@@ -4,11 +4,11 @@ import * as components from './components/test'
 
 interface LinkProps {
   label: string
-  component: any
-  props?: any
+  component: any // eslint-disable-line
+  props?: Record<string, unknown>
 }
 
-function Link ({ label, component, props }: LinkProps) {
+function Link ({ label, component, props }: LinkProps): JSX.Element {
   const dispatch = useNavigationDispatch()
   return (
     <a
@@ -16,10 +16,11 @@ function Link ({ label, component, props }: LinkProps) {
       onClick={(event) => {
         event.preventDefault()
         const id = uuid()
-        dispatch({ type: NavigationActionType.ADD, content: component })
+        dispatch({ type: NavigationActionType.ADD_LAST, content: component, componentName: component.displayName, props: { id }, id })
         history.pushState({
           id,
-          props
+          props: { ...props, id },
+          itemName: component.displayName
         }, label, `${label.toLowerCase()}?id=${id}`)
       }}
     >
@@ -40,7 +41,7 @@ function App (): JSX.Element {
 
         </div>
         <div className="flex flex-column gap-4 bg-gray-500 p-2 h-full">
-          {state.content}
+          {state.content.map((content) => content.item)}
         </div>
       </div>
   )
