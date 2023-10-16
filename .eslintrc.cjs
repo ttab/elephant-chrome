@@ -8,7 +8,8 @@ module.exports = {
   env: {
     browser: true,
     es2021: true,
-    jest: true },
+    jest: true
+  },
   extends: [
     'eslint:recommended',
     'plugin:@typescript-eslint/recommended',
@@ -23,5 +24,7 @@ module.exports = {
       'warn',
       { allowConstantExport: true },
     ],
+    "space-before-function-paren": ["warn", "never"],
+    "@typescript-eslint/space-before-function-paren": ["warn", "never"]
   },
 }

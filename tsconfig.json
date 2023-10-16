@@ -21,7 +21,26 @@
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    /* Paths */
+    "baseUrl": ".",
+    "paths": {
+      "@/components/*": [
+        "./src/components/*"
+      ],
+      "@/contexts/*": [
+        "./src/contexts/*"
+      ],
+      "@/hooks/*": [
+        "./src/hooks/*"
+      ],
+      "@/views/*": [
+        "./src/views/*"
+      ],
+      "@/lib/*": [
+        "./src/lib/*"
+      ]
+    }
   },
   "include": [
     "src",
