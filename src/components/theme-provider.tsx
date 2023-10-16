@@ -20,7 +20,7 @@ const initialState: ThemeProviderState = {
 
 const ThemeProviderContext = createContext<ThemeProviderState>(initialState)
 
-export function ThemeProvider ({
+export function ThemeProvider({
   children,
   defaultTheme = 'system',
   storageKey = 'ele-ui-theme',
