@@ -1,7 +1,7 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import App from './App.tsx'
-import NavigationProvider from '@/contexts/navigation'
+import { NavigationProvider } from '@/contexts/navigation'
 
 import { ThemeProvider } from '@/contexts/theme-provider'
 
