@@ -27,7 +27,8 @@ const config: JestConfigWithTsJest = {
     printBasicPrototype: true
   },
   moduleNameMapper: {
-    '\\.(css|scss)$': '<rootDir>/__mocks__/styleMock.js'
+    '\\.(css|scss)$': '<rootDir>/__mocks__/styleMock.js',
+    '@/(.*)': '<rootDir>/src/$1'
   },
   modulePathIgnorePatterns: [
     '<rootDir>/__tests__/data'

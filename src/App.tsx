@@ -1,10 +1,10 @@
-import { NavigationActionType, useNavigationDispatch, useNavigationState } from './contexts/navigation'
+import { NavigationActionType, useNavigationDispatch, useNavigationState } from '@/contexts'
 import { v4 as uuid } from 'uuid'
 import * as views from './views'
 
 interface LinkProps {
   label: string
-  component: any // eslint-disable-line
+  component: any
   props?: Record<string, unknown>
 }
 
@@ -16,11 +16,23 @@ function Link({ label, component, props }: LinkProps): JSX.Element {
       onClick={(event) => {
         event.preventDefault()
         const id = uuid()
-        dispatch({ type: NavigationActionType.ADD_LAST, content: component, componentName: component.displayName, props: { id }, id })
+        const args = { ...props, id }
+        dispatch({
+          type: NavigationActionType.ADD,
+          content: component,
+          componentName: component.displayName,
+          props: args,
+          id
+        })
+
         history.pushState({
           id,
           props: { ...props, id },
-          itemName: component.displayName
+          itemName: component.displayName,
+          contentState: [
+            ...history.state.contentState,
+            { id, componentName: component.displayName, props: args }
+          ]
         }, label, `${label.toLowerCase()}?id=${id}`)
       }}
     >
@@ -38,7 +50,6 @@ function App(): JSX.Element {
             <Link label='Medium' component={views.Medium} />
             <Link label='Large' component={views.Large} />
           </nav>
-
         </div>
         <div className="flex flex-column gap-4 bg-gray-500 p-2 h-full">
           {state.content}

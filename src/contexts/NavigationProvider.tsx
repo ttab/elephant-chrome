@@ -6,9 +6,10 @@ import {
   useSyncExternalStore,
   type PropsWithChildren
 } from 'react'
-import { ContentWrapper } from '../components/test/Wrapper'
+import { NavigationWrapper } from '@/components/NavigationWrapper'
 
-import * as components from '../components/test'
+import * as views from '@/views'
+import { Init } from '@/views'
 
 interface NavigationState {
   stack: string[] // Stack history ledger
@@ -23,41 +24,35 @@ interface HistoryState {
   id: string
   itemName: string
   props: Record<string, unknown>
-  contentLength: number
+  contentState: Array<Record<string, unknown>>
 }
 
 export enum NavigationActionType {
-  ADD_LAST = 'addLast',
-  ADD_FIRST = 'addFirst',
-  REMOVE_FIRST = 'removeFirst',
-  REMOVE_LAST = 'removeLast',
-  REMOVE_FROM_TO_LAST = 'removeFromToLast',
-  POP = 'pop'
+  ADD = 'add',
+  REMOVE = 'remove',
+  SET = 'setContent'
 }
 
 const initialState = {
   stack: ['init'],
   stackPosition: 0,
   content: [
-    {
-      id: 'init',
-      item: (
-      <ContentWrapper>
-        <p>Init</p>
-      </ContentWrapper>
-      )
-    }
+    (
+      <NavigationWrapper>
+        <Init />
+      </NavigationWrapper>
+    )
   ]
 }
 
 const NavigationContext = createContext({} as NavigationState) // eslint-disable-line
 const NavigationDispatchContext = createContext(null as unknown as React.Dispatch<any>)
 
-function NavigationProvider ({ children }: PropsWithChildren): JSX.Element {
+export function NavigationProvider({ children }: PropsWithChildren): JSX.Element {
   const [state, dispatch] = useReducer(navigationReducer, initialState)
 
   // Sync history state with navigation state
-  function subscribe (callback) {
+  function subscribe(callback) {
     window.addEventListener('popstate', callback)
     // also use 'resize'
     return () => {
@@ -65,7 +60,7 @@ function NavigationProvider ({ children }: PropsWithChildren): JSX.Element {
     }
   }
 
-  function getSnapshot (): HistoryState {
+  function getSnapshot(): HistoryState {
     return history.state
   }
 
@@ -78,7 +73,7 @@ function NavigationProvider ({ children }: PropsWithChildren): JSX.Element {
       history.replaceState({
         id: 'init',
         itemName: 'init',
-        contentLength: 0
+        contentState: [{ id: 'init', componentName: 'Init', props: { id: 'init' } }]
       },
       document.title,
       window.location.href
@@ -87,36 +82,16 @@ function NavigationProvider ({ children }: PropsWithChildren): JSX.Element {
     }
 
     // Backward movement
-    if (state.stack.indexOf(historyState.id) < state.stackPosition) {
-      dispatch({
-        type: NavigationActionType.REMOVE_LAST
-      })
-      // TODO: ADD_FIRST if we have more entires in stack ledger before FIRST in content
-      // How to calculate this?
-    }
-
-    // Forward movement
-    if (state.stack.indexOf(historyState.id) > state.stackPosition) {
-      dispatch({
-        type: NavigationActionType.ADD_LAST,
-        content: components[historyState.itemName],
-        props: historyState.props
-      })
-    }
-
-    // Link navigation
-    // if (state.stack.indexOf(historyState.id) === state.stackPosition) {
-    // }
+    dispatch({ type: NavigationActionType.SET, newContent: historyState.contentState })
+    // Link navigation (state.stack.indexOf(historyState.id) === state.stackPosition)
+    console.log('fall trough: ', 'stack:', JSON.stringify(state.stack), 'stackPosition: ', state.stackPosition, 'itemName: ', history.state.itemName)
+    console.log('historyState.contentState: ', JSON.stringify(historyState.contentState, null, 2))
   }, [historyState])
 
   // Remove first element if document width exceeds window width
   useLayoutEffect(() => {
-    // TODO: Move this to useLayoutEffect above, there we have direction and can figure out if
-    // we're going forward or backward, and if we're gonna remove first or last
-    // Hmm, doesn't work to do both useEffects at the same time. We need to render content before
-    // we know the size of the rendered content.
     if (document.documentElement.scrollWidth > window.innerWidth) {
-      dispatch({ type: NavigationActionType.REMOVE_FIRST })
+      dispatch({ type: NavigationActionType.REMOVE })
     }
   }, [state])
 
@@ -130,18 +105,18 @@ function NavigationProvider ({ children }: PropsWithChildren): JSX.Element {
 }
 
 // Navigation state
-export function useNavigationState (): any {
+export function useNavigationState(): any {
   return useContext(NavigationContext)
 }
 
 // Modify navigation state through dispatch
-export function useNavigationDispatch (): any {
+export function useNavigationDispatch(): any {
   return useContext(NavigationDispatchContext)
 }
 
-function navigationReducer (state, action): NavigationState {
+function navigationReducer(state, action): NavigationState {
   switch (action.type) {
-    case NavigationActionType.ADD_LAST:
+    case NavigationActionType.ADD:
       return {
         // FIXME: Now we remove ledger entries after current stackPosition when we ADD new entries.
         // New navigation path. This works right now but might not when we implement a active window
@@ -150,27 +125,30 @@ function navigationReducer (state, action): NavigationState {
         stackPosition: state.stackPosition + 1,
         content: [
           ...state.content,
-          { id: action.id, item: <ContentWrapper><action.content {...action.props }/></ContentWrapper> }
+          <NavigationWrapper><action.content {...action.props }/></NavigationWrapper>
 
         ]
       }
-    case NavigationActionType.REMOVE_FIRST:
+    case NavigationActionType.REMOVE:
       return {
         ...state,
         content: [
           ...state.content.slice(1, state.content.length)
         ]
       }
-    case NavigationActionType.REMOVE_LAST:
+    case NavigationActionType.SET:
       return {
         ...state,
-        stackPosition: state.stackPosition - 1,
-        content: [
-          ...state.content.slice(0, state.content.length - 1)
-        ]
+        content: action.newContent.map((item) => {
+          const Component = item.componentName ? views[item.componentName] : Init
+          return (
+            <NavigationWrapper>
+              <Component {...item.props} />
+            </NavigationWrapper>
+          )
+        })
       }
     default:
       throw new Error(`Unhandled action type: ${action.type}`)
   }
 }
-export default NavigationProvider
