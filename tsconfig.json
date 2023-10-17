@@ -31,6 +31,12 @@
       "@/views/*": [
         "./src/views/*"
       ],
+      "@/hooks/*": [
+        "./src/hooks/*"
+      ],
+      "@/contexts/*": [
+        "./src/contexts/*"
+      ],
       "@/lib/*": [
         "./src/lib/*"
       ]
