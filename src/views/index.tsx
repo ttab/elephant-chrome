@@ -1,4 +1,4 @@
-export { Large } from './large'
-export { Medium } from './medium'
-export { Small } from './small'
-export { Init } from './init'
+export { Large } from './Large'
+export { Medium } from './Medium'
+export { Small } from './Small'
+export { Init } from './Init'

@@ -54,7 +54,6 @@ export function NavigationProvider({ children }: PropsWithChildren): JSX.Element
   // Sync history state with navigation state
   function subscribe(callback) {
     window.addEventListener('popstate', callback)
-    // also use 'resize'
     return () => {
       window.removeEventListener('popstate', callback)
     }
@@ -81,11 +80,7 @@ export function NavigationProvider({ children }: PropsWithChildren): JSX.Element
       return
     }
 
-    // Backward movement
     dispatch({ type: NavigationActionType.SET, newContent: historyState.contentState })
-    // Link navigation (state.stack.indexOf(historyState.id) === state.stackPosition)
-    console.log('fall trough: ', 'stack:', JSON.stringify(state.stack), 'stackPosition: ', state.stackPosition, 'itemName: ', history.state.itemName)
-    console.log('historyState.contentState: ', JSON.stringify(historyState.contentState, null, 2))
   }, [historyState])
 
   // Remove first element if document width exceeds window width
