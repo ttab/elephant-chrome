@@ -1,11 +1,9 @@
-import { PlanningOverview } from '@/views/planning/overview'
+import { Editor } from '@/views/Editor'
 
-function App(): JSX.Element {
+export const App = (): JSX.Element => {
   return (
     <div className='relative flex min-h-screen flex-col bg-white dark:bg-black'>
-      <PlanningOverview />
+      <Editor />
     </div>
   )
 }
-
-export default App
