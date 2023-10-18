@@ -25,20 +25,8 @@
     /* Paths */
     "baseUrl": ".",
     "paths": {
-      "@/components/*": [
-        "./src/components/*"
-      ],
-      "@/contexts/*": [
-        "./src/contexts/*"
-      ],
-      "@/hooks/*": [
-        "./src/hooks/*"
-      ],
-      "@/views/*": [
-        "./src/views/*"
-      ],
-      "@/lib/*": [
-        "./src/lib/*"
+      "@/*": [
+        "./src/*"
       ]
     }
   },

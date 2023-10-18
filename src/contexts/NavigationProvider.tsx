@@ -1,39 +1,25 @@
 import {
   createContext,
   useReducer,
-  useContext,
   useLayoutEffect,
-  useSyncExternalStore,
   type PropsWithChildren
 } from 'react'
 import { NavigationWrapper } from '@/components/NavigationWrapper'
+import type { ContentState, NavigationAction } from '@/types'
+import { NavigationActionType } from '@/types'
+
+import { useHistory } from '@/hooks'
 
 import * as views from '@/views'
 import { Init } from '@/views'
 
-interface NavigationState {
+export interface NavigationState {
   stack: string[] // Stack history ledger
   stackPosition: number // Position in the stack ledger
-  content: Array<{ // Renderable content
-    id: string
-    item: JSX.Element[]
-  }>
+  content: JSX.Element[]
 }
 
-interface HistoryState {
-  id: string
-  itemName: string
-  props: Record<string, unknown>
-  contentState: Array<Record<string, unknown>>
-}
-
-export enum NavigationActionType {
-  ADD = 'add',
-  REMOVE = 'remove',
-  SET = 'setContent'
-}
-
-const initialState = {
+const initialState: NavigationState = {
   stack: ['init'],
   stackPosition: 0,
   content: [
@@ -45,27 +31,12 @@ const initialState = {
   ]
 }
 
-const NavigationContext = createContext({} as NavigationState) // eslint-disable-line
-const NavigationDispatchContext = createContext(null as unknown as React.Dispatch<any>)
+export const NavigationContext = createContext(initialState)
 
-export function NavigationProvider({ children }: PropsWithChildren): JSX.Element {
+export const NavigationProvider = ({ children }: PropsWithChildren): JSX.Element => {
   const [state, dispatch] = useReducer(navigationReducer, initialState)
+  const historyState = useHistory()
 
-  // Sync history state with navigation state
-  function subscribe(callback) {
-    window.addEventListener('popstate', callback)
-    return () => {
-      window.removeEventListener('popstate', callback)
-    }
-  }
-
-  function getSnapshot(): HistoryState {
-    return history.state
-  }
-
-  const historyState = useSyncExternalStore(subscribe, getSnapshot)
-
-  // Catch historyState changes ie browser navigation
   useLayoutEffect(() => {
     if (historyState === null) {
       // Create history state for initial content
@@ -80,7 +51,7 @@ export function NavigationProvider({ children }: PropsWithChildren): JSX.Element
       return
     }
 
-    dispatch({ type: NavigationActionType.SET, newContent: historyState.contentState })
+    dispatch({ type: NavigationActionType.SET, content: historyState.contentState })
   }, [historyState])
 
   // Remove first element if document width exceeds window width
@@ -91,36 +62,24 @@ export function NavigationProvider({ children }: PropsWithChildren): JSX.Element
   }, [state])
 
   return (
-    <NavigationContext.Provider value={state}>
-      <NavigationDispatchContext.Provider value={dispatch}>
+    <NavigationContext.Provider value={{ state, dispatch }}>
         {children}
-      </NavigationDispatchContext.Provider>
     </NavigationContext.Provider>
   )
 }
 
-// Navigation state
-export function useNavigationState(): any {
-  return useContext(NavigationContext)
-}
-
-// Modify navigation state through dispatch
-export function useNavigationDispatch(): any {
-  return useContext(NavigationDispatchContext)
-}
-
-function navigationReducer(state, action): NavigationState {
+function navigationReducer(state: NavigationState, action: NavigationAction): NavigationState {
   switch (action.type) {
     case NavigationActionType.ADD:
+      if (action.component === undefined) {
+        throw new Error('Component is undefined')
+      }
       return {
-        // FIXME: Now we remove ledger entries after current stackPosition when we ADD new entries.
-        // New navigation path. This works right now but might not when we implement a active window
-        // (any window in view, and navigation should act from that position)
         stack: action.id !== undefined ? [...state.stack.slice(0, state.stackPosition + 1), action.id] : state.stack,
         stackPosition: state.stackPosition + 1,
         content: [
           ...state.content,
-          <NavigationWrapper><action.content {...action.props }/></NavigationWrapper>
+          <NavigationWrapper key={action.id}><action.component { ...action.props }/></NavigationWrapper>
 
         ]
       }
@@ -132,10 +91,13 @@ function navigationReducer(state, action): NavigationState {
         ]
       }
     case NavigationActionType.SET:
+      if (action.content === undefined) {
+        throw new Error('Content is undefined')
+      }
       return {
         ...state,
-        content: action.newContent.map((item) => {
-          const Component = item.componentName ? views[item.componentName] : Init
+        content: action.content.map((item: ContentState): JSX.Element => {
+          const Component = item.name !== undefined ? views[item.name] : Init
           return (
             <NavigationWrapper>
               <Component {...item.props} />
@@ -144,6 +106,6 @@ function navigationReducer(state, action): NavigationState {
         })
       }
     default:
-      throw new Error(`Unhandled action type: ${action.type}`)
+      throw new Error(`Unhandled action type: ${action.type as string}`)
   }
 }

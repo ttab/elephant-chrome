@@ -1,4 +1,4 @@
-export function Medium ({ id }: { id: string }): JSX.Element {
+export function Medium({ id }: { id: string }): JSX.Element {
   return (
     <div className='w-[450px] bg-blue-200 overflow-hidden'>
       <h1 className='font-bold text-lg py-4'>{`Medium - ${Date.now()}`}</h1>
