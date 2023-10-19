@@ -9,12 +9,6 @@
     ],
     "noEmit": true,
     "allowImportingTsExtensions": true,
-    "outDir": "../dist",
-    "baseUrl": ".",
-    "paths": {
-      "@/routes/*": [
-        "./routes/*"
-      ]
-    }
+    "outDir": "../dist"
   }
 }

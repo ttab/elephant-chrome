@@ -7,7 +7,7 @@ import dotenv from 'dotenv'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 
-import { mapRoutes } from './routes.ts'
+import { connectRouteHandler, mapRoutes } from './routes.ts'
 
 dotenv.config()
 
@@ -19,24 +19,34 @@ console.log(`Starting server environment "${NODE_ENV}"`)
 async function runServer(): Promise<string> {
   const { apiDir, distDir } = getPaths()
   const { app } = expressWebsockets(express())
-  const routes = mapRoutes(apiDir)
+  const routes = await mapRoutes(apiDir)
 
   app.use(cors())
   app.use(cookieParser())
   app.use(express.json())
   app.use(express.static(distDir))
 
-  app.use('/api/*', (req, res) => {
-    res.send('wow')
-  })
+  for (const route in routes) {
+    const routePath = path.join('/api', route)
+    const { GET, POST, PUT, DELETE } = routes[route].handlers
 
-  // app.get('*', (_, res) => {
-  //   res.sendFile(path.join(distDir, 'index.html'))
-  // })
+    if (GET) {
+      connectRouteHandler(app, routePath, GET)
+    }
+    if (POST) {
+      connectRouteHandler(app, routePath, POST)
+    }
+    if (PUT) {
+      connectRouteHandler(app, routePath, PUT)
+    }
+    if (DELETE) {
+      connectRouteHandler(app, routePath, DELETE)
+    }
+  }
 
   app.listen(API_PORT)
 
-  return 'http://localhost:5183'
+  return `http://localhost:${API_PORT}`
 }
 
 (async () => {
