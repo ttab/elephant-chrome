@@ -1,6 +1,7 @@
 import fs from 'node:fs'
 import path from 'node:path'
-import type { Request, Application } from 'express'
+import type { Request } from 'express'
+import type { Application, WebsocketRequestHandler } from 'express-ws'
 
 /* Route types */
 interface Route {
@@ -30,7 +31,9 @@ interface RouteHandlers {
   GET?: RouteHandler
   POST?: RouteHandler
   PUT?: RouteHandler
+  PATCH?: RouteHandler
   DELETE?: RouteHandler
+  WEB_SOCKET?: WebsocketRequestHandler
 }
 
 type RouteMap = Record<string, Route>
@@ -64,8 +67,8 @@ export async function mapRoutes(apiDir: string): Promise<RouteMap> {
 /*
  * Connect an exported route handler like GET, POST, etc to a specific express path.
  */
-export function connectRouteHandler(app: Application, routePath: string, func: RouteHandler): void {
-  app.get(routePath, (req, res) => {
+export function connectRouteHandler(app: Application, routePath: string, func: RouteHandler): Application {
+  const handlerFunc = (req, res): void => {
     func(req).then((response) => {
       if (ApiResponse.isContent(response)) {
         const { statusCode = 200, payload = '' } = response
@@ -90,8 +93,36 @@ export function connectRouteHandler(app: Application, routePath: string, func: R
       res.statusMessage = ex?.message || 'Uknown error'
       res.send('')
     })
-  })
+  }
+
+  switch (func.name) {
+    case 'GET':
+      return app.get(routePath, handlerFunc)
+
+    case 'POST':
+      return app.post(routePath, handlerFunc)
+
+    case 'PUT':
+      return app.put(routePath, handlerFunc)
+
+    case 'PATCH':
+      return app.patch(routePath, handlerFunc)
+
+    case 'DELETE':
+      return app.delete(routePath, handlerFunc)
+
+    case 'WEB_SOCKET':
+      return app.ws(routePath, handlerFunc)
+  }
+
+  return app
 }
+
+export function connectWebsocketHandler(app: Application, routePath: string, func: WebsocketRequestHandler): Application {
+  app.ws(routePath, func)
+  return app
+}
+
 
 function buildRoutes(routes: RouteMap, directory: string, baseRoute: string = ''): void {
   const items = fs.readdirSync(directory)
@@ -135,6 +166,8 @@ async function importRouteHandler(path: string): Promise<RouteHandlers> {
     GET: handlers?.GET instanceof Function ? handlers.GET : undefined,
     POST: handlers?.POST instanceof Function ? handlers.POST : undefined,
     PUT: handlers?.GET instanceof Function ? handlers.PUT : undefined,
-    DELETE: handlers?.DELETE instanceof Function ? handlers.DELETE : undefined
+    PATCH: handlers?.GET instanceof Function ? handlers.PATCH : undefined,
+    DELETE: handlers?.DELETE instanceof Function ? handlers.DELETE : undefined,
+    WEB_SOCKET: handlers?.WEB_SOCKET instanceof Function ? handlers.WEB_SOCKET : undefined
   }
 }
