@@ -14,7 +14,7 @@ dotenv.config()
 const NODE_ENV = process.env.NODE_ENV === 'production' ? 'production' : 'development'
 const API_PORT = parseInt(process.env.API_PORT) || 5183
 
-console.log(`Starting server environment "${NODE_ENV}"`)
+console.info(`Starting API environment "${NODE_ENV}"`)
 
 async function runServer(): Promise<string> {
   const { apiDir, distDir } = getPaths()
@@ -52,7 +52,7 @@ async function runServer(): Promise<string> {
 (async () => {
   return await runServer()
 })().then(url => {
-  console.log(`Serving api on ${url}`)
+  console.info(`Serving API on ${url}`)
 }).catch(ex => {
   console.error(ex)
   process.exit(1)
