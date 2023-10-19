@@ -1,4 +1,4 @@
-import { createContext, useEffect, useState, useMemo } from 'react'
+import { createContext, useEffect, useRef } from 'react'
 
 interface ApiProviderProps {
   children: React.ReactNode
@@ -7,40 +7,45 @@ interface ApiProviderProps {
 }
 
 export interface ApiProviderState {
-  url: string | undefined
+  apiUrl?: string
+  send?: (msg: string) => void
 }
 
 const initialState: ApiProviderState = {
-  url: undefined
+  apiUrl: undefined,
+  send: undefined
 }
 
 export const ApiProvider = ({ children, host = 'localhost', port = 5183, ...props }: ApiProviderProps): JSX.Element => {
-  const [hostName] = useState(host)
-  const [portNumber] = useState(port)
-  const socket = new WebSocket(`ws://${hostName}:${portNumber}/api/ws`)
+  const wsRef = useRef<WebSocket | undefined>(undefined)
 
-  // FIXME: This does not work, might need useRef and stuff... WiP
   useEffect(() => {
-    socket.addEventListener('open', () => {
-      console.log('WebSocket connection opened')
-    })
+    if (!wsRef.current) {
+      wsRef.current = new WebSocket(`ws://${host}:${port}/api/ws`)
 
-    socket.addEventListener('message', (event) => {
-      console.log('Received message:', event.data)
-    })
+      wsRef.current.addEventListener('open', () => {
+        console.log('WebSocket connection opened')
+      })
 
-    socket.addEventListener('close', (event) => {
-      console.log('Closed socket:', event)
-    })
-
-    // Clean up and close the socket when the component unmounts
-    return () => {
-      socket.close()
+      wsRef.current.addEventListener('message', (event) => {
+        console.log('Received message:', event.data)
+      })
     }
-  })
+
+    return () => {
+      if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
+        wsRef.current.close()
+      }
+    }
+  }, [host, port])
 
   const value = {
-    url: `${hostName}:${portNumber}/api`
+    apiUrl: `${host}:${port}/api`,
+    send: (msg: string) => {
+      if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
+        wsRef.current.send(msg)
+      }
+    }
   }
 
   return (
