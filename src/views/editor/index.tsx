@@ -1,13 +1,13 @@
-import { useApi } from '@/hooks/useApi'
+import { useWebSocket } from '@/hooks/useWebSocket'
 import { useState } from 'react'
 
 export const Editor = (): JSX.Element => {
   const [count, setCount] = useState<number>(0)
-  const api = useApi()
+  const ws = useWebSocket()
 
   const onClick = (msg: string): void => {
-    if (api.send) {
-      api.send(msg)
+    if (ws?.webSocket?.current) {
+      ws?.webSocket?.current.send(`Clicked ${msg} time(s)`)
     }
   }
 
