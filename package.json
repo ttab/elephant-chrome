@@ -15,6 +15,11 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@hocuspocus/extension-database": "^2.7.1",
+    "@hocuspocus/extension-logger": "^2.7.1",
+    "@hocuspocus/extension-redis": "^2.7.1",
+    "@hocuspocus/provider": "^2.7.1",
+    "@hocuspocus/server": "^2.7.1",
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
     "dotenv": "^16.3.1",
@@ -22,7 +27,8 @@
     "express-ws": "^5.0.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "react-router-dom": "^6.17.0"
+    "react-router-dom": "^6.17.0",
+    "yjs": "^13.6.8"
   },
   "devDependencies": {
     "@testing-library/jest-dom": "^6.1.3",
