@@ -20,6 +20,8 @@
     "@hocuspocus/extension-redis": "^2.7.1",
     "@hocuspocus/provider": "^2.7.1",
     "@hocuspocus/server": "^2.7.1",
+    "@slate-yjs/core": "^1.0.2",
+    "@ttab/textbit": "^0.0.7",
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
     "dotenv": "^16.3.1",
@@ -28,6 +30,10 @@
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.17.0",
+    "redis": "^4.6.10",
+    "slate": "^0.100.0",
+    "slate-react": "^0.100.0",
+    "uuid": "^9.0.1",
     "yjs": "^13.6.8"
   },
   "devDependencies": {
@@ -42,6 +48,7 @@
     "@types/react": "^18.2.15",
     "@types/react-dom": "^18.2.7",
     "@types/react-router-dom": "^5.3.3",
+    "@types/uuid": "^9.0.6",
     "@typescript-eslint/eslint-plugin": "^6.0.0",
     "@typescript-eslint/parser": "^6.0.0",
     "@vitejs/plugin-react": "^4.0.3",

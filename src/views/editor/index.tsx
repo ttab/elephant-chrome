@@ -1,26 +1,95 @@
 // import { useWebSocket } from '@/hooks/useWebSocket'
 import { useApi } from '@/hooks/useApi'
-import { useMemo, useState } from 'react'
-// import * as Y from 'yjs'
-import { HocuspocusProvider } from '@hocuspocus/provider'
+import { useEffect, useMemo, useState } from 'react'
+import { withYjs, withYHistory, YjsEditor } from '@slate-yjs/core'
+import { withReact } from 'slate-react'
+import * as Y from 'yjs'
+import { Textbit, useTextbitEditor, type TextbitDescendant } from '@ttab/textbit'
+import '@ttab/textbit/dist/esm/index.css'
+
+import { HocuspocusProvider, HocuspocusProviderWebsocket, WebSocketStatus } from '@hocuspocus/provider'
+import { createEditor } from 'slate'
 
 export const Editor = (): JSX.Element => {
   const api = useApi()
-  const [taskList, setTaskList] = useState<string[]>([])
+  const [connectionStatus, setConnectionStatus] = useState<WebSocketStatus>(WebSocketStatus.Disconnected)
+  const [documentUuid, setDocumentUuid] = useState('7de322ac-a9b2-45d9-8a0f-f1ac27f9cbfe')
+
+  const [value, setValue] = useState<TextbitDescendant[]>([ // ])
+    {
+      type: 'core/text',
+      id: '538345e5-bacc-48f9-8ef1-a219891b60eb',
+      class: 'text',
+      children: [
+        { text: '' }
+      ]
+    }
+  ])
 
   const provider = useMemo(() => {
+    const endpoint = `ws://${api.endpoint}/`.replace('api', 'collaboration') // Seems to be correct!
+    console.log(`Hocuspocus provider on ${endpoint}`)
+
+    const hpWs = new HocuspocusProviderWebsocket({ url: endpoint })
+
     return new HocuspocusProvider({
-      url: `ws://${api.endpoint}/documents/mydoc`,
-      name: 'mydoc'
+      websocketProvider: hpWs,
+      name: documentUuid,
+      token: 'danne',
+      onConnect: () => {
+        console.log('IS CONNECTED')
+      },
+      onDisconnect: () => {
+        console.log('DISCONNECTED')
+      },
+      onOpen: () => {
+        console.log('IS OPEN')
+      },
+      onClose: () => {
+        console.log('IS CLOSED')
+      },
+      onSynced: ({ state }) => {
+        console.log(state)
+        if (state) {
+          console.log('Connected')
+          setConnectionStatus(WebSocketStatus.Connected)
+        }
+      },
+      onStatus: ({ status }) => {
+        if (status === 'disconnected') {
+          console.warn('Lost connection')
+          setConnectionStatus(WebSocketStatus.Disconnected)
+        }
+      }
     })
-  }, [api.endpoint])
+  }, [documentUuid, api.endpoint])
 
-  const tasks = provider.document.getArray('tasks')
+  const editor = useMemo(() => {
+    const sharedType = provider.document.get('content', Y.XmlText)
+    const e = withReact(
+      withYHistory(
+        withYjs(
+          createEditor(), sharedType as Y.XmlText
+        )
+      )
+    )
+    return e
+  }, [provider.document])
 
-  tasks.observe(() => {
-    setTaskList(tasks.toArray() as string[])
+  // const editor: YjsEditorType = useTextbitEditor((editor) => {
+  //   const sharedType = provider.document.get('content', Y.XmlText)
+  //   withYjs(editor, sharedType as Y.XmlText)
+  //   withYHistory(editor)
+
+  //   return editor
+  // })
+
+  useEffect(() => {
+    console.log('CONNECTING')
+    YjsEditor.connect(editor)
+
+    return () => YjsEditor.disconnect(editor)
   })
-
 
   return (
     <div className="p-4">
@@ -28,51 +97,18 @@ export const Editor = (): JSX.Element => {
         <h1 className="strong text-xl font-bold">Editor header</h1>
       </header>
 
-      <main>
-        <ul className="mt-4">
-          {taskList.map((t) => {
-            return <li>{t}</li>
-          })}
-        </ul>
-
-        <p className="mt-4">
-          <a className="px-4 py-2 bg-slate-300 font-bold rounded cursor-pointer opacity" onClick={(e) => {
-            e.preventDefault()
-            tasks.push(['buy milk'])
-          }}>Send click count</a>
-        </p>
+      <main className="mt-5 p-2 border shadow h-[800px]">
+        <div className="h-full relative">
+          {connectionStatus === WebSocketStatus.Connected
+            ? (<Textbit
+              value={value}
+              onChange={setValue}
+              editor={editor}
+            />)
+            : <strong>Not connected</strong>
+          }
+        </div>
       </main>
     </div>
   )
-  // const [count, setCount] = useState<number>(0)
-
-  // const [sendMessage] = useWebSocket((msg) => {
-  //   console.log(`::=> ${msg}`)
-  // })
-
-  // const onClick = (): void => {
-  //   const clicked = count + 1
-  //   sendMessage(`Clicked ${clicked.toString()} time(s)`)
-  //   setCount(clicked)
-  // }
-
-  // return (
-  //   <div className="p-4">
-  //     <header>
-  //       <h1 className="strong text-xl font-bold">Editor header</h1>
-  //     </header>
-
-  //     <main>
-  //       <p className="mt-4">
-  //         Editor content...!
-  //       </p>
-  //       <p className="mt-4">
-  //         <a className="px-4 py-2 bg-slate-300 font-bold rounded cursor-pointer opacity" onClick={(e) => {
-  //           e.preventDefault()
-  //           onClick()
-  //         }}>Send click count</a>
-  //       </p>
-  //     </main>
-  //   </div>
-  // )
 }
