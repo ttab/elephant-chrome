@@ -13,3 +13,5 @@ export const Editor = (): JSX.Element => {
     </>
   )
 }
+
+Editor.displayName = 'Editor'

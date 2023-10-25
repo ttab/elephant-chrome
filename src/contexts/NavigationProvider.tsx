@@ -24,9 +24,11 @@ export const NavigationProvider = ({ children, init }: PropsWithChildren<{ init:
     // Create history state for initial content
     if (historyState === null) {
       // TODO: Make router/location hook
-      const currentView = window.location.pathname !== '/' ? window.location.pathname[1].toUpperCase() + window.location.pathname.slice(2) : 'Init'
+      const currentView = window.location.pathname !== '/'
+        ? window.location.pathname[1].toUpperCase() + window.location.pathname.slice(2)
+        : 'Init'
       const currentProps = Object.fromEntries(new URLSearchParams(window.location.search))
-      const id = currentProps.id || 'init'
+      const id = currentProps.id || 'init' // eslint-disable-line @typescript-eslint/strict-boolean-expressions
       history.replaceState({
         id,
         itemName: currentView,
@@ -90,13 +92,12 @@ function navigationReducer(state: NavigationState, action: NavigationAction): Na
         throw new Error('Content is undefined')
       }
 
-      console.log('ADD side effect SET')
       return {
         ...state,
         content: action.content.map((item: ContentState): JSX.Element => {
           const Component = state.registry.get(item.name)?.component
           return (
-            <NavigationWrapper key={item.id}>
+            <NavigationWrapper key={Date.now() + item.id}>
               <Component {...item.props} />
             </NavigationWrapper>
           )

@@ -1,4 +1,3 @@
-export { Large } from './Large'
-export { Medium } from './Medium'
-export { Small } from './Small'
+export { Editor } from './Editor'
+export { Planning } from './Planning'
 export { Init } from './Init'

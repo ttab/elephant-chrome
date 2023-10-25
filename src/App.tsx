@@ -4,18 +4,15 @@ import { Link } from '@/components'
 const App = (): JSX.Element => {
   const { state } = useNavigation()
   return (
-      <div className='h-screen'>
-        <div className="flex flex-row w-screen justify-between px-2">
-          <nav className='flex flex-row'>
-            <Link to='Small'>Small</Link>
-            <Link to='Medium'>Medium</Link>
-            <Link to='Large'>Large</Link>
-          </nav>
-        </div>
-        <div className="flex flex-column gap-4 bg-gray-500 p-2 h-full">
-          {state.content}
-        </div>
+    <div className='relative flex h-screen flex-col bg-white dark:bg-black'>
+      <nav className='flex flex-row'>
+        <Link to='Editor'>Editor</Link>
+        <Link to='Planning'>Planning</Link>
+      </nav>
+      <div className="flex flex-1 gap-4 bg-gray-500 p-2 h-max">
+        {state.content}
       </div>
+    </div>
   )
 }
 

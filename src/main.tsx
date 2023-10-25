@@ -9,7 +9,7 @@ import * as views from './views'
 const registeredComponents = new Map()
 const registry = {
   get: (key: View) => {
-    const registryItem = registeredComponents.get(key)
+    const registryItem: RegistryItem = registeredComponents.get(key)
     if (registryItem === undefined) {
       throw new Error(`Can't find component: ${key}`)
     }
@@ -33,7 +33,6 @@ ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
     <ThemeProvider defaultTheme='light' storageKey='ele-ui-theme'>
       <NavigationProvider init={init}>
         <App />
-        <p>test</p>
       </NavigationProvider>
     </ThemeProvider>
   </React.StrictMode>
@@ -60,8 +59,8 @@ function init(): NavigationState {
     registry,
     content: [
       (
-      <NavigationWrapper>
-        <InititalView.component id='init'/>
+      <NavigationWrapper key='init'>
+        <InititalView.component id='init' />
       </NavigationWrapper>
       )
     ]

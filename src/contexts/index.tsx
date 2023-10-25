@@ -1,2 +1,2 @@
-export { NavigationProvider } from './NavigationProvider'
+export { NavigationProvider, NavigationContext } from './NavigationProvider'
 export { ThemeProvider } from './ThemeProvider'

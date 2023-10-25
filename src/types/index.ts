@@ -1,4 +1,4 @@
-import type * as views from '../views'
+import type * as views from '@/views'
 
 export enum NavigationActionType {
   ADD = 'add',

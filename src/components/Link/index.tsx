@@ -29,7 +29,7 @@ export const Link = ({ children, to, props }: LinkProps): JSX.Element => {
           props: { ...props, id },
           itemName: linkItem.metadata.name,
           contentState: [
-            ...history.state.contentState.slice(),
+            ...history.state.contentState,
             {
               id,
               name: linkItem.metadata.name,
