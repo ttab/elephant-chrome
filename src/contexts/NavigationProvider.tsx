@@ -12,9 +12,9 @@ import { NavigationActionType } from '@/types'
 import { useHistory } from '@/hooks'
 
 export const NavigationContext = createContext<{
-  state: NavigationState | null
+  state: NavigationState
   dispatch: Dispatch<NavigationAction>
-}>({ state: null, dispatch: () => {} })
+}>({ state: {} as NavigationState, dispatch: () => {} }) // eslint-disable-line @typescript-eslint/consistent-type-assertions
 
 export const NavigationProvider = ({ children, init }: PropsWithChildren<{ init: () => NavigationState }>): JSX.Element => {
   const [state, dispatch] = useReducer(navigationReducer, null, init)
@@ -23,6 +23,7 @@ export const NavigationProvider = ({ children, init }: PropsWithChildren<{ init:
   useLayoutEffect(() => {
     // Create history state for initial content
     if (historyState === null) {
+      // TODO: Make router/location hook
       const currentView = window.location.pathname !== '/' ? window.location.pathname[1].toUpperCase() + window.location.pathname.slice(2) : 'Init'
       const currentProps = Object.fromEntries(new URLSearchParams(window.location.search))
       const id = currentProps.id || 'init'

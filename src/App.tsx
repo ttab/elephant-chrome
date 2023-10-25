@@ -13,7 +13,7 @@ const App = (): JSX.Element => {
           </nav>
         </div>
         <div className="flex flex-column gap-4 bg-gray-500 p-2 h-full">
-          {state?.content.length ? state?.content : <strong>Loading</strong>}
+          {state.content}
         </div>
       </div>
   )
