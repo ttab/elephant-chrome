@@ -64,10 +64,47 @@ export async function mapRoutes(apiDir: string): Promise<RouteMap> {
   return routes
 }
 
+/**
+ * Connect all route handlers found to their respective routes
+ */
+export function connectRouteHandlers(app: Application, routes: RouteMap): Application {
+  for (const route in routes) {
+    const routePath = path.join('/api', route)
+
+    const { GET, POST, PUT, PATCH, DELETE, WEB_SOCKET } = routes[route].handlers
+
+    if (GET) {
+      connectRouteHandler(app, routePath, GET)
+    }
+
+    if (POST) {
+      connectRouteHandler(app, routePath, POST)
+    }
+
+    if (PUT) {
+      connectRouteHandler(app, routePath, PUT)
+    }
+
+    if (PATCH) {
+      connectRouteHandler(app, routePath, PATCH)
+    }
+
+    if (DELETE) {
+      connectRouteHandler(app, routePath, DELETE)
+    }
+
+    if (WEB_SOCKET) {
+      connectWebsocketHandler(app, routePath, WEB_SOCKET)
+    }
+  }
+
+  return app
+}
+
 /*
  * Connect an exported route handler like GET, POST, etc to a specific express path.
  */
-export function connectRouteHandler(app: Application, routePath: string, func: RouteHandler): Application {
+function connectRouteHandler(app: Application, routePath: string, func: RouteHandler): Application {
   const handlerFunc = (req, res): void => {
     func(req).then((response) => {
       if (ApiResponse.isContent(response)) {

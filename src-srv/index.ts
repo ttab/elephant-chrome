@@ -7,7 +7,7 @@ import dotenv from 'dotenv'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 
-import { connectRouteHandler, connectWebsocketHandler, mapRoutes } from './routes.ts'
+import { connectRouteHandlers, mapRoutes } from './routes.ts'
 
 // HocusPocus and friends
 import { type Hocuspocus, Server } from '@hocuspocus/server'
@@ -27,46 +27,19 @@ console.info(`Starting API environment "${NODE_ENV}"`)
 async function runServer(): Promise<string> {
   const { apiDir, distDir } = getPaths()
   const { app } = expressWebsockets(express())
+
   const routes = await mapRoutes(apiDir)
+  const hpServer = await createHocuspocusServer()
 
   app.use(cors())
   app.use(cookieParser())
   app.use(express.json())
   app.use(express.static(distDir))
 
-  for (const route in routes) {
-    const routePath = path.join('/api', route)
+  connectRouteHandlers(app, routes)
 
-    const { GET, POST, PUT, PATCH, DELETE, WEB_SOCKET } = routes[route].handlers
-
-    if (GET) {
-      connectRouteHandler(app, routePath, GET)
-    }
-
-    if (POST) {
-      connectRouteHandler(app, routePath, POST)
-    }
-
-    if (PUT) {
-      connectRouteHandler(app, routePath, PUT)
-    }
-
-    if (PATCH) {
-      connectRouteHandler(app, routePath, PATCH)
-    }
-
-    if (DELETE) {
-      connectRouteHandler(app, routePath, DELETE)
-    }
-
-    if (WEB_SOCKET) {
-      connectWebsocketHandler(app, routePath, WEB_SOCKET)
-    }
-  }
-
-  const server = await createServer()
   app.ws('/:document', (websocket, request) => {
-    server.handleConnection(websocket, request)
+    hpServer.handleConnection(websocket, request)
   })
 
   app.listen(API_PORT)
@@ -103,7 +76,7 @@ function getPaths(): { distDir: string, apiDir: string } {
 }
 
 
-async function createServer(): Promise<Hocuspocus> {
+async function createHocuspocusServer(): Promise<Hocuspocus> {
   const redisClient = createClient({
     url: `redis://${process.env.REDIS_HOST}:${process.env.REDIS_PORT}`
   })
@@ -122,8 +95,8 @@ async function createServer(): Promise<Hocuspocus> {
           console.log(data.socketId, data.documentName)
           const docId = '7de322ac-a9b2-45d9-8a0f-f1ac27f9cbfe' // data.documentName
           const cachedDoc = await redisClient.get(docId)
-          console.log('<--CACHED DOCUMENT-->')
-          console.log(cachedDoc)
+          console.log(`<----=== (${docId})`)
+
 
           if (cachedDoc) {
             return new Uint8Array(
@@ -137,20 +110,26 @@ async function createServer(): Promise<Hocuspocus> {
           )
         },
         store: async ({ documentName, state }) => {
-          console.log('<--STORING DOCUMENT-->')
-          console.log(Buffer.from(state).toString('binary'))
+          console.log(`===----> (${documentName})`)
 
-          redisClient.set(
-            documentName,
-            Buffer.from(state).toString('binary')
-          ).catch(ex => {
-            console.log(ex)
-          })
+          // redisClient.set(
+          //   documentName,
+          //   Buffer.from(state).toString('binary')
+          // ).catch(ex => {
+          //   console.log(ex)
+          // })
         }
       })
     ],
     onAuthenticate: async (data) => {
-      return {}
+      const { token } = data
+
+      return {
+        token,
+        user: {
+          name: 'Danne Lundqvist'
+        }
+      }
     }
   })
 

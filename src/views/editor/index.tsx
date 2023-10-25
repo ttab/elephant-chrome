@@ -4,27 +4,21 @@ import { useEffect, useMemo, useState } from 'react'
 import { withYjs, withYHistory, YjsEditor } from '@slate-yjs/core'
 import { withReact } from 'slate-react'
 import * as Y from 'yjs'
-import { Textbit, useTextbitEditor, type TextbitDescendant } from '@ttab/textbit'
+import { createEditor } from 'slate'
+
+// import { Textbit, useTextbitEditor, type TextbitDescendant } from '@ttab/textbit'
+import { Editor as TextbitEditor, type TextbitDescendant } from '@ttab/textbit'
 import '@ttab/textbit/dist/esm/index.css'
 
 import { HocuspocusProvider, HocuspocusProviderWebsocket, WebSocketStatus } from '@hocuspocus/provider'
-import { createEditor } from 'slate'
+// import { createEditor, isEditor, Editor as SlateEditor } from 'slate'
 
 export const Editor = (): JSX.Element => {
   const api = useApi()
   const [connectionStatus, setConnectionStatus] = useState<WebSocketStatus>(WebSocketStatus.Disconnected)
   const [documentUuid, setDocumentUuid] = useState('7de322ac-a9b2-45d9-8a0f-f1ac27f9cbfe')
 
-  const [value, setValue] = useState<TextbitDescendant[]>([ // ])
-    {
-      type: 'core/text',
-      id: '538345e5-bacc-48f9-8ef1-a219891b60eb',
-      class: 'text',
-      children: [
-        { text: '' }
-      ]
-    }
-  ])
+  const [value, setValue] = useState<TextbitDescendant[]>([])
 
   const provider = useMemo(() => {
     const endpoint = `ws://${api.endpoint}/`.replace('api', 'collaboration') // Seems to be correct!
@@ -36,20 +30,13 @@ export const Editor = (): JSX.Element => {
       websocketProvider: hpWs,
       name: documentUuid,
       token: 'danne',
-      onConnect: () => {
-        console.log('IS CONNECTED')
+      onAuthenticationFailed: ({ reason }) => {
+        console.warn(reason)
       },
-      onDisconnect: () => {
-        console.log('DISCONNECTED')
-      },
-      onOpen: () => {
-        console.log('IS OPEN')
-      },
-      onClose: () => {
-        console.log('IS CLOSED')
+      onAuthenticated: () => {
+        console.warn('Authenticated')
       },
       onSynced: ({ state }) => {
-        console.log(state)
         if (state) {
           console.log('Connected')
           setConnectionStatus(WebSocketStatus.Connected)
@@ -76,20 +63,10 @@ export const Editor = (): JSX.Element => {
     return e
   }, [provider.document])
 
-  // const editor: YjsEditorType = useTextbitEditor((editor) => {
-  //   const sharedType = provider.document.get('content', Y.XmlText)
-  //   withYjs(editor, sharedType as Y.XmlText)
-  //   withYHistory(editor)
-
-  //   return editor
-  // })
-
   useEffect(() => {
-    console.log('CONNECTING')
     YjsEditor.connect(editor)
-
     return () => YjsEditor.disconnect(editor)
-  })
+  }, [editor])
 
   return (
     <div className="p-4">
@@ -100,12 +77,12 @@ export const Editor = (): JSX.Element => {
       <main className="mt-5 p-2 border shadow h-[800px]">
         <div className="h-full relative">
           {connectionStatus === WebSocketStatus.Connected
-            ? (<Textbit
+            ? (<TextbitEditor
               value={value}
               onChange={setValue}
               editor={editor}
             />)
-            : <strong>Not connected</strong>
+            : <strong className="animate-pulse">Not connected</strong>
           }
         </div>
       </main>
