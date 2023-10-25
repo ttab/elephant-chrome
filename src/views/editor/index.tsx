@@ -66,7 +66,7 @@ export const Editor = (): JSX.Element => {
   useEffect(() => {
     YjsEditor.connect(editor)
     return () => YjsEditor.disconnect(editor)
-  }, [editor])
+  })
 
   return (
     <div className="p-4">
