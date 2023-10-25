@@ -1,20 +1,19 @@
-import * as views from './views'
 import { useNavigation } from '@/hooks'
 import { Link } from '@/components'
 
-function App(): JSX.Element {
+const App = (): JSX.Element => {
   const { state } = useNavigation()
   return (
       <div className='h-screen'>
         <div className="flex flex-row w-screen justify-between px-2">
           <nav className='flex flex-row'>
-            <Link label='Small' component={views.Small} props={{ }}/>
-            <Link label='Medium' component={views.Medium} />
-            <Link label='Large' component={views.Large} />
+            <Link to='Small'>Small</Link>
+            <Link to='Medium'>Medium</Link>
+            <Link to='Large'>Large</Link>
           </nav>
         </div>
         <div className="flex flex-column gap-4 bg-gray-500 p-2 h-full">
-          {state.content}
+          {state?.content.length ? state?.content : <strong>Loading</strong>}
         </div>
       </div>
   )

@@ -1,42 +1,45 @@
-import { NavigationActionType, type ContentState } from '@/types'
+import { NavigationActionType, type ContentState, type View } from '@/types'
 import { useNavigation } from '@/hooks'
 import { v4 as uuid } from 'uuid'
 
 interface LinkProps {
-  label: string
-  component: React.FC
+  children: string
+  to: View
   props?: Record<string, unknown>
 }
 
-export const Link = ({ label, component, props }: LinkProps): JSX.Element => {
-  const { dispatch } = useNavigation()
+export const Link = ({ children, to, props }: LinkProps): JSX.Element => {
+  const { state, dispatch } = useNavigation()
+  const id = uuid()
+  const linkItem = state.registry.get(to)
   return (
     <a
       className='p-1 hover:font-bold'
+      href={`${linkItem.metadata.path}?id=${id}`}
       onClick={(event) => {
         event.preventDefault()
-        const id = uuid()
-        const args = { ...props, id }
         dispatch({
           type: NavigationActionType.ADD,
-          component,
-          name: component.displayName,
-          props: args,
-          id
+          component: linkItem.component,
+          props: { ...props, id }
         })
 
         history.pushState({
           id,
           props: { ...props, id },
-          itemName: component.displayName,
+          itemName: linkItem.metadata.name,
           contentState: [
-            ...history.state.contentState,
-            { id, name: component.displayName, props: args }
+            ...history.state.contentState.slice(),
+            {
+              id,
+              name: linkItem.metadata.name,
+              props
+            }
           ] as ContentState[]
-        }, label, `${label.toLowerCase()}?id=${id}`)
+        }, children, `${linkItem.metadata.path}?id=${id}`)
       }}
     >
-      {label}
+      {children}
     </a>
   )
 }

@@ -1,6 +1,7 @@
-import { useContext } from 'react'
-import { type NavigationState, NavigationContext } from '../contexts/NavigationProvider'
+import { type Dispatch, useContext } from 'react'
+import { NavigationContext } from '../contexts/NavigationProvider'
+import type { NavigationAction, NavigationState } from '@/types'
 
-export function useNavigation(): React.Context<NavigationState> {
-  return useContext(NavigationContext)
-}
+export const useNavigation = (): { state: NavigationState | null, dispatch: Dispatch<NavigationAction> } => (
+  useContext(NavigationContext)
+)

@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 
-export function NavigationWrapper({ children }: { children: JSX.Element }): JSX.Element {
+export const NavigationWrapper = ({ children }: { children: JSX.Element }): JSX.Element => {
   const [expanded, setExpanded] = useState(false)
   const variants = {
     maximized: 'absolute inset-y-0 left-0 z-10 w-screen h-screen bg-gray-100 basis-full rounded-lg p-2',

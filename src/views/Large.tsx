@@ -1,4 +1,7 @@
-export function Large({ id }: { id: string }): JSX.Element {
+import { type ViewProps } from '@/types'
+
+export const Large = (props: ViewProps): JSX.Element => {
+  const { id } = props
   return (
     <div className="w-[915px] bg-green-200 overflow-hidden">
       <h1 className='font-bold text-lg py-4'>{`Large - ${Date.now()}`}</h1>

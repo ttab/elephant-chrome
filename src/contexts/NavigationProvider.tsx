@@ -2,62 +2,53 @@ import {
   createContext,
   useReducer,
   useLayoutEffect,
-  type PropsWithChildren
+  type PropsWithChildren,
+  type Dispatch
 } from 'react'
 import { NavigationWrapper } from '@/components/NavigationWrapper'
-import type { ContentState, NavigationAction } from '@/types'
+import type { ContentState, NavigationState, NavigationAction } from '@/types'
 import { NavigationActionType } from '@/types'
 
 import { useHistory } from '@/hooks'
 
-import * as views from '@/views'
-import { Init } from '@/views'
+export const NavigationContext = createContext<{
+  state: NavigationState | null
+  dispatch: Dispatch<NavigationAction>
+}>({ state: null, dispatch: () => {} })
 
-export interface NavigationState {
-  stack: string[] // Stack history ledger
-  stackPosition: number // Position in the stack ledger
-  content: JSX.Element[]
-}
-
-const initialState: NavigationState = {
-  stack: ['init'],
-  stackPosition: 0,
-  content: [
-    (
-      <NavigationWrapper>
-        <Init />
-      </NavigationWrapper>
-    )
-  ]
-}
-
-export const NavigationContext = createContext(initialState)
-
-export const NavigationProvider = ({ children }: PropsWithChildren): JSX.Element => {
-  const [state, dispatch] = useReducer(navigationReducer, initialState)
+export const NavigationProvider = ({ children, init }: PropsWithChildren<{ init: () => NavigationState }>): JSX.Element => {
+  const [state, dispatch] = useReducer(navigationReducer, null, init)
   const historyState = useHistory()
 
   useLayoutEffect(() => {
+    // Create history state for initial content
     if (historyState === null) {
-      // Create history state for initial content
+      const currentView = window.location.pathname !== '/' ? window.location.pathname[1].toUpperCase() + window.location.pathname.slice(2) : 'Init'
+      const currentProps = Object.fromEntries(new URLSearchParams(window.location.search))
+      const id = currentProps.id || 'init'
       history.replaceState({
-        id: 'init',
-        itemName: 'init',
-        contentState: [{ id: 'init', componentName: 'Init', props: { id: 'init' } }]
+        id,
+        itemName: currentView,
+        contentState: [{ id, name: currentView, props: currentProps }]
       },
       document.title,
       window.location.href
       )
-      return
     }
-
-    dispatch({ type: NavigationActionType.SET, content: historyState.contentState })
+    if (historyState !== null) {
+      dispatch({ type: NavigationActionType.SET, content: historyState.contentState })
+    }
   }, [historyState])
 
   // Remove first element if document width exceeds window width
   useLayoutEffect(() => {
     if (document.documentElement.scrollWidth > window.innerWidth) {
+      // Remove overflowing view and update state
       dispatch({ type: NavigationActionType.REMOVE })
+      // Set new history.state
+      history.replaceState({
+        contentState: history.state.contentState.slice(1, history.state.contentState.length)
+      }, document.title, window.location.href)
     }
   }, [state])
 
@@ -71,19 +62,22 @@ export const NavigationProvider = ({ children }: PropsWithChildren): JSX.Element
 function navigationReducer(state: NavigationState, action: NavigationAction): NavigationState {
   switch (action.type) {
     case NavigationActionType.ADD:
-      if (action.component === undefined) {
+      console.log('ADDing view')
+      if (action.component === undefined || action.props === undefined) {
         throw new Error('Component is undefined')
       }
       return {
-        stack: action.id !== undefined ? [...state.stack.slice(0, state.stackPosition + 1), action.id] : state.stack,
-        stackPosition: state.stackPosition + 1,
+        ...state,
         content: [
           ...state.content,
-          <NavigationWrapper key={action.id}><action.component { ...action.props }/></NavigationWrapper>
+          <NavigationWrapper key={action.id}>
+            <action.component { ...action.props }/>
+          </NavigationWrapper>
 
         ]
       }
     case NavigationActionType.REMOVE:
+      console.log('ADD side effect REMOVE')
       return {
         ...state,
         content: [
@@ -94,12 +88,14 @@ function navigationReducer(state: NavigationState, action: NavigationAction): Na
       if (action.content === undefined) {
         throw new Error('Content is undefined')
       }
+
+      console.log('ADD side effect SET')
       return {
         ...state,
         content: action.content.map((item: ContentState): JSX.Element => {
-          const Component = item.name !== undefined ? views[item.name] : Init
+          const Component = state.registry.get(item.name)?.component
           return (
-            <NavigationWrapper>
+            <NavigationWrapper key={item.id}>
               <Component {...item.props} />
             </NavigationWrapper>
           )
