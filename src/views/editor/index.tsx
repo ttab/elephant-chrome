@@ -1,29 +1,21 @@
-// import { useWebSocket } from '@/hooks/useWebSocket'
 import { useApi } from '@/hooks/useApi'
 import { useEffect, useMemo, useState } from 'react'
 import { withYjs, withYHistory, YjsEditor } from '@slate-yjs/core'
-import { withReact } from 'slate-react'
 import * as Y from 'yjs'
 import { createEditor } from 'slate'
 
-// import { Textbit, useTextbitEditor, type TextbitDescendant } from '@ttab/textbit'
-import { Editor as TextbitEditor, type TextbitDescendant } from '@ttab/textbit'
+import { Editor as TextbitEditor } from '@ttab/textbit'
 import '@ttab/textbit/dist/esm/index.css'
 
 import { HocuspocusProvider, HocuspocusProviderWebsocket, WebSocketStatus } from '@hocuspocus/provider'
-// import { createEditor, isEditor, Editor as SlateEditor } from 'slate'
 
 export const Editor = (): JSX.Element => {
   const api = useApi()
   const [connectionStatus, setConnectionStatus] = useState<WebSocketStatus>(WebSocketStatus.Disconnected)
   const [documentUuid, setDocumentUuid] = useState('7de322ac-a9b2-45d9-8a0f-f1ac27f9cbfe')
 
-  const [value, setValue] = useState<TextbitDescendant[]>([])
-
   const provider = useMemo(() => {
-    const endpoint = `ws://${api.endpoint}/`.replace('api', 'collaboration') // Seems to be correct!
-    console.log(`Hocuspocus provider on ${endpoint}`)
-
+    const endpoint = `ws://${api.endpoint}/`.replace('api', 'collaboration')
     const hpWs = new HocuspocusProviderWebsocket({ url: endpoint })
 
     return new HocuspocusProvider({
@@ -51,18 +43,17 @@ export const Editor = (): JSX.Element => {
     })
   }, [documentUuid, api.endpoint])
 
+  // Create YjsEditor for Textbit to use
   const editor = useMemo(() => {
-    const sharedType = provider.document.get('content', Y.XmlText)
-    const e = withReact(
-      withYHistory(
-        withYjs(
-          createEditor(), sharedType as Y.XmlText
-        )
+    return withYHistory(
+      withYjs(
+        createEditor(),
+        provider.document.get('content', Y.XmlText) as Y.XmlText // sharedType as Y.XmlText
       )
     )
-    return e
   }, [provider.document])
 
+  // Connect Yjs to editor once
   useEffect(() => {
     YjsEditor.connect(editor)
     return () => YjsEditor.disconnect(editor)
@@ -77,11 +68,7 @@ export const Editor = (): JSX.Element => {
       <main className="mt-5 p-2 border shadow h-[800px]">
         <div className="h-full relative">
           {connectionStatus === WebSocketStatus.Connected
-            ? (<TextbitEditor
-              value={value}
-              onChange={setValue}
-              editor={editor}
-            />)
+            ? (<TextbitEditor yjsEditor={editor} />) // FIXME: Types...
             : <strong className="animate-pulse">Not connected</strong>
           }
         </div>
