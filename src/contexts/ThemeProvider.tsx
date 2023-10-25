@@ -18,8 +18,6 @@ const initialState: ThemeProviderState = {
   setTheme: () => null
 }
 
-export const ThemeProviderContext = createContext<ThemeProviderState>(initialState)
-
 export const ThemeProvider = ({
   children,
   defaultTheme = 'system',
@@ -59,3 +57,5 @@ export const ThemeProvider = ({
     </ThemeProviderContext.Provider>
   )
 }
+
+export const ThemeProviderContext = createContext<ThemeProviderState>(initialState)
