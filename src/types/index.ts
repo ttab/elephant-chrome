@@ -51,3 +51,10 @@ export interface HistoryState {
 export interface ViewProps {
   id: string
 }
+
+export type Theme = 'dark' | 'light' | 'system'
+
+export interface ThemeProviderState {
+  theme: Theme
+  setTheme: (theme: Theme) => void
+}

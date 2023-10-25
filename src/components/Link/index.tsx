@@ -1,4 +1,4 @@
-import { NavigationActionType, type ContentState, type View } from '@/types'
+import { NavigationActionType, type View } from '@/types'
 import { useNavigation } from '@/hooks'
 import { v4 as uuid } from 'uuid'
 
@@ -35,7 +35,7 @@ export const Link = ({ children, to, props }: LinkProps): JSX.Element => {
               name: linkItem.metadata.name,
               props
             }
-          ] as ContentState[]
+          ]
         }, children, `${linkItem.metadata.path}?id=${id}`)
       }}
     >

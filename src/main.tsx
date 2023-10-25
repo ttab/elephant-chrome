@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom/client'
 import App from './App.tsx'
 import { NavigationProvider, ThemeProvider } from '@/contexts'
 import type { NavigationState, RegistryItem, View } from '@/types'
-import { NavigationWrapper } from '@/components/NavigationWrapper'
+import { NavigationWrapper } from '@/components'
 import * as views from './views'
 
 const registeredComponents = new Map()
