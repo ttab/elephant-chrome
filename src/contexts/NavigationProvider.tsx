@@ -8,16 +8,19 @@ import {
 import { NavigationWrapper } from '@/components/NavigationWrapper'
 import type { ContentState, NavigationState, NavigationAction } from '@/types'
 import { NavigationActionType } from '@/types'
+import { init } from '@/lib/init'
 
 import { useHistory } from '@/hooks'
+
+const initialState = init()
 
 export const NavigationContext = createContext<{
   state: NavigationState
   dispatch: Dispatch<NavigationAction>
-}>({ state: {} as NavigationState, dispatch: () => {} }) // eslint-disable-line @typescript-eslint/consistent-type-assertions
+}>({ state: initialState, dispatch: () => {} })
 
-export const NavigationProvider = ({ children, init }: PropsWithChildren<{ init: () => NavigationState }>): JSX.Element => {
-  const [state, dispatch] = useReducer(navigationReducer, null, init)
+export const NavigationProvider = ({ children }: PropsWithChildren): JSX.Element => {
+  const [state, dispatch] = useReducer(navigationReducer, initialState)
   const historyState = useHistory()
 
   useLayoutEffect(() => {
@@ -29,6 +32,7 @@ export const NavigationProvider = ({ children, init }: PropsWithChildren<{ init:
         : 'Init'
       const currentProps = Object.fromEntries(new URLSearchParams(window.location.search))
       const id = currentProps.id || 'init' // eslint-disable-line @typescript-eslint/strict-boolean-expressions
+
       history.replaceState({
         id,
         itemName: currentView,
@@ -38,6 +42,7 @@ export const NavigationProvider = ({ children, init }: PropsWithChildren<{ init:
       window.location.href
       )
     }
+
     if (historyState !== null) {
       dispatch({ type: NavigationActionType.SET, content: historyState.contentState })
     }
@@ -65,10 +70,10 @@ export const NavigationProvider = ({ children, init }: PropsWithChildren<{ init:
 function navigationReducer(state: NavigationState, action: NavigationAction): NavigationState {
   switch (action.type) {
     case NavigationActionType.ADD:
-      console.log('ADDing view')
       if (action.component === undefined || action.props === undefined) {
         throw new Error('Component is undefined')
       }
+
       return {
         ...state,
         content: [
@@ -79,14 +84,16 @@ function navigationReducer(state: NavigationState, action: NavigationAction): Na
 
         ]
       }
+
     case NavigationActionType.REMOVE:
-      console.log('ADD side effect REMOVE')
+
       return {
         ...state,
         content: [
           ...state.content.slice(1, state.content.length)
         ]
       }
+
     case NavigationActionType.SET:
       if (action.content === undefined) {
         throw new Error('Content is undefined')
@@ -103,6 +110,7 @@ function navigationReducer(state: NavigationState, action: NavigationAction): Na
           )
         })
       }
+
     default:
       throw new Error(`Unhandled action type: ${action.type as string}`)
   }
