@@ -1,6 +1,5 @@
 import { createContext, useEffect, useState } from 'react'
-
-type Theme = 'dark' | 'light' | 'system'
+import type { Theme, ThemeProviderState } from '@/types'
 
 interface ThemeProviderProps {
   children: React.ReactNode
@@ -8,9 +7,9 @@ interface ThemeProviderProps {
   storageKey?: string
 }
 
-export interface ThemeProviderState {
-  theme: Theme
-  setTheme: (theme: Theme) => void
+const initialState: ThemeProviderState = {
+  theme: 'system',
+  setTheme: () => null
 }
 
 export const ThemeProvider = ({
@@ -51,11 +50,6 @@ export const ThemeProvider = ({
       {children}
     </ThemeProviderContext.Provider>
   )
-}
-
-const initialState: ThemeProviderState = {
-  theme: 'system',
-  setTheme: () => null
 }
 
 export const ThemeProviderContext = createContext<ThemeProviderState>(initialState)
