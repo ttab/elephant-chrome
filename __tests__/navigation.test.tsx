@@ -9,6 +9,6 @@ describe('Use NavigationProvider', () => {
         <App />
       </NavigationProvider>
     )
-    expect(screen.getByText('test')).toBeInTheDocument()
+    expect(screen.getByText('Init')).toBeInTheDocument()
   })
 })
