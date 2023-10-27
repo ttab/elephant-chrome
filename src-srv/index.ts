@@ -10,12 +10,16 @@ import { fileURLToPath } from 'node:url'
 import { connectRouteHandlers, mapRoutes } from './routes.ts'
 import { createServer as createHocuspocusServer } from './utils/hocuspocus.ts'
 import { RedisCache } from './utils/RedisCache.ts'
+import { Repository } from './utils/Repository.ts'
+import { createRemoteJWKSet } from 'jose'
 
 dotenv.config()
 
 const NODE_ENV = process.env.NODE_ENV === 'production' ? 'production' : 'development'
 const API_PORT = parseInt(process.env.API_PORT) || 5183
-const API_URL = process.env.API_URL || 'https://localhost'
+const API_URL = `${process.env.API_HOST || 'https://localhost'}:${API_PORT}`
+const REPOSITORY_URL = process.env.REPOSITORY_URL
+const JWKS_URL = process.env.JWKS_URL
 
 console.info(`Starting API environment "${NODE_ENV}"`)
 
@@ -25,11 +29,27 @@ async function runServer(): Promise<string> {
 
   const routes = await mapRoutes(apiDir)
 
+  // Connect to Redis
   const cache = new RedisCache(process.env.REDIS_HOST, process.env.REDIS_PORT)
   if (!await cache.connect()) {
-    console.error('Failed connecting to Redis')
+    throw new Error('Failed connecting to Redis')
   }
+
+  // Connect to repository
+  console.log(JWKS_URL)
+  const jwks = createRemoteJWKSet(new URL(JWKS_URL))
+  try {
+    await jwks({ alg: 'ES384', typ: 'JWT' })
+  } catch (err: unknown) {
+    throw new Error('Failed to fetch JWKS', { cause: err })
+  }
+
+  const repository = new Repository(REPOSITORY_URL, jwks)
+
+
+  // Create hocuspocus server
   const hpServer = await createHocuspocusServer({
+    repository,
     cache
   })
 
@@ -38,7 +58,9 @@ async function runServer(): Promise<string> {
   app.use(express.json())
   app.use(express.static(distDir))
 
-  connectRouteHandlers(app, routes)
+  connectRouteHandlers(app, routes, {
+    repository
+  })
 
   app.ws('/:document', (websocket, request) => {
     hpServer.handleConnection(websocket, request)

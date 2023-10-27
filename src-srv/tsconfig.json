@@ -5,7 +5,7 @@
     "moduleResolution": "NodeNext",
     "skipLibCheck": true,
     "lib": [
-      "ES2020"
+      "ES2022"
     ],
     "noEmit": true,
     "allowImportingTsExtensions": true,

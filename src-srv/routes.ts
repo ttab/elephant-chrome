@@ -1,13 +1,23 @@
 import fs from 'node:fs'
 import path from 'node:path'
-import type { Request } from 'express'
+import type { Request, Response } from 'express'
 import type { Application, WebsocketRequestHandler } from 'express-ws'
+import type { Repository } from 'utils/Repository.ts'
 
 /* Route types */
 interface Route {
   path: string
   params: string[]
   handlers?: RouteHandlers
+}
+
+interface RouteInitContext {
+  repository: Repository
+  [key: string]: unknown
+}
+
+interface RouteContext extends RouteInitContext {
+  res: Response
 }
 
 interface RouteContentResponse {
@@ -20,7 +30,7 @@ interface RouteStatusResponse {
   statusMessage: string
 }
 
-type RouteHandler = (req: Request) => Promise<RouteContentResponse | RouteStatusResponse>
+export type RouteHandler = (req: Request, context: RouteContext) => Promise<RouteContentResponse | RouteStatusResponse>
 
 export interface ApiResponseInterface {
   isStatus: (value: unknown) => value is RouteStatusResponse
@@ -67,34 +77,34 @@ export async function mapRoutes(apiDir: string): Promise<RouteMap> {
 /**
  * Connect all route handlers found to their respective routes
  */
-export function connectRouteHandlers(app: Application, routes: RouteMap): Application {
+export function connectRouteHandlers(app: Application, routes: RouteMap, context: RouteInitContext): Application {
   for (const route in routes) {
     const routePath = path.join('/api', route)
 
     const { GET, POST, PUT, PATCH, DELETE, WEB_SOCKET } = routes[route].handlers
 
     if (GET) {
-      connectRouteHandler(app, routePath, GET)
+      connectRouteHandler(app, routePath, GET, context)
     }
 
     if (POST) {
-      connectRouteHandler(app, routePath, POST)
+      connectRouteHandler(app, routePath, POST, context)
     }
 
     if (PUT) {
-      connectRouteHandler(app, routePath, PUT)
+      connectRouteHandler(app, routePath, PUT, context)
     }
 
     if (PATCH) {
-      connectRouteHandler(app, routePath, PATCH)
+      connectRouteHandler(app, routePath, PATCH, context)
     }
 
     if (DELETE) {
-      connectRouteHandler(app, routePath, DELETE)
+      connectRouteHandler(app, routePath, DELETE, context)
     }
 
     if (WEB_SOCKET) {
-      connectWebsocketHandler(app, routePath, WEB_SOCKET)
+      connectWebsocketHandler(app, routePath, WEB_SOCKET, context)
     }
   }
 
@@ -104,9 +114,14 @@ export function connectRouteHandlers(app: Application, routes: RouteMap): Applic
 /*
  * Connect an exported route handler like GET, POST, etc to a specific express path.
  */
-function connectRouteHandler(app: Application, routePath: string, func: RouteHandler): Application {
+function connectRouteHandler(app: Application, routePath: string, func: RouteHandler, initContext: RouteInitContext): Application {
   const handlerFunc = (req, res): void => {
-    func(req).then((response) => {
+    const context: RouteContext = {
+      ...initContext,
+      res
+    }
+
+    func(req, context).then((response) => {
       if (ApiResponse.isContent(response)) {
         const { statusCode = 200, payload = '' } = response
 
@@ -148,18 +163,20 @@ function connectRouteHandler(app: Application, routePath: string, func: RouteHan
     case 'DELETE':
       return app.delete(routePath, handlerFunc)
 
-    case 'WEB_SOCKET':
-      return app.ws(routePath, handlerFunc)
+    // case 'WEB_SOCKET':
+    //   return app.ws(routePath, handlerFunc)
   }
 
   return app
 }
 
-export function connectWebsocketHandler(app: Application, routePath: string, func: WebsocketRequestHandler): Application {
+export function connectWebsocketHandler(app: Application, routePath: string, func: WebsocketRequestHandler, context: RouteInitContext): Application {
   app.ws(routePath, func)
   return app
 }
 
+// FIXME: Implement support for context sharing with websocket handlers, context is ignored for now
+console.warn('Websocket route handlers don\'t have access to context')
 
 function buildRoutes(routes: RouteMap, directory: string, baseRoute: string = ''): void {
   const items = fs.readdirSync(directory)
