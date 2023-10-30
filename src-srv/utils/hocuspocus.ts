@@ -49,7 +49,6 @@ export async function createServer(options: CreateServerOptions): Promise<Hocusp
     ],
     onAuthenticate: async (data) => {
       const { token } = data
-
       return await repository.validateToken(token).then(() => {
         return {
           token,

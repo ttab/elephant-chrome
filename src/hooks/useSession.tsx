@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { type JWTPayload } from 'jose'
+import { useApi } from './useApi'
 
 export interface ElephantSession {
   jwt?: JWTPayload
@@ -7,15 +8,17 @@ export interface ElephantSession {
   error?: string
 }
 
-export const useSession = (endpoint: string): ElephantSession => {
+export const useSession = (overrideEndpoint?: string): ElephantSession => {
   const [jwt, setJwt] = useState<JWTPayload | undefined>()
   const [loading, setLoading] = useState<boolean>(true)
   const [error, setError] = useState<string | undefined>()
+  const { api: apiEndpoint } = useApi()
+  const endpoint = overrideEndpoint || apiEndpoint
 
   useEffect(() => {
     const fetchData = async (): Promise<void> => {
       try {
-        const response = await fetch(`${endpoint}/api/user`, {
+        const response = await fetch(`${endpoint}/user`, {
           credentials: 'include'
         })
 
