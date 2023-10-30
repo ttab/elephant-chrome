@@ -1,4 +1,4 @@
-export const PlanningOverview = (): JSX.Element => {
+export const Planning = (): JSX.Element => {
   return (
     <>
       <header>
@@ -13,3 +13,5 @@ export const PlanningOverview = (): JSX.Element => {
     </>
   )
 }
+
+Planning.displayName = 'Planning'
