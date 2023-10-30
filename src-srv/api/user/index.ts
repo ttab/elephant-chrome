@@ -7,8 +7,8 @@ export const POST: RouteHandler = async (req, context) => {
   const { repository, res } = context
 
   const {
-    user = 'Danne Lundqvist', // FIXME: Remove hardcoded value
-    password = 'xd3SOkyXUoA2dMPmKMziuoWDkxt6SqU9', // FIXME: Remove hardcoded value
+    user,
+    password,
     sub = 'abc' // FIXME: Remove hardcoded value, should come from somewhere
   } = req.body
 
