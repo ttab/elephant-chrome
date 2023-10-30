@@ -1,10 +1,9 @@
+import { ViewHeader } from '@/components'
+
 export const Editor = (): JSX.Element => {
   return (
     <>
-      <header>
-        <h1>Editor header</h1>
-      </header>
-
+      <ViewHeader title='Editor' />
       <main>
         <p>
           Editor content
