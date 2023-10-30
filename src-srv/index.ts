@@ -16,8 +16,15 @@ import { createRemoteJWKSet } from 'jose'
 dotenv.config()
 
 const NODE_ENV = process.env.NODE_ENV === 'production' ? 'production' : 'development'
-const API_PORT = parseInt(process.env.API_PORT) || 5183
-const API_URL = `${process.env.API_HOST || 'https://localhost'}:${API_PORT}`
+const PROTOCOL = (NODE_ENV === 'production') ? 'https' : process.env.VITE_PROTOCOL || 'https'
+
+const CLIENT_HOST = process.env.VITE_CLIENT_HOST || '127.0.0.1'
+const CLIENT_PORT = parseInt(process.env.VITE_CLIENT_PORT) || 5173
+
+const API_HOST = process.env.VITE_API_HOST || '127.0.0.1'
+const API_PORT = parseInt(process.env.VITE_API_PORT) || 5183
+const API_URL = `${PROTOCOL}://${API_HOST}:${API_PORT}`
+
 const REPOSITORY_URL = process.env.REPOSITORY_URL
 const JWKS_URL = process.env.JWKS_URL
 
@@ -53,7 +60,10 @@ async function runServer(): Promise<string> {
     cache
   })
 
-  app.use(cors())
+  app.use(cors({
+    credentials: true,
+    origin: `${PROTOCOL}://${CLIENT_HOST}:${CLIENT_PORT}`
+  }))
   app.use(cookieParser())
   app.use(express.json())
   app.use(express.static(distDir))
@@ -68,7 +78,7 @@ async function runServer(): Promise<string> {
 
   app.listen(API_PORT)
 
-  return `${API_URL}:${API_PORT}`
+  return API_URL
 }
 
 (async () => {

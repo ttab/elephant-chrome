@@ -1,28 +1,47 @@
 import { createContext } from 'react'
 import { WebSocketProvider } from './WebSocketProvider'
+import type { ElephantSession } from '@/hooks/useSession'
+import type { JWTPayload } from 'jose'
 
 interface ApiProviderProps {
   children: React.ReactNode
-  host?: string
-  port?: number
+  protocol: string
+  host: string
+  port: number
+  session?: ElephantSession
 }
 
 export interface ApiProviderState {
-  endpoint?: string
+  api?: string
+  ws?: string
+  jwt?: JWTPayload
 }
 
 const initialState: ApiProviderState = {
-  endpoint: undefined
+  api: undefined,
+  ws: undefined,
+  jwt: undefined
 }
 
-export const ApiProvider = ({ children, host = 'localhost', port = 5183, ...props }: ApiProviderProps): JSX.Element => {
+export const ApiProvider = (params: ApiProviderProps): JSX.Element => {
+  const {
+    children,
+    protocol,
+    host = 'localhost',
+    port = 5183,
+    session = undefined,
+    ...props
+  } = params
+
   const value = {
-    endpoint: `${host}:${port}/api`
+    api: `${protocol}://${host}:${port}/api`,
+    ws: host && port ? `ws://${host}:${port}/ws` : undefined,
+    jwt: session?.jwt
   }
 
   return (
     <ApiProviderContext.Provider {...props} value={value}>
-      <WebSocketProvider endpoint={`ws://${value.endpoint}/ws`}>
+      <WebSocketProvider endpoint={`${value.ws}`}>
         {children}
       </WebSocketProvider>
     </ApiProviderContext.Provider>
