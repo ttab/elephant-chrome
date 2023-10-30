@@ -21,7 +21,7 @@ export const Editor = (): JSX.Element => {
     return new HocuspocusProvider({
       websocketProvider: hpWs,
       name: documentUuid,
-      token: 'danne',
+      token: 'xyz-dummy-token',
       onAuthenticationFailed: ({ reason }) => {
         console.warn(reason)
       },
