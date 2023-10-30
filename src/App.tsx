@@ -8,7 +8,7 @@ const App = (): JSX.Element => {
       <div className='absolute top-0 right-0 w-28 h-10 p-2 z-10 justify-end flex'>
         <AppHeader />
       </div>
-      <div className="flex flex-1 gap-4 p-2 h-max">
+      <div className='flex flex-1 gap-4 p-2 h-max'>
         {state.content}
       </div>
     </div>
