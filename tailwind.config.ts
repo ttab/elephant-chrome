@@ -5,7 +5,7 @@ export default {
   presets: [preset],
   content: [
     './src/**/*.{html,tsx}',
-    './node_modules/@ttab/elephant-ui/src/components/ui/*.tsx'
+    './node_modules/@ttab/elephant-ui/dist/src/components/ui/*.js'
   ],
   theme: {
     extend: {}
