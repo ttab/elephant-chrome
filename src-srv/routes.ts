@@ -59,7 +59,7 @@ export const ApiResponse: ApiResponseInterface = {
 
 /*
  * Map directory structure under api/ to express route paths.
- * Direcory or file names enclosed in brackets, i.e api/planning[id]/[action].ts
+ * Directory or file names enclosed in brackets, i.e api/planning[id]/[action].ts
  * would become "api/planning/:id/:action".
  */
 export async function mapRoutes(apiDir: string): Promise<RouteMap> {
@@ -115,7 +115,7 @@ export function connectRouteHandlers(app: Application, routes: RouteMap, context
  * Connect an exported route handler like GET, POST, etc to a specific express path.
  */
 function connectRouteHandler(app: Application, routePath: string, func: RouteHandler, initContext: RouteInitContext): Application {
-  const handlerFunc = (req, res): void => {
+  const handlerFunc = (req: Request, res: Response): void => {
     const context: RouteContext = {
       ...initContext,
       res
@@ -162,21 +162,19 @@ function connectRouteHandler(app: Application, routePath: string, func: RouteHan
 
     case 'DELETE':
       return app.delete(routePath, handlerFunc)
-
-    // case 'WEB_SOCKET':
-    //   return app.ws(routePath, handlerFunc)
   }
 
   return app
 }
 
+// FIXME: WebSocket handlers need some more thought
 export function connectWebsocketHandler(app: Application, routePath: string, func: WebsocketRequestHandler, context: RouteInitContext): Application {
+  // FIXME: Implement support for context sharing with websocket handlers, context is ignored for now
+  console.warn('Websocket route handlers don\'t have access to context')
+
   app.ws(routePath, func)
   return app
 }
-
-// FIXME: Implement support for context sharing with websocket handlers, context is ignored for now
-console.warn('Websocket route handlers don\'t have access to context')
 
 function buildRoutes(routes: RouteMap, directory: string, baseRoute: string = ''): void {
   const items = fs.readdirSync(directory)
