@@ -17,7 +17,7 @@ const initialState = init()
 export const NavigationContext = createContext<{
   state: NavigationState
   dispatch: Dispatch<NavigationAction>
-}>({ state: initialState, dispatch: () => {} })
+}>({ state: initialState, dispatch: () => { } })
 
 export const NavigationProvider = ({ children }: PropsWithChildren): JSX.Element => {
   const [state, dispatch] = useReducer(navigationReducer, initialState)
@@ -38,8 +38,8 @@ export const NavigationProvider = ({ children }: PropsWithChildren): JSX.Element
         itemName: currentView,
         contentState: [{ id, name: currentView, props: currentProps }]
       },
-      document.title,
-      window.location.href
+        document.title,
+        window.location.href
       )
     }
 
@@ -62,7 +62,7 @@ export const NavigationProvider = ({ children }: PropsWithChildren): JSX.Element
 
   return (
     <NavigationContext.Provider value={{ state, dispatch }}>
-        {children}
+      {children}
     </NavigationContext.Provider>
   )
 }
@@ -79,7 +79,7 @@ function navigationReducer(state: NavigationState, action: NavigationAction): Na
         content: [
           ...state.content,
           <NavigationWrapper key={action.id}>
-            <action.component { ...action.props }/>
+            <action.component {...action.props} />
           </NavigationWrapper>
 
         ]
