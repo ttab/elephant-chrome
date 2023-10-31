@@ -37,10 +37,7 @@ export const NavigationProvider = ({ children }: PropsWithChildren): JSX.Element
         id,
         itemName: currentView,
         contentState: [{ id, name: currentView, props: currentProps }]
-      },
-        document.title,
-        window.location.href
-      )
+      }, document.title, window.location.href)
     }
 
     if (historyState !== null) {
