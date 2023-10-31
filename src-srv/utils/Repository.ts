@@ -135,7 +135,11 @@ export class Repository {
    * @param accessToken string
    * @returns Promise<FinishedUnaryCall<UpdateRequest, UpdateResponse>
    */
-  async saveDoc({ document, documentName, accessToken }: { document: Doc, documentName: string, accessToken: string }): Promise<FinishedUnaryCall<UpdateRequest, UpdateResponse>> {
+  async saveDoc({ document, documentName, accessToken }: {
+    document: Doc,
+    documentName: string,
+    accessToken: string
+  }): Promise<FinishedUnaryCall<UpdateRequest, UpdateResponse>> {
     const newsDoc = yDocToNewsDoc(document)
     const payload = {
       ...newsDoc,
