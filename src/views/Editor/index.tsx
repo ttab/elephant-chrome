@@ -8,10 +8,10 @@ import { Editor as TextbitEditor } from '@ttab/textbit'
 import '@ttab/textbit/dist/esm/index.css'
 
 import { HocuspocusProvider, HocuspocusProviderWebsocket, WebSocketStatus } from '@hocuspocus/provider'
-import useSession from '@/hooks/useSession'
+import { useSession } from '@/hooks'
 
 export const Editor = (): JSX.Element => {
-  const { jwt = undefined } = useSession()
+  const jwt = useSession()
   const { ws: endpoint } = useApi()
   const [connectionStatus, setConnectionStatus] = useState<WebSocketStatus>(WebSocketStatus.Disconnected)
   const [documentUuid, setDocumentUuid] = useState('7de322ac-a9b2-45d9-8a0f-f1ac27f9cbfe')
@@ -27,7 +27,7 @@ export const Editor = (): JSX.Element => {
     return new HocuspocusProvider({
       websocketProvider: hpWs,
       name: documentUuid,
-      token: jwt?.accessToken as string || '',
+      token: jwt.accessToken as string,
       onAuthenticationFailed: ({ reason }) => {
         console.warn(reason)
       },
@@ -47,7 +47,7 @@ export const Editor = (): JSX.Element => {
         }
       }
     })
-  }, [documentUuid, endpoint, jwt])
+  }, [documentUuid])
 
   // Create YjsEditor for Textbit to use
   const editor = useMemo(() => {

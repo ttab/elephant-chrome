@@ -4,6 +4,7 @@ import { type HistoryState } from '@/types'
 export const useHistory = (): HistoryState => {
   function subscribe(callback: () => void): () => void {
     window.addEventListener('popstate', callback)
+
     return () => {
       window.removeEventListener('popstate', callback)
     }
