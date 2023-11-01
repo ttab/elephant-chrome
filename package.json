@@ -10,8 +10,9 @@
     "dev:web": "vite",
     "dev:css": "tailwindcss -i ./src/input.css -o ./dist/output.css --watch",
     "build": "tsc && vite build",
-    "lint": "tsc --noEmit && eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
-    "test": "jest",
+    "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
+    "tsc": "tsc --noEmit",
+    "test": "tsc --noEmit && jest",
     "test:coverage": "jest --coverage",
     "preview": "vite preview"
   },

@@ -19,7 +19,7 @@ export const ThemeProvider = ({
   ...props
 }: ThemeProviderProps): JSX.Element => {
   const [theme, setTheme] = useState<Theme>(
-    () => (localStorage.getItem(storageKey) as Theme) || defaultTheme // eslint-disable-line @typescript-eslint/strict-boolean-expressions
+    () => (localStorage.getItem(storageKey) as Theme) || defaultTheme
   )
 
   useEffect(() => {

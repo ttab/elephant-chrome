@@ -1,10 +1,11 @@
-import { AppMenu, ThemeSwitcher } from '@/components'
+import { ThemeSwitcher } from './ThemeSwitcher'
+import { Menu } from './Menu'
 
 export const AppHeader = (): JSX.Element => {
   return (
     <header className='justify-end flex'>
       <ThemeSwitcher />
-      <AppMenu />
+      <Menu />
     </header>
   )
 }

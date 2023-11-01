@@ -4,6 +4,7 @@ import { useTheme } from '@/hooks'
 
 export const ThemeSwitcher = (): JSX.Element => {
   const { theme, setTheme } = useTheme()
+
   return (
     <Button
       variant='ghost'

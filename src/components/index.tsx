@@ -1,6 +1,4 @@
 export { Link } from './Link'
 export { NavigationWrapper } from './NavigationWrapper'
 export { ViewHeader } from './ViewHeader'
-export { AppMenu } from './AppMenu'
 export { AppHeader } from './AppHeader'
-export { ThemeSwitcher } from './ThemeSwitcher'

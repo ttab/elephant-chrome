@@ -9,14 +9,14 @@ import {
   SheetTrigger
 } from '@ttab/elephant-ui'
 import { Link } from '@/components'
-import { Menu } from '@ttab/elephant-ui/icons'
+import { Menu as MenuIcon } from '@ttab/elephant-ui/icons'
 
-export const AppMenu = (): JSX.Element => {
+export const Menu = (): JSX.Element => {
   return (
     <Sheet>
       <SheetTrigger asChild>
         <Button variant='ghost' className='w-9 px-0'>
-          <Menu />
+          <MenuIcon />
         </Button>
       </SheetTrigger>
       <SheetContent>
