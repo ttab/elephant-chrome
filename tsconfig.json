@@ -47,6 +47,7 @@
   },
   "include": [
     "src",
+    "srv-src",
     "vite.config.ts",
     "tailwind.config.ts",
     "setupTests.ts",
