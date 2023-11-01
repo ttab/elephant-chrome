@@ -25,6 +25,10 @@ module.exports = {
       { allowConstantExport: true },
     ],
     "space-before-function-paren": ["warn", "never"],
-    "@typescript-eslint/space-before-function-paren": ["warn", "never"]
+    "@typescript-eslint/space-before-function-paren": ["warn", "never"],
+    "@typescript-eslint/prefer-nullish-coalescing": "off",
+    "@typescript-eslint/strict-boolean-expressions": "off",
+    "no-multiple-empty-lines": ["warn", { max: 2, maxEOF: 1 }],
+    "@typescript-eslint/no-confusing-void-expression": ["error", { ignoreArrowShorthand: true }]
   },
 }
