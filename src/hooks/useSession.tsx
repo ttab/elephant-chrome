@@ -1,8 +1,8 @@
 import { useContext } from 'react'
 import { ApiProviderContext } from '@/contexts'
-import { type JWTPayload } from 'jose'
+import { type ElephantJwt } from '@/types'
 
-export const useSession = (): JWTPayload | undefined => {
+export const useSession = (): ElephantJwt | undefined => {
   const context = useContext(ApiProviderContext)
 
   if (context === undefined) {

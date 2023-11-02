@@ -1,4 +1,5 @@
 import type * as views from '@/views'
+import { type JWTPayload } from 'jose'
 
 export enum NavigationActionType {
   ADD = 'add',
@@ -57,4 +58,11 @@ export type Theme = 'dark' | 'light' | 'system'
 export interface ThemeProviderState {
   theme: Theme
   setTheme: (theme: Theme) => void
+}
+
+export interface ElephantJwt extends JWTPayload {
+  sub: string
+  sub_name: string
+  scope: string
+  units: string[]
 }

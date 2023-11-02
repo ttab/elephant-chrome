@@ -1,6 +1,6 @@
 import { createContext, useEffect, useState } from 'react'
 import { WebSocketProvider } from './WebSocketProvider'
-import type { JWTPayload } from 'jose'
+import { type ElephantJwt } from '@/types'
 
 interface ApiProviderProps {
   children: React.ReactNode
@@ -12,7 +12,7 @@ interface ApiProviderProps {
 export interface ApiProviderState {
   api?: string
   ws?: string
-  jwt?: JWTPayload
+  jwt?: ElephantJwt
 }
 
 export const ApiProviderContext = createContext<ApiProviderState>({
@@ -30,7 +30,7 @@ export const ApiProvider = (params: ApiProviderProps): JSX.Element => {
     ...props
   } = params
 
-  const [jwt, setJwt] = useState<JWTPayload | undefined>(undefined)
+  const [jwt, setJwt] = useState<ElephantJwt | undefined>(undefined)
 
   const value = {
     api: `${protocol}://${host}:${port}/api`,
@@ -59,7 +59,7 @@ export const ApiProvider = (params: ApiProviderProps): JSX.Element => {
 }
 
 
-async function fetchToken(endpoint: string): Promise<JWTPayload | undefined> {
+async function fetchToken(endpoint: string): Promise<ElephantJwt | undefined> {
   try {
     const response = await fetch(`${endpoint}/user`, {
       credentials: 'include'
