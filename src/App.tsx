@@ -4,11 +4,7 @@ import { ApiProvider } from '@/contexts/ApiProvider'
 import { Login } from './views/auth/Login'
 
 export const App = (): JSX.Element => {
-  const apiProtocol = import.meta.env.VITE_PROTOCOL
-  const apiHost = import.meta.env.VITE_API_HOST
-  const apiPort = import.meta.env.VITE_API_PORT
-
-  const session = useSession(`${apiProtocol}://${apiHost}:${apiPort}/api`)
+  const jwt = useSession()
   const { state } = useNavigation()
 
   return (

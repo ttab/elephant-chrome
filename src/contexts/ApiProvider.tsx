@@ -1,6 +1,5 @@
-import { createContext } from 'react'
+import { createContext, useEffect, useState } from 'react'
 import { WebSocketProvider } from './WebSocketProvider'
-import type { ElephantSession } from '@/hooks/useSession'
 import type { JWTPayload } from 'jose'
 
 interface ApiProviderProps {
@@ -8,7 +7,6 @@ interface ApiProviderProps {
   protocol: string
   host: string
   port: number
-  session?: ElephantSession
 }
 
 export interface ApiProviderState {
@@ -17,11 +15,11 @@ export interface ApiProviderState {
   jwt?: JWTPayload
 }
 
-const initialState: ApiProviderState = {
+export const ApiProviderContext = createContext<ApiProviderState>({
   api: undefined,
   ws: undefined,
   jwt: undefined
-}
+})
 
 export const ApiProvider = (params: ApiProviderProps): JSX.Element => {
   const {
@@ -29,15 +27,27 @@ export const ApiProvider = (params: ApiProviderProps): JSX.Element => {
     protocol,
     host = 'localhost',
     port = 5183,
-    session = undefined,
     ...props
   } = params
+
+  const [jwt, setJwt] = useState<JWTPayload | undefined>(undefined)
 
   const value = {
     api: `${protocol}://${host}:${port}/api`,
     ws: host && port ? `ws://${host}:${port}/ws` : undefined,
-    jwt: session?.jwt
+    jwt
   }
+
+  useEffect(() => {
+    fetchToken(value.api)
+      .then(payload => {
+        setJwt(payload)
+      })
+      .catch(error => {
+        console.error('Error when fetching JWT token', error)
+        setJwt(undefined)
+      })
+  }, [value.api])
 
   return (
     <ApiProviderContext.Provider {...props} value={value}>
@@ -48,4 +58,23 @@ export const ApiProvider = (params: ApiProviderProps): JSX.Element => {
   )
 }
 
-export const ApiProviderContext = createContext<ApiProviderState>(initialState)
+
+async function fetchToken(endpoint: string): Promise<JWTPayload | undefined> {
+  try {
+    const response = await fetch(`${endpoint}/user`, {
+      credentials: 'include'
+    })
+
+    if (response.status === 401) {
+      return undefined
+    }
+
+    if (!response.ok) {
+      throw new Error(`Fetching session return status ${response.status}`)
+    }
+
+    return await response.json() || undefined
+  } catch (error) {
+    console.error('Unable to retrieve session', error)
+  }
+}
