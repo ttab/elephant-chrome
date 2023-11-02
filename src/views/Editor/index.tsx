@@ -72,12 +72,12 @@ export const Editor = (): JSX.Element => {
   })
 
   return (
-    <div className="p-4">
+    <div className="p-4 w-[800px]">
       <header>
         <h1 className="strong text-xl font-bold">Editor header</h1>
       </header>
 
-      <main className="mt-5 p-2 border shadow h-[800px]">
+      <main className="mt-5 p-2">
         <div className="h-full relative">
           {connectionStatus === WebSocketStatus.Connected && editor
             ? (<TextbitEditor yjsEditor={editor} />) // FIXME: Types...
