@@ -23,7 +23,7 @@ export interface SlateDoc {
 const transformer = transformNewsdoc
 const reverter = revertNewsdoc
 
-export function initDoc (data: GetDocumentResponse, doc: Y.Doc): Uint8Array {
+export function initDoc(data: GetDocumentResponse, doc: Y.Doc): Uint8Array {
   // TODO:Should set `meta` and `links` once a slate format i set
   const origMap = doc.getMap('original')
   const result = newsDocToYmap(data, origMap)
@@ -34,7 +34,7 @@ export function initDoc (data: GetDocumentResponse, doc: Y.Doc): Uint8Array {
   return yjsStateAsUpdate(content, doc)
 }
 
-export function revert (data: SlateDoc): GetDocumentResponse {
+export function revert(data: SlateDoc): GetDocumentResponse {
   if (data.document !== undefined) {
     return {
       ...data,

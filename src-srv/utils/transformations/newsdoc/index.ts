@@ -3,7 +3,7 @@ import { transformVisual, revertVisual } from './tt/visual.js'
 import { type Block } from '../../../protos/service.js'
 import type { TextbitElement } from '@ttab/textbit'
 
-export function transformNewsdoc (content: Block[]): TextbitElement[] {
+export function transformNewsdoc(content: Block[]): TextbitElement[] {
   if (content !== undefined) {
     return content.map((element: Block) => {
       switch (element.type) {
@@ -24,7 +24,7 @@ export function transformNewsdoc (content: Block[]): TextbitElement[] {
   throw new Error('No document to transform')
 }
 
-export function revertNewsdoc (elements: TextbitElement[]): Block[] {
+export function revertNewsdoc(elements: TextbitElement[]): Block[] {
   if (elements !== undefined) {
     return elements.map((element: TextbitElement): Block => {
       switch (element.type) {

@@ -1,8 +1,12 @@
 import type { Config } from 'tailwindcss'
-
+import preset from '@ttab/elephant-ui/styles/preset'
 export default {
   darkMode: 'class',
-  content: ['./src/**/*.{html,tsx}'],
+  presets: [preset],
+  content: [
+    './src/**/*.{html,tsx}',
+    './node_modules/@ttab/elephant-ui/dist/src/components/ui/*.js'
+  ],
   theme: {
     extend: {}
   },
