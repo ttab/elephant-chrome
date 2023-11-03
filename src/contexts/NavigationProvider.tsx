@@ -98,11 +98,12 @@ function navigationReducer(state: NavigationState, action: NavigationAction): Na
 
       return {
         ...state,
-        content: action.content.map((item: ContentState): JSX.Element => {
+        content: action.content.map((item: ContentState, index): JSX.Element => {
           const Component = state.registry.get(item.name)?.component
+
           return (
-            <NavigationWrapper key={Date.now() + item.id}>
-              <Component {...item.props} />
+            <NavigationWrapper key={item.id}>
+              <Component {...{ ...item, index }} />
             </NavigationWrapper>
           )
         })

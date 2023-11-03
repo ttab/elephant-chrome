@@ -16,15 +16,15 @@ export interface WebSocketProviderState {
 
 const initialState: WebSocketProviderState = {}
 
-export const WebSocketProvider = ({ children, endpoint, ...props }: WebSocketProviderProps): JSX.Element => {
+export const WebSocketProvider = ({ children, endpoint: websocketUrl, ...props }: WebSocketProviderProps): JSX.Element => {
   const wsRef = useRef<WebSocket | undefined>(undefined)
 
   useEffect(() => {
-    if (!wsRef.current && endpoint?.substring(0, 5) === 'ws://') {
-      wsRef.current = new WebSocket(endpoint)
+    if (!wsRef.current && websocketUrl?.substring(0, 5) === 'ws://') {
+      wsRef.current = new WebSocket(websocketUrl)
 
       wsRef.current.addEventListener('open', () => {
-        console.info(`WebSocket connection opened to ${endpoint}`)
+        console.info(`WebSocket connection opened to ${websocketUrl}`)
       })
     }
 
@@ -33,7 +33,7 @@ export const WebSocketProvider = ({ children, endpoint, ...props }: WebSocketPro
         wsRef.current.close()
       }
     }
-  }, [endpoint])
+  }, [websocketUrl])
 
   const value = {
     webSocket: wsRef

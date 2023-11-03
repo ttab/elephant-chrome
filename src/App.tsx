@@ -3,7 +3,7 @@ import { Link } from '@/components'
 import { Login } from './views/auth/Login'
 
 export const App = (): JSX.Element => {
-  const jwt = useSession()
+  const [jwt] = useSession()
   const { state } = useNavigation()
 
   return (

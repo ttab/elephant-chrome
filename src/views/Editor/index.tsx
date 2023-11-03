@@ -10,23 +10,27 @@ import '@ttab/textbit/dist/esm/index.css'
 import { HocuspocusProvider, HocuspocusProviderWebsocket, WebSocketStatus } from '@hocuspocus/provider'
 import { useSession } from '@/hooks'
 
-export const Editor = (): JSX.Element => {
-  const jwt = useSession()
-  const { ws: endpoint } = useApi()
+export const Editor = (props: Record<string, string>): JSX.Element => {
+  const [jwt] = useSession()
+  const { websocketUrl, hocuspocusWebsocket } = useApi()
   const [connectionStatus, setConnectionStatus] = useState<WebSocketStatus>(WebSocketStatus.Disconnected)
-  const [documentUuid, setDocumentUuid] = useState('7de322ac-a9b2-45d9-8a0f-f1ac27f9cbfe')
+  const [documentId, setDocumentId] = useState('7de322ac-a9b2-45d9-8a0f-f1ac27f9cbfe')
+  const { index: viewIndex } = props
 
   const provider = useMemo(() => {
-    const url = `${endpoint}/`.replace('api', 'collaboration')
-    const hpWs = new HocuspocusProviderWebsocket({ url })
+    const hpWs = new HocuspocusProviderWebsocket({ url: websocketUrl })
 
     if (!jwt?.accessToken) {
       return
     }
 
+    /* FIXME: using shared hocus pocus websocket provider
+     * It might be that using the provided shared "hocuspocusWebsocket" does not work as it might not
+     * be possible to have the same document synced twice to the same hocuspocusprovider in the client?
+     */
     return new HocuspocusProvider({
-      websocketProvider: hpWs,
-      name: documentUuid,
+      websocketProvider: hpWs, // hocuspocusWebsocket, // FIXME: Is the problem having same uuid (name below) on same shared hp websocket?
+      name: documentId,
       token: jwt.accessToken as string,
       onAuthenticationFailed: ({ reason }) => {
         console.warn(reason)
@@ -47,7 +51,7 @@ export const Editor = (): JSX.Element => {
         }
       }
     })
-  }, [documentUuid])
+  }, [documentId])
 
   // Create YjsEditor for Textbit to use
   const editor = useMemo(() => {

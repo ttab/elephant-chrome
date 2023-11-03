@@ -1,10 +1,14 @@
 import { useState } from 'react'
 import { useApi } from '@/hooks/useApi'
+import { useSession } from '@/hooks'
+import { type JWTPayload } from 'jose'
 
 export const Login = (): JSX.Element => {
-  const { api: endpoint } = useApi()
+  const { apiUrl } = useApi()
   const [user, setUser] = useState<string>('')
   const [password, setPassword] = useState<string>('')
+  const [, setJwt] = useSession()
+  const [failed, setFailed] = useState<boolean>(false)
 
   return (
     <div className="flex flex-row flex-auto justify-center">
@@ -27,27 +31,39 @@ export const Login = (): JSX.Element => {
             className="p-2 w-64 text-sm border border-gray-300 text-bold center bg-gray-100 shadow-sm rounded"
             onClick={(e) => {
               e.preventDefault()
-              if (!endpoint) {
+              if (!apiUrl) {
+                console.log('NO URL')
                 return
               }
 
-              auth(endpoint, user, password)
-                .then((success) => {
-                  if (success) {
-                    window.location.replace('/')
+              auth(apiUrl, user, password)
+                .then(async ([status, jwt]) => {
+                  if (status === 200 && jwt) {
+                    setJwt(jwt)
+                  } else {
+                    setFailed(true)
                   }
-                }).catch(ex => {
+                })
+                .catch(ex => {
                   console.log('Failed login: ', ex.message)
                 })
             }}>Login...</button>
         </div>
+
+
+        <div className="pt-4 text-sm text-red-500 text-center">
+          {failed
+            ? <p>Failed logging in<br /> Verify your credentials and try again</p>
+            : <p>&nbsp;<br />&nbsp;</p>
+          }
+        </div>
       </form >
-    </div>
+    </div >
   )
 }
 
 
-async function auth(api: string, user: string, password: string): Promise<boolean> {
+async function auth(api: string, user: string, password: string): Promise<[number, JWTPayload | undefined]> {
   const response = await fetch(`${api}/user`, {
     method: 'post',
     mode: 'cors',
@@ -61,5 +77,9 @@ async function auth(api: string, user: string, password: string): Promise<boolea
     })
   })
 
-  return response.status === 200
+  if (response.status === 200) {
+    return [200, await response.json()]
+  }
+
+  return [response.status, undefined]
 }
