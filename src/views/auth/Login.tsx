@@ -3,6 +3,8 @@ import { useApi } from '@/hooks/useApi'
 import { useSession } from '@/hooks'
 import { type JWT } from '@/types'
 
+import { Input, Button } from '@ttab/elephant-ui'
+
 export const Login = (): JSX.Element => {
   const { apiUrl } = useApi()
   const [user, setUser] = useState<string>('')
@@ -14,21 +16,20 @@ export const Login = (): JSX.Element => {
     <div className="flex flex-row flex-auto justify-center">
       <form onSubmit={(e) => { e.preventDefault() }} className="self-center flex flex-col gap-4">
         <div>
-          <input
+          <Input
             className="p-2 w-64 text-sm border border-gray-200 shadow-sm rounded"
             type="text" name="user" onChange={(e) => setUser(e.currentTarget.value)}
           />
         </div>
         <div>
-          <input
+          <Input
             className="p-2 w-64 text-sm border border-gray-200 shadow-sm rounded"
             type="password" name="password" onChange={(e) => setPassword(e.currentTarget.value)}
           />
         </div>
 
         <div>
-          <button
-            className="p-2 w-64 text-sm border border-gray-300 text-bold center bg-gray-100 shadow-sm rounded"
+          <Button
             onClick={(e) => {
               e.preventDefault()
               if (!apiUrl) {
@@ -47,7 +48,7 @@ export const Login = (): JSX.Element => {
                 .catch(ex => {
                   console.log('Failed login: ', ex.message)
                 })
-            }}>Login...</button>
+            }}>Login...</Button>
         </div>
 
 
