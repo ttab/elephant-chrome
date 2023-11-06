@@ -43,7 +43,6 @@ async function runServer(): Promise<string> {
   }
 
   // Connect to repository
-  console.log(JWKS_URL)
   const jwks = createRemoteJWKSet(new URL(JWKS_URL))
   try {
     await jwks({ alg: 'ES384', typ: 'JWT' })

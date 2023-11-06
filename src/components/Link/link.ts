@@ -24,7 +24,11 @@ export function handleLink({ event, dispatch, linkItem, props, id }: LinkClick):
   dispatch({
     type: NavigationActionType.ADD,
     component: linkItem.component,
-    props: { ...props, id }
+    props: {
+      ...props,
+      name: linkItem.component.name,
+      id
+    }
   })
 
   history.pushState({
@@ -41,3 +45,4 @@ export function handleLink({ event, dispatch, linkItem, props, id }: LinkClick):
     ]
   }, linkItem.metadata.name, `${linkItem.metadata.path}?id=${id}`)
 }
+

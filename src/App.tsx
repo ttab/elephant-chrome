@@ -4,7 +4,7 @@ import { Login } from '@/views/auth/Login'
 import { CommandMenu } from '@/components/CommandMenu'
 
 export const App = (): JSX.Element => {
-  const jwt = useSession()
+  const [jwt] = useSession()
   const { state } = useNavigation()
 
   return (
