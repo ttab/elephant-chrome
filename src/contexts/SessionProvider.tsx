@@ -29,12 +29,10 @@ export const SessionProvider = ({ children, endpoint }: {
 
     // FIXME: It seems server jwt.exp is set to current time, not a future time
     const timeoutRef = setTimeout(() => {
-      console.log('Refreshing jwt -> fetching jwt', jwt)
       void fetchToken()
-    }, 60000 * 9) // Set timeout to refresh token when 9 mins have passed (should use jwt.exp)
+    }, 60000 * 5) // Set timeout to refresh token when 9 mins have passed (should use jwt.exp)
 
     return () => {
-      console.log('Clearing timeout!')
       clearTimeout(timeoutRef)
     }
   }, [jwt, endpoint])
