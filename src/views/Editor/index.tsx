@@ -1,5 +1,6 @@
 import { useApi } from '@/hooks/useApi'
 import { useEffect, useMemo, useState } from 'react'
+import { ViewHeader } from '@/components'
 import { withYjs, withYHistory, YjsEditor } from '@slate-yjs/core'
 import * as Y from 'yjs'
 import { createEditor } from 'slate'
@@ -89,12 +90,9 @@ export const Editor = (props: ViewProps): JSX.Element => {
   ]
 
   return (
-    <div className="p-4 w-[800px]">
-      <header>
-        <h1 className="strong text-xl font-bold">Editor header</h1>
-      </header>
-
-      <main className="mt-5 p-2">
+    <>
+      <ViewHeader title='Editor' />
+      <main className="min-w-[800px] max-w-[900px]">
         <div className="h-full relative">
           {views[connectionStatus === WebSocketStatus.Connected ? 0 : 1]}
           {/*
@@ -102,7 +100,7 @@ export const Editor = (props: ViewProps): JSX.Element => {
           */}
         </div>
       </main>
-    </div>
+    </>
   )
 }
 
