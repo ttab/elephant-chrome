@@ -95,9 +95,6 @@ export const Editor = (props: ViewProps): JSX.Element => {
       <main className="min-w-[800px] max-w-[900px]">
         <div className="h-full relative">
           {views[connectionStatus === WebSocketStatus.Connected ? 0 : 1]}
-          {/*
-          {connectionStatus === WebSocketStatus.Connected && editor ? (<TextbitEditor yjsEditor={editor} />) : <strong className="animate-pulse">Not connected</strong>}
-          */}
         </div>
       </main>
     </>
