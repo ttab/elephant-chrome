@@ -7,18 +7,21 @@ import { createEditor } from 'slate'
 import { Editor as TextbitEditor } from '@ttab/textbit'
 import '@ttab/textbit/dist/esm/index.css'
 
-import { HocuspocusProvider, HocuspocusProviderWebsocket, WebSocketStatus } from '@hocuspocus/provider'
+import { HocuspocusProvider, WebSocketStatus } from '@hocuspocus/provider'
 import { useSession } from '@/hooks'
+import { type ViewProps } from '@/types'
 
-export const Editor = (props: Record<string, string>): JSX.Element => {
+export const Editor = (props: ViewProps): JSX.Element => {
   const [jwt] = useSession()
-  const { websocketUrl } = useApi()
   const [connectionStatus, setConnectionStatus] = useState<WebSocketStatus>(WebSocketStatus.Disconnected)
   const [documentId] = useState('7de322ac-a9b2-45d9-8a0f-f1ac27f9cbfe')
-  const { index: viewIndex } = props
+  const { id: viewId } = props
+  const { hocuspocusWebsocket } = useApi()
 
   const provider = useMemo(() => {
-    const hpWs = new HocuspocusProviderWebsocket({ url: websocketUrl })
+    if (!hocuspocusWebsocket) {
+      return
+    }
 
     if (!jwt?.accessToken) {
       return
@@ -29,32 +32,33 @@ export const Editor = (props: Record<string, string>): JSX.Element => {
      * be possible to have the same document synced twice to the same hocuspocusprovider in the client?
      */
     return new HocuspocusProvider({
-      websocketProvider: hpWs, // hocuspocusWebsocket, // FIXME: Is the problem having same uuid (name below) on same shared hp websocket?
+      websocketProvider: hocuspocusWebsocket,
       name: documentId,
       token: jwt.accessToken as string,
       onAuthenticationFailed: ({ reason }) => {
         console.warn(reason)
       },
       onAuthenticated: () => {
-        console.info('Authenticated')
+        console.info('Authenticated', viewId)
       },
       onSynced: ({ state }) => {
         if (state) {
-          console.info('Connected')
+          console.info('Synced ', viewId)
           setConnectionStatus(WebSocketStatus.Connected)
         }
       },
       onStatus: ({ status }) => {
         if (status === 'disconnected') {
-          console.warn('Lost connection')
+          console.warn('Lost connection', viewId)
           setConnectionStatus(WebSocketStatus.Disconnected)
         }
-      },
-      onAwarenessUpdate: ({ states }) => {
-        console.log(states)
       }
+      // TODO: Implement awareness
+      // onAwarenessUpdate: ({ states }) => {
+      //   console.log(states)
+      // }
     })
-  }, [documentId])
+  }, [documentId, hocuspocusWebsocket, jwt?.accessToken, viewId])
 
   // Create YjsEditor for Textbit to use
   const editor = useMemo(() => {
