@@ -36,7 +36,7 @@ export const Login = (): JSX.Element => {
                 return
               }
 
-              auth(apiUrl, user, password)
+              auth(apiUrl.href, user, password)
                 .then(async ([status, jwt]) => {
                   if (status === 200 && jwt) {
                     setJwt(jwt)

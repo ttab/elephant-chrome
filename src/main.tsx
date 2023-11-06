@@ -11,7 +11,7 @@ const websocketUrl = `ws://${host}:${port}/ws`
 
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
   <SessionProvider endpoint={`${apiUrl}/user`}>
-    <ApiProvider apiUrl={apiUrl} websocketUrl={websocketUrl}>
+    <ApiProvider apiUrl={new URL(apiUrl)} websocketUrl={new URL(websocketUrl)}>
       <React.StrictMode>
         < ThemeProvider defaultTheme='light' storageKey='ele-ui-theme' >
           <NavigationProvider>

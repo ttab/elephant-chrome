@@ -3,25 +3,25 @@ import { HocuspocusProvider, HocuspocusProviderWebsocket } from '@hocuspocus/pro
 
 interface ApiProviderProps {
   children: React.ReactNode
-  apiUrl: string
-  websocketUrl: string
+  apiUrl: URL
+  websocketUrl: URL
 }
 
 export interface ApiProviderState {
-  apiUrl: string
-  websocketUrl: string
+  apiUrl: URL
+  websocketUrl: URL
   hocuspocusWebsocket?: HocuspocusProviderWebsocket
 }
 
 export const ApiProviderContext = createContext<ApiProviderState>({
-  apiUrl: '',
-  websocketUrl: '',
+  apiUrl: new URL('http://localhost'),
+  websocketUrl: new URL('http://localhost'),
   hocuspocusWebsocket: undefined
 })
 
 export const ApiProvider = ({ children, apiUrl, websocketUrl }: ApiProviderProps): JSX.Element => {
   const hpws = useMemo(() => {
-    return new HocuspocusProviderWebsocket({ url: websocketUrl })
+    return new HocuspocusProviderWebsocket({ url: websocketUrl.href })
   }, [websocketUrl])
 
   const value = {
