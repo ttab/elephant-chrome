@@ -39,7 +39,8 @@ export const Link = ({ children, to, props }: LinkProps): JSX.Element => {
         ...history.state.contentState,
         {
           id,
-          name: linkItem.metadata.name
+          name: linkItem.metadata.name,
+          props
         }
       ]
     }, children, `${linkItem.metadata.path}?id=${id}`)
