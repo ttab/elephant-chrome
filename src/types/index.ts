@@ -62,7 +62,7 @@ export interface ThemeProviderState {
   setTheme: (theme: Theme) => void
 }
 
-export interface ElephantJwt extends JWTPayload {
+export interface JWT extends JWTPayload {
   sub: string
   sub_name: string
   scope: string
