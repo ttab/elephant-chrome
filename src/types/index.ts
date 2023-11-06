@@ -51,6 +51,8 @@ export interface HistoryState {
 
 export interface ViewProps {
   id: string
+  name: string
+  index?: number
 }
 
 export type Theme = 'dark' | 'light' | 'system'

@@ -1,80 +1,38 @@
-import { createContext, useEffect, useState } from 'react'
-import { WebSocketProvider } from './WebSocketProvider'
-import { type ElephantJwt } from '@/types'
+import { createContext, useMemo } from 'react'
+import { HocuspocusProvider, HocuspocusProviderWebsocket } from '@hocuspocus/provider'
 
 interface ApiProviderProps {
   children: React.ReactNode
-  protocol: string
-  host: string
-  port: number
+  apiUrl: URL
+  websocketUrl: URL
 }
 
 export interface ApiProviderState {
-  api?: string
-  ws?: string
-  jwt?: ElephantJwt
+  apiUrl: URL
+  websocketUrl: URL
+  hocuspocusWebsocket?: HocuspocusProviderWebsocket
 }
 
 export const ApiProviderContext = createContext<ApiProviderState>({
-  api: undefined,
-  ws: undefined,
-  jwt: undefined
+  apiUrl: new URL('http://localhost'),
+  websocketUrl: new URL('http://localhost'),
+  hocuspocusWebsocket: undefined
 })
 
-export const ApiProvider = (params: ApiProviderProps): JSX.Element => {
-  const {
-    children,
-    protocol,
-    host = 'localhost',
-    port = 5183,
-    ...props
-  } = params
-
-  const [jwt, setJwt] = useState<ElephantJwt | undefined>(undefined)
+export const ApiProvider = ({ children, apiUrl, websocketUrl }: ApiProviderProps): JSX.Element => {
+  const hpws = useMemo(() => {
+    return new HocuspocusProviderWebsocket({ url: websocketUrl.href })
+  }, [websocketUrl])
 
   const value = {
-    api: `${protocol}://${host}:${port}/api`,
-    ws: host && port ? `ws://${host}:${port}/ws` : undefined,
-    jwt
+    apiUrl,
+    websocketUrl,
+    hocuspocusWebsocket: hpws
   }
-
-  useEffect(() => {
-    fetchToken(value.api)
-      .then(payload => {
-        setJwt(payload)
-      })
-      .catch(error => {
-        console.error('Error when fetching JWT token', error)
-        setJwt(undefined)
-      })
-  }, [value.api])
 
   return (
-    <ApiProviderContext.Provider {...props} value={value}>
-      <WebSocketProvider endpoint={`${value.ws}`}>
-        {children}
-      </WebSocketProvider>
+    <ApiProviderContext.Provider value={value}>
+      {!!HocuspocusProvider && children}
     </ApiProviderContext.Provider>
   )
-}
-
-
-async function fetchToken(endpoint: string): Promise<ElephantJwt | undefined> {
-  try {
-    const response = await fetch(`${endpoint}/user`, {
-      credentials: 'include'
-    })
-
-    if (response.status === 401) {
-      return undefined
-    }
-
-    if (!response.ok) {
-      throw new Error(`Fetching session return status ${response.status}`)
-    }
-
-    return await response.json() || undefined
-  } catch (error) {
-    console.error('Unable to retrieve session', error)
-  }
 }

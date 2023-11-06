@@ -24,7 +24,11 @@ export const Link = ({ children, to, props }: LinkProps): JSX.Element => {
     dispatch({
       type: NavigationActionType.ADD,
       component: linkItem.component,
-      props: { ...props, id }
+      props: {
+        ...props,
+        name: linkItem.component.name,
+        id
+      }
     })
 
     history.pushState({

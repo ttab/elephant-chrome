@@ -1,13 +1,13 @@
 import { useContext } from 'react'
-import { ApiProviderContext } from '@/contexts'
-import { type ElephantJwt } from '@/types'
+import { SessionProviderContext } from '@/contexts'
+import { type SessionProviderState } from '@/contexts/SessionProvider'
 
-export const useSession = (): ElephantJwt | undefined => {
-  const context = useContext(ApiProviderContext)
+export const useSession = (): SessionProviderState => {
+  const context = useContext(SessionProviderContext)
 
   if (context === undefined) {
-    throw new Error('useSession() must be used with an ApiProvider')
+    throw new Error('useSession() must be used with a SessionProvider')
   }
 
-  return context.jwt
+  return context
 }

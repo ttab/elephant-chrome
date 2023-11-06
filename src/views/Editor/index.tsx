@@ -8,47 +8,58 @@ import { createEditor } from 'slate'
 import { Editor as TextbitEditor } from '@ttab/textbit'
 import '@ttab/textbit/dist/esm/index.css'
 
-import { HocuspocusProvider, HocuspocusProviderWebsocket, WebSocketStatus } from '@hocuspocus/provider'
+import { HocuspocusProvider, WebSocketStatus } from '@hocuspocus/provider'
 import { useSession } from '@/hooks'
+import { type ViewProps } from '@/types'
 
-export const Editor = (): JSX.Element => {
-  const jwt = useSession()
-  const { ws: endpoint } = useApi()
+export const Editor = (props: ViewProps): JSX.Element => {
+  const [jwt] = useSession()
   const [connectionStatus, setConnectionStatus] = useState<WebSocketStatus>(WebSocketStatus.Disconnected)
-  const [documentUuid, setDocumentUuid] = useState('7de322ac-a9b2-45d9-8a0f-f1ac27f9cbfe')
+  const [documentId] = useState('7de322ac-a9b2-45d9-8a0f-f1ac27f9cbfe')
+  const { id: viewId } = props
+  const { hocuspocusWebsocket } = useApi()
 
   const provider = useMemo(() => {
-    const url = `${endpoint}/`.replace('api', 'collaboration')
-    const hpWs = new HocuspocusProviderWebsocket({ url })
+    if (!hocuspocusWebsocket) {
+      return
+    }
 
     if (!jwt?.accessToken) {
       return
     }
 
+    /* FIXME: using shared hocus pocus websocket provider
+     * It might be that using the provided shared "hocuspocusWebsocket" does not work as it might not
+     * be possible to have the same document synced twice to the same hocuspocusprovider in the client?
+     */
     return new HocuspocusProvider({
-      websocketProvider: hpWs,
-      name: documentUuid,
+      websocketProvider: hocuspocusWebsocket,
+      name: documentId,
       token: jwt.accessToken as string,
       onAuthenticationFailed: ({ reason }) => {
         console.warn(reason)
       },
       onAuthenticated: () => {
-        console.info('Authenticated')
+        console.info('Authenticated', viewId)
       },
       onSynced: ({ state }) => {
         if (state) {
-          console.info('Connected')
+          console.info('Synced ', viewId)
           setConnectionStatus(WebSocketStatus.Connected)
         }
       },
       onStatus: ({ status }) => {
         if (status === 'disconnected') {
-          console.warn('Lost connection')
+          console.warn('Lost connection', viewId)
           setConnectionStatus(WebSocketStatus.Disconnected)
         }
       }
+      // TODO: Implement awareness
+      // onAwarenessUpdate: ({ states }) => {
+      //   console.log(states)
+      // }
     })
-  }, [documentUuid])
+  }, [documentId, hocuspocusWebsocket, jwt?.accessToken, viewId])
 
   // Create YjsEditor for Textbit to use
   const editor = useMemo(() => {
@@ -72,15 +83,21 @@ export const Editor = (): JSX.Element => {
     }
   })
 
+  const views = [
+    // @ts-expect-error FIXME: yjsEditor needs more refinement
+    <TextbitEditor yjsEditor={editor} />,
+    <strong className="animate-pulse">Not connected</strong>
+  ]
+
   return (
     <>
       <ViewHeader title='Editor' />
       <main className="min-w-[800px] max-w-[900px]">
         <div className="h-full relative">
-          {connectionStatus === WebSocketStatus.Connected && editor
-            ? (<TextbitEditor yjsEditor={editor} />) // FIXME: Types...
-            : <strong className="animate-pulse">Not connected</strong>
-          }
+          {views[connectionStatus === WebSocketStatus.Connected ? 0 : 1]}
+          {/*
+          {connectionStatus === WebSocketStatus.Connected && editor ? (<TextbitEditor yjsEditor={editor} />) : <strong className="animate-pulse">Not connected</strong>}
+          */}
         </div>
       </main>
     </>
