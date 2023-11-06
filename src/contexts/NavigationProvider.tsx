@@ -31,7 +31,7 @@ export const NavigationProvider = ({ children }: PropsWithChildren): JSX.Element
         ? window.location.pathname[1].toUpperCase() + window.location.pathname.slice(2)
         : 'Init'
       const currentProps = Object.fromEntries(new URLSearchParams(window.location.search))
-      const id = currentProps.id || 'init' // eslint-disable-line @typescript-eslint/strict-boolean-expressions
+      const id = currentProps.id || 'init'
 
       history.replaceState({
         id,

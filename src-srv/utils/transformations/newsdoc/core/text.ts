@@ -16,7 +16,7 @@ const replace = (type: string, translateList: Record<string, string>): string =>
   return translateList[type] ?? 'core/paragraph'
 }
 
-function createAnchorElement (element: TextbitElement): string {
+function createAnchorElement(element: TextbitElement): string {
   const dom = new JSDOM()
   const document = dom.window.document
 
@@ -36,7 +36,7 @@ function createAnchorElement (element: TextbitElement): string {
   return anchor.outerHTML
 }
 
-function transformInlineElement (node: HTMLElement): TextbitDescendant {
+function transformInlineElement(node: HTMLElement): TextbitDescendant {
   switch (node.rawTagName) {
     case 'a':
       return {
@@ -56,7 +56,7 @@ function transformInlineElement (node: HTMLElement): TextbitDescendant {
   }
 }
 
-function revertInlineElement (element: TextbitElement): string {
+function revertInlineElement(element: TextbitElement): string {
   switch (element.type) {
     case 'core/link':
       return createAnchorElement(element)
@@ -65,7 +65,7 @@ function revertInlineElement (element: TextbitElement): string {
   }
 }
 
-export function transformText (element: Block): TextbitElement {
+export function transformText(element: Block): TextbitElement {
   const { id, type, data } = element
   const root = parse(data.text)
   const nodes = root.childNodes as HTMLElement[]
@@ -102,7 +102,7 @@ export function transformText (element: Block): TextbitElement {
   }
 }
 
-export function revertText (element: TextbitElement): Block {
+export function revertText(element: TextbitElement): Block {
   const { id, children } = element
   return Block.create({
     id,

@@ -4,7 +4,7 @@ import type { GetDocumentResponse } from '../../../protos/service.js'
 import { type TextbitElement } from '@ttab/textbit'
 import { revertNewsdoc } from '../newsdoc/index.js'
 
-export function yjsStateAsUpdate (content: TextbitElement[], data: Y.Doc): Uint8Array {
+export function yjsStateAsUpdate(content: TextbitElement[], data: Y.Doc): Uint8Array {
   const insertContentDelta = slateNodesToInsertDelta(content)
   const sharedContentRoot = data.get('content', Y.XmlText) as Y.XmlText
   sharedContentRoot.applyDelta(insertContentDelta)
@@ -19,7 +19,7 @@ export function yjsStateAsUpdate (content: TextbitElement[], data: Y.Doc): Uint8
  * @param map Y.Map<unknown>
  * @returns Y.Map<unknown>
  */
-export function newsDocToYmap (data: GetDocumentResponse, map: Y.Map<unknown>): Y.Map<unknown> {
+export function newsDocToYmap(data: GetDocumentResponse, map: Y.Map<unknown>): Y.Map<unknown> {
   const d = {
     ...data,
     version: data.version.toString()
@@ -52,7 +52,7 @@ export function newsDocToYmap (data: GetDocumentResponse, map: Y.Map<unknown>): 
 * @param document Document
 * @returns GetDocumentResponse
 */
-export function yDocToNewsDoc (document: Y.Doc): GetDocumentResponse {
+export function yDocToNewsDoc(document: Y.Doc): GetDocumentResponse {
   const original = document.get('original', Y.Map) as Y.Map<unknown>
   const json = original.toJSON()
 

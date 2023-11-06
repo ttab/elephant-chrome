@@ -1,5 +1,5 @@
 import { useNavigation, useSession } from '@/hooks'
-import { Link } from '@/components'
+import { AppHeader } from '@/components'
 import { Login } from './views/auth/Login'
 
 export const App = (): JSX.Element => {
@@ -10,15 +10,16 @@ export const App = (): JSX.Element => {
     <div className='relative flex h-screen flex-col bg-white dark:bg-black'>
       {!jwt
         ? <Login />
-        : <>
-          <nav className='flex flex-row'>
-            <Link key="editor" to='Editor'>Editor</Link>
-            <Link key="planning" to='Planning'>Planning</Link>
-          </nav>
-          <div className="flex flex-1 gap-4 bg-gray-500 p-2 h-max">
-            {state.content}
-          </div>
-        </>
+        : (
+            <>
+              <div className='absolute top-0 right-0 w-28 h-10 p-2 z-10 justify-end flex'>
+                <AppHeader />
+              </div>
+              <div className='flex flex-1 gap-4 p-2 h-max'>
+                {state.content}
+              </div>
+            </>
+          )
       }
     </div>
   )
