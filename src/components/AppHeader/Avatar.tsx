@@ -8,13 +8,14 @@ import {
 } from '@ttab/elephant-ui'
 
 export const Avatar = (): JSX.Element => {
-  const jwt = useSession()
+  const [jwt] = useSession()
+
   return (
     <Popover>
 
       <PopoverTrigger>
         <AvatarMain>
-          <AvatarFallback className='bg-green-300 rounded-full'>{jwt?.sub.replace('user://tt/', '')}</AvatarFallback>
+          <AvatarFallback className='bg-green-300 rounded-full'>{jwt?.sub.replace('user://tt/', '') || '?'}</AvatarFallback>
         </AvatarMain>
       </PopoverTrigger>
 

@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useApi } from '@/hooks/useApi'
 import { useSession } from '@/hooks'
-import { type JWTPayload } from 'jose'
+import { type ElephantJwt } from '@/types'
 
 export const Login = (): JSX.Element => {
   const { apiUrl } = useApi()
@@ -63,7 +63,7 @@ export const Login = (): JSX.Element => {
 }
 
 
-async function auth(api: string, user: string, password: string): Promise<[number, JWTPayload | undefined]> {
+async function auth(api: string, user: string, password: string): Promise<[number, ElephantJwt | undefined]> {
   const response = await fetch(`${api}/user`, {
     method: 'post',
     mode: 'cors',

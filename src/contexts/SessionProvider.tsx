@@ -1,9 +1,9 @@
 import { createContext, useEffect, useState } from 'react'
-import type { JWTPayload } from 'jose'
+import { type ElephantJwt } from '@/types'
 
 export type SessionProviderState = [
-  JWTPayload | undefined,
-  (jwt: JWTPayload) => void
+  ElephantJwt | undefined,
+  (jwt: ElephantJwt) => void
 ]
 
 export const SessionProviderContext = createContext<SessionProviderState>([
@@ -15,7 +15,7 @@ export const SessionProvider = ({ children, endpoint }: {
   children: React.ReactNode
   endpoint: string
 }): JSX.Element => {
-  const [jwt, setJwt] = useState<JWTPayload | undefined>(undefined)
+  const [jwt, setJwt] = useState<ElephantJwt | undefined>(undefined)
 
   useEffect(() => {
     const fetchToken = async (): Promise<void> => {
@@ -39,7 +39,7 @@ export const SessionProvider = ({ children, endpoint }: {
 
   const value: SessionProviderState = [
     jwt,
-    (jwt: JWTPayload): void => {
+    (jwt: ElephantJwt): void => {
       setJwt(jwt)
     }
   ]
@@ -52,7 +52,7 @@ export const SessionProvider = ({ children, endpoint }: {
 }
 
 
-async function fetchOrRefreshToken(endpoint: string): Promise<JWTPayload | undefined> {
+async function fetchOrRefreshToken(endpoint: string): Promise<ElephantJwt | undefined> {
   try {
     const response = await fetch(`${endpoint}`, {
       credentials: 'include'
