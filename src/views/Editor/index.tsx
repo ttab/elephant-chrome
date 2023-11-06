@@ -92,7 +92,7 @@ export const Editor = (props: ViewProps): JSX.Element => {
   return (
     <>
       <ViewHeader title='Editor' />
-      <main className="min-w-[800px] max-w-[900px]">
+      <main className="min-w-[70vw]">
         <div className="h-full relative">
           {views[connectionStatus === WebSocketStatus.Connected ? 0 : 1]}
         </div>
