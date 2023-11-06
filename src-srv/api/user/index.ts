@@ -20,19 +20,18 @@ export const POST: RouteHandler = async (req, context) => {
 
   try {
     const session = await repository.auth({ user, password, sub, permissions })
-    if (!setAccessToken(session, res)) {
-      return {
-        statusCode: 401,
-        statusMessage: 'Not authorized'
-      }
-    }
+    const jwt = decodeJwt(session.access_token)
+    setCookies(session, res)
 
     return {
-      payload: session
+      payload: {
+        ...jwt,
+        access_token: session.access_token
+      }
     }
   } catch (ex) {
     return {
-      statusCode: 500,
+      statusCode: 401,
       statusMessage: ex.message || 'Unexpected error when authenticating'
     }
   }
@@ -42,7 +41,6 @@ export const GET: RouteHandler = async (req, { repository, res }) => {
   const accessToken: string = req.cookies['ele-access_token']
   const refreshToken: string = req.cookies['ele-refresh_token']
 
-  // No token equals Unauthorized
   if (accessToken === undefined) {
     return {
       statusCode: 401,
@@ -52,60 +50,42 @@ export const GET: RouteHandler = async (req, { repository, res }) => {
 
   try {
     await repository.validateToken(accessToken)
-    const session = decodeJwt(accessToken)
-
-    return {
-      payload: {
-        ...session,
-        accessToken,
-        refreshToken
-      }
-    }
-  } catch (ex) {
-    console.log(ex)
-  }
-
-  try {
-    console.info('Refreshing token...')
-
+    const jwt = decodeJwt(accessToken)
     const session = await repository.refresh({ refreshToken })
-    if (!setAccessToken(session, res)) {
-      return {
-        statusCode: 401,
-        statusMessage: 'Not authorized'
-      }
-    }
+    setCookies(session, res)
+
+    jwt.exp = new Date().getTime() + session.expires_in
+    jwt.accessToken = session.access_token
 
     return {
       payload: {
-        ...session,
-        accessToken: session.access_token,
-        refreshToken: session.refresh_token
+        ...jwt,
+        access_token: session.access_token
       }
     }
   } catch (ex) {
-    console.error('Failed refreshing token')
-    throw (ex)
+    return {
+      statusCode: 401,
+      statusMessage: 'Not authorized'
+    }
   }
 }
 
+function setCookies(session: Session, res: Response): void {
+  res.cookie(
+    'ele-access_token',
+    session.access_token,
+    {
+      maxAge: session.expires_in * 1000
+    }
+  )
 
-export function setAccessToken(session: Session, res: Response): boolean {
-  const {
-    access_token: accessToken,
-    expires_in: expiresIn,
-    refresh_token: refreshToken
-  } = session
-
-  if (!accessToken) {
-    return false
-  }
-
-  res.cookie('ele-access_token', accessToken, { maxAge: expiresIn * 1000 })
-  res.cookie('ele-refresh_token', refreshToken, {
-    httpOnly: true,
-    secure: true
-  })
-
-  return true
+  res.cookie(
+    'ele-refresh_token',
+    session.refresh_token,
+    {
+      httpOnly: true,
+      secure: true
+    }
+  )
 }

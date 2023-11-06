@@ -1,20 +1,24 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import { App } from './App.tsx'
-import { NavigationProvider, ThemeProvider, ApiProvider } from '@/contexts'
+import { NavigationProvider, ThemeProvider, ApiProvider, SessionProvider } from '@/contexts'
 
-const apiProtocol = import.meta.env.VITE_PROTOCOL
-const apiHost = import.meta.env.VITE_API_HOST
-const apiPort = import.meta.env.VITE_API_PORT
+const protocol = import.meta.env.VITE_PROTOCOL
+const host = import.meta.env.VITE_API_HOST
+const port = import.meta.env.VITE_API_PORT
+const apiUrl = `${protocol}://${host}:${port}/api`
+const websocketUrl = `ws://${host}:${port}/ws`
 
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
-  <React.StrictMode>
-    < ThemeProvider defaultTheme='light' storageKey='ele-ui-theme' >
-      <ApiProvider protocol={apiProtocol} host={apiHost} port={apiPort}>
-        <NavigationProvider>
-          <App />
-        </NavigationProvider>
-      </ApiProvider>
-    </ThemeProvider >
-  </React.StrictMode>
+  <SessionProvider endpoint={`${apiUrl}/user`}>
+    <ApiProvider apiUrl={new URL(apiUrl)} websocketUrl={new URL(websocketUrl)}>
+      <React.StrictMode>
+        < ThemeProvider defaultTheme='light' storageKey='ele-ui-theme' >
+          <NavigationProvider>
+            <App />
+          </NavigationProvider>
+        </ThemeProvider >
+      </React.StrictMode>
+    </ApiProvider>
+  </SessionProvider>
 )

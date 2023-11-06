@@ -1,6 +1,6 @@
 import { NavigationProvider } from '@/contexts'
 import { render, screen } from '../setupTests'
-import App from '@/App'
+import { App } from '@/App'
 
 describe('Use NavigationProvider', () => {
   it('should render view from registry', () => {
