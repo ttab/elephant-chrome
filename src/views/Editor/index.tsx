@@ -12,9 +12,9 @@ import { useSession } from '@/hooks'
 
 export const Editor = (props: Record<string, string>): JSX.Element => {
   const [jwt] = useSession()
-  const { websocketUrl, hocuspocusWebsocket } = useApi()
+  const { websocketUrl } = useApi()
   const [connectionStatus, setConnectionStatus] = useState<WebSocketStatus>(WebSocketStatus.Disconnected)
-  const [documentId, setDocumentId] = useState('7de322ac-a9b2-45d9-8a0f-f1ac27f9cbfe')
+  const [documentId] = useState('7de322ac-a9b2-45d9-8a0f-f1ac27f9cbfe')
   const { index: viewIndex } = props
 
   const provider = useMemo(() => {
@@ -49,6 +49,9 @@ export const Editor = (props: Record<string, string>): JSX.Element => {
           console.warn('Lost connection')
           setConnectionStatus(WebSocketStatus.Disconnected)
         }
+      },
+      onAwarenessUpdate: ({ states }) => {
+        console.log(states)
       }
     })
   }, [documentId])
@@ -75,6 +78,12 @@ export const Editor = (props: Record<string, string>): JSX.Element => {
     }
   })
 
+  const views = [
+    // @ts-expect-error FIXME: yjsEditor needs more refinement
+    <TextbitEditor yjsEditor={editor} />,
+    <strong className="animate-pulse">Not connected</strong>
+  ]
+
   return (
     <div className="p-4">
       <header>
@@ -83,10 +92,10 @@ export const Editor = (props: Record<string, string>): JSX.Element => {
 
       <main className="mt-5 p-2 border shadow h-[800px]">
         <div className="h-full relative">
-          {connectionStatus === WebSocketStatus.Connected && editor
-            ? (<TextbitEditor yjsEditor={editor} />) // FIXME: Types...
-            : <strong className="animate-pulse">Not connected</strong>
-          }
+          {views[connectionStatus === WebSocketStatus.Connected ? 0 : 1]}
+          {/*
+          {connectionStatus === WebSocketStatus.Connected && editor ? (<TextbitEditor yjsEditor={editor} />) : <strong className="animate-pulse">Not connected</strong>}
+          */}
         </div>
       </main>
     </div>

@@ -42,7 +42,6 @@ export const SessionProvider = ({ children, endpoint }: {
   const value: SessionProviderState = [
     jwt,
     (jwt: JWTPayload): void => {
-      console.log('Setting JWT', jwt)
       setJwt(jwt)
     }
   ]
