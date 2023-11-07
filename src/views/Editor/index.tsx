@@ -53,10 +53,11 @@ export const Editor = (props: ViewProps): JSX.Element => {
           console.warn('Lost connection', viewId)
           setConnectionStatus(WebSocketStatus.Disconnected)
         }
-      },
-      onAwarenessUpdate: ({ states }) => {
-        console.log(states)
       }
+      // FIXME: This is needed later when we want to show info on active users in views
+      // onAwarenessUpdate: ({ states }) => {
+      //   console.log(states)
+      // }
     })
   }, [documentId, hocuspocusWebsocket, jwt?.accessToken, viewId])
 
