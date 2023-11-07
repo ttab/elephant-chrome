@@ -1,4 +1,4 @@
-import * as React from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import {
   Pencil,
   GanttChart,
@@ -14,15 +14,16 @@ import {
   CommandList,
   CommandSeparator
 } from '@ttab/elephant-ui'
+
 import { handleLink } from '../Link/link'
 import { useNavigation } from '@/hooks'
 import { v4 as uuid } from 'uuid'
 
 export function CommandMenu(): JSX.Element {
   const { state, dispatch } = useNavigation()
-  const [open, setOpen] = React.useState(false)
+  const [open, setOpen] = useState(false)
 
-  React.useEffect(() => {
+  useEffect(() => {
     const down = (e: KeyboardEvent): void => {
       if (e.key === 'k' && (e.metaKey || e.ctrlKey)) {
         e.preventDefault()
@@ -34,7 +35,7 @@ export function CommandMenu(): JSX.Element {
     return () => document.removeEventListener('keydown', down)
   }, [])
 
-  const runCommand = React.useCallback((command: () => unknown) => {
+  const runCommand = useCallback((command: () => unknown) => {
     setOpen(false)
     command()
   }, [])
