@@ -26,7 +26,7 @@
     "@protobuf-ts/twirp-transport": "^2.9.1",
     "@slate-yjs/core": "^1.0.2",
     "@ttab/elephant-ui": "^0.0.8",
-    "@ttab/textbit": "^0.1.0",
+    "@ttab/textbit": "^0.2.2",
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
     "dotenv": "^16.3.1",
@@ -46,10 +46,6 @@
     "yjs": "^13.6.8"
   },
   "devDependencies": {
-    "@fontsource/inter": "^5.0.15",
-    "@fontsource/roboto": "^5.0.8",
-    "@fontsource/source-serif-pro": "^5.0.8",
-    "@slate-yjs/react": "^1.1.0",
     "@testing-library/jest-dom": "^6.1.3",
     "@testing-library/react": "^14.0.0",
     "@types/cookie-parser": "^1.4.4",
