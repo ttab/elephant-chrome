@@ -46,6 +46,10 @@
     "yjs": "^13.6.8"
   },
   "devDependencies": {
+    "@fontsource/inter": "^5.0.15",
+    "@fontsource/roboto": "^5.0.8",
+    "@fontsource/source-serif-pro": "^5.0.8",
+    "@slate-yjs/react": "^1.1.0",
     "@testing-library/jest-dom": "^6.1.3",
     "@testing-library/react": "^14.0.0",
     "@types/cookie-parser": "^1.4.4",
