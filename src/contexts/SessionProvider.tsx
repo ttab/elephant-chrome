@@ -1,27 +1,44 @@
 import { createContext, useEffect, useState } from 'react'
 import { type JWT } from '@/types'
 
-export type SessionProviderState = [
-  JWT | undefined,
-  (jwt: JWT) => void
-]
+// export type SessionProviderState = [
+//   JWT | undefined,
+//   (jwt: JWT) => void
+// ]
 
-export const SessionProviderContext = createContext<SessionProviderState>([
-  undefined,
-  () => { }
-])
+export interface SessionProviderState {
+  session?: {
+    jwtToken: string
+    jwt: JWT
+  }
+  setJwtToken: (token: string) => void
+}
+
+export const SessionProviderContext = createContext<SessionProviderState>({
+  session: undefined,
+  setJwtToken: () => { }
+})
 
 export const SessionProvider = ({ children, endpoint }: {
   children: React.ReactNode
   endpoint: string
 }): JSX.Element => {
-  const [jwt, setJwt] = useState<JWT | undefined>(undefined)
+  const [session, setSession] = useState<{ jwtToken: string, jwt: JWT } | undefined>(undefined)
 
   useEffect(() => {
     const fetchToken = async (): Promise<void> => {
-      setJwt(await fetchOrRefreshToken(endpoint))
+      const result = await fetchOrRefreshToken(endpoint)
+      if (result) {
+        setSession({
+          jwtToken: result,
+          jwt: JSON.parse(result)
+        })
+      } else {
+        setSession(undefined)
+      }
     }
 
+    const { jwt = undefined } = session || {}
     if (!jwt?.exp) {
       void fetchToken()
       return
@@ -30,19 +47,22 @@ export const SessionProvider = ({ children, endpoint }: {
     // FIXME: It seems server jwt.exp is set to current time, not a future time
     const timeoutRef = setTimeout(() => {
       void fetchToken()
-    }, 60000 * 5) // Set timeout to refresh token when 9 mins have passed (should use jwt.exp)
+    }, 60000 * 5) // Set timeout to refresh token when N mins have passed (should use jwt.exp)
 
     return () => {
       clearTimeout(timeoutRef)
     }
-  }, [jwt, endpoint])
+  }, [session, endpoint])
 
-  const value: SessionProviderState = [
-    jwt,
-    (jwt: JWT): void => {
-      setJwt(jwt)
+  const value: SessionProviderState = {
+    session,
+    setJwtToken: jwtToken => {
+      setSession(!jwtToken
+        ? undefined
+        : { jwtToken, jwt: JSON.parse(jwtToken) }
+      )
     }
-  ]
+  }
 
   return (
     <SessionProviderContext.Provider value={value}>
@@ -52,7 +72,7 @@ export const SessionProvider = ({ children, endpoint }: {
 }
 
 
-async function fetchOrRefreshToken(endpoint: string): Promise<JWT | undefined> {
+async function fetchOrRefreshToken(endpoint: string): Promise<string | undefined> {
   try {
     const response = await fetch(`${endpoint}`, {
       credentials: 'include'
@@ -67,8 +87,7 @@ async function fetchOrRefreshToken(endpoint: string): Promise<JWT | undefined> {
       return undefined
     }
 
-    const jwt = await response.json() || undefined
-    return jwt
+    return await response.text()
   } catch (error) {
     console.error('Unable to retrieve session', error)
     return undefined

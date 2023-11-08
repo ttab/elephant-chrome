@@ -1,7 +1,6 @@
 import { useState } from 'react'
 import { useApi } from '@/hooks/useApi'
 import { useSession } from '@/hooks'
-import { type JWT } from '@/types'
 
 import { Input, Button } from '@ttab/elephant-ui'
 
@@ -9,7 +8,7 @@ export const Login = (): JSX.Element => {
   const { apiUrl } = useApi()
   const [user, setUser] = useState<string>('')
   const [password, setPassword] = useState<string>('')
-  const [, setJwt] = useSession()
+  const { setJwtToken } = useSession()
   const [failed, setFailed] = useState<boolean>(false)
 
   return (
@@ -38,9 +37,9 @@ export const Login = (): JSX.Element => {
               }
 
               auth(apiUrl.href, user, password)
-                .then(async ([status, jwt]) => {
-                  if (status === 200 && jwt) {
-                    setJwt(jwt)
+                .then(async ([status, jwtToken]) => {
+                  if (status === 200 && jwtToken) {
+                    setJwtToken(jwtToken)
                   } else {
                     setFailed(true)
                   }
@@ -64,7 +63,7 @@ export const Login = (): JSX.Element => {
 }
 
 
-async function auth(api: string, user: string, password: string): Promise<[number, JWT | undefined]> {
+async function auth(api: string, user: string, password: string): Promise<[number, string | undefined]> {
   const response = await fetch(`${api}/user`, {
     method: 'post',
     mode: 'cors',
@@ -79,7 +78,7 @@ async function auth(api: string, user: string, password: string): Promise<[numbe
   })
 
   if (response.status === 200) {
-    return [200, await response.json()]
+    return [200, await response.text()]
   }
 
   return [response.status, undefined]

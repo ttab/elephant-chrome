@@ -30,7 +30,7 @@ export const Menu = (): JSX.Element => {
             <Link to='Init'>Start</Link>
           </SheetClose>
           <Link to='Editor'>Editor</Link>
-          <Link to='Planning'>Planning</Link>
+          <Link to='PlanningOverview'>Planning overview</Link>
         </div>
         <SheetFooter>
         </SheetFooter>
