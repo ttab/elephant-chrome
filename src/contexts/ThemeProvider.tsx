@@ -29,12 +29,13 @@ export const ThemeProvider = ({
 
     if (theme === 'system') {
       const systemTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
-
-      root.classList.add(systemTheme)
+      setThemeOnDocument(root, systemTheme)
+      // root.classList.add(systemTheme)
       return
     }
 
-    root.classList.add(theme)
+    // root.classList.add(theme)
+    setThemeOnDocument(root, theme)
   }, [theme])
 
   const value = {
@@ -50,6 +51,20 @@ export const ThemeProvider = ({
       {children}
     </ThemeProviderContext.Provider>
   )
+}
+
+/**
+ * Set theme class and data attributes on document root element for both elephant-chrome and textbit.
+ *
+ * @param root
+ * @param theme
+ */
+function setThemeOnDocument(root: HTMLElement, theme: string): void {
+  // Set theme for elephant-chrome
+  root.classList.add(theme)
+
+  // Make textbit aware of chosen theme
+  root.setAttribute('data-theme', theme)
 }
 
 export const ThemeProviderContext = createContext<ThemeProviderState>(initialState)

@@ -1,6 +1,7 @@
 import { useApi } from '@/hooks/useApi'
 import { useEffect, useMemo, useState } from 'react'
-import { withYjs, withYHistory, YjsEditor } from '@slate-yjs/core'
+import { ViewHeader } from '@/components'
+import { withYjs, withYHistory, YjsEditor, withCursors } from '@slate-yjs/core'
 import * as Y from 'yjs'
 import { createEditor } from 'slate'
 
@@ -53,7 +54,7 @@ export const Editor = (props: ViewProps): JSX.Element => {
           setConnectionStatus(WebSocketStatus.Disconnected)
         }
       }
-      // TODO: Implement awareness
+      // FIXME: This is needed later when we want to show info on active users in views
       // onAwarenessUpdate: ({ states }) => {
       //   console.log(states)
       // }
@@ -62,17 +63,23 @@ export const Editor = (props: ViewProps): JSX.Element => {
 
   // Create YjsEditor for Textbit to use
   const editor = useMemo(() => {
-    if (!provider) {
+    if (!provider?.awareness) {
       return
     }
 
     return withYHistory(
-      withYjs(
-        createEditor(),
-        provider.document.get('content', Y.XmlText) as Y.XmlText // sharedType as Y.XmlText
+      withCursors(
+        withYjs(
+          createEditor(),
+          provider.document.get('content', Y.XmlText) as Y.XmlText
+        ),
+        provider?.awareness,
+        {
+          data: cursorData(jwt?.sub_name || '')
+        }
       )
     )
-  }, [provider])
+  }, [provider, jwt?.sub_name])
 
   // Connect Yjs to editor once
   useEffect(() => {
@@ -84,26 +91,59 @@ export const Editor = (props: ViewProps): JSX.Element => {
 
   const views = [
     // @ts-expect-error FIXME: yjsEditor needs more refinement
-    <TextbitEditor yjsEditor={editor} />,
+    < TextbitEditor yjsEditor={editor} />,
     <strong className="animate-pulse">Not connected</strong>
   ]
 
   return (
-    <div className="p-4 w-[800px]">
-      <header>
-        <h1 className="strong text-xl font-bold">Editor header</h1>
-      </header>
-
-      <main className="mt-5 p-2">
+    <>
+      <ViewHeader title='Editor' />
+      <main className="min-w-[70vw]">
         <div className="h-full relative">
           {views[connectionStatus === WebSocketStatus.Connected ? 0 : 1]}
-          {/*
-          {connectionStatus === WebSocketStatus.Connected && editor ? (<TextbitEditor yjsEditor={editor} />) : <strong className="animate-pulse">Not connected</strong>}
-          */}
         </div>
       </main>
-    </div>
+    </>
   )
+}
+
+function cursorData(name: string): Record<string, unknown> {
+  const colors = [
+    'aquamarine',
+    'beige',
+    'blueviolet',
+    'brown',
+    'cadetblue',
+    'burlywood',
+    'chocoalate',
+    'coral',
+    'crimson',
+    'hotpink',
+
+    'lightcoral',
+    'lightpink',
+    'lightgreen',
+    'lightgray',
+    'lightcyan',
+    'lightblue',
+    'lightsalmon',
+    'lightseagreen',
+    'lightsteelblue',
+    'lemonchiffon',
+    'palegreen',
+    'tomato'
+  ]
+
+  const [first, last] = name.split(' ')
+  const f1 = first.substring(0, 1)
+  const l1 = last.substring(0, 1)
+
+  return {
+    color: colors[Math.floor(Math.random() * colors.length)],
+    initials: `${f1}${l1}`,
+    name,
+    avatar: ''
+  }
 }
 
 Editor.displayName = 'Editor'
