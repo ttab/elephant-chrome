@@ -25,9 +25,9 @@ export const Avatar = (): JSX.Element => {
           <p className="text-sm text-muted-foreground">
             {jwt?.sub_name}
           </p>
-            {jwt?.units.map((unit: string) => {
+            {jwt?.units.map((unit: string, index: number) => {
               return (
-                <p className="text-sm text-muted-foreground">
+                <p key={index} className="text-sm text-muted-foreground">
                   {unit}
                 </p>
               )

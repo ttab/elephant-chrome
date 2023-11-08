@@ -8,6 +8,9 @@ export function yjsStateAsUpdate(content: TextbitElement[], data: Y.Doc): Uint8A
   const insertContentDelta = slateNodesToInsertDelta(content)
   const sharedContentRoot = data.get('content', Y.XmlText) as Y.XmlText
   sharedContentRoot.applyDelta(insertContentDelta)
+
+  // FIXME: How to avoid any?
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   data.share.set('content', sharedContentRoot as Y.AbstractType<any>)
 
   return Y.encodeStateAsUpdate(data)
@@ -59,6 +62,9 @@ export function yDocToNewsDoc(document: Y.Doc): GetDocumentResponse {
   // revert content
   const sharedRoot = document.get('content', Y.XmlText) as Y.XmlText
   const content = yTextToSlateElement(sharedRoot).children
+
+  // FIXME: How to avoid any?
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   json.document.content = revertNewsdoc(content as any)
   json.version = BigInt(json.version)
 
