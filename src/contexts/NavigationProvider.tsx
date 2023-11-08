@@ -75,7 +75,7 @@ function navigationReducer(state: NavigationState, action: NavigationAction): Na
         ...state,
         content: [
           ...state.content,
-          <NavigationWrapper key={action.props.id}>
+          <NavigationWrapper key={action.props.id} id={action.props.id}>
             <action.component {...action.props} />
           </NavigationWrapper>
 
@@ -102,12 +102,25 @@ function navigationReducer(state: NavigationState, action: NavigationAction): Na
           const Component = state.registry.get(item.name)?.component
 
           return (
-            <NavigationWrapper key={item.id}>
+            <NavigationWrapper key={item.id} id={item.id}>
               <Component {...{ ...item, index }} />
             </NavigationWrapper>
           )
         })
       }
+
+    case NavigationActionType.FOCUS:
+      if (action.id === undefined) {
+        throw new Error('Id is undefined')
+      }
+
+      return {
+        ...state,
+        focus: action.id === state.focus
+          ? null
+          : action.id
+      }
+
 
     default:
       throw new Error(`Unhandled action type: ${action.type as string}`)

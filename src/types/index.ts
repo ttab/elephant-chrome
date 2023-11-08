@@ -4,7 +4,8 @@ import { type JWTPayload } from 'jose'
 export enum NavigationActionType {
   ADD = 'add',
   REMOVE = 'remove',
-  SET = 'setContent'
+  SET = 'set',
+  FOCUS = 'focus'
 }
 
 export type View = keyof typeof views
@@ -33,6 +34,7 @@ export interface Registry {
 
 export interface NavigationState {
   registry: Registry
+  focus: string | null
   content: JSX.Element[]
 }
 
@@ -51,7 +53,7 @@ export interface HistoryState {
 
 export interface ViewProps {
   id: string
-  name: string
+  name?: string
   index?: number
 }
 
