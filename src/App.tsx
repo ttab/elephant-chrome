@@ -4,12 +4,12 @@ import { Login } from '@/views/auth/Login'
 import { CommandMenu } from '@/components/CommandMenu'
 
 export const App = (): JSX.Element => {
-  const { session } = useSession()
+  const { jwt } = useSession()
   const { state } = useNavigation()
 
   return (
     <div className='relative flex h-screen flex-col bg-white dark:bg-black'>
-      {!session?.jwt
+      {!jwt
         ? <Login />
         : <>
           <div className='absolute top-0 right-0 w-28 h-10 p-2 z-10 justify-end flex'>

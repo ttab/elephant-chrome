@@ -8,7 +8,7 @@ export const Login = (): JSX.Element => {
   const { apiUrl } = useApi()
   const [user, setUser] = useState<string>('')
   const [password, setPassword] = useState<string>('')
-  const { setJwtToken } = useSession()
+  const { setJwt } = useSession()
   const [failed, setFailed] = useState<boolean>(false)
 
   return (
@@ -39,7 +39,7 @@ export const Login = (): JSX.Element => {
               auth(apiUrl.href, user, password)
                 .then(async ([status, jwtToken]) => {
                   if (status === 200 && jwtToken) {
-                    setJwtToken(jwtToken)
+                    setJwt(jwtToken)
                   } else {
                     setFailed(true)
                   }

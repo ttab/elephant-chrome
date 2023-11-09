@@ -1,28 +1,16 @@
 import { type JWT } from '@/types'
+import { searchIndex, type SearchIndexResponse } from '../index/search'
 
-const host = 'repository.stage.tt.se'
-const port = 443
-const url = `https://${host}:${port}`
-
-export const search = async (jwt: JWT): Promise<unknown> => {
-  const headers = {
-    Authorization: `Bearer ${JSON.stringify(jwt)}`,
-    'Content-Type': 'application/json'
-  }
-
-  const indexName = 'core_planning_item'
-
-  const result = await fetch(`${url}/${indexName}/_search`, {
-    method: 'POST',
-    mode: 'no-cors',
-    headers,
-    body: JSON.stringify(query)
-  })
-
-  console.log(JSON.stringify(result, null, 2))
-  return result
+export const search = async (endpoint: URL, jwt: JWT): Promise<SearchIndexResponse> => {
+  return await searchIndex(
+    query,
+    {
+      index: 'core_planning_item',
+      endpoint,
+      jwt
+    }
+  )
 }
-
 
 const query = {
   query: {
