@@ -28,7 +28,6 @@ export function initDoc(data: GetDocumentResponse, doc: Y.Doc): Uint8Array {
   const origMap = doc.getMap('original')
   const result = newsDocToYmap(data, origMap)
 
-  // FIXME: How to avoid any?
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   doc.share.set('original', result as unknown as Y.AbstractType<Y.YEvent<any>>)
 
