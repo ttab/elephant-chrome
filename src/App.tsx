@@ -17,7 +17,7 @@ export const App = (): JSX.Element => {
                 <CommandMenu />
                 <AppHeader />
               </div>
-              <div className='flex flex-1 gap-4 p-2 h-max'>
+              <div className='flex flex-1 divide-x-2 h-max'>
                 {state.content}
               </div>
             </>
