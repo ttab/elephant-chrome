@@ -29,8 +29,12 @@ export const Menu = (): JSX.Element => {
           <SheetClose asChild>
             <Link to='Init'>Start</Link>
           </SheetClose>
-          <Link to='Editor'>Editor</Link>
-          <Link to='Planning'>Planning</Link>
+          <SheetClose asChild>
+            <Link to='Editor'>Editor</Link>
+          </SheetClose>
+          <SheetClose asChild>
+            <Link to='Planning'>Planning</Link>
+          </SheetClose>
         </div>
         <SheetFooter>
         </SheetFooter>
