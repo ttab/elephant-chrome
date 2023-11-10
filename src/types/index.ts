@@ -69,4 +69,5 @@ export interface JWT extends JWTPayload {
   sub_name: string
   scope: string
   units: string[]
+  access_token: string
 }

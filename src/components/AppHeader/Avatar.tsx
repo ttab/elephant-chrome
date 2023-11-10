@@ -8,7 +8,7 @@ import {
 } from '@ttab/elephant-ui'
 
 export const Avatar = (): JSX.Element => {
-  const [jwt] = useSession()
+  const { jwt } = useSession()
 
   return (
     <Popover>
@@ -25,13 +25,13 @@ export const Avatar = (): JSX.Element => {
           <p className="text-sm text-muted-foreground">
             {jwt?.sub_name}
           </p>
-            {jwt?.units.map((unit: string, index: number) => {
-              return (
-                <p key={index} className="text-sm text-muted-foreground">
-                  {unit}
-                </p>
-              )
-            })}
+          {jwt?.units.map((unit: string, index: number) => {
+            return (
+              <p key={index} className="text-sm text-muted-foreground">
+                {unit}
+              </p>
+            )
+          })}
           <p className="text-sm text-muted-foreground">
             {jwt?.scope}
           </p>

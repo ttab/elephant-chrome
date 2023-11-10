@@ -13,6 +13,9 @@ JWKS_URL="https://.../.well-known/jwks.json"
 REDIS_HOST="localhost"
 REDIS_PORT=6379
 
+# Opensearch index
+VITE_INDEX_URL="https://...se:443"
+
 # Server and client side env
 VITE_PROTOCOL=http
 VITE_CLIENT_HOST=localhost
