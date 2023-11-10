@@ -50,16 +50,6 @@ export function CommandMenu(): JSX.Element {
             <CommandItem
               onSelect={() => runCommand(() => handleLink({
                 dispatch,
-                linkItem: state.registry.get('Editor'),
-                id: uuid()
-              }))}
-            >
-              <Pencil className="mr-2 h-4 w-4" />
-              <span>Editor</span>
-            </CommandItem>
-            <CommandItem
-              onSelect={() => runCommand(() => handleLink({
-                dispatch,
                 linkItem: state.registry.get('Planning'),
                 id: uuid()
               }))}
