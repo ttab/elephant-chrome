@@ -16,15 +16,9 @@ interface SearchIndexHit {
 interface SearchIndexResult {
   ok: true
   total: number
-  next?: {
-    from: number
-    size: number
-  }
-  prev?: {
-    from: number
-    size: number
-  }
+  page: number
   pages: number
+  pageSize: number
   hits: SearchIndexHit[]
 }
 
@@ -46,13 +40,20 @@ export type SearchIndexResponse = SearchIndexError | SearchIndexResult
  * @param options SearchIndexOptions
  * @returns Promise<SearchIndexResponse>
  */
-export async function searchIndex(search: unknown, options: SearchIndexOptions): Promise<SearchIndexResponse> {
+export async function searchIndex(search: object, options: SearchIndexOptions, skip?: number, size?: number): Promise<SearchIndexResponse> {
   const endpoint = new URL(`${options.index}/_search`, options.endpoint)
+  const pageSize = typeof size === 'number' && size > 0 && size < 500 ? size : 100
+  const skipPages = typeof skip === 'number' && skip > -1 ? skip : 0
+  const from = skipPages * pageSize
 
   const response = await fetch(endpoint.href, {
     method: 'POST',
     headers: headers(options.jwt),
-    body: JSON.stringify(search)
+    body: JSON.stringify({
+      from,
+      size: pageSize,
+      ...search
+    })
   })
 
   if (response.status !== 200) {
@@ -63,12 +64,13 @@ export async function searchIndex(search: unknown, options: SearchIndexOptions):
     const body = await response.json()
     const total = body?.hits?.total?.value || 0
     const hits = body?.hits?.hits?.length || 0
-    const pages = hits > 0 ? Math.ceil(total / hits) : 0
 
     return {
       ok: true,
       total: body?.hits?.total?.value || 0,
-      pages,
+      page: skipPages + 1,
+      pages: hits > 0 ? Math.ceil(total / pageSize) : 0,
+      pageSize,
       hits: hits ? body.hits.hits : []
     }
   } catch (ex: unknown) {

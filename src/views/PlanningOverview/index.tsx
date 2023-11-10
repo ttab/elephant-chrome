@@ -16,7 +16,14 @@ export const PlanningOverview = (props: ViewProps): JSX.Element => {
       return
     }
 
-    Planning.search(indexUrl, jwt)
+    const args = {
+      size: 30,
+      where: {
+        startDate: '2023-10-01T00:00:00Z' // FIXME: Convert to non hardcoded when working more on this view
+      }
+    }
+
+    Planning.search(indexUrl, jwt, args)
       .then(result => {
         setResult(result)
       })
@@ -34,13 +41,16 @@ export const PlanningOverview = (props: ViewProps): JSX.Element => {
         {result?.ok === true &&
           <div className="bg-gray-100">
             <div className="flex flex-col gap-4 p-4 border">
-              {result.hits.map(hit => {
-                return <div className="flex flex-col gap-1 bg-white p-3 shadow-md rounded-md" key={hit._id}>
+              {result.hits.map(({ _id, _source }) => {
+                return <div className="flex flex-col gap-1 bg-white p-3 shadow-md rounded-md" key={_id}>
                   <div className="font-bold">
-                    {hit._source['document.meta.core_assignment.title']}
+                    {_source['document.meta.core_assignment.title']}
                   </div>
                   <div className="text-xs opacity-50">
-                    {hit._id}
+                    {_id}
+                  </div>
+                  <div className="text-sm">
+                    {formatDate(_source['document.meta.core_assignment.data.start'][0])}
                   </div>
                 </div>
               })}
@@ -49,7 +59,7 @@ export const PlanningOverview = (props: ViewProps): JSX.Element => {
         }
 
         <pre className="mt-8 p-8 bg-slate-300 whitespace-pre-wrap text-xs">
-          {JSON.stringify(result?.hits, null, 2)}
+          {JSON.stringify(result, null, 2)}
         </pre>
 
       </main>
@@ -58,3 +68,19 @@ export const PlanningOverview = (props: ViewProps): JSX.Element => {
 }
 
 PlanningOverview.displayName = 'PlanningOverview'
+
+// TODO: Breakout to lib that has awareness of locales etc...
+function formatDate(date: Date | string): string {
+  const dt = typeof date === 'string' ? new Date(date) : date
+
+  // Format the date in Swedish locale
+  return dt.toLocaleDateString(
+    'sv-SE',
+    {
+      year: 'numeric',
+      month: 'short',
+      day: 'numeric',
+      weekday: 'short'
+    }
+  )
+}
