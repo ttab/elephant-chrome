@@ -6,6 +6,13 @@ interface SearchIndexOptions {
   endpoint: URL
 }
 
+interface SearchIndexHit {
+  _index: string
+  _id: string
+  _score: null | number
+  _source: Record<string, string[]>
+}
+
 interface SearchIndexResult {
   ok: true
   total: number
@@ -18,7 +25,7 @@ interface SearchIndexResult {
     size: number
   }
   pages: number
-  items: unknown[]
+  hits: SearchIndexHit[]
 }
 
 interface SearchIndexError {
@@ -27,7 +34,7 @@ interface SearchIndexError {
   errorMessage: string
   total: 0
   pages: 0
-  items: never[]
+  hits: never[]
 }
 
 export type SearchIndexResponse = SearchIndexError | SearchIndexResult
@@ -62,7 +69,7 @@ export async function searchIndex(search: unknown, options: SearchIndexOptions):
       ok: true,
       total: body?.hits?.total?.value || 0,
       pages,
-      items: hits ? body.hits.hits : []
+      hits: hits ? body.hits.hits : []
     }
   } catch (ex: unknown) {
     return responseError(0, ex instanceof Error && ex.message ? ex.message : 'Error message not defined')
@@ -85,6 +92,6 @@ function responseError(errorCode: number, errorMessage: string): SearchIndexErro
     errorMessage,
     total: 0,
     pages: 0,
-    items: []
+    hits: []
   }
 }
