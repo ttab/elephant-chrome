@@ -13,13 +13,13 @@ export const SessionProviderContext = createContext<SessionProviderState>({
 
 export const SessionProvider = ({ children, endpoint }: {
   children: React.ReactNode
-  endpoint: string
+  endpoint: URL
 }): JSX.Element => {
   const [jwt, setJwt] = useState<JWT | undefined>(undefined)
 
   useEffect(() => {
     const fetchToken = async (): Promise<void> => {
-      const result = await fetchOrRefreshToken(endpoint)
+      const result = await fetchOrRefreshToken(endpoint.href)
 
       if (result) {
         setJwt(JSON.parse(result))
