@@ -80,7 +80,7 @@ export async function searchIndex(search: unknown, options: SearchIndexOptions):
 function headers(jwt: JWT): Record<string, string> {
   return {
     // FIXME: Remove "as string" when JWT/interface has been updated
-    Authorization: `Bearer ${jwt.access_token as string}`,
+    Authorization: `Bearer ${jwt.access_token}`,
     'Content-Type': 'application/json'
   }
 }

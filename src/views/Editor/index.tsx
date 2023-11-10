@@ -35,7 +35,7 @@ export const Editor = (props: ViewProps): JSX.Element => {
     return new HocuspocusProvider({
       websocketProvider: hocuspocusWebsocket,
       name: documentId,
-      token: jwt.access_token as string,
+      token: jwt.access_token,
       onAuthenticationFailed: ({ reason }) => {
         console.warn(reason)
       },
@@ -97,7 +97,7 @@ export const Editor = (props: ViewProps): JSX.Element => {
 
   return (
     <>
-      <ViewHeader title='Editor' { ...props} />
+      <ViewHeader title='Editor' {...props} />
       <main className="min-w-[50vw]">
         <div className="h-full relative">
           {views[connectionStatus === WebSocketStatus.Connected ? 0 : 1]}
