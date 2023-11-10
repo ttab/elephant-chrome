@@ -27,6 +27,8 @@ export function initDoc(data: GetDocumentResponse, doc: Y.Doc): Uint8Array {
   // TODO:Should set `meta` and `links` once a slate format i set
   const origMap = doc.getMap('original')
   const result = newsDocToYmap(data, origMap)
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   doc.share.set('original', result as unknown as Y.AbstractType<Y.YEvent<any>>)
 
   // Format and add content as slate editable
