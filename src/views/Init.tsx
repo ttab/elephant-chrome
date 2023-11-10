@@ -1,9 +1,10 @@
 import { ViewHeader } from '@/components'
+import { type ViewProps } from '@/types'
 
-export const Init = (): JSX.Element => {
+export const Init = (props: ViewProps): JSX.Element => {
   return (
     <>
-      <ViewHeader title='Init' />
+      <ViewHeader title='Init' { ...props } />
       <main>
         <p>
           Initial page

@@ -1,9 +1,10 @@
 import { ViewHeader } from '@/components'
+import { type ViewProps } from '@/types'
 
-export const Planning = (): JSX.Element => {
+export const Planning = (props: ViewProps): JSX.Element => {
   return (
     <>
-      <ViewHeader title='Planning' />
+      <ViewHeader title='Planning' { ...props} />
       <main>
         <p>
           Planning overview content

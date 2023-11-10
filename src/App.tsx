@@ -13,11 +13,11 @@ export const App = (): JSX.Element => {
         ? <Login />
         : (
             <>
-              <div className='absolute top-0 right-0 w-28 h-10 p-2 z-10 justify-end flex'>
+              <div className='absolute top-0 right-0 h-10 p-2 z-10 justify-end flex'>
                 <CommandMenu />
                 <AppHeader />
               </div>
-              <div className='flex flex-1 gap-4 p-2 h-max'>
+              <div className='flex flex-1 divide-x-2 h-max'>
                 {state.content}
               </div>
             </>
