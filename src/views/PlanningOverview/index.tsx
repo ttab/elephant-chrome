@@ -1,3 +1,4 @@
+import { type ViewProps } from '@/types'
 import { ViewHeader } from '@/components'
 import { useSession } from '@/hooks'
 import { useEffect, useState } from 'react'
@@ -5,7 +6,7 @@ import { Planning } from '@/lib/planning'
 import { useApi } from '@/hooks/useApi'
 import { type SearchIndexResponse } from '@/lib/index/search'
 
-export const PlanningOverview = (): JSX.Element => {
+export const PlanningOverview = (props: ViewProps): JSX.Element => {
   const { jwt } = useSession()
   const { indexUrl } = useApi()
   const [result, setResult] = useState<SearchIndexResponse | undefined>()
@@ -26,7 +27,7 @@ export const PlanningOverview = (): JSX.Element => {
 
   return (
     <>
-      <ViewHeader title='Planning' />
+      <ViewHeader title='Planning' {...props} />
       <main>
         <h2 className="text-lg font-bold mb-4">Planning overview content</h2>
 

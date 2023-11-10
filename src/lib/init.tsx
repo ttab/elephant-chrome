@@ -43,9 +43,10 @@ export function init(): NavigationState {
 
   return {
     registry,
+    focus: null,
     content: [
       (
-        <NavigationWrapper key='init'>
+        <NavigationWrapper key='init' id='init'>
           <InititalView.component id='init' name='init' />
         </NavigationWrapper>
       )
