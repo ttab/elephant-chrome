@@ -3,18 +3,18 @@ import { render, screen } from '../setupTests'
 import { App } from '@/App'
 
 
-const JWT = { sub: 'abc', sub_name: 'ABC', units: ['a', 'b', 'c'], scope: 'AbC' }
+const JWT = { sub: 'abc', sub_name: 'ABC', units: ['a', 'b', 'c'], scope: 'AbC', access_token: 'xxx' }
 
 jest.mock('../src/hooks/useSession.tsx', () => ({
-  useSession: jest.fn().mockImplementation(() => [JWT, () => {}])
+  useSession: jest.fn().mockImplementation(() => { return { jwt: JWT, setJwt: () => { } } })
 }))
 
-global.fetch = jest.fn().mockImplementation(async (url) => {
-  if (url === '/user') {
+global.fetch = jest.fn().mockImplementation(async (url: string) => {
+  if (url === 'http://localhost/user') {
     return await Promise.resolve({
       status: 200,
       ok: true,
-      json: async () => await Promise.resolve(JWT)
+      text: async () => await Promise.resolve(JSON.stringify(JWT))
     })
   }
 })
@@ -22,7 +22,7 @@ global.fetch = jest.fn().mockImplementation(async (url) => {
 describe('Use NavigationProvider', () => {
   it('should render view from registry', async () => {
     render(
-      <SessionProvider endpoint='/user'>
+      <SessionProvider endpoint={new URL('/user', 'http://localhost')}>
         <NavigationProvider>
           <App />
         </NavigationProvider>
