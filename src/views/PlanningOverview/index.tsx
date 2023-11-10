@@ -31,20 +31,20 @@ export const PlanningOverview = (): JSX.Element => {
         <h2 className="text-lg font-bold mb-4">Planning overview content</h2>
 
         {result?.ok === true &&
-          <>
-            <div className="grid grid-cols-2 gap-4 p-4 border">
+          <div className="bg-gray-100">
+            <div className="flex flex-col gap-4 p-4 border">
               {result.hits.map(hit => {
-                return <>
-                  <div>
-                    {hit._id}
-                  </div>
-                  <div>
+                return <div className="flex flex-col gap-1 bg-white p-3 shadow-md rounded-md" key={hit._id}>
+                  <div className="font-bold">
                     {hit._source['document.meta.core_assignment.title']}
                   </div>
-                </>
+                  <div className="text-xs opacity-50">
+                    {hit._id}
+                  </div>
+                </div>
               })}
             </div>
-          </>
+          </div>
         }
 
         <pre className="mt-8 p-8 bg-slate-300 whitespace-pre-wrap text-xs">
