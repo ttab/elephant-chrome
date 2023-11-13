@@ -53,7 +53,8 @@
     "setupTests.ts",
     "jest.config.ts",
     "__mocks__/**/*",
-    "__tests__/**/*"
+    "__tests__/**/*",
+    "__mocks__"
   ],
   "references": [
     {

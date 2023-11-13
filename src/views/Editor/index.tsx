@@ -13,7 +13,7 @@ import { useSession } from '@/hooks'
 import { type ViewProps } from '@/types'
 
 export const Editor = (props: ViewProps): JSX.Element => {
-  const [jwt] = useSession()
+  const { jwt } = useSession()
   const [connectionStatus, setConnectionStatus] = useState<WebSocketStatus>(WebSocketStatus.Disconnected)
   const [documentId] = useState('7de322ac-a9b2-45d9-8a0f-f1ac27f9cbfe')
   const { id: viewId } = props
@@ -24,7 +24,7 @@ export const Editor = (props: ViewProps): JSX.Element => {
       return
     }
 
-    if (!jwt?.accessToken) {
+    if (!jwt?.access_token) {
       return
     }
 
@@ -35,7 +35,7 @@ export const Editor = (props: ViewProps): JSX.Element => {
     return new HocuspocusProvider({
       websocketProvider: hocuspocusWebsocket,
       name: documentId,
-      token: jwt.accessToken as string,
+      token: jwt.access_token,
       onAuthenticationFailed: ({ reason }) => {
         console.warn(reason)
       },
@@ -59,7 +59,7 @@ export const Editor = (props: ViewProps): JSX.Element => {
       //   console.log(states)
       // }
     })
-  }, [documentId, hocuspocusWebsocket, jwt?.accessToken, viewId])
+  }, [documentId, hocuspocusWebsocket, jwt?.access_token, viewId])
 
   // Create YjsEditor for Textbit to use
   const editor = useMemo(() => {
@@ -97,7 +97,7 @@ export const Editor = (props: ViewProps): JSX.Element => {
 
   return (
     <>
-      <ViewHeader title='Editor' { ...props} />
+      <ViewHeader title='Editor' {...props} />
       <main className="min-w-[50vw]">
         <div className="h-full relative">
           {views[connectionStatus === WebSocketStatus.Connected ? 0 : 1]}

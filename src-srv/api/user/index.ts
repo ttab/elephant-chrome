@@ -15,7 +15,8 @@ export const POST: RouteHandler = async (req, context) => {
   const permissions = [
     'doc_read',
     'doc_write',
-    'doc_del'
+    'doc_del',
+    'search'
   ].join(' ')
 
   try {
@@ -76,7 +77,8 @@ function setCookies(session: Session, res: Response): void {
     'ele-access_token',
     session.access_token,
     {
-      maxAge: session.expires_in * 1000
+      maxAge: session.expires_in * 1000,
+      secure: true
     }
   )
 
