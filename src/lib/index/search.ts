@@ -1,3 +1,4 @@
+import { type Planning } from '@/components/PlanningTable/data/schema'
 import { type JWT } from '@/types'
 
 interface SearchIndexOptions {
@@ -6,20 +7,13 @@ interface SearchIndexOptions {
   endpoint: URL
 }
 
-interface SearchIndexHit {
-  _index: string
-  _id: string
-  _score: null | number
-  _source: Record<string, string[]>
-}
-
 interface SearchIndexResult {
   ok: true
   total: number
   page: number
   pages: number
   pageSize: number
-  hits: SearchIndexHit[]
+  hits: Planning[]
 }
 
 interface SearchIndexError {

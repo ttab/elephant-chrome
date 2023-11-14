@@ -1,8 +1,6 @@
 import { useEffect, useState, useCallback } from 'react'
 import {
-  Pencil,
-  GanttChart,
-  Home
+  GanttChart
 } from '@ttab/elephant-ui/icons'
 
 import {
@@ -56,16 +54,6 @@ export function CommandMenu(): JSX.Element {
             >
               <GanttChart className="mr-2 h-4 w-4" />
               <span>Planning overview</span>
-            </CommandItem>
-            <CommandItem
-              onSelect={() => runCommand(() => handleLink({
-                dispatch,
-                linkItem: state.registry.get('Init'),
-                id: uuid()
-              }))}
-            >
-              <Home className="mr-2 h-4 w-4" />
-              <span>Start</span>
             </CommandItem>
           </CommandGroup>
           <CommandSeparator />

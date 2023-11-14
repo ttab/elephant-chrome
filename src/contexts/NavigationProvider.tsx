@@ -29,9 +29,9 @@ export const NavigationProvider = ({ children }: PropsWithChildren): JSX.Element
       // TODO: Make router/location hook
       const currentView = window.location.pathname !== '/'
         ? window.location.pathname[1].toUpperCase() + window.location.pathname.slice(2)
-        : 'Init'
+        : 'PlanningOverview'
       const currentProps = Object.fromEntries(new URLSearchParams(window.location.search))
-      const id = currentProps.id || 'init'
+      const id = currentProps.id || 'start'
 
       history.replaceState({
         id,

@@ -15,16 +15,20 @@ import { type ViewProps } from '@/types'
 export const Editor = (props: ViewProps): JSX.Element => {
   const { jwt } = useSession()
   const [connectionStatus, setConnectionStatus] = useState<WebSocketStatus>(WebSocketStatus.Disconnected)
-  const [documentId] = useState('7de322ac-a9b2-45d9-8a0f-f1ac27f9cbfe')
   const { id: viewId } = props
   const { hocuspocusWebsocket } = useApi()
-
+  // FIXME: Not props.props
+  const documentId = props.props?.documentId
   const provider = useMemo(() => {
     if (!hocuspocusWebsocket) {
       return
     }
 
     if (!jwt?.access_token) {
+      return
+    }
+
+    if (!documentId) {
       return
     }
 
@@ -98,7 +102,7 @@ export const Editor = (props: ViewProps): JSX.Element => {
   return (
     <>
       <ViewHeader title='Editor' {...props} />
-      <main className="min-w-[50vw]">
+      <main className="min-w-[30vw]">
         <div className="h-full relative">
           {views[connectionStatus === WebSocketStatus.Connected ? 0 : 1]}
         </div>

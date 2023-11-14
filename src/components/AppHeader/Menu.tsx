@@ -27,9 +27,6 @@ export const Menu = (): JSX.Element => {
         </SheetHeader>
         <div className='grid gap-4 py-4'>
           <SheetClose asChild>
-            <Link to='Init'>Start</Link>
-          </SheetClose>
-          <SheetClose asChild>
             <Link to='PlanningOverview'>Planning</Link>
           </SheetClose>
         </div>
