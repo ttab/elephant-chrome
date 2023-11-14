@@ -3,6 +3,7 @@ import { useNavigation } from '@/hooks'
 
 export const NavigationWrapper = ({ children, id }: { children: JSX.Element, id: string }): JSX.Element => {
   const { state } = useNavigation()
+
   return useMemo(() => {
     const variants = {
       maximized: 'absolute inset-y-0 left-0 z-10 w-screen h-screen bg-background dark:bg-background basis-full p-2',
