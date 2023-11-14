@@ -5,7 +5,6 @@ import * as views from '@/views'
 const registeredComponents = new Map()
 const registry = {
   get: (key: View) => {
-    console.log(key)
     const registryItem: RegistryItem = registeredComponents.get(key)
     if (registryItem === undefined) {
       throw new Error(`Can't find component: ${key}`)

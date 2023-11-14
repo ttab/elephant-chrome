@@ -38,9 +38,9 @@ export function handleLink({ event, dispatch, linkItem, props, id }: LinkClick):
     contentState: [
       ...history.state.contentState,
       {
+        ...props,
         id,
-        name: linkItem.metadata.name,
-        props
+        name: linkItem.metadata.name
       }
     ]
   }, linkItem.metadata.name, `${linkItem.metadata.path}?id=${id}`)

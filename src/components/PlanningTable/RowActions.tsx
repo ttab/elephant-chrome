@@ -11,15 +11,16 @@ import {
   DropdownMenuTrigger
 } from '@ttab/elephant-ui'
 import { Link } from '..'
+import { type Planning } from './data/schema'
 
 
-interface DataTableRowActionsProps<TData> {
-  row: Row<TData>
+interface DataTableRowActionsProps {
+  row: Row<Planning>
 }
 
-export function DataTableRowActions<TData>({
+export function DataTableRowActions({
   row
-}: DataTableRowActionsProps<TData>): JSX.Element {
+}: DataTableRowActionsProps): JSX.Element {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>

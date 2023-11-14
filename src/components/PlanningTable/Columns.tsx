@@ -126,7 +126,7 @@ export const columns: Array<ColumnDef<Planning>> = [
     ),
     cell: ({ row }) => {
       const data = assignmentTypes.filter(
-        (assignmentType) => row.getValue('assignmentType').includes(assignmentType.value)
+        (assignmentType) => row.getValue<string[]>('assignmentType').includes(assignmentType.value)
       )
       if (data.length === 0) {
         return null

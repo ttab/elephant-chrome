@@ -26,6 +26,10 @@ const config: JestConfigWithTsJest = {
     escapeString: true,
     printBasicPrototype: true
   },
+  moduleDirectories: [
+    '<rootDir>/node_modules',
+    'node_modules'
+  ],
   moduleNameMapper: {
     '\\.(css|scss)$': '<rootDir>/__mocks__/styleMock.ts',
     '@/(.*)': '<rootDir>/src/$1'

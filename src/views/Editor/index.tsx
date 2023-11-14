@@ -13,12 +13,13 @@ import { useSession } from '@/hooks'
 import { type ViewProps } from '@/types'
 
 export const Editor = (props: ViewProps): JSX.Element => {
+  const { id: viewId, documentId } = props
+
   const { jwt } = useSession()
-  const [connectionStatus, setConnectionStatus] = useState<WebSocketStatus>(WebSocketStatus.Disconnected)
-  const { id: viewId } = props
   const { hocuspocusWebsocket } = useApi()
-  // FIXME: Not props.props
-  const documentId = props.props?.documentId
+
+  const [connectionStatus, setConnectionStatus] = useState<WebSocketStatus>(WebSocketStatus.Disconnected)
+
   const provider = useMemo(() => {
     if (!hocuspocusWebsocket) {
       return

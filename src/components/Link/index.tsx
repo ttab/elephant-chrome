@@ -8,7 +8,7 @@ import { handleLink } from './link'
 interface LinkProps {
   children: React.ReactNode
   to: View
-  props?: ViewProps
+  props?: Omit<ViewProps, 'id'>
   onClick?: (event: unknown) => void
 }
 
@@ -27,7 +27,7 @@ export const Link = forwardRef((props: LinkProps, ref: ForwardedRef<HTMLAnchorEl
         props.onClick && props.onClick(event)
 
         // Our onClick handler
-        handleLink({ event, dispatch, linkItem, props: props.props, id })
+        handleLink({ event, dispatch, linkItem, props: { ...props.props, id }, id })
       }}
       ref={ref}>
         {props.children}
