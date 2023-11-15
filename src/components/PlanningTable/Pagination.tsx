@@ -1,10 +1,8 @@
 import {
   ChevronLeft,
   ChevronRight,
-  // DoubleArrowLeft,
-  MoveLeft,
-  // DoubleArrowRight
-  MoveRight
+  ChevronFirst,
+  ChevronLast
 } from '@ttab/elephant-ui/icons'
 import { type Table } from '@tanstack/react-table'
 
@@ -63,7 +61,7 @@ export function DataTablePagination<TData>({
             disabled={!table.getCanPreviousPage()}
           >
             <span className="sr-only">Go to first page</span>
-            <MoveLeft className="h-4 w-4" />
+            <ChevronFirst className="h-4 w-4" />
           </Button>
           <Button
             variant="outline"
@@ -90,7 +88,7 @@ export function DataTablePagination<TData>({
             disabled={!table.getCanNextPage()}
           >
             <span className="sr-only">Go to last page</span>
-            <MoveRight className="h-4 w-4" />
+            <ChevronLast className="h-4 w-4" />
           </Button>
         </div>
       </div>

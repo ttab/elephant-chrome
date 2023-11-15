@@ -21,6 +21,8 @@ interface DataTableRowActionsProps {
 export function DataTableRowActions({
   row
 }: DataTableRowActionsProps): JSX.Element {
+  const deliverableUuids = row.original._source['document.meta.core_assignment.rel.deliverable.uuid'] || []
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -33,8 +35,9 @@ export function DataTableRowActions({
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-[160px]">
-        {row.original._source?.['document.meta.core_assignment.rel.deliverable.uuid']
-          ? row.original._source?.['document.meta.core_assignment.rel.deliverable.uuid'].map((uuid) => {
+        {!deliverableUuids.length && 'No deliverables'}
+        {deliverableUuids.length &&
+          deliverableUuids.map((uuid) => {
             return (
               <DropdownMenuItem key={uuid}>
                 <Link to='Editor' props={{ documentId: uuid }}>
@@ -43,8 +46,7 @@ export function DataTableRowActions({
               </DropdownMenuItem>
             )
           })
-          : 'No deliverables'
-          }
+        }
       </DropdownMenuContent>
     </DropdownMenu>
   )

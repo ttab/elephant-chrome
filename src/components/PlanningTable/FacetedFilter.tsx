@@ -1,6 +1,6 @@
 
 import * as React from 'react'
-import { CheckIcon, PlusCircle as PlusCircledIcon } from '@ttab/elephant-ui/icons'
+import { CheckIcon, PlusCircle } from '@ttab/elephant-ui/icons'
 import { type Column } from '@tanstack/react-table'
 
 import { cn } from '@ttab/elephant-ui/utils'
@@ -29,6 +29,34 @@ interface DataTableFacetedFilterProps<TData, TValue> {
   }>
 }
 
+const SelectedBadge = <TData, TValue>({ options, selectedValues }:
+{ options: DataTableFacetedFilterProps<TData, TValue>['options']
+  selectedValues: Set<string> }):
+  React.ReactNode => {
+  if (selectedValues.size > 2) {
+    return (
+      <Badge
+        variant="secondary"
+        className="rounded-sm px-1 font-normal"
+      >
+        {selectedValues.size} selected
+      </Badge>
+    )
+  } else {
+    return options
+      .filter((option) => selectedValues.has(option.value))
+      .map((option) => (
+        <Badge
+          variant="secondary"
+          key={option.value}
+          className="rounded-sm px-1 font-normal"
+        >
+          {option.label}
+        </Badge>
+      ))
+  }
+}
+
 export function DataTableFacetedFilter<TData, TValue>({
   column,
   title,
@@ -41,7 +69,7 @@ export function DataTableFacetedFilter<TData, TValue>({
     <Popover>
       <PopoverTrigger asChild>
         <Button variant="outline" size="sm" className="h-8 border-dashed">
-          <PlusCircledIcon className="mr-2 h-4 w-4" />
+          <PlusCircle className="mr-2 h-4 w-4" />
           {title}
           {selectedValues?.size > 0 && (
             <>
@@ -53,28 +81,10 @@ export function DataTableFacetedFilter<TData, TValue>({
                 {selectedValues.size}
               </Badge>
               <div className="hidden space-x-1 lg:flex">
-                {selectedValues.size > 2
-                  ? (
-                  <Badge
-                    variant="secondary"
-                    className="rounded-sm px-1 font-normal"
-                  >
-                    {selectedValues.size} selected
-                  </Badge>
-                    )
-                  : (
-                      options
-                        .filter((option) => selectedValues.has(option.value))
-                        .map((option) => (
-                      <Badge
-                        variant="secondary"
-                        key={option.value}
-                        className="rounded-sm px-1 font-normal"
-                      >
-                        {option.label}
-                      </Badge>
-                        ))
-                    )}
+                <SelectedBadge
+                  options={options}
+                  selectedValues={selectedValues}
+                />
               </div>
             </>
           )}

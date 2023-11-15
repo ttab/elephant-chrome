@@ -33,6 +33,7 @@ interface DataTableProps<TData, TValue> {
   data: TData[]
 }
 
+
 export function PlanningTable<TData, TValue>({
   columns,
   data
@@ -67,6 +68,38 @@ export function PlanningTable<TData, TValue>({
     getFacetedUniqueValues: getFacetedUniqueValues()
   })
 
+  const TableBodyElement = (): React.ReactNode => {
+    if (table.getRowModel().rows?.length === 0) {
+      return (
+        <TableRow>
+          <TableCell
+            colSpan={columns.length}
+            className="h-24 text-center"
+          >
+            No results.
+          </TableCell>
+        </TableRow>
+      )
+    }
+
+    return table.getRowModel().rows.map((row) => (
+        <TableRow
+          key={row.id}
+          data-state={row.getIsSelected() && 'selected'}
+        >
+          {row.getVisibleCells().map((cell) => (
+            <TableCell key={cell.id}>
+              {flexRender(
+                cell.column.columnDef.cell,
+                cell.getContext()
+              )}
+            </TableCell>
+          ))}
+        </TableRow>
+    ))
+  }
+
+
   return (
     <div className="space-y-2">
       <DataTableToolbar table={table} />
@@ -91,34 +124,7 @@ export function PlanningTable<TData, TValue>({
             ))}
           </TableHeader>
           <TableBody>
-            {table.getRowModel().rows?.length
-              ? (
-                  table.getRowModel().rows.map((row) => (
-                <TableRow
-                  key={row.id}
-                  data-state={row.getIsSelected() && 'selected'}
-                >
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
-                      )}
-                    </TableCell>
-                  ))}
-                </TableRow>
-                  ))
-                )
-              : (
-              <TableRow>
-                <TableCell
-                  colSpan={columns.length}
-                  className="h-24 text-center"
-                >
-                  No results.
-                </TableCell>
-              </TableRow>
-                )}
+            <TableBodyElement />
           </TableBody>
         </Table>
       </div>
