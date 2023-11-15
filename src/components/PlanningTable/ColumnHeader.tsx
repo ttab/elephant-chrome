@@ -16,17 +16,17 @@ import {
   DropdownMenuTrigger
 } from '@ttab/elephant-ui'
 
-interface DataTableColumnHeaderProps<TData, TValue>
+interface ColumnHeaderProps<TData, TValue>
   extends React.HTMLAttributes<HTMLDivElement> {
   column: Column<TData, TValue>
   title: string
 }
 
-export function DataTableColumnHeader<TData, TValue>({
+export const ColumnHeader = <TData, TValue>({
   column,
   title,
   className
-}: DataTableColumnHeaderProps<TData, TValue>): JSX.Element {
+}: ColumnHeaderProps<TData, TValue>): JSX.Element => {
   if (!column.getCanSort()) {
     return <div className={cn(className)}>{title}</div>
   }

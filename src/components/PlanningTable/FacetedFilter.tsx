@@ -19,7 +19,7 @@ import {
   Separator
 } from '@ttab/elephant-ui'
 
-interface DataTableFacetedFilterProps<TData, TValue> {
+interface FacetedFilterProps<TData, TValue> {
   column?: Column<TData, TValue>
   title?: string
   options: Array<{
@@ -30,7 +30,7 @@ interface DataTableFacetedFilterProps<TData, TValue> {
 }
 
 const SelectedBadge = <TData, TValue>({ options, selectedValues }:
-{ options: DataTableFacetedFilterProps<TData, TValue>['options']
+{ options: FacetedFilterProps<TData, TValue>['options']
   selectedValues: Set<string> }):
   React.ReactNode => {
   if (selectedValues.size > 2) {
@@ -57,11 +57,11 @@ const SelectedBadge = <TData, TValue>({ options, selectedValues }:
   }
 }
 
-export function DataTableFacetedFilter<TData, TValue>({
+export const FacetedFilter = <TData, TValue>({
   column,
   title,
   options
-}: DataTableFacetedFilterProps<TData, TValue>): JSX.Element {
+}: FacetedFilterProps<TData, TValue>): JSX.Element => {
   const facets = column?.getFacetedUniqueValues()
   const selectedValues = new Set(column?.getFilterValue() as string[])
 

@@ -15,13 +15,13 @@ import {
   SelectValue
 } from '@ttab/elephant-ui'
 
-interface DataTablePaginationProps<TData> {
+interface PaginationProps<TData> {
   table: Table<TData>
 }
 
-export function DataTablePagination<TData>({
+export const Pagination = <TData,>({
   table
-}: DataTablePaginationProps<TData>): JSX.Element {
+}: PaginationProps<TData>): JSX.Element => {
   return (
     <div className="flex items-center justify-between px-2">
       <div className="flex-1 text-sm text-muted-foreground">

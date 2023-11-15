@@ -14,13 +14,13 @@ import { Link } from '..'
 import { type Planning } from './data/schema'
 
 
-interface DataTableRowActionsProps {
+interface RowActionsProps {
   row: Row<Planning>
 }
 
-export function DataTableRowActions({
+export const RowActions = ({
   row
-}: DataTableRowActionsProps): JSX.Element {
+}: RowActionsProps): JSX.Element => {
   const deliverableUuids = row.original._source['document.meta.core_assignment.rel.deliverable.uuid'] || []
 
   return (

@@ -12,13 +12,13 @@ import { SlidersHorizontal as MixerHorizontalIcon } from '@ttab/elephant-ui/icon
 import { type Table } from '@tanstack/react-table'
 
 
-interface DataTableViewOptionsProps<TData> {
+interface ViewOptionsProps<TData> {
   table: Table<TData>
 }
 
-export function DataTableViewOptions<TData>({
+export const ViewOptions = <TData,>({
   table
-}: DataTableViewOptionsProps<TData>): JSX.Element {
+}: ViewOptionsProps<TData>): JSX.Element => {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>

@@ -4,18 +4,18 @@ import { X as Cross2Icon } from '@ttab/elephant-ui/icons'
 import { type Table } from '@tanstack/react-table'
 
 import { Button, Input } from '@ttab/elephant-ui'
-import { DataTableViewOptions } from './ViewOptions'
+import { ViewOptions } from './ViewOptions'
 
 import { priorities } from './data/data'
-import { DataTableFacetedFilter } from './FacetedFilter'
+import { FacetedFilter } from './FacetedFilter'
 
-interface DataTableToolbarProps<TData> {
+interface ToolbarProps<TData> {
   table: Table<TData>
 }
 
-export function DataTableToolbar<TData>({
+export const Toolbar = <TData,>({
   table
-}: DataTableToolbarProps<TData>): JSX.Element {
+}: ToolbarProps<TData>): JSX.Element => {
   const isFiltered = table.getState().columnFilters.length > 0
 
   return (
@@ -30,7 +30,7 @@ export function DataTableToolbar<TData>({
           className="h-8 w-[150px] lg:w-[250px]"
         />
         {table.getColumn('priority') && (
-          <DataTableFacetedFilter
+          <FacetedFilter
             column={table.getColumn('priority')}
             title="Priority"
             options={priorities}
@@ -47,7 +47,7 @@ export function DataTableToolbar<TData>({
           </Button>
         )}
       </div>
-      <DataTableViewOptions table={table} />
+      <ViewOptions table={table} />
     </div>
   )
 }

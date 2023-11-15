@@ -25,19 +25,19 @@ import {
   TableRow
 } from '@ttab/elephant-ui'
 
-import { DataTablePagination } from './Pagination'
-import { DataTableToolbar } from './Toolbar'
+import { Pagination } from './Pagination'
+import { Toolbar } from './Toolbar'
 
-interface DataTableProps<TData, TValue> {
+interface PlanningTableProps<TData, TValue> {
   columns: Array<ColumnDef<TData, TValue>>
   data: TData[]
 }
 
 
-export function PlanningTable<TData, TValue>({
+export const PlanningTable = <TData, TValue>({
   columns,
   data
-}: DataTableProps<TData, TValue>): JSX.Element {
+}: PlanningTableProps<TData, TValue>): JSX.Element => {
   const [rowSelection, setRowSelection] = React.useState({})
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({})
@@ -102,7 +102,7 @@ export function PlanningTable<TData, TValue>({
 
   return (
     <div className="space-y-2">
-      <DataTableToolbar table={table} />
+      <Toolbar table={table} />
       <div className="rounded-md border">
         <Table>
           <TableHeader>
@@ -128,7 +128,7 @@ export function PlanningTable<TData, TValue>({
           </TableBody>
         </Table>
       </div>
-      <DataTablePagination table={table} />
+      <Pagination table={table} />
     </div>
   )
 }

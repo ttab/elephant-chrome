@@ -2,12 +2,15 @@
 
 import { type ColumnDef } from '@tanstack/react-table'
 
-import { Badge, Checkbox, Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@ttab/elephant-ui'
+import {
+  Badge,
+  Checkbox, Tooltip, TooltipContent, TooltipProvider, TooltipTrigger
+} from '@ttab/elephant-ui'
 
 import { assignmentTypes, sectors, priorities } from './data/data'
 import { type Planning } from './data/schema'
-import { DataTableColumnHeader } from './ColumnHeader'
-import { DataTableRowActions } from './RowActions'
+import { ColumnHeader } from './ColumnHeader'
+import { RowActions } from './RowActions'
 
 export const columns: Array<ColumnDef<Planning>> = [
   {
@@ -35,7 +38,7 @@ export const columns: Array<ColumnDef<Planning>> = [
     id: 'title',
     accessorFn: (data) => data._source['document.title'][0],
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Title" />
+      <ColumnHeader column={column} title="Title" />
     ),
     cell: ({ row }) => {
       const sector = sectors.find((label) => label.value === row.original._source['document.rel.sector.title'][0])
@@ -53,9 +56,9 @@ export const columns: Array<ColumnDef<Planning>> = [
   {
     id: 'assignees',
     accessorFn: (data) => data._source['document.meta.core_assignment.rel.assignee.name'],
-    header: ({ column }) => (<DataTableColumnHeader column={column} title="Assignees" />),
+    header: ({ column }) => (<ColumnHeader column={column} title="Assignees" />),
     cell: ({ row }) => {
-      const assignees = row.original._source['document.meta.core_assignment.rel.assignee.name']
+      const assignees = row.getValue<string[]>('assignees')
 
       return (
         <div className='flex -space-x-3 hover:-space-x-0 w-[150px] font-mono text-xs leading-6'>
@@ -85,7 +88,7 @@ export const columns: Array<ColumnDef<Planning>> = [
     id: 'priority',
     accessorFn: (data) => data._source['document.meta.core_planning_item.data.priority'][0],
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Priority" />
+      <ColumnHeader column={column} title="Priority" />
     ),
     cell: ({ row }) => {
       const priority = priorities.find(
@@ -118,11 +121,9 @@ export const columns: Array<ColumnDef<Planning>> = [
   },
   {
     id: 'assignmentType',
-    accessorFn: (data) => {
-      return data._source['document.meta.core_assignment.meta.core_assignment_type.value']
-    },
+    accessorFn: (data) => data._source['document.meta.core_assignment.meta.core_assignment_type.value'],
     header: ({ column }) => (
-      <DataTableColumnHeader column={column} title="Type" />
+      <ColumnHeader column={column} title="Type" />
     ),
     cell: ({ row }) => {
       const data = assignmentTypes.filter(
@@ -157,6 +158,6 @@ export const columns: Array<ColumnDef<Planning>> = [
   },
   {
     id: 'actions',
-    cell: ({ row }) => <DataTableRowActions row={row} />
+    cell: ({ row }) => <RowActions row={row} />
   }
 ]
