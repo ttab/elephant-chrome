@@ -55,6 +55,7 @@ export interface ViewProps {
   id: string
   name?: string
   index?: number
+  documentId?: string
 }
 
 export type Theme = 'dark' | 'light' | 'system'

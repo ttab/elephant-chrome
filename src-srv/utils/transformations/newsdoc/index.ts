@@ -16,6 +16,14 @@ export function transformNewsdoc(content: Block[]): TextbitElement[] {
           return transformText(element)
         case 'tt/visual':
           return transformVisual(element)
+        case 'core/factbox':
+          return {
+            id: 'factbox',
+            class: 'text',
+            type: 'core/text',
+            children: [
+            ]
+          }
         default:
           throw new Error(`Element not implemented: ${element.type}`)
       }

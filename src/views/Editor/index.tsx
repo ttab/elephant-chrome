@@ -13,11 +13,12 @@ import { useSession } from '@/hooks'
 import { type ViewProps } from '@/types'
 
 export const Editor = (props: ViewProps): JSX.Element => {
+  const { id: viewId, documentId } = props
+
   const { jwt } = useSession()
-  const [connectionStatus, setConnectionStatus] = useState<WebSocketStatus>(WebSocketStatus.Disconnected)
-  const [documentId] = useState('7de322ac-a9b2-45d9-8a0f-f1ac27f9cbfe')
-  const { id: viewId } = props
   const { hocuspocusWebsocket } = useApi()
+
+  const [connectionStatus, setConnectionStatus] = useState<WebSocketStatus>(WebSocketStatus.Disconnected)
 
   const provider = useMemo(() => {
     if (!hocuspocusWebsocket) {
@@ -25,6 +26,10 @@ export const Editor = (props: ViewProps): JSX.Element => {
     }
 
     if (!jwt?.access_token) {
+      return
+    }
+
+    if (!documentId) {
       return
     }
 
@@ -98,7 +103,7 @@ export const Editor = (props: ViewProps): JSX.Element => {
   return (
     <>
       <ViewHeader title='Editor' {...props} />
-      <main className="min-w-[50vw]">
+      <main className="min-w-[30vw]">
         <div className="h-full relative">
           {views[connectionStatus === WebSocketStatus.Connected ? 0 : 1]}
         </div>

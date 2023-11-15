@@ -32,7 +32,7 @@ export function init(): NavigationState {
       registeredComponents.set(key as View, {
         component: views[key as View],
         metadata: {
-          path: key === 'Init' ? '/' : `/${key.toLowerCase()}`,
+          path: key === 'PlanningOverview' ? '/' : `/${key.toLowerCase()}`,
           name: views[key as View].displayName
         }
       })
@@ -46,8 +46,8 @@ export function init(): NavigationState {
     focus: null,
     content: [
       (
-        <NavigationWrapper key='init' id='init'>
-          <InititalView.component id='init' name='init' />
+        <NavigationWrapper key='start' id='start'>
+          <InititalView.component id='start' name='start' />
         </NavigationWrapper>
       )
     ]

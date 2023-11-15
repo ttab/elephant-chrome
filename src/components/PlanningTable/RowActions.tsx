@@ -1,0 +1,53 @@
+'use client'
+
+import { MoreHorizontal as DotsHorizontalIcon } from '@ttab/elephant-ui/icons'
+import { type Row } from '@tanstack/react-table'
+
+import {
+  Button,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger
+} from '@ttab/elephant-ui'
+import { Link } from '..'
+import { type Planning } from './data/schema'
+
+
+interface RowActionsProps {
+  row: Row<Planning>
+}
+
+export const RowActions = ({
+  row
+}: RowActionsProps): JSX.Element => {
+  const deliverableUuids = row.original._source['document.meta.core_assignment.rel.deliverable.uuid'] || []
+
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button
+          variant="ghost"
+          className="flex h-8 w-8 p-0 data-[state=open]:bg-muted"
+        >
+          <DotsHorizontalIcon className="h-4 w-4" />
+          <span className="sr-only">Open menu</span>
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end" className="w-[160px]">
+        {!deliverableUuids.length && 'No deliverables'}
+        {deliverableUuids.length &&
+          deliverableUuids.map((uuid) => {
+            return (
+              <DropdownMenuItem key={uuid}>
+                <Link to='Editor' props={{ documentId: uuid }}>
+                  {uuid}
+                </Link>
+              </DropdownMenuItem>
+            )
+          })
+        }
+      </DropdownMenuContent>
+    </DropdownMenu>
+  )
+}
