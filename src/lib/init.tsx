@@ -47,7 +47,7 @@ export function init(): NavigationState {
     content: [
       (
         <NavigationWrapper key='start' id='start'>
-          <InititalView.component id='start' name='start' />
+          <InititalView.component id='start' />
         </NavigationWrapper>
       )
     ]

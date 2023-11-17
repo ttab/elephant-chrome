@@ -9,16 +9,16 @@ import { Editor as TextbitEditor } from '@ttab/textbit'
 import '@ttab/textbit/dist/esm/index.css'
 
 import { HocuspocusProvider, WebSocketStatus } from '@hocuspocus/provider'
-import { useSession } from '@/hooks'
+import { useSession, useQuery } from '@/hooks'
 import { type ViewProps } from '@/types'
 
 export const Editor = (props: ViewProps): JSX.Element => {
-  const { id: viewId, documentId } = props
-
+  const query = useQuery()
   const { jwt } = useSession()
   const { hocuspocusWebsocket } = useApi()
 
   const [connectionStatus, setConnectionStatus] = useState<WebSocketStatus>(WebSocketStatus.Disconnected)
+  const documentId = props.documentId || query.documentId
 
   const provider = useMemo(() => {
     if (!hocuspocusWebsocket) {
@@ -45,17 +45,17 @@ export const Editor = (props: ViewProps): JSX.Element => {
         console.warn(reason)
       },
       onAuthenticated: () => {
-        console.info('Authenticated', viewId)
+        console.info('Authenticated', documentId)
       },
       onSynced: ({ state }) => {
         if (state) {
-          console.info('Synced ', viewId)
+          console.info('Synced ', documentId)
           setConnectionStatus(WebSocketStatus.Connected)
         }
       },
       onStatus: ({ status }) => {
         if (status === 'disconnected') {
-          console.warn('Lost connection', viewId)
+          console.warn('Lost connection', documentId)
           setConnectionStatus(WebSocketStatus.Disconnected)
         }
       }
@@ -64,7 +64,7 @@ export const Editor = (props: ViewProps): JSX.Element => {
       //   console.log(states)
       // }
     })
-  }, [documentId, hocuspocusWebsocket, jwt?.access_token, viewId])
+  }, [documentId, hocuspocusWebsocket, jwt?.access_token])
 
   // Create YjsEditor for Textbit to use
   const editor = useMemo(() => {

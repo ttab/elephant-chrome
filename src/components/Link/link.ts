@@ -14,6 +14,15 @@ interface LinkClick {
   id: string
 }
 
+export function toQueryString(obj:
+Record<string, string> | Omit<ViewProps, 'id'> | undefined):
+  string {
+  if (!obj || Object.keys(obj).length === 0) {
+    return ''
+  }
+  return `?${new URLSearchParams(obj as Record<string, string>).toString()}`
+}
+
 export function handleLink({ event, dispatch, linkItem, props, id }: LinkClick): void {
   if (event?.ctrlKey || event?.metaKey) {
     return
@@ -25,10 +34,9 @@ export function handleLink({ event, dispatch, linkItem, props, id }: LinkClick):
     type: NavigationActionType.ADD,
     component: linkItem.component,
     props: {
-      ...props,
-      name: linkItem.component.name,
-      id
-    }
+      ...props
+    },
+    id
   })
 
   history.pushState({
@@ -43,6 +51,6 @@ export function handleLink({ event, dispatch, linkItem, props, id }: LinkClick):
         name: linkItem.metadata.name
       }
     ]
-  }, linkItem.metadata.name, `${linkItem.metadata.path}?id=${id}`)
+  }, linkItem.metadata.name, `${linkItem.metadata.path}${toQueryString(props)}`)
 }
 

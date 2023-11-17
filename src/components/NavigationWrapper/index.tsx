@@ -1,7 +1,7 @@
 import { useMemo } from 'react'
 import { useNavigation } from '@/hooks'
 
-export const NavigationWrapper = ({ children, id }: { children: JSX.Element, id: string }): JSX.Element => {
+export const NavigationWrapper = ({ children, id }: { children: JSX.Element, id: string | undefined }): JSX.Element => {
   const { state } = useNavigation()
 
   return useMemo(() => {
