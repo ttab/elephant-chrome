@@ -75,7 +75,7 @@ function navigationReducer(state: NavigationState, action: NavigationAction): Na
         ...state,
         content: [
           ...state.content,
-          <NavigationWrapper key={action.props.id} id={action.props.id}>
+          <NavigationWrapper key={action.id} id={action.id}>
             <action.component {...action.props} />
           </NavigationWrapper>
 

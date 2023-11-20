@@ -52,9 +52,7 @@ export interface HistoryState {
 }
 
 export interface ViewProps {
-  id: string
-  name?: string
-  index?: number
+  id?: string
   documentId?: string
 }
 
