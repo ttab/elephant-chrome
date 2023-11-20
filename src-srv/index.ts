@@ -2,7 +2,6 @@ import express from 'express'
 import expressWebsockets from 'express-ws'
 import cors from 'cors'
 import cookieParser from 'cookie-parser'
-import dotenv from 'dotenv'
 
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
@@ -12,8 +11,6 @@ import { createServer as createHocuspocusServer } from './utils/hocuspocus.ts'
 import { RedisCache } from './utils/RedisCache.ts'
 import { Repository } from './utils/Repository.ts'
 import { createRemoteJWKSet } from 'jose'
-
-dotenv.config()
 
 const NODE_ENV = process.env.NODE_ENV === 'production' ? 'production' : 'development'
 const PROTOCOL = (NODE_ENV === 'production') ? 'https' : process.env.VITE_PROTOCOL || 'https'
