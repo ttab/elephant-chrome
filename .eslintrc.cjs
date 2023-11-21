@@ -30,12 +30,12 @@ module.exports = {
     "@typescript-eslint/no-confusing-void-expression": ["error", { ignoreArrowShorthand: true }],
     "@typescript-eslint/space-before-function-paren": ["warn", {
         "asyncArrow": "always",
-        "anonymous": "never", 
+        "anonymous": "never",
         "named": "never",
     }],
     "space-before-function-paren": ["warn", {
         "asyncArrow": "always",
-        "anonymous": "never", 
+        "anonymous": "never",
         "named": "never",
     }]
   }
