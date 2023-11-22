@@ -31,9 +31,6 @@
       "@/components/*": [
         "./src/components/*"
       ],
-      "@/navigation/*": [
-        "./src/navigation/*"
-      ],
       "@/views/*": [
         "./src/views/*"
       ],

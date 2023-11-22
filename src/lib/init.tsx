@@ -1,5 +1,5 @@
 import type { NavigationState, RegistryItem, View } from '@/types'
-import { NavigationWrapper } from '@/navigation/components'
+import { NavigationWrapper } from '@/navigation/components/NavigationWrapper'
 import * as views from '@/views'
 
 const registeredComponents = new Map()
