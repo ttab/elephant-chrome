@@ -1,4 +1,4 @@
-FROM node:hydrogen
+FROM node:iron
 RUN apt-get update && apt-get upgrade -y
 RUN mkdir -p /usr/src/app
 WORKDIR /usr/src/app
