@@ -10,7 +10,7 @@ import {
 export function navigationReducer(state: NavigationState, action: NavigationAction): NavigationState {
   switch (action.type) {
     case NavigationActionType.ADD:
-      console.log(action.id)
+
       if (action.component === undefined || action.props === undefined) {
         throw new Error('Component is undefined')
       }
