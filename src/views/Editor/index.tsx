@@ -5,7 +5,7 @@ import { withYjs, withYHistory, YjsEditor, withCursors } from '@slate-yjs/core'
 import * as Y from 'yjs'
 import { createEditor } from 'slate'
 
-import { Editor as TextbitEditor } from '@ttab/textbit'
+import { TextbitEditable } from '@ttab/textbit'
 import '@ttab/textbit/dist/esm/index.css'
 
 import { HocuspocusProvider, WebSocketStatus } from '@hocuspocus/provider'
@@ -96,7 +96,7 @@ export const Editor = (props: ViewProps): JSX.Element => {
 
   const views = [
     // @ts-expect-error FIXME: yjsEditor needs more refinement
-    < TextbitEditor yjsEditor={editor} />,
+    < TextbitEditable yjsEditor={editor} />,
     <strong className="animate-pulse">Not connected</strong>
   ]
 

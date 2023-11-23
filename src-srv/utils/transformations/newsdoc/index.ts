@@ -1,9 +1,9 @@
 import { transformText, revertText } from './core/index.js'
 import { transformVisual, revertVisual } from './tt/visual.js'
 import { type Block } from '../../../protos/service.js'
-import type { TextbitElement } from '@ttab/textbit'
+import type { TBElement } from '@ttab/textbit'
 
-export function transformNewsdoc(content: Block[]): TextbitElement[] {
+export function transformNewsdoc(content: Block[]): TBElement[] {
   if (content !== undefined) {
     return content.map((element: Block) => {
       switch (element.type) {
@@ -32,9 +32,9 @@ export function transformNewsdoc(content: Block[]): TextbitElement[] {
   throw new Error('No document to transform')
 }
 
-export function revertNewsdoc(elements: TextbitElement[]): Block[] {
+export function revertNewsdoc(elements: TBElement[]): Block[] {
   if (elements !== undefined) {
-    return elements.map((element: TextbitElement): Block => {
+    return elements.map((element: TBElement): Block => {
       switch (element.type) {
         case 'core/text':
           return revertText(element)

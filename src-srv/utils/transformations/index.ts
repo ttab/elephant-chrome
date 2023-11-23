@@ -1,6 +1,6 @@
 import type { GetDocumentResponse, Block } from '../../protos/service.js'
 import { transformNewsdoc, revertNewsdoc } from './newsdoc/index.js'
-import type { TextbitElement } from '@ttab/textbit'
+import type { TBElement } from '@ttab/textbit'
 import { newsDocToYmap, yjsStateAsUpdate } from './yjs/index.js'
 import type * as Y from 'yjs'
 
@@ -13,7 +13,7 @@ export interface SlateDoc {
     uri: string
     url: string
     title: string
-    content: TextbitElement[]
+    content: TBElement[]
     meta: Block[]
     links: Block[]
   }
@@ -24,7 +24,7 @@ const transformer = transformNewsdoc
 const reverter = revertNewsdoc
 
 export function initDoc(data: GetDocumentResponse, doc: Y.Doc): Uint8Array {
-  // TODO:Should set `meta` and `links` once a slate format i set
+  // TODO: Should set `meta` and `links` once a slate format is set
   const origMap = doc.getMap('original')
   const result = newsDocToYmap(data, origMap)
 

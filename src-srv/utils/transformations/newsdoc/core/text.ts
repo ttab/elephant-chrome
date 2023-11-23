@@ -2,7 +2,13 @@ import { decode, encode } from 'html-entities'
 import { parse, type HTMLElement } from 'node-html-parser'
 import { Block } from '../../../../protos/service.js'
 import { JSDOM } from 'jsdom'
-import type { TextbitDescendant, TextbitElement, TextbitText } from '@ttab/textbit'
+import {
+  type TBDescendant,
+  type TBElement,
+  type TBText,
+  TextbitElement
+} from '@ttab/textbit'
+
 import { invert } from 'lodash-es'
 
 const translateList = {
@@ -16,7 +22,7 @@ const replace = (type: string, translateList: Record<string, string>): string =>
   return translateList[type] ?? 'core/paragraph'
 }
 
-function createAnchorElement(element: TextbitElement): string {
+function createAnchorElement(element: TBElement): string {
   const dom = new JSDOM()
   const document = dom.window.document
 
@@ -28,7 +34,7 @@ function createAnchorElement(element: TextbitElement): string {
     anchor.id = element.id
   }
 
-  const children = element.children as TextbitText[]
+  const children = element.children as TBText[]
   if (typeof children[0].text === 'string') {
     anchor.textContent = children[0].text
   }
@@ -36,7 +42,7 @@ function createAnchorElement(element: TextbitElement): string {
   return anchor.outerHTML
 }
 
-function transformInlineElement(node: HTMLElement): TextbitDescendant {
+function transformInlineElement(node: HTMLElement): TBElement {
   switch (node.rawTagName) {
     case 'a':
       return {
@@ -56,7 +62,7 @@ function transformInlineElement(node: HTMLElement): TextbitDescendant {
   }
 }
 
-function revertInlineElement(element: TextbitElement): string {
+function revertInlineElement(element: TBElement): string {
   switch (element.type) {
     case 'core/link':
       return createAnchorElement(element)
@@ -65,25 +71,18 @@ function revertInlineElement(element: TextbitElement): string {
   }
 }
 
-export function transformText(element: Block): TextbitElement {
+export function transformText(element: Block): TBElement {
   const { id, type, data } = element
   const root = parse(data.text)
   const nodes = root.childNodes as HTMLElement[]
-
-  const properties = type !== 'core/paragraph'
-    ? {
-        properties: {
-          type: replace(type, translateList)
-        }
-      }
-    : {}
+  const properties = type !== 'core/paragraph' ? { properties: { type: replace(type, translateList) } } : {}
 
   return {
     id,
     class: 'text',
     type: 'core/text',
     ...properties,
-    children: nodes.map((node): TextbitDescendant => {
+    children: nodes.map((node): TBDescendant => {
       // Html entity
       if (node.nodeType === 1) {
         return {
@@ -102,18 +101,19 @@ export function transformText(element: Block): TextbitElement {
   }
 }
 
-export function revertText(element: TextbitElement): Block {
+export function revertText(element: TBElement): Block {
   const { id, children } = element
+
   return Block.create({
     id,
     type: replace(element.properties?.type as string, invert(translateList)),
     data: {
-      text: children.map((child: TextbitDescendant) => {
-        if ('class' in child && child.class === 'inline') {
+      text: children.map((child: TBElement | TBText) => {
+        if (TextbitElement.isInline(child)) {
           return revertInlineElement(child)
         }
 
-        if ('text' in child) {
+        if (TextbitElement.isTextLeaf(child)) {
           return encode(child.text)
         }
 
