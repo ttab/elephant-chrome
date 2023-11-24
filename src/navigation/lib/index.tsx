@@ -1,0 +1,1 @@
+export { navigationReducer } from './navigationReducer'

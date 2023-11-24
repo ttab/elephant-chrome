@@ -5,12 +5,13 @@ import {
   type PropsWithChildren,
   type Dispatch
 } from 'react'
-import { NavigationWrapper } from '@/components/NavigationWrapper'
-import type { ContentState, NavigationState, NavigationAction } from '@/types'
+import type { NavigationState, NavigationAction } from '@/types'
 import { NavigationActionType } from '@/types'
 import { init } from '@/lib/init'
 
 import { useHistory } from '@/hooks'
+import { navigationReducer } from '@/navigation/lib'
+
 
 const initialState = init()
 
@@ -24,7 +25,7 @@ export const NavigationProvider = ({ children }: PropsWithChildren): JSX.Element
   const historyState = useHistory()
 
   useLayoutEffect(() => {
-    // Create history state for initial content
+    // Create history state for initial content based on url
     if (historyState === null) {
       // TODO: Make router/location hook
       const currentView = window.location.pathname !== '/'
@@ -36,11 +37,13 @@ export const NavigationProvider = ({ children }: PropsWithChildren): JSX.Element
       history.replaceState({
         id,
         itemName: currentView,
-        contentState: [{ id, name: currentView, props: currentProps }]
+        contentState: [{ id, name: currentView, props: currentProps, path: '/' }]
       }, document.title, window.location.href)
     }
 
-    if (historyState !== null) {
+    /* undefined is for initial state on page load/refresh set state from saved history
+       'popstate' is for state change on back/forward button, set new state */
+    if (historyState && (historyState.type === 'popstate' || historyState.type === undefined)) {
       dispatch({ type: NavigationActionType.SET, content: historyState.contentState })
     }
   }, [historyState])
@@ -64,65 +67,3 @@ export const NavigationProvider = ({ children }: PropsWithChildren): JSX.Element
   )
 }
 
-function navigationReducer(state: NavigationState, action: NavigationAction): NavigationState {
-  switch (action.type) {
-    case NavigationActionType.ADD:
-      if (action.component === undefined || action.props === undefined) {
-        throw new Error('Component is undefined')
-      }
-
-      return {
-        ...state,
-        content: [
-          ...state.content,
-          <NavigationWrapper key={action.id} id={action.id}>
-            <action.component {...action.props} />
-          </NavigationWrapper>
-
-        ]
-      }
-
-    case NavigationActionType.REMOVE:
-
-      return {
-        ...state,
-        content: [
-          ...state.content.slice(1, state.content.length)
-        ]
-      }
-
-    case NavigationActionType.SET:
-      if (action.content === undefined) {
-        throw new Error('Content is undefined')
-      }
-
-      return {
-        ...state,
-        content: action.content.map((item: ContentState, index): JSX.Element => {
-          const Component = state.registry.get(item.name)?.component
-
-          return (
-            <NavigationWrapper key={item.id} id={item.id}>
-              <Component {...{ ...item, index }} />
-            </NavigationWrapper>
-          )
-        })
-      }
-
-    case NavigationActionType.FOCUS:
-      if (action.id === undefined) {
-        throw new Error('Id is undefined')
-      }
-
-      return {
-        ...state,
-        focus: action.id === state.focus
-          ? null
-          : action.id
-      }
-
-
-    default:
-      throw new Error(`Unhandled action type: ${action.type as string}`)
-  }
-}

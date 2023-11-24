@@ -48,7 +48,8 @@ export function handleLink({ event, dispatch, linkItem, props, id }: LinkClick):
       {
         ...props,
         id,
-        name: linkItem.metadata.name
+        name: linkItem.metadata.name,
+        path: `${linkItem.metadata.path}${toQueryString(props)}`
       }
     ]
   }, linkItem.metadata.name, `${linkItem.metadata.path}${toQueryString(props)}`)

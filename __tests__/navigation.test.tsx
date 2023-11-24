@@ -1,6 +1,8 @@
-import { NavigationProvider, SessionProvider } from '@/contexts'
-import { render, screen } from '../setupTests'
+import { SessionProvider } from '@/contexts'
+import { NavigationProvider } from '@/navigation/components'
+
 import { App } from '@/App'
+import { render, screen } from '../setupTests'
 
 
 const JWT = { sub: 'abc', sub_name: 'ABC', units: ['a', 'b', 'c'], scope: 'AbC', access_token: 'xxx' }

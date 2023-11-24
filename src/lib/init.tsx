@@ -1,5 +1,5 @@
 import type { NavigationState, RegistryItem, View } from '@/types'
-import { NavigationWrapper } from '@/components'
+import { NavigationWrapper } from '@/navigation/components/NavigationWrapper'
 import * as views from '@/views'
 
 const registeredComponents = new Map()
@@ -44,6 +44,7 @@ export function init(): NavigationState {
   return {
     registry,
     focus: null,
+    active: 'start',
     content: [
       (
         <NavigationWrapper key='start' id='start'>
