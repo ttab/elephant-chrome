@@ -1,8 +1,8 @@
 import { decode } from 'html-entities'
 import { Block } from '../../../../protos/service.js'
-import { type TextbitElement } from '@ttab/textbit'
+import { type TBElement } from '@ttab/textbit'
 
-export const transformVisual = (element: Block): TextbitElement => {
+export const transformVisual = (element: Block): TBElement => {
   const { id, data, links } = element
   return {
     id,
@@ -40,7 +40,7 @@ export const transformVisual = (element: Block): TextbitElement => {
   }
 }
 
-export function revertVisual(element: TextbitElement): Block {
+export function revertVisual(element: TBElement): Block {
   function toString(value: string | number | undefined): string {
     return (value ?? '').toString()
   }

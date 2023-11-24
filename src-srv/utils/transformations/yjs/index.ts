@@ -1,10 +1,10 @@
 import * as Y from 'yjs'
 import { slateNodesToInsertDelta, yTextToSlateElement } from '@slate-yjs/core'
 import type { GetDocumentResponse } from '../../../protos/service.js'
-import { type TextbitElement } from '@ttab/textbit'
+import { type TBElement } from '@ttab/textbit'
 import { revertNewsdoc } from '../newsdoc/index.js'
 
-export function yjsStateAsUpdate(content: TextbitElement[], data: Y.Doc): Uint8Array {
+export function yjsStateAsUpdate(content: TBElement[], data: Y.Doc): Uint8Array {
   const insertContentDelta = slateNodesToInsertDelta(content)
   const sharedContentRoot = data.get('content', Y.XmlText) as Y.XmlText
   sharedContentRoot.applyDelta(insertContentDelta)
