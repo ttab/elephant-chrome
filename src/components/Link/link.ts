@@ -33,9 +33,7 @@ export function handleLink({ event, dispatch, linkItem, props, id }: LinkClick):
   dispatch({
     type: NavigationActionType.ADD,
     component: linkItem.component,
-    props: {
-      ...props
-    },
+    props: { ...props, id },
     id
   })
 
