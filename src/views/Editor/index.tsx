@@ -96,7 +96,7 @@ export const Editor = (props: ViewProps): JSX.Element => {
 
   const views = [
     // @ts-expect-error FIXME: yjsEditor needs more refinement
-    < TextbitEditable yjsEditor={editor} />,
+    <TextbitEditable yjsEditor={editor} />,
     <strong className="animate-pulse">Not connected</strong>
   ]
 

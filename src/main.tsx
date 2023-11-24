@@ -16,7 +16,7 @@ ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
   <SessionProvider endpoint={new URL('/api/user', apiUrl)}>
     <ApiProvider apiUrl={apiUrl} websocketUrl={websocketUrl} indexUrl={indexUrl}>
       <React.StrictMode>
-        < ThemeProvider defaultTheme='light' storageKey='ele-ui-theme' >
+        <ThemeProvider defaultTheme='light' storageKey='ele-ui-theme' >
           <NavigationProvider>
             <App />
           </NavigationProvider>
