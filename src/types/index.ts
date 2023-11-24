@@ -5,7 +5,8 @@ export enum NavigationActionType {
   ADD = 'add',
   REMOVE = 'remove',
   SET = 'set',
-  FOCUS = 'focus'
+  FOCUS = 'focus',
+  ACTIVE = 'active'
 }
 
 export type View = keyof typeof views
@@ -35,6 +36,7 @@ export interface Registry {
 export interface NavigationState {
   registry: Registry
   focus: string | null
+  active: string | undefined
   content: JSX.Element[]
 }
 
@@ -48,6 +50,8 @@ export interface HistoryState {
   id: string
   itemName: string
   props: Record<string, unknown>
+  path: string
+  type: 'popstate' | 'pushstate' | 'replacestate'
   contentState: ContentState[]
 }
 

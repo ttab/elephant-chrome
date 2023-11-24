@@ -1,5 +1,5 @@
-export { useNavigation } from './useNavigation'
+export { useNavigation } from '@/navigation/hooks/useNavigation'
 export { useTheme } from './useTheme'
-export { useHistory } from './useHistory'
+export { useHistory } from '@/navigation/hooks/useHistory'
 export { useSession } from './useSession'
 export { useQuery } from './useQuery'

@@ -1,7 +1,8 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import { App } from './App.tsx'
-import { NavigationProvider, ThemeProvider, ApiProvider, SessionProvider } from '@/contexts'
+import { ThemeProvider, ApiProvider, SessionProvider } from '@/contexts'
+import { NavigationProvider } from '@/navigation/components'
 
 const protocol = import.meta.env.VITE_PROTOCOL
 const host = import.meta.env.VITE_API_HOST
