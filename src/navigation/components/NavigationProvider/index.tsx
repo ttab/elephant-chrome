@@ -9,10 +9,8 @@ import type { NavigationState, NavigationAction } from '@/types'
 import { NavigationActionType } from '@/types'
 import { init } from '@/lib/init'
 
-import { useHistory } from '@/hooks'
+import { useHistory, useResize } from '@/hooks'
 import { navigationReducer } from '@/navigation/lib'
-import { useResize } from '@/navigation/hooks/useResize'
-
 
 const initialState = init()
 
