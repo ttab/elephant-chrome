@@ -13,6 +13,6 @@ describe('Use NavigationProvider', () => {
         </NavigationProvider>
       </SessionProvider>
     )
-    expect(await screen.findByText('Plannings 2023-11-09')).toBeInTheDocument()
+    expect(await screen.findByText(/AaaBbbCcc/)).toBeInTheDocument()
   })
 })
