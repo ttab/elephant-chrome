@@ -9,9 +9,8 @@ import type { NavigationState, NavigationAction } from '@/types'
 import { NavigationActionType } from '@/types'
 import { init } from '@/lib/init'
 
-import { useHistory } from '@/hooks'
+import { useHistory, useResize } from '@/hooks'
 import { navigationReducer } from '@/navigation/lib'
-
 
 const initialState = init()
 
@@ -23,6 +22,7 @@ export const NavigationContext = createContext<{
 export const NavigationProvider = ({ children }: PropsWithChildren): JSX.Element => {
   const [state, dispatch] = useReducer(navigationReducer, initialState)
   const historyState = useHistory()
+  const screenSize = useResize()
 
   useLayoutEffect(() => {
     // Create history state for initial content based on url
@@ -58,7 +58,7 @@ export const NavigationProvider = ({ children }: PropsWithChildren): JSX.Element
         contentState: history.state.contentState.slice(1, history.state.contentState.length)
       }, document.title, window.location.href)
     }
-  }, [state])
+  }, [state, screenSize])
 
   return (
     <NavigationContext.Provider value={{ state, dispatch }}>
