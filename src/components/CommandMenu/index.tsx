@@ -13,7 +13,7 @@ import {
   CommandSeparator
 } from '@ttab/elephant-ui'
 
-import { handleLink } from '../Link/link'
+import { handleLink } from '../Link/lib/handleLink'
 import { useNavigation } from '@/hooks'
 import { v4 as uuid } from 'uuid'
 

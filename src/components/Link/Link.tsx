@@ -3,7 +3,8 @@ import { type View, type ViewProps } from '@/types'
 import { useNavigation } from '@/hooks'
 import { v4 as uuid } from 'uuid'
 
-import { handleLink, toQueryString } from './link'
+import { handleLink } from './lib/handleLink'
+import { toQueryString } from './lib/toQueryString'
 
 interface LinkProps {
   children: React.ReactNode
@@ -33,7 +34,7 @@ export const Link = forwardRef((props: LinkProps, ref: ForwardedRef<HTMLAnchorEl
         handleLink({ event, dispatch, linkItem, props: { ...props.props }, id })
       }}
       ref={ref}>
-        {props.children}
+      {props.children}
     </a>
   )
 })
