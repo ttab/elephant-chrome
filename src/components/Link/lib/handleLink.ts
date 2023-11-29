@@ -5,6 +5,7 @@ import {
   type ViewProps,
   type RegistryItem
 } from '@/types'
+import { toQueryString } from './toQueryString'
 
 interface LinkClick {
   event?: MouseEvent<HTMLAnchorElement>
@@ -12,15 +13,6 @@ interface LinkClick {
   linkItem: RegistryItem
   props?: ViewProps
   id: string
-}
-
-export function toQueryString(obj:
-Record<string, string> | Omit<ViewProps, 'id'> | undefined):
-  string {
-  if (!obj || Object.keys(obj).length === 0) {
-    return ''
-  }
-  return `?${new URLSearchParams(obj as Record<string, string>).toString()}`
 }
 
 export function handleLink({ event, dispatch, linkItem, props, id }: LinkClick): void {
@@ -52,4 +44,3 @@ export function handleLink({ event, dispatch, linkItem, props, id }: LinkClick):
     ]
   }, linkItem.metadata.name, `${linkItem.metadata.path}${toQueryString(props)}`)
 }
-

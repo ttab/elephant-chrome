@@ -23,27 +23,32 @@ src/
       handlLogin.ts
       handleLogout.ts
   views/
+    index.tsx
     Editor/
-      index.tsx
-      metadata.tsx
-      editable.tsx
+      Editor.tsx
+      Metadata.tsx
+      Editable.tsx
     Planning
-      index.tsx
-      add-item
-        index.tsx
+      Planning.tsx
+      lib/
+        sortPlanning.ts
+        filterPlanning.ts
+      hooks/
+        usePlanningFilter.tsx
+        usePlanningSort.tsx
   components
     ItemCard
-      index.tsx
+      ItemCard.tsx
       ItemCardHeader.tsx
       ItemCardFooter.tsx
     ItemList
-      index.tsx
+      ItemList.tsx
     Usermenu
-      index.tsx
+      Usermenu.tsx
 ```
 
 ### Component naming and structure
-Component and view filenames should be use _PascalCase_. All directories should have a default `index.tsx` with the main component implementation. Sub components should be in files using _PascalCase naming_. All exported react components should be named according to _PascalCase_ and use named exports.
+Component and view filenames should use _PascalCase_, both for folder and main file. Exported name from a file should be same as filename. Parent directories should have an `index.tsx` with all views, components, lib files, etc.
 
 Support functions in component files should use _camelCase_ (i.e `myFunction()` and never be exported.
 
@@ -78,4 +83,3 @@ All hooks and support functions in _hooks/_ and _lib/_ should all use _camelCase
 
 ### Import aliases
 Use `@/lib/...`, `@/components/`, `@/hooks/` and `@/views/` etc to import components and functions.
-
