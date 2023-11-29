@@ -1,0 +1,234 @@
+{
+  "total": 124,
+  "hits": {
+    "hits": [
+      {
+        "_index": "documents-v1-core_planning_item",
+        "_id": "e0c26cee-07f1-xxxx-8ed0-8c7052032acf",
+        "_score": null,
+        "_source": {
+          "created": [
+            "2023-10-30T12:41:02Z"
+          ],
+          "current_version": [
+            "347"
+          ],
+          "document.language": [
+            ""
+          ],
+          "document.meta.core_assignment.data.end": [
+            "2023-11-09T22:59:59Z"
+          ],
+          "document.meta.core_assignment.data.end_date": [
+            "2023-11-09T00:00:00Z"
+          ],
+          "document.meta.core_assignment.data.full_day": [
+            "true"
+          ],
+          "document.meta.core_assignment.data.public": [
+            "true"
+          ],
+          "document.meta.core_assignment.data.publish": [
+            "2023-11-09T08:00:00Z",
+            "2023-11-09T04:00:00Z",
+            "2023-11-08T23:00:00Z",
+            "2023-11-09T11:00:00Z",
+            "2023-11-09T16:00:00Z",
+            "2023-11-09T17:00:00Z",
+            "2023-11-09T18:00:00Z"
+          ],
+          "document.meta.core_assignment.data.start": [
+            "2023-11-08T23:00:00Z"
+          ],
+          "document.meta.core_assignment.data.start_date": [
+            "2023-11-09T00:00:00Z"
+          ],
+          "document.meta.core_assignment.id": [
+            "c78a058c-dcb9-4579-xxxx-065c82e22779",
+            "8aece287-cf6b-4cf9-xxxx-e735555361f8",
+            "c63ad787-9122-4aab-xxxx-0cab788e52ac",
+            "d6d13285-e0dd-4d15-xxxx-9130d2e1edab",
+            "d05a7349-aa07-49c3-xxxx-9801974c56d9",
+            "4d4cecf7-0c4d-4515-xxxx-71f861269ace",
+            "cd223fad-dd5d-4804-xxxx-fe7519e3d937",
+            "67609c73-9f3b-411a-xxxx-5dda594f0441",
+            "58287dfa-d788-4862-xxxx-770c41f7b454"
+          ],
+          "document.meta.core_assignment.meta.core_assignment_type.value": [
+            "text",
+            "graphic"
+          ],
+          "document.meta.core_assignment.meta.tt_slugline.value": [
+            "xö-oro",
+            "xö-oroa",
+            "xö-orob",
+            "xö-oroc",
+            "xö-orod",
+            "xö-oroe",
+            "xö-orof"
+          ],
+          "document.meta.core_assignment.rel.assignee.name": [
+            "Aaa Bbb/XX",
+            "Ccc Ddd/XX",
+            "Eee Fff /XX",
+            "Ggg Hhh/XX",
+            "Iii Jjj/XX",
+            "Kkk Lll/XX",
+            "Mmm Nnn/XX",
+            "Ooo Ppp/XX",
+            "Qqq Rrr/XX",
+            "Sss Ttt/XX"
+          ],
+          "document.meta.core_assignment.rel.assignee.role": [
+            "primary"
+          ],
+          "document.meta.core_assignment.rel.assignee.type": [
+            "core/author"
+          ],
+          "document.meta.core_assignment.rel.assignee.uuid": [
+            "efb80708-1b2c-xxxx-a624-4178e53d7ff8",
+            "8e2e359c-6e99-xxxx-b4f1-03fcb41c6d95",
+            "e276b99a-c5df-xxxx-b72b-ed79308791c2",
+            "786cd02c-2eb6-xxxx-b9c7-2e3e3233e2bd",
+            "5dedccab-4006-xxxx-ab39-f89e533b3feb",
+            "bd797945-a08d-xxxx-b901-a720152b576f",
+            "1286a450-c8d6-xxxx-9a7f-0ee961f3e9d5",
+            "26c89367-a4e4-xxxx-9dab-d6df9d5071b2",
+            "f44930d5-c71c-xxxx-93b9-68988b333522",
+            "9631121f-cfb8-xxxx-9800-f66ecfd57b7b"
+          ],
+          "document.meta.core_assignment.rel.deliverable.type": [
+            "core/article"
+          ],
+          "document.meta.core_assignment.rel.deliverable.uuid": [
+            "06633ac6-2f1a-xxxx-9c08-310ebed4d0c5",
+            "2582a566-9fee-xxxx-8ece-9ca307663385",
+            "e31378cf-4bf4-xxxx-b7a9-2c75c649548e",
+            "3056b39f-a8d5-xxxx-9a5e-67b49e71afa5",
+            "1fcaef21-db99-xxxx-ac39-2c9e1eb457f7",
+            "1f089705-6caa-xxxx-97e6-09d1186a6572",
+            "2762882f-2e15-xxxx-aa4e-c206e170c567",
+            "4f9e6822-aaff-xxxx-8a44-2c79401e5e48",
+            "ad2a462d-0ac0-xxxx-8ef7-bb3b0b1fde81",
+            "1ae86be7-29bb-xxxx-9bb8-f3ae224172c4",
+            "32af9737-fe5e-xxxx-9f7f-fa453fd8ff48",
+            "5b10d1b8-c70b-xxxx-b4e3-20ac922d50b2",
+            "a21b8f49-5233-xxxx-8a14-6b35b96cbc51",
+            "4abe5ffe-3743-xxxx-9539-754f60de801f",
+            "5222a012-f34c-xxxx-b8d0-9f1463f3ac10",
+            "f18facf3-747b-xxxx-9f50-218acec90a65",
+            "3116e85a-05b4-xxxx-93ae-c4fc6b4ce2fe",
+            "ffcbf814-8819-xxxx-8b1c-348f1e476ca1"
+          ],
+          "document.meta.core_assignment.title": [
+            "aaa",
+            "bbb",
+            "ccc",
+            "ddd",
+            "eee",
+            "fff",
+            "ggg",
+            "hhh",
+            "iii"
+          ],
+          "document.meta.core_description.data.text": [
+            "aaa"
+          ],
+          "document.meta.core_description.role": [
+            "public"
+          ],
+          "document.meta.core_planning_item.data.end_date": [
+            "2023-11-09T00:00:00Z"
+          ],
+          "document.meta.core_planning_item.data.priority": [
+            "1"
+          ],
+          "document.meta.core_planning_item.data.public": [
+            "true"
+          ],
+          "document.meta.core_planning_item.data.start_date": [
+            "2023-11-09T00:00:00Z"
+          ],
+          "document.meta.core_planning_item.data.tentative": [
+            "false"
+          ],
+          "document.rel.sector.title": [
+            "Utrikes"
+          ],
+          "document.rel.sector.type": [
+            "tt/sector"
+          ],
+          "document.rel.sector.uri": [
+            "sector://utr"
+          ],
+          "document.rel.sector.uuid": [
+            "ef739bb6-7ba1-xxxx-8aa0-f7dde302efa2"
+          ],
+          "document.rel.sector.value": [
+            "UTR"
+          ],
+          "document.rel.story.title": [
+            "AaaBbb"
+          ],
+          "document.rel.story.type": [
+            "core/story"
+          ],
+          "document.rel.story.uuid": [
+            "f5c2ac15-ce79-xxxx-b663-2ca314af3b4b"
+          ],
+          "document.title": [
+            "AaaBbbCcc"
+          ],
+          "document.type": [
+            "core/planning-item"
+          ],
+          "document.uri": [
+            "core://newscoverage/e0c26cee-07f1-xxx-8ed0-8c7052032acf"
+          ],
+          "document.url": [
+            ""
+          ],
+          "heads.usable.created": [
+            "2023-11-09T18:00:00Z"
+          ],
+          "heads.usable.creator": [
+            "imid://user/sub/5a90ce6e-5db9-xxxx-a1d7-2af6264b4912"
+          ],
+          "heads.usable.id": [
+            "347"
+          ],
+          "heads.usable.version": [
+            "347"
+          ],
+          "modified": [
+            "2023-11-09T18:00:00Z"
+          ],
+          "readers": [
+            "core://unit/xxxEditorial"
+          ],
+          "text": null
+        },
+        "fields": {
+          "document.title": [
+            "AaaBbbCcc"
+          ],
+          "heads.usable.creator": [
+            "imid://user/sub/5a90ce6e-5db9-xxxx-a1d7-2af6264b4912"
+          ],
+          "heads.usable.id": [
+            347
+          ],
+          "heads.usable.version": [
+            347
+          ],
+          "heads.usable.created": [
+            "2023-11-09T18:00:00.000Z"
+          ]
+        },
+        "sort": [
+          1
+        ]
+      }
+    ]
+  }
+}

@@ -34,6 +34,7 @@ export const PlanningOverview = (props: ViewProps): JSX.Element => {
         console.log(ex)
       })
   }, [indexUrl, jwt])
+
   return (
     <>
       <ViewHeader title='Plannings 2023-11-09' { ...props} />
