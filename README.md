@@ -26,7 +26,6 @@ src/
     index.tsx
     Editor/
       Editor.tsx
-      Metadata.tsx
       Editable.tsx
     Planning
       Planning.tsx

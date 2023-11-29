@@ -32,15 +32,15 @@ export function handleLink({ event, dispatch, linkItem, props, id }: LinkClick):
   history.pushState({
     id,
     props: { ...props, id },
-    itemName: linkItem.metadata.name,
+    itemName: linkItem.meta.name,
     contentState: [
       ...history.state.contentState,
       {
         ...props,
         id,
-        name: linkItem.metadata.name,
-        path: `${linkItem.metadata.path}${toQueryString(props)}`
+        name: linkItem.meta.name,
+        path: `${linkItem.meta.path}${toQueryString(props)}`
       }
     ]
-  }, linkItem.metadata.name, `${linkItem.metadata.path}${toQueryString(props)}`)
+  }, linkItem.meta.name, `${linkItem.meta.path}${toQueryString(props)}`)
 }

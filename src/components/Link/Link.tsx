@@ -24,7 +24,7 @@ export const Link = forwardRef((props: LinkProps, ref: ForwardedRef<HTMLAnchorEl
     <a
       {...props}
       className='p-1 hover:font-bold'
-      href={`${linkItem.metadata.path}${qs || ''}`}
+      href={`${linkItem.meta.path}${qs || ''}`}
       onClick={(event) => {
         event.stopPropagation()
         // Execute forwarded onClick handler

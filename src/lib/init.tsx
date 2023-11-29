@@ -3,6 +3,7 @@ import { NavigationWrapper } from '@/navigation/components/NavigationWrapper'
 import * as views from '@/views'
 
 const registeredComponents = new Map()
+
 const registry = {
   get: (key: View) => {
     const registryItem: RegistryItem = registeredComponents.get(key)
@@ -11,9 +12,10 @@ const registry = {
     }
     return registryItem
   },
+
   getByPath: (path: string): RegistryItem => {
     for (const [key, value] of registeredComponents) {
-      if (value.metadata.path === path) {
+      if (value.meta.path === path) {
         return registeredComponents.get(key)
       }
     }
@@ -25,19 +27,12 @@ const registry = {
 }
 
 export function init(): NavigationState {
-  for (const key in views) {
-    if (views[key as View].displayName === undefined) {
-      throw new Error(`Can't register views without displayName: ${key}`)
-    } else {
-      registeredComponents.set(key as View, {
-        component: views[key as View],
-        metadata: {
-          path: key === 'PlanningOverview' ? '/' : `/${key.toLowerCase()}`,
-          name: views[key as View].displayName
-        }
-      })
-    }
-  }
+  Object.keys(views).forEach((name) => {
+    registeredComponents.set(name, {
+      component: views[name as View],
+      meta: views[name as View].meta
+    })
+  })
 
   const InititalView = registry.getByPath(window.location.pathname)
 

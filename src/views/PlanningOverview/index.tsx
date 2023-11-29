@@ -37,14 +37,24 @@ export const PlanningOverview = (props: ViewProps): JSX.Element => {
 
   return (
     <>
-      <ViewHeader title='Plannings 2023-11-09' { ...props} />
+      <ViewHeader title='Plannings 2023-11-09' {...props} />
       <main className="h-full flex-1 flex-col space-y-8 p-8 md:flex">
         {result?.ok === true &&
-        <PlanningTable data={result?.hits} columns={columns} />
+          <PlanningTable data={result?.hits} columns={columns} />
         }
       </main>
     </>
   )
 }
 
-PlanningOverview.displayName = 'PlanningOverview'
+PlanningOverview.meta = {
+  name: 'PlanningOverview',
+  path: '/',
+  widths: {
+    sm: [100],
+    md: [100],
+    lg: [50, 100],
+    xl: [50, 100],
+    '2xl': [40, 80]
+  }
+}

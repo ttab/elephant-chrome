@@ -20,11 +20,21 @@ export interface NavigationAction {
   id?: string
 }
 
-export interface RegistryItem {
-  metadata: {
-    name: string
-    path: string
+export interface ViewMetadata {
+  name: string
+  path: string
+  widths: {
+    xs: [number, number?]
+    sm: [number, number?]
+    md: [number, number?]
+    lg: [number, number?]
+    xl: [number, number?]
+    '2xl': [number, number?]
   }
+}
+
+export interface RegistryItem {
+  meta: ViewMetadata
   component: React.FC<ViewProps>
 }
 
