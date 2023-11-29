@@ -8,7 +8,7 @@ import { createEditor } from 'slate'
 import { TextbitEditable } from '@ttab/textbit'
 import '@ttab/textbit/dist/esm/index.css'
 
-import { HocuspocusProvider, WebSocketStatus } from '@hocuspocus/provider'
+import { HocuspocusProvider } from '@hocuspocus/provider'
 import { useSession, useQuery } from '@/hooks'
 import { type ViewProps } from '@/types'
 
@@ -17,58 +17,42 @@ export const Editor = (props: ViewProps): JSX.Element => {
   const { jwt } = useSession()
   const { hocuspocusWebsocket } = useApi()
 
-  const [connectionStatus, setConnectionStatus] = useState<WebSocketStatus>(WebSocketStatus.Disconnected)
-  const documentId = props.documentId || query.documentId
+  const [isSynced, setIsSynced] = useState<boolean>(false)
+  const [isConnected, setIsConnected] = useState<boolean>(false)
 
+  // Ensure we have a valid document id
+  const documentId = useMemo(() => {
+    return props.documentId || query.documentId
+  }, [props.documentId, query.documentId])
+
+
+  // Setup hocus pocus provider
   const provider = useMemo(() => {
-    if (!hocuspocusWebsocket) {
+    if (!hocuspocusWebsocket || !jwt?.access_token || !documentId) {
       return
     }
 
-    if (!jwt?.access_token) {
-      return
-    }
-
-    if (!documentId) {
-      return
-    }
-
-    /* FIXME: using shared hocus pocus websocket provider
-     * It might be that using the provided shared "hocuspocusWebsocket" does not work as it might not
-     * be possible to have the same document synced twice to the same hocuspocusprovider in the client?
-     */
     return new HocuspocusProvider({
       websocketProvider: hocuspocusWebsocket,
       name: documentId,
       token: jwt.access_token,
-      onAuthenticationFailed: ({ reason }) => {
-        console.warn(reason)
+      onConnect: () => {
+        setIsConnected(true)
       },
-      onAuthenticated: () => {
-        console.info('Authenticated', documentId)
+      onSynced: () => {
+        setIsSynced(true)
       },
-      onSynced: ({ state }) => {
-        if (state) {
-          console.info('Synced ', documentId)
-          setConnectionStatus(WebSocketStatus.Connected)
-        }
-      },
-      onStatus: ({ status }) => {
-        if (status === 'disconnected') {
-          console.warn('Lost connection', documentId)
-          setConnectionStatus(WebSocketStatus.Disconnected)
-        }
+      onDisconnect: () => {
+        setIsSynced(false)
+        setIsConnected(false)
       }
-      // FIXME: This is needed later when we want to show info on active users in views
-      // onAwarenessUpdate: ({ states }) => {
-      //   console.log(states)
-      // }
     })
   }, [documentId, hocuspocusWebsocket, jwt?.access_token])
 
+
   // Create YjsEditor for Textbit to use
   const editor = useMemo(() => {
-    if (!provider?.awareness) {
+    if (!jwt?.sub_name || !provider?.awareness) {
       return
     }
 
@@ -86,26 +70,22 @@ export const Editor = (props: ViewProps): JSX.Element => {
     )
   }, [provider, jwt?.sub_name])
 
-  // Connect Yjs to editor once
+
+  // Connect/disconnect from provider through editor only when editor changes
   useEffect(() => {
     if (editor) {
       YjsEditor.connect(editor)
       return () => YjsEditor.disconnect(editor)
     }
-  })
-
-  const views = [
-    // @ts-expect-error FIXME: yjsEditor needs more refinement
-    <TextbitEditable yjsEditor={editor} />,
-    <strong className="animate-pulse">Not connected</strong>
-  ]
+  }, [editor])
 
   return (
     <>
       <ViewHeader title='Editor' {...props} />
       <main className="min-w-[30vw]">
-        <div className="h-full relative">
-          {views[connectionStatus === WebSocketStatus.Connected ? 0 : 1]}
+        <div className={`h-full relative ${!isConnected || !isSynced ? 'opacity-60' : ''}`}>
+          { /* @ts-expect-error yjsEditor needs more refinement */}
+          <TextbitEditable yjsEditor={editor} />
         </div>
       </main>
     </>

@@ -23,16 +23,14 @@ export const ApiProviderContext = createContext<ApiProviderState>({
 })
 
 export const ApiProvider = ({ children, apiUrl, websocketUrl, indexUrl }: ApiProviderProps): JSX.Element => {
-  const hpws = useMemo(() => {
-    return new HocuspocusProviderWebsocket({ url: websocketUrl.href })
-  }, [websocketUrl])
-
-  const value = {
-    apiUrl,
-    websocketUrl,
-    indexUrl,
-    hocuspocusWebsocket: hpws
-  }
+  const value = useMemo((): ApiProviderState => {
+    return {
+      apiUrl,
+      websocketUrl,
+      indexUrl,
+      hocuspocusWebsocket: new HocuspocusProviderWebsocket({ url: websocketUrl.href })
+    }
+  }, [apiUrl, websocketUrl, indexUrl])
 
   return (
     <ApiProviderContext.Provider value={value}>
