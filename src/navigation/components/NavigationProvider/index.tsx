@@ -9,7 +9,7 @@ import type { NavigationState, NavigationAction } from '@/types'
 import { NavigationActionType } from '@/types'
 import { initializeNavigationState } from '@/lib/initializeNavigationState'
 
-import { useHistory, useResize } from '@/hooks'
+import { useHistory, useResize, useView } from '@/hooks'
 import { navigationReducer } from '@/navigation/lib'
 
 const initialState = initializeNavigationState()
@@ -23,41 +23,50 @@ export const NavigationProvider = ({ children }: PropsWithChildren): JSX.Element
   const [state, dispatch] = useReducer(navigationReducer, initialState)
   const historyState = useHistory()
   const screenSize = useResize()
+  const { name, props } = useView()
 
+  // Initialize a new history start state based on current url
   useLayoutEffect(() => {
-    // Create history state for initial content based on url
     if (historyState === null) {
-      // TODO: Make router/location hook
-      const currentView = window.location.pathname !== '/'
-        ? window.location.pathname[1].toUpperCase() + window.location.pathname.slice(2)
-        : 'PlanningOverview'
-      const currentProps = Object.fromEntries(new URLSearchParams(window.location.search))
-      const id = currentProps.id || 'start'
-
       history.replaceState({
-        id,
-        itemName: currentView,
-        contentState: [{ id, name: currentView, props: currentProps, path: '/' }]
+        id: 'start',
+        itemName: name,
+        contentState: [{
+          id: 'start',
+          name,
+          props,
+          path: '/'
+        }]
       }, document.title, window.location.href)
     }
+  }, [name, props, historyState])
 
-    /* undefined is for initial state on page load/refresh set state from saved history
-       'popstate' is for state change on back/forward button, set new state */
+
+  // undefined is for initial state on page load/refresh set state from saved history
+  // 'popstate' is for state change on back/forward button, set new state.
+  useLayoutEffect(() => {
     if (historyState && (historyState.type === 'popstate' || historyState.type === undefined)) {
-      dispatch({ type: NavigationActionType.SET, content: historyState.contentState })
+      dispatch({
+        type: NavigationActionType.SET,
+        content: historyState.contentState
+      })
     }
   }, [historyState])
 
+
+  // FIXME: Calculate widths and things for all views currently displayed
   // Remove first element if document width exceeds window width
   useLayoutEffect(() => {
-    if (document.documentElement.scrollWidth > window.innerWidth) {
-      // Remove overflowing view and update state
-      dispatch({ type: NavigationActionType.REMOVE })
-      // Set new history.state
-      history.replaceState({
-        contentState: history.state.contentState.slice(1, history.state.contentState.length)
-      }, document.title, window.location.href)
+    if (document.documentElement.scrollWidth <= window.innerWidth) {
+      return
     }
+
+    // Remove overflowing view and update state
+    dispatch({ type: NavigationActionType.REMOVE })
+
+    history.replaceState({
+      contentState: history.state.contentState.slice(1, history.state.contentState.length)
+    }, document.title, window.location.href)
   }, [state, screenSize])
 
   return (

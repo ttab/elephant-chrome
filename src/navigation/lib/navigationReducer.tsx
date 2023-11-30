@@ -10,7 +10,7 @@ import {
 export function navigationReducer(state: NavigationState, action: NavigationAction): NavigationState {
   switch (action.type) {
     case NavigationActionType.ADD:
-
+      // FIXME: We should calculate here if the new view will fit or if we need to remove an existing
       if (action.component === undefined || action.props === undefined) {
         throw new Error('Component is undefined')
       }
@@ -23,12 +23,10 @@ export function navigationReducer(state: NavigationState, action: NavigationActi
           <NavigationWrapper key={action.id} id={action.id}>
             <action.component {...action.props} />
           </NavigationWrapper>
-
         ]
       }
 
     case NavigationActionType.REMOVE:
-
       return {
         ...state,
         content: [
@@ -64,9 +62,7 @@ export function navigationReducer(state: NavigationState, action: NavigationActi
 
       return {
         ...state,
-        focus: action.id === state.focus
-          ? null
-          : action.id
+        focus: action.id === state.focus ? null : action.id
       }
 
     case NavigationActionType.ACTIVE: {
