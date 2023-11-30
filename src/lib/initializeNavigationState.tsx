@@ -1,32 +1,37 @@
-import type { NavigationState, RegistryItem, View } from '@/types'
+import type { NavigationState, ViewRegistryItem, View } from '@/types'
 import { NavigationWrapper } from '@/navigation/components/NavigationWrapper'
 import * as views from '@/views'
 
-const registeredComponents = new Map()
+const registeredComponents = new Map() as Map<string, ViewRegistryItem>
 
-const registry = {
-  get: (key: View) => {
-    const registryItem: RegistryItem = registeredComponents.get(key)
+const viewRegistry = {
+  get: (name: View) => {
+    const registryItem = registeredComponents.get(name)
+
     if (registryItem === undefined) {
-      throw new Error(`Can't find component: ${key}`)
+      throw new Error(`Can't find component: ${name}`)
     }
+
     return registryItem
   },
 
-  getByPath: (path: string): RegistryItem => {
-    for (const [key, value] of registeredComponents) {
-      if (value.meta.path === path) {
-        return registeredComponents.get(key)
+  getByPath: (path: string): ViewRegistryItem => {
+    for (const [, registryItem] of registeredComponents) {
+      if (registryItem.meta.path === path) {
+        return registryItem
       }
     }
+
     throw new Error(`Can't find component by path: ${path}`)
   },
+
   set: () => {
     throw new Error('"Set" is not implemented')
   }
 }
 
-export function init(): NavigationState {
+
+export function initializeNavigationState(): NavigationState {
   Object.keys(views).forEach((name) => {
     registeredComponents.set(name, {
       component: views[name as View],
@@ -34,10 +39,10 @@ export function init(): NavigationState {
     })
   })
 
-  const InititalView = registry.getByPath(window.location.pathname)
+  const InititalView = viewRegistry.getByPath(window.location.pathname)
 
   return {
-    registry,
+    viewRegistry,
     focus: null,
     active: 'start',
     content: [

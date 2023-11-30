@@ -16,7 +16,7 @@ interface LinkProps {
 export const Link = forwardRef((props: LinkProps, ref: ForwardedRef<HTMLAnchorElement>) => {
   const { state, dispatch } = useNavigation()
   const id = uuid()
-  const linkItem = state.registry.get(props.to)
+  const viewItem = state.viewRegistry.get(props.to)
 
   const qs = toQueryString(props.props)
 
@@ -24,14 +24,14 @@ export const Link = forwardRef((props: LinkProps, ref: ForwardedRef<HTMLAnchorEl
     <a
       {...props}
       className='p-1 hover:font-bold'
-      href={`${linkItem.meta.path}${qs || ''}`}
+      href={`${viewItem.meta.path}${qs || ''}`}
       onClick={(event) => {
         event.stopPropagation()
         // Execute forwarded onClick handler
         props.onClick && props.onClick(event)
 
         // Our onClick handler
-        handleLink({ event, dispatch, linkItem, props: { ...props.props }, id })
+        handleLink({ event, dispatch, viewItem, props: { ...props.props }, id })
       }}
       ref={ref}>
       {props.children}

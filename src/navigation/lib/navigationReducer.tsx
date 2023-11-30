@@ -46,7 +46,7 @@ export function navigationReducer(state: NavigationState, action: NavigationActi
         ...state,
         active: action.content[action.content.length - 1].id,
         content: action.content.map((item: ContentState, index): JSX.Element => {
-          const Component = state.registry.get(item.name)?.component
+          const Component = state.viewRegistry.get(item.name)?.component
 
           return (
             <NavigationWrapper key={item.id} id={item.id}>

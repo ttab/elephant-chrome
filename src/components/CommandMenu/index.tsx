@@ -48,7 +48,7 @@ export function CommandMenu(): JSX.Element {
             <CommandItem
               onSelect={() => runCommand(() => handleLink({
                 dispatch,
-                linkItem: state.registry.get('PlanningOverview'),
+                viewItem: state.viewRegistry.get('PlanningOverview'),
                 id: uuid()
               }))}
             >

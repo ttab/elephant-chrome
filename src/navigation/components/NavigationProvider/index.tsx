@@ -7,12 +7,12 @@ import {
 } from 'react'
 import type { NavigationState, NavigationAction } from '@/types'
 import { NavigationActionType } from '@/types'
-import { init } from '@/lib/init'
+import { initializeNavigationState } from '@/lib/initializeNavigationState'
 
 import { useHistory, useResize } from '@/hooks'
 import { navigationReducer } from '@/navigation/lib'
 
-const initialState = init()
+const initialState = initializeNavigationState()
 
 export const NavigationContext = createContext<{
   state: NavigationState
@@ -66,4 +66,3 @@ export const NavigationProvider = ({ children }: PropsWithChildren): JSX.Element
     </NavigationContext.Provider>
   )
 }
-

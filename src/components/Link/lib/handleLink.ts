@@ -3,19 +3,19 @@ import {
   NavigationActionType,
   type NavigationAction,
   type ViewProps,
-  type RegistryItem
+  type ViewRegistryItem
 } from '@/types'
 import { toQueryString } from './toQueryString'
 
 interface LinkClick {
   event?: MouseEvent<HTMLAnchorElement>
   dispatch: React.Dispatch<NavigationAction>
-  linkItem: RegistryItem
+  viewItem: ViewRegistryItem
   props?: ViewProps
   id: string
 }
 
-export function handleLink({ event, dispatch, linkItem, props, id }: LinkClick): void {
+export function handleLink({ event, dispatch, viewItem, props, id }: LinkClick): void {
   if (event?.ctrlKey || event?.metaKey) {
     return
   }
@@ -24,7 +24,7 @@ export function handleLink({ event, dispatch, linkItem, props, id }: LinkClick):
 
   dispatch({
     type: NavigationActionType.ADD,
-    component: linkItem.component,
+    component: viewItem.component,
     props: { ...props, id },
     id
   })
@@ -32,15 +32,15 @@ export function handleLink({ event, dispatch, linkItem, props, id }: LinkClick):
   history.pushState({
     id,
     props: { ...props, id },
-    itemName: linkItem.meta.name,
+    itemName: viewItem.meta.name,
     contentState: [
       ...history.state.contentState,
       {
         ...props,
         id,
-        name: linkItem.meta.name,
-        path: `${linkItem.meta.path}${toQueryString(props)}`
+        name: viewItem.meta.name,
+        path: `${viewItem.meta.path}${toQueryString(props)}`
       }
     ]
-  }, linkItem.meta.name, `${linkItem.meta.path}${toQueryString(props)}`)
+  }, viewItem.meta.name, `${viewItem.meta.path}${toQueryString(props)}`)
 }

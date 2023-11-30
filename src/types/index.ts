@@ -24,27 +24,26 @@ export interface ViewMetadata {
   name: string
   path: string
   widths: {
-    xs: [number, number?]
-    sm: [number, number?]
-    md: [number, number?]
-    lg: [number, number?]
-    xl: [number, number?]
-    '2xl': [number, number?]
+    sm: [number] | [number, number]
+    md: [number] | [number, number]
+    lg: [number] | [number, number]
+    xl: [number] | [number, number]
+    '2xl': [number] | [number, number]
   }
 }
 
-export interface RegistryItem {
+export interface ViewRegistryItem {
   meta: ViewMetadata
   component: React.FC<ViewProps>
 }
 
-export interface Registry {
-  get: (key: View) => RegistryItem
+export interface ViewRegistry {
+  get: (key: View) => ViewRegistryItem
   set: () => void
 }
 
 export interface NavigationState {
-  registry: Registry
+  viewRegistry: ViewRegistry
   focus: string | null
   active: string | undefined
   content: JSX.Element[]

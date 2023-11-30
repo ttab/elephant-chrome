@@ -10,7 +10,19 @@ import '@ttab/textbit/dist/esm/index.css'
 
 import { HocuspocusProvider } from '@hocuspocus/provider'
 import { useSession, useQuery } from '@/hooks'
-import { type ViewProps } from '@/types'
+import { type ViewMetadata, type ViewProps } from '@/types'
+
+const meta: ViewMetadata = {
+  name: 'Editor',
+  path: '/editor',
+  widths: {
+    sm: [100],
+    md: [100],
+    lg: [50, 100],
+    xl: [50, 100],
+    '2xl': [20, 40]
+  }
+}
 
 const Editor = (props: ViewProps): JSX.Element => {
   const query = useQuery()
@@ -131,16 +143,6 @@ function cursorData(name: string): Record<string, unknown> {
   }
 }
 
-Editor.meta = {
-  name: 'Editor',
-  path: '/editor',
-  widths: {
-    sm: [100],
-    md: [100],
-    lg: [50, 100],
-    xl: [50, 100],
-    '2xl': [20, 40]
-  }
-}
+Editor.meta = meta
 
 export { Editor }

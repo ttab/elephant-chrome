@@ -1,4 +1,4 @@
-import { type ViewProps } from '@/types'
+import { type ViewMetadata, type ViewProps } from '@/types'
 import { ViewHeader } from '@/components'
 import { useSession } from '@/hooks'
 import { useEffect, useState } from 'react'
@@ -8,6 +8,18 @@ import { type SearchIndexResponse } from '@/lib/index/search'
 
 import { PlanningTable } from '@/components/PlanningTable'
 import { columns } from '@/components/PlanningTable/Columns'
+
+const meta: ViewMetadata = {
+  name: 'PlanningOverview',
+  path: '/',
+  widths: {
+    sm: [100],
+    md: [100],
+    lg: [50, 100],
+    xl: [50, 100],
+    '2xl': [40, 80]
+  }
+}
 
 export const PlanningOverview = (props: ViewProps): JSX.Element => {
   const { jwt } = useSession()
@@ -47,14 +59,4 @@ export const PlanningOverview = (props: ViewProps): JSX.Element => {
   )
 }
 
-PlanningOverview.meta = {
-  name: 'PlanningOverview',
-  path: '/',
-  widths: {
-    sm: [100],
-    md: [100],
-    lg: [50, 100],
-    xl: [50, 100],
-    '2xl': [40, 80]
-  }
-}
+PlanningOverview.meta = meta
