@@ -18,8 +18,7 @@ export const PlanningOverview = (props: ViewProps): JSX.Element => {
   const { jwt } = useSession()
   const { indexUrl } = useApi()
   const [result, setResult] = useState<SearchIndexResponse | undefined>()
-  const sDate = new Date()
-  const [date, setDate] = useState<Date>(sDate)
+  const [date, setDate] = useState<Date>(new Date())
 
   useEffect(() => {
     if (!jwt) {
