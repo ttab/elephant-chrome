@@ -10,6 +10,7 @@ import {
 } from '@ttab/elephant-ui'
 import { Link } from '@/components'
 import { Menu as MenuIcon } from '@ttab/elephant-ui/icons'
+import { ThemeSwitcher } from './ThemeSwitcher'
 
 export const Menu = (): JSX.Element => {
   return (
@@ -23,6 +24,7 @@ export const Menu = (): JSX.Element => {
         <SheetHeader>
           <SheetTitle>
             <span className='text-[52px]'>🐘</span>Elefanten
+            <ThemeSwitcher />
           </SheetTitle>
         </SheetHeader>
         <div className='grid gap-4 py-4'>
