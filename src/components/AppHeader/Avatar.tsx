@@ -14,8 +14,12 @@ export const Avatar = (): JSX.Element => {
     <Popover>
 
       <PopoverTrigger className='mr-2'>
-        <AvatarMain>
-          <AvatarFallback>{jwt?.sub.replace('user://tt/', '') || '?'}</AvatarFallback>
+        <AvatarMain className='h-8 w-8 mt-1'>
+          <AvatarFallback
+            className='bg-[#973C9F] border-2 text-background dark:text-foreground text-sm font-semibold leading-6'
+          >
+            {jwt?.sub.replace('user://tt/', '') || '?'}
+          </AvatarFallback>
         </AvatarMain>
       </PopoverTrigger>
 

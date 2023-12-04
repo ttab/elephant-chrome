@@ -9,7 +9,7 @@ export const POST: RouteHandler = async (req, context) => {
   const {
     user,
     password,
-    sub = 'abc' // FIXME: Remove hardcoded value, should come from somewhere
+    sub = 'AB' // FIXME: Remove hardcoded value, should come from somewhere
   } = req.body
 
   const permissions = [

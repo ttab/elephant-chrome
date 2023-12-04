@@ -38,7 +38,7 @@ export const PlanningOverview = (props: ViewProps): JSX.Element => {
   return (
     <>
       <ViewHeader title='Plannings 2023-11-09' { ...props} />
-      <main className="h-full flex-1 flex-col space-y-8 p-8 md:flex">
+      <main className="h-full flex-1 flex-col space-y-8 md:flex">
         {result?.ok === true &&
         <PlanningTable data={result?.hits} columns={columns} />
         }

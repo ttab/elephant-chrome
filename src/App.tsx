@@ -8,7 +8,7 @@ export const App = (): JSX.Element => {
   const { state } = useNavigation()
 
   return (
-    <div className='relative flex h-screen flex-col bg-white dark:bg-black'>
+    <div className='relative flex h-screen flex-col bg-background'>
       {!jwt
         ? <Login />
         : <>
