@@ -136,8 +136,8 @@ export const columns: Array<ColumnDef<Planning>> = [
                   const [first, last] = assignee.trim().split(' ')
                   const initials = `${first[0]}${last[0]}`
                   return (
-                    <div className='flex p-1'>
-                      <div key={index} className='w-8 h-8 rounded-full flex items-center stroke-slate-100 justify-center bg-[#973C9F] text-background dark:text-foreground border-2 mx-4'>
+                    <div key={index} className='flex p-1'>
+                      <div className='w-8 h-8 rounded-full flex items-center stroke-slate-100 justify-center bg-[#973C9F] text-background dark:text-foreground border-2 mx-4'>
                         {initials}
                       </div>
                       <p>{assignee}</p>
