@@ -1,12 +1,12 @@
-import { useApi } from '@/hooks/useApi'
-import { useEffect, useMemo, useState } from 'react'
 import { ViewHeader } from '@/components'
-import { withYjs, withYHistory, YjsEditor, withCursors } from '@slate-yjs/core'
-import * as Y from 'yjs'
-import { createEditor } from 'slate'
-
+import { useApi } from '@/hooks/useApi'
+import { YjsEditor, withCursors, withYHistory, withYjs } from '@slate-yjs/core'
+import { PenLine } from '@ttab/elephant-ui/icons'
 import { TextbitEditable } from '@ttab/textbit'
 import '@ttab/textbit/dist/esm/index.css'
+import { useEffect, useMemo, useState } from 'react'
+import { createEditor } from 'slate'
+import * as Y from 'yjs'
 
 import { HocuspocusProvider } from '@hocuspocus/provider'
 import { useSession, useQuery } from '@/hooks'
@@ -93,7 +93,16 @@ const Editor = (props: ViewProps): JSX.Element => {
 
   return (
     <>
-      <ViewHeader title='Editor' {...props} />
+      <ViewHeader
+        {...props}
+      >
+        <div className='flex'>
+          <PenLine className='w-4 h-4 mr-1 mt-2' />
+          <h1 className='font-sans font-semibold text-md break-all mr-4 mt-1'>
+            Editor
+          </h1>
+        </div>
+      </ViewHeader>
       <main className="min-w-[30vw]">
         <div className={`h-full relative ${!isConnected || !isSynced ? 'opacity-60' : ''}`}>
           { /* @ts-expect-error yjsEditor needs more refinement */}
