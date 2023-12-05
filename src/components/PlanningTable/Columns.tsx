@@ -104,7 +104,7 @@ export const columns: Array<ColumnDef<Planning>> = [
     accessorFn: (data) => data._source['document.meta.core_assignment.rel.assignee.name'],
     header: ({ column }) => (<ColumnHeader column={column} title="Assignees" />),
     cell: ({ row }) => {
-      const assignees = row.getValue<string[]>('assignees')
+      const assignees = row.getValue<string[]>('assignees') || []
       return (
         <div className={cn('flex -space-x-2 w-fit text-sm font-semibold leading-6',
           assignees.length > 3 && 'border-2 rounded-full')}>
