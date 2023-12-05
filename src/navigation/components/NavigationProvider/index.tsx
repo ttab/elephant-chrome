@@ -11,6 +11,7 @@ import { initializeNavigationState } from '@/lib/initializeNavigationState'
 
 import { useHistory, useResize, useView } from '@/hooks'
 import { navigationReducer } from '@/navigation/lib'
+import { minimumSpaceRequired } from '@/navigation/lib/minimumSpaceRequired'
 
 const initialState = initializeNavigationState()
 
@@ -57,18 +58,36 @@ export const NavigationProvider = ({ children }: PropsWithChildren): JSX.Element
   }, [historyState])
 
 
+  // Handle when screen size gets smaller and views don't fit no longer
   useLayoutEffect(() => {
-    if (document.documentElement.scrollWidth <= window.innerWidth) {
+    let spaceRequired = minimumSpaceRequired(history.state.contentState, state.viewRegistry, state.screens)
+    if (spaceRequired <= 12) {
       return
     }
 
-    // Remove overflowing view and update state
-    // dispatch({ type: NavigationActionType.REMOVE })
+    // Screen size too small for currently displayed views, remove overflow
+    const content = history.state.contentState
+    do {
+      content.shift()
+      spaceRequired = minimumSpaceRequired(history.state.contentState, state.viewRegistry, state.screens)
+    } while (spaceRequired > 12)
 
-    history.replaceState({
-      contentState: history.state.contentState.slice(1, history.state.contentState.length)
-    }, document.title, window.location.href)
-  }, [state, screenSize])
+    // Set new state
+    dispatch({
+      type: NavigationActionType.SET,
+      content
+    })
+
+    // Update current history state, not adding, this does however make it
+    // difficult/impossible to redisplay removed views if screen gets bigger...
+    history.replaceState(
+      {
+        contentState: content
+      },
+      document.title,
+      window.location.href
+    )
+  }, [screenSize, state])
 
   return (
     <NavigationContext.Provider value={{ state, dispatch }}>
