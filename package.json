@@ -26,7 +26,7 @@
     "@protobuf-ts/runtime-rpc": "^2.9.1",
     "@protobuf-ts/twirp-transport": "^2.9.1",
     "@tanstack/react-table": "^8.10.7",
-    "@ttab/elephant-ui": "^0.0.10",
+    "@ttab/elephant-ui": "^0.0.11",
     "@ttab/textbit": "^0.5.1",
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
