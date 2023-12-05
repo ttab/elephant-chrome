@@ -17,7 +17,8 @@ export const Link = forwardRef((props: LinkProps, ref: ForwardedRef<HTMLAnchorEl
   const { state, dispatch } = useNavigation()
   const id = uuid()
   const viewItem = state.viewRegistry.get(props.to)
-
+  const screens = state.screens
+  const viewRegistry = state.viewRegistry
   const qs = toQueryString(props.props)
 
   return (
@@ -31,7 +32,7 @@ export const Link = forwardRef((props: LinkProps, ref: ForwardedRef<HTMLAnchorEl
         props.onClick && props.onClick(event)
 
         // Our onClick handler
-        handleLink({ event, dispatch, viewItem, props: { ...props.props }, id })
+        handleLink({ event, dispatch, viewItem, screens, viewRegistry, props: { ...props.props }, id })
       }}
       ref={ref}>
       {props.children}

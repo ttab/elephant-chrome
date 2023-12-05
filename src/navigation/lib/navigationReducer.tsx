@@ -8,21 +8,21 @@ import {
 } from '@/types'
 
 
-export function navigationReducer(prevState: NavigationState, action: NavigationAction): NavigationState {
+export function navigationReducer(newState: NavigationState, action: NavigationAction): NavigationState {
   switch (action.type) {
     case NavigationActionType.SET: {
       if (action.content === undefined) {
         throw new Error('Content is undefined')
       }
 
-      const { views, state: nextState } = calculateViews(prevState, action.content)
-      console.log(views)
+      const views = calculateViews(newState, action.content)
+
       return {
-        ...nextState,
+        ...newState,
         views,
         active: action.content[action.content.length - 1].id,
         content: action.content.map((item: ContentState, index): JSX.Element => {
-          const Component = prevState.viewRegistry.get(item.name)?.component
+          const Component = newState.viewRegistry.get(item.name)?.component
           const width = views[index]
 
           return (
@@ -45,8 +45,8 @@ export function navigationReducer(prevState: NavigationState, action: Navigation
       }
 
       return {
-        ...prevState,
-        focus: action.id === prevState.focus ? null : action.id
+        ...newState,
+        focus: action.id === newState.focus ? null : action.id
       }
 
     case NavigationActionType.ACTIVE: {
@@ -65,7 +65,7 @@ export function navigationReducer(prevState: NavigationState, action: Navigation
 
 
       return {
-        ...prevState,
+        ...newState,
         active: action.id
       }
     }
@@ -76,10 +76,7 @@ export function navigationReducer(prevState: NavigationState, action: Navigation
 }
 
 
-function calculateViews(state: NavigationState, content: ContentState[]): {
-  views: Array<{ name: string, colSpan: number }>
-  state: NavigationState
-} {
+function calculateViews(state: NavigationState, content: ContentState[]): Array<{ name: string, colSpan: number }> {
   let screen = state.screens[state.screens.length - 1]
   const screens = state.screens.filter(s => {
     return s.value > window.innerWidth
@@ -103,21 +100,15 @@ function calculateViews(state: NavigationState, content: ContentState[]): {
 
   // Happens during init phase
   if (!views.length) {
-    return {
-      views: [],
-      state
-    }
+    return []
   }
 
-  // Remove those views/components that don't fit the required minimum colspans
-  do {
-    content.slice(1, content.length)
-    views.slice(1, views.length)
-  } while (minimumSpaceRequired(views) > 12)
+  // Calculate total requested minimum colSpan
+  const usedSpace = views.reduce((total, view) => {
+    return view.width + total
+  }, 0)
 
-  // Calculate assigned colSpan for each view
-  // Should we use round() and then adjust last view? This is safer though...
-  const usedSpace = minimumSpaceRequired(views)
+  // Calculate what colSpan each view is assigned
   const widths = views.map(view => {
     return {
       name: view.name,
@@ -131,17 +122,7 @@ function calculateViews(state: NavigationState, content: ContentState[]): {
     widths[widths.length - 1].colSpan += 12 - usedColSpan
   }
 
-  state.views = widths
+  // state.views = widths
 
-  return {
-    state,
-    views: widths
-  }
-}
-
-// Calculate minimum required space for current views
-function minimumSpaceRequired(views: Array<{ name: string, width: number }>): number {
-  return views.reduce((total, view) => {
-    return view.width + total
-  }, 0)
+  return widths
 }
