@@ -4,7 +4,6 @@ import { useSession } from '@/hooks'
 import { useApi } from '@/hooks/useApi'
 import { type SearchIndexResponse } from '@/lib/index/search'
 import { Planning } from '@/lib/planning'
-import { type ViewProps } from '@/types'
 import { useEffect, useState } from 'react'
 
 import { PlanningHeader } from '@/components/PlanningHeader'
