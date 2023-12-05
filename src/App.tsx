@@ -2,16 +2,10 @@ import { useNavigation, useSession } from '@/hooks'
 import { AppHeader } from '@/components'
 import { Login } from '@/views/auth/Login'
 import { CommandMenu } from '@/components/CommandMenu'
-import { useEffect, useRef } from 'react'
 
 export const App = (): JSX.Element => {
   const { jwt } = useSession()
   const { state } = useNavigation()
-  const contentRef = useRef<HTMLDivElement>(null)
-
-  useEffect(() => {
-    console.log('Rerender', state.views)
-  }, [state.views])
 
   if (!jwt) {
     return <div className='relative flex h-screen flex-col bg-white dark:bg-black'>
@@ -26,7 +20,7 @@ export const App = (): JSX.Element => {
         <AppHeader />
       </div>
 
-      <div ref={contentRef} className='grid grid-cols-12 divide-x-2 h-max'>
+      <div className='grid grid-cols-12 divide-x-2 h-max'>
         {state.content}
       </div>
     </div>
