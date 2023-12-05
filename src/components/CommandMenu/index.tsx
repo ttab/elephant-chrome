@@ -49,7 +49,9 @@ export function CommandMenu(): JSX.Element {
               onSelect={() => runCommand(() => handleLink({
                 dispatch,
                 viewItem: state.viewRegistry.get('PlanningOverview'),
-                id: uuid()
+                id: uuid(),
+                viewRegistry: state.viewRegistry,
+                screens: state.screens
               }))}
             >
               <GanttChart className="mr-2 h-4 w-4" />
