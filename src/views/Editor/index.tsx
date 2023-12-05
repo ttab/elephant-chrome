@@ -86,9 +86,7 @@ export const Editor = (props: ViewProps): JSX.Element => {
       >
         <div className='flex'>
           <PenLine className='w-4 h-4 mr-1 mt-2' />
-          <h1
-            className='font-sans font-semibold text-md break-all mr-4 mt-1'
-          >
+          <h1 className='font-sans font-semibold text-md break-all mr-4 mt-1'>
             Editor
           </h1>
         </div>
