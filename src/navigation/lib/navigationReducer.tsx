@@ -16,7 +16,7 @@ export function navigationReducer(prevState: NavigationState, action: Navigation
       }
 
       const { views, state: nextState } = calculateViews(prevState, action.content)
-
+      console.log(views)
       return {
         ...nextState,
         views,
@@ -117,10 +117,11 @@ function calculateViews(state: NavigationState, content: ContentState[]): {
 
   // Calculate assigned colSpan for each view
   // Should we use round() and then adjust last view? This is safer though...
+  const usedSpace = minimumSpaceRequired(views)
   const widths = views.map(view => {
     return {
       name: view.name,
-      colSpan: Math.floor(12 * (view.width / 12))
+      colSpan: Math.floor(12 * (view.width / usedSpace))
     }
   })
 
