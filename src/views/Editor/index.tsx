@@ -16,11 +16,11 @@ const meta: ViewMetadata = {
   name: 'Editor',
   path: '/editor',
   widths: {
-    sm: [100],
-    md: [100],
-    lg: [50, 100],
-    xl: [50, 100],
-    '2xl': [20, 40]
+    sm: 12,
+    md: 12,
+    lg: 4,
+    xl: 4,
+    '2xl': 4
   }
 }
 

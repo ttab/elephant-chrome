@@ -20,16 +20,20 @@ export interface NavigationAction {
   id?: string
 }
 
+export interface ViewWidths {
+  [key: string]: number // FIXME: Should use some keyof typeof thingy...
+  sm: number
+  md: number
+  lg: number
+  xl: number
+  '2xl': number
+}
+
+
 export interface ViewMetadata {
   name: string
   path: string
-  widths: {
-    sm: [number] | [number, number]
-    md: [number] | [number, number]
-    lg: [number] | [number, number]
-    xl: [number] | [number, number]
-    '2xl': [number] | [number, number]
-  }
+  widths: ViewWidths
 }
 
 export interface ViewRegistryItem {
@@ -44,6 +48,8 @@ export interface ViewRegistry {
 
 export interface NavigationState {
   viewRegistry: ViewRegistry
+  screens: Array<{ key: string, value: number }>
+  views: Array<{ name: string, colSpan: number }>
   focus: string | null
   active: string | undefined
   content: JSX.Element[]

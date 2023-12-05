@@ -17,7 +17,10 @@ const initialState = initializeNavigationState()
 export const NavigationContext = createContext<{
   state: NavigationState
   dispatch: Dispatch<NavigationAction>
-}>({ state: initialState, dispatch: () => { } })
+}>({
+  state: initialState,
+  dispatch: () => { }
+})
 
 export const NavigationProvider = ({ children }: PropsWithChildren): JSX.Element => {
   const [state, dispatch] = useReducer(navigationReducer, initialState)
@@ -54,15 +57,13 @@ export const NavigationProvider = ({ children }: PropsWithChildren): JSX.Element
   }, [historyState])
 
 
-  // FIXME: Calculate widths and things for all views currently displayed
-  // Remove first element if document width exceeds window width
   useLayoutEffect(() => {
     if (document.documentElement.scrollWidth <= window.innerWidth) {
       return
     }
 
     // Remove overflowing view and update state
-    dispatch({ type: NavigationActionType.REMOVE })
+    // dispatch({ type: NavigationActionType.REMOVE })
 
     history.replaceState({
       contentState: history.state.contentState.slice(1, history.state.contentState.length)

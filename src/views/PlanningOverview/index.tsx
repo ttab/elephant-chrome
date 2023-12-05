@@ -13,11 +13,11 @@ const meta: ViewMetadata = {
   name: 'PlanningOverview',
   path: '/',
   widths: {
-    sm: [100],
-    md: [100],
-    lg: [50, 100],
-    xl: [50, 100],
-    '2xl': [40, 80]
+    sm: 12,
+    md: 12,
+    lg: 6,
+    xl: 6,
+    '2xl': 4
   }
 }
 
