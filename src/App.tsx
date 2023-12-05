@@ -14,7 +14,7 @@ export const App = (): JSX.Element => {
   }
 
   return (
-    <div className='relative flex h-screen flex-col bg-white dark:bg-black'>
+    <div className='relative flex h-screen flex-col bg-background'>
       <div className='absolute top-0 right-0 h-10 p-2 z-10 justify-end flex'>
         <CommandMenu />
         <AppHeader />
