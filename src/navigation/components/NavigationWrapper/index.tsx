@@ -4,6 +4,8 @@ import { NavigationActionType } from '@/types'
 import { cn } from '@ttab/elephant-ui/utils'
 import { cva } from 'class-variance-authority'
 
+// TODO: Implement use of @container queries through @tailwindcss/container-queries
+
 const section = cva('p-2', {
   variants: {
     active: {
@@ -39,7 +41,7 @@ export const NavigationWrapper = ({ children, id, colSpan }: {
   children: JSX.Element
   id: string | undefined
   name: string
-  colSpan: number
+  colSpan: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12
 }): JSX.Element => {
   const { state, dispatch } = useNavigation()
 
@@ -55,7 +57,7 @@ export const NavigationWrapper = ({ children, id, colSpan }: {
           section({
             active: state.active === id,
             focused: state.focus === id,
-            size: colSpan as 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 // Ugliness!!!
+            size: colSpan
           })
         )}
       >
