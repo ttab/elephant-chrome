@@ -39,7 +39,7 @@ export const NavigationWrapper = ({ children, id, colSpan }: {
   children: JSX.Element
   id: string | undefined
   name: string
-  colSpan: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12
+  colSpan: number
 }): JSX.Element => {
   const { state, dispatch } = useNavigation()
 
@@ -55,7 +55,7 @@ export const NavigationWrapper = ({ children, id, colSpan }: {
           section({
             active: state.active === id,
             focused: state.focus === id,
-            size: colSpan
+            size: colSpan as 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 // Ugliness!!!
           })
         )}
       >

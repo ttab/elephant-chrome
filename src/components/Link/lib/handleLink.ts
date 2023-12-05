@@ -21,12 +21,17 @@ export function handleLink({ event, dispatch, viewItem, props, id }: LinkClick):
   }
 
   event?.preventDefault()
-
   dispatch({
-    type: NavigationActionType.ADD,
-    component: viewItem.component,
-    props: { ...props, id },
-    id
+    type: NavigationActionType.SET,
+    content: [
+      ...history.state.contentState,
+      {
+        ...props,
+        id,
+        name: viewItem.meta.name,
+        path: `${viewItem.meta.path}${toQueryString(props)}`
+      }
+    ]
   })
 
   history.pushState({
