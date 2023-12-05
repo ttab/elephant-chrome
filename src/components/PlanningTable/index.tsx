@@ -103,7 +103,7 @@ export const PlanningTable = <TData, TValue>({
   return (
     <div className="space-y-2">
       <Toolbar table={table} />
-      <div className="rounded-md border">
+      <div className="rounded-md">
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
