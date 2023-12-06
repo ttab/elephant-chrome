@@ -9,9 +9,8 @@ import type { NavigationState, NavigationAction } from '@/types'
 import { NavigationActionType } from '@/types'
 import { initializeNavigationState } from '@/lib/initializeNavigationState'
 
-import { useHistory, useResize, useView } from '@/hooks'
-import { navigationReducer } from '@/navigation/lib'
-import { minimumSpaceRequired } from '@/navigation/lib/minimumSpaceRequired'
+import { useHistory, useResize } from '@/hooks'
+import { minimumSpaceRequired, navigationReducer, currentView } from '@/navigation/lib'
 import { debounce } from '@/lib/debounce'
 
 const initialState = initializeNavigationState()
@@ -28,7 +27,7 @@ export const NavigationProvider = ({ children }: PropsWithChildren): JSX.Element
   const [state, dispatch] = useReducer(navigationReducer, initialState)
   const historyState = useHistory()
   const screenSize = useResize()
-  const { name, props } = useView()
+  const { name, props } = currentView()
 
   // Initialize a new history start state based on current url
   useLayoutEffect(() => {

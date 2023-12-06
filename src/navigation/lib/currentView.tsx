@@ -1,4 +1,4 @@
-export const useView = (): { name: string, props: Record<string, string> } => {
+export const currentView = (): { name: string, props: Record<string, string> } => {
   let name = ''
 
   if (window.location.pathname !== '/') {
