@@ -8,21 +8,21 @@ import {
 } from '@/types'
 
 
-export function navigationReducer(newState: NavigationState, action: NavigationAction): NavigationState {
+export function navigationReducer(state: NavigationState, action: NavigationAction): NavigationState {
   switch (action.type) {
     case NavigationActionType.SET: {
       if (action.content === undefined) {
         throw new Error('Content is undefined')
       }
 
-      const views = calculateViews(newState, action.content)
+      const views = calculateViews(state, action.content)
 
       return {
-        ...newState,
+        ...state,
         views,
         active: action?.active || action.content[action.content.length - 1].id,
         content: action.content.map((item: ContentState, index): JSX.Element => {
-          const Component = newState.viewRegistry.get(item.name)?.component
+          const Component = state.viewRegistry.get(item.name)?.component
           const width = views[index]
 
           return (
@@ -45,8 +45,8 @@ export function navigationReducer(newState: NavigationState, action: NavigationA
       }
 
       return {
-        ...newState,
-        focus: action.id === newState.focus ? null : action.id
+        ...state,
+        focus: action.id === state.focus ? null : action.id
       }
 
     case NavigationActionType.ACTIVE: {
@@ -65,7 +65,7 @@ export function navigationReducer(newState: NavigationState, action: NavigationA
 
 
       return {
-        ...newState,
+        ...state,
         active: action.id
       }
     }
