@@ -18,6 +18,7 @@ export interface NavigationAction {
   component?: React.FC<ViewProps>
   content?: ContentState[]
   id?: string
+  active?: string
 }
 
 export interface ViewWidths {

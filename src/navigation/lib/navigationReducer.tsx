@@ -20,7 +20,7 @@ export function navigationReducer(newState: NavigationState, action: NavigationA
       return {
         ...newState,
         views,
-        active: action.content[action.content.length - 1].id,
+        active: action?.active || action.content[action.content.length - 1].id,
         content: action.content.map((item: ContentState, index): JSX.Element => {
           const Component = newState.viewRegistry.get(item.name)?.component
           const width = views[index]

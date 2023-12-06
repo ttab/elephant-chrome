@@ -12,6 +12,7 @@ import { initializeNavigationState } from '@/lib/initializeNavigationState'
 import { useHistory, useResize, useView } from '@/hooks'
 import { navigationReducer } from '@/navigation/lib'
 import { minimumSpaceRequired } from '@/navigation/lib/minimumSpaceRequired'
+import { debounce } from '@/lib/debounce'
 
 const initialState = initializeNavigationState()
 
@@ -58,40 +59,51 @@ export const NavigationProvider = ({ children }: PropsWithChildren): JSX.Element
   }, [historyState])
 
 
-  // Handle when screen size gets smaller and views don't fit no longer
+  // Handle when screen size gets smaller and views don't fit or more views fit
   useLayoutEffect(() => {
-    let spaceRequired = minimumSpaceRequired(history.state.contentState, state.viewRegistry, state.screens)
-    if (spaceRequired <= 12) {
-      return
-    }
-
-    // Screen size too small for currently displayed views, remove overflow
-    const content = history.state.contentState
-    do {
-      content.shift()
-      spaceRequired = minimumSpaceRequired(history.state.contentState, state.viewRegistry, state.screens)
-    } while (spaceRequired > 12)
-
-    // Set new state
-    dispatch({
-      type: NavigationActionType.SET,
-      content
-    })
-
-    // Update current history state, not adding, this does however make it
-    // difficult/impossible to redisplay removed views if screen gets bigger...
-    history.replaceState(
-      {
-        contentState: content
-      },
-      document.title,
-      window.location.href
-    )
-  }, [screenSize, state])
+    debouncedCalculateView(history, state, dispatch)
+  }, [screenSize])
 
   return (
     <NavigationContext.Provider value={{ state, dispatch }}>
       {children}
     </NavigationContext.Provider>
+  )
+}
+
+
+const debouncedCalculateView = debounce(calculateViews, 40)
+
+function calculateViews(history: History, state: NavigationState, dispatch: Dispatch<NavigationAction>): void {
+  let spaceRequired = minimumSpaceRequired(history.state.contentState, state.viewRegistry, state.screens)
+  if (spaceRequired <= 12 && (history.state.contentState || []).length <= (state.content || []).length) {
+    return
+  }
+
+  // Screen size too small for currently available views, remove overflow
+  const content = [...history.state.contentState]
+  while (spaceRequired > 12) {
+    content.shift()
+    spaceRequired = minimumSpaceRequired(content, state.viewRegistry, state.screens)
+  }
+
+  // Get active id, or set it to the leftmost view if the active view was removed
+  const activeId = content.find(c => c.id === state.active)?.id || content[0].id
+
+  // Set new state
+  dispatch({
+    type: NavigationActionType.SET,
+    active: activeId,
+    content
+  })
+
+  // Update current history state, not adding, this does however make it
+  // difficult/impossible to redisplay removed views if screen gets bigger...
+  history.replaceState(
+    {
+      contentState: history.state.contentState
+    },
+    document.title,
+    window.location.href
   )
 }
