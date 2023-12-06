@@ -58,7 +58,7 @@ export const PlanningOverview = (props: ViewProps): JSX.Element => {
       <ViewHeader {...props}>
         <PlanningHeader date={date} setDate={setDate} />
       </ViewHeader>
-      <main className='h-full flex-1 flex-col space-y-8 p-8 md:flex'>
+      <main className='h-full flex-1 flex-col space-y-8 md:flex'>
         {result?.ok === true &&
           <>
             <TabsContent value='list'>

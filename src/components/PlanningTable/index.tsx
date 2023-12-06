@@ -17,12 +17,7 @@ import {
 } from '@tanstack/react-table'
 
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow
+  Table, TableBody, TableCell, TableRow
 } from '@ttab/elephant-ui'
 
 import { Pagination } from './Pagination'
@@ -105,24 +100,6 @@ export const PlanningTable = <TData, TValue>({
       <Toolbar table={table} />
       <div className="rounded-md">
         <Table>
-          <TableHeader>
-            {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id}>
-                {headerGroup.headers.map((header) => {
-                  return (
-                    <TableHead key={header.id}>
-                      {header.isPlaceholder
-                        ? null
-                        : flexRender(
-                          header.column.columnDef.header,
-                          header.getContext()
-                        )}
-                    </TableHead>
-                  )
-                })}
-              </TableRow>
-            ))}
-          </TableHeader>
           <TableBody>
             <TableBodyElement />
           </TableBody>

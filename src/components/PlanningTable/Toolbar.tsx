@@ -6,7 +6,7 @@ import { type Table } from '@tanstack/react-table'
 import { Button, Input } from '@ttab/elephant-ui'
 import { ViewOptions } from './ViewOptions'
 
-import { priorities } from './data/data'
+import { priorities } from './data/settings'
 import { FacetedFilter } from './FacetedFilter'
 
 interface ToolbarProps<TData> {

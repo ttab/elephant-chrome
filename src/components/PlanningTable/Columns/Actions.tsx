@@ -1,7 +1,7 @@
 'use client'
 
 import { MoreHorizontal as DotsHorizontalIcon } from '@ttab/elephant-ui/icons'
-import { type Row } from '@tanstack/react-table'
+import { type ColumnDef } from '@tanstack/react-table'
 
 import {
   Button,
@@ -10,20 +10,16 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger
 } from '@ttab/elephant-ui'
-import { Link } from '..'
-import { type Planning } from './data/schema'
+import { Link } from '../..'
+import { type Planning } from '../data/schema'
 
 
-interface RowActionsProps {
-  row: Row<Planning>
-}
+export const actions: ColumnDef<Planning> = {
 
-export const RowActions = ({
-  row
-}: RowActionsProps): JSX.Element => {
-  const deliverableUuids = row.original._source['document.meta.core_assignment.rel.deliverable.uuid'] || []
-
-  return (
+  id: 'action',
+  cell: ({ row }) => {
+    const deliverableUuids = row.original._source['document.meta.core_assignment.rel.deliverable.uuid'] || []
+    return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Button
@@ -49,5 +45,6 @@ export const RowActions = ({
         }
       </DropdownMenuContent>
     </DropdownMenu>
-  )
+    )
+  }
 }
