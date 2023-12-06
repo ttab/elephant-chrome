@@ -36,6 +36,9 @@ const config: JestConfigWithTsJest = {
   },
   modulePathIgnorePatterns: [
     '<rootDir>/__tests__/data'
+  ],
+  transformIgnorePatterns: [
+    '<rootDir>/node_modules/(?!@ttab/elephant-ui)'
   ]
 }
 export default config
