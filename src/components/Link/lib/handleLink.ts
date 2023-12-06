@@ -8,7 +8,7 @@ import {
   type ViewRegistry
 } from '@/types'
 import { toQueryString } from './toQueryString'
-import { minimumSpaceRequired } from '../../../navigation/lib/minimumSpaceRequired'
+import { minimumSpaceRequired } from '@/navigation/lib'
 
 interface LinkClick {
   event?: MouseEvent<HTMLAnchorElement>
