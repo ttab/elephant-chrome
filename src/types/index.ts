@@ -18,23 +18,39 @@ export interface NavigationAction {
   component?: React.FC<ViewProps>
   content?: ContentState[]
   id?: string
+  active?: string
 }
 
-export interface RegistryItem {
-  metadata: {
-    name: string
-    path: string
-  }
+export interface ViewWidths {
+  [key: string]: number // FIXME: Should use some keyof typeof thingy...
+  sm: number
+  md: number
+  lg: number
+  xl: number
+  '2xl': number
+}
+
+
+export interface ViewMetadata {
+  name: string
+  path: string
+  widths: ViewWidths
+}
+
+export interface ViewRegistryItem {
+  meta: ViewMetadata
   component: React.FC<ViewProps>
 }
 
-export interface Registry {
-  get: (key: View) => RegistryItem
+export interface ViewRegistry {
+  get: (key: View) => ViewRegistryItem
   set: () => void
 }
 
 export interface NavigationState {
-  registry: Registry
+  viewRegistry: ViewRegistry
+  screens: Array<{ key: string, value: number }>
+  views: Array<{ name: string, colSpan: number }>
   focus: string | null
   active: string | undefined
   content: JSX.Element[]

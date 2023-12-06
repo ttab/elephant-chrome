@@ -8,13 +8,13 @@ import { useNavigation } from '@/navigation/hooks'
 import { render, screen } from '../setupTests'
 import { ViewFocus } from '@/components/ViewHeader/ViewFocus'
 import { type NavigationActionType } from '@/types'
-import { init } from '@/lib/init'
+import { initializeNavigationState } from '@/lib/initializeNavigationState'
 
 
 jest.mock('@/navigation/hooks/useNavigation', () => ({
   useNavigation: jest.fn()
 }))
-const mockState = init()
+const mockState = initializeNavigationState()
 
 const mockDispatch = jest.fn() as Dispatch<NavigationActionType>
 
@@ -28,7 +28,7 @@ describe('ViewFocus', () => {
     render(
       <SessionProvider endpoint={new URL('/user', 'http://localhost')}>
         <NavigationProvider>
-          <ViewFocus id={'abc123'}/>
+          <ViewFocus id={'abc123'} />
         </NavigationProvider>
       </SessionProvider>
     )

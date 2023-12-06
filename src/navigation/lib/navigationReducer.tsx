@@ -7,66 +7,46 @@ import {
   type NavigationState
 } from '@/types'
 
+
 export function navigationReducer(state: NavigationState, action: NavigationAction): NavigationState {
   switch (action.type) {
-    case NavigationActionType.ADD:
-
-      if (action.component === undefined || action.props === undefined) {
-        throw new Error('Component is undefined')
-      }
-
-      return {
-        ...state,
-        active: action.id,
-        content: [
-          ...state.content,
-          <NavigationWrapper key={action.id} id={action.id}>
-            <action.component {...action.props} />
-          </NavigationWrapper>
-
-        ]
-      }
-
-    case NavigationActionType.REMOVE:
-
-      return {
-        ...state,
-        content: [
-          ...state.content.slice(1, state.content.length)
-        ]
-      }
-
-    case NavigationActionType.SET:
-
+    case NavigationActionType.SET: {
       if (action.content === undefined) {
         throw new Error('Content is undefined')
       }
 
+      const views = calculateViews(state, action.content)
+
       return {
         ...state,
-        active: action.content[action.content.length - 1].id,
+        views,
+        active: action?.active || action.content[action.content.length - 1].id,
         content: action.content.map((item: ContentState, index): JSX.Element => {
-          const Component = state.registry.get(item.name)?.component
+          const Component = state.viewRegistry.get(item.name)?.component
+          const width = views[index]
 
           return (
-            <NavigationWrapper key={item.id} id={item.id}>
+            <NavigationWrapper
+              name={item.name}
+              key={item.id}
+              id={item.id}
+              colSpan={width.colSpan as 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12}
+            >
               <Component {...{ ...item, index }} />
             </NavigationWrapper>
           )
         })
       }
+    }
 
     case NavigationActionType.FOCUS:
-
       if (action.id === undefined) {
         throw new Error('Id is undefined')
       }
 
       return {
         ...state,
-        focus: action.id === state.focus
-          ? null
-          : action.id
+        focus: action.id === state.focus ? null : action.id
       }
 
     case NavigationActionType.ACTIVE: {
@@ -93,4 +73,56 @@ export function navigationReducer(state: NavigationState, action: NavigationActi
     default:
       throw new Error(`Unhandled action type: ${action.type as string}`)
   }
+}
+
+
+function calculateViews(state: NavigationState, content: ContentState[]): Array<{ name: string, colSpan: number }> {
+  let screen = state.screens[state.screens.length - 1]
+  const screens = state.screens.filter(s => {
+    return s.value > window.innerWidth
+  }).reverse()
+
+  // Find the smallest defined screen size that can handle current screen width
+  if (screens.length) {
+    screen = screens[screens.length - 1]
+  }
+
+  // Extracts all current views based from components content as name/wanted minimum width
+  const views = content
+    .filter(item => !!item.name) // Happens during init phase
+    .map((item): { name: string, width: number } => {
+      const name = item.name
+      return {
+        name,
+        width: state.viewRegistry.get(name).meta.widths[screen.key]
+      }
+    })
+
+  // Happens during init phase
+  if (!views.length) {
+    return []
+  }
+
+  // Calculate total requested minimum colSpan
+  const usedSpace = views.reduce((total, view) => {
+    return view.width + total
+  }, 0)
+
+  // Calculate what colSpan each view is assigned
+  const widths = views.map(view => {
+    return {
+      name: view.name,
+      colSpan: Math.floor(12 * (view.width / usedSpace))
+    }
+  })
+
+  // Assign extra space left to the last view so it expands if necessary
+  const usedColSpan = widths.reduce((total, item) => { return item.colSpan + total }, 0)
+  if (usedColSpan < 12) {
+    widths[widths.length - 1].colSpan += 12 - usedColSpan
+  }
+
+  // state.views = widths
+
+  return widths
 }

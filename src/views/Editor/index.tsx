@@ -8,11 +8,23 @@ import { useEffect, useMemo, useState } from 'react'
 import { createEditor } from 'slate'
 import * as Y from 'yjs'
 
-import { useQuery, useSession } from '@/hooks'
-import { type ViewProps } from '@/types'
 import { HocuspocusProvider } from '@hocuspocus/provider'
+import { useSession, useQuery } from '@/hooks'
+import { type ViewMetadata, type ViewProps } from '@/types'
 
-export const Editor = (props: ViewProps): JSX.Element => {
+const meta: ViewMetadata = {
+  name: 'Editor',
+  path: '/editor',
+  widths: {
+    sm: 12,
+    md: 12,
+    lg: 4,
+    xl: 4,
+    '2xl': 4
+  }
+}
+
+const Editor = (props: ViewProps): JSX.Element => {
   const query = useQuery()
   const { jwt } = useSession()
   const { hocuspocusWebsocket } = useApi()
@@ -140,4 +152,6 @@ function cursorData(name: string): Record<string, unknown> {
   }
 }
 
-Editor.displayName = 'Editor'
+Editor.meta = meta
+
+export { Editor }

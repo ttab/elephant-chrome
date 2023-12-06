@@ -1,9 +1,9 @@
+import { type ViewMetadata, type ViewProps } from '@/types'
 import { ViewHeader } from '@/components'
 import { useSession } from '@/hooks'
 import { useApi } from '@/hooks/useApi'
 import { type SearchIndexResponse } from '@/lib/index/search'
 import { Planning } from '@/lib/planning'
-import { type ViewProps } from '@/types'
 import { useEffect, useState } from 'react'
 
 import { PlanningHeader } from '@/components/PlanningHeader'
@@ -13,6 +13,18 @@ import {
   Tabs,
   TabsContent
 } from '@ttab/elephant-ui'
+
+const meta: ViewMetadata = {
+  name: 'PlanningOverview',
+  path: '/',
+  widths: {
+    sm: 12,
+    md: 12,
+    lg: 6,
+    xl: 6,
+    '2xl': 4
+  }
+}
 
 export const PlanningOverview = (props: ViewProps): JSX.Element => {
   const { jwt } = useSession()
@@ -43,7 +55,7 @@ export const PlanningOverview = (props: ViewProps): JSX.Element => {
 
   return (
     <Tabs defaultValue='list' className='flex-1'>
-      <ViewHeader { ...props}>
+      <ViewHeader {...props}>
         <PlanningHeader date={date} setDate={setDate} />
       </ViewHeader>
       <main className='h-full flex-1 flex-col space-y-8 p-8 md:flex'>
@@ -62,4 +74,4 @@ export const PlanningOverview = (props: ViewProps): JSX.Element => {
   )
 }
 
-PlanningOverview.displayName = 'PlanningOverview'
+PlanningOverview.meta = meta

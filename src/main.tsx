@@ -3,6 +3,9 @@ import ReactDOM from 'react-dom/client'
 import { App } from './App.tsx'
 import { ThemeProvider, ApiProvider, SessionProvider } from '@/contexts'
 import { NavigationProvider } from '@/navigation/components'
+import { banner } from './lib/banner.ts'
+
+banner()
 
 const protocol = import.meta.env.VITE_PROTOCOL
 const host = import.meta.env.VITE_API_HOST

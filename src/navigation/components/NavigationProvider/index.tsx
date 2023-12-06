@@ -7,58 +7,62 @@ import {
 } from 'react'
 import type { NavigationState, NavigationAction } from '@/types'
 import { NavigationActionType } from '@/types'
-import { init } from '@/lib/init'
+import { initializeNavigationState } from '@/lib/initializeNavigationState'
 
 import { useHistory, useResize } from '@/hooks'
-import { navigationReducer } from '@/navigation/lib'
+import { minimumSpaceRequired, navigationReducer, currentView } from '@/navigation/lib'
+import { debounce } from '@/lib/debounce'
 
-const initialState = init()
+const initialState = initializeNavigationState()
 
 export const NavigationContext = createContext<{
   state: NavigationState
   dispatch: Dispatch<NavigationAction>
-}>({ state: initialState, dispatch: () => { } })
+}>({
+  state: initialState,
+  dispatch: () => { }
+})
 
 export const NavigationProvider = ({ children }: PropsWithChildren): JSX.Element => {
   const [state, dispatch] = useReducer(navigationReducer, initialState)
   const historyState = useHistory()
   const screenSize = useResize()
+  const { name, props } = currentView()
 
+  // Initialize a new history start state based on current url
   useLayoutEffect(() => {
-    // Create history state for initial content based on url
     if (historyState === null) {
-      // TODO: Make router/location hook
-      const currentView = window.location.pathname !== '/'
-        ? window.location.pathname[1].toUpperCase() + window.location.pathname.slice(2)
-        : 'PlanningOverview'
-      const currentProps = Object.fromEntries(new URLSearchParams(window.location.search))
-      const id = currentProps.id || 'start'
-
       history.replaceState({
-        id,
-        itemName: currentView,
-        contentState: [{ id, name: currentView, props: currentProps, path: '/' }]
+        id: 'start',
+        itemName: name,
+        contentState: [{
+          id: 'start',
+          name,
+          props,
+          path: '/'
+        }]
       }, document.title, window.location.href)
     }
+  }, [name, props, historyState])
 
-    /* undefined is for initial state on page load/refresh set state from saved history
-       'popstate' is for state change on back/forward button, set new state */
+
+  // undefined is for initial state on page load/refresh set state from saved history
+  // 'popstate' is for state change on back/forward button, set new state.
+  useLayoutEffect(() => {
     if (historyState && (historyState.type === 'popstate' || historyState.type === undefined)) {
-      dispatch({ type: NavigationActionType.SET, content: historyState.contentState })
+      dispatch({
+        type: NavigationActionType.SET,
+        content: historyState.contentState
+      })
     }
   }, [historyState])
 
-  // Remove first element if document width exceeds window width
+
+  // Handle when screen size gets smaller and views don't fit or more views fit
   useLayoutEffect(() => {
-    if (document.documentElement.scrollWidth > window.innerWidth) {
-      // Remove overflowing view and update state
-      dispatch({ type: NavigationActionType.REMOVE })
-      // Set new history.state
-      history.replaceState({
-        contentState: history.state.contentState.slice(1, history.state.contentState.length)
-      }, document.title, window.location.href)
-    }
-  }, [state, screenSize])
+    debouncedCalculateView(history, state, dispatch)
+    // eslint-disable-next-line
+  }, [screenSize])
 
   return (
     <NavigationContext.Provider value={{ state, dispatch }}>
@@ -67,3 +71,38 @@ export const NavigationProvider = ({ children }: PropsWithChildren): JSX.Element
   )
 }
 
+const debouncedCalculateView = debounce(calculateViews, 40)
+
+function calculateViews(history: History, state: NavigationState, dispatch: Dispatch<NavigationAction>): void {
+  let spaceRequired = minimumSpaceRequired(history.state.contentState, state.viewRegistry, state.screens)
+  if (spaceRequired <= 12 && (history.state.contentState || []).length <= (state.content || []).length) {
+    return
+  }
+
+  // Screen size too small for currently available views, remove overflow
+  const content = [...history.state.contentState]
+  while (spaceRequired > 12) {
+    content.shift()
+    spaceRequired = minimumSpaceRequired(content, state.viewRegistry, state.screens)
+  }
+
+  // Get active id, or set it to the leftmost view if the active view was removed
+  const activeId = content.find(c => c.id === state.active)?.id || content[0].id
+
+  // Set new state
+  dispatch({
+    type: NavigationActionType.SET,
+    active: activeId,
+    content
+  })
+
+  // Update current history state, not adding, this does however make it
+  // difficult/impossible to redisplay removed views if screen gets bigger...
+  history.replaceState(
+    {
+      contentState: history.state.contentState
+    },
+    document.title,
+    window.location.href
+  )
+}
