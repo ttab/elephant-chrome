@@ -5,7 +5,6 @@ import { type Planning } from '../data/schema'
 import { sectors } from '../data/settings'
 
 export const section: ColumnDef<Planning> = {
-
   id: 'section',
   accessorFn: (data) => data._source['document.rel.sector.title'][0],
   cell: ({ row }) => {

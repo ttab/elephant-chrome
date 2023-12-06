@@ -4,7 +4,6 @@ import { type ColumnDef } from '@tanstack/react-table'
 import { type Planning } from '../data/schema'
 
 export const type: ColumnDef<Planning> = {
-
   id: 'type',
   accessorFn: (data) => data._source['document.meta.core_assignment.meta.core_assignment_type.value'],
   cell: ({ row }) => {
