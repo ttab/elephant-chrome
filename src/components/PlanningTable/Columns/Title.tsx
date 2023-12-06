@@ -22,7 +22,7 @@ export const title: ColumnDef<Planning> = {
                     : 'border')} />
               </TooltipTrigger>
               <TooltipContent>
-                <p>Public</p>
+                <p>{status ? 'Public' : 'Internal'}</p>
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>
