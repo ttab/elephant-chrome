@@ -61,6 +61,7 @@ export const NavigationProvider = ({ children }: PropsWithChildren): JSX.Element
   // Handle when screen size gets smaller and views don't fit or more views fit
   useLayoutEffect(() => {
     debouncedCalculateView(history, state, dispatch)
+    // eslint-disable-next-line
   }, [screenSize])
 
   return (
@@ -69,7 +70,6 @@ export const NavigationProvider = ({ children }: PropsWithChildren): JSX.Element
     </NavigationContext.Provider>
   )
 }
-
 
 const debouncedCalculateView = debounce(calculateViews, 40)
 
