@@ -9,17 +9,16 @@ export const title: ColumnDef<Planning> = {
   cell: ({ row }) => {
     const status = row.original._source['document.meta.core_planning_item.data.public'][0] === 'true'
     const slugline = row.original._source['document.meta.core_assignment.meta.tt_slugline.value']
+    const classNames = cn('flex items-center h-2 w-2 rounded-full mx-4', status
+      ? 'bg-[#5895FF]'
+      : 'border')
 
     return (
         <div className='flex space-x-2 w-fit'>
           <TooltipProvider>
             <Tooltip>
               <TooltipTrigger>
-                <div className={cn(
-                  'flex items-center h-2 w-2 rounded-full mx-4',
-                  status
-                    ? 'bg-[#5895FF]'
-                    : 'border')} />
+                <div className={classNames} />
               </TooltipTrigger>
               <TooltipContent>
                 <p>{status ? 'Public' : 'Internal'}</p>
@@ -29,7 +28,7 @@ export const title: ColumnDef<Planning> = {
           <span className='max-w-[200px] md:max-w-[300px] lg:max-w-[700px] truncate font-medium'>
             {row.getValue('title')}
           </span>
-          {slugline?.length && (
+          {!!slugline?.length && (
             <span className='hidden text-medium text-slate-600 lg:block'>{slugline[0]}</span>
           )}
         </div>
