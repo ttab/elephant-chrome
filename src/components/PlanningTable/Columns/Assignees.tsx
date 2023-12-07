@@ -40,7 +40,7 @@ export const assignees: ColumnDef<Planning> = {
                   const initials = `${first[0]}${last[0]}`
                   return (
                     <div key={index} className='flex p-1'>
-                      <div className='w-8 h-8 rounded-full flex items-center justify-center bg-[#973C9F] text-background dark:text-foreground border-2 mr-4'>
+                      <div className='w-8 h-8 rounded-full flex items-center justify-center border-2 mr-4'>
                         {initials}
                       </div>
                       <p>{assignee}</p>

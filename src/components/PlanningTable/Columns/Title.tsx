@@ -25,7 +25,7 @@ export const title: ColumnDef<Planning> = {
               </TooltipContent>
             </Tooltip>
           </TooltipProvider>
-          <span className='max-w-[200px] md:max-w-[300px] lg:max-w-[700px] truncate font-semibold'>
+          <span className='max-w-[200px] md:max-w-[300px] lg:max-w-[700px] truncate font-medium'>
             {row.getValue('title')}
           </span>
           {!!slugline?.length && (
