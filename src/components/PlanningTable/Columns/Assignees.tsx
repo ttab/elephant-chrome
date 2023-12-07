@@ -9,7 +9,7 @@ export const assignees: ColumnDef<Planning> = {
   cell: ({ row }) => {
     const assignees = row.getValue<string[]>('assignees') || []
     return (
-        <div className={cn('flex -space-x-2 w-fit text-sm font-semibold leading-6 h-8 items-center',
+        <div className={cn('flex -space-x-2 w-fit text-xs font-semibold leading-6 h-8 items-center',
           assignees.length > 3 && 'border rounded-full hidden lg:flex')}>
           {(assignees || []).slice(0, 3).map((assignee: string, index: number) => {
             const [first, last] = assignee.trim().split(' ')
@@ -18,7 +18,7 @@ export const assignees: ColumnDef<Planning> = {
               <TooltipProvider key={index}>
                 <Tooltip>
                   <TooltipTrigger>
-                    <div className='hidden lg:flex w-8 h-8 rounded-full items-center justify-center bg-[#973C9F] text-background dark:text-foreground border relative z-1'>
+                    <div className='hidden lg:flex w-8 h-8 rounded-full items-center justify-center bg-[#973C9F] text-background dark:text-foreground border'>
                       {initials}
                     </div>
                   </TooltipTrigger>

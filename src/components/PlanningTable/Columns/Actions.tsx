@@ -31,9 +31,8 @@ export const actions: ColumnDef<Planning> = {
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-[160px]">
-        {!deliverableUuids.length && 'No deliverables'}
-        {deliverableUuids.length &&
-          deliverableUuids.map((uuid) => {
+        {deliverableUuids.length
+          ? deliverableUuids.map((uuid) => {
             return (
               <DropdownMenuItem key={uuid}>
                 <Link to='Editor' props={{ documentId: uuid }}>
@@ -42,6 +41,7 @@ export const actions: ColumnDef<Planning> = {
               </DropdownMenuItem>
             )
           })
+          : 'No deliverables'
         }
       </DropdownMenuContent>
     </DropdownMenu>

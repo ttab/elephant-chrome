@@ -10,9 +10,9 @@ export const section: ColumnDef<Planning> = {
   cell: ({ row }) => {
     const sector = sectors.find((label) => label.value === row.original._source['document.rel.sector.title'][0])
 
-    return sector && <Badge variant='outline'>
+    return sector && <Badge variant='outline' className='rounded-md'>
         <div className={cn('h-2 w-2 rounded-full mr-2', sector?.color) } />
-        <span className='text-slate-500 font-medium font-sans'>{sector.label}</span>
+        <span className='text-slate-500 text-sm font-sans'>{sector.label}</span>
       </Badge>
   }
 }
