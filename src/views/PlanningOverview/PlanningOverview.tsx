@@ -33,7 +33,7 @@ export const PlanningOverview = (props: ViewProps): JSX.Element => {
   const { indexUrl } = useApi()
   const [result, setResult] = useState<SearchIndexResponse | undefined>()
   const [date, setDate] = useState<Date>(new Date())
-  const { locale } = useRegistry()
+  const { locale, timeZone } = useRegistry()
 
   useEffect(() => {
     if (!jwt) {
@@ -71,7 +71,7 @@ export const PlanningOverview = (props: ViewProps): JSX.Element => {
             </TabsContent>
 
             <TabsContent value='grid'>
-              Grid in {locale}
+              Grid in {timeZone} ({locale})
             </TabsContent>
           </>
         }
