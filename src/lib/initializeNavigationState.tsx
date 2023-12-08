@@ -1,8 +1,7 @@
 import type { NavigationState, ViewRegistryItem, View } from '@/types'
 import { NavigationWrapper } from '@/navigation/components/NavigationWrapper'
 import * as views from '@/views'
-import resolveConfig from 'tailwindcss/resolveConfig'
-import tailwindConfig from '../../tailwind.config'
+import tailwindConfig from '@ttab/elephant-ui/styles/presetResolved.json'
 
 const registeredComponents = new Map() as Map<string, ViewRegistryItem>
 
@@ -61,8 +60,7 @@ const viewRegistry = {
 
 // Get defined screens from tailwind config as a sorted array
 function getScreens(): Array<{ key: string, value: number }> {
-  // @ts-expect-error Don't know how to fix typescript...
-  const definedScreens = resolveConfig(tailwindConfig).theme.screens as Record<string, string>
+  const definedScreens = tailwindConfig.theme.screens as Record<string, string>
   const screens: Array<{ key: string, value: number }> = []
 
   for (const key of Object.keys(definedScreens)) {

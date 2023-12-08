@@ -1,5 +1,6 @@
 import type { Config } from 'tailwindcss'
-import preset from '@ttab/elephant-ui/styles/preset'
+import preset from '@ttab/elephant-ui/styles/preset.ts'
+
 export default {
   darkMode: 'class',
   presets: [preset],
