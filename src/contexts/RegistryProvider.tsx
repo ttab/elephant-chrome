@@ -5,18 +5,20 @@ import {
   useMemo,
   type PropsWithChildren
 } from 'react'
+import { getUserLocale } from 'get-user-locale'
+import { getUserTimeZone } from '@/lib/getUserTimeZone'
 
 interface RegistryProviderState {
   locale: string
-  decimalFormat: string
+  timeZone: string
 }
 
 interface RegistryProviderContext extends RegistryProviderState {
   setLocale: (locale: string) => void
-  setDecimalFormat: (format: string) => void
+  setTimeZone: (timeZone: string) => void
 }
 
-type RegistryProviderActionType = 'SET_LOCALE' | 'SET_DECIMAL_FORMAT' | 'SET_DATE_FORMAT'
+type RegistryProviderActionType = 'SET_LOCALE' | 'SET_TIME_ZONE'
 interface RegistryProviderAction {
   type: RegistryProviderActionType
   payload: unknown
@@ -24,10 +26,11 @@ interface RegistryProviderAction {
 
 /**
  * Initial state
+ * TODO: Fetch from future users settings stored in local storage or elsewhere
  */
 const initialState: RegistryProviderState = {
-  locale: 'en-US',
-  decimalFormat: '2-digit'
+  locale: getUserLocale() || 'en-US',
+  timeZone: getUserTimeZone() || 'America/New_York'
 }
 
 // TODO: Split this file into one per hook, provider and context
@@ -49,9 +52,9 @@ const reducer = (state: RegistryProviderState, action: RegistryProviderAction): 
       }
       break
 
-    case 'SET_DECIMAL_FORMAT':
+    case 'SET_TIME_ZONE':
       if (typeof payload === 'string') {
-        return { ...state, decimalFormat: payload }
+        return { ...state, timeZone: payload }
       }
       break
   }
@@ -72,11 +75,8 @@ const RegistryContext = createContext<RegistryProviderState>(initialState)
  * @param children
  * @returns JSX.Element
  */
-const RegistryProvider = ({ children, locale, decimalFormat }: PropsWithChildren<RegistryProviderState>): JSX.Element => {
+const RegistryProvider = ({ children }: PropsWithChildren): JSX.Element => {
   const [state, dispatch] = useReducer(reducer, initialState)
-
-  state.locale = locale
-  state.decimalFormat = decimalFormat
 
   // Memoize the context value to avoid unnecessary re-renders
   const contextValue = useMemo((): RegistryProviderContext => {
@@ -86,9 +86,9 @@ const RegistryProvider = ({ children, locale, decimalFormat }: PropsWithChildren
         type: 'UPDATE_LOCALE' as RegistryProviderActionType,
         payload: locale
       }),
-      setDecimalFormat: (format: string) => dispatch({
-        type: 'UPDATE_DECIMAL_FORMAT' as RegistryProviderActionType,
-        payload: format
+      setTimeZone: (timeZone: string) => dispatch({
+        type: 'UPDATE_TIME_ZONE' as RegistryProviderActionType,
+        payload: timeZone
       })
     }
   }, [state])
