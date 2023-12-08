@@ -50,6 +50,7 @@
     "srv-src",
     "vite.config.ts",
     "tailwind.config.ts",
+    "postcss.config.js",
     "setupTests.ts",
     "jest.config.ts",
     "__mocks__/**/*",
