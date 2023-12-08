@@ -3,10 +3,10 @@ import { Server } from '@hocuspocus/server'
 import { Logger } from '@hocuspocus/extension-logger'
 import { Redis } from '@hocuspocus/extension-redis'
 import { Database } from '@hocuspocus/extension-database'
-import type { RedisCache } from './RedisCache.ts'
-import type { Repository } from './Repository.ts'
+import type { RedisCache } from './RedisCache.js'
+import type { Repository } from './Repository.js'
 import { decodeJwt } from 'jose'
-import { initDoc } from './transformations/index.ts'
+import { initDoc } from './transformations/index.js'
 
 interface CreateServerOptions {
   repository: Repository
@@ -17,12 +17,14 @@ export async function createServer(options: CreateServerOptions): Promise<Hocusp
   const { repository, cache } = options
 
   const server = Server.configure({
-    port: parseInt(process.env.API_PORT),
+    port: process.env.API_PORT ? parseInt(process.env.API_PORT) : 5183,
     extensions: [
       new Logger(),
       new Redis({
-        host: process.env.REDIS_HOST, // FIXME: Should not use env
-        port: parseInt(process.env.REDIS_PORT) // FIXME: SHould not use env
+        // FIXME: Should not use env
+        host: process.env.REDIS_HOST,
+        // FIXME: Should not use env
+        port: process.env.REDIS_PORT ? parseInt(process.env.REDIS_PORT) : 6379
       }),
       new Database({
         fetch: async (data) => {

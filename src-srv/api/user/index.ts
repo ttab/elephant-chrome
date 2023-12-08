@@ -1,7 +1,7 @@
 import { decodeJwt } from 'jose'
 import type { Response } from 'express'
-import type { RouteHandler } from 'routes.ts'
-import type { Session } from 'utils/Repository.ts'
+import type { RouteHandler } from '../../routes.js'
+import type { Session } from '../../utils/Repository.js'
 
 export const POST: RouteHandler = async (req, context) => {
   const { repository, res } = context
@@ -31,9 +31,15 @@ export const POST: RouteHandler = async (req, context) => {
       }
     }
   } catch (ex) {
+    if (ex instanceof Error) {
+      return {
+        statusCode: 401,
+        statusMessage: ex.message
+      }
+    }
     return {
       statusCode: 401,
-      statusMessage: ex.message || 'Unexpected error when authenticating'
+      statusMessage: 'Unexpected error when authenticating'
     }
   }
 }

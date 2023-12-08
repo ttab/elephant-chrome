@@ -6,20 +6,20 @@ import cookieParser from 'cookie-parser'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 
-import { connectRouteHandlers, mapRoutes } from './routes.ts'
-import { createServer as createHocuspocusServer } from './utils/hocuspocus.ts'
-import { RedisCache } from './utils/RedisCache.ts'
-import { Repository } from './utils/Repository.ts'
+import { connectRouteHandlers, mapRoutes } from './routes.js'
+import { createServer as createHocuspocusServer } from './utils/hocuspocus.js'
+import { RedisCache } from './utils/RedisCache.js'
+import { Repository } from './utils/Repository.js'
 import { createRemoteJWKSet } from 'jose'
 
 const NODE_ENV = process.env.NODE_ENV === 'production' ? 'production' : 'development'
 const PROTOCOL = (NODE_ENV === 'production') ? 'https' : process.env.VITE_PROTOCOL || 'https'
 
 const CLIENT_HOST = process.env.VITE_CLIENT_HOST || '127.0.0.1'
-const CLIENT_PORT = parseInt(process.env.VITE_CLIENT_PORT) || 5173
+const CLIENT_PORT = process.env.VITE_CLIENT_PORT ? parseInt(process.env.VITE_CLIENT_PORT) : 5173
 
 const API_HOST = process.env.VITE_API_HOST || '127.0.0.1'
-const API_PORT = parseInt(process.env.VITE_API_PORT) || 5183
+const API_PORT = process.env.VITE_API_PORT ? parseInt(process.env.VITE_API_PORT) : 5183
 const API_URL = `${PROTOCOL}://${API_HOST}:${API_PORT}`
 
 const REPOSITORY_URL = process.env.REPOSITORY_URL
@@ -33,8 +33,16 @@ async function runServer(): Promise<string> {
 
   const routes = await mapRoutes(apiDir)
 
+  if (!JWKS_URL) {
+    throw new Error('Missing JWKS_URL')
+  }
+
+  if (!REPOSITORY_URL) {
+    throw new Error('Missing REPOSITORY_URL')
+  }
+
   // Connect to Redis
-  const cache = new RedisCache(process.env.REDIS_HOST, process.env.REDIS_PORT)
+  const cache = new RedisCache(process.env.REDIS_HOST || 'localhost', process.env.REDIS_PORT || 6379)
   if (!await cache.connect()) {
     throw new Error('Failed connecting to Redis')
   }
