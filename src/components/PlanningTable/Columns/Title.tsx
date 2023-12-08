@@ -29,7 +29,7 @@ export const title: ColumnDef<Planning> = {
             {row.getValue('title')}
           </span>
           {!!slugline?.length && (
-            <span className='hidden text-medium text-slate-600 lg:block'>{slugline[0]}</span>
+            <span className='hidden font-medium text-slate-500 lg:block'>{slugline[0]}</span>
           )}
         </div>
     )
