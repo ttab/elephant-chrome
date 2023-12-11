@@ -6,7 +6,7 @@ import { cva } from 'class-variance-authority'
 
 // TODO: Implement use of @container queries through @tailwindcss/container-queries
 
-const section = cva('p-2', {
+const section = cva('', {
   variants: {
     active: {
       true: 'border-t-green-500 border-t-4',

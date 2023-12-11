@@ -9,7 +9,7 @@ interface ViewHeaderProps extends ViewProps {
 export const ViewHeader = ({ id, children }: ViewHeaderProps): JSX.Element => {
   const { state } = useNavigation()
   return (
-    <header className='relative top-0 group-last:w-[calc(100%-8rem)] flex justify-between'>
+    <header className='relative top-0 group-last:w-[calc(100%-8rem)] flex justify-between border-b p-2 px-3'>
       {children}
       {state.content.length > 1 &&
         <ViewFocus id={id} />

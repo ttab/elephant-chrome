@@ -1,21 +1,31 @@
-import { CalendarSearch } from '@ttab/elephant-ui/icons'
 import { DateChanger } from './Datechanger'
 import { TabsGrid } from './LayoutSwitch'
 import { Filter } from './Filter'
-import { type Dispatch, type SetStateAction } from 'react'
+import {
+  type Dispatch,
+  type SetStateAction
+} from 'react'
 
 export interface PlanningHeaderProps {
-  date: Date
-  setDate: Dispatch<SetStateAction<Date>>
+  tab: string
+  startDate: Date
+  setStartDate: Dispatch<SetStateAction<Date>>
+  endDate?: Date
+  setEndDate?: Dispatch<SetStateAction<Date>>
 }
-export const PlanningHeader = ({ date, setDate }: PlanningHeaderProps): JSX.Element => (
-  <div className='flex'>
-    <CalendarSearch className='w-4 h-4 mr-1 mt-2' />
-    <h1 className='font-sans font-semibold text-md break-all mr-4 mt-1'>
-      Planning
-    </h1>
+
+export const PlanningHeader = ({ tab, startDate, setStartDate, endDate, setEndDate }: PlanningHeaderProps): JSX.Element => {
+  return <div className='flex'>
     <TabsGrid />
-    <DateChanger date={date} setDate={setDate} />
+
+    {tab === 'list' &&
+      <DateChanger startDate={startDate} setStartDate={setStartDate} />}
+
+    {tab === 'grid' &&
+      <DateChanger
+        startDate={startDate} setStartDate={setStartDate}
+        endDate={endDate} setEndDate={setEndDate} />}
+
     <Filter />
   </div>
-)
+}

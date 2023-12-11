@@ -5,7 +5,8 @@ interface SaerchPlanningParams {
   skip?: number
   size?: number
   where?: {
-    startDate?: string | Date
+    start?: string | Date
+    end?: string | Date
   }
   sort?: {
     start?: 'asc' | 'desc'
@@ -14,7 +15,8 @@ interface SaerchPlanningParams {
 }
 
 export const search = async (endpoint: URL, jwt: JWT, params?: SaerchPlanningParams): Promise<SearchIndexResponse> => {
-  const startDate = params?.where?.startDate ? new Date(params.where.startDate) : new Date()
+  const start = params?.where?.start ? new Date(params.where.start) : new Date()
+  const end = params?.where?.end ? new Date(params.where.end) : new Date()
   const sort: Array<Record<string, 'asc' | 'desc'>> = []
 
   if (params?.sort?.start && ['asc', 'desc'].includes(params.sort.start)) {
@@ -32,8 +34,11 @@ export const search = async (endpoint: URL, jwt: JWT, params?: SaerchPlanningPar
       bool: {
         must: [
           {
-            term: {
-              'document.meta.core_assignment.data.start_date': startDate.toISOString()
+            range: {
+              'document.meta.core_assignment.data.start_date': {
+                gte: start.toISOString(),
+                lte: end.toISOString()
+              }
             }
           }
         ]
