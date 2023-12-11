@@ -6,7 +6,7 @@ import { type SearchIndexResponse } from '@/lib/index/search'
 import { Planning } from '@/lib/planning'
 import { useEffect, useState } from 'react'
 import { type Planning as PlanningType } from '@/components/PlanningTable/data/schema'
-
+import { CalendarDaysIcon } from '@ttab/elephant-ui/icons'
 import { PlanningTable } from '@/components/PlanningTable'
 import { columns } from '@/components/PlanningTable/Columns'
 import { PlanningHeader } from './PlanningHeader'
@@ -88,7 +88,7 @@ export const PlanningOverview = (props: ViewProps): JSX.Element => {
   return (
     <Tabs defaultValue={currentTab} className='flex-1' onValueChange={setCurrentTab}>
 
-      <ViewHeader {...props}>
+      <ViewHeader {...props} title="Planeringsöversikt" icon={CalendarDaysIcon}>
         <PlanningHeader
           tab={currentTab}
           startDate={startDate}
