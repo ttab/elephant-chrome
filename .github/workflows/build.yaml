@@ -2,8 +2,6 @@ name: Build
 
 on:
   push:
-    branches:
-      - main
     tags:
       - v*
 
@@ -45,3 +43,5 @@ jobs:
           tags: ghcr.io/${{ github.repository }}:${{ github.ref_name }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
+        env:
+          NODE_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
