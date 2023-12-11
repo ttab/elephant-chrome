@@ -9,8 +9,8 @@ export default defineConfig({
     viteStaticCopy({
       targets: [
         {
-          src: './node_modules/@ttab/elephant-ui/dist/styles/**/*',
-          dest: './'
+          src: './node_modules/@ttab/elephant-ui/dist/styles/**/*.{woff,woff2}',
+          dest: './assets'
         }
       ]
     })
