@@ -32,7 +32,7 @@ export const DatePicker = ({ date, setDate }: DatePickerProps): JSX.Element => {
         <Button
           variant={'ghost'}
           className={cn(
-            'justify-center text-left font-normal h-8 w-36',
+            'justify-center text-left font-normal h-9',
             !date && 'text-muted-foreground'
           )}
         >

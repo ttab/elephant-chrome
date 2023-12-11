@@ -21,9 +21,9 @@ export const DateChanger = ({
   const steps = !!endDate && !!setEndDate ? 7 : 1
 
   return (
-    <>
+    <div className="flex items-center">
       <ChevronLeft
-        className='w-4 h-4 mt-2 ml-4'
+        className='w-6 h-8 px-1 py-2 rounded cursor-pointer hover:bg-muted'
         onClick={() => setStartDate(decrementDate(startDate, steps))}
       />
 
@@ -34,10 +34,10 @@ export const DateChanger = ({
       }
 
       <ChevronRight
-        className='w-4 h-4 mt-2'
+        className='w-6 h-8 px-1 py-2 rounded cursor-pointer hover:bg-muted'
         onClick={() => setStartDate(incrementDate(startDate, steps))}
       />
-    </>
+    </div>
   )
 }
 

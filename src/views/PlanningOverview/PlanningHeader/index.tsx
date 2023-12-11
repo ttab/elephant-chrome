@@ -15,7 +15,7 @@ export interface PlanningHeaderProps {
 }
 
 export const PlanningHeader = ({ tab, startDate, setStartDate, endDate, setEndDate }: PlanningHeaderProps): JSX.Element => {
-  return <div className='flex'>
+  return <>
     <TabsGrid />
 
     {tab === 'list' &&
@@ -27,5 +27,5 @@ export const PlanningHeader = ({ tab, startDate, setStartDate, endDate, setEndDa
         endDate={endDate} setEndDate={setEndDate} />}
 
     <Filter />
-  </div>
+  </>
 }
