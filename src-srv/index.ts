@@ -63,7 +63,8 @@ async function runServer(): Promise<string> {
 
   app.use(cors({
     credentials: true,
-    origin: `${PROTOCOL}://${HOST}:${process.env.NODE_ENV === 'development' ? 5173 : PORT}`
+    origin: `${PROTOCOL}://${HOST}:${process.env.DEV_CLIENT_PORT || PORT}`
+
   }))
   app.use(cookieParser())
   app.use(express.json())
