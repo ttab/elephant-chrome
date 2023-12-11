@@ -84,7 +84,8 @@ function setCookies(session: Session, res: Response): void {
     session.access_token,
     {
       maxAge: session.expires_in * 1000,
-      secure: true
+      secure: true,
+      sameSite: 'strict'
     }
   )
 
@@ -93,7 +94,8 @@ function setCookies(session: Session, res: Response): void {
     session.refresh_token,
     {
       httpOnly: true,
-      secure: true
+      secure: true,
+      sameSite: 'strict'
     }
   )
 }
