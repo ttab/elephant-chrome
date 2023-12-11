@@ -80,6 +80,11 @@ async function runServer(): Promise<string> {
     hpServer.handleConnection(websocket, request)
   })
 
+  // Catch all other requests and serve bundled app
+  app.get('*', (_, res) => {
+    res.sendFile(path.join(distDir, 'index.html'))
+  })
+
   app.listen(API_PORT)
 
   return API_URL
