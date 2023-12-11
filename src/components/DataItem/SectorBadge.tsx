@@ -7,7 +7,7 @@ export const SectorBadge = ({ color, value }: { color?: string, value: string })
 
   return <Badge variant='outline' className='rounded-md'>
     <div className={cn('h-2 w-2 rounded-full mr-2', chosenColor || '')} />
-    <span className='text-slate-500 text-xs font-sans font-normal'>{sector?.label}</span>
+    <span className='text-muted-foreground text-xs font-sans font-normal whitespace-nowrap text-ellipsis'>{sector?.label}</span>
   </Badge>
 }
 

@@ -109,7 +109,7 @@ export const PlanningOverview = (props: ViewProps): JSX.Element => {
               <TabsContent value='grid' className="">
                 <div className={cn(grid({ size: colSpan }))}>
                   {plannings !== undefined && <>
-                    {Object.keys(plannings).map((key) => (
+                    {Object.keys(plannings).sort((dt1, dt2) => { return dt1 > dt2 ? 1 : -1 }).map((key) => (
                       <PlanningGridColumn key={key} date={new Date(key)} items={plannings[key]} />
                     ))}
                   </>}
