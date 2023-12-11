@@ -1,5 +1,3 @@
-'use client'
-
 import { MoreHorizontal as DotsHorizontalIcon } from '@ttab/elephant-ui/icons'
 import { type ColumnDef } from '@tanstack/react-table'
 

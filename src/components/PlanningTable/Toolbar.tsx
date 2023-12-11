@@ -1,5 +1,3 @@
-'use client'
-
 import { X as Cross2Icon } from '@ttab/elephant-ui/icons'
 import { type Table } from '@tanstack/react-table'
 
