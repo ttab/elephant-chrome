@@ -15,12 +15,9 @@ import { createRemoteJWKSet } from 'jose'
 const NODE_ENV = process.env.NODE_ENV === 'production' ? 'production' : 'development'
 const PROTOCOL = (NODE_ENV === 'production') ? 'https' : process.env.VITE_PROTOCOL || 'https'
 
-const CLIENT_HOST = process.env.VITE_CLIENT_HOST || '127.0.0.1'
-const CLIENT_PORT = process.env.VITE_CLIENT_PORT ? parseInt(process.env.VITE_CLIENT_PORT) : 5173
-
-const API_HOST = process.env.VITE_API_HOST || '127.0.0.1'
-const API_PORT = process.env.VITE_API_PORT ? parseInt(process.env.VITE_API_PORT) : 5183
-const API_URL = `${PROTOCOL}://${API_HOST}:${API_PORT}`
+const HOST = process.env.VITE_HOST || '127.0.0.1'
+const PORT = process.env.VITE_PORT ? parseInt(process.env.VITE_PORT) : 5183
+const API_URL = `${PROTOCOL}://${HOST}:${PORT}`
 
 const REPOSITORY_URL = process.env.REPOSITORY_URL
 const JWKS_URL = process.env.JWKS_URL
@@ -66,7 +63,7 @@ async function runServer(): Promise<string> {
 
   app.use(cors({
     credentials: true,
-    origin: `${PROTOCOL}://${CLIENT_HOST}:${CLIENT_PORT}`
+    origin: `${PROTOCOL}://${HOST}:${process.env.NODE_ENV === 'development' ? 5173 : PORT}`
   }))
   app.use(cookieParser())
   app.use(express.json())
@@ -85,7 +82,7 @@ async function runServer(): Promise<string> {
     res.sendFile(path.join(distDir, 'index.html'))
   })
 
-  app.listen(API_PORT)
+  app.listen(PORT)
 
   return API_URL
 }
