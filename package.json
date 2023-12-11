@@ -2,7 +2,7 @@
   "name": "elephant-chrome",
   "private": false,
   "license": "MIT",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "type": "module",
   "scripts": {
     "dev": "concurrently npm:dev:server npm:dev:client",
