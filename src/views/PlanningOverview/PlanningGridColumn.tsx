@@ -1,6 +1,8 @@
 
 import { type Planning as PlanningType } from '@/components/PlanningTable/data/schema'
 import { useRegistry } from '@/contexts/RegistryProvider'
+import { SectorBadge } from '@/components/DataItem/SectorBadge'
+import { StatusIndicator } from '@/components/DataItem/StatusIndicator'
 
 interface PlanningGridColumnProps {
   date: Date
@@ -25,9 +27,15 @@ export const PlanningGridColumn = ({ date, items }: PlanningGridColumnProps): JS
 
       <div>
         {items.map(item => {
-          return <div key={item._id}>
-            <strong className="font-bold">{item._source['document.title']}</strong>
-            <span>{item._source['document.type']}</span>
+          const internal = item._source['document.meta.core_planning_item.data.public'][0] !== 'true'
+          const title = item._source['document.title'][0]
+          const slugLine = item._source['document.meta.core_assignment.meta.tt_slugline.value']
+
+          return <div key={item._id} className="">
+            <StatusIndicator internal={internal} />
+            <strong className="font-bold">{title}</strong>
+            <span>{slugLine}</span>
+            <SectorBadge value={item._source['document.rel.sector.title'][0]} />
           </div>
         })}
       </div>
