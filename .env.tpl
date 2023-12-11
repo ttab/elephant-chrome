@@ -18,7 +18,5 @@ VITE_INDEX_URL="https://...se:443"
 
 # Server and client side env
 VITE_PROTOCOL=http
-VITE_CLIENT_HOST=localhost
-VITE_CLIENT_PORT=5173
-VITE_API_HOST=localhost
-VITE_API_PORT=5183
+VITE_HOST=localhost
+VITE_PORT=5183
