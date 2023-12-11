@@ -6,5 +6,5 @@ COPY package.json package-lock.json tsconfig.json jest.config.ts /usr/src/app/
 RUN npm ci
 COPY . /usr/src/app
 RUN npm run build
-EXPOSE 5173
+EXPOSE 5183
 CMD [ "npm", "start" ]

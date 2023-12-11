@@ -1,5 +1,3 @@
-'use client'
-
 import { type ColumnDef } from '@tanstack/react-table'
 import { type Planning } from '../data/schema'
 import { actions } from './Actions'
