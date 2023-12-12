@@ -44,17 +44,15 @@ export const PlanningOverview = (props: ViewProps): JSX.Element => {
         />
       </ViewHeader>
 
-      <View>
-        <main className='h-full flex-1 flex-col space-y-8 md:flex'>
-          <TabsContent value='list'>
-            <PlanningList date={startDate} />
-          </TabsContent>
+      <main className='h-full flex-1 flex-col space-y-8 md:flex px-3'>
+        <TabsContent value='list'>
+          <PlanningList date={startDate} />
+        </TabsContent>
 
-          <TabsContent value='grid'>
-            <PlanningGrid startDate={startDate} endDate={endDate} />
-          </TabsContent>
-        </main>
-      </View>
+        <TabsContent value='grid'>
+          <PlanningGrid startDate={startDate} endDate={endDate} />
+        </TabsContent>
+      </main>
     </Tabs>
   )
 }
