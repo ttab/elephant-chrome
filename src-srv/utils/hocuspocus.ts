@@ -23,8 +23,11 @@ export async function createServer(options: CreateServerOptions): Promise<Hocusp
       new Redis({
         // FIXME: Should not use env
         host: process.env.REDIS_HOST,
-        // FIXME: Should not use env
-        port: process.env.REDIS_PORT ? parseInt(process.env.REDIS_PORT) : 6379
+        port: process.env.REDIS_PORT ? parseInt(process.env.REDIS_PORT) : 6379,
+        options: {
+          user: process.env.REDIS_USER,
+          password: process.env.REDIS_PASSWORD
+        }
       }),
       new Database({
         fetch: async (data) => {
