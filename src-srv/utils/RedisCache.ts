@@ -17,7 +17,8 @@ export class RedisCache {
   }
 
   get url(): string {
-    return `redis://${this.#user}:${this.#password}@${this.#host}:${this.#port}`
+    const credentials = this.#user && this.#password ? `${this.#user}:${this.#password}@` : ''
+    return `redis://${credentials}${this.#host}:${this.#port}`
   }
 
   async connect(): Promise<boolean> {
