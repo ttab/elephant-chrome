@@ -2,8 +2,6 @@ name: Build
 
 on:
   push:
-    branches:
-      - main
     tags:
       - v*
 
@@ -39,7 +37,7 @@ jobs:
         uses: docker/build-push-action@v3
         with:
           context: .
-          # Specify the build_platforms variable in the GitHub repo
+          build-args: npm_authtoken=${{ secrets.GITHUB_TOKEN }}
           platforms: ${{ vars.BUILD_PLATFORMS }}
           push: true
           tags: ghcr.io/${{ github.repository }}:${{ github.ref_name }}

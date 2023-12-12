@@ -4,11 +4,12 @@ import type { RedisClientType } from 'redis'
 export class RedisCache {
   readonly #host: string
   readonly #port: number
-  redisClient: RedisClientType
+  redisClient?: RedisClientType
 
   constructor(host: string, port: number | string) {
     this.#port = typeof port === 'number' ? port : parseInt(port)
     this.#host = host
+    this.redisClient = undefined
   }
 
   get url(): string {
@@ -35,7 +36,7 @@ export class RedisCache {
   }
 
   async get(key: string): Promise<Uint8Array | undefined> {
-    const cachedDoc = await this.redisClient.get(key)
+    const cachedDoc = await this.redisClient?.get(key)
 
     if (!cachedDoc) {
       return
@@ -50,7 +51,7 @@ export class RedisCache {
 
   async store(key: string, state: Buffer): Promise<boolean> {
     try {
-      await this.redisClient.set(
+      await this.redisClient?.set(
         key,
         Buffer.from(state).toString('binary')
       )

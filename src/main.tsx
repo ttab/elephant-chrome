@@ -9,8 +9,8 @@ import { RegistryProvider } from './contexts/RegistryProvider.tsx'
 banner()
 
 const protocol = import.meta.env.VITE_PROTOCOL
-const host = import.meta.env.VITE_API_HOST
-const port = import.meta.env.VITE_API_PORT
+const host = import.meta.env.VITE_HOST
+const port = import.meta.env.VITE_PORT
 
 const apiUrl = new URL('/api', `${protocol}://${host}:${port}`)
 const websocketUrl = new URL('/ws', `ws://${host}:${port}`)

@@ -2,7 +2,7 @@ import fs from 'node:fs'
 import path from 'node:path'
 import type { Request, Response } from 'express'
 import type { Application, WebsocketRequestHandler } from 'express-ws'
-import type { Repository } from 'utils/Repository.ts'
+import type { Repository } from './utils/Repository.js'
 
 /* Route types */
 interface Route {
@@ -50,10 +50,10 @@ type RouteMap = Record<string, Route>
 
 export const ApiResponse: ApiResponseInterface = {
   isStatus: (value): value is RouteStatusResponse => {
-    return typeof value === 'object' && ('statusCode' in value && 'statusMessage' in value)
+    return value !== null && typeof value === 'object' && ('statusCode' in value && 'statusMessage' in value)
   },
   isContent: (value): value is RouteContentResponse => {
-    return typeof value === 'object' && 'payload' in value
+    return value !== null && typeof value === 'object' && 'payload' in value
   }
 }
 
@@ -81,7 +81,7 @@ export function connectRouteHandlers(app: Application, routes: RouteMap, context
   for (const route in routes) {
     const routePath = path.join('/api', route)
 
-    const { GET, POST, PUT, PATCH, DELETE, WEB_SOCKET } = routes[route].handlers
+    const { GET, POST, PUT, PATCH, DELETE, WEB_SOCKET } = routes[route].handlers || {}
 
     if (GET) {
       connectRouteHandler(app, routePath, GET, context)
@@ -168,7 +168,7 @@ function connectRouteHandler(app: Application, routePath: string, func: RouteHan
 }
 
 // FIXME: WebSocket handlers need some more thought
-export function connectWebsocketHandler(app: Application, routePath: string, func: WebsocketRequestHandler, context: RouteInitContext): Application {
+export function connectWebsocketHandler(app: Application, routePath: string, func: WebsocketRequestHandler, _: RouteInitContext): Application {
   // FIXME: Implement support for context sharing with websocket handlers, context is ignored for now
   console.warn('Websocket route handlers don\'t have access to context')
 
@@ -196,7 +196,7 @@ function buildRoutes(routes: RouteMap, directory: string, baseRoute: string = ''
 function buildRoute(route: string, path: string): [string, Route] {
   const paramsRegex = /\[([^[\]]+)]/g
   const params = []
-  let match: RegExpExecArray
+  let match: RegExpExecArray | null
 
   while ((match = paramsRegex.exec(route)) !== null) {
     const paramName = match[1]
@@ -205,8 +205,8 @@ function buildRoute(route: string, path: string): [string, Route] {
 
   const expressPath = route
     .replace(/\[([^/]+)]/g, ':$1')
-    .replace(/index\.ts$/, '')
-    .replace(/\.ts$/, '')
+    .replace(/index\.(t|j)s$/, '')
+    .replace(/\.(t|j)s$/, '')
 
   return [expressPath, { path, params }]
 }
