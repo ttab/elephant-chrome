@@ -1,2 +1,2 @@
 export { Editor } from './Editor'
-export { PlanningOverview } from './PlanningOverview/PlanningOverview'
+export { PlanningOverview } from './PlanningOverview'
