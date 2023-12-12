@@ -42,7 +42,7 @@ export const PlanningGridColumn = ({ date, items }: PlanningGridColumnProps): JS
                 <StatusIndicator internal={internal} />
               </div>
 
-              <div className="flex-grow font-bold line-clamp-3">{title}</div>
+              <div className="flex-grow font-medium line-clamp-3">{title}</div>
 
               {!!startTime &&
                 <div className="flex-none text-muted-foreground">{startTime}</div>
