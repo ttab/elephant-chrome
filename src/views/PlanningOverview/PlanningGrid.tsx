@@ -26,6 +26,7 @@ export const PlanningGrid = ({ startDate, endDate }: PlanningGridProps): JSX.Ele
   const { startTime } = getDateTimeBoundaries(startDate)
   const { endTime } = getDateTimeBoundaries(endDate)
 
+  // Create url to base SWR caching on
   const searchUrl = useMemo(() => {
     const start = convertToISOStringInUTC(startTime, locale)
     const end = convertToISOStringInUTC(endTime, locale)
