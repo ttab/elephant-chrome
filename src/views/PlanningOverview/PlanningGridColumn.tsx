@@ -30,8 +30,8 @@ export const PlanningGridColumn = ({ date, items }: PlanningGridColumnProps): JS
           const internal = item._source['document.meta.core_planning_item.data.public'][0] !== 'true'
           const title = item._source['document.title'][0]
           const slugLine = item._source['document.meta.core_assignment.meta.tt_slugline.value']
-          const startTime = getStartTime(
-            item._source['document.meta.core_assignment.data.start'],
+          const startTime = getPublishTime(
+            item._source['document.meta.core_assignment.data.publish'],
             locale,
             timeZone
           )
@@ -60,8 +60,12 @@ export const PlanningGridColumn = ({ date, items }: PlanningGridColumnProps): JS
   )
 }
 
-function getStartTime(assignmentStartTimes: string[], locale: string, timeZone: string): string | undefined {
-  const startTimes = assignmentStartTimes.filter(dt => {
+function getPublishTime(assignmentPublishTimes: string[], locale: string, timeZone: string): string | undefined {
+  if (!Array.isArray(assignmentPublishTimes)) {
+    return
+  }
+
+  const startTimes = assignmentPublishTimes.filter(dt => {
     return !!dt
   }).sort((dt1, dt2) => {
     return dt1 >= dt2 ? 1 : -1
