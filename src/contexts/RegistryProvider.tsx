@@ -1,6 +1,5 @@
 import {
   createContext,
-  useContext,
   useReducer,
   useMemo,
   type PropsWithChildren
@@ -8,7 +7,7 @@ import {
 import { getUserLocale } from 'get-user-locale'
 import { getUserTimeZone } from '@/lib/getUserTimeZone'
 
-interface RegistryProviderState {
+export interface RegistryProviderState {
   locale: string
   timeZone: string
 }
@@ -32,8 +31,6 @@ const initialState: RegistryProviderState = {
   locale: getUserLocale() || 'en-US',
   timeZone: getUserTimeZone() || 'America/New_York'
 }
-
-// TODO: Split this file into one per hook, provider and context
 
 /**
  * RegistryReducer
@@ -66,7 +63,7 @@ const reducer = (state: RegistryProviderState, action: RegistryProviderAction): 
 /**
  * Registry context
  */
-const RegistryContext = createContext<RegistryProviderState>(initialState)
+export const RegistryContext = createContext<RegistryProviderState>(initialState)
 
 
 /**
@@ -99,18 +96,4 @@ const RegistryProvider = ({ children }: PropsWithChildren): JSX.Element => {
 }
 
 
-/**
- * Registry hook
- *
- * @returns RegistryProviderState
- */
-const useRegistry = (): RegistryProviderState => {
-  const context = useContext(RegistryContext)
-
-  if (!context) {
-    throw new Error('useRegistry must be used within a RegistryProvider')
-  }
-  return context
-}
-
-export { RegistryProvider, useRegistry }
+export { RegistryProvider }

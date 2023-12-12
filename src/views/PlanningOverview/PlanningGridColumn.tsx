@@ -1,6 +1,6 @@
 
 import { type Planning as PlanningType } from '@/components/PlanningTable/data/schema'
-import { useRegistry } from '@/contexts/RegistryProvider'
+import { useRegistry } from '@/hooks'
 import { SectorBadge } from '@/components/DataItem/SectorBadge'
 import { StatusIndicator } from '@/components/DataItem/StatusIndicator'
 

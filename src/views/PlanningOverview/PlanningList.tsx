@@ -1,11 +1,10 @@
-import { useSession, useApi } from '@/hooks'
+import { useSession, useApi, useRegistry } from '@/hooks'
 import { type SearchIndexResponse } from '@/lib/index/search'
 import { Planning } from '@/lib/planning'
 import { PlanningTable } from '@/components/PlanningTable'
 import { columns } from '@/components/PlanningTable/Columns'
 
 import { convertToISOStringInUTC, getDateTimeBoundaries } from '@/lib/datetime'
-import { useRegistry } from '@/contexts/RegistryProvider'
 import useSWR from 'swr'
 import { useMemo } from 'react'
 

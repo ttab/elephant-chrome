@@ -10,7 +10,7 @@ import {
   PopoverTrigger
 } from '@ttab/elephant-ui'
 import { cn } from '@ttab/elephant-ui/utils'
-import { useRegistry } from '@/contexts/RegistryProvider'
+import { useRegistry } from '@/hooks'
 
 interface DatePickerProps {
   date: Date

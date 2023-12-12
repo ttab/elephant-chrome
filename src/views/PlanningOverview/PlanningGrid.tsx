@@ -6,9 +6,8 @@ import { type Planning as PlanningType } from '@/components/PlanningTable/data/s
 import { cn } from '@ttab/elephant-ui/utils'
 import { cva } from 'class-variance-authority'
 import { PlanningGridColumn } from './PlanningGridColumn'
-import { useSession, useApi } from '@/hooks'
+import { useSession, useApi, useRegistry } from '@/hooks'
 import { convertToISOStringInTimeZone, convertToISOStringInUTC, getDateTimeBoundaries } from '@/lib/datetime'
-import { useRegistry } from '@/contexts/RegistryProvider'
 import useSWR from 'swr'
 import { useMemo } from 'react'
 
