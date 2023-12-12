@@ -3,7 +3,7 @@ import { Planning } from '@/lib/planning'
 import { type Planning as PlanningType } from '@/components/PlanningTable/data/schema'
 
 import { cn } from '@ttab/elephant-ui/utils'
-import { cva } from 'class-variance-authority'
+import { cva, type VariantProps } from 'class-variance-authority'
 import { PlanningGridColumn } from './PlanningGridColumn'
 import { useSession, useApi, useRegistry } from '@/hooks'
 import { convertToISOStringInTimeZone, convertToISOStringInUTC, getDateTimeBoundaries } from '@/lib/datetime'
@@ -53,7 +53,10 @@ export const PlanningGrid = ({ startDate, endDate }: PlanningGridProps): JSX.Ele
     return (result?.ok) ? structureByDate(result, startTime, endTime, locale, timeZone) : undefined
   })
 
-  const grid = cva('grid grid-cols-1', {
+  type GridVariantsProps = VariantProps<typeof gridVariants>
+  type GridSize = Extract<1 | 2 | 3 | 4 | 5 | 6 | 7, GridVariantsProps['size']>
+
+  const gridVariants = cva('grid grid-cols-1', {
     variants: {
       size: {
         1: 'grid-cols-1',
@@ -71,10 +74,12 @@ export const PlanningGrid = ({ startDate, endDate }: PlanningGridProps): JSX.Ele
     return <></>
   }
 
-  const colSpan = (Object.keys(data || {}).length || 1) as 1 | 2 | 3 | 4 | 5 | 6 | 7
+  const gridProps = {
+    size: (Object.keys(data || {}).length || 1) as GridSize
+  }
 
   return (
-    <div className={cn(grid({ size: colSpan }))}>
+    <div className={cn(gridVariants(gridProps))}>
       {Object.keys(data).sort((dt1, dt2) => { return dt1 > dt2 ? 1 : -1 }).map((key) => (
         <PlanningGridColumn key={key} date={new Date(key)} items={data[key]} />
       ))}
