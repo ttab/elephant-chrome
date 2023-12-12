@@ -12,6 +12,8 @@ interface DateChangerProps {
   setEndDate?: Dispatch<SetStateAction<Date>>
 }
 
+// FIXME: Implement handling of date intervals, commented out at the moment
+
 export const DateChanger = ({
   startDate,
   setStartDate,
@@ -29,9 +31,9 @@ export const DateChanger = ({
 
       <DatePicker date={startDate} setDate={setStartDate} />
 
-      {!!endDate && !!setEndDate &&
+      {/* {!!endDate && !!setEndDate &&
         <DatePicker date={endDate} setDate={setEndDate} />
-      }
+      } */}
 
       <ChevronRight
         className='w-6 h-8 px-1 py-2 rounded cursor-pointer hover:bg-muted'

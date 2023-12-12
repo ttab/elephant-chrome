@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { type ViewMetadata, type ViewProps } from '@/types'
 import { ViewHeader } from '@/components'
 import { CalendarDaysIcon } from '@ttab/elephant-ui/icons'
@@ -23,11 +23,13 @@ const meta: ViewMetadata = {
 }
 
 export const PlanningOverview = (props: ViewProps): JSX.Element => {
-  const [currentDate, setCurrentDate] = useState<Date>(new Date())
   const [startDate, setStartDate] = useState<Date>(new Date())
   const [endDate, setEndDate] = useState<Date>(getEndDate(startDate))
   const [currentTab, setCurrentTab] = useState<string>('list')
 
+  useEffect(() => {
+    setEndDate(getEndDate(startDate))
+  }, [startDate])
 
   return (
     <Tabs defaultValue={currentTab} className='flex-1' onValueChange={setCurrentTab}>
@@ -45,7 +47,7 @@ export const PlanningOverview = (props: ViewProps): JSX.Element => {
       <View>
         <main className='h-full flex-1 flex-col space-y-8 md:flex'>
           <TabsContent value='list'>
-            <PlanningList date={currentDate} />
+            <PlanningList date={startDate} />
           </TabsContent>
 
           <TabsContent value='grid'>
