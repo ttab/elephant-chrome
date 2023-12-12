@@ -1,6 +1,5 @@
 import { type SearchIndexResponse } from '@/lib/index/search'
 import { Planning } from '@/lib/planning'
-// import { useEffect } from 'react'
 import { type Planning as PlanningType } from '@/components/PlanningTable/data/schema'
 
 import { cn } from '@ttab/elephant-ui/utils'
