@@ -21,6 +21,8 @@ FROM node:20.10
 
 RUN apt-get update && apt-get upgrade -y && apt-get clean
 
+WORKDIR /usr/src/app
+
 COPY --from=build /usr/src/app /usr/src/app
 
 EXPOSE 5183
