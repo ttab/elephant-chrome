@@ -5,7 +5,6 @@ import { CalendarDaysIcon } from '@ttab/elephant-ui/icons'
 import { PlanningHeader } from './PlanningHeader'
 import { Tabs, TabsContent } from '@ttab/elephant-ui'
 
-import { View } from '@/components/View/View'
 import { PlanningGrid } from './PlanningGrid'
 import { PlanningList } from './PlanningList'
 
