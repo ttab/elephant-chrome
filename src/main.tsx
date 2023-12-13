@@ -4,6 +4,7 @@ import { App } from './App.tsx'
 import { ThemeProvider, ApiProvider, SessionProvider } from '@/contexts'
 import { NavigationProvider } from '@/navigation/components'
 import { banner } from './lib/banner.ts'
+import { RegistryProvider } from './contexts/RegistryProvider.tsx'
 
 banner()
 
@@ -19,11 +20,13 @@ ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
   <SessionProvider endpoint={new URL('/api/user', apiUrl)}>
     <ApiProvider apiUrl={apiUrl} websocketUrl={websocketUrl} indexUrl={indexUrl}>
       <React.StrictMode>
-        <ThemeProvider defaultTheme='light' storageKey='ele-ui-theme' >
-          <NavigationProvider>
-            <App />
-          </NavigationProvider>
-        </ThemeProvider >
+        <RegistryProvider>
+          <ThemeProvider defaultTheme='light' storageKey='ele-ui-theme' >
+            <NavigationProvider>
+              <App />
+            </NavigationProvider>
+          </ThemeProvider >
+        </RegistryProvider>
       </React.StrictMode>
     </ApiProvider>
   </SessionProvider>

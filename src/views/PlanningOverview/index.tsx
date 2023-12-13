@@ -1,18 +1,13 @@
+import { useEffect, useState } from 'react'
 import { type ViewMetadata, type ViewProps } from '@/types'
 import { ViewHeader } from '@/components'
-import { useSession } from '@/hooks'
-import { useApi } from '@/hooks/useApi'
-import { type SearchIndexResponse } from '@/lib/index/search'
-import { Planning } from '@/lib/planning'
-import { useEffect, useState } from 'react'
+import { CalendarDaysIcon } from '@ttab/elephant-ui/icons'
+import { PlanningHeader } from './PlanningHeader'
+import { Tabs, TabsContent } from '@ttab/elephant-ui'
 
-import { PlanningHeader } from '@/components/PlanningHeader'
-import { PlanningTable } from '@/components/PlanningTable'
-import { columns } from '@/components/PlanningTable/Columns'
-import {
-  Tabs,
-  TabsContent
-} from '@ttab/elephant-ui'
+import { PlanningGrid } from './PlanningGrid'
+import { PlanningList } from './PlanningList'
+
 
 const meta: ViewMetadata = {
   name: 'PlanningOverview',
@@ -27,51 +22,44 @@ const meta: ViewMetadata = {
 }
 
 export const PlanningOverview = (props: ViewProps): JSX.Element => {
-  const { jwt } = useSession()
-  const { indexUrl } = useApi()
-  const [result, setResult] = useState<SearchIndexResponse | undefined>()
-  const [date, setDate] = useState<Date>(new Date())
+  const [startDate, setStartDate] = useState<Date>(new Date())
+  const [endDate, setEndDate] = useState<Date>(getEndDate(startDate))
+  const [currentTab, setCurrentTab] = useState<string>('list')
 
   useEffect(() => {
-    if (!jwt) {
-      return
-    }
-
-    const args = {
-      size: 500,
-      where: {
-        startDate: date.toISOString().replace(/T.*$/, 'T00:00:00Z')
-      }
-    }
-
-    Planning.search(indexUrl, jwt, args)
-      .then(result => {
-        setResult(result)
-      })
-      .catch(ex => {
-        console.log(ex)
-      })
-  }, [indexUrl, jwt, date])
+    setEndDate(getEndDate(startDate))
+  }, [startDate])
 
   return (
-    <Tabs defaultValue='list' className='flex-1'>
-      <ViewHeader {...props}>
-        <PlanningHeader date={date} setDate={setDate} />
+    <Tabs defaultValue={currentTab} className='flex-1' onValueChange={setCurrentTab}>
+
+      <ViewHeader {...props} title="Planeringsöversikt" icon={CalendarDaysIcon}>
+        <PlanningHeader
+          tab={currentTab}
+          startDate={startDate}
+          setStartDate={setStartDate}
+          endDate={endDate}
+          setEndDate={setEndDate}
+        />
       </ViewHeader>
-      <main className='h-full flex-1 flex-col space-y-8 md:flex'>
-        {result?.ok === true &&
-          <>
-            <TabsContent value='list'>
-              <PlanningTable data={result?.hits} columns={columns} />
-            </TabsContent>
-            <TabsContent value='grid'>
-              Grid
-            </TabsContent>
-          </>
-        }
+
+      <main className='h-full flex-1 flex-col space-y-8 md:flex px-3'>
+        <TabsContent value='list'>
+          <PlanningList date={startDate} />
+        </TabsContent>
+
+        <TabsContent value='grid'>
+          <PlanningGrid startDate={startDate} endDate={endDate} />
+        </TabsContent>
       </main>
     </Tabs>
   )
 }
 
 PlanningOverview.meta = meta
+
+function getEndDate(startDate: Date): Date {
+  const endDate = new Date()
+  endDate.setDate(startDate.getDate() + 6)
+  return endDate
+}
