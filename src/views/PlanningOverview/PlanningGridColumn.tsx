@@ -29,7 +29,8 @@ export const PlanningGridColumn = ({ date, items }: PlanningGridColumnProps): JS
         {items.map(item => {
           const internal = item._source['document.meta.core_planning_item.data.public'][0] !== 'true'
           const title = item._source['document.title'][0]
-          const slugLine = item._source['document.meta.core_assignment.meta.tt_slugline.value']
+          const slugLines = item._source['document.meta.core_assignment.meta.tt_slugline.value']
+          const slugLine = Array.isArray(slugLines) ? slugLines[0] : slugLines
           const startTime = getPublishTime(
             item._source['document.meta.core_assignment.data.publish'],
             locale,
@@ -50,7 +51,7 @@ export const PlanningGridColumn = ({ date, items }: PlanningGridColumnProps): JS
             </div>
 
             <div className="flex justify-between mt-2">
-              <span className="text-sm text-muted-foreground whitespace-nowrap overflow-hidden text-ellipsis pr-1">{slugLine}</span>
+              <span className="text-sm text-muted-foreground whitespace-nowrap overflow-hidden text-ellipsis pl-7 pr-1">{slugLine}</span>
               <SectorBadge value={item._source['document.rel.sector.title'][0]} />
             </div>
           </div>
