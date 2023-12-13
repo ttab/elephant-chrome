@@ -30,7 +30,6 @@ const Editor = (props: ViewProps): JSX.Element => {
   const { hocuspocusWebsocket } = useApi()
 
   const [isSynced, setIsSynced] = useState<boolean>(false)
-  const [isConnected, setIsConnected] = useState<boolean>(false)
 
   // Ensure we have a valid document id
   const documentId = useMemo(() => {
@@ -48,15 +47,11 @@ const Editor = (props: ViewProps): JSX.Element => {
       websocketProvider: hocuspocusWebsocket,
       name: documentId,
       token: jwt.access_token,
-      onConnect: () => {
-        setIsConnected(true)
-      },
       onSynced: () => {
         setIsSynced(true)
       },
       onDisconnect: () => {
         setIsSynced(false)
-        setIsConnected(false)
       }
     })
   }, [documentId, hocuspocusWebsocket, jwt?.access_token])
@@ -96,7 +91,7 @@ const Editor = (props: ViewProps): JSX.Element => {
       <ViewHeader {...props} title="Editor" icon={PenBoxIcon} />
 
       <main className="min-w-[30vw]">
-        <div className={`h-full relative ${!isConnected || !isSynced ? 'opacity-60' : ''}`}>
+        <div className={`h-full relative ${!isSynced ? 'opacity-60' : ''}`}>
           { /* @ts-expect-error yjsEditor needs more refinement */}
           <TextbitEditable yjsEditor={editor} />
         </div>
