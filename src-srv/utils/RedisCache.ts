@@ -4,11 +4,11 @@ import type { RedisClientType } from 'redis'
 export class RedisCache {
   readonly #host: string
   readonly #port: number
-  readonly #user: string
-  readonly #password: string
+  readonly #user: string | undefined
+  readonly #password: string | undefined
   redisClient?: RedisClientType
 
-  constructor(host: string, port: number | string, user: string, password: string) {
+  constructor(host: string, port: number | string, user?: string, password?: string) {
     this.#port = typeof port === 'number' ? port : parseInt(port)
     this.#host = host
     this.#user = user
