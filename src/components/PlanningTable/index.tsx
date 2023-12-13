@@ -1,4 +1,4 @@
-import * as React from 'react'
+import React, { useState } from 'react'
 import {
   type ColumnDef,
   type ColumnFiltersState,
@@ -14,12 +14,10 @@ import {
   useReactTable
 } from '@tanstack/react-table'
 
-import {
-  Table, TableBody, TableCell, TableRow
-} from '@ttab/elephant-ui'
-
+import { Table, TableBody, TableCell, TableRow } from '@ttab/elephant-ui'
 import { Pagination } from './Pagination'
 import { Toolbar } from './Toolbar'
+
 
 interface PlanningTableProps<TData, TValue> {
   columns: Array<ColumnDef<TData, TValue>>
@@ -27,17 +25,11 @@ interface PlanningTableProps<TData, TValue> {
 }
 
 
-export const PlanningTable = <TData, TValue>({
-  columns,
-  data
-}: PlanningTableProps<TData, TValue>): JSX.Element => {
-  const [rowSelection, setRowSelection] = React.useState({})
-  const [columnVisibility, setColumnVisibility] =
-    React.useState<VisibilityState>({})
-  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
-    []
-  )
-  const [sorting, setSorting] = React.useState<SortingState>([])
+export const PlanningTable = <TData, TValue>({ columns, data }: PlanningTableProps<TData, TValue>): JSX.Element => {
+  const [rowSelection, setRowSelection] = useState({})
+  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
+  const [sorting, setSorting] = useState<SortingState>([])
 
   const table = useReactTable({
     data,
@@ -76,19 +68,19 @@ export const PlanningTable = <TData, TValue>({
     }
 
     return table.getRowModel().rows.map((row) => (
-        <TableRow
-          key={row.id}
-          data-state={row.getIsSelected() && 'selected'}
-        >
-          {row.getVisibleCells().map((cell) => (
-            <TableCell key={cell.id}>
-              {flexRender(
-                cell.column.columnDef.cell,
-                cell.getContext()
-              )}
-            </TableCell>
-          ))}
-        </TableRow>
+      <TableRow
+        key={row.id}
+        data-state={row.getIsSelected() && 'selected'}
+      >
+        {row.getVisibleCells().map((cell) => (
+          <TableCell key={cell.id}>
+            {flexRender(
+              cell.column.columnDef.cell,
+              cell.getContext()
+            )}
+          </TableCell>
+        ))}
+      </TableRow>
     ))
   }
 
