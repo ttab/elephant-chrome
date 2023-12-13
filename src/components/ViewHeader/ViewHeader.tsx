@@ -13,7 +13,7 @@ export const ViewHeader = ({ id, children, title, icon: Icon }: ViewHeaderProps)
   const { state } = useNavigation()
 
   return (
-    <header className='relative top-0 group-last:w-[calc(100%-8rem)] flex gap-3 border-b py-2 px-3 items-center justify-between'>
+    <header className='relative top-0 group-last:w-[calc(100%-5rem)] flex gap-3 border-b py-2 px-3 items-center justify-between'>
       <div className="flex h-full gap-3 items-center">
         {Icon !== undefined &&
           <Icon className="h-4 w-4 -mt-[2px]" />
