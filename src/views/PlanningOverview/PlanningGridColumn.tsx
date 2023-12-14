@@ -3,6 +3,8 @@ import { type Planning as PlanningType } from '@/components/PlanningTable/data/s
 import { useRegistry } from '@/hooks'
 import { SectorBadge } from '@/components/DataItem/SectorBadge'
 import { StatusIndicator } from '@/components/DataItem/StatusIndicator'
+import { getPublishTime } from '@/lib/getPublishTime'
+import { isoStringToHumanReadableTime } from '@/lib/datetime'
 
 interface PlanningGridColumnProps {
   date: Date
@@ -31,8 +33,10 @@ export const PlanningGridColumn = ({ date, items }: PlanningGridColumnProps): JS
           const title = item._source['document.title'][0]
           const slugLines = item._source['document.meta.core_assignment.meta.tt_slugline.value']
           const slugLine = Array.isArray(slugLines) ? slugLines[0] : slugLines
-          const startTime = getPublishTime(
-            item._source['document.meta.core_assignment.data.publish'],
+          const startTime = isoStringToHumanReadableTime(
+            getPublishTime(
+              item._source['document.meta.core_assignment.data.publish']
+            ),
             locale,
             timeZone
           )
@@ -59,26 +63,4 @@ export const PlanningGridColumn = ({ date, items }: PlanningGridColumnProps): JS
       </div>
     </div>
   )
-}
-
-function getPublishTime(assignmentPublishTimes: string[], locale: string, timeZone: string): string | undefined {
-  if (!Array.isArray(assignmentPublishTimes)) {
-    return
-  }
-
-  const startTimes = assignmentPublishTimes.filter(dt => {
-    return !!dt
-  }).sort((dt1, dt2) => {
-    return dt1 >= dt2 ? 1 : -1
-  })
-
-  if (!startTimes.length) {
-    return
-  }
-
-  return new Intl.DateTimeFormat(locale, {
-    hour: '2-digit',
-    minute: '2-digit',
-    timeZone
-  }).format(new Date(startTimes[0]))
 }

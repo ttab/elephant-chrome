@@ -30,6 +30,35 @@ export function convertToISOStringInTimeZone(localDate: Date, locale: string, ti
 }
 
 /**
+* Format a iso string to a human readable date.
+* @param isoString string
+* @param locale string
+* @param timeZone string
+* @returns string
+* */
+export function isoStringToHumanReadableTime(
+  isoString: string | undefined,
+  locale: string = 'en-US',
+  timeZone: string = 'America/New York'
+): string | undefined {
+  if (!isoString) {
+    return
+  }
+
+  const date = new Date(isoString)
+
+  if (isNaN(date.getTime()) || date.toString() === 'Invalid Date') {
+    return
+  }
+
+  return new Intl.DateTimeFormat(locale, {
+    hour: '2-digit',
+    minute: '2-digit',
+    timeZone
+  }).format(date)
+}
+
+/**
  * Return start time and end time of local date. I.e a date with the local date/time
  * "2024-12-28 12:10:43" will return "2024-12-28 00:00:00" and "2024-12-28 23:59:59".
  *
