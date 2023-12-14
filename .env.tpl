@@ -10,6 +10,8 @@ REPOSITORY_URL="https://..."
 JWKS_URL="https://.../.well-known/jwks.json"
 
 # Redis cache
+REDIS_PASSWORD=""
+REDIS_USERNAME=""
 REDIS_HOST="localhost"
 REDIS_PORT=6379
 

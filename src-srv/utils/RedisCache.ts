@@ -22,7 +22,15 @@ export class RedisCache {
   }
 
   async connect(): Promise<boolean> {
-    const client = createClient({ url: this.url })
+    const client = createClient({
+      username: this.#user,
+      password: this.#password,
+      socket: {
+        host: this.#host,
+        port: this.#port,
+        tls: true
+      }
+    })
 
     try {
       const result = await client.connect()
@@ -41,23 +49,26 @@ export class RedisCache {
   }
 
   async get(key: string): Promise<Uint8Array | undefined> {
-    const cachedDoc = await this.redisClient?.get(`ele::hp:${key}`)
+    try {
+      const cachedDoc = await this.redisClient?.get(`elc::hp:${key}`)
+      if (!cachedDoc) {
+        return
+      }
 
-    if (!cachedDoc) {
-      return
+      const uint8array = new Uint8Array(
+        Buffer.from(cachedDoc, 'binary')
+      )
+
+      return uint8array
+    } catch (ex: unknown) {
+      console.error(ex)
     }
-
-    const uint8array = new Uint8Array(
-      Buffer.from(cachedDoc, 'binary')
-    )
-
-    return uint8array
   }
 
   async store(key: string, state: Buffer): Promise<boolean> {
     try {
       await this.redisClient?.set(
-        `ele::hp:${key}`,
+        `elc::hp:${key}`,
         Buffer.from(state).toString('binary')
       )
       return true
