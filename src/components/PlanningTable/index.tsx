@@ -25,7 +25,11 @@ interface PlanningTableProps<TData, TValue> {
 }
 
 
-export const PlanningTable = <TData, TValue>({ columns, data, onRowSelected }: PlanningTableProps<TData, TValue>): JSX.Element => {
+export const PlanningTable = <TData, TValue>({
+  columns,
+  data,
+  onRowSelected
+}: PlanningTableProps<TData, TValue>): JSX.Element => {
   const [rowSelection, setRowSelection] = useState({})
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
