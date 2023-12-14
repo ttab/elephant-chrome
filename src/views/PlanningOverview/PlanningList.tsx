@@ -43,7 +43,13 @@ export const PlanningList = ({ date }: { date: Date }): JSX.Element => {
   return (
     <>
       {data?.ok === true &&
-        <PlanningTable data={data?.hits} columns={columns} />
+        <PlanningTable data={data?.hits} columns={columns} onRowSelected={(row): void => {
+          if (row) {
+            console.log(`Selected planning item ${row._id}`)
+          } else {
+            console.log('Deselected row')
+          }
+        }} />
       }
     </>
   )
