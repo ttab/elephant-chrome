@@ -10,11 +10,11 @@ const section = cva('', {
   variants: {
     active: {
       true: 'border-t-green-500 border-t-4',
-      false: ''
+      false: 'border-t-transparent border-t-4'
     },
     focused: {
       true: 'absolute inset-y-0 left-0 z-10 w-screen h-screen bg-background dark:bg-background basis-full',
-      false: 'relative'
+      false: 'relative group'
     },
     size: {
       1: 'col-span-1',
