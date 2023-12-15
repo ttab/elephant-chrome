@@ -12,9 +12,12 @@ import { HocuspocusProvider } from '@hocuspocus/provider'
 import { useSession, useQuery } from '@/hooks'
 import { type ViewMetadata, type ViewProps } from '@/types'
 
+const BASE_URL = import.meta.env.BASE_URL
+  ? import.meta.env.BASE_URL + '/'
+  : '/'
 const meta: ViewMetadata = {
   name: 'Editor',
-  path: '/editor',
+  path: `${BASE_URL}editor`,
   widths: {
     sm: 12,
     md: 12,

@@ -21,6 +21,8 @@ const PORT = process.env.VITE_PORT ? parseInt(process.env.VITE_PORT) : 5183
 const REPOSITORY_URL = process.env.REPOSITORY_URL
 const JWKS_URL = process.env.JWKS_URL
 
+const BASE_URL = process.env.BASE_URL || ''
+
 console.info(`Starting API environment "${NODE_ENV}"`)
 
 async function runServer(): Promise<string> {
@@ -72,7 +74,7 @@ async function runServer(): Promise<string> {
   }))
   app.use(cookieParser())
   app.use(express.json())
-  app.use(express.static(distDir))
+  app.use(BASE_URL || '', express.static(distDir))
 
   connectRouteHandlers(app, routes, {
     repository
