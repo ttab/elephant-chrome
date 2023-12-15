@@ -8,7 +8,7 @@ import { Link } from '@/components'
 describe('Link', () => {
   it('should render Link component', async () => {
     render(
-      <SessionProvider endpoint={new URL('/user', 'http://localhost')}>
+      <SessionProvider>
         <NavigationProvider>
           <Link to='Editor' props={{ documentId: 'abc123' }}>
             Planning Overview

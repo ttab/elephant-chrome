@@ -11,15 +11,14 @@ export const SessionProviderContext = createContext<SessionProviderState>({
   setJwt: () => { }
 })
 
-export const SessionProvider = ({ children, endpoint }: {
+export const SessionProvider = ({ children }: {
   children: React.ReactNode
-  endpoint: URL
 }): JSX.Element => {
   const [jwt, setJwt] = useState<JWT | undefined>(undefined)
 
   useEffect(() => {
     const fetchToken = async (): Promise<void> => {
-      const result = await fetchOrRefreshToken(endpoint.href)
+      const result = await fetchOrRefreshToken()
 
       if (result) {
         setJwt(JSON.parse(result))
@@ -41,7 +40,7 @@ export const SessionProvider = ({ children, endpoint }: {
     return () => {
       clearTimeout(timeoutRef)
     }
-  }, [jwt, endpoint])
+  }, [jwt])
 
   const value: SessionProviderState = {
     jwt,
@@ -61,9 +60,9 @@ export const SessionProvider = ({ children, endpoint }: {
 }
 
 
-async function fetchOrRefreshToken(endpoint: string): Promise<string | undefined> {
+async function fetchOrRefreshToken(): Promise<string | undefined> {
   try {
-    const response = await fetch(`${endpoint}`, {
+    const response = await fetch('/api/user', {
       credentials: 'include'
     })
 

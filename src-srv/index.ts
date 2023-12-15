@@ -17,7 +17,6 @@ const PROTOCOL = (NODE_ENV === 'production') ? 'https' : process.env.VITE_PROTOC
 
 const HOST = process.env.VITE_HOST || '127.0.0.1'
 const PORT = process.env.VITE_PORT ? parseInt(process.env.VITE_PORT) : 5183
-const API_URL = `${PROTOCOL}://${HOST}:${PORT}`
 
 const REPOSITORY_URL = process.env.REPOSITORY_URL
 const JWKS_URL = process.env.JWKS_URL
@@ -45,9 +44,9 @@ async function runServer(): Promise<string> {
     process.env.REDIS_PASSWORD
   )
 
-  if (!await cache.connect()) {
+  /* if (!await cache.connect()) {
     throw new Error('Failed connecting to Redis')
-  }
+  } */
 
   // Connect to repository
   const jwks = createRemoteJWKSet(new URL(JWKS_URL))
@@ -89,8 +88,7 @@ async function runServer(): Promise<string> {
   })
 
   app.listen(PORT)
-
-  return API_URL
+  return `${PROTOCOL}://${HOST}:${PORT}`
 }
 
 (async () => {

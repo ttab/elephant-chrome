@@ -25,7 +25,7 @@ export async function createServer(options: CreateServerOptions): Promise<Hocusp
     : {}
 
   const server = Server.configure({
-    port: process.env.API_PORT ? parseInt(process.env.API_PORT) : 5183,
+    port: process.env.VITE_PORT ? parseInt(process.env.VITE_PORT) : 5183,
     extensions: [
       new Logger(),
       new Redis({

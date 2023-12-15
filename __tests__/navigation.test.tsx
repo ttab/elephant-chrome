@@ -7,7 +7,7 @@ import { render, screen } from '../setupTests'
 describe('Use NavigationProvider', () => {
   it('should render view from registry', async () => {
     render(
-      <SessionProvider endpoint={new URL('/user', 'http://localhost')}>
+      <SessionProvider>
         <NavigationProvider>
           <App />
         </NavigationProvider>

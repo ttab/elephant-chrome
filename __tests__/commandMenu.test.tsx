@@ -13,7 +13,7 @@ global.ResizeObserver = jest.fn().mockImplementation(() => ({
 describe('CommandMenu', () => {
   it('should render CommandMenu component', async () => {
     render(
-      <SessionProvider endpoint={new URL('/user', 'http://localhost')}>
+      <SessionProvider>
         <NavigationProvider>
           <CommandMenu />
         </NavigationProvider>
