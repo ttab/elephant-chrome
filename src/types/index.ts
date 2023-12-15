@@ -64,7 +64,7 @@ export interface ContentState {
 
 export interface HistoryState {
   id: string
-  itemName: string
+  viewName: string
   props: Record<string, unknown>
   path: string
   type: 'popstate' | 'pushstate' | 'replacestate'
