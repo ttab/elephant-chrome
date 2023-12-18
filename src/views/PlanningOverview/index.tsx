@@ -8,10 +8,9 @@ import { Tabs, TabsContent } from '@ttab/elephant-ui'
 import { PlanningGrid } from './PlanningGrid'
 import { PlanningList } from './PlanningList'
 
-
 const meta: ViewMetadata = {
   name: 'PlanningOverview',
-  path: '/',
+  path: import.meta.env.BASE_URL || '/',
   widths: {
     sm: 12,
     md: 12,

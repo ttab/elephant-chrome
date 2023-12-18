@@ -1,11 +1,9 @@
 import { useState } from 'react'
-import { useApi } from '@/hooks/useApi'
 import { useSession } from '@/hooks'
 
 import { Input, Button } from '@ttab/elephant-ui'
 
 export const Login = (): JSX.Element => {
-  const { apiUrl } = useApi()
   const [user, setUser] = useState<string>('')
   const [password, setPassword] = useState<string>('')
   const { setJwt } = useSession()
@@ -31,12 +29,8 @@ export const Login = (): JSX.Element => {
           <Button
             onClick={(e) => {
               e.preventDefault()
-              if (!apiUrl) {
-                console.log('NO URL')
-                return
-              }
 
-              auth(apiUrl.href, user, password)
+              auth(user, password)
                 .then(async ([status, jwtToken]) => {
                   if (status === 200 && jwtToken) {
                     setJwt(jwtToken)
@@ -63,8 +57,8 @@ export const Login = (): JSX.Element => {
 }
 
 
-async function auth(api: string, user: string, password: string): Promise<[number, string | undefined]> {
-  const response = await fetch(`${api}/user`, {
+async function auth(user: string, password: string): Promise<[number, string | undefined]> {
+  const response = await fetch('/api/user', {
     method: 'post',
     mode: 'cors',
     credentials: 'include',

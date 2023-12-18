@@ -8,7 +8,7 @@ import { Link } from '@/components'
 describe('Link', () => {
   it('should render Link component', async () => {
     render(
-      <SessionProvider endpoint={new URL('/user', 'http://localhost')}>
+      <SessionProvider>
         <NavigationProvider>
           <Link to='Editor' props={{ documentId: 'abc123' }}>
             Planning Overview
@@ -21,7 +21,7 @@ describe('Link', () => {
     await userEvent.click(screen.getByText('Planning Overview'))
     setTimeout(() => {
       expect(history.state.contentState[0].props.documentId).toBe('abc123')
-      expect(history.state.itemName).toBe('Editor')
+      expect(history.state.viewName).toBe('Editor')
       expect(history.state.contentState[0].path).toBe('/editor?documentId=abc123')
     })
   })

@@ -26,7 +26,7 @@ const mockDispatch = jest.fn() as Dispatch<NavigationActionType>
 describe('ViewFocus', () => {
   it('should render ViewFocus component', async () => {
     render(
-      <SessionProvider endpoint={new URL('/user', 'http://localhost')}>
+      <SessionProvider>
         <NavigationProvider>
           <ViewFocus id={'abc123'} />
         </NavigationProvider>

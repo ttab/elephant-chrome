@@ -2,9 +2,27 @@ import type { JestConfigWithTsJest } from 'ts-jest/dist/types'
 
 const config: JestConfigWithTsJest = {
   testEnvironment: 'jsdom',
-  preset: 'ts-jest',
+  extensionsToTreatAsEsm: ['.ts', '.tsx'],
   transform: {
     '^.+\\.tsx?$': ['ts-jest', {
+      diagnostics: {
+        ignoreCodes: [1343]
+      },
+      astTransformers: {
+        before: [
+          {
+            path: 'ts-jest-mock-import-meta',
+            options: {
+              metaObjectReplacement: {
+                env: {
+                  BASE_URL: ''
+                }
+              }
+            }
+          }
+        ]
+      },
+      useESM: true,
       tsconfig: {
         jsx: 'react-jsx'
       }
