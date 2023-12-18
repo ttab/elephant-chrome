@@ -9,13 +9,11 @@ import {
   getFacetedRowModel,
   getFacetedUniqueValues,
   getFilteredRowModel,
-  getPaginationRowModel,
   getSortedRowModel,
   useReactTable
 } from '@tanstack/react-table'
 
 import { Table, TableBody, TableCell, TableRow } from '@ttab/elephant-ui'
-import { Pagination } from './Pagination'
 import { Toolbar } from './Toolbar'
 
 interface PlanningTableProps<TData, TValue> {
@@ -52,7 +50,6 @@ export const PlanningTable = <TData, TValue>({
     onColumnVisibilityChange: setColumnVisibility,
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getFacetedRowModel: getFacetedRowModel(),
     getFacetedUniqueValues: getFacetedUniqueValues()
@@ -157,7 +154,6 @@ export const PlanningTable = <TData, TValue>({
           </TableBody>
         </Table>
       </div>
-      <Pagination table={table} />
     </div>
   )
 }
