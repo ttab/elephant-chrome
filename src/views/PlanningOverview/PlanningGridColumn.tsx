@@ -3,6 +3,8 @@ import { type Planning as PlanningType } from '@/components/PlanningTable/data/s
 import { useRegistry } from '@/hooks'
 import { SectorBadge } from '@/components/DataItem/SectorBadge'
 import { StatusIndicator } from '@/components/DataItem/StatusIndicator'
+import { getPublishTime } from '@/lib/getPublishTime'
+import { dateToReadableTime } from '@/lib/datetime'
 
 interface PlanningGridColumnProps {
   date: Date
@@ -31,11 +33,7 @@ export const PlanningGridColumn = ({ date, items }: PlanningGridColumnProps): JS
           const title = item._source['document.title'][0]
           const slugLines = item._source['document.meta.core_assignment.meta.tt_slugline.value']
           const slugLine = Array.isArray(slugLines) ? slugLines[0] : slugLines
-          const startTime = getPublishTime(
-            item._source['document.meta.core_assignment.data.publish'],
-            locale,
-            timeZone
-          )
+          const assignmentDataPublish = getPublishTime(item._source['document.meta.core_assignment.data.publish'])
 
           return <div key={item._id} className="px-3 pb-8">
             <div className="flex text-sm -ml-3">
@@ -45,8 +43,10 @@ export const PlanningGridColumn = ({ date, items }: PlanningGridColumnProps): JS
 
               <div className="flex-grow font-medium line-clamp-3">{title}</div>
 
-              {!!startTime &&
-                <div className="flex-none text-muted-foreground">{startTime}</div>
+              {!!assignmentDataPublish &&
+                <div className="flex-none text-muted-foreground">
+                  {dateToReadableTime(assignmentDataPublish, locale, timeZone)}
+                </div>
               }
             </div>
 
@@ -59,26 +59,4 @@ export const PlanningGridColumn = ({ date, items }: PlanningGridColumnProps): JS
       </div>
     </div>
   )
-}
-
-function getPublishTime(assignmentPublishTimes: string[], locale: string, timeZone: string): string | undefined {
-  if (!Array.isArray(assignmentPublishTimes)) {
-    return
-  }
-
-  const startTimes = assignmentPublishTimes.filter(dt => {
-    return !!dt
-  }).sort((dt1, dt2) => {
-    return dt1 >= dt2 ? 1 : -1
-  })
-
-  if (!startTimes.length) {
-    return
-  }
-
-  return new Intl.DateTimeFormat(locale, {
-    hour: '2-digit',
-    minute: '2-digit',
-    timeZone
-  }).format(new Date(startTimes[0]))
 }
