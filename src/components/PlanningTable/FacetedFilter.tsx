@@ -26,6 +26,7 @@ interface FacetedFilterProps<TData, TValue> {
     label: string
     value: string
     icon?: React.ComponentType<{ className?: string }>
+    color?: string
   }>
 }
 
