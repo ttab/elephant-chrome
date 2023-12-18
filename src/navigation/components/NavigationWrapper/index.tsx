@@ -50,7 +50,10 @@ export const NavigationWrapper = ({ children, id, colSpan }: {
       <section
         onClick={() => {
           if (state.active !== id) {
-            dispatch({ type: NavigationActionType.ACTIVE, id })
+            dispatch({
+              type: NavigationActionType.ACTIVE,
+              id
+            })
           }
         }}
         className={cn(

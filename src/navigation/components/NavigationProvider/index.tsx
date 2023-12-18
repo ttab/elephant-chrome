@@ -75,8 +75,11 @@ export const NavigationProvider = ({ children }: PropsWithChildren): JSX.Element
 
 const debouncedCalculateView = debounce(calculateViews, 40)
 
-function calculateViews(history: History, state: NavigationState, dispatch: Dispatch<NavigationAction>): void {
-  let spaceRequired = minimumSpaceRequired(history.state.contentState, state.viewRegistry, state.screens)
+function calculateViews(
+  history: History,
+  state: NavigationState,
+  dispatch: Dispatch<NavigationAction>): void {
+  let spaceRequired = minimumSpaceRequired(history.state.contentState, state.viewRegistry)
   if (spaceRequired <= 12 && (history.state.contentState || []).length <= (state.content || []).length) {
     return
   }
@@ -85,7 +88,7 @@ function calculateViews(history: History, state: NavigationState, dispatch: Disp
   const content = [...history.state.contentState]
   while (spaceRequired > 12) {
     content.shift()
-    spaceRequired = minimumSpaceRequired(content, state.viewRegistry, state.screens)
+    spaceRequired = minimumSpaceRequired(content, state.viewRegistry)
   }
 
   // Get active id, or set it to the leftmost view if the active view was removed

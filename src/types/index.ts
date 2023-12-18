@@ -49,7 +49,6 @@ export interface ViewRegistry {
 
 export interface NavigationState {
   viewRegistry: ViewRegistry
-  screens: Array<{ key: string, value: number }>
   views: Array<{ name: string, colSpan: number }>
   focus: string | null
   active: string | undefined

@@ -95,5 +95,4 @@ const RegistryProvider = ({ children }: PropsWithChildren): JSX.Element => {
   </RegistryContext.Provider>
 }
 
-
 export { RegistryProvider }

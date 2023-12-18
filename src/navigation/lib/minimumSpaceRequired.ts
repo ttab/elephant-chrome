@@ -3,15 +3,18 @@ import {
   type ViewRegistry
 } from '@/types'
 
+import { getScreenDefinitions } from '@/lib/getScreenDefinitions'
+
+const screenDefinitions = getScreenDefinitions()
+
 // Calculate how much space (columns in grid) the content requires as a minimum
 export function minimumSpaceRequired(
   content: ContentState[],
-  viewRegistry: ViewRegistry,
-  screens: Array<{ key: string, value: number }>
+  viewRegistry: ViewRegistry
 ): number {
   // Default to biggest screen, then find biggest screen size allowed
-  let screen = screens.slice(-1)[0]
-  const filteredScreens = screens.filter(s => {
+  let screen = screenDefinitions.slice(-1)[0]
+  const filteredScreens = screenDefinitions.filter(s => {
     return s.value > window.innerWidth
   }).reverse()
 

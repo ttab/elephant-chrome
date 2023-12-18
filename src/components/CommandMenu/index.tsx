@@ -19,6 +19,7 @@ import { v4 as uuid } from 'uuid'
 
 export function CommandMenu(): JSX.Element {
   const { state, dispatch } = useNavigation()
+
   const [open, setOpen] = useState(false)
 
   useEffect(() => {
@@ -50,8 +51,7 @@ export function CommandMenu(): JSX.Element {
                 dispatch,
                 viewItem: state.viewRegistry.get('PlanningOverview'),
                 id: uuid(),
-                viewRegistry: state.viewRegistry,
-                screens: state.screens
+                viewRegistry: state.viewRegistry
               }))}
             >
               <GanttChart className="mr-2 h-4 w-4" />

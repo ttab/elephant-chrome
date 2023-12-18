@@ -1,5 +1,6 @@
 import { ViewProvider } from '@/contexts'
 import { NavigationWrapper } from '@/navigation/components'
+
 import {
   NavigationActionType,
   type ContentState,
@@ -8,6 +9,12 @@ import {
   type NavigationState
 } from '@/types'
 
+import {
+  type ScreenDefinition,
+  getScreenDefinitions
+} from '@/lib/getScreenDefinitions'
+
+const screenDefinitions = getScreenDefinitions()
 
 export function navigationReducer(state: NavigationState, action: NavigationAction): NavigationState {
   switch (action.type) {
@@ -16,7 +23,7 @@ export function navigationReducer(state: NavigationState, action: NavigationActi
         throw new Error('Content is undefined')
       }
 
-      const views = calculateViews(state, action.content)
+      const views = calculateViews(state, screenDefinitions, action.content)
 
       return {
         ...state,
@@ -79,9 +86,13 @@ export function navigationReducer(state: NavigationState, action: NavigationActi
 }
 
 
-function calculateViews(state: NavigationState, content: ContentState[]): Array<{ name: string, colSpan: number }> {
-  let screen = state.screens[state.screens.length - 1]
-  const screens = state.screens.filter(s => {
+function calculateViews(
+  state: NavigationState,
+  screenDefinitions: ScreenDefinition[],
+  content: ContentState[]
+): Array<{ name: string, colSpan: number }> {
+  let screen = screenDefinitions[screenDefinitions.length - 1]
+  const screens = screenDefinitions.filter(s => {
     return s.value > window.innerWidth
   }).reverse()
 
