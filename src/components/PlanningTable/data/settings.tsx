@@ -10,19 +10,35 @@ import {
 
 export const priorities = [
   {
-    label: 'High',
-    value: '1',
+    value: '6',
+    label: '6',
     icon: SignalHigh,
     color: '#FF5050'
   },
   {
-    label: 'Medium',
-    value: '2',
+    value: '5',
+    label: '5',
+    icon: SignalHigh,
+    color: '#FF5050'
+  },
+  {
+    value: '4',
+    label: '4',
     icon: SignalMedium
   },
   {
-    label: 'Low',
     value: '3',
+    label: '3',
+    icon: SignalMedium
+  },
+  {
+    value: '2',
+    label: '2',
+    icon: SignalLow
+  },
+  {
+    value: '1',
+    label: '1',
     icon: SignalLow
   }
 ]

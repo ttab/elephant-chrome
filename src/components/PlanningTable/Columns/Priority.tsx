@@ -1,6 +1,9 @@
 import { type ColumnDef } from '@tanstack/react-table'
 import { type Planning } from '../data/schema'
-import { TooltipProvider, Tooltip, TooltipTrigger, TooltipContent } from '@ttab/elephant-ui'
+import {
+  Badge,
+  TooltipProvider, Tooltip, TooltipTrigger, TooltipContent
+} from '@ttab/elephant-ui'
 import { priorities } from '../data/settings'
 
 export const priority: ColumnDef<Planning> = {
@@ -17,12 +20,22 @@ export const priority: ColumnDef<Planning> = {
     }
 
     return (
-        <div className='flex w-1'>
+        <div className='flex w-1 pr-4'>
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger>
               {priority.icon && (
-                <priority.icon className='h-6 w-6 text-muted-foreground' color={priority.color} />
+              <Badge
+                variant='outline'
+                className='rounded-lg px-2 py-1'>
+                  <priority.icon
+                    color={priority.color}
+                    className='p-0'
+                  />
+                  <span className='text-muted-foreground text-sm font-sans font-normal'>
+                    {priority.value}
+                  </span>
+              </Badge>
               )}
             </TooltipTrigger>
             <TooltipContent>
