@@ -12,6 +12,7 @@ import { initializeNavigationState } from '@/lib/initializeNavigationState'
 import { useHistory, useResize } from '@/hooks'
 import { minimumSpaceRequired, navigationReducer, currentView } from '@/navigation/lib'
 import { debounce } from '@/lib/debounce'
+import * as uuid from 'uuid'
 
 const initialState = initializeNavigationState()
 
@@ -20,7 +21,7 @@ export const NavigationContext = createContext<{
   dispatch: Dispatch<NavigationAction>
 }>({
   state: initialState,
-  dispatch: () => { }
+  dispatch: () => {}
 })
 
 export const NavigationProvider = ({ children }: PropsWithChildren): JSX.Element => {
@@ -31,12 +32,13 @@ export const NavigationProvider = ({ children }: PropsWithChildren): JSX.Element
 
   // Initialize a new history start state based on current url
   useLayoutEffect(() => {
+    const id = uuid.v4()
     if (historyState === null) {
       history.replaceState({
-        id: 'start',
+        id,
         itemName: name,
         contentState: [{
-          id: 'start',
+          id,
           name,
           props,
           path: '/'

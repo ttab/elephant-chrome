@@ -2,6 +2,8 @@ import type { NavigationState, ViewRegistryItem, View } from '@/types'
 import { NavigationWrapper } from '@/navigation/components/NavigationWrapper'
 import * as views from '@/views'
 import tailwindConfig from '@ttab/elephant-ui/styles/presetResolved.json'
+import * as uuid from 'uuid'
+import { ViewProvider } from '@/contexts/ViewProvider'
 
 const registeredComponents = new Map() as Map<string, ViewRegistryItem>
 
@@ -14,17 +16,21 @@ export function initializeNavigationState(): NavigationState {
   })
 
   const InititalView = viewRegistry.getByPath(window.location.pathname)
+  const id = uuid.v4()
+  const name = 'start'
 
   return {
     viewRegistry,
     screens: getScreens(),
-    views: [{ name: 'start', colSpan: 12 }],
+    views: [{ name, colSpan: 12 }],
     focus: null,
-    active: 'start',
+    active: id,
     content: [
       (
-        <NavigationWrapper name='' key='start' id='start' colSpan={12}>
-          <InititalView.component id='start' />
+        <NavigationWrapper name='' key={id} id={id} colSpan={12}>
+          <ViewProvider id={id} name={name}>
+            <InititalView.component id={id} />
+          </ViewProvider>
         </NavigationWrapper>
       )
     ]

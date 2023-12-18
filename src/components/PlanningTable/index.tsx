@@ -17,6 +17,7 @@ import {
 import { Table, TableBody, TableCell, TableRow } from '@ttab/elephant-ui'
 import { Pagination } from './Pagination'
 import { Toolbar } from './Toolbar'
+import { useView } from '@/hooks'
 
 interface PlanningTableProps<TData, TValue> {
   columns: Array<ColumnDef<TData, TValue>>
@@ -34,6 +35,7 @@ export const PlanningTable = <TData, TValue>({
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
   const [sorting, setSorting] = useState<SortingState>([])
+  const { isActiveView } = useView()
 
   const table = useReactTable({
     data,
@@ -65,6 +67,10 @@ export const PlanningTable = <TData, TValue>({
     }
 
     const keyDownHandler = (evt: KeyboardEvent): void => {
+      if (!isActiveView) {
+        return
+      }
+
       if (!table || !['ArrowDown', 'ArrowUp', 'Escape'].includes(evt.key)) {
         return
       }
@@ -95,7 +101,7 @@ export const PlanningTable = <TData, TValue>({
     document.addEventListener('keydown', keyDownHandler)
 
     return () => document.removeEventListener('keydown', keyDownHandler)
-  }, [table, onRowSelected])
+  }, [table, isActiveView, onRowSelected])
 
 
   // When row selection changes, report back to callback

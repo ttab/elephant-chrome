@@ -1,3 +1,4 @@
+import { ViewProvider } from '@/contexts'
 import { NavigationWrapper } from '@/navigation/components'
 import {
   NavigationActionType,
@@ -32,7 +33,9 @@ export function navigationReducer(state: NavigationState, action: NavigationActi
               id={item.id}
               colSpan={width.colSpan as 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12}
             >
-              <Component {...{ ...item, index }} />
+              <ViewProvider id={item.id} name={item.name}>
+                <Component {...{ ...item, index }} />
+              </ViewProvider>
             </NavigationWrapper>
           )
         })

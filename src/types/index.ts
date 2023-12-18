@@ -83,6 +83,12 @@ export interface ThemeProviderState {
   setTheme: (theme: Theme) => void
 }
 
+export interface ViewProviderState {
+  id: string
+  name: string
+  isActiveView: boolean
+}
+
 export interface JWT extends JWTPayload {
   sub: string
   sub_name: string
