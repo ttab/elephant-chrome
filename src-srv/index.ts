@@ -46,9 +46,9 @@ async function runServer(): Promise<string> {
     process.env.REDIS_PASSWORD
   )
 
-  /* if (!await cache.connect()) {
+  if (!await cache.connect()) {
     throw new Error('Failed connecting to Redis')
-  } */
+  }
 
   // Connect to repository
   const jwks = createRemoteJWKSet(new URL(JWKS_URL))
