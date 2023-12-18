@@ -39,7 +39,7 @@ export const priority: ColumnDef<Planning> = {
               )}
             </TooltipTrigger>
             <TooltipContent>
-              <p>{priority.value}</p>
+              <p>{priority.label}</p>
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>
