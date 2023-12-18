@@ -4,7 +4,7 @@ import { useRegistry } from '@/hooks'
 import { SectorBadge } from '@/components/DataItem/SectorBadge'
 import { StatusIndicator } from '@/components/DataItem/StatusIndicator'
 import { getPublishTime } from '@/lib/getPublishTime'
-import { isoStringToHumanReadableTime } from '@/lib/datetime'
+import { dateToReadableTime } from '@/lib/datetime'
 
 interface PlanningGridColumnProps {
   date: Date
@@ -33,13 +33,11 @@ export const PlanningGridColumn = ({ date, items }: PlanningGridColumnProps): JS
           const title = item._source['document.title'][0]
           const slugLines = item._source['document.meta.core_assignment.meta.tt_slugline.value']
           const slugLine = Array.isArray(slugLines) ? slugLines[0] : slugLines
-          const startTime = isoStringToHumanReadableTime(
-            getPublishTime(
-              item._source['document.meta.core_assignment.data.publish']
-            ),
-            locale,
-            timeZone
-          )
+          const assignmentDataPublish = getPublishTime(item._source['document.meta.core_assignment.data.publish'])
+
+          const startTime = assignmentDataPublish
+            ? dateToReadableTime(assignmentDataPublish, locale, timeZone)
+            : null
 
           return <div key={item._id} className="px-3 pb-8">
             <div className="flex text-sm -ml-3">

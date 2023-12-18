@@ -1,12 +1,12 @@
-import { isoStringToHumanReadableTime } from '@/lib/datetime'
+import { dateToReadableTime } from '@/lib/datetime'
 import { useRegistry } from '@/hooks'
 
-export const TimeDisplay = ({ isoString }: { isoString: string }): JSX.Element => {
+export const TimeDisplay = ({ date }: { date: Date }): JSX.Element => {
   const { locale, timeZone } = useRegistry()
 
   return (
     <span className='font-medium'>
-      {isoStringToHumanReadableTime(isoString, locale, timeZone) || '-'}
+      {dateToReadableTime(date, locale, timeZone) || '-'}
     </span>
   )
 }

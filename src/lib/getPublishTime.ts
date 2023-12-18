@@ -1,4 +1,4 @@
-export function getPublishTime(assignmentPublishTimes: string[]): string | undefined {
+export function getPublishTime(assignmentPublishTimes: string[]): Date | undefined {
   if (!Array.isArray(assignmentPublishTimes)) {
     return
   }
@@ -12,5 +12,11 @@ export function getPublishTime(assignmentPublishTimes: string[]): string | undef
   if (!startTimes.length) {
     return
   }
-  return startTimes[0]
+
+  const date = new Date(startTimes[0])
+
+  if (isNaN(date.getTime()) || date.toString() === 'Invalid Date') {
+    return
+  }
+  return date
 }

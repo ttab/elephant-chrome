@@ -31,30 +31,21 @@ export function convertToISOStringInTimeZone(localDate: Date, locale: string, ti
 
 /**
 * Format a iso string to a human readable date.
-* @param isoString string
+* @param date Date
 * @param locale string
 * @param timeZone string
 * @returns string
 * */
-export function isoStringToHumanReadableTime(
-  isoString: string | undefined,
+export function dateToReadableTime(
+  date: Date,
   locale: string = 'en-US',
   timeZone: string = 'America/New York'
 ): string | undefined {
-  if (!isoString) {
-    return
-  }
-
-  const date = new Date(isoString)
-
-  if (isNaN(date.getTime()) || date.toString() === 'Invalid Date') {
-    return
-  }
-
   return new Intl.DateTimeFormat(locale, {
     hour: '2-digit',
     minute: '2-digit',
-    timeZone
+    timeZone,
+    hour12: is12HourcycleFromLocale(locale)
   }).format(date)
 }
 
@@ -75,5 +66,25 @@ export function getDateTimeBoundaries(localDate: Date): { startTime: Date, endTi
   return {
     startTime,
     endTime
+  }
+}
+/**
+* Determine if 12h or 24h clock should be used based on the locale.
+*
+* @param locale
+* @returns boolean
+*/
+export function is12HourcycleFromLocale(locale: string): boolean {
+  try {
+    const formatter = new Intl.DateTimeFormat(locale, { hour: 'numeric', hourCycle: 'h12' })
+    const sampleDate = new Date(2000, 0, 1, 13, 0, 0) // 1:00 PM
+
+    const formattedDate = formatter.formatToParts(sampleDate)
+
+    return formattedDate.some(part => part.type === 'dayPeriod' &&
+      (part.value === 'AM' || part.value === 'PM'))
+  } catch (error) {
+    console.error('Error getting hour cycle:', error)
+    return false
   }
 }

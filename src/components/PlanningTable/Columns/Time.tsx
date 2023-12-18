@@ -7,6 +7,6 @@ export const time: ColumnDef<Planning> = {
   id: 'time',
   accessorFn: (data) => getPublishTime(data._source['document.meta.core_assignment.data.publish']),
   cell: ({ row }) => (
-    <TimeDisplay isoString={row.getValue('time')} />
+    <TimeDisplay date={row.getValue('time')} />
   )
 }
