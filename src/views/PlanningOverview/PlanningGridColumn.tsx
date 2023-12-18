@@ -35,10 +35,6 @@ export const PlanningGridColumn = ({ date, items }: PlanningGridColumnProps): JS
           const slugLine = Array.isArray(slugLines) ? slugLines[0] : slugLines
           const assignmentDataPublish = getPublishTime(item._source['document.meta.core_assignment.data.publish'])
 
-          const startTime = assignmentDataPublish
-            ? dateToReadableTime(assignmentDataPublish, locale, timeZone)
-            : null
-
           return <div key={item._id} className="px-3 pb-8">
             <div className="flex text-sm -ml-3">
               <div className="flex-none">
@@ -47,8 +43,10 @@ export const PlanningGridColumn = ({ date, items }: PlanningGridColumnProps): JS
 
               <div className="flex-grow font-medium line-clamp-3">{title}</div>
 
-              {!!startTime &&
-                <div className="flex-none text-muted-foreground">{startTime}</div>
+              {!!assignmentDataPublish &&
+                <div className="flex-none text-muted-foreground">
+                  {dateToReadableTime(assignmentDataPublish, locale, timeZone)}
+                </div>
               }
             </div>
 
