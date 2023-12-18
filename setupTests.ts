@@ -5,17 +5,14 @@ export * from '@testing-library/react'
 const JWT = { sub: 'abc', sub_name: 'ABC', units: ['a', 'b', 'c'], scope: 'AbC', access_token: 'xxx' }
 
 function mockUrl(url: string): unknown {
-  const path = new URL(url).pathname
-
-  switch (path) {
-    case '/user':
+  switch (url) {
+    case '/api/user':
       return JSON.stringify(JWT)
 
-    // Fixme: Add and anonymize planning data for mocks
     case '/core_planning_item/_search':
       return planning
     default:
-      throw new Error(`No mock data for ${path}`)
+      throw new Error(`No mock data for ${url}`)
   }
 }
 global.fetch = jest.fn().mockImplementation(async (url: string) => {

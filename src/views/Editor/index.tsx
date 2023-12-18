@@ -14,7 +14,7 @@ import { type ViewMetadata, type ViewProps } from '@/types'
 
 const meta: ViewMetadata = {
   name: 'Editor',
-  path: '/editor',
+  path: `${import.meta.env.BASE_URL || ''}/editor`,
   widths: {
     sm: 12,
     md: 12,

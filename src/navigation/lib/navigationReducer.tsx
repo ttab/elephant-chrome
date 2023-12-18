@@ -61,7 +61,7 @@ export function navigationReducer(state: NavigationState, action: NavigationActi
 
       history.replaceState({
         id: action.id,
-        itemName: current.name,
+        viewName: current.name,
         path: current.path,
         contentState: history.state.contentState
       }, current.name, `${window.location.protocol}//${window.location.host}${current.path}`)

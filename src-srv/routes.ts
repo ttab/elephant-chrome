@@ -142,7 +142,7 @@ function connectRouteHandler(app: Application, routePath: string, func: RouteHan
     }).catch(ex => {
       console.error(ex)
       res.statusCode = 500
-      res.statusMessage = ex?.message || 'Uknown error'
+      res.statusMessage = ex?.message || 'Unknown error'
       res.send('')
     })
   }

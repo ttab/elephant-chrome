@@ -51,7 +51,8 @@ const viewRegistry = {
 
   getByPath: (path: string): ViewRegistryItem => {
     for (const [, registryItem] of registeredComponents) {
-      if (registryItem.meta.path === path) {
+      // remove trailing slashes
+      if (registryItem.meta.path === path || registryItem.meta.path === path.replace(/\/$/, '')) {
         return registryItem
       }
     }

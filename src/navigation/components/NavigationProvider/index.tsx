@@ -35,8 +35,8 @@ export const NavigationProvider = ({ children }: PropsWithChildren): JSX.Element
     const id = uuid.v4()
     if (historyState === null) {
       history.replaceState({
-        id,
-        itemName: name,
+        id: 'start',
+        viewName: name,
         contentState: [{
           id,
           name,

@@ -13,7 +13,7 @@ global.ResizeObserver = jest.fn().mockImplementation(() => ({
 describe('CommandMenu', () => {
   it('should render CommandMenu component', async () => {
     render(
-      <SessionProvider endpoint={new URL('/user', 'http://localhost')}>
+      <SessionProvider>
         <NavigationProvider>
           <CommandMenu />
         </NavigationProvider>
@@ -22,6 +22,6 @@ describe('CommandMenu', () => {
     await userEvent.keyboard('{Control>}k')
     expect(screen.getByText('Planning overview')).toBeInTheDocument()
     await userEvent.click(screen.getByRole('option'))
-    expect(history.state.itemName).toBe('PlanningOverview')
+    expect(history.state.viewName).toBe('PlanningOverview')
   })
 })

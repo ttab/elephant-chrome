@@ -17,12 +17,11 @@ export class RedisCache {
   }
 
   get url(): string {
-    const credentials = this.#user && this.#password ? `${this.#user}:${this.#password}@` : ''
-    return `redis://${credentials}${this.#host}:${this.#port}`
+    return `redis://${this.#host}:${this.#port}`
   }
 
   async connect(): Promise<boolean> {
-    const client = createClient({
+    const options = {
       username: this.#user,
       password: this.#password,
       socket: {
@@ -30,7 +29,9 @@ export class RedisCache {
         port: this.#port,
         tls: true
       }
-    })
+    }
+
+    const client = createClient(options.username ? options : { url: this.url })
 
     try {
       const result = await client.connect()

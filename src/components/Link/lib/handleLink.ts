@@ -53,7 +53,7 @@ export function handleLink({ event, dispatch, viewItem, screens, viewRegistry, p
   history.pushState({
     id,
     props: { ...props, id },
-    itemName: viewItem.meta.name,
+    viewName: viewItem.meta.name,
     contentState: content
   }, viewItem.meta.name, `${viewItem.meta.path}${toQueryString(props)}`)
 }
