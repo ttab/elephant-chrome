@@ -85,7 +85,8 @@ export interface ThemeProviderState {
 export interface ViewProviderState {
   id: string
   name: string
-  isActiveView: boolean
+  isActive: boolean
+  isFocused: boolean
 }
 
 export interface JWT extends JWTPayload {

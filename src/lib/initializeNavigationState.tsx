@@ -1,5 +1,5 @@
 import type { NavigationState, ViewRegistryItem, View } from '@/types'
-import { NavigationWrapper } from '@/navigation/components/NavigationWrapper'
+import { ViewWrapper } from '@/components/ViewWrapper'
 import * as views from '@/views'
 import * as uuid from 'uuid'
 import { ViewProvider } from '@/contexts/ViewProvider'
@@ -25,11 +25,11 @@ export function initializeNavigationState(): NavigationState {
     active: id,
     content: [
       (
-        <NavigationWrapper name='' key={id} id={id} colSpan={12}>
-          <ViewProvider id={id} name={name}>
+        <ViewProvider key={id} id={id} name={name}>
+          <ViewWrapper colSpan={12}>
             <InititalView.component id={id} />
-          </ViewProvider>
-        </NavigationWrapper>
+          </ViewWrapper>
+        </ViewProvider>
       )
     ]
   }

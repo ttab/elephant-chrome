@@ -33,7 +33,7 @@ export const PlanningTable = <TData, TValue>({
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
   const [sorting, setSorting] = useState<SortingState>([])
-  const { isActiveView } = useView()
+  const { isActive: isActiveView } = useView()
 
   const table = useReactTable({
     data,

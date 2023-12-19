@@ -11,7 +11,8 @@ interface ViewProviderProps {
 const initialState = {
   id: '',
   name: '',
-  isActiveView: false
+  isActive: false,
+  isFocused: false
 }
 
 const ViewContext = createContext<ViewProviderState>(initialState)
@@ -23,9 +24,10 @@ const ViewProvider = ({ id, name, children }: ViewProviderProps): JSX.Element =>
     return {
       id,
       name,
-      isActiveView: navigationState.active === id
+      isActive: navigationState.active === id,
+      isFocused: navigationState.focus === id
     }
-  }, [id, name, navigationState.active])
+  }, [id, name, navigationState.active, navigationState.focus])
 
   return (
     <ViewContext.Provider value={value}>
