@@ -29,7 +29,7 @@ export default defineConfig(({ mode }) => {
       strictPort: true,
       proxy: {
         '/api': {
-          target: `http://${env.VITE_HOST}:${env.VITE_PORT}`,
+          target: `http://${env.HOST}:${env.PORT}`,
           changeOrigin: true,
           secure: false
         }
