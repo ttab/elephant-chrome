@@ -8,13 +8,15 @@ interface ViewProviderProps {
   children: React.ReactNode
 }
 
-export const ViewContext = createContext<ViewProviderState>({
+const initialState = {
   id: '',
   name: '',
   isActiveView: false
-})
+}
 
-export const ViewProvider = ({ id, name, children }: ViewProviderProps): JSX.Element => {
+const ViewContext = createContext<ViewProviderState>(initialState)
+
+const ViewProvider = ({ id, name, children }: ViewProviderProps): JSX.Element => {
   const { state: navigationState } = useNavigation()
 
   const value = useMemo((): ViewProviderState => {
@@ -31,3 +33,5 @@ export const ViewProvider = ({ id, name, children }: ViewProviderProps): JSX.Ele
     </ViewContext.Provider>
   )
 }
+
+export { ViewContext, ViewProvider }
