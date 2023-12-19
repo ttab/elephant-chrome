@@ -16,9 +16,13 @@ REDIS_HOST="localhost"
 REDIS_PORT=6379
 
 # Opensearch index
-VITE_INDEX_URL="https://...se:443"
+INDEX_URL="https://...se:443"
 
-# Server and client side env
-VITE_PROTOCOL=http
-VITE_HOST=localhost
-VITE_PORT=5183
+# Server configuration
+PROTOCOL=http
+HOST=localhost
+PORT=5183
+BASE_URL=/elephant
+
+# Used for cors with development server
+DEV_CLIENT_PORT=5173
