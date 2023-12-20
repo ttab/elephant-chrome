@@ -73,14 +73,14 @@ async function runServer(): Promise<string> {
 
   }))
   app.use(cookieParser())
-  app.use(express.json())
+  app.use(BASE_URL, express.json())
   app.use(BASE_URL || '', express.static(distDir))
 
   connectRouteHandlers(app, routes, {
     repository
   })
 
-  app.ws('/:document', (websocket, request) => {
+  app.ws(`${BASE_URL}/:document`, (websocket, request) => {
     hpServer.handleConnection(websocket, request)
   })
 

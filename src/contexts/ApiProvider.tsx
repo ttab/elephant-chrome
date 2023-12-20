@@ -20,12 +20,13 @@ export const ApiProviderContext = createContext<ApiProviderState>({
 })
 
 export const ApiProvider = ({ children }: ApiProviderProps): JSX.Element => {
+  const BASE_URL = import.meta.env.BASE_URL || ''
   const [urls, setUrls] = useState<{ websocketUrl: URL, indexUrl: URL }>({ websocketUrl: new URL('http://localhost'), indexUrl: new URL('http://localhost') })
   const [apiInitialized, setApiInitialized] = useState(false)
 
   useEffect(() => {
     const fetchUrls = async (): Promise<void> => {
-      const response = await fetch('/api/init')
+      const response = await fetch(`${BASE_URL}/api/init`)
       if (response.ok) {
         const urls = await response.json()
         setUrls({ websocketUrl: urls.WS_URL, indexUrl: urls.INDEX_URL })
@@ -33,14 +34,14 @@ export const ApiProvider = ({ children }: ApiProviderProps): JSX.Element => {
       }
     }
     void fetchUrls()
-  }, [])
+  }, [BASE_URL])
 
   const value = useMemo((): ApiProviderState => {
     return {
       apiInitialized,
       websocketUrl: urls.websocketUrl,
       indexUrl: urls.indexUrl,
-      hocuspocusWebsocket: new HocuspocusProviderWebsocket({ url: urls.websocketUrl?.href })
+      hocuspocusWebsocket: new HocuspocusProviderWebsocket({ url: urls.websocketUrl?.toString() })
     }
   }, [urls, apiInitialized])
 
