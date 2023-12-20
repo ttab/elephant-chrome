@@ -40,7 +40,7 @@ export const ApiProvider = ({ children }: ApiProviderProps): JSX.Element => {
       apiInitialized,
       websocketUrl: urls.websocketUrl,
       indexUrl: urls.indexUrl,
-      hocuspocusWebsocket: new HocuspocusProviderWebsocket({ url: urls.websocketUrl?.href })
+      hocuspocusWebsocket: new HocuspocusProviderWebsocket({ url: urls.websocketUrl?.toString() })
     }
   }, [urls, apiInitialized])
 

@@ -80,7 +80,7 @@ async function runServer(): Promise<string> {
     repository
   })
 
-  app.ws('/:document', (websocket, request) => {
+  app.ws(`${BASE_URL}/:document`, (websocket, request) => {
     hpServer.handleConnection(websocket, request)
   })
 
