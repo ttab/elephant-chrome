@@ -62,7 +62,7 @@ export const SessionProvider = ({ children }: {
 
 async function fetchOrRefreshToken(): Promise<string | undefined> {
   try {
-    const response = await fetch('/api/user', {
+    const response = await fetch(`${import.meta.env.BASE_URL || ''}/api/user`, {
       credentials: 'include'
     })
 
