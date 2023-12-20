@@ -6,6 +6,7 @@ import { viteStaticCopy } from 'vite-plugin-static-copy'
 
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), '')
+  const proxyPath = `${env.BASE_URL || ''}/api`
   return {
     base: '/elephant',
     plugins: [
@@ -28,7 +29,7 @@ export default defineConfig(({ mode }) => {
       port: 5173,
       strictPort: true,
       proxy: {
-        '/api': {
+        [proxyPath]: {
           target: `http://${env.HOST}:${env.PORT}`,
           changeOrigin: true,
           secure: false
