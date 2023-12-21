@@ -45,7 +45,6 @@ export function handleLink({ event, dispatch, viewItem, viewRegistry, props, id 
   // Set history state first, then navigation state
   history.pushState({
     id,
-    activeViewId: id,
     props: { ...props, id },
     viewName: viewItem.meta.name,
     contentState: content
