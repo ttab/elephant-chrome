@@ -30,7 +30,7 @@ export function initializeNavigationState(): NavigationState {
 
   if (!history?.state?.contentState) {
     history.replaceState({
-      id: 'start',
+      id,
       viewName: name,
       contentState: [{
         id,

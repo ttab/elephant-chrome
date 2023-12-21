@@ -34,6 +34,7 @@ export const NavigationProvider = ({ children }: PropsWithChildren): JSX.Element
     if (historyState && (historyState.type === 'popstate' || historyState.type === undefined)) {
       dispatch({
         type: NavigationActionType.SET,
+        active: historyState.id,
         content: historyState.contentState
       })
     }
@@ -81,10 +82,10 @@ function calculateViews(
     content
   })
 
-  // Update current history state, not adding, this does however make it
-  // difficult/impossible to redisplay removed views if screen gets bigger...
+  // Update current history state
   history.replaceState(
     {
+      id: activeId,
       contentState: history.state.contentState
     },
     document.title,
