@@ -42,17 +42,17 @@ export function handleLink({ event, dispatch, viewItem, viewRegistry, props, id 
     content.shift()
   }
 
-  // Set state
-  dispatch({
-    type: NavigationActionType.SET,
-    content
-  })
-
-  // Set history state
+  // Set history state first, then navigation state
   history.pushState({
     id,
+    activeViewId: id,
     props: { ...props, id },
     viewName: viewItem.meta.name,
     contentState: content
   }, viewItem.meta.name, `${viewItem.meta.path}${toQueryString(props)}`)
+
+  dispatch({
+    type: NavigationActionType.SET,
+    content
+  })
 }
