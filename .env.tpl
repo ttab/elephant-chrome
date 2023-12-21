@@ -10,7 +10,7 @@ REPOSITORY_URL="https://..."
 JWKS_URL="https://.../.well-known/jwks.json"
 
 # Redis cache and pub/sub
-# rediss://user:pass:host:port for TLS
+# rediss://user:pass@host:port for TLS
 # redis://localhost:6379 for no-tls, no-auth
 REDIS_URL=
 # Opensearch index
