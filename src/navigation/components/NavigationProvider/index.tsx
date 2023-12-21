@@ -10,9 +10,8 @@ import { NavigationActionType } from '@/types'
 import { initializeNavigationState } from '@/lib/initializeNavigationState'
 
 import { useHistory, useResize } from '@/hooks'
-import { minimumSpaceRequired, navigationReducer, currentView } from '@/navigation/lib'
+import { minimumSpaceRequired, navigationReducer } from '@/navigation/lib'
 import { debounce } from '@/lib/debounce'
-import * as uuid from 'uuid'
 
 const initialState = initializeNavigationState()
 
@@ -28,25 +27,6 @@ export const NavigationProvider = ({ children }: PropsWithChildren): JSX.Element
   const [state, dispatch] = useReducer(navigationReducer, initialState)
   const historyState = useHistory()
   const screenSize = useResize()
-  const { name, props } = currentView()
-
-  // Initialize a new history start state based on current url
-  useLayoutEffect(() => {
-    const id = uuid.v4()
-    if (historyState === null) {
-      history.replaceState({
-        id: 'start',
-        viewName: name,
-        contentState: [{
-          id,
-          name,
-          props,
-          path: '/'
-        }]
-      }, document.title, window.location.href)
-    }
-  }, [name, props, historyState])
-
 
   // undefined is for initial state on page load/refresh set state from saved history
   // 'popstate' is for state change on back/forward button, set new state.
