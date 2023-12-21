@@ -9,12 +9,10 @@ GOOGLE_CLIENT_SECRET="GO..."
 REPOSITORY_URL="https://..."
 JWKS_URL="https://.../.well-known/jwks.json"
 
-# Redis cache
-REDIS_PASSWORD=""
-REDIS_USERNAME=""
-REDIS_HOST="localhost"
-REDIS_PORT=6379
-
+# Redis cache and pub/sub
+# rediss://user:pass:host:port for TLS
+# redis://localhost:6379 for no-tls, no-auth
+REDIS_URL=
 # Opensearch index
 INDEX_URL="https://...se:443"
 

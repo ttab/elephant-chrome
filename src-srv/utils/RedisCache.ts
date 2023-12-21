@@ -2,36 +2,16 @@ import { createClient } from 'redis'
 import type { RedisClientType } from 'redis'
 
 export class RedisCache {
-  readonly #host: string
-  readonly #port: number
-  readonly #user: string | undefined
-  readonly #password: string | undefined
+  readonly #url: string
   redisClient?: RedisClientType
 
-  constructor(host: string, port: number | string, user?: string, password?: string) {
-    this.#port = typeof port === 'number' ? port : parseInt(port)
-    this.#host = host
-    this.#user = user
-    this.#password = password
+  constructor(url: string) {
+    this.#url = url
     this.redisClient = undefined
   }
 
-  get url(): string {
-    return `redis://${this.#host}:${this.#port}`
-  }
-
   async connect(): Promise<boolean> {
-    const options = {
-      username: this.#user,
-      password: this.#password,
-      socket: {
-        host: this.#host,
-        port: this.#port,
-        tls: true
-      }
-    }
-
-    const client = createClient(options.username ? options : { url: this.url })
+    const client = createClient({ url: this.#url })
 
     try {
       const result = await client.connect()
@@ -41,7 +21,7 @@ export class RedisCache {
         return true
       }
 
-      console.error('Failed connecting to ', this.url)
+      console.error('Failed connecting to ', this.#url)
     } catch (ex: unknown) {
       console.error(ex)
     }
