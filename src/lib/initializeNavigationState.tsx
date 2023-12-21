@@ -17,7 +17,6 @@ export function initializeNavigationState(): NavigationState {
   })
 
   const { name = 'start', props } = currentView()
-
   if (!history?.state?.contentState?.length) {
     const InititalView = viewRegistry.getByPath(window.location.pathname)
     const id = uuid.v4()
@@ -29,7 +28,7 @@ export function initializeNavigationState(): NavigationState {
         id,
         name,
         props,
-        path: '/'
+        path: window.location.pathname
       }]
     }, '', window.location.href)
 
