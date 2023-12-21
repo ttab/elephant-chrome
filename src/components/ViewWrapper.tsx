@@ -51,6 +51,13 @@ export const ViewWrapper = ({ children, colSpan: wantedColSpan }: {
       : 12
   ) as keyof typeof section
 
+  // Make sure content does not rerender every time active view changes
+  const memoizedContent = useMemo((): JSX.Element => {
+    return <div>
+      {children}
+    </div>
+  }, [children])
+
   return useMemo(() => {
     return (
       <section
@@ -70,8 +77,8 @@ export const ViewWrapper = ({ children, colSpan: wantedColSpan }: {
           })
         )}
       >
-        {children}
+        {memoizedContent}
       </section>
     )
-  }, [children, id, dispatch, isFocused, isActive, colSpan])
+  }, [memoizedContent, id, dispatch, isFocused, isActive, colSpan])
 }
