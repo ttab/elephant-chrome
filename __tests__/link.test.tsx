@@ -1,5 +1,5 @@
 import { SessionProvider } from '@/contexts'
-import { NavigationProvider } from '@/navigation/components'
+import { NavigationProvider } from '@/navigation'
 import userEvent from '@testing-library/user-event'
 
 import { render, screen } from '../setupTests'

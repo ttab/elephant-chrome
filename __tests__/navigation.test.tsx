@@ -1,13 +1,13 @@
 import { type Dispatch } from 'react'
 import { SessionProvider } from '@/contexts'
-import { NavigationProvider } from '@/navigation/components'
+import { NavigationProvider } from '@/navigation'
 
 import { useNavigation } from '@/navigation/hooks'
 
 import { render, screen } from '../setupTests'
 import { App } from '@/App'
 import { type NavigationActionType } from '@/types'
-import { initializeNavigationState } from '@/lib/initializeNavigationState'
+import { initializeNavigationState } from '@/navigation/lib/initializeNavigationState'
 
 jest.mock('@/navigation/hooks/useNavigation', () => ({
   useNavigation: jest.fn()

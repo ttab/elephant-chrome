@@ -7,7 +7,7 @@ import {
 } from 'react'
 import type { NavigationState, NavigationAction } from '@/types'
 import { NavigationActionType } from '@/types'
-import { initializeNavigationState } from '@/lib/initializeNavigationState'
+import { initializeNavigationState } from '@/navigation/lib/initializeNavigationState'
 
 import { useHistory, useResize } from '@/hooks'
 import { minimumSpaceRequired, navigationReducer } from '@/navigation/lib'
