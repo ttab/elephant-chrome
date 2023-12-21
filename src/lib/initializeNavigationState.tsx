@@ -17,7 +17,8 @@ export function initializeNavigationState(): NavigationState {
 
   const { name = 'start', props } = currentView()
   const InititalView = viewRegistry.getByPath(window.location.pathname)
-  const id = uuid.v4()
+  const id = history?.state?.id || uuid.v4()
+
   const content = [
     (
       <ViewProvider key={id} id={id} name={name}>
