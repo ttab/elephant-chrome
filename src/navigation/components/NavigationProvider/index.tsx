@@ -31,7 +31,7 @@ export const NavigationProvider = ({ children }: PropsWithChildren): JSX.Element
   // undefined is for initial state on page load/refresh set state from saved history
   // 'popstate' is for state change on back/forward button, set new state.
   useLayoutEffect(() => {
-    if (historyState && (historyState.type === 'popstate' || historyState.type === undefined)) {
+    if (historyState && (historyState.type === 'popstate')) {
       dispatch({
         type: NavigationActionType.SET,
         active: historyState.id,

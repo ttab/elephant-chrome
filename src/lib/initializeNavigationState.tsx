@@ -1,9 +1,10 @@
-import type { NavigationState, ViewRegistryItem, View } from '@/types'
+import type { NavigationState, ViewRegistryItem, View, ContentState } from '@/types'
 import { ViewWrapper } from '@/components/ViewWrapper'
 import * as views from '@/views'
 import * as uuid from 'uuid'
 import { ViewProvider } from '@/contexts/ViewProvider'
 import { currentView } from '@/navigation/lib'
+import { calculateViewWidts } from '@/navigation/lib/calculateViews'
 
 const registeredComponents = new Map() as Map<string, ViewRegistryItem>
 
@@ -16,20 +17,11 @@ export function initializeNavigationState(): NavigationState {
   })
 
   const { name = 'start', props } = currentView()
-  const InititalView = viewRegistry.getByPath(window.location.pathname)
-  const id = history?.state?.id || uuid.v4()
 
-  const content = [
-    (
-      <ViewProvider key={id} id={id} name={name}>
-        <ViewWrapper colSpan={12}>
-          <InititalView.component id={id} />
-        </ViewWrapper>
-      </ViewProvider>
-    )
-  ]
+  if (!history?.state?.contentState?.length) {
+    const InititalView = viewRegistry.getByPath(window.location.pathname)
+    const id = uuid.v4()
 
-  if (!history?.state?.contentState) {
     history.replaceState({
       id,
       viewName: name,
@@ -39,14 +31,47 @@ export function initializeNavigationState(): NavigationState {
         props,
         path: '/'
       }]
-    }, document.title, window.location.href)
+    }, '', window.location.href)
+
+    return {
+      viewRegistry,
+      views: [{ name, colSpan: 12 }],
+      focus: null,
+      active: id,
+      content: [(
+        <ViewProvider key={id} id={id} name={name}>
+          <ViewWrapper colSpan={12}>
+            <InititalView.component id={id} />
+          </ViewWrapper>
+        </ViewProvider>
+      )]
+    }
   }
+
+
+  const preContent = history.state.contentState.map((item: ContentState): { name: string } => {
+    return item
+  })
+  const widths = calculateViewWidts(viewRegistry, preContent)
+
+  const content = history.state.contentState.map((item: ContentState, index: number): JSX.Element => {
+    const Component = viewRegistry.get(item.name)?.component
+    const width = widths[index]
+
+    return (
+      <ViewProvider key={item.id} id={item.id} name={item.name}>
+        <ViewWrapper colSpan={width.colSpan}>
+          <Component {...{ ...item, index }} />
+        </ViewWrapper>
+      </ViewProvider>
+    )
+  })
 
   return {
     viewRegistry,
-    views: [{ name, colSpan: 12 }],
+    views: widths,
     focus: null,
-    active: id,
+    active: history.state.id,
     content
   }
 }
