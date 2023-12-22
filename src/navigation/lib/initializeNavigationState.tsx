@@ -1,8 +1,8 @@
 import type { NavigationState, ViewRegistryItem, View, ContentState } from '@/types'
-import { ViewWrapper } from '@/components/ViewWrapper'
+import { ViewWrapper } from '@/components'
 import * as views from '@/views'
 import * as uuid from 'uuid'
-import { ViewProvider } from '@/contexts/ViewProvider'
+import { ViewProvider } from '@/contexts'
 import {
   currentView,
   calculateViewWidths
@@ -19,6 +19,8 @@ export function initializeNavigationState(): NavigationState {
   })
 
   const { name, props } = currentView()
+
+  // Initialize navigationstate from scratch if no contentState exists (or is empty []) in history
   if (!history?.state?.contentState?.length) {
     const InititalView = viewRegistry.getByPath(window.location.pathname)
     const id = uuid.v4()
@@ -50,7 +52,7 @@ export function initializeNavigationState(): NavigationState {
   }
 
 
-  // Recreate navigationstate from history
+  // Recreate navigationstate from history when contentState exist in history
   const preContent = history.state.contentState.map((item: ContentState): { name: string } => {
     return item
   })
