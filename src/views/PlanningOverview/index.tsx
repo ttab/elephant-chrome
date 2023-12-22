@@ -14,9 +14,9 @@ const meta: ViewMetadata = {
   widths: {
     sm: 12,
     md: 12,
-    lg: 6,
-    xl: 6,
-    '2xl': 4
+    lg: 12,
+    xl: 8,
+    '2xl': 6
   }
 }
 
