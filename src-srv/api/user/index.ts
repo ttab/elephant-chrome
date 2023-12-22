@@ -20,6 +20,7 @@ export const POST: RouteHandler = async (req, context) => {
   ].join(' ')
 
   try {
+    console.log(user, password)
     const session = await repository.auth({ user, password, sub, permissions })
     const jwt = decodeJwt(session.access_token)
     setCookies(session, res)

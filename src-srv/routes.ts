@@ -78,8 +78,9 @@ export async function mapRoutes(apiDir: string): Promise<RouteMap> {
  * Connect all route handlers found to their respective routes
  */
 export function connectRouteHandlers(app: Application, routes: RouteMap, context: RouteInitContext): Application {
+  const BASE_URL = process.env.BASE_URL || ''
   for (const route in routes) {
-    const routePath = path.join('/api', route)
+    const routePath = path.join(BASE_URL, '/api', route)
 
     const { GET, POST, PUT, PATCH, DELETE, WEB_SOCKET } = routes[route].handlers || {}
 

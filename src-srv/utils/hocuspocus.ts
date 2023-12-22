@@ -17,15 +17,15 @@ export async function createServer(options: CreateServerOptions): Promise<Hocusp
   const { repository, cache } = options
   const redisOption = process.env.REDIS_USER && process.env.REDIS_PASSWORD
     ? {
-        options: {
-          user: process.env.REDIS_USER,
-          password: process.env.REDIS_PASSWORD
-        }
+      options: {
+        user: process.env.REDIS_USER,
+        password: process.env.REDIS_PASSWORD
       }
+    }
     : {}
 
   const server = Server.configure({
-    port: process.env.VITE_PORT ? parseInt(process.env.VITE_PORT) : 5183,
+    port: process.env.PORT ? parseInt(process.env.PORT) : 5183,
     extensions: [
       new Logger(),
       new Redis({

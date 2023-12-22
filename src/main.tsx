@@ -8,15 +8,9 @@ import { RegistryProvider } from './contexts/RegistryProvider.tsx'
 
 banner()
 
-const host = import.meta.env.VITE_HOST
-const port = import.meta.env.VITE_PORT
-
-const websocketUrl = new URL('/ws', `ws://${host}:${port}`)
-const indexUrl = new URL(import.meta.env.VITE_INDEX_URL)
-
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
   <SessionProvider>
-    <ApiProvider websocketUrl={websocketUrl} indexUrl={indexUrl}>
+    <ApiProvider>
       <React.StrictMode>
         <RegistryProvider>
           <ThemeProvider defaultTheme='light' storageKey='ele-ui-theme' >
