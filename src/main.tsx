@@ -4,7 +4,7 @@ import { App } from './App.tsx'
 import { ThemeProvider, ApiProvider, SessionProvider } from '@/contexts'
 import { NavigationProvider } from '@/navigation'
 import { banner } from './lib/banner.ts'
-import { RegistryProvider } from './contexts/RegistryProvider.tsx'
+import { RegistryProvider } from './contexts'
 
 banner()
 
