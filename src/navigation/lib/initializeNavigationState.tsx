@@ -4,7 +4,7 @@ import * as views from '@/views'
 import * as uuid from 'uuid'
 import { ViewProvider } from '@/contexts/ViewProvider'
 import { currentView } from '@/navigation/lib'
-import { calculateViewWidts } from '@/navigation/lib/calculateViews'
+import { calculateViewWidths } from '@/navigation/lib/calculateViews'
 
 const registeredComponents = new Map() as Map<string, ViewRegistryItem>
 
@@ -16,7 +16,7 @@ export function initializeNavigationState(): NavigationState {
     })
   })
 
-  const { name = 'start', props } = currentView()
+  const { name, props } = currentView()
   if (!history?.state?.contentState?.length) {
     const InititalView = viewRegistry.getByPath(window.location.pathname)
     const id = uuid.v4()
@@ -51,7 +51,7 @@ export function initializeNavigationState(): NavigationState {
   const preContent = history.state.contentState.map((item: ContentState): { name: string } => {
     return item
   })
-  const widths = calculateViewWidts(viewRegistry, preContent)
+  const widths = calculateViewWidths(viewRegistry, preContent)
 
   const content = history.state.contentState.map((item: ContentState, index: number): JSX.Element => {
     const Component = viewRegistry.get(item.name)?.component
