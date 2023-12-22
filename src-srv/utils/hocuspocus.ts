@@ -17,11 +17,11 @@ export async function createServer(options: CreateServerOptions): Promise<Hocusp
   const { repository, cache } = options
   const redisOption = process.env.REDIS_USER && process.env.REDIS_PASSWORD
     ? {
-      options: {
-        user: process.env.REDIS_USER,
-        password: process.env.REDIS_PASSWORD
+        options: {
+          user: process.env.REDIS_USER,
+          password: process.env.REDIS_PASSWORD
+        }
       }
-    }
     : {}
 
   const server = Server.configure({
