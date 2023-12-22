@@ -32,7 +32,7 @@ export const PlanningOverview = (props: ViewProps): JSX.Element => {
   return (
     <Tabs defaultValue={currentTab} className='flex-1' onValueChange={setCurrentTab}>
 
-      <ViewHeader {...props} title="Planeringsöversikt" icon={CalendarDaysIcon}>
+      <ViewHeader {...props} title="Planeringsöversikt" shortTitle="Planering" icon={CalendarDaysIcon}>
         <PlanningHeader
           tab={currentTab}
           startDate={startDate}
