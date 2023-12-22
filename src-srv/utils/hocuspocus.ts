@@ -15,25 +15,12 @@ interface CreateServerOptions {
 
 export async function createServer(options: CreateServerOptions): Promise<Hocuspocus> {
   const { repository, cache } = options
-  const redisOption = process.env.REDIS_USER && process.env.REDIS_PASSWORD
-    ? {
-        options: {
-          user: process.env.REDIS_USER,
-          password: process.env.REDIS_PASSWORD
-        }
-      }
-    : {}
 
   const server = Server.configure({
     port: process.env.PORT ? parseInt(process.env.PORT) : 5183,
     extensions: [
       new Logger(),
-      new Redis({
-        // FIXME: Should not use env
-        host: process.env.REDIS_HOST,
-        port: process.env.REDIS_PORT ? parseInt(process.env.REDIS_PORT) : 6379,
-        ...redisOption
-      }),
+      new Redis(process.env.REDIS_URL),
       new Database({
         fetch: async (data) => {
           // Try fetching from cache
