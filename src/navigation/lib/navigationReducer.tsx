@@ -18,7 +18,6 @@ export function navigationReducer(state: NavigationState, action: NavigationActi
         throw new Error('Content is undefined')
       }
 
-      // const views = calculateViews(state, screenDefinitions, action.content)
       const views = calculateViewWidths(state.viewRegistry, action.content)
 
       return {
