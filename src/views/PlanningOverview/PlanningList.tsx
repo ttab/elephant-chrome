@@ -1,8 +1,8 @@
 import { useSession, useApi, useRegistry } from '@/hooks'
 import { type SearchIndexResponse } from '@/lib/index/search'
 import { Planning } from '@/lib/planning'
-import { PlanningTable } from '@/components/PlanningTable'
-import { columns } from '@/components/PlanningTable/Columns'
+import { PlanningTable } from '@/views/PlanningOverview/PlanningTable'
+import { columns } from '@/views/PlanningOverview/PlanningTable/Columns'
 
 import { convertToISOStringInUTC, getDateTimeBoundaries } from '@/lib/datetime'
 import useSWR from 'swr'
