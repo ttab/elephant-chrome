@@ -1,6 +1,6 @@
 import { type ColumnDef } from '@tanstack/react-table'
 import { type Planning } from '../data/schema'
-import { TimeDisplay } from '../../DataItem/TimeDisplay'
+import { TimeDisplay } from '../../../../components/DataItem/TimeDisplay'
 import { getPublishTime } from '@/lib/getPublishTime'
 
 export const time: ColumnDef<Planning> = {

@@ -1,4 +1,4 @@
-import { type Planning } from '@/components/PlanningTable/data/schema'
+import { type Planning } from '@/views/PlanningOverview/PlanningTable/data/schema'
 import { type JWT } from '@/types'
 
 interface SearchIndexOptions {
