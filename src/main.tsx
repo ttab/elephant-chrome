@@ -2,7 +2,7 @@ import React from 'react'
 import ReactDOM from 'react-dom/client'
 import { App } from './App.tsx'
 import { ThemeProvider, ApiProvider, SessionProvider } from '@/contexts'
-import { NavigationProvider } from '@/navigation/index.tsx'
+import { NavigationProvider } from '@/navigation'
 import { banner } from './lib/banner.ts'
 import { RegistryProvider } from './contexts/RegistryProvider.tsx'
 
