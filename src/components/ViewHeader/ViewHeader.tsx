@@ -5,11 +5,12 @@ import { type LucideIcon } from '@ttab/elephant-ui/icons'
 
 interface ViewHeaderProps extends ViewProps {
   title: string
+  shortTitle?: string
   icon?: LucideIcon
   children?: JSX.Element | JSX.Element[]
 }
 
-export const ViewHeader = ({ id, children, title, icon: Icon }: ViewHeaderProps): JSX.Element => {
+export const ViewHeader = ({ id, children, title, shortTitle, icon: Icon }: ViewHeaderProps): JSX.Element => {
   const { state } = useNavigation()
 
   return (
@@ -20,7 +21,13 @@ export const ViewHeader = ({ id, children, title, icon: Icon }: ViewHeaderProps)
         }
 
         <h2 className="font-bold -ml-1 mr-3">
-          {title}
+          {typeof shortTitle !== 'string'
+            ? <>{title}</>
+            : <>
+              <span className="@3xl/view:hidden">{shortTitle}</span>
+              <span className="hidden @3xl/view:inline">{title}</span>
+            </>
+          }
         </h2>
 
         {children}
@@ -31,6 +38,6 @@ export const ViewHeader = ({ id, children, title, icon: Icon }: ViewHeaderProps)
           <ViewFocus id={id} />
         }
       </div>
-    </header>
+    </header >
   )
 }

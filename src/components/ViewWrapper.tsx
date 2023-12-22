@@ -4,9 +4,13 @@ import { NavigationActionType } from '@/types'
 import { cn } from '@ttab/elephant-ui/utils'
 import { cva } from 'class-variance-authority'
 
-// TODO: Implement use of @container queries through @tailwindcss/container-queries
-
-const section = cva('', {
+/**
+ * Each view is defined to be a @container named "view". When styling components that needs
+ * to change depending on @component size, use e.g:
+ *
+ * <div className="hidden @lg/view:block">Only shown in @lg sized components</div>
+ */
+const section = cva('@container/view', {
   variants: {
     isActive: {
       true: 'border-t-green-500 border-t-4',

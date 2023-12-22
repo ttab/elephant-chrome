@@ -14,9 +14,9 @@ const meta: ViewMetadata = {
   widths: {
     sm: 12,
     md: 12,
-    lg: 6,
-    xl: 6,
-    '2xl': 4
+    lg: 12,
+    xl: 8,
+    '2xl': 6
   }
 }
 
@@ -32,7 +32,7 @@ export const PlanningOverview = (props: ViewProps): JSX.Element => {
   return (
     <Tabs defaultValue={currentTab} className='flex-1' onValueChange={setCurrentTab}>
 
-      <ViewHeader {...props} title="Planeringsöversikt" icon={CalendarDaysIcon}>
+      <ViewHeader {...props} title="Planeringsöversikt" shortTitle="Planering" icon={CalendarDaysIcon}>
         <PlanningHeader
           tab={currentTab}
           startDate={startDate}
