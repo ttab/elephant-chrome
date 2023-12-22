@@ -12,7 +12,10 @@ export const ViewFocus = ({ id }: ViewProps): JSX.Element => {
     const close = (e: KeyboardEvent): void => {
       if (e.key === 'Escape' && state.focus === id) {
         e.preventDefault()
-        dispatch({ type: NavigationActionType.FOCUS, id })
+        dispatch({
+          type: NavigationActionType.FOCUS,
+          id
+        })
       }
     }
 
@@ -24,11 +27,16 @@ export const ViewFocus = ({ id }: ViewProps): JSX.Element => {
     <Button
       variant='ghost'
       className='w-9 px-0'
-      onClick={() => { dispatch({ type: NavigationActionType.FOCUS, id }) }}
+      onClick={() => {
+        dispatch({
+          type: NavigationActionType.FOCUS,
+          id
+        })
+      }}
     >
       {state.focus === id
-        ? <Minimize2 className='h-[1.2rem] w-[1.2rem]'/>
-        : <Maximize2 className='h-[1.2rem] w-[1.2rem]'/>
+        ? <Minimize2 className='h-[1.2rem] w-[1.2rem]' />
+        : <Maximize2 className='h-[1.2rem] w-[1.2rem]' />
       }
     </Button>
   )

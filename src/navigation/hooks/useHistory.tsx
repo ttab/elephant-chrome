@@ -11,7 +11,7 @@ if (typeof history !== 'undefined') {
     const original = history[type as keyof typeof history]
 
     // @ts-expect-error history state and length are readonly
-    history[type as keyof typeof history] = function(state: HistoryState, title: string, url?: string | null) {
+    history[type as keyof typeof history] = (state: HistoryState, title: string, url?: string | null) => {
       const result = original.apply(this, [state, title, url])
       const event = new Event(type.toLowerCase()) as HistoryEvent
       event.state = state

@@ -34,7 +34,6 @@ export const Link = forwardRef((props: LinkProps, ref: ForwardedRef<HTMLAnchorEl
           event,
           dispatch,
           viewItem,
-          screens: state.screens,
           viewRegistry: state.viewRegistry,
           props: { ...props.props },
           id

@@ -49,7 +49,6 @@ export interface ViewRegistry {
 
 export interface NavigationState {
   viewRegistry: ViewRegistry
-  screens: Array<{ key: string, value: number }>
   views: Array<{ name: string, colSpan: number }>
   focus: string | null
   active: string | undefined
@@ -81,6 +80,13 @@ export type Theme = 'dark' | 'light' | 'system'
 export interface ThemeProviderState {
   theme: Theme
   setTheme: (theme: Theme) => void
+}
+
+export interface ViewProviderState {
+  id: string
+  name: string
+  isActive: boolean
+  isFocused: boolean
 }
 
 export interface JWT extends JWTPayload {

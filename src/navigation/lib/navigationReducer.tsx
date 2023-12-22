@@ -1,4 +1,6 @@
-import { NavigationWrapper } from '@/navigation/components'
+import { ViewProvider } from '@/contexts'
+import { ViewWrapper } from '@/components'
+
 import {
   NavigationActionType,
   type ContentState,
@@ -7,6 +9,7 @@ import {
   type NavigationState
 } from '@/types'
 
+import { calculateViewWidths } from './calculateViewWidths'
 
 export function navigationReducer(state: NavigationState, action: NavigationAction): NavigationState {
   switch (action.type) {
@@ -15,7 +18,7 @@ export function navigationReducer(state: NavigationState, action: NavigationActi
         throw new Error('Content is undefined')
       }
 
-      const views = calculateViews(state, action.content)
+      const views = calculateViewWidths(state.viewRegistry, action.content)
 
       return {
         ...state,
@@ -26,14 +29,11 @@ export function navigationReducer(state: NavigationState, action: NavigationActi
           const width = views[index]
 
           return (
-            <NavigationWrapper
-              name={item.name}
-              key={item.id}
-              id={item.id}
-              colSpan={width.colSpan as 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12}
-            >
-              <Component {...{ ...item, index }} />
-            </NavigationWrapper>
+            <ViewProvider key={item.id} id={item.id} name={item.name}>
+              <ViewWrapper colSpan={width.colSpan}>
+                <Component {...{ ...item, index }} />
+              </ViewWrapper>
+            </ViewProvider>
           )
         })
       }
@@ -73,56 +73,4 @@ export function navigationReducer(state: NavigationState, action: NavigationActi
     default:
       throw new Error(`Unhandled action type: ${action.type as string}`)
   }
-}
-
-
-function calculateViews(state: NavigationState, content: ContentState[]): Array<{ name: string, colSpan: number }> {
-  let screen = state.screens[state.screens.length - 1]
-  const screens = state.screens.filter(s => {
-    return s.value > window.innerWidth
-  }).reverse()
-
-  // Find the smallest defined screen size that can handle current screen width
-  if (screens.length) {
-    screen = screens[screens.length - 1]
-  }
-
-  // Extracts all current views based from components content as name/wanted minimum width
-  const views = content
-    .filter(item => !!item.name) // Happens during init phase
-    .map((item): { name: string, width: number } => {
-      const name = item.name
-      return {
-        name,
-        width: state.viewRegistry.get(name).meta.widths[screen.key]
-      }
-    })
-
-  // Happens during init phase
-  if (!views.length) {
-    return []
-  }
-
-  // Calculate total requested minimum colSpan
-  const usedSpace = views.reduce((total, view) => {
-    return view.width + total
-  }, 0)
-
-  // Calculate what colSpan each view is assigned
-  const widths = views.map(view => {
-    return {
-      name: view.name,
-      colSpan: Math.floor(12 * (view.width / usedSpace))
-    }
-  })
-
-  // Assign extra space left to the last view so it expands if necessary
-  const usedColSpan = widths.reduce((total, item) => { return item.colSpan + total }, 0)
-  if (usedColSpan < 12) {
-    widths[widths.length - 1].colSpan += 12 - usedColSpan
-  }
-
-  // state.views = widths
-
-  return widths
 }

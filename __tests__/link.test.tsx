@@ -1,9 +1,25 @@
 import { SessionProvider } from '@/contexts'
-import { NavigationProvider } from '@/navigation/components'
+import { NavigationProvider } from '@/navigation'
 import userEvent from '@testing-library/user-event'
 
 import { render, screen } from '../setupTests'
 import { Link } from '@/components'
+import { initializeNavigationState } from '@/navigation/lib'
+import { type NavigationActionType } from '@/types'
+import { type Dispatch } from 'react'
+import { useNavigation } from '@/hooks'
+
+jest.mock('@/navigation/hooks/useNavigation', () => ({
+  useNavigation: jest.fn()
+}))
+const mockState = initializeNavigationState()
+
+const mockDispatch = jest.fn() as Dispatch<NavigationActionType>
+
+(useNavigation as jest.Mock).mockReturnValue({
+  state: mockState,
+  dispatch: mockDispatch
+})
 
 describe('Link', () => {
   it('should render Link component', async () => {

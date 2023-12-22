@@ -1,6 +1,6 @@
 import { type Dispatch } from 'react'
 import { SessionProvider } from '@/contexts'
-import { NavigationProvider } from '@/navigation/components'
+import { NavigationProvider } from '@/navigation'
 import userEvent from '@testing-library/user-event'
 
 import { useNavigation } from '@/navigation/hooks'
@@ -8,7 +8,7 @@ import { useNavigation } from '@/navigation/hooks'
 import { render, screen } from '../setupTests'
 import { ViewFocus } from '@/components/ViewHeader/ViewFocus'
 import { type NavigationActionType } from '@/types'
-import { initializeNavigationState } from '@/lib/initializeNavigationState'
+import { initializeNavigationState } from '@/navigation/lib'
 
 
 jest.mock('@/navigation/hooks/useNavigation', () => ({

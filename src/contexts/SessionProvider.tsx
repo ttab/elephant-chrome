@@ -8,7 +8,7 @@ export interface SessionProviderState {
 
 export const SessionProviderContext = createContext<SessionProviderState>({
   jwt: undefined,
-  setJwt: () => { }
+  setJwt: () => {}
 })
 
 export const SessionProvider = ({ children }: {
