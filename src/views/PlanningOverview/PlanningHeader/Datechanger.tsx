@@ -1,9 +1,12 @@
 import { ChevronLeft, ChevronRight } from '@ttab/elephant-ui/icons'
 import { DatePicker } from './Datepicker'
 import {
+  useEffect,
   type Dispatch,
   type SetStateAction
 } from 'react'
+import { useView } from '@/hooks'
+import { isEditableTarget } from '@/lib/isEditableTarget'
 
 interface DateChangerProps {
   startDate: Date
@@ -20,7 +23,27 @@ export const DateChanger = ({
   endDate,
   setEndDate
 }: DateChangerProps): JSX.Element => {
+  const { isActive } = useView()
   const steps = !!endDate && !!setEndDate ? 7 : 1
+
+  useEffect(() => {
+    const keyDownHandler = (evt: KeyboardEvent): void => {
+      if (!isActive || isEditableTarget(evt)) {
+        return
+      }
+
+      if (evt.key === 'ArrowLeft') {
+        evt.stopPropagation()
+        setStartDate(decrementDate(startDate, steps))
+      } else if (evt.key === 'ArrowRight') {
+        evt.stopPropagation()
+        setStartDate(incrementDate(startDate, steps))
+      }
+    }
+
+    document.addEventListener('keydown', keyDownHandler)
+    return () => document.removeEventListener('keydown', keyDownHandler)
+  }, [isActive, setStartDate, startDate, steps])
 
   return (
     <div className="flex items-center">
