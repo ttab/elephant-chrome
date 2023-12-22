@@ -16,6 +16,7 @@ import {
 import { Table, TableBody, TableCell, TableRow } from '@ttab/elephant-ui'
 import { Toolbar } from './Toolbar'
 import { useView } from '@/hooks'
+import { isEditableTarget } from '@/lib/isEditableTarget'
 
 interface PlanningTableProps<TData, TValue> {
   columns: Array<ColumnDef<TData, TValue>>
@@ -64,7 +65,7 @@ export const PlanningTable = <TData, TValue>({
     }
 
     const keyDownHandler = (evt: KeyboardEvent): void => {
-      if (!isActiveView) {
+      if (!isActiveView || isEditableTarget(evt)) {
         return
       }
 
