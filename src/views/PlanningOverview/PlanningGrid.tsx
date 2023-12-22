@@ -1,6 +1,6 @@
 import { type SearchIndexResponse } from '@/lib/index/search'
 import { Planning } from '@/lib/planning'
-import { type Planning as PlanningType } from '@/components/PlanningTable/data/schema'
+import { type Planning as PlanningType } from '@/views/PlanningOverview/PlanningTable/data/schema'
 
 import { cn } from '@ttab/elephant-ui/utils'
 import { cva, type VariantProps } from 'class-variance-authority'
