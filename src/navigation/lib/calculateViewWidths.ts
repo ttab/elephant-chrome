@@ -15,7 +15,7 @@ import {
  * @param content ContentState[]
  * @returns Array<{ name: string, colSpan: number }>
  */
-export function calculateViewWidts(
+export function calculateViewWidths(
   viewRegistry: ViewRegistry,
   content: ContentState[]
 ): Array<{ name: string, colSpan: number }> {

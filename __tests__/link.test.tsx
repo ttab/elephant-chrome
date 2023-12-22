@@ -4,7 +4,7 @@ import userEvent from '@testing-library/user-event'
 
 import { render, screen } from '../setupTests'
 import { Link } from '@/components'
-import { initializeNavigationState } from '@/navigation/lib/initializeNavigationState'
+import { initializeNavigationState } from '@/navigation/lib'
 import { type NavigationActionType } from '@/types'
 import { type Dispatch } from 'react'
 import { useNavigation } from '@/hooks'

@@ -3,8 +3,10 @@ import { ViewWrapper } from '@/components/ViewWrapper'
 import * as views from '@/views'
 import * as uuid from 'uuid'
 import { ViewProvider } from '@/contexts/ViewProvider'
-import { currentView } from '@/navigation/lib'
-import { calculateViewWidths } from '@/navigation/lib/calculateViews'
+import {
+  currentView,
+  calculateViewWidths
+} from '@/navigation/lib'
 
 const registeredComponents = new Map() as Map<string, ViewRegistryItem>
 

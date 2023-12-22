@@ -9,7 +9,7 @@ import {
   type NavigationState
 } from '@/types'
 
-import { calculateViewWidts } from './calculateViews'
+import { calculateViewWidths } from './calculateViewWidths'
 
 export function navigationReducer(state: NavigationState, action: NavigationAction): NavigationState {
   switch (action.type) {
@@ -19,7 +19,7 @@ export function navigationReducer(state: NavigationState, action: NavigationActi
       }
 
       // const views = calculateViews(state, screenDefinitions, action.content)
-      const views = calculateViewWidts(state.viewRegistry, action.content)
+      const views = calculateViewWidths(state.viewRegistry, action.content)
 
       return {
         ...state,

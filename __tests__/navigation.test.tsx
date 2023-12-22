@@ -7,7 +7,7 @@ import { useNavigation } from '@/navigation/hooks'
 import { render, screen } from '../setupTests'
 import { App } from '@/App'
 import { type NavigationActionType } from '@/types'
-import { initializeNavigationState } from '@/navigation/lib/initializeNavigationState'
+import { initializeNavigationState } from '@/navigation/lib'
 
 jest.mock('@/navigation/hooks/useNavigation', () => ({
   useNavigation: jest.fn()
