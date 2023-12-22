@@ -19,7 +19,6 @@ import { v4 as uuid } from 'uuid'
 
 export function CommandMenu(): JSX.Element {
   const { state, dispatch } = useNavigation()
-
   const [open, setOpen] = useState(false)
 
   useEffect(() => {
