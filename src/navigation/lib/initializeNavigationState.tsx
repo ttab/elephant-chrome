@@ -50,6 +50,7 @@ export function initializeNavigationState(): NavigationState {
   }
 
 
+  // Recreate navigationstate from history
   const preContent = history.state.contentState.map((item: ContentState): { name: string } => {
     return item
   })
