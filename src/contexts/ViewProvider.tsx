@@ -13,7 +13,7 @@ const initialState = {
   name: '',
   isActive: false,
   isFocused: false,
-  hasFocused: false
+  isHidden: false
 }
 
 const ViewContext = createContext<ViewProviderState>(initialState)
@@ -27,7 +27,7 @@ const ViewProvider = ({ id, name, children }: ViewProviderProps): JSX.Element =>
       name,
       isActive: navigationState.active === id,
       isFocused: navigationState.focus === id,
-      hasFocused: !!navigationState.focus
+      isHidden: !!navigationState.focus && navigationState.focus !== id
     }
   }, [id, name, navigationState.active, navigationState.focus])
 

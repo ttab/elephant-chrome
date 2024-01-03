@@ -87,7 +87,7 @@ export interface ViewProviderState {
   name: string
   isActive: boolean
   isFocused: boolean
-  hasFocused: boolean
+  isHidden: boolean
 }
 
 export interface JWT extends JWTPayload {
