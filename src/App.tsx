@@ -15,7 +15,7 @@ export const App = (): JSX.Element => {
 
   return (
     <div className='relative flex h-screen flex-col'>
-      <div className='absolute top-0 right-0 h-10 p-2 z-10'>
+      <div className='absolute top-0 right-0 h-10 p-1 z-10'>
         <CommandMenu />
         <AppHeader />
       </div>
