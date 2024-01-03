@@ -3,6 +3,7 @@ import { useNavigation, useView } from '@/hooks'
 import { NavigationActionType } from '@/types'
 import { cn } from '@ttab/elephant-ui/utils'
 import { cva } from 'class-variance-authority'
+import { ScrollArea } from '@ttab/elephant-ui'
 
 /**
  * Each view is defined to be a @container named "view". When styling components that needs
@@ -19,6 +20,10 @@ const section = cva('@container/view', {
     isFocused: {
       true: 'absolute inset-y-0 left-0 z-10 w-screen h-screen bg-background dark:bg-background basis-full',
       false: 'relative group'
+    },
+    isHidden: {
+      true: 'hidden',
+      false: null
     },
     colSpan: {
       1: 'col-span-1',
@@ -46,7 +51,7 @@ export const ViewWrapper = ({ children, colSpan: wantedColSpan }: {
   colSpan: number
 }): JSX.Element => {
   const { dispatch } = useNavigation()
-  const { id, isActive, isFocused } = useView()
+  const { id, isActive, isFocused, hasFocused } = useView()
 
   // Ensure supported colspan is used as well as correct type
   const colSpan = (
@@ -77,12 +82,15 @@ export const ViewWrapper = ({ children, colSpan: wantedColSpan }: {
           section({
             isActive,
             isFocused,
+            isHidden: hasFocused && !isFocused,
             colSpan
           })
         )}
       >
-        {memoizedContent}
+        <ScrollArea className='h-[calc(100vh-4px)]'>
+          {memoizedContent}
+        </ScrollArea>
       </section>
     )
-  }, [memoizedContent, id, dispatch, isFocused, isActive, colSpan])
+  }, [memoizedContent, id, dispatch, isFocused, hasFocused, isActive, colSpan])
 }

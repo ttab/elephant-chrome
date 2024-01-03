@@ -27,7 +27,7 @@ export const search = async (endpoint: URL, jwt: JWT, params?: SaerchPlanningPar
     sort.push({ 'document.meta.core_assignment.data.end': params.sort.end })
   }
 
-  sort.push({ 'document.meta.core_planning_item.data.priority': 'asc' })
+  sort.push({ 'document.meta.core_planning_item.data.priority': 'desc' })
 
   const query = {
     query: {
