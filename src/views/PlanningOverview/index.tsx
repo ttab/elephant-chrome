@@ -42,7 +42,7 @@ export const PlanningOverview = (props: ViewProps): JSX.Element => {
         />
       </ViewHeader>
 
-      <main className='h-full flex-1 flex-col space-y-8 md:flex px-3'>
+      <main className='px-3'>
         <TabsContent value='list'>
           <PlanningList date={startDate} />
         </TabsContent>
