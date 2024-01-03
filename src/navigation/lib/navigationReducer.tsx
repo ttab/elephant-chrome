@@ -23,17 +23,18 @@ export function navigationReducer(state: NavigationState, action: NavigationActi
       return {
         ...state,
         views,
+        focus: null,
         active: action?.active || action.content[action.content.length - 1].id,
         content: action.content.map((item: ContentState, index): JSX.Element => {
           const Component = state.viewRegistry.get(item.name)?.component
           const width = views[index]
 
           return (
-            <ViewProvider key={item.id} id={item.id} name={item.name}>
-              <ViewWrapper colSpan={width.colSpan}>
-                <Component {...{ ...item, index }} />
-              </ViewWrapper>
-            </ViewProvider>
+          <ViewProvider key={item.id} id={item.id} name={item.name}>
+            <ViewWrapper colSpan={width.colSpan}>
+              <Component {...{ ...item, index }} />
+            </ViewWrapper>
+          </ViewProvider>
           )
         })
       }
@@ -66,6 +67,7 @@ export function navigationReducer(state: NavigationState, action: NavigationActi
 
       return {
         ...state,
+        focus: null,
         active: action.id
       }
     }

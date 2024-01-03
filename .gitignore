@@ -28,3 +28,9 @@ dist-ssr
 
 coverage
 .npmrc
+
+#nix/direnv
+.envrc
+.direnv
+flake.nix
+flake.lock
