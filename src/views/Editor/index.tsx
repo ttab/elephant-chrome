@@ -2,7 +2,7 @@ import { ViewHeader } from '@/components'
 import { useApi } from '@/hooks/useApi'
 import { YjsEditor, withCursors, withYHistory, withYjs } from '@slate-yjs/core'
 import { PenBoxIcon } from '@ttab/elephant-ui/icons'
-import { TextbitEditable } from '@ttab/textbit'
+import { TextbitEditable, Textbit, TextbitFooter } from '@ttab/textbit'
 import '@ttab/textbit/dist/esm/index.css'
 import { useEffect, useMemo, useState } from 'react'
 import { createEditor } from 'slate'
@@ -92,8 +92,11 @@ const Editor = (props: ViewProps): JSX.Element => {
 
       <main className="min-w-[30vw]">
         <div className={`h-full relative ${!isSynced ? 'opacity-60' : ''}`}>
-          { /* @ts-expect-error yjsEditor needs more refinement */}
-          <TextbitEditable yjsEditor={editor} />
+          <Textbit>
+            { /* @ts-expect-error yjsEditor needs more refinement */}
+            <TextbitEditable yjsEditor={editor} />
+            <TextbitFooter />
+          </Textbit>
         </div>
       </main>
     </>
