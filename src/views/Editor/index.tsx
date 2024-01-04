@@ -119,7 +119,7 @@ function Footer(): JSX.Element {
   const { words, characters } = useTextbitContext()
 
   return (
-    <div className="flex line font-sans text-sm p-3 pr-8 text-right gap-4 justify-end">
+    <footer className="flex line font-sans text-sm p-3 pr-8 text-right gap-4 justify-end">
       <div className="flex gap-2">
         <strong>Words:</strong>
         <span>{words}</span>
@@ -128,7 +128,7 @@ function Footer(): JSX.Element {
         <strong>Characters:</strong>
         <span>{characters}</span>
       </div>
-    </div>
+    </footer>
   )
 }
 
