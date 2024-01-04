@@ -61,7 +61,6 @@ export const PlanningOverview = (props: ViewProps): JSX.Element => {
         </ScrollArea>
 
       </div>
-
     </Tabs>
   )
 }
