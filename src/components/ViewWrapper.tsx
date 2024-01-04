@@ -20,6 +20,10 @@ const section = cva('@container/view', {
       true: 'absolute inset-y-0 left-0 z-10 w-screen h-screen bg-background dark:bg-background basis-full',
       false: 'relative group'
     },
+    isHidden: {
+      true: 'hidden',
+      false: null
+    },
     colSpan: {
       1: 'col-span-1',
       2: 'col-span-2',
@@ -46,7 +50,7 @@ export const ViewWrapper = ({ children, colSpan: wantedColSpan }: {
   colSpan: number
 }): JSX.Element => {
   const { dispatch } = useNavigation()
-  const { id, isActive, isFocused } = useView()
+  const { id, isActive, isFocused, isHidden } = useView()
 
   // Ensure supported colspan is used as well as correct type
   const colSpan = (
@@ -77,6 +81,7 @@ export const ViewWrapper = ({ children, colSpan: wantedColSpan }: {
           section({
             isActive,
             isFocused,
+            isHidden,
             colSpan
           })
         )}
@@ -84,5 +89,5 @@ export const ViewWrapper = ({ children, colSpan: wantedColSpan }: {
         {memoizedContent}
       </section>
     )
-  }, [memoizedContent, id, dispatch, isFocused, isActive, colSpan])
+  }, [memoizedContent, id, dispatch, isFocused, isHidden, isActive, colSpan])
 }

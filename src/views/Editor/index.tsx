@@ -2,7 +2,11 @@ import { ViewHeader } from '@/components'
 import { useApi } from '@/hooks/useApi'
 import { YjsEditor, withCursors, withYHistory, withYjs } from '@slate-yjs/core'
 import { PenBoxIcon } from '@ttab/elephant-ui/icons'
-import { TextbitEditable, Textbit, TextbitFooter } from '@ttab/textbit'
+import {
+  TextbitEditable,
+  Textbit,
+  useTextbitContext
+} from '@ttab/textbit'
 import '@ttab/textbit/dist/esm/index.css'
 import { useEffect, useMemo, useState } from 'react'
 import { createEditor } from 'slate'
@@ -11,6 +15,7 @@ import * as Y from 'yjs'
 import { HocuspocusProvider } from '@hocuspocus/provider'
 import { useSession, useQuery } from '@/hooks'
 import { type ViewMetadata, type ViewProps } from '@/types'
+import { ScrollArea } from '@ttab/elephant-ui'
 
 const meta: ViewMetadata = {
   name: 'Editor',
@@ -28,7 +33,6 @@ const Editor = (props: ViewProps): JSX.Element => {
   const query = useQuery()
   const { jwt } = useSession()
   const { hocuspocusWebsocket } = useApi()
-
   const [isSynced, setIsSynced] = useState<boolean>(false)
 
   // Ensure we have a valid document id
@@ -88,18 +92,43 @@ const Editor = (props: ViewProps): JSX.Element => {
 
   return (
     <>
-      <ViewHeader {...props} title="Editor" icon={PenBoxIcon} />
+      <Textbit>
+        <div className={`flex flex-col h-screen ${!isSynced ? 'opacity-60' : ''}`}>
+          <div className="grow-0">
+            <ViewHeader {...props} title="Editor" icon={PenBoxIcon} />
+          </div>
 
-      <main className="min-w-[30vw]">
-        <div className={`h-full relative ${!isSynced ? 'opacity-60' : ''}`}>
-          <Textbit>
-            { /* @ts-expect-error yjsEditor needs more refinement */}
-            <TextbitEditable yjsEditor={editor} />
-            <TextbitFooter />
-          </Textbit>
+          <ScrollArea>
+            <div className="overscroll-auto">
+              { /* @ts-expect-error yjsEditor needs more refinement */}
+              <TextbitEditable yjsEditor={editor} />
+            </div>
+          </ScrollArea>
+
+          <div className="grow-0 border-t opacity-90">
+            <Footer />
+          </div>
         </div>
-      </main>
+
+      </Textbit>
     </>
+  )
+}
+
+function Footer(): JSX.Element {
+  const { words, characters } = useTextbitContext()
+
+  return (
+    <div className="flex line font-sans text-sm p-3 pr-8 text-right gap-4 justify-end">
+      <div className="flex gap-2">
+        <strong>Words:</strong>
+        <span>{words}</span>
+      </div>
+      <div className="flex gap-2">
+        <strong>Characters:</strong>
+        <span>{characters}</span>
+      </div>
+    </div>
   )
 }
 
