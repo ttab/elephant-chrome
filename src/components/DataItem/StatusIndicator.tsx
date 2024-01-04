@@ -9,7 +9,7 @@ import { cn } from '@ttab/elephant-ui/utils'
 import { cva } from 'class-variance-authority'
 
 export const StatusIndicator = ({ internal }: { internal: boolean }): JSX.Element => {
-  const status = cva('flex items-center h-2 w-2 rounded-full mx-4', {
+  const status = cva('flex items-center h-2 w-2 rounded-full mr-2', {
     variants: {
       internal: {
         true: 'border',
