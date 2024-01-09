@@ -1,8 +1,6 @@
 import type { GetDocumentResponse, Block } from '../../protos/service.js'
-import { transformNewsdoc, revertNewsdoc } from './newsdoc/index.js'
+import { slateToNewsDoc } from './newsdoc/index.js'
 import type { TBElement } from '@ttab/textbit'
-import { newsDocToYmap, yjsStateAsUpdate } from './yjs/index.js'
-import type * as Y from 'yjs'
 
 export interface SlateDoc {
   version: bigint
@@ -20,23 +18,30 @@ export interface SlateDoc {
 }
 
 // Add different transformers here
-const transformer = transformNewsdoc
-const reverter = revertNewsdoc
+// const transformer = newsDocToSlate
+const reverter = slateToNewsDoc
 
-export function initDoc(data: GetDocumentResponse, doc: Y.Doc): Uint8Array {
-  // TODO: Should set `meta` and `links` once a slate format is set
-  const origMap = doc.getMap('original')
-  const result = newsDocToYmap(data, origMap)
+/**
+ * Convert from newsDoc to Uint8Array
+ */
+// export function toUint8Array(data: GetDocumentResponse, yDoc: Y.Doc): Uint8Array {
+//   // TODO: Should set `meta` and `links` once a slate format is set
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  doc.share.set('original', result as unknown as Y.AbstractType<Y.YEvent<any>>)
+//   // Set original
+//   const yMap = newsDocToYmap(data, yDoc.getMap('original'))
+//   // eslint-disable-next-line @typescript-eslint/no-explicit-any
+//   yDoc.share.set('original', yMap as unknown as Y.AbstractType<Y.YEvent<any>>)
 
-  // Format and add content as slate editable
-  const content = transformer(data.document?.content ?? [])
-  return yjsStateAsUpdate(content, doc)
-}
+//   // Format and add content as slate editable
+//   const content = transformer(data.document?.content ?? [])
+//   return yjsStateAsUpdate(content, yDoc)
+// }
 
-export function revert(data: SlateDoc): GetDocumentResponse {
+
+/**
+ * Convert Y.Doc to Slate document
+ */
+export function toNewsDoc(data: SlateDoc): GetDocumentResponse {
   if (data.document !== undefined) {
     return {
       ...data,
@@ -46,5 +51,6 @@ export function revert(data: SlateDoc): GetDocumentResponse {
       }
     }
   }
+
   throw new Error('no document to transform')
 }

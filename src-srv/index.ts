@@ -2,29 +2,36 @@ import express from 'express'
 import expressWebsockets from 'express-ws'
 import cors from 'cors'
 import cookieParser from 'cookie-parser'
-
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 import { connectRouteHandlers, mapRoutes } from './routes.js'
-import { createServer as createHocuspocusServer } from './utils/hocuspocus.js'
-import { RedisCache } from './utils/RedisCache.js'
-import { Repository } from './utils/Repository.js'
+import {
+  Repository,
+  RedisCache,
+  CollaborationServer
+} from './utils/index.js'
 import { createRemoteJWKSet } from 'jose'
 
+
+/*
+ * Read and normalize all environment variables
+*/
 const NODE_ENV = process.env.NODE_ENV === 'production' ? 'production' : 'development'
 const PROTOCOL = (NODE_ENV === 'production') ? 'https' : process.env.VITE_PROTOCOL || 'https'
-
 const HOST = process.env.HOST || '127.0.0.1'
 const PORT = process.env.PORT ? parseInt(process.env.PORT) : 5183
-
 const REPOSITORY_URL = process.env.REPOSITORY_URL
 const JWKS_URL = process.env.JWKS_URL
-
+const REDIS_URL = process.env.REDIS_URL
 const BASE_URL = process.env.BASE_URL || ''
 
 console.info(`Starting API environment "${NODE_ENV}"`)
 
+
+/**
+ * Run the server
+ */
 async function runServer(): Promise<string> {
   const { apiDir, distDir } = getPaths()
   const { app } = expressWebsockets(express())
@@ -37,6 +44,10 @@ async function runServer(): Promise<string> {
 
   if (!REPOSITORY_URL) {
     throw new Error('Missing REPOSITORY_URL')
+  }
+
+  if (!REDIS_URL) {
+    throw new Error('Missing REDIS_URL')
   }
 
   // Connect to Redis
@@ -56,13 +67,6 @@ async function runServer(): Promise<string> {
 
   const repository = new Repository(REPOSITORY_URL, jwks)
 
-
-  // Create hocuspocus server
-  const hpServer = await createHocuspocusServer({
-    repository,
-    cache
-  })
-
   app.use(cors({
     credentials: true,
     origin: `${PROTOCOL}://${HOST}:${process.env.DEV_CLIENT_PORT || PORT}`
@@ -76,9 +80,17 @@ async function runServer(): Promise<string> {
     repository
   })
 
-  app.ws(`${BASE_URL}/:document`, (websocket, request) => {
-    hpServer.handleConnection(websocket, request)
+  // Create collaboration and hocuspocus server
+  const collabServer = new CollaborationServer({
+    name: 'Elephant',
+    port: PORT,
+    redisUrl: REDIS_URL,
+    redisCache: cache,
+    repository,
+    expressServer: app
   })
+  await collabServer.listen([`${BASE_URL}/:document`])
+
 
   // Catch all other requests and serve bundled app
   app.get('*', (_, res) => {
