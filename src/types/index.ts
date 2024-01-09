@@ -97,3 +97,10 @@ export interface JWT extends JWTPayload {
   units: string[]
   access_token: string
 }
+
+export interface ColumnValueOption {
+  label: string
+  value: string
+  icon?: React.ComponentType<{ className?: string, color?: string }>
+  color?: string
+}

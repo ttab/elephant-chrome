@@ -7,6 +7,9 @@ import { Tabs, TabsContent } from '@ttab/elephant-ui'
 
 import { PlanningGrid } from './PlanningGrid'
 import { PlanningList } from './PlanningList'
+import { TableProvider } from '@/contexts/TableProvider'
+
+import { TableCommandMenu } from './PlanningTable/TableCommandMenu'
 
 const meta: ViewMetadata = {
   name: 'PlanningOverview',
@@ -30,28 +33,30 @@ export const PlanningOverview = (props: ViewProps): JSX.Element => {
   }, [startDate])
 
   return (
-    <Tabs defaultValue={currentTab} className='flex-1' onValueChange={setCurrentTab}>
+    <TableProvider>
+      <Tabs defaultValue={currentTab} className='flex-1' onValueChange={setCurrentTab}>
+        <TableCommandMenu />
+        <ViewHeader {...props} title="Planeringsöversikt" shortTitle="Planering" icon={CalendarDaysIcon}>
+          <PlanningHeader
+            tab={currentTab}
+            startDate={startDate}
+            setStartDate={setStartDate}
+            endDate={endDate}
+            setEndDate={setEndDate}
+          />
+        </ViewHeader>
 
-      <ViewHeader {...props} title="Planeringsöversikt" shortTitle="Planering" icon={CalendarDaysIcon}>
-        <PlanningHeader
-          tab={currentTab}
-          startDate={startDate}
-          setStartDate={setStartDate}
-          endDate={endDate}
-          setEndDate={setEndDate}
-        />
-      </ViewHeader>
+        <section className='h-full flex-1 flex-col space-y-8 md:flex px-3'>
+          <TabsContent value='list'>
+            <PlanningList date={startDate} />
+          </TabsContent>
 
-      <main className='h-full flex-1 flex-col space-y-8 md:flex px-3'>
-        <TabsContent value='list'>
-          <PlanningList date={startDate} />
-        </TabsContent>
-
-        <TabsContent value='grid'>
-          <PlanningGrid startDate={startDate} endDate={endDate} />
-        </TabsContent>
-      </main>
-    </Tabs>
+          <TabsContent value='grid'>
+            <PlanningGrid startDate={startDate} endDate={endDate} />
+          </TabsContent>
+        </section>
+      </Tabs>
+    </TableProvider>
   )
 }
 

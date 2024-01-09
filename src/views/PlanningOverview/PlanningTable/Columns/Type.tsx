@@ -1,13 +1,48 @@
 import { TooltipProvider, Tooltip, TooltipTrigger, TooltipContent } from '@ttab/elephant-ui'
-import { assignmentTypes } from '../data/settings'
 import { type ColumnDef } from '@tanstack/react-table'
 import { type Planning } from '../data/schema'
+import {
+  Crosshair,
+  FileType,
+  Image,
+  Camera,
+  Video
+} from '@ttab/elephant-ui/icons'
+import { type ColumnValueOption } from '@/types'
 
+const columnValueOptions: ColumnValueOption[] = [
+  {
+    label: 'Text',
+    value: 'text',
+    icon: FileType
+  },
+  {
+    label: 'Graphic',
+    value: 'graphic',
+    icon: Image
+  },
+  {
+    label: 'Picture',
+    value: 'picture',
+    icon: Camera
+  },
+  {
+    label: 'Video',
+    value: 'video',
+    icon: Video
+  }
+]
 export const type: ColumnDef<Planning> = {
   id: 'type',
+  meta: {
+    filter: 'facet',
+    options: columnValueOptions,
+    name: 'Type',
+    icon: Crosshair
+  },
   accessorFn: (data) => data._source['document.meta.core_assignment.meta.core_assignment_type.value'],
   cell: ({ row }) => {
-    const data = assignmentTypes.filter(
+    const data = columnValueOptions.filter(
       (assignmentType) => row.getValue<string[]>('type').includes(assignmentType.value)
     )
     if (data.length === 0) {
@@ -33,7 +68,5 @@ export const type: ColumnDef<Planning> = {
         </div>
     )
   },
-  filterFn: (row, id, value) => {
-    return value.includes(row.getValue(id))
-  }
+  filterFn: 'arrIncludesSome'
 }
