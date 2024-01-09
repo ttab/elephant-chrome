@@ -3,7 +3,6 @@ import { useNavigation, useView } from '@/hooks'
 import { NavigationActionType } from '@/types'
 import { cn } from '@ttab/elephant-ui/utils'
 import { cva } from 'class-variance-authority'
-import { ScrollArea } from '@ttab/elephant-ui'
 
 /**
  * Each view is defined to be a @container named "view". When styling components that needs
@@ -87,9 +86,7 @@ export const ViewWrapper = ({ children, colSpan: wantedColSpan }: {
           })
         )}
       >
-        <ScrollArea className='h-[calc(100vh-4px)]'>
-          {memoizedContent}
-        </ScrollArea>
+        {memoizedContent}
       </section>
     )
   }, [memoizedContent, id, dispatch, isFocused, isHidden, isActive, colSpan])

@@ -62,31 +62,28 @@ export const priority: ColumnDef<Planning> = {
     }
 
     return (
-        <div className='flex w-1 pr-4'>
-        <TooltipProvider>
-          <Tooltip>
-            <TooltipTrigger>
-              {priority.icon && (
-              <Badge
-                variant='outline'
-                className='rounded-lg px-2 py-1'>
-                  <priority.icon
-                    color={priority.color}
-                    className='p-0'
-                  />
-                  <span className='text-muted-foreground text-sm font-sans font-normal'>
-                    {priority.value}
-                  </span>
-              </Badge>
-              )}
-            </TooltipTrigger>
-            <TooltipContent>
-              <p>{priority.label}</p>
-            </TooltipContent>
-          </Tooltip>
-        </TooltipProvider>
-        </div>
-    )
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger>
+            {priority.icon && (
+            <Badge
+              variant='outline'
+              className='rounded-lg px-2 py-1'>
+                <priority.icon
+                  color={priority.color}
+                  className='p-0'
+                />
+                <span className='text-muted-foreground text-sm font-sans font-normal'>
+                  {priority.value}
+                </span>
+            </Badge>
+            )}
+          </TooltipTrigger>
+          <TooltipContent>
+            <p>{priority.label}</p>
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>)
   },
   filterFn: (row, id, value) => {
     return value.includes(row.getValue(id))
