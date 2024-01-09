@@ -38,7 +38,7 @@ export function Filter(): JSX.Element {
           aria-expanded={open}
           className="w-[200px] justify-between"
         >
-            Filter...
+          Filter...
           <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
@@ -57,16 +57,16 @@ export function Filter(): JSX.Element {
           }}
         >
 
-      <DebouncedCommandInput
-        value={search}
-        onChange={(value: string | undefined) => {
-          setSearch(value)
-          if (page === 'textFilter') {
-            table.setGlobalFilter(value)
-          }
-        }}
-        placeholder="Filter..."
-        className="h-9"
+          <DebouncedCommandInput
+            value={search}
+            onChange={(value: string | undefined) => {
+              setSearch(value)
+              if (page === 'textFilter') {
+                table.setGlobalFilter(value)
+              }
+            }}
+            placeholder="Filter..."
+            className="h-9"
       />
           <PlanningCommands {...cmdProps}/>
         </Command>

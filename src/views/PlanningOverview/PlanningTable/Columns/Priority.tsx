@@ -69,13 +69,13 @@ export const priority: ColumnDef<Planning> = {
             <Badge
               variant='outline'
               className='rounded-lg px-2 py-1'>
-                <priority.icon
-                  color={priority.color}
-                  className='p-0'
+              <priority.icon
+                color={priority.color}
+                className='p-0'
                 />
-                <span className='text-muted-foreground text-sm font-sans font-normal'>
-                  {priority.value}
-                </span>
+              <span className='text-muted-foreground text-sm font-sans font-normal'>
+                {priority.value}
+              </span>
             </Badge>
             )}
           </TooltipTrigger>

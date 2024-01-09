@@ -30,11 +30,11 @@ export function navigationReducer(state: NavigationState, action: NavigationActi
           const width = views[index]
 
           return (
-          <ViewProvider key={item.id} id={item.id} name={item.name}>
-            <ViewWrapper colSpan={width.colSpan}>
-              <Component {...{ ...item, index }} />
-            </ViewWrapper>
-          </ViewProvider>
+            <ViewProvider key={item.id} id={item.id} name={item.name}>
+              <ViewWrapper colSpan={width.colSpan}>
+                <Component {...{ ...item, index }} />
+              </ViewWrapper>
+            </ViewProvider>
           )
         })
       }

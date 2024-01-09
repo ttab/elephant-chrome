@@ -30,11 +30,11 @@ export const TableCommandMenu = (): JSX.Element => {
           }
         }
       }}
-        render={(props: CmdProps) => (
-          <CommandGroup heading='Planning'>
-            <PlanningCommands {...props} />
-          </CommandGroup>
-        )}
+      render={(props: CmdProps) => (
+        <CommandGroup heading='Planning'>
+          <PlanningCommands {...props} />
+        </CommandGroup>
+      )}
       />
 
   )

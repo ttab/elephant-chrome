@@ -16,23 +16,23 @@ const SelectedBadge = ({ value }: SelectedBase): ReactNode => {
   if (Array.isArray(value)) {
     if (value.length > 2) {
       return (
-      <Badge
-        variant="secondary"
-        className="rounded-sm px-1 font-normal"
+        <Badge
+          variant="secondary"
+          className="rounded-sm px-1 font-normal"
       >
-        {value.length} selected
-      </Badge>
+          {value.length} selected
+        </Badge>
       )
     } else {
       return value.map((v, index: number) => (
-      <div key={index}>
-        <Badge
-          variant="secondary"
-          className="rounded-sm px-1 font-normal mr-1"
+        <div key={index}>
+          <Badge
+            variant="secondary"
+            className="rounded-sm px-1 font-normal mr-1"
         >
-          {typeof v === 'string' ? v : ''}
-        </Badge>
-      </div>
+            {typeof v === 'string' ? v : ''}
+          </Badge>
+        </div>
       ))
     }
   }

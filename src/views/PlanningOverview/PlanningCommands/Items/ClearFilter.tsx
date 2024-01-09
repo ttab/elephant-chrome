@@ -11,10 +11,10 @@ export const ClearFilter = ({ table }: ClearFilterProps): JSX.Element | null => 
 
   return columnFilters.length || globalFilter
     ? <CommandItem
-      onSelect={() => {
-        table.resetColumnFilters()
-        table.resetGlobalFilter()
-      }}
+        onSelect={() => {
+          table.resetColumnFilters()
+          table.resetGlobalFilter()
+        }}
     >
       <X className='h-4 w-3' />
       Clear filters
