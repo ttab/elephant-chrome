@@ -9,25 +9,12 @@ import {
 import { PlanningCommands } from '../PlanningCommands'
 import { DebouncedCommandInput } from '../PlanningCommands/DebouncedCommandInput'
 import { useTable } from '@/hooks'
-import { type CmdProps } from '@/components/CommandMenu'
 
 export function Filter(): JSX.Element {
   const [open, setOpen] = useState(false)
-  const [search, setSearch] = useState<string | undefined>('')
-  const [pages, setPages] = useState<string[]>([])
-  const page = pages[pages.length - 1]
 
-  const { table } = useTable()
-
-  const cmdProps: CmdProps = {
-    pages,
-    setPages,
-    page,
-    search,
-    setSearch,
-    open,
-    setOpen
-  }
+  const { command, table } = useTable()
+  const { setSearch, setPages, search, pages, page } = command
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
@@ -68,7 +55,7 @@ export function Filter(): JSX.Element {
             placeholder="Filter..."
             className="h-9"
       />
-          <PlanningCommands {...cmdProps}/>
+          <PlanningCommands />
         </Command>
       </PopoverContent>
     </Popover>

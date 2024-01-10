@@ -1,12 +1,10 @@
-import { type Table } from '@tanstack/react-table'
+import { useTable } from '@/hooks'
 import { CommandItem } from '@ttab/elephant-ui'
 import { X } from '@ttab/elephant-ui/icons'
-import { type Planning } from '../../PlanningTable/data/schema'
 
-interface ClearFilterProps {
-  table: Table<Planning>
-}
-export const ClearFilter = ({ table }: ClearFilterProps): JSX.Element | null => {
+export const ClearFilter = (): JSX.Element | null => {
+  const { table } = useTable()
+
   const { columnFilters, globalFilter } = table.getState()
 
   return columnFilters.length || globalFilter

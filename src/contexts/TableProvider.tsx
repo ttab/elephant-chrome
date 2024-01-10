@@ -19,6 +19,13 @@ export interface TableProviderState<TData> {
   table: Table<TData>
   setData: Dispatch<SearchIndexResponse>
   loading: boolean
+  command: {
+    pages: string[]
+    setPages: Dispatch<string[] | ((p: string[]) => string[])>
+    page: string
+    search: string | undefined
+    setSearch: Dispatch<string | undefined>
+  }
 }
 
 const initialState = {
@@ -35,6 +42,18 @@ export const TableProvider = ({ children }: PropsWithChildren): JSX.Element => {
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
   const [sorting, setSorting] = useState<SortingState>([])
+
+  const [pages, setPages] = useState<string[]>([])
+  const page = pages[pages.length - 1]
+  const [search, setSearch] = useState<string | undefined>()
+
+  const command = {
+    pages,
+    setPages,
+    page,
+    setSearch,
+    search
+  }
 
   const table = useReactTable({
     data: data?.hits || [],
@@ -59,7 +78,7 @@ export const TableProvider = ({ children }: PropsWithChildren): JSX.Element => {
   })
 
   return (
-    <TableContext.Provider value={{ table, setData, loading: !data }}>
+    <TableContext.Provider value={{ table, setData, loading: !data, command }}>
       {children}
     </TableContext.Provider>
   )

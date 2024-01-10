@@ -1,17 +1,11 @@
-import { type Table } from '@tanstack/react-table'
+import { useTable } from '@/hooks'
 import { CommandItem } from '@ttab/elephant-ui'
 import { Search } from '@ttab/elephant-ui/icons'
-import { type Dispatch } from 'react'
-import { type Planning } from '../../PlanningTable/data/schema'
 
-interface TextFilterProps {
-  pages: string[]
-  setPages: Dispatch<string[]>
-  page: string
-  setSearch: Dispatch<string>
-  table: Table<Planning>
-}
-export const TextFilter = ({ pages, setPages, page, setSearch, table }: TextFilterProps): JSX.Element | null => {
+export const TextFilter = (): JSX.Element | null => {
+  const { command, table } = useTable()
+  const { setPages, setSearch, pages, page } = command
+
   return !page
     ? (
       <CommandItem

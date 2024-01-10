@@ -1,18 +1,12 @@
-import { type Table } from '@tanstack/react-table'
-import { type Planning } from '../../PlanningTable/data/schema'
+import { useTable } from '@/hooks'
 import { CommandItem, CommandList } from '@ttab/elephant-ui'
 import { CheckIcon, SlidersHorizontal } from '@ttab/elephant-ui/icons'
-import { type Dispatch } from 'react'
 import { cn } from '@ttab/elephant-ui/utils'
 
-interface ToggleColumnProps {
-  table: Table<Planning>
-  page: string
-  pages: string[]
-  setPages: Dispatch<string[]>
-  setSearch: Dispatch<string>
-}
-export const ToggleColumn = ({ table, page, pages, setPages, setSearch }: ToggleColumnProps): JSX.Element | null => {
+export const ToggleColumn = (): JSX.Element | null => {
+  const { command, table } = useTable()
+  const { setPages, setSearch, pages, page } = command
+
   if (!page) {
     return (
       <CommandItem

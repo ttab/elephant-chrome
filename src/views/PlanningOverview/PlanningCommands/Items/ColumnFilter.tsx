@@ -1,18 +1,13 @@
 import { CommandItem } from '@ttab/elephant-ui'
-import { type Table } from '@tanstack/react-table'
-import { type ReactNode, type Dispatch } from 'react'
-import { type Planning } from '../../PlanningTable/data/schema'
+import { type ReactNode } from 'react'
 import { FacetedFilter } from '../FacetedFilter'
 import { FileQuestion } from '@ttab/elephant-ui/icons'
+import { useTable } from '@/hooks'
 
-interface ColumnFilterProps {
-  table: Table<Planning>
-  page: string
-  pages: string[]
-  setPages: Dispatch<string[]>
-  setSearch: Dispatch<string>
-}
-export const ColumnFilter = ({ table, page, pages, setPages, setSearch }: ColumnFilterProps): ReactNode => {
+export const ColumnFilter = (): ReactNode => {
+  const { command, table } = useTable()
+  const { setPages, setSearch, pages, page } = command
+
   const columns = table.getAllColumns()
 
   if (!page) {
