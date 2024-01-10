@@ -15,8 +15,8 @@ import * as Y from 'yjs'
 import { HocuspocusProvider } from '@hocuspocus/provider'
 import { useSession, useQuery } from '@/hooks'
 import { type ViewMetadata, type ViewProps } from '@/types'
-import { Input, ScrollArea } from '@ttab/elephant-ui'
-import { useYMap } from '@/hooks/useYjsMap'
+import { ScrollArea } from '@ttab/elephant-ui'
+import { Toolbar } from './Toolbar'
 
 const meta: ViewMetadata = {
   name: 'Editor',
@@ -35,8 +35,6 @@ const Editor = (props: ViewProps): JSX.Element => {
   const { jwt } = useSession()
   const { hocuspocusWebsocket } = useApi()
   const [isSynced, setIsSynced] = useState<boolean>(false)
-  const [newsvalueDuration, setNewsvalueDuration, initNewsvalueDuration] = useYMap('core/newsvalue/duration')
-  const [newsvalueScore, setNewsvalueScore, initNewsvalueScore] = useYMap('core/newsvalue/score')
 
   // Ensure we have a valid document id
   const documentId = useMemo(() => {
@@ -65,19 +63,6 @@ const Editor = (props: ViewProps): JSX.Element => {
     return provider
   }, [documentId, hocuspocusWebsocket, jwt?.access_token])
 
-  useEffect(() => {
-    if (!isSynced || !provider?.document) {
-      return
-    }
-
-    initNewsvalueDuration(provider.document.getMap('meta'))
-    initNewsvalueScore(provider.document.getMap('meta'))
-  }, [
-    provider?.document,
-    isSynced,
-    initNewsvalueDuration,
-    initNewsvalueScore
-  ])
 
   // Create YjsEditor for Textbit to use
   const editor = useMemo(() => {
@@ -112,18 +97,7 @@ const Editor = (props: ViewProps): JSX.Element => {
         <div className={`flex flex-col h-screen ${!isSynced ? 'opacity-60' : ''}`}>
           <div className="grow-0">
             <ViewHeader {...props} title="Editor" icon={PenBoxIcon}>
-              <Input
-                placeholder="Newsvalue duration"
-                value={newsvalueDuration as string || ''}
-                onChange={(event) => setNewsvalueDuration(event.target.value)}
-                className="h-8 w-[150px] lg:w-[250px]"
-              />
-              <Input
-                placeholder="Newsvalue score"
-                value={newsvalueScore as string || ''}
-                onChange={(event) => setNewsvalueScore(event.target.value)}
-                className="h-8 w-[150px] lg:w-[250px]"
-              />
+              <Toolbar isSynced={isSynced} document={isSynced ? provider?.document : undefined} />
             </ViewHeader>
           </div>
 

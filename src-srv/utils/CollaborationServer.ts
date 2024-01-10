@@ -168,7 +168,7 @@ export class CollaborationServer {
       accessToken: context.token
     })
     const { document } = documentResponse
-
+    console.log(JSON.stringify(document, null, 2))
     // Share complete original document
     const newsDocYMap = newsDocToYmap(documentResponse, yDoc.getMap('original'))
     yDoc.share.set('original', yMapAsYEventAny(newsDocYMap))
@@ -184,7 +184,8 @@ export class CollaborationServer {
     const newsValue = document?.meta.find(i => i.type === 'core/newsvalue')
     const metaYMap = yDoc.getMap('meta')
     metaYMap.set('core/newsvalue/score', newsValue?.data.score || 0)
-    metaYMap.set('core/newsvalue/duration', newsValue?.data.duration || 0)
+    metaYMap.set('core/newsvalue/duration', newsValue?.data.duration || undefined)
+    metaYMap.set('core/newsvalue/end', newsValue?.data.duration || undefined)
     yDoc.share.set('meta', yMapAsYEventAny(metaYMap))
 
     return Y.encodeStateAsUpdate(yDoc)

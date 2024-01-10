@@ -7,9 +7,8 @@ type YMapState = [
   (yMap: Y.Map<unknown>) => void
 ]
 
-export const useYMap = (key: string): YMapState => {
+export const useYMap = (key: string, removeEmpty: boolean = false): YMapState => {
   const [map, setMap] = useState<Y.Map<unknown> | undefined>()
-  // const [key, setKey] = useState<string>()
   const [value, setValue] = useState<unknown | undefined>()
 
   useEffect(() => {
@@ -48,7 +47,12 @@ export const useYMap = (key: string): YMapState => {
       }
 
       setValue(value)
-      map.set(key, value)
+
+      if (removeEmpty && typeof value === 'undefined') {
+        map.delete(key)
+      } else {
+        map.set(key, value)
+      }
     },
     (yMap: Y.Map<unknown>): void => {
       setMap(yMap)
