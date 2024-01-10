@@ -15,17 +15,19 @@ import { columns } from '@/views/PlanningOverview/PlanningTable/Columns'
 import { type SearchIndexResponse } from '@/lib/index/search'
 import type { Planning } from '../views/PlanningOverview/PlanningTable/data/schema'
 
+export interface CommandArgs {
+  pages: string[]
+  setPages: Dispatch<string[] | ((p: string[]) => string[])>
+  page: string
+  search: string | undefined
+  setSearch: Dispatch<string | undefined>
+}
+
 export interface TableProviderState<TData> {
   table: Table<TData>
   setData: Dispatch<SearchIndexResponse>
   loading: boolean
-  command: {
-    pages: string[]
-    setPages: Dispatch<string[] | ((p: string[]) => string[])>
-    page: string
-    search: string | undefined
-    setSearch: Dispatch<string | undefined>
-  }
+  command: CommandArgs
 }
 
 const initialState = {

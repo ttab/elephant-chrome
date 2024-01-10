@@ -31,7 +31,7 @@ describe('CommandMenu', () => {
     render(
       <SessionProvider>
         <NavigationProvider>
-          <CommandMenu onKeyDown={() => {}} onChange={() => {}} render={() => <p>test</p>} />
+          <CommandMenu onKeyDown={() => {}} onChange={() => {}} />
         </NavigationProvider>
       </SessionProvider>
     )

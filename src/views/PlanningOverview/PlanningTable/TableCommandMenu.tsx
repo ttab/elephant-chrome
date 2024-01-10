@@ -1,12 +1,13 @@
-import { CommandMenu, type CmdProps } from '@/components/CommandMenu'
+import { CommandMenu } from '@/components/CommandMenu'
 import { CommandGroup } from '@ttab/elephant-ui'
 import { PlanningCommands } from '../PlanningCommands'
 import { useTable } from '@/hooks/useTable'
+import { type CommandArgs } from '@/contexts/TableProvider'
 
 export const TableCommandMenu = (): JSX.Element => {
   const { table } = useTable()
 
-  const handleChange = (value: string | undefined, args: CmdProps): void => {
+  const handleChange = (value: string | undefined, args: CommandArgs): void => {
     const { setSearch, page } = args
     setSearch(value)
     if (page === 'textFilter') {
@@ -17,8 +18,8 @@ export const TableCommandMenu = (): JSX.Element => {
   return (
     <CommandMenu
       onChange={handleChange}
-      onKeyDown={(e, args) => {
-        const { search, setSearch, pages, setPages, setOpen } = args
+      onKeyDown={(e, setOpen, args) => {
+        const { search, setSearch, pages, setPages } = args
         if (e.key === 'Escape' || e.key === 'ArrowLeft' || (e.key === 'Backspace' && !search)) {
           e.preventDefault()
           setSearch('')
@@ -30,12 +31,10 @@ export const TableCommandMenu = (): JSX.Element => {
           }
         }
       }}
-      render={(props: CmdProps) => (
-        <CommandGroup heading='Planning'>
-          <PlanningCommands {...props} />
-        </CommandGroup>
-      )}
-      />
-
+      >
+      <CommandGroup heading='Planning'>
+        <PlanningCommands />
+      </CommandGroup>
+    </CommandMenu>
   )
 }
