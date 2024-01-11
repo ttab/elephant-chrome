@@ -8,7 +8,7 @@ export const title: ColumnDef<Planning> = {
   meta: {
     filter: null,
     name: 'Title',
-    icon: Pen
+    columnIcon: Pen
   },
   accessorFn: (data) => data._source['document.title'][0],
   cell: ({ row }) => {

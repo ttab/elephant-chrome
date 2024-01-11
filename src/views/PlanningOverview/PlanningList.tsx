@@ -33,15 +33,15 @@ export const PlanningList = ({ date }: { date: Date }): JSX.Element => {
     }
 
     const { startTime, endTime } = getDateTimeBoundaries(date)
-    const test = await Planning.search(indexUrl, jwt, {
+    const result = await Planning.search(indexUrl, jwt, {
       size: 100,
       where: {
         start: convertToISOStringInUTC(startTime, locale),
         end: convertToISOStringInUTC(endTime, locale)
       }
     })
-    setData(test)
-    return test
+    setData(result)
+    return result
   })
 
 

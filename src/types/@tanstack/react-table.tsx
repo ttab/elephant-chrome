@@ -7,7 +7,7 @@ declare module '@tanstack/react-table' {
   interface ColumnMeta<TData extends RowData, TValue> {
     filter: 'facet' | 'search' | null
     name: string
-    icon: LucideIcon
+    columnIcon: LucideIcon
     options?: ColumnValueOption[]
   }
 }

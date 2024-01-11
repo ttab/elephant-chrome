@@ -38,7 +38,7 @@ export const section: ColumnDef<Planning> = {
     options: columnValueOptions,
     filter: 'facet',
     name: 'Section',
-    icon: Shapes
+    columnIcon: Shapes
   },
   accessorFn: (data) => data._source['document.rel.sector.title'][0],
   cell: ({ row }) => {

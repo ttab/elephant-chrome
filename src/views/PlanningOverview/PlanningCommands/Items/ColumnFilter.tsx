@@ -22,8 +22,8 @@ export const ColumnFilter = (): ReactNode => {
               setSearch('')
             }}
             >
-            {column.columnDef.meta?.icon
-              ? <column.columnDef.meta.icon className='h-4 w-4 mr-2'/>
+            {column.columnDef.meta?.columnIcon
+              ? <column.columnDef.meta.columnIcon className='h-4 w-4 mr-2'/>
               : <FileQuestion className='h4 w-4 mr-2'/>
               }
             {column.columnDef.meta?.name || 'unknown'}

@@ -17,7 +17,7 @@ export const actions: ColumnDef<Planning> = {
   meta: {
     filter: null,
     name: 'Action',
-    icon: Navigation
+    columnIcon: Navigation
   },
   cell: ({ row }) => {
     const deliverableUuids = row.original._source['document.meta.core_assignment.rel.deliverable.uuid'] || []

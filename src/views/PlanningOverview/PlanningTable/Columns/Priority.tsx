@@ -48,7 +48,7 @@ export const priority: ColumnDef<Planning> = {
     filter: 'facet',
     options: columnValueOptions,
     name: 'Priority',
-    icon: SignalHigh
+    columnIcon: SignalHigh
   },
   accessorFn: (data) => data._source['document.meta.core_planning_item.data.priority'][0],
   cell: ({ row }) => {

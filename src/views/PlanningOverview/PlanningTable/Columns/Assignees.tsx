@@ -8,7 +8,7 @@ export const assignees: ColumnDef<Planning> = {
   meta: {
     filter: 'facet',
     name: 'Assignees',
-    icon: Users
+    columnIcon: Users
   },
   accessorFn: (data) => data._source['document.meta.core_assignment.rel.assignee.name'],
   cell: ({ row }) => {

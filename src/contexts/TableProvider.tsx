@@ -13,7 +13,7 @@ import {
 } from '@tanstack/react-table'
 import { columns } from '@/views/PlanningOverview/PlanningTable/Columns'
 import { type SearchIndexResponse } from '@/lib/index/search'
-import { initialData, type Planning } from '../views/PlanningOverview/PlanningTable/data/schema'
+import { type Planning } from '../views/PlanningOverview/PlanningTable/data/schema'
 
 export interface CommandArgs {
   pages: string[]
@@ -80,7 +80,7 @@ export const TableProvider = ({ children }: PropsWithChildren): JSX.Element => {
   })
 
   return (
-    <TableContext.Provider value={{ table, setData, loading: !table.options.data.length, command }}>
+    <TableContext.Provider value={{ table, setData, loading: !!table.options.data.length, command }}>
       {children}
     </TableContext.Provider>
   )
