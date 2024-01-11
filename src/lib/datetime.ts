@@ -30,6 +30,42 @@ export function convertToISOStringInTimeZone(localDate: Date, locale: string, ti
 }
 
 /**
+* Format a iso string to a human readable date and time.
+* @param date Date
+* @param locale string
+* @param timeZone string
+* @returns string
+* */
+export function dateToReadableDateTime(
+  date: Date,
+  locale: string,
+  timeZone: string
+): string | undefined {
+  const yearFormat = {
+    timeZone,
+    year: 'numeric' as '2-digit'
+  }
+  const year = new Intl.DateTimeFormat(locale, yearFormat).format(date)
+  const currentYear = new Intl.DateTimeFormat(locale, yearFormat).format(new Date())
+
+  if (year === currentYear) {
+    return new Intl.DateTimeFormat(locale, {
+      timeZone,
+      day: 'numeric',
+      month: 'short',
+      hour: '2-digit',
+      minute: '2-digit'
+    }).format(date)
+  }
+
+  return new Intl.DateTimeFormat(locale, {
+    timeZone,
+    timeStyle: 'short',
+    dateStyle: 'medium'
+  }).format(date)
+}
+
+/**
 * Format a iso string to a human readable date.
 * @param date Date
 * @param locale string
@@ -38,8 +74,8 @@ export function convertToISOStringInTimeZone(localDate: Date, locale: string, ti
 * */
 export function dateToReadableTime(
   date: Date,
-  locale: string = 'en-US',
-  timeZone: string = 'America/New York'
+  locale: string,
+  timeZone: string
 ): string | undefined {
   return new Intl.DateTimeFormat(locale, {
     hour: '2-digit',

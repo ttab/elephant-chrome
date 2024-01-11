@@ -185,7 +185,7 @@ export class CollaborationServer {
     const metaYMap = yDoc.getMap('meta')
     metaYMap.set('core/newsvalue/score', newsValue?.data.score || 0)
     metaYMap.set('core/newsvalue/duration', newsValue?.data.duration || undefined)
-    metaYMap.set('core/newsvalue/end', newsValue?.data.duration || undefined)
+    metaYMap.set('core/newsvalue/end', newsValue?.data.end || undefined)
     yDoc.share.set('meta', yMapAsYEventAny(metaYMap))
 
     return Y.encodeStateAsUpdate(yDoc)

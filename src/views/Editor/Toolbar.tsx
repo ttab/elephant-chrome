@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import {
   Button,
   DropdownMenu,
@@ -18,11 +18,11 @@ import { SignalMedium } from '@ttab/elephant-ui/icons'
 import { useYMap } from '@/hooks/useYjsMap'
 import type * as Y from 'yjs'
 import { useRegistry } from '@/hooks'
-
+import { ComboBox } from '@/components/ui'
 
 // FIXME: Needs refactoring into a more global settings file
 import { priorities } from '../PlanningOverview/PlanningTable/data/settings'
-import { convertToISOStringInTimeZone } from '@/lib/datetime'
+import { dateToReadableDateTime, dateToReadableTime, is12HourcycleFromLocale } from '@/lib/datetime'
 
 interface ToolbarProps {
   isSynced: boolean
@@ -136,32 +136,19 @@ interface DurationDropDownProps {
 }
 
 function DurationDropDown({ duration, end, onChange }: DurationDropDownProps): JSX.Element {
+  const { locale, timeZone } = useRegistry()
   const isDuration = !!duration && duration === parseInt(duration).toString(10)
   const isEnd = !isDuration && !!end
-  const { locale, timeZone } = useRegistry()
+  const [time, setTime] = useState(isEnd ? new Date(end) : new Date())
 
-  let label = '∞'
+  let value = '∞'
   if (isDuration) {
     const secs = parseInt(duration)
     const hours = Math.ceil(secs / 3600)
-    label = `${hours}h`
+    value = `${hours}h`
   } else if (isEnd) {
-    label = convertToISOStringInTimeZone(new Date(end), locale, timeZone)
+    value = 'datetime'
   }
-
-  /*
-    "data": {
-      "end": "2024-01-11T08:00:00.000Z",
-      "score": "4"
-    },
-
-    or
-
-    "data": {
-          "duration": "86400",
-          "score": "2"
-    },
-  */
 
   return (
     <Popover>
@@ -170,12 +157,12 @@ function DurationDropDown({ duration, end, onChange }: DurationDropDownProps): J
           variant="ghost"
           className="flex h-8 p-0 px-2 mb-1 data-[state=open]:bg-muted"
         >
-          <span className="flex items-end">{label}</span>
+          <span className="flex items-end">{isEnd ? dateToReadableDateTime(new Date(end), locale, timeZone) : value}</span>
         </Button>
       </PopoverTrigger>
 
-      <PopoverContent className="w-[360px]">
-        <Tabs defaultValue={label} onValueChange={(value) => {
+      <PopoverContent className="w-[320px]">
+        <Tabs defaultValue={value} onValueChange={(value) => {
           if (['24h', '∞'].includes(value)) {
             onChange(value === '24h' ? '86400' : '', undefined)
           }
@@ -184,33 +171,106 @@ function DurationDropDown({ duration, end, onChange }: DurationDropDownProps): J
           <TabsList className="grid w-full grid-cols-3">
             <TabsTrigger value="∞">∞</TabsTrigger>
             <TabsTrigger value="24h">24h</TabsTrigger>
-            <TabsTrigger value="datetime">Tid</TabsTrigger>
+            <TabsTrigger value="datetime">
+              {isEnd
+                ? dateToReadableDateTime(new Date(end), locale, timeZone)
+                : 'Tidpunkt'
+              }
+            </TabsTrigger>
           </TabsList>
 
 
           <TabsContent value="∞" className="p-3">
-            <h2 className="font-medium leading-none pb-1">Livslängd</h2>
-            <p className="text-sm text-muted-foreground">Ingen sluttid specificerad</p>
+            <h2 className="font-medium leading-none pb-1">Lifetime</h2>
+            <p className="text-sm text-muted-foreground">Not specified</p>
           </TabsContent>
 
           <TabsContent value="24h" className="p-3">
-            <h2 className="font-medium leading-none pb-1">Livslängd</h2>
-            <p>24 timmar från publicering</p>
+            <h2 className="font-medium leading-none pb-1">Lifetime</h2>
+            <p>24 hours from published time</p>
           </TabsContent>
 
           <TabsContent value="datetime" className="p-3">
-            <h2 className="font-medium leading-none pb-1">Livslängd till...</h2>
+            <h2 className="font-medium leading-none pb-1">Lifetime to specified time</h2>
             <Calendar
+              className="px-0"
               mode='single'
-              selected={isEnd ? new Date(end) : new Date()}
+              selected={time}
               onSelect={(selectedDate) => {
                 onChange(undefined, selectedDate?.toISOString())
               }}
               initialFocus
             />
+
+            <TimePicker
+              value={time}
+              timeZone={timeZone}
+              locale={locale}
+              onSelect={(value) => {
+                onChange(undefined, value.toISOString())
+              }}
+            />
           </TabsContent>
         </Tabs>
       </PopoverContent>
-    </Popover>
+    </Popover >
   )
+}
+
+
+interface TimePickerProps {
+  value: Date
+  locale: string
+  timeZone: string
+  onSelect: (value: Date) => void
+}
+
+function TimePicker({ value, onSelect, locale, timeZone }: TimePickerProps): JSX.Element {
+  const times = useMemo(() => {
+    const times = []
+    const is12Hour = is12HourcycleFromLocale(locale)
+
+    const date = new Date()
+    let minutes = 0
+    let hours = 0
+
+    while (hours < 24) {
+      date.setHours(hours)
+      date.setMinutes(minutes)
+
+      times.push({
+        value: date.toLocaleTimeString(undefined, { hour: '2-digit', minute: '2-digit', hour12: false }),
+        label: date.toLocaleTimeString(locale, { hour: '2-digit', minute: '2-digit', hour12: is12Hour })
+      })
+
+      if (minutes === 45) {
+        minutes = 0
+        hours++
+      } else {
+        minutes += 15
+      }
+    }
+
+    return times
+  }, [locale])
+
+  const time = dateToReadableTime(value, locale, timeZone)
+  return <ComboBox
+    options={times}
+    selectedOption={times.find(({ value }: { value: string }) => value === time) || times[0]}
+    placeholder={time || ''}
+    onSelect={(option) => {
+      const newTime = times.find(t => t.value === option.value)
+      if (newTime) {
+        const hours = parseInt(time?.substring(0, 2) || '0')
+        const minutes = parseInt(time?.substring(3, 5) || '0')
+        value.setHours(!isNaN(hours) ? hours : 0)
+        value.setMinutes(!isNaN(minutes) ? minutes : 0)
+        value.setSeconds(0)
+        value.setMilliseconds(0)
+
+        onSelect(value)
+      }
+    }}
+  />
 }
