@@ -23,7 +23,7 @@ export const PlanningTable = <TData, TValue>({
 }: PlanningTableProps<TData, TValue>): JSX.Element => {
   const { isActive: isActiveView } = useView()
 
-  const { table } = useTable()
+  const { table, loading } = useTable()
 
   // Handle navigation using arrow keys
   useEffect(() => {
@@ -77,7 +77,7 @@ export const PlanningTable = <TData, TValue>({
             colSpan={columns.length}
             className="h-24 text-center"
           >
-            No results.
+            {loading ? 'Loading...' : 'No results.'}
           </TableCell>
         </TableRow>
       )

@@ -20,7 +20,10 @@ export const TableCommandMenu = (): JSX.Element => {
       onChange={handleChange}
       onKeyDown={(e, setOpen, args) => {
         const { search, setSearch, pages, setPages } = args
-        if (e.key === 'Escape' || e.key === 'ArrowLeft' || (e.key === 'Backspace' && !search)) {
+        if (e.key === 'Escape') {
+          setOpen(false)
+        }
+        if (e.key === 'ArrowLeft' || (e.key === 'Backspace' && !search)) {
           e.preventDefault()
           setSearch('')
 

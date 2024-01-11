@@ -57,10 +57,8 @@ export const TableProvider = ({ children }: PropsWithChildren): JSX.Element => {
     search
   }
 
-  const tableData = data?.hits || initialData
-
   const table = useReactTable({
-    data: tableData,
+    data: data?.hits || [],
     columns,
     state: {
       sorting,
@@ -82,7 +80,7 @@ export const TableProvider = ({ children }: PropsWithChildren): JSX.Element => {
   })
 
   return (
-    <TableContext.Provider value={{ table, setData, loading: !data, command }}>
+    <TableContext.Provider value={{ table, setData, loading: !table.options.data.length, command }}>
       {children}
     </TableContext.Provider>
   )

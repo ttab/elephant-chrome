@@ -32,7 +32,10 @@ export function Filter(): JSX.Element {
       <PopoverContent className="w-[200px] p-0">
         <Command
           onKeyDown={(e) => {
-            if (e.key === 'Escape' || e.key === 'ArrowLeft' || (e.key === 'Backspace' && !search)) {
+            if (e.key === 'Escape') {
+              setOpen(false)
+            }
+            if (e.key === 'ArrowLeft' || (e.key === 'Backspace' && !search)) {
               e.preventDefault()
               setSearch('')
               if (pages.length > 0) {
