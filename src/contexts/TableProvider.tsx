@@ -13,7 +13,7 @@ import {
 } from '@tanstack/react-table'
 import { columns } from '@/views/PlanningOverview/PlanningTable/Columns'
 import { type SearchIndexResponse } from '@/lib/index/search'
-import type { Planning } from '../views/PlanningOverview/PlanningTable/data/schema'
+import { initialData, type Planning } from '../views/PlanningOverview/PlanningTable/data/schema'
 
 export interface CommandArgs {
   pages: string[]
@@ -57,8 +57,10 @@ export const TableProvider = ({ children }: PropsWithChildren): JSX.Element => {
     search
   }
 
+  const tableData = data?.hits || initialData
+
   const table = useReactTable({
-    data: data?.hits || [],
+    data: tableData,
     columns,
     state: {
       sorting,

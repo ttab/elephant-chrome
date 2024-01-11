@@ -60,4 +60,64 @@ const PlanningSchema = z.object({
   sort: z.array(z.number())
 })
 
+export const initialData: Planning[] = [{
+  _index: '',
+  _id: '',
+  _score: 0,
+  _source: {
+    created: [''],
+    current_version: [''],
+    'document.language': [''],
+    'document.meta.core_assignment.data.end': [''],
+    'document.meta.core_assignment.data.end_date': [''],
+    'document.meta.core_assignment.data.full_day': [''],
+    'document.meta.core_assignment.data.public': [''],
+    'document.meta.core_assignment.data.publish': [''],
+    'document.meta.core_assignment.data.start': [''],
+    'document.meta.core_assignment.data.start_date': [''],
+    'document.meta.core_assignment.id': [''],
+    'document.meta.core_assignment.meta.core_assignment_type.value': [''],
+    'document.meta.core_assignment.meta.tt_slugline.value': [''],
+    'document.meta.core_assignment.rel.assignee.name': [''],
+    'document.meta.core_assignment.rel.assignee.role': [''],
+    'document.meta.core_assignment.rel.assignee.type': [''],
+    'document.meta.core_assignment.rel.assignee.uuid': [''],
+    'document.meta.core_assignment.rel.deliverable.type': [''],
+    'document.meta.core_assignment.rel.deliverable.uuid': [''],
+    'document.meta.core_assignment.title': [''],
+    'document.meta.core_planning_item.data.end_date': [''],
+    'document.meta.core_planning_item.data.priority': [''],
+    'document.meta.core_planning_item.data.public': [''],
+    'document.meta.core_planning_item.data.start_date': [''],
+    'document.meta.core_planning_item.data.tentative': [''],
+    'document.rel.sector.title': [''],
+    'document.rel.sector.type': [''],
+    'document.rel.sector.uri': [''],
+    'document.rel.sector.uuid': [''],
+    'document.rel.sector.value': [''],
+    'document.rel.story.title': [''],
+    'document.rel.story.type': [''],
+    'document.rel.story.uuid': [''],
+    'document.title': [''],
+    'document.type': [''],
+    'document.uri': [''],
+    'document.url': [''],
+    'heads.usable.created': [''],
+    'heads.usable.creator': [''],
+    'heads.usable.id': [''],
+    'heads.usable.version': [''],
+    modified: [''],
+    readers: [''],
+    text: null
+  },
+  fields: {
+    'document.title': [''],
+    'heads.usable.creator': [''],
+    'heads.usable.id': [0],
+    'heads.usable.version': [0],
+    'heads.usable.created': ['']
+  },
+  sort: [0]
+}]
+
 export type Planning = z.infer<typeof PlanningSchema>
