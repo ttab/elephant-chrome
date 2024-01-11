@@ -22,6 +22,7 @@ export const TableCommandMenu = (): JSX.Element => {
         const { search, setSearch, pages, setPages } = args
         if (e.key === 'Escape') {
           setOpen(false)
+          setPages([])
         }
         if (e.key === 'ArrowLeft' || (e.key === 'Backspace' && !search)) {
           e.preventDefault()
