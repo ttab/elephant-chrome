@@ -1,4 +1,5 @@
 import { useSession } from '@/hooks'
+import { getInitials } from '@/lib/getInitials'
 import {
   Avatar as AvatarMain,
   AvatarFallback,
@@ -18,7 +19,7 @@ export const Avatar = (): JSX.Element => {
           <AvatarFallback
             className='bg-[#973C9F] border-2 text-background dark:text-foreground text-sm font-semibold leading-6'
           >
-            {jwt?.sub.replace('user://tt/', '') || '?'}
+            {jwt?.sub_name ? getInitials(jwt?.sub_name) : '??'}
           </AvatarFallback>
         </AvatarMain>
       </PopoverTrigger>

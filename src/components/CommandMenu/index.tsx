@@ -28,7 +28,7 @@ interface CommandMenuProps {
   children?: JSX.Element
 }
 
-export const CommandMenu: React.FC<CommandMenuProps> = ({ children, onKeyDown, onChange }) => {
+export const CommandMenu = ({ children, onKeyDown, onChange }: CommandMenuProps): JSX.Element => {
   const { state, dispatch } = useNavigation()
   const [open, setOpen] = useState(false)
 
@@ -62,7 +62,7 @@ export const CommandMenu: React.FC<CommandMenuProps> = ({ children, onKeyDown, o
           <DebouncedCommandInput
             value={search}
             onChange={(value) => onChange(value, command)}
-            placeholder={pages.length === 0 ? 'Type a command or search...' : 'Filter by text'}
+            placeholder={getPlaceholder(pages, page)}
             className="h-9"
       />
           {children}
@@ -86,4 +86,12 @@ export const CommandMenu: React.FC<CommandMenuProps> = ({ children, onKeyDown, o
       </DialogContent>
     </Dialog>
   )
+}
+
+function getPlaceholder(pages: string[], page: string): string {
+  if (pages.length === 0) return 'Type a command or search'
+
+  if (page === 'textFilter') return 'Filter by text'
+
+  return 'Filter'
 }

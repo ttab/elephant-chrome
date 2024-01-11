@@ -1,3 +1,4 @@
+import { getInitials } from '@/lib/getInitials'
 import {
   TooltipProvider, Tooltip, TooltipTrigger, TooltipContent,
   Popover, PopoverTrigger, PopoverContent
@@ -52,11 +53,3 @@ export const AssigneeAvatars = ({ assignees }: { assignees: string[] }): JSX.Ele
   )
 }
 
-function getInitials(assignee: string): string {
-  const [first, last] = assignee.trim().split(' ')
-
-  if (!first.length || !last.length) {
-    return '??'
-  }
-  return `${first[0]}${last[0]}`
-}
