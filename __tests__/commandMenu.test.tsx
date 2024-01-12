@@ -21,6 +21,7 @@ jest.mock('@/navigation/hooks/useNavigation', () => ({
 jest.mock('@/hooks/useTable', () => ({
   useTable: jest.fn()
 }))
+
 const mockState = initializeNavigationState()
 
 const mockDispatch = jest.fn() as Dispatch<NavigationActionType>
@@ -29,7 +30,6 @@ const mockDispatch = jest.fn() as Dispatch<NavigationActionType>
   state: mockState,
   dispatch: mockDispatch
 });
-
 
 (useTable as jest.Mock).mockReturnValue({
   table: {},
