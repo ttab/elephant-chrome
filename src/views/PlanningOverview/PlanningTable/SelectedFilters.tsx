@@ -39,7 +39,7 @@ const SelectedBadge = ({ value }: SelectedBase): ReactNode => {
 }
 
 const SelectedButton = <TData, >({ id, value, table }: SelectedButtonProps<TData>): React.ReactNode => {
-  const FilterIcon = table.getColumn(id)?.columnDef.meta?.icon
+  const FilterIcon = table.getColumn(id)?.columnDef.meta?.columnIcon
 
   return (
     <Button
