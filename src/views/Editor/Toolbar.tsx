@@ -3,10 +3,9 @@ import { useYMap } from '@/hooks/useYjsMap'
 import type * as Y from 'yjs'
 
 // FIXME: Needs refactoring into a more global settings file
-import { Priorities, Sectors } from '@/defaults'
+import { Priorities } from '@/defaults'
 import { NewsValueTimeDropDown } from './Toolbar/NewsValueTimeDropDown'
 import { NewsValueScoreDropDown } from './Toolbar/NewsValueScoreDropDown'
-import { ComboBox } from '@/components/ui'
 
 interface ToolbarProps {
   isSynced: boolean
