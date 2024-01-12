@@ -32,12 +32,12 @@ export const columnValueOptions: ColumnValueOption[] = [
   }
 ]
 
-export const section: ColumnDef<Planning> = {
+export const sector: ColumnDef<Planning> = {
   id: 'section',
   meta: {
     options: columnValueOptions,
     filter: 'facet',
-    name: 'Section',
+    name: 'Sector',
     columnIcon: Shapes
   },
   accessorFn: (data) => data._source['document.rel.sector.title'][0],
