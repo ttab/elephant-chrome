@@ -7,7 +7,7 @@ import {
 } from '@ttab/elephant-ui'
 
 import { PlanningCommands } from '../PlanningCommands'
-import { DebouncedCommandInput } from '../PlanningCommands/DebouncedCommandInput'
+import { DebouncedCommandInput } from '@/components/CommandMenu/DebouncedCommandInput'
 import { useTable } from '@/hooks'
 
 export function Filter(): JSX.Element {

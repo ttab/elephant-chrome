@@ -16,7 +16,7 @@ import {
   CommandItem,
   CommandSeparator
 } from '@ttab/elephant-ui'
-import { DebouncedCommandInput } from '@/views/PlanningOverview/PlanningCommands/DebouncedCommandInput'
+import { DebouncedCommandInput } from './DebouncedCommandInput'
 import { handleLink } from '../Link/lib/handleLink'
 import { useNavigation, useTable } from '@/hooks'
 import { v4 as uuid } from 'uuid'
