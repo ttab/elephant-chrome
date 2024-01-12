@@ -4,13 +4,13 @@ import {
   Badge,
   TooltipProvider, Tooltip, TooltipTrigger, TooltipContent
 } from '@ttab/elephant-ui'
-import { priorities } from '../data/settings'
+import { Priorities } from '@/defaults'
 
 export const priority: ColumnDef<Planning> = {
   id: 'priority',
   accessorFn: (data) => data._source['document.meta.core_planning_item.data.priority'][0],
   cell: ({ row }) => {
-    const priority = priorities.find(
+    const priority = Priorities.find(
       (priority) => {
         return priority.value === row.getValue('priority')
       }
@@ -24,9 +24,9 @@ export const priority: ColumnDef<Planning> = {
         <Tooltip>
           <TooltipTrigger>
             {priority.icon && (
-            <Badge
-              variant='outline'
-              className='rounded-lg px-2 py-1'>
+              <Badge
+                variant='outline'
+                className='rounded-lg px-2 py-1'>
                 <priority.icon
                   color={priority.color}
                   className='p-0'
@@ -34,7 +34,7 @@ export const priority: ColumnDef<Planning> = {
                 <span className='text-muted-foreground text-sm font-sans font-normal'>
                   {priority.value}
                 </span>
-            </Badge>
+              </Badge>
             )}
           </TooltipTrigger>
           <TooltipContent>

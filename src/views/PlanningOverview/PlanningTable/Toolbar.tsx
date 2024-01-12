@@ -4,7 +4,7 @@ import { type Table } from '@tanstack/react-table'
 import { Button, Input } from '@ttab/elephant-ui'
 import { ViewOptions } from './ViewOptions'
 
-import { priorities } from './data/settings'
+import { Priorities } from '@/defaults'
 import { FacetedFilter } from './FacetedFilter'
 
 interface ToolbarProps<TData> {
@@ -31,7 +31,7 @@ export const Toolbar = <TData,>({
           <FacetedFilter
             column={table.getColumn('priority')}
             title="Priority"
-            options={priorities}
+            options={Priorities}
           />
         )}
         {isFiltered && (
