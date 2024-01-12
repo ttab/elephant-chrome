@@ -86,7 +86,6 @@ export function NewsValueTimeDropDown({ duration, end, onChange }: NewsValueDrop
                       hour12: false,
                       timeZone
                     })}
-                  timeZone={timeZone}
                   locale={locale}
                   onSelect={(selectedTime) => {
                     const hours = parseInt(selectedTime.substring(0, 2) || '0')
@@ -132,10 +131,9 @@ export function NewsValueTimeDropDown({ duration, end, onChange }: NewsValueDrop
 interface TimePickerProps {
   value: string
   locale: string
-  timeZone: string
   onSelect: (value: string) => void
 }
-function TimePicker({ value, onSelect, locale, timeZone }: TimePickerProps): JSX.Element {
+function TimePicker({ value, onSelect, locale }: TimePickerProps): JSX.Element {
   const timesList = useMemo(() => {
     const is12Hour = is12HourcycleFromLocale(locale)
     const date = new Date()
