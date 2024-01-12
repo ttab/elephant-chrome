@@ -68,6 +68,14 @@ export const PlanningTable = <TData, TValue>({
     return () => document.removeEventListener('keydown', keyDownHandler)
   }, [table, isActiveView, onRowSelected])
 
+  // When row selection changes, report back to callback
+  useEffect(() => {
+    if (onRowSelected) {
+      const selectedRows = table.getSelectedRowModel()
+      // @ts-expect-error unknown type
+      onRowSelected(selectedRows?.rows[0]?.original)
+    }
+  }, [table, onRowSelected])
 
   const TableBodyElement = (): React.ReactNode => {
     if (table.getRowModel().rows?.length === 0) {
