@@ -2,7 +2,7 @@ import * as Y from 'yjs'
 import { slateNodesToInsertDelta, yTextToSlateElement } from '@slate-yjs/core'
 import type { GetDocumentResponse } from '../../../protos/service.js'
 import { type TBElement } from '@ttab/textbit'
-import { slateToNewsDoc } from '../newsdoc/index.js'
+import { slateToNewsDoc } from '../index.js'
 
 export function yjsStateAsUpdate(content: TBElement[], data: Y.Doc): Uint8Array {
   const insertContentDelta = slateNodesToInsertDelta(content)

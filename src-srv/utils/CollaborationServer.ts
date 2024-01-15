@@ -23,8 +23,10 @@ import {
 
 import { slateNodesToInsertDelta } from '@slate-yjs/core'
 import * as Y from 'yjs'
-import { newsDocToSlate } from './transformations/newsdoc/index.js'
-import { newsDocToYmap } from './transformations/yjs/index.js'
+import {
+  newsDocToSlate,
+  newsDocToYmap
+} from './transformations/index.js'
 
 interface CollaborationServerOptions {
   name: string

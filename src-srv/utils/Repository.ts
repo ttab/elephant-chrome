@@ -3,7 +3,7 @@ import { TwirpFetchTransport } from '@protobuf-ts/twirp-transport'
 import { DocumentsClient } from '../protos/service.client.js'
 import { type JWTVerifyResult, jwtVerify, type JWTVerifyGetKey } from 'jose'
 import type { GetDocumentResponse, UpdateRequest, UpdateResponse } from '../protos/service.js'
-import { yDocToNewsDoc } from './transformations/yjs/index.js'
+import { yDocToNewsDoc } from './transformations/index.js'
 import { type FinishedUnaryCall } from '@protobuf-ts/runtime-rpc'
 import { type Doc } from 'yjs'
 
