@@ -178,7 +178,8 @@ function TimePicker({ value, onSelect, locale }: TimePickerProps): JSX.Element {
     placeholder={selectedOption?.label || 'Select a time...'}
     onSelect={(option) => {
       onSelect(option.value)
-    }} />
+    }}
+  />
 }
 
 interface NewsValueScoreProps extends PropsWithChildren {
