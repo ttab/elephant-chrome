@@ -1,4 +1,4 @@
-import { MoreHorizontal as DotsHorizontalIcon } from '@ttab/elephant-ui/icons'
+import { MoreHorizontal as DotsHorizontalIcon, Navigation } from '@ttab/elephant-ui/icons'
 import { type ColumnDef } from '@tanstack/react-table'
 
 import {
@@ -13,8 +13,12 @@ import { type Planning } from '../data/schema'
 
 
 export const actions: ColumnDef<Planning> = {
-
   id: 'action',
+  meta: {
+    filter: null,
+    name: 'Action',
+    columnIcon: Navigation
+  },
   cell: ({ row }) => {
     const deliverableUuids = row.original._source['document.meta.core_assignment.rel.deliverable.uuid'] || []
     return (

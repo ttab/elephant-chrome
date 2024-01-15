@@ -44,3 +44,5 @@ export const Link = forwardRef((props: LinkProps, ref: ForwardedRef<HTMLAnchorEl
     </a>
   )
 })
+
+Link.displayName = 'Link'

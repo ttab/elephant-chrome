@@ -1,9 +1,15 @@
 import { type ColumnDef } from '@tanstack/react-table'
 import { type Planning } from '../data/schema'
 import { StatusIndicator } from '@/components/DataItem/StatusIndicator'
+import { Pen } from '@ttab/elephant-ui/icons'
 
 export const title: ColumnDef<Planning> = {
   id: 'title',
+  meta: {
+    filter: null,
+    name: 'Title',
+    columnIcon: Pen
+  },
   accessorFn: (data) => data._source['document.title'][0],
   cell: ({ row }) => {
     const internal = row.original._source['document.meta.core_planning_item.data.public'][0] !== 'true'

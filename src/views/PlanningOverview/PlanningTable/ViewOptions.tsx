@@ -6,7 +6,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator
 } from '@ttab/elephant-ui'
-import { SlidersHorizontal as MixerHorizontalIcon } from '@ttab/elephant-ui/icons'
+import { SlidersHorizontal } from '@ttab/elephant-ui/icons'
 import { type Table } from '@tanstack/react-table'
 
 
@@ -25,7 +25,7 @@ export const ViewOptions = <TData,>({
           size="sm"
           className="ml-auto h-8 lg:flex"
         >
-          <MixerHorizontalIcon className="mr-2 h-4 w-4" />
+          <SlidersHorizontal className="mr-2 h-4 w-4" />
           View
         </Button>
       </DropdownMenuTrigger>

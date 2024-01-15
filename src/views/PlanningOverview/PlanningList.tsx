@@ -7,8 +7,10 @@ import { columns } from '@/views/PlanningOverview/PlanningTable/Columns'
 import { convertToISOStringInUTC, getDateTimeBoundaries } from '@/lib/datetime'
 import useSWR from 'swr'
 import { useMemo } from 'react'
+import { useTable } from '@/hooks/useTable'
 
 export const PlanningList = ({ date }: { date: Date }): JSX.Element => {
+  const { setData } = useTable()
   const { locale } = useRegistry()
   const { jwt } = useSession()
   const { indexUrl } = useApi()
@@ -31,14 +33,17 @@ export const PlanningList = ({ date }: { date: Date }): JSX.Element => {
     }
 
     const { startTime, endTime } = getDateTimeBoundaries(date)
-    return await Planning.search(indexUrl, jwt, {
+    const result = await Planning.search(indexUrl, jwt, {
       size: 100,
       where: {
         start: convertToISOStringInUTC(startTime, locale),
         end: convertToISOStringInUTC(endTime, locale)
       }
     })
+    setData(result)
+    return result
   })
+
 
   return (
     <>

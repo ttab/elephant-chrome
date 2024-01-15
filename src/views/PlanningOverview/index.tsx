@@ -7,6 +7,9 @@ import { ScrollArea, ScrollBar, Tabs, TabsContent } from '@ttab/elephant-ui'
 
 import { PlanningGrid } from './PlanningGrid'
 import { PlanningList } from './PlanningList'
+import { TableProvider } from '@/contexts/TableProvider'
+
+import { TableCommandMenu } from './PlanningTable/TableCommandMenu'
 
 const meta: ViewMetadata = {
   name: 'PlanningOverview',
@@ -30,38 +33,40 @@ export const PlanningOverview = (props: ViewProps): JSX.Element => {
   }, [startDate])
 
   return (
-    <Tabs defaultValue={currentTab} className='flex-1' onValueChange={setCurrentTab}>
+    <TableProvider>
+      <Tabs defaultValue={currentTab} className='flex-1' onValueChange={setCurrentTab}>
+        <TableCommandMenu />
+        <div className="flex flex-col h-screen">
+          <div className="grow-0">
+            <ViewHeader {...props} title="Planeringsöversikt" shortTitle="Planering" icon={CalendarDaysIcon}>
+              <PlanningHeader
+                tab={currentTab}
+                startDate={startDate}
+                setStartDate={setStartDate}
+                endDate={endDate}
+                setEndDate={setEndDate}
+              />
+            </ViewHeader>
+          </div>
 
-      <div className="flex flex-col h-screen">
-        <div className="grow-0">
-          <ViewHeader {...props} title="Planeringsöversikt" shortTitle="Planering" icon={CalendarDaysIcon}>
-            <PlanningHeader
-              tab={currentTab}
-              startDate={startDate}
-              setStartDate={setStartDate}
-              endDate={endDate}
-              setEndDate={setEndDate}
-            />
-          </ViewHeader>
-        </div>
-
-        <ScrollArea>
           <ScrollArea>
-            <main>
-              <TabsContent value='list'>
-                <PlanningList date={startDate} />
-              </TabsContent>
+            <ScrollArea>
+              <main>
+                <TabsContent value='list'>
+                  <PlanningList date={startDate} />
+                </TabsContent>
 
-              <TabsContent value='grid'>
-                <PlanningGrid startDate={startDate} endDate={endDate} />
-              </TabsContent>
-            </main>
+                <TabsContent value='grid'>
+                  <PlanningGrid startDate={startDate} endDate={endDate} />
+                </TabsContent>
+              </main>
+            </ScrollArea>
+            <ScrollBar orientation="horizontal" />
           </ScrollArea>
-          <ScrollBar orientation="horizontal" />
-        </ScrollArea>
 
-      </div>
-    </Tabs>
+        </div>
+      </Tabs>
+    </TableProvider>
   )
 }
 
