@@ -44,7 +44,7 @@ export function NewsValueTimeDropDown({ duration, end, onChange }: NewsValueDrop
         </Button>
       </PopoverTrigger>
 
-      <PopoverContent className="w-[320px]">
+      <PopoverContent className="w-[320px]" align="start">
         <Tabs defaultValue={value} onValueChange={(value) => {
           if (['24h', '∞'].includes(value)) {
             onChange(value === '24h' ? '86400' : '', undefined)
