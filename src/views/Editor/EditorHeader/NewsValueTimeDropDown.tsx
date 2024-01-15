@@ -1,4 +1,7 @@
-import { useMemo } from 'react'
+import {
+  useMemo,
+  type PropsWithChildren
+} from 'react'
 import {
   Button, Popover,
   PopoverTrigger,
@@ -7,7 +10,11 @@ import {
   Tabs,
   TabsList,
   TabsTrigger,
-  TabsContent
+  TabsContent,
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger
 } from '@ttab/elephant-ui'
 import { useRegistry } from '@/hooks'
 import { ComboBox } from '@/components/ui'
@@ -35,14 +42,17 @@ export function NewsValueTimeDropDown({ duration, end, onChange }: NewsValueDrop
 
   return (
     <Popover>
-      <PopoverTrigger asChild>
-        <Button
-          variant="ghost"
-          className="flex h-8 p-0 px-2 mb-1 data-[state=open]:bg-muted"
-        >
-          <span className="flex items-end">{isEnd ? dateToReadableDateTime(new Date(end), locale, timeZone) : value}</span>
-        </Button>
-      </PopoverTrigger>
+      <NewsValueTime text="News value lifetime">
+        <PopoverTrigger asChild>
+          <Button
+            variant="ghost"
+            className="flex h-8 p-0 px-2 mb-1 data-[state=open]:bg-muted"
+          >
+            <span className="flex items-end">{isEnd ? dateToReadableDateTime(new Date(end), locale, timeZone) : value}</span>
+          </Button>
+
+        </PopoverTrigger>
+      </NewsValueTime>
 
       <PopoverContent className="w-[320px]" align="start">
         <Tabs defaultValue={value} onValueChange={(value) => {
@@ -169,4 +179,23 @@ function TimePicker({ value, onSelect, locale }: TimePickerProps): JSX.Element {
     onSelect={(option) => {
       onSelect(option.value)
     }} />
+}
+
+interface NewsValueScoreProps extends PropsWithChildren {
+  text: string
+}
+
+function NewsValueTime({ text, children }: NewsValueScoreProps): JSX.Element {
+  return (
+    <TooltipProvider>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          {children}
+        </TooltipTrigger>
+        <TooltipContent>
+          {text}
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
+  )
 }
