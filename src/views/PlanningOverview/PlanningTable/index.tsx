@@ -1,5 +1,4 @@
 import React, { useEffect } from 'react'
-import { columns } from '@/views/PlanningOverview/PlanningTable/Columns'
 import {
   type ColumnDef,
   flexRender
@@ -10,6 +9,7 @@ import { Toolbar } from './Toolbar'
 import { useView } from '@/hooks'
 import { isEditableTarget } from '@/lib/isEditableTarget'
 import { useTable } from '@/hooks/useTable'
+import { columns } from './Columns'
 
 interface PlanningTableProps<TData, TValue> {
   columns: Array<ColumnDef<TData, TValue>>

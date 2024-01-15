@@ -1,10 +1,11 @@
+import { type ColumnValueOption } from '@/types'
 import {
   SignalHigh,
   SignalMedium,
   SignalLow
 } from '@ttab/elephant-ui/icons'
 
-export const Priorities = [
+export const Priorities: ColumnValueOption[] = [
   {
     value: '6',
     label: '6',
@@ -20,21 +21,25 @@ export const Priorities = [
   {
     value: '4',
     label: '4',
-    icon: SignalMedium
+    icon: SignalMedium,
+    color: ''
   },
   {
     value: '3',
     label: '3',
-    icon: SignalMedium
+    icon: SignalMedium,
+    color: ''
   },
   {
     value: '2',
     label: '2',
-    icon: SignalLow
+    icon: SignalLow,
+    color: ''
   },
   {
     value: '1',
     label: '1',
-    icon: SignalLow
+    icon: SignalLow,
+    color: ''
   }
 ]

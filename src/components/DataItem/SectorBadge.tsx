@@ -1,9 +1,9 @@
 import { Badge } from '@ttab/elephant-ui'
 import { cn } from '@ttab/elephant-ui/utils'
-import { columnValueOptions } from '@/views/PlanningOverview/PlanningTable/Columns/Sector'
+import { Sectors } from '@/defaults/sectors'
 
 export const SectorBadge = ({ color, value }: { color?: string, value: string }): JSX.Element => {
-  const sector = columnValueOptions.find((label) => label.value === value)
+  const sector = Sectors.find((label) => label.value === value)
   const chosenColor = color || sector?.color
 
   return <Badge variant='outline' className='rounded-md'>

@@ -1,32 +1,17 @@
-import { type ColumnDef } from '@tanstack/react-table'
-import { type Planning } from '../data/schema'
 import { StatusIndicator } from '@/components/DataItem/StatusIndicator'
-import { Pen } from '@ttab/elephant-ui/icons'
+import { useMemo } from 'react'
 
-export const title: ColumnDef<Planning> = {
-  id: 'title',
-  meta: {
-    filter: null,
-    name: 'Title',
-    columnIcon: Pen
-  },
-  accessorFn: (data) => data._source['document.title'][0],
-  cell: ({ row }) => {
-    const internal = row.original._source['document.meta.core_planning_item.data.public'][0] !== 'true'
-    const slugline = row.original._source['document.meta.core_assignment.meta.tt_slugline.value']
+export const Title = ({ internal, slugline, title }: any): JSX.Element => {
+  return useMemo(() => (
+    <div className='flex space-x-2 w-fit'>
+      <StatusIndicator internal={internal} />
 
-    return (
-      <div className='flex space-x-2 w-fit'>
-        <StatusIndicator internal={internal} />
+      <span className='max-w-[200px] md:max-w-[300px] lg:max-w-[700px] truncate font-medium'>
+        {title}
+      </span>
 
-        <span className='max-w-[200px] md:max-w-[300px] lg:max-w-[700px] truncate font-medium'>
-          {row.getValue('title')}
-        </span>
-
-        {!!slugline?.length && (
-          <span className='hidden font-medium text-slate-500 lg:block'>{slugline[0]}</span>
-        )}
-      </div>
-    )
-  }
+      {!!slugline?.length && (
+      <span className='hidden font-medium text-slate-500 lg:block'>{slugline[0]}</span>
+      )}
+    </div>), [internal, slugline, title])
 }

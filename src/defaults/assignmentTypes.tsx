@@ -1,3 +1,4 @@
+import { type ColumnValueOption } from '@/types'
 import {
   FileType,
   Image,
@@ -5,7 +6,8 @@ import {
   Video
 } from '@ttab/elephant-ui/icons'
 
-export const AssignmentTypes = [
+
+export const AssignmentTypes: ColumnValueOption[] = [
   {
     label: 'Text',
     value: 'text',

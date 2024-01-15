@@ -1,4 +1,5 @@
 import type * as views from '@/views'
+import { LucideIcon } from '@ttab/elephant-ui/icons'
 import { type JWTPayload } from 'jose'
 
 export enum NavigationActionType {
@@ -101,6 +102,6 @@ export interface JWT extends JWTPayload {
 export interface ColumnValueOption {
   label: string
   value: string
-  icon?: React.ComponentType<{ className?: string, color?: string }>
+  icon?: LucideIcon,
   color?: string
 }
