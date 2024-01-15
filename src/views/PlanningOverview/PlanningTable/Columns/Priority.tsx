@@ -6,6 +6,7 @@ import {
 } from '@ttab/elephant-ui'
 import { Priorities } from '@/defaults'
 import { SignalHigh } from '@ttab/elephant-ui/icons'
+
 export const priority: ColumnDef<Planning> = {
   id: 'priority',
   meta: {
