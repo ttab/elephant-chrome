@@ -5,9 +5,15 @@ import {
   TooltipProvider, Tooltip, TooltipTrigger, TooltipContent
 } from '@ttab/elephant-ui'
 import { Priorities } from '@/defaults'
-
+import { SignalHigh } from '@ttab/elephant-ui/icons'
 export const priority: ColumnDef<Planning> = {
   id: 'priority',
+  meta: {
+    filter: 'facet',
+    options: Priorities,
+    name: 'Priority',
+    columnIcon: SignalHigh
+  },
   accessorFn: (data) => data._source['document.meta.core_planning_item.data.priority'][0],
   cell: ({ row }) => {
     const priority = Priorities.find(

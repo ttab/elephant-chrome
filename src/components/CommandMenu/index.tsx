@@ -1,25 +1,44 @@
-import { useEffect, useState, useCallback } from 'react'
+import React, {
+  useEffect,
+  useState,
+  useCallback,
+  type Dispatch,
+  useMemo
+} from 'react'
 import {
   GanttChart
 } from '@ttab/elephant-ui/icons'
 
 import {
-  CommandDialog,
-  CommandEmpty,
+  Dialog,
+  DialogContent,
+  Command,
   CommandGroup,
-  CommandInput,
   CommandItem,
-  CommandList,
   CommandSeparator
 } from '@ttab/elephant-ui'
-
+import { DebouncedCommandInput } from './DebouncedCommandInput'
 import { handleLink } from '../Link/lib/handleLink'
-import { useNavigation } from '@/hooks'
+import { useNavigation, useTable } from '@/hooks'
 import { v4 as uuid } from 'uuid'
+import { type CommandArgs } from '@/contexts/TableProvider'
 
-export function CommandMenu(): JSX.Element {
+interface CommandMenuProps {
+  onKeyDown: (event: React.KeyboardEvent<HTMLDivElement>, setOpen: Dispatch<boolean>, args: CommandArgs) => void
+  onChange: (value: string | undefined, args: CommandArgs) => void
+  children?: JSX.Element
+}
+
+export const CommandMenu = ({ children, onKeyDown, onChange }: CommandMenuProps): JSX.Element => {
   const { state, dispatch } = useNavigation()
   const [open, setOpen] = useState(false)
+
+  const { command } = useTable()
+  const { search, setSearch, pages, setPages, page } = command
+
+  const onOpenChange = useMemo(
+    () => handleOpenChange({ setOpen, setSearch, setPages }),
+    [setOpen, setSearch, setPages])
 
   useEffect(() => {
     const down = (e: KeyboardEvent): void => {
@@ -39,11 +58,20 @@ export function CommandMenu(): JSX.Element {
   }, [])
 
   return (
-    <>
-      <CommandDialog open={open} onOpenChange={setOpen}>
-        <CommandInput placeholder="Type a command or search..." />
-        <CommandList>
-          <CommandEmpty>No results found.</CommandEmpty>
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent className="overflow-hidden p-0 shadow-lg">
+        <Command
+          className="[&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:font-medium [&_[cmdk-group-heading]]:text-muted-foreground [&_[cmdk-group]:not([hidden])_~[cmdk-group]]:pt-0 [&_[cmdk-group]]:px-2 [&_[cmdk-input-wrapper]_svg]:h-5 [&_[cmdk-input-wrapper]_svg]:w-5 [&_[cmdk-input]]:h-12 [&_[cmdk-item]]:px-2 [&_[cmdk-item]]:py-3 [&_[cmdk-item]_svg]:h-5 [&_[cmdk-item]_svg]:w-5"
+          onKeyDown={(e) => onKeyDown(e, setOpen, command)}
+        >
+          <DebouncedCommandInput
+            value={search}
+            onChange={(value) => onChange(value, command)}
+            placeholder={getPlaceholder(pages, page)}
+            className="h-9"
+      />
+          {children}
+          {!page && (
           <CommandGroup heading="Suggestions">
             <CommandItem
               onSelect={() => runCommand(() => handleLink({
@@ -57,9 +85,30 @@ export function CommandMenu(): JSX.Element {
               <span>Planning overview</span>
             </CommandItem>
           </CommandGroup>
+          )}
           <CommandSeparator />
-        </CommandList>
-      </CommandDialog>
-    </>
+        </Command>
+      </DialogContent>
+    </Dialog>
   )
+}
+
+function getPlaceholder(pages: string[], page: string): string {
+  if (pages.length === 0) return 'Type a command or search'
+
+  if (page === 'textFilter') return 'Filter by text'
+
+  return 'Filter'
+}
+
+function handleOpenChange({ setOpen, setSearch, setPages }: {
+  setOpen: Dispatch<boolean>
+  setSearch: Dispatch<string | undefined>
+  setPages: Dispatch<string[]>
+}): (open: boolean) => void {
+  return (open: boolean) => {
+    setSearch(undefined)
+    setPages([])
+    setOpen(open)
+  }
 }

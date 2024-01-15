@@ -1,22 +1,15 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect } from 'react'
+import { columns } from '@/views/PlanningOverview/PlanningTable/Columns'
 import {
   type ColumnDef,
-  type ColumnFiltersState,
-  type SortingState,
-  type VisibilityState,
-  flexRender,
-  getCoreRowModel,
-  getFacetedRowModel,
-  getFacetedUniqueValues,
-  getFilteredRowModel,
-  getSortedRowModel,
-  useReactTable
+  flexRender
 } from '@tanstack/react-table'
 
 import { Table, TableBody, TableCell, TableRow } from '@ttab/elephant-ui'
 import { Toolbar } from './Toolbar'
 import { useView } from '@/hooks'
 import { isEditableTarget } from '@/lib/isEditableTarget'
+import { useTable } from '@/hooks/useTable'
 
 interface PlanningTableProps<TData, TValue> {
   columns: Array<ColumnDef<TData, TValue>>
@@ -26,37 +19,11 @@ interface PlanningTableProps<TData, TValue> {
 
 
 export const PlanningTable = <TData, TValue>({
-  columns,
-  data,
   onRowSelected
 }: PlanningTableProps<TData, TValue>): JSX.Element => {
-  const [rowSelection, setRowSelection] = useState({})
-  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
-  const [sorting, setSorting] = useState<SortingState>([])
   const { isActive: isActiveView } = useView()
 
-  const table = useReactTable({
-    data,
-    columns,
-    state: {
-      sorting,
-      columnVisibility,
-      rowSelection,
-      columnFilters
-    },
-    enableRowSelection: true,
-    enableMultiRowSelection: false,
-    onRowSelectionChange: setRowSelection,
-    onSortingChange: setSorting,
-    onColumnFiltersChange: setColumnFilters,
-    onColumnVisibilityChange: setColumnVisibility,
-    getCoreRowModel: getCoreRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
-    getSortedRowModel: getSortedRowModel(),
-    getFacetedRowModel: getFacetedRowModel(),
-    getFacetedUniqueValues: getFacetedUniqueValues()
-  })
+  const { table, loading } = useTable()
 
   // Handle navigation using arrow keys
   useEffect(() => {
@@ -101,15 +68,14 @@ export const PlanningTable = <TData, TValue>({
     return () => document.removeEventListener('keydown', keyDownHandler)
   }, [table, isActiveView, onRowSelected])
 
-
   // When row selection changes, report back to callback
   useEffect(() => {
     if (onRowSelected) {
       const selectedRows = table.getSelectedRowModel()
+      // @ts-expect-error unknown type
       onRowSelected(selectedRows?.rows[0]?.original)
     }
-  }, [table, rowSelection, onRowSelected])
-
+  }, [table, onRowSelected])
 
   const TableBodyElement = (): React.ReactNode => {
     if (table.getRowModel().rows?.length === 0) {
@@ -119,7 +85,7 @@ export const PlanningTable = <TData, TValue>({
             colSpan={columns.length}
             className="h-24 text-center"
           >
-            No results.
+            {loading ? 'Loading...' : 'No results.'}
           </TableCell>
         </TableRow>
       )
@@ -149,7 +115,6 @@ export const PlanningTable = <TData, TValue>({
       </TableRow>
     ))
   }
-
 
   return (
     <div className="space-y-2">

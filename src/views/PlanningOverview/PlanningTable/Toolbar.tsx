@@ -1,11 +1,8 @@
 import { X as Cross2Icon } from '@ttab/elephant-ui/icons'
 import { type Table } from '@tanstack/react-table'
 
-import { Button, Input } from '@ttab/elephant-ui'
-import { ViewOptions } from './ViewOptions'
-
-import { Priorities } from '@/defaults'
-import { FacetedFilter } from './FacetedFilter'
+import { Button } from '@ttab/elephant-ui'
+import { SelectedFilters } from './SelectedFilters'
 
 interface ToolbarProps<TData> {
   table: Table<TData>
@@ -14,26 +11,13 @@ interface ToolbarProps<TData> {
 export const Toolbar = <TData,>({
   table
 }: ToolbarProps<TData>): JSX.Element => {
-  const isFiltered = table.getState().columnFilters.length > 0
+  const isFiltered = table.getState().columnFilters.length > 0 ||
+    !!table.getState().globalFilter
 
   return (
     <div className="flex items-center justify-between">
       <div className="flex flex-1 items-center space-x-2">
-        <Input
-          placeholder="Filter plannings..."
-          value={(table.getColumn('title')?.getFilterValue() as string) ?? ''}
-          onChange={(event) =>
-            table.getColumn('title')?.setFilterValue(event.target.value)
-          }
-          className="h-8 w-[150px] lg:w-[250px]"
-        />
-        {table.getColumn('priority') && (
-          <FacetedFilter
-            column={table.getColumn('priority')}
-            title="Priority"
-            options={Priorities}
-          />
-        )}
+        <SelectedFilters table={table} />
         {isFiltered && (
           <Button
             variant="ghost"
@@ -45,7 +29,6 @@ export const Toolbar = <TData,>({
           </Button>
         )}
       </div>
-      <ViewOptions table={table} />
     </div>
   )
 }
