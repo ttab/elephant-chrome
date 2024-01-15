@@ -48,10 +48,10 @@ export const columns: Array<ColumnDef<Planning>> = [
     accessorFn: (data) => data._source['document.title'][0],
     cell: ({ row }) => {
       const internal = row.original._source['document.meta.core_planning_item.data.public'][0] !== 'true'
-      const slugline = row.original._source['document.meta.core_assignment.meta.tt_slugline.value']
+      const slugline = row.original._source['document.meta.core_assignment.meta.tt_slugline.value'][0]
       const title = row.getValue('title')
 
-      return <Title title={title} internal={internal} slugline={slugline} />
+      return <Title title={title as string} internal={internal} slugline={slugline} />
     }
   },
   {

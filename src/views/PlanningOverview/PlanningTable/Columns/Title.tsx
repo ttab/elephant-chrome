@@ -1,7 +1,12 @@
 import { StatusIndicator } from '@/components/DataItem/StatusIndicator'
 import { useMemo } from 'react'
 
-export const Title = ({ internal, slugline, title }: any): JSX.Element => {
+interface TitleProps {
+  internal: boolean
+  slugline: string
+  title: string
+}
+export const Title = ({ internal, slugline, title }: TitleProps): JSX.Element => {
   return useMemo(() => (
     <div className='flex space-x-2 w-fit'>
       <StatusIndicator internal={internal} />
