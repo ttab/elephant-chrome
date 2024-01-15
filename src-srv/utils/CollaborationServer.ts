@@ -170,7 +170,7 @@ export class CollaborationServer {
       accessToken: context.token
     })
     const { document } = documentResponse
-    console.log(JSON.stringify(document, null, 2))
+
     // Share complete original document
     const newsDocYMap = newsDocToYmap(documentResponse, yDoc.getMap('original'))
     yDoc.share.set('original', yMapAsYEventAny(newsDocYMap))
