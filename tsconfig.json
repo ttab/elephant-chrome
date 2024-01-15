@@ -42,6 +42,9 @@
       ],
       "@/lib/*": [
         "./src/lib/*"
+      ],
+      "@/defaults/*": [
+        "./src/defaults/*"
       ]
     }
   },

@@ -16,6 +16,7 @@ import { HocuspocusProvider } from '@hocuspocus/provider'
 import { useSession, useQuery } from '@/hooks'
 import { type ViewMetadata, type ViewProps } from '@/types'
 import { ScrollArea } from '@ttab/elephant-ui'
+import { EditorHeader } from './EditorHeader'
 
 const meta: ViewMetadata = {
   name: 'Editor',
@@ -47,7 +48,7 @@ const Editor = (props: ViewProps): JSX.Element => {
       return
     }
 
-    return new HocuspocusProvider({
+    const provider = new HocuspocusProvider({
       websocketProvider: hocuspocusWebsocket,
       name: documentId,
       token: jwt.access_token,
@@ -58,12 +59,14 @@ const Editor = (props: ViewProps): JSX.Element => {
         setIsSynced(false)
       }
     })
+
+    return provider
   }, [documentId, hocuspocusWebsocket, jwt?.access_token])
 
 
   // Create YjsEditor for Textbit to use
   const editor = useMemo(() => {
-    if (!jwt?.sub_name || !provider?.awareness) {
+    if (!provider?.awareness) {
       return
     }
 
@@ -73,13 +76,11 @@ const Editor = (props: ViewProps): JSX.Element => {
           createEditor(),
           provider.document.get('content', Y.XmlText) as Y.XmlText
         ),
-        provider?.awareness,
-        {
-          data: cursorData(jwt?.sub_name || '')
-        }
+        provider.awareness,
+        { data: cursorData(jwt?.sub_name || '') }
       )
     )
-  }, [provider, jwt?.sub_name])
+  }, [jwt?.sub_name, provider?.awareness, provider?.document])
 
 
   // Connect/disconnect from provider through editor only when editor changes
@@ -95,7 +96,9 @@ const Editor = (props: ViewProps): JSX.Element => {
       <Textbit>
         <div className={`flex flex-col h-screen ${!isSynced ? 'opacity-60' : ''}`}>
           <div className="grow-0">
-            <ViewHeader {...props} title="Editor" icon={PenBoxIcon} />
+            <ViewHeader {...props} title="Editor" icon={PenBoxIcon}>
+              <EditorHeader isSynced={isSynced} document={isSynced ? provider?.document : undefined} />
+            </ViewHeader>
           </div>
 
           <ScrollArea>

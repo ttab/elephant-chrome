@@ -2,7 +2,7 @@ import * as Y from 'yjs'
 import { slateNodesToInsertDelta, yTextToSlateElement } from '@slate-yjs/core'
 import type { GetDocumentResponse } from '../../../protos/service.js'
 import { type TBElement } from '@ttab/textbit'
-import { revertNewsdoc } from '../newsdoc/index.js'
+import { slateToNewsDoc } from '../index.js'
 
 export function yjsStateAsUpdate(content: TBElement[], data: Y.Doc): Uint8Array {
   const insertContentDelta = slateNodesToInsertDelta(content)
@@ -63,7 +63,7 @@ export function yDocToNewsDoc(document: Y.Doc): GetDocumentResponse {
   const content = yTextToSlateElement(sharedRoot).children
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  json.document.content = revertNewsdoc(content as any)
+  json.document.content = slateToNewsDoc(content as any)
   json.version = BigInt(json.version)
 
   return json as GetDocumentResponse
