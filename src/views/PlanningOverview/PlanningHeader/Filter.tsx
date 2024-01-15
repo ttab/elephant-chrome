@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { type Dispatch, useState, useMemo } from 'react'
 import { ChevronDown } from '@ttab/elephant-ui/icons'
 import {
   Button,
@@ -16,8 +16,12 @@ export function Filter(): JSX.Element {
   const { command, table } = useTable()
   const { setSearch, setPages, search, pages, page } = command
 
+  const onOpenChange = useMemo(
+    () => handleOpenChange({ setOpen, setSearch, setPages }),
+    [setOpen, setSearch, setPages])
+
   return (
-    <Popover open={open} onOpenChange={setOpen}>
+    <Popover open={open} onOpenChange={onOpenChange}>
       <PopoverTrigger asChild>
         <Button
           variant="outline"
@@ -63,4 +67,16 @@ export function Filter(): JSX.Element {
       </PopoverContent>
     </Popover>
   )
+}
+
+function handleOpenChange({ setOpen, setSearch, setPages }: {
+  setOpen: Dispatch<boolean>
+  setSearch: Dispatch<string | undefined>
+  setPages: Dispatch<string[]>
+}): (open: boolean) => void {
+  return (open: boolean) => {
+    setSearch(undefined)
+    setPages([])
+    setOpen(open)
+  }
 }
