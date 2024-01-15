@@ -16,7 +16,7 @@ import { HocuspocusProvider } from '@hocuspocus/provider'
 import { useSession, useQuery } from '@/hooks'
 import { type ViewMetadata, type ViewProps } from '@/types'
 import { ScrollArea } from '@ttab/elephant-ui'
-import { Toolbar } from './Toolbar'
+import { EditorHeader } from './EditorHeader'
 
 const meta: ViewMetadata = {
   name: 'Editor',
@@ -97,7 +97,7 @@ const Editor = (props: ViewProps): JSX.Element => {
         <div className={`flex flex-col h-screen ${!isSynced ? 'opacity-60' : ''}`}>
           <div className="grow-0">
             <ViewHeader {...props} title="Editor" icon={PenBoxIcon}>
-              <Toolbar isSynced={isSynced} document={isSynced ? provider?.document : undefined} />
+              <EditorHeader isSynced={isSynced} document={isSynced ? provider?.document : undefined} />
             </ViewHeader>
           </div>
 

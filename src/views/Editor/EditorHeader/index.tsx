@@ -2,17 +2,16 @@ import { useEffect } from 'react'
 import { useYMap } from '@/hooks/useYjsMap'
 import type * as Y from 'yjs'
 
-// FIXME: Needs refactoring into a more global settings file
 import { Priorities } from '@/defaults'
-import { NewsValueTimeDropDown } from './Toolbar/NewsValueTimeDropDown'
-import { NewsValueScoreDropDown } from './Toolbar/NewsValueScoreDropDown'
+import { NewsValueTimeDropDown } from './NewsValueTimeDropDown'
+import { NewsValueScoreDropDown } from './NewsValueScoreDropDown'
 
 interface ToolbarProps {
   isSynced: boolean
   document?: Y.Doc
 }
 
-export const Toolbar = ({ isSynced, document }: ToolbarProps): JSX.Element => {
+export const EditorHeader = ({ isSynced, document }: ToolbarProps): JSX.Element => {
   const [newsvalueScore, setNewsvalueScore, initNewsvalueScore] = useYMap('core/newsvalue/score')
   const [newsvalueDuration, setNewsvalueDuration, initNewsvalueDuration] = useYMap('core/newsvalue/duration')
   const [newsvalueEnd, setNewsvalueEnd, initNewsvalueEnd] = useYMap('core/newsvalue/end')
