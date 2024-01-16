@@ -28,7 +28,7 @@ describe('ViewFocus', () => {
     render(
       <SessionProvider>
         <NavigationProvider>
-          <ViewFocus id={'abc123'} />
+          <ViewFocus viewId={'abc123'} />
         </NavigationProvider>
       </SessionProvider>
     )
@@ -37,6 +37,6 @@ describe('ViewFocus', () => {
     await userEvent.click(screen.getByRole('button'))
     mockState.focus = 'abc123'
     await userEvent.keyboard('{Escape}')
-    expect(mockDispatch).toHaveBeenCalledWith({ id: 'abc123', type: 'focus' })
+    expect(mockDispatch).toHaveBeenCalledWith({ viewId: 'abc123', type: 'focus' })
   })
 })

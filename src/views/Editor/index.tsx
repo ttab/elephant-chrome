@@ -38,9 +38,8 @@ const Editor = (props: ViewProps): JSX.Element => {
 
   // Ensure we have a valid document id
   const documentId = useMemo(() => {
-    return props.documentId || query.documentId
-  }, [props.documentId, query.documentId])
-
+    return props.id || query.id
+  }, [props.id, query.id])
 
   // Setup hocus pocus provider
   const provider = useMemo(() => {

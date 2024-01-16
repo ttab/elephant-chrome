@@ -50,7 +50,7 @@ export const ViewWrapper = ({ children, colSpan: wantedColSpan }: {
   colSpan: number
 }): JSX.Element => {
   const { dispatch } = useNavigation()
-  const { id, isActive, isFocused, isHidden } = useView()
+  const { viewId, isActive, isFocused, isHidden } = useView()
 
   // Ensure supported colspan is used as well as correct type
   const colSpan = (
@@ -72,7 +72,7 @@ export const ViewWrapper = ({ children, colSpan: wantedColSpan }: {
         onClick={() => {
           if (!isActive) {
             dispatch({
-              id,
+              viewId,
               type: NavigationActionType.ACTIVE
             })
           }
@@ -89,5 +89,5 @@ export const ViewWrapper = ({ children, colSpan: wantedColSpan }: {
         {memoizedContent}
       </section>
     )
-  }, [memoizedContent, id, dispatch, isFocused, isHidden, isActive, colSpan])
+  }, [memoizedContent, viewId, dispatch, isFocused, isHidden, isActive, colSpan])
 }

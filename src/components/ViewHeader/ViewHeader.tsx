@@ -1,17 +1,17 @@
-import { type ViewProps } from '@/types'
 import { ViewFocus } from './ViewFocus'
-import { useNavigation } from '@/hooks'
+import { useNavigation, useView } from '@/hooks'
 import { type LucideIcon } from '@ttab/elephant-ui/icons'
 
-interface ViewHeaderProps extends ViewProps {
+interface ViewHeaderProps {
   title: string
   shortTitle?: string
   icon?: LucideIcon
   children?: JSX.Element | JSX.Element[]
 }
 
-export const ViewHeader = ({ id, children, title, shortTitle, icon: Icon }: ViewHeaderProps): JSX.Element => {
+export const ViewHeader = ({ children, title, shortTitle, icon: Icon }: ViewHeaderProps): JSX.Element => {
   const { state } = useNavigation()
+  const { viewId } = useView()
 
   return (
     <header className='sticky top-0 group-last:w-[calc(100%-5rem)] h-14 flex gap-3 border-b py-2 px-3 items-center justify-between bg-background z-50'>
@@ -35,7 +35,7 @@ export const ViewHeader = ({ id, children, title, shortTitle, icon: Icon }: View
 
       <div className="flex h-full gap-3 items-center">
         {state.content.length > 1 &&
-          <ViewFocus id={id} />
+          <ViewFocus viewId={viewId} />
         }
       </div>
     </header >
