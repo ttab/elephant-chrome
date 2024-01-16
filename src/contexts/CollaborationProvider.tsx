@@ -8,29 +8,38 @@ import { HocuspocusProvider } from '@hocuspocus/provider'
 import { useApi, useSession } from '@/hooks'
 import { Awareness } from '@/defaults'
 
-export interface AwarenessData {
+export interface AwarenessUserData {
   name: string
   initials: string
   color: string
   avatar?: string
-  focusedId?: string
   [key: string]: string | undefined
 }
+
+export type AwarenessStates = Array<{
+  clientId: number
+  data: AwarenessUserData
+  focus?: {
+    key: string
+    color: string
+  }
+  [key: string]: unknown
+}>
 
 export interface CollaborationProviderState {
   provider?: HocuspocusProvider
   documentId?: string
   connected: boolean
   synced: boolean
-  awarenessData: AwarenessData
+  user: AwarenessUserData
+  states: AwarenessStates
 }
 
-const initialAwarenessData = {
+const initialUserData = {
   name: 'Jone Doe',
   initials: 'J D',
-  color: 'black',
-  avatar: undefined,
-  focusedId: undefined
+  color: 'gray',
+  avatar: undefined
 }
 
 const initialState: CollaborationProviderState = {
@@ -38,7 +47,8 @@ const initialState: CollaborationProviderState = {
   documentId: undefined,
   connected: false,
   synced: false,
-  awarenessData: initialAwarenessData
+  user: initialUserData,
+  states: []
 }
 
 
@@ -56,6 +66,7 @@ export const CollaborationProviderContext = ({ documentId, children }: CollabCon
   const { jwt } = useSession()
   const [synced, setSynced] = useState<boolean>(false)
   const [connected, setConnected] = useState<boolean>(false)
+  const [states, setStates] = useState<AwarenessStates>([])
 
   const provider = useMemo(() => {
     if (!documentId || !hocuspocusWebsocket || !jwt?.access_token) {
@@ -79,30 +90,30 @@ export const CollaborationProviderContext = ({ documentId, children }: CollabCon
         setSynced(false)
       },
       onAwarenessChange: (data) => {
-        console.log('change: ', data)
+        setStates(data.states as AwarenessStates)
       },
       onAwarenessUpdate: (data) => {
-        console.log('update: ', data)
+        setStates(data.states as AwarenessStates)
       }
     })
 
     return provider
   }, [documentId, hocuspocusWebsocket, jwt?.access_token])
 
-  // Awareness user data and user focused field
-  const awarenessData = useMemo((): AwarenessData | undefined => {
-    if (!provider?.awareness || !jwt?.access_token) {
-      return initialAwarenessData
+  // Awareness user data
+  const user = useMemo((): AwarenessUserData => {
+    if (!jwt?.access_token) {
+      return initialUserData
     }
 
+    const colors = Object.values(Awareness.colors)
     return {
       name: jwt.sub_name,
       initials: jwt.sub_name.split(' ').map(t => t.substring(0, 1)).join(' '),
-      color: Awareness.colors[Math.floor(Math.random() * Awareness.colors.length)],
-      avatar: undefined,
-      focusedId: undefined
+      color: colors[Math.floor(Math.random() * colors.length)],
+      avatar: undefined
     }
-  }, [provider?.awareness, jwt?.access_token, jwt?.sub_name])
+  }, [jwt?.access_token, jwt?.sub_name])
 
 
   const state = {
@@ -110,7 +121,8 @@ export const CollaborationProviderContext = ({ documentId, children }: CollabCon
     documentId,
     connected,
     synced,
-    awarenessData
+    user,
+    states
   }
 
   return (

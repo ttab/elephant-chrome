@@ -50,7 +50,7 @@ function EditorViewContent(props: ViewProps): JSX.Element {
   const {
     provider,
     synced: isSynced,
-    awarenessData
+    user
   } = useCollaboration()
 
 
@@ -67,10 +67,10 @@ function EditorViewContent(props: ViewProps): JSX.Element {
           provider.document.get('content', Y.XmlText) as Y.XmlText
         ),
         provider.awareness,
-        { data: awarenessData }
+        { data: user }
       )
     )
-  }, [provider?.awareness, provider?.document, awarenessData])
+  }, [provider?.awareness, provider?.document, user])
 
 
   // Connect/disconnect from provider through editor only when editor changes
