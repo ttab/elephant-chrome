@@ -5,3 +5,4 @@ export { WebSocketProvider, WebSocketProviderContext } from './WebSocketProvider
 export { RegistryProvider, RegistryContext } from './RegistryProvider'
 export { ViewProvider, ViewContext } from './ViewProvider'
 export { TableProvider, TableContext } from './TableProvider'
+export { CollaborationProviderContext, CollaborationContext, type CollaborationProviderState } from './CollaborationProvider'

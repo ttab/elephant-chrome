@@ -11,12 +11,14 @@ import { useEffect, useMemo } from 'react'
 import { createEditor } from 'slate'
 import * as Y from 'yjs'
 
-import { useQuery } from '@/hooks'
+import {
+  useQuery,
+  useCollaboration
+} from '@/hooks'
 import { type ViewMetadata, type ViewProps } from '@/types'
 import { ScrollArea } from '@ttab/elephant-ui'
 import { EditorHeader } from './EditorHeader'
 import { CollaborationProviderContext } from '@/contexts'
-import { useCollaboration } from '@/hooks'
 
 const meta: ViewMetadata = {
   name: 'Editor',
