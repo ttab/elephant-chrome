@@ -6,7 +6,7 @@ import React, {
 } from 'react'
 import { cn } from '@ttab/elephant-ui/utils'
 import { cva } from 'class-variance-authority'
-import { useAwareness } from '@/hooks/useAwareness'
+import { useAwareness } from '@/hooks'
 import { Collaboration } from '@/defaults'
 
 interface AwarenessProps extends PropsWithChildren {
