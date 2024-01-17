@@ -8,7 +8,7 @@ export const useCollaboration = (): CollaborationProviderState => {
   const context = useContext(CollaborationContext)
 
   if (!context) {
-    throw new Error('useTextbitContext must be used within a TextbitContextProvider')
+    throw new Error('useCollaboration must be used within a CollaborationContextProvider')
   }
 
   return context
