@@ -1,4 +1,4 @@
-export const Awareness = {
+export const Collaboration = {
   colors: {
     red: 'rgb(248 113 113)',
     orange: 'rgb(251 146 60)',
