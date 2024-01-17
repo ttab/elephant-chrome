@@ -7,7 +7,7 @@ import React, {
 import { cn } from '@ttab/elephant-ui/utils'
 import { cva } from 'class-variance-authority'
 import { useAwareness } from '@/hooks/useAwareness'
-import { Awareness as Colors } from '@/defaults'
+import { Collaboration } from '@/defaults'
 
 interface AwarenessProps extends PropsWithChildren {
   id: string
@@ -24,7 +24,7 @@ export const Awareness = React.forwardRef(({ id, children }: AwarenessProps, ref
   // User awareness object only have rgb value. Swap imported colors to
   // have rgb as key and name as value. Then we can get the value for styling.
   const colorMap = useMemo(() => {
-    return Object.fromEntries(Object.entries(Colors.colors).map(([key, value]) => [value, key]))
+    return Object.fromEntries(Object.entries(Collaboration.colors).map(([key, value]) => [value, key]))
   }, [])
 
   const style = cva('rounded', {

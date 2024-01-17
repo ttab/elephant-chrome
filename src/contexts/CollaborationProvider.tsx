@@ -6,7 +6,7 @@ import {
 } from 'react'
 import { HocuspocusProvider } from '@hocuspocus/provider'
 import { useApi, useSession } from '@/hooks'
-import { Awareness } from '@/defaults'
+import { Collaboration } from '@/defaults'
 
 export interface AwarenessUserData {
   name: string
@@ -106,7 +106,7 @@ export const CollaborationProviderContext = ({ documentId, children }: CollabCon
       return initialUserData
     }
 
-    const colors = Object.values(Awareness.colors)
+    const colors = Object.values(Collaboration.colors)
     return {
       name: jwt.sub_name,
       initials: jwt.sub_name.split(' ').map(t => t.substring(0, 1)).join(' '),

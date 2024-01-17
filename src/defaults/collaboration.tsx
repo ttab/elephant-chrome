@@ -8,7 +8,7 @@ export const Collaboration = {
     emerald: 'rgb(52 211 153)',
     teal: 'rgb(45 212 191)',
     indigo: 'rgb(129 140 248)',
-    viloet: 'rgb(167 139 250)',
+    violet: 'rgb(167 139 250)',
     purple: 'rgb(192 132 252)',
     fuchsia: 'rgb(232 121 249)',
     rose: 'rgb(251 113 133)'
