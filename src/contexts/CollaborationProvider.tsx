@@ -104,7 +104,7 @@ export const CollaborationProviderContext = ({ documentId, children }: CollabCon
       return initialUserData
     }
 
-    const colors = Object.values(Collaboration.colors)
+    const colors = Object.keys(Collaboration.colors)
     return {
       name: jwt.sub_name,
       initials: jwt.sub_name.split(' ').map(t => t.substring(0, 1)).join(' '),
