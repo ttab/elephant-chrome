@@ -33,19 +33,17 @@ export interface CollaborationProviderState {
   states: AwarenessStates
 }
 
-const initialUserData = {
-  name: 'Jone Doe',
-  initials: 'J D',
-  color: 'gray',
-  avatar: undefined
-}
-
 const initialState: CollaborationProviderState = {
   provider: undefined,
   documentId: undefined,
   connected: false,
   synced: false,
-  user: initialUserData,
+  user: {
+    name: '',
+    initials: '',
+    color: '',
+    avatar: undefined
+  },
   states: []
 }
 
@@ -66,8 +64,12 @@ export const CollaborationProviderContext = ({ documentId, children }: CollabCon
   const [connected, setConnected] = useState<boolean>(false)
   const [states, setStates] = useState<AwarenessStates>([])
 
+  if (!jwt?.access_token) {
+    throw new Error('Collaboration is not allowed without a valid access_token')
+  }
+
   const provider = useMemo(() => {
-    if (!documentId || !hocuspocusWebsocket || !jwt?.access_token) {
+    if (!documentId || !hocuspocusWebsocket) {
       return
     }
 
@@ -100,10 +102,6 @@ export const CollaborationProviderContext = ({ documentId, children }: CollabCon
 
   // Awareness user data
   const user = useMemo((): AwarenessUserData => {
-    if (!jwt?.access_token) {
-      return initialUserData
-    }
-
     const colors = Object.keys(Collaboration.colors)
     return {
       name: jwt.sub_name,
@@ -111,7 +109,7 @@ export const CollaborationProviderContext = ({ documentId, children }: CollabCon
       color: colors[Math.floor(Math.random() * colors.length)],
       avatar: undefined
     }
-  }, [jwt?.access_token, jwt?.sub_name])
+  }, [jwt?.sub_name])
 
 
   const state = {
