@@ -2,7 +2,7 @@ import { useContext } from 'react'
 import {
   CollaborationContext,
   type CollaborationProviderState
-} from '../contexts/CollaborationProvider'
+} from '@/contexts'
 
 export const useCollaboration = (): CollaborationProviderState => {
   const context = useContext(CollaborationContext)
