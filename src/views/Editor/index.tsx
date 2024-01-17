@@ -67,7 +67,7 @@ function EditorViewContent(props: ViewProps): JSX.Element {
           provider.document.get('content', Y.XmlText) as Y.XmlText
         ),
         provider.awareness,
-        { data: user }
+        { data: user as unknown as Record<string, unknown> }
       )
     )
   }, [provider?.awareness, provider?.document, user])

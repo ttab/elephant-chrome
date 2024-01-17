@@ -13,7 +13,6 @@ export interface AwarenessUserData {
   initials: string
   color: string
   avatar?: string
-  [key: string]: string | undefined
 }
 
 export type AwarenessStates = Array<{
@@ -23,7 +22,6 @@ export type AwarenessStates = Array<{
     key: string
     color: string
   }
-  [key: string]: unknown
 }>
 
 export interface CollaborationProviderState {
