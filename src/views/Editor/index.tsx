@@ -1,5 +1,4 @@
 import { ViewHeader } from '@/components'
-import { useApi } from '@/hooks/useApi'
 import { YjsEditor, withCursors, withYHistory, withYjs } from '@slate-yjs/core'
 import { PenBoxIcon } from '@ttab/elephant-ui/icons'
 import {
@@ -8,15 +7,18 @@ import {
   useTextbitContext
 } from '@ttab/textbit'
 import '@ttab/textbit/dist/esm/index.css'
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo } from 'react'
 import { createEditor } from 'slate'
 import * as Y from 'yjs'
 
-import { HocuspocusProvider } from '@hocuspocus/provider'
-import { useSession, useQuery } from '@/hooks'
+import {
+  useQuery,
+  useCollaboration
+} from '@/hooks'
 import { type ViewMetadata, type ViewProps } from '@/types'
 import { ScrollArea } from '@ttab/elephant-ui'
 import { EditorHeader } from './EditorHeader'
+import { CollaborationProviderContext } from '@/contexts'
 
 const meta: ViewMetadata = {
   name: 'Editor',
@@ -32,35 +34,26 @@ const meta: ViewMetadata = {
 
 const Editor = (props: ViewProps): JSX.Element => {
   const query = useQuery()
-  const { jwt } = useSession()
-  const { hocuspocusWebsocket } = useApi()
-  const [isSynced, setIsSynced] = useState<boolean>(false)
+  const documentId = props.id || query.id
 
-  // Ensure we have a valid document id
-  const documentId = useMemo(() => {
-    return props.id || query.id
-  }, [props.id, query.id])
-
-  // Setup hocus pocus provider
-  const provider = useMemo(() => {
-    if (!hocuspocusWebsocket || !jwt?.access_token || !documentId) {
-      return
-    }
-
-    const provider = new HocuspocusProvider({
-      websocketProvider: hocuspocusWebsocket,
-      name: documentId,
-      token: jwt.access_token,
-      onSynced: () => {
-        setIsSynced(true)
-      },
-      onDisconnect: () => {
-        setIsSynced(false)
+  return (
+    <>
+      {documentId
+        ? <CollaborationProviderContext documentId={documentId}>
+          <EditorViewContent {...props} />
+        </CollaborationProviderContext>
+        : <></>
       }
-    })
+    </>
+  )
+}
 
-    return provider
-  }, [documentId, hocuspocusWebsocket, jwt?.access_token])
+function EditorViewContent(props: ViewProps): JSX.Element {
+  const {
+    provider,
+    synced: isSynced,
+    user
+  } = useCollaboration()
 
 
   // Create YjsEditor for Textbit to use
@@ -76,10 +69,10 @@ const Editor = (props: ViewProps): JSX.Element => {
           provider.document.get('content', Y.XmlText) as Y.XmlText
         ),
         provider.awareness,
-        { data: cursorData(jwt?.sub_name || '') }
+        { data: user as unknown as Record<string, unknown> }
       )
     )
-  }, [jwt?.sub_name, provider?.awareness, provider?.document])
+  }, [provider?.awareness, provider?.document, user])
 
 
   // Connect/disconnect from provider through editor only when editor changes
@@ -132,45 +125,6 @@ function Footer(): JSX.Element {
       </div>
     </footer>
   )
-}
-
-function cursorData(name: string): Record<string, unknown> {
-  const colors = [
-    'aquamarine',
-    'beige',
-    'blueviolet',
-    'brown',
-    'cadetblue',
-    'burlywood',
-    'chocoalate',
-    'coral',
-    'crimson',
-    'hotpink',
-
-    'lightcoral',
-    'lightpink',
-    'lightgreen',
-    'lightgray',
-    'lightcyan',
-    'lightblue',
-    'lightsalmon',
-    'lightseagreen',
-    'lightsteelblue',
-    'lemonchiffon',
-    'palegreen',
-    'tomato'
-  ]
-
-  const [first, last] = name.split(' ')
-  const f1 = first.substring(0, 1)
-  const l1 = last.substring(0, 1)
-
-  return {
-    color: colors[Math.floor(Math.random() * colors.length)],
-    initials: `${f1}${l1}`,
-    name,
-    avatar: ''
-  }
 }
 
 Editor.meta = meta

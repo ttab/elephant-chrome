@@ -2,9 +2,9 @@ import { useEffect, useState } from 'react'
 import type * as Y from 'yjs'
 
 type YMapState = [
-  unknown,
-  (value: unknown) => void,
-  (yMap: Y.Map<unknown>) => void
+  unknown, // value
+  (value: unknown) => void, // set value
+  (yMap: Y.Map<unknown>) => void // init value
 ]
 
 export const useYMap = (key: string, removeEmpty: boolean = false): YMapState => {
