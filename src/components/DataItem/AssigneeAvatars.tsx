@@ -7,13 +7,13 @@ import { cn } from '@ttab/elephant-ui/utils'
 export const AssigneeAvatars = ({ assignees }: { assignees: string[] }): JSX.Element => {
   return (
     <div className={cn('flex -space-x-2 w-fit text-xs font-semibold leading-6 h-8 items-center',
-      assignees.length > 3 && 'border rounded-full hidden lg:flex')}>
+      assignees.length > 3 && 'border rounded-full')}>
       {(assignees || []).slice(0, 3).map((assignee: string, index: number) => {
         return (
           <TooltipProvider key={index}>
             <Tooltip>
               <TooltipTrigger>
-                <div className='hidden lg:flex w-8 h-8 rounded-full items-center justify-center bg-background text-muted-foreground border'>
+                <div className='w-8 h-8 rounded-full items-center justify-center bg-background text-muted-foreground border'>
                   {getInitials(assignee)}
                 </div>
               </TooltipTrigger>

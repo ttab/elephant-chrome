@@ -9,7 +9,8 @@ export const time: ColumnDef<Planning> = {
   meta: {
     filter: null,
     name: 'Time',
-    columnIcon: Clock
+    columnIcon: Clock,
+    className: 'box-content w-[120px] hidden @3xl/view:[display:revert]'
   },
   accessorFn: (data) => getPublishTime(data._source['document.meta.core_assignment.data.publish']),
   cell: ({ row }) => (

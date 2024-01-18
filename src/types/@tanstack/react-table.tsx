@@ -9,5 +9,6 @@ declare module '@tanstack/react-table' {
     name: string
     columnIcon: LucideIcon
     options?: ColumnValueOption[]
+    className: string
   }
 }
