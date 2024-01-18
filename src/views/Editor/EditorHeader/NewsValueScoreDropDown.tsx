@@ -1,3 +1,4 @@
+import { Awareness } from '@/components'
 import {
   Button,
   DropdownMenu,
@@ -10,7 +11,7 @@ import {
   TooltipTrigger
 } from '@ttab/elephant-ui'
 import { SignalMedium } from '@ttab/elephant-ui/icons'
-import { type PropsWithChildren } from 'react'
+import { useRef, type PropsWithChildren } from 'react'
 
 interface NewsScoreDropDownProps {
   value: string
@@ -24,41 +25,48 @@ interface NewsScoreDropDownProps {
 export const NewsValueScoreDropDown = ({ value, options, onChange }: NewsScoreDropDownProps): JSX.Element => {
   const option = options.find(option => option.value === value)
   const Icon = option?.icon || <SignalMedium />
+  const setFocused = useRef<(value: boolean) => void>(null)
 
   return (
-    <DropdownMenu>
-      <NewsValueScore text={`Newsvalue priority ${option?.label}`}>
-        <DropdownMenuTrigger asChild>
-          <Button
-            variant="ghost"
-            className="flex h-8 p-0 px-2 data-[state=open]:bg-muted items-start"
-          >
-            <span className={`flex items-end ${!option?.label ? 'opacity-40' : ''}`}>
-              {Icon}
-              {option?.label || '∞'}
-            </span>
-
-            <span className="sr-only">Open menu</span>
-          </Button>
-        </DropdownMenuTrigger>
-      </NewsValueScore>
-
-      <DropdownMenuContent align="start">
-        {options.map((priority) => {
-          return (
-            <DropdownMenuItem key={priority.value}>
-              <span
-                className="flex items-end text-sm"
-                onClick={() => { onChange(priority.value) }}
-              >
-                {!!priority.icon && (priority.icon)}
-                {priority.label}
+    <Awareness id="NewsValueScore" ref={setFocused}>
+      <DropdownMenu onOpenChange={(isOpen) => {
+        if (setFocused?.current) {
+          setFocused.current(isOpen)
+        }
+      }}>
+        <NewsValueScore text={`Newsvalue priority ${option?.label}`}>
+          <DropdownMenuTrigger asChild>
+            <Button
+              variant="ghost"
+              className="flex h-8 p-0 px-2 data-[state=open]:bg-muted items-start"
+            >
+              <span className={`flex items-end ${!option?.label ? 'opacity-40' : ''}`}>
+                {Icon}
+                {option?.label || '∞'}
               </span>
-            </DropdownMenuItem>
-          )
-        })}
-      </DropdownMenuContent>
-    </DropdownMenu>
+
+              <span className="sr-only">Open menu</span>
+            </Button>
+          </DropdownMenuTrigger>
+        </NewsValueScore>
+
+        <DropdownMenuContent align="start">
+          {options.map((priority) => {
+            return (
+              <DropdownMenuItem key={priority.value}>
+                <span
+                  className="flex items-end text-sm"
+                  onClick={() => { onChange(priority.value) }}
+                >
+                  {!!priority.icon && (priority.icon)}
+                  {priority.label}
+                </span>
+              </DropdownMenuItem>
+            )
+          })}
+        </DropdownMenuContent>
+      </DropdownMenu>
+    </Awareness>
   )
 }
 
