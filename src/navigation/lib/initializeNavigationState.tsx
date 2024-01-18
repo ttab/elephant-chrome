@@ -23,13 +23,13 @@ export function initializeNavigationState(): NavigationState {
   // Initialize navigationstate from scratch if no contentState exists (or is empty []) in history
   if (!history?.state?.contentState?.length) {
     const InititalView = viewRegistry.getByPath(window.location.pathname)
-    const id = uuid.v4()
+    const viewId = uuid.v4()
 
     history.replaceState({
-      id,
+      viewId,
       viewName: name,
       contentState: [{
-        id,
+        viewId,
         name,
         props,
         path: window.location.pathname
@@ -40,11 +40,11 @@ export function initializeNavigationState(): NavigationState {
       viewRegistry,
       views: [{ name, colSpan: 12 }],
       focus: null,
-      active: id,
+      active: viewId,
       content: [(
-        <ViewProvider key={id} id={id} name={name}>
+        <ViewProvider key={viewId} viewId={viewId} name={name}>
           <ViewWrapper colSpan={12}>
-            <InititalView.component id={id} />
+            <InititalView.component {...props} />
           </ViewWrapper>
         </ViewProvider>
       )]
@@ -63,9 +63,9 @@ export function initializeNavigationState(): NavigationState {
     const width = widths[index]
 
     return (
-      <ViewProvider key={item.id} id={item.id} name={item.name}>
+      <ViewProvider key={item.viewId} viewId={item.viewId} name={item.name}>
         <ViewWrapper colSpan={width.colSpan}>
-          <Component {...{ ...item, index }} />
+          <Component {...item.props} />
         </ViewWrapper>
       </ViewProvider>
     )

@@ -17,7 +17,7 @@ export interface NavigationAction {
   name?: string
   component?: React.FC<ViewProps>
   content?: ContentState[]
-  id?: string
+  viewId?: string
   active?: string
 }
 
@@ -56,13 +56,13 @@ export interface NavigationState {
 }
 
 export interface ContentState {
-  id: string
+  viewId: string
   name: View
   props: ViewProps
 }
 
 export interface HistoryState {
-  id: string
+  viewId: string
   viewName: string
   props: Record<string, unknown>
   path: string
@@ -72,7 +72,6 @@ export interface HistoryState {
 
 export interface ViewProps {
   id?: string
-  documentId?: string
 }
 
 export type Theme = 'dark' | 'light' | 'system'
@@ -83,7 +82,7 @@ export interface ThemeProviderState {
 }
 
 export interface ViewProviderState {
-  id: string
+  viewId: string
   name: string
   isActive: boolean
   isFocused: boolean

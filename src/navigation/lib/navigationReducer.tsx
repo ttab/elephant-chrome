@@ -24,15 +24,15 @@ export function navigationReducer(state: NavigationState, action: NavigationActi
         ...state,
         views,
         focus: null,
-        active: action?.active || action.content[action.content.length - 1].id,
+        active: action?.active || action.content[action.content.length - 1].viewId,
         content: action.content.map((item: ContentState, index): JSX.Element => {
           const Component = state.viewRegistry.get(item.name)?.component
           const width = views[index]
 
           return (
-            <ViewProvider key={item.id} id={item.id} name={item.name}>
+            <ViewProvider key={item.viewId} viewId={item.viewId} name={item.name}>
               <ViewWrapper colSpan={width.colSpan}>
-                <Component {...{ ...item, index }} />
+                <Component {...item.props} />
               </ViewWrapper>
             </ViewProvider>
           )
@@ -41,24 +41,24 @@ export function navigationReducer(state: NavigationState, action: NavigationActi
     }
 
     case NavigationActionType.FOCUS:
-      if (action.id === undefined) {
-        throw new Error('Id is undefined')
+      if (action.viewId === undefined) {
+        throw new Error('ViewId is undefined')
       }
 
       return {
         ...state,
-        focus: action.id === state.focus ? null : action.id
+        focus: action.viewId === state.focus ? null : action.viewId
       }
 
     case NavigationActionType.ACTIVE: {
-      if (action.id === undefined) {
-        throw new Error('Id is undefined')
+      if (action.viewId === undefined) {
+        throw new Error('ViewId is undefined')
       }
 
-      const current = history.state.contentState.find((item: HistoryState) => item.id === action.id)
+      const current = history.state.contentState.find((item: HistoryState) => item.viewId === action.viewId)
 
       history.replaceState({
-        id: action.id,
+        id: action.viewId,
         viewName: current.name,
         path: current.path,
         contentState: history.state.contentState
@@ -68,7 +68,7 @@ export function navigationReducer(state: NavigationState, action: NavigationActi
       return {
         ...state,
         focus: null,
-        active: action.id
+        active: action.viewId
       }
     }
 

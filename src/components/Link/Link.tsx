@@ -15,7 +15,7 @@ interface LinkProps {
 
 export const Link = forwardRef((props: LinkProps, ref: ForwardedRef<HTMLAnchorElement>) => {
   const { state, dispatch } = useNavigation()
-  const id = uuid()
+  const viewId = uuid()
   const viewItem = state.viewRegistry.get(props.to)
   const qs = toQueryString(props.props)
 
@@ -36,7 +36,7 @@ export const Link = forwardRef((props: LinkProps, ref: ForwardedRef<HTMLAnchorEl
           viewItem,
           viewRegistry: state.viewRegistry,
           props: { ...props.props },
-          id
+          viewId
         })
       }}
       ref={ref}>

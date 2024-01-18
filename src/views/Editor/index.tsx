@@ -34,7 +34,7 @@ const meta: ViewMetadata = {
 
 const Editor = (props: ViewProps): JSX.Element => {
   const query = useQuery()
-  const documentId = props.documentId || query.documentId
+  const documentId = props.id || query.id
 
   return (
     <>
