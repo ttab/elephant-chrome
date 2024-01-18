@@ -39,7 +39,8 @@ export const type: ColumnDef<Planning> = {
     filter: 'facet',
     options: columnValueOptions,
     name: 'Type',
-    columnIcon: Crosshair
+    columnIcon: Crosshair,
+    className: 'box-content w-[120px] hidden @6xl/view:[display:revert]'
   },
   accessorFn: (data) => data._source['document.meta.core_assignment.meta.core_assignment_type.value'],
   cell: ({ row }) => {

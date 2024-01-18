@@ -8,7 +8,8 @@ export const title: ColumnDef<Planning> = {
   meta: {
     filter: null,
     name: 'Title',
-    columnIcon: Pen
+    columnIcon: Pen,
+    className: 'box-content truncate'
   },
   accessorFn: (data) => data._source['document.title'][0],
   cell: ({ row }) => {
@@ -16,10 +17,10 @@ export const title: ColumnDef<Planning> = {
     const slugline = row.original._source['document.meta.core_assignment.meta.tt_slugline.value']
 
     return (
-      <div className='flex space-x-2 w-fit'>
+      <div className='flex space-x-2 justify-start'>
         <StatusIndicator internal={internal} />
 
-        <span className='max-w-[200px] md:max-w-[300px] lg:max-w-[700px] truncate font-medium'>
+        <span className='truncate font-medium'>
           {row.getValue('title')}
         </span>
 

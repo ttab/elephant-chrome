@@ -105,7 +105,10 @@ export const PlanningTable = <TData, TValue>({
         }}
       >
         {row.getVisibleCells().map((cell) => (
-          <TableCell key={cell.id}>
+          <TableCell
+            key={cell.id}
+            className={cell.column.columnDef.meta?.className}
+          >
             {flexRender(
               cell.column.columnDef.cell,
               cell.getContext()

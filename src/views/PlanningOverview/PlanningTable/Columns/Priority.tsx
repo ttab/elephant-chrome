@@ -13,7 +13,8 @@ export const priority: ColumnDef<Planning> = {
     filter: 'facet',
     options: Priorities,
     name: 'Priority',
-    columnIcon: SignalHigh
+    columnIcon: SignalHigh,
+    className: 'box-content w-[55px]'
   },
   accessorFn: (data) => data._source['document.meta.core_planning_item.data.priority'][0],
   cell: ({ row }) => {
