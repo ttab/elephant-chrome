@@ -59,6 +59,7 @@ export interface NavigationState {
 export interface ContentState {
   viewId: string
   name: View
+  path: string
   props: ViewProps
 }
 
