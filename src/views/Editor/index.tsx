@@ -1,4 +1,4 @@
-import { ViewHeader } from '@/components'
+import { AwarenessDocument, ViewHeader } from '@/components'
 import { YjsEditor, withCursors, withYHistory, withYjs } from '@slate-yjs/core'
 import { PenBoxIcon } from '@ttab/elephant-ui/icons'
 import {
@@ -13,12 +13,12 @@ import * as Y from 'yjs'
 
 import {
   useQuery,
-  useCollaboration
+  useCollaboration,
+  useAwareness
 } from '@/hooks'
 import { type ViewMetadata, type ViewProps } from '@/types'
 import { ScrollArea } from '@ttab/elephant-ui'
 import { EditorHeader } from './EditorHeader'
-import { CollaborationProviderContext } from '@/contexts'
 
 const meta: ViewMetadata = {
   name: 'Editor',
@@ -39,22 +39,29 @@ const Editor = (props: ViewProps): JSX.Element => {
   return (
     <>
       {documentId
-        ? <CollaborationProviderContext documentId={documentId}>
-          <EditorViewContent {...props} />
-        </CollaborationProviderContext>
-        : <></>
+        ? <AwarenessDocument documentId={documentId}>
+          <EditorViewContent documentId={documentId} {...props} />
+        </AwarenessDocument>
+        : <>
+          {/* TODO: Should we have a skeleton loading screen here */}
+        </>
       }
     </>
   )
 }
 
-function EditorViewContent(props: ViewProps): JSX.Element {
+function EditorViewContent(props: ViewProps & { documentId: string }): JSX.Element {
   const {
     provider,
     synced: isSynced,
     user
   } = useCollaboration()
 
+  const [focused] = useAwareness(props.documentId)
+
+  useEffect(() => {
+    console.log(focused)
+  }, [focused])
 
   // Create YjsEditor for Textbit to use
   const editor = useMemo(() => {

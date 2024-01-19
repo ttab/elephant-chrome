@@ -51,8 +51,6 @@ const initialState: CollaborationProviderState = {
 // Create the context
 export const CollaborationContext = createContext(initialState)
 
-
-// Create the context provider component
 interface CollabContextProviderProps extends PropsWithChildren {
   documentId?: string
 }
@@ -91,10 +89,11 @@ export const CollaborationProviderContext = ({ documentId, children }: CollabCon
       },
       onAwarenessChange: (data) => {
         setStates(data.states as AwarenessStates)
-      },
-      onAwarenessUpdate: (data) => {
-        setStates(data.states as AwarenessStates)
       }
+      // TODO: Is this necessary, it's a lot chattier than onAwarenessChange, why would it be necessary?
+      // onAwarenessUpdate: (data) => {
+      //   setStates(data.states as AwarenessStates)
+      // }
     })
 
     return provider
