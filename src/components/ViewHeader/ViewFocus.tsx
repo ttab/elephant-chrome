@@ -3,25 +3,25 @@ import { Button } from '@ttab/elephant-ui'
 import { Maximize2, Minimize2 } from '@ttab/elephant-ui/icons'
 
 import { useNavigation } from '@/hooks'
-import { NavigationActionType, type ViewProps } from '@/types'
+import { NavigationActionType } from '@/types'
 
-export const ViewFocus = ({ id }: ViewProps): JSX.Element => {
+export const ViewFocus = ({ viewId }: { viewId: string }): JSX.Element => {
   const { state, dispatch } = useNavigation()
 
   useEffect(() => {
     const close = (e: KeyboardEvent): void => {
-      if (e.key === 'Escape' && state.focus === id) {
+      if (e.key === 'Escape' && state.focus === viewId) {
         e.preventDefault()
         dispatch({
           type: NavigationActionType.FOCUS,
-          id
+          viewId
         })
       }
     }
 
     document.addEventListener('keydown', close)
     return () => document.removeEventListener('keydown', close)
-  }, [dispatch, id, state.focus])
+  }, [dispatch, viewId, state.focus])
 
   return (
     <Button
@@ -30,11 +30,11 @@ export const ViewFocus = ({ id }: ViewProps): JSX.Element => {
       onClick={() => {
         dispatch({
           type: NavigationActionType.FOCUS,
-          id
+          viewId
         })
       }}
     >
-      {state.focus === id
+      {state.focus === viewId
         ? <Minimize2 className='h-[1.2rem] w-[1.2rem]' />
         : <Maximize2 className='h-[1.2rem] w-[1.2rem]' />
       }

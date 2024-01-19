@@ -26,7 +26,7 @@ describe('Link', () => {
     render(
       <SessionProvider>
         <NavigationProvider>
-          <Link to='Editor' props={{ documentId: 'abc123' }}>
+          <Link to='Editor' props={{ id: 'abc123' }}>
             Planning Overview
           </Link>
         </NavigationProvider>
@@ -36,9 +36,9 @@ describe('Link', () => {
 
     await userEvent.click(screen.getByText('Planning Overview'))
     setTimeout(() => {
-      expect(history.state.contentState[0].props.documentId).toBe('abc123')
+      expect(history.state.contentState[0].props.id).toBe('abc123')
       expect(history.state.viewName).toBe('Editor')
-      expect(history.state.contentState[0].path).toBe('/editor?documentId=abc123')
+      expect(history.state.contentState[0].path).toBe('/editor?id=abc123')
     })
   })
 })

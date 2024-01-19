@@ -28,7 +28,7 @@ export const Actions = ({ deliverableUuids }: { deliverableUuids: string[] }): J
           ? deliverableUuids.map((uuid) => {
             return (
               <DropdownMenuItem key={uuid}>
-                <Link to='Editor' props={{ documentId: uuid }}>
+                <Link to='Editor' props={{ id: uuid }}>
                   {uuid}
                 </Link>
               </DropdownMenuItem>

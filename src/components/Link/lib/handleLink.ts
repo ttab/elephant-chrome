@@ -15,11 +15,11 @@ interface LinkClick {
   dispatch: React.Dispatch<NavigationAction>
   viewItem: ViewRegistryItem
   viewRegistry: ViewRegistry
+  viewId: string
   props?: ViewProps
-  id: string
 }
 
-export function handleLink({ event, dispatch, viewItem, viewRegistry, props, id }: LinkClick): void {
+export function handleLink({ event, dispatch, viewItem, viewRegistry, props, viewId }: LinkClick): void {
   if (event?.ctrlKey || event?.metaKey) {
     return
   }
@@ -30,8 +30,8 @@ export function handleLink({ event, dispatch, viewItem, viewRegistry, props, id 
   const content = [
     ...history.state.contentState,
     {
-      ...props,
-      id,
+      props,
+      viewId,
       name: viewItem.meta.name,
       path: `${viewItem.meta.path}${toQueryString(props)}`
     }
@@ -44,8 +44,8 @@ export function handleLink({ event, dispatch, viewItem, viewRegistry, props, id 
 
   // Set history state first, then navigation state
   history.pushState({
-    id,
-    props: { ...props, id },
+    viewId,
+    props,
     viewName: viewItem.meta.name,
     contentState: content
   }, viewItem.meta.name, `${viewItem.meta.path}${toQueryString(props)}`)

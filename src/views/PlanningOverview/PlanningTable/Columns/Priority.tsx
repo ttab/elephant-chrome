@@ -5,7 +5,6 @@ import {
 } from '@ttab/elephant-ui'
 import { useMemo } from 'react'
 
-
 export const Priority = ({ priority }: { priority: ColumnValueOption }): JSX.Element => {
   return useMemo(() => (
     <TooltipProvider>

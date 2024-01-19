@@ -18,7 +18,8 @@ export const columns: Array<ColumnDef<Planning>> = [
       filter: 'facet',
       options: Priorities,
       name: 'Priority',
-      columnIcon: SignalHigh
+      columnIcon: SignalHigh,
+      className: 'box-content w-[55px]'
     },
     accessorFn: (data) => data._source['document.meta.core_planning_item.data.priority'][0],
     cell: ({ row }) => {
@@ -43,12 +44,13 @@ export const columns: Array<ColumnDef<Planning>> = [
     meta: {
       filter: null,
       name: 'Title',
-      columnIcon: Pen
+      columnIcon: Pen,
+      className: 'box-content truncate'
     },
     accessorFn: (data) => data._source['document.title'][0],
     cell: ({ row }) => {
       const internal = row.original._source['document.meta.core_planning_item.data.public'][0] !== 'true'
-      const slugline = row.original._source['document.meta.core_assignment.meta.tt_slugline.value'][0]
+      const slugline = row.original._source['document.meta.core_assignment.meta.tt_slugline.value']?.[0]
       const title = row.getValue('title')
 
       return <Title title={title as string} internal={internal} slugline={slugline} />
@@ -61,7 +63,8 @@ export const columns: Array<ColumnDef<Planning>> = [
       options: Sectors,
       filter: 'facet',
       name: 'Sector',
-      columnIcon: Shapes
+      columnIcon: Shapes,
+      className: 'box-content w-[115px] hidden @4xl/view:[display:revert]'
     },
     accessorFn: (data) => data._source['document.rel.sector.title'][0],
     cell: ({ row }) => {
@@ -76,7 +79,8 @@ export const columns: Array<ColumnDef<Planning>> = [
     meta: {
       filter: 'facet',
       name: 'Assignees',
-      columnIcon: Users
+      columnIcon: Users,
+      className: 'box-content w-[112px] hidden @5xl/view:[display:revert]'
     },
     accessorFn: (data) => data._source['document.meta.core_assignment.rel.assignee.name'],
     cell: ({ row }) => {
@@ -90,7 +94,8 @@ export const columns: Array<ColumnDef<Planning>> = [
       filter: 'facet',
       options: AssignmentTypes,
       name: 'Type',
-      columnIcon: Crosshair
+      columnIcon: Crosshair,
+      className: 'box-content w-[120px] hidden @6xl/view:[display:revert]'
     },
     accessorFn: (data) => data._source['document.meta.core_assignment.meta.core_assignment_type.value'],
     cell: ({ row }) => {
@@ -110,7 +115,8 @@ export const columns: Array<ColumnDef<Planning>> = [
     meta: {
       filter: null,
       name: 'Time',
-      columnIcon: Clock
+      columnIcon: Clock,
+      className: 'box-content w-[120px] hidden @3xl/view:[display:revert]'
     },
     accessorFn: (data) => getPublishTime(data._source['document.meta.core_assignment.data.publish']),
     cell: ({ row }) => (
@@ -122,7 +128,8 @@ export const columns: Array<ColumnDef<Planning>> = [
     meta: {
       filter: null,
       name: 'Action',
-      columnIcon: Navigation
+      columnIcon: Navigation,
+      className: 'box-content w-[32px]'
     },
     cell: ({ row }) => {
       const deliverableUuids = row.original._source['document.meta.core_assignment.rel.deliverable.uuid'] || []
