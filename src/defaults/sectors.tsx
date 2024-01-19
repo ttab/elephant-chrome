@@ -1,4 +1,6 @@
-export const Sectors = [
+import { type ColumnValueOption } from '@/types'
+
+export const Sectors: ColumnValueOption[] = [
   {
     value: 'Utrikes',
     label: 'Utrikes',

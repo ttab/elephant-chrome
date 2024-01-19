@@ -44,7 +44,7 @@ export const EditorHeader = ({ isSynced, document }: ToolbarProps): JSX.Element 
           return {
             label: p.label,
             value: p.value,
-            icon: <p.icon color={p.color} />
+            icon: p.icon && <p.icon color={p.color} />
           }
         })}
       />
