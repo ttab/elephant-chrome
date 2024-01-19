@@ -28,5 +28,6 @@ export const Priority = ({ priority }: { priority: ColumnValueOption }): JSX.Ele
           <p>{priority.label}</p>
         </TooltipContent>
       </Tooltip>
-    </TooltipProvider>), [priority])
+    </TooltipProvider>
+  ), [priority])
 }
