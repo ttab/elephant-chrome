@@ -123,7 +123,7 @@ export const PlanningTable = <TData, TValue>({
     <div className="space-y-2">
       <Toolbar table={table} />
       <div className="rounded-md">
-        <Table>
+        <Table className='table-fixed'>
           <TableBody>
             <TableBodyElement />
           </TableBody>
