@@ -6,7 +6,7 @@ import { cn } from '@ttab/elephant-ui/utils'
 
 export const AssigneeAvatars = ({ assignees }: { assignees: string[] }): JSX.Element => {
   return (
-    <div className={cn('flex -space-x-2 w-fit text-xs font-semibold leading-6 h-8 items-center',
+    <div className={cn('flex -space-x-2 w-fit text-xs font-semibold leading-7 h-8 items-center',
       assignees.length > 3 && 'border rounded-full')}>
       {(assignees || []).slice(0, 3).map((assignee: string, index: number) => {
         return (
@@ -33,7 +33,7 @@ export const AssigneeAvatars = ({ assignees }: { assignees: string[] }): JSX.Ele
             <TooltipContent>
               {assignees.map((assignee, index) => {
                 return (
-                  <div key={index} className='flex p-1 text-xs font-semibold leading-6 items-center'>
+                  <div key={index} className='flex p-1 text-xs font-semibold leading-7 items-center'>
                     <div className='w-8 h-8 rounded-full flex items-center justify-center border-2 mr-4'>
                       {getInitials(assignee)}
                     </div>

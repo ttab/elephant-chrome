@@ -17,7 +17,7 @@ export const Title = ({ internal, slugline, title }: TitleProps): JSX.Element =>
       </span>
 
       {!!slugline?.length && (
-        <span className='hidden font-medium text-slate-500 lg:block'>{slugline}</span>
+        <span className='hidden font-medium text-slate-500 @2xl/view:[display:revert]'>{slugline}</span>
       )}
     </div>), [internal, slugline, title])
 }
