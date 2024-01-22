@@ -87,13 +87,9 @@ export const CollaborationProviderContext = ({ documentId, children }: CollabCon
       onDisconnect: () => {
         setSynced(false)
       },
-      onAwarenessChange: (data) => {
+      onAwarenessUpdate: (data) => {
         setStates(data.states as AwarenessStates)
       }
-      // TODO: Is this necessary, it's a lot chattier than onAwarenessChange, why would it be necessary?
-      // onAwarenessUpdate: (data) => {
-      //   setStates(data.states as AwarenessStates)
-      // }
     })
 
     return provider
@@ -104,7 +100,7 @@ export const CollaborationProviderContext = ({ documentId, children }: CollabCon
     const colors = Object.keys(Collaboration.colors)
     return {
       name: jwt.sub_name,
-      initials: jwt.sub_name.split(' ').map(t => t.substring(0, 1)).join(' '),
+      initials: jwt.sub_name.split(' ').map(t => t.substring(0, 1)).join(''),
       color: colors[Math.floor(Math.random() * colors.length)],
       avatar: undefined
     }

@@ -9,7 +9,7 @@ type AwarenessState = [
   (value: boolean) => void // set value
 ]
 
-export const useAwareness = (name: string): AwarenessState => {
+export const useAwareness = (key: string): AwarenessState => {
   const { provider, states, user } = useCollaboration()
   const [value, setValue] = useState<AwarenessStates>([])
   const localClientId = provider?.configuration?.awareness?.clientID
@@ -20,8 +20,7 @@ export const useAwareness = (name: string): AwarenessState => {
         if (!focus) {
           return false
         }
-
-        return focus?.key === name && clientId !== localClientId
+        return focus?.key === key && clientId !== localClientId
       })
 
     if (!remoteStates.length && value.length) {
@@ -29,12 +28,12 @@ export const useAwareness = (name: string): AwarenessState => {
     } else if (remoteStates.length && !value.length) {
       setValue(remoteStates)
     }
-  }, [name, value, states, localClientId])
+  }, [key, value, states, localClientId])
 
   return [
     value,
     (newValue) => {
-      provider?.setAwarenessField('focus', newValue ? { key: name, color: user.color } : undefined)
+      provider?.setAwarenessField('focus', newValue ? { key, color: user.color } : undefined)
     }
   ]
 }

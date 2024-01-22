@@ -13,8 +13,7 @@ import * as Y from 'yjs'
 
 import {
   useQuery,
-  useCollaboration,
-  useAwareness
+  useCollaboration
 } from '@/hooks'
 import { type ViewMetadata, type ViewProps } from '@/types'
 import { ScrollArea } from '@ttab/elephant-ui'
@@ -56,12 +55,6 @@ function EditorViewContent(props: ViewProps & { documentId: string }): JSX.Eleme
     synced: isSynced,
     user
   } = useCollaboration()
-
-  const [focused] = useAwareness(props.documentId)
-
-  useEffect(() => {
-    console.log(focused)
-  }, [focused])
 
   // Create YjsEditor for Textbit to use
   const editor = useMemo(() => {

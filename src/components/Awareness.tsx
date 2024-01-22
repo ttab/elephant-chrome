@@ -28,7 +28,7 @@ export const Awareness = React.forwardRef(({ name, visual = true, children }: Aw
 
   // Currently we only show one user color as ring around remotely focused element
   const state = states.length ? states[0] : null
-  const color = Collaboration.colors[state?.focus?.color || ''] || ''
+  const color = Collaboration.colors[state?.focus?.color || '']?.ring || ''
 
   return (
     <div ref={awarenessRef} className={`rounded ${visual && !!color ? 'ring' : ''} ${color}`}>
