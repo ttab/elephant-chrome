@@ -38,12 +38,18 @@ export const PlanningGrid = ({ startDate, endDate }: PlanningGridProps): JSX.Ele
     if (!jwt) {
       return
     }
+    const start = searchUrl.searchParams.get('start')
+    const end = searchUrl.searchParams.get('end')
+
+    if (start === null || end === null) {
+      throw new Error('Start or end cant be null')
+    }
 
     const result = await Planning.search(indexUrl, jwt, {
       size: 500,
       where: {
-        start: searchUrl.searchParams.get('start') as string,
-        end: searchUrl.searchParams.get('end') as string
+        start,
+        end
       },
       sort: {
         start: 'asc'

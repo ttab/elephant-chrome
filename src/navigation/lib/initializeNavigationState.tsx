@@ -53,7 +53,7 @@ export function initializeNavigationState(): NavigationState {
 
 
   // Recreate navigationstate from history when contentState exist in history
-  const preContent = history.state.contentState.map((item: ContentState): { name: string } => {
+  const preContent: ContentState[] = history.state.contentState.map((item: ContentState): { name: string } => {
     return item
   })
   const widths = calculateViewWidths(viewRegistry, preContent)

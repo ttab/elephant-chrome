@@ -19,12 +19,7 @@ export const SessionProvider = ({ children }: {
   useEffect(() => {
     const fetchToken = async (): Promise<void> => {
       const result = await fetchOrRefreshToken()
-
-      if (result) {
-        setJwt(JSON.parse(result))
-      } else {
-        setJwt(undefined)
-      }
+      setJwt(parseJWT(result))
     }
 
     if (!jwt?.exp) {
@@ -45,10 +40,7 @@ export const SessionProvider = ({ children }: {
   const value: SessionProviderState = {
     jwt,
     setJwt: jwtToken => {
-      setJwt(!jwtToken
-        ? undefined
-        : JSON.parse(jwtToken)
-      )
+      setJwt(parseJWT(jwtToken))
     }
   }
 
@@ -79,5 +71,12 @@ async function fetchOrRefreshToken(): Promise<string | undefined> {
   } catch (error) {
     console.error('Unable to retrieve session', error)
     return undefined
+  }
+}
+
+function parseJWT(value?: string): JWT | undefined {
+  if (value) {
+    const JWT: JWT = JSON.parse(value)
+    return JWT
   }
 }
