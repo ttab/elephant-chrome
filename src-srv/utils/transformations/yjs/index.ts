@@ -9,7 +9,7 @@ export function yjsStateAsUpdate(content: TBElement[], data: Y.Doc): Uint8Array 
   const sharedContentRoot = data.get('content', Y.XmlText) as Y.XmlText
   sharedContentRoot.applyDelta(insertContentDelta)
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-argument
   data.share.set('content', sharedContentRoot as Y.AbstractType<any>)
 
   return Y.encodeStateAsUpdate(data)
@@ -60,11 +60,11 @@ export function yDocToNewsDoc(document: Y.Doc): GetDocumentResponse {
 
   // revert content
   const sharedRoot = document.get('content', Y.XmlText) as Y.XmlText
-  const content = yTextToSlateElement(sharedRoot).children
+  const content: TBElement[] = yTextToSlateElement(sharedRoot).children
+  const version: number = json.version
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  json.document.content = slateToNewsDoc(content as any)
-  json.version = BigInt(json.version)
+  json.document.content = slateToNewsDoc(content)
+  json.version = BigInt(version)
 
   return json as GetDocumentResponse
 }
