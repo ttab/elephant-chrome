@@ -1,11 +1,17 @@
 import { ViewHeader } from '@/components'
 import { type ViewMetadata, type ViewProps } from '@/types'
-import { ScrollArea } from '@ttab/elephant-ui'
+import { ScrollArea, Separator } from '@ttab/elephant-ui'
 import { GanttChartSquare } from '@ttab/elephant-ui/icons'
 import { Textbit } from '@ttab/textbit'
 import { useCollaboration, useQuery } from '@/hooks'
 import { CollaborationProviderContext } from '@/contexts'
-import { Title } from './Title'
+import { PlanningHeader } from './PlanningHeader'
+import { PlanAssignments } from './components/PlanAssignments'
+import { PlanDate } from './components/PlanDate'
+import { PlanDescription } from './components/PlanDescription'
+import { PlanSector } from './components/PlanSector'
+import { PlanStatus } from './components/PlanStatus'
+import { PlanTitle } from './components/PlanTitle'
 
 const meta: ViewMetadata = {
   name: 'Planning',
@@ -39,24 +45,33 @@ export const Planning = (props: ViewProps): JSX.Element => {
 const PlanningViewContent = (props: ViewProps): JSX.Element => {
   const {
     provider,
-    synced: isSynced,
-    user
+    synced: isSynced
   } = useCollaboration()
 
+
+  const document = isSynced ? provider?.document : undefined
 
   return (
     <Textbit>
       <div className={`flex flex-col h-screen ${!isSynced ? 'opacity-60' : ''}`}>
         <div className="grow-0">
           <ViewHeader {...props} title="Planering" icon={GanttChartSquare}>
+            <PlanningHeader isSynced={isSynced} document={document} />
           </ViewHeader>
         </div>
 
         <ScrollArea>
-          <div className="overscroll-auto">
-            <h1 className='font-bold text-lg'>id: {props.id}</h1>
-            <Title isSynced document={isSynced ? provider?.document : undefined}/>
-          </div>
+          <section className='overscroll-auto w-full space-y-4 p-8'>
+            <PlanDate isSynced={isSynced} document={document} />
+            <div className='flex justify-between'>
+              <PlanSector isSynced={isSynced} document={document} />
+              <PlanStatus isSynced={isSynced} document={document} />
+            </div>
+            <Separator />
+            <PlanAssignments isSynced={isSynced} document={document} />
+            <PlanTitle isSynced={isSynced} document={document} className='font-bold text-xl py-4' />
+            <PlanDescription isSynced={isSynced} document={document} />
+          </section>
         </ScrollArea>
       </div>
     </Textbit>

@@ -1,6 +1,7 @@
 import type * as views from '@/views'
 import { LucideIcon } from '@ttab/elephant-ui/icons'
 import { type JWTPayload } from 'jose'
+import type * as Y from 'yjs'
 
 export enum NavigationActionType {
   ADD = 'add',
@@ -103,4 +104,10 @@ export interface ColumnValueOption {
   value: string
   icon?: LucideIcon,
   color?: string
+}
+
+export interface PlanningComponentProps {
+  isSynced: boolean
+  document?: Y.Doc
+  className?: string
 }

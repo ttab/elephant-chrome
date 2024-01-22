@@ -1,17 +1,17 @@
 import { useEffect } from 'react'
-import { useYMap } from '@/hooks/useYjsMap'
+import { useYMap } from '@/hooks'
 import type * as Y from 'yjs'
 
 import { Priorities } from '@/defaults'
 import { NewsValueTimeDropDown } from './NewsValueTimeDropDown'
 import { NewsValueScoreDropDown } from './NewsValueScoreDropDown'
 
-interface ToolbarProps {
+interface EditorHeaderProps {
   isSynced: boolean
   document?: Y.Doc
 }
 
-export const EditorHeader = ({ isSynced, document }: ToolbarProps): JSX.Element => {
+export const EditorHeader = ({ isSynced, document }: EditorHeaderProps): JSX.Element => {
   const [newsvalueScore, setNewsvalueScore, initNewsvalueScore] = useYMap('core/newsvalue/score')
   const [newsvalueDuration, setNewsvalueDuration, initNewsvalueDuration] = useYMap('core/newsvalue/duration')
   const [newsvalueEnd, setNewsvalueEnd, initNewsvalueEnd] = useYMap('core/newsvalue/end')
