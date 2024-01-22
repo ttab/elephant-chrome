@@ -2,15 +2,10 @@ import { Priorities } from '@/defaults'
 import { useYMap } from '@/hooks'
 import { NewsValueScoreDropDown } from '@/views/Editor/EditorHeader/NewsValueScoreDropDown'
 import { useEffect } from 'react'
-import type * as Y from 'yjs'
 import { PlanTitle } from '../components/PlanTitle'
+import { type CollabComponentProps } from '@/types'
 
-interface PlanningHeaderProps {
-  isSynced: boolean
-  document?: Y.Doc
-}
-
-export const PlanningHeader = ({ isSynced, document }: PlanningHeaderProps): JSX.Element => {
+export const PlanningHeader = ({ isSynced, document }: CollabComponentProps): JSX.Element => {
   const [priority, setPriority, initPriority] = useYMap('core/planning-item/priority')
 
   useEffect(() => {

@@ -1,17 +1,12 @@
 import { useEffect } from 'react'
 import { useYMap } from '@/hooks'
-import type * as Y from 'yjs'
 
 import { Priorities } from '@/defaults'
 import { NewsValueTimeDropDown } from './NewsValueTimeDropDown'
 import { NewsValueScoreDropDown } from './NewsValueScoreDropDown'
+import { type CollabComponentProps } from '@/types'
 
-interface EditorHeaderProps {
-  isSynced: boolean
-  document?: Y.Doc
-}
-
-export const EditorHeader = ({ isSynced, document }: EditorHeaderProps): JSX.Element => {
+export const EditorHeader = ({ isSynced, document }: CollabComponentProps): JSX.Element => {
   const [newsvalueScore, setNewsvalueScore, initNewsvalueScore] = useYMap('core/newsvalue/score')
   const [newsvalueDuration, setNewsvalueDuration, initNewsvalueDuration] = useYMap('core/newsvalue/duration')
   const [newsvalueEnd, setNewsvalueEnd, initNewsvalueEnd] = useYMap('core/newsvalue/end')

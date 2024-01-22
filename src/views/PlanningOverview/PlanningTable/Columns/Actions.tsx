@@ -1,4 +1,4 @@
-import { ActionMenu } from '@/components/ActionMenu'
+import { ActionMenu } from '@/components/DataItem/ActionMenu'
 import { useMemo } from 'react'
 
 export const Actions = ({ deliverableUuids, planningId }: { deliverableUuids: string[], planningId: string }): JSX.Element => {
