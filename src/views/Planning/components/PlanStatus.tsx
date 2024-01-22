@@ -1,10 +1,10 @@
-import { useYMap } from '@/hooks'
-import { type PlanningComponentProps } from '@/types'
-import { Switch, Label } from '@ttab/elephant-ui'
-import { type YMap } from 'node_modules/yjs/dist/src/internals'
 import { useEffect } from 'react'
+import { useYMap } from '@/hooks'
+import { type CollabComponentProps } from '@/types'
+import { Label, Switch } from '@ttab/elephant-ui'
+import { type YMap } from 'node_modules/yjs/dist/src/internals'
 
-export const PlanStatus = ({ isSynced, document }: PlanningComponentProps): JSX.Element => {
+export const PlanStatus = ({ isSynced, document }: CollabComponentProps): JSX.Element => {
   const [status, setStatus, initStatus] = useYMap('core/planning-item/status')
 
 

@@ -1,10 +1,10 @@
+import { useEffect } from 'react'
 import { SectorBadge } from '@/components/DataItem/SectorBadge'
 import { useYMap } from '@/hooks'
+import type { CollabComponentProps } from '@/types'
 import { type YMap } from 'node_modules/yjs/dist/src/internals'
-import { useEffect } from 'react'
-import type { PlanningComponentProps } from '@/types'
 
-export const PlanSector = ({ isSynced, document }: PlanningComponentProps): JSX.Element => {
+export const PlanSector = ({ isSynced, document }: CollabComponentProps): JSX.Element => {
   const [sector, , initSector] = useYMap('core/planning-item/sector')
 
   useEffect(() => {

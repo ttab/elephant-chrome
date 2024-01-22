@@ -1,10 +1,10 @@
-import { useYMap, useRegistry } from '@/hooks'
+import { useEffect } from 'react'
+import { useRegistry, useYMap } from '@/hooks'
+import { type CollabComponentProps } from '@/types'
 import { Calendar } from '@ttab/elephant-ui/icons'
 import { type YMap } from 'node_modules/yjs/dist/src/internals'
-import { useEffect } from 'react'
-import type { PlanningComponentProps } from '@/types'
 
-export const PlanDate = ({ isSynced, document }: PlanningComponentProps): JSX.Element => {
+export const PlanDate = ({ isSynced, document }: CollabComponentProps): JSX.Element => {
   const [start, , initStart] = useYMap('core/planning-item/start')
   const [end, , initEnd] = useYMap('core/planning-item/start')
 

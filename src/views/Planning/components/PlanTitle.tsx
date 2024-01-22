@@ -1,11 +1,11 @@
-import { useYMap } from '@/hooks'
-import { type PlanningComponentProps } from '@/types'
-import { Input } from '@ttab/elephant-ui'
-import { type YMap } from 'node_modules/yjs/dist/src/internals'
 import { useEffect } from 'react'
+import { useYMap } from '@/hooks'
+import { type CollabComponentProps } from '@/types'
+import { Input } from '@ttab/elephant-ui'
 import { cn } from '@ttab/elephant-ui/utils'
+import { type YMap } from 'node_modules/yjs/dist/src/internals'
 
-export const PlanTitle = ({ isSynced, document, className }: PlanningComponentProps): JSX.Element | null => {
+export const PlanTitle = ({ isSynced, document, className }: CollabComponentProps): JSX.Element | null => {
   const [title = '', setTitle, initTitle] = useYMap('core/planning-item/title')
 
   useEffect(() => {

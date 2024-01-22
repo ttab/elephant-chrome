@@ -1,13 +1,13 @@
-import { useYMap } from '@/hooks'
-import { type PlanningComponentProps } from '@/types'
-import { Separator } from '@ttab/elephant-ui'
-import { type YMap } from 'node_modules/yjs/dist/src/internals'
 import { useEffect } from 'react'
 import { Link } from '@/components'
 import { Avatar } from '@/components/Avatar'
+import { useYMap } from '@/hooks'
+import { type CollabComponentProps } from '@/types'
+import { Separator } from '@ttab/elephant-ui'
+import { type YMap } from 'node_modules/yjs/dist/src/internals'
 import { type Block } from '../../../../src-srv/protos/service'
 
-export const PlanAssignments = ({ isSynced, document }: PlanningComponentProps): JSX.Element => {
+export const PlanAssignments = ({ isSynced, document }: CollabComponentProps): JSX.Element => {
   const [assignments, , initAssignments] = useYMap('core/assignments')
 
   useEffect(() => {

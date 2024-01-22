@@ -1,10 +1,10 @@
-import { useYMap } from '@/hooks'
-import { type PlanningComponentProps } from '@/types'
-import { type YMap } from 'node_modules/yjs/dist/src/internals'
 import { useEffect } from 'react'
+import { useYMap } from '@/hooks'
+import { type CollabComponentProps } from '@/types'
 import { Textarea } from '@ttab/elephant-ui'
+import { type YMap } from 'node_modules/yjs/dist/src/internals'
 
-export const PlanDescription = ({ isSynced, document }: PlanningComponentProps): JSX.Element => {
+export const PlanDescription = ({ isSynced, document }: CollabComponentProps): JSX.Element => {
   const [description, setDescription, initDescription] = useYMap('core/description/text')
 
 

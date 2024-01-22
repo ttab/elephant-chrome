@@ -107,7 +107,7 @@ export interface ColumnValueOption {
   color?: string
 }
 
-export interface PlanningComponentProps {
+export interface CollabComponentProps {
   isSynced: boolean
   document?: Y.Doc
   className?: string
