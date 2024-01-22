@@ -1,27 +1,19 @@
 import { useSession } from '@/hooks'
-import { getInitials } from '@/lib/getInitials'
 import {
-  Avatar as AvatarMain,
-  AvatarFallback,
   Popover,
   PopoverTrigger,
   PopoverContent
 } from '@ttab/elephant-ui'
+import { Avatar } from '../Avatar'
 
-export const Avatar = (): JSX.Element => {
+export const User = (): JSX.Element => {
   const { jwt } = useSession()
 
   return (
     <Popover>
 
       <PopoverTrigger className='mr-2'>
-        <AvatarMain className='h-8 w-8 mt-1'>
-          <AvatarFallback
-            className='bg-[#973C9F] border-2 text-background dark:text-foreground text-sm font-semibold leading-6'
-          >
-            {jwt?.sub_name ? getInitials(jwt?.sub_name) : '??'}
-          </AvatarFallback>
-        </AvatarMain>
+        <Avatar variant='menu' value={jwt?.sub_name || '??'} />
       </PopoverTrigger>
 
       <PopoverContent className="w-80" sideOffset={20} align='end' alignOffset={15}>

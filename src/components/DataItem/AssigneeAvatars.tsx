@@ -13,7 +13,7 @@ export const AssigneeAvatars = ({ assignees }: { assignees: string[] }): JSX.Ele
           <TooltipProvider key={index}>
             <Tooltip>
               <TooltipTrigger>
-                <Avatar value={assignee} />
+                <Avatar variant='table' value={assignee} />
               </TooltipTrigger>
               <TooltipContent>
                 <p>{assignee}</p>
@@ -32,7 +32,7 @@ export const AssigneeAvatars = ({ assignees }: { assignees: string[] }): JSX.Ele
               {assignees.map((assignee, index) => {
                 return (
                   <div key={index} className='flex p-1 text-xs font-semibold leading-7 items-center'>
-                    <Avatar value={assignee} className='mr-4'/>
+                    <Avatar variant='table' value={assignee} className='mr-4'/>
                     <p>{assignee}</p>
                   </div>)
               })}

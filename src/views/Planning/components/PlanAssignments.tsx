@@ -32,7 +32,7 @@ export const PlanAssignments = ({ isSynced, document }: PlanningComponentProps):
         return (
           <div key={index} className='flex flex-col'>
             <div className='flex space-x-1'>
-              <Avatar size={'sm'} value={author} />
+              <Avatar variant='plan' size='sm' value={author} />
               <span className='text-sm font-medium leading-8'>{author}</span>
             </div>
             {uuid
