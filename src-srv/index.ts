@@ -51,7 +51,7 @@ async function runServer(): Promise<string> {
   }
 
   // Connect to Redis
-  const cache = new RedisCache(process.env.REDIS_URL || 'redis://localhost:6379')
+  const cache = new RedisCache(REDIS_URL)
 
   if (!await cache.connect()) {
     throw new Error('Failed connecting to Redis')

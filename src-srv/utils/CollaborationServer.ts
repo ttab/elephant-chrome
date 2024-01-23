@@ -77,7 +77,9 @@ export class CollaborationServer {
       extensions: [
         new Logger(),
         new Redis({
-          options: redisUrl
+          options: {
+            host: redisUrl
+          }
         }),
         new Database({
           fetch: async (payload) => { return await this.#fetchDocument(payload) },
