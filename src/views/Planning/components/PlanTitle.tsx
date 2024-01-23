@@ -26,7 +26,7 @@ export const PlanTitle = ({ isSynced, document, className }: CollabComponentProp
 
   return (
 
-    <Awareness id='PlanTitle' ref={setFocused}>
+    <Awareness name='PlanTitle' ref={setFocused}>
       <Input
         value={title as string}
         className={cn('font-medium text-sm border-0', className)}
@@ -43,7 +43,7 @@ export const PlanTitle = ({ isSynced, document, className }: CollabComponentProp
           }
         }}
         onChange={(event) => setTitle(event.target.value)}
-    />
+      />
     </Awareness>
   )
 }
