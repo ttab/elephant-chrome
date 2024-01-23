@@ -13,7 +13,7 @@ const avatarVariants = cva('text-sm',
       variant: {
         menu: 'bg-[#973C9F] border-2 font-semibold text-background dark:text-foreground',
         plan: 'bg-background border-2 text-muted-foreground text-xs',
-        table: 'bg-background border-2 text-muted-foreground text-xs'
+        table: 'bg-background border text-muted-foreground text-xs'
       },
       size: {
         default: 'size-8',
