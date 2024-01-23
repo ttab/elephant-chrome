@@ -124,35 +124,3 @@ export function is12HourcycleFromLocale(locale: string): boolean {
     return false
   }
 }
-
-/**
- * String date to readable locale date string
-  *
-  * @param value string
-  * @param locale string
-  * @param timeZone string
-  * @returns string | null
-  */
-export function stringToReadableDate(value: string, locale: string, timeZone: string): string | null {
-  if (value === undefined) {
-    return null
-  }
-
-  try {
-    const date = new Date(value)
-    date.setHours(0, 0, 0, 0)
-    date.setDate(date.getDate() - 1)
-
-    const formattedDate = new Intl.DateTimeFormat(locale, {
-      weekday: 'short',
-      month: 'short',
-      day: 'numeric',
-      year: 'numeric',
-      timeZone
-    }).format(date)
-
-    return formattedDate
-  } catch {
-    return null
-  }
-}
