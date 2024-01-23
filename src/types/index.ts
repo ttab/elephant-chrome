@@ -1,5 +1,7 @@
 import type * as views from '@/views'
+import { LucideIcon } from '@ttab/elephant-ui/icons'
 import { type JWTPayload } from 'jose'
+import type * as Y from 'yjs'
 
 export enum NavigationActionType {
   ADD = 'add',
@@ -58,6 +60,7 @@ export interface NavigationState {
 export interface ContentState {
   viewId: string
   name: View
+  path: string
   props: ViewProps
 }
 
@@ -100,6 +103,12 @@ export interface JWT extends JWTPayload {
 export interface ColumnValueOption {
   label: string
   value: string
-  icon?: React.ComponentType<{ className?: string, color?: string }>
+  icon?: LucideIcon,
   color?: string
+}
+
+export interface CollabComponentProps {
+  isSynced: boolean
+  document?: Y.Doc
+  className?: string
 }

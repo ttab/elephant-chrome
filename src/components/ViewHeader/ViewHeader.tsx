@@ -2,10 +2,9 @@ import { type AwarenessUserData } from '@/contexts/CollaborationProvider'
 import { ViewFocus } from './ViewFocus'
 import { useAwareness, useNavigation, useView } from '@/hooks'
 import { type LucideIcon } from '@ttab/elephant-ui/icons'
-import {
-  AvatarGroup,
-  Avatar
-} from '../Avatar'
+import { Avatar } from '../Avatar'
+import { AvatarGroup } from '../AvatarGroup'
+
 import { type PropsWithChildren } from 'react'
 
 interface ViewHeaderProps {
@@ -20,8 +19,8 @@ export const ViewHeader = ({ children, documentId, title, shortTitle, icon: Icon
   const { viewId } = useView()
 
   return (
-    <header className='sticky top-0 flex items-center group-last:w-[calc(100%-5.5rem)] h-14 gap-3 px-3 border-b bg-background z-50'>
-      <div className="flex gap-3 items-center">
+    <header className='sticky top-0 flex items-center justify-items-stretch group-last:w-[calc(100%-5.5rem)] h-14 gap-3 px-3 border-b bg-background z-50'>
+      <div className="flex flex-1 gap-3 items-center">
         {Icon !== undefined &&
           <Icon className="h-4 w-4 -mt-[2px]" />
         }
@@ -70,8 +69,8 @@ function RemoteUsers({ documentId }: PropsWithChildren & { documentId: string })
         {users.map(user => {
           return <Avatar
             key={user.clientId}
-            name={user.data.name}
-            initials={user.data.initials}
+            value={user.data.name}
+            variant="color"
             color={user.data.color}
           />
         })}

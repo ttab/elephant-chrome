@@ -1,4 +1,4 @@
-FROM node:20.10 AS build
+FROM node:20.11 AS build
 
 ARG npm_authtoken
 
@@ -17,7 +17,7 @@ RUN rm -fr node_modules && \
     npm ci --include prod && \
     rm -f .npmrc
 
-FROM node:20.10
+FROM node:20.11
 
 RUN apt-get update && apt-get upgrade -y && apt-get clean
 

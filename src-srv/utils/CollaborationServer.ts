@@ -28,6 +28,11 @@ import {
   newsDocToYmap
 } from './transformations/index.js'
 
+enum DocumentType {
+  ARTICLE = 'core/article',
+  PLANNING = 'core/planning-item'
+}
+
 interface CollaborationServerOptions {
   name: string
   port: number
@@ -175,22 +180,56 @@ export class CollaborationServer {
     const newsDocYMap = newsDocToYmap(documentResponse, yDoc.getMap('original'))
     yDoc.share.set('original', yMapAsYEventAny(newsDocYMap))
 
-    // Share editable content
-    const slateDocument = newsDocToSlate(document?.content ?? [])
-    const sharedContent = yDoc.get('content', Y.XmlText) as Y.XmlText
-    sharedContent.applyDelta(
-      slateNodesToInsertDelta(slateDocument)
-    )
+    if (document?.type === DocumentType.ARTICLE) {
+      // Share editable content
+      const slateDocument = newsDocToSlate(document?.content ?? [])
+      const sharedContent = yDoc.get('content', Y.XmlText) as Y.XmlText
+      sharedContent.applyDelta(
+        slateNodesToInsertDelta(slateDocument)
+      )
 
-    // Share meta data map
-    const newsValue = document?.meta.find(i => i.type === 'core/newsvalue')
-    const metaYMap = yDoc.getMap('meta')
-    metaYMap.set('core/newsvalue/score', newsValue?.data.score || 0)
-    metaYMap.set('core/newsvalue/duration', newsValue?.data.duration || undefined)
-    metaYMap.set('core/newsvalue/end', newsValue?.data.end || undefined)
-    yDoc.share.set('meta', yMapAsYEventAny(metaYMap))
+      // Share meta data map
+      const newsValue = document?.meta.find(i => i.type === 'core/newsvalue')
+      const metaYMap = yDoc.getMap('meta')
+      metaYMap.set('core/newsvalue/score', newsValue?.data.score || 0)
+      metaYMap.set('core/newsvalue/duration', newsValue?.data.duration || undefined)
+      metaYMap.set('core/newsvalue/end', newsValue?.data.end || undefined)
+      yDoc.share.set('meta', yMapAsYEventAny(metaYMap))
 
-    return Y.encodeStateAsUpdate(yDoc)
+      return Y.encodeStateAsUpdate(yDoc)
+    }
+
+    if (document?.type === DocumentType.PLANNING) {
+      const title = document?.title
+      const sector = document?.links.find(l => l.type === 'tt/sector')
+      const assignee = document.meta?.find(m => m.type === 'core/assignment')?.links
+        .find(l => l.type === 'core/author')
+      const planningItem = document?.meta.find(m => m.type === 'core/planning-item')
+
+      const description = document?.meta.find(i => i.type === 'core/description')
+      const assignments = document?.meta.filter(i => i.type === 'core/assignment')
+
+      const planningYMap = yDoc.getMap('planning')
+
+      planningYMap.set('core/planning-item/title', title || '')
+      planningYMap.set('core/planning-item/sector', sector?.title || '')
+      planningYMap.set('core/planning-item/status', planningItem?.data.public || 'false')
+      planningYMap.set('core/planning-item/start', planningItem?.data.start_date || '')
+      planningYMap.set('core/planning-item/end', planningItem?.data.end_date || '')
+      planningYMap.set('core/author', assignee?.name.replace('/TT', '') || '')
+      planningYMap.set('core/planning-item/priority', planningItem?.data.priority || 0)
+
+
+      planningYMap.set('core/description/text', description?.data.text || '')
+      planningYMap.set('core/assignments', assignments || [])
+
+
+      yDoc.share.set('planning', yMapAsYEventAny(planningYMap))
+
+      return Y.encodeStateAsUpdate(yDoc)
+    }
+
+    throw new Error('Can\'t determine DocumentType')
   }
 
 
