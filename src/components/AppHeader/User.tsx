@@ -4,7 +4,7 @@ import {
   PopoverTrigger,
   PopoverContent
 } from '@ttab/elephant-ui'
-import { Avatar } from '../Avatar'
+import { Avatar } from '@/components'
 
 export const User = (): JSX.Element => {
   const { jwt } = useSession()

@@ -1,6 +1,5 @@
 import { useEffect } from 'react'
-import { Link } from '@/components'
-import { Avatar } from '@/components/Avatar'
+import { Link, Avatar } from '@/components'
 import { useYMap } from '@/hooks'
 import { type CollabComponentProps } from '@/types'
 import { Separator } from '@ttab/elephant-ui'

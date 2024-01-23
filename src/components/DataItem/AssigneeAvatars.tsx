@@ -2,7 +2,7 @@ import {
   TooltipProvider, Tooltip, TooltipTrigger, TooltipContent
 } from '@ttab/elephant-ui'
 import { cn } from '@ttab/elephant-ui/utils'
-import { Avatar } from '../Avatar'
+import { Avatar } from '@/components'
 
 export const AssigneeAvatars = ({ assignees }: { assignees: string[] }): JSX.Element => {
   return (
