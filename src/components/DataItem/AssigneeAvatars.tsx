@@ -1,8 +1,8 @@
-import { getInitials } from '@/lib/getInitials'
 import {
   TooltipProvider, Tooltip, TooltipTrigger, TooltipContent
 } from '@ttab/elephant-ui'
 import { cn } from '@ttab/elephant-ui/utils'
+import { Avatar } from '@/components'
 
 export const AssigneeAvatars = ({ assignees }: { assignees: string[] }): JSX.Element => {
   return (
@@ -13,9 +13,7 @@ export const AssigneeAvatars = ({ assignees }: { assignees: string[] }): JSX.Ele
           <TooltipProvider key={index}>
             <Tooltip>
               <TooltipTrigger>
-                <div className='w-8 h-8 rounded-full items-center justify-center bg-background text-muted-foreground border'>
-                  {getInitials(assignee)}
-                </div>
+                <Avatar variant='table' value={assignee} />
               </TooltipTrigger>
               <TooltipContent>
                 <p>{assignee}</p>
@@ -34,9 +32,7 @@ export const AssigneeAvatars = ({ assignees }: { assignees: string[] }): JSX.Ele
               {assignees.map((assignee, index) => {
                 return (
                   <div key={index} className='flex p-1 text-xs font-semibold leading-7 items-center'>
-                    <div className='w-8 h-8 rounded-full flex items-center justify-center border-2 mr-4'>
-                      {getInitials(assignee)}
-                    </div>
+                    <Avatar variant='table' value={assignee} className='mr-4'/>
                     <p>{assignee}</p>
                   </div>)
               })}

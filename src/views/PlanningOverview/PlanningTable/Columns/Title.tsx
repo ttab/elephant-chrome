@@ -1,19 +1,23 @@
 import { StatusIndicator } from '@/components/DataItem/StatusIndicator'
+import { Link } from '@/components'
 import { useMemo } from 'react'
 
 interface TitleProps {
   internal: boolean
   slugline: string
   title: string
+  planningId: string
 }
 
-export const Title = ({ internal, slugline, title }: TitleProps): JSX.Element => {
+export const Title = ({ internal, slugline, title, planningId }: TitleProps): JSX.Element => {
   return useMemo(() => (
     <div className='flex space-x-2 justify-start'>
       <StatusIndicator internal={internal} />
 
       <span className='truncate font-medium'>
-        {title}
+        <Link to='Planning' props={{ id: planningId }}>
+          {title}
+        </Link>
       </span>
 
       {!!slugline?.length && (
@@ -22,5 +26,5 @@ export const Title = ({ internal, slugline, title }: TitleProps): JSX.Element =>
         </span>
       )}
     </div>
-  ), [internal, slugline, title])
+  ), [internal, slugline, title, planningId])
 }

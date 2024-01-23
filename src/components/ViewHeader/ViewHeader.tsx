@@ -15,7 +15,7 @@ export const ViewHeader = ({ children, title, shortTitle, icon: Icon }: ViewHead
 
   return (
     <header className='sticky top-0 group-last:w-[calc(100%-5rem)] h-14 flex gap-3 border-b py-2 px-3 items-center justify-between bg-background z-50'>
-      <div className="flex h-full gap-3 items-center">
+      <div className="flex h-full w-full gap-3 items-center">
         {Icon !== undefined &&
           <Icon className="h-4 w-4 -mt-[2px]" />
         }
