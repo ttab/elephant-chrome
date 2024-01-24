@@ -35,7 +35,7 @@ export const Avatar = ({ value, variant = 'default', size = 'default', color = '
   const bg = Collaboration.colors[color]?.bg || ''
   const border = Collaboration.colors[color]?.border || ''
 
-  const compoundClassName = (variant === 'color') ? `${className} ${bg} border ${border}` : className
+  const compoundClassName = cn(className, variant === 'color' && [bg, 'border', border])
 
   return (
     <AvatarMain className={cn(avatarVariants({ size }))}>
