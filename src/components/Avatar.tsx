@@ -14,7 +14,7 @@ const avatarVariants = cva('text-sm',
       variant: {
         default: 'bg-background text-foreground border',
         color: '',
-        muted: 'text-background text-muted-foreground border'
+        muted: 'bg-background text-muted-foreground border'
       },
       size: {
         sm: 'size-7 mr-2 font-normal text-xs',
