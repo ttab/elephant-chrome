@@ -8,7 +8,7 @@ import {
 } from '@ttab/elephant-ui'
 import { Collaboration } from '@/defaults'
 
-const avatarVariants = cva('text-sm',
+const avatarVariants = cva('',
   {
     variants: {
       variant: {

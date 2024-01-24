@@ -1,14 +1,12 @@
 import {
   TooltipProvider, Tooltip, TooltipTrigger, TooltipContent
 } from '@ttab/elephant-ui'
-import { cn } from '@ttab/elephant-ui/utils'
 import { Avatar } from '@/components'
+import { AvatarGroup } from '../AvatarGroup'
 
 export const AssigneeAvatars = ({ assignees }: { assignees: string[] }): JSX.Element => {
   return (
-    <div className={cn('flex -space-x-2 w-fit leading-7 h-8 items-center',
-      assignees.length > 3 && 'rounded-full')}
-    >
+    <AvatarGroup size="sm">
       {(assignees || []).slice(0, 3).map((assignee: string, index: number) => {
         return (
           <TooltipProvider key={index}>
@@ -42,6 +40,6 @@ export const AssigneeAvatars = ({ assignees }: { assignees: string[] }): JSX.Ele
           </Tooltip>
         </TooltipProvider>)
       }
-    </div>
+    </AvatarGroup>
   )
 }
