@@ -28,7 +28,7 @@ export const NewsValueScoreDropDown = ({ value, options, onChange }: NewsScoreDr
   const setFocused = useRef<(value: boolean) => void>(null)
 
   return (
-    <Awareness id="NewsValueScore" ref={setFocused}>
+    <Awareness name="NewsValueScore" ref={setFocused}>
       <DropdownMenu onOpenChange={(isOpen) => {
         if (setFocused?.current) {
           setFocused.current(isOpen)

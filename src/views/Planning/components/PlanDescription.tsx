@@ -25,8 +25,7 @@ export const PlanDescription = ({ isSynced, document }: CollabComponentProps): J
 
   return isSynced && document
     ? (
-
-      <Awareness id='PlanDescription' ref={setFocused}>
+      <Awareness name='PlanDescription' ref={setFocused}>
         <Textarea
           value={description as string}
           onChange={(event) => setDescription(event.target.value)}
@@ -43,7 +42,7 @@ export const PlanDescription = ({ isSynced, document }: CollabComponentProps): J
             }
           }}
           className='h-screen'
-      />
+        />
       </Awareness>
       )
     : <p>Loading</p>

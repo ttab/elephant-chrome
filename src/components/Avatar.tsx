@@ -6,19 +6,20 @@ import {
   Avatar as AvatarMain,
   AvatarFallback
 } from '@ttab/elephant-ui'
+import { Collaboration } from '@/defaults'
 
-const avatarVariants = cva('text-sm',
+const avatarVariants = cva('',
   {
     variants: {
       variant: {
-        menu: 'bg-[#973C9F] border-2 font-semibold text-background dark:text-foreground',
-        plan: 'bg-background border-2 text-muted-foreground text-xs',
-        table: 'bg-background border text-muted-foreground text-xs'
+        default: 'bg-background text-foreground border',
+        color: '',
+        muted: 'bg-background text-muted-foreground border'
       },
       size: {
-        default: 'size-8',
-        sm: 'size-7 mr-2',
-        lg: 'size-9 mr-6'
+        sm: 'size-7 mr-2 font-normal text-xs',
+        lg: 'size-9 mr-6 font-semibold text-md',
+        default: 'size-8 font-semibold text-sm'
       }
     }
   })
@@ -27,14 +28,22 @@ export interface AvatarProps
   extends React.HTMLAttributes<HTMLDivElement>,
   VariantProps<typeof avatarVariants> {
   value: string
+  color?: string
 }
 
-export const Avatar = ({ variant, value, size = 'default', className }: AvatarProps): JSX.Element => (
-  <AvatarMain className={cn(avatarVariants({ size }))}>
-    <AvatarFallback
-      className={cn(avatarVariants({ variant, className }))}
-    >
-      {getInitials(value)}
-    </AvatarFallback>
-  </AvatarMain>
-)
+export const Avatar = ({ value, variant = 'default', size = 'default', color = 'default', className }: AvatarProps): JSX.Element => {
+  const bg = Collaboration.colors[color]?.bg || ''
+  const border = Collaboration.colors[color]?.border || ''
+
+  const compoundClassName = cn(className, variant === 'color' && [bg, 'border', border])
+
+  return (
+    <AvatarMain className={cn(avatarVariants({ size }))}>
+      <AvatarFallback
+        className={cn(avatarVariants({ variant, className: compoundClassName }))}
+      >
+        {getInitials(value)}
+      </AvatarFallback>
+    </AvatarMain >
+  )
+}

@@ -44,7 +44,7 @@ export function NewsValueTimeDropDown({ duration, end, onChange }: NewsValueDrop
   }
 
   return (
-    <Awareness id="NewsValueTime" ref={setFocused}>
+    <Awareness name="NewsValueTime" ref={setFocused}>
       <Popover onOpenChange={(isOpen) => {
         if (setFocused?.current) {
           setFocused.current(isOpen)

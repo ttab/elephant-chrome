@@ -51,8 +51,6 @@ const initialState: CollaborationProviderState = {
 // Create the context
 export const CollaborationContext = createContext(initialState)
 
-
-// Create the context provider component
 interface CollabContextProviderProps extends PropsWithChildren {
   documentId?: string
 }
@@ -89,9 +87,6 @@ export const CollaborationProviderContext = ({ documentId, children }: CollabCon
       onDisconnect: () => {
         setSynced(false)
       },
-      onAwarenessChange: (data) => {
-        setStates(data.states as AwarenessStates)
-      },
       onAwarenessUpdate: (data) => {
         setStates(data.states as AwarenessStates)
       }
@@ -105,7 +100,7 @@ export const CollaborationProviderContext = ({ documentId, children }: CollabCon
     const colors = Object.keys(Collaboration.colors)
     return {
       name: jwt.sub_name,
-      initials: jwt.sub_name.split(' ').map(t => t.substring(0, 1)).join(' '),
+      initials: jwt.sub_name.split(' ').map(t => t.substring(0, 1)).join(''),
       color: colors[Math.floor(Math.random() * colors.length)],
       avatar: undefined
     }

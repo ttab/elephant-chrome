@@ -31,7 +31,7 @@ export const PlanAssignments = ({ isSynced, document }: CollabComponentProps): J
         return (
           <div key={index} className='flex flex-col'>
             <div className='flex space-x-1'>
-              <Avatar variant='plan' size='sm' value={author} />
+              <Avatar variant="muted" size='sm' value={author} />
               <span className='text-sm font-medium leading-8'>{author}</span>
             </div>
             {uuid
@@ -40,7 +40,7 @@ export const PlanAssignments = ({ isSynced, document }: CollabComponentProps): J
                   {assignment.title}
                 </Link>)
               : assignment.title}
-            <Separator className='my-4'/>
+            <Separator className='my-4' />
           </div>)
       })}
     </div>
