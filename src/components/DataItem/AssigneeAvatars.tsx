@@ -34,7 +34,7 @@ export const AssigneeAvatars = ({ assignees }: { assignees: string[] }): JSX.Ele
               {assignees.map((assignee, index) => {
                 return (
                   <div key={index} className='flex p-1 text-xs font-semibold leading-7 items-center'>
-                    <Avatar size="sm" value={assignee} className='mr-4' />
+                    <Avatar variant="muted" size="sm" value={assignee} className='mr-4' />
                     <p>{assignee}</p>
                   </div>)
               })}
