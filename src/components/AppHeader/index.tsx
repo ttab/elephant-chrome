@@ -11,11 +11,11 @@ export const AppHeader = (): JSX.Element => {
       <Menu />
 
       <Popover>
-        <PopoverTrigger className='-ml-2 last:ml-0'>
+        <PopoverTrigger>
           <Avatar value={jwt?.sub_name || '??'} variant="color" />
         </PopoverTrigger>
 
-        <PopoverContent className="w-80" sideOffset={20} align='end' alignOffset={15}>
+        <PopoverContent className="w-80" align='end'>
           <div className="space-y-2">
             <h4 className="font-medium leading-none">{jwt?.sub_name || '??'}</h4>
             {jwt?.units.map((unit: string, index: number) => {

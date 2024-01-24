@@ -5,6 +5,7 @@ import React, {
 } from 'react'
 import { useAwareness } from '@/hooks'
 import { Collaboration } from '@/defaults'
+import { cn } from '@ttab/elephant-ui/utils'
 
 interface AwarenessProps extends PropsWithChildren {
   name: string
@@ -16,7 +17,7 @@ interface AwarenessProps extends PropsWithChildren {
  * as well as signal awareness to remote users. Children use the ref function
  * to signal awareness using true/false.
  *
- * If prop `visual` is false, it only signals awareness
+ * If prop `visual` is false, the visual ring is suppressed
  */
 export const Awareness = React.forwardRef(({ name, visual = true, children }: AwarenessProps, ref) => {
   const [states, setIsFocused] = useAwareness(name)
@@ -27,11 +28,9 @@ export const Awareness = React.forwardRef(({ name, visual = true, children }: Aw
   })
 
   // Currently we only show one user color as ring around remotely focused element
-  const state = states.length ? states[0] : null
-  const color = Collaboration.colors[state?.focus?.color || '']?.ring || ''
-
+  const color = Collaboration.colors[states[0]?.focus?.color || '']?.ring
   return (
-    <div ref={awarenessRef} className={`rounded ${visual && !!color ? 'ring' : ''} ${color}`}>
+    <div ref={awarenessRef} className={cn('rounded', visual && !!color && ['ring', color])}>
       {children}
     </div>
   )

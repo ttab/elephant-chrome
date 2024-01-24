@@ -1,4 +1,4 @@
-import { type AwarenessUserData } from '@/contexts/CollaborationProvider'
+import { type AwarenessStates } from '@/contexts/CollaborationProvider'
 import { ViewFocus } from './ViewFocus'
 import { useAwareness, useNavigation, useView } from '@/hooks'
 import { type LucideIcon } from '@ttab/elephant-ui/icons'
@@ -52,7 +52,7 @@ export const ViewHeader = ({ children, documentId, title, shortTitle, icon: Icon
 function RemoteUsers({ documentId }: PropsWithChildren & { documentId: string }): JSX.Element {
   const [states] = useAwareness(documentId)
 
-  const users = states.reduce<Array<{ clientId: number, data: AwarenessUserData }>>((remoteUsers, state) => {
+  const users = states.reduce<AwarenessStates>((remoteUsers, state) => {
     if (!remoteUsers.find(ru => ru.clientId === state.clientId)) {
       remoteUsers.push({
         clientId: state.clientId,

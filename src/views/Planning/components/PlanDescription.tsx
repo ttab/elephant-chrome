@@ -24,24 +24,26 @@ export const PlanDescription = ({ isSynced, document }: CollabComponentProps): J
   ])
 
   return isSynced && document
-    ? <Awareness name='PlanDescription' ref={setFocused}>
-      <Textarea
-        value={description as string}
-        onChange={(event) => setDescription(event.target.value)}
-        onFocus={(event) => {
-          if (setFocused.current) {
-            console.log(event)
-            setFocused.current(true)
-          }
-        }}
-        onBlur={(event) => {
-          if (setFocused.current) {
-            console.log(event)
-            setFocused.current(false)
-          }
-        }}
-        className='h-screen'
-      />
-    </Awareness>
+    ? (
+      <Awareness name='PlanDescription' ref={setFocused}>
+        <Textarea
+          value={description as string}
+          onChange={(event) => setDescription(event.target.value)}
+          onFocus={(event) => {
+            if (setFocused.current) {
+              console.log(event)
+              setFocused.current(true)
+            }
+          }}
+          onBlur={(event) => {
+            if (setFocused.current) {
+              console.log(event)
+              setFocused.current(false)
+            }
+          }}
+          className='h-screen'
+        />
+      </Awareness>
+      )
     : <p>Loading</p>
 }
