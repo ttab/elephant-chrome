@@ -67,7 +67,12 @@ export class CollaborationServer {
     this.#redisCache = redisCache
     this.#repository = repository
 
-    const url = new URL(redisUrl)
+    const {
+      host: redisHost,
+      port: redisPort,
+      username: redisUsername,
+      password: redisPassword
+    } = new URL(redisUrl)
 
     this.#server = Server.configure({
       name: this.#name,
@@ -79,8 +84,11 @@ export class CollaborationServer {
       extensions: [
         new Logger(),
         new Redis({
+          host: redisHost,
+          port: parseInt(redisPort, 10),
           options: {
-            ...url
+            username: redisUsername,
+            password: redisPassword
           }
         }),
         new Database({
