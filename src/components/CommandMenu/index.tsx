@@ -19,7 +19,7 @@ import {
 } from '@ttab/elephant-ui'
 import { DebouncedCommandInput } from './DebouncedCommandInput'
 import { handleLink } from '../Link/lib/handleLink'
-import { useNavigation, useTable } from '@/hooks'
+import { useNavigation, useTable, useView } from '@/hooks'
 import { v4 as uuid } from 'uuid'
 import { type CommandArgs } from '@/contexts/TableProvider'
 
@@ -32,6 +32,8 @@ interface CommandMenuProps {
 export const CommandMenu = ({ children, onKeyDown, onChange }: CommandMenuProps): JSX.Element => {
   const { state, dispatch } = useNavigation()
   const [open, setOpen] = useState(false)
+
+  const { viewId } = useView()
 
   const { command } = useTable()
   const { search, setSearch, pages, setPages, page } = command
@@ -78,7 +80,8 @@ export const CommandMenu = ({ children, onKeyDown, onChange }: CommandMenuProps)
                 dispatch,
                 viewItem: state.viewRegistry.get('PlanningOverview'),
                 viewId: uuid(),
-                viewRegistry: state.viewRegistry
+                viewRegistry: state.viewRegistry,
+                origin: viewId
               }))}
             >
               <GanttChart className="mr-2 h-4 w-4" />
