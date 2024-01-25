@@ -34,8 +34,8 @@ export interface ViewWidths {
 
 
 export interface ViewMetadata {
-  name: string
-  path: string
+  name: ContentState['name']
+  path: ContentState['path']
   widths: ViewWidths
 }
 
@@ -61,7 +61,7 @@ export interface ContentState {
   viewId: string
   name: View
   path: string
-  props: ViewProps
+  props?: ViewProps
 }
 
 export interface HistoryState {

@@ -17,25 +17,38 @@ interface LinkClick {
   viewRegistry: ViewRegistry
   viewId: string
   props?: ViewProps
+  origin: string
 }
 
-export function handleLink({ event, dispatch, viewItem, viewRegistry, props, viewId }: LinkClick): void {
+export function handleLink({ event, dispatch, viewItem, viewRegistry, props, viewId, origin }: LinkClick): void {
   if (event?.ctrlKey || event?.metaKey) {
     return
   }
 
-  event?.preventDefault()
+  const content: ContentState[] = history.state.contentState
 
   // Create next (wanted) content state
-  const content = [
-    ...history.state.contentState,
+  const newContent: ContentState =
     {
       props,
       viewId,
       name: viewItem.meta.name,
       path: `${viewItem.meta.path}${toQueryString(props)}`
     }
-  ] as ContentState[]
+
+  // If modifier is used, open furthest to the right
+  // Otherwise open to the right of origin
+  if (event?.shiftKey) {
+    content.push(newContent)
+  } else {
+    const currentIndex = content.findIndex(c => c.viewId === origin)
+
+    content.splice(currentIndex + 1)
+    content.push(newContent)
+  }
+
+  event?.preventDefault()
+
 
   // Remove what does not fit
   while (minimumSpaceRequired(content, viewRegistry) > 12) {
