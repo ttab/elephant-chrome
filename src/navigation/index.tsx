@@ -57,7 +57,7 @@ export const NavigationProvider = ({ children }: PropsWithChildren): JSX.Element
   )
 }
 
-const debouncedCalculateView = debounce(calculateViews, 40)
+const debouncedCalculateView = debounce(calculateViews, 15)
 
 
 function calculateViews(
