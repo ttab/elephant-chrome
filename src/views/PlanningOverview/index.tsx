@@ -3,7 +3,7 @@ import { type ViewMetadata, type ViewProps } from '@/types'
 import { ViewHeader } from '@/components'
 import { CalendarDaysIcon } from '@ttab/elephant-ui/icons'
 import { PlanningHeader } from './PlanningHeader'
-import { ScrollArea, ScrollBar, Tabs, TabsContent } from '@ttab/elephant-ui'
+import { ScrollArea, Tabs, TabsContent } from '@ttab/elephant-ui'
 
 import { PlanningGrid } from './PlanningGrid'
 import { PlanningList } from './PlanningList'
@@ -50,18 +50,15 @@ export const PlanningOverview = (props: ViewProps): JSX.Element => {
           </div>
 
           <ScrollArea>
-            <ScrollArea>
-              <main>
-                <TabsContent value='list'>
-                  <PlanningList date={startDate} />
-                </TabsContent>
+            <main>
+              <TabsContent value='list'>
+                <PlanningList date={startDate} />
+              </TabsContent>
 
-                <TabsContent value='grid'>
-                  <PlanningGrid startDate={startDate} endDate={endDate} />
-                </TabsContent>
-              </main>
-            </ScrollArea>
-            <ScrollBar orientation="horizontal" />
+              <TabsContent value='grid'>
+                <PlanningGrid startDate={startDate} endDate={endDate} />
+              </TabsContent>
+            </main>
           </ScrollArea>
 
         </div>
