@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useSession } from '@/hooks'
 
 import { Input, Button } from '@ttab/elephant-ui'
+import { authenticate } from '@/lib/authenticate'
 
 export const Login = (): JSX.Element => {
   const [user, setUser] = useState<string>('')
@@ -29,17 +30,15 @@ export const Login = (): JSX.Element => {
           <Button
             onClick={(e) => {
               e.preventDefault()
-
-              auth(user, password)
-                .then(async ([status, jwtToken]) => {
-                  if (status === 200 && jwtToken) {
-                    setJwt(jwtToken)
-                  } else {
+              authenticate(user, password)
+                .then(jwt => {
+                  if (!jwt) {
                     setFailed(true)
                   }
+                  setJwt(jwt)
                 })
-                .catch(ex => {
-                  console.log('Failed login: ', ex.message)
+                .catch(() => {
+                  setFailed(true)
                 })
             }}>Login...</Button>
         </div>
@@ -57,24 +56,24 @@ export const Login = (): JSX.Element => {
 }
 
 
-async function auth(user: string, password: string): Promise<[number, string | undefined]> {
-  const BASE_URL = import.meta.env.BASE_URL || ''
-  const response = await fetch(`${BASE_URL}/api/user`, {
-    method: 'post',
-    mode: 'cors',
-    credentials: 'include',
-    headers: {
-      'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({
-      user,
-      password
-    })
-  })
+// async function auth(user: string, password: string): Promise<[number, string | undefined]> {
+//   const BASE_URL = import.meta.env.BASE_URL || ''
+//   const response = await fetch(`${BASE_URL}/api/user`, {
+//     method: 'post',
+//     mode: 'cors',
+//     credentials: 'include',
+//     headers: {
+//       'Content-Type': 'application/json'
+//     },
+//     body: JSON.stringify({
+//       user,
+//       password
+//     })
+//   })
 
-  if (response.status === 200) {
-    return [200, await response.text()]
-  }
+//   if (response.status === 200) {
+//     return [200, await response.text()]
+//   }
 
-  return [response.status, undefined]
-}
+//   return [response.status, undefined]
+// }

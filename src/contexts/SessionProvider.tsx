@@ -1,14 +1,15 @@
 import { createContext, useEffect, useState } from 'react'
 import { type JWT } from '@/types'
+import { authRefresh } from '@/lib/authRefresh'
 
 export interface SessionProviderState {
   jwt?: JWT
-  setJwt: (token: string) => void
+  setJwt: (jwt: JWT | undefined) => void
 }
 
 export const SessionProviderContext = createContext<SessionProviderState>({
   jwt: undefined,
-  setJwt: () => {}
+  setJwt: () => { }
 })
 
 export const SessionProvider = ({ children }: {
@@ -17,31 +18,32 @@ export const SessionProvider = ({ children }: {
   const [jwt, setJwt] = useState<JWT | undefined>(undefined)
 
   useEffect(() => {
-    const fetchToken = async (): Promise<void> => {
-      const result = await fetchOrRefreshToken()
-      setJwt(parseJWT(result))
-    }
-
-    if (!jwt?.exp) {
-      void fetchToken()
-      return
-    }
-
     // FIXME: It seems server jwt.exp is set to current time, not a future time
-    const timeoutRef = setTimeout(() => {
-      void fetchToken()
+    const timeoutRef = setInterval(() => {
+      authRefresh()
+        .then(setJwt)
+        .catch(() => {
+          setJwt(undefined)
+        })
     }, 60000 * 5) // Set timeout to refresh token when N mins have passed (should use jwt.exp)
 
     return () => {
-      clearTimeout(timeoutRef)
+      clearInterval(timeoutRef)
     }
   }, [jwt])
 
+  useEffect(() => {
+    // Initialize by checking if we can update token
+    authRefresh()
+      .then(setJwt)
+      .catch(() => {
+        setJwt(undefined)
+      })
+  }, [])
+
   const value: SessionProviderState = {
     jwt,
-    setJwt: jwtToken => {
-      setJwt(parseJWT(jwtToken))
-    }
+    setJwt
   }
 
   return (
@@ -49,34 +51,4 @@ export const SessionProvider = ({ children }: {
       {children}
     </SessionProviderContext.Provider>
   )
-}
-
-
-async function fetchOrRefreshToken(): Promise<string | undefined> {
-  try {
-    const response = await fetch(`${import.meta.env.BASE_URL || ''}/api/user`, {
-      credentials: 'include'
-    })
-
-    if (response.status === 401) {
-      return undefined
-    }
-
-    if (!response.ok) {
-      console.error(`Fetching session return status ${response.status}`)
-      return undefined
-    }
-
-    return await response.text()
-  } catch (error) {
-    console.error('Unable to retrieve session', error)
-    return undefined
-  }
-}
-
-function parseJWT(value?: string): JWT | undefined {
-  if (value) {
-    const JWT: JWT = JSON.parse(value)
-    return JWT
-  }
 }
