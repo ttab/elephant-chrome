@@ -54,26 +54,3 @@ export const Login = (): JSX.Element => {
     </div >
   )
 }
-
-
-// async function auth(user: string, password: string): Promise<[number, string | undefined]> {
-//   const BASE_URL = import.meta.env.BASE_URL || ''
-//   const response = await fetch(`${BASE_URL}/api/user`, {
-//     method: 'post',
-//     mode: 'cors',
-//     credentials: 'include',
-//     headers: {
-//       'Content-Type': 'application/json'
-//     },
-//     body: JSON.stringify({
-//       user,
-//       password
-//     })
-//   })
-
-//   if (response.status === 200) {
-//     return [200, await response.text()]
-//   }
-
-//   return [response.status, undefined]
-// }
