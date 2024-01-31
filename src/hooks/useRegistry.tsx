@@ -1,5 +1,5 @@
 import { useContext } from 'react'
-import { type RegistryProviderState, RegistryContext } from '../contexts/RegistryProvider'
+import { type RegistryProviderState, RegistryContext } from '@/contexts'
 
 /**
  * Registry hook
@@ -12,5 +12,6 @@ export const useRegistry = (): RegistryProviderState => {
   if (!context) {
     throw new Error('useRegistry must be used within a RegistryProvider')
   }
+
   return context
 }

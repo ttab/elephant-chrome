@@ -5,7 +5,7 @@ import { type Planning as PlanningType } from '@/views/PlanningOverview/Planning
 import { cn } from '@ttab/elephant-ui/utils'
 import { cva, type VariantProps } from 'class-variance-authority'
 import { PlanningGridColumn } from './PlanningGridColumn'
-import { useSession, useApi, useRegistry } from '@/hooks'
+import { useSession, useRegistry, useIndexUrl } from '@/hooks'
 import { convertToISOStringInTimeZone, convertToISOStringInUTC, getDateTimeBoundaries } from '@/lib/datetime'
 import useSWR from 'swr'
 import { useMemo } from 'react'
@@ -18,7 +18,7 @@ interface PlanningGridProps {
 }
 
 export const PlanningGrid = ({ startDate, endDate }: PlanningGridProps): JSX.Element => {
-  const { indexUrl } = useApi()
+  const indexUrl = useIndexUrl()
   const { jwt } = useSession()
   const { locale, timeZone } = useRegistry()
   const { startTime } = getDateTimeBoundaries(startDate)

@@ -4,8 +4,8 @@ import {
   useMemo,
   useState
 } from 'react'
-import { HocuspocusProvider } from '@hocuspocus/provider'
-import { useApi, useSession } from '@/hooks'
+import { HocuspocusProvider, HocuspocusProviderWebsocket } from '@hocuspocus/provider'
+import { useRegistry, useSession } from '@/hooks'
 import { Collaboration } from '@/defaults'
 
 export interface AwarenessUserData {
@@ -56,7 +56,7 @@ interface CollabContextProviderProps extends PropsWithChildren {
 }
 
 export const CollaborationProviderContext = ({ documentId, children }: CollabContextProviderProps): JSX.Element => {
-  const { hocuspocusWebsocket } = useApi()
+  const { server: { webSocketUrl } = {} } = useRegistry()
   const { jwt } = useSession()
   const [synced, setSynced] = useState<boolean>(false)
   const [connected, setConnected] = useState<boolean>(false)
@@ -65,6 +65,10 @@ export const CollaborationProviderContext = ({ documentId, children }: CollabCon
   if (!jwt?.access_token) {
     throw new Error('Collaboration is not allowed without a valid access_token')
   }
+
+  const hocuspocusWebsocket = useMemo(() => {
+    return (!webSocketUrl) ? undefined : new HocuspocusProviderWebsocket({ url: webSocketUrl.toString() })
+  }, [webSocketUrl])
 
   const provider = useMemo(() => {
     if (!documentId || !hocuspocusWebsocket) {
