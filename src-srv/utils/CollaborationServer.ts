@@ -95,9 +95,7 @@ export class CollaborationServer {
         }),
         new Database({
           fetch: async (payload) => { return await this.#fetchDocument(payload) },
-          store: async (payload) => {
-            await this.#storeDocument(payload)
-          }
+          store: async (payload) => { await this.#storeDocument(payload) }
         })
       ],
       onAuthenticate: async (payload) => { return await this.#authenticate(payload) }
