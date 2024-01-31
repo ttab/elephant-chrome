@@ -84,16 +84,20 @@ export class CollaborationServer {
       extensions: [
         new Logger(),
         new Redis({
+          prefix: 'elc::hp',
           host: redisHost,
           port: parseInt(redisPort, 10),
           options: {
             username: redisUsername,
-            password: redisPassword
+            password: redisPassword,
+            tls: {}
           }
         }),
         new Database({
           fetch: async (payload) => { return await this.#fetchDocument(payload) },
-          store: async (payload) => { await this.#storeDocument(payload) }
+          store: async (payload) => {
+            await this.#storeDocument(payload)
+          }
         })
       ],
       onAuthenticate: async (payload) => { return await this.#authenticate(payload) }
