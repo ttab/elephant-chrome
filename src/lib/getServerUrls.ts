@@ -5,11 +5,11 @@ interface ServerUrls {
   indexUrl: URL
 }
 
-export async function getServerUrls(): Promise<ServerUrls | undefined> {
+export async function getServerUrls(): Promise<ServerUrls> {
   const response = await fetch(`${BASE_URL}/api/init`)
 
   if (!response.ok) {
-    return
+    throw new Error(`Failed initializing remote URL:s, got response ${response.status}`)
   }
 
   const urls = await response.json()
