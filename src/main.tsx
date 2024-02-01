@@ -1,7 +1,7 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import { App } from './App.tsx'
-import { ThemeProvider, SessionProvider, RegistryProvider } from '@/contexts'
+import { ThemeProvider, SessionProvider, RegistryProvider, HPWebSocketProvider } from '@/contexts'
 import { NavigationProvider } from '@/navigation'
 import { banner } from './lib/banner.ts'
 
@@ -17,11 +17,13 @@ ReactDOM.createRoot(root).render(
   <SessionProvider>
     <React.StrictMode>
       <RegistryProvider>
-        <ThemeProvider defaultTheme='light' storageKey='ele-ui-theme' >
-          <NavigationProvider>
-            <App />
-          </NavigationProvider>
-        </ThemeProvider >
+        <HPWebSocketProvider>
+          <ThemeProvider defaultTheme='light' storageKey='ele-ui-theme' >
+            <NavigationProvider>
+              <App />
+            </NavigationProvider>
+          </ThemeProvider >
+        </HPWebSocketProvider>
       </RegistryProvider>
     </React.StrictMode>
   </SessionProvider>

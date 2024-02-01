@@ -5,3 +5,4 @@ export { WebSocketProvider, WebSocketProviderContext } from './WebSocketProvider
 export { ViewProvider, ViewContext } from './ViewProvider'
 export { TableProvider, TableContext } from './TableProvider'
 export { CollaborationProviderContext, CollaborationContext, type CollaborationProviderState } from './CollaborationProvider'
+export { HPWebSocketProviderContext, HPWebSocketProvider } from './HPWebSocketProvider'
