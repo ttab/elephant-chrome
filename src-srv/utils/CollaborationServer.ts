@@ -71,7 +71,8 @@ export class CollaborationServer {
       host: redisHost,
       port: redisPort,
       username: redisUsername,
-      password: redisPassword
+      password: redisPassword,
+      protocol: redisProtocol
     } = new URL(redisUrl)
 
     this.#server = Server.configure({
@@ -90,7 +91,7 @@ export class CollaborationServer {
           options: {
             username: redisUsername,
             password: redisPassword,
-            tls: {}
+            tls: redisProtocol === 'rediss'
           }
         }),
         new Database({
