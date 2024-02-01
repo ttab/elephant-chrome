@@ -84,11 +84,13 @@ export class CollaborationServer {
       extensions: [
         new Logger(),
         new Redis({
+          prefix: 'elc::hp',
           host: redisHost,
           port: parseInt(redisPort, 10),
           options: {
             username: redisUsername,
-            password: redisPassword
+            password: redisPassword,
+            tls: {}
           }
         }),
         new Database({
