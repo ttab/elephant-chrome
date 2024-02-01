@@ -2,11 +2,13 @@ import {
   createContext,
   type PropsWithChildren,
   useMemo,
-  useState
+  useState,
+  useContext
 } from 'react'
 import { HocuspocusProvider } from '@hocuspocus/provider'
-import { useApi, useSession } from '@/hooks'
+import { useSession } from '@/hooks'
 import { Collaboration } from '@/defaults'
+import { HPWebSocketProviderContext } from '.'
 
 export interface AwarenessUserData {
   name: string
@@ -56,7 +58,7 @@ interface CollabContextProviderProps extends PropsWithChildren {
 }
 
 export const CollaborationProviderContext = ({ documentId, children }: CollabContextProviderProps): JSX.Element => {
-  const { hocuspocusWebsocket } = useApi()
+  const { webSocket } = useContext(HPWebSocketProviderContext)
   const { jwt } = useSession()
   const [synced, setSynced] = useState<boolean>(false)
   const [connected, setConnected] = useState<boolean>(false)
@@ -67,12 +69,12 @@ export const CollaborationProviderContext = ({ documentId, children }: CollabCon
   }
 
   const provider = useMemo(() => {
-    if (!documentId || !hocuspocusWebsocket) {
+    if (!documentId || !webSocket) {
       return
     }
 
     const provider = new HocuspocusProvider({
-      websocketProvider: hocuspocusWebsocket,
+      websocketProvider: webSocket,
       name: documentId,
       token: jwt.access_token,
       onConnect: () => {
@@ -93,7 +95,7 @@ export const CollaborationProviderContext = ({ documentId, children }: CollabCon
     })
 
     return provider
-  }, [documentId, hocuspocusWebsocket, jwt?.access_token])
+  }, [documentId, webSocket, jwt?.access_token])
 
   // Awareness user data
   const user = useMemo((): AwarenessUserData => {
