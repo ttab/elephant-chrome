@@ -53,6 +53,7 @@ export class CollaborationServer {
   readonly #redisCache: RedisCache
   #handlePaths: string[]
   #openForBusiness: boolean
+  #openDocuments?: Y.Doc
 
   /**
    * Collaboration server constructor. Creates and initializes
@@ -179,6 +180,30 @@ export class CollaborationServer {
    * Fetch document from redis if already in cache, otherwise from repository
    */
   async #fetchDocument({ documentName: uuid, document: yDoc, context }: fetchPayload): Promise<Uint8Array | null> {
+    if (this.#openDocuments && uuid !== 'document-tracker') {
+      //
+      // FIXME: Important!
+      // FIXME: Cleanup empty documents (no users) somewhere!!!!
+      // FIXME: Or this will grow until server is restarted.
+      //
+      const documents = this.#openDocuments.get('documents') as Y.Map<Y.Map<unknown>>
+      if (!documents.get(uuid)) {
+        documents.set(uuid, new Y.Map())
+      }
+    }
+
+    // Handle document tracker ymap, must be reinitalized if no reference exist
+    if (uuid === 'document-tracker' && !this.#openDocuments) {
+      if (!this.#openDocuments) {
+        this.#openDocuments = yDoc
+      }
+
+      const documents = yDoc.getMap('documents')
+      yDoc.share.set('documents', yMapAsYEventAny(documents))
+      return Y.encodeStateAsUpdate(yDoc)
+    }
+
+    // Fetch from Redis if exists
     const state = await this.#redisCache.get(uuid)
     if (state) {
       return state

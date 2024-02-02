@@ -1,6 +1,7 @@
 import { useNavigation, useSession } from '@/hooks'
 import { AppHeader } from '@/components'
 import { Login } from '@/views/auth/Login'
+import { DocTrackerProviderContext } from './contexts/DocTrackerProvider'
 
 export const App = (): JSX.Element => {
   const { jwt } = useSession()
@@ -19,7 +20,9 @@ export const App = (): JSX.Element => {
       </div>
 
       <div className='grid grid-cols-12 divide-x-2 h-max'>
-        {state.content}
+        <DocTrackerProviderContext>
+          {state.content}
+        </DocTrackerProviderContext>
       </div>
     </div>
   )

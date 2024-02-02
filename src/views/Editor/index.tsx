@@ -7,17 +7,19 @@ import {
   useTextbitContext
 } from '@ttab/textbit'
 import '@ttab/textbit/dist/esm/index.css'
-import { useEffect, useMemo } from 'react'
+import { useContext, useEffect, useMemo } from 'react'
 import { createEditor } from 'slate'
 import * as Y from 'yjs'
 
 import {
   useQuery,
-  useCollaboration
+  useCollaboration,
+  useYMap
 } from '@/hooks'
 import { type ViewMetadata, type ViewProps } from '@/types'
 import { ScrollArea } from '@ttab/elephant-ui'
 import { EditorHeader } from './EditorHeader'
+import { DocTrackerContext } from '@/contexts/DocTrackerProvider'
 
 const meta: ViewMetadata = {
   name: 'Editor',
@@ -50,11 +52,31 @@ const Editor = (props: ViewProps): JSX.Element => {
 }
 
 function EditorViewContent(props: ViewProps & { documentId: string }): JSX.Element {
-  const {
-    provider,
-    synced: isSynced,
-    user
-  } = useCollaboration()
+  const { provider, synced: isSynced, user } = useCollaboration()
+  const { provider: docTracker } = useContext(DocTrackerContext)
+  const [yUsers, , initYUsers] = useYMap(props.documentId)
+
+  //
+  // TODO: Refactor this into a separate hook
+  //
+  useEffect(() => {
+    if (!docTracker?.document || !docTracker?.synced) {
+      return
+    }
+
+    initYUsers(docTracker.document.getMap('documents'))
+  }, [docTracker?.document, docTracker?.synced, initYUsers])
+
+  useEffect(() => {
+    if (!yUsers) {
+      return
+    }
+
+    //
+    // TODO: Implement use of real data here
+    //
+    (yUsers as Y.Map<Y.Text>).set('393', new Y.Text('FOOOOOOOOOO'))
+  }, [yUsers])
 
   // Create YjsEditor for Textbit to use
   const editor = useMemo(() => {
