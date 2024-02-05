@@ -3,7 +3,10 @@ import {
   type Hocuspocus,
   type fetchPayload,
   type storePayload,
-  type onAuthenticatePayload
+  type onAuthenticatePayload,
+  type afterUnloadDocumentPayload,
+  type connectedPayload,
+  type onDisconnectPayload
 } from '@hocuspocus/server'
 
 import { Logger } from '@hocuspocus/extension-logger'
@@ -100,7 +103,10 @@ export class CollaborationServer {
           store: async (payload) => { await this.#storeDocument(payload) }
         })
       ],
-      onAuthenticate: async (payload) => { return await this.#authenticate(payload) }
+      onAuthenticate: async (payload) => { return await this.#authenticate(payload) },
+      afterUnloadDocument: async (payload) => { await this.#afterUnloadDocument(payload) },
+      connected: async (payload) => { await this.#connected(payload) },
+      onDisconnect: async (payload) => { await this.#onDisconnect(payload) }
     })
 
     this.#handlePaths = []
@@ -180,19 +186,7 @@ export class CollaborationServer {
    * Fetch document from redis if already in cache, otherwise from repository
    */
   async #fetchDocument({ documentName: uuid, document: yDoc, context }: fetchPayload): Promise<Uint8Array | null> {
-    if (this.#openDocuments && uuid !== 'document-tracker') {
-      //
-      // FIXME: Important!
-      // FIXME: Cleanup empty documents (no users) somewhere!!!!
-      // FIXME: Or this will grow until server is restarted.
-      //
-      const documents = this.#openDocuments.get('documents') as Y.Map<Y.Map<unknown>>
-      if (!documents.get(uuid)) {
-        documents.set(uuid, new Y.Map())
-      }
-    }
-
-    // Handle document tracker ymap, must be reinitalized if no reference exist
+    // Init tracking document. Must not be fetched from cache when starting up the server fresh.
     if (uuid === 'document-tracker' && !this.#openDocuments) {
       if (!this.#openDocuments) {
         this.#openDocuments = yDoc
@@ -270,6 +264,92 @@ export class CollaborationServer {
     }
 
     throw new Error('Can\'t determine DocumentType')
+  }
+
+
+  /**
+   * Called for every provider that connects to track a specific document.
+   *
+   * Add user that opened the document to the correct document in the document tracker document.
+   * (Or increase the number of times the user have this document open.)
+   */
+  async #connected({ documentName, context, socketId }: connectedPayload): Promise<void> {
+    if (!this.#openDocuments || documentName === 'document-tracker') {
+      return
+    }
+
+    const { sub: userId, sub_name: userName } = context.user as { sub: string, sub_name: string }
+    const trackedDocuments = this.#openDocuments.getMap('documents')
+    const userList = trackedDocuments.get(documentName) as Y.Map<unknown>
+
+    let trackingUser: Y.Map<unknown> = userList?.get(userId) as Y.Map<unknown> || null
+    const trackingUserExisted = !!trackingUser
+
+    if (!trackingUser) {
+      trackingUser = new Y.Map()
+      trackingUser.set('userId', userId)
+      trackingUser.set('userName', userName)
+      trackingUser.set('count', 1)
+    } else {
+      const count = trackingUser.get('count') as number
+      trackingUser.set('count', count + 1)
+    }
+
+    if (!userList) {
+      const newUserList: Y.Map<unknown> = new Y.Map()
+      newUserList.set(userId, trackingUser)
+      trackedDocuments.set(documentName, newUserList)
+    } else if (!trackingUserExisted) {
+      userList.set(userId, trackingUser)
+    }
+  }
+
+
+  /*
+   * Called for every provider that diconnects for tracking a specific document.
+   *
+   * Remove the user (or decrease count) from tracked document userlist
+   */
+  async #onDisconnect({ documentName, context }: onDisconnectPayload): Promise<void> {
+    if (!this.#openDocuments || documentName === 'document-tracker') {
+      return
+    }
+
+    const { sub: userId } = context.user as { sub: string, sub_name: string }
+    const documents = this.#openDocuments.getMap('documents')
+    const documentUsersList = documents.get(documentName) as Y.Map<unknown>
+
+    if (documentUsersList) {
+      const user = documentUsersList.get(userId) as Y.Map<unknown>
+      const count = user?.get('count') as number || 0
+      if (count) {
+        user.set('count', count - 1)
+        console.log('    :: ODC', `decreased user count for document <${documentName}>`)
+      } else {
+        documentUsersList.delete(documentName)
+        console.log('    :: ODC', `removed user from tracking document <${documentName}>`)
+      }
+    }
+  }
+
+
+  /**
+   * Called when no one have the document open anylonger.
+   *
+   * Remove this document from tracked documents so that the tracker document does not grow indefinitely
+   */
+  async #afterUnloadDocument({ documentName }: afterUnloadDocumentPayload): Promise<void> {
+    if (!this.#openDocuments || documentName === 'document-tracker') {
+      return
+    }
+
+    const documents = this.#openDocuments.getMap('documents')
+    const documentUsersList = documents.get(documentName) as Y.Map<unknown>
+
+    if (documentUsersList && !documentUsersList.size) {
+      documents.delete(documentName)
+      console.log('    :: ULD', `REMOVED document <${documentName}> from tracked documents`)
+    }
   }
 
 

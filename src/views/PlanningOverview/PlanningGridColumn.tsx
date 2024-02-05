@@ -8,6 +8,7 @@ import { dateToReadableTime } from '@/lib/datetime'
 import { useContext, useEffect, useState } from 'react'
 import { DocTrackerContext } from '@/contexts/DocTrackerProvider'
 import type * as Y from 'yjs'
+import { Avatar } from '@/components'
 
 interface PlanningGridColumnProps {
   date: Date
@@ -59,6 +60,12 @@ export const PlanningGridColumn = ({ date, items }: PlanningGridColumnProps): JS
 }
 
 
+interface TrackedUser {
+  userId: string
+  userName: string
+  count: number
+}
+
 function PlanningItem(props: {
   id: string
   internal: boolean
@@ -73,7 +80,7 @@ function PlanningItem(props: {
   const { internal, title, slugLine, assignmentDataPublish, sectorBadge, locale, timeZone, deliverable } = props
   const { provider: docTracker } = useContext(DocTrackerContext)
   const [yUsers, , initYUsers] = useYMap(deliverable)
-  const [users, setUsers] = useState<string[]>([])
+  const [users, setUsers] = useState<TrackedUser[]>([])
 
   //
   // TODO: Verify that this is actually updating, does not seem like it
@@ -93,10 +100,15 @@ function PlanningItem(props: {
       return
     }
 
-    const locUsers = []
-    for (const [key, value] of (yUsers as Y.Map<string>).entries()) {
-      locUsers.push(value.toString())
+    const locUsers: TrackedUser[] = []
+    for (const [, value] of (yUsers as Y.Map<Y.Map<string | number>>).entries()) {
+      locUsers.push({
+        userId: value.get('userId') as string || '',
+        userName: value.get('userName') as string || '',
+        count: value.get('count') as number || 0
+      })
     }
+
     setUsers(locUsers)
   }, [yUsers])
 
@@ -122,7 +134,14 @@ function PlanningItem(props: {
       </div>
 
       <div>
-        {...users}
+        {users.map(user => {
+          return <span
+            key={user.userName}
+            title={`${user.userName} (${user.count})`}
+          >
+            <Avatar size="sm" variant="muted" value={user.userName} />
+          </span>
+        })}
       </div>
 
     </div>

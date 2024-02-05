@@ -31,10 +31,6 @@ interface CollabContextProviderProps extends PropsWithChildren {
   documentId?: string
 }
 
-//
-// TODO: Almost same code as in CollaborationProvider, should we refactor it?
-//
-
 export const DocTrackerProviderContext = ({ children }: CollabContextProviderProps): JSX.Element => {
   const { webSocket } = useContext(HPWebSocketProviderContext)
   const { jwt } = useSession()
