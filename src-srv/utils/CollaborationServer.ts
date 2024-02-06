@@ -46,6 +46,18 @@ interface CollaborationServerOptions {
   quiet?: boolean
 }
 
+interface CollaborationSnapshotUser {
+  userId: string
+  userName: string
+  count: number
+  socketId: string
+}
+
+type CollaborationSnapshot = Array<{
+  uuid: string
+  users: CollaborationSnapshotUser[]
+}>
+
 export class CollaborationServer {
   readonly #name: string
   readonly #port: number
@@ -290,6 +302,7 @@ export class CollaborationServer {
       trackingUser.set('userId', userId)
       trackingUser.set('userName', userName)
       trackingUser.set('count', 1)
+      trackingUser.set('socketId', socketId)
     } else {
       const count = trackingUser.get('count') as number
       trackingUser.set('count', count + 1)
@@ -360,6 +373,49 @@ export class CollaborationServer {
     if (!await this.#redisCache.store(documentName, state)) {
       console.error(`Failed storing ${documentName} in cache`)
     }
+  }
+
+  /**
+   * Number of HocusPocus provider connections (not number of websocket connections)
+   */
+  getConnectionsCount(): number {
+    return this.#server ? this.#server.getConnectionsCount() : 0
+  }
+
+  /**
+   * Number of open documents
+   */
+  getDocumentsCount(): number {
+    return this.#server ? this.#server.getDocumentsCount() : 0
+  }
+
+  /**
+   * Snapshot of open documents and by who
+   */
+  getSnapshot(): CollaborationSnapshot {
+    if (!this.#openDocuments) {
+      return []
+    }
+
+    const documents: CollaborationSnapshot = [{
+      uuid: 'tracker-document',
+      users: []
+    }]
+
+    const yDocMap: Y.Map<Y.Map<Y.Map<string>>> = this.#openDocuments.getMap('documents')
+    yDocMap.forEach((yUsersMap, uuid) => {
+      const users: CollaborationSnapshotUser[] = []
+      yUsersMap.forEach(yUser => {
+        users.push(yUser.toJSON() as CollaborationSnapshotUser)
+      })
+
+      documents.push({
+        uuid,
+        users
+      })
+    })
+
+    return documents
   }
 }
 

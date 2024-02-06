@@ -3,6 +3,7 @@ import path from 'node:path'
 import type { Request, Response } from 'express'
 import type { Application, WebsocketRequestHandler } from 'express-ws'
 import type { Repository } from './utils/Repository.js'
+import type { CollaborationServer } from './utils/CollaborationServer.js'
 
 /* Route types */
 interface Route {
@@ -13,6 +14,7 @@ interface Route {
 
 interface RouteInitContext {
   repository: Repository
+  collaborationServer: CollaborationServer
   [key: string]: unknown
 }
 
