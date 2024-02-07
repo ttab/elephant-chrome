@@ -19,7 +19,6 @@ export function initializeNavigationState(): NavigationState {
   })
 
   const { name, props } = currentView()
-
   // Initialize navigationstate from scratch if no contentState exists (or is empty []) in history
   if (!history?.state?.contentState?.length) {
     const InititalView = viewRegistry.getByPath(window.location.pathname)

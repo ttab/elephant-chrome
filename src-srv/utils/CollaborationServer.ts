@@ -116,9 +116,15 @@ export class CollaborationServer {
         })
       ],
       onAuthenticate: async (payload) => { return await this.#authenticate(payload) },
-      afterUnloadDocument: async (payload) => { await this.#afterUnloadDocument(payload) },
+
+      // Add user as having a tracked document open (or increase nr of times user have it open)
       connected: async (payload) => { await this.#connected(payload) },
-      onDisconnect: async (payload) => { await this.#onDisconnect(payload) }
+
+      // Remove user from having a tracked doc open (or decrease the nr of times user have it open)
+      onDisconnect: async (payload) => { await this.#onDisconnect(payload) },
+
+      // No users have this doc open, remove it from tracked documents
+      afterUnloadDocument: async (payload) => { await this.#afterUnloadDocument(payload) }
     })
 
     this.#handlePaths = []
@@ -282,8 +288,8 @@ export class CollaborationServer {
   /**
    * Called for every provider that connects to track a specific document.
    *
-   * Add user that opened the document to the correct document in the document tracker document.
-   * (Or increase the number of times the user have this document open.)
+   * Action: Add user that opened the document to the correct document in the document
+   * tracker document. Or increase the number of times the user have this document open.
    */
   async #connected({ documentName, context, socketId }: connectedPayload): Promise<void> {
     if (!this.#openDocuments || documentName === 'document-tracker') {
@@ -321,7 +327,7 @@ export class CollaborationServer {
   /*
    * Called for every provider that diconnects for tracking a specific document.
    *
-   * Remove the user (or decrease count) from tracked document userlist
+   * Action: Remove the user (or decrease count) from a tracked document userlist
    */
   async #onDisconnect({ documentName, context }: onDisconnectPayload): Promise<void> {
     if (!this.#openDocuments || documentName === 'document-tracker') {
@@ -335,12 +341,11 @@ export class CollaborationServer {
     if (documentUsersList) {
       const user = documentUsersList.get(userId) as Y.Map<unknown>
       const count = user?.get('count') as number || 0
-      if (count) {
+
+      if (count > 1) {
         user.set('count', count - 1)
-        console.log('    :: ODC', `decreased user count for document <${documentName}>`)
       } else {
-        documentUsersList.delete(documentName)
-        console.log('    :: ODC', `removed user from tracking document <${documentName}>`)
+        documentUsersList.delete(userId)
       }
     }
   }
@@ -349,7 +354,7 @@ export class CollaborationServer {
   /**
    * Called when no one have the document open anylonger.
    *
-   * Remove this document from tracked documents so that the tracker document does not grow indefinitely
+   * Action: Remove this document from tracked documents so that the tracker document does not grow indefinitely
    */
   async #afterUnloadDocument({ documentName }: afterUnloadDocumentPayload): Promise<void> {
     if (!this.#openDocuments || documentName === 'document-tracker') {
@@ -361,7 +366,6 @@ export class CollaborationServer {
 
     if (documentUsersList && !documentUsersList.size) {
       documents.delete(documentName)
-      console.log('    :: ULD', `REMOVED document <${documentName}> from tracked documents`)
     }
   }
 

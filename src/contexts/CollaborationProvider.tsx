@@ -3,7 +3,8 @@ import {
   type PropsWithChildren,
   useMemo,
   useState,
-  useContext
+  useContext,
+  useEffect
 } from 'react'
 import { HocuspocusProvider } from '@hocuspocus/provider'
 import { useSession } from '@/hooks'
@@ -63,12 +64,13 @@ export const CollaborationProviderContext = ({ documentId, children }: CollabCon
   const [synced, setSynced] = useState<boolean>(false)
   const [connected, setConnected] = useState<boolean>(false)
   const [states, setStates] = useState<AwarenessStates>([])
+  const [provider, setProvider] = useState<HocuspocusProvider>()
 
   if (!jwt?.access_token) {
     throw new Error('Collaboration is not allowed without a valid access_token')
   }
 
-  const provider = useMemo(() => {
+  useEffect(() => {
     if (!documentId || !webSocket) {
       return
     }
@@ -94,7 +96,13 @@ export const CollaborationProviderContext = ({ documentId, children }: CollabCon
       }
     })
 
-    return provider
+    setProvider(provider)
+
+    return () => {
+      // Provider must be destroyed first, then unset, to trigger correct events in collaboration server
+      provider.destroy()
+      setProvider(undefined)
+    }
   }, [documentId, webSocket, jwt?.access_token])
 
   // Awareness user data
@@ -119,8 +127,12 @@ export const CollaborationProviderContext = ({ documentId, children }: CollabCon
   }
 
   return (
-    <CollaborationContext.Provider value={{ ...state }}>
-      {children}
-    </CollaborationContext.Provider>
+    <>
+      {!!provider &&
+        <CollaborationContext.Provider value={{ ...state }}>
+          {children}
+        </CollaborationContext.Provider>
+      }
+    </>
   )
 }
