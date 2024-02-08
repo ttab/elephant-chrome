@@ -31,7 +31,7 @@ interface CollabContextProviderProps extends PropsWithChildren {
   documentId?: string
 }
 
-export const DocTrackerProviderContext = ({ children }: CollabContextProviderProps): JSX.Element => {
+export const DocTrackerProvider = ({ children }: CollabContextProviderProps): JSX.Element => {
   const { webSocket } = useContext(HPWebSocketProviderContext)
   const { jwt } = useSession()
   const [synced, setSynced] = useState<boolean>(false)
