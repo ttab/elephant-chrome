@@ -83,17 +83,20 @@ function PlanningItem(props: {
   const [users, setUsers] = useState<TrackedUser[]>([])
 
   //
-  // TODO: Verify that this is actually updating, does not seem like it
-  // TODO: Verify that this does not cause indefinite rerenders
+  // FIXME: Tracking should be changed to use future observer pattern, currently this does not work
   //
   useEffect(() => {
-    if (!docTracker?.document || !docTracker.synced) {
+    if (!docTracker?.document || !docTracker.synced || !deliverable) {
       return
     }
 
-    const openDocuments = docTracker.document.getMap('documents')
-    initYUsers(openDocuments)
-  }, [docTracker?.document, docTracker?.synced, initYUsers])
+    const openDocuments: Y.Map<Y.Map<unknown>> = docTracker.document.getMap('open-documents')
+    const openDocumentUsers = openDocuments.get(deliverable)
+
+    if (openDocumentUsers) {
+      initYUsers(openDocumentUsers)
+    }
+  }, [docTracker?.document, docTracker?.synced, initYUsers, deliverable])
 
   useEffect(() => {
     if (!yUsers || !(yUsers as Y.Map<string>)?.entries) {

@@ -1,9 +1,9 @@
 import {
   createContext,
   type PropsWithChildren,
-  useMemo,
   useState,
-  useContext
+  useContext,
+  useEffect
 } from 'react'
 import { HocuspocusProvider } from '@hocuspocus/provider'
 import { useSession } from '@/hooks'
@@ -36,12 +36,13 @@ export const DocTrackerProviderContext = ({ children }: CollabContextProviderPro
   const { jwt } = useSession()
   const [synced, setSynced] = useState<boolean>(false)
   const [connected, setConnected] = useState<boolean>(false)
+  const [provider, setProvider] = useState<HocuspocusProvider>()
 
   if (!jwt?.access_token) {
     throw new Error('DocTracker is not allowed without a valid access_token')
   }
 
-  const provider = useMemo(() => {
+  useEffect(() => {
     if (!webSocket) {
       return
     }
@@ -64,7 +65,12 @@ export const DocTrackerProviderContext = ({ children }: CollabContextProviderPro
       }
     })
 
-    return provider
+    setProvider(provider)
+
+    return () => {
+      provider.destroy()
+      setProvider(undefined)
+    }
   }, [webSocket, jwt?.access_token])
 
   const state = {
@@ -74,8 +80,12 @@ export const DocTrackerProviderContext = ({ children }: CollabContextProviderPro
   }
 
   return (
-    <DocTrackerContext.Provider value={{ ...state }}>
-      {children}
-    </DocTrackerContext.Provider>
+    <>
+      {!!provider &&
+        <DocTrackerContext.Provider value={{ ...state }}>
+          {children}
+        </DocTrackerContext.Provider>
+      }
+    </>
   )
 }

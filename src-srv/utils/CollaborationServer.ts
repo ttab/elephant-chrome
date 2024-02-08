@@ -210,8 +210,8 @@ export class CollaborationServer {
         this.#openDocuments = yDoc
       }
 
-      const documents = yDoc.getMap('documents')
-      yDoc.share.set('documents', yMapAsYEventAny(documents))
+      const documents = yDoc.getMap('open-documents')
+      yDoc.share.set('open-documents', yMapAsYEventAny(documents))
       return Y.encodeStateAsUpdate(yDoc)
     }
 
@@ -297,7 +297,7 @@ export class CollaborationServer {
     }
 
     const { sub: userId, sub_name: userName } = context.user as { sub: string, sub_name: string }
-    const trackedDocuments = this.#openDocuments.getMap('documents')
+    const trackedDocuments = this.#openDocuments.getMap('open-documents')
     const userList = trackedDocuments.get(documentName) as Y.Map<unknown>
 
     let trackingUser: Y.Map<unknown> = userList?.get(userId) as Y.Map<unknown> || null
@@ -335,7 +335,7 @@ export class CollaborationServer {
     }
 
     const { sub: userId } = context.user as { sub: string, sub_name: string }
-    const documents = this.#openDocuments.getMap('documents')
+    const documents = this.#openDocuments.getMap('open-documents')
     const documentUsersList = documents.get(documentName) as Y.Map<unknown>
 
     if (documentUsersList) {
@@ -361,7 +361,7 @@ export class CollaborationServer {
       return
     }
 
-    const documents = this.#openDocuments.getMap('documents')
+    const documents = this.#openDocuments.getMap('open-documents')
     const documentUsersList = documents.get(documentName) as Y.Map<unknown>
 
     if (documentUsersList && !documentUsersList.size) {
@@ -406,7 +406,7 @@ export class CollaborationServer {
       users: []
     }]
 
-    const yDocMap: Y.Map<Y.Map<Y.Map<string>>> = this.#openDocuments.getMap('documents')
+    const yDocMap: Y.Map<Y.Map<Y.Map<string>>> = this.#openDocuments.getMap('open-documents')
     yDocMap.forEach((yUsersMap, uuid) => {
       const users: CollaborationSnapshotUser[] = []
       yUsersMap.forEach(yUser => {
