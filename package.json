@@ -46,7 +46,7 @@
     "node-html-parser": "^6.1.12",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
-    "redis": "^4.6.12",
+    "redis": "^4.6.13",
     "slate": "^0.101.5",
     "slate-react": "^0.101.6",
     "swr": "^2.2.4",
