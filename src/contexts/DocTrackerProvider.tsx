@@ -11,14 +11,12 @@ import { HPWebSocketProviderContext } from '.'
 
 export interface DocTrackerProviderState {
   provider?: HocuspocusProvider
-  documentId?: string
   connected: boolean
   synced: boolean
 }
 
 const initialState: DocTrackerProviderState = {
   provider: undefined,
-  documentId: undefined,
   connected: false,
   synced: false
 }
@@ -27,11 +25,11 @@ const initialState: DocTrackerProviderState = {
 // Create the context
 export const DocTrackerContext = createContext(initialState)
 
-interface CollabContextProviderProps extends PropsWithChildren {
+interface DocTrackerContextProviderProps extends PropsWithChildren {
   documentId?: string
 }
 
-export const DocTrackerProvider = ({ children }: CollabContextProviderProps): JSX.Element => {
+export const DocTrackerProvider = ({ children }: DocTrackerContextProviderProps): JSX.Element => {
   const { webSocket } = useContext(HPWebSocketProviderContext)
   const { jwt } = useSession()
   const [synced, setSynced] = useState<boolean>(false)
@@ -66,6 +64,7 @@ export const DocTrackerProvider = ({ children }: CollabContextProviderProps): JS
   }, [webSocket, jwt?.access_token])
 
   const state = {
+    provider,
     connected,
     synced
   }

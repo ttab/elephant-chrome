@@ -44,7 +44,7 @@ describe('Use NavigationProvider', () => {
     render(
       <SessionProvider>
         <NavigationProvider>
-          <DocTrackerContext.Provider value={{ synced: true, connected: true, provider, documentId: 'x' }}>
+          <DocTrackerContext.Provider value={{ synced: true, connected: true, provider }}>
             <AppContent />
           </DocTrackerContext.Provider>
         </NavigationProvider>
