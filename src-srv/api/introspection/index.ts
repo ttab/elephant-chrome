@@ -11,7 +11,7 @@ export const GET: RouteHandler = async (req, { collaborationServer }) => {
     }
   } catch (ex) {
     return {
-      statusCode: 401,
+      statusCode: 500,
       statusMessage: 'Not authorized'
     }
   }
