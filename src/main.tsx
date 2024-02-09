@@ -1,4 +1,3 @@
-import React from 'react'
 import ReactDOM from 'react-dom/client'
 import { App } from './App.tsx'
 import { ThemeProvider, SessionProvider, RegistryProvider, HPWebSocketProvider } from '@/contexts'
@@ -15,16 +14,14 @@ if (!root) {
 
 ReactDOM.createRoot(root).render(
   <SessionProvider>
-    <React.StrictMode>
-      <RegistryProvider>
-        <HPWebSocketProvider>
-          <ThemeProvider defaultTheme='light' storageKey='ele-ui-theme' >
-            <NavigationProvider>
-              <App />
-            </NavigationProvider>
-          </ThemeProvider >
-        </HPWebSocketProvider>
-      </RegistryProvider>
-    </React.StrictMode>
+    <RegistryProvider>
+      <HPWebSocketProvider>
+        <ThemeProvider defaultTheme='light' storageKey='ele-ui-theme' >
+          <NavigationProvider>
+            <App />
+          </NavigationProvider>
+        </ThemeProvider >
+      </HPWebSocketProvider>
+    </RegistryProvider>
   </SessionProvider>
 )

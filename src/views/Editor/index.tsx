@@ -50,11 +50,7 @@ const Editor = (props: ViewProps): JSX.Element => {
 }
 
 function EditorViewContent(props: ViewProps & { documentId: string }): JSX.Element {
-  const {
-    provider,
-    synced: isSynced,
-    user
-  } = useCollaboration()
+  const { provider, synced: isSynced, user } = useCollaboration()
 
   // Create YjsEditor for Textbit to use
   const editor = useMemo(() => {
