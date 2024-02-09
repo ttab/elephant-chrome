@@ -1,44 +1,27 @@
-import { useEffect, useRef } from 'react'
-import { useYMap } from '@/hooks'
-import { type CollabComponentProps } from '@/types'
+import { useRef } from 'react'
+import { useYObserver } from '@/hooks'
 import { Input } from '@ttab/elephant-ui'
 import { cn } from '@ttab/elephant-ui/utils'
 import { Awareness } from '@/components'
-import { type YMap } from 'node_modules/yjs/dist/src/internals'
+import type * as Y from 'yjs'
 
-export const PlanTitle = ({ isSynced, document, className }: CollabComponentProps): JSX.Element | null => {
-  const [title = '', setTitle, initTitle] = useYMap('core/planning-item/title')
+export const PlanTitle = ({ yMap, className }: { yMap?: Y.Map<unknown>, className?: string }): JSX.Element | null => {
+  const [title, setTitle] = useYObserver(yMap, 'title')
 
   const setFocused = useRef<(value: boolean) => void>(null)
 
-  useEffect(() => {
-    if (!isSynced || !document) {
-      return
-    }
-
-    const planningYMap: YMap<unknown> = document.getMap('planning')
-    initTitle(planningYMap)
-  }, [
-    isSynced,
-    document,
-    initTitle
-  ])
-
   return (
-
     <Awareness name='PlanTitle' ref={setFocused}>
       <Input
-        value={title as string}
+        value={title }
         className={cn('font-medium text-sm border-0', className)}
-        onFocus={(event) => {
+        onFocus={() => {
           if (setFocused.current) {
-            console.log(event)
             setFocused.current(true)
           }
         }}
-        onBlur={(event) => {
+        onBlur={() => {
           if (setFocused.current) {
-            console.log(event)
             setFocused.current(false)
           }
         }}

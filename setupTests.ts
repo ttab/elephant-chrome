@@ -1,5 +1,5 @@
 import '@testing-library/jest-dom'
-import planning from './__tests__/data/planning.json'
+import planning from './__tests__/data/planning-index.json'
 export * from '@testing-library/react'
 
 const JWT = { sub: 'abc', sub_name: 'ABC', units: ['a', 'b', 'c'], scope: 'AbC', access_token: 'xxx' }

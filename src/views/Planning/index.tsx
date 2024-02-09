@@ -5,13 +5,14 @@ import { GanttChartSquare } from '@ttab/elephant-ui/icons'
 import { Textbit } from '@ttab/textbit'
 import { useCollaboration, useQuery } from '@/hooks'
 import { CollaborationProviderContext } from '@/contexts'
-import { PlanningHeader } from './PlanningHeader'
 import { PlanAssignments } from './components/PlanAssignments'
 import { PlanDate } from './components/PlanDate'
-import { PlanDescription } from './components/PlanDescription'
+import { PlanDescriptions } from './components/PlanDescriptions'
 import { PlanSector } from './components/PlanSector'
 import { PlanStatus } from './components/PlanStatus'
 import { PlanTitle } from './components/PlanTitle'
+import { PlanPriority } from './components/PlanPriority'
+import type * as Y from 'yjs'
 
 const meta: ViewMetadata = {
   name: 'Planning',
@@ -42,7 +43,7 @@ export const Planning = (props: ViewProps): JSX.Element => {
   )
 }
 
-const PlanningViewContent = (props: ViewProps): JSX.Element => {
+const PlanningViewContent = (props: ViewProps): JSX.Element | undefined => {
   const {
     provider,
     synced: isSynced
@@ -50,27 +51,35 @@ const PlanningViewContent = (props: ViewProps): JSX.Element => {
 
 
   const document = isSynced ? provider?.document : undefined
+  const yPlanning = document?.getMap<Y.Map<Y.Array<Y.Map<unknown>>>>('planning')
+  const yMeta = yPlanning?.get('meta')
+  const yLinks = yPlanning?.get('links')
+  const yRoot = yPlanning?.get('root')
 
-  return (
+  return yMeta && (
     <Textbit>
       <div className={`flex flex-col h-screen ${!isSynced ? 'opacity-60' : ''}`}>
         <div className="grow-0">
           <ViewHeader {...props} title="Planering" icon={GanttChartSquare}>
-            <PlanningHeader isSynced={isSynced} document={document} />
+            <div className='flex w-full h-full'>
+              <PlanPriority yMap={yMeta?.get('core/planning-item')?.get(0)} />
+              <PlanTitle yMap={yRoot as Y.Map<unknown>} />
+            </div>
           </ViewHeader>
         </div>
 
         <ScrollArea>
           <section className='overscroll-auto w-full space-y-4 p-8'>
-            <PlanDate isSynced={isSynced} document={document} />
+            <PlanDate yMap={yMeta?.get('core/planning-item')?.get(0)} />
+
             <div className='flex justify-between'>
-              <PlanSector isSynced={isSynced} document={document} />
-              <PlanStatus isSynced={isSynced} document={document} />
+              <PlanSector yMap={yLinks?.get('tt/sector')?.get(0)} />
+              <PlanStatus yMap={yMeta?.get('core/planning-item')?.get(0)} />
             </div>
             <Separator />
-            <PlanAssignments isSynced={isSynced} document={document} />
-            <PlanTitle isSynced={isSynced} document={document} className='font-bold text-xl py-4' />
-            <PlanDescription isSynced={isSynced} document={document} />
+            <PlanAssignments yArray={yMeta?.get('core/assignment')} />
+            <PlanTitle yMap={yRoot as Y.Map<unknown>} />
+            <PlanDescriptions yArray={yMeta?.get('core/description') as Y.Array<unknown>} />
           </section>
         </ScrollArea>
       </div>

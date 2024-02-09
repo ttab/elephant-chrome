@@ -27,6 +27,7 @@ import {
   newsDocToSlate,
   newsDocToYmap
 } from './transformations/index.js'
+import { newsDocToYPlanning } from './transformations/yjs/yPlanning.js'
 
 enum DocumentType {
   ARTICLE = 'core/article',
@@ -90,7 +91,7 @@ export class CollaborationServer {
           options: {
             username: redisUsername,
             password: redisPassword,
-            tls: {}
+            tls: false
           }
         }),
         new Database({
@@ -180,6 +181,7 @@ export class CollaborationServer {
   async #fetchDocument({ documentName: uuid, document: yDoc, context }: fetchPayload): Promise<Uint8Array | null> {
     const state = await this.#redisCache.get(uuid)
     if (state) {
+      console.log('returning previous state')
       return state
     }
 
@@ -188,6 +190,7 @@ export class CollaborationServer {
       uuid,
       accessToken: context.token
     })
+
     const { document } = documentResponse
 
     // Share complete original document
@@ -202,45 +205,26 @@ export class CollaborationServer {
         slateNodesToInsertDelta(slateDocument)
       )
 
-      // Share meta data map
-      const newsValue = document?.meta.find(i => i.type === 'core/newsvalue')
-      const metaYMap = yDoc.getMap('meta')
-      metaYMap.set('core/newsvalue/score', newsValue?.data.score || 0)
-      metaYMap.set('core/newsvalue/duration', newsValue?.data.duration || undefined)
-      metaYMap.set('core/newsvalue/end', newsValue?.data.end || undefined)
-      yDoc.share.set('meta', yMapAsYEventAny(metaYMap))
-
+      const yArticle = yDoc.getMap('article')
+      const parsed = newsDocToYPlanning(document, yArticle)
+      yDoc.share.set('article', yMapAsYEventAny(parsed))
       return Y.encodeStateAsUpdate(yDoc)
     }
 
     if (document?.type === DocumentType.PLANNING) {
-      const title = document?.title
-      const sector = document?.links.find(l => l.type === 'tt/sector')
-      const assignee = document.meta?.find(m => m.type === 'core/assignment')?.links
-        .find(l => l.type === 'core/author')
-      const planningItem = document?.meta.find(m => m.type === 'core/planning-item')
+      try {
+        const planningYMap = yDoc.getMap('planning')
 
-      const description = document?.meta.find(i => i.type === 'core/description')
-      const assignments = document?.meta.filter(i => i.type === 'core/assignment')
+        const parsed = newsDocToYPlanning(document, planningYMap)
+        yDoc.share.set('planning', yMapAsYEventAny(parsed))
 
-      const planningYMap = yDoc.getMap('planning')
-
-      planningYMap.set('core/planning-item/title', title || '')
-      planningYMap.set('core/planning-item/sector', sector?.title || '')
-      planningYMap.set('core/planning-item/status', planningItem?.data.public || 'false')
-      planningYMap.set('core/planning-item/start', planningItem?.data.start_date || '')
-      planningYMap.set('core/planning-item/end', planningItem?.data.end_date || '')
-      planningYMap.set('core/author', assignee?.name.replace('/TT', '') || '')
-      planningYMap.set('core/planning-item/priority', planningItem?.data.priority || 0)
-
-
-      planningYMap.set('core/description/text', description?.data.text || '')
-      planningYMap.set('core/assignments', assignments || [])
-
-
-      yDoc.share.set('planning', yMapAsYEventAny(planningYMap))
-
-      return Y.encodeStateAsUpdate(yDoc)
+        return Y.encodeStateAsUpdate(yDoc)
+      } catch (err) {
+        if (err instanceof Error) {
+          throw new Error(err.message)
+        }
+        throw new Error('Unknown error in parsing Planning')
+      }
     }
 
     throw new Error('Can\'t determine DocumentType')

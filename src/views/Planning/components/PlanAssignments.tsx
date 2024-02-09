@@ -1,48 +1,42 @@
-import { useEffect } from 'react'
 import { Link, Avatar } from '@/components'
-import { useYMap } from '@/hooks'
-import { type CollabComponentProps } from '@/types'
 import { Separator } from '@ttab/elephant-ui'
-import { type YMap } from 'node_modules/yjs/dist/src/internals'
-import { type Block } from '../../../../src-srv/protos/service'
+import { useYObserver } from '@/hooks/useYObserver'
+import { AvatarGroup } from '@/components/AvatarGroup'
+import type * as Y from 'yjs'
 
-export const PlanAssignments = ({ isSynced, document }: CollabComponentProps): JSX.Element => {
-  const [assignments, , initAssignments] = useYMap('core/assignments')
+const PlanAssignment = ({ yMap }: { yMap: Y.Map<unknown> }): JSX.Element => {
+  const [title] = useYObserver(yMap, 'title')
 
-  useEffect(() => {
-    if (!isSynced || !document) {
-      return
-    }
-
-    const planningYMap: YMap<unknown> = document.getMap('planning')
-    initAssignments(planningYMap)
-  }, [
-    isSynced,
-    document,
-    initAssignments
-  ])
+  const [authors] = useYObserver((yMap.get('links') as Y.Map<Y.Array<unknown>>)?.get('core/author'))
+  const [uuid] = useYObserver((yMap?.get('links') as Y.Map<Y.Array<Y.Map<unknown>>>)?.get('core/article')?.get(0), 'uuid')
 
   return (
+    <div className='flex flex-col'>
+      <AvatarGroup>
+        {authors.map((author, index) => {
+          const name = (author as Y.Map<string>).get('name')
+          return <Avatar
+            key={index}
+            variant="muted"
+            size='sm'
+            value={name || ''} />
+        })}
+      </AvatarGroup>
+      {uuid
+        ? (
+          <Link to='Editor' props={{ id: uuid }}>
+            {title}
+          </Link>)
+        : title}
+      <Separator className='my-4' />
+    </div>)
+}
+export const PlanAssignments = ({ yArray }: { yArray?: Y.Array<Y.Map<unknown>> }): JSX.Element => {
+  return (
     <div>
-      {(assignments as Block[] || []).map((assignment, index: number) => {
-        const author = assignment?.links.find((a: Block) => a.type === 'core/author')?.name?.replace('/TT', '') || ''
-        const uuid = assignment?.links.find((l: Block) => l.type === 'core/article')?.uuid
-
-        return (
-          <div key={index} className='flex flex-col'>
-            <div className='flex space-x-1'>
-              <Avatar variant="muted" size='sm' value={author} />
-              <span className='text-sm font-medium leading-8'>{author}</span>
-            </div>
-            {uuid
-              ? (
-                <Link to='Editor' props={{ id: uuid }}>
-                  {assignment.title}
-                </Link>)
-              : assignment.title}
-            <Separator className='my-4' />
-          </div>)
-      })}
+      {(yArray || []).map((yMap, index: number) => (
+        <PlanAssignment key={index} yMap={yMap} />
+      ))}
     </div>
   )
 }

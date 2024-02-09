@@ -45,6 +45,9 @@
       ],
       "@/defaults/*": [
         "./src/defaults/*"
+      ],
+      "@/protos/*": [
+        "./src-srv/protos/*"
       ]
     }
   },

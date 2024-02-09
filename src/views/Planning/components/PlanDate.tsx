@@ -1,35 +1,17 @@
-import { useEffect } from 'react'
-import { useRegistry, useYMap } from '@/hooks'
-import { type CollabComponentProps } from '@/types'
+import { useRegistry, useYObserver } from '@/hooks'
 import { Calendar } from '@ttab/elephant-ui/icons'
-import { type YMap } from 'node_modules/yjs/dist/src/internals'
+import type * as Y from 'yjs'
 
-export const PlanDate = ({ isSynced, document }: CollabComponentProps): JSX.Element => {
-  const [start, , initStart] = useYMap('core/planning-item/start')
-  const [end, , initEnd] = useYMap('core/planning-item/start')
-
+export const PlanDate = ({ yMap }: { yMap: Y.Map<unknown> | undefined }): JSX.Element => {
+  const [start] = useYObserver(yMap, 'data.start_date')
+  const [end] = useYObserver(yMap, 'data.end_date')
   const { locale, timeZone } = useRegistry()
-
-  useEffect(() => {
-    if (!isSynced || !document) {
-      return
-    }
-
-    const planningYMap: YMap<unknown> = document.getMap('planning')
-    initStart(planningYMap)
-    initEnd(planningYMap)
-  }, [
-    isSynced,
-    document,
-    initStart,
-    initEnd
-  ])
 
   return (
     <div className='flex w-fit space-x-2'>
       <Calendar className='h-4 w-4' color='#4848FA' />
       { typeof start === 'string' && <span className='text-sm font-normal leading-4'>{formatDate(start, locale, timeZone)}</span>}
-      {start !== end && <span className='text-sm font-normal leading-4'>{formatDate(end as string, locale, timeZone)}</span>}
+      {start !== end && <span className='text-sm font-normal leading-4'>{formatDate(end, locale, timeZone)}</span>}
     </div>
   )
 }

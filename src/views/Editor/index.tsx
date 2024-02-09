@@ -83,13 +83,18 @@ function EditorViewContent(props: ViewProps & { documentId: string }): JSX.Eleme
     }
   }, [editor])
 
+  const document = isSynced ? provider?.document : undefined
+  const yArticle = document?.getMap<Y.Map<Y.Array<unknown>>>('article')
+  const yMeta = yArticle?.get('meta')
+
+
   return (
     <>
       <Textbit>
         <div className={`flex flex-col h-screen ${!isSynced ? 'opacity-60' : ''}`}>
           <div className="grow-0">
             <ViewHeader {...props} title="Editor" icon={PenBoxIcon}>
-              <EditorHeader isSynced={isSynced} document={isSynced ? provider?.document : undefined} />
+              {yMeta && <EditorHeader yMap={yMeta?.get('core/newsvalue')?.get(0) as Y.Map<unknown>} />}
             </ViewHeader>
           </div>
 
