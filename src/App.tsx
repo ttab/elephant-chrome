@@ -1,10 +1,11 @@
-import { useNavigation, useSession } from '@/hooks'
+import { useSession } from '@/hooks'
 import { AppHeader } from '@/components'
 import { Login } from '@/views/auth/Login'
+import { DocTrackerProvider } from './contexts/DocTrackerProvider'
+import { AppContent } from './AppContent'
 
 export const App = (): JSX.Element => {
   const { jwt } = useSession()
-  const { state } = useNavigation()
 
   if (!jwt) {
     return <div className='relative flex h-screen flex-col'>
@@ -19,7 +20,9 @@ export const App = (): JSX.Element => {
       </div>
 
       <div className='grid grid-cols-12 divide-x-2 h-max'>
-        {state.content}
+        <DocTrackerProvider>
+          <AppContent />
+        </DocTrackerProvider>
       </div>
     </div>
   )

@@ -1,13 +1,15 @@
 import { type Dispatch } from 'react'
-import { SessionProvider, TableProvider } from '@/contexts'
+import { SessionProvider } from '@/contexts'
 import { NavigationProvider } from '@/navigation'
 
 import { useNavigation, useTable } from '@/hooks'
 
 import { render, screen } from '../setupTests'
-import { App } from '@/App'
 import { type NavigationActionType } from '@/types'
 import { initializeNavigationState } from '@/navigation/lib'
+import { DocTrackerContext } from '@/contexts/DocTrackerProvider'
+import { type HocuspocusProvider } from '@hocuspocus/provider'
+import { AppContent } from '@/AppContent'
 
 jest.mock('@/navigation/hooks/useNavigation', () => ({
   useNavigation: jest.fn()
@@ -35,17 +37,20 @@ const mockDispatch = jest.fn() as Dispatch<NavigationActionType>
   }
 })
 
+const provider = true as unknown as HocuspocusProvider
+
 describe('Use NavigationProvider', () => {
   it('should render view from registry', async () => {
     render(
       <SessionProvider>
         <NavigationProvider>
-          <TableProvider>
-            <App />
-          </TableProvider>
+          <DocTrackerContext.Provider value={{ synced: true, connected: true, provider }}>
+            <AppContent />
+          </DocTrackerContext.Provider>
         </NavigationProvider>
-      </SessionProvider>
+      </SessionProvider >
     )
+
     expect(await screen.findByText(/Planeringsöversikt/)).toBeInTheDocument()
   })
 })

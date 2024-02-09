@@ -2,11 +2,14 @@ import {
   createContext,
   type PropsWithChildren,
   useMemo,
-  useState
+  useState,
+  useContext,
+  useEffect
 } from 'react'
 import { HocuspocusProvider } from '@hocuspocus/provider'
-import { useApi, useSession } from '@/hooks'
+import { useSession } from '@/hooks'
 import { Collaboration } from '@/defaults'
+import { HPWebSocketProviderContext } from '.'
 
 export interface AwarenessUserData {
   name: string
@@ -56,23 +59,24 @@ interface CollabContextProviderProps extends PropsWithChildren {
 }
 
 export const CollaborationProviderContext = ({ documentId, children }: CollabContextProviderProps): JSX.Element => {
-  const { hocuspocusWebsocket } = useApi()
+  const { webSocket } = useContext(HPWebSocketProviderContext)
   const { jwt } = useSession()
   const [synced, setSynced] = useState<boolean>(false)
   const [connected, setConnected] = useState<boolean>(false)
   const [states, setStates] = useState<AwarenessStates>([])
+  const [provider, setProvider] = useState<HocuspocusProvider>()
 
   if (!jwt?.access_token) {
     throw new Error('Collaboration is not allowed without a valid access_token')
   }
 
-  const provider = useMemo(() => {
-    if (!documentId || !hocuspocusWebsocket) {
+  useEffect(() => {
+    if (!documentId || !webSocket) {
       return
     }
 
     const provider = new HocuspocusProvider({
-      websocketProvider: hocuspocusWebsocket,
+      websocketProvider: webSocket,
       name: documentId,
       token: jwt.access_token,
       onConnect: () => {
@@ -92,8 +96,14 @@ export const CollaborationProviderContext = ({ documentId, children }: CollabCon
       }
     })
 
-    return provider
-  }, [documentId, hocuspocusWebsocket, jwt?.access_token])
+    setProvider(provider)
+
+    return () => {
+      // Provider must be destroyed first, then unset, to trigger correct events in collaboration server
+      provider.destroy()
+      setProvider(undefined)
+    }
+  }, [documentId, webSocket, jwt?.access_token])
 
   // Awareness user data
   const user = useMemo((): AwarenessUserData => {
@@ -117,8 +127,12 @@ export const CollaborationProviderContext = ({ documentId, children }: CollabCon
   }
 
   return (
-    <CollaborationContext.Provider value={{ ...state }}>
-      {children}
-    </CollaborationContext.Provider>
+    <>
+      {!!provider &&
+        <CollaborationContext.Provider value={{ ...state }}>
+          {children}
+        </CollaborationContext.Provider>
+      }
+    </>
   )
 }

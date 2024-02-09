@@ -76,12 +76,9 @@ async function runServer(): Promise<string> {
   app.use(BASE_URL, express.json())
   app.use(BASE_URL || '', express.static(distDir))
 
-  connectRouteHandlers(app, routes, {
-    repository
-  })
 
   // Create collaboration and hocuspocus server
-  const collabServer = new CollaborationServer({
+  const collaborationServer = new CollaborationServer({
     name: 'Elephant',
     port: PORT,
     redisUrl: REDIS_URL,
@@ -89,8 +86,12 @@ async function runServer(): Promise<string> {
     repository,
     expressServer: app
   })
-  await collabServer.listen([`${BASE_URL}/:document`])
+  await collaborationServer.listen([`${BASE_URL}/:document`])
 
+  connectRouteHandlers(app, routes, {
+    repository,
+    collaborationServer
+  })
 
   // Catch all other requests and serve bundled app
   app.get('*', (_, res) => {

@@ -1,19 +1,19 @@
-import { useSession, useApi, useRegistry } from '@/hooks'
+import { useMemo } from 'react'
+import useSWR from 'swr'
+
+import { useSession, useRegistry, useIndexUrl, useTable } from '@/hooks'
 import { type SearchIndexResponse } from '@/lib/index/search'
 import { Planning } from '@/lib/planning'
 import { PlanningTable } from '@/views/PlanningOverview/PlanningTable'
 import { columns } from '@/views/PlanningOverview/PlanningTable/Columns'
 
 import { convertToISOStringInUTC, getDateTimeBoundaries } from '@/lib/datetime'
-import useSWR from 'swr'
-import { useMemo } from 'react'
-import { useTable } from '@/hooks/useTable'
 
 export const PlanningList = ({ date }: { date: Date }): JSX.Element => {
   const { setData } = useTable()
   const { locale } = useRegistry()
   const { jwt } = useSession()
-  const { indexUrl } = useApi()
+  const indexUrl = useIndexUrl()
   const { startTime, endTime } = getDateTimeBoundaries(date)
 
   // Create url to base SWR caching on
