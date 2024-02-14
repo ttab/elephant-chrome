@@ -3,8 +3,8 @@ import { Calendar } from '@ttab/elephant-ui/icons'
 import type * as Y from 'yjs'
 
 export const PlanDate = ({ yMap }: { yMap: Y.Map<unknown> | undefined }): JSX.Element => {
-  const [start] = useYObserver(yMap, 'data.start_date')
-  const [end] = useYObserver(yMap, 'data.end_date')
+  const [start] = useYObserver<string>(yMap, 'data.start_date')
+  const [end] = useYObserver<string>(yMap, 'data.end_date')
   const { locale, timeZone } = useRegistry()
 
   return (

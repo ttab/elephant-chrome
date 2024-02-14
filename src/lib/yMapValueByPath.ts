@@ -16,16 +16,19 @@ import * as Y from 'yjs'
  * @returns {Y.Map<unknown> | Y.Array<unknown> | string | undefined} The retrieved value, or undefined if not found.
  */
 
-export function get(y: Y.Array<unknown>): Y.Array<unknown>
-export function get(y: Y.Map<unknown>, path?: string): Y.Map<unknown> | string | undefined
-export function get(y: Y.Map<unknown> | Y.Array<unknown>, path?: string): Y.Map<unknown> | Y.Array<unknown> | string | undefined {
+export function get<T>(y: Y.Array<unknown>): T[]
+export function get<T>(y: Y.Map<unknown>, path?: string): Record<string, T> | string | undefined
+export function get<T>(y: Y.Map<unknown> | Y.Array<unknown>, path?: string): T[] | Record<string, T> | string | undefined {
+  if (!y) {
+    return
+  }
   if (!path) {
-    return y // Return the original ymap if no path is provided
+    return y.toJSON() // Return the original ymap if no path is provided
   }
 
   // Return Y.Array for observation
   if (y instanceof Y.Array) {
-    return y
+    return y.toJSON()
   }
 
   const keys: string[] = path.split('.')
@@ -38,7 +41,7 @@ export function get(y: Y.Map<unknown> | Y.Array<unknown>, path?: string): Y.Map<
     current = current.get(key) as Y.Map<unknown>
   }
 
-  return current
+  return current as unknown as string
 }
 
 

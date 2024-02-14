@@ -4,7 +4,7 @@ import { NewsValueScoreDropDown } from '@/views/Editor/EditorHeader/NewsValueSco
 import type * as Y from 'yjs'
 
 export const PlanPriority = ({ yMap }: { yMap?: Y.Map<unknown> }): JSX.Element => {
-  const [priority, setPriority] = useYObserver(yMap, 'data.priority')
+  const [priority, setPriority] = useYObserver<string>(yMap, 'data.priority')
   return (
     <NewsValueScoreDropDown
       value={priority }

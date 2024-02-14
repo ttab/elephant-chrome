@@ -3,23 +3,23 @@ import { Separator } from '@ttab/elephant-ui'
 import { useYObserver } from '@/hooks/useYObserver'
 import { AvatarGroup } from '@/components/AvatarGroup'
 import type * as Y from 'yjs'
+import { type Block } from '@/protos/service'
 
 const PlanAssignment = ({ yMap }: { yMap: Y.Map<unknown> }): JSX.Element => {
-  const [title] = useYObserver(yMap, 'title')
+  const [title] = useYObserver<string>(yMap, 'title')
 
-  const [authors] = useYObserver((yMap.get('links') as Y.Map<Y.Array<unknown>>)?.get('core/author'))
-  const [uuid] = useYObserver((yMap?.get('links') as Y.Map<Y.Array<Y.Map<unknown>>>)?.get('core/article')?.get(0), 'uuid')
+  const [authors] = useYObserver<Block>((yMap.get('links') as Y.Map<Y.Array<unknown>>)?.get('core/author'))
+  const [uuid] = useYObserver<string>((yMap?.get('links') as Y.Map<Y.Array<Y.Map<unknown>>>)?.get('core/article')?.get(0), 'uuid')
 
   return (
     <div className='flex flex-col'>
       <AvatarGroup>
         {authors.map((author, index) => {
-          const name = (author as Y.Map<string>).get('name')
           return <Avatar
             key={index}
             variant="muted"
             size='sm'
-            value={name || ''} />
+            value={author?.name || ''} />
         })}
       </AvatarGroup>
       {uuid

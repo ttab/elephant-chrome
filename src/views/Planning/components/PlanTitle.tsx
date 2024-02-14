@@ -6,7 +6,7 @@ import { Awareness } from '@/components'
 import type * as Y from 'yjs'
 
 export const PlanTitle = ({ yMap, className }: { yMap?: Y.Map<unknown>, className?: string }): JSX.Element | null => {
-  const [title, setTitle] = useYObserver(yMap, 'title')
+  const [title, setTitle] = useYObserver<string>(yMap, 'title')
 
   const setFocused = useRef<(value: boolean) => void>(null)
 

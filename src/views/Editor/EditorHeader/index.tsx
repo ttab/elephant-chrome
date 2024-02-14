@@ -5,9 +5,9 @@ import { NewsValueScoreDropDown } from './NewsValueScoreDropDown'
 import type * as Y from 'yjs'
 
 export const EditorHeader = ({ yMap }: { yMap: Y.Map<unknown> }): JSX.Element => {
-  const [score, setScore] = useYObserver(yMap, 'data.score')
-  const [duration, setDuration] = useYObserver(yMap, 'data.duration')
-  const [end, setEnd] = useYObserver(yMap, 'data.end')
+  const [score, setScore] = useYObserver<string>(yMap, 'data.score')
+  const [duration, setDuration] = useYObserver<string>(yMap, 'data.duration')
+  const [end, setEnd] = useYObserver<string>(yMap, 'data.end')
 
   return (
     <>

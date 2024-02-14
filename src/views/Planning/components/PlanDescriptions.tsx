@@ -2,12 +2,11 @@ import { useRef } from 'react'
 import type * as Y from 'yjs'
 import { useYObserver } from '@/hooks'
 import { Button, Textarea } from '@ttab/elephant-ui'
-
-
 import { Awareness } from '@/components'
+import { type Block } from '@/protos/service'
 
 const PlanDescription = ({ yDescription }: { yDescription: Y.Map<unknown> }): JSX.Element => {
-  const [description, setDescription] = useYObserver(yDescription, 'data.text')
+  const [description, setDescription] = useYObserver<string>(yDescription, 'data.text')
   const setFocused = useRef<(value: boolean) => void>(null)
   return (
     <Awareness name='PlanDescription' ref={setFocused}>
@@ -24,13 +23,12 @@ const PlanDescription = ({ yDescription }: { yDescription: Y.Map<unknown> }): JS
             setFocused.current(false)
           }
         }}
-        className='h-screen'
         />
     </Awareness>
   )
 }
 export const PlanDescriptions = ({ yArray }: { yArray?: Y.Array<unknown> }): JSX.Element => {
-  const [descriptions, setDescriptions] = useYObserver(yArray)
+  const [descriptions, setDescriptions] = useYObserver<Block>(yArray)
 
   return descriptions && (
     <div>
