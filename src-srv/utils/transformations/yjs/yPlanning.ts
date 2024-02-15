@@ -1,6 +1,6 @@
 import * as Y from 'yjs'
 import { type Document } from '../../../protos/service.js'
-import { toYMap } from '../lib/toYMap'
+import { toYMap } from '../lib/toYMap.js'
 import { groupBy } from '../lib/groupBy.js'
 
 export function newsDocToYPlanning(document: Document, planningYMap: Y.Map<unknown>): Y.Map<unknown> {
