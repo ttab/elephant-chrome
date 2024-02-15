@@ -206,6 +206,10 @@ export class CollaborationServer {
   async #fetchDocument({ documentName: uuid, document: yDoc, context }: fetchPayload): Promise<Uint8Array | null> {
     // Init tracking document. Must not be fetched from cache when starting up the server fresh.
     if (uuid === 'document-tracker') {
+      if (this.#openDocuments) {
+        return null
+      }
+
       this.#openDocuments = yDoc
 
       const documents = yDoc.getMap('open-documents')
