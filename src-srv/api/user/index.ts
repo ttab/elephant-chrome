@@ -9,7 +9,7 @@ export const POST: RouteHandler = async (req, context) => {
   const {
     user,
     password,
-    sub = 'AB' // FIXME: Remove hardcoded value, should come from somewhere
+    sub = getInitials(user as string) // FIXME: Remove hardcoded value, should come from somewhere
   } = req.body
 
   const permissions = [
@@ -98,4 +98,13 @@ function setCookies(session: Session, res: Response): void {
       sameSite: 'strict'
     }
   )
+}
+
+export function getInitials(assignee: string): string {
+  try {
+    const [first, last] = assignee.trim().split(' ')
+    return `${first[0]}${last[0]}`
+  } catch {
+    return '??'
+  }
 }

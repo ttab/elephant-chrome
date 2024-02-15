@@ -16,40 +16,6 @@ export function yjsStateAsUpdate(content: TBElement[], data: Y.Doc): Uint8Array 
 }
 
 /**
- * Helper function to transform a newsDoc to a Y.Map()
- * @param data GetDocumentResponse
- * @param map Y.Map<unknown>
- * @returns Y.Map<unknown>
- */
-export function newsDocToYmap(data: GetDocumentResponse, map: Y.Map<unknown>): Y.Map<unknown> {
-  const d = {
-    ...data,
-    version: data.version.toString()
-  }
-
-  for (const key in d) {
-    const value = d[key as keyof typeof d]
-    if (typeof value === 'object') {
-      const m = new Y.Map()
-      if (Array.isArray(value)) {
-        const a = new Y.Array()
-        if (value?.length > 0) {
-          a.push([newsDocToYmap(value as unknown as GetDocumentResponse, m)])
-        }
-        map.set(key, a)
-      } else {
-        for (const k in value) {
-          m.set(k, value[k as keyof typeof value])
-        }
-        map.set(key, m)
-      }
-    }
-    map.set(key, value)
-  }
-  return map
-}
-
-/**
 * Helper function to transform a Document(Y.Doc) to a newsDoc
 * @param document Document
 * @returns GetDocumentResponse

@@ -1,39 +1,20 @@
-import { useEffect } from 'react'
-import { useYMap } from '@/hooks'
-
+import { useYObserver } from '@/hooks'
 import { Priorities } from '@/defaults'
 import { NewsValueTimeDropDown } from './NewsValueTimeDropDown'
 import { NewsValueScoreDropDown } from './NewsValueScoreDropDown'
-import { type CollabComponentProps } from '@/types'
+import type * as Y from 'yjs'
 
-export const EditorHeader = ({ isSynced, document }: CollabComponentProps): JSX.Element => {
-  const [newsvalueScore, setNewsvalueScore, initNewsvalueScore] = useYMap('core/newsvalue/score')
-  const [newsvalueDuration, setNewsvalueDuration, initNewsvalueDuration] = useYMap('core/newsvalue/duration')
-  const [newsvalueEnd, setNewsvalueEnd, initNewsvalueEnd] = useYMap('core/newsvalue/end')
-
-  useEffect(() => {
-    if (!isSynced || !document) {
-      return
-    }
-
-    const metaYMap = document.getMap('meta')
-    initNewsvalueDuration(metaYMap)
-    initNewsvalueScore(metaYMap)
-    initNewsvalueEnd(metaYMap)
-  }, [
-    isSynced,
-    document,
-    initNewsvalueDuration,
-    initNewsvalueScore,
-    initNewsvalueEnd
-  ])
+export const EditorHeader = ({ yMap }: { yMap: Y.Map<unknown> }): JSX.Element => {
+  const [score, setScore] = useYObserver<string>(yMap, 'data.score')
+  const [duration, setDuration] = useYObserver<string>(yMap, 'data.duration')
+  const [end, setEnd] = useYObserver<string>(yMap, 'data.end')
 
   return (
     <>
       <NewsValueScoreDropDown
-        value={newsvalueScore as string}
+        value={score}
         onChange={(value) => {
-          setNewsvalueScore(value as number)
+          setScore(value)
         }}
         options={Priorities.map(p => {
           return {
@@ -45,11 +26,11 @@ export const EditorHeader = ({ isSynced, document }: CollabComponentProps): JSX.
       />
 
       <NewsValueTimeDropDown
-        duration={typeof newsvalueDuration === 'string' ? newsvalueDuration : undefined}
-        end={typeof newsvalueEnd === 'string' ? newsvalueEnd : undefined}
-        onChange={(setDuration, setEnd) => {
-          setNewsvalueDuration(setDuration)
-          setNewsvalueEnd(setEnd)
+        duration={typeof duration === 'string' ? duration : undefined}
+        end={typeof end === 'string' ? end : undefined}
+        onChange={(newDuration, newEnd) => {
+          setDuration(newDuration)
+          setEnd(newEnd)
         }}
       />
     </>
