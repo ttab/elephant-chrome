@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import * as Y from 'yjs'
-import { toYMap } from '../../src-srv/utils/transformations/yjs/yPlanning'
+import { toYMap } from '../../src-srv/utils/transformations/lib/toYMap'
 
 import { get, set } from '../lib/yMapValueByPath'
 

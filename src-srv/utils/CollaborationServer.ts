@@ -27,8 +27,7 @@ import {
 import { slateNodesToInsertDelta } from '@slate-yjs/core'
 import * as Y from 'yjs'
 import {
-  newsDocToSlate,
-  newsDocToYmap
+  newsDocToSlate
 } from './transformations/index.js'
 import { newsDocToYPlanning } from './transformations/yjs/yPlanning.js'
 
@@ -226,10 +225,6 @@ export class CollaborationServer {
       accessToken: context.token
     })
     const { document } = documentResponse
-
-    // Share complete original document
-    const newsDocYMap = newsDocToYmap(documentResponse, yDoc.getMap('original'))
-    yDoc.share.set('original', yMapAsYEventAny(newsDocYMap))
 
     if (document?.type === DocumentType.ARTICLE) {
       // Share editable content
