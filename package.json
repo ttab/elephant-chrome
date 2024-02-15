@@ -31,7 +31,7 @@
     "@protobuf-ts/runtime-rpc": "^2.9.3",
     "@protobuf-ts/twirp-transport": "^2.9.3",
     "@tailwindcss/container-queries": "^0.1.1",
-    "@ttab/elephant-ui": "^0.2.2",
+    "@ttab/elephant-ui": "^0.2.3",
     "@tanstack/react-table": "^8.11.7",
     "@ttab/textbit": "^0.6.6",
     "class-variance-authority": "^0.7.0",
