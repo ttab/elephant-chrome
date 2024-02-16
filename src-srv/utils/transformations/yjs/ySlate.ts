@@ -6,7 +6,7 @@ import { slateToNewsDoc } from '../index.js'
 
 export function yjsStateAsUpdate(content: TBElement[], data: Y.Doc): Uint8Array {
   const insertContentDelta = slateNodesToInsertDelta(content)
-  const sharedContentRoot = data.get('content', Y.XmlText) as Y.XmlText
+  const sharedContentRoot = data.get('content', Y.XmlText)
   sharedContentRoot.applyDelta(insertContentDelta)
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-argument
@@ -21,11 +21,11 @@ export function yjsStateAsUpdate(content: TBElement[], data: Y.Doc): Uint8Array 
 * @returns GetDocumentResponse
 */
 export function yDocToNewsDoc(document: Y.Doc): GetDocumentResponse {
-  const original = document.get('original', Y.Map) as Y.Map<unknown>
+  const original = document.get('original', Y.Map)
   const json = original.toJSON()
 
   // revert content
-  const sharedRoot = document.get('content', Y.XmlText) as Y.XmlText
+  const sharedRoot = document.get('content', Y.XmlText)
   const content: TBElement[] = yTextToSlateElement(sharedRoot).children
   const version: number = json.version
 
