@@ -62,7 +62,7 @@ function EditorViewContent(props: ViewProps & { documentId: string }): JSX.Eleme
       withCursors(
         withYjs(
           createEditor(),
-          provider.document.get('content', Y.XmlText) as Y.XmlText
+          provider.document.get('content', Y.XmlText)
         ),
         provider.awareness,
         { data: user as unknown as Record<string, unknown> }

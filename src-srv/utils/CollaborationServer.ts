@@ -233,7 +233,7 @@ export class CollaborationServer {
     if (document?.type === DocumentType.ARTICLE) {
       // Share editable content
       const slateDocument = newsDocToSlate(document?.content ?? [])
-      const sharedContent = yDoc.get('content', Y.XmlText) as Y.XmlText
+      const sharedContent = yDoc.get('content', Y.XmlText)
       sharedContent.applyDelta(
         slateNodesToInsertDelta(slateDocument)
       )
