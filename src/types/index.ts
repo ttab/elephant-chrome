@@ -1,3 +1,4 @@
+import { Block } from '@/protos/service'
 import type * as views from '@/views'
 import { LucideIcon } from '@ttab/elephant-ui/icons'
 import { type JWTPayload } from 'jose'
@@ -101,6 +102,7 @@ export interface JWT extends JWTPayload {
 }
 
 export interface ColumnValueOption {
+  payload: Partial<Block>
   label: string
   value: string
   icon?: LucideIcon,

@@ -4,12 +4,13 @@ import { useYObserver } from '@/hooks/useYObserver'
 import { AvatarGroup } from '@/components/AvatarGroup'
 import type * as Y from 'yjs'
 import { type Block } from '@/protos/service'
+import { get } from '@/lib/yMapValueByPath'
 
 const PlanAssignment = ({ yMap }: { yMap: Y.Map<unknown> }): JSX.Element => {
   const [title] = useYObserver<string>(yMap, 'title')
 
-  const [authors] = useYObserver<Block>((yMap.get('links') as Y.Map<Y.Array<unknown>>)?.get('core/author'))
-  const [uuid] = useYObserver<string>((yMap?.get('links') as Y.Map<Y.Array<Y.Map<unknown>>>)?.get('core/article')?.get(0), 'uuid')
+  const [authors] = useYObserver<Block>(yMap, 'links.core/author')
+  const [uuid] = useYObserver<string>(yMap, 'links.core/article[0].uuid')
 
   return (
     <div className='flex flex-col'>
@@ -34,8 +35,8 @@ const PlanAssignment = ({ yMap }: { yMap: Y.Map<unknown> }): JSX.Element => {
 export const PlanAssignments = ({ yArray }: { yArray?: Y.Array<Y.Map<unknown>> }): JSX.Element => {
   return (
     <div>
-      {(yArray || []).map((yMap, index: number) => (
-        <PlanAssignment key={index} yMap={yMap} />
+      {(yArray?.value || []).map((yMap, index: number) => (
+        <PlanAssignment key={index} yMap={get(yMap, '')} />
       ))}
     </div>
   )

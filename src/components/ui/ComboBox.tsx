@@ -21,6 +21,7 @@ import {
   type LucideIcon,
   CheckIcon
 } from '@ttab/elephant-ui/icons'
+import { cn } from '@ttab/elephant-ui/utils'
 
 
 interface ComboBoxOption {
@@ -31,13 +32,15 @@ interface ComboBoxOption {
 }
 
 interface ComboBoxProps {
+  size: string
   selectedOption?: ComboBoxOption
   options: ComboBoxOption[]
   placeholder: string
   onSelect: (option: ComboBoxOption) => void
+  className: string
 }
 
-export const ComboBox = ({ selectedOption, options, placeholder, onSelect }: ComboBoxProps): JSX.Element => {
+export const ComboBox = ({ size, selectedOption, options, placeholder, onSelect, className }: ComboBoxProps): JSX.Element => {
   const [open, setOpen] = React.useState(false)
   const isDesktop = useMediaQuery('(min-width: 768px)')
 
@@ -45,7 +48,7 @@ export const ComboBox = ({ selectedOption, options, placeholder, onSelect }: Com
     return (
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
-          <Button variant='outline' className='w-[150px] justify-start'>
+          <Button size={size || 'sm'} variant='outline' className={cn('w-[150px]', className)}>
             {selectedOption ? <>{selectedOption.label}</> : <>{placeholder}</>}
           </Button>
         </PopoverTrigger>
@@ -54,7 +57,9 @@ export const ComboBox = ({ selectedOption, options, placeholder, onSelect }: Com
             options={options}
             selectedOption={selectedOption}
             setOpen={setOpen}
-            onSelect={onSelect}
+            onSelect={(option) => {
+              onSelect(option)
+            }}
           />
         </PopoverContent>
       </Popover>
@@ -100,7 +105,7 @@ function ComboBoxList({ options, selectedOption, setOpen, onSelect }: ComboBoxLi
               key={option.label}
               value={option.label}
               onSelect={(selectedLabel) => {
-                const newSelectedOption = options.find((option) => option.label === selectedLabel)
+                const newSelectedOption = options.find((option) => option.label.toLocaleLowerCase() === selectedLabel)
                 if (newSelectedOption) {
                   onSelect(newSelectedOption)
                 }
