@@ -99,9 +99,12 @@ describe('yMapValueByPath', () => {
     }
 
     const yLinks = get(p, 'links')
-    // @ts-expect-error unknown
+
+    if (!yLinks) {
+      throw new Error('Unable to get Y.Map links')
+    }
+
     set(yLinks, 'core/category[0]', toYMap(payload))
-    // @ts-expect-error unknown
     set(yLinks, 'core/category[0].title', 'test')
     expect(get(yLinks, 'core/category[0].title')).toBe('test')
   })

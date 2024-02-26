@@ -230,8 +230,6 @@ export class CollaborationServer {
     })
     const { document } = documentResponse
 
-    console.log(JSON.stringify(document, null, 2))
-
     if (document?.type === DocumentType.ARTICLE) {
       // Share editable content
       const slateDocument = newsDocToSlate(document?.content ?? [])

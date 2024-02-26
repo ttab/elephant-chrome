@@ -3,7 +3,7 @@ import { Input } from '@ttab/elephant-ui'
 import { Awareness } from '@/components'
 import { useYObserver } from '@/hooks'
 
-// Temp to show slug, show be other component
+// Temp to show slug, should be other component?
 export const PlanSlugline = (): JSX.Element | undefined => {
   const { get, set, loading } = useYObserver('meta.tt/slugline[0]')
 
