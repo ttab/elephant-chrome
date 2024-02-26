@@ -102,7 +102,7 @@ export interface JWT extends JWTPayload {
 }
 
 export interface ColumnValueOption {
-  payload: Partial<Block>
+  payload?: Partial<Block>
   label: string
   value: string
   icon?: LucideIcon,

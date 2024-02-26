@@ -1,12 +1,11 @@
 import { ComboBox } from '@/components/ui'
 import { Stories } from '@/defaults/stories'
 import { useYObserver } from '@/hooks'
-import type * as Y from 'yjs'
 
-export const PlanStory = ({ yArray }: { yArray?: Y.Array<unknown> }): JSX.Element => {
-  const [story, setStory] = useYObserver<string>(yArray, '[0]')
+export const PlanStory = (): JSX.Element => {
+  const { get, set } = useYObserver('links.core/story/[0]')
 
-  const selectedOption = Stories.find(s => s.value === story?.title)
+  const selectedOption = Stories.find(s => s.value === get('title'))
 
   return <ComboBox
     size='xs'
@@ -15,7 +14,7 @@ export const PlanStory = ({ yArray }: { yArray?: Y.Array<unknown> }): JSX.Elemen
     selectedOption={selectedOption}
     placeholder={selectedOption?.label || 'Add Story'}
     onSelect={(option) => {
-      setStory(option.payload)
+      set(option.payload)
     }}
     />
 }

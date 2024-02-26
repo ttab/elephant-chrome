@@ -17,11 +17,7 @@ describe('yMapValueByPath', () => {
 
     const result = get(root, 'nested.key')
 
-    expect(result).toEqual({
-      base: root,
-      value: 'value',
-      path: 'nested.key'
-    })
+    expect(result).toBe('value')
   })
 
 
@@ -63,8 +59,8 @@ describe('yMapValueByPath', () => {
     root.set('nested', nestedYmap)
 
     expect(root instanceof Y.Map).toBeTruthy()
-    expect(get(root, 'nested.arr[0].first').value).toBe('1')
-    expect(get(root, 'nested.arr[1].second').value).toBe('2')
+    expect(get(root, 'nested.arr[0].first')).toBe('1')
+    expect(get(root, 'nested.arr[1].second')).toBe('2')
   })
 
   it('set value', () => {
@@ -73,19 +69,11 @@ describe('yMapValueByPath', () => {
 
     const result = get(root, 'nested.key')
 
-    expect(result).toEqual({
-      base: root,
-      value: undefined,
-      path: 'nested.key'
-    })
+    expect(result).toBe(undefined)
 
-    set(result.base, result.path || '', 'value')
+    set(root, 'nested.key', 'value')
 
-    expect(get(root, 'nested.key')).toEqual({
-      base: root,
-      value: 'value',
-      path: 'nested.key'
-    })
+    expect(get(root, 'nested.key')).toBe('value')
   })
 
   it('sets value in array', () => {
@@ -110,12 +98,11 @@ describe('yMapValueByPath', () => {
       rel: 'category'
     }
 
-    const yLinks = get(p, 'links').value
+    const yLinks = get(p, 'links')
     // @ts-expect-error unknown
     set(yLinks, 'core/category[0]', toYMap(payload))
     // @ts-expect-error unknown
     set(yLinks, 'core/category[0].title', 'test')
-    // @ts-expect-error unknown
-    console.log(yLinks.toJSON())
+    expect(get(yLinks, 'core/category[0].title')).toBe('test')
   })
 })

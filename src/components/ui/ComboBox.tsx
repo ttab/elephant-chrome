@@ -22,22 +22,24 @@ import {
   CheckIcon
 } from '@ttab/elephant-ui/icons'
 import { cn } from '@ttab/elephant-ui/utils'
+import { type Block } from '@/protos/service'
 
 
 interface ComboBoxOption {
   value: string
   label: string
+  payload?: Partial<Block>
   icon?: LucideIcon
   info?: string
 }
 
 interface ComboBoxProps {
-  size: string
+  size?: string
   selectedOption?: ComboBoxOption
   options: ComboBoxOption[]
   placeholder: string
   onSelect: (option: ComboBoxOption) => void
-  className: string
+  className?: string
 }
 
 export const ComboBox = ({ size, selectedOption, options, placeholder, onSelect, className }: ComboBoxProps): JSX.Element => {

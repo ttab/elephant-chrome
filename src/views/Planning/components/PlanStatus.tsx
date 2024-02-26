@@ -1,19 +1,19 @@
 import { useYObserver } from '@/hooks'
 import { Label, Switch } from '@ttab/elephant-ui'
-import type * as Y from 'yjs'
 
-export const PlanStatus = ({ yArray }: { yArray?: Y.Array<unknown> }): JSX.Element => {
-  const [status, setStatus] = useYObserver(yArray, 'data.start')
+export const PlanStatus = (): JSX.Element => {
+  const { get, set } = useYObserver('meta.core/planning-item[0].data')
+
   return (
     <div className="flex items-center space-x-2">
       <Switch
         id="public"
-        checked={status === 'true'}
+        checked={get('start') === 'true'}
         onCheckedChange={(value) => {
-          setStatus(value ? 'true' : 'false')
+          set(value ? 'true' : 'false')
         }}
         />
-      <Label htmlFor="public">{status === 'true' ? 'Public' : 'Internal'}</Label>
+      <Label htmlFor="public">{get('start') === 'true' ? 'Public' : 'Internal'}</Label>
     </div>
   )
 }

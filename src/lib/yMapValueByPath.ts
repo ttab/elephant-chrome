@@ -1,35 +1,11 @@
 import * as Y from 'yjs'
 
-/**
- * Retrieves a value from a Y.Map or Y.Array by key.
- * @overload
- * @param {Y.Map<unknown>} y - The Y.Map to retrieve a value from.
- * @param {string} [path] - The path of the value to retrieve.
- * @returns {Y.Map<unknown> | string | undefined} The retrieved value, or undefined if not found.
- *
- * @overload
- * @param {Y.Array<unknown>} y - The Y.Array to retrieve a value from.
- * @returns {Y.Array<unknown>} The retrieved value.
- *
- * @param {Y.Map<unknown> | Y.Array<unknown>} y - The Y.Map or Y.Array to retrieve a value from.
- * @param {string} [path] - The path of the value to retrieve.
- * @returns {Y.Map<unknown> | Y.Array<unknown> | string | undefined} The retrieved value, or undefined if not found.
- */
-
-export function get<T>(y: Y.Array<unknown>, path?: string): T[]
-export function get<T>(y: Y.Map<unknown>, path?: string): Record<string, T> | string | undefined
-export function get<T>(y: Y.Map<unknown> | Y.Array<unknown>, path?: string): T[] | Record<string, T> | string | undefined {
+export function get(y: Y.Map<unknown> | undefined, path?: string): Y.Map<unknown> | undefined {
   if (!y) {
     return
   }
 
-  // Return Y.Array or Y.Map for observation
-  if (y instanceof Y.Array && !path) {
-    return y.toJSON()
-  }
-
-  // @ts-expect-error unknown
-  const keys: string[] = path?.replace(/(\[|\])/g, '.').split('.').filter(x => x)
+  const keys = path?.replace(/(\[|\])/g, '.').split('.').filter(x => x) || ''
   let current = y
 
   for (const key of keys) {
@@ -37,15 +13,14 @@ export function get<T>(y: Y.Map<unknown> | Y.Array<unknown>, path?: string): T[]
       current = current.get(key) as Y.Map<unknown>
       // Handle array index notation
     } else if (!isNaN(Number(key)) && current instanceof Y.Array) {
-      current = (current).get(Number(key)) as Y.Map<unknown>
+      current = (current as Y.Array<unknown>).get(Number(key)) as Y.Map<unknown>
     } else {
       return // Return undefined if the key doesn't exist
     }
   }
 
-  return current as unknown as string
+  return current
 }
-
 
 /*
   * Traverse Y.Map and SET value by provided path
@@ -54,7 +29,7 @@ export function get<T>(y: Y.Map<unknown> | Y.Array<unknown>, path?: string): T[]
   * @param string value
   * @return void
 */
-export function set(ymap: Y.Map<unknown>, path: string, value: string): void {
+export function set(ymap: Y.Map<unknown>, path: string, value: unknown): void {
   const keys: string[] = path.replace(/(\[|\])/g, '.').split('.').filter(x => x !== '')
 
   let current: Y.Map<unknown> | Y.Array<unknown> | undefined = ymap

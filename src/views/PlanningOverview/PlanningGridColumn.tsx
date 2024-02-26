@@ -1,6 +1,6 @@
-import { useContext } from 'react'
+import { useContext, useEffect, useState } from 'react'
 import { type Planning as PlanningType } from '@/views/PlanningOverview/PlanningTable/data/schema'
-import { useRegistry, useYObserver } from '@/hooks'
+import { useRegistry } from '@/hooks'
 import { SectorBadge } from '@/components/DataItem/SectorBadge'
 import { StatusIndicator } from '@/components/DataItem/StatusIndicator'
 import { getPublishTime } from '@/lib/getPublishTime'
@@ -8,6 +8,7 @@ import { dateToReadableTime } from '@/lib/datetime'
 import { DocTrackerContext } from '@/contexts/DocTrackerProvider'
 import { Avatar } from '@/components'
 import { AvatarGroup } from '@/components/AvatarGroup'
+import type * as Y from 'yjs'
 
 interface PlanningGridColumnProps {
   date: Date
@@ -22,10 +23,26 @@ interface TrackedUser {
   socketId: string
 }
 
+type UserDoc = Record<string, Record<string, TrackedUser>>
+
 export const PlanningGridColumn = ({ date, items }: PlanningGridColumnProps): JSX.Element => {
   const { provider: docTracker } = useContext(DocTrackerContext)
-  const openDocuments = docTracker?.document.getMap('open-documents')
-  const [yOpenDocuments] = useYObserver<Record<string, TrackedUser>>(openDocuments)
+  const [openDocuments, setOpenDocuments] = useState<Y.Map<unknown> | undefined>()
+  const [users, setUsers] = useState<UserDoc | undefined>()
+
+  // TODO: Temporary until we'll get into useYObserver/useCollaboration
+  useEffect(() => {
+    const ymap = docTracker?.document.getMap('open-documents')
+    setOpenDocuments(ymap)
+    setUsers(ymap?.toJSON())
+  }, [docTracker?.document])
+
+  useEffect(() => {
+    openDocuments?.observe((event) => {
+      setUsers(event.currentTarget.toJSON() as UserDoc | undefined)
+    })
+  }, [openDocuments])
+
   const { locale, timeZone } = useRegistry()
 
   const [weekday, day] = new Intl.DateTimeFormat(locale, {
@@ -52,7 +69,7 @@ export const PlanningGridColumn = ({ date, items }: PlanningGridColumnProps): JS
           const deliverable = (Array.isArray(deliverables) ? deliverables[0] || '' : '')
           const id = item._id
           const sectorBadge = item._source['document.rel.sector.title'][0]
-          const users = yOpenDocuments?.[deliverable]
+          const activeUsers = users?.[deliverable]
 
           return <PlanningItem
             key={id}
@@ -64,7 +81,7 @@ export const PlanningGridColumn = ({ date, items }: PlanningGridColumnProps): JS
             locale={locale}
             timeZone={timeZone}
             sectorBadge={sectorBadge}
-            users={users}
+            users={activeUsers}
           />
         })
 }
@@ -83,7 +100,7 @@ function PlanningItem(props: {
   locale: string
   timeZone: string
   sectorBadge: string
-  users: Record<string, TrackedUser>
+  users?: Record<string, TrackedUser>
 }): JSX.Element {
   const { internal, title, slugLine, assignmentDataPublish, sectorBadge, locale, timeZone, users } = props
 
@@ -112,10 +129,10 @@ function PlanningItem(props: {
         <AvatarGroup>
           {Object.keys(users || {}).map(user => {
             return <span
-              key={users[user].userName}
-              title={`${users[user].userName} (${users[user].count})`}
+              key={users?.[user].userName}
+              title={`${users?.[user].userName} (${users?.[user].count})`}
           >
-              <Avatar size="sm" variant="muted" value={users[user].userName} />
+              <Avatar size="sm" variant="muted" value={users?.[user].userName || ''} />
             </span>
           })}
         </AvatarGroup>

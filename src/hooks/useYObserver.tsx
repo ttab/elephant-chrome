@@ -1,99 +1,109 @@
+import * as yMapValueByPath from '@/lib/yMapValueByPath'
+import { useCollaboration } from '.'
 import { useCallback, useEffect, useState } from 'react'
 import * as Y from 'yjs'
 import { toYMap } from '../../src-srv/utils/transformations/lib/toYMap'
+import { type Block } from '@/protos/service'
 
-import { get, set } from '../lib/yMapValueByPath'
+export const useForceUpdate = (): () => void => {
+  const [, dispatch] = useState(Object.create(null))
 
-type YSetter = (value: unknown) => void
+  return useCallback(
+    () => dispatch(Object.create(null)),
+    [dispatch]
+  )
+}
 
+interface YObserved {
+  get: (key: string) => unknown | undefined
+  set: (value: string | Partial<Block> | undefined, key?: string) => void
+  state: Block | Block[]
+  loading: boolean
+}
 
-/*
- * Create an observer for YJS Shared Type
- * Should always return a "workable" format, array, object or string
- */
-export function useYObserver<T>(y: { value: Y.Map<unknown> | undefined, base: Y.Map<unknown> | Y.Array<unknown>, path: string }, key: string): [T, YSetter]
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function useYObserver<T extends Record<string, any>>(y: { value: Y.Map<unknown> | undefined, base: any, path: string }, key?: string): [Record<string, T>, YSetter]
-export function useYObserver<T>(y: { value: Y.Array<unknown> | undefined, base: Y.Map<unknown> | Y.Array<unknown>, path: string }, key?: string): [T[], YSetter]
-export function useYObserver<T>(y: { value: Y.Map<unknown> | Y.Array<unknown> | undefined, base: Y.Map<unknown> | Y.Array<unknown>, path: string }, key?: string): [T | Record<string, T> | T[], YSetter] {
-  const initialValue = useCallback(() => get(y?.value, key).value, [y?.value, key])
+export function useYObserver(path: string): YObserved {
+  const [loading, setLoading] = useState(true)
+  const forceUpdate = useForceUpdate()
 
-  const [value, setValue] = useState<unknown | undefined>(initialValue)
+  // Get Y.Doc from provider and extract planning Y.Map
+  const { provider, synced: isSynced } = useCollaboration()
+  const document = isSynced ? provider?.document : undefined
+  const yPlanning = document?.getMap('planning')
+
+  // Get wanted Y.Map by path provided
+  const map = yMapValueByPath.get(yPlanning, path)
+
+  // Observe whole yPlanning to detect changes at top
   useEffect(() => {
-    if (!y?.value) {
-      return
+    // Do we have a yPlanning to work with?
+    if (yPlanning) {
+      setLoading(false)
     }
 
-    /* Reset value because y.value or key has changed
-     * Catch changes above in structure
-     */
-    setValue(() => {
-      const value = get(y.value, key).value
-
-      if (typeof value === 'string' || value === undefined) return value
-      if (!key) {
-        return value
-      }
-
-      return value.toJSON()
-    })
-
-    y.value.observeDeep(events => {
-      for (const ev of events) {
-        if (ev.keysChanged?.has(key)) {
-          ev.changes.keys.forEach((change) => {
-            switch (change.action) {
-              case 'add':
-                setValue(get(y?.value, key).value)
-                break
-
-              case 'update':
-                setValue(get(y?.value, key).value)
-                break
-
-              case 'delete':
-                setValue(get(y?.value, key).value)
-                break
-
-              default:
-                throw new Error(`unknown action: ${change.action as string}`)
-            }
-          })
-        } else {
-          setValue(get(ev.target, key).value?.toJSON())
+    yPlanning?.observeDeep((events) => {
+      // Do actions on change
+      events.forEach(ev => {
+        // TODO: is this good enough?
+        if (path.includes(ev.path.join('.'))) {
+          forceUpdate()
         }
-      }
+      })
     })
+    // TODO: How do we unobserve
+    // return yPlanning?.unobserveDeep(() => console.log('Unobserving yPlanning'))
+  }, [yPlanning, forceUpdate, path])
 
-    // FIXME: Should unobserve...?
-    // return () => {
-    //   y.unobserve()
-    // }
-  }, [y?.value, key])
+  // Observe specific Y.Map for changes in values
+  useEffect(() => {
+    map?.observe(() => forceUpdate())
+  }, [map, forceUpdate])
 
-  return [
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    value as any,
-    (change) => {
-      if (y.value instanceof Y.Array) {
-        set(y.value, key, toYMap(change))
-        setValue(change)
-        return
-      }
 
-      if (y.value instanceof Y.Map && key) {
-        if (typeof change === 'string') {
-          set(y.value, key, change)
-          setValue(change)
-          return
-        } else {
-          throw new Error(`Invalid change type:${typeof change}`)
-        }
-      }
-      if (y.value === undefined) {
-        set(y.base, y.path + key, toYMap(change))
-        setValue(get(y.base, y.path + key).value.toJSON())
-      }
+  return {
+    get: (key: string) => map?.get(key),
+    set: (value: string | Partial<Block> | undefined, key?: string) => handleSetYmap({
+      map,
+      path,
+      key,
+      value,
+      yPlanning
+    }),
+    state: map?.toJSON() as Block | Block[],
+    loading
+  }
+}
+
+function handleSetYmap({ map, path, key, value, yPlanning }:
+{ map?: Y.Map<unknown>, path: string, key?: string, value: string | Partial<Block> | undefined, yPlanning?: Y.Map<unknown> }): void {
+  // When no map or map.parent we need to set the value on the yPlanning document
+  if (!map?.parent) {
+    if (typeof value !== 'object') {
+      throw new Error('Value can not be of type string when no Y.Map exists')
     }
-  ]
+
+    if (!yPlanning) {
+      throw new Error('No original Y.Map provided, can not set valye without Y.Map')
+    }
+    yMapValueByPath.set(yPlanning, path, toYMap(value))
+  }
+  // If key is provided, set value on key
+  if (key && map) {
+    map.set(key, value)
+  } else {
+    // When no key and parent is Array, update with new Y.Map
+    if (map?.parent instanceof Y.Array) {
+      // TODO: Could we get maps index in parent from Y.Map or Y.Array?
+      const index = path.match(/\[(\d+)\]/)
+      if (!index) {
+        throw new Error('Not able to find an index')
+      }
+
+      if (typeof value === 'string') {
+        throw new Error('value can not be of type string when no Y.Map exists')
+      }
+
+      map.parent.delete(Number(index[1]))
+      map.parent.insert(Number(index[1]), [toYMap(value as Record<string, unknown>)])
+    }
+  }
 }

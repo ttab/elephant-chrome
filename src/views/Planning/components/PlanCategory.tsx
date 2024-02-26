@@ -1,13 +1,11 @@
 import { ComboBox } from '@/components/ui'
 import { Categories } from '@/defaults/categories'
 import { useYObserver } from '@/hooks'
-import { type Block } from '@/protos/service'
-import type * as Y from 'yjs'
 
-export const PlanCategory = ({ yArray }: { yArray?: Y.Array<unknown> }): JSX.Element => {
-  const [category, setCategory] = useYObserver<Block>(yArray, '[0]')
+export const PlanCategory = (): JSX.Element => {
+  const { get, set } = useYObserver('links.core/category[0]')
 
-  const selectedOption = Categories.find(c => c.value === category?.title)
+  const selectedOption = Categories.find(c => c.value === get('title'))
 
   return <ComboBox
     size='xs'
@@ -16,7 +14,10 @@ export const PlanCategory = ({ yArray }: { yArray?: Y.Array<unknown> }): JSX.Ele
     selectedOption={selectedOption}
     placeholder={selectedOption?.label || 'Add Category'}
     onSelect={(option) => {
-      setCategory(option.payload)
+      if (option.value === selectedOption?.value) {
+        console.log('Should delete value')
+      }
+      set(option.payload)
     }}
     />
 }
