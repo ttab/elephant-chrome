@@ -4,17 +4,16 @@ import { NewsValueTimeDropDown } from './NewsValueTimeDropDown'
 import { NewsValueScoreDropDown } from './NewsValueScoreDropDown'
 
 export const EditorHeader = (): JSX.Element => {
-  const { get: getScore, set: setScore } = useYObserver('meta.core/newsvalue[0].data')
-  const { get: getDuration, set: setDuration } = useYObserver('meta.core/newsvalue/data')
-  const { get: getEnd, set: setEnd } = useYObserver('meta.core/newsvalue.data')
-
+  const { get: getScore, set: setScore } = useYObserver('article', 'meta.core/newsvalue[0].data')
+  const { get: getDuration, set: setDuration } = useYObserver('article', 'meta.core/newsvalue/data')
+  const { get: getEnd, set: setEnd } = useYObserver('article', 'meta.core/newsvalue.data')
 
   return (
     <>
       <NewsValueScoreDropDown
         value={getScore('score') as string}
         onChange={(value) => {
-          setScore(value as string)
+          setScore(value as string, 'score')
         }}
         options={Priorities.map(p => {
           return {

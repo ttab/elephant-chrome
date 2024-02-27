@@ -5,7 +5,7 @@ import { useYObserver } from '@/hooks'
 
 // Temp to show slug, should be other component?
 export const PlanSlugline = (): JSX.Element | undefined => {
-  const { get, set, loading } = useYObserver('meta.tt/slugline[0]')
+  const { get, set, loading } = useYObserver('planning', 'meta.tt/slugline[0]')
 
   const setFocused = useRef<(value: boolean) => void>(null)
 

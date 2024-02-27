@@ -2,8 +2,8 @@ import { useRegistry, useYObserver } from '@/hooks'
 import { Calendar } from '@ttab/elephant-ui/icons'
 
 export const PlanDate = (): JSX.Element => {
-  const { get: getStart } = useYObserver('meta.core/planning-item[0].data')
-  const { get: getEnd } = useYObserver('meta.core/planning-item[0].data')
+  const { get: getStart } = useYObserver('planning', 'meta.core/planning-item[0].data')
+  const { get: getEnd } = useYObserver('planning', 'meta.core/planning-item[0].data')
   const { locale, timeZone } = useRegistry()
 
   return (

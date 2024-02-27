@@ -6,7 +6,7 @@ import { MessageCircleMore } from '@ttab/elephant-ui/icons'
 import { type Block } from '@/protos/service'
 
 const PlanDescription = ({ role, index }: { role: string, index?: number }): JSX.Element => {
-  const { get, set } = useYObserver(`meta.core/description[${index}].data`)
+  const { get, set } = useYObserver('planning', `meta.core/description[${index}].data`)
 
   const setFocused = useRef<(value: boolean) => void>(null)
   const placeholder = role === 'public' ? 'Add public description' : 'Add internal message'
@@ -36,7 +36,7 @@ const PlanDescription = ({ role, index }: { role: string, index?: number }): JSX
 }
 
 export const PlanDescriptions = (): JSX.Element => {
-  const { state } = useYObserver('meta.core/description')
+  const { state } = useYObserver('planning', 'meta.core/description')
 
   const newPublicDescription = isPlaceholderNeeded(state, 'public') &&
     <PlanDescription key='newPublic' role='public' />

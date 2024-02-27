@@ -3,7 +3,7 @@ import { Categories } from '@/defaults/categories'
 import { useYObserver } from '@/hooks'
 
 export const PlanCategory = (): JSX.Element => {
-  const { get, set } = useYObserver('links.core/category[0]')
+  const { get, set } = useYObserver('planning', 'links.core/category[0]')
 
   const selectedOption = Categories.find(c => c.value === get('title'))
 

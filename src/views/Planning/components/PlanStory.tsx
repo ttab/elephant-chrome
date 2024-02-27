@@ -3,7 +3,7 @@ import { Stories } from '@/defaults/stories'
 import { useYObserver } from '@/hooks'
 
 export const PlanStory = (): JSX.Element => {
-  const { get, set } = useYObserver('links.core/story/[0]')
+  const { get, set } = useYObserver('planning', 'links.core/story/[0]')
 
   const selectedOption = Stories.find(s => s.value === get('title'))
 

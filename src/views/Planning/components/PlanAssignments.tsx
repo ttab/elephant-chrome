@@ -4,9 +4,9 @@ import { useYObserver } from '@/hooks/useYObserver'
 import { AvatarGroup } from '@/components/AvatarGroup'
 
 const PlanAssignment = ({ index }: { index: number }): JSX.Element => {
-  const { get: getTitle } = useYObserver(`meta.core/assignment[${index}]`)
-  const { get: getUUID } = useYObserver(`meta.core/assignment[${index}].links.core/article[0]`)
-  const { state: stateAuthor = [] } = useYObserver(`meta.core/assignment[${index}].links.core/author`)
+  const { get: getTitle } = useYObserver('planning', `meta.core/assignment[${index}]`)
+  const { get: getUUID } = useYObserver('planning', `meta.core/assignment[${index}].links.core/article[0]`)
+  const { state: stateAuthor = [] } = useYObserver('planning', `meta.core/assignment[${index}].links.core/author`)
 
   return (
     <div className='flex flex-col'>
@@ -31,7 +31,7 @@ const PlanAssignment = ({ index }: { index: number }): JSX.Element => {
 }
 
 export const PlanAssignments = (): JSX.Element => {
-  const { state } = useYObserver('meta.core/assignment')
+  const { state } = useYObserver('planning', 'meta.core/assignment')
   return (
     <div>
       {Array.isArray(state) && state.map((_, index: number) => (

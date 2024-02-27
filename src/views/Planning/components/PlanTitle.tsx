@@ -5,7 +5,7 @@ import { Awareness } from '@/components'
 import { useYObserver } from '@/hooks'
 
 export const PlanTitle = ({ className }: { className?: string }): JSX.Element | undefined => {
-  const { get, set, loading } = useYObserver('root')
+  const { get, set, loading } = useYObserver('planning', 'root')
 
   const setFocused = useRef<(value: boolean) => void>(null)
 

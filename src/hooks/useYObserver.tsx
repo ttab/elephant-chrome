@@ -21,26 +21,26 @@ interface YObserved {
   loading: boolean
 }
 
-export function useYObserver(path: string): YObserved {
+export function useYObserver(name: string, path: string): YObserved {
   const [loading, setLoading] = useState(true)
   const forceUpdate = useForceUpdate()
 
-  // Get Y.Doc from provider and extract planning Y.Map
+  // Get Y.Doc from provider and extract Root Y.Map by it's name
   const { provider, synced: isSynced } = useCollaboration()
   const document = isSynced ? provider?.document : undefined
-  const yPlanning = document?.getMap('planning')
+  const yRoot = document?.getMap(name)
 
   // Get wanted Y.Map by path provided
-  const map = yMapValueByPath.get(yPlanning, path)
+  const map = yMapValueByPath.get(yRoot, path)
 
-  // Observe whole yPlanning to detect changes at top
+  // Observe root Y.Map to detect changes at top
   useEffect(() => {
-    // Do we have a yPlanning to work with?
-    if (yPlanning) {
+    // Do we have a root Y.Map to work with?
+    if (yRoot) {
       setLoading(false)
     }
 
-    yPlanning?.observeDeep((events) => {
+    yRoot?.observeDeep((events) => {
       // Do actions on change
       events.forEach(ev => {
         // TODO: is this good enough?
@@ -50,8 +50,8 @@ export function useYObserver(path: string): YObserved {
       })
     })
     // TODO: How do we unobserve
-    // return yPlanning?.unobserveDeep(() => console.log('Unobserving yPlanning'))
-  }, [yPlanning, forceUpdate, path])
+    // return yPlanning?.unobserveDeep(() => console.log('Unobserving root Y.Map'))
+  }, [yRoot, forceUpdate, path])
 
   // Observe specific Y.Map for changes in values
   useEffect(() => {
@@ -66,25 +66,29 @@ export function useYObserver(path: string): YObserved {
       path,
       key,
       value,
-      yPlanning
+      yRoot
     }),
     state: map?.toJSON() as Block | Block[],
     loading
   }
 }
 
-function handleSetYmap({ map, path, key, value, yPlanning }:
-{ map?: Y.Map<unknown>, path: string, key?: string, value: string | Partial<Block> | undefined, yPlanning?: Y.Map<unknown> }): void {
-  // When no map or map.parent we need to set the value on the yPlanning document
+function handleSetYmap({ map, path, key, value, yRoot }: {
+  map?: Y.Map<unknown>
+  path: string
+  key?: string
+  value: string | Partial<Block> | undefined
+  yRoot?: Y.Map<unknown> }): void {
+  // When no map or map.parent we need to set the value on the root Y.Map
   if (!map?.parent) {
     if (typeof value !== 'object') {
       throw new Error('Value can not be of type string when no Y.Map exists')
     }
 
-    if (!yPlanning) {
-      throw new Error('No original Y.Map provided, can not set valye without Y.Map')
+    if (!yRoot) {
+      throw new Error('No root Y.Map provided, can not set value without Y.Map')
     }
-    yMapValueByPath.set(yPlanning, path, toYMap(value))
+    yMapValueByPath.set(yRoot, path, toYMap(value))
   }
   // If key is provided, set value on key
   if (key && map) {

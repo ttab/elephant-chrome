@@ -3,7 +3,7 @@ import { Sectors } from '@/defaults'
 import { useYObserver } from '@/hooks'
 
 export const PlanSector = (): JSX.Element | undefined => {
-  const { get, set, loading } = useYObserver('links.tt/sector[0]')
+  const { get, set, loading } = useYObserver('planning', 'links.tt/sector[0]')
 
   const selectedOption = Sectors.find(c => c.value === get('title'))
 
