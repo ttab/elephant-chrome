@@ -1,9 +1,22 @@
-import { SectorBadge } from '@/components/DataItem/SectorBadge'
+import { ComboBox } from '@/components/ui'
+import { Sectors } from '@/defaults'
 import { useYObserver } from '@/hooks'
-import type * as Y from 'yjs'
 
-export const PlanSector = ({ yMap }: { yMap?: Y.Map<unknown> }): JSX.Element => {
-  const [sector] = useYObserver<string>(yMap, 'title')
+export const PlanSector = (): JSX.Element | undefined => {
+  const { get, set, loading } = useYObserver('planning', 'links.tt/sector[0]')
 
-  return <SectorBadge value={sector} />
+  const selectedOption = Sectors.find(c => c.value === get('title'))
+
+  return !loading
+    ? <ComboBox
+        size='xs'
+        className='w-fit text-muted-foreground text-xs font-sans font-normal whitespace-nowrap text-ellipsis px-2'
+        options={Sectors}
+        selectedOption={selectedOption}
+        placeholder={selectedOption?.label || 'Add Sector'}
+        onSelect={(option) => {
+          set(option.payload)
+        }}
+      />
+    : undefined
 }

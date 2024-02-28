@@ -1,20 +1,20 @@
 import { useRef } from 'react'
 import { Input } from '@ttab/elephant-ui'
-import { cn } from '@ttab/elephant-ui/utils'
 import { Awareness } from '@/components'
 import { useYObserver } from '@/hooks'
 
-export const PlanTitle = ({ className }: { className?: string }): JSX.Element | undefined => {
-  const { get, set, loading } = useYObserver('planning', 'root')
+// Temp to show slug, should be other component?
+export const PlanSlugline = (): JSX.Element | undefined => {
+  const { get, set, loading } = useYObserver('planning', 'meta.tt/slugline[0]')
 
   const setFocused = useRef<(value: boolean) => void>(null)
 
   return !loading
     ? (
-      <Awareness name='PlanTitle' ref={setFocused}>
+      <Awareness name='PlanSlugline' ref={setFocused}>
         <Input
-          value={get('title') as string}
-          className={cn('font-medium text-sm border-0', className)}
+          value={get('value') as string}
+          className='font-medium text-sm border-0'
           onFocus={() => {
             if (setFocused.current) {
               setFocused.current(true)
@@ -25,7 +25,7 @@ export const PlanTitle = ({ className }: { className?: string }): JSX.Element | 
               setFocused.current(false)
             }
           }}
-          onChange={(event) => set(event.target.value, 'title')}
+          onChange={(event) => set(event.target.value, 'value')}
       />
       </Awareness>
       )

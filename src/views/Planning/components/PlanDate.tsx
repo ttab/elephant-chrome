@@ -1,17 +1,18 @@
 import { useRegistry, useYObserver } from '@/hooks'
 import { Calendar } from '@ttab/elephant-ui/icons'
-import type * as Y from 'yjs'
 
-export const PlanDate = ({ yMap }: { yMap: Y.Map<unknown> | undefined }): JSX.Element => {
-  const [start] = useYObserver<string>(yMap, 'data.start_date')
-  const [end] = useYObserver<string>(yMap, 'data.end_date')
+export const PlanDate = (): JSX.Element => {
+  const { get: getStart } = useYObserver('planning', 'meta.core/planning-item[0].data')
+  const { get: getEnd } = useYObserver('planning', 'meta.core/planning-item[0].data')
   const { locale, timeZone } = useRegistry()
 
   return (
     <div className='flex w-fit space-x-2'>
-      <Calendar className='h-4 w-4' color='#4848FA' />
-      { typeof start === 'string' && <span className='text-sm font-normal leading-4'>{formatDate(start, locale, timeZone)}</span>}
-      {start !== end && <span className='text-sm font-normal leading-4'>{formatDate(end, locale, timeZone)}</span>}
+      <Calendar className='h-4 w-4' />
+      { typeof getStart('start_date') === 'string' &&
+        <span className='text-sm font-normal leading-4'>{formatDate(getStart('start_date') as string, locale, timeZone)}</span>}
+      {getStart('start_date') !== getEnd('end_date') &&
+        <span className='text-sm font-normal leading-4'>{formatDate(getEnd('end_date') as string, locale, timeZone)}</span>}
     </div>
   )
 }

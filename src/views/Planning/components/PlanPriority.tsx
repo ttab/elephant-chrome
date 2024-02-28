@@ -1,15 +1,15 @@
 import { Priorities } from '@/defaults'
 import { useYObserver } from '@/hooks'
 import { NewsValueScoreDropDown } from '@/views/Editor/EditorHeader/NewsValueScoreDropDown'
-import type * as Y from 'yjs'
 
-export const PlanPriority = ({ yMap }: { yMap?: Y.Map<unknown> }): JSX.Element => {
-  const [priority, setPriority] = useYObserver<string>(yMap, 'data.priority')
+export const PlanPriority = (): JSX.Element => {
+  const { get, set } = useYObserver('planning', 'meta.core/planning-item[0].data')
+
   return (
     <NewsValueScoreDropDown
-      value={priority }
+      value={get('priority') as string}
       onChange={(value) => {
-        setPriority(value as number)
+        set(value as string, 'priority')
       }}
       options={Priorities.map(p => {
         return {
