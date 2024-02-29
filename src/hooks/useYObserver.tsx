@@ -53,21 +53,15 @@ export function useYObserver(name: string, path: string): YObserved {
     // return yPlanning?.unobserveDeep(() => console.log('Unobserving root Y.Map'))
   }, [yRoot, forceUpdate, path])
 
-  // Observe specific Y.Map for changes in values
-  useEffect(() => {
-    map?.observe(() => forceUpdate())
-  }, [map, forceUpdate])
-
-
   return {
-    get: (key: string) => map?.get(key),
-    set: (value: string | Partial<Block> | undefined, key?: string) => handleSetYmap({
+    get: useCallback((key: string) => map?.get(key), [map]),
+    set: useCallback((value: string | Partial<Block> | undefined, key?: string) => handleSetYmap({
       map,
       path,
       key,
       value,
       yRoot
-    }),
+    }), [map, path, yRoot]),
     state: map?.toJSON() as Block | Block[],
     loading
   }
@@ -106,8 +100,12 @@ function handleSetYmap({ map, path, key, value, yRoot }: {
         throw new Error('value can not be of type string when no Y.Map exists')
       }
 
-      map.parent.delete(Number(index[1]))
-      map.parent.insert(Number(index[1]), [toYMap(value as Record<string, unknown>)])
+      map.doc?.transact(() => {
+        if (map.parent instanceof Y.Array) {
+          map.parent.delete(Number(index[1]))
+          map.parent.insert(Number(index[1]), [toYMap(value as Record<string, unknown>)])
+        }
+      })
     }
   }
 }
