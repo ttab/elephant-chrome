@@ -107,7 +107,7 @@ export class CollaborationServer {
           options: {
             username: redisUsername,
             password: redisPassword,
-            tls: redisProtocol === 'rediss'
+            tls: redisProtocol === 'rediss:'
           }
         }),
         new Database({
