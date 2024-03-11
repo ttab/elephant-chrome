@@ -1,4 +1,5 @@
 import { type ColumnValueOption } from '@/types'
+import { Shapes } from '@ttab/elephant-ui/icons'
 
 export const Categories: ColumnValueOption[] = [
   {
@@ -11,7 +12,7 @@ export const Categories: ColumnValueOption[] = [
       title: 'Politik',
       rel: 'category'
     },
-    color: 'bg-[#BD6E11]'
+    icon: Shapes
   },
   {
     value: 'Brott, lag och rätt',
@@ -23,7 +24,7 @@ export const Categories: ColumnValueOption[] = [
       title: 'Brott, lag och rätt',
       rel: 'category'
     },
-    color: 'bg-[#BD6E11]'
+    icon: Shapes
   },
   {
     value: 'Ekonomi, affärer och finans',
@@ -35,7 +36,7 @@ export const Categories: ColumnValueOption[] = [
       title: 'Ekonomi, affärer och finans',
       rel: 'category'
     },
-    color: 'bg-[#BD6E11]'
+    icon: Shapes
   },
   {
     value: 'Fotboll',
@@ -47,7 +48,7 @@ export const Categories: ColumnValueOption[] = [
       title: 'Fotboll',
       rel: 'category'
     },
-    color: 'bg-[#BD6E11]'
+    icon: Shapes
   },
   {
     value: 'Krig, konflikter och oroligheter',
@@ -58,7 +59,6 @@ export const Categories: ColumnValueOption[] = [
       title: 'Krig, konflikter och oroligheter',
       rel: 'category'
     },
-    color: 'bg-[#BD6E11]'
+    icon: Shapes
   }
-
 ]

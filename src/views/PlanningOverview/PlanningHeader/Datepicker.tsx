@@ -14,7 +14,7 @@ import { useRegistry } from '@/hooks'
 
 interface DatePickerProps {
   date: Date
-  setDate: Dispatch<SetStateAction<Date>>
+  setDate: Dispatch<SetStateAction<Date>> | ((arg: Date) => void)
 }
 
 export const DatePicker = ({ date, setDate }: DatePickerProps): JSX.Element => {
@@ -53,8 +53,7 @@ export const DatePicker = ({ date, setDate }: DatePickerProps): JSX.Element => {
         <Calendar
           mode='single'
           selected={date}
-          onSelect={(selectedDate) => selectedDate &&
-            setDate(selectedDate)}
+          onSelect={(selectedDate) => selectedDate && setDate(selectedDate)}
           initialFocus
         />
       </PopoverContent>

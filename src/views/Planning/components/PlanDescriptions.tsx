@@ -5,34 +5,37 @@ import { Awareness } from '@/components'
 import { MessageCircleMore } from '@ttab/elephant-ui/icons'
 import { type Block } from '@/protos/service'
 
-const PlanDescription = ({ role, index }: { role: string, index?: number }): JSX.Element => {
-  const { get, set } = useYObserver('planning', `meta.core/description[${index}].data`)
+const PlanDescription = ({ role, index }: { role: string, index?: number }): JSX.Element | undefined => {
+  const { get, set, loading } = useYObserver('planning', `meta.core/description[${index}].data`)
 
   const setFocused = useRef<(value: boolean) => void>(null)
-  const placeholder = role === 'public' ? 'Add public description' : 'Add internal message'
-  return (
-    <Awareness name='PlanMessage' ref={setFocused}>
-      <div className='flex'>
-        {role === 'internal' && <MessageCircleMore className='size-6 pr-2'/>}
-        <Textarea
-          className='border-0 p-0 font-normal text-base '
-          value={get('text') as string}
-          placeholder={placeholder}
-          onChange={(event) => set(event.target.value, 'text')}
-          onFocus={() => {
-            if (setFocused.current) {
-              setFocused.current(true)
-            }
-          }}
-          onBlur={() => {
-            if (setFocused.current) {
-              setFocused.current(false)
-            }
-          }}
+  const placeholder = role === 'public' ? 'Public description' : 'Internal message'
+
+  return !loading
+    ? (
+      <Awareness name={'PlanDescription'} ref={setFocused}>
+        <div className='flex w-full'>
+          {role === 'internal' && <MessageCircleMore className='size-6 pr-2 text-muted-foreground'/>}
+          <Textarea
+            className='border-0 p-0 font-normal text-base '
+            value={get('text') as string}
+            placeholder={placeholder}
+            onChange={(event) => set(event.target.value, 'text')}
+            onFocus={() => {
+              if (setFocused.current) {
+                setFocused.current(true)
+              }
+            }}
+            onBlur={() => {
+              if (setFocused.current) {
+                setFocused.current(false)
+              }
+            }}
         />
-      </div>
-    </Awareness>
-  )
+        </div>
+      </Awareness>
+      )
+    : undefined
 }
 
 export const PlanDescriptions = (): JSX.Element => {
