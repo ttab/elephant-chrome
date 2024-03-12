@@ -31,6 +31,7 @@ interface ComboBoxOption {
   payload?: Partial<Block>
   icon?: LucideIcon
   info?: string
+  color?: string
 }
 
 interface ComboBoxProps {
@@ -51,6 +52,7 @@ export const ComboBox = ({ size, selectedOption, options, placeholder, onSelect,
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
           <Button size={size || 'sm'} variant='outline' className={cn('w-[150px]', className)}>
+            {selectedOption?.color && <div className={cn('h-2 w-2 rounded-full mr-2', selectedOption?.color)} /> }
             {selectedOption ? <>{selectedOption.label}</> : <>{placeholder}</>}
           </Button>
         </PopoverTrigger>

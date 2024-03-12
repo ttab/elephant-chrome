@@ -1,6 +1,6 @@
 import { type ColumnValueOption } from '@/types'
 import {
-  FileType,
+  FileText,
   Image,
   Camera,
   Video
@@ -11,7 +11,7 @@ export const AssignmentTypes: ColumnValueOption[] = [
   {
     label: 'Text',
     value: 'text',
-    icon: FileType
+    icon: FileText
   },
   {
     label: 'Graphic',

@@ -24,7 +24,6 @@ export const Link = forwardRef((props: LinkProps, ref: ForwardedRef<HTMLAnchorEl
   return (
     <a
       {...props}
-      className='p-1'
       href={`${viewItem.meta.path}${qs || ''}`}
       onClick={(event) => {
         event.stopPropagation()

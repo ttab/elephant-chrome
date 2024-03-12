@@ -10,7 +10,7 @@ export const PlanSector = (): JSX.Element | undefined => {
   return !loading
     ? <ComboBox
         size='xs'
-        className='w-fit text-muted-foreground text-xs font-sans font-normal whitespace-nowrap text-ellipsis px-2'
+        className='w-fit text-muted-foreground font-sans font-normal whitespace-nowrap text-ellipsis px-2 h-7'
         options={Sectors}
         selectedOption={selectedOption}
         placeholder={selectedOption?.label || 'Add Sector'}

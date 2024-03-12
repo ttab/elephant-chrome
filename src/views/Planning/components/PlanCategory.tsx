@@ -10,10 +10,10 @@ export const PlanCategory = (): JSX.Element | undefined => {
   return !loading
     ? <ComboBox
         size='xs'
-        className='w-fit text-muted-foreground text-xs font-sans font-normal whitespace-nowrap text-ellipsis px-2'
+        className='w-fit text-muted-foreground font-sans font-normal whitespace-nowrap text-ellipsis px-2 h-7'
         options={Categories}
         selectedOption={selectedOption}
-        placeholder={selectedOption?.label || 'Add Category'}
+        placeholder={selectedOption?.label || 'Category'}
         onSelect={(option) => {
           if (option.value === selectedOption?.value) {
             console.log('Should delete value')
