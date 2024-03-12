@@ -98,6 +98,7 @@ export const PlanningTable = <TData, TValue>({
     return table.getRowModel().rows.map((row) => (
       <TableRow
         key={row.id}
+        className='cursor-default'
         data-state={row.getIsSelected() && 'selected'}
         onClick={(event) => {
           if (!onRowSelected) {
