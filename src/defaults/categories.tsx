@@ -10,8 +10,7 @@ export const Categories: ColumnValueOption[] = [
       type: 'core/category',
       title: 'Politik',
       rel: 'category'
-    },
-    color: 'bg-[#BD6E11]'
+    }
   },
   {
     value: 'Brott, lag och rätt',
@@ -22,8 +21,7 @@ export const Categories: ColumnValueOption[] = [
       type: 'core/category',
       title: 'Brott, lag och rätt',
       rel: 'category'
-    },
-    color: 'bg-[#BD6E11]'
+    }
   },
   {
     value: 'Ekonomi, affärer och finans',
@@ -34,8 +32,7 @@ export const Categories: ColumnValueOption[] = [
       uri: 'iptc://mediatopic/04000000',
       title: 'Ekonomi, affärer och finans',
       rel: 'category'
-    },
-    color: 'bg-[#BD6E11]'
+    }
   },
   {
     value: 'Fotboll',
@@ -46,8 +43,7 @@ export const Categories: ColumnValueOption[] = [
       type: 'core/category',
       title: 'Fotboll',
       rel: 'category'
-    },
-    color: 'bg-[#BD6E11]'
+    }
   },
   {
     value: 'Krig, konflikter och oroligheter',
@@ -57,8 +53,6 @@ export const Categories: ColumnValueOption[] = [
       uri: 'iptc://mediatopic/16000000',
       title: 'Krig, konflikter och oroligheter',
       rel: 'category'
-    },
-    color: 'bg-[#BD6E11]'
+    }
   }
-
 ]

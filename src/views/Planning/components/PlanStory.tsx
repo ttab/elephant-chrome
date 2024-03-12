@@ -9,10 +9,10 @@ export const PlanStory = (): JSX.Element => {
 
   return <ComboBox
     size='xs'
-    className='w-fit text-muted-foreground text-xs font-sans font-normal whitespace-nowrap text-ellipsis px-2'
+    className='w-fit text-muted-foreground font-sans font-normal whitespace-nowrap text-ellipsis px-2 h-7'
     options={Stories}
     selectedOption={selectedOption}
-    placeholder={selectedOption?.label || 'Add Story'}
+    placeholder={selectedOption?.label || 'Story'}
     onSelect={(option) => {
       set(option.payload)
     }}
