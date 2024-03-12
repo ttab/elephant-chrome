@@ -1,6 +1,6 @@
 import { ViewHeader } from '@/components'
 import { type ViewMetadata, type ViewProps } from '@/types'
-import { ScrollArea, Separator } from '@ttab/elephant-ui'
+import { ScrollArea } from '@ttab/elephant-ui'
 import { GanttChartSquare } from '@ttab/elephant-ui/icons'
 import { Textbit } from '@ttab/textbit'
 import { useQuery } from '@/hooks'
@@ -15,7 +15,8 @@ import {
   PlanPriority,
   PlanCategory,
   PlanStory,
-  PlanSlugline
+  PlanSlugline,
+  PlanDocumentStatus
 } from './components'
 
 const meta: ViewMetadata = {
@@ -53,17 +54,19 @@ const PlanningViewContent = (props: ViewProps): JSX.Element | undefined => {
       <div className={'flex flex-col h-screen'}>
         <div className="grow-0">
           <ViewHeader {...props} title="Planering" icon={GanttChartSquare}>
-            <div className='flex w-full h-full'>
+            <div className='flex w-full h-full items-center space-x-2'>
+              <PlanDocumentStatus />
+              <PlanStatus />
               <PlanPriority />
-              <PlanTitle />
+              <PlanTitle className='invisible @4xl:visible' />
             </div>
           </ViewHeader>
         </div>
 
-        <ScrollArea>
-          <section className='overscroll-auto w-full space-y-4 p-8'>
-            <div className='flex'>
-              <PlanTitle className='font-semibold text-xl leading-4 px-0 w-full'/>
+        <ScrollArea className='grid @5xl:place-content-center'>
+          <section className='overscroll-auto @5xl:w-[1024px] space-y-4 p-8'>
+            <div className='flex space-x-2 items-center'>
+              <PlanTitle className='font-semibold text-xl leading-4 px-0'/>
               <PlanSlugline />
             </div>
             <PlanDescriptions />
@@ -76,7 +79,6 @@ const PlanningViewContent = (props: ViewProps): JSX.Element | undefined => {
               </div>
               <PlanStatus />
             </div>
-            <Separator />
             <PlanAssignments />
           </section>
         </ScrollArea>

@@ -1,42 +1,51 @@
-import { useRegistry, useYObserver } from '@/hooks'
-import { Calendar } from '@ttab/elephant-ui/icons'
+import { useYObserver, useRegistry } from '@/hooks'
+import { DatePicker } from '@/views/PlanningOverview/PlanningHeader/Datepicker'
 
 export const PlanDate = (): JSX.Element => {
-  const { get: getStart } = useYObserver('planning', 'meta.core/planning-item[0].data')
-  const { get: getEnd } = useYObserver('planning', 'meta.core/planning-item[0].data')
-  const { locale, timeZone } = useRegistry()
+  const { get, set, loading } = useYObserver('planning', 'meta.core/planning-item[0].data')
+  const { timeZone } = useRegistry()
 
-  return (
-    <div className='flex w-fit space-x-2'>
-      <Calendar className='h-4 w-4' />
-      { typeof getStart('start_date') === 'string' &&
-        <span className='text-sm font-normal leading-4'>{formatDate(getStart('start_date') as string, locale, timeZone)}</span>}
-      {getStart('start_date') !== getEnd('end_date') &&
-        <span className='text-sm font-normal leading-4'>{formatDate(getEnd('end_date') as string, locale, timeZone)}</span>}
-    </div>
+
+  const date = parseDate(get('start_date') as string)
+
+  const setDate = () => (date: Date) => { set(format(date, timeZone), 'start_date') }
+
+  if (loading || !date) {
+    return <p>Loading</p>
+  }
+
+  return <DatePicker date={date} setDate={setDate()} />
+}
+
+function parseDate(value: string): Date | undefined {
+  if (!value) {
+    return
+  }
+
+  const parts: string[] = value.split('-')
+
+  return new Date(
+    parseInt(parts[0], 10),
+    parseInt(parts[1], 10) - 1,
+    parseInt(parts[2], 10)
   )
 }
 
-function formatDate(value: string, locale: string, timeZone: string): string | null {
-  try {
-    const parts: string[] = value.split('-')
+function format(date: Date, timeZone: string): string {
+  const formatter = new Intl.DateTimeFormat('en-US', {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    timeZone
+  })
 
-    const date = new Date(
-      parseInt(parts[0], 10),
-      parseInt(parts[1], 10) - 1,
-      parseInt(parts[2], 10)
-    )
+  const [
+    { value: month },
+    ,
+    { value: day },
+    ,
+    { value: year }
+  ] = formatter.formatToParts(date)
 
-    const formattedDate = new Intl.DateTimeFormat(locale, {
-      weekday: 'short',
-      month: 'short',
-      day: 'numeric',
-      year: 'numeric',
-      timeZone
-    }).format(date)
-
-    return formattedDate
-  } catch {
-    return null
-  }
+  return `${year}-${month}-${day}`
 }

@@ -22,7 +22,6 @@ interface YObserved {
 }
 
 export function useYObserver(name: string, path: string): YObserved {
-  const [loading, setLoading] = useState(true)
   const forceUpdate = useForceUpdate()
 
   // Get Y.Doc from provider and extract Root Y.Map by it's name
@@ -35,20 +34,26 @@ export function useYObserver(name: string, path: string): YObserved {
 
   // Observe root Y.Map to detect changes at top
   useEffect(() => {
-    // Do we have a root Y.Map to work with?
-    if (yRoot) {
-      setLoading(false)
-    }
-
     yRoot?.observeDeep((events) => {
       // Do actions on change
       events.forEach(ev => {
-        // TODO: is this good enough?
-        if (path.includes(ev.path.join('.'))) {
+        // Convert provided path to a comparable array
+        const pathAsArray = path
+          .split(/\.|\[|\]/g)
+          .filter(x => x !== '')
+
+        // Check if observed change is on same path as provided path
+        // This will also register changes on same path before observed value
+        // Change on ['meta', 'core/description'] will trigger even if meta.core/description[0].data is the observed value
+        const changeIsOnSamePath = ev.path.every((value, index) => value.toString() === pathAsArray[index])
+
+        // Do update
+        if (changeIsOnSamePath) {
           forceUpdate()
         }
       })
     })
+
     // TODO: How do we unobserve
     // return yPlanning?.unobserveDeep(() => console.log('Unobserving root Y.Map'))
   }, [yRoot, forceUpdate, path])
@@ -63,7 +68,7 @@ export function useYObserver(name: string, path: string): YObserved {
       yRoot
     }), [map, path, yRoot]),
     state: map?.toJSON() as Block | Block[],
-    loading
+    loading: !isSynced
   }
 }
 
@@ -84,6 +89,7 @@ function handleSetYmap({ map, path, key, value, yRoot }: {
     }
     yMapValueByPath.set(yRoot, path, toYMap(value))
   }
+
   // If key is provided, set value on key
   if (key && map) {
     map.set(key, value)
