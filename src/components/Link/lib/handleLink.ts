@@ -11,7 +11,7 @@ import { toQueryString } from './toQueryString'
 import { minimumSpaceRequired } from '@/navigation/lib'
 
 interface LinkClick {
-  event?: MouseEvent<HTMLAnchorElement>
+  event?: MouseEvent<HTMLAnchorElement | HTMLTableRowElement>
   dispatch: React.Dispatch<NavigationAction>
   viewItem: ViewRegistryItem
   viewRegistry: ViewRegistry
