@@ -22,7 +22,6 @@ interface YObserved {
 }
 
 export function useYObserver(name: string, path: string): YObserved {
-  const [loading, setLoading] = useState(true)
   const forceUpdate = useForceUpdate()
 
   // Get Y.Doc from provider and extract Root Y.Map by it's name
@@ -35,11 +34,6 @@ export function useYObserver(name: string, path: string): YObserved {
 
   // Observe root Y.Map to detect changes at top
   useEffect(() => {
-    // Do we have a root Y.Map to work with?
-    if (yRoot) {
-      setLoading(false)
-    }
-
     yRoot?.observeDeep((events) => {
       // Do actions on change
       events.forEach(ev => {
@@ -74,7 +68,7 @@ export function useYObserver(name: string, path: string): YObserved {
       yRoot
     }), [map, path, yRoot]),
     state: map?.toJSON() as Block | Block[],
-    loading
+    loading: !isSynced
   }
 }
 

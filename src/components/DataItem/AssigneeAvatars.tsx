@@ -12,7 +12,7 @@ export const AssigneeAvatars = ({ assignees }: { assignees: string[] }): JSX.Ele
           <TooltipProvider key={index}>
             <Tooltip>
               <TooltipTrigger>
-                <Avatar value={assignee} variant="muted" size="sm" />
+                <Avatar value={assignee} size="sm" />
               </TooltipTrigger>
               <TooltipContent>
                 <p>{assignee}</p>

@@ -4,6 +4,7 @@ import { cn } from '@ttab/elephant-ui/utils'
 import { Awareness } from '@/components'
 import { useYObserver } from '@/hooks'
 
+// TODO: Temp should use Textbit instead of input
 export const PlanTitle = ({ className }: { className?: string }): JSX.Element | undefined => {
   const { get, set, loading } = useYObserver('planning', 'root')
   const [inputWidth, setInputWidth] = useState<string>()

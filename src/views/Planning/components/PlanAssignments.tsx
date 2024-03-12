@@ -1,35 +1,14 @@
 import { Link, Avatar } from '@/components'
 import { useYObserver } from '@/hooks/useYObserver'
 import { AvatarGroup } from '@/components/AvatarGroup'
-import { AssignmentTypes } from '@/defaults'
 import { MoreHorizontal } from '@ttab/elephant-ui/icons'
-import { TooltipProvider, Tooltip, TooltipTrigger, TooltipContent } from '@ttab/elephant-ui'
 import { TimeDisplay } from '@/components/DataItem/TimeDisplay'
 import { PlanSlugline } from '.'
-
-const AssignmentIcon = ({ value }: { value: string }): JSX.Element | undefined => {
-  const data = AssignmentTypes.find(type => type.value === value)
-
-  return data?.icon && (
-    <div className='flex items-center'>
-      <TooltipProvider>
-        <Tooltip>
-          <TooltipTrigger>
-            <data.icon className='mr-2 h-5 w-5' strokeWidth={1.75}/>
-          </TooltipTrigger>
-          <TooltipContent>
-            <p>{data.label}</p>
-          </TooltipContent>
-        </Tooltip>
-      </TooltipProvider>
-    </div>
-  )
-}
+import { AssignmentType } from '@/components/DataItem/AssignmentType'
 
 const PlanAssignment = ({ index }: { index: number }): JSX.Element => {
   const { get: getTitle } = useYObserver('planning', `meta.core/assignment[${index}]`)
   const { get: getUUID } = useYObserver('planning', `meta.core/assignment[${index}].links.core/article[0]`)
-  const { get: getAssignmentType } = useYObserver('planning', `meta.core/assignment[${index}].meta.core/assignment-type[0]`)
   const { get: getAssignmentDescription } = useYObserver('planning', `meta.core/assignment[${index}].meta.core/description[0].data`)
   const { get: getAssignmentPublishTime } = useYObserver('planning', `meta.core/assignment[${index}].data`)
   const { state: stateAuthor = [] } = useYObserver('planning', `meta.core/assignment[${index}].links.core/author`)
@@ -57,14 +36,13 @@ const PlanAssignment = ({ index }: { index: number }): JSX.Element => {
             {Array.isArray(stateAuthor) && stateAuthor.map((author, index) => {
               return <Avatar
                 key={index}
-                variant="muted"
                 size='sm'
                 value={author?.name || ''} />
             })}
           </AvatarGroup>
         </div>
         <div className="">
-          <AssignmentIcon value={getAssignmentType('value') as string} />
+          <AssignmentType index={index} />
         </div>
         <div className="min-w-[64px] whitespace-nowrap">
           {getAssignmentPublishTime('publish')

@@ -5,6 +5,7 @@ import { Awareness } from '@/components'
 import { MessageCircleMore } from '@ttab/elephant-ui/icons'
 import { type Block } from '@/protos/service'
 
+// TODO: Temp should use textbit instead of Textarea
 const PlanDescription = ({ role, index }: { role: string, index?: number }): JSX.Element | undefined => {
   const { get, set, loading } = useYObserver('planning', `meta.core/description[${index}].data`)
 

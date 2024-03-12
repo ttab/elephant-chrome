@@ -2,22 +2,26 @@ import { useYObserver, useRegistry } from '@/hooks'
 import { DatePicker } from '@/views/PlanningOverview/PlanningHeader/Datepicker'
 
 export const PlanDate = (): JSX.Element => {
-  const { get, set } = useYObserver('planning', 'meta.core/planning-item[0].data')
+  const { get, set, loading } = useYObserver('planning', 'meta.core/planning-item[0].data')
   const { timeZone } = useRegistry()
 
-  const date = get('start_date')
-    ? parseDate(get('start_date') as string)
-    : new Date()
 
-  const setDate = () => (date: Date) => {
-    set(
-      format(date, timeZone), 'start_date')
+  const date = parseDate(get('start_date') as string)
+
+  const setDate = () => (date: Date) => { set(format(date, timeZone), 'start_date') }
+
+  if (loading || !date) {
+    return <p>Loading</p>
   }
 
   return <DatePicker date={date} setDate={setDate()} />
 }
 
-function parseDate(value: string): Date {
+function parseDate(value: string): Date | undefined {
+  if (!value) {
+    return
+  }
+
   const parts: string[] = value.split('-')
 
   return new Date(
@@ -35,7 +39,13 @@ function format(date: Date, timeZone: string): string {
     timeZone
   })
 
-  const [{ value: month }, , { value: day }, , { value: year }] = formatter.formatToParts(date)
+  const [
+    { value: month },
+    ,
+    { value: day },
+    ,
+    { value: year }
+  ] = formatter.formatToParts(date)
 
   return `${year}-${month}-${day}`
 }
