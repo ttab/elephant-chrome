@@ -19,7 +19,7 @@ export const App = (): JSX.Element => {
         <AppHeader />
       </div>
 
-      <div className='grid grid-cols-12 divide-x-2 h-max'>
+      <div className='grid grid-cols-12 divide-x-2 h-screen'>
         <DocTrackerProvider>
           <AppContent />
         </DocTrackerProvider>

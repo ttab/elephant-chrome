@@ -61,9 +61,7 @@ export const ViewWrapper = ({ children, colSpan: wantedColSpan }: {
 
   // Make sure content does not rerender every time active view changes
   const memoizedContent = useMemo((): JSX.Element => {
-    return <div>
-      {children}
-    </div>
+    return <>{children}</>
   }, [children])
 
   return useMemo(() => {

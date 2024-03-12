@@ -1,23 +1,29 @@
+import { type PropsWithChildren, useEffect, useMemo } from 'react'
 import { AwarenessDocument, ViewHeader } from '@/components'
-import { YjsEditor, withCursors, withYHistory, withYjs } from '@slate-yjs/core'
 import { PenBoxIcon } from '@ttab/elephant-ui/icons'
-import {
-  TextbitEditable,
-  Textbit,
-  useTextbitContext
-} from '@ttab/textbit'
-import '@ttab/textbit/dist/esm/index.css'
-import { useEffect, useMemo } from 'react'
+
 import { createEditor } from 'slate'
 import * as Y from 'yjs'
+import { YjsEditor, withCursors, withYHistory, withYjs } from '@slate-yjs/core'
+
+import {
+  Textbit,
+  Menu,
+  Toolbar,
+  DropMarker,
+  useTextbit,
+  usePluginRegistry,
+  type PluginRegistryAction
+} from '@ttab/textbit'
 
 import {
   useQuery,
   useCollaboration
 } from '@/hooks'
 import { type ViewMetadata, type ViewProps } from '@/types'
-import { ScrollArea } from '@ttab/elephant-ui'
 import { EditorHeader } from './EditorHeader'
+import { type HocuspocusProvider } from '@hocuspocus/provider'
+import { type AwarenessUserData } from '@/contexts/CollaborationProvider'
 
 const meta: ViewMetadata = {
   name: 'Editor',
@@ -35,25 +41,52 @@ const Editor = (props: ViewProps): JSX.Element => {
   const query = useQuery()
   const documentId = props.id || query.id
 
+  if (!documentId) {
+    // TODO: Should we have a skeleton loading screen here
+    return <></>
+  }
+
   return (
-    <>
-      {documentId
-        ? <AwarenessDocument documentId={documentId}>
-          <EditorViewContent documentId={documentId} {...props} />
-        </AwarenessDocument>
-        : <>
-          {/* TODO: Should we have a skeleton loading screen here */}
-        </>
-      }
-    </>
+    <AwarenessDocument documentId={documentId} className="h-full">
+      <EditorWrapper documentId={documentId} {...props} />
+    </AwarenessDocument>
   )
 }
 
-function EditorViewContent(props: ViewProps & { documentId: string }): JSX.Element {
-  const { provider, synced: isSynced, user } = useCollaboration()
 
-  // Create YjsEditor for Textbit to use
-  const editor = useMemo(() => {
+function EditorWrapper(props: ViewProps & { documentId: string }): JSX.Element {
+  const {
+    provider,
+    // synced: isSynced,
+    user
+  } = useCollaboration()
+
+  return (
+    <div className="h-screen *:h-screen *:max-h-screen *:flex *:flex-col"> {/* FIXME: When changes in Textbit have been merged, remove this */}
+      <Textbit.Root> {/* FIXME: Add className="h-full" when parent div is removed} */}
+        {/* <div className={`h-full ${!isSynced ? 'opacity-60' : ''}`}> */}
+        <div className="h-14 basis-14">
+          <ViewHeader {...props} title="Editor" icon={PenBoxIcon}>
+            <EditorHeader />
+          </ViewHeader>
+        </div>
+
+        <EditorContent provider={provider} user={user} />
+
+        <div className="h-14 basis-14">
+          <Footer />
+        </div>
+        {/* </div> */}
+      </Textbit.Root>
+    </div>
+  )
+}
+
+function EditorContent({ provider, user }: {
+  provider?: HocuspocusProvider
+  user: AwarenessUserData
+}): JSX.Element {
+  const yjsEditor = useMemo(() => {
     if (!provider?.awareness) {
       return
     }
@@ -73,44 +106,119 @@ function EditorViewContent(props: ViewProps & { documentId: string }): JSX.Eleme
 
   // Connect/disconnect from provider through editor only when editor changes
   useEffect(() => {
-    if (editor) {
-      YjsEditor.connect(editor)
-      return () => YjsEditor.disconnect(editor)
+    if (yjsEditor) {
+      YjsEditor.connect(yjsEditor)
+      return () => YjsEditor.disconnect(yjsEditor)
     }
-  }, [editor])
+  }, [yjsEditor])
 
   return (
-    <>
-      <Textbit>
-        <div className={`flex flex-col h-screen ${!isSynced ? 'opacity-60' : ''}`}>
-          <div className="grow-0">
-            <ViewHeader {...props} title="Editor" icon={PenBoxIcon}>
-              <EditorHeader />
-            </ViewHeader>
-          </div>
+    <div className="flex-grow overflow-auto">
+      <Textbit.Editable yjsEditor={yjsEditor} className="outline-none h-full dark:text-slate-100">
+        <DropMarker className="h-[3px] rounded bg-blue-400/75 dark:bg-blue-500/75" />
+        <ToolbarMenu />
+        <Textbit.Gutter className="w-14">
+          <ContentMenu />
+        </Textbit.Gutter>
+      </Textbit.Editable>
+    </div>
+  )
+}
 
-          <ScrollArea>
-            <div className="overscroll-auto">
-              { /* @ts-expect-error yjsEditor needs more refinement */}
-              <TextbitEditable yjsEditor={editor} />
-            </div>
-          </ScrollArea>
+function ToolbarMenu(): JSX.Element {
+  const { actions } = usePluginRegistry()
 
-          <div className="grow-0 border-t opacity-90">
-            <Footer />
-          </div>
-        </div>
+  const leafActions = actions.filter(action => ['leaf'].includes(action.plugin.class))
+  const inlineActions = actions.filter(action => ['inline'].includes(action.plugin.class))
 
-      </Textbit>
-    </>
+  return (
+    <Toolbar.Root
+      className="flex select-none divide-x p-1 border rounded-lg cursor-default shadow-xl border bg-white border-gray-100 dark:text-white dark:bg-slate-900 dark:border-slate-800 dark:divide-slate-800 dark:shadow-none"
+    >
+      <Toolbar.Group key="leafs" className="flex place-items-center pr-1 gap-1">
+        {leafActions.map(action => {
+          return <ToolbarItem action={action} key={`${action.plugin.name}`} />
+        })}
+      </Toolbar.Group>
+
+      <Toolbar.Group key="inlines" className="flex pl-1">
+        {inlineActions.map(action => {
+          return <ToolbarItem
+            action={action}
+            key={`${action.plugin.name}`}
+          />
+        })}
+      </Toolbar.Group>
+    </Toolbar.Root>
+  )
+}
+
+function ToolbarItem({ action }: { action: PluginRegistryAction }): JSX.Element {
+  return <Toolbar.Item
+    action={action}
+    className="p-2 w-8 h-8 flex place-items-center rounded border border-white hover:bg-gray-100 hover:border-gray-200 pointer data-[state='active']:bg-gray-100 data-[state='active']:border-gray-200 dark:border-gray-900 dark:hover:bg-slate-800 dark:hover:border-slate-700 dark:data-[state='active']:bg-gray-800 dark:data-[state='active']:border-slate-800 dark:hover:data-[state='active']:border-slate-700"
+  />
+}
+
+function ContentMenu(): JSX.Element {
+  const { actions } = usePluginRegistry()
+
+  const textActions = actions.filter(action => action.plugin.class === 'text')
+  const textblockActions = actions.filter(action => action.plugin.class === 'textblock')
+  const blockActions = actions.filter(action => action.plugin.class === 'block')
+
+  return (
+    <Menu.Root className="group">
+      <Menu.Trigger className="flex justify-center place-items-center center font-bold border w-8 h-8 ml-3 rounded-full cursor-default group-data-[state='open']:border-gray-200 hover:border-gray-400 dark:text-slate-200 dark:bg-slate-950 dark:border-slate-600 dark:group-data-[state='open']:border-slate-700 dark:hover:border-slate-500">⋮</Menu.Trigger>
+      <Menu.Content className="flex flex-col -mt-[0.75rem] ml-[2.25rem] border rounded-lg divide-y shadow-xl bg-white border-gray-100 dark:text-white dark:bg-slate-900 dark:border-slate-800 dark:divide-slate-800 dark:shadow-none">
+        {textActions.length > 0 &&
+          <ContentMenuGroup>
+            {textActions.map(action => <ContentMenuItem action={action} key={`${action.key}-${action.title}`} />)}
+          </ContentMenuGroup>
+        }
+
+        {textblockActions.length > 0 &&
+          <ContentMenuGroup>
+            {textblockActions.map(action => <ContentMenuItem action={action} key={`${action.key}-${action.title}`} />)}
+          </ContentMenuGroup>
+        }
+
+        {blockActions.length > 0 &&
+          <ContentMenuGroup>
+            {blockActions.map(action => <ContentMenuItem action={action} key={`${action.key}-${action.title}`} />)}
+          </ContentMenuGroup>
+        }
+      </Menu.Content>
+    </Menu.Root >
+  )
+}
+
+function ContentMenuGroup({ children }: PropsWithChildren): JSX.Element {
+  return (
+    <Menu.Group className="flex flex-col p-1 text-md">
+      {children}
+    </Menu.Group>
+  )
+}
+
+function ContentMenuItem({ action }: { action: PluginRegistryAction }): JSX.Element {
+  return (
+    <Menu.Item
+      action={action}
+      className="grid gap-x-5 py-[0.4rem] border group grid-cols-[1.5rem_minmax(max-content,_220px)_minmax(max-content,_90px)] rounded cursor-default border-white hover:border-gray-200 hover:bg-gray-100 dark:border-slate-900 dark:hover:border-slate-700 dark:hover:bg-slate-800"
+    >
+      <Menu.Icon className="flex justify-self-end self-center group-data-[state='active']:font-semibold" />
+      <Menu.Label className="self-center text-sm group-data-[state='active']:font-semibold" />
+      <Menu.Hotkey className="justify-self-end self-center pl-6 pr-3 text-sm opacity-70" />
+    </Menu.Item>
   )
 }
 
 function Footer(): JSX.Element {
-  const { words, characters } = useTextbitContext()
+  const { words, characters } = useTextbit()
 
   return (
-    <footer className="flex line font-sans text-sm p-3 pr-8 text-right gap-4 justify-end">
+    <footer className="flex line font-sans h-14 border-t text-sm p-3 pr-8 text-right gap-4 justify-end items-center">
       <div className="flex gap-2">
         <strong>Words:</strong>
         <span>{words}</span>
