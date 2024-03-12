@@ -72,7 +72,6 @@ export const PlanningTable = <TData, TValue>({
   useEffect(() => {
     if (onRowSelected) {
       const selectedRows = table.getSelectedRowModel()
-      // @ts-expect-error unknown type
       onRowSelected(selectedRows?.rows[0]?.original)
     }
   }, [table, onRowSelected])
