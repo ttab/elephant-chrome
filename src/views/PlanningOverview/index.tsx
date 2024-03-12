@@ -49,8 +49,8 @@ export const PlanningOverview = (props: ViewProps): JSX.Element => {
             </ViewHeader>
           </div>
 
-          <ScrollArea className='p-4'>
-            <TabsContent value='list'>
+          <ScrollArea>
+            <TabsContent value='list' className='mt-0'>
               <PlanningList date={startDate} />
             </TabsContent>
 

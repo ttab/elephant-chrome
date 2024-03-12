@@ -10,6 +10,7 @@ import { useView } from '@/hooks'
 import { isEditableTarget } from '@/lib/isEditableTarget'
 import { useTable } from '@/hooks/useTable'
 import { columns } from './Columns'
+import { cn } from '@ttab/elephant-ui/utils'
 
 interface PlanningTableProps<TData, TValue> {
   columns: Array<ColumnDef<TData, TValue>>
@@ -107,7 +108,10 @@ export const PlanningTable = <TData, TValue>({
         {row.getVisibleCells().map((cell) => (
           <TableCell
             key={cell.id}
-            className={cell.column.columnDef.meta?.className}
+            className={cn(
+              'first:pl-6 last:pr-6',
+              cell.column.columnDef.meta?.className
+            )}
           >
             {flexRender(
               cell.column.columnDef.cell,
@@ -120,7 +124,7 @@ export const PlanningTable = <TData, TValue>({
   }
 
   return (
-    <div className="space-y-2">
+    <>
       <Toolbar table={table} />
       <div className="rounded-md">
         <Table className='table-fixed'>
@@ -129,6 +133,6 @@ export const PlanningTable = <TData, TValue>({
           </TableBody>
         </Table>
       </div>
-    </div>
+    </>
   )
 }
