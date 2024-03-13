@@ -32,7 +32,7 @@
     "@protobuf-ts/twirp-transport": "^2.9.3",
     "@tailwindcss/container-queries": "^0.1.1",
     "@tanstack/react-table": "^8.13.2",
-    "@ttab/elephant-ui": "^0.2.5",
+    "@ttab/elephant-ui": "^0.2.6",
     "@ttab/textbit": "^0.6.6",
     "class-variance-authority": "^0.7.0",
     "cookie-parser": "^1.4.6",
