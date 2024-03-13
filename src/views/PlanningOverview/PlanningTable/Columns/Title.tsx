@@ -12,7 +12,7 @@ export const Title = ({ internal, slugline, title }: TitleProps): JSX.Element =>
     <div className='flex space-x-2 justify-start'>
       <StatusIndicator internal={internal} />
 
-      <span className='truncate font-medium'>
+      <span className='truncate font-medium text-sm'>
         {title}
       </span>
 
