@@ -71,10 +71,12 @@ function EditorWrapper(props: ViewProps & { documentId: string }): JSX.Element {
         </ViewHeader>
       </div>
 
-      {synced
-        ? <EditorContent provider={provider} user={user} />
-        : <div></div>
-      }
+      <div className="flex-grow overflow-auto pr-12 max-w-screen-xl mx-auto">
+        {synced
+          ? <EditorContent provider={provider} user={user} />
+          : <></>
+        }
+      </div>
 
       <div className="h-14 basis-14">
         <Footer />
@@ -114,15 +116,13 @@ function EditorContent({ provider, user }: {
   }, [yjsEditor])
 
   return (
-    <div className="flex-grow overflow-auto pr-12 max-w-screen-xl mx-auto">
-      <Textbit.Editable yjsEditor={yjsEditor} className="outline-none h-full dark:text-slate-100">
-        <DropMarker className="h-[3px] rounded bg-blue-400/75 dark:bg-blue-500/75 data-[state='between']:block" />
-        <ToolbarMenu />
-        <Textbit.Gutter className="w-14">
-          <ContentMenu />
-        </Textbit.Gutter>
-      </Textbit.Editable>
-    </div>
+    <Textbit.Editable yjsEditor={yjsEditor} className="outline-none h-full dark:text-slate-100">
+      <DropMarker className="h-[3px] rounded bg-blue-400/75 dark:bg-blue-500/75 data-[state='between']:block" />
+      <ToolbarMenu />
+      <Textbit.Gutter className="w-14">
+        <ContentMenu />
+      </Textbit.Gutter>
+    </Textbit.Editable>
   )
 }
 
