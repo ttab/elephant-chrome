@@ -15,6 +15,7 @@ import {
   usePluginRegistry,
   type PluginRegistryAction
 } from '@ttab/textbit'
+import { Bold, Italic, Link, Text, Image, NumberList, BulletList } from '@ttab/textbit-plugins'
 
 import {
   useQuery,
@@ -55,30 +56,30 @@ const Editor = (props: ViewProps): JSX.Element => {
 
 
 function EditorWrapper(props: ViewProps & { documentId: string }): JSX.Element {
+  const plugins = [Text, BulletList, NumberList, Image, Bold, Italic, Link]
   const {
     provider,
-    // synced: isSynced,
+    synced,
     user
   } = useCollaboration()
 
   return (
-    <div className="h-screen *:h-screen *:max-h-screen *:flex *:flex-col"> {/* FIXME: When changes in Textbit have been merged, remove this */}
-      <Textbit.Root> {/* FIXME: Add className="h-full" when parent div is removed} */}
-        {/* <div className={`h-full ${!isSynced ? 'opacity-60' : ''}`}> */}
-        <div className="h-14 basis-14">
-          <ViewHeader {...props} title="Editor" icon={PenBoxIcon}>
-            <EditorHeader />
-          </ViewHeader>
-        </div>
+    <Textbit.Root plugins={plugins} className="h-screen max-h-screen flex flex-col">
+      <div className="h-14 basis-14">
+        <ViewHeader {...props} title="Editor" icon={PenBoxIcon}>
+          <EditorHeader />
+        </ViewHeader>
+      </div>
 
-        <EditorContent provider={provider} user={user} />
+      {synced
+        ? <EditorContent provider={provider} user={user} />
+        : <div></div>
+      }
 
-        <div className="h-14 basis-14">
-          <Footer />
-        </div>
-        {/* </div> */}
-      </Textbit.Root>
-    </div>
+      <div className="h-14 basis-14">
+        <Footer />
+      </div>
+    </Textbit.Root>
   )
 }
 
@@ -113,9 +114,9 @@ function EditorContent({ provider, user }: {
   }, [yjsEditor])
 
   return (
-    <div className="flex-grow overflow-auto">
+    <div className="flex-grow overflow-auto pr-12 max-w-screen-xl mx-auto">
       <Textbit.Editable yjsEditor={yjsEditor} className="outline-none h-full dark:text-slate-100">
-        <DropMarker className="h-[3px] rounded bg-blue-400/75 dark:bg-blue-500/75" />
+        <DropMarker className="h-[3px] rounded bg-blue-400/75 dark:bg-blue-500/75 data-[state='between']:block" />
         <ToolbarMenu />
         <Textbit.Gutter className="w-14">
           <ContentMenu />
@@ -127,13 +128,12 @@ function EditorContent({ provider, user }: {
 
 function ToolbarMenu(): JSX.Element {
   const { actions } = usePluginRegistry()
-
   const leafActions = actions.filter(action => ['leaf'].includes(action.plugin.class))
   const inlineActions = actions.filter(action => ['inline'].includes(action.plugin.class))
 
   return (
     <Toolbar.Root
-      className="flex select-none divide-x p-1 border rounded-lg cursor-default shadow-xl border bg-white border-gray-100 dark:text-white dark:bg-slate-900 dark:border-slate-800 dark:divide-slate-800 dark:shadow-none"
+      className="flex min-w-12 select-none divide-x p-1 border rounded-lg cursor-default shadow-xl border bg-white border-gray-100 dark:text-white dark:bg-slate-900 dark:border-slate-800 dark:divide-slate-800 dark:shadow-none"
     >
       <Toolbar.Group key="leafs" className="flex place-items-center pr-1 gap-1">
         {leafActions.map(action => {
