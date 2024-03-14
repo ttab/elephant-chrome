@@ -5,18 +5,18 @@ import { useYObserver } from '@/hooks'
 
 interface SluglineButtonProps {
   value: string
-  setActive: (value: boolean) => void
+  setActive?: (value: boolean) => void
 }
 
 interface SluglineInputProps extends SluglineButtonProps {
   setSlugline: (value: string, key: string) => void
 }
 
-const SluglineButton = ({ value, setActive }: SluglineButtonProps): JSX.Element => (
+export const SluglineButton = ({ value, setActive }: SluglineButtonProps): JSX.Element => (
   <Button
     className='text-muted-foreground h-7 p-1.5'
     variant='outline'
-    onClick={() => setActive(true)}
+    onClick={() => setActive && setActive(true)}
   >
     {value || 'Slugline...'}
   </Button>
@@ -26,15 +26,16 @@ const SluglineInput = ({ value, setActive, setSlugline }: SluglineInputProps): J
   <Input
     value={value}
     autoFocus
-    onBlur={() => setActive(false)}
+    onBlur={() => setActive && setActive(false)}
     onChange={(event) => setSlugline(event.target.value, 'value')}
     className='h-[1.2rem] w-44'
   />
 )
 
-export const PlanSlugline = ({ path = 'meta.tt/slugline[0]' }: { path?: string }): JSX.Element | undefined => {
+export const SluglineEditable = ({ path = 'meta.tt/slugline[0]' }: { path?: string }): JSX.Element => {
   const [active, setActive] = useState(false)
   const { get, set, loading } = useYObserver('planning', path)
+
 
   const setFocused = useRef<(value: boolean) => void>(null)
 
@@ -52,5 +53,5 @@ export const PlanSlugline = ({ path = 'meta.tt/slugline[0]' }: { path?: string }
         }
       </Awareness>
       )
-    : undefined
+    : <p>Loading...</p>
 }

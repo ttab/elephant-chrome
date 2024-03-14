@@ -5,6 +5,7 @@ import { GanttChartSquare } from '@ttab/elephant-ui/icons'
 import { Textbit } from '@ttab/textbit'
 import { useQuery } from '@/hooks'
 import { CollaborationProviderContext } from '@/contexts'
+import { SluglineEditable } from '@/components/DataItem/Slugline'
 import {
   PlanAssignments,
   PlanDate,
@@ -15,7 +16,6 @@ import {
   PlanPriority,
   PlanCategory,
   PlanStory,
-  PlanSlugline,
   PlanDocumentStatus
 } from './components'
 
@@ -67,7 +67,7 @@ const PlanningViewContent = (props: ViewProps): JSX.Element | undefined => {
           <section className='overscroll-auto @5xl:w-[1024px] space-y-4 p-8'>
             <div className='flex space-x-2 items-center'>
               <PlanTitle className='font-semibold text-xl leading-4 px-0'/>
-              <PlanSlugline />
+              <SluglineEditable />
             </div>
             <PlanDescriptions />
             <PlanDate />
