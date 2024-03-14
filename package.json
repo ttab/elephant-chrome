@@ -28,7 +28,7 @@
     "@hocuspocus/extension-redis": "^2.11.3",
     "@hocuspocus/provider": "^2.11.3",
     "@hocuspocus/server": "^2.11.3",
-    "@protobuf-ts/runtime-rpc": "^2.9.3",
+    "@protobuf-ts/runtime-rpc": "^2.9.4",
     "@protobuf-ts/twirp-transport": "^2.9.3",
     "@tailwindcss/container-queries": "^0.1.1",
     "@tanstack/react-table": "^8.13.2",
