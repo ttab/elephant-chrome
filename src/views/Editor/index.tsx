@@ -15,7 +15,7 @@ import {
   usePluginRegistry,
   type PluginRegistryAction
 } from '@ttab/textbit'
-import { Bold, Italic, Link, Text, Image, NumberList, BulletList } from '@ttab/textbit-plugins'
+import { Bold, Italic, Link, Text, Image, NumberList, BulletList, Blockquote } from '@ttab/textbit-plugins'
 
 import {
   useQuery,
@@ -56,7 +56,7 @@ const Editor = (props: ViewProps): JSX.Element => {
 
 
 function EditorWrapper(props: ViewProps & { documentId: string }): JSX.Element {
-  const plugins = [Text, BulletList, NumberList, Image, Bold, Italic, Link]
+  const plugins = [Text, BulletList, NumberList, Blockquote, Image, Bold, Italic, Link]
   const {
     provider,
     synced,

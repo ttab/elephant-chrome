@@ -6,7 +6,8 @@ export default {
   presets: [preset],
   content: [
     './src/**/*.{html,tsx}',
-    './node_modules/@ttab/elephant-ui/dist/src/components/ui/*.js'
+    './node_modules/@ttab/elephant-ui/dist/src/components/ui/*.js',
+    './node_modules/@ttab/textbit-plugins/dist/**/*.es.js'
   ],
   theme: {
     extend: {}
