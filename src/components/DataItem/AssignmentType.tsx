@@ -19,7 +19,7 @@ export const AssignmentType = ({ index }: { index: number }): JSX.Element => {
     >
       {selectedOption?.icon
         ? <selectedOption.icon size={16} strokeWidth={1.75}/>
-        : selectedOption.label
+        : selectedOption?.label
       }
     </ComboBox>
     : <span>Loading...</span>
