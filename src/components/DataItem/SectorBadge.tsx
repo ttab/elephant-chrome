@@ -6,7 +6,7 @@ export const SectorBadge = ({ color, value }: { color?: string, value: string })
   const sector = Sectors.find((label) => label.value === value)
   const chosenColor = color || sector?.color
 
-  return <Badge variant='outline' className='rounded-md'>
+  return <Badge variant='outline' className='rounded-md bg-background'>
     <div className={cn('h-2 w-2 rounded-full mr-2', chosenColor || '')} />
     <span className='text-muted-foreground text-xs font-sans font-normal whitespace-nowrap text-ellipsis'>{sector?.label}</span>
   </Badge>
