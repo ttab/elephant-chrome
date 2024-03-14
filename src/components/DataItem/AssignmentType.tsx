@@ -1,51 +1,26 @@
-import {
-  Button,
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuRadioGroup,
-  DropdownMenuRadioItem,
-  DropdownMenuTrigger
-} from '@ttab/elephant-ui'
 import { useYObserver } from '@/hooks'
 import { AssignmentTypes } from '@/defaults'
+import { ComboBox } from '../ui'
 
 export const AssignmentType = ({ index }: { index: number }): JSX.Element => {
-  const { get, set } = useYObserver('planning', `meta.core/assignment[${index}].meta.core/assignment-type[0]`)
+  const { get, set, loading } = useYObserver('planning', `meta.core/assignment[${index}].meta.core/assignment-type[0]`)
 
-  const data = AssignmentTypes.find(type => type.value === get('value'))
+  const selectedOption = AssignmentTypes.find(type => type.value === get('value'))
 
-  return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button variant='ghost'>
-          {data?.icon &&
-            <data.icon strokeWidth={1.75} size={20}/>
-          }
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent className='w-40'>
-        <DropdownMenuRadioGroup
-          value={get('value') as string}
-          onValueChange={(value) => { set(value, 'value') }}
-        >
-          {AssignmentTypes.map(type => {
-            return <DropdownMenuRadioItem
-              key={type.value}
-              value={type.value}
-            >
-              <div className='flex place-items-center'>
-                {type?.icon &&
-                  <type.icon
-                    size={16}
-                    strokeWidth={1.75}
-                    className='text-muted-foreground mr-2'
-                  />}
-                {type.label}
-              </div>
-            </DropdownMenuRadioItem>
-          })}
-        </DropdownMenuRadioGroup>
-      </DropdownMenuContent>
-    </DropdownMenu>
-  )
+  return !loading
+    ? <ComboBox
+        size='xs'
+        className='w-fit text-muted-foreground font-sans font-normal whitespace-nowrap text-ellipsis px-2 h-7'
+        options={AssignmentTypes}
+        variant={'ghost'}
+        selectedOption={selectedOption}
+        placeholder='Assignment type'
+        onSelect={(option) => { set(option.value, 'value') }}
+    >
+      {selectedOption?.icon
+        ? <selectedOption.icon size={16} strokeWidth={1.75}/>
+        : selectedOption.label
+      }
+    </ComboBox>
+    : <span>Loading...</span>
 }
