@@ -101,7 +101,7 @@ export interface JWT extends JWTPayload {
   access_token: string
 }
 
-export interface ColumnValueOption {
+export interface DefaultValueOption {
   payload?: Partial<Block>
   label: string
   value: string

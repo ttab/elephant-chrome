@@ -21,14 +21,14 @@ import {
   CheckIcon
 } from '@ttab/elephant-ui/icons'
 import { cn } from '@ttab/elephant-ui/utils'
-import { type ColumnValueOption } from '@/types'
+import { type DefaultValueOption } from '@/types'
 
 interface ComboBoxProps extends React.PropsWithChildren {
   size?: string
-  selectedOption?: ColumnValueOption
-  options: ColumnValueOption[]
+  selectedOption?: DefaultValueOption
+  options: DefaultValueOption[]
   placeholder: string
-  onSelect: (option: ColumnValueOption) => void
+  onSelect: (option: DefaultValueOption) => void
   className?: string
   variant?: 'link' | 'default' | 'destructive' | 'outline' | 'secondary' | 'ghost' | null | undefined
   hideInput?: boolean
@@ -97,10 +97,10 @@ export const ComboBox = ({
 }
 
 interface ComboBoxListProps {
-  options: ColumnValueOption[]
-  selectedOption?: ColumnValueOption
+  options: DefaultValueOption[]
+  selectedOption?: DefaultValueOption
   setOpen: (open: boolean) => void
-  onSelect: (option: ColumnValueOption) => void
+  onSelect: (option: DefaultValueOption) => void
   hideInput?: boolean
 }
 

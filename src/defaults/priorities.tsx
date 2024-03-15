@@ -1,11 +1,11 @@
-import { type ColumnValueOption } from '@/types'
+import { type DefaultValueOption } from '@/types'
 import {
   SignalHigh,
   SignalMedium,
   SignalLow
 } from '@ttab/elephant-ui/icons'
 
-export const Priorities: ColumnValueOption[] = [
+export const Priorities: DefaultValueOption[] = [
   {
     value: '6',
     label: '6',

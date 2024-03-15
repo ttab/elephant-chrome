@@ -1,11 +1,11 @@
-import { type ColumnValueOption } from '@/types'
+import { type DefaultValueOption } from '@/types'
 import {
   Badge,
   TooltipProvider, Tooltip, TooltipTrigger, TooltipContent
 } from '@ttab/elephant-ui'
 import { useMemo } from 'react'
 
-export const Priority = ({ priority }: { priority: ColumnValueOption }): JSX.Element => {
+export const Priority = ({ priority }: { priority: DefaultValueOption }): JSX.Element => {
   return useMemo(() => (
     <TooltipProvider>
       <Tooltip>

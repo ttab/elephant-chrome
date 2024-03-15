@@ -1,11 +1,11 @@
-import { type ColumnValueOption } from '@/types'
+import { type DefaultValueOption } from '@/types'
 import {
   CircleCheck,
   PieChart
 } from '@ttab/elephant-ui/icons'
 
 
-export const DocumentStatuses: ColumnValueOption[] = [
+export const DocumentStatuses: DefaultValueOption[] = [
   {
     label: 'Published',
     value: 'published',

@@ -1,4 +1,4 @@
-import { type ColumnValueOption } from '@/types'
+import { type DefaultValueOption } from '@/types'
 import {
   FileText,
   Image,
@@ -7,7 +7,7 @@ import {
 } from '@ttab/elephant-ui/icons'
 
 
-export const AssignmentTypes: ColumnValueOption[] = [
+export const AssignmentTypes: DefaultValueOption[] = [
   {
     label: 'Text',
     value: 'text',
