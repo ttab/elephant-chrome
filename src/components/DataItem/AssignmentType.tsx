@@ -19,7 +19,7 @@ export const AssignmentType = ({ index }: { index: number }): JSX.Element => {
       <DropdownMenuTrigger asChild>
         <Button variant='ghost'>
           {data?.icon &&
-            <data.icon strokeWidth={1.75} size={20}/>
+            <data.icon strokeWidth={1.75} size={18} />
           }
         </Button>
       </DropdownMenuTrigger>
@@ -36,7 +36,7 @@ export const AssignmentType = ({ index }: { index: number }): JSX.Element => {
               <div className='flex place-items-center'>
                 {type?.icon &&
                   <type.icon
-                    size={16}
+                    size={18}
                     strokeWidth={1.75}
                     className='text-muted-foreground mr-2'
                   />}

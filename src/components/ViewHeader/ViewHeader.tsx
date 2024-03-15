@@ -22,7 +22,7 @@ export const ViewHeader = ({ children, documentId, title, shortTitle, icon: Icon
     <header className='sticky top-0 flex items-center justify-items-stretch group-last:w-[calc(100%-5.5rem)] h-14 gap-3 px-3 border-b bg-background z-50'>
       <div className="flex flex-1 gap-2 items-center">
         {Icon !== undefined &&
-          <Icon className="size-4" />
+          <Icon size={18} strokeWidth={1.75} />
         }
 
         <h2 className="font-bold">

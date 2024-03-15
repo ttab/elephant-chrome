@@ -50,11 +50,10 @@ export const Planning = (props: ViewProps): JSX.Element => {
 
 const PlanningViewContent = (props: ViewProps): JSX.Element | undefined => {
   return (
-    <Textbit>
       <div className={'flex flex-col h-screen'}>
         <div className="grow-0">
           <ViewHeader {...props} title="Planering" icon={GanttChartSquare}>
-            <div className='flex w-full h-full items-center space-x-2'>
+            <div className='flex w-full h-full items-center'>
               <PlanDocumentStatus />
               <PlanStatus />
               <PlanPriority />
@@ -71,19 +70,15 @@ const PlanningViewContent = (props: ViewProps): JSX.Element | undefined => {
             </div>
             <PlanDescriptions />
             <PlanDate />
-            <div className='flex justify-between'>
-              <div className='space-x-2'>
-                <PlanSector />
-                <PlanCategory />
-                <PlanStory />
-              </div>
-              <PlanStatus />
+            <div className='space-x-2'>
+              <PlanSector />
+              <PlanCategory />
+              <PlanStory />
             </div>
             <PlanAssignments />
           </section>
         </ScrollArea>
       </div>
-    </Textbit>
   )
 }
 

@@ -51,7 +51,7 @@ const PlanAssignment = ({ index }: { index: number }): JSX.Element => {
           }
         </div>
         <div className="whitespace-nowrap">
-          <MoreHorizontal />
+          <MoreHorizontal size={18} strokeWidth={1.75} />
         </div>
       </div>
     </div>

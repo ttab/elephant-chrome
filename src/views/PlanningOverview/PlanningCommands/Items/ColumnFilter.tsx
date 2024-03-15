@@ -23,8 +23,8 @@ export const ColumnFilter = (): ReactNode => {
             }}
             >
             {column.columnDef.meta?.columnIcon
-              ? <column.columnDef.meta.columnIcon className='h-4 w-4 mr-2'/>
-              : <FileQuestion className='h4 w-4 mr-2'/>
+              ? <column.columnDef.meta.columnIcon size={18} strokeWidth={1.75} className='mr-2'/>
+              : <FileQuestion size={18} strokeWidth={1.75} className='mr-2'/>
               }
             {column.columnDef.meta?.name || 'unknown'}
           </CommandItem>)

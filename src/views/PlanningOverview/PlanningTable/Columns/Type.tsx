@@ -10,7 +10,7 @@ export const Type = ({ data }: { data: ColumnValueOption[] }): JSX.Element => {
           <TooltipProvider key={index}>
             <Tooltip>
               <TooltipTrigger>
-                <item.icon className='mr-2 h-5 w-5 text-muted-foreground' color='#818FB4' />
+                <item.icon size={18} strokeWidth={1.75} className='mr-2 text-muted-foreground' color='#818FB4' />
               </TooltipTrigger>
               <TooltipContent>
                 <p>{item.label}</p>

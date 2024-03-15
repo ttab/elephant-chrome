@@ -1,4 +1,4 @@
-import { X as Cross2Icon } from '@ttab/elephant-ui/icons'
+import { X } from '@ttab/elephant-ui/icons'
 import { type Table } from '@tanstack/react-table'
 
 import { Button } from '@ttab/elephant-ui'
@@ -25,7 +25,7 @@ export const Toolbar = <TData,>({
             className="h-8 px-2 lg:px-3"
           >
             Reset
-            <Cross2Icon className="ml-2 h-4 w-4" />
+            <X size={18} strokeWidth={1.75} className="ml-2" />
           </Button>
         )}
       </div>

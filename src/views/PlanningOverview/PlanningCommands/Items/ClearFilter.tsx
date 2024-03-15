@@ -14,7 +14,7 @@ export const ClearFilter = (): JSX.Element | null => {
           table.resetGlobalFilter()
         }}
     >
-      <X className='h-4 w-3' />
+      <X size={18} strokeWidth={1.75} />
       Clear filters
     </CommandItem>
     : null

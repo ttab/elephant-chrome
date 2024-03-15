@@ -16,7 +16,12 @@ const PlanDescription = ({ role, index }: { role: string, index?: number }): JSX
     ? (
       <Awareness name={'PlanDescription'} ref={setFocused}>
         <div className='flex w-full'>
-          {role === 'internal' && <MessageCircleMore className='size-6 pr-2 text-muted-foreground'/>}
+          {role === 'internal' &&
+            <MessageCircleMore
+              size={18}
+              strokeWidth={1.75}
+              className='pr-2 text-muted-foreground'
+            />}
           <Textarea
             className='border-0 p-0 font-normal text-base '
             value={get('text') as string}

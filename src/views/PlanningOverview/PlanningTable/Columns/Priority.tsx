@@ -17,7 +17,9 @@ export const Priority = ({ priority }: { priority: ColumnValueOption }): JSX.Ele
             <priority.icon
               color={priority.color}
               className='p-0'
-                />
+              size={18}
+              strokeWidth={1.75}
+            />
             <span className='text-muted-foreground text-sm font-sans font-normal'>
               {priority.value}
             </span>
