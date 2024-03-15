@@ -10,7 +10,10 @@ import { Awareness } from './'
 /**
  * Use as a wrapper around all documents that needs awareness
  */
-export const AwarenessDocument = ({ children, documentId }: PropsWithChildren & { documentId: string }): JSX.Element => {
+export const AwarenessDocument = ({ children, documentId, className }: PropsWithChildren & {
+  documentId: string
+  className?: string
+}): JSX.Element => {
   const setAsOpen = useRef<(value: boolean) => void>(null)
 
   useEffect(() => {
@@ -27,7 +30,7 @@ export const AwarenessDocument = ({ children, documentId }: PropsWithChildren & 
   }, [setAsOpen])
 
   return <CollaborationProviderContext documentId={documentId}>
-    <Awareness name={documentId} ref={setAsOpen} visual={false}>
+    <Awareness name={documentId} ref={setAsOpen} visual={false} className={className}>
       {children}
     </Awareness>
   </CollaborationProviderContext>

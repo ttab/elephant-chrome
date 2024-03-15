@@ -49,37 +49,37 @@ export const Planning = (props: ViewProps): JSX.Element => {
 
 const PlanningViewContent = (props: ViewProps): JSX.Element | undefined => {
   return (
-      <div className={'flex flex-col h-screen'}>
-        <div className="grow-0">
-          <ViewHeader {...props} title="Planering" icon={GanttChartSquare}>
-            <div className='flex w-full h-full items-center space-x-2'>
-              <PlanDocumentStatus />
-              <PlanStatus />
-              <PlanPriority />
-              <PlanTitle className='invisible @4xl:visible' />
-            </div>
-          </ViewHeader>
-        </div>
+    <div className={'flex flex-col h-screen'}>
+      <div className="grow-0">
+        <ViewHeader {...props} title="Planering" icon={GanttChartSquare}>
+          <div className='flex w-full h-full items-center space-x-2'>
+            <PlanDocumentStatus />
+            <PlanStatus />
+            <PlanPriority />
+            <PlanTitle className='invisible @4xl:visible' />
+          </div>
+        </ViewHeader>
+      </div>
 
-        <ScrollArea className='grid @5xl:place-content-center'>
-          <section className='overscroll-auto @5xl:w-[1024px] space-y-4 p-8'>
-            <div className='flex space-x-2 items-center'>
-              <PlanTitle className='font-semibold text-xl leading-4 px-0'/>
-              <SluglineEditable />
+      <ScrollArea className='grid @5xl:place-content-center'>
+        <section className='overscroll-auto @5xl:w-[1024px] space-y-4 p-8'>
+          <div className='flex space-x-2 items-center'>
+            <PlanTitle className='font-semibold text-xl leading-4 px-0' />
+            <SluglineEditable />
+          </div>
+          <PlanDescriptions />
+          <PlanDate />
+          <div className='flex justify-between'>
+            <div className='space-x-2'>
+              <PlanSector />
+              <PlanCategory />
+              <PlanStory />
             </div>
-            <PlanDescriptions />
-            <PlanDate />
-            <div className='flex justify-between'>
-              <div className='space-x-2'>
-                <PlanSector />
-                <PlanCategory />
-                <PlanStory />
-              </div>
-              <PlanStatus />
-            </div>
-            <PlanAssignments />
-          </section>
-        </ScrollArea>
+            <PlanStatus />
+          </div>
+          <PlanAssignments />
+        </section>
+      </ScrollArea>
     </div>
   )
 }
