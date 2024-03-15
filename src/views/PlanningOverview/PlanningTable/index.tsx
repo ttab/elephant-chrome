@@ -6,10 +6,13 @@ import {
 
 import { Table, TableBody, TableCell, TableRow } from '@ttab/elephant-ui'
 import { Toolbar } from './Toolbar'
-import { useView } from '@/hooks'
+import { useNavigation, useView } from '@/hooks'
 import { isEditableTarget } from '@/lib/isEditableTarget'
 import { useTable } from '@/hooks/useTable'
 import { columns } from './Columns'
+import { cn } from '@ttab/elephant-ui/utils'
+import { handleLink } from '@/components/Link/lib/handleLink'
+import { v4 as uuid } from 'uuid'
 
 interface PlanningTableProps<TData, TValue> {
   columns: Array<ColumnDef<TData, TValue>>
@@ -22,6 +25,8 @@ export const PlanningTable = <TData, TValue>({
   onRowSelected
 }: PlanningTableProps<TData, TValue>): JSX.Element => {
   const { isActive: isActiveView } = useView()
+  const { state, dispatch } = useNavigation()
+  const { viewId: origin } = useView()
 
   const { table, loading } = useTable()
 
@@ -94,11 +99,23 @@ export const PlanningTable = <TData, TValue>({
     return table.getRowModel().rows.map((row) => (
       <TableRow
         key={row.id}
+        className='cursor-default'
         data-state={row.getIsSelected() && 'selected'}
         onClick={(event) => {
           if (!onRowSelected) {
             return
           }
+
+          handleLink({
+            event,
+            dispatch,
+            viewItem: state.viewRegistry.get('Planning'),
+            viewRegistry: state.viewRegistry,
+            props: { id: row.original._id },
+            viewId: uuid(),
+            origin
+
+          })
 
           event.preventDefault()
           row.toggleSelected(!row.getIsSelected())
@@ -107,7 +124,10 @@ export const PlanningTable = <TData, TValue>({
         {row.getVisibleCells().map((cell) => (
           <TableCell
             key={cell.id}
-            className={cell.column.columnDef.meta?.className}
+            className={cn(
+              'first:pl-6 last:pr-6',
+              cell.column.columnDef.meta?.className
+            )}
           >
             {flexRender(
               cell.column.columnDef.cell,
@@ -120,7 +140,7 @@ export const PlanningTable = <TData, TValue>({
   }
 
   return (
-    <div className="space-y-2">
+    <>
       <Toolbar table={table} />
       <div className="rounded-md">
         <Table className='table-fixed'>
@@ -129,6 +149,6 @@ export const PlanningTable = <TData, TValue>({
           </TableBody>
         </Table>
       </div>
-    </div>
+    </>
   )
 }

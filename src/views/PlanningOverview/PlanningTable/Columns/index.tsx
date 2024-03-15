@@ -52,9 +52,8 @@ export const columns: Array<ColumnDef<Planning>> = [
       const internal = row.original._source['document.meta.core_planning_item.data.public'][0] !== 'true'
       const slugline = row.original._source['document.meta.core_assignment.meta.tt_slugline.value']?.[0]
       const title = row.getValue('title')
-      const planningId = row.original._id
 
-      return <Title title={title as string} internal={internal} slugline={slugline} planningId={planningId}/>
+      return <Title title={title as string} internal={internal} slugline={slugline} />
     }
   },
   {
