@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 import { ComboBox } from '@/components/ui'
 import { DocumentStatuses } from '@/defaults'
 
