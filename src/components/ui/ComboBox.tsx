@@ -27,7 +27,7 @@ interface ComboBoxProps extends React.PropsWithChildren {
   size?: string
   selectedOption?: DefaultValueOption
   options: DefaultValueOption[]
-  placeholder: string
+  placeholder?: string
   onSelect: (option: DefaultValueOption) => void
   className?: string
   variant?: 'link' | 'default' | 'destructive' | 'outline' | 'secondary' | 'ghost' | null | undefined
@@ -55,7 +55,7 @@ export const ComboBox = ({
           <Button size={size || 'sm'} variant={ variant || 'outline'} className={cn('w-[150px]', className)}>
             {children || (selectedOption
               ? <>{selectedOption?.label}</>
-              : <>{placeholder}</>)
+              : <>{placeholder || ''}</>)
             }
           </Button>
         </PopoverTrigger>

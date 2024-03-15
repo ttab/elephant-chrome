@@ -11,16 +11,11 @@ export const PlanDocumentStatus = (): JSX.Element => {
     options={DocumentStatuses}
     variant={'ghost'}
     selectedOption={selectedOption}
-    placeholder='Document status'
     onSelect={() => { alert('Not yet implemented') }}
     hideInput
     >
     {selectedOption?.icon
-      ? <selectedOption.icon
-          fill='#4675C8'
-          color='#ffffff'
-          className='size-4 bg-[#4675C8] rounded-full'
-          strokeWidth={1.75}
+      ? <selectedOption.icon { ...selectedOption.iconProps }
   />
       : selectedOption?.label
       }
