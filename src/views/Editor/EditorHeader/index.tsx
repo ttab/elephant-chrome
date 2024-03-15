@@ -19,7 +19,8 @@ export const EditorHeader = (): JSX.Element => {
           return {
             label: p.label,
             value: p.value,
-            icon: p.icon && <p.icon color={p.color} />
+            icon: p.icon &&
+              <p.icon color={p.color} size={18} strokeWidth={1.75} />
           }
         })}
       />

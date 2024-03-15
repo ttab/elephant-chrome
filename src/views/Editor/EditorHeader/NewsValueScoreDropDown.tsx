@@ -22,9 +22,10 @@ interface NewsScoreDropDownProps {
   }>
   onChange: (value: unknown) => void
 }
+
 export const NewsValueScoreDropDown = ({ value, options, onChange }: NewsScoreDropDownProps): JSX.Element => {
   const option = options.find(option => option.value === value)
-  const Icon = option?.icon || <SignalMedium />
+  const Icon = option?.icon || <SignalMedium size={18} strokeWidth={1.75} />
   const setFocused = useRef<(value: boolean) => void>(null)
 
   return (
@@ -38,9 +39,9 @@ export const NewsValueScoreDropDown = ({ value, options, onChange }: NewsScoreDr
           <DropdownMenuTrigger asChild>
             <Button
               variant="ghost"
-              className="flex h-8 p-0 px-2 data-[state=open]:bg-muted items-start"
+              className="flex w-10 p-0 px-2 data-[state=open]:bg-muted items-center"
             >
-              <span className={`flex items-end ${!option?.label ? 'opacity-40' : ''}`}>
+              <span className={`flex ${!option?.label ? 'opacity-40' : ''}`}>
                 {Icon}
                 {option?.label || '∞'}
               </span>

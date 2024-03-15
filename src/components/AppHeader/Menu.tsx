@@ -17,7 +17,7 @@ export const Menu = (): JSX.Element => {
     <Sheet>
       <SheetTrigger asChild>
         <Button variant='ghost' className='w-9 px-0'>
-          <MenuIcon />
+          <MenuIcon size={18} strokeWidth={1.75} />
         </Button>
       </SheetTrigger>
       <SheetContent>

@@ -19,7 +19,7 @@ export function ActionMenu({ deliverableUuids, planningId }: { deliverableUuids:
           variant='ghost'
           className="flex h-8 w-8 p-0 data-[state=open]:bg-muted"
         >
-          <MoreHorizontal className="h-4 w-4" />
+          <MoreHorizontal size={18} strokeWidth={1.75} />
           <span className="sr-only">Open</span>
         </Button>
       </DropdownMenuTrigger>
