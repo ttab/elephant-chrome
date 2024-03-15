@@ -14,7 +14,7 @@ interface SluglineInputProps extends SluglineButtonProps {
 
 export const SluglineButton = ({ value, setActive }: SluglineButtonProps): JSX.Element => (
   <Button
-    className='text-muted-foreground h-7 p-1.5'
+    className='text-muted-foreground h-7 p-1.5 font-normal text-sm'
     variant='outline'
     onClick={() => setActive && setActive(true)}
   >
@@ -28,7 +28,7 @@ const SluglineInput = ({ value, setActive, setSlugline }: SluglineInputProps): J
     autoFocus
     onBlur={() => setActive && setActive(false)}
     onChange={(event) => setSlugline(event.target.value, 'value')}
-    className='h-[1.2rem] w-44'
+    className='h-[1.2rem] w-44 font-normal text-sm'
   />
 )
 
