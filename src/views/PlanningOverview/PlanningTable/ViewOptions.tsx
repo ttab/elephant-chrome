@@ -25,7 +25,7 @@ export const ViewOptions = <TData,>({
           size="sm"
           className="ml-auto h-8 lg:flex"
         >
-          <SlidersHorizontal className="mr-2 h-4 w-4" />
+          <SlidersHorizontal size={18} strokeWidth={1.75} className="mr-2" />
           View
         </Button>
       </DropdownMenuTrigger>

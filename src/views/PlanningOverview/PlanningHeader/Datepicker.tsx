@@ -43,7 +43,7 @@ export const DatePicker = ({ date, setDate }: DatePickerProps): JSX.Element => {
             !date && 'text-muted-foreground'
           )}
         >
-          <CalendarIcon className='mr-2 h-4 w-4' />
+          <CalendarIcon size={18} strokeWidth={1.75} className='mr-2' />
           <span className="@3xl/view:hidden">{formattedDate}</span>
           <span className="hidden @3xl/view:inline">{longFormattedDate}</span>
         </Button>

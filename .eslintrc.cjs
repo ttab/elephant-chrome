@@ -43,6 +43,7 @@ module.exports = {
     'no-use-before-define': 'off',
     '@typescript-eslint/no-use-before-define': ['error'],
     'react/jsx-indent' : ['error', 2],
-    'react/jsx-indent-props': ['error', 2]
+    'react/jsx-indent-props': ['error', 2],
+    'react/jsx-tag-spacing': ['error']
   }
 }

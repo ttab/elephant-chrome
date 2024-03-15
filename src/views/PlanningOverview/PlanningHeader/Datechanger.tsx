@@ -48,6 +48,7 @@ export const DateChanger = ({
   return (
     <div className="flex items-center">
       <ChevronLeft
+        strokeWidth={1.75}
         className='w-6 h-8 px-1 py-2 rounded cursor-pointer hover:bg-muted'
         onClick={() => setStartDate(decrementDate(startDate, steps))}
       />
@@ -59,6 +60,7 @@ export const DateChanger = ({
       } */}
 
       <ChevronRight
+        strokeWidth={1.75}
         className='w-6 h-8 px-1 py-2 rounded cursor-pointer hover:bg-muted'
         onClick={() => setStartDate(incrementDate(startDate, steps))}
       />

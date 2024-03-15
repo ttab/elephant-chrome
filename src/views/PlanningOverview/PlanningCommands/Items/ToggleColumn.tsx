@@ -15,7 +15,7 @@ export const ToggleColumn = (): JSX.Element | null => {
           setSearch('')
         }}
       >
-        <SlidersHorizontal className="mr-2 h-4 w-4" />
+        <SlidersHorizontal size={18} strokeWidth={18} className="mr-2" />
         Toggle columns
       </CommandItem>
     )
@@ -45,7 +45,7 @@ export const ToggleColumn = (): JSX.Element | null => {
                       : 'opacity-50 [&_svg]:invisible'
                   )}
               >
-                  <CheckIcon className={cn('h-4 w-4')} />
+                  <CheckIcon size={18} strokeWidth={1.75} />
                 </div>
 
                 <span className='capitalize'>{column.id}</span>

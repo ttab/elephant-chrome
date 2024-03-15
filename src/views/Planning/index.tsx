@@ -75,7 +75,6 @@ const PlanningViewContent = (props: ViewProps): JSX.Element | undefined => {
               <PlanCategory />
               <PlanStory />
             </div>
-            <PlanStatus />
           </div>
           <PlanAssignments />
         </section>

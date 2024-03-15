@@ -30,7 +30,7 @@ export function Filter(): JSX.Element {
           className="w-[200px] justify-between"
         >
           Filter...
-          <ChevronDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+          <ChevronDown size={18} strokeWidth={1.75} className="ml-2 shrink-0 opacity-50" />
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-[200px] p-0">

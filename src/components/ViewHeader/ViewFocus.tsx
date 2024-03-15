@@ -35,8 +35,8 @@ export const ViewFocus = ({ viewId }: { viewId: string }): JSX.Element => {
       }}
     >
       {state.focus === viewId
-        ? <Minimize2 className='h-[1.2rem] w-[1.2rem]' />
-        : <Maximize2 className='h-[1.2rem] w-[1.2rem]' />
+        ? <Minimize2 size={18} strokeWidth={1.75} />
+        : <Maximize2 size={18} strokeWidth={1.75} />
       }
     </Button>
   )
