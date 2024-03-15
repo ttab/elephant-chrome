@@ -10,7 +10,7 @@ export function groupBy(objects: Block[], groupKey: keyof Block): GroupedObjects
   const groupedObjects: GroupedObjects = {}
 
   objects.forEach(object => {
-    const { [groupKey as keyof Block]: arrayToGroup, ...rest } = object
+    const { [groupKey]: arrayToGroup, ...rest } = object
     if (!arrayToGroup) return
 
     if (!groupedObjects[(object[groupKey] as string)]) {
