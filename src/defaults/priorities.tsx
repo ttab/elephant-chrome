@@ -10,7 +10,7 @@ export const Priorities: DefaultValueOption[] = [
     value: '6',
     label: '6',
     icon: SignalHigh,
-    color: '#FF5050'
+    color: '#E12430'
   },
   {
     value: '5',

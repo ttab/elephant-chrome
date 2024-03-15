@@ -85,7 +85,7 @@ export const columns: Array<ColumnDef<Planning>> = [
     accessorFn: (data) => data._source['document.meta.core_assignment.rel.assignee.name'],
     cell: ({ row }) => {
       const assignees = row.getValue<string[]>('assignees') || []
-      return <Assignees assignees={assignees}/>
+      return <Assignees assignees={assignees} />
     }
   },
   {
@@ -135,7 +135,7 @@ export const columns: Array<ColumnDef<Planning>> = [
       const deliverableUuids = row.original._source['document.meta.core_assignment.rel.deliverable.uuid'] || []
       const planningId = row.original._id
 
-      return <Actions deliverableUuids={deliverableUuids} planningId={planningId}/>
+      return <Actions deliverableUuids={deliverableUuids} planningId={planningId} />
     }
   }
 ]
