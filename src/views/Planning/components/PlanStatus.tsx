@@ -18,8 +18,8 @@ export const PlanStatus = (): JSX.Element => {
     >
       <span className={'flex items-end'}>
         { status === 'true'
-          ? <Globe size={18} strokeWidth={1.75} className='text-muted-foreground' onClick={() => set('false', 'public')}/>
-          : <Building size={18} strokeWidth={1.75} className='text-muted-foreground' onClick={() => set('true', 'public')}/>
+          ? <Globe size={18} strokeWidth={1.75} className='text-muted-foreground' onClick={() => set('false', 'public')} />
+          : <Building size={18} strokeWidth={1.75} className='text-muted-foreground' onClick={() => set('true', 'public')} />
         }
       </span>
     </Button>

@@ -50,7 +50,7 @@ const SelectedButton = <TData, >({ id, value, table }: SelectedButtonProps<TData
     >
       {FilterIcon && <FilterIcon size={18} strokeWidth={1.75} className='mr-2' />}
       <SelectedBadge id={id} value={value} />
-      <X size={18} strokeWidth={1.75} className='ml-2'/>
+      <X size={18} strokeWidth={1.75} className='ml-2' />
     </Button>
   )
 }
@@ -69,7 +69,7 @@ export const SelectedFilters = <TData, >({ table }: { table: Table<TData> }): Re
       >
         <Search className='h4 w-4 mr-2' />
         {`"${globalFilter}"`}
-        <X className='h-4 w-4 ml-2'/>
+        <X className='h-4 w-4 ml-2' />
       </Button>)
     : null
 

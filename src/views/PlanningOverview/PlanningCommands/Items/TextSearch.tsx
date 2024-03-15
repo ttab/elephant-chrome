@@ -17,7 +17,7 @@ export const TextFilter = (): JSX.Element | null => {
           setPages([...pages, 'textFilter'])
           setSearch(globalFilter)
         }}>
-        <Search size={18} strokeWidth={1.75} className='mr-2'/>
+        <Search size={18} strokeWidth={1.75} className='mr-2' />
         Text filter
       </CommandItem>
       )

@@ -23,8 +23,8 @@ export const ColumnFilter = (): ReactNode => {
             }}
             >
             {column.columnDef.meta?.columnIcon
-              ? <column.columnDef.meta.columnIcon size={18} strokeWidth={1.75} className='mr-2'/>
-              : <FileQuestion size={18} strokeWidth={1.75} className='mr-2'/>
+              ? <column.columnDef.meta.columnIcon size={18} strokeWidth={1.75} className='mr-2' />
+              : <FileQuestion size={18} strokeWidth={1.75} className='mr-2' />
               }
             {column.columnDef.meta?.name || 'unknown'}
           </CommandItem>)
@@ -33,7 +33,7 @@ export const ColumnFilter = (): ReactNode => {
   }
 
   if (page.startsWith('faceted-')) {
-    return <FacetedFilter column={table.getColumn(page.replace('faceted-', ''))} setSearch={setSearch}/>
+    return <FacetedFilter column={table.getColumn(page.replace('faceted-', ''))} setSearch={setSearch} />
   }
   return null
 }

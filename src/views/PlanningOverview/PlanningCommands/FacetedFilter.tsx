@@ -50,7 +50,7 @@ export const FacetedFilter = <TData, TValue>({
             <CheckIcon size={18} strokeWidth={1.75} />
           </div>
           {option.icon && (
-            <option.icon size={18} strokeWidth={1.75}/>
+            <option.icon size={18} strokeWidth={1.75} />
           )}
           <span>{option.label}</span>
           {(
