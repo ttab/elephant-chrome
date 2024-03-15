@@ -13,7 +13,7 @@ export const Priority = ({ priority }: { priority: ColumnValueOption }): JSX.Ele
           {priority.icon && (
           <Badge
             variant='outline'
-            className='rounded-lg px-2 py-1'>
+            className='rounded-lg px-2 py-1 bg-background'>
             <priority.icon
               color={priority.color}
               className='p-0'

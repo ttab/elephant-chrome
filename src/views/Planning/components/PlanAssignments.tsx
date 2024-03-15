@@ -3,7 +3,7 @@ import { useYObserver } from '@/hooks/useYObserver'
 import { AvatarGroup } from '@/components/AvatarGroup'
 import { MoreHorizontal } from '@ttab/elephant-ui/icons'
 import { TimeDisplay } from '@/components/DataItem/TimeDisplay'
-import { PlanSlugline } from '.'
+import { SluglineEditable } from '@/components/DataItem/Slugline'
 import { AssignmentType } from '@/components/DataItem/AssignmentType'
 
 const PlanAssignment = ({ index }: { index: number }): JSX.Element => {
@@ -26,7 +26,7 @@ const PlanAssignment = ({ index }: { index: number }): JSX.Element => {
                 )
               : getTitle('title') as string}
           </div>
-          <PlanSlugline path={`meta.core/assignment[${index}].meta.tt/slugline[0]`} />
+          <SluglineEditable path={`meta.core/assignment[${index}].meta.tt/slugline[0]`} />
         </div>
         <div className='font-normal text-sm mt-2'>{getAssignmentDescription('text') as string}</div>
       </div>

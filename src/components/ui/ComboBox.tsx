@@ -34,16 +34,26 @@ interface ComboBoxOption {
   color?: string
 }
 
-interface ComboBoxProps {
+interface ComboBoxProps extends React.PropsWithChildren {
   size?: string
   selectedOption?: ComboBoxOption
   options: ComboBoxOption[]
   placeholder: string
   onSelect: (option: ComboBoxOption) => void
   className?: string
+  variant?: 'link' | 'default' | 'destructive' | 'outline' | 'secondary' | 'ghost' | null | undefined
 }
 
-export const ComboBox = ({ size, selectedOption, options, placeholder, onSelect, className }: ComboBoxProps): JSX.Element => {
+export const ComboBox = ({
+  size,
+  variant,
+  selectedOption,
+  options,
+  placeholder,
+  onSelect,
+  className,
+  children
+}: ComboBoxProps): JSX.Element => {
   const [open, setOpen] = React.useState(false)
   const isDesktop = useMediaQuery('(min-width: 768px)')
 
@@ -51,9 +61,11 @@ export const ComboBox = ({ size, selectedOption, options, placeholder, onSelect,
     return (
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
-          <Button size={size || 'sm'} variant='outline' className={cn('w-[150px]', className)}>
-            {selectedOption?.color && <div className={cn('h-2 w-2 rounded-full mr-2', selectedOption?.color)} /> }
-            {selectedOption ? <>{selectedOption.label}</> : <>{placeholder}</>}
+          <Button size={size || 'sm'} variant={ variant || 'outline'} className={cn('w-[150px]', className)}>
+            {children || (selectedOption
+              ? <>{selectedOption?.label}</>
+              : <>{placeholder}</>)
+            }
           </Button>
         </PopoverTrigger>
         <PopoverContent className='w-[200px] p-0' align='start'>
@@ -97,6 +109,7 @@ interface ComboBoxListProps {
   setOpen: (open: boolean) => void
   onSelect: (option: ComboBoxOption) => void
 }
+
 function ComboBoxList({ options, selectedOption, setOpen, onSelect }: ComboBoxListProps): JSX.Element {
   return (
     <Command>
@@ -116,12 +129,15 @@ function ComboBoxList({ options, selectedOption, setOpen, onSelect }: ComboBoxLi
                 setOpen(false)
               }}
             >
-              {option.value === selectedOption?.value
-                ? <CheckIcon size={18} strokeWidth={1.75} className="mr-2" />
-                : <span className="mr-2 h-4 w-4" />
+              <div className='flex space-x-2 items-center'>
+                {option.value === selectedOption?.value
+                  ? <CheckIcon size={18} strokeWidth={1.75} className="mr-2" />
+                  : <span className="mr-2 h-4 w-4" />
               }
-              <span>{option.label}</span>
-              <CommandShortcut>{option.info || ''}</CommandShortcut>
+                {option?.icon && <option.icon size={18} strokeWidth={1.75}/>}
+                <span>{option.label}</span>
+                <CommandShortcut>{option.info || ''}</CommandShortcut>
+              </div>
             </CommandItem>
           ))}
         </CommandGroup>
