@@ -18,7 +18,7 @@ export const AssignmentType = ({ index }: { index: number }): JSX.Element => {
         onSelect={(option) => { set(option.value, 'value') }}
     >
       {selectedOption?.icon
-        ? <selectedOption.icon size={18} strokeWidth={1.75}/>
+        ? <selectedOption.icon size={18} strokeWidth={1.75} className='text-foreground' />
         : selectedOption?.label
       }
     </ComboBox>

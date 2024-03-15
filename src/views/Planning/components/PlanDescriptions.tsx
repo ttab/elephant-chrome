@@ -18,7 +18,7 @@ const PlanDescription = ({ role, index }: { role: string, index?: number }): JSX
         <div className='flex w-full'>
           {role === 'internal' &&
             <MessageCircleMore
-              size={18}
+              size={28}
               strokeWidth={1.75}
               className='pr-2 text-muted-foreground'
             />}

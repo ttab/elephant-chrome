@@ -134,7 +134,7 @@ function ComboBoxList({ options, selectedOption, setOpen, onSelect }: ComboBoxLi
                   ? <CheckIcon size={18} strokeWidth={1.75} className="mr-2" />
                   : <span className="mr-2 h-4 w-4" />
               }
-                {option?.icon && <option.icon size={18} strokeWidth={1.75}/>}
+                {option?.icon && <option.icon size={18} strokeWidth={1.75} />}
                 <span>{option.label}</span>
                 <CommandShortcut>{option.info || ''}</CommandShortcut>
               </div>
