@@ -23,7 +23,7 @@ export const SluglineButton = ({ value, setActive }: SluglineButtonProps): JSX.E
 )
 
 const SluglineInput = ({ value, setActive, setSlugline }: SluglineInputProps): JSX.Element => {
-  const inputRef = createRef<HTMLInputElement>()
+  const inputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
     document.addEventListener('keydown', (event) => {
