@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, createRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { Button, Input } from '@ttab/elephant-ui'
 import { Awareness } from '@/components'
 import { useYObserver } from '@/hooks'
@@ -26,11 +26,17 @@ const SluglineInput = ({ value, setActive, setSlugline }: SluglineInputProps): J
   const inputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
-    document.addEventListener('keydown', (event) => {
+    const handleKeyDownEscape = (event: KeyboardEvent): void => {
       if (event.key === 'Escape') {
         inputRef.current?.blur()
       }
-    })
+    }
+
+    document.addEventListener('keydown', handleKeyDownEscape)
+
+    return () => {
+      document.removeEventListener('keydown', handleKeyDownEscape)
+    }
   })
 
   return <Input
