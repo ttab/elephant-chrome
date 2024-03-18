@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { Button, Input } from '@ttab/elephant-ui'
 import { Awareness } from '@/components'
 import { useYObserver } from '@/hooks'
@@ -14,7 +14,7 @@ interface SluglineInputProps extends SluglineButtonProps {
 
 export const SluglineButton = ({ value, setActive }: SluglineButtonProps): JSX.Element => (
   <Button
-    className='text-muted-foreground h-7 p-1.5 font-normal text-sm'
+    className='text-muted-foreground h-7 p-1.5 font-normal text-sm whitespace-nowrap'
     variant='outline'
     onClick={() => setActive && setActive(true)}
   >
@@ -22,15 +22,32 @@ export const SluglineButton = ({ value, setActive }: SluglineButtonProps): JSX.E
   </Button>
 )
 
-const SluglineInput = ({ value, setActive, setSlugline }: SluglineInputProps): JSX.Element => (
-  <Input
+const SluglineInput = ({ value, setActive, setSlugline }: SluglineInputProps): JSX.Element => {
+  const inputRef = useRef<HTMLInputElement>(null)
+
+  useEffect(() => {
+    const handleKeyDownEscape = (event: KeyboardEvent): void => {
+      if (event.key === 'Escape') {
+        inputRef.current?.blur()
+      }
+    }
+
+    document.addEventListener('keydown', handleKeyDownEscape)
+
+    return () => {
+      document.removeEventListener('keydown', handleKeyDownEscape)
+    }
+  })
+
+  return <Input
+    ref={inputRef}
     value={value}
     autoFocus
     onBlur={() => setActive && setActive(false)}
     onChange={(event) => setSlugline(event.target.value, 'value')}
-    className='h-[1.2rem] w-44 font-normal text-sm'
+    className='h-7 w-44 font-normal text-sm whitespace-nowrap'
   />
-)
+}
 
 export const SluglineEditable = ({ path = 'meta.tt/slugline[0]' }: { path?: string }): JSX.Element => {
   const [active, setActive] = useState(false)
