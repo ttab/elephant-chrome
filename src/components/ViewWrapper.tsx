@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { useEffect, useMemo, useRef } from 'react'
 import { useNavigation, useView } from '@/hooks'
 import { NavigationActionType } from '@/types'
 import { cn } from '@ttab/elephant-ui/utils'
@@ -51,6 +51,7 @@ export const ViewWrapper = ({ children, colSpan: wantedColSpan }: {
 }): JSX.Element => {
   const { dispatch } = useNavigation()
   const { viewId, isActive, isFocused, isHidden } = useView()
+  const sectionRef = useRef<HTMLElement>(null)
 
   // Ensure supported colspan is used as well as correct type
   const colSpan = (
@@ -64,17 +65,29 @@ export const ViewWrapper = ({ children, colSpan: wantedColSpan }: {
     return <>{children}</>
   }, [children])
 
+  useEffect(() => {
+    const handleSetActive = (e: MouseEvent): void => {
+      if (sectionRef.current && sectionRef.current.contains(e.target as Node) && !isActive) {
+        setTimeout(() => {
+          dispatch({
+            viewId,
+            type: NavigationActionType.ACTIVE
+          })
+        }, 0)
+      }
+    }
+
+    document.addEventListener('click', handleSetActive, { capture: true })
+
+    return () => {
+      document.removeEventListener('click', handleSetActive, { capture: true })
+    }
+  }, [dispatch, viewId, isActive])
+
   return useMemo(() => {
     return (
       <section
-        onClick={() => {
-          if (!isActive) {
-            dispatch({
-              viewId,
-              type: NavigationActionType.ACTIVE
-            })
-          }
-        }}
+        ref={sectionRef}
         className={cn(
           section({
             isActive,
@@ -87,5 +100,5 @@ export const ViewWrapper = ({ children, colSpan: wantedColSpan }: {
         {memoizedContent}
       </section>
     )
-  }, [memoizedContent, viewId, dispatch, isFocused, isHidden, isActive, colSpan])
+  }, [memoizedContent, isFocused, isHidden, isActive, colSpan])
 }

@@ -117,7 +117,6 @@ export const PlanningTable = <TData, TValue>({
 
           })
 
-          event.preventDefault()
           row.toggleSelected(!row.getIsSelected())
         }}
       >
