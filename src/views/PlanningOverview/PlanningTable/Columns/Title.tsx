@@ -1,18 +1,14 @@
 import { SluglineButton } from '@/components/DataItem/Slugline'
-import { StatusIndicator } from '@/components/DataItem/StatusIndicator'
 import { useMemo } from 'react'
 
 interface TitleProps {
-  internal: boolean
   slugline: string
   title: string
 }
 
-export const Title = ({ internal, slugline, title }: TitleProps): JSX.Element => {
+export const Title = ({ slugline, title }: TitleProps): JSX.Element => {
   return useMemo(() => (
     <div className='flex space-x-2 justify-start items-center'>
-      <StatusIndicator internal={internal} />
-
       <span className='truncate font-medium text-sm'>
         {title}
       </span>
@@ -24,5 +20,5 @@ export const Title = ({ internal, slugline, title }: TitleProps): JSX.Element =>
       )}
 
     </div>
-  ), [internal, slugline, title])
+  ), [slugline, title])
 }

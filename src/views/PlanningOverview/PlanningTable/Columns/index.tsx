@@ -7,11 +7,36 @@ import { Assignees } from './Assignees'
 import { Type } from './Type'
 import { Time } from './Time'
 import { Actions } from './Actions'
-import { SignalHigh, Pen, Shapes, Users, Crosshair, Clock, Navigation } from '@ttab/elephant-ui/icons'
+import {
+  SignalHigh,
+  Pen,
+  Shapes,
+  Users,
+  Crosshair,
+  Clock,
+  Navigation,
+  Eye
+} from '@ttab/elephant-ui/icons'
 import { getPublishTime } from '@/lib/getPublishTime'
-import { Priorities, Sectors, AssignmentTypes } from '@/defaults'
+import { Priorities, Sectors, AssignmentTypes, VisibilityStatuses } from '@/defaults'
+import { StatusIndicator } from '@/components/DataItem/StatusIndicator'
 
 export const columns: Array<ColumnDef<Planning>> = [
+  {
+    id: 'visibilityStatus',
+    meta: {
+      filter: 'facet',
+      options: VisibilityStatuses,
+      name: 'Visibility',
+      columnIcon: Eye,
+      className: 'box-content w-6 pr-0'
+    },
+    accessorFn: (data) => data._source['document.meta.core_planning_item.data.public'][0] !== 'true',
+    cell: ({ row }) => {
+      const internal = row.getValue<boolean>('visibilityStatus')
+      return <StatusIndicator internal={internal} />
+    }
+  },
   {
     id: 'priority',
     meta: {
@@ -19,7 +44,7 @@ export const columns: Array<ColumnDef<Planning>> = [
       options: Priorities,
       name: 'Priority',
       columnIcon: SignalHigh,
-      className: 'box-content w-[55px]'
+      className: 'box-content w-8 pr-4'
     },
     accessorFn: (data) => data._source['document.meta.core_planning_item.data.priority'][0],
     cell: ({ row }) => {
@@ -49,15 +74,13 @@ export const columns: Array<ColumnDef<Planning>> = [
     },
     accessorFn: (data) => data._source['document.title'][0],
     cell: ({ row }) => {
-      const internal = row.original._source['document.meta.core_planning_item.data.public'][0] !== 'true'
       const slugline = row.original._source['document.meta.core_assignment.meta.tt_slugline.value']?.[0]
       const title = row.getValue('title')
 
-      return <Title title={title as string} internal={internal} slugline={slugline} />
+      return <Title title={title as string} slugline={slugline} />
     }
   },
   {
-
     id: 'sector',
     meta: {
       options: Sectors,
@@ -68,7 +91,8 @@ export const columns: Array<ColumnDef<Planning>> = [
     },
     accessorFn: (data) => data._source['document.rel.sector.title'][0],
     cell: ({ row }) => {
-      return <Sector section={row.original._source['document.rel.sector.title'][0]} />
+      const sector = row.getValue<string>('sector')
+      return <Sector section={sector} />
     },
     filterFn: (row, id, value) => {
       return value.includes(row.getValue(id))
