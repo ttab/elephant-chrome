@@ -13,8 +13,7 @@ export const PlanStatus = (): JSX.Element => {
 
   return !loading
     ? <ComboBox
-        size='xs'
-        className='w-fit text-muted-foreground font-sans font-normal whitespace-nowrap text-ellipsis px-2 h-7'
+        className='w-fit px-2 h-7'
         options={VisibilityStatuses}
         variant={'ghost'}
         selectedOption={selectedOption}

@@ -52,7 +52,14 @@ export const ComboBox = ({
     return (
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
-          <Button size={size || 'sm'} variant={ variant || 'outline'} className={cn('w-[150px]', className)}>
+          <Button
+            size={size || 'sm'}
+            variant={ variant || 'outline'}
+            className={cn(
+              'w-[150px] text-muted-foreground font-sans font-normal whitespace-nowrap',
+              className
+            )
+          }>
             {children || (selectedOption
               ? <>{selectedOption?.label}</>
               : <>{placeholder || ''}</>)
@@ -104,7 +111,13 @@ interface ComboBoxListProps {
   hideInput?: boolean
 }
 
-function ComboBoxList({ options, selectedOption, setOpen, onSelect, hideInput = false }: ComboBoxListProps): JSX.Element {
+function ComboBoxList({
+  options,
+  selectedOption,
+  setOpen,
+  onSelect,
+  hideInput = false
+}: ComboBoxListProps): JSX.Element {
   return (
     <Command>
       {!hideInput && <CommandInput placeholder={selectedOption?.label || ''} />}

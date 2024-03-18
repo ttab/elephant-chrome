@@ -6,8 +6,7 @@ export const PlanDocumentStatus = (): JSX.Element => {
   const selectedOption = DocumentStatuses.find(type => type.value === 'published')
 
   return <ComboBox
-    size='xs'
-    className='w-fit text-muted-foreground font-sans font-normal whitespace-nowrap text-ellipsis px-2 h-7'
+    className='w-fit px-2 h-7'
     options={DocumentStatuses}
     variant={'ghost'}
     selectedOption={selectedOption}
