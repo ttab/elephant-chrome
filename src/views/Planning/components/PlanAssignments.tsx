@@ -1,10 +1,10 @@
-import { Link, Avatar } from '@/components'
+import { Link } from '@/components'
 import { useYObserver } from '@/hooks/useYObserver'
-import { AvatarGroup } from '@/components/AvatarGroup'
 import { MoreHorizontal } from '@ttab/elephant-ui/icons'
 import { TimeDisplay } from '@/components/DataItem/TimeDisplay'
 import { SluglineEditable } from '@/components/DataItem/Slugline'
 import { AssignmentType } from '@/components/DataItem/AssignmentType'
+import { AssigneeAvatars } from '@/components/DataItem/AssigneeAvatars'
 
 const PlanAssignment = ({ index }: { index: number }): JSX.Element => {
   const { get: getTitle } = useYObserver('planning', `meta.core/assignment[${index}]`)
@@ -31,19 +31,12 @@ const PlanAssignment = ({ index }: { index: number }): JSX.Element => {
         <div className='font-normal text-sm mt-2'>{getAssignmentDescription('text') as string}</div>
       </div>
       <div className="col-span-4 flex justify-end space-x-4 items-center">
-        <div className="">
-          <AvatarGroup>
-            {Array.isArray(stateAuthor) && stateAuthor.map((author, index) => {
-              return <Avatar
-                key={index}
-                size='sm'
-                value={author?.name || ''} />
-            })}
-          </AvatarGroup>
-        </div>
-        <div className="">
-          <AssignmentType index={index} />
-        </div>
+        <AssigneeAvatars
+          assignees={Array.isArray(stateAuthor)
+            ? stateAuthor.map((author) => author.name)
+            : []}
+        />
+        <AssignmentType index={index} />
         <div className="min-w-[64px] whitespace-nowrap">
           {getAssignmentPublishTime('publish')
             ? <TimeDisplay date={new Date(getAssignmentPublishTime('publish') as string)} />
