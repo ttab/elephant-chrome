@@ -106,6 +106,7 @@ export interface ColumnValueOption {
   label: string
   value: string
   icon?: LucideIcon,
+  iconProps?: Record<string, unknown>
   color?: string
 }
 
