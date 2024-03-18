@@ -1,35 +1,40 @@
 import { useEffect, useRef, useState } from 'react'
 import { useYObserver } from '@/hooks'
-import { Textarea } from '@ttab/elephant-ui'
 import { Awareness } from '@/components'
 import { MessageCircleMore } from '@ttab/elephant-ui/icons'
 import { type Block } from '@/protos/service'
 import { Textbit } from '@ttab/textbit'
 import { type Descendant, Text } from 'slate'
-import { useSlateSelection } from 'slate-react'
 import { cva } from 'class-variance-authority'
 import { cn } from '@ttab/elephant-ui/utils'
 
-const PlanDescription = ({ role, index }: { role: string, index?: number }): JSX.Element | undefined => {
+const PlanDescription = ({ role, index }: {
+  role: string
+  index?: number
+}): JSX.Element | undefined => {
   const { get, set, loading } = useYObserver('planning', `meta.core/description[${index}].data`)
 
   const setFocused = useRef<(value: boolean) => void>(null)
-  const placeholder = role === 'public' ? 'Public description' : 'Internal message'
 
   if (loading) {
     return undefined
   }
 
+  console.log('rerender...')
 
   return (
-    <div className='flex w-full'>
-      <Textbox
-        initialText={get('text') as string || ''}
-        onChange={text => {
-          set(text, 'text')
-        }}
-      />
-    </div>
+    <Awareness name={'PlanDescription'} ref={setFocused}>
+      <div className='flex w-full'>
+        <Textbox
+          role={role}
+          initialText={get('text') as string || ''}
+          onChange={text => {
+            console.log('str: ', text)
+            set(text, 'text')
+          }}
+        />
+      </div>
+    </Awareness>
   )
 
   // return (
@@ -62,50 +67,92 @@ const PlanDescription = ({ role, index }: { role: string, index?: number }): JSX
   // )
 }
 
-const Textbox = ({ initialText, onChange }: {
+const Textbox = ({ initialText, role, onChange }: {
   initialText: string
+  role: string
   onChange: (value: string) => void
 }): JSX.Element => {
   return (
     <Textbit.Root verbose={true} plugins={[]} className="h-min-12 w-full">
-      <TextboxEditable initialText={initialText} onChange={onChange} />
+      <TextboxEditable
+        role={role}
+        initialText={initialText}
+        onChange={onChange}
+      />
     </Textbit.Root>
   )
 }
 
-const TextboxEditable = ({ initialText, onChange }: {
+const TextboxEditable = ({ initialText, role, onChange }: {
+  role: string
   initialText: string
   onChange: (value: string) => void
 }): JSX.Element => {
-  const [internalValue, setInternalValue] = useState<Descendant[]>(textToDescendant(initialText))
+  const [controlledValue, setControlledValue] = useState<Descendant[]>(textToDescendant(initialText))
+  const [showPlaceholder, setShowPlaceholder] = useState<boolean>(!initialText.trim())
 
   useEffect(() => {
-    setInternalValue(textToDescendant(initialText))
+    setControlledValue(textToDescendant(initialText))
   }, [initialText])
 
-  if (!internalValue.length) {
-    return <></>
-  }
+  const wrapperStyle = cva('absolute top-0 left-0 p-2 -mt-2 -ml-2 delay-0 duratino-150 transition-opacity text-muted-foreground', {
+    variants: {
+      isInternal: {
+        true: 'flex flex-row'
+      }
+    }
+  })
+  const placeholderStyle = cva('', {
+    variants: {
+      showPlaceholder: {
+        true: 'opacity-80',
+        false: 'opacity-0'
+      }
+    }
+  })
+  const editableStyle = cva('relative outline-none rounded-sm h-min-12 p-2 -mt-2 -ml-2 ring-offset-background data-[state="focused"]:ring-1 ring-gray-300 data-[state="focused"]:dark:ring-gray-600', {
+    variants: {
+      isInternal: {
+        true: 'ps-9'
+      }
+    }
+  })
+
+  const isInternal = role === 'internal'
 
   return (
-    <Textbit.Editable
-      className="outline-none rounded h-min-12 ring-offset-8 ring-offset-background data-[state='focused']:ring-2 ring-slate-400 data-[state='focused']:dark:ring-slate-200"
-      value={internalValue}
-      onChange={nodes => {
-        const strValue = Object.values(nodes).map(node => {
-          return descendantToText(node)
-        }).join('\n')
+    <div>
+      <div className={cn(wrapperStyle({ isInternal }))}>
+        {isInternal &&
+          <MessageCircleMore
+            size={28}
+            strokeWidth={1.75}
+            className='pr-2 -mt-[0.12rem] text-muted-foreground'
+          />
+        }
+        <div className={cn(placeholderStyle({ showPlaceholder }))}>
+          {role === 'public' ? 'Public description' : 'Internal message'}
+        </div>
+      </div>
 
-        console.log(strValue, null, 2)
-      }}
-    />
+      <Textbit.Editable
+        className={cn(editableStyle({ isInternal }))}
+        value={controlledValue}
+        onChange={nodes => {
+          const strValue = Object.values(nodes).map(node => {
+            return descendantToText(node)
+          }).join('\n')
+          setShowPlaceholder(!strValue.trim())
+          onChange(strValue)
+        }}
+      />
+    </div>
   )
 }
 
 function textToDescendant(text: string): Descendant[] {
   // eslint-disable-next-line @typescript-eslint/quotes
   return text.split("\n")
-    .filter(str => !!str.trim())
     .map(str => {
       return {
         type: 'core/text',
