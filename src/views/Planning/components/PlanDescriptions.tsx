@@ -3,7 +3,7 @@ import { useYObserver } from '@/hooks'
 import { Awareness } from '@/components'
 import { MessageCircleMore } from '@ttab/elephant-ui/icons'
 import { type Block } from '@/protos/service'
-import { Textbit } from '@ttab/textbit'
+import { Textbit, useFocused } from '@ttab/textbit'
 import { type Descendant, Text } from 'slate'
 import { cva } from 'class-variance-authority'
 import { cn } from '@ttab/elephant-ui/utils'
@@ -13,16 +13,22 @@ const PlanDescription = ({ role, index }: {
   index?: number
 }): JSX.Element | undefined => {
   const { get, set, state, loading } = useYObserver('planning', `meta.core/description[${index}].data`)
-  const setFocused = useRef<(value: boolean) => void>(null)
+  const [focused, setFocused] = useState<boolean>(false)
+  const refHasFocus = useRef<(value: boolean) => void>(null)
+
+  useEffect(() => {
+    if (refHasFocus?.current) {
+      refHasFocus.current(focused)
+    }
+  }, [focused, refHasFocus])
 
   if (loading) {
     return undefined
   }
 
   // TODO: Need to handle that internal might not exist in ymap
-
   return (
-    <Awareness name={'PlanDescription'} ref={setFocused}>
+    <Awareness name={`PlanDescription.${role}`} ref={refHasFocus}>
       <div className='flex w-full'>
         <Textbox
           role={role}
@@ -34,45 +40,18 @@ const PlanDescription = ({ role, index }: {
               // set([{ `meta.core/description[${index}].data`: text }])
             }
           }}
+          onFocusChange={setFocused}
         />
       </div>
     </Awareness>
   )
-
-  // return (
-  //   <Awareness name={'PlanDescription'} ref={setFocused}>
-  //     <div className='flex w-full'>
-  //       {role === 'internal' &&
-  //         <MessageCircleMore
-  //           size={28}
-  //           strokeWidth={1.75}
-  //           className='pr-2 text-muted-foreground'
-  //         />}
-  //       <Textarea
-  //         className='border-0 p-0 font-normal text-base '
-  //         value={get('text') as string}
-  //         placeholder={placeholder}
-  //         onChange={(event) => set(event.target.value, 'text')}
-  //         onFocus={() => {
-  //           if (setFocused.current) {
-  //             setFocused.current(true)
-  //           }
-  //         }}
-  //         onBlur={() => {
-  //           if (setFocused.current) {
-  //             setFocused.current(false)
-  //           }
-  //         }}
-  //       />
-  //     </div>
-  //   </Awareness>
-  // )
 }
 
-const Textbox = ({ initialText, role, onChange }: {
+const Textbox = ({ initialText, role, onChange, onFocusChange }: {
   initialText: string
   role: string
   onChange: (value: string) => void
+  onFocusChange: React.Dispatch<React.SetStateAction<boolean>>
 }): JSX.Element => {
   return (
     <Textbit.Root
@@ -86,18 +65,25 @@ const Textbox = ({ initialText, role, onChange }: {
         role={role}
         initialText={initialText}
         onChange={onChange}
+        onFocusChange={onFocusChange}
       />
     </Textbit.Root>
   )
 }
 
-const TextboxEditable = ({ initialText, role, onChange }: {
+const TextboxEditable = ({ initialText, role, onChange, onFocusChange }: {
   role: string
   initialText: string
   onChange: (value: string) => void
+  onFocusChange: React.Dispatch<React.SetStateAction<boolean>>
 }): JSX.Element => {
   const [controlledValue, setControlledValue] = useState<Descendant[]>(textToDescendant(initialText))
   const [showPlaceholder, setShowPlaceholder] = useState<boolean>(!initialText.trim())
+  const focused = useFocused()
+
+  useEffect(() => {
+    onFocusChange(focused)
+  }, [focused, onFocusChange])
 
   useEffect(() => {
     setControlledValue(textToDescendant(initialText))
