@@ -12,15 +12,14 @@ const PlanDescription = ({ role, index }: {
   role: string
   index?: number
 }): JSX.Element | undefined => {
-  const { get, set, loading } = useYObserver('planning', `meta.core/description[${index}].data`)
-
+  const { get, set, state, loading } = useYObserver('planning', `meta.core/description[${index}].data`)
   const setFocused = useRef<(value: boolean) => void>(null)
 
   if (loading) {
     return undefined
   }
 
-  console.log('rerender...')
+  // TODO: Need to handle that internal might not exist in ymap
 
   return (
     <Awareness name={'PlanDescription'} ref={setFocused}>
@@ -29,8 +28,11 @@ const PlanDescription = ({ role, index }: {
           role={role}
           initialText={get('text') as string || ''}
           onChange={text => {
-            console.log('str: ', text)
-            set(text, 'text')
+            if (state) {
+              set(text, 'text')
+            } else {
+              // set([{ `meta.core/description[${index}].data`: text }])
+            }
           }}
         />
       </div>
@@ -73,7 +75,13 @@ const Textbox = ({ initialText, role, onChange }: {
   onChange: (value: string) => void
 }): JSX.Element => {
   return (
-    <Textbit.Root verbose={true} plugins={[]} className="h-min-12 w-full">
+    <Textbit.Root
+      verbose={true}
+      debounce={0}
+      placeholders={false}
+      plugins={[]}
+      className="h-min-12 w-full"
+    >
       <TextboxEditable
         role={role}
         initialText={initialText}
@@ -95,21 +103,23 @@ const TextboxEditable = ({ initialText, role, onChange }: {
     setControlledValue(textToDescendant(initialText))
   }, [initialText])
 
-  const wrapperStyle = cva('absolute top-0 left-0 p-2 -mt-2 -ml-2 delay-0 duratino-150 transition-opacity text-muted-foreground', {
+  const wrapperStyle = cva('absolute top-0 left-0 p-2 -mt-2 -ml-2 delay-0 duratino-150 text-muted-foreground', {
     variants: {
       isInternal: {
         true: 'flex flex-row'
       }
     }
   })
-  const placeholderStyle = cva('', {
+
+  const placeholderStyle = cva('transition-opacity duration-75', {
     variants: {
       showPlaceholder: {
-        true: 'opacity-80',
+        true: 'opacity-70',
         false: 'opacity-0'
       }
     }
   })
+
   const editableStyle = cva('relative outline-none rounded-sm h-min-12 p-2 -mt-2 -ml-2 ring-offset-background data-[state="focused"]:ring-1 ring-gray-300 data-[state="focused"]:dark:ring-gray-600', {
     variants: {
       isInternal: {
