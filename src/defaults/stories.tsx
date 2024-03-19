@@ -1,6 +1,6 @@
-import { type ColumnValueOption } from '@/types'
+import { type DefaultValueOption } from '@/types'
 
-export const Stories: ColumnValueOption[] = [
+export const Stories: DefaultValueOption[] = [
   {
     value: 'Gängkriminaliteten',
     label: 'Gängkriminaliteten',

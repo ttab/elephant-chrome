@@ -18,30 +18,20 @@ import {
   CommandShortcut
 } from '@ttab/elephant-ui'
 import {
-  type LucideIcon,
   CheckIcon
 } from '@ttab/elephant-ui/icons'
 import { cn } from '@ttab/elephant-ui/utils'
-import { type Block } from '@/protos/service'
-
-
-interface ComboBoxOption {
-  value: string
-  label: string
-  payload?: Partial<Block>
-  icon?: LucideIcon
-  info?: string
-  color?: string
-}
+import { type DefaultValueOption } from '@/types'
 
 interface ComboBoxProps extends React.PropsWithChildren {
   size?: string
-  selectedOption?: ComboBoxOption
-  options: ComboBoxOption[]
-  placeholder: string
-  onSelect: (option: ComboBoxOption) => void
+  selectedOption?: DefaultValueOption
+  options: DefaultValueOption[]
+  placeholder?: string
+  onSelect: (option: DefaultValueOption) => void
   className?: string
   variant?: 'link' | 'default' | 'destructive' | 'outline' | 'secondary' | 'ghost' | null | undefined
+  hideInput?: boolean
 }
 
 export const ComboBox = ({
@@ -52,7 +42,8 @@ export const ComboBox = ({
   placeholder,
   onSelect,
   className,
-  children
+  children,
+  hideInput
 }: ComboBoxProps): JSX.Element => {
   const [open, setOpen] = React.useState(false)
   const isDesktop = useMediaQuery('(min-width: 768px)')
@@ -61,10 +52,17 @@ export const ComboBox = ({
     return (
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
-          <Button size={size || 'sm'} variant={ variant || 'outline'} className={cn('w-[150px]', className)}>
+          <Button
+            size={size || 'sm'}
+            variant={ variant || 'outline'}
+            className={cn(
+              'w-[150px] text-muted-foreground font-sans font-normal whitespace-nowrap',
+              className
+            )
+          }>
             {children || (selectedOption
               ? <>{selectedOption?.label}</>
-              : <>{placeholder}</>)
+              : <>{placeholder || ''}</>)
             }
           </Button>
         </PopoverTrigger>
@@ -76,6 +74,7 @@ export const ComboBox = ({
             onSelect={(option) => {
               onSelect(option)
             }}
+            hideInput={hideInput}
           />
         </PopoverContent>
       </Popover>
@@ -96,6 +95,7 @@ export const ComboBox = ({
             selectedOption={selectedOption}
             setOpen={setOpen}
             onSelect={onSelect}
+            hideInput={hideInput}
           />
         </div>
       </DrawerContent>
@@ -104,16 +104,23 @@ export const ComboBox = ({
 }
 
 interface ComboBoxListProps {
-  options: ComboBoxOption[]
-  selectedOption?: ComboBoxOption
+  options: DefaultValueOption[]
+  selectedOption?: DefaultValueOption
   setOpen: (open: boolean) => void
-  onSelect: (option: ComboBoxOption) => void
+  onSelect: (option: DefaultValueOption) => void
+  hideInput?: boolean
 }
 
-function ComboBoxList({ options, selectedOption, setOpen, onSelect }: ComboBoxListProps): JSX.Element {
+function ComboBoxList({
+  options,
+  selectedOption,
+  setOpen,
+  onSelect,
+  hideInput = false
+}: ComboBoxListProps): JSX.Element {
   return (
     <Command>
-      <CommandInput placeholder={selectedOption?.label || ''} />
+      {!hideInput && <CommandInput placeholder={selectedOption?.label || ''} />}
       <CommandList>
         <CommandEmpty>No results found.</CommandEmpty>
         <CommandGroup>
@@ -134,7 +141,7 @@ function ComboBoxList({ options, selectedOption, setOpen, onSelect }: ComboBoxLi
                   ? <CheckIcon size={18} strokeWidth={1.75} className="mr-2" />
                   : <span className="mr-2 h-4 w-4" />
               }
-                {option?.icon && <option.icon size={18} strokeWidth={1.75} />}
+                {option?.icon && <option.icon {...option.iconProps} />}
                 <span>{option.label}</span>
                 <CommandShortcut>{option.info || ''}</CommandShortcut>
               </div>

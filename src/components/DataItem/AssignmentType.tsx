@@ -1,6 +1,7 @@
 import { useYObserver } from '@/hooks'
 import { AssignmentTypes } from '@/defaults'
 import { ComboBox } from '../ui'
+import { cn } from '@ttab/elephant-ui/utils'
 
 export const AssignmentType = ({ index }: { index: number }): JSX.Element => {
   const { get, set, loading } = useYObserver('planning', `meta.core/assignment[${index}].meta.core/assignment-type[0]`)
@@ -9,16 +10,16 @@ export const AssignmentType = ({ index }: { index: number }): JSX.Element => {
 
   return !loading
     ? <ComboBox
-        size='xs'
-        className='w-fit text-muted-foreground font-sans font-normal whitespace-nowrap text-ellipsis px-2 h-7'
+        className='w-fit px-2 h-7'
         options={AssignmentTypes}
         variant={'ghost'}
         selectedOption={selectedOption}
-        placeholder='Assignment type'
         onSelect={(option) => { set(option.value, 'value') }}
     >
       {selectedOption?.icon
-        ? <selectedOption.icon size={18} strokeWidth={1.75} className='text-foreground' />
+        ? <selectedOption.icon
+            {...selectedOption.iconProps}
+            className={cn('text-foreground', selectedOption.iconProps)} />
         : selectedOption?.label
       }
     </ComboBox>
