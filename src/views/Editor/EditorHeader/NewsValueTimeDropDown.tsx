@@ -12,10 +12,7 @@ import {
   TabsList,
   TabsTrigger,
   TabsContent,
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger
+  Tooltip
 } from '@ttab/elephant-ui'
 import { useRegistry } from '@/hooks'
 import { ComboBox } from '@/components/ui'
@@ -199,15 +196,8 @@ interface NewsValueScoreProps extends PropsWithChildren {
 
 function NewsValueTime({ text, children }: NewsValueScoreProps): JSX.Element {
   return (
-    <TooltipProvider>
-      <Tooltip>
-        <TooltipTrigger asChild>
-          {children}
-        </TooltipTrigger>
-        <TooltipContent>
-          {text}
-        </TooltipContent>
-      </Tooltip>
-    </TooltipProvider>
+    <Tooltip content={text}>
+      {children}
+    </Tooltip>
   )
 }
