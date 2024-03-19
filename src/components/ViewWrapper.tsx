@@ -68,19 +68,17 @@ export const ViewWrapper = ({ children, colSpan: wantedColSpan }: {
   useEffect(() => {
     const handleSetActive = (e: MouseEvent): void => {
       if (sectionRef.current && sectionRef.current.contains(e.target as Node) && !isActive) {
-        setTimeout(() => {
-          dispatch({
-            viewId,
-            type: NavigationActionType.ACTIVE
-          })
-        }, 0)
+        dispatch({
+          viewId,
+          type: NavigationActionType.ACTIVE
+        })
       }
     }
 
-    document.addEventListener('click', handleSetActive, { capture: true })
+    document.addEventListener('click', handleSetActive)
 
     return () => {
-      document.removeEventListener('click', handleSetActive, { capture: true })
+      document.removeEventListener('click', handleSetActive)
     }
   }, [dispatch, viewId, isActive])
 

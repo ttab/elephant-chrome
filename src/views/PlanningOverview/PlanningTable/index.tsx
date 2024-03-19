@@ -102,22 +102,26 @@ export const PlanningTable = <TData, TValue>({
         className='cursor-default'
         data-state={row.getIsSelected() && 'selected'}
         onClick={(event) => {
-          if (!onRowSelected) {
-            return
+          // @ts-expect-error unknown
+          if (!event.nativeEvent.target.dataset.rowAction) {
+            if (!onRowSelected) {
+              return
+            }
+
+            handleLink({
+              event,
+              dispatch,
+              viewItem: state.viewRegistry.get('Planning'),
+              viewRegistry: state.viewRegistry,
+              props: { id: row.original._id },
+              viewId: uuid(),
+              origin
+
+            })
           }
-
-          handleLink({
-            event,
-            dispatch,
-            viewItem: state.viewRegistry.get('Planning'),
-            viewRegistry: state.viewRegistry,
-            props: { id: row.original._id },
-            viewId: uuid(),
-            origin
-
-          })
-
-          row.toggleSelected(!row.getIsSelected())
+          setTimeout(() => {
+            row.toggleSelected(!row.getIsSelected())
+          }, 0)
         }}
       >
         {row.getVisibleCells().map((cell) => (
