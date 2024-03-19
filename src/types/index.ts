@@ -101,13 +101,14 @@ export interface JWT extends JWTPayload {
   access_token: string
 }
 
-export interface ColumnValueOption {
+export interface DefaultValueOption {
   payload?: Partial<Block>
   label: string
   value: string
   icon?: LucideIcon,
   iconProps?: Record<string, unknown>
   color?: string
+  info?: string
 }
 
 export interface CollabComponentProps {

@@ -1,6 +1,6 @@
-import { type ColumnValueOption } from '@/types'
+import { type DefaultValueOption } from '@/types'
 
-export const Categories: ColumnValueOption[] = [
+export const Categories: DefaultValueOption[] = [
   {
     value: 'Politik',
     label: 'Politik',
