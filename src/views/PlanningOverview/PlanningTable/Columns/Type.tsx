@@ -1,8 +1,8 @@
-import { type ColumnValueOption } from '@/types'
+import { type DefaultValueOption } from '@/types'
 import { TooltipProvider, Tooltip, TooltipTrigger, TooltipContent } from '@ttab/elephant-ui'
 import { useMemo } from 'react'
 
-export const Type = ({ data }: { data: ColumnValueOption[] }): JSX.Element => {
+export const Type = ({ data }: { data: DefaultValueOption[] }): JSX.Element => {
   return useMemo(() => (
     <div className='flex items-center'>
       {data.map((item, index) => {

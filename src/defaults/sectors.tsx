@@ -1,6 +1,6 @@
-import { type ColumnValueOption } from '@/types'
+import { type DefaultValueOption } from '@/types'
 
-export const Sectors: ColumnValueOption[] = [
+export const Sectors: DefaultValueOption[] = [
   {
     value: 'Utrikes',
     label: 'Utrikes',

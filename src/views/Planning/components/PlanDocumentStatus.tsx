@@ -1,20 +1,22 @@
-import { Button } from '@ttab/elephant-ui'
-import { CircleCheck } from '@ttab/elephant-ui/icons'
+import { ComboBox } from '@/components/ui'
+import { DocumentStatuses } from '@/defaults'
 
 // TODO: Should read current versions status
-export const PlanDocumentStatus = (): JSX.Element => (
-  <Button
-    variant="ghost"
-    className="flex w-10 p-0 px-2 data-[state=open]:bg-muted items-center"
-  >
-    <span className={'flex items-end'}>
-      <CircleCheck
-        fill='#4675C8'
-        color='#ffffff'
-        size={18}
-        className='bg-[#4675C8] rounded-full'
-        strokeWidth={1.75}
-      />
-    </span>
-  </Button>
-)
+export const PlanDocumentStatus = (): JSX.Element => {
+  const selectedOption = DocumentStatuses.find(type => type.value === 'published')
+
+  return <ComboBox
+    className='w-fit px-2 h-7'
+    options={DocumentStatuses}
+    variant={'ghost'}
+    selectedOption={selectedOption}
+    onSelect={() => { alert('Not yet implemented') }}
+    hideInput
+    >
+    {selectedOption?.icon
+      ? <selectedOption.icon { ...selectedOption.iconProps }
+  />
+      : selectedOption?.label
+      }
+  </ComboBox>
+}
