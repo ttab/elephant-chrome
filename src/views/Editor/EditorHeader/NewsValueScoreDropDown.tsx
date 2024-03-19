@@ -5,10 +5,7 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger
+  Tooltip
 } from '@ttab/elephant-ui'
 import { SignalMedium } from '@ttab/elephant-ui/icons'
 import { useRef, type PropsWithChildren } from 'react'
@@ -35,7 +32,7 @@ export const NewsValueScoreDropDown = ({ value, options, onChange }: NewsScoreDr
           setFocused.current(isOpen)
         }
       }}>
-        <NewsValueScore text={`Newsvalue priority ${option?.label}`}>
+        <NewsValueScore text={`News value priority ${option?.label}`}>
           <DropdownMenuTrigger asChild>
             <Button
               variant="ghost"
@@ -77,15 +74,8 @@ interface NewsValueScoreProps extends PropsWithChildren {
 
 function NewsValueScore({ text, children }: NewsValueScoreProps): JSX.Element {
   return (
-    <TooltipProvider>
-      <Tooltip>
-        <TooltipTrigger asChild>
-          {children}
-        </TooltipTrigger>
-        <TooltipContent>
-          {text}
-        </TooltipContent>
-      </Tooltip>
-    </TooltipProvider>
+    <Tooltip content={text}>
+      {children}
+    </Tooltip>
   )
 }
