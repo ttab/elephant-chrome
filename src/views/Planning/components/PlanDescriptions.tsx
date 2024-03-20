@@ -1,9 +1,8 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useYObserver } from '@/hooks'
-import { Awareness } from '@/components'
 import { MessageCircleMore } from '@ttab/elephant-ui/icons'
 import { type Block } from '@/protos/service'
-import { Textbit, useFocused } from '@ttab/textbit'
+import { Textbit } from '@ttab/textbit'
 import { type Descendant, Text } from 'slate'
 import { cva } from 'class-variance-authority'
 import { cn } from '@ttab/elephant-ui/utils'
@@ -13,14 +12,7 @@ const PlanDescription = ({ role, index }: {
   index?: number
 }): JSX.Element | undefined => {
   const { get, set, state, loading } = useYObserver('planning', `meta.core/description[${index}].data`)
-  const [focused, setFocused] = useState<boolean>(false)
-  const refHasFocus = useRef<(value: boolean) => void>(null)
 
-  useEffect(() => {
-    if (refHasFocus?.current) {
-      refHasFocus.current(focused)
-    }
-  }, [focused, refHasFocus])
 
   if (loading) {
     return undefined
@@ -28,30 +20,26 @@ const PlanDescription = ({ role, index }: {
 
   // TODO: Need to handle that internal might not exist in ymap
   return (
-    <Awareness name={`PlanDescription.${role}`} ref={refHasFocus}>
-      <div className='flex w-full'>
-        <Textbox
-          role={role}
-          initialText={get('text') as string || ''}
-          onChange={text => {
-            if (state) {
-              set(text, 'text')
-            } else {
-              // set([{ `meta.core/description[${index}].data`: text }])
-            }
-          }}
-          onFocusChange={setFocused}
-        />
-      </div>
-    </Awareness>
+    <div className='flex w-full'>
+      <Textbox
+        role={role}
+        initialText={get('text') as string || ''}
+        onChange={text => {
+          if (state) {
+            set(text, 'text')
+          } else {
+            // set([{ `meta.core/description[${index}].data`: text }])
+          }
+        }}
+      />
+    </div>
   )
 }
 
-const Textbox = ({ initialText, role, onChange, onFocusChange }: {
+const Textbox = ({ initialText, role, onChange }: {
   initialText: string
   role: string
   onChange: (value: string) => void
-  onFocusChange: React.Dispatch<React.SetStateAction<boolean>>
 }): JSX.Element => {
   return (
     <Textbit.Root
@@ -65,25 +53,18 @@ const Textbox = ({ initialText, role, onChange, onFocusChange }: {
         role={role}
         initialText={initialText}
         onChange={onChange}
-        onFocusChange={onFocusChange}
       />
     </Textbit.Root>
   )
 }
 
-const TextboxEditable = ({ initialText, role, onChange, onFocusChange }: {
+const TextboxEditable = ({ initialText, role, onChange }: {
   role: string
   initialText: string
   onChange: (value: string) => void
-  onFocusChange: React.Dispatch<React.SetStateAction<boolean>>
 }): JSX.Element => {
   const [controlledValue, setControlledValue] = useState<Descendant[]>(textToDescendant(initialText))
   const [showPlaceholder, setShowPlaceholder] = useState<boolean>(!initialText.trim())
-  const focused = useFocused()
-
-  useEffect(() => {
-    onFocusChange(focused)
-  }, [focused, onFocusChange])
 
   useEffect(() => {
     setControlledValue(textToDescendant(initialText))
