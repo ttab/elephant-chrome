@@ -1,48 +1,7 @@
-import { useRef } from 'react'
 import { useYObserver } from '@/hooks'
-import { Textarea } from '@ttab/elephant-ui'
-import { Awareness } from '@/components'
 import { MessageCircleMore } from '@ttab/elephant-ui/icons'
 import { type Block } from '@/protos/service'
-
-// TODO: Temp should use textbit instead of Textarea
-const PlanDescription = ({ role, index }: { role: string, index?: number }): JSX.Element | undefined => {
-  const { get, set, loading } = useYObserver('planning', `meta.core/description[${index}].data`)
-
-  const setFocused = useRef<(value: boolean) => void>(null)
-  const placeholder = role === 'public' ? 'Public description' : 'Internal message'
-
-  return !loading
-    ? (
-      <Awareness name={'PlanDescription'} ref={setFocused}>
-        <div className='flex w-full'>
-          {role === 'internal' &&
-            <MessageCircleMore
-              size={28}
-              strokeWidth={1.75}
-              className='pr-2 text-muted-foreground'
-            />}
-          <Textarea
-            className='border-0 p-0 font-normal text-base '
-            value={get('text') as string}
-            placeholder={placeholder}
-            onChange={(event) => set(event.target.value, 'text')}
-            onFocus={() => {
-              if (setFocused.current) {
-                setFocused.current(true)
-              }
-            }}
-            onBlur={() => {
-              if (setFocused.current) {
-                setFocused.current(false)
-              }
-            }}
-        />
-        </div>
-      </Awareness>
-      )
-    : undefined
-}
+import { TextBox } from '@/components/ui'
 
 export const PlanDescriptions = (): JSX.Element => {
   const { state } = useYObserver('planning', 'meta.core/description')
@@ -50,7 +9,7 @@ export const PlanDescriptions = (): JSX.Element => {
   const newPublicDescription = isPlaceholderNeeded(state, 'public') &&
     <PlanDescription key='newPublic' role='public' />
   const newInternalMessage = isPlaceholderNeeded(state, 'internal') &&
-    <PlanDescription key='newInternal 'role='internal' />
+    <PlanDescription key='newInternal' role='internal' />
 
 
   const sortedDescriptions = (Array.isArray(state)
@@ -68,12 +27,14 @@ export const PlanDescriptions = (): JSX.Element => {
     })
 
   return (
-    <div className='flex flex-col gap-4'>
-      {...[
-        newPublicDescription,
-        ...sortedDescriptions,
-        newInternalMessage
-      ].filter(x => x)}
+    <div className='flex flex-col gap-4' >
+      {
+        ...[
+          newPublicDescription,
+          ...sortedDescriptions,
+          newInternalMessage
+        ].filter(x => x)
+      }
     </div>
   )
 }
@@ -84,4 +45,24 @@ function isPlaceholderNeeded(state: Block | Block[] | undefined, role: string): 
   } else {
     return true
   }
+}
+
+
+const PlanDescription = ({ role, index }: {
+  role: string
+  index?: number
+}): JSX.Element | undefined => {
+  return (
+    <div className='flex w-full' >
+      <TextBox
+        icon={role === 'internal' && <MessageCircleMore
+          size={28}
+          strokeWidth={1.75}
+          className='pr-2 -mt-[0.12rem] text-muted-foreground'
+        />}
+        placeholder={role === 'public' ? 'Public description' : 'Internal message'}
+        yObserver={useYObserver('planning', `meta.core/description[${index}].data`)}
+      />
+    </div>
+  )
 }

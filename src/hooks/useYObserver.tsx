@@ -14,7 +14,7 @@ export const useForceUpdate = (): () => void => {
   )
 }
 
-interface YObserved {
+export interface YObserved {
   get: (key: string) => unknown | undefined
   set: (value: string | Partial<Block> | undefined, key?: string) => void
   state: Block | Block[]
@@ -77,7 +77,8 @@ function handleSetYmap({ map, path, key, value, yRoot }: {
   path: string
   key?: string
   value: string | Partial<Block> | undefined
-  yRoot?: Y.Map<unknown> }): void {
+  yRoot?: Y.Map<unknown>
+}): void {
   // When no map or map.parent we need to set the value on the root Y.Map
   if (!map?.parent) {
     if (typeof value !== 'object') {
