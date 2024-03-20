@@ -69,12 +69,10 @@ const PlanningViewContent = (props: ViewProps): JSX.Element | undefined => {
           </div>
           <PlanDescriptions />
           <PlanDate />
-          <div className='flex justify-between'>
-            <div className='space-x-2'>
-              <PlanSector />
-              <PlanCategory />
-              <PlanStory />
-            </div>
+          <div className='flex space-x-2'>
+            <PlanSector />
+            <PlanCategory />
+            <PlanStory />
           </div>
           <PlanAssignments />
         </section>
