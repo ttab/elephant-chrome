@@ -9,7 +9,7 @@ export const PlanDescriptions = (): JSX.Element => {
   const newPublicDescription = isPlaceholderNeeded(state, 'public') &&
     <PlanDescription key='newPublic' role='public' />
   const newInternalMessage = isPlaceholderNeeded(state, 'internal') &&
-    <PlanDescription key='newInternal ' role='internal' />
+    <PlanDescription key='newInternal' role='internal' />
 
 
   const sortedDescriptions = (Array.isArray(state)

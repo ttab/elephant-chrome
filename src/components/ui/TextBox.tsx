@@ -94,8 +94,7 @@ const TextboxEditable = ({ icon, placeholder, yObserver }: {
 }
 
 function textToDescendant(text: string): Descendant[] {
-  // eslint-disable-next-line @typescript-eslint/quotes
-  return text.split("\n")
+  return text.split('\n')
     .map(str => {
       return {
         type: 'core/text',
