@@ -30,6 +30,7 @@ import {
   newsDocToSlate
 } from './transformations/index.js'
 import { newsDocToYPlanning } from './transformations/yjs/yPlanning.js'
+import { yPlanningSchema } from './transformations/schemas/yPlanning.js'
 
 enum DocumentType {
   ARTICLE = 'core/article',
@@ -249,6 +250,14 @@ export class CollaborationServer {
         const planningYMap = yDoc.getMap('planning')
 
         const parsed = newsDocToYPlanning(document, planningYMap)
+
+        // Validate yPlanning
+        try {
+          yPlanningSchema.parse(parsed.toJSON())
+        } catch (err) {
+          throw new Error('Validation failed.', { cause: err })
+        }
+
         yDoc.share.set('planning', yMapAsYEventAny(parsed))
 
         return Y.encodeStateAsUpdate(yDoc)
