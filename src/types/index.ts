@@ -31,6 +31,10 @@ export interface ViewWidths {
   lg: number
   xl: number
   '2xl': number
+  hd: number
+  fhd: number
+  qhd: number
+  uhd: number
 }
 
 
