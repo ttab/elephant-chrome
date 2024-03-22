@@ -34,7 +34,11 @@ const meta: ViewMetadata = {
     md: 12,
     lg: 6,
     xl: 6,
-    '2xl': 4
+    '2xl': 6,
+    hd: 6,
+    fhd: 4,
+    qhd: 3,
+    uhd: 2
   }
 }
 
@@ -133,7 +137,7 @@ function ToolbarMenu(): JSX.Element {
 
   return (
     <Toolbar.Root
-      className="flex min-w-12 select-none divide-x p-1 border rounded-lg cursor-default shadow-xl border bg-white border-gray-100 dark:text-white dark:bg-slate-900 dark:border-slate-800 dark:divide-slate-800 dark:shadow-none"
+      className="flex min-w-12 select-none divide-x p-1 rounded-lg cursor-default shadow-xl border bg-white border-gray-100 dark:text-white dark:bg-slate-900 dark:border-slate-800 dark:divide-slate-800 dark:shadow-none"
     >
       <Toolbar.Group key="leafs" className="flex place-items-center pr-1 gap-1">
         {leafActions.map(action => {

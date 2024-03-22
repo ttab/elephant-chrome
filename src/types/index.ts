@@ -25,12 +25,15 @@ export interface NavigationAction {
 }
 
 export interface ViewWidths {
-  [key: string]: number // FIXME: Should use some keyof typeof thingy...
   sm: number
   md: number
   lg: number
   xl: number
   '2xl': number
+  hd: number
+  fhd: number
+  qhd: number
+  uhd: number
 }
 
 
