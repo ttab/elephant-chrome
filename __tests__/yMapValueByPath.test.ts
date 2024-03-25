@@ -118,6 +118,20 @@ describe('yMapValueByPath', () => {
     set(root, 'nested.arr[2]', toYMap({ index: '2' }))
     set(root, 'nested.arr[1]', toYMap({ index: '1' }))
     set(root, 'nested.arr[8]', toYMap({ index: '8' }))
-    console.log(JSON.stringify(root.toJSON(), null, 2))
+    expect(root.toJSON()).toEqual({
+      nested: {
+        arr: [
+          { index: '0' },
+          { index: '1' },
+          { index: '2' },
+          {},
+          {},
+          {},
+          {},
+          {},
+          { index: '8' }
+        ]
+      }
+    })
   })
 })
