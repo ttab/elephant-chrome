@@ -1,11 +1,17 @@
 import * as Y from 'yjs'
 
+import { toYMap } from '../../src-srv/utils/transformations/lib/toYMap'
+
 export function get(y: Y.Map<unknown> | undefined, path?: string): Y.Map<unknown> | undefined {
   if (!y) {
     return
   }
 
-  const keys = path?.replace(/(\[|\])/g, '.').split('.').filter(x => x) || ''
+  const keys = path
+    ?.replace(/(\[|\])/g, '.')
+    .split('.')
+    .filter(x => x) || ''
+
   let current = y
 
   for (const key of keys) {
@@ -48,10 +54,6 @@ export function set(ymap: Y.Map<unknown>, path: string, value: unknown): void {
           throw new Error(`Invalid path. Expected an array, but encountered a map at '${key}'.`)
         }
 
-        if (arrayIndex >= current.length) {
-          throw new Error(`Index '${arrayIndex}' out of bounds for array '${keys[i - 1]}'.`)
-        }
-
         current = current.get(arrayIndex) as Y.Map<unknown> | Y.Array<unknown>
       } else {
         if (current instanceof Y.Map && !current.has(key)) {
@@ -72,11 +74,34 @@ export function set(ymap: Y.Map<unknown>, path: string, value: unknown): void {
     current.set(keys[keys.length - 1], value)
   } else if (current instanceof Y.Array) {
     const index = parseInt(keys[keys.length - 1], 10)
-    if (current.length - 1 >= index) {
-      current.delete(index)
-      current.insert(index, [value])
+    // Check if valid index
+    if (!isNaN(index)) {
+      // When index is within array bounds
+      if (current.length - 1 >= index) {
+        current.doc?.transact(() => {
+          current.delete(index)
+          current.insert(index, [value])
+        })
+        return
+      }
+
+      // Create structure
+      if (current.doc) {
+        current.doc.transact(() => {
+          Array.from(Array(index + 1)).forEach((_, transactIndex) => {
+            const transactValue = transactIndex === index
+              ? value
+              : toYMap((current.get(transactIndex) as Y.Map<unknown>)?.toJSON()) || null
+
+            current.length - 1 >= transactIndex && current.delete(transactIndex)
+            current.insert(transactIndex, [transactValue])
+          })
+        })
+      }
+
+    // When not valid index
     } else {
-      current.push([value])
+      throw new Error(`Invalid array index '${keys[keys.length - 1]}'`)
     }
   }
 }

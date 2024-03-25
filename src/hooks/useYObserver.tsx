@@ -15,7 +15,7 @@ export const useForceUpdate = (): () => void => {
 }
 
 export interface YObserved {
-  get: (key: string) => unknown | undefined
+  get: (key?: string) => unknown | undefined
   set: (value: string | Partial<Block> | undefined, key?: string) => void
   state: Block | Block[]
   loading: boolean
@@ -59,7 +59,10 @@ export function useYObserver(name: string, path: string): YObserved {
   }, [yRoot, forceUpdate, path])
 
   return {
-    get: useCallback((key: string) => map?.get(key), [map]),
+    get: useCallback((key?: string) => key
+      ? map?.get(key)
+      : map?.toJSON(),
+    [map]),
     set: useCallback((value: string | Partial<Block> | undefined, key?: string) => handleSetYmap({
       map,
       path,
@@ -88,17 +91,20 @@ function handleSetYmap({ map, path, key, value, yRoot }: {
     if (!yRoot) {
       throw new Error('No root Y.Map provided, can not set value without Y.Map')
     }
-    yMapValueByPath.set(yRoot, path, toYMap(value))
   }
 
   // If key is provided, set value on key
+  // Handles simple values
   if (key && map) {
     map.set(key, value)
   } else {
     // When no key and parent is Array, update with new Y.Map
+    // Handles objects
     if (map?.parent instanceof Y.Array) {
       // TODO: Could we get maps index in parent from Y.Map or Y.Array?
       const index = path.match(/\[(\d+)\]/)
+
+      // Throw when no index is provided
       if (!index) {
         throw new Error('Not able to find an index')
       }
@@ -113,6 +119,10 @@ function handleSetYmap({ map, path, key, value, yRoot }: {
           map.parent.insert(Number(index[1]), [toYMap(value as Record<string, unknown>)])
         }
       })
+    } else {
+      if (yRoot) {
+        yMapValueByPath.set(yRoot, path, toYMap(value as Record<string, unknown>))
+      }
     }
   }
 }

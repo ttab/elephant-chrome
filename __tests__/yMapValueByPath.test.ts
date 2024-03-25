@@ -21,7 +21,7 @@ describe('yMapValueByPath', () => {
   })
 
 
-  it('get value from array', () => {
+  it('gets value from array', () => {
     /*
      * {
      *   nested: {
@@ -63,7 +63,7 @@ describe('yMapValueByPath', () => {
     expect(get(root, 'nested.arr[1].second')).toBe('2')
   })
 
-  it('set value', () => {
+  it('sets simple value', () => {
     const ydoc = new Y.Doc()
     const root = ydoc.getMap('root')
 
@@ -107,5 +107,17 @@ describe('yMapValueByPath', () => {
     set(yLinks, 'core/category[0]', toYMap(payload))
     set(yLinks, 'core/category[0].title', 'test')
     expect(get(yLinks, 'core/category[0].title')).toBe('test')
+  })
+
+  it('sets ymap in array when no path exists', () => {
+    const ydoc = new Y.Doc()
+    const root = ydoc.getMap('root')
+    const result = get(root, 'nested.arr[1].first')
+    expect(result).toBe(undefined)
+    set(root, 'nested.arr[0]', toYMap({ index: '0' }))
+    set(root, 'nested.arr[2]', toYMap({ index: '2' }))
+    set(root, 'nested.arr[1]', toYMap({ index: '1' }))
+    set(root, 'nested.arr[8]', toYMap({ index: '8' }))
+    console.log(JSON.stringify(root.toJSON(), null, 2))
   })
 })
