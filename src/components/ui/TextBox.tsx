@@ -91,6 +91,8 @@ const TextboxEditable = ({ icon, placeholder, yObserver, role }: {
           }).join('\n')
 
           const payload: Partial<Block> = {
+            ...state,
+            type: 'core/description',
             role,
             data: {
               text: strValue
