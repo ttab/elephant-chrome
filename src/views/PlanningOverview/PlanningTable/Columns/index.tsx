@@ -135,19 +135,6 @@ export const columns: Array<ColumnDef<Planning>> = [
     filterFn: 'arrIncludesSome'
   },
   {
-    id: 'time',
-    meta: {
-      filter: null,
-      name: 'Time',
-      columnIcon: Clock,
-      className: 'box-content w-[120px] hidden @3xl/view:[display:revert]'
-    },
-    accessorFn: (data) => getPublishTime(data._source['document.meta.core_assignment.data.publish']),
-    cell: ({ row }) => (
-      <Time date={row.getValue('time')} />
-    )
-  },
-  {
     id: 'action',
     meta: {
       filter: null,
