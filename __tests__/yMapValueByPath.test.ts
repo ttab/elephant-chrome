@@ -124,11 +124,11 @@ describe('yMapValueByPath', () => {
           { index: '0' },
           { index: '1' },
           { index: '2' },
-          {},
-          {},
-          {},
-          {},
-          {},
+          null,
+          null,
+          null,
+          null,
+          null,
           { index: '8' }
         ]
       }

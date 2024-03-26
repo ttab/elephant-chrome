@@ -1,7 +1,5 @@
 import * as Y from 'yjs'
 
-import { toYMap } from '../../src-srv/utils/transformations/lib/toYMap'
-
 export function get(y: Y.Map<unknown> | undefined, path?: string): Y.Map<unknown> | undefined {
   if (!y) {
     return
@@ -91,10 +89,13 @@ export function set(ymap: Y.Map<unknown>, path: string, value: unknown): void {
           Array.from(Array(index + 1)).forEach((_, transactIndex) => {
             const transactValue = transactIndex === index
               ? value
-              : toYMap((current.get(transactIndex) as Y.Map<unknown>)?.toJSON()) || null
+              : null
 
-            current.length - 1 >= transactIndex && current.delete(transactIndex)
-            current.insert(transactIndex, [transactValue])
+            const hasValue = !!current.get(transactIndex)
+            if (!hasValue) {
+              current.length - 1 >= transactIndex && current.delete(transactIndex)
+              current.insert(transactIndex, [transactValue])
+            }
           })
         })
       }
