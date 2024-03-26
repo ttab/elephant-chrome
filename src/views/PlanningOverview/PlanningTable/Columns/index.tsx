@@ -5,7 +5,6 @@ import { Title } from './Title'
 import { Sector } from './Sector'
 import { Assignees } from './Assignees'
 import { Type } from './Type'
-import { Time } from './Time'
 import { Actions } from './Actions'
 import {
   SignalHigh,
@@ -13,11 +12,9 @@ import {
   Shapes,
   Users,
   Crosshair,
-  Clock,
   Navigation,
   Eye
 } from '@ttab/elephant-ui/icons'
-import { getPublishTime } from '@/lib/getPublishTime'
 import { Priorities, Sectors, AssignmentTypes, VisibilityStatuses } from '@/defaults'
 import { StatusIndicator } from '@/components/DataItem/StatusIndicator'
 
