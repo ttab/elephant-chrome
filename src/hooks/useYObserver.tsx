@@ -15,7 +15,7 @@ export const useForceUpdate = (): () => void => {
 }
 
 export interface YObserved {
-  get: (key?: string) => unknown | undefined
+  get: (key: string) => unknown
   set: (value: string | Partial<Block> | undefined, key?: string) => void
   state: Block | Block[]
   loading: boolean
@@ -59,10 +59,7 @@ export function useYObserver(name: string, path: string): YObserved {
   }, [yRoot, forceUpdate, path])
 
   return {
-    get: useCallback((key?: string) => key
-      ? map?.get(key)
-      : map?.toJSON(),
-    [map]),
+    get: useCallback((key: string) => map?.get(key), [map]),
     set: useCallback((value: string | Partial<Block> | undefined, key?: string) => handleSetYmap({
       map,
       path,

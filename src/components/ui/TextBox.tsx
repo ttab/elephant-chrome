@@ -35,13 +35,13 @@ const TextboxEditable = ({ icon, placeholder, yObserver, role }: {
   placeholder?: string
   role: string
 }): JSX.Element | undefined => {
-  const { get, set, loading } = yObserver
+  const { state, set, loading } = yObserver
 
   if (loading) {
     return undefined
   }
 
-  const value = get()
+  const value = state
   const text = isText(value)
     ? value.data?.text || ''
     : ''
