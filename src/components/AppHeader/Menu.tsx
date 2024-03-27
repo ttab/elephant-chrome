@@ -20,7 +20,7 @@ export const Menu = (): JSX.Element => {
           <MenuIcon size={18} strokeWidth={1.75} />
         </Button>
       </SheetTrigger>
-      <SheetContent>
+      <SheetContent className="w-[400px] sm:w-[540px] sm:max-w-[540px]">
         <SheetHeader>
           <SheetTitle>
             <span className='text-[52px]'>🐘</span>Elefanten
