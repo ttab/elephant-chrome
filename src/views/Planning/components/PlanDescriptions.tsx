@@ -4,64 +4,42 @@ import { type Block } from '@/protos/service'
 import { TextBox } from '@/components/ui'
 
 export const PlanDescriptions = (): JSX.Element => {
-  const { state } = useYObserver('planning', 'meta.core/description')
+  const { state, loading } = useYObserver('planning', 'meta.core/description')
 
-  const newPublicDescription = isPlaceholderNeeded(state, 'public') &&
-    <PlanDescription key='newPublic' role='public' />
-  const newInternalMessage = isPlaceholderNeeded(state, 'internal') &&
-    <PlanDescription key='newInternal' role='internal' />
-
-
-  const sortedDescriptions = (Array.isArray(state)
-    ? state.map((description: Block, index: number) => {
-      return <PlanDescription key={index} index={index} role={description.role} />
-    })
-    : [])
-    .sort((componentA: JSX.Element, componentB: JSX.Element) => {
-      const roleOrder = { public: 0, internal: 1 }
-
-      const roleA: keyof typeof roleOrder = componentA.props.role
-      const roleB: keyof typeof roleOrder = componentB.props.role
-
-      return roleOrder[roleA] - roleOrder[roleB]
-    })
-
-  return (
-    <div className='flex flex-col gap-4' >
-      {
-        ...[
-          newPublicDescription,
-          ...sortedDescriptions,
-          newInternalMessage
-        ].filter(x => x)
-      }
+  return !loading
+    ? <div className='flex flex-col gap-4'>
+      {['public', 'internal'].map((role, index) => (
+        <PlanDescription key={role} role={role} index={findRoleIndex(role, index, state as Block[])} />
+      ))}
     </div>
-  )
+    : <p>Loading...</p>
 }
 
-function isPlaceholderNeeded(state: Block | Block[] | undefined, role: string): boolean {
-  if (Array.isArray(state)) {
-    return !state.some((d: Block) => d.role === role)
-  } else {
-    return true
-  }
+// Find the index of the role in the state array
+// If the role is not found, return the length of the state array or the index of the role
+function findRoleIndex(role: string, index: number, state: Block[]): number {
+  const roleIndex = (state || []).findIndex((block) => block?.role === role)
+  return roleIndex === -1
+    ? state?.length || index
+    : roleIndex
 }
 
 
 const PlanDescription = ({ role, index }: {
   role: string
-  index?: number
+  index: number
 }): JSX.Element | undefined => {
   return (
     <div className='flex w-full' >
       <TextBox
+        role={role}
         icon={role === 'internal' && <MessageCircleMore
           size={28}
           strokeWidth={1.75}
           className='pr-2 -mt-[0.12rem] text-muted-foreground'
         />}
         placeholder={role === 'public' ? 'Public description' : 'Internal message'}
-        yObserver={useYObserver('planning', `meta.core/description[${index}].data`)}
+        yObserver={useYObserver('planning', `meta.core/description[${index}]`)}
       />
     </div>
   )
