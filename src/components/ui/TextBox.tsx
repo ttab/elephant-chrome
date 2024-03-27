@@ -1,42 +1,77 @@
-import { type YObserved } from '@/hooks/useYObserver'
 import { Textbit } from '@ttab/textbit'
-import { type Descendant, Text } from 'slate'
+import { createEditor } from 'slate'
 import { cva } from 'class-variance-authority'
 import { cn } from '@ttab/elephant-ui/utils'
+import { useCollaboration } from '@/hooks'
+import { useEffect, useMemo } from 'react'
+import { YjsEditor, withCursors, withYHistory, withYjs } from '@slate-yjs/core'
+import { type HocuspocusProvider } from '@hocuspocus/provider'
+import { type AwarenessUserData } from '@/contexts/CollaborationProvider'
+import * as Y from 'yjs'
 
-export const TextBox = ({ yObserver, icon, placeholder }: {
-  yObserver: YObserved
+export const TextBox = ({ name, icon, placeholder }: {
+  name: string
   icon?: React.ReactNode
   placeholder?: string
 }): JSX.Element => {
+  const { provider, synced, user } = useCollaboration()
+
   return (
-    <Textbit.Root
-      verbose={true}
-      debounce={0}
-      placeholders={false}
-      plugins={[]}
-      className="h-min-12 w-full"
-    >
-      <TextboxEditable
-        yObserver={yObserver}
-        icon={icon}
-        placeholder={placeholder}
-      />
-    </Textbit.Root>
+    <>
+      {!!provider && synced &&
+        <Textbit.Root
+          verbose={true}
+          debounce={0}
+          placeholders={false}
+          plugins={[]}
+          className="h-min-12 w-full"
+        >
+          <TextboxEditable
+            name={name}
+            provider={provider}
+            user={user}
+            icon={icon}
+            placeholder={placeholder}
+          />
+        </Textbit.Root>
+      }
+    </>
   )
 }
 
-const TextboxEditable = ({ icon, placeholder, yObserver }: {
-  yObserver: YObserved
+const TextboxEditable = ({ name, provider, user, icon, placeholder }: {
+  name: string
+  provider: HocuspocusProvider
+  user: AwarenessUserData
   icon?: React.ReactNode
   placeholder?: string
 }): JSX.Element | undefined => {
-  const { get, set, state, loading } = yObserver
+  const yjsEditor = useMemo(() => {
+    if (!provider?.awareness) {
+      return
+    }
 
-  if (loading) {
-    return undefined
-  }
-  const text = get('text') as string || ''
+    return withYHistory(
+      withCursors(
+        withYjs(
+          createEditor(),
+          provider.document.get(name, Y.XmlText)
+        ),
+        provider.awareness,
+        { data: user as unknown as Record<string, unknown> }
+      )
+    )
+  }, [provider?.awareness, provider?.document, user, name])
+
+
+  // Connect/disconnect from provider through editor only when editor changes
+  useEffect(() => {
+    if (yjsEditor) {
+      YjsEditor.connect(yjsEditor)
+      return () => YjsEditor.disconnect(yjsEditor)
+    }
+  }, [yjsEditor])
+
 
   const wrapperStyle = cva('absolute top-0 left-0 p-2 -mt-2 -ml-2 text-muted-foreground', {
     variants: {
@@ -69,48 +104,37 @@ const TextboxEditable = ({ icon, placeholder, yObserver }: {
     <div>
       <div className={cn(wrapperStyle({ hasIcon }))}>
         {icon}
-        <div className={cn(placeholderStyle({ showPlaceholder: !text?.trim() }))}>
+        <div className={cn(placeholderStyle({ showPlaceholder: false }))}>
           {placeholder || ''}
         </div>
       </div>
 
       <Textbit.Editable
+        yjsEditor={yjsEditor}
         className={cn(editableStyle({ hasIcon }))}
-        value={textToDescendant(text)}
-        onChange={nodes => {
-          if (state) {
-            const strValue = Object.values(nodes).map(node => {
-              return descendantToText(node)
-            }).join('\n')
-            set(strValue, 'text')
-          } else {
-            // TODO: Need to handle when an entry does not exist in ymap
-            // set([{ `meta.core / description[${ index }].data`: text }])
-          }
-        }}
       />
     </div>
   )
 }
 
-function textToDescendant(text: string): Descendant[] {
-  return text.split('\n')
-    .map(str => {
-      return {
-        type: 'core/text',
-        id: crypto.randomUUID(),
-        class: 'text',
-        children: [{ text: str.trim() }]
-      }
-    })
-}
+// function textToDescendant(text: string): Descendant[] {
+//   return text.split('\n')
+//     .map(str => {
+//       return {
+//         type: 'core/text',
+//         id: crypto.randomUUID(),
+//         class: 'text',
+//         children: [{ text: str.trim() }]
+//       }
+//     })
+// }
 
-function descendantToText(node: Descendant | Text): string {
-  if (Text.isText(node)) {
-    return node.text
-  }
+// function descendantToText(node: Descendant | Text): string {
+//   if (Text.isText(node)) {
+//     return node.text
+//   }
 
-  const { children } = node
-  // eslint-disable-next-line @typescript-eslint/quotes
-  return Object.values(children || {}).map(node => descendantToText(node)).join("\n")
-}
+//   const { children } = node
+//   // eslint-disable-next-line @typescript-eslint/quotes
+//   return Object.values(children || {}).map(node => descendantToText(node)).join("\n")
+// }

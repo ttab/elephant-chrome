@@ -43,7 +43,7 @@ export const Planning = (props: ViewProps): JSX.Element => {
     <>
       {planningId
         ? <CollaborationProviderContext documentId={planningId}>
-          <PlanningViewContent {...props} />
+          <PlanningViewContent {...props} documentId={planningId} />
         </CollaborationProviderContext>
         : <></>
       }
@@ -51,7 +51,7 @@ export const Planning = (props: ViewProps): JSX.Element => {
   )
 }
 
-const PlanningViewContent = (props: ViewProps): JSX.Element | undefined => {
+const PlanningViewContent = (props: ViewProps & { documentId: string }): JSX.Element | undefined => {
   return (
     <div className={'flex flex-col h-screen'}>
       <div className="grow-0">
@@ -71,7 +71,7 @@ const PlanningViewContent = (props: ViewProps): JSX.Element | undefined => {
             <PlanTitle className='font-semibold text-xl leading-4 px-0' />
             <SluglineEditable />
           </div>
-          <PlanDescriptions />
+          <PlanDescriptions documentId={props.documentId} />
           <PlanDate />
           <div className='flex space-x-2'>
             <PlanSector />
