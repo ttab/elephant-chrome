@@ -5,7 +5,6 @@ import { Title } from './Title'
 import { Sector } from './Sector'
 import { Assignees } from './Assignees'
 import { Type } from './Type'
-import { Time } from './Time'
 import { Actions } from './Actions'
 import {
   SignalHigh,
@@ -13,11 +12,9 @@ import {
   Shapes,
   Users,
   Crosshair,
-  Clock,
   Navigation,
   Eye
 } from '@ttab/elephant-ui/icons'
-import { getPublishTime } from '@/lib/getPublishTime'
 import { Priorities, Sectors, AssignmentTypes, VisibilityStatuses } from '@/defaults'
 import { StatusIndicator } from '@/components/DataItem/StatusIndicator'
 
@@ -133,19 +130,6 @@ export const columns: Array<ColumnDef<Planning>> = [
       return <Type data={data} />
     },
     filterFn: 'arrIncludesSome'
-  },
-  {
-    id: 'time',
-    meta: {
-      filter: null,
-      name: 'Time',
-      columnIcon: Clock,
-      className: 'box-content w-[120px] hidden @3xl/view:[display:revert]'
-    },
-    accessorFn: (data) => getPublishTime(data._source['document.meta.core_assignment.data.publish']),
-    cell: ({ row }) => (
-      <Time date={row.getValue('time')} />
-    )
   },
   {
     id: 'action',
