@@ -1,21 +1,20 @@
-import { ViewHeader } from '@/components'
+import { AwarenessDocument, ViewHeader } from '@/components'
 import { type ViewMetadata, type ViewProps } from '@/types'
 import { ScrollArea } from '@ttab/elephant-ui'
 import { GanttChartSquare } from '@ttab/elephant-ui/icons'
 import { useQuery } from '@/hooks'
-import { CollaborationProviderContext } from '@/contexts'
 import { SluglineEditable } from '@/components/DataItem/Slugline'
 import {
   PlanAssignments,
   PlanDate,
-  PlanDescriptions,
   PlanSector,
   PlanStatus,
   PlanTitle,
   PlanPriority,
   PlanCategory,
   PlanStory,
-  PlanDocumentStatus
+  PlanDocumentStatus,
+  PlanDescription
 } from './components'
 
 const meta: ViewMetadata = {
@@ -42,16 +41,16 @@ export const Planning = (props: ViewProps): JSX.Element => {
   return (
     <>
       {planningId
-        ? <CollaborationProviderContext documentId={planningId}>
-          <PlanningViewContent {...props} />
-        </CollaborationProviderContext>
+        ? <AwarenessDocument documentId={planningId}>
+          <PlanningViewContent {...props} documentId={planningId} />
+        </AwarenessDocument>
         : <></>
       }
     </>
   )
 }
 
-const PlanningViewContent = (props: ViewProps): JSX.Element | undefined => {
+const PlanningViewContent = (props: ViewProps & { documentId: string }): JSX.Element | undefined => {
   return (
     <div className={'flex flex-col h-screen'}>
       <div className="grow-0">
@@ -71,13 +70,20 @@ const PlanningViewContent = (props: ViewProps): JSX.Element | undefined => {
             <PlanTitle className='font-semibold text-xl leading-4 px-0' />
             <SluglineEditable />
           </div>
-          <PlanDescriptions />
+
+          <div className='flex flex-col gap-4'>
+            <PlanDescription role="public" name="publicDescription" />
+            <PlanDescription role="internal" name="internalDescription" />
+          </div>
+
           <PlanDate />
+
           <div className='flex space-x-2'>
             <PlanSector />
             <PlanCategory />
             <PlanStory />
           </div>
+
           <PlanAssignments />
         </section>
       </ScrollArea>
