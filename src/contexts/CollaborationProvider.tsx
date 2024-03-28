@@ -33,7 +33,6 @@ export interface CollaborationProviderState {
   connected: boolean
   synced: boolean
   user: AwarenessUserData
-  states: AwarenessStates
 }
 
 const initialState: CollaborationProviderState = {
@@ -46,8 +45,7 @@ const initialState: CollaborationProviderState = {
     initials: '',
     color: '',
     avatar: undefined
-  },
-  states: []
+  }
 }
 
 
@@ -63,7 +61,6 @@ export const CollaborationProviderContext = ({ documentId, children }: CollabCon
   const { jwt } = useSession()
   const [synced, setSynced] = useState<boolean>(false)
   const [connected, setConnected] = useState<boolean>(false)
-  const [states, setStates] = useState<AwarenessStates>([])
   const [provider, setProvider] = useState<HocuspocusProvider>()
 
   if (!jwt?.access_token) {
@@ -90,9 +87,6 @@ export const CollaborationProviderContext = ({ documentId, children }: CollabCon
       },
       onDisconnect: () => {
         setSynced(false)
-      },
-      onAwarenessUpdate: (data) => {
-        setStates(data.states as AwarenessStates)
       }
     })
 
@@ -122,13 +116,12 @@ export const CollaborationProviderContext = ({ documentId, children }: CollabCon
     documentId,
     connected,
     synced,
-    user,
-    states
+    user
   }
 
   return (
     <>
-      {!!provider &&
+      {!!provider && synced &&
         <CollaborationContext.Provider value={{ ...state }}>
           {children}
         </CollaborationContext.Provider>
