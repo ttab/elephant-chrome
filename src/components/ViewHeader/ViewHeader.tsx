@@ -5,7 +5,8 @@ import { type LucideIcon } from '@ttab/elephant-ui/icons'
 import { Avatar } from '../Avatar'
 import { AvatarGroup } from '../AvatarGroup'
 
-import { type PropsWithChildren } from 'react'
+import { useEffect, type PropsWithChildren } from 'react'
+import { handleReset } from '../Link/lib/handleReset'
 
 interface ViewHeaderProps {
   documentId?: string
@@ -15,17 +16,41 @@ interface ViewHeaderProps {
 }
 
 export const ViewHeader = ({ children, documentId, title, shortTitle, icon: Icon }: ViewHeaderProps & PropsWithChildren): JSX.Element => {
-  const { state } = useNavigation()
-  const { viewId } = useView()
+  const { state, dispatch } = useNavigation()
+  const { viewId, isActive } = useView()
+
+  useEffect(() => {
+    // Only add event listener if the view is active
+    if (isActive) {
+      const keyDownHandler = (evt: KeyboardEvent): void => {
+        if (evt.altKey && evt.shiftKey && /^Digit\d$/.test(evt.code)) {
+          try {
+            const viewIndex = parseInt(evt.code.slice(-1)) - 1
+            const viewId = state.content[viewIndex].key
+
+
+            if (viewId) {
+              handleReset({ viewId, dispatch })
+            }
+          } catch {
+            console.warn('Invalid view index')
+          }
+        }
+      }
+      document.addEventListener('keydown', keyDownHandler)
+
+      return () => document.removeEventListener('keydown', keyDownHandler)
+    }
+  }, [state, dispatch, isActive])
 
   return (
     <header className='sticky top-0 flex items-center justify-items-stretch group-last:w-[calc(100%-5.5rem)] h-14 gap-3 px-3 border-b bg-background z-50'>
       <div className="flex flex-1 gap-2 items-center">
         {Icon !== undefined &&
-          <Icon size={18} strokeWidth={1.75} />
+          <Icon size={18} strokeWidth={1.75} onClick={() => handleReset({ viewId, dispatch })} />
         }
 
-        <h2 className="font-bold">
+        <h2 className="font-bold cursor-pointer" onClick={() => handleReset({ viewId, dispatch })}>
           {typeof shortTitle !== 'string'
             ? <>{title}</>
             : <>
