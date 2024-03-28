@@ -32,10 +32,10 @@ export const DateChanger = ({
         return
       }
 
-      if (evt.key === 'ArrowLeft') {
+      if (evt.key === 'ArrowLeft' && !evt.altKey) {
         evt.stopPropagation()
         setStartDate(decrementDate(startDate, steps))
-      } else if (evt.key === 'ArrowRight') {
+      } else if (evt.key === 'ArrowRight' && !evt.altKey) {
         evt.stopPropagation()
         setStartDate(incrementDate(startDate, steps))
       }
