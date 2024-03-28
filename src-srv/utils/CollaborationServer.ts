@@ -31,6 +31,7 @@ import {
 } from './transformations/index.js'
 import { newsDocToYPlanning } from './transformations/yjs/yPlanning.js'
 import { v4 } from 'uuid'
+import { textToNewsDoc } from './transformations/lib/textToNewsdoc.js'
 
 enum DocumentType {
   ARTICLE = 'core/article',
@@ -252,49 +253,8 @@ export class CollaborationServer {
       const pubDesc = document?.meta?.find(i => i.type === 'core/description' && i.role === 'public')
       const internDesc = document?.meta?.find(i => i.type === 'core/description' && i.role !== 'public')
 
-      const pubDescDoc = (pubDesc?.data?.text || '').split('\n').map((line) => {
-        return {
-          id: v4(),
-          uuid: '',
-          uri: '',
-          url: '',
-          type: 'core/paragraph',
-          title: '',
-          data: {
-            text: line
-          },
-          rel: '',
-          role: '',
-          name: '',
-          value: '',
-          contentType: '',
-          links: [],
-          content: [],
-          meta: []
-        }
-      })
-
-      const internDescDoc = (internDesc?.data?.text || '').split('\n').map((line) => {
-        return {
-          id: v4(),
-          uuid: '',
-          uri: '',
-          url: '',
-          type: 'core/paragraph',
-          title: '',
-          data: {
-            text: line
-          },
-          rel: '',
-          role: '',
-          name: '',
-          value: '',
-          contentType: '',
-          links: [],
-          content: [],
-          meta: []
-        }
-      })
+      const pubDescDoc = textToNewsDoc(pubDesc?.data?.text || '')
+      const internDescDoc = textToNewsDoc(internDesc?.data?.text || '')
 
       const pubDescSlateDoc = newsDocToSlate(pubDescDoc ?? [])
       const sharedPubDesc = yDoc.get('publicDescription', Y.XmlText)

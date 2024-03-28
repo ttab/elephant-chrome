@@ -114,25 +114,3 @@ const TextboxEditable = ({ name, provider, user, icon, placeholder }: {
     </div>
   )
 }
-
-// function textToDescendant(text: string): Descendant[] {
-//   return text.split('\n')
-//     .map(str => {
-//       return {
-//         type: 'core/text',
-//         id: crypto.randomUUID(),
-//         class: 'text',
-//         children: [{ text: str.trim() }]
-//       }
-//     })
-// }
-
-// function descendantToText(node: Descendant | Text): string {
-//   if (Text.isText(node)) {
-//     return node.text
-//   }
-
-//   const { children } = node
-//   // eslint-disable-next-line @typescript-eslint/quotes
-//   return Object.values(children || {}).map(node => descendantToText(node)).join("\n")
-// }
