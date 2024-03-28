@@ -63,8 +63,6 @@ const TextboxEditable = ({ name, provider, user, icon, placeholder }: {
     )
   }, [provider?.awareness, provider?.document, user, name])
 
-
-  // Connect/disconnect from provider through editor only when editor changes
   useEffect(() => {
     if (yjsEditor) {
       YjsEditor.connect(yjsEditor)
@@ -90,7 +88,7 @@ const TextboxEditable = ({ name, provider, user, icon, placeholder }: {
     }
   })
 
-  const editableStyle = cva('relative outline-none rounded-sm h-min-12 p-2 -mt-2 -ml-2 ring-offset-background data-[state="focused"]:ring-1 ring-gray-300 data-[state="focused"]:dark:ring-gray-600', {
+  const editableStyle = cva('relative w-full outline-none rounded-sm h-min-12 p-2 -mt-2 -ml-2 ring-offset-background data-[state="focused"]:ring-1 ring-gray-300 data-[state="focused"]:dark:ring-gray-600', {
     variants: {
       hasIcon: {
         true: 'ps-9'
