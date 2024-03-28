@@ -30,7 +30,6 @@ import {
   newsDocToSlate
 } from './transformations/index.js'
 import { newsDocToYPlanning } from './transformations/yjs/yPlanning.js'
-import { v4 } from 'uuid'
 import { textToNewsDoc } from './transformations/lib/textToNewsdoc.js'
 
 enum DocumentType {
