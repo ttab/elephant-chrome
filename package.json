@@ -32,7 +32,7 @@
     "@protobuf-ts/twirp-transport": "^2.9.4",
     "@slate-yjs/core": "^1.0.2",
     "@tailwindcss/container-queries": "^0.1.1",
-    "@tanstack/react-table": "^8.14.0",
+    "@tanstack/react-table": "^8.15.2",
     "@ttab/elephant-ui": "^0.2.10",
     "@ttab/textbit": "^0.12.5",
     "@ttab/textbit-plugins": "^0.1.18",
