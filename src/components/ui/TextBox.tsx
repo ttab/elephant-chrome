@@ -22,7 +22,7 @@ export const TextBox = ({ name, icon, placeholder }: {
         <Textbit.Root
           verbose={true}
           debounce={0}
-          placeholders={false}
+          placeholder={placeholder}
           plugins={[]}
           className="h-min-12 w-full"
         >
@@ -31,7 +31,6 @@ export const TextBox = ({ name, icon, placeholder }: {
             provider={provider}
             user={user}
             icon={icon}
-            placeholder={placeholder}
           />
         </Textbit.Root>
       }
@@ -39,12 +38,11 @@ export const TextBox = ({ name, icon, placeholder }: {
   )
 }
 
-const TextboxEditable = ({ name, provider, user, icon, placeholder }: {
+const TextboxEditable = ({ name, provider, user, icon }: {
   name: string
   provider: HocuspocusProvider
   user: AwarenessUserData
   icon?: React.ReactNode
-  placeholder?: string
 }): JSX.Element | undefined => {
   const yjsEditor = useMemo(() => {
     if (!provider?.awareness) {
@@ -79,15 +77,6 @@ const TextboxEditable = ({ name, provider, user, icon, placeholder }: {
     }
   })
 
-  const placeholderStyle = cva('transition-opacity delay-0 duration-75', {
-    variants: {
-      showPlaceholder: {
-        true: 'opacity-70',
-        false: 'opacity-0'
-      }
-    }
-  })
-
   const editableStyle = cva('relative w-full outline-none rounded-sm h-min-12 p-2 -mt-2 -ml-2 ring-offset-background data-[state="focused"]:ring-1 ring-gray-300 data-[state="focused"]:dark:ring-gray-600', {
     variants: {
       hasIcon: {
@@ -102,9 +91,6 @@ const TextboxEditable = ({ name, provider, user, icon, placeholder }: {
     <div>
       <div className={cn(wrapperStyle({ hasIcon }))}>
         {icon}
-        <div className={cn(placeholderStyle({ showPlaceholder: false }))}>
-          {placeholder || ''}
-        </div>
       </div>
 
       <Textbit.Editable
