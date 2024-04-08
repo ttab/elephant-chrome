@@ -21,7 +21,7 @@ describe('yMapValueByPath', () => {
   })
 
 
-  it('get value from array', () => {
+  it('gets value from array', () => {
     /*
      * {
      *   nested: {
@@ -63,7 +63,7 @@ describe('yMapValueByPath', () => {
     expect(get(root, 'nested.arr[1].second')).toBe('2')
   })
 
-  it('set value', () => {
+  it('sets simple value', () => {
     const ydoc = new Y.Doc()
     const root = ydoc.getMap('root')
 
