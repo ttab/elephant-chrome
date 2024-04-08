@@ -128,7 +128,7 @@ export const PlanningTable = <TData, TValue>({
           <TableCell
             key={cell.id}
             className={cn(
-              'first:pl-6 last:pr-6',
+              'first:pl-2 last:pr-2 sm:first:pl-6 sm:last:pr-6',
               cell.column.columnDef.meta?.className
             )}
           >
