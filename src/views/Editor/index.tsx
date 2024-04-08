@@ -68,7 +68,7 @@ function EditorWrapper(props: ViewProps & { documentId: string }): JSX.Element {
   } = useCollaboration()
 
   return (
-    <Textbit.Root plugins={plugins} className="h-screen max-h-screen flex flex-col">
+    <Textbit.Root plugins={plugins} placeholders="multiple" className="h-screen max-h-screen flex flex-col">
       <div className="h-14 basis-14">
         <ViewHeader {...props} title="Editor" icon={PenBoxIcon}>
           <EditorHeader />

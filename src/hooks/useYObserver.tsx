@@ -15,7 +15,7 @@ export const useForceUpdate = (): () => void => {
 }
 
 export interface YObserved {
-  get: (key: string) => unknown | undefined
+  get: (key: string) => unknown
   set: (value: string | Partial<Block> | undefined, key?: string) => void
   state: Block | Block[]
   loading: boolean
