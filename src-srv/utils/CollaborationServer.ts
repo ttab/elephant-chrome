@@ -30,6 +30,7 @@ import {
   newsDocToSlate
 } from './transformations/index.js'
 import { newsDocToYPlanning } from './transformations/yjs/yPlanning.js'
+import { textToNewsDoc } from './transformations/lib/textToNewsdoc.js'
 
 enum DocumentType {
   ARTICLE = 'core/article',
@@ -230,6 +231,7 @@ export class CollaborationServer {
     })
     const { document } = documentResponse
 
+    // Handle article document
     if (document?.type === DocumentType.ARTICLE) {
       // Share editable content
       const slateDocument = newsDocToSlate(document?.content ?? [])
@@ -244,13 +246,27 @@ export class CollaborationServer {
       return Y.encodeStateAsUpdate(yDoc)
     }
 
+    // Handle planning document
     if (document?.type === DocumentType.PLANNING) {
+      // Share editable content
+      const pubDesc = document?.meta?.find(i => i.type === 'core/description' && i.role === 'public')
+      const internDesc = document?.meta?.find(i => i.type === 'core/description' && i.role !== 'public')
+
+      const pubDescDoc = textToNewsDoc(pubDesc?.data?.text || '')
+      const internDescDoc = textToNewsDoc(internDesc?.data?.text || '')
+
+      const pubDescSlateDoc = newsDocToSlate(pubDescDoc ?? [])
+      const sharedPubDesc = yDoc.get('publicDescription', Y.XmlText)
+      sharedPubDesc.applyDelta(slateNodesToInsertDelta(pubDescSlateDoc))
+
+      const internDescSlateDoc = newsDocToSlate(internDescDoc ?? [])
+      const sharedInternDesc = yDoc.get('internalDescription', Y.XmlText)
+      sharedInternDesc.applyDelta(slateNodesToInsertDelta(internDescSlateDoc))
+
       try {
         const planningYMap = yDoc.getMap('planning')
-
         const parsed = newsDocToYPlanning(document, planningYMap)
         yDoc.share.set('planning', yMapAsYEventAny(parsed))
-
         return Y.encodeStateAsUpdate(yDoc)
       } catch (err) {
         if (err instanceof Error) {

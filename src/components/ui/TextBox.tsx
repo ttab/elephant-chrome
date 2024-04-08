@@ -1,50 +1,73 @@
-import { type YObserved } from '@/hooks/useYObserver'
 import { Textbit } from '@ttab/textbit'
-import { type Descendant, Text } from 'slate'
+import { createEditor } from 'slate'
 import { cva } from 'class-variance-authority'
 import { cn } from '@ttab/elephant-ui/utils'
-import { type Block } from '@/protos/service'
+import { useCollaboration } from '@/hooks'
+import { useEffect, useMemo } from 'react'
+import { YjsEditor, withCursors, withYHistory, withYjs } from '@slate-yjs/core'
+import { type HocuspocusProvider } from '@hocuspocus/provider'
+import { type AwarenessUserData } from '@/contexts/CollaborationProvider'
+import * as Y from 'yjs'
 
-export const TextBox = ({ yObserver, icon, placeholder, role }: {
-  yObserver: YObserved
+export const TextBox = ({ name, icon, placeholder }: {
+  name: string
   icon?: React.ReactNode
   placeholder?: string
-  role: string
 }): JSX.Element => {
+  const { provider, synced, user } = useCollaboration()
+
   return (
-    <Textbit.Root
-      verbose={true}
-      debounce={0}
-      placeholders={false}
-      plugins={[]}
-      className="h-min-12 w-full"
-    >
-      <TextboxEditable
-        yObserver={yObserver}
-        icon={icon}
-        placeholder={placeholder}
-        role={role}
-      />
-    </Textbit.Root>
+    <>
+      {!!provider && synced &&
+        <Textbit.Root
+          verbose={true}
+          debounce={0}
+          placeholder={placeholder}
+          plugins={[]}
+          className="h-min-12 w-full"
+        >
+          <TextboxEditable
+            name={name}
+            provider={provider}
+            user={user}
+            icon={icon}
+          />
+        </Textbit.Root>
+      }
+    </>
   )
 }
 
-const TextboxEditable = ({ icon, placeholder, yObserver, role }: {
-  yObserver: YObserved
+const TextboxEditable = ({ name, provider, user, icon }: {
+  name: string
+  provider: HocuspocusProvider
+  user: AwarenessUserData
   icon?: React.ReactNode
-  placeholder?: string
-  role: string
 }): JSX.Element | undefined => {
-  const { state, set, loading } = yObserver
+  const yjsEditor = useMemo(() => {
+    if (!provider?.awareness) {
+      return
+    }
 
-  if (loading) {
-    return undefined
-  }
+    return withYHistory(
+      withCursors(
+        withYjs(
+          createEditor(),
+          provider.document.get(name, Y.XmlText)
+        ),
+        provider.awareness,
+        { data: user as unknown as Record<string, unknown> }
+      )
+    )
+  }, [provider?.awareness, provider?.document, user, name])
 
-  const value = state
-  const text = isText(value)
-    ? value.data?.text || ''
-    : ''
+  useEffect(() => {
+    if (yjsEditor) {
+      YjsEditor.connect(yjsEditor)
+      return () => YjsEditor.disconnect(yjsEditor)
+    }
+  }, [yjsEditor])
+
 
   const wrapperStyle = cva('absolute top-0 left-0 p-2 -mt-2 -ml-2 text-muted-foreground', {
     variants: {
@@ -54,16 +77,7 @@ const TextboxEditable = ({ icon, placeholder, yObserver, role }: {
     }
   })
 
-  const placeholderStyle = cva('transition-opacity delay-0 duration-75', {
-    variants: {
-      showPlaceholder: {
-        true: 'opacity-70',
-        false: 'opacity-0'
-      }
-    }
-  })
-
-  const editableStyle = cva('relative outline-none rounded-sm h-min-12 p-2 -mt-2 -ml-2 ring-offset-background data-[state="focused"]:ring-1 ring-gray-300 data-[state="focused"]:dark:ring-gray-600', {
+  const editableStyle = cva('relative w-full outline-none rounded-sm h-min-12 p-2 -mt-2 -ml-2 ring-offset-background data-[state="focused"]:ring-1 ring-gray-300 data-[state="focused"]:dark:ring-gray-600', {
     variants: {
       hasIcon: {
         true: 'ps-9'
@@ -77,60 +91,12 @@ const TextboxEditable = ({ icon, placeholder, yObserver, role }: {
     <div>
       <div className={cn(wrapperStyle({ hasIcon }))}>
         {icon}
-        <div className={cn(placeholderStyle({ showPlaceholder: !text.trim() }))}>
-          {placeholder || ''}
-        </div>
       </div>
 
       <Textbit.Editable
+        yjsEditor={yjsEditor}
         className={cn(editableStyle({ hasIcon }))}
-        value={textToDescendant(text)}
-        onChange={nodes => {
-          const strValue = Object.values(nodes).map(node => {
-            return descendantToText(node)
-          }).join('\n')
-
-          const payload: Partial<Block> = {
-            ...state,
-            type: 'core/description',
-            role,
-            data: {
-              text: strValue
-            }
-          }
-          set(payload)
-        }}
       />
     </div>
-  )
-}
-
-function textToDescendant(text: string): Descendant[] {
-  return text.split('\n')
-    .map(str => {
-      return {
-        type: 'core/text',
-        id: crypto.randomUUID(),
-        class: 'text',
-        children: [{ text: str.trim() }]
-      }
-    })
-}
-
-function descendantToText(node: Descendant | Text): string {
-  if (Text.isText(node)) {
-    return node.text
-  }
-
-  const { children } = node
-  // eslint-disable-next-line @typescript-eslint/quotes
-  return Object.values(children || {}).map(node => descendantToText(node)).join("\n")
-}
-
-function isText(obj: unknown): obj is Block {
-  return (
-    typeof obj === 'object' &&
-    obj !== null &&
-    typeof (obj as Block).data === 'object'
   )
 }

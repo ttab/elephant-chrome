@@ -10,25 +10,28 @@ type AwarenessState = [
 ]
 
 export const useAwareness = (key: string): AwarenessState => {
-  const { provider, states, user } = useCollaboration()
+  const { provider, user } = useCollaboration()
   const [value, setValue] = useState<AwarenessStates>([])
-  const localClientId = provider?.configuration?.awareness?.clientID
 
   useEffect(() => {
-    const remoteStates = states
-      .filter(({ clientId, focus }) => {
-        if (!focus) {
-          return false
-        }
-        return focus?.key === key && clientId !== localClientId
-      })
+    provider?.on('awarenessUpdate', ({ states }: { states: AwarenessStates }) => {
+      const localClientId = provider?.configuration?.awareness?.clientID
 
-    if (!remoteStates.length && value.length) {
-      setValue([])
-    } else if (remoteStates.length && !value.length) {
-      setValue(remoteStates)
-    }
-  }, [key, value, states, localClientId])
+      const remoteStates = states
+        .filter(({ clientId, focus }) => {
+          if (!focus) {
+            return false
+          }
+          return focus?.key === key && clientId !== localClientId
+        })
+
+      if (!remoteStates.length && value.length) {
+        setValue([])
+      } else if (remoteStates.length && !value.length) {
+        setValue(remoteStates)
+      }
+    })
+  }, [key, value, provider])
 
   return [
     value,

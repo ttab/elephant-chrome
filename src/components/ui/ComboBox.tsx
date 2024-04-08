@@ -26,6 +26,7 @@ import { type DefaultValueOption } from '@/types'
 interface ComboBoxProps extends React.PropsWithChildren {
   size?: string
   selectedOption?: DefaultValueOption
+  onOpenChange?: (isOpen: boolean) => void
   options: DefaultValueOption[]
   placeholder?: string
   onSelect: (option: DefaultValueOption) => void
@@ -38,6 +39,7 @@ export const ComboBox = ({
   size,
   variant,
   selectedOption,
+  onOpenChange,
   options,
   placeholder,
   onSelect,
@@ -48,9 +50,14 @@ export const ComboBox = ({
   const [open, setOpen] = React.useState(false)
   const isDesktop = useMediaQuery('(min-width: 768px)')
 
+  const handleOpenChange = (isOpen: boolean): void => {
+    onOpenChange && onOpenChange(isOpen)
+    setOpen(isOpen)
+  }
+
   if (isDesktop) {
     return (
-      <Popover open={open} onOpenChange={setOpen}>
+      <Popover open={open} onOpenChange={handleOpenChange}>
         <PopoverTrigger asChild>
           <Button
             size={size || 'sm'}
@@ -70,7 +77,7 @@ export const ComboBox = ({
           <ComboBoxList
             options={options}
             selectedOption={selectedOption}
-            setOpen={setOpen}
+            setOpen={handleOpenChange}
             onSelect={(option) => {
               onSelect(option)
             }}
@@ -93,7 +100,7 @@ export const ComboBox = ({
           <ComboBoxList
             options={options}
             selectedOption={selectedOption}
-            setOpen={setOpen}
+            setOpen={handleOpenChange}
             onSelect={onSelect}
             hideInput={hideInput}
           />

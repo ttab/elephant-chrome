@@ -1,6 +1,6 @@
 export { PlanAssignments } from './PlanAssignments'
 export { PlanDate } from './PlanDate'
-export { PlanDescriptions } from './PlanDescriptions'
+export { PlanDescription } from './PlanDescription'
 export { PlanPriority } from './PlanPriority'
 export { PlanSector } from './PlanSector'
 export { PlanStatus } from './PlanStatus'

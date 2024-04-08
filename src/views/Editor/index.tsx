@@ -1,4 +1,4 @@
-import { type PropsWithChildren, useEffect, useMemo } from 'react'
+import { useMemo, type PropsWithChildren, useEffect } from 'react'
 import { AwarenessDocument, ViewHeader } from '@/components'
 import { PenBoxIcon } from '@ttab/elephant-ui/icons'
 
@@ -68,7 +68,7 @@ function EditorWrapper(props: ViewProps & { documentId: string }): JSX.Element {
   } = useCollaboration()
 
   return (
-    <Textbit.Root plugins={plugins} className="h-screen max-h-screen flex flex-col">
+    <Textbit.Root plugins={plugins} placeholders="multiple" className="h-screen max-h-screen flex flex-col">
       <div className="h-14 basis-14">
         <ViewHeader {...props} title="Editor" icon={PenBoxIcon}>
           <EditorHeader />
@@ -76,7 +76,7 @@ function EditorWrapper(props: ViewProps & { documentId: string }): JSX.Element {
       </div>
 
       <div className="flex-grow overflow-auto pr-12 max-w-screen-xl mx-auto">
-        {synced
+        {!!provider && synced
           ? <EditorContent provider={provider} user={user} />
           : <></>
         }
@@ -90,7 +90,7 @@ function EditorWrapper(props: ViewProps & { documentId: string }): JSX.Element {
 }
 
 function EditorContent({ provider, user }: {
-  provider?: HocuspocusProvider
+  provider: HocuspocusProvider
   user: AwarenessUserData
 }): JSX.Element {
   const yjsEditor = useMemo(() => {

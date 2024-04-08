@@ -10,7 +10,7 @@ import { PlanningCommands } from '../PlanningCommands'
 import { DebouncedCommandInput } from '@/components/CommandMenu/DebouncedCommandInput'
 import { useTable } from '@/hooks'
 
-export function Filter(): JSX.Element {
+export const Filter = (): JSX.Element => {
   const [open, setOpen] = useState(false)
 
   const { command, table } = useTable()
@@ -27,7 +27,7 @@ export function Filter(): JSX.Element {
           variant="outline"
           role="combobox"
           aria-expanded={open}
-          className="w-[200px] justify-between"
+          className="w-[200px] justify-between hidden sm:flex"
         >
           Filter...
           <ChevronDown size={18} strokeWidth={1.75} className="ml-2 shrink-0 opacity-50" />

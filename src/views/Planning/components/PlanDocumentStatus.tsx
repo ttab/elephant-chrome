@@ -1,22 +1,30 @@
+import { Awareness } from '@/components'
 import { ComboBox } from '@/components/ui'
 import { DocumentStatuses } from '@/defaults'
+import { useRef } from 'react'
 
 // TODO: Should read current versions status
 export const PlanDocumentStatus = (): JSX.Element => {
+  const setFocused = useRef<(value: boolean) => void>(null)
+
   const selectedOption = DocumentStatuses.find(type => type.value === 'published')
 
-  return <ComboBox
-    className='w-fit px-2 h-7'
-    options={DocumentStatuses}
-    variant={'ghost'}
-    selectedOption={selectedOption}
-    onSelect={() => { alert('Not yet implemented') }}
-    hideInput
+  return (
+    <Awareness name='PlanDocumentStatus' ref={setFocused}>
+      <ComboBox
+        className='w-fit px-2 h-7'
+        options={DocumentStatuses}
+        variant={'ghost'}
+        selectedOption={selectedOption}
+        onSelect={() => { alert('Not yet implemented') }}
+        hideInput
     >
-    {selectedOption?.icon
-      ? <selectedOption.icon { ...selectedOption.iconProps }
+        {selectedOption?.icon
+          ? <selectedOption.icon { ...selectedOption.iconProps }
   />
-      : selectedOption?.label
+          : selectedOption?.label
       }
-  </ComboBox>
+      </ComboBox>
+    </Awareness>
+  )
 }

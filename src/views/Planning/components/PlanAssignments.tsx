@@ -24,7 +24,7 @@ const PlanAssignment = ({ index }: { index: number }): JSX.Element => {
                   {getTitle('title') as string}
                 </Link>
                 )
-              : getTitle('title') as string}
+              : <span className='text-muted-foreground'>{getTitle('title') as string}</span>}
           </div>
           <SluglineEditable path={`meta.core/assignment[${index}].meta.tt/slugline[0]`} />
         </div>
