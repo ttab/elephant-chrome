@@ -79,6 +79,7 @@ function handleSetYmap({ map, path, key, value, yRoot }: {
   value: string | Partial<Block> | undefined
   yRoot?: Y.Map<unknown>
 }): void {
+  // Check wether we have something to work with
   // When no map or map.parent we need to set the value on the root Y.Map
   if (!map?.parent) {
     if (typeof value !== 'object') {
