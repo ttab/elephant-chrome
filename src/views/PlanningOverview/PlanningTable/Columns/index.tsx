@@ -41,7 +41,7 @@ export const columns: Array<ColumnDef<Planning>> = [
       options: Priorities,
       name: 'Priority',
       columnIcon: SignalHigh,
-      className: 'box-content w-8 pr-4'
+      className: 'box-content w-4 sm:w-8 pr-1 sm:pr-4'
     },
     accessorFn: (data) => data._source['document.meta.core_planning_item.data.priority'][0],
     cell: ({ row }) => {

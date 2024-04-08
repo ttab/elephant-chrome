@@ -16,7 +16,9 @@ export interface PlanningHeaderProps {
 
 export const PlanningHeader = ({ tab, startDate, setStartDate, endDate, setEndDate }: PlanningHeaderProps): JSX.Element => {
   return <>
-    <TabsGrid />
+    <div className='hidden sm:block'>
+      <TabsGrid />
+    </div>
 
     {tab === 'list' &&
       <DateChanger startDate={startDate} setStartDate={setStartDate} />}
