@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`YPlanning transform newsDoc to yPlanning 1`] = `
+exports[`YPlanning transforms newsDoc to yPlanning 1`] = `
 Object {
   "links": Object {
     "tt/sector": Array [
@@ -190,7 +190,13 @@ Object {
     ],
   },
   "root": Object {
+    "content": Array [],
+    "language": "sv-se",
     "title": "Tomasson lämnar Blackburn – för landslaget?",
+    "type": "core/planning-item",
+    "uri": "core://newscoverage/726045e7-a52b-4737-8fba-c8149f7e2c2d",
+    "url": "",
+    "uuid": "726045e7-a52b-4737-8fba-c8149f7e2c2d",
   },
 }
 `;
