@@ -1,4 +1,4 @@
-import { newsDocToYPlanning } from '../src-srv/utils/transformations/yjs/yPlanning'
+import { newsDocToYPlanning, yPlanningToNewsDoc } from '../src-srv/utils/transformations/yjs/yPlanning'
 import * as Y from 'yjs'
 import { planning as pl } from './data/planning-repo'
 
@@ -18,5 +18,10 @@ describe('YPlanning', () => {
   it('transforms newsDoc to yPlanning', () => {
     const planningJson = yDoc.getMap('planning').toJSON()
     expect(planningJson).toMatchSnapshot()
+  })
+
+  it('transforms yPlanning to newsDoc', () => {
+    const newsDoc = yPlanningToNewsDoc(yPlanning)
+    expect(newsDoc).toMatchSnapshot()
   })
 })
