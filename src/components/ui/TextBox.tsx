@@ -14,11 +14,11 @@ export const TextBox = ({ name, icon, placeholder }: {
   icon?: React.ReactNode
   placeholder?: string
 }): JSX.Element => {
-  const { provider, synced, user } = useCollaboration()
+  const { provider, user } = useCollaboration()
 
   return (
     <>
-      {!!provider && synced &&
+      {!!provider &&
         <Textbit.Root
           verbose={true}
           debounce={0}

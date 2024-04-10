@@ -16,6 +16,8 @@ import {
   PlanDocumentStatus,
   PlanDescription
 } from './components'
+import * as Y from 'yjs'
+import { slateNodesToInsertDelta } from '@slate-yjs/core'
 
 const meta: ViewMetadata = {
   name: 'Planning',
@@ -37,12 +39,57 @@ const meta: ViewMetadata = {
 export const Planning = (props: ViewProps): JSX.Element => {
   const query = useQuery()
   const planningId = props.id || query.id
+  const documentId = planningId || crypto.randomUUID()
+
+  const createPlanningDocument = (): Y.Doc => {
+    // {
+    //   uuid: crypto.randomUUID(),
+    //   type: 'core/planning-item',
+    //   uri: `core://newscoverage/${documentId}`,
+    //   url: '',
+    //   title: '',
+    //   content: [],
+    //   meta: [],
+    //   links: [],
+    //   language: 'sv-se'
+    // }
+    const document = new Y.Doc()
+
+    const _internal = document.getMap('_internal')
+    _internal.set('draft', true)
+
+    const planningYMap = document.getMap('planning')
+    planningYMap.set('meta', new Y.Map())
+    planningYMap.set('links', new Y.Map())
+
+    const root = new Y.Map()
+    root.set('title', 'Ny planering')
+    root.set('uuid', crypto.randomUUID())
+    root.set('type', 'core/planning-item')
+    root.set('language', 'sv-se')
+
+    const emptyText = {
+      class: 'text',
+      type: 'core/text',
+      children: [{ text: '' }]
+    }
+
+    const publicDescription = document.get('publicDescription', Y.XmlText)
+    const internalDescription = document.get('internalDescription', Y.XmlText)
+
+    publicDescription.applyDelta(slateNodesToInsertDelta([{ id: crypto.randomUUID(), ...emptyText }]))
+    internalDescription.applyDelta(slateNodesToInsertDelta([{ id: crypto.randomUUID(), ...emptyText }]))
+
+    planningYMap.set('planning', root)
+
+    return document
+  }
 
   return (
     <>
-      {planningId
-        ? <AwarenessDocument documentId={planningId}>
-          <PlanningViewContent {...props} documentId={planningId} />
+      {documentId
+        ? <AwarenessDocument documentId={documentId} document={!planningId ? createPlanningDocument() : undefined}>
+          <PlanningViewContent {...props} documentId={documentId} />
         </AwarenessDocument>
         : <></>
       }

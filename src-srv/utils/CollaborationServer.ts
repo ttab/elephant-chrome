@@ -218,6 +218,17 @@ export class CollaborationServer {
       return Y.encodeStateAsUpdate(yDoc)
     }
 
+    // TODO: We should be able to get info from created yDocs from client!?!
+    const _internal = yDoc.getMap('_internal')
+    console.log(JSON.stringify(_internal, null, 2))
+    console.log(_internal.get('draft'))
+
+    // FIXME: We should be able to access document data from client
+    if (_internal.get('draft') === true) {
+      console.log('This is a draft document')
+      // Merge with an empty yDoc
+    }
+
     // Fetch from Redis if exists
     const state = await this.#redisCache.get(uuid)
     if (state) {
@@ -225,11 +236,10 @@ export class CollaborationServer {
     }
 
     // Fetch content
-    const documentResponse = await this.#repository.getDoc({
+    const { document = null } = await this.#repository.getDoc({
       uuid,
       accessToken: context.token
-    })
-    const { document } = documentResponse
+    }) || {}
 
     // Handle article document
     if (document?.type === DocumentType.ARTICLE) {
