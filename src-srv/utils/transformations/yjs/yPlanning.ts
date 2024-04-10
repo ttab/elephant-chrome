@@ -21,19 +21,25 @@ export function newsDocToYPlanning(document: Document, planningYMap: Y.Map<unkno
 }
 
 export function yPlanningToNewsDoc(planningYMap: Y.Map<unknown>): Document {
-  const meta = ungroup((planningYMap.get('meta') as Y.Map<unknown>).toJSON())
-  const links = ungroup((planningYMap.get('links') as Y.Map<unknown>).toJSON())
-  const root = planningYMap.get('root') as Y.Map<unknown>
+  try {
+    const meta = ungroup((planningYMap.get('meta') as Y.Map<unknown>)?.toJSON() || {})
+    const links = ungroup((planningYMap.get('links') as Y.Map<unknown>)?.toJSON() || {})
+    const content = ungroup((planningYMap.get('content') as Y.Map<unknown>)?.toJSON() || {})
+    const root = planningYMap.get('root') as Y.Map<unknown>
 
-  const res = {
-    ...root.toJSON(),
-    content: [],
-    meta,
-    links
+    const res = {
+      ...root.toJSON(),
+      content,
+      meta,
+      links
+    } as unknown as Document
+
+    return res
+  } catch (err) {
+    if (err instanceof Error) {
+      throw new Error(err.message)
+    }
+    throw new Error('Unknown error')
   }
-
-
-  // @ts-expect-error unknown type
-  return res
 }
 
