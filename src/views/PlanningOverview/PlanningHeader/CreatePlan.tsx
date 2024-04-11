@@ -5,26 +5,31 @@ import {
 
 import { Planning } from '@/views/Planning'
 import { PlusIcon } from '@ttab/elephant-ui/icons'
+import { useState } from 'react'
 
 export const CreatePlan = (): JSX.Element => {
+  const [open, setOpen] = useState(false)
+
   return (
-    <>
-      <Dialog>
-        <DialogTrigger asChild>
-          <Button variant='ghost'>
-            <PlusIcon size={18} strokeWidth={1.75} />
+    <Dialog open={open}>
+      <DialogTrigger asChild>
+        <Button variant='ghost' onClick={() => setOpen(!open)}>
+          <PlusIcon size={18} strokeWidth={1.75} />
+        </Button>
+      </DialogTrigger>
+
+      <DialogContent className='p-0 rounded-md'>
+        <Planning asChild className='p-0 rounded-md' />
+
+        <DialogFooter className='p-4 border-t'>
+          <Button onClick={() => {
+            setOpen(!open)
+          }}
+          >
+            Skapa planering
           </Button>
-        </DialogTrigger>
-
-        <DialogContent className='p-0 rounded-md'>
-          <Planning asChild className='p-0 rounded-md' />
-
-          <DialogFooter className='p-3 border-t'>
-            <Button variant=''>Skapa planering</Button>
-          </DialogFooter>
-        </DialogContent>
-
-      </Dialog>
-    </>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   )
 }

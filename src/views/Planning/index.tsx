@@ -126,10 +126,18 @@ const PlanningViewContent = (props: ViewProps & { documentId: string }): JSX.Ele
     }
   })
 
+  const sectionVariants = cva('overscroll-auto @5xl:w-[1024px] space-y-4', {
+    variants: {
+      asChild: {
+        false: 'p-8',
+        true: 'p-6'
+      }
+    }
+  })
   return (
     <div className={cn(viewVariants({ asChild: !!props?.asChild, className: props?.className }))}>
       <div className="grow-0">
-        <ViewHeader {...props} title="Planering" icon={GanttChartSquare}>
+        <ViewHeader {...props} title={props?.asChild ? undefined : 'Planering'} icon={props?.asChild ? undefined : GanttChartSquare}>
           <div className='flex w-full h-full items-center space-x-2'>
             <PlanDocumentStatus />
             <PlanStatus />
@@ -139,7 +147,7 @@ const PlanningViewContent = (props: ViewProps & { documentId: string }): JSX.Ele
       </div>
 
       <ScrollArea className='grid @5xl:place-content-center'>
-        <section className='overscroll-auto @5xl:w-[1024px] space-y-4 p-8'>
+        <section className={cn(sectionVariants({ asChild: !!props?.asChild }))}>
           <div className='flex space-x-2 items-center'>
             <PlanTitle />
             <SluglineEditable />
