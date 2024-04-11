@@ -218,17 +218,6 @@ export class CollaborationServer {
       return Y.encodeStateAsUpdate(yDoc)
     }
 
-    // TODO: We should be able to get info from created yDocs from client!?!
-    const _internal = yDoc.getMap('_internal')
-    console.log(JSON.stringify(_internal, null, 2))
-    console.log(_internal.get('draft'))
-
-    // FIXME: We should be able to access document data from client
-    if (_internal.get('draft') === true) {
-      console.log('This is a draft document')
-      // Merge with an empty yDoc
-    }
-
     // Fetch from Redis if exists
     const state = await this.#redisCache.get(uuid)
     if (state) {
@@ -251,32 +240,36 @@ export class CollaborationServer {
       )
 
       const yArticle = yDoc.getMap('article')
-      const parsed = newsDocToYPlanning(document, yArticle)
-      yDoc.share.set('article', yMapAsYEventAny(parsed))
+      newsDocToYPlanning(document, yArticle)
       return Y.encodeStateAsUpdate(yDoc)
     }
 
     // Handle planning document
     if (document?.type === DocumentType.PLANNING) {
       // Share editable content
+      const title = document.title || ''
       const pubDesc = document?.meta?.find(i => i.type === 'core/description' && i.role === 'public')
       const internDesc = document?.meta?.find(i => i.type === 'core/description' && i.role !== 'public')
 
-      const pubDescDoc = textToNewsDoc(pubDesc?.data?.text || '')
-      const internDescDoc = textToNewsDoc(internDesc?.data?.text || '')
 
+      const sharedTitle = yDoc.get('title', Y.XmlText)
+      sharedTitle.applyDelta(slateNodesToInsertDelta(
+        newsDocToSlate(textToNewsDoc(title) ?? [])
+      ))
+
+      const pubDescDoc = textToNewsDoc(pubDesc?.data?.text || '')
       const pubDescSlateDoc = newsDocToSlate(pubDescDoc ?? [])
       const sharedPubDesc = yDoc.get('publicDescription', Y.XmlText)
       sharedPubDesc.applyDelta(slateNodesToInsertDelta(pubDescSlateDoc))
 
+      const internDescDoc = textToNewsDoc(internDesc?.data?.text || '')
       const internDescSlateDoc = newsDocToSlate(internDescDoc ?? [])
       const sharedInternDesc = yDoc.get('internalDescription', Y.XmlText)
       sharedInternDesc.applyDelta(slateNodesToInsertDelta(internDescSlateDoc))
 
       try {
         const planningYMap = yDoc.getMap('planning')
-        const parsed = newsDocToYPlanning(document, planningYMap)
-        yDoc.share.set('planning', yMapAsYEventAny(parsed))
+        newsDocToYPlanning(document, planningYMap)
         return Y.encodeStateAsUpdate(yDoc)
       } catch (err) {
         if (err instanceof Error) {
@@ -286,7 +279,10 @@ export class CollaborationServer {
       }
     }
 
-    throw new Error('Can\'t determine DocumentType')
+    // This is a new and unknown yDoc initiated from the client. Just return it
+    // as an encoded state update and trust the client to set properties and the
+    // hocuspocus client/server comm to sync the changes and store them in redis.
+    return Y.encodeStateAsUpdate(yDoc)
   }
 
 

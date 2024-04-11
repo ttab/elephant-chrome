@@ -5,8 +5,7 @@ import {
   type Dispatch,
   type SetStateAction
 } from 'react'
-import { Button } from '@ttab/elephant-ui'
-import { Link } from '@/components'
+import { CreatePlan } from './CreatePlan'
 
 export interface PlanningHeaderProps {
   tab: string
@@ -32,9 +31,6 @@ export const PlanningHeader = ({ tab, startDate, setStartDate, endDate, setEndDa
 
     <Filter />
 
-    <Button variant="ghost">
-      <Link to='Planning' props={{ id: '' }}>+</Link>
-    </Button>
-
+    <CreatePlan />
   </>
 }
