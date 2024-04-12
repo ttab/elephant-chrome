@@ -5,7 +5,9 @@ import { groupBy } from '../lib/groupBy.js'
 
 export function newsDocToYPlanning(document: Document, planningYMap: Y.Map<unknown>): Y.Map<unknown> {
   try {
-    const root = {}
+    const root = {
+      title: document.title
+    }
     const meta = toYMap(groupBy(document.meta, 'type'), new Y.Map())
     const links = toYMap(groupBy(document.links, 'type'), new Y.Map())
 
