@@ -13,23 +13,23 @@ export function group(objects: Block[], groupKey: keyof Block): GroupedObjects {
   const groupedObjects: GroupedObjects = {}
 
   objects.forEach(object => {
-    if (!object[groupKey]) return
+    const key = object[groupKey] as string | undefined
+    if (!key) return
 
-    if (!groupedObjects[(object[groupKey] as string)]) {
-      groupedObjects[(object[groupKey]) as string] = []
+    if (!groupedObjects[key]) {
+      groupedObjects[key] = []
     }
 
-    // eslint-disable-next-line
-    const newObj: any = { ...object }
+    const newObj = { ...object }
 
-    Object.keys(object).forEach((key) => {
-      if (Array.isArray(object[key as keyof Block])) {
-        const array = object[key as keyof Block]
-        newObj[key] = group((array as Block[]), groupKey)
+    Object.entries(newObj).forEach(([key, value]) => {
+      if (Array.isArray(value)) {
+        // @ts-expect-error Can't get this ts error to go away
+        newObj[key] = group(value, groupKey)
       }
     })
 
-    groupedObjects[(object[groupKey]) as string].push(newObj as Block)
+    groupedObjects[key].push(newObj)
   })
 
   return groupedObjects
