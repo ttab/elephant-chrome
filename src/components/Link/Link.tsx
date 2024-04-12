@@ -9,7 +9,7 @@ import { toQueryString } from './lib/toQueryString'
 interface LinkProps {
   children: React.ReactNode
   to: View
-  props?: Omit<ViewProps, 'id'>
+  props?: ViewProps,
   onClick?: (event: unknown) => void
 }
 
