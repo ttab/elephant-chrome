@@ -26,7 +26,7 @@ export function useYObserver(name: string, path: string): YObserved {
 
   // Get Y.Doc from provider and extract Root Y.Map by it's name
   const { provider, synced: isSynced } = useCollaboration()
-  const document = isSynced ? provider?.document : undefined
+  const document = provider?.document || undefined
   const yRoot = document?.getMap(name)
 
   // Get wanted Y.Map by path provided

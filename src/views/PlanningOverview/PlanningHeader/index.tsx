@@ -5,6 +5,7 @@ import {
   type Dispatch,
   type SetStateAction
 } from 'react'
+import { CreatePlan } from './CreatePlan'
 
 export interface PlanningHeaderProps {
   tab: string
@@ -29,5 +30,7 @@ export const PlanningHeader = ({ tab, startDate, setStartDate, endDate, setEndDa
         endDate={endDate} setEndDate={setEndDate} />}
 
     <Filter />
+
+    <CreatePlan />
   </>
 }

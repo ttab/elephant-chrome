@@ -10,7 +10,7 @@ import { handleReset } from '../Link/lib/handleReset'
 
 interface ViewHeaderProps {
   documentId?: string
-  title: string
+  title?: string
   shortTitle?: string
   icon?: LucideIcon
 }
@@ -45,20 +45,24 @@ export const ViewHeader = ({ children, documentId, title, shortTitle, icon: Icon
 
   return (
     <header className='sticky top-0 flex items-center justify-items-stretch group-last:w-[calc(100%-5.5rem)] h-14 gap-3 px-3 border-b bg-background z-50'>
-      <div className="flex flex-1 gap-2 items-center">
+      <div className="flex flex-1 gap-2 items-center w-[50px]">
         {Icon !== undefined &&
-          <Icon size={18} strokeWidth={1.75} onClick={() => handleReset({ viewId, dispatch })} />
+          <div>
+            <Icon size={18} strokeWidth={1.75} onClick={() => handleReset({ viewId, dispatch })} />
+          </div>
         }
 
-        <h2 className="font-bold cursor-pointer" onClick={() => handleReset({ viewId, dispatch })}>
-          {typeof shortTitle !== 'string'
-            ? <>{title}</>
-            : <>
-              <span className="@3xl/view:hidden">{shortTitle}</span>
-              <span className="hidden @3xl/view:inline">{title}</span>
-            </>
-          }
-        </h2>
+        {!!title &&
+          <h2 className="font-bold cursor-pointer" onClick={() => handleReset({ viewId, dispatch })}>
+            {typeof shortTitle !== 'string'
+              ? <>{title}</>
+              : <>
+                <span className="@3xl/view:hidden">{shortTitle}</span>
+                <span className="hidden @3xl/view:inline">{title}</span>
+              </>
+            }
+          </h2>
+        }
 
         {children}
       </div>

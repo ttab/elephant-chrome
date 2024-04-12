@@ -9,22 +9,23 @@ import { type HocuspocusProvider } from '@hocuspocus/provider'
 import { type AwarenessUserData } from '@/contexts/CollaborationProvider'
 import * as Y from 'yjs'
 
-export const TextBox = ({ name, icon, placeholder }: {
+export const TextBox = ({ name, icon, placeholder, className }: {
   name: string
   icon?: React.ReactNode
   placeholder?: string
+  className?: string
 }): JSX.Element => {
-  const { provider, synced, user } = useCollaboration()
+  const { provider, user } = useCollaboration()
 
   return (
     <>
-      {!!provider && synced &&
+      {!!provider &&
         <Textbit.Root
           verbose={true}
           debounce={0}
           placeholder={placeholder}
           plugins={[]}
-          className="h-min-12 w-full"
+          className={cn('h-min-12 w-full', className)}
         >
           <TextboxEditable
             name={name}

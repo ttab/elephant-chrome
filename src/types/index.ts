@@ -80,6 +80,8 @@ export interface HistoryState {
 
 export interface ViewProps {
   id?: string
+  asChild?: boolean
+  className?: string
 }
 
 export type Theme = 'dark' | 'light' | 'system'

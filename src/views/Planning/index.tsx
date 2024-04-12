@@ -16,6 +16,12 @@ import {
   PlanDocumentStatus,
   PlanDescription
 } from './components'
+import * as Y from 'yjs'
+import { slateNodesToInsertDelta } from '@slate-yjs/core'
+import { useEffect, useState } from 'react'
+import { cva } from 'class-variance-authority'
+import { cn } from '@ttab/elephant-ui/utils'
+import { type Element } from 'slate'
 
 const meta: ViewMetadata = {
   name: 'Planning',
@@ -36,13 +42,73 @@ const meta: ViewMetadata = {
 
 export const Planning = (props: ViewProps): JSX.Element => {
   const query = useQuery()
-  const planningId = props.id || query.id
+  const [planningId, setPlanningId] = useState(props.id || query.id)
+  const documentId = planningId || crypto.randomUUID()
+
+  useEffect(() => {
+    // When we had no planningId and created a new documentId, sync them
+    if (planningId !== documentId) {
+      setPlanningId(documentId)
+    }
+  }, [planningId, documentId])
+
+  // TODO: Extract this to shared function where most will be used by both client and server
+  const createPlanningDocument = (): Y.Doc => {
+    // {
+    //   uuid: crypto.randomUUID(),
+    //   type: 'core/planning-item',
+    //   uri: `core://newscoverage/${documentId}`,
+    //   url: '',
+    //   title: '',
+    //   content: [],
+    //   meta: [],
+    //   links: [],
+    //   language: 'sv-se'
+    // }
+    const document = new Y.Doc()
+
+    // Create internal structure so that we know this is a draft
+    // and should not be serialized to the repository.
+    const _internal = document.getMap('_internal')
+    _internal.set('draft', true)
+
+    const planningYMap = document.getMap('planning')
+    planningYMap.set('meta', new Y.Map())
+    planningYMap.set('links', new Y.Map())
+
+    const root = new Y.Map()
+    root.set('title', 'Ny planering')
+    root.set('uuid', documentId)
+    root.set('type', 'core/planning-item')
+    root.set('language', 'sv-se')
+
+    const emptyText = (): Element[] => {
+      return [{
+        id: crypto.randomUUID(),
+        class: 'text',
+        type: 'core/text',
+        children: [{ text: '' }]
+      }]
+    }
+
+    const title = document.get('title', Y.XmlText)
+    const publicDescription = document.get('publicDescription', Y.XmlText)
+    const internalDescription = document.get('internalDescription', Y.XmlText)
+
+    title.applyDelta(slateNodesToInsertDelta(emptyText()))
+    publicDescription.applyDelta(slateNodesToInsertDelta(emptyText()))
+    internalDescription.applyDelta(slateNodesToInsertDelta(emptyText()))
+
+    planningYMap.set('planning', root)
+
+    return document
+  }
 
   return (
     <>
-      {planningId
-        ? <AwarenessDocument documentId={planningId}>
-          <PlanningViewContent {...props} documentId={planningId} />
+      {documentId
+        ? <AwarenessDocument documentId={documentId} document={!planningId ? createPlanningDocument() : undefined}>
+          <PlanningViewContent {...props} documentId={documentId} />
         </AwarenessDocument>
         : <></>
       }
@@ -51,23 +117,39 @@ export const Planning = (props: ViewProps): JSX.Element => {
 }
 
 const PlanningViewContent = (props: ViewProps & { documentId: string }): JSX.Element | undefined => {
+  const viewVariants = cva('flex flex-col', {
+    variants: {
+      asChild: {
+        false: 'h-screen',
+        true: 'overflow-hidden'
+      }
+    }
+  })
+
+  const sectionVariants = cva('overscroll-auto @5xl:w-[1024px] space-y-4', {
+    variants: {
+      asChild: {
+        false: 'p-8',
+        true: 'p-6'
+      }
+    }
+  })
   return (
-    <div className={'flex flex-col h-screen'}>
+    <div className={cn(viewVariants({ asChild: !!props?.asChild, className: props?.className }))}>
       <div className="grow-0">
-        <ViewHeader {...props} title="Planering" icon={GanttChartSquare}>
+        <ViewHeader {...props} title={props?.asChild ? undefined : 'Planering'} icon={props?.asChild ? undefined : GanttChartSquare}>
           <div className='flex w-full h-full items-center space-x-2'>
             <PlanDocumentStatus />
             <PlanStatus />
             <PlanPriority />
-            <PlanTitle className='invisible @4xl:visible' />
           </div>
         </ViewHeader>
       </div>
 
       <ScrollArea className='grid @5xl:place-content-center'>
-        <section className='overscroll-auto @5xl:w-[1024px] space-y-4 p-8'>
+        <section className={cn(sectionVariants({ asChild: !!props?.asChild }))}>
           <div className='flex space-x-2 items-center'>
-            <PlanTitle className='font-semibold text-xl leading-4 px-0' />
+            <PlanTitle />
             <SluglineEditable />
           </div>
 

@@ -51,24 +51,17 @@ const SluglineInput = ({ value, setActive, setSlugline }: SluglineInputProps): J
 
 export const SluglineEditable = ({ path = 'meta.tt/slugline[0]' }: { path?: string }): JSX.Element => {
   const [active, setActive] = useState(false)
-  const { get, set, loading } = useYObserver('planning', path)
+  const { get, set } = useYObserver('planning', path)
 
 
   const setFocused = useRef<(value: boolean) => void>(null)
 
-  return !loading
-    ? (
-      <Awareness name='PlanSlugline' ref={setFocused}>
-        {active
-          ? <SluglineInput
-              value={get('value') as string}
-              setActive={setActive}
-              setSlugline={set} />
-          : <SluglineButton
-              value={get('value') as string}
-              setActive={setActive} />
-        }
-      </Awareness>
-      )
-    : <p>Loading...</p>
+  return (
+    <Awareness name='PlanSlugline' ref={setFocused}>
+      {active
+        ? <SluglineInput value={get('value') as string} setActive={setActive} setSlugline={set} />
+        : <SluglineButton value={get('value') as string} setActive={setActive} />
+      }
+    </Awareness>
+  )
 }
