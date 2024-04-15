@@ -84,9 +84,7 @@ describe('yMapValueByPath', () => {
     if (!document) {
       throw new Error('no document')
     }
-    const yPlanning = newsDocToYMap(document, planningYMap)
-    // eslint-disable-next-line
-    yDoc.share.set('planning', yPlanning as unknown as Y.AbstractType<Y.YEvent<any>>)
+    newsDocToYMap(document, planningYMap)
 
     const p = yDoc.getMap('planning')
 
