@@ -6,7 +6,7 @@ import { useYObserver } from '@/hooks'
 
 // TODO: Temp should use Textbit instead of input
 export const PlanTitle = ({ className }: { className?: string }): JSX.Element | undefined => {
-  const { get, set, loading } = useYObserver('planning', 'root')
+  const { get, set, loading } = useYObserver('root', '')
   const [inputWidth, setInputWidth] = useState<string>()
 
   const setFocused = useRef<(value: boolean) => void>(null)

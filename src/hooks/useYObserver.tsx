@@ -17,7 +17,7 @@ export const useForceUpdate = (): () => void => {
 export interface YObserved {
   get: (key: string) => unknown
   set: (value: string | Partial<Block> | undefined, key?: string) => void
-  state: Block | Block[]
+  state: Block[]
   loading: boolean
 }
 
@@ -26,8 +26,8 @@ export function useYObserver(name: string, path: string): YObserved {
 
   // Get Y.Doc from provider and extract Root Y.Map by it's name
   const { provider, synced: isSynced } = useCollaboration()
-  const document = isSynced ? provider?.document : undefined
-  const yRoot = document?.getMap(name)
+  const document = isSynced ? provider?.document.getMap('ele') : undefined
+  const yRoot = document?.get(name) as Y.Map<unknown>
 
   // Get wanted Y.Map by path provided
   const map = yMapValueByPath.get(yRoot, path)
@@ -67,7 +67,7 @@ export function useYObserver(name: string, path: string): YObserved {
       value,
       yRoot
     }), [map, path, yRoot]),
-    state: map?.toJSON() as Block | Block[],
+    state: map?.toJSON() as Block[],
     loading: !isSynced
   }
 }

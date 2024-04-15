@@ -3,7 +3,6 @@ import { AwarenessDocument, ViewHeader } from '@/components'
 import { PenBoxIcon } from '@ttab/elephant-ui/icons'
 
 import { createEditor } from 'slate'
-import * as Y from 'yjs'
 import { YjsEditor, withCursors, withYHistory, withYjs } from '@slate-yjs/core'
 
 import {
@@ -25,6 +24,7 @@ import { type ViewMetadata, type ViewProps } from '@/types'
 import { EditorHeader } from './EditorHeader'
 import { type HocuspocusProvider } from '@hocuspocus/provider'
 import { type AwarenessUserData } from '@/contexts/CollaborationProvider'
+import { type YXmlText } from 'node_modules/yjs/dist/src/internals'
 
 const meta: ViewMetadata = {
   name: 'Editor',
@@ -98,11 +98,13 @@ function EditorContent({ provider, user }: {
       return
     }
 
+    const content = provider.document.getMap('ele').get('content') as YXmlText
+
     return withYHistory(
       withCursors(
         withYjs(
           createEditor(),
-          provider.document.get('content', Y.XmlText)
+          content
         ),
         provider.awareness,
         { data: user as unknown as Record<string, unknown> }

@@ -5,7 +5,7 @@ import { useYObserver } from '@/hooks'
 import { useRef } from 'react'
 
 export const PlanCategory = (): JSX.Element | undefined => {
-  const { get, set, loading } = useYObserver('planning', 'links.core/category[0]')
+  const { get, set, loading } = useYObserver('links', 'core/category[0]')
 
   const setFocused = useRef<(value: boolean) => void>(null)
   const selectedOption = Categories.find(c => c.value === get('title'))

@@ -1,4 +1,5 @@
 import * as Y from 'yjs'
+import { toSlateYXmlText } from './toSlateYXmlText.js'
 
 /**
  * Transform any object to a Y representation
@@ -20,7 +21,12 @@ export function toYMap<T extends Record<string, unknown>>(d: T, map: Y.Map<unkno
         map.set(key, toYMap(value as Record<string, unknown>, new Y.Map()))
       }
     } else {
-      map.set(key, value)
+      if (key === 'text') {
+        const yXmlText = toSlateYXmlText(value as string)
+        map.set(key, yXmlText)
+      } else {
+        map.set(key, value)
+      }
     }
   }
   return map

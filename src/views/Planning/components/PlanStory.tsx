@@ -5,7 +5,7 @@ import { useYObserver } from '@/hooks'
 import { useRef } from 'react'
 
 export const PlanStory = (): JSX.Element => {
-  const { get, set, loading } = useYObserver('planning', 'links.core/story/[0]')
+  const { get, set, loading } = useYObserver('links', 'core/story/[0]')
   const setFocused = useRef<(value: boolean) => void>(null)
 
   const selectedOption = Stories.find(s => s.value === get('title'))

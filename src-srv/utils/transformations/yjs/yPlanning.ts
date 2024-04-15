@@ -3,7 +3,7 @@ import { type Document } from '../../../protos/service.js'
 import { toYMap } from '../lib/toYMap.js'
 import { group, ungroup } from '../lib/group.js'
 
-export function newsDocToYPlanning(document: Document, planningYMap: Y.Map<unknown>): Y.Map<unknown> {
+export function newsDocToYMap(document: Document, planningYMap: Y.Map<unknown>): Y.Map<unknown> {
   try {
     const { meta, links, ...rest } = document
 
@@ -20,7 +20,7 @@ export function newsDocToYPlanning(document: Document, planningYMap: Y.Map<unkno
   }
 }
 
-export function yPlanningToNewsDoc(planningYMap: Y.Map<unknown>): Document {
+export function yMapToNewsDoc(planningYMap: Y.Map<unknown>): Document {
   try {
     const meta = ungroup((planningYMap.get('meta') as Y.Map<unknown>)?.toJSON() || {})
     const links = ungroup((planningYMap.get('links') as Y.Map<unknown>)?.toJSON() || {})

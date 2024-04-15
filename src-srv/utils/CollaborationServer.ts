@@ -29,13 +29,7 @@ import * as Y from 'yjs'
 import {
   newsDocToSlate
 } from './transformations/index.js'
-import { newsDocToYPlanning } from './transformations/yjs/yPlanning.js'
-import { textToNewsDoc } from './transformations/lib/textToNewsdoc.js'
-
-enum DocumentType {
-  ARTICLE = 'core/article',
-  PLANNING = 'core/planning-item'
-}
+import { newsDocToYMap } from './transformations/yjs/yPlanning.js'
 
 interface CollaborationServerOptions {
   name: string
@@ -124,6 +118,8 @@ export class CollaborationServer {
       // Remove user from having a tracked doc open (or decrease the nr of times user have it open)
       onDisconnect: async (payload) => { await this.#onDisconnect(payload) },
 
+      // onLoadDocument: async (payload) => { console.log(payload) },
+      onChange: async ({ documentName, context }) => { this.#setDirty({ documentName, context }) },
       // No users have this doc open, remove it from tracked documents
       afterUnloadDocument: async (payload) => { await this.#afterUnloadDocument(payload) }
     })
@@ -200,6 +196,40 @@ export class CollaborationServer {
     }
   }
 
+  /**
+  * Helper function to access tracked documents or a specific document if a documentName is provided
+  * param documentName? string
+  */
+  #documentMeta(documentName?: string): Y.Map<unknown> | undefined {
+    if (!this.#openDocuments || documentName === 'document-tracker') {
+      return
+    }
+
+    const documents = this.#openDocuments.getMap('open-documents')
+    if (documentName) {
+      const document = documents.get(documentName) as Y.Map<unknown>
+      return document
+    }
+
+    return documents
+  }
+
+  #setDirty({ documentName, context }: { documentName: string, context: any }): void {
+    if (documentName === 'document-tracker') {
+      return
+    }
+
+    const currentDoc = this.#documentMeta(documentName)
+    const currentUserDoc = currentDoc?.get(context.user.sub as string) as Y.Map<unknown>
+
+    if (currentUserDoc) {
+      const isDirty = currentUserDoc.get('dirty') as boolean
+
+      if (!isDirty) {
+        currentUserDoc.set('dirty', true)
+      }
+    }
+  }
 
   /**
    * Fetch document from redis if already in cache, otherwise from repository
@@ -231,49 +261,20 @@ export class CollaborationServer {
     })
     const { document } = documentResponse
 
-    // Handle article document
-    if (document?.type === DocumentType.ARTICLE) {
-      // Share editable content
+
+    if (document) {
+      const yEle = yDoc.getMap('ele')
+
+      // Share editable content for Textbit use
+      const yContent = new Y.XmlText()
       const slateDocument = newsDocToSlate(document?.content ?? [])
-      const sharedContent = yDoc.get('content', Y.XmlText)
-      sharedContent.applyDelta(
+      yContent.applyDelta(
         slateNodesToInsertDelta(slateDocument)
       )
 
-      const yArticle = yDoc.getMap('article')
-      const parsed = newsDocToYPlanning(document, yArticle)
-      yDoc.share.set('article', yMapAsYEventAny(parsed))
+      const parsed = newsDocToYMap(document, yEle)
+      parsed.set('content', yContent)
       return Y.encodeStateAsUpdate(yDoc)
-    }
-
-    // Handle planning document
-    if (document?.type === DocumentType.PLANNING) {
-      // Share editable content
-      const pubDesc = document?.meta?.find(i => i.type === 'core/description' && i.role === 'public')
-      const internDesc = document?.meta?.find(i => i.type === 'core/description' && i.role !== 'public')
-
-      const pubDescDoc = textToNewsDoc(pubDesc?.data?.text || '')
-      const internDescDoc = textToNewsDoc(internDesc?.data?.text || '')
-
-      const pubDescSlateDoc = newsDocToSlate(pubDescDoc ?? [])
-      const sharedPubDesc = yDoc.get('publicDescription', Y.XmlText)
-      sharedPubDesc.applyDelta(slateNodesToInsertDelta(pubDescSlateDoc))
-
-      const internDescSlateDoc = newsDocToSlate(internDescDoc ?? [])
-      const sharedInternDesc = yDoc.get('internalDescription', Y.XmlText)
-      sharedInternDesc.applyDelta(slateNodesToInsertDelta(internDescSlateDoc))
-
-      try {
-        const planningYMap = yDoc.getMap('planning')
-        const parsed = newsDocToYPlanning(document, planningYMap)
-        yDoc.share.set('planning', yMapAsYEventAny(parsed))
-        return Y.encodeStateAsUpdate(yDoc)
-      } catch (err) {
-        if (err instanceof Error) {
-          throw new Error(err.message)
-        }
-        throw new Error('Unknown error in parsing Planning')
-      }
     }
 
     throw new Error('Can\'t determine DocumentType')
@@ -324,7 +325,7 @@ export class CollaborationServer {
    *
    * Action: Remove the user (or decrease count) from a tracked document userlist
    */
-  async #onDisconnect({ documentName, context }: onDisconnectPayload): Promise<void> {
+  async #onDisconnect({ document, documentName, context }: onDisconnectPayload): Promise<void> {
     if (!this.#openDocuments || documentName === 'document-tracker') {
       return
     }
@@ -332,6 +333,22 @@ export class CollaborationServer {
     const { sub: userId } = context.user as { sub: string, sub_name: string }
     const documents = this.#openDocuments.getMap('open-documents')
     const documentUsersList = documents.get(documentName) as Y.Map<unknown>
+
+    if (documentUsersList) {
+      const user = documentUsersList.get(userId) as Y.Map<unknown>
+      const isDirty = user.get('dirty') as boolean
+
+      if (isDirty) {
+        const yPlanning = document.getMap('planning')
+        console.log(yPlanning.toJSON())
+        /* const res = await this.#repository.saveDoc({
+          document,
+          documentName,
+          accessToken: context.token
+        })
+        console.log('Document saved', res) */
+      }
+    }
 
     if (documentUsersList) {
       const user = documentUsersList.get(userId) as Y.Map<unknown>
@@ -352,15 +369,11 @@ export class CollaborationServer {
    * Action: Remove this document from tracked documents so that the tracker document does not grow indefinitely
    */
   async #afterUnloadDocument({ documentName }: afterUnloadDocumentPayload): Promise<void> {
-    if (!this.#openDocuments || documentName === 'document-tracker') {
-      return
-    }
-
-    const documents = this.#openDocuments.getMap('open-documents')
-    const documentUsersList = documents.get(documentName) as Y.Map<unknown>
+    const documents = this.#documentMeta()
+    const documentUsersList = this.#documentMeta(documentName)
 
     if (documentUsersList && !documentUsersList.size) {
-      documents.delete(documentName)
+      documents && documents.delete(documentName)
     }
   }
 
@@ -402,6 +415,7 @@ export class CollaborationServer {
     }]
 
     const yDocMap: Y.Map<Y.Map<Y.Map<string>>> = this.#openDocuments.getMap('open-documents')
+    console.log(yDocMap.toJSON())
     yDocMap.forEach((yUsersMap, uuid) => {
       const users: CollaborationSnapshotUser[] = []
       yUsersMap.forEach(yUser => {
