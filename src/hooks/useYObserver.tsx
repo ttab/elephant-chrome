@@ -68,7 +68,7 @@ export function useYObserver(name: string, path: string): YObserved {
       yRoot
     }), [map, path, yRoot]),
     state: map?.toJSON() as Block[],
-    loading: !isSynced
+    loading: yRoot === undefined
   }
 }
 

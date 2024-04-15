@@ -5,7 +5,7 @@ import { useYObserver } from '@/hooks'
 import { Awareness } from '@/components'
 
 export const PlanStatus = (): JSX.Element => {
-  const { get, set, loading } = useYObserver('meta', 'core/planning-item[0].data')
+  const { get, set } = useYObserver('meta', 'core/planning-item[0].data')
 
   const setFocused = useRef<(value: boolean) => void>(null)
 
@@ -15,32 +15,30 @@ export const PlanStatus = (): JSX.Element => {
     return type.value === value
   })
 
-  return !loading
-    ? (
-      <Awareness name='PlanStatus' ref={setFocused}>
-        <ComboBox
-          className='w-fit px-2 h-7'
-          options={VisibilityStatuses}
-          variant={'ghost'}
-          selectedOption={selectedOption}
-          onOpenChange={(isOpen: boolean) => {
-            if (setFocused?.current) {
-              setFocused.current(isOpen)
-            }
-          }}
-          onSelect={(option) => set(option.value === 'public'
-            ? 'true'
-            : 'false',
-          'public') }
-          hideInput
-        >
-          {selectedOption?.icon
-            ? <selectedOption.icon { ...selectedOption.iconProps} />
+  return (
+    <Awareness name='PlanStatus' ref={setFocused}>
+      <ComboBox
+        className='w-fit px-2 h-7'
+        options={VisibilityStatuses}
+        variant={'ghost'}
+        selectedOption={selectedOption}
+        onOpenChange={(isOpen: boolean) => {
+          if (setFocused?.current) {
+            setFocused.current(isOpen)
+          }
+        }}
+        onSelect={(option) => set(
+          option.value === 'public' ? 'true' : 'false',
+          'public'
+        )}
+        hideInput
+      >
+        {selectedOption?.icon
+          ? <selectedOption.icon {...selectedOption.iconProps} />
 
-            : selectedOption?.label
-      }
-        </ComboBox>
-      </Awareness>
-      )
-    : <p>Loading...</p>
+          : selectedOption?.label
+        }
+      </ComboBox>
+    </Awareness>
+  )
 }

@@ -2,17 +2,13 @@ import { useYObserver, useRegistry } from '@/hooks'
 import { DatePicker } from '@/views/PlanningOverview/PlanningHeader/Datepicker'
 
 export const PlanDate = (): JSX.Element => {
-  const { get, set, loading } = useYObserver('meta', 'core/planning-item[0].data')
+  const { get, set } = useYObserver('meta', 'core/planning-item[0].data')
   const { timeZone } = useRegistry()
 
 
-  const date = parseDate(get('start_date') as string)
+  const date = parseDate(get('start_date') as string) || new Date()
 
   const setDate = () => (date: Date) => { set(format(date, timeZone), 'start_date') }
-
-  if (loading || !date) {
-    return <p>Loading</p>
-  }
 
   return <DatePicker date={date} setDate={setDate()} />
 }

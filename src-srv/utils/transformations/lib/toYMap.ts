@@ -21,7 +21,7 @@ export function toYMap<T extends Record<string, unknown>>(d: T, map: Y.Map<unkno
         map.set(key, toYMap(value as Record<string, unknown>, new Y.Map()))
       }
     } else {
-      if (key === 'text') {
+      if (key === 'text' || key === 'title') {
         const yXmlText = toSlateYXmlText(value as string)
         map.set(key, yXmlText)
       } else {

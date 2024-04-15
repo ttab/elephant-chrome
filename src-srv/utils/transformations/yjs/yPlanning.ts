@@ -42,4 +42,3 @@ export function yMapToNewsDoc(planningYMap: Y.Map<unknown>): Document {
     throw new Error('Unknown error')
   }
 }
-

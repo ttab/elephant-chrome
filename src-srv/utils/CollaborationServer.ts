@@ -118,8 +118,6 @@ export class CollaborationServer {
       // Remove user from having a tracked doc open (or decrease the nr of times user have it open)
       onDisconnect: async (payload) => { await this.#onDisconnect(payload) },
 
-      // onLoadDocument: async (payload) => { console.log(payload) },
-      onChange: async ({ documentName, context }) => { this.#setDirty({ documentName, context }) },
       // No users have this doc open, remove it from tracked documents
       afterUnloadDocument: async (payload) => { await this.#afterUnloadDocument(payload) }
     })
@@ -197,41 +195,6 @@ export class CollaborationServer {
   }
 
   /**
-  * Helper function to access tracked documents or a specific document if a documentName is provided
-  * param documentName? string
-  */
-  #documentMeta(documentName?: string): Y.Map<unknown> | undefined {
-    if (!this.#openDocuments || documentName === 'document-tracker') {
-      return
-    }
-
-    const documents = this.#openDocuments.getMap('open-documents')
-    if (documentName) {
-      const document = documents.get(documentName) as Y.Map<unknown>
-      return document
-    }
-
-    return documents
-  }
-
-  #setDirty({ documentName, context }: { documentName: string, context: any }): void {
-    if (documentName === 'document-tracker') {
-      return
-    }
-
-    const currentDoc = this.#documentMeta(documentName)
-    const currentUserDoc = currentDoc?.get(context.user.sub as string) as Y.Map<unknown>
-
-    if (currentUserDoc) {
-      const isDirty = currentUserDoc.get('dirty') as boolean
-
-      if (!isDirty) {
-        currentUserDoc.set('dirty', true)
-      }
-    }
-  }
-
-  /**
    * Fetch document from redis if already in cache, otherwise from repository
    */
   async #fetchDocument({ documentName: uuid, document: yDoc, context }: fetchPayload): Promise<Uint8Array | null> {
@@ -255,11 +218,10 @@ export class CollaborationServer {
     }
 
     // Fetch content
-    const documentResponse = await this.#repository.getDoc({
+    const { document = null } = await this.#repository.getDoc({
       uuid,
       accessToken: context.token
-    })
-    const { document } = documentResponse
+    }) || {}
 
 
     if (document) {
@@ -277,7 +239,10 @@ export class CollaborationServer {
       return Y.encodeStateAsUpdate(yDoc)
     }
 
-    throw new Error('Can\'t determine DocumentType')
+    // This is a new and unknown yDoc initiated from the client. Just return it
+    // as an encoded state update and trust the client to set properties and the
+    // hocuspocus client/server comm to sync the changes and store them in redis.
+    return Y.encodeStateAsUpdate(yDoc)
   }
 
 
@@ -336,22 +301,6 @@ export class CollaborationServer {
 
     if (documentUsersList) {
       const user = documentUsersList.get(userId) as Y.Map<unknown>
-      const isDirty = user.get('dirty') as boolean
-
-      if (isDirty) {
-        const yPlanning = document.getMap('planning')
-        console.log(yPlanning.toJSON())
-        /* const res = await this.#repository.saveDoc({
-          document,
-          documentName,
-          accessToken: context.token
-        })
-        console.log('Document saved', res) */
-      }
-    }
-
-    if (documentUsersList) {
-      const user = documentUsersList.get(userId) as Y.Map<unknown>
       const count = user?.get('count') as number || 0
 
       if (count > 1) {
@@ -369,11 +318,15 @@ export class CollaborationServer {
    * Action: Remove this document from tracked documents so that the tracker document does not grow indefinitely
    */
   async #afterUnloadDocument({ documentName }: afterUnloadDocumentPayload): Promise<void> {
-    const documents = this.#documentMeta()
-    const documentUsersList = this.#documentMeta(documentName)
+    if (!this.#openDocuments || documentName === 'document-tracker') {
+      return
+    }
+
+    const documents = this.#openDocuments.getMap('open-documents')
+    const documentUsersList = documents.get(documentName) as Y.Map<unknown>
 
     if (documentUsersList && !documentUsersList.size) {
-      documents && documents.delete(documentName)
+      documents.delete(documentName)
     }
   }
 
@@ -415,7 +368,6 @@ export class CollaborationServer {
     }]
 
     const yDocMap: Y.Map<Y.Map<Y.Map<string>>> = this.#openDocuments.getMap('open-documents')
-    console.log(yDocMap.toJSON())
     yDocMap.forEach((yUsersMap, uuid) => {
       const users: CollaborationSnapshotUser[] = []
       yUsersMap.forEach(yUser => {

@@ -23,15 +23,16 @@ function findIndex(stateDescriptions: Block[], role: 'internal' | 'public'):
 
 export const PlanDescription = ({ role }: {
   role: 'internal' | 'public'
-  name: string
 }): JSX.Element => {
   const { state: stateDescriptions = [] } = useYObserver('meta', 'core/description')
 
   const { createIndex, index } = findIndex(stateDescriptions, role)
 
-  const { set } = useYObserver('meta', `core/description[${index}]`)
+  const { set, loading } = useYObserver('meta', `core/description[${index}]`)
 
-  if (createIndex) {
+  const path = `core/description[${index === -1 ? stateDescriptions.length : index}].data`
+
+  if (createIndex && !loading) {
     set({
       role,
       data: {
@@ -40,12 +41,12 @@ export const PlanDescription = ({ role }: {
     })
   }
 
-  const path = `core/description[${index === -1 ? stateDescriptions.length : index}].data`
-
   return (
     <div className='flex w-full -ml-1' >
       <TextBox
+        base='meta'
         path={path}
+        field='text'
         icon={role === 'internal' && <MessageCircleMore
           size={28}
           strokeWidth={1.75}

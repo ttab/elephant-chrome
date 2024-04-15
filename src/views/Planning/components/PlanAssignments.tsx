@@ -20,16 +20,14 @@ const PlanAssignment = ({ index }: { index: number }): JSX.Element => {
         <div className="flex-grow flex space-x-2 items-center">
           <div className='font-medium text-sm'>
             {getUUID('uuid')
-              ? (
-                <Link to='Editor' props={{ id: getUUID('uuid') }}>
-                  {getTitle('title') as string}
-                </Link>
-                )
-              : <span className='text-muted-foreground'>{getTitle('title') as string}</span>}
+              ? <Link to='Editor' props={{ id: getUUID('uuid') as string }}>
+                {(getTitle('title') as Y.XmlText)?.toJSON()}
+              </Link>
+              : <span className='text-muted-foreground'>{(getTitle('title') as Y.XmlText)?.toJSON()}</span>}
           </div>
           <SluglineEditable path={`core/assignment[${index}].meta.tt/slugline[0]`} />
         </div>
-        <div className='font-normal text-sm mt-2'>{(getAssignmentDescription('text') as Y.XmlText)?.toJSON() }</div>
+        <div className='font-normal text-sm mt-2'>{(getAssignmentDescription('text') as Y.XmlText)?.toJSON()}</div>
       </div>
       <div className="col-span-4 flex justify-end space-x-4 items-center">
         <AssigneeAvatars

@@ -9,28 +9,30 @@ import { type HocuspocusProvider } from '@hocuspocus/provider'
 import { type AwarenessUserData } from '@/contexts/CollaborationProvider'
 import type * as Y from 'yjs'
 
-export const TextBox = ({ icon, placeholder, path }: {
+export const TextBox = ({ icon, placeholder, base, path, field, className }: {
   path: string
+  base: string
+  field: string
   icon?: React.ReactNode
   placeholder?: string
+  className?: string
 }): JSX.Element => {
-  const { provider, synced, user } = useCollaboration()
-  const { get } = useYObserver('meta', path)
+  const { provider, user } = useCollaboration()
+  const { get } = useYObserver(base, path)
 
-  const content = get('text')
-
+  const content = get(field) as Y.XmlText
   return (
     <>
-      {!!provider && synced && content &&
+      {!!provider && content &&
         <Textbit.Root
           verbose={true}
           debounce={0}
           placeholder={placeholder}
           plugins={[]}
-          className="h-min-12 w-full"
+          className={cn('h-min-12 w-full', className)}
         >
           <TextboxEditable
-            content={get('text') as Y.XmlText}
+            content={content}
             provider={provider}
             user={user}
             icon={icon}

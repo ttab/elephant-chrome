@@ -109,23 +109,27 @@ export class Repository {
    * @param accessToken string
    * @returns Promise<GetDocumentResponse>
    */
-  async getDoc({ uuid, accessToken }: { uuid: string, accessToken: string }): Promise<GetDocumentResponse> {
-    if (uuidValidate(uuid)) {
-      try {
-        const { response } = await this.#client.get({
-          uuid,
-          version: 0n,
-          status: '',
-          lock: false
-        }, meta(accessToken))
-        return response
-      } catch (err: unknown) {
-        if (err instanceof Error) {
-          throw new Error(`Unable to fetch document: ${err.message}`)
-        }
-      }
+  async getDoc({ uuid, accessToken }: { uuid: string, accessToken: string }): Promise<GetDocumentResponse | null> {
+    if (!uuidValidate(uuid)) {
+      throw new Error('Invalid uuid format')
     }
-    throw new Error('Invalid uuid format')
+
+    try {
+      const { response } = await this.#client.get({
+        uuid,
+        version: 0n,
+        status: '',
+        lock: false
+      }, meta(accessToken))
+
+      return response
+    } catch (err: unknown) {
+      if ((err as { code: string })?.code === 'not_found') {
+        return null
+      }
+
+      throw new Error(`Unable to fetch document: ${(err as Error)?.message || 'Unknown error'}`)
+    }
   }
 
   /**
