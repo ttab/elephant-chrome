@@ -12,8 +12,6 @@ describe('YPlanning', () => {
   }
 
   const yPlanning = newsDocToYMap(document, planningYMap)
-  // eslint-disable-next-line
-    yDoc.share.set('planning', yPlanning as unknown as Y.AbstractType<Y.YEvent<any>>)
 
   it('transforms newsDoc to yPlanning', () => {
     const planningJson = yDoc.getMap('planning').toJSON()
