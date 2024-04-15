@@ -80,7 +80,8 @@ export interface HistoryState {
 
 export interface ViewProps {
   id?: string
-  asChild?: boolean
+  asDialog?: boolean
+  onDialogClose?: (id?: string) => void
   className?: string
 }
 

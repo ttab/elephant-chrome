@@ -13,19 +13,28 @@ export const CreatePlan = (): JSX.Element => {
   return (
     <Dialog open={open}>
       <DialogTrigger asChild>
-        <Button variant='ghost' onClick={() => setOpen(!open)}>
+        <Button variant='ghost' className="h-9 w-9 p-0" onClick={() => setOpen(!open)}>
           <PlusIcon size={18} strokeWidth={1.75} />
         </Button>
       </DialogTrigger>
 
       <DialogContent className='p-0 rounded-md'>
-        <Planning asChild className='p-0 rounded-md' />
+        <Planning
+          className='p-0 rounded-md'
+          asDialog
+          onDialogClose={(id) => {
+            setOpen(!open)
+            if (id) {
+              // Open in new view
+            }
+          }}
+        />
 
         <DialogFooter className='p-4 border-t'>
           <Button onClick={() => {
+            // Get the id, post it, and open it in a view?
             setOpen(!open)
-          }}
-          >
+          }}>
             Skapa planering
           </Button>
         </DialogFooter>

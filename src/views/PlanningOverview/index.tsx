@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { type ViewMetadata, type ViewProps } from '@/types'
+import { type ViewMetadata } from '@/types'
 import { ViewHeader } from '@/components'
 import { CalendarDaysIcon } from '@ttab/elephant-ui/icons'
 import { PlanningHeader } from './PlanningHeader'
@@ -27,7 +27,7 @@ const meta: ViewMetadata = {
   }
 }
 
-export const PlanningOverview = (props: ViewProps): JSX.Element => {
+export const PlanningOverview = (): JSX.Element => {
   const [startDate, setStartDate] = useState<Date>(new Date())
   const [endDate, setEndDate] = useState<Date>(getEndDate(startDate))
   const [currentTab, setCurrentTab] = useState<string>('list')
@@ -39,10 +39,14 @@ export const PlanningOverview = (props: ViewProps): JSX.Element => {
   return (
     <TableProvider>
       <Tabs defaultValue={currentTab} className='flex-1' onValueChange={setCurrentTab}>
+
         <TableCommandMenu />
+
         <div className="flex flex-col h-screen">
-          <div className="grow-0">
-            <ViewHeader {...props} title="Planeringsöversikt" shortTitle="Planering" icon={CalendarDaysIcon}>
+          <ViewHeader.Root>
+            <ViewHeader.Title title="Planeringsöversikt" short="Planering" icon={CalendarDaysIcon} />
+
+            <ViewHeader.Content>
               <PlanningHeader
                 tab={currentTab}
                 startDate={startDate}
@@ -50,8 +54,10 @@ export const PlanningOverview = (props: ViewProps): JSX.Element => {
                 endDate={endDate}
                 setEndDate={setEndDate}
               />
-            </ViewHeader>
-          </div>
+            </ViewHeader.Content>
+
+            <ViewHeader.Action />
+          </ViewHeader.Root>
 
           <ScrollArea>
             <TabsContent value='list' className='mt-0'>
@@ -62,8 +68,8 @@ export const PlanningOverview = (props: ViewProps): JSX.Element => {
               <PlanningGrid startDate={startDate} endDate={endDate} />
             </TabsContent>
           </ScrollArea>
-
         </div>
+
       </Tabs>
     </TableProvider>
   )

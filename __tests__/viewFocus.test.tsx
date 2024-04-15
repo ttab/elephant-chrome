@@ -6,7 +6,7 @@ import userEvent from '@testing-library/user-event'
 import { useNavigation } from '@/navigation/hooks'
 
 import { render, screen } from '../setupTests'
-import { ViewFocus } from '@/components/ViewHeader/ViewFocus'
+import { ViewFocus } from '@/components/View/Header/ViewFocus'
 import { type NavigationActionType } from '@/types'
 import { initializeNavigationState } from '@/navigation/lib'
 

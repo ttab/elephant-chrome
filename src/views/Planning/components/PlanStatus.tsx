@@ -18,7 +18,7 @@ export const PlanStatus = (): JSX.Element => {
   return (
     <Awareness name='PlanStatus' ref={setFocused}>
       <ComboBox
-        className='w-fit px-2 h-7'
+        className='h-9 w-9 p-0'
         options={VisibilityStatuses}
         variant={'ghost'}
         selectedOption={selectedOption}

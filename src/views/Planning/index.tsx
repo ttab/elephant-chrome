@@ -119,7 +119,7 @@ export const Planning = (props: ViewProps): JSX.Element => {
 const PlanningViewContent = (props: ViewProps & { documentId: string }): JSX.Element | undefined => {
   const viewVariants = cva('flex flex-col', {
     variants: {
-      asChild: {
+      asDialog: {
         false: 'h-screen',
         true: 'overflow-hidden'
       }
@@ -128,26 +128,39 @@ const PlanningViewContent = (props: ViewProps & { documentId: string }): JSX.Ele
 
   const sectionVariants = cva('overscroll-auto @5xl:w-[1024px] space-y-4', {
     variants: {
-      asChild: {
+      asDialog: {
         false: 'p-8',
         true: 'p-6'
       }
     }
   })
+
   return (
-    <div className={cn(viewVariants({ asChild: !!props?.asChild, className: props?.className }))}>
+    <div className={cn(viewVariants({ asDialog: !!props.asDialog, className: props?.className }))}>
       <div className="grow-0">
-        <ViewHeader {...props} title={props?.asChild ? undefined : 'Planering'} icon={props?.asChild ? undefined : GanttChartSquare}>
-          <div className='flex w-full h-full items-center space-x-2'>
-            <PlanDocumentStatus />
-            <PlanStatus />
-            <PlanPriority />
-          </div>
-        </ViewHeader>
+        <ViewHeader.Root>
+          {!props.asDialog &&
+            <ViewHeader.Title title='Planering' icon={GanttChartSquare} />
+          }
+
+          <ViewHeader.Content>
+            <div className='flex w-full h-full items-center space-x-2'>
+              <PlanDocumentStatus />
+              <PlanStatus />
+              <PlanPriority />
+            </div>
+          </ViewHeader.Content>
+
+          <ViewHeader.Action onDialogClose={props.onDialogClose}>
+            {!props.asDialog && !!props.documentId &&
+              <ViewHeader.RemoteUsers documentId={props.documentId} />
+            }
+          </ViewHeader.Action>
+        </ViewHeader.Root>
       </div>
 
       <ScrollArea className='grid @5xl:place-content-center'>
-        <section className={cn(sectionVariants({ asChild: !!props?.asChild }))}>
+        <section className={cn(sectionVariants({ asDialog: !!props?.asDialog }))}>
           <div className='flex space-x-2 items-center'>
             <PlanTitle />
             <SluglineEditable />

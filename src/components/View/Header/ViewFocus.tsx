@@ -26,7 +26,7 @@ export const ViewFocus = ({ viewId }: { viewId: string }): JSX.Element => {
   return (
     <Button
       variant='ghost'
-      className='w-9 px-0'
+      className='w-9 h-9 px-0'
       onClick={() => {
         dispatch({
           type: NavigationActionType.FOCUS,

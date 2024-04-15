@@ -22,12 +22,15 @@ export const PlanningHeader = ({ tab, startDate, setStartDate, endDate, setEndDa
     </div>
 
     {tab === 'list' &&
-      <DateChanger startDate={startDate} setStartDate={setStartDate} />}
+      <DateChanger startDate={startDate} setStartDate={setStartDate} />
+    }
 
     {tab === 'grid' &&
       <DateChanger
         startDate={startDate} setStartDate={setStartDate}
-        endDate={endDate} setEndDate={setEndDate} />}
+        endDate={endDate} setEndDate={setEndDate}
+      />
+    }
 
     <Filter />
 

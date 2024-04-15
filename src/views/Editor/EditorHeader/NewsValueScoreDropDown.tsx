@@ -36,7 +36,7 @@ export const NewsValueScoreDropDown = ({ value, options, onChange }: NewsScoreDr
           <DropdownMenuTrigger asChild>
             <Button
               variant="ghost"
-              className="flex w-10 p-0 px-2 data-[state=open]:bg-muted items-center"
+              className="flex w-10 h-9 p-0 data-[state=open]:bg-muted items-center"
             >
               <span className={`flex ${!option?.label ? 'opacity-40' : ''}`}>
                 {Icon}
