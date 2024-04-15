@@ -1,7 +1,6 @@
 import { type ForwardedRef, forwardRef } from 'react'
 import { type View, type ViewProps } from '@/types'
 import { useNavigation, useView } from '@/hooks'
-import { v4 as uuid } from 'uuid'
 
 import { handleLink } from './lib/handleLink'
 import { toQueryString } from './lib/toQueryString'
@@ -15,7 +14,7 @@ interface LinkProps {
 
 export const Link = forwardRef((props: LinkProps, ref: ForwardedRef<HTMLAnchorElement>) => {
   const { state, dispatch } = useNavigation()
-  const viewId = uuid()
+  const viewId = crypto.randomUUID()
   const viewItem = state.viewRegistry.get(props.to)
   const qs = toQueryString(props.props)
 
