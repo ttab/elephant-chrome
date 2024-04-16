@@ -1,8 +1,6 @@
 import type { NavigationState, ViewRegistryItem, View, ContentState } from '@/types'
 import { ViewWrapper } from '@/components'
 import * as views from '@/views'
-import * as uuid from 'uuid'
-
 import {
   currentView,
   calculateViewWidths
@@ -22,7 +20,7 @@ export function initializeNavigationState(): NavigationState {
   // Initialize navigationstate from scratch if no contentState exists (or is empty []) in history
   if (!history?.state?.contentState?.length) {
     const InititalView = viewRegistry.getByPath(window.location.pathname)
-    const viewId = uuid.v4()
+    const viewId = crypto.randomUUID()
 
     history.replaceState({
       viewId,

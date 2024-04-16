@@ -5,13 +5,14 @@ import { TimeDisplay } from '@/components/DataItem/TimeDisplay'
 import { SluglineEditable } from '@/components/DataItem/Slugline'
 import { AssignmentType } from '@/components/DataItem/AssignmentType'
 import { AssigneeAvatars } from '@/components/DataItem/AssigneeAvatars'
+import type * as Y from 'yjs'
 
 const PlanAssignment = ({ index }: { index: number }): JSX.Element => {
-  const { get: getTitle } = useYObserver('planning', `meta.core/assignment[${index}]`)
-  const { get: getUUID } = useYObserver('planning', `meta.core/assignment[${index}].links.core/article[0]`)
-  const { get: getAssignmentDescription } = useYObserver('planning', `meta.core/assignment[${index}].meta.core/description[0].data`)
-  const { get: getAssignmentPublishTime } = useYObserver('planning', `meta.core/assignment[${index}].data`)
-  const { state: stateAuthor = [] } = useYObserver('planning', `meta.core/assignment[${index}].links.core/author`)
+  const { get: getTitle } = useYObserver('meta', `core/assignment[${index}]`)
+  const { get: getUUID } = useYObserver('meta', `core/assignment[${index}].links.core/article[0]`)
+  const { get: getAssignmentDescription } = useYObserver('meta', `core/assignment[${index}].meta.core/description[0].data`)
+  const { get: getAssignmentPublishTime } = useYObserver('meta', `core/assignment[${index}].data`)
+  const { state: stateAuthor = [] } = useYObserver('meta', `core/assignment[${index}].links.core/author`)
 
   return (
     <div className="grid grid-cols-12 border-b py-2">
@@ -20,13 +21,13 @@ const PlanAssignment = ({ index }: { index: number }): JSX.Element => {
           <div className='font-medium text-sm'>
             {getUUID('uuid')
               ? <Link to='Editor' props={{ id: getUUID('uuid') as string }}>
-                {getTitle('title') as string}
+                {(getTitle('title') as Y.XmlText)?.toJSON()}
               </Link>
-              : <span className='text-muted-foreground'>{getTitle('title') as string}</span>}
+              : <span className='text-muted-foreground'>{(getTitle('title') as Y.XmlText)?.toJSON()}</span>}
           </div>
-          <SluglineEditable path={`meta.core/assignment[${index}].meta.tt/slugline[0]`} />
+          <SluglineEditable path={`core/assignment[${index}].meta.tt/slugline[0]`} />
         </div>
-        <div className='font-normal text-sm mt-2'>{getAssignmentDescription('text') as string}</div>
+        <div className='font-normal text-sm mt-2'>{(getAssignmentDescription('text') as Y.XmlText)?.toJSON()}</div>
       </div>
       <div className="col-span-4 flex justify-end space-x-4 items-center">
         <AssigneeAvatars
@@ -50,7 +51,7 @@ const PlanAssignment = ({ index }: { index: number }): JSX.Element => {
 }
 
 export const PlanAssignments = (): JSX.Element => {
-  const { state } = useYObserver('planning', 'meta.core/assignment')
+  const { state } = useYObserver('meta', 'core/assignment')
   return (
     <div>
       {Array.isArray(state) && state.map((_, index: number) => (

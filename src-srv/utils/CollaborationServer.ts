@@ -29,13 +29,7 @@ import * as Y from 'yjs'
 import {
   newsDocToSlate
 } from './transformations/index.js'
-import { newsDocToYPlanning } from './transformations/yjs/yPlanning.js'
-import { textToNewsDoc } from './transformations/lib/textToNewsdoc.js'
-
-enum DocumentType {
-  ARTICLE = 'core/article',
-  PLANNING = 'core/planning-item'
-}
+import { newsDocToYMap } from './transformations/yjs/yMap.js'
 
 interface CollaborationServerOptions {
   name: string
@@ -200,7 +194,6 @@ export class CollaborationServer {
     }
   }
 
-
   /**
    * Fetch document from redis if already in cache, otherwise from repository
    */
@@ -230,53 +223,20 @@ export class CollaborationServer {
       accessToken: context.token
     }) || {}
 
-    // Handle article document
-    if (document?.type === DocumentType.ARTICLE) {
-      // Share editable content
+
+    if (document) {
+      const yEle = yDoc.getMap('ele')
+
+      // Share editable content for Textbit use
+      const yContent = new Y.XmlText()
       const slateDocument = newsDocToSlate(document?.content ?? [])
-      const sharedContent = yDoc.get('content', Y.XmlText)
-      sharedContent.applyDelta(
+      yContent.applyDelta(
         slateNodesToInsertDelta(slateDocument)
       )
 
-      const yArticle = yDoc.getMap('article')
-      newsDocToYPlanning(document, yArticle)
+      const parsed = newsDocToYMap(document, yEle)
+      parsed.set('content', yContent)
       return Y.encodeStateAsUpdate(yDoc)
-    }
-
-    // Handle planning document
-    if (document?.type === DocumentType.PLANNING) {
-      // Share editable content
-      const title = document.title || ''
-      const pubDesc = document?.meta?.find(i => i.type === 'core/description' && i.role === 'public')
-      const internDesc = document?.meta?.find(i => i.type === 'core/description' && i.role !== 'public')
-
-
-      const sharedTitle = yDoc.get('title', Y.XmlText)
-      sharedTitle.applyDelta(slateNodesToInsertDelta(
-        newsDocToSlate(textToNewsDoc(title) ?? [])
-      ))
-
-      const pubDescDoc = textToNewsDoc(pubDesc?.data?.text || '')
-      const pubDescSlateDoc = newsDocToSlate(pubDescDoc ?? [])
-      const sharedPubDesc = yDoc.get('publicDescription', Y.XmlText)
-      sharedPubDesc.applyDelta(slateNodesToInsertDelta(pubDescSlateDoc))
-
-      const internDescDoc = textToNewsDoc(internDesc?.data?.text || '')
-      const internDescSlateDoc = newsDocToSlate(internDescDoc ?? [])
-      const sharedInternDesc = yDoc.get('internalDescription', Y.XmlText)
-      sharedInternDesc.applyDelta(slateNodesToInsertDelta(internDescSlateDoc))
-
-      try {
-        const planningYMap = yDoc.getMap('planning')
-        newsDocToYPlanning(document, planningYMap)
-        return Y.encodeStateAsUpdate(yDoc)
-      } catch (err) {
-        if (err instanceof Error) {
-          throw new Error(err.message)
-        }
-        throw new Error('Unknown error in parsing Planning')
-      }
     }
 
     // This is a new and unknown yDoc initiated from the client. Just return it
@@ -330,7 +290,7 @@ export class CollaborationServer {
    *
    * Action: Remove the user (or decrease count) from a tracked document userlist
    */
-  async #onDisconnect({ documentName, context }: onDisconnectPayload): Promise<void> {
+  async #onDisconnect({ document, documentName, context }: onDisconnectPayload): Promise<void> {
     if (!this.#openDocuments || documentName === 'document-tracker') {
       return
     }

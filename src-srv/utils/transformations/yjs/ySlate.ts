@@ -9,9 +9,6 @@ export function yjsStateAsUpdate(content: TBElement[], data: Y.Doc): Uint8Array 
   const sharedContentRoot = data.get('content', Y.XmlText)
   sharedContentRoot.applyDelta(insertContentDelta)
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-argument
-  data.share.set('content', sharedContentRoot as Y.AbstractType<any>)
-
   return Y.encodeStateAsUpdate(data)
 }
 

@@ -6,7 +6,7 @@ import { cn } from '@ttab/elephant-ui/utils'
 import { useRef } from 'react'
 
 export const PlanSector = (): JSX.Element | undefined => {
-  const { get, set } = useYObserver('planning', 'links.tt/sector[0]')
+  const { get, set } = useYObserver('links', 'tt/sector[0]')
   const setFocused = useRef<(value: boolean) => void>(null)
   const selectedOption = Sectors.find(c => c.value === get('title'))
 

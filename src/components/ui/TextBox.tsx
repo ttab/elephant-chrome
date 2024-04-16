@@ -2,24 +2,28 @@ import { Textbit } from '@ttab/textbit'
 import { createEditor } from 'slate'
 import { cva } from 'class-variance-authority'
 import { cn } from '@ttab/elephant-ui/utils'
-import { useCollaboration } from '@/hooks'
+import { useCollaboration, useYObserver } from '@/hooks'
 import { useEffect, useMemo } from 'react'
 import { YjsEditor, withCursors, withYHistory, withYjs } from '@slate-yjs/core'
 import { type HocuspocusProvider } from '@hocuspocus/provider'
 import { type AwarenessUserData } from '@/contexts/CollaborationProvider'
-import * as Y from 'yjs'
+import type * as Y from 'yjs'
 
-export const TextBox = ({ name, icon, placeholder, className }: {
-  name: string
+export const TextBox = ({ icon, placeholder, base, path, field, className }: {
+  path: string
+  base: string
+  field: string
   icon?: React.ReactNode
   placeholder?: string
   className?: string
 }): JSX.Element => {
   const { provider, user } = useCollaboration()
+  const { get } = useYObserver(base, path)
 
+  const content = get(field) as Y.XmlText
   return (
     <>
-      {!!provider &&
+      {!!provider && content &&
         <Textbit.Root
           verbose={true}
           debounce={0}
@@ -28,7 +32,7 @@ export const TextBox = ({ name, icon, placeholder, className }: {
           className={cn('h-min-12 w-full', className)}
         >
           <TextboxEditable
-            name={name}
+            content={content}
             provider={provider}
             user={user}
             icon={icon}
@@ -39,11 +43,11 @@ export const TextBox = ({ name, icon, placeholder, className }: {
   )
 }
 
-const TextboxEditable = ({ name, provider, user, icon }: {
-  name: string
+const TextboxEditable = ({ provider, user, icon, content }: {
   provider: HocuspocusProvider
   user: AwarenessUserData
   icon?: React.ReactNode
+  content: Y.XmlText
 }): JSX.Element | undefined => {
   const yjsEditor = useMemo(() => {
     if (!provider?.awareness) {
@@ -54,13 +58,13 @@ const TextboxEditable = ({ name, provider, user, icon }: {
       withCursors(
         withYjs(
           createEditor(),
-          provider.document.get(name, Y.XmlText)
+          content
         ),
         provider.awareness,
         { data: user as unknown as Record<string, unknown> }
       )
     )
-  }, [provider?.awareness, provider?.document, user, name])
+  }, [provider?.awareness, user, content])
 
   useEffect(() => {
     if (yjsEditor) {

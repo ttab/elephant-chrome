@@ -1,14 +1,52 @@
 import { MessageCircleMore } from '@ttab/elephant-ui/icons'
 import { TextBox } from '@/components/ui'
+import { useYObserver } from '@/hooks'
+import { type Block } from '@/protos/service'
 
-export const PlanDescription = ({ role, name }: {
-  role: string
-  name: string
-}): JSX.Element | undefined => {
+function findIndex(stateDescriptions: Block[], role: 'internal' | 'public'):
+{ createIndex: boolean, index: number } {
+  // If no descriptions, assign indices based on role
+  if (!stateDescriptions?.length) {
+    return {
+      createIndex: true,
+      index: role === 'internal' ? 1 : 0
+    }
+  }
+
+  // Else find index
+  const foundIndex = stateDescriptions.findIndex((description) => description.role === role)
+  return {
+    createIndex: foundIndex === -1,
+    index: foundIndex === -1 ? stateDescriptions.length : foundIndex
+  }
+}
+
+export const PlanDescription = ({ role }: {
+  role: 'internal' | 'public'
+}): JSX.Element => {
+  const { state: stateDescriptions = [] } = useYObserver('meta', 'core/description')
+
+  const { createIndex, index } = findIndex(stateDescriptions, role)
+
+  const { set, loading } = useYObserver('meta', `core/description[${index}]`)
+
+  const path = `core/description[${index === -1 ? stateDescriptions.length : index}].data`
+
+  if (createIndex && !loading) {
+    set({
+      role,
+      data: {
+        text: ''
+      }
+    })
+  }
+
   return (
     <div className='flex w-full -ml-1' >
       <TextBox
-        name={name}
+        base='meta'
+        path={path}
+        field='text'
         icon={role === 'internal' && <MessageCircleMore
           size={28}
           strokeWidth={1.75}

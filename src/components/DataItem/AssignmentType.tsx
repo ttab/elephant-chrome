@@ -4,7 +4,7 @@ import { ComboBox } from '../ui'
 import { cn } from '@ttab/elephant-ui/utils'
 
 export const AssignmentType = ({ index }: { index: number }): JSX.Element => {
-  const { get, set, loading } = useYObserver('planning', `meta.core/assignment[${index}].meta.core/assignment-type[0]`)
+  const { get, set, loading } = useYObserver('meta', `core/assignment[${index}].meta.core/assignment-type[0]`)
 
   const selectedOption = AssignmentTypes.find(type => type.value === get('value'))
 
