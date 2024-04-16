@@ -42,8 +42,7 @@ const meta: ViewMetadata = {
 
 export const Planning = (props: ViewProps): JSX.Element => {
   const query = useQuery()
-  // FIXME: When creating new after opening an existing plan query.id is picked up...
-  const [planningId, setPlanningId] = useState(props.id || query.id)
+  const [planningId, setPlanningId] = useState(props.id !== undefined ? props.id : query.id)
   const documentId = planningId || crypto.randomUUID()
 
   useEffect(() => {

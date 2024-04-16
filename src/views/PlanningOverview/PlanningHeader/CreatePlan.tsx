@@ -20,6 +20,7 @@ export const CreatePlan = (): JSX.Element => {
 
       <DialogContent className='p-0 rounded-md'>
         <Planning
+          id={null}
           className='p-0 rounded-md'
           asDialog
           onDialogClose={(id) => {
