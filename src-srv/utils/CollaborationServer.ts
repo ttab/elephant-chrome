@@ -29,7 +29,7 @@ import * as Y from 'yjs'
 import {
   newsDocToSlate
 } from './transformations/index.js'
-import { newsDocToYMap } from './transformations/yjs/yPlanning.js'
+import { newsDocToYMap } from './transformations/yjs/yMap.js'
 
 interface CollaborationServerOptions {
   name: string

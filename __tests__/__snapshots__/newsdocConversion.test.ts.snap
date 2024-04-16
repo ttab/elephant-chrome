@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`YPlanning transforms newsDoc to yPlanning 1`] = `
+exports[`Conversion of newsdoc to yMap document transforms newsDoc to yPlanning 1`] = `
 Object {
   "links": Object {
     "tt/sector": Array [
@@ -201,7 +201,7 @@ Object {
 }
 `;
 
-exports[`YPlanning transforms yPlanning to newsDoc 1`] = `
+exports[`Conversion of newsdoc to yMap document transforms yPlanning to newsDoc 1`] = `
 Object {
   "content": Array [],
   "language": "sv-se",

@@ -1,7 +1,7 @@
 import { get, set } from '../src/lib/yMapValueByPath'
 import * as Y from 'yjs'
 import { planning } from './data/planning-repo'
-import { newsDocToYMap } from '../src-srv/utils/transformations/yjs/yPlanning'
+import { newsDocToYMap } from '../src-srv/utils/transformations/yjs/yMap'
 import { toYMap } from '../src-srv/utils/transformations/lib/toYMap'
 
 describe('yMapValueByPath', () => {
