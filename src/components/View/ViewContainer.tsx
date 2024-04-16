@@ -45,7 +45,7 @@ const section = cva('@container/view', {
   }]
 })
 
-export const ViewWrapper = ({ children, colSpan: wantedColSpan }: {
+export const ViewContainer = ({ children, colSpan: wantedColSpan }: {
   children: JSX.Element
   colSpan: number
 }): JSX.Element => {

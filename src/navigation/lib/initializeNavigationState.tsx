@@ -2,7 +2,7 @@ import type { NavigationState, ViewRegistryItem, View, ContentState } from '@/ty
 import { ViewWrapper } from '@/components'
 import * as views from '@/views'
 import * as uuid from 'uuid'
-import { ViewProvider } from '@/contexts'
+
 import {
   currentView,
   calculateViewWidths
@@ -41,11 +41,9 @@ export function initializeNavigationState(): NavigationState {
       focus: null,
       active: viewId,
       content: [(
-        <ViewProvider key={viewId} viewId={viewId} name={name}>
-          <ViewWrapper colSpan={12}>
-            <InititalView.component {...props} />
-          </ViewWrapper>
-        </ViewProvider>
+        <ViewWrapper key={viewId} viewId={viewId} name={name} colSpan={12}>
+          <InititalView.component {...props} />
+        </ViewWrapper>
       )]
     }
   }
@@ -59,14 +57,12 @@ export function initializeNavigationState(): NavigationState {
 
   const content = history.state.contentState.map((item: ContentState, index: number): JSX.Element => {
     const Component = viewRegistry.get(item.name)?.component
-    const width = widths[index]
+    const { colSpan } = widths[index]
 
     return (
-      <ViewProvider key={item.viewId} viewId={item.viewId} name={item.name}>
-        <ViewWrapper colSpan={width.colSpan}>
-          <Component {...item.props} />
-        </ViewWrapper>
-      </ViewProvider>
+      <ViewWrapper key={item.viewId} viewId={item.viewId} name={item.name} colSpan={colSpan}>
+        <Component {...item.props} />
+      </ViewWrapper>
     )
   })
 

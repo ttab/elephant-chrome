@@ -1,4 +1,3 @@
-import { ViewProvider } from '@/contexts'
 import { ViewWrapper } from '@/components'
 
 import {
@@ -27,14 +26,12 @@ export function navigationReducer(state: NavigationState, action: NavigationActi
         active: action?.active || action.content[action.content.length - 1].viewId,
         content: action.content.map((item: ContentState, index): JSX.Element => {
           const Component = state.viewRegistry.get(item.name)?.component
-          const width = views[index]
+          const { colSpan } = views[index]
 
           return (
-            <ViewProvider key={item.viewId} viewId={item.viewId} name={item.name}>
-              <ViewWrapper colSpan={width.colSpan}>
-                <Component {...item.props} />
-              </ViewWrapper>
-            </ViewProvider>
+            <ViewWrapper key={item.viewId} viewId={item.viewId} name={item.name} colSpan={colSpan}>
+              <Component {...item.props} />
+            </ViewWrapper>
           )
         })
       }

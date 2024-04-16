@@ -1,2 +1,3 @@
-export { ViewHeader } from './Header'
-export { ViewWrapper } from './Wrapper'
+export { ViewHeader } from './ViewHeader'
+export { ViewWrapper } from './ViewWrapper'
+export { ViewContext } from './ViewProvider'
