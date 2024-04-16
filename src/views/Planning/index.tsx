@@ -72,7 +72,7 @@ export const Planning = (props: ViewProps): JSX.Element => {
     const _internal = document.getMap('_internal')
     _internal.set('draft', true)
 
-    const planningYMap = document.getMap('planning')
+    const planningYMap = document.getMap('ele')
     planningYMap.set('meta', new Y.Map())
     planningYMap.set('links', new Y.Map())
 
@@ -91,15 +91,11 @@ export const Planning = (props: ViewProps): JSX.Element => {
       }]
     }
 
-    const title = document.get('title', Y.XmlText)
-    const publicDescription = document.get('publicDescription', Y.XmlText)
-    const internalDescription = document.get('internalDescription', Y.XmlText)
+    const title = root.get('title') as Y.XmlText
 
     title.applyDelta(slateNodesToInsertDelta(emptyText()))
-    publicDescription.applyDelta(slateNodesToInsertDelta(emptyText()))
-    internalDescription.applyDelta(slateNodesToInsertDelta(emptyText()))
 
-    planningYMap.set('planning', root)
+    planningYMap.set('ele', root)
 
     return document
   }
@@ -154,8 +150,8 @@ const PlanningViewContent = (props: ViewProps & { documentId: string }): JSX.Ele
           </div>
 
           <div className='flex flex-col gap-4'>
-            <PlanDescription role="public" name="publicDescription" />
-            <PlanDescription role="internal" name="internalDescription" />
+            <PlanDescription role="public" />
+            <PlanDescription role="internal" />
           </div>
 
           <PlanDate />

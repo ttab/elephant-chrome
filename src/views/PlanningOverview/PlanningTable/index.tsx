@@ -12,7 +12,6 @@ import { useTable } from '@/hooks/useTable'
 import { columns } from './Columns'
 import { cn } from '@ttab/elephant-ui/utils'
 import { handleLink } from '@/components/Link/lib/handleLink'
-import { v4 as uuid } from 'uuid'
 
 interface PlanningTableProps<TData, TValue> {
   columns: Array<ColumnDef<TData, TValue>>
@@ -114,7 +113,7 @@ export const PlanningTable = <TData, TValue>({
               viewItem: state.viewRegistry.get('Planning'),
               viewRegistry: state.viewRegistry,
               props: { id: row.original._id },
-              viewId: uuid(),
+              viewId: crypto.randomUUID(),
               origin
 
             })

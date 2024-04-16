@@ -20,7 +20,6 @@ import {
 import { DebouncedCommandInput } from './DebouncedCommandInput'
 import { handleLink } from '../Link/lib/handleLink'
 import { useNavigation, useTable, useView } from '@/hooks'
-import { v4 as uuid } from 'uuid'
 import { type CommandArgs } from '@/contexts/TableProvider'
 
 interface CommandMenuProps {
@@ -79,7 +78,7 @@ export const CommandMenu = ({ children, onKeyDown, onChange }: CommandMenuProps)
               onSelect={() => runCommand(() => handleLink({
                 dispatch,
                 viewItem: state.viewRegistry.get('PlanningOverview'),
-                viewId: uuid(),
+                viewId: crypto.randomUUID(),
                 viewRegistry: state.viewRegistry,
                 origin: viewId
               }))}

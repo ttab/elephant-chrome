@@ -1,7 +1,7 @@
 import { get, set } from '../src/lib/yMapValueByPath'
 import * as Y from 'yjs'
 import { planning } from './data/planning-repo'
-import { newsDocToYPlanning } from '../src-srv/utils/transformations/yjs/yPlanning'
+import { newsDocToYMap } from '../src-srv/utils/transformations/yjs/yMap'
 import { toYMap } from '../src-srv/utils/transformations/lib/toYMap'
 
 describe('yMapValueByPath', () => {
@@ -84,9 +84,7 @@ describe('yMapValueByPath', () => {
     if (!document) {
       throw new Error('no document')
     }
-    const yPlanning = newsDocToYPlanning(document, planningYMap)
-    // eslint-disable-next-line
-    yDoc.share.set('planning', yPlanning as unknown as Y.AbstractType<Y.YEvent<any>>)
+    newsDocToYMap(document, planningYMap)
 
     const p = yDoc.getMap('planning')
 

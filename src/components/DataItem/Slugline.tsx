@@ -49,9 +49,9 @@ const SluglineInput = ({ value, setActive, setSlugline }: SluglineInputProps): J
   />
 }
 
-export const SluglineEditable = ({ path = 'meta.tt/slugline[0]' }: { path?: string }): JSX.Element => {
+export const SluglineEditable = ({ path = 'tt/slugline[0]' }: { path?: string }): JSX.Element => {
   const [active, setActive] = useState(false)
-  const { get, set } = useYObserver('planning', path)
+  const { get, set } = useYObserver('meta', path)
 
 
   const setFocused = useRef<(value: boolean) => void>(null)

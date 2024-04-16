@@ -1,12 +1,10 @@
 import { decode, encode } from 'html-entities'
 import { parse, type HTMLElement } from 'node-html-parser'
 import { Block } from '../../../../protos/service.js'
-import { JSDOM } from 'jsdom'
 import { TextbitElement } from '@ttab/textbit'
 import type { Descendant, Element, Text } from 'slate'
 
-import { invert } from 'lodash-es'
-
+// TODO: Is this needed now?
 const translateList = {
   'core/heading-1': 'h1',
   'core/heading-2': 'h2',
@@ -14,13 +12,33 @@ const translateList = {
   'tt/dateline': 'dateline'
 }
 
+
+const invertedTranslateList = {
+  h1: 'core/heading-1',
+  h2: 'core/heading-2',
+  preamble: 'core/preamble',
+  dateline: 'tt/dateline'
+}
+
+
 const replace = (type: string, translateList: Record<string, string>): string => {
   return translateList[type] ?? 'core/paragraph'
 }
 
+const createDocument = (): Document => {
+  if (module?.exports) {
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    const JSDOM = require('jsdom')
+
+    const dom = new JSDOM()
+    return dom.window.document
+  }
+
+  return window.document
+}
+
 function createAnchorElement(element: Element): string {
-  const dom = new JSDOM()
-  const document = dom.window.document
+  const document = createDocument()
 
   const anchor = document.createElement('a')
   if (typeof element.properties?.url === 'string') {
@@ -102,7 +120,7 @@ export function revertText(element: Element): Block {
 
   return Block.create({
     id,
-    type: replace(element.properties?.type as string, invert(translateList)),
+    type: replace(element.properties?.type as string, invertedTranslateList),
     data: {
       text: children.map((child: Element | Text) => {
         if (TextbitElement.isInline(child)) {
