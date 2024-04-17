@@ -15,7 +15,7 @@ export const CreatePlan = (): JSX.Element => {
   return (
     <Dialog open={!!planning[0]}>
       <DialogTrigger asChild>
-        <Button variant='ghost' className="h-9 w-9 p-0" onClick={() => {
+        <Button variant='ghost' className='h-9 w-9 p-0' onClick={() => {
           setPlanning(createPlanningDocument())
         }}>
           <PlusIcon size={18} strokeWidth={1.75} />
@@ -71,38 +71,38 @@ const createPlanningDocument = (): [string, Y.Doc] => {
     content: [],
     meta: [
       {
-        "id": "",
-        "uuid": "",
-        "uri": "",
-        "url": "",
-        "type": "core/description",
-        "title": "",
-        "data": { "text": '' },
-        "rel": "",
-        "role": "public",
-        "name": "",
-        "value": "",
-        "contentType": "",
-        "links": [],
-        "content": [],
-        "meta": []
+        id: '',
+        uuid: '',
+        uri: '',
+        url: '',
+        type: 'core/description',
+        title: '',
+        data: { text: '' },
+        rel: '',
+        role: 'public',
+        name: '',
+        value: '',
+        contentType: '',
+        links: [],
+        content: [],
+        meta: []
       },
       {
-        "id": "",
-        "uuid": "",
-        "uri": "",
-        "url": "",
-        "type": "core/description",
-        "title": "",
-        "data": { "text": '' },
-        "rel": "",
-        "role": "internal",
-        "name": "",
-        "value": "",
-        "contentType": "",
-        "links": [],
-        "content": [],
-        "meta": []
+        id: '',
+        uuid: '',
+        uri: '',
+        url: '',
+        type: 'core/description',
+        title: '',
+        data: { text: '' },
+        rel: '',
+        role: 'internal',
+        name: '',
+        value: '',
+        contentType: '',
+        links: [],
+        content: [],
+        meta: []
       }
     ],
     links: [],
