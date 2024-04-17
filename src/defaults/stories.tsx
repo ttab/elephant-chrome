@@ -2,7 +2,7 @@ import { type DefaultValueOption } from '@/types'
 
 export const Stories: DefaultValueOption[] = [
   {
-    value: 'Gängkriminaliteten',
+    value: '989a5d7d-714c-4882-b64d-281b31000caa',
     label: 'Gängkriminaliteten',
     payload: {
       uuid: '989a5d7d-714c-4882-b64d-281b31000caa',
@@ -11,7 +11,7 @@ export const Stories: DefaultValueOption[] = [
     }
   },
   {
-    value: 'Israel-Hamas',
+    value: 'f5c2ac15-ce79-4ad9-b663-2ca314af3b4b',
     label: 'Israel-Hamas',
     payload: {
       uuid: 'f5c2ac15-ce79-4ad9-b663-2ca314af3b4b',

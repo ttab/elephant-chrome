@@ -6,9 +6,9 @@ import { useRef } from 'react'
 
 export const PlanCategory = (): JSX.Element | undefined => {
   const { get, set } = useYObserver('links', 'core/category[0]')
-
   const setFocused = useRef<(value: boolean) => void>(null)
-  const selectedOption = Categories.find(c => c.value === get('title'))
+  const uuid = get('uuid')
+  const selectedOption = Categories.find(c => c.value === uuid)
 
   return (
     <Awareness name='PlanCategory' ref={setFocused}>
