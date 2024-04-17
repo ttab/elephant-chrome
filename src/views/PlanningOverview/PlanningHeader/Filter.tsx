@@ -61,7 +61,7 @@ export const Filter = (): JSX.Element => {
             }}
             placeholder="Filter..."
             className="h-9"
-      />
+          />
           <PlanningCommands />
         </Command>
       </PopoverContent>

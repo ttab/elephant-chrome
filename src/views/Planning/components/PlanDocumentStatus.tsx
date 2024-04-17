@@ -12,18 +12,18 @@ export const PlanDocumentStatus = (): JSX.Element => {
   return (
     <Awareness name='PlanDocumentStatus' ref={setFocused}>
       <ComboBox
-        className='w-fit px-2 h-7'
+        className='h-9 w-9 p-0'
         options={DocumentStatuses}
         variant={'ghost'}
         selectedOption={selectedOption}
         onSelect={() => { alert('Not yet implemented') }}
         hideInput
-    >
+      >
         {selectedOption?.icon
-          ? <selectedOption.icon { ...selectedOption.iconProps }
-  />
+          ? <selectedOption.icon {...selectedOption.iconProps}
+          />
           : selectedOption?.label
-      }
+        }
       </ComboBox>
     </Awareness>
   )

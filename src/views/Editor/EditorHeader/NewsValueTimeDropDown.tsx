@@ -51,7 +51,7 @@ export function NewsValueTimeDropDown({ duration, end, onChange }: NewsValueDrop
           <PopoverTrigger asChild>
             <Button
               variant="ghost"
-              className="flex h-10 w-10 p-0 px-2 mb-1 data-[state=open]:bg-muted"
+              className="flex h-9 w-10 p-0 mb-1 data-[state=open]:bg-muted"
             >
               <span className="flex items-center">{isEnd ? dateToReadableDateTime(new Date(end), locale, timeZone) : value}</span>
             </Button>

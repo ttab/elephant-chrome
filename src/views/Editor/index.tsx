@@ -59,7 +59,9 @@ const Editor = (props: ViewProps): JSX.Element => {
 }
 
 
-function EditorWrapper(props: ViewProps & { documentId: string }): JSX.Element {
+function EditorWrapper(props: ViewProps & {
+  documentId: string
+}): JSX.Element {
   const plugins = [Text, BulletList, NumberList, Blockquote, Image, Bold, Italic, Link]
   const {
     provider,
@@ -69,11 +71,20 @@ function EditorWrapper(props: ViewProps & { documentId: string }): JSX.Element {
 
   return (
     <Textbit.Root plugins={plugins} placeholders="multiple" className="h-screen max-h-screen flex flex-col">
-      <div className="h-14 basis-14">
-        <ViewHeader {...props} title="Editor" icon={PenBoxIcon}>
+      <ViewHeader.Root>
+        <ViewHeader.Title title='Editor' icon={PenBoxIcon} />
+
+        <ViewHeader.Content>
           <EditorHeader />
-        </ViewHeader>
-      </div>
+        </ViewHeader.Content>
+
+        <ViewHeader.Action>
+          {!!props.documentId &&
+            <ViewHeader.RemoteUsers documentId={props.documentId} />
+          }
+        </ViewHeader.Action>
+
+      </ViewHeader.Root>
 
       <div className="flex-grow overflow-auto pr-12 max-w-screen-xl mx-auto">
         {!!provider && synced

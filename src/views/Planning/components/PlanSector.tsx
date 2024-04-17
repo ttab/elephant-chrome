@@ -8,7 +8,8 @@ import { useRef } from 'react'
 export const PlanSector = (): JSX.Element | undefined => {
   const { get, set } = useYObserver('links', 'tt/sector[0]')
   const setFocused = useRef<(value: boolean) => void>(null)
-  const selectedOption = Sectors.find(c => c.value === get('title'))
+  const uri = get('uri')
+  const selectedOption = Sectors.find(c => c.value === uri)
 
   const placeholder = selectedOption?.label || 'Add Sector'
 
