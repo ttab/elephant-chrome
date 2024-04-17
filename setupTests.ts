@@ -2,13 +2,13 @@ import '@testing-library/jest-dom'
 import planning from './__tests__/data/planning-index.json'
 
 import { randomUUID } from 'node:crypto'
+import { TextEncoder, TextDecoder } from 'util'
 export * from '@testing-library/react'
 
 window.crypto.randomUUID = randomUUID
-import { TextEncoder, TextDecoder } from 'util';
-global.TextEncoder = TextEncoder;
+global.TextEncoder = TextEncoder
 // @ts-expect-error unknown
-global.TextDecoder = TextDecoder;
+global.TextDecoder = TextDecoder
 const JWT = { sub: 'abc', sub_name: 'ABC', units: ['a', 'b', 'c'], scope: 'AbC', access_token: 'xxx' }
 
 function mockUrl(url: string): unknown {

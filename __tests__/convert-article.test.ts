@@ -10,7 +10,7 @@ describe('Conversion of slate to newsdoc', () => {
   const slate = newsDocToSlate(document.content)
 
   it('should convert newsdoc to slate', () => {
-      expect(slate).toMatchSnapshot()
+    expect(slate).toMatchSnapshot()
   })
 
   it('should be able to revert slate to newsdoc', () => {
@@ -21,6 +21,5 @@ describe('Conversion of slate to newsdoc', () => {
     const slate = newsDocToSlate(document.content)
     const newsdoc = slateToNewsDoc(slate)
     expect(newsdoc).toEqual(document.content)
-
   })
 })

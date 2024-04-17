@@ -26,8 +26,9 @@ const replace = (type: string, translateList: Record<string, string>): string =>
 }
 
 const createDocument = (): Document => {
-  // TODO: does this work, we'll find out!
+  // TODO: does this work, we'll find outj
   if (module?.exports) {
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
     const { JSDOM } = require('jsdom')
 
     const dom = new JSDOM()
