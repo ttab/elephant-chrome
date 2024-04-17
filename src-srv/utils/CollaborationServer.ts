@@ -218,14 +218,13 @@ export class CollaborationServer {
     }
 
     // Fetch content
-    const { document = null, ...rest } = await this.#repository.getDoc({
+    const { document = null } = await this.#repository.getDoc({
       uuid,
       accessToken: context.token
     }) || {}
 
 
     if (document) {
-      console.log(rest)
       const yEle = yDoc.getMap('ele')
 
       // Share editable content for Textbit use
