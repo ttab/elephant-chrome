@@ -1,5 +1,7 @@
 import { newsDocToYMap, yMapToNewsDoc } from '../src-srv/utils/transformations/yjs/yMap'
+
 import * as Y from 'yjs'
+
 import { planning as pl } from './data/planning-repo'
 
 describe('Conversion of newsdoc to yMap document', () => {

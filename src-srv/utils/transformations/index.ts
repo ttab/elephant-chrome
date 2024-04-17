@@ -1,6 +1,6 @@
 export {
   slateToNewsDoc,
-  slateDocToNewsDocument,
+  slateToNewsDocument,
   newsDocToSlate
 } from './newsdoc/index.js'
 export {

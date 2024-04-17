@@ -77,7 +77,7 @@ export function slateToNewsDoc(elements: TBElement[]): Block[] {
 /**
  * Convert a complete slate document to a complete NewsDoc document
  */
-export function slateDocToNewsDocument(data: SlateDoc): GetDocumentResponse {
+export function slateToNewsDocument(data: SlateDoc): GetDocumentResponse {
   const { document } = data
 
   if (!document !== undefined) {
