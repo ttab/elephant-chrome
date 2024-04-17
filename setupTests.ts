@@ -5,6 +5,10 @@ import { randomUUID } from 'node:crypto'
 export * from '@testing-library/react'
 
 window.crypto.randomUUID = randomUUID
+import { TextEncoder, TextDecoder } from 'util';
+global.TextEncoder = TextEncoder;
+// @ts-expect-error unknown
+global.TextDecoder = TextDecoder;
 const JWT = { sub: 'abc', sub_name: 'ABC', units: ['a', 'b', 'c'], scope: 'AbC', access_token: 'xxx' }
 
 function mockUrl(url: string): unknown {
