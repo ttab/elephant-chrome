@@ -86,10 +86,10 @@ export const columns: Array<ColumnDef<Planning>> = [
       columnIcon: Shapes,
       className: 'box-content w-[115px] hidden @4xl/view:[display:revert]'
     },
-    accessorFn: (data) => data._source['document.rel.sector.title'][0],
+    accessorFn: (data) => data._source['document.rel.sector.uuid'][0],
     cell: ({ row }) => {
-      const sector = row.getValue<string>('sector')
-      return <Sector section={sector} />
+      const uuid = row.getValue<string>('sector')
+      return <Sector uuid={uuid || ''} />
     },
     filterFn: (row, id, value) => {
       return value.includes(row.getValue(id))
@@ -147,4 +147,3 @@ export const columns: Array<ColumnDef<Planning>> = [
     }
   }
 ]
-

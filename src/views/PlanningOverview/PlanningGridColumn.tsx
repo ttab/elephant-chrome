@@ -9,6 +9,7 @@ import { DocTrackerContext } from '@/contexts/DocTrackerProvider'
 import { Avatar } from '@/components'
 import { AvatarGroup } from '@/components/AvatarGroup'
 import type * as Y from 'yjs'
+import { Sectors } from '@/defaults'
 
 interface PlanningGridColumnProps {
   date: Date
@@ -68,7 +69,7 @@ export const PlanningGridColumn = ({ date, items }: PlanningGridColumnProps): JS
           const deliverables = item._source['document.meta.core_assignment.rel.deliverable.uuid']
           const deliverable = (Array.isArray(deliverables) ? deliverables[0] || '' : '')
           const id = item._id
-          const sectorBadge = item._source['document.rel.sector.title'][0]
+          const sector = Sectors.find((sector) => sector.value === item._source['document.rel.sector.uuid'][0])
           const activeUsers = users?.[deliverable]
 
           return <PlanningItem
@@ -80,11 +81,11 @@ export const PlanningGridColumn = ({ date, items }: PlanningGridColumnProps): JS
             assignmentDataPublish={assignmentDataPublish}
             locale={locale}
             timeZone={timeZone}
-            sectorBadge={sectorBadge}
+            sector={sector}
             users={activeUsers}
           />
         })
-}
+        }
       </div>
     </div>
   )
@@ -99,10 +100,13 @@ function PlanningItem(props: {
   assignmentDataPublish?: Date
   locale: string
   timeZone: string
-  sectorBadge: string
+  sector?: {
+    label: string
+    color?: string
+  }
   users?: Record<string, TrackedUser>
 }): JSX.Element {
-  const { internal, title, slugLine, assignmentDataPublish, sectorBadge, locale, timeZone, users } = props
+  const { internal, title, slugLine, assignmentDataPublish, sector, locale, timeZone, users } = props
 
   return (
     <div className="px-3 pb-8">
@@ -122,7 +126,9 @@ function PlanningItem(props: {
 
       <div className="flex justify-between mt-2">
         <span className="text-sm text-muted-foreground whitespace-nowrap overflow-hidden text-ellipsis pl-7 pr-1">{slugLine}</span>
-        <SectorBadge value={sectorBadge} />
+        {!!sector &&
+          <SectorBadge label={sector.label} color={sector.color} />
+        }
       </div>
 
       <div className='flex'>
@@ -131,7 +137,7 @@ function PlanningItem(props: {
             return <span
               key={users?.[user].userName}
               title={`${users?.[user].userName} (${users?.[user].count})`}
-          >
+            >
               <Avatar size="sm" variant="muted" value={users?.[user].userName || ''} />
             </span>
           })}
