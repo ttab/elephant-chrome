@@ -2,6 +2,7 @@
 
 exports[`Conversion of newsdoc to yMap document transforms newsDoc to yPlanning 1`] = `
 Object {
+  "content": "",
   "links": Object {
     "tt/sector": Array [
       Object {
@@ -190,7 +191,6 @@ Object {
     ],
   },
   "root": Object {
-    "content": Array [],
     "language": "sv-se",
     "title": "Tomasson lämnar Blackburn – för landslaget?",
     "type": "core/planning-item",
