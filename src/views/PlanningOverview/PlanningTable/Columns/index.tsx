@@ -15,14 +15,8 @@ import {
   Navigation,
   Eye
 } from '@ttab/elephant-ui/icons'
-import { Newsvalues, Sectors, AssignmentTypes, VisibilityStatuses } from '@/defaults'
+import { Newsvalues, NewsvalueMap, Sectors, AssignmentTypes, VisibilityStatuses } from '@/defaults'
 import { StatusIndicator } from '@/components/DataItem/StatusIndicator'
-
-
-// Convert Newsvalues to a simple object map for faster access
-const NewsvalueMap = Object.fromEntries(
-  Newsvalues.map(item => [item.value, { ...item }])
-)
 
 
 export const columns: Array<ColumnDef<Planning>> = [

@@ -1,5 +1,6 @@
 export { AssignmentTypes } from './assignmentTypes'
 export { Newsvalues } from './newsvalues'
+export { NewsvalueMap } from './newsvalueMap'
 export { Sectors } from './sectors'
 export { Collaboration } from './collaboration'
 export { Categories } from './categories'
