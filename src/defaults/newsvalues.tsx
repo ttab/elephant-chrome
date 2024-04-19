@@ -5,7 +5,7 @@ import {
   SignalLow
 } from '@ttab/elephant-ui/icons'
 
-export const Priorities: DefaultValueOption[] = [
+export const Newsvalues: DefaultValueOption[] = [
   {
     value: '6',
     label: '6',

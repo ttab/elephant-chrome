@@ -1,17 +1,17 @@
-import { Priorities } from '@/defaults'
+import { Newsvalues } from '@/defaults'
 import { useYObserver } from '@/hooks'
 import { NewsValueScoreDropDown } from '@/views/Editor/EditorHeader/NewsValueScoreDropDown'
 
-export const PlanPriority = (): JSX.Element => {
-  const { get, set } = useYObserver('meta', 'core/planning-item[0].data')
+export const PlanNewsvalue = (): JSX.Element => {
+  const { get, set } = useYObserver('meta', 'core/newsvalue[0]')
 
   return (
     <NewsValueScoreDropDown
-      value={get('priority') as string}
+      value={get('value') as string}
       onChange={(value) => {
-        set(value as string, 'priority')
+        set(value as string, 'value')
       }}
-      options={Priorities.map(p => {
+      options={Newsvalues.map(p => {
         return {
           label: p.label,
           value: p.value,
@@ -19,6 +19,6 @@ export const PlanPriority = (): JSX.Element => {
             <p.icon color={p.color} size={18} strokeWidth={1.75} />
         }
       })}
-      />
+    />
   )
 }
