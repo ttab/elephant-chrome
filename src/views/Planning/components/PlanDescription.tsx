@@ -34,10 +34,23 @@ export const PlanDescription = ({ role }: {
 
   if (createIndex && !loading) {
     set({
-      role,
+      id: '',
+      uuid: '',
+      uri: '',
+      url: '',
+      type: 'core/description',
+      title: '',
       data: {
         text: ''
-      }
+      },
+      rel: '',
+      role,
+      name: '',
+      value: '',
+      contentType: '',
+      links: [],
+      content: [],
+      meta: []
     })
   }
 

@@ -1,10 +1,7 @@
 import { transformText, revertText } from './core/index.js'
 import { transformVisual, revertVisual } from './tt/visual.js'
 import type { TBElement } from '@ttab/textbit'
-import type {
-  Block,
-  GetDocumentResponse
-} from '../../../protos/service.js'
+import type { Block } from '../../../protos/service.js'
 
 export interface SlateDoc {
   version: bigint
@@ -56,8 +53,8 @@ export function newsDocToSlate(content: Block[]): TBElement[] {
 /**
  * Convert a slate TBElement array to a NewsDoc block array
  */
-export function slateToNewsDoc(elements: TBElement[]): Block[] {
-  if (elements !== undefined) {
+export function slateToNewsDoc(elements: TBElement[]): Block[] | undefined {
+  if (Array.isArray(elements)) {
     return elements.map((element: TBElement): Block => {
       switch (element.type) {
         case 'core/text':
@@ -70,25 +67,6 @@ export function slateToNewsDoc(elements: TBElement[]): Block[] {
       }
     })
   }
-  throw new Error('No elements provided for transformation')
-}
 
-
-/**
- * Convert a complete slate document to a complete NewsDoc document
- */
-export function slateToNewsDocument(data: SlateDoc): GetDocumentResponse {
-  const { document } = data
-
-  if (!document !== undefined) {
-    throw new Error('no document to transform')
-  }
-
-  return {
-    ...data,
-    document: {
-      ...data.document,
-      content: slateToNewsDoc(document.content)
-    }
-  }
+  return []
 }

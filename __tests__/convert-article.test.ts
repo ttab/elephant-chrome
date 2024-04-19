@@ -18,7 +18,6 @@ describe('Conversion of slate to newsdoc', () => {
       throw new Error('No document to transform')
     }
 
-    const slate = newsDocToSlate(document.content)
     const newsdoc = slateToNewsDoc(slate)
     expect(newsdoc).toEqual(document.content)
   })
