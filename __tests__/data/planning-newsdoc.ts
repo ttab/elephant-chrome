@@ -20,7 +20,6 @@ export const planning: GetDocumentResponse = {
         data: {
           public: 'true',
           end_date: '2024-02-09',
-          priority: '4',
           tentative: 'false',
           start_date: '2024-02-09'
         },
@@ -28,6 +27,23 @@ export const planning: GetDocumentResponse = {
         role: '',
         name: '',
         value: '',
+        contentType: '',
+        links: [],
+        content: [],
+        meta: []
+      },
+      {
+        id: '',
+        uuid: '',
+        uri: '',
+        url: '',
+        type: 'core/newsvalue',
+        title: '',
+        data: {},
+        rel: '',
+        role: '',
+        name: '',
+        value: '4',
         contentType: '',
         links: [],
         content: [],

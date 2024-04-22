@@ -41,7 +41,7 @@
     "cors": "^2.8.5",
     "express": "^4.19.2",
     "express-ws": "^5.0.2",
-    "get-user-locale": "^2.3.1",
+    "get-user-locale": "^2.3.2",
     "html-entities": "^2.5.2",
     "jose": "^5.2.4",
     "lodash-es": "^4.17.21",
@@ -53,7 +53,7 @@
     "slate-react": "^0.102.0",
     "swr": "^2.2.5",
     "yjs": "^13.6.14",
-    "zod": "^3.22.4"
+    "zod": "^3.23.0"
   },
   "devDependencies": {
     "@testing-library/jest-dom": "^6.4.2",
@@ -88,7 +88,7 @@
     "ts-node": "^10.9.2",
     "tsx": "^4.7.2",
     "typescript": "^5.4.5",
-    "vite": "^5.2.9",
-    "vite-plugin-static-copy": "^1.0.2"
+    "vite": "^5.2.10",
+    "vite-plugin-static-copy": "^1.0.3"
   }
 }
