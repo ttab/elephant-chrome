@@ -22,7 +22,7 @@ export interface SlateDoc {
  * Convert a NewsDoc block array to slate TBElement array
  */
 export function newsDocToSlate(content: Block[]): TBElement[] {
-  if (content !== undefined) {
+  if (content !== undefined && Array.isArray(content)) {
     return content.map((element: Block) => {
       switch (element.type) {
         case 'core/heading-1':

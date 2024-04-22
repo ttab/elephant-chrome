@@ -60,54 +60,56 @@ export const CreatePlan = (): JSX.Element => {
 const createPlanningDocument = (): [string, Y.Doc] => {
   const documentId = crypto.randomUUID()
   const yDoc = new Y.Doc()
-  const yEle = yDoc.getMap('ele')
 
-  newsDocToYMap({
-    uuid: documentId,
-    type: 'core/planning-item',
-    uri: `core://newscoverage/${documentId}`,
-    url: '',
-    title: '',
-    content: [],
-    meta: [
-      {
-        id: '',
-        uuid: '',
-        uri: '',
-        url: '',
-        type: 'core/description',
-        title: '',
-        data: { text: '' },
-        rel: '',
-        role: 'public',
-        name: '',
-        value: '',
-        contentType: '',
-        links: [],
-        content: [],
-        meta: []
-      },
-      {
-        id: '',
-        uuid: '',
-        uri: '',
-        url: '',
-        type: 'core/description',
-        title: '',
-        data: { text: '' },
-        rel: '',
-        role: 'internal',
-        name: '',
-        value: '',
-        contentType: '',
-        links: [],
-        content: [],
-        meta: []
-      }
-    ],
-    links: [],
-    language: 'sv-se'
-  }, yEle)
+  newsDocToYMap(yDoc, {
+    version: 0n,
+    document: {
+      uuid: documentId,
+      type: 'core/planning-item',
+      uri: `core://newscoverage/${documentId}`,
+      url: '',
+      title: '',
+      content: [],
+      meta: [
+        {
+          id: '',
+          uuid: '',
+          uri: '',
+          url: '',
+          type: 'core/description',
+          title: '',
+          data: { text: '' },
+          rel: '',
+          role: 'public',
+          name: '',
+          value: '',
+          contentType: '',
+          links: [],
+          content: [],
+          meta: []
+        },
+        {
+          id: '',
+          uuid: '',
+          uri: '',
+          url: '',
+          type: 'core/description',
+          title: '',
+          data: { text: '' },
+          rel: '',
+          role: 'internal',
+          name: '',
+          value: '',
+          contentType: '',
+          links: [],
+          content: [],
+          meta: []
+        }
+      ],
+      links: [],
+      language: 'sv-se'
+    }
+  })
 
   return [documentId, yDoc]
 }

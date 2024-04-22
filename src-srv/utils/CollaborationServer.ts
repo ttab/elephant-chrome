@@ -218,21 +218,14 @@ export class CollaborationServer {
     }
 
     // Fetch content
-    const { document, version } = await this.#repository.getDoc({
+    const newsDoc = await this.#repository.getDoc({
       uuid,
       accessToken: context.token
-    }) || {}
+    })
 
 
-    if (document) {
-      const yEle = yDoc.getMap('ele')
-
-      newsDocToYMap(document, yEle)
-
-      const yVersion = yDoc.getMap('version')
-      yVersion?.set('version', version?.toString())
-
-      return Y.encodeStateAsUpdate(yDoc)
+    if (newsDoc) {
+      newsDocToYMap(yDoc, newsDoc)
     }
 
     // This is a new and unknown yDoc initiated from the client. Just return it

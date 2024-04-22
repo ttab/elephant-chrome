@@ -1,28 +1,45 @@
 import * as Y from 'yjs'
-import { type Document } from '../../../protos/service.js'
+import { type Block, type GetDocumentResponse } from '../../../protos/service.js'
 import { toYMap } from '../lib/toYMap.js'
 import { group, ungroup } from '../lib/group.js'
 import { newsDocToSlate, slateToNewsDoc } from '../newsdoc/index.js'
-import { slateNodesToInsertDelta } from '@slate-yjs/core'
+import { slateNodesToInsertDelta, yTextToSlateElement } from '@slate-yjs/core'
 import { type TBElement } from '@ttab/textbit'
+import { type Document } from '@hocuspocus/server'
 
-export function newsDocToYMap(document: Document, yMap: Y.Map<unknown>): Y.Map<unknown> {
+function yContentToNewsDoc(yContent: Y.XmlText): Block[] | undefined {
+  const slateElement = yTextToSlateElement(yContent).children
+  return slateToNewsDoc(slateElement as TBElement[])
+}
+
+export function newsDocToYMap(yDoc: Document | Y.Doc, newsDoc: GetDocumentResponse): void {
   try {
-    const { meta, links, content, ...rest } = document
+    const yMap = yDoc.getMap('ele')
+    const { document, version } = newsDoc
 
-    yMap.set('meta', toYMap(group(document.meta, 'type'), new Y.Map()))
-    yMap.set('links', toYMap(group(document.links, 'type'), new Y.Map()))
-    yMap.set('root', toYMap(rest, new Y.Map()))
+    if (document) {
+      const { meta, links, content, ...rest } = document
 
-    // Share editable content for Textbit use
-    const yContent = new Y.XmlText()
-    const slateDocument = newsDocToSlate(document?.content ?? [])
-    yContent.applyDelta(
-      slateNodesToInsertDelta(slateDocument)
-    )
-    yMap.set('content', yContent)
+      yMap.set('meta', toYMap(group(document.meta, 'type'), new Y.Map()))
+      yMap.set('links', toYMap(group(document.links, 'type'), new Y.Map()))
+      yMap.set('root', toYMap(rest, new Y.Map()))
 
-    return yMap
+      // Share editable content for Textbit use
+      const yContent = new Y.XmlText()
+      const slateDocument = newsDocToSlate(document?.content ?? [])
+      yContent.applyDelta(
+        slateNodesToInsertDelta(slateDocument)
+      )
+      yMap.set('content', yContent)
+
+      // Set version
+      const yVersion = yDoc.getMap('version')
+      yVersion?.set('version', version?.toString())
+
+      return
+    }
+
+    throw new Error('No document')
   } catch (err) {
     if (err instanceof Error) {
       throw new Error(err.message)
@@ -31,21 +48,34 @@ export function newsDocToYMap(document: Document, yMap: Y.Map<unknown>): Y.Map<u
   }
 }
 
-export function yMapToNewsDoc(yMap: Y.Map<unknown>): Document {
+export function yMapToNewsDoc(yDoc: Y.Doc): GetDocumentResponse {
+  const yMap = yDoc.getMap('ele')
   try {
     const meta = ungroup((yMap.get('meta') as Y.Map<unknown>)?.toJSON() || {})
     const links = ungroup((yMap.get('links') as Y.Map<unknown>)?.toJSON() || {})
-    const content = slateToNewsDoc(yMap.get('content') as TBElement[])
+
+    const yContent = yMap.get('content') as Y.XmlText
+    const content = yContent.toString() ? yContentToNewsDoc(yContent) : []
+
+
     const root = yMap.get('root') as Y.Map<unknown>
 
-    const res = {
-      ...root.toJSON(),
-      content,
-      meta,
-      links
-    } as unknown as Document
+    const { uuid, type, url, uri, title, language } = root.toJSON()
 
-    return res
+    return {
+      version: BigInt(yDoc.getMap('version').get('version') as string),
+      document: {
+        uuid,
+        type,
+        url,
+        uri,
+        title,
+        content: content || [],
+        meta,
+        links,
+        language
+      }
+    }
   } catch (err) {
     if (err instanceof Error) {
       throw new Error(err.message)
