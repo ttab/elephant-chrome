@@ -80,7 +80,6 @@ const createPlanningDocument = (): [string, Y.Doc] => {
         data: {
           public: 'true',
           end_date: '',
-          priority: '',
           tentative: 'false',
           start_date: ''
         },
