@@ -12,7 +12,10 @@ function yContentToNewsDoc(yContent: Y.XmlText): Block[] | undefined {
   return slateToNewsDoc(slateElement as TBElement[])
 }
 
-function assertDescriptions(yMeta: Y.Map<unknown>): void {
+function assertDescriptions(yMeta: Y.Map<unknown>, documentType: string): void {
+  // Only perform on planning items
+  if (documentType !== 'core/planning-item') return
+
   const yDesc = yMeta.get('core/description') as Y.Array<Y.Map<unknown>>
 
   const payload: Block = {
@@ -67,7 +70,7 @@ export function newsDocToYDoc(yDoc: Document | Y.Doc, newsDoc: GetDocumentRespon
       yMap.set('links', toYMap(group(document.links, 'type'), new Y.Map()))
       yMap.set('root', toYMap(rest, new Y.Map()))
 
-      assertDescriptions(yMap.get('meta') as Y.Map<unknown>)
+      assertDescriptions(yMap.get('meta') as Y.Map<unknown>, document.type)
 
       // Share editable content for Textbit use
       const yContent = new Y.XmlText()
@@ -116,7 +119,13 @@ export function yDocToNewsDoc(yDoc: Y.Doc): GetDocumentResponse {
         uri,
         title,
         content: content || [],
-        meta,
+        // Remove added empty descriptions
+        meta: meta.filter((m) => {
+          if (m.type === 'core/description') {
+            return m.data.text !== ''
+          }
+          return true
+        }),
         links,
         language
       }

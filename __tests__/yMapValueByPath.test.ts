@@ -1,7 +1,7 @@
 import { get, set } from '../src/lib/yMapValueByPath'
 import * as Y from 'yjs'
 import { planning } from './data/planning-newsdoc'
-import { newsDocToYMap } from '../src-srv/utils/transformations/yjs/yMap'
+import { newsDocToYDoc } from '../src-srv/utils/transformations/yjs/yDoc'
 import { toYMap } from '../src-srv/utils/transformations/lib/toYMap'
 
 describe('yMapValueByPath', () => {
@@ -81,7 +81,7 @@ describe('yMapValueByPath', () => {
     if (!document) {
       throw new Error('no document')
     }
-    newsDocToYMap(yDoc, planning)
+    newsDocToYDoc(yDoc, planning)
 
     const p = yDoc.getMap('ele')
 
