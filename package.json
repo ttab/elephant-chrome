@@ -41,7 +41,7 @@
     "cors": "^2.8.5",
     "express": "^4.19.2",
     "express-ws": "^5.0.2",
-    "get-user-locale": "^2.3.1",
+    "get-user-locale": "^2.3.2",
     "html-entities": "^2.5.2",
     "jose": "^5.2.4",
     "lodash-es": "^4.17.21",
