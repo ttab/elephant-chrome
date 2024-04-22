@@ -48,7 +48,7 @@ export function newsDocToYMap(yDoc: Document | Y.Doc, newsDoc: GetDocumentRespon
   }
 }
 
-export function yMapToNewsDoc(yDoc: Y.Doc): GetDocumentResponse {
+export function yDocToNewsDoc(yDoc: Y.Doc): GetDocumentResponse {
   const yMap = yDoc.getMap('ele')
   try {
     const meta = ungroup((yMap.get('meta') as Y.Map<unknown>)?.toJSON() || {})

@@ -5,7 +5,7 @@ import { type JWTVerifyResult, jwtVerify, type JWTVerifyGetKey } from 'jose'
 import type { GetDocumentResponse, UpdateRequest, UpdateResponse, ValidateRequest, ValidateResponse } from '../protos/service.js'
 import { type FinishedUnaryCall } from '@protobuf-ts/runtime-rpc'
 import type * as Y from 'yjs'
-import { yMapToNewsDoc } from './transformations/yjs/yMap.js'
+import { yDocToNewsDoc } from './transformations/yjs/yMap.js'
 
 export interface GetAuth {
   user: string
@@ -134,17 +134,20 @@ export class Repository {
 
   /**
    * Save a newsdoc to repository
-  * @param yDoc Y.Doc
+   * @param yDoc Y.Doc
    * @param accessToken string
    * @returns Promise<FinishedUnaryCall<UpdateRequest, UpdateResponse>
    */
 
   async saveDoc(ydoc: Y.Doc, accessToken: string): Promise<FinishedUnaryCall<UpdateRequest, UpdateResponse>> {
-    const document = yMapToNewsDoc(ydoc.getMap('ele'))
+    const { document } = yDocToNewsDoc(ydoc)
 
     const versionMap = ydoc.getMap('version')
     const version = BigInt(versionMap.get('version') as string)
 
+    if (!document) {
+      throw new Error('No document to save')
+    }
     const payload: UpdateRequest = {
       document,
       meta: {},
@@ -164,9 +167,14 @@ export class Repository {
     return result
   }
 
-  async validateDoc(ele: Y.Map<unknown>, version: string):
+  /**
+  * Validate a newsdoc without writing to repository
+  * @param yDoc Y.Doc
+  * @returns Promise<FinishedUnaryCall<ValidateRequest, ValidateResponse>>
+  */
+  async validateDoc(ydoc: Y.Doc):
   Promise<FinishedUnaryCall<ValidateRequest, ValidateResponse>> {
-    const document = yMapToNewsDoc(ele)
+    const { document, version } = yDocToNewsDoc(ydoc)
     const payload = {
       version: BigInt(version),
       document

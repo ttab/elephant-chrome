@@ -1,4 +1,4 @@
-import { newsDocToYMap, yMapToNewsDoc } from '../src-srv/utils/transformations/yjs/yMap'
+import { newsDocToYMap, yDocToNewsDoc } from '../src-srv/utils/transformations/yjs/yMap'
 import * as Y from 'yjs'
 
 import { planning } from './data/planning-newsdoc'
@@ -39,7 +39,7 @@ describe('Transform full planning newsdoc document to internal YMap representati
 
 
   it('handles reverting the planning document', () => {
-    const { document, version } = yMapToNewsDoc(yDoc)
+    const { document, version } = yDocToNewsDoc(yDoc)
     if (!document || !planning.document) {
       throw new Error('no document')
     }
@@ -59,7 +59,7 @@ describe('Transform full article newsdoc document to internal YMap representatio
 
 
   it('handles reverting the article document', () => {
-    const { document, version } = yMapToNewsDoc(yDoc)
+    const { document, version } = yDocToNewsDoc(yDoc)
 
     if (!document || !article.document) {
       throw new Error('no document')
