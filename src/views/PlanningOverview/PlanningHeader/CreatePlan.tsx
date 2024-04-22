@@ -68,6 +68,7 @@ const createPlanningDocument = (): [string, Y.Doc] => {
     uri: `core://newscoverage/${documentId}`,
     url: '',
     title: '',
+    language: 'sv-se',
     content: [],
     meta: [
       {
@@ -83,6 +84,23 @@ const createPlanningDocument = (): [string, Y.Doc] => {
           tentative: 'false',
           start_date: ''
         },
+        rel: '',
+        role: '',
+        name: '',
+        value: '',
+        contentType: '',
+        links: [],
+        content: [],
+        meta: []
+      },
+      {
+        id: '',
+        uuid: '',
+        uri: '',
+        url: '',
+        type: 'core/newsvalue',
+        title: '',
+        data: {},
         rel: '',
         role: '',
         name: '',
@@ -127,8 +145,7 @@ const createPlanningDocument = (): [string, Y.Doc] => {
         meta: []
       }
     ],
-    links: [],
-    language: 'sv-se'
+    links: []
   }, yEle)
 
   return [documentId, yDoc]
