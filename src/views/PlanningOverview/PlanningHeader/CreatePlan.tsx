@@ -7,7 +7,7 @@ import * as Y from 'yjs'
 import { Planning } from '@/views/Planning'
 import { PlusIcon } from '@ttab/elephant-ui/icons'
 import { useState } from 'react'
-import { newsDocToYMap } from '../../../../src-srv/utils/transformations/yjs/yMap'
+import { newsDocToYDoc } from '../../../../src-srv/utils/transformations/yjs/yDoc'
 
 export const CreatePlan = (): JSX.Element => {
   const [planning, setPlanning] = useState<[string | undefined, Y.Doc | undefined]>([undefined, undefined])
@@ -61,7 +61,7 @@ const createPlanningDocument = (): [string, Y.Doc] => {
   const documentId = crypto.randomUUID()
   const yDoc = new Y.Doc()
 
-  newsDocToYMap(yDoc, {
+  newsDocToYDoc(yDoc, {
     version: 0n,
     document: {
       uuid: documentId,

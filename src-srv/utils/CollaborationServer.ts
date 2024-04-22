@@ -26,7 +26,7 @@ import {
 
 
 import * as Y from 'yjs'
-import { newsDocToYMap } from './transformations/yjs/yMap.js'
+import { newsDocToYDoc } from './transformations/yjs/yDoc.js'
 
 interface CollaborationServerOptions {
   name: string
@@ -225,7 +225,7 @@ export class CollaborationServer {
 
 
     if (newsDoc) {
-      newsDocToYMap(yDoc, newsDoc)
+      newsDocToYDoc(yDoc, newsDoc)
     }
 
     // This is a new and unknown yDoc initiated from the client. Just return it

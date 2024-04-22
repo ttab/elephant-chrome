@@ -1,4 +1,4 @@
-import { newsDocToYMap, yDocToNewsDoc } from '../src-srv/utils/transformations/yjs/yMap'
+import { newsDocToYDoc, yDocToNewsDoc } from '../src-srv/utils/transformations/yjs/yDoc'
 import * as Y from 'yjs'
 
 import { planning } from './data/planning-newsdoc'
@@ -30,9 +30,9 @@ function sortDocument(json: any): any {
 
 describe('Transform full planning newsdoc document to internal YMap representation', () => {
   const yDoc = new Y.Doc()
-  newsDocToYMap(yDoc, planning)
+  newsDocToYDoc(yDoc, planning)
 
-  it('handles transoformation of planning document', () => {
+  it('handles transformation of planning document', () => {
     const planningJson = yDoc.getMap('ele').toJSON()
     expect(planningJson).toMatchSnapshot()
   })
@@ -50,7 +50,7 @@ describe('Transform full planning newsdoc document to internal YMap representati
 
 describe('Transform full article newsdoc document to internal YMap representation', () => {
   const yDoc = new Y.Doc()
-  newsDocToYMap(yDoc, article)
+  newsDocToYDoc(yDoc, article)
 
   it('handles article document', () => {
     const articleJson = yDoc.getMap('ele').toJSON()

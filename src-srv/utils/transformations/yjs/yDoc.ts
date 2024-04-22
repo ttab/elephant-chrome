@@ -12,7 +12,7 @@ function yContentToNewsDoc(yContent: Y.XmlText): Block[] | undefined {
   return slateToNewsDoc(slateElement as TBElement[])
 }
 
-export function newsDocToYMap(yDoc: Document | Y.Doc, newsDoc: GetDocumentResponse): void {
+export function newsDocToYDoc(yDoc: Document | Y.Doc, newsDoc: GetDocumentResponse): void {
   try {
     const yMap = yDoc.getMap('ele')
     const { document, version } = newsDoc
