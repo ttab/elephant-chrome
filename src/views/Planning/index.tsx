@@ -108,7 +108,9 @@ const PlanningViewContent = (props: ViewProps & { documentId: string }): JSX.Ele
             <PlanDescription role="internal" />
           </div>
 
-          <PlanDate />
+          <div className='-ml-2 -ml-4'>
+            <PlanDate />
+          </div>
 
           <div className='flex space-x-2'>
             <PlanSector />
