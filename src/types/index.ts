@@ -5,8 +5,6 @@ import { type JWTPayload } from 'jose'
 import type * as Y from 'yjs'
 
 export enum NavigationActionType {
-  ADD = 'add',
-  REMOVE = 'remove',
   SET = 'set',
   FOCUS = 'focus',
   ACTIVE = 'active'
