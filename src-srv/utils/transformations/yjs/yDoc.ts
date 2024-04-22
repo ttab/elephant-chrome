@@ -12,6 +12,49 @@ function yContentToNewsDoc(yContent: Y.XmlText): Block[] | undefined {
   return slateToNewsDoc(slateElement as TBElement[])
 }
 
+function assertDescriptions(yMeta: Y.Map<unknown>): void {
+  const yDesc = yMeta.get('core/description') as Y.Array<Y.Map<unknown>>
+
+  const payload: Block = {
+    id: '',
+    uuid: '',
+    uri: '',
+    url: '',
+    type: 'core/description',
+    title: '',
+    data: { text: '' },
+    rel: '',
+    role: '',
+    name: '',
+    value: '',
+    contentType: '',
+    links: [],
+    content: [],
+    meta: []
+  }
+
+  // No descriptions
+  if (!yDesc) {
+    const yArr = new Y.Array()
+    yArr.push([toYMap({ ...payload, role: 'public' }, new Y.Map())])
+    yArr.push([toYMap({ ...payload, role: 'internal' }, new Y.Map())])
+
+    yMeta.set('core/description', yArr)
+    return
+  }
+
+  // Already has two descriptions
+  if (yDesc.length === 2) return
+
+  // Find missing description
+  const descriptionTypes = yDesc.map((yMap) => yMap.get('role') as string)
+  const missingType = ['public', 'internal'].filter((role) => !descriptionTypes.includes(role))
+
+  missingType.forEach((role) => {
+    yDesc.push([toYMap({ ...payload, role }, new Y.Map())])
+  })
+}
+
 export function newsDocToYDoc(yDoc: Document | Y.Doc, newsDoc: GetDocumentResponse): void {
   try {
     const yMap = yDoc.getMap('ele')
@@ -23,6 +66,8 @@ export function newsDocToYDoc(yDoc: Document | Y.Doc, newsDoc: GetDocumentRespon
       yMap.set('meta', toYMap(group(document.meta, 'type'), new Y.Map()))
       yMap.set('links', toYMap(group(document.links, 'type'), new Y.Map()))
       yMap.set('root', toYMap(rest, new Y.Map()))
+
+      assertDescriptions(yMap.get('meta') as Y.Map<unknown>)
 
       // Share editable content for Textbit use
       const yContent = new Y.XmlText()

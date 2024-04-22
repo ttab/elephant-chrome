@@ -5,7 +5,7 @@ import { type JWTVerifyResult, jwtVerify, type JWTVerifyGetKey } from 'jose'
 import type { GetDocumentResponse, UpdateRequest, UpdateResponse, ValidateRequest, ValidateResponse } from '../protos/service.js'
 import { type FinishedUnaryCall } from '@protobuf-ts/runtime-rpc'
 import type * as Y from 'yjs'
-import { yDocToNewsDoc } from './transformations/yjs/yMap.js'
+import { yDocToNewsDoc } from './transformations/yjs/yDoc.js'
 
 export interface GetAuth {
   user: string
@@ -139,7 +139,8 @@ export class Repository {
    * @returns Promise<FinishedUnaryCall<UpdateRequest, UpdateResponse>
    */
 
-  async saveDoc(ydoc: Y.Doc, accessToken: string): Promise<FinishedUnaryCall<UpdateRequest, UpdateResponse>> {
+  async saveDoc(ydoc: Y.Doc, accessToken: string):
+  Promise<FinishedUnaryCall<UpdateRequest, UpdateResponse> | undefined> {
     const { document } = yDocToNewsDoc(ydoc)
 
     const versionMap = ydoc.getMap('version')
@@ -148,6 +149,7 @@ export class Repository {
     if (!document) {
       throw new Error('No document to save')
     }
+
     const payload: UpdateRequest = {
       document,
       meta: {},
@@ -157,14 +159,19 @@ export class Repository {
       uuid: document.uuid
     }
 
-    const result = await this.#client.update(payload, meta(accessToken))
+    try {
+      const result = await this.#client.update(payload, meta(accessToken))
 
-    // Success, update version
-    if (result.status.code === 'OK') {
-      versionMap.set('version', result.response.version.toString())
-      console.debug('Snapshot saved:', document.uuid, 'version:', result.response.version.toString())
+      // Success, update version
+      if (result.status.code === 'OK') {
+        versionMap.set('version', result.response.version.toString())
+
+        console.log('::: Snapshot saved: ', result.response.version)
+        return result
+      }
+    } catch (err: unknown) {
+      console.log('::: saveDoc error:', err)
     }
-    return result
   }
 
   /**
