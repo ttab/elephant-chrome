@@ -1,4 +1,4 @@
-export { PlanAssignments } from './PlanAssignments'
+export { Assignments as PlanAssignments } from './Assignments'
 export { PlanDate } from './PlanDate'
 export { PlanDescription } from './PlanDescription'
 export { PlanNewsvalue } from './PlanNewsvalue'

@@ -7,7 +7,8 @@ import { AssignmentType } from '@/components/DataItem/AssignmentType'
 import { AssigneeAvatars } from '@/components/DataItem/AssigneeAvatars'
 import type * as Y from 'yjs'
 
-const PlanAssignment = ({ index }: { index: number }): JSX.Element => {
+
+export const Assignment = ({ index }: { index: number }): JSX.Element => {
   const { get: getTitle } = useYObserver('meta', `core/assignment[${index}]`)
   const { get: getUUID } = useYObserver('meta', `core/assignment[${index}].links.core/article[0]`)
   const { get: getAssignmentDescription } = useYObserver('meta', `core/assignment[${index}].meta.core/description[0].data`)
@@ -46,17 +47,6 @@ const PlanAssignment = ({ index }: { index: number }): JSX.Element => {
           <MoreHorizontal size={18} strokeWidth={1.75} />
         </div>
       </div>
-    </div>
-  )
-}
-
-export const PlanAssignments = (): JSX.Element => {
-  const { state } = useYObserver('meta', 'core/assignment')
-  return (
-    <div>
-      {Array.isArray(state) && state.map((_, index: number) => (
-        <PlanAssignment key={index} index={index} />
-      ))}
     </div>
   )
 }
