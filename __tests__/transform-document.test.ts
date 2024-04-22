@@ -3,6 +3,7 @@ import * as Y from 'yjs'
 
 import { planning } from './data/planning-newsdoc'
 import { article } from './data/article-newsdoc'
+import { type GetDocumentResponse } from '@/protos/service'
 
 /*
   * Array order is not guaranteed.
@@ -95,7 +96,10 @@ describe('Description handling - planning', () => {
 
   describe('When one exists', () => {
     const yDoc = new Y.Doc()
-    const augmentedPlanning = {
+    if (!planning?.document) {
+      throw new Error('no document')
+    }
+    const augmentedPlanning: GetDocumentResponse = {
       ...planning,
       document: {
         ...planning.document,
@@ -122,7 +126,6 @@ describe('Description handling - planning', () => {
       }
     }
 
-    // @ts-expect-error unk
     newsDocToYDoc(yDoc, augmentedPlanning)
 
     it('adds one when one of other type exists', () => {
