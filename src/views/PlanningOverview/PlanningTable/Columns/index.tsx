@@ -1,6 +1,6 @@
 import { type ColumnDef } from '@tanstack/react-table'
 import { type Planning } from '../data/schema'
-import { Priority } from './Priority'
+import { Newsvalue } from './Newsvalue'
 import { Title } from './Title'
 import { Sector } from './Sector'
 import { Assignees } from './Assignees'
@@ -15,8 +15,9 @@ import {
   Navigation,
   Eye
 } from '@ttab/elephant-ui/icons'
-import { Priorities, Sectors, AssignmentTypes, VisibilityStatuses } from '@/defaults'
+import { Newsvalues, NewsvalueMap, Sectors, AssignmentTypes, VisibilityStatuses } from '@/defaults'
 import { StatusIndicator } from '@/components/DataItem/StatusIndicator'
+
 
 export const columns: Array<ColumnDef<Planning>> = [
   {
@@ -35,26 +36,22 @@ export const columns: Array<ColumnDef<Planning>> = [
     }
   },
   {
-    id: 'priority',
+    id: 'newsvalue',
     meta: {
       filter: 'facet',
-      options: Priorities,
+      options: Newsvalues,
       name: 'Priority',
       columnIcon: SignalHigh,
       className: 'box-content w-4 sm:w-8 pr-1 sm:pr-4'
     },
-    accessorFn: (data) => data._source['document.meta.core_planning_item.data.priority'][0],
+    accessorFn: (data) => data._source['document.meta.core_newsvalue.value']?.[0],
     cell: ({ row }) => {
-      const priority = Priorities.find(
-        (priority) => {
-          return priority.value === row.getValue('priority')
-        }
-      )
-      if (!priority) {
-        return null
-      }
+      const value: string = row.getValue('newsvalue') || ''
+      const newsvalue = NewsvalueMap[value]
 
-      return (<Priority priority={priority} />)
+      if (newsvalue) {
+        return <Newsvalue newsvalue={newsvalue} />
+      }
     },
 
     filterFn: (row, id, value) => {
@@ -86,10 +83,10 @@ export const columns: Array<ColumnDef<Planning>> = [
       columnIcon: Shapes,
       className: 'box-content w-[115px] hidden @4xl/view:[display:revert]'
     },
-    accessorFn: (data) => data._source['document.rel.sector.title'][0],
+    accessorFn: (data) => data._source['document.rel.sector.uuid'][0],
     cell: ({ row }) => {
-      const sector = row.getValue<string>('sector')
-      return <Sector section={sector} />
+      const uuid = row.getValue<string>('sector')
+      return <Sector uuid={uuid || ''} />
     },
     filterFn: (row, id, value) => {
       return value.includes(row.getValue(id))
@@ -147,4 +144,3 @@ export const columns: Array<ColumnDef<Planning>> = [
     }
   }
 ]
-

@@ -10,7 +10,7 @@ import {
   PlanSector,
   PlanStatus,
   PlanTitle,
-  PlanPriority,
+  PlanNewsvalue,
   PlanCategory,
   PlanStory,
   PlanDocumentStatus,
@@ -84,7 +84,7 @@ const PlanningViewContent = (props: ViewProps & { documentId: string }): JSX.Ele
             <div className='flex w-full h-full items-center space-x-2'>
               <PlanDocumentStatus />
               <PlanStatus />
-              <PlanPriority />
+              <PlanNewsvalue />
             </div>
           </ViewHeader.Content>
 

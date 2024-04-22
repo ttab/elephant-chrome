@@ -1,21 +1,21 @@
 import { useYObserver } from '@/hooks'
-import { Priorities } from '@/defaults'
+import { Newsvalues } from '@/defaults'
 import { NewsValueTimeDropDown } from './NewsValueTimeDropDown'
 import { NewsValueScoreDropDown } from './NewsValueScoreDropDown'
 
 export const EditorHeader = (): JSX.Element => {
-  const { get: getScore, set: setScore } = useYObserver('meta', 'core/newsvalue[0].data')
+  const { get: getScore, set: setScore } = useYObserver('meta', 'core/newsvalue[0]')
   const { get: getDuration, set: setDuration } = useYObserver('meta', 'core/newsvalue/data')
   const { get: getEnd, set: setEnd } = useYObserver('meta', 'core/newsvalue.data')
 
   return (
     <>
       <NewsValueScoreDropDown
-        value={getScore('score') as string}
+        value={getScore('value') as string}
         onChange={(value) => {
-          setScore(value as string, 'score')
+          setScore(value as string, 'value')
         }}
-        options={Priorities.map(p => {
+        options={Newsvalues.map(p => {
           return {
             label: p.label,
             value: p.value,

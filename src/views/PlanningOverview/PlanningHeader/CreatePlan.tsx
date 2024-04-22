@@ -76,6 +76,28 @@ const createPlanningDocument = (): [string, Y.Doc] => {
           uuid: '',
           uri: '',
           url: '',
+          type: 'core/planning-item',
+          title: '',
+          data: {
+            public: 'true',
+            end_date: '',
+            tentative: 'false',
+            start_date: ''
+          },
+          rel: '',
+          role: '',
+          name: '',
+          value: '',
+          contentType: '',
+          links: [],
+          content: [],
+          meta: []
+        },
+        {
+          id: '',
+          uuid: '',
+          uri: '',
+          url: '',
           type: 'core/description',
           title: '',
           data: { text: '' },
