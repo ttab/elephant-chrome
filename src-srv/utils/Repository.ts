@@ -1,10 +1,10 @@
 import { TwirpFetchTransport } from '@protobuf-ts/twirp-transport'
 import { DocumentsClient } from '../protos/service.client.js'
 import { type JWTVerifyResult, jwtVerify, type JWTVerifyGetKey } from 'jose'
-import type { GetDocumentResponse, UpdateRequest, UpdateResponse } from '../protos/service.js'
-import { yDocToNewsDoc } from './transformations/index.js'
+import type { GetDocumentResponse, UpdateRequest, UpdateResponse, ValidateRequest, ValidateResponse } from '../protos/service.js'
 import { type FinishedUnaryCall } from '@protobuf-ts/runtime-rpc'
-import { type Doc } from 'yjs'
+import type * as Y from 'yjs'
+import { yDocToNewsDoc } from './transformations/yjs/yDoc.js'
 
 interface GetAuth {
   user: string
@@ -139,33 +139,59 @@ export class Repository {
 
   /**
    * Save a newsdoc to repository
-   * @param document Document
-   * @param documentName string
+   * @param yDoc Y.Doc
    * @param accessToken string
    * @returns Promise<FinishedUnaryCall<UpdateRequest, UpdateResponse>
    */
-  async saveDoc({ document, documentName, accessToken }: {
-    document: Doc
-    documentName: string
-    accessToken: string
-  }): Promise<FinishedUnaryCall<UpdateRequest, UpdateResponse>> {
-    const newsDoc = yDocToNewsDoc(document)
-    const payload = {
-      ...newsDoc,
+
+  async saveDoc(ydoc: Y.Doc, accessToken: string):
+  Promise<FinishedUnaryCall<UpdateRequest, UpdateResponse> | undefined> {
+    const { document } = yDocToNewsDoc(ydoc)
+
+    const versionMap = ydoc.getMap('version')
+    const version = BigInt(versionMap.get('version') as string)
+
+    if (!document) {
+      throw new Error('No document to save')
+    }
+
+    const payload: UpdateRequest = {
+      document,
       meta: {},
-      ifMatch: newsDoc.version,
+      ifMatch: version,
       status: [],
       acl: [],
-      uuid: documentName
+      uuid: document.uuid
     }
 
-    const result = await this.#client.update(payload, meta(accessToken))
+    try {
+      const result = await this.#client.update(payload, meta(accessToken))
 
-    // Success, update version
-    if (result.status.code === 'OK') {
-      document.getMap('original').set('version', result.response.version.toString())
+      // Success, update version
+      if (result.status.code === 'OK') {
+        versionMap.set('version', result.response.version.toString())
+
+        console.log('::: Snapshot saved: ', result.response.version)
+        return result
+      }
+    } catch (err: unknown) {
+      console.log('::: saveDoc error:', err)
     }
+  }
 
+  /**
+  * Validate a newsdoc without writing to repository
+  * @param yDoc Y.Doc
+  * @returns Promise<FinishedUnaryCall<ValidateRequest, ValidateResponse>>
+  */
+  async validateDoc(ydoc: Y.Doc):
+  Promise<FinishedUnaryCall<ValidateRequest, ValidateResponse>> {
+    const { document, version } = yDocToNewsDoc(ydoc)
+    const payload = {
+      version: BigInt(version),
+      document
+    }
+    const result = await this.#client.validate(payload)
     return result
   }
 }

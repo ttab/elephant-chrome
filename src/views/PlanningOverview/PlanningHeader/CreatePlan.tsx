@@ -7,7 +7,7 @@ import * as Y from 'yjs'
 import { Planning } from '@/views/Planning'
 import { PlusIcon } from '@ttab/elephant-ui/icons'
 import { useState } from 'react'
-import { newsDocToYMap } from '../../../../src-srv/utils/transformations/yjs/yMap'
+import { newsDocToYDoc } from '../../../../src-srv/utils/transformations/yjs/yDoc'
 
 export const CreatePlan = (): JSX.Element => {
   const [planning, setPlanning] = useState<[string | undefined, Y.Doc | undefined]>([undefined, undefined])
@@ -60,76 +60,78 @@ export const CreatePlan = (): JSX.Element => {
 const createPlanningDocument = (): [string, Y.Doc] => {
   const documentId = crypto.randomUUID()
   const yDoc = new Y.Doc()
-  const yEle = yDoc.getMap('ele')
 
-  newsDocToYMap({
-    uuid: documentId,
-    type: 'core/planning-item',
-    uri: `core://newscoverage/${documentId}`,
-    url: '',
-    title: '',
-    content: [],
-    meta: [
-      {
-        id: '',
-        uuid: '',
-        uri: '',
-        url: '',
-        type: 'core/planning-item',
-        title: '',
-        data: {
-          public: 'true',
-          end_date: '',
-          tentative: 'false',
-          start_date: ''
+  newsDocToYDoc(yDoc, {
+    version: 0n,
+    document: {
+      uuid: documentId,
+      type: 'core/planning-item',
+      uri: `core://newscoverage/${documentId}`,
+      url: '',
+      title: '',
+      content: [],
+      meta: [
+        {
+          id: '',
+          uuid: '',
+          uri: '',
+          url: '',
+          type: 'core/planning-item',
+          title: '',
+          data: {
+            public: 'true',
+            end_date: '',
+            tentative: 'false',
+            start_date: ''
+          },
+          rel: '',
+          role: '',
+          name: '',
+          value: '',
+          contentType: '',
+          links: [],
+          content: [],
+          meta: []
         },
-        rel: '',
-        role: '',
-        name: '',
-        value: '',
-        contentType: '',
-        links: [],
-        content: [],
-        meta: []
-      },
-      {
-        id: '',
-        uuid: '',
-        uri: '',
-        url: '',
-        type: 'core/description',
-        title: '',
-        data: { text: '' },
-        rel: '',
-        role: 'public',
-        name: '',
-        value: '',
-        contentType: '',
-        links: [],
-        content: [],
-        meta: []
-      },
-      {
-        id: '',
-        uuid: '',
-        uri: '',
-        url: '',
-        type: 'core/description',
-        title: '',
-        data: { text: '' },
-        rel: '',
-        role: 'internal',
-        name: '',
-        value: '',
-        contentType: '',
-        links: [],
-        content: [],
-        meta: []
-      }
-    ],
-    links: [],
-    language: 'sv-se'
-  }, yEle)
+        {
+          id: '',
+          uuid: '',
+          uri: '',
+          url: '',
+          type: 'core/description',
+          title: '',
+          data: { text: '' },
+          rel: '',
+          role: 'public',
+          name: '',
+          value: '',
+          contentType: '',
+          links: [],
+          content: [],
+          meta: []
+        },
+        {
+          id: '',
+          uuid: '',
+          uri: '',
+          url: '',
+          type: 'core/description',
+          title: '',
+          data: { text: '' },
+          rel: '',
+          role: 'internal',
+          name: '',
+          value: '',
+          contentType: '',
+          links: [],
+          content: [],
+          meta: []
+        }
+      ],
+      links: [],
+      language: 'sv-se'
+    }
+  })
 
   return [documentId, yDoc]
 }
