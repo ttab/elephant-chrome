@@ -7,15 +7,13 @@ import {
 } from 'react'
 import { CreatePlan } from './CreatePlan'
 
-interface PlanningHeaderProps {
+export const PlanningHeader = ({ tab, startDate, setStartDate, endDate, setEndDate }: {
   tab: string
   startDate: Date
   setStartDate: Dispatch<SetStateAction<Date>>
   endDate?: Date
   setEndDate?: Dispatch<SetStateAction<Date>>
-}
-
-export const PlanningHeader = ({ tab, startDate, setStartDate, endDate, setEndDate }: PlanningHeaderProps): JSX.Element => {
+}): JSX.Element => {
   return <>
     <div className='hidden sm:block'>
       <TabsGrid />
