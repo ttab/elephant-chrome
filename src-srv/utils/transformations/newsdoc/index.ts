@@ -3,21 +3,6 @@ import { transformVisual, revertVisual } from './tt/visual.js'
 import type { TBElement } from '@ttab/textbit'
 import type { Block } from '../../../protos/service.js'
 
-interface SlateDoc {
-  version: bigint
-  document: {
-    language: string
-    uuid: string
-    type: string
-    uri: string
-    url: string
-    title: string
-    content: TBElement[]
-    meta: Block[]
-    links: Block[]
-  }
-}
-
 /**
  * Convert a NewsDoc block array to slate TBElement array
  */
