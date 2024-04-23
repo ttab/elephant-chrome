@@ -5,7 +5,7 @@ import * as Y from 'yjs'
 import { toYMap } from '../../src-srv/utils/transformations/lib/toYMap'
 import { type Block } from '@/protos/service'
 
-export const useForceUpdate = (): () => void => {
+const useForceUpdate = (): () => void => {
   const [, dispatch] = useState(Object.create(null))
 
   return useCallback(
@@ -14,7 +14,7 @@ export const useForceUpdate = (): () => void => {
   )
 }
 
-export interface YObserved {
+interface YObserved {
   get: (key: string) => unknown
   set: (value: string | Partial<Block> | undefined, key?: string) => void
   state: Block[]

@@ -1,6 +1,6 @@
 import { Awareness } from '@/components'
 import { ComboBox } from '@/components/ui'
-import { Categories } from '@/defaults/categories'
+import { Categories } from '@/defaults'
 import { useYObserver } from '@/hooks'
 import { useRef } from 'react'
 
