@@ -1,4 +1,3 @@
-import { validate as uuidValidate } from 'uuid'
 import { TwirpFetchTransport } from '@protobuf-ts/twirp-transport'
 import { DocumentsClient } from '../protos/service.client.js'
 import { type JWTVerifyResult, jwtVerify, type JWTVerifyGetKey } from 'jose'
@@ -19,6 +18,12 @@ export interface Session {
   token_type: 'Bearer'
   expires_in: number
   refresh_token: string
+}
+
+function validateUUID(uuid: string): boolean {
+  // https://github.com/uuidjs/uuid/blob/main/src/regex.js
+  const UUIDRegEx = /^(?:[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}|00000000-0000-0000-0000-000000000000)$/i
+  return UUIDRegEx.test(uuid)
 }
 
 export class Repository {
@@ -110,7 +115,7 @@ export class Repository {
    * @returns Promise<GetDocumentResponse>
    */
   async getDoc({ uuid, accessToken }: { uuid: string, accessToken: string }): Promise<GetDocumentResponse | null> {
-    if (!uuidValidate(uuid)) {
+    if (!validateUUID(uuid)) {
       throw new Error('Invalid uuid format')
     }
 
