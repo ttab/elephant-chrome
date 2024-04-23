@@ -2,7 +2,7 @@ import { createContext, useMemo } from 'react'
 import { HocuspocusProviderWebsocket } from '@hocuspocus/provider'
 import { useRegistry } from '@/hooks'
 
-export interface HPWebSocketProviderState {
+interface HPWebSocketProviderState {
   webSocket?: HocuspocusProviderWebsocket
 }
 

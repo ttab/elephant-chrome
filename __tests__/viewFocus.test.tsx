@@ -3,7 +3,7 @@ import { SessionProvider } from '@/contexts'
 import { NavigationProvider } from '@/navigation'
 import userEvent from '@testing-library/user-event'
 
-import { useNavigation } from '@/navigation/hooks'
+import { useNavigation } from '@/hooks'
 
 import { render, screen } from '../setupTests'
 import { ViewFocus } from '@/components/View/ViewHeader/ViewFocus'

@@ -4,6 +4,5 @@ export {
   newsDocToSlate
 } from './newsdoc/index.js'
 export {
-  yDocToNewsDoc,
-  yjsStateAsUpdate
+  yDocToNewsDoc
 } from './yjs/ySlate.js'

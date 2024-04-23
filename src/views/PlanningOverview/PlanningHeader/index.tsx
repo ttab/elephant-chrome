@@ -7,7 +7,7 @@ import {
 } from 'react'
 import { CreatePlan } from './CreatePlan'
 
-export interface PlanningHeaderProps {
+interface PlanningHeaderProps {
   tab: string
   startDate: Date
   setStartDate: Dispatch<SetStateAction<Date>>

@@ -9,7 +9,7 @@ import { HocuspocusProvider } from '@hocuspocus/provider'
 import { useSession } from '@/hooks'
 import { HPWebSocketProviderContext } from '.'
 
-export interface DocTrackerProviderState {
+interface DocTrackerProviderState {
   provider?: HocuspocusProvider
   connected: boolean
   synced: boolean

@@ -7,7 +7,7 @@ import { yDocToNewsDoc } from './transformations/index.js'
 import { type FinishedUnaryCall } from '@protobuf-ts/runtime-rpc'
 import { type Doc } from 'yjs'
 
-export interface GetAuth {
+interface GetAuth {
   user: string
   password: string
   sub: string

@@ -2,7 +2,6 @@ import { Block } from '@/protos/service'
 import type * as views from '@/views'
 import { LucideIcon } from '@ttab/elephant-ui/icons'
 import { type JWTPayload } from 'jose'
-import type * as Y from 'yjs'
 
 export enum NavigationActionType {
   SET = 'set',
@@ -22,7 +21,7 @@ export interface NavigationAction {
   active?: string
 }
 
-export interface ViewWidths {
+interface ViewWidths {
   [key: string]: number // FIXME: Should use some keyof typeof thingy...
   sm: number
   md: number
@@ -114,10 +113,4 @@ export interface DefaultValueOption {
   iconProps?: Record<string, unknown>
   color?: string
   info?: string
-}
-
-export interface CollabComponentProps {
-  isSynced: boolean
-  document?: Y.Doc
-  className?: string
 }
