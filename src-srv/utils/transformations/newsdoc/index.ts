@@ -6,7 +6,7 @@ import type {
   GetDocumentResponse
 } from '../../../protos/service.js'
 
-export interface SlateDoc {
+interface SlateDoc {
   version: bigint
   document: {
     language: string
