@@ -3,7 +3,7 @@ import { transformVisual, revertVisual } from './tt/visual.js'
 import type { TBElement } from '@ttab/textbit'
 import type { Block } from '../../../protos/service.js'
 
-export interface SlateDoc {
+interface SlateDoc {
   version: bigint
   document: {
     language: string

@@ -7,7 +7,7 @@ import { type Block } from '../../../protos/service.js'
  * @returns GroupedObjects
  */
 
-export type GroupedObjects = Record<string, Block[]>
+type GroupedObjects = Record<string, Block[]>
 
 export function group(objects: Block[], groupKey: keyof Block): GroupedObjects {
   const groupedObjects: GroupedObjects = {}
