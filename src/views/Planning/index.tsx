@@ -5,7 +5,7 @@ import { GanttChartSquare } from '@ttab/elephant-ui/icons'
 import { useQuery } from '@/hooks'
 import { SluglineEditable } from '@/components/DataItem/Slugline'
 import {
-  PlanAssignments,
+  AssignmentTable,
   PlanDate,
   PlanSector,
   PlanStatus,
@@ -118,7 +118,7 @@ const PlanningViewContent = (props: ViewProps & { documentId: string }): JSX.Ele
             <PlanStory />
           </div>
 
-          <PlanAssignments />
+          <AssignmentTable documentId={props.documentId} />
         </section>
       </ScrollArea>
     </div>

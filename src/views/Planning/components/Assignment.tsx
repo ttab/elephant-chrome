@@ -1,50 +1,50 @@
-import { Link } from '@/components'
-import { useYObserver } from '@/hooks/useYObserver'
-import { MoreHorizontal } from '@ttab/elephant-ui/icons'
-import { TimeDisplay } from '@/components/DataItem/TimeDisplay'
-import { SluglineEditable } from '@/components/DataItem/Slugline'
-import { AssignmentType } from '@/components/DataItem/AssignmentType'
-import { AssigneeAvatars } from '@/components/DataItem/AssigneeAvatars'
-import type * as Y from 'yjs'
+import { useYObserver } from '@/hooks'
+import { Clock10Icon, FileTextIcon, UserPlus } from '@ttab/elephant-ui/icons'
+import * as Y from 'yjs'
 
-
-export const Assignment = ({ index }: { index: number }): JSX.Element => {
+export const Assignment = ({ index, setSelectedAssignment }: {
+  index: number
+  setSelectedAssignment: React.Dispatch<React.SetStateAction<number | undefined>>
+}): JSX.Element => {
   const { get: getTitle } = useYObserver('meta', `core/assignment[${index}]`)
-  const { get: getUUID } = useYObserver('meta', `core/assignment[${index}].links.core/article[0]`)
-  const { get: getAssignmentDescription } = useYObserver('meta', `core/assignment[${index}].meta.core/description[0].data`)
-  const { get: getAssignmentPublishTime } = useYObserver('meta', `core/assignment[${index}].data`)
-  const { state: stateAuthor = [] } = useYObserver('meta', `core/assignment[${index}].links.core/author`)
 
   return (
-    <div className="grid grid-cols-12 border-b py-2">
-      <div className="col-span-8 px-2 py-1">
-        <div className="flex-grow flex space-x-2 items-center">
-          <div className='font-medium text-sm'>
-            {getUUID('uuid')
-              ? <Link to='Editor' props={{ id: getUUID('uuid') as string }}>
-                {(getTitle('title') as Y.XmlText)?.toJSON()}
-              </Link>
-              : <span className='text-muted-foreground'>{(getTitle('title') as Y.XmlText)?.toJSON()}</span>}
-          </div>
-          <SluglineEditable path={`core/assignment[${index}].meta.tt/slugline[0]`} />
-        </div>
-        <div className='font-normal text-sm mt-2'>{(getAssignmentDescription('text') as Y.XmlText)?.toJSON()}</div>
+    <div className='flex flex-col border rounded-md shadow-xl opacity-50'>
+      <div className='flex gap-4 p-4 items-center'>
+        <div className='text-xl text-gray'>{(getTitle('title') as Y.XmlText)?.toJSON()}</div>
+        <div className='border rounded-sm p-1 text-xs text-gray'>Lägg till slugg</div>
       </div>
-      <div className="col-span-4 flex justify-end space-x-4 items-center">
-        <AssigneeAvatars
-          assignees={Array.isArray(stateAuthor)
-            ? stateAuthor.map((author) => author.name)
-            : []}
-        />
-        <AssignmentType index={index} />
-        <div className="min-w-[64px] whitespace-nowrap">
-          {getAssignmentPublishTime('publish')
-            ? <TimeDisplay date={new Date(getAssignmentPublishTime('publish') as string)} />
-            : '-'
-          }
+
+      <div className='text-sm text-gray p-2 min-h-24 p-4'>
+        Lägg till beskrivning
+      </div>
+
+      <div className='flex items-center justify-between border-t px-4 h-16'>
+        <div className='flex items-center justify-start gap-6'>
+          <UserPlus size={20} strokeWidth={1.75} />
+          <FileTextIcon size={20} strokeWidth={1.75} />
+          <Clock10Icon size={20} strokeWidth={1.75} />
         </div>
-        <div className="whitespace-nowrap">
-          <MoreHorizontal size={18} strokeWidth={1.75} />
+
+        <div className='flex items-center justify-end gap-4'>
+          <button
+            className='rounded-sm text-gray text-sm px-4 py-2'
+            onClick={(evt) => {
+              evt.preventDefault()
+              // FIXME: If this was a newly created/added we need to remove it
+              setSelectedAssignment(undefined)
+            }}>
+            Avbryt
+          </button>
+
+          <button
+            className='border rounded-sm text-gray text-sm px-4 py-2'
+            onClick={(evt) => {
+              evt.preventDefault()
+              setSelectedAssignment(undefined)
+            }}>
+            Klar
+          </button>
         </div>
       </div>
     </div>
