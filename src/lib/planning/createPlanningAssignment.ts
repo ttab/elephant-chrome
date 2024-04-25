@@ -137,7 +137,7 @@ function getAssignmentTemplate(id: string, assignmentType: string): Block {
         type: 'core/description',
         title: '',
         data: {
-          text: 'foo'
+          text: ''
         },
         rel: '',
         role: 'internal',

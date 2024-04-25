@@ -32,18 +32,16 @@ export const Assignment = ({ index, setSelectedAssignment, className }: {
         className="text-sm leading-4 px-0 opacity-80"
       />
 
-      <div className='p-2 min-h-24 p-4'>
-        {/* FIXME: This does not work, probably wrong in createPlanningAssignment() */}
-        <TextBox
-          base='meta'
-          path={`core/assignment[${index}].meta.core/description[0].data`}
-          field='text'
-          placeholder='Beskrivning'
-          className="text-md leading-4 px-0"
-        />
-      </div>
+      {/* FIXME: This does not work, probably wrong in createPlanningAssignment() */}
+      <TextBox
+        base='meta'
+        path={`core/assignment[${index}].meta.core/description[0].data`}
+        field='text'
+        placeholder='Beskrivning'
+        className="text-sm leading-4 px-0"
+      />
 
-      <div className='flex items-center justify-between border-t px-4 h-16'>
+      <div className='flex items-center justify-between border-t px-4 pt-4'>
         <div className='flex items-center justify-start gap-6'>
           <UserPlus size={20} strokeWidth={1.75} />
           <FileTextIcon size={20} strokeWidth={1.75} />
