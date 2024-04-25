@@ -45,16 +45,8 @@ export const AssignmentTable = (): JSX.Element => {
         {Array.isArray(state) && state.map((_, index: number) => (
           <>
             {selectedAssignment === index
-              ? <Assignment
-                index={index}
-                setSelectedAssignment={setSelectedAssignment}
-                className='my-6'
-              />
-              : <AssignmentRow
-                key={index}
-                index={index}
-                setSelectedAssignment={setSelectedAssignment}
-              />
+              ? <Assignment key={`${_.id}-${index}`} index={index} setSelectedAssignment={setSelectedAssignment} className='my-6' />
+              : <AssignmentRow key={`${_.id}-${index}`} index={index} setSelectedAssignment={setSelectedAssignment} />
             }
           </>
         ))}

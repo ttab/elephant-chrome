@@ -1,6 +1,6 @@
 import * as Y from 'yjs'
 import { toYMap } from '../../../src-srv/utils/transformations/lib/toYMap'
-import { Block } from '@/protos/service'
+import { type Block } from '@/protos/service'
 
 /**
  * Create an empty planning assignment and add it to the planning Y.Doc.

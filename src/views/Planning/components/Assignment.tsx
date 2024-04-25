@@ -1,13 +1,14 @@
-import { useYObserver } from '@/hooks'
+import { useCollaboration, useYObserver } from '@/hooks'
 import { Clock10Icon, FileTextIcon, UserPlus } from '@ttab/elephant-ui/icons'
 import { cn } from '@ttab/elephant-ui/utils'
-import * as Y from 'yjs'
+import type * as Y from 'yjs'
 
 export const Assignment = ({ index, setSelectedAssignment, className }: {
   index: number
   setSelectedAssignment: React.Dispatch<React.SetStateAction<number | undefined>>
   className?: string
 }): JSX.Element => {
+  const { provider } = useCollaboration()
   const { get: getTitle } = useYObserver('meta', `core/assignment[${index}]`)
 
   return (
@@ -33,8 +34,15 @@ export const Assignment = ({ index, setSelectedAssignment, className }: {
             className='rounded-sm text-gray text-sm px-4 py-2'
             onClick={(evt) => {
               evt.preventDefault()
-              // FIXME: If this was a newly created/added we need to remove it
-              setSelectedAssignment(undefined)
+              if (provider?.document) {
+                const yEle = provider.document.getMap('ele')
+                const meta = yEle.get('meta') as Y.Map<unknown>
+                if (meta.has('core/assignment')) {
+                  const assignments = meta.get('core/assignment') as Y.Array<unknown>
+                  assignments.delete(index, 1)
+                }
+                setSelectedAssignment(undefined)
+              }
             }}>
             Avbryt
           </button>
