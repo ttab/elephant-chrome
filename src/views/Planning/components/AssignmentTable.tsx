@@ -7,9 +7,7 @@ import { Assignment } from './Assignment'
 import { useState } from 'react'
 
 
-export const AssignmentTable = ({ documentId }: {
-  documentId: string
-}): JSX.Element => {
+export const AssignmentTable = (): JSX.Element => {
   const { provider } = useCollaboration()
   const { state } = useYObserver('meta', 'core/assignment')
   const [selectedAssignment, setSelectedAssignment] = useState<number | undefined>(undefined)
@@ -36,15 +34,27 @@ export const AssignmentTable = ({ documentId }: {
       </div>
 
       {createdAssignment !== undefined &&
-        <Assignment index={createdAssignment} setSelectedAssignment={setCreatedAssignment} />
+        <Assignment
+          index={createdAssignment}
+          setSelectedAssignment={setCreatedAssignment}
+          className='my-6'
+        />
       }
 
       <div className="border-t">
         {Array.isArray(state) && state.map((_, index: number) => (
           <>
             {selectedAssignment === index
-              ? <Assignment index={index} setSelectedAssignment={setSelectedAssignment} />
-              : < AssignmentRow key={index} index={index} setSelectedAssignment={setSelectedAssignment} />
+              ? <Assignment
+                index={index}
+                setSelectedAssignment={setSelectedAssignment}
+                className='my-6'
+              />
+              : <AssignmentRow
+                key={index}
+                index={index}
+                setSelectedAssignment={setSelectedAssignment}
+              />
             }
           </>
         ))}

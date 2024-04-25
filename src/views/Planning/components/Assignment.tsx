@@ -1,15 +1,17 @@
 import { useYObserver } from '@/hooks'
 import { Clock10Icon, FileTextIcon, UserPlus } from '@ttab/elephant-ui/icons'
+import { cn } from '@ttab/elephant-ui/utils'
 import * as Y from 'yjs'
 
-export const Assignment = ({ index, setSelectedAssignment }: {
+export const Assignment = ({ index, setSelectedAssignment, className }: {
   index: number
   setSelectedAssignment: React.Dispatch<React.SetStateAction<number | undefined>>
+  className?: string
 }): JSX.Element => {
   const { get: getTitle } = useYObserver('meta', `core/assignment[${index}]`)
 
   return (
-    <div className='flex flex-col border rounded-md shadow-xl opacity-50'>
+    <div className={cn('flex flex-col border rounded-md shadow-xl opacity-50', className)}>
       <div className='flex gap-4 p-4 items-center'>
         <div className='text-xl text-gray'>{(getTitle('title') as Y.XmlText)?.toJSON()}</div>
         <div className='border rounded-sm p-1 text-xs text-gray'>Lägg till slugg</div>

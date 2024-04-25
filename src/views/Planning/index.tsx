@@ -118,7 +118,7 @@ const PlanningViewContent = (props: ViewProps & { documentId: string }): JSX.Ele
             <PlanStory />
           </div>
 
-          <AssignmentTable documentId={props.documentId} />
+          <AssignmentTable />
         </section>
       </ScrollArea>
     </div>
