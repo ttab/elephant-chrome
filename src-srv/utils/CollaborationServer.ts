@@ -285,7 +285,7 @@ export class CollaborationServer {
    * Action: Save the document if changes has been made
    * Action: Remove the user (or decrease count) from a tracked document userlist
    */
-  async #onDisconnect({ document, documentName, context }: onDisconnectPayload): Promise<void> {
+  async #onDisconnect({ documentName, context }: onDisconnectPayload): Promise<void> {
     if (!this.#openDocuments || documentName === 'document-tracker') {
       return
     }

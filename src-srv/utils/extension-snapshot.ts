@@ -1,23 +1,29 @@
 import {
   type onStoreDocumentPayload,
-  type Extension
+  type Extension,
+  type onDisconnectPayload
 } from '@hocuspocus/server'
-import { debounce } from 'lodash-es'
+import { type DebouncedFunc, debounce } from 'lodash-es'
 
-interface Configuration {
+interface DefaultConfiguration {
   debounce: number
+}
+
+interface Configuration extends DefaultConfiguration {
   snapshot: (payload: onStoreDocumentPayload) => Promise<() => Promise<void>>
 }
 
-const debounceMap = new Map<string, () => Promise<void>>()
+const debounceMap = new Map<string, DebouncedFunc<() => Promise<void>>>()
 
 export class Snapshot implements Extension {
-  configuration: Configuration = {
-    debounce: 600000
-  }
+  configuration: Configuration
 
-  constructor(configuration?: Partial<Configuration>) {
-    this.configuration = { ...this.configuration, ...configuration }
+  constructor(configuration: Configuration) {
+    const defaultConfig: DefaultConfiguration = {
+      debounce: 60000
+    }
+
+    this.configuration = { ...defaultConfig, ...configuration }
   }
 
   async onStoreDocument(payload: onStoreDocumentPayload): Promise<void> {
@@ -29,7 +35,7 @@ export class Snapshot implements Extension {
 
       // Create debounce
       const fn = await this.configuration.snapshot(payload)
-      const debouncedFn: () => Promise<void> = debounce(fn, this.configuration.debounce)
+      const debouncedFn = debounce(fn, this.configuration.debounce)
 
       // Set new debounce
       debounceMap.set(documentName, debouncedFn)
@@ -39,7 +45,7 @@ export class Snapshot implements Extension {
     }
   }
 
-  async onDisconnect(payload: onStoreDocumentPayload): Promise<void> {
+  async onDisconnect(payload: onDisconnectPayload): Promise<void> {
     const debouncedFn = debounceMap.get(payload.documentName)
     // If the document has a debounceFn it's dirty, check if there are no other clients
     if (debouncedFn && payload.clientsCount === 0) {
