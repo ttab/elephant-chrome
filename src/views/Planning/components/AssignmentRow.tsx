@@ -7,18 +7,21 @@ import { AssigneeAvatars } from '@/components/DataItem/AssigneeAvatars'
 import type * as Y from 'yjs'
 import { DotDropdownMenu } from '@/components/ui/DotMenu'
 import { useCollaboration } from '@/hooks'
+import { Delete, Edit } from '@ttab/elephant-ui/icons'
+import { Button, Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@ttab/elephant-ui'
+import { useEffect, useState } from 'react'
 
 
 export const AssignmentRow = ({ index, setSelectedAssignment }: {
   index: number
   setSelectedAssignment: React.Dispatch<React.SetStateAction<number | undefined>>
 }): JSX.Element => {
-  const { provider } = useCollaboration()
   const { get: getTitle } = useYObserver('meta', `core/assignment[${index}]`)
   const { get: getUUID } = useYObserver('meta', `core/assignment[${index}].links.core/article[0]`)
   const { get: getAssignmentDescription } = useYObserver('meta', `core/assignment[${index}].meta.core/description[0].data`)
   const { get: getAssignmentPublishTime } = useYObserver('meta', `core/assignment[${index}].data`)
   const { state: stateAuthor = [] } = useYObserver('meta', `core/assignment[${index}].links.core/author`)
+  const [showVerifyDialog, setShowVerifyDialog] = useState<boolean>(false)
 
   return (
     <div className="grid grid-cols-12 border-b py-2">
@@ -55,25 +58,15 @@ export const AssignmentRow = ({ index, setSelectedAssignment }: {
           <DotDropdownMenu
             items={[
               {
-                label: 'Edit',
-                item: () => {
-                  setSelectedAssignment(index)
-                }
+                label: 'Redigera',
+                icon: Edit,
+                item: () => setSelectedAssignment(index)
               },
               {
-                label: 'Remove',
+                label: 'Ta bort',
+                icon: Delete,
                 item: () => {
-                  if (!provider?.document) {
-                    return
-                  }
-
-                  const yEle = provider.document.getMap('ele')
-                  const meta = yEle.get('meta') as Y.Map<unknown>
-                  if (meta.has('core/assignment')) {
-                    const assignments = meta.get('core/assignment') as Y.Array<unknown>
-                    assignments.delete(index, 1)
-                  }
-                  setSelectedAssignment(undefined)
+                  setShowVerifyDialog(true)
                 }
               }
             ]}
@@ -81,6 +74,77 @@ export const AssignmentRow = ({ index, setSelectedAssignment }: {
         </div>
       </div>
 
+      {showVerifyDialog &&
+        <VerifyDeleteAssignmentDialog
+          index={index}
+          title={(getTitle('title') as Y.XmlText)?.toJSON()}
+          setSelectedAssignment={setSelectedAssignment}
+          setShowVerifyDialog={setShowVerifyDialog}
+        />
+      }
     </div>
+  )
+}
+
+
+function VerifyDeleteAssignmentDialog({ index, title, setSelectedAssignment, setShowVerifyDialog }: {
+  index: number
+  title: string
+  setSelectedAssignment: React.Dispatch<React.SetStateAction<number | undefined>>
+  setShowVerifyDialog: React.Dispatch<React.SetStateAction<boolean>>
+}): JSX.Element {
+  const { provider } = useCollaboration()
+
+  useEffect(() => {
+    if (provider?.document) {
+      console.log(JSON.stringify(provider.document.toJSON(), null, 2))
+    }
+  }, [provider?.document])
+
+  return (
+    <Dialog open={true}>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Ta bort?</DialogTitle>
+        </DialogHeader>
+
+        <DialogDescription>
+          {title
+            ? <>Vill du ta bort uppdraget <em>{title}</em>?</>
+            : <>Vill du ta bort uppdraget?</>
+          }
+        </DialogDescription>
+
+        <DialogFooter className="flex flex-col gap-2 pt-4">
+          <Button
+            variant="secondary"
+            onClick={(evt) => {
+              evt.preventDefault()
+              setShowVerifyDialog(false)
+            }}
+          >
+            Avbryt
+          </Button>
+
+          <Button onClick={(evt) => {
+            evt.preventDefault()
+
+            if (!provider?.document) {
+              return
+            }
+
+            const yEle = provider.document.getMap('ele')
+            const meta = yEle.get('meta') as Y.Map<unknown>
+            if (meta.has('core/assignment')) {
+              const assignments = meta.get('core/assignment') as Y.Array<unknown>
+              assignments.delete(index, 1)
+            }
+            setSelectedAssignment(undefined)
+          }}>
+            Ta bort
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   )
 }

@@ -128,6 +128,25 @@ function getAssignmentTemplate(id: string, assignmentType: string): Block {
         links: [],
         content: [],
         meta: []
+      },
+      {
+        id: '',
+        uuid: '',
+        uri: '',
+        url: '',
+        type: 'core/description',
+        title: '',
+        data: {
+          text: 'foo'
+        },
+        rel: '',
+        role: 'internal',
+        name: '',
+        value: assignmentType,
+        contentType: '',
+        links: [],
+        content: [],
+        meta: []
       }
     ]
   }

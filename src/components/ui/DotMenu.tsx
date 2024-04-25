@@ -1,5 +1,10 @@
 import React from 'react'
-import { MoreHorizontal, MoreVertical } from '@ttab/elephant-ui/icons'
+import {
+  type LucideIcon,
+  MoreHorizontal,
+  MoreVertical
+} from '@ttab/elephant-ui/icons'
+
 import {
   Button,
   DropdownMenu,
@@ -13,6 +18,7 @@ import {
 
 interface DotDropdownMenuActionItem {
   label: string
+  icon?: LucideIcon
   item: DotDropdownMenuActionItem[] | ((evt: React.MouseEvent<HTMLDivElement, MouseEvent>) => void) | React.ReactNode
 }
 
@@ -46,6 +52,8 @@ export const DotDropdownMenu = ({ trigger = 'horizontal', items }: {
   trigger?: 'horizontal' | 'vertical'
   items: DotDropdownMenuActionItem[]
 }): JSX.Element => {
+  const hasIcons = items.findIndex(item => !!item.icon) !== -1
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -60,15 +68,17 @@ export const DotDropdownMenu = ({ trigger = 'horizontal', items }: {
 
       <DropdownMenuContent className='w-56'>
         {items.map(item => {
-          return <DotDropdownMenuItem key={item.label} item={item} />
+          return <DotDropdownMenuItem key={item.label} item={item} hasIcons={hasIcons} />
         })}
       </DropdownMenuContent>
     </DropdownMenu>
   )
 }
 
-function DotDropdownMenuItem({ item }: {
+
+function DotDropdownMenuItem({ item, hasIcons }: {
   item: DotDropdownMenuActionItem
+  hasIcons: boolean
 }): JSX.Element {
   const { label, item: Item } = item
 
@@ -80,22 +90,48 @@ function DotDropdownMenuItem({ item }: {
           Item(evt)
         }
       }}>
-        {React.isValidElement(Item)
-          ? <>{Item}</>
-          : <>{label}</>
-        }
+        <DotDropdownMenuItemContent item={item} hasIcons={hasIcons} />
       </DropdownMenuItem>
     )
   }
+
+  const subMenuHasIcons = typeof Item.findIndex(item => item.icon) === 'number'
 
   return (
     <DropdownMenuSub>
       <DropdownMenuSubTrigger>{label}</DropdownMenuSubTrigger>
       <DropdownMenuSubContent>
         {Item.map(item => {
-          return <DotDropdownMenuItem key={item.label} item={item} />
+          return <DotDropdownMenuItem key={item.label} item={item} hasIcons={subMenuHasIcons} />
         })}
       </DropdownMenuSubContent>
     </DropdownMenuSub>
+  )
+}
+
+
+function DotDropdownMenuItemContent({ item, hasIcons }: {
+  item: DotDropdownMenuActionItem
+  hasIcons: boolean
+}): JSX.Element {
+  const { label, icon: Icon, item: Item } = item
+
+  return (
+    <div className="flex flex-row justify-center items-center">
+      {hasIcons &&
+        <div className="opacity-70 flex-none w-7">
+          {!!Icon &&
+            <Icon size={16} strokeWidth={1.75} />
+          }
+        </div>
+      }
+
+      <div className="grow">
+        {React.isValidElement(Item)
+          ? <>{Item}</>
+          : <>{label}</>
+        }
+      </div>
+    </div>
   )
 }

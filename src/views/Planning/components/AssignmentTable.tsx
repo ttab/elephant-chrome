@@ -16,7 +16,7 @@ export const AssignmentTable = (): JSX.Element => {
 
   return (
     <div className='flex flex-col gap-2 pt-4'>
-      <div className='flex flex-start'>
+      <div className='flex flex-start pb-4'>
         <a href="#" className='flex flex-start items-center text-sm gap-2 p-2 -ml-2 rounded-sm hover:bg-gray-100' onClick={(evt) => {
           evt.preventDefault()
 
@@ -37,18 +37,18 @@ export const AssignmentTable = (): JSX.Element => {
         <Assignment
           index={createdAssignment}
           setSelectedAssignment={setCreatedAssignment}
-          className='my-6'
+          className='mb-6'
         />
       }
 
       <div className="border-t">
         {Array.isArray(state) && state.map((_, index: number) => (
-          <>
+          <div key={`${_.id}`}>
             {selectedAssignment === index
-              ? <Assignment key={`${_.id}-${index}`} index={index} setSelectedAssignment={setSelectedAssignment} className='my-6' />
-              : <AssignmentRow key={`${_.id}-${index}`} index={index} setSelectedAssignment={setSelectedAssignment} />
+              ? <Assignment index={index} setSelectedAssignment={setSelectedAssignment} className='my-6' />
+              : <AssignmentRow index={index} setSelectedAssignment={setSelectedAssignment} />
             }
-          </>
+          </div>
         ))}
       </div>
     </div >

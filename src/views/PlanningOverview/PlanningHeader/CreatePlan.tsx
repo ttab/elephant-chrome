@@ -2,7 +2,7 @@ import {
   Button,
   Dialog, DialogContent, DialogFooter, DialogTrigger
 } from '@ttab/elephant-ui'
-import * as Y from 'yjs'
+import type * as Y from 'yjs'
 
 import { Planning } from '@/views/Planning'
 import { PlusIcon } from '@ttab/elephant-ui/icons'
