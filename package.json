@@ -24,7 +24,7 @@
   },
   "dependencies": {
     "@hocuspocus/extension-database": "^2.11.3",
-    "@hocuspocus/extension-logger": "^2.11.3",
+    "@hocuspocus/extension-logger": "^2.12.2",
     "@hocuspocus/extension-redis": "^2.11.3",
     "@hocuspocus/provider": "^2.11.3",
     "@hocuspocus/server": "^2.12.2",
