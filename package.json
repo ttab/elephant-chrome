@@ -53,7 +53,7 @@
     "slate-react": "^0.102.0",
     "swr": "^2.2.5",
     "yjs": "^13.6.14",
-    "zod": "^3.23.0"
+    "zod": "^3.23.4"
   },
   "devDependencies": {
     "@testing-library/jest-dom": "^6.4.2",
