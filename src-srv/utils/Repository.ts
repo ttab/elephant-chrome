@@ -171,11 +171,11 @@ export class Repository {
       if (result.status.code === 'OK') {
         versionMap.set('version', result.response.version.toString())
 
-        console.log('::: Snapshot saved: ', result.response.version)
+        console.debug('::: Snapshot saved: ', result.response.version)
         return result
       }
     } catch (err: unknown) {
-      console.log('::: saveDoc error:', err)
+      console.error('::: saveDoc error:', err)
     }
   }
 

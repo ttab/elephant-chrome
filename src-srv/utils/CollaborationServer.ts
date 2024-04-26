@@ -7,14 +7,14 @@ import {
   type afterUnloadDocumentPayload,
   type connectedPayload,
   type onDisconnectPayload,
-  type onChangePayload
+  type onStoreDocumentPayload
 } from '@hocuspocus/server'
 
 import { Logger } from '@hocuspocus/extension-logger'
 import { Redis } from '@hocuspocus/extension-redis'
 import { Database } from '@hocuspocus/extension-database'
 import type { RedisCache } from './RedisCache.js'
-import type { Repository } from './Repository.js'
+import { type Repository } from './Repository.js'
 import {
   decodeJwt,
   type JWTPayload
@@ -27,6 +27,7 @@ import {
 
 import * as Y from 'yjs'
 import { newsDocToYDoc } from './transformations/yjs/yDoc.js'
+import { Snapshot } from './extension-snapshot.js'
 
 interface CollaborationServerOptions {
   name: string
@@ -105,6 +106,14 @@ export class CollaborationServer {
         new Database({
           fetch: async (payload) => { return await this.#fetchDocument(payload) },
           store: async (payload) => { await this.#storeDocument(payload) }
+        }),
+        new Snapshot({
+          debounce: 30000,
+          snapshot: async (payload: onStoreDocumentPayload) => {
+            return async () => {
+              await this.#repository.saveDoc(payload.document, payload.context.token as string)
+            }
+          }
         })
       ],
       onAuthenticate: async (payload) => { return await this.#authenticate(payload) },
@@ -114,9 +123,6 @@ export class CollaborationServer {
 
       // Remove user from having a tracked doc open (or decrease the nr of times user have it open)
       onDisconnect: async (payload) => { await this.#onDisconnect(payload) },
-      onChange: async (payload) => {
-        await this.#onChange(payload)
-      },
 
       // No users have this doc open, remove it from tracked documents
       afterUnloadDocument: async (payload) => { await this.#afterUnloadDocument(payload) }
@@ -273,35 +279,13 @@ export class CollaborationServer {
     }
   }
 
-  async #setDirty({ documentName, context }: onChangePayload): Promise<void> {
-    if ((!this.#openDocuments || documentName === 'document-tracker' || !context.user)) {
-      return
-    }
-    const trackedDocuments = this.#openDocuments.getMap('open-documents')
-    const userList = trackedDocuments.get(documentName) as Y.Map<unknown>
-
-    const { sub: userId } = context.user as { sub: string, sub_name: string }
-
-    const trackingUser = userList.get(userId) as Y.Map<unknown>
-
-    const isDirty = trackingUser.get('dirty') as boolean
-
-    if (!isDirty) {
-      trackingUser.set('dirty', true)
-    }
-  }
-
-  async #onChange(payload: onChangePayload): Promise<void> {
-    await this.#setDirty(payload)
-  }
-
   /*
    * Called for every provider that diconnects for tracking a specific document.
    *
    * Action: Save the document if changes has been made
    * Action: Remove the user (or decrease count) from a tracked document userlist
    */
-  async #onDisconnect({ document, documentName, context }: onDisconnectPayload): Promise<void> {
+  async #onDisconnect({ documentName, context }: onDisconnectPayload): Promise<void> {
     if (!this.#openDocuments || documentName === 'document-tracker') {
       return
     }
@@ -313,12 +297,6 @@ export class CollaborationServer {
     if (documentUsersList) {
       const user = documentUsersList.get(userId) as Y.Map<unknown>
       const count = user?.get('count') as number || 0
-      const isDirty = user?.get('dirty') as boolean
-
-      // Save document if changes has been made
-      if (isDirty) {
-        await this.#repository.saveDoc(document, context.token as string)
-      }
 
       if (count > 1) {
         user.set('count', count - 1)
