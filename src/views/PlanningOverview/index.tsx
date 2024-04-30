@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { type ViewMetadata } from '@/types'
+import { Intent, NavigateContext, type ViewMetadata } from '@/types'
 import { ViewHeader } from '@/components'
 import { CalendarDaysIcon } from '@ttab/elephant-ui/icons'
 import { PlanningHeader } from './PlanningHeader'
@@ -24,7 +24,20 @@ const meta: ViewMetadata = {
     fhd: 4,
     qhd: 3,
     uhd: 2
-  }
+  },
+  handleIntent: (intent: Intent, _: NavigateContext) : boolean => {
+    if (intent.action != "view") {
+      return false
+    }
+
+    if (intent.data != "planning://overview") {
+      return false
+    }
+
+    return true
+  },
+  // Alternative shorthand for URI navigation
+  viewFor: ["planning://overview"]
 }
 
 export const PlanningOverview = (): JSX.Element => {

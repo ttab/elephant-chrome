@@ -5,7 +5,7 @@ import {
   type ViewProps,
   type ViewRegistryItem,
   type ContentState,
-  type ViewRegistry
+  type ViewRegistry,
 } from '@/types'
 import { toQueryString } from './toQueryString'
 import { minimumSpaceRequired } from '@/navigation/lib'

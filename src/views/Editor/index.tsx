@@ -20,7 +20,7 @@ import {
   useQuery,
   useCollaboration
 } from '@/hooks'
-import { type ViewMetadata, type ViewProps } from '@/types'
+import { Intent, NavigateContext, type ViewMetadata, type ViewProps } from '@/types'
 import { EditorHeader } from './EditorHeader'
 import { type HocuspocusProvider } from '@hocuspocus/provider'
 import { type AwarenessUserData } from '@/contexts/CollaborationProvider'
@@ -28,7 +28,6 @@ import { type YXmlText } from 'node_modules/yjs/dist/src/internals'
 
 const meta: ViewMetadata = {
   name: 'Editor',
-  path: `${import.meta.env.BASE_URL || ''}/editor`,
   widths: {
     sm: 12,
     md: 12,
@@ -39,7 +38,32 @@ const meta: ViewMetadata = {
     fhd: 4,
     qhd: 3,
     uhd: 2
-  }
+  },
+  handleIntent: (intent: Intent, ctx: NavigateContext) : boolean => {
+    // These three if-statements can probably be handled by a helper func or
+    // formal deocument editor registration, but they illustrate the concept.
+
+    if (intent.action != "edit") {
+      return false
+    }
+
+    if (typeof intent.data != "object") {
+      return false
+    }
+
+    if (intent.data.type != "core/article") {
+      return false
+    }
+
+    return true
+  },
+  // Alternative shorthand for edit intent actions, the "for" here can be a uri
+  // or a DocumentReference.
+  editorFor: [{type:"core/article"}],
+  // For a view that is a document viewer that could be:
+  viewFor: [{type:"core/article"}]
+  // ...and the editor launched through a view intent action could open in a
+  // read only mode.
 }
 
 const Editor = (props: ViewProps): JSX.Element => {

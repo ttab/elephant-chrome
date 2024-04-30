@@ -1,7 +1,44 @@
+import type { MouseEvent } from 'react'
 import { Block } from '@/protos/service'
 import type * as views from '@/views'
 import { LucideIcon } from '@ttab/elephant-ui/icons'
 import { type JWTPayload } from 'jose'
+
+export enum Action {
+  View = "view",
+  Edit = "edit",
+}
+
+export interface DocumentReference {
+  uuid?: string
+  type: string
+}
+
+// Intent is what we replace direct links to views with. Rather than opening the
+// planning view and pass it the id=X we would call:
+//
+//    handleIntent({action:"edit",data:{uuid:"X", type:"core/planning-item"})
+//
+// ViewMetadata for the views would then have have a function where they can
+// decide if they can handle the intent, and probably also describe how the
+// intent data is encoded into query params so that we can push the state.
+export interface Intent {
+  // The primary inspectable thing when a view decides if it can handle the
+  // intent.
+  action: Action
+  data: string | DocumentReference
+  // Extra arguments for the view. The actual types for these should be defined,
+  // but they are not known by the intent dispatcher.
+  extra: any
+}
+
+export interface NavigateContext {
+  event?: MouseEvent<HTMLAnchorElement | HTMLTableRowElement>
+  navigation: NavigationState
+  props?: ViewProps
+  origin: string
+}
+
 
 export enum NavigationActionType {
   SET = 'set',
@@ -76,6 +113,8 @@ export interface HistoryState {
 }
 
 export interface ViewProps {
+  // We mix "what the view should show" with "view mode", let things like ID be
+  // the domain of the intent information.
   id?: string | null
   asDialog?: boolean
   onDialogClose?: (id?: string) => void
