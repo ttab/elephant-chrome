@@ -1,5 +1,5 @@
 import { useMemo, type PropsWithChildren, useEffect } from 'react'
-import { AwarenessDocument, ViewHeader } from '@/components'
+import { AwarenessDocument, ViewHeader, Link as LocalLink } from '@/components'
 import { PenBoxIcon } from '@ttab/elephant-ui/icons'
 
 import { createEditor } from 'slate'
@@ -25,6 +25,7 @@ import { EditorHeader } from './EditorHeader'
 import { type HocuspocusProvider } from '@hocuspocus/provider'
 import { type AwarenessUserData } from '@/contexts/CollaborationProvider'
 import { type YXmlText } from 'node_modules/yjs/dist/src/internals'
+import { Button } from '@ttab/elephant-ui'
 
 const meta: ViewMetadata = {
   name: 'Editor',
@@ -73,6 +74,11 @@ function EditorWrapper(props: ViewProps & {
     <Textbit.Root plugins={plugins} placeholders="multiple" className="h-screen max-h-screen flex flex-col">
       <ViewHeader.Root>
         <ViewHeader.Title title='Editor' icon={PenBoxIcon} />
+        <LocalLink to='ImageSearch' props={{ id: props.documentId }}>
+          <Button variant='outline'>
+            <span>Bildsätt</span>
+          </Button>
+        </LocalLink>
 
         <ViewHeader.Content>
           <EditorHeader />
