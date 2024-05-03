@@ -1,7 +1,7 @@
 import { Link } from '@/components'
 import { useYObserver } from '@/hooks/useYObserver'
 import { TimeDisplay } from '@/components/DataItem/TimeDisplay'
-import { SluglineEditable } from '@/components/DataItem/Slugline'
+import { SluglineEditable } from '@/components/DataItem/SluglineInput'
 import { AssignmentType } from '@/components/DataItem/AssignmentType'
 import { AssigneeAvatars } from '@/components/DataItem/AssigneeAvatars'
 import type * as Y from 'yjs'
@@ -9,7 +9,7 @@ import { DotDropdownMenu } from '@/components/ui/DotMenu'
 import { useCollaboration } from '@/hooks'
 import { Delete, Edit } from '@ttab/elephant-ui/icons'
 import { Button, Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@ttab/elephant-ui'
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 
 
 export const AssignmentRow = ({ index, setSelectedAssignment }: {
@@ -94,12 +94,6 @@ function VerifyDeleteAssignmentDialog({ index, title, setSelectedAssignment, set
   setShowVerifyDialog: React.Dispatch<React.SetStateAction<boolean>>
 }): JSX.Element {
   const { provider } = useCollaboration()
-
-  useEffect(() => {
-    if (provider?.document) {
-      console.log(JSON.stringify(provider.document.toJSON(), null, 2))
-    }
-  }, [provider?.document])
 
   return (
     <Dialog open={true}>

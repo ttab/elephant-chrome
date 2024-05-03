@@ -1,6 +1,5 @@
 import * as Y from 'yjs'
 import { toYMap } from '../../../src-srv/utils/transformations/lib/toYMap'
-import { type Block } from '@/protos/service'
 
 /**
  * Create an empty planning assignment and add it to the planning Y.Doc.
@@ -32,10 +31,10 @@ export const createPlanningAssignment = (yDoc: Y.Doc): void => {
  * Create a template structure for an assigment
  *
  * TODO: Should be refactored into a more coherent group of functions with createPlanningDocument etc
+ * TODO: Should return combination of Block and Record<string, Block[]>
  */
-function getAssignmentTemplate(id: string, assignmentType: string): Block {
+function getAssignmentTemplate(id: string, assignmentType: string): Y.Map<unknown> {
   return {
-    // @ts-expect-error TODO: Remove this line when merged with snapshot-functionality branch
     __inProgress: true,
     id,
     uuid: '',
@@ -57,8 +56,8 @@ function getAssignmentTemplate(id: string, assignmentType: string): Block {
     name: '',
     value: '',
     contentType: '',
-    links: [
-      {
+    links: {
+      'core/author': [{
         id: '',
         uuid: 'c37fdf3e-72ff-4e22-8b9f-1af0d60b0cd9',
         uri: '',
@@ -74,8 +73,8 @@ function getAssignmentTemplate(id: string, assignmentType: string): Block {
         links: [],
         content: [],
         meta: []
-      },
-      {
+      }],
+      'core/article': [{
         id: '',
         uuid: 'f283c9a0-6a2e-4021-a009-087961dd032f',
         uri: '',
@@ -91,11 +90,11 @@ function getAssignmentTemplate(id: string, assignmentType: string): Block {
         links: [],
         content: [],
         meta: []
-      }
-    ],
+      }]
+    },
     content: [],
-    meta: [
-      {
+    meta: {
+      'tt/slugline': [{
         id: '',
         uuid: '',
         uri: '',
@@ -111,25 +110,8 @@ function getAssignmentTemplate(id: string, assignmentType: string): Block {
         links: [],
         content: [],
         meta: []
-      },
-      {
-        id: '',
-        uuid: '',
-        uri: '',
-        url: '',
-        type: 'core/assignment-type',
-        title: '',
-        data: {},
-        rel: '',
-        role: '',
-        name: '',
-        value: assignmentType,
-        contentType: '',
-        links: [],
-        content: [],
-        meta: []
-      },
-      {
+      }],
+      'core/description': [{
         id: '',
         uuid: '',
         uri: '',
@@ -147,7 +129,24 @@ function getAssignmentTemplate(id: string, assignmentType: string): Block {
         links: [],
         content: [],
         meta: []
-      }
-    ]
-  }
+      }],
+      'core/assignment-type': [{
+        id: '',
+        uuid: '',
+        uri: '',
+        url: '',
+        type: 'core/assignment-type',
+        title: '',
+        data: {},
+        rel: '',
+        role: '',
+        name: '',
+        value: assignmentType,
+        contentType: '',
+        links: [],
+        content: [],
+        meta: []
+      }]
+    }
+  } as unknown as Y.Map<unknown>
 }

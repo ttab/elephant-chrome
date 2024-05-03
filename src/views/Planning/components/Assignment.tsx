@@ -26,19 +26,18 @@ export const Assignment = ({ index, setSelectedAssignment, className }: {
 
       <TextBox
         base='meta'
-        path={`core/assignment[${index}]`}
-        field='slug'
+        path={`core/assignment[${index}].meta.tt/slugline[0]`}
+        field='value'
         placeholder='Lägg till slug'
         className="text-sm leading-4 px-0 opacity-80"
       />
 
-      {/* FIXME: This does not work, probably wrong in createPlanningAssignment() */}
       <TextBox
         base='meta'
         path={`core/assignment[${index}].meta.core/description[0].data`}
         field='text'
         placeholder='Beskrivning'
-        className="text-sm leading-4 px-0"
+        className="text-md leading-4 px-0 bg-gray"
       />
 
       <div className='flex items-center justify-between border-t px-4 pt-4'>

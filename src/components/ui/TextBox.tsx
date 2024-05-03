@@ -19,8 +19,8 @@ export const TextBox = ({ icon, placeholder, base, path, field, className }: {
 }): JSX.Element => {
   const { provider, user } = useCollaboration()
   const { get } = useYObserver(base, path)
-
   const content = get(field) as Y.XmlText
+
   return (
     <>
       {!!provider && content &&
