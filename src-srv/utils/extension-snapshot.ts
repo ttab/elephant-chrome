@@ -50,8 +50,8 @@ export class Snapshot implements Extension {
 
   async onDisconnect(payload: onDisconnectPayload): Promise<void> {
     const debouncedFn = debounceMap.get(payload.documentName)
+
     // If the document has a debounceFn it's dirty, check if there are no other clients
-    console.log('::: onDisconnect', payload.clientsCount, payload.documentName, debouncedFn)
     if (debouncedFn && payload.clientsCount === 0) {
       // Flush (immidiately call the function)
       await debouncedFn.flush()
