@@ -1,6 +1,6 @@
 import * as Y from 'yjs'
-import { newsDocToYMap } from '../../../src-srv/utils/transformations/yjs/yMap'
 import { type Document } from '@/protos/service'
+import { newsDocToYDoc } from '../../../src-srv/utils/transformations/yjs/yDoc'
 
 /**
  * Create empty planning document and convert it to Y.Doc as appropriate.
@@ -11,9 +11,11 @@ import { type Document } from '@/protos/service'
 export const createPlanningDocument = (): [string, Y.Doc] => {
   const documentId = crypto.randomUUID()
   const yDoc = new Y.Doc()
-  const yEle = yDoc.getMap('ele')
 
-  newsDocToYMap(getPlanningTemplate(documentId), yEle)
+  newsDocToYDoc(yDoc, {
+    version: 0n,
+    document: getPlanningTemplate(documentId)
+  })
 
   return [documentId, yDoc]
 }
