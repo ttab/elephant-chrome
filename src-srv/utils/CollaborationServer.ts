@@ -108,10 +108,23 @@ export class CollaborationServer {
           store: async (payload) => { await this.#storeDocument(payload) }
         }),
         new Snapshot({
-          debounce: 30000,
+          debounce: 300000,
           snapshot: async (payload: onStoreDocumentPayload) => {
             return async () => {
-              await this.#repository.saveDoc(payload.document, payload.context.token as string)
+              const result = await this.#repository.saveDoc(payload.document, payload.context.token as string)
+              if (result?.status.code === 'OK') {
+                const connection = await this.#server.openDirectConnection(payload.documentName, {
+                  ...payload.context,
+                  agent: 'server'
+                })
+
+                await connection.transact(doc => {
+                  const versionMap = doc.getMap('version')
+                  versionMap.set('version', result?.response.version.toString())
+                })
+
+                console.debug('::: Snapshot saved: ', result.response.version)
+              }
             }
           }
         })

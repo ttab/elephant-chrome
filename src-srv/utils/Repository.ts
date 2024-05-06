@@ -167,13 +167,7 @@ export class Repository {
     try {
       const result = await this.#client.update(payload, meta(accessToken))
 
-      // Success, update version
-      if (result.status.code === 'OK') {
-        versionMap.set('version', result.response.version.toString())
-
-        console.debug('::: Snapshot saved: ', result.response.version)
-        return result
-      }
+      return result
     } catch (err: unknown) {
       console.error('::: saveDoc error:', err)
     }
