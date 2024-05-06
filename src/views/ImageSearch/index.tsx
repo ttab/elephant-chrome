@@ -3,8 +3,8 @@ import { ViewHeader } from '@/components'
 import { useSession } from '@/hooks'
 import apiClient from '@/lib/apiclient'
 import { type ViewMetadata } from '@/types'
-import { Button, Input } from '@ttab/elephant-ui'
-import { Image } from '@ttab/elephant-ui/icons'
+// import { Button, Input } from '@ttab/elephant-ui'
+import { XIcon, SearchIcon } from '@ttab/elephant-ui/icons'
 import { useState, useRef } from 'react'
 
 
@@ -13,12 +13,29 @@ interface SearchInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
 const SearchInput = React.forwardRef<HTMLInputElement, SearchInputProps>(
   ({ className, type, ...props }, ref) => {
     return (
-      <input
-        type={type}
-        className='flex h-10 w-full border-input bg-background px-3 py-0 ring-offset-background  placeholder:text-muted-foreground focus-visible:outline-none focus-visible:0  disabled:cursor-not-allowed disabled:opacity-50'
-        ref={ref}
-        {...props}
-      />
+      <div>
+
+        <input
+          type={type}
+          className='flex h-10
+          w-full
+          border-input
+          bg-background
+          px-3 py-0 ring-offset-background
+          placeholder:text-muted-foreground
+          focus-visible:outline-none focus-visible:0
+          disabled:cursor-not-allowed
+          disabled:opacity-50'
+          ref={ref}
+          {...props}
+        />
+        <div className='absolute inset-y-0 left-1 pl-3
+                    flex items-center
+                    pointer-events-none'>
+          <SearchIcon />
+        </div>
+
+      </div>
     )
   }
 )
@@ -60,7 +77,7 @@ function ImageSearchResult(props: SearchResultProps): JSX.Element {
       <p className='text-sm'>Antal träffar: {total}</p>
       <div
         className='grid grid-cols-2 md:grid-cols-3 gap-4'
-        >
+      >
         {children}
       </div>
     </div>
@@ -111,20 +128,6 @@ function ImageSearchInput(props: InputProps): JSX.Element {
         ref={inputRef}
         onChange={(e) => setQuery(e.currentTarget.value)}
       />
-
-      {/* <Input
-        className="p-2 w-full text-sm border-none focus:ring-0"
-        type="text"
-        placeholder='Sök bild'
-        name="imagesearch"
-        ref={inputRef}
-        onChange={(e) => setQuery(e.currentTarget.value)}
-      /> */}
-      {/* <Button
-        className='w-32'
-        disabled={!query.length}
-      >Sök
-      </Button> */}
     </form>
   )
 }
@@ -137,7 +140,8 @@ function ImageSearch(): JSX.Element {
   return (
     <div className='flex flex-col gap-3'>
       <ViewHeader.Root>
-      <ImageSearchInput setSearchResult={setSearchResult} />
+        <ImageSearchInput setSearchResult={setSearchResult} />
+        <XIcon />
       </ViewHeader.Root>
 
       <ImageSearchResult total={hits.total}>
@@ -150,7 +154,7 @@ function ImageSearch(): JSX.Element {
                 <img
                   src={`${hit.uri}_NormalThumbnail.jpg`}
                   className='h-32 max-w-full rounded-lg'
-                  />
+                />
               </a>
             </div>
           )
