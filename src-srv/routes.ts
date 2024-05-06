@@ -34,7 +34,7 @@ interface RouteStatusResponse {
 
 export type RouteHandler = (req: Request, context: RouteContext) => Promise<RouteContentResponse | RouteStatusResponse>
 
-export interface ApiResponseInterface {
+interface ApiResponseInterface {
   isStatus: (value: unknown) => value is RouteStatusResponse
   isContent: (value: unknown) => value is RouteContentResponse
 }
@@ -171,7 +171,7 @@ function connectRouteHandler(app: Application, routePath: string, func: RouteHan
 }
 
 // FIXME: WebSocket handlers need some more thought
-export function connectWebsocketHandler(app: Application, routePath: string, func: WebsocketRequestHandler, _: RouteInitContext): Application {
+function connectWebsocketHandler(app: Application, routePath: string, func: WebsocketRequestHandler, _: RouteInitContext): Application {
   // FIXME: Implement support for context sharing with websocket handlers, context is ignored for now
   console.warn('Websocket route handlers don\'t have access to context')
 

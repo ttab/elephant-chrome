@@ -1,12 +1,9 @@
-import { Block } from '@/protos/service'
+import { type Block } from '@/protos/service'
 import type * as views from '@/views'
-import { LucideIcon } from '@ttab/elephant-ui/icons'
+import { type LucideIcon } from '@ttab/elephant-ui/icons'
 import { type JWTPayload } from 'jose'
-import type * as Y from 'yjs'
 
 export enum NavigationActionType {
-  ADD = 'add',
-  REMOVE = 'remove',
   SET = 'set',
   FOCUS = 'focus',
   ACTIVE = 'active'
@@ -24,7 +21,7 @@ export interface NavigationAction {
   active?: string
 }
 
-export interface ViewWidths {
+interface ViewWidths {
   [key: string]: number // FIXME: Should use some keyof typeof thingy...
   sm: number
   md: number
@@ -112,14 +109,14 @@ export interface DefaultValueOption {
   payload?: Partial<Block>
   label: string
   value: string
-  icon?: LucideIcon,
-  iconProps?: Record<string, unknown>
+  icon?: LucideIcon
+  iconProps?: {
+    size?: number
+    fill?: string
+    color?: string
+    strokeWidth?: number
+    className?: string
+  }
   color?: string
   info?: string
-}
-
-export interface CollabComponentProps {
-  isSynced: boolean
-  document?: Y.Doc
-  className?: string
 }

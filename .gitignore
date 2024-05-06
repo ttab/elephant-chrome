@@ -34,3 +34,6 @@ coverage
 .direnv
 flake.nix
 flake.lock
+
+tsconfig.node.tsbuildinfo
+tsconfig.tsbuildinfo

@@ -1,31 +1,13 @@
 import { transformText, revertText } from './core/index.js'
 import { transformVisual, revertVisual } from './tt/visual.js'
 import type { TBElement } from '@ttab/textbit'
-import type {
-  Block,
-  GetDocumentResponse
-} from '../../../protos/service.js'
-
-export interface SlateDoc {
-  version: bigint
-  document: {
-    language: string
-    uuid: string
-    type: string
-    uri: string
-    url: string
-    title: string
-    content: TBElement[]
-    meta: Block[]
-    links: Block[]
-  }
-}
+import type { Block } from '@/protos/service.js'
 
 /**
  * Convert a NewsDoc block array to slate TBElement array
  */
 export function newsDocToSlate(content: Block[]): TBElement[] {
-  if (content !== undefined) {
+  if (content !== undefined && Array.isArray(content)) {
     return content.map((element: Block) => {
       switch (element.type) {
         case 'core/heading-1':
@@ -56,8 +38,8 @@ export function newsDocToSlate(content: Block[]): TBElement[] {
 /**
  * Convert a slate TBElement array to a NewsDoc block array
  */
-export function slateToNewsDoc(elements: TBElement[]): Block[] {
-  if (elements !== undefined) {
+export function slateToNewsDoc(elements: TBElement[]): Block[] | undefined {
+  if (Array.isArray(elements)) {
     return elements.map((element: TBElement): Block => {
       switch (element.type) {
         case 'core/text':
@@ -70,25 +52,6 @@ export function slateToNewsDoc(elements: TBElement[]): Block[] {
       }
     })
   }
-  throw new Error('No elements provided for transformation')
-}
 
-
-/**
- * Convert a complete slate document to a complete NewsDoc document
- */
-export function slateToNewsDocument(data: SlateDoc): GetDocumentResponse {
-  const { document } = data
-
-  if (!document !== undefined) {
-    throw new Error('no document to transform')
-  }
-
-  return {
-    ...data,
-    document: {
-      ...data.document,
-      content: slateToNewsDoc(document.content)
-    }
-  }
+  return []
 }

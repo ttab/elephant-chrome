@@ -24,14 +24,12 @@ const avatarVariants = cva('',
     }
   })
 
-export interface AvatarProps
-  extends React.HTMLAttributes<HTMLDivElement>,
-  VariantProps<typeof avatarVariants> {
+export const Avatar = ({ value, variant = 'default', size = 'default', color = 'default', className }:
+React.HTMLAttributes<HTMLDivElement> &
+VariantProps<typeof avatarVariants> & {
   value: string
   color?: string
-}
-
-export const Avatar = ({ value, variant = 'default', size = 'default', color = 'default', className }: AvatarProps): JSX.Element => {
+}): JSX.Element => {
   const bg = Collaboration.colors[color]?.bg || ''
   const border = Collaboration.colors[color]?.border || ''
 

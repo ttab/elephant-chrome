@@ -9,7 +9,7 @@ import { HocuspocusProvider } from '@hocuspocus/provider'
 import { useSession } from '@/hooks'
 import { HPWebSocketProviderContext } from '.'
 
-export interface DocTrackerProviderState {
+interface DocTrackerProviderState {
   provider?: HocuspocusProvider
   connected: boolean
   synced: boolean
@@ -61,7 +61,10 @@ export const DocTrackerProvider = ({ children }: DocTrackerContextProviderProps)
         setSynced(false)
       }
     })
-  }, [webSocket, jwt?.access_token])
+    // JWT.token should be used on creation, but provider should not be recreated on token change
+    // In this case we don't need to update the token since auth is done on when provider opens the connection
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [webSocket])
 
   const state = {
     provider,

@@ -3,33 +3,27 @@ import {
   type Hocuspocus,
   type fetchPayload,
   type storePayload,
-  type onAuthenticatePayload,
   type afterUnloadDocumentPayload,
   type connectedPayload,
-  type onDisconnectPayload
+  type onDisconnectPayload,
+  type onStoreDocumentPayload
 } from '@hocuspocus/server'
 
 import { Logger } from '@hocuspocus/extension-logger'
 import { Redis } from '@hocuspocus/extension-redis'
 import { Database } from '@hocuspocus/extension-database'
 import type { RedisCache } from './RedisCache.js'
-import type { Repository } from './Repository.js'
-import {
-  decodeJwt,
-  type JWTPayload
-} from 'jose'
+import { type Repository } from './Repository.js'
 
 import {
   type Application
 } from 'express-ws'
 
 
-import { slateNodesToInsertDelta } from '@slate-yjs/core'
 import * as Y from 'yjs'
-import {
-  newsDocToSlate
-} from './transformations/index.js'
-import { newsDocToYMap } from './transformations/yjs/yMap.js'
+import { newsDocToYDoc } from './transformations/yjs/yDoc.js'
+import { Snapshot } from './extensions/snapshot.js'
+import { Auth } from './extensions/auth.js'
 
 interface CollaborationServerOptions {
   name: string
@@ -108,10 +102,32 @@ export class CollaborationServer {
         new Database({
           fetch: async (payload) => { return await this.#fetchDocument(payload) },
           store: async (payload) => { await this.#storeDocument(payload) }
+        }),
+        new Snapshot({
+          debounce: 300000,
+          snapshot: async (payload: onStoreDocumentPayload) => {
+            return async () => {
+              const result = await this.#repository.saveDoc(payload.document, payload.context.token as string)
+              if (result?.status.code === 'OK') {
+                const connection = await this.#server.openDirectConnection(payload.documentName, {
+                  ...payload.context,
+                  agent: 'server'
+                })
+
+                await connection.transact(doc => {
+                  const versionMap = doc.getMap('version')
+                  versionMap.set('version', result?.response.version.toString())
+                })
+
+                console.debug('::: Snapshot saved: ', result.response.version)
+              }
+            }
+          }
+        }),
+        new Auth({
+          validateToken: this.#repository.validateToken.bind(this.#repository)
         })
       ],
-      onAuthenticate: async (payload) => { return await this.#authenticate(payload) },
-
       // Add user as having a tracked document open (or increase nr of times user have it open)
       connected: async (payload) => { await this.#connected(payload) },
 
@@ -176,25 +192,6 @@ export class CollaborationServer {
 
 
   /**
-   * Authenticate using token
-   */
-  async #authenticate({ token }: onAuthenticatePayload): Promise<{
-    token: string
-    user: JWTPayload
-  }> {
-    try {
-      await this.#repository.validateToken(token)
-    } catch (ex) {
-      throw new Error('Could not authenticate', { cause: ex })
-    }
-
-    return {
-      token,
-      user: { ...decodeJwt(token) }
-    }
-  }
-
-  /**
    * Fetch document from redis if already in cache, otherwise from repository
    */
   async #fetchDocument({ documentName: uuid, document: yDoc, context }: fetchPayload): Promise<Uint8Array | null> {
@@ -218,25 +215,14 @@ export class CollaborationServer {
     }
 
     // Fetch content
-    const { document = null } = await this.#repository.getDoc({
+    const newsDoc = await this.#repository.getDoc({
       uuid,
       accessToken: context.token
-    }) || {}
+    })
 
 
-    if (document) {
-      const yEle = yDoc.getMap('ele')
-
-      // Share editable content for Textbit use
-      const yContent = new Y.XmlText()
-      const slateDocument = newsDocToSlate(document?.content ?? [])
-      yContent.applyDelta(
-        slateNodesToInsertDelta(slateDocument)
-      )
-
-      const parsed = newsDocToYMap(document, yEle)
-      parsed.set('content', yContent)
-      return Y.encodeStateAsUpdate(yDoc)
+    if (newsDoc) {
+      newsDocToYDoc(yDoc, newsDoc)
     }
 
     // This is a new and unknown yDoc initiated from the client. Just return it
@@ -284,13 +270,13 @@ export class CollaborationServer {
     }
   }
 
-
   /*
    * Called for every provider that diconnects for tracking a specific document.
    *
+   * Action: Save the document if changes has been made
    * Action: Remove the user (or decrease count) from a tracked document userlist
    */
-  async #onDisconnect({ document, documentName, context }: onDisconnectPayload): Promise<void> {
+  async #onDisconnect({ documentName, context }: onDisconnectPayload): Promise<void> {
     if (!this.#openDocuments || documentName === 'document-tracker') {
       return
     }

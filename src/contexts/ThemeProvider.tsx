@@ -59,7 +59,7 @@ export const ThemeProvider = ({
  * @param root
  * @param theme
  */
-function setThemeOnDocument(root: HTMLElement, theme: string): void {
+function setThemeOnDocument(root: HTMLElement, theme: Theme): void {
   // Set theme for elephant-chrome
   root.classList.add(theme)
 

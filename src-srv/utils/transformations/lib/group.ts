@@ -1,4 +1,4 @@
-import { type Block } from '../../../protos/service.js'
+import { type Block } from '@/protos/service.js'
 
 /**
  * Group Blocks with same groupKey in arrays
@@ -7,7 +7,7 @@ import { type Block } from '../../../protos/service.js'
  * @returns GroupedObjects
  */
 
-export type GroupedObjects = Record<string, Block[]>
+type GroupedObjects = Record<string, Block[]>
 
 export function group(objects: Block[], groupKey: keyof Block): GroupedObjects {
   const groupedObjects: GroupedObjects = {}

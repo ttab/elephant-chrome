@@ -3,22 +3,15 @@ import { TextBox } from '@/components/ui'
 import { useYObserver } from '@/hooks'
 import { type Block } from '@/protos/service'
 
-function findIndex(stateDescriptions: Block[], role: 'internal' | 'public'):
-{ createIndex: boolean, index: number } {
+function findIndex(stateDescriptions: Block[], role: 'internal' | 'public'): number {
   // If no descriptions, assign indices based on role
   if (!stateDescriptions?.length) {
-    return {
-      createIndex: true,
-      index: role === 'internal' ? 1 : 0
-    }
+    return role === 'internal' ? 1 : 0
   }
 
   // Else find index
   const foundIndex = stateDescriptions.findIndex((description) => description.role === role)
-  return {
-    createIndex: foundIndex === -1,
-    index: foundIndex === -1 ? stateDescriptions.length : foundIndex
-  }
+  return foundIndex === -1 ? stateDescriptions.length : foundIndex
 }
 
 export const PlanDescription = ({ role }: {
@@ -26,20 +19,9 @@ export const PlanDescription = ({ role }: {
 }): JSX.Element => {
   const { state: stateDescriptions = [] } = useYObserver('meta', 'core/description')
 
-  const { createIndex, index } = findIndex(stateDescriptions, role)
-
-  const { set, loading } = useYObserver('meta', `core/description[${index}]`)
+  const index = findIndex(stateDescriptions, role)
 
   const path = `core/description[${index === -1 ? stateDescriptions.length : index}].data`
-
-  if (createIndex && !loading) {
-    set({
-      role,
-      data: {
-        text: ''
-      }
-    })
-  }
 
   return (
     <div className='flex w-full -ml-1' >

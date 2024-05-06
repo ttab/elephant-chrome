@@ -7,6 +7,7 @@ export const AssignmentType = ({ index }: { index: number }): JSX.Element => {
   const { get, set, loading } = useYObserver('meta', `core/assignment[${index}].meta.core/assignment-type[0]`)
 
   const selectedOption = AssignmentTypes.find(type => type.value === get('value'))
+  const { className = '', ...iconProps } = selectedOption?.iconProps || {}
 
   return !loading
     ? <ComboBox
@@ -18,8 +19,8 @@ export const AssignmentType = ({ index }: { index: number }): JSX.Element => {
     >
       {selectedOption?.icon
         ? <selectedOption.icon
-            {...selectedOption.iconProps}
-            className={cn('text-foreground', selectedOption.iconProps)} />
+            {...iconProps}
+            className={cn('text-foreground', className)} />
         : selectedOption?.label
       }
     </ComboBox>

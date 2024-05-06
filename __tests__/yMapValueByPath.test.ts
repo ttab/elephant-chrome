@@ -1,7 +1,7 @@
 import { get, set } from '../src/lib/yMapValueByPath'
 import * as Y from 'yjs'
-import { planning } from './data/planning-repo'
-import { newsDocToYMap } from '../src-srv/utils/transformations/yjs/yMap'
+import { planning } from './data/planning-newsdoc'
+import { newsDocToYDoc } from '../src-srv/utils/transformations/yjs/yDoc'
 import { toYMap } from '../src-srv/utils/transformations/lib/toYMap'
 
 describe('yMapValueByPath', () => {
@@ -77,16 +77,13 @@ describe('yMapValueByPath', () => {
   })
 
   it('sets value in array', () => {
-    const { document } = planning
-
     const yDoc = new Y.Doc()
-    const planningYMap = yDoc.getMap('planning')
     if (!document) {
       throw new Error('no document')
     }
-    newsDocToYMap(document, planningYMap)
+    newsDocToYDoc(yDoc, planning)
 
-    const p = yDoc.getMap('planning')
+    const p = yDoc.getMap('ele')
 
     const payload = {
       uuid: 'f1508161-1b84-5da0-a457-7658c03a2386',

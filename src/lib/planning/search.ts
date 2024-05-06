@@ -1,7 +1,7 @@
 import { type JWT } from '@/types'
 import { searchIndex, type SearchIndexResponse } from '../index/search'
 
-interface SaerchPlanningParams {
+interface SearchPlanningParams {
   skip?: number
   size?: number
   where?: {
@@ -14,7 +14,7 @@ interface SaerchPlanningParams {
   }
 }
 
-export const search = async (endpoint: URL, jwt: JWT, params?: SaerchPlanningParams): Promise<SearchIndexResponse> => {
+export const search = async (endpoint: URL, jwt: JWT, params?: SearchPlanningParams): Promise<SearchIndexResponse> => {
   const start = params?.where?.start ? new Date(params.where.start) : new Date()
   const end = params?.where?.end ? new Date(params.where.end) : new Date()
   const sort: Array<Record<string, 'asc' | 'desc'>> = []
