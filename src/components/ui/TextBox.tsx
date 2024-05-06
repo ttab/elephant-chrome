@@ -3,19 +3,21 @@ import { createEditor } from 'slate'
 import { cva } from 'class-variance-authority'
 import { cn } from '@ttab/elephant-ui/utils'
 import { useCollaboration, useYObserver } from '@/hooks'
-import { useEffect, useMemo } from 'react'
+import { useLayoutEffect, useMemo } from 'react'
 import { YjsEditor, withCursors, withYHistory, withYjs } from '@slate-yjs/core'
 import { type HocuspocusProvider } from '@hocuspocus/provider'
 import { type AwarenessUserData } from '@/contexts/CollaborationProvider'
 import type * as Y from 'yjs'
 
-export const TextBox = ({ icon, placeholder, base, path, field, className }: {
+export const TextBox = ({ icon, placeholder, base, path, field, className, autoFocus = false, onBlur }: {
   path: string
   base: string
   field: string
   icon?: React.ReactNode
   placeholder?: string
   className?: string
+  autoFocus?: boolean
+  onBlur?: React.FocusEventHandler<HTMLDivElement>
 }): JSX.Element => {
   const { provider, user } = useCollaboration()
   const { get } = useYObserver(base, path)
@@ -27,6 +29,8 @@ export const TextBox = ({ icon, placeholder, base, path, field, className }: {
         <Textbit.Root
           verbose={true}
           debounce={0}
+          autoFocus={autoFocus}
+          onBlur={onBlur}
           placeholder={placeholder}
           plugins={[]}
           className={cn('h-min-12 w-full', className)}
@@ -66,13 +70,12 @@ const TextboxEditable = ({ provider, user, icon, content }: {
     )
   }, [provider?.awareness, user, content])
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (yjsEditor) {
       YjsEditor.connect(yjsEditor)
       return () => YjsEditor.disconnect(yjsEditor)
     }
   }, [yjsEditor])
-
 
   const wrapperStyle = cva('absolute top-0 left-0 p-2 -mt-2 -ml-2 text-muted-foreground', {
     variants: {

@@ -5,13 +5,13 @@ import { useYObserver } from '@/hooks'
 export const SluglineButton = ({ path, value, setActive }: {
   path?: string
   value?: string
-  setActive: (value: boolean) => void
+  setActive?: ((value: boolean) => void) | null
 }): JSX.Element => {
   if (typeof value === 'string') {
     return <StaticSlugline value={value} />
   }
 
-  if (typeof path === 'string') {
+  if (typeof path === 'string' && setActive) {
     return <EditableSlugline path={path} setActive={setActive} />
   }
 
@@ -21,14 +21,18 @@ export const SluglineButton = ({ path, value, setActive }: {
 
 function EditableSlugline({ path, setActive }: {
   path: string
-  setActive: (value: boolean) => void
+  setActive: ((value: boolean) => void) | null
 }): JSX.Element {
   const { get } = useYObserver('meta', path)
 
   return <Button
     className='text-muted-foreground h-7 font-normal text-sm whitespace-nowrap'
     variant='outline'
-    onClick={() => setActive(true)}
+    onClick={() => {
+      if (setActive) {
+        setActive(true)
+      }
+    }}
   >
     {(get('value') as Y.XmlText)?.toJSON() || 'Slugline...'}
   </Button >
