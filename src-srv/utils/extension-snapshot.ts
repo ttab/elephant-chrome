@@ -27,9 +27,12 @@ export class Snapshot implements Extension {
   }
 
   async onStoreDocument(payload: onStoreDocumentPayload): Promise<void> {
-    const { documentName } = payload
+    const { documentName, context } = payload
 
-    if (documentName !== 'document-tracker') {
+
+    // Ignore document-tracker and server actions on the document
+    // We dont need to snapshot the these
+    if (documentName !== 'document-tracker' && context.agent !== 'server') {
       // Clear previous debounce
       debounceMap.get(documentName)?.cancel()
 
@@ -48,6 +51,7 @@ export class Snapshot implements Extension {
   async onDisconnect(payload: onDisconnectPayload): Promise<void> {
     const debouncedFn = debounceMap.get(payload.documentName)
     // If the document has a debounceFn it's dirty, check if there are no other clients
+    console.log('::: onDisconnect', payload.clientsCount, payload.documentName, debouncedFn)
     if (debouncedFn && payload.clientsCount === 0) {
       // Flush (immidiately call the function)
       await debouncedFn.flush()
