@@ -3,9 +3,9 @@ import { type ViewMetadata, type ViewProps } from '@/types'
 import { ScrollArea } from '@ttab/elephant-ui'
 import { GanttChartSquare } from '@ttab/elephant-ui/icons'
 import { useQuery } from '@/hooks'
-import { SluglineEditable } from '@/components/DataItem/Slugline'
+import { SluglineEditable } from '@/components/DataItem/SluglineInput'
 import {
-  PlanAssignments,
+  AssignmentTable,
   PlanDate,
   PlanSector,
   PlanStatus,
@@ -108,7 +108,9 @@ const PlanningViewContent = (props: ViewProps & { documentId: string }): JSX.Ele
             <PlanDescription role="internal" />
           </div>
 
-          <PlanDate />
+          <div className='-ml-2 -ml-4'>
+            <PlanDate />
+          </div>
 
           <div className='flex space-x-2'>
             <PlanSector />
@@ -116,7 +118,7 @@ const PlanningViewContent = (props: ViewProps & { documentId: string }): JSX.Ele
             <PlanStory />
           </div>
 
-          <PlanAssignments />
+          <AssignmentTable />
         </section>
       </ScrollArea>
     </div>
