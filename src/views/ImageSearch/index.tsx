@@ -13,25 +13,23 @@ interface SearchInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
 const SearchInput = React.forwardRef<HTMLInputElement, SearchInputProps>(
   ({ className, type, ...props }, ref) => {
     return (
-      <div>
-
+      <div className='flex'>
+        {/* <SearchIcon/> */}
         <input
           type={type}
           className='flex h-10
-          w-full
-          border-input
-          bg-background
-          px-3 py-0 ring-offset-background
-          placeholder:text-muted-foreground
-          focus-visible:outline-none focus-visible:0
-          disabled:cursor-not-allowed
-          disabled:opacity-50'
+            w-full
+            border-input
+            bg-background
+            px-3 py-0 ring-offset-background
+            placeholder:text-muted-foreground
+            focus-visible:outline-none focus-visible:0
+            disabled:cursor-not-allowed
+            disabled:opacity-50'
           ref={ref}
           {...props}
         />
-        <div className='absolute inset-y-0 left-1 pl-3
-                    flex items-center
-                    pointer-events-none'>
+        <div className='absolute inset-y-0 left-2 pl-3 flex items-center pointer-events-none'>
           <SearchIcon />
         </div>
 
@@ -140,9 +138,13 @@ function ImageSearch(): JSX.Element {
   return (
     <div className='flex flex-col gap-3'>
       <ViewHeader.Root>
-        <ImageSearchInput setSearchResult={setSearchResult} />
-        <XIcon />
+        <ViewHeader.Content>
+        {/* <ViewHeader.Title icon={XIcon} /> */}
+          <ImageSearchInput setSearchResult={setSearchResult} />
+          <XIcon />
+        </ViewHeader.Content>
       </ViewHeader.Root>
+
 
       <ImageSearchResult total={hits.total}>
         {hits.hits.map((hit: { uri?: string }) => {
