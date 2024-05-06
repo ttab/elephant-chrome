@@ -3,7 +3,6 @@ import {
   type Hocuspocus,
   type fetchPayload,
   type storePayload,
-  type onAuthenticatePayload,
   type afterUnloadDocumentPayload,
   type connectedPayload,
   type onDisconnectPayload,
@@ -15,10 +14,6 @@ import { Redis } from '@hocuspocus/extension-redis'
 import { Database } from '@hocuspocus/extension-database'
 import type { RedisCache } from './RedisCache.js'
 import { type Repository } from './Repository.js'
-import {
-  decodeJwt,
-  type JWTPayload
-} from 'jose'
 
 import {
   type Application
@@ -27,7 +22,8 @@ import {
 
 import * as Y from 'yjs'
 import { newsDocToYDoc } from './transformations/yjs/yDoc.js'
-import { Snapshot } from './extension-snapshot.js'
+import { Snapshot } from './extensions/snapshot.js'
+import { Auth } from './extensions/auth.js'
 
 interface CollaborationServerOptions {
   name: string
@@ -127,10 +123,11 @@ export class CollaborationServer {
               }
             }
           }
+        }),
+        new Auth({
+          validateToken: this.#repository.validateToken.bind(this.#repository)
         })
       ],
-      onAuthenticate: async (payload) => { return await this.#authenticate(payload) },
-
       // Add user as having a tracked document open (or increase nr of times user have it open)
       connected: async (payload) => { await this.#connected(payload) },
 
@@ -193,25 +190,6 @@ export class CollaborationServer {
     }
   }
 
-
-  /**
-   * Authenticate using token
-   */
-  async #authenticate({ token }: onAuthenticatePayload): Promise<{
-    token: string
-    user: JWTPayload
-  }> {
-    try {
-      await this.#repository.validateToken(token)
-    } catch (ex) {
-      throw new Error('Could not authenticate', { cause: ex })
-    }
-
-    return {
-      token,
-      user: { ...decodeJwt(token) }
-    }
-  }
 
   /**
    * Fetch document from redis if already in cache, otherwise from repository

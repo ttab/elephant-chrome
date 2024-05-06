@@ -1,4 +1,4 @@
-import { type Block } from '../../../protos/service.js'
+import { type Block } from '@/protos/service.js'
 
 /**
  * Group Blocks with same groupKey in arrays

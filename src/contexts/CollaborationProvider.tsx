@@ -11,6 +11,7 @@ import { useSession } from '@/hooks'
 import { Collaboration } from '@/defaults'
 import { HPWebSocketProviderContext } from '.'
 import type * as Y from 'yjs'
+import { createStateless, StatelessType } from '@/shared/stateless'
 
 export interface AwarenessUserData {
   name: string
@@ -99,7 +100,15 @@ export const CollaborationProviderContext = ({ documentId, document, children }:
       provider.destroy()
       setProvider(undefined)
     }
-  }, [documentId, document, webSocket, jwt?.access_token])
+    // JWT.token should be used on creation but provider should not be recreated on token change
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [documentId, document, webSocket])
+
+  useEffect(() => {
+    // When the token is refreshed we need to send it to the server
+    // and update the connection context with the new token
+    provider?.sendStateless(createStateless(StatelessType.AUTH, jwt))
+  }, [provider, jwt])
 
   // Awareness user data
   const user = useMemo((): AwarenessUserData => {

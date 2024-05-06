@@ -1,5 +1,5 @@
 import * as Y from 'yjs'
-import { type Block, type GetDocumentResponse } from '../../../protos/service.js'
+import { type Block, type GetDocumentResponse } from '@/protos/service.js'
 import { toYMap } from '../lib/toYMap.js'
 import { group, ungroup } from '../lib/group.js'
 import { newsDocToSlate, slateToNewsDoc } from '../newsdoc/index.js'

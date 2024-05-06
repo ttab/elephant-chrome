@@ -1,5 +1,5 @@
 import { decode } from 'html-entities'
-import { Block } from '../../../../protos/service.js'
+import { Block } from '@/protos/service.js'
 import { type TBElement } from '@ttab/textbit'
 
 export const transformVisual = (element: Block): TBElement => {
