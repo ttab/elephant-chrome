@@ -20,7 +20,7 @@ export const createPlanningAssignment = (yDoc: Y.Doc): void => {
   const assignment = new Y.Map()
 
   toYMap(
-    getAssignmentTemplate(crypto.randomUUID(), 'text') as unknown as Record<string, unknown>,
+    getAssignmentTemplate(crypto.randomUUID(), 'text'),
     assignment
   )
 
@@ -33,7 +33,7 @@ export const createPlanningAssignment = (yDoc: Y.Doc): void => {
  * TODO: Should be refactored into a more coherent group of functions with createPlanningDocument etc
  * TODO: Should return combination of Block and Record<string, Block[]>
  */
-function getAssignmentTemplate(id: string, assignmentType: string): Y.Map<unknown> {
+function getAssignmentTemplate(id: string, assignmentType: string): Record<string, unknown> {
   return {
     __inProgress: true,
     id,
@@ -148,5 +148,5 @@ function getAssignmentTemplate(id: string, assignmentType: string): Y.Map<unknow
         meta: []
       }]
     }
-  } as unknown as Y.Map<unknown>
+  }
 }

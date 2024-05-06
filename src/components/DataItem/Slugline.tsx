@@ -21,18 +21,14 @@ export const SluglineButton = ({ path, value, setActive }: {
 
 function EditableSlugline({ path, setActive }: {
   path: string
-  setActive: ((value: boolean) => void) | null
+  setActive: ((value: boolean) => void)
 }): JSX.Element {
   const { get } = useYObserver('meta', path)
 
   return <Button
     className='text-muted-foreground h-7 font-normal text-sm whitespace-nowrap'
     variant='outline'
-    onClick={() => {
-      if (setActive) {
-        setActive(true)
-      }
-    }}
+    onClick={() => setActive(true)}
   >
     {(get('value') as Y.XmlText)?.toJSON() || 'Slugline...'}
   </Button >

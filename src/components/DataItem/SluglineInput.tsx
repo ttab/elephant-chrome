@@ -2,7 +2,6 @@ import { useState, useRef, useCallback } from 'react'
 import { Awareness } from '@/components'
 import { TextBox } from '../ui'
 import { SluglineButton } from './Slugline'
-import { useCollaboration } from '@/hooks'
 
 export const SluglineEditable = ({ path = 'tt/slugline[0]' }: { path?: string }): JSX.Element => {
   const [active, setActive] = useState(false)
@@ -15,9 +14,6 @@ export const SluglineEditable = ({ path = 'tt/slugline[0]' }: { path?: string })
     }
   }, [setActive, setFocused])
 
-  const { provider } = useCollaboration()
-
-  console.log(provider?.document.guid, path)
   return (
     <Awareness name={`PlanSlugline-${path}`} ref={setFocused}>
       {active

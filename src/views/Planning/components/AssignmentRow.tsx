@@ -87,12 +87,12 @@ export const AssignmentRow = ({ index, setSelectedAssignment }: {
 }
 
 
-function VerifyDeleteAssignmentDialog({ index, title, setSelectedAssignment, setShowVerifyDialog }: {
+const VerifyDeleteAssignmentDialog = ({ index, title, setSelectedAssignment, setShowVerifyDialog }: {
   index: number
   title: string
   setSelectedAssignment: React.Dispatch<React.SetStateAction<number | undefined>>
   setShowVerifyDialog: React.Dispatch<React.SetStateAction<boolean>>
-}): JSX.Element {
+}): JSX.Element => {
   const { provider } = useCollaboration()
 
   return (
