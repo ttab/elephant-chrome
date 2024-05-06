@@ -1,6 +1,6 @@
-import { Block } from '@/protos/service'
+import { type Block } from '@/protos/service'
 import type * as views from '@/views'
-import { LucideIcon } from '@ttab/elephant-ui/icons'
+import { type LucideIcon } from '@ttab/elephant-ui/icons'
 import { type JWTPayload } from 'jose'
 
 export enum NavigationActionType {
@@ -109,8 +109,14 @@ export interface DefaultValueOption {
   payload?: Partial<Block>
   label: string
   value: string
-  icon?: LucideIcon,
-  iconProps?: Record<string, unknown>
+  icon?: LucideIcon
+  iconProps?: {
+    size?: number
+    fill?: string
+    color?: string
+    strokeWidth?: number
+    className?: string
+  }
   color?: string
   info?: string
 }

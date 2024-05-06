@@ -7,5 +7,16 @@
     "esModuleInterop": true,
     "outDir": "../dist/src-srv",
     "skipLibCheck": true,
+    "paths": {
+      "@/shared/*": [
+        "../shared/*"
+      ],
+      "@/shared": [
+        "../shared/index.ts"
+      ],
+      "@/protos/*": [
+        "../shared/protos/*"
+      ]
+    }
   }
 }

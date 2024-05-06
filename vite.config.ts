@@ -21,7 +21,16 @@ export default defineConfig(({ mode }) => {
     ],
     resolve: {
       alias: {
-        '@': path.resolve(__dirname, './src')
+        '@/components': path.resolve(__dirname, './src/components'),
+        '@/views': path.resolve(__dirname, './src/views'),
+        '@/hooks': path.resolve(__dirname, './src/hooks'),
+        '@/contexts': path.resolve(__dirname, './src/contexts'),
+        '@/lib': path.resolve(__dirname, './src/lib'),
+        '@/types': path.resolve(__dirname, './src/types'),
+        '@/navigation': path.resolve(__dirname, './src/navigation'),
+        '@/defaults': path.resolve(__dirname, './src/defaults'),
+        '@/protos': path.resolve(__dirname, './shared/protos'),
+        '@/shared': path.resolve(__dirname, './shared')
       }
     },
     server: {

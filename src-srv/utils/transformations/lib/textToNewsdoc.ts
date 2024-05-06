@@ -1,4 +1,4 @@
-import { type Block } from '../../../protos/service.js'
+import { type Block } from '@/protos/service.js'
 
 export function textToNewsDoc(text: string): Block[] {
   return (text || '').split('\n').map((line) => {

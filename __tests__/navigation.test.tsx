@@ -9,7 +9,7 @@ import { type NavigationActionType } from '@/types'
 import { initializeNavigationState } from '@/navigation/lib'
 import { DocTrackerContext } from '@/contexts/DocTrackerProvider'
 import { type HocuspocusProvider } from '@hocuspocus/provider'
-import { AppContent } from '@/AppContent'
+import { AppContent } from '../src/AppContent'
 
 jest.mock('@/navigation/hooks/useNavigation', () => ({
   useNavigation: jest.fn()

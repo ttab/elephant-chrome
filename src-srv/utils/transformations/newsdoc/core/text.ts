@@ -1,6 +1,6 @@
 import { decode, encode } from 'html-entities'
 import { parse, type HTMLElement } from 'node-html-parser'
-import { Block } from '../../../../protos/service.js'
+import { Block } from '@/protos/service.js'
 import { TextbitElement } from '@ttab/textbit'
 import type { Descendant, Element, Text } from 'slate'
 
