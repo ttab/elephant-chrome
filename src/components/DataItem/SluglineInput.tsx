@@ -17,9 +17,9 @@ export const SluglineEditable = ({ path = 'tt/slugline[0]' }: { path?: string })
 
   const { provider } = useCollaboration()
 
-  console.log(provider?.document.guid)
+  console.log(provider?.document.guid, path)
   return (
-    <Awareness name={`PlanSlugline-${provider?.document.guid}`} ref={setFocused}>
+    <Awareness name={`PlanSlugline-${path}`} ref={setFocused}>
       {active
         ? <SluglineInput path={path} setActive={setAwareness} />
         : <SluglineButton path={path} setActive={setAwareness} />}
