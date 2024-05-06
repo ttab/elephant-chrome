@@ -1,3 +1,4 @@
+import React from 'react'
 import { ViewHeader } from '@/components'
 import { useSession } from '@/hooks'
 import apiClient from '@/lib/apiclient'
@@ -5,6 +6,22 @@ import { type ViewMetadata } from '@/types'
 import { Button, Input } from '@ttab/elephant-ui'
 import { Image } from '@ttab/elephant-ui/icons'
 import { useState, useRef } from 'react'
+
+
+interface SearchInputProps extends React.InputHTMLAttributes<HTMLInputElement> { }
+
+const SearchInput = React.forwardRef<HTMLInputElement, SearchInputProps>(
+  ({ className, type, ...props }, ref) => {
+    return (
+      <input
+        type={type}
+        className='flex h-10 w-full border-input bg-background px-3 py-0 ring-offset-background  placeholder:text-muted-foreground focus-visible:outline-none focus-visible:0  disabled:cursor-not-allowed disabled:opacity-50'
+        ref={ref}
+        {...props}
+      />
+    )
+  }
+)
 
 interface Result {
   hits: object[]
@@ -57,6 +74,8 @@ function ImageSearchInput(props: InputProps): JSX.Element {
 
   const inputRef = useRef<HTMLInputElement>(null)
 
+
+
   const handleSubmit: React.FormEventHandler<HTMLFormElement> = (e) => {
     e.preventDefault()
     async function imageSearch(query: string): Promise<object> {
@@ -84,19 +103,28 @@ function ImageSearchInput(props: InputProps): JSX.Element {
       onSubmit={handleSubmit}
       className="self-center w-full p-2 flex flex-row gap-4"
     >
-      <Input
-        className="p-2 w-full text-sm border border-gray-200 shadow-sm rounded"
+      <SearchInput
+        className="p-2 w-full text-sm border-none focus:border-none"
         type="text"
         placeholder='Sök bild'
         name="imagesearch"
         ref={inputRef}
         onChange={(e) => setQuery(e.currentTarget.value)}
       />
-      <Button
+
+      {/* <Input
+        className="p-2 w-full text-sm border-none focus:ring-0"
+        type="text"
+        placeholder='Sök bild'
+        name="imagesearch"
+        ref={inputRef}
+        onChange={(e) => setQuery(e.currentTarget.value)}
+      /> */}
+      {/* <Button
         className='w-32'
         disabled={!query.length}
       >Sök
-      </Button>
+      </Button> */}
     </form>
   )
 }
@@ -107,11 +135,11 @@ function ImageSearch(): JSX.Element {
   console.log('result', hits)
 
   return (
-    <div className='flex flex-col gap-2'>
+    <div className='flex flex-col gap-3'>
       <ViewHeader.Root>
-        <ViewHeader.Title title='Bild' icon={Image} />
-      </ViewHeader.Root>
       <ImageSearchInput setSearchResult={setSearchResult} />
+      </ViewHeader.Root>
+
       <ImageSearchResult total={hits.total}>
         {hits.hits.map((hit: { uri?: string }) => {
           const objectID = hit.uri.split('/')[5]
