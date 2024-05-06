@@ -1,6 +1,6 @@
 import * as Y from 'yjs'
 import { newsDocToYMap } from '../../../src-srv/utils/transformations/yjs/yMap'
-import { Document } from '@/protos/service'
+import { type Document } from '@/protos/service'
 
 /**
  * Create empty planning document and convert it to Y.Doc as appropriate.
