@@ -4,7 +4,7 @@ import {
   type onAuthenticatePayload
 } from '@hocuspocus/server'
 import { type JWTPayload, decodeJwt } from 'jose'
-import { type Repository } from './Repository.js'
+import { type Repository } from '../Repository.js'
 import { type StatelessAuth, StatelessType, parseStateless } from '@/shared/stateless.js'
 
 interface Configuration {

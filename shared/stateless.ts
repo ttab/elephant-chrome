@@ -1,4 +1,4 @@
-import { type JWT } from '../src/types'
+import { type JWT } from '@/shared/types/index.js'
 import { z } from 'zod'
 
 export enum StatelessType {
