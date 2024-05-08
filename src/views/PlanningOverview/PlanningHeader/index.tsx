@@ -15,6 +15,8 @@ export const PlanningHeader = ({ tab, startDate, setStartDate, endDate, setEndDa
   setEndDate?: Dispatch<SetStateAction<Date>>
 }): JSX.Element => {
   return <>
+    <CreatePlan />
+
     <div className='hidden sm:block'>
       <TabsGrid />
     </div>
@@ -31,7 +33,5 @@ export const PlanningHeader = ({ tab, startDate, setStartDate, endDate, setEndDa
     }
 
     <Filter />
-
-    <CreatePlan />
   </>
 }
