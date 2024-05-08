@@ -99,7 +99,7 @@ const PlanningViewContent = (props: ViewProps & { documentId: string }): JSX.Ele
       <ScrollArea className='grid @5xl:place-content-center'>
         <section className={cn(sectionVariants({ asDialog: !!props?.asDialog }))}>
           <div className='flex space-x-2 items-center'>
-            <PlanTitle />
+            <PlanTitle autoFocus={props.asDialog} />
             <SluglineEditable />
           </div>
 
