@@ -42,7 +42,7 @@ export const Title = ({ title, short: shortTitle, icon: Icon }: PropsWithChildre
 
   return (
     <div
-      className="flex flex-1 gap-2 items-center grow-0 h-14 cursor-pointer"
+      className="flex flex-1 gap-2 items-center grow-0 h-14 px-4 cursor-pointer"
       onClick={() => handleReset({ viewId, dispatch })}
     >
       {!!Icon &&

@@ -15,10 +15,10 @@ export const CreatePlan = (): JSX.Element => {
   return (
     <Dialog open={!!planning[0]}>
       <DialogTrigger asChild>
-        <Button variant='ghost' className='h-9 w-9 p-0' onClick={() => {
+        <Button size='sm' className='h-8 pr-4' onClick={() => {
           setPlanning(createPlanningDocument())
         }}>
-          <PlusIcon size={18} strokeWidth={1.75} />
+          <PlusIcon size={18} strokeWidth={1.75} /> Ny
         </Button>
       </DialogTrigger>
 
