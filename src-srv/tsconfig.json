@@ -5,7 +5,7 @@
     "moduleResolution": "NodeNext",
     "strict": true,
     "esModuleInterop": true,
-    "outDir": "../dist/src-srv",
+    "outDir": "../dist",
     "skipLibCheck": true,
     "paths": {
       "@/shared/*": [
