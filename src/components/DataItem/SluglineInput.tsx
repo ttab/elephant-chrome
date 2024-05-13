@@ -34,6 +34,7 @@ const SluglineInput = ({ path, setActive }: {
     field='value'
     placeholder='Slug'
     autoFocus={true}
+    singleLine={true}
     onBlur={() => {
       if (setActive) {
         setActive(false)

@@ -8,14 +8,16 @@ import { YjsEditor, withCursors, withYHistory, withYjs } from '@slate-yjs/core'
 import { type HocuspocusProvider } from '@hocuspocus/provider'
 import { type AwarenessUserData } from '@/contexts/CollaborationProvider'
 import type * as Y from 'yjs'
+import { Text } from '@ttab/textbit-plugins'
 
-export const TextBox = ({ icon, placeholder, base, path, field, className, autoFocus = false, onBlur }: {
+export const TextBox = ({ icon, placeholder, base, path, field, className, singleLine = false, autoFocus = false, onBlur }: {
   path: string
   base: string
   field: string
   icon?: React.ReactNode
   placeholder?: string
   className?: string
+  singleLine?: boolean
   autoFocus?: boolean
   onBlur?: React.FocusEventHandler<HTMLDivElement>
 }): JSX.Element => {
@@ -32,7 +34,11 @@ export const TextBox = ({ icon, placeholder, base, path, field, className, autoF
           autoFocus={autoFocus}
           onBlur={onBlur}
           placeholder={placeholder}
-          plugins={[]}
+          plugins={[Text({
+            singleLine,
+            inputStyle: true,
+            styles: ['body']
+          })]}
           className={cn('h-min-12 w-full', className)}
         >
           <TextboxEditable

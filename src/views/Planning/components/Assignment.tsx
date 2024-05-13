@@ -22,6 +22,7 @@ export const Assignment = ({ index, setSelectedAssignment, className }: {
         field='title'
         placeholder='Uppdragsrubrik'
         className="font-semibold text-lg leading-4 px-0"
+        singleLine={true}
       />
 
       <TextBox
@@ -30,6 +31,7 @@ export const Assignment = ({ index, setSelectedAssignment, className }: {
         field='value'
         placeholder='Lägg till slug'
         className="text-sm leading-4 px-0 opacity-80"
+        singleLine={true}
       />
 
       <TextBox
