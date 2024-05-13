@@ -4,15 +4,22 @@ import { AssignmentRow } from './AssignmentRow'
 import { createPlanningAssignment } from '@/lib/planning/createPlanningAssignment'
 import { useCollaboration } from '@/hooks'
 import { Assignment } from './Assignment'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 
 export const AssignmentTable = (): JSX.Element => {
   const { provider } = useCollaboration()
   const { state } = useYObserver('meta', 'core/assignment')
-  const [selectedAssignment, setSelectedAssignment] = useState<number | undefined>(undefined)
-  const [createdAssignment, setCreatedAssignment] = useState<number | undefined>(undefined)
   const noOfAssignments = !Array.isArray(state) ? 0 : state.length
+
+  const [createdAssignment, setCreatedAssignment] = useState<number | undefined>(undefined)
+  const [selectedAssignment, setSelectedAssignment] = useState<number | undefined>(undefined)
+
+  useEffect(() => {
+    // @ts-expect-error FIXME: Remove this line when __inProgress is part of the format
+    const assignmentInProgress = Array.isArray(state) ? state.findIndex(a => a.__inProgress) : -1
+    setCreatedAssignment(assignmentInProgress < 0 ? undefined : assignmentInProgress)
+  }, [setCreatedAssignment, state])
 
   return (
     <div className='flex flex-col gap-2 pt-4'>

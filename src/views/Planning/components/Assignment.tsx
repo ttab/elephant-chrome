@@ -4,6 +4,7 @@ import { Button } from '@ttab/elephant-ui'
 import { Clock10Icon, FileTextIcon, UserPlus } from '@ttab/elephant-ui/icons'
 import { cn } from '@ttab/elephant-ui/utils'
 import type * as Y from 'yjs'
+import * as yMapValueByPath from '@/lib/yMapValueByPath'
 
 export const Assignment = ({ index, setSelectedAssignment, className }: {
   index: number
@@ -62,6 +63,7 @@ export const Assignment = ({ index, setSelectedAssignment, className }: {
                     const assignments = meta.get('core/assignment') as Y.Array<unknown>
                     assignments.delete(index, 1)
                   }
+
                   setSelectedAssignment(undefined)
                 }
               }}>
@@ -72,6 +74,18 @@ export const Assignment = ({ index, setSelectedAssignment, className }: {
           <Button
             onClick={(evt) => {
               evt.preventDefault()
+              if (provider?.document && inProgress) {
+                const yEle = provider.document.getMap('ele')
+                const assignment = yMapValueByPath.get(
+                  yEle.get('meta') as Y.Map<unknown>,
+                  `core/assignment[${index}]`
+                )
+
+                if (assignment) {
+                  assignment.delete('__inProgress')
+                }
+              }
+
               setSelectedAssignment(undefined)
             }}
           >

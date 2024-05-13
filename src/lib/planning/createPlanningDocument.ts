@@ -27,8 +27,8 @@ export const createPlanningDocument = (): [string, Y.Doc] => {
  */
 function getPlanningTemplate(id: string): Document {
   return {
-    // @ts-expect-error TODO: Remove this line when merged with snapshot-functionality branch
-    __inPogress: true,
+    // @ts-expect-error FIXME: Remove this line when types have been fixed in backend
+    __inProgress: true,
     uuid: id,
     type: 'core/planning-item',
     uri: `core://newscoverage/${id}`,

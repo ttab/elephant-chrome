@@ -10,6 +10,7 @@ interface LinkProps {
   to: View
   props?: ViewProps
   onClick?: (event: unknown) => void
+  className?: string
 }
 
 export const Link = forwardRef((props: LinkProps, ref: ForwardedRef<HTMLAnchorElement>) => {
@@ -22,6 +23,7 @@ export const Link = forwardRef((props: LinkProps, ref: ForwardedRef<HTMLAnchorEl
 
   return (
     <a
+      className={props?.className || ''}
       {...props}
       href={`${viewItem.meta.path}${qs || ''}`}
       onClick={(event) => {
