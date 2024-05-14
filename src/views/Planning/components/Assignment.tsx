@@ -1,10 +1,11 @@
 import { TextBox } from '@/components/ui'
 import { useCollaboration, useYObserver } from '@/hooks'
 import { Button } from '@ttab/elephant-ui'
-import { Clock10Icon, FileTextIcon, UserPlus } from '@ttab/elephant-ui/icons'
+import { Clock10Icon, UserPlus } from '@ttab/elephant-ui/icons'
 import { cn } from '@ttab/elephant-ui/utils'
 import type * as Y from 'yjs'
 import * as yMapValueByPath from '@/lib/yMapValueByPath'
+import { AssignmentType } from '@/components/DataItem/AssignmentType'
 
 export const Assignment = ({ index, setSelectedAssignment, className }: {
   index: number
@@ -45,8 +46,11 @@ export const Assignment = ({ index, setSelectedAssignment, className }: {
 
       <div className='flex items-center justify-between border-t px-4 pt-4'>
         <div className='flex items-center justify-start gap-6'>
+          <AssignmentType
+            path={`core/assignment[${index}].meta.core/assignment-type[0]`}
+            editable={inProgress}
+          />
           <UserPlus size={20} strokeWidth={1.75} />
-          <FileTextIcon size={20} strokeWidth={1.75} />
           <Clock10Icon size={20} strokeWidth={1.75} />
         </div>
 
