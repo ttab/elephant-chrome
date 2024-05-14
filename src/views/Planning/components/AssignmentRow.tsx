@@ -1,7 +1,6 @@
 import { Link } from '@/components'
 import { useYObserver } from '@/hooks/useYObserver'
 import { TimeDisplay } from '@/components/DataItem/TimeDisplay'
-import { SluglineEditable } from '@/components/DataItem/SluglineInput'
 import { AssignmentType } from '@/components/DataItem/AssignmentType'
 import { AssigneeAvatars } from '@/components/DataItem/AssigneeAvatars'
 import type * as Y from 'yjs'
@@ -12,6 +11,7 @@ import { Button, Dialog, DialogContent, DialogDescription, DialogFooter, DialogH
 import { useState } from 'react'
 import { cva } from 'class-variance-authority'
 import { cn } from '@ttab/elephant-ui/utils'
+import { SluglineButton } from '@/components/DataItem/Slugline'
 
 
 export const AssignmentRow = ({ index, setSelectedAssignment }: {
@@ -44,9 +44,11 @@ export const AssignmentRow = ({ index, setSelectedAssignment }: {
             ? <Link to='Editor' props={{ id: getUUID('uuid') as string }} className="font-semibold text-sm hover:underline">
               {(get('title') as Y.XmlText)?.toJSON()}
             </Link>
-            : <span className='font-semibold text-sm text-muted-foreground'>{(get('title') as Y.XmlText)?.toJSON()}</span>}
+            : <span className='font-semibold text-sm text-muted-foreground'>
+              {(get('title') as Y.XmlText)?.toJSON()}
+            </span>}
 
-          <SluglineEditable path={`core/assignment[${index}].meta.tt/slugline[0]`} />
+          <SluglineButton path={`core/assignment[${index}].meta.tt/slugline[0]`} />
         </div>
 
         <div className='font-normal text-sm mt-2'>{(getAssignmentDescription('text') as Y.XmlText)?.toJSON()}</div>
