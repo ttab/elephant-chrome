@@ -57,7 +57,7 @@ export const AssignmentRow = ({ index, setSelectedAssignment }: {
       <div className="col-span-4 flex justify-end space-x-4 items-center">
         <AssigneeAvatars assignees={Array.isArray(stateAuthor) ? stateAuthor.map((author) => author.name) : []} />
 
-        <AssignmentType index={index} />
+        <AssignmentType path={`core/assignment[${index}].meta.core/assignment-type[0]`} />
 
         <div className="min-w-[64px] whitespace-nowrap">
           {getAssignmentPublishTime('publish')
