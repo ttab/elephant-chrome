@@ -67,7 +67,7 @@ export const Assignment = ({ index, setSelectedAssignment, className }: {
                   setSelectedAssignment(undefined)
                 }
               }}>
-              Avbryt
+              Ta bort
             </Button>
           }
 
