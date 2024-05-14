@@ -10,31 +10,41 @@ import { useCollaboration } from '@/hooks'
 import { Delete, Edit } from '@ttab/elephant-ui/icons'
 import { Button, Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@ttab/elephant-ui'
 import { useState } from 'react'
+import { cva } from 'class-variance-authority'
+import { cn } from '@ttab/elephant-ui/utils'
 
 
 export const AssignmentRow = ({ index, setSelectedAssignment }: {
   index: number
   setSelectedAssignment: React.Dispatch<React.SetStateAction<number | undefined>>
 }): JSX.Element => {
-  const { get: getTitle } = useYObserver('meta', `core/assignment[${index}]`)
+  const { get } = useYObserver('meta', `core/assignment[${index}]`)
   const { get: getUUID } = useYObserver('meta', `core/assignment[${index}].links.core/article[0]`)
   const { get: getAssignmentDescription } = useYObserver('meta', `core/assignment[${index}].meta.core/description[0].data`)
   const { get: getAssignmentPublishTime } = useYObserver('meta', `core/assignment[${index}].data`)
   const { state: stateAuthor = [] } = useYObserver('meta', `core/assignment[${index}].links.core/author`)
   const [showVerifyDialog, setShowVerifyDialog] = useState<boolean>(false)
 
+  const inProgress = !!get('__inProgress')
+  const assignment = cva('grid grid-cols-12 border-b py-2', {
+    variants: {
+      inProgress: {
+        true: 'opacity-50'
+      }
+    }
+  })
+
   return (
-    <div className="grid grid-cols-12 border-b py-2">
+    <div className={cn(assignment({ inProgress }))}>
 
       <div className="col-span-8 px-2 py-1">
         <div className="flex-grow flex space-x-2 items-center">
-          <div className='font-medium text-sm'>
-            {getUUID('uuid')
-              ? <Link to='Editor' props={{ id: getUUID('uuid') as string }}>
-                {(getTitle('title') as Y.XmlText)?.toJSON()}
-              </Link>
-              : <span className='text-muted-foreground'>{(getTitle('title') as Y.XmlText)?.toJSON()}</span>}
-          </div>
+
+          {getUUID('uuid') && !inProgress
+            ? <Link to='Editor' props={{ id: getUUID('uuid') as string }} className="font-semibold text-sm hover:underline">
+              {(get('title') as Y.XmlText)?.toJSON()}
+            </Link>
+            : <span className='font-semibold text-sm text-muted-foreground'>{(get('title') as Y.XmlText)?.toJSON()}</span>}
 
           <SluglineEditable path={`core/assignment[${index}].meta.tt/slugline[0]`} />
         </div>
@@ -55,29 +65,31 @@ export const AssignmentRow = ({ index, setSelectedAssignment }: {
         </div>
 
         <div className="whitespace-nowrap">
-          <DotDropdownMenu
-            items={[
-              {
-                label: 'Redigera',
-                icon: Edit,
-                item: () => setSelectedAssignment(index)
-              },
-              {
-                label: 'Ta bort',
-                icon: Delete,
-                item: () => {
-                  setShowVerifyDialog(true)
+          {!inProgress &&
+            <DotDropdownMenu
+              items={[
+                {
+                  label: 'Redigera',
+                  icon: Edit,
+                  item: () => setSelectedAssignment(index)
+                },
+                {
+                  label: 'Ta bort',
+                  icon: Delete,
+                  item: () => {
+                    setShowVerifyDialog(true)
+                  }
                 }
-              }
-            ]}
-          />
+              ]}
+            />
+          }
         </div>
       </div>
 
       {showVerifyDialog &&
         <VerifyDeleteAssignmentDialog
           index={index}
-          title={(getTitle('title') as Y.XmlText)?.toJSON()}
+          title={(get('title') as Y.XmlText)?.toJSON()}
           setSelectedAssignment={setSelectedAssignment}
           setShowVerifyDialog={setShowVerifyDialog}
         />
