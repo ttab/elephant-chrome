@@ -89,7 +89,7 @@ export const Assignment = ({ index, setSelectedAssignment, className }: {
               setSelectedAssignment(undefined)
             }}
           >
-            Klar
+            {inProgress ? 'Lägg till' : 'Stäng'}
           </Button>
         </div>
       </div>
