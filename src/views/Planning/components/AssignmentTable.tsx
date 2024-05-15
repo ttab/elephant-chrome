@@ -33,7 +33,7 @@ export const AssignmentTable = (): JSX.Element => {
             }
           }}
           >
-            <div className='bg-green-400 rounded-full text-white w-5 h-5 flex justify-center items-center'>
+            <div className='bg-primary rounded-full text-white w-5 h-5 flex justify-center items-center'>
               <PlusIcon size={14} strokeWidth={1.75} className='rounded-full' />
             </div>
             Lägg till uppdrag

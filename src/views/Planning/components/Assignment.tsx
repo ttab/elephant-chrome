@@ -17,34 +17,36 @@ export const Assignment = ({ index, setSelectedAssignment, className }: {
   const inProgress = getInProgress('__inProgress') === true
 
   return (
-    <div className={cn('flex flex-col p-4 gap-4 border rounded-md shadow-xl', className)}>
-      <TextBox
-        base='meta'
-        path={`core/assignment[${index}]`}
-        field='title'
-        placeholder='Uppdragsrubrik'
-        className="font-semibold text-lg leading-4 px-0"
-        singleLine={true}
-      />
+    <div className={cn('border rounded-md shadow-xl', className)}>
+      <div className="flex flex-col gap-6 p-6">
+        <TextBox
+          base='meta'
+          path={`core/assignment[${index}]`}
+          field='title'
+          placeholder='Uppdragsrubrik'
+          className="font-semibold text-lg leading-4 px-0"
+          singleLine={true}
+        />
 
-      <TextBox
-        base='meta'
-        path={`core/assignment[${index}].meta.tt/slugline[0]`}
-        field='value'
-        placeholder='Lägg till slug'
-        className="text-sm leading-4 px-0 opacity-80"
-        singleLine={true}
-      />
+        <TextBox
+          base='meta'
+          path={`core/assignment[${index}].meta.tt/slugline[0]`}
+          field='value'
+          placeholder='Lägg till slug'
+          className="text-sm leading-4 px-0 opacity-80"
+          singleLine={true}
+        />
 
-      <TextBox
-        base='meta'
-        path={`core/assignment[${index}].meta.core/description[0].data`}
-        field='text'
-        placeholder='Beskrivning'
-        className="text-md leading-4 px-0 bg-gray"
-      />
+        <TextBox
+          base='meta'
+          path={`core/assignment[${index}].meta.core/description[0].data`}
+          field='text'
+          placeholder='Beskrivning'
+          className="text-md leading-4 px-0 bg-gray"
+        />
+      </div>
 
-      <div className='flex items-center justify-between border-t px-4 pt-4'>
+      <div className='flex items-center justify-between border-t p-4'>
         <div className='flex items-center justify-start gap-6'>
           <AssignmentType
             path={`core/assignment[${index}].meta.core/assignment-type[0]`}
@@ -57,7 +59,7 @@ export const Assignment = ({ index, setSelectedAssignment, className }: {
         <div className='flex items-center justify-end gap-4'>
           {inProgress &&
             <Button
-              variant="secondary"
+              variant="ghost"
               onClick={(evt) => {
                 evt.preventDefault()
                 if (provider?.document) {
@@ -76,6 +78,7 @@ export const Assignment = ({ index, setSelectedAssignment, className }: {
           }
 
           <Button
+            variant="outline"
             onClick={(evt) => {
               evt.preventDefault()
               if (provider?.document && inProgress) {

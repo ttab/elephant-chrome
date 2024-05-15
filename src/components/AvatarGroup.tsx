@@ -18,7 +18,7 @@ interface AvatarGroupProps extends React.HTMLAttributes<HTMLDivElement>, PropsWi
 
 export function AvatarGroup({ children, size = 'default' }: AvatarGroupProps): JSX.Element {
   return (
-    <div className={cn(avatarGroupVariants({ size })) }>
+    <div className={cn(avatarGroupVariants({ size }))}>
       {children}
     </div>
   )
