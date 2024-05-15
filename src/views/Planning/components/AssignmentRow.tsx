@@ -95,7 +95,7 @@ export const AssignmentRow = ({ index, setSelectedAssignment }: {
 
       {!!description &&
         <div className='grid grid-cols-12'>
-          <div className='col-start-1 col-span-12 pb-2 @4xl/view:col-span-8'>
+          <div className='col-start-1 col-span-12 pb-2 @xl/view:col-span-11 @4xl/view:col-span-8'>
             {description}
           </div>
         </div>
