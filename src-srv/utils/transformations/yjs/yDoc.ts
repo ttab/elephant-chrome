@@ -1,4 +1,5 @@
 import * as Y from 'yjs'
+import crypto from 'crypto'
 import { type Block, type GetDocumentResponse } from '@/protos/service.js'
 import { toYMap } from '../lib/toYMap.js'
 import { group, ungroup } from '../lib/group.js'
@@ -84,6 +85,14 @@ export function newsDocToYDoc(yDoc: Document | Y.Doc, newsDoc: GetDocumentRespon
       const yVersion = yDoc.getMap('version')
       yVersion?.set('version', version?.toString())
 
+      const originalHash = crypto
+        .createHash('md5')
+        .update(JSON.stringify(newsDoc.document))
+        .digest('hex')
+
+      const yOriginalHash = yDoc.getMap('hash')
+      yOriginalHash?.set('hash', originalHash)
+
       return
     }
 
@@ -108,15 +117,15 @@ export function yDocToNewsDoc(yDoc: Y.Doc): GetDocumentResponse {
 
     const root = yMap.get('root') as Y.Map<unknown>
 
-    const { uuid, type, url, uri, title, language } = root.toJSON()
+    const { uuid, type, uri, url, title, language } = root.toJSON()
 
     return {
       version: BigInt(yDoc.getMap('version').get('version') as string),
       document: {
         uuid,
         type,
-        url,
         uri,
+        url,
         title,
         content: content || [],
         // Remove added empty descriptions

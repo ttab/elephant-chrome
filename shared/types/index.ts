@@ -1,3 +1,4 @@
+import { type Block } from '@/protos/service'
 import { type JWTPayload } from 'jose'
 
 export interface JWT extends JWTPayload {
@@ -6,5 +7,12 @@ export interface JWT extends JWTPayload {
   scope: string
   units: string[]
   access_token: string
+}
+
+export interface YBlock extends Block {
+  __inProgress?: boolean
+  meta: YBlock[]
+  links: YBlock[]
+  content: YBlock[]
 }
 
