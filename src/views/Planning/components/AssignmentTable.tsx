@@ -49,17 +49,20 @@ export const AssignmentTable = (): JSX.Element => {
         />
       }
 
-      <div className="divide-y border-y">
-        {/* @ts-expect-error FIXME: Remove this line when __inProgress is part of the format */}
-        {Array.isArray(state) && state.filter(a => !a.__inProgress).map((_, index: number) => (
-          <div key={`${_.id}`}>
-            {selectedAssignment === index
-              ? <Assignment index={index} setSelectedAssignment={setSelectedAssignment} className='my-6' />
-              : <AssignmentRow index={index} setSelectedAssignment={setSelectedAssignment} />
-            }
-          </div>
-        ))}
-      </div>
+      {/* @ts-expect-error FIXME: Remove this line when __inProgress is part of the format */}
+      {Array.isArray(state) && !!state.filter(a => !a.__inProgress).length &&
+        <div className="divide-y border-y">
+          {/* @ts-expect-error FIXME: Remove this line when __inProgress is part of the format */}
+          {Array.isArray(state) && state.filter(a => !a.__inProgress).map((_, index: number) => (
+            <div key={`${_.id}`}>
+              {selectedAssignment === index
+                ? <Assignment index={index} setSelectedAssignment={setSelectedAssignment} className='my-6' />
+                : <AssignmentRow index={index} setSelectedAssignment={setSelectedAssignment} />
+              }
+            </div>
+          ))}
+        </div>
+      }
     </div >
   )
 }
