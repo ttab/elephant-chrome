@@ -49,7 +49,7 @@ export const AssignmentTable = (): JSX.Element => {
         />
       }
 
-      <div className="border-t">
+      <div className="divide-y border-y">
         {/* @ts-expect-error FIXME: Remove this line when __inProgress is part of the format */}
         {Array.isArray(state) && state.filter(a => !a.__inProgress).map((_, index: number) => (
           <div key={`${_.id}`}>

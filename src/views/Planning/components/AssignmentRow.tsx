@@ -24,6 +24,7 @@ export const AssignmentRow = ({ index, setSelectedAssignment }: {
   const { get: getAssignmentPublishTime } = useYObserver('meta', `core/assignment[${index}].data`)
   const { state: stateAuthor = [] } = useYObserver('meta', `core/assignment[${index}].links.core/author`)
   const [showVerifyDialog, setShowVerifyDialog] = useState<boolean>(false)
+  const description = (getAssignmentDescription('text') as Y.XmlText)?.toJSON()
 
   const inProgress = !!get('__inProgress')
   const assignment = cva('grid grid-cols-12 border-b py-2', {
@@ -35,38 +36,24 @@ export const AssignmentRow = ({ index, setSelectedAssignment }: {
   })
 
   return (
-    <div className={cn(assignment({ inProgress }))}>
+    <div className='flex flex-col text-sm px-4 py-2 @4xl/view:gap-1'>
+      <div className='grid grid-cols-12 grid-rows-2 text-sm gap-2 items-start @4xl/view:grid-rows-1'>
 
-      <div className="col-span-8 px-2 py-1">
-        <div className="flex-grow flex space-x-2 items-center">
+        <div className='row-start-1 col-start-1 col-span-10 row-span-1 self-center font-semibold @4xl/view:col-span-8 @4xl/view:pt-1'>
 
           {getUUID('uuid') && !inProgress
-            ? <Link to='Editor' props={{ id: getUUID('uuid') as string }} className="font-semibold text-sm hover:underline">
-              {(get('title') as Y.XmlText)?.toJSON()}
+            ? <Link to='Editor' props={{ id: getUUID('uuid') as string }} className="hover:underline">
+              <span className='pr-2'>{(get('title') as Y.XmlText)?.toJSON()}</span>
+              {/* <SluglineButton path={`core/assignment[${index}].meta.tt/slugline[0]`} /> */}
             </Link>
-            : <span className='font-semibold text-sm text-muted-foreground'>
+            : <><span className='text-muted-foreground pr-2'>
               {(get('title') as Y.XmlText)?.toJSON()}
-            </span>}
-
-          <SluglineButton path={`core/assignment[${index}].meta.tt/slugline[0]`} />
+            </span>
+              {/* <SluglineButton path={`core/assignment[${index}].meta.tt/slugline[0]`} /> */}
+            </>}
         </div>
 
-        <div className='font-normal text-sm mt-2'>{(getAssignmentDescription('text') as Y.XmlText)?.toJSON()}</div>
-      </div>
-
-      <div className="col-span-4 flex justify-end space-x-4 items-center">
-        <AssigneeAvatars assignees={Array.isArray(stateAuthor) ? stateAuthor.map((author) => author.name) : []} />
-
-        <AssignmentType path={`core/assignment[${index}].meta.core/assignment-type[0]`} />
-
-        <div className="min-w-[64px] whitespace-nowrap">
-          {getAssignmentPublishTime('publish')
-            ? <TimeDisplay date={new Date(getAssignmentPublishTime('publish') as string)} />
-            : '-'
-          }
-        </div>
-
-        <div className="whitespace-nowrap">
+        <div className='row-start-1 col-start-11 col-span-2 row-span-2 justify-self-end @4xl/view:col-start-12 @4xl/view:col-span-1'>
           {!inProgress &&
             <DotDropdownMenu
               items={[
@@ -86,7 +73,33 @@ export const AssignmentRow = ({ index, setSelectedAssignment }: {
             />
           }
         </div>
-      </div>
+
+        <div className='row-start-2 col-start-1 col-span-10 row-span-1 flex space-x-2 items-center @4xl/view:row-start-1 @4xl/view:col-span-3 @4xl/view:col-start-9'>
+          <div className='min-w-[128px] whitespace-nowrap -ml-1 @4xl/view:ml-0 hover:cursor-default'>
+            <AssigneeAvatars assignees={Array.isArray(stateAuthor) ? stateAuthor.map((author) => author.name) : []} />
+          </div>
+
+          <div>
+            <AssignmentType path={`core/assignment[${index}].meta.core/assignment-type[0]`} />
+          </div>
+
+          <div className="min-w-[64px] whitespace-nowrap">
+            {getAssignmentPublishTime('publish')
+              ? <TimeDisplay date={new Date(getAssignmentPublishTime('publish') as string)} />
+              : '-'
+            }
+          </div>
+        </div>
+
+      </div>{/* grid */}
+
+      {!!description &&
+        <div className='grid grid-cols-12'>
+          <div className='col-start-1 col-span-12 pb-2 @4xl/view:col-span-8'>
+            {description}
+          </div>
+        </div>
+      }
 
       {showVerifyDialog &&
         <VerifyDeleteAssignmentDialog
@@ -98,6 +111,127 @@ export const AssignmentRow = ({ index, setSelectedAssignment }: {
       }
     </div>
   )
+
+  // TODO: Remove below experiements/leftovers when finished
+  // return (
+  //   <div className='text-sm p-2 pb-3'>
+  //     <div className='flex align-start'>
+  //       <div className='flex-none w-8 justify-self-start self-center'>
+  //         <AssignmentType path={`core/assignment[${index}].meta.core/assignment-type[0]`} />
+  //       </div>
+
+  //       <div className='flex-1 self-center font-semibold'>
+  //         {(get('title') as Y.XmlText)?.toJSON()}
+  //       </div>
+
+  //       <div className='flex-none w-8 justify-self-end'>
+  //         {!inProgress &&
+  //           <DotDropdownMenu
+  //             items={[
+  //               {
+  //                 label: 'Redigera',
+  //                 icon: Edit,
+  //                 item: () => setSelectedAssignment(index)
+  //               },
+  //               {
+  //                 label: 'Ta bort',
+  //                 icon: Delete,
+  //                 item: () => {
+  //                   setShowVerifyDialog(true)
+  //                 }
+  //               }
+  //             ]}
+  //           />
+  //         }
+  //       </div>
+  //     </div>
+
+  //     <div className='pt-2 pl-8 flex gap-6 items-center'>
+  //       <SluglineButton path={`core/assignment[${index}].meta.tt/slugline[0]`} />
+  //       <AssigneeAvatars assignees={Array.isArray(stateAuthor) ? stateAuthor.map((author) => author.name) : []} />
+  //       <div className="min-w-[64px] whitespace-nowrap">
+  //         {getAssignmentPublishTime('publish')
+  //           ? <TimeDisplay date={new Date(getAssignmentPublishTime('publish') as string)} />
+  //           : '-'
+  //         }
+  //       </div>
+  //     </div>
+
+  //     {!!description &&
+  //       <div className='pt-2 px-8'>
+  //         {description}
+  //       </div>
+  //     }
+  //   </div>
+  // )
+
+
+
+
+  // return (
+  //   <div className={cn(assignment({ inProgress }))}>
+
+  //     <div className="col-span-8 px-2 py-1">
+  //       <div className="flex-grow flex space-x-2 items-center">
+
+  //         {getUUID('uuid') && !inProgress
+  //           ? <Link to='Editor' props={{ id: getUUID('uuid') as string }} className="font-semibold text-sm hover:underline">
+  //             {(get('title') as Y.XmlText)?.toJSON()}
+  //           </Link>
+  //           : <span className='font-semibold text-sm text-muted-foreground'>
+  //             {(get('title') as Y.XmlText)?.toJSON()}
+  //           </span>}
+
+  //         <SluglineButton path={`core/assignment[${index}].meta.tt/slugline[0]`} />
+  //       </div>
+
+  //       <div className='font-normal text-sm mt-2'>{(getAssignmentDescription('text') as Y.XmlText)?.toJSON()}</div>
+  //     </div>
+
+  //     <div className="col-span-4 flex justify-end space-x-4 items-center">
+  //       <AssigneeAvatars assignees={Array.isArray(stateAuthor) ? stateAuthor.map((author) => author.name) : []} />
+
+  //       <AssignmentType path={`core/assignment[${index}].meta.core/assignment-type[0]`} />
+
+  //       <div className="min-w-[64px] whitespace-nowrap">
+  //         {getAssignmentPublishTime('publish')
+  //           ? <TimeDisplay date={new Date(getAssignmentPublishTime('publish') as string)} />
+  //           : '-'
+  //         }
+  //       </div>
+
+  //       <div className="whitespace-nowrap">
+  //         {!inProgress &&
+  //           <DotDropdownMenu
+  //             items={[
+  //               {
+  //                 label: 'Redigera',
+  //                 icon: Edit,
+  //                 item: () => setSelectedAssignment(index)
+  //               },
+  //               {
+  //                 label: 'Ta bort',
+  //                 icon: Delete,
+  //                 item: () => {
+  //                   setShowVerifyDialog(true)
+  //                 }
+  //               }
+  //             ]}
+  //           />
+  //         }
+  //       </div>
+  //     </div>
+
+  //     {showVerifyDialog &&
+  //       <VerifyDeleteAssignmentDialog
+  //         index={index}
+  //         title={(get('title') as Y.XmlText)?.toJSON()}
+  //         setSelectedAssignment={setSelectedAssignment}
+  //         setShowVerifyDialog={setShowVerifyDialog}
+  //       />
+  //     }
+  //   </div>
+  // )
 }
 
 
