@@ -11,8 +11,29 @@ import { Button, Dialog, DialogContent, DialogDescription, DialogFooter, DialogH
 import { useState } from 'react'
 import { SluglineButton } from '@/components/DataItem/Slugline'
 
-
 export const AssignmentRow = ({ index, setSelectedAssignment }: {
+  index: number
+  setSelectedAssignment: React.Dispatch<React.SetStateAction<number | undefined>>
+}): JSX.Element => {
+  const { get } = useYObserver('meta', `core/assignment[${index}]`)
+  const { get: getUUID } = useYObserver('meta', `core/assignment[${index}].links.core/article[0]`)
+
+  const uuid = getUUID('uuid')
+  const inProgress = !!get('__inProgress')
+
+  return (
+    <>
+      {uuid && !inProgress
+        ? <Link to='Editor' props={{ id: uuid as string }} className="group/assrow cursor-default">
+          <AssignmentRowContent index={index} setSelectedAssignment={setSelectedAssignment} />
+        </Link>
+        : <AssignmentRowContent index={index} setSelectedAssignment={setSelectedAssignment} />
+      }
+    </>
+  )
+}
+
+const AssignmentRowContent = ({ index, setSelectedAssignment }: {
   index: number
   setSelectedAssignment: React.Dispatch<React.SetStateAction<number | undefined>>
 }): JSX.Element => {
@@ -23,21 +44,20 @@ export const AssignmentRow = ({ index, setSelectedAssignment }: {
   const { state: stateAuthor = [] } = useYObserver('meta', `core/assignment[${index}].links.core/author`)
   const [showVerifyDialog, setShowVerifyDialog] = useState<boolean>(false)
 
+  const uuid = getUUID('uuid')
   const description = (getAssignmentDescription('text') as Y.XmlText)?.toJSON()
   const inProgress = !!get('__inProgress')
 
   return (
-    <div className='flex flex-col text-sm px-4 py-2.5 @4xl/view:gap-1'>
+    <div className='flex flex-col text-sm px-4 py-2.5 @4xl/view:gap-1 hover:bg-muted'>
       <div className='grid grid-cols-12 grid-rows-2 text-sm gap-2 items-start @4xl/view:grid-rows-1'>
 
         <div className='row-start-1 col-start-1 col-span-10 row-span-1 self-center text-[15px] font-medium @4xl/view:col-span-8 @4xl/view:pt-1'>
-          {getUUID('uuid') && !inProgress
-            ? <Link to='Editor' props={{ id: getUUID('uuid') as string }} className="hover:underline">
-              <span className='pr-2 leading-relaxed'>{(get('title') as Y.XmlText)?.toJSON()}</span>
-            </Link>
-            : <span className='text-muted-foreground pr-2 leading-relaxed'>
-              {(get('title') as Y.XmlText)?.toJSON()}
-            </span>}
+          {uuid && !inProgress
+            ? <span className='pr-2 leading-relaxed group-hover/assrow:underline'>{(get('title') as Y.XmlText)?.toJSON()}</span>
+            : <span className='pr-2 leading-relaxed text-muted-foreground'>{(get('title') as Y.XmlText)?.toJSON()}</span>
+          }
+
           <span className="float-right pr-4">
             <SluglineButton path={`core/assignment[${index}].meta.tt/slugline[0]`} />
           </span>
