@@ -8,7 +8,11 @@ export const SluglineButton = ({ path, value, setActive }: {
   setActive?: ((value: boolean) => void) | null
 }): JSX.Element => {
   if (typeof value === 'string') {
-    return <StaticSlugline value={value} />
+    return <StaticSluglineByValue value={value} />
+  }
+
+  if (typeof path === 'string' && !setActive) {
+    return <StaticSluglineByPath path={path} />
   }
 
   if (typeof path === 'string' && setActive) {
@@ -35,11 +39,24 @@ function EditableSlugline({ path, setActive }: {
 }
 
 
-function StaticSlugline({ value }: {
+function StaticSluglineByPath({ path }: {
+  path: string
+}): JSX.Element {
+  const { get } = useYObserver('meta', path)
+
+  return <StaticSluglineByValue value={(get('value') as Y.XmlText)?.toJSON() || ''} />
+}
+
+
+function StaticSluglineByValue({ value }: {
   value: string
 }): JSX.Element {
+  if (!value) {
+    return <></>
+  }
+
   return <Button
-    className='text-muted-foreground h-7 font-normal text-sm whitespace-nowrap'
+    className='text-muted-foreground h-7 px-2 font-normal text-sm whitespace-nowrap hover:bg-background hover:text-muted-foreground hover:cursor-default'
     variant='outline'
   >
     {value || 'Slugline...'}

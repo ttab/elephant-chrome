@@ -3,7 +3,7 @@ import { type ViewMetadata, type ViewProps } from '@/types'
 import { ScrollArea } from '@ttab/elephant-ui'
 import { GanttChartSquare } from '@ttab/elephant-ui/icons'
 import { useQuery } from '@/hooks'
-import { SluglineEditable } from '@/components/DataItem/SluglineInput'
+import { SluglineEditable } from '@/components/DataItem/SluglineEditable'
 import {
   AssignmentTable,
   PlanDate,

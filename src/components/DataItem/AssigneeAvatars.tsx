@@ -10,7 +10,7 @@ export const AssigneeAvatars = ({ assignees }: { assignees: string[] }): JSX.Ele
       {(assignees || []).slice(0, 3).map((assignee: string, index: number) => {
         return (
           <Tooltip key={index} content={assignee}>
-            <Avatar value={assignee} size='sm' />
+            <Avatar value={assignee} size='sm' stacked={index > 0} />
           </Tooltip>
         )
       })}
