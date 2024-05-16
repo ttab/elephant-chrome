@@ -22,8 +22,8 @@ export const AssignmentRow = ({ index, setSelectedAssignment }: {
   const { get: getAssignmentPublishTime } = useYObserver('meta', `core/assignment[${index}].data`)
   const { state: stateAuthor = [] } = useYObserver('meta', `core/assignment[${index}].links.core/author`)
   const [showVerifyDialog, setShowVerifyDialog] = useState<boolean>(false)
-  const description = (getAssignmentDescription('text') as Y.XmlText)?.toJSON()
 
+  const description = (getAssignmentDescription('text') as Y.XmlText)?.toJSON()
   const inProgress = !!get('__inProgress')
 
   return (
@@ -31,17 +31,16 @@ export const AssignmentRow = ({ index, setSelectedAssignment }: {
       <div className='grid grid-cols-12 grid-rows-2 text-sm gap-2 items-start @4xl/view:grid-rows-1'>
 
         <div className='row-start-1 col-start-1 col-span-10 row-span-1 self-center text-[15px] font-medium @4xl/view:col-span-8 @4xl/view:pt-1'>
-
           {getUUID('uuid') && !inProgress
             ? <Link to='Editor' props={{ id: getUUID('uuid') as string }} className="hover:underline">
-              <span className='pr-2'>{(get('title') as Y.XmlText)?.toJSON()}</span>
-              {/* <SluglineButton path={`core/assignment[${index}].meta.tt/slugline[0]`} /> */}
+              <span className='pr-2 leading-relaxed'>{(get('title') as Y.XmlText)?.toJSON()}</span>
             </Link>
-            : <><span className='text-muted-foreground pr-2'>
+            : <span className='text-muted-foreground pr-2 leading-relaxed'>
               {(get('title') as Y.XmlText)?.toJSON()}
-            </span>
-              {/* <SluglineButton path={`core/assignment[${index}].meta.tt/slugline[0]`} /> */}
-            </>}
+            </span>}
+          <span className="float-right pr-4">
+            <SluglineButton path={`core/assignment[${index}].meta.tt/slugline[0]`} />
+          </span>
         </div>
 
         <div className='row-start-1 col-start-11 col-span-2 row-span-2 justify-self-end @4xl/view:col-start-12 @4xl/view:col-span-1'>
@@ -65,21 +64,21 @@ export const AssignmentRow = ({ index, setSelectedAssignment }: {
           }
         </div>
 
-        <div className='row-start-2 col-start-1 col-span-10 row-span-1 flex space-x-2 items-center @4xl/view:row-start-1 @4xl/view:col-span-3 @4xl/view:col-start-9 pb-2 @4xl/view:pb-0'>
-          <div className='min-w-[128px] whitespace-nowrap -ml-1 @4xl/view:ml-0 hover:cursor-default'>
-            <AssigneeAvatars assignees={Array.isArray(stateAuthor) ? stateAuthor.map((author) => author.name) : []} />
-          </div>
-
-          <div>
+        <div className='row-start-2 col-start-1 col-span-10 row-span-1 flex space-x-2 items-center pt-0.5 @4xl/view:row-start-1 @4xl/view:col-span-3 @4xl/view:col-start-9 pb-2 @4xl/view:pb-0'>
+          <div className="pr-4 @4xl/view:px-4">
             <AssignmentType path={`core/assignment[${index}].meta.core/assignment-type[0]`} />
           </div>
 
           <div className="min-w-[64px] whitespace-nowrap">
             {getAssignmentPublishTime('publish')
               ? <TimeDisplay date={new Date(getAssignmentPublishTime('publish') as string)} />
-              : '-'
+              : ''
             }
           </div>
+          <div className='min-w-[128px] whitespace-nowrap -ml-1 @4xl/view:ml-0 hover:cursor-default'>
+            <AssigneeAvatars assignees={Array.isArray(stateAuthor) ? stateAuthor.map((author) => author.name) : []} />
+          </div>
+
         </div>
 
       </div>{/* end of grid */}
