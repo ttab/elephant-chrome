@@ -1,5 +1,4 @@
 import * as Y from 'yjs'
-import crypto from 'crypto'
 import { type Block, type GetDocumentResponse } from '@/protos/service.js'
 import { toYMap } from '../lib/toYMap.js'
 import { group, ungroup } from '../lib/group.js'
@@ -7,6 +6,7 @@ import { newsDocToSlate, slateToNewsDoc } from '../newsdoc/index.js'
 import { slateNodesToInsertDelta, yTextToSlateElement } from '@slate-yjs/core'
 import { type TBElement } from '@ttab/textbit'
 import { type Document } from '@hocuspocus/server'
+import createHash from '@/shared/lib/createHash.js'
 
 function yContentToNewsDoc(yContent: Y.XmlText): Block[] | undefined {
   const slateElement = yTextToSlateElement(yContent).children
@@ -85,10 +85,7 @@ export function newsDocToYDoc(yDoc: Document | Y.Doc, newsDoc: GetDocumentRespon
       const yVersion = yDoc.getMap('version')
       yVersion?.set('version', version?.toString())
 
-      const originalHash = crypto
-        .createHash('md5')
-        .update(JSON.stringify(newsDoc.document))
-        .digest('hex')
+      const originalHash = createHash(JSON.stringify(newsDoc.document))
 
       const yOriginalHash = yDoc.getMap('hash')
       yOriginalHash?.set('hash', originalHash)

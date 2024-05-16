@@ -9,8 +9,6 @@ import {
   type onStoreDocumentPayload
 } from '@hocuspocus/server'
 
-import crypto from 'crypto'
-
 import { Logger } from '@hocuspocus/extension-logger'
 import { Redis } from '@hocuspocus/extension-redis'
 import { Database } from '@hocuspocus/extension-database'
@@ -26,6 +24,7 @@ import * as Y from 'yjs'
 import { yDocToNewsDoc, newsDocToYDoc } from './transformations/yjs/yDoc.js'
 import { Snapshot } from './extensions/snapshot.js'
 import { Auth } from './extensions/auth.js'
+import createHash from '../../shared/lib/createHash.js'
 
 interface CollaborationServerOptions {
   name: string
@@ -106,7 +105,7 @@ export class CollaborationServer {
           store: async (payload) => { await this.#storeDocument(payload) }
         }),
         new Snapshot({
-          debounce: 300000,
+          debounce: 10000,
           snapshot: async (payload: onStoreDocumentPayload) => {
             return async () => {
               await this.#snapshotDocument(payload)
@@ -221,12 +220,18 @@ export class CollaborationServer {
   }
 
   async #snapshotDocument({ documentName, document: yDoc, context }: onStoreDocumentPayload): Promise<void> {
+    // Disregard __inProgress documents
+    if ((yDoc.getMap('ele')
+      .get('root') as Y.Map<unknown>)
+      .get('__inProgress') as boolean) {
+      console.debug('::: saveDoc: Document is in progress, not saving')
+      return
+    }
+
     // Convert yDoc to newsDoc, so we can hash it and maybe save it to the repository
     const { document } = yDocToNewsDoc(yDoc)
 
-    const currentHash = crypto.createHash('md5')
-      .update(JSON.stringify(document))
-      .digest('hex')
+    const currentHash = createHash(JSON.stringify(document))
 
     // Compare original hash with current hash to establish if there are any changes
     // This solution relies on the same order of keys in the documents, but a change of key order
