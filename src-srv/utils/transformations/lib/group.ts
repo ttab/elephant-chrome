@@ -1,4 +1,5 @@
 import { type Block } from '@/protos/service.js'
+import { type YBlock } from '@/shared/types/index.js'
 
 /**
  * Group Blocks with same groupKey in arrays
@@ -7,7 +8,7 @@ import { type Block } from '@/protos/service.js'
  * @returns GroupedObjects
  */
 
-type GroupedObjects = Record<string, Block[]>
+type GroupedObjects = Record<string, YBlock[]>
 
 export function group(objects: Block[], groupKey: keyof Block): GroupedObjects {
   const groupedObjects: GroupedObjects = {}
@@ -45,15 +46,18 @@ export function ungroup(obj: GroupedObjects): Block[] {
 
   Object.keys(obj).forEach(key => {
     if (Array.isArray(obj[key])) {
-      obj[key].forEach((item: Block) => {
-        const newObj: Block = {
-          ...item,
-          meta: ungroup(item.meta as unknown as GroupedObjects),
-          links: ungroup(item.links as unknown as GroupedObjects),
-          content: ungroup(item.content as unknown as GroupedObjects)
-        }
+      obj[key].forEach((item) => {
+        // Dont process __inProgress items
+        if (!item.__inProgress) {
+          const newObj = {
+            ...item,
+            meta: ungroup(item.meta as unknown as GroupedObjects),
+            links: ungroup(item.links as unknown as GroupedObjects),
+            content: ungroup(item.content as unknown as GroupedObjects)
+          }
 
-        result.push(newObj as unknown as Block)
+          result.push(newObj as unknown as Block)
+        }
       })
     }
   })

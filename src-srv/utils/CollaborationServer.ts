@@ -2,9 +2,9 @@ import {
   Server,
   type Hocuspocus,
   type fetchPayload,
+  type connectedPayload,
   type storePayload,
   type afterUnloadDocumentPayload,
-  type connectedPayload,
   type onDisconnectPayload,
   type onStoreDocumentPayload
 } from '@hocuspocus/server'
@@ -21,9 +21,10 @@ import {
 
 
 import * as Y from 'yjs'
-import { newsDocToYDoc } from './transformations/yjs/yDoc.js'
+import { yDocToNewsDoc, newsDocToYDoc } from './transformations/yjs/yDoc.js'
 import { Snapshot } from './extensions/snapshot.js'
 import { Auth } from './extensions/auth.js'
+import createHash from '../../shared/createHash.js'
 
 interface CollaborationServerOptions {
   name: string
@@ -107,20 +108,7 @@ export class CollaborationServer {
           debounce: 300000,
           snapshot: async (payload: onStoreDocumentPayload) => {
             return async () => {
-              const result = await this.#repository.saveDoc(payload.document, payload.context.token as string)
-              if (result?.status.code === 'OK') {
-                const connection = await this.#server.openDirectConnection(payload.documentName, {
-                  ...payload.context,
-                  agent: 'server'
-                })
-
-                await connection.transact(doc => {
-                  const versionMap = doc.getMap('version')
-                  versionMap.set('version', result?.response.version.toString())
-                })
-
-                console.debug('::: Snapshot saved: ', result.response.version)
-              }
+              await this.#snapshotDocument(payload)
             }
           }
         }),
@@ -229,6 +217,54 @@ export class CollaborationServer {
     // as an encoded state update and trust the client to set properties and the
     // hocuspocus client/server comm to sync the changes and store them in redis.
     return Y.encodeStateAsUpdate(yDoc)
+  }
+
+  async #snapshotDocument({ documentName, document: yDoc, context }: onStoreDocumentPayload): Promise<void> {
+    // Disregard __inProgress documents
+    if ((yDoc.getMap('ele')
+      .get('root') as Y.Map<unknown>)
+      .get('__inProgress') as boolean) {
+      console.debug('::: saveDoc: Document is in progress, not saving')
+      return
+    }
+
+    // Convert yDoc to newsDoc, so we can hash it and maybe save it to the repository
+    const { document } = yDocToNewsDoc(yDoc)
+
+    const currentHash = createHash(JSON.stringify(document))
+
+    // Compare original hash with current hash to establish if there are any changes
+    // This solution relies on the same order of keys in the documents, but a change of key order
+    // should be indicate a change in the document anyway.
+    if (yDoc.getMap('hash').get('hash') === currentHash) {
+      console.debug('::: saveDoc: No changes in document')
+      return
+    }
+
+
+    const versionMap = yDoc.getMap('version')
+    const version = BigInt(versionMap.get('version') as string)
+
+    if (!document) {
+      throw new Error('No document to save')
+    }
+
+    const result = await this.#repository.saveDoc(document, context.token as string, version)
+    if (result?.status.code === 'OK') {
+      const connection = await this.#server.openDirectConnection(documentName, {
+        ...context,
+        agent: 'server'
+      })
+
+      await connection.transact(doc => {
+        const versionMap = doc.getMap('version')
+        const hashMap = doc.getMap('hash')
+        versionMap.set('version', result?.response.version.toString())
+        hashMap.set('hash', currentHash)
+      })
+
+      console.debug('::: Snapshot saved: ', result.response.version, 'new hash:', currentHash)
+    }
   }
 
 

@@ -17,6 +17,9 @@ export const createPlanningDocument = (): [string, Y.Doc] => {
     document: getPlanningTemplate(documentId)
   })
 
+  const yRoot = yDoc.getMap('ele').get('root') as Y.Map<unknown>
+  yRoot.set('__inProgress', true)
+
   return [documentId, yDoc]
 }
 
@@ -27,8 +30,6 @@ export const createPlanningDocument = (): [string, Y.Doc] => {
  */
 function getPlanningTemplate(id: string): Document {
   return {
-    // @ts-expect-error FIXME: Remove this line when types have been fixed in backend
-    __inProgress: true,
     uuid: id,
     type: 'core/planning-item',
     uri: `core://newscoverage/${id}`,
@@ -38,7 +39,7 @@ function getPlanningTemplate(id: string): Document {
     content: [],
     meta: [
       {
-        id: '',
+        id: 'abc123',
         uuid: '',
         uri: '',
         url: '',

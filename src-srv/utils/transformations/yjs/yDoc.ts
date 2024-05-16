@@ -6,6 +6,7 @@ import { newsDocToSlate, slateToNewsDoc } from '../newsdoc/index.js'
 import { slateNodesToInsertDelta, yTextToSlateElement } from '@slate-yjs/core'
 import { type TBElement } from '@ttab/textbit'
 import { type Document } from '@hocuspocus/server'
+import createHash from '../../../../shared/createHash.js'
 
 function yContentToNewsDoc(yContent: Y.XmlText): Block[] | undefined {
   const slateElement = yTextToSlateElement(yContent).children
@@ -84,6 +85,11 @@ export function newsDocToYDoc(yDoc: Document | Y.Doc, newsDoc: GetDocumentRespon
       const yVersion = yDoc.getMap('version')
       yVersion?.set('version', version?.toString())
 
+      const originalHash = createHash(JSON.stringify(newsDoc.document))
+
+      const yOriginalHash = yDoc.getMap('hash')
+      yOriginalHash?.set('hash', originalHash)
+
       return
     }
 
@@ -108,15 +114,15 @@ export function yDocToNewsDoc(yDoc: Y.Doc): GetDocumentResponse {
 
     const root = yMap.get('root') as Y.Map<unknown>
 
-    const { uuid, type, url, uri, title, language } = root.toJSON()
+    const { uuid, type, uri, url, title, language } = root.toJSON()
 
     return {
       version: BigInt(yDoc.getMap('version').get('version') as string),
       document: {
         uuid,
         type,
-        url,
         uri,
+        url,
         title,
         content: content || [],
         // Remove added empty descriptions
