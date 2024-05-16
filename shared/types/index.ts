@@ -1,4 +1,4 @@
-import { type Block } from '@/protos/service'
+import { type Block } from '../protos/service'
 import { type JWTPayload } from 'jose'
 
 export interface JWT extends JWTPayload {
