@@ -6,7 +6,7 @@ import { newsDocToSlate, slateToNewsDoc } from '../newsdoc/index.js'
 import { slateNodesToInsertDelta, yTextToSlateElement } from '@slate-yjs/core'
 import { type TBElement } from '@ttab/textbit'
 import { type Document } from '@hocuspocus/server'
-import createHash from '@/shared/lib/createHash.js'
+import createHash from '../../../../shared/createHash.js'
 
 function yContentToNewsDoc(yContent: Y.XmlText): Block[] | undefined {
   const slateElement = yTextToSlateElement(yContent).children

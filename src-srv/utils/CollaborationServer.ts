@@ -24,7 +24,7 @@ import * as Y from 'yjs'
 import { yDocToNewsDoc, newsDocToYDoc } from './transformations/yjs/yDoc.js'
 import { Snapshot } from './extensions/snapshot.js'
 import { Auth } from './extensions/auth.js'
-import createHash from '../../shared/lib/createHash.js'
+import createHash from '../../shared/createHash.js'
 
 interface CollaborationServerOptions {
   name: string
