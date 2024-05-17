@@ -106,7 +106,7 @@ export class CollaborationServer {
           store: async (payload) => { await this.#storeDocument(payload) }
         }),
         new Snapshot({
-          debounce: 6000,
+          debounce: 300000,
           snapshot: async (payload: onStoreDocumentPayload) => {
             return async () => {
               await this.#snapshotDocument(payload)
@@ -127,9 +127,10 @@ export class CollaborationServer {
       afterUnloadDocument: async (payload) => { await this.#afterUnloadDocument(payload) },
       onStateless: async ({ payload }) => {
         const msg = parseStateless(payload)
+
         if (msg.type === StatelessType.IN_PROGRESS) {
-          console.log('StatelessInProgress', msg.message)
           const connection = await this.#server.openDirectConnection(msg.message.id, { ...msg.message.context, agent: 'server' })
+
           await connection.transact(doc => {
             const ele = doc.getMap('ele')
             const root = ele.get('root') as Y.Map<unknown>
@@ -139,6 +140,7 @@ export class CollaborationServer {
           if (connection.document) {
             const document = yDocToNewsDoc(connection.document)
             const currentHash = createHash(JSON.stringify(document.document))
+
             if (document.document && msg.message.context) {
               const result = await this.#repository.saveDoc(document.document, msg.message.context.accessToken as string, BigInt(document.version))
 

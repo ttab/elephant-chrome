@@ -49,7 +49,6 @@ type StatelessPayload = StatelessAuth | StatelessMessage | StatelessInProgress
 export function parseStateless<T extends StatelessPayload>(payload: string): T {
   try {
     const [type, message] = payload.split('@')
-    console.log(type, message)
 
     switch (type) {
       case StatelessType.AUTH: {
