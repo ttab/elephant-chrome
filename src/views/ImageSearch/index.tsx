@@ -6,6 +6,7 @@ import { type ViewMetadata } from '@/types'
 // import { Button, Input } from '@ttab/elephant-ui'
 import { XIcon, SearchIcon } from '@ttab/elephant-ui/icons'
 import { useState, useRef } from 'react'
+import useSWRInfinite from 'swr/infinite'
 
 
 interface SearchInputProps extends React.InputHTMLAttributes<HTMLInputElement> { }
@@ -15,13 +16,16 @@ const SearchInput = React.forwardRef<HTMLInputElement, SearchInputProps>(
     return (
       <div className='flex'>
         {/* <SearchIcon/> */}
+
         <input
           type={type}
-          className='flex h-10
+          className='
+            flex h-10
             w-full
             border-input
             bg-background
-            px-3 py-0 ring-offset-background
+            ring-offset-background
+            px-2 py-0
             placeholder:text-muted-foreground
             focus-visible:outline-none focus-visible:0
             disabled:cursor-not-allowed
@@ -29,7 +33,7 @@ const SearchInput = React.forwardRef<HTMLInputElement, SearchInputProps>(
           ref={ref}
           {...props}
         />
-        <div className='absolute inset-y-0 left-2 pl-3 flex items-center pointer-events-none'>
+        <div className='absolute inset-y-0 left-1 pl2 flex items-center pointer-events-none'>
           <SearchIcon />
         </div>
 
@@ -44,12 +48,13 @@ interface Result {
 }
 
 interface SearchResultProps {
-  total: number
+  total?: number
   children: React.ReactNode
 }
 
 interface InputProps {
-  setSearchResult: React.Dispatch<React.SetStateAction<Result>>
+  // setSearchResult: React.Dispatch<React.SetStateAction<Result>>
+  setQuery: any
 }
 
 const meta: ViewMetadata = {
@@ -83,71 +88,95 @@ function ImageSearchResult(props: SearchResultProps): JSX.Element {
 }
 
 function ImageSearchInput(props: InputProps): JSX.Element {
-  const { setSearchResult } = props
+  const { setQuery } = props
   const { jwt } = useSession()
-  const [query, setQuery] = useState('')
+  // const [query, setQuery] = useState('')
 
   const inputRef = useRef<HTMLInputElement>(null)
 
 
 
-  const handleSubmit: React.FormEventHandler<HTMLFormElement> = (e) => {
-    e.preventDefault()
-    async function imageSearch(query: string): Promise<object> {
-      if (jwt?.access_token) {
-        console.log('jwt?.access_token', jwt?.access_token)
-        const client = await apiClient(jwt?.accessToken, undefined)
-        const result = await client.content.search('image', { q: query, s: 10 })
+  // const handleSubmit: React.FormEventHandler<HTMLFormElement> = (e) => {
+  //   e.preventDefault()
+  //   async function imageSearch(query: string): Promise<object> {
+  //     if (jwt?.access_token) {
+  //       console.log('jwt?.access_token', jwt?.access_token)
+  //       const client = await apiClient(jwt?.accessToken, undefined)
+  //       const result = await client.content.search('image', { q: query, s: 10 })
 
-        if (result?.hits) {
-          setSearchResult(result)
-          return result?.hits
-        }
-      }
-      return {}
-    }
+  //       if (result?.hits) {
+  //         setSearchResult(result)
+  //         return result?.hits
+  //       }
+  //     }
+  //     return {}
+  //   }
 
-    if (inputRef.current) {
-      imageSearch(inputRef.current.value)
-        .catch(error => console.error('Image search error:', error))
-    }
-  }
+  //   if (inputRef.current) {
+  //     imageSearch(inputRef.current.value)
+  //       .catch(error => console.error('Image search error:', error))
+  //   }
+  // }
 
   return (
     <form
-      onSubmit={handleSubmit}
+      // onSubmit={handleSubmit}
       className="self-center w-full p-2 flex flex-row gap-4"
     >
       <SearchInput
         className="p-2 w-full text-sm border-none focus:border-none"
         type="text"
-        placeholder='Sök bild'
+        placeholder='Sök bild...'
         name="imagesearch"
         ref={inputRef}
-        onChange={(e) => setQuery(e.currentTarget.value)}
+        onChange={(e) => setQuery({q: e.currentTarget.value, fr: 0, s: 20})}
       />
     </form>
   )
 }
 
+// const getKey = (query, previousPageData) => {
+//   if (previousPageData && !previousPageData.length) return null // reached the end
+//   return JSON.stringify(query)                // SWR key
+// }
+
+const fetcher = (key, index) => {
+  const query = JSON.parse(key)
+  apiClient(null, undefined).then(client => {
+    client.content.search('image', query).then(result => {
+      return result
+    })
+  })
+}
 
 function ImageSearch(): JSX.Element {
-  const [hits, setSearchResult] = useState<{ hits: object[], total: number }>({ hits: [], total: 0 })
-  console.log('result', hits)
+  // const [hits, setSearchResult] = useState<{ hits: object[], total: number }>({ hits: [], total: 0 })
+  const [query, setQuery ] = useState({q: '', fr: 0, s: 20})
+  // console.log('result', hits)
+
+  const { data, error, isLoading, isValidating, mutate, size, setSize } = useSWRInfinite(
+    index => [JSON.stringify(query), index],
+    fetcher
+  )
+
+  console.log('XXX data', data)
+
+  // https://api.stage.tt.se/
+  // content/v1/image/search?q=hus&pubstatus=usable&s=20&sort=date%3Adesc&layout=full
 
   return (
     <div className='flex flex-col gap-3'>
       <ViewHeader.Root>
         <ViewHeader.Content>
         {/* <ViewHeader.Title icon={XIcon} /> */}
-          <ImageSearchInput setSearchResult={setSearchResult} />
+          <ImageSearchInput setQuery={setQuery}  />
           <XIcon />
         </ViewHeader.Content>
       </ViewHeader.Root>
 
 
-      <ImageSearchResult total={hits.total}>
-        {hits.hits.map((hit: { uri?: string }) => {
+      <ImageSearchResult total={data?.length}>
+        {/* {hits.hits.map((hit: { uri?: string }) => {
           const objectID = hit.uri.split('/')[5]
           console.log('🍄 ~ {hits.hits.map ~ objectID 🤭 -', objectID)
           return (
@@ -160,7 +189,8 @@ function ImageSearch(): JSX.Element {
               </a>
             </div>
           )
-        })}
+        })} */}
+        retrurn (<h2>Result to come</h2>)
       </ImageSearchResult>
     </div>
   )
