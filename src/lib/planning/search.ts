@@ -52,9 +52,6 @@ export const search = async (endpoint: URL, jwt: JWT, params?: SearchPlanningPar
     sort
   }
 
-  console.log(JSON.stringify(query, null, 2))
-
-
   return await searchIndex(
     query,
     {

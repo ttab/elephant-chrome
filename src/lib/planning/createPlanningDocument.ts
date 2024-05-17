@@ -8,13 +8,13 @@ import { newsDocToYDoc } from '../../../src-srv/utils/transformations/yjs/yDoc'
  *
  * @returns [string, Y.Doc]
  */
-export const createPlanningDocument = (): [string, Y.Doc] => {
+export const createPlanningDocument = (locale: string, timeZone: string): [string, Y.Doc] => {
   const documentId = crypto.randomUUID()
   const yDoc = new Y.Doc()
 
   newsDocToYDoc(yDoc, {
     version: 0n,
-    document: getPlanningTemplate(documentId)
+    document: getPlanningTemplate(documentId, locale, timeZone)
   })
 
   const yRoot = yDoc.getMap('ele').get('root') as Y.Map<unknown>
@@ -28,7 +28,17 @@ export const createPlanningDocument = (): [string, Y.Doc] => {
  *
  * TODO: Should be refactored into a more coherent group of functions with createPlanningAssignment etc
  */
-function getPlanningTemplate(id: string): Document {
+function getPlanningTemplate(id: string, locale: string, timeZone: string): Document {
+  const date = new Date()
+  const formattedDate = new Intl.DateTimeFormat(locale,
+    {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      timeZone
+    }).format(date)
+
+
   return {
     uuid: id,
     type: 'core/planning-item',
@@ -47,9 +57,9 @@ function getPlanningTemplate(id: string): Document {
         title: '',
         data: {
           public: 'true',
-          end_date: '2024-05-17',
+          end_date: formattedDate,
           tentative: 'false',
-          start_date: '2024-05-17'
+          start_date: formattedDate
         },
         rel: '',
         role: '',
