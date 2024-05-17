@@ -14,8 +14,10 @@ function yContentToNewsDoc(yContent: Y.XmlText): Block[] | undefined {
 }
 
 function assertDescriptions(yMeta: Y.Map<unknown>, documentType: string): void {
-  // Only perform on planning items
-  if (documentType !== 'core/planning-item') return
+  // Only perform on planning items and assignments
+  if (!['core/planning-item', 'core/assignment'].includes(documentType)) {
+    return
+  }
 
   const yDesc = yMeta.get('core/description') as Y.Array<Y.Map<unknown>>
 
@@ -48,7 +50,9 @@ function assertDescriptions(yMeta: Y.Map<unknown>, documentType: string): void {
   }
 
   // Already has two descriptions
-  if (yDesc.length === 2) return
+  if (yDesc.length === 2) {
+    return
+  }
 
   // Find missing description
   const descriptionTypes = yDesc.map((yMap) => yMap.get('role') as string)
@@ -72,6 +76,16 @@ export function newsDocToYDoc(yDoc: Document | Y.Doc, newsDoc: GetDocumentRespon
       yMap.set('root', toYMap(rest, new Y.Map()))
 
       assertDescriptions(yMap.get('meta') as Y.Map<unknown>, document.type)
+
+      // Assert assignment descriptions
+      const yMeta = yMap.get('meta') as Y.Map<unknown>
+      const yAssignments = yMeta.get('core/assignment') as Y.Array<unknown>
+      if (yAssignments?.length) {
+        for (const yAssignment of yAssignments) {
+          const assMeta = (yAssignment as Y.Map<unknown>).get('meta') as Y.Map<unknown>
+          assertDescriptions(assMeta, 'core/assignment')
+        }
+      }
 
       // Share editable content for Textbit use
       const yContent = new Y.XmlText()
@@ -116,6 +130,16 @@ export function yDocToNewsDoc(yDoc: Y.Doc): GetDocumentResponse {
 
     const { uuid, type, uri, url, title, language } = root.toJSON()
 
+    meta.forEach(docMeta => {
+      if (docMeta.type === 'core/assignment') {
+        docMeta.meta = docMeta.meta.filter(assMeta => {
+          if (assMeta.type === 'core/description') {
+            return assMeta.data.text !== ''
+          }
+          return true
+        })
+      }
+    })
 
     return {
       version: BigInt(yDoc.getMap('version').get('version') as string),
