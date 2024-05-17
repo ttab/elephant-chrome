@@ -88,9 +88,9 @@ function ImageSearchResult(props: SearchResultProps): JSX.Element {
 }
 
 function ImageSearchInput(props: InputProps): JSX.Element {
-  const { setQuery } = props
+  const { setQuery: setQ } = props
   const { jwt } = useSession()
-  // const [query, setQuery] = useState('')
+  const [query, setQuery] = useState('')
 
   const inputRef = useRef<HTMLInputElement>(null)
 
@@ -121,6 +121,7 @@ function ImageSearchInput(props: InputProps): JSX.Element {
   return (
     <form
       // onSubmit={handleSubmit}
+      onSubmit={() => setQ({q: query, fr: 0, s: 20})}
       className="self-center w-full p-2 flex flex-row gap-4"
     >
       <SearchInput
@@ -129,7 +130,7 @@ function ImageSearchInput(props: InputProps): JSX.Element {
         placeholder='Sök bild...'
         name="imagesearch"
         ref={inputRef}
-        onChange={(e) => setQuery({q: e.currentTarget.value, fr: 0, s: 20})}
+        onChange={(e) => setQuery(e.currentTarget.value )}
       />
     </form>
   )
