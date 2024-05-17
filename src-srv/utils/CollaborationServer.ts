@@ -128,7 +128,7 @@ export class CollaborationServer {
       onStateless: async ({ payload }) => {
         const msg = parseStateless(payload)
 
-        if (msg.type === StatelessType.IN_PROGRESS) {
+        if (msg.type === StatelessType.IN_PROGRESS && !msg.message.state) {
           const connection = await this.#server.openDirectConnection(msg.message.id, { ...msg.message.context, agent: 'server' })
 
           await connection.transact(doc => {
