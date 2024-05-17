@@ -130,6 +130,18 @@ export function yDocToNewsDoc(yDoc: Y.Doc): GetDocumentResponse {
 
     const { uuid, type, uri, url, title, language } = root.toJSON()
 
+    meta.forEach(docMeta => {
+      if (docMeta.type === 'core/assignment') {
+        docMeta.meta = docMeta.meta.filter(assMeta => {
+          if (assMeta.type === 'core/description') {
+            return assMeta.data.text !== ''
+          }
+          return true
+        })
+      }
+    })
+
+    console.log(meta)
     return {
       version: BigInt(yDoc.getMap('version').get('version') as string),
       document: {
