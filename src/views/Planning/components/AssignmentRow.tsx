@@ -70,12 +70,18 @@ const AssignmentRowContent = ({ index, setSelectedAssignment }: {
                 {
                   label: 'Redigera',
                   icon: Edit,
-                  item: () => setSelectedAssignment(index)
+                  item: (ev) => {
+                    ev.preventDefault()
+                    ev.stopPropagation()
+                    setSelectedAssignment(index)
+                  }
                 },
                 {
                   label: 'Ta bort',
                   icon: Delete,
-                  item: () => {
+                  item: (ev) => {
+                    ev.preventDefault()
+                    ev.stopPropagation()
                     setShowVerifyDialog(true)
                   }
                 }
