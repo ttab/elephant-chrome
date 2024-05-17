@@ -1,8 +1,8 @@
 import { AwarenessDocument, ViewHeader } from '@/components'
 import { type ViewMetadata, type ViewProps } from '@/types'
-import { ScrollArea } from '@ttab/elephant-ui'
+import { Button, ScrollArea, Separator } from '@ttab/elephant-ui'
 import { GanttChartSquare } from '@ttab/elephant-ui/icons'
-import { useQuery } from '@/hooks'
+import { useCollaboration, useQuery, useSession } from '@/hooks'
 import { SluglineEditable } from '@/components/DataItem/SluglineEditable'
 import {
   AssignmentTable,
@@ -19,6 +19,7 @@ import {
 import type * as Y from 'yjs'
 import { cva } from 'class-variance-authority'
 import { cn } from '@ttab/elephant-ui/utils'
+import { createStateless, StatelessType } from '@/shared/stateless'
 
 const meta: ViewMetadata = {
   name: 'Planning',
@@ -54,9 +55,12 @@ export const Planning = (props: ViewProps & { document?: Y.Doc }): JSX.Element =
 }
 
 const PlanningViewContent = (props: ViewProps & { documentId: string }): JSX.Element | undefined => {
+  const { provider } = useCollaboration()
+  const { jwt } = useSession()
+
   const viewVariants = cva('flex flex-col', {
     variants: {
-      asDialog: {
+      asCreateDialog: {
         false: 'h-screen',
         true: 'overflow-hidden'
       }
@@ -65,7 +69,7 @@ const PlanningViewContent = (props: ViewProps & { documentId: string }): JSX.Ele
 
   const sectionVariants = cva('overscroll-auto @5xl:w-[1024px] space-y-4', {
     variants: {
-      asDialog: {
+      asCreateDialog: {
         false: 'p-8',
         true: 'p-6'
       }
@@ -73,10 +77,10 @@ const PlanningViewContent = (props: ViewProps & { documentId: string }): JSX.Ele
   })
 
   return (
-    <div className={cn(viewVariants({ asDialog: !!props.asDialog, className: props?.className }))}>
+    <div className={cn(viewVariants({ asCreateDialog: !!props.asCreateDialog, className: props?.className }))}>
       <div className="grow-0">
         <ViewHeader.Root>
-          {!props.asDialog &&
+          {!props.asCreateDialog &&
             <ViewHeader.Title title='Planering' icon={GanttChartSquare} />
           }
 
@@ -89,7 +93,7 @@ const PlanningViewContent = (props: ViewProps & { documentId: string }): JSX.Ele
           </ViewHeader.Content>
 
           <ViewHeader.Action onDialogClose={props.onDialogClose}>
-            {!props.asDialog && !!props.documentId &&
+            {!props.asCreateDialog && !!props.documentId &&
               <ViewHeader.RemoteUsers documentId={props.documentId} />
             }
           </ViewHeader.Action>
@@ -97,9 +101,9 @@ const PlanningViewContent = (props: ViewProps & { documentId: string }): JSX.Ele
       </div>
 
       <ScrollArea className='grid @5xl:place-content-center'>
-        <section className={cn(sectionVariants({ asDialog: !!props?.asDialog }))}>
+        <section className={cn(sectionVariants({ asCreateDialog: !!props?.asCreateDialog }))}>
           <div className='flex space-x-2 items-center'>
-            <PlanTitle autoFocus={props.asDialog} />
+            <PlanTitle autoFocus={props.asCreateDialog} />
             <SluglineEditable />
           </div>
 
@@ -108,7 +112,7 @@ const PlanningViewContent = (props: ViewProps & { documentId: string }): JSX.Ele
             <PlanDescription role="internal" />
           </div>
 
-          <div className='-ml-2 -ml-4'>
+          <div className='-ml-4'>
             <PlanDate />
           </div>
 
@@ -120,6 +124,30 @@ const PlanningViewContent = (props: ViewProps & { documentId: string }): JSX.Ele
 
           <AssignmentTable />
         </section>
+        {props.asCreateDialog && (
+          <div>
+            <Separator className='ml-0' />
+            <div className='flex justify-end px-6 py-4'>
+              <Button onClick={() => {
+                // Get the id, post it, and open it in a view?
+                if (props?.onDialogClose) {
+                  props.onDialogClose()
+                }
+
+                if (provider && jwt) {
+                  provider.sendStateless(
+                    createStateless(StatelessType.IN_PROGRESS, {
+                      state: false,
+                      id: props.documentId,
+                      context: jwt
+                    }))
+                }
+              }}>
+                Skapa planering
+              </Button>
+            </div>
+          </div>)}
+
       </ScrollArea>
     </div>
   )

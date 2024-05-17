@@ -1,6 +1,6 @@
 import {
   Button,
-  Dialog, DialogContent, DialogFooter, DialogTrigger
+  Dialog, DialogContent, DialogTrigger
 } from '@ttab/elephant-ui'
 import type * as Y from 'yjs'
 
@@ -34,7 +34,7 @@ export const CreatePlan = (): JSX.Element => {
             id={planning[0]}
             document={planning[1]}
             className='p-0 rounded-md'
-            asDialog
+            asCreateDialog
             onDialogClose={(id) => {
               setPlanning([undefined, undefined])
               if (id) {
@@ -43,15 +43,6 @@ export const CreatePlan = (): JSX.Element => {
             }}
           />
         }
-
-        <DialogFooter className='p-4 border-t'>
-          <Button onClick={() => {
-            // Get the id, post it, and open it in a view?
-            setPlanning([undefined, undefined])
-          }}>
-            Skapa planering
-          </Button>
-        </DialogFooter>
       </DialogContent>
     </Dialog>
   )

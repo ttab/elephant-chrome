@@ -47,9 +47,9 @@ function getPlanningTemplate(id: string): Document {
         title: '',
         data: {
           public: 'true',
-          end_date: '',
+          end_date: '2024-05-17',
           tentative: 'false',
-          start_date: ''
+          start_date: '2024-05-17'
         },
         rel: '',
         role: '',

@@ -35,7 +35,7 @@ export const search = async (endpoint: URL, jwt: JWT, params?: SearchPlanningPar
         must: [
           {
             range: {
-              'document.meta.core_assignment.data.start_date': {
+              'document.meta.core_planning_item.data.start_date': {
                 gte: start.toISOString(),
                 lte: end.toISOString()
               }
@@ -51,6 +51,8 @@ export const search = async (endpoint: URL, jwt: JWT, params?: SearchPlanningPar
     ],
     sort
   }
+
+  console.log(JSON.stringify(query, null, 2))
 
 
   return await searchIndex(

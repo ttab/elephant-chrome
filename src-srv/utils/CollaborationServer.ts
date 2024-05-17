@@ -25,6 +25,7 @@ import { yDocToNewsDoc, newsDocToYDoc } from './transformations/yjs/yDoc.js'
 import { Snapshot } from './extensions/snapshot.js'
 import { Auth } from './extensions/auth.js'
 import createHash from '../../shared/createHash.js'
+import { StatelessType, parseStateless } from '@/shared/stateless.js'
 
 interface CollaborationServerOptions {
   name: string
@@ -105,7 +106,7 @@ export class CollaborationServer {
           store: async (payload) => { await this.#storeDocument(payload) }
         }),
         new Snapshot({
-          debounce: 300000,
+          debounce: 6000,
           snapshot: async (payload: onStoreDocumentPayload) => {
             return async () => {
               await this.#snapshotDocument(payload)
@@ -123,7 +124,43 @@ export class CollaborationServer {
       onDisconnect: async (payload) => { await this.#onDisconnect(payload) },
 
       // No users have this doc open, remove it from tracked documents
-      afterUnloadDocument: async (payload) => { await this.#afterUnloadDocument(payload) }
+      afterUnloadDocument: async (payload) => { await this.#afterUnloadDocument(payload) },
+      onStateless: async ({ payload }) => {
+        const msg = parseStateless(payload)
+        if (msg.type === StatelessType.IN_PROGRESS) {
+          console.log('StatelessInProgress', msg.message)
+          const connection = await this.#server.openDirectConnection(msg.message.id, { ...msg.message.context, agent: 'server' })
+          await connection.transact(doc => {
+            const ele = doc.getMap('ele')
+            const root = ele.get('root') as Y.Map<unknown>
+            root.delete('__inProgress')
+          })
+
+          if (connection.document) {
+            const document = yDocToNewsDoc(connection.document)
+            const currentHash = createHash(JSON.stringify(document.document))
+            if (document.document && msg.message.context) {
+              const result = await this.#repository.saveDoc(document.document, msg.message.context.accessToken as string, BigInt(document.version))
+
+              if (result?.status.code === 'OK') {
+                const connection = await this.#server.openDirectConnection(msg.message.id, {
+                  ...msg.message.context,
+                  agent: 'server'
+                })
+
+                await connection.transact(doc => {
+                  const versionMap = doc.getMap('version')
+                  const hashMap = doc.getMap('hash')
+                  versionMap.set('version', result?.response.version.toString())
+                  hashMap.set('hash', currentHash)
+                })
+
+                console.debug('::: Document saved: ', result.response.version, 'new hash:', currentHash)
+              }
+            }
+          }
+        }
+      }
     })
 
     this.#handlePaths = []

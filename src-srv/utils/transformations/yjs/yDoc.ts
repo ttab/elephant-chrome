@@ -116,6 +116,7 @@ export function yDocToNewsDoc(yDoc: Y.Doc): GetDocumentResponse {
 
     const { uuid, type, uri, url, title, language } = root.toJSON()
 
+
     return {
       version: BigInt(yDoc.getMap('version').get('version') as string),
       document: {
