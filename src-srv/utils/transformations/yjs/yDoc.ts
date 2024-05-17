@@ -141,7 +141,6 @@ export function yDocToNewsDoc(yDoc: Y.Doc): GetDocumentResponse {
       }
     })
 
-    console.log(meta)
     return {
       version: BigInt(yDoc.getMap('version').get('version') as string),
       document: {
