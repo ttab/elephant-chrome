@@ -1,6 +1,7 @@
 import * as Y from 'yjs'
 import { type Document } from '@/protos/service'
 import { newsDocToYDoc } from '../../../src-srv/utils/transformations/yjs/yDoc'
+import { currentDateInUTC } from '../datetime'
 
 /**
  * Create empty planning document and convert it to Y.Doc as appropriate.
@@ -8,13 +9,13 @@ import { newsDocToYDoc } from '../../../src-srv/utils/transformations/yjs/yDoc'
  *
  * @returns [string, Y.Doc]
  */
-export const createPlanningDocument = (locale: string, timeZone: string): [string, Y.Doc] => {
+export const createPlanningDocument = (): [string, Y.Doc] => {
   const documentId = crypto.randomUUID()
   const yDoc = new Y.Doc()
 
   newsDocToYDoc(yDoc, {
     version: 0n,
-    document: getPlanningTemplate(documentId, locale, timeZone)
+    document: getPlanningTemplate(documentId)
   })
 
   const yRoot = yDoc.getMap('ele').get('root') as Y.Map<unknown>
@@ -28,17 +29,7 @@ export const createPlanningDocument = (locale: string, timeZone: string): [strin
  *
  * TODO: Should be refactored into a more coherent group of functions with createPlanningAssignment etc
  */
-function getPlanningTemplate(id: string, locale: string, timeZone: string): Document {
-  const date = new Date()
-  const formattedDate = new Intl.DateTimeFormat(locale,
-    {
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit',
-      timeZone
-    }).format(date)
-
-
+function getPlanningTemplate(id: string): Document {
   return {
     uuid: id,
     type: 'core/planning-item',
@@ -57,9 +48,9 @@ function getPlanningTemplate(id: string, locale: string, timeZone: string): Docu
         title: '',
         data: {
           public: 'true',
-          end_date: formattedDate,
+          end_date: currentDateInUTC(),
           tentative: 'false',
-          start_date: formattedDate
+          start_date: currentDateInUTC()
         },
         rel: '',
         role: '',

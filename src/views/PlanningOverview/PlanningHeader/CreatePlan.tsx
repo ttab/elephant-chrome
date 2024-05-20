@@ -9,11 +9,9 @@ import { PlusIcon } from '@ttab/elephant-ui/icons'
 import { useState } from 'react'
 import { createPlanningDocument } from '@/lib/planning/createPlanningDocument'
 import { useKeydownGlobal } from '@/hooks/useKeydownGlobal'
-import { useRegistry } from '@/hooks/useRegistry'
 
 export const CreatePlan = (): JSX.Element => {
   const [planning, setPlanning] = useState<[string | undefined, Y.Doc | undefined]>([undefined, undefined])
-  const { locale, timeZone } = useRegistry()
 
   useKeydownGlobal(evt => {
     if (evt.key === 'Escape') {
@@ -25,7 +23,7 @@ export const CreatePlan = (): JSX.Element => {
     <Dialog open={!!planning[0]} >
       <DialogTrigger asChild>
         <Button size='sm' className='h-8 pr-4' onClick={() => {
-          setPlanning(createPlanningDocument(locale, timeZone))
+          setPlanning(createPlanningDocument())
         }}>
           <PlusIcon size={18} strokeWidth={1.75} /> Ny
         </Button>
