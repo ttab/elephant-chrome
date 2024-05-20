@@ -124,3 +124,11 @@ export function is12HourcycleFromLocale(locale: string): boolean {
     return false
   }
 }
+
+/**
+* Get current date in UTC timezone.
+**/
+export function currentDateInUTC(): string {
+  const dateString = new Date().toISOString()
+  return dateString.split('T')[0]
+}
