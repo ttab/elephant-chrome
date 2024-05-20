@@ -51,9 +51,9 @@ export function ungroup(obj: GroupedObjects): Block[] {
         if (!item.__inProgress) {
           const newObj = {
             ...item,
-            meta: ungroup(item.meta as unknown as GroupedObjects),
-            links: ungroup(item.links as unknown as GroupedObjects),
-            content: ungroup(item.content as unknown as GroupedObjects)
+            meta: ungroup(item.meta as unknown as GroupedObjects || {}),
+            links: ungroup(item.links as unknown as GroupedObjects || {}),
+            content: ungroup(item.content as unknown as GroupedObjects || {})
           }
 
           result.push(newObj as unknown as Block)

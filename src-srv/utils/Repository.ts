@@ -151,17 +151,13 @@ export class Repository {
       meta: {},
       ifMatch: version,
       status: [],
-      acl: [],
+      acl: [{ uri: 'core://unit/redaktionen', permissions: ['r', 'w'] }],
       uuid: document.uuid
     }
 
-    try {
-      const result = await this.#client.update(payload, meta(accessToken))
+    const result = await this.#client.update(payload, meta(accessToken))
 
-      return result
-    } catch (err: unknown) {
-      console.error('::: saveDoc error:', err)
-    }
+    return result
   }
 
   /**

@@ -1,6 +1,7 @@
 import * as Y from 'yjs'
 import { type Document } from '@/protos/service'
 import { newsDocToYDoc } from '../../../src-srv/utils/transformations/yjs/yDoc'
+import { currentDateInUTC } from '../datetime'
 
 /**
  * Create empty planning document and convert it to Y.Doc as appropriate.
@@ -47,9 +48,9 @@ function getPlanningTemplate(id: string): Document {
         title: '',
         data: {
           public: 'true',
-          end_date: '',
+          end_date: currentDateInUTC(),
           tentative: 'false',
-          start_date: ''
+          start_date: currentDateInUTC()
         },
         rel: '',
         role: '',
