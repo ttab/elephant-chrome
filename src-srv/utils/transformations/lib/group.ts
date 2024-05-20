@@ -1,4 +1,4 @@
-import { type Block } from '@/protos/service.js'
+import { Block } from '@/protos/service.js'
 import { type YBlock } from '@/shared/types/index.js'
 
 /**
@@ -49,12 +49,12 @@ export function ungroup(obj: GroupedObjects): Block[] {
       obj[key].forEach((item) => {
         // Dont process __inProgress items
         if (!item.__inProgress) {
-          const newObj = {
+          const newObj = Block.create({
             ...item,
-            meta: ungroup(item.meta as unknown as GroupedObjects),
-            links: ungroup(item.links as unknown as GroupedObjects),
-            content: ungroup(item.content as unknown as GroupedObjects)
-          }
+            meta: ungroup(item.meta as unknown as GroupedObjects || {}),
+            links: ungroup(item.links as unknown as GroupedObjects || {}),
+            content: ungroup(item.content as unknown as GroupedObjects || {})
+          })
 
           result.push(newObj as unknown as Block)
         }
