@@ -11,9 +11,9 @@ export const DocumentStatuses: DefaultValueOption[] = [
     value: 'published',
     icon: CircleCheck,
     iconProps: {
-      fill: '#4675C8',
+      fill: '#86B0F9',
       color: '#ffffff',
-      className: 'bg-[#4675C8] rounded-full',
+      className: 'bg-[#86B0F9] rounded-full',
       size: 18,
       strokeWidth: 1.75
     }
