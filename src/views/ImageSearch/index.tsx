@@ -49,7 +49,7 @@ interface SearchResultProps {
 }
 
 interface InputProps {
-  setSearchResult: React.Dispatch<React.SetStateAction<Result>>
+  setQueryString: any
 }
 
 const meta: ViewMetadata = {
@@ -83,7 +83,7 @@ function ImageSearchResult(props: SearchResultProps): JSX.Element {
 }
 
 function ImageSearchInput(props: InputProps): JSX.Element {
-  const { setSearchResult } = props
+  const { setQueryString } = props
   const { jwt } = useSession()
   const [query, setQuery] = useState('')
 
@@ -93,24 +93,25 @@ function ImageSearchInput(props: InputProps): JSX.Element {
 
   const handleSubmit: React.FormEventHandler<HTMLFormElement> = (e) => {
     e.preventDefault()
-    async function imageSearch(query: string): Promise<object> {
-      if (jwt?.access_token) {
-        console.log('jwt?.access_token', jwt?.access_token)
-        const client = await apiClient(jwt?.accessToken, undefined)
-        const result = await client.content.search('image', { q: query, s: 10 })
+    setQueryString(query)
+  //   async function imageSearch(query: string): Promise<object> {
+  //     if (jwt?.access_token) {
+  //       console.log('jwt?.access_token', jwt?.access_token)
+  //       const client = await apiClient(jwt?.accessToken, undefined)
+  //       const result = await client.content.search('image', { q: query, s: 10 })
 
-        if (result?.hits) {
-          setSearchResult(result)
-          return result?.hits
-        }
-      }
-      return {}
-    }
+  //       if (result?.hits) {
+  //         setSearchResult(result)
+  //         return result?.hits
+  //       }
+  //     }
+  //     return {}
+  //   }
 
-    if (inputRef.current) {
-      imageSearch(inputRef.current.value)
-        .catch(error => console.error('Image search error:', error))
-    }
+  //   if (inputRef.current) {
+  //     imageSearch(inputRef.current.value)
+  //       .catch(error => console.error('Image search error:', error))
+  //   }
   }
 
   return (
@@ -130,7 +131,7 @@ function ImageSearchInput(props: InputProps): JSX.Element {
   )
 }
 
-const fetcher = async (queryKey) => {
+const fetcher = async (queryKey: string) => {
   console.log('XXX url', queryKey)
   const queryObject = JSON.parse(queryKey)
   const { query, fromIndex, size } = queryObject
@@ -144,10 +145,11 @@ const fetcher = async (queryKey) => {
 //   return `/users?page=${pageIndex}&limit=10`                    // SWR key
 // }
 function ImageSearch(): JSX.Element {
+  const [queryString, setQueryString] = useState('')
   const { data, size, setSize } = useSWRInfinite(
     (index, prevData) => {
       console.log('XXX prevData', prevData)
-      return JSON.stringify({ swrKey: '', query: 'man', fromIndex: index, size: 10 })
+      return JSON.stringify({ swrKey: '', query: queryString, fromIndex: index, size: 10 })
     },
     fetcher
   )
@@ -162,7 +164,7 @@ function ImageSearch(): JSX.Element {
       <ViewHeader.Root>
         <ViewHeader.Content>
           {/* <ViewHeader.Title icon={XIcon} /> */}
-          <ImageSearchInput setSearchResult={setSearchResult} />
+          <ImageSearchInput setQueryString={setQueryString}/>
           <XIcon />
         </ViewHeader.Content>
       </ViewHeader.Root>
