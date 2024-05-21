@@ -3,10 +3,10 @@ import { ViewHeader } from '@/components'
 import { useSession } from '@/hooks'
 import apiClient from '@/lib/apiclient'
 import { type ViewMetadata } from '@/types'
-// import { Button, Input } from '@ttab/elephant-ui'
+import { Button } from '@ttab/elephant-ui'
 import { XIcon, SearchIcon } from '@ttab/elephant-ui/icons'
 import { useState, useRef } from 'react'
-
+import useSWRInfinite from 'swr/infinite'
 
 interface SearchInputProps extends React.InputHTMLAttributes<HTMLInputElement> { }
 
@@ -130,24 +130,67 @@ function ImageSearchInput(props: InputProps): JSX.Element {
   )
 }
 
+const fetcher = async (queryKey) => {
+  console.log('XXX url', queryKey)
+  const queryObject = JSON.parse(queryKey)
+  const { query, fromIndex, size } = queryObject
+  const client = await apiClient(undefined, undefined)
+  const res = await client.content.search('image', { q: query, s: size, fr: fromIndex * size })
+  return res
+}
 
+// const getKey = (pageIndex, previousPageData) => {
+//   if (previousPageData && !previousPageData.length) return null // reached the end
+//   return `/users?page=${pageIndex}&limit=10`                    // SWR key
+// }
 function ImageSearch(): JSX.Element {
+  const { data, size, setSize } = useSWRInfinite(
+    (index, prevData) => {
+      console.log('XXX prevData', prevData)
+      return JSON.stringify({ swrKey: '', query: 'man', fromIndex: index, size: 10 })
+    },
+    fetcher
+  )
+
   const [hits, setSearchResult] = useState<{ hits: object[], total: number }>({ hits: [], total: 0 })
-  console.log('result', hits)
+  // console.log('result', hits)
+
+  console.log('XXX data', data)
 
   return (
     <div className='flex flex-col gap-3'>
       <ViewHeader.Root>
         <ViewHeader.Content>
-        {/* <ViewHeader.Title icon={XIcon} /> */}
+          {/* <ViewHeader.Title icon={XIcon} /> */}
           <ImageSearchInput setSearchResult={setSearchResult} />
           <XIcon />
         </ViewHeader.Content>
       </ViewHeader.Root>
 
-
+      <Button onClick={() => setSize(size + 1)} />
       <ImageSearchResult total={hits.total}>
-        {hits.hits.map((hit: { uri?: string }) => {
+
+        {
+          data?.map(hitres => {
+            return hitres.hits.map((hit: { uri?: string }) => {
+              const objectID = hit?.uri?.split('/')[5]
+              console.log('🍄 ~ {hits.hits.map ~ objectID 🤭 -', objectID)
+              return (
+                <div key={hit.uri} className='bg-gray-200'>
+                  <a href={`https://stage.tt.se/bild/o/${objectID}`}>
+                    <img
+                      src={`${hit.uri}_NormalThumbnail.jpg`}
+                      className='h-32 max-w-full rounded-lg'
+                    />
+                  </a>
+                </div>
+              )
+            })
+          })
+        }
+
+
+        {/* {hits.hits.map((hit: { uri?: string }) => {
           const objectID = hit.uri.split('/')[5]
           console.log('🍄 ~ {hits.hits.map ~ objectID 🤭 -', objectID)
           return (
@@ -160,7 +203,7 @@ function ImageSearch(): JSX.Element {
               </a>
             </div>
           )
-        })}
+        })} */}
       </ImageSearchResult>
     </div>
   )
