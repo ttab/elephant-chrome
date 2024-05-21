@@ -38,6 +38,8 @@ const SearchInput = React.forwardRef<HTMLInputElement, SearchInputProps>(
   }
 )
 
+SearchInput.displayName = 'SearchInput'
+
 interface Result {
   hits: object[]
   total: number
@@ -149,7 +151,7 @@ function ImageSearch(): JSX.Element {
   const { data, size, setSize } = useSWRInfinite(
     (index, prevData) => {
       console.log('XXX prevData', prevData)
-      return JSON.stringify({ swrKey: '', query: queryString, fromIndex: index, size: 10 })
+      return JSON.stringify({ swrKey: '', query: queryString, fromIndex: index, size: 4 })
     },
     fetcher
   )
