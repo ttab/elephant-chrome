@@ -1,11 +1,12 @@
 import * as Y from 'yjs'
-import { type Block, type GetDocumentResponse } from '../../../protos/service.js'
+import { type Block, type GetDocumentResponse } from '@/protos/service.js'
 import { toYMap } from '../lib/toYMap.js'
 import { group, ungroup } from '../lib/group.js'
 import { newsDocToSlate, slateToNewsDoc } from '../newsdoc/index.js'
 import { slateNodesToInsertDelta, yTextToSlateElement } from '@slate-yjs/core'
 import { type TBElement } from '@ttab/textbit'
 import { type Document } from '@hocuspocus/server'
+import createHash from '../../../../shared/createHash.js'
 
 function yContentToNewsDoc(yContent: Y.XmlText): Block[] | undefined {
   const slateElement = yTextToSlateElement(yContent).children
@@ -13,8 +14,10 @@ function yContentToNewsDoc(yContent: Y.XmlText): Block[] | undefined {
 }
 
 function assertDescriptions(yMeta: Y.Map<unknown>, documentType: string): void {
-  // Only perform on planning items
-  if (documentType !== 'core/planning-item') return
+  // Only perform on planning items and assignments
+  if (!['core/planning-item', 'core/assignment'].includes(documentType)) {
+    return
+  }
 
   const yDesc = yMeta.get('core/description') as Y.Array<Y.Map<unknown>>
 
@@ -47,7 +50,9 @@ function assertDescriptions(yMeta: Y.Map<unknown>, documentType: string): void {
   }
 
   // Already has two descriptions
-  if (yDesc.length === 2) return
+  if (yDesc.length === 2) {
+    return
+  }
 
   // Find missing description
   const descriptionTypes = yDesc.map((yMap) => yMap.get('role') as string)
@@ -72,6 +77,16 @@ export function newsDocToYDoc(yDoc: Document | Y.Doc, newsDoc: GetDocumentRespon
 
       assertDescriptions(yMap.get('meta') as Y.Map<unknown>, document.type)
 
+      // Assert assignment descriptions
+      const yMeta = yMap.get('meta') as Y.Map<unknown>
+      const yAssignments = yMeta.get('core/assignment') as Y.Array<unknown>
+      if (yAssignments?.length) {
+        for (const yAssignment of yAssignments) {
+          const assMeta = (yAssignment as Y.Map<unknown>).get('meta') as Y.Map<unknown>
+          assertDescriptions(assMeta, 'core/assignment')
+        }
+      }
+
       // Share editable content for Textbit use
       const yContent = new Y.XmlText()
       const slateDocument = newsDocToSlate(document?.content ?? [])
@@ -83,6 +98,11 @@ export function newsDocToYDoc(yDoc: Document | Y.Doc, newsDoc: GetDocumentRespon
       // Set version
       const yVersion = yDoc.getMap('version')
       yVersion?.set('version', version?.toString())
+
+      const originalHash = createHash(JSON.stringify(newsDoc.document))
+
+      const yOriginalHash = yDoc.getMap('hash')
+      yOriginalHash?.set('hash', originalHash)
 
       return
     }
@@ -108,15 +128,26 @@ export function yDocToNewsDoc(yDoc: Y.Doc): GetDocumentResponse {
 
     const root = yMap.get('root') as Y.Map<unknown>
 
-    const { uuid, type, url, uri, title, language } = root.toJSON()
+    const { uuid, type, uri, url, title, language } = root.toJSON()
+
+    meta.forEach(docMeta => {
+      if (docMeta.type === 'core/assignment') {
+        docMeta.meta = docMeta.meta.filter(assMeta => {
+          if (assMeta.type === 'core/description') {
+            return assMeta.data.text !== ''
+          }
+          return true
+        })
+      }
+    })
 
     return {
       version: BigInt(yDoc.getMap('version').get('version') as string),
       document: {
         uuid,
         type,
-        url,
         uri,
+        url,
         title,
         content: content || [],
         // Remove added empty descriptions

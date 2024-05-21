@@ -83,7 +83,7 @@ export const columns: Array<ColumnDef<Planning>> = [
       columnIcon: Shapes,
       className: 'box-content w-[115px] hidden @4xl/view:[display:revert]'
     },
-    accessorFn: (data) => data._source['document.rel.sector.uuid'][0],
+    accessorFn: (data) => data._source['document.rel.sector.uuid']?.[0],
     cell: ({ row }) => {
       const uuid = row.getValue<string>('sector')
       return <Sector uuid={uuid || ''} />
@@ -118,7 +118,7 @@ export const columns: Array<ColumnDef<Planning>> = [
     accessorFn: (data) => data._source['document.meta.core_assignment.meta.core_assignment_type.value'],
     cell: ({ row }) => {
       const data = AssignmentTypes.filter(
-        (assignmentType) => row.getValue<string[]>('type').includes(assignmentType.value)
+        (assignmentType) => (row.getValue<string[]>('type') || []).includes(assignmentType.value)
       )
       if (data.length === 0) {
         return null

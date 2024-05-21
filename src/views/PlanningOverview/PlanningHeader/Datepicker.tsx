@@ -11,15 +11,18 @@ import {
 } from '@ttab/elephant-ui'
 import { cn } from '@ttab/elephant-ui/utils'
 import { useRegistry } from '@/hooks'
+import { cva } from 'class-variance-authority'
 
-interface DatePickerProps {
+
+export const DatePicker = ({ date, setDate, forceYear = false }: {
   date: Date
   setDate: Dispatch<SetStateAction<Date>> | ((arg: Date) => void)
-}
-
-export const DatePicker = ({ date, setDate }: DatePickerProps): JSX.Element => {
+  forceYear?: boolean
+}): JSX.Element => {
   const { locale, timeZone } = useRegistry()
+
   const formattedDate = new Intl.DateTimeFormat(locale, {
+    weekday: 'short',
     month: 'short',
     day: 'numeric',
     timeZone
@@ -29,8 +32,27 @@ export const DatePicker = ({ date, setDate }: DatePickerProps): JSX.Element => {
     weekday: 'short',
     month: 'short',
     day: 'numeric',
+    year: 'numeric',
     timeZone
   }).format(date)
+
+  const defaultDate = cva('', {
+    variants: {
+      forceYear: {
+        true: 'hidden',
+        false: '@3xl/view:hidden'
+      }
+    }
+  })
+
+  const longDate = cva('', {
+    variants: {
+      forceYear: {
+        true: '',
+        false: 'hidden @3xl/view:inline'
+      }
+    }
+  })
 
   return (
     <Popover>
@@ -44,8 +66,9 @@ export const DatePicker = ({ date, setDate }: DatePickerProps): JSX.Element => {
           )}
         >
           <CalendarIcon size={18} strokeWidth={1.75} className='mr-2' />
-          <span className="@3xl/view:hidden">{formattedDate}</span>
-          <span className="hidden @3xl/view:inline">{longFormattedDate}</span>
+
+          <span className={cn(defaultDate({ forceYear }))}>{formattedDate}</span>
+          <span className={cn(longDate({ forceYear }))}>{longFormattedDate}</span>
         </Button>
 
       </PopoverTrigger>

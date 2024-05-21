@@ -25,20 +25,29 @@
     /* Paths */
     "baseUrl": ".",
     "paths": {
-      "@/*": [
-        "./src/*"
-      ],
       "@/components/*": [
         "./src/components/*"
+      ],
+      "@/components": [
+        "./src/components/index.tsx"
       ],
       "@/views/*": [
         "./src/views/*"
       ],
+      "@/views": [
+        "./src/views/index.tsx"
+      ],
       "@/hooks/*": [
         "./src/hooks/*"
       ],
+      "@/hooks": [
+        "./src/hooks/index.tsx"
+      ],
       "@/contexts/*": [
         "./src/contexts/*"
+      ],
+      "@/contexts": [
+        "./src/contexts/index.tsx"
       ],
       "@/lib/*": [
         "./src/lib/*"
@@ -46,26 +55,44 @@
       "@/defaults/*": [
         "./src/defaults/*"
       ],
+      "@/defaults": [
+        "./src/defaults/index.tsx"
+      ],
       "@/protos/*": [
-        "./src-srv/protos/*"
+        "./shared/protos/*"
+      ],
+      "@/types/*": [
+        "./src/types/*"
+      ],
+      "@/types": [
+        "./src/types/index.ts"
+      ],
+      "@/navigation/*": [
+        "./src/navigation/*"
+      ],
+      "@/navigation": [
+        "./src/navigation/index.ts"
+      ],
+      "@/shared/*": [
+        "./shared/*"
+      ],
+      "@/shared": [
+        "./shared/index.ts"
       ]
     }
   },
   "include": [
     "src",
     "srv-src",
+    "./shared/**/*",
     "vite.config.ts",
     "tailwind.config.ts",
+    ".eslintrc.cjs",
     "postcss.config.js",
     "setupTests.ts",
     "jest.config.ts",
     "__mocks__/**/*",
     "__tests__/**/*",
     "__mocks__"
-  ],
-  "references": [
-    {
-      "path": "./tsconfig.node.json"
-    }
   ]
 }

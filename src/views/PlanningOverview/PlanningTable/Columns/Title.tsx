@@ -13,12 +13,9 @@ export const Title = ({ slugline, title }: TitleProps): JSX.Element => {
         {title}
       </span>
 
-      {!!slugline?.length && (
-      <span className='hidden font-medium text-slate-500 @2xl/view:[display:revert]'>
+      <span className='hidden @2xl/view:[display:revert]'>
         <SluglineButton value={slugline} />
       </span>
-      )}
-
     </div>
   ), [slugline, title])
 }

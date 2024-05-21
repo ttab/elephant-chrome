@@ -1,7 +1,7 @@
 import { TwirpFetchTransport } from '@protobuf-ts/twirp-transport'
-import { DocumentsClient } from '../protos/service.client.js'
+import { DocumentsClient } from '@/protos/service.client.js'
 import { type JWTVerifyResult, jwtVerify, type JWTVerifyGetKey } from 'jose'
-import type { GetDocumentResponse, UpdateRequest, UpdateResponse, ValidateRequest, ValidateResponse } from '../protos/service.js'
+import type { Document, GetDocumentResponse, UpdateRequest, UpdateResponse, ValidateRequest, ValidateResponse } from '@/protos/service.js'
 import { type FinishedUnaryCall } from '@protobuf-ts/runtime-rpc'
 import type * as Y from 'yjs'
 import { yDocToNewsDoc } from './transformations/yjs/yDoc.js'
@@ -144,39 +144,20 @@ export class Repository {
    * @returns Promise<FinishedUnaryCall<UpdateRequest, UpdateResponse>
    */
 
-  async saveDoc(ydoc: Y.Doc, accessToken: string):
+  async saveDoc(document: Document, accessToken: string, version: bigint):
   Promise<FinishedUnaryCall<UpdateRequest, UpdateResponse> | undefined> {
-    const { document } = yDocToNewsDoc(ydoc)
-
-    const versionMap = ydoc.getMap('version')
-    const version = BigInt(versionMap.get('version') as string)
-
-    if (!document) {
-      throw new Error('No document to save')
-    }
-
     const payload: UpdateRequest = {
       document,
       meta: {},
       ifMatch: version,
       status: [],
-      acl: [],
+      acl: [{ uri: 'core://unit/redaktionen', permissions: ['r', 'w'] }],
       uuid: document.uuid
     }
 
-    try {
-      const result = await this.#client.update(payload, meta(accessToken))
+    const result = await this.#client.update(payload, meta(accessToken))
 
-      // Success, update version
-      if (result.status.code === 'OK') {
-        versionMap.set('version', result.response.version.toString())
-
-        console.debug('::: Snapshot saved: ', result.response.version)
-        return result
-      }
-    } catch (err: unknown) {
-      console.error('::: saveDoc error:', err)
-    }
+    return result
   }
 
   /**
