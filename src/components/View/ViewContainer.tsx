@@ -13,12 +13,12 @@ import { cva } from 'class-variance-authority'
 const section = cva('@container/view', {
   variants: {
     isActive: {
-      true: 'border-t-green-500 border-t-4',
-      false: 'border-t-transparent border-t-4'
+      true: 'shadow-2xl',
+      false: 'opacity-90'
     },
     isFocused: {
       true: 'absolute inset-y-0 left-0 z-10 w-screen h-screen bg-background dark:bg-background basis-full',
-      false: 'relative group'
+      false: 'relative group/view-container'
     },
     isHidden: {
       true: 'hidden',

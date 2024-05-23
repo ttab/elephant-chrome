@@ -21,7 +21,8 @@ const avatarVariants = cva('',
       },
       size: {
         sm: 'size-7 mr-2 font-normal text-xs',
-        lg: 'size-9 mr-6 font-semibold text-md',
+        lg: 'size-9 font-semibold text-md',
+        xl: 'size-12 font-semibold text-md',
         default: 'size-8 font-semibold text-sm'
       }
     }
