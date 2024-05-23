@@ -15,6 +15,7 @@ export const Stories: DefaultValueOption[] = [
     label: 'Israel-Hamas',
     payload: {
       uuid: 'f5c2ac15-ce79-4ad9-b663-2ca314af3b4b',
+      type: 'core/story',
       title: 'Israel-Hamas',
       rel: 'story'
     }
