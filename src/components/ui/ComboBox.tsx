@@ -63,7 +63,7 @@ export const ComboBox = ({
             size={size || 'sm'}
             variant={ variant || 'outline'}
             className={cn(
-              'w-[150px] text-muted-foreground font-sans font-normal whitespace-nowrap',
+              'w-9 h-9 text-muted-foreground font-sans font-normal whitespace-nowrap p-0',
               className
             )
           }>
