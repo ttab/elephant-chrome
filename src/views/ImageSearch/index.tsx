@@ -7,6 +7,7 @@ import { Button } from '@ttab/elephant-ui'
 import { XIcon, SearchIcon } from '@ttab/elephant-ui/icons'
 import { useState, useRef } from 'react'
 import useSWRInfinite from 'swr/infinite'
+import InfiniteScroll from './InfiniteScroll'
 
 interface SearchInputProps extends React.InputHTMLAttributes<HTMLInputElement> { }
 
@@ -40,10 +41,10 @@ const SearchInput = React.forwardRef<HTMLInputElement, SearchInputProps>(
 
 SearchInput.displayName = 'SearchInput'
 
-interface Result {
-  hits: object[]
-  total: number
-}
+// interface Result {
+//   hits: object[]
+//   total: number
+// }
 
 interface SearchResultProps {
   total: number
@@ -96,24 +97,6 @@ function ImageSearchInput(props: InputProps): JSX.Element {
   const handleSubmit: React.FormEventHandler<HTMLFormElement> = (e) => {
     e.preventDefault()
     setQueryString(query)
-  //   async function imageSearch(query: string): Promise<object> {
-  //     if (jwt?.access_token) {
-  //       console.log('jwt?.access_token', jwt?.access_token)
-  //       const client = await apiClient(jwt?.accessToken, undefined)
-  //       const result = await client.content.search('image', { q: query, s: 10 })
-
-  //       if (result?.hits) {
-  //         setSearchResult(result)
-  //         return result?.hits
-  //       }
-  //     }
-  //     return {}
-  //   }
-
-  //   if (inputRef.current) {
-  //     imageSearch(inputRef.current.value)
-  //       .catch(error => console.error('Image search error:', error))
-  //   }
   }
 
   return (
@@ -148,16 +131,14 @@ const fetcher = async (queryKey: string) => {
 // }
 function ImageSearch(): JSX.Element {
   const [queryString, setQueryString] = useState('')
-  const { data, size, setSize } = useSWRInfinite(
+  // const { data, size, setSize } = useSWRInfinite(
+  const swr = useSWRInfinite(
     (index, prevData) => {
       console.log('XXX prevData', prevData)
       return JSON.stringify({ swrKey: '', query: queryString, fromIndex: index, size: 4 })
     },
     fetcher
   )
-
-  const [hits, setSearchResult] = useState<{ hits: object[], total: number }>({ hits: [], total: 0 })
-  // console.log('result', hits)
 
   console.log('XXX data', data)
 
@@ -166,48 +147,49 @@ function ImageSearch(): JSX.Element {
       <ViewHeader.Root>
         <ViewHeader.Content>
           {/* <ViewHeader.Title icon={XIcon} /> */}
-          <ImageSearchInput setQueryString={setQueryString}/>
+          <ImageSearchInput setQueryString={setQueryString} />
           <XIcon />
         </ViewHeader.Content>
       </ViewHeader.Root>
 
-      <Button onClick={() => setSize(size + 1)} />
-      <ImageSearchResult total={hits.total}>
-
-        {
-          data?.map(hitres => {
-            return hitres.hits.map((hit: { uri?: string }) => {
-              const objectID = hit?.uri?.split('/')[5]
-              console.log('🍄 ~ {hits.hits.map ~ objectID 🤭 -', objectID)
-              return (
-                <div key={hit.uri} className='bg-gray-200'>
-                  <a href={`https://stage.tt.se/bild/o/${objectID}`}>
-                    <img
-                      src={`${hit.uri}_NormalThumbnail.jpg`}
-                      className='h-32 max-w-full rounded-lg'
-                    />
-                  </a>
-                </div>
-              )
-            })
-          })
+      {/* <Button onClick={() => setSize(size + 1)} /> */}
+      <ImageSearchResult total={ 0}>
+        <InfiniteScroll
+          swr={swr}
+        loadingIndicator={<div>Loading...</div>}
+        isReachingEnd={(swr) =>
+          false
+          // swr.data?.length === 0 || (swr.data?.[swr.data?.length - 1]?.length ?? 0) < PAGE_SIZE
         }
+        >
 
 
-        {/* {hits.hits.map((hit: { uri?: string }) => {
-          const objectID = hit.uri.split('/')[5]
-          console.log('🍄 ~ {hits.hits.map ~ objectID 🤭 -', objectID)
-          return (
-            <div key={hit.uri} className='bg-gray-200'>
-              <a href={`https://stage.tt.se/bild/o/${objectID}`}>
-                <img
-                  src={`${hit.uri}_NormalThumbnail.jpg`}
-                  className='h-32 max-w-full rounded-lg'
-                />
-              </a>
-            </div>
-          )
-        })} */}
+        {(data) => {
+
+
+          console.log('XXX data', data)
+          return (<div>result</div>)
+
+            // data?.map(hitres => {
+            //   return hitres.hits.map((hit: { uri?: string }) => {
+            //     const objectID = hit?.uri?.split('/')[5]
+            //     console.log('🍄 ~ {hits.hits.map ~ objectID 🤭 -', objectID)
+            //     return (
+            //       <div key={hit.uri} className='bg-gray-200'>
+            //         <a href={`https://stage.tt.se/bild/o/${objectID}`}>
+            //           <img
+            //             src={`${hit.uri}_NormalThumbnail.jpg`}
+            //             className='h-32 max-w-full rounded-lg'
+            //           />
+            //         </a>
+            //       </div>
+            //     )
+            //   })
+            // })
+
+          }
+        }
+        </InfiniteScroll>
       </ImageSearchResult>
     </div>
   )
