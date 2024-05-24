@@ -3,7 +3,7 @@ import { ViewHeader } from '@/components'
 import { useSession } from '@/hooks'
 import apiClient from '@/lib/apiclient'
 import { type ViewMetadata } from '@/types'
-import { Button } from '@ttab/elephant-ui'
+import { Button, ScrollArea } from '@ttab/elephant-ui'
 import { XIcon, SearchIcon } from '@ttab/elephant-ui/icons'
 import { useState, useRef } from 'react'
 import useSWRInfinite from 'swr/infinite'
@@ -74,10 +74,10 @@ const meta: ViewMetadata = {
 function ImageSearchResult(props: SearchResultProps): JSX.Element {
   const { children, total } = props
   return (
-    <div className='overflow-auto h-full flex flex-col p-2 gap-4'>
+    <div className='h-full w-full flex flex-col p-2 gap-4'>
       <div
-        className='h-full grid grid-cols-2 md:grid-cols-3 gap-4'
-        // className='overflow-y-auto'
+        className='h-full w-full overflow-auto grid grid-cols-2 md:grid-cols-3 gap-4'
+      // className='overflow-y-auto'
       >
         {children}
       </div>
@@ -143,28 +143,30 @@ function ImageSearch(): JSX.Element {
   // console.log('XXX data', data)
 
   return (
-    <div className='flex flex-col gap-3'>
-      <ViewHeader.Root>
-        <ViewHeader.Content>
-          {/* <ViewHeader.Title icon={XIcon} /> */}
-          <ImageSearchInput setQueryString={setQueryString} />
-          <XIcon />
-        </ViewHeader.Content>
-      </ViewHeader.Root>
-
+    <div className='h-full flex flex-col gap-3'>
+      <div>
+        <ViewHeader.Root>
+          <ViewHeader.Content>
+            {/* <ViewHeader.Title icon={XIcon} /> */}
+            <ImageSearchInput setQueryString={setQueryString} />
+            <XIcon />
+          </ViewHeader.Content>
+        </ViewHeader.Root>
+      </div>
       {/* <Button onClick={() => setSize(size + 1)} /> */}
-      <ImageSearchResult total={0}>
-        <InfiniteScroll
-          swr={swr}
-          loadingIndicator={<div>Loading...</div>}
-          isReachingEnd={(swr) =>
-            false
-            // swr.data?.[0].hits.length === 0 || (swr.data?.[swr.data?.length - 1]?.hits.length ?? 0) < 20
-          }
-        >
+      <ScrollArea className='grid @5xl:place-content-center'>
+        <ImageSearchResult total={0}>
+          <InfiniteScroll
+            swr={swr}
+            loadingIndicator={<div>Loading...</div>}
+            isReachingEnd={(swr) =>
+              false
+              // swr.data?.[0].hits.length === 0 || (swr.data?.[swr.data?.length - 1]?.hits.length ?? 0) < 20
+            }
+          >
 
 
-          {(data) =>
+            {(data) =>
               data.hits.map((hit: { uri?: string }) => {
                 const objectID = hit?.uri?.split('/')[5]
                 console.log('🍄 ~ {hits.hits.map ~ objectID 🤭 -', objectID)
@@ -180,9 +182,10 @@ function ImageSearch(): JSX.Element {
                 )
               })
 
-          }
-        </InfiniteScroll>
-      </ImageSearchResult>
+            }
+          </InfiniteScroll>
+        </ImageSearchResult>
+      </ScrollArea>
     </div>
   )
 }
