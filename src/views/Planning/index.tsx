@@ -11,7 +11,6 @@ import {
   PlanStatus,
   PlanTitle,
   PlanNewsvalue,
-  PlanCategory,
   PlanStory,
   PlanDocumentStatus,
   PlanDescription
@@ -118,7 +117,6 @@ const PlanningViewContent = (props: ViewProps & { documentId: string }): JSX.Ele
 
           <div className='flex space-x-2'>
             <PlanSector />
-            <PlanCategory />
             <PlanStory />
           </div>
 
