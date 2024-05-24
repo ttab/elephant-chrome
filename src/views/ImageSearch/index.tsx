@@ -74,10 +74,10 @@ const meta: ViewMetadata = {
 function ImageSearchResult(props: SearchResultProps): JSX.Element {
   const { children, total } = props
   return (
-    <div className='h-full flex flex-col p-2 gap-4'>
-      <p className='text-sm'>Antal träffar: {total}</p>
+    <div className='overflow-auto h-full flex flex-col p-2 gap-4'>
       <div
-        className='grid grid-cols-2 md:grid-cols-3 gap-4'
+        className='h-full grid grid-cols-2 md:grid-cols-3 gap-4'
+        // className='overflow-y-auto'
       >
         {children}
       </div>
@@ -135,12 +135,12 @@ function ImageSearch(): JSX.Element {
   const swr = useSWRInfinite(
     (index, prevData) => {
       console.log('XXX prevData', prevData)
-      return JSON.stringify({ swrKey: '', query: queryString, fromIndex: index, size: 4 })
+      return JSON.stringify({ swrKey: '', query: queryString, fromIndex: index, size: 20 })
     },
     fetcher
   )
 
-  console.log('XXX data', data)
+  // console.log('XXX data', data)
 
   return (
     <div className='flex flex-col gap-3'>
@@ -153,42 +153,34 @@ function ImageSearch(): JSX.Element {
       </ViewHeader.Root>
 
       {/* <Button onClick={() => setSize(size + 1)} /> */}
-      <ImageSearchResult total={ 0}>
+      <ImageSearchResult total={0}>
         <InfiniteScroll
           swr={swr}
-        loadingIndicator={<div>Loading...</div>}
-        isReachingEnd={(swr) =>
-          false
-          // swr.data?.length === 0 || (swr.data?.[swr.data?.length - 1]?.length ?? 0) < PAGE_SIZE
-        }
+          loadingIndicator={<div>Loading...</div>}
+          isReachingEnd={(swr) =>
+            false
+            // swr.data?.[0].hits.length === 0 || (swr.data?.[swr.data?.length - 1]?.hits.length ?? 0) < 20
+          }
         >
 
 
-        {(data) => {
-
-
-          console.log('XXX data', data)
-          return (<div>result</div>)
-
-            // data?.map(hitres => {
-            //   return hitres.hits.map((hit: { uri?: string }) => {
-            //     const objectID = hit?.uri?.split('/')[5]
-            //     console.log('🍄 ~ {hits.hits.map ~ objectID 🤭 -', objectID)
-            //     return (
-            //       <div key={hit.uri} className='bg-gray-200'>
-            //         <a href={`https://stage.tt.se/bild/o/${objectID}`}>
-            //           <img
-            //             src={`${hit.uri}_NormalThumbnail.jpg`}
-            //             className='h-32 max-w-full rounded-lg'
-            //           />
-            //         </a>
-            //       </div>
-            //     )
-            //   })
-            // })
+          {(data) =>
+              data.hits.map((hit: { uri?: string }) => {
+                const objectID = hit?.uri?.split('/')[5]
+                console.log('🍄 ~ {hits.hits.map ~ objectID 🤭 -', objectID)
+                return (
+                  <div key={hit.uri} className='bg-gray-200'>
+                    <a href={`https://stage.tt.se/bild/o/${objectID}`}>
+                      <img
+                        src={`${hit.uri}_NormalThumbnail.jpg`}
+                        className='h-32 max-w-full'
+                      />
+                    </a>
+                  </div>
+                )
+              })
 
           }
-        }
         </InfiniteScroll>
       </ImageSearchResult>
     </div>
