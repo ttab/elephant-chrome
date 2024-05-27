@@ -5,46 +5,62 @@ import { AssignmentType } from '@/components/DataItem/AssignmentType'
 import { AssigneeAvatars } from '@/components/DataItem/AssigneeAvatars'
 import type * as Y from 'yjs'
 import { DotDropdownMenu } from '@/components/ui/DotMenu'
-import { useCollaboration } from '@/hooks'
+import { useCollaboration, useNavigation, useView } from '@/hooks'
 import { Delete, Edit } from '@ttab/elephant-ui/icons'
 import { Button, Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@ttab/elephant-ui'
 import { useState } from 'react'
 import { SluglineButton } from '@/components/DataItem/Slugline'
+import { appendArticle } from '@/lib/createYItem'
+import { handleLink } from '@/components/Link/lib/handleLink'
 
 export const AssignmentRow = ({ index, setSelectedAssignment }: {
   index: number
   setSelectedAssignment: React.Dispatch<React.SetStateAction<number | undefined>>
 }): JSX.Element => {
+  const [showCreateDialog, setShowCreateDialog] = useState<boolean>(false)
   const { get } = useYObserver('meta', `core/assignment[${index}]`)
   const { get: getUUID } = useYObserver('meta', `core/assignment[${index}].links.core/article[0]`)
 
   const uuid = getUUID('uuid')
   const inProgress = !!get('__inProgress')
 
+  if (inProgress) {
+    return <></>
+  }
+
   return (
     <>
-      {uuid && !inProgress
-        ? <Link to='Editor' props={{ id: uuid as string }} className="group/assrow cursor-default">
-          <AssignmentRowContent index={index} setSelectedAssignment={setSelectedAssignment} />
-        </Link>
-        : <AssignmentRowContent index={index} setSelectedAssignment={setSelectedAssignment} />
+      {uuid
+        ? (
+          <Link to='Editor' props={{ id: uuid as string }} className="group/assrow cursor-default">
+            <AssignmentRowContent index={index} setSelectedAssignment={setSelectedAssignment} />
+          </Link>)
+        : (
+          <div onClick={() => setShowCreateDialog(true)}>
+            <AssignmentRowContent
+              index={index}
+              setSelectedAssignment={setSelectedAssignment}
+              setShowCreateDialog={setShowCreateDialog}
+              showCreateDialog={showCreateDialog}
+            />
+          </div>)
       }
     </>
   )
 }
 
-const AssignmentRowContent = ({ index, setSelectedAssignment }: {
+const AssignmentRowContent = ({ index, setSelectedAssignment, setShowCreateDialog, showCreateDialog = false }: {
   index: number
   setSelectedAssignment: React.Dispatch<React.SetStateAction<number | undefined>>
+  setShowCreateDialog?: React.Dispatch<React.SetStateAction<boolean>>
+  showCreateDialog?: boolean
 }): JSX.Element => {
   const { get } = useYObserver('meta', `core/assignment[${index}]`)
-  const { get: getUUID } = useYObserver('meta', `core/assignment[${index}].links.core/article[0]`)
   const { get: getAssignmentDescription } = useYObserver('meta', `core/assignment[${index}].meta.core/description[0].data`)
   const { get: getAssignmentPublishTime } = useYObserver('meta', `core/assignment[${index}].data`)
   const { state: stateAuthor = [] } = useYObserver('meta', `core/assignment[${index}].links.core/author`)
   const [showVerifyDialog, setShowVerifyDialog] = useState<boolean>(false)
 
-  const uuid = getUUID('uuid')
   const description = (getAssignmentDescription('text') as Y.XmlText)?.toJSON()
   const inProgress = !!get('__inProgress')
 
@@ -53,9 +69,8 @@ const AssignmentRowContent = ({ index, setSelectedAssignment }: {
       <div className='grid grid-cols-12 grid-rows-2 text-sm gap-2 items-start @4xl/view:grid-rows-1'>
 
         <div className='row-start-1 col-start-1 col-span-10 row-span-1 self-center text-[15px] font-medium @4xl/view:col-span-8 @4xl/view:pt-1'>
-          {uuid && !inProgress
-            ? <span className='pr-2 leading-relaxed group-hover/assrow:underline'>{(get('title') as Y.XmlText)?.toJSON()}</span>
-            : <span className='pr-2 leading-relaxed text-muted-foreground'>{(get('title') as Y.XmlText)?.toJSON()}</span>
+          {!inProgress &&
+            <span className='pr-2 leading-relaxed group-hover/assrow:underline'>{(get('title') as Y.XmlText)?.toJSON()}</span>
           }
 
           <span className="float-right pr-4">
@@ -125,6 +140,14 @@ const AssignmentRowContent = ({ index, setSelectedAssignment }: {
           setShowVerifyDialog={setShowVerifyDialog}
         />
       }
+      {showCreateDialog && setShowCreateDialog &&
+        <VerifyCreateArticleDialog
+          index={index}
+          title={(get('title') as Y.XmlText)?.toJSON()}
+          setSelectedAssignment={setSelectedAssignment}
+          setShowCreateDialog={setShowCreateDialog}
+        />
+      }
     </div>
   )
 }
@@ -179,6 +202,84 @@ const VerifyDeleteAssignmentDialog = ({ index, title, setSelectedAssignment, set
             setSelectedAssignment(undefined)
           }}>
             Ta bort
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  )
+}
+
+// TODO: We should really have some general prompt dialog...
+const VerifyCreateArticleDialog = ({ index, title, setShowCreateDialog }: {
+  index: number
+  title: string
+  setSelectedAssignment: React.Dispatch<React.SetStateAction<number | undefined>>
+  setShowCreateDialog: React.Dispatch<React.SetStateAction<boolean>>
+}): JSX.Element => {
+  const { provider } = useCollaboration()
+  const { state, dispatch } = useNavigation()
+  const { viewId: origin } = useView()
+
+  return (
+    <Dialog open={true}>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Skapa artikel</DialogTitle>
+        </DialogHeader>
+
+        <DialogDescription>
+          {title
+            ? <>Vill du skapa en artikel för uppdraget <em>{title}</em>?</>
+            : <>Vill du skapa en artikel uppdraget?</>
+          }
+        </DialogDescription>
+
+        <DialogFooter className="flex flex-col gap-2 pt-4">
+          <Button
+            variant="secondary"
+            onClick={(evt) => {
+              evt.preventDefault()
+              evt.stopPropagation()
+
+              setShowCreateDialog(false)
+            }}
+          >
+            Avbryt
+          </Button>
+
+          <Button onClick={(evt) => {
+            evt.preventDefault()
+            evt.stopPropagation()
+
+            if (!provider?.document) {
+              return
+            }
+
+
+            const id = crypto.randomUUID()
+
+            const onDocumentCreated = (): void => {
+              setTimeout(() => {
+                appendArticle({ document: provider?.document, id, index, slug: '' })
+              }, 0)
+            }
+            const props = { id }
+
+            handleLink({
+              event: evt,
+              dispatch,
+              viewItem: state.viewRegistry.get('Editor'),
+              viewRegistry: state.viewRegistry,
+              props,
+              viewId: crypto.randomUUID(),
+              origin,
+              onDocumentCreated
+            })
+
+
+            setShowCreateDialog(false)
+          }}>
+            Skapa
           </Button>
         </DialogFooter>
       </DialogContent>

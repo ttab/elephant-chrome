@@ -18,18 +18,24 @@ import { useRegistry } from '@/hooks'
 import { ComboBox } from '@/components/ui'
 import { dateToReadableDateTime, is12HourcycleFromLocale } from '@/lib/datetime'
 import { Awareness } from '@/components'
+import { NewsValueSkeleton } from './NewsValueSkeleton'
 
 interface NewsValueDropDownProps {
   duration?: string
   end?: string
+  loading?: boolean
   onChange: (duration: string | undefined, end: string | undefined) => void
 }
-export function NewsValueTimeDropDown({ duration, end, onChange }: NewsValueDropDownProps): JSX.Element {
+export function NewsValueTimeDropDown({ duration, end, loading, onChange }: NewsValueDropDownProps): JSX.Element {
   const { locale, timeZone } = useRegistry()
   const isDuration = !!duration && duration === parseInt(duration).toString(10)
   const isEnd = !isDuration && !!end
   const endTime = end ? new Date(end) : new Date()
   const setFocused = useRef<(value: boolean) => void>(null)
+
+  if (loading) {
+    return <NewsValueSkeleton />
+  }
 
   let value = '∞'
   if (isDuration) {

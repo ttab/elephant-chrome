@@ -155,9 +155,12 @@ export class Repository {
       uuid: document.uuid
     }
 
-    const result = await this.#client.update(payload, meta(accessToken))
-
-    return result
+    try {
+      const result = await this.#client.update(payload, meta(accessToken))
+      return result
+    } catch (err: unknown) {
+      console.error(err)
+    }
   }
 
   /**
