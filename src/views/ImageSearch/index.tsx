@@ -74,9 +74,11 @@ const meta: ViewMetadata = {
 function ImageSearchResult(props: SearchResultProps): JSX.Element {
   const { children, total } = props
   return (
-    <div className='h-full w-full flex flex-col p-2 gap-4'>
+    <div className='h-screen max-h-screen flex flex-col p-2 gap-4 overflow-auto'>
       <div
-        className='h-full w-full overflow-auto grid grid-cols-2 md:grid-cols-3 gap-4'
+        // className='flex-grow overflow-auto pr-12 max-w-screen-xl mx-auto grid grid-cols-2 md:grid-cols-3 gap-4 '
+        // className='max-h-44 flex-grow overflow-auto pr-12 mx-auto'
+        className='relative h-full grid grid-cols-2 md:grid-cols-3 gap-4'
       // className='overflow-y-auto'
       >
         {children}
@@ -116,12 +118,25 @@ function ImageSearchInput(props: InputProps): JSX.Element {
   )
 }
 
-const fetcher = async (queryKey: string) => {
-  console.log('XXX url', queryKey)
-  const queryObject = JSON.parse(queryKey)
-  const { query, fromIndex, size } = queryObject
+const fetcher2 = ([key, queryString, index]) => {
+  const SIZE = 5
+  // fetch(key)
+  //   .then((res) => res.json())
+  //   .then((json) => json?.data)
+  console.log('XXX fetcher2, key, querystring index', key, queryString, index)
+  return apiClient(undefined, undefined)
+    .then((client) => client.content.search('image', { q: queryString, s: SIZE, fr: (index) * SIZE }))
+    .then((res) => res)
+}
+
+const fetcher = async ([key, queryString, index, SIZE]) => {
+  // console.log('XXX fetch url', queryKey)
+  // const queryObject = JSON.parse(queryKey)
+  // const { query, fromIndex, size } = queryObject
+  console.log('XXX fetcher, key, querystring index', key, queryString, index)
+  // const SIZE = 5
   const client = await apiClient(undefined, undefined)
-  const res = await client.content.search('image', { q: query, s: size, fr: fromIndex * size })
+  const res = await client.content.search('image', { q: queryString, s: SIZE, fr: (index) * SIZE })
   return res
 }
 
@@ -131,20 +146,26 @@ const fetcher = async (queryKey: string) => {
 // }
 function ImageSearch(): JSX.Element {
   const [queryString, setQueryString] = useState('')
-  // const { data, size, setSize } = useSWRInfinite(
+  const SIZE = 100
   const swr = useSWRInfinite(
     (index, prevData) => {
-      console.log('XXX prevData', prevData)
-      return JSON.stringify({ swrKey: '', query: queryString, fromIndex: index, size: 20 })
+      console.log('XXX index', index)
+      // if (prevData && prevData.hits.length) return null
+      return [`/q=${queryString}&fr=${index},`, queryString, index, SIZE]
+
     },
-    fetcher
+    fetcher,
+    {
+      revalidateFirstPage: false
+    }
   )
+
+
 
   // console.log('XXX data', data)
 
   return (
-    <div className='h-full flex flex-col gap-3'>
-      <div>
+    <div className='h-screen max-h-screen flex flex-col relative'>
         <ViewHeader.Root>
           <ViewHeader.Content>
             {/* <ViewHeader.Title icon={XIcon} /> */}
@@ -152,16 +173,16 @@ function ImageSearch(): JSX.Element {
             <XIcon />
           </ViewHeader.Content>
         </ViewHeader.Root>
-      </div>
       {/* <Button onClick={() => setSize(size + 1)} /> */}
-      <ScrollArea className='grid @5xl:place-content-center'>
+
         <ImageSearchResult total={0}>
           <InfiniteScroll
             swr={swr}
             loadingIndicator={<div>Loading...</div>}
+            endingIndicator={<div>Ending</div>}
             isReachingEnd={(swr) =>
-              false
-              // swr.data?.[0].hits.length === 0 || (swr.data?.[swr.data?.length - 1]?.hits.length ?? 0) < 20
+              // false
+              swr.data?.[0].hits.length === 0 || (swr.data?.[swr.data?.length - 1]?.hits.length ?? 0) < SIZE
             }
           >
 
@@ -169,7 +190,7 @@ function ImageSearch(): JSX.Element {
             {(data) =>
               data.hits.map((hit: { uri?: string }) => {
                 const objectID = hit?.uri?.split('/')[5]
-                console.log('🍄 ~ {hits.hits.map ~ objectID 🤭 -', objectID)
+                // console.log('🍄 ~ {hits.hits.map ~ objectID 🤭 -', objectID)
                 return (
                   <div key={hit.uri} className='bg-gray-200'>
                     <a href={`https://stage.tt.se/bild/o/${objectID}`}>
@@ -185,7 +206,8 @@ function ImageSearch(): JSX.Element {
             }
           </InfiniteScroll>
         </ImageSearchResult>
-      </ScrollArea>
+        {/* <div className="h-14 basis-14">Antal: XXX</div> */}
+
     </div>
   )
 }
