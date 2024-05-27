@@ -52,7 +52,7 @@ export function useYValue<T>(path: string, deep: boolean = false): [
     }
 
     return [
-      (yValue instanceof Y.XmlText) ? yValue as T : yValue as T,
+      yValue as T,
       yParent
     ]
   }, [yRoot, pathArray])
