@@ -3,7 +3,8 @@ import {
   FileText,
   Image,
   Camera,
-  Video
+  Video,
+  Aperture
 } from '@ttab/elephant-ui/icons'
 
 const iconProps = {
@@ -20,13 +21,13 @@ export const AssignmentTypes: DefaultValueOption[] = [
     iconProps
   },
   {
-    label: 'Graphic',
+    label: 'Grafik',
     value: 'graphic',
     icon: Image,
     iconProps
   },
   {
-    label: 'Picture',
+    label: 'Bild',
     value: 'picture',
     icon: Camera,
     iconProps
@@ -35,6 +36,12 @@ export const AssignmentTypes: DefaultValueOption[] = [
     label: 'Video',
     value: 'video',
     icon: Video,
+    iconProps
+  },
+  {
+    label: 'Bild/Video',
+    value: 'picture/video',
+    icon: Aperture,
     iconProps
   }
 ]
