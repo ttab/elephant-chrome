@@ -26,7 +26,6 @@ const replace = (type: string, translateList: Record<string, string>): string =>
 }
 
 const createDocument = (): Document => {
-  // TODO: does this work, we'll find outj
   if (module?.exports) {
     // eslint-disable-next-line @typescript-eslint/no-var-requires
     const { JSDOM } = require('jsdom')
@@ -88,7 +87,7 @@ function revertInlineElement(element: Element): string {
 
 export function transformText(element: Block): Element {
   const { id, type, data } = element
-  const root = parse(data.text)
+  const root = parse(data?.text || '')
   const nodes = root.childNodes as HTMLElement[]
   const properties = type !== 'core/paragraph' ? { properties: { type: replace(type, translateList) } } : {}
 

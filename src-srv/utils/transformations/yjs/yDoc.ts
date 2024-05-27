@@ -64,56 +64,49 @@ function assertDescriptions(yMeta: Y.Map<unknown>, documentType: string): void {
 }
 
 export function newsDocToYDoc(yDoc: Document | Y.Doc, newsDoc: GetDocumentResponse): void {
-  try {
-    const yMap = yDoc.getMap('ele')
-    const { document, version } = newsDoc
+  const yMap = yDoc.getMap('ele')
+  const { document, version } = newsDoc
 
-    if (document) {
-      const { meta, links, content, ...rest } = document
+  if (document) {
+    const { meta, links, content, ...rest } = document
 
-      yMap.set('meta', toYMap(group(document.meta, 'type'), new Y.Map()))
-      yMap.set('links', toYMap(group(document.links, 'type'), new Y.Map()))
-      yMap.set('root', toYMap(rest, new Y.Map()))
+    yMap.set('meta', toYMap(group(document.meta || [], 'type'), new Y.Map()))
+    yMap.set('links', toYMap(group(document.links || [], 'type'), new Y.Map()))
+    yMap.set('root', toYMap(rest, new Y.Map()))
 
-      assertDescriptions(yMap.get('meta') as Y.Map<unknown>, document.type)
+    assertDescriptions(yMap.get('meta') as Y.Map<unknown>, document.type)
 
-      // Assert assignment descriptions
-      const yMeta = yMap.get('meta') as Y.Map<unknown>
-      const yAssignments = yMeta.get('core/assignment') as Y.Array<unknown>
-      if (yAssignments?.length) {
-        for (const yAssignment of yAssignments) {
-          const assMeta = (yAssignment as Y.Map<unknown>).get('meta') as Y.Map<unknown>
-          assertDescriptions(assMeta, 'core/assignment')
-        }
+    // Assert assignment descriptions
+    const yMeta = yMap.get('meta') as Y.Map<unknown>
+    const yAssignments = yMeta.get('core/assignment') as Y.Array<unknown>
+    if (yAssignments?.length) {
+      for (const yAssignment of yAssignments) {
+        const assMeta = (yAssignment as Y.Map<unknown>).get('meta') as Y.Map<unknown>
+        assertDescriptions(assMeta, 'core/assignment')
       }
-
-      // Share editable content for Textbit use
-      const yContent = new Y.XmlText()
-      const slateDocument = newsDocToSlate(document?.content ?? [])
-      yContent.applyDelta(
-        slateNodesToInsertDelta(slateDocument)
-      )
-      yMap.set('content', yContent)
-
-      // Set version
-      const yVersion = yDoc.getMap('version')
-      yVersion?.set('version', version?.toString())
-
-      const originalHash = createHash(JSON.stringify(newsDoc.document))
-
-      const yOriginalHash = yDoc.getMap('hash')
-      yOriginalHash?.set('hash', originalHash)
-
-      return
     }
 
-    throw new Error('No document')
-  } catch (err) {
-    if (err instanceof Error) {
-      throw new Error(err.message)
-    }
-    throw new Error('Unknown error')
+    // Share editable content for Textbit use
+    const yContent = new Y.XmlText()
+    const slateDocument = newsDocToSlate(document?.content ?? [])
+    yContent.applyDelta(
+      slateNodesToInsertDelta(slateDocument)
+    )
+    yMap.set('content', yContent)
+
+    // Set version
+    const yVersion = yDoc.getMap('version')
+    yVersion?.set('version', version?.toString())
+
+    const originalHash = createHash(JSON.stringify(newsDoc.document))
+
+    const yOriginalHash = yDoc.getMap('hash')
+    yOriginalHash?.set('hash', originalHash)
+
+    return
   }
+
+  throw new Error('No document')
 }
 
 export function yDocToNewsDoc(yDoc: Y.Doc): GetDocumentResponse {

@@ -11,16 +11,26 @@ import { toQueryString } from './toQueryString'
 import { minimumSpaceRequired } from '@/navigation/lib'
 
 interface LinkClick {
-  event?: MouseEvent<HTMLAnchorElement | HTMLTableRowElement>
+  event?: MouseEvent<HTMLAnchorElement | HTMLTableRowElement | HTMLButtonElement>
   dispatch: React.Dispatch<NavigationAction>
   viewItem: ViewRegistryItem
   viewRegistry: ViewRegistry
   viewId: string
   props?: ViewProps
   origin: string
+  onDocumentCreated?: () => void
 }
 
-export function handleLink({ event, dispatch, viewItem, viewRegistry, props, viewId, origin }: LinkClick): void {
+export function handleLink({
+  event,
+  dispatch,
+  viewItem,
+  viewRegistry,
+  props,
+  viewId,
+  origin,
+  onDocumentCreated
+}: LinkClick): void {
   if (event?.ctrlKey || event?.metaKey) {
     return
   }
@@ -28,6 +38,7 @@ export function handleLink({ event, dispatch, viewItem, viewRegistry, props, vie
   const content: ContentState[] = history.state.contentState
 
   // Create next (wanted) content state
+  // Beware, props can not be functions
   const newContent: ContentState =
     {
       props,
@@ -62,6 +73,14 @@ export function handleLink({ event, dispatch, viewItem, viewRegistry, props, vie
     viewName: viewItem.meta.name,
     contentState: content
   }, viewItem.meta.name, `${viewItem.meta.path}${toQueryString(props)}`)
+
+  // Append onDocumentCreated to props if available
+  // This since we can't save a function to history state
+  if (onDocumentCreated) {
+    const currentIndex = content.findIndex(c => c.viewId === viewId)
+
+    content[currentIndex].props = { ...content[currentIndex].props, onDocumentCreated }
+  }
 
   dispatch({
     type: NavigationActionType.SET,

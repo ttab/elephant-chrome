@@ -1,7 +1,7 @@
 import { useYObserver } from '@/hooks/useYObserver'
 import { PlusIcon } from '@ttab/elephant-ui/icons'
 import { AssignmentRow } from './AssignmentRow'
-import { createPlanningAssignment } from '@/lib/planning/createPlanningAssignment'
+import { appendAssignment } from '@/lib/createYItem'
 import { useCollaboration } from '@/hooks'
 import { Assignment } from './Assignment'
 import { useEffect, useState } from 'react'
@@ -28,7 +28,7 @@ export const AssignmentTable = (): JSX.Element => {
             evt.preventDefault()
 
             if (provider?.document) {
-              createPlanningAssignment(provider?.document)
+              appendAssignment({ document: provider?.document, inProgress: true })
               setCreatedAssignment(noOfAssignments)
             }
           }}
