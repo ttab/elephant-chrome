@@ -91,8 +91,17 @@ export function useYValue<T>(path: string): [
   // Return value and parent map/array
   return [
     value,
-    () => {
-      console.warn('Setting values through useYValue() hook is not implemented')
+    (v) => {
+      const [key] = yPath.slice(-1)
+
+      if (isYMap(parent) && !isNumber(key)) {
+        parent.set(key, v)
+      } else if (isYArray(parent) && isNumber(key) && key > 0 && key <= parent.length - 1) {
+        parent.doc?.transact(() => {
+          parent.delete(key)
+          parent.insert(key, [v])
+        })
+      }
     },
     parent
   ]
