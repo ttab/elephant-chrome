@@ -1,105 +1,101 @@
 import { useCollaboration } from './useCollaboration'
-import { useEffect, useMemo, useState } from 'react'
-import * as Y from 'yjs'
-import { isYArray, isYMap, isYValue } from '@/lib/isType'
+import { useCallback, useEffect, useState } from 'react'
+import { isYArray, isYContainer, isYMap, isYValue, isYXmlText } from '@/lib/isType'
+import type * as Y from 'yjs'
 
-type PathArray = Array<string | number>
+type YPath = Array<string | number>
 type YParent = Y.Array<unknown> | Y.Map<unknown> | undefined
 
 /**
- * Observe a value in a an exact path. If "deep" is passed, observe all
- * changes beneath the exact path. This hook is especially usefull when observing (any)
- * change to a Y.XmlText structure (i.e Textbit/Slate)
+ * Observe a value in a an exact path. If the observed value is a Y.XmlText all changes beneath
+ * that value are observed, but the value returned is returned as string. If you need to access
+ * the actual Y.XmlText structure you can use the parent container which is also returned.
  *
  * @param path string
- * @param deep boolean
  *
- * @returns [<T>, YParent]
+ * @returns [<T>, (arg0: T) => void, YParent]
  */
-export function useYValue<T>(path: string, deep: boolean = false): [
+export function useYValue<T>(path: string): [
   T | undefined,
+  (arg0: T) => void,
   YParent
 ] {
-  const { provider, synced } = useCollaboration()
-  const yRoot = synced ? provider?.document.getMap('ele') : undefined
-  const pathArray = parseYPath(path)
-  const [lastKey] = pathArray.slice(-1)
+  const { provider } = useCollaboration()
+  const yRoot = provider?.document.getMap('ele')
+  const yPath = stringToYPath(path)
+  const [value, setValue] = useState<T | undefined>()
+  const [parent, setParent] = useState<YParent>()
 
-  // Find out what the initial value is (or undefined if structure is not complete)
-  const [initialValue, initialParent] = useMemo((): [T | undefined, YParent] => {
-    if (!yRoot) {
-      return [undefined, undefined]
+
+  // Initialization callback function
+  const initialize = useCallback((yRoot: Y.Map<unknown>): void => {
+    const [v, p] = getValueByYPath(yRoot, yPath)
+    setValue(isYXmlText(v) ? v.toJSON() as T : v as T)
+
+    if (isYContainer(p)) {
+      setParent(p)
     }
-
-    const lastIndex = pathArray.length - 1
-    let yValue: unknown = yRoot
-    let yParent: YParent
-
-    for (let i = 0; i < pathArray.length; i++) {
-      const key = pathArray[i]
-
-      if (isYArray(yValue) && isNumber(key)) {
-        if (i === lastIndex) {
-          yParent = yValue
-        }
-        yValue = yValue.get(key)
-      } else if (isYMap(yValue) && !isNumber(key)) {
-        if (i === lastIndex) {
-          yParent = yValue
-        }
-        yValue = yValue?.get(key)
-      }
-    }
-
-    return [
-      yValue as T,
-      yParent
-    ]
-  }, [yRoot, pathArray])
+  }, [yPath])
 
 
-  // Set initial state value (and it's parent map/array container if structure is complete)
-  const [value, setValue] = useState<T | undefined>(initialValue)
-  const [container, setContainer] = useState<YParent>(initialParent)
-
-
-  // Always observe changes from the root to handle initially incomplete data structures
+  // Initialization
   useEffect(() => {
+    if (yRoot && value === undefined) {
+      initialize(yRoot)
+    }
+  }, [yRoot, initialize, value])
+
+
+  // Setup the observer
+  useEffect(() => {
+    if (!yRoot) {
+      return
+    }
+
     // @ts-expect-error Yjs is using any, which is not permitted in our code
     const observer = (yEvents: Array<Y.YEvent<unknown>>): void => {
       yEvents.forEach(yEvent => {
-        const yEventPath = !deep ? [...yEvent.path] : yEvent.path.slice(0, pathArray.length)
-        const pathMatches = yEventPath.every((value, index) => value === pathArray[index])
+        const yEventPath = yEvent.path.slice(0, yPath.length)
+        const pathMatch = yEventPath.length && yEventPath.every((v, idx) => v === yPath[idx])
+        const exactMatch = yEvent.path.length === yPath.length && yEvent.path.every((v, idx) => v === yPath[idx])
 
-        if (pathMatches) {
-          let parent
+        if (exactMatch) {
+          setValue(yEvent?.target !== undefined ? yEvent.target as T : undefined)
 
-          if (yEvent.target instanceof Y.XmlText) {
-            parent = yEvent.target.parent?.parent
-            setValue(yEvent.target as T)
+          if (!parent && isYValue(yEvent.target) && isYContainer(yEvent.target.parent)) {
+            setParent(yEvent.target.parent)
+          }
+        } else if (pathMatch) {
+          const [v, p] = getValueByYPath(yRoot, yPath)
+
+          if (isYXmlText(v)) {
+            setValue(v.toJSON() as T)
           } else {
-            parent = (isYValue(yEvent.target)) ? yEvent.target.parent : undefined
-            if (isYArray(yEvent.target) && isNumber(lastKey)) {
-              setValue(yEvent.target.get(lastKey) as T)
-            } else if (isYMap(yEvent.target) && !isNumber(lastKey)) {
-              setValue(yEvent.target.get(lastKey) as T)
-            }
+            setValue(v as T)
           }
 
-          // If structure was incomplete and we now have a parent container, set it
-          if (!container && (isYArray(parent) || isYMap(parent))) {
-            setContainer(parent)
+          if (!parent && isYContainer(p)) {
+            setParent(p)
           }
         }
       })
     }
 
+    // Always observe changes from the root to handle initially incomplete data structures
+    // TODO: We could optimze this by observing as far down in the structure as we could
     yRoot?.observeDeep(observer)
+
     return () => yRoot?.unobserveDeep(observer)
-  }, [yRoot, deep, pathArray, container, lastKey])
+  }, [yRoot, yPath, parent])
 
   // Return value and parent map/array
-  return [value, container]
+  return [
+    value,
+    () => {
+      console.warn('Setting values through useYValue() hook is not implemented')
+    },
+    parent
+  ]
 }
 
 
@@ -108,8 +104,45 @@ function isNumber(value: unknown): value is number {
 }
 
 
-function parseYPath(input: string): PathArray {
-  const result: PathArray = []
+/**
+ * Traverse a yjs structure to find the wanted value based on the yjs path.
+ *
+ * Returns an array with two elements. First the value and then the parent map or array.
+ */
+function getValueByYPath<T>(root: Y.Map<unknown>, path: YPath): [T | undefined, YParent] {
+  const lastIndex = path.length - 1
+  let parent: unknown = root
+
+  for (let i = 0; i < path.length; i++) {
+    const key = path[i]
+    let current: unknown
+
+    if (isYArray(parent) && isNumber(key)) {
+      current = parent.get(key)
+    } else if (isYMap(parent) && !isNumber(key)) {
+      current = parent?.get(key)
+    }
+
+    if (i === lastIndex) {
+      return [current as T, parent as YParent]
+    }
+
+    parent = current
+  }
+
+  return [undefined, undefined]
+}
+
+
+/**
+ * Converts a string path to the same array path format used by yjs maintaing
+ * the difference between strings for map properties and numbers for array positions.
+ *
+ * Example:
+ * 'meta.myArray[1].value' -> ['meta', 'myArray', 1, 'value]
+ */
+function stringToYPath(input: string): YPath {
+  const result: YPath = []
   const regex = /([^[\].]+)|\[(\d+)\]/g
   let match: RegExpExecArray | null
 

@@ -17,9 +17,9 @@ export const Assignment = ({ index, setSelectedAssignment, className }: {
   const { get: getInProgress } = useYObserver('meta', `core/assignment[${index}]`)
   const inProgress = getInProgress('__inProgress') === true
 
-  const [title] = useYValue<Y.XmlText | undefined>(`meta.core/assignment[${index}].title`, true)
-  const [slugLine] = useYValue<Y.XmlText | undefined>(`meta.core/assignment[${index}].meta.tt/slugline[0].value`, true)
-  const [assignmentType] = useYValue<string | undefined>(`meta.core/assignment[${index}].meta.core/assignment-type[0].value`, true)
+  const [title] = useYValue<string | undefined>(`meta.core/assignment[${index}].title`)
+  const [slugLine] = useYValue<string | undefined>(`meta.core/assignment[${index}].meta.tt/slugline[0].value`)
+  const [assignmentType] = useYValue<string | undefined>(`meta.core/assignment[${index}].meta.core/assignment-type[0].value`)
 
   return (
     <div className={cn('border rounded-md shadow-xl', className)}>
@@ -86,7 +86,7 @@ export const Assignment = ({ index, setSelectedAssignment, className }: {
 
           <Button
             variant="outline"
-            disabled={!title?.toJSON() || (assignmentType === 'text' && !slugLine?.toJSON())}
+            disabled={!title || (assignmentType === 'text' && !slugLine)}
             onClick={(evt) => {
               evt.preventDefault()
               evt.stopPropagation()
