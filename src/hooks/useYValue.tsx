@@ -11,6 +11,8 @@ type YParent = Y.Array<unknown> | Y.Map<unknown> | undefined
  * that value are observed, but the value returned is returned as string. If you need to access
  * the actual Y.XmlText structure you can use the parent container which is also returned.
  *
+ * This function also detects, recovers and continue to observe when a whole structure gets replaced.
+ *
  * @param path string
  *
  * @returns [<T>, (arg0: T) => void, YParent]
@@ -80,9 +82,17 @@ export function useYValue<T>(path: string): [
             if (yEvent.keys.has(key.toString())) {
               setValue(v as T)
             }
+          } else if (yEventPath.length < yPath.length && !!p && p !== parent) {
+            // The parent structure have changed but the exact path still exists.
+            // This happens if a larger structure gets replaced.
+            setValue(v as T)
+          } else if (!p) {
+            // The parent is gone, which means the whole structure is gone
+            setValue(undefined)
           }
 
-          if (!parent && isYContainer(p)) {
+          // If we have no parent from before, or the parent has changed, we need to set it again
+          if ((!parent && isYContainer(p)) || (p !== parent)) {
             setParent(p)
           }
         }
