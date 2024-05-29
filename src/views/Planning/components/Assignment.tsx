@@ -54,7 +54,7 @@ export const Assignment = ({ index, setSelectedAssignment, className }: {
       <div className='flex items-center justify-between border-t p-4'>
         <div className='flex items-center justify-start gap-6'>
           <AssignmentType
-            path={`core/assignment[${index}].meta.core/assignment-type[0]`}
+            path={`core/assignment[${index}].meta.core/assignment-type`}
             editable={inProgress}
           />
           <UserPlus size={20} strokeWidth={1.75} />

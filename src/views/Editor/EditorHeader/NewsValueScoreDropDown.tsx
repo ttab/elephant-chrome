@@ -9,9 +9,11 @@ import {
 } from '@ttab/elephant-ui'
 import { SignalMedium } from '@ttab/elephant-ui/icons'
 import { useRef, type PropsWithChildren } from 'react'
+import { NewsValueSkeleton } from './NewsValueSkeleton'
 
 interface NewsScoreDropDownProps {
   value: string
+  loading: boolean
   options: Array<{
     label: string
     value: string | number
@@ -20,10 +22,14 @@ interface NewsScoreDropDownProps {
   onChange: (value: unknown) => void
 }
 
-export const NewsValueScoreDropDown = ({ value, options, onChange }: NewsScoreDropDownProps): JSX.Element => {
+export const NewsValueScoreDropDown = ({ value, loading, options, onChange }: NewsScoreDropDownProps): JSX.Element => {
   const option = options.find(option => option.value === value)
   const Icon = option?.icon || <SignalMedium size={18} strokeWidth={1.75} />
   const setFocused = useRef<(value: boolean) => void>(null)
+
+  if (loading) {
+    return <NewsValueSkeleton />
+  }
 
   return (
     <Awareness name="NewsValueScore" ref={setFocused}>

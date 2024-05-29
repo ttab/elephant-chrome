@@ -152,6 +152,9 @@
           "document.meta.core_planning_item.data.tentative": [
             "false"
           ],
+          "document.meta.tt_slugline.value": [
+            "gänggripen"
+          ],
           "document.rel.sector.title": [
             "Utrikes"
           ],
