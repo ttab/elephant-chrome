@@ -1,8 +1,12 @@
 import { decode, encode } from 'html-entities'
 import { parse, type HTMLElement } from 'node-html-parser'
 import { Block } from '@/protos/service.js'
-import { TextbitElement } from '@ttab/textbit'
-import type { Descendant, Element, Text } from 'slate'
+import type { Text } from 'slate'
+import {
+  type TBElement,
+  type TBText,
+  TextbitElement
+} from '@ttab/textbit'
 
 // TODO: Is this needed now?
 const translateList = {
@@ -37,7 +41,7 @@ const createDocument = (): Document => {
   return window.document
 }
 
-function createAnchorElement(element: Element): string {
+function createAnchorElement(element: TBElement): string {
   const document = createDocument()
 
   const anchor = document.createElement('a')
@@ -56,7 +60,7 @@ function createAnchorElement(element: Element): string {
   return anchor.outerHTML
 }
 
-function transformInlineElement(node: HTMLElement): Element {
+function transformInlineElement(node: HTMLElement): TBElement {
   switch (node.rawTagName) {
     case 'a':
       return {
@@ -76,7 +80,7 @@ function transformInlineElement(node: HTMLElement): Element {
   }
 }
 
-function revertInlineElement(element: Element): string {
+function revertInlineElement(element: TBElement): string {
   switch (element.type) {
     case 'core/link':
       return createAnchorElement(element)
@@ -85,7 +89,7 @@ function revertInlineElement(element: Element): string {
   }
 }
 
-export function transformText(element: Block): Element {
+export function transformText(element: Block): TBElement {
   const { id, type, data } = element
   const root = parse(data?.text || '')
   const nodes = root.childNodes as HTMLElement[]
@@ -96,7 +100,7 @@ export function transformText(element: Block): Element {
     class: 'text',
     type: 'core/text',
     ...properties,
-    children: nodes.map((node): Descendant => {
+    children: nodes.map((node): (TBElement | TBText) => {
       // Html entity
       if (node.nodeType === 1) {
         return {
@@ -115,14 +119,14 @@ export function transformText(element: Block): Element {
   }
 }
 
-export function revertText(element: Element): Block {
+export function revertText(element: TBElement): Block {
   const { id, children } = element
 
   return Block.create({
     id,
     type: replace(element.properties?.type as string, invertedTranslateList),
     data: {
-      text: children.map((child: Element | Text) => {
+      text: children.map((child: TBElement | Text) => {
         if (TextbitElement.isInline(child)) {
           return revertInlineElement(child)
         }

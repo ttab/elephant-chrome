@@ -31,6 +31,7 @@ export const Assignment = ({ index, setSelectedAssignment, className }: {
           placeholder='Uppdragsrubrik'
           className="font-semibold text-lg leading-4 px-0"
           singleLine={true}
+          autoFocus={true}
         />
 
         <TextBox
