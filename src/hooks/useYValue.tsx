@@ -92,7 +92,7 @@ export function useYValue<T>(path: string): [
           }
 
           // If we have no parent from before, or the parent has changed, we need to set it again
-          if ((!parent && isYContainer(p)) || (p !== parent)) {
+          if (p !== parent) {
             setParent(p)
           }
         }
