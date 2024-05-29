@@ -71,7 +71,7 @@ export function useYValue<T>(path: string): [
 
           if (isYXmlText(v)) {
             // Report the change (as string) to the Y.Xmltext value.
-            // CAVEAT: This is not a good idea, and should not be used, with large documents!
+            // CAVEAT: Should not observe large docs like this as this would then not be very perfomant!
             setValue(v.toJSON() as T)
           } else if (yEventPath.length + 1 === yPath.length) {
             // The change event refers to a property in a direct parent map/array,
