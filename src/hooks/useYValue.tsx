@@ -66,12 +66,20 @@ export function useYValue<T>(path: string): [
             setParent(yEvent.target.parent)
           }
         } else if (pathMatch) {
+          // We observe deeper for Y.XmlText or when we observe individual values in a Y.Map or Y.Array
           const [v, p] = getValueByYPath(yRoot, yPath)
 
           if (isYXmlText(v)) {
+            // Report the change (as string) to the Y.Xmltext value.
+            // CAVEAT: This is not a good idea, and should not be used, with large documents!
             setValue(v.toJSON() as T)
-          } else {
-            setValue(v as T)
+          } else if (yEventPath.length + 1 === yPath.length) {
+            // The change event refers to a property in a direct parent map/array,
+            // ensure it is the observed property that is changed
+            const [key] = yPath.slice(-1)
+            if (yEvent.keys.has(key.toString())) {
+              setValue(v as T)
+            }
           }
 
           if (!parent && isYContainer(p)) {
