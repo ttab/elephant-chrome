@@ -34,7 +34,7 @@
     "@tailwindcss/container-queries": "^0.1.1",
     "@tanstack/react-table": "^8.17.3",
     "@ttab/elephant-ui": "^0.2.16",
-    "@ttab/textbit": "^0.13.0",
+    "@ttab/textbit": "^0.13.1",
     "@ttab/textbit-plugins": "^0.2.0",
     "class-variance-authority": "^0.7.0",
     "cookie-parser": "^1.4.6",
