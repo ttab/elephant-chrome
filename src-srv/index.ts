@@ -13,6 +13,10 @@ import {
 } from './utils/index.js'
 import { createRemoteJWKSet } from 'jose'
 
+import { ExpressAuth } from '@auth/express'
+import { authenticatedUser } from './utils/authenticatedUser.js'
+import { authConfig } from './utils/authConfig.js'
+
 
 /*
  * Read and normalize all environment variables
@@ -67,6 +71,11 @@ async function runServer(): Promise<string> {
 
   const repository = new Repository(REPOSITORY_URL, jwks)
 
+
+  app.set('trust proxy', true)
+  app.use(`${BASE_URL}/api/auth/*`, ExpressAuth(authConfig))
+
+  app.use(authenticatedUser)
   app.use(cors({
     credentials: true,
     origin: `${PROTOCOL}://${HOST}:${process.env.DEV_CLIENT_PORT || PORT}`
