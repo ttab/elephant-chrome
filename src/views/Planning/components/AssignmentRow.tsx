@@ -3,8 +3,8 @@ import { TimeDisplay } from '@/components/DataItem/TimeDisplay'
 import { AssignmentType } from '@/components/DataItem/AssignmentType'
 import { AssigneeAvatars } from '@/components/DataItem/AssigneeAvatars'
 import { DotDropdownMenu } from '@/components/ui/DotMenu'
-import { Delete, Edit, NotebookPen } from '@ttab/elephant-ui/icons'
-import { type MouseEvent, useMemo, useState } from 'react'
+import { Delete, Edit, FileInput } from '@ttab/elephant-ui/icons'
+import { type MouseEvent, useMemo, useState, useCallback } from 'react'
 import { SluglineButton } from '@/components/DataItem/Slugline'
 import { useYValue } from '@/hooks/useYValue'
 import { useLink } from '@/hooks/useLink'
@@ -13,6 +13,7 @@ import { Prompt } from './Prompt'
 import { appendArticle } from '@/lib/createYItem'
 import { useCollaboration } from '@/hooks/useCollaboration'
 import type * as Y from 'yjs'
+import { Button } from '@ttab/elephant-ui'
 
 export const AssignmentRow = ({ index, setSelectedAssignment }: {
   index: number
@@ -70,9 +71,22 @@ const AssignmentRowContent = ({ index, setSelectedAssignment /*, setShowCreateDi
     return publishTime ? new Date(publishTime) : undefined
   }, [publishTime])
 
+  const onOpenArticleEvent = useCallback((event: MouseEvent<Element, MouseEvent>) => {
+    event.preventDefault()
+    event.stopPropagation()
+
+    if (articleId) {
+      openArticle(event, {
+        id: articleId
+      })
+    } else {
+      setShowCreateDialog(true)
+    }
+  }, [articleId, openArticle, setShowCreateDialog])
+
   const menuItems = [
     {
-      label: 'Redigera uppdrag',
+      label: 'Redigera',
       icon: Edit,
       item: (event: MouseEvent<Element, MouseEvent>) => {
         event.preventDefault()
@@ -94,18 +108,9 @@ const AssignmentRowContent = ({ index, setSelectedAssignment /*, setShowCreateDi
   if (assignmentType === 'text') {
     menuItems.push({
       label: 'Öppna artikel',
-      icon: NotebookPen,
-      item: (event) => {
-        event.preventDefault()
-        event.stopPropagation()
-
-        if (articleId) {
-          openArticle(event, {
-            id: articleId
-          })
-        } else {
-          setShowCreateDialog(true)
-        }
+      icon: FileInput,
+      item: (event: MouseEvent<Element, MouseEvent>) => {
+        onOpenArticleEvent(event)
       }
     })
   }
@@ -123,10 +128,21 @@ const AssignmentRowContent = ({ index, setSelectedAssignment /*, setShowCreateDi
           </div>
         </div>
 
-        <div className="flex grow items-center justify-end">
+        <div className="flex grow items-center justify-end gap-1.5">
           <div className="min-w-[64px] whitespace-nowrap">
             {assTime ? <TimeDisplay date={assTime} /> : ''}
           </div>
+
+          {assignmentType === 'text' &&
+            <Button
+              variant='ghost'
+              className="flex h-8 w-8 p-0 data-[state=open]:bg-muted"
+              onClick={(event) => {
+                onOpenArticleEvent(event as unknown as MouseEvent<Element, MouseEvent>)
+              }}>
+              <FileInput size={18} strokeWidth={1.75} />
+            </Button>
+          }
 
           {!inProgress &&
             <DotDropdownMenu
