@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { type MouseEvent, useEffect } from 'react'
 import {
   type ColumnDef,
   flexRender
@@ -108,7 +108,7 @@ export const PlanningTable = <TData, TValue>({
             }
 
             handleLink({
-              event,
+              event: event as unknown as MouseEvent<Element, MouseEvent>,
               dispatch,
               viewItem: state.viewRegistry.get('Planning'),
               viewRegistry: state.viewRegistry,
