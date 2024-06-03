@@ -1,10 +1,5 @@
-<<<<<<< HEAD
-import { useMemo, type PropsWithChildren, useEffect } from 'react'
-import { AwarenessDocument, ViewHeader, Link as LocalLink } from '@/components'
-=======
 import { useMemo, type PropsWithChildren, useEffect, useState } from 'react'
 import { AwarenessDocument, ViewHeader } from '@/components'
->>>>>>> main
 import { PenBoxIcon } from '@ttab/elephant-ui/icons'
 
 import { createEditor } from 'slate'
@@ -31,12 +26,9 @@ import { EditorHeader } from './EditorHeader'
 import { type HocuspocusProvider } from '@hocuspocus/provider'
 import { type AwarenessUserData } from '@/contexts/CollaborationProvider'
 import { type YXmlText } from 'node_modules/yjs/dist/src/internals'
-<<<<<<< HEAD
 import { Button } from '@ttab/elephant-ui'
-=======
 import { articleDocumentTemplate } from '@/lib/templates/articleDocumentTemplate'
 import { createDocument } from '@/lib/createYItem'
->>>>>>> main
 
 const meta: ViewMetadata = {
   name: 'Editor',
