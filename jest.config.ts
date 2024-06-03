@@ -51,6 +51,7 @@ const config: JestConfigWithTsJest = {
   moduleNameMapper: {
     '\\.(css|scss)$': '<rootDir>/__mocks__/styleMock.ts',
     '@/protos/(.*).js': '<rootDir>/shared/protos/$1.ts',
+    '@/protos/(.*)': '<rootDir>/shared/protos/$1',
     '@/shared/(.*)': '<rootDir>/shared/$1',
     '@/(.*)': '<rootDir>/src/$1',
     '^(\\.{1,2}/.*)\\.js$': '$1'

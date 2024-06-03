@@ -1,9 +1,15 @@
+<<<<<<< HEAD
 import { useMemo, type PropsWithChildren, useEffect } from 'react'
 import { AwarenessDocument, ViewHeader, Link as LocalLink } from '@/components'
+=======
+import { useMemo, type PropsWithChildren, useEffect, useState } from 'react'
+import { AwarenessDocument, ViewHeader } from '@/components'
+>>>>>>> main
 import { PenBoxIcon } from '@ttab/elephant-ui/icons'
 
 import { createEditor } from 'slate'
 import { YjsEditor, withCursors, withYHistory, withYjs } from '@slate-yjs/core'
+import type * as Y from 'yjs'
 
 import {
   Textbit,
@@ -25,7 +31,12 @@ import { EditorHeader } from './EditorHeader'
 import { type HocuspocusProvider } from '@hocuspocus/provider'
 import { type AwarenessUserData } from '@/contexts/CollaborationProvider'
 import { type YXmlText } from 'node_modules/yjs/dist/src/internals'
+<<<<<<< HEAD
 import { Button } from '@ttab/elephant-ui'
+=======
+import { articleDocumentTemplate } from '@/lib/templates/articleDocumentTemplate'
+import { createDocument } from '@/lib/createYItem'
+>>>>>>> main
 
 const meta: ViewMetadata = {
   name: 'Editor',
@@ -45,15 +56,30 @@ const meta: ViewMetadata = {
 
 const Editor = (props: ViewProps): JSX.Element => {
   const query = useQuery()
+  const [document, setDocument] = useState<Y.Doc | undefined>(undefined)
+
   const documentId = props.id || query.id
 
   if (!documentId) {
     // TODO: Should we have a skeleton loading screen here
+    // Or maybe a message that says "No document selected"?
+    // This option shouldn't be possible in the UI, but it's possible to navigate to /editor without a document id
     return <></>
   }
 
+  if (props.onDocumentCreated && !document) {
+    const [, doc] = createDocument((id: string) => articleDocumentTemplate(id))
+    setDocument(doc)
+
+    return <></>
+  }
+
+  if (document && props.onDocumentCreated) {
+    props.onDocumentCreated()
+  }
+
   return (
-    <AwarenessDocument documentId={documentId} className="h-full">
+    <AwarenessDocument documentId={documentId} document={document} className="h-full">
       <EditorWrapper documentId={documentId} {...props} />
     </AwarenessDocument>
   )
@@ -92,7 +118,7 @@ function EditorWrapper(props: ViewProps & {
 
       </ViewHeader.Root>
 
-      <div className="flex-grow overflow-auto pr-12 max-w-screen-xl mx-auto">
+      <div className="flex-grow overflow-auto pr-12 max-w-screen-xl">
         {!!provider && synced
           ? <EditorContent provider={provider} user={user} />
           : <></>
