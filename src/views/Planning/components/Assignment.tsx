@@ -29,7 +29,7 @@ export const Assignment = ({ index, setSelectedAssignment, className }: {
           path={`core/assignment[${index}]`}
           field='title'
           placeholder='Uppdragsrubrik'
-          className="font-semibold text-lg leading-4 px-0"
+          className="font-semibold text-sm leading-5"
           singleLine={true}
           autoFocus={true}
         />
