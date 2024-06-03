@@ -57,7 +57,7 @@ export const DotDropdownMenu = ({ trigger = 'horizontal', items }: {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant='ghost' className="flex h-8 w-8 p-0 data-[state=open]:bg-muted">
+        <Button variant='ghost' className="flex h-8 w-8 p-0 data-[state=open]:bg-muted hover:bg-accent2">
           {trigger === 'horizontal'
             ? <MoreHorizontal size={18} strokeWidth={1.75} />
             : <MoreVertical size={18} strokeWidth={1.75} />
