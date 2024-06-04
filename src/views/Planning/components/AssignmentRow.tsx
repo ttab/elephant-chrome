@@ -40,14 +40,13 @@ export const AssignmentRow = ({ index, setSelectedAssignment }: {
   )
 }
 
-const AssignmentRowContent = ({ index, setSelectedAssignment /*, setShowCreateDialog, showCreateDialog = false */ }: {
+const AssignmentRowContent = ({ index, setSelectedAssignment }: {
   index: number
   setSelectedAssignment: React.Dispatch<React.SetStateAction<number | undefined>>
 }): JSX.Element => {
   const { provider } = useCollaboration()
   const openArticle = useLink('Editor')
   const base = `meta.core/assignment[${index}]`
-  // const [id] = useYValue<string>(`${assPath}.id`)
   const [inProgress] = useYValue(`${base}.__inProgress`)
   const [articleId] = useYValue<string>(`${base}.links.core/article[0].uuid`)
   const [assignmentType] = useYValue<string>(`${base}.meta.core/assignment-type[0].value`)
