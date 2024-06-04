@@ -7,6 +7,7 @@ import { XIcon, SearchIcon } from '@ttab/elephant-ui/icons'
 import { useState, useRef } from 'react'
 import useSWRInfinite from 'swr/infinite'
 import InfiniteScroll from './InfiniteScroll'
+import { ttninjs } from '@ttab/api-client'
 
 interface SearchInputProps extends React.InputHTMLAttributes<HTMLInputElement> { }
 
@@ -125,6 +126,22 @@ function ImageSearchResult(props: SearchResultProps): JSX.Element {
   )
 }
 
+interface ThumbnailProps {
+  hit: ttninjs
+}
+function Thumbnail(props: ThumbnailProps): JSX.Element {
+  const { hit } = props
+  return (
+    <div key={hit.uri} className='flex place-content-center  bg-gray-200' style={{minHeight: '144px'}}>
+      <img
+        src={`${hit.uri}_NormalThumbnail.jpg`}
+        // className='h-32 max-w-full'
+        style={{ maxHeight: '176px', objectFit: 'contain', maxWidth: 'auto' }}
+      // className='!max-h-44 !object-contain'
+      />
+    </div>
+  )
+}
 function ImageSearch(): JSX.Element {
   const [queryString, setQueryString] = useState('')
   const SIZE = 10
@@ -138,46 +155,40 @@ function ImageSearch(): JSX.Element {
     }
   )
 
+
+
+
   return (
     <div className='h-screen max-h-screen flex flex-col relative'>
-        <ViewHeader.Root>
-          <ViewHeader.Content>
-            {/* <ViewHeader.Title icon={XIcon} /> */}
-            <ImageSearchInput setQueryString={setQueryString} />
-            <XIcon />
-          </ViewHeader.Content>
-        </ViewHeader.Root>
+      <ViewHeader.Root>
+        <ViewHeader.Content>
+          {/* <ViewHeader.Title icon={XIcon} /> */}
+          <ImageSearchInput setQueryString={setQueryString} />
+          <XIcon />
+        </ViewHeader.Content>
+      </ViewHeader.Root>
 
-        <ImageSearchResult total={0}>
-          <InfiniteScroll
-            swr={swr}
-            loadingIndicator={<div>Loading...</div>}
-            endingIndicator={<div>Ending</div>}
-            isReachingEnd={(swr) =>
-              swr.data?.[0].hits.length === 0 || (swr.data?.[swr.data?.length - 1]?.hits.length ?? 0) < SIZE
-            }
-          >
-            {(data) =>
-              data.hits.map((hit: { uri?: string }) => {
-                const objectID = hit?.uri?.split('/')[5]
-                return (
-                  <div key={hit.uri} className='bg-gray-200'>
-                    <a href={`https://stage.tt.se/bild/o/${objectID}`} className='flex place-content-center'>
-                      <img
-                        src={`${hit.uri}_NormalThumbnail.jpg`}
-                        className='h-32 max-w-full'
-                        // style={{maxHeight: '100%', width: 'auto'}}
-                        // className=''
-                      />
-                    </a>
-                  </div>
-                )
-              })
+      <ImageSearchResult total={0}>
+        <InfiniteScroll
+          swr={swr}
+          loadingIndicator={<div>Loading...</div>}
+          endingIndicator={<div>Ending</div>}
+          isReachingEnd={(swr) =>
+            swr.data?.[0].hits.length === 0 || (swr.data?.[swr.data?.length - 1]?.hits.length ?? 0) < SIZE
+          }
+        >
+          {(data) =>
+            data.hits.map((hit) => {
+              // const objectID = hit?.uri?.split('/')[5]
+              return (
+                <Thumbnail hit={hit} />
+              )
+            })
 
-            }
-          </InfiniteScroll>
-        </ImageSearchResult>
-        {/* <div className="h-14 basis-14">Antal: XXX</div> */}
+          }
+        </InfiniteScroll>
+      </ImageSearchResult>
+      {/* <div className="h-14 basis-14">Antal: XXX</div> */}
 
     </div>
   )
