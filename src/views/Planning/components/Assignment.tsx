@@ -1,5 +1,5 @@
 import { TextBox } from '@/components/ui'
-import { useCollaboration, useYObserver } from '@/hooks'
+import { useAppearEffect, useCollaboration, useYObserver } from '@/hooks'
 import { Button } from '@ttab/elephant-ui'
 import { Clock10Icon, UserPlus } from '@ttab/elephant-ui/icons'
 import { cn } from '@ttab/elephant-ui/utils'
@@ -7,6 +7,7 @@ import type * as Y from 'yjs'
 import * as yMapValueByPath from '@/lib/yMapValueByPath'
 import { AssignmentType } from '@/components/DataItem/AssignmentType'
 import { useYValue } from '@/hooks/useYValue'
+import { useRef } from 'react'
 
 export const Assignment = ({ index, setSelectedAssignment, className }: {
   index: number
@@ -20,9 +21,11 @@ export const Assignment = ({ index, setSelectedAssignment, className }: {
   const [title] = useYValue<string | undefined>(`meta.core/assignment[${index}].title`)
   const [slugLine] = useYValue<string | undefined>(`meta.core/assignment[${index}].meta.tt/slugline[0].value`)
   const [assignmentType] = useYValue<string | undefined>(`meta.core/assignment[${index}].meta.core/assignment-type[0].value`)
+  const ref = useRef<HTMLDivElement>(null)
+  const [initialClass, revert] = useAppearEffect(ref)
 
   return (
-    <div className={cn('border rounded-md shadow-xl', className)}>
+    <div ref={ref} className={cn('border rounded-md shadow-xl', className, initialClass)}>
       <div className="flex flex-col gap-6 p-6">
         <TextBox
           base='meta'
@@ -78,7 +81,9 @@ export const Assignment = ({ index, setSelectedAssignment, className }: {
                     assignments.delete(index, 1)
                   }
 
-                  setSelectedAssignment(undefined)
+                  revert(() => {
+                    setSelectedAssignment(undefined)
+                  })
                 }
               }}>
               Avbryt
@@ -104,7 +109,9 @@ export const Assignment = ({ index, setSelectedAssignment, className }: {
                 }
               }
 
-              setSelectedAssignment(undefined)
+              revert(() => {
+                setSelectedAssignment(undefined)
+              })
             }}
           >
             {inProgress ? 'Lägg till' : 'Stäng'}

@@ -4,7 +4,7 @@ import { AssignmentType } from '@/components/DataItem/AssignmentType'
 import { AssigneeAvatars } from '@/components/DataItem/AssigneeAvatars'
 import { DotDropdownMenu } from '@/components/ui/DotMenu'
 import { Delete, Edit, FileInput } from '@ttab/elephant-ui/icons'
-import { type MouseEvent, useMemo, useState, useCallback } from 'react'
+import { type MouseEvent, useMemo, useState, useCallback, useRef } from 'react'
 import { SluglineButton } from '@/components/DataItem/Slugline'
 import { useYValue } from '@/hooks/useYValue'
 import { useLink } from '@/hooks/useLink'
@@ -14,6 +14,8 @@ import { appendArticle } from '@/lib/createYItem'
 import { useCollaboration } from '@/hooks/useCollaboration'
 import type * as Y from 'yjs'
 import { Button } from '@ttab/elephant-ui'
+import { cn } from '@ttab/elephant-ui/utils'
+import { useAppearEffect } from '@/hooks/useAppearEffect'
 
 export const AssignmentRow = ({ index, setSelectedAssignment }: {
   index: number
@@ -60,6 +62,9 @@ const AssignmentRowContent = ({ index, setSelectedAssignment }: {
   const [showVerifyDialog, setShowVerifyDialog] = useState<boolean>(false)
   const [showCreateDialog, setShowCreateDialog] = useState<boolean>(false)
 
+  const ref = useRef<HTMLDivElement>(null)
+  const [initialClass, revert] = useAppearEffect(ref)
+
   useKeydownGlobal((evt) => {
     if (evt.key === 'Escape') {
       setSelectedAssignment(undefined)
@@ -90,7 +95,9 @@ const AssignmentRowContent = ({ index, setSelectedAssignment }: {
       item: <T extends HTMLElement>(event: MouseEvent<T>) => {
         event.preventDefault()
         event.stopPropagation()
-        setSelectedAssignment(index)
+        revert(() => {
+          setSelectedAssignment(index)
+        })
       }
     },
     {
@@ -115,7 +122,13 @@ const AssignmentRowContent = ({ index, setSelectedAssignment }: {
   }
 
   return (
-    <div className='flex flex-col gap-2 text-sm px-4 pt-2.5 pb-4 hover:bg-muted'>
+    <div
+      ref={ref}
+      className={
+        cn('flex flex-col gap-2 text-sm px-4 pt-2.5 pb-4 hover:bg-muted',
+          initialClass
+        )}
+    >
       <div className="flex flex-row gap-6 items-center justify-items-between justify-between">
 
         <div className="flex grow gap-4 items-center">
@@ -176,19 +189,22 @@ const AssignmentRowContent = ({ index, setSelectedAssignment }: {
             if (!provider?.document) {
               return
             }
-            const yEle = provider.document.getMap('ele')
-            const meta = yEle.get('meta') as Y.Map<unknown>
-            if (meta.has('core/assignment')) {
-              const assignments = meta.get('core/assignment') as Y.Array<unknown>
-              assignments.delete(index, 1)
-            }
-            setSelectedAssignment(undefined)
+            revert(() => {
+              const yEle = provider.document.getMap('ele')
+              const meta = yEle.get('meta') as Y.Map<unknown>
+              if (meta.has('core/assignment')) {
+                const assignments = meta.get('core/assignment') as Y.Array<unknown>
+                assignments.delete(index, 1)
+              }
+              setSelectedAssignment(undefined)
+            })
           }}
           onSecondary={() => {
             setShowVerifyDialog(false)
           }}
         />
       }
+
       {showCreateDialog &&
         <Prompt
           title="Skapa artikel?"
