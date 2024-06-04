@@ -1,8 +1,9 @@
 import type { KeyboardEvent, MouseEvent } from 'react'
 import { useNavigation, useView } from '@/hooks'
 import { handleLink } from '@/components/Link/lib/handleLink'
+import type { View } from '../types'
 
-export const useLink = (viewName: 'Editor' | 'PlanningOverview' | 'Planning') => {
+export const useLink = (viewName: View) => {
   const { state, dispatch } = useNavigation()
   const { viewId: origin } = useView()
 
