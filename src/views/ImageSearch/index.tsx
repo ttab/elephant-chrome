@@ -60,14 +60,14 @@ const meta: ViewMetadata = {
   path: `${import.meta.env.BASE_URL || ''}/imagesearch`,
   widths: {
     sm: 12,
-    md: 12,
-    lg: 6,
-    xl: 6,
-    '2xl': 6,
-    hd: 6,
-    fhd: 4,
+    md: 3,
+    lg: 3,
+    xl: 3,
+    '2xl': 3,
+    hd: 3,
+    fhd: 3,
     qhd: 3,
-    uhd: 2
+    uhd: 3
   }
 }
 
