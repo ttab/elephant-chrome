@@ -3,7 +3,6 @@ import { ViewHeader } from '@/components'
 import { useSession } from '@/hooks'
 import apiClient from '@/lib/apiclient'
 import { type ViewMetadata } from '@/types'
-import { Button, ScrollArea } from '@ttab/elephant-ui'
 import { XIcon, SearchIcon } from '@ttab/elephant-ui/icons'
 import { useState, useRef } from 'react'
 import useSWRInfinite from 'swr/infinite'
@@ -71,21 +70,7 @@ const meta: ViewMetadata = {
   }
 }
 
-function ImageSearchResult(props: SearchResultProps): JSX.Element {
-  const { children, total } = props
-  return (
-    <div className='h-screen max-h-screen flex flex-col p-2 gap-4 overflow-auto'>
-      <div
-        // className='flex-grow overflow-auto pr-12 max-w-screen-xl mx-auto grid grid-cols-2 md:grid-cols-3 gap-4 '
-        // className='max-h-44 flex-grow overflow-auto pr-12 mx-auto'
-        className='relative h-full grid grid-cols-2 md:grid-cols-3 gap-4'
-      // className='overflow-y-auto'
-      >
-        {children}
-      </div>
-    </div>
-  )
-}
+
 
 function ImageSearchInput(props: InputProps): JSX.Element {
   const { setQueryString } = props
@@ -93,8 +78,6 @@ function ImageSearchInput(props: InputProps): JSX.Element {
   const [query, setQuery] = useState('')
 
   const inputRef = useRef<HTMLInputElement>(null)
-
-
 
   const handleSubmit: React.FormEventHandler<HTMLFormElement> = (e) => {
     e.preventDefault()
@@ -104,7 +87,7 @@ function ImageSearchInput(props: InputProps): JSX.Element {
   return (
     <form
       onSubmit={handleSubmit}
-      className="self-center w-full p-2 flex flex-row gap-4"
+      className="self-center w-full p-2 flex flex-row"
     >
       <SearchInput
         className="p-2 w-full text-sm border-none focus:border-none"
@@ -118,51 +101,42 @@ function ImageSearchInput(props: InputProps): JSX.Element {
   )
 }
 
-const fetcher2 = ([key, queryString, index]) => {
-  const SIZE = 5
-  // fetch(key)
-  //   .then((res) => res.json())
-  //   .then((json) => json?.data)
-  console.log('XXX fetcher2, key, querystring index', key, queryString, index)
-  return apiClient(undefined, undefined)
-    .then((client) => client.content.search('image', { q: queryString, s: SIZE, fr: (index) * SIZE }))
-    .then((res) => res)
-}
+// const fetcher2 = ([queryString, index, SIZE]) => {
+//   return apiClient(undefined, undefined)
+//     .then((client) => client.content.search('image', { q: queryString, s: SIZE, fr: (index) * SIZE }))
+//     .then((res) => res)
+// }
 
-const fetcher = async ([key, queryString, index, SIZE]) => {
-  // console.log('XXX fetch url', queryKey)
-  // const queryObject = JSON.parse(queryKey)
-  // const { query, fromIndex, size } = queryObject
-  console.log('XXX fetcher, key, querystring index', key, queryString, index)
-  // const SIZE = 5
+const fetcher = async ([queryString, index, SIZE]: [queryString: string, index: number, SIZE: number]) => {
+  console.log('XXX fetch query', queryString, index)
   const client = await apiClient(undefined, undefined)
   const res = await client.content.search('image', { q: queryString, s: SIZE, fr: (index) * SIZE })
   return res
 }
 
-// const getKey = (pageIndex, previousPageData) => {
-//   if (previousPageData && !previousPageData.length) return null // reached the end
-//   return `/users?page=${pageIndex}&limit=10`                    // SWR key
-// }
+function ImageSearchResult(props: SearchResultProps): JSX.Element {
+  const { children } = props
+  return (
+    <div className='h-screen max-h-screen flex flex-col p-2 overflow-auto'>
+      <div className='relative h-full grid grid-cols-2 md:grid-cols-3 gap-1'>
+        {children}
+      </div>
+    </div>
+  )
+}
+
 function ImageSearch(): JSX.Element {
   const [queryString, setQueryString] = useState('')
-  const SIZE = 100
+  const SIZE = 10
   const swr = useSWRInfinite(
     (index, prevData) => {
-      console.log('XXX index', index)
-      // if (prevData && prevData.hits.length) return null
-      return [`/q=${queryString}&fr=${index},`, queryString, index, SIZE]
-
+      return [queryString, index, SIZE]
     },
     fetcher,
     {
       revalidateFirstPage: false
     }
   )
-
-
-
-  // console.log('XXX data', data)
 
   return (
     <div className='h-screen max-h-screen flex flex-col relative'>
@@ -173,7 +147,6 @@ function ImageSearch(): JSX.Element {
             <XIcon />
           </ViewHeader.Content>
         </ViewHeader.Root>
-      {/* <Button onClick={() => setSize(size + 1)} /> */}
 
         <ImageSearchResult total={0}>
           <InfiniteScroll
@@ -181,22 +154,20 @@ function ImageSearch(): JSX.Element {
             loadingIndicator={<div>Loading...</div>}
             endingIndicator={<div>Ending</div>}
             isReachingEnd={(swr) =>
-              // false
               swr.data?.[0].hits.length === 0 || (swr.data?.[swr.data?.length - 1]?.hits.length ?? 0) < SIZE
             }
           >
-
-
             {(data) =>
               data.hits.map((hit: { uri?: string }) => {
                 const objectID = hit?.uri?.split('/')[5]
-                // console.log('🍄 ~ {hits.hits.map ~ objectID 🤭 -', objectID)
                 return (
                   <div key={hit.uri} className='bg-gray-200'>
-                    <a href={`https://stage.tt.se/bild/o/${objectID}`}>
+                    <a href={`https://stage.tt.se/bild/o/${objectID}`} className='flex place-content-center'>
                       <img
                         src={`${hit.uri}_NormalThumbnail.jpg`}
                         className='h-32 max-w-full'
+                        // style={{maxHeight: '100%', width: 'auto'}}
+                        // className=''
                       />
                     </a>
                   </div>

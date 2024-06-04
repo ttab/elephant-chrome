@@ -1,5 +1,5 @@
 import { useMemo, type PropsWithChildren, useEffect, useState } from 'react'
-import { AwarenessDocument, ViewHeader } from '@/components'
+import { AwarenessDocument, ViewHeader, Link as LocalLink } from '@/components'
 import { PenBoxIcon } from '@ttab/elephant-ui/icons'
 
 import { createEditor } from 'slate'
