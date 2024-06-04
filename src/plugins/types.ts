@@ -5,4 +5,5 @@ export interface ActionHandlerI {
   dispatch: Dispatch<NavigationAction>
   viewRegistry: ViewRegistry
   origin: string
+  id?: string
 }
