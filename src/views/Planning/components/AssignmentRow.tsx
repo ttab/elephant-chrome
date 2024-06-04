@@ -71,7 +71,7 @@ const AssignmentRowContent = ({ index, setSelectedAssignment /*, setShowCreateDi
     return publishTime ? new Date(publishTime) : undefined
   }, [publishTime])
 
-  const onOpenArticleEvent = useCallback((event: MouseEvent<Element, MouseEvent>) => {
+  const onOpenArticleEvent = useCallback(<T extends HTMLElement>(event: MouseEvent<T>) => {
     event.preventDefault()
     event.stopPropagation()
 
@@ -88,7 +88,7 @@ const AssignmentRowContent = ({ index, setSelectedAssignment /*, setShowCreateDi
     {
       label: 'Redigera',
       icon: Edit,
-      item: (event: MouseEvent<Element, MouseEvent>) => {
+      item: <T extends HTMLElement>(event: MouseEvent<T>) => {
         event.preventDefault()
         event.stopPropagation()
         setSelectedAssignment(index)
@@ -97,7 +97,7 @@ const AssignmentRowContent = ({ index, setSelectedAssignment /*, setShowCreateDi
     {
       label: 'Ta bort',
       icon: Delete,
-      item: (event: MouseEvent<Element, MouseEvent>) => {
+      item: <T extends HTMLElement>(event: MouseEvent<T>) => {
         event.preventDefault()
         event.stopPropagation()
         setShowVerifyDialog(true)
@@ -109,7 +109,7 @@ const AssignmentRowContent = ({ index, setSelectedAssignment /*, setShowCreateDi
     menuItems.push({
       label: 'Öppna artikel',
       icon: FileInput,
-      item: (event: MouseEvent<Element, MouseEvent>) => {
+      item: <T extends HTMLElement>(event: MouseEvent<T>) => {
         onOpenArticleEvent(event)
       }
     })
@@ -137,8 +137,8 @@ const AssignmentRowContent = ({ index, setSelectedAssignment /*, setShowCreateDi
             <Button
               variant='ghost'
               className="flex h-8 w-8 p-0 data-[state=open]:bg-muted"
-              onClick={(event) => {
-                onOpenArticleEvent(event as unknown as MouseEvent<Element, MouseEvent>)
+              onClick={<T extends HTMLElement>(event: MouseEvent<T>) => {
+                onOpenArticleEvent(event)
               }}>
               <FileInput size={18} strokeWidth={1.75} />
             </Button>
@@ -209,7 +209,7 @@ const AssignmentRowContent = ({ index, setSelectedAssignment /*, setShowCreateDi
               }, 0)
             }
 
-            openArticle(event as unknown as MouseEvent<Element, MouseEvent>,
+            openArticle(event,
               { id },
               { onDocumentCreated }
             )

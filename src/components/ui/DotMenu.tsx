@@ -19,7 +19,7 @@ import {
 interface DotDropdownMenuActionItem {
   label: string
   icon?: LucideIcon
-  item: DotDropdownMenuActionItem[] | ((event: MouseEvent<Element, MouseEvent>) => void) | React.ReactNode
+  item: DotDropdownMenuActionItem[] | (<T extends HTMLElement>(event: MouseEvent<T>) => void) | React.ReactNode
 }
 
 /**
@@ -84,10 +84,10 @@ function DotDropdownMenuItem({ item, hasIcons }: {
 
   if (!Array.isArray(Item)) {
     return (
-      <DropdownMenuItem onClick={(evt) => {
+      <DropdownMenuItem onClick={<T extends HTMLElement>(evt: MouseEvent<T>) => {
         if (typeof Item === 'function') {
           evt.preventDefault()
-          Item(evt as unknown as MouseEvent<Element, MouseEvent>)
+          Item(evt)
         }
       }}>
         <DotDropdownMenuItemContent item={item} hasIcons={hasIcons} />

@@ -100,7 +100,7 @@ export const PlanningTable = <TData, TValue>({
         key={row.id}
         className='cursor-default'
         data-state={row.getIsSelected() && 'selected'}
-        onClick={(event) => {
+        onClick={<T extends HTMLElement>(event: MouseEvent<T>) => {
           // @ts-expect-error unknown
           if (!event.nativeEvent.target.dataset.rowAction) {
             if (!onRowSelected) {
@@ -108,7 +108,7 @@ export const PlanningTable = <TData, TValue>({
             }
 
             handleLink({
-              event: event as unknown as MouseEvent<Element, MouseEvent>,
+              event,
               dispatch,
               viewItem: state.viewRegistry.get('Planning'),
               viewRegistry: state.viewRegistry,
