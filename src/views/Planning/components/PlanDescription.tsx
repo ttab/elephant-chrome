@@ -32,9 +32,9 @@ export const PlanDescription = ({ role }: {
         icon={role === 'internal' && <Building
           size={26}
           strokeWidth={1.75}
-          className='px-1 text-muted-foreground'
+          className='p-0 text-muted-foreground'
         />}
-        placeholder={role === 'public' ? 'Public description' : 'Internal message'}
+        placeholder={role === 'public' ? 'Publik beskrivning' : 'Internt meddelande'}
       />
     </div>
   )
