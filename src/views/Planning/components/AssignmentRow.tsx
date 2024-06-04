@@ -107,7 +107,7 @@ const AssignmentRowContent = ({ index, setSelectedAssignment, setShowCreateDialo
 
         <div className='row-start-2 col-start-1 col-span-10 row-span-1 flex space-x-2 items-center pt-0.5 @4xl/view:row-start-1 @4xl/view:col-span-3 @4xl/view:col-start-9 pb-2 @4xl/view:pb-0'>
           <div className="pr-4 @4xl/view:px-4">
-            <AssignmentType path={`core/assignment[${index}].meta.core/assignment-type[0]`} />
+            <AssignmentType path={`core/assignment[${index}].meta.core/assignment-type`} />
           </div>
 
           <div className="min-w-[64px] whitespace-nowrap">

@@ -1,4 +1,4 @@
-import { Megaphone, MessageCircleMore } from '@ttab/elephant-ui/icons'
+import { Building } from '@ttab/elephant-ui/icons'
 import { TextBox } from '@/components/ui'
 import { useYObserver } from '@/hooks'
 import { type Block } from '@/protos/service'
@@ -23,16 +23,14 @@ export const PlanDescription = ({ role }: {
 
   const path = `core/description[${index === -1 ? stateDescriptions.length : index}].data`
 
-  const Icon = role === 'internal' ? MessageCircleMore : Megaphone
-
   return (
     <div className='flex w-full -ml-1' >
       <TextBox
         base='meta'
         path={path}
         field='text'
-        icon={<Icon
-          size={20}
+        icon={role === 'internal' && <Building
+          size={26}
           strokeWidth={1.75}
           className='p-0 text-muted-foreground'
         />}

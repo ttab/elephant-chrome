@@ -68,7 +68,7 @@ export const columns: Array<ColumnDef<Planning>> = [
     },
     accessorFn: (data) => data._source['document.title'][0],
     cell: ({ row }) => {
-      const slugline = row.original._source['document.meta.core_assignment.meta.tt_slugline.value']?.[0]
+      const slugline = row.original._source['document.meta.tt_slugline.value']?.[0]
       const title = row.getValue('title')
 
       return <Title title={title as string} slugline={slugline} />

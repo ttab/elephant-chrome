@@ -6,6 +6,7 @@ import { cn } from '@ttab/elephant-ui/utils'
 import type * as Y from 'yjs'
 import * as yMapValueByPath from '@/lib/yMapValueByPath'
 import { AssignmentType } from '@/components/DataItem/AssignmentType'
+import { useYValue } from '@/hooks/useYValue'
 
 export const Assignment = ({ index, setSelectedAssignment, className }: {
   index: number
@@ -16,6 +17,10 @@ export const Assignment = ({ index, setSelectedAssignment, className }: {
   const { get: getInProgress } = useYObserver('meta', `core/assignment[${index}]`)
   const inProgress = getInProgress('__inProgress') === true
 
+  const [title] = useYValue<string | undefined>(`meta.core/assignment[${index}].title`)
+  const [slugLine] = useYValue<string | undefined>(`meta.core/assignment[${index}].meta.tt/slugline[0].value`)
+  const [assignmentType] = useYValue<string | undefined>(`meta.core/assignment[${index}].meta.core/assignment-type[0].value`)
+
   return (
     <div className={cn('border rounded-md shadow-xl', className)}>
       <div className="flex flex-col gap-6 p-6">
@@ -24,8 +29,9 @@ export const Assignment = ({ index, setSelectedAssignment, className }: {
           path={`core/assignment[${index}]`}
           field='title'
           placeholder='Uppdragsrubrik'
-          className="font-semibold text-lg leading-4 px-0"
+          className="font-semibold text-sm leading-5"
           singleLine={true}
+          autoFocus={true}
         />
 
         <TextBox
@@ -54,7 +60,7 @@ export const Assignment = ({ index, setSelectedAssignment, className }: {
       <div className='flex items-center justify-between border-t p-4'>
         <div className='flex items-center justify-start gap-6'>
           <AssignmentType
-            path={`core/assignment[${index}].meta.core/assignment-type[0]`}
+            path={`core/assignment[${index}].meta.core/assignment-type`}
             editable={inProgress}
           />
           <UserPlus size={20} strokeWidth={1.75} />
@@ -67,6 +73,8 @@ export const Assignment = ({ index, setSelectedAssignment, className }: {
               variant="ghost"
               onClick={(evt) => {
                 evt.preventDefault()
+                evt.stopPropagation()
+
                 if (provider?.document) {
                   const yEle = provider.document.getMap('ele')
                   const meta = yEle.get('meta') as Y.Map<unknown>
@@ -78,14 +86,17 @@ export const Assignment = ({ index, setSelectedAssignment, className }: {
                   setSelectedAssignment(undefined)
                 }
               }}>
-              Ta bort
+              Avbryt
             </Button>
           }
 
           <Button
             variant="outline"
+            disabled={!title || (assignmentType === 'text' && !slugLine)}
             onClick={(evt) => {
               evt.preventDefault()
+              evt.stopPropagation()
+
               if (provider?.document && inProgress) {
                 const yEle = provider.document.getMap('ele')
                 const assignment = yMapValueByPath.get(

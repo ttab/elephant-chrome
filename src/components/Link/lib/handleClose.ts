@@ -4,15 +4,10 @@ interface Reset {
   viewId: string
   dispatch: React.Dispatch<NavigationAction>
 }
-export function handleReset({ viewId, dispatch }: Reset): void {
+export function handleClose({ viewId, dispatch }: Reset): void {
   const content: ContentState[] = history.state.contentState
 
-  // If the viewId is the last in the content state, do nothing
-  if (viewId === content[content.length - 1].viewId) {
-    return
-  }
-
-  const newContent = content.slice(0, content.findIndex(obj => obj.viewId === viewId) + 1)
+  const newContent = content.filter(obj => obj.viewId !== viewId)
   const newActive = newContent[newContent.length - 1]
 
 
