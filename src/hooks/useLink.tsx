@@ -1,14 +1,14 @@
 import type { KeyboardEvent, MouseEvent } from 'react'
 import { useNavigation, useView } from '@/hooks'
 import { handleLink } from '@/components/Link/lib/handleLink'
-import type { View } from '../types'
+import { type View } from '../types'
 
-export const useLink = (viewName: View) => {
+export const useLink = <T extends HTMLElement>(viewName: View) => {
   const { state, dispatch } = useNavigation()
   const { viewId: origin } = useView()
 
   return (
-    event: MouseEvent<Element, MouseEvent> | KeyboardEvent<Element>,
+    event: MouseEvent<T> | KeyboardEvent<T>,
     props: Record<string, unknown>,
     callbacks?: Record<string, () => void>
   ): void => {

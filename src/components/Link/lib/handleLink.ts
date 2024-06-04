@@ -10,8 +10,8 @@ import {
 import { toQueryString } from './toQueryString'
 import { minimumSpaceRequired } from '@/navigation/lib'
 
-interface LinkClick {
-  event?: MouseEvent<Element, MouseEvent> | KeyboardEvent<Element>
+interface LinkClick<T> {
+  event?: MouseEvent<T> | KeyboardEvent<T>
   dispatch: React.Dispatch<NavigationAction>
   viewItem: ViewRegistryItem
   viewRegistry: ViewRegistry
@@ -21,7 +21,7 @@ interface LinkClick {
   onDocumentCreated?: () => void
 }
 
-export function handleLink({
+export function handleLink<T>({
   event,
   dispatch,
   viewItem,
@@ -30,7 +30,7 @@ export function handleLink({
   viewId,
   origin,
   onDocumentCreated
-}: LinkClick): void {
+}: LinkClick<T>): void {
   if (event?.ctrlKey || event?.metaKey) {
     return
   }
