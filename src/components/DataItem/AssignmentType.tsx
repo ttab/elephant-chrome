@@ -17,7 +17,7 @@ export const AssignmentType = ({ path, editable = false }: {
     return <></>
   }
 
-  const value = state.map((s) => s.value).join('/')
+  const value = state?.map ? state.map((s) => s.value).sort().join('/') : ''
 
   const selectedOption = AssignmentTypes.find(type => type.value === value)
 

@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { type MouseEvent } from 'react'
 import {
   type LucideIcon,
   MoreHorizontal,
@@ -19,7 +19,7 @@ import {
 interface DotDropdownMenuActionItem {
   label: string
   icon?: LucideIcon
-  item: DotDropdownMenuActionItem[] | ((evt: React.MouseEvent<HTMLDivElement, MouseEvent>) => void) | React.ReactNode
+  item: DotDropdownMenuActionItem[] | (<T extends HTMLElement>(event: MouseEvent<T>) => void) | React.ReactNode
 }
 
 /**
@@ -84,7 +84,7 @@ function DotDropdownMenuItem({ item, hasIcons }: {
 
   if (!Array.isArray(Item)) {
     return (
-      <DropdownMenuItem onClick={(evt) => {
+      <DropdownMenuItem onClick={<T extends HTMLElement>(evt: MouseEvent<T>) => {
         if (typeof Item === 'function') {
           evt.preventDefault()
           Item(evt)
