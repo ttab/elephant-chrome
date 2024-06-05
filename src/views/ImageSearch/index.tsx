@@ -40,12 +40,6 @@ const SearchInput = React.forwardRef<HTMLInputElement, SearchInputProps>(
 )
 
 SearchInput.displayName = 'SearchInput'
-
-// interface Result {
-//   hits: object[]
-//   total: number
-// }
-
 interface SearchResultProps {
   total: number
   children: React.ReactNode
@@ -179,7 +173,6 @@ function ImageSearch(): JSX.Element {
         >
           {(data) =>
             data.hits.map((hit) => {
-              // const objectID = hit?.uri?.split('/')[5]
               return (
                 <Thumbnail hit={hit} />
               )

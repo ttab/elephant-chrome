@@ -10,6 +10,7 @@ type Props<T> = {
   offset?: number
 }
 
+
 const useIntersection = <T extends HTMLElement>(): [boolean, Ref<T>] => {
   const [intersecting, setIntersecting] = useState<boolean>(false)
   const [element, setElement] = useState<HTMLElement>()
