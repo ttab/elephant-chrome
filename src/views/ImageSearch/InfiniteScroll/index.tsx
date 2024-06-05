@@ -49,7 +49,7 @@ const InfiniteScroll = <T,>(props: Props<T>): React.ReactElement<Props<T>> => {
   return (
     <>
       {typeof children === 'function' ? data?.map((item) => children(item)) : children}
-      <div style={{ position: 'relative' }}>
+      <div style={{ position: 'relative', minHeight: '144px', display: 'flex', placeContent: 'center', placeItems: 'center' }} className=' bg-gray-200'>
         <div ref={ref} style={{ position: 'absolute', top: offset }}></div>
         {ending ? endingIndicator : loadingIndicator}
       </div>

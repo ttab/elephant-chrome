@@ -3,7 +3,7 @@ import { ViewHeader } from '@/components'
 import { useSession } from '@/hooks'
 import apiClient from '@/lib/apiclient'
 import { type ViewMetadata } from '@/types'
-import { XIcon, SearchIcon } from '@ttab/elephant-ui/icons'
+import { XIcon, SearchIcon, LoaderIcon, ImageIcon, ListEndIcon } from '@ttab/elephant-ui/icons'
 import { useState, useRef } from 'react'
 import useSWRInfinite from 'swr/infinite'
 import InfiniteScroll from './InfiniteScroll'
@@ -165,8 +165,8 @@ function ImageSearch(): JSX.Element {
       <ImageSearchResult total={0}>
         <InfiniteScroll
           swr={swr}
-          loadingIndicator={<div>Loading...</div>}
-          endingIndicator={<div>Ending</div>}
+          loadingIndicator={<LoaderIcon size={'50%'} color='#9ca3af' strokeWidth='1' />}
+          endingIndicator={<ListEndIcon size={'50%'} color='#9ca3af' strokeWidth='1' />}
           isReachingEnd={(swr) =>
             swr.data?.[0].hits.length === 0 || (swr.data?.[swr.data?.length - 1]?.hits.length ?? 0) < SIZE
           }
