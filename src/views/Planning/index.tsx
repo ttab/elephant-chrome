@@ -66,7 +66,7 @@ const PlanningViewContent = (props: ViewProps & { documentId: string }): JSX.Ele
     }
   })
 
-  const sectionVariants = cva('overscroll-auto @5xl:w-[1024px] space-y-4', {
+  const sectionVariants = cva('overscroll-auto @5xl:w-[1024px] space-y-5', {
     variants: {
       asCreateDialog: {
         false: 'p-8',
@@ -101,27 +101,29 @@ const PlanningViewContent = (props: ViewProps & { documentId: string }): JSX.Ele
 
       <ScrollArea className='grid @5xl:place-content-center'>
         <section className={cn(sectionVariants({ asCreateDialog: !!props?.asCreateDialog }))}>
-          <div className='flex space-x-2 items-start'>
-            <PlanTitle autoFocus={props.asCreateDialog} />
-            <SluglineEditable />
-          </div>
+          <div className='flex flex-col gap-2 pl-0.5'>
+            <div className='flex space-x-2 items-start'>
+              <PlanTitle autoFocus={props.asCreateDialog} />
+              <SluglineEditable />
+            </div>
 
-          <div className='flex flex-col gap-4'>
             <PlanDescription role="public" />
             <PlanDescription role="internal" />
           </div>
 
-          <div className='-ml-4'>
-            <PlanDate />
-          </div>
-
-          <div className='flex space-x-2'>
-            <PlanSector />
-            <PlanStory />
+          <div className="flex flex-col space-y-2">
+            <div className='-ml-2'>
+              <PlanDate />
+            </div>
+            <div className='flex space-x-2'>
+              <PlanSector />
+              <PlanStory />
+            </div>
           </div>
 
           <AssignmentTable />
         </section>
+
         {props.asCreateDialog && (
           <div>
             <Separator className='ml-0' />

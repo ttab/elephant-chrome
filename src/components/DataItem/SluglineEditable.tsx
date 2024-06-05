@@ -18,7 +18,7 @@ export const SluglineEditable = ({ path = 'tt/slugline[0]' }: { path?: string })
     <Awareness name={`PlanSlugline-${path}`} ref={setFocused}>
       {active
         ? <SluglineInput path={path} setActive={setAwareness} />
-        : <SluglineButton path={path} setActive={setAwareness} />}
+        : <div className="pt-1.5"><SluglineButton path={path} setActive={setAwareness} /></div>}
     </Awareness>
   )
 }

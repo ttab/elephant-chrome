@@ -61,11 +61,11 @@ export const DatePicker = ({ date, setDate, forceYear = false }: {
         <Button
           variant={'ghost'}
           className={cn(
-            'justify-center text-left font-normal h-9 whitespace-nowrap px-0 sm:px-4',
+            'justify-center text-left font-normal h-9 whitespace-nowrap px-2',
             !date && 'text-muted-foreground'
           )}
         >
-          <CalendarIcon size={18} strokeWidth={1.75} className='mr-2' />
+          <CalendarIcon size={18} strokeWidth={1.75} className='mr-3.5' />
 
           <span className={cn(defaultDate({ forceYear }))}>{formattedDate}</span>
           <span className={cn(longDate({ forceYear }))}>{longFormattedDate}</span>

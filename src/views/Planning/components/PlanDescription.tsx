@@ -1,4 +1,4 @@
-import { Building } from '@ttab/elephant-ui/icons'
+import { Building, Text } from '@ttab/elephant-ui/icons'
 import { TextBox } from '@/components/ui'
 import { useYObserver } from '@/hooks'
 import { type Block } from '@/protos/service'
@@ -29,12 +29,12 @@ export const PlanDescription = ({ role }: {
         base='meta'
         path={path}
         field='text'
-        icon={role === 'internal' && <Building
-          size={26}
-          strokeWidth={1.75}
-          className='p-0 text-muted-foreground'
-        />}
+        icon={role === 'internal'
+          ? <Building size={20} strokeWidth={1.75} className='text-muted-foreground' />
+          : <Text size={20} strokeWidth={1.75} className='text-muted-foreground' />
+        }
         placeholder={role === 'public' ? 'Publik beskrivning' : 'Internt meddelande'}
+        className='text-sm'
       />
     </div>
   )
