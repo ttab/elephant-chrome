@@ -9,7 +9,7 @@ export const PlanTitle = ({ autoFocus }: { autoFocus?: boolean }): JSX.Element |
         path=''
         field='title'
         placeholder='Planeringsrubrik'
-        className='font-semibold text-xl leading-4 px-0'
+        className='font-semibold text-xl leading-6'
         autoFocus={!!autoFocus}
         singleLine={true}
       />

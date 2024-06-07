@@ -17,7 +17,7 @@ export const AssignmentType = ({ path, editable = false }: {
     return <></>
   }
 
-  const value = state.map((s) => s.value).join('/')
+  const value = state?.map ? state.map((s) => s.value).sort().join('/') : ''
 
   const selectedOption = AssignmentTypes.find(type => type.value === value)
 
@@ -45,9 +45,11 @@ export const AssignmentType = ({ path, editable = false }: {
         // If selected option is composit picture/video, create two new maps
         if (option.value === 'picture/video') {
           const picture = toYMap(Block.create({
+            type: 'core/assignment-type',
             value: 'picture'
           }) as unknown as Record<string, unknown>)
           const video = toYMap(Block.create({
+            type: 'core/assignment-type',
             value: 'video'
           }) as unknown as Record<string, unknown>)
 
@@ -55,6 +57,7 @@ export const AssignmentType = ({ path, editable = false }: {
           // If selected option is not composite, create one new map
         } else {
           const newMap = toYMap(Block.create({
+            type: 'core/assignment-type',
             value: option.value
           }) as unknown as Record<string, unknown>)
           newArray.push([newMap])

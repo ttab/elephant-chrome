@@ -94,7 +94,7 @@ const TextboxEditable = ({ provider, user, icon, content }: {
   const editableStyle = cva('relative w-full outline-none rounded-sm h-min-12 p-2 -mt-2 -ml-2 ring-offset-background data-[state="focused"]:ring-1 ring-gray-300 data-[state="focused"]:dark:ring-gray-600', {
     variants: {
       hasIcon: {
-        true: 'ps-9'
+        true: 'ps-10'
       }
     }
   })

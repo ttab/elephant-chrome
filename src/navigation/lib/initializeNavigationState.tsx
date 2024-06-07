@@ -19,8 +19,30 @@ export function initializeNavigationState(): NavigationState {
   const { name, props } = currentView()
   // Initialize navigationstate from scratch if no contentState exists (or is empty []) in history
   if (!history?.state?.contentState?.length) {
-    const InititalView = viewRegistry.getByPath(window.location.pathname)
     const viewId = crypto.randomUUID()
+    let InititalView: ViewRegistryItem
+
+    try {
+      InititalView = viewRegistry.getByPath(window.location.pathname)
+    } catch (ex) {
+      // TODO: Refactor this funtionality so that it is easy to reuse in different situations
+      InititalView = viewRegistry.getByPath(`${import.meta.env.BASE_URL || ''}/error`)
+
+      props.title = 'Felaktig länk!'
+      props.message = 'Den länk du angav verkar inte leda någonstans. Kontrollera länken noga och försök igen.'
+
+      return {
+        viewRegistry,
+        views: [{ name: 'Error', colSpan: 12 }],
+        focus: null,
+        active: viewId,
+        content: [(
+          <ViewWrapper key={viewId} viewId={viewId} name={'Error'} colSpan={12}>
+            <InititalView.component {...props} />
+          </ViewWrapper>
+        )]
+      }
+    }
 
     history.replaceState({
       viewId,
