@@ -1,5 +1,5 @@
 import express from 'express'
-import type core from 'express-serve-static-core'
+import type { RequestHandler, Express } from 'express-serve-static-core'
 import expressWebsockets from 'express-ws'
 import cors from 'cors'
 import cookieParser from 'cookie-parser'
@@ -14,6 +14,10 @@ import {
   CollaborationServer
 } from './utils/index.js'
 import { createRemoteJWKSet } from 'jose'
+
+import { ExpressAuth } from '@auth/express'
+import { authenticatedUser } from './utils/authenticatedUser.js'
+import { authConfig } from './utils/authConfig.js'
 
 
 /*
@@ -67,6 +71,10 @@ export async function runServer(): Promise<string> {
 
   const repository = new Repository(REPOSITORY_URL, jwks)
 
+  app.set('trust proxy', true)
+  app.use(`${BASE_URL}/api/auth/*`, ExpressAuth(authConfig) as RequestHandler)
+  app.use(authenticatedUser as RequestHandler)
+
   app.use(cors({
     credentials: true,
     origin: `${PROTOCOL}://${HOST}:${PORT}`
@@ -93,7 +101,7 @@ export async function runServer(): Promise<string> {
   })
 
   if (NODE_ENV === 'development') {
-    ViteExpress.listen(app as unknown as core.Express, PORT,
+    ViteExpress.listen(app as unknown as Express, PORT,
       () => {
         console.log(`Development Server running on ${PROTOCOL}://${HOST}:${PORT}${BASE_URL || ''}`)
       })
