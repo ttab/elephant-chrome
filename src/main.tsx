@@ -1,8 +1,9 @@
 import ReactDOM from 'react-dom/client'
 import { App } from './App.tsx'
-import { ThemeProvider, SessionProvider, RegistryProvider, HPWebSocketProvider } from '@/contexts'
+import { ThemeProvider, RegistryProvider, HPWebSocketProvider } from '@/contexts'
 import { NavigationProvider } from '@/navigation'
 import { banner } from './lib/banner.ts'
+import { SessionProvider } from 'next-auth/react'
 
 banner()
 
@@ -13,7 +14,7 @@ if (!root) {
 }
 
 ReactDOM.createRoot(root).render(
-  <SessionProvider>
+  <SessionProvider basePath='/elephant/api/auth'>
     <RegistryProvider>
       <HPWebSocketProvider>
         <ThemeProvider defaultTheme='light' storageKey='ele-ui-theme' >

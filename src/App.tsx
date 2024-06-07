@@ -5,9 +5,11 @@ import { DocTrackerProvider } from './contexts/DocTrackerProvider'
 import { AppContent } from './AppContent'
 
 export const App = (): JSX.Element => {
-  const { jwt } = useSession()
+  const data = useSession()
 
-  if (!jwt) {
+  console.log(data)
+
+  if (!data) {
     return <div className='relative flex h-screen flex-col'>
       <Login />
     </div>

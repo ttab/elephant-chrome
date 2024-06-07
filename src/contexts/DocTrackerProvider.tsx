@@ -6,7 +6,8 @@ import {
   useMemo
 } from 'react'
 import { HocuspocusProvider } from '@hocuspocus/provider'
-import { useSession } from '@/hooks'
+// import { useSession } from '@/hooks'
+import { useSession } from 'next-auth/react'
 import { HPWebSocketProviderContext } from '.'
 
 interface DocTrackerProviderState {
@@ -31,14 +32,18 @@ interface DocTrackerContextProviderProps extends PropsWithChildren {
 
 export const DocTrackerProvider = ({ children }: DocTrackerContextProviderProps): JSX.Element => {
   const { webSocket } = useContext(HPWebSocketProviderContext)
-  const { jwt } = useSession()
+  const { data } = useSession()
   const [synced, setSynced] = useState<boolean>(false)
   const [connected, setConnected] = useState<boolean>(false)
 
-  if (!jwt?.access_token) {
+  console.log('doc tracker provider', JSON.stringify(data, null, 2))
+  // @ts-expect-error unk
+  if (!data.user.accessToken) {
     throw new Error('DocTracker is not allowed without a valid access_token')
   }
 
+  // @ts-expect-error unk
+  const accessToken = data?.user?.accessToken
   const provider = useMemo(() => {
     if (!webSocket) {
       return
@@ -47,7 +52,7 @@ export const DocTrackerProvider = ({ children }: DocTrackerContextProviderProps)
     return new HocuspocusProvider({
       websocketProvider: webSocket,
       name: 'document-tracker',
-      token: jwt.access_token,
+      token: accessToken,
       onConnect: () => {
         setConnected(true)
       },
