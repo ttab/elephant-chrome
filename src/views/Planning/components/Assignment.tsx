@@ -53,7 +53,7 @@ export const Assignment = ({ index, setSelectedAssignment, className }: {
             strokeWidth={1.75}
             className='p-0 text-muted-foreground'
           />}
-          className="text-md px-0 bg-gray"
+          className="text-sm px-0 bg-gray"
         />
       </div>
 

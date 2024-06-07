@@ -23,7 +23,7 @@ export const AssignmentTable = (): JSX.Element => {
   return (
     <div className='flex flex-col gap-2 pt-4'>
       {createdAssignment === undefined &&
-        <div className='flex flex-start pb-4'>
+        <div className='flex flex-start pb-2'>
           <a href="#" className='flex flex-start items-center text-sm gap-2 p-2 -ml-2 rounded-sm hover:bg-gray-100' onClick={(evt) => {
             evt.preventDefault()
 
