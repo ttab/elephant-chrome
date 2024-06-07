@@ -8,6 +8,8 @@ import { useState, useRef } from 'react'
 import useSWRInfinite from 'swr/infinite'
 import InfiniteScroll from './InfiniteScroll'
 import { ttninjs } from '@ttab/api-client'
+import { Button, Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger, Popover, PopoverContent, PopoverTrigger } from '@ttab/elephant-ui'
+import { Preview } from './Preview'
 
 interface SearchInputProps extends React.InputHTMLAttributes<HTMLInputElement> { }
 
@@ -126,14 +128,23 @@ interface ThumbnailProps {
 function Thumbnail(props: ThumbnailProps): JSX.Element {
   const { hit } = props
   return (
-    <div key={hit.uri} className='flex place-content-center  bg-gray-200' style={{minHeight: '144px'}}>
-      <img
-        src={`${hit.uri}_NormalThumbnail.jpg`}
-        // className='h-32 max-w-full'
-        style={{ maxHeight: '176px', objectFit: 'contain', maxWidth: 'auto' }}
-      // className='!max-h-44 !object-contain'
-      />
-    </div>
+
+    <Dialog modal={false} >
+      <DialogTrigger>
+        <div className='flex place-content-center  bg-gray-200' style={{ minHeight: '144px' }}>
+          <img
+            src={`${hit.uri}_NormalThumbnail.jpg`}
+            // className='h-32 max-w-full'
+            style={{ maxHeight: '176px', objectFit: 'contain', maxWidth: 'auto' }}
+            // onClick={() => { }}
+          // className='!max-h-44 !object-contain'
+          />
+        </div>
+      </DialogTrigger>
+      <DialogContent><Preview ttninjs={hit}/></DialogContent>
+    </Dialog>
+
+
   )
 }
 function ImageSearch(): JSX.Element {
@@ -174,7 +185,7 @@ function ImageSearch(): JSX.Element {
           {(data) =>
             data.hits.map((hit) => {
               return (
-                <Thumbnail hit={hit} />
+                <Thumbnail key={hit.uri} hit={hit} />
               )
             })
 
