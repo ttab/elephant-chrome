@@ -67,7 +67,6 @@ export async function runServer(): Promise<string> {
 
   const repository = new Repository(REPOSITORY_URL, jwks)
 
-  // TODO: Remove?
   app.use(cors({
     credentials: true,
     origin: `${PROTOCOL}://${HOST}:${PORT}`
