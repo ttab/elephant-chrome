@@ -17,7 +17,7 @@ export const Title = ({ title, short: shortTitle, icon: Icon }: PropsWithChildre
       }
 
       {!!title &&
-        <h2 className="font-bold cursor-pointer">
+        <h2 className="font-bold cursor-pointer whitespace-nowrap">
           {typeof shortTitle !== 'string'
             ? <>{title}</>
             : <>

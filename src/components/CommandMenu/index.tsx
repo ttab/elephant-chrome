@@ -70,23 +70,23 @@ export const CommandMenu = ({ children, onKeyDown, onChange }: CommandMenuProps)
             onChange={(value) => onChange(value, command)}
             placeholder={getPlaceholder(pages, page)}
             className="h-9"
-      />
+          />
           {children}
           {!page && (
-          <CommandGroup heading="Suggestions">
-            <CommandItem
-              onSelect={() => runCommand(() => handleLink({
-                dispatch,
-                viewItem: state.viewRegistry.get('PlanningOverview'),
-                viewId: crypto.randomUUID(),
-                viewRegistry: state.viewRegistry,
-                origin: viewId
-              }))}
-            >
-              <GanttChart size={18} strokeWidth={1.75} className="mr-2" />
-              <span>Planning overview</span>
-            </CommandItem>
-          </CommandGroup>
+            <CommandGroup heading="Suggestions">
+              <CommandItem
+                onSelect={() => runCommand(() => handleLink({
+                  dispatch,
+                  viewItem: state.viewRegistry.get('PlanningOverview'),
+                  viewId: crypto.randomUUID(),
+                  viewRegistry: state.viewRegistry,
+                  origin: viewId
+                }))}
+              >
+                <GanttChart size={18} strokeWidth={1.75} className="mr-2" />
+                <span>Planning overview</span>
+              </CommandItem>
+            </CommandGroup>
           )}
           <CommandSeparator />
         </Command>

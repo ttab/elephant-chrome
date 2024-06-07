@@ -37,3 +37,5 @@ flake.lock
 
 tsconfig.node.tsbuildinfo
 tsconfig.tsbuildinfo
+
+vite.config.ts.timestamp*
