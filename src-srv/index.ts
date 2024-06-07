@@ -1,4 +1,5 @@
 import express from 'express'
+import type core from 'express-serve-static-core'
 import expressWebsockets from 'express-ws'
 import cors from 'cors'
 import cookieParser from 'cookie-parser'
@@ -6,6 +7,7 @@ import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 
 import { connectRouteHandlers, mapRoutes } from './routes.js'
+import ViteExpress from 'vite-express'
 import {
   Repository,
   RedisCache,
@@ -26,15 +28,13 @@ const JWKS_URL = process.env.JWKS_URL
 const REDIS_URL = process.env.REDIS_URL
 const BASE_URL = process.env.BASE_URL || ''
 
-console.info(`Starting API environment "${NODE_ENV}"`)
-
-
 /**
  * Run the server
  */
-async function runServer(): Promise<string> {
+export async function runServer(): Promise<string> {
   const { apiDir, distDir } = getPaths()
   const { app } = expressWebsockets(express())
+
 
   const routes = await mapRoutes(apiDir)
 
@@ -69,12 +69,11 @@ async function runServer(): Promise<string> {
 
   app.use(cors({
     credentials: true,
-    origin: `${PROTOCOL}://${HOST}:${process.env.DEV_CLIENT_PORT || PORT}`
+    origin: `${PROTOCOL}://${HOST}:${PORT}`
 
   }))
   app.use(cookieParser())
   app.use(BASE_URL, express.json())
-  app.use(BASE_URL || '', express.static(distDir))
 
 
   // Create collaboration and hocuspocus server
@@ -93,18 +92,30 @@ async function runServer(): Promise<string> {
     collaborationServer
   })
 
-  // Catch all other requests and serve bundled app
-  app.get('*', (_, res) => {
-    res.sendFile(path.join(distDir, 'index.html'))
-  })
+  if (NODE_ENV === 'development') {
+    ViteExpress.listen(app as unknown as core.Express, PORT,
+      () => {
+        console.log(`Development Server running on ${PROTOCOL}://${HOST}:${PORT}${BASE_URL || ''}`)
+      })
+    return `${PROTOCOL}://${HOST}:${PORT}${BASE_URL || ''}`
+  }
 
-  app.listen(PORT)
-  return `${PROTOCOL}://${HOST}:${PORT}`
+  if (NODE_ENV === 'production') {
+    // Catch all other requests and serve bundled app
+    app.use(BASE_URL || '', express.static(distDir))
+    app.get('*', (_, res) => {
+      res.sendFile(path.join(distDir, 'index.html'))
+    })
+    app.listen(PORT)
+    return `${PROTOCOL}://${HOST}:${PORT}${BASE_URL || ''}`
+  }
+
+  throw new Error('Invalid NODE_ENV')
 }
 
 (async () => {
   return await runServer()
-})().then(url => {
+})().then((url) => {
   console.info(`Serving API on ${url}/api`)
 }).catch(ex => {
   console.error(ex)
