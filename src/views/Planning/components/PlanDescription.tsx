@@ -21,14 +21,12 @@ export const PlanDescription = ({ role }: {
 
   const index = findIndex(stateDescriptions, role)
 
-  const path = `core/description[${index === -1 ? stateDescriptions.length : index}].data`
+  const path = `meta.core/description[${index === -1 ? stateDescriptions.length : index}].data.text`
 
   return (
     <div className='flex w-full -ml-1' >
       <TextBox
-        base='meta'
         path={path}
-        field='text'
         icon={role === 'internal'
           ? <Building size={20} strokeWidth={1.75} className='text-muted-foreground' />
           : <Text size={20} strokeWidth={1.75} className='text-muted-foreground' />

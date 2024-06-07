@@ -31,3 +31,11 @@ export function isYValue(value: unknown): value is Y.XmlText | Y.Text | Y.Array<
 export function isYContainer(value: unknown): value is Y.Array<unknown> | Y.Map<unknown> {
   return isYArray(value) || isYMap(value)
 }
+
+export function isNumber(value: unknown): value is number {
+  return Number.isInteger(value)
+}
+
+export function isRecord(value: unknown): value is Record<string, unknown> {
+  return !!value && typeof value === 'object' && value.constructor === Object
+}
