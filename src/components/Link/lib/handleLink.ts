@@ -1,4 +1,4 @@
-import type { MouseEvent } from 'react'
+import type { KeyboardEvent, MouseEvent } from 'react'
 import {
   NavigationActionType,
   type NavigationAction,
@@ -10,8 +10,8 @@ import {
 import { toQueryString } from './toQueryString'
 import { minimumSpaceRequired } from '@/navigation/lib'
 
-interface LinkClick {
-  event?: MouseEvent<HTMLAnchorElement | HTMLTableRowElement | HTMLButtonElement>
+interface LinkClick<T> {
+  event?: MouseEvent<T> | KeyboardEvent<T>
   dispatch: React.Dispatch<NavigationAction>
   viewItem: ViewRegistryItem
   viewRegistry: ViewRegistry
@@ -21,7 +21,7 @@ interface LinkClick {
   onDocumentCreated?: () => void
 }
 
-export function handleLink({
+export function handleLink<T>({
   event,
   dispatch,
   viewItem,
@@ -30,7 +30,7 @@ export function handleLink({
   viewId,
   origin,
   onDocumentCreated
-}: LinkClick): void {
+}: LinkClick<T>): void {
   if (event?.ctrlKey || event?.metaKey) {
     return
   }
@@ -40,12 +40,12 @@ export function handleLink({
   // Create next (wanted) content state
   // Beware, props can not be functions
   const newContent: ContentState =
-    {
-      props,
-      viewId,
-      name: viewItem.meta.name,
-      path: `${viewItem.meta.path}${toQueryString(props)}`
-    }
+  {
+    props,
+    viewId,
+    name: viewItem.meta.name,
+    path: `${viewItem.meta.path}${toQueryString(props)}`
+  }
 
   // If modifier is used, open furthest to the right
   // Otherwise open to the right of origin

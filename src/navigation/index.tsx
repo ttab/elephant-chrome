@@ -23,7 +23,7 @@ export const NavigationContext = createContext<{
   dispatch: Dispatch<NavigationAction>
 }>({
   state: initialState,
-  dispatch: () => {}
+  dispatch: () => { }
 })
 
 export const NavigationProvider = ({ children }: PropsWithChildren): JSX.Element => {
@@ -64,6 +64,10 @@ function calculateViews(
   history: History,
   state: NavigationState,
   dispatch: Dispatch<NavigationAction>): void {
+  if (!history.state) {
+    // This happens when loading Error view which does not store it's state
+    return
+  }
   const content: ContentState[] = [...history.state.contentState]
 
   let spaceRequired = minimumSpaceRequired(content, state.viewRegistry)

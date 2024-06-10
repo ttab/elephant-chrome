@@ -1,7 +1,7 @@
 import { TextBox } from '@/components/ui'
 import { useCollaboration, useYObserver } from '@/hooks'
 import { Button } from '@ttab/elephant-ui'
-import { Clock10Icon, UserPlus } from '@ttab/elephant-ui/icons'
+import { Clock10Icon, MessageCircleMore, UserPlus } from '@ttab/elephant-ui/icons'
 import { cn } from '@ttab/elephant-ui/utils'
 import type * as Y from 'yjs'
 import * as yMapValueByPath from '@/lib/yMapValueByPath'
@@ -29,7 +29,7 @@ export const Assignment = ({ index, setSelectedAssignment, className }: {
           path={`core/assignment[${index}]`}
           field='title'
           placeholder='Uppdragsrubrik'
-          className="font-semibold text-lg leading-4 px-0"
+          className="font-semibold text-sm leading-5"
           singleLine={true}
           autoFocus={true}
         />
@@ -47,8 +47,13 @@ export const Assignment = ({ index, setSelectedAssignment, className }: {
           base='meta'
           path={`core/assignment[${index}].meta.core/description[0].data`}
           field='text'
-          placeholder='Beskrivning'
-          className="text-md leading-4 px-0 bg-gray"
+          placeholder='Internt meddelande'
+          icon={<MessageCircleMore
+            size={20}
+            strokeWidth={1.75}
+            className='p-0 text-muted-foreground'
+          />}
+          className="text-sm px-0 bg-gray"
         />
       </div>
 

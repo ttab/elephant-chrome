@@ -1,6 +1,5 @@
 import { Textbit } from '@ttab/textbit'
 import { createEditor } from 'slate'
-import { cva } from 'class-variance-authority'
 import { cn } from '@ttab/elephant-ui/utils'
 import { useCollaboration, useYObserver } from '@/hooks'
 import { useLayoutEffect, useMemo } from 'react'
@@ -82,35 +81,28 @@ const TextboxEditable = ({ provider, user, icon, content }: {
       return () => YjsEditor.disconnect(yjsEditor)
     }
   }, [yjsEditor])
-
-  const wrapperStyle = cva('absolute top-0 left-0 p-2 -mt-2 -ml-2 text-muted-foreground', {
-    variants: {
-      hasIcon: {
-        true: 'flex flex-row'
-      }
-    }
-  })
-
-  const editableStyle = cva('relative w-full outline-none rounded-sm h-min-12 p-2 -mt-2 -ml-2 ring-offset-background data-[state="focused"]:ring-1 ring-gray-300 data-[state="focused"]:dark:ring-gray-600', {
-    variants: {
-      hasIcon: {
-        true: 'ps-9'
-      }
-    }
-  })
-
-  const hasIcon = !!icon
-
   return (
-    <div>
-      <div className={cn(wrapperStyle({ hasIcon }))}>
-        {icon}
-      </div>
+    <>
+      {icon
+        ? <div className='flex flex-row'>
+          <div className='pt-2.5'>
+            {icon}
+          </div>
 
-      <Textbit.Editable
-        yjsEditor={yjsEditor}
-        className={cn(editableStyle({ hasIcon }))}
-      />
-    </div>
+          <div className='grow'>
+            <Textbit.Editable
+              yjsEditor={yjsEditor}
+              className='p-1 py-1.5 -ms-7 ps-11 rounded-sm outline-none ring-offset-background data-[state="focused"]:ring-1 ring-gray-300 data-[state="focused"]:dark:ring-gray-600'
+            />
+          </div>
+        </div>
+        : <div>
+          <Textbit.Editable
+            yjsEditor={yjsEditor}
+            className='p-1 py-1.5 -ms-2 ps-2 rounded-sm outline-none ring-offset-background data-[state="focused"]:ring-1 ring-gray-300 data-[state="focused"]:dark:ring-gray-600'
+          />
+        </div>
+      }
+    </>
   )
 }

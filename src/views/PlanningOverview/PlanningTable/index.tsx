@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { type MouseEvent, useEffect } from 'react'
 import {
   type ColumnDef,
   flexRender
@@ -100,7 +100,7 @@ export const PlanningTable = <TData, TValue>({
         key={row.id}
         className='cursor-default'
         data-state={row.getIsSelected() && 'selected'}
-        onClick={(event) => {
+        onClick={<T extends HTMLElement>(event: MouseEvent<T>) => {
           // @ts-expect-error unknown
           if (!event.nativeEvent.target.dataset.rowAction) {
             if (!onRowSelected) {

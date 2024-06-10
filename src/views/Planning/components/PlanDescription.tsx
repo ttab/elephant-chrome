@@ -1,4 +1,4 @@
-import { MessageCircleMore } from '@ttab/elephant-ui/icons'
+import { Building, Text } from '@ttab/elephant-ui/icons'
 import { TextBox } from '@/components/ui'
 import { useYObserver } from '@/hooks'
 import { type Block } from '@/protos/service'
@@ -29,12 +29,12 @@ export const PlanDescription = ({ role }: {
         base='meta'
         path={path}
         field='text'
-        icon={role === 'internal' && <MessageCircleMore
-          size={28}
-          strokeWidth={1.75}
-          className='px-1 text-muted-foreground'
-        />}
-        placeholder={role === 'public' ? 'Public description' : 'Internal message'}
+        icon={role === 'internal'
+          ? <Building size={20} strokeWidth={1.75} className='text-muted-foreground' />
+          : <Text size={20} strokeWidth={1.75} className='text-muted-foreground' />
+        }
+        placeholder={role === 'public' ? 'Publik beskrivning' : 'Internt meddelande'}
+        className='text-sm'
       />
     </div>
   )

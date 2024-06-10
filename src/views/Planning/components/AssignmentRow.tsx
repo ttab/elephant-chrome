@@ -1,198 +1,181 @@
-import { Link } from '@/components'
 import { useYObserver } from '@/hooks/useYObserver'
 import { TimeDisplay } from '@/components/DataItem/TimeDisplay'
 import { AssignmentType } from '@/components/DataItem/AssignmentType'
 import { AssigneeAvatars } from '@/components/DataItem/AssigneeAvatars'
-import type * as Y from 'yjs'
 import { DotDropdownMenu } from '@/components/ui/DotMenu'
-import { useCollaboration, useNavigation, useView } from '@/hooks'
-import { Delete, Edit } from '@ttab/elephant-ui/icons'
-import { Button, Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@ttab/elephant-ui'
-import { useState } from 'react'
+import { Delete, Edit, FileInput } from '@ttab/elephant-ui/icons'
+import { type MouseEvent, useMemo, useState, useCallback } from 'react'
 import { SluglineButton } from '@/components/DataItem/Slugline'
+import { useYValue } from '@/hooks/useYValue'
+import { useLink } from '@/hooks/useLink'
+import { useKeydownGlobal } from '@/hooks/useKeydownGlobal'
+import { Prompt } from './Prompt'
 import { appendArticle } from '@/lib/createYItem'
-import { handleLink } from '@/components/Link/lib/handleLink'
+import { useCollaboration } from '@/hooks/useCollaboration'
+import type * as Y from 'yjs'
+import { Button } from '@ttab/elephant-ui'
 
 export const AssignmentRow = ({ index, setSelectedAssignment }: {
   index: number
   setSelectedAssignment: React.Dispatch<React.SetStateAction<number | undefined>>
 }): JSX.Element => {
-  const [showCreateDialog, setShowCreateDialog] = useState<boolean>(false)
-  const { get } = useYObserver('meta', `core/assignment[${index}]`)
-  const { get: getUUID } = useYObserver('meta', `core/assignment[${index}].links.core/article[0]`)
-
-  const uuid = getUUID('uuid')
-  const inProgress = !!get('__inProgress')
+  const assPath = `meta.core/assignment[${index}]`
+  const [inProgress] = useYValue(`${assPath}.__inProgress`)
 
   if (inProgress) {
     return <></>
   }
 
   return (
-    <>
-      {uuid
-        ? (
-          <Link to='Editor' props={{ id: uuid as string }} className="group/assrow cursor-default">
-            <AssignmentRowContent index={index} setSelectedAssignment={setSelectedAssignment} />
-          </Link>)
-        : (
-          <div onClick={() => setShowCreateDialog(true)}>
-            <AssignmentRowContent
-              index={index}
-              setSelectedAssignment={setSelectedAssignment}
-              setShowCreateDialog={setShowCreateDialog}
-              showCreateDialog={showCreateDialog}
-            />
-          </div>)
-      }
-    </>
-  )
-}
-
-const AssignmentRowContent = ({ index, setSelectedAssignment, setShowCreateDialog, showCreateDialog = false }: {
-  index: number
-  setSelectedAssignment: React.Dispatch<React.SetStateAction<number | undefined>>
-  setShowCreateDialog?: React.Dispatch<React.SetStateAction<boolean>>
-  showCreateDialog?: boolean
-}): JSX.Element => {
-  const { get } = useYObserver('meta', `core/assignment[${index}]`)
-  const { get: getAssignmentDescription } = useYObserver('meta', `core/assignment[${index}].meta.core/description[0].data`)
-  const { get: getAssignmentPublishTime } = useYObserver('meta', `core/assignment[${index}].data`)
-  const { state: stateAuthor = [] } = useYObserver('meta', `core/assignment[${index}].links.core/author`)
-  const [showVerifyDialog, setShowVerifyDialog] = useState<boolean>(false)
-
-  const description = (getAssignmentDescription('text') as Y.XmlText)?.toJSON()
-  const inProgress = !!get('__inProgress')
-
-  return (
-    <div className='flex flex-col text-sm px-4 py-2.5 @4xl/view:gap-1 hover:bg-muted'>
-      <div className='grid grid-cols-12 grid-rows-2 text-sm gap-2 items-start @4xl/view:grid-rows-1'>
-
-        <div className='row-start-1 col-start-1 col-span-10 row-span-1 self-center text-[15px] font-medium @4xl/view:col-span-8 @4xl/view:pt-1'>
-          {!inProgress &&
-            <span className='pr-2 leading-relaxed group-hover/assrow:underline'>{(get('title') as Y.XmlText)?.toJSON()}</span>
-          }
-
-          <span className="float-right pr-4">
-            <SluglineButton path={`core/assignment[${index}].meta.tt/slugline[0]`} />
-          </span>
-        </div>
-
-        <div className='row-start-1 col-start-11 col-span-2 row-span-2 justify-self-end @4xl/view:col-start-12 @4xl/view:col-span-1'>
-          {!inProgress &&
-            <DotDropdownMenu
-              items={[
-                {
-                  label: 'Redigera',
-                  icon: Edit,
-                  item: (ev) => {
-                    ev.preventDefault()
-                    ev.stopPropagation()
-                    setSelectedAssignment(index)
-                  }
-                },
-                {
-                  label: 'Ta bort',
-                  icon: Delete,
-                  item: (ev) => {
-                    ev.preventDefault()
-                    ev.stopPropagation()
-                    setShowVerifyDialog(true)
-                  }
-                }
-              ]}
-            />
-          }
-        </div>
-
-        <div className='row-start-2 col-start-1 col-span-10 row-span-1 flex space-x-2 items-center pt-0.5 @4xl/view:row-start-1 @4xl/view:col-span-3 @4xl/view:col-start-9 pb-2 @4xl/view:pb-0'>
-          <div className="pr-4 @4xl/view:px-4">
-            <AssignmentType path={`core/assignment[${index}].meta.core/assignment-type`} />
-          </div>
-
-          <div className="min-w-[64px] whitespace-nowrap">
-            {getAssignmentPublishTime('publish')
-              ? <TimeDisplay date={new Date(getAssignmentPublishTime('publish') as string)} />
-              : ''
-            }
-          </div>
-          <div className='min-w-[128px] whitespace-nowrap -ml-1 @4xl/view:ml-0 hover:cursor-default'>
-            <AssigneeAvatars assignees={Array.isArray(stateAuthor) ? stateAuthor.map((author) => author.name) : []} />
-          </div>
-
-        </div>
-
-      </div>{/* end of grid */}
-
-      {!!description &&
-        <div className='grid grid-cols-12 font-light'>
-          <div className='col-start-1 col-span-12 pb-2 @xl/view:col-span-11 @4xl/view:col-span-8'>
-            {description}
-          </div>
-        </div>
-      }
-
-      {showVerifyDialog &&
-        <VerifyDeleteAssignmentDialog
-          index={index}
-          title={(get('title') as Y.XmlText)?.toJSON()}
-          setSelectedAssignment={setSelectedAssignment}
-          setShowVerifyDialog={setShowVerifyDialog}
-        />
-      }
-      {showCreateDialog && setShowCreateDialog &&
-        <VerifyCreateArticleDialog
-          index={index}
-          title={(get('title') as Y.XmlText)?.toJSON()}
-          setSelectedAssignment={setSelectedAssignment}
-          setShowCreateDialog={setShowCreateDialog}
-        />
-      }
+    <div onClick={(ev) => {
+      ev.preventDefault()
+      ev.stopPropagation()
+      setSelectedAssignment(index)
+    }}>
+      <AssignmentRowContent
+        index={index}
+        setSelectedAssignment={setSelectedAssignment}
+      />
     </div>
   )
 }
 
-
-const VerifyDeleteAssignmentDialog = ({ index, title, setSelectedAssignment, setShowVerifyDialog }: {
+const AssignmentRowContent = ({ index, setSelectedAssignment }: {
   index: number
-  title: string
   setSelectedAssignment: React.Dispatch<React.SetStateAction<number | undefined>>
-  setShowVerifyDialog: React.Dispatch<React.SetStateAction<boolean>>
 }): JSX.Element => {
   const { provider } = useCollaboration()
+  const openArticle = useLink('Editor')
+  const base = `meta.core/assignment[${index}]`
+  const [inProgress] = useYValue(`${base}.__inProgress`)
+  const [articleId] = useYValue<string>(`${base}.links.core/article[0].uuid`)
+  const [assignmentType] = useYValue<string>(`${base}.meta.core/assignment-type[0].value`)
+  const [title] = useYValue<string>(`${base}.title`)
+  const [description] = useYValue<string>(`${base}.meta.core/description[0].data.text`)
+  const [publishTime] = useYValue<string>(`${base}.data.publish`)
+
+  // FIXME: Convert to use useYValue()
+  const { state: stateAuthor = [] } = useYObserver('meta', `core/assignment[${index}].links.core/author`)
+
+  const [showVerifyDialog, setShowVerifyDialog] = useState<boolean>(false)
+  const [showCreateDialog, setShowCreateDialog] = useState<boolean>(false)
+
+  useKeydownGlobal((evt) => {
+    if (evt.key === 'Escape') {
+      setSelectedAssignment(undefined)
+    }
+  })
+
+  const assTime = useMemo(() => {
+    return publishTime ? new Date(publishTime) : undefined
+  }, [publishTime])
+
+  const onOpenArticleEvent = useCallback(<T extends HTMLElement>(event: MouseEvent<T>) => {
+    event.preventDefault()
+    event.stopPropagation()
+
+    if (articleId) {
+      openArticle(event, {
+        id: articleId
+      })
+    } else {
+      setShowCreateDialog(true)
+    }
+  }, [articleId, openArticle, setShowCreateDialog])
+
+  const menuItems = [
+    {
+      label: 'Redigera',
+      icon: Edit,
+      item: <T extends HTMLElement>(event: MouseEvent<T>) => {
+        event.preventDefault()
+        event.stopPropagation()
+        setSelectedAssignment(index)
+      }
+    },
+    {
+      label: 'Ta bort',
+      icon: Delete,
+      item: <T extends HTMLElement>(event: MouseEvent<T>) => {
+        event.preventDefault()
+        event.stopPropagation()
+        setShowVerifyDialog(true)
+      }
+    }
+  ]
+
+  if (assignmentType === 'text') {
+    menuItems.push({
+      label: 'Öppna artikel',
+      icon: FileInput,
+      item: <T extends HTMLElement>(event: MouseEvent<T>) => {
+        onOpenArticleEvent(event)
+      }
+    })
+  }
 
   return (
-    <Dialog open={true}>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>Ta bort?</DialogTitle>
-        </DialogHeader>
+    <div className='flex flex-col gap-2 text-sm px-4 pt-2.5 pb-4 hover:bg-muted'>
+      <div className="flex flex-row gap-6 items-center justify-items-between justify-between">
 
-        <DialogDescription>
-          {title
-            ? <>Vill du ta bort uppdraget <em>{title}</em>?</>
-            : <>Vill du ta bort uppdraget?</>
+        <div className="flex grow gap-4 items-center">
+          <AssignmentType path={`core/assignment[${index}].meta.core/assignment-type`} />
+          <AssigneeAvatars assignees={Array.isArray(stateAuthor) ? stateAuthor.map((author) => author.name) : []} />
+
+          <div className="hidden items-center @3xl/view:flex">
+            <SluglineButton path={`core/assignment[${index}].meta.tt/slugline[0]`} />
+          </div>
+        </div>
+
+        <div className="flex grow items-center justify-end gap-1.5">
+          <div className="min-w-[64px] whitespace-nowrap">
+            {assTime ? <TimeDisplay date={assTime} /> : ''}
+          </div>
+
+          {assignmentType === 'text' &&
+            <Button
+              variant='ghost'
+              className="flex h-8 w-8 p-0 data-[state=open]:bg-muted"
+              onClick={<T extends HTMLElement>(event: MouseEvent<T>) => {
+                onOpenArticleEvent(event)
+              }}>
+              <FileInput size={18} strokeWidth={1.75} />
+            </Button>
           }
-        </DialogDescription>
 
-        <DialogFooter className="flex flex-col gap-2 pt-4">
-          <Button
-            variant="secondary"
-            onClick={(evt) => {
-              evt.preventDefault()
-              setShowVerifyDialog(false)
-            }}
-          >
-            Avbryt
-          </Button>
+          {!inProgress &&
+            <DotDropdownMenu
+              items={menuItems}
+            />
+          }
+        </div>
+      </div>
 
-          <Button onClick={(evt) => {
-            evt.preventDefault()
+      <div className="text-[15px] font-medium">
+        <span className='pr-2 leading-relaxed group-hover/assrow:underline'>{title}</span>
+      </div>
 
+      {!!description &&
+        <div className='font-light'>
+          {description}
+        </div>
+      }
+
+      <div className="@3xl/view:hidden">
+        <SluglineButton path={`core/assignment[${index}].meta.tt/slugline[0]`} />
+      </div>
+
+      {showVerifyDialog &&
+        <Prompt
+          title="Ta bort?"
+          description={`Vill du ta bort uppdraget${` ${title}` || ''}?`}
+          secondaryLabel='Avbryt'
+          primaryLabel='Ta bort'
+          onPrimary={() => {
+            setShowVerifyDialog(false)
             if (!provider?.document) {
               return
             }
-
             const yEle = provider.document.getMap('ele')
             const meta = yEle.get('meta') as Y.Map<unknown>
             if (meta.has('core/assignment')) {
@@ -200,89 +183,41 @@ const VerifyDeleteAssignmentDialog = ({ index, title, setSelectedAssignment, set
               assignments.delete(index, 1)
             }
             setSelectedAssignment(undefined)
-          }}>
-            Ta bort
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
-  )
-}
-
-// TODO: We should really have some general prompt dialog...
-const VerifyCreateArticleDialog = ({ index, title, setShowCreateDialog }: {
-  index: number
-  title: string
-  setSelectedAssignment: React.Dispatch<React.SetStateAction<number | undefined>>
-  setShowCreateDialog: React.Dispatch<React.SetStateAction<boolean>>
-}): JSX.Element => {
-  const { provider } = useCollaboration()
-  const { state, dispatch } = useNavigation()
-  const { viewId: origin } = useView()
-
-  return (
-    <Dialog open={true}>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>Skapa artikel</DialogTitle>
-        </DialogHeader>
-
-        <DialogDescription>
-          {title
-            ? <>Vill du skapa en artikel för uppdraget <em>{title}</em>?</>
-            : <>Vill du skapa en artikel uppdraget?</>
-          }
-        </DialogDescription>
-
-        <DialogFooter className="flex flex-col gap-2 pt-4">
-          <Button
-            variant="secondary"
-            onClick={(evt) => {
-              evt.preventDefault()
-              evt.stopPropagation()
-
-              setShowCreateDialog(false)
-            }}
-          >
-            Avbryt
-          </Button>
-
-          <Button onClick={(evt) => {
-            evt.preventDefault()
-            evt.stopPropagation()
-
+          }}
+          onSecondary={() => {
+            setShowVerifyDialog(false)
+          }}
+        />
+      }
+      {showCreateDialog &&
+        <Prompt
+          title="Skapa artikel?"
+          description={`Vill du skapa en artikel för uppdraget${` ${title}` || ''}?`}
+          secondaryLabel='Avbryt'
+          primaryLabel='Skapa'
+          onPrimary={(event) => {
+            setShowCreateDialog(false)
             if (!provider?.document) {
               return
             }
 
-
             const id = crypto.randomUUID()
-
             const onDocumentCreated = (): void => {
               setTimeout(() => {
                 appendArticle({ document: provider?.document, id, index, slug: '' })
               }, 0)
             }
-            const props = { id }
 
-            handleLink({
-              event: evt,
-              dispatch,
-              viewItem: state.viewRegistry.get('Editor'),
-              viewRegistry: state.viewRegistry,
-              props,
-              viewId: crypto.randomUUID(),
-              origin,
-              onDocumentCreated
-            })
-
-
+            openArticle(event,
+              { id },
+              { onDocumentCreated }
+            )
+          }}
+          onSecondary={() => {
             setShowCreateDialog(false)
-          }}>
-            Skapa
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+          }}
+        />
+      }
+    </div>
   )
 }
