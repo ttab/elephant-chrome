@@ -21,8 +21,7 @@ export const TextBox = ({ icon, placeholder, path, className, singleLine = false
 }): JSX.Element => {
   const { provider, user } = useCollaboration()
   const [content] = useYValue<Y.XmlText>(path, { observe: false })
-  console.log(path)
-  console.log(content)
+
   return (
     <>
       {!!provider && content &&

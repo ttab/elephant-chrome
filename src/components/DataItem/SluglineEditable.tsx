@@ -3,7 +3,7 @@ import { Awareness } from '@/components'
 import { TextBox } from '../ui'
 import { SluglineButton } from './Slugline'
 
-export const SluglineEditable = ({ path = 'tt/slugline[0]' }: { path?: string }): JSX.Element => {
+export const SluglineEditable = ({ path }: { path: string }): JSX.Element => {
   const [active, setActive] = useState(false)
   const setFocused = useRef<(value: boolean) => void>(null)
 
@@ -29,9 +29,7 @@ const SluglineInput = ({ path, setActive }: {
   setActive: ((value: boolean) => void)
 }): JSX.Element => {
   return <TextBox
-    base='meta'
     path={path}
-    field='value'
     placeholder='Slug'
     autoFocus={true}
     singleLine={true}

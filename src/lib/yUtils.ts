@@ -1,5 +1,8 @@
 import * as Y from 'yjs'
 import { isNumber, isRecord, isYArray, isYMap } from './isType'
+import { isTextEntry } from '@/shared/transformations/isTextEntry'
+import type { TBElement } from '@ttab/textbit'
+import { slateNodesToInsertDelta } from '@slate-yjs/core'
 
 export type YParent = Y.Array<unknown> | Y.Map<unknown> | undefined
 export type YPath = Array<string | number>
@@ -73,14 +76,14 @@ export function createYStructure(root: Y.Map<unknown>, path: string | YPath, str
   const yPath = Array.isArray(path) ? path : stringToYPath(path)
   if (!yPath.length) {
     // Empty path
-    console.warn('Path given to createYStructure() is empty')
+    console.warn('Path given to createYStructure() is empty:', path)
     return false
   }
 
   const [yValue, yParent] = getValueByYPath(root, yPath)
-  if (!yValue || !yParent) {
+  if (!yValue && !yParent) {
     // Non existing path
-    console.warn('Path given to createYStructure() is non existing')
+    console.warn('Path given to createYStructure() is non existing:', path)
     return false
   }
 
@@ -132,4 +135,39 @@ export function toYStructure(value: unknown): unknown {
   }
 
   return value
+}
+
+/**
+ * Transform a string to a Y.XmlText structure suitable for Textbit/Slate
+ *
+ * @param value string
+ * @returns Y.XmlText
+ */
+function toSlateYXmlText(value: string): Y.XmlText {
+  const elements = stringToTextbitText(value)
+
+  const yXmlText = new Y.XmlText()
+  yXmlText.applyDelta(slateNodesToInsertDelta(elements))
+
+  return yXmlText
+}
+
+/**
+ * Transform a string separated by newlines to an array of Textbit Slate Elements
+ * of type text/core with no further type information (no titles, visuals etc).
+ *
+ * @param value string
+ * @returns TBElement[]
+ */
+function stringToTextbitText(value: string): TBElement[] {
+  const lines = value.trim().split('\n')
+
+  return lines.map(line => {
+    return {
+      id: crypto.randomUUID(),
+      class: 'text',
+      type: 'core/text',
+      children: [{ text: line }]
+    }
+  })
 }
