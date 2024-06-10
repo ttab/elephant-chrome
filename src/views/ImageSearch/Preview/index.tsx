@@ -9,14 +9,15 @@ export function Preview(props: { ttninjs: ttninjs }) {
 
   return (
 
-    <div className=''>
+    <div className='flex flex-col'>
       <div><h3>{ttninjs.headline}</h3></div>
-
       <img
         src={`${ttninjs.uri}_WatermarkPreview.jpg`}
-
       />
+      <div>Toolbar</div>
       <div>{ttninjs.description_text}</div>
+      <div>Restrictions</div>
+      <div className='flex justify-end'><Button>Infoga bild</Button></div>
     </div>
   )
 }
