@@ -15,7 +15,7 @@ import {
 } from './utils/index.js'
 
 import { ExpressAuth } from '@auth/express'
-import { authenticatedUser } from './utils/authenticatedUser.js'
+import { assertAuthenticatedUser } from './utils/assertAuthenticatedUser.js'
 import { authConfig } from './utils/authConfig.js'
 
 
@@ -64,7 +64,7 @@ export async function runServer(): Promise<string> {
 
   app.set('trust proxy', true)
   app.use(`${BASE_URL}/api/auth/*`, ExpressAuth(authConfig) as RequestHandler)
-  app.use(authenticatedUser as RequestHandler)
+  app.use(assertAuthenticatedUser as RequestHandler)
 
   app.use(cors({
     credentials: true,
