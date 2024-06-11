@@ -9,13 +9,13 @@ export async function authenticatedUser(
 ): Promise<void> {
   const session = res.locals.session ?? (await getSession(req, authConfig))
 
-  if (req.path === '/elephant/api/auth/signin') {
+  if (req.path === `${process.env.BASE_URL}/api/auth/signin`) {
     next()
     return
   }
 
   if (!session?.user) {
-    res.redirect('/elephant/api/auth/signin')
+    res.redirect(`${process.env.BASE_URL}/api/auth/signin`)
   } else {
     next()
   }

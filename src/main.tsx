@@ -14,7 +14,7 @@ if (!root) {
 }
 
 ReactDOM.createRoot(root).render(
-  <SessionProvider basePath='/elephant/api/auth'>
+  <SessionProvider basePath={`${import.meta.env.BASE_URL}/api/auth`} refetchInterval={290}>
     <RegistryProvider>
       <HPWebSocketProvider>
         <ThemeProvider defaultTheme='light' storageKey='ele-ui-theme' >

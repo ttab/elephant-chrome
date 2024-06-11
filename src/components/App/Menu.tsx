@@ -68,7 +68,7 @@ export const Menu = (): JSX.Element => {
                   <LogOut strokeWidth={1.75} size={18} />
                 </div>
                 <div>
-                  <a href='/elephant/api/auth/signout'>Logga ut</a>
+                  <a href={`${import.meta.env.BASE_URL}/api/auth/signout`}>Logga ut</a>
                 </div>
               </div>
             </SheetClose>
