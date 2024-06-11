@@ -1,7 +1,6 @@
 
 import { ttninjs } from '@ttab/api-client'
-import { Button, Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@ttab/elephant-ui'
-import { textChangeRangeIsUnchanged } from 'typescript';
+import { Button } from '@ttab/elephant-ui'
 
 export function Preview(props: { ttninjs: ttninjs }) {
   const { ttninjs } = props
@@ -9,13 +8,13 @@ export function Preview(props: { ttninjs: ttninjs }) {
 
   return (
 
-    <div className='flex flex-col'>
+    <div className='flex flex-col max-h-80'>
       <div><h3>{ttninjs.headline}</h3></div>
       <img
         src={`${ttninjs.uri}_WatermarkPreview.jpg`}
       />
       <div>Toolbar</div>
-      <div>{ttninjs.description_text}</div>
+      <div className='overflow-auto max-h-56'>{ttninjs.description_text}</div>
       <div>Restrictions</div>
       <div className='flex justify-end'><Button>Infoga bild</Button></div>
     </div>

@@ -156,12 +156,15 @@ export const findRenditionByUsageAndVariant = (renditions: renditions, usage = '
 
 interface ThumbnailProps {
   hit: ttninjs
+
 }
 function Thumbnail(props: ThumbnailProps): JSX.Element {
   const imageRef = useRef<HTMLImageElement>(null)
   const { hit } = props
   const renditions = hit.renditions as renditions
-  const rendition = findRenditionByUsageAndVariant(renditions, 'Thumbnail', 'Normal')
+  const thumbnail = findRenditionByUsageAndVariant(renditions, 'Thumbnail', 'Normal')
+  const preview = findRenditionByUsageAndVariant(renditions, 'Preview', 'Watermark')
+
   return (
 
     <Dialog modal={false} >
@@ -169,7 +172,7 @@ function Thumbnail(props: ThumbnailProps): JSX.Element {
         <div className='flex place-content-center  bg-gray-200' style={{ minHeight: '144px' }}>
           <img
             // src={`${hit.uri}_NormalThumbnail.jpg`}
-            src={rendition.href}
+            src={thumbnail.href}
             // className='h-32 max-w-full'
             style={{ maxHeight: '176px', objectFit: 'contain', maxWidth: 'auto' }}
             onDragStartCapture={(e) => {
@@ -191,7 +194,7 @@ function Thumbnail(props: ThumbnailProps): JSX.Element {
                 const image = {
                   byline: hit.byline,
                   text: hit.headline,
-                  href: hit?.renditions?.r02?.href,
+                  href: preview.href,
                   altText: hit?.description_text || ''
                 }
 
@@ -210,8 +213,6 @@ function Thumbnail(props: ThumbnailProps): JSX.Element {
                 el.style.opacity = '1'
               }
             }}
-            // onClick={() => { }}
-          // className='!max-h-44 !object-contain'
           />
         </div>
       </DialogTrigger>
@@ -233,9 +234,6 @@ function ImageSearch(): JSX.Element {
       revalidateFirstPage: false
     }
   )
-
-
-
 
   return (
     <div className='h-screen max-h-screen flex flex-col relative'>
