@@ -10,18 +10,24 @@ const permissions = [
 ].join('+')
 
 async function refreshAccessToken(token: JWTPayload): Promise<JWTPayload> {
-  const url = new URL(`${process.env.AUTH_KEYCLOAK_ISSUER}/protocol/openid-connect/token`)
-  url.searchParams.append('grant_type', 'refresh_token')
-  url.searchParams.append('client_id', process.env.AUTH_KEYCLOAK_CLIENT_ID || '')
-  url.searchParams.append('client_secret', process.env.AUTH_KEYCLOAK_CLIENT_SECRET || '')
-  url.searchParams.append('refresh_token', token.refreshToken as string)
+  const url = `${process.env.AUTH_KEYCLOAK_ISSUER}/protocol/openid-connect/token`
+
+  const params = new URLSearchParams({
+    client_id: process.env.AUTH_KEYCLOAK_ID ?? '',
+    client_secret: process.env.AUTH_KEYCLOAK_SECRET ?? '',
+    grant_type: 'refresh_token',
+    refresh_token: token.refreshToken as string ?? ''
+  })
 
   const response = await fetch(url, {
     method: 'POST',
     headers: {
-      'Content-Type': 'application/x-www-form-urlencoded'
-    }
+      'Content-Type': 'application/x-www-form-urlencoded',
+      Accept: 'application/json'
+    },
+    body: params
   })
+
   const refreshedTokens = await response.json()
 
   if (!response.ok) {
