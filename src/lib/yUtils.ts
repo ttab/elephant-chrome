@@ -108,9 +108,6 @@ export function createYStructure(root: Y.Map<unknown>, path: string | YPath, str
 /**
  * Transform any value/structure to a Y representation.
  *
- * TODO: Can this function replace toYMap()?
- * FIXME: How do we share isTextEntry() and toSlateYXmLText()?
- *
  * @param value unknown
  * @returns unkown
  */
