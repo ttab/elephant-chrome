@@ -36,7 +36,7 @@ export const PlanningGrid = ({ startDate, endDate }: PlanningGridProps): JSX.Ele
   }, [startTime, endTime, indexUrl, locale])
 
   const { data } = useSWR(searchUrl.href, async (): Promise<PlanningsByDate | undefined> => {
-    if (status !== 'authenticated' || !session?.accessToken) {
+    if (status !== 'authenticated') {
       return
     }
     const start = searchUrl.searchParams.get('start')
@@ -46,7 +46,7 @@ export const PlanningGrid = ({ startDate, endDate }: PlanningGridProps): JSX.Ele
       throw new Error('Start or end cant be null')
     }
 
-    const result = await Planning.search(indexUrl, session?.accessToken, {
+    const result = await Planning.search(indexUrl, session.accessToken, {
       size: 500,
       where: {
         start,

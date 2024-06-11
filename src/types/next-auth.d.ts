@@ -2,8 +2,8 @@ import 'next-auth'
 
 declare module 'next-auth' {
   interface Session {
-    accessToken: string | undefined
-    refreshToken: string | undefined
+    accessToken: string
+    refreshToken: string
     accessTokenExpires: number
     expires: string
     status: 'authenticated' | 'unauthenticated' | 'loading'

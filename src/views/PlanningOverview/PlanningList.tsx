@@ -30,12 +30,12 @@ export const PlanningList = ({ date }: { date: Date }): JSX.Element => {
 
 
   const { data } = useSWR(searchUrl.href, async (): Promise<SearchIndexResponse | undefined> => {
-    if (status !== 'authenticated' || !session.accessToken) {
+    if (status !== 'authenticated') {
       return
     }
 
     const { startTime, endTime } = getDateTimeBoundaries(date)
-    const result = await Planning.search(indexUrl, session?.accessToken, {
+    const result = await Planning.search(indexUrl, session.accessToken, {
       size: 100,
       where: {
         start: convertToISOStringInUTC(startTime, locale),
