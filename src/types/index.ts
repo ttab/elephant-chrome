@@ -2,8 +2,6 @@ import { type Block } from '@/protos/service'
 import type * as views from '@/views'
 import { type LucideIcon } from '@ttab/elephant-ui/icons'
 
-export type { JWT } from '@/shared/types'
-
 export enum NavigationActionType {
   SET = 'set',
   FOCUS = 'focus',

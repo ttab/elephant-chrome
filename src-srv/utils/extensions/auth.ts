@@ -1,32 +1,19 @@
 import {
-  type onStatelessPayload,
   type Extension,
   type onAuthenticatePayload
 } from '@hocuspocus/server'
 import { type JWTPayload, decodeJwt } from 'jose'
-import { type Repository } from '../Repository.js'
-import { type StatelessAuth, StatelessType, parseStateless } from '@/shared/stateless.js'
-
-interface Configuration {
-  validateToken: Repository['validateToken']
-}
 
 export class Auth implements Extension {
-  configuration: Configuration
-
-  constructor(configuration: Configuration) {
-    this.configuration = { ...configuration }
-  }
-
   async onAuthenticate({ token }: onAuthenticatePayload): Promise<{
     token: string
     user: JWTPayload
   }> {
-    try {
+    /* try {
       await this.configuration.validateToken(token)
     } catch (ex) {
       throw new Error('Could not authenticate', { cause: ex })
-    }
+    } */
 
     return {
       token,
@@ -34,7 +21,7 @@ export class Auth implements Extension {
     }
   }
 
-  async onStateless({ payload, connection }: onStatelessPayload): Promise<void> {
+  /* async onStateless({ payload, connection }: onStatelessPayload): Promise<void> {
     try {
       const statelessMessage = parseStateless<StatelessAuth>(payload)
       if (statelessMessage.type === StatelessType.AUTH) {
@@ -46,5 +33,5 @@ export class Auth implements Extension {
     } catch (ex) {
       throw new Error('Could not authenticate, token not refreshed', { cause: ex })
     }
-  }
+  } */
 }

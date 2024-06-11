@@ -1,8 +1,7 @@
 import { type Planning } from '@/views/PlanningOverview/PlanningTable/data/schema'
-import { type JWT } from '@/types'
 
 interface SearchIndexOptions {
-  jwt: JWT
+  accessToken: string
   index: string
   endpoint: URL
 }
@@ -42,7 +41,7 @@ export async function searchIndex(search: object, options: SearchIndexOptions, s
 
   const response = await fetch(endpoint.href, {
     method: 'POST',
-    headers: headers(options.jwt),
+    headers: headers(options.accessToken),
     body: JSON.stringify({
       from,
       size: pageSize,
@@ -73,10 +72,9 @@ export async function searchIndex(search: object, options: SearchIndexOptions, s
 }
 
 
-function headers(jwt: JWT): Record<string, string> {
+function headers(accessToken: string): Record<string, string> {
   return {
-    // FIXME: Remove "as string" when JWT/interface has been updated
-    Authorization: `Bearer ${jwt.access_token}`,
+    Authorization: `Bearer ${accessToken}`,
     'Content-Type': 'application/json'
   }
 }

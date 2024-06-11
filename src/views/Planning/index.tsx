@@ -2,7 +2,7 @@ import { AwarenessDocument, ViewHeader } from '@/components'
 import { type ViewMetadata, type ViewProps } from '@/types'
 import { Button, ScrollArea, Separator } from '@ttab/elephant-ui'
 import { GanttChartSquare } from '@ttab/elephant-ui/icons'
-import { useCollaboration, useQuery, useSession } from '@/hooks'
+import { useCollaboration, useQuery } from '@/hooks'
 import { SluglineEditable } from '@/components/DataItem/SluglineEditable'
 import {
   AssignmentTable,
@@ -19,6 +19,7 @@ import type * as Y from 'yjs'
 import { cva } from 'class-variance-authority'
 import { cn } from '@ttab/elephant-ui/utils'
 import { createStateless, StatelessType } from '@/shared/stateless'
+import { useSession } from 'next-auth/react'
 
 const meta: ViewMetadata = {
   name: 'Planning',
@@ -55,7 +56,7 @@ export const Planning = (props: ViewProps & { document?: Y.Doc }): JSX.Element =
 
 const PlanningViewContent = (props: ViewProps & { documentId: string }): JSX.Element | undefined => {
   const { provider } = useCollaboration()
-  const { jwt } = useSession()
+  const { data, status } = useSession()
 
   const viewVariants = cva('flex flex-col', {
     variants: {
@@ -134,12 +135,12 @@ const PlanningViewContent = (props: ViewProps & { documentId: string }): JSX.Ele
                   props.onDialogClose()
                 }
 
-                if (provider && jwt) {
+                if (provider && status === 'authenticated') {
                   provider.sendStateless(
                     createStateless(StatelessType.IN_PROGRESS, {
                       state: false,
                       id: props.documentId,
-                      context: jwt
+                      context: data.accessToken
                     }))
                 }
               }}>

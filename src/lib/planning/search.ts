@@ -1,4 +1,3 @@
-import { type JWT } from '@/types'
 import { searchIndex, type SearchIndexResponse } from '../index/search'
 
 interface SearchPlanningParams {
@@ -14,7 +13,7 @@ interface SearchPlanningParams {
   }
 }
 
-export const search = async (endpoint: URL, jwt: JWT, params?: SearchPlanningParams): Promise<SearchIndexResponse> => {
+export const search = async (endpoint: URL, accessToken: string, params?: SearchPlanningParams): Promise<SearchIndexResponse> => {
   const start = params?.where?.start ? new Date(params.where.start) : new Date()
   const end = params?.where?.end ? new Date(params.where.end) : new Date()
   const sort: Array<Record<string, 'asc' | 'desc'>> = []
@@ -57,7 +56,7 @@ export const search = async (endpoint: URL, jwt: JWT, params?: SearchPlanningPar
     {
       index: 'core_planning_item',
       endpoint,
-      jwt
+      accessToken
     },
     params?.skip,
     params?.size

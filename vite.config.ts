@@ -4,9 +4,9 @@ import react from '@vitejs/plugin-react'
 import { viteStaticCopy } from 'vite-plugin-static-copy'
 
 export default defineConfig(({ mode }) => {
-  const env = loadEnv(mode, process.cwd(), '')
-  const proxyPath = `${env.BASE_URL || ''}/api`
+  const env = loadEnv(mode, process.cwd())
   return {
+    port: 5173,
     base: '/elephant',
     plugins: [
       react(),
@@ -33,17 +33,16 @@ export default defineConfig(({ mode }) => {
         '@/shared': path.resolve(__dirname, './shared')
       }
     },
+    define: {
+      'process.env.NEXTAUTH_URL': env.AUTH_URL
+    },
     server: {
-      port: 5173,
-      strictPort: true,
-      proxy: {
-        [proxyPath]: {
-          target: `http://${env.HOST}:${env.PORT}`,
-          changeOrigin: true,
-          secure: false
-        }
+      hmr: {
+        port: 5183
       },
-      cors: { origin: '*' }
+      watch: {
+        awaitWriteFinish: true
+      }
     }
   }
 })
