@@ -40,31 +40,38 @@ export function useYValue<T>(path: string, options: useYValueOptions = { observe
   const [value, setValue] = useState<T | undefined>()
   const [parent, setParent] = useState<YParent>()
 
-
-  // Initialization callback function
-  const initialize = useCallback((yRoot: Y.Map<unknown>): void => {
-    let vp = getValueByYPath(yRoot, yPath)
+  // Get y value/parent callback function
+  const getValueAndParent = useCallback((yRoot: Y.Map<unknown>): [unknown, YParent] => {
+    const vp = getValueByYPath(yRoot, yPath)
 
     if (synced && vp[0] === undefined && options.createOnEmpty) {
       // No value exists and caller wants us to fill in empty structure
       const { path, data } = options.createOnEmpty
       if (createYStructure(yRoot, path, data)) {
-        vp = getValueByYPath(yRoot, yPath)
+        return getValueByYPath(yRoot, yPath)
       }
     }
 
+    return vp
+  }, [synced, yPath, options?.createOnEmpty])
+
+
+  // Initialization callback function
+  const initialize = useCallback((yRoot: Y.Map<unknown>): void => {
+    const [initValue, initParent] = getValueAndParent(yRoot)
+
     if (options.observe) {
       // When observing we return Y.XmlText as string
-      setValue(isYXmlText(vp[0]) ? vp[0].toJSON() as T : vp[0] as T)
+      setValue(isYXmlText(initValue) ? initValue.toJSON() as T : initValue as T)
     } else {
       // Just return raw Y values when not observing
-      setValue(vp[0] as T)
+      setValue(initValue as T)
     }
 
-    if (isYContainer(vp[1])) {
-      setParent(vp[1])
+    if (isYContainer(initParent)) {
+      setParent(initParent)
     }
-  }, [yPath, synced, options.observe, options?.createOnEmpty])
+  }, [getValueAndParent, options.observe])
 
 
   // Initialization
