@@ -1,16 +1,13 @@
-import { useSession } from '@/hooks'
+import { useSession } from 'next-auth/react'
 import { AppHeader } from '@/components'
-import { Login } from '@/views/auth/Login'
 import { DocTrackerProvider } from './contexts/DocTrackerProvider'
 import { AppContent } from './AppContent'
 
 export const App = (): JSX.Element => {
-  const { jwt } = useSession()
+  const { status } = useSession()
 
-  if (!jwt) {
-    return <div className='relative flex h-screen flex-col'>
-      <Login />
-    </div>
+  if (status === 'loading') {
+    return <p>loading...</p>
   }
 
   return (

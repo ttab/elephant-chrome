@@ -5,7 +5,8 @@ import { type Planning as PlanningType } from '@/views/PlanningOverview/Planning
 import { cn } from '@ttab/elephant-ui/utils'
 import { cva, type VariantProps } from 'class-variance-authority'
 import { PlanningGridColumn } from './PlanningGridColumn'
-import { useSession, useRegistry, useIndexUrl } from '@/hooks'
+import { useRegistry, useIndexUrl } from '@/hooks'
+import { useSession } from 'next-auth/react'
 import { convertToISOStringInTimeZone, convertToISOStringInUTC, getDateTimeBoundaries } from '@/lib/datetime'
 import useSWR from 'swr'
 import { useMemo } from 'react'
@@ -19,7 +20,7 @@ interface PlanningGridProps {
 
 export const PlanningGrid = ({ startDate, endDate }: PlanningGridProps): JSX.Element => {
   const indexUrl = useIndexUrl()
-  const { jwt } = useSession()
+  const { data: session, status } = useSession()
   const { locale, timeZone } = useRegistry()
   const { startTime } = getDateTimeBoundaries(startDate)
   const { endTime } = getDateTimeBoundaries(endDate)
@@ -35,7 +36,7 @@ export const PlanningGrid = ({ startDate, endDate }: PlanningGridProps): JSX.Ele
   }, [startTime, endTime, indexUrl, locale])
 
   const { data } = useSWR(searchUrl.href, async (): Promise<PlanningsByDate | undefined> => {
-    if (!jwt) {
+    if (status !== 'authenticated' || !session?.accessToken) {
       return
     }
     const start = searchUrl.searchParams.get('start')
@@ -45,7 +46,7 @@ export const PlanningGrid = ({ startDate, endDate }: PlanningGridProps): JSX.Ele
       throw new Error('Start or end cant be null')
     }
 
-    const result = await Planning.search(indexUrl, jwt, {
+    const result = await Planning.search(indexUrl, session?.accessToken, {
       size: 500,
       where: {
         start,

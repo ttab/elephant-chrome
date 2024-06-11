@@ -1,29 +1,79 @@
 import { type AuthConfig } from '@auth/core'
+import { type JWTPayload } from 'jose'
 import Keycloak from '@auth/express/providers/keycloak'
 
+const permissions = [
+  'doc_read',
+  'doc_write',
+  'doc_delete',
+  'search'
+].join('+')
+
+async function refreshAccessToken(token: JWTPayload): Promise<JWTPayload> {
+  const url = new URL(`${process.env.AUTH_KEYCLOAK_ISSUER}/protocol/openid-connect/token`)
+  url.searchParams.append('grant_type', 'refresh_token')
+  url.searchParams.append('client_id', process.env.AUTH_KEYCLOAK_CLIENT_ID || '')
+  url.searchParams.append('client_secret', process.env.AUTH_KEYCLOAK_CLIENT_SECRET || '')
+  url.searchParams.append('refresh_token', token.refreshToken as string)
+
+  const response = await fetch(url, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded'
+    }
+  })
+  const refreshedTokens = await response.json()
+
+  if (!response.ok) {
+    throw refreshedTokens
+  }
+
+  return {
+    ...token,
+    accessToken: refreshedTokens.access_token,
+    accessTokenExpires: Date.now() + refreshedTokens.expires_in * 1000,
+    refreshToken: refreshedTokens.refresh_token ?? token.refreshToken
+  }
+}
+
 export const authConfig: AuthConfig = {
-  providers: [Keycloak],
+  providers: [
+    Keycloak({
+      authorization: `${process.env.AUTH_KEYCLOAK_ISSUER}/protocol/openid-connect/auth?scope=openid+profile+email+${permissions}`
+    })
+  ],
   callbacks: {
     async session({ session, token }) {
       return {
         ...session,
+        ...token,
         user: {
-          ...session.user,
-          id: token.id as string,
-          accessToken: token.accessToken,
-          refreshToken: token.refreshToken
-        }
+          ...token.user as Record<string, unknown>,
+          id: token.id as string
+        },
+        accessToken: token.accessToken,
+        error: token.error
       }
     },
     async jwt({ token, user, account }) {
-      if (user) {
-        token.id = user.id
+      // First time user is logging in
+      if (account && user) {
+        return {
+          accessToken: account.access_token,
+          accessTokenExpires: Date.now() + (account.expires_in || 300) * 1000,
+          refreshToken: account.refresh_token,
+          user
+        }
       }
-      if (account) {
-        token.accessToken = account.access_token
-        token.refreshToken = account.refresh_token
+
+      // The user is already logged in, check if the access token is expired
+      const accessTokenExpires = token.accessTokenExpires as number
+      if (Date.now() < accessTokenExpires) {
+        return token
       }
-      return token
+
+      // Access token is expired, refresh it
+      return await refreshAccessToken(token)
     },
     redirect: async ({ url, baseUrl }) => {
       return await Promise.resolve(process.env.BASE_URL

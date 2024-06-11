@@ -1,5 +1,5 @@
 import { type Dispatch } from 'react'
-import { SessionProvider } from '@/contexts'
+import { SessionProvider } from 'next-auth/react'
 import { NavigationProvider } from '@/navigation'
 
 import { useNavigation, useTable } from '@/hooks'

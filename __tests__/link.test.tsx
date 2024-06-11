@@ -1,4 +1,3 @@
-import { SessionProvider } from '@/contexts'
 import { NavigationProvider } from '@/navigation'
 import userEvent from '@testing-library/user-event'
 
@@ -8,6 +7,7 @@ import { initializeNavigationState } from '@/navigation/lib'
 import { type NavigationActionType } from '@/types'
 import { type Dispatch } from 'react'
 import { useNavigation } from '@/hooks'
+import { SessionProvider } from 'next-auth/react'
 
 jest.mock('@/navigation/hooks/useNavigation', () => ({
   useNavigation: jest.fn()

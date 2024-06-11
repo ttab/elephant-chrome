@@ -113,9 +113,7 @@ export class CollaborationServer {
             }
           }
         }),
-        new Auth({
-          validateToken: this.#repository.validateToken.bind(this.#repository)
-        })
+        new Auth()
       ],
       // Add user as having a tracked document open (or increase nr of times user have it open)
       connected: async (payload) => { await this.#connected(payload) },
@@ -246,7 +244,6 @@ export class CollaborationServer {
       uuid,
       accessToken: context.token
     })
-
 
     if (newsDoc) {
       newsDocToYDoc(yDoc, newsDoc)
