@@ -105,7 +105,7 @@ const PlanningViewContent = (props: ViewProps & { documentId: string }): JSX.Ele
           <div className='flex flex-col gap-2 pl-0.5'>
             <div className='flex space-x-2 items-start'>
               <PlanTitle autoFocus={props.asCreateDialog} />
-              <SluglineEditable />
+              <SluglineEditable path='meta.tt/slugline[0].value' />
             </div>
 
             <PlanDescription role="public" />

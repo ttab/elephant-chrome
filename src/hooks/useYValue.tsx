@@ -1,43 +1,77 @@
 import { useCollaboration } from './useCollaboration'
 import { useCallback, useEffect, useState } from 'react'
-import { isYArray, isYContainer, isYMap, isYValue, isYXmlText } from '@/lib/isType'
+import { isNumber, isYArray, isYContainer, isYMap, isYValue, isYXmlText } from '@/lib/isType'
 import type * as Y from 'yjs'
+import { createYStructure, getValueByYPath, stringToYPath, type YParent } from '@/lib/yUtils'
 
-type YPath = Array<string | number>
-type YParent = Y.Array<unknown> | Y.Map<unknown> | undefined
+interface useYValueOptions {
+  observe?: boolean
+  createOnEmpty?: {
+    path: string
+    data: unknown
+  }
+}
 
 /**
  * Observe a value in a an exact path. If the observed value is a Y.XmlText all changes beneath
- * that value are observed, but the value returned is returned as string. If you need to access
- * the actual Y.XmlText structure you can use the parent container which is also returned.
+ * that value are observed, but the value returned is returned as string.
  *
  * This function also detects, recovers and continue to observe when a whole structure gets replaced.
+ *
+ * Specifying option observe=false will return raw value and not setup an observer. This is
+ * especially useful when you want to retrieve a raw Y.XmlText to hand over to Textbit.
+ *
+ * Specifying option createOnEmpty creates the structure if no value was found. Path must always
+ * end with a property name in a Y.Map or a Y.Array in which case the new
+ * structure is pushed to the array.
  *
  * @param path string
  *
  * @returns [<T>, (arg0: T) => void, YParent]
  */
-export function useYValue<T>(path: string): [
+export function useYValue<T>(path: string, options: useYValueOptions = { observe: true }): [
   T | undefined,
   (arg0: T) => void,
   YParent
 ] {
-  const { provider } = useCollaboration()
+  const { provider, synced } = useCollaboration()
   const yRoot = provider?.document.getMap('ele')
   const yPath = stringToYPath(path)
   const [value, setValue] = useState<T | undefined>()
   const [parent, setParent] = useState<YParent>()
 
+  // Get y value/parent callback function
+  const getValueAndParent = useCallback((yRoot: Y.Map<unknown>): [unknown, YParent] => {
+    const vp = getValueByYPath(yRoot, yPath)
+
+    if (synced && vp[0] === undefined && options.createOnEmpty) {
+      // No value exists and caller wants us to fill in empty structure
+      const { path, data } = options.createOnEmpty
+      if (createYStructure(yRoot, path, data)) {
+        return getValueByYPath(yRoot, yPath)
+      }
+    }
+
+    return vp
+  }, [synced, yPath, options?.createOnEmpty])
+
 
   // Initialization callback function
   const initialize = useCallback((yRoot: Y.Map<unknown>): void => {
-    const [v, p] = getValueByYPath(yRoot, yPath)
-    setValue(isYXmlText(v) ? v.toJSON() as T : v as T)
+    const [initValue, initParent] = getValueAndParent(yRoot)
 
-    if (isYContainer(p)) {
-      setParent(p)
+    if (options.observe) {
+      // When observing we return Y.XmlText as string
+      setValue(isYXmlText(initValue) ? initValue.toJSON() as T : initValue as T)
+    } else {
+      // Just return raw Y values when not observing
+      setValue(initValue as T)
     }
-  }, [yPath])
+
+    if (isYContainer(initParent)) {
+      setParent(initParent)
+    }
+  }, [getValueAndParent, options.observe])
 
 
   // Initialization
@@ -51,6 +85,10 @@ export function useYValue<T>(path: string): [
   // Setup the observer
   useEffect(() => {
     if (!yRoot) {
+      return
+    }
+
+    if (!options.observe) {
       return
     }
 
@@ -104,7 +142,7 @@ export function useYValue<T>(path: string): [
     yRoot?.observeDeep(observer)
 
     return () => yRoot?.unobserveDeep(observer)
-  }, [yRoot, yPath, parent])
+  }, [yRoot, yPath, parent, options.observe])
 
   // Return value and parent map/array
   return [
@@ -123,65 +161,4 @@ export function useYValue<T>(path: string): [
     },
     parent
   ]
-}
-
-
-function isNumber(value: unknown): value is number {
-  return Number.isInteger(value)
-}
-
-
-/**
- * Traverse a yjs structure to find the wanted value based on the yjs path.
- *
- * Returns an array with two elements. First the value and then the parent map or array.
- */
-function getValueByYPath<T>(root: Y.Map<unknown>, path: YPath): [T | undefined, YParent] {
-  const lastIndex = path.length - 1
-  let parent: unknown = root
-
-  for (let i = 0; i < path.length; i++) {
-    const key = path[i]
-    let current: unknown
-
-    if (isYArray(parent) && isNumber(key)) {
-      current = parent.get(key)
-    } else if (isYMap(parent) && !isNumber(key)) {
-      current = parent?.get(key)
-    }
-
-    if (i === lastIndex) {
-      return [current as T, parent as YParent]
-    }
-
-    parent = current
-  }
-
-  return [undefined, undefined]
-}
-
-
-/**
- * Converts a string path to the same array path format used by yjs maintaing
- * the difference between strings for map properties and numbers for array positions.
- *
- * Example:
- * 'meta.myArray[1].value' -> ['meta', 'myArray', 1, 'value]
- */
-function stringToYPath(input: string): YPath {
-  const result: YPath = []
-  const regex = /([^[\].]+)|\[(\d+)\]/g
-  let match: RegExpExecArray | null
-
-  while ((match = regex.exec(input)) !== null) {
-    if (match[1]) {
-      // Matched a word (property in a Y.Map)
-      result.push(match[1])
-    } else if (match[2]) {
-      // Matched a number in brackets (array index)
-      result.push(parseInt(match[2]))
-    }
-  }
-
-  return result
 }

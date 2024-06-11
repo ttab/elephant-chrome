@@ -7,6 +7,7 @@ import type * as Y from 'yjs'
 import * as yMapValueByPath from '@/lib/yMapValueByPath'
 import { AssignmentType } from '@/components/DataItem/AssignmentType'
 import { useYValue } from '@/hooks/useYValue'
+import { Block } from '@/protos/service'
 
 export const Assignment = ({ index, setSelectedAssignment, className }: {
   index: number
@@ -18,16 +19,21 @@ export const Assignment = ({ index, setSelectedAssignment, className }: {
   const inProgress = getInProgress('__inProgress') === true
 
   const [title] = useYValue<string | undefined>(`meta.core/assignment[${index}].title`)
-  const [slugLine] = useYValue<string | undefined>(`meta.core/assignment[${index}].meta.tt/slugline[0].value`)
+  const [slugLine] = useYValue<string | undefined>(`meta.core/assignment[${index}].meta.tt/slugline[0].value`, {
+    createOnEmpty: {
+      path: `meta.core/assignment[${index}].meta.tt/slugline`,
+      data: [Block.create({
+        type: 'tt/slugline'
+      })]
+    }
+  })
   const [assignmentType] = useYValue<string | undefined>(`meta.core/assignment[${index}].meta.core/assignment-type[0].value`)
 
   return (
     <div className={cn('border rounded-md shadow-xl', className)}>
       <div className="flex flex-col gap-6 p-6">
         <TextBox
-          base='meta'
-          path={`core/assignment[${index}]`}
-          field='title'
+          path={`meta.core/assignment[${index}].title`}
           placeholder='Uppdragsrubrik'
           className="font-semibold text-sm leading-5"
           singleLine={true}
@@ -35,18 +41,14 @@ export const Assignment = ({ index, setSelectedAssignment, className }: {
         />
 
         <TextBox
-          base='meta'
-          path={`core/assignment[${index}].meta.tt/slugline[0]`}
-          field='value'
+          path={`meta.core/assignment[${index}].meta.tt/slugline[0].value`}
           placeholder='Lägg till slug'
           className="text-sm leading-4 px-0 opacity-80"
           singleLine={true}
         />
 
         <TextBox
-          base='meta'
-          path={`core/assignment[${index}].meta.core/description[0].data`}
-          field='text'
+          path={`meta.core/assignment[${index}].meta.core/description[0].data.text`}
           placeholder='Internt meddelande'
           icon={<MessageCircleMore
             size={20}

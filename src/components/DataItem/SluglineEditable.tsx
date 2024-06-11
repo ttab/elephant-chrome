@@ -2,8 +2,13 @@ import { useState, useRef, useCallback } from 'react'
 import { Awareness } from '@/components'
 import { TextBox } from '../ui'
 import { SluglineButton } from './Slugline'
+import { useYValue } from '@/hooks/useYValue'
+import type * as Y from 'yjs'
+import { Block } from '@/protos/service'
 
-export const SluglineEditable = ({ path = 'tt/slugline[0]' }: { path?: string }): JSX.Element => {
+export const SluglineEditable = ({ path }: {
+  path: string
+}): JSX.Element => {
   const [active, setActive] = useState(false)
   const setFocused = useRef<(value: boolean) => void>(null)
 
@@ -23,16 +28,27 @@ export const SluglineEditable = ({ path = 'tt/slugline[0]' }: { path?: string })
   )
 }
 
-// FIXME: Should blend in, have better styling
 const SluglineInput = ({ path, setActive }: {
   path: string
   setActive: ((value: boolean) => void)
 }): JSX.Element => {
+  const [slugLine] = useYValue<Y.XmlText | undefined>(path, {
+    createOnEmpty: {
+      path: path.replace(/\[0\]\.value$/, ''), // Set property "tt/slugline" on meta to a new Block[] if non existant
+      data: [Block.create({
+        type: 'tt/slugline'
+      })]
+    }
+  })
+
+
+  if (typeof slugLine === 'undefined') {
+    return <></>
+  }
+
   return <TextBox
-    base='meta'
     path={path}
-    field='value'
-    placeholder='Slug'
+    placeholder='Lägg till slugg'
     autoFocus={true}
     singleLine={true}
     onBlur={() => {
@@ -40,5 +56,6 @@ const SluglineInput = ({ path, setActive }: {
         setActive(false)
       }
     }}
-    className="h-7 w-44 p-1.5 font-normal text-sm whitespace-nowrap" />
+    className="h-7 w-44 p-1.5 font-normal text-sm whitespace-nowrap"
+  />
 }

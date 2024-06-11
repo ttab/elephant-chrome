@@ -123,7 +123,7 @@ const AssignmentRowContent = ({ index, setSelectedAssignment }: {
           <AssigneeAvatars assignees={Array.isArray(stateAuthor) ? stateAuthor.map((author) => author.name) : []} />
 
           <div className="hidden items-center @3xl/view:flex">
-            <SluglineButton path={`core/assignment[${index}].meta.tt/slugline[0]`} />
+            <SluglineButton path={`meta.core/assignment[${index}].meta.tt/slugline[0].value`} />
           </div>
         </div>
 

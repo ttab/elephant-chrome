@@ -1,18 +1,17 @@
 import { Textbit } from '@ttab/textbit'
 import { createEditor } from 'slate'
 import { cn } from '@ttab/elephant-ui/utils'
-import { useCollaboration, useYObserver } from '@/hooks'
+import { useCollaboration } from '@/hooks'
 import { useLayoutEffect, useMemo } from 'react'
 import { YjsEditor, withCursors, withYHistory, withYjs } from '@slate-yjs/core'
 import { type HocuspocusProvider } from '@hocuspocus/provider'
 import { type AwarenessUserData } from '@/contexts/CollaborationProvider'
 import type * as Y from 'yjs'
 import { Text } from '@ttab/textbit-plugins'
+import { useYValue } from '@/hooks/useYValue'
 
-export const TextBox = ({ icon, placeholder, base, path, field, className, singleLine = false, autoFocus = false, onBlur }: {
+export const TextBox = ({ icon, placeholder, path, className, singleLine = false, autoFocus = false, onBlur }: {
   path: string
-  base: string
-  field: string
   icon?: React.ReactNode
   placeholder?: string
   className?: string
@@ -21,8 +20,7 @@ export const TextBox = ({ icon, placeholder, base, path, field, className, singl
   onBlur?: React.FocusEventHandler<HTMLDivElement>
 }): JSX.Element => {
   const { provider, user } = useCollaboration()
-  const { get } = useYObserver(base, path)
-  const content = get(field) as Y.XmlText
+  const [content] = useYValue<Y.XmlText>(path, { observe: false })
 
   return (
     <>
