@@ -7,7 +7,7 @@ import {
   useEffect
 } from 'react'
 import { HocuspocusProvider } from '@hocuspocus/provider'
-import { useSession } from '@/hooks'
+import { useSession } from 'next-auth/react'
 import { Collaboration } from '@/defaults'
 import { HPWebSocketProviderContext } from '.'
 import type * as Y from 'yjs'
@@ -59,12 +59,13 @@ export const CollaborationProviderContext = ({ documentId, document, children }:
   document?: Y.Doc
 }): JSX.Element => {
   const { webSocket } = useContext(HPWebSocketProviderContext)
-  const { jwt } = useSession()
+  const { data, status } = useSession()
+
   const [synced, setSynced] = useState<boolean>(false)
   const [connected, setConnected] = useState<boolean>(false)
   const [provider, setProvider] = useState<HocuspocusProvider>()
 
-  if (!jwt?.access_token) {
+  if (status !== 'authenticated') {
     throw new Error('Collaboration is not allowed without a valid access_token')
   }
 
@@ -77,7 +78,7 @@ export const CollaborationProviderContext = ({ documentId, document, children }:
       websocketProvider: webSocket,
       name: documentId,
       document,
-      token: jwt.access_token,
+      token: data.accessToken,
 
       onConnect: () => {
         setConnected(true)
@@ -107,19 +108,20 @@ export const CollaborationProviderContext = ({ documentId, document, children }:
   useEffect(() => {
     // When the token is refreshed we need to send it to the server
     // and update the connection context with the new token
-    provider?.sendStateless(createStateless(StatelessType.AUTH, jwt))
-  }, [provider, jwt])
+    // TODO: Is there a better way using Auth.js?
+    provider?.sendStateless(createStateless(StatelessType.AUTH, data.accessToken || ''))
+  }, [provider, data.accessToken])
 
   // Awareness user data
   const user = useMemo((): AwarenessUserData => {
     const colors = Object.keys(Collaboration.colors)
     return {
-      name: jwt.sub_name,
-      initials: jwt.sub_name.split(' ').map(t => t.substring(0, 1)).join(''),
+      name: data?.user.name,
+      initials: data?.user.name.split(' ').map(t => t.substring(0, 1)).join(''),
       color: colors[Math.floor(Math.random() * colors.length)],
       avatar: undefined
     }
-  }, [jwt?.sub_name])
+  }, [data?.user.name])
 
 
   const state = {

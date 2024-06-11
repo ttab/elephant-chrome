@@ -1,5 +1,4 @@
 import { type Dispatch } from 'react'
-import { SessionProvider } from '@/contexts'
 import { NavigationProvider } from '@/navigation'
 import userEvent from '@testing-library/user-event'
 
@@ -9,6 +8,7 @@ import { render, screen } from '../setupTests'
 import { ViewFocus } from '@/components/View/ViewHeader/ViewFocus'
 import { type NavigationActionType } from '@/types'
 import { initializeNavigationState } from '@/navigation/lib'
+import { SessionProvider } from 'next-auth/react'
 
 
 jest.mock('@/navigation/hooks/useNavigation', () => ({

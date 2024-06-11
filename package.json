@@ -23,6 +23,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@auth/express": "^0.5.5",
     "@hocuspocus/extension-database": "^2.13.1",
     "@hocuspocus/extension-logger": "^2.13.1",
     "@hocuspocus/extension-redis": "^2.13.1",
@@ -45,6 +46,7 @@
     "html-entities": "^2.5.2",
     "jose": "^5.4.0",
     "lodash-es": "^4.17.21",
+    "next-auth": "^4.24.7",
     "node-html-parser": "^6.1.13",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
