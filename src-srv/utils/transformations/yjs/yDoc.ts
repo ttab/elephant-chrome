@@ -8,9 +8,9 @@ import { type TBElement } from '@ttab/textbit'
 import { type Document } from '@hocuspocus/server'
 import createHash from '../../../../shared/createHash.js'
 
-function yContentToNewsDoc(yContent: Y.XmlText): Block[] | undefined {
+async function yContentToNewsDoc(yContent: Y.XmlText): Promise<Block[] | undefined> {
   const slateElement = yTextToSlateElement(yContent).children
-  return slateToNewsDoc(slateElement as TBElement[])
+  return await slateToNewsDoc(slateElement as TBElement[])
 }
 
 function assertDescriptions(yMeta: Y.Map<unknown>, documentType: string): void {
@@ -109,14 +109,14 @@ export function newsDocToYDoc(yDoc: Document | Y.Doc, newsDoc: GetDocumentRespon
   throw new Error('No document')
 }
 
-export function yDocToNewsDoc(yDoc: Y.Doc): GetDocumentResponse {
+export async function yDocToNewsDoc(yDoc: Y.Doc): Promise<GetDocumentResponse> {
   const yMap = yDoc.getMap('ele')
   try {
     const meta = ungroup((yMap.get('meta') as Y.Map<unknown>)?.toJSON() || {})
     const links = ungroup((yMap.get('links') as Y.Map<unknown>)?.toJSON() || {})
 
     const yContent = yMap.get('content') as Y.XmlText
-    const content = yContent.toString() ? yContentToNewsDoc(yContent) : []
+    const content = yContent.toString() ? await yContentToNewsDoc(yContent) : []
 
 
     const root = yMap.get('root') as Y.Map<unknown>
