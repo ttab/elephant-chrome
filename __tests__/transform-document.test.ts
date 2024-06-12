@@ -39,8 +39,8 @@ describe('Transform full planning newsdoc document to internal YDoc representati
   })
 
 
-  it('handles reverting the planning document', () => {
-    const { document, version } = yDocToNewsDoc(yDoc)
+  it('handles reverting the planning document', async () => {
+    const { document, version } = await yDocToNewsDoc(yDoc)
     expect(version).toBe(planning.version)
     expect(sortDocument(document)).toEqual(sortDocument(planning.document))
   })
@@ -56,8 +56,8 @@ describe('Transform full article newsdoc document to internal YDoc representatio
   })
 
 
-  it('handles reverting the article document', () => {
-    const { document, version } = yDocToNewsDoc(yDoc)
+  it('handles reverting the article document', async () => {
+    const { document, version } = await yDocToNewsDoc(yDoc)
 
     if (!document || !article.document) {
       throw new Error('no document')
@@ -82,8 +82,8 @@ describe('Description handling - planning', () => {
       expect(descriptions.length).toBe(2)
       expect(descriptions.map((d) => d.get('role'))).toEqual(['public', 'internal'])
     })
-    it('removes them when reverting', () => {
-      const { document, version } = yDocToNewsDoc(yDoc)
+    it('removes them when reverting', async () => {
+      const { document, version } = await yDocToNewsDoc(yDoc)
       if (!document || !planning.document) {
         throw new Error('no document')
       }
@@ -138,8 +138,8 @@ describe('Description handling - planning', () => {
       expect(descriptions.map((d) => d.get('role'))).toEqual(['internal', 'public'])
     })
 
-    it('removes them when reverting', () => {
-      const { document, version } = yDocToNewsDoc(yDoc)
+    it('removes them when reverting', async () => {
+      const { document, version } = await yDocToNewsDoc(yDoc)
       expect(version).toBe(planning.version)
       expect(document?.meta.filter((meta) => meta.type === 'core/description').length).toBe(1)
       expect(sortDocument(document)).toEqual(sortDocument(augmentedPlanning.document))
