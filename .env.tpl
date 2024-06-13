@@ -1,6 +1,12 @@
 # Environment
 NODE_ENV="development"
 
+# Keycloak configuration
+AUTH_KEYCLOAK_ID=elephant
+AUTH_KEYCLOAK_SECRET="..."
+AUTH_KEYCLOAK_ISSUER="https://..."
+AUTH_KEYCLOAK_IDP_HINT=google
+
 # Google OAuth2 secrets
 GOOGLE_CLIENT_ID="12345..."
 GOOGLE_CLIENT_SECRET="GO..."
