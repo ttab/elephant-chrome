@@ -1,7 +1,7 @@
 import { useMemo } from 'react'
 import useSWR from 'swr'
 
-import { useRegistry, useIndexUrl, useTable } from '@/hooks'
+import { useIndexUrl, useTable } from '@/hooks'
 import { useSession } from 'next-auth/react'
 import { type SearchIndexResponse } from '@/lib/index/search'
 import { Planning } from '@/lib/planning'
@@ -12,7 +12,6 @@ import { convertToISOStringInUTC, getDateTimeBoundaries } from '@/lib/datetime'
 
 export const PlanningList = ({ date }: { date: Date }): JSX.Element => {
   const { setData } = useTable()
-  const { locale } = useRegistry()
   const { data: session, status } = useSession()
 
   const indexUrl = useIndexUrl()
@@ -20,13 +19,13 @@ export const PlanningList = ({ date }: { date: Date }): JSX.Element => {
 
   // Create url to base SWR caching on
   const searchUrl = useMemo(() => {
-    const start = convertToISOStringInUTC(startTime, locale)
-    const end = convertToISOStringInUTC(endTime, locale)
+    const start = convertToISOStringInUTC(startTime)
+    const end = convertToISOStringInUTC(endTime)
     const searchUrl = new URL(indexUrl)
 
     searchUrl.search = new URLSearchParams({ start, end }).toString()
     return searchUrl
-  }, [startTime, endTime, indexUrl, locale])
+  }, [startTime, endTime, indexUrl])
 
 
   const { data } = useSWR(searchUrl.href, async (): Promise<SearchIndexResponse | undefined> => {
@@ -38,8 +37,8 @@ export const PlanningList = ({ date }: { date: Date }): JSX.Element => {
     const result = await Planning.search(indexUrl, session.accessToken, {
       size: 100,
       where: {
-        start: convertToISOStringInUTC(startTime, locale),
-        end: convertToISOStringInUTC(endTime, locale)
+        start: convertToISOStringInUTC(startTime),
+        end: convertToISOStringInUTC(endTime)
       }
     })
     setData(result)
