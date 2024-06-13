@@ -8,7 +8,8 @@ const scopes = [
   'email',
   'doc_read',
   'doc_write',
-  'doc_delete'
+  'doc_delete',
+  'search'
 ]
 
 const authorizationUrl = new URL(`${process.env.AUTH_KEYCLOAK_ISSUER}/protocol/openid-connect/auth`)

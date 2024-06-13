@@ -35,10 +35,8 @@ export const search = async (endpoint: URL, accessToken: string, params?: Search
           {
             range: {
               'document.meta.core_planning_item.data.start_date': {
-                // gte: start.toISOString(),
-                // lte: end.toISOString()
-                gte: '2024-05-23T20:00:00.000Z',
-                lte: '2024-05-24T19:59:59.000Z'
+                gte: start.toISOString(),
+                lte: end.toISOString()
               }
             }
           }

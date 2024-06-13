@@ -1,6 +1,6 @@
 import React from 'react'
 import { ViewHeader } from '@/components'
-import { useSession } from '@/hooks'
+// import { useSession } from '@/hooks'
 import apiClient from '@/lib/apiclient'
 import { type ViewMetadata } from '@/types'
 import { XIcon, SearchIcon, LoaderIcon, ImageIcon, ListEndIcon } from '@ttab/elephant-ui/icons'
@@ -72,7 +72,7 @@ const meta: ViewMetadata = {
 
 function ImageSearchInput(props: InputProps): JSX.Element {
   const { setQueryString } = props
-  const { jwt } = useSession()
+  // const { jwt } = useSession()
   const [query, setQuery] = useState('')
 
   const inputRef = useRef<HTMLInputElement>(null)
