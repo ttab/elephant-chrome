@@ -7,16 +7,17 @@ export const transformVisual = (element: Block): TBElement => {
   return {
     id,
     class: 'block',
-    type: 'core/image',
+    type: 'tt/visual',
     properties: {
-      // FIXME: This is a hack to get a viewable image
-      // TODO: Could there be more than one link/image?
-      src: links[0].url?.replace('_NormalPreview.jpg', '_WatermarkPreview.jpg') ?? '',
+      // FIXME: This is a hack to get a viewable image,
+      // we need authentication to view non-watermarked images
+      href: links[0]?.url
+        ?.replace('_NormalPreview.jpg', '_WatermarkPreview.jpg') ?? '',
       rel: links[0].rel,
       uri: links[0].uri,
       type: links[0].type,
       credit: links[0].data.credit,
-      altText: data.caption,
+      altText: data?.altText,
       text: data.caption,
       width: links[0].data.width,
       height: links[0].data.height,
@@ -24,17 +25,20 @@ export const transformVisual = (element: Block): TBElement => {
     },
     children: [
       {
-        type: 'core/image/image',
+        type: 'tt/visual/image',
         children: [{ text: '' }]
       },
       {
-        type: 'core/image/altText',
-        // TODO: Whats the difference between altText and text, and how should we handle them?
+        type: 'tt/visual/text',
         children: [{ text: decode(data.caption) ?? '' }]
       },
       {
-        type: 'core/image/text',
-        children: [{ text: decode(data.caption) ?? '' }]
+        type: 'tt/visual/byline',
+        children: [{ text: decode(links[0].data.credit) ?? '' }]
+      },
+      {
+        type: 'tt/visual/altText',
+        children: [{ text: decode(data.altText) ?? '' }]
       }
     ]
   }
@@ -48,13 +52,13 @@ export function revertVisual(element: TBElement): Block {
   const { id, properties } = element
   return Block.create({
     id,
-    // TODO: Fix once we have a coherent schema
     type: 'tt/visual',
     data: {
-      caption: toString(properties?.text)
+      caption: toString(properties?.text),
+      altText: toString(properties?.altText)
     },
     links: [
-      Block.create({
+      {
         data: {
           credit: toString(properties?.credit),
           height: toString(properties?.height),
@@ -66,7 +70,7 @@ export function revertVisual(element: TBElement): Block {
         uri: toString(properties?.uri),
         // FIXME: This is a hack to revert the viewable image
         url: toString(properties?.src).replace('_WatermarkPreview.jpg', '_NormalPreview.jpg')
-      })
+      }
     ]
   })
 }
