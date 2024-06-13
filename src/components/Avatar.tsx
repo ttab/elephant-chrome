@@ -4,9 +4,11 @@ import { getInitials } from '@/lib/getInitials'
 
 import {
   Avatar as AvatarMain,
-  AvatarFallback
+  AvatarFallback,
+  AvatarImage
 } from '@ttab/elephant-ui'
 import { Collaboration } from '@/defaults'
+import { type Session } from 'next-auth'
 
 const avatarVariants = cva('',
   {
@@ -28,10 +30,11 @@ const avatarVariants = cva('',
     }
   })
 
-export const Avatar = ({ value, variant = 'default', size = 'default', color = 'default', stacked = false, className }:
+export const Avatar = ({ user, value, variant = 'default', size = 'default', color = 'default', stacked = false, className }:
 React.HTMLAttributes<HTMLDivElement> &
 VariantProps<typeof avatarVariants> & {
-  value: string
+  value?: string
+  user?: Session['user'] | undefined
   color?: string
   stacked?: boolean
 }): JSX.Element => {
@@ -42,10 +45,11 @@ VariantProps<typeof avatarVariants> & {
 
   return (
     <AvatarMain className={cn(avatarVariants({ size, stacked }))}>
+      <AvatarImage src={user?.image} />
       <AvatarFallback
         className={cn(avatarVariants({ variant, className: compoundClassName }))}
       >
-        {getInitials(value)}
+        {getInitials(user?.name || value)}
       </AvatarFallback>
     </AvatarMain >
   )

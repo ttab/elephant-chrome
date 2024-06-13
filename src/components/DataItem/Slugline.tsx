@@ -1,6 +1,5 @@
-import type * as Y from 'yjs'
 import { Button } from '@ttab/elephant-ui'
-import { useYObserver } from '@/hooks'
+import { useYValue } from '@/hooks/useYValue'
 
 export const SluglineButton = ({ path, value, setActive }: {
   path?: string
@@ -27,14 +26,14 @@ function EditableSlugline({ path, setActive }: {
   path: string
   setActive: ((value: boolean) => void)
 }): JSX.Element {
-  const { get } = useYObserver('meta', path)
+  const [slugLine] = useYValue<string | undefined>(path)
 
   return <Button
     className='text-muted-foreground h-7 font-normal text-sm whitespace-nowrap'
     variant='outline'
     onClick={() => setActive(true)}
   >
-    {(get('value') as Y.XmlText)?.toJSON() || 'Slugline...'}
+    {slugLine || 'Slugg...'}
   </Button >
 }
 
@@ -42,9 +41,9 @@ function EditableSlugline({ path, setActive }: {
 function StaticSluglineByPath({ path }: {
   path: string
 }): JSX.Element {
-  const { get } = useYObserver('meta', path)
+  const [slugLine] = useYValue<string | undefined>(path)
 
-  return <StaticSluglineByValue value={(get('value') as Y.XmlText)?.toJSON() || ''} />
+  return <StaticSluglineByValue value={slugLine || ''} />
 }
 
 
@@ -59,6 +58,6 @@ function StaticSluglineByValue({ value }: {
     className='text-muted-foreground h-7 px-2 font-normal text-sm whitespace-nowrap hover:bg-background hover:text-muted-foreground hover:cursor-default'
     variant='outline'
   >
-    {value || 'Slugline...'}
+    {value || 'Slugg...'}
   </Button >
 }

@@ -1,5 +1,5 @@
 import express from 'express'
-import type core from 'express-serve-static-core'
+import type { RequestHandler, Express } from 'express-serve-static-core'
 import expressWebsockets from 'express-ws'
 import cors from 'cors'
 import cookieParser from 'cookie-parser'
@@ -13,7 +13,10 @@ import {
   RedisCache,
   CollaborationServer
 } from './utils/index.js'
-import { createRemoteJWKSet } from 'jose'
+
+import { ExpressAuth } from '@auth/express'
+import { assertAuthenticatedUser } from './utils/assertAuthenticatedUser.js'
+import { authConfig } from './utils/authConfig.js'
 
 
 /*
@@ -24,7 +27,7 @@ const PROTOCOL = (NODE_ENV === 'production') ? 'https' : process.env.VITE_PROTOC
 const HOST = process.env.HOST || '127.0.0.1'
 const PORT = process.env.PORT ? parseInt(process.env.PORT) : 5183
 const REPOSITORY_URL = process.env.REPOSITORY_URL
-const JWKS_URL = process.env.JWKS_URL
+const ISSUER_URL = process.env.AUTH_KEYCLOAK_ISSUER
 const REDIS_URL = process.env.REDIS_URL
 const BASE_URL = process.env.BASE_URL || ''
 
@@ -38,8 +41,8 @@ export async function runServer(): Promise<string> {
 
   const routes = await mapRoutes(apiDir)
 
-  if (!JWKS_URL) {
-    throw new Error('Missing JWKS_URL')
+  if (!ISSUER_URL) {
+    throw new Error('Missing ISSUER_URL')
   }
 
   if (!REPOSITORY_URL) {
@@ -57,15 +60,11 @@ export async function runServer(): Promise<string> {
     throw new Error('Failed connecting to Redis')
   }
 
-  // Connect to repository
-  const jwks = createRemoteJWKSet(new URL(JWKS_URL))
-  try {
-    await jwks({ alg: 'ES384', typ: 'JWT' })
-  } catch (err: unknown) {
-    throw new Error('Failed to fetch JWKS', { cause: err })
-  }
+  const repository = new Repository(REPOSITORY_URL)
 
-  const repository = new Repository(REPOSITORY_URL, jwks)
+  app.set('trust proxy', true)
+  app.use(`${BASE_URL}/api/auth/*`, ExpressAuth(authConfig) as RequestHandler)
+  app.use(assertAuthenticatedUser as RequestHandler)
 
   app.use(cors({
     credentials: true,
@@ -93,7 +92,7 @@ export async function runServer(): Promise<string> {
   })
 
   if (NODE_ENV === 'development') {
-    ViteExpress.listen(app as unknown as core.Express, PORT,
+    ViteExpress.listen(app as unknown as Express, PORT,
       () => {
         console.log(`Development Server running on ${PROTOCOL}://${HOST}:${PORT}${BASE_URL || ''}`)
       })

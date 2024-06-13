@@ -1,4 +1,3 @@
-import { type JWT } from '@/shared/types/index.js'
 import { z } from 'zod'
 
 export enum StatelessType {
@@ -10,15 +9,7 @@ export enum StatelessType {
 const StatelessAuthSchema = z.object({
   type: z.enum([StatelessType.AUTH]),
   message: z.object({
-    token: z.string(),
-    user: z.object({
-      iss: z.string(),
-      sub: z.string(),
-      exp: z.number(),
-      sub_name: z.string(),
-      scope: z.string(),
-      units: z.array(z.string())
-    })
+    token: z.string()
   })
 })
 
@@ -76,15 +67,14 @@ export function parseStateless<T extends StatelessPayload>(payload: string): T {
 }
 
 export function createStateless(prefix: StatelessType.IN_PROGRESS, message: StatelessInProgressMessage): string
-export function createStateless(prefix: StatelessType.AUTH, message: JWT): string
+export function createStateless(prefix: StatelessType.AUTH, message: string): string
 export function createStateless(prefix: StatelessType.MESSAGE, message: string): string
-export function createStateless(prefix: StatelessType, message: string | JWT | StatelessInProgressMessage): string {
+export function createStateless(prefix: StatelessType, message: string | StatelessInProgressMessage): string {
   switch (prefix) {
     case StatelessType.AUTH: {
-      const { access_token: accessToken, ...rest } = message as JWT
       const payload = {
-        token: accessToken,
-        user: rest
+        token: message
+        // TODO: Send user
       }
       return `${prefix as string}@${JSON.stringify(payload)}`
     }

@@ -1,7 +1,8 @@
 import { useMemo } from 'react'
 import useSWR from 'swr'
 
-import { useSession, useRegistry, useIndexUrl, useTable } from '@/hooks'
+import { useRegistry, useIndexUrl, useTable } from '@/hooks'
+import { useSession } from 'next-auth/react'
 import { type SearchIndexResponse } from '@/lib/index/search'
 import { Planning } from '@/lib/planning'
 import { PlanningTable } from '@/views/PlanningOverview/PlanningTable'
@@ -12,7 +13,8 @@ import { convertToISOStringInUTC, getDateTimeBoundaries } from '@/lib/datetime'
 export const PlanningList = ({ date }: { date: Date }): JSX.Element => {
   const { setData } = useTable()
   const { locale } = useRegistry()
-  const { jwt } = useSession()
+  const { data: session, status } = useSession()
+
   const indexUrl = useIndexUrl()
   const { startTime, endTime } = getDateTimeBoundaries(date)
 
@@ -28,12 +30,12 @@ export const PlanningList = ({ date }: { date: Date }): JSX.Element => {
 
 
   const { data } = useSWR(searchUrl.href, async (): Promise<SearchIndexResponse | undefined> => {
-    if (!jwt) {
+    if (status !== 'authenticated') {
       return
     }
 
     const { startTime, endTime } = getDateTimeBoundaries(date)
-    const result = await Planning.search(indexUrl, jwt, {
+    const result = await Planning.search(indexUrl, session.accessToken, {
       size: 100,
       where: {
         start: convertToISOStringInUTC(startTime, locale),

@@ -1,5 +1,6 @@
 import * as Y from 'yjs'
 import { toSlateYXmlText } from './toSlateYXmlText.js'
+import { isTextEntry } from '../../../../shared/transformations/isTextEntry.js'
 
 /**
  * Transform any object to a Y representation
@@ -30,32 +31,4 @@ export function toYMap<T extends Record<string, unknown>>(d: T, map: Y.Map<unkno
   }
 
   return map
-}
-
-/**
- * Decide whether property should be converted to Y.XmlText,
- * i.e be editable using Textbit.
- *
- * @param {string} key - The property name
- * @param {unknown} t - Type value on the same level as the key
- * @returns {boolean}
- */
-function isTextEntry(key: string, t?: unknown): boolean {
-  // TODO: This lookup table should live somewhere else or maybe be auto generated from revisor schemas
-  const lookupMap: Record<string, string[]> = {
-    'tt/slugline': [
-      'value'
-    ],
-    '*': [
-      'text', 'title'
-    ]
-  }
-
-  const type = typeof t === 'string' ? t : ''
-
-  if (lookupMap[type]?.includes(key)) {
-    return true
-  }
-
-  return lookupMap['*']?.includes(key)
 }

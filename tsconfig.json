@@ -93,6 +93,7 @@
     "jest.config.ts",
     "__mocks__/**/*",
     "__tests__/**/*",
-    "__mocks__"
+    "__mocks__",
+    "types/**/*"
   ]
 }

@@ -1,17 +1,9 @@
 import { TwirpFetchTransport } from '@protobuf-ts/twirp-transport'
 import { DocumentsClient } from '@/protos/service.client.js'
-import { type JWTVerifyResult, jwtVerify, type JWTVerifyGetKey } from 'jose'
 import type { Document, GetDocumentResponse, UpdateRequest, UpdateResponse, ValidateRequest, ValidateResponse } from '@/protos/service.js'
 import { type FinishedUnaryCall } from '@protobuf-ts/runtime-rpc'
 import type * as Y from 'yjs'
 import { yDocToNewsDoc } from './transformations/yjs/yDoc.js'
-
-interface GetAuth {
-  user: string
-  password: string
-  sub: string
-  permissions: string
-}
 
 export interface Session {
   access_token: string
@@ -27,13 +19,9 @@ function validateUUID(uuid: string): boolean {
 }
 
 export class Repository {
-  readonly #repoUrl: string
-  readonly #jwks: JWTVerifyGetKey
   readonly #client: DocumentsClient
 
-  constructor(repoUrl: string, jwks: JWTVerifyGetKey) {
-    this.#repoUrl = repoUrl
-    this.#jwks = jwks
+  constructor(repoUrl: string) {
     this.#client = new DocumentsClient(
       new TwirpFetchTransport({
         baseUrl: new URL('twirp', repoUrl).toString()
@@ -42,41 +30,11 @@ export class Repository {
   }
 
   /**
-   * Authenticate with repo
-   */
-  async auth({ user, password, sub, permissions }: GetAuth): Promise<Session> {
-    try {
-      const res = await fetch(
-        new URL('/token', this.#repoUrl),
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded'
-          },
-          body: `grant_type=password&username=${user} <user://tt/${sub}, core://unit/redaktionen>&password=${password}&scope=${permissions}`
-        }
-      )
-
-      if (res.status === 200) {
-        return await res.json()
-      }
-
-      throw new Error('Unable to authorize')
-    } catch (err: unknown) {
-      if (err instanceof Error) {
-        throw new Error(err.message)
-      }
-
-      throw new Error('Unknown error')
-    }
-  }
-
-  /**
    * Validate access token
    * @param jwt string
    * @returns Promise<JWTVerifyResult>
    */
-  async validateToken(jwt: string): Promise<JWTVerifyResult> {
+  /* async validateToken(jwt: string): Promise<JWTVerifyResult> {
     const result = await jwtVerify(jwt, this.#jwks).catch(err => {
       throw new Error('Failed to verify jwt', { cause: err })
     })
@@ -106,7 +64,7 @@ export class Repository {
 
       throw new Error('Unknown error')
     }
-  }
+  } */
 
   /**
    * Get a newsdoc from repository
@@ -170,7 +128,7 @@ export class Repository {
   */
   async validateDoc(ydoc: Y.Doc):
   Promise<FinishedUnaryCall<ValidateRequest, ValidateResponse>> {
-    const { document, version } = yDocToNewsDoc(ydoc)
+    const { document, version } = await yDocToNewsDoc(ydoc)
     const payload = {
       version: BigInt(version),
       document

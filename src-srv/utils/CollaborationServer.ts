@@ -106,16 +106,14 @@ export class CollaborationServer {
           store: async (payload) => { await this.#storeDocument(payload) }
         }),
         new Snapshot({
-          debounce: 300000,
+          debounce: 6000,
           snapshot: async (payload: onStoreDocumentPayload) => {
             return async () => {
               await this.#snapshotDocument(payload)
             }
           }
         }),
-        new Auth({
-          validateToken: this.#repository.validateToken.bind(this.#repository)
-        })
+        new Auth()
       ],
       // Add user as having a tracked document open (or increase nr of times user have it open)
       connected: async (payload) => { await this.#connected(payload) },
@@ -138,7 +136,7 @@ export class CollaborationServer {
           })
 
           if (connection.document) {
-            const document = yDocToNewsDoc(connection.document)
+            const document = await yDocToNewsDoc(connection.document)
             const currentHash = createHash(JSON.stringify(document.document))
 
             if (document.document && msg.message.context) {
@@ -247,7 +245,6 @@ export class CollaborationServer {
       accessToken: context.token
     })
 
-
     if (newsDoc) {
       newsDocToYDoc(yDoc, newsDoc)
     }
@@ -268,7 +265,7 @@ export class CollaborationServer {
     }
 
     // Convert yDoc to newsDoc, so we can hash it and maybe save it to the repository
-    const { document } = yDocToNewsDoc(yDoc)
+    const { document } = await yDocToNewsDoc(yDoc)
 
     const currentHash = createHash(JSON.stringify(document))
 

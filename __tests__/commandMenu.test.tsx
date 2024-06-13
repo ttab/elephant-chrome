@@ -1,4 +1,5 @@
-import { SessionProvider, TableProvider } from '@/contexts'
+import { TableProvider } from '@/contexts'
+import { SessionProvider } from 'next-auth/react'
 import { NavigationProvider } from '@/navigation'
 import { render, screen } from '../setupTests'
 import { CommandMenu } from '@/components/CommandMenu'
@@ -45,7 +46,7 @@ describe('CommandMenu', () => {
       <SessionProvider>
         <NavigationProvider>
           <TableProvider>
-            <CommandMenu onKeyDown={() => {}} onChange={() => {}}>
+            <CommandMenu onKeyDown={() => { }} onChange={() => { }}>
               <p>test</p>
             </CommandMenu>
           </TableProvider>
