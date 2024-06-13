@@ -69,7 +69,7 @@ export function revertVisual(element: TBElement): Block {
         type: toString(properties?.type),
         uri: toString(properties?.uri),
         // FIXME: This is a hack to revert the viewable image
-        url: toString(properties?.src).replace('_WatermarkPreview.jpg', '_NormalPreview.jpg')
+        url: toString(properties?.href).replace('_WatermarkPreview.jpg', '_NormalPreview.jpg')
       }
     ]
   })
