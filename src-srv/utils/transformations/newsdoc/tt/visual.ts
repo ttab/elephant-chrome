@@ -12,12 +12,11 @@ export const transformVisual = (element: Block): TBElement => {
       // FIXME: This is a hack to get a viewable image,
       // we need authentication to view non-watermarked images
       href: links[0]?.url
-        ?.replace('_NormalPreview.jpg', '_WatermarkPreview.jpg') ?? '',
+        ?.replace('_NormalPreview.jpg', '_WatermarkPreview.jpg'),
       rel: links[0].rel,
       uri: links[0].uri,
       type: links[0].type,
       credit: links[0].data.credit,
-      altText: data?.altText,
       text: data.caption,
       width: links[0].data.width,
       height: links[0].data.height,
@@ -35,10 +34,6 @@ export const transformVisual = (element: Block): TBElement => {
       {
         type: 'tt/visual/byline',
         children: [{ text: decode(links[0].data.credit) ?? '' }]
-      },
-      {
-        type: 'tt/visual/altText',
-        children: [{ text: decode(data.altText) ?? '' }]
       }
     ]
   }
@@ -54,8 +49,7 @@ export function revertVisual(element: TBElement): Block {
     id,
     type: 'tt/visual',
     data: {
-      caption: toString(properties?.text),
-      altText: toString(properties?.altText)
+      caption: toString(properties?.text)
     },
     links: [
       {
