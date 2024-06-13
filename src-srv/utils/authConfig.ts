@@ -2,12 +2,20 @@ import { type AuthConfig } from '@auth/core'
 import { type JWTPayload } from 'jose'
 import Keycloak from '@auth/express/providers/keycloak'
 
-const permissions = [
+const scopes = [
+  'openid',
+  'profile',
+  'email',
   'doc_read',
   'doc_write',
-  'doc_delete',
-  'search'
-].join('+')
+  'doc_delete'
+]
+
+const authorizationUrl = new URL(`${process.env.AUTH_KEYCLOAK_ISSUER}/protocol/openid-connect/auth`)
+authorizationUrl.searchParams.set('scope', scopes.join(' '))
+if (process.env.AUTH_KEYCLOAK_IDP_HINT) {
+  authorizationUrl.searchParams.set('kc_idp_hint', process.env.AUTH_KEYCLOAK_IDP_HINT)
+}
 
 async function refreshAccessToken(token: JWTPayload): Promise<JWTPayload> {
   const url = `${process.env.AUTH_KEYCLOAK_ISSUER}/protocol/openid-connect/token`
@@ -45,7 +53,7 @@ async function refreshAccessToken(token: JWTPayload): Promise<JWTPayload> {
 export const authConfig: AuthConfig = {
   providers: [
     Keycloak({
-      authorization: `${process.env.AUTH_KEYCLOAK_ISSUER}/protocol/openid-connect/auth?scope=openid+profile+email+${permissions}`
+      authorization: authorizationUrl.toString()
     })
   ],
   callbacks: {
