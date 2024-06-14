@@ -30,43 +30,6 @@ export class Repository {
   }
 
   /**
-   * Validate access token
-   * @param jwt string
-   * @returns Promise<JWTVerifyResult>
-   */
-  /* async validateToken(jwt: string): Promise<JWTVerifyResult> {
-    const result = await jwtVerify(jwt, this.#jwks).catch(err => {
-      throw new Error('Failed to verify jwt', { cause: err })
-    })
-
-    return result
-  }
-
-  async refresh({ refreshToken }: { refreshToken: string }): Promise<Session> {
-    try {
-      const res = await fetch(new URL('/token', this.#repoUrl), {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded'
-        },
-        body: `grant_type=refresh_token&refresh_token=${refreshToken}`
-      })
-
-      if (res.status === 200) {
-        return await res.json()
-      }
-
-      throw new Error('Unable to authorize')
-    } catch (err: unknown) {
-      if (err instanceof Error) {
-        throw new Error(err.message)
-      }
-
-      throw new Error('Unknown error')
-    }
-  } */
-
-  /**
    * Get a newsdoc from repository
    * @param uuid string
    * @param accessToken string
@@ -101,7 +64,6 @@ export class Repository {
    * @param accessToken string
    * @returns Promise<FinishedUnaryCall<UpdateRequest, UpdateResponse>
    */
-
   async saveDoc(document: Document, accessToken: string, version: bigint):
   Promise<FinishedUnaryCall<UpdateRequest, UpdateResponse> | undefined> {
     const payload: UpdateRequest = {
@@ -113,12 +75,9 @@ export class Repository {
       uuid: document.uuid
     }
 
-    try {
-      const result = await this.#client.update(payload, meta(accessToken))
-      return result
-    } catch (err: unknown) {
-      console.error(err)
-    }
+    return await this.#client.update(
+      payload, meta(accessToken),
+    )
   }
 
   /**
@@ -133,8 +92,8 @@ export class Repository {
       version: BigInt(version),
       document
     }
-    const result = await this.#client.validate(payload)
-    return result
+
+    return await this.#client.validate(payload)
   }
 }
 
