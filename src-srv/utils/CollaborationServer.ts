@@ -140,7 +140,7 @@ export class CollaborationServer {
           const connection = await this.#server.openDirectConnection(
             msg.message.id, { ...msg.message.context, agent: 'server' }
           ).catch(ex => {
-            throw new Error('acquire connection', {cause: ex})
+            throw new Error('acquire connection', { cause: ex })
           })
 
           await connection.transact(doc => {
@@ -148,7 +148,7 @@ export class CollaborationServer {
             const root = ele.get('root') as Y.Map<unknown>
             root.delete('__inProgress')
           }).catch(ex => {
-            throw new Error('remove in progress flag', {cause: ex})
+            throw new Error('remove in progress flag', { cause: ex })
           })
 
           if (connection.document) {
@@ -160,7 +160,7 @@ export class CollaborationServer {
                 document.document, msg.message.context.accessToken as string,
                 BigInt(document.version)
               ).catch(ex => {
-                throw new Error('save snapshot', {cause: ex})
+                throw new Error('save snapshot', { cause: ex })
               })
 
               if (result?.status.code === 'OK') {
@@ -176,7 +176,7 @@ export class CollaborationServer {
                   versionMap.set('version', result?.response.version.toString())
                   hashMap.set('hash', currentHash)
                 }).catch(ex => {
-                  throw new Error('update document version and hash', {cause:ex})
+                  throw new Error('update document version and hash', { cause: ex })
                 })
 
                 console.debug('::: Document saved: ', result.response.version, 'new hash:', currentHash)
@@ -259,7 +259,7 @@ export class CollaborationServer {
 
     // Fetch from Redis if exists
     const state = await this.#redisCache.get(uuid).catch(ex => {
-      throw new Error("get cached document", {cause:ex})
+      throw new Error('get cached document', { cause: ex })
     })
     if (state) {
       return state
@@ -270,7 +270,7 @@ export class CollaborationServer {
       uuid,
       accessToken: context.token
     }).catch(ex => {
-      throw new Error("get document from repository", {cause: ex})
+      throw new Error('get document from repository', { cause: ex })
     })
 
     if (newsDoc) {
@@ -318,14 +318,14 @@ export class CollaborationServer {
       // TODO: what does an error response look like? Is it parsed? A full twirp
       // error response looks like this:
       // https://twitchtv.github.io/twirp/docs/errors.html#metadata
-      throw new Error('save document to repository', {cause: result})
+      throw new Error('save document to repository', { cause: result })
     }
 
     const connection = await this.#server.openDirectConnection(documentName, {
       ...context,
       agent: 'server'
     }).catch(ex => {
-      throw new Error('open hocuspocus connection', {cause: ex})
+      throw new Error('open hocuspocus connection', { cause: ex })
     })
 
     await connection.transact(doc => {
@@ -334,7 +334,7 @@ export class CollaborationServer {
       versionMap.set('version', result?.response.version.toString())
       hashMap.set('hash', currentHash)
     }).catch(ex => {
-      throw new Error('update document with new hash', {cause: ex})
+      throw new Error('update document with new hash', { cause: ex })
     })
 
     console.debug('::: Snapshot saved: ', result.response.version, 'new hash:', currentHash)

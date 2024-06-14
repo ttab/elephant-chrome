@@ -27,13 +27,15 @@ async function refreshAccessToken(token: JWTPayload): Promise<JWTPayload> {
     },
     body: params
   }).catch(ex => {
-    throw new Error("refresh token grant request", {cause: ex})
+    throw new Error('refresh token grant request', { cause: ex })
   })
 
   const refreshedTokens = await response.json()
 
   if (!response.ok) {
-    throw new Error("refresh request error response", {cause: refreshedTokens})
+    throw new Error(
+      `refresh request error response: ${response.statusText}`,
+      { cause: refreshedTokens })
   }
 
   return {

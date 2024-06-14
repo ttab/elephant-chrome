@@ -14,7 +14,7 @@ export class RedisCache {
     const client = createClient({ url: this.#url })
 
     await client.connect().catch(ex => {
-      throw new Error("connect to redis", {cause: ex})
+      throw new Error('connect to redis', { cause: ex })
     })
 
     this.redisClient = client as RedisClientType

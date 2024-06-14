@@ -56,7 +56,7 @@ export async function runServer(): Promise<string> {
   const cache = new RedisCache(REDIS_URL)
 
   await cache.connect().catch(ex => {
-    throw new Error("connect to redis cache", {cause: ex})
+    throw new Error('connect to redis cache', { cause: ex })
   })
 
   const repository = new Repository(REPOSITORY_URL)
@@ -84,7 +84,7 @@ export async function runServer(): Promise<string> {
   })
 
   await collaborationServer.listen([`${BASE_URL}/:document`]).catch(ex => {
-    throw new Error(`start collaboration server on port ${PORT}`, {cause: ex})
+    throw new Error(`start collaboration server on port ${PORT}`, { cause: ex })
   })
 
   connectRouteHandlers(app, routes, {
@@ -111,9 +111,6 @@ export async function runServer(): Promise<string> {
       app.listen(PORT)
 
       break
-    }
-    default: {
-      throw new Error(`Invalid NODE_ENV ${NODE_ENV}`)
     }
   }
 

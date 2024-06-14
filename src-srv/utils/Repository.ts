@@ -76,7 +76,7 @@ export class Repository {
     }
 
     return await this.#client.update(
-      payload, meta(accessToken),
+      payload, meta(accessToken)
     )
   }
 
