@@ -20,9 +20,7 @@ export function Thumbnail(props: ThumbnailProps): JSX.Element {
       <DialogTrigger>
         <div className='flex place-content-center  bg-gray-200' style={{ minHeight: '144px' }}>
           <img
-            // src={`${hit.uri}_NormalThumbnail.jpg`}
             src={thumbnail.href}
-            // className='h-32 max-w-full'
             style={{ maxHeight: '176px', objectFit: 'contain', maxWidth: 'auto' }}
             onDragStartCapture={(e) => {
               console.log('dragging the image', e)
