@@ -20,20 +20,17 @@ export class Auth implements Extension {
       }
     }
 
-    throw new Error('Invalid token')
+    throw new Error('Could not authenticate: Invalid token')
   }
 
   async onStateless({ payload, connection }: onStatelessPayload): Promise<void> {
-    try {
-      const statelessMessage = parseStateless<StatelessAuth>(payload)
-      if (statelessMessage.type === StatelessType.AUTH) {
-        await validateAccessToken(statelessMessage.message.token)
+    const statelessMessage = parseStateless<StatelessAuth>(payload)
+    if (statelessMessage.type === StatelessType.AUTH) {
+      if (await validateAccessToken(statelessMessage.message.token)) {
+        connection.context = statelessMessage.message
+      } else {
+        throw new Error('Could not authenticate: Invalid new token')
       }
-
-      // Set new JWT in connection context
-      connection.context = statelessMessage.message
-    } catch (ex) {
-      throw new Error('Could not authenticate, token not refreshed', { cause: ex })
     }
   }
 }
@@ -47,3 +44,4 @@ async function validateAccessToken(token: string): Promise<boolean> {
 
   return response.ok
 }
+
