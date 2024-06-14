@@ -104,8 +104,9 @@ export const columns: Array<ColumnDef<Calendar>> = [
       return true
     },
     cell: () => {
-      const _random = (Math.ceil(Math.random() * 10))
-      const _status = _random > 4 || false
+      // TODO: remove and replace below when possible to get real planning status
+      const _random = (Math.ceil(Math.random() * 5))
+      const _status = _random > 3 || false
       return <PlanningStatus status={_status} />
     }
   },
