@@ -8,7 +8,7 @@ export function Preview(props: { ttninjs: ttninjs }) {
 
   return (
 
-    <div className='flex flex-col max-h-80'>
+    <div className='flex flex-col'>
       <div><h3>{ttninjs.headline}</h3></div>
       <img
         src={`${ttninjs.uri}_WatermarkPreview.jpg`}
