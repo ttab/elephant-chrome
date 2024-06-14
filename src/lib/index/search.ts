@@ -1,4 +1,5 @@
-import { type Planning } from '@/views/PlanningOverview/PlanningTable/data/schema'
+import { type Planning } from '@/views/Overviews/PlanningOverview/PlanningTable/data/schema'
+import { type Calendar } from '@/views/Overviews/CalendarOverview/CalendarTable/data/schema'
 
 interface SearchIndexOptions {
   accessToken: string
@@ -12,7 +13,7 @@ interface SearchIndexResult {
   page: number
   pages: number
   pageSize: number
-  hits: Planning[]
+  hits: Planning[] | Calendar[]
 }
 
 interface SearchIndexError {

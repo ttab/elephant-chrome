@@ -1,4 +1,5 @@
 export { Editor } from './Editor'
-export { PlanningOverview } from './PlanningOverview'
+export { PlanningOverview } from './Overviews/PlanningOverview'
+export { CalendarOverview } from './Overviews/CalendarOverview'
 export { Planning } from './Planning'
 export { Error } from './Error'

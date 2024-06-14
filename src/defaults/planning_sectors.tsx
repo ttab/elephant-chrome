@@ -1,6 +1,6 @@
 import { type DefaultValueOption } from '@/types'
 
-export const Sectors: DefaultValueOption[] = [
+export const PlanningSectors: DefaultValueOption[] = [
   {
     value: 'ef739bb6-7ba1-5d36-8aa0-f7dde302efa2',
     label: 'Utrikes',

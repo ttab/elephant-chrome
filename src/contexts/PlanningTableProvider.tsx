@@ -11,9 +11,9 @@ import {
   getSortedRowModel,
   useReactTable
 } from '@tanstack/react-table'
-import { columns } from '@/views/PlanningOverview/PlanningTable/Columns'
+import { columns } from '@/views/Overviews/PlanningOverview/PlanningTable/Columns'
 import { type SearchIndexResponse } from '@/lib/index/search'
-import { type Planning } from '@/views/PlanningOverview/PlanningTable/data/schema'
+import { type Planning } from '@/views/Overviews/PlanningOverview/PlanningTable/data/schema'
 
 export interface CommandArgs {
   pages: string[]
@@ -35,10 +35,11 @@ const initialState = {
   setData: () => {}
 } as unknown as TableProviderState<Planning>
 
-export const TableContext = createContext<TableProviderState<Planning>>(initialState)
+export const PlanningTableContext = createContext<TableProviderState<Planning>>(initialState)
 
-export const TableProvider = ({ children }: PropsWithChildren): JSX.Element => {
+export const PlanningTableProvider = ({ children }: PropsWithChildren): JSX.Element => {
   const [data, setData] = useState<SearchIndexResponse | null>([] as unknown as SearchIndexResponse)
+  console.log('🍄 ~ PlanningTableProvider ~ data 🤭 -', data)
 
   const [rowSelection, setRowSelection] = useState({})
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
@@ -80,8 +81,8 @@ export const TableProvider = ({ children }: PropsWithChildren): JSX.Element => {
   })
 
   return (
-    <TableContext.Provider value={{ table, setData, loading: !table.options.data.length, command }}>
+    <PlanningTableContext.Provider value={{ table, setData, loading: !table.options.data.length, command }}>
       {children}
-    </TableContext.Provider>
+    </PlanningTableContext.Provider>
   )
 }
