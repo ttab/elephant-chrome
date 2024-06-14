@@ -44,7 +44,7 @@ function ImageSearch(): JSX.Element {
   const [queryString, setQueryString] = useState('')
   const SIZE = 10
   const swr = useSWRInfinite(
-    (index, prevData) => {
+    (index) => {
       return [queryString, index, SIZE]
     },
     fetcher,
