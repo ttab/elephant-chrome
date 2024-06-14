@@ -1,5 +1,5 @@
 import { useMemo, type PropsWithChildren, useEffect, useState } from 'react'
-import { AwarenessDocument, ViewHeader, Link as LocalLink } from '@/components'
+import { AwarenessDocument, ViewHeader } from '@/components'
 import { PenBoxIcon } from '@ttab/elephant-ui/icons'
 
 import { createEditor } from 'slate'
@@ -15,8 +15,10 @@ import {
   usePluginRegistry,
   type PluginRegistryAction
 } from '@ttab/textbit'
-import { Bold, Italic, Link, Text, Image, NumberList, BulletList, Blockquote } from '@ttab/textbit-plugins'
+
 import { ImageSearchPlugin } from '../../plugins/ImageSearch'
+
+import { Bold, Italic, Link, Text, Image, NumberList, BulletList, Blockquote, TTVisual } from '@ttab/textbit-plugins'
 
 import {
   useQuery,
@@ -27,7 +29,6 @@ import { EditorHeader } from './EditorHeader'
 import { type HocuspocusProvider } from '@hocuspocus/provider'
 import { type AwarenessUserData } from '@/contexts/CollaborationProvider'
 import { type YXmlText } from 'node_modules/yjs/dist/src/internals'
-import { Button } from '@ttab/elephant-ui'
 import { articleDocumentTemplate } from '@/lib/templates/articleDocumentTemplate'
 import { createDocument } from '@/lib/createYItem'
 
@@ -81,7 +82,8 @@ const Editor = (props: ViewProps): JSX.Element => {
 function EditorWrapper(props: ViewProps & {
   documentId: string
 }): JSX.Element {
-  const plugins = [Text, BulletList, NumberList, Blockquote, Image, Bold, Italic, Link, ImageSearchPlugin]
+
+  const plugins = [Text, BulletList, NumberList, Blockquote, Image, Bold, Italic, Link, TTVisual, ImageSearchPlugin]
   const {
     provider,
     synced,

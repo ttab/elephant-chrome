@@ -6,6 +6,7 @@ const scopes = [
   'openid',
   'profile',
   'email',
+  'search',
   'doc_read',
   'doc_write',
   'doc_delete',

@@ -1,4 +1,6 @@
+import { parseStateless, type StatelessAuth, StatelessType } from '@/shared/stateless.js'
 import {
+  type onStatelessPayload,
   type Extension,
   type onAuthenticatePayload
 } from '@hocuspocus/server'
@@ -9,29 +11,37 @@ export class Auth implements Extension {
     token: string
     user: JWTPayload
   }> {
-    /* try {
-      await this.configuration.validateToken(token)
-    } catch (ex) {
-      throw new Error('Could not authenticate', { cause: ex })
-    } */
+    const isValidToken = await validateAccessToken(token)
 
-    return {
-      token,
-      user: { ...decodeJwt(token) }
+    if (isValidToken) {
+      return {
+        token,
+        user: { ...decodeJwt(token) }
+      }
     }
+
+    throw new Error('Could not authenticate: Invalid token')
   }
 
-  /* async onStateless({ payload, connection }: onStatelessPayload): Promise<void> {
-    try {
-      const statelessMessage = parseStateless<StatelessAuth>(payload)
-      if (statelessMessage.type === StatelessType.AUTH) {
-        await this.configuration.validateToken(statelessMessage.message.token)
+  async onStateless({ payload, connection }: onStatelessPayload): Promise<void> {
+    const statelessMessage = parseStateless<StatelessAuth>(payload)
+    if (statelessMessage.type === StatelessType.AUTH) {
+      if (await validateAccessToken(statelessMessage.message.token)) {
+        connection.context = statelessMessage.message
+      } else {
+        throw new Error('Could not authenticate: Invalid new token')
       }
-
-      // Set new JWT in connection context
-      connection.context = statelessMessage.message
-    } catch (ex) {
-      throw new Error('Could not authenticate, token not refreshed', { cause: ex })
     }
-  } */
+  }
 }
+
+async function validateAccessToken(token: string): Promise<boolean> {
+  const response = await fetch(`${process.env.AUTH_KEYCLOAK_ISSUER}/protocol/openid-connect/userinfo`, {
+    headers: {
+      Authorization: `Bearer ${token}`
+    }
+  })
+
+  return response.ok
+}
+
