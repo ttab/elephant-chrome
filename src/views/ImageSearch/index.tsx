@@ -32,7 +32,7 @@ const SearchInput = React.forwardRef<HTMLInputElement, SearchInputProps>(
           {...props}
         />
         <div className='absolute inset-y-0 left-0 pl-1 flex items-center pointer-events-none'>
-          <SearchIcon  color='#9ca3af' strokeWidth='2'/>
+          <SearchIcon strokeWidth='1.75' size='18'/>
         </div>
 
       </div>
