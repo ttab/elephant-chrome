@@ -8,9 +8,8 @@ import { useState, useRef } from 'react'
 import useSWRInfinite from 'swr/infinite'
 import InfiniteScroll from './InfiniteScroll'
 import { ttninjs } from '@ttab/api-client'
-import { Button, Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger, Popover, PopoverContent, PopoverTrigger } from '@ttab/elephant-ui'
+import { Dialog, DialogContent, DialogTrigger } from '@ttab/elephant-ui'
 import { Preview } from './Preview'
-import { AnyNaptrRecord } from 'dns'
 
 interface SearchInputProps extends React.InputHTMLAttributes<HTMLInputElement> { }
 
@@ -18,7 +17,6 @@ const SearchInput = React.forwardRef<HTMLInputElement, SearchInputProps>(
   ({ className, type, ...props }, ref) => {
     return (
       <div className='flex'>
-        {/* <SearchIcon/> */}
         <input
           type={type}
           className='flex h-10
@@ -33,8 +31,8 @@ const SearchInput = React.forwardRef<HTMLInputElement, SearchInputProps>(
           ref={ref}
           {...props}
         />
-        <div className='absolute inset-y-0 left-2 pl-3 flex items-center pointer-events-none'>
-          <SearchIcon />
+        <div className='absolute inset-y-0 left-0 pl-1 flex items-center pointer-events-none'>
+          <SearchIcon  color='#9ca3af' strokeWidth='2'/>
         </div>
 
       </div>
