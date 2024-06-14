@@ -2,7 +2,7 @@ import { type Dispatch } from 'react'
 import { SessionProvider } from 'next-auth/react'
 import { NavigationProvider } from '@/navigation'
 
-import { useNavigation, useTable } from '@/hooks'
+import { useNavigation, usePlanningTable } from '@/hooks'
 
 import { render, screen } from '../setupTests'
 import { type NavigationActionType } from '@/types'
@@ -15,8 +15,8 @@ jest.mock('@/navigation/hooks/useNavigation', () => ({
   useNavigation: jest.fn()
 }))
 
-jest.mock('@/hooks/useTable', () => ({
-  useTable: jest.fn()
+jest.mock('@/hooks/usePlanningTable', () => ({
+  usePlanningTable: jest.fn()
 }))
 
 const mockState = initializeNavigationState()
@@ -29,7 +29,7 @@ const mockDispatch = jest.fn() as Dispatch<NavigationActionType>
 });
 
 
-(useTable as jest.Mock).mockReturnValue({
+(usePlanningTable as jest.Mock).mockReturnValue({
   table: {},
   command: {
     pages: [],
