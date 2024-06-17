@@ -62,7 +62,7 @@ const LoginForm = ({ callbackUrl }: {
   )
 }
 
-const LoginAutomaticSignin = ({ callbackUrl }: {
+const LoginAutomatic = ({ callbackUrl }: {
   callbackUrl?: string
 }): JSX.Element => {
   useEffect(() => {
@@ -76,7 +76,7 @@ export const Login = (props: ViewProps & {
   callbackUrl?: string
 }): JSX.Element => {
   if (trustGoogleLocalStorage()) {
-    return <LoginAutomaticSignin callbackUrl={props.callbackUrl} />
+    return <LoginAutomatic callbackUrl={props.callbackUrl} />
   } else {
     return <LoginForm callbackUrl={props.callbackUrl} />
   }
