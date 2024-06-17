@@ -28,7 +28,7 @@ export const Menu = (): JSX.Element => {
                 <X strokeWidth={2.25} />
               </SheetClose>
               <SheetClose asChild>
-                <Link to='PlanningOverview' className="leading-9 px-3 rounded-md">
+                <Link to='Plannings' className="leading-9 px-3 rounded-md">
                   Elefanten
                   <span className="text-2xl pl-2">🐘</span>
                 </Link>

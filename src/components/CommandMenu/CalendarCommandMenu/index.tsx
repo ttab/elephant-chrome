@@ -77,7 +77,7 @@ export const CalendarCommandMenu = ({ children, onKeyDown, onChange }: CommandMe
               <CommandItem
                 onSelect={() => runCommand(() => handleLink({
                   dispatch,
-                  viewItem: state.viewRegistry.get('CalendarOverview'),
+                  viewItem: state.viewRegistry.get('Events'),
                   viewId: crypto.randomUUID(),
                   viewRegistry: state.viewRegistry,
                   origin: viewId

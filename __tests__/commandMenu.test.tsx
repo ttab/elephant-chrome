@@ -56,6 +56,6 @@ describe('CommandMenu', () => {
     await userEvent.keyboard('{Control>}k')
     expect(screen.getByText('Planning overview')).toBeInTheDocument()
     await userEvent.click(screen.getByRole('option'))
-    expect(history.state.viewName).toBe('PlanningOverview')
+    expect(history.state.viewName).toBe('Plannings')
   })
 })

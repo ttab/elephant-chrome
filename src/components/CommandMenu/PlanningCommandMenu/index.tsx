@@ -77,7 +77,7 @@ export const PlanningCommandMenu = ({ children, onKeyDown, onChange }: CommandMe
               <CommandItem
                 onSelect={() => runCommand(() => handleLink({
                   dispatch,
-                  viewItem: state.viewRegistry.get('PlanningOverview'),
+                  viewItem: state.viewRegistry.get('Plannings'),
                   viewId: crypto.randomUUID(),
                   viewRegistry: state.viewRegistry,
                   origin: viewId

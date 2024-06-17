@@ -11,8 +11,8 @@ import { CalendarGrid } from './CalendarGrid'
 import { CalendarHeader } from './CalendarHeader'
 
 const meta: ViewMetadata = {
-  name: 'CalendarOverview',
-  path: `${import.meta.env.BASE_URL}/calendar`,
+  name: 'Events',
+  path: `${import.meta.env.BASE_URL}/events`,
   widths: {
     sm: 12,
     md: 12,
@@ -26,7 +26,7 @@ const meta: ViewMetadata = {
   }
 }
 
-export const CalendarOverview = (): JSX.Element => {
+export const Events = (): JSX.Element => {
   const [startDate, setStartDate] = useState<Date>(new Date())
   const [endDate, setEndDate] = useState<Date>(getEndDate(startDate))
   const [currentTab, setCurrentTab] = useState<string>('list')
@@ -74,7 +74,7 @@ export const CalendarOverview = (): JSX.Element => {
   )
 }
 
-CalendarOverview.meta = meta
+Events.meta = meta
 
 function getEndDate(startDate: Date): Date {
   const endDate = new Date()

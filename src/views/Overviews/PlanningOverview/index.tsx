@@ -12,8 +12,8 @@ import { PlanningTableProvider } from '@/contexts/PlanningTableProvider'
 import { TableCommandMenu } from './PlanningTable/TableCommandMenu'
 
 const meta: ViewMetadata = {
-  name: 'PlanningOverview',
-  path: `${import.meta.env.BASE_URL}/planning`,
+  name: 'Plannings',
+  path: `${import.meta.env.BASE_URL}/plannings`,
   widths: {
     sm: 12,
     md: 12,
@@ -27,7 +27,7 @@ const meta: ViewMetadata = {
   }
 }
 
-export const PlanningOverview = (): JSX.Element => {
+export const Plannings = (): JSX.Element => {
   const [startDate, setStartDate] = useState<Date>(new Date())
   const [endDate, setEndDate] = useState<Date>(getEndDate(startDate))
   const [currentTab, setCurrentTab] = useState<string>('list')
@@ -75,7 +75,7 @@ export const PlanningOverview = (): JSX.Element => {
   )
 }
 
-PlanningOverview.meta = meta
+Plannings.meta = meta
 
 function getEndDate(startDate: Date): Date {
   const endDate = new Date()
