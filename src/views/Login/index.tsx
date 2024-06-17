@@ -1,4 +1,4 @@
-import { type ViewMetadata } from '@/types'
+import { type ViewProps, type ViewMetadata } from '@/types'
 import { useState, useEffect } from 'react'
 import { Button, Checkbox } from '@ttab/elephant-ui'
 import { signIn } from 'next-auth/react'
@@ -23,7 +23,7 @@ const meta: ViewMetadata = {
 const trustGoogleLocalStorage = (): boolean => localStorage.getItem('trustGoogle') === 'true' || false
 
 const LoginForm = ({ callbackUrl }: {
-  callbackUrl: string
+  callbackUrl?: string
 }): JSX.Element => {
   const [trustGoogle, setTrustGoogle] = useState<boolean | 'indeterminate'>(trustGoogleLocalStorage())
 
@@ -63,7 +63,7 @@ const LoginForm = ({ callbackUrl }: {
 }
 
 const LoginAutomaticSignin = ({ callbackUrl }: {
-  callbackUrl: string
+  callbackUrl?: string
 }): JSX.Element => {
   useEffect(() => {
     signIn('keycloak', { callbackUrl: callbackUrl || import.meta.env.BASE_URL })
@@ -72,13 +72,13 @@ const LoginAutomaticSignin = ({ callbackUrl }: {
   return <p>Loading...</p>
 }
 
-export const Login = ({ callbackUrl }: {
-  callbackUrl: string
+export const Login = (props: ViewProps & {
+  callbackUrl?: string
 }): JSX.Element => {
   if (trustGoogleLocalStorage()) {
-    return <LoginAutomaticSignin callbackUrl={callbackUrl} />
+    return <LoginAutomaticSignin callbackUrl={props.callbackUrl} />
   } else {
-    return <LoginForm callbackUrl={callbackUrl} />
+    return <LoginForm callbackUrl={props.callbackUrl} />
   }
 }
 
