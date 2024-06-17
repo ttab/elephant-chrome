@@ -1,10 +1,9 @@
 import path from 'path'
-import { defineConfig, loadEnv } from 'vite'
+import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import { viteStaticCopy } from 'vite-plugin-static-copy'
 
-export default defineConfig(({ mode }) => {
-  const env = loadEnv(mode, process.cwd())
+export default defineConfig(() => {
   return {
     port: 5173,
     base: '/elephant',
@@ -34,7 +33,7 @@ export default defineConfig(({ mode }) => {
       }
     },
     define: {
-      'process.env.NEXTAUTH_URL': env.AUTH_URL
+      'process.env': process.env
     },
     server: {
       hmr: {
