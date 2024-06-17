@@ -29,25 +29,26 @@ const replace = (type: string, translateList: Record<string, string>): string =>
   return translateList[type] ?? 'core/paragraph'
 }
 
-const createDocument = (): Document => {
-  if (module?.exports) {
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
-    const { JSDOM } = require('jsdom')
-
+const createDomDocument = async (): Promise<Document> => {
+  if (typeof window === 'undefined') {
+    const { JSDOM } = await import('jsdom')
     const dom = new JSDOM()
     return dom.window.document
   }
 
+
   return window.document
 }
 
-function createAnchorElement(element: TBElement): string {
-  const document = createDocument()
+async function createAnchorElement(element: TBElement): Promise<string> {
+  const document = await createDomDocument()
 
   const anchor = document.createElement('a')
+
   if (typeof element.properties?.url === 'string') {
     anchor.href = element.properties?.url
   }
+
   if (typeof element.id === 'string') {
     anchor.id = element.id
   }
@@ -80,10 +81,10 @@ function transformInlineElement(node: HTMLElement): TBElement {
   }
 }
 
-function revertInlineElement(element: TBElement): string {
+async function revertInlineElement(element: TBElement): Promise<string> {
   switch (element.type) {
     case 'core/link':
-      return createAnchorElement(element)
+      return await createAnchorElement(element)
     default:
       throw new Error(`Inline element not implemented: ${element.type}`)
   }
@@ -119,16 +120,16 @@ export function transformText(element: Block): TBElement {
   }
 }
 
-export function revertText(element: TBElement): Block {
+export async function revertText(element: TBElement): Promise<Block> {
   const { id, children } = element
 
   return Block.create({
     id,
     type: replace(element.properties?.type as string, invertedTranslateList),
     data: {
-      text: children.map((child: TBElement | Text) => {
+      text: (await Promise.all(children.map(async (child: TBElement | Text) => {
         if (TextbitElement.isInline(child)) {
-          return revertInlineElement(child)
+          return await revertInlineElement(child)
         }
 
         if (TextbitElement.isTextLeaf(child)) {
@@ -136,7 +137,7 @@ export function revertText(element: TBElement): Block {
         }
 
         throw new Error('Unknown child')
-      }).join('')
+      }))).join('')
     }
   })
 }

@@ -2,7 +2,7 @@
 
 exports[`Transform full article newsdoc document to internal YDoc representation handles article document 1`] = `
 Object {
-  "content": "10|000 liter mjölk läckte vid E6En stor mängd mjölk spilldes över vägbanan i samband med en olycka i Falkenberg. Arkivbild.En stor mängd mjölk spilldes över vägbanan i samband med en olycka i Falkenberg. Arkivbild.TrafikOmkring 10|000 liter mjölk läckte ut på vägbanan när en tankbil välte på en avfart från E6 i Falkenberg natten till onsdag, rapporterar Göteborgs-Posten.– Det är många mjölkpaket, säger Peter Karlborg, inre befäl vid räddningstjänsten, till tidningen.Föraren skadades inte i olyckan. Avfarten stängdes av i norrgående riktning medan olyckan hanterades. Den spillda mjölken krävde ingen åtgärd.– Det är ingen tjäle nu och det finns inga vattendrag i närheten, så mjölken går ner i marken bara, säger Karlborg.",
+  "content": "10|000 liter mjölk läckte vid E6En stor mängd mjölk spilldes över vägbanan i samband med en olycka i Falkenberg. Arkivbild.John Doe/TTTrafikOmkring 10|000 liter mjölk läckte ut på vägbanan när en tankbil välte på en avfart från E6 i Falkenberg natten till onsdag, rapporterar Göteborgs-Posten.– Det är många mjölkpaket, säger Peter Karlborg, inre befäl vid räddningstjänsten, till tidningen.Föraren skadades inte i olyckan. Avfarten stängdes av i norrgående riktning medan olyckan hanterades. Den spillda mjölken krävde ingen åtgärd.– Det är ingen tjäle nu och det finns inga vattendrag i närheten, så mjölken går ner i marken bara, säger Karlborg.",
   "links": Object {
     "core/assignment": Array [
       Object {

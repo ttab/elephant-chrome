@@ -5,8 +5,8 @@
  * @param locale
  * @returns string
  */
-export function convertToISOStringInUTC(localDate: Date, locale: string): string {
-  return convertToISOStringInTimeZone(localDate, locale, 'UTC')
+export function convertToISOStringInUTC(localDate: Date): string {
+  return convertToISOStringInTimeZone(localDate, 'UTC')
 }
 
 /**
@@ -17,8 +17,8 @@ export function convertToISOStringInUTC(localDate: Date, locale: string): string
  * @param timeZone
  * @returns string
  */
-export function convertToISOStringInTimeZone(localDate: Date, locale: string, timeZone: string): string {
-  return localDate.toLocaleString(locale, {
+export function convertToISOStringInTimeZone(localDate: Date, timeZone: string): string {
+  return localDate.toLocaleString('en-US', {
     year: 'numeric',
     month: '2-digit',
     day: '2-digit',
