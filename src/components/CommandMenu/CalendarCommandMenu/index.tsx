@@ -17,9 +17,9 @@ import {
   CommandItem,
   CommandSeparator
 } from '@ttab/elephant-ui'
-import { DebouncedCommandInput } from './DebouncedCommandInput'
-import { handleLink } from '../Link/lib/handleLink'
-import { useNavigation, usePlanningTable, useView } from '@/hooks'
+import { DebouncedCommandInput } from '../DebouncedCommandInput'
+import { handleLink } from '../../Link/lib/handleLink'
+import { useNavigation, useCalendarTable, useView } from '@/hooks'
 import { type CommandArgs } from '@/contexts/PlanningTableProvider'
 
 interface CommandMenuProps {
@@ -28,13 +28,13 @@ interface CommandMenuProps {
   children?: JSX.Element
 }
 
-export const PlanningCommandMenu = ({ children, onKeyDown, onChange }: CommandMenuProps): JSX.Element => {
+export const CalendarCommandMenu = ({ children, onKeyDown, onChange }: CommandMenuProps): JSX.Element => {
   const { state, dispatch } = useNavigation()
   const [open, setOpen] = useState(false)
 
   const { viewId } = useView()
 
-  const { command } = usePlanningTable()
+  const { command } = useCalendarTable()
   const { search, setSearch, pages, setPages, page } = command
 
   const onOpenChange = useMemo(
@@ -77,14 +77,14 @@ export const PlanningCommandMenu = ({ children, onKeyDown, onChange }: CommandMe
               <CommandItem
                 onSelect={() => runCommand(() => handleLink({
                   dispatch,
-                  viewItem: state.viewRegistry.get('PlanningOverview'),
+                  viewItem: state.viewRegistry.get('CalendarOverview'),
                   viewId: crypto.randomUUID(),
                   viewRegistry: state.viewRegistry,
                   origin: viewId
                 }))}
               >
                 <GanttChart size={18} strokeWidth={1.75} className="mr-2" />
-                <span>Planning overview</span>
+                <span>Calendar overview</span>
               </CommandItem>
             </CommandGroup>
           )}

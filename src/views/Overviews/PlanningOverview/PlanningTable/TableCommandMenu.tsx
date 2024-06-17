@@ -1,4 +1,4 @@
-import { PlanningCommandMenu } from '@/components/PlanningCommandMenu'
+import { PlanningCommandMenu } from '@/components/CommandMenu/PlanningCommandMenu'
 import { CommandGroup } from '@ttab/elephant-ui'
 import { PlanningCommands } from '../PlanningCommands'
 import { usePlanningTable } from '@/hooks/usePlanningTable'
