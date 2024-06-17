@@ -13,7 +13,7 @@ import { TableCommandMenu } from './PlanningTable/TableCommandMenu'
 
 const meta: ViewMetadata = {
   name: 'PlanningOverview',
-  path: import.meta.env.BASE_URL || '/',
+  path: `${import.meta.env.BASE_URL}/planning`,
   widths: {
     sm: 12,
     md: 12,

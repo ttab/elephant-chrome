@@ -12,7 +12,7 @@ import { CalendarHeader } from './CalendarHeader'
 
 const meta: ViewMetadata = {
   name: 'CalendarOverview',
-  path: import.meta.env.BASE_URL || '/',
+  path: `${import.meta.env.BASE_URL}/calendar`,
   widths: {
     sm: 12,
     md: 12,
