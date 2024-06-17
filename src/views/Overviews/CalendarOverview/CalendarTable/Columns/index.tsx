@@ -131,7 +131,7 @@ export const columns: Array<ColumnDef<Calendar>> = [
       filter: null,
       name: 'Action',
       columnIcon: Navigation,
-      className: 'box-content w-[32px] hover:bg-red-400'
+      className: 'box-content w-[32px]'
     },
     cell: ({ row }) => {
       // What to use here for calendar posts? There is no such field for them.

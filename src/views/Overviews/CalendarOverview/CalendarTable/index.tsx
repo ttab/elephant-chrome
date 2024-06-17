@@ -88,7 +88,7 @@ export const CalendarTable = <TData, TValue>({
           <TableCell
             colSpan={columns.length}
             className="h-24 text-center"
-          >
+            >
             {loading ? 'Loading...' : 'No results.'}
           </TableCell>
         </TableRow>
@@ -97,7 +97,7 @@ export const CalendarTable = <TData, TValue>({
 
     return table.getRowModel().rows.map((row) => (
       <TableRow
-        key={row.id}
+        key={`calendar/${row.id}`}
         className='cursor-default'
         data-state={row.getIsSelected() && 'selected'}
         onClick={<T extends HTMLElement>(event: MouseEvent<T>) => {
