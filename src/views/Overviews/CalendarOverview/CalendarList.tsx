@@ -29,8 +29,7 @@ export const CalendarList = ({ date }: { date: Date }): JSX.Element => {
   }, [startTime, endTime, indexUrl, locale])
 
 
-  const { data } = useSWR(searchUrl.href, async (): Promise<SearchIndexResponse | undefined> => {
-    console.log('🍄 ~ const{data}=useSWR ~ data 🤭 -', data)
+  const { data } = useSWR(['calendaritems', status, searchUrl.href], async (): Promise<CalendarSearchIndexResponse & { planningItem?: string } | undefined> => {
     if (status !== 'authenticated') {
       return
     }
@@ -44,8 +43,32 @@ export const CalendarList = ({ date }: { date: Date }): JSX.Element => {
         end: convertToISOStringInUTC(endTime, locale)
       }
     })
-    setData(result)
-    return result
+    if (result?.ok) {
+      const eventIDs = result.hits?.map(hit => hit?._id)
+      const statusResults = await Calendar.relatedPlanningSearch(indexUrl, session.accessToken, eventIDs, {
+        size: 100,
+        where: {
+          start: convertToISOStringInUTC(startTime, locale),
+          end: convertToISOStringInUTC(endTime, locale)
+        }
+      })
+      const hasPlannings = statusResults.hits?.map(hit => hit._source['document.rel.event.uuid'])
+      const hitsWithPlannings = result.hits.map(hit => {
+        const relatedItemIndex = hasPlannings.findIndex(item => item[0] === hit._id)
+        if (relatedItemIndex !== -1) {
+          return {
+            ...hit,
+            _relatedPlannings: hasPlannings[relatedItemIndex]
+          }
+        }
+        return hit
+      })
+
+      result.hits = hitsWithPlannings
+
+      setData(result)
+      return result
+    }
   })
 
 

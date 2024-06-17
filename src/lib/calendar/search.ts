@@ -41,13 +41,6 @@ export const search = async (endpoint: URL, accessToken: string, params?: Search
             }
           }
         ],
-        // must: [
-        //   {
-        //     term: {
-        //       'document.meta.core_event.data.start': 'now/d'
-        //     }
-        //   }
-        // ],
         must_not: [
           {
             term: {

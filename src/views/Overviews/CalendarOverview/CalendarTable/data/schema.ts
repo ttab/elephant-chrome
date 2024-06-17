@@ -4,6 +4,7 @@ const CalendarSchema = z.object({
   _index: z.string(),
   _id: z.string(),
   _score: z.nullable(z.number()),
+  _relatedPlannings: z.array(z.string()),
   _source: z.object({
     created: z.array(z.string()),
     current_version: z.array(z.string()),

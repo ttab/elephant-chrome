@@ -100,13 +100,9 @@ export const columns: Array<ColumnDef<Calendar>> = [
       columnIcon: NotebookPen,
       className: 'box-content w-[112px] hidden @5xl/view:[display:revert]'
     },
-    accessorFn: (data) => {
-      return true
-    },
-    cell: () => {
-      // TODO: remove and replace below when possible to get real planning status
-      const _random = (Math.ceil(Math.random() * 5))
-      const _status = _random > 3 || false
+    accessorFn: (data) => data?._relatedPlannings,
+    cell: ({ row }) => {
+      const _status = row.getValue<string>('planning_status')
       return <PlanningStatus status={_status} />
     }
   },

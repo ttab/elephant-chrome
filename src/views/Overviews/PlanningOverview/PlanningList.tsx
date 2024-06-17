@@ -29,8 +29,7 @@ export const PlanningList = ({ date }: { date: Date }): JSX.Element => {
   }, [startTime, endTime, indexUrl, locale])
 
 
-  const { data } = useSWR(searchUrl.href, async (): Promise<SearchIndexResponse | undefined> => {
-    console.log('🍄 ~ const{data}=useSWR ~ data 🤭 -', data)
+  const { data } = useSWR(['planningitems', status, searchUrl.href], async (): Promise<SearchIndexResponse | undefined> => {
     if (status !== 'authenticated') {
       return
     }
@@ -43,8 +42,10 @@ export const PlanningList = ({ date }: { date: Date }): JSX.Element => {
         end: convertToISOStringInUTC(endTime, locale)
       }
     })
-    setData(result)
-    return result
+    if (result.ok) {
+      setData(result)
+      return result
+    }
   })
 
 
