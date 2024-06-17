@@ -1,4 +1,4 @@
-import { CalendarCommandMenu } from '@/components/CalendarCommandMenu'
+import { CalendarCommandMenu } from '@/components/CommandMenu/CalendarCommandMenu'
 import { CommandGroup } from '@ttab/elephant-ui'
 import { CalendarCommands } from '../CalendarCommands'
 import { useCalendarTable } from '@/hooks/useCalendarTable'

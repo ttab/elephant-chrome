@@ -7,7 +7,7 @@ import {
 } from '@ttab/elephant-ui'
 
 import { CalendarCommands } from '../CalendarCommands'
-import { DebouncedCommandInput } from '@/components/CalendarCommandMenu/DebouncedCommandInput'
+import { DebouncedCommandInput } from '@/components/CommandMenu/DebouncedCommandInput'
 import { useCalendarTable } from '@/hooks'
 
 export const Filter = (): JSX.Element => {

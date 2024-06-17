@@ -12,7 +12,7 @@ import {
   useReactTable
 } from '@tanstack/react-table'
 import { columns } from '@/views/Overviews/CalendarOverview/CalendarTable/Columns'
-import { type SearchIndexResponse } from '@/lib/index/search'
+import { type CalendarSearchIndexResponse } from '@/lib/index/calendar-search'
 import { type Calendar } from '@/views/Overviews/CalendarOverview/CalendarTable/data/schema'
 
 export interface CommandArgs {
@@ -25,7 +25,7 @@ export interface CommandArgs {
 
 export interface TableProviderState<TData> {
   table: Table<TData>
-  setData: Dispatch<SearchIndexResponse>
+  setData: Dispatch<CalendarSearchIndexResponse>
   loading: boolean
   command: CommandArgs
 }
@@ -38,8 +38,7 @@ const initialState = {
 export const CalendarTableContext = createContext<TableProviderState<Calendar>>(initialState)
 
 export const CalendarTableProvider = ({ children }: PropsWithChildren): JSX.Element => {
-  const [data, setData] = useState<SearchIndexResponse | null>([] as unknown as SearchIndexResponse)
-  console.log('🍄 ~ CalendarTableProvider ~ data 🤭 -', data)
+  const [data, setData] = useState<CalendarSearchIndexResponse | null>([] as unknown as CalendarSearchIndexResponse)
 
   const [rowSelection, setRowSelection] = useState({})
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})

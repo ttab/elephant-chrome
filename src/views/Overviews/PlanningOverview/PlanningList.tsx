@@ -3,7 +3,7 @@ import useSWR from 'swr'
 
 import { useRegistry, useIndexUrl, usePlanningTable } from '@/hooks'
 import { useSession } from 'next-auth/react'
-import { type SearchIndexResponse } from '@/lib/index/search'
+import { type SearchIndexResponse } from '@/lib/index/planning-search'
 import { Planning } from '@/lib/planning'
 import { PlanningTable } from '@/views/Overviews/PlanningOverview/PlanningTable'
 import { columns } from '@/views/Overviews/PlanningOverview/PlanningTable/Columns'

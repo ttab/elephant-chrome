@@ -1,4 +1,4 @@
-import { type SearchIndexResponse } from '@/lib/index/search'
+import { type SearchIndexResponse } from '@/lib/index/planning-search'
 import { Planning } from '@/lib/planning'
 import { type Planning as PlanningType } from '@/views/Overviews/PlanningOverview/PlanningTable/data/schema'
 

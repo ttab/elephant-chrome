@@ -3,7 +3,7 @@ import useSWR from 'swr'
 
 import { useRegistry, useIndexUrl, useCalendarTable } from '@/hooks'
 import { useSession } from 'next-auth/react'
-import { type SearchIndexResponse } from '@/lib/index/search'
+import { type CalendarSearchIndexResponse } from '@/lib/index/calendar-search'
 import { Calendar } from '@/lib/calendar'
 import { columns } from '@/views/Overviews/CalendarOverview/CalendarTable/Columns'
 

@@ -1,4 +1,4 @@
-import { searchIndex, type SearchIndexResponse } from '../index/search'
+import { searchIndex, type CalendarSearchIndexResponse } from '../index/calendar-search'
 
 interface SearchCalendarParams {
   skip?: number
@@ -13,7 +13,7 @@ interface SearchCalendarParams {
   }
 }
 
-export const search = async (endpoint: URL, accessToken: string, params?: SearchCalendarParams): Promise<SearchIndexResponse> => {
+export const search = async (endpoint: URL, accessToken: string, params?: SearchCalendarParams): Promise<CalendarSearchIndexResponse> => {
   const start = params?.where?.start ? new Date(params.where.start) : new Date()
   const end = params?.where?.end ? new Date(params.where.end) : new Date()
   const sort: Array<Record<string, 'asc' | 'desc'>> = []

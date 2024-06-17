@@ -1,4 +1,4 @@
-import { type SearchIndexResponse } from '@/lib/index/search'
+import { type CalendarSearchIndexResult } from '@/lib/index/calendar-search'
 import { Calendar } from '@/lib/calendar'
 import { type Calendar as CalendarType } from '@/views/Overviews/CalendarOverview/CalendarTable/data/schema'
 
@@ -95,7 +95,7 @@ export const CalendarGrid = ({ startDate, endDate }: CalendarGridProps): JSX.Ele
 }
 
 
-function structureByDate(result: SearchIndexResponse, startTime: Date, endTime: Date, locale: string, timeZone: string): EventsByDate | undefined {
+function structureByDate(result: CalendarSearchIndexResult, startTime: Date, endTime: Date, locale: string, timeZone: string): EventsByDate | undefined {
   const events: EventsByDate = {}
 
   if (!Array.isArray(result?.hits)) {
