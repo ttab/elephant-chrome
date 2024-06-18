@@ -1,14 +1,10 @@
 import React, { useState, useRef, type Dispatch, type SetStateAction } from 'react'
 import { SearchIcon } from '@ttab/elephant-ui/icons'
 
-
 interface SearchInputProps extends React.InputHTMLAttributes<HTMLInputElement> { }
-interface InputProps {
-  setQueryString: Dispatch<SetStateAction<string>>
-}
 
 const SearchInput = React.forwardRef<HTMLInputElement, SearchInputProps>(
-  ({ className, type, ...props }, ref) => {
+  ({ className, type, ...props }, ref): JSX.Element => {
     return (
       <div className='flex'>
         <input
@@ -36,8 +32,9 @@ const SearchInput = React.forwardRef<HTMLInputElement, SearchInputProps>(
 
 SearchInput.displayName = 'SearchInput'
 
-export function ImageSearchInput(props: InputProps): JSX.Element {
-  const { setQueryString } = props
+export const ImageSearchInput = ({ setQueryString }: {
+  setQueryString: Dispatch<SetStateAction<string>>
+}): JSX.Element => {
   const [query, setQuery] = useState('')
 
   const inputRef = useRef<HTMLInputElement>(null)

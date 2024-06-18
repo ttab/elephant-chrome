@@ -4,26 +4,22 @@ import { type ttninjs } from '@ttab/api-client'
 import { Dialog, DialogContent, DialogTrigger } from '@ttab/elephant-ui'
 import { findRenditionByUsageAndVariant, type renditions } from '../fun/find-rendition'
 
-interface ThumbnailProps {
+export const Thumbnail = ({ hit }: {
   hit: ttninjs
-}
-
-export function Thumbnail(props: ThumbnailProps): JSX.Element {
+}): JSX.Element => {
   const imageRef = useRef<HTMLImageElement>(null)
-  const { hit } = props
   const renditions = hit.renditions as renditions
   const thumbnail = findRenditionByUsageAndVariant(renditions, 'Thumbnail', 'Normal')
   const preview = findRenditionByUsageAndVariant(renditions, 'Preview', 'Watermark')
 
   return (
-    <Dialog modal={false} >
+    <Dialog modal={false}>
       <DialogTrigger>
-        <div className='flex place-content-center  bg-gray-200' style={{ minHeight: '144px' }}>
+        <div className='flex place-content-center bg-gray-200 min-h-[144px]'>
           <img
             src={thumbnail.href}
-            style={{ maxHeight: '176px', objectFit: 'contain', maxWidth: 'auto' }}
+            className='max-h-[176px] object-contain m-width-auto'
             onDragStartCapture={(e) => {
-              console.log('dragging the image', e)
               const el = imageRef.current
               if (el) {
                 // Create cloned element to force as drag image
@@ -65,7 +61,5 @@ export function Thumbnail(props: ThumbnailProps): JSX.Element {
       </DialogTrigger>
       <DialogContent><Preview ttninjs={hit} /></DialogContent>
     </Dialog>
-
-
   )
 }

@@ -9,10 +9,7 @@ import { ImageSearchInput } from './SearchInput'
 import { SWRConfig } from 'swr'
 import { createFetcher } from './fun/fetcher'
 import { useRegistry } from '@/hooks/useRegistry'
-interface SearchResultProps {
-  total: number
-  children: React.ReactNode
-}
+import { type ttninjs } from '@ttab/api-client'
 
 const meta: ViewMetadata = {
   name: 'ImageSearch',
@@ -30,8 +27,10 @@ const meta: ViewMetadata = {
   }
 }
 
-function ImageSearchResult(props: SearchResultProps): JSX.Element {
-  const { children } = props
+const ImageSearchResult = ({ children }: {
+  total: number
+  children: React.ReactNode
+}): JSX.Element => {
   return (
     <div className='h-screen max-h-screen flex flex-col p-2 overflow-auto'>
       <div className='relative h-full grid grid-cols-2 md:grid-cols-3 gap-1'>
@@ -51,9 +50,10 @@ export const ImageSearch = (): JSX.Element => {
   )
 }
 
-function ImageSearchContent(): JSX.Element {
+const ImageSearchContent = (): JSX.Element => {
   const [queryString, setQueryString] = useState('')
   const SIZE = 10
+
   const swr = useSWRInfinite(
     (index) => {
       return [queryString, index, SIZE]
@@ -82,16 +82,12 @@ function ImageSearchContent(): JSX.Element {
           }
         >
           {(data) =>
-            data.hits.map((hit) => {
-              return (
-                <Thumbnail key={hit.uri} hit={hit} />
-              )
-            })
-
+            data.hits.map((hit: ttninjs) => (
+              <Thumbnail key={hit.uri} hit={hit} />
+            ))
           }
         </InfiniteScroll>
       </ImageSearchResult>
-      {/* <div className="h-14 basis-14">Antal: XXX</div> */}
     </div>
   )
 }
