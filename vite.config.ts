@@ -1,3 +1,5 @@
+// eslint-disable-next-line @typescript-eslint/triple-slash-reference
+/// <reference types="vitest" />
 import path from 'path'
 import { defineConfig, loadEnv } from 'vite'
 import react from '@vitejs/plugin-react'
@@ -8,6 +10,7 @@ export default defineConfig(({ mode }) => {
   return {
     port: 5173,
     base: '/elephant',
+
     plugins: [
       react(),
       viteStaticCopy({
@@ -42,6 +45,17 @@ export default defineConfig(({ mode }) => {
       },
       watch: {
         awaitWriteFinish: true
+      }
+    },
+    test: {
+      include: ['__tests__/**/*.test.ts(x)?'],
+      globals: true,
+      setupFiles: ['./setupTests.ts'],
+      environment: 'jsdom',
+      server: {
+        deps: {
+          inline: ['@ttab/elephant-ui']
+        }
       }
     }
   }

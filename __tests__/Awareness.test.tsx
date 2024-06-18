@@ -1,14 +1,13 @@
 import { createRef } from 'react'
 import { screen, render } from '@testing-library/react'
 import { Awareness } from '../src/components/Awareness'
+import { vi } from 'vitest'
+import * as hooks from '@/hooks'
 
-const setIsFocusedMock = jest.fn()
+const setIsFocusedMock = vi.fn()
 // Mock the useAwareness hook
-jest.mock('@/hooks', () => ({
-  useAwareness: jest.fn(() => {
-    return [[{ focus: { color: 'rgb(248 113 113)' } }], setIsFocusedMock]
-  })
-}))
+
+vi.spyOn(hooks, 'useAwareness').mockReturnValue([[{ clientId: 1, data: { name: 'Test', initials: 'T', color: 'a' }, focus: { key: '', color: 'rgb(248 113 113)' } }], setIsFocusedMock])
 
 describe('Awareness component', () => {
   it('renders children with proper className when visual is true', () => {
