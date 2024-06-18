@@ -4,9 +4,11 @@ import { type ViewMetadata } from '@/types'
 import { XIcon, LoaderIcon, ListEndIcon } from '@ttab/elephant-ui/icons'
 import useSWRInfinite from 'swr/infinite'
 import InfiniteScroll from './InfiniteScroll'
-import { fetcher } from './fun/fetcher'
 import { Thumbnail } from './Thumbnail'
 import { ImageSearchInput } from './SearchInput'
+import { SWRConfig } from 'swr'
+import { createFetcher } from './fun/fetcher'
+import { useRegistry } from '@/hooks/useRegistry'
 interface SearchResultProps {
   total: number
   children: React.ReactNode
@@ -39,14 +41,23 @@ function ImageSearchResult(props: SearchResultProps): JSX.Element {
   )
 }
 
-function ImageSearch(): JSX.Element {
+export const ImageSearch = (): JSX.Element => {
+  const { server: { contentApiUrl } } = useRegistry()
+
+  return (
+    <SWRConfig value={{ fetcher: createFetcher(contentApiUrl) }}>
+      <ImageSearchContent />
+    </SWRConfig>
+  )
+}
+
+function ImageSearchContent(): JSX.Element {
   const [queryString, setQueryString] = useState('')
   const SIZE = 10
   const swr = useSWRInfinite(
     (index) => {
       return [queryString, index, SIZE]
     },
-    fetcher,
     {
       revalidateFirstPage: false
     }
@@ -86,5 +97,3 @@ function ImageSearch(): JSX.Element {
 }
 
 ImageSearch.meta = meta
-
-export { ImageSearch }
