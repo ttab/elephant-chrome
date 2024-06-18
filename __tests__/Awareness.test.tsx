@@ -5,9 +5,22 @@ import { vi } from 'vitest'
 import * as hooks from '@/hooks'
 
 const setIsFocusedMock = vi.fn()
-// Mock the useAwareness hook
 
-vi.spyOn(hooks, 'useAwareness').mockReturnValue([[{ clientId: 1, data: { name: 'Test', initials: 'T', color: 'a' }, focus: { key: '', color: 'rgb(248 113 113)' } }], setIsFocusedMock])
+vi.spyOn(hooks, 'useAwareness').mockReturnValue([
+  [
+    {
+      clientId: 1870901647,
+      data: {
+        name: 'Testy Testerson',
+        initials: 'TT',
+        color: 'rgb(6 182 212)'
+      },
+      focus: {
+        key: 'PlanSector',
+        color: 'rgb(6 182 212)'
+      }
+    }
+  ], setIsFocusedMock])
 
 describe('Awareness component', () => {
   it('renders children with proper className when visual is true', () => {
@@ -23,7 +36,7 @@ describe('Awareness component', () => {
     const wrapperDiv = childElement.parentElement
     expect(wrapperDiv).toHaveClass('rounded')
     expect(wrapperDiv).toHaveClass('ring')
-    expect(wrapperDiv).toHaveClass('ring-red-400')
+    expect(wrapperDiv).toHaveClass('ring-cyan-400')
   })
 
   it('renders children without ring className when visual is false', () => {
