@@ -9,7 +9,7 @@ import {
 import { Avatar, Link } from '@/components'
 import { CalendarDaysIcon, LogOut, Menu as MenuIcon, X } from '@ttab/elephant-ui/icons'
 import { ThemeSwitcher } from './ThemeSwitcher'
-import { useSession } from 'next-auth/react'
+import { signOut, useSession } from 'next-auth/react'
 
 export const Menu = (): JSX.Element => {
   const { data } = useSession()
@@ -51,7 +51,12 @@ export const Menu = (): JSX.Element => {
             </SheetClose>
 
             <SheetClose asChild>
-              <a href={`${import.meta.env.BASE_URL}/api/auth/signout`}>
+              <a href='' onClick={(event) => {
+                event.preventDefault()
+                signOut()
+                  .catch((error) => console.log(error))
+                localStorage.removeItem('trustGoogle')
+              }}>
                 <div className="flex gap-3 items-center px-3 py-2 rounded-md hover:bg-gray-100">
                   <div className="flex items-center justify-center opacity-80 pr-2">
                     <LogOut strokeWidth={1.75} size={18} />

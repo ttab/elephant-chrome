@@ -92,7 +92,6 @@ export const authConfig: AuthConfig = {
     }
   },
   pages: {
-    signIn: `${process.env.BASE_URL}/login`,
-    signOut: `${process.env.BASE_URL}/logout`
+    signIn: `${process.env.BASE_URL}/login`
   }
 }
