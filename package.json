@@ -19,7 +19,7 @@
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "tsc": "tsc --noEmit",
     "test": "vitest run",
-    "test:coverage": "jest --coverage",
+    "test:coverage": "vitest run --coverage",
     "preview": "vite preview"
   },
   "dependencies": {
@@ -74,6 +74,7 @@
     "@typescript-eslint/eslint-plugin": "^7.13.0",
     "@typescript-eslint/parser": "^7.13.0",
     "@vitejs/plugin-react": "^4.3.1",
+    "@vitest/coverage-v8": "^1.6.0",
     "concurrently": "^8.2.2",
     "eslint": "^8.57.0",
     "eslint-config-love": "^47.0.0",
