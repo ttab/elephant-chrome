@@ -5,7 +5,7 @@ import {
   type Dispatch,
   type SetStateAction
 } from 'react'
-import { CreatePlan } from './CreatePlan'
+import { CreateEvent } from './CreateEvent'
 
 export const CalendarHeader = ({ tab, startDate, setStartDate, endDate, setEndDate }: {
   tab: string
@@ -15,7 +15,7 @@ export const CalendarHeader = ({ tab, startDate, setStartDate, endDate, setEndDa
   setEndDate?: Dispatch<SetStateAction<Date>>
 }): JSX.Element => {
   return <>
-    <CreatePlan />
+    <CreateEvent />
 
     <div className='hidden sm:block'>
       <TabsGrid />
