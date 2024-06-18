@@ -84,7 +84,7 @@ export const CalendarCommandMenu = ({ children, onKeyDown, onChange }: CommandMe
                 }))}
               >
                 <GanttChart size={18} strokeWidth={1.75} className="mr-2" />
-                <span>Calendar overview</span>
+                <span>Events overview</span>
               </CommandItem>
             </CommandGroup>
           )}
