@@ -28,7 +28,9 @@ export const ImageSearchPlugin: Plugin.InitFunction = () => {
     class: 'block',
     name: 'tt/visual/search',
     componentEntry: {
-      class: 'block'
+      class: 'block',
+      // TODO: Do we need this, or can we make component optional in the types
+      component: () => null
     },
     actions: [
       {
@@ -40,9 +42,9 @@ export const ImageSearchPlugin: Plugin.InitFunction = () => {
         },
         visibility: () => {
           return [
-            true, // Always visible
-            true, // Always enabled
-            false // Never active
+            true,
+            true,
+            false
           ]
         }
       }

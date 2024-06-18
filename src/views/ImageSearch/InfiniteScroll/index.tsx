@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/promise-function-async */
 import React, { type Ref, useEffect, useState } from 'react'
 import type { SWRInfiniteResponse } from 'swr/infinite'
 
@@ -51,7 +52,9 @@ const InfiniteScroll = <T,>(props: Props<T>): React.ReactElement<Props<T>> => {
 
   return (
     <>
-      {typeof children === 'function' ? data?.map(async (item) => await children(item)) : children}
+      {typeof children === 'function'
+        ? data?.map((item) => children(item))
+        : children}
       <div style={{ position: 'relative', minHeight: '144px', display: 'flex', placeContent: 'center', placeItems: 'center' }} className=' bg-gray-200'>
         <div ref={ref} style={{ position: 'absolute', top: offset }}></div>
         {ending ? endingIndicator : loadingIndicator}
