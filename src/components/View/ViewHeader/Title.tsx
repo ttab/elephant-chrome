@@ -1,11 +1,12 @@
 import { type LucideIcon } from '@ttab/elephant-ui/icons'
 import { type PropsWithChildren } from 'react'
 
-export const Title = ({ title, short: shortTitle, icon: Icon }: PropsWithChildren &
+export const Title = ({ title, short: shortTitle, icon: Icon, iconColor }: PropsWithChildren &
 {
   title: string
   short?: string
   icon: LucideIcon
+  iconColor?: string
 }
 ): JSX.Element => {
   return (
@@ -13,7 +14,7 @@ export const Title = ({ title, short: shortTitle, icon: Icon }: PropsWithChildre
       className="flex flex-1 gap-2 items-center grow-0 h-14 px-4 cursor-pointer"
     >
       {!!Icon &&
-        <Icon size={18} strokeWidth={1.75} />
+        <Icon size={18} strokeWidth={1.75} color={iconColor || '#222'} />
       }
 
       {!!title &&
