@@ -1,13 +1,10 @@
-
-import { ttninjs } from '@ttab/api-client'
+import { type ttninjs } from '@ttab/api-client'
 import { Button } from '@ttab/elephant-ui'
 
-export function Preview(props: { ttninjs: ttninjs }) {
+export function Preview(props: { ttninjs: ttninjs }): JSX.Element {
   const { ttninjs } = props
 
-
   return (
-
     <div className='flex flex-col'>
       <div><h3>{ttninjs.headline}</h3></div>
       <img

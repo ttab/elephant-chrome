@@ -1,8 +1,8 @@
 import { useRef } from 'react'
 import { Preview } from '../Preview'
-import { ttninjs } from '@ttab/api-client'
+import { type ttninjs } from '@ttab/api-client'
 import { Dialog, DialogContent, DialogTrigger } from '@ttab/elephant-ui'
-import { findRenditionByUsageAndVariant, renditions } from '../fun/find-rendition'
+import { findRenditionByUsageAndVariant, type renditions } from '../fun/find-rendition'
 
 interface ThumbnailProps {
   hit: ttninjs
@@ -63,7 +63,7 @@ export function Thumbnail(props: ThumbnailProps): JSX.Element {
           />
         </div>
       </DialogTrigger>
-      <DialogContent><Preview ttninjs={hit}/></DialogContent>
+      <DialogContent><Preview ttninjs={hit} /></DialogContent>
     </Dialog>
 
 

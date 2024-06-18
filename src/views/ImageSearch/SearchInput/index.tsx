@@ -1,11 +1,10 @@
-import React from 'react'
-import { useState, useRef } from 'react'
+import React, { useState, useRef, type Dispatch, type SetStateAction } from 'react'
 import { SearchIcon } from '@ttab/elephant-ui/icons'
 
 
 interface SearchInputProps extends React.InputHTMLAttributes<HTMLInputElement> { }
 interface InputProps {
-  setQueryString: any
+  setQueryString: Dispatch<SetStateAction<string>>
 }
 
 const SearchInput = React.forwardRef<HTMLInputElement, SearchInputProps>(
@@ -27,7 +26,7 @@ const SearchInput = React.forwardRef<HTMLInputElement, SearchInputProps>(
           {...props}
         />
         <div className='absolute inset-y-0 left-1 pl-1 flex items-center pointer-events-none'>
-          <SearchIcon strokeWidth='1.75' size='18'/>
+          <SearchIcon strokeWidth='1.75' size='18' />
         </div>
 
       </div>
