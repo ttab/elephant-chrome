@@ -18,8 +18,9 @@ export interface RegistryProviderState {
   locale: string
   timeZone: string
   server: {
-    webSocketUrl: URL
-    indexUrl: URL
+    webSocketUrl?: URL
+    indexUrl?: URL
+    repositoryEventsUrl?: URL
   }
   dispatch: React.Dispatch<Partial<RegistryProviderState>>
 }
@@ -28,10 +29,7 @@ export interface RegistryProviderState {
 const initialState: RegistryProviderState = {
   locale: getUserLocale() || DEFAULT_LOCALE,
   timeZone: getUserTimeZone() || DEFAULT_TIMEZONE,
-  server: {
-    webSocketUrl: new URL('http://localhost'),
-    indexUrl: new URL('http://localhost')
-  },
+  server: {},
   dispatch: () => { }
 }
 
@@ -46,14 +44,12 @@ export const RegistryProvider = ({ children }: PropsWithChildren): JSX.Element =
   const [isInitialized, setIsInitialized] = useState<boolean>(false)
 
   useEffect(() => {
-    getServerUrls()
-      .then(server => {
-        dispatch({ server })
-        setIsInitialized(true)
-      })
-      .catch(ex => {
-        console.error(`Failed fetching server urls in RegistryProvider, ${ex.message}`)
-      })
+    getServerUrls().then(server => {
+      dispatch({ server })
+      setIsInitialized(true)
+    }).catch(ex => {
+      console.error(`Failed fetching server urls in RegistryProvider, ${ex.message}`, ex)
+    })
   }, [])
 
   return (

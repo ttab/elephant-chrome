@@ -122,7 +122,10 @@ export async function runServer(): Promise<string> {
 })
 
 
-function getPaths(): { distDir: string, apiDir: string } {
+function getPaths(): {
+  distDir: string
+  apiDir: string
+} {
   const distDir = path.join(
     path.resolve(
       path.dirname(
