@@ -7,7 +7,7 @@ import { isYArray } from '@/lib/isType'
 import { Block } from '@/protos/service'
 import { UserPlus } from '@ttab/elephant-ui/icons'
 import { useSession } from 'next-auth/react'
-import { useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import type * as Y from 'yjs'
 
 
@@ -22,10 +22,26 @@ export const Assignees = ({ path }: {
   const { server: { indexUrl } } = useRegistry()
   const { data } = useSession()
   const [authors, setAuthors] = useState<IAssignee[]>([])
-  const [assignees, setAssignees] = useYValue<Y.Array<unknown>>(path)
-  console.log(assignees?.toJSON())
-  const setFocused = useRef<(value: boolean) => void>(null)
+  const [assignees] = useYValue<Y.Array<unknown>>(path)
+  const [selectedOptions, setSelectedOptions] = useState<IAssignee[]>([])
 
+  const updateSelectedOptions = useCallback((assignees: Y.Array<unknown>) => {
+    setSelectedOptions((assignees?.toJSON() || [])?.map(a => {
+      return {
+        value: a.uuid,
+        label: a.name
+      }
+    })
+    )
+  }, [])
+
+  useEffect(() => {
+    if (isYArray(assignees)) {
+      updateSelectedOptions(assignees)
+    }
+  }, [updateSelectedOptions, assignees])
+
+  const setFocused = useRef<(value: boolean) => void>(null)
   const placeholder = 'Lägg till uppdragstagare'
 
   useEffect(() => {
@@ -34,6 +50,7 @@ export const Assignees = ({ path }: {
         return
       }
 
+      // FIXME: Must fetch all authors, not just the first 100
       const result = await Authors.get(new URL(indexUrl), data.accessToken)
       if (Array.isArray(result.hits)) {
         setAuthors(result.hits.map(_ => {
@@ -49,7 +66,6 @@ export const Assignees = ({ path }: {
   }, [data?.accessToken, indexUrl])
 
 
-  // FIXME: ComboBox must be able to have multiple selectedOptions
   // FIXME: All authors must be fetched (now only 100)
   // FIXME: It must be possible to deselect one
   // FIXME: Use <AssigneeAvatars .../> to show assignees selected and not just <UserPlus ...> icon
@@ -63,27 +79,33 @@ export const Assignees = ({ path }: {
         size='xs'
         className='w-fit text-muted-foreground font-sans font-normal whitespace-nowrap text-ellipsis px-2 h-7'
         options={authors}
-        selectedOption={undefined}
+        selectedOption={selectedOptions}
         placeholder={placeholder}
+        closeOnSelect={false}
         onOpenChange={(isOpen: boolean) => {
           if (setFocused?.current) {
             setFocused.current(isOpen)
           }
         }}
         onSelect={(option) => {
-          const block = Block.create({
-            type: 'core/author',
-            uuid: option.value,
-            name: option.label,
-            rel: 'assignee',
-            role: 'primary'
-          })
-
-          console.log(option)
-          console.log(block)
-          if (isYArray(assignees)) {
-            assignees?.push([block])
+          if (!isYArray(assignees)) {
+            return
           }
+
+          const selectedAuthor = selectedOptions.findIndex(sa => sa.value === option.value)
+          if (selectedAuthor > -1) {
+            assignees.delete(selectedAuthor)
+          } else {
+            assignees.push([Block.create({
+              type: 'core/author',
+              uuid: option.value,
+              name: option.label,
+              rel: 'assignee',
+              role: 'primary'
+            })])
+          }
+
+          updateSelectedOptions(assignees)
         }}
       >
         <UserPlus size={20} strokeWidth={1.75} />
