@@ -1,24 +1,23 @@
 import { type Dispatch } from 'react'
 import { NavigationProvider } from '@/navigation'
 import userEvent from '@testing-library/user-event'
-
 import { useNavigation } from '@/hooks'
-
 import { render, screen } from '../setupTests'
 import { ViewFocus } from '@/components/View/ViewHeader/ViewFocus'
 import { type NavigationActionType } from '@/types'
 import { initializeNavigationState } from '@/navigation/lib'
 import { SessionProvider } from 'next-auth/react'
+import { type Mock, vi } from 'vitest'
 
 
-jest.mock('@/navigation/hooks/useNavigation', () => ({
-  useNavigation: jest.fn()
+vi.mock('@/navigation/hooks/useNavigation', () => ({
+  useNavigation: vi.fn()
 }))
 const mockState = initializeNavigationState()
 
-const mockDispatch = jest.fn() as Dispatch<NavigationActionType>
+const mockDispatch = vi.fn() as Dispatch<NavigationActionType>
 
-(useNavigation as jest.Mock).mockReturnValue({
+(useNavigation as Mock).mockReturnValue({
   state: mockState,
   dispatch: mockDispatch
 })

@@ -3,6 +3,11 @@ import planning from './__tests__/data/planning-index.json'
 
 import { randomUUID } from 'node:crypto'
 import { TextEncoder, TextDecoder } from 'util'
+import { type Mock, vi } from 'vitest'
+import { initializeNavigationState } from '@/navigation/lib'
+import { type Dispatch } from 'react'
+import { useNavigation } from './src/hooks'
+import { type NavigationActionType } from './src/types'
 export * from '@testing-library/react'
 
 window.crypto.randomUUID = randomUUID
@@ -35,7 +40,7 @@ function mockUrl(url: string): unknown {
       throw new Error(`No mock data for ${url}`)
   }
 }
-global.fetch = jest.fn().mockImplementation(async (url: string) => {
+global.fetch = vi.fn().mockImplementation(async (url: string) => {
   return await Promise.resolve({
     status: 200,
     ok: true,
@@ -44,8 +49,36 @@ global.fetch = jest.fn().mockImplementation(async (url: string) => {
   })
 })
 
-jest.mock('next-auth/react', () => {
-  const originalModule = jest.requireActual('next-auth/react')
+
+vi.mock('@/navigation/hooks/useNavigation', () => ({
+  useNavigation: vi.fn()
+}))
+const mockState = initializeNavigationState()
+
+history.pushState({
+  viewId: 'eddbfe39-57d4-4b32-b9a1-a555e39139ea',
+  viewName: 'PlanningOverview',
+  contentState: [
+    {
+      viewId: 'eddbfe39-57d4-4b32-b9a1-a555e39139ea',
+      name: 'PlanningOverview',
+      props: {},
+      path: '/'
+    }
+  ]
+}, '', '/')
+
+const mockDispatch = vi.fn() as Dispatch<NavigationActionType>
+
+
+(useNavigation as Mock).mockReturnValue({
+  state: mockState,
+  dispatch: mockDispatch
+})
+
+
+vi.mock('next-auth/react', async () => {
+  const originalModule = await vi.importActual('next-auth/react')
   const mockSession = {
     expires: new Date(Date.now() + 2 * 86400).toISOString(),
     user: { name: 'Testy Test' }
@@ -53,8 +86,8 @@ jest.mock('next-auth/react', () => {
   return {
     __esModule: true,
     ...originalModule,
-    useSession: jest.fn(() => {
-      return { data: mockSession, status: 'authenticated' } // return type is [] in v3 but changed to {} in v4
+    useSession: vi.fn(() => {
+      return { data: mockSession, status: 'authenticated' }
     })
   }
 })

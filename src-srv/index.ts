@@ -63,7 +63,7 @@ export async function runServer(): Promise<string> {
 
   app.set('trust proxy', true)
   app.use(`${BASE_URL}/api/auth/*`, ExpressAuth(authConfig) as RequestHandler)
-  app.use(assertAuthenticatedUser as RequestHandler)
+  app.use(`${BASE_URL}/api`, assertAuthenticatedUser as RequestHandler)
 
   app.use(cors({
     credentials: true,

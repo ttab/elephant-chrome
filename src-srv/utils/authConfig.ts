@@ -93,12 +93,9 @@ export const authConfig: AuthConfig = {
 
       // Access token is expired, refresh it
       return await refreshAccessToken(token)
-    },
-    redirect: async ({ url, baseUrl }) => {
-      return process.env.BASE_URL
-        ? `${baseUrl}${process.env.BASE_URL}`
-        : url
     }
+  },
+  pages: {
+    signIn: `${process.env.BASE_URL}/login`
   }
-
 }
