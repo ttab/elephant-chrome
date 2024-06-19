@@ -2,7 +2,7 @@ import { type Dispatch } from 'react'
 import { SessionProvider } from 'next-auth/react'
 import { NavigationProvider } from '@/navigation'
 
-import { useNavigation, useTable } from '@/hooks'
+import { useNavigation } from '@/hooks'
 
 import { render, screen } from '../setupTests'
 import { type NavigationActionType } from '@/types'
@@ -10,31 +10,19 @@ import { initializeNavigationState } from '@/navigation/lib'
 import { DocTrackerContext } from '@/contexts/DocTrackerProvider'
 import { type HocuspocusProvider } from '@hocuspocus/provider'
 import { AppContent } from '../src/AppContent'
+import { type Mock, vi } from 'vitest'
 
-jest.mock('@/navigation/hooks/useNavigation', () => ({
-  useNavigation: jest.fn()
-}))
-
-jest.mock('@/hooks/useTable', () => ({
-  useTable: jest.fn()
+vi.mock('@/navigation/hooks/useNavigation', () => ({
+  useNavigation: vi.fn()
 }))
 
 const mockState = initializeNavigationState()
 
-const mockDispatch = jest.fn() as Dispatch<NavigationActionType>
+const mockDispatch = vi.fn() as Dispatch<NavigationActionType>
 
-(useNavigation as jest.Mock).mockReturnValue({
+(useNavigation as Mock).mockReturnValue({
   state: mockState,
   dispatch: mockDispatch
-});
-
-
-(useTable as jest.Mock).mockReturnValue({
-  table: {},
-  command: {
-    pages: [],
-    page: ''
-  }
 })
 
 const provider = true as unknown as HocuspocusProvider
