@@ -115,24 +115,40 @@ export class CollaborationServer {
         }),
         new Auth()
       ],
-      // Add user as having a tracked document open (or increase nr of times user have it open)
-      connected: async (payload) => { await this.#connected(payload) },
 
-      // Remove user from having a tracked doc open (or decrease the nr of times user have it open)
-      onDisconnect: async (payload) => { await this.#onDisconnect(payload) },
+      // Add user as having a tracked document open (or increase nr of times
+      // user have it open)
+      connected: async (payload) => {
+        await this.#connected(payload)
+      },
+
+      // Remove user from having a tracked doc open (or decrease the nr of times
+      // user have it open)
+      onDisconnect: async (payload) => {
+        await this.#onDisconnect(payload)
+      },
 
       // No users have this doc open, remove it from tracked documents
-      afterUnloadDocument: async (payload) => { await this.#afterUnloadDocument(payload) },
+      afterUnloadDocument: async (payload) => {
+        await this.#afterUnloadDocument(payload)
+      },
+
       onStateless: async ({ payload }) => {
         const msg = parseStateless(payload)
 
         if (msg.type === StatelessType.IN_PROGRESS && !msg.message.state) {
-          const connection = await this.#server.openDirectConnection(msg.message.id, { ...msg.message.context, agent: 'server' })
+          const connection = await this.#server.openDirectConnection(
+            msg.message.id, { ...msg.message.context, agent: 'server' }
+          ).catch(ex => {
+            throw new Error('acquire connection', { cause: ex })
+          })
 
           await connection.transact(doc => {
             const ele = doc.getMap('ele')
             const root = ele.get('root') as Y.Map<unknown>
             root.delete('__inProgress')
+          }).catch(ex => {
+            throw new Error('remove in progress flag', { cause: ex })
           })
 
           if (connection.document) {
@@ -140,19 +156,21 @@ export class CollaborationServer {
             const currentHash = createHash(JSON.stringify(document.document))
 
             if (document.document && msg.message.context) {
-              const result = await this.#repository.saveDoc(document.document, msg.message.context.accessToken as string, BigInt(document.version))
+              const result = await this.#repository.saveDoc(
+                document.document, msg.message.context.accessToken as string,
+                BigInt(document.version)
+              ).catch(ex => {
+                throw new Error('save snapshot', { cause: ex })
+              })
 
               if (result?.status.code === 'OK') {
-                const connection = await this.#server.openDirectConnection(msg.message.id, {
-                  ...msg.message.context,
-                  agent: 'server'
-                })
-
                 await connection.transact(doc => {
                   const versionMap = doc.getMap('version')
                   const hashMap = doc.getMap('hash')
                   versionMap.set('version', result?.response.version.toString())
                   hashMap.set('hash', currentHash)
+                }).catch(ex => {
+                  throw new Error('update document version and hash', { cause: ex })
                 })
 
                 console.debug('::: Document saved: ', result.response.version, 'new hash:', currentHash)
@@ -234,7 +252,9 @@ export class CollaborationServer {
     }
 
     // Fetch from Redis if exists
-    const state = await this.#redisCache.get(uuid)
+    const state = await this.#redisCache.get(uuid).catch(ex => {
+      throw new Error('get cached document', { cause: ex })
+    })
     if (state) {
       return state
     }
@@ -243,6 +263,8 @@ export class CollaborationServer {
     const newsDoc = await this.#repository.getDoc({
       uuid,
       accessToken: context.token
+    }).catch(ex => {
+      throw new Error('get document from repository', { cause: ex })
     })
 
     if (newsDoc) {
@@ -286,21 +308,30 @@ export class CollaborationServer {
     }
 
     const result = await this.#repository.saveDoc(document, context.token as string, version)
-    if (result?.status.code === 'OK') {
-      const connection = await this.#server.openDirectConnection(documentName, {
-        ...context,
-        agent: 'server'
-      })
-
-      await connection.transact(doc => {
-        const versionMap = doc.getMap('version')
-        const hashMap = doc.getMap('hash')
-        versionMap.set('version', result?.response.version.toString())
-        hashMap.set('hash', currentHash)
-      })
-
-      console.debug('::: Snapshot saved: ', result.response.version, 'new hash:', currentHash)
+    if (result?.status.code !== 'OK') {
+      // TODO: what does an error response look like? Is it parsed? A full twirp
+      // error response looks like this:
+      // https://twitchtv.github.io/twirp/docs/errors.html#metadata
+      throw new Error('save document to repository', { cause: result })
     }
+
+    const connection = await this.#server.openDirectConnection(documentName, {
+      ...context,
+      agent: 'server'
+    }).catch(ex => {
+      throw new Error('open hocuspocus connection', { cause: ex })
+    })
+
+    await connection.transact(doc => {
+      const versionMap = doc.getMap('version')
+      const hashMap = doc.getMap('hash')
+      versionMap.set('version', result?.response.version.toString())
+      hashMap.set('hash', currentHash)
+    }).catch(ex => {
+      throw new Error('update document with new hash', { cause: ex })
+    })
+
+    console.debug('::: Snapshot saved: ', result.response.version, 'new hash:', currentHash)
   }
 
 
@@ -393,9 +424,7 @@ export class CollaborationServer {
    * Store document in redis cache
    */
   async #storeDocument({ documentName, state }: storePayload): Promise<void> {
-    if (!await this.#redisCache.store(documentName, state)) {
-      console.error(`Failed storing ${documentName} in cache`)
-    }
+    await this.#redisCache.store(documentName, state)
   }
 
   /**
