@@ -7,7 +7,7 @@ import {
 
 export const VisibilityStatuses: DefaultValueOption[] = [
   {
-    label: 'Public',
+    label: 'Publik',
     value: 'public',
     icon: Globe,
     iconProps: {
@@ -17,7 +17,7 @@ export const VisibilityStatuses: DefaultValueOption[] = [
     }
   },
   {
-    label: 'Internal',
+    label: 'Intern',
     value: 'internal',
     icon: Building,
     iconProps: {
