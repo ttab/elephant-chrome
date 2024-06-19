@@ -1,14 +1,18 @@
-import apiClient from '@/lib/apiclient'
+import apiClient from '@/lib/apiClient'
+import { type ttninjs, type facet } from '@ttab/api-client'
 
-export const fetcher = async ([queryString, index, SIZE]: [queryString: string, index: number, SIZE: number]) => {
-  const client = await apiClient(undefined, undefined)
-  const res = await client.content.search('image', { q: queryString, s: SIZE, fr: (index) * SIZE })
-  return res
+export const createFetcher = (url: URL) =>
+  async ([queryString, index, SIZE]: [queryString: string, index: number, SIZE: number]): Promise<{
+    hits: ttninjs[]
+    total: number
+    facets?: {
+      'subject.code'?: facet[]
+      'product.code'?: facet[]
+      'place.name'?: facet[]
+      'person.name'?: facet[]
+      copyrightholder?: facet[]
+    }
+  }> => {
+    const client = await apiClient('', url)
+    return await client.content.search('image', { q: queryString, s: SIZE, fr: (index) * SIZE })
   }
-
-
-  // export const fetcher2 = ([queryString, index, SIZE]) => {
-  //   return apiClient(undefined, undefined)
-  //     .then((client) => client.content.search('image', { q: queryString, s: SIZE, fr: (index) * SIZE }))
-  //     .then((res) => res)
-  // }

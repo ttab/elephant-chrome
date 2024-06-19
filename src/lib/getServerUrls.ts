@@ -3,6 +3,7 @@ const BASE_URL = import.meta.env.BASE_URL || ''
 interface ServerUrls {
   webSocketUrl: URL
   indexUrl: URL
+  contentApiUrl: URL
 }
 
 export async function getServerUrls(): Promise<ServerUrls> {
@@ -15,6 +16,7 @@ export async function getServerUrls(): Promise<ServerUrls> {
   const urls = await response.json()
   return {
     webSocketUrl: new URL(urls?.WS_URL as string || 'http://localhost'),
-    indexUrl: new URL(urls?.INDEX_URL as string || 'http://localhost')
+    indexUrl: new URL(urls?.INDEX_URL as string || 'http://localhost'),
+    contentApiUrl: new URL(urls?.CONTENT_API_URL as string || 'http://localhost')
   }
 }

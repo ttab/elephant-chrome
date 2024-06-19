@@ -2,6 +2,7 @@ import { ScanSearch } from '@ttab/elephant-ui/icons'
 import { handleLink } from '@/components/Link/lib/handleLink'
 import { useNavigation, useQuery, useView } from '../../hooks'
 import { type ActionHandlerI } from '../types'
+import { type Plugin } from '@ttab/textbit'
 
 function handler({ dispatch, viewRegistry, origin, id }: ActionHandlerI): boolean {
   handleLink({
@@ -16,18 +17,20 @@ function handler({ dispatch, viewRegistry, origin, id }: ActionHandlerI): boolea
   return true
 }
 
-export function ImageSearchPlugin(): any {
+export const ImageSearchPlugin: Plugin.InitFunction = () => {
   const { state, dispatch } = useNavigation()
   const { viewId: origin } = useView()
   const viewRegistry = state.viewRegistry
   const query = useQuery()
   const { id } = query
 
-  return ({
+  return {
     class: 'block',
     name: 'tt/visual/search',
     componentEntry: {
-      class: 'block'
+      class: 'block',
+      // TODO: Do we need this, or can we make component optional in the types
+      component: () => null
     },
     actions: [
       {
@@ -39,12 +42,12 @@ export function ImageSearchPlugin(): any {
         },
         visibility: () => {
           return [
-            true, // Always visible
-            true, // Always enabled
-            false // Never active
+            true,
+            true,
+            false
           ]
         }
       }
     ]
-  })
+  }
 }
