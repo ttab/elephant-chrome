@@ -2,7 +2,7 @@ import { PlanningCommandMenu } from '@/components/CommandMenu/PlanningCommandMen
 import { CommandGroup } from '@ttab/elephant-ui'
 import { usePlanningTable } from '@/hooks/usePlanningTable'
 import { type CommandArgs } from '@/contexts/PlanningTableProvider'
-import { Commands } from '@/components/Commands'
+import { PlanningCommands } from '../PlanningCommands'
 
 export const TableCommandMenu = (): JSX.Element => {
   const { table } = usePlanningTable()
@@ -37,7 +37,7 @@ export const TableCommandMenu = (): JSX.Element => {
       }}
       >
       <CommandGroup heading='Planning'>
-        <Commands />
+        <PlanningCommands />
       </CommandGroup>
     </PlanningCommandMenu>
   )

@@ -9,7 +9,7 @@ import { PlanningList } from './PlanningList'
 import { PlanningTableProvider } from '@/contexts/PlanningTableProvider'
 
 import { TableCommandMenu } from './PlanningTable/TableCommandMenu'
-import { Header } from '@/components/Header'
+import { Header } from '@/views/PlanningOverview/PlanningHeader'
 
 const meta: ViewMetadata = {
   name: 'Plannings',

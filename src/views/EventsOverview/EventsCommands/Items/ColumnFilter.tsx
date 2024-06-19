@@ -1,6 +1,6 @@
 import { CommandItem } from '@ttab/elephant-ui'
 import { type ReactNode } from 'react'
-import { FacetedFilter } from '../FacetedFilter'
+import { FacetedFilter } from '@/components/Commands/FacetedFilter'
 import { FileQuestion } from '@ttab/elephant-ui/icons'
 import { useEventsTable } from '@/hooks'
 

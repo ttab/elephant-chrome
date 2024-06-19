@@ -21,7 +21,7 @@ export const CreateEvent = (): JSX.Element => {
     <Dialog open={!!event[0]} >
       <DialogTrigger asChild>
         <Button size='sm' className='h-8 pr-4' onClick={() => {
-          alert('Skapa kalenderhändelse')
+          alert('Skapa händelse')
         }}>
           <PlusIcon size={18} strokeWidth={1.75} /> Ny
         </Button>
@@ -29,7 +29,7 @@ export const CreateEvent = (): JSX.Element => {
 
       <DialogContent className='p-0 rounded-md'>
         {event !== null &&
-          <p>Skapa kalenderhändelse</p>
+          <p>Skapa händelse</p>
         }
       </DialogContent>
     </Dialog>

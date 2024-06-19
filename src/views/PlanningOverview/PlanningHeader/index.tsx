@@ -1,11 +1,11 @@
-import { DateChanger } from './Datechanger'
-import { TabsGrid } from './LayoutSwitch'
+import { DateChanger } from '@/components/Header/Datechanger'
 import { Filter } from './Filter'
 import {
   type Dispatch,
   type SetStateAction
 } from 'react'
-import { CreateEvent } from './CreateEvent'
+import { CreatePlanning } from './CreatePlanning'
+import { TabsGrid } from '@/components/Header/LayoutSwitch'
 
 export const Header = ({ tab, startDate, setStartDate, endDate, setEndDate }: {
   tab: string
@@ -15,7 +15,7 @@ export const Header = ({ tab, startDate, setStartDate, endDate, setEndDate }: {
   setEndDate?: Dispatch<SetStateAction<Date>>
 }): JSX.Element => {
   return <>
-    <CreateEvent />
+    <CreatePlanning />
 
     <div className='hidden sm:block'>
       <TabsGrid />

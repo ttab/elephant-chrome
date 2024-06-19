@@ -6,7 +6,7 @@ import {
   Popover, PopoverContent, PopoverTrigger
 } from '@ttab/elephant-ui'
 
-import { Commands } from '../Commands'
+import { EventsCommands } from '../EventsCommands'
 import { DebouncedCommandInput } from '@/components/CommandMenu/DebouncedCommandInput'
 import { useEventsTable } from '@/hooks'
 
@@ -62,7 +62,7 @@ export const Filter = (): JSX.Element => {
             placeholder="Filter..."
             className="h-9"
           />
-          <Commands />
+          <EventsCommands />
         </Command>
       </PopoverContent>
     </Popover>

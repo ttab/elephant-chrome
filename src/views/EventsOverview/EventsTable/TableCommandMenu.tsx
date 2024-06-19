@@ -1,6 +1,6 @@
 import { EventsCommandMenu } from '@/components/CommandMenu/EventsCommandMenu'
 import { CommandGroup } from '@ttab/elephant-ui'
-import { Commands } from '@/components/Commands'
+import { EventsCommands } from '../EventsCommands'
 import { useEventsTable } from '@/hooks/useEventsTable'
 import { type CommandArgs } from '@/contexts/EventsTableProvider'
 
@@ -37,7 +37,7 @@ export const TableCommandMenu = (): JSX.Element => {
       }}
       >
       <CommandGroup heading='Events'>
-        <Commands />
+        <EventsCommands />
       </CommandGroup>
     </EventsCommandMenu>
   )

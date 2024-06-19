@@ -1,7 +1,6 @@
 import { type ColumnDef } from '@tanstack/react-table'
 import { type Events } from '../data/schema'
 import { Newsvalue } from '@/components/Table/Newsvalue'
-import { Title } from '../../../../components/Table/Title'
 import { Section } from './Section'
 import { type MouseEvent } from 'react'
 import {
@@ -20,6 +19,7 @@ import { Newsvalues, NewsvalueMap, EventsSections, VisibilityStatuses } from '@/
 import { StatusIndicator } from '@/components/DataItem/StatusIndicator'
 import { Time } from './Time'
 import { PlanningStatus } from './PlanningStatus'
+import { Title } from '@/components/Table/Title'
 
 const menuItems = [
   {

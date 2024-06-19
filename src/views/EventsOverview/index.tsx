@@ -7,7 +7,7 @@ import { EventsTableProvider } from '@/contexts/EventsTableProvider'
 import { TableCommandMenu } from './EventsTable/TableCommandMenu'
 import { EventsList } from './EventsList'
 import { EventsGrid } from './EventsGrid'
-import { Header } from '@/components/Header'
+import { Header } from './EventsHeader'
 
 const meta: ViewMetadata = {
   name: 'Events',

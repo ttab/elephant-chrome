@@ -4,7 +4,7 @@ import { TextFilter } from './Items/TextSearch'
 import { ColumnFilter } from './Items/ColumnFilter'
 import { ToggleColumn } from './Items/ToggleColumn'
 
-export const Commands = (): JSX.Element => {
+export const PlanningCommands = (): JSX.Element => {
   return (
     <CommandList>
       <TextFilter />
