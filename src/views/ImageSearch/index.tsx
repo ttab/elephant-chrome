@@ -7,7 +7,7 @@ import InfiniteScroll from './InfiniteScroll'
 import { Thumbnail } from './Thumbnail'
 import { ImageSearchInput } from './SearchInput'
 import { SWRConfig } from 'swr'
-import { createFetcher } from './fun/fetcher'
+import { createFetcher } from './lib/fetcher'
 import { useRegistry } from '@/hooks/useRegistry'
 import { type ttninjs } from '@ttab/api-client'
 

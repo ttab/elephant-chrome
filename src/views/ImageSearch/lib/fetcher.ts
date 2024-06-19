@@ -1,5 +1,10 @@
-import apiClient from '@/lib/apiClient'
 import { type ttninjs, type facet } from '@ttab/api-client'
+import { Api } from '@ttab/api-client'
+
+async function apiClient(token: string, host: URL): Promise<Api> {
+  const client = new Api({ host: host.origin, token, timeout: 6000 })
+  return client
+}
 
 export const createFetcher = (url: URL) =>
   async ([queryString, index, SIZE]: [queryString: string, index: number, SIZE: number]): Promise<{
