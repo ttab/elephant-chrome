@@ -1,12 +1,11 @@
-/* eslint-disable @typescript-eslint/promise-function-async */
-import React, { type Ref, useEffect, useState } from 'react'
+import React, { type Ref, type ReactNode, useEffect, useState } from 'react'
 import type { SWRInfiniteResponse } from 'swr/infinite'
 
 interface Props<T> {
   swr: SWRInfiniteResponse<T>
-  children: React.ReactNode | ((item: T) => React.ReactNode)
-  loadingIndicator?: React.ReactNode
-  endingIndicator?: React.ReactNode
+  children: ReactNode | ((item: T) => ReactNode)
+  loadingIndicator?: ReactNode
+  endingIndicator?: ReactNode
   isReachingEnd: boolean | ((swr: SWRInfiniteResponse<T>) => boolean)
   offset?: number
 }
@@ -53,7 +52,7 @@ const InfiniteScroll = <T,>(props: Props<T>): React.ReactElement<Props<T>> => {
   return (
     <>
       {typeof children === 'function'
-        ? data?.map((item) => children(item))
+        ? data?.map((item): ReactNode => children(item))
         : children}
       <div className='flex relative bg-gray-200 min-h-[144px] place-content-center place-items-center'>
         <div ref={ref} className={`absolute top-[${offset}]`}></div>
