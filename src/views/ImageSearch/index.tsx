@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { ViewHeader } from '@/components'
 import { type ViewMetadata } from '@/types'
-import { XIcon, LoaderIcon, ListEndIcon } from '@ttab/elephant-ui/icons'
+import { LoaderIcon, ListEndIcon } from '@ttab/elephant-ui/icons'
 import useSWRInfinite from 'swr/infinite'
 import InfiniteScroll from './InfiniteScroll'
 import { Thumbnail } from './Thumbnail'
@@ -68,8 +68,8 @@ const ImageSearchContent = (): JSX.Element => {
       <ViewHeader.Root>
         <ViewHeader.Content>
           <ImageSearchInput setQueryString={setQueryString} />
-          <XIcon />
         </ViewHeader.Content>
+        <ViewHeader.Action />
       </ViewHeader.Root>
 
       <ImageSearchResult total={0}>
