@@ -1,7 +1,7 @@
 import { useMemo } from 'react'
 import useSWR from 'swr'
 
-import { useRegistry, useIndexUrl, useEventsTable } from '@/hooks'
+import { useIndexUrl, useEventsTable } from '@/hooks'
 import { useSession } from 'next-auth/react'
 import { type EventsSearchIndexResponse } from '@/lib/index/events-search'
 import { Events } from '@/lib/events'
@@ -12,7 +12,6 @@ import { EventsTable } from './EventsTable'
 
 export const EventsList = ({ date }: { date: Date }): JSX.Element => {
   const { setData } = useEventsTable()
-  const { locale } = useRegistry()
   const { data: session, status } = useSession()
 
   const indexUrl = useIndexUrl()
@@ -26,7 +25,7 @@ export const EventsList = ({ date }: { date: Date }): JSX.Element => {
 
     searchUrl.search = new URLSearchParams({ start, end }).toString()
     return searchUrl
-  }, [startTime, endTime, indexUrl, locale])
+  }, [startTime, endTime, indexUrl])
 
 
   const { data } = useSWR(['eventitems', status, searchUrl.href], async (): Promise<EventsSearchIndexResponse & { planningItem?: string } | undefined> => {
