@@ -1,4 +1,4 @@
-import { type Events } from '@/views/Overviews/EventsOverview/EventsTable/data/schema'
+import { type Events } from '@/views/EventsOverview/EventsTable/data/schema'
 
 interface SearchIndexOptions {
   accessToken: string

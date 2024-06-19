@@ -1,4 +1,4 @@
-import { type Planning } from '@/views/Overviews/PlanningOverview/PlanningTable/data/schema'
+import { type Planning } from '@/views/PlanningOverview/PlanningTable/data/schema'
 
 interface SearchIndexOptions {
   accessToken: string

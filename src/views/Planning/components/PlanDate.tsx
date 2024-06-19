@@ -1,5 +1,5 @@
 import { useYObserver, useRegistry } from '@/hooks'
-import { DatePicker } from '@/views/Overviews/PlanningOverview/PlanningHeader/Datepicker'
+import { DatePicker } from '@/components/Datepicker'
 
 export const PlanDate = (): JSX.Element => {
   const { get, set } = useYObserver('meta', 'core/planning-item[0].data')
