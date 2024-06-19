@@ -1,6 +1,6 @@
 import { type DefaultValueOption } from '@/types'
 
-export const EventsSectors: DefaultValueOption[] = [
+export const EventsSections: DefaultValueOption[] = [
   {
     value: 'SPT',
     label: 'Sport',
