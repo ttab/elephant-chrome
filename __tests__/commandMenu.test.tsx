@@ -4,41 +4,6 @@ import { NavigationProvider } from '@/navigation'
 import { render, screen } from '../setupTests'
 import { CommandMenu } from '@/components/CommandMenu'
 import userEvent from '@testing-library/user-event'
-import { initializeNavigationState } from '@/navigation/lib'
-import { type NavigationActionType } from '@/types'
-import { type Dispatch } from 'react'
-import { useNavigation, useTable } from '@/hooks'
-
-global.ResizeObserver = jest.fn().mockImplementation(() => ({
-  observe: jest.fn(),
-  unobserve: jest.fn(),
-  disconnect: jest.fn()
-}))
-
-jest.mock('@/navigation/hooks/useNavigation', () => ({
-  useNavigation: jest.fn()
-}))
-
-jest.mock('@/hooks/useTable', () => ({
-  useTable: jest.fn()
-}))
-
-const mockState = initializeNavigationState()
-
-const mockDispatch = jest.fn() as Dispatch<NavigationActionType>
-
-(useNavigation as jest.Mock).mockReturnValue({
-  state: mockState,
-  dispatch: mockDispatch
-});
-
-(useTable as jest.Mock).mockReturnValue({
-  table: {},
-  command: {
-    pages: [],
-    page: ''
-  }
-})
 
 describe('CommandMenu', () => {
   it('should render CommandMenu component', async () => {
