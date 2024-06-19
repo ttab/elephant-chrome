@@ -82,7 +82,6 @@ const Editor = (props: ViewProps): JSX.Element => {
 function EditorWrapper(props: ViewProps & {
   documentId: string
 }): JSX.Element {
-
   const plugins = [Text, BulletList, NumberList, Blockquote, Image, Bold, Italic, Link, TTVisual, ImageSearchPlugin]
   const {
     provider,

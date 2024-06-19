@@ -6,11 +6,9 @@ export interface rendition {
   width: number
   height: number
 }
-export interface renditions {
-[name: string]: rendition
-}
+export type renditions = Record<string, rendition>
 
-export const findRenditionByUsageAndVariant = (renditions: renditions, usage = 'Thumbnail', variant = 'Normal') : rendition => {
+export const findRenditionByUsageAndVariant = (renditions: renditions, usage = 'Thumbnail', variant = 'Normal'): rendition => {
   const matchingRenditions = Object.values(renditions).filter((rendition) => {
     return rendition?.usage === usage && rendition?.variant === variant
   })
@@ -24,7 +22,7 @@ export const findRenditionByUsageAndVariant = (renditions: renditions, usage = '
       href: 'not found',
       mimetype: 'image/jpeg',
       width: 0,
-      height:0
+      height: 0
     }
   }
 }

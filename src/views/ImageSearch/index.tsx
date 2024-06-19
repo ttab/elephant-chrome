@@ -1,17 +1,15 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { ViewHeader } from '@/components'
 import { type ViewMetadata } from '@/types'
-import { XIcon, LoaderIcon, ListEndIcon } from '@ttab/elephant-ui/icons'
-import { useState } from 'react'
+import { LoaderIcon, ListEndIcon } from '@ttab/elephant-ui/icons'
 import useSWRInfinite from 'swr/infinite'
 import InfiniteScroll from './InfiniteScroll'
-import { fetcher } from './fun/fetcher'
 import { Thumbnail } from './Thumbnail'
 import { ImageSearchInput } from './SearchInput'
-interface SearchResultProps {
-  total: number
-  children: React.ReactNode
-}
+import { SWRConfig } from 'swr'
+import { createFetcher } from './fun/fetcher'
+import { useRegistry } from '@/hooks/useRegistry'
+import { type ttninjs } from '@ttab/api-client'
 
 const meta: ViewMetadata = {
   name: 'ImageSearch',
@@ -29,8 +27,10 @@ const meta: ViewMetadata = {
   }
 }
 
-function ImageSearchResult(props: SearchResultProps): JSX.Element {
-  const { children } = props
+const ImageSearchResult = ({ children }: {
+  total: number
+  children: React.ReactNode
+}): JSX.Element => {
   return (
     <div className='h-screen max-h-screen flex flex-col p-2 overflow-auto'>
       <div className='relative h-full grid grid-cols-2 md:grid-cols-3 gap-1'>
@@ -40,14 +40,24 @@ function ImageSearchResult(props: SearchResultProps): JSX.Element {
   )
 }
 
-function ImageSearch(): JSX.Element {
+export const ImageSearch = (): JSX.Element => {
+  const { server: { contentApiUrl } } = useRegistry()
+
+  return (
+    <SWRConfig value={{ fetcher: createFetcher(contentApiUrl) }}>
+      <ImageSearchContent />
+    </SWRConfig>
+  )
+}
+
+const ImageSearchContent = (): JSX.Element => {
   const [queryString, setQueryString] = useState('')
   const SIZE = 10
+
   const swr = useSWRInfinite(
     (index) => {
       return [queryString, index, SIZE]
     },
-    fetcher,
     {
       revalidateFirstPage: false
     }
@@ -58,8 +68,8 @@ function ImageSearch(): JSX.Element {
       <ViewHeader.Root>
         <ViewHeader.Content>
           <ImageSearchInput setQueryString={setQueryString} />
-          <XIcon />
         </ViewHeader.Content>
+        <ViewHeader.Action />
       </ViewHeader.Root>
 
       <ImageSearchResult total={0}>
@@ -72,20 +82,14 @@ function ImageSearch(): JSX.Element {
           }
         >
           {(data) =>
-            data.hits.map((hit) => {
-              return (
-                <Thumbnail key={hit.uri} hit={hit} />
-              )
-            })
-
+            data.hits.map((hit: ttninjs) => (
+              <Thumbnail key={hit.uri} hit={hit} />
+            ))
           }
         </InfiniteScroll>
       </ImageSearchResult>
-      {/* <div className="h-14 basis-14">Antal: XXX</div> */}
     </div>
   )
 }
 
 ImageSearch.meta = meta
-
-export { ImageSearch }

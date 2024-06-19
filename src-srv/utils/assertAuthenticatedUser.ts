@@ -9,14 +9,24 @@ export async function assertAuthenticatedUser(
 ): Promise<void> {
   const session = res.locals.session ?? (await getSession(req, authConfig))
 
-  if (req.path === `${process.env.BASE_URL}/api/auth/signin`) {
+  if (isUnprotectedRoute(req)) {
     next()
     return
   }
 
   if (!session?.user) {
-    res.redirect(`${process.env.BASE_URL}/api/auth/signin`)
+    res.redirect(`${process.env.BASE_URL}/login`)
   } else {
     next()
   }
+}
+
+
+function isUnprotectedRoute(req: Request): boolean {
+  const unprotectedRoutes = [
+    '/auth/',
+    '/init'
+  ]
+
+  return unprotectedRoutes.some((route) => req.path.startsWith(route))
 }

@@ -20,6 +20,7 @@ export interface RegistryProviderState {
   server: {
     webSocketUrl: URL
     indexUrl: URL
+    contentApiUrl: URL
   }
   dispatch: React.Dispatch<Partial<RegistryProviderState>>
 }
@@ -30,7 +31,8 @@ const initialState: RegistryProviderState = {
   timeZone: getUserTimeZone() || DEFAULT_TIMEZONE,
   server: {
     webSocketUrl: new URL('http://localhost'),
-    indexUrl: new URL('http://localhost')
+    indexUrl: new URL('http://localhost'),
+    contentApiUrl: new URL('http://localhost')
   },
   dispatch: () => { }
 }
