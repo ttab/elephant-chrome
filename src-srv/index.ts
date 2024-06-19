@@ -18,7 +18,6 @@ import { ExpressAuth } from '@auth/express'
 import { assertAuthenticatedUser } from './utils/assertAuthenticatedUser.js'
 import { authConfig } from './utils/authConfig.js'
 
-
 /*
  * Read and normalize all environment variables
 */
@@ -56,9 +55,9 @@ export async function runServer(): Promise<string> {
   // Connect to Redis
   const cache = new RedisCache(REDIS_URL)
 
-  if (!await cache.connect()) {
-    throw new Error('Failed connecting to Redis')
-  }
+  await cache.connect().catch(ex => {
+    throw new Error('connect to redis cache', { cause: ex })
+  })
 
   const repository = new Repository(REPOSITORY_URL)
 
@@ -74,7 +73,6 @@ export async function runServer(): Promise<string> {
   app.use(cookieParser())
   app.use(BASE_URL, express.json())
 
-
   // Create collaboration and hocuspocus server
   const collaborationServer = new CollaborationServer({
     name: 'Elephant',
@@ -84,43 +82,47 @@ export async function runServer(): Promise<string> {
     repository,
     expressServer: app
   })
-  await collaborationServer.listen([`${BASE_URL}/:document`])
+
+  await collaborationServer.listen([`${BASE_URL}/:document`]).catch(ex => {
+    throw new Error(`start collaboration server on port ${PORT}`, { cause: ex })
+  })
 
   connectRouteHandlers(app, routes, {
     repository,
     collaborationServer
   })
 
-  if (NODE_ENV === 'development') {
-    ViteExpress.listen(app as unknown as Express, PORT,
-      () => {
-        console.log(`Development Server running on ${PROTOCOL}://${HOST}:${PORT}${BASE_URL || ''}`)
+  const serverUrl = `${PROTOCOL}://${HOST}:${PORT}${BASE_URL || ''}`
+
+  switch (NODE_ENV) {
+    case 'development': {
+      ViteExpress.listen(app as unknown as Express, PORT, () => {
+        console.log(`Development Server running on ${serverUrl}`)
       })
-    return `${PROTOCOL}://${HOST}:${PORT}${BASE_URL || ''}`
+
+      break
+    }
+    case 'production': {
+      // Catch all other requests and serve bundled app
+      app.use(BASE_URL || '', express.static(distDir))
+      app.get('*', (_, res) => {
+        res.sendFile(path.join(distDir, 'index.html'))
+      })
+      app.listen(PORT)
+
+      break
+    }
   }
 
-  if (NODE_ENV === 'production') {
-    // Catch all other requests and serve bundled app
-    app.use(BASE_URL || '', express.static(distDir))
-    app.get('*', (_, res) => {
-      res.sendFile(path.join(distDir, 'index.html'))
-    })
-    app.listen(PORT)
-    return `${PROTOCOL}://${HOST}:${PORT}${BASE_URL || ''}`
-  }
-
-  throw new Error('Invalid NODE_ENV')
+  return serverUrl
 }
 
-(async () => {
-  return await runServer()
-})().then((url) => {
+runServer().then(url => {
   console.info(`Serving API on ${url}/api`)
 }).catch(ex => {
   console.error(ex)
   process.exit(1)
 })
-
 
 function getPaths(): { distDir: string, apiDir: string } {
   const distDir = path.join(
