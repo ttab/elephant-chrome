@@ -22,7 +22,7 @@ import { authConfig } from './utils/authConfig.js'
  * Read and normalize all environment variables
 */
 const NODE_ENV = process.env.NODE_ENV === 'production' ? 'production' : 'development'
-const PROTOCOL = (NODE_ENV === 'production') ? 'https' : process.env.VITE_PROTOCOL || 'https'
+const PROTOCOL = process.env.VITE_PROTOCOL || 'https'
 const HOST = process.env.HOST || '127.0.0.1'
 const PORT = process.env.PORT ? parseInt(process.env.PORT) : 5183
 const REPOSITORY_URL = process.env.REPOSITORY_URL
