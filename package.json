@@ -44,7 +44,7 @@
     "express-ws": "^5.0.2",
     "get-user-locale": "^2.3.2",
     "html-entities": "^2.5.2",
-    "jose": "^5.4.0",
+    "jose": "^5.4.1",
     "lodash-es": "^4.17.21",
     "next-auth": "^4.24.7",
     "node-html-parser": "^6.1.13",
