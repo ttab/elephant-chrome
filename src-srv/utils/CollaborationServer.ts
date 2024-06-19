@@ -164,12 +164,6 @@ export class CollaborationServer {
               })
 
               if (result?.status.code === 'OK') {
-                // TODO: Why a new connection?
-                const connection = await this.#server.openDirectConnection(msg.message.id, {
-                  ...msg.message.context,
-                  agent: 'server'
-                })
-
                 await connection.transact(doc => {
                   const versionMap = doc.getMap('version')
                   const hashMap = doc.getMap('hash')
