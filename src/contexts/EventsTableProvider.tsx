@@ -11,9 +11,9 @@ import {
   getSortedRowModel,
   useReactTable
 } from '@tanstack/react-table'
-import { columns } from '@/views/Overviews/EventsOverview/EventsTable/Columns'
+import { columns } from '@/views/EventsOverview/EventsTable/Columns'
 import { type EventsSearchIndexResponse } from '@/lib/index/events-search'
-import { type Events } from '@/views/Overviews/EventsOverview/EventsTable/data/schema'
+import { type Events } from '@/views/EventsOverview/EventsTable/data/schema'
 
 export interface CommandArgs {
   pages: string[]

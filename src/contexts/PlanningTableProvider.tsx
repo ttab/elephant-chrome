@@ -11,9 +11,9 @@ import {
   getSortedRowModel,
   useReactTable
 } from '@tanstack/react-table'
-import { columns } from '@/views/Overviews/PlanningOverview/PlanningTable/Columns'
+import { columns } from '@/views/PlanningOverview/PlanningTable/Columns'
 import { type SearchIndexResponse } from '@/lib/index/planning-search'
-import { type Planning } from '@/views/Overviews/PlanningOverview/PlanningTable/data/schema'
+import { type Planning } from '@/views/PlanningOverview/PlanningTable/data/schema'
 
 export interface CommandArgs {
   pages: string[]

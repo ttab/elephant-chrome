@@ -10,7 +10,7 @@ import { Avatar, Link } from '@/components'
 import { LogOut, Menu as MenuIcon, X } from '@ttab/elephant-ui/icons'
 import { ThemeSwitcher } from './ThemeSwitcher'
 import { useSession } from 'next-auth/react'
-import { OverviewLinks } from '@/views/Overviews/OverviewLinks'
+import { OverviewLinks } from '../OverviewLinks'
 
 export const Menu = (): JSX.Element => {
   const { data } = useSession()
