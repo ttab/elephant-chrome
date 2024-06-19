@@ -87,7 +87,7 @@ export class Repository {
   */
   async validateDoc(ydoc: Y.Doc):
   Promise<FinishedUnaryCall<ValidateRequest, ValidateResponse>> {
-    const { document, version } = yDocToNewsDoc(ydoc)
+    const { document, version } = await yDocToNewsDoc(ydoc)
     const payload = {
       version: BigInt(version),
       document

@@ -38,19 +38,19 @@ export function newsDocToSlate(content: Block[]): TBElement[] {
 /**
  * Convert a slate TBElement array to a NewsDoc block array
  */
-export function slateToNewsDoc(elements: TBElement[]): Block[] | undefined {
+export async function slateToNewsDoc(elements: TBElement[]): Promise<Block[] | undefined> {
   if (Array.isArray(elements)) {
-    return elements.map((element: TBElement): Block => {
+    return await Promise.all(elements.map(async (element: TBElement): Promise<Block> => {
       switch (element.type) {
         case 'core/text':
-          return revertText(element)
+          return await revertText(element)
         case 'tt/visual':
         case 'core/image':
           return revertVisual(element)
         default:
           throw new Error(`Element not implemented: ${element.type}`)
       }
-    })
+    }))
   }
 
   return []
