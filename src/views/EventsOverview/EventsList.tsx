@@ -20,8 +20,8 @@ export const EventsList = ({ date }: { date: Date }): JSX.Element => {
 
   // Create url to base SWR caching on
   const searchUrl = useMemo(() => {
-    const start = convertToISOStringInUTC(startTime, locale)
-    const end = convertToISOStringInUTC(endTime, locale)
+    const start = convertToISOStringInUTC(startTime)
+    const end = convertToISOStringInUTC(endTime)
     const searchUrl = new URL(indexUrl)
 
     searchUrl.search = new URLSearchParams({ start, end }).toString()
@@ -39,8 +39,8 @@ export const EventsList = ({ date }: { date: Date }): JSX.Element => {
       sort: { start: 'asc' },
       size: 100,
       where: {
-        start: convertToISOStringInUTC(startTime, locale),
-        end: convertToISOStringInUTC(endTime, locale)
+        start: convertToISOStringInUTC(startTime),
+        end: convertToISOStringInUTC(endTime)
       }
     })
     if (result?.ok) {
@@ -48,8 +48,8 @@ export const EventsList = ({ date }: { date: Date }): JSX.Element => {
       const statusResults = await Events.relatedPlanningSearch(indexUrl, session.accessToken, eventIDs, {
         size: 100,
         where: {
-          start: convertToISOStringInUTC(startTime, locale),
-          end: convertToISOStringInUTC(endTime, locale)
+          start: convertToISOStringInUTC(startTime),
+          end: convertToISOStringInUTC(endTime)
         }
       })
       const hasPlannings = statusResults.hits?.map(hit => hit._source['document.rel.event.uuid'])

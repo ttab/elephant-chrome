@@ -20,19 +20,19 @@ interface EventsGridProps {
 export const EventsGrid = ({ startDate, endDate }: EventsGridProps): JSX.Element => {
   const indexUrl = useIndexUrl()
   const { data: session, status } = useSession()
-  const { locale, timeZone } = useRegistry()
+  const { timeZone } = useRegistry()
   const { startTime } = getDateTimeBoundaries(startDate)
   const { endTime } = getDateTimeBoundaries(endDate)
 
   // Create url to base SWR caching on
   const searchUrl = useMemo(() => {
-    const start = convertToISOStringInUTC(startTime, locale)
-    const end = convertToISOStringInUTC(endTime, locale)
+    const start = convertToISOStringInUTC(startTime)
+    const end = convertToISOStringInUTC(endTime)
     const searchUrl = new URL(indexUrl)
 
     searchUrl.search = new URLSearchParams({ start, end }).toString()
     return searchUrl
-  }, [startTime, endTime, indexUrl, locale])
+  }, [startTime, endTime, indexUrl])
 
   const { data } = useSWR(searchUrl.href, async (): Promise<EventsByDate | undefined> => {
     if (status !== 'authenticated') {
@@ -56,7 +56,7 @@ export const EventsGrid = ({ startDate, endDate }: EventsGridProps): JSX.Element
       }
     })
 
-    return (result?.ok) ? structureByDate(result, startTime, endTime, locale, timeZone) : undefined
+    return (result?.ok) ? structureByDate(result, startTime, endTime, timeZone) : undefined
   })
 
   type GridVariantsProps = VariantProps<typeof gridVariants>
@@ -94,7 +94,7 @@ export const EventsGrid = ({ startDate, endDate }: EventsGridProps): JSX.Element
 }
 
 
-function structureByDate(result: EventsSearchIndexResult, startTime: Date, endTime: Date, locale: string, timeZone: string): EventsByDate | undefined {
+function structureByDate(result: EventsSearchIndexResult, startTime: Date, endTime: Date, timeZone: string): EventsByDate | undefined {
   const events: EventsByDate = {}
 
   if (!Array.isArray(result?.hits)) {
@@ -114,7 +114,6 @@ function structureByDate(result: EventsSearchIndexResult, startTime: Date, endTi
 
     const localStart = convertToISOStringInTimeZone(
       assignmentDatesInInterval[0],
-      locale,
       timeZone
     )
     const date = localStart.substring(0, 10)
