@@ -54,7 +54,7 @@ export const Menu = (): JSX.Element => {
               <a href='' onClick={(event) => {
                 event.preventDefault()
                 signOut()
-                  .catch((error) => console.log(error))
+                  .catch((error) => console.error(error))
                 localStorage.removeItem('trustGoogle')
               }}>
                 <div className="flex gap-3 items-center px-3 py-2 rounded-md hover:bg-gray-100">

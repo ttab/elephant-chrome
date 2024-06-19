@@ -33,7 +33,7 @@ const LoginForm = ({ callbackUrl }: {
         <Button
           onClick={() => {
             signIn('keycloak', { callbackUrl: callbackUrl || import.meta.env.BASE_URL })
-              .catch((error) => console.log(error))
+              .catch((error) => console.error(error))
           }}
           size="lg" className='space-x-1' variant='outline'>
           <p>Logga in med</p>
@@ -67,7 +67,7 @@ const LoginAutomatic = ({ callbackUrl }: {
 }): JSX.Element => {
   useEffect(() => {
     signIn('keycloak', { callbackUrl: callbackUrl || import.meta.env.BASE_URL })
-      .catch((error) => console.log(error))
+      .catch((error) => console.error(error))
   }, [callbackUrl])
   return <p>Loading...</p>
 }
