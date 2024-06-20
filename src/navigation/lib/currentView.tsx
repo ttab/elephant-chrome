@@ -9,7 +9,7 @@ export const currentView = (): { name: string, props: Record<string, string> } =
 
     name = nameFromPath[1]?.toUpperCase() + nameFromPath.slice(2)
   } else {
-    name = 'PlanningOverview'
+    name = 'Plannings'
   }
 
   const props = Object.fromEntries(new URLSearchParams(window.location.search))

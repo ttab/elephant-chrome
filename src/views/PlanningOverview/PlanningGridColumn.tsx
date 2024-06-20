@@ -1,13 +1,13 @@
 import { useContext, useEffect, useState } from 'react'
 import { type Planning as PlanningType } from '@/views/PlanningOverview/PlanningTable/data/schema'
 import { useRegistry } from '@/hooks'
-import { SectorBadge } from '@/components/DataItem/SectorBadge'
+import { SectionBadge } from '@/components/DataItem/SectionBadge'
 import { StatusIndicator } from '@/components/DataItem/StatusIndicator'
 import { DocTrackerContext } from '@/contexts/DocTrackerProvider'
 import { Avatar } from '@/components'
 import { AvatarGroup } from '@/components/AvatarGroup'
 import type * as Y from 'yjs'
-import { Sectors } from '@/defaults'
+import { PlanningSections } from '@/defaults'
 
 interface PlanningGridColumnProps {
   date: Date
@@ -66,7 +66,7 @@ export const PlanningGridColumn = ({ date, items }: PlanningGridColumnProps): JS
           const deliverables = item._source['document.meta.core_assignment.rel.deliverable.uuid']
           const deliverable = (Array.isArray(deliverables) ? deliverables[0] || '' : '')
           const id = item._id
-          const sector = Sectors.find((sector) => sector.value === item._source['document.rel.sector.uuid'][0])
+          const section = PlanningSections.find((section) => section.value === item._source['document.rel.sector.uuid'][0])
           const activeUsers = users?.[deliverable]
 
           return <PlanningItem
@@ -75,7 +75,7 @@ export const PlanningGridColumn = ({ date, items }: PlanningGridColumnProps): JS
             internal={internal}
             title={title}
             slugLine={slugLine}
-            sector={sector}
+            sector={section}
             users={activeUsers}
           />
         })
@@ -111,7 +111,7 @@ function PlanningItem(props: {
         <div className="flex justify-between gap-2">
           <span className="text-sm text-muted-foreground whitespace-nowrap overflow-hidden text-ellipsis">{slugLine}</span>
           {!!sector &&
-            <SectorBadge label={sector.label} color={sector.color} />
+            <SectionBadge label={sector.label} color={sector.color} />
           }
         </div>
 

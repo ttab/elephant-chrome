@@ -1,4 +1,4 @@
-import { searchIndex, type SearchIndexResponse } from '../index/search'
+import { searchIndex, type SearchIndexResponse } from '../index/planning-search'
 
 interface SearchPlanningParams {
   skip?: number

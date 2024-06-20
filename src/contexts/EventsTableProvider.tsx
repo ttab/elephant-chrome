@@ -11,9 +11,9 @@ import {
   getSortedRowModel,
   useReactTable
 } from '@tanstack/react-table'
-import { columns } from '@/views/PlanningOverview/PlanningTable/Columns'
-import { type SearchIndexResponse } from '@/lib/index/search'
-import { type Planning } from '@/views/PlanningOverview/PlanningTable/data/schema'
+import { columns } from '@/views/EventsOverview/EventsTable/Columns'
+import { type EventsSearchIndexResponse } from '@/lib/index/events-search'
+import { type Events } from '@/views/EventsOverview/EventsTable/data/schema'
 
 export interface CommandArgs {
   pages: string[]
@@ -25,7 +25,7 @@ export interface CommandArgs {
 
 export interface TableProviderState<TData> {
   table: Table<TData>
-  setData: Dispatch<SearchIndexResponse>
+  setData: Dispatch<EventsSearchIndexResponse>
   loading: boolean
   command: CommandArgs
 }
@@ -33,12 +33,12 @@ export interface TableProviderState<TData> {
 const initialState = {
   table: {},
   setData: () => {}
-} as unknown as TableProviderState<Planning>
+} as unknown as TableProviderState<Events>
 
-export const TableContext = createContext<TableProviderState<Planning>>(initialState)
+export const EventsTableContext = createContext<TableProviderState<Events>>(initialState)
 
-export const TableProvider = ({ children }: PropsWithChildren): JSX.Element => {
-  const [data, setData] = useState<SearchIndexResponse | null>([] as unknown as SearchIndexResponse)
+export const EventsTableProvider = ({ children }: PropsWithChildren): JSX.Element => {
+  const [data, setData] = useState<EventsSearchIndexResponse | null>([] as unknown as EventsSearchIndexResponse)
 
   const [rowSelection, setRowSelection] = useState({})
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
@@ -80,8 +80,8 @@ export const TableProvider = ({ children }: PropsWithChildren): JSX.Element => {
   })
 
   return (
-    <TableContext.Provider value={{ table, setData, loading: !table.options.data.length, command }}>
+    <EventsTableContext.Provider value={{ table, setData, loading: !table.options.data.length, command }}>
       {children}
-    </TableContext.Provider>
+    </EventsTableContext.Provider>
   )
 }

@@ -1,8 +1,8 @@
 import { type ColumnDef } from '@tanstack/react-table'
 import { type Planning } from '../data/schema'
-import { Newsvalue } from './Newsvalue'
-import { Title } from './Title'
-import { Sector } from './Sector'
+import { Newsvalue } from '@/components/Table/Newsvalue'
+import { Title } from '@/components/Table/Title'
+import { Section } from './Section'
 import { Assignees } from './Assignees'
 import { Type } from './Type'
 import { Actions } from './Actions'
@@ -15,7 +15,7 @@ import {
   Navigation,
   Eye
 } from '@ttab/elephant-ui/icons'
-import { Newsvalues, NewsvalueMap, Sectors, AssignmentTypes, VisibilityStatuses } from '@/defaults'
+import { Newsvalues, NewsvalueMap, PlanningSections, AssignmentTypes, VisibilityStatuses } from '@/defaults'
 import { StatusIndicator } from '@/components/DataItem/StatusIndicator'
 
 
@@ -75,18 +75,18 @@ export const columns: Array<ColumnDef<Planning>> = [
     }
   },
   {
-    id: 'sector',
+    id: 'section',
     meta: {
-      options: Sectors,
+      options: PlanningSections,
       filter: 'facet',
-      name: 'Sector',
+      name: 'Section',
       columnIcon: Shapes,
       className: 'box-content w-[115px] hidden @4xl/view:[display:revert]'
     },
     accessorFn: (data) => data._source['document.rel.sector.uuid']?.[0],
     cell: ({ row }) => {
-      const uuid = row.getValue<string>('sector')
-      return <Sector uuid={uuid || ''} />
+      const uuid = row.getValue<string>('section')
+      return <Section uuid={uuid || ''} />
     },
     filterFn: (row, id, value) => {
       return value.includes(row.getValue(id))

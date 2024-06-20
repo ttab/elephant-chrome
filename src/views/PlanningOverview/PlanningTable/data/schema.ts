@@ -39,6 +39,7 @@ const PlanningSchema = z.object({
     'document.rel.story.title': z.array(z.string()),
     'document.rel.story.type': z.array(z.string()),
     'document.rel.story.uuid': z.array(z.string()),
+    'document.rel.event.uuid': z.array(z.string()),
     'document.title': z.array(z.string()),
     'document.type': z.array(z.string()),
     'document.uri': z.array(z.string()),
