@@ -97,7 +97,7 @@ export function transformText(element: Block): TBElement {
   const properties = type !== 'core/paragraph' ? { properties: { type: replace(type, translateList) } } : {}
 
   return {
-    id,
+    id: id || crypto.randomUUID(), // Must have id, if id is missing positioning in drag'n drop does not work
     class: 'text',
     type: 'core/text',
     ...properties,

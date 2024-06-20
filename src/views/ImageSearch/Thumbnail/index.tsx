@@ -17,39 +17,43 @@ export const Thumbnail = ({ hit }: {
       <DialogTrigger>
         <div className='flex place-content-center bg-gray-200 min-h-[144px]'>
           <img
+            ref={imageRef}
             src={thumbnail.href}
             className='max-h-[176px] object-contain m-width-auto'
             onDragStartCapture={(e) => {
-              const el = imageRef.current
-              if (el) {
-                // Create cloned element to force as drag image
-                const clone = el.cloneNode(true) as HTMLDivElement
-                const { left, top } = el.getBoundingClientRect()
+              e.stopPropagation()
 
-                clone.style.width = `${el.offsetWidth}px`
-                clone.style.height = `${el.offsetHeight}px`
-
-                document.body.appendChild(clone)
-
-                el.style.opacity = '0.5'
-                e.dataTransfer.clearData()
-
-                const image = {
-                  byline: hit.byline,
-                  text: hit.headline,
-                  href: preview.href,
-                  altText: hit?.description_text || ''
-                }
-
-                e.dataTransfer.setData('tt/visual-ex', JSON.stringify(image))
-                e.dataTransfer.setDragImage(
-                  clone,
-                  (e.clientX - left) * 0.2,
-                  (e.clientY - top) * 0.2
-                )
+              if (!imageRef.current) {
+                return
               }
-            }}
 
+              // Create cloned element to force as drag image
+              const el = imageRef.current
+              const clone = el.cloneNode(true) as HTMLDivElement
+              const { left, top } = el.getBoundingClientRect()
+
+              clone.style.width = `${el.offsetWidth}px`
+              clone.style.height = `${el.offsetHeight}px`
+
+              document.body.appendChild(clone)
+
+              el.style.opacity = '0.5'
+              e.dataTransfer.clearData()
+
+              const image = {
+                byline: hit.byline,
+                text: hit.headline,
+                href: preview.href,
+                altText: hit?.description_text || ''
+              }
+
+              e.dataTransfer.setData('tt/visual', JSON.stringify(image))
+              e.dataTransfer.setDragImage(
+                clone,
+                (e.clientX - left) * 0.2,
+                (e.clientY - top) * 0.2
+              )
+            }}
             onDragEndCapture={() => {
               const el = imageRef.current
               if (el) {
