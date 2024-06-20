@@ -5,7 +5,7 @@ import { type TBElement } from '@ttab/textbit'
 export const transformVisual = (element: Block): TBElement => {
   const { id, data, links } = element
   return {
-    id,
+    id: id || crypto.randomUUID(), // Must have id, if id is missing positioning in drag'n drop does not work
     class: 'block',
     type: 'tt/visual',
     properties: {

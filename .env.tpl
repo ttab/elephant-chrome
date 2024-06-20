@@ -1,32 +1,29 @@
-# Environment
-NODE_ENV="development"
-
 # Keycloak configuration
+AUTH_SECRET=...
 AUTH_KEYCLOAK_ID=elephant
-AUTH_KEYCLOAK_SECRET="..."
-AUTH_KEYCLOAK_ISSUER="https://..."
+AUTH_KEYCLOAK_SECRET=...
+AUTH_KEYCLOAK_ISSUER=https://...
 AUTH_KEYCLOAK_IDP_HINT=google
 
-# Google OAuth2 secrets
-GOOGLE_CLIENT_ID="12345..."
-GOOGLE_CLIENT_SECRET="GO..."
-
 # Repository
-REPOSITORY_URL="https://..."
-JWKS_URL="https://.../.well-known/jwks.json"
+REPOSITORY_URL=https://...
 
 # Redis cache and pub/sub
 # rediss://user:pass@host:port for TLS
 # redis://localhost:6379 for no-tls, no-auth
 REDIS_URL=
+
 # Opensearch index
 INDEX_URL="https://...se:443"
+
+# Websocket
+WS_URL=https:// ...
+
+# Image resource
+CONTENT_API_URL=https:// ...
 
 # Server configuration
 PROTOCOL=http
 HOST=localhost
 PORT=5183
 BASE_URL=/elephant
-
-# Used for cors with development server
-DEV_CLIENT_PORT=5173

@@ -15,6 +15,9 @@ import {
   usePluginRegistry,
   type PluginRegistryAction
 } from '@ttab/textbit'
+
+import { ImageSearchPlugin } from '../../plugins/ImageSearch'
+
 import { Bold, Italic, Link, Text, Image, NumberList, BulletList, Blockquote, TTVisual } from '@ttab/textbit-plugins'
 
 import {
@@ -76,11 +79,10 @@ const Editor = (props: ViewProps): JSX.Element => {
   )
 }
 
-
 function EditorWrapper(props: ViewProps & {
   documentId: string
 }): JSX.Element {
-  const plugins = [Text, BulletList, NumberList, Blockquote, Image, Bold, Italic, Link, TTVisual]
+  const plugins = [Text, BulletList, NumberList, Blockquote, Image, Bold, Italic, Link, TTVisual, ImageSearchPlugin]
   const {
     provider,
     synced,
@@ -91,7 +93,6 @@ function EditorWrapper(props: ViewProps & {
     <Textbit.Root plugins={plugins.map(initPlugin => initPlugin())} placeholders="multiple" className="h-screen max-h-screen flex flex-col">
       <ViewHeader.Root>
         <ViewHeader.Title title='Editor' icon={PenBoxIcon} />
-
         <ViewHeader.Content>
           <EditorHeader />
         </ViewHeader.Content>
@@ -217,14 +218,14 @@ function ContentMenu(): JSX.Element {
             {textblockActions.map(action => <ContentMenuItem action={action} key={action.name} />)}
           </ContentMenuGroup>
         }
-
         {blockActions.length > 0 &&
           <ContentMenuGroup>
             {blockActions.map(action => <ContentMenuItem action={action} key={action.name} />)}
+            <Menu.Item action={ImageSearchPlugin().name} />
           </ContentMenuGroup>
         }
       </Menu.Content>
-    </Menu.Root >
+    </Menu.Root>
   )
 }
 
