@@ -22,7 +22,12 @@ export const Assignees = ({ path }: {
   const { server: { indexUrl } } = useRegistry()
   const { data } = useSession()
   const [authors, setAuthors] = useState<IAssignee[]>([])
-  const [assignees] = useYValue<Y.Array<unknown>>(path)
+  const [assignees] = useYValue<Y.Array<unknown>>(path, {
+    createOnEmpty: {
+      path,
+      data: []
+    }
+  })
   const [selectedOptions, setSelectedOptions] = useState<IAssignee[]>([])
 
   const updateSelectedOptions = useCallback((assignees: Y.Array<unknown>) => {
