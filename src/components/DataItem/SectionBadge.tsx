@@ -1,7 +1,7 @@
 import { Badge } from '@ttab/elephant-ui'
 import { cn } from '@ttab/elephant-ui/utils'
 
-export const SectorBadge = ({ label, color }: {
+export const SectionBadge = ({ label, color }: {
   label: string
   color?: string
 }): JSX.Element => {

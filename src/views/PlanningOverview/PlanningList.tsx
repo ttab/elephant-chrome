@@ -1,9 +1,9 @@
 import { useMemo } from 'react'
 import useSWR from 'swr'
 
-import { useIndexUrl, useTable } from '@/hooks'
+import { useIndexUrl, usePlanningTable } from '@/hooks'
 import { useSession } from 'next-auth/react'
-import { type SearchIndexResponse } from '@/lib/index/search'
+import { type SearchIndexResponse } from '@/lib/index/planning-search'
 import { Planning } from '@/lib/planning'
 import { PlanningTable } from '@/views/PlanningOverview/PlanningTable'
 import { columns } from '@/views/PlanningOverview/PlanningTable/Columns'
@@ -11,7 +11,7 @@ import { columns } from '@/views/PlanningOverview/PlanningTable/Columns'
 import { convertToISOStringInUTC, getDateTimeBoundaries } from '@/lib/datetime'
 
 export const PlanningList = ({ date }: { date: Date }): JSX.Element => {
-  const { setData } = useTable()
+  const { setData } = usePlanningTable()
   const { data: session, status } = useSession()
 
   const indexUrl = useIndexUrl()
@@ -28,7 +28,7 @@ export const PlanningList = ({ date }: { date: Date }): JSX.Element => {
   }, [startTime, endTime, indexUrl])
 
 
-  const { data } = useSWR(searchUrl.href, async (): Promise<SearchIndexResponse | undefined> => {
+  const { data } = useSWR(['planningitems', status, searchUrl.href], async (): Promise<SearchIndexResponse | undefined> => {
     if (status !== 'authenticated') {
       return
     }
@@ -41,8 +41,10 @@ export const PlanningList = ({ date }: { date: Date }): JSX.Element => {
         end: convertToISOStringInUTC(endTime)
       }
     })
-    setData(result)
-    return result
+    if (result.ok) {
+      setData(result)
+      return result
+    }
   })
 
 

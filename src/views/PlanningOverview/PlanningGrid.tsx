@@ -1,4 +1,4 @@
-import { type SearchIndexResponse } from '@/lib/index/search'
+import { type SearchIndexResponse } from '@/lib/index/planning-search'
 import { Planning } from '@/lib/planning'
 import { type Planning as PlanningType } from '@/views/PlanningOverview/PlanningTable/data/schema'
 
@@ -105,11 +105,11 @@ function structureByDate(result: SearchIndexResponse, startTime: Date, endTime: 
   for (const item of result.hits) {
     // A planning item can have assignments outside of the wanted period. Filter and sort
     // so that we have an ordered list of assignment dates within the wanted period
-    const assignmentDatesInInterval = item._source['document.meta.core_assignment.data.start'].map(strDate => {
+    const assignmentDatesInInterval: Date[] = item._source['document.meta.core_assignment.data.start'].map((strDate: string) => {
       return new Date(strDate)
-    }).filter((date) => {
+    }).filter((date: Date) => {
       return date >= startTime && date <= endTime
-    }).sort((dt1, dt2) => {
+    }).sort((dt1: Date, dt2: Date) => {
       return dt1 > dt2 ? 1 : -1
     })
 

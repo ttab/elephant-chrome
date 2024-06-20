@@ -8,7 +8,7 @@ import { Table, TableBody, TableCell, TableRow } from '@ttab/elephant-ui'
 import { Toolbar } from './Toolbar'
 import { useNavigation, useView } from '@/hooks'
 import { isEditableTarget } from '@/lib/isEditableTarget'
-import { useTable } from '@/hooks/useTable'
+import { usePlanningTable } from '@/hooks/usePlanningTable'
 import { columns } from './Columns'
 import { cn } from '@ttab/elephant-ui/utils'
 import { handleLink } from '@/components/Link/lib/handleLink'
@@ -27,7 +27,7 @@ export const PlanningTable = <TData, TValue>({
   const { state, dispatch } = useNavigation()
   const { viewId: origin } = useView()
 
-  const { table, loading } = useTable()
+  const { table, loading } = usePlanningTable()
 
   // Handle navigation using arrow keys
   useEffect(() => {
@@ -97,7 +97,7 @@ export const PlanningTable = <TData, TValue>({
 
     return table.getRowModel().rows.map((row) => (
       <TableRow
-        key={row.id}
+        key={`planning/${row.id}`}
         className='cursor-default'
         data-state={row.getIsSelected() && 'selected'}
         onClick={<T extends HTMLElement>(event: MouseEvent<T>) => {

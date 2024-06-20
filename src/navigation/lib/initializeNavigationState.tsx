@@ -25,6 +25,33 @@ export function initializeNavigationState(): NavigationState {
     try {
       InititalView = viewRegistry.getByPath(window.location.pathname)
     } catch (ex) {
+      const isRoot = (x: string): boolean => x === import.meta.env.BASE_URL || x === `${import.meta.env.BASE_URL}/`
+      if (isRoot(window.location.pathname)) {
+        InititalView = viewRegistry.getByPath(`${import.meta.env.BASE_URL || ''}/plannings`)
+
+        history.pushState({
+          viewId,
+          viewName: name,
+          contentState: [{
+            viewId,
+            name,
+            props,
+            path: window.location.pathname
+          }]
+        }, '', `${import.meta.env.BASE_URL}/plannings`)
+
+        return {
+          viewRegistry,
+          views: [{ name: 'Plannings', colSpan: 12 }],
+          focus: null,
+          active: viewId,
+          content: [(
+            <ViewWrapper key={viewId} viewId={viewId} name={'Plannings'} colSpan={12}>
+              <InititalView.component {...props} />
+            </ViewWrapper>
+          )]
+        }
+      }
       // TODO: Refactor this funtionality so that it is easy to reuse in different situations
       InititalView = viewRegistry.getByPath(`${import.meta.env.BASE_URL || ''}/error`)
 

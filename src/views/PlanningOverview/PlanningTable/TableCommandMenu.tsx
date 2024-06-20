@@ -1,11 +1,11 @@
-import { CommandMenu } from '@/components/CommandMenu'
+import { PlanningCommandMenu } from '@/components/CommandMenu/PlanningCommandMenu'
 import { CommandGroup } from '@ttab/elephant-ui'
+import { usePlanningTable } from '@/hooks/usePlanningTable'
+import { type CommandArgs } from '@/contexts/PlanningTableProvider'
 import { PlanningCommands } from '../PlanningCommands'
-import { useTable } from '@/hooks/useTable'
-import { type CommandArgs } from '@/contexts/TableProvider'
 
 export const TableCommandMenu = (): JSX.Element => {
-  const { table } = useTable()
+  const { table } = usePlanningTable()
 
   const handleChange = (value: string | undefined, args: CommandArgs): void => {
     const { setSearch, page } = args
@@ -16,7 +16,7 @@ export const TableCommandMenu = (): JSX.Element => {
   }
 
   return (
-    <CommandMenu
+    <PlanningCommandMenu
       onChange={handleChange}
       onKeyDown={(e, setOpen, args) => {
         const { search, setSearch, pages, setPages } = args
@@ -39,6 +39,6 @@ export const TableCommandMenu = (): JSX.Element => {
       <CommandGroup heading='Planning'>
         <PlanningCommands />
       </CommandGroup>
-    </CommandMenu>
+    </PlanningCommandMenu>
   )
 }

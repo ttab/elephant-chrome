@@ -1,5 +1,5 @@
 import { ChevronLeft, ChevronRight } from '@ttab/elephant-ui/icons'
-import { DatePicker } from './Datepicker'
+import { DatePicker } from '../Datepicker'
 import {
   useEffect,
   type Dispatch,

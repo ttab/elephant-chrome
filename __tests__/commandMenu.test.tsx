@@ -1,8 +1,8 @@
-import { TableProvider } from '@/contexts'
+import { PlanningTableProvider } from '@/contexts'
 import { SessionProvider } from 'next-auth/react'
 import { NavigationProvider } from '@/navigation'
 import { render, screen } from '../setupTests'
-import { CommandMenu } from '@/components/CommandMenu'
+import { PlanningCommandMenu } from '@/components/CommandMenu/PlanningCommandMenu'
 import userEvent from '@testing-library/user-event'
 
 describe('CommandMenu', () => {
@@ -10,17 +10,17 @@ describe('CommandMenu', () => {
     render(
       <SessionProvider>
         <NavigationProvider>
-          <TableProvider>
-            <CommandMenu onKeyDown={() => { }} onChange={() => { }}>
+          <PlanningTableProvider>
+            <PlanningCommandMenu onKeyDown={() => { }} onChange={() => { }}>
               <p>test</p>
-            </CommandMenu>
-          </TableProvider>
+            </PlanningCommandMenu>
+          </PlanningTableProvider>
         </NavigationProvider>
       </SessionProvider>
     )
     await userEvent.keyboard('{Control>}k')
     expect(screen.getByText('Planning overview')).toBeInTheDocument()
     await userEvent.click(screen.getByRole('option'))
-    expect(history.state.viewName).toBe('PlanningOverview')
+    expect(history.state.viewName).toBe('Plannings')
   })
 })
