@@ -72,7 +72,6 @@ export const Assignees = ({ path }: {
           })
         })
 
-        console.log(`${authors.length} authors fetched of ${result.total}`)
         page++
         totalPages = result.pages
       } while (totalPages && page <= totalPages)
