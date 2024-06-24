@@ -55,28 +55,38 @@ export const Assignees = ({ path }: {
         return
       }
 
-      // FIXME: Must fetch all authors, not just the first 100
-      const result = await Authors.get(new URL(indexUrl), data.accessToken)
-      if (Array.isArray(result.hits)) {
-        setAuthors(result.hits.map(_ => {
-          return {
+      let page = 1
+      let totalPages: number | undefined
+      const authors: IAssignee[] = []
+
+      do {
+        const result = await Authors.get(new URL(indexUrl), data.accessToken, { page })
+        if (!Array.isArray(result.hits)) {
+          break
+        }
+
+        result.hits.forEach(_ => {
+          authors.push({
             value: _._id,
             label: _._source['document.title'][0]
-          }
-        }))
-      }
+          })
+        })
+
+        console.log(`${authors.length} authors fetched of ${result.total}`)
+        page++
+        totalPages = result.pages
+      } while (totalPages && page <= totalPages)
+
+      setAuthors(authors)
     }
 
     void fetchAuthors()
   }, [data?.accessToken, indexUrl])
 
 
-  // FIXME: All authors must be fetched (now only 100)
-  // FIXME: It must be possible to deselect one
   // FIXME: Use <AssigneeAvatars .../> to show assignees selected and not just <UserPlus ...> icon
   // FIXME: Setup correct caching of calls in ServiceWorker
   // FIXME: EventSource should probably be in a WebWorker, not in a Context
-  // FIXME: ...
 
   return (
     <Awareness name='AssignmentAssignees' ref={setFocused}>

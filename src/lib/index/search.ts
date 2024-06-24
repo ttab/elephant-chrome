@@ -27,23 +27,24 @@ interface SearchIndexError {
 export type SearchIndexResponse = SearchIndexError | SearchIndexResult
 
 /**
- * FIXME: Implement automatic calculation of next/prev pagination values
- *
- * @param search unknown
- * @param options SearchIndexOptions
+ * @param search - object
+ * @param options - SearchIndexOptions
+ * @param page - number Optional, defaults to 1
+ * @param size - number Optionally wanted page size, defaults to 100
  * @returns Promise<SearchIndexResponse>
  */
-export async function searchIndex(search: object, options: SearchIndexOptions, skip?: number, size?: number): Promise<SearchIndexResponse> {
+export async function searchIndex(search: object, options: SearchIndexOptions, page: number = 1, size: number = 100): Promise<SearchIndexResponse> {
   const endpoint = new URL(`${options.index}/_search`, options.endpoint)
-  const pageSize = typeof size === 'number' && size > 0 && size < 500 ? size : 100
-  const skipPages = typeof skip === 'number' && skip > -1 ? skip : 0
-  const from = skipPages * pageSize
+  const { skip, size: pageSize } = pagination({
+    page,
+    size
+  })
 
   const response = await fetch(endpoint.href, {
     method: 'POST',
     headers: headers(options.accessToken),
     body: JSON.stringify({
-      from,
+      from: skip,
       size: pageSize,
       ...search
     })
@@ -61,7 +62,7 @@ export async function searchIndex(search: object, options: SearchIndexOptions, s
     return {
       ok: true,
       total: body?.hits?.total?.value || 0,
-      page: skipPages + 1,
+      page: page || 1,
       pages: hits > 0 ? Math.ceil(total / pageSize) : 0,
       pageSize,
       hits: hits ? body.hits.hits : []
@@ -87,5 +88,31 @@ function responseError(errorCode: number, errorMessage: string): SearchIndexErro
     total: 0,
     pages: 0,
     hits: []
+  }
+}
+
+function pagination(paginationOptions?: {
+  page: number
+  size: number
+}): { skip: number, size: number } {
+  const defaultPageSize = 100
+  const defaultPage = 1
+
+  let {
+    page = defaultPage,
+    size: pageSize = defaultPageSize
+  } = paginationOptions || {}
+
+  if (isNaN(page) || page < 1) {
+    page = defaultPage
+  }
+
+  if (isNaN(pageSize) || pageSize < 1 || pageSize > 1000) {
+    pageSize = defaultPageSize
+  }
+
+  return {
+    skip: (page - 1) * pageSize,
+    size: pageSize
   }
 }

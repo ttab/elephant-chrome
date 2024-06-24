@@ -1,7 +1,7 @@
 import { searchIndex, type SearchIndexResponse } from './search'
 
 interface SearchParams {
-  skip?: number
+  page?: number
   size?: number
   where?: {
     start?: string | Date
@@ -28,7 +28,7 @@ const get = async (endpoint: URL, accessToken: string, params?: SearchParams): P
       endpoint,
       accessToken
     },
-    params?.skip,
+    params?.page,
     params?.size
   )
 }

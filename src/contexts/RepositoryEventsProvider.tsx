@@ -1,7 +1,6 @@
-import { createContext, useEffect, useMemo } from 'react'
+import { createContext, useMemo } from 'react'
 import { useRegistry } from '@/hooks'
 import { useSession } from 'next-auth/react'
-import { Authors } from '@/lib/index/authors'
 
 /*
  * TODO: This is now a mix of two things, listening to events and fetching categories
@@ -15,7 +14,7 @@ export const RepositoryEventsProviderContext = createContext<RepositoryEventsPro
 export const RepositoryEventsProvider = ({ children }: {
   children: React.ReactNode
 }): JSX.Element => {
-  const { server: { indexUrl, repositoryEventsUrl } } = useRegistry()
+  const { server: { repositoryEventsUrl } } = useRegistry()
   const { data } = useSession()
 
   const eventSource = useMemo(() => {
@@ -36,21 +35,6 @@ export const RepositoryEventsProvider = ({ children }: {
 
     return eventSource
   }, [repositoryEventsUrl, data?.accessToken])
-
-
-  useEffect(() => {
-    async function fetchAuthors(): Promise<void> {
-      if (!data?.accessToken || !indexUrl) {
-        return
-      }
-
-      const authors = await Authors.get(new URL(indexUrl), data.accessToken)
-      // console.log(authors)
-    }
-
-    void fetchAuthors()
-  })
-
 
   return (
     <RepositoryEventsProviderContext.Provider value={{ eventSource }}>
