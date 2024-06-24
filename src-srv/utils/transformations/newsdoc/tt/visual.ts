@@ -19,8 +19,7 @@ export const transformVisual = (element: Block): TBElement => {
       credit: links[0].data.credit,
       text: data.caption,
       width: links[0].data.width,
-      height: links[0].data.height,
-      hiresScale: links[0].data.hiresScale
+      height: links[0].data.height
     },
     children: [
       {
@@ -56,7 +55,6 @@ export function revertVisual(element: TBElement): Block {
         data: {
           credit: toString(properties?.credit),
           height: toString(properties?.height),
-          hiresScale: toString(properties?.hiresScale),
           width: toString(properties?.width)
         },
         rel: toString(properties?.rel),

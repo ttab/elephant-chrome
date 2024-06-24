@@ -11,6 +11,7 @@ export const Thumbnail = ({ hit }: {
   const renditions = hit.renditions as renditions
   const thumbnail = findRenditionByUsageAndVariant(renditions, 'Thumbnail', 'Normal')
   const preview = findRenditionByUsageAndVariant(renditions, 'Preview', 'Watermark')
+  const hires = findRenditionByUsageAndVariant(renditions, 'Hires', 'Normal')
 
   return (
     <Dialog modal={false}>
@@ -44,7 +45,8 @@ export const Thumbnail = ({ hit }: {
                 byline: hit.byline,
                 text: hit.headline,
                 href: preview.href,
-                altText: hit?.description_text || ''
+                width: hires.width,
+                height: hires.height
               }
 
               e.dataTransfer.setData('tt/visual', JSON.stringify(image))
