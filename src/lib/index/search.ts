@@ -35,7 +35,7 @@ export type SearchIndexResponse = SearchIndexError | SearchIndexResult
  */
 export async function searchIndex(search: object, options: SearchIndexOptions, page: number = 1, size: number = 100): Promise<SearchIndexResponse> {
   const endpoint = new URL(`${options.index}/_search`, options.endpoint)
-  const { skip, size: pageSize } = pagination({
+  const { from, pageSize } = pagination({
     page,
     size
   })
@@ -44,7 +44,7 @@ export async function searchIndex(search: object, options: SearchIndexOptions, p
     method: 'POST',
     headers: headers(options.accessToken),
     body: JSON.stringify({
-      from: skip,
+      from,
       size: pageSize,
       ...search
     })
@@ -56,6 +56,7 @@ export async function searchIndex(search: object, options: SearchIndexOptions, p
 
   try {
     const body = await response.json()
+
     const total = body?.hits?.total?.value || 0
     const hits = body?.hits?.hits?.length || 0
 
@@ -94,7 +95,7 @@ function responseError(errorCode: number, errorMessage: string): SearchIndexErro
 function pagination(paginationOptions?: {
   page: number
   size: number
-}): { skip: number, size: number } {
+}): { from: number, pageSize: number } {
   const defaultPageSize = 100
   const defaultPage = 1
 
@@ -112,7 +113,7 @@ function pagination(paginationOptions?: {
   }
 
   return {
-    skip: (page - 1) * pageSize,
-    size: pageSize
+    from: (page - 1) * pageSize,
+    pageSize
   }
 }

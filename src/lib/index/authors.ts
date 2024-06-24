@@ -8,17 +8,25 @@ interface SearchParams {
     end?: string | Date
   }
   sort?: {
-    start?: 'asc' | 'desc'
-    end?: 'asc' | 'desc'
+    name?: 'asc' | 'desc'
   }
 }
 
 const get = async (endpoint: URL, accessToken: string, params?: SearchParams): Promise<SearchIndexResponse> => {
+  const sort: Array<Record<string, 'asc' | 'desc'>> = []
+
+  if (params?.sort?.name) {
+    sort.push(
+      { 'document.meta.core_author.data.firstName': params.sort.name },
+      { 'document.meta.core_author.data.lastName': params.sort.name }
+    )
+  }
+
   const query = {
     query: {
       match_all: {}
     },
-    _source: true
+    sort
   }
 
   return await searchIndex(

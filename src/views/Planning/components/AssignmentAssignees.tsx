@@ -60,7 +60,17 @@ export const Assignees = ({ path }: {
       const authors: IAssignee[] = []
 
       do {
-        const result = await Authors.get(new URL(indexUrl), data.accessToken, { page })
+        const result = await Authors.get(
+          new URL(indexUrl),
+          data.accessToken,
+          {
+            page,
+            sort: {
+              name: 'asc'
+            }
+          }
+        )
+
         if (!Array.isArray(result.hits)) {
           break
         }
@@ -76,6 +86,7 @@ export const Assignees = ({ path }: {
         totalPages = result.pages
       } while (totalPages && page <= totalPages)
 
+      console.log(authors)
       setAuthors(authors)
     }
 
