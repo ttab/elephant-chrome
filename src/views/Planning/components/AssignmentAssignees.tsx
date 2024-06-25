@@ -86,15 +86,12 @@ export const Assignees = ({ path }: {
         totalPages = result.pages
       } while (totalPages && page <= totalPages)
 
-      console.log(authors)
       setAuthors(authors)
     }
 
     void fetchAuthors()
   }, [data?.accessToken, indexUrl])
 
-
-  // FIXME: Use <AssigneeAvatars .../> to show assignees selected and not just <UserPlus ...> icon
   // FIXME: Setup correct caching of calls in ServiceWorker
   // FIXME: EventSource should probably be in a WebWorker, not in a Context
 
