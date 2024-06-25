@@ -79,8 +79,8 @@ export const ComboBox = ({
             )
             }>
             {children || (label
-              ? <>{label}</>
-              : <>{placeholder || ''}</>)
+              ? <>aa{label}</>
+              : <>bb{placeholder || ''}</>)
             }
           </Button>
         </PopoverTrigger>
@@ -104,7 +104,7 @@ export const ComboBox = ({
   return (
     <Drawer open={open} onOpenChange={setOpen}>
       <DrawerTrigger asChild>
-        <Button variant='outline' className='w-[150px] justify-start'>
+        <Button variant='outline' className='w-[150px] justify-start px-2 whitespace-nowrap text-ellipsis'>
           {label ? <>{label}</> : <>{placeholder}</>}
         </Button>
       </DrawerTrigger>

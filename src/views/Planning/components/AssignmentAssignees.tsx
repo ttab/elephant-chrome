@@ -102,7 +102,7 @@ export const Assignees = ({ path }: {
     <Awareness name='AssignmentAssignees' ref={setFocused}>
       <ComboBox
         size='xs'
-        className='w-fit text-muted-foreground font-sans font-normal whitespace-nowrap text-ellipsis px-2 h-7'
+        className='w-fit text-muted-foreground font-sans font-normal text-ellipsis px-2 h-7'
         options={authors}
         selectedOption={selectedOptions}
         placeholder={placeholder}
