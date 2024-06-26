@@ -38,7 +38,7 @@ export const NewsValueScoreDropDown = ({ value, loading, options, onChange }: Ne
           setFocused.current(isOpen)
         }
       }}>
-        <NewsValueScore text={`News value priority ${option?.label}`}>
+        <NewsValueScore text={`Nyhetsvärde: ${option?.label || 'Inget valt'}`}>
           <DropdownMenuTrigger asChild>
             <Button
               variant="ghost"
@@ -49,7 +49,6 @@ export const NewsValueScoreDropDown = ({ value, loading, options, onChange }: Ne
                 {option?.label || '∞'}
               </span>
 
-              <span className="sr-only">Open menu</span>
             </Button>
           </DropdownMenuTrigger>
         </NewsValueScore>
