@@ -9,30 +9,30 @@
   <title>Elephant</title>
 
   <script>
-    const registerServiceWorker = async () => {
-      if ('serviceWorker' in navigator) {
-        try {
-          const registration = await navigator.serviceWorker.register(
-            '/elephant/sw-cache.js?v=1',
-            {
-              scope: '/elephant/'
-            }
-          )
+    // const registerServiceWorker = async () => {
+    //   if ('serviceWorker' in navigator) {
+    //     try {
+    //       const registration = await navigator.serviceWorker.register(
+    //         '/elephant/sw-cache.js?v=2',
+    //         {
+    //           scope: '/elephant/'
+    //         }
+    //       )
 
-          if (registration.installing) {
-            console.info('Caching service worker installing...')
-          } else if (registration.waiting) {
-            console.info('Caching service worker is installed.')
-          } else if (registration.active) {
-            console.info('Caching service worker is active.')
-          }
-        } catch (error) {
-          console.error(`Caching service worker registration failed with ${error}`)
-        }
-      }
-    }
+    //       if (registration.installing) {
+    //         console.info('Caching service worker installing...')
+    //       } else if (registration.waiting) {
+    //         console.info('Caching service worker is installed.')
+    //       } else if (registration.active) {
+    //         console.info('Caching service worker is active.')
+    //       }
+    //     } catch (error) {
+    //       console.error(`Caching service worker registration failed with ${error}`)
+    //     }
+    //   }
+    // }
 
-    registerServiceWorker()
+    // registerServiceWorker()
   </script>
 </head>
 

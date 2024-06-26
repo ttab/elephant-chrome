@@ -4,10 +4,11 @@ interface SearchIndexOptions {
   accessToken: string
   index: string
   endpoint: URL
+  useCache?: boolean
 }
 
 interface SearchIndexResult {
-  ok: true
+  ok: boolean
   total: number
   page: number
   pages: number
@@ -40,14 +41,16 @@ export async function searchIndex(search: object, options: SearchIndexOptions, p
     size
   })
 
+  const body = JSON.stringify({
+    from,
+    size: pageSize,
+    ...search
+  })
+
   const response = await fetch(endpoint.href, {
     method: 'POST',
     headers: headers(options.accessToken),
-    body: JSON.stringify({
-      from,
-      size: pageSize,
-      ...search
-    })
+    body
   })
 
   if (response.status !== 200) {
@@ -60,7 +63,7 @@ export async function searchIndex(search: object, options: SearchIndexOptions, p
     const total = body?.hits?.total?.value || 0
     const hits = body?.hits?.hits?.length || 0
 
-    return {
+    const result = {
       ok: true,
       total: body?.hits?.total?.value || 0,
       page: page || 1,
@@ -68,6 +71,8 @@ export async function searchIndex(search: object, options: SearchIndexOptions, p
       pageSize,
       hits: hits ? body.hits.hits : []
     }
+
+    return result
   } catch (ex: unknown) {
     return responseError(0, ex instanceof Error && ex.message ? ex.message : 'Error message not defined')
   }

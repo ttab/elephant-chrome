@@ -4,49 +4,48 @@ self.addEventListener('install', (event) => {
 })
 
 self.addEventListener('fetch', (event) => {
-  const match = event.request.url.match(/https?:\/\/[^/]+(.*)/i)
-  if (match?.length !== 2) {
-    return
-  }
+  // Matched path (.*) is everything after the root (elephant/)
+  // const match = event.request.url.match(/https?:\/\/[^/]+(.*)/i)
+  // if (match?.length !== 2) {
+  //   return
+  // }
 
-  switch (match[1]) {
-    case '/core_author/_search':
-      event.respondWith(handleFetch('cached-searches', event.request))
-      break
-  }
+  // switch (match[1]) {
+  //   case '/core_author/_search':
+  //     event.respondWith(handleFetch('cached-searches', event.request))
+  //     break
+  // }
 })
 
 
-async function handleFetch(storeName, request) {
-  console.debug(`Caching ${request.url}`)
+// async function handleFetch(storeName, request) {
+//   console.debug(`Caching ${request.url}`)
 
-  const db = await openDatabase(storeName)
-  // FIXME: Should be a hash
-  const cacheKey = await serializeRequest(request)
-  // FIXME: This never returns anything
-  const cachedResponse = await getCachedResponse(db, storeName, cacheKey)
+//   const db = await openDatabase(storeName)
+//   const cacheKey = await createRequestHashKey(request)
+//   const cachedResponse = await getCachedResponse(db, storeName, cacheKey)
 
-  if (cachedResponse) {
-    console.debug('CACHE HIT:', cachedResponse)
-    return cachedResponse
-  }
+//   if (cachedResponse) {
+//     console.debug('CACHE HIT:', cachedResponse)
+//     return cachedResponse
+//   }
 
-  // Clone the request, it can only be consumed once
-  try {
-    const response = await fetch(request.clone())
-    if (response && response.status === 200) {
-      await cacheResponse(db, storeName, cacheKey, response.clone())
-    }
+//   // Clone the request, it can only be consumed once
+//   try {
+//     const response = await fetch(request.clone())
+//     if (response && response.status === 200) {
+//       await cacheResponse(db, storeName, cacheKey, response.clone())
+//     }
 
-    console.debug('FRESH: ', response)
-    return response
-  } catch (error) {
-    console.error('Fetch failed:', error)
-    throw error
-  }
-}
+//     console.debug('FRESH: ', response)
+//     return response
+//   } catch (error) {
+//     console.error('Fetch failed:', error)
+//     throw error
+//   }
+// }
 
-async function serializeRequest(request) {
+async function createRequestHashKey(request) {
   const clonedRequest = request.clone()
 
   const serializedRequest = {
@@ -60,7 +59,17 @@ async function serializeRequest(request) {
     serializedRequest.headers[key] = value
   }
 
-  return JSON.stringify(serializedRequest)
+  console.log(serializedRequest)
+
+  const msgUint8 = new TextEncoder().encode(JSON.stringify(serializedRequest))
+  const hashBuffer = await crypto.subtle.digest('SHA-256', msgUint8)
+  const hashArray = Array.from(new Uint8Array(hashBuffer))
+  const hash = hashArray
+    .map((b) => b.toString(16).padStart(2, '0'))
+    .join('')
+
+  console.log(hash)
+  return hash
 }
 
 function openDatabase(storeName) {

@@ -25,8 +25,8 @@ const get = async (endpoint: URL, accessToken: string, params?: SearchParams): P
   const query = {
     query: {
       match_all: {}
-    },
-    sort
+      // Add sort: sort when/if supported
+    }
   }
 
   return await searchIndex(

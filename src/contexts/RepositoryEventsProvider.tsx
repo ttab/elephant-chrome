@@ -22,6 +22,9 @@ export const RepositoryEventsProvider = ({ children }: {
       return
     }
 
+    // Disabled for now
+    return
+
     // Create url
     const url = new URL(repositoryEventsUrl)
     url.searchParams.set('topic', 'firehose') // FIXME: Should not be firehose!!!
