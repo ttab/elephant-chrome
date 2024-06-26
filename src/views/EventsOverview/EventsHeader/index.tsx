@@ -4,8 +4,8 @@ import {
   type Dispatch,
   type SetStateAction
 } from 'react'
-import { CreateEvent } from './CreateEvent'
 import { Filter } from './Filter'
+import { CreateDocumentDialog } from '@/components/View/ViewHeader/CreateDocumentDialog'
 
 export const Header = ({ tab, startDate, setStartDate, endDate, setEndDate }: {
   tab: string
@@ -15,7 +15,7 @@ export const Header = ({ tab, startDate, setStartDate, endDate, setEndDate }: {
   setEndDate?: Dispatch<SetStateAction<Date>>
 }): JSX.Element => {
   return <>
-    <CreateEvent />
+    <CreateDocumentDialog />
 
     <div className='hidden sm:block'>
       <TabsGrid />
