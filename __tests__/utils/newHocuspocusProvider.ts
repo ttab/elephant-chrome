@@ -1,13 +1,15 @@
 import {
   HocuspocusProvider,
-  type HocuspocusProviderConfiguration, type HocuspocusProviderWebsocketConfiguration
+  type HocuspocusProviderConfiguration,
+  type HocuspocusProviderWebsocketConfiguration
 } from '@hocuspocus/provider'
 import { type Hocuspocus } from '@hocuspocus/server'
 import { newHocuspocusProviderWebsocket } from './newHocuspocusProviderWebsocket.js'
+import type * as Y from 'yjs'
 
 export const newHocuspocusProvider = (
   server: Hocuspocus,
-  document: any,
+  document: Y.Doc,
   options: Partial<HocuspocusProviderConfiguration> = {},
   websocketOptions: Partial<HocuspocusProviderWebsocketConfiguration> = {}
 ): HocuspocusProvider => {
