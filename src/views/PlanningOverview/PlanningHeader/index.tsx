@@ -4,7 +4,7 @@ import {
   type Dispatch,
   type SetStateAction
 } from 'react'
-import { CreatePlanning } from './CreatePlanning'
+import { CreateDocumentDialog } from '@/components/View/ViewHeader/CreateDocumentDialog'
 import { TabsGrid } from '@/components/Header/LayoutSwitch'
 
 export const Header = ({ tab, startDate, setStartDate, endDate, setEndDate }: {
@@ -15,7 +15,7 @@ export const Header = ({ tab, startDate, setStartDate, endDate, setEndDate }: {
   setEndDate?: Dispatch<SetStateAction<Date>>
 }): JSX.Element => {
   return <>
-    <CreatePlanning />
+    <CreateDocumentDialog type='Planning' />
 
     <div className='hidden sm:block'>
       <TabsGrid />
