@@ -1,6 +1,8 @@
-import { type SearchIndexResponse } from '@/lib/index/search'
-import { Planning } from '@/lib/planning'
-import { type Planning as PlanningType } from '@/views/PlanningOverview/PlanningTable/data/schema'
+import {
+  Plannings,
+  type Planning as PlanningType,
+  type SearchIndexResponse
+} from '@/lib/index'
 
 import { cn } from '@ttab/elephant-ui/utils'
 import { cva, type VariantProps } from 'class-variance-authority'
@@ -46,7 +48,7 @@ export const PlanningGrid = ({ startDate, endDate }: PlanningGridProps): JSX.Ele
       throw new Error('Start or end cant be null')
     }
 
-    const result = await Planning.search(indexUrl, session.accessToken, {
+    const result = await Plannings.search(indexUrl, session.accessToken, {
       size: 500,
       where: {
         start,
@@ -95,7 +97,7 @@ export const PlanningGrid = ({ startDate, endDate }: PlanningGridProps): JSX.Ele
 }
 
 
-function structureByDate(result: SearchIndexResponse, startTime: Date, endTime: Date, timeZone: string): PlanningsByDate | undefined {
+function structureByDate(result: SearchIndexResponse<PlanningType>, startTime: Date, endTime: Date, timeZone: string): PlanningsByDate | undefined {
   const plannings: PlanningsByDate = {}
 
   if (!Array.isArray(result?.hits)) {

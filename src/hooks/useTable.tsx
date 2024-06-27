@@ -1,7 +1,7 @@
 import { useContext } from 'react'
 import { TableContext } from '@/contexts'
 import { type TableProviderState } from '@/contexts/TableProvider'
-import { type Planning } from '@/views/PlanningOverview/PlanningTable/data/schema'
+import { type Planning } from '@/lib/index'
 
 export const useTable = (): TableProviderState<Planning> => {
   const context = useContext(TableContext)

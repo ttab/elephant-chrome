@@ -22,18 +22,17 @@ export const RepositoryEventsProvider = ({ children }: {
       return
     }
 
-    // Disabled for now
-    return
-
     // Create url
     const url = new URL(repositoryEventsUrl)
-    url.searchParams.set('topic', 'firehose') // FIXME: Should not be firehose!!!
+    url.searchParams.set('topic', 'firehose') // FIXME: Should not specific type, ie core/author
     url.searchParams.set('token', data.accessToken)
 
     // Listen for messages
     const eventSource = new window.EventSource(url.toString())
-    eventSource.onmessage = (event) => {
-      // console.log(event.data)
+
+    // FIXME: Implement handling of author updates and clear (update?) IDB authors object store
+    eventSource.onmessage = (event: MessageEvent<unknown>) => {
+      console.log(event.data)
     }
 
     return eventSource

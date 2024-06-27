@@ -1,7 +1,7 @@
 import { createContext, useEffect, useState } from 'react'
 import { useRegistry } from '@/hooks'
 import { useSession } from 'next-auth/react'
-import { Authors } from '@/lib/index/authors'
+import { Authors } from '@/lib/index'
 import { IDB } from '@/lib/indexedDB'
 
 export interface IAuthor {

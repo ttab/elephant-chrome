@@ -1,4 +1,5 @@
-import { searchIndex, type SearchIndexResponse } from './search'
+import { type Author } from './schemas'
+import { searchIndex, type SearchIndexResponse } from './searchIndex'
 
 interface SearchParams {
   page?: number
@@ -12,7 +13,7 @@ interface SearchParams {
   }
 }
 
-const get = async (endpoint: URL, accessToken: string, params?: SearchParams): Promise<SearchIndexResponse> => {
+const get = async (endpoint: URL, accessToken: string, params?: SearchParams): Promise<SearchIndexResponse<Author>> => {
   const sort: Array<Record<string, 'asc' | 'desc'>> = []
 
   if (params?.sort?.name) {

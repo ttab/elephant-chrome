@@ -3,8 +3,11 @@ import useSWR from 'swr'
 
 import { useIndexUrl, useTable } from '@/hooks'
 import { useSession } from 'next-auth/react'
-import { type SearchIndexResponse } from '@/lib/index/search'
-import { Planning } from '@/lib/planning'
+import {
+  type SearchIndexResponse,
+  type Planning as PlanningType,
+  Plannings
+} from '@/lib/index'
 import { PlanningTable } from '@/views/PlanningOverview/PlanningTable'
 import { columns } from '@/views/PlanningOverview/PlanningTable/Columns'
 
@@ -28,13 +31,13 @@ export const PlanningList = ({ date }: { date: Date }): JSX.Element => {
   }, [startTime, endTime, indexUrl])
 
 
-  const { data } = useSWR(searchUrl.href, async (): Promise<SearchIndexResponse | undefined> => {
+  const { data } = useSWR(searchUrl.href, async (): Promise<SearchIndexResponse<PlanningType> | undefined> => {
     if (status !== 'authenticated') {
       return
     }
 
     const { startTime, endTime } = getDateTimeBoundaries(date)
-    const result = await Planning.search(indexUrl, session.accessToken, {
+    const result = await Plannings.search(indexUrl, session.accessToken, {
       size: 100,
       where: {
         start: convertToISOStringInUTC(startTime),

@@ -1,5 +1,3 @@
-import { type Planning } from '@/views/PlanningOverview/PlanningTable/data/schema'
-
 interface SearchIndexOptions {
   accessToken: string
   index: string
@@ -7,13 +5,13 @@ interface SearchIndexOptions {
   useCache?: boolean
 }
 
-interface SearchIndexResult {
+interface SearchIndexResult<T> {
   ok: boolean
   total: number
   page: number
   pages: number
   pageSize: number
-  hits: Planning[]
+  hits: T[]
 }
 
 interface SearchIndexError {
@@ -25,7 +23,7 @@ interface SearchIndexError {
   hits: never[]
 }
 
-export type SearchIndexResponse = SearchIndexError | SearchIndexResult
+export type SearchIndexResponse<T> = SearchIndexError | SearchIndexResult<T>
 
 /**
  * @param search - object
@@ -34,7 +32,7 @@ export type SearchIndexResponse = SearchIndexError | SearchIndexResult
  * @param size - number Optionally wanted page size, defaults to 100
  * @returns Promise<SearchIndexResponse>
  */
-export async function searchIndex(search: object, options: SearchIndexOptions, page: number = 1, size: number = 100): Promise<SearchIndexResponse> {
+export async function searchIndex<T>(search: object, options: SearchIndexOptions, page: number = 1, size: number = 100): Promise<SearchIndexResponse<T>> {
   const endpoint = new URL(`${options.index}/_search`, options.endpoint)
   const { from, pageSize } = pagination({
     page,
