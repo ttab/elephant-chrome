@@ -29,7 +29,7 @@ export const PlanningList = ({ date }: { date: Date }): JSX.Element => {
   }, [startTime, endTime, indexUrl])
 
 
-  const { data: plannings } = useSWR([status, searchUrl.href], async (): Promise<SearchIndexResponse | undefined> => {
+  const { data } = useSWR([status, searchUrl.href], async (): Promise<SearchIndexResponse | undefined> => {
     if (status !== 'authenticated') {
       return
     }
@@ -43,47 +43,37 @@ export const PlanningList = ({ date }: { date: Date }): JSX.Element => {
       }
     })
     if (result.ok) {
-      return result
-    }
-  })
-
-  const documentIds = plannings?.hits.map(hit => hit._id)
-  const { data: metaData } = useSWR([documentIds?.length], documentIds && documentIds?.length > 0
-    ? async (): Promise<any[]> => {
+      const documentIds = result?.hits.map(hit => hit._id)
       try {
         const metaResult = await Promise.all(documentIds?.map(async (documentId: string) => {
           const metaResponse = await Repository.metaSearch({ session, documentId })
           return { ...metaResponse, documentId }
         }))
-        return metaResult
+        const planningsWithMeta = {
+          ...result,
+          hits: result?.hits?.map((planningItem: PlanningType) => {
+            const documentId = planningItem?._id
+            const _meta = metaResult?.find(metaItem => metaItem.documentId === documentId)
+            const heads = _meta?.meta?.heads
+            const status = Object?.keys(heads || {})[0]
+            planningItem._source = Object.assign({}, planningItem._source, {
+              'document.meta.status': [status]
+            })
+            return planningItem
+          })
+        }
+        setData(planningsWithMeta)
+        return planningsWithMeta
       } catch (error) {
         console.error(error)
-        return []
       }
     }
-    : null)
-
-  const { data } = useSWR([plannings?.hits.length, metaData?.length], (): any => {
-    const planningsWithMeta = {
-      ...plannings,
-      hits: plannings?.hits?.map((planningItem: PlanningType) => {
-        const documentId = planningItem?._id
-        const _meta = metaData?.find(metaItem => metaItem.documentId === documentId)
-        const heads: object = _meta?.meta?.heads
-        const status = Object?.keys(heads || {})[0]
-        planningItem._source = Object.assign({}, planningItem._source, {
-          'document.meta.status': [status]
-        })
-        return planningItem
-      })
-    }
-    setData(planningsWithMeta)
-    return planningsWithMeta
   })
+
 
   return (
     <>
-      {plannings?.ok === true &&
+      {data?.ok === true &&
         <PlanningTable data={data?.hits} columns={columns} onRowSelected={(row): void => {
           if (row) {
             console.info(`Selected planning item ${row._id}`)
