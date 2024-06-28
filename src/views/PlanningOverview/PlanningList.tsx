@@ -5,10 +5,11 @@ import { useIndexUrl, usePlanningTable } from '@/hooks'
 import { useSession } from 'next-auth/react'
 import { type SearchIndexResponse } from '@/lib/index/planning-search'
 import { Planning } from '@/lib/planning'
+import { Repository } from '@/lib/repository'
 import { PlanningTable } from '@/views/PlanningOverview/PlanningTable'
 import { columns } from '@/views/PlanningOverview/PlanningTable/Columns'
-
 import { convertToISOStringInUTC, getDateTimeBoundaries } from '@/lib/datetime'
+import { type Planning as PlanningType } from './PlanningTable/data/schema'
 
 export const PlanningList = ({ date }: { date: Date }): JSX.Element => {
   const { setData } = usePlanningTable()
@@ -28,7 +29,7 @@ export const PlanningList = ({ date }: { date: Date }): JSX.Element => {
   }, [startTime, endTime, indexUrl])
 
 
-  const { data } = useSWR(['planningitems', status, searchUrl.href], async (): Promise<SearchIndexResponse | undefined> => {
+  const { data: plannings } = useSWR([status, searchUrl.href], async (): Promise<SearchIndexResponse | undefined> => {
     if (status !== 'authenticated') {
       return
     }
@@ -42,20 +43,52 @@ export const PlanningList = ({ date }: { date: Date }): JSX.Element => {
       }
     })
     if (result.ok) {
-      setData(result)
       return result
     }
   })
 
+  const documentIds = plannings?.hits.map(hit => hit._id)
+  const { data: metaData } = useSWR([documentIds?.length], documentIds && documentIds?.length > 0
+    ? async (): Promise<any[]> => {
+      try {
+        const metaResult = await Promise.all(documentIds?.map(async (documentId: string) => {
+          const metaResponse = await Repository.metaSearch({ session, documentId })
+          return { ...metaResponse, documentId }
+        }))
+        return metaResult
+      } catch (error) {
+        console.error(error)
+        return []
+      }
+    }
+    : null)
+
+  const { data } = useSWR([plannings?.hits.length, metaData?.length], (): any => {
+    const planningsWithMeta = {
+      ...plannings,
+      hits: plannings?.hits?.map((planningItem: PlanningType) => {
+        const documentId = planningItem?._id
+        const _meta = metaData?.find(metaItem => metaItem.documentId === documentId)
+        const heads: object = _meta?.meta?.heads
+        const status = Object?.keys(heads || {})[0]
+        planningItem._source = Object.assign({}, planningItem._source, {
+          'document.meta.status': [status]
+        })
+        return planningItem
+      })
+    }
+    setData(planningsWithMeta)
+    return planningsWithMeta
+  })
 
   return (
     <>
-      {data?.ok === true &&
+      {plannings?.ok === true &&
         <PlanningTable data={data?.hits} columns={columns} onRowSelected={(row): void => {
           if (row) {
-            console.log(`Selected planning item ${row._id}`)
+            console.info(`Selected planning item ${row._id}`)
           } else {
-            console.log('Deselected row')
+            console.info('Deselected row')
           }
         }} />
       }
