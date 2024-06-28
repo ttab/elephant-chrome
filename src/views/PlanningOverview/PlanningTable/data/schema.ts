@@ -30,6 +30,7 @@ const PlanningSchema = z.object({
     'document.meta.core_planning_item.data.start_date': z.array(z.string()),
     'document.meta.core_planning_item.data.tentative': z.array(z.string()),
     'document.meta.core_newsvalue.value': z.array(z.string()),
+    'document.meta.status': z.array(z.string()),
     'document.rel.sector.title': z.array(z.string()),
     'document.meta.tt_slugline.value': z.array(z.string()),
     'document.rel.sector.type': z.array(z.string()),
