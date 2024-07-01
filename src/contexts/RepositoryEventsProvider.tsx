@@ -1,17 +1,33 @@
-import { createContext, useEffect, useState } from 'react'
+import { createContext, useCallback, useEffect, useRef, useState } from 'react'
 import { useRegistry } from '@/hooks'
 import { useSession } from 'next-auth/react'
 
-interface RepositoryEventsProviderState {
-  eventSource?: EventSource
+interface ElephantRepositoryEvent {
+  event: string
+  id: string
+  language: string
+  timestamp: string
+  type: string
+  updateUri: string
+  uuid: string
+  version: string
 }
 
-interface EBCCMessage {
+interface RepositoryEventsProviderState {
+  eventSource?: EventSource
+  subscribe: (eventType: string, callback: (data: ElephantRepositoryEvent) => void) => void
+  unsubscribe: (eventType: string, callback: (data: ElephantRepositoryEvent) => void) => void
+}
+
+interface ElephantBroadcastMessage {
   msg: string
   payload?: unknown
 }
 
-export const RepositoryEventsProviderContext = createContext<RepositoryEventsProviderState>({})
+export const RepositoryEventsProviderContext = createContext<RepositoryEventsProviderState>({
+  subscribe: () => { },
+  unsubscribe: () => { }
+})
 
 export const RepositoryEventsProvider = ({ children }: {
   children: React.ReactNode
@@ -19,6 +35,7 @@ export const RepositoryEventsProvider = ({ children }: {
   const { server: { repositoryEventsUrl } } = useRegistry()
   const { data } = useSession()
   const [isLeader, setIsLeader] = useState(true)
+  const subscribers = useRef<Record<string, Array<(data: ElephantRepositoryEvent) => void>>>({})
 
   // Handle broadcasted messages (browser tab leadership election)
   useEffect(() => {
@@ -28,10 +45,9 @@ export const RepositoryEventsProvider = ({ children }: {
       if (isLeader) {
         ebcc.postMessage({ msg: 'leader:exit' })
       }
-      ebcc.close()
     }
 
-    const messageHandler = (event: MessageEvent<EBCCMessage>): void => {
+    const messageHandler = (event: MessageEvent<ElephantBroadcastMessage>): void => {
       switch (event.data.msg) {
         case 'leader:exit':
           // The leader has left the building, request leadership,
@@ -77,24 +93,34 @@ export const RepositoryEventsProvider = ({ children }: {
 
     // Create url
     const url = new URL(repositoryEventsUrl)
-    url.searchParams.set('topic', 'core/author')
+    url.searchParams.set('topic', 'document')
     url.searchParams.set('token', data.accessToken)
 
     // Listen for messages
     const eventSource = new window.EventSource(url.toString())
 
-    // FIXME: Implement handling of author updates and clear (update?) IDB authors object store
-    eventSource.onmessage = (event: MessageEvent<unknown>) => {
-      console.log(event.data)
+    eventSource.onmessage = (event: MessageEvent<string | undefined>) => {
+      const msg: ElephantRepositoryEvent = event?.data ? JSON.parse(event?.data) : {}
+      const callbacks = subscribers.current[msg.type] || []
+
+      callbacks.forEach(callback => callback(msg))
     }
 
     return () => {
       eventSource.close()
     }
-  }, [repositoryEventsUrl, data?.accessToken, isLeader])
+  }, [repositoryEventsUrl, data?.accessToken, isLeader, subscribers])
+
+  const subscribe = useCallback((eventType: string, callback: (data: ElephantRepositoryEvent) => void) => {
+    subscribers.current[eventType] = [...(subscribers.current[eventType] || []), callback]
+  }, [subscribers])
+
+  const unsubscribe = useCallback((eventType: string, callback: (data: ElephantRepositoryEvent) => void) => {
+    subscribers.current[eventType] = (subscribers.current[eventType] || []).filter(cb => cb !== callback)
+  }, [subscribers])
 
   return (
-    <RepositoryEventsProviderContext.Provider value={{}}>
+    <RepositoryEventsProviderContext.Provider value={{ subscribe, unsubscribe }}>
       {children}
     </RepositoryEventsProviderContext.Provider>
   )

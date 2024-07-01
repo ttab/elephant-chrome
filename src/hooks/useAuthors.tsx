@@ -1,8 +1,8 @@
-import { AuthorsProviderContext, type IAuthor } from '@/contexts/AuthorsProvider'
+import { AuthorsContext, type IAuthor } from '@/contexts/AuthorsProvider'
 import { useContext } from 'react'
 
 export const useAuthors = (options?: { sort?: 'title' | 'firstName' | 'lastName' }): IAuthor[] => {
-  const { authors } = useContext(AuthorsProviderContext)
+  const { authors } = useContext(AuthorsContext)
   const sortKey = (['title', 'firstName', 'lastName'].includes(options?.sort || '')) ? options?.sort : 'title' as keyof (IAuthor)
 
   return (authors).sort((a1, a2) => {

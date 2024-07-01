@@ -9,7 +9,7 @@ export async function createHashKey(data: unknown): Promise<string> {
   return hash
 }
 
-async function openDatabase(storeName: string): Promise<IDBDatabase> {
+async function open(storeName: string): Promise<IDBDatabase> {
   return await new Promise((resolve, reject) => {
     const request = indexedDB.open('elephant-cache', 1)
 
@@ -28,12 +28,8 @@ async function openDatabase(storeName: string): Promise<IDBDatabase> {
   })
 }
 
-async function get(db: IDBDatabase, objectStore: string, key?: string): Promise<unknown[] | unknown> {
+async function get(store: IDBObjectStore, key?: string): Promise<unknown[] | unknown> {
   return await new Promise((resolve, reject) => {
-    const store = db
-      .transaction(objectStore, 'readonly')
-      .objectStore(objectStore)
-
     const request = key ? store.get(key) : store.getAll()
 
     request.onsuccess = (event) => {
@@ -46,20 +42,37 @@ async function get(db: IDBDatabase, objectStore: string, key?: string): Promise<
   })
 }
 
-function put(db: IDBDatabase, storeName: string, cacheKey: string, value: unknown): void {
-  const store = db
-    .transaction(storeName, 'readwrite')
-    .objectStore(storeName)
+async function put(store: IDBObjectStore, cacheKey: string, value: unknown): Promise<boolean> {
+  return await new Promise((resolve) => {
+    const request = store.put(value, cacheKey)
 
-  const request = store.put(value, cacheKey)
+    request.onerror = () => {
+      resolve(false)
+    }
 
-  request.onerror = () => {
-    console.warn(`Failed caching key ${cacheKey}`)
-  }
+    request.onsuccess = () => {
+      resolve(true)
+    }
+  })
+}
+
+async function clear(store: IDBObjectStore): Promise<boolean> {
+  return await new Promise((resolve) => {
+    const request = store.clear()
+
+    request.onerror = () => {
+      resolve(false)
+    }
+
+    request.onsuccess = () => {
+      resolve(true)
+    }
+  })
 }
 
 export const IDB = {
-  openDatabase,
+  open,
   get,
-  put
+  put,
+  clear
 }
