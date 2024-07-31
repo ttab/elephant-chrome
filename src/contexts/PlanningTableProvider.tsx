@@ -34,9 +34,9 @@ const initialState = {
   setData: () => { }
 } as unknown as TableProviderState<Planning>
 
-export const TableContext = createContext<TableProviderState<Planning>>(initialState)
+export const PlanningTableContext = createContext<TableProviderState<Planning>>(initialState)
 
-export const TableProvider = ({ children }: PropsWithChildren): JSX.Element => {
+export const PlanningTableProvider = ({ children }: PropsWithChildren): JSX.Element => {
   const [data, setData] = useState<SearchIndexResponse<Planning> | null>([] as unknown as SearchIndexResponse<Planning>)
 
   const [rowSelection, setRowSelection] = useState({})
@@ -79,8 +79,8 @@ export const TableProvider = ({ children }: PropsWithChildren): JSX.Element => {
   })
 
   return (
-    <TableContext.Provider value={{ table, setData, loading: !table.options.data.length, command }}>
+    <PlanningTableContext.Provider value={{ table, setData, loading: !table.options.data.length, command }}>
       {children}
-    </TableContext.Provider>
+    </PlanningTableContext.Provider>
   )
 }

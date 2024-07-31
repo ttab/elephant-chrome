@@ -6,14 +6,14 @@ import {
   Popover, PopoverContent, PopoverTrigger
 } from '@ttab/elephant-ui'
 
-import { PlanningCommands } from '../PlanningCommands'
 import { DebouncedCommandInput } from '@/components/CommandMenu/DebouncedCommandInput'
-import { useTable } from '@/hooks'
+import { usePlanningTable } from '@/hooks'
+import { PlanningCommands } from '../PlanningCommands'
 
 export const Filter = (): JSX.Element => {
   const [open, setOpen] = useState(false)
 
-  const { command, table } = useTable()
+  const { command, table } = usePlanningTable()
   const { setSearch, setPages, search, pages, page } = command
 
   const onOpenChange = useMemo(

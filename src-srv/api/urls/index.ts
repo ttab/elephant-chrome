@@ -7,7 +7,8 @@ export async function GET(): Promise<unknown> {
     payload: {
       indexUrl: process.env.INDEX_URL ?? '',
       webSocketUrl: process.env.WS_URL ?? '',
-      repositoryEventsUrl
+      repositoryEventsUrl,
+      contentApiUrl: process.env.CONTENT_API_URL ?? ''
     }
   }
 }

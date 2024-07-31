@@ -1,17 +1,17 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`Transform full article newsdoc document to internal YDoc representation handles article document 1`] = `
-Object {
+exports[`Transform full article newsdoc document to internal YDoc representation > handles article document 1`] = `
+{
   "content": "10|000 liter mjölk läckte vid E6En stor mängd mjölk spilldes över vägbanan i samband med en olycka i Falkenberg. Arkivbild.John Doe/TTTrafikOmkring 10|000 liter mjölk läckte ut på vägbanan när en tankbil välte på en avfart från E6 i Falkenberg natten till onsdag, rapporterar Göteborgs-Posten.– Det är många mjölkpaket, säger Peter Karlborg, inre befäl vid räddningstjänsten, till tidningen.Föraren skadades inte i olyckan. Avfarten stängdes av i norrgående riktning medan olyckan hanterades. Den spillda mjölken krävde ingen åtgärd.– Det är ingen tjäle nu och det finns inga vattendrag i närheten, så mjölken går ner i marken bara, säger Karlborg.",
-  "links": Object {
-    "core/assignment": Array [
-      Object {
-        "content": Object {},
+  "links": {
+    "core/assignment": [
+      {
+        "content": {},
         "contentType": "",
-        "data": Object {},
+        "data": {},
         "id": "",
-        "links": Object {},
-        "meta": Object {},
+        "links": {},
+        "meta": {},
         "name": "",
         "rel": "assignment",
         "role": "",
@@ -23,14 +23,14 @@ Object {
         "value": "",
       },
     ],
-    "core/content-source": Array [
-      Object {
-        "content": Object {},
+    "core/content-source": [
+      {
+        "content": {},
         "contentType": "",
-        "data": Object {},
+        "data": {},
         "id": "",
-        "links": Object {},
-        "meta": Object {},
+        "links": {},
+        "meta": {},
         "name": "",
         "rel": "source",
         "role": "",
@@ -42,14 +42,14 @@ Object {
         "value": "",
       },
     ],
-    "core/section": Array [
-      Object {
-        "content": Object {},
+    "core/section": [
+      {
+        "content": {},
         "contentType": "",
-        "data": Object {},
+        "data": {},
         "id": "",
-        "links": Object {},
-        "meta": Object {},
+        "links": {},
+        "meta": {},
         "name": "",
         "rel": "subject",
         "role": "",
@@ -62,18 +62,18 @@ Object {
       },
     ],
   },
-  "meta": Object {
-    "core/newsvalue": Array [
-      Object {
-        "content": Object {},
+  "meta": {
+    "core/newsvalue": [
+      {
+        "content": {},
         "contentType": "",
-        "data": Object {
+        "data": {
           "duration": "86400",
           "score": "2",
         },
         "id": "",
-        "links": Object {},
-        "meta": Object {},
+        "links": {},
+        "meta": {},
         "name": "",
         "rel": "",
         "role": "",
@@ -85,14 +85,14 @@ Object {
         "value": "",
       },
     ],
-    "tt/slugline": Array [
-      Object {
-        "content": Object {},
+    "tt/slugline": [
+      {
+        "content": {},
         "contentType": "",
-        "data": Object {},
+        "data": {},
         "id": "",
-        "links": Object {},
-        "meta": Object {},
+        "links": {},
+        "meta": {},
         "name": "",
         "rel": "",
         "role": "",
@@ -105,7 +105,7 @@ Object {
       },
     ],
   },
-  "root": Object {
+  "root": {
     "language": "sv",
     "title": "mjölkolycka",
     "type": "core/article",
@@ -116,18 +116,18 @@ Object {
 }
 `;
 
-exports[`Transform full planning newsdoc document to internal YDoc representation handles transformation of planning document 1`] = `
-Object {
+exports[`Transform full planning newsdoc document to internal YDoc representation > handles transformation of planning document 1`] = `
+{
   "content": "",
-  "links": Object {
-    "tt/sector": Array [
-      Object {
-        "content": Object {},
+  "links": {
+    "tt/sector": [
+      {
+        "content": {},
         "contentType": "",
-        "data": Object {},
+        "data": {},
         "id": "",
-        "links": Object {},
-        "meta": Object {},
+        "links": {},
+        "meta": {},
         "name": "",
         "rel": "sector",
         "role": "",
@@ -140,12 +140,12 @@ Object {
       },
     ],
   },
-  "meta": Object {
-    "core/assignment": Array [
-      Object {
-        "content": Object {},
+  "meta": {
+    "core/assignment": [
+      {
+        "content": {},
         "contentType": "",
-        "data": Object {
+        "data": {
           "end": "2024-02-09T22:59:59Z",
           "end_date": "2024-02-09",
           "full_day": "true",
@@ -155,15 +155,15 @@ Object {
           "start_date": "2024-02-09",
         },
         "id": "97464374-3d0c-44b9-9126-f5efadbd32a7",
-        "links": Object {
-          "core/article": Array [
-            Object {
-              "content": Object {},
+        "links": {
+          "core/article": [
+            {
+              "content": {},
               "contentType": "",
-              "data": Object {},
+              "data": {},
               "id": "",
-              "links": Object {},
-              "meta": Object {},
+              "links": {},
+              "meta": {},
               "name": "",
               "rel": "deliverable",
               "role": "",
@@ -174,13 +174,13 @@ Object {
               "uuid": "f283c9a0-6a2e-4021-a009-087961dd032f",
               "value": "",
             },
-            Object {
-              "content": Object {},
+            {
+              "content": {},
               "contentType": "",
-              "data": Object {},
+              "data": {},
               "id": "",
-              "links": Object {},
-              "meta": Object {},
+              "links": {},
+              "meta": {},
               "name": "",
               "rel": "deliverable",
               "role": "",
@@ -192,14 +192,14 @@ Object {
               "value": "",
             },
           ],
-          "core/author": Array [
-            Object {
-              "content": Object {},
+          "core/author": [
+            {
+              "content": {},
               "contentType": "",
-              "data": Object {},
+              "data": {},
               "id": "",
-              "links": Object {},
-              "meta": Object {},
+              "links": {},
+              "meta": {},
               "name": "John Doe/TT",
               "rel": "assignee",
               "role": "primary",
@@ -210,13 +210,13 @@ Object {
               "uuid": "c37fdf3e-72ff-4e22-8b9f-1af0d60b0cd9",
               "value": "",
             },
-            Object {
-              "content": Object {},
+            {
+              "content": {},
               "contentType": "",
-              "data": Object {},
+              "data": {},
               "id": "",
-              "links": Object {},
-              "meta": Object {},
+              "links": {},
+              "meta": {},
               "name": "Jane Doe/TT",
               "rel": "assignee",
               "role": "primary",
@@ -229,15 +229,15 @@ Object {
             },
           ],
         },
-        "meta": Object {
-          "core/assignment-type": Array [
-            Object {
-              "content": Object {},
+        "meta": {
+          "core/assignment-type": [
+            {
+              "content": {},
               "contentType": "",
-              "data": Object {},
+              "data": {},
               "id": "",
-              "links": Object {},
-              "meta": Object {},
+              "links": {},
+              "meta": {},
               "name": "",
               "rel": "",
               "role": "",
@@ -249,16 +249,16 @@ Object {
               "value": "text",
             },
           ],
-          "core/description": Array [
-            Object {
-              "content": Array [],
+          "core/description": [
+            {
+              "content": [],
               "contentType": "",
-              "data": Object {
+              "data": {
                 "text": "",
               },
               "id": "",
-              "links": Array [],
-              "meta": Array [],
+              "links": [],
+              "meta": [],
               "name": "",
               "rel": "",
               "role": "public",
@@ -269,15 +269,15 @@ Object {
               "uuid": "",
               "value": "",
             },
-            Object {
-              "content": Array [],
+            {
+              "content": [],
               "contentType": "",
-              "data": Object {
+              "data": {
                 "text": "",
               },
               "id": "",
-              "links": Array [],
-              "meta": Array [],
+              "links": [],
+              "meta": [],
               "name": "",
               "rel": "",
               "role": "internal",
@@ -289,14 +289,14 @@ Object {
               "value": "",
             },
           ],
-          "tt/slugline": Array [
-            Object {
-              "content": Object {},
+          "tt/slugline": [
+            {
+              "content": {},
               "contentType": "",
-              "data": Object {},
+              "data": {},
               "id": "",
-              "links": Object {},
-              "meta": Object {},
+              "links": {},
+              "meta": {},
               "name": "",
               "rel": "",
               "role": "",
@@ -320,16 +320,16 @@ Object {
         "value": "",
       },
     ],
-    "core/description": Array [
-      Object {
-        "content": Array [],
+    "core/description": [
+      {
+        "content": [],
         "contentType": "",
-        "data": Object {
+        "data": {
           "text": "",
         },
         "id": "",
-        "links": Array [],
-        "meta": Array [],
+        "links": [],
+        "meta": [],
         "name": "",
         "rel": "",
         "role": "public",
@@ -340,15 +340,15 @@ Object {
         "uuid": "",
         "value": "",
       },
-      Object {
-        "content": Array [],
+      {
+        "content": [],
         "contentType": "",
-        "data": Object {
+        "data": {
           "text": "",
         },
         "id": "",
-        "links": Array [],
-        "meta": Array [],
+        "links": [],
+        "meta": [],
         "name": "",
         "rel": "",
         "role": "internal",
@@ -360,14 +360,14 @@ Object {
         "value": "",
       },
     ],
-    "core/newsvalue": Array [
-      Object {
-        "content": Object {},
+    "core/newsvalue": [
+      {
+        "content": {},
         "contentType": "",
-        "data": Object {},
+        "data": {},
         "id": "",
-        "links": Object {},
-        "meta": Object {},
+        "links": {},
+        "meta": {},
         "name": "",
         "rel": "",
         "role": "",
@@ -379,19 +379,19 @@ Object {
         "value": "4",
       },
     ],
-    "core/planning-item": Array [
-      Object {
-        "content": Object {},
+    "core/planning-item": [
+      {
+        "content": {},
         "contentType": "",
-        "data": Object {
+        "data": {
           "end_date": "2024-02-09",
           "public": "true",
           "start_date": "2024-02-09",
           "tentative": "false",
         },
         "id": "",
-        "links": Object {},
-        "meta": Object {},
+        "links": {},
+        "meta": {},
         "name": "",
         "rel": "",
         "role": "",
@@ -404,7 +404,7 @@ Object {
       },
     ],
   },
-  "root": Object {
+  "root": {
     "language": "sv-se",
     "title": "Tomasson lämnar Blackburn – för landslaget?",
     "type": "core/planning-item",

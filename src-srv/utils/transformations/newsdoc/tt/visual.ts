@@ -5,7 +5,7 @@ import { type TBElement } from '@ttab/textbit'
 export const transformVisual = (element: Block): TBElement => {
   const { id, data, links } = element
   return {
-    id,
+    id: id || crypto.randomUUID(), // Must have id, if id is missing positioning in drag'n drop does not work
     class: 'block',
     type: 'tt/visual',
     properties: {
@@ -19,8 +19,7 @@ export const transformVisual = (element: Block): TBElement => {
       credit: links[0].data.credit,
       text: data.caption,
       width: links[0].data.width,
-      height: links[0].data.height,
-      hiresScale: links[0].data.hiresScale
+      height: links[0].data.height
     },
     children: [
       {
@@ -56,7 +55,6 @@ export function revertVisual(element: TBElement): Block {
         data: {
           credit: toString(properties?.credit),
           height: toString(properties?.height),
-          hiresScale: toString(properties?.hiresScale),
           width: toString(properties?.width)
         },
         rel: toString(properties?.rel),

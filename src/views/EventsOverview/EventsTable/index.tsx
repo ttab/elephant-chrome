@@ -1,0 +1,156 @@
+import React, { type MouseEvent, useEffect } from 'react'
+import {
+  type ColumnDef,
+  flexRender
+} from '@tanstack/react-table'
+
+import { Table, TableBody, TableCell, TableRow } from '@ttab/elephant-ui'
+import { Toolbar } from './Toolbar'
+import { useNavigation, useView } from '@/hooks'
+import { isEditableTarget } from '@/lib/isEditableTarget'
+import { useEventsTable } from '@/hooks/useEventsTable'
+import { columns } from './Columns'
+import { cn } from '@ttab/elephant-ui/utils'
+import { handleLink } from '@/components/Link/lib/handleLink'
+
+interface EventsTableProps<TData, TValue> {
+  columns: Array<ColumnDef<TData, TValue>>
+  data: TData[]
+  onRowSelected?: (row?: TData) => void
+}
+
+
+export const EventsTable = <TData, TValue>({
+  onRowSelected
+}: EventsTableProps<TData, TValue>): JSX.Element => {
+  const { isActive: isActiveView } = useView()
+  const { state, dispatch } = useNavigation()
+  const { viewId: origin } = useView()
+
+  const { table, loading } = useEventsTable()
+
+  // Handle navigation using arrow keys
+  useEffect(() => {
+    if (!onRowSelected) {
+      return
+    }
+
+    const keyDownHandler = (evt: KeyboardEvent): void => {
+      if (!isActiveView || isEditableTarget(evt)) {
+        return
+      }
+
+      if (!table || !['ArrowDown', 'ArrowUp', 'Escape'].includes(evt.key)) {
+        return
+      }
+
+      evt.preventDefault()
+      const rows = table.getRowModel().rows
+      if (!rows?.length) {
+        return
+      }
+
+      const selectedRows = table.getSelectedRowModel()
+      const selectedRow = selectedRows?.rows[0]
+
+      if (evt.key === 'Escape') {
+        if (selectedRow) {
+          selectedRow.toggleSelected(false)
+        }
+      } else if (!selectedRow) {
+        const idx = evt.key === 'ArrowDown' ? 0 : rows.length - 1
+        rows[idx].toggleSelected(true)
+      } else {
+        const nextIdx = selectedRow.index + ((evt.key === 'ArrowDown') ? 1 : -1)
+        const idx = nextIdx < 0 ? rows.length - 1 : nextIdx >= rows.length ? 0 : nextIdx
+        rows[idx].toggleSelected(true)
+      }
+    }
+
+    document.addEventListener('keydown', keyDownHandler)
+
+    return () => document.removeEventListener('keydown', keyDownHandler)
+  }, [table, isActiveView, onRowSelected])
+
+  // When row selection changes, report back to callback
+  useEffect(() => {
+    if (onRowSelected) {
+      const selectedRows = table.getSelectedRowModel()
+      // @ts-expect-error unknown type
+      onRowSelected(selectedRows?.rows[0]?.original)
+    }
+  }, [table, onRowSelected])
+
+  const TableBodyElement = (): React.ReactNode => {
+    if (table.getRowModel().rows?.length === 0) {
+      return (
+        <TableRow>
+          <TableCell
+            colSpan={columns.length}
+            className="h-24 text-center"
+            >
+            {loading ? 'Loading...' : 'No results.'}
+          </TableCell>
+        </TableRow>
+      )
+    }
+
+    return table.getRowModel().rows.map((row) => (
+      <TableRow
+        key={`calendar/${row.id}`}
+        className='cursor-default'
+        data-state={row.getIsSelected() && 'selected'}
+        onClick={<T extends HTMLElement>(event: MouseEvent<T>) => {
+          // @ts-expect-error unknown
+          if (!event.nativeEvent.target.dataset.rowAction) {
+            if (!onRowSelected) {
+              return
+            }
+
+            handleLink({
+              event,
+              dispatch,
+              viewItem: state.viewRegistry.get('Planning'),
+              viewRegistry: state.viewRegistry,
+              props: { id: row.original._id },
+              viewId: crypto.randomUUID(),
+              origin
+
+            })
+          }
+          setTimeout(() => {
+            row.toggleSelected(!row.getIsSelected())
+          }, 0)
+        }}
+      >
+        {row.getVisibleCells().map((cell) => (
+          <TableCell
+            key={cell.id}
+            className={cn(
+              'first:pl-2 last:pr-2 sm:first:pl-6 sm:last:pr-6',
+              cell.column.columnDef.meta?.className
+            )}
+          >
+            {flexRender(
+              cell.column.columnDef.cell,
+              cell.getContext()
+            )}
+          </TableCell>
+        ))}
+      </TableRow>
+    ))
+  }
+
+  return (
+    <>
+      <Toolbar table={table} />
+      <div className="rounded-md">
+        <Table className='table-fixed'>
+          <TableBody>
+            <TableBodyElement />
+          </TableBody>
+        </Table>
+      </div>
+    </>
+  )
+}

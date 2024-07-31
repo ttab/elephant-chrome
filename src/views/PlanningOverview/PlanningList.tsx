@@ -1,20 +1,22 @@
 import { useMemo } from 'react'
 import useSWR from 'swr'
 
-import { useIndexUrl, useTable } from '@/hooks'
+import { useIndexUrl, usePlanningTable } from '@/hooks'
 import { useSession } from 'next-auth/react'
 import {
   type SearchIndexResponse,
   type Planning as PlanningType,
   Plannings
 } from '@/lib/index'
+
+import { Repository } from '@/lib/repository'
+
 import { PlanningTable } from '@/views/PlanningOverview/PlanningTable'
 import { columns } from '@/views/PlanningOverview/PlanningTable/Columns'
-
 import { convertToISOStringInUTC, getDateTimeBoundaries } from '@/lib/datetime'
 
 export const PlanningList = ({ date }: { date: Date }): JSX.Element => {
-  const { setData } = useTable()
+  const { setData } = usePlanningTable()
   const { data: session, status } = useSession()
 
   const indexUrl = useIndexUrl()
@@ -44,8 +46,32 @@ export const PlanningList = ({ date }: { date: Date }): JSX.Element => {
         end: convertToISOStringInUTC(endTime)
       }
     })
-    setData(result)
-    return result
+    if (result.ok) {
+      const documentIds = result?.hits.map(hit => hit._id)
+      try {
+        const metaResult = await Promise.all(documentIds?.map(async (documentId: string) => {
+          const metaResponse = await Repository.metaSearch({ session, documentId })
+          return { ...metaResponse, documentId }
+        }))
+        const planningsWithMeta = {
+          ...result,
+          hits: result?.hits?.map((planningItem: PlanningType) => {
+            const documentId = planningItem?._id
+            const _meta = metaResult?.find(metaItem => metaItem.documentId === documentId)
+            const heads = _meta?.meta?.heads
+            const status = Object?.keys(heads || {})[0]
+            planningItem._source = Object.assign({}, planningItem._source, {
+              'document.meta.status': [status]
+            })
+            return planningItem
+          })
+        }
+        setData(planningsWithMeta)
+        return planningsWithMeta
+      } catch (error) {
+        console.error(error)
+      }
+    }
   })
 
 
@@ -54,9 +80,9 @@ export const PlanningList = ({ date }: { date: Date }): JSX.Element => {
       {data?.ok === true &&
         <PlanningTable data={data?.hits} columns={columns} onRowSelected={(row): void => {
           if (row) {
-            console.log(`Selected planning item ${row._id}`)
+            console.info(`Selected planning item ${row._id}`)
           } else {
-            console.log('Deselected row')
+            console.info('Deselected row')
           }
         }} />
       }

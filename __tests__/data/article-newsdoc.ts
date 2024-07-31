@@ -52,7 +52,6 @@ export const article: GetDocumentResponse = {
             type: 'tt/picture',
             title: '',
             data: {
-              hiresScale: '5.4541015625',
               width: '1024',
               credit: 'John Doe/TT',
               height: '642'

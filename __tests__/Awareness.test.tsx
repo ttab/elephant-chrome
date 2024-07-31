@@ -1,14 +1,26 @@
 import { createRef } from 'react'
 import { screen, render } from '@testing-library/react'
 import { Awareness } from '../src/components/Awareness'
+import { vi } from 'vitest'
+import * as hooks from '@/hooks'
 
-const setIsFocusedMock = jest.fn()
-// Mock the useAwareness hook
-jest.mock('@/hooks', () => ({
-  useAwareness: jest.fn(() => {
-    return [[{ focus: { color: 'rgb(248 113 113)' } }], setIsFocusedMock]
-  })
-}))
+const setIsFocusedMock = vi.fn()
+
+vi.spyOn(hooks, 'useAwareness').mockReturnValue([
+  [
+    {
+      clientId: 1870901647,
+      data: {
+        name: 'Testy Testerson',
+        initials: 'TT',
+        color: 'rgb(6 182 212)'
+      },
+      focus: {
+        key: 'PlanSector',
+        color: 'rgb(6 182 212)'
+      }
+    }
+  ], setIsFocusedMock])
 
 describe('Awareness component', () => {
   it('renders children with proper className when visual is true', () => {
@@ -24,7 +36,7 @@ describe('Awareness component', () => {
     const wrapperDiv = childElement.parentElement
     expect(wrapperDiv).toHaveClass('rounded')
     expect(wrapperDiv).toHaveClass('ring')
-    expect(wrapperDiv).toHaveClass('ring-red-400')
+    expect(wrapperDiv).toHaveClass('ring-cyan-400')
   })
 
   it('renders children without ring className when visual is false', () => {

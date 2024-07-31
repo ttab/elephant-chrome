@@ -10,7 +10,8 @@ const scopes = [
   'doc_read',
   'doc_write',
   'doc_delete',
-  'eventlog_read'
+  'eventlog_read',
+  'search'
 ]
 
 const authorizationUrl = new URL(`${process.env.AUTH_KEYCLOAK_ISSUER}/protocol/openid-connect/auth`)
@@ -36,12 +37,16 @@ async function refreshAccessToken(token: JWTPayload): Promise<JWTPayload> {
       Accept: 'application/json'
     },
     body: params
+  }).catch(ex => {
+    throw new Error('refresh token grant request', { cause: ex })
   })
 
   const refreshedTokens = await response.json()
 
   if (!response.ok) {
-    throw refreshedTokens
+    throw new Error(
+      `refresh request error response: ${response.statusText}`,
+      { cause: refreshedTokens })
   }
 
   return {
@@ -90,12 +95,9 @@ export const authConfig: AuthConfig = {
 
       // Access token is expired, refresh it
       return await refreshAccessToken(token)
-    },
-    redirect: async ({ url, baseUrl }) => {
-      return await Promise.resolve(process.env.BASE_URL
-        ? `${baseUrl}${process.env.BASE_URL}`
-        : url)
     }
+  },
+  pages: {
+    signIn: `${process.env.BASE_URL}/login`
   }
-
 }

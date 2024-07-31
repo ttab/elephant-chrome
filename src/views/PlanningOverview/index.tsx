@@ -2,18 +2,18 @@ import { useEffect, useState } from 'react'
 import { type ViewMetadata } from '@/types'
 import { ViewHeader } from '@/components'
 import { CalendarDaysIcon } from '@ttab/elephant-ui/icons'
-import { PlanningHeader } from './PlanningHeader'
 import { ScrollArea, Tabs, TabsContent } from '@ttab/elephant-ui'
 
 import { PlanningGrid } from './PlanningGrid'
 import { PlanningList } from './PlanningList'
-import { TableProvider } from '@/contexts/TableProvider'
+import { PlanningTableProvider } from '@/contexts/PlanningTableProvider'
 
 import { TableCommandMenu } from './PlanningTable/TableCommandMenu'
+import { Header } from '@/views/PlanningOverview/PlanningHeader'
 
 const meta: ViewMetadata = {
-  name: 'PlanningOverview',
-  path: import.meta.env.BASE_URL || '/',
+  name: 'Plannings',
+  path: `${import.meta.env.BASE_URL}/plannings`,
   widths: {
     sm: 12,
     md: 12,
@@ -27,7 +27,7 @@ const meta: ViewMetadata = {
   }
 }
 
-export const PlanningOverview = (): JSX.Element => {
+export const Plannings = (): JSX.Element => {
   const [startDate, setStartDate] = useState<Date>(new Date())
   const [endDate, setEndDate] = useState<Date>(getEndDate(startDate))
   const [currentTab, setCurrentTab] = useState<string>('list')
@@ -37,17 +37,17 @@ export const PlanningOverview = (): JSX.Element => {
   }, [startDate])
 
   return (
-    <TableProvider>
+    <PlanningTableProvider>
       <Tabs defaultValue={currentTab} className='flex-1' onValueChange={setCurrentTab}>
 
         <TableCommandMenu />
 
         <div className="flex flex-col h-screen">
           <ViewHeader.Root>
-            <ViewHeader.Title title="Planeringsöversikt" short="Planering" icon={CalendarDaysIcon} />
+            <ViewHeader.Title title="Planeringsöversikt" short="Planering" icon={CalendarDaysIcon} iconColor='#FF971E' />
 
             <ViewHeader.Content>
-              <PlanningHeader
+              <Header
                 tab={currentTab}
                 startDate={startDate}
                 setStartDate={setStartDate}
@@ -71,11 +71,11 @@ export const PlanningOverview = (): JSX.Element => {
         </div>
 
       </Tabs>
-    </TableProvider>
+    </PlanningTableProvider>
   )
 }
 
-PlanningOverview.meta = meta
+Plannings.meta = meta
 
 function getEndDate(startDate: Date): Date {
   const endDate = new Date()

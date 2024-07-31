@@ -15,7 +15,7 @@ if (!root) {
 }
 
 ReactDOM.createRoot(root).render(
-  <SessionProvider basePath={`${import.meta.env.BASE_URL}/api/auth`} refetchInterval={290}>
+  <SessionProvider basePath={`${import.meta.env.BASE_URL}/api/auth`} refetchInterval={180}>
     <RegistryProvider>
       <HPWebSocketProvider>
         <RepositoryEventsProvider>
