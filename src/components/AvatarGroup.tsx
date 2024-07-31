@@ -5,6 +5,7 @@ import { cn } from '@ttab/elephant-ui/utils'
 const avatarGroupVariants = cva('flex items-center', {
   variants: {
     size: {
+      xs: '-space-x-4',
       sm: '-space-x-3',
       lg: '-space-x-2',
       default: '-space-x-2'
