@@ -24,6 +24,10 @@ export const PlanningList = ({ date }: { date: Date }): JSX.Element => {
 
   // Create url to base SWR caching on
   const searchUrl = useMemo(() => {
+    if (!indexUrl) {
+      return
+    }
+
     const start = convertToISOStringInUTC(startTime)
     const end = convertToISOStringInUTC(endTime)
     const searchUrl = new URL(indexUrl)
@@ -33,8 +37,8 @@ export const PlanningList = ({ date }: { date: Date }): JSX.Element => {
   }, [startTime, endTime, indexUrl])
 
 
-  const { data } = useSWR(searchUrl.href, async (): Promise<SearchIndexResponse<PlanningType> | undefined> => {
-    if (status !== 'authenticated') {
+  const { data } = useSWR(searchUrl?.href, async (): Promise<SearchIndexResponse<PlanningType> | undefined> => {
+    if (status !== 'authenticated' || !indexUrl) {
       return
     }
 
