@@ -1,7 +1,7 @@
 import {
   Tooltip
 } from '@ttab/elephant-ui'
-import { Avatar } from '@/components'
+import { Avatar, type AvatarSize } from '@/components'
 import { AvatarGroup } from '../AvatarGroup'
 
 export const AssigneeAvatars = ({ assignees, size = 'sm' }: {
@@ -9,11 +9,11 @@ export const AssigneeAvatars = ({ assignees, size = 'sm' }: {
   size?: string
 }): JSX.Element => {
   return (
-    <AvatarGroup size={size}>
+    <AvatarGroup size={size as AvatarSize}>
       {(assignees || []).slice(0, 3).map((assignee: string, index: number) => {
         return (
           <Tooltip key={index} content={assignee}>
-            <Avatar value={assignee} size='sm' stacked={index > 0} />
+            <Avatar value={assignee} size={size as AvatarSize} stacked={index > 0} />
           </Tooltip>
         )
       })}
