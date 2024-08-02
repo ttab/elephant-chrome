@@ -47,7 +47,7 @@ export const Assignees = ({ path }: {
   const placeholder = 'Lägg till uppdragstagare'
 
   return (
-    <div className="flex gap-2">
+    <div className="flex gap-2 items-center">
       <Awareness name='AssignmentAssignees' ref={setFocused}>
         <ComboBox
           size='xs'
