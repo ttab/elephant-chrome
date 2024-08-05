@@ -43,6 +43,10 @@ const ImageSearchResult = ({ children }: {
 export const ImageSearch = (): JSX.Element => {
   const { server: { contentApiUrl } } = useRegistry()
 
+  if (!contentApiUrl) {
+    return <></>
+  }
+
   return (
     <SWRConfig value={{ fetcher: createFetcher(contentApiUrl) }}>
       <ImageSearchContent />

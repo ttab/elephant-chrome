@@ -20,6 +20,7 @@ export interface RegistryProviderState {
   server: {
     webSocketUrl: URL
     indexUrl: URL
+    repositoryEventsUrl: URL
     contentApiUrl: URL
   }
   dispatch: React.Dispatch<Partial<RegistryProviderState>>
@@ -32,6 +33,7 @@ const initialState: RegistryProviderState = {
   server: {
     webSocketUrl: new URL('http://localhost'),
     indexUrl: new URL('http://localhost'),
+    repositoryEventsUrl: new URL('http://localhost'),
     contentApiUrl: new URL('http://localhost')
   },
   dispatch: () => { }
@@ -48,14 +50,12 @@ export const RegistryProvider = ({ children }: PropsWithChildren): JSX.Element =
   const [isInitialized, setIsInitialized] = useState<boolean>(false)
 
   useEffect(() => {
-    getServerUrls()
-      .then(server => {
-        dispatch({ server })
-        setIsInitialized(true)
-      })
-      .catch(ex => {
-        console.error(`Failed fetching server urls in RegistryProvider, ${ex.message}`)
-      })
+    getServerUrls().then(server => {
+      dispatch({ server })
+      setIsInitialized(true)
+    }).catch(ex => {
+      console.error(`Failed fetching server urls in RegistryProvider, ${ex.message}`, ex)
+    })
   }, [])
 
   return (

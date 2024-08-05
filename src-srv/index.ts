@@ -63,7 +63,8 @@ export async function runServer(): Promise<string> {
 
   app.set('trust proxy', true)
   app.use(`${BASE_URL}/api/auth/*`, ExpressAuth(authConfig) as RequestHandler)
-  app.use(`${BASE_URL}/api`, assertAuthenticatedUser as RequestHandler)
+  app.use(`${BASE_URL}/api/documents`, assertAuthenticatedUser as RequestHandler)
+  app.use(`${BASE_URL}/api/introspection`, assertAuthenticatedUser as RequestHandler)
 
   app.use(cors({
     credentials: true,
@@ -124,7 +125,11 @@ runServer().then(url => {
   process.exit(1)
 })
 
-function getPaths(): { distDir: string, apiDir: string } {
+
+function getPaths(): {
+  distDir: string
+  apiDir: string
+} {
   const distDir = path.join(
     path.resolve(
       path.dirname(

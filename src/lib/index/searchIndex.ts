@@ -1,18 +1,17 @@
-import { type Planning } from '@/views/PlanningOverview/PlanningTable/data/schema'
-
 interface SearchIndexOptions {
   accessToken: string
   index: string
   endpoint: URL
+  useCache?: boolean
 }
 
-interface SearchIndexResult {
-  ok: true
+interface SearchIndexResult<T> {
+  ok: boolean
   total: number
   page: number
   pages: number
   pageSize: number
-  hits: Planning[]
+  hits: T[]
 }
 
 interface SearchIndexError {
@@ -24,29 +23,32 @@ interface SearchIndexError {
   hits: never[]
 }
 
-export type SearchIndexResponse = SearchIndexError | SearchIndexResult
+export type SearchIndexResponse<T> = SearchIndexError | SearchIndexResult<T>
 
 /**
- * FIXME: Implement automatic calculation of next/prev pagination values
- *
- * @param search unknown
- * @param options SearchIndexOptions
+ * @param search - object
+ * @param options - SearchIndexOptions
+ * @param page - number Optional, defaults to 1
+ * @param size - number Optionally wanted page size, defaults to 100
  * @returns Promise<SearchIndexResponse>
  */
-export async function searchIndex(search: object, options: SearchIndexOptions, skip?: number, size?: number): Promise<SearchIndexResponse> {
+export async function searchIndex<T>(search: object, options: SearchIndexOptions, page: number = 1, size: number = 100): Promise<SearchIndexResponse<T>> {
   const endpoint = new URL(`${options.index}/_search`, options.endpoint)
-  const pageSize = typeof size === 'number' && size > 0 && size < 500 ? size : 100
-  const skipPages = typeof skip === 'number' && skip > -1 ? skip : 0
-  const from = skipPages * pageSize
+  const { from, pageSize } = pagination({
+    page,
+    size
+  })
+
+  const body = JSON.stringify({
+    from,
+    size: pageSize,
+    ...search
+  })
 
   const response = await fetch(endpoint.href, {
     method: 'POST',
     headers: headers(options.accessToken),
-    body: JSON.stringify({
-      from,
-      size: pageSize,
-      ...search
-    })
+    body
   })
 
   if (response.status !== 200) {
@@ -55,17 +57,20 @@ export async function searchIndex(search: object, options: SearchIndexOptions, s
 
   try {
     const body = await response.json()
+
     const total = body?.hits?.total?.value || 0
     const hits = body?.hits?.hits?.length || 0
 
-    return {
+    const result = {
       ok: true,
       total: body?.hits?.total?.value || 0,
-      page: skipPages + 1,
+      page: page || 1,
       pages: hits > 0 ? Math.ceil(total / pageSize) : 0,
       pageSize,
       hits: hits ? body.hits.hits : []
     }
+
+    return result
   } catch (ex: unknown) {
     return responseError(0, ex instanceof Error && ex.message ? ex.message : 'Error message not defined')
   }
@@ -87,5 +92,31 @@ function responseError(errorCode: number, errorMessage: string): SearchIndexErro
     total: 0,
     pages: 0,
     hits: []
+  }
+}
+
+function pagination(paginationOptions?: {
+  page: number
+  size: number
+}): { from: number, pageSize: number } {
+  const defaultPageSize = 100
+  const defaultPage = 1
+
+  let {
+    page = defaultPage,
+    size: pageSize = defaultPageSize
+  } = paginationOptions || {}
+
+  if (isNaN(page) || page < 1) {
+    page = defaultPage
+  }
+
+  if (isNaN(pageSize) || pageSize < 1 || pageSize > 1000) {
+    pageSize = defaultPageSize
+  }
+
+  return {
+    from: (page - 1) * pageSize,
+    pageSize
   }
 }

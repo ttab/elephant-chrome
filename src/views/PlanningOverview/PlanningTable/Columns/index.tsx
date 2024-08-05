@@ -1,5 +1,5 @@
 import { type ColumnDef } from '@tanstack/react-table'
-import { type Planning } from '../data/schema'
+import { type Planning } from '@/lib/index/schemas/planning'
 import { Newsvalue } from '@/components/Table/Newsvalue'
 import { Title } from '@/components/Table/Title'
 import { Section } from './Section'

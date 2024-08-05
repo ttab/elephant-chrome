@@ -3,13 +3,17 @@ import useSWR from 'swr'
 
 import { useIndexUrl, usePlanningTable } from '@/hooks'
 import { useSession } from 'next-auth/react'
-import { type SearchIndexResponse } from '@/lib/index/planning-search'
-import { Planning } from '@/lib/planning'
+import {
+  type SearchIndexResponse,
+  type Planning as PlanningType,
+  Plannings
+} from '@/lib/index'
+
 import { Repository } from '@/lib/repository'
+
 import { PlanningTable } from '@/views/PlanningOverview/PlanningTable'
 import { columns } from '@/views/PlanningOverview/PlanningTable/Columns'
 import { convertToISOStringInUTC, getDateTimeBoundaries } from '@/lib/datetime'
-import { type Planning as PlanningType } from './PlanningTable/data/schema'
 
 export const PlanningList = ({ date }: { date: Date }): JSX.Element => {
   const { setData } = usePlanningTable()
@@ -20,6 +24,10 @@ export const PlanningList = ({ date }: { date: Date }): JSX.Element => {
 
   // Create url to base SWR caching on
   const searchUrl = useMemo(() => {
+    if (!indexUrl) {
+      return
+    }
+
     const start = convertToISOStringInUTC(startTime)
     const end = convertToISOStringInUTC(endTime)
     const searchUrl = new URL(indexUrl)
@@ -29,13 +37,13 @@ export const PlanningList = ({ date }: { date: Date }): JSX.Element => {
   }, [startTime, endTime, indexUrl])
 
 
-  const { data } = useSWR([status, searchUrl.href], async (): Promise<SearchIndexResponse | undefined> => {
-    if (status !== 'authenticated') {
+  const { data } = useSWR(searchUrl?.href, async (): Promise<SearchIndexResponse<PlanningType> | undefined> => {
+    if (status !== 'authenticated' || !indexUrl) {
       return
     }
 
     const { startTime, endTime } = getDateTimeBoundaries(date)
-    const result = await Planning.search(indexUrl, session.accessToken, {
+    const result = await Plannings.search(indexUrl, session.accessToken, {
       size: 100,
       where: {
         start: convertToISOStringInUTC(startTime),

@@ -1,16 +1,19 @@
 import {
   Tooltip
 } from '@ttab/elephant-ui'
-import { Avatar } from '@/components'
+import { Avatar, type AvatarSize } from '@/components'
 import { AvatarGroup } from '../AvatarGroup'
 
-export const AssigneeAvatars = ({ assignees }: { assignees: string[] }): JSX.Element => {
+export const AssigneeAvatars = ({ assignees, size = 'sm' }: {
+  assignees: string[]
+  size?: string
+}): JSX.Element => {
   return (
-    <AvatarGroup size='sm'>
+    <AvatarGroup size={size as AvatarSize}>
       {(assignees || []).slice(0, 3).map((assignee: string, index: number) => {
         return (
           <Tooltip key={index} content={assignee}>
-            <Avatar value={assignee} size='sm' stacked={index > 0} />
+            <Avatar value={assignee} size={size as AvatarSize} stacked={index > 0} />
           </Tooltip>
         )
       })}
@@ -23,7 +26,7 @@ export const AssigneeAvatars = ({ assignees }: { assignees: string[] }): JSX.Ele
               <p>{assignee}</p>
             </div>))
         }>
-          <span className='font-semibold text-muted-foreground px-4 pt-1'>
+          <span className='font-semibold text-muted-foreground px-4 pt-1 text-xs'>
             {assignees.length > 3 && `+${assignees.length - 3}`}
           </span>
         </Tooltip>)

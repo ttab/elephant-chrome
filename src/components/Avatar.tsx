@@ -22,6 +22,7 @@ const avatarVariants = cva('',
         true: 'shadow-[-1px_1px_5px_-3px_rgba(0,0,0,0.4)] dark:shadow-none'
       },
       size: {
+        xs: 'size-6 mr-1.5 font-normal text-xs',
         sm: 'size-7 mr-2 font-normal text-xs',
         lg: 'size-9 font-semibold text-md',
         xl: 'size-12 font-semibold text-md',
@@ -29,6 +30,8 @@ const avatarVariants = cva('',
       }
     }
   })
+
+export type AvatarSize = 'xs' | 'sm' | 'lg' | 'xl' | 'default' | undefined | null
 
 export const Avatar = ({ user, value, variant = 'default', size = 'default', color = 'default', stacked = false, className }:
 React.HTMLAttributes<HTMLDivElement> &
