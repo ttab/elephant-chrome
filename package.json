@@ -91,7 +91,7 @@
     "tsx": "^4.16.5",
     "typescript": "^5.5.4",
     "vite": "^5.3.5",
-    "vite-plugin-static-copy": "^1.0.5",
+    "vite-plugin-static-copy": "^1.0.6",
     "vitest": "^1.6.0",
     "ws": "^8.17.1"
   }
