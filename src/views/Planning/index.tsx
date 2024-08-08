@@ -86,7 +86,7 @@ const PlanningViewContent = (props: ViewProps & { documentId: string }): JSX.Ele
 
           <ViewHeader.Content>
             <div className='flex w-full h-full items-center space-x-2'>
-              <PlanDocumentStatus />
+              <PlanDocumentStatus documentId={props.documentId} />
               <PlanStatus />
               <PlanNewsvalue />
             </div>
