@@ -9,8 +9,6 @@ import {
   Plannings
 } from '@/lib/index'
 
-import { Repository } from '@/lib/repository'
-
 import { PlanningTable } from '@/views/PlanningOverview/PlanningTable'
 import { columns } from '@/views/PlanningOverview/PlanningTable/Columns'
 import { convertToISOStringInUTC, getDateTimeBoundaries } from '@/lib/datetime'
@@ -51,27 +49,39 @@ export const PlanningList = ({ date }: { date: Date }): JSX.Element => {
       }
     })
     if (result.ok) {
-      const documentIds = result?.hits.map(hit => hit._id)
       try {
-        const metaResult = await Promise.all(documentIds?.map(async (documentId: string) => {
-          const metaResponse = await Repository.metaSearch({ session, documentId })
-          return { ...metaResponse, documentId }
-        }))
-        const planningsWithMeta = {
+        const getCurrentDocumentStatus = (obj: PlanningType): string => {
+          const item = obj._source
+          const result: Record<string, string[]> = {}
+          const defaultStatus = 'draft'
+          for (const key in item) {
+            if (Object.prototype.hasOwnProperty.call(item, key) && key.startsWith('heads.')) {
+              const newkey = key.split('heads.')[1]
+              result[newkey] = (item as Record<string, any>)[key]
+            }
+          }
+          const createdValues = []
+          for (const key in result) {
+            if (key.includes('.created')) {
+              const dateCreated = result[key][0]
+              createdValues.push({ status: key.replace('.created', ''), created: dateCreated })
+            }
+          }
+          createdValues.sort((a, b) => a?.created > b?.created ? -1 : 1)
+          return createdValues[0]?.status || defaultStatus
+        }
+        const planningsWithStatus = {
           ...result,
           hits: result?.hits?.map((planningItem: PlanningType) => {
-            const documentId = planningItem?._id
-            const _meta = metaResult?.find(metaItem => metaItem.documentId === documentId)
-            const heads = _meta?.meta?.heads
-            const status = Object?.keys(heads || {})[0]
+            const status = getCurrentDocumentStatus(planningItem)
             planningItem._source = Object.assign({}, planningItem._source, {
               'document.meta.status': [status]
             })
             return planningItem
           })
         }
-        setData(planningsWithMeta)
-        return planningsWithMeta
+        setData(planningsWithStatus)
+        return planningsWithStatus
       } catch (error) {
         console.error(error)
       }
