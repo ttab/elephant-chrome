@@ -7,8 +7,9 @@ export async function fetchOrRefresh<T>(
   cb: () => Promise<T[]>
 ): Promise<T[]> {
   const { lastRefresh } = await IDB.get<{ lastRefresh: Date }>('__meta', storeName) || {}
+  const maxRefreshInterval = 1000 * 3600 * 48
 
-  if (force || !lastRefresh || (Date.now() - (lastRefresh.getTime() || 0) > 60000 * 60 * 24)) {
+  if (force || !lastRefresh || (Date.now() - (lastRefresh.getTime() || 0) > maxRefreshInterval)) {
     await navigator.locks.request(`__meta_${storeName}`, { ifAvailable: true },
       async (lock) => {
         if (!lock) {
