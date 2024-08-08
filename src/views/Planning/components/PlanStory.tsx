@@ -13,7 +13,7 @@ export const PlanStory = (): JSX.Element => {
     }
   })
 
-  const [stories, setStories] = useYValue<Y.Array<unknown>>('links.core/story', {
+  const [, setStories] = useYValue<Y.Array<unknown>>('links.core/story', {
     createOnEmpty: {
       path: 'links.core/story',
       data: []
@@ -24,7 +24,6 @@ export const PlanStory = (): JSX.Element => {
   const setFocused = useRef<(value: boolean) => void>(null)
   const selectedOption = allStories.find(s => s.value === story?.uuid)
 
-  console.log('STORIES: ', stories)
   return (
     <Awareness name='PlanStory' ref={setFocused}>
       <ComboBox
