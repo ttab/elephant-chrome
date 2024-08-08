@@ -47,42 +47,37 @@ export const PlanningList = ({ date }: { date: Date }): JSX.Element => {
       }
     })
     if (result.ok) {
-      try {
-        const getCurrentDocumentStatus = (obj: PlanningType): string => {
-          const item = obj._source
-          const result: Record<string, string[]> = {}
-          const defaultStatus = 'draft'
-          for (const key in item) {
+      const getCurrentDocumentStatus = (obj: PlanningType): string => {
+        const item: Record<string, null | string[]> = obj._source
+        const defaultStatus = 'draft'
+        const createdValues = []
+        for (const key in item) {
+          if (Array.isArray(item[key])) {
             if (Object.prototype.hasOwnProperty.call(item, key) && key.startsWith('heads.')) {
-              const newkey = key.split('heads.')[1]
-              result[newkey] = (item as Record<string, any>)[key]
+              let newkey = key.split('heads.')[1]
+              if (newkey.includes('.created')) {
+                newkey = newkey.replace('.created', '')
+                const [dateCreated] = item[key]
+                createdValues.push({ status: newkey, created: dateCreated })
+              }
             }
           }
-          const createdValues = []
-          for (const key in result) {
-            if (key.includes('.created')) {
-              const dateCreated = result[key][0]
-              createdValues.push({ status: key.replace('.created', ''), created: dateCreated })
-            }
-          }
-          createdValues.sort((a, b) => a?.created > b?.created ? -1 : 1)
-          return createdValues[0]?.status || defaultStatus
         }
-        const planningsWithStatus = {
-          ...result,
-          hits: result?.hits?.map((planningItem: PlanningType) => {
-            const status = getCurrentDocumentStatus(planningItem)
-            planningItem._source = Object.assign({}, planningItem._source, {
-              'document.meta.status': [status]
-            })
-            return planningItem
-          })
-        }
-        setData(planningsWithStatus)
-        return planningsWithStatus
-      } catch (error) {
-        console.error(error)
+        createdValues.sort((a, b) => a?.created > b?.created ? -1 : 1)
+        return createdValues[0]?.status || defaultStatus
       }
+      const planningsWithStatus = {
+        ...result,
+        hits: result?.hits?.map((planningItem: PlanningType) => {
+          const status = getCurrentDocumentStatus(planningItem)
+          planningItem._source = Object.assign({}, planningItem._source, {
+            'document.meta.status': [status]
+          })
+          return planningItem
+        })
+      }
+      setData(planningsWithStatus)
+      return planningsWithStatus
     }
   })
 
