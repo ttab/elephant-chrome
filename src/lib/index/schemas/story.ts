@@ -1,6 +1,6 @@
 import { z } from 'zod'
 
-const AuthorSchema = z.object({
+const StorySchema = z.object({
   _index: z.string(),
   _id: z.string(),
   _score: z.nullable(z.number()),
@@ -16,16 +16,12 @@ const AuthorSchema = z.object({
     'heads.usable.creator': z.array(z.string()),
     'heads.usable.id': z.array(z.string()),
     'heads.usable.version': z.array(z.string()),
-    'document.meta.core_author.data.firstName': z.array(z.string()),
-    'document.meta.core_author.data.lastName': z.array(z.string()),
-    'document.meta.core_author.data.initials': z.array(z.string()),
-    'document.meta.core_contact_info.data.email': z.array(z.string()),
-    'document.meta.core_contact_info.data.city': z.array(z.string()),
-    'document.meta.core_contact_info.data.country': z.array(z.string()),
+    'document.meta.core_definition.data.text': z.array(z.string()),
+    'document.meta.core_definition.role': z.array(z.string()),
     modified: z.array(z.string()),
     readers: z.array(z.string()),
     text: z.null()
   })
 })
 
-export type IndexedAuthor = z.infer<typeof AuthorSchema>
+export type IndexedStory = z.infer<typeof StorySchema>

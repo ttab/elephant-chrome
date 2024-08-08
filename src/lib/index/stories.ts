@@ -1,4 +1,4 @@
-import { type IndexedAuthor } from './schemas/author'
+import { type IndexedStory } from './schemas/story'
 import { searchIndex, type SearchIndexResponse } from './searchIndex'
 
 interface SearchParams {
@@ -6,7 +6,7 @@ interface SearchParams {
   size?: number
 }
 
-const get = async (endpoint: URL, accessToken: string, params?: SearchParams): Promise<SearchIndexResponse<IndexedAuthor>> => {
+const get = async (endpoint: URL, accessToken: string, params?: SearchParams): Promise<SearchIndexResponse<IndexedStory>> => {
   const query = {
     query: {
       match_all: {}
@@ -16,7 +16,7 @@ const get = async (endpoint: URL, accessToken: string, params?: SearchParams): P
   return await searchIndex(
     query,
     {
-      index: 'core_author',
+      index: 'core_story',
       endpoint,
       accessToken
     },
@@ -25,6 +25,6 @@ const get = async (endpoint: URL, accessToken: string, params?: SearchParams): P
   )
 }
 
-export const Authors = {
+export const Stories = {
   get
 }

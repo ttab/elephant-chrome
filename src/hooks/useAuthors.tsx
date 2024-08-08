@@ -1,11 +1,12 @@
-import { AuthorsContext, type IAuthor } from '@/contexts/AuthorsProvider'
 import { useContext } from 'react'
+import { CoreAuthorContext } from '../datastore/contexts/CoreAuthorProvider'
+import { type IDBAuthor } from '../datastore/types'
 
-export const useAuthors = (options?: { sort?: 'title' | 'firstName' | 'lastName' }): IAuthor[] => {
-  const { authors } = useContext(AuthorsContext)
-  const sortKey = (['title', 'firstName', 'lastName'].includes(options?.sort || '')) ? options?.sort : 'title' as keyof (IAuthor)
+export const useAuthors = (options?: { sort?: 'title' | 'firstName' | 'lastName' }): IDBAuthor[] => {
+  const { objects } = useContext(CoreAuthorContext)
+  const sortKey = (['title', 'firstName', 'lastName'].includes(options?.sort || '')) ? options?.sort : 'title'
 
-  return (authors).sort((a1, a2) => {
+  return (objects).sort((a1, a2) => {
     if (sortKey === 'firstName') {
       const v1 = `${a1.firstName} ${a1.lastName}`.toLocaleLowerCase()
       const v2 = `${a2.firstName} ${a2.lastName}`.toLocaleLowerCase()
