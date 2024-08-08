@@ -1,7 +1,6 @@
 import { useMemo } from 'react'
 import useSWR from 'swr'
-
-import { useIndexUrl, usePlanningTable } from '@/hooks'
+import { useIndexUrl, usePlanningTable, useRepositoryEvents } from '@/hooks'
 import { useSession } from 'next-auth/react'
 import {
   type SearchIndexResponse,
@@ -34,8 +33,7 @@ export const PlanningList = ({ date }: { date: Date }): JSX.Element => {
     return searchUrl
   }, [startTime, endTime, indexUrl])
 
-
-  const { data } = useSWR(searchUrl?.href, async (): Promise<SearchIndexResponse<PlanningType> | undefined> => {
+  const { data, mutate } = useSWR(searchUrl?.href, async (): Promise<SearchIndexResponse<PlanningType> | undefined> => {
     if (status !== 'authenticated' || !indexUrl) {
       return
     }
@@ -88,6 +86,15 @@ export const PlanningList = ({ date }: { date: Date }): JSX.Element => {
     }
   })
 
+  useRepositoryEvents('core/planning-item', () => {
+    void (async () => {
+      try {
+        await mutate()
+      } catch (error) {
+        console.error('Error when mutating Planning list', error)
+      }
+    })()
+  })
 
   return (
     <>
