@@ -12,7 +12,7 @@ import {
   useReactTable
 } from '@tanstack/react-table'
 import { columns } from '@/views/PlanningOverview/PlanningTable/Columns'
-import type { SearchIndexResponse, Planning } from '@/lib/index'
+import { type SearchIndexResponse, type Planning } from '@/lib/index'
 
 export interface CommandArgs {
   pages: string[]
@@ -55,7 +55,6 @@ export const PlanningTableProvider = ({ children }: PropsWithChildren): JSX.Elem
     setSearch,
     search
   }
-
   const table = useReactTable({
     data: data?.hits || [],
     columns,
