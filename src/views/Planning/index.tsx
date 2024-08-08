@@ -81,7 +81,7 @@ const PlanningViewContent = (props: ViewProps & { documentId: string }): JSX.Ele
       <div className="grow-0">
         <ViewHeader.Root>
           {!props.asCreateDialog &&
-            <ViewHeader.Title title='Planering' icon={GanttChartSquare} />
+            <ViewHeader.Title title='Planering' icon={GanttChartSquare} iconColor='#DAC9F2' />
           }
 
           <ViewHeader.Content>
