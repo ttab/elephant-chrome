@@ -79,8 +79,8 @@ export const ComboBox = ({
             )
             }>
             {children || (label
-              ? <>aa{label}</>
-              : <>bb{placeholder || ''}</>)
+              ? <>{label}</>
+              : <>{placeholder || ''}</>)
             }
           </Button>
         </PopoverTrigger>

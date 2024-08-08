@@ -18,7 +18,7 @@ interface IAssignee {
 export const Assignees = ({ path }: {
   path: string
 }): JSX.Element | undefined => {
-  const authors = useAuthors({ sort: 'lastName' })
+  const authors = useAuthors({ sort: 'title' })
   const [assignees] = useYValue<Y.Array<unknown>>(path, {
     createOnEmpty: {
       path,
