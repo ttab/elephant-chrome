@@ -3,7 +3,6 @@ import { AppHeader } from '@/components'
 import { DocTrackerProvider } from './contexts/DocTrackerProvider'
 import { AppContent } from './AppContent'
 import { Login } from './views'
-import { PlanningTableProvider } from './contexts'
 import { IndexedDBProvider } from './datastore/contexts/IndexedDBProvider'
 
 export const App = (): JSX.Element => {
@@ -25,11 +24,9 @@ export const App = (): JSX.Element => {
     <div className='relative flex h-screen flex-col'>
       <div className='grid grid-cols-12 divide-x-2 h-screen'>
         <IndexedDBProvider name='elephant-db'>
-          <PlanningTableProvider>
-            <DocTrackerProvider>
-              <AppContent />
-            </DocTrackerProvider>
-          </PlanningTableProvider>
+          <DocTrackerProvider>
+            <AppContent />
+          </DocTrackerProvider>
         </IndexedDBProvider>
       </div>
 
