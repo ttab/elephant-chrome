@@ -1,13 +1,12 @@
 import { useContext, useEffect, useState } from 'react'
 import { type Events as EventsType } from '@/views/EventsOverview/EventsTable/data/schema'
-import { useRegistry } from '@/hooks'
+import { useRegistry, useSections } from '@/hooks'
 import { SectionBadge } from '@/components/DataItem/SectionBadge'
 import { StatusIndicator } from '@/components/DataItem/StatusIndicator'
 import { DocTrackerContext } from '@/contexts/DocTrackerProvider'
 import { Avatar } from '@/components'
 import { AvatarGroup } from '@/components/AvatarGroup'
 import type * as Y from 'yjs'
-import { EventsSections } from '@/defaults'
 
 interface EventsGridColumnProps {
   date: Date
@@ -28,6 +27,7 @@ export const EventsGridColumn = ({ date, items }: EventsGridColumnProps): JSX.El
   const { provider: docTracker } = useContext(DocTrackerContext)
   const [openDocuments, setOpenDocuments] = useState<Y.Map<unknown> | undefined>()
   const [users, setUsers] = useState<UserDoc | undefined>()
+  const sections = useSections()
 
   // TODO: Temporary until we'll get it into useYObserver/useCollaboration
   useEffect(() => {
@@ -67,7 +67,7 @@ export const EventsGridColumn = ({ date, items }: EventsGridColumnProps): JSX.El
           const deliverables = item._source['document.rel.story.uuid']
           const deliverable = (Array.isArray(deliverables) ? deliverables[0] || '' : '')
           const id = item._id
-          const sector = EventsSections.find((sector) => sector.value === item._source['document.rel.story.uuid'][0])
+          const section = sections.find(_ => _.id === item._source['document.rel.story.uuid'][0])
           const activeUsers = users?.[deliverable]
 
           return <EventItem
@@ -76,7 +76,7 @@ export const EventsGridColumn = ({ date, items }: EventsGridColumnProps): JSX.El
             internal={internal}
             title={title}
             slugLine={slugLine}
-            sector={sector}
+            section={section}
             users={activeUsers}
           />
         })
@@ -92,13 +92,14 @@ function EventItem(props: {
   internal: boolean
   title: string
   slugLine: string
-  sector?: {
-    label: string
+  section?: {
+    id: string
+    title: string
     color?: string
   }
   users?: Record<string, TrackedUser>
 }): JSX.Element {
-  const { internal, title, slugLine, sector, users } = props
+  const { internal, title, slugLine, section, users } = props
 
   return (
     <div className="flex gap-2">
@@ -111,8 +112,8 @@ function EventItem(props: {
 
         <div className="flex justify-between gap-2">
           <span className="text-sm text-muted-foreground whitespace-nowrap overflow-hidden text-ellipsis">{slugLine}</span>
-          {!!sector &&
-            <SectionBadge label={sector.label} color={sector.color} />
+          {!!section &&
+            <SectionBadge label={section.title} color={section.color} />
           }
         </div>
 

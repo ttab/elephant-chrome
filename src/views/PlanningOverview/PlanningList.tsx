@@ -1,7 +1,7 @@
 import { useMemo } from 'react'
 import useSWR from 'swr'
 
-import { useIndexUrl, usePlanningTable } from '@/hooks'
+import { useIndexUrl, usePlanningTable, useSections } from '@/hooks'
 import { useSession } from 'next-auth/react'
 import {
   type SearchIndexResponse,
@@ -12,13 +12,14 @@ import {
 import { Repository } from '@/lib/repository'
 
 import { PlanningTable } from '@/views/PlanningOverview/PlanningTable'
-import { columns } from '@/views/PlanningOverview/PlanningTable/Columns'
+import { planningTableColumns } from '@/views/PlanningOverview/PlanningTable/Columns'
 import { convertToISOStringInUTC, getDateTimeBoundaries } from '@/lib/datetime'
 
 export const PlanningList = ({ date }: { date: Date }): JSX.Element => {
   const { setData } = usePlanningTable()
   const { data: session, status } = useSession()
 
+  const sections = useSections()
   const indexUrl = useIndexUrl()
   const { startTime, endTime } = getDateTimeBoundaries(date)
 
@@ -82,7 +83,7 @@ export const PlanningList = ({ date }: { date: Date }): JSX.Element => {
   return (
     <>
       {data?.ok === true &&
-        <PlanningTable data={data?.hits} columns={columns} onRowSelected={(row): void => {
+        <PlanningTable data={data?.hits} columns={planningTableColumns({ sections })} onRowSelected={(row): void => {
           if (row) {
             console.info(`Selected planning item ${row._id}`)
           } else {

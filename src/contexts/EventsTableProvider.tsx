@@ -11,9 +11,10 @@ import {
   getSortedRowModel,
   useReactTable
 } from '@tanstack/react-table'
-import { columns } from '@/views/EventsOverview/EventsTable/Columns'
+import { eventTableColumns } from '@/views/EventsOverview/EventsTable/Columns'
 import { type EventsSearchIndexResponse } from '@/lib/index/events-search'
 import { type Events } from '@/views/EventsOverview/EventsTable/data/schema'
+import { useSections } from '../hooks'
 
 export interface CommandArgs {
   pages: string[]
@@ -32,13 +33,14 @@ export interface TableProviderState<TData> {
 
 const initialState = {
   table: {},
-  setData: () => {}
+  setData: () => { }
 } as unknown as TableProviderState<Events>
 
 export const EventsTableContext = createContext<TableProviderState<Events>>(initialState)
 
 export const EventsTableProvider = ({ children }: PropsWithChildren): JSX.Element => {
   const [data, setData] = useState<EventsSearchIndexResponse | null>([] as unknown as EventsSearchIndexResponse)
+  const sections = useSections()
 
   const [rowSelection, setRowSelection] = useState({})
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
@@ -59,7 +61,7 @@ export const EventsTableProvider = ({ children }: PropsWithChildren): JSX.Elemen
 
   const table = useReactTable({
     data: data?.hits || [],
-    columns,
+    columns: eventTableColumns({ sections }),
     state: {
       sorting,
       columnVisibility,
