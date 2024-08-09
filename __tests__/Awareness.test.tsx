@@ -16,7 +16,7 @@ vi.spyOn(hooks, 'useAwareness').mockReturnValue([
         color: 'rgb(6 182 212)'
       },
       focus: {
-        key: 'PlanSector',
+        key: 'PlanSection',
         color: 'rgb(6 182 212)'
       }
     }

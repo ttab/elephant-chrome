@@ -7,7 +7,7 @@ import { SluglineEditable } from '@/components/DataItem/SluglineEditable'
 import {
   AssignmentTable,
   PlanDate,
-  PlanSector,
+  PlanSection,
   PlanStatus,
   PlanTitle,
   PlanNewsvalue,
@@ -117,7 +117,7 @@ const PlanningViewContent = (props: ViewProps & { documentId: string }): JSX.Ele
               <PlanDate />
             </div>
             <div className='flex space-x-2'>
-              <PlanSector />
+              <PlanSection />
               <PlanStory />
             </div>
           </div>

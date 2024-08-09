@@ -1,3 +1,6 @@
+/**
+ * @deprecated
+ */
 import { type DefaultValueOption } from '@/types'
 
 export const EventsSections: DefaultValueOption[] = [
@@ -5,17 +8,17 @@ export const EventsSections: DefaultValueOption[] = [
     value: 'SPT',
     label: 'Sport',
     payload:
-  {
-    uri: 'sector://spt',
-    type: 'tt/sector',
-    title: 'Sport',
-    data: {},
-    rel: 'sector',
-    value: 'SPT',
-    links: [],
-    content: [],
-    meta: []
-  },
+    {
+      uri: 'sector://spt',
+      type: 'tt/sector',
+      title: 'Sport',
+      data: {},
+      rel: 'sector',
+      value: 'SPT',
+      links: [],
+      content: [],
+      meta: []
+    },
     color: 'bg-[#6CA8DF]'
   },
   {

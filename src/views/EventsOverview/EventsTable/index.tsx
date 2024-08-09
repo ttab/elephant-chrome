@@ -9,7 +9,7 @@ import { Toolbar } from './Toolbar'
 import { useNavigation, useView } from '@/hooks'
 import { isEditableTarget } from '@/lib/isEditableTarget'
 import { useEventsTable } from '@/hooks/useEventsTable'
-import { columns } from './Columns'
+import { eventTableColumns } from './Columns'
 import { cn } from '@ttab/elephant-ui/utils'
 import { handleLink } from '@/components/Link/lib/handleLink'
 
@@ -86,9 +86,9 @@ export const EventsTable = <TData, TValue>({
       return (
         <TableRow>
           <TableCell
-            colSpan={columns.length}
+            colSpan={eventTableColumns({}).length}
             className="h-24 text-center"
-            >
+          >
             {loading ? 'Loading...' : 'No results.'}
           </TableCell>
         </TableRow>

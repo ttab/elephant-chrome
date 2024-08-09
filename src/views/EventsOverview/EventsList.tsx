@@ -1,11 +1,11 @@
 import { useMemo } from 'react'
 import useSWR from 'swr'
 
-import { useIndexUrl, useEventsTable } from '@/hooks'
+import { useIndexUrl, useEventsTable, useSections } from '@/hooks'
 import { useSession } from 'next-auth/react'
 import { type EventsSearchIndexResponse } from '@/lib/index/events-search'
 import { Events } from '@/lib/events'
-import { columns } from '@/views/EventsOverview/EventsTable/Columns'
+import { eventTableColumns } from '@/views/EventsOverview/EventsTable/Columns'
 
 import { convertToISOStringInUTC, getDateTimeBoundaries } from '@/lib/datetime'
 import { EventsTable } from './EventsTable'
@@ -16,6 +16,7 @@ export const EventsList = ({ date }: { date: Date }): JSX.Element => {
 
   const indexUrl = useIndexUrl()
   const { startTime, endTime } = getDateTimeBoundaries(date)
+  const sections = useSections()
 
   // Create url to base SWR caching on
   const searchUrl = useMemo(() => {
@@ -70,6 +71,7 @@ export const EventsList = ({ date }: { date: Date }): JSX.Element => {
     }
   })
 
+  const columns = eventTableColumns({ sections })
 
   return (
     <>

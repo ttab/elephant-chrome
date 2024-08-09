@@ -9,7 +9,7 @@ import { Toolbar } from './Toolbar'
 import { useNavigation, useView } from '@/hooks'
 import { isEditableTarget } from '@/lib/isEditableTarget'
 import { usePlanningTable } from '@/hooks/usePlanningTable'
-import { columns } from './Columns'
+import { planningTableColumns } from './Columns'
 import { cn } from '@ttab/elephant-ui/utils'
 import { handleLink } from '@/components/Link/lib/handleLink'
 
@@ -86,7 +86,7 @@ export const PlanningTable = <TData, TValue>({
       return (
         <TableRow>
           <TableCell
-            colSpan={columns.length}
+            colSpan={planningTableColumns({}).length}
             className="h-24 text-center"
           >
             {loading ? 'Loading...' : 'No results.'}
