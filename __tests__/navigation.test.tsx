@@ -39,6 +39,6 @@ describe('Use NavigationProvider', () => {
       </SessionProvider >
     )
 
-    expect(await screen.findByText(/Planeringsöversikt/)).toBeInTheDocument()
+    expect(await screen.findByRole('header-title')).toBeInTheDocument()
   })
 })
