@@ -1,5 +1,5 @@
 import { type ColumnDef } from '@tanstack/react-table'
-import { type Planning } from '../data/schema'
+import { type Planning } from '@/lib/index/schemas/planning'
 import { Newsvalue } from '@/components/Table/Newsvalue'
 import { Title } from '@/components/Table/Title'
 import { Section } from './Section'
@@ -13,13 +13,29 @@ import {
   Users,
   Crosshair,
   Navigation,
-  Eye
+  Eye,
+  CircleCheck
 } from '@ttab/elephant-ui/icons'
-import { Newsvalues, NewsvalueMap, PlanningSections, AssignmentTypes, VisibilityStatuses } from '@/defaults'
+import { Newsvalues, NewsvalueMap, PlanningSections, AssignmentTypes, VisibilityStatuses, DocumentStatuses } from '@/defaults'
 import { StatusIndicator } from '@/components/DataItem/StatusIndicator'
-
+import { DocumentStatus } from './DocumentStatus'
 
 export const columns: Array<ColumnDef<Planning>> = [
+  {
+    id: 'documentStatus',
+    meta: {
+      filter: 'facet',
+      options: DocumentStatuses,
+      name: 'documentStatus',
+      columnIcon: CircleCheck,
+      className: 'box-content w-6 pr-0'
+    },
+    accessorFn: (data) => data?._source['document.meta.status'][0],
+    cell: ({ row }) => {
+      const status = row.getValue<string>('documentStatus')
+      return <DocumentStatus status={status} />
+    }
+  },
   {
     id: 'visibilityStatus',
     meta: {

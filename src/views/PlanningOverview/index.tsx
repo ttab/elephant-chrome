@@ -44,7 +44,7 @@ export const Plannings = (): JSX.Element => {
 
         <div className="flex flex-col h-screen">
           <ViewHeader.Root>
-            <ViewHeader.Title title="Planeringsöversikt" short="Planering" icon={CalendarDaysIcon} iconColor='#FF971E' />
+            <ViewHeader.Title title="Planeringar" short="Planeringar" icon={CalendarDaysIcon} iconColor='#FF971E' />
 
             <ViewHeader.Content>
               <Header

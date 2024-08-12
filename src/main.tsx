@@ -4,6 +4,7 @@ import { ThemeProvider, RegistryProvider, HPWebSocketProvider } from '@/contexts
 import { SessionProvider } from 'next-auth/react'
 import { NavigationProvider } from '@/navigation'
 import { banner } from './lib/banner.ts'
+import { RepositoryEventsProvider } from './contexts/RepositoryEventsProvider.tsx'
 
 banner()
 
@@ -17,11 +18,13 @@ ReactDOM.createRoot(root).render(
   <SessionProvider basePath={`${import.meta.env.BASE_URL}/api/auth`} refetchInterval={180}>
     <RegistryProvider>
       <HPWebSocketProvider>
-        <ThemeProvider defaultTheme='light' storageKey='ele-ui-theme' >
-          <NavigationProvider>
-            <App />
-          </NavigationProvider>
-        </ThemeProvider >
+        <RepositoryEventsProvider>
+          <ThemeProvider defaultTheme='light' storageKey='ele-ui-theme' >
+            <NavigationProvider>
+              <App />
+            </NavigationProvider>
+          </ThemeProvider >
+        </RepositoryEventsProvider>
       </HPWebSocketProvider>
     </RegistryProvider>
   </SessionProvider>

@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState } from 'react'
-import { type Planning as PlanningType } from '@/views/PlanningOverview/PlanningTable/data/schema'
+import { type Planning as PlanningType } from '@/lib/index'
 import { useRegistry } from '@/hooks'
 import { SectionBadge } from '@/components/DataItem/SectionBadge'
 import { StatusIndicator } from '@/components/DataItem/StatusIndicator'

@@ -1,13 +1,14 @@
 import { TextBox } from '@/components/ui'
 import { useCollaboration, useYObserver } from '@/hooks'
 import { Button } from '@ttab/elephant-ui'
-import { Clock10Icon, MessageCircleMore, UserPlus } from '@ttab/elephant-ui/icons'
+import { Clock10Icon, MessageCircleMore } from '@ttab/elephant-ui/icons'
 import { cn } from '@ttab/elephant-ui/utils'
 import type * as Y from 'yjs'
 import * as yMapValueByPath from '@/lib/yMapValueByPath'
 import { AssignmentType } from '@/components/DataItem/AssignmentType'
 import { useYValue } from '@/hooks/useYValue'
 import { Block } from '@/protos/service'
+import { Assignees } from './AssignmentAssignees'
 
 export const Assignment = ({ index, setSelectedAssignment, className }: {
   index: number
@@ -65,7 +66,8 @@ export const Assignment = ({ index, setSelectedAssignment, className }: {
             path={`core/assignment[${index}].meta.core/assignment-type`}
             editable={inProgress}
           />
-          <UserPlus size={20} strokeWidth={1.75} />
+          <Assignees path={`meta.core/assignment[${index}].links.core/author`} />
+
           <Clock10Icon size={20} strokeWidth={1.75} />
         </div>
 

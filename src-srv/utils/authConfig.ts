@@ -10,6 +10,7 @@ const scopes = [
   'doc_read',
   'doc_write',
   'doc_delete',
+  'eventlog_read',
   'search'
 ]
 

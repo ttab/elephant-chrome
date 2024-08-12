@@ -1,4 +1,8 @@
-import { searchIndex, type SearchIndexResponse } from '../index/planning-search'
+import {
+  type Planning,
+  searchIndex,
+  type SearchIndexResponse
+} from '../index'
 
 interface SearchPlanningParams {
   skip?: number
@@ -9,7 +13,7 @@ interface SearchPlanningParams {
   }
 }
 // request planning items what has related calendar events
-export const relatedPlanningSearch = async (endpoint: URL, accessToken: string, uuids: string[], params?: SearchPlanningParams): Promise<SearchIndexResponse> => {
+export const relatedPlanningSearch = async (endpoint: URL, accessToken: string, uuids: string[], params?: SearchPlanningParams): Promise<SearchIndexResponse<Planning>> => {
   const start = params?.where?.start ? new Date(params.where.start) : new Date()
   const end = params?.where?.end ? new Date(params.where.end) : new Date()
 

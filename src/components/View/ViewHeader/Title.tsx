@@ -23,7 +23,7 @@ export const Title = ({ title, short: shortTitle, icon: Icon, iconColor }: Props
             ? <>{title}</>
             : <>
               <span className="@3xl/view:hidden">{shortTitle}</span>
-              <span className="hidden @3xl/view:inline">{title}</span>
+              <span className="hidden @3xl/view:inline" role='header-title'>{title}</span>
             </>
           }
         </h2>

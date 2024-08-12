@@ -12,8 +12,7 @@ import {
   useReactTable
 } from '@tanstack/react-table'
 import { columns } from '@/views/PlanningOverview/PlanningTable/Columns'
-import { type SearchIndexResponse } from '@/lib/index/planning-search'
-import { type Planning } from '@/views/PlanningOverview/PlanningTable/data/schema'
+import { type SearchIndexResponse, type Planning } from '@/lib/index'
 
 export interface CommandArgs {
   pages: string[]
@@ -25,20 +24,20 @@ export interface CommandArgs {
 
 export interface TableProviderState<TData> {
   table: Table<TData>
-  setData: Dispatch<SearchIndexResponse>
+  setData: Dispatch<SearchIndexResponse<Planning>>
   loading: boolean
   command: CommandArgs
 }
 
 const initialState = {
   table: {},
-  setData: () => {}
+  setData: () => { }
 } as unknown as TableProviderState<Planning>
 
 export const PlanningTableContext = createContext<TableProviderState<Planning>>(initialState)
 
 export const PlanningTableProvider = ({ children }: PropsWithChildren): JSX.Element => {
-  const [data, setData] = useState<SearchIndexResponse | null>([] as unknown as SearchIndexResponse)
+  const [data, setData] = useState<SearchIndexResponse<Planning> | null>([] as unknown as SearchIndexResponse<Planning>)
 
   const [rowSelection, setRowSelection] = useState({})
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
@@ -56,7 +55,6 @@ export const PlanningTableProvider = ({ children }: PropsWithChildren): JSX.Elem
     setSearch,
     search
   }
-
   const table = useReactTable({
     data: data?.hits || [],
     columns,

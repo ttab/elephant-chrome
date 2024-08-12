@@ -1,13 +1,52 @@
 import { Awareness } from '@/components'
 import { ComboBox } from '@/components/ui'
 import { DocumentStatuses } from '@/defaults'
+import { useSession } from 'next-auth/react'
 import { useRef } from 'react'
+import { type DefaultValueOption } from '@/types'
+import { Repository } from '@/lib/repository'
+import useSWR from 'swr'
+import { type MetaHead } from '@/lib/repository/metaSearch'
 
-// TODO: Should read current versions status
-export const PlanDocumentStatus = (): JSX.Element => {
+interface Status {
+  name: string
+  version: number
+  documentId: string
+}
+
+export const PlanDocumentStatus = ({ documentId }: { documentId: string }): JSX.Element => {
+  const { data: documentStatus, mutate } = useSWR([`status/${documentId}`], async () => {
+    const _meta = await Repository.metaSearch({ session, documentId })
+    const version = _meta.meta.current_version
+    const heads: MetaHead = _meta?.meta?.heads
+    const headsEntries = Object.entries(heads)
+    const currentStatus = headsEntries.sort((a, b) => a[1].created > b[1].created ? -1 : 0)[0][0]
+    const status = {
+      version: +version,
+      name: currentStatus,
+      documentId
+    }
+    return status
+  })
+  const { data: session } = useSession()
   const setFocused = useRef<(value: boolean) => void>(null)
 
-  const selectedOption = DocumentStatuses.find(type => type.value === 'published')
+  const selectedOption = DocumentStatuses.find(type => type.value === (documentStatus?.name || 'draft'))
+
+  const handleOnSelect = (option: DefaultValueOption, currentStatus?: Status): void => {
+    (async () => {
+      if (currentStatus?.version) {
+        const selectedStatusName = option.value
+        const newStatus = {
+          name: selectedStatusName,
+          version: currentStatus.version,
+          documentId: currentStatus.documentId
+        }
+        await Repository.update({ session, status: newStatus })
+        await mutate(newStatus, { optimisticData: newStatus, revalidate: false })
+      }
+    })().catch(error => console.error(error))
+  }
 
   return (
     <Awareness name='PlanDocumentStatus' ref={setFocused}>
@@ -16,7 +55,7 @@ export const PlanDocumentStatus = (): JSX.Element => {
         options={DocumentStatuses}
         variant={'ghost'}
         selectedOption={selectedOption}
-        onSelect={() => { alert('Not yet implemented') }}
+        onSelect={(option) => handleOnSelect(option, documentStatus)}
         hideInput
       >
         {selectedOption?.icon
