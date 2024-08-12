@@ -4,6 +4,6 @@ import { get, type SearchParams } from './get'
 
 export const Authors = {
   get: async (endpoint: URL, accessToken: string, params?: SearchParams): Promise<SearchIndexResponse<IndexedAuthor>> => {
-    return await get<IndexedAuthor>(endpoint, accessToken, 'core_story', params)
+    return await get<IndexedAuthor>(endpoint, accessToken, 'core_author', params)
   }
 }
