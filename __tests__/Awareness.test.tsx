@@ -1,6 +1,6 @@
 import { createRef } from 'react'
 import { screen, render } from '@testing-library/react'
-import { Awareness } from '../src/components/Awareness'
+import { Awareness } from '@/components/Awareness'
 import { vi } from 'vitest'
 import * as hooks from '@/hooks'
 

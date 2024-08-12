@@ -2,10 +2,10 @@ import { CommandItem } from '@ttab/elephant-ui'
 import { type ReactNode } from 'react'
 import { FacetedFilter } from '@/components/Commands/FacetedFilter'
 import { FileQuestion } from '@ttab/elephant-ui/icons'
-import { useEventsTable } from '@/hooks'
+import { useTable } from '@/hooks'
 
 export const ColumnFilter = (): ReactNode => {
-  const { command, table } = useEventsTable()
+  const { command, table } = useTable()
   const { setPages, setSearch, pages, page } = command
 
   const columns = table.getAllColumns()

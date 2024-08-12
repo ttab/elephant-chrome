@@ -6,10 +6,11 @@ import { ScrollArea, Tabs, TabsContent } from '@ttab/elephant-ui'
 
 import { PlanningGrid } from './PlanningGrid'
 import { PlanningList } from './PlanningList'
-import { PlanningTableProvider } from '@/contexts/PlanningTableProvider'
+import { TableProvider } from '@/contexts/TableProvider'
 
-import { TableCommandMenu } from './PlanningTable/TableCommandMenu'
+import { TableCommandMenu } from '@/components/Commands/TableCommand'
 import { Header } from '@/views/PlanningOverview/PlanningHeader'
+import { PlanningCommands } from './PlanningCommands'
 
 const meta: ViewMetadata = {
   name: 'Plannings',
@@ -37,10 +38,12 @@ export const Plannings = (): JSX.Element => {
   }, [startDate])
 
   return (
-    <PlanningTableProvider>
+    <TableProvider type='planning'>
       <Tabs defaultValue={currentTab} className='flex-1' onValueChange={setCurrentTab}>
 
-        <TableCommandMenu />
+        <TableCommandMenu>
+          <PlanningCommands />
+        </TableCommandMenu>
 
         <div className="flex flex-col h-screen">
           <ViewHeader.Root>
@@ -71,7 +74,7 @@ export const Plannings = (): JSX.Element => {
         </div>
 
       </Tabs>
-    </PlanningTableProvider>
+    </TableProvider>
   )
 }
 

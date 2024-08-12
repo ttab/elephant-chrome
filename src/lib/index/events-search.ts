@@ -1,4 +1,4 @@
-import { type Events } from '@/views/EventsOverview/EventsTable/data/schema'
+import { type Event } from '@/lib/index'
 
 interface SearchIndexOptions {
   accessToken: string
@@ -12,7 +12,7 @@ interface SearchIndexResult {
   page: number
   pages: number
   pageSize: number
-  hits: Events[]
+  hits: Event[]
 }
 
 interface SearchIndexError {

@@ -1,6 +1,6 @@
 import { ScanSearch } from '@ttab/elephant-ui/icons'
 import { handleLink } from '@/components/Link/lib/handleLink'
-import { useNavigation, useQuery, useView } from '../../hooks'
+import { useNavigation, useQuery, useView } from '@/hooks'
 import { type ActionHandlerI } from '../types'
 import { type Plugin } from '@ttab/textbit'
 

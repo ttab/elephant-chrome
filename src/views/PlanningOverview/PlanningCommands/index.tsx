@@ -1,8 +1,5 @@
 import { CommandList } from '@ttab/elephant-ui'
-import { ClearFilter } from './Items/ClearFilter'
-import { TextFilter } from './Items/TextSearch'
-import { ColumnFilter } from './Items/ColumnFilter'
-import { ToggleColumn } from './Items/ToggleColumn'
+import { ClearFilter, TextFilter, ColumnFilter, ToggleColumn } from '@/components/Commands/Items'
 
 export const PlanningCommands = (): JSX.Element => {
   return (

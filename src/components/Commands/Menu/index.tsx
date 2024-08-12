@@ -17,10 +17,10 @@ import {
   CommandItem,
   CommandSeparator
 } from '@ttab/elephant-ui'
-import { DebouncedCommandInput } from '../DebouncedCommandInput'
-import { handleLink } from '../../Link/lib/handleLink'
-import { useNavigation, useEventsTable, useView } from '@/hooks'
-import { type CommandArgs } from '@/contexts/EventsTableProvider'
+import { DebouncedCommandInput } from './DebouncedCommandInput'
+import { handleLink } from '@/components/Link/lib/handleLink'
+import { useNavigation, useTable, useView } from '@/hooks'
+import { type CommandArgs } from '@/contexts/TableProvider'
 
 interface CommandMenuProps {
   onKeyDown: (event: React.KeyboardEvent<HTMLDivElement>, setOpen: Dispatch<boolean>, args: CommandArgs) => void
@@ -28,13 +28,13 @@ interface CommandMenuProps {
   children?: JSX.Element
 }
 
-export const EventsCommandMenu = ({ children, onKeyDown, onChange }: CommandMenuProps): JSX.Element => {
+export const CommandMenu = ({ children, onKeyDown, onChange }: CommandMenuProps): JSX.Element => {
   const { state, dispatch } = useNavigation()
   const [open, setOpen] = useState(false)
 
   const { viewId } = useView()
 
-  const { command } = useEventsTable()
+  const { command } = useTable()
   const { search, setSearch, pages, setPages, page } = command
 
   const onOpenChange = useMemo(
@@ -77,14 +77,14 @@ export const EventsCommandMenu = ({ children, onKeyDown, onChange }: CommandMenu
               <CommandItem
                 onSelect={() => runCommand(() => handleLink({
                   dispatch,
-                  viewItem: state.viewRegistry.get('Events'),
+                  viewItem: state.viewRegistry.get('Plannings'),
                   viewId: crypto.randomUUID(),
                   viewRegistry: state.viewRegistry,
                   origin: viewId
                 }))}
               >
                 <GanttChart size={18} strokeWidth={1.75} className="mr-2" />
-                <span>Events overview</span>
+                <span>Planning overview</span>
               </CommandItem>
             </CommandGroup>
           )}

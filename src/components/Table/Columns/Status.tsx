@@ -2,7 +2,7 @@ import { Tooltip } from '@ttab/elephant-ui'
 import { CirclePlus, CalendarCheck } from '@ttab/elephant-ui/icons'
 import { useMemo } from 'react'
 
-export const PlanningStatus = ({ status }: { status: string }): JSX.Element => {
+export const Status = ({ status }: { status: string }): JSX.Element => {
   return useMemo(() => (
     <div className='flex items-center'>
       <Tooltip content={status ? 'Har planerats' : 'Skapa planering'}>

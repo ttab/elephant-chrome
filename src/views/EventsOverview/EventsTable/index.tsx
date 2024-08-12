@@ -5,11 +5,11 @@ import {
 } from '@tanstack/react-table'
 
 import { Table, TableBody, TableCell, TableRow } from '@ttab/elephant-ui'
-import { Toolbar } from './Toolbar'
+import { Toolbar } from '@/components/Table/Toolbar'
 import { useNavigation, useView } from '@/hooks'
 import { isEditableTarget } from '@/lib/isEditableTarget'
-import { useEventsTable } from '@/hooks/useEventsTable'
-import { columns } from './Columns'
+import { useTable } from '@/hooks/useTable'
+import { eventColumns } from './Columns'
 import { cn } from '@ttab/elephant-ui/utils'
 import { handleLink } from '@/components/Link/lib/handleLink'
 
@@ -27,7 +27,7 @@ export const EventsTable = <TData, TValue>({
   const { state, dispatch } = useNavigation()
   const { viewId: origin } = useView()
 
-  const { table, loading } = useEventsTable()
+  const { table, loading } = useTable()
 
   // Handle navigation using arrow keys
   useEffect(() => {
@@ -86,7 +86,7 @@ export const EventsTable = <TData, TValue>({
       return (
         <TableRow>
           <TableCell
-            colSpan={columns.length}
+            colSpan={eventColumns.length}
             className="h-24 text-center"
             >
             {loading ? 'Loading...' : 'No results.'}

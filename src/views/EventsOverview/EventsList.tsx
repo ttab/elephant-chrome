@@ -1,17 +1,17 @@
 import { useMemo } from 'react'
 import useSWR from 'swr'
 
-import { useIndexUrl, useEventsTable } from '@/hooks'
+import { useIndexUrl, useTable } from '@/hooks'
 import { useSession } from 'next-auth/react'
 import { type EventsSearchIndexResponse } from '@/lib/index/events-search'
 import { Events } from '@/lib/events'
-import { columns } from '@/views/EventsOverview/EventsTable/Columns'
+import { eventColumns } from '@/views/EventsOverview/EventsTable/Columns'
 
 import { convertToISOStringInUTC, getDateTimeBoundaries } from '@/lib/datetime'
 import { EventsTable } from './EventsTable'
 
 export const EventsList = ({ date }: { date: Date }): JSX.Element => {
-  const { setData } = useEventsTable()
+  const { setData } = useTable()
   const { data: session, status } = useSession()
 
   const indexUrl = useIndexUrl()
@@ -74,7 +74,7 @@ export const EventsList = ({ date }: { date: Date }): JSX.Element => {
   return (
     <>
       {data?.ok === true &&
-        <EventsTable data={data?.hits} columns={columns} onRowSelected={(row): void => {
+        <EventsTable data={data?.hits} columns={eventColumns} onRowSelected={(row): void => {
           if (row) {
             console.log(`Selected event item ${row._id}`)
           } else {

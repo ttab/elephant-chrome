@@ -1,41 +1,47 @@
 import { type ColumnDef } from '@tanstack/react-table'
-import { type Planning } from '@/lib/index/schemas/planning'
+import { type Event } from '@/lib/index/schemas/event'
 import { Newsvalue } from '@/components/Table/Newsvalue'
-import { Title } from '@/components/Table/Title'
-import { Section } from './Section'
-import { Assignees } from './Assignees'
-import { Type } from './Type'
-import { Actions } from './Actions'
+import { Section } from '@/components/Table/Columns/Section'
+import { type MouseEvent } from 'react'
 import {
   SignalHigh,
   Pen,
   Shapes,
-  Users,
-  Crosshair,
-  Navigation,
+  Clock3Icon,
   Eye,
-  CircleCheck
+  Navigation,
+  NotebookPen,
+  Edit,
+  Delete
 } from '@ttab/elephant-ui/icons'
-import { Newsvalues, NewsvalueMap, PlanningSections, AssignmentTypes, VisibilityStatuses, DocumentStatuses } from '@/defaults'
+import { DotDropdownMenu } from '@/components/ui/DotMenu'
+import { Newsvalues, NewsvalueMap, EventsSections, VisibilityStatuses } from '@/defaults'
 import { StatusIndicator } from '@/components/DataItem/StatusIndicator'
-import { DocumentStatus } from './DocumentStatus'
+import { Time } from '@/components/Table/Columns/Time'
+import { Status } from '@/components/Table/Columns/Status'
+import { Title } from '@/components/Table/Title'
 
-export const columns: Array<ColumnDef<Planning>> = [
+const menuItems = [
   {
-    id: 'documentStatus',
-    meta: {
-      filter: 'facet',
-      options: DocumentStatuses,
-      name: 'documentStatus',
-      columnIcon: CircleCheck,
-      className: 'box-content w-6 pr-0'
-    },
-    accessorFn: (data) => data?._source['document.meta.status'][0],
-    cell: ({ row }) => {
-      const status = row.getValue<string>('documentStatus')
-      return <DocumentStatus status={status} />
+    label: 'Redigera',
+    icon: Edit,
+    item: <T extends HTMLElement>(event: MouseEvent<T>) => {
+      event.preventDefault()
+      event.stopPropagation()
     }
   },
+  {
+    label: 'Ta bort',
+    icon: Delete,
+    item: <T extends HTMLElement>(event: MouseEvent<T>) => {
+      event.preventDefault()
+      event.stopPropagation()
+      confirm('Ta bort')
+    }
+  }
+]
+
+export const eventColumns: Array<ColumnDef<Event>> = [
   {
     id: 'visibilityStatus',
     meta: {
@@ -45,7 +51,7 @@ export const columns: Array<ColumnDef<Planning>> = [
       columnIcon: Eye,
       className: 'box-content w-6 pr-0'
     },
-    accessorFn: (data) => data._source['document.meta.core_planning_item.data.public'][0] !== 'true',
+    accessorFn: (data) => data._source['document.meta.core_description.role'][0] !== 'public',
     cell: ({ row }) => {
       const internal = row.getValue<boolean>('visibilityStatus')
       return <StatusIndicator internal={internal} />
@@ -93,56 +99,53 @@ export const columns: Array<ColumnDef<Planning>> = [
   {
     id: 'section',
     meta: {
-      options: PlanningSections,
+      options: EventsSections,
       filter: 'facet',
       name: 'Section',
       columnIcon: Shapes,
       className: 'box-content w-[115px] hidden @4xl/view:[display:revert]'
     },
-    accessorFn: (data) => data._source['document.rel.sector.uuid']?.[0],
+    accessorFn: (data) => data._source['document.rel.section.title']?.[0],
     cell: ({ row }) => {
-      const uuid = row.getValue<string>('section')
-      return <Section uuid={uuid || ''} />
+      const title = row.getValue<string>('section')
+      return <Section title={title || ''} />
     },
     filterFn: (row, id, value) => {
       return value.includes(row.getValue(id))
     }
   },
   {
-    id: 'assignees',
+    id: 'planning_status',
     meta: {
       filter: 'facet',
-      name: 'Assignees',
-      columnIcon: Users,
+      name: 'Planning Status',
+      columnIcon: NotebookPen,
       className: 'box-content w-[112px] hidden @5xl/view:[display:revert]'
     },
-    accessorFn: (data) => data._source['document.meta.core_assignment.rel.assignee.name'],
+    accessorFn: (data) => data?._relatedPlannings,
     cell: ({ row }) => {
-      const assignees = row.getValue<string[]>('assignees') || []
-      return <Assignees assignees={assignees} />
+      const _status = row.getValue<string>('planning_status')
+      return <Status status={_status} />
     }
   },
   {
-    id: 'type',
+    id: 'event_time',
     meta: {
       filter: 'facet',
-      options: AssignmentTypes,
-      name: 'Type',
-      columnIcon: Crosshair,
-      className: 'box-content w-[120px] hidden @6xl/view:[display:revert]'
+      name: 'Event Time',
+      columnIcon: Clock3Icon,
+      className: 'box-content w-[112px] hidden @5xl/view:[display:revert]'
     },
-    accessorFn: (data) => data._source['document.meta.core_assignment.meta.core_assignment_type.value'],
+    accessorFn: (data) => {
+      const startTime = new Date(data._source['document.meta.core_event.data.start'][0])
+      const endTime = new Date(data._source['document.meta.core_event.data.end'][0])
+      return [startTime, endTime]
+    },
     cell: ({ row }) => {
-      const data = AssignmentTypes.filter(
-        (assignmentType) => (row.getValue<string[]>('type') || []).includes(assignmentType.value)
-      )
-      if (data.length === 0) {
-        return null
-      }
-
-      return <Type data={data} />
-    },
-    filterFn: 'arrIncludesSome'
+      const startTime = row.getValue<Date[]>('event_time')[0] || undefined
+      const endTime = row.getValue<Date[]>('event_time')[1] || undefined
+      return <Time startTime={startTime} endTime={endTime} />
+    }
   },
   {
     id: 'action',
@@ -152,11 +155,8 @@ export const columns: Array<ColumnDef<Planning>> = [
       columnIcon: Navigation,
       className: 'box-content w-[32px]'
     },
-    cell: ({ row }) => {
-      const deliverableUuids = row.original._source['document.meta.core_assignment.rel.deliverable.uuid'] || []
-      const planningId = row.original._id
-
-      return <Actions deliverableUuids={deliverableUuids} planningId={planningId} />
+    cell: () => {
+      return <DotDropdownMenu items={menuItems} />
     }
   }
 ]

@@ -7,13 +7,13 @@ import {
 } from '@ttab/elephant-ui'
 
 import { EventsCommands } from '../EventsCommands'
-import { DebouncedCommandInput } from '@/components/CommandMenu/DebouncedCommandInput'
-import { useEventsTable } from '@/hooks'
+import { DebouncedCommandInput } from '@/components/Commands/Menu/DebouncedCommandInput'
+import { useTable } from '@/hooks'
 
 export const Filter = (): JSX.Element => {
   const [open, setOpen] = useState(false)
 
-  const { command, table } = useEventsTable()
+  const { command, table } = useTable()
   const { setSearch, setPages, search, pages, page } = command
 
   const onOpenChange = useMemo(

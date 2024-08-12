@@ -3,11 +3,12 @@ import { type ViewMetadata } from '@/types'
 import { ViewHeader } from '@/components'
 import { CalendarPlus2 } from '@ttab/elephant-ui/icons'
 import { ScrollArea, Tabs, TabsContent } from '@ttab/elephant-ui'
-import { EventsTableProvider } from '@/contexts/EventsTableProvider'
-import { TableCommandMenu } from './EventsTable/TableCommandMenu'
+import { TableProvider } from '@/contexts/TableProvider'
+import { TableCommandMenu } from '@/components/Commands/TableCommand'
 import { EventsList } from './EventsList'
 import { EventsGrid } from './EventsGrid'
 import { Header } from './EventsHeader'
+import { EventsCommands } from './EventsCommands'
 
 const meta: ViewMetadata = {
   name: 'Events',
@@ -35,10 +36,12 @@ export const Events = (): JSX.Element => {
   }, [startDate])
 
   return (
-    <EventsTableProvider>
+    <TableProvider type='events'>
       <Tabs defaultValue={currentTab} className='flex-1' onValueChange={setCurrentTab}>
 
-        <TableCommandMenu />
+        <TableCommandMenu>
+          <EventsCommands />
+        </TableCommandMenu>
 
         <div className="flex flex-col h-screen">
           <ViewHeader.Root>
@@ -69,7 +72,7 @@ export const Events = (): JSX.Element => {
         </div>
 
       </Tabs>
-    </EventsTableProvider>
+    </TableProvider>
   )
 }
 
