@@ -1,15 +1,12 @@
 import { useMemo } from 'react'
 import useSWR from 'swr'
-
-import { useIndexUrl, usePlanningTable, useSections } from '@/hooks'
+import { useIndexUrl, usePlanningTable, useSections, useRepositoryEvents } from '@/hooks'
 import { useSession } from 'next-auth/react'
 import {
   type SearchIndexResponse,
   type Planning as PlanningType,
   Plannings
 } from '@/lib/index'
-
-import { Repository } from '@/lib/repository'
 
 import { PlanningTable } from '@/views/PlanningOverview/PlanningTable'
 import { planningTableColumns } from '@/views/PlanningOverview/PlanningTable/Columns'
@@ -37,8 +34,7 @@ export const PlanningList = ({ date }: { date: Date }): JSX.Element => {
     return searchUrl
   }, [startTime, endTime, indexUrl])
 
-
-  const { data } = useSWR(searchUrl?.href, async (): Promise<SearchIndexResponse<PlanningType> | undefined> => {
+  const { data, mutate } = useSWR(searchUrl?.href, async (): Promise<SearchIndexResponse<PlanningType> | undefined> => {
     if (status !== 'authenticated' || !indexUrl) {
       return
     }
@@ -52,33 +48,49 @@ export const PlanningList = ({ date }: { date: Date }): JSX.Element => {
       }
     })
     if (result.ok) {
-      const documentIds = result?.hits.map(hit => hit._id)
-      try {
-        const metaResult = await Promise.all(documentIds?.map(async (documentId: string) => {
-          const metaResponse = await Repository.metaSearch({ session, documentId })
-          return { ...metaResponse, documentId }
-        }))
-        const planningsWithMeta = {
-          ...result,
-          hits: result?.hits?.map((planningItem: PlanningType) => {
-            const documentId = planningItem?._id
-            const _meta = metaResult?.find(metaItem => metaItem.documentId === documentId)
-            const heads = _meta?.meta?.heads
-            const status = Object?.keys(heads || {})[0]
-            planningItem._source = Object.assign({}, planningItem._source, {
-              'document.meta.status': [status]
-            })
-            return planningItem
-          })
+      const getCurrentDocumentStatus = (obj: PlanningType): string => {
+        const item: Record<string, null | string[]> = obj._source
+        const defaultStatus = 'draft'
+        const createdValues = []
+        for (const key in item) {
+          if (Array.isArray(item[key])) {
+            if (Object.prototype.hasOwnProperty.call(item, key) && key.startsWith('heads.')) {
+              let newkey = key.split('heads.')[1]
+              if (newkey.includes('.created')) {
+                newkey = newkey.replace('.created', '')
+                const [dateCreated] = item[key]
+                createdValues.push({ status: newkey, created: dateCreated })
+              }
+            }
+          }
         }
-        setData(planningsWithMeta)
-        return planningsWithMeta
-      } catch (error) {
-        console.error(error)
+        createdValues.sort((a, b) => a?.created > b?.created ? -1 : 1)
+        return createdValues[0]?.status || defaultStatus
       }
+      const planningsWithStatus = {
+        ...result,
+        hits: result?.hits?.map((planningItem: PlanningType) => {
+          const status = getCurrentDocumentStatus(planningItem)
+          planningItem._source = Object.assign({}, planningItem._source, {
+            'document.meta.status': [status]
+          })
+          return planningItem
+        })
+      }
+      setData(planningsWithStatus)
+      return planningsWithStatus
     }
   })
 
+  useRepositoryEvents('core/planning-item', () => {
+    void (async () => {
+      try {
+        await mutate()
+      } catch (error) {
+        console.error('Error when mutating Planning list', error)
+      }
+    })()
+  })
 
   return (
     <>

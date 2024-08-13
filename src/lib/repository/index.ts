@@ -1,7 +1,9 @@
 import { metaSearch } from './metaSearch'
+import { update } from './update'
 
 const Repository = {
-  metaSearch
+  metaSearch,
+  update
 }
 
 export { Repository }

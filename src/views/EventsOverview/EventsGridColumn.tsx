@@ -59,7 +59,6 @@ export const EventsGridColumn = ({ date, items }: EventsGridColumnProps): JSX.El
 
       <div className="border-r h-full flex flex-col p-4 gap-8">
         {items.map(item => {
-          console.log('item', item)
           const internal = item._source['document.meta.core_description.role'][0] !== 'public'
           const title = item._source['document.title'][0]
           const slugLines = item._source['document.meta.tt_slugline.value']

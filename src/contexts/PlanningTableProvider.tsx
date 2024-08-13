@@ -11,6 +11,7 @@ import {
   getSortedRowModel,
   useReactTable
 } from '@tanstack/react-table'
+
 import { planningTableColumns } from '@/views/PlanningOverview/PlanningTable/Columns'
 import type { SearchIndexResponse, Planning } from '@/lib/index'
 import { useSections } from '../hooks'
@@ -57,7 +58,6 @@ export const PlanningTableProvider = ({ children }: PropsWithChildren): JSX.Elem
     setSearch,
     search
   }
-
   const table = useReactTable({
     data: data?.hits || [],
     columns: planningTableColumns({ sections }),
