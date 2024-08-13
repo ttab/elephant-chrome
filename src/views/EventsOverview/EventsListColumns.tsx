@@ -1,7 +1,7 @@
 import { type ColumnDef } from '@tanstack/react-table'
 import { type Event } from '@/lib/index/schemas/event'
-import { Newsvalue } from '@/components/Table/Newsvalue'
-import { Section } from '@/components/Table/Columns/Section'
+import { Newsvalue } from '@/components/Table/Items/Newsvalue'
+import { Section } from '@/components/Table/Items/Section'
 import { type MouseEvent } from 'react'
 import {
   SignalHigh,
@@ -17,9 +17,9 @@ import {
 import { DotDropdownMenu } from '@/components/ui/DotMenu'
 import { Newsvalues, NewsvalueMap, Sections, VisibilityStatuses } from '@/defaults'
 import { StatusIndicator } from '@/components/DataItem/StatusIndicator'
-import { Time } from '@/components/Table/Columns/Time'
-import { Status } from '@/components/Table/Columns/Status'
-import { Title } from '@/components/Table/Title'
+import { Time } from '@/components/Table/Items/Time'
+import { Status } from '@/components/Table/Items/Status'
+import { Title } from '@/components/Table/Items/Title'
 
 const menuItems = [
   {
