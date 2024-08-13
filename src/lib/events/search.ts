@@ -1,5 +1,5 @@
 import { type SearchIndexResponse, type Event } from '../index'
-import { searchIndex } from '../index/events-search'
+import { searchIndex } from '../index'
 
 interface SearchEventsParams {
   skip?: number
