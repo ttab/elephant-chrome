@@ -8,8 +8,8 @@ import {
   Plannings
 } from '@/lib/index'
 
-import { PlanningTable } from '@/views/PlanningOverview/PlanningTable'
-import { planningColumns } from '@/views/PlanningOverview/PlanningTable/Columns'
+import { Table } from '@/components/Table'
+import { planningColumns } from '@/views/PlanningOverview/PlanningListColumns'
 import { convertToISOStringInUTC, getDateTimeBoundaries } from '@/lib/datetime'
 
 export const PlanningList = ({ date }: { date: Date }): JSX.Element => {
@@ -94,7 +94,7 @@ export const PlanningList = ({ date }: { date: Date }): JSX.Element => {
   return (
     <>
       {data?.ok === true &&
-        <PlanningTable data={data?.hits} columns={planningColumns} onRowSelected={(row): void => {
+        <Table data={data?.hits} columns={planningColumns} onRowSelected={(row): void => {
           if (row) {
             console.info(`Selected planning item ${row._id}`)
           } else {

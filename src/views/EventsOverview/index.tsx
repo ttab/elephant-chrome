@@ -9,7 +9,7 @@ import { EventsList } from './EventsList'
 import { EventsGrid } from './EventsGrid'
 import { Header } from './EventsHeader'
 import { EventsCommands } from './EventsCommands'
-import { eventColumns } from './EventsTable/Columns'
+import { eventColumns } from './EventsListColumns'
 import { type Event } from '@/lib/index'
 
 const meta: ViewMetadata = {

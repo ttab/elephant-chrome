@@ -6,10 +6,10 @@ import { useSession } from 'next-auth/react'
 import { type SearchIndexResponse } from '@/lib/index/searchIndex'
 import { Events } from '@/lib/events'
 import { type Event } from '@/lib/index/schemas'
-import { eventColumns } from '@/views/EventsOverview/EventsTable/Columns'
+import { eventColumns } from '@/views/EventsOverview/EventsListColumns'
 
 import { convertToISOStringInUTC, getDateTimeBoundaries } from '@/lib/datetime'
-import { EventsTable } from './EventsTable'
+import { Table } from '@/components/Table'
 
 export const EventsList = ({ date }: { date: Date }): JSX.Element => {
   const { setData } = useTable<Event>()
@@ -75,7 +75,7 @@ export const EventsList = ({ date }: { date: Date }): JSX.Element => {
   return (
     <>
       {data?.ok === true &&
-        <EventsTable data={data?.hits} columns={eventColumns} onRowSelected={(row): void => {
+        <Table data={data?.hits} columns={eventColumns} onRowSelected={(row): void => {
           if (row) {
             console.log(`Selected event item ${row._id}`)
           } else {

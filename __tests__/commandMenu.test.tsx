@@ -4,7 +4,7 @@ import { NavigationProvider } from '@/navigation'
 import { render, screen } from '../setupTests'
 import { CommandMenu } from '@/components/Commands/Menu'
 import userEvent from '@testing-library/user-event'
-import { planningColumns } from '@/views/PlanningOverview/PlanningTable/Columns'
+import { planningColumns } from '@/views/PlanningOverview/PlanningListColumns'
 import { type Planning } from '@/lib/index'
 
 describe('CommandMenu', () => {

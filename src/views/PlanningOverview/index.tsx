@@ -11,7 +11,7 @@ import { TableProvider } from '@/contexts/TableProvider'
 import { TableCommandMenu } from '@/components/Commands/TableCommand'
 import { Header } from '@/views/PlanningOverview/PlanningHeader'
 import { PlanningCommands } from './PlanningCommands'
-import { planningColumns } from './PlanningTable/Columns'
+import { planningColumns } from './PlanningListColumns'
 import { type Planning } from '@/lib/index'
 
 const meta: ViewMetadata = {
