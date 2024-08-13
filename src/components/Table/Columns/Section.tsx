@@ -1,12 +1,12 @@
 import { SectionBadge } from '@/components/DataItem/SectionBadge'
-import { EventsSections } from '@/defaults'
+import { Sections } from '@/defaults'
 import { useMemo } from 'react'
 
-export const Section = ({ title }: {
-  title: string
+export const Section = ({ uuid }: {
+  uuid: string
 }): JSX.Element => {
   return useMemo(() => {
-    const section = EventsSections.find((section) => section?.payload?.title === title)
+    const section = Sections.find((section) => section?.payload?.uuid === uuid)
 
     if (!section) {
       return <></>
@@ -15,5 +15,5 @@ export const Section = ({ title }: {
     return (
       <SectionBadge label={section.label} color={section.color} />
     )
-  }, [title])
+  }, [uuid])
 }

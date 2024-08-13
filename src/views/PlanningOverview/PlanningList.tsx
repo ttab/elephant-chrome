@@ -75,7 +75,7 @@ export const PlanningList = ({ date }: { date: Date }): JSX.Element => {
           })
           return planningItem
         })
-      }
+     }
       setData(planningsWithStatus)
       return planningsWithStatus
     }
