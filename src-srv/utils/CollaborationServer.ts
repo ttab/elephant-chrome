@@ -106,7 +106,7 @@ export class CollaborationServer {
           store: async (payload) => { await this.#storeDocument(payload) }
         }),
         new Snapshot({
-          debounce: 6000,
+          debounce: 120000,
           snapshot: async (payload: onStoreDocumentPayload) => {
             return async () => {
               await this.#snapshotDocument(payload)
@@ -271,8 +271,6 @@ export class CollaborationServer {
       newsDocToYDoc(yDoc, newsDoc)
     }
 
-    console.log('NEWSDOC', JSON.stringify(newsDoc?.document, null, 2))
-    console.log('YDOC', JSON.stringify(yDoc, null, 2))
     // This is a new and unknown yDoc initiated from the client. Just return it
     // as an encoded state update and trust the client to set properties and the
     // hocuspocus client/server comm to sync the changes and store them in redis.
