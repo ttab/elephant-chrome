@@ -3,8 +3,8 @@ import { useRegistry, useRepositoryEvents } from '@/hooks'
 import { useSession } from 'next-auth/react'
 import { useIndexedDB } from '../hooks/useIndexedDB'
 import { fetchOrRefresh } from '../lib/fetchOrRefresh'
-import { fetchAuthors } from '../lib/fetchAuthors'
 import { type IDBAuthor } from '../types'
+import { type IndexedAuthor } from '@/lib/index'
 
 interface CoreAuthorProviderState {
   objects: IDBAuthor[]
@@ -31,12 +31,22 @@ export const CoreAuthorProvider = ({ children }: {
       return
     }
 
-    const cachedObjects = await fetchOrRefresh<IDBAuthor>(
+    const cachedObjects = await fetchOrRefresh<IDBAuthor, IndexedAuthor>(
       IDB,
       documentType,
+      indexUrl,
+      data.accessToken,
       force,
-      async () => {
-        return await fetchAuthors(indexUrl, data.accessToken)
+      (item) => {
+        const { _id: id, _source: _ } = item
+        return {
+          id,
+          title: _['document.title'][0].trim(),
+          firstName: _?.['document.meta.core_author.data.firstName']?.[0].trim() || '',
+          lastName: _?.['document.meta.core_author.data.lastName']?.[0].trim() || '',
+          initials: _?.['document.meta.core_author.data.initials']?.[0].trim() || '',
+          email: _?.['document.meta.core_contact_info.data.email']?.[0].trim() || ''
+        }
       }
     )
 

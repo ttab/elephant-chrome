@@ -3,24 +3,24 @@ import { useRegistry, useRepositoryEvents } from '@/hooks'
 import { useSession } from 'next-auth/react'
 import { useIndexedDB } from '../hooks/useIndexedDB'
 import { fetchOrRefresh } from '../lib/fetchOrRefresh'
-import { type IDBStory } from '../types'
-import { type IndexedStory } from '@/lib/index'
+import { type IDBSection } from '../types'
+import { type IndexedSection } from '@/lib/index'
 
-interface CoreStoryProviderState {
-  objects: IDBStory[]
+interface CoreSectionProviderState {
+  objects: IDBSection[]
 }
 
-export const CoreStoryContext = createContext<CoreStoryProviderState>({
+export const CoreSectionContext = createContext<CoreSectionProviderState>({
   objects: []
 })
 
-export const CoreStoryProvider = ({ children }: {
+export const CoreSectionProvider = ({ children }: {
   children: React.ReactNode
 }): JSX.Element => {
-  const documentType = 'core/story'
+  const documentType = 'core/section'
   const { server: { indexUrl } } = useRegistry()
   const { data } = useSession()
-  const [objects, setObjects] = useState<IDBStory[]>([])
+  const [objects, setObjects] = useState<IDBSection[]>([])
   const IDB = useIndexedDB()
 
   /*
@@ -31,7 +31,7 @@ export const CoreStoryProvider = ({ children }: {
       return
     }
 
-    const cachedObjects = await fetchOrRefresh<IDBStory, IndexedStory>(
+    const cachedObjects = await fetchOrRefresh<IDBSection, IndexedSection>(
       IDB,
       documentType,
       indexUrl,
@@ -39,37 +39,10 @@ export const CoreStoryProvider = ({ children }: {
       force,
       (item) => {
         const { _id: id, _source: _ } = item
-        const getRoleText = (roleIndex: number): [string, string] => ([
-          _['document.meta.core_definition.role']?.[roleIndex]?.trim() || '',
-          _['document.meta.core_definition.data.text']?.[roleIndex]?.trim() || ''
-        ])
-        const [role0, text0] = getRoleText(0)
-        const [role1, text1] = getRoleText(1)
-
-        const story = {
+        return {
           id,
-          title: _['document.title'][0].trim(),
-          shortText: '',
-          longText: ''
+          title: _['document.title'][0].trim()
         }
-
-        if (role0 && text0) {
-          if (role0 === 'short') {
-            story.shortText = text0
-          } else if (role0 === 'long') {
-            story.longText = text0
-          }
-        }
-
-        if (role1 && text1) {
-          if (role1 === 'short') {
-            story.shortText = text1
-          } else if (role1 === 'long') {
-            story.longText = text1
-          }
-        }
-
-        return story
       }
     )
 
@@ -98,8 +71,8 @@ export const CoreStoryProvider = ({ children }: {
   })
 
   return (
-    <CoreStoryContext.Provider value={{ objects }}>
+    <CoreSectionContext.Provider value={{ objects }}>
       {children}
-    </CoreStoryContext.Provider >
+    </CoreSectionContext.Provider >
   )
 }

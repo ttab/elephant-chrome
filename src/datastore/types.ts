@@ -1,4 +1,8 @@
 /** Story structure in indexedDB objectStore  */
+export interface IDBSection {
+  id: string
+  title: string
+}
 export interface IDBStory {
   id: string
   title: string
