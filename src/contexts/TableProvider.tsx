@@ -9,13 +9,10 @@ import {
   getFacetedUniqueValues,
   getFilteredRowModel,
   getSortedRowModel,
-  useReactTable
+  useReactTable,
+  type ColumnDef
 } from '@tanstack/react-table'
-import { eventColumns } from '@/views/EventsOverview/EventsTable/Columns'
-import { planningColumns } from '@/views/PlanningOverview/PlanningTable/Columns'
 import { type SearchIndexResponse } from '@/lib/index/searchIndex'
-import { type Planning } from '@/lib/index'
-// import { type Event } from '@/lib/index'
 
 export interface CommandArgs {
   pages: string[]
@@ -35,18 +32,16 @@ export interface TableProviderState<TData> {
 const initialState = {
   table: {},
   setData: () => {}
-} as unknown as TableProviderState<Event>
+} as unknown as TableProviderState<unknown>
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const TableContext = createContext<TableProviderState<any>>(initialState)
 
-export const TableProvider = ({
+export const TableProvider = <T,>({
   children,
-  type
-}: PropsWithChildren<{ type: 'planning' | 'events' }>): JSX.Element => {
-  const columns = type === 'events' ? eventColumns : planningColumns
-
-  const [data, setData] = useState<SearchIndexResponse<Planning> | null>([] as unknown as SearchIndexResponse<Planning>)
+  columns
+}: PropsWithChildren<{ columns: Array<ColumnDef<T, unknown>> }>): JSX.Element => {
+  const [data, setData] = useState<SearchIndexResponse<T> | null>([] as unknown as SearchIndexResponse<T>)
 
   const [rowSelection, setRowSelection] = useState({})
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
@@ -66,9 +61,7 @@ export const TableProvider = ({
   }
 
   const table = useReactTable({
-    // @ts-expect-error unknown type
     data: data?.hits || [],
-    // @ts-expect-error unknown type
     columns,
     state: {
       sorting,

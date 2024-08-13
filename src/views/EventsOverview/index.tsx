@@ -9,6 +9,8 @@ import { EventsList } from './EventsList'
 import { EventsGrid } from './EventsGrid'
 import { Header } from './EventsHeader'
 import { EventsCommands } from './EventsCommands'
+import { eventColumns } from './EventsTable/Columns'
+import { type Event } from '@/lib/index'
 
 const meta: ViewMetadata = {
   name: 'Events',
@@ -36,7 +38,7 @@ export const Events = (): JSX.Element => {
   }, [startDate])
 
   return (
-    <TableProvider type='events'>
+    <TableProvider<Event> columns={eventColumns}>
       <Tabs defaultValue={currentTab} className='flex-1' onValueChange={setCurrentTab}>
 
         <TableCommandMenu>

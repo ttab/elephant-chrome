@@ -8,5 +8,5 @@ export function useTable<TData>(): TableProviderState<TData> {
 
   if (context === undefined) { throw new Error('useTable must be used within a TableProvider') }
 
-  return context
+  return context as TableProviderState<TData>
 }

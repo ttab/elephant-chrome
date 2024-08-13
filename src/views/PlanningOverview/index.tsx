@@ -11,6 +11,8 @@ import { TableProvider } from '@/contexts/TableProvider'
 import { TableCommandMenu } from '@/components/Commands/TableCommand'
 import { Header } from '@/views/PlanningOverview/PlanningHeader'
 import { PlanningCommands } from './PlanningCommands'
+import { planningColumns } from './PlanningTable/Columns'
+import { type Planning } from '@/lib/index'
 
 const meta: ViewMetadata = {
   name: 'Plannings',
@@ -38,7 +40,7 @@ export const Plannings = (): JSX.Element => {
   }, [startDate])
 
   return (
-    <TableProvider type='planning'>
+    <TableProvider<Planning> columns={planningColumns}>
       <Tabs defaultValue={currentTab} className='flex-1' onValueChange={setCurrentTab}>
 
         <TableCommandMenu>

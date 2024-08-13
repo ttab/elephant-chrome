@@ -1,4 +1,4 @@
-import { type SearchIndexResponse, type Event } from '@/lib/index'
+import { type SearchIndexResponse, type SearchIndexError, type Event } from '@/lib/index'
 
 interface SearchIndexOptions {
   accessToken: string
@@ -6,27 +6,6 @@ interface SearchIndexOptions {
   endpoint: URL
 }
 
-
-export interface EventSearchIndexResult {
-  ok: true
-  total: number
-  page: number
-  pages: number
-  pageSize: number
-  hits: Event[]
-}
-
-interface EventSearchIndexError {
-  ok: false
-  errorCode: number
-  errorMessage: string
-  total: 0
-  pages: 0
-  hits: never[]
-}
-
-export type EventsSearchIndexResult = EventSearchIndexResult
-export type EventsSearchIndexResponse = EventSearchIndexError | EventSearchIndexResult
 
 /**
  * FIXME: Implement automatic calculation of next/prev pagination values
@@ -81,7 +60,7 @@ function headers(accessToken: string): Record<string, string> {
   }
 }
 
-function responseError(errorCode: number, errorMessage: string): EventSearchIndexError {
+function responseError(errorCode: number, errorMessage: string): SearchIndexError {
   return {
     ok: false,
     errorCode,
