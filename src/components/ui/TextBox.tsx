@@ -83,7 +83,7 @@ const TextboxEditable = ({ provider, user, icon, content }: {
     <>
       {icon
         ? <div className='flex flex-row'>
-          <div className='pt-2.5'>
+          <div className='pt-1.5'>
             {icon}
           </div>
 
