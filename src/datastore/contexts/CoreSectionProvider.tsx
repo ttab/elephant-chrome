@@ -3,8 +3,8 @@ import { useRegistry, useRepositoryEvents } from '@/hooks'
 import { useSession } from 'next-auth/react'
 import { useIndexedDB } from '../hooks/useIndexedDB'
 import { fetchOrRefresh } from '../lib/fetchOrRefresh'
-import { fetchSections } from '../lib/fetchSections'
 import { type IDBSection } from '../types'
+import { type IndexedSection } from '@/lib/index'
 
 interface CoreSectionProviderState {
   objects: IDBSection[]
@@ -31,12 +31,18 @@ export const CoreSectionProvider = ({ children }: {
       return
     }
 
-    const cachedObjects = await fetchOrRefresh<IDBSection>(
+    const cachedObjects = await fetchOrRefresh<IDBSection, IndexedSection>(
       IDB,
       documentType,
+      indexUrl,
+      data.accessToken,
       force,
-      async () => {
-        return await fetchSections(indexUrl, data.accessToken)
+      (item) => {
+        const { _id: id, _source: _ } = item
+        return {
+          id,
+          title: _['document.title'][0].trim()
+        }
       }
     )
 
