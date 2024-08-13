@@ -1,4 +1,4 @@
-import { type SearchIndexResponse } from '../index'
+import { type SearchIndexResponse, type Event } from '../index'
 import { searchIndex } from '../index/events-search'
 
 interface SearchEventsParams {

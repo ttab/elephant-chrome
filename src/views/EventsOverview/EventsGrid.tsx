@@ -1,6 +1,5 @@
-import { type EventsSearchIndexResult } from '@/lib/index/events-search'
 import { Events } from '@/lib/events'
-import { type Event as EventsType } from '@/lib/index/schemas'
+import { type Event, type Event as EventsType } from '@/lib/index/schemas'
 import { cn } from '@ttab/elephant-ui/utils'
 import { cva, type VariantProps } from 'class-variance-authority'
 import { useRegistry, useIndexUrl } from '@/hooks'
@@ -9,6 +8,7 @@ import { convertToISOStringInTimeZone, convertToISOStringInUTC, getDateTimeBound
 import useSWR from 'swr'
 import { useMemo } from 'react'
 import { EventsGridColumn } from './EventsGridColumn'
+import { type SearchIndexResponse } from '@/lib/index'
 
 type EventsByDate = Record<string, EventsType[]>
 
@@ -94,7 +94,7 @@ export const EventsGrid = ({ startDate, endDate }: EventsGridProps): JSX.Element
 }
 
 
-function structureByDate(result: EventsSearchIndexResult, startTime: Date, endTime: Date, timeZone: string): EventsByDate | undefined {
+function structureByDate(result: SearchIndexResponse<Event>, startTime: Date, endTime: Date, timeZone: string): EventsByDate | undefined {
   const events: EventsByDate = {}
 
   if (!Array.isArray(result?.hits)) {

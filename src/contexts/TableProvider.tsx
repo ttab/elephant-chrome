@@ -14,6 +14,7 @@ import {
 import { eventColumns } from '@/views/EventsOverview/EventsTable/Columns'
 import { planningColumns } from '@/views/PlanningOverview/PlanningTable/Columns'
 import { type SearchIndexResponse } from '@/lib/index/searchIndex'
+import { type Planning } from '@/lib/index'
 // import { type Event } from '@/lib/index'
 
 export interface CommandArgs {
@@ -39,18 +40,13 @@ const initialState = {
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const TableContext = createContext<TableProviderState<any>>(initialState)
 
-interface TableProviderProps<TData> {
-  type: 'planning' | 'events'
-  data?: TData[]
-}
-
-export const TableProvider = <TData,>({
+export const TableProvider = ({
   children,
   type
-}: PropsWithChildren<TableProviderProps<TData>>): JSX.Element => {
+}: PropsWithChildren<{ type: 'planning' | 'events' }>): JSX.Element => {
   const columns = type === 'events' ? eventColumns : planningColumns
 
-  const [data, setData] = useState<SearchIndexResponse<TData> | null>([] as unknown as SearchIndexResponse<TData>)
+  const [data, setData] = useState<SearchIndexResponse<Planning> | null>([] as unknown as SearchIndexResponse<Planning>)
 
   const [rowSelection, setRowSelection] = useState({})
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
@@ -70,7 +66,9 @@ export const TableProvider = <TData,>({
   }
 
   const table = useReactTable({
+    // @ts-expect-error unknown type
     data: data?.hits || [],
+    // @ts-expect-error unknown type
     columns,
     state: {
       sorting,

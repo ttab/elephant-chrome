@@ -46,7 +46,7 @@ export const relatedPlanningSearch = async (endpoint: URL, accessToken: string, 
     ]
   }
 
-  return await searchIndex(
+  return await searchIndex<Planning>(
     query,
     {
       index: 'core_planning_item',
