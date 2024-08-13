@@ -19,6 +19,7 @@ interface TableProps<TData, TValue> {
 
 
 export const Table = <TData, TValue>({
+  columns,
   onRowSelected
 }: TableProps<TData, TValue>): JSX.Element => {
   const { isActive: isActiveView } = useView()
@@ -84,8 +85,7 @@ export const Table = <TData, TValue>({
       return (
         <TableRow>
           <TableCell
-            // TODO: Add colspan
-            // colSpan={columns.length}
+            colSpan={columns.length}
             className="h-24 text-center"
             >
             {loading ? 'Loading...' : 'No results.'}
