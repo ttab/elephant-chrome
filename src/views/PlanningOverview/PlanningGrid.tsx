@@ -1,4 +1,5 @@
 import {
+  type Planning,
   Plannings,
   type Planning as PlanningType,
   type SearchIndexResponse
@@ -97,7 +98,7 @@ export const PlanningGrid = ({ startDate, endDate }: PlanningGridProps): JSX.Ele
 }
 
 
-function structureByDate(result: SearchIndexResponse<PlanningType>, startTime: Date, endTime: Date, timeZone: string): PlanningsByDate | undefined {
+function structureByDate(result: SearchIndexResponse<Planning>, startTime: Date, endTime: Date, timeZone: string): PlanningsByDate | undefined {
   const plannings: PlanningsByDate = {}
 
   if (!Array.isArray(result?.hits)) {

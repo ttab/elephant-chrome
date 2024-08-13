@@ -8,8 +8,6 @@ import { Table as _Table, TableBody, TableCell, TableRow } from '@ttab/elephant-
 import { Toolbar } from './Toolbar'
 import { useNavigation, useView, useTable } from '@/hooks'
 import { isEditableTarget } from '@/lib/isEditableTarget'
-import { eventColumns } from '@/views/EventsOverview/EventsTable/Columns'
-import { planningColumns } from '@/views/PlanningOverview/PlanningTable/Columns'
 import { cn } from '@ttab/elephant-ui/utils'
 import { handleLink } from '@/components/Link/lib/handleLink'
 
@@ -86,7 +84,8 @@ export const Table = <TData, TValue>({
       return (
         <TableRow>
           <TableCell
-            colSpan={columns.length}
+            // TODO: Add colspan
+            // colSpan={columns.length}
             className="h-24 text-center"
             >
             {loading ? 'Loading...' : 'No results.'}
@@ -112,6 +111,7 @@ export const Table = <TData, TValue>({
               dispatch,
               viewItem: state.viewRegistry.get('Planning'),
               viewRegistry: state.viewRegistry,
+              // @ts-expect-error unknown type
               props: { id: row.original._id },
               viewId: crypto.randomUUID(),
               origin

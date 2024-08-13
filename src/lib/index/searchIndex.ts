@@ -32,7 +32,7 @@ export type SearchIndexResponse<T> = SearchIndexError | SearchIndexResult<T>
  * @param size - number Optionally wanted page size, defaults to 100
  * @returns Promise<SearchIndexResponse>
  */
-export async function searchIndex<T>(search: object, options: SearchIndexOptions, page: number = 1, size: number = 100): Promise<SearchIndexResponse<T>> {
+export async function searchIndex(search: object, options: SearchIndexOptions, page: number = 1, size: number = 100): Promise<PlanningSearchIndexResponse> {
   const endpoint = new URL(`${options.index}/_search`, options.endpoint)
   const { from, pageSize } = pagination({
     page,

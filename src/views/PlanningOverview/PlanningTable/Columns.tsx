@@ -16,7 +16,7 @@ import {
   Eye,
   CircleCheck
 } from '@ttab/elephant-ui/icons'
-import { Newsvalues, NewsvalueMap, PlanningSections, AssignmentTypes, VisibilityStatuses, DocumentStatuses } from '@/defaults'
+import { Newsvalues, NewsvalueMap, Sections, AssignmentTypes, VisibilityStatuses, DocumentStatuses } from '@/defaults'
 import { StatusIndicator } from '@/components/DataItem/StatusIndicator'
 import { DocumentStatus } from '@/components/Table/Columns/DocumentStatus'
 
@@ -93,7 +93,7 @@ export const planningColumns: Array<ColumnDef<Planning>> = [
   {
     id: 'section',
     meta: {
-      options: PlanningSections,
+      options: Sections,
       filter: 'facet',
       name: 'Section',
       columnIcon: Shapes,

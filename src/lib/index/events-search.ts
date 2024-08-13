@@ -1,4 +1,4 @@
-import { type Event } from '@/lib/index'
+import { type SearchIndexResponse, type Event } from '@/lib/index'
 
 interface SearchIndexOptions {
   accessToken: string
@@ -6,7 +6,8 @@ interface SearchIndexOptions {
   endpoint: URL
 }
 
-interface SearchIndexResult {
+
+export interface EventSearchIndexResult {
   ok: true
   total: number
   page: number
@@ -15,7 +16,7 @@ interface SearchIndexResult {
   hits: Event[]
 }
 
-interface SearchIndexError {
+interface EventSearchIndexError {
   ok: false
   errorCode: number
   errorMessage: string
@@ -24,8 +25,8 @@ interface SearchIndexError {
   hits: never[]
 }
 
-export type EventsSearchIndexResult = SearchIndexResult
-export type EventsSearchIndexResponse = SearchIndexError | SearchIndexResult
+export type EventsSearchIndexResult = EventSearchIndexResult
+export type EventsSearchIndexResponse = EventSearchIndexError | EventSearchIndexResult
 
 /**
  * FIXME: Implement automatic calculation of next/prev pagination values
@@ -34,7 +35,7 @@ export type EventsSearchIndexResponse = SearchIndexError | SearchIndexResult
  * @param options SearchIndexOptions
  * @returns Promise<SearchIndexResponse>
  */
-export async function searchIndex(search: object, options: SearchIndexOptions, skip?: number, size?: number): Promise<EventsSearchIndexResponse> {
+export async function searchIndex(search: object, options: SearchIndexOptions, skip?: number, size?: number): Promise<SearchIndexResponse<Event>> {
   const endpoint = new URL(`${options.index}/_search`, options.endpoint)
   const pageSize = typeof size === 'number' && size > 0 && size < 500 ? size : 100
   const skipPages = typeof skip === 'number' && skip > -1 ? skip : 0
@@ -80,7 +81,7 @@ function headers(accessToken: string): Record<string, string> {
   }
 }
 
-function responseError(errorCode: number, errorMessage: string): SearchIndexError {
+function responseError(errorCode: number, errorMessage: string): EventSearchIndexError {
   return {
     ok: false,
     errorCode,

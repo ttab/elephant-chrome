@@ -7,7 +7,7 @@ import { DocTrackerContext } from '@/contexts/DocTrackerProvider'
 import { Avatar } from '@/components'
 import { AvatarGroup } from '@/components/AvatarGroup'
 import type * as Y from 'yjs'
-import { EventsSections } from '@/defaults'
+import { Sections } from '@/defaults'
 
 interface EventsGridColumnProps {
   date: Date
@@ -66,7 +66,7 @@ export const EventsGridColumn = ({ date, items }: EventsGridColumnProps): JSX.El
           const deliverables = item._source['document.rel.story.uuid']
           const deliverable = (Array.isArray(deliverables) ? deliverables[0] || '' : '')
           const id = item._id
-          const sector = EventsSections.find((sector) => sector.value === item._source['document.rel.story.uuid'][0])
+          const sector = Sections.find((sector) => sector.value === item._source['document.rel.story.uuid'][0])
           const activeUsers = users?.[deliverable]
 
           return <EventItem

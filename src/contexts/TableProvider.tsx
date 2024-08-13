@@ -13,8 +13,8 @@ import {
 } from '@tanstack/react-table'
 import { eventColumns } from '@/views/EventsOverview/EventsTable/Columns'
 import { planningColumns } from '@/views/PlanningOverview/PlanningTable/Columns'
-import { type EventsSearchIndexResponse } from '@/lib/index/events-search'
-import { type Event } from '@/lib/index'
+import { type SearchIndexResponse } from '@/lib/index/searchIndex'
+// import { type Event } from '@/lib/index'
 
 export interface CommandArgs {
   pages: string[]
@@ -26,7 +26,7 @@ export interface CommandArgs {
 
 export interface TableProviderState<TData> {
   table: Table<TData>
-  setData: Dispatch<EventsSearchIndexResponse>
+  setData: Dispatch<SearchIndexResponse<TData>>
   loading: boolean
   command: CommandArgs
 }
@@ -36,11 +36,21 @@ const initialState = {
   setData: () => {}
 } as unknown as TableProviderState<Event>
 
-export const TableContext = createContext<TableProviderState<Event>>(initialState)
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const TableContext = createContext<TableProviderState<any>>(initialState)
 
-export const TableProvider = ({ children, type }: PropsWithChildren<{ type: 'planning' | 'events' }>): JSX.Element => {
+interface TableProviderProps<TData> {
+  type: 'planning' | 'events'
+  data?: TData[]
+}
+
+export const TableProvider = <TData,>({
+  children,
+  type
+}: PropsWithChildren<TableProviderProps<TData>>): JSX.Element => {
   const columns = type === 'events' ? eventColumns : planningColumns
-  const [data, setData] = useState<EventsSearchIndexResponse | null>([] as unknown as EventsSearchIndexResponse)
+
+  const [data, setData] = useState<SearchIndexResponse<TData> | null>([] as unknown as SearchIndexResponse<TData>)
 
   const [rowSelection, setRowSelection] = useState({})
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})

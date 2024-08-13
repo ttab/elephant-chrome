@@ -15,7 +15,7 @@ import {
   Delete
 } from '@ttab/elephant-ui/icons'
 import { DotDropdownMenu } from '@/components/ui/DotMenu'
-import { Newsvalues, NewsvalueMap, EventsSections, VisibilityStatuses } from '@/defaults'
+import { Newsvalues, NewsvalueMap, Sections, VisibilityStatuses } from '@/defaults'
 import { StatusIndicator } from '@/components/DataItem/StatusIndicator'
 import { Time } from '@/components/Table/Columns/Time'
 import { Status } from '@/components/Table/Columns/Status'
@@ -99,7 +99,7 @@ export const eventColumns: Array<ColumnDef<Event>> = [
   {
     id: 'section',
     meta: {
-      options: EventsSections,
+      options: Sections,
       filter: 'facet',
       name: 'Section',
       columnIcon: Shapes,
@@ -108,7 +108,7 @@ export const eventColumns: Array<ColumnDef<Event>> = [
     accessorFn: (data) => data._source['document.rel.section.title']?.[0],
     cell: ({ row }) => {
       const title = row.getValue<string>('section')
-      return <Section title={title || ''} />
+      return <Section uuid={title || ''} />
     },
     filterFn: (row, id, value) => {
       return value.includes(row.getValue(id))

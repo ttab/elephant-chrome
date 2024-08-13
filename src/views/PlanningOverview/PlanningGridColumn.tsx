@@ -7,7 +7,7 @@ import { DocTrackerContext } from '@/contexts/DocTrackerProvider'
 import { Avatar } from '@/components'
 import { AvatarGroup } from '@/components/AvatarGroup'
 import type * as Y from 'yjs'
-import { PlanningSections } from '@/defaults'
+import { Sections } from '@/defaults'
 
 interface PlanningGridColumnProps {
   date: Date
@@ -66,7 +66,7 @@ export const PlanningGridColumn = ({ date, items }: PlanningGridColumnProps): JS
           const deliverables = item._source['document.meta.core_assignment.rel.deliverable.uuid']
           const deliverable = (Array.isArray(deliverables) ? deliverables[0] || '' : '')
           const id = item._id
-          const section = PlanningSections.find((section) => section.value === item._source['document.rel.sector.uuid'][0])
+          const section = Sections.find((section) => section.value === item._source['document.rel.sector.uuid'][0])
           const activeUsers = users?.[deliverable]
 
           return <PlanningItem

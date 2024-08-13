@@ -3,7 +3,7 @@ import useSWR from 'swr'
 
 import { useIndexUrl, useTable } from '@/hooks'
 import { useSession } from 'next-auth/react'
-import { type EventsSearchIndexResponse } from '@/lib/index/events-search'
+import { type SearchIndexResponse } from '@/lib/index/searchIndex'
 import { Events } from '@/lib/events'
 import { eventColumns } from '@/views/EventsOverview/EventsTable/Columns'
 
@@ -11,7 +11,7 @@ import { convertToISOStringInUTC, getDateTimeBoundaries } from '@/lib/datetime'
 import { EventsTable } from './EventsTable'
 
 export const EventsList = ({ date }: { date: Date }): JSX.Element => {
-  const { setData } = useTable()
+  const { setData } = useTable<Event>()
   const { data: session, status } = useSession()
 
   const indexUrl = useIndexUrl()
@@ -28,7 +28,7 @@ export const EventsList = ({ date }: { date: Date }): JSX.Element => {
   }, [startTime, endTime, indexUrl])
 
 
-  const { data } = useSWR(['eventitems', status, searchUrl.href], async (): Promise<EventsSearchIndexResponse & { planningItem?: string } | undefined> => {
+  const { data } = useSWR(['eventitems', status, searchUrl.href], async (): Promise<SearchIndexResponse<Event> & { planningItem?: string } | undefined> => {
     if (status !== 'authenticated') {
       return
     }

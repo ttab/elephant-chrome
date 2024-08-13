@@ -11,6 +11,7 @@ import { isEditableTarget } from '@/lib/isEditableTarget'
 import { planningColumns } from './Columns'
 import { cn } from '@ttab/elephant-ui/utils'
 import { handleLink } from '@/components/Link/lib/handleLink'
+import { type Planning } from '@/lib/index'
 
 interface PlanningTableProps<TData, TValue> {
   columns: Array<ColumnDef<TData, TValue>>
@@ -26,7 +27,7 @@ export const PlanningTable = <TData, TValue>({
   const { state, dispatch } = useNavigation()
   const { viewId: origin } = useView()
 
-  const { table, loading } = useTable()
+  const { table, loading } = useTable<Planning>()
 
   // Handle navigation using arrow keys
   useEffect(() => {

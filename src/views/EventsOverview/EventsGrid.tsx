@@ -1,6 +1,6 @@
 import { type EventsSearchIndexResult } from '@/lib/index/events-search'
 import { Events } from '@/lib/events'
-import { type Event as EventsType } from '../../lib/index/schemas/event'
+import { type Event as EventsType } from '@/lib/index/schemas'
 import { cn } from '@ttab/elephant-ui/utils'
 import { cva, type VariantProps } from 'class-variance-authority'
 import { useRegistry, useIndexUrl } from '@/hooks'

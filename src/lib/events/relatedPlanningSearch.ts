@@ -1,8 +1,8 @@
+import { type Planning } from '../index'
 import {
-  type Planning,
   searchIndex,
   type SearchIndexResponse
-} from '../index'
+} from '../index/searchIndex'
 
 interface SearchPlanningParams {
   skip?: number
