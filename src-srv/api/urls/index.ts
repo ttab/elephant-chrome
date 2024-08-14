@@ -11,5 +11,4 @@ export async function GET(): Promise<unknown> {
       contentApiUrl: process.env.CONTENT_API_URL ?? ''
     }
   }
-
 }
