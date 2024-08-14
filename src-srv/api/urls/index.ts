@@ -3,7 +3,7 @@ export async function GET(): Promise<unknown> {
     ? `${process.env.REPOSITORY_URL}/sse`
     : ''
 
-return {
+  return {
     payload: {
       indexUrl: process.env.INDEX_URL ?? '',
       webSocketUrl: process.env.WS_URL ?? '',
