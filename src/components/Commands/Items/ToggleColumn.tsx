@@ -16,7 +16,7 @@ export const ToggleColumn = (): JSX.Element | null => {
         }}
       >
         <SlidersHorizontal size={18} strokeWidth={18} className="mr-2" />
-        Toggle columns
+        Kolumner
       </CommandItem>
     )
   }

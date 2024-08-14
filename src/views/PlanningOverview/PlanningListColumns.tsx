@@ -30,7 +30,7 @@ export function planningTableColumns({ sections = [] }: {
       meta: {
         filter: 'facet',
         options: DocumentStatuses,
-        name: 'documentStatus',
+        name: 'Status',
         columnIcon: CircleCheck,
         className: 'box-content w-6 pr-0'
       },
@@ -45,7 +45,7 @@ export function planningTableColumns({ sections = [] }: {
       meta: {
         filter: 'facet',
         options: VisibilityStatuses,
-        name: 'Visibility',
+        name: 'Synlighet',
         columnIcon: Eye,
         className: 'box-content w-6 pr-0'
       },
@@ -60,7 +60,7 @@ export function planningTableColumns({ sections = [] }: {
       meta: {
         filter: 'facet',
         options: Newsvalues,
-        name: 'Priority',
+        name: 'Nyhetsvärde',
         columnIcon: SignalHigh,
         className: 'box-content w-4 sm:w-8 pr-1 sm:pr-4'
       },
@@ -82,7 +82,7 @@ export function planningTableColumns({ sections = [] }: {
       id: 'title',
       meta: {
         filter: null,
-        name: 'Title',
+        name: 'Slugg',
         columnIcon: Pen,
         className: 'box-content truncate'
       },
@@ -104,7 +104,7 @@ export function planningTableColumns({ sections = [] }: {
           }
         }),
         filter: 'facet',
-        name: 'Section',
+        name: 'Sektion',
         columnIcon: Shapes,
         className: 'box-content w-[115px] hidden @4xl/view:[display:revert]'
       },
@@ -127,7 +127,7 @@ export function planningTableColumns({ sections = [] }: {
       id: 'assignees',
       meta: {
         filter: 'facet',
-        name: 'Assignees',
+        name: 'Uppdragstagare',
         columnIcon: Users,
         className: 'box-content w-[112px] hidden @5xl/view:[display:revert]'
       },
@@ -142,7 +142,7 @@ export function planningTableColumns({ sections = [] }: {
       meta: {
         filter: 'facet',
         options: AssignmentTypes,
-        name: 'Type',
+        name: 'Typ',
         columnIcon: Crosshair,
         className: 'box-content w-[120px] hidden @6xl/view:[display:revert]'
       },
