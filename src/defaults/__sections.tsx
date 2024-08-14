@@ -1,3 +1,6 @@
+/**
+ * @deprecated
+ */
 import { type DefaultValueOption } from '@/types'
 
 export const Sections: DefaultValueOption[] = [

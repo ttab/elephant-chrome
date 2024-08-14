@@ -11,8 +11,9 @@ import { TableProvider } from '@/contexts/TableProvider'
 import { TableCommandMenu } from '@/components/Commands/TableCommand'
 import { Header } from '@/views/PlanningOverview/PlanningHeader'
 import { PlanningCommands } from './PlanningCommands'
-import { planningColumns } from './PlanningListColumns'
+import { planningTableColumns } from './PlanningListColumns'
 import { type Planning } from '@/lib/index'
+import { useSections } from '@/hooks/useSections'
 
 const meta: ViewMetadata = {
   name: 'Plannings',
@@ -34,13 +35,14 @@ export const Plannings = (): JSX.Element => {
   const [startDate, setStartDate] = useState<Date>(new Date())
   const [endDate, setEndDate] = useState<Date>(getEndDate(startDate))
   const [currentTab, setCurrentTab] = useState<string>('list')
+  const sections = useSections()
 
   useEffect(() => {
     setEndDate(getEndDate(startDate))
   }, [startDate])
 
   return (
-    <TableProvider<Planning> columns={planningColumns}>
+    <TableProvider<Planning> columns={planningTableColumns({ sections })}>
       <Tabs defaultValue={currentTab} className='flex-1' onValueChange={setCurrentTab}>
 
         <TableCommandMenu>

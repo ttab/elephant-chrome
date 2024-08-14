@@ -87,7 +87,7 @@ export const Table = <TData, TValue>({
           <TableCell
             colSpan={columns.length}
             className="h-24 text-center"
-            >
+          >
             {loading ? 'Loading...' : 'No results.'}
           </TableCell>
         </TableRow>

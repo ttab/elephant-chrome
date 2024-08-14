@@ -9,8 +9,9 @@ import { EventsList } from './EventsList'
 import { EventsGrid } from './EventsGrid'
 import { Header } from './EventsHeader'
 import { EventsCommands } from './EventsCommands'
-import { eventColumns } from './EventsListColumns'
+import { eventTableColumns } from './EventsListColumns'
 import { type Event } from '@/lib/index'
+import { useSections } from '@/hooks/useSections'
 
 const meta: ViewMetadata = {
   name: 'Events',
@@ -32,13 +33,14 @@ export const Events = (): JSX.Element => {
   const [startDate, setStartDate] = useState<Date>(new Date())
   const [endDate, setEndDate] = useState<Date>(getEndDate(startDate))
   const [currentTab, setCurrentTab] = useState<string>('list')
+  const sections = useSections()
 
   useEffect(() => {
     setEndDate(getEndDate(startDate))
   }, [startDate])
 
   return (
-    <TableProvider<Event> columns={eventColumns}>
+    <TableProvider<Event> columns={eventTableColumns({ sections })}>
       <Tabs defaultValue={currentTab} className='flex-1' onValueChange={setCurrentTab}>
 
         <TableCommandMenu>

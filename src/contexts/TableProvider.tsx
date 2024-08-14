@@ -12,7 +12,7 @@ import {
   useReactTable,
   type ColumnDef
 } from '@tanstack/react-table'
-import { type SearchIndexResponse } from '@/lib/index/searchIndex'
+import type { SearchIndexResponse } from '@/lib/index'
 
 export interface CommandArgs {
   pages: string[]

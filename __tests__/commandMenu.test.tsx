@@ -4,7 +4,7 @@ import { NavigationProvider } from '@/navigation'
 import { render, screen } from '../setupTests'
 import { CommandMenu } from '@/components/Commands/Menu'
 import userEvent from '@testing-library/user-event'
-import { planningColumns } from '@/views/PlanningOverview/PlanningListColumns'
+import { planningTableColumns } from '@/views/PlanningOverview/PlanningListColumns'
 import { type Planning } from '@/lib/index'
 
 describe('CommandMenu', () => {
@@ -12,7 +12,7 @@ describe('CommandMenu', () => {
     render(
       <SessionProvider>
         <NavigationProvider>
-          <TableProvider<Planning> columns={planningColumns}>
+          <TableProvider<Planning> columns={planningTableColumns({})}>
             <CommandMenu onKeyDown={() => { }} onChange={() => { }}>
               <p>test</p>
             </CommandMenu>

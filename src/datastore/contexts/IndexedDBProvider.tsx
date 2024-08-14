@@ -7,6 +7,7 @@ import React, {
 
 import { CoreAuthorProvider } from './CoreAuthorProvider'
 import { CoreStoryProvider } from './CoreStoryProvider'
+import { CoreSectionProvider } from './CoreSectionProvider'
 
 export interface IndexedDBContextType {
   db: IDBDatabase | null
@@ -26,9 +27,10 @@ export const IndexedDBProvider = ({ children, name }: {
   // Open (and create if applicable) an indexedDB
   useEffect(() => {
     const indexedDbSpecification = {
-      version: 5,
+      version: 6,
       objectStores: [
         'core/author',
+        'core/section',
         'core/story',
         '__meta'
       ]
@@ -97,11 +99,13 @@ export const IndexedDBProvider = ({ children, name }: {
   return (
     <IndexedDBContext.Provider value={{ db, put, get, clear }}>
       {!!db &&
-        <CoreAuthorProvider>
-          <CoreStoryProvider>
-            {children}
-          </CoreStoryProvider>
-        </CoreAuthorProvider>
+        <CoreSectionProvider>
+          <CoreAuthorProvider>
+            <CoreStoryProvider>
+              {children}
+            </CoreStoryProvider>
+          </CoreAuthorProvider>
+        </CoreSectionProvider>
       }
     </IndexedDBContext.Provider>
   )

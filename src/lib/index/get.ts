@@ -1,12 +1,11 @@
-import { type IndexedStory } from './schemas/story'
 import { searchIndex, type SearchIndexResponse } from './searchIndex'
 
-interface SearchParams {
+export interface SearchParams {
   page?: number
   size?: number
 }
 
-const get = async (endpoint: URL, accessToken: string, params?: SearchParams): Promise<SearchIndexResponse<IndexedStory>> => {
+export const get = async <T>(endpoint: URL, accessToken: string, index: string, params?: SearchParams): Promise<SearchIndexResponse<T>> => {
   const query = {
     query: {
       match_all: {}
@@ -16,15 +15,11 @@ const get = async (endpoint: URL, accessToken: string, params?: SearchParams): P
   return await searchIndex(
     query,
     {
-      index: 'core_story',
+      index,
       endpoint,
       accessToken
     },
     params?.page,
     params?.size
   )
-}
-
-export const Stories = {
-  get
 }
