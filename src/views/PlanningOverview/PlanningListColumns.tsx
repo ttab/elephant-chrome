@@ -38,6 +38,9 @@ export function planningTableColumns({ sections = [] }: {
       cell: ({ row }) => {
         const status = row.getValue<string>('documentStatus')
         return <DocumentStatus status={status} />
+      },
+      filterFn: (row, id, value) => {
+        return value.includes(row.getValue(id))
       }
     },
     {
