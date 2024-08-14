@@ -2,7 +2,7 @@ import { renderHook } from '@testing-library/react'
 import { useYValue } from '@/hooks/useYValue'
 import { type CollaborationWrapper, initializeCollaborationWrapper } from './utils/initializeCollaborationWrapper'
 import { act } from '../setupTests'
-import { PlanningSections } from '@/defaults'
+import { PlanningSections } from '@/defaults/__planning_sections'
 import { type Block } from '@/protos/service'
 
 let init: CollaborationWrapper
