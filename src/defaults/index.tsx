@@ -1,8 +1,6 @@
 export { AssignmentTypes } from './assignmentTypes'
 export { Newsvalues } from './newsvalues'
 export { NewsvalueMap } from './newsvalueMap'
-export { PlanningSections } from './planning_sections'
-export { EventsSections } from './events_sections'
 export { Collaboration } from './collaboration'
 export { DocumentStatuses } from './documentStatuses'
 export { VisibilityStatuses } from './visibilityStatuses'

@@ -1,4 +1,7 @@
 import { Block } from '@/protos/service'
+/**
+ * @deprecated
+ */
 import { type DefaultValueOption } from '@/types'
 
 export const EventsSections: DefaultValueOption[] = [

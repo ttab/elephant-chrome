@@ -31,7 +31,7 @@ export const PlanStory = (): JSX.Element => {
         className='w-fit text-muted-foreground font-sans font-normal whitespace-nowrap text-ellipsis px-2 h-7'
         options={allStories}
         selectedOption={selectedOption}
-        placeholder={story?.title || 'Story'}
+        placeholder={story?.title || 'Lägg till story'}
         onOpenChange={(isOpen: boolean) => {
           if (setFocused?.current) {
             setFocused.current(isOpen)
