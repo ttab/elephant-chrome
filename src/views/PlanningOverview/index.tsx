@@ -6,10 +6,14 @@ import { ScrollArea, Tabs, TabsContent } from '@ttab/elephant-ui'
 
 import { PlanningGrid } from './PlanningGrid'
 import { PlanningList } from './PlanningList'
-import { PlanningTableProvider } from '@/contexts/PlanningTableProvider'
+import { TableProvider } from '@/contexts/TableProvider'
 
-import { TableCommandMenu } from './PlanningTable/TableCommandMenu'
+import { TableCommandMenu } from '@/components/Commands/TableCommand'
 import { Header } from '@/views/PlanningOverview/PlanningHeader'
+import { PlanningCommands } from './PlanningCommands'
+import { planningTableColumns } from './PlanningListColumns'
+import { type Planning } from '@/lib/index'
+import { useSections } from '@/hooks/useSections'
 
 const meta: ViewMetadata = {
   name: 'Plannings',
@@ -31,16 +35,19 @@ export const Plannings = (): JSX.Element => {
   const [startDate, setStartDate] = useState<Date>(new Date())
   const [endDate, setEndDate] = useState<Date>(getEndDate(startDate))
   const [currentTab, setCurrentTab] = useState<string>('list')
+  const sections = useSections()
 
   useEffect(() => {
     setEndDate(getEndDate(startDate))
   }, [startDate])
 
   return (
-    <PlanningTableProvider>
+    <TableProvider<Planning> columns={planningTableColumns({ sections })}>
       <Tabs defaultValue={currentTab} className='flex-1' onValueChange={setCurrentTab}>
 
-        <TableCommandMenu />
+        <TableCommandMenu>
+          <PlanningCommands />
+        </TableCommandMenu>
 
         <div className="flex flex-col h-screen">
           <ViewHeader.Root>
@@ -71,7 +78,7 @@ export const Plannings = (): JSX.Element => {
         </div>
 
       </Tabs>
-    </PlanningTableProvider>
+    </TableProvider>
   )
 }
 

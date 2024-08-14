@@ -55,4 +55,4 @@ const EventsSchema = z.object({
   sort: z.array(z.number())
 })
 
-export type Events = z.infer<typeof EventsSchema>
+export type Event = z.infer<typeof EventsSchema>

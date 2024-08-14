@@ -4,30 +4,29 @@ import {
   flexRender
 } from '@tanstack/react-table'
 
-import { Table, TableBody, TableCell, TableRow } from '@ttab/elephant-ui'
+import { Table as _Table, TableBody, TableCell, TableRow } from '@ttab/elephant-ui'
 import { Toolbar } from './Toolbar'
-import { useNavigation, useView } from '@/hooks'
+import { useNavigation, useView, useTable } from '@/hooks'
 import { isEditableTarget } from '@/lib/isEditableTarget'
-import { useEventsTable } from '@/hooks/useEventsTable'
-import { eventTableColumns } from './Columns'
 import { cn } from '@ttab/elephant-ui/utils'
 import { handleLink } from '@/components/Link/lib/handleLink'
 
-interface EventsTableProps<TData, TValue> {
+interface TableProps<TData, TValue> {
   columns: Array<ColumnDef<TData, TValue>>
   data: TData[]
   onRowSelected?: (row?: TData) => void
 }
 
 
-export const EventsTable = <TData, TValue>({
+export const Table = <TData, TValue>({
+  columns,
   onRowSelected
-}: EventsTableProps<TData, TValue>): JSX.Element => {
+}: TableProps<TData, TValue>): JSX.Element => {
   const { isActive: isActiveView } = useView()
   const { state, dispatch } = useNavigation()
   const { viewId: origin } = useView()
 
-  const { table, loading } = useEventsTable()
+  const { table, loading } = useTable()
 
   // Handle navigation using arrow keys
   useEffect(() => {
@@ -86,7 +85,7 @@ export const EventsTable = <TData, TValue>({
       return (
         <TableRow>
           <TableCell
-            colSpan={eventTableColumns({}).length}
+            colSpan={columns.length}
             className="h-24 text-center"
           >
             {loading ? 'Loading...' : 'No results.'}
@@ -112,6 +111,7 @@ export const EventsTable = <TData, TValue>({
               dispatch,
               viewItem: state.viewRegistry.get('Planning'),
               viewRegistry: state.viewRegistry,
+              // @ts-expect-error unknown type
               props: { id: row.original._id },
               viewId: crypto.randomUUID(),
               origin
@@ -145,11 +145,11 @@ export const EventsTable = <TData, TValue>({
     <>
       <Toolbar table={table} />
       <div className="rounded-md">
-        <Table className='table-fixed'>
+        <_Table className='table-fixed'>
           <TableBody>
             <TableBodyElement />
           </TableBody>
-        </Table>
+        </_Table>
       </div>
     </>
   )

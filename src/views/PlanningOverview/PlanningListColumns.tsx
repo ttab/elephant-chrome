@@ -1,10 +1,10 @@
 import { type ColumnDef } from '@tanstack/react-table'
 import { type Planning } from '@/lib/index/schemas/planning'
-import { Newsvalue } from '@/components/Table/Newsvalue'
-import { Title } from '@/components/Table/Title'
-import { Assignees } from './Assignees'
-import { Type } from './Type'
-import { Actions } from './Actions'
+import { Newsvalue } from '@/components/Table/Items/Newsvalue'
+import { Title } from '@/components/Table/Items/Title'
+import { Assignees } from '@/components/Table/Items/Assignees'
+import { Type } from '@/components/Table/Items/Type'
+import { Actions } from '@/components/Table/Items/Actions'
 import {
   SignalHigh,
   Pen,
@@ -17,7 +17,7 @@ import {
 } from '@ttab/elephant-ui/icons'
 import { Newsvalues, NewsvalueMap, AssignmentTypes, VisibilityStatuses, DocumentStatuses } from '@/defaults'
 import { StatusIndicator } from '@/components/DataItem/StatusIndicator'
-import { DocumentStatus } from './DocumentStatus'
+import { DocumentStatus } from '@/components/Table/Items/DocumentStatus'
 import { SectionBadge } from '@/components/DataItem/SectionBadge'
 import { type IDBSection } from 'src/datastore/types'
 

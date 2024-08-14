@@ -1,9 +1,9 @@
-import { useEventsTable } from '@/hooks'
+import { useTable } from '@/hooks'
 import { CommandItem } from '@ttab/elephant-ui'
 import { Search } from '@ttab/elephant-ui/icons'
 
 export const TextFilter = (): JSX.Element | null => {
-  const { command, table } = useEventsTable()
+  const { command, table } = useTable()
   const { setPages, setSearch, pages, page } = command
 
   const globalFilter: string | undefined = typeof table.getState().globalFilter === 'string'

@@ -1,11 +1,11 @@
-import { EventsCommandMenu } from '@/components/CommandMenu/EventsCommandMenu'
+import { CommandMenu } from '@/components/Commands/Menu'
 import { CommandGroup } from '@ttab/elephant-ui'
-import { EventsCommands } from '../EventsCommands'
-import { useEventsTable } from '@/hooks/useEventsTable'
-import { type CommandArgs } from '@/contexts/EventsTableProvider'
+import { useTable } from '@/hooks'
+import { type CommandArgs } from '@/contexts/TableProvider'
+import { type PropsWithChildren } from 'react'
 
-export const TableCommandMenu = (): JSX.Element => {
-  const { table } = useEventsTable()
+export const TableCommandMenu = ({ children }: PropsWithChildren): JSX.Element => {
+  const { table } = useTable()
 
   const handleChange = (value: string | undefined, args: CommandArgs): void => {
     const { setSearch, page } = args
@@ -16,7 +16,7 @@ export const TableCommandMenu = (): JSX.Element => {
   }
 
   return (
-    <EventsCommandMenu
+    <CommandMenu
       onChange={handleChange}
       onKeyDown={(e, setOpen, args) => {
         const { search, setSearch, pages, setPages } = args
@@ -37,8 +37,8 @@ export const TableCommandMenu = (): JSX.Element => {
       }}
       >
       <CommandGroup heading='Events'>
-        <EventsCommands />
+        {children}
       </CommandGroup>
-    </EventsCommandMenu>
+    </CommandMenu>
   )
 }

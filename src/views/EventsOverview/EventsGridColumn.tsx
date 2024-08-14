@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState } from 'react'
-import { type Events as EventsType } from '@/views/EventsOverview/EventsTable/data/schema'
+import { type Event } from '@/lib/index'
 import { useRegistry, useSections } from '@/hooks'
 import { SectionBadge } from '@/components/DataItem/SectionBadge'
 import { StatusIndicator } from '@/components/DataItem/StatusIndicator'
@@ -10,7 +10,7 @@ import type * as Y from 'yjs'
 
 interface EventsGridColumnProps {
   date: Date
-  items: EventsType[]
+  items: Event[]
 }
 
 

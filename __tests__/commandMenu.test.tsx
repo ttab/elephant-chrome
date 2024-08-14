@@ -1,20 +1,22 @@
-import { PlanningTableProvider } from '@/contexts'
+import { TableProvider } from '@/contexts'
 import { SessionProvider } from 'next-auth/react'
 import { NavigationProvider } from '@/navigation'
 import { render, screen } from '../setupTests'
-import { PlanningCommandMenu } from '@/components/CommandMenu/PlanningCommandMenu'
+import { CommandMenu } from '@/components/Commands/Menu'
 import userEvent from '@testing-library/user-event'
+import { planningTableColumns } from '@/views/PlanningOverview/PlanningListColumns'
+import { type Planning } from '@/lib/index'
 
 describe('CommandMenu', () => {
   it('should render CommandMenu component', async () => {
     render(
       <SessionProvider>
         <NavigationProvider>
-          <PlanningTableProvider>
-            <PlanningCommandMenu onKeyDown={() => { }} onChange={() => { }}>
+          <TableProvider<Planning> columns={planningTableColumns({})}>
+            <CommandMenu onKeyDown={() => { }} onChange={() => { }}>
               <p>test</p>
-            </PlanningCommandMenu>
-          </PlanningTableProvider>
+            </CommandMenu>
+          </TableProvider>
         </NavigationProvider>
       </SessionProvider>
     )

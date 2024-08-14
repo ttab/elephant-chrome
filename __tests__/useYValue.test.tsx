@@ -2,7 +2,7 @@ import { renderHook } from '@testing-library/react'
 import { useYValue } from '@/hooks/useYValue'
 import { type CollaborationWrapper, initializeCollaborationWrapper } from './utils/initializeCollaborationWrapper'
 import { act } from '../setupTests'
-import { PlanningSections } from '@/defaults/__planning_sections'
+import { Sections } from '@/defaults/__sections'
 import { type Block } from '@/protos/service'
 
 let init: CollaborationWrapper
@@ -35,7 +35,7 @@ describe('useYValue', () => {
       useYValue<Block>('links.tt/sector[0]'), { wrapper: init.wrapper })
 
     expect(result.current[0]).toEqual({
-      ...PlanningSections[2].payload,
+      ...Sections[2].payload,
       content: {},
       links: {},
       meta: {}
@@ -47,7 +47,7 @@ describe('useYValue', () => {
     const { result } = renderHook(() =>
       useYValue<Block>('links.tt/sector[0]'), { wrapper: init.wrapper })
 
-    const payload = PlanningSections[3].payload
+    const payload = Sections[3].payload
     if (payload) {
       act(() => result.current[1](payload))
       expect(result.current[0]).toEqual(payload)
@@ -60,7 +60,7 @@ describe('useYValue', () => {
     const { result } = renderHook(() =>
       useYValue<Block>('links.tt/sector[1]'), { wrapper: init.wrapper })
 
-    const payload = PlanningSections[3].payload
+    const payload = Sections[3].payload
     if (payload) {
       act(() => result.current[1](payload))
       expect(result.current[2]).toHaveLength(2)

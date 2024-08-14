@@ -1,10 +1,10 @@
-import { useEventsTable } from '@/hooks'
+import { useTable } from '@/hooks'
 import { CommandItem, CommandList } from '@ttab/elephant-ui'
 import { CheckIcon, SlidersHorizontal } from '@ttab/elephant-ui/icons'
 import { cn } from '@ttab/elephant-ui/utils'
 
 export const ToggleColumn = (): JSX.Element | null => {
-  const { command, table } = useEventsTable()
+  const { command, table } = useTable()
   const { setPages, setSearch, pages, page } = command
 
   if (!page) {

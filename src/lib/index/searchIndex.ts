@@ -14,7 +14,7 @@ interface SearchIndexResult<T> {
   hits: T[]
 }
 
-interface SearchIndexError {
+export interface SearchIndexError {
   ok: false
   errorCode: number
   errorMessage: string

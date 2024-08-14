@@ -1,6 +1,6 @@
 import { type ColumnDef } from '@tanstack/react-table'
-import { type Events } from '../data/schema'
-import { Newsvalue } from '@/components/Table/Newsvalue'
+import { type Event } from '@/lib/index/schemas/event'
+import { Newsvalue } from '@/components/Table/Items/Newsvalue'
 import { type MouseEvent } from 'react'
 import {
   SignalHigh,
@@ -16,16 +16,16 @@ import {
 import { DotDropdownMenu } from '@/components/ui/DotMenu'
 import { Newsvalues, NewsvalueMap, VisibilityStatuses } from '@/defaults'
 import { StatusIndicator } from '@/components/DataItem/StatusIndicator'
-import { Time } from './Time'
-import { PlanningStatus } from './PlanningStatus'
-import { Title } from '@/components/Table/Title'
+import { Time } from '@/components/Table/Items/Time'
+import { Title } from '@/components/Table/Items/Title'
+import { Status } from '@/components/Table/Items/Status'
 import { SectionBadge } from '@/components/DataItem/SectionBadge'
 import { type IDBSection } from 'src/datastore/types'
 
 
 export function eventTableColumns({ sections = [] }: {
   sections?: IDBSection[]
-}): Array<ColumnDef<Events>> {
+}): Array<ColumnDef<Event>> {
   return [
     {
       id: 'visibilityStatus',
@@ -117,7 +117,7 @@ export function eventTableColumns({ sections = [] }: {
       accessorFn: (data) => data?._relatedPlannings,
       cell: ({ row }) => {
         const _status = row.getValue<string>('planning_status')
-        return <PlanningStatus status={_status} />
+        return <Status status={_status} />
       }
     },
     {

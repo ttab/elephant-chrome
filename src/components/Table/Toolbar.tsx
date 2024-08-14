@@ -2,7 +2,7 @@ import { X } from '@ttab/elephant-ui/icons'
 import { type Table } from '@tanstack/react-table'
 
 import { Button } from '@ttab/elephant-ui'
-import { SelectedFilters } from '@/components/Table/SelectedFilters'
+import { SelectedFilters } from './SelectedFilters'
 
 interface ToolbarProps<TData> {
   table: Table<TData>

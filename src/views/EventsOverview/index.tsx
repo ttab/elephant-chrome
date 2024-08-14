@@ -3,11 +3,15 @@ import { type ViewMetadata } from '@/types'
 import { ViewHeader } from '@/components'
 import { CalendarPlus2 } from '@ttab/elephant-ui/icons'
 import { ScrollArea, Tabs, TabsContent } from '@ttab/elephant-ui'
-import { EventsTableProvider } from '@/contexts/EventsTableProvider'
-import { TableCommandMenu } from './EventsTable/TableCommandMenu'
+import { TableProvider } from '@/contexts/TableProvider'
+import { TableCommandMenu } from '@/components/Commands/TableCommand'
 import { EventsList } from './EventsList'
 import { EventsGrid } from './EventsGrid'
 import { Header } from './EventsHeader'
+import { EventsCommands } from './EventsCommands'
+import { eventTableColumns } from './EventsListColumns'
+import { type Event } from '@/lib/index'
+import { useSections } from '@/hooks/useSections'
 
 const meta: ViewMetadata = {
   name: 'Events',
@@ -29,16 +33,19 @@ export const Events = (): JSX.Element => {
   const [startDate, setStartDate] = useState<Date>(new Date())
   const [endDate, setEndDate] = useState<Date>(getEndDate(startDate))
   const [currentTab, setCurrentTab] = useState<string>('list')
+  const sections = useSections()
 
   useEffect(() => {
     setEndDate(getEndDate(startDate))
   }, [startDate])
 
   return (
-    <EventsTableProvider>
+    <TableProvider<Event> columns={eventTableColumns({ sections })}>
       <Tabs defaultValue={currentTab} className='flex-1' onValueChange={setCurrentTab}>
 
-        <TableCommandMenu />
+        <TableCommandMenu>
+          <EventsCommands />
+        </TableCommandMenu>
 
         <div className="flex flex-col h-screen">
           <ViewHeader.Root>
@@ -69,7 +76,7 @@ export const Events = (): JSX.Element => {
         </div>
 
       </Tabs>
-    </EventsTableProvider>
+    </TableProvider>
   )
 }
 

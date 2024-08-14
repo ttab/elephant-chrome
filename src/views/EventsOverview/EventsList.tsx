@@ -1,17 +1,18 @@
 import { useMemo } from 'react'
 import useSWR from 'swr'
 
-import { useIndexUrl, useEventsTable, useSections } from '@/hooks'
+import { useIndexUrl, useTable, useSections } from '@/hooks'
 import { useSession } from 'next-auth/react'
-import { type EventsSearchIndexResponse } from '@/lib/index/events-search'
+import { type SearchIndexResponse } from '@/lib/index/searchIndex'
 import { Events } from '@/lib/events'
-import { eventTableColumns } from '@/views/EventsOverview/EventsTable/Columns'
+import { type Event } from '@/lib/index/schemas'
+import { eventTableColumns } from '@/views/EventsOverview/EventsListColumns'
 
 import { convertToISOStringInUTC, getDateTimeBoundaries } from '@/lib/datetime'
-import { EventsTable } from './EventsTable'
+import { Table } from '@/components/Table'
 
 export const EventsList = ({ date }: { date: Date }): JSX.Element => {
-  const { setData } = useEventsTable()
+  const { setData } = useTable<Event>()
   const { data: session, status } = useSession()
 
   const indexUrl = useIndexUrl()
@@ -29,7 +30,7 @@ export const EventsList = ({ date }: { date: Date }): JSX.Element => {
   }, [startTime, endTime, indexUrl])
 
 
-  const { data } = useSWR(['eventitems', status, searchUrl.href], async (): Promise<EventsSearchIndexResponse & { planningItem?: string } | undefined> => {
+  const { data } = useSWR(['eventitems', status, searchUrl.href], async (): Promise<SearchIndexResponse<Event> & { planningItem?: string } | undefined> => {
     if (status !== 'authenticated') {
       return
     }
@@ -76,7 +77,7 @@ export const EventsList = ({ date }: { date: Date }): JSX.Element => {
   return (
     <>
       {data?.ok === true &&
-        <EventsTable data={data?.hits} columns={columns} onRowSelected={(row): void => {
+        <Table data={data?.hits} columns={columns} onRowSelected={(row): void => {
           if (row) {
             console.log(`Selected event item ${row._id}`)
           } else {

@@ -1,4 +1,5 @@
-import { searchIndex, type EventsSearchIndexResponse } from '../index/events-search'
+import { type SearchIndexResponse, type Event } from '../index'
+import { searchIndex } from '../index'
 
 interface SearchEventsParams {
   skip?: number
@@ -13,7 +14,7 @@ interface SearchEventsParams {
   }
 }
 
-export const search = async (endpoint: URL, accessToken: string, params?: SearchEventsParams): Promise<EventsSearchIndexResponse> => {
+export const search = async (endpoint: URL, accessToken: string, params?: SearchEventsParams): Promise<SearchIndexResponse<Event>> => {
   const start = params?.where?.start ? new Date(params.where.start) : new Date()
   const end = params?.where?.end ? new Date(params.where.end) : new Date()
   const sort: Array<Record<string, 'asc' | 'desc'>> = []

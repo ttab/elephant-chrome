@@ -1,7 +1,6 @@
 export { RegistryProvider, RegistryContext, type RegistryProviderState } from './RegistryProvider'
 export { ThemeProvider, ThemeProviderContext } from './ThemeProvider'
-export { PlanningTableProvider, PlanningTableContext } from './PlanningTableProvider'
-export { EventsTableProvider, EventsTableContext } from './EventsTableProvider'
+export { TableProvider, TableContext } from './TableProvider'
 export { CollaborationProviderContext, CollaborationContext, type CollaborationProviderState } from './CollaborationProvider'
 export { HPWebSocketProviderContext, HPWebSocketProvider } from './HPWebSocketProvider'
 export { DocTrackerProvider } from './DocTrackerProvider'

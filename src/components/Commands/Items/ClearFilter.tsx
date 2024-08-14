@@ -1,9 +1,9 @@
-import { useEventsTable } from '@/hooks'
+import { useTable } from '@/hooks'
 import { CommandItem } from '@ttab/elephant-ui'
 import { X } from '@ttab/elephant-ui/icons'
 
 export const ClearFilter = (): JSX.Element | null => {
-  const { table } = useEventsTable()
+  const { table } = useTable()
 
   const { columnFilters, globalFilter } = table.getState()
 

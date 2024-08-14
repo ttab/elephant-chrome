@@ -1,19 +1,19 @@
 import { useMemo } from 'react'
 import useSWR from 'swr'
-import { useIndexUrl, usePlanningTable, useSections, useRepositoryEvents } from '@/hooks'
+import { useIndexUrl, useTable, useSections, useRepositoryEvents } from '@/hooks'
 import { useSession } from 'next-auth/react'
 import {
   type SearchIndexResponse,
-  type Planning as PlanningType,
+  type Planning,
   Plannings
 } from '@/lib/index'
 
-import { PlanningTable } from '@/views/PlanningOverview/PlanningTable'
-import { planningTableColumns } from '@/views/PlanningOverview/PlanningTable/Columns'
+import { Table } from '@/components/Table'
+import { planningTableColumns } from '@/views/PlanningOverview/PlanningListColumns'
 import { convertToISOStringInUTC, getDateTimeBoundaries } from '@/lib/datetime'
 
 export const PlanningList = ({ date }: { date: Date }): JSX.Element => {
-  const { setData } = usePlanningTable()
+  const { setData } = useTable<Planning>()
   const { data: session, status } = useSession()
 
   const sections = useSections()
@@ -34,7 +34,7 @@ export const PlanningList = ({ date }: { date: Date }): JSX.Element => {
     return searchUrl
   }, [startTime, endTime, indexUrl])
 
-  const { data, mutate } = useSWR(searchUrl?.href, async (): Promise<SearchIndexResponse<PlanningType> | undefined> => {
+  const { data, mutate } = useSWR(searchUrl?.href, async (): Promise<SearchIndexResponse<Planning> | undefined> => {
     if (status !== 'authenticated' || !indexUrl) {
       return
     }
@@ -48,7 +48,7 @@ export const PlanningList = ({ date }: { date: Date }): JSX.Element => {
       }
     })
     if (result.ok) {
-      const getCurrentDocumentStatus = (obj: PlanningType): string => {
+      const getCurrentDocumentStatus = (obj: Planning): string => {
         const item: Record<string, null | string[]> = obj._source
         const defaultStatus = 'draft'
         const createdValues = []
@@ -69,7 +69,7 @@ export const PlanningList = ({ date }: { date: Date }): JSX.Element => {
       }
       const planningsWithStatus = {
         ...result,
-        hits: result?.hits?.map((planningItem: PlanningType) => {
+        hits: result?.hits?.map((planningItem: Planning) => {
           const status = getCurrentDocumentStatus(planningItem)
           planningItem._source = Object.assign({}, planningItem._source, {
             'document.meta.status': [status]
@@ -95,7 +95,7 @@ export const PlanningList = ({ date }: { date: Date }): JSX.Element => {
   return (
     <>
       {data?.ok === true &&
-        <PlanningTable data={data?.hits} columns={planningTableColumns({ sections })} onRowSelected={(row): void => {
+        <Table data={data?.hits} columns={planningTableColumns({ sections })} onRowSelected={(row): void => {
           if (row) {
             console.info(`Selected planning item ${row._id}`)
           } else {
