@@ -5,11 +5,19 @@ import { newHocuspocus } from './newHocuspocus'
 import { newsDocToYDoc } from '../../src-srv/utils/transformations/yjs/yDoc'
 import { planning } from '../data/planning-newsdoc'
 import * as Y from 'yjs'
+import { type Hocuspocus } from '@hocuspocus/server'
+import { type HocuspocusProvider } from '@hocuspocus/provider'
 
 const yDoc = new Y.Doc()
 newsDocToYDoc(yDoc, planning)
 
-export const initializeCollaborationWrapper = async (): Promise<(props: React.PropsWithChildren) => JSX.Element> => {
+export interface CollaborationWrapper {
+  wrapper: (props: React.PropsWithChildren) => JSX.Element
+  server: Hocuspocus
+  provider: HocuspocusProvider
+}
+
+export const initializeCollaborationWrapper = async (): Promise<CollaborationWrapper> => {
   const server = await newHocuspocus({})
   const provider = newHocuspocusProvider(server, yDoc)
 
@@ -31,6 +39,6 @@ export const initializeCollaborationWrapper = async (): Promise<(props: React.Pr
     </CollaborationContext.Provider>
   )
 
-  return wrapper
+  return { wrapper, server, provider }
 }
 

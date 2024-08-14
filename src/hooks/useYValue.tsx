@@ -74,6 +74,14 @@ export function useYValue<T>(path: string, options: useYValueOptions = { observe
   }, [getValueAndParent, options.observe])
 
 
+  const ensureValue = useCallback((value: unknown): T => {
+    if (isYContainer(value)) {
+      return value.toJSON() as T
+    }
+    return value as T
+  }, [])
+
+
   // Initialization
   useEffect(() => {
     if (yRoot && value === undefined) {
@@ -113,20 +121,30 @@ export function useYValue<T>(path: string, options: useYValueOptions = { observe
             // Report the change (as string) to the Y.Xmltext value.
             // CAVEAT: Should not observe large docs like this as this would then not be very perfomant!
             setValue(v.toJSON() as T)
-          } else if (yEventPath.length + 1 === yPath.length) {
+            return
+          }
+
+          if (yEventPath.length + 1 === yPath.length) {
             // The change event refers to a property in a direct parent map/array,
             // ensure it is the observed property that is changed
             const [key] = yPath.slice(-1)
             if (yEvent.keys.has(key.toString())) {
               setValue(v as T)
+              return
             }
-          } else if (yEventPath.length < yPath.length && !!p && p !== parent) {
+          }
+
+          if (yEventPath.length < yPath.length && !!p) {
             // The parent structure have changed but the exact path still exists.
             // This happens if a larger structure gets replaced.
-            setValue(v as T)
-          } else if (!p) {
+            setValue(ensureValue(v))
+            return
+          }
+
+          if (!p) {
             // The parent is gone, which means the whole structure is gone
             setValue(undefined)
+            return
           }
 
           // If we have no parent from before, or the parent has changed, we need to set it again
@@ -142,21 +160,45 @@ export function useYValue<T>(path: string, options: useYValueOptions = { observe
     yRoot?.observeDeep(observer)
 
     return () => yRoot?.unobserveDeep(observer)
-  }, [yRoot, yPath, parent, options.observe])
+  }, [yRoot, yPath, parent, options.observe, ensureValue])
 
   // Return value and parent map/array
   return [
-    value,
+    ensureValue(value),
     (v) => {
       const [key] = yPath.slice(-1)
 
+      // Set value in parent YMap
       if (isYMap(parent) && !isNumber(key)) {
         parent.set(key, v)
-      } else if (isYArray(parent) && isNumber(key) && key > 0 && key <= parent.length - 1) {
+        return
+      }
+
+      // Delete a value from parent YArray
+      if (isYArray(parent) && isNumber(key) && key >= 0 && key <= parent.length - 1 && v === undefined) {
+        parent.delete(key)
+
+        // Delete "grandparent" if parent YArray is empty
+        // TODO: This could be recursive to delete all empty parents
+        const [nextKey] = yPath.slice(-2)
+        if (parent.length === 0 && isYMap(parent.parent) && typeof nextKey === 'string') {
+          parent.parent.delete(nextKey)
+        }
+        return
+      }
+
+      // Replace value in parent YArray
+      if (isYArray(parent) && isNumber(key) && key >= 0 && key <= parent.length - 1) {
         parent.doc?.transact(() => {
           parent.delete(key)
           parent.insert(key, [v])
         })
+        return
+      }
+
+      // Append value to parent YArray
+      if (isYArray(parent) && isNumber(key) && key >= 0 && key > parent.length - 1) {
+        parent.push([v])
       }
     },
     parent

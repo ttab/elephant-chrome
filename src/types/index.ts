@@ -98,7 +98,7 @@ export interface ViewProviderState {
 }
 
 export interface DefaultValueOption {
-  payload?: Partial<Block>
+  payload?: Block
   label: string
   value: string
   icon?: LucideIcon
