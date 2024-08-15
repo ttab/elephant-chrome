@@ -5,7 +5,6 @@ import { useIndexedDB } from '../hooks/useIndexedDB'
 import { fetchOrRefresh } from '../lib/fetchOrRefresh'
 import { type IDBCategory } from '../types'
 import { type IndexedCategory } from '@/lib/index'
-// import { type IndexedAuthor } from '@/lib/index'
 
 interface CoreCategoryProviderState {
   objects: IDBCategory[]
@@ -40,11 +39,9 @@ export const CoreCategoryProvider = ({ children }: {
       force,
       (item) => {
         const { _id: id, _source: _ } = item
-        console.log(item)
         return {
           id,
-          title: _['document.title'][0].trim(),
-          uri: _?.['document.uri']?.[0].trim() || ''
+          title: _['document.title'][0].trim()
         }
       }
     )
