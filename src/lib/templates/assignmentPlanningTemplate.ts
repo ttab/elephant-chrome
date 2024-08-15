@@ -20,15 +20,6 @@ export function assignmentPlanningTemplate(assignmentType: string, planningDate:
       public: 'true',
       publish: '2024-02-09T10:30:00Z'
     },
-    links: [
-      {
-        uuid: 'c37fdf3e-72ff-4e22-8b9f-1af0d60b0cd9',
-        type: 'core/author',
-        rel: 'assignee',
-        role: 'primary',
-        name: 'Nomen Nescio/TT'
-      }
-    ],
     meta: [
       {
         type: 'tt/slugline'

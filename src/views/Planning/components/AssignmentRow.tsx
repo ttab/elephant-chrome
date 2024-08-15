@@ -1,4 +1,3 @@
-import { useYObserver } from '@/hooks/useYObserver'
 import { TimeDisplay } from '@/components/DataItem/TimeDisplay'
 import { AssignmentType } from '@/components/DataItem/AssignmentType'
 import { AssigneeAvatars } from '@/components/DataItem/AssigneeAvatars'
@@ -14,6 +13,7 @@ import { appendArticle } from '@/lib/createYItem'
 import { useCollaboration } from '@/hooks/useCollaboration'
 import type * as Y from 'yjs'
 import { Button } from '@ttab/elephant-ui'
+import { type Block } from '@/protos/service'
 
 export const AssignmentRow = ({ index, setSelectedAssignment }: {
   index: number
@@ -53,9 +53,7 @@ const AssignmentRowContent = ({ index, setSelectedAssignment }: {
   const [title] = useYValue<string>(`${base}.title`)
   const [description] = useYValue<string>(`${base}.meta.core/description[0].data.text`)
   const [publishTime] = useYValue<string>(`${base}.data.publish`)
-
-  // FIXME: Convert to use useYValue()
-  const { state: stateAuthor = [] } = useYObserver('meta', `core/assignment[${index}].links.core/author`)
+  const [authors = []] = useYValue<Block[]>(`meta.core/assignment[${index}].links.core/author`)
 
   const [showVerifyDialog, setShowVerifyDialog] = useState<boolean>(false)
   const [showCreateDialog, setShowCreateDialog] = useState<boolean>(false)
@@ -120,7 +118,7 @@ const AssignmentRowContent = ({ index, setSelectedAssignment }: {
 
         <div className="flex grow gap-4 items-center">
           <AssignmentType path={`core/assignment[${index}].meta.core/assignment-type`} />
-          <AssigneeAvatars assignees={Array.isArray(stateAuthor) ? stateAuthor.map((author) => author.name) : []} />
+          <AssigneeAvatars assignees={authors.map((author) => author.name)} />
 
           <div className="hidden items-center @3xl/view:flex">
             <SluglineButton path={`meta.core/assignment[${index}].meta.tt/slugline[0].value`} />
