@@ -4,7 +4,5 @@ export { Link } from './Link/Link'
 export { ViewHeader } from './View'
 export { Awareness } from './Awareness'
 export { AwarenessDocument } from './AwarenessDocument'
-export {
-  Avatar,
-  type AvatarSize
-} from './Avatar'
+export { Avatar, type AvatarSize } from './Avatar'
+export { Category } from './Category'

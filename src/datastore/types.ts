@@ -10,7 +10,7 @@ export interface IDBStory {
   longText: string
 }
 
-/** Story structure in indexedDB objectStore */
+/** Author structure in indexedDB objectStore */
 export interface IDBAuthor {
   id: string
   title: string
@@ -18,4 +18,10 @@ export interface IDBAuthor {
   lastName: string
   initials: string
   email: string
+}
+
+/** Category structure in indexedDB objectStore */
+export interface IDBCategory {
+  id: string
+  title: string
 }
