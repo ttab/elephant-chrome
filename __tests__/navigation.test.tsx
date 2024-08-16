@@ -11,6 +11,10 @@ import { DocTrackerContext } from '@/contexts/DocTrackerProvider'
 import { type HocuspocusProvider } from '@hocuspocus/provider'
 import { AppContent } from '../src/AppContent'
 import { type Mock, vi } from 'vitest'
+import { IndexedDBProvider } from '../src/datastore/contexts/IndexedDBProvider'
+import indexeddb from 'fake-indexeddb'
+
+globalThis.indexedDB = indexeddb
 
 vi.mock('@/navigation/hooks/useNavigation', () => ({
   useNavigation: vi.fn()
@@ -30,13 +34,15 @@ const provider = true as unknown as HocuspocusProvider
 describe('Use NavigationProvider', () => {
   it('should render view from registry', async () => {
     render(
-      <SessionProvider>
-        <NavigationProvider>
-          <DocTrackerContext.Provider value={{ synced: true, connected: true, provider }}>
-            <AppContent />
-          </DocTrackerContext.Provider>
-        </NavigationProvider>
-      </SessionProvider >
+      <IndexedDBProvider>
+        <SessionProvider>
+          <NavigationProvider>
+            <DocTrackerContext.Provider value={{ synced: true, connected: true, provider }}>
+              <AppContent />
+            </DocTrackerContext.Provider>
+          </NavigationProvider>
+        </SessionProvider >
+      </IndexedDBProvider>
     )
 
     expect(await screen.findByRole('header-title')).toBeInTheDocument()
