@@ -39,11 +39,17 @@ export function eventTableColumns({ sections = [] }: {
         columnIcon: Eye,
         className: 'box-content w-6 pr-0'
       },
-      accessorFn: (data) => data._source['document.meta.core_description.role'][0] !== 'public',
+      accessorFn: (data) => (
+        // FIXME: It seems we're not indexing "document.meta.core_event.data.public"
+        data._source['document.meta.core_description.role'][0]
+      ),
       cell: ({ row }) => {
-        const internal = row.getValue<boolean>('visibilityStatus')
-        return <StatusIndicator internal={internal} />
-      }
+        const status = row.getValue<string>('visibilityStatus')
+        return <StatusIndicator internal={status === 'internal'} />
+      },
+      filterFn: (row, id, value) => (
+        value.includes(row.getValue(id))
+      )
     },
     {
       id: 'newsvalue',
@@ -65,7 +71,6 @@ export function eventTableColumns({ sections = [] }: {
           return <Newsvalue newsvalue={newsvalue} />
         }
       },
-
       filterFn: (row, id, value) => (
         value.includes(row.getValue(id))
       )
