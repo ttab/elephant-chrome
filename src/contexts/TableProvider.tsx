@@ -1,4 +1,4 @@
-import { useState, createContext, type Dispatch, type PropsWithChildren } from 'react'
+import { useState, createContext, type Dispatch, type PropsWithChildren, type SetStateAction } from 'react'
 import {
   type Table,
   type ColumnFiltersState,
@@ -16,10 +16,10 @@ import type { SearchIndexResponse } from '@/lib/index'
 
 export interface CommandArgs {
   pages: string[]
-  setPages: Dispatch<string[] | ((p: string[]) => string[])>
+  setPages: Dispatch<SetStateAction<string[]>>
   page: string
   search: string | undefined
-  setSearch: Dispatch<string | undefined>
+  setSearch: Dispatch<SetStateAction<string | undefined>>
 }
 
 export interface TableProviderState<TData> {

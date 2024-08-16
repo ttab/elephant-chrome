@@ -1,4 +1,4 @@
-import { type Dispatch, useState, useMemo } from 'react'
+import { type Dispatch, useState, useMemo, type PropsWithChildren } from 'react'
 import { ChevronDown } from '@ttab/elephant-ui/icons'
 import {
   Button,
@@ -8,9 +8,8 @@ import {
 
 import { DebouncedCommandInput } from '@/components/Commands/Menu/DebouncedCommandInput'
 import { useTable } from '@/hooks'
-import { PlanningCommands } from '../PlanningCommands'
 
-export const Filter = (): JSX.Element => {
+export const Filter = ({ children }: PropsWithChildren): JSX.Element => {
   const [open, setOpen] = useState(false)
 
   const { command, table } = useTable()
@@ -43,7 +42,7 @@ export const Filter = (): JSX.Element => {
               e.preventDefault()
               setSearch('')
               if (pages.length > 0) {
-                setPages((pages) => pages.slice(0, -1))
+                setPages(pages.slice(0, -1))
               } else {
                 setOpen(false)
               }
@@ -62,7 +61,7 @@ export const Filter = (): JSX.Element => {
             placeholder="Filter..."
             className="h-9"
           />
-          <PlanningCommands />
+          {children}
         </Command>
       </PopoverContent>
     </Popover>

@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import { type ColumnDef } from '@tanstack/react-table'
 import { type Planning } from '@/lib/index/schemas/planning'
 import { Newsvalue } from '@/components/Table/Items/Newsvalue'
@@ -20,6 +21,7 @@ import { StatusIndicator } from '@/components/DataItem/StatusIndicator'
 import { DocumentStatus } from '@/components/Table/Items/DocumentStatus'
 import { SectionBadge } from '@/components/DataItem/SectionBadge'
 import { type IDBSection } from 'src/datastore/types'
+import { FacetedFilter } from '@/components/Commands/FacetedFilter'
 
 export function planningTableColumns({ sections = [] }: {
   sections?: IDBSection[]
@@ -28,9 +30,11 @@ export function planningTableColumns({ sections = [] }: {
     {
       id: 'documentStatus',
       meta: {
-        filter: 'facet',
+        Filter: ({ column, setSearch }) => (
+          <FacetedFilter column={column} setSearch={setSearch} />
+        ),
         options: DocumentStatuses,
-        name: 'documentStatus',
+        name: 'Document status',
         columnIcon: CircleCheck,
         className: 'box-content w-6 pr-0'
       },
@@ -38,27 +42,41 @@ export function planningTableColumns({ sections = [] }: {
       cell: ({ row }) => {
         const status = row.getValue<string>('documentStatus')
         return <DocumentStatus status={status} />
-      }
+      },
+      filterFn: (row, id, value) => (
+        value.includes(row.getValue(id))
+      )
     },
     {
       id: 'visibilityStatus',
       meta: {
-        filter: 'facet',
+        Filter: ({ column, setSearch }) => (
+          <FacetedFilter column={column} setSearch={setSearch} />
+        ),
         options: VisibilityStatuses,
         name: 'Visibility',
         columnIcon: Eye,
         className: 'box-content w-6 pr-0'
       },
-      accessorFn: (data) => data._source['document.meta.core_planning_item.data.public'][0] !== 'true',
+      accessorFn: (data) => (
+        data._source['document.meta.core_planning_item.data.public'][0] === 'true'
+          ? 'public'
+          : 'internal'
+      ),
       cell: ({ row }) => {
-        const internal = row.getValue<boolean>('visibilityStatus')
-        return <StatusIndicator internal={internal} />
-      }
+        const visibility = row.getValue<'internal' | 'public'>('visibilityStatus')
+        return <StatusIndicator visibility={visibility} />
+      },
+      filterFn: (row, id, value) => (
+        value.includes(row.getValue(id))
+      )
     },
     {
       id: 'newsvalue',
       meta: {
-        filter: 'facet',
+        Filter: ({ column, setSearch }) => (
+          <FacetedFilter column={column} setSearch={setSearch} />
+        ),
         options: Newsvalues,
         name: 'Priority',
         columnIcon: SignalHigh,
@@ -81,7 +99,6 @@ export function planningTableColumns({ sections = [] }: {
     {
       id: 'title',
       meta: {
-        filter: null,
         name: 'Title',
         columnIcon: Pen,
         className: 'box-content truncate'
@@ -103,7 +120,9 @@ export function planningTableColumns({ sections = [] }: {
             label: _.title
           }
         }),
-        filter: 'facet',
+        Filter: ({ column, setSearch }) => (
+          <FacetedFilter column={column} setSearch={setSearch} />
+        ),
         name: 'Section',
         columnIcon: Shapes,
         className: 'box-content w-[115px] hidden @4xl/view:[display:revert]'
@@ -126,7 +145,9 @@ export function planningTableColumns({ sections = [] }: {
     {
       id: 'assignees',
       meta: {
-        filter: 'facet',
+        Filter: ({ column, setSearch }) => (
+          <FacetedFilter column={column} setSearch={setSearch} />
+        ),
         name: 'Assignees',
         columnIcon: Users,
         className: 'box-content w-[112px] hidden @5xl/view:[display:revert]'
@@ -140,7 +161,9 @@ export function planningTableColumns({ sections = [] }: {
     {
       id: 'type',
       meta: {
-        filter: 'facet',
+        Filter: ({ column, setSearch }) => (
+          <FacetedFilter column={column} setSearch={setSearch} />
+        ),
         options: AssignmentTypes,
         name: 'Type',
         columnIcon: Crosshair,
@@ -162,7 +185,6 @@ export function planningTableColumns({ sections = [] }: {
     {
       id: 'action',
       meta: {
-        filter: null,
         name: 'Action',
         columnIcon: Navigation,
         className: 'box-content w-[32px]'

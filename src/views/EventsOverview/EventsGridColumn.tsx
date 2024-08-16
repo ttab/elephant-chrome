@@ -59,7 +59,8 @@ export const EventsGridColumn = ({ date, items }: EventsGridColumnProps): JSX.El
 
       <div className="border-r h-full flex flex-col p-4 gap-8">
         {items.map(item => {
-          const internal = item._source['document.meta.core_description.role'][0] !== 'public'
+          // FIXME: Event has currently no indexed indication whether it's internal or public
+          const visibility = item._source['document.meta.core_description.role'][0] === 'true' ? 'public' : 'internal'
           const title = item._source['document.title'][0]
           const slugLines = item._source['document.meta.tt_slugline.value']
           const slugLine = Array.isArray(slugLines) ? slugLines[0] : slugLines
@@ -72,7 +73,7 @@ export const EventsGridColumn = ({ date, items }: EventsGridColumnProps): JSX.El
           return <EventItem
             key={id}
             id={id}
-            internal={internal}
+            visibility={visibility}
             title={title}
             slugLine={slugLine}
             section={section}
@@ -88,7 +89,7 @@ export const EventsGridColumn = ({ date, items }: EventsGridColumnProps): JSX.El
 
 function EventItem(props: {
   id: string
-  internal: boolean
+  visibility: 'public' | 'internal'
   title: string
   slugLine: string
   section?: {
@@ -98,11 +99,11 @@ function EventItem(props: {
   }
   users?: Record<string, TrackedUser>
 }): JSX.Element {
-  const { internal, title, slugLine, section, users } = props
+  const { visibility, title, slugLine, section, users } = props
 
   return (
     <div className="flex gap-2">
-      <StatusIndicator internal={internal} className="pt-0.5 flex-none" />
+      <StatusIndicator visibility={visibility} className="pt-0.5 flex-none" />
 
       <div className="flex flex-col w-full gap-2">
         <div className="font-medium text-sm line-clamp-3">
