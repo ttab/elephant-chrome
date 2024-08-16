@@ -16,7 +16,7 @@ import type { SearchIndexResponse } from '@/lib/index'
 
 export interface CommandArgs {
   pages: string[]
-  setPages: Dispatch<SetStateAction<string[] | ((p: string[]) => string[])>>
+  setPages: Dispatch<SetStateAction<string[]>>
   page: string
   search: string | undefined
   setSearch: Dispatch<SetStateAction<string | undefined>>

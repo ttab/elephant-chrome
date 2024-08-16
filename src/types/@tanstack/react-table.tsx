@@ -4,7 +4,6 @@ import { type DefaultValueOption } from '..'
 import { type SetStateAction, type Dispatch } from 'react'
 
 declare module '@tanstack/react-table' {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   interface ColumnMeta<TData extends RowData, TValue> {
     Filter?: (({ column, setSearch }: {
       column: Column<TData, TValue>
