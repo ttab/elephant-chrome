@@ -64,8 +64,8 @@ export function planningTableColumns({ sections = [] }: {
           : 'internal'
       ),
       cell: ({ row }) => {
-        const data = row.getValue<'internal' | 'public'>('visibilityStatus')
-        return <StatusIndicator data={data} />
+        const visibility = row.getValue<'internal' | 'public'>('visibilityStatus')
+        return <StatusIndicator visibility={visibility} />
       },
       filterFn: (row, id, value) => (
         value.includes(row.getValue(id))
