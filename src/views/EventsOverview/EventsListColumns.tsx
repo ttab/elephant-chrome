@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import { type ColumnDef } from '@tanstack/react-table'
 import { type Event } from '@/lib/index/schemas/event'
 import { Newsvalue } from '@/components/Table/Items/Newsvalue'
@@ -21,7 +22,7 @@ import { Title } from '@/components/Table/Items/Title'
 import { Status } from '@/components/Table/Items/Status'
 import { SectionBadge } from '@/components/DataItem/SectionBadge'
 import { type IDBSection } from 'src/datastore/types'
-
+import { FacetedFilter } from '@/components/Commands/FacetedFilter'
 
 export function eventTableColumns({ sections = [] }: {
   sections?: IDBSection[]
@@ -30,7 +31,9 @@ export function eventTableColumns({ sections = [] }: {
     {
       id: 'visibilityStatus',
       meta: {
-        filter: 'facet',
+        Filter: ({ column, setSearch }) => (
+          <FacetedFilter column={column} setSearch={setSearch} />
+        ),
         options: VisibilityStatuses,
         name: 'Visibility',
         columnIcon: Eye,
@@ -45,7 +48,9 @@ export function eventTableColumns({ sections = [] }: {
     {
       id: 'newsvalue',
       meta: {
-        filter: 'facet',
+        Filter: ({ column, setSearch }) => (
+          <FacetedFilter column={column} setSearch={setSearch} />
+        ),
         options: Newsvalues,
         name: 'Priority',
         columnIcon: SignalHigh,
@@ -61,14 +66,13 @@ export function eventTableColumns({ sections = [] }: {
         }
       },
 
-      filterFn: (row, id, value) => {
-        return value.includes(row.getValue(id))
-      }
+      filterFn: (row, id, value) => (
+        value.includes(row.getValue(id))
+      )
     },
     {
       id: 'title',
       meta: {
-        filter: null,
         name: 'Title',
         columnIcon: Pen,
         className: 'box-content truncate'
@@ -90,7 +94,9 @@ export function eventTableColumns({ sections = [] }: {
             label: _.title
           }
         }),
-        filter: 'facet',
+        Filter: ({ column, setSearch }) => (
+          <FacetedFilter column={column} setSearch={setSearch} />
+        ),
         name: 'Section',
         columnIcon: Shapes,
         className: 'box-content w-[115px] hidden @4xl/view:[display:revert]'
@@ -102,28 +108,39 @@ export function eventTableColumns({ sections = [] }: {
           {sectionTitle && <SectionBadge label={sectionTitle} color='bg-[#BD6E11]' />}
         </>
       },
-      filterFn: (row, id, value) => {
-        return value.includes(row.getValue(id))
-      }
+      filterFn: (row, id, value) => (
+        value.includes(row.getValue(id))
+      )
     },
     {
       id: 'planning_status',
       meta: {
-        filter: 'facet',
+        Filter: ({ column, setSearch }) => (
+          <FacetedFilter column={column} setSearch={setSearch} />
+        ),
+        options: [{ label: 'Planerad', value: 'planned' }, { label: 'Ej planerad', value: 'unplanned' }],
         name: 'Planning Status',
         columnIcon: NotebookPen,
         className: 'box-content w-[112px] hidden @5xl/view:[display:revert]'
       },
-      accessorFn: (data) => data?._relatedPlannings,
+      accessorFn: (data) => Array.isArray(data?._relatedPlannings)
+        ? 'planned'
+        : 'unplanned',
       cell: ({ row }) => {
-        const _status = row.getValue<string>('planning_status')
+        const _status = row.original._relatedPlannings?.[0]
         return <Status status={_status} />
-      }
+      },
+      filterFn: (row, id, value) => (
+        value.includes(row.getValue(id))
+      )
     },
+    // TODO: Use range filter
     {
       id: 'event_time',
       meta: {
-        filter: 'facet',
+        Filter: ({ column, setSearch }) => (
+          <FacetedFilter column={column} setSearch={setSearch} />
+        ),
         name: 'Event Time',
         columnIcon: Clock3Icon,
         className: 'box-content w-[112px] hidden @5xl/view:[display:revert]'
@@ -142,7 +159,6 @@ export function eventTableColumns({ sections = [] }: {
     {
       id: 'action',
       meta: {
-        filter: null,
         name: 'Action',
         columnIcon: Navigation,
         className: 'box-content w-[32px]'

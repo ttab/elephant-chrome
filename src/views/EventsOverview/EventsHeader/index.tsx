@@ -4,8 +4,9 @@ import {
   type Dispatch,
   type SetStateAction
 } from 'react'
-import { Filter } from './Filter'
+import { Filter } from '@/components'
 import { CreateDocumentDialog } from '@/components/View/ViewHeader/CreateDocumentDialog'
+import { EventsCommands } from '../EventsCommands'
 
 export const Header = ({ tab, startDate, setStartDate, endDate, setEndDate }: {
   tab: string
@@ -32,6 +33,8 @@ export const Header = ({ tab, startDate, setStartDate, endDate, setEndDate }: {
       />
     }
 
-    <Filter />
+    <Filter>
+      <EventsCommands />
+    </Filter>
   </>
 }
