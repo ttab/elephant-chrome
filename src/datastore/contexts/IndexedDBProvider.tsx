@@ -5,10 +5,7 @@ import React, {
   useCallback
 } from 'react'
 
-import { CoreAuthorProvider } from './CoreAuthorProvider'
-import { CoreStoryProvider } from './CoreStoryProvider'
-import { CoreSectionProvider } from './CoreSectionProvider'
-import { CoreCategoryProvider } from './CoreCategoryProvider'
+import { indexedDBSpecification as specification } from '../../defaults/indexedDBSpecification'
 
 export interface IndexedDBContextType {
   db: IDBDatabase | null
@@ -19,32 +16,20 @@ export interface IndexedDBContextType {
 
 export const IndexedDBContext = createContext<IndexedDBContextType | undefined>(undefined)
 
-export const IndexedDBProvider = ({ children, name }: {
+export const IndexedDBProvider = ({ children }: {
   children: React.ReactNode
-  name: string
 }): JSX.Element => {
   const [db, setDb] = useState<IDBDatabase | null>(null)
 
   // Open (and create if applicable) an indexedDB
   useEffect(() => {
-    const indexedDbSpecification = {
-      version: 7,
-      objectStores: [
-        'core/author',
-        'core/section',
-        'core/story',
-        'core/category',
-        '__meta'
-      ]
-    }
-    const openRequest = indexedDB.open(name, indexedDbSpecification.version)
+    const openRequest = indexedDB.open(specification.name, specification.version)
 
-    // FIXME: Upgrade is not done if database is open in another tab
     openRequest.onupgradeneeded = (event) => {
       const target = event.target as IDBOpenDBRequest
       const db = target.result
 
-      for (const storeName of indexedDbSpecification.objectStores) {
+      for (const storeName of specification.objectStores) {
         if (!db.objectStoreNames.contains(storeName)) {
           db.createObjectStore(storeName, { keyPath: 'id' })
         }
@@ -63,10 +48,19 @@ export const IndexedDBProvider = ({ children, name }: {
     openRequest.onblocked = (event) => {
       console.error('Blocked upgrade of IndexedDB:', event)
     }
-  }, [name])
+  }, [])
 
-  // Close DB upon leaving
   useEffect(() => {
+    if (db) {
+      db.onversionchange = () => {
+        // Another tab or window have reloaded with a new database version
+        // and needs to perform a database update. Close database.
+        db.close()
+        setDb(null)
+      }
+    }
+
+    // Close database upon leaving
     return () => {
       db?.close()
     }
@@ -100,17 +94,7 @@ export const IndexedDBProvider = ({ children, name }: {
 
   return (
     <IndexedDBContext.Provider value={{ db, put, get, clear }}>
-      {!!db &&
-        <CoreSectionProvider>
-          <CoreAuthorProvider>
-            <CoreStoryProvider>
-              <CoreCategoryProvider>
-                {children}
-              </CoreCategoryProvider>
-            </CoreStoryProvider>
-          </CoreAuthorProvider>
-        </CoreSectionProvider>
-      }
+      {children}
     </IndexedDBContext.Provider>
   )
 }
