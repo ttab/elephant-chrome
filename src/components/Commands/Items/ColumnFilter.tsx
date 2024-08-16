@@ -31,6 +31,10 @@ export const ColumnFilter = (): ReactNode => {
     }).filter(x => x)
   }
 
+  if (page === 'textFilter') {
+    return <></>
+  }
+
   const column = table.getColumn(page)
 
   if (column?.columnDef?.meta?.Filter) {
