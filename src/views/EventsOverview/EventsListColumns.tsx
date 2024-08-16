@@ -35,7 +35,7 @@ export function eventTableColumns({ sections = [] }: {
           <FacetedFilter column={column} setSearch={setSearch} />
         ),
         options: VisibilityStatuses,
-        name: 'Visibility',
+        name: 'Synlighet',
         columnIcon: Eye,
         className: 'box-content w-6 pr-0'
       },
@@ -58,7 +58,7 @@ export function eventTableColumns({ sections = [] }: {
           <FacetedFilter column={column} setSearch={setSearch} />
         ),
         options: Newsvalues,
-        name: 'Priority',
+        name: 'Nyhetsvärde',
         columnIcon: SignalHigh,
         className: 'box-content w-4 sm:w-8 pr-1 sm:pr-4'
       },
@@ -78,7 +78,7 @@ export function eventTableColumns({ sections = [] }: {
     {
       id: 'title',
       meta: {
-        name: 'Title',
+        name: 'Slugg',
         columnIcon: Pen,
         className: 'box-content truncate'
       },
@@ -102,7 +102,7 @@ export function eventTableColumns({ sections = [] }: {
         Filter: ({ column, setSearch }) => (
           <FacetedFilter column={column} setSearch={setSearch} />
         ),
-        name: 'Section',
+        name: 'Sektion',
         columnIcon: Shapes,
         className: 'box-content w-[115px] hidden @4xl/view:[display:revert]'
       },
@@ -124,7 +124,7 @@ export function eventTableColumns({ sections = [] }: {
           <FacetedFilter column={column} setSearch={setSearch} />
         ),
         options: [{ label: 'Planerad', value: 'planned' }, { label: 'Ej planerad', value: 'unplanned' }],
-        name: 'Planning Status',
+        name: 'Planeringsstatus',
         columnIcon: NotebookPen,
         className: 'box-content w-[112px] hidden @5xl/view:[display:revert]'
       },
@@ -146,7 +146,7 @@ export function eventTableColumns({ sections = [] }: {
         Filter: ({ column, setSearch }) => (
           <FacetedFilter column={column} setSearch={setSearch} />
         ),
-        name: 'Event Time',
+        name: 'Tid',
         columnIcon: Clock3Icon,
         className: 'box-content w-[112px] hidden @5xl/view:[display:revert]'
       },
