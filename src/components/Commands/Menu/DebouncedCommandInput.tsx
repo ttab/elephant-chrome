@@ -1,10 +1,10 @@
-import { useEffect, useState, type InputHTMLAttributes } from 'react'
+import { useRef, useState, type InputHTMLAttributes } from 'react'
 import { CommandInput } from '@ttab/elephant-ui'
 
 export const DebouncedCommandInput = ({
   value: initialValue,
   onChange,
-  debounce = 500,
+  debounce = 800,
   ...props
 }: {
   value: string | undefined
@@ -12,24 +12,25 @@ export const DebouncedCommandInput = ({
   debounce?: number
 } & Omit<InputHTMLAttributes<HTMLInputElement>, 'onChange'>): JSX.Element => {
   const [value, setValue] = useState<string | undefined>(initialValue)
+  const debounceTimeout = useRef<NodeJS.Timeout | null>(null)
 
-  useEffect(() => {
-    setValue(initialValue)
-  }, [initialValue])
+  const handleInputChange = (value: string | undefined): void => {
+    setValue(value)
 
-  useEffect(() => {
-    const timeout = setTimeout(() => {
+    if (debounceTimeout.current) {
+      clearTimeout(debounceTimeout.current)
+    }
+
+    debounceTimeout.current = setTimeout(() => {
       onChange(value)
     }, debounce)
-
-    return () => clearTimeout(timeout)
-  }, [value, debounce, onChange])
+  }
 
   return (
     <CommandInput
       {...props}
       value={value}
-      onValueChange={(value: string | number) => setValue(value as string)}
+      onValueChange={(value: string | number) => handleInputChange(value as string)}
     />
   )
 }

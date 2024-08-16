@@ -27,7 +27,7 @@
     "@auth/express": "^0.6.0",
     "@hocuspocus/extension-database": "^2.13.5",
     "@hocuspocus/extension-logger": "^2.13.5",
-    "@hocuspocus/extension-redis": "^2.13.2",
+    "@hocuspocus/extension-redis": "^2.13.5",
     "@hocuspocus/provider": "^2.13.5",
     "@hocuspocus/server": "^2.13.2",
     "@protobuf-ts/runtime-rpc": "^2.9.4",
@@ -55,12 +55,12 @@
     "slate": "^0.102.0",
     "slate-react": "^0.102.0",
     "swr": "^2.2.5",
-    "vite-express": "^0.17.0",
+    "vite-express": "^0.18.0",
     "yjs": "^13.6.18",
     "zod": "^3.23.8"
   },
   "devDependencies": {
-    "@testing-library/jest-dom": "^6.4.6",
+    "@testing-library/jest-dom": "^6.4.8",
     "@testing-library/react": "^16.0.0",
     "@testing-library/user-event": "^14.5.2",
     "@types/cookie-parser": "^1.4.7",
@@ -77,7 +77,7 @@
     "@typescript-eslint/eslint-plugin": "^7.13.1",
     "@typescript-eslint/parser": "^7.13.1",
     "@vitejs/plugin-react": "^4.3.1",
-    "@vitest/coverage-v8": "^1.6.0",
+    "@vitest/coverage-v8": "^2.0.5",
     "concurrently": "^8.2.2",
     "eslint": "^8.57.0",
     "eslint-plugin-react": "^7.35.0",
@@ -88,11 +88,11 @@
     "jsdom": "^24.1.1",
     "tailwindcss": "^3.4.10",
     "tsc-alias": "^1.8.10",
-    "tsx": "^4.16.5",
+    "tsx": "^4.17.0",
     "typescript": "^5.5.4",
-    "vite": "^5.3.5",
+    "vite": "^5.4.0",
     "vite-plugin-static-copy": "^1.0.6",
-    "vitest": "^1.6.0",
+    "vitest": "^2.0.5",
     "ws": "^8.18.0"
   }
 }

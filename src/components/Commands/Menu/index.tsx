@@ -3,7 +3,8 @@ import React, {
   useState,
   useCallback,
   type Dispatch,
-  useMemo
+  useMemo,
+  type SetStateAction
 } from 'react'
 import {
   GanttChart
@@ -105,7 +106,7 @@ function getPlaceholder(pages: string[], page: string): string {
 
 function handleOpenChange({ setOpen, setSearch, setPages }: {
   setOpen: Dispatch<boolean>
-  setSearch: Dispatch<string | undefined>
+  setSearch: Dispatch<SetStateAction<string | undefined>>
   setPages: Dispatch<string[]>
 }): (open: boolean) => void {
   return (open: boolean) => {

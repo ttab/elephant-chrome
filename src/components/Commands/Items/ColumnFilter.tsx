@@ -1,6 +1,5 @@
 import { CommandItem } from '@ttab/elephant-ui'
 import { type ReactNode } from 'react'
-import { FacetedFilter } from '@/components/Commands/FacetedFilter'
 import { FileQuestion } from '@ttab/elephant-ui/icons'
 import { useTable } from '@/hooks'
 
@@ -12,13 +11,13 @@ export const ColumnFilter = (): ReactNode => {
 
   if (!page) {
     return columns.map((column) => {
-      return column.columnDef.meta?.filter
+      return column.columnDef.meta?.Filter
         ? (
           <CommandItem
             key={column.id}
             value={column.id}
             onSelect={() => {
-              setPages([...pages, `faceted-${column.id}`])
+              setPages([...pages, column.id])
               setSearch('')
             }}
             >
@@ -32,9 +31,16 @@ export const ColumnFilter = (): ReactNode => {
     }).filter(x => x)
   }
 
-  if (page.startsWith('faceted-')) {
-    return <FacetedFilter column={table.getColumn(page.replace('faceted-', ''))} setSearch={setSearch} />
+  if (page === 'textFilter') {
+    return <></>
   }
+
+  const column = table.getColumn(page)
+
+  if (column?.columnDef?.meta?.Filter) {
+    return column.columnDef.meta?.Filter({ column, setSearch })
+  }
+
   return null
 }
 
