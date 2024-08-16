@@ -44,8 +44,8 @@ export function eventTableColumns({ sections = [] }: {
         data._source['document.meta.core_description.role'][0]
       ),
       cell: ({ row }) => {
-        const status = row.getValue<string>('visibilityStatus')
-        return <StatusIndicator internal={status === 'internal'} />
+        const data = row.getValue<'internal' | 'public'>('visibilityStatus')
+        return <StatusIndicator data={data} />
       },
       filterFn: (row, id, value) => (
         value.includes(row.getValue(id))

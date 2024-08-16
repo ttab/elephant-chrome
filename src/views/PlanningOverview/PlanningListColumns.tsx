@@ -34,7 +34,7 @@ export function planningTableColumns({ sections = [] }: {
           <FacetedFilter column={column} setSearch={setSearch} />
         ),
         options: DocumentStatuses,
-        name: 'documentStatus',
+        name: 'Document status',
         columnIcon: CircleCheck,
         className: 'box-content w-6 pr-0'
       },
@@ -42,7 +42,10 @@ export function planningTableColumns({ sections = [] }: {
       cell: ({ row }) => {
         const status = row.getValue<string>('documentStatus')
         return <DocumentStatus status={status} />
-      }
+      },
+      filterFn: (row, id, value) => (
+        value.includes(row.getValue(id))
+      )
     },
     {
       id: 'visibilityStatus',
@@ -55,11 +58,18 @@ export function planningTableColumns({ sections = [] }: {
         columnIcon: Eye,
         className: 'box-content w-6 pr-0'
       },
-      accessorFn: (data) => data._source['document.meta.core_planning_item.data.public'][0] !== 'true',
+      accessorFn: (data) => (
+        data._source['document.meta.core_planning_item.data.public'][0] === 'true'
+          ? 'public'
+          : 'internal'
+      ),
       cell: ({ row }) => {
-        const internal = row.getValue<boolean>('visibilityStatus')
-        return <StatusIndicator internal={internal} />
-      }
+        const data = row.getValue<'internal' | 'public'>('visibilityStatus')
+        return <StatusIndicator data={data} />
+      },
+      filterFn: (row, id, value) => (
+        value.includes(row.getValue(id))
+      )
     },
     {
       id: 'newsvalue',
