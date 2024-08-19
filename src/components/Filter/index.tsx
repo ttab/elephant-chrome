@@ -1,5 +1,5 @@
-import { type Dispatch, useState, useMemo } from 'react'
-import { ChevronDown } from '@ttab/elephant-ui/icons'
+import { type Dispatch, useState, useMemo, type PropsWithChildren } from 'react'
+import { ListFilter } from '@ttab/elephant-ui/icons'
 import {
   Button,
   Command,
@@ -8,9 +8,8 @@ import {
 
 import { DebouncedCommandInput } from '@/components/Commands/Menu/DebouncedCommandInput'
 import { useTable } from '@/hooks'
-import { PlanningCommands } from '../PlanningCommands'
 
-export const Filter = (): JSX.Element => {
+export const Filter = ({ children }: PropsWithChildren): JSX.Element => {
   const [open, setOpen] = useState(false)
 
   const { command, table } = useTable()
@@ -27,13 +26,13 @@ export const Filter = (): JSX.Element => {
           variant="outline"
           role="combobox"
           aria-expanded={open}
-          className="w-[200px] justify-between hidden sm:flex"
+          className="hidden sm:flex"
         >
-          Filter...
-          <ChevronDown size={18} strokeWidth={1.75} className="ml-2 shrink-0 opacity-50" />
+          <ListFilter size={18} strokeWidth={1.75} className="shrink-0 mr-2" />
+          Filter
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-[200px] p-0">
+      <PopoverContent className="w-[200px] p-0" align='start'>
         <Command
           onKeyDown={(e) => {
             if (e.key === 'Escape') {
@@ -43,7 +42,7 @@ export const Filter = (): JSX.Element => {
               e.preventDefault()
               setSearch('')
               if (pages.length > 0) {
-                setPages((pages) => pages.slice(0, -1))
+                setPages(pages.slice(0, -1))
               } else {
                 setOpen(false)
               }
@@ -62,7 +61,7 @@ export const Filter = (): JSX.Element => {
             placeholder="Filter..."
             className="h-9"
           />
-          <PlanningCommands />
+          {children}
         </Command>
       </PopoverContent>
     </Popover>

@@ -5,7 +5,7 @@ import { SessionProvider } from 'next-auth/react'
 import { NavigationProvider } from '@/navigation'
 import { banner } from './lib/banner.ts'
 import { RepositoryEventsProvider } from './contexts/RepositoryEventsProvider.tsx'
-import { IndexedDBProvider } from './datastore/contexts/IndexedDBProvider'
+import { IndexedDBProvider } from './datastore/contexts/IndexedDBProvider.tsx'
 
 banner()
 
@@ -16,10 +16,10 @@ if (!root) {
 }
 
 ReactDOM.createRoot(root).render(
-  <SessionProvider basePath={`${import.meta.env.BASE_URL}/api/auth`} refetchInterval={180}>
+  <IndexedDBProvider>
     <RegistryProvider>
       <HPWebSocketProvider>
-        <IndexedDBProvider name='elephant-db'>
+        <SessionProvider refetchOnWindowFocus={false} basePath={`${import.meta.env.BASE_URL}/api/auth`} refetchInterval={180}>
           <RepositoryEventsProvider>
             <ThemeProvider defaultTheme='light' storageKey='ele-ui-theme' >
               <NavigationProvider>
@@ -27,8 +27,8 @@ ReactDOM.createRoot(root).render(
               </NavigationProvider>
             </ThemeProvider >
           </RepositoryEventsProvider>
-        </IndexedDBProvider>
+        </SessionProvider>
       </HPWebSocketProvider>
     </RegistryProvider>
-  </SessionProvider>
+  </IndexedDBProvider>
 )

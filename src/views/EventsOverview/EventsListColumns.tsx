@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import { type ColumnDef } from '@tanstack/react-table'
 import { type Event } from '@/lib/index/schemas/event'
 import { Newsvalue } from '@/components/Table/Items/Newsvalue'
@@ -21,7 +22,7 @@ import { Title } from '@/components/Table/Items/Title'
 import { Status } from '@/components/Table/Items/Status'
 import { SectionBadge } from '@/components/DataItem/SectionBadge'
 import { type IDBSection } from 'src/datastore/types'
-
+import { FacetedFilter } from '@/components/Commands/FacetedFilter'
 
 export function eventTableColumns({ sections = [] }: {
   sections?: IDBSection[]
@@ -30,24 +31,34 @@ export function eventTableColumns({ sections = [] }: {
     {
       id: 'visibilityStatus',
       meta: {
-        filter: 'facet',
+        Filter: ({ column, setSearch }) => (
+          <FacetedFilter column={column} setSearch={setSearch} />
+        ),
         options: VisibilityStatuses,
-        name: 'Visibility',
+        name: 'Synlighet',
         columnIcon: Eye,
         className: 'box-content w-6 pr-0'
       },
-      accessorFn: (data) => data._source['document.meta.core_description.role'][0] !== 'public',
+      accessorFn: (data) => (
+        // FIXME: It seems we're not indexing "document.meta.core_event.data.public"
+        data._source['document.meta.core_description.role'][0]
+      ),
       cell: ({ row }) => {
-        const internal = row.getValue<boolean>('visibilityStatus')
-        return <StatusIndicator internal={internal} />
-      }
+        const visibility = row.getValue<'internal' | 'public'>('visibilityStatus')
+        return <StatusIndicator visibility={visibility} />
+      },
+      filterFn: (row, id, value) => (
+        value.includes(row.getValue(id))
+      )
     },
     {
       id: 'newsvalue',
       meta: {
-        filter: 'facet',
+        Filter: ({ column, setSearch }) => (
+          <FacetedFilter column={column} setSearch={setSearch} />
+        ),
         options: Newsvalues,
-        name: 'Priority',
+        name: 'Nyhetsvärde',
         columnIcon: SignalHigh,
         className: 'box-content w-4 sm:w-8 pr-1 sm:pr-4'
       },
@@ -60,16 +71,14 @@ export function eventTableColumns({ sections = [] }: {
           return <Newsvalue newsvalue={newsvalue} />
         }
       },
-
-      filterFn: (row, id, value) => {
-        return value.includes(row.getValue(id))
-      }
+      filterFn: (row, id, value) => (
+        value.includes(row.getValue(id))
+      )
     },
     {
       id: 'title',
       meta: {
-        filter: null,
-        name: 'Title',
+        name: 'Slugg',
         columnIcon: Pen,
         className: 'box-content truncate'
       },
@@ -82,6 +91,7 @@ export function eventTableColumns({ sections = [] }: {
       }
     },
     {
+      // FIXME: document.rel.section.uuid is not indexed
       id: 'section',
       meta: {
         options: sections.map(_ => {
@@ -90,8 +100,10 @@ export function eventTableColumns({ sections = [] }: {
             label: _.title
           }
         }),
-        filter: 'facet',
-        name: 'Section',
+        Filter: ({ column, setSearch }) => (
+          <FacetedFilter column={column} setSearch={setSearch} />
+        ),
+        name: 'Sektion',
         columnIcon: Shapes,
         className: 'box-content w-[115px] hidden @4xl/view:[display:revert]'
       },
@@ -102,29 +114,40 @@ export function eventTableColumns({ sections = [] }: {
           {sectionTitle && <SectionBadge label={sectionTitle} color='bg-[#BD6E11]' />}
         </>
       },
-      filterFn: (row, id, value) => {
-        return value.includes(row.getValue(id))
-      }
+      filterFn: (row, id, value) => (
+        value.includes(row.getValue(id))
+      )
     },
     {
       id: 'planning_status',
       meta: {
-        filter: 'facet',
-        name: 'Planning Status',
+        Filter: ({ column, setSearch }) => (
+          <FacetedFilter column={column} setSearch={setSearch} />
+        ),
+        options: [{ label: 'Planerad', value: 'planned' }, { label: 'Ej planerad', value: 'unplanned' }],
+        name: 'Planeringsstatus',
         columnIcon: NotebookPen,
         className: 'box-content w-[112px] hidden @5xl/view:[display:revert]'
       },
-      accessorFn: (data) => data?._relatedPlannings,
+      accessorFn: (data) => Array.isArray(data?._relatedPlannings)
+        ? 'planned'
+        : 'unplanned',
       cell: ({ row }) => {
-        const _status = row.getValue<string>('planning_status')
+        const _status = row.original._relatedPlannings?.[0]
         return <Status status={_status} />
-      }
+      },
+      filterFn: (row, id, value) => (
+        value.includes(row.getValue(id))
+      )
     },
+    // TODO: Use range filter
     {
       id: 'event_time',
       meta: {
-        filter: 'facet',
-        name: 'Event Time',
+        Filter: ({ column, setSearch }) => (
+          <FacetedFilter column={column} setSearch={setSearch} />
+        ),
+        name: 'Tid',
         columnIcon: Clock3Icon,
         className: 'box-content w-[112px] hidden @5xl/view:[display:revert]'
       },
@@ -142,7 +165,6 @@ export function eventTableColumns({ sections = [] }: {
     {
       id: 'action',
       meta: {
-        filter: null,
         name: 'Action',
         columnIcon: Navigation,
         className: 'box-content w-[32px]'

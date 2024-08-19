@@ -18,7 +18,7 @@ export const TextFilter = (): JSX.Element | null => {
           setSearch(globalFilter)
         }}>
         <Search size={18} strokeWidth={1.75} className='mr-2' />
-        Text filter
+        Text
       </CommandItem>
       )
     : null

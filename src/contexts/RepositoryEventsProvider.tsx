@@ -1,4 +1,4 @@
-import { createContext, useCallback, useEffect, useRef, useState } from 'react'
+import { createContext, useCallback, useEffect, useRef } from 'react'
 import { useRegistry } from '@/hooks'
 import { useSession } from 'next-auth/react'
 import { fetchEventSource } from '@microsoft/fetch-event-source'
@@ -38,7 +38,7 @@ export const RepositoryEventsProvider = ({ children }: {
 }): JSX.Element => {
   const { server: { repositoryEventsUrl } } = useRegistry()
   const { data } = useSession()
-  const [isLeader, setIsLeader] = useState(true)
+  const isLeaderRef = useRef<boolean>(false)
   const subscribers = useRef<Record<string, Array<(data: ElephantRepositoryEvent) => void>>>({})
   const IDB = useIndexedDB()
   const [listeningForSSE, setListeningForSSE] = useState<boolean>(false)
@@ -48,7 +48,7 @@ export const RepositoryEventsProvider = ({ children }: {
     const ebcc = new BroadcastChannel('elephant-bcc')
 
     const closeHandler = (): void => {
-      if (isLeader) {
+      if (isLeaderRef.current) {
         ebcc.postMessage({ msg: 'leader:exit' })
       }
     }
@@ -59,21 +59,21 @@ export const RepositoryEventsProvider = ({ children }: {
           // The leader has left the building, request leadership,
           // use variable timeout to avoid race conditions.
           setTimeout(() => {
-            setIsLeader(true)
+            isLeaderRef.current = true
             ebcc.postMessage({ msg: 'leader:request' })
           }, Math.round(Math.random() * 100))
           break
 
         case 'leader:request':
           // Another tab requested leadership
-          if (isLeader) {
+          if (isLeaderRef.current) {
             ebcc.postMessage({ msg: 'leader:exist' })
           }
           break
 
         case 'leader:exist':
           // Another tab was already the leader
-          setIsLeader(false)
+          isLeaderRef.current = false
           break
       }
     }
@@ -88,12 +88,12 @@ export const RepositoryEventsProvider = ({ children }: {
       window.removeEventListener('beforeunload', closeHandler)
       ebcc.close()
     }
-  }, [isLeader])
+  }, [])
 
 
   // Listen and react to Server Sent Events in leading tab
   useEffect(() => {
-    if (!isLeader || !repositoryEventsUrl || !data?.accessToken) {
+    if (!isLeaderRef.current || !repositoryEventsUrl || !data?.accessToken) {
       return
     }
 
@@ -143,9 +143,8 @@ export const RepositoryEventsProvider = ({ children }: {
         setListeningForSSE(false)
       }
     }
-
     void fetchEvents()
-  }, [repositoryEventsUrl, data?.accessToken, isLeader, subscribers, IDB, listeningForSSE])
+  }, [repositoryEventsUrl, data?.accessToken, subscribers, IDB, listeningForSSE])
 
   const subscribe = useCallback((eventType: string, callback: (data: ElephantRepositoryEvent) => void) => {
     subscribers.current[eventType] = [...(subscribers.current[eventType] || []), callback]

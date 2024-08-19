@@ -1,11 +1,12 @@
 import { DateChanger } from '@/components/Header/Datechanger'
-import { Filter } from './Filter'
+import { Filter } from '@/components'
 import {
   type Dispatch,
   type SetStateAction
 } from 'react'
 import { CreateDocumentDialog } from '@/components/View/ViewHeader/CreateDocumentDialog'
 import { TabsGrid } from '@/components/Header/LayoutSwitch'
+import { PlanningCommands } from '../PlanningCommands'
 
 export const Header = ({ tab, startDate, setStartDate, endDate, setEndDate }: {
   tab: string
@@ -32,6 +33,8 @@ export const Header = ({ tab, startDate, setStartDate, endDate, setEndDate }: {
       />
     }
 
-    <Filter />
+    <Filter>
+      <PlanningCommands />
+    </Filter>
   </>
 }

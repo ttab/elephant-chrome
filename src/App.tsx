@@ -3,6 +3,10 @@ import { AppHeader } from '@/components'
 import { DocTrackerProvider } from './contexts/DocTrackerProvider'
 import { AppContent } from './AppContent'
 import { Login } from './views'
+import { CoreAuthorProvider } from './datastore/contexts/CoreAuthorProvider'
+import { CoreStoryProvider } from './datastore/contexts/CoreStoryProvider'
+import { CoreSectionProvider } from './datastore/contexts/CoreSectionProvider'
+import { CoreCategoryProvider } from './datastore/contexts/CoreCategoryProvider'
 
 export const App = (): JSX.Element => {
   const { data: session, status } = useSession()
@@ -23,7 +27,15 @@ export const App = (): JSX.Element => {
     <div className='relative flex h-screen flex-col'>
       <div className='grid grid-cols-12 divide-x-2 h-screen'>
         <DocTrackerProvider>
-          <AppContent />
+          <CoreSectionProvider>
+            <CoreAuthorProvider>
+              <CoreStoryProvider>
+                <CoreCategoryProvider>
+                  <AppContent />
+                </CoreCategoryProvider>
+              </CoreStoryProvider>
+            </CoreAuthorProvider>
+          </CoreSectionProvider>
         </DocTrackerProvider>
       </div>
 

@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import { type ColumnDef } from '@tanstack/react-table'
 import { type Planning } from '@/lib/index/schemas/planning'
 import { Newsvalue } from '@/components/Table/Items/Newsvalue'
@@ -19,18 +20,23 @@ import { Newsvalues, NewsvalueMap, AssignmentTypes, VisibilityStatuses, Document
 import { StatusIndicator } from '@/components/DataItem/StatusIndicator'
 import { DocumentStatus } from '@/components/Table/Items/DocumentStatus'
 import { SectionBadge } from '@/components/DataItem/SectionBadge'
-import { type IDBSection } from 'src/datastore/types'
+import { type IDBAuthor, type IDBSection } from 'src/datastore/types'
+import { FacetedFilter } from '@/components/Commands/FacetedFilter'
+import { getNestedFacetedUniqueValues } from '@/components/Filter/lib/getNestedFacetedUniqueValues'
 
-export function planningTableColumns({ sections = [] }: {
+export function planningTableColumns({ sections = [], authors = [] }: {
   sections?: IDBSection[]
+  authors?: IDBAuthor[]
 }): Array<ColumnDef<Planning>> {
   return [
     {
       id: 'documentStatus',
       meta: {
-        filter: 'facet',
+        Filter: ({ column, setSearch }) => (
+          <FacetedFilter column={column} setSearch={setSearch} />
+        ),
         options: DocumentStatuses,
-        name: 'documentStatus',
+        name: 'Status',
         columnIcon: CircleCheck,
         className: 'box-content w-6 pr-0'
       },
@@ -38,29 +44,43 @@ export function planningTableColumns({ sections = [] }: {
       cell: ({ row }) => {
         const status = row.getValue<string>('documentStatus')
         return <DocumentStatus status={status} />
-      }
+      },
+      filterFn: (row, id, value) => (
+        value.includes(row.getValue(id))
+      )
     },
     {
       id: 'visibilityStatus',
       meta: {
-        filter: 'facet',
+        Filter: ({ column, setSearch }) => (
+          <FacetedFilter column={column} setSearch={setSearch} />
+        ),
         options: VisibilityStatuses,
-        name: 'Visibility',
+        name: 'Synlighet',
         columnIcon: Eye,
         className: 'box-content w-6 pr-0'
       },
-      accessorFn: (data) => data._source['document.meta.core_planning_item.data.public'][0] !== 'true',
+      accessorFn: (data) => (
+        data._source['document.meta.core_planning_item.data.public'][0] === 'true'
+          ? 'public'
+          : 'internal'
+      ),
       cell: ({ row }) => {
-        const internal = row.getValue<boolean>('visibilityStatus')
-        return <StatusIndicator internal={internal} />
-      }
+        const visibility = row.getValue<'internal' | 'public'>('visibilityStatus')
+        return <StatusIndicator visibility={visibility} />
+      },
+      filterFn: (row, id, value) => (
+        value.includes(row.getValue(id))
+      )
     },
     {
       id: 'newsvalue',
       meta: {
-        filter: 'facet',
+        Filter: ({ column, setSearch }) => (
+          <FacetedFilter column={column} setSearch={setSearch} />
+        ),
         options: Newsvalues,
-        name: 'Priority',
+        name: 'Nyhetsvärde',
         columnIcon: SignalHigh,
         className: 'box-content w-4 sm:w-8 pr-1 sm:pr-4'
       },
@@ -81,8 +101,7 @@ export function planningTableColumns({ sections = [] }: {
     {
       id: 'title',
       meta: {
-        filter: null,
-        name: 'Title',
+        name: 'Slugg',
         columnIcon: Pen,
         className: 'box-content truncate'
       },
@@ -103,8 +122,10 @@ export function planningTableColumns({ sections = [] }: {
             label: _.title
           }
         }),
-        filter: 'facet',
-        name: 'Section',
+        Filter: ({ column, setSearch }) => (
+          <FacetedFilter column={column} setSearch={setSearch} />
+        ),
+        name: 'Sektion',
         columnIcon: Shapes,
         className: 'box-content w-[115px] hidden @4xl/view:[display:revert]'
       },
@@ -126,8 +147,11 @@ export function planningTableColumns({ sections = [] }: {
     {
       id: 'assignees',
       meta: {
-        filter: 'facet',
-        name: 'Assignees',
+        options: authors.map((_) => ({ value: _.title, label: _.title })),
+        Filter: ({ column, setSearch }) => (
+          <FacetedFilter column={column} setSearch={setSearch} facetFn={() => getNestedFacetedUniqueValues(column)} />
+        ),
+        name: 'Uppdragstagare',
         columnIcon: Users,
         className: 'box-content w-[112px] hidden @5xl/view:[display:revert]'
       },
@@ -135,14 +159,21 @@ export function planningTableColumns({ sections = [] }: {
       cell: ({ row }) => {
         const assignees = row.getValue<string[]>('assignees') || []
         return <Assignees assignees={assignees} />
-      }
+      },
+      filterFn: (row, id, value) => (
+        typeof value?.[0] === 'string'
+          ? (row.getValue<string[]>(id) || []).includes(value[0])
+          : false
+      )
     },
     {
       id: 'type',
       meta: {
-        filter: 'facet',
+        Filter: ({ column, setSearch }) => (
+          <FacetedFilter column={column} setSearch={setSearch} facetFn={() => getNestedFacetedUniqueValues(column)} />
+        ),
         options: AssignmentTypes,
-        name: 'Type',
+        name: 'Typ',
         columnIcon: Crosshair,
         className: 'box-content w-[120px] hidden @6xl/view:[display:revert]'
       },
@@ -157,12 +188,13 @@ export function planningTableColumns({ sections = [] }: {
 
         return <Type data={data} />
       },
-      filterFn: 'arrIncludesSome'
+      filterFn: (row, id, value) => (
+        value.some((v: string) => row.getValue<string[] | undefined>(id)?.includes(v))
+      )
     },
     {
       id: 'action',
       meta: {
-        filter: null,
         name: 'Action',
         columnIcon: Navigation,
         className: 'box-content w-[32px]'
