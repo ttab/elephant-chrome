@@ -99,7 +99,7 @@ export const RepositoryEventsProvider = ({ children }: {
 
     // Create url
     const url = new URL(repositoryEventsUrl)
-    url.searchParams.set('topic', 'document')
+    url.searchParams.set('topic', 'firehose')
 
     // Listen for messages
     const fetchEvents = async (): Promise<void> => {
@@ -121,6 +121,7 @@ export const RepositoryEventsProvider = ({ children }: {
           headers,
           onmessage(event) {
             const msg: ElephantRepositoryEvent = event?.data ? JSON.parse(event?.data) : {}
+            console.log(msg)
             const callbacks = subscribers.current[msg.type] || []
             void IDB.put('__meta', {
               id: 'repositoryEvents',
