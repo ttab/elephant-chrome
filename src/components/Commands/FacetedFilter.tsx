@@ -21,11 +21,11 @@ export const FacetedFilter = <TData, TValue>({
   const options = column?.columnDef.meta?.options
 
   return options
-    ? options.map((option) => {
+    ? options.map((option, index) => {
       const isSelected = selectedValues.has(option.value)
       return (
         <CommandItem
-          key={option.value}
+          key={`${option.value}-${index}`}
           onSelect={() => {
             if (isSelected) {
               selectedValues.delete(option.value)
