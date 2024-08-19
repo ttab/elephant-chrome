@@ -1,4 +1,4 @@
-import { createContext, useCallback, useEffect, useRef } from 'react'
+import { createContext, useCallback, useEffect, useRef, useState } from 'react'
 import { useRegistry } from '@/hooks'
 import { useSession } from 'next-auth/react'
 import { fetchEventSource } from '@microsoft/fetch-event-source'
