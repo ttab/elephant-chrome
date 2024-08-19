@@ -20,12 +20,13 @@ import { Newsvalues, NewsvalueMap, AssignmentTypes, VisibilityStatuses, Document
 import { StatusIndicator } from '@/components/DataItem/StatusIndicator'
 import { DocumentStatus } from '@/components/Table/Items/DocumentStatus'
 import { SectionBadge } from '@/components/DataItem/SectionBadge'
-import { type IDBSection } from 'src/datastore/types'
+import { type IDBAuthor, type IDBSection } from 'src/datastore/types'
 import { FacetedFilter } from '@/components/Commands/FacetedFilter'
 import { getNestedFacetedUniqueValues } from '@/components/Filter/lib/getNestedFacetedUniqueValues'
 
-export function planningTableColumns({ sections = [] }: {
+export function planningTableColumns({ sections = [], authors = [] }: {
   sections?: IDBSection[]
+  authors?: IDBAuthor[]
 }): Array<ColumnDef<Planning>> {
   return [
     {
@@ -146,8 +147,9 @@ export function planningTableColumns({ sections = [] }: {
     {
       id: 'assignees',
       meta: {
+        options: authors.map((_) => ({ value: _.title, label: _.title })),
         Filter: ({ column, setSearch }) => (
-          <FacetedFilter column={column} setSearch={setSearch} />
+          <FacetedFilter column={column} setSearch={setSearch} facetFn={() => getNestedFacetedUniqueValues(column)} />
         ),
         name: 'Uppdragstagare',
         columnIcon: Users,
@@ -157,7 +159,12 @@ export function planningTableColumns({ sections = [] }: {
       cell: ({ row }) => {
         const assignees = row.getValue<string[]>('assignees') || []
         return <Assignees assignees={assignees} />
-      }
+      },
+      filterFn: (row, id, value) => (
+        typeof value?.[0] === 'string'
+          ? (row.getValue<string[]>(id) || []).includes(value[0])
+          : false
+      )
     },
     {
       id: 'type',
