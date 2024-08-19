@@ -9,14 +9,18 @@ import { type SetStateAction, type Dispatch } from 'react'
 interface FacetedFilterProps<TData, TValue> {
   column?: Column<TData, TValue>
   title?: string
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  facetFn?: (() => Map<any, number>) | undefined
   setSearch: Dispatch<SetStateAction<string | undefined>>
 }
 
 export const FacetedFilter = <TData, TValue>({
   column,
-  setSearch
+  setSearch,
+  facetFn = column?.getFacetedUniqueValues
 }: FacetedFilterProps<TData, TValue>): JSX.Element[] => {
-  const facets = column?.getFacetedUniqueValues()
+  const facets = facetFn?.()
+
   const selectedValues = new Set(column?.getFilterValue() as string[])
   const options = column?.columnDef.meta?.options
 
@@ -67,3 +71,4 @@ export const FacetedFilter = <TData, TValue>({
     })
     : []
 }
+
