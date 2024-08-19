@@ -149,8 +149,7 @@ export function planningTableColumns({ sections = [], authors = [] }: {
       meta: {
         options: authors.map((_) => ({ value: _.title, label: _.title })),
         Filter: ({ column, setSearch }) => (
-          // TODO: Add facetFn for arrays
-          <FacetedFilter column={column} setSearch={setSearch} />
+          <FacetedFilter column={column} setSearch={setSearch} facetFn={() => getNestedFacetedUniqueValues(column)} />
         ),
         name: 'Uppdragstagare',
         columnIcon: Users,
