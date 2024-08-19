@@ -41,6 +41,7 @@ export const RepositoryEventsProvider = ({ children }: {
   const [isLeader, setIsLeader] = useState(true)
   const subscribers = useRef<Record<string, Array<(data: ElephantRepositoryEvent) => void>>>({})
   const IDB = useIndexedDB()
+  const [listeningForSSE, setListeningForSSE] = useState<boolean>(false)
 
   // Handle broadcasted messages (browser tab leadership election)
   useEffect(() => {
@@ -112,36 +113,40 @@ export const RepositoryEventsProvider = ({ children }: {
         headers['Last-Event-ID'] = lastEventId
       }
 
-      await fetchEventSource(url.toString(), {
-        openWhenHidden: true, // As we already have a session leader (one tab listens) we don't want to stop when hidden
-        headers,
-        onmessage(event) {
-          const msg: ElephantRepositoryEvent = event?.data ? JSON.parse(event?.data) : {}
-          const callbacks = subscribers.current[msg.type] || []
-          void IDB.put('__meta', {
-            id: 'repositoryEvents',
-            lastEventId: msg.id,
-            timestamp: msg.timestamp
-          })
-          callbacks.forEach(callback => callback(msg))
-        },
-        onclose() {
-          // If connection is unexpectedly closed by server, retry
-          throw new RetriableError()
-        },
-        onerror(err) {
-          if (err instanceof RetriableError) {
-            console.info('Retrying...')
-            return
-          }
+      setListeningForSSE(true)
 
-          throw err
-        }
-      })
+      try {
+        await fetchEventSource(url.toString(), {
+          openWhenHidden: true, // As we already have a session leader (one tab listens) we don't want to stop when hidden
+          headers,
+          onmessage(event) {
+            const msg: ElephantRepositoryEvent = event?.data ? JSON.parse(event?.data) : {}
+            const callbacks = subscribers.current[msg.type] || []
+            void IDB.put('__meta', {
+              id: 'repositoryEvents',
+              lastEventId: msg.id,
+              timestamp: msg.timestamp
+            })
+            callbacks.forEach(callback => callback(msg))
+          },
+          onclose() {
+            // If connection is unexpectedly closed by server, retry
+            throw new RetriableError()
+          },
+          onerror(err) {
+            if (!(err instanceof RetriableError)) {
+              console.log('Error', err.message, err)
+              setListeningForSSE(false)
+            }
+          }
+        })
+      } catch (ex) {
+        setListeningForSSE(false)
+      }
     }
 
     void fetchEvents()
-  }, [repositoryEventsUrl, data?.accessToken, isLeader, subscribers, IDB])
+  }, [repositoryEventsUrl, data?.accessToken, isLeader, subscribers, IDB, listeningForSSE])
 
   const subscribe = useCallback((eventType: string, callback: (data: ElephantRepositoryEvent) => void) => {
     subscribers.current[eventType] = [...(subscribers.current[eventType] || []), callback]
