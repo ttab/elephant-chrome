@@ -1,6 +1,8 @@
-import { createContext, useCallback, useEffect, useRef } from 'react'
+import { createContext, useCallback, useEffect, useRef, useState } from 'react'
 import { useRegistry } from '@/hooks'
 import { useSession } from 'next-auth/react'
+import { fetchEventSource } from '@microsoft/fetch-event-source'
+import { useIndexedDB } from '../datastore/hooks/useIndexedDB'
 
 interface ElephantRepositoryEvent {
   event: string
@@ -24,6 +26,8 @@ interface ElephantBroadcastMessage {
   payload?: unknown
 }
 
+class RetriableError extends Error { }
+
 export const RepositoryEventsProviderContext = createContext<RepositoryEventsProviderState>({
   subscribe: () => { },
   unsubscribe: () => { }
@@ -36,6 +40,8 @@ export const RepositoryEventsProvider = ({ children }: {
   const { data } = useSession()
   const isLeaderRef = useRef<boolean>(false)
   const subscribers = useRef<Record<string, Array<(data: ElephantRepositoryEvent) => void>>>({})
+  const IDB = useIndexedDB()
+  const [listeningForSSE, setListeningForSSE] = useState<boolean>(false)
 
   // Handle broadcasted messages (browser tab leadership election)
   useEffect(() => {
@@ -93,23 +99,52 @@ export const RepositoryEventsProvider = ({ children }: {
 
     // Create url
     const url = new URL(repositoryEventsUrl)
-    url.searchParams.set('topic', 'document')
-    url.searchParams.set('token', data.accessToken)
+    url.searchParams.set('topic', 'firehose')
 
     // Listen for messages
-    const eventSource = new window.EventSource(url.toString())
+    const fetchEvents = async (): Promise<void> => {
+      const headers: Record<string, string> = {
+        Authorization: `Bearer ${data.accessToken}`
+      }
 
-    eventSource.onmessage = (event: MessageEvent<string | undefined>) => {
-      const msg: ElephantRepositoryEvent = event?.data ? JSON.parse(event?.data) : {}
-      const callbacks = subscribers.current[msg.type] || []
+      // Get last event id so we can continue where we left
+      const { lastEventId } = await IDB.get<{ lastEventId: string }>('__meta', 'repositoryEvents') || {}
+      if (lastEventId) {
+        headers['Last-Event-ID'] = lastEventId
+      }
 
-      callbacks.forEach(callback => callback(msg))
+      setListeningForSSE(true)
+
+      try {
+        await fetchEventSource(url.toString(), {
+          openWhenHidden: true, // As we already have a session leader (one tab listens) we don't want to stop when hidden
+          headers,
+          onmessage(event) {
+            const msg: ElephantRepositoryEvent = event?.data ? JSON.parse(event?.data) : {}
+            const callbacks = subscribers.current[msg.type] || []
+            void IDB.put('__meta', {
+              id: 'repositoryEvents',
+              lastEventId: msg.id,
+              timestamp: msg.timestamp
+            })
+            callbacks.forEach(callback => callback(msg))
+          },
+          onclose() {
+            // If connection is unexpectedly closed by server, retry
+            throw new RetriableError()
+          },
+          onerror(err) {
+            if (!(err instanceof RetriableError)) {
+              setListeningForSSE(false)
+            }
+          }
+        })
+      } catch (ex) {
+        setListeningForSSE(false)
+      }
     }
-
-    return () => {
-      eventSource.close()
-    }
-  }, [repositoryEventsUrl, data?.accessToken, subscribers])
+    void fetchEvents()
+  }, [repositoryEventsUrl, data?.accessToken, subscribers, IDB, listeningForSSE])
 
   const subscribe = useCallback((eventType: string, callback: (data: ElephantRepositoryEvent) => void) => {
     subscribers.current[eventType] = [...(subscribers.current[eventType] || []), callback]

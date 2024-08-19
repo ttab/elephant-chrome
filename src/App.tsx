@@ -8,7 +8,6 @@ import { CoreStoryProvider } from './datastore/contexts/CoreStoryProvider'
 import { CoreSectionProvider } from './datastore/contexts/CoreSectionProvider'
 import { CoreCategoryProvider } from './datastore/contexts/CoreCategoryProvider'
 
-
 export const App = (): JSX.Element => {
   const { data: session, status } = useSession()
 

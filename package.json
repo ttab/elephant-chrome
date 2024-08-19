@@ -30,6 +30,7 @@
     "@hocuspocus/extension-redis": "^2.13.5",
     "@hocuspocus/provider": "^2.13.5",
     "@hocuspocus/server": "^2.13.2",
+    "@microsoft/fetch-event-source": "^2.0.1",
     "@protobuf-ts/runtime-rpc": "^2.9.4",
     "@protobuf-ts/twirp-transport": "^2.9.4",
     "@slate-yjs/core": "^1.0.2",
