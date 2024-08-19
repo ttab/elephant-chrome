@@ -1,5 +1,5 @@
 import { type Dispatch, useState, useMemo, type PropsWithChildren } from 'react'
-import { ChevronDown } from '@ttab/elephant-ui/icons'
+import { ListFilter } from '@ttab/elephant-ui/icons'
 import {
   Button,
   Command,
@@ -26,13 +26,13 @@ export const Filter = ({ children }: PropsWithChildren): JSX.Element => {
           variant="outline"
           role="combobox"
           aria-expanded={open}
-          className="w-[200px] justify-between hidden sm:flex"
+          className="hidden sm:flex"
         >
-          Filter...
-          <ChevronDown size={18} strokeWidth={1.75} className="ml-2 shrink-0 opacity-50" />
+          <ListFilter size={18} strokeWidth={1.75} className="shrink-0 mr-2" />
+          Filter
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-[200px] p-0">
+      <PopoverContent className="w-[200px] p-0" align='start'>
         <Command
           onKeyDown={(e) => {
             if (e.key === 'Escape') {
