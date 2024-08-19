@@ -121,7 +121,6 @@ export const RepositoryEventsProvider = ({ children }: {
           headers,
           onmessage(event) {
             const msg: ElephantRepositoryEvent = event?.data ? JSON.parse(event?.data) : {}
-            console.log(msg)
             const callbacks = subscribers.current[msg.type] || []
             void IDB.put('__meta', {
               id: 'repositoryEvents',
@@ -136,7 +135,6 @@ export const RepositoryEventsProvider = ({ children }: {
           },
           onerror(err) {
             if (!(err instanceof RetriableError)) {
-              console.log('Error', err.message, err)
               setListeningForSSE(false)
             }
           }
