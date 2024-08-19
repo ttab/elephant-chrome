@@ -91,6 +91,7 @@ export function eventTableColumns({ sections = [] }: {
       }
     },
     {
+      // FIXME: document.rel.section.uuid is not indexed
       id: 'section',
       meta: {
         options: sections.map(_ => {

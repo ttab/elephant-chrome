@@ -22,6 +22,7 @@ import { DocumentStatus } from '@/components/Table/Items/DocumentStatus'
 import { SectionBadge } from '@/components/DataItem/SectionBadge'
 import { type IDBSection } from 'src/datastore/types'
 import { FacetedFilter } from '@/components/Commands/FacetedFilter'
+import { getNestedFacetedUniqueValues } from '@/components/Filter/lib/getNestedFacetedUniqueValues'
 
 export function planningTableColumns({ sections = [] }: {
   sections?: IDBSection[]
@@ -162,7 +163,7 @@ export function planningTableColumns({ sections = [] }: {
       id: 'type',
       meta: {
         Filter: ({ column, setSearch }) => (
-          <FacetedFilter column={column} setSearch={setSearch} />
+          <FacetedFilter column={column} setSearch={setSearch} facetFn={() => getNestedFacetedUniqueValues(column)} />
         ),
         options: AssignmentTypes,
         name: 'Typ',
@@ -180,7 +181,9 @@ export function planningTableColumns({ sections = [] }: {
 
         return <Type data={data} />
       },
-      filterFn: 'arrIncludesSome'
+      filterFn: (row, id, value) => (
+        value.some((v: string) => row.getValue<string[] | undefined>(id)?.includes(v))
+      )
     },
     {
       id: 'action',
