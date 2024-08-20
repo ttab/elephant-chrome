@@ -9,6 +9,7 @@ import { AssignmentType } from '@/components/DataItem/AssignmentType'
 import { useYValue } from '@/hooks/useYValue'
 import { Block } from '@/protos/service'
 import { Assignees } from './AssignmentAssignees'
+import { TimePicker } from '@/components/TimePicker'
 
 export const Assignment = ({ index, setSelectedAssignment, className }: {
   index: number
@@ -68,7 +69,12 @@ export const Assignment = ({ index, setSelectedAssignment, className }: {
           />
           <Assignees path={`meta.core/assignment[${index}].links.core/author`} />
 
-          <Clock10Icon size={20} strokeWidth={1.75} />
+          <TimePicker
+            path={`core/assignment[${index}].meta.core/assignment`}
+            editable={inProgress}
+          />
+
+          {/* <Clock10Icon size={20} strokeWidth={1.75} /> */}
         </div>
 
         <div className='flex items-center justify-end gap-4'>
