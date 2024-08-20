@@ -21,6 +21,7 @@ export interface RegistryProviderState {
     webSocketUrl: URL
     indexUrl: URL
     repositoryEventsUrl: URL
+    repositoryUrl: URL
     contentApiUrl: URL
   }
   dispatch: React.Dispatch<Partial<RegistryProviderState>>
@@ -34,6 +35,7 @@ const initialState: RegistryProviderState = {
     webSocketUrl: new URL('http://localhost'),
     indexUrl: new URL('http://localhost'),
     repositoryEventsUrl: new URL('http://localhost'),
+    repositoryUrl: new URL('http://localhost'),
     contentApiUrl: new URL('http://localhost')
   },
   dispatch: () => { }
