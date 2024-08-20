@@ -62,7 +62,6 @@ export const Filter = ({ children }: PropsWithChildren): JSX.Element => {
             ref={inputRef}
             value={search}
             onChange={(value: string | undefined) => {
-              console.log('onChange', value)
               setSearch(value)
               if (page === 'textFilter') {
                 table.setGlobalFilter(value)
