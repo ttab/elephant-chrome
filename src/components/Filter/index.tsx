@@ -1,4 +1,4 @@
-import { type Dispatch, useState, useMemo, type PropsWithChildren } from 'react'
+import { type Dispatch, useState, useMemo, type PropsWithChildren, useRef, useEffect } from 'react'
 import { ListFilter } from '@ttab/elephant-ui/icons'
 import {
   Button,
@@ -18,6 +18,14 @@ export const Filter = ({ children }: PropsWithChildren): JSX.Element => {
   const onOpenChange = useMemo(
     () => handleOpenChange({ setOpen, setSearch, setPages }),
     [setOpen, setSearch, setPages])
+
+  const inputRef = useRef<HTMLInputElement>(null)
+
+  useEffect(() => {
+    if (page === 'textFilter' && inputRef.current) {
+      inputRef.current.focus()
+    }
+  }, [page])
 
   return (
     <Popover open={open} onOpenChange={onOpenChange}>
@@ -51,14 +59,16 @@ export const Filter = ({ children }: PropsWithChildren): JSX.Element => {
         >
 
           <DebouncedCommandInput
+            ref={inputRef}
             value={search}
             onChange={(value: string | undefined) => {
+              console.log('onChange', value)
               setSearch(value)
               if (page === 'textFilter') {
                 table.setGlobalFilter(value)
               }
             }}
-            placeholder="Filter..."
+            placeholder={page === 'textFilter' ? 'Sök' : 'Filter'}
             className="h-9"
           />
           {children}
