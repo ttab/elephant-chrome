@@ -22,7 +22,7 @@ export const Filter = ({ children }: PropsWithChildren): JSX.Element => {
   const inputRef = useRef<HTMLInputElement>(null)
 
   useEffect(() => {
-    if (page === 'textFilter' && inputRef.current) {
+    if (inputRef.current) {
       inputRef.current.focus()
     }
   }, [page])
