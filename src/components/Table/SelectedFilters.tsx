@@ -2,6 +2,7 @@ import { type ReactNode } from 'react'
 import { Badge, Button } from '@ttab/elephant-ui'
 import { Search, X } from '@ttab/elephant-ui/icons'
 import { type Table } from '@tanstack/react-table'
+import { type DefaultValueOption } from '@/types/index'
 
 interface SelectedBase {
   id: string
@@ -12,7 +13,9 @@ interface SelectedButtonProps<TData> extends SelectedBase {
   table: Table<TData>
 }
 
-const SelectedBadge = ({ value }: SelectedBase): ReactNode => {
+const SelectedBadge = ({ value, options }: SelectedBase & {
+  options: DefaultValueOption[] | undefined
+}): ReactNode => {
   if (Array.isArray(value)) {
     if (value.length > 2) {
       return (
@@ -30,7 +33,7 @@ const SelectedBadge = ({ value }: SelectedBase): ReactNode => {
             variant="secondary"
             className="rounded-sm px-1 font-normal mr-1"
         >
-            {typeof v === 'string' ? v : ''}
+            {typeof v === 'string' ? options?.find(option => option.value === v)?.label || v : ''}
           </Badge>
         </div>
       ))
@@ -40,6 +43,7 @@ const SelectedBadge = ({ value }: SelectedBase): ReactNode => {
 
 const SelectedButton = <TData, >({ id, value, table }: SelectedButtonProps<TData>): React.ReactNode => {
   const FilterIcon = table.getColumn(id)?.columnDef.meta?.columnIcon
+  const options = table.getColumn(id)?.columnDef.meta?.options
 
   return (
     <Button
@@ -49,7 +53,7 @@ const SelectedButton = <TData, >({ id, value, table }: SelectedButtonProps<TData
       onClick={() => table.resetColumnFilters()}
     >
       {FilterIcon && <FilterIcon size={18} strokeWidth={1.75} className='mr-2' />}
-      <SelectedBadge id={id} value={value} />
+      <SelectedBadge id={id} value={value} options={options} />
       <X size={18} strokeWidth={1.75} className='ml-2' />
     </Button>
   )

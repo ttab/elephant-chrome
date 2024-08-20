@@ -24,7 +24,7 @@ export const Toolbar = <TData,>({
             onClick={() => table.resetColumnFilters()}
             className="h-8 px-2 lg:px-3"
           >
-            Reset
+            Rensa
             <X size={18} strokeWidth={1.75} className="ml-2" />
           </Button>
         )}
