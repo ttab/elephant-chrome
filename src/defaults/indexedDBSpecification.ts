@@ -7,12 +7,13 @@
  */
 export const indexedDBSpecification = {
   name: 'elephant-db',
-  version: 38,
+  version: 39,
   objectStores: [
     'core/author',
     'core/section',
     'core/story',
     'core/category',
+    'core/organisation',
     '__meta'
   ]
 }
