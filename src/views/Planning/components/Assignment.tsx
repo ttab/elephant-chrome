@@ -70,8 +70,7 @@ export const Assignment = ({ index, setSelectedAssignment, className }: {
           <Assignees path={`meta.core/assignment[${index}].links.core/author`} />
 
           <TimePicker
-            path={`core/assignment[${index}].meta.core/assignment`}
-            editable={inProgress}
+            index={index}
           />
 
           {/* <Clock10Icon size={20} strokeWidth={1.75} /> */}

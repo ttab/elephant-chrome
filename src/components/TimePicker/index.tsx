@@ -1,8 +1,16 @@
 
 import { ComboBox } from '../ui'
 import { type DefaultValueOption } from '@/types/index'
-import {CalendarFoldIcon, Clock1Icon, Clock2Icon, Clock3Icon, Clock4Icon, Clock5Icon, Clock6Icon, Clock7Icon, Clock8Icon, Clock9Icon, Clock10Icon, Clock11Icon, Clock12Icon} from '@ttab/elephant-ui/icons'
-import { useYObserver } from '@/hooks'
+import { CalendarFoldIcon, Clock1Icon, Clock2Icon, Clock3Icon, Clock4Icon, Clock5Icon, Clock6Icon, Clock7Icon, Clock8Icon, Clock9Icon, Clock10Icon, Clock11Icon, Clock12Icon } from '@ttab/elephant-ui/icons'
+// import { useYObserver } from '@/hooks'
+import { useYValue } from '@/hooks/useYValue'
+import { Block } from '@/protos/service'
+import { useRef } from 'react'
+
+
+// import * as Y from 'yjs'
+
+
 import { cn } from '@ttab/elephant-ui/utils'
 
 const iconProps = {
@@ -45,38 +53,124 @@ export const TimeSlotTypes: DefaultValueOption[] = [
 ]
 
 
-export const TimePicker = ({ path, editable = false }: {
-  path: string
-  editable?: boolean
+export const TimePicker = ({ index }: {
+  index: number
 }): JSX.Element => {
 
-  const { get, state, loading } = useYObserver('meta', path)
+  // const { get, state, loading } = useYObserver('meta', path)
+  // const { get, set } = useYObserver('meta', 'core/planning-item[0].data')
+  // const base = `meta.core/assignment[${index}]`
 
-  if (loading) {
-    return <></>
-  }
+  // const [publishTime] = useYValue<string>(`${base}.data.publish`)
+  // const [inProgress] = useYValue(`${base}.__inProgress`)
 
-  const value = state?.map ? state.map((s) => s.data.start).sort().join('/') : ''
+  // const { get, set, loading } = useYObserver('meta', `core/assignment[${index}]/core/assignment`)
+  // const { get, set, loading } = useYObserver('meta', `core/assignment/data`)
 
-  const selectedOption = TimeSlotTypes.find(type => type.value === value)
+  // const { get: getInProgress } = useYObserver('meta', `core/assignment[${index}]`)
+
+
+  // if (loading) {
+  //   return <></>
+  // }
+  // const [publishTime] = useYValue<string>(`meta.core/assignment[${index}].data.publish`)
+  // const [data, setData] = useYValue<Block>(`meta.core/assignment[${index}]`)
+
+  // const [data, setData] = useYValue<Block>(`meta.core/assignment[${index}]`)
+  // const d = data?.data
+
+  // const [, setTimeData] = useYValue(`meta.core/assignment[${index}].data`)
+
+  const [startDate ] = useYValue(`meta.core/planning-item[0].data.start_date`)
+  const [endDate ] = useYValue(`meta.core/planning-item[0].data.end_date`)
+
+  const [fullDay, setFullDay] = useYValue(`meta.core/assignment[${index}].data.full_day`)
+  const [end, setEnd] = useYValue(`meta.core/assignment[${index}].data.end`)
+  const [start, setStart] = useYValue(`meta.core/assignment[${index}].data.start`)
+
+
+  // data: {
+  //   end_date: '2024-02-09',
+  //   full_day: 'true',
+  //   start_date: '2024-02-09',
+  //   end: '2024-02-09T22:59:59Z',
+  //   start: '2024-02-08T23:00:00Z',
+  //   public: 'true',
+  //   publish: '2024-02-09T10:30:00Z'
+  // },
+
+
+  const selectedOption = TimeSlotTypes.find(type => {
+    console.log('XXX fullDay', fullDay)
+
+    if (fullDay === 'true' && type.value === 'fullDay') {
+      return type
+    }
+
+
+  })
 
   const { className = '', ...iconProps } = selectedOption?.iconProps || {}
-  const handleOnSelect = (get: (key: string) => unknown): (option: DefaultValueOption) => void => {
-    return (option) => {
+
+  // const handleOnSelect = (): (option: DefaultValueOption) => void => {
+  //   return (option) => {
+  //   }
+  // }
+
+  const handleOnSelect = (option: DefaultValueOption) => {
+    console.log('XXX selecxt', option)
+    const { value } = option
+
+    switch (value) {
+      case 'fullDay':
+        setFullDay( fullDay === 'true' ? 'false' : 'true')
+        break;
+      case 'morning':
+        break;
+      case 'forenoon':
+        break;
+      case 'afternoon':
+        break;
+       case 'evening':
+        break;
+      default:
+        break;
     }
+    // set(
+    //   option.value === 'fullDay' ? 'true' : 'false',
+    //   'full_day'
+    // )
+
+    // const times = Block.create({
+
+    //   data: {
+    //     ...d,
+    //     full_day: option.value === 'fullDay' ? 'true' : 'false'
+    //   }
+
+
+    // })
+    // setTimeData({
+    //   ...d,
+    //   full_day: option.value === 'fullDay' ? 'true' : 'false' })
   }
 
-return <ComboBox
+  // const handleOnSelect = (option: any) => {
+  //   console.log('XXX option', option)
+  // }
+
+  return <ComboBox
     className='w-fit h-7'
     options={TimeSlotTypes}
     variant={'ghost'}
     selectedOption={selectedOption}
-    onSelect={handleOnSelect(get)}
+    onSelect={handleOnSelect}
+
 
   >
     {selectedOption?.icon
       ? <div> <selectedOption.icon {...iconProps} className={cn('text-foreground', className)} /> {selectedOption?.label} </div>
-      : <Clock10Icon {...iconProps}/>
+      : <Clock10Icon {...iconProps} />
     }
   </ComboBox>
 
