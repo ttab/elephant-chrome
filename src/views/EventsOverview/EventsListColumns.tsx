@@ -96,7 +96,8 @@ export function eventTableColumns({ sections = [] }: {
       meta: {
         options: sections.map(_ => {
           return {
-            value: _.id,
+            // TODO: Use section uuid for a more stable reference, not yet available on event document
+            value: _.title,
             label: _.title
           }
         }),

@@ -130,14 +130,12 @@ export function planningTableColumns({ sections = [], authors = [] }: {
         className: 'box-content w-[115px] hidden @4xl/view:[display:revert]'
       },
       accessorFn: (data) => {
-        const uuid = data._source['document.rel.sector.uuid']?.[0]
-        const title = data._source['document.rel.sector.title']?.[0]
-        return (uuid && title) ? { uuid, title } : undefined
+        return data._source['document.rel.section.uuid']?.[0]
       },
       cell: ({ row }) => {
-        const section = row.getValue<{ uuid: string, title: string } | undefined>('section')
+        const sectionTitle = row.original._source['document.rel.section.title']?.[0]
         return <>
-          {section && <SectionBadge label={section.title} color='bg-[#BD6E11]' />}
+          {sectionTitle && <SectionBadge label={sectionTitle} color='bg-[#BD6E11]' />}
         </>
       },
       filterFn: (row, id, value) => {

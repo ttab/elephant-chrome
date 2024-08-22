@@ -67,7 +67,7 @@ export const PlanningGridColumn = ({ date, items }: PlanningGridColumnProps): JS
           const deliverables = item._source['document.meta.core_assignment.rel.deliverable.uuid']
           const deliverable = (Array.isArray(deliverables) ? deliverables[0] || '' : '')
           const id = item._id
-          const section = sections.find((section) => section.id === item._source['document.rel.sector.uuid'][0])
+          const section = sections.find((section) => section.id === item._source['document.rel.section.uuid'][0])
           const activeUsers = users?.[deliverable]
 
           return <PlanningItem
