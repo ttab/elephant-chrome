@@ -8,25 +8,24 @@ import {
   TextbitElement
 } from '@ttab/textbit'
 
-// TODO: Is this needed now?
+// TODO: Could this be changed in textbit so we dont have to translate?
 const translateList = {
-  'core/heading-1': 'h1',
-  'core/heading-2': 'h2',
-  'core/preamble': 'preamble',
-  'tt/dateline': 'dateline'
+  'heading-1': 'h1',
+  'heading-2': 'h2',
+  vignette: 'dateline'
 }
 
 
 const invertedTranslateList = {
-  h1: 'core/heading-1',
-  h2: 'core/heading-2',
-  preamble: 'core/preamble',
-  dateline: 'tt/dateline'
+  h1: 'heading-1',
+  h2: 'heading-2',
+  preamble: 'preamble',
+  dateline: 'vignette'
 }
 
 
 const replace = (type: string, translateList: Record<string, string>): string => {
-  return translateList[type] ?? 'core/paragraph'
+  return translateList[type]
 }
 
 const createDomDocument = async (): Promise<Document> => {
@@ -91,10 +90,10 @@ async function revertInlineElement(element: TBElement): Promise<string> {
 }
 
 export function transformText(element: Block): TBElement {
-  const { id, type, data } = element
+  const { id, data, role } = element
   const root = parse(data?.text || '')
   const nodes = root.childNodes as HTMLElement[]
-  const properties = type !== 'core/paragraph' ? { properties: { type: replace(type, translateList) } } : {}
+  const properties = role ? { properties: { type: replace(role, translateList) } } : {}
 
   return {
     id: id || crypto.randomUUID(), // Must have id, if id is missing positioning in drag'n drop does not work
@@ -125,7 +124,8 @@ export async function revertText(element: TBElement): Promise<Block> {
 
   return Block.create({
     id,
-    type: replace(element.properties?.type as string, invertedTranslateList),
+    type: 'core/text',
+    role: replace(element.properties?.role as string, invertedTranslateList),
     data: {
       text: (await Promise.all(children.map(async (child: TBElement | Text) => {
         if (TextbitElement.isInline(child)) {
