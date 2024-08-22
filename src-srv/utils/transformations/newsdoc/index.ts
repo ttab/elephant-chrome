@@ -10,12 +10,7 @@ export function newsDocToSlate(content: Block[]): TBElement[] {
   if (content !== undefined && Array.isArray(content)) {
     return content.map((element: Block) => {
       switch (element.type) {
-        case 'core/heading-1':
-        case 'core/heading-2':
-        case 'core/paragraph':
-        case 'core/preamble':
-        case 'core/dateline':
-        case 'tt/dateline':
+        case 'core/text':
           return transformText(element)
         case 'tt/visual':
           return transformVisual(element)

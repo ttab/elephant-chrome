@@ -1,5 +1,5 @@
 import * as Y from 'yjs'
-import { type Block, type GetDocumentResponse } from '@/protos/service.js'
+import { Block, type GetDocumentResponse } from '@/protos/service.js'
 import { toYMap } from '../lib/toYMap.js'
 import { group, ungroup } from '../lib/group.js'
 import { newsDocToSlate, slateToNewsDoc } from '../newsdoc/index.js'
@@ -21,23 +21,10 @@ function assertDescriptions(yMeta: Y.Map<unknown>, documentType: string): void {
 
   const yDesc = yMeta.get('core/description') as Y.Array<Y.Map<unknown>>
 
-  const payload: Block = {
-    id: '',
-    uuid: '',
-    uri: '',
-    url: '',
+  const payload: Block = Block.create({
     type: 'core/description',
-    title: '',
-    data: { text: '' },
-    rel: '',
-    role: '',
-    name: '',
-    value: '',
-    contentType: '',
-    links: [],
-    content: [],
-    meta: []
-  }
+    data: { text: '' }
+  })
 
   // No descriptions
   if (!yDesc) {
