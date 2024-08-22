@@ -14,13 +14,13 @@ export const article: GetDocumentResponse = {
         uuid: '',
         uri: '',
         url: '',
-        type: 'core/heading-1',
+        type: 'core/text',
         title: '',
         data: {
           text: '10|000 liter mjölk läckte vid E6'
         },
         rel: '',
-        role: '',
+        role: 'heading-1',
         name: '',
         value: '',
         contentType: '',
@@ -74,13 +74,13 @@ export const article: GetDocumentResponse = {
         uuid: '',
         uri: '',
         url: '',
-        type: 'tt/dateline',
+        type: 'core/text',
         title: '',
         data: {
           text: 'Trafik'
         },
         rel: '',
-        role: '',
+        role: 'vignette',
         name: '',
         value: '',
         contentType: '',
@@ -93,13 +93,13 @@ export const article: GetDocumentResponse = {
         uuid: '',
         uri: '',
         url: '',
-        type: 'core/paragraph',
+        type: 'core/text',
         title: '',
         data: {
           text: 'Omkring 10|000 liter mjölk läckte ut på vägbanan när en tankbil välte på en avfart från E6 i Falkenberg natten till onsdag, rapporterar <a href="https://www.example.com./newss/article" id="link-8f370161883287209b20750f478c18f1">Göteborgs-Posten</a>.'
         },
         rel: '',
-        role: '',
+        role: 'preamble',
         name: '',
         value: '',
         contentType: '',
@@ -112,7 +112,7 @@ export const article: GetDocumentResponse = {
         uuid: '',
         uri: '',
         url: '',
-        type: 'core/paragraph',
+        type: 'core/text',
         title: '',
         data: {
           text: '– Det är många mjölkpaket, säger Peter Karlborg, inre befäl vid räddningstjänsten, till tidningen.'
@@ -131,7 +131,7 @@ export const article: GetDocumentResponse = {
         uuid: '',
         uri: '',
         url: '',
-        type: 'core/paragraph',
+        type: 'core/text',
         title: '',
         data: {
           text: 'Föraren skadades inte i olyckan. Avfarten stängdes av i norrgående riktning medan olyckan hanterades. Den spillda mjölken krävde ingen åtgärd.'
@@ -150,7 +150,7 @@ export const article: GetDocumentResponse = {
         uuid: '',
         uri: '',
         url: '',
-        type: 'core/paragraph',
+        type: 'core/text',
         title: '',
         data: {
           text: '– Det är ingen tjäle nu och det finns inga vattendrag i närheten, så mjölken går ner i marken bara, säger Karlborg.'

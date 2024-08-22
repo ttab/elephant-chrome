@@ -12,6 +12,7 @@ import {
 const translateList = {
   'heading-1': 'h1',
   'heading-2': 'h2',
+  preamble: 'preamble',
   vignette: 'dateline'
 }
 
@@ -24,8 +25,12 @@ const invertedTranslateList = {
 }
 
 
-const replace = (type: string, translateList: Record<string, string>): string => {
-  return translateList[type]
+const replace = (type: unknown, translateList: Record<string, string>): string => {
+  if (typeof type !== 'string') {
+    return ''
+  }
+
+  return translateList[type] || ''
 }
 
 const createDomDocument = async (): Promise<Document> => {
@@ -93,6 +98,7 @@ export function transformText(element: Block): TBElement {
   const { id, data, role } = element
   const root = parse(data?.text || '')
   const nodes = root.childNodes as HTMLElement[]
+  // TODO: Align properties.role to textbit? Use role instead of type?
   const properties = role ? { properties: { type: replace(role, translateList) } } : {}
 
   return {
@@ -122,10 +128,12 @@ export function transformText(element: Block): TBElement {
 export async function revertText(element: TBElement): Promise<Block> {
   const { id, children } = element
 
+  const role = replace(element.properties?.type, invertedTranslateList)
+
   return Block.create({
     id,
     type: 'core/text',
-    role: replace(element.properties?.role as string, invertedTranslateList),
+    role,
     data: {
       text: (await Promise.all(children.map(async (child: TBElement | Text) => {
         if (TextbitElement.isInline(child)) {

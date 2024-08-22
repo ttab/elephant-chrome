@@ -14,20 +14,32 @@ export function articleDocumentTemplate(id: string): Document {
     title: 'title', // TODO: Add slug
     content: [
       Block.create({
-        type: 'core/heading-1',
+        type: 'core/text',
         data: {
           text: ''
-        }
+        },
+        role: 'heading-1'
       }),
       // TODO: Insert tt/visual placeholder/dropzone
       Block.create({
-        type: 'tt/dateline'
+        type: 'core/text',
+        data: {
+          text: ''
+        },
+        role: 'vignette'
       }),
       Block.create({
-        type: 'core/preamble'
+        type: 'core/text',
+        data: {
+          text: ''
+        },
+        role: 'preamble'
       }),
       Block.create({
-        type: 'core/paragraph'
+        type: 'core/text',
+        data: {
+          text: ''
+        }
       })
     ]
   })
