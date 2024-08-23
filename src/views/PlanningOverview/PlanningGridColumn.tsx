@@ -109,7 +109,7 @@ function PlanningItem(props: {
         <div className="flex justify-between gap-2">
           <span className="text-sm text-muted-foreground whitespace-nowrap overflow-hidden text-ellipsis">{slugLine}</span>
           {!!section &&
-            <SectionBadge label={section.title} />
+            <SectionBadge title={section.title} />
           }
         </div>
 

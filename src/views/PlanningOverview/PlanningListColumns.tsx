@@ -135,7 +135,7 @@ export function planningTableColumns({ sections = [], authors = [] }: {
       cell: ({ row }) => {
         const sectionTitle = row.original._source['document.rel.section.title']?.[0]
         return <>
-          {sectionTitle && <SectionBadge label={sectionTitle} color='bg-[#BD6E11]' />}
+          {sectionTitle && <SectionBadge title={sectionTitle} color='bg-[#BD6E11]' />}
         </>
       },
       filterFn: (row, id, value) => {

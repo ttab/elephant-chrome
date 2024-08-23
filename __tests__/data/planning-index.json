@@ -155,20 +155,14 @@
           "document.meta.tt_slugline.value": [
             "gänggripen"
           ],
-          "document.rel.sector.title": [
+          "document.rel.section.title": [
             "Utrikes"
           ],
-          "document.rel.sector.type": [
-            "tt/sector"
+          "document.rel.section.type": [
+            "core/section"
           ],
-          "document.rel.sector.uri": [
-            "sector://utr"
-          ],
-          "document.rel.sector.uuid": [
+          "document.rel.section.uuid": [
             "ef739bb6-7ba1-xxxx-8aa0-f7dde302efa2"
-          ],
-          "document.rel.sector.value": [
-            "UTR"
           ],
           "document.rel.story.title": [
             "AaaBbb"
