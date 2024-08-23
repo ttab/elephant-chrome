@@ -81,12 +81,14 @@ export const TimePicker = ({ index }: {
 
   // const [, setTimeData] = useYValue(`meta.core/assignment[${index}].data`)
 
-  const [startDate ] = useYValue(`meta.core/planning-item[0].data.start_date`)
-  const [endDate ] = useYValue(`meta.core/planning-item[0].data.end_date`)
+  const [startDate] = useYValue<String>(`meta.core/planning-item[0].data.start_date`) as unknown as string
+  const [endDate] = useYValue(`meta.core/planning-item[0].data.end_date`) as unknown as string
 
   const [fullDay, setFullDay] = useYValue(`meta.core/assignment[${index}].data.full_day`)
   const [end, setEnd] = useYValue(`meta.core/assignment[${index}].data.end`)
   const [start, setStart] = useYValue(`meta.core/assignment[${index}].data.start`)
+
+
 
 
   // data: {
@@ -99,12 +101,56 @@ export const TimePicker = ({ index }: {
   //   publish: '2024-02-09T10:30:00Z'
   // },
 
+  const timeSlots = (sd = startDate, ed = endDate) => {
+    return {
+      morning: {
+        timeSlotType: TimeSlotTypes[1],
+        start: `${sd}T05:00:00`,
+        end: `${ed}T09:59:59`
+      },
+      forenoon: {
+        timeSlotType: TimeSlotTypes[2],
+        start: `${sd}T10:00:00`,
+        end: `${ed}T13:59:59`
+      },
+      afternoon: {
+        timeSlotType: TimeSlotTypes[3],
+        start: `${sd}T14:00:00`,
+        end: `${ed}T17:59:59`
+      },
+      evening: {
+        timeSlotType: TimeSlotTypes[4],
+        start: `${sd}T18:00:00`,
+        end: `${ed}T04:59:59?`
+      },
+      fullday: {
+        timeSlotType: TimeSlotTypes[0],
+        start: `${sd}T00:00:00`,
+        end: `${ed}T23:59:59`
+      }
+    }
+  }
+
+  const getTimeSlot = (start: string, end: string) =>  {
+    const values = Object.values(timeSlots()) as [{timeSlotType: DefaultValueOption, start: string, end: string }]
+    return values.find(slot => {
+      console.log('XXX start', slot.start, start)
+      console.log('XXX end', slot.end, end)
+
+      slot.start === start && slot.end === end
+  })
+
+  }
 
   const selectedOption = TimeSlotTypes.find(type => {
-    console.log('XXX fullDay', fullDay)
 
     if (fullDay === 'true' && type.value === 'fullDay') {
       return type
+    } else {
+      const ts = getTimeSlot(start as string, end as string)
+      if (ts && ts.timeSlotType.value === type.value) {
+        return type
+      }
     }
 
 
@@ -123,15 +169,23 @@ export const TimePicker = ({ index }: {
 
     switch (value) {
       case 'fullDay':
-        setFullDay( fullDay === 'true' ? 'false' : 'true')
+        setFullDay(fullDay === 'true' ? 'false' : 'true')
         break;
       case 'morning':
+
+        const start = new Date(`${startDate}T05:00:00`)
+        const startString = start.toISOString()
+        const end = new Date(`${endDate}T09:59:59`)
+        const endString = end.toISOString()
+        setFullDay('false')
+        setStart(startString)
+        setEnd(endString)
         break;
       case 'forenoon':
         break;
       case 'afternoon':
         break;
-       case 'evening':
+      case 'evening':
         break;
       default:
         break;
