@@ -28,6 +28,7 @@ export interface IDBCategory {
 
 /** Organisation structure in indexedDB objectStore */
 export interface IDBOrganisation {
+  id: string
   title: string
   city: string
   country: string

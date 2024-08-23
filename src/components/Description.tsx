@@ -14,7 +14,7 @@ function findIndex(stateDescriptions: Block[], role: 'internal' | 'public'): num
   return foundIndex === -1 ? stateDescriptions.length : foundIndex
 }
 
-export const PlanDescription = ({ role }: {
+export const Description = ({ role }: {
   role: 'internal' | 'public'
 }): JSX.Element => {
   const { state: stateDescriptions = [] } = useYObserver('meta', 'core/description')

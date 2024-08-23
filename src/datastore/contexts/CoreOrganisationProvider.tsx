@@ -41,12 +41,12 @@ export const CoreOrganisationProvider = ({ children }: {
         const { _id: id, _source: _ } = item
         return {
           id,
-          title: _['document.title'],
-          city: _['document.city'],
-          country: _['document.country'],
-          email: _['document.email'],
-          phone: _['document.phone'],
-          streetAddress: _['document.streetAddress']
+          title: _['document.title']?.[0].trim() || '',
+          city: _['document.meta.core_contact_info.data.city']?.[0].trim() || '',
+          country: _['document.meta.core_contact_info.data.country']?.[0].trim() || '',
+          email: _['document.meta.core_contact_info.data.email']?.[0]?.trim() || '',
+          phone: _['document.meta.core_contact_info.data.phone']?.[0]?.trim() || '',
+          streetAddress: _['document.meta.core_contact_info.data.streetAddress']?.[0].trim() || ''
         }
       }
     )

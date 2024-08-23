@@ -1,33 +1,31 @@
+import type * as Y from 'yjs'
+import { type ViewMetadata, type ViewProps } from '@/types/index'
+import { AwarenessDocument } from '@/components/AwarenessDocument'
+import { useCollaboration } from '@/hooks/useCollaboration'
+import { useQuery } from '@/hooks/useQuery'
+import { useSession } from 'next-auth/react'
+import { ViewHeader } from '@/components/View'
+import { createStateless, StatelessType } from '@/shared/stateless'
+import { ScrollArea, Separator, Button } from '@ttab/elephant-ui'
+import { Ticket } from '@ttab/elephant-ui/icons'
+import { cn } from '@ttab/elephant-ui/utils'
+import { cva } from 'class-variance-authority'
 import {
-  AwarenessDocument,
-  ViewHeader,
+  Description,
   DocumentStatus,
-  VisibilityStatus,
   Newsvalue,
   Title,
-  Description,
+  VisibilityStatus,
+  Section,
   Story,
-  Section
+  Registration,
+  Category,
+  Organisation
 } from '@/components'
-import { type ViewMetadata, type ViewProps } from '@/types'
-import { Button, ScrollArea, Separator } from '@ttab/elephant-ui'
-import { GanttChartSquare } from '@ttab/elephant-ui/icons'
-import { useCollaboration, useQuery } from '@/hooks'
-import { SluglineEditable } from '@/components/DataItem/SluglineEditable'
-import {
-  AssignmentTable,
-  PlanDate
-} from './components'
-
-import type * as Y from 'yjs'
-import { cva } from 'class-variance-authority'
-import { cn } from '@ttab/elephant-ui/utils'
-import { createStateless, StatelessType } from '@/shared/stateless'
-import { useSession } from 'next-auth/react'
 
 const meta: ViewMetadata = {
-  name: 'Planning',
-  path: `${import.meta.env.BASE_URL || ''}/planning`,
+  name: 'Event',
+  path: `${import.meta.env.BASE_URL || ''}/event`,
   widths: {
     sm: 12,
     md: 12,
@@ -41,16 +39,16 @@ const meta: ViewMetadata = {
   }
 }
 
-
-export const Planning = (props: ViewProps & { document?: Y.Doc }): JSX.Element => {
+export const Event = (props: ViewProps & { document?: Y.Doc }): JSX.Element => {
   const query = useQuery()
   const documentId = props.id || query.id
+
 
   return (
     <>
       {documentId
         ? <AwarenessDocument documentId={documentId} document={props.document}>
-          <PlanningViewContent {...props} documentId={documentId} />
+          <EventViewContent {...props} documentId={documentId} />
         </AwarenessDocument>
         : <></>
       }
@@ -58,7 +56,7 @@ export const Planning = (props: ViewProps & { document?: Y.Doc }): JSX.Element =
   )
 }
 
-const PlanningViewContent = (props: ViewProps & { documentId: string }): JSX.Element | undefined => {
+const EventViewContent = (props: ViewProps & { documentId: string }): JSX.Element | undefined => {
   const { provider } = useCollaboration()
   const { data, status } = useSession()
 
@@ -82,10 +80,10 @@ const PlanningViewContent = (props: ViewProps & { documentId: string }): JSX.Ele
 
   return (
     <div className={cn(viewVariants({ asCreateDialog: !!props.asCreateDialog, className: props?.className }))}>
-      <div className="grow-0">
+      <div className='grow-0'>
         <ViewHeader.Root>
           {!props.asCreateDialog &&
-            <ViewHeader.Title title='Planering' icon={GanttChartSquare} iconColor='#DAC9F2' />
+            <ViewHeader.Title title='Händelse' icon={Ticket} iconColor='#DAC9F2' />
           }
 
           <ViewHeader.Content>
@@ -110,26 +108,25 @@ const PlanningViewContent = (props: ViewProps & { documentId: string }): JSX.Ele
             <div className='flex space-x-2 items-start'>
               <Title
                 autoFocus={props.asCreateDialog}
-                placeholder='Planeringsrubrik'
+                placeholder='Händelserubrik'
               />
-              <SluglineEditable path='meta.tt/slugline[0].value' />
             </div>
 
-            <Description role="public" />
-            <Description role="internal" />
+            <p>Datetime TODO</p>
+            <Description role='public' />
+            <p>Registration/Accreditation TODO core/event.registration</p>
+            <Registration />
+            <Organisation />
           </div>
 
-          <div className="flex flex-col space-y-2">
-            <div className='-ml-2'>
-              <PlanDate />
-            </div>
+          <div className='flex flex-col space-y-2'>
             <div className='flex space-x-2'>
               <Section />
+              <Category />
               <Story />
             </div>
           </div>
 
-          <AssignmentTable />
         </section>
 
         {props.asCreateDialog && (
@@ -147,13 +144,11 @@ const PlanningViewContent = (props: ViewProps & { documentId: string }): JSX.Ele
                     createStateless(StatelessType.IN_PROGRESS, {
                       state: false,
                       id: props.documentId,
-                      context: {
-                        accessToken: data.accessToken
-                      }
+                      context: data.accessToken
                     }))
                 }
               }}>
-                Skapa planering
+                Skapa händelse
               </Button>
             </div>
           </div>)}
@@ -163,4 +158,4 @@ const PlanningViewContent = (props: ViewProps & { documentId: string }): JSX.Ele
   )
 }
 
-Planning.meta = meta
+Event.meta = meta

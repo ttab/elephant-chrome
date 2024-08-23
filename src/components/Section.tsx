@@ -4,7 +4,7 @@ import { useSections, useYValue } from '@/hooks'
 import { Block } from '@/protos/service'
 import { useRef } from 'react'
 
-export const PlanSection = (): JSX.Element => {
+export const Section = (): JSX.Element => {
   const allSections = useSections().map((_) => {
     return {
       value: _.id,

@@ -16,7 +16,7 @@ export const Header = ({ tab, startDate, setStartDate, endDate, setEndDate }: {
   setEndDate?: Dispatch<SetStateAction<Date>>
 }): JSX.Element => {
   return <>
-    <CreateDocumentDialog />
+    <CreateDocumentDialog type='Event' />
 
     <div className='hidden sm:block'>
       <TabsGrid />

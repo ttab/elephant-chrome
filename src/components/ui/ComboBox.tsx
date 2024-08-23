@@ -150,10 +150,10 @@ function ComboBoxList({
       <CommandList>
         <CommandEmpty>Ingenting hittades</CommandEmpty>
         <CommandGroup>
-          {options.map((option) => (
+          {options.map((option, index) => (
             <CommandItem
               className='group/checkbox'
-              key={option.label}
+              key={`${option.label}-${index}`}
               value={option.label}
               onSelect={(selectedLabel) => {
                 const newSelectedOption = options.find((option) => option.label.toLocaleLowerCase() === selectedLabel)

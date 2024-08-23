@@ -15,8 +15,7 @@ import { type Document } from '@/protos/service'
 
 export type Template = keyof typeof templates
 
-// TODO: Remove optional type once Events view is implemented
-export const CreateDocumentDialog = ({ type }: { type?: View }): JSX.Element | null => {
+export const CreateDocumentDialog = ({ type }: { type: View }): JSX.Element | null => {
   const [document, setDocument] = useState<[string | undefined, Y.Doc | undefined]>([undefined, undefined])
 
   useKeydownGlobal(evt => {
@@ -63,7 +62,9 @@ function getTemplate(type: View): (id: string) => Document {
   switch (type) {
     case 'Planning':
       return templates.planning
+    case 'Event':
+      return templates.event
     default:
-      return templates.planning
+      throw new Error(`No template for ${type}`)
   }
 }

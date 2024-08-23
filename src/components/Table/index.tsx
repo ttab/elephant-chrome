@@ -13,13 +13,14 @@ import { handleLink } from '@/components/Link/lib/handleLink'
 
 interface TableProps<TData, TValue> {
   columns: Array<ColumnDef<TData, TValue>>
-  data: TData[]
+  type: 'Planning' | 'Event'
   onRowSelected?: (row?: TData) => void
 }
 
 
 export const Table = <TData, TValue>({
   columns,
+  type,
   onRowSelected
 }: TableProps<TData, TValue>): JSX.Element => {
   const { isActive: isActiveView } = useView()
@@ -109,7 +110,7 @@ export const Table = <TData, TValue>({
             handleLink({
               event,
               dispatch,
-              viewItem: state.viewRegistry.get('Planning'),
+              viewItem: state.viewRegistry.get(type),
               viewRegistry: state.viewRegistry,
               // @ts-expect-error unknown type
               props: { id: row.original._id },

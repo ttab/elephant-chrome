@@ -15,7 +15,7 @@ interface Status {
   documentId: string
 }
 
-export const PlanDocumentStatus = ({ documentId }: { documentId: string }): JSX.Element => {
+export const DocumentStatus = ({ documentId }: { documentId: string }): JSX.Element => {
   const { server: { repositoryUrl } } = useRegistry()
   const { data: documentStatus, mutate } = useSWR([`status/${documentId}`], async () => {
     const _meta = await Repository.metaSearch({ session, documentId, repositoryUrl })

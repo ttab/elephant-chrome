@@ -95,13 +95,17 @@ export const PlanningList = ({ date }: { date: Date }): JSX.Element => {
   return (
     <>
       {data?.ok === true &&
-        <Table data={data?.hits} columns={planningTableColumns({ sections })} onRowSelected={(row): void => {
-          if (row) {
-            console.info(`Selected planning item ${row._id}`)
-          } else {
-            console.info('Deselected row')
-          }
-        }} />
+        <Table
+          type='Planning'
+          columns={planningTableColumns({ sections })}
+          onRowSelected={(row): void => {
+            if (row) {
+              console.info(`Selected planning item ${row._id}`)
+            } else {
+              console.info('Deselected row')
+            }
+          }}
+        />
       }
     </>
   )
