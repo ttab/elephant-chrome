@@ -120,7 +120,7 @@ exports[`Transform full planning newsdoc document to internal YDoc representatio
 {
   "content": "",
   "links": {
-    "tt/sector": [
+    "core/section": [
       {
         "content": {},
         "contentType": "",
@@ -129,14 +129,14 @@ exports[`Transform full planning newsdoc document to internal YDoc representatio
         "links": {},
         "meta": {},
         "name": "",
-        "rel": "sector",
+        "rel": "section",
         "role": "",
         "title": "Sport",
-        "type": "tt/sector",
-        "uri": "sector://spt",
+        "type": "core/section",
+        "uri": "",
         "url": "",
         "uuid": "a36ff853-9fb3-5950-8893-64ac699f5481",
-        "value": "SPT",
+        "value": "",
       },
     ],
   },
