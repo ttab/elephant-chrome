@@ -7,6 +7,7 @@ import { type DefaultValueOption } from '@/types'
 import { Repository } from '@/lib/repository'
 import useSWR from 'swr'
 import { type MetaHead } from '@/lib/repository/metaSearch'
+import { useRegistry } from '@/hooks'
 
 interface Status {
   name: string
@@ -15,8 +16,9 @@ interface Status {
 }
 
 export const PlanDocumentStatus = ({ documentId }: { documentId: string }): JSX.Element => {
+  const { server: { repositoryUrl } } = useRegistry()
   const { data: documentStatus, mutate } = useSWR([`status/${documentId}`], async () => {
-    const _meta = await Repository.metaSearch({ session, documentId })
+    const _meta = await Repository.metaSearch({ session, documentId, repositoryUrl })
     const version = _meta.meta.current_version
     const heads: MetaHead = _meta?.meta?.heads
     const headsEntries = Object.entries(heads)

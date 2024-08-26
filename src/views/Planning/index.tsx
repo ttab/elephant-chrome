@@ -140,7 +140,9 @@ const PlanningViewContent = (props: ViewProps & { documentId: string }): JSX.Ele
                     createStateless(StatelessType.IN_PROGRESS, {
                       state: false,
                       id: props.documentId,
-                      context: data.accessToken
+                      context: {
+                        accessToken: data.accessToken
+                      }
                     }))
                 }
               }}>

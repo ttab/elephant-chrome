@@ -91,11 +91,13 @@ export function eventTableColumns({ sections = [] }: {
       }
     },
     {
+      // FIXME: document.rel.section.uuid is not indexed
       id: 'section',
       meta: {
         options: sections.map(_ => {
           return {
-            value: _.id,
+            // TODO: Use section uuid for a more stable reference, not yet available on event document
+            value: _.title,
             label: _.title
           }
         }),
@@ -110,7 +112,7 @@ export function eventTableColumns({ sections = [] }: {
       cell: ({ row }) => {
         const sectionTitle = row.getValue<string | undefined>('section')
         return <>
-          {sectionTitle && <SectionBadge label={sectionTitle} color='bg-[#BD6E11]' />}
+          {sectionTitle && <SectionBadge title={sectionTitle} color='bg-[#BD6E11]' />}
         </>
       },
       filterFn: (row, id, value) => (

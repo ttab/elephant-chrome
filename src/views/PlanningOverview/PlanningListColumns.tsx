@@ -20,11 +20,13 @@ import { Newsvalues, NewsvalueMap, AssignmentTypes, VisibilityStatuses, Document
 import { StatusIndicator } from '@/components/DataItem/StatusIndicator'
 import { DocumentStatus } from '@/components/Table/Items/DocumentStatus'
 import { SectionBadge } from '@/components/DataItem/SectionBadge'
-import { type IDBSection } from 'src/datastore/types'
+import { type IDBAuthor, type IDBSection } from 'src/datastore/types'
 import { FacetedFilter } from '@/components/Commands/FacetedFilter'
+import { getNestedFacetedUniqueValues } from '@/components/Filter/lib/getNestedFacetedUniqueValues'
 
-export function planningTableColumns({ sections = [] }: {
+export function planningTableColumns({ sections = [], authors = [] }: {
   sections?: IDBSection[]
+  authors?: IDBAuthor[]
 }): Array<ColumnDef<Planning>> {
   return [
     {
@@ -128,14 +130,12 @@ export function planningTableColumns({ sections = [] }: {
         className: 'box-content w-[115px] hidden @4xl/view:[display:revert]'
       },
       accessorFn: (data) => {
-        const uuid = data._source['document.rel.sector.uuid']?.[0]
-        const title = data._source['document.rel.sector.title']?.[0]
-        return (uuid && title) ? { uuid, title } : undefined
+        return data._source['document.rel.section.uuid']?.[0]
       },
       cell: ({ row }) => {
-        const section = row.getValue<{ uuid: string, title: string } | undefined>('section')
+        const sectionTitle = row.original._source['document.rel.section.title']?.[0]
         return <>
-          {section && <SectionBadge label={section.title} color='bg-[#BD6E11]' />}
+          {sectionTitle && <SectionBadge title={sectionTitle} color='bg-[#BD6E11]' />}
         </>
       },
       filterFn: (row, id, value) => {
@@ -145,8 +145,9 @@ export function planningTableColumns({ sections = [] }: {
     {
       id: 'assignees',
       meta: {
+        options: authors.map((_) => ({ value: _.title, label: _.title })),
         Filter: ({ column, setSearch }) => (
-          <FacetedFilter column={column} setSearch={setSearch} />
+          <FacetedFilter column={column} setSearch={setSearch} facetFn={() => getNestedFacetedUniqueValues(column)} />
         ),
         name: 'Uppdragstagare',
         columnIcon: Users,
@@ -156,13 +157,18 @@ export function planningTableColumns({ sections = [] }: {
       cell: ({ row }) => {
         const assignees = row.getValue<string[]>('assignees') || []
         return <Assignees assignees={assignees} />
-      }
+      },
+      filterFn: (row, id, value) => (
+        typeof value?.[0] === 'string'
+          ? (row.getValue<string[]>(id) || []).includes(value[0])
+          : false
+      )
     },
     {
       id: 'type',
       meta: {
         Filter: ({ column, setSearch }) => (
-          <FacetedFilter column={column} setSearch={setSearch} />
+          <FacetedFilter column={column} setSearch={setSearch} facetFn={() => getNestedFacetedUniqueValues(column)} />
         ),
         options: AssignmentTypes,
         name: 'Typ',
@@ -180,7 +186,9 @@ export function planningTableColumns({ sections = [] }: {
 
         return <Type data={data} />
       },
-      filterFn: 'arrIncludesSome'
+      filterFn: (row, id, value) => (
+        value.some((v: string) => row.getValue<string[] | undefined>(id)?.includes(v))
+      )
     },
     {
       id: 'action',

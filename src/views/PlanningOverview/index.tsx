@@ -14,6 +14,7 @@ import { PlanningCommands } from './PlanningCommands'
 import { planningTableColumns } from './PlanningListColumns'
 import { type Planning } from '@/lib/index'
 import { useSections } from '@/hooks/useSections'
+import { useAuthors } from '@/hooks/useAuthors'
 
 const meta: ViewMetadata = {
   name: 'Plannings',
@@ -36,13 +37,14 @@ export const Plannings = (): JSX.Element => {
   const [endDate, setEndDate] = useState<Date>(getEndDate(startDate))
   const [currentTab, setCurrentTab] = useState<string>('list')
   const sections = useSections()
+  const authors = useAuthors()
 
   useEffect(() => {
     setEndDate(getEndDate(startDate))
   }, [startDate])
 
   return (
-    <TableProvider<Planning> columns={planningTableColumns({ sections })}>
+    <TableProvider<Planning> columns={planningTableColumns({ sections, authors })}>
       <Tabs defaultValue={currentTab} className='flex-1' onValueChange={setCurrentTab}>
 
         <TableCommandMenu>

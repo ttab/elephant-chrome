@@ -28,17 +28,27 @@ export interface MetaResult {
   }
 }
 
-export const metaSearch = async ({ session, documentId }: { session: Session | null, documentId: string }): Promise<MetaResult> => {
-  const response = await fetch(`${process.env.REPOSITORY_URL}/twirp/elephant.repository.Documents/GetMeta`, {
-    method: 'POST',
-    mode: 'cors',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: 'Bearer ' + session?.accessToken
-    },
-    body: JSON.stringify({ uuid: documentId })
-  })
+export const metaSearch = async ({ session, documentId, repositoryUrl }: {
+  session: Session | null
+  documentId: string
+  repositoryUrl: URL
+}): Promise<MetaResult> => {
+  try {
+    const searchUrl = new URL('/twirp/elephant.repository.Documents/GetMeta', repositoryUrl.href)
 
-  const result = await response.json()
-  return result
+    const response = await fetch(searchUrl, {
+      method: 'POST',
+      mode: 'cors',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: 'Bearer ' + session?.accessToken
+      },
+      body: JSON.stringify({ uuid: documentId })
+    })
+
+    const result = await response.json()
+    return result
+  } catch (ex) {
+    throw new Error('Failed fetching metadata', { cause: ex as Error })
+  }
 }

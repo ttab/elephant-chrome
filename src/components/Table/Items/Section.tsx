@@ -1,19 +1,21 @@
 import { SectionBadge } from '@/components/DataItem/SectionBadge'
-import { Sections } from '@/defaults'
+import { useSections } from '@/hooks/useSections'
 import { useMemo } from 'react'
 
 export const Section = ({ uuid }: {
   uuid: string
 }): JSX.Element => {
+  const allSections = useSections()
+
   return useMemo(() => {
-    const section = Sections.find((section) => section?.payload?.uuid === uuid)
+    const section = allSections.find((section) => section?.id === uuid)
 
     if (!section) {
       return <></>
     }
 
     return (
-      <SectionBadge label={section.label} color={section.color} />
+      <SectionBadge title={section.title} />
     )
-  }, [uuid])
+  }, [uuid, allSections])
 }

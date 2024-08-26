@@ -1,5 +1,5 @@
 import { CommandList } from '@ttab/elephant-ui'
-import { ClearFilter, TextFilter, ColumnFilter, ToggleColumn } from '@/components/Commands/Items'
+import { ClearFilter, TextFilter, ColumnFilter } from '@/components/Commands/Items'
 
 export const PlanningCommands = (): JSX.Element => {
   return (
@@ -7,7 +7,6 @@ export const PlanningCommands = (): JSX.Element => {
       <TextFilter />
       <ColumnFilter />
       <ClearFilter />
-      <ToggleColumn />
     </CommandList>
   )
 }
