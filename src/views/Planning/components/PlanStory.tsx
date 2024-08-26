@@ -1,7 +1,7 @@
 import { Awareness } from '@/components'
-import { ComboBox } from '@/components/ui'
 import { useStories, useYValue } from '@/hooks'
 import { Block } from '@/protos/service'
+import { ComboBox } from '@ttab/elephant-ui'
 import { useRef } from 'react'
 import * as Y from 'yjs'
 
@@ -22,12 +22,12 @@ export const PlanStory = (): JSX.Element => {
   const [story] = useYValue<{ uuid: string, title: string }>('links.core/story[0]')
 
   const setFocused = useRef<(value: boolean) => void>(null)
-  const selectedOption = allStories.find(s => s.value === story?.uuid)
+  const selectedOption = allStories.filter(s => s.value === story?.uuid)
 
   return (
     <Awareness name='PlanStory' ref={setFocused}>
       <ComboBox
-        size='xs'
+        max={1}
         className='w-fit text-muted-foreground font-sans font-normal whitespace-nowrap text-ellipsis px-2 h-7'
         options={allStories}
         selectedOption={selectedOption}
@@ -39,12 +39,14 @@ export const PlanStory = (): JSX.Element => {
         }}
         onSelect={(option) => {
           const newStories = new Y.Array()
-          newStories.push([Block.create({
-            type: 'core/story',
-            rel: 'story',
-            uuid: option.value,
-            title: option.label
-          })])
+          if (option.label !== story?.title) {
+            newStories.push([Block.create({
+              type: 'core/story',
+              rel: 'story',
+              uuid: option.value,
+              title: option.label
+            })])
+          }
           setStories(newStories)
         }}
       />
