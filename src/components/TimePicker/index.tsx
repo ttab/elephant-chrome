@@ -12,6 +12,8 @@ import { useRef } from 'react'
 
 
 import { cn } from '@ttab/elephant-ui/utils'
+import { as } from 'vitest/dist/chunks/reporters.C_zwCd4j.js'
+import { time } from 'console'
 
 const iconProps = {
   size: 18,
@@ -19,7 +21,7 @@ const iconProps = {
   className: 'text-muted-foreground'
 }
 
-export const TimeSlotTypes: DefaultValueOption[] = [
+export const timeSlotTypes: DefaultValueOption[] = [
   {
     label: 'Heldag',
     value: 'fullDay',
@@ -87,9 +89,9 @@ export const TimePicker = ({ index }: {
   const [fullDay, setFullDay] = useYValue(`meta.core/assignment[${index}].data.full_day`)
   const [end, setEnd] = useYValue(`meta.core/assignment[${index}].data.end`)
   const [start, setStart] = useYValue(`meta.core/assignment[${index}].data.start`)
+  const [timeSlot, setTimeSlot] = useYValue<string>(`meta.core/assignment[${index}].data.slot`)
 
-
-
+  console.log('XXX timeSlot', timeSlot)
 
   // data: {
   //   end_date: '2024-02-09',
@@ -101,67 +103,68 @@ export const TimePicker = ({ index }: {
   //   publish: '2024-02-09T10:30:00Z'
   // },
 
-  const timeSlots = (sd = startDate, ed = endDate) => {
-    return {
-      morning: {
-        timeSlotType: TimeSlotTypes[1],
-        start: `${sd}T05:00:00`,
-        end: `${ed}T09:59:59`
+
+  const timeSlots:
+    {
+      name: string,
+      timeSlotType: DefaultValueOption,
+      slots: string[],
+      median: string
+    }[] = [
+      {
+        name: 'morning',
+        timeSlotType: timeSlotTypes[1],
+        slots: ['5', '6', '7', '8', '9'],
+        median: '7'
       },
-      forenoon: {
-        timeSlotType: TimeSlotTypes[2],
-        start: `${sd}T10:00:00`,
-        end: `${ed}T13:59:59`
+      {
+        name: 'forenoon',
+        timeSlotType: timeSlotTypes[2],
+        slots: ['10', '11', '12', '13'],
+        median: '11'
       },
-      afternoon: {
-        timeSlotType: TimeSlotTypes[3],
-        start: `${sd}T14:00:00`,
-        end: `${ed}T17:59:59`
+      {
+        name: 'afternoon',
+        timeSlotType: timeSlotTypes[3],
+        slots: ['14', '15', '16', '17'],
+        median: '15'
       },
-      evening: {
-        timeSlotType: TimeSlotTypes[4],
-        start: `${sd}T18:00:00`,
-        end: `${ed}T04:59:59?`
+      {
+        name: 'evening',
+        timeSlotType: timeSlotTypes[4],
+        slots: ['18', '19', '20', '21', '22', '23', '0', '1', '2', '3', '4'],
+        median: '22'
       },
-      fullday: {
-        timeSlotType: TimeSlotTypes[0],
-        start: `${sd}T00:00:00`,
-        end: `${ed}T23:59:59`
+      {
+        name: 'fullDay',
+        timeSlotType: timeSlotTypes[0],
+        slots: [],
+        median: ''
       }
-    }
+    ]
+
+  const getTimeSlot = (timeSlot: string) => {
+    return timeSlots.find(slot => slot.slots.includes(timeSlot))
   }
 
-  const getTimeSlot = (start: string, end: string) =>  {
-    const values = Object.values(timeSlots()) as [{timeSlotType: DefaultValueOption, start: string, end: string }]
-    return values.find(slot => {
-      console.log('XXX start', slot.start, start)
-      console.log('XXX end', slot.end, end)
-
-      slot.start === start && slot.end === end
-  })
-
+  const getMedianSlot = (slots: typeof timeSlots, value: string) => {
+    const slot = slots.find(slot => slot.name === value)?.median
+    return slot ? slot : ''
   }
 
-  const selectedOption = TimeSlotTypes.find(type => {
+  const selectedOption = timeSlotTypes.find(type => {
 
     if (fullDay === 'true' && type.value === 'fullDay') {
       return type
     } else {
-      const ts = getTimeSlot(start as string, end as string)
+      const ts = getTimeSlot(timeSlot as string)
       if (ts && ts.timeSlotType.value === type.value) {
         return type
       }
     }
-
-
   })
 
   const { className = '', ...iconProps } = selectedOption?.iconProps || {}
-
-  // const handleOnSelect = (): (option: DefaultValueOption) => void => {
-  //   return (option) => {
-  //   }
-  // }
 
   const handleOnSelect = (option: DefaultValueOption) => {
     console.log('XXX selecxt', option)
@@ -169,23 +172,24 @@ export const TimePicker = ({ index }: {
 
     switch (value) {
       case 'fullDay':
-        setFullDay(fullDay === 'true' ? 'false' : 'true')
+        setFullDay('true')
+        setTimeSlot(getMedianSlot(timeSlots, value))
         break;
       case 'morning':
-
-        const start = new Date(`${startDate}T05:00:00`)
-        const startString = start.toISOString()
-        const end = new Date(`${endDate}T09:59:59`)
-        const endString = end.toISOString()
         setFullDay('false')
-        setStart(startString)
-        setEnd(endString)
+        setTimeSlot(getMedianSlot(timeSlots, value))
         break;
       case 'forenoon':
+        setFullDay('false')
+        setTimeSlot(getMedianSlot(timeSlots, value))
         break;
       case 'afternoon':
+        setFullDay('false')
+        setTimeSlot(getMedianSlot(timeSlots, value))
         break;
       case 'evening':
+        setFullDay('false')
+        setTimeSlot(getMedianSlot(timeSlots, value))
         break;
       default:
         break;
@@ -215,7 +219,7 @@ export const TimePicker = ({ index }: {
 
   return <ComboBox
     className='w-fit h-7'
-    options={TimeSlotTypes}
+    options={timeSlotTypes}
     variant={'ghost'}
     selectedOption={selectedOption}
     onSelect={handleOnSelect}
