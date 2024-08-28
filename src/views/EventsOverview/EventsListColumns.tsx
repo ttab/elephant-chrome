@@ -112,7 +112,7 @@ export function eventTableColumns({ sections = [] }: {
       cell: ({ row }) => {
         const sectionTitle = row.getValue<string | undefined>('section')
         return <>
-          {sectionTitle && <SectionBadge label={sectionTitle} color='bg-[#BD6E11]' />}
+          {sectionTitle && <SectionBadge title={sectionTitle} color='bg-[#BD6E11]' />}
         </>
       },
       filterFn: (row, id, value) => (

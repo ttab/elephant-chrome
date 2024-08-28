@@ -1,5 +1,5 @@
 import { Awareness } from '@/components'
-import { ComboBox } from '@/components/ui'
+import { ComboBox } from '@ttab/elephant-ui'
 import { useSections, useYValue } from '@/hooks'
 import { Block } from '@/protos/service'
 import { useRef } from 'react'
@@ -11,16 +11,15 @@ export const Section = (): JSX.Element => {
       label: _.title
     }
   })
-
-  const [section, setSection] = useYValue<Block | undefined>('links.core/section[0]')
+  const [section, setSection] = useYValue<Block | undefined>('links.core/section')
 
   const setFocused = useRef<(value: boolean) => void>(null)
-  const selectedOption = allSections.find(s => s.value === section?.uuid)
+  const selectedOption = (allSections || [])?.filter(s => s.value === section?.uuid)
 
   return (
     <Awareness name='PlanSection' ref={setFocused}>
       <ComboBox
-        size='xs'
+        max={1}
         className='w-fit text-muted-foreground font-sans font-normal whitespace-nowrap text-ellipsis px-2 h-7'
         options={allSections}
         selectedOption={selectedOption}
@@ -31,13 +30,18 @@ export const Section = (): JSX.Element => {
           }
         }}
         onSelect={(option) => {
-          const newSections = Block.create({
-            type: 'core/section',
-            rel: 'section',
-            uuid: option.value,
-            title: option.label
-          })
-          setSection(newSections)
+          let newSection
+          if (section?.title === option.label) {
+            newSection = undefined
+          } else {
+            newSection = Block.create({
+              type: 'core/section',
+              rel: 'section',
+              uuid: option.value,
+              title: option.label
+            })
+          }
+          setSection(newSection)
         }}
       />
     </Awareness>

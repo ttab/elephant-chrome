@@ -2,10 +2,24 @@ import { renderHook } from '@testing-library/react'
 import { useYValue } from '@/hooks/useYValue'
 import { type CollaborationWrapper, initializeCollaborationWrapper } from './utils/initializeCollaborationWrapper'
 import { act } from '../setupTests'
-import { Sections } from '@/defaults/__sections'
-import { type Block } from '@/protos/service'
+import { Block } from '@/protos/service'
 
 let init: CollaborationWrapper
+
+const culturePayload = Block.create({
+  uuid: '1c0df6b4-d82e-5ae6-aaee-47e33c04ba5b',
+  type: 'core/section',
+  title: 'Kultur och nöje',
+  rel: 'section'
+})
+
+const sportsPayload = Block.create({
+  uuid: 'a36ff853-9fb3-5950-8893-64ac699f5481',
+  type: 'core/section',
+  title: 'Sport',
+  data: {},
+  rel: 'section'
+})
 
 describe('useYValue', () => {
   beforeAll(async () => {
@@ -32,10 +46,10 @@ describe('useYValue', () => {
 
   it('gets an object from an array, SPT', async () => {
     const { result } = renderHook(() =>
-      useYValue<Block>('links.tt/sector[0]'), { wrapper: init.wrapper })
+      useYValue<Block>('links.core/section[0]'), { wrapper: init.wrapper })
 
     expect(result.current[0]).toEqual({
-      ...Sections[2].payload,
+      ...sportsPayload,
       content: {},
       links: {},
       meta: {}
@@ -45,33 +59,23 @@ describe('useYValue', () => {
 
   it('replaces an object in an array, from SPT to KLT', async () => {
     const { result } = renderHook(() =>
-      useYValue<Block>('links.tt/sector[0]'), { wrapper: init.wrapper })
+      useYValue<Block>('links.core/section[0]'), { wrapper: init.wrapper })
 
-    const payload = Sections[3].payload
-    if (payload) {
-      act(() => result.current[1](payload))
-      expect(result.current[0]).toEqual(payload)
-    } else {
-      throw new Error('Payload not found')
-    }
+    act(() => result.current[1](culturePayload))
+    expect(result.current[0]).toEqual(culturePayload)
   })
 
   it('appends an object to an array', async () => {
     const { result } = renderHook(() =>
-      useYValue<Block>('links.tt/sector[1]'), { wrapper: init.wrapper })
+      useYValue<Block>('links.core/section[1]'), { wrapper: init.wrapper })
 
-    const payload = Sections[3].payload
-    if (payload) {
-      act(() => result.current[1](payload))
-      expect(result.current[2]).toHaveLength(2)
-    } else {
-      throw new Error('Payload not found')
-    }
+    act(() => result.current[1](sportsPayload))
+    expect(result.current[2]).toHaveLength(2)
   })
 
   it('removes an object from an array', async () => {
     const { result } = renderHook(() =>
-      useYValue<Block | undefined>('links.tt/sector[1]'), { wrapper: init.wrapper })
+      useYValue<Block | undefined>('links.core/section[1]'), { wrapper: init.wrapper })
 
     expect(result.current[0]).toBeTruthy()
     act(() => result.current[1](undefined))
@@ -80,14 +84,14 @@ describe('useYValue', () => {
 
   it('removes parent when last value is removed', async () => {
     const { result } = renderHook(() =>
-      useYValue<Block | undefined>('links.tt/sector[0]'), { wrapper: init.wrapper })
+      useYValue<Block | undefined>('links.core/section[0]'), { wrapper: init.wrapper })
 
     act(() => result.current[1](undefined))
     expect(result.current[0]).toBeFalsy()
 
 
     const { result: after } = renderHook(() =>
-      useYValue<Block | undefined>('links.tt/sector'), { wrapper: init.wrapper })
+      useYValue<Block | undefined>('links.core/section'), { wrapper: init.wrapper })
 
     expect(after.current[0]).toBeUndefined()
   })
