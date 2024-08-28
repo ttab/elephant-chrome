@@ -114,7 +114,6 @@ const EventViewContent = (props: ViewProps & { documentId: string }): JSX.Elemen
 
             <p>Datetime TODO</p>
             <Description role='public' />
-            <p>Registration/Accreditation TODO core/event.registration</p>
             <Registration />
             <Organisation />
           </div>
