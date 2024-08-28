@@ -39,8 +39,8 @@ export const PlanStory = (): JSX.Element => {
           setStory(story?.title === option.label
             ? undefined
             : Block.create({
-              type: 'core/section',
-              rel: 'section',
+              type: 'core/story',
+              rel: 'story',
               uuid: option.value,
               title: option.label
             }))
