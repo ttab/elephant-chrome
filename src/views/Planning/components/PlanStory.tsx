@@ -12,12 +12,7 @@ export const PlanStory = (): JSX.Element => {
     }
   })
 
-  const [story, setStory] = useYValue<Block | undefined>('links.core/story[0]', {
-    createOnEmpty: {
-      path: 'links.core/story',
-      data: []
-    }
-  })
+  const [story, setStory] = useYValue<Block | undefined>('links.core/story[0]')
 
   const setFocused = useRef<(value: boolean) => void>(null)
   const selectedOption = (allStories || []).filter(s => s.value === story?.uuid)

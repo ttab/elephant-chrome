@@ -21,6 +21,14 @@ const sportsPayload = Block.create({
   rel: 'section'
 })
 
+const storyPayload = Block.create({
+  uuid: 'a36ff853-9fb3-5950-8893-64ac699f5481',
+  type: 'core/story',
+  title: 'Göteborgsvarvet',
+  data: {},
+  rel: 'story'
+})
+
 describe('useYValue', () => {
   beforeAll(async () => {
     init = await initializeCollaborationWrapper()
@@ -94,5 +102,14 @@ describe('useYValue', () => {
       useYValue<Block | undefined>('links.core/section'), { wrapper: init.wrapper })
 
     expect(after.current[0]).toBeUndefined()
+  })
+
+  it('add path to value if non existent', async () => {
+    const { result } = renderHook(() =>
+      useYValue<Block | undefined>('links.core/story[0]'), { wrapper: init.wrapper })
+
+    expect(result.current[0]).toBeUndefined()
+    act(() => result.current[1](storyPayload))
+    expect(result.current[0]).toEqual(storyPayload)
   })
 })

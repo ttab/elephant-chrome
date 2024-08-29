@@ -72,8 +72,10 @@ export function stringToYPath(input: string): YPath {
  * @param structure unknown - Value or structure to convert
  * @returns boolean True on success, otherwise false
  */
-export function createYStructure(root: Y.Map<unknown>, path: string | YPath, structure: unknown): boolean {
-  const yPath = Array.isArray(path) ? path : stringToYPath(path)
+export function createYStructure(root: Y.Map<unknown>, path: YPath, structure?: unknown): boolean {
+  const yIndex = path[path.length - 1]
+
+  const yPath = path.filter((part) => part !== yIndex)
   if (!yPath.length) {
     // Empty path
     console.warn('Path given to createYStructure() is empty:', path)
@@ -97,7 +99,7 @@ export function createYStructure(root: Y.Map<unknown>, path: string | YPath, str
 
   if (isYMap(yParent) && yPath.length >= 2) {
     // Set given structure to the property named by the last part of the path
-    yParent.set(yPath.slice(-1).toString(), yStructure)
+    yParent.set(yPath.slice(-1).toString(), !isNaN(Number(yIndex)) ? new Y.Array() : new Y.Map())
     return true
   }
 

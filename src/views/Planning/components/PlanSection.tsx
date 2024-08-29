@@ -11,12 +11,7 @@ export const PlanSection = (): JSX.Element => {
       label: _.title
     }
   })
-  const [section, setSection] = useYValue<Block | undefined>('links.core/section[0]', {
-    createOnEmpty: {
-      path: 'links.core/section',
-      data: []
-    }
-  })
+  const [section, setSection] = useYValue<Block | undefined>('links.core/section[0]')
 
   const setFocused = useRef<(value: boolean) => void>(null)
   const selectedOption = (allSections || [])?.filter(s => s.value === section?.uuid)

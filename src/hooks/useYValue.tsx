@@ -6,10 +6,6 @@ import { createYStructure, getValueByYPath, stringToYPath, type YParent } from '
 
 interface useYValueOptions {
   observe?: boolean
-  createOnEmpty?: {
-    path: string
-    data: unknown
-  }
 }
 
 /**
@@ -20,10 +16,6 @@ interface useYValueOptions {
  *
  * Specifying option observe=false will return raw value and not setup an observer. This is
  * especially useful when you want to retrieve a raw Y.XmlText to hand over to Textbit.
- *
- * Specifying option createOnEmpty creates the structure if no value was found. Path must always
- * end with a property name in a Y.Map or a Y.Array in which case the new
- * structure is pushed to the array.
  *
  * @param path string
  *
@@ -44,16 +36,15 @@ export function useYValue<T>(path: string, options: useYValueOptions = { observe
   const getValueAndParent = useCallback((yRoot: Y.Map<unknown>): [unknown, YParent] => {
     const vp = getValueByYPath(yRoot, yPath)
 
-    if (synced && vp[0] === undefined && options.createOnEmpty) {
+    if (synced && vp[0] === undefined && vp[1] === undefined) {
       // No value exists and caller wants us to fill in empty structure
-      const { path, data } = options.createOnEmpty
-      if (createYStructure(yRoot, path, data)) {
+      if (createYStructure(yRoot, yPath)) {
         return getValueByYPath(yRoot, yPath)
       }
     }
 
     return vp
-  }, [synced, yPath, options?.createOnEmpty])
+  }, [synced, yPath])
 
 
   // Initialization callback function
