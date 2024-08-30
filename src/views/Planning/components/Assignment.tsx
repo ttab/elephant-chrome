@@ -9,7 +9,7 @@ import { AssignmentType } from '@/components/DataItem/AssignmentType'
 import { useYValue } from '@/hooks/useYValue'
 import { Block } from '@/protos/service'
 import { Assignees } from './AssignmentAssignees'
-import { TimePicker } from '@/components/TimePicker'
+import { AssignmentTime } from '@/components/AssignmentTime'
 
 export const Assignment = ({ index, setSelectedAssignment, className }: {
   index: number
@@ -69,7 +69,7 @@ export const Assignment = ({ index, setSelectedAssignment, className }: {
           />
           <Assignees path={`meta.core/assignment[${index}].links.core/author`} />
 
-          <TimePicker
+          <AssignmentTime
             index={index}
           />
 
