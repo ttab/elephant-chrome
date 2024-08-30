@@ -172,7 +172,7 @@ export const TimePicker = ({ index }: {
 
     switch (value) {
       case 'fullDay':
-        setFullDay('true')
+        setFullDay(fullDay === 'true' ? 'false' : 'true')
         setTimeSlot(getMedianSlot(timeSlots, value))
         break;
       case 'morning':
