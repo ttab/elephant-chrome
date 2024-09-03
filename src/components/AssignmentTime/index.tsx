@@ -1,12 +1,13 @@
 
 import { ComboBox } from '../ui'
 import { type DefaultValueOption } from '@/types/index'
-import { CalendarFoldIcon, Clock1Icon, Clock2Icon, Clock3Icon, Clock4Icon, Clock5Icon, Clock6Icon, Clock7Icon, Clock8Icon, Clock9Icon, Clock10Icon, Clock11Icon, Clock12Icon } from '@ttab/elephant-ui/icons'
+import { CalendarFoldIcon, CalendarClockIcon, Clock1Icon, Clock2Icon, Clock3Icon, Clock4Icon, Clock5Icon, Clock6Icon, Clock7Icon, Clock8Icon, Clock9Icon, Clock10Icon, Clock11Icon, Clock12Icon } from '@ttab/elephant-ui/icons'
 // import { useYObserver } from '@/hooks'
 import { useYValue } from '@/hooks/useYValue'
-import { TimePicker } from './TimePicker'
+import { useState, useRef } from 'react'
 import { Block } from '@/protos/service'
-import { useRef } from 'react'
+import { TimeMenu } from './TimeMenu'
+
 
 
 // import * as Y from 'yjs'
@@ -15,7 +16,6 @@ import { useRef } from 'react'
 import { cn } from '@ttab/elephant-ui/utils'
 import { as } from 'vitest/dist/chunks/reporters.C_zwCd4j.js'
 import { time } from 'console'
-import { Time } from '../Table/Items/Time'
 
 const iconProps = {
   size: 18,
@@ -57,7 +57,7 @@ export const timeSlotTypes: DefaultValueOption[] = [
   {
     label: 'Välj tid',
     value: 'timestamp',
-    icon: CalendarFoldIcon,
+    icon: CalendarClockIcon,
     iconProps
   }
 ]
@@ -98,8 +98,12 @@ export const AssignmentTime = ({ index }: {
   const [end, setEnd] = useYValue(`meta.core/assignment[${index}].data.end`)
   const [start, setStart] = useYValue(`meta.core/assignment[${index}].data.start`)
   const [publishSlot, setPublishSlot] = useYValue<number>(`meta.core/assignment[${index}].data.publish_slot`)
+  const [showTimePick, setShowTimePick] = useState(false)
+
+
 
   console.log('XXX timeSlot', publishSlot)
+  console.log('XXX fullDay', fullDay)
 
   // data: {
   //   end_date: '2024-02-09',
@@ -116,7 +120,7 @@ export const AssignmentTime = ({ index }: {
     {
       name: string,
       timeSlotType: DefaultValueOption,
-      slots: number[],
+      slots: number [],
       median: number
     }[] = [
       {
@@ -210,21 +214,24 @@ export const AssignmentTime = ({ index }: {
   }
 
 
-  return <ComboBox
-    className='w-fit h-7'
-    options={timeSlotTypes}
-    variant={'ghost'}
-    selectedOption={selectedOption}
-    onSelect={handleOnSelect}
+  return (
+
+  // <ComboBox
+  //   className='w-fit h-7'
+  //   options={timeSlotTypes}
+  //   variant={'ghost'}
+  //   selectedOption={selectedOption}
+  //   onSelect={handleOnSelect}
 
 
-  >
-    {selectedOption?.icon
-      ? <div> <selectedOption.icon {...iconProps} className={cn('text-foreground', className)} />
-        {selectedOption?.label}
-      </div>
-      : <Clock10Icon {...iconProps} />
-    }
-  </ComboBox>
-
+  // >
+  //   {selectedOption?.icon
+  //     ? <div><selectedOption.icon {...iconProps} className={cn('text-foreground', className)} /> {selectedOption.label} </div>
+  //     : <CalendarFoldIcon size={18} strokeWidth={1.75} className={ 'text-muted-foreground'} />
+  //   }
+  // </ComboBox>
+    <TimeMenu>
+      <CalendarFoldIcon size={18} strokeWidth={1.75} className={ 'text-muted-foreground'} />
+    </TimeMenu>
+  )
 }
