@@ -2,7 +2,7 @@ import { useCollaboration } from './useCollaboration'
 import { useCallback, useEffect, useState } from 'react'
 import { isNumber, isYArray, isYContainer, isYMap, isYValue, isYXmlText } from '@/lib/isType'
 import type * as Y from 'yjs'
-import { createYStructure, getValueByYPath, stringToYPath, type YParent } from '@/lib/yUtils'
+import { getValueByYPath, stringToYPath, type YParent } from '@/lib/yUtils'
 
 interface useYValueOptions {
   observe?: boolean
@@ -34,16 +34,17 @@ export function useYValue<T>(path: string, options: useYValueOptions = { observe
 
   // Get y value/parent callback function
   const getValueAndParent = useCallback((yRoot: Y.Map<unknown>): [unknown, YParent] => {
-    const vp = getValueByYPath(yRoot, yPath)
+    if (synced) {
+      const vp = getValueByYPath(yRoot, yPath)
 
-    if (synced && vp[0] === undefined && vp[1] === undefined) {
-      // No value exists and caller wants us to fill in empty structure
-      if (createYStructure(yRoot, yPath)) {
-        return getValueByYPath(yRoot, yPath)
+      if (synced && vp[0] === undefined && vp[1] === undefined) {
+        console.warn(`Unable to get or create the requested path in the Yjs document: ${yPath.join(' ')}`)
       }
+
+      return vp
     }
 
-    return vp
+    return [undefined, undefined]
   }, [synced, yPath])
 
 

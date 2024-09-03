@@ -17,16 +17,7 @@ const sportsPayload = Block.create({
   uuid: 'a36ff853-9fb3-5950-8893-64ac699f5481',
   type: 'core/section',
   title: 'Sport',
-  data: {},
   rel: 'section'
-})
-
-const storyPayload = Block.create({
-  uuid: 'a36ff853-9fb3-5950-8893-64ac699f5481',
-  type: 'core/story',
-  title: 'Göteborgsvarvet',
-  data: {},
-  rel: 'story'
 })
 
 describe('useYValue', () => {
@@ -73,43 +64,56 @@ describe('useYValue', () => {
     expect(result.current[0]).toEqual(culturePayload)
   })
 
-  it('appends an object to an array', async () => {
-    const { result } = renderHook(() =>
-      useYValue<Block>('links.core/section[1]'), { wrapper: init.wrapper })
-
-    act(() => result.current[1](sportsPayload))
-    expect(result.current[2]).toHaveLength(2)
-  })
-
-  it('removes an object from an array', async () => {
+  it('appends and removes an object to an array', async () => {
     const { result } = renderHook(() =>
       useYValue<Block | undefined>('links.core/section[1]'), { wrapper: init.wrapper })
 
-    expect(result.current[0]).toBeTruthy()
+    // Append
+    act(() => result.current[1](sportsPayload))
+    expect(result.current[2]).toHaveLength(2)
+
+    // Remove
     act(() => result.current[1](undefined))
-    expect(result.current[0]).toBeFalsy()
-  })
-
-  it('removes parent when last value is removed', async () => {
-    const { result } = renderHook(() =>
-      useYValue<Block | undefined>('links.core/section[0]'), { wrapper: init.wrapper })
-
-    act(() => result.current[1](undefined))
-    expect(result.current[0]).toBeFalsy()
-
-
-    const { result: after } = renderHook(() =>
-      useYValue<Block | undefined>('links.core/section'), { wrapper: init.wrapper })
-
-    expect(after.current[0]).toBeUndefined()
+    expect(result.current[2]).toHaveLength(1)
   })
 
   it('add path to value if non existent', async () => {
     const { result } = renderHook(() =>
       useYValue<Block | undefined>('links.core/story[0]'), { wrapper: init.wrapper })
 
+    const { result: parent } = renderHook(() =>
+      useYValue<Block | undefined>('links.core/story'), { wrapper: init.wrapper })
+
+    // Value is still undefined
     expect(result.current[0]).toBeUndefined()
-    act(() => result.current[1](storyPayload))
-    expect(result.current[0]).toEqual(storyPayload)
+    // But path to parent has been created
+    expect(parent.current[0]).toEqual([])
+  })
+
+  it('modifies existing slugline', async () => {
+    const { result } = renderHook(() =>
+      useYValue<string | undefined>('meta.core/assignment[0].meta.tt/slugline[0].value'), { wrapper: init.wrapper })
+
+    expect(result.current[0]).toBe('lands-tomasson')
+    act(() => result.current[1]('test'))
+    expect(result.current[0]).toEqual('test')
+  })
+
+  it('creates non-existing slugline', async () => {
+    const { result } = renderHook(() =>
+      useYValue<string | undefined>('meta.core/assignment[1].meta.tt/slugline[0].value'), { wrapper: init.wrapper })
+
+    expect(result.current[0]).toBe('')
+    act(() => result.current[1]('test'))
+    expect(result.current[0]).toEqual('test')
+  })
+
+  it('handles __inProgress', async () => {
+    const { result } = renderHook(() =>
+      useYValue<boolean | undefined>('meta.core/assignment[0].__inProgress'), { wrapper: init.wrapper })
+
+    expect(result.current[0]).toBeFalsy()
+    act(() => result.current[1](true))
+    expect(result.current[0]).toBeTruthy()
   })
 })
