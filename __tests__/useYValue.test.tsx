@@ -66,28 +66,30 @@ describe('useYValue', () => {
 
   it('appends and removes an object to an array', async () => {
     const { result } = renderHook(() =>
-      useYValue<Block | undefined>('links.core/section[1]'), { wrapper: init.wrapper })
+      useYValue<Block[] | undefined>('links.core/section'), { wrapper: init.wrapper })
+
+    expect(result.current[0]).toHaveLength(1)
 
     // Append
-    act(() => result.current[1](sportsPayload))
-    expect(result.current[2]).toHaveLength(2)
+    act(() => result.current[1]([...(result.current[0] || []), sportsPayload]))
+    expect(result.current[0]).toHaveLength(2)
 
     // Remove
-    act(() => result.current[1](undefined))
-    expect(result.current[2]).toHaveLength(1)
+    act(() => result.current[1]((result.current[0] || []).slice(0, 1)))
+    expect(result.current[0]).toHaveLength(1)
   })
 
   it('add path to value if non existent', async () => {
     const { result } = renderHook(() =>
-      useYValue<Block | undefined>('links.core/story[0]'), { wrapper: init.wrapper })
+      useYValue<{ __inProgress: boolean } & Block | undefined>('links.core/story[0]'), { wrapper: init.wrapper })
 
     const { result: parent } = renderHook(() =>
       useYValue<Block | undefined>('links.core/story'), { wrapper: init.wrapper })
 
-    // Value is still undefined
-    expect(result.current[0]).toBeUndefined()
-    // But path to parent has been created
-    expect(parent.current[0]).toEqual([])
+    // Value is __inProgress
+    expect(result.current[0]?.__inProgress).toBeTruthy()
+    // And path to parent has been created
+    expect(parent.current[0]).toHaveLength(1)
   })
 
   it('modifies existing slugline', async () => {
