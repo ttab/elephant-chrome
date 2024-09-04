@@ -113,7 +113,6 @@ export function dateToReadableTime(
   locale: string,
   timeZone: string
 ): string | undefined {
-  console.log(locale, is12HourcycleFromLocale(locale))
   return new Intl.DateTimeFormat(locale, {
     hour: '2-digit',
     minute: '2-digit',
