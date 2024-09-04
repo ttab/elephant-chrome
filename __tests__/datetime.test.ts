@@ -60,8 +60,12 @@ describe('datetime', () => {
   })
 
   it('is12HourcycleFromLocale', () => {
-    const result = is12HourcycleFromLocale('en-US')
-    expect(result).toBe(true)
+    expect(is12HourcycleFromLocale('en-US'))
+      .toBe(true)
+    expect(is12HourcycleFromLocale('en-AU'))
+      .toBe(true)
+    expect(is12HourcycleFromLocale('sv-SE'))
+      .toBe(false)
   })
 
   it('currentDateInUTC', () => {
