@@ -18,7 +18,7 @@ import {
 
 import { ImageSearchPlugin } from '../../plugins/ImageSearch'
 
-import { Bold, Italic, Link, Text, Image, NumberList, BulletList, Blockquote, TTVisual } from '@ttab/textbit-plugins'
+import { Bold, Italic, Link, Text, OrderedList, UnorderedList, TTVisual } from '@ttab/textbit-plugins'
 
 import {
   useQuery,
@@ -82,7 +82,7 @@ const Editor = (props: ViewProps): JSX.Element => {
 function EditorWrapper(props: ViewProps & {
   documentId: string
 }): JSX.Element {
-  const plugins = [Text, BulletList, NumberList, Blockquote, Image, Bold, Italic, Link, TTVisual, ImageSearchPlugin]
+  const plugins = [Text, UnorderedList, OrderedList, Bold, Italic, Link, TTVisual, ImageSearchPlugin]
   const {
     provider,
     synced,
