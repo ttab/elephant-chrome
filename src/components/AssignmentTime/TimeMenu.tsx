@@ -21,11 +21,20 @@ import { CalendarFoldIcon, CalendarClockIcon, Clock1Icon, Clock2Icon, Clock3Icon
 
 import { TimeMenuItems } from './TimeMenuItems'
 
-export const TimeMenu = ({ children }: PropsWithChildren): React.JSX.Element => {
+interface TimeMenuProps extends React.PropsWithChildren {
+  handleOnSelect: (value: string) => void
+  className?: string
+}
+
+export const TimeMenu = ({
+  children,
+  handleOnSelect
+}: TimeMenuProps): React.JSX.Element => {
   const [open, setOpen] = useState(false)
 
   const handleOpenChange = (isOpen: boolean): void => {
     // onOpenChange && onOpenChange(isOpen)
+
     setOpen(isOpen)
   }
 
@@ -37,9 +46,11 @@ export const TimeMenu = ({ children }: PropsWithChildren): React.JSX.Element => 
           variant={'outline'}
           className={'w-9 h-9 text-muted-foreground font-sans font-normal whitespace-nowrap p-0'}
         >
-          {children}
+           {children || (label
+              ? <>{label}</>
+              : <>{''}</>)
+            }
         </Button>
-
       </PopoverTrigger>
       <PopoverContent>
         <Command>
@@ -47,15 +58,15 @@ export const TimeMenu = ({ children }: PropsWithChildren): React.JSX.Element => 
           <CommandList>
             <CommandEmpty>Ingenting hittades</CommandEmpty>
             <CommandGroup>
-              <TimeMenuItems />
+              <TimeMenuItems handleOnSelect={handleOnSelect}/>
             </CommandGroup>
             <CommandGroup>
               <CommandItem
                 className='border-t'
-                key={'Heldag'}
-                value={'Heldag'}
+                key={'Tid'}
+                value={'seclectime'}
                 onSelect={() => {
-                  console.log('XXX Full day')
+                  console.log('XXX Välj tid')
                 }}
               >
                 <div className='flex flex-row space-x-2 items-center  pt-2'>
@@ -69,5 +80,4 @@ export const TimeMenu = ({ children }: PropsWithChildren): React.JSX.Element => 
       </PopoverContent>
     </Popover>
   )
-
 }

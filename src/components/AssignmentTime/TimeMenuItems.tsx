@@ -27,7 +27,7 @@ const iconProps = {
 export const timeSlotTypes: DefaultValueOption[] = [
   {
     label: 'Heldag',
-    value: 'fullDay',
+    value: 'fullday',
     icon: CalendarFoldIcon,
     iconProps
   },
@@ -57,15 +57,17 @@ export const timeSlotTypes: DefaultValueOption[] = [
   }
 ]
 
-export const TimeMenuItems = (): JSX.Element[] => {
+interface TimeMenuItemsProps extends React.PropsWithChildren {
+  handleOnSelect: (value: string) => void
+}
+
+export const TimeMenuItems = ({ handleOnSelect }: TimeMenuItemsProps): JSX.Element[] => {
   return (
     timeSlotTypes.map((slot) => (
       <CommandItem
         key={slot.label}
-        value={slot.label}
-        onSelect={() => {
-          console.log('XXX Full day')
-        }}
+        value={slot.value}
+        onSelect={handleOnSelect}
       >
         <div className='flex flex-row space-x-2 items-center'>
           {slot?.icon && <slot.icon {...slot.iconProps} />}

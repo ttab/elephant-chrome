@@ -164,26 +164,26 @@ export const AssignmentTime = ({ index }: {
     return slot ? slot : -1
   }
 
-  const selectedOption = timeSlotTypes.find(type => {
+  const selectedOption = timeSlotTypes.find(option => {
 
-    if (fullDay === 'true' && type.value === 'fullDay') {
-      return type
+    if (fullDay === 'true' && option.value === 'fullDay') {
+      return option
     } else {
       const ts = getTimeSlot(publishSlot as number)
-      if (ts && ts.timeSlotType.value === type.value) {
-        return type
+      if (ts && ts.timeSlotType.value === option.value) {
+        return option
       }
     }
   })
 
   const { className = '', ...iconProps } = selectedOption?.iconProps || {}
 
-  const handleOnSelect = (option: DefaultValueOption) => {
-    console.log('XXX selecxt', option)
-    const { value } = option
+  const handleOnSelect = (value: string) => {
+    console.log('XXX select', value)
+
 
     switch (value) {
-      case 'fullDay':
+      case 'fullday':
         setFullDay(fullDay === 'true' ? 'false' : 'true')
         setPublishSlot(getMedianSlot(timeSlots, value))
         break;
@@ -230,9 +230,14 @@ export const AssignmentTime = ({ index }: {
     //     : <CalendarFoldIcon size={18} strokeWidth={1.75} className={ 'text-muted-foreground'} />
     //   }
     // </ComboBox>
-    <TimeMenu>
+    <TimeMenu
+      handleOnSelect={handleOnSelect}
+      label={selectedOption?.label}
+      className='w-fit text-muted-foreground font-sans font-normal text-ellipsis px-2 h-7'
+
+      >
       {selectedOption?.icon
-        ? <div><selectedOption.icon {...iconProps} className={cn('text-foreground', className)} /> {selectedOption.label} </div>
+        ? <div><selectedOption.icon {...iconProps}  className={cn('text-foreground', className)} /> </div>
         : <CalendarFoldIcon size={18} strokeWidth={1.75} className={'text-muted-foreground'} />
       }
       {/* <CalendarFoldIcon size={18} strokeWidth={1.75} className={ 'text-muted-foreground'} /> */}
