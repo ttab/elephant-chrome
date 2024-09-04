@@ -13,20 +13,55 @@ export function convertToISOStringInUTC(localDate: Date): string {
  * Format a date/time to ISO format but in the local timezone.
  *
  * @param localDate
- * @param locale
  * @param timeZone
  * @returns string
  */
-export function convertToISOStringInTimeZone(localDate: Date, timeZone: string): string {
-  return localDate.toLocaleString('en-US', {
+export function convertToISOStringInTimeZone(date: Date, timeZone: string): string {
+  const getOffset = (date: Date, formatter: Intl.DateTimeFormat): string => {
+    const dateStringWithOffset = formatter.format(date)
+    const offset = dateStringWithOffset.slice(-8, -3)
+
+    if (offset === '24:00') {
+      return 'Z'
+    }
+
+    if (parseInt(offset, 10) > 12) {
+      const correctedOffset = (24 - parseInt(offset, 10))
+        .toString()
+        .padStart(2, '0')
+
+      return `-${correctedOffset}:${offset.slice(-2)}`
+    }
+
+    return `+${offset}`
+  }
+
+  const formatter = new Intl.DateTimeFormat('en-US', {
     year: 'numeric',
     month: '2-digit',
     day: '2-digit',
     hour: '2-digit',
     minute: '2-digit',
     second: '2-digit',
+    hour12: false,
     timeZone
   })
+
+  const parts = formatter.formatToParts(date)
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const dateParts = parts.reduce<any>((acc, part) => {
+    acc[part.type] = part.value
+    return acc
+  }, {})
+
+  // Check if hour is '24' and reset to '00'
+  if (dateParts.hour === '24') {
+    dateParts.hour = '00'
+  }
+
+  const formattedDateTime = `${dateParts.year}-${dateParts.month}-${dateParts.day}T${dateParts.hour}:${dateParts.minute}:${dateParts.second}.000${getOffset(date, formatter)}`
+  return formattedDateTime
 }
 
 /**
@@ -50,18 +85,19 @@ export function dateToReadableDateTime(
 
   if (year === currentYear) {
     return new Intl.DateTimeFormat(locale, {
-      timeZone,
       day: 'numeric',
       month: 'short',
       hour: '2-digit',
-      minute: '2-digit'
+      minute: '2-digit',
+      timeZone
     }).format(date)
   }
 
   return new Intl.DateTimeFormat(locale, {
     timeZone,
     timeStyle: 'short',
-    dateStyle: 'medium'
+    dateStyle: 'medium',
+    hour12: is12HourcycleFromLocale(locale)
   }).format(date)
 }
 
@@ -77,6 +113,7 @@ export function dateToReadableTime(
   locale: string,
   timeZone: string
 ): string | undefined {
+  console.log(locale, is12HourcycleFromLocale(locale))
   return new Intl.DateTimeFormat(locale, {
     hour: '2-digit',
     minute: '2-digit',
@@ -118,7 +155,7 @@ export function is12HourcycleFromLocale(locale: string): boolean {
     const formattedDate = formatter.formatToParts(sampleDate)
 
     return formattedDate.some(part => part.type === 'dayPeriod' &&
-      (part.value === 'AM' || part.value === 'PM'))
+      (part.value.toLowerCase() === 'am' || part.value.toLowerCase() === 'pm'))
   } catch (error) {
     console.error('Error getting hour cycle:', error)
     return false
