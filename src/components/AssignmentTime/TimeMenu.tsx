@@ -67,7 +67,6 @@ export const TimeMenu = ({ children }: PropsWithChildren): React.JSX.Element => 
           </CommandList>
         </Command>
       </PopoverContent>
-
     </Popover>
   )
 

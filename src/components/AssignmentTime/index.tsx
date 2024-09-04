@@ -120,7 +120,7 @@ export const AssignmentTime = ({ index }: {
     {
       name: string,
       timeSlotType: DefaultValueOption,
-      slots: number [],
+      slots: number[],
       median: number
     }[] = [
       {
@@ -216,22 +216,26 @@ export const AssignmentTime = ({ index }: {
 
   return (
 
-  // <ComboBox
-  //   className='w-fit h-7'
-  //   options={timeSlotTypes}
-  //   variant={'ghost'}
-  //   selectedOption={selectedOption}
-  //   onSelect={handleOnSelect}
+    // <ComboBox
+    //   className='w-fit h-7'
+    //   options={timeSlotTypes}
+    //   variant={'ghost'}
+    //   selectedOption={selectedOption}
+    //   onSelect={handleOnSelect}
 
 
-  // >
-  //   {selectedOption?.icon
-  //     ? <div><selectedOption.icon {...iconProps} className={cn('text-foreground', className)} /> {selectedOption.label} </div>
-  //     : <CalendarFoldIcon size={18} strokeWidth={1.75} className={ 'text-muted-foreground'} />
-  //   }
-  // </ComboBox>
+    // >
+    //   {selectedOption?.icon
+    //     ? <div><selectedOption.icon {...iconProps} className={cn('text-foreground', className)} /> {selectedOption.label} </div>
+    //     : <CalendarFoldIcon size={18} strokeWidth={1.75} className={ 'text-muted-foreground'} />
+    //   }
+    // </ComboBox>
     <TimeMenu>
-      <CalendarFoldIcon size={18} strokeWidth={1.75} className={ 'text-muted-foreground'} />
+      {selectedOption?.icon
+        ? <div><selectedOption.icon {...iconProps} className={cn('text-foreground', className)} /> {selectedOption.label} </div>
+        : <CalendarFoldIcon size={18} strokeWidth={1.75} className={'text-muted-foreground'} />
+      }
+      {/* <CalendarFoldIcon size={18} strokeWidth={1.75} className={ 'text-muted-foreground'} /> */}
     </TimeMenu>
   )
 }

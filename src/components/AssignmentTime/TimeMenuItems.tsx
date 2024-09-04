@@ -57,98 +57,22 @@ export const timeSlotTypes: DefaultValueOption[] = [
   }
 ]
 
-export const TimeMenuItems = () => {
-
+export const TimeMenuItems = (): JSX.Element[] => {
   return (
-    {timeSlotTypes.map((slot) => {
-        <CommandItem
-        key={'Heldag'}
-        value={'Heldag'}
+    timeSlotTypes.map((slot) => (
+      <CommandItem
+        key={slot.label}
+        value={slot.label}
         onSelect={() => {
           console.log('XXX Full day')
         }}
       >
         <div className='flex flex-row space-x-2 items-center'>
-          <CalendarFoldIcon size={18} strokeWidth={1.75} className='text-muted-foreground' />
-          <div>Heldag</div>
+          {slot?.icon && <slot.icon {...slot.iconProps} />}
+          <div>{slot.label}</div>
         </div>
       </CommandItem>
-      }
-
+    )
+    )
   )
 }
-
-
-    // [
-    //   <CommandItem
-    //     key={'Heldag'}
-    //     value={'Heldag'}
-    //     onSelect={() => {
-    //       console.log('XXX Full day')
-    //     }}
-    //   >
-    //     <div className='flex flex-row space-x-2 items-center'>
-    //       <CalendarFoldIcon size={18} strokeWidth={1.75} className='text-muted-foreground' />
-    //       <div>Heldag</div>
-    //     </div>
-    //   </CommandItem>,
-    //    <CommandItem
-    //    key={'Morgon'}
-    //    value={'Morgon'}
-    //    onSelect={() => {
-    //      console.log('XXX morning')
-    //    }}
-    //  >
-    //    <div className='flex flex-row space-x-2 items-center'>
-    //      <Clock10Icon size={18} strokeWidth={1.75} className='text-muted-foreground' />
-    //      <div className="grow">
-    //        Morgon
-    //      </div>
-    //    </div>
-    //  </CommandItem>,
-    //   <CommandItem
-    //     key={'Förmiddag'}
-    //     value={'Förmiddag'}
-    //     onSelect={() => {
-    //       console.log('XXX forenon')
-    //     }}
-    //   >
-    //     <div className='flex flex-row space-x-2 items-center'>
-    //       <Clock10Icon size={18} strokeWidth={1.75} className='text-muted-foreground' />
-    //       <div className="grow">
-    //         Förmiddag
-    //       </div>
-    //     </div>
-    //   </CommandItem>,
-    //   <CommandItem
-    //     key={'Eftermiddag'}
-    //     value={'Eftermiddag'}
-    //     onSelect={() => {
-    //       console.log('XXX afternoon')
-    //     }}
-    //   >
-    //     <div className='flex flex-row space-x-2 items-center'>
-    //       <div><Clock10Icon size={18} strokeWidth={1.75} className='text-muted-foreground' /></div>
-    //       <div className="grow">
-    //         Eftermiddag
-    //       </div>
-    //     </div>
-    //   </CommandItem>,
-    //   <CommandItem
-    //     key={'Kväll'}
-    //     value={'Kväll'}
-    //     onSelect={() => {
-    //       console.log('XXX evening')
-    //     }}
-    //   >
-    //     <div className='flex flex-row space-x-2 items-center'>
-    //       <Clock10Icon size={18} strokeWidth={1.75} className='text-muted-foreground' />
-    //       <div className="grow">
-    //         Kväll
-    //       </div>
-    //     </div>
-    //   </CommandItem>
-    // ]
-  // )
-
-// }
