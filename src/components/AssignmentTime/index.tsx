@@ -1,21 +1,13 @@
 
-import { ComboBox } from '../ui'
 import { type DefaultValueOption } from '@/types/index'
 import { CalendarFoldIcon, CalendarClockIcon, Clock1Icon, Clock2Icon, Clock3Icon, Clock4Icon, Clock5Icon, Clock6Icon, Clock7Icon, Clock8Icon, Clock9Icon, Clock10Icon, Clock11Icon, Clock12Icon } from '@ttab/elephant-ui/icons'
 // import { useYObserver } from '@/hooks'
 import { useYValue } from '@/hooks/useYValue'
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { Block } from '@/protos/service'
 import { TimeMenu } from './TimeMenu'
-
-
-
-// import * as Y from 'yjs'
-
-
 import { cn } from '@ttab/elephant-ui/utils'
-import { as } from 'vitest/dist/chunks/reporters.C_zwCd4j.js'
-import { time } from 'console'
+
 
 const iconProps = {
   size: 18,
@@ -26,7 +18,7 @@ const iconProps = {
 export const timeSlotTypes: DefaultValueOption[] = [
   {
     label: 'Heldag',
-    value: 'fullDay',
+    value: 'fullday',
     icon: CalendarFoldIcon,
     iconProps
   },
@@ -53,7 +45,10 @@ export const timeSlotTypes: DefaultValueOption[] = [
     value: 'evening',
     icon: Clock6Icon,
     iconProps
-  },
+  }
+]
+
+export const timePickTypes: DefaultValueOption[] = [
   {
     label: 'Välj tid',
     value: 'timestamp',
@@ -61,7 +56,6 @@ export const timeSlotTypes: DefaultValueOption[] = [
     iconProps
   }
 ]
-
 
 export const AssignmentTime = ({ index }: {
   index: number
@@ -100,8 +94,7 @@ export const AssignmentTime = ({ index }: {
   const [publishSlot, setPublishSlot] = useYValue<number>(`meta.core/assignment[${index}].data.publish_slot`)
   const [showTimePick, setShowTimePick] = useState(false)
 
-
-
+  console.log('XXX end', end)
   console.log('XXX timeSlot', publishSlot)
   console.log('XXX fullDay', fullDay)
 
@@ -148,11 +141,18 @@ export const AssignmentTime = ({ index }: {
         median: 22
       },
       {
-        name: 'fullDay',
+        name: 'fullday',
         timeSlotType: timeSlotTypes[0],
         slots: [],
         median: -1
+      },
+      {
+        name: 'timestamp',
+        timeSlotType: timePickTypes[0],
+        slots: [],
+        median: -1
       }
+
     ]
 
   const getTimeSlot = (timeSlot: number) => {
@@ -164,11 +164,16 @@ export const AssignmentTime = ({ index }: {
     return slot ? slot : -1
   }
 
-  const selectedOption = timeSlotTypes.find(option => {
-
-    if (fullDay === 'true' && option.value === 'fullDay') {
+  timeSlotTypes.concat(timePickTypes)
+  const selectedOption = timeSlotTypes.concat(timePickTypes).find(option => {
+    console.log('XXX option', option)
+    if (fullDay === 'true' && option.value === 'fullday') {
       return option
-    } else {
+    } else if (end && option.value === 'timestamp'){
+      console.log('XXX selectedOption', option)
+      return option
+    }
+    else if (publishSlot && publishSlot > 0) {
       const ts = getTimeSlot(publishSlot as number)
       if (ts && ts.timeSlotType.value === option.value) {
         return option
@@ -178,13 +183,11 @@ export const AssignmentTime = ({ index }: {
 
   const { className = '', ...iconProps } = selectedOption?.iconProps || {}
 
-  const handleOnSelect = (value: string) => {
-    console.log('XXX select', value)
-
-
+  const handleOnSelect = ({value, selectValue}: {value: string, selectValue: string}) => {
+    console.log('XXX handleOnSelect', value)
     switch (value) {
       case 'fullday':
-        setFullDay(fullDay === 'true' ? 'false' : 'true')
+        setFullDay('true')
         setPublishSlot(getMedianSlot(timeSlots, value))
         break;
       case 'morning':
@@ -204,43 +207,33 @@ export const AssignmentTime = ({ index }: {
         setPublishSlot(getMedianSlot(timeSlots, value))
         break;
       case 'timestamp':
+        setFullDay('false')
+        setPublishSlot(-1)
+        const endDateString = `${endDate}T${selectValue}`
+        console.log('XXX endDateString', endDateString)
+        const endDateIsoString = new Date(endDateString).toISOString()
+        console.log('XXX endDateISOString', endDateIsoString)
 
+        setEnd(endDateIsoString)
         break;
       default:
 
         break;
     }
-
   }
 
 
   return (
-
-    // <ComboBox
-    //   className='w-fit h-7'
-    //   options={timeSlotTypes}
-    //   variant={'ghost'}
-    //   selectedOption={selectedOption}
-    //   onSelect={handleOnSelect}
-
-
-    // >
-    //   {selectedOption?.icon
-    //     ? <div><selectedOption.icon {...iconProps} className={cn('text-foreground', className)} /> {selectedOption.label} </div>
-    //     : <CalendarFoldIcon size={18} strokeWidth={1.75} className={ 'text-muted-foreground'} />
-    //   }
-    // </ComboBox>
     <TimeMenu
       handleOnSelect={handleOnSelect}
-      label={selectedOption?.label}
       className='w-fit text-muted-foreground font-sans font-normal text-ellipsis px-2 h-7'
+      selectedOption={selectedOption}
 
-      >
+    >
       {selectedOption?.icon
-        ? <div><selectedOption.icon {...iconProps}  className={cn('text-foreground', className)} /> </div>
+        ? <div><selectedOption.icon {...iconProps} className={cn('text-foreground', className)} />{selectedOption?.label} </div>
         : <CalendarFoldIcon size={18} strokeWidth={1.75} className={'text-muted-foreground'} />
       }
-      {/* <CalendarFoldIcon size={18} strokeWidth={1.75} className={ 'text-muted-foreground'} /> */}
     </TimeMenu>
   )
 }
