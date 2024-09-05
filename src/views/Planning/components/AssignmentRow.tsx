@@ -160,7 +160,7 @@ const AssignmentRowContent = ({ index, setSelectedAssignment }: {
       }
 
       <div className="@3xl/view:hidden">
-        <SluglineButton path={`core/assignment[${index}].meta.tt/slugline[0]`} />
+        <SluglineButton path={`meta.core/assignment[${index}].meta.tt/slugline[0].value`} />
       </div>
 
       {showVerifyDialog &&
