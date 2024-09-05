@@ -1,7 +1,7 @@
 import { z } from 'zod'
 import { BaseSchema } from './base'
 
-const OrganisationSchema = z.object({
+const OrganiserSchema = z.object({
   _source: z.object({
     'document.meta.core_contact_info.data.city': z.array(z.string()),
     'document.meta.core_contact_info.data.country': z.array(z.string()),
@@ -11,5 +11,5 @@ const OrganisationSchema = z.object({
   })
 })
 
-const FullOrganisationSchema = BaseSchema.and(OrganisationSchema)
-export type IndexedOrganisation = z.infer<typeof FullOrganisationSchema>
+const FullOrganiserSchema = BaseSchema.and(OrganiserSchema)
+export type IndexedOrganiser = z.infer<typeof FullOrganiserSchema>

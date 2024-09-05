@@ -20,7 +20,7 @@ import {
   Story,
   Registration,
   Category,
-  Organisation
+  Organiser
 } from '@/components'
 
 const meta: ViewMetadata = {
@@ -115,7 +115,7 @@ const EventViewContent = (props: ViewProps & { documentId: string }): JSX.Elemen
             <p>Datetime TODO</p>
             <Description role='public' />
             <Registration />
-            <Organisation />
+            <Organiser />
           </div>
 
           <div className='flex flex-col space-y-2'>

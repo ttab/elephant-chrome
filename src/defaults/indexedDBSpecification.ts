@@ -13,7 +13,7 @@ export const indexedDBSpecification = {
     'core/section',
     'core/story',
     'core/category',
-    'core/organisation',
+    'core/organiser',
     '__meta'
   ]
 }
