@@ -7,7 +7,7 @@ import type * as Y from 'yjs'
 import * as yMapValueByPath from '@/lib/yMapValueByPath'
 import { AssignmentType } from '@/components/DataItem/AssignmentType'
 import { useYValue } from '@/hooks/useYValue'
-import { Block } from '@/protos/service'
+import { type Block } from '@/protos/service'
 import { Assignees } from './AssignmentAssignees'
 
 export const Assignment = ({ index, setSelectedAssignment, className }: {
@@ -20,14 +20,7 @@ export const Assignment = ({ index, setSelectedAssignment, className }: {
   const inProgress = getInProgress('__inProgress') === true
 
   const [title] = useYValue<string | undefined>(`meta.core/assignment[${index}].title`)
-  const [slugLine] = useYValue<string | undefined>(`meta.core/assignment[${index}].meta.tt/slugline[0].value`, {
-    createOnEmpty: {
-      path: `meta.core/assignment[${index}].meta.tt/slugline`,
-      data: [Block.create({
-        type: 'tt/slugline'
-      })]
-    }
-  })
+  const [slugLine] = useYValue<Block | undefined>(`meta.core/assignment[${index}].meta.tt/slugline[0].value`)
   const [assignmentType] = useYValue<string | undefined>(`meta.core/assignment[${index}].meta.core/assignment-type[0].value`)
 
   return (

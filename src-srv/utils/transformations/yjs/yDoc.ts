@@ -13,6 +13,26 @@ async function yContentToNewsDoc(yContent: Y.XmlText): Promise<Block[] | undefin
   return await slateToNewsDoc(slateElement as TBElement[])
 }
 
+function assertSlugline(yMeta: Y.Map<unknown>, documentType: string): void {
+  // Only perform on planning items and assignments
+  if (!['core/planning-item', 'core/assignment'].includes(documentType)) {
+    return
+  }
+
+  const payload: Block = Block.create({
+    type: 'tt/slugline'
+  })
+
+  const ySlugline = yMeta.get('tt/slugline') as Y.Map<unknown>
+
+  if (!ySlugline) {
+    const yArr = new Y.Array()
+
+    yArr.push([toYMap({ ...payload }, new Y.Map())])
+    yMeta.set('tt/slugline', yArr)
+  }
+}
+
 function assertDescriptions(yMeta: Y.Map<unknown>, documentType: string): void {
   // Only perform on planning items and assignments
   if (!['core/planning-item', 'core/assignment'].includes(documentType)) {
@@ -62,6 +82,8 @@ export function newsDocToYDoc(yDoc: Document | Y.Doc, newsDoc: GetDocumentRespon
     yMap.set('root', toYMap(rest, new Y.Map()))
 
     assertDescriptions(yMap.get('meta') as Y.Map<unknown>, document.type)
+    assertSlugline(yMap.get('meta') as Y.Map<unknown>, document.type)
+
 
     // Assert assignment descriptions
     const yMeta = yMap.get('meta') as Y.Map<unknown>
@@ -70,6 +92,7 @@ export function newsDocToYDoc(yDoc: Document | Y.Doc, newsDoc: GetDocumentRespon
       for (const yAssignment of yAssignments) {
         const assMeta = (yAssignment as Y.Map<unknown>).get('meta') as Y.Map<unknown>
         assertDescriptions(assMeta, 'core/assignment')
+        assertSlugline(assMeta, 'core/assignment')
       }
     }
 
@@ -116,6 +139,11 @@ export async function yDocToNewsDoc(yDoc: Y.Doc): Promise<GetDocumentResponse> {
           if (assMeta.type === 'core/description') {
             return assMeta.data.text !== ''
           }
+
+          if (assMeta.type === 'tt/slugline') {
+            return assMeta.value !== ''
+          }
+
           return true
         })
       }

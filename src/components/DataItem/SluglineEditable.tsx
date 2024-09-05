@@ -4,7 +4,6 @@ import { TextBox } from '../ui'
 import { SluglineButton } from './Slugline'
 import { useYValue } from '@/hooks/useYValue'
 import type * as Y from 'yjs'
-import { Block } from '@/protos/service'
 
 export const SluglineEditable = ({ path }: {
   path: string
@@ -32,14 +31,7 @@ const SluglineInput = ({ path, setActive }: {
   path: string
   setActive: ((value: boolean) => void)
 }): JSX.Element => {
-  const [slugLine] = useYValue<Y.XmlText | undefined>(path, {
-    createOnEmpty: {
-      path: path.replace(/\[0\]\.value$/, ''), // Set property "tt/slugline" on meta to a new Block[] if non existant
-      data: [Block.create({
-        type: 'tt/slugline'
-      })]
-    }
-  })
+  const [slugLine] = useYValue<Y.XmlText | undefined>(path)
 
 
   if (typeof slugLine === 'undefined') {

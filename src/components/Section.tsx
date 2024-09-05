@@ -11,7 +11,7 @@ export const Section = (): JSX.Element => {
       label: _.title
     }
   })
-  const [section, setSection] = useYValue<Block | undefined>('links.core/section')
+  const [section, setSection] = useYValue<Block | undefined>('links.core/section[0]')
 
   const setFocused = useRef<(value: boolean) => void>(null)
   const selectedOption = (allSections || [])?.filter(s => s.value === section?.uuid)
@@ -30,18 +30,14 @@ export const Section = (): JSX.Element => {
           }
         }}
         onSelect={(option) => {
-          let newSection
-          if (section?.title === option.label) {
-            newSection = undefined
-          } else {
-            newSection = Block.create({
+          setSection(section?.title === option.label
+            ? undefined
+            : Block.create({
               type: 'core/section',
               rel: 'section',
               uuid: option.value,
               title: option.label
-            })
-          }
-          setSection(newSection)
+            }))
         }}
       />
     </Awareness>
