@@ -14,7 +14,7 @@ export const Section = (): JSX.Element => {
   const [section, setSection] = useYValue<Block | undefined>('links.core/section[0]')
 
   const setFocused = useRef<(value: boolean) => void>(null)
-  const selectedOption = (allSections || [])?.filter(s => s.value === section?.uuid)
+  const selectedOptions = (allSections || [])?.filter(s => s.value === section?.uuid)
 
   return (
     <Awareness name='PlanSection' ref={setFocused}>
@@ -22,7 +22,7 @@ export const Section = (): JSX.Element => {
         max={1}
         className='w-fit text-muted-foreground font-sans font-normal whitespace-nowrap text-ellipsis px-2 h-7'
         options={allSections}
-        selectedOption={selectedOption}
+        selectedOptions={selectedOptions}
         placeholder={section?.title || 'Lägg till sektion'}
         onOpenChange={(isOpen: boolean) => {
           if (setFocused?.current) {
