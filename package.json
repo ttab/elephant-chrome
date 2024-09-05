@@ -39,7 +39,7 @@
     "@ttab/api-client": "^2.9.1",
     "@ttab/elephant-ui": "^0.2.20",
     "@ttab/textbit": "^0.14.5",
-    "@ttab/textbit-plugins": "^0.3.0",
+    "@ttab/textbit-plugins": "^0.3.1",
     "class-variance-authority": "^0.7.0",
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
