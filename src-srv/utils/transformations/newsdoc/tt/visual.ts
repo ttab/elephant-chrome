@@ -39,7 +39,7 @@ export const transformVisual = (element: Block): TBElement => {
 }
 
 export function revertVisual(element: TBElement): Block {
-  function toString(value: string | number | undefined): string {
+  function toString(value: string | number | boolean | undefined): string {
     return (value ?? '').toString()
   }
 

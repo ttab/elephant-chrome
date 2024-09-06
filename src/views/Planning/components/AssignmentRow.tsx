@@ -133,7 +133,7 @@ const AssignmentRowContent = ({ index, setSelectedAssignment }: {
           {assignmentType === 'text' &&
             <Button
               variant='ghost'
-              className="flex h-8 w-8 p-0 data-[state=open]:bg-muted"
+              className="flex h-8 w-8 p-0 data-[state=open]:bg-muted hover:bg-accent2"
               onClick={<T extends HTMLElement>(event: MouseEvent<T>) => {
                 onOpenArticleEvent(event)
               }}>
