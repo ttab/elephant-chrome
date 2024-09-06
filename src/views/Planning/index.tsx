@@ -20,6 +20,7 @@ import { cva } from 'class-variance-authority'
 import { cn } from '@ttab/elephant-ui/utils'
 import { createStateless, StatelessType } from '@/shared/stateless'
 import { useSession } from 'next-auth/react'
+import { useDocumentStatus } from '@/hooks/useDocumentStatus'
 
 const meta: ViewMetadata = {
   name: 'Planning',
@@ -57,6 +58,7 @@ export const Planning = (props: ViewProps & { document?: Y.Doc }): JSX.Element =
 const PlanningViewContent = (props: ViewProps & { documentId: string }): JSX.Element | undefined => {
   const { provider } = useCollaboration()
   const { data, status } = useSession()
+  const [documentStatus, setDocumentStatus] = useDocumentStatus(props.documentId)
 
   const viewVariants = cva('flex flex-col', {
     variants: {
@@ -86,7 +88,7 @@ const PlanningViewContent = (props: ViewProps & { documentId: string }): JSX.Ele
 
           <ViewHeader.Content>
             <div className='flex w-full h-full items-center space-x-2'>
-              <PlanDocumentStatus documentId={props.documentId} />
+              <PlanDocumentStatus status={documentStatus} setStatus={setDocumentStatus} />
               <PlanStatus />
               <PlanNewsvalue />
             </div>
@@ -105,7 +107,12 @@ const PlanningViewContent = (props: ViewProps & { documentId: string }): JSX.Ele
           <div className='flex flex-col gap-2 pl-0.5'>
             <div className='flex space-x-2 items-start'>
               <PlanTitle autoFocus={props.asCreateDialog} />
-              <SluglineEditable path='meta.tt/slugline[0].value' />
+              <div className='min-w-32'>
+                <SluglineEditable
+                  path='meta.tt/slugline[0].value'
+                  documentStatus={documentStatus?.name}
+                />
+              </div>
             </div>
 
             <PlanDescription role="public" />
