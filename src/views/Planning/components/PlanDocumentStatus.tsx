@@ -23,7 +23,6 @@ export const PlanDocumentStatus = ({ status, setStatus }: {
         variant={'ghost'}
         selectedOption={selectedOption}
         onSelect={(option) => {
-          console.log('setting to ', option.value)
           if (status?.version) {
             void setStatus(option.value)
           }
