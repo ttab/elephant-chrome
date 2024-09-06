@@ -10,7 +10,7 @@ import type * as Y from 'yjs'
 import { Text } from '@ttab/textbit-plugins'
 import { useYValue } from '@/hooks/useYValue'
 
-export const TextBox = ({ icon, placeholder, path, className, singleLine = false, autoFocus = false, onBlur }: {
+export const TextBox = ({ icon, placeholder, path, className, singleLine = false, autoFocus = false, onBlur, onFocus }: {
   path: string
   icon?: React.ReactNode
   placeholder?: string
@@ -18,6 +18,7 @@ export const TextBox = ({ icon, placeholder, path, className, singleLine = false
   singleLine?: boolean
   autoFocus?: boolean
   onBlur?: React.FocusEventHandler<HTMLDivElement>
+  onFocus?: React.FocusEventHandler<HTMLDivElement>
 }): JSX.Element => {
   const { provider, user } = useCollaboration()
   const [content] = useYValue<Y.XmlText>(path, { observe: false })
@@ -30,6 +31,7 @@ export const TextBox = ({ icon, placeholder, path, className, singleLine = false
           debounce={0}
           autoFocus={autoFocus}
           onBlur={onBlur}
+          onFocus={onFocus}
           placeholder={placeholder}
           plugins={[Text({
             singleLine,
@@ -97,7 +99,7 @@ const TextboxEditable = ({ provider, user, icon, content }: {
         : <div>
           <Textbit.Editable
             yjsEditor={yjsEditor}
-            className='p-1 py-1.5 -ms-2 ps-2 rounded-sm outline-none ring-offset-background data-[state="focused"]:ring-1 ring-gray-300 data-[state="focused"]:dark:ring-gray-600'
+            className='p-1 py-1.5 -ms-2 ps-2 rounded-sm outline-none ring-offset-background data-[state="focused"]:ring-1 ring-gray-300 data-[state="focused"]:dark:ring-gray-600 whitespace-nowrap'
           />
         </div>
       }
