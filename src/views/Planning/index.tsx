@@ -42,7 +42,7 @@ const meta: ViewMetadata = {
 }
 
 
-export const Planning = (props: ViewProps & { document?: Y.Doc, mutateOnSave: (title: string) => Promise<void> }): JSX.Element => {
+export const Planning = (props: ViewProps & { document?: Y.Doc, mutateOnSave?: (title: string) => Promise<void> }): JSX.Element => {
   const query = useQuery()
   const documentId = props.id || query.id
 
@@ -58,7 +58,7 @@ export const Planning = (props: ViewProps & { document?: Y.Doc, mutateOnSave: (t
   )
 }
 
-const PlanningViewContent = (props: ViewProps & { documentId: string, mutateOnSave: (title: string) => Promise<void> }): JSX.Element | undefined => {
+const PlanningViewContent = (props: ViewProps & { documentId: string, mutateOnSave?: (title: string) => Promise<void> }): JSX.Element | undefined => {
   const { provider } = useCollaboration()
   const { data, status } = useSession()
 
