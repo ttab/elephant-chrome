@@ -7,21 +7,35 @@ import { type YBlock } from '@/shared/types'
 import { get } from './yMapValueByPath'
 import { group } from '../../src-srv/utils/transformations/lib/group'
 
+export interface TemplatePayload {
+  eventId?: string
+  eventTitle?: string
+  createdDocumentIdRef?: React.MutableRefObject<string | undefined>
+  mutator: (title: string) => Promise<void>
+}
 /**
 * General function to create a new document as Y.Doc from a template
 * @returns [string, Y.Doc]
 */
 export function createDocument(
   template: (
-    id: string) => Document,
-  inProgress?: boolean
+    documentId: string,
+    payload?: TemplatePayload
+  ) => Document,
+  inProgress?: boolean,
+  payload?: TemplatePayload
 ): [string, Y.Doc] {
   const documentId = crypto.randomUUID()
+
+  if (payload?.createdDocumentIdRef) {
+    payload.createdDocumentIdRef.current = documentId
+  }
+
   const yDoc = new Y.Doc()
 
   newsDocToYDoc(yDoc, {
     version: 0n,
-    document: template(documentId)
+    document: template(documentId, payload)
   })
 
   if (inProgress) {

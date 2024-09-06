@@ -16,10 +16,10 @@ export function eventDocumentTemplate(id: string): Document {
       Block.create({
         type: 'core/event',
         data: {
-          public: 'true',
-          end_date: currentDateInUTC(),
-          tentative: 'false',
-          start_date: currentDateInUTC()
+          end: currentDateInUTC(),
+          start: currentDateInUTC(),
+          registration: '',
+          dateGranularity: 'date'
         }
       }),
       Block.create({

@@ -14,9 +14,6 @@ interface SearchPlanningParams {
 }
 // request planning items what has related calendar events
 export const relatedPlanningSearch = async (endpoint: URL, accessToken: string, uuids: string[], params?: SearchPlanningParams): Promise<SearchIndexResponse<Planning>> => {
-  const start = params?.where?.start ? new Date(params.where.start) : new Date()
-  const end = params?.where?.end ? new Date(params.where.end) : new Date()
-
   const query = {
     query: {
       bool: {
@@ -24,16 +21,6 @@ export const relatedPlanningSearch = async (endpoint: URL, accessToken: string, 
           {
             terms: {
               'document.rel.event.uuid': uuids
-            }
-          }
-        ],
-        must: [
-          {
-            range: {
-              'document.meta.core_planning_item.data.start_date': {
-                gte: start.toISOString(),
-                lte: end.toISOString()
-              }
             }
           }
         ]

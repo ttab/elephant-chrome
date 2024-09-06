@@ -82,6 +82,8 @@ export const PlanningList = ({ date }: { date: Date }): JSX.Element => {
     }
   })
 
+  // FIXME: This should be supported by the useRepositoryEvents hook
+  // but isn't working right now. The message goes only to the leader tab
   useRepositoryEvents('core/planning-item', () => {
     void (async () => {
       try {

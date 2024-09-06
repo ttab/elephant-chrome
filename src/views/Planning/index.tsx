@@ -12,7 +12,7 @@ import {
 import { type ViewMetadata, type ViewProps } from '@/types'
 import { Button, ScrollArea, Separator } from '@ttab/elephant-ui'
 import { GanttChartSquare } from '@ttab/elephant-ui/icons'
-import { useCollaboration, useQuery } from '@/hooks'
+import { useCollaboration, useQuery, useYValue } from '@/hooks'
 import { SluglineEditable } from '@/components/DataItem/SluglineEditable'
 import {
   AssignmentTable,
@@ -42,7 +42,7 @@ const meta: ViewMetadata = {
 }
 
 
-export const Planning = (props: ViewProps & { document?: Y.Doc }): JSX.Element => {
+export const Planning = (props: ViewProps & { document?: Y.Doc, mutateOnSave: (title: string) => Promise<void> }): JSX.Element => {
   const query = useQuery()
   const documentId = props.id || query.id
 
@@ -58,7 +58,7 @@ export const Planning = (props: ViewProps & { document?: Y.Doc }): JSX.Element =
   )
 }
 
-const PlanningViewContent = (props: ViewProps & { documentId: string }): JSX.Element | undefined => {
+const PlanningViewContent = (props: ViewProps & { documentId: string, mutateOnSave: (title: string) => Promise<void> }): JSX.Element | undefined => {
   const { provider } = useCollaboration()
   const { data, status } = useSession()
 
@@ -79,6 +79,8 @@ const PlanningViewContent = (props: ViewProps & { documentId: string }): JSX.Ele
       }
     }
   })
+
+  const [title] = useYValue<string | undefined>('root.title')
 
   return (
     <div className={cn(viewVariants({ asCreateDialog: !!props.asCreateDialog, className: props?.className }))}>
@@ -136,7 +138,7 @@ const PlanningViewContent = (props: ViewProps & { documentId: string }): JSX.Ele
           <div>
             <Separator className='ml-0' />
             <div className='flex justify-end px-6 py-4'>
-              <Button onClick={() => {
+              <Button onClick={(): void => {
                 // Get the id, post it, and open it in a view?
                 if (props?.onDialogClose) {
                   props.onDialogClose()
@@ -151,6 +153,14 @@ const PlanningViewContent = (props: ViewProps & { documentId: string }): JSX.Ele
                         accessToken: data.accessToken
                       }
                     }))
+
+                  if (props.mutateOnSave) {
+                    props.mutateOnSave(title || 'Untitled').catch((error: unknown) => {
+                      if (error instanceof Error) {
+                        throw new Error(`Error when mutating Planning list: ${error.message}`)
+                      }
+                    })
+                  }
                 }
               }}>
                 Skapa planering

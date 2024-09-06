@@ -22,6 +22,8 @@ import {
   Category,
   Organiser
 } from '@/components'
+import { PlanningTable } from './components/PlanningTable'
+import { useYValue } from '@/hooks/useYValue'
 
 const meta: ViewMetadata = {
   name: 'Event',
@@ -59,6 +61,8 @@ export const Event = (props: ViewProps & { document?: Y.Doc }): JSX.Element => {
 const EventViewContent = (props: ViewProps & { documentId: string }): JSX.Element | undefined => {
   const { provider } = useCollaboration()
   const { data, status } = useSession()
+
+  const [eventTitle] = useYValue<string | undefined>('root.title')
 
   const viewVariants = cva('flex flex-col', {
     variants: {
@@ -118,14 +122,15 @@ const EventViewContent = (props: ViewProps & { documentId: string }): JSX.Elemen
             <p>Datetime TODO</p>
           </div>
 
-          <div className='flex flex-col space-y-2'>
-            <div className='flex space-x-2'>
+          <div className='flex flex-col space-y-2 w-fit'>
+            <div className='grid grid-cols-2 gap-2 @xs:flex'>
               <Organiser />
               <Section />
               <Category />
               <Story />
             </div>
 
+            <PlanningTable eventId={props.documentId} eventTitle={eventTitle} />
           </div>
 
         </section>
