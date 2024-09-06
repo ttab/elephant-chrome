@@ -8,7 +8,6 @@ import { Block } from '@/protos/service'
 import { TimeMenu } from './TimeMenu'
 import { cn } from '@ttab/elephant-ui/utils'
 
-
 const iconProps = {
   size: 18,
   strokeWidth: 1.75,
@@ -57,6 +56,71 @@ export const timePickTypes: DefaultValueOption[] = [
   }
 ]
 
+export const timeSlots:
+  {
+    name: string,
+    timeSlotType: DefaultValueOption,
+    slots: number[],
+    median: number
+  }[] = [
+    {
+      name: 'morning',
+      timeSlotType: timeSlotTypes[1],
+      slots: [5, 6, 7, 8, 9],
+      median: 7
+    },
+    {
+      name: 'forenoon',
+      timeSlotType: timeSlotTypes[2],
+      slots: [10, 11, 12, 13],
+      median: 11
+    },
+    {
+      name: 'afternoon',
+      timeSlotType: timeSlotTypes[3],
+      slots: [14, 15, 16, 17],
+      median: 15
+    },
+    {
+      name: 'evening',
+      timeSlotType: timeSlotTypes[4],
+      slots: [18, 19, 20, 21, 22, 23, 0, 1, 2, 3, 4],
+      median: 22
+    },
+    {
+      name: 'fullday',
+      timeSlotType: timeSlotTypes[0],
+      slots: [],
+      median: -1
+    },
+    {
+      name: 'timestamp',
+      timeSlotType: timePickTypes[0],
+      slots: [],
+      median: -1
+    }
+  ]
+
+  const getTimeSlot = (timeSlot: number) => {
+    return timeSlots.find(slot => slot.slots.includes(timeSlot))
+  }
+
+  const getMedianSlot = (slots: typeof timeSlots, value: string) => {
+    const slot = slots.find(slot => slot.name === value)?.median
+    return slot ? slot : -1
+  }
+
+  interface AssignmentData {
+    end_date?: string
+    full_day?: string
+    start_date?: string
+    end?: string
+    start?: string
+    public?: string
+    publish?: string
+    publish_slot?: number
+  }
+
 export const AssignmentTime = ({ index }: {
   index: number
 }): JSX.Element => {
@@ -85,97 +149,38 @@ export const AssignmentTime = ({ index }: {
 
   // const [, setTimeData] = useYValue(`meta.core/assignment[${index}].data`)
 
-  const [startDate] = useYValue<String>(`meta.core/planning-item[0].data.start_date`) as unknown as string
-  const [endDate] = useYValue(`meta.core/planning-item[0].data.end_date`) as unknown as string
-
-  const [fullDay, setFullDay] = useYValue(`meta.core/assignment[${index}].data.full_day`)
-  const [end, setEnd] = useYValue(`meta.core/assignment[${index}].data.end`)
-  const [start, setStart] = useYValue(`meta.core/assignment[${index}].data.start`)
-  const [publishSlot, setPublishSlot] = useYValue<number>(`meta.core/assignment[${index}].data.publish_slot`)
-  const [showTimePick, setShowTimePick] = useState(false)
-
-  console.log('XXX end', end)
-  console.log('XXX timeSlot', publishSlot)
-  console.log('XXX fullDay', fullDay)
-
-  // data: {
-  //   end_date: '2024-02-09',
-  //   full_day: 'true',
-  //   start_date: '2024-02-09',
-  //   end: '2024-02-09T22:59:59Z',
-  //   start: '2024-02-08T23:00:00Z',
-  //   public: 'true',
-  //   publish: '2024-02-09T10:30:00Z'
-  // },
+  // const [startDate] = useYValue<String>(`meta.core/planning-item[0].data.start_date`) as unknown as string
+  // const [endDate] = useYValue(`meta.core/planning-item[0].data.end_date`) as unknown as string
 
 
-  const timeSlots:
-    {
-      name: string,
-      timeSlotType: DefaultValueOption,
-      slots: number[],
-      median: number
-    }[] = [
-      {
-        name: 'morning',
-        timeSlotType: timeSlotTypes[1],
-        slots: [5, 6, 7, 8, 9],
-        median: 7
-      },
-      {
-        name: 'forenoon',
-        timeSlotType: timeSlotTypes[2],
-        slots: [10, 11, 12, 13],
-        median: 11
-      },
-      {
-        name: 'afternoon',
-        timeSlotType: timeSlotTypes[3],
-        slots: [14, 15, 16, 17],
-        median: 15
-      },
-      {
-        name: 'evening',
-        timeSlotType: timeSlotTypes[4],
-        slots: [18, 19, 20, 21, 22, 23, 0, 1, 2, 3, 4],
-        median: 22
-      },
-      {
-        name: 'fullday',
-        timeSlotType: timeSlotTypes[0],
-        slots: [],
-        median: -1
-      },
-      {
-        name: 'timestamp',
-        timeSlotType: timePickTypes[0],
-        slots: [],
-        median: -1
-      }
+  // const [fullDay, setFullDay] = useYValue(`meta.core/assignment[${index}].data.full_day`)
+  // const [end, setEnd] = useYValue<String>(`meta.core/assignment[${index}].data.end`)
+  // const [start, setStart] = useYValue(`meta.core/assignment[${index}].data.start`)
+  // const [publishSlot, setPublishSlot] = useYValue<number>(`meta.core/assignment[${index}].data.publish_slot`)
 
-    ]
+  const [assignmentType] = useYValue<string>(`meta.core/assignment[${index}].meta.core/assignment-type[0].value`)
+  const [data, setData] = useYValue<AssignmentData>(`meta.core/assignment[${index}].data`)
+  const { full_day: fullDay, end, publish_slot: publishSlot, end_date: endDate } = data || {}
 
-  const getTimeSlot = (timeSlot: number) => {
-    return timeSlots.find(slot => slot.slots.includes(timeSlot))
-  }
-
-  const getMedianSlot = (slots: typeof timeSlots, value: string) => {
-    const slot = slots.find(slot => slot.name === value)?.median
-    return slot ? slot : -1
-  }
-
+  let selectedLabel = ''
   timeSlotTypes.concat(timePickTypes)
   const selectedOption = timeSlotTypes.concat(timePickTypes).find(option => {
-    console.log('XXX option', option)
     if (fullDay === 'true' && option.value === 'fullday') {
+      selectedLabel = option.label
       return option
     } else if (end && option.value === 'timestamp'){
-      console.log('XXX selectedOption', option)
+
+      const aDate = new Date(end.toString())
+      selectedLabel = aDate.toLocaleString('sv-SE', {
+        hour: '2-digit',
+        minute: '2-digit'
+      })
       return option
     }
     else if (publishSlot && publishSlot > 0) {
       const ts = getTimeSlot(publishSlot as number)
       if (ts && ts.timeSlotType.value === option.value) {
+        selectedLabel = option.label
         return option
       }
     }
@@ -184,44 +189,45 @@ export const AssignmentTime = ({ index }: {
   const { className = '', ...iconProps } = selectedOption?.iconProps || {}
 
   const handleOnSelect = ({value, selectValue}: {value: string, selectValue: string}) => {
-    console.log('XXX handleOnSelect', value)
+    let newData = {...data}
     switch (value) {
       case 'fullday':
-        setFullDay('true')
-        setPublishSlot(getMedianSlot(timeSlots, value))
+        newData.full_day = "true"
+        newData.publish_slot = (getMedianSlot(timeSlots, value))
+        setData(newData)
         break;
       case 'morning':
-        setFullDay('false')
-        setPublishSlot(getMedianSlot(timeSlots, value))
+        newData.full_day = "false"
+        newData.publish_slot = (getMedianSlot(timeSlots, value))
+        setData(newData)
         break;
       case 'forenoon':
-        setFullDay('false')
-        setPublishSlot(getMedianSlot(timeSlots, value))
+        newData.full_day = "false"
+        newData.publish_slot = (getMedianSlot(timeSlots, value))
+        setData(newData)
         break;
       case 'afternoon':
-        setFullDay('false')
-        setPublishSlot(getMedianSlot(timeSlots, value))
+        newData.full_day = "false"
+        newData.publish_slot = (getMedianSlot(timeSlots, value))
+        setData(newData)
         break;
       case 'evening':
-        setFullDay('false')
-        setPublishSlot(getMedianSlot(timeSlots, value))
+        newData.full_day = "false"
+        newData.publish_slot = (getMedianSlot(timeSlots, value))
+        setData(newData)
         break;
       case 'timestamp':
-        setFullDay('false')
-        setPublishSlot(-1)
         const endDateString = `${endDate}T${selectValue}`
-        console.log('XXX endDateString', endDateString)
         const endDateIsoString = new Date(endDateString).toISOString()
-        console.log('XXX endDateISOString', endDateIsoString)
-
-        setEnd(endDateIsoString)
+        newData.end = endDateIsoString
+        delete newData.publish_slot
+        setData(newData)
         break;
       default:
 
         break;
     }
   }
-
 
   return (
     <TimeMenu
@@ -231,7 +237,7 @@ export const AssignmentTime = ({ index }: {
 
     >
       {selectedOption?.icon
-        ? <div><selectedOption.icon {...iconProps} className={cn('text-foreground', className)} />{selectedOption?.label} </div>
+        ? <div><selectedOption.icon {...iconProps} className={cn('text-foreground', className)} />{selectedLabel} </div>
         : <CalendarFoldIcon size={18} strokeWidth={1.75} className={'text-muted-foreground'} />
       }
     </TimeMenu>
