@@ -19,16 +19,31 @@ import {
 } from '@ttab/elephant-ui'
 
 import { timePickTypes } from '.'
-import { DebouncedCommandInput } from '../Commands/Menu/DebouncedCommandInput'
+import { useYValue } from '@/hooks/useYValue'
 
 interface TimeSelectItem extends React.PropsWithChildren {
-  handleOnSelect: ({value, selectValue}: {value: string, selectValue: string}) => void
-  className?: string
+  handleOnSelect: ({ value, selectValue }: { value: string, selectValue: string }) => void
+  className?: string,
+  index: number
 }
-export const TimeSelectItem = ({ handleOnSelect }: TimeSelectItem) => {
+export const TimeSelectItem = ({ handleOnSelect, index }: TimeSelectItem) => {
   const [open, setOpen] = useState(false)
   const inputRef = useRef(null)
-  const [value, setValue] = useState('')
+  const [endTime, setEndTime] = useState('')
+  const [end] = useYValue<String>(`meta.core/assignment[${index}].data.end`)
+  const [endValue, setEndValue] = useState('')
+  console.log('XXX end', end)
+
+  useEffect(() => {
+    if (end) {
+      const aDate = new Date(end.toString())
+      const endValue = aDate.toLocaleString('sv-SE', {
+        hour: '2-digit',
+        minute: '2-digit'
+      })
+      setEndValue(endValue)
+    }
+  }, [end])
 
   const handleOpenChange = (isOpen: boolean): void => {
     // onOpenChange && onOpenChange(isOpen)
@@ -37,9 +52,8 @@ export const TimeSelectItem = ({ handleOnSelect }: TimeSelectItem) => {
   }
   const timePickType = timePickTypes[0]
 
-  const handleInput = (value: string) => {
 
-  }
+
 
   return (
     <CommandItem
@@ -60,21 +74,30 @@ export const TimeSelectItem = ({ handleOnSelect }: TimeSelectItem) => {
 
           <Command>
 
-            <DebouncedCommandInput
+            <CommandInput
               ref={inputRef}
-              value={''}
-              onChange={(value: string | undefined) => {
-                handleOnSelect({value: timePickType.value, selectValue: value ? value : ''})
+              value={endTime || endValue}
+              onValueChange={(value: string | undefined) => {
+                console.log('XX onChange', value)
+                setEndTime(value as string)
+                // handleOnSelect({value: timePickType.value, selectValue: value ? value : ''})
               }}
-              placeholder={'11:00'}
+              placeholder={'hh:mm ex 11:00'}
               className="h-9"
+              onKeyDown={(e) => {
+                if (e.key === 'Escape') {
+                  setOpen(false)
+                }
+                if (e.key === 'Enter') {
+                  console.log('XXX time', endTime)
+                  e.preventDefault()
+                  handleOnSelect({ value: timePickType.value, selectValue: endTime })
+                  setOpen(false)
+                }
+              }}
+
             />
           </Command>
-          {/* <Input
-            placeholder='10:00'
-            onChange={(e) => handleSelect(e.currentTarget.value)}
-            ref={inputRef}
-            /> */}
         </PopoverContent>
       </Popover>
     </CommandItem>

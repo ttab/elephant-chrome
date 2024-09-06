@@ -161,6 +161,8 @@ export const AssignmentTime = ({ index }: {
   const [assignmentType] = useYValue<string>(`meta.core/assignment[${index}].meta.core/assignment-type[0].value`)
   const [data, setData] = useYValue<AssignmentData>(`meta.core/assignment[${index}].data`)
   const { full_day: fullDay, end, publish_slot: publishSlot, end_date: endDate } = data || {}
+  const [ass] = useYValue<AssignmentData>(`meta.core/assignment[${index}]`)
+  console.log('XXX ass', ass)
 
   let selectedLabel = ''
   timeSlotTypes.concat(timePickTypes)
@@ -193,7 +195,7 @@ export const AssignmentTime = ({ index }: {
     switch (value) {
       case 'fullday':
         newData.full_day = "true"
-        newData.publish_slot = (getMedianSlot(timeSlots, value))
+        delete newData.publish_slot
         setData(newData)
         break;
       case 'morning':
@@ -217,6 +219,7 @@ export const AssignmentTime = ({ index }: {
         setData(newData)
         break;
       case 'timestamp':
+        console.log('XXX timestamp', selectValue)
         const endDateString = `${endDate}T${selectValue}`
         const endDateIsoString = new Date(endDateString).toISOString()
         newData.end = endDateIsoString
@@ -234,6 +237,7 @@ export const AssignmentTime = ({ index }: {
       handleOnSelect={handleOnSelect}
       className='w-fit text-muted-foreground font-sans font-normal text-ellipsis px-2 h-7'
       selectedOption={selectedOption}
+      index={index}
 
     >
       {selectedOption?.icon

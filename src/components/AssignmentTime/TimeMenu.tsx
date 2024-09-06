@@ -27,11 +27,13 @@ interface TimeMenuProps extends React.PropsWithChildren {
   handleOnSelect: ({value, selectValue}: {value: string, selectValue: string}) => void
   className?: string
   selectedOption?: DefaultValueOption
+  index: number
 }
 
 export const TimeMenu = ({
   children,
   handleOnSelect,
+  index
 }: TimeMenuProps): React.JSX.Element => {
   const [open, setOpen] = useState(false)
 
@@ -62,7 +64,7 @@ export const TimeMenu = ({
               <TimeMenuItems handleOnSelect={handleOnSelect}/>
             </CommandGroup>
             <CommandGroup>
-              <TimeSelectItem handleOnSelect={handleOnSelect}/>
+              <TimeSelectItem handleOnSelect={handleOnSelect} index={index}/>
             </CommandGroup>
           </CommandList>
         </Command>
