@@ -1,8 +1,12 @@
 import type * as Y from 'yjs'
 import { type ViewMetadata, type ViewProps } from '@/types/index'
 import { AwarenessDocument } from '@/components/AwarenessDocument'
-import { useCollaboration } from '@/hooks/useCollaboration'
-import { useQuery } from '@/hooks/useQuery'
+import {
+  useCollaboration,
+  useQuery,
+  useYValue,
+  useDocumentStatus
+} from '@/hooks'
 import { useSession } from 'next-auth/react'
 import { ViewHeader } from '@/components/View'
 import { createStateless, StatelessType } from '@/shared/stateless'
@@ -23,7 +27,6 @@ import {
   Organiser
 } from '@/components'
 import { PlanningTable } from './components/PlanningTable'
-import { useYValue } from '@/hooks/useYValue'
 
 const meta: ViewMetadata = {
   name: 'Event',
@@ -61,6 +64,7 @@ export const Event = (props: ViewProps & { document?: Y.Doc }): JSX.Element => {
 const EventViewContent = (props: ViewProps & { documentId: string }): JSX.Element | undefined => {
   const { provider } = useCollaboration()
   const { data, status } = useSession()
+  const [documentStatus, setDocumentStatus] = useDocumentStatus(props.documentId)
 
   const [eventTitle] = useYValue<string | undefined>('root.title')
 
@@ -92,7 +96,7 @@ const EventViewContent = (props: ViewProps & { documentId: string }): JSX.Elemen
 
           <ViewHeader.Content>
             <div className='flex w-full h-full items-center space-x-2'>
-              <DocumentStatus documentId={props.documentId} />
+              <DocumentStatus status={documentStatus} setStatus={setDocumentStatus} />
               <VisibilityStatus />
               <Newsvalue />
             </div>

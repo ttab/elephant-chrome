@@ -23,7 +23,8 @@ export function eventDocumentTemplate(id: string): Document {
         }
       }),
       Block.create({
-        type: 'core/newsvalue'
+        type: 'core/newsvalue',
+        value: '3'
       }),
       Block.create({
         type: 'core/description',

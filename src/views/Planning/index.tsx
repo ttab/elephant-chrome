@@ -12,7 +12,12 @@ import {
 import { type ViewMetadata, type ViewProps } from '@/types'
 import { Button, ScrollArea, Separator } from '@ttab/elephant-ui'
 import { GanttChartSquare } from '@ttab/elephant-ui/icons'
-import { useCollaboration, useQuery, useYValue } from '@/hooks'
+import {
+  useCollaboration,
+  useQuery,
+  useYValue,
+  useDocumentStatus
+} from '@/hooks'
 import { SluglineEditable } from '@/components/DataItem/SluglineEditable'
 import {
   AssignmentTable,
@@ -24,7 +29,6 @@ import { cva } from 'class-variance-authority'
 import { cn } from '@ttab/elephant-ui/utils'
 import { createStateless, StatelessType } from '@/shared/stateless'
 import { useSession } from 'next-auth/react'
-import { useDocumentStatus } from '@/hooks/useDocumentStatus'
 
 const meta: ViewMetadata = {
   name: 'Planning',
