@@ -11,7 +11,7 @@ export interface TemplatePayload {
   eventId?: string
   eventTitle?: string
   createdDocumentIdRef?: React.MutableRefObject<string | undefined>
-  mutator: (title: string) => Promise<void>
+  mutator: (id: string, title: string) => Promise<void>
 }
 /**
 * General function to create a new document as Y.Doc from a template

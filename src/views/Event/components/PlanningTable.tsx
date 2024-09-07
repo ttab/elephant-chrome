@@ -17,7 +17,7 @@ export const PlanningTable = ({ eventId, eventTitle }: {
   const createdDocumentIdRef = useRef<string | undefined>()
   const indexUrl = useIndexUrl()
 
-  const { data, mutate } = useSWR(['relatedPlanningItems', status, indexUrl.href], async (): Promise<Array<{ title: string, uuid: string | undefined }> | undefined> => {
+  const { data, mutate } = useSWR([`relatedPlanningItems/${eventId}`, status, indexUrl.href], async (): Promise<Array<{ title: string, uuid: string | undefined }> | undefined> => {
     if (status !== 'authenticated') {
       throw new Error('Not authenticated')
     }
@@ -31,12 +31,8 @@ export const PlanningTable = ({ eventId, eventTitle }: {
   })
 
   // Mutator function to update the planning table once a new planning is created
-  const mutator = async (title: string): Promise<void> => {
-    if (!data) {
-      return
-    }
-
-    const newData = [...data, { title, uuid: createdDocumentIdRef.current }]
+  const mutator = async (id: string, title: string): Promise<void> => {
+    const newData = [...(data || []), { title, uuid: id }]
     await mutate(newData, { optimisticData: newData, revalidate: false })
   }
 

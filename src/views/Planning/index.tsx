@@ -43,7 +43,7 @@ const meta: ViewMetadata = {
 }
 
 
-export const Planning = (props: ViewProps & { document?: Y.Doc, mutateOnSave?: (title: string) => Promise<void> }): JSX.Element => {
+export const Planning = (props: ViewProps & { document?: Y.Doc }): JSX.Element => {
   const query = useQuery()
   const documentId = props.id || query.id
 
@@ -59,7 +59,7 @@ export const Planning = (props: ViewProps & { document?: Y.Doc, mutateOnSave?: (
   )
 }
 
-const PlanningViewContent = (props: ViewProps & { documentId: string, mutateOnSave?: (title: string) => Promise<void> }): JSX.Element | undefined => {
+const PlanningViewContent = (props: ViewProps & { documentId: string }): JSX.Element | undefined => {
   const { provider } = useCollaboration()
   const { data, status } = useSession()
   const [documentStatus, setDocumentStatus] = useDocumentStatus(props.documentId)
@@ -148,7 +148,7 @@ const PlanningViewContent = (props: ViewProps & { documentId: string, mutateOnSa
               <Button onClick={(): void => {
                 // Get the id, post it, and open it in a view?
                 if (props?.onDialogClose) {
-                  props.onDialogClose()
+                  props.onDialogClose(props.documentId, title)
                 }
 
                 if (provider && status === 'authenticated') {
@@ -159,15 +159,8 @@ const PlanningViewContent = (props: ViewProps & { documentId: string, mutateOnSa
                       context: {
                         accessToken: data.accessToken
                       }
-                    }))
-
-                  if (props.mutateOnSave) {
-                    props.mutateOnSave(title || 'Untitled').catch((error: unknown) => {
-                      if (error instanceof Error) {
-                        throw new Error(`Error when mutating Planning list: ${error.message}`)
-                      }
                     })
-                  }
+                  )
                 }
               }}>
                 Skapa planering

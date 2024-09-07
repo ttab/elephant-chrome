@@ -55,11 +55,17 @@ export const CreateDocumentDialog = ({ type, payload, children }: PropsWithChild
           document={document[1]}
           className='p-0 rounded-md'
           asCreateDialog
-          mutateOnSave={payload?.mutator}
-          onDialogClose={(id) => {
+          onDialogClose={(id, title: string = 'Untitled') => {
             setDocument([undefined, undefined])
+
             if (id) {
-              // Open in new view
+              if (payload?.mutator) {
+                payload.mutator(id, title).catch((error: unknown) => {
+                  if (error instanceof Error) {
+                    throw new Error(`Error when mutating Planning list: ${error.message}`)
+                  }
+                })
+              }
             }
           }}
           />
