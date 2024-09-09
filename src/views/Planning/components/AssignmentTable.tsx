@@ -1,23 +1,23 @@
 import { PlusIcon } from '@ttab/elephant-ui/icons'
 import { AssignmentRow } from './AssignmentRow'
 import { appendAssignment } from '@/lib/createYItem'
-import { useCollaboration, useYObserver } from '@/hooks'
+import { useCollaboration, useYValue } from '@/hooks'
 import { Assignment } from './Assignment'
-import { useEffect, useState } from 'react'
-
+import { type Block } from '@/protos/service'
+import { useState } from 'react'
 
 export const AssignmentTable = (): JSX.Element => {
   const { provider } = useCollaboration()
-  const { state } = useYObserver('meta', 'core/assignment')
-  const noOfAssignments = !Array.isArray(state) ? 0 : state.length
+  const [state] = useYValue<Block[]>('meta.core/assignment')
   const [createdAssignment, setCreatedAssignment] = useState<number | undefined>(undefined)
   const [selectedAssignment, setSelectedAssignment] = useState<number | undefined>(undefined)
+  const [planningSlugLine] = useYValue<string | undefined>('meta.tt/slugline[0].value')
 
-  useEffect(() => {
-    // @ts-expect-error FIXME: Remove this line when __inProgress is part of the format
-    const assignmentInProgress = Array.isArray(state) ? state.findIndex(a => a.__inProgress) : -1
-    setCreatedAssignment(assignmentInProgress < 0 ? undefined : assignmentInProgress)
-  }, [setCreatedAssignment, state])
+  const noOfAssignments = !Array.isArray(state) ? 0 : state.length
+  const slugLines = state?.reduce<string[]>((acc, item) => {
+    const slugline = (item.meta as unknown as Record<string, Block[]>)?.['tt/slugline']?.[0]?.value
+    return (slugline) ? [...acc, slugline] : acc
+  }, [])
 
   return (
     <div className='flex flex-col gap-2 pt-4'>
@@ -27,7 +27,11 @@ export const AssignmentTable = (): JSX.Element => {
             evt.preventDefault()
 
             if (provider?.document) {
-              appendAssignment({ document: provider?.document, inProgress: true })
+              appendAssignment({
+                document: provider?.document,
+                inProgress: true,
+                slugLine: (!slugLines?.includes(planningSlugLine || '')) ? planningSlugLine : undefined
+              })
               setCreatedAssignment(noOfAssignments)
             }
           }}
