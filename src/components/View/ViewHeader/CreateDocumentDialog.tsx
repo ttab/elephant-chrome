@@ -14,9 +14,10 @@ import { type TemplatePayload } from '@/lib/createYItem'
 
 export type Template = keyof typeof templates
 
-export const CreateDocumentDialog = ({ type, payload, children }: PropsWithChildren<{
+export const CreateDocumentDialog = ({ type, payload, children, mutator }: PropsWithChildren<{
   type: View
   payload?: TemplatePayload
+  mutator?: (id: string, title: string) => Promise<void>
 }>): JSX.Element | null => {
   const [document, setDocument] = useState<[string | undefined, Y.Doc | undefined]>([undefined, undefined])
 
@@ -50,24 +51,22 @@ export const CreateDocumentDialog = ({ type, payload, children }: PropsWithChild
 
       <DialogContent className='p-0 rounded-md'>
         {document !== null && Document &&
-        <Document
-          id={document[0]}
-          document={document[1]}
-          className='p-0 rounded-md'
-          asCreateDialog
-          onDialogClose={(id, title: string = 'Untitled') => {
-            setDocument([undefined, undefined])
+          <Document
+            id={document[0]}
+            document={document[1]}
+            className='p-0 rounded-md'
+            asCreateDialog
+            onDialogClose={(id, title: string = 'Untitled') => {
+              setDocument([undefined, undefined])
 
-            if (id) {
-              if (payload?.mutator) {
-                payload.mutator(id, title).catch((error: unknown) => {
+              if (id && mutator) {
+                mutator(id, title).catch((error: unknown) => {
                   if (error instanceof Error) {
                     throw new Error(`Error when mutating Planning list: ${error.message}`)
                   }
                 })
               }
-            }
-          }}
+            }}
           />
         }
       </DialogContent>

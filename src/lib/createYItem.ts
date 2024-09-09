@@ -11,7 +11,6 @@ export interface TemplatePayload {
   eventId?: string
   eventTitle?: string
   createdDocumentIdRef?: React.MutableRefObject<string | undefined>
-  mutator: (id: string, title: string) => Promise<void>
 }
 /**
 * General function to create a new document as Y.Doc from a template
@@ -53,7 +52,8 @@ export function createDocument(
 */
 export function appendAssignment({ document, inProgress }: {
   document: Y.Doc
-  inProgress?: boolean }): void {
+  inProgress?: boolean
+}): void {
   // Get meta yMap
   const meta = document.getMap('ele').get('meta') as Y.Map<unknown>
 
