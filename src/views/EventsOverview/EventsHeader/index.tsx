@@ -7,6 +7,8 @@ import {
 import { Filter } from '@/components'
 import { CreateDocumentDialog } from '@/components/View/ViewHeader/CreateDocumentDialog'
 import { EventsCommands } from '../EventsCommands'
+import { Button } from '@ttab/elephant-ui'
+import { PlusIcon } from '@ttab/elephant-ui/icons'
 
 export const Header = ({ tab, startDate, setStartDate, endDate, setEndDate }: {
   tab: string
@@ -16,7 +18,11 @@ export const Header = ({ tab, startDate, setStartDate, endDate, setEndDate }: {
   setEndDate?: Dispatch<SetStateAction<Date>>
 }): JSX.Element => {
   return <>
-    <CreateDocumentDialog />
+    <CreateDocumentDialog type='Event'>
+      <Button size='sm' className='h-8 pr-4'>
+        <PlusIcon size={18} strokeWidth={1.75} /> Ny
+      </Button>
+    </CreateDocumentDialog>
 
     <div className='hidden sm:block'>
       <TabsGrid />

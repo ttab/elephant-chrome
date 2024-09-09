@@ -2,7 +2,7 @@ import { Newsvalues } from '@/defaults'
 import { useYObserver } from '@/hooks'
 import { NewsValueScoreDropDown } from '@/views/Editor/EditorHeader/NewsValueScoreDropDown'
 
-export const PlanNewsvalue = (): JSX.Element => {
+export const Newsvalue = (): JSX.Element => {
   const { get, set, loading } = useYObserver('meta', 'core/newsvalue[0]')
 
   return (

@@ -3,24 +3,24 @@ import { useRegistry, useRepositoryEvents } from '@/hooks'
 import { useSession } from 'next-auth/react'
 import { useIndexedDB } from '../hooks/useIndexedDB'
 import { fetchOrRefresh } from '../lib/fetchOrRefresh'
-import { type IDBOrganisation } from '../types'
-import { type IndexedOrganisation } from '@/lib/index'
+import { type IDBOrganiser } from '../types'
+import { type IndexedOrganiser } from '@/lib/index'
 
-interface CoreOrganisationProviderState {
-  objects: IDBOrganisation[]
+interface CoreOrganiserProviderState {
+  objects: IDBOrganiser[]
 }
 
-export const CoreOrganisationContext = createContext<CoreOrganisationProviderState>({
+export const CoreOrganiserContext = createContext<CoreOrganiserProviderState>({
   objects: []
 })
 
-export const CoreOrganisationProvider = ({ children }: {
+export const CoreOrganiserProvider = ({ children }: {
   children: React.ReactNode
 }): JSX.Element => {
-  const documentType = 'core/organisation'
+  const documentType = 'core/organiser'
   const { server: { indexUrl } } = useRegistry()
   const { data } = useSession()
-  const [objects, setObjects] = useState<IDBOrganisation[]>([])
+  const [objects, setObjects] = useState<IDBOrganiser[]>([])
   const IDB = useIndexedDB()
 
   /*
@@ -31,7 +31,7 @@ export const CoreOrganisationProvider = ({ children }: {
       return
     }
 
-    const cachedObjects = await fetchOrRefresh<IDBOrganisation, IndexedOrganisation>(
+    const cachedObjects = await fetchOrRefresh<IDBOrganiser, IndexedOrganiser>(
       IDB,
       documentType,
       indexUrl,
@@ -41,12 +41,12 @@ export const CoreOrganisationProvider = ({ children }: {
         const { _id: id, _source: _ } = item
         return {
           id,
-          title: _['document.title'],
-          city: _['document.city'],
-          country: _['document.country'],
-          email: _['document.email'],
-          phone: _['document.phone'],
-          streetAddress: _['document.streetAddress']
+          title: _['document.title']?.[0].trim() || '',
+          city: _['document.meta.core_contact_info.data.city']?.[0].trim() || '',
+          country: _['document.meta.core_contact_info.data.country']?.[0].trim() || '',
+          email: _['document.meta.core_contact_info.data.email']?.[0]?.trim() || '',
+          phone: _['document.meta.core_contact_info.data.phone']?.[0]?.trim() || '',
+          streetAddress: _['document.meta.core_contact_info.data.streetAddress']?.[0].trim() || ''
         }
       }
     )
@@ -76,8 +76,8 @@ export const CoreOrganisationProvider = ({ children }: {
   })
 
   return (
-    <CoreOrganisationContext.Provider value={{ objects }}>
+    <CoreOrganiserContext.Provider value={{ objects }}>
       {children}
-    </CoreOrganisationContext.Provider >
+    </CoreOrganiserContext.Provider >
   )
 }

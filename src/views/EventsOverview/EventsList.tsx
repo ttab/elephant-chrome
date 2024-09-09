@@ -77,13 +77,17 @@ export const EventsList = ({ date }: { date: Date }): JSX.Element => {
   return (
     <>
       {data?.ok === true &&
-        <Table data={data?.hits} columns={columns} onRowSelected={(row): void => {
-          if (row) {
-            console.log(`Selected event item ${row._id}`)
-          } else {
-            console.log('Deselected row')
-          }
-        }} />
+        <Table
+          type='Event'
+          columns={columns}
+          onRowSelected={(row): void => {
+            if (row) {
+              console.log(`Selected event item ${row._id}`)
+            } else {
+              console.log('Deselected row')
+            }
+          }}
+        />
       }
     </>
   )

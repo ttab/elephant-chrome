@@ -7,7 +7,7 @@ import { CoreAuthorProvider } from './datastore/contexts/CoreAuthorProvider'
 import { CoreStoryProvider } from './datastore/contexts/CoreStoryProvider'
 import { CoreSectionProvider } from './datastore/contexts/CoreSectionProvider'
 import { CoreCategoryProvider } from './datastore/contexts/CoreCategoryProvider'
-import { CoreOrganisationProvider } from './datastore/contexts/CoreOrganisationProvider'
+import { CoreOrganiserProvider } from './datastore/contexts/CoreOrganiserProvider'
 
 export const App = (): JSX.Element => {
   const { data: session, status } = useSession()
@@ -32,9 +32,9 @@ export const App = (): JSX.Element => {
             <CoreAuthorProvider>
               <CoreStoryProvider>
                 <CoreCategoryProvider>
-                  <CoreOrganisationProvider>
+                  <CoreOrganiserProvider>
                     <AppContent />
-                  </CoreOrganisationProvider>
+                  </CoreOrganiserProvider>
                 </CoreCategoryProvider>
               </CoreStoryProvider>
             </CoreAuthorProvider>

@@ -4,7 +4,7 @@ import { Block } from '@/protos/service'
 import { ComboBox } from '@ttab/elephant-ui'
 import { useRef } from 'react'
 
-export const PlanStory = (): JSX.Element => {
+export const Story = (): JSX.Element => {
   const allStories = useStories().map((_) => {
     return {
       value: _.id,
@@ -15,15 +15,15 @@ export const PlanStory = (): JSX.Element => {
   const [story, setStory] = useYValue<Block | undefined>('links.core/story[0]')
 
   const setFocused = useRef<(value: boolean) => void>(null)
-  const selectedOption = (allStories || []).filter(s => s.value === story?.uuid)
+  const selectedOptions = (allStories || []).filter(s => s.value === story?.uuid)
 
   return (
-    <Awareness name='PlanStory' ref={setFocused}>
+    <Awareness name='Story' ref={setFocused}>
       <ComboBox
         max={1}
         className='w-fit text-muted-foreground font-sans font-normal whitespace-nowrap text-ellipsis px-2 h-7'
         options={allStories}
-        selectedOption={selectedOption}
+        selectedOptions={selectedOptions}
         placeholder={story?.title || 'Lägg till story'}
         onOpenChange={(isOpen: boolean) => {
           if (setFocused?.current) {

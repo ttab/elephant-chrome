@@ -8,7 +8,7 @@ interface Status {
   documentId: string
 }
 
-export const PlanDocumentStatus = ({ status, setStatus }: {
+export const DocumentStatus = ({ status, setStatus }: {
   status?: Status
   setStatus: (newStatusName: string) => Promise<void>
 }): JSX.Element => {
@@ -16,7 +16,7 @@ export const PlanDocumentStatus = ({ status, setStatus }: {
   const selectedOption = DocumentStatuses.find(type => type.value === (status?.name || 'draft'))
 
   return (
-    <Awareness name='PlanDocumentStatus' ref={setFocused}>
+    <Awareness name='DocumentStatus' ref={setFocused}>
       <ComboBox
         className='h-9 w-9 p-0'
         options={DocumentStatuses}

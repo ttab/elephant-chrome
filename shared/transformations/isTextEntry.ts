@@ -13,7 +13,7 @@ export function isTextEntry(key: string, t?: unknown): boolean {
       'value'
     ],
     '*': [
-      'text', 'title'
+      'text', 'title', 'registration'
     ]
   }
 

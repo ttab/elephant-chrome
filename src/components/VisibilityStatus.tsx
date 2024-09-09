@@ -4,7 +4,7 @@ import { VisibilityStatuses } from '@/defaults'
 import { useYObserver } from '@/hooks'
 import { Awareness } from '@/components'
 
-export const PlanStatus = (): JSX.Element => {
+export const VisibilityStatus = (): JSX.Element => {
   const { get, set } = useYObserver('meta', 'core/planning-item[0].data')
 
   const setFocused = useRef<(value: boolean) => void>(null)

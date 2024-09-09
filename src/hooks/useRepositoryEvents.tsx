@@ -1,7 +1,7 @@
 import { useEffect, useContext } from 'react'
-import { RepositoryEventsProviderContext } from '../contexts/RepositoryEventsProvider'
+import { type ElephantRepositoryEvent, RepositoryEventsProviderContext } from '../contexts/RepositoryEventsProvider'
 
-export const useRepositoryEvents = (eventType: string, callback: (data: unknown) => void): void => {
+export const useRepositoryEvents = (eventType: string, callback: (data: ElephantRepositoryEvent) => void): void => {
   const { subscribe, unsubscribe } = useContext(RepositoryEventsProviderContext)
 
   useEffect(() => {

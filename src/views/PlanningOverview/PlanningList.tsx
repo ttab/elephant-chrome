@@ -82,6 +82,8 @@ export const PlanningList = ({ date }: { date: Date }): JSX.Element => {
     }
   })
 
+  // FIXME: This should be supported by the useRepositoryEvents hook
+  // but isn't working right now. The message goes only to the leader tab
   useRepositoryEvents('core/planning-item', () => {
     void (async () => {
       try {
@@ -95,13 +97,17 @@ export const PlanningList = ({ date }: { date: Date }): JSX.Element => {
   return (
     <>
       {data?.ok === true &&
-        <Table data={data?.hits} columns={planningTableColumns({ sections })} onRowSelected={(row): void => {
-          if (row) {
-            console.info(`Selected planning item ${row._id}`)
-          } else {
-            console.info('Deselected row')
-          }
-        }} />
+        <Table
+          type='Planning'
+          columns={planningTableColumns({ sections })}
+          onRowSelected={(row): void => {
+            if (row) {
+              console.info(`Selected planning item ${row._id}`)
+            } else {
+              console.info('Deselected row')
+            }
+          }}
+        />
       }
     </>
   )
