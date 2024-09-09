@@ -127,7 +127,7 @@ const EventViewContent = (props: ViewProps & { documentId: string }): JSX.Elemen
           </div>
 
           <div className='flex flex-col space-y-2 w-fit'>
-            <div className='grid grid-cols-2 gap-2 @xs:flex'>
+            <div className='flex flex-wrap gap-2'>
               <Organiser />
               <Section />
               <Category />
