@@ -800,7 +800,7 @@ export interface DocumentMeta {
      *
      * @generated from protobuf field: int64 currentVersion = 3;
      */
-    currentVersion: bigint;
+    current_version: bigint;
     /**
      * Heads are the last statuses.
      *
