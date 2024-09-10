@@ -1,14 +1,15 @@
 import { TextBox } from '@/components/ui'
-import { useCollaboration, useYObserver } from '@/hooks'
+import { useCollaboration } from '@/hooks'
 import { Button } from '@ttab/elephant-ui'
 import { Clock10Icon, MessageCircleMore } from '@ttab/elephant-ui/icons'
 import { cn } from '@ttab/elephant-ui/utils'
-import type * as Y from 'yjs'
-import * as yMapValueByPath from '@/lib/yMapValueByPath'
+// import type * as Y from 'yjs'
+// import * as yMapValueByPath from '@/lib/yMapValueByPath'
 import { AssignmentType } from '@/components/DataItem/AssignmentType'
 import { useYValue } from '@/hooks/useYValue'
 import { type Block } from '@/protos/service'
 import { Assignees } from './AssignmentAssignees'
+import { deleteByYPath } from '@/lib/yUtils'
 
 export const Assignment = ({ index, setSelectedAssignment, className }: {
   index: number
@@ -16,11 +17,9 @@ export const Assignment = ({ index, setSelectedAssignment, className }: {
   className?: string
 }): JSX.Element => {
   const { provider } = useCollaboration()
-  const { get: getInProgress } = useYObserver('meta', `core/assignment[${index}]`)
-  const inProgress = getInProgress('__inProgress') === true
-
+  const [inProgress] = useYValue<boolean>(`meta.core/assignment[${index}].__inProgress`)
   const [title] = useYValue<string | undefined>(`meta.core/assignment[${index}].title`)
-  const [slugLine] = useYValue<Block | undefined>(`meta.core/assignment[${index}].meta.tt/slugline[0].value`)
+  const [slugLine] = useYValue<Block[] | undefined>(`meta.core/assignment[${index}].meta.tt/slugline[0].value`)
   const [assignmentType] = useYValue<string | undefined>(`meta.core/assignment[${index}].meta.core/assignment-type[0].value`)
 
   return (
@@ -34,12 +33,14 @@ export const Assignment = ({ index, setSelectedAssignment, className }: {
           autoFocus={true}
         />
 
-        <TextBox
-          path={`meta.core/assignment[${index}].meta.tt/slugline[0].value`}
-          placeholder='Lägg till slug'
-          className="text-sm leading-4 px-0 opacity-80"
-          singleLine={true}
-        />
+        {assignmentType === 'text' &&
+          <TextBox
+            path={`meta.core/assignment[${index}].meta.tt/slugline[0].value`}
+            placeholder='Lägg till slug'
+            className="text-sm leading-4 px-0 opacity-80"
+            singleLine={true}
+          />
+        }
 
         <TextBox
           path={`meta.core/assignment[${index}].meta.core/description[0].data.text`}
@@ -72,16 +73,8 @@ export const Assignment = ({ index, setSelectedAssignment, className }: {
                 evt.preventDefault()
                 evt.stopPropagation()
 
-                if (provider?.document) {
-                  const yEle = provider.document.getMap('ele')
-                  const meta = yEle.get('meta') as Y.Map<unknown>
-                  if (meta.has('core/assignment')) {
-                    const assignments = meta.get('core/assignment') as Y.Array<unknown>
-                    assignments.delete(index, 1)
-                  }
-
-                  setSelectedAssignment(undefined)
-                }
+                deleteByYPath(provider?.document.getMap('ele'), `meta.core/assignment[${index}]`)
+                setSelectedAssignment(undefined)
               }}>
               Avbryt
             </Button>
@@ -94,17 +87,29 @@ export const Assignment = ({ index, setSelectedAssignment, className }: {
               evt.preventDefault()
               evt.stopPropagation()
 
-              if (provider?.document && inProgress) {
-                const yEle = provider.document.getMap('ele')
-                const assignment = yMapValueByPath.get(
-                  yEle.get('meta') as Y.Map<unknown>,
-                  `core/assignment[${index}]`
+              if (assignmentType !== 'text') {
+                deleteByYPath(
+                  provider?.document.getMap('ele'),
+                  `meta.core/assignment[${index}].meta.tt/slugline`
                 )
-
-                if (assignment) {
-                  assignment.delete('__inProgress')
-                }
               }
+
+              if (inProgress) {
+                deleteByYPath(
+                  provider?.document.getMap('ele'),
+                  `meta.core/assignment[${index}].__inProgress`
+                )
+              }
+
+              // const yEle = provider.document.getMap('ele')
+              // const assignment = yMapValueByPath.get(
+              //   yEle.get('meta') as Y.Map<unknown>,
+              //   `core/assignment[${ index }]`
+              // )
+
+              // if (assignment) {
+              //   assignment.delete('__inProgress')
+              // }
 
               setSelectedAssignment(undefined)
             }}

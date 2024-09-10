@@ -5,6 +5,7 @@ import { useCollaboration, useYValue } from '@/hooks'
 import { Assignment } from './Assignment'
 import { type Block } from '@/protos/service'
 import { useState } from 'react'
+// import { deleteByYPath } from '@/lib/yUtils'
 
 export const AssignmentTable = (): JSX.Element => {
   const { provider } = useCollaboration()
@@ -18,6 +19,11 @@ export const AssignmentTable = (): JSX.Element => {
     const slugline = (item.meta as unknown as Record<string, Block[]>)?.['tt/slugline']?.[0]?.value
     return (slugline) ? [...acc, slugline] : acc
   }, [])
+
+  // console.log(state)
+  // console.log('NO: ', noOfAssignments)
+
+  // deleteByYPath(provider?.document.getMap('ele'), 'meta.core/assignment[1]')
 
   return (
     <div className='flex flex-col gap-2 pt-4'>

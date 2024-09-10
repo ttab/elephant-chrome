@@ -83,6 +83,39 @@ export function stringToYPath(input: string): YPath {
   return result
 }
 
+
+/**
+ * Delete an element from either a Y.Map or Y.Array specified by exact path
+ *
+ * @param yRoot Y.Map - Root yMap, can be undefined to make it simpler to call without checking the value first (i.e provider.document.getMap('ele'))
+ * @param path string - Path in dot notation from yRoot including the index or property
+ * @returns boolean - true if element was found and removed
+ */
+export function deleteByYPath(yRoot: Y.Map<unknown> | undefined, path: string): boolean {
+  if (!yRoot?.doc) {
+    return false
+  }
+
+  const yPath = stringToYPath(path)
+  if (!yPath.length) {
+    return false
+  }
+
+  const idx = yPath.pop()
+  const [yStructure] = (yPath.length) ? getValueByYPath(yRoot, yPath) : yRoot
+
+  if (isYMap(yStructure) && typeof idx === 'string' && yStructure.has(idx)) {
+    yStructure.delete(idx)
+    return true
+  } else if (isYArray(yStructure) && typeof idx === 'number' && yStructure.length > idx) {
+    yStructure.delete(idx)
+    return true
+  }
+
+  return false
+}
+
+
 /**
  * Transform any value/structure to a Y representation.
  *
