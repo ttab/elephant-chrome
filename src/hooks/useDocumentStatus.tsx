@@ -22,11 +22,13 @@ export const useDocumentStatus = (documentId?: string): [
   const [inProgress] = useYValue<boolean>('root.__inProgress')
 
 
+  const doFetch = documentId && synced && !inProgress && session && repositoryUrl
+
   const { data: documentStatus, mutate, error } = useSWR(
-    documentId && synced ? [`status/${documentId}`] : null,
+    doFetch ? [`status/${documentId}`] : null,
     async () => {
       // Dont try to fetch if document is inProgress
-      if (inProgress || !session || !repositoryUrl || !documentId) return undefined
+      if (!session || !repositoryUrl || !documentId) return undefined
 
       const result = await Repository.metaSearch({ session, documentId, repositoryUrl })
 

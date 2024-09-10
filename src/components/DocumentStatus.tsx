@@ -22,7 +22,9 @@ export const DocumentStatus = ({ status, setStatus }: {
         variant={'ghost'}
         selectedOptions={selectedOptions}
         onSelect={(option) => {
-          void setStatus(option.value)
+          if (status?.version) {
+            void setStatus(option.value)
+          }
         }}
         hideInput
       >
