@@ -1,38 +1,11 @@
+import { type GetMetaResponse } from '@/protos/service'
 import { type Session } from 'next-auth'
-
-interface MetaData {
-  id: string
-  version: string
-  creator: string
-  created: Date
-}
-
-export interface MetaHead {
-  usable?: MetaData
-  approved?: MetaData
-  done?: MetaData
-  withheld?: MetaData
-}
-
-export interface MetaResult {
-  documentId: string
-  meta: {
-    created: Date
-    modified: Date
-    current_version: string
-    heads: MetaHead
-    acl: Array<{
-      uri: string
-      permissions: string[]
-    }>
-  }
-}
 
 export const metaSearch = async ({ session, documentId, repositoryUrl }: {
   session: Session | null
   documentId: string
   repositoryUrl: URL
-}): Promise<MetaResult> => {
+}): Promise<GetMetaResponse | undefined> => {
   try {
     const searchUrl = new URL('/twirp/elephant.repository.Documents/GetMeta', repositoryUrl.href)
 
@@ -45,6 +18,10 @@ export const metaSearch = async ({ session, documentId, repositoryUrl }: {
       },
       body: JSON.stringify({ uuid: documentId })
     })
+
+    if (!response.ok) {
+      return undefined
+    }
 
     const result = await response.json()
     return result

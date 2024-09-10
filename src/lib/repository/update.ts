@@ -1,11 +1,14 @@
 import { type Session } from 'next-auth'
+import { type UpdateResponse } from '@/protos/service'
 
-interface UpdateResult {
-  version: string
-  uuid: string
-}
-
-export const update = async ({ session, status }: { session: Session | null, status: { version: number, name: string, documentId: string } }): Promise<UpdateResult> => {
+export const update = async ({ session, status }: {
+  session: Session | null
+  status: {
+    version: bigint
+    name: string
+    documentId: string
+  }
+}): Promise<UpdateResponse> => {
   const { documentId, version, name } = status
   const response = await fetch(`${process.env.REPOSITORY_URL}/twirp/elephant.repository.Documents/Update`, {
     method: 'POST',

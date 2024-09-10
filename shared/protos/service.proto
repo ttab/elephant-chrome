@@ -385,7 +385,7 @@ message DocumentMeta {
   // affected the document.
   string modified = 2;
   // CurrentVersion is the last written vrsion of the document.
-  int64 currentVersion = 3;
+  int64 current_version = 3;
   // Heads are the last statuses.
   map<string, Status> heads = 4;
   // ACL is an ACL list controlling access to the document.
