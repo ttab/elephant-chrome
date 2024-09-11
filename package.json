@@ -57,7 +57,7 @@
     "slate-react": "^0.109.0",
     "swr": "^2.2.5",
     "vite-express": "^0.19.0",
-    "yjs": "^13.6.18",
+    "yjs": "^13.6.19",
     "zod": "^3.23.8"
   },
   "devDependencies": {
