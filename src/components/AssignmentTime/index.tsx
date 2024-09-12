@@ -101,25 +101,25 @@ export const timeSlots:
     }
   ]
 
-  const getTimeSlot = (timeSlot: number) => {
-    return timeSlots.find(slot => slot.slots.includes(timeSlot))
-  }
+const getTimeSlot = (timeSlot: number) => {
+  return timeSlots.find(slot => slot.slots.includes(timeSlot))
+}
 
-  const getMedianSlot = (slots: typeof timeSlots, value: string) => {
-    const slot = slots.find(slot => slot.name === value)?.median
-    return slot ? slot : -1
-  }
+const getMedianSlot = (slots: typeof timeSlots, value: string) => {
+  const slot = slots.find(slot => slot.name === value)?.median
+  return slot ? slot : -1
+}
 
-  interface AssignmentData {
-    end_date?: string
-    full_day?: string
-    start_date?: string
-    end?: string
-    start?: string
-    public?: string
-    publish?: string
-    publish_slot?: number
-  }
+interface AssignmentData {
+  end_date?: string
+  full_day?: string
+  start_date?: string
+  end?: string
+  start?: string
+  public?: string
+  publish?: string
+  publish_slot?: number
+}
 
 export const AssignmentTime = ({ index }: {
   index: number
@@ -170,7 +170,7 @@ export const AssignmentTime = ({ index }: {
     if (fullDay === 'true' && option.value === 'fullday') {
       selectedLabel = option.label
       return option
-    } else if (end && option.value === 'timestamp'){
+    } else if (end && option.value === 'timestamp') {
 
       const aDate = new Date(end.toString())
       selectedLabel = aDate.toLocaleString('sv-SE', {
@@ -190,41 +190,53 @@ export const AssignmentTime = ({ index }: {
 
   const { className = '', ...iconProps } = selectedOption?.iconProps || {}
 
-  const handleOnSelect = ({value, selectValue}: {value: string, selectValue: string}) => {
-    let newData = {...data}
+  const handleOnSelect = ({ value, selectValue }: { value: string, selectValue: string }) => {
     switch (value) {
       case 'fullday':
-        newData.full_day = "true"
-        delete newData.publish_slot
-        setData(newData)
+        setData( Block.create({
+          data: {
+            end_date: data?.end_date,
+            full_day: 'true',
+            start_date: data?.start_date,
+            end: data?.end,
+            start: data?.start,
+            public: data?.public,
+            publish: data?.publish,
+          }
+        }).data)
         break;
       case 'morning':
-        newData.full_day = "false"
-        newData.publish_slot = (getMedianSlot(timeSlots, value))
-        setData(newData)
-        break;
       case 'forenoon':
-        newData.full_day = "false"
-        newData.publish_slot = (getMedianSlot(timeSlots, value))
-        setData(newData)
-        break;
       case 'afternoon':
-        newData.full_day = "false"
-        newData.publish_slot = (getMedianSlot(timeSlots, value))
-        setData(newData)
-        break;
       case 'evening':
-        newData.full_day = "false"
-        newData.publish_slot = (getMedianSlot(timeSlots, value))
-        setData(newData)
+        setData(Block.create({
+          data: {
+            end_date: data?.end_date,
+            full_day: 'false',
+            start_date: data?.start_date,
+            end: data?.end,
+            start: data?.start,
+            public: data?.public,
+            publish: data?.publish,
+            publish_slot: (getMedianSlot(timeSlots, value)) + ''
+          }
+        }).data)
         break;
+
       case 'timestamp':
-        console.log('XXX timestamp', selectValue)
         const endDateString = `${endDate}T${selectValue}`
         const endDateIsoString = new Date(endDateString).toISOString()
-        newData.end = endDateIsoString
-        delete newData.publish_slot
-        setData(newData)
+        setData(Block.create({
+          data: {
+            end_date: data?.end_date,
+            full_day: 'false',
+            start_date: data?.start_date,
+            end: endDateIsoString,
+            start: data?.start,
+            public: data?.public,
+            publish: data?.publish,
+          }
+        }).data)
         break;
       default:
 
