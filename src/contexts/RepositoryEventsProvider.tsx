@@ -4,7 +4,7 @@ import { useSession } from 'next-auth/react'
 import { fetchEventSource } from '@microsoft/fetch-event-source'
 import { useIndexedDB } from '../datastore/hooks/useIndexedDB'
 
-interface ElephantRepositoryEvent {
+export interface ElephantRepositoryEvent {
   event: string
   id: string
   language: string
@@ -38,7 +38,7 @@ export const RepositoryEventsProvider = ({ children }: {
 }): JSX.Element => {
   const { server: { repositoryEventsUrl } } = useRegistry()
   const { data } = useSession()
-  const isLeaderRef = useRef<boolean>(false)
+  const isLeaderRef = useRef<boolean>(true)
   const subscribers = useRef<Record<string, Array<(data: ElephantRepositoryEvent) => void>>>({})
   const IDB = useIndexedDB()
   const [listeningForSSE, setListeningForSSE] = useState<boolean>(false)

@@ -8,30 +8,6 @@ import {
   TextbitElement
 } from '@ttab/textbit'
 
-// TODO: Could this be changed in textbit so we dont have to translate?
-const translateList = {
-  'heading-1': 'h1',
-  'heading-2': 'h2',
-  preamble: 'preamble',
-  vignette: 'dateline'
-}
-
-
-const invertedTranslateList = {
-  h1: 'heading-1',
-  h2: 'heading-2',
-  preamble: 'preamble',
-  dateline: 'vignette'
-}
-
-
-const replace = (type: unknown, translateList: Record<string, string>): string => {
-  if (typeof type !== 'string') {
-    return ''
-  }
-
-  return translateList[type] || ''
-}
 
 const createDomDocument = async (): Promise<Document> => {
   if (typeof window === 'undefined') {
@@ -39,7 +15,6 @@ const createDomDocument = async (): Promise<Document> => {
     const dom = new JSDOM()
     return dom.window.document
   }
-
 
   return window.document
 }
@@ -98,8 +73,7 @@ export function transformText(element: Block): TBElement {
   const { id, data, role } = element
   const root = parse(data?.text || '')
   const nodes = root.childNodes as HTMLElement[]
-  // TODO: Align properties.role to textbit? Use role instead of type?
-  const properties = role ? { properties: { type: replace(role, translateList) } } : {}
+  const properties = role ? { properties: { role } } : {}
 
   return {
     id: id || crypto.randomUUID(), // Must have id, if id is missing positioning in drag'n drop does not work
@@ -128,12 +102,10 @@ export function transformText(element: Block): TBElement {
 export async function revertText(element: TBElement): Promise<Block> {
   const { id, children } = element
 
-  const role = replace(element.properties?.type, invertedTranslateList)
-
   return Block.create({
     id,
     type: 'core/text',
-    role,
+    role: typeof element?.properties?.role === 'string' ? element.properties.role : '',
     data: {
       text: (await Promise.all(children.map(async (child: TBElement | Text) => {
         if (TextbitElement.isInline(child)) {

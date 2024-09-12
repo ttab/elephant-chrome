@@ -1,17 +1,17 @@
 import { useState, useRef, useCallback } from 'react'
 import { Awareness } from '@/components'
 import { TextBox } from '../ui'
-import { SluglineButton } from './Slugline'
 import { useYValue } from '@/hooks/useYValue'
 import type * as Y from 'yjs'
-import { Block } from '@/protos/service'
+import { SluglineButton } from './Slugline'
 
-export const SluglineEditable = ({ path }: {
+export const SluglineEditable = ({ path, documentStatus }: {
   path: string
+  documentStatus?: string
 }): JSX.Element => {
   const [active, setActive] = useState(false)
   const setFocused = useRef<(value: boolean) => void>(null)
-
+  const [slugLine] = useYValue<Y.XmlText | undefined>(path)
   const setAwareness = useCallback((active: boolean) => {
     if (setFocused?.current) {
       setFocused.current(active)
@@ -19,43 +19,33 @@ export const SluglineEditable = ({ path }: {
     }
   }, [setActive, setFocused])
 
-  return (
-    <Awareness name={`PlanSlugline-${path}`} ref={setFocused}>
-      {active
-        ? <SluglineInput path={path} setActive={setAwareness} />
-        : <div className="pt-1.5"><SluglineButton path={path} setActive={setAwareness} /></div>}
-    </Awareness>
-  )
-}
-
-const SluglineInput = ({ path, setActive }: {
-  path: string
-  setActive: ((value: boolean) => void)
-}): JSX.Element => {
-  const [slugLine] = useYValue<Y.XmlText | undefined>(path, {
-    createOnEmpty: {
-      path: path.replace(/\[0\]\.value$/, ''), // Set property "tt/slugline" on meta to a new Block[] if non existant
-      data: [Block.create({
-        type: 'tt/slugline'
-      })]
-    }
-  })
-
-
   if (typeof slugLine === 'undefined') {
     return <></>
   }
 
-  return <TextBox
-    path={path}
-    placeholder='Lägg till slugg'
-    autoFocus={true}
-    singleLine={true}
-    onBlur={() => {
-      if (setActive) {
-        setActive(false)
+  return (
+    <Awareness name={`PlanSlugline-${path}`} ref={setFocused}>
+      {documentStatus !== 'usable'
+        ? <div className={!active ? 'relative h-6 mt-1.5 ring-1 ring-gray-300 rounded transition-colors hover:bg-gray-100 hover:cursor-pointer' : 'mt-0.5'}>
+          <div className={!active ? 'absolute -top-1 w-full' : ''}>
+            <TextBox
+              path={path}
+              placeholder='Lägg till slugg'
+              singleLine={true}
+              onBlur={() => {
+                setAwareness(false)
+              }}
+              onFocus={() => {
+                setAwareness(true)
+              }}
+              className='pl-2 h-6 font-normal text-sm whitespace-nowrap'
+            />
+          </div>
+        </div>
+        : <div>
+          <SluglineButton path={path} setActive={setAwareness} />
+        </div>
       }
-    }}
-    className="h-7 w-44 p-1.5 font-normal text-sm whitespace-nowrap"
-  />
+    </Awareness>
+  )
 }

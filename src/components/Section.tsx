@@ -4,17 +4,17 @@ import { useSections, useYValue } from '@/hooks'
 import { Block } from '@/protos/service'
 import { useRef } from 'react'
 
-export const PlanSection = (): JSX.Element => {
+export const Section = (): JSX.Element => {
   const allSections = useSections().map((_) => {
     return {
       value: _.id,
       label: _.title
     }
   })
-  const [section, setSection] = useYValue<Block | undefined>('links.core/section')
+  const [section, setSection] = useYValue<Block | undefined>('links.core/section[0]')
 
   const setFocused = useRef<(value: boolean) => void>(null)
-  const selectedOption = (allSections || [])?.filter(s => s.value === section?.uuid)
+  const selectedOptions = (allSections || [])?.filter(s => s.value === section?.uuid)
 
   return (
     <Awareness name='PlanSection' ref={setFocused}>
@@ -22,7 +22,7 @@ export const PlanSection = (): JSX.Element => {
         max={1}
         className='w-fit text-muted-foreground font-sans font-normal whitespace-nowrap text-ellipsis px-2 h-7'
         options={allSections}
-        selectedOption={selectedOption}
+        selectedOptions={selectedOptions}
         placeholder={section?.title || 'Lägg till sektion'}
         onOpenChange={(isOpen: boolean) => {
           if (setFocused?.current) {
@@ -30,18 +30,14 @@ export const PlanSection = (): JSX.Element => {
           }
         }}
         onSelect={(option) => {
-          let newSection
-          if (section?.title === option.label) {
-            newSection = undefined
-          } else {
-            newSection = Block.create({
+          setSection(section?.title === option.label
+            ? undefined
+            : Block.create({
               type: 'core/section',
               rel: 'section',
               uuid: option.value,
               title: option.label
-            })
-          }
-          setSection(newSection)
+            }))
         }}
       />
     </Awareness>

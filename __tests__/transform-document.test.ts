@@ -3,7 +3,7 @@ import * as Y from 'yjs'
 
 import { planning } from './data/planning-newsdoc'
 import { article } from './data/article-newsdoc'
-import { type GetDocumentResponse } from '@/protos/service'
+import { Block, type GetDocumentResponse } from '@/protos/service'
 
 /*
   * Array order is not guaranteed.
@@ -41,8 +41,26 @@ describe('Transform full planning newsdoc document to internal YDoc representati
 
   it('handles reverting the planning document', async () => {
     const { document, version } = await yDocToNewsDoc(yDoc)
+
+    if (!document || !planning.document) {
+      throw new Error('no document')
+    }
+
+    const augmentedPlanning: GetDocumentResponse = {
+      ...planning,
+      document: {
+        ...planning.document,
+        meta: [
+          ...(planning.document?.meta || []),
+          Block.create({
+            type: 'tt/slugline'
+          })
+        ]
+      }
+    }
+
     expect(version).toBe(planning.version)
-    expect(sortDocument(document)).toEqual(sortDocument(planning.document))
+    expect(sortDocument(document)).toEqual(sortDocument(augmentedPlanning.document))
   })
 })
 
@@ -68,8 +86,60 @@ describe('Transform full article newsdoc document to internal YDoc representatio
   })
 })
 
-describe('Description handling - planning', () => {
-  describe('When empty', () => {
+describe('Description and slugline handling - planning', () => {
+  describe('slugline', () => {
+    const yDoc = new Y.Doc()
+    newsDocToYDoc(yDoc, planning)
+
+    it('adds slugline to planning and assignment', async () => {
+      const sluglineBefore = planning.document?.meta.find((meta) => meta.type === 'tt/slugline')
+      expect(sluglineBefore).toBeUndefined()
+
+      const ele = yDoc.getMap('ele')
+      const meta = ele.get('meta') as Y.Map<unknown>
+
+      const createdSlugline = (meta.get('tt/slugline') as Y.Map<unknown>).toJSON() as Block[]
+
+      // A slugline is created on the planning document with newsDocToYDoc
+      expect(createdSlugline).toEqual([Block.create({ type: 'tt/slugline' })])
+      expect(createdSlugline).toHaveLength(1)
+      expect(createdSlugline[0].value).toBe('')
+
+      const assignments = (meta.get('core/assignment') as Y.Map<unknown>).toJSON()
+      // One slugline each
+      expect(assignments[0].meta['tt/slugline']).toHaveLength(1)
+      expect(assignments[1].meta['tt/slugline']).toHaveLength(1)
+
+      // First assignment, existing slugline, existing value
+      expect(assignments[0].meta['tt/slugline'][0].value).toBe('lands-tomasson')
+
+      // Second assignment, created, empty string
+      expect(assignments[1].meta['tt/slugline'][0].value).toBe('')
+    })
+
+    it('removes empty sluglines from assignments when reverting', async () => {
+      // Revert to newsDoc
+      const { document } = await yDocToNewsDoc(yDoc)
+
+      // Created slugline on planning is kept
+      const planningSlugline = document?.meta.filter((meta) => meta.type === 'tt/slugline')
+      expect(planningSlugline).toHaveLength(1)
+      expect(planningSlugline?.[0].value).toBe('')
+
+      const revertedAssignments = document?.meta.filter((meta) => meta.type === 'core/assignment')
+
+      // First assignment slugline is kept
+      const firstRevertedAssignment = revertedAssignments?.[0].meta.filter(meta => meta.type === 'tt/slugline')
+      expect(firstRevertedAssignment).toHaveLength(1)
+      expect(firstRevertedAssignment?.[0].value).toBe('lands-tomasson')
+
+      // Second assignment slugline is removed
+      const secondRevertedAssignment = revertedAssignments?.[1].meta.filter(meta => meta.type === 'tt/slugline')
+      expect(secondRevertedAssignment).toHaveLength(0)
+    })
+  })
+
+  describe('Descriptions when empty', () => {
     const yDoc = new Y.Doc()
     newsDocToYDoc(yDoc, planning)
 
@@ -82,46 +152,53 @@ describe('Description handling - planning', () => {
       expect(descriptions.length).toBe(2)
       expect(descriptions.map((d) => d.get('role'))).toEqual(['public', 'internal'])
     })
-    it('removes them when reverting', async () => {
+
+    it('removes descriptions when reverting', async () => {
       const { document, version } = await yDocToNewsDoc(yDoc)
       if (!document || !planning.document) {
         throw new Error('no document')
       }
 
+      const augmentedPlanning: GetDocumentResponse = {
+        ...planning,
+        document: {
+          ...planning.document,
+          meta: [
+            ...(planning.document?.meta || []),
+            Block.create({
+              type: 'tt/slugline'
+            })
+          ]
+        }
+      }
+
+
       expect(version).toBe(planning.version)
       expect(document.meta.filter((meta) => meta.type === 'core/description').length).toBe(0)
-      expect(sortDocument(document)).toEqual(sortDocument(planning.document))
+      expect(sortDocument(document)).toEqual(sortDocument(augmentedPlanning.document))
     })
   })
 
-  describe('When one exists', () => {
+  describe('Description one exists', () => {
     const yDoc = new Y.Doc()
     if (!planning?.document) {
       throw new Error('no document')
     }
+
     const augmentedPlanning: GetDocumentResponse = {
       ...planning,
       document: {
         ...planning.document,
         meta: [
           ...(planning.document?.meta || []),
-          {
-            id: '',
-            uuid: '',
-            uri: '',
-            url: '',
+          Block.create({
             type: 'core/description',
-            title: '',
             data: { text: 'hojhoj' },
-            rel: '',
-            role: 'internal',
-            name: '',
-            value: '',
-            contentType: '',
-            links: [],
-            content: [],
-            meta: []
-          }
+            role: 'internal'
+          }),
+          Block.create({
+            type: 'tt/slugline'
+          })
         ]
       }
     }

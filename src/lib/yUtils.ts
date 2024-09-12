@@ -3,6 +3,7 @@ import { isNumber, isRecord, isYArray, isYMap } from './isType'
 import { isTextEntry } from '@/shared/transformations/isTextEntry'
 import type { TBElement } from '@ttab/textbit'
 import { slateNodesToInsertDelta } from '@slate-yjs/core'
+import { Block } from '@/protos/service'
 
 export type YParent = Y.Array<unknown> | Y.Map<unknown> | undefined
 export type YPath = Array<string | number>
@@ -14,6 +15,7 @@ export type YPath = Array<string | number>
  */
 export function getValueByYPath<T>(root: Y.Map<unknown>, path: YPath): [T | undefined, YParent] {
   const lastIndex = path.length - 1
+
   let parent: unknown = root
 
   for (let i = 0; i < path.length; i++) {
@@ -21,15 +23,34 @@ export function getValueByYPath<T>(root: Y.Map<unknown>, path: YPath): [T | unde
     let current: unknown
 
     if (isYArray(parent) && isNumber(key)) {
+      // try to get next path value by key
       current = parent.get(key)
+
+      // if next path value is undefined, create next path value
+      if (current === undefined) {
+        const inProgressBlock = {
+          __inProgress: true,
+          ...Block.create({ type: path[i - 1] as string })
+        }
+
+        parent.insert(key, [toYStructure(inProgressBlock)])
+        current = parent.get(key)
+      }
     } else if (isYMap(parent) && !isNumber(key)) {
-      current = parent?.get(key)
+      current = parent.get(key)
+      if (current === undefined) {
+        // Set as new array if next path value is a number, else ignore
+        if (isNumber(path[i + 1])) {
+          parent.set(key, new Y.Array())
+          current = parent.get(key)
+        }
+      }
     }
 
+    // We're done, we've reached the end of the path
     if (i === lastIndex) {
       return [current as T, parent as YParent]
     }
-
     parent = current
   }
 
@@ -60,49 +81,6 @@ export function stringToYPath(input: string): YPath {
   }
 
   return result
-}
-
-/**
- * Creates a new Y.* structure unto the given path in an existing Y document
- *
- * Path must either point to a Y.Array or a Y.Map property.
- *
- * @param root Y.Map - The root Y.Map of the path
- * @param path YPath | string - Path to set structure
- * @param structure unknown - Value or structure to convert
- * @returns boolean True on success, otherwise false
- */
-export function createYStructure(root: Y.Map<unknown>, path: string | YPath, structure: unknown): boolean {
-  const yPath = Array.isArray(path) ? path : stringToYPath(path)
-  if (!yPath.length) {
-    // Empty path
-    console.warn('Path given to createYStructure() is empty:', path)
-    return false
-  }
-
-  const [yValue, yParent] = getValueByYPath(root, yPath)
-  if (!yValue && !yParent) {
-    // Non existing path
-    console.warn('Path given to createYStructure() is non existing:', path)
-    return false
-  }
-
-  const yStructure = toYStructure(structure)
-
-  if (isYArray(yValue)) {
-    // Push given structure onto this existing array
-    yValue.push([yStructure])
-    return true
-  }
-
-  if (isYMap(yParent) && yPath.length >= 2) {
-    // Set given structure to the property named by the last part of the path
-    yParent.set(yPath.slice(-1).toString(), yStructure)
-    return true
-  }
-
-  console.warn('Path given to createYStructure() could not be handled')
-  return false
 }
 
 /**

@@ -1,8 +1,7 @@
-import { useYObserver } from '@/hooks/useYObserver'
 import { PlusIcon } from '@ttab/elephant-ui/icons'
 import { AssignmentRow } from './AssignmentRow'
 import { appendAssignment } from '@/lib/createYItem'
-import { useCollaboration } from '@/hooks'
+import { useCollaboration, useYObserver } from '@/hooks'
 import { Assignment } from './Assignment'
 import { useEffect, useState } from 'react'
 

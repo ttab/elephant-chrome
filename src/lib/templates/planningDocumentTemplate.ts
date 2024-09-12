@@ -1,16 +1,26 @@
 import { Document, Block } from '@/protos/service'
 import { currentDateInUTC } from '../datetime'
+import { type TemplatePayload } from '../createYItem'
 
 /**
  * Create a template structure for a planning document
  *
  * @returns Document
  */
-export function planningDocumentTemplate(id: string): Document {
+export function planningDocumentTemplate(documentId: string, payload?: TemplatePayload): Document {
+  const event = payload?.eventId
+    ? [Block.create({
+        uuid: payload?.eventId,
+        type: 'core/event',
+        title: payload?.eventTitle || 'Untitled',
+        rel: 'event'
+      })]
+    : []
+
   return Document.create({
-    uuid: id,
+    uuid: documentId,
     type: 'core/planning-item',
-    uri: `core://newscoverage/${id}`,
+    uri: `core://newscoverage/${documentId}`,
     language: 'sv-se',
     meta: [
       Block.create({
@@ -23,7 +33,8 @@ export function planningDocumentTemplate(id: string): Document {
         }
       }),
       Block.create({
-        type: 'core/newsvalue'
+        type: 'core/newsvalue',
+        value: '3'
       }),
       Block.create({
         type: 'tt/slugline'
@@ -38,6 +49,7 @@ export function planningDocumentTemplate(id: string): Document {
         data: { text: '' },
         role: 'internal'
       })
-    ]
+    ],
+    links: [...event]
   })
 }

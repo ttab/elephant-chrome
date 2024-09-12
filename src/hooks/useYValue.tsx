@@ -2,14 +2,10 @@ import { useCollaboration } from './useCollaboration'
 import { useCallback, useEffect, useState } from 'react'
 import { isNumber, isYArray, isYContainer, isYMap, isYValue, isYXmlText } from '@/lib/isType'
 import type * as Y from 'yjs'
-import { createYStructure, getValueByYPath, stringToYPath, type YParent } from '@/lib/yUtils'
+import { getValueByYPath, stringToYPath, type YParent } from '@/lib/yUtils'
 
 interface useYValueOptions {
   observe?: boolean
-  createOnEmpty?: {
-    path: string
-    data: unknown
-  }
 }
 
 /**
@@ -20,10 +16,6 @@ interface useYValueOptions {
  *
  * Specifying option observe=false will return raw value and not setup an observer. This is
  * especially useful when you want to retrieve a raw Y.XmlText to hand over to Textbit.
- *
- * Specifying option createOnEmpty creates the structure if no value was found. Path must always
- * end with a property name in a Y.Map or a Y.Array in which case the new
- * structure is pushed to the array.
  *
  * @param path string
  *
@@ -42,18 +34,18 @@ export function useYValue<T>(path: string, options: useYValueOptions = { observe
 
   // Get y value/parent callback function
   const getValueAndParent = useCallback((yRoot: Y.Map<unknown>): [unknown, YParent] => {
-    const vp = getValueByYPath(yRoot, yPath)
+    if (synced) {
+      const vp = getValueByYPath(yRoot, yPath)
 
-    if (synced && vp[0] === undefined && options.createOnEmpty) {
-      // No value exists and caller wants us to fill in empty structure
-      const { path, data } = options.createOnEmpty
-      if (createYStructure(yRoot, path, data)) {
-        return getValueByYPath(yRoot, yPath)
+      if (synced && vp[0] === undefined && vp[1] === undefined) {
+        console.warn(`Unable to get or create the requested path in the Yjs document: ${yPath.join(' ')}`)
       }
+
+      return vp
     }
 
-    return vp
-  }, [synced, yPath, options?.createOnEmpty])
+    return [undefined, undefined]
+  }, [synced, yPath])
 
 
   // Initialization callback function
