@@ -7,17 +7,16 @@ import { type MouseEvent, useMemo, useState, useCallback } from 'react'
 import { SluglineButton } from '@/components/DataItem/Slugline'
 import { useYValue } from '@/hooks/useYValue'
 import { useLink } from '@/hooks/useLink'
-import { useKeydownGlobal } from '@/hooks/useKeydownGlobal'
 import { Prompt } from './Prompt'
 import { appendArticle } from '@/lib/createYItem'
 import { useCollaboration } from '@/hooks/useCollaboration'
-import type * as Y from 'yjs'
 import { Button } from '@ttab/elephant-ui'
 import { type Block } from '@/protos/service'
+import { deleteByYPath } from '@/lib/yUtils'
 
-export const AssignmentRow = ({ index, setSelectedAssignment }: {
+export const AssignmentRow = ({ index, onSelect }: {
   index: number
-  setSelectedAssignment: React.Dispatch<React.SetStateAction<number | undefined>>
+  onSelect: () => void
 }): JSX.Element => {
   const assPath = `meta.core/assignment[${index}]`
   const [inProgress] = useYValue(`${assPath}.__inProgress`)
@@ -30,19 +29,19 @@ export const AssignmentRow = ({ index, setSelectedAssignment }: {
     <div onClick={(ev) => {
       ev.preventDefault()
       ev.stopPropagation()
-      setSelectedAssignment(index)
+      onSelect()
     }}>
       <AssignmentRowContent
         index={index}
-        setSelectedAssignment={setSelectedAssignment}
+        onSelect={onSelect}
       />
     </div>
   )
 }
 
-const AssignmentRowContent = ({ index, setSelectedAssignment }: {
+const AssignmentRowContent = ({ index, onSelect }: {
   index: number
-  setSelectedAssignment: React.Dispatch<React.SetStateAction<number | undefined>>
+  onSelect: () => void
 }): JSX.Element => {
   const { provider } = useCollaboration()
   const openArticle = useLink('Editor')
@@ -57,12 +56,6 @@ const AssignmentRowContent = ({ index, setSelectedAssignment }: {
 
   const [showVerifyDialog, setShowVerifyDialog] = useState<boolean>(false)
   const [showCreateDialog, setShowCreateDialog] = useState<boolean>(false)
-
-  useKeydownGlobal((evt) => {
-    if (evt.key === 'Escape') {
-      setSelectedAssignment(undefined)
-    }
-  })
 
   const assTime = useMemo(() => {
     return publishTime ? new Date(publishTime) : undefined
@@ -88,7 +81,7 @@ const AssignmentRowContent = ({ index, setSelectedAssignment }: {
       item: <T extends HTMLElement>(event: MouseEvent<T>) => {
         event.preventDefault()
         event.stopPropagation()
-        setSelectedAssignment(index)
+        onSelect()
       }
     },
     {
@@ -171,22 +164,17 @@ const AssignmentRowContent = ({ index, setSelectedAssignment }: {
           primaryLabel='Ta bort'
           onPrimary={() => {
             setShowVerifyDialog(false)
-            if (!provider?.document) {
-              return
-            }
-            const yEle = provider.document.getMap('ele')
-            const meta = yEle.get('meta') as Y.Map<unknown>
-            if (meta.has('core/assignment')) {
-              const assignments = meta.get('core/assignment') as Y.Array<unknown>
-              assignments.delete(index, 1)
-            }
-            setSelectedAssignment(undefined)
+            deleteByYPath(
+              provider?.document.getMap('ele'),
+              `meta.core/assignment[${index}]`
+            )
           }}
           onSecondary={() => {
             setShowVerifyDialog(false)
           }}
         />
       }
+
       {showCreateDialog &&
         <Prompt
           title="Skapa artikel?"

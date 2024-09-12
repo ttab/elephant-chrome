@@ -1,26 +1,38 @@
 import { TextBox } from '@/components/ui'
-import { useCollaboration } from '@/hooks'
 import { Button } from '@ttab/elephant-ui'
 import { Clock10Icon, MessageCircleMore } from '@ttab/elephant-ui/icons'
 import { cn } from '@ttab/elephant-ui/utils'
-// import type * as Y from 'yjs'
-// import * as yMapValueByPath from '@/lib/yMapValueByPath'
 import { AssignmentType } from '@/components/DataItem/AssignmentType'
 import { useYValue } from '@/hooks/useYValue'
-import { type Block } from '@/protos/service'
 import { Assignees } from './AssignmentAssignees'
-import { deleteByYPath } from '@/lib/yUtils'
+import { useKeydownGlobal } from '@/hooks/useKeydownGlobal'
+import { type Block } from '@/protos/service'
 
-export const Assignment = ({ index, setSelectedAssignment, className }: {
+export const Assignment = ({ index, onAbort, onClose, className }: {
   index: number
-  setSelectedAssignment: React.Dispatch<React.SetStateAction<number | undefined>>
+  onClose: () => void
+  onAbort?: () => void
   className?: string
 }): JSX.Element => {
-  const { provider } = useCollaboration()
+  const [assignment] = useYValue<boolean>(`meta.core/assignment[${index}]`)
   const [inProgress] = useYValue<boolean>(`meta.core/assignment[${index}].__inProgress`)
   const [title] = useYValue<string | undefined>(`meta.core/assignment[${index}].title`)
   const [slugLine] = useYValue<Block[] | undefined>(`meta.core/assignment[${index}].meta.tt/slugline[0].value`)
   const [assignmentType] = useYValue<string | undefined>(`meta.core/assignment[${index}].meta.core/assignment-type[0].value`)
+
+  useKeydownGlobal((evt) => {
+    if (evt.key === 'Escape') {
+      if (onAbort) {
+        onAbort()
+      } else {
+        onClose()
+      }
+    }
+  })
+
+  if (!assignment) {
+    return <></>
+  }
 
   return (
     <div className={cn('border rounded-md shadow-xl', className)}>
@@ -66,15 +78,13 @@ export const Assignment = ({ index, setSelectedAssignment, className }: {
         </div>
 
         <div className='flex items-center justify-end gap-4'>
-          {inProgress &&
+          {inProgress && !!onAbort &&
             <Button
               variant="ghost"
               onClick={(evt) => {
                 evt.preventDefault()
                 evt.stopPropagation()
-
-                deleteByYPath(provider?.document.getMap('ele'), `meta.core/assignment[${index}]`)
-                setSelectedAssignment(undefined)
+                onAbort()
               }}>
               Avbryt
             </Button>
@@ -86,32 +96,7 @@ export const Assignment = ({ index, setSelectedAssignment, className }: {
             onClick={(evt) => {
               evt.preventDefault()
               evt.stopPropagation()
-
-              if (assignmentType !== 'text') {
-                deleteByYPath(
-                  provider?.document.getMap('ele'),
-                  `meta.core/assignment[${index}].meta.tt/slugline`
-                )
-              }
-
-              if (inProgress) {
-                deleteByYPath(
-                  provider?.document.getMap('ele'),
-                  `meta.core/assignment[${index}].__inProgress`
-                )
-              }
-
-              // const yEle = provider.document.getMap('ele')
-              // const assignment = yMapValueByPath.get(
-              //   yEle.get('meta') as Y.Map<unknown>,
-              //   `core/assignment[${ index }]`
-              // )
-
-              // if (assignment) {
-              //   assignment.delete('__inProgress')
-              // }
-
-              setSelectedAssignment(undefined)
+              onClose()
             }}
           >
             {inProgress ? 'Lägg till' : 'Stäng'}

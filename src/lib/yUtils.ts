@@ -1,9 +1,9 @@
 import * as Y from 'yjs'
-import { isNumber, isRecord, isYArray, isYMap } from './isType'
+import { isNumber, isRecord, isYArray, isYContainer, isYMap, isYXmlText } from './isType'
 import { isTextEntry } from '@/shared/transformations/isTextEntry'
 import type { TBElement } from '@ttab/textbit'
 import { slateNodesToInsertDelta } from '@slate-yjs/core'
-import { Block } from '@/protos/service'
+// import { Block } from '@/protos/service'
 
 export type YParent = Y.Array<unknown> | Y.Map<unknown> | undefined
 export type YPath = Array<string | number>
@@ -13,50 +13,167 @@ export type YPath = Array<string | number>
  *
  * Returns an array with two elements. First the value and then the parent map or array.
  */
-export function getValueByYPath<T>(root: Y.Map<unknown>, path: YPath): [T | undefined, YParent] {
-  const lastIndex = path.length - 1
+// export function getValueByYPath<T>(root: Y.Map<unknown>, path: YPath): [T | undefined, YParent] {
+//   const lastIndex = path.length - 1
 
-  let parent: unknown = root
+//   let parent: unknown = root
+
+//   for (let i = 0; i < path.length; i++) {
+//     const key = path[i]
+//     let current: unknown
+
+//     if (isYArray(parent) && isNumber(key)) {
+//       // try to get next path value by key
+//       current = parent.get(key)
+
+//       // if next path value is undefined, create next path value
+//       if (current === undefined) {
+//         const inProgressBlock = {
+//           __inProgress: true,
+//           ...Block.create({ type: path[i - 1] as string })
+//         }
+
+//         parent.insert(key, [toYStructure(inProgressBlock)])
+//         current = parent.get(key)
+//       }
+//     } else if (isYMap(parent) && !isNumber(key)) {
+//       current = parent.get(key)
+//       if (current === undefined) {
+//         // Set as new array if next path value is a number, else ignore
+//         if (isNumber(path[i + 1])) {
+//           parent.set(key, new Y.Array())
+//           current = parent.get(key)
+//         }
+//       }
+//     }
+
+//     // We're done, we've reached the end of the path
+//     if (i === lastIndex) {
+//       return [current as T, parent as YParent]
+//     }
+//     parent = current
+//   }
+
+//   return [undefined, undefined]
+// }
+
+
+/**
+ * Returns an array with two elements: the value and the parent map or array.
+ *
+ * @param yRoot Y.Map - Root yMap, can be undefined to make it simpler to call without checking the value first (i.e provider.document.getMap('ele'))
+ * @param path string - Path in dot notation from yRoot including the index or property
+ */
+export function getValueByYPath<T>(yRoot: Y.Map<unknown> | undefined, path: YPath | string, raw: boolean = false): [T | undefined, YParent] {
+  if (!yRoot?.doc) {
+    return [undefined, undefined]
+  }
+
+  const yPath = Array.isArray(path) ? path : stringToYPath(path)
+  if (!yPath.length) {
+    return [undefined, undefined]
+  }
+
+  const lastIndex = path.length - 1
+  let parent: YParent = yRoot
 
   for (let i = 0; i < path.length; i++) {
     const key = path[i]
     let current: unknown
 
     if (isYArray(parent) && isNumber(key)) {
-      // try to get next path value by key
       current = parent.get(key)
-
-      // if next path value is undefined, create next path value
-      if (current === undefined) {
-        const inProgressBlock = {
-          __inProgress: true,
-          ...Block.create({ type: path[i - 1] as string })
-        }
-
-        parent.insert(key, [toYStructure(inProgressBlock)])
-        current = parent.get(key)
-      }
     } else if (isYMap(parent) && !isNumber(key)) {
       current = parent.get(key)
-      if (current === undefined) {
-        // Set as new array if next path value is a number, else ignore
-        if (isNumber(path[i + 1])) {
-          parent.set(key, new Y.Array())
-          current = parent.get(key)
-        }
-      }
     }
 
-    // We're done, we've reached the end of the path
-    if (i === lastIndex) {
-      return [current as T, parent as YParent]
+    if (current == null) {
+      // Abort if nullish
+      break
     }
-    parent = current
+
+    if (i === lastIndex) {
+      // We're done, we've reached the endpoint of the path
+      return [
+        (!raw && (isYContainer(current) || isYXmlText(current))) ? current.toJSON() as T : current as T,
+        parent
+      ]
+    }
+
+    parent = current as YParent
   }
 
   return [undefined, undefined]
 }
 
+/**
+ * Set a value at the specified path
+ *
+ * @param yRoot Y.Map - Root yMap, can be undefined to make it simpler to call without checking the value first (i.e provider.document.getMap('ele'))
+ * @param path string - Path in dot notation from yRoot including the index or property
+ * @param value unknown
+ */
+export function setValueByYPath(yRoot: Y.Map<unknown> | undefined, path: YPath | string, value: unknown): boolean {
+  if (!yRoot?.doc) {
+    return false
+  }
+
+  const yPath = Array.isArray(path) ? path : stringToYPath(path)
+  if (!yPath.length) {
+    return false
+  }
+
+  const key = yPath.pop()
+  const [yStructure] = (yPath.length) ? getValueByYPath(yRoot, yPath, true) : yRoot
+
+  if (isYMap(yStructure) && typeof key === 'string' && yStructure.has(key)) {
+    yStructure.set(key, value)
+    return true
+  } else if (isYArray(yStructure) && typeof key === 'number') {
+    if (key == null || key >= yStructure.length) {
+      yStructure.push([value])
+    } else {
+      yStructure.doc?.transact(() => {
+        yStructure.delete(key)
+        yStructure.insert(key, [value])
+      })
+    }
+    return true
+  }
+
+  return false
+}
+
+/**
+ * Delete an element from either a Y.Map or Y.Array specified by exact path
+ *
+ * @param yRoot Y.Map - Root yMap, can be undefined to make it simpler to call without checking the value first (i.e provider.document.getMap('ele'))
+ * @param path string - Path in dot notation from yRoot including the index or property
+ * @returns boolean - true if element was found and removed
+ */
+export function deleteByYPath(yRoot: Y.Map<unknown> | undefined, path: YPath | string): boolean {
+  if (!yRoot?.doc) {
+    return false
+  }
+
+  const yPath = Array.isArray(path) ? path : stringToYPath(path)
+  if (!yPath.length) {
+    return false
+  }
+
+  const idx = yPath.pop()
+  const [yStructure] = (yPath.length) ? getValueByYPath(yRoot, yPath, true) : yRoot
+
+  if (isYMap(yStructure) && typeof idx === 'string' && yStructure.has(idx)) {
+    yStructure.delete(idx)
+    return true
+  } else if (isYArray(yStructure) && typeof idx === 'number' && yStructure.length > idx) {
+    yStructure.delete(idx)
+    return true
+  }
+
+  return false
+}
 
 /**
  * Converts a string path to the same array path format used by yjs maintaing
@@ -82,39 +199,6 @@ export function stringToYPath(input: string): YPath {
 
   return result
 }
-
-
-/**
- * Delete an element from either a Y.Map or Y.Array specified by exact path
- *
- * @param yRoot Y.Map - Root yMap, can be undefined to make it simpler to call without checking the value first (i.e provider.document.getMap('ele'))
- * @param path string - Path in dot notation from yRoot including the index or property
- * @returns boolean - true if element was found and removed
- */
-export function deleteByYPath(yRoot: Y.Map<unknown> | undefined, path: string): boolean {
-  if (!yRoot?.doc) {
-    return false
-  }
-
-  const yPath = stringToYPath(path)
-  if (!yPath.length) {
-    return false
-  }
-
-  const idx = yPath.pop()
-  const [yStructure] = (yPath.length) ? getValueByYPath(yRoot, yPath) : yRoot
-
-  if (isYMap(yStructure) && typeof idx === 'string' && yStructure.has(idx)) {
-    yStructure.delete(idx)
-    return true
-  } else if (isYArray(yStructure) && typeof idx === 'number' && yStructure.length > idx) {
-    yStructure.delete(idx)
-    return true
-  }
-
-  return false
-}
-
 
 /**
  * Transform any value/structure to a Y representation.

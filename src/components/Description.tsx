@@ -1,27 +1,16 @@
 import { Building, Text } from '@ttab/elephant-ui/icons'
 import { TextBox } from '@/components/ui'
-import { useYObserver } from '@/hooks'
 import { type Block } from '@/protos/service'
+import { useYValue } from '@/hooks/useYValue'
 
-function findIndex(stateDescriptions: Block[], role: 'internal' | 'public'): number {
-  // If no descriptions, assign indices based on role
-  if (!stateDescriptions?.length) {
-    return role === 'internal' ? 1 : 0
-  }
-
-  // Else find index
-  const foundIndex = stateDescriptions.findIndex((description) => description.role === role)
-  return foundIndex === -1 ? stateDescriptions.length : foundIndex
-}
 
 export const Description = ({ role }: {
   role: 'internal' | 'public'
 }): JSX.Element => {
-  const { state: stateDescriptions = [] } = useYObserver('meta', 'core/description')
+  const [stateDescriptions] = useYValue<Block[]>('meta.core/description')
 
   const index = findIndex(stateDescriptions, role)
-
-  const path = `meta.core/description[${index === -1 ? stateDescriptions.length : index}].data.text`
+  const path = `meta.core/description[${index}].data.text`
 
   return (
     <div className='flex w-full -ml-1' >
@@ -36,4 +25,15 @@ export const Description = ({ role }: {
       />
     </div>
   )
+}
+
+function findIndex(stateDescriptions: Block[] | undefined, role: 'internal' | 'public'): number {
+  // If no descriptions, assign indices based on role
+  if (!stateDescriptions?.length) {
+    return role === 'internal' ? 1 : 0
+  }
+
+  // Else find index
+  const foundIndex = stateDescriptions.findIndex((description) => description.role === role)
+  return foundIndex === -1 ? stateDescriptions.length : foundIndex
 }
