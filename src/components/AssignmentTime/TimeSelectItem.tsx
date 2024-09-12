@@ -20,6 +20,7 @@ import {
 
 import { timePickTypes } from '.'
 import { useYValue } from '@/hooks/useYValue'
+import { AssignmentData } from '.'
 
 interface TimeSelectItem extends React.PropsWithChildren {
   handleOnSelect: ({ value, selectValue }: { value: string, selectValue: string }) => void
@@ -30,20 +31,21 @@ export const TimeSelectItem = ({ handleOnSelect, index }: TimeSelectItem) => {
   const [open, setOpen] = useState(false)
   const inputRef = useRef(null)
   const [endTime, setEndTime] = useState('')
-  const [end] = useYValue<String>(`meta.core/assignment[${index}].data.end`)
+  // const [end] = useYValue<String>(`meta.core/assignment[${index}].data.end`)
   const [endValue, setEndValue] = useState('')
-  console.log('XXX end', end)
-
+  const [data, setData] = useYValue<AssignmentData>(`meta.core/assignment[${index}].data`)
+  // console.log('XXX end', end)
+  console.log('XXX data', data)
   useEffect(() => {
-    if (end) {
-      const aDate = new Date(end.toString())
+    if (data?.end) {
+      const aDate = new Date(data.end.toString())
       const endValue = aDate.toLocaleString('sv-SE', {
         hour: '2-digit',
         minute: '2-digit'
       })
-      setEndValue(endValue)
+      setEndTime(endValue)
     }
-  }, [end])
+  }, [data?.end])
 
   const handleOpenChange = (isOpen: boolean): void => {
     // onOpenChange && onOpenChange(isOpen)
@@ -76,7 +78,7 @@ export const TimeSelectItem = ({ handleOnSelect, index }: TimeSelectItem) => {
 
             <CommandInput
               ref={inputRef}
-              value={endTime || endValue}
+              value={endTime}
               onValueChange={(value: string | undefined) => {
                 console.log('XX onChange', value)
                 setEndTime(value as string)

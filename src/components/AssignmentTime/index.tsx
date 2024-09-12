@@ -60,49 +60,45 @@ export const timeSlots:
   {
     name: string,
     timeSlotType: DefaultValueOption,
-    slots: number[],
-    median: number
+    slots?: string[],
+    median?: string
   }[] = [
     {
       name: 'morning',
       timeSlotType: timeSlotTypes[1],
-      slots: [5, 6, 7, 8, 9],
-      median: 7
+      slots: ['5', '6', '7', '8', '9'],
+      median: '7'
     },
     {
       name: 'forenoon',
       timeSlotType: timeSlotTypes[2],
-      slots: [10, 11, 12, 13],
-      median: 11
+      slots: ['10', '11', '12', '13'],
+      median: '11'
     },
     {
       name: 'afternoon',
       timeSlotType: timeSlotTypes[3],
-      slots: [14, 15, 16, 17],
-      median: 15
+      slots: ['14', '15', '16', '17'],
+      median: '15'
     },
     {
       name: 'evening',
       timeSlotType: timeSlotTypes[4],
-      slots: [18, 19, 20, 21, 22, 23, 0, 1, 2, 3, 4],
-      median: 22
+      slots: ['18', '19', '20', '21', '22', '23', '0', '1', '2', '3', '4'],
+      median: '2'
     },
     {
       name: 'fullday',
-      timeSlotType: timeSlotTypes[0],
-      slots: [],
-      median: -1
+      timeSlotType: timeSlotTypes[0]
     },
     {
       name: 'timestamp',
-      timeSlotType: timePickTypes[0],
-      slots: [],
-      median: -1
+      timeSlotType: timePickTypes[0]
     }
   ]
 
-const getTimeSlot = (timeSlot: number) => {
-  return timeSlots.find(slot => slot.slots.includes(timeSlot))
+const getTimeSlot = (timeSlot: string) => {
+  return timeSlots.find(slot => slot.slots?.includes(timeSlot))
 }
 
 const getMedianSlot = (slots: typeof timeSlots, value: string) => {
@@ -110,7 +106,7 @@ const getMedianSlot = (slots: typeof timeSlots, value: string) => {
   return slot ? slot : -1
 }
 
-interface AssignmentData {
+export interface AssignmentData {
   end_date?: string
   full_day?: string
   start_date?: string
@@ -118,45 +114,15 @@ interface AssignmentData {
   start?: string
   public?: string
   publish?: string
-  publish_slot?: number
+  publish_slot?: string
 }
 
 export const AssignmentTime = ({ index }: {
   index: number
 }): JSX.Element => {
-
-  // const { get, state, loading } = useYObserver('meta', path)
-  // const { get, set } = useYObserver('meta', 'core/planning-item[0].data')
-  // const base = `meta.core/assignment[${index}]`
-
-  // const [publishTime] = useYValue<string>(`${base}.data.publish`)
-  // const [inProgress] = useYValue(`${base}.__inProgress`)
-
-  // const { get, set, loading } = useYObserver('meta', `core/assignment[${index}]/core/assignment`)
-  // const { get, set, loading } = useYObserver('meta', `core/assignment/data`)
-
-  // const { get: getInProgress } = useYObserver('meta', `core/assignment[${index}]`)
-
-
   // if (loading) {
   //   return <></>
   // }
-  // const [publishTime] = useYValue<string>(`meta.core/assignment[${index}].data.publish`)
-  // const [data, setData] = useYValue<Block>(`meta.core/assignment[${index}]`)
-
-  // const [data, setData] = useYValue<Block>(`meta.core/assignment[${index}]`)
-  // const d = data?.data
-
-  // const [, setTimeData] = useYValue(`meta.core/assignment[${index}].data`)
-
-  // const [startDate] = useYValue<String>(`meta.core/planning-item[0].data.start_date`) as unknown as string
-  // const [endDate] = useYValue(`meta.core/planning-item[0].data.end_date`) as unknown as string
-
-
-  // const [fullDay, setFullDay] = useYValue(`meta.core/assignment[${index}].data.full_day`)
-  // const [end, setEnd] = useYValue<String>(`meta.core/assignment[${index}].data.end`)
-  // const [start, setStart] = useYValue(`meta.core/assignment[${index}].data.start`)
-  // const [publishSlot, setPublishSlot] = useYValue<number>(`meta.core/assignment[${index}].data.publish_slot`)
 
   const [assignmentType] = useYValue<string>(`meta.core/assignment[${index}].meta.core/assignment-type[0].value`)
   const [data, setData] = useYValue<AssignmentData>(`meta.core/assignment[${index}].data`)
@@ -179,8 +145,8 @@ export const AssignmentTime = ({ index }: {
       })
       return option
     }
-    else if (publishSlot && publishSlot > 0) {
-      const ts = getTimeSlot(publishSlot as number)
+    else if (publishSlot) {
+      const ts = getTimeSlot(publishSlot)
       if (ts && ts.timeSlotType.value === option.value) {
         selectedLabel = option.label
         return option
@@ -198,8 +164,8 @@ export const AssignmentTime = ({ index }: {
             end_date: data?.end_date,
             full_day: 'true',
             start_date: data?.start_date,
-            end: data?.end,
-            start: data?.start,
+            // end: data?.end,
+            // start: data?.start,
             public: data?.public,
             publish: data?.publish,
           }
@@ -214,8 +180,6 @@ export const AssignmentTime = ({ index }: {
             end_date: data?.end_date,
             full_day: 'false',
             start_date: data?.start_date,
-            end: data?.end,
-            start: data?.start,
             public: data?.public,
             publish: data?.publish,
             publish_slot: (getMedianSlot(timeSlots, value)) + ''
