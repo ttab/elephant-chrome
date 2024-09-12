@@ -1,7 +1,7 @@
 import { transformText, revertText } from './core/index.js'
 import { transformVisual, revertVisual } from './tt/visual.js'
 import type { TBElement } from '@ttab/textbit'
-import type { Block } from '@/protos/service.js'
+import type { Block } from '@ttab/elephant-api/newsdoc'
 
 /**
  * Convert a NewsDoc block array to slate TBElement array

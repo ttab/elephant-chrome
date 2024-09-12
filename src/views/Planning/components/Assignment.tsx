@@ -7,7 +7,7 @@ import type * as Y from 'yjs'
 import * as yMapValueByPath from '@/lib/yMapValueByPath'
 import { AssignmentType } from '@/components/DataItem/AssignmentType'
 import { useYValue } from '@/hooks/useYValue'
-import { type Block } from '@/protos/service'
+import { type Block } from '@ttab/elephant-api/newsdoc'
 import { Assignees } from './AssignmentAssignees'
 
 export const Assignment = ({ index, setSelectedAssignment, className }: {

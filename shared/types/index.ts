@@ -1,4 +1,4 @@
-import { type Block } from '../protos/service.js'
+import { type Block } from '@ttab/elephant-api/newsdoc'
 
 export interface YBlock extends Block {
   __inProgress?: boolean

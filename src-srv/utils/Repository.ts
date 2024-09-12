@@ -1,6 +1,13 @@
 import { TwirpFetchTransport } from '@protobuf-ts/twirp-transport'
-import { DocumentsClient } from '@/protos/service.client.js'
-import type { Document, GetDocumentResponse, UpdateRequest, UpdateResponse, ValidateRequest, ValidateResponse } from '@/protos/service.js'
+import { DocumentsClient } from '@ttab/elephant-api/repository'
+import type {
+  GetDocumentResponse,
+  UpdateRequest,
+  UpdateResponse,
+  ValidateRequest,
+  ValidateResponse
+} from '@ttab/elephant-api/repository'
+import type { Document } from '@ttab/elephant-api/newsdoc'
 import { type FinishedUnaryCall } from '@protobuf-ts/runtime-rpc'
 import type * as Y from 'yjs'
 import { yDocToNewsDoc } from './transformations/yjs/yDoc.js'
@@ -45,7 +52,8 @@ export class Repository {
         uuid,
         version: 0n,
         status: '',
-        lock: false
+        lock: false,
+        metaDocument: 1
       }, meta(accessToken))
 
       return response
@@ -72,7 +80,9 @@ export class Repository {
       ifMatch: version,
       status: [],
       acl: [{ uri: 'core://unit/redaktionen', permissions: ['r', 'w'] }],
-      uuid: document.uuid
+      uuid: document.uuid,
+      lockToken: '',
+      updateMetaDocument: false
     }
 
     return await this.#client.update(

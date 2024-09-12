@@ -1,4 +1,4 @@
-import { Block } from '@/protos/service'
+import { Block } from '@ttab/elephant-api/newsdoc'
 
 /**
  * Create a template structure for an assigment

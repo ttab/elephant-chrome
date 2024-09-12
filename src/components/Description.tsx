@@ -1,7 +1,7 @@
 import { Building, Text } from '@ttab/elephant-ui/icons'
 import { TextBox } from '@/components/ui'
 import { useYObserver } from '@/hooks'
-import { type Block } from '@/protos/service'
+import { type Block } from '@ttab/elephant-api/newsdoc'
 
 function findIndex(stateDescriptions: Block[], role: 'internal' | 'public'): number {
   // If no descriptions, assign indices based on role
@@ -19,7 +19,7 @@ export const Description = ({ role }: {
 }): JSX.Element => {
   const { state: stateDescriptions = [] } = useYObserver('meta', 'core/description')
 
-  const index = findIndex(stateDescriptions, role)
+  const index = findIndex(stateDescriptions as Block[], role)
 
   const path = `meta.core/description[${index === -1 ? stateDescriptions.length : index}].data.text`
 

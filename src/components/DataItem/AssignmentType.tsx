@@ -5,7 +5,7 @@ import { cn } from '@ttab/elephant-ui/utils'
 import { type DefaultValueOption } from '@/types/index'
 import * as Y from 'yjs'
 import { toYMap } from '../../../src-srv/utils/transformations/lib/toYMap'
-import { Block } from '@/protos/service'
+import { Block } from '@ttab/elephant-api/newsdoc'
 
 export const AssignmentType = ({ path, editable = false }: {
   path: string

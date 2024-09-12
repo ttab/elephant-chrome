@@ -1,4 +1,4 @@
-import { Document, Block } from '@/protos/service'
+import { Document, Block } from '@ttab/elephant-api/newsdoc'
 import { currentDateInUTC } from '../datetime'
 
 /**

@@ -13,7 +13,7 @@ import { appendArticle } from '@/lib/createYItem'
 import { useCollaboration } from '@/hooks/useCollaboration'
 import type * as Y from 'yjs'
 import { Button } from '@ttab/elephant-ui'
-import { type Block } from '@/protos/service'
+import { type Block } from '@ttab/elephant-api/newsdoc'
 
 export const AssignmentRow = ({ index, setSelectedAssignment }: {
   index: number

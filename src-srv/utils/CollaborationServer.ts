@@ -260,10 +260,12 @@ export class CollaborationServer {
     }
 
     // Fetch content
+    console.log('::: uuid', uuid)
     const newsDoc = await this.#repository.getDoc({
       uuid,
       accessToken: context.token
     }).catch(ex => {
+      console.log('Error fetching document', ex)
       throw new Error('get document from repository', { cause: ex })
     })
 

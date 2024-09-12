@@ -1,4 +1,4 @@
-import { type Block } from '@/protos/service'
+import { type Block } from '@ttab/elephant-api/newsdoc'
 import type * as views from '@/views'
 import { type LucideIcon } from '@ttab/elephant-ui/icons'
 

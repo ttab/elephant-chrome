@@ -2,7 +2,7 @@ import { Awareness } from '@/components'
 import { ComboBox } from '@/components/ui'
 import { useAuthors } from '@/hooks/useAuthors'
 import { useYValue } from '@/hooks/useYValue'
-import { Block } from '@/protos/service'
+import { Block } from '@ttab/elephant-api/newsdoc'
 import { UserPlus } from '@ttab/elephant-ui/icons'
 import { useRef } from 'react'
 

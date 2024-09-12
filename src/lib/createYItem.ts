@@ -1,5 +1,5 @@
 import * as Y from 'yjs'
-import { Block, type Document } from '@/protos/service'
+import { Block, type Document } from '@ttab/elephant-api/newsdoc'
 import { newsDocToYDoc } from '../../src-srv/utils/transformations/yjs/yDoc'
 import { assignmentPlanningTemplate } from './templates/assignmentPlanningTemplate'
 import { toYMap } from '../../src-srv/utils/transformations/lib/toYMap'
@@ -34,6 +34,8 @@ export function createDocument(
 
   newsDocToYDoc(yDoc, {
     version: 0n,
+    isMetaDocument: false,
+    mainDocument: '',
     document: template(documentId, payload)
   })
 

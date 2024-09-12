@@ -3,7 +3,7 @@ import { isNumber, isRecord, isYArray, isYMap } from './isType'
 import { isTextEntry } from '@/shared/transformations/isTextEntry'
 import type { TBElement } from '@ttab/textbit'
 import { slateNodesToInsertDelta } from '@slate-yjs/core'
-import { Block } from '@/protos/service'
+import { Block } from '@ttab/elephant-api/newsdoc'
 
 export type YParent = Y.Array<unknown> | Y.Map<unknown> | undefined
 export type YPath = Array<string | number>
