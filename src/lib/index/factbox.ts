@@ -7,7 +7,7 @@ interface SearchFactboxParams {
   query: object
 }
 
-export const search = async (endpoint: URL, accessToken: string, params: SearchFactboxParams): Promise<SearchIndexResponse<FactboxSchema>> => {
+const search = async (endpoint: URL, accessToken: string, params: SearchFactboxParams): Promise<SearchIndexResponse<FactboxSchema>> => {
   const query = params.query
 
   return await searchIndex(
