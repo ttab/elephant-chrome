@@ -30,7 +30,7 @@ import { EditorHeader } from './EditorHeader'
 import { type HocuspocusProvider } from '@hocuspocus/provider'
 import { type AwarenessUserData } from '@/contexts/CollaborationProvider'
 import { type YXmlText } from 'node_modules/yjs/dist/src/internals'
-import { articleDocumentTemplate } from '@/lib/templates/articleDocumentTemplate'
+import { article } from '@/lib/templates/article'
 import { createDocument } from '@/lib/createYItem'
 
 const meta: ViewMetadata = {
@@ -63,7 +63,7 @@ const Editor = (props: ViewProps): JSX.Element => {
   }
 
   if (props.onDocumentCreated && !document) {
-    const [, doc] = createDocument((id: string) => articleDocumentTemplate(id))
+    const [, doc] = createDocument((id: string) => article(id))
     setDocument(doc)
 
     return <></>

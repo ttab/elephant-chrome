@@ -7,7 +7,7 @@ import { type TemplatePayload } from '../createYItem'
  *
  * @returns Document
  */
-export function planningDocumentTemplate(documentId: string, payload?: TemplatePayload): Document {
+export function planning(documentId: string, payload?: TemplatePayload): Document {
   const event = payload?.eventId
     ? [Block.create({
         uuid: payload?.eventId,

@@ -1,7 +1,7 @@
 import * as Y from 'yjs'
 import { Block, type Document } from '@/protos/service'
 import { newsDocToYDoc } from '../../src-srv/utils/transformations/yjs/yDoc'
-import { assignmentPlanningTemplate } from './templates/assignmentPlanningTemplate'
+import { assignment as assignmentTemplate } from './templates/assignment'
 import { toYMap } from '../../src-srv/utils/transformations/lib/toYMap'
 import { type YBlock } from '@/shared/types'
 import { get } from './yMapValueByPath'
@@ -67,7 +67,7 @@ export function appendAssignment({ document, inProgress, slugLine }: {
   const yAssignments = meta.get('core/assignment') as Y.Array<unknown>
 
   // Create new assignment from template
-  const assignment: YBlock = assignmentPlanningTemplate({
+  const assignment: YBlock = assignmentTemplate({
     assignmentType: 'text',
     planningDate: get(meta, 'core/planning-item[0].data.start_date') as unknown as string,
     slugLine

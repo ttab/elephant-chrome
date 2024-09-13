@@ -17,7 +17,7 @@ import { Button } from '@ttab/elephant-ui'
 import { createStateless, StatelessType } from '@/shared/stateless'
 import { useSession } from 'next-auth/react'
 import { createDocument } from '@/lib/createYItem'
-import { factboxDocumentTemplate } from '@/lib/templates/factboxDocumentTemplate'
+import { factbox } from '@/lib/templates/factbox'
 
 const meta: ViewMetadata = {
   name: 'FactboxEditor',
@@ -45,7 +45,7 @@ export const FactboxEditor = (props: ViewProps & { document?: Y.Doc }): JSX.Elem
   }
 
   if (props.onDocumentCreated && !document) {
-    const [, doc] = createDocument((id) => factboxDocumentTemplate(id), true)
+    const [, doc] = createDocument((id) => factbox(id), true)
     setDocument(doc)
   }
 

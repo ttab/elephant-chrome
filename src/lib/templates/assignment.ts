@@ -4,7 +4,7 @@ import { Block } from '@/protos/service'
  * Create a template structure for an assigment
  * @returns Block
  */
-export function assignmentPlanningTemplate({ assignmentType, planningDate, slugLine }: {
+export function assignment({ assignmentType, planningDate, slugLine }: {
   assignmentType: string
   planningDate: string
   slugLine?: string

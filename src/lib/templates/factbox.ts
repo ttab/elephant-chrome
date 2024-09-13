@@ -5,7 +5,7 @@ import { Block, Document } from '@/protos/service'
 * @returns Document
 */
 
-export function factboxDocumentTemplate(id: string): Document {
+export function factbox(id: string): Document {
   return Document.create({
     uuid: id,
     type: 'core/factbox',

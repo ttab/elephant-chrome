@@ -6,7 +6,7 @@ import { Document, Block } from '@/protos/service'
  * @returns Document
  */
 // FIXME: Get correct dateGranularity and datetime from Date Component
-export function eventDocumentTemplate(id: string): Document {
+export function event(id: string): Document {
   return Document.create({
     uuid: id,
     type: 'core/event',

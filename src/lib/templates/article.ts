@@ -5,7 +5,7 @@ import { Block, Document } from '@/protos/service'
 * @returns Document
 */
 
-export function articleDocumentTemplate(id: string): Document {
+export function article(id: string): Document {
   return Document.create({
     uuid: id,
     type: 'core/article',
