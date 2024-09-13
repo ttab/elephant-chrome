@@ -154,7 +154,9 @@ const EventViewContent = (props: ViewProps & { documentId: string }): JSX.Elemen
                     createStateless(StatelessType.IN_PROGRESS, {
                       state: false,
                       id: props.documentId,
-                      context: data.accessToken
+                      context: {
+                        accessToken: data.accessToken
+                      }
                     }))
                 }
               }}>

@@ -1,11 +1,11 @@
 import { Document, Block } from '@/protos/service'
-import { currentDateInUTC } from '../datetime'
 
 /**
  * Create a template structure for a event document
  *
  * @returns Document
  */
+// FIXME: Get correct dateGranularity and datetime from Date Component
 export function eventDocumentTemplate(id: string): Document {
   return Document.create({
     uuid: id,
@@ -16,8 +16,8 @@ export function eventDocumentTemplate(id: string): Document {
       Block.create({
         type: 'core/event',
         data: {
-          end: currentDateInUTC(),
-          start: currentDateInUTC(),
+          end: new Date().toISOString(),
+          start: new Date().toISOString(),
           registration: '',
           dateGranularity: 'date'
         }

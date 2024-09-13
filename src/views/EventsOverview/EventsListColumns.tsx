@@ -41,7 +41,7 @@ export function eventTableColumns({ sections = [] }: {
       },
       accessorFn: (data) => (
         // FIXME: It seems we're not indexing "document.meta.core_event.data.public"
-        data._source['document.meta.core_description.role'][0]
+        data._source['document.meta.core_description.role']?.[0]
       ),
       cell: ({ row }) => {
         const visibility = row.getValue<'internal' | 'public'>('visibilityStatus')
