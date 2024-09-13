@@ -3,60 +3,9 @@ import { isNumber, isRecord, isYArray, isYContainer, isYMap, isYXmlText } from '
 import { isTextEntry } from '@/shared/transformations/isTextEntry'
 import type { TBElement } from '@ttab/textbit'
 import { slateNodesToInsertDelta } from '@slate-yjs/core'
-// import { Block } from '@/protos/service'
 
 export type YParent = Y.Array<unknown> | Y.Map<unknown> | undefined
 export type YPath = Array<string | number>
-
-/**
- * Traverse a yjs structure to find the wanted value based on the yjs path.
- *
- * Returns an array with two elements. First the value and then the parent map or array.
- */
-// export function getValueByYPath<T>(root: Y.Map<unknown>, path: YPath): [T | undefined, YParent] {
-//   const lastIndex = path.length - 1
-
-//   let parent: unknown = root
-
-//   for (let i = 0; i < path.length; i++) {
-//     const key = path[i]
-//     let current: unknown
-
-//     if (isYArray(parent) && isNumber(key)) {
-//       // try to get next path value by key
-//       current = parent.get(key)
-
-//       // if next path value is undefined, create next path value
-//       if (current === undefined) {
-//         const inProgressBlock = {
-//           __inProgress: true,
-//           ...Block.create({ type: path[i - 1] as string })
-//         }
-
-//         parent.insert(key, [toYStructure(inProgressBlock)])
-//         current = parent.get(key)
-//       }
-//     } else if (isYMap(parent) && !isNumber(key)) {
-//       current = parent.get(key)
-//       if (current === undefined) {
-//         // Set as new array if next path value is a number, else ignore
-//         if (isNumber(path[i + 1])) {
-//           parent.set(key, new Y.Array())
-//           current = parent.get(key)
-//         }
-//       }
-//     }
-
-//     // We're done, we've reached the end of the path
-//     if (i === lastIndex) {
-//       return [current as T, parent as YParent]
-//     }
-//     parent = current
-//   }
-
-//   return [undefined, undefined]
-// }
-
 
 /**
  * Returns an array with two elements: the value and the parent map or array.
