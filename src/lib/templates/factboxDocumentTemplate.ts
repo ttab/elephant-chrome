@@ -11,7 +11,7 @@ export function factboxDocumentTemplate(id: string): Document {
     type: 'core/factbox',
     uri: `core://factbox/${id}`,
     language: 'sv-se',
-    title: 'Rubrik',
+    title: '',
     content: [
       Block.create({
         type: 'core/text',
