@@ -11,5 +11,5 @@ export const Title = ({ autoFocus, placeholder }: {
     className='font-bold text-lg leading-6'
     autoFocus={!!autoFocus}
     singleLine={true}
-    />
+  />
 )

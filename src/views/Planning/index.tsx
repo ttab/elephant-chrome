@@ -86,7 +86,7 @@ const PlanningViewContent = (props: ViewProps & { documentId: string }): JSX.Ele
     }
   })
 
-  const [title] = useYValue<string | undefined>('root.title')
+  const [title] = useYValue<string | undefined>('title')
 
   return (
     <div className={cn(viewVariants({ asCreateDialog: !!props.asCreateDialog, className: props?.className }))}>

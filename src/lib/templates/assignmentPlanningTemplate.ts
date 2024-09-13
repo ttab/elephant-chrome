@@ -4,7 +4,11 @@ import { Block } from '@/protos/service'
  * Create a template structure for an assigment
  * @returns Block
  */
-export function assignmentPlanningTemplate(assignmentType: string, planningDate: string): Block {
+export function assignmentPlanningTemplate({ assignmentType, planningDate, slugLine }: {
+  assignmentType: string
+  planningDate: string
+  slugLine?: string
+}): Block {
   // TODO: Until we have a strategy for assignment dates
   // Set full day to true and end time to 22:59:59
 
@@ -22,7 +26,8 @@ export function assignmentPlanningTemplate(assignmentType: string, planningDate:
     },
     meta: [
       {
-        type: 'tt/slugline'
+        type: 'tt/slugline',
+        value: slugLine || ''
       },
       {
         type: 'core/description',
