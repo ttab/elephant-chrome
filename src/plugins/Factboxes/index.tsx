@@ -8,7 +8,7 @@ function handler({ dispatch, viewRegistry, origin, id }: ActionHandlerI): boolea
   handleLink({
     event: undefined,
     dispatch,
-    viewItem: viewRegistry?.get('FactboxSearch'),
+    viewItem: viewRegistry?.get('Factboxes'),
     viewRegistry,
     viewId: crypto.randomUUID(),
     props: { id },

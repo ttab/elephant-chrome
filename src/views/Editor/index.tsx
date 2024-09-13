@@ -17,7 +17,7 @@ import {
 } from '@ttab/textbit'
 
 import { ImageSearchPlugin } from '../../plugins/ImageSearch'
-import { FactboxPlugin } from '../../plugins/FactboxSearch'
+import { FactboxPlugin } from '../../plugins/Factboxes'
 
 import { Bold, Italic, Link, Text, OrderedList, UnorderedList, TTVisual, Factbox } from '@ttab/textbit-plugins'
 
