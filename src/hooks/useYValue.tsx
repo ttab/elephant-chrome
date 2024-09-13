@@ -10,9 +10,9 @@ import { useCollaboration } from './useCollaboration'
  *
  * This function also detects, recovers and continue to observe when a whole structure gets replaced.
  *
- * FIXME: raw = true option
  * Specifying option row=true will return raw value and not setup an observer. This is
- * especially useful when you want to retrieve a raw Y.XmlText to hand over to Textbit.
+ * especially useful when you want to retrieve a raw Y.XmlText to hand over to Textbit or
+ * if you want to have a structure that you want to manipulate, like adding elements to a Y.Map/Y.Array.
  *
  * @param path string
  *
