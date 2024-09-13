@@ -15,8 +15,8 @@ import { dateToReadableDateTime } from '@/lib/datetime'
 import { formatModified } from '@/lib/formatModified'
 
 const meta: ViewMetadata = {
-  name: 'FactboxSearch',
-  path: `${import.meta.env.BASE_URL || ''}/factboxsearch`,
+  name: 'Factboxes',
+  path: `${import.meta.env.BASE_URL || ''}/factboxes`,
   widths: {
     sm: 12,
     md: 3,
@@ -101,7 +101,7 @@ const FactboxItem = ({ factbox, openFactbox, locale, timeZone }: FBItem): JSX.El
 }
 
 const FactboxContent = ({ factboxes = [], loading, message }: FactboxContentI): JSX.Element => {
-  const openFactboxEditor = useLink('FactboxEditor')
+  const openFactboxEditor = useLink('Factbox')
   const { locale, timeZone } = useRegistry()
 
   const openFactbox = useCallback(<T extends HTMLElement>(event: MouseEvent<T>, factbox: FactboxSchema) => {
@@ -159,7 +159,7 @@ const FactboxContent = ({ factboxes = [], loading, message }: FactboxContentI): 
   )
 }
 
-export const FactboxSearch = (): JSX.Element => {
+export const Factboxes = (): JSX.Element => {
   const { data: session, status } = useSession()
   const indexUrl = useIndexUrl()
   const inputRef = useRef<HTMLInputElement>(null)
@@ -232,7 +232,7 @@ export const FactboxSearch = (): JSX.Element => {
               className="p-4 w-full text-sm border-none focus:border-none"
               type="text"
               placeholder='Sök faktaruta'
-              name="factboxsearch"
+              name="factboxes"
               ref={inputRef}
             />
           </form>
@@ -244,4 +244,4 @@ export const FactboxSearch = (): JSX.Element => {
   )
 }
 
-FactboxSearch.meta = meta
+Factboxes.meta = meta

@@ -20,8 +20,8 @@ import { createDocument } from '@/lib/createYItem'
 import { factboxDocumentTemplate } from '@/lib/templates/factboxDocumentTemplate'
 
 const meta: ViewMetadata = {
-  name: 'FactboxEditor',
-  path: `${import.meta.env.BASE_URL || ''}/factboxeditor`,
+  name: 'Factbox',
+  path: `${import.meta.env.BASE_URL || ''}/factbox`,
   widths: {
     sm: 4,
     md: 4,
@@ -35,7 +35,7 @@ const meta: ViewMetadata = {
   }
 }
 
-export const FactboxEditor = (props: ViewProps & { document?: Y.Doc }): JSX.Element => {
+export const Factbox = (props: ViewProps & { document?: Y.Doc }): JSX.Element => {
   const query = useQuery()
   const [document, setDocument] = useState<Y.Doc>()
   const documentId = props.id || query.id
@@ -292,4 +292,4 @@ function Footer(): JSX.Element {
   )
 }
 
-FactboxEditor.meta = meta
+Factbox.meta = meta
