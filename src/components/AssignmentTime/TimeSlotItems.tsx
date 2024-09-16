@@ -21,12 +21,12 @@ interface TimeMenuItemsProps extends React.PropsWithChildren {
   handleOnSelect: ({value, selectValue}: {value: string, selectValue: string}) => void
 }
 
-export const TimeMenuItems = ({ handleOnSelect }: TimeMenuItemsProps): JSX.Element[] => {
+export const TimeSlotItems = ({ handleOnSelect }: TimeMenuItemsProps): JSX.Element[] => {
   return (
     timeSlotTypes.map((slot) => (
       <CommandItem
         key={slot.label}
-        value={slot.value}
+        value={slot.label}
         onSelect={(value: string) => {
           handleOnSelect({value: slot.value, selectValue: value})
         }}

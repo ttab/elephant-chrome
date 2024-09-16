@@ -20,7 +20,7 @@ import { CalendarFoldIcon, CalendarClockIcon, Clock1Icon, Clock2Icon, Clock3Icon
 import { type DefaultValueOption } from '@/types/index'
 
 
-import { TimeMenuItems } from './TimeMenuItems'
+import { TimeSlotItems } from './TimeSlotItems'
 import { TimeSelectItem } from './TimeSelectItem'
 
 interface TimeMenuProps extends React.PropsWithChildren {
@@ -57,11 +57,11 @@ export const TimeMenu = ({
       </PopoverTrigger>
       <PopoverContent>
         <Command>
-          <CommandInput placeholder='label for something' />
+          <CommandInput placeholder='' />
           <CommandList>
             <CommandEmpty>Ingenting hittades</CommandEmpty>
             <CommandGroup>
-              <TimeMenuItems handleOnSelect={handleOnSelect}/>
+              <TimeSlotItems handleOnSelect={handleOnSelect}/>
             </CommandGroup>
             <CommandGroup>
               <TimeSelectItem handleOnSelect={handleOnSelect} index={index}/>

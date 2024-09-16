@@ -66,7 +66,7 @@ export const timeSlots:
     {
       name: 'morning',
       timeSlotType: timeSlotTypes[1],
-      slots: ['5', '6', '7', '8', '9'],
+      slots: ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'],
       median: '7'
     },
     {
@@ -84,8 +84,8 @@ export const timeSlots:
     {
       name: 'evening',
       timeSlotType: timeSlotTypes[4],
-      slots: ['18', '19', '20', '21', '22', '23', '0', '1', '2', '3', '4'],
-      median: '2'
+      slots: ['18', '19', '20', '21', '22', '23'],
+      median: '21'
     },
     {
       name: 'fullday',
@@ -104,6 +104,22 @@ const getTimeSlot = (timeSlot: string) => {
 const getMedianSlot = (slots: typeof timeSlots, value: string) => {
   const slot = slots.find(slot => slot.name === value)?.median
   return slot ? slot : -1
+}
+
+const getMidnightISOString = (endDate: string) => {
+
+    const endDateString = `${endDate}T00:00:00`
+    const endDateIsoString = (new Date(endDateString)).toISOString()
+    console.log('XXX endDateString', endDateIsoString)
+    return endDateIsoString
+}
+
+const getEndDateTimeISOString = (endDate: string, hours: number) => {
+  const newDate = new Date(endDate)
+  newDate.setHours(hours, 59, 59)
+  const hoursString = newDate.toISOString()
+  console.log('XXX hours string', hoursString)
+  return hoursString
 }
 
 export interface AssignmentData {
@@ -159,13 +175,14 @@ export const AssignmentTime = ({ index }: {
   const handleOnSelect = ({ value, selectValue }: { value: string, selectValue: string }) => {
     switch (value) {
       case 'fullday':
+
         setData( Block.create({
           data: {
             end_date: data?.end_date,
             full_day: 'true',
             start_date: data?.start_date,
-            // end: data?.end,
-            // start: data?.start,
+            end: getEndDateTimeISOString(endDate as string, 23),
+            start: getMidnightISOString(endDate as string),
             public: data?.public,
             publish: data?.publish,
           }
@@ -182,7 +199,9 @@ export const AssignmentTime = ({ index }: {
             start_date: data?.start_date,
             public: data?.public,
             publish: data?.publish,
-            publish_slot: (getMedianSlot(timeSlots, value)) + ''
+            publish_slot: (getMedianSlot(timeSlots, value)) + '',
+            end: getEndDateTimeISOString(endDate as string, 23),
+            start: getMidnightISOString(endDate as string),
           }
         }).data)
         break;
@@ -190,6 +209,7 @@ export const AssignmentTime = ({ index }: {
       case 'timestamp':
         const endDateString = `${endDate}T${selectValue}`
         const endDateIsoString = new Date(endDateString).toISOString()
+        console.log('XXX timestamp', endDateIsoString)
         setData(Block.create({
           data: {
             end_date: data?.end_date,

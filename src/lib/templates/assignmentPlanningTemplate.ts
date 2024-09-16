@@ -19,6 +19,7 @@ export function assignmentPlanningTemplate(assignmentType: string, planningDate:
       start: `${getStartDate(planningDate)}T23:00:00Z`,
       public: 'true',
       publish: '2024-02-09T10:30:00Z'
+
     },
     meta: [
       {
