@@ -17,6 +17,7 @@ import {
 import { ExpressAuth } from '@auth/express'
 import { assertAuthenticatedUser } from './utils/assertAuthenticatedUser.js'
 import { authConfig } from './utils/authConfig.js'
+import logger from './lib/logger.js'
 
 /*
  * Read and normalize all environment variables
@@ -93,12 +94,41 @@ export async function runServer(): Promise<string> {
     collaborationServer
   })
 
+
+  process.on('unhandledException', (ex) => {
+    logger.fatal('Unhandled exception', { cause: ex })
+
+    collaborationServer.close().then(() => {
+      process.exit(1)
+    }).catch(ex => logger.fatal(ex))
+
+    setTimeout(() => {
+      process.abort()
+    }, 1000).unref()
+
+    process.exit(1)
+  })
+
+  process.on('unhandledRejection', (ex) => {
+    logger.fatal('Unhandled rejection', { cause: ex })
+
+    collaborationServer.close().then(() => {
+      process.exit(1)
+    }).catch(ex => logger.fatal(ex))
+
+    setTimeout(() => {
+      process.abort()
+    }, 1000).unref()
+
+    process.exit(1)
+  })
+
   const serverUrl = `${PROTOCOL}://${HOST}:${PORT}${BASE_URL || ''}`
 
   switch (NODE_ENV) {
     case 'development': {
       ViteExpress.listen(app as unknown as Express, PORT, () => {
-        console.log(`Development Server running on ${serverUrl}`)
+        logger.info(`Development Server running on ${serverUrl}`)
       })
 
       break
@@ -119,7 +149,7 @@ export async function runServer(): Promise<string> {
 }
 
 runServer().then(url => {
-  console.info(`Serving API on ${url}/api`)
+  logger.info(`Serving API on ${url}/api`)
 }).catch(ex => {
   console.error(ex)
   process.exit(1)

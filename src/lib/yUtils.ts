@@ -73,9 +73,9 @@ export function setValueByYPath(yRoot: Y.Map<unknown> | undefined, path: YPath |
   }
 
   const key = yPath.pop()
-  const [yStructure] = (yPath.length) ? getValueByYPath(yRoot, yPath, true) : yRoot
+  const [yStructure] = (yPath.length) ? getValueByYPath(yRoot, yPath, true) : [yRoot]
 
-  if (isYMap(yStructure) && typeof key === 'string' && yStructure.has(key)) {
+  if (isYMap(yStructure) && typeof key === 'string') {
     yStructure.set(key, value)
     return true
   } else if (isYArray(yStructure) && typeof key === 'number') {
