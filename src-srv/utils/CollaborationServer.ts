@@ -15,7 +15,7 @@ import { Redis } from '@hocuspocus/extension-redis'
 import { Database } from '@hocuspocus/extension-database'
 
 import type { RedisCache } from './RedisCache.js'
-import type { Repository } from './Repository.js'
+import type { Repository } from '@/shared/Repository.js'
 
 import {
   type Application

@@ -8,8 +8,8 @@ import { fileURLToPath } from 'node:url'
 
 import { connectRouteHandlers, mapRoutes } from './routes.js'
 import ViteExpress from 'vite-express'
+import { Repository } from '@/shared/Repository.js'
 import {
-  Repository,
   RedisCache,
   CollaborationServer
 } from './utils/index.js'
