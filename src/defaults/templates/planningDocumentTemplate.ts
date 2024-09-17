@@ -1,6 +1,6 @@
 import { Document, Block } from '@/protos/service'
-import { currentDateInUTC } from '../datetime'
-import { type TemplatePayload } from '../createYItem'
+import { currentDateInUTC } from '../../lib/datetime'
+import { type TemplatePayload } from '../../lib/createYItem'
 
 /**
  * Create a template structure for a planning document
@@ -10,11 +10,11 @@ import { type TemplatePayload } from '../createYItem'
 export function planningDocumentTemplate(documentId: string, payload?: TemplatePayload): Document {
   const event = payload?.eventId
     ? [Block.create({
-        uuid: payload?.eventId,
-        type: 'core/event',
-        title: payload?.eventTitle || 'Untitled',
-        rel: 'event'
-      })]
+      uuid: payload?.eventId,
+      type: 'core/event',
+      title: payload?.eventTitle || 'Untitled',
+      rel: 'event'
+    })]
     : []
 
   return Document.create({

@@ -1,7 +1,7 @@
 import * as Y from 'yjs'
 import { Block, type Document } from '@/protos/service'
 import { newsDocToYDoc } from '../../src-srv/utils/transformations/yjs/yDoc'
-import { assignmentPlanningTemplate } from './templates/assignmentPlanningTemplate'
+import { assignmentPlanningTemplate } from '../defaults/templates/assignmentPlanningTemplate'
 import { toYMap } from '../../src-srv/utils/transformations/lib/toYMap'
 import { type YBlock } from '@/shared/types'
 import { get } from './yMapValueByPath'

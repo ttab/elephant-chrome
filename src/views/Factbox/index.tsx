@@ -17,7 +17,7 @@ import { Button } from '@ttab/elephant-ui'
 import { createStateless, StatelessType } from '@/shared/stateless'
 import { useSession } from 'next-auth/react'
 import { createDocument } from '@/lib/createYItem'
-import { factboxDocumentTemplate } from '@/lib/templates/factboxDocumentTemplate'
+import { factboxDocumentTemplate } from '@/defaults/templates/factboxDocumentTemplate'
 
 const meta: ViewMetadata = {
   name: 'Factbox',
@@ -56,7 +56,7 @@ export const Factbox = (props: ViewProps & { document?: Y.Doc }): JSX.Element =>
           <AwarenessDocument documentId={documentId} document={document} className='h-full'>
             <Wrapper {...props} documentId={documentId} />
           </AwarenessDocument>
-          )
+        )
         : <></>
       }
     </>
