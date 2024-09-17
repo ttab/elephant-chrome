@@ -27,6 +27,7 @@ import {
   Organiser
 } from '@/components'
 import { PlanningTable } from './components/PlanningTable'
+import { useState, useRef } from 'react'
 
 const meta: ViewMetadata = {
   name: 'Event',
@@ -65,6 +66,22 @@ const EventViewContent = (props: ViewProps & { documentId: string }): JSX.Elemen
   const { provider } = useCollaboration()
   const { data, status } = useSession()
   const [documentStatus, setDocumentStatus] = useDocumentStatus(props.documentId)
+  const [validateForm, setValidateForm] = useState<boolean>(!props.asCreateDialog)
+  const validateStateRef = useRef<Record<string, boolean>>({})
+
+  const handleValidation = (key: string, value: string | undefined): boolean => {
+    validateStateRef.current = {
+      ...validateStateRef.current,
+      [key]: !!value
+    }
+
+    if (validateForm) {
+      return !!value
+    }
+
+    return true
+  }
+
 
   const [eventTitle] = useYValue<string | undefined>('root.title')
 
@@ -117,6 +134,7 @@ const EventViewContent = (props: ViewProps & { documentId: string }): JSX.Elemen
               <Title
                 autoFocus={props.asCreateDialog}
                 placeholder='Händelserubrik'
+                onValidation={handleValidation}
               />
             </div>
 
@@ -129,7 +147,7 @@ const EventViewContent = (props: ViewProps & { documentId: string }): JSX.Elemen
           <div className='flex flex-col space-y-2 w-fit'>
             <div className='flex flex-wrap gap-2'>
               <Organiser />
-              <Section />
+              <Section onValidation={handleValidation} />
               <Category />
               <Story />
             </div>
@@ -144,20 +162,24 @@ const EventViewContent = (props: ViewProps & { documentId: string }): JSX.Elemen
             <Separator className='ml-0' />
             <div className='flex justify-end px-6 py-4'>
               <Button onClick={() => {
+                setValidateForm(true)
+                // if all fields are valid close and save
+                if (Object.values(validateStateRef.current).every((state) => !!state)) {
                 // Get the id, post it, and open it in a view?
-                if (props?.onDialogClose) {
-                  props.onDialogClose()
-                }
+                  if (props?.onDialogClose) {
+                    props.onDialogClose()
+                  }
 
-                if (provider && status === 'authenticated') {
-                  provider.sendStateless(
-                    createStateless(StatelessType.IN_PROGRESS, {
-                      state: false,
-                      id: props.documentId,
-                      context: {
-                        accessToken: data.accessToken
-                      }
-                    }))
+                  if (provider && status === 'authenticated') {
+                    provider.sendStateless(
+                      createStateless(StatelessType.IN_PROGRESS, {
+                        state: false,
+                        id: props.documentId,
+                        context: {
+                          accessToken: data.accessToken
+                        }
+                      }))
+                  }
                 }
               }}>
                 Skapa händelse

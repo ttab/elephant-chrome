@@ -29,6 +29,7 @@ import { cva } from 'class-variance-authority'
 import { cn } from '@ttab/elephant-ui/utils'
 import { createStateless, StatelessType } from '@/shared/stateless'
 import { useSession } from 'next-auth/react'
+import { useRef, useState } from 'react'
 
 const meta: ViewMetadata = {
   name: 'Planning',
@@ -67,6 +68,21 @@ const PlanningViewContent = (props: ViewProps & { documentId: string }): JSX.Ele
   const { provider } = useCollaboration()
   const { data, status } = useSession()
   const [documentStatus, setDocumentStatus] = useDocumentStatus(props.documentId)
+  const [validateForm, setValidateForm] = useState<boolean>(!props.asCreateDialog)
+  const validateStateRef = useRef<Record<string, boolean>>({})
+
+  const handleValidation = (key: string, value: string | undefined): boolean => {
+    validateStateRef.current = {
+      ...validateStateRef.current,
+      [key]: !!value
+    }
+
+    if (validateForm) {
+      return !!value
+    }
+
+    return true
+  }
 
   const viewVariants = cva('flex flex-col', {
     variants: {
@@ -87,6 +103,7 @@ const PlanningViewContent = (props: ViewProps & { documentId: string }): JSX.Ele
   })
 
   const [title] = useYValue<string | undefined>('title')
+
 
   return (
     <div className={cn(viewVariants({ asCreateDialog: !!props.asCreateDialog, className: props?.className }))}>
@@ -120,11 +137,13 @@ const PlanningViewContent = (props: ViewProps & { documentId: string }): JSX.Ele
               <Title
                 autoFocus={props.asCreateDialog}
                 placeholder='Planeringsrubrik'
+                onValidation={handleValidation}
               />
               <div className='min-w-32'>
                 <SluglineEditable
                   path='meta.tt/slugline[0].value'
                   documentStatus={documentStatus?.name}
+                  onValidation={handleValidation}
                 />
               </div>
             </div>
@@ -138,7 +157,7 @@ const PlanningViewContent = (props: ViewProps & { documentId: string }): JSX.Ele
               <PlanDate />
             </div>
             <div className='flex space-x-2'>
-              <Section />
+              <Section onValidation={handleValidation} />
               <Story />
             </div>
           </div>
@@ -151,21 +170,25 @@ const PlanningViewContent = (props: ViewProps & { documentId: string }): JSX.Ele
             <Separator className='ml-0' />
             <div className='flex justify-end px-6 py-4'>
               <Button onClick={(): void => {
+                setValidateForm(true)
+                // if all fields are valid close and save
+                if (Object.values(validateStateRef.current).every((state) => !!state)) {
                 // Get the id, post it, and open it in a view?
-                if (props?.onDialogClose) {
-                  props.onDialogClose(props.documentId, title)
-                }
+                  if (props?.onDialogClose) {
+                    props.onDialogClose(props.documentId, title)
+                  }
 
-                if (provider && status === 'authenticated') {
-                  provider.sendStateless(
-                    createStateless(StatelessType.IN_PROGRESS, {
-                      state: false,
-                      id: props.documentId,
-                      context: {
-                        accessToken: data.accessToken
-                      }
-                    })
-                  )
+                  if (provider && status === 'authenticated') {
+                    provider.sendStateless(
+                      createStateless(StatelessType.IN_PROGRESS, {
+                        state: false,
+                        id: props.documentId,
+                        context: {
+                          accessToken: data.accessToken
+                        }
+                      })
+                    )
+                  }
                 }
               }}>
                 Skapa planering

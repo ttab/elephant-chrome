@@ -4,10 +4,12 @@ import { TextBox } from '../ui'
 import { useYValue } from '@/hooks/useYValue'
 import type * as Y from 'yjs'
 import { SluglineButton } from './Slugline'
+import { Validation } from '../Validation'
 
-export const SluglineEditable = ({ path, documentStatus }: {
+export const SluglineEditable = ({ path, documentStatus, onValidation }: {
   path: string
   documentStatus?: string
+  onValidation?: (label: string, value: string | undefined) => boolean
 }): JSX.Element => {
   const [active, setActive] = useState(false)
   const setFocused = useRef<(value: boolean) => void>(null)
@@ -45,6 +47,9 @@ export const SluglineEditable = ({ path, documentStatus }: {
         : <div>
           <SluglineButton path={path} setActive={setAwareness} />
         </div>
+      }
+      {onValidation &&
+        <Validation label='Slugline' path={path} onValidation={onValidation} />
       }
     </Awareness>
   )
