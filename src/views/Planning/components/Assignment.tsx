@@ -5,12 +5,9 @@ import { cn } from '@ttab/elephant-ui/utils'
 import { AssignmentType } from '@/components/DataItem/AssignmentType'
 import { useYValue } from '@/hooks/useYValue'
 import { Assignees } from './AssignmentAssignees'
-<<<<<<< HEAD
 import { AssignmentTime } from '@/components/AssignmentTime'
-=======
 import { useKeydownGlobal } from '@/hooks/useKeydownGlobal'
 import { type Block } from '@/protos/service'
->>>>>>> main
 
 export const Assignment = ({ index, onAbort, onClose, className }: {
   index: number
