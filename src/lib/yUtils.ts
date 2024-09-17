@@ -72,26 +72,61 @@ export function setValueByYPath(yRoot: Y.Map<unknown> | undefined, path: YPath |
     return false
   }
 
-  const key = yPath.pop()
-  const [yStructure] = (yPath.length) ? getValueByYPath(yRoot, yPath, true) : [yRoot]
+  const parent = getParent(yRoot, yPath)
+  if (!parent) {
+    return false
+  }
 
-  if (isYMap(yStructure) && typeof key === 'string') {
-    yStructure.set(key, value)
+  const lastKey = yPath[yPath.length - 1]
+  if (isYMap(parent) && typeof lastKey === 'string') {
+    parent.set(lastKey, toYStructure(value))
     return true
-  } else if (isYArray(yStructure) && typeof key === 'number') {
-    if (key == null || key >= yStructure.length) {
-      yStructure.push([value])
-    } else {
-      yStructure.doc?.transact(() => {
-        yStructure.delete(key)
-        yStructure.insert(key, [value])
-      })
-    }
+  }
+
+  if (isYArray(parent) && isNumber(lastKey)) {
+    setArrayValue(parent, lastKey, value)
     return true
   }
 
   return false
 }
+
+function getParent(yRoot: Y.Map<unknown> | Y.Array<unknown>, yPath: YPath): Y.Map<unknown> | Y.Array<unknown> | undefined {
+  let current = yRoot
+
+  for (let i = 0; i < yPath.length - 1; i++) {
+    const currentKey = yPath[i]
+    const isArrayIndex = isNumber(currentKey)
+    const isNextArrayIndex = isNumber(yPath[i + 1])
+
+    if (isArrayIndex) {
+      if (isYMap(current)) {
+        throw new Error(`Invalid path. Expected an array, but encountered a map at '${currentKey}'.`)
+      }
+
+      current = current.get(currentKey) as Y.Map<unknown> | Y.Array<unknown>
+    } else {
+      if (isYMap(current) && !current.has(currentKey)) {
+        current.set(currentKey, isNextArrayIndex ? new Y.Array() : new Y.Map())
+      }
+
+      current = current.get(currentKey as never) as Y.Map<unknown>
+    }
+  }
+
+  return current
+}
+
+function setArrayValue(array: Y.Array<unknown>, index: number, value: unknown): void {
+  array.doc?.transact(() => {
+    if (array.length - 1 >= index) {
+      array.delete(index)
+    }
+
+    array.insert(index, [value])
+  })
+}
+
 
 /**
  * Delete an element from either a Y.Map or Y.Array specified by exact path

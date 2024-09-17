@@ -17,6 +17,7 @@ import {
 } from '@ttab/textbit'
 
 import { ImageSearchPlugin } from '../../plugins/ImageSearch'
+import { FactboxPlugin } from '../../plugins/Factboxes'
 
 import { Bold, Italic, Link, Text, OrderedList, UnorderedList, TTVisual, Factbox } from '@ttab/textbit-plugins'
 
@@ -82,7 +83,7 @@ const Editor = (props: ViewProps): JSX.Element => {
 function EditorWrapper(props: ViewProps & {
   documentId: string
 }): JSX.Element {
-  const plugins = [Text, UnorderedList, OrderedList, Bold, Italic, Link, TTVisual, ImageSearchPlugin, Factbox]
+  const plugins = [Text, UnorderedList, OrderedList, Bold, Italic, Link, TTVisual, ImageSearchPlugin, Factbox, FactboxPlugin]
   const {
     provider,
     synced,
@@ -221,7 +222,6 @@ function ContentMenu(): JSX.Element {
         {blockActions.length > 0 &&
           <ContentMenuGroup>
             {blockActions.map(action => <ContentMenuItem action={action} key={action.name} />)}
-            <Menu.Item action={ImageSearchPlugin().name} />
           </ContentMenuGroup>
         }
       </Menu.Content>
