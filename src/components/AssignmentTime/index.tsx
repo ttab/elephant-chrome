@@ -181,8 +181,8 @@ export const AssignmentTime = ({ index }: {
             end_date: data?.end_date,
             full_day: 'true',
             start_date: data?.start_date,
-            end: getEndDateTimeISOString(endDate as string, 23),
-            start: getMidnightISOString(endDate as string),
+            // end: getEndDateTimeISOString(endDate as string, 23),
+            // start: getMidnightISOString(endDate as string),
             public: data?.public,
             publish: data?.publish,
           }
@@ -200,8 +200,8 @@ export const AssignmentTime = ({ index }: {
             public: data?.public,
             publish: data?.publish,
             publish_slot: (getMedianSlot(timeSlots, value)) + '',
-            end: getEndDateTimeISOString(endDate as string, 23),
-            start: getMidnightISOString(endDate as string),
+            // end: getEndDateTimeISOString(endDate as string, 23),
+            // start: getMidnightISOString(endDate as string),
           }
         }).data)
         break;

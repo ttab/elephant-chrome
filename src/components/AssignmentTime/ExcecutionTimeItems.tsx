@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react'
+import React, { useState, useRef, useEffect, ChangeEventHandler } from 'react'
 import {
   Command,
   CommandInput,
@@ -6,10 +6,15 @@ import {
   Popover,
   PopoverContent,
   PopoverTrigger,
+  Calendar,
+  Input
 } from '@ttab/elephant-ui'
 import { timePickTypes } from '.'
 import { useYValue } from '@/hooks/useYValue'
 import { AssignmentData } from '.'
+
+import { useYObserver, useRegistry } from '@/hooks'
+
 interface TimeSelectItem extends React.PropsWithChildren {
   handleOnSelect: ({ value, selectValue }: { value: string, selectValue: string }) => void
   className?: string,
@@ -18,10 +23,49 @@ interface TimeSelectItem extends React.PropsWithChildren {
 
 
 export const ExcecutionTimeItems = ({ handleOnSelect, index }: TimeSelectItem) => {
+  const { timeZone } = useRegistry()
   const [open, setOpen] = useState(false)
   const inputRef = useRef(null)
   const [endTime, setEndTime] = useState('')
   const [data] = useYValue<AssignmentData>(`meta.core/assignment[${index}].data`)
+
+  const [selected, setSelected] = useState<Date>()
+  const [timeValue, setTimeValue] = useState<string>("00:00")
+
+  const handleTimeChange: ChangeEventHandler<HTMLInputElement> = (e) => {
+    const time = e.target.value;
+    if (!selected) {
+      setTimeValue(time)
+      return
+    }
+    const [hours, minutes] = time.split(":").map((str: string) => parseInt(str, 10))
+
+    // const newSelectedDate = setHours(setMinutes(selected, minutes), hours);
+    const newSelectedDate = new Date() //XXX
+    newSelectedDate.setHours(hours, minutes)
+    setSelected(newSelectedDate)
+    setTimeValue(time)
+  };
+
+  const handleDaySelect = (date: Date | undefined) => {
+    if (!timeValue || !date) {
+      setSelected(date)
+      return;
+    }
+    const [hours, minutes] = timeValue
+      .split(":")
+      .map((str) => parseInt(str, 10))
+    const newDate = new Date(
+      date.getFullYear(),
+      date.getMonth(),
+      date.getDate(),
+      hours,
+      minutes
+    )
+
+    setSelected(newDate)
+  };
+
   useEffect(() => {
     if (data?.end) {
       const aDate = new Date(data.end.toString())
@@ -38,7 +82,7 @@ export const ExcecutionTimeItems = ({ handleOnSelect, index }: TimeSelectItem) =
   }
   const timePickType = timePickTypes[0]
 
-
+  const endDate = new Date(data?.end_date as string)
 
   return (
     <CommandItem
@@ -54,13 +98,22 @@ export const ExcecutionTimeItems = ({ handleOnSelect, index }: TimeSelectItem) =
           </div>
         </PopoverTrigger>
         <PopoverContent>
+
+
+          <Calendar
+            mode='single'
+            selected={selected}
+            onSelect={handleDaySelect}
+            initialFocus
+            footer={`Selected date: ${selected ? selected.toLocaleString() : "none"}`}
+          />
           <Command>
-            <CommandInput
+            <Input
+              type='time'
               ref={inputRef}
-              value={endTime}
-              onValueChange={(value: string | undefined) => {
-                setEndTime(value as string)
-              }}
+              value={timeValue}
+              onChange={handleTimeChange}
+
               placeholder={'hh:mm ex 11:00'}
               className="h-9"
               onKeyDown={(e) => {
@@ -75,6 +128,7 @@ export const ExcecutionTimeItems = ({ handleOnSelect, index }: TimeSelectItem) =
               }}
             />
           </Command>
+
         </PopoverContent>
       </Popover>
     </CommandItem>

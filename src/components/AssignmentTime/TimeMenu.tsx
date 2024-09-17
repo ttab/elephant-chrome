@@ -22,6 +22,7 @@ import { type DefaultValueOption } from '@/types/index'
 
 import { TimeSlotItems } from './TimeSlotItems'
 import { TimeSelectItem } from './TimeSelectItem'
+import { ExcecutionTimeItems } from './ExcecutionTimeItems'
 
 interface TimeMenuProps extends React.PropsWithChildren {
   handleOnSelect: ({value, selectValue}: {value: string, selectValue: string}) => void
@@ -64,7 +65,8 @@ export const TimeMenu = ({
               <TimeSlotItems handleOnSelect={handleOnSelect}/>
             </CommandGroup>
             <CommandGroup>
-              <TimeSelectItem handleOnSelect={handleOnSelect} index={index}/>
+              {/* <TimeSelectItem handleOnSelect={handleOnSelect} index={index}/> */}
+              <ExcecutionTimeItems handleOnSelect={()=> {}} index={index}/>
             </CommandGroup>
           </CommandList>
         </Command>
