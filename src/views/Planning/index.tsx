@@ -29,6 +29,7 @@ import { cva } from 'class-variance-authority'
 import { cn } from '@ttab/elephant-ui/utils'
 import { createStateless, StatelessType } from '@/shared/stateless'
 import { useSession } from 'next-auth/react'
+import { ValidationAlert } from '@/components/Header/ValidationAlert'
 
 const meta: ViewMetadata = {
   name: 'Planning',
@@ -115,6 +116,7 @@ const PlanningViewContent = (props: ViewProps & { documentId: string }): JSX.Ele
 
       <ScrollArea className='grid @5xl:place-content-center'>
         <section className={cn(sectionVariants({ asCreateDialog: !!props?.asCreateDialog }))}>
+          <ValidationAlert />
           <div className='flex flex-col gap-2 pl-0.5'>
             <div className='flex space-x-2 items-start'>
               <Title

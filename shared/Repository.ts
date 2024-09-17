@@ -3,7 +3,7 @@ import { DocumentsClient } from '@/protos/service.client.js'
 import type { Document, GetDocumentResponse, UpdateRequest, UpdateResponse, ValidateRequest, ValidateResponse } from '@/protos/service.js'
 import { type FinishedUnaryCall } from '@protobuf-ts/runtime-rpc'
 import type * as Y from 'yjs'
-import { yDocToNewsDoc } from './transformations/yjs/yDoc.js'
+import { yDocToNewsDoc } from '../src-srv/utils/transformations/yjs/yDoc.js'
 
 export interface Session {
   access_token: string

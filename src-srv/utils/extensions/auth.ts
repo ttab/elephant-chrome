@@ -25,8 +25,9 @@ export class Auth implements Extension {
 
   async onStateless({ payload, connection }: onStatelessPayload): Promise<void> {
     const statelessMessage = parseStateless<StatelessAuth>(payload)
+
     if (statelessMessage.type === StatelessType.AUTH) {
-      if (await validateAccessToken(statelessMessage.message.token)) {
+      if (await validateAccessToken(statelessMessage.message.accessToken)) {
         connection.context = statelessMessage.message
       } else {
         throw new Error('Could not authenticate: Invalid new token')

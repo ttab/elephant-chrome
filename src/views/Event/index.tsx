@@ -27,6 +27,7 @@ import {
   Organiser
 } from '@/components'
 import { PlanningTable } from './components/PlanningTable'
+import { ValidationAlert } from '@/components/Header/ValidationAlert'
 
 const meta: ViewMetadata = {
   name: 'Event',
@@ -112,6 +113,7 @@ const EventViewContent = (props: ViewProps & { documentId: string }): JSX.Elemen
 
       <ScrollArea className='grid @5xl:place-content-center'>
         <section className={cn(sectionVariants({ asCreateDialog: !!props?.asCreateDialog }))}>
+          <ValidationAlert />
           <div className='flex flex-col gap-2 pl-0.5'>
             <div className='flex space-x-2 items-start'>
               <Title
