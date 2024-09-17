@@ -2,7 +2,7 @@
   "name": "elephant-chrome",
   "private": false,
   "license": "MIT",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "type": "module",
   "scripts": {
     "dev": "concurrently npm:dev:vite npm:dev:client:css",
@@ -50,6 +50,7 @@
     "lodash-es": "^4.17.21",
     "next-auth": "^5.0.0-beta.20",
     "node-html-parser": "^6.1.13",
+    "pino": "^9.3.2",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "redis": "^4.7.0",

@@ -125,13 +125,13 @@ export async function yDocToNewsDoc(yDoc: Y.Doc): Promise<GetDocumentResponse> {
     const meta = ungroup((yMap.get('meta') as Y.Map<unknown>)?.toJSON() || {})
     const links = ungroup((yMap.get('links') as Y.Map<unknown>)?.toJSON() || {})
 
-    const yContent = yMap.get('content') as Y.XmlText
-    const content = yContent.toString() ? await yContentToNewsDoc(yContent) : []
+    const yContent = yMap.get('content') as Y.XmlText | undefined
+    const content = yContent?.toString() ? await yContentToNewsDoc(yContent) : []
 
 
-    const root = yMap.get('root') as Y.Map<unknown>
+    const root = yMap.get('root') as Y.Map<unknown> | undefined
 
-    const { uuid, type, uri, url, title, language } = root.toJSON()
+    const { uuid, type, uri, url, title, language } = root?.toJSON() || {}
 
     meta.forEach(docMeta => {
       if (docMeta.type === 'core/assignment') {
@@ -149,8 +149,9 @@ export async function yDocToNewsDoc(yDoc: Y.Doc): Promise<GetDocumentResponse> {
       }
     })
 
+    const version = yDoc.getMap('version').get('version') as string
     return {
-      version: BigInt(yDoc.getMap('version').get('version') as string),
+      version: version ? BigInt(version) : 0n,
       document: {
         uuid,
         type,
