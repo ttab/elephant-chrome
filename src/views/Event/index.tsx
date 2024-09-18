@@ -1,5 +1,5 @@
 import type * as Y from 'yjs'
-import { type ViewMetadata, type ViewProps } from '@/types/index'
+import { type ValidateState, type ViewMetadata, type ViewProps } from '@/types/index'
 import { AwarenessDocument } from '@/components/AwarenessDocument'
 import {
   useCollaboration,
@@ -28,7 +28,7 @@ import {
 } from '@/components'
 import { PlanningTable } from './components/PlanningTable'
 import { useState, useRef } from 'react'
-import { ValidationAlert } from '@/components/Header/ValidationAlert'
+import { ValidationAlert } from '@/components/ValidationAlert'
 
 const meta: ViewMetadata = {
   name: 'Event',
@@ -68,12 +68,12 @@ const EventViewContent = (props: ViewProps & { documentId: string }): JSX.Elemen
   const { data, status } = useSession()
   const [documentStatus, setDocumentStatus] = useDocumentStatus(props.documentId)
   const [validateForm, setValidateForm] = useState<boolean>(!props.asCreateDialog)
-  const validateStateRef = useRef<Record<string, boolean>>({})
+  const validateStateRef = useRef<ValidateState>({})
 
-  const handleValidation = (key: string, value: string | undefined): boolean => {
+  const handleValidation = (block: string, label: string, value: string | undefined, reason: string): boolean => {
     validateStateRef.current = {
       ...validateStateRef.current,
-      [key]: !!value
+      [block]: { label, valid: !!value, reason }
     }
 
     if (validateForm) {
@@ -130,7 +130,7 @@ const EventViewContent = (props: ViewProps & { documentId: string }): JSX.Elemen
 
       <ScrollArea className='grid @5xl:place-content-center'>
         <section className={cn(sectionVariants({ asCreateDialog: !!props?.asCreateDialog }))}>
-          <ValidationAlert />
+          <ValidationAlert validateStateRef={validateStateRef} />
           <div className='flex flex-col gap-2 pl-0.5'>
             <div className='flex space-x-2 items-start'>
               <Title

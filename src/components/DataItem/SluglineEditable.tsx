@@ -9,7 +9,7 @@ import { Validation } from '../Validation'
 export const SluglineEditable = ({ path, documentStatus, onValidation }: {
   path: string
   documentStatus?: string
-  onValidation?: (label: string, value: string | undefined) => boolean
+  onValidation?: (label: string, block: string, value: string | undefined, reason: string) => boolean
 }): JSX.Element => {
   const [active, setActive] = useState(false)
   const setFocused = useRef<(value: boolean) => void>(null)
@@ -49,7 +49,11 @@ export const SluglineEditable = ({ path, documentStatus, onValidation }: {
         </div>
       }
       {onValidation &&
-        <Validation label='Slugline' path={path} onValidation={onValidation} />
+        <Validation
+          label='Slugline'
+          block='tt/slugline'
+          path={path} onValidation={onValidation}
+        />
       }
     </Awareness>
   )

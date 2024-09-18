@@ -6,7 +6,7 @@ import { useRef } from 'react'
 import { Validation } from './Validation'
 
 export const Section = ({ onValidation }: {
-  onValidation?: (label: string, value: string | undefined) => boolean
+  onValidation?: (block: string, label: string, value: string | undefined, reason: string) => boolean
 }): JSX.Element => {
   const allSections = useSections().map((_) => {
     return {
@@ -46,8 +46,13 @@ export const Section = ({ onValidation }: {
         }}
       />
       {onValidation &&
-      <Validation label='Sektion' path={path} onValidation={onValidation} />
-    }
+        <Validation
+          label='Sektion'
+          path={path}
+          block='core/section'
+          onValidation={onValidation}
+          />
+      }
     </Awareness>
   )
 }

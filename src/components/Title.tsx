@@ -5,7 +5,7 @@ import { Validation } from './Validation'
 export const Title = ({ autoFocus, placeholder, onValidation }: {
   autoFocus?: boolean
   placeholder: string
-  onValidation?: (label: string, value: string | undefined) => boolean
+  onValidation?: (block: string, label: string, value: string | undefined, reason: string) => boolean
 }): JSX.Element => (
 
   <div className='flex-grow'>
@@ -17,7 +17,12 @@ export const Title = ({ autoFocus, placeholder, onValidation }: {
       singleLine={true}
       />
     {onValidation &&
-      <Validation label='Titel' path='root.title' onValidation={onValidation} />
+      <Validation
+        label='Titel'
+        path='root.title'
+        block='title'
+        onValidation={onValidation}
+      />
     }
   </div>
 )

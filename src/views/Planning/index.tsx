@@ -9,7 +9,7 @@ import {
   Story,
   Section
 } from '@/components'
-import { type ViewMetadata, type ViewProps } from '@/types'
+import { type ValidateState, type ViewMetadata, type ViewProps } from '@/types'
 import { Button, ScrollArea, Separator } from '@ttab/elephant-ui'
 import { GanttChartSquare } from '@ttab/elephant-ui/icons'
 import {
@@ -30,7 +30,7 @@ import { cn } from '@ttab/elephant-ui/utils'
 import { createStateless, StatelessType } from '@/shared/stateless'
 import { useSession } from 'next-auth/react'
 import { useRef, useState } from 'react'
-import { ValidationAlert } from '@/components/Header/ValidationAlert'
+import { ValidationAlert } from '@/components/ValidationAlert'
 
 const meta: ViewMetadata = {
   name: 'Planning',
@@ -47,7 +47,6 @@ const meta: ViewMetadata = {
     uhd: 2
   }
 }
-
 
 export const Planning = (props: ViewProps & { document?: Y.Doc }): JSX.Element => {
   const query = useQuery()
@@ -70,12 +69,12 @@ const PlanningViewContent = (props: ViewProps & { documentId: string }): JSX.Ele
   const { data, status } = useSession()
   const [documentStatus, setDocumentStatus] = useDocumentStatus(props.documentId)
   const [validateForm, setValidateForm] = useState<boolean>(!props.asCreateDialog)
-  const validateStateRef = useRef<Record<string, boolean>>({})
+  const validateStateRef = useRef<ValidateState>({})
 
-  const handleValidation = (key: string, value: string | undefined): boolean => {
+  const handleValidation = (block: string, label: string, value: string | undefined, reason: string): boolean => {
     validateStateRef.current = {
       ...validateStateRef.current,
-      [key]: !!value
+      [block]: { label, valid: !!value, reason }
     }
 
     if (validateForm) {
@@ -107,7 +106,10 @@ const PlanningViewContent = (props: ViewProps & { documentId: string }): JSX.Ele
 
 
   return (
-    <div className={cn(viewVariants({ asCreateDialog: !!props.asCreateDialog, className: props?.className }))}>
+    <div className={cn(viewVariants({
+      asCreateDialog: !!props.asCreateDialog,
+      className: props?.className
+    }))}>
       <div className="grow-0">
         <ViewHeader.Root>
           {!props.asCreateDialog &&
@@ -133,7 +135,7 @@ const PlanningViewContent = (props: ViewProps & { documentId: string }): JSX.Ele
 
       <ScrollArea className='grid @5xl:place-content-center'>
         <section className={cn(sectionVariants({ asCreateDialog: !!props?.asCreateDialog }))}>
-          <ValidationAlert />
+          <ValidationAlert validateStateRef={validateStateRef} />
           <div className='flex flex-col gap-2 pl-0.5'>
             <div className='flex space-x-2 items-start'>
               <Title
@@ -174,7 +176,7 @@ const PlanningViewContent = (props: ViewProps & { documentId: string }): JSX.Ele
               <Button onClick={(): void => {
                 setValidateForm(true)
                 // if all fields are valid close and save
-                if (Object.values(validateStateRef.current).every((state) => !!state)) {
+                if (Object.values(validateStateRef.current).every((block) => block.valid)) {
                 // Get the id, post it, and open it in a view?
                   if (props?.onDialogClose) {
                     props.onDialogClose(props.documentId, title)
