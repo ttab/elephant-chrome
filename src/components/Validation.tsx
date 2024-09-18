@@ -14,7 +14,13 @@ export const Validation = ({ path, label, block, onValidation }: {
     return onValidation(block, label, value, 'cannot be empty')
   }, [value, onValidation, label, block])
 
-  return synced && !isValid
-    ? <span className='text-red-400 font-medium text-xs'>{`${label} saknas`}</span>
-    : <>&nbsp;</>
+  return (
+
+    <span className='text-red-400 font-medium text-xs'>
+      {synced && !isValid
+        ? <>`${label} saknas`</>
+        : <>&nbsp;</>
+      }
+    </span>
+  )
 }

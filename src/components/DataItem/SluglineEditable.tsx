@@ -52,7 +52,8 @@ export const SluglineEditable = ({ path, documentStatus, onValidation }: {
         <Validation
           label='Slugline'
           block='tt/slugline'
-          path={path} onValidation={onValidation}
+          path={path}
+          onValidation={onValidation}
         />
       }
     </Awareness>
