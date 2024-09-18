@@ -4,18 +4,13 @@ import type { Document, GetDocumentResponse, UpdateRequest, UpdateResponse, Vali
 import { type FinishedUnaryCall } from '@protobuf-ts/runtime-rpc'
 import type * as Y from 'yjs'
 import { yDocToNewsDoc } from './transformations/yjs/yDoc.js'
+import { isValidUUID } from './isValidUUID.js'
 
 export interface Session {
   access_token: string
   token_type: 'Bearer'
   expires_in: number
   refresh_token: string
-}
-
-function validateUUID(uuid: string): boolean {
-  // https://github.com/uuidjs/uuid/blob/main/src/regex.js
-  const UUIDRegEx = /^(?:[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}|00000000-0000-0000-0000-000000000000)$/i
-  return UUIDRegEx.test(uuid)
 }
 
 export class Repository {
@@ -36,7 +31,7 @@ export class Repository {
    * @returns Promise<GetDocumentResponse>
    */
   async getDoc({ uuid, accessToken }: { uuid: string, accessToken: string }): Promise<GetDocumentResponse | null> {
-    if (!validateUUID(uuid)) {
+    if (!isValidUUID(uuid)) {
       throw new Error('Invalid uuid format')
     }
 
@@ -64,8 +59,7 @@ export class Repository {
    * @param accessToken string
    * @returns Promise<FinishedUnaryCall<UpdateRequest, UpdateResponse>
    */
-  async saveDoc(document: Document, accessToken: string, version: bigint):
-  Promise<FinishedUnaryCall<UpdateRequest, UpdateResponse> | undefined> {
+  async saveDoc(document: Document, accessToken: string, version: bigint): Promise<FinishedUnaryCall<UpdateRequest, UpdateResponse> | undefined> {
     const payload: UpdateRequest = {
       document,
       meta: {},
@@ -85,8 +79,7 @@ export class Repository {
   * @param yDoc Y.Doc
   * @returns Promise<FinishedUnaryCall<ValidateRequest, ValidateResponse>>
   */
-  async validateDoc(ydoc: Y.Doc):
-  Promise<FinishedUnaryCall<ValidateRequest, ValidateResponse>> {
+  async validateDoc(ydoc: Y.Doc): Promise<FinishedUnaryCall<ValidateRequest, ValidateResponse>> {
     const { document, version } = await yDocToNewsDoc(ydoc)
     const payload = {
       version: BigInt(version),

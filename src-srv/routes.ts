@@ -4,6 +4,7 @@ import type { Request, Response } from 'express'
 import type { Application, WebsocketRequestHandler } from 'express-ws'
 import type { Repository } from './utils/Repository.js'
 import type { CollaborationServer } from './utils/CollaborationServer.js'
+import type { RedisCache } from './utils/RedisCache.js'
 
 /* Route types */
 interface Route {
@@ -14,6 +15,7 @@ interface Route {
 
 interface RouteInitContext {
   repository: Repository
+  cache: RedisCache
   collaborationServer: CollaborationServer
   [key: string]: unknown
 }

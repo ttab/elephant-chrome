@@ -13,6 +13,8 @@ import { type Document } from '@/protos/service'
 import { type TemplatePayload } from '@/lib/createYItem'
 import { useNavigation } from '@/hooks/index'
 
+const BASE_URL = import.meta.env.BASE_URL || ''
+
 export type Template = keyof typeof Templates
 
 export const CreateDocumentDialog = ({ type, payload, children, mutator }: PropsWithChildren<{
@@ -45,9 +47,18 @@ export const CreateDocumentDialog = ({ type, payload, children, mutator }: Props
                 const planningId = state.content.find(s => {
                   return s.props.name === 'Planning' && s.key === state.active
                 })?.props.children.props.id
-                // FIXME: Fetch planning to extract section
+                // FIXME: Fetch planning to extract section should be gernalized
                 // FIXME: Check current user to extract email and fetch author document
-                console.log(`Planning in focus: ${planningId}`)
+
+                if (planningId) {
+                  const response = await fetch(`${BASE_URL}/api/documents/${planningId}`)
+                  if (response.ok) {
+                    // HACK: We need to provide a custom toJSON for BigInt to not trigger an Exception. Why? We don't need it elsewhere.
+                    // FIXME: This is not the way to do it!
+                    const planningDoc = await response.json()
+                    console.log(planningDoc)
+                  }
+                }
 
                 setDocument(
                   createDocument(
