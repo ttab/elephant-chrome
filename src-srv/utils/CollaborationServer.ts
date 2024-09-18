@@ -125,7 +125,7 @@ export class CollaborationServer {
           }
         }),
         new Snapshot({
-          debounce: 15000,
+          debounce: 120000,
           snapshot: async (payload: onStoreDocumentPayload) => {
             return async () => {
               await this.#snapshotDocument(payload).catch(ex => {

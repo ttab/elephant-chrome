@@ -9,7 +9,7 @@ import {
   Story,
   Section
 } from '@/components'
-import { type ViewMetadata, type ViewProps } from '@/types'
+import { type ValidateState, type ViewMetadata, type ViewProps } from '@/types'
 import { Button, ScrollArea, Separator } from '@ttab/elephant-ui'
 import { GanttChartSquare } from '@ttab/elephant-ui/icons'
 import {
@@ -29,7 +29,8 @@ import { cva } from 'class-variance-authority'
 import { cn } from '@ttab/elephant-ui/utils'
 import { createStateless, StatelessType } from '@/shared/stateless'
 import { useSession } from 'next-auth/react'
-import { ValidationAlert } from '@/components/Header/ValidationAlert'
+import { useRef, useState } from 'react'
+import { ValidationAlert } from '@/components/ValidationAlert'
 
 const meta: ViewMetadata = {
   name: 'Planning',
@@ -46,7 +47,6 @@ const meta: ViewMetadata = {
     uhd: 2
   }
 }
-
 
 export const Planning = (props: ViewProps & { document?: Y.Doc }): JSX.Element => {
   const query = useQuery()
@@ -68,6 +68,21 @@ const PlanningViewContent = (props: ViewProps & { documentId: string }): JSX.Ele
   const { provider } = useCollaboration()
   const { data, status } = useSession()
   const [documentStatus, setDocumentStatus] = useDocumentStatus(props.documentId)
+  const [validateForm, setValidateForm] = useState<boolean>(!props.asCreateDialog)
+  const validateStateRef = useRef<ValidateState>({})
+
+  const handleValidation = (block: string, label: string, value: string | undefined, reason: string): boolean => {
+    validateStateRef.current = {
+      ...validateStateRef.current,
+      [block]: { label, valid: !!value, reason }
+    }
+
+    if (validateForm) {
+      return !!value
+    }
+
+    return true
+  }
 
   const viewVariants = cva('flex flex-col', {
     variants: {
@@ -89,8 +104,12 @@ const PlanningViewContent = (props: ViewProps & { documentId: string }): JSX.Ele
 
   const [title] = useYValue<string | undefined>('title')
 
+
   return (
-    <div className={cn(viewVariants({ asCreateDialog: !!props.asCreateDialog, className: props?.className }))}>
+    <div className={cn(viewVariants({
+      asCreateDialog: !!props.asCreateDialog,
+      className: props?.className
+    }))}>
       <div className="grow-0">
         <ViewHeader.Root>
           {!props.asCreateDialog &&
@@ -116,17 +135,19 @@ const PlanningViewContent = (props: ViewProps & { documentId: string }): JSX.Ele
 
       <ScrollArea className='grid @5xl:place-content-center'>
         <section className={cn(sectionVariants({ asCreateDialog: !!props?.asCreateDialog }))}>
-          <ValidationAlert />
+          <ValidationAlert validateStateRef={validateStateRef} />
           <div className='flex flex-col gap-2 pl-0.5'>
             <div className='flex space-x-2 items-start'>
               <Title
                 autoFocus={props.asCreateDialog}
                 placeholder='Planeringsrubrik'
+                onValidation={handleValidation}
               />
               <div className='min-w-32'>
                 <SluglineEditable
                   path='meta.tt/slugline[0].value'
                   documentStatus={documentStatus?.name}
+                  onValidation={handleValidation}
                 />
               </div>
             </div>
@@ -140,7 +161,7 @@ const PlanningViewContent = (props: ViewProps & { documentId: string }): JSX.Ele
               <PlanDate />
             </div>
             <div className='flex space-x-2'>
-              <Section />
+              <Section onValidation={handleValidation} />
               <Story />
             </div>
           </div>
@@ -153,21 +174,25 @@ const PlanningViewContent = (props: ViewProps & { documentId: string }): JSX.Ele
             <Separator className='ml-0' />
             <div className='flex justify-end px-6 py-4'>
               <Button onClick={(): void => {
+                setValidateForm(true)
+                // if all fields are valid close and save
+                if (Object.values(validateStateRef.current).every((block) => block.valid)) {
                 // Get the id, post it, and open it in a view?
-                if (props?.onDialogClose) {
-                  props.onDialogClose(props.documentId, title)
-                }
+                  if (props?.onDialogClose) {
+                    props.onDialogClose(props.documentId, title)
+                  }
 
-                if (provider && status === 'authenticated') {
-                  provider.sendStateless(
-                    createStateless(StatelessType.IN_PROGRESS, {
-                      state: false,
-                      id: props.documentId,
-                      context: {
-                        accessToken: data.accessToken
-                      }
-                    })
-                  )
+                  if (provider && status === 'authenticated') {
+                    provider.sendStateless(
+                      createStateless(StatelessType.IN_PROGRESS, {
+                        state: false,
+                        id: props.documentId,
+                        context: {
+                          accessToken: data.accessToken
+                        }
+                      })
+                    )
+                  }
                 }
               }}>
                 Skapa planering
