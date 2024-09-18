@@ -65,8 +65,8 @@ export const TimeMenu = ({
               <TimeSlotItems handleOnSelect={handleOnSelect}/>
             </CommandGroup>
             <CommandGroup>
-              {/* <TimeSelectItem handleOnSelect={handleOnSelect} index={index}/> */}
-              <ExcecutionTimeItems handleOnSelect={()=> {}} index={index}/>
+              <TimeSelectItem handleOnSelect={handleOnSelect} index={index}/>
+              {/* <ExcecutionTimeItems handleOnSelect={()=> {}} index={index}/> */}
             </CommandGroup>
           </CommandList>
         </Command>

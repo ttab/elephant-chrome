@@ -26,7 +26,7 @@ export const ExcecutionTimeItems = ({ handleOnSelect, index }: TimeSelectItem) =
   const { timeZone } = useRegistry()
   const [open, setOpen] = useState(false)
   const inputRef = useRef(null)
-  const [endTime, setEndTime] = useState('')
+  // const [endTime, setEndTime] = useState('')
   const [data] = useYValue<AssignmentData>(`meta.core/assignment[${index}].data`)
 
   const [selected, setSelected] = useState<Date>()
@@ -66,23 +66,23 @@ export const ExcecutionTimeItems = ({ handleOnSelect, index }: TimeSelectItem) =
     setSelected(newDate)
   };
 
-  useEffect(() => {
-    if (data?.end) {
-      const aDate = new Date(data.end.toString())
-      const endValue = aDate.toLocaleString('sv-SE', {
-        hour: '2-digit',
-        minute: '2-digit'
-      })
-      setEndTime(endValue)
-    }
-  }, [data?.end])
+  // useEffect(() => {
+  //   if (data?.end) {
+  //     const aDate = new Date(data.end.toString())
+  //     const endValue = aDate.toLocaleString('sv-SE', {
+  //       hour: '2-digit',
+  //       minute: '2-digit'
+  //     })
+  //     setEndTime(endValue)
+  //   }
+  // }, [data?.end])
 
   const handleOpenChange = (isOpen: boolean): void => {
     setOpen(isOpen)
   }
   const timePickType = timePickTypes[0]
 
-  const endDate = new Date(data?.end_date as string)
+  // const endDate = new Date(data?.end_date as string)
 
   return (
     <CommandItem
@@ -122,7 +122,7 @@ export const ExcecutionTimeItems = ({ handleOnSelect, index }: TimeSelectItem) =
                 }
                 if (e.key === 'Enter') {
                   e.preventDefault()
-                  handleOnSelect({ value: timePickType.value, selectValue: endTime })
+                  handleOnSelect({ value: timePickType.value, selectValue: selected?.toISOString() || '' })
                   setOpen(false)
                 }
               }}
