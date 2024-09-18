@@ -15,6 +15,6 @@ export const Validation = ({ path, label, block, onValidation }: {
   }, [value, onValidation, label, block])
 
   return synced && !isValid
-    ? <span className='text-red-400 font-medium text-xs'>{`${label} måste vara ifylld`}</span>
-    : null
+    ? <span className='text-red-400 font-medium text-xs'>{`${label} saknas`}</span>
+    : <>&nbsp;</>
 }
