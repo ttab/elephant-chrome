@@ -42,11 +42,13 @@ export const CreateDocumentDialog = ({ type, payload, children, mutator }: Props
               event.preventDefault()
 
               if (type === 'Flash') {
-                // state.content.find(s => s.key === state.active).props.children.props.id
-                const planningId = state.content.find(s => s.key === state.active)?.props.children.props.id
+                const planningId = state.content.find(s => {
+                  return s.props.name === 'Planning' && s.key === state.active
+                })?.props.children.props.id
                 // FIXME: Fetch planning to extract section
                 // FIXME: Check current user to extract email and fetch author document
-                console.log(planningId)
+                console.log(`Planning in focus: ${planningId}`)
+
                 setDocument(
                   createDocument(
                     getTemplate(type),
