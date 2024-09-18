@@ -18,7 +18,7 @@ export const Validation = ({ path, label, block, onValidation }: {
 
     <span className='text-red-400 font-medium text-xs'>
       {synced && !isValid
-        ? <>`${label} saknas`</>
+        ? <>{label} saknas</>
         : <>&nbsp;</>
       }
     </span>
