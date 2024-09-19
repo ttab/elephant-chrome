@@ -80,7 +80,7 @@ export const DocTrackerProvider = ({ children }: DocTrackerContextProviderProps)
     // When the token is refreshed we need to send it to the server
     // and update the connection context with the new token
     provider?.sendStateless(createStateless(StatelessType.AUTH, { accessToken: data.accessToken || '' }))
-  }, [provider, data])
+  }, [provider, data.accessToken])
 
   return (
     <>
