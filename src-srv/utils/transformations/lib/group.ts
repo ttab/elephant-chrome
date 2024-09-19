@@ -1,5 +1,5 @@
 import { Block } from '@/protos/service.js'
-import { type YBlock } from '@/shared/types/index.js'
+import { type YBlockGroup } from '@/shared/types/index.js'
 
 /**
  * Group Blocks with same groupKey in arrays
@@ -8,10 +8,8 @@ import { type YBlock } from '@/shared/types/index.js'
  * @returns GroupedObjects
  */
 
-type GroupedObjects = Record<string, YBlock[]>
-
-export function group(objects: Block[], groupKey: keyof Block): GroupedObjects {
-  const groupedObjects: GroupedObjects = {}
+export function group(objects: Block[], groupKey: keyof Block): YBlockGroup {
+  const groupedObjects: YBlockGroup = {}
 
   objects.forEach(object => {
     const key = object[groupKey] as string | undefined
@@ -30,6 +28,7 @@ export function group(objects: Block[], groupKey: keyof Block): GroupedObjects {
       }
     })
 
+    // @ts-expect-error Can't get this ts error to go away
     groupedObjects[key].push(newObj)
   })
 
@@ -38,10 +37,10 @@ export function group(objects: Block[], groupKey: keyof Block): GroupedObjects {
 
 /**
  * Reverts the operation of group function
-* @param GroupedObjects
+* @param YBlockGroup
 * @returns Block[]
  */
-export function ungroup(obj: GroupedObjects): Block[] {
+export function ungroup(obj: YBlockGroup): Block[] {
   const result: Block[] = []
 
   Object.keys(obj).forEach(key => {
@@ -51,9 +50,9 @@ export function ungroup(obj: GroupedObjects): Block[] {
         if (!item.__inProgress) {
           const newObj = Block.create({
             ...item,
-            meta: ungroup(item.meta as unknown as GroupedObjects || {}),
-            links: ungroup(item.links as unknown as GroupedObjects || {}),
-            content: ungroup(item.content as unknown as GroupedObjects || {})
+            meta: ungroup(item.meta as unknown as YBlockGroup || {}),
+            links: ungroup(item.links as unknown as YBlockGroup || {}),
+            content: ungroup(item.content as unknown as YBlockGroup || {})
           })
 
           result.push(newObj as unknown as Block)

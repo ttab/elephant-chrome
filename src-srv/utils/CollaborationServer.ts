@@ -289,6 +289,7 @@ export class CollaborationServer {
     // Convert yDoc to newsDoc, so we can hash it and maybe save it to the repository
     const { document } = await yDocToNewsDoc(yDoc)
 
+    // FIXME: When using new functions this hash must be created using grouped document!!!
     const currentHash = createHash(JSON.stringify(document))
 
     // Compare original hash with current hash to establish if there are any changes

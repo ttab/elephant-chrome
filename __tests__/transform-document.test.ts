@@ -1,4 +1,7 @@
 import { newsDocToYDoc, yDocToNewsDoc } from '../src-srv/utils/transformations/yjs/yDoc'
+import { toGroupedNewsDoc, fromGroupedNewsDoc } from '../src-srv/utils/transformations/groupedNewsDoc'
+import { toYjsNewsDoc, fromYjsNewsDoc } from '../src-srv/utils/transformations/yjsNewsDoc'
+
 import * as Y from 'yjs'
 
 import { planning } from './data/planning-newsdoc'
@@ -28,6 +31,29 @@ function sortDocument(json: any): any {
   }
   return json
 }
+
+describe('Transform back and forth from GetDocumentResponse and YDocumentResponse', () => {
+  const groupedPlanning = toGroupedNewsDoc(planning)
+
+  it('does not alter document when converted to grouped and back', async () => {
+    const ungroupedPlanning = await fromGroupedNewsDoc(groupedPlanning)
+
+    expect(ungroupedPlanning.version).toBe(planning.version)
+    expect(sortDocument(ungroupedPlanning.document)).toEqual(sortDocument(planning.document))
+  })
+
+  it('does not alter document when converted to yjs and back', async () => {
+    const yDoc = new Y.Doc()
+    toYjsNewsDoc(groupedPlanning, yDoc)
+
+    const fromYjsPlanning = await fromYjsNewsDoc(yDoc)
+    const ungroupedPlanning = await fromGroupedNewsDoc(fromYjsPlanning)
+
+    expect(ungroupedPlanning.version).toBe(planning.version)
+    expect(sortDocument(ungroupedPlanning.document)).toEqual(sortDocument(planning.document))
+  })
+})
+
 
 describe('Transform full planning newsdoc document to internal YDoc representation', () => {
   const yDoc = new Y.Doc()
