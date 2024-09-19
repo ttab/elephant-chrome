@@ -11,7 +11,6 @@ export class Auth implements Extension {
     token: string
     user: JWTPayload
   }> {
-    console.log(token)
     const isValidToken = await validateAccessToken(token)
 
     if (isValidToken) {
