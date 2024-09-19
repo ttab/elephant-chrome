@@ -3,11 +3,13 @@ import {
   type PropsWithChildren,
   useState,
   useContext,
-  useMemo
+  useMemo,
+  useEffect
 } from 'react'
 import { HocuspocusProvider } from '@hocuspocus/provider'
 import { useSession } from 'next-auth/react'
 import { HPWebSocketProviderContext } from '.'
+import { createStateless, StatelessType } from '@/shared/stateless'
 
 interface DocTrackerProviderState {
   provider?: HocuspocusProvider
@@ -72,6 +74,13 @@ export const DocTrackerProvider = ({ children }: DocTrackerContextProviderProps)
     connected,
     synced
   }
+
+  // TODO: This is duplicated in CollaborationProvider, there might be room for improvement
+  useEffect(() => {
+    // When the token is refreshed we need to send it to the server
+    // and update the connection context with the new token
+    provider?.sendStateless(createStateless(StatelessType.AUTH, { accessToken: data.accessToken || '' }))
+  }, [provider, data])
 
   return (
     <>

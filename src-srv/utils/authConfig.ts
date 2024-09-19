@@ -81,7 +81,7 @@ export const authConfig: AuthConfig = {
       if (account && user) {
         return {
           accessToken: account.access_token,
-          accessTokenExpires: Date.now() + (account.expires_in || 300) * 1000,
+          accessTokenExpires: Date.now() + (150) * 1000,
           refreshToken: account.refresh_token,
           user
         }
