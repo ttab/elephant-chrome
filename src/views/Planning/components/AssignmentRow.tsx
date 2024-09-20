@@ -110,7 +110,7 @@ const AssignmentRowContent = ({ index, onSelect }: {
       <div className="flex flex-row gap-6 items-center justify-items-between justify-between">
 
         <div className="flex grow gap-4 items-center">
-          <AssignmentType path={`core/assignment[${index}].meta.core/assignment-type`} />
+          <AssignmentType path={`meta.core/assignment[${index}].meta.core/assignment-type`} />
           <AssigneeAvatars assignees={authors.map((author) => author.name)} />
 
           <div className="hidden items-center @3xl/view:flex">

@@ -23,6 +23,7 @@ export const Category = (): JSX.Element => {
     <Awareness name='Category' ref={setFocused}>
       <ComboBox
         max={3}
+        sortOrder='label'
         size='xs'
         options={allCategories}
         selectedOptions={selectedOptions}

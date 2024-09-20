@@ -13,9 +13,9 @@ import {
   TabsTrigger,
   TabsContent,
   Tooltip
+  , ComboBox
 } from '@ttab/elephant-ui'
 import { useRegistry } from '@/hooks'
-import { ComboBox } from '@/components/ui'
 import { dateToReadableDateTime, is12HourcycleFromLocale } from '@/lib/datetime'
 import { Awareness } from '@/components'
 import { NewsValueSkeleton } from './NewsValueSkeleton'
@@ -183,12 +183,12 @@ function TimePicker({ value, onSelect, locale }: TimePickerProps): JSX.Element {
     return timesList
   }, [locale])
 
-  const selectedOption = timesList.find(time => time.value === value)
+  const selectedOptions = timesList.filter(time => time.value === value)
   return (
     <ComboBox
       options={timesList}
-      selectedOption={selectedOption}
-      placeholder={selectedOption?.label || 'Select a time...'}
+      selectedOptions={selectedOptions}
+      placeholder={selectedOptions[0]?.label || 'Select a time...'}
       onSelect={(option) => {
         onSelect(option.value)
       }}

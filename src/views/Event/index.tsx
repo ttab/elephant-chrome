@@ -19,7 +19,6 @@ import {
   DocumentStatus,
   Newsvalue,
   Title,
-  VisibilityStatus,
   Section,
   Story,
   Registration,
@@ -115,7 +114,6 @@ const EventViewContent = (props: ViewProps & { documentId: string }): JSX.Elemen
           <ViewHeader.Content>
             <div className='flex w-full h-full items-center space-x-2'>
               <DocumentStatus status={documentStatus} setStatus={setDocumentStatus} />
-              <VisibilityStatus />
               <Newsvalue />
             </div>
           </ViewHeader.Content>

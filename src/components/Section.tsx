@@ -22,10 +22,11 @@ export const Section = ({ onValidation }: {
   const selectedOptions = (allSections || [])?.filter(s => s.value === section?.uuid)
 
   return (
-    <Awareness name='PlanSection' ref={setFocused} className='flex flex-col gap-2'>
+    <Awareness name='Section' ref={setFocused} className='flex flex-col gap-2'>
       <ComboBox
         max={1}
         size='xs'
+        sortOrder='label'
         options={allSections}
         selectedOptions={selectedOptions}
         placeholder={section?.title || 'Lägg till sektion'}
