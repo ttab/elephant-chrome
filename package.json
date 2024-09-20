@@ -51,6 +51,7 @@
     "next-auth": "^5.0.0-beta.20",
     "node-html-parser": "^6.1.13",
     "pino": "^9.3.2",
+    "pino-http": "^10.3.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "redis": "^4.7.0",
