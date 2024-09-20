@@ -5,9 +5,10 @@ import { CalendarFoldIcon, CalendarClockIcon, Clock1Icon, Clock2Icon, Clock3Icon
 import { useYValue } from '@/hooks/useYValue'
 import { useState, useRef, useEffect } from 'react'
 import { Block } from '@/protos/service'
-import { TimeMenu } from './TimeMenu'
+import { TimeDeliveryMenu } from './TimeDeliveryMenu'
 import { cn } from '@ttab/elephant-ui/utils'
 import { AssignmentValueOption } from './types'
+import { ExcecutionTimeItems } from './ExcecutionTimeItems'
 
 const iconProps = {
   size: 18,
@@ -66,52 +67,11 @@ export const timePickTypes: AssignmentValueOption[] = [
   },
   {
     label: 'Välj tid',
-    value: 'startexcecution',
+    value: 'start-end-excecution',
     icon: CalendarClockIcon,
     iconProps
   }
 ]
-
-// const timeSlots:
-//   {
-//     name: string,
-//     timeSlotType: DefaultValueOption,
-//     slots?: string[],
-//     median?: string
-//   }[] = [
-//     {
-//       name: 'morning',
-//       timeSlotType: timeSlotTypes[1],
-//       slots: ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'],
-//       median: '7'
-//     },
-//     {
-//       name: 'forenoon',
-//       timeSlotType: timeSlotTypes[2],
-//       slots: ['10', '11', '12', '13'],
-//       median: '11'
-//     },
-//     {
-//       name: 'afternoon',
-//       timeSlotType: timeSlotTypes[3],
-//       slots: ['14', '15', '16', '17'],
-//       median: '15'
-//     },
-//     {
-//       name: 'evening',
-//       timeSlotType: timeSlotTypes[4],
-//       slots: ['18', '19', '20', '21', '22', '23'],
-//       median: '21'
-//     },
-//     // {
-//     //   name: 'fullday',
-//     //   timeSlotType: timeSlotTypes[0]
-//     // },
-//     // {
-//     //   name: 'timestamp',
-//     //   timeSlotType: timePickTypes[0]
-//     // }
-//   ]
 
 const getTimeSlot = (timeSlot: string) => {
   return timeSlotTypes.find(type => type.slots?.includes(timeSlot))
@@ -124,10 +84,10 @@ const getMedianSlot = (slots: AssignmentValueOption[], value: string) => {
 
 const getMidnightISOString = (endDate: string) => {
 
-    const endDateString = `${endDate}T00:00:00`
-    const endDateIsoString = (new Date(endDateString)).toISOString()
-    console.log('XXX endDateString', endDateIsoString)
-    return endDateIsoString
+  const endDateString = `${endDate}T00:00:00`
+  const endDateIsoString = (new Date(endDateString)).toISOString()
+  console.log('XXX endDateString', endDateIsoString)
+  return endDateIsoString
 }
 
 const getEndDateTimeISOString = (endDate: string, hours: number) => {
@@ -158,9 +118,9 @@ export const AssignmentTime = ({ index }: {
 
   const [assignmentType] = useYValue<string>(`meta.core/assignment[${index}].meta.core/assignment-type[0].value`)
   const [data, setData] = useYValue<AssignmentData>(`meta.core/assignment[${index}].data`)
-  const { full_day: fullDay, end, publish_slot: publishSlot, end_date: endDate } = data || {}
+  const { full_day: fullDay, end, publish_slot: publishSlot, end_date: endDate, start_date: startDate } = data || {}
   // const [ass] = useYValue<AssignmentData>(`meta.core/assignment[${index}]`)
-  // console.log('XXX ass', ass)
+  console.log('XXX data', data)
 
   let selectedLabel = ''
   timeSlotTypes.concat(timePickTypes)
@@ -192,7 +152,7 @@ export const AssignmentTime = ({ index }: {
     switch (value) {
       case 'fullday':
 
-        setData( Block.create({
+        setData(Block.create({
           data: {
             end_date: data?.end_date,
             full_day: 'true',
@@ -238,7 +198,21 @@ export const AssignmentTime = ({ index }: {
           }
         }).data)
         break;
-      case 'xxx':
+      case 'start-end-excecution':
+        const startDateString = `${endDate}T${selectValue}`
+        const startDateIsoString = new Date(startDateString).toISOString()
+        console.log('start-end-excecution', startDateIsoString)
+        setData(Block.create({
+          data: {
+            end_date: data?.end_date,
+            full_day: 'false',
+            start_date: data?.start_date,
+            // end: endDateIsoString,
+            start: startDateIsoString,
+            public: data?.public,
+            publish: data?.publish,
+          }
+        }).data)
         break;
       default:
 
@@ -246,18 +220,44 @@ export const AssignmentTime = ({ index }: {
     }
   }
 
-  return (
-    <TimeMenu
-      handleOnSelect={handleOnSelect}
-      className='w-fit text-muted-foreground font-sans font-normal text-ellipsis px-2 h-7'
-      selectedOption={selectedOption}
-      index={index}
-
-    >
-      {selectedOption?.icon
-        ? <div><selectedOption.icon {...iconProps} className={cn('text-foreground', className)} />{selectedLabel} </div>
-        : <CalendarFoldIcon size={18} strokeWidth={1.75} className={'text-muted-foreground'} />
+  const onExcecutionTimeSelect = (
+    {excecutionStart, executionEnd}:
+    {excecutionStart: string | undefined, executionEnd: string | undefined}) => {
+    const block = Block.create({
+      data: {
+        end_date: data?.end_date,
+        full_day: 'false',
+        start_date: data?.start_date,
+        end: executionEnd,
+        start: excecutionStart,
+        public: data?.public,
+        publish: data?.publish,
       }
-    </TimeMenu>
+    })
+
+    if (!excecutionStart) {delete block.data.start}
+    if (!executionEnd) { delete block.data.end}
+
+    setData(block.data)
+  }
+
+  return (
+
+    (assignmentType && assignmentType === 'picture') ?
+      (<ExcecutionTimeItems handleOnSelect={onExcecutionTimeSelect} index={index} startDate={startDate as string}/>)
+
+      : (<TimeDeliveryMenu
+        handleOnSelect={handleOnSelect}
+        className='w-fit text-muted-foreground font-sans font-normal text-ellipsis px-2 h-7'
+        selectedOption={selectedOption}
+        index={index}
+
+      >
+        {selectedOption?.icon
+          ? <div><selectedOption.icon {...iconProps} className={cn('text-foreground', className)} />{selectedLabel} </div>
+          : <CalendarFoldIcon size={18} strokeWidth={1.75} className={'text-muted-foreground'} />
+        }
+      </TimeDeliveryMenu>)
+
   )
 }

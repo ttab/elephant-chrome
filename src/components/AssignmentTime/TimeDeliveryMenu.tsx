@@ -31,7 +31,7 @@ interface TimeMenuProps extends React.PropsWithChildren {
   index: number
 }
 
-export const TimeMenu = ({
+export const TimeDeliveryMenu = ({
   children,
   handleOnSelect,
   index
@@ -66,7 +66,6 @@ export const TimeMenu = ({
             </CommandGroup>
             <CommandGroup>
               <TimeSelectItem handleOnSelect={handleOnSelect} index={index}/>
-              {/* <ExcecutionTimeItems handleOnSelect={()=> {}} index={index}/> */}
             </CommandGroup>
           </CommandList>
         </Command>
