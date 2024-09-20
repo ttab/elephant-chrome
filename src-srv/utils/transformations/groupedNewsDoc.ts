@@ -5,9 +5,9 @@ import {
 } from '@/shared/protos/service.js'
 
 import type {
-  YDocumentResponse,
-  YDocument,
-  YBlockGroup
+  EleDocumentResponse,
+  EleDocument,
+  EleBlockGroup
 } from '@/shared/types/index.js'
 
 import { newsDocToSlate, slateToNewsDoc } from './newsdoc/index.js'
@@ -16,19 +16,20 @@ import { newsDocToSlate, slateToNewsDoc } from './newsdoc/index.js'
 /**
  *  Convert repository format NewsDoc to grouped YDocument format
  */
-export const toGroupedNewsDoc = (payload: GetDocumentResponse): YDocumentResponse => {
-  const { document, version } = payload
+export const toGroupedNewsDoc = (payload: GetDocumentResponse): EleDocumentResponse => {
+  // Create clone of document so not to change original document/cause sideffects
+  const { document, version } = structuredClone(payload)
 
   if (!document) {
     throw new Error('GetDocumentResponse contains no document')
   }
 
-  if (document.type === 'core/planning') {
+  if (document.type === 'core/planning-item') {
     assertPlanningHasNecessaryProperties(document)
   }
 
   // const { meta, links, content, ...properties } = document
-  const yDocument: YDocument = {
+  const yDocument: EleDocument = {
     ...document,
     content: newsDocToSlate(document.content),
     meta: group(document.meta || [], 'type'),
@@ -45,7 +46,7 @@ export const toGroupedNewsDoc = (payload: GetDocumentResponse): YDocumentRespons
 /**
  *  Convert grouped YDocument format to the repository format NewsDoc
  */
-export const fromGroupedNewsDoc = async (payload: YDocumentResponse): Promise<GetDocumentResponse> => {
+export const fromGroupedNewsDoc = async (payload: EleDocumentResponse): Promise<{ document: Document } & Omit<GetDocumentResponse, 'document'>> => {
   const { document, version } = payload
 
   if (!document) {
@@ -60,7 +61,9 @@ export const fromGroupedNewsDoc = async (payload: YDocumentResponse): Promise<Ge
     links: ungroup(document.links)
   }
 
-  assertPlanningHasNoEmptyProperties(newsDocument)
+  if (document.type === 'core/planning-item') {
+    assertPlanningHasNoEmptyProperties(newsDocument)
+  }
 
   return {
     version: BigInt(version),
@@ -76,8 +79,8 @@ export const fromGroupedNewsDoc = async (payload: YDocumentResponse): Promise<Ge
  * @param groupKey
  * @returns YBlockGroup
  */
-function group(objects: Block[], groupKey: keyof Block): YBlockGroup {
-  const groupedObjects: YBlockGroup = {}
+export function group(objects: Block[], groupKey: keyof Block): EleBlockGroup {
+  const groupedObjects: EleBlockGroup = {}
 
   objects.forEach(object => {
     const key = object[groupKey] as string | undefined
@@ -110,7 +113,7 @@ function group(objects: Block[], groupKey: keyof Block): YBlockGroup {
  * @param YBlockGroup
  * @returns Block[]
  */
-function ungroup(obj: YBlockGroup): Block[] {
+export function ungroup(obj: EleBlockGroup): Block[] {
   const result: Block[] = []
 
   Object.keys(obj).forEach(key => {
@@ -120,9 +123,9 @@ function ungroup(obj: YBlockGroup): Block[] {
         if (!item.__inProgress) {
           const newObj = Block.create({
             ...item,
-            meta: ungroup(item.meta as unknown as YBlockGroup || {}),
-            links: ungroup(item.links as unknown as YBlockGroup || {}),
-            content: ungroup(item.content as unknown as YBlockGroup || {})
+            meta: ungroup(item.meta as unknown as EleBlockGroup || {}),
+            links: ungroup(item.links as unknown as EleBlockGroup || {}),
+            content: ungroup(item.content as unknown as EleBlockGroup || {})
           })
 
           result.push(newObj as unknown as Block)
@@ -173,6 +176,7 @@ function assertPlanningHasNecessaryProperties(obj: Document | Block): void {
   if (!internalDesc) {
     obj.meta.push(Block.create({
       type: 'core/description',
+      role: 'internal',
       data: { text: '' }
     }))
   }
@@ -180,6 +184,7 @@ function assertPlanningHasNecessaryProperties(obj: Document | Block): void {
   if (!publicDesc) {
     obj.meta.push(Block.create({
       type: 'core/description',
+      role: 'public',
       data: { text: '' }
     }))
   }

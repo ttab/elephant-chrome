@@ -2,7 +2,7 @@ import * as Y from 'yjs'
 import { type Document } from '@hocuspocus/server'
 
 import type {
-  YDocumentResponse
+  EleDocumentResponse
 } from '@/shared/types/index.js'
 import { toYMap } from './lib/toYMap.js'
 import { slateNodesToInsertDelta, yTextToSlateElement } from '@slate-yjs/core'
@@ -12,7 +12,7 @@ import createHash from '@/shared/createHash.js'
 /**
  * Convert a grouped YDocumentResponse a yjs structure and add it to the provided Y.Doc
  */
-export function toYjsNewsDoc(eleDoc: YDocumentResponse, yDoc: Document | Y.Doc): void {
+export function toYjsNewsDoc(eleDoc: EleDocumentResponse, yDoc: Document | Y.Doc): void {
   const yMap = yDoc.getMap('ele')
   const { document, version } = eleDoc
 
@@ -36,7 +36,7 @@ export function toYjsNewsDoc(eleDoc: YDocumentResponse, yDoc: Document | Y.Doc):
   const yVersion = yDoc.getMap('version')
   yVersion?.set('version', version)
 
-  // Set hash
+  // Create original hash based on eleDocument content and store in yjs structure
   const originalHash = createHash(JSON.stringify(eleDoc.document))
   const yOriginalHash = yDoc.getMap('hash')
   yOriginalHash?.set('hash', originalHash)
@@ -44,9 +44,13 @@ export function toYjsNewsDoc(eleDoc: YDocumentResponse, yDoc: Document | Y.Doc):
 
 
 /**
- * Converte a yjs structure to a grouped YDocumentResponse
+ * Convert a yjs structure to a grouped YDocumentResponse
  */
-export async function fromYjsNewsDoc(yDoc: Y.Doc): Promise<YDocumentResponse> {
+export async function fromYjsNewsDoc(yDoc: Y.Doc): Promise<{
+  documentResponse: EleDocumentResponse
+  updatedHash: number | undefined
+  originalHash: number
+}> {
   const yMap = yDoc.getMap('ele')
 
   const root = yMap.get('root') as Y.Map<unknown>
@@ -58,7 +62,7 @@ export async function fromYjsNewsDoc(yDoc: Y.Doc): Promise<YDocumentResponse> {
   const yContent = yMap.get('content') as Y.XmlText
   const content = yContent.toString() ? await yTextToSlateElement(yContent).children : []
 
-  return {
+  const responseDocument = {
     version: yDoc.getMap('version').get('version') as string,
     document: {
       uuid,
@@ -71,5 +75,15 @@ export async function fromYjsNewsDoc(yDoc: Y.Doc): Promise<YDocumentResponse> {
       links,
       language
     }
+  }
+
+  const currentHash = createHash(JSON.stringify(responseDocument.document))
+  const originalHash = (yDoc.getMap('hash')?.get('hash') || 0) as number
+
+  // Return response, original hash from yjs structure and newly calculated hash
+  return {
+    documentResponse: responseDocument,
+    updatedHash: (currentHash !== originalHash) ? currentHash : undefined,
+    originalHash
   }
 }

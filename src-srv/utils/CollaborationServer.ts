@@ -21,11 +21,12 @@ import {
 
 
 import * as Y from 'yjs'
-import { yDocToNewsDoc, newsDocToYDoc } from './transformations/yjs/yDoc.js'
 import { Snapshot } from './extensions/snapshot.js'
 import { Auth } from './extensions/auth.js'
-import createHash from '../../shared/createHash.js'
 import { StatelessType, parseStateless } from '@/shared/stateless.js'
+import { fromGroupedNewsDoc, toGroupedNewsDoc } from './transformations/groupedNewsDoc.js'
+import { fromYjsNewsDoc, toYjsNewsDoc } from './transformations/yjsNewsDoc.js'
+import { type GetDocumentResponse } from '@/shared/protos/service.js'
 
 interface CollaborationServerOptions {
   name: string
@@ -151,32 +152,24 @@ export class CollaborationServer {
             throw new Error('remove in progress flag', { cause: ex })
           })
 
-          if (connection.document) {
-            const document = await yDocToNewsDoc(connection.document)
-            const currentHash = createHash(JSON.stringify(document.document))
-
-            if (document.document && msg.message.context) {
-              const result = await this.#repository.saveDoc(
-                document.document, msg.message.context.accessToken as string,
-                BigInt(document.version)
-              ).catch(ex => {
-                throw new Error('save snapshot', { cause: ex })
-              })
-
-              if (result?.status.code === 'OK') {
-                await connection.transact(doc => {
-                  const versionMap = doc.getMap('version')
-                  const hashMap = doc.getMap('hash')
-                  versionMap.set('version', result?.response.version.toString())
-                  hashMap.set('hash', currentHash)
-                }).catch(ex => {
-                  throw new Error('update document version and hash', { cause: ex })
-                })
-
-                console.debug('::: Document saved: ', result.response.version, 'new hash:', currentHash)
-              }
-            }
+          if (!connection.document || !msg.message.context) {
+            return
           }
+
+          const {
+            documentResponse,
+            updatedHash,
+            originalHash
+          } = await fromYjsNewsDoc(connection.document)
+
+          // We should always have a new hash but fallback to original
+          await this.#storeDocumentInRepository(
+            msg.message.id,
+            await fromGroupedNewsDoc(documentResponse),
+            updatedHash || originalHash,
+            msg.message.context.accessToken as string,
+            msg.message.context
+          )
         }
       }
     })
@@ -268,7 +261,10 @@ export class CollaborationServer {
     })
 
     if (newsDoc) {
-      newsDocToYDoc(yDoc, newsDoc)
+      toYjsNewsDoc(
+        toGroupedNewsDoc(newsDoc),
+        yDoc
+      )
     }
 
     // This is a new and unknown yDoc initiated from the client. Just return it
@@ -278,7 +274,7 @@ export class CollaborationServer {
   }
 
   async #snapshotDocument({ documentName, document: yDoc, context }: onStoreDocumentPayload): Promise<void> {
-    // Disregard __inProgress documents
+    // Ignore __inProgress documents
     if ((yDoc.getMap('ele')
       .get('root') as Y.Map<unknown>)
       .get('__inProgress') as boolean) {
@@ -286,55 +282,66 @@ export class CollaborationServer {
       return
     }
 
-    // Convert yDoc to newsDoc, so we can hash it and maybe save it to the repository
-    const { document } = await yDocToNewsDoc(yDoc)
-
-    // FIXME: When using new functions this hash must be created using grouped document!!!
-    const currentHash = createHash(JSON.stringify(document))
-
-    // Compare original hash with current hash to establish if there are any changes
-    // This solution relies on the same order of keys in the documents, but a change of key order
-    // should be indicate a change in the document anyway.
-    if (yDoc.getMap('hash').get('hash') === currentHash) {
+    const { documentResponse, updatedHash } = await fromYjsNewsDoc(yDoc)
+    if (!updatedHash) {
       console.debug('::: saveDoc: No changes in document')
       return
     }
 
+    // const { document, version } = await fromGroupedNewsDoc(documentResponse)
+    await this.#storeDocumentInRepository(
+      documentName,
+      await fromGroupedNewsDoc(documentResponse),
+      updatedHash,
+      context.token as string,
+      context
+    )
+  }
 
-    const versionMap = yDoc.getMap('version')
-    const version = BigInt(versionMap.get('version') as string)
-
+  async #storeDocumentInRepository(
+    documentName: string,
+    documentResponse: GetDocumentResponse,
+    updatedHash: number,
+    accessToken: string,
+    context: unknown): Promise<void> {
+    const { document, version } = documentResponse
     if (!document) {
-      throw new Error('No document to save')
+      throw new Error(`Store document ${documentName} failed, no document in GetDocumentResponse parameter`)
     }
 
-    const result = await this.#repository.saveDoc(document, context.token as string, version)
+    const result = await this.#repository.saveDoc(
+      document,
+      accessToken,
+      version
+    )
+
     if (result?.status.code !== 'OK') {
       // TODO: what does an error response look like? Is it parsed? A full twirp
       // error response looks like this:
       // https://twitchtv.github.io/twirp/docs/errors.html#metadata
-      throw new Error('save document to repository', { cause: result })
+      throw new Error('Save snapshot document to repository failed', { cause: result })
     }
 
+
     const connection = await this.#server.openDirectConnection(documentName, {
-      ...context,
+      ...context as Record<string, unknown> || {},
       agent: 'server'
     }).catch(ex => {
-      throw new Error('open hocuspocus connection', { cause: ex })
+      throw new Error('Open hocuspocus connection failed', { cause: ex })
     })
 
     await connection.transact(doc => {
       const versionMap = doc.getMap('version')
       const hashMap = doc.getMap('hash')
+
       versionMap.set('version', result?.response.version.toString())
-      hashMap.set('hash', currentHash)
+      hashMap.set('hash', updatedHash)
     }).catch(ex => {
-      throw new Error('update document with new hash', { cause: ex })
+      throw new Error('Update document with new hash and version failed', { cause: ex })
     })
 
-    console.debug('::: Snapshot saved: ', result.response.version, 'new hash:', currentHash)
+    console.debug('::: Document saved to repository: ', result.response.version, 'new hash:', updatedHash)
   }
-
 
   /**
    * Called for every provider that connects to track a specific document.

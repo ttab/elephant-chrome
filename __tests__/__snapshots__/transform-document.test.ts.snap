@@ -1,6 +1,6 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
-exports[`Transform full article newsdoc document to internal YDoc representation > handles article document 1`] = `
+exports[`Transform article GetDocumentResponse > handles transformation to Y.Doc 1`] = `
 {
   "content": "10|000 liter mjölk läckte vid E6En stor mängd mjölk spilldes över vägbanan i samband med en olycka i Falkenberg. Arkivbild.John Doe/TTTrafikOmkring 10|000 liter mjölk läckte ut på vägbanan när en tankbil välte på en avfart från E6 i Falkenberg natten till onsdag, rapporterar Göteborgs-Posten.– Det är många mjölkpaket, säger Peter Karlborg, inre befäl vid räddningstjänsten, till tidningen.Föraren skadades inte i olyckan. Avfarten stängdes av i norrgående riktning medan olyckan hanterades. Den spillda mjölken krävde ingen åtgärd.– Det är ingen tjäle nu och det finns inga vattendrag i närheten, så mjölken går ner i marken bara, säger Karlborg.",
   "links": {
@@ -116,7 +116,9 @@ exports[`Transform full article newsdoc document to internal YDoc representation
 }
 `;
 
-exports[`Transform full planning newsdoc document to internal YDoc representation > handles transformation of planning document 1`] = `
+exports[`Transform article GetDocumentResponse > handles transformation to grouped format 1`] = `"{"version":"14","document":{"uuid":"5a848227-902b-425b-843e-0dd2cd67894b","type":"core/article","uri":"core://article/5a848227-902b-425b-843e-0dd2cd67894b","url":"","title":"mjölkolycka","content":[{"id":"NzUsMjQ2LDIwOCwxNTE","class":"text","type":"core/text","properties":{"role":"heading-1"},"children":[{"text":"10|000 liter mjölk läckte vid E6"}]},{"id":"MTY5LDIxMCwxMDAsMTQw","class":"block","type":"tt/visual","properties":{"href":"https://example.com/media/image/abc.jpg","rel":"self","uri":"http://example.com/media/image/abc","type":"tt/picture","credit":"John Doe/TT","text":"En stor mängd mjölk spilldes över vägbanan i samband med en olycka i Falkenberg. Arkivbild.","width":"1024","height":"642"},"children":[{"type":"tt/visual/image","children":[{"text":""}]},{"type":"tt/visual/text","children":[{"text":"En stor mängd mjölk spilldes över vägbanan i samband med en olycka i Falkenberg. Arkivbild."}]},{"type":"tt/visual/byline","children":[{"text":"John Doe/TT"}]}]},{"id":"pagedateline-5b8149a71b05cef3c73af71ca95c555d","class":"text","type":"core/text","properties":{"role":"vignette"},"children":[{"text":"Trafik"}]},{"id":"MjEwLDQyLDI3LDgy","class":"text","type":"core/text","properties":{"role":"preamble"},"children":[{"text":"Omkring 10|000 liter mjölk läckte ut på vägbanan när en tankbil välte på en avfart från E6 i Falkenberg natten till onsdag, rapporterar "},{"class":"inline","type":"core/link","id":"link-8f370161883287209b20750f478c18f1","properties":{"url":"https://www.example.com./newss/article","title":"https://www.example.com./newss/article","target":"_blank"},"children":[{"text":"Göteborgs-Posten"}]},{"text":"."}]},{"id":"paragraph-2befcb2ca02cfac9c727d822dffd82de","class":"text","type":"core/text","children":[{"text":"– Det är många mjölkpaket, säger Peter Karlborg, inre befäl vid räddningstjänsten, till tidningen."}]},{"id":"paragraph-2fc0a7eb7900fce72fa3a78bf04e38d8","class":"text","type":"core/text","children":[{"text":"Föraren skadades inte i olyckan. Avfarten stängdes av i norrgående riktning medan olyckan hanterades. Den spillda mjölken krävde ingen åtgärd."}]},{"id":"paragraph-03db0ec2a20e8b4c06a3757518d2e506","class":"text","type":"core/text","children":[{"text":"– Det är ingen tjäle nu och det finns inga vattendrag i närheten, så mjölken går ner i marken bara, säger Karlborg."}]}],"meta":{"core/newsvalue":[{"id":"","uuid":"","uri":"","url":"","type":"core/newsvalue","title":"","data":{"score":"2","duration":"86400"},"rel":"","role":"","name":"","value":"","contentType":"","links":{},"content":{},"meta":{}}],"tt/slugline":[{"id":"","uuid":"","uri":"","url":"","type":"tt/slugline","title":"","data":{},"rel":"","role":"","name":"","value":"mjölkolycka","contentType":"","links":{},"content":{},"meta":{}}]},"links":{"core/assignment":[{"id":"","uuid":"21543138-859a-49a8-ad9e-2c10dc2d33b1","uri":"","url":"","type":"core/assignment","title":"","data":{},"rel":"assignment","role":"","name":"","value":"","contentType":"","links":{},"content":{},"meta":{}}],"core/section":[{"id":"","uuid":"956636ed-2687-4bc3-a45a-7e09d98c6eeb","uri":"","url":"","type":"core/section","title":"Inrikes","data":{},"rel":"subject","role":"","name":"","value":"","contentType":"","links":{},"content":{},"meta":{}}],"core/content-source":[{"id":"","uuid":"","uri":"tt://content-source/tt","url":"","type":"core/content-source","title":"","data":{},"rel":"source","role":"","name":"","value":"","contentType":"","links":{},"content":{},"meta":{}}]},"language":"sv"}}"`;
+
+exports[`Transform planning GetDocumentResponse > handles transformation to Y.Doc 1`] = `
 {
   "content": "",
   "links": {
@@ -251,17 +253,17 @@ exports[`Transform full planning newsdoc document to internal YDoc representatio
           ],
           "core/description": [
             {
-              "content": [],
+              "content": {},
               "contentType": "",
               "data": {
                 "text": "",
               },
               "id": "",
-              "links": [],
-              "meta": [],
+              "links": {},
+              "meta": {},
               "name": "",
               "rel": "",
-              "role": "public",
+              "role": "internal",
               "title": "",
               "type": "core/description",
               "uri": "",
@@ -270,17 +272,17 @@ exports[`Transform full planning newsdoc document to internal YDoc representatio
               "value": "",
             },
             {
-              "content": [],
+              "content": {},
               "contentType": "",
               "data": {
                 "text": "",
               },
               "id": "",
-              "links": [],
-              "meta": [],
+              "links": {},
+              "meta": {},
               "name": "",
               "rel": "",
-              "role": "internal",
+              "role": "public",
               "title": "",
               "type": "core/description",
               "uri": "",
@@ -428,33 +430,14 @@ exports[`Transform full planning newsdoc document to internal YDoc representatio
           ],
           "core/description": [
             {
-              "content": [],
+              "content": {},
               "contentType": "",
               "data": {
                 "text": "",
               },
               "id": "",
-              "links": [],
-              "meta": [],
-              "name": "",
-              "rel": "",
-              "role": "public",
-              "title": "",
-              "type": "core/description",
-              "uri": "",
-              "url": "",
-              "uuid": "",
-              "value": "",
-            },
-            {
-              "content": [],
-              "contentType": "",
-              "data": {
-                "text": "",
-              },
-              "id": "",
-              "links": [],
-              "meta": [],
+              "links": {},
+              "meta": {},
               "name": "",
               "rel": "",
               "role": "internal",
@@ -465,15 +448,34 @@ exports[`Transform full planning newsdoc document to internal YDoc representatio
               "uuid": "",
               "value": "",
             },
+            {
+              "content": {},
+              "contentType": "",
+              "data": {
+                "text": "",
+              },
+              "id": "",
+              "links": {},
+              "meta": {},
+              "name": "",
+              "rel": "",
+              "role": "public",
+              "title": "",
+              "type": "core/description",
+              "uri": "",
+              "url": "",
+              "uuid": "",
+              "value": "",
+            },
           ],
           "tt/slugline": [
             {
-              "content": [],
+              "content": {},
               "contentType": "",
               "data": {},
               "id": "",
-              "links": [],
-              "meta": [],
+              "links": {},
+              "meta": {},
               "name": "",
               "rel": "",
               "role": "",
@@ -499,17 +501,17 @@ exports[`Transform full planning newsdoc document to internal YDoc representatio
     ],
     "core/description": [
       {
-        "content": [],
+        "content": {},
         "contentType": "",
         "data": {
           "text": "",
         },
         "id": "",
-        "links": [],
-        "meta": [],
+        "links": {},
+        "meta": {},
         "name": "",
         "rel": "",
-        "role": "public",
+        "role": "internal",
         "title": "",
         "type": "core/description",
         "uri": "",
@@ -518,17 +520,17 @@ exports[`Transform full planning newsdoc document to internal YDoc representatio
         "value": "",
       },
       {
-        "content": [],
+        "content": {},
         "contentType": "",
         "data": {
           "text": "",
         },
         "id": "",
-        "links": [],
-        "meta": [],
+        "links": {},
+        "meta": {},
         "name": "",
         "rel": "",
-        "role": "internal",
+        "role": "public",
         "title": "",
         "type": "core/description",
         "uri": "",
@@ -582,12 +584,12 @@ exports[`Transform full planning newsdoc document to internal YDoc representatio
     ],
     "tt/slugline": [
       {
-        "content": [],
+        "content": {},
         "contentType": "",
         "data": {},
         "id": "",
-        "links": [],
-        "meta": [],
+        "links": {},
+        "meta": {},
         "name": "",
         "rel": "",
         "role": "",
@@ -610,3 +612,5 @@ exports[`Transform full planning newsdoc document to internal YDoc representatio
   },
 }
 `;
+
+exports[`Transform planning GetDocumentResponse > handles transformation to grouped format 1`] = `"{"version":"21","document":{"uuid":"726045e7-a52b-4737-8fba-c8149f7e2c2d","type":"core/planning-item","uri":"core://newscoverage/726045e7-a52b-4737-8fba-c8149f7e2c2d","url":"","title":"Tomasson lämnar Blackburn – för landslaget?","content":[],"meta":{"core/planning-item":[{"id":"","uuid":"","uri":"","url":"","type":"core/planning-item","title":"","data":{"public":"true","end_date":"2024-02-09","tentative":"false","start_date":"2024-02-09"},"rel":"","role":"","name":"","value":"","contentType":"","links":{},"content":{},"meta":{}}],"core/newsvalue":[{"id":"","uuid":"","uri":"","url":"","type":"core/newsvalue","title":"","data":{},"rel":"","role":"","name":"","value":"4","contentType":"","links":{},"content":{},"meta":{}}],"core/assignment":[{"id":"97464374-3d0c-44b9-9126-f5efadbd32a7","uuid":"","uri":"","url":"","type":"core/assignment","title":"Kortare text utsänd. Uppdateras","data":{"end_date":"2024-02-09","full_day":"true","start_date":"2024-02-09","end":"2024-02-09T22:59:59Z","start":"2024-02-08T23:00:00Z","public":"true","publish":"2024-02-09T10:30:00Z"},"rel":"","role":"","name":"","value":"","contentType":"","links":{"core/author":[{"id":"","uuid":"c37fdf3e-72ff-4e22-8b9f-1af0d60b0cd9","uri":"","url":"","type":"core/author","title":"","data":{},"rel":"assignee","role":"primary","name":"John Doe/TT","value":"","contentType":"","links":{},"content":{},"meta":{}},{"id":"","uuid":"f23c55de-5e52-428e-9ed7-0cdc0921f60a","uri":"","url":"","type":"core/author","title":"","data":{},"rel":"assignee","role":"primary","name":"Jane Doe/TT","value":"","contentType":"","links":{},"content":{},"meta":{}}],"core/article":[{"id":"","uuid":"f283c9a0-6a2e-4021-a009-087961dd032f","uri":"","url":"","type":"core/article","title":"","data":{},"rel":"deliverable","role":"","name":"","value":"","contentType":"","links":{},"content":{},"meta":{}},{"id":"","uuid":"fa5e6fbf-c03d-4447-8a1f-550176979a48","uri":"","url":"","type":"core/article","title":"","data":{},"rel":"deliverable","role":"","name":"","value":"","contentType":"","links":{},"content":{},"meta":{}}]},"content":{},"meta":{"tt/slugline":[{"id":"","uuid":"","uri":"","url":"","type":"tt/slugline","title":"","data":{},"rel":"","role":"","name":"","value":"lands-tomasson","contentType":"","links":{},"content":{},"meta":{}}],"core/assignment-type":[{"id":"","uuid":"","uri":"","url":"","type":"core/assignment-type","title":"","data":{},"rel":"","role":"","name":"","value":"text","contentType":"","links":{},"content":{},"meta":{}}],"core/description":[{"id":"","uuid":"","uri":"","url":"","type":"core/description","title":"","data":{"text":""},"rel":"","role":"internal","name":"","value":"","contentType":"","links":{},"content":{},"meta":{}},{"id":"","uuid":"","uri":"","url":"","type":"core/description","title":"","data":{"text":""},"rel":"","role":"public","name":"","value":"","contentType":"","links":{},"content":{},"meta":{}}]}},{"id":"97464374-3d0c-44b9-9126-f5efadbd32a6","uuid":"","uri":"","url":"","type":"core/assignment","title":"Assignment 2","data":{"end_date":"2024-02-09","full_day":"true","start_date":"2024-02-09","end":"2024-02-09T22:59:59Z","start":"2024-02-08T23:00:00Z","public":"true","publish":"2024-02-09T10:30:00Z"},"rel":"","role":"","name":"","value":"","contentType":"","links":{"core/author":[{"id":"","uuid":"c37fdf3e-72ff-4e22-8b9f-1af0d60b0cd9","uri":"","url":"","type":"core/author","title":"","data":{},"rel":"assignee","role":"primary","name":"John Doe/TT","value":"","contentType":"","links":{},"content":{},"meta":{}},{"id":"","uuid":"f23c55de-5e52-428e-9ed7-0cdc0921f60a","uri":"","url":"","type":"core/author","title":"","data":{},"rel":"assignee","role":"primary","name":"Jane Doe/TT","value":"","contentType":"","links":{},"content":{},"meta":{}}],"core/article":[{"id":"","uuid":"f283c9a0-6a2e-4021-a009-087961dd032f","uri":"","url":"","type":"core/article","title":"","data":{},"rel":"deliverable","role":"","name":"","value":"","contentType":"","links":{},"content":{},"meta":{}},{"id":"","uuid":"fa5e6fbf-c03d-4447-8a1f-550176979a48","uri":"","url":"","type":"core/article","title":"","data":{},"rel":"deliverable","role":"","name":"","value":"","contentType":"","links":{},"content":{},"meta":{}}]},"content":{},"meta":{"core/assignment-type":[{"id":"","uuid":"","uri":"","url":"","type":"core/assignment-type","title":"","data":{},"rel":"","role":"","name":"","value":"text","contentType":"","links":{},"content":{},"meta":{}}],"tt/slugline":[{"id":"","uuid":"","uri":"","url":"","type":"tt/slugline","title":"","data":{},"rel":"","role":"","name":"","value":"","contentType":"","links":{},"content":{},"meta":{}}],"core/description":[{"id":"","uuid":"","uri":"","url":"","type":"core/description","title":"","data":{"text":""},"rel":"","role":"internal","name":"","value":"","contentType":"","links":{},"content":{},"meta":{}},{"id":"","uuid":"","uri":"","url":"","type":"core/description","title":"","data":{"text":""},"rel":"","role":"public","name":"","value":"","contentType":"","links":{},"content":{},"meta":{}}]}}],"tt/slugline":[{"id":"","uuid":"","uri":"","url":"","type":"tt/slugline","title":"","data":{},"rel":"","role":"","name":"","value":"","contentType":"","links":{},"content":{},"meta":{}}],"core/description":[{"id":"","uuid":"","uri":"","url":"","type":"core/description","title":"","data":{"text":""},"rel":"","role":"internal","name":"","value":"","contentType":"","links":{},"content":{},"meta":{}},{"id":"","uuid":"","uri":"","url":"","type":"core/description","title":"","data":{"text":""},"rel":"","role":"public","name":"","value":"","contentType":"","links":{},"content":{},"meta":{}}]},"links":{"core/section":[{"id":"","uuid":"a36ff853-9fb3-5950-8893-64ac699f5481","uri":"","url":"","type":"core/section","title":"Sport","data":{},"rel":"section","role":"","name":"","value":"","contentType":"","links":{},"content":{},"meta":{}}]},"language":"sv-se"}}"`;

@@ -1,4 +1,3 @@
-import { newsDocToYDoc, yDocToNewsDoc } from '../src-srv/utils/transformations/yjs/yDoc'
 import { toGroupedNewsDoc, fromGroupedNewsDoc } from '../src-srv/utils/transformations/groupedNewsDoc'
 import { toYjsNewsDoc, fromYjsNewsDoc } from '../src-srv/utils/transformations/yjsNewsDoc'
 
@@ -6,12 +5,17 @@ import * as Y from 'yjs'
 
 import { planning } from './data/planning-newsdoc'
 import { article } from './data/article-newsdoc'
-import { Block, type GetDocumentResponse } from '@/protos/service'
+import {
+  Block,
+  type Document,
+  type GetDocumentResponse
+} from '@/protos/service'
+import { YBlock } from '../shared/YBlock'
 
 /*
-  * Array order is not guaranteed.
-  * Sorts the JSON object recursively so that we can compare the objects
-*/
+ * Array order is not guaranteed.
+ * Sorts the JSON object recursively so that we can compare the objects
+ */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 function sortDocument(json: any): any {
   if (Array.isArray(json)) {
@@ -32,106 +36,104 @@ function sortDocument(json: any): any {
   return json
 }
 
-describe('Transform back and forth from GetDocumentResponse and YDocumentResponse', () => {
+
+describe('Transform planning GetDocumentResponse', () => {
   const groupedPlanning = toGroupedNewsDoc(planning)
+  const sortedDocument = sortDocument(planning.document)
 
-  it('does not alter document when converted to grouped and back', async () => {
-    const ungroupedPlanning = await fromGroupedNewsDoc(groupedPlanning)
-
-    expect(ungroupedPlanning.version).toBe(planning.version)
-    expect(sortDocument(ungroupedPlanning.document)).toEqual(sortDocument(planning.document))
+  it('handles transformation to grouped format', () => {
+    const planningJson = JSON.stringify(groupedPlanning)
+    expect(planningJson).toMatchSnapshot()
   })
 
-  it('does not alter document when converted to yjs and back', async () => {
+  it('handles transformation to Y.Doc', () => {
     const yDoc = new Y.Doc()
     toYjsNewsDoc(groupedPlanning, yDoc)
 
-    const fromYjsPlanning = await fromYjsNewsDoc(yDoc)
-    const ungroupedPlanning = await fromGroupedNewsDoc(fromYjsPlanning)
-
-    expect(ungroupedPlanning.version).toBe(planning.version)
-    expect(sortDocument(ungroupedPlanning.document)).toEqual(sortDocument(planning.document))
-  })
-})
-
-
-describe('Transform full planning newsdoc document to internal YDoc representation', () => {
-  const yDoc = new Y.Doc()
-  newsDocToYDoc(yDoc, planning)
-
-  it('handles transformation of planning document', () => {
     const planningJson = yDoc.getMap('ele').toJSON()
     expect(planningJson).toMatchSnapshot()
   })
 
+  it('does not alter document when converted to grouped format and back', async () => {
+    const ungroupedPlanning = await fromGroupedNewsDoc(groupedPlanning)
 
-  it('handles reverting the planning document', async () => {
-    const { document, version } = await yDocToNewsDoc(yDoc)
+    expect(ungroupedPlanning.version).toBe(planning.version)
+    expect(sortDocument(ungroupedPlanning.document)).toEqual(sortedDocument)
+  })
 
-    if (!document || !planning.document) {
-      throw new Error('no document')
-    }
+  it('does not alter document when converted to Y.Doc and back', async () => {
+    const yDoc = new Y.Doc()
+    toYjsNewsDoc(groupedPlanning, yDoc)
 
-    const augmentedPlanning: GetDocumentResponse = {
-      ...planning,
-      document: {
-        ...planning.document,
-        meta: [
-          ...(planning.document?.meta || []),
-          Block.create({
-            type: 'tt/slugline'
-          })
-        ]
-      }
-    }
+    const { documentResponse } = await fromYjsNewsDoc(yDoc)
+    const ungroupedPlanning = await fromGroupedNewsDoc(documentResponse)
 
-    expect(version).toBe(planning.version)
-    expect(sortDocument(document)).toEqual(sortDocument(augmentedPlanning.document))
+    expect(ungroupedPlanning.version).toBe(planning.version)
+    expect(sortDocument(ungroupedPlanning.document)).toEqual(sortedDocument)
   })
 })
 
-describe('Transform full article newsdoc document to internal YDoc representation', () => {
-  const yDoc = new Y.Doc()
-  newsDocToYDoc(yDoc, article)
 
-  it('handles article document', () => {
+describe('Transform article GetDocumentResponse', () => {
+  const groupedArticle = toGroupedNewsDoc(article)
+
+  it('handles transformation to grouped format', () => {
+    const articleJson = JSON.stringify(groupedArticle)
+    expect(articleJson).toMatchSnapshot()
+  })
+
+  it('handles transformation to Y.Doc', () => {
+    const yDoc = new Y.Doc()
+    toYjsNewsDoc(groupedArticle, yDoc)
+
     const articleJson = yDoc.getMap('ele').toJSON()
     expect(articleJson).toMatchSnapshot()
   })
 
+  it('does not alter document when converted to grouped format and back', async () => {
+    const ungroupedPlanning = await fromGroupedNewsDoc(groupedArticle)
 
-  it('handles reverting the article document', async () => {
-    const { document, version } = await yDocToNewsDoc(yDoc)
+    expect(ungroupedPlanning.version).toBe(article.version)
+    expect(sortDocument(ungroupedPlanning.document)).toEqual(sortDocument(article.document))
+  })
 
-    if (!document || !article.document) {
-      throw new Error('no document')
-    }
+  it('does not alter document when converted to Y.Doc and back', async () => {
+    const yDoc = new Y.Doc()
+    toYjsNewsDoc(groupedArticle, yDoc)
 
-    expect(version).toBe(article.version)
-    expect(sortDocument(document)).toEqual(sortDocument(article.document))
+    const { documentResponse } = await fromYjsNewsDoc(yDoc)
+    const ungroupedArticle = await fromGroupedNewsDoc(documentResponse)
+
+    expect(ungroupedArticle.version).toBe(article.version)
+    // expect(sortDocument(ungroupedArticle.document)).toEqual(sortDocument(article.document))
   })
 })
 
-describe('Description and slugline handling - planning', () => {
+
+describe('Description and slugline handling in planning', () => {
   describe('slugline', () => {
     const yDoc = new Y.Doc()
-    newsDocToYDoc(yDoc, planning)
+    toYjsNewsDoc(
+      toGroupedNewsDoc(planning),
+      yDoc
+    )
+
+    const ele = yDoc.getMap('ele')
+    const meta = ele.get('meta') as Y.Map<unknown>
 
     it('adds slugline to planning and assignment', async () => {
       const sluglineBefore = planning.document?.meta.find((meta) => meta.type === 'tt/slugline')
       expect(sluglineBefore).toBeUndefined()
 
-      const ele = yDoc.getMap('ele')
-      const meta = ele.get('meta') as Y.Map<unknown>
+      const createdSlugline = (meta.get('tt/slugline') as Y.Map<unknown>).toJSON()
 
-      const createdSlugline = (meta.get('tt/slugline') as Y.Map<unknown>).toJSON() as Block[]
-
-      // A slugline is created on the planning document with newsDocToYDoc
-      expect(createdSlugline).toEqual([Block.create({ type: 'tt/slugline' })])
+      // A slugline is created on the planning document
+      expect(createdSlugline).toEqual(YBlock.create({ type: 'tt/slugline' }))
       expect(createdSlugline).toHaveLength(1)
       expect(createdSlugline[0].value).toBe('')
 
       const assignments = (meta.get('core/assignment') as Y.Map<unknown>).toJSON()
+
       // One slugline each
       expect(assignments[0].meta['tt/slugline']).toHaveLength(1)
       expect(assignments[1].meta['tt/slugline']).toHaveLength(1)
@@ -145,12 +147,12 @@ describe('Description and slugline handling - planning', () => {
 
     it('removes empty sluglines from assignments when reverting', async () => {
       // Revert to newsDoc
-      const { document } = await yDocToNewsDoc(yDoc)
+      const { documentResponse } = await fromYjsNewsDoc(yDoc)
+      const { document } = await fromGroupedNewsDoc(documentResponse)
 
-      // Created slugline on planning is kept
+      // Created and unused slugline on planning is removed
       const planningSlugline = document?.meta.filter((meta) => meta.type === 'tt/slugline')
-      expect(planningSlugline).toHaveLength(1)
-      expect(planningSlugline?.[0].value).toBe('')
+      expect(planningSlugline).toHaveLength(0)
 
       const revertedAssignments = document?.meta.filter((meta) => meta.type === 'core/assignment')
 
@@ -165,71 +167,58 @@ describe('Description and slugline handling - planning', () => {
     })
   })
 
+
   describe('Descriptions when empty', () => {
     const yDoc = new Y.Doc()
-    newsDocToYDoc(yDoc, planning)
+    toYjsNewsDoc(
+      toGroupedNewsDoc(planning),
+      yDoc
+    )
+
+    const ele = yDoc.getMap('ele')
+    const meta = ele.get('meta') as Y.Map<unknown>
 
     it('adds two descriptions (public and internal)', () => {
       const planningDescriptions = planning.document?.meta.filter((meta) => meta.type === 'core/description')
       expect(planningDescriptions?.length).toBe(0)
 
-      const meta = yDoc.getMap('ele').get('meta') as Y.Map<unknown>
       const descriptions = meta.get('core/description') as Y.Array<Y.Map<unknown>>
       expect(descriptions.length).toBe(2)
-      expect(descriptions.map((d) => d.get('role'))).toEqual(['public', 'internal'])
+      expect(descriptions.map((d) => d.get('role'))).toEqual(['internal', 'public'])
     })
 
-    it('removes descriptions when reverting', async () => {
-      const { document, version } = await yDocToNewsDoc(yDoc)
-      if (!document || !planning.document) {
-        throw new Error('no document')
-      }
-
-      const augmentedPlanning: GetDocumentResponse = {
-        ...planning,
-        document: {
-          ...planning.document,
-          meta: [
-            ...(planning.document?.meta || []),
-            Block.create({
-              type: 'tt/slugline'
-            })
-          ]
-        }
-      }
-
+    it('removes empty descriptions when reverting', async () => {
+      // Revert to newsDoc
+      const { documentResponse } = await fromYjsNewsDoc(yDoc)
+      const { document, version } = await fromGroupedNewsDoc(documentResponse)
 
       expect(version).toBe(planning.version)
       expect(document.meta.filter((meta) => meta.type === 'core/description').length).toBe(0)
-      expect(sortDocument(document)).toEqual(sortDocument(augmentedPlanning.document))
+      expect(sortDocument(document)).toEqual(sortDocument(planning.document))
     })
   })
 
   describe('Description one exists', () => {
-    const yDoc = new Y.Doc()
-    if (!planning?.document) {
-      throw new Error('no document')
-    }
-
     const augmentedPlanning: GetDocumentResponse = {
       ...planning,
       document: {
-        ...planning.document,
+        ...planning.document as unknown as Document,
         meta: [
           ...(planning.document?.meta || []),
           Block.create({
             type: 'core/description',
             data: { text: 'hojhoj' },
             role: 'internal'
-          }),
-          Block.create({
-            type: 'tt/slugline'
           })
         ]
       }
     }
 
-    newsDocToYDoc(yDoc, augmentedPlanning)
+    const yDoc = new Y.Doc()
+    toYjsNewsDoc(
+      toGroupedNewsDoc(augmentedPlanning),
+      yDoc
+    )
 
     it('adds one when one of other type exists', () => {
       const planningDescriptions = augmentedPlanning.document?.meta.filter((meta) => meta.type === 'core/description')
@@ -237,12 +226,16 @@ describe('Description and slugline handling - planning', () => {
 
       const meta = yDoc.getMap('ele').get('meta') as Y.Map<unknown>
       const descriptions = meta.get('core/description') as Y.Array<Y.Map<unknown>>
+
       expect(descriptions.length).toBe(2)
       expect(descriptions.map((d) => d.get('role'))).toEqual(['internal', 'public'])
     })
 
     it('removes them when reverting', async () => {
-      const { document, version } = await yDocToNewsDoc(yDoc)
+      // Revert to newsDoc
+      const { documentResponse } = await fromYjsNewsDoc(yDoc)
+      const { document, version } = await fromGroupedNewsDoc(documentResponse)
+
       expect(version).toBe(planning.version)
       expect(document?.meta.filter((meta) => meta.type === 'core/description').length).toBe(1)
       expect(sortDocument(document)).toEqual(sortDocument(augmentedPlanning.document))

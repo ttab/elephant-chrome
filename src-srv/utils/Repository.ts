@@ -3,8 +3,9 @@ import { DocumentsClient } from '@/protos/service.client.js'
 import type { Document, GetDocumentResponse, UpdateRequest, UpdateResponse, ValidateRequest, ValidateResponse } from '@/protos/service.js'
 import { type FinishedUnaryCall } from '@protobuf-ts/runtime-rpc'
 import type * as Y from 'yjs'
-import { yDocToNewsDoc } from './transformations/yjs/yDoc.js'
 import { isValidUUID } from './isValidUUID.js'
+import { fromYjsNewsDoc } from './transformations/yjsNewsDoc.js'
+import { fromGroupedNewsDoc } from './transformations/groupedNewsDoc.js'
 
 export interface Session {
   access_token: string
@@ -80,13 +81,11 @@ export class Repository {
   * @returns Promise<FinishedUnaryCall<ValidateRequest, ValidateResponse>>
   */
   async validateDoc(ydoc: Y.Doc): Promise<FinishedUnaryCall<ValidateRequest, ValidateResponse>> {
-    const { document, version } = await yDocToNewsDoc(ydoc)
-    const payload = {
-      version: BigInt(version),
-      document
-    }
+    const { documentResponse } = await fromYjsNewsDoc(ydoc)
 
-    return await this.#client.validate(payload)
+    return await this.#client.validate(
+      await fromGroupedNewsDoc(documentResponse)
+    )
   }
 }
 

@@ -18,24 +18,23 @@ import type {
  * The key differenceis is this format groups meta and links for a more
  * convenient access and also converts content to TBElement for Textbit.
  */
-export interface YDocumentResponse extends Omit<GetDocumentResponse, 'document' | 'version'> {
+export interface EleDocumentResponse extends Omit<GetDocumentResponse, 'document' | 'version'> {
   version: string
-  document?: YDocument
+  document?: EleDocument
 }
 
-export interface YDocument extends Omit<Document, 'meta' | 'links' | 'content'> {
-  meta: YBlockGroup
-  links: YBlockGroup
+export interface EleDocument extends Omit<Document, 'meta' | 'links' | 'content'> {
+  meta: EleBlockGroup
+  links: EleBlockGroup
   language: string
   content: TBElement[]
 }
 
-export type YBlockGroup = Record<string, YBlock[]>
-// export interface YBlockGroup { [key: string]: YBlock[] }
+export type EleBlockGroup = Record<string, EleBlock[]>
 
-export interface YBlock extends Omit<Block, 'meta' | 'links' | 'content'> {
+export interface EleBlock extends Omit<Block, 'meta' | 'links' | 'content'> {
   __inProgress?: boolean
-  meta: YBlockGroup
-  links: YBlockGroup
-  content: YBlockGroup
+  meta: EleBlockGroup
+  links: EleBlockGroup
+  content: EleBlockGroup
 }
