@@ -55,7 +55,15 @@ export const ExcecutionTimeItems = ({ handleOnSelect, index, startDate }: Excecu
       setStartTimeValue(startValue)
       setStartDateValue(data.start)
 
-      dates.push(new Date(data.start))
+      const startDate = new Date(data.start)
+      const newStartDayWithTime = new Date(
+        startDate.getFullYear(),
+        startDate.getMonth(),
+        startDate.getDate(),
+        0,
+        0
+      )
+      dates.push(newStartDayWithTime)
 
 
     if (data?.end) {
@@ -67,22 +75,32 @@ export const ExcecutionTimeItems = ({ handleOnSelect, index, startDate }: Excecu
       setEndTimeValue(endValue)
       setEndDateValue(data.end)
 
-      dates.push(new Date(data.end))
+      const endDate = new Date(data.end)
+      const newEndDayWithTime = new Date(
+        endDate.getFullYear(),
+        endDate.getMonth(),
+        endDate.getDate(),
+        0,
+        0
+      )
+      if (dates.length === 1 && (dates[0].getTime() !== newEndDayWithTime.getTime())) {
+        dates.push(newEndDayWithTime)
+      }
 
     }
     setSelected(dates)
   }
   }, [])
 
-  // console.log('XXX selected', selected)
+  console.log('XXX selected', selected)
   // console.log('XXX endTimeValue', endTimeValue)
 
   const handleStartTimeChange: ChangeEventHandler<HTMLInputElement> = (e) => {
     const time = e.target.value;
-    if (!selected) {
-      setStartTimeValue(time)
-      return
-    }
+    // if (!selected) {
+    //   setStartTimeValue(time)
+    //   return
+    // }
     const [hours, minutes] = time.split(":").map((str: string) => parseInt(str, 10))
 
     const newSelectedDate = new Date(selected[0])
@@ -93,11 +111,12 @@ export const ExcecutionTimeItems = ({ handleOnSelect, index, startDate }: Excecu
 
   const handleEndTimeChange: ChangeEventHandler<HTMLInputElement> = (e) => {
     const time = e.target.value;
-    if (!selected) {
-      setEndTimeValue(time)
-      return
-    }
+    // if (!selected) {
+    //   setEndTimeValue(time)
+    //   return
+    // }
     const [hours, minutes] = time.split(":").map((str: string) => parseInt(str, 10))
+    console.log('XXX selected', selected)
 
     if (selected.length === 2) {
       const newSelectedDate = new Date(selected[1])
@@ -151,6 +170,9 @@ export const ExcecutionTimeItems = ({ handleOnSelect, index, startDate }: Excecu
         startMinutes
       )
       setStartDateValue(newStartDayWithTime.toISOString())
+    } else {
+      // setStartDateValue('')
+      setEndDateValue('')
     }
 
     setSelected(selectedDays)
