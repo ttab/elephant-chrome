@@ -17,7 +17,7 @@ export const DocumentStatus = ({ status, setStatus }: {
     <Awareness name='DocumentStatus' ref={setFocused}>
       <ComboBox
         max={1}
-        className='h-9 w-9 p-0'
+        size='sm'
         options={DocumentStatuses}
         variant={'ghost'}
         selectedOptions={selectedOptions}

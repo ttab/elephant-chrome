@@ -23,7 +23,7 @@ export const Category = (): JSX.Element => {
     <Awareness name='Category' ref={setFocused}>
       <ComboBox
         max={3}
-        className='w-fit text-muted-foreground font-sans font-normal whitespace-nowrap text-ellipsis px-2 h-7'
+        size='xs'
         options={allCategories}
         selectedOptions={selectedOptions}
         placeholder={'Lägg till ämne'}

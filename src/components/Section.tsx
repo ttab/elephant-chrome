@@ -25,7 +25,7 @@ export const Section = ({ onValidation }: {
     <Awareness name='PlanSection' ref={setFocused} className='flex flex-col gap-2'>
       <ComboBox
         max={1}
-        className='text-muted-foreground font-sans font-normal whitespace-nowrap text-ellipsis px-2 h-7'
+        size='xs'
         options={allSections}
         selectedOptions={selectedOptions}
         placeholder={section?.title || 'Lägg till sektion'}
