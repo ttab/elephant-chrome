@@ -1,5 +1,5 @@
 import { decode } from 'html-entities'
-import { Block } from '@/shared/protos/service.js'
+import { Block } from '@ttab/elephant-api/newsdoc'
 import { type TBElement } from '@ttab/textbit'
 
 export const transformFactbox = (element: Block): TBElement => {
