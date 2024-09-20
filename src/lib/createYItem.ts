@@ -52,9 +52,10 @@ export function createDocument(
 * and append it to the meta yMap
 * @returns void
 */
-export function appendAssignment({ document, inProgress }: {
+export function appendAssignment({ document, inProgress, slugLine }: {
   document: Y.Doc
   inProgress?: boolean
+  slugLine?: string
 }): void {
   // Get meta yMap
   const meta = document.getMap('ele').get('meta') as Y.Map<unknown>
@@ -68,10 +69,11 @@ export function appendAssignment({ document, inProgress }: {
   const yAssignments = meta.get('core/assignment') as Y.Array<unknown>
 
   // Create new assignment from template
-  const assignment: YBlock = assignmentPlanningTemplate(
-    'text',
-    get(meta, 'core/planning-item[0].data.start_date') as unknown as string
-  )
+  const assignment: YBlock = assignmentPlanningTemplate({
+    assignmentType: 'text',
+    planningDate: get(meta, 'core/planning-item[0].data.start_date') as unknown as string,
+    slugLine
+  })
 
   // Append __inProgress if needed
   if (inProgress) {

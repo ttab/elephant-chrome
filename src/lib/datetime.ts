@@ -34,12 +34,14 @@ export function convertToISOStringInTimeZone(localDate: Date, timeZone: string):
 * @param date Date
 * @param locale string
 * @param timeZone string
+* @param includeYear string
 * @returns string
 * */
 export function dateToReadableDateTime(
   date: Date,
   locale: string,
-  timeZone: string
+  timeZone: string,
+  options?: { includeYear?: boolean }
 ): string | undefined {
   const yearFormat = {
     timeZone,
@@ -61,7 +63,8 @@ export function dateToReadableDateTime(
   return new Intl.DateTimeFormat(locale, {
     timeZone,
     timeStyle: 'short',
-    dateStyle: 'medium'
+    dateStyle: 'full',
+    ...(options?.includeYear && { year: 'numeric' })
   }).format(date)
 }
 

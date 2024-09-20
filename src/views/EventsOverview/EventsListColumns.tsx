@@ -8,15 +8,13 @@ import {
   Pen,
   Shapes,
   Clock3Icon,
-  Eye,
   Navigation,
   NotebookPen,
   Edit,
   Delete
 } from '@ttab/elephant-ui/icons'
 import { DotDropdownMenu } from '@/components/ui/DotMenu'
-import { Newsvalues, NewsvalueMap, VisibilityStatuses } from '@/defaults'
-import { StatusIndicator } from '@/components/DataItem/StatusIndicator'
+import { Newsvalues, NewsvalueMap } from '@/defaults'
 import { Time } from '@/components/Table/Items/Time'
 import { Title } from '@/components/Table/Items/Title'
 import { Status } from '@/components/Table/Items/Status'
@@ -28,29 +26,6 @@ export function eventTableColumns({ sections = [] }: {
   sections?: IDBSection[]
 }): Array<ColumnDef<Event>> {
   return [
-    {
-      id: 'visibilityStatus',
-      meta: {
-        Filter: ({ column, setSearch }) => (
-          <FacetedFilter column={column} setSearch={setSearch} />
-        ),
-        options: VisibilityStatuses,
-        name: 'Synlighet',
-        columnIcon: Eye,
-        className: 'box-content w-6 pr-0'
-      },
-      accessorFn: (data) => (
-        // FIXME: It seems we're not indexing "document.meta.core_event.data.public"
-        data._source['document.meta.core_description.role'][0]
-      ),
-      cell: ({ row }) => {
-        const visibility = row.getValue<'internal' | 'public'>('visibilityStatus')
-        return <StatusIndicator visibility={visibility} />
-      },
-      filterFn: (row, id, value) => (
-        value.includes(row.getValue(id))
-      )
-    },
     {
       id: 'newsvalue',
       meta: {

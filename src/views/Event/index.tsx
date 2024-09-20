@@ -1,5 +1,5 @@
 import type * as Y from 'yjs'
-import { type ViewMetadata, type ViewProps } from '@/types/index'
+import { type ValidateState, type ViewMetadata, type ViewProps } from '@/types/index'
 import { AwarenessDocument } from '@/components/AwarenessDocument'
 import {
   useCollaboration,
@@ -27,6 +27,8 @@ import {
   Organiser
 } from '@/components'
 import { PlanningTable } from './components/PlanningTable'
+import { useState, useRef } from 'react'
+import { ValidationAlert } from '@/components/ValidationAlert'
 
 const meta: ViewMetadata = {
   name: 'Event',
@@ -65,6 +67,22 @@ const EventViewContent = (props: ViewProps & { documentId: string }): JSX.Elemen
   const { provider } = useCollaboration()
   const { data, status } = useSession()
   const [documentStatus, setDocumentStatus] = useDocumentStatus(props.documentId)
+  const [validateForm, setValidateForm] = useState<boolean>(!props.asCreateDialog)
+  const validateStateRef = useRef<ValidateState>({})
+
+  const handleValidation = (block: string, label: string, value: string | undefined, reason: string): boolean => {
+    validateStateRef.current = {
+      ...validateStateRef.current,
+      [block]: { label, valid: !!value, reason }
+    }
+
+    if (validateForm) {
+      return !!value
+    }
+
+    return true
+  }
+
 
   const [eventTitle] = useYValue<string | undefined>('root.title')
 
@@ -112,11 +130,13 @@ const EventViewContent = (props: ViewProps & { documentId: string }): JSX.Elemen
 
       <ScrollArea className='grid @5xl:place-content-center'>
         <section className={cn(sectionVariants({ asCreateDialog: !!props?.asCreateDialog }))}>
+          <ValidationAlert validateStateRef={validateStateRef} />
           <div className='flex flex-col gap-2 pl-0.5'>
             <div className='flex space-x-2 items-start'>
               <Title
                 autoFocus={props.asCreateDialog}
                 placeholder='Händelserubrik'
+                onValidation={handleValidation}
               />
             </div>
 
@@ -129,7 +149,7 @@ const EventViewContent = (props: ViewProps & { documentId: string }): JSX.Elemen
           <div className='flex flex-col space-y-2 w-fit'>
             <div className='flex flex-wrap gap-2'>
               <Organiser />
-              <Section />
+              <Section onValidation={handleValidation} />
               <Category />
               <Story />
             </div>
@@ -144,18 +164,24 @@ const EventViewContent = (props: ViewProps & { documentId: string }): JSX.Elemen
             <Separator className='ml-0' />
             <div className='flex justify-end px-6 py-4'>
               <Button onClick={() => {
+                setValidateForm(true)
+                // if all fields are valid close and save
+                if (Object.values(validateStateRef.current).every((state) => !!state)) {
                 // Get the id, post it, and open it in a view?
-                if (props?.onDialogClose) {
-                  props.onDialogClose()
-                }
+                  if (props?.onDialogClose) {
+                    props.onDialogClose()
+                  }
 
-                if (provider && status === 'authenticated') {
-                  provider.sendStateless(
-                    createStateless(StatelessType.IN_PROGRESS, {
-                      state: false,
-                      id: props.documentId,
-                      context: data.accessToken
-                    }))
+                  if (provider && status === 'authenticated') {
+                    provider.sendStateless(
+                      createStateless(StatelessType.IN_PROGRESS, {
+                        state: false,
+                        id: props.documentId,
+                        context: {
+                          accessToken: data.accessToken
+                        }
+                      }))
+                  }
                 }
               }}>
                 Skapa händelse

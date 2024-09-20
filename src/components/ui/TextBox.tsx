@@ -21,7 +21,17 @@ export const TextBox = ({ icon, placeholder, path, className, singleLine = false
   onFocus?: React.FocusEventHandler<HTMLDivElement>
 }): JSX.Element => {
   const { provider, user } = useCollaboration()
-  const [content] = useYValue<Y.XmlText>(path, { observe: false })
+  // FIXME: We need to check that the path exists. If not we need to create the missing Block
+  const [content] = useYValue<Y.XmlText>(path, true)
+
+  if (content === undefined) {
+    // Empty placeholder while waiting for data
+    return <div className={cn('h-10 w-full flex flex-row', className)}>
+      <div className="pt-1.5">
+        {icon}
+      </div>
+    </div>
+  }
 
   return (
     <>

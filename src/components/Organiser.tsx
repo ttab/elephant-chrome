@@ -36,8 +36,8 @@ export const Organiser = (): JSX.Element => {
           setOrganiser(organiser?.title === option.label
             ? undefined
             : Block.create({
-              type: 'core/section',
-              rel: 'section',
+              type: 'core/organiser',
+              rel: 'organiser',
               uuid: option.value,
               title: option.label
             })

@@ -1,12 +1,8 @@
+import { isEqualDeep } from '@/lib/isEqualDeep'
+import { useRef, useSyncExternalStore } from 'react'
+import { getValueByYPath, setValueByYPath, stringToYPath } from '@/lib/yUtils'
 import { useCollaboration } from './useCollaboration'
-import { useCallback, useEffect, useState } from 'react'
-import { isNumber, isYArray, isYContainer, isYMap, isYValue, isYXmlText } from '@/lib/isType'
-import type * as Y from 'yjs'
-import { getValueByYPath, stringToYPath, type YParent } from '@/lib/yUtils'
 
-interface useYValueOptions {
-  observe?: boolean
-}
 
 /**
  * Observe a value in a an exact path. If the observed value is a Y.XmlText all changes beneath
@@ -14,185 +10,54 @@ interface useYValueOptions {
  *
  * This function also detects, recovers and continue to observe when a whole structure gets replaced.
  *
- * Specifying option observe=false will return raw value and not setup an observer. This is
- * especially useful when you want to retrieve a raw Y.XmlText to hand over to Textbit.
+ * Specifying option row=true will return raw value and not setup an observer. This is
+ * especially useful when you want to retrieve a raw Y.XmlText to hand over to Textbit or
+ * if you want to have a structure that you want to manipulate, like adding elements to a Y.Map/Y.Array.
  *
  * @param path string
  *
  * @returns [<T>, (arg0: T) => void, YParent]
  */
-export function useYValue<T>(path: string, options: useYValueOptions = { observe: true }): [
+export function useYValue<T>(path: string, raw: boolean = false): [
   T | undefined,
-  (arg0: T) => void,
-  YParent
+  (arg0: T) => void
 ] {
-  const { provider, synced } = useCollaboration()
+  const { provider } = useCollaboration()
+  const prevDataRef = useRef<T | undefined>(undefined)
   const yRoot = provider?.document.getMap('ele')
   const yPath = stringToYPath(path)
-  const [value, setValue] = useState<T | undefined>()
-  const [parent, setParent] = useState<YParent>()
 
-  // Get y value/parent callback function
-  const getValueAndParent = useCallback((yRoot: Y.Map<unknown>): [unknown, YParent] => {
-    if (synced) {
-      const vp = getValueByYPath(yRoot, yPath)
-
-      if (synced && vp[0] === undefined && vp[1] === undefined) {
-        console.warn(`Unable to get or create the requested path in the Yjs document: ${yPath.join(' ')}`)
+  const data = useSyncExternalStore(
+    (callback) => {
+      if (!yRoot) {
+        return () => { }
       }
 
-      return vp
-    }
+      // Observe deep changes in the Yjs document and trigger updates
+      yRoot.observeDeep(callback)
+      return () => yRoot.unobserveDeep(callback)
+    },
+    () => {
+      // Get the current value at the path
+      const [currentData] = getValueByYPath(yRoot, yPath, raw)
 
-    return [undefined, undefined]
-  }, [synced, yPath])
-
-
-  // Initialization callback function
-  const initialize = useCallback((yRoot: Y.Map<unknown>): void => {
-    const [initValue, initParent] = getValueAndParent(yRoot)
-
-    if (options.observe) {
-      // When observing we return Y.XmlText as string
-      setValue(isYXmlText(initValue) ? initValue.toJSON() as T : initValue as T)
-    } else {
-      // Just return raw Y values when not observing
-      setValue(initValue as T)
-    }
-
-    if (isYContainer(initParent)) {
-      setParent(initParent)
-    }
-  }, [getValueAndParent, options.observe])
-
-
-  const ensureValue = useCallback((value: unknown): T => {
-    if (isYContainer(value)) {
-      return value.toJSON() as T
-    }
-    return value as T
-  }, [])
-
-
-  // Initialization
-  useEffect(() => {
-    if (yRoot && value === undefined) {
-      initialize(yRoot)
-    }
-  }, [yRoot, initialize, value])
-
-
-  // Setup the observer
-  useEffect(() => {
-    if (!yRoot) {
-      return
-    }
-
-    if (!options.observe) {
-      return
-    }
-
-    // @ts-expect-error Yjs is using any, which is not permitted in our code
-    const observer = (yEvents: Array<Y.YEvent<unknown>>): void => {
-      yEvents.forEach(yEvent => {
-        const yEventPath = yEvent.path.slice(0, yPath.length)
-        const pathMatch = yEventPath.length && yEventPath.every((v, idx) => v === yPath[idx])
-        const exactMatch = yEvent.path.length === yPath.length && yEvent.path.every((v, idx) => v === yPath[idx])
-
-        if (exactMatch) {
-          setValue(yEvent?.target !== undefined ? yEvent.target as T : undefined)
-
-          if (!parent && isYValue(yEvent.target) && isYContainer(yEvent.target.parent)) {
-            setParent(yEvent.target.parent)
-          }
-        } else if (pathMatch) {
-          // We observe deeper for Y.XmlText or when we observe individual values in a Y.Map or Y.Array
-          const [v, p] = getValueByYPath(yRoot, yPath)
-
-          if (isYXmlText(v)) {
-            // Report the change (as string) to the Y.Xmltext value.
-            // CAVEAT: Should not observe large docs like this as this would then not be very perfomant!
-            setValue(v.toJSON() as T)
-            return
-          }
-
-          if (yEventPath.length + 1 === yPath.length) {
-            // The change event refers to a property in a direct parent map/array,
-            // ensure it is the observed property that is changed
-            const [key] = yPath.slice(-1)
-            if (yEvent.keys.has(key.toString())) {
-              setValue(v as T)
-              return
-            }
-          }
-
-          if (yEventPath.length < yPath.length && !!p) {
-            // The parent structure have changed but the exact path still exists.
-            // This happens if a larger structure gets replaced.
-            setValue(ensureValue(v))
-            return
-          }
-
-          if (!p) {
-            // The parent is gone, which means the whole structure is gone
-            setValue(undefined)
-            return
-          }
-
-          // If we have no parent from before, or the parent has changed, we need to set it again
-          if (p !== parent) {
-            setParent(p)
-          }
-        }
-      })
-    }
-
-    // Always observe changes from the root to handle initially incomplete data structures
-    // TODO: We could optimze this by observing as far down in the structure as we could
-    yRoot?.observeDeep(observer)
-
-    return () => yRoot?.unobserveDeep(observer)
-  }, [yRoot, yPath, parent, options.observe, ensureValue])
-
-  // Return value and parent map/array
-  return [
-    ensureValue(value),
-    (v) => {
-      const [key] = yPath.slice(-1)
-
-      // Set value in parent YMap
-      if (isYMap(parent) && !isNumber(key)) {
-        parent.set(key, v)
-        return
-      }
-
-      // Delete a value from parent YArray
-      if (isYArray(parent) && isNumber(key) && key >= 0 && key <= parent.length - 1 && v === undefined) {
-        parent.delete(key)
-
-        // Delete "grandparent" if parent YArray is empty
-        // TODO: This could be recursive to delete all empty parents
-        const [nextKey] = yPath.slice(-2)
-        if (parent.length === 0 && isYMap(parent.parent) && typeof nextKey === 'string') {
-          parent.parent.delete(nextKey)
-        }
-        return
-      }
-
-      // Replace value in parent YArray
-      if (isYArray(parent) && isNumber(key) && key >= 0 && key <= parent.length - 1) {
-        parent.doc?.transact(() => {
-          parent.delete(key)
-          parent.insert(key, [v])
-        })
-        return
-      }
-
-      // Append value to parent YArray
-      if (isYArray(parent) && isNumber(key) && key >= 0 && key > parent.length - 1) {
-        parent.push([v])
+      if (isEqualDeep(prevDataRef.current, currentData)) {
+        return prevDataRef.current
+      } else {
+        prevDataRef.current = currentData as T
+        return currentData
       }
     },
-    parent
+    () => getValueByYPath(yRoot, yPath, raw) // Fallback for server-side rendering
+  )
+
+  // Setter function to update the value at the path
+  const setData = (newValue: T): void => {
+    setValueByYPath(yRoot, yPath, newValue)
+  }
+
+  return [
+    data as T,
+    setData
   ]
 }

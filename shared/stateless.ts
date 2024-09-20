@@ -1,16 +1,45 @@
+/**
+ * This module defines the StatelessType enum and related schemas for different types of stateless messages.
+ * It also provides functions to parse and create stateless messages.
+ *
+ * @module shared/stateless
+ */
+
 import { z } from 'zod'
+import type pino from 'pino'
 
 export enum StatelessType {
   AUTH = 'auth',
   IN_PROGRESS = 'inProgress',
-  MESSAGE = 'message'
+  MESSAGE = 'message',
+  ERROR = 'error'
 }
 
-const StatelessAuthSchema = z.object({
-  type: z.enum([StatelessType.AUTH]),
-  message: z.object({
-    token: z.string()
+const inProgressMessageSchema = z.object({
+  state: z.boolean(),
+  id: z.string(),
+  context: z.object({
+    accessToken: z.string()
   })
+})
+
+const StatelessInProgressSchema = z.object({
+  type: z.enum([StatelessType.IN_PROGRESS]),
+  message: inProgressMessageSchema
+})
+
+
+const ErrorMessageSchema = z.object({
+  type: z.string(),
+  message: z.string(),
+  stack: z.string().optional(),
+  code: z.string().optional(),
+  signal: z.string().optional()
+})
+
+const StatelessErrorSchema = z.object({
+  type: z.enum([StatelessType.ERROR]),
+  message: ErrorMessageSchema
 })
 
 const StatelessMessageSchema = z.object({
@@ -18,77 +47,62 @@ const StatelessMessageSchema = z.object({
   message: z.string()
 })
 
-const StatelessInProgressMessageSchema = z.object({
-  state: z.boolean(),
-  id: z.string(),
-  context: z.any()
+const authMessageSchema = z.object({
+  accessToken: z.string()
 })
 
-const StateLessInProgressSchema = z.object({
-  type: z.enum([StatelessType.IN_PROGRESS]),
-  message: StatelessInProgressMessageSchema
+const StatelessAuthSchema = z.object({
+  type: z.enum([StatelessType.AUTH]),
+  message: authMessageSchema
 })
-
 
 export type StatelessAuth = z.infer<typeof StatelessAuthSchema>
 export type StatelessMessage = z.infer<typeof StatelessMessageSchema>
-export type StatelessInProgress = z.infer<typeof StateLessInProgressSchema>
-type StatelessInProgressMessage = z.infer<typeof StatelessInProgressMessageSchema>
+export type StatelessInProgress = z.infer<typeof StatelessInProgressSchema>
+export type StatelessError = z.infer<typeof StatelessErrorSchema>
+
+type inProgressMessage = z.infer<typeof inProgressMessageSchema>
+type authMessage = z.infer<typeof authMessageSchema>
 
 type StatelessPayload = StatelessAuth | StatelessMessage | StatelessInProgress
 
-export function parseStateless<T extends StatelessPayload>(payload: string): T {
-  try {
-    const [type, message] = payload.split('@')
-
-    switch (type) {
-      case StatelessType.AUTH: {
-        return StatelessAuthSchema.parse({ type, message: JSON.parse(message) }) as T
-      }
-
-      case StatelessType.MESSAGE: {
-        return StatelessMessageSchema.parse({ type, message }) as T
-      }
-
-      case StatelessType.IN_PROGRESS: {
-        return StateLessInProgressSchema.parse({ type, message: JSON.parse(message) }) as T
-      }
-
-      default: {
-        throw new Error(`Invalid stateless type: ${type}`)
-      }
-    }
-  } catch (err) {
-    if (err instanceof Error) {
-      throw new Error(`Unable to parse stateless message: ${err.message}`)
-    }
-    throw new Error('Unable to parse stateless message: Unknown error')
-  }
+const StatelessSchemaMap = {
+  [StatelessType.AUTH]: StatelessAuthSchema,
+  [StatelessType.MESSAGE]: StatelessMessageSchema,
+  [StatelessType.IN_PROGRESS]: StatelessInProgressSchema,
+  [StatelessType.ERROR]: StatelessErrorSchema
 }
 
-export function createStateless(prefix: StatelessType.IN_PROGRESS, message: StatelessInProgressMessage): string
-export function createStateless(prefix: StatelessType.AUTH, message: string): string
-export function createStateless(prefix: StatelessType.MESSAGE, message: string): string
-export function createStateless(prefix: StatelessType, message: string | StatelessInProgressMessage): string {
-  switch (prefix) {
-    case StatelessType.AUTH: {
-      const payload = {
-        token: message
-        // TODO: Send user
-      }
-      return `${prefix as string}@${JSON.stringify(payload)}`
-    }
-
-    case StatelessType.MESSAGE: {
-      return `${prefix as string}@${JSON.stringify(message)}`
-    }
-
-    case StatelessType.IN_PROGRESS: {
-      return `${prefix as string}@${JSON.stringify(message)}`
-    }
-
-    default: {
-      throw new Error(`Invalid stateless type: ${prefix as string}`)
-    }
+export function parseStateless<T extends StatelessPayload>(payload: string): T {
+  if (!payload.includes('@')) {
+    throw new Error('Invalid stateless message: Missing separator')
   }
+  const separator = payload.indexOf('@')
+  const type = payload.slice(0, separator) as StatelessType
+  const message = payload.slice(separator + 1)
+
+  if (!Object.values(StatelessType).includes(type)) {
+    throw new Error(`Invalid stateless type: ${type}`)
+  }
+
+  const schema = StatelessSchemaMap[type]
+  return schema.parse({ type, message: JSON.parse(message) }) as T
+}
+
+
+/**
+ * Creates a stateless message based on a prefix and a message.
+ *
+ * @param {StatelessType} prefix - The prefix for the stateless message. Must be a valid StatelessType.
+ * @param {string | StatelessInProgressMessage | pino.SerializedError} message - The message to be included in the stateless message. Can be a string, a StatelessInProgressMessage, or a pino.SerializedError.
+ * @returns {string} The stateless message as a string.
+ * @throws {Error} Will throw an error if the prefix is not a valid StatelessType.
+ */
+
+type StatelessMessageType = string | inProgressMessage | authMessage | pino.SerializedError
+export function createStateless(prefix: StatelessType, message: StatelessMessageType): string {
+  if (!Object.values(StatelessType).includes(prefix)) {
+    throw new Error(`Invalid stateless type: ${prefix as string}`)
+  }
+  return `${prefix as string}@${JSON.stringify(message)}`
 }

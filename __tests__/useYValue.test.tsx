@@ -3,6 +3,7 @@ import { useYValue } from '@/hooks/useYValue'
 import { type CollaborationWrapper, initializeCollaborationWrapper } from './utils/initializeCollaborationWrapper'
 import { act } from '../setupTests'
 import { Block } from '@ttab/elephant-api/newsdoc'
+import type * as Y from 'yjs'
 
 let init: CollaborationWrapper
 
@@ -79,19 +80,6 @@ describe('useYValue', () => {
     expect(result.current[0]).toHaveLength(1)
   })
 
-  it('add path to value if non existent', async () => {
-    const { result } = renderHook(() =>
-      useYValue<{ __inProgress: boolean } & Block | undefined>('links.core/story[0]'), { wrapper: init.wrapper })
-
-    const { result: parent } = renderHook(() =>
-      useYValue<Block | undefined>('links.core/story'), { wrapper: init.wrapper })
-
-    // Value is __inProgress
-    expect(result.current[0]?.__inProgress).toBeTruthy()
-    // And path to parent has been created
-    expect(parent.current[0]).toHaveLength(1)
-  })
-
   it('modifies existing slugline', async () => {
     const { result } = renderHook(() =>
       useYValue<string | undefined>('meta.core/assignment[0].meta.tt/slugline[0].value'), { wrapper: init.wrapper })
@@ -111,11 +99,20 @@ describe('useYValue', () => {
   })
 
   it('handles __inProgress', async () => {
-    const { result } = renderHook(() =>
-      useYValue<boolean | undefined>('meta.core/assignment[0].__inProgress'), { wrapper: init.wrapper })
+    const { result } = renderHook(() => {
+      return {
+        progress: useYValue<boolean | undefined>('meta.core/assignment[0].__inProgress'),
+        assignment: useYValue<Y.Map<boolean>>('meta.core/assignment[0]', true)
+      }
+    }, { wrapper: init.wrapper }
+    )
 
-    expect(result.current[0]).toBeFalsy()
-    act(() => result.current[1](true))
-    expect(result.current[0]).toBeTruthy()
+    expect(result.current.progress[0]).toBeFalsy()
+
+    act(() => {
+      result.current.assignment[0]?.set('__inProgress', true)
+    })
+
+    expect(result.current.progress[0]).toBeTruthy()
   })
 })

@@ -10,7 +10,7 @@ import type {
 import type { Document } from '@ttab/elephant-api/newsdoc'
 import { type FinishedUnaryCall } from '@protobuf-ts/runtime-rpc'
 import type * as Y from 'yjs'
-import { yDocToNewsDoc } from './transformations/yjs/yDoc.js'
+import { yDocToNewsDoc } from '../src-srv/utils/transformations/yjs/yDoc.js'
 
 export interface Session {
   access_token: string
