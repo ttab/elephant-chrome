@@ -1,4 +1,4 @@
-import express, { type Request, type Response } from 'express'
+import express, { type NextFunction, type Request, type Response } from 'express'
 import type { RequestHandler, Express } from 'express-serve-static-core'
 import expressWebsockets from 'express-ws'
 import cors from 'cors'
@@ -76,11 +76,14 @@ export async function runServer(): Promise<string> {
   app.use(cookieParser())
   app.use(BASE_URL, express.json())
 
-  app.use((err: unknown, req: Request, res: Response) => {
-    req.log.error({ err }, 'Error occurred')
-    res.status(500).send('Internal Server Error')
+  app.use((err: unknown, req: Request, res: Response, next: NextFunction) => {
+    if (err) {
+      req.log.error({ err }, 'Error occurred')
+      res.status(500).send('Internal Server Error')
+    } else {
+      next()
+    }
   })
-
 
   // Create collaboration and hocuspocus server
   const collaborationServer = new CollaborationServer({
