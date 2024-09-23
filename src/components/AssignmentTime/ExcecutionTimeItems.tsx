@@ -42,6 +42,9 @@ export const ExcecutionTimeItems = ({ handleOnSelect, index, startDate }: Excecu
   const [endTimeValue, setEndTimeValue] = useState<string>("23:59")
   const [startDateValue, setStartDateValue] = useState<string>()
   const [endDateValue, setEndDateValue] = useState<string>()
+  const [hasEndTime, setHasEndTime] = useState<boolean>()
+
+  console.log('XXX endDateValue', endDateValue)
 
   useEffect(() => {
     const dates: Date[] = []
@@ -55,6 +58,7 @@ export const ExcecutionTimeItems = ({ handleOnSelect, index, startDate }: Excecu
       setStartTimeValue(startValue)
       setStartDateValue(data.start)
 
+
       const startDateObject = new Date(data.start)
       const newStartDayWithTime = new Date(
         startDateObject.getFullYear(),
@@ -66,41 +70,41 @@ export const ExcecutionTimeItems = ({ handleOnSelect, index, startDate }: Excecu
         0
       )
       dates.push(newStartDayWithTime)
-
-
-      if (data?.end) {
-        const aDate = new Date(data.end.toString())
-        const endValue = aDate.toLocaleString('sv-SE', {
-          hour: '2-digit',
-          minute: '2-digit'
-        })
-        setEndTimeValue(endValue)
-        setEndDateValue(data.end)
-
-        const endDate = new Date(data.end)
-        const newEndDayWithTime = new Date(
-          endDate.getFullYear(),
-          endDate.getMonth(),
-          endDate.getDate(),
-          0,
-          0,
-          0,
-          0
-        )
-        if (dates.length === 1 && (dates[0].getTime() !== newEndDayWithTime.getTime())) {
-          dates.push(newEndDayWithTime)
-        }
-
-      }
-      setSelected(dates)
     }
+
+
+    if (data?.end) {
+      const aDate = new Date(data.end.toString())
+      const endValue = aDate.toLocaleString('sv-SE', {
+        hour: '2-digit',
+        minute: '2-digit'
+      })
+      setEndTimeValue(endValue)
+      setEndDateValue(data.end)
+      setHasEndTime(true)
+
+      const endDate = new Date(data.end)
+      const newEndDayWithTime = new Date(
+        endDate.getFullYear(),
+        endDate.getMonth(),
+        endDate.getDate(),
+        0,
+        0,
+        0,
+        0
+      )
+      if (dates.length === 1 && (dates[0].getTime() !== newEndDayWithTime.getTime())) {
+        dates.push(newEndDayWithTime)
+      }
+
+    }
+
+    setSelected(dates)
   }, [])
+
   const handleStartTimeChange: ChangeEventHandler<HTMLInputElement> = (e) => {
     const time = e.target.value;
-    // if (!selected) {
-    //   setStartTimeValue(time)
-    //   return
-    // }
+
     const [hours, minutes] = time.split(":").map((str: string) => parseInt(str, 10))
 
     const newSelectedDate = new Date(selected[0])
@@ -109,28 +113,29 @@ export const ExcecutionTimeItems = ({ handleOnSelect, index, startDate }: Excecu
     setStartDateValue(newSelectedDate.toISOString())
   }
 
-  const handleEndTimeChange: ChangeEventHandler<HTMLInputElement> = (e) => {
-    const time = e.target.value;
-    // if (!selected) {
-    //   setEndTimeValue(time)
-    //   return
-    // }
+  const handleEndTime = (time: string) => {
     const [hours, minutes] = time.split(":").map((str: string) => parseInt(str, 10))
 
     if (selected.length === 2) {
       const newSelectedDate = new Date(selected[1])
       newSelectedDate.setHours(hours, minutes)
-      setEndTimeValue(newSelectedDate.toISOString())
+      setEndDateValue(newSelectedDate.toISOString())
     } else {
       const newDate = new Date(selected[0])
       newDate.setHours(hours, minutes)
       setEndDateValue(newDate.toISOString())
     }
+  }
+  const handleEndTimeChange: ChangeEventHandler<HTMLInputElement> = (e) => {
+    const time = e.target.value;
     setEndTimeValue(time)
+    handleEndTime(time)
   }
 
   const handleDayClick: CalendarTypes.DayClickEventHandler = (day, modifiers) => {
     const selectedDays = [...selected]
+
+
 
     if (modifiers.selected) {
       const index = selected.findIndex((d) => d.getTime() === day.getTime())
@@ -155,7 +160,6 @@ export const ExcecutionTimeItems = ({ handleOnSelect, index, startDate }: Excecu
       )
       setEndDateValue(newDayWithTime.toISOString())
 
-
       const startDate = new Date(selectedDays[0])
       const [startHours, startMinutes] = (startTimeValue ? startTimeValue : '00:00')
         .split(":")
@@ -170,8 +174,11 @@ export const ExcecutionTimeItems = ({ handleOnSelect, index, startDate }: Excecu
       )
       setStartDateValue(newStartDayWithTime.toISOString())
     } else {
-      // setStartDateValue('')
       setEndDateValue('')
+    }
+
+    if (selectedDays.length === 2) {
+      setHasEndTime(true)
     }
 
     setSelected(selectedDays)
@@ -182,6 +189,13 @@ export const ExcecutionTimeItems = ({ handleOnSelect, index, startDate }: Excecu
   const handleOpenChange = (isOpen: boolean): void => {
     setOpen(isOpen)
   }
+
+  const handleCheckedChange = (checked: boolean) => {
+    setHasEndTime(checked)
+    handleEndTime(endTimeValue)
+
+  }
+
   const timePickType = timePickTypes[1]
 
 
@@ -202,11 +216,10 @@ export const ExcecutionTimeItems = ({ handleOnSelect, index, startDate }: Excecu
           max={2}
           selected={selected}
           weekStartsOn={1}
-          // onSelect={handleDayClick}
           onDayClick={handleDayClick}
           initialFocus
-          footer={`Selected date: ${selected ? selected.toLocaleString() : "none"}`}
-          disabled={{ before: new Date() }}
+          // footer={`Selected date: ${selected ? selected.toLocaleString() : "none"}`}
+          disabled={data?.start ? { before: new Date(data.start) } : { before: new Date() }}
 
         />
         <div>
@@ -237,7 +250,7 @@ export const ExcecutionTimeItems = ({ handleOnSelect, index, startDate }: Excecu
         <div>
           <div>
 
-            <Switch onCheckedChange={() => { }} >Från-till</Switch>
+            <Switch onCheckedChange={handleCheckedChange} checked={hasEndTime}>Från-till</Switch>
           </div>
           <div>
             <label>Slut: </label><label>{endDateValue}</label>
@@ -245,9 +258,9 @@ export const ExcecutionTimeItems = ({ handleOnSelect, index, startDate }: Excecu
           <Input
             type='time'
             ref={inputRef}
-            value={endTimeValue}
+            value={hasEndTime ? endTimeValue : ''}
             onChange={handleEndTimeChange}
-
+            disabled={!hasEndTime}
             placeholder={'hh:mm ex 11:00'}
             className="h-9"
             onKeyDown={(e) => {
@@ -277,13 +290,13 @@ export const ExcecutionTimeItems = ({ handleOnSelect, index, startDate }: Excecu
 
           <Button
             variant="outline"
-            // disabled={!title || (assignmentType === 'text' && !slugLine)}
+            // disabled={!hasEndTime}
             onClick={(evt) => {
               evt.preventDefault()
               evt.stopPropagation()
               handleOnSelect({
                 excecutionStart: startDateValue,
-                executionEnd: endDateValue
+                executionEnd: hasEndTime ? endDateValue : undefined
               })
               // onClose()
             }}
