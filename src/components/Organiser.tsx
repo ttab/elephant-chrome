@@ -21,8 +21,7 @@ export const Organiser = (): JSX.Element => {
     <Awareness name='Organiser' ref={setFocused}>
       <ComboBox
         max={1}
-        size='lg'
-        className='w-fit text-muted-foreground font-sans font-normal whitespace-nowrap text-ellipsis px-2 h-7'
+        size='xs'
         options={allOrganisers}
         selectedOptions={selectedOptions}
         placeholder={organiser?.title || 'Lägg till organisatör'}

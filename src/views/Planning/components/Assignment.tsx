@@ -69,7 +69,7 @@ export const Assignment = ({ index, onAbort, onClose, className }: {
       <div className='flex items-center justify-between border-t p-4'>
         <div className='flex items-center justify-start gap-6'>
           <AssignmentType
-            path={`core/assignment[${index}].meta.core/assignment-type`}
+            path={`meta.core/assignment[${index}].meta.core/assignment-type`}
             editable={inProgress}
           />
           <Assignees path={`meta.core/assignment[${index}].links.core/author`} />

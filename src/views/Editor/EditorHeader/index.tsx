@@ -1,15 +1,8 @@
 import { useYObserver } from '@/hooks'
-import { Newsvalues } from '@/defaults'
 import { NewsValueTimeDropDown } from './NewsValueTimeDropDown'
-import { NewsValueScoreDropDown } from './NewsValueScoreDropDown'
+import { Newsvalue } from '@/components/Newsvalue'
 
 export const EditorHeader = (): JSX.Element => {
-  const {
-    get: getScore,
-    set: setScore,
-    loading: loadingScore
-  } = useYObserver('meta', 'core/newsvalue[0]')
-
   const {
     get: getDuration,
     set: setDuration,
@@ -23,21 +16,7 @@ export const EditorHeader = (): JSX.Element => {
 
   return (
     <>
-      <NewsValueScoreDropDown
-        value={getScore('value') as string}
-        loading={loadingScore}
-        onChange={(value) => {
-          setScore(value as string, 'value')
-        }}
-        options={Newsvalues.map(p => {
-          return {
-            label: p.label,
-            value: p.value,
-            icon: p.icon &&
-              <p.icon color={p.color} size={18} strokeWidth={1.75} />
-          }
-        })}
-      />
+      <Newsvalue />
 
       <NewsValueTimeDropDown
         duration={typeof getDuration('duration') === 'string'

@@ -11,13 +11,13 @@ export const DocumentStatus = ({ status, setStatus }: {
   const setFocused = useRef<(value: boolean) => void>(null)
   const selectedOptions = DocumentStatuses.filter(type => type.value === (status?.name || 'draft'))
 
-
   const SelectedIcon = selectedOptions[0].icon
+
   return (
     <Awareness name='DocumentStatus' ref={setFocused}>
       <ComboBox
         max={1}
-        className='h-9 w-9 p-0'
+        size='sm'
         options={DocumentStatuses}
         variant={'ghost'}
         selectedOptions={selectedOptions}

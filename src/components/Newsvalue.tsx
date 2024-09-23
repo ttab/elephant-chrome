@@ -1,25 +1,43 @@
+import { useRef } from 'react'
+import { ComboBox } from '@ttab/elephant-ui'
 import { Newsvalues } from '@/defaults'
-import { useYObserver } from '@/hooks'
-import { NewsValueScoreDropDown } from '@/views/Editor/EditorHeader/NewsValueScoreDropDown'
+import { useYValue } from '@/hooks'
+import { Awareness } from '@/components'
 
 export const Newsvalue = (): JSX.Element => {
-  const { get, set, loading } = useYObserver('meta', 'core/newsvalue[0]')
+  const [newsvalue, setNewsvalue] = useYValue<string | undefined>('meta.core/newsvalue[0].value')
+
+  const setFocused = useRef<(value: boolean) => void>(null)
+
+  const selectedOptions = Newsvalues.filter(type => {
+    return type.value === newsvalue
+  })
+
+  const SelectedIcon = selectedOptions.length && selectedOptions[0].icon
 
   return (
-    <NewsValueScoreDropDown
-      value={get('value') as string}
-      loading={loading}
-      onChange={(value) => {
-        set(value as string, 'value')
-      }}
-      options={Newsvalues.map(p => {
-        return {
-          label: p.label,
-          value: p.value,
-          icon: p.icon &&
-            <p.icon color={p.color} size={18} strokeWidth={1.75} />
-        }
-      })}
-    />
+    <Awareness name='Newsvalue' ref={setFocused}>
+      <ComboBox
+        max={1}
+        size='sm'
+        variant={'ghost'}
+        options={Newsvalues}
+        selectedOptions={selectedOptions}
+        onOpenChange={(isOpen: boolean) => {
+          if (setFocused?.current) {
+            setFocused.current(isOpen)
+          }
+        }}
+        onSelect={(option) => {
+          setNewsvalue(option.value)
+        }}
+        hideInput
+      >
+        {SelectedIcon
+          ? <SelectedIcon { ...selectedOptions[0].iconProps } />
+          : selectedOptions?.[0]?.label
+          }
+      </ComboBox>
+    </Awareness>
   )
 }
