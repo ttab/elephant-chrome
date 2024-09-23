@@ -1,4 +1,4 @@
-import express from 'express'
+import express, { type NextFunction, type Request, type Response } from 'express'
 import type { RequestHandler, Express } from 'express-serve-static-core'
 import expressWebsockets from 'express-ws'
 import cors from 'cors'
@@ -18,6 +18,7 @@ import { ExpressAuth } from '@auth/express'
 import { assertAuthenticatedUser } from './utils/assertAuthenticatedUser.js'
 import { authConfig } from './utils/authConfig.js'
 import logger from './lib/logger.js'
+import { pinoHttp } from 'pino-http'
 
 /*
  * Read and normalize all environment variables
@@ -74,6 +75,15 @@ export async function runServer(): Promise<string> {
   }))
   app.use(cookieParser())
   app.use(BASE_URL, express.json())
+
+  app.use((err: unknown, req: Request, res: Response, next: NextFunction) => {
+    if (err) {
+      req.log.error({ err }, 'Error occurred')
+      res.status(500).send('Internal Server Error')
+    } else {
+      next()
+    }
+  })
 
   // Create collaboration and hocuspocus server
   const collaborationServer = new CollaborationServer({
@@ -135,6 +145,7 @@ export async function runServer(): Promise<string> {
     }
     case 'production': {
       // Catch all other requests and serve bundled app
+      app.use(pinoHttp({ logger }))
       app.use(BASE_URL || '', express.static(distDir))
       app.get('*', (_, res) => {
         res.sendFile(path.join(distDir, 'index.html'))

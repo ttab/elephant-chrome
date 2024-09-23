@@ -21,7 +21,8 @@ export const Story = (): JSX.Element => {
     <Awareness name='Story' ref={setFocused}>
       <ComboBox
         max={1}
-        className='w-fit text-muted-foreground font-sans font-normal whitespace-nowrap text-ellipsis px-2 h-7'
+        size='xs'
+        sortOrder='label'
         options={allStories}
         selectedOptions={selectedOptions}
         placeholder={story?.title || 'Lägg till story'}
