@@ -10,7 +10,9 @@ export function assignmentPlanningTemplate({ assignmentType, planningDate, slugL
   slugLine?: string
 }): Block {
   // TODO: Until we have a strategy for assignment dates
-  // Set full day to true and end time to 22:59:59
+  // Set full day to true
+
+  const startDate = new Date(`${planningDate}T00:00:00`)
 
   return Block.create({
     id: crypto.randomUUID(),
@@ -19,8 +21,7 @@ export function assignmentPlanningTemplate({ assignmentType, planningDate, slugL
       end_date: planningDate,
       full_day: 'true',
       start_date: planningDate,
-      end: `${planningDate}T22:59:59Z`,
-      start: `${getStartDate(planningDate)}T23:00:00Z`,
+      start: startDate.toISOString(),
       public: 'true',
       publish: '2024-02-09T10:30:00Z'
 

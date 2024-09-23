@@ -86,7 +86,6 @@ const getMidnightISOString = (endDate: string) => {
 
   const endDateString = `${endDate}T00:00:00`
   const endDateIsoString = (new Date(endDateString)).toISOString()
-  console.log('XXX endDateString', endDateIsoString)
   return endDateIsoString
 }
 
@@ -94,7 +93,6 @@ const getEndDateTimeISOString = (endDate: string, hours: number) => {
   const newDate = new Date(endDate)
   newDate.setHours(hours, 59, 59)
   const hoursString = newDate.toISOString()
-  console.log('XXX hours string', hoursString)
   return hoursString
 }
 
@@ -120,7 +118,6 @@ export const AssignmentTime = ({ index }: {
   const [data, setData] = useYValue<AssignmentData>(`meta.core/assignment[${index}].data`)
   const { full_day: fullDay, end, publish_slot: publishSlot, end_date: endDate, start_date: startDate } = data || {}
   // const [ass] = useYValue<AssignmentData>(`meta.core/assignment[${index}]`)
-  console.log('XXX data', data)
 
   let selectedLabel = ''
   timeSlotTypes.concat(timePickTypes)
@@ -185,7 +182,6 @@ export const AssignmentTime = ({ index }: {
       case 'endexcecution':
         const endDateString = `${endDate}T${selectValue}`
         const endDateIsoString = new Date(endDateString).toISOString()
-        console.log('XXX endexcecution', endDateIsoString)
         setData(Block.create({
           data: {
             end_date: data?.end_date,

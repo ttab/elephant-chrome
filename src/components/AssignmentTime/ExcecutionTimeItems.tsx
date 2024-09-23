@@ -9,7 +9,8 @@ import {
   Calendar,
   Input,
   CalendarTypes,
-  Button
+  Button,
+  Switch
 } from '@ttab/elephant-ui'
 import { timePickTypes } from '.'
 import { useYValue } from '@/hooks/useYValue'
@@ -21,7 +22,7 @@ import { AssignmentData } from '.'
 
 
 interface ExcecutionTimeItemsProps extends React.PropsWithChildren {
-  handleOnSelect: ({excecutionStart, executionEnd}: {excecutionStart: string | undefined, executionEnd: string | undefined}) => void
+  handleOnSelect: ({ excecutionStart, executionEnd }: { excecutionStart: string | undefined, executionEnd: string | undefined }) => void
   className?: string,
   index?: number,
   startDate: string
@@ -42,9 +43,8 @@ export const ExcecutionTimeItems = ({ handleOnSelect, index, startDate }: Excecu
   const [startDateValue, setStartDateValue] = useState<string>()
   const [endDateValue, setEndDateValue] = useState<string>()
 
-
   useEffect(() => {
-    const dates : Date[] = []
+    const dates: Date[] = []
 
     if (data?.start) {
       const aDate = new Date(data.start.toString())
@@ -55,46 +55,46 @@ export const ExcecutionTimeItems = ({ handleOnSelect, index, startDate }: Excecu
       setStartTimeValue(startValue)
       setStartDateValue(data.start)
 
-      const startDate = new Date(data.start)
+      const startDateObject = new Date(data.start)
       const newStartDayWithTime = new Date(
-        startDate.getFullYear(),
-        startDate.getMonth(),
-        startDate.getDate(),
+        startDateObject.getFullYear(),
+        startDateObject.getMonth(),
+        startDateObject.getDate(),
+        0,
+        0,
         0,
         0
       )
       dates.push(newStartDayWithTime)
 
 
-    if (data?.end) {
-      const aDate = new Date(data.end.toString())
-      const endValue = aDate.toLocaleString('sv-SE', {
-        hour: '2-digit',
-        minute: '2-digit'
-      })
-      setEndTimeValue(endValue)
-      setEndDateValue(data.end)
+      if (data?.end) {
+        const aDate = new Date(data.end.toString())
+        const endValue = aDate.toLocaleString('sv-SE', {
+          hour: '2-digit',
+          minute: '2-digit'
+        })
+        setEndTimeValue(endValue)
+        setEndDateValue(data.end)
 
-      const endDate = new Date(data.end)
-      const newEndDayWithTime = new Date(
-        endDate.getFullYear(),
-        endDate.getMonth(),
-        endDate.getDate(),
-        0,
-        0
-      )
-      if (dates.length === 1 && (dates[0].getTime() !== newEndDayWithTime.getTime())) {
-        dates.push(newEndDayWithTime)
+        const endDate = new Date(data.end)
+        const newEndDayWithTime = new Date(
+          endDate.getFullYear(),
+          endDate.getMonth(),
+          endDate.getDate(),
+          0,
+          0,
+          0,
+          0
+        )
+        if (dates.length === 1 && (dates[0].getTime() !== newEndDayWithTime.getTime())) {
+          dates.push(newEndDayWithTime)
+        }
+
       }
-
+      setSelected(dates)
     }
-    setSelected(dates)
-  }
   }, [])
-
-  console.log('XXX selected', selected)
-  // console.log('XXX endTimeValue', endTimeValue)
-
   const handleStartTimeChange: ChangeEventHandler<HTMLInputElement> = (e) => {
     const time = e.target.value;
     // if (!selected) {
@@ -116,7 +116,6 @@ export const ExcecutionTimeItems = ({ handleOnSelect, index, startDate }: Excecu
     //   return
     // }
     const [hours, minutes] = time.split(":").map((str: string) => parseInt(str, 10))
-    console.log('XXX selected', selected)
 
     if (selected.length === 2) {
       const newSelectedDate = new Date(selected[1])
@@ -202,6 +201,7 @@ export const ExcecutionTimeItems = ({ handleOnSelect, index, startDate }: Excecu
           min={1}
           max={2}
           selected={selected}
+          weekStartsOn={1}
           // onSelect={handleDayClick}
           onDayClick={handleDayClick}
           initialFocus
@@ -235,6 +235,10 @@ export const ExcecutionTimeItems = ({ handleOnSelect, index, startDate }: Excecu
 
         </div>
         <div>
+          <div>
+
+            <Switch onCheckedChange={() => { }} >Från-till</Switch>
+          </div>
           <div>
             <label>Slut: </label><label>{endDateValue}</label>
           </div>
@@ -279,7 +283,8 @@ export const ExcecutionTimeItems = ({ handleOnSelect, index, startDate }: Excecu
               evt.stopPropagation()
               handleOnSelect({
                 excecutionStart: startDateValue,
-                executionEnd: endDateValue})
+                executionEnd: endDateValue
+              })
               // onClose()
             }}
           >
