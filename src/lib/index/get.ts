@@ -8,7 +8,11 @@ export interface SearchParams {
 export const get = async <T>(endpoint: URL, accessToken: string, index: string, params?: SearchParams): Promise<SearchIndexResponse<T>> => {
   const query = {
     query: {
-      match_all: {}
+      range: {
+        'heads.usable.version': {
+          gte: 1
+        }
+      }
     }
   }
 
