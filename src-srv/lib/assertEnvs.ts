@@ -9,7 +9,12 @@ function assertEnvs(): void {
     'REDIS_URL',
     'INDEX_URL',
     'WS_URL',
-    'CONTENT_API_URL'
+    'CONTENT_API_URL',
+    'PROTOCOL',
+    'HOST',
+    'PORT',
+    'BASE_URL'
+
   ]
 
   envs.forEach((env) => {
