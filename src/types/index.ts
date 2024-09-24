@@ -1,5 +1,6 @@
 import { type Block } from '@/protos/service'
 import type * as views from '@/views'
+import { type RpcError } from '@protobuf-ts/runtime-rpc'
 import { type LucideIcon } from '@ttab/elephant-ui/icons'
 
 export enum NavigationActionType {
@@ -112,3 +113,14 @@ export interface DefaultValueOption {
   color?: string
   info?: string
 }
+
+
+export type ElephantValidationMessage = Pick<RpcError, 'code' | 'methodName' | 'serviceName' | 'meta'>
+
+export type ValidateStateRef = React.MutableRefObject<ValidateState>
+
+export type ValidateState = Record<string, {
+  label: string
+  valid: boolean
+  reason: string
+}>

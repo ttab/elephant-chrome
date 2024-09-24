@@ -6,26 +6,29 @@ import {
   type storePayload,
   type afterUnloadDocumentPayload,
   type onDisconnectPayload,
-  type onStoreDocumentPayload
+  type onStoreDocumentPayload,
+  type onStatelessPayload
 } from '@hocuspocus/server'
-
+import * as Y from 'yjs'
 import { Logger } from '@hocuspocus/extension-logger'
 import { Redis } from '@hocuspocus/extension-redis'
 import { Database } from '@hocuspocus/extension-database'
+
 import type { RedisCache } from './RedisCache.js'
-import { type Repository } from './Repository.js'
+import type { Repository } from '@/shared/Repository.js'
 
 import {
   type Application
 } from 'express-ws'
 
 
-import * as Y from 'yjs'
 import { yDocToNewsDoc, newsDocToYDoc } from './transformations/yjs/yDoc.js'
 import { Snapshot } from './extensions/snapshot.js'
 import { Auth } from './extensions/auth.js'
 import createHash from '../../shared/createHash.js'
 import { StatelessType, parseStateless } from '@/shared/stateless.js'
+import CollaborationServerErrorHandler from '../lib/errorHandler.js'
+import logger from '../lib/logger.js'
 
 interface CollaborationServerOptions {
   name: string
@@ -57,6 +60,7 @@ export class CollaborationServer {
   readonly #server: Hocuspocus
   readonly #repository: Repository
   readonly #redisCache: RedisCache
+  readonly #errorHandler: CollaborationServerErrorHandler
   #handlePaths: string[]
   #openForBusiness: boolean
   #openDocuments?: Y.Doc
@@ -82,15 +86,20 @@ export class CollaborationServer {
       protocol: redisProtocol
     } = new URL(redisUrl)
 
+    this.#quiet = process.env.LOG_LEVEL !== 'info' && process.env.LOG_LEVEL !== 'debug'
+
     this.#server = Server.configure({
-      name: this.#name,
       port: this.#port,
       timeout: 30000,
       debounce: 5000,
       maxDebounce: 30000,
       quiet: this.#quiet,
       extensions: [
-        new Logger(),
+        new Logger({
+          log: (msg) => {
+            logger.info(msg)
+          }
+        }),
         new Redis({
           prefix: 'elc::hp',
           host: redisHost,
@@ -102,84 +111,67 @@ export class CollaborationServer {
           }
         }),
         new Database({
-          fetch: async (payload) => { return await this.#fetchDocument(payload) },
-          store: async (payload) => { await this.#storeDocument(payload) }
+          fetch: async (payload: fetchPayload) => {
+            const document = await this.#fetchDocument(payload).catch(ex => {
+              this.#errorHandler.error(ex)
+            })
+
+            return document || null
+          },
+          store: async (payload) => {
+            await this.#storeDocument(payload).catch(ex => {
+              this.#errorHandler.error(ex)
+            })
+          }
         }),
         new Snapshot({
           debounce: 120000,
           snapshot: async (payload: onStoreDocumentPayload) => {
             return async () => {
-              await this.#snapshotDocument(payload)
+              await this.#snapshotDocument(payload).catch(ex => {
+                this.#errorHandler.error(ex, {
+                  id: payload.documentName,
+                  accessToken: payload.context.accessToken
+                })
+              })
             }
           }
         }),
+        // TODO: Handle Auth/token validation errors
         new Auth()
       ],
 
       // Add user as having a tracked document open (or increase nr of times
       // user have it open)
       connected: async (payload) => {
-        await this.#connected(payload)
+        await this.#connected(payload).catch(ex => {
+          this.#errorHandler.error(ex)
+        })
       },
 
       // Remove user from having a tracked doc open (or decrease the nr of times
       // user have it open)
       onDisconnect: async (payload) => {
-        await this.#onDisconnect(payload)
+        await this.#onDisconnect(payload).catch(ex => {
+          this.#errorHandler.error(ex)
+        })
       },
 
       // No users have this doc open, remove it from tracked documents
       afterUnloadDocument: async (payload) => {
-        await this.#afterUnloadDocument(payload)
+        await this.#afterUnloadDocument(payload).catch(ex => {
+          this.#errorHandler.error(ex)
+        })
       },
 
-      onStateless: async ({ payload }) => {
-        const msg = parseStateless(payload)
-
-        if (msg.type === StatelessType.IN_PROGRESS && !msg.message.state) {
-          const connection = await this.#server.openDirectConnection(
-            msg.message.id, { ...msg.message.context, agent: 'server' }
-          ).catch(ex => {
-            throw new Error('acquire connection', { cause: ex })
-          })
-
-          await connection.transact(doc => {
-            const ele = doc.getMap('ele')
-            const root = ele.get('root') as Y.Map<unknown>
-            root.delete('__inProgress')
-          }).catch(ex => {
-            throw new Error('remove in progress flag', { cause: ex })
-          })
-
-          if (connection.document) {
-            const document = await yDocToNewsDoc(connection.document)
-            const currentHash = createHash(JSON.stringify(document.document))
-
-            if (document.document && msg.message.context) {
-              const result = await this.#repository.saveDoc(
-                document.document, msg.message.context.accessToken as string,
-                BigInt(document.version)
-              ).catch(ex => {
-                throw new Error('save snapshot', { cause: ex })
-              })
-
-              if (result?.status.code === 'OK') {
-                await connection.transact(doc => {
-                  const versionMap = doc.getMap('version')
-                  const hashMap = doc.getMap('hash')
-                  versionMap.set('version', result?.response.version.toString())
-                  hashMap.set('hash', currentHash)
-                }).catch(ex => {
-                  throw new Error('update document version and hash', { cause: ex })
-                })
-
-                console.debug('::: Document saved: ', result.response.version, 'new hash:', currentHash)
-              }
-            }
-          }
-        }
+      onStateless: async (payload) => {
+        await this.#statelessHandler(payload).catch(ex => {
+          this.#errorHandler.error(ex)
+        })
       }
     })
+
+    this.#errorHandler = new CollaborationServerErrorHandler(this.#server)
 
     this.#handlePaths = []
     this.#openForBusiness = false
@@ -195,7 +187,7 @@ export class CollaborationServer {
     }
 
     if (this.#handlePaths.length || this.#openForBusiness) {
-      console.warn('Collab server already open for business, closing, cleaning up and reinitializing')
+      this.#errorHandler.warn('Collab server already open for business, closing, cleaning up and reinitializing')
       await this.close()
     }
 
@@ -206,7 +198,7 @@ export class CollaborationServer {
         })
       })
     } catch (ex) {
-      console.error(ex)
+      this.#errorHandler.fatal(ex)
       return false
     }
 
@@ -226,13 +218,65 @@ export class CollaborationServer {
     try {
       await this.#server.destroy()
     } catch (ex) {
-      console.error(ex)
+      this.#errorHandler.error(ex)
     } finally {
       this.#openForBusiness = false
       this.#handlePaths = []
     }
   }
 
+  async #statelessHandler(payload: onStatelessPayload): Promise<void> {
+    const msg = parseStateless(payload.payload)
+
+    if (msg.type === StatelessType.IN_PROGRESS && !msg.message.state) {
+      const connection = await this.#server.openDirectConnection(
+        msg.message.id, { ...msg.message.context, agent: 'server' }
+      ).catch(ex => {
+        throw new Error('open direct connection', { cause: ex })
+      })
+
+      if (connection) {
+        await connection.transact(doc => {
+          const ele = doc.getMap('ele')
+          const root = ele.get('root') as Y.Map<unknown>
+          root.delete('__inProgress')
+        }).catch(ex => {
+          throw new Error('remove __inProgress', { cause: ex })
+        })
+
+        if (connection.document) {
+          const document = await yDocToNewsDoc(connection.document)
+          const currentHash = createHash(JSON.stringify(document.document))
+
+          if (document.document && msg.message.context) {
+            const result = await this.#repository.saveDoc(
+              document.document, msg.message.context.accessToken,
+              BigInt(document.version)
+            ).catch(err => {
+              this.#errorHandler.error(err, {
+                id: msg.message.id,
+                accessToken: msg.message.context.accessToken
+              })
+            })
+
+            if (result?.status.code === 'OK') {
+              await connection.transact(doc => {
+                const versionMap = doc.getMap('version')
+                const hashMap = doc.getMap('hash')
+                versionMap.set('version', result?.response.version.toString())
+                hashMap.set('hash', currentHash)
+              }).catch(ex => {
+                throw new Error('update version and hash', { cause: ex })
+              })
+
+              payload.connection.sendStateless('message@ok')
+              logger.debug('::: Document saved: ', result.response.version, 'new hash:', currentHash)
+            }
+          }
+        }
+      }
+    }
+  }
 
   /**
    * Fetch document from redis if already in cache, otherwise from repository
@@ -255,6 +299,7 @@ export class CollaborationServer {
     const state = await this.#redisCache.get(uuid).catch(ex => {
       throw new Error('get cached document', { cause: ex })
     })
+
     if (state) {
       return state
     }
@@ -262,7 +307,7 @@ export class CollaborationServer {
     // Fetch content
     const newsDoc = await this.#repository.getDoc({
       uuid,
-      accessToken: context.token
+      accessToken: context.accessToken
     }).catch(ex => {
       throw new Error('get document from repository', { cause: ex })
     })
@@ -277,61 +322,68 @@ export class CollaborationServer {
     return Y.encodeStateAsUpdate(yDoc)
   }
 
-  async #snapshotDocument({ documentName, document: yDoc, context }: onStoreDocumentPayload): Promise<void> {
+  async #snapshotDocument({ documentName, document: yDoc, context, document }: onStoreDocumentPayload): Promise<void> {
     // Disregard __inProgress documents
     if ((yDoc.getMap('ele')
       .get('root') as Y.Map<unknown>)
       .get('__inProgress') as boolean) {
-      console.debug('::: saveDoc: Document is in progress, not saving')
+      logger.debug('::: Snapshot document: Document is in progress, not saving')
       return
     }
 
     // Convert yDoc to newsDoc, so we can hash it and maybe save it to the repository
-    const { document } = await yDocToNewsDoc(yDoc)
-
-    const currentHash = createHash(JSON.stringify(document))
-
-    // Compare original hash with current hash to establish if there are any changes
-    // This solution relies on the same order of keys in the documents, but a change of key order
-    // should be indicate a change in the document anyway.
-    if (yDoc.getMap('hash').get('hash') === currentHash) {
-      console.debug('::: saveDoc: No changes in document')
-      return
-    }
-
-
-    const versionMap = yDoc.getMap('version')
-    const version = BigInt(versionMap.get('version') as string)
-
-    if (!document) {
-      throw new Error('No document to save')
-    }
-
-    const result = await this.#repository.saveDoc(document, context.token as string, version)
-    if (result?.status.code !== 'OK') {
-      // TODO: what does an error response look like? Is it parsed? A full twirp
-      // error response looks like this:
-      // https://twitchtv.github.io/twirp/docs/errors.html#metadata
-      throw new Error('save document to repository', { cause: result })
-    }
-
-    const connection = await this.#server.openDirectConnection(documentName, {
-      ...context,
-      agent: 'server'
-    }).catch(ex => {
-      throw new Error('open hocuspocus connection', { cause: ex })
+    const newsDoc = await yDocToNewsDoc(yDoc).catch(ex => {
+      throw new Error('convert yDoc to newsDoc', { cause: ex })
     })
 
-    await connection.transact(doc => {
-      const versionMap = doc.getMap('version')
-      const hashMap = doc.getMap('hash')
-      versionMap.set('version', result?.response.version.toString())
-      hashMap.set('hash', currentHash)
-    }).catch(ex => {
-      throw new Error('update document with new hash', { cause: ex })
-    })
+    if (newsDoc?.document) {
+      const currentHash = createHash(JSON.stringify(newsDoc.document))
 
-    console.debug('::: Snapshot saved: ', result.response.version, 'new hash:', currentHash)
+      // Compare original hash with current hash to establish if there are any changes
+      // This solution relies on the same order of keys in the documents, but a change of key order
+      // should be indicate a change in the document anyway.
+      if (yDoc.getMap('hash').get('hash') === currentHash) {
+        logger.debug('::: saveDoc: No changes in document')
+        return
+      }
+
+
+      const versionMap = yDoc.getMap('version')
+      const version = BigInt(versionMap.get('version') as string)
+
+      if (!document) {
+        throw new Error('no document')
+      }
+
+      const result = await this.#repository.saveDoc(newsDoc.document, context.accessToken as string, version)
+        .catch(async ex => {
+          throw ex
+        })
+
+      if (result?.status.code !== 'OK') {
+        throw new Error('save document to repository', { cause: result })
+      }
+
+      const connection = await this.#server.openDirectConnection(documentName, {
+        ...context,
+        agent: 'server'
+      }).catch(ex => {
+        throw new Error('unable to open direct connection', { cause: ex })
+      })
+
+      if (connection) {
+        await connection.transact(doc => {
+          const versionMap = doc.getMap('version')
+          const hashMap = doc.getMap('hash')
+          versionMap.set('version', result?.response.version.toString())
+          hashMap.set('hash', currentHash)
+        }).catch(ex => {
+          throw new Error('update version and hash', { cause: ex })
+        })
+
+        logger.debug('::: Snapshot saved: ', result?.response.version, 'new hash:', currentHash)
+      }
+    }
   }
 
 
@@ -424,7 +476,9 @@ export class CollaborationServer {
    * Store document in redis cache
    */
   async #storeDocument({ documentName, state }: storePayload): Promise<void> {
-    await this.#redisCache.store(documentName, state)
+    await this.#redisCache.store(documentName, state).catch(ex => {
+      this.#errorHandler.error(ex)
+    })
   }
 
   /**

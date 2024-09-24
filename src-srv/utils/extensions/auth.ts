@@ -7,38 +7,40 @@ import {
 import { type JWTPayload, decodeJwt } from 'jose'
 
 export class Auth implements Extension {
-  async onAuthenticate({ token }: onAuthenticatePayload): Promise<{
-    token: string
+  async onAuthenticate({ token: accessToken }: onAuthenticatePayload): Promise<{
+    accessToken: string
     user: JWTPayload
   }> {
-    const isValidToken = await validateAccessToken(token)
+    const isValidAccessToken = await validateAccessToken(accessToken)
 
-    if (isValidToken) {
+    if (isValidAccessToken) {
       return {
-        token,
-        user: { ...decodeJwt(token) }
+        accessToken,
+        user: { ...decodeJwt(accessToken) }
       }
     }
 
-    throw new Error('Could not authenticate: Invalid token')
+    throw new Error('Could not authenticate: Invalid accessToken')
   }
 
   async onStateless({ payload, connection }: onStatelessPayload): Promise<void> {
     const statelessMessage = parseStateless<StatelessAuth>(payload)
+
     if (statelessMessage.type === StatelessType.AUTH) {
-      if (await validateAccessToken(statelessMessage.message.token)) {
-        connection.context = statelessMessage.message
+      if (await validateAccessToken(statelessMessage.message.accessToken)) {
+        connection.context.accessToken = statelessMessage.message.accessToken
+        connection.context.user = { ...decodeJwt(statelessMessage.message.accessToken) }
       } else {
-        throw new Error('Could not authenticate: Invalid new token')
+        throw new Error('Could not authenticate: Invalid new accessToken')
       }
     }
   }
 }
 
-async function validateAccessToken(token: string): Promise<boolean> {
+async function validateAccessToken(accessToken: string): Promise<boolean> {
   const response = await fetch(`${process.env.AUTH_KEYCLOAK_ISSUER}/protocol/openid-connect/userinfo`, {
     headers: {
-      Authorization: `Bearer ${token}`
+      Authorization: `Bearer ${accessToken}`
     }
   })
 
