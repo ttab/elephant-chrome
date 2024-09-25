@@ -11,9 +11,6 @@ import * as Templates from '@/defaults/templates'
 import { type View } from '@/types/index'
 import { type Document } from '@/protos/service'
 import { type TemplatePayload } from '@/lib/createYItem'
-import { useNavigation } from '@/hooks/index'
-
-const BASE_URL = import.meta.env.BASE_URL || ''
 
 export type Template = keyof typeof Templates
 
@@ -22,7 +19,6 @@ export const CreateDocumentDialog = ({ type, payload, children, mutator }: Props
   payload?: TemplatePayload
   mutator?: (id: string, title: string) => Promise<void>
 }>): JSX.Element | null => {
-  const { state } = useNavigation()
   const [document, setDocument] = useState<[string | undefined, Y.Doc | undefined]>([undefined, undefined])
 
   useKeydownGlobal(evt => {
@@ -42,32 +38,7 @@ export const CreateDocumentDialog = ({ type, payload, children, mutator }: Props
           React.cloneElement(children, {
             onClick: async (event: React.MouseEvent<HTMLElement>) => {
               event.preventDefault()
-
-              if (type === 'Flash') {
-                const planningId = state.content.find(s => {
-                  return s.props.name === 'Planning' && s.key === state.active
-                })?.props.children.props.id
-                // FIXME: Fetch planning to extract section should be gernalized
-                // FIXME: Check current user to extract email and fetch author document
-
-                if (planningId) {
-                  const response = await fetch(`${BASE_URL}/api/documents/${planningId}`)
-                  if (response.ok) {
-                    // HACK: We need to provide a custom toJSON for BigInt to not trigger an Exception. Why? We don't need it elsewhere.
-                    // FIXME: This is not the way to do it!
-                    const planningDoc = await response.json()
-                    console.log(planningDoc)
-                  }
-                }
-
-                setDocument(
-                  createDocument(
-                    getTemplate(type),
-                    true,
-                    payload
-                  )
-                )
-              } else if (type) {
+              if (type) {
                 setDocument(
                   createDocument(
                     getTemplate(type),
@@ -109,8 +80,6 @@ function getTemplate(type: View): (id: string) => Document {
   switch (type) {
     case 'Planning':
       return Templates.planning
-    case 'Flash':
-      return Templates.flash
     case 'Event':
       return Templates.event
     default:

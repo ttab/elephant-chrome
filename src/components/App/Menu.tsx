@@ -22,7 +22,7 @@ export const Menu = (): JSX.Element => {
         <MenuIcon strokeWidth={2.25} size={18} />
       </SheetTrigger>
 
-      <SheetContent side="left" className="w-100vw h-100vh p-0 flex flex-col justify-between" defaultClose={false}>
+      <SheetContent side="left" className="w-100vw h-100vh p-0 flex flex-col justify-between">
         <div>
           <SheetHeader>
             <SheetTitle className="flex flex-row gap-4 justify-between justify-items-center items-center h-14 px-4">
@@ -43,7 +43,6 @@ export const Menu = (): JSX.Element => {
             {applicationMenuItems.map(item => {
               return <MenuItem key={item.name} menuItem={item} />
             })}
-
           </div>
         </div>
 
