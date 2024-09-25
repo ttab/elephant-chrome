@@ -26,12 +26,12 @@ interface ExcecutionTimeItemsProps extends React.PropsWithChildren {
 }
 
 const fortmatIsoStringToLocalTime = (isoString: string): JSX.Element => {
-    const date = new Date(isoString)
-    return <TimeDisplay date={date}/>
+  const date = new Date(isoString)
+  return <TimeDisplay date={date} />
 
 }
 
-const DateLabel = ({fromDate, toDate}: {fromDate?: string | undefined, toDate?: string | undefined}) => {
+const DateLabel = ({ fromDate, toDate }: { fromDate?: string | undefined, toDate?: string | undefined }) => {
   const from = fromDate ? fortmatIsoStringToLocalTime(fromDate) : null
   const to = toDate ? fortmatIsoStringToLocalTime(toDate) : null
   return (
@@ -211,9 +211,9 @@ export const ExcecutionTimeMenu = ({ handleOnSelect, index, startDate }: Excecut
   return (
     <Popover open={open} onOpenChange={handleOpenChange}>
       <PopoverTrigger asChild>
-        <div className='flex flex-row space-x-2 items-center  pt-2'>
+        <div className='flex flex-row space-x-2 items-center align-middle'>
           {timePickType.icon && <timePickType.icon {...timePickType.iconProps} />}
-          <DateLabel  fromDate={data?.start} toDate={data?.end}/>
+          <DateLabel fromDate={data?.start} toDate={data?.end} />
         </div>
       </PopoverTrigger>
       <PopoverContent>
@@ -231,60 +231,64 @@ export const ExcecutionTimeMenu = ({ handleOnSelect, index, startDate }: Excecut
           disabled={data?.start ? { before: new Date(data.start) } : { before: new Date() }}
 
         />
-        <div className='flex flex-auto border-2 rounded border-slate-100'>
-          <div>
-            {startDateValue && dateToReadableDateTime(new Date(startDateValue as string), locale, timeZone )}
+        <div className='flex justify-between border-2 rounded-md border-slate-100'>
+          <div className='px-3 py-2 text-sm'>
+            {startDateValue && dateToReadableDateTime(new Date(startDateValue as string), locale, timeZone)}
           </div>
-          <Input
-            type='time'
-            ref={inputRef}
-            value={startTimeValue}
-            onChange={handleStartTimeChange}
+          <div>
+            <Input
+              type='time'
+              ref={inputRef}
+              value={startTimeValue}
+              onChange={handleStartTimeChange}
 
-            placeholder={'hh:mm ex 11:00'}
-            className="h-9 border-none"
-            onKeyDown={(e) => {
-              if (e.key === 'Escape') {
-                setOpen(false)
-              }
-              if (e.key === 'Enter') {
-                e.preventDefault()
-                setOpen(false)
-              }
-            }}
-          />
-
+              placeholder={'hh:mm ex 11:00'}
+              className="h-9 border-none"
+              onKeyDown={(e) => {
+                if (e.key === 'Escape') {
+                  setOpen(false)
+                }
+                if (e.key === 'Enter') {
+                  e.preventDefault()
+                  setOpen(false)
+                }
+              }}
+            />
+          </div>
         </div>
         <div>
-          <div>
-
+          <div className='pt-2 pb-2'>
             <Switch onCheckedChange={handleCheckedChange} checked={hasEndTime}>Från-till</Switch>
           </div>
-          <div>
-            { endDateValue && dateToReadableDateTime(new Date(endDateValue as string), locale, timeZone )}
-          </div>
-          <Input
-            type='time'
-            ref={inputRef}
-            value={hasEndTime ? endTimeValue : ''}
-            onChange={handleEndTimeChange}
-            disabled={!hasEndTime}
-            placeholder={'hh:mm ex 11:00'}
-            className="h-9 border-none"
-            onKeyDown={(e) => {
-              if (e.key === 'Escape') {
-                setOpen(false)
-              }
-              // if (e.key === 'Enter') {
-              //   e.preventDefault()
-              //   // handleOnSelect({ value: timePickType.value, selectValue: selected?.toISOString() || '' })
-              //   setOpen(false)
-              // }
-            }}
-          />
 
+          <div className='flex justify-between border-2 rounded-md border-slate-100'>
+            <div className='px-3 py-2 text-sm'>
+              {endDateValue && dateToReadableDateTime(new Date(endDateValue as string), locale, timeZone)}
+            </div>
+            <div>
+              <Input
+                type='time'
+                ref={inputRef}
+                value={hasEndTime ? endTimeValue : ''}
+                onChange={handleEndTimeChange}
+                disabled={!hasEndTime}
+                placeholder={'hh:mm ex 11:00'}
+                className="h-9 border-none"
+                onKeyDown={(e) => {
+                  if (e.key === 'Escape') {
+                    setOpen(false)
+                  }
+                  // if (e.key === 'Enter') {
+                  //   e.preventDefault()
+                  //   // handleOnSelect({ value: timePickType.value, selectValue: selected?.toISOString() || '' })
+                  //   setOpen(false)
+                  // }
+                }}
+              />
+            </div>
+          </div>
         </div>
-        <div className='flex items-center justify-end gap-4'>
+        <div className='flex items-center justify-end gap-4 p-2'>
           <Button
             variant="ghost"
             onClick={(evt) => {
