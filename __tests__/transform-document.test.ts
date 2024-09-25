@@ -2,6 +2,7 @@ import { newsDocToYDoc, yDocToNewsDoc } from '../src-srv/utils/transformations/y
 import * as Y from 'yjs'
 
 import { planning } from './data/planning-newsdoc'
+import { articleFactbox } from './data/article-factbox-newsdoc'
 import { article } from './data/article-newsdoc'
 import { Block, type GetDocumentResponse } from '@/protos/service'
 
@@ -15,14 +16,14 @@ function sortDocument(json: any): any {
     return json.map(sortDocument)
       .sort((a: unknown, b: unknown) => {
         if (typeof a === 'object' && typeof b === 'object') {
-          return JSON.stringify(a).localeCompare(JSON.stringify(b))
+          return JSON.stringify(sortDocument(a)).localeCompare(JSON.stringify(sortDocument(b)))
         }
         return JSON.stringify(a).localeCompare(JSON.stringify(b))
       })
   } else if (typeof json === 'object' && json !== null) {
     const sortedObject: Record<string, unknown> = {}
     Object.keys(json as Record<string, unknown>).sort().forEach(key => {
-      sortedObject[key] = sortDocument((json)[key])
+      sortedObject[key] = sortDocument(json[key])
     })
     return sortedObject
   }
@@ -220,6 +221,22 @@ describe('Description and slugline handling - planning', () => {
       expect(version).toBe(planning.version)
       expect(document?.meta.filter((meta) => meta.type === 'core/description').length).toBe(1)
       expect(sortDocument(document)).toEqual(sortDocument(augmentedPlanning.document))
+    })
+  })
+
+  describe('Transform and revert planning with factbox document', () => {
+    it('transforms and reverts the planning with factbox document correctly', async () => {
+      const yDoc = new Y.Doc()
+      newsDocToYDoc(yDoc, articleFactbox)
+
+      const { document, version } = await yDocToNewsDoc(yDoc)
+
+      if (!document || !articleFactbox.document) {
+        throw new Error('no document')
+      }
+
+      expect(version).toBe(articleFactbox.version)
+      expect(sortDocument(document)).toEqual(sortDocument(articleFactbox.document))
     })
   })
 })

@@ -38,7 +38,7 @@ export async function slateToNewsDoc(elements: TBElement[]): Promise<Block[] | u
         case 'core/image':
           return revertVisual(element)
         case 'core/factbox':
-          return revertFactbox(element)
+          return await revertFactbox(element)
         default:
           throw new Error(`Element not implemented: ${element.type}`)
       }
