@@ -16,7 +16,8 @@ import { timePickTypes } from '.'
 import { useYValue } from '@/hooks/useYValue'
 import { AssignmentData } from '.'
 import { TimeDisplay } from '../DataItem/TimeDisplay'
-
+import { dateToReadableTime, dateToReadableDateTime } from '@/lib/datetime'
+import { useRegistry } from '@/hooks'
 interface ExcecutionTimeItemsProps extends React.PropsWithChildren {
   handleOnSelect: ({ excecutionStart, executionEnd }: { excecutionStart: string | undefined, executionEnd: string | undefined }) => void
   className?: string,
@@ -30,7 +31,7 @@ const fortmatIsoStringToLocalTime = (isoString: string): JSX.Element => {
 
 }
 
-const DateLabel = ({fromDate, toDate}: {fromDate: string | undefined, toDate: string | undefined}) => {
+const DateLabel = ({fromDate, toDate}: {fromDate?: string | undefined, toDate?: string | undefined}) => {
   const from = fromDate ? fortmatIsoStringToLocalTime(fromDate) : null
   const to = toDate ? fortmatIsoStringToLocalTime(toDate) : null
   return (
@@ -52,6 +53,7 @@ export const ExcecutionTimeMenu = ({ handleOnSelect, index, startDate }: Excecut
   const [startDateValue, setStartDateValue] = useState<string>()
   const [endDateValue, setEndDateValue] = useState<string>()
   const [hasEndTime, setHasEndTime] = useState<boolean>()
+  const { locale, timeZone } = useRegistry()
 
   useEffect(() => {
     const dates: Date[] = []
@@ -229,9 +231,9 @@ export const ExcecutionTimeMenu = ({ handleOnSelect, index, startDate }: Excecut
           disabled={data?.start ? { before: new Date(data.start) } : { before: new Date() }}
 
         />
-        <div>
+        <div className='flex flex-auto border-2 rounded border-slate-100'>
           <div>
-            <label>Start: </label><label>{startDateValue}</label>
+            {startDateValue && dateToReadableDateTime(new Date(startDateValue as string), locale, timeZone )}
           </div>
           <Input
             type='time'
@@ -240,14 +242,13 @@ export const ExcecutionTimeMenu = ({ handleOnSelect, index, startDate }: Excecut
             onChange={handleStartTimeChange}
 
             placeholder={'hh:mm ex 11:00'}
-            className="h-9"
+            className="h-9 border-none"
             onKeyDown={(e) => {
               if (e.key === 'Escape') {
                 setOpen(false)
               }
               if (e.key === 'Enter') {
                 e.preventDefault()
-                // handleOnSelect({ value: timePickType.value, selectValue: selected?.toISOString() || '' })
                 setOpen(false)
               }
             }}
@@ -260,7 +261,7 @@ export const ExcecutionTimeMenu = ({ handleOnSelect, index, startDate }: Excecut
             <Switch onCheckedChange={handleCheckedChange} checked={hasEndTime}>Från-till</Switch>
           </div>
           <div>
-            <label>Slut: </label><label>{endDateValue}</label>
+            { endDateValue && dateToReadableDateTime(new Date(endDateValue as string), locale, timeZone )}
           </div>
           <Input
             type='time'
@@ -269,7 +270,7 @@ export const ExcecutionTimeMenu = ({ handleOnSelect, index, startDate }: Excecut
             onChange={handleEndTimeChange}
             disabled={!hasEndTime}
             placeholder={'hh:mm ex 11:00'}
-            className="h-9"
+            className="h-9 border-none"
             onKeyDown={(e) => {
               if (e.key === 'Escape') {
                 setOpen(false)
