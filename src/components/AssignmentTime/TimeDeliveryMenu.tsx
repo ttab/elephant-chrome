@@ -18,12 +18,8 @@ import {
 
 import { CalendarFoldIcon, CalendarClockIcon, Clock1Icon, Clock2Icon, Clock3Icon, Clock4Icon, Clock5Icon, Clock6Icon, Clock7Icon, Clock8Icon, Clock9Icon, Clock10Icon, Clock11Icon, Clock12Icon } from '@ttab/elephant-ui/icons'
 import { type DefaultValueOption } from '@/types/index'
-
-
 import { TimeSlotItems } from './TimeSlotItems'
 import { TimeSelectItem } from './TimeSelectItem'
-import { ExcecutionTimeItems } from './ExcecutionTimeItems'
-
 interface TimeMenuProps extends React.PropsWithChildren {
   handleOnSelect: ({value, selectValue}: {value: string, selectValue: string}) => void
   className?: string

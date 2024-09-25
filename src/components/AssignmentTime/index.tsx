@@ -8,7 +8,7 @@ import { Block } from '@/protos/service'
 import { TimeDeliveryMenu } from './TimeDeliveryMenu'
 import { cn } from '@ttab/elephant-ui/utils'
 import { AssignmentValueOption } from './types'
-import { ExcecutionTimeItems } from './ExcecutionTimeItems'
+import { ExcecutionTimeMenu } from './ExcecutionTimeMenu'
 
 const iconProps = {
   size: 18,
@@ -240,7 +240,7 @@ export const AssignmentTime = ({ index }: {
   return (
 
     (assignmentType && assignmentType === 'picture') ?
-      (<ExcecutionTimeItems handleOnSelect={onExcecutionTimeSelect} index={index} startDate={startDate as string}/>)
+      (<ExcecutionTimeMenu handleOnSelect={onExcecutionTimeSelect} index={index} startDate={startDate as string}/>)
 
       : (<TimeDeliveryMenu
         handleOnSelect={handleOnSelect}
