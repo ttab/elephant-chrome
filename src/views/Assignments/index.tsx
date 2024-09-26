@@ -3,13 +3,10 @@ import { type ViewMetadata } from '@/types'
 import { ViewHeader } from '@/components'
 import { BriefcaseBusinessIcon } from '@ttab/elephant-ui/icons'
 import { ScrollArea, Tabs, TabsContent } from '@ttab/elephant-ui'
-
-// import { PlanningGrid } from './PlanningGrid'
 import { TableProvider } from '@/contexts/TableProvider'
-
 import { TableCommandMenu } from '@/components/Commands/TableCommand'
-import { Header } from '@/views/PlanningOverview/PlanningHeader'
-import { type Assignment } from '@/lib/index/schemas/assignment'
+import { Header } from '@/components/Header'
+import { type Planning } from '@/lib/index/schemas/planning'
 import { AssignmentsList } from './AssignmentsList'
 import { assignmentColumns } from './AssignmentColumns'
 import { useAuthors } from '@/hooks/useAuthors'
@@ -42,7 +39,7 @@ export const Assignments = (): JSX.Element => {
   }, [startDate])
 
   return (
-    <TableProvider<Assignment> columns={assignmentColumns({ authors })}>
+    <TableProvider<Planning> columns={assignmentColumns({ authors })}>
       <Tabs defaultValue={currentTab} className='flex-1' onValueChange={setCurrentTab}>
         <TableCommandMenu>
           <Commands />

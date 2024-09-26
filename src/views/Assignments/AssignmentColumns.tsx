@@ -8,7 +8,7 @@ import {
   Crosshair,
   Users
 } from '@ttab/elephant-ui/icons'
-import { type Assignment } from '@/lib/index/schemas/assignment'
+import { type Planning } from '@/lib/index/schemas/planning'
 import { type IDBAuthor } from 'src/datastore/types'
 import { getNestedFacetedUniqueValues } from '@/components/Filter/lib/getNestedFacetedUniqueValues'
 import { FacetedFilter } from '@/components/Commands/FacetedFilter'
@@ -19,7 +19,7 @@ import { Time } from '@/components/Table/Items/Time'
 
 export function assignmentColumns({ authors }: {
   authors?: IDBAuthor[]
-}): Array<ColumnDef<Assignment>> {
+}): Array<ColumnDef<Planning>> {
   return [
     {
       id: 'title',
@@ -29,12 +29,13 @@ export function assignmentColumns({ authors }: {
         className: 'box-content truncate'
       },
       accessorFn: (data) => {
-        return data?._source['document.title'][0]
+        return data?._source['document.title']
       },
       filterFn: (row, id, value) => value.some((x: string) => row.getValue<string[] | undefined>(id)?.includes(x)),
       cell: ({ row }) => {
         const title = row.getValue<string>('title')
-        return <Title title={title} />
+        const slugline = row.original._source['document.meta.tt_slugline.value']?.[0]
+        return <Title title={title} slugline={slugline} />
       }
     },
     {
@@ -48,7 +49,7 @@ export function assignmentColumns({ authors }: {
         columnIcon: Crosshair,
         className: 'box-content hidden w-[120px] @6xl/view:[display:revert]'
       },
-      accessorFn: (data) => data._source['document.meta.core_assignment_type.value'],
+      accessorFn: (data) => data._source['document.meta.core_assignment.meta.core_assignment_type.value'],
       cell: ({ row }) => {
         const data = AssignmentTypes.filter(
           (assignmentType) => (row.getValue<string[]>('type') || []).includes(assignmentType.value)
@@ -74,7 +75,7 @@ export function assignmentColumns({ authors }: {
         columnIcon: Users,
         className: 'box-content w-[112px] hidden @5xl/view:[display:revert]'
       },
-      accessorFn: (data) => data._source['document.rel.assigned_to.title'],
+      accessorFn: (data) => data._source['document.meta.core_assignment.rel.assignee.name'],
       cell: ({ row }) => {
         const assignees = row.getValue<string[]>('assignees') || []
         return <Assignees assignees={assignees} />
@@ -96,8 +97,8 @@ export function assignmentColumns({ authors }: {
         className: 'box-content w-[112px] hidden @5xl/view:[display:revert]'
       },
       accessorFn: (data) => {
-        const startTime = new Date(data._source['document.meta.core_assignment.data.start'][0])
-        const endTime = new Date(data._source['document.meta.core_assignment.data.end'][0])
+        const startTime = new Date(data._source['document.meta.core_assignment.data.start'][0] ?? '')
+        const endTime = new Date(data._source['document.meta.core_assignment.data.end'][0] ?? '')
         return [startTime, endTime]
       },
       cell: ({ row }) => {

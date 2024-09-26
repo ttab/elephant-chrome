@@ -34,6 +34,7 @@ export const PlanningList = ({ date }: { date: Date }): JSX.Element => {
     return searchUrl
   }, [startTime, endTime, indexUrl])
 
+  console.log('searchurl', searchUrl)
   const { data, mutate } = useSWR(searchUrl?.href, async (): Promise<SearchIndexResponse<Planning> | undefined> => {
     if (status !== 'authenticated' || !indexUrl) {
       return

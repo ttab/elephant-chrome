@@ -9,7 +9,7 @@ import { PlanningList } from './PlanningList'
 import { TableProvider } from '@/contexts/TableProvider'
 
 import { TableCommandMenu } from '@/components/Commands/TableCommand'
-import { Header } from '@/views/PlanningOverview/PlanningHeader'
+import { Header } from '@/components/Header'
 import { planningTableColumns } from './PlanningListColumns'
 import { type Planning } from '@/lib/index'
 import { useSections } from '@/hooks/useSections'

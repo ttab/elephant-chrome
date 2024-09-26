@@ -6,14 +6,14 @@ import {
   type SearchIndexResponse,
   Assignments
 } from '@/lib/index'
-import { type Assignment } from '@/lib/index/schemas/assignment'
+import { type Planning } from '@/lib/index/schemas/planning'
 
 import { Table } from '@/components/Table'
 import { convertToISOStringInUTC, getDateTimeBoundaries } from '@/lib/datetime'
 import { assignmentColumns } from './AssignmentColumns'
 
 export const AssignmentsList = ({ date }: { date: Date }): JSX.Element => {
-  const { setData } = useTable<Assignment>()
+  const { setData } = useTable<Planning>()
   const { data: session, status } = useSession()
 
   const indexUrl = useIndexUrl()
@@ -34,16 +34,24 @@ export const AssignmentsList = ({ date }: { date: Date }): JSX.Element => {
     return searchUrl
   }, [startTime, endTime, indexUrl])
 
-  const { data } = useSWR(searchUrl?.href, async (): Promise<SearchIndexResponse<Assignment> | undefined> => {
+  const { data } = useSWR(searchUrl?.href, async (): Promise<SearchIndexResponse<Planning> | undefined> => {
     if (status !== 'authenticated' || !indexUrl) {
       return
     }
 
     const result = await Assignments.search(indexUrl, session.accessToken, {
-      size: 100
+      size: 100,
+      where: {
+        start: convertToISOStringInUTC(startTime),
+        end: convertToISOStringInUTC(endTime)
+      },
+      sort: {
+        start: 'asc'
+      }
     })
     if (result.ok) {
-      console.log(result.hits.slice(0, 5))
+      console.log('result hits 🤭 -', result.hits)
+      // console.log(result.hits.slice(0, 5))
       setData(result)
       return result
     }

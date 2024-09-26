@@ -25,6 +25,7 @@ const PlanningSchema = z.object({
     'document.meta.core_assignment.rel.deliverable.type': z.array(z.string()),
     'document.meta.core_assignment.rel.deliverable.uuid': z.array(z.string()),
     'document.meta.core_assignment.title': z.array(z.string()),
+    'document.meta.core_description.data.text': z.array(z.string()),
     'document.meta.core_planning_item.data.end_date': z.array(z.string()),
     'document.meta.core_planning_item.data.public': z.array(z.string()),
     'document.meta.core_planning_item.data.start_date': z.array(z.string()),
