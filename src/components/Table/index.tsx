@@ -13,7 +13,7 @@ import { handleLink } from '@/components/Link/lib/handleLink'
 
 interface TableProps<TData, TValue> {
   columns: Array<ColumnDef<TData, TValue>>
-  type: 'Planning' | 'Event'
+  type: 'Planning' | 'Event' | 'Assignments'
   onRowSelected?: (row?: TData) => void
 }
 

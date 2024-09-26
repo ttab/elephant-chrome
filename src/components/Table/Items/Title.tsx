@@ -2,7 +2,7 @@ import { SluglineButton } from '@/components/DataItem/Slugline'
 import { useMemo } from 'react'
 
 interface TitleProps {
-  slugline: string
+  slugline?: string
   title: string
 }
 

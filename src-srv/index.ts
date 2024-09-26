@@ -120,6 +120,7 @@ export async function runServer(): Promise<string> {
   })
 
   process.on('unhandledRejection', (ex) => {
+    console.log(ex)
     logger.fatal('Unhandled rejection', { cause: ex })
 
     collaborationServer.close().then(() => {

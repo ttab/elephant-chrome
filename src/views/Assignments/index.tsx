@@ -1,24 +1,23 @@
 import { useEffect, useState } from 'react'
 import { type ViewMetadata } from '@/types'
 import { ViewHeader } from '@/components'
-import { CalendarDaysIcon } from '@ttab/elephant-ui/icons'
+import { BriefcaseBusinessIcon } from '@ttab/elephant-ui/icons'
 import { ScrollArea, Tabs, TabsContent } from '@ttab/elephant-ui'
 
-import { PlanningGrid } from './PlanningGrid'
-import { PlanningList } from './PlanningList'
+// import { PlanningGrid } from './PlanningGrid'
 import { TableProvider } from '@/contexts/TableProvider'
 
 import { TableCommandMenu } from '@/components/Commands/TableCommand'
 import { Header } from '@/views/PlanningOverview/PlanningHeader'
-import { planningTableColumns } from './PlanningListColumns'
-import { type Planning } from '@/lib/index'
-import { useSections } from '@/hooks/useSections'
+import { type Assignment } from '@/lib/index/schemas/assignment'
+import { AssignmentsList } from './AssignmentsList'
+import { assignmentColumns } from './AssignmentColumns'
 import { useAuthors } from '@/hooks/useAuthors'
 import { Commands } from '@/components/Commands'
 
 const meta: ViewMetadata = {
-  name: 'Plannings',
-  path: `${import.meta.env.BASE_URL}/plannings`,
+  name: 'Assignments',
+  path: `${import.meta.env.BASE_URL}/assignments`,
   widths: {
     sm: 12,
     md: 12,
@@ -32,11 +31,10 @@ const meta: ViewMetadata = {
   }
 }
 
-export const Plannings = (): JSX.Element => {
+export const Assignments = (): JSX.Element => {
   const [startDate, setStartDate] = useState<Date>(new Date())
   const [endDate, setEndDate] = useState<Date>(getEndDate(startDate))
   const [currentTab, setCurrentTab] = useState<string>('list')
-  const sections = useSections()
   const authors = useAuthors()
 
   useEffect(() => {
@@ -44,17 +42,14 @@ export const Plannings = (): JSX.Element => {
   }, [startDate])
 
   return (
-    <TableProvider<Planning> columns={planningTableColumns({ sections, authors })}>
+    <TableProvider<Assignment> columns={assignmentColumns({ authors })}>
       <Tabs defaultValue={currentTab} className='flex-1' onValueChange={setCurrentTab}>
-
         <TableCommandMenu>
           <Commands />
         </TableCommandMenu>
-
         <div className="flex flex-col h-screen">
           <ViewHeader.Root>
-            <ViewHeader.Title title="Planeringar" short="Planeringar" icon={CalendarDaysIcon} iconColor='#FF971E' />
-
+            <ViewHeader.Title title="Uppdrag" short="Uppdrag" icon={BriefcaseBusinessIcon} iconColor='#006bb3' />
             <ViewHeader.Content>
               <Header
                 tab={currentTab}
@@ -62,7 +57,7 @@ export const Plannings = (): JSX.Element => {
                 setStartDate={setStartDate}
                 endDate={endDate}
                 setEndDate={setEndDate}
-                type='Planning'
+                type='Assignments'
               />
             </ViewHeader.Content>
 
@@ -71,11 +66,11 @@ export const Plannings = (): JSX.Element => {
 
           <ScrollArea>
             <TabsContent value='list' className='mt-0'>
-              <PlanningList date={startDate} />
+              <AssignmentsList date={startDate} />
             </TabsContent>
 
             <TabsContent value='grid'>
-              <PlanningGrid startDate={startDate} endDate={endDate} />
+              {/* <AssignmentGrid startDate={startDate} endDate={endDate} /> */}
             </TabsContent>
           </ScrollArea>
         </div>
@@ -85,7 +80,7 @@ export const Plannings = (): JSX.Element => {
   )
 }
 
-Plannings.meta = meta
+Assignments.meta = meta
 
 function getEndDate(startDate: Date): Date {
   const endDate = new Date()

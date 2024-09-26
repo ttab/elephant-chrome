@@ -7,11 +7,11 @@ import { TableProvider } from '@/contexts/TableProvider'
 import { TableCommandMenu } from '@/components/Commands/TableCommand'
 import { EventsList } from './EventsList'
 import { EventsGrid } from './EventsGrid'
-import { Header } from './EventsHeader'
-import { EventsCommands } from './EventsCommands'
 import { eventTableColumns } from './EventsListColumns'
 import { type Event } from '@/lib/index'
 import { useSections } from '@/hooks/useSections'
+import { Commands } from '@/components/Commands'
+import { Header } from '@/components/Header'
 
 const meta: ViewMetadata = {
   name: 'Events',
@@ -44,7 +44,7 @@ export const Events = (): JSX.Element => {
       <Tabs defaultValue={currentTab} className='flex-1' onValueChange={setCurrentTab}>
 
         <TableCommandMenu>
-          <EventsCommands />
+          <Commands />
         </TableCommandMenu>
 
         <div className="flex flex-col h-screen">
@@ -58,6 +58,7 @@ export const Events = (): JSX.Element => {
                 setStartDate={setStartDate}
                 endDate={endDate}
                 setEndDate={setEndDate}
+                type='Event'
               />
             </ViewHeader.Content>
 

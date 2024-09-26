@@ -9,16 +9,18 @@ import { TabsGrid } from '@/components/Header/LayoutSwitch'
 import { PlanningCommands } from '../PlanningCommands'
 import { Button } from '@ttab/elephant-ui'
 import { PlusIcon } from '@ttab/elephant-ui/icons'
+import { type View } from '@/types/index'
 
-export const Header = ({ tab, startDate, setStartDate, endDate, setEndDate }: {
+export const Header = ({ tab, startDate, setStartDate, endDate, setEndDate, type }: {
   tab: string
   startDate: Date
   setStartDate: Dispatch<SetStateAction<Date>>
   endDate?: Date
   setEndDate?: Dispatch<SetStateAction<Date>>
+  type: View
 }): JSX.Element => {
   return <>
-    <CreateDocumentDialog type='Planning'>
+    <CreateDocumentDialog type={type}>
       <Button size='sm' className='h-8 pr-4'>
         <PlusIcon size={18} strokeWidth={1.75} /> Ny
       </Button>
