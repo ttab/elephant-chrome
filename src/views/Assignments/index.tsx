@@ -41,7 +41,7 @@ export const Assignments = (): JSX.Element => {
   return (
     <TableProvider<Planning> columns={assignmentColumns({ authors })}>
       <Tabs defaultValue={currentTab} className='flex-1' onValueChange={setCurrentTab}>
-        <TableCommandMenu>
+        <TableCommandMenu heading='Assignments'>
           <Commands />
         </TableCommandMenu>
         <div className="flex flex-col h-screen">

@@ -1,6 +1,6 @@
 import { useMemo } from 'react'
 import useSWR from 'swr'
-import { useAuthors, useIndexUrl, useTable } from '@/hooks'
+import { useAuthors, useIndexUrl, useSections, useTable } from '@/hooks'
 import { useSession } from 'next-auth/react'
 import {
   type SearchIndexResponse,
@@ -18,6 +18,7 @@ export const AssignmentsList = ({ date }: { date: Date }): JSX.Element => {
 
   const indexUrl = useIndexUrl()
   const authors = useAuthors()
+  const sections = useSections()
   const { startTime, endTime } = getDateTimeBoundaries(date)
 
   // Create url to base SWR caching on
@@ -50,8 +51,7 @@ export const AssignmentsList = ({ date }: { date: Date }): JSX.Element => {
       }
     })
     if (result.ok) {
-      console.log('result hits 🤭 -', result.hits)
-      // console.log(result.hits.slice(0, 5))
+      console.log(result.hits.slice(0, 10))
       setData(result)
       return result
     }
@@ -61,8 +61,8 @@ export const AssignmentsList = ({ date }: { date: Date }): JSX.Element => {
     <>
       {data?.ok === true &&
         <Table
-          type='Assignments'
-          columns={assignmentColumns({ authors })}
+          type='Planning'
+          columns={assignmentColumns({ authors, sections })}
           onRowSelected={(row): void => {
             if (row) {
               console.info(`Selected assignment item ${row._id}`)

@@ -47,7 +47,7 @@ export const Plannings = (): JSX.Element => {
     <TableProvider<Planning> columns={planningTableColumns({ sections, authors })}>
       <Tabs defaultValue={currentTab} className='flex-1' onValueChange={setCurrentTab}>
 
-        <TableCommandMenu>
+        <TableCommandMenu heading='Plannings'>
           <Commands />
         </TableCommandMenu>
 

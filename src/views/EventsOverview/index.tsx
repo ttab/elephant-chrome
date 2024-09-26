@@ -43,7 +43,7 @@ export const Events = (): JSX.Element => {
     <TableProvider<Event> columns={eventTableColumns({ sections })}>
       <Tabs defaultValue={currentTab} className='flex-1' onValueChange={setCurrentTab}>
 
-        <TableCommandMenu>
+        <TableCommandMenu heading='Events'>
           <Commands />
         </TableCommandMenu>
 

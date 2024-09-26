@@ -20,5 +20,6 @@ export function getNestedFacetedUniqueValues<TData, TValue>(
       uniqueValues.set(value, (uniqueValues.get(value) || 0) + 1)
     })
   })
+  console.log('unique', uniqueValues)
   return uniqueValues
 }

@@ -15,8 +15,8 @@ interface Params {
   }
 }
 
-// Since assignment posts are not separate document, searches for the Assignments overview are conducted against
-// the core_planning_item index, to retrieve assignments.
+// Since assignment posts are not separate document, searches for the Assignments overview are
+// conducted against the core_planning_item index.
 const search = async (endpoint: URL, accessToken: string, params: Params): Promise<SearchIndexResponse<Planning>> => {
   const start = params?.where?.start ? new Date(params.where.start) : new Date()
   const end = params?.where?.end ? new Date(params.where.end) : new Date()
@@ -49,7 +49,7 @@ const search = async (endpoint: URL, accessToken: string, params: Params): Promi
           },
           {
             range: {
-              'document.meta.core_assignment.data.start_date': {
+              'document.meta.core_assignment.data.start': {
                 gte: start.toISOString(),
                 lte: end.toISOString()
               }
