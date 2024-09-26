@@ -15,8 +15,9 @@ interface TimeSelectItem extends React.PropsWithChildren {
   handleOnSelect: ({ value, selectValue }: { value: string, selectValue: string }) => void
   className?: string,
   index: number
+  handleParentOpenChange: (open: boolean) => void
 }
-export const TimeSelectItem = ({ handleOnSelect, index }: TimeSelectItem) => {
+export const TimeSelectItem = ({ handleOnSelect, index, handleParentOpenChange }: TimeSelectItem) => {
   const [open, setOpen] = useState(false)
   const inputRef = useRef(null)
   const [endTime, setEndTime] = useState('')
@@ -68,11 +69,13 @@ export const TimeSelectItem = ({ handleOnSelect, index }: TimeSelectItem) => {
               onKeyDown={(e) => {
                 if (e.key === 'Escape') {
                   setOpen(false)
+                  handleParentOpenChange(false)
                 }
                 if (e.key === 'Enter') {
                   e.preventDefault()
                   handleOnSelect({ value: timePickType.value, selectValue: endTime })
                   setOpen(false)
+                  handleParentOpenChange(false)
                 }
               }}
             />
@@ -83,6 +86,7 @@ export const TimeSelectItem = ({ handleOnSelect, index }: TimeSelectItem) => {
                   evt.preventDefault()
                   evt.stopPropagation()
                   setOpen(false)
+                  handleParentOpenChange(false)
                 }}>
                 Avbryt
               </Button>
@@ -94,6 +98,7 @@ export const TimeSelectItem = ({ handleOnSelect, index }: TimeSelectItem) => {
                   evt.stopPropagation()
                   handleOnSelect({ value: timePickType.value, selectValue: endTime })
                   setOpen(false)
+                  handleParentOpenChange(false)
                 }}
               >
                 Klar

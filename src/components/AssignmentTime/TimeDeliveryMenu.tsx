@@ -58,7 +58,7 @@ export const TimeDeliveryMenu = ({
               <TimeSlotItems handleOnSelect={handleOnSelect}/>
             </CommandGroup>
             <CommandGroup>
-              <TimeSelectItem handleOnSelect={handleOnSelect} index={index}/>
+              <TimeSelectItem handleOnSelect={handleOnSelect} index={index} handleParentOpenChange={handleOpenChange}/>
             </CommandGroup>
           </CommandList>
         </Command>
