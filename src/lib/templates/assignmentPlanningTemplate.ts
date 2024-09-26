@@ -46,9 +46,3 @@ export function assignmentPlanningTemplate({ assignmentType, planningDate, slugL
   })
 }
 
-function getStartDate(planningDate: string): string {
-  const date = new Date(planningDate)
-  date.setDate(date.getDate() - 1)
-
-  return date.toISOString().split('T')[0]
-}

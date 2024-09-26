@@ -1,24 +1,11 @@
-import React, { useState, type PropsWithChildren, useRef, useEffect } from 'react'
+import React from 'react'
 import {
-  Button,
-  Command,
-  CommandEmpty,
-  CommandGroup,
-  CommandInput,
-  CommandItem,
-  CommandList,
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-  Drawer,
-  DrawerContent,
-  DrawerTrigger,
-  CommandShortcut
+  CommandItem
 } from '@ttab/elephant-ui'
 
-import { timeSlotTypes } from '.'
+import { timeSlotTypes } from './constants'
 interface TimeMenuItemsProps extends React.PropsWithChildren {
-  handleOnSelect: ({value, selectValue}: {value: string, selectValue: string}) => void
+  handleOnSelect: ({ value, selectValue }: { value: string, selectValue: string }) => void
 }
 
 export const TimeSlotItems = ({ handleOnSelect }: TimeMenuItemsProps): JSX.Element[] => {
@@ -28,7 +15,7 @@ export const TimeSlotItems = ({ handleOnSelect }: TimeMenuItemsProps): JSX.Eleme
         key={slot.label}
         value={slot.label}
         onSelect={(value: string) => {
-          handleOnSelect({value: slot.value, selectValue: value})
+          handleOnSelect({ value: slot.value, selectValue: value })
         }}
       >
         <div className='flex flex-row space-x-2 items-center'>

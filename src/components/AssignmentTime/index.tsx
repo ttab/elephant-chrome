@@ -1,100 +1,25 @@
-
-
-import { CalendarFoldIcon, CalendarClockIcon, Clock1Icon, Clock2Icon, Clock3Icon, Clock4Icon, Clock5Icon, Clock6Icon, Clock7Icon, Clock8Icon, Clock9Icon, Clock10Icon, Clock11Icon, Clock12Icon } from '@ttab/elephant-ui/icons'
+import { CalendarFoldIcon } from '@ttab/elephant-ui/icons'
 import { useYValue } from '@/hooks/useYValue'
 import { Block } from '@/protos/service'
 import { TimeDeliveryMenu } from './TimeDeliveryMenu'
 import { cn } from '@ttab/elephant-ui/utils'
-import { AssignmentValueOption } from './types'
+import { type AssignmentValueOption, type AssignmentData } from './types'
 import { ExcecutionTimeMenu } from './ExcecutionTimeMenu'
+import { timeSlotTypes, timePickTypes } from './constants'
 
-const iconProps = {
-  size: 18,
-  strokeWidth: 1.75,
-  className: 'text-muted-foreground'
-}
-
-export const timeSlotTypes: AssignmentValueOption[] = [
-  {
-    label: 'Heldag',
-    value: 'fullday',
-    icon: CalendarFoldIcon,
-    iconProps,
-    slots: []
-  },
-  {
-    label: 'Morgon',
-    value: 'morning',
-    icon: Clock5Icon,
-    iconProps,
-    slots: ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'],
-    median: '7'
-  },
-  {
-    label: 'Förmiddag',
-    value: 'forenoon',
-    icon: Clock10Icon,
-    iconProps,
-    slots: ['10', '11', '12', '13'],
-    median: '11'
-  },
-  {
-    label: 'Eftermiddag',
-    value: 'afternoon',
-    icon: Clock2Icon,
-    iconProps,
-    slots: ['14', '15', '16', '17'],
-    median: '15'
-  },
-  {
-    label: 'Kväll',
-    value: 'evening',
-    icon: Clock6Icon,
-    iconProps,
-    slots: ['18', '19', '20', '21', '22', '23'],
-    median: '21'
-  }
-]
-
-export const timePickTypes: AssignmentValueOption[] = [
-  {
-    label: 'Välj tid',
-    value: 'endexcecution',
-    icon: CalendarClockIcon,
-    iconProps
-  },
-  {
-    label: 'Välj tid',
-    value: 'start-end-excecution',
-    icon: CalendarClockIcon,
-    iconProps
-  }
-]
-
-const getTimeSlot = (timeSlot: string) => {
+const getTimeSlot = (timeSlot: string): AssignmentValueOption | undefined => {
   return timeSlotTypes.find(type => type.slots?.includes(timeSlot))
 }
 
-const getMedianSlot = (slots: AssignmentValueOption[], value: string) => {
+const getMedianSlot = (slots: AssignmentValueOption[], value: string): string => {
   const slotMedian = slots.find(slot => slot.value === value)?.median
-  return slotMedian ? slotMedian : -1
+  return slotMedian || '-1'
 }
 
-const getMidnightISOString = (endDate: string) => {
-
+const getMidnightISOString = (endDate: string): string => {
   const endDateString = `${endDate}T00:00:00`
   const endDateIsoString = (new Date(endDateString)).toISOString()
   return endDateIsoString
-}
-export interface AssignmentData {
-  end_date?: string
-  full_day?: string
-  start_date?: string
-  end?: string
-  start?: string
-  public?: string
-  publish?: string
-  publish_slot?: string
 }
 
 export const AssignmentTime = ({ index }: {
@@ -111,7 +36,6 @@ export const AssignmentTime = ({ index }: {
       selectedLabel = option.label
       return option
     } else if (end && option.value === 'endexcecution') {
-
       const aDate = new Date(end.toString())
       selectedLabel = aDate.toLocaleString('sv-SE', {
         hour: '2-digit',
@@ -130,7 +54,7 @@ export const AssignmentTime = ({ index }: {
 
   const { className = '', ...iconProps } = selectedOption?.iconProps || {}
 
-  const handleOnSelect = ({ value, selectValue }: { value: string, selectValue: string }) => {
+  const handleOnSelect = ({ value, selectValue }: { value: string, selectValue: string }): void => {
     switch (value) {
       case 'fullday':
 
@@ -141,10 +65,10 @@ export const AssignmentTime = ({ index }: {
             start_date: data?.start_date,
             start: getMidnightISOString(endDate as string),
             public: data?.public,
-            publish: data?.publish,
+            publish: data?.publish
           }
         }).data)
-        break;
+        break
       case 'morning':
       case 'forenoon':
       case 'afternoon':
@@ -157,10 +81,10 @@ export const AssignmentTime = ({ index }: {
             public: data?.public,
             publish: data?.publish,
             publish_slot: (getMedianSlot(timeSlotTypes, value)) + '',
-            start: getMidnightISOString(endDate as string),
+            start: getMidnightISOString(endDate as string)
           }
         }).data)
-        break;
+        break
 
       case 'endexcecution':
         const endDateString = `${endDate}T${selectValue}`
@@ -173,10 +97,10 @@ export const AssignmentTime = ({ index }: {
             end: endDateIsoString,
             start: getMidnightISOString(endDate as string),
             public: data?.public,
-            publish: data?.publish,
+            publish: data?.publish
           }
         }).data)
-        break;
+        break
       case 'start-end-excecution':
         const startDateString = `${endDate}T${selectValue}`
         const startDateIsoString = new Date(startDateString).toISOString()
@@ -188,19 +112,18 @@ export const AssignmentTime = ({ index }: {
             start_date: data?.start_date,
             start: startDateIsoString,
             public: data?.public,
-            publish: data?.publish,
+            publish: data?.publish
           }
         }).data)
-        break;
+        break
       default:
 
-        break;
+        break
     }
   }
 
   const onExcecutionTimeSelect = (
-    {excecutionStart, executionEnd}:
-    {excecutionStart: string | undefined, executionEnd: string | undefined}) => {
+    { excecutionStart, executionEnd }: { excecutionStart: string | undefined, executionEnd: string | undefined }) => {
     const block = Block.create({
       data: {
         end_date: data?.end_date,
@@ -209,27 +132,24 @@ export const AssignmentTime = ({ index }: {
         end: executionEnd,
         start: excecutionStart,
         public: data?.public,
-        publish: data?.publish,
+        publish: data?.publish
       }
     })
 
-    if (!excecutionStart) {delete block.data.start}
-    if (!executionEnd) { delete block.data.end}
+    if (!excecutionStart) { delete block.data.start }
+    if (!executionEnd) { delete block.data.end }
 
     setData(block.data)
   }
 
   return (
-
-    (assignmentType && assignmentType === 'picture') ?
-      (<ExcecutionTimeMenu handleOnSelect={onExcecutionTimeSelect} index={index} startDate={startDate as string}/>)
-
+    (assignmentType && assignmentType === 'picture')
+      ? (<ExcecutionTimeMenu handleOnSelect={onExcecutionTimeSelect} index={index} startDate={startDate as string} />)
       : (<TimeDeliveryMenu
-        handleOnSelect={handleOnSelect}
-        className='w-fit text-muted-foreground font-sans font-normal text-ellipsis px-2 h-7'
-        selectedOption={selectedOption}
-        index={index}
-
+          handleOnSelect={handleOnSelect}
+          className='w-fit text-muted-foreground font-sans font-normal text-ellipsis px-2 h-7'
+          selectedOption={selectedOption}
+          index={index}
       >
         {selectedOption?.icon
           ? <div className='flex flex-row p-1'><selectedOption.icon {...iconProps} className={cn('text-foreground', className)} /><div className='pl-1'>{selectedLabel}</div></div>

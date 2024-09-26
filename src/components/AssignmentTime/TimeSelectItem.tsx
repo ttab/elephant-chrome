@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, ChangeEventHandler } from 'react'
+import React, { useState, useRef, useEffect, type ChangeEventHandler } from 'react'
 import {
   Command,
   CommandItem,
@@ -8,16 +8,16 @@ import {
   Input,
   Button
 } from '@ttab/elephant-ui'
-import { timePickTypes } from '.'
+import { timePickTypes } from './constants'
 import { useYValue } from '@/hooks/useYValue'
-import { AssignmentData } from '.'
-interface TimeSelectItem extends React.PropsWithChildren {
+import { type AssignmentData } from './types'
+interface TimeSelectItemProps extends React.PropsWithChildren {
   handleOnSelect: ({ value, selectValue }: { value: string, selectValue: string }) => void
-  className?: string,
+  className?: string
   index: number
   handleParentOpenChange: (open: boolean) => void
 }
-export const TimeSelectItem = ({ handleOnSelect, index, handleParentOpenChange }: TimeSelectItem) => {
+export const TimeSelectItem = ({ handleOnSelect, index, handleParentOpenChange }: TimeSelectItemProps): JSX.Element => {
   const [open, setOpen] = useState(false)
   const inputRef = useRef(null)
   const [endTime, setEndTime] = useState('')
@@ -39,7 +39,7 @@ export const TimeSelectItem = ({ handleOnSelect, index, handleParentOpenChange }
   }
 
   const handleTimeChange: ChangeEventHandler<HTMLInputElement> = (e) => {
-    const time = e.target.value;
+    const time = e.target.value
     setEndTime(time)
   }
   const timePickType = timePickTypes[0]

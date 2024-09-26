@@ -19,3 +19,14 @@ export interface AssignmentValueOption {
   median?: string
 }
 
+export interface AssignmentData {
+  end_date?: string
+  full_day?: string
+  start_date?: string
+  end?: string
+  start?: string
+  public?: string
+  publish?: string
+  publish_slot?: string
+}
+
