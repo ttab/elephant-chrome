@@ -48,61 +48,64 @@ export const ExcecutionTimeMenu = ({ handleOnSelect, index, startDate }: Excecut
   const [endDateValue, setEndDateValue] = useState<string>()
   const [hasEndTime, setHasEndTime] = useState<boolean>()
   const { locale, timeZone } = useRegistry()
+  const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
-    const dates: Date[] = []
+    if (!mounted && data) {
+      const dates: Date[] = []
 
-    if (data?.start) {
-      const aDate = new Date(data.start.toString())
-      const startValue = aDate.toLocaleString('sv-SE', {
-        hour: '2-digit',
-        minute: '2-digit'
-      })
-      setStartTimeValue(startValue)
-      setStartDateValue(data.start)
-
-
-      const startDateObject = new Date(data.start)
-      const newStartDayWithTime = new Date(
-        startDateObject.getFullYear(),
-        startDateObject.getMonth(),
-        startDateObject.getDate(),
-        0,
-        0,
-        0,
-        0
-      )
-      dates.push(newStartDayWithTime)
-    }
+      if (data?.start) {
+        const aDate = new Date(data.start.toString())
+        const startValue = aDate.toLocaleString('sv-SE', {
+          hour: '2-digit',
+          minute: '2-digit'
+        })
+        setStartTimeValue(startValue)
+        setStartDateValue(data.start)
 
 
-    if (data?.end) {
-      const aDate = new Date(data.end.toString())
-      const endValue = aDate.toLocaleString('sv-SE', {
-        hour: '2-digit',
-        minute: '2-digit'
-      })
-      setEndTimeValue(endValue)
-      setEndDateValue(data.end)
-      setHasEndTime(true)
-
-      const endDate = new Date(data.end)
-      const newEndDayWithTime = new Date(
-        endDate.getFullYear(),
-        endDate.getMonth(),
-        endDate.getDate(),
-        0,
-        0,
-        0,
-        0
-      )
-      if (dates.length === 1 && (dates[0].getTime() !== newEndDayWithTime.getTime())) {
-        dates.push(newEndDayWithTime)
+        const startDateObject = new Date(data.start)
+        const newStartDayWithTime = new Date(
+          startDateObject.getFullYear(),
+          startDateObject.getMonth(),
+          startDateObject.getDate(),
+          0,
+          0,
+          0,
+          0
+        )
+        dates.push(newStartDayWithTime)
       }
-    }
 
-    setSelected(dates)
-  }, [])
+      if (data?.end) {
+        const aDate = new Date(data.end.toString())
+        const endValue = aDate.toLocaleString('sv-SE', {
+          hour: '2-digit',
+          minute: '2-digit'
+        })
+        setEndTimeValue(endValue)
+        setEndDateValue(data.end)
+        setHasEndTime(true)
+
+        const endDate = new Date(data.end)
+        const newEndDayWithTime = new Date(
+          endDate.getFullYear(),
+          endDate.getMonth(),
+          endDate.getDate(),
+          0,
+          0,
+          0,
+          0
+        )
+        if (dates.length === 1 && (dates[0].getTime() !== newEndDayWithTime.getTime())) {
+          dates.push(newEndDayWithTime)
+        }
+      }
+
+      setSelected(dates)
+      setMounted(true)
+    }
+  }, [data, mounted])
 
   const handleStartTimeChange: ChangeEventHandler<HTMLInputElement> = (e) => {
     const time = e.target.value
@@ -198,60 +201,28 @@ export const ExcecutionTimeMenu = ({ handleOnSelect, index, startDate }: Excecut
         </div>
       </PopoverTrigger>
       <PopoverContent>
-        <Calendar
-          mode='multiple'
-          min={1}
-          max={2}
-          selected={selected}
-          weekStartsOn={1}
-          onDayClick={handleDayClick}
-          initialFocus
-        />
-        <div className='flex justify-between border-2 rounded-md border-slate-100'>
-          <div className='px-3 py-2 text-sm'>
-            {startDateValue && dateToReadableDateTime(new Date(startDateValue as string), locale, timeZone)}
-          </div>
-          <div>
-            <Input
-              type='time'
-              ref={inputRef}
-              value={startTimeValue}
-              onChange={handleStartTimeChange}
-
-              placeholder={'hh:mm ex 11:00'}
-              className="h-9 border-none"
-              onKeyDown={(e) => {
-                if (e.key === 'Escape') {
-                  setOpen(false)
-                }
-                if (e.key === 'Enter') {
-                  e.preventDefault()
-                  handleOnSelect({
-                    excecutionStart: startDateValue,
-                    executionEnd: hasEndTime ? endDateValue : undefined
-                  })
-                  setOpen(false)
-                }
-              }}
-            />
-          </div>
-        </div>
         <div>
-          <div className='pt-2 pb-2'>
-            <Switch onCheckedChange={handleCheckedChange} checked={hasEndTime}>Från-till</Switch>
-          </div>
-
+          <Calendar
+            mode='multiple'
+            min={1}
+            max={2}
+            selected={selected}
+            weekStartsOn={1}
+            onDayClick={handleDayClick}
+            initialFocus
+            className='p-0'
+          />
           <div className='flex justify-between border-2 rounded-md border-slate-100'>
             <div className='px-3 py-2 text-sm'>
-              {(hasEndTime && endDateValue) && dateToReadableDateTime(new Date(endDateValue as string), locale, timeZone)}
+              {startDateValue && dateToReadableDateTime(new Date(startDateValue), locale, timeZone)}
             </div>
             <div>
               <Input
                 type='time'
                 ref={inputRef}
-                value={hasEndTime ? endTimeValue : ''}
-                onChange={handleEndTimeChange}
-                disabled={!hasEndTime}
+                value={startTimeValue}
+                onChange={handleStartTimeChange}
+
                 placeholder={'hh:mm ex 11:00'}
                 className="h-9 border-none"
                 onKeyDown={(e) => {
@@ -270,31 +241,66 @@ export const ExcecutionTimeMenu = ({ handleOnSelect, index, startDate }: Excecut
               />
             </div>
           </div>
-        </div>
-        <div className='flex items-center justify-end gap-4 p-2'>
-          <Button
-            variant="ghost"
-            onClick={(evt) => {
-              evt.preventDefault()
-              evt.stopPropagation()
-              setOpen(false)
-            }}>
-            Avbryt
-          </Button>
-          <Button
-            variant="outline"
-            onClick={(evt) => {
-              evt.preventDefault()
-              evt.stopPropagation()
-              handleOnSelect({
-                excecutionStart: startDateValue,
-                executionEnd: hasEndTime ? endDateValue : undefined
-              })
-              setOpen(false)
-            }}
-          >
-            Klar
-          </Button>
+          <div>
+            <div className='pt-2 pb-2'>
+              <Switch onCheckedChange={handleCheckedChange} checked={hasEndTime}>Från-till</Switch>
+            </div>
+
+            <div className='flex justify-between border-2 rounded-md border-slate-100'>
+              <div className='px-3 py-2 text-sm'>
+                {(hasEndTime && endDateValue) && dateToReadableDateTime(new Date(endDateValue), locale, timeZone)}
+              </div>
+              <div>
+                <Input
+                  type='time'
+                  ref={inputRef}
+                  value={hasEndTime ? endTimeValue : ''}
+                  onChange={handleEndTimeChange}
+                  disabled={!hasEndTime}
+                  placeholder={'hh:mm ex 11:00'}
+                  className="h-9 border-none"
+                  onKeyDown={(e) => {
+                    if (e.key === 'Escape') {
+                      setOpen(false)
+                    }
+                    if (e.key === 'Enter') {
+                      e.preventDefault()
+                      handleOnSelect({
+                        excecutionStart: startDateValue,
+                        executionEnd: hasEndTime ? endDateValue : undefined
+                      })
+                      setOpen(false)
+                    }
+                  }}
+                />
+              </div>
+            </div>
+          </div>
+          <div className='flex items-center justify-end gap-4 pt-2'>
+            <Button
+              variant="ghost"
+              onClick={(evt) => {
+                evt.preventDefault()
+                evt.stopPropagation()
+                setOpen(false)
+              }}>
+              Avbryt
+            </Button>
+            <Button
+              variant="outline"
+              onClick={(evt) => {
+                evt.preventDefault()
+                evt.stopPropagation()
+                handleOnSelect({
+                  excecutionStart: startDateValue,
+                  executionEnd: hasEndTime ? endDateValue : undefined
+                })
+                setOpen(false)
+              }}
+            >
+              Klar
+            </Button>
+          </div>
         </div>
       </PopoverContent>
     </Popover>
