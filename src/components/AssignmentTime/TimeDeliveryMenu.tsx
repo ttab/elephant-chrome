@@ -1,11 +1,10 @@
-import React, { useState, type PropsWithChildren, useRef, useEffect } from 'react'
+import React, { useState } from 'react'
 import {
   Button,
   Command,
   CommandEmpty,
   CommandGroup,
   CommandInput,
-  CommandItem,
   CommandList,
   Popover,
   PopoverContent,
@@ -36,8 +35,6 @@ export const TimeDeliveryMenu = ({
 
 
   const handleOpenChange = (isOpen: boolean): void => {
-    // onOpenChange && onOpenChange(isOpen)
-
     setOpen(isOpen)
   }
 

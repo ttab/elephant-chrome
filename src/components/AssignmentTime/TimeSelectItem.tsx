@@ -1,7 +1,6 @@
 import React, { useState, useRef, useEffect, ChangeEventHandler } from 'react'
 import {
   Command,
-  CommandInput,
   CommandItem,
   Popover,
   PopoverContent,
@@ -64,7 +63,6 @@ export const TimeSelectItem = ({ handleOnSelect, index }: TimeSelectItem) => {
               ref={inputRef}
               value={endTime}
               onChange={handleTimeChange}
-              // disabled={!hasEndTime}
               placeholder={'hh:mm ex 11:00'}
               className="h-9"
               onKeyDown={(e) => {
@@ -78,25 +76,6 @@ export const TimeSelectItem = ({ handleOnSelect, index }: TimeSelectItem) => {
                 }
               }}
             />
-            {/* <CommandInput
-              ref={inputRef}
-              value={endTime}
-              onValueChange={(value: string | undefined) => {
-                setEndTime(value as string)
-              }}
-              placeholder={'hh:mm ex 11:00'}
-              className="h-9"
-              onKeyDown={(e) => {
-                if (e.key === 'Escape') {
-                  setOpen(false)
-                }
-                if (e.key === 'Enter') {
-                  e.preventDefault()
-                  handleOnSelect({ value: timePickType.value, selectValue: endTime })
-                  setOpen(false)
-                }
-              }}
-            /> */}
             <div className='flex items-center justify-end gap-4 p-2'>
               <Button
                 variant="ghost"
@@ -108,10 +87,8 @@ export const TimeSelectItem = ({ handleOnSelect, index }: TimeSelectItem) => {
                 Avbryt
               </Button>
 
-
               <Button
                 variant="outline"
-                // disabled={!hasEndTime}
                 onClick={(evt) => {
                   evt.preventDefault()
                   evt.stopPropagation()
@@ -122,7 +99,6 @@ export const TimeSelectItem = ({ handleOnSelect, index }: TimeSelectItem) => {
                 Klar
               </Button>
             </div>
-
           </Command>
         </PopoverContent>
       </Popover>

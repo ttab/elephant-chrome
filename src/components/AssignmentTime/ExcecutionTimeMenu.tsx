@@ -278,11 +278,14 @@ export const ExcecutionTimeMenu = ({ handleOnSelect, index, startDate }: Excecut
                   if (e.key === 'Escape') {
                     setOpen(false)
                   }
-                  // if (e.key === 'Enter') {
-                  //   e.preventDefault()
-                  //   // handleOnSelect({ value: timePickType.value, selectValue: selected?.toISOString() || '' })
-                  //   setOpen(false)
-                  // }
+                  if (e.key === 'Enter') {
+                    e.preventDefault()
+                    handleOnSelect({
+                      excecutionStart: startDateValue,
+                      executionEnd: hasEndTime ? endDateValue : undefined
+                    })
+                    setOpen(false)
+                  }
                 }}
               />
             </div>

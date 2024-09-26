@@ -1,7 +1,6 @@
 
 
 import { CalendarFoldIcon, CalendarClockIcon, Clock1Icon, Clock2Icon, Clock3Icon, Clock4Icon, Clock5Icon, Clock6Icon, Clock7Icon, Clock8Icon, Clock9Icon, Clock10Icon, Clock11Icon, Clock12Icon } from '@ttab/elephant-ui/icons'
-// import { useYObserver } from '@/hooks'
 import { useYValue } from '@/hooks/useYValue'
 import { Block } from '@/protos/service'
 import { TimeDeliveryMenu } from './TimeDeliveryMenu'
@@ -101,14 +100,9 @@ export interface AssignmentData {
 export const AssignmentTime = ({ index }: {
   index: number
 }): JSX.Element => {
-  // if (loading) {
-  //   return <></>
-  // }
-
   const [assignmentType] = useYValue<string>(`meta.core/assignment[${index}].meta.core/assignment-type[0].value`)
   const [data, setData] = useYValue<AssignmentData>(`meta.core/assignment[${index}].data`)
   const { full_day: fullDay, end, publish_slot: publishSlot, end_date: endDate, start_date: startDate } = data || {}
-  // const [ass] = useYValue<AssignmentData>(`meta.core/assignment[${index}]`)
 
   let selectedLabel = ''
   timeSlotTypes.concat(timePickTypes)
@@ -145,7 +139,6 @@ export const AssignmentTime = ({ index }: {
             end_date: data?.end_date,
             full_day: 'true',
             start_date: data?.start_date,
-            // end: getEndDateTimeISOString(endDate as string, 23),
             start: getMidnightISOString(endDate as string),
             public: data?.public,
             publish: data?.publish,
@@ -164,7 +157,6 @@ export const AssignmentTime = ({ index }: {
             public: data?.public,
             publish: data?.publish,
             publish_slot: (getMedianSlot(timeSlotTypes, value)) + '',
-            // end: getEndDateTimeISOString(endDate as string, 23),
             start: getMidnightISOString(endDate as string),
           }
         }).data)
@@ -194,7 +186,6 @@ export const AssignmentTime = ({ index }: {
             end_date: data?.end_date,
             full_day: 'false',
             start_date: data?.start_date,
-            // end: endDateIsoString,
             start: startDateIsoString,
             public: data?.public,
             publish: data?.publish,
