@@ -228,7 +228,7 @@ export const ExcecutionTimeMenu = ({ handleOnSelect, index, startDate }: Excecut
           onDayClick={handleDayClick}
           initialFocus
           // footer={`Selected date: ${selected ? selected.toLocaleString() : "none"}`}
-          disabled={data?.start ? { before: new Date(data.start) } : { before: new Date() }}
+          // disabled={data?.start ? { before: new Date(data.start) } : { before: new Date() }}
 
         />
         <div className='flex justify-between border-2 rounded-md border-slate-100'>
@@ -250,7 +250,11 @@ export const ExcecutionTimeMenu = ({ handleOnSelect, index, startDate }: Excecut
                 }
                 if (e.key === 'Enter') {
                   e.preventDefault()
-                  setOpen(false)
+                    handleOnSelect({
+                      excecutionStart: startDateValue,
+                      executionEnd: hasEndTime ? endDateValue : undefined
+                    })
+                    setOpen(false)
                 }
               }}
             />
@@ -263,7 +267,7 @@ export const ExcecutionTimeMenu = ({ handleOnSelect, index, startDate }: Excecut
 
           <div className='flex justify-between border-2 rounded-md border-slate-100'>
             <div className='px-3 py-2 text-sm'>
-              {endDateValue && dateToReadableDateTime(new Date(endDateValue as string), locale, timeZone)}
+              {hasEndTime && endDateValue && dateToReadableDateTime(new Date(endDateValue as string), locale, timeZone)}
             </div>
             <div>
               <Input
