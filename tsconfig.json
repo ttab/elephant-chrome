@@ -61,9 +61,6 @@
       "@/defaults": [
         "./src/defaults/index.tsx"
       ],
-      "@/protos/*": [
-        "./shared/protos/*"
-      ],
       "@/types/*": [
         "./src/types/*"
       ],
