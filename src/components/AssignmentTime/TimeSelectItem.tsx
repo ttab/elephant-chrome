@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from 'react'
+import React, { useState, useRef, useEffect, ChangeEventHandler } from 'react'
 import {
   Command,
   CommandInput,
@@ -6,6 +6,8 @@ import {
   Popover,
   PopoverContent,
   PopoverTrigger,
+  Input,
+  Button
 } from '@ttab/elephant-ui'
 import { timePickTypes } from '.'
 import { useYValue } from '@/hooks/useYValue'
@@ -20,6 +22,7 @@ export const TimeSelectItem = ({ handleOnSelect, index }: TimeSelectItem) => {
   const inputRef = useRef(null)
   const [endTime, setEndTime] = useState('')
   const [data] = useYValue<AssignmentData>(`meta.core/assignment[${index}].data`)
+
   useEffect(() => {
     if (data?.end) {
       const aDate = new Date(data.end.toString())
@@ -33,6 +36,11 @@ export const TimeSelectItem = ({ handleOnSelect, index }: TimeSelectItem) => {
 
   const handleOpenChange = (isOpen: boolean): void => {
     setOpen(isOpen)
+  }
+
+  const handleTimeChange: ChangeEventHandler<HTMLInputElement> = (e) => {
+    const time = e.target.value;
+    setEndTime(time)
   }
   const timePickType = timePickTypes[0]
 
@@ -51,7 +59,26 @@ export const TimeSelectItem = ({ handleOnSelect, index }: TimeSelectItem) => {
         </PopoverTrigger>
         <PopoverContent>
           <Command>
-            <CommandInput
+            <Input
+              type='time'
+              ref={inputRef}
+              value={endTime}
+              onChange={handleTimeChange}
+              // disabled={!hasEndTime}
+              placeholder={'hh:mm ex 11:00'}
+              className="h-9"
+              onKeyDown={(e) => {
+                if (e.key === 'Escape') {
+                  setOpen(false)
+                }
+                if (e.key === 'Enter') {
+                  e.preventDefault()
+                  handleOnSelect({ value: timePickType.value, selectValue: endTime })
+                  setOpen(false)
+                }
+              }}
+            />
+            {/* <CommandInput
               ref={inputRef}
               value={endTime}
               onValueChange={(value: string | undefined) => {
@@ -69,7 +96,33 @@ export const TimeSelectItem = ({ handleOnSelect, index }: TimeSelectItem) => {
                   setOpen(false)
                 }
               }}
-            />
+            /> */}
+            <div className='flex items-center justify-end gap-4 p-2'>
+              <Button
+                variant="ghost"
+                onClick={(evt) => {
+                  evt.preventDefault()
+                  evt.stopPropagation()
+                  setOpen(false)
+                }}>
+                Avbryt
+              </Button>
+
+
+              <Button
+                variant="outline"
+                // disabled={!hasEndTime}
+                onClick={(evt) => {
+                  evt.preventDefault()
+                  evt.stopPropagation()
+                  handleOnSelect({ value: timePickType.value, selectValue: endTime })
+                  setOpen(false)
+                }}
+              >
+                Klar
+              </Button>
+            </div>
+
           </Command>
         </PopoverContent>
       </Popover>
