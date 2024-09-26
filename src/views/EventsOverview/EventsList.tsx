@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { useCallback, useMemo } from 'react'
 import useSWR from 'swr'
 
 import { useIndexUrl, useTable, useSections } from '@/hooks'
@@ -72,7 +72,17 @@ export const EventsList = ({ date }: { date: Date }): JSX.Element => {
     }
   })
 
-  const columns = eventTableColumns({ sections })
+  const columns = useMemo(() => eventTableColumns({ sections }), [sections])
+
+  const onRowSelected = useCallback((row?: Event) => {
+    if (row) {
+      console.info(`Selected planning item ${row._id}`)
+    } else {
+      console.info('Deselected row')
+    }
+    return row
+  }, [])
+
 
   return (
     <>
@@ -80,13 +90,7 @@ export const EventsList = ({ date }: { date: Date }): JSX.Element => {
         <Table
           type='Event'
           columns={columns}
-          onRowSelected={(row): void => {
-            if (row) {
-              console.log(`Selected event item ${row._id}`)
-            } else {
-              console.log('Deselected row')
-            }
-          }}
+          onRowSelected={onRowSelected}
         />
       }
     </>

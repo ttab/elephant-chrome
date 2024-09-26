@@ -1,4 +1,4 @@
-import React, { type MouseEvent, useEffect } from 'react'
+import { type MouseEvent, useEffect, useCallback, useMemo } from 'react'
 import {
   type ColumnDef,
   flexRender
@@ -17,7 +17,6 @@ interface TableProps<TData, TValue> {
   onRowSelected?: (row?: TData) => void
 }
 
-
 export const Table = <TData, TValue>({
   columns,
   type,
@@ -29,50 +28,46 @@ export const Table = <TData, TValue>({
 
   const { table, loading } = useTable()
 
-  // Handle navigation using arrow keys
+  const keyDownHandler = useCallback((evt: KeyboardEvent): void => {
+    if (!isActiveView || isEditableTarget(evt)) {
+      return
+    }
+
+    if (!table || !['ArrowDown', 'ArrowUp', 'Escape'].includes(evt.key)) {
+      return
+    }
+
+    evt.preventDefault()
+    const rows = table.getRowModel().rows
+    if (!rows?.length) {
+      return
+    }
+
+    const selectedRows = table.getSelectedRowModel()
+    const selectedRow = selectedRows?.rows[0]
+
+    if (evt.key === 'Escape') {
+      selectedRow?.toggleSelected(false)
+    } else if (!selectedRow) {
+      const idx = evt.key === 'ArrowDown' ? 0 : rows.length - 1
+      rows[idx].toggleSelected(true)
+    } else {
+      const nextIdx = selectedRow.index + (evt.key === 'ArrowDown' ? 1 : -1)
+      const idx = nextIdx < 0 ? rows.length - 1 : nextIdx >= rows.length ? 0 : nextIdx
+      rows[idx].toggleSelected(true)
+    }
+  }, [table, isActiveView])
+
   useEffect(() => {
     if (!onRowSelected) {
       return
     }
 
-    const keyDownHandler = (evt: KeyboardEvent): void => {
-      if (!isActiveView || isEditableTarget(evt)) {
-        return
-      }
-
-      if (!table || !['ArrowDown', 'ArrowUp', 'Escape'].includes(evt.key)) {
-        return
-      }
-
-      evt.preventDefault()
-      const rows = table.getRowModel().rows
-      if (!rows?.length) {
-        return
-      }
-
-      const selectedRows = table.getSelectedRowModel()
-      const selectedRow = selectedRows?.rows[0]
-
-      if (evt.key === 'Escape') {
-        if (selectedRow) {
-          selectedRow.toggleSelected(false)
-        }
-      } else if (!selectedRow) {
-        const idx = evt.key === 'ArrowDown' ? 0 : rows.length - 1
-        rows[idx].toggleSelected(true)
-      } else {
-        const nextIdx = selectedRow.index + ((evt.key === 'ArrowDown') ? 1 : -1)
-        const idx = nextIdx < 0 ? rows.length - 1 : nextIdx >= rows.length ? 0 : nextIdx
-        rows[idx].toggleSelected(true)
-      }
-    }
-
     document.addEventListener('keydown', keyDownHandler)
 
     return () => document.removeEventListener('keydown', keyDownHandler)
-  }, [table, isActiveView, onRowSelected])
+  }, [keyDownHandler, onRowSelected])
 
-  // When row selection changes, report back to callback
   useEffect(() => {
     if (onRowSelected) {
       const selectedRows = table.getSelectedRowModel()
@@ -81,7 +76,7 @@ export const Table = <TData, TValue>({
     }
   }, [table, onRowSelected])
 
-  const TableBodyElement = (): React.ReactNode => {
+  const TableBodyElement = useMemo(() => {
     if (table.getRowModel().rows?.length === 0) {
       return (
         <TableRow>
@@ -102,7 +97,7 @@ export const Table = <TData, TValue>({
         data-state={row.getIsSelected() && 'selected'}
         onClick={<T extends HTMLElement>(event: MouseEvent<T>) => {
           // @ts-expect-error unknown
-          if (!event.nativeEvent.target.dataset.rowAction) {
+          if (!event.nativeEvent.target?.dataset?.rowAction) {
             if (!onRowSelected) {
               return
             }
@@ -116,7 +111,6 @@ export const Table = <TData, TValue>({
               props: { id: row.original._id },
               viewId: crypto.randomUUID(),
               origin
-
             })
           }
           setTimeout(() => {
@@ -140,7 +134,7 @@ export const Table = <TData, TValue>({
         ))}
       </TableRow>
     ))
-  }
+  }, [table, columns.length, loading, onRowSelected, dispatch, state.viewRegistry, type, origin])
 
   return (
     <>
@@ -148,10 +142,11 @@ export const Table = <TData, TValue>({
       <div className="rounded-md">
         <_Table className='table-fixed'>
           <TableBody>
-            <TableBodyElement />
+            {TableBodyElement}
           </TableBody>
         </_Table>
       </div>
     </>
   )
 }
+
