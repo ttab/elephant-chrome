@@ -1,5 +1,6 @@
 import { useMemo, type PropsWithChildren, useEffect, useState } from 'react'
 import { AwarenessDocument, ViewHeader } from '@/components'
+import { Notes } from './components/Notes'
 import { PenBoxIcon } from '@ttab/elephant-ui/icons'
 
 import { createEditor } from 'slate'
@@ -106,6 +107,9 @@ function EditorWrapper(props: ViewProps & {
 
       </ViewHeader.Root>
 
+      <div className='p-4'>
+        <Notes />
+      </div>
       <div className="flex-grow overflow-auto pr-12 max-w-screen-xl">
         {!!provider && synced
           ? <EditorContent provider={provider} user={user} />
