@@ -1,7 +1,9 @@
-import { type GetDocumentResponse } from '@/protos/service'
+import { type GetDocumentResponse } from '@ttab/elephant-api/repository'
 
 export const article: GetDocumentResponse = {
   version: 14n,
+  isMetaDocument: false,
+  mainDocument: '',
   document: {
     uuid: '5a848227-902b-425b-843e-0dd2cd67894b',
     type: 'core/article',
@@ -23,7 +25,8 @@ export const article: GetDocumentResponse = {
         role: 'heading-1',
         name: '',
         value: '',
-        contentType: '',
+        contenttype: '',
+        sensitivity: '',
         links: [],
         content: [],
         meta: []
@@ -42,7 +45,8 @@ export const article: GetDocumentResponse = {
         role: '',
         name: '',
         value: '',
-        contentType: '',
+        contenttype: '',
+        sensitivity: '',
         links: [
           {
             id: '',
@@ -60,7 +64,8 @@ export const article: GetDocumentResponse = {
             role: '',
             name: '',
             value: '',
-            contentType: '',
+            contenttype: '',
+            sensitivity: '',
             links: [],
             content: [],
             meta: []
@@ -83,7 +88,8 @@ export const article: GetDocumentResponse = {
         role: 'vignette',
         name: '',
         value: '',
-        contentType: '',
+        contenttype: '',
+        sensitivity: '',
         links: [],
         content: [],
         meta: []
@@ -102,7 +108,8 @@ export const article: GetDocumentResponse = {
         role: 'preamble',
         name: '',
         value: '',
-        contentType: '',
+        contenttype: '',
+        sensitivity: '',
         links: [],
         content: [],
         meta: []
@@ -121,7 +128,8 @@ export const article: GetDocumentResponse = {
         role: '',
         name: '',
         value: '',
-        contentType: '',
+        contenttype: '',
+        sensitivity: '',
         links: [],
         content: [],
         meta: []
@@ -140,7 +148,8 @@ export const article: GetDocumentResponse = {
         role: '',
         name: '',
         value: '',
-        contentType: '',
+        contenttype: '',
+        sensitivity: '',
         links: [],
         content: [],
         meta: []
@@ -159,7 +168,8 @@ export const article: GetDocumentResponse = {
         role: '',
         name: '',
         value: '',
-        contentType: '',
+        contenttype: '',
+        sensitivity: '',
         links: [],
         content: [],
         meta: []
@@ -181,7 +191,8 @@ export const article: GetDocumentResponse = {
         role: '',
         name: '',
         value: '',
-        contentType: '',
+        contenttype: '',
+        sensitivity: '',
         links: [],
         content: [],
         meta: []
@@ -198,7 +209,8 @@ export const article: GetDocumentResponse = {
         role: '',
         name: '',
         value: 'mjölkolycka',
-        contentType: '',
+        contenttype: '',
+        sensitivity: '',
         links: [],
         content: [],
         meta: []
@@ -217,7 +229,8 @@ export const article: GetDocumentResponse = {
         role: '',
         name: '',
         value: '',
-        contentType: '',
+        contenttype: '',
+        sensitivity: '',
         links: [],
         content: [],
         meta: []
@@ -234,7 +247,8 @@ export const article: GetDocumentResponse = {
         role: '',
         name: '',
         value: '',
-        contentType: '',
+        contenttype: '',
+        sensitivity: '',
         links: [],
         content: [],
         meta: []
@@ -251,7 +265,8 @@ export const article: GetDocumentResponse = {
         role: '',
         name: '',
         value: '',
-        contentType: '',
+        contenttype: '',
+        sensitivity: '',
         links: [],
         content: [],
         meta: []

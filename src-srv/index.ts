@@ -19,6 +19,7 @@ import { assertAuthenticatedUser } from './utils/assertAuthenticatedUser.js'
 import { authConfig } from './utils/authConfig.js'
 import logger from './lib/logger.js'
 import { pinoHttp } from 'pino-http'
+import assertEnvs from './lib/assertEnvs.js'
 
 /*
  * Read and normalize all environment variables
@@ -27,32 +28,21 @@ const NODE_ENV = process.env.NODE_ENV === 'production' ? 'production' : 'develop
 const PROTOCOL = process.env.VITE_PROTOCOL || 'https'
 const HOST = process.env.HOST || '127.0.0.1'
 const PORT = process.env.PORT ? parseInt(process.env.PORT) : 5183
-const REPOSITORY_URL = process.env.REPOSITORY_URL
-const ISSUER_URL = process.env.AUTH_KEYCLOAK_ISSUER
-const REDIS_URL = process.env.REDIS_URL
+const REPOSITORY_URL = process.env.REPOSITORY_URL || ''
+const REDIS_URL = process.env.REDIS_URL || ''
 const BASE_URL = process.env.BASE_URL || ''
 
 /**
  * Run the server
  */
 export async function runServer(): Promise<string> {
+  assertEnvs()
+
   const { apiDir, distDir } = getPaths()
   const { app } = expressWebsockets(express())
 
 
   const routes = await mapRoutes(apiDir)
-
-  if (!ISSUER_URL) {
-    throw new Error('Missing ISSUER_URL')
-  }
-
-  if (!REPOSITORY_URL) {
-    throw new Error('Missing REPOSITORY_URL')
-  }
-
-  if (!REDIS_URL) {
-    throw new Error('Missing REDIS_URL')
-  }
 
   // Connect to Redis
   const cache = new RedisCache(REDIS_URL)
