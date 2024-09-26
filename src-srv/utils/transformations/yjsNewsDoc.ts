@@ -7,6 +7,7 @@ import type {
 import { toYMap } from './lib/toYMap.js'
 import { slateNodesToInsertDelta, yTextToSlateElement } from '@slate-yjs/core'
 import createHash from '@/shared/createHash.js'
+import { type TBElement } from '@ttab/textbit'
 
 
 /**
@@ -70,7 +71,7 @@ export async function fromYjsNewsDoc(yDoc: Y.Doc): Promise<{
       uri,
       url,
       title,
-      content,
+      content: content as TBElement[],
       meta,
       links,
       language

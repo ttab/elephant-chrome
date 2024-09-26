@@ -10,11 +10,11 @@ import { type TemplatePayload } from '../../lib/createYItem'
 export function planningDocumentTemplate(documentId: string, payload?: TemplatePayload): Document {
   const event = payload?.eventId
     ? [Block.create({
-      uuid: payload?.eventId,
-      type: 'core/event',
-      title: payload?.eventTitle || 'Untitled',
-      rel: 'event'
-    })]
+        uuid: payload?.eventId,
+        type: 'core/event',
+        title: payload?.eventTitle || 'Untitled',
+        rel: 'event'
+      })]
     : []
 
   return Document.create({
