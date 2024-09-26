@@ -87,10 +87,10 @@ const EventViewContent = (props: ViewProps & { documentId: string }): JSX.Elemen
   })
 
   return (
-    <div className={cn(viewVariants({ asCreateDialog: !!props.asCreateDialog, className: props?.className }))}>
+    <div className={cn(viewVariants({ asCreateDialog: !!props.asDialog, className: props?.className }))}>
       <div className='grow-0'>
         <ViewHeader.Root>
-          {!props.asCreateDialog &&
+          {!props.asDialog &&
             <ViewHeader.Title title='Händelse' icon={Ticket} iconColor='#DAC9F2' />
           }
 
@@ -103,7 +103,7 @@ const EventViewContent = (props: ViewProps & { documentId: string }): JSX.Elemen
           </ViewHeader.Content>
 
           <ViewHeader.Action onDialogClose={props.onDialogClose}>
-            {!props.asCreateDialog && !!props.documentId &&
+            {!props.asDialog && !!props.documentId &&
               <ViewHeader.RemoteUsers documentId={props.documentId} />
             }
           </ViewHeader.Action>
@@ -111,11 +111,11 @@ const EventViewContent = (props: ViewProps & { documentId: string }): JSX.Elemen
       </div>
 
       <ScrollArea className='grid @5xl:place-content-center'>
-        <section className={cn(sectionVariants({ asCreateDialog: !!props?.asCreateDialog }))}>
+        <section className={cn(sectionVariants({ asCreateDialog: !!props?.asDialog }))}>
           <div className='flex flex-col gap-2 pl-0.5'>
             <div className='flex space-x-2 items-start'>
               <Title
-                autoFocus={props.asCreateDialog}
+                autoFocus={props.asDialog}
                 placeholder='Händelserubrik'
               />
             </div>
@@ -139,7 +139,7 @@ const EventViewContent = (props: ViewProps & { documentId: string }): JSX.Elemen
 
         </section>
 
-        {props.asCreateDialog && (
+        {props.asDialog && (
           <div>
             <Separator className='ml-0' />
             <div className='flex justify-end px-6 py-4'>

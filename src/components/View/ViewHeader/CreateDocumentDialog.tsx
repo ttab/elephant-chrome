@@ -30,7 +30,7 @@ export const CreateDocumentDialog = ({ type, payload, children, mutator }: Props
   const Document = type && Views[type]
 
   return (
-    <Dialog open={!!document[0]} >
+    <Dialog open={!!document[0]}>
       <DialogTrigger asChild>
         {React.isValidElement<{
           onClick?: (event: React.MouseEvent<HTMLElement>) => Promise<void>
@@ -57,7 +57,7 @@ export const CreateDocumentDialog = ({ type, payload, children, mutator }: Props
             id={document[0]}
             document={document[1]}
             className='p-0 rounded-md'
-            asCreateDialog
+            asDialog
             onDialogClose={(id, title: string = 'Untitled') => {
               setDocument([undefined, undefined])
 

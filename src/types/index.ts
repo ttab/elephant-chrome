@@ -1,4 +1,4 @@
-import { type Block } from '@/protos/service'
+import type { Block } from '@/protos/service'
 import type * as views from '@/views'
 import { type LucideIcon } from '@ttab/elephant-ui/icons'
 
@@ -76,7 +76,7 @@ export interface HistoryState {
 
 export interface ViewProps {
   id?: string | null
-  asCreateDialog?: boolean
+  asDialog?: boolean
   onDialogClose?: (id?: string, title?: string) => void
   onDocumentCreated?: () => void
   className?: string

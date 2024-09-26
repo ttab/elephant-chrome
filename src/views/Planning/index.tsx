@@ -89,16 +89,16 @@ const PlanningViewContent = (props: ViewProps & { documentId: string }): JSX.Ele
   const [title] = useYValue<string | undefined>('title')
 
   return (
-    <div className={cn(viewVariants({ asCreateDialog: !!props.asCreateDialog, className: props?.className }))}>
+    <div className={cn(viewVariants({ asCreateDialog: !!props.asDialog, className: props?.className }))}>
       <div className="grow-0">
         <ViewHeader.Root>
-          {!props.asCreateDialog &&
+          {!props.asDialog &&
             <ViewHeader.Title title='Planering' icon={GanttChartSquare} iconColor='#DAC9F2' />
           }
 
           <ViewHeader.Content>
             <div className='flex w-full h-full items-center space-x-2'>
-              {!props.asCreateDialog &&
+              {!props.asDialog &&
                 <DocumentStatus status={documentStatus} setStatus={setDocumentStatus} />}
               <VisibilityStatus />
               <Newsvalue />
@@ -106,7 +106,7 @@ const PlanningViewContent = (props: ViewProps & { documentId: string }): JSX.Ele
           </ViewHeader.Content>
 
           <ViewHeader.Action onDialogClose={props.onDialogClose}>
-            {!props.asCreateDialog && !!props.documentId &&
+            {!props.asDialog && !!props.documentId &&
               <ViewHeader.RemoteUsers documentId={props.documentId} />
             }
           </ViewHeader.Action>
@@ -114,11 +114,11 @@ const PlanningViewContent = (props: ViewProps & { documentId: string }): JSX.Ele
       </div>
 
       <ScrollArea className='grid @5xl:place-content-center'>
-        <section className={cn(sectionVariants({ asCreateDialog: !!props?.asCreateDialog }))}>
+        <section className={cn(sectionVariants({ asCreateDialog: !!props?.asDialog }))}>
           <div className='flex flex-col gap-2 pl-0.5'>
             <div className='flex space-x-2 items-start'>
               <Title
-                autoFocus={props.asCreateDialog}
+                autoFocus={props.asDialog}
                 placeholder='Planeringsrubrik'
               />
               <div className='min-w-32'>
@@ -146,7 +146,7 @@ const PlanningViewContent = (props: ViewProps & { documentId: string }): JSX.Ele
           <AssignmentTable />
         </section>
 
-        {props.asCreateDialog && (
+        {props.asDialog && (
           <div>
             <Separator className='ml-0' />
             <div className='flex justify-end px-6 py-4'>

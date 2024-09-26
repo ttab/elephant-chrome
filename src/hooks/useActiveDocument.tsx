@@ -14,7 +14,7 @@ const BASE_URL = import.meta.env.BASE_URL || ''
  * Returns undefined while loading, null if not found.
  */
 export const useActiveDocument = ({ type }: {
-  type?: 'Planning' | 'Event' | 'Flash'
+  type?: 'Planning' | 'Event'
 }): Document | null | undefined => {
   const { state } = useNavigation()
   const [document, setDocument] = useState<Document | null | undefined>(undefined)

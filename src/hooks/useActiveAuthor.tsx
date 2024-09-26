@@ -7,7 +7,7 @@ import { type IDBAuthor } from 'src/datastore/types'
 const BASE_URL = import.meta.env.BASE_URL || ''
 
 /**
- * Find and return author infomration based on logged in user.
+ * Find and return author information based on logged-in user.
  *
  * Returns undefined while loading, null if not found.
  */
