@@ -1,17 +1,24 @@
-import { useState, createContext, type Dispatch, type PropsWithChildren, type SetStateAction } from 'react'
 import {
-  type Table,
-  type ColumnFiltersState,
-  type SortingState,
-  type VisibilityState,
   getCoreRowModel,
   getFacetedRowModel,
   getFacetedUniqueValues,
   getFilteredRowModel,
   getSortedRowModel,
   useReactTable,
-  type ColumnDef
+  type ColumnDef,
+  type ColumnFiltersState,
+  type SortingState,
+  type Table,
+  type VisibilityState
 } from '@tanstack/react-table'
+import {
+  createContext,
+  useMemo,
+  useState,
+  type Dispatch,
+  type PropsWithChildren,
+  type SetStateAction
+} from 'react'
 import type { SearchIndexResponse } from '@/lib/index'
 
 export interface CommandArgs {
@@ -52,13 +59,13 @@ export const TableProvider = <T,>({
   const page = pages[pages.length - 1]
   const [search, setSearch] = useState<string | undefined>()
 
-  const command = {
+  const command = useMemo(() => ({
     pages,
     setPages,
     page,
     setSearch,
     search
-  }
+  }), [pages, page, search])
 
   const table = useReactTable({
     data: data?.hits || [],
@@ -82,8 +89,15 @@ export const TableProvider = <T,>({
     getFacetedUniqueValues: getFacetedUniqueValues()
   })
 
+  const value = useMemo(() => ({
+    table,
+    setData,
+    loading: !data?.hits?.length,
+    command
+  }), [table, data, command])
+
   return (
-    <TableContext.Provider value={{ table, setData, loading: !table.options.data.length, command }}>
+    <TableContext.Provider value={value}>
       {children}
     </TableContext.Provider>
   )
