@@ -1,6 +1,8 @@
-import { type GetDocumentResponse } from '@/protos/service'
+import { type GetDocumentResponse } from '@ttab/elephant-api/repository'
 
 export const articleFactbox: GetDocumentResponse = {
+  isMetaDocument: false,
+  mainDocument: '',
   version: 22n,
   document: {
     content: [
@@ -8,7 +10,7 @@ export const articleFactbox: GetDocumentResponse = {
         content: [
           {
             content: [],
-            contentType: '',
+            contenttype: '',
             data: {
               text: 'Lorem ipsum dolor sit amet 7'
             },
@@ -23,10 +25,11 @@ export const articleFactbox: GetDocumentResponse = {
             uri: '',
             url: '',
             uuid: '',
-            value: ''
+            value: '',
+            sensitivity: ''
           }
         ],
-        contentType: '',
+        contenttype: '',
         data: {
           byline: '(Lorem Ipsum 8)'
         },
@@ -41,11 +44,12 @@ export const articleFactbox: GetDocumentResponse = {
         uri: '',
         url: '',
         uuid: '',
-        value: ''
+        value: '',
+        sensitivity: ''
       },
       {
         content: [],
-        contentType: '',
+        contenttype: '',
         data: {
           caption: 'Lorem ipsum dolor sit amet 2'
         },
@@ -53,7 +57,7 @@ export const articleFactbox: GetDocumentResponse = {
         links: [
           {
             content: [],
-            contentType: '',
+            contenttype: '',
             data: {
               credit: 'Lorem Ipsum 3',
               height: '683',
@@ -70,7 +74,8 @@ export const articleFactbox: GetDocumentResponse = {
             uri: 'http://tt.se/media/image/sdlu1v4kWp0QoA',
             url: 'https://beta.tt.se/media/image/sdlu1v4kWp0QoA_NormalPreview.jpg',
             uuid: '',
-            value: ''
+            value: '',
+            sensitivity: ''
           }
         ],
         meta: [],
@@ -82,11 +87,12 @@ export const articleFactbox: GetDocumentResponse = {
         uri: '',
         url: '',
         uuid: '',
-        value: ''
+        value: '',
+        sensitivity: ''
       },
       {
         content: [],
-        contentType: '',
+        contenttype: '',
         data: {
           text: 'Lorem ipsum 4'
         },
@@ -101,11 +107,12 @@ export const articleFactbox: GetDocumentResponse = {
         uri: '',
         url: '',
         uuid: '',
-        value: ''
+        value: '',
+        sensitivity: ''
       },
       {
         content: [],
-        contentType: '',
+        contenttype: '',
         data: {
           text: 'Lorem ipsum dolor sit amet 1'
         },
@@ -120,11 +127,12 @@ export const articleFactbox: GetDocumentResponse = {
         uri: '',
         url: '',
         uuid: '',
-        value: ''
+        value: '',
+        sensitivity: ''
       },
       {
         content: [],
-        contentType: '',
+        contenttype: '',
         data: {
           text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. 5'
         },
@@ -139,11 +147,12 @@ export const articleFactbox: GetDocumentResponse = {
         uri: '',
         url: '',
         uuid: '',
-        value: ''
+        value: '',
+        sensitivity: ''
       },
       {
         content: [],
-        contentType: '',
+        contenttype: '',
         data: {
           text: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit. 6'
         },
@@ -158,14 +167,15 @@ export const articleFactbox: GetDocumentResponse = {
         uri: '',
         url: '',
         uuid: '',
-        value: ''
+        value: '',
+        sensitivity: ''
       }
     ],
     language: 'sv',
     links: [
       {
         content: [],
-        contentType: '',
+        contenttype: '',
         data: {
           email: 'lorem.ipsum@example.com',
           firstName: 'Lorem',
@@ -185,11 +195,12 @@ export const articleFactbox: GetDocumentResponse = {
         uri: '',
         url: '',
         uuid: '691d7a04-e5d7-4db3-bc4b-dd0b12c712fe',
-        value: ''
+        value: '',
+        sensitivity: ''
       },
       {
         content: [],
-        contentType: '',
+        contenttype: '',
         data: {
           email: 'lorem.ipsum@example.com',
           firstName: 'Lorem',
@@ -209,11 +220,12 @@ export const articleFactbox: GetDocumentResponse = {
         uri: '',
         url: '',
         uuid: '859a6990-32df-40e3-998e-bd87c7002fc5',
-        value: ''
+        value: '',
+        sensitivity: ''
       },
       {
         content: [],
-        contentType: '',
+        contenttype: '',
         data: {},
         id: '',
         links: [],
@@ -226,11 +238,12 @@ export const articleFactbox: GetDocumentResponse = {
         uri: '',
         url: '',
         uuid: 'a9209d79-cdc7-4a51-8d86-08a9b860c39a',
-        value: ''
+        value: '',
+        sensitivity: ''
       },
       {
         content: [],
-        contentType: '',
+        contenttype: '',
         data: {},
         id: '',
         links: [],
@@ -243,11 +256,12 @@ export const articleFactbox: GetDocumentResponse = {
         uri: '',
         url: '',
         uuid: '1c275798-70d5-4bd4-8f7a-18be4aa74f72',
-        value: ''
+        value: '',
+        sensitivity: ''
       },
       {
         content: [],
-        contentType: '',
+        contenttype: '',
         data: {},
         id: '',
         links: [],
@@ -260,11 +274,12 @@ export const articleFactbox: GetDocumentResponse = {
         uri: '',
         url: '',
         uuid: '00048df7-6142-47ed-a1b7-1f9700d6cefb',
-        value: ''
+        value: '',
+        sensitivity: ''
       },
       {
         content: [],
-        contentType: '',
+        contenttype: '',
         data: {},
         id: '',
         links: [],
@@ -277,13 +292,14 @@ export const articleFactbox: GetDocumentResponse = {
         uri: 'tt://content-source/tt',
         url: '',
         uuid: '',
-        value: ''
+        value: '',
+        sensitivity: ''
       }
     ],
     meta: [
       {
         content: [],
-        contentType: '',
+        contenttype: '',
         data: {
           duration: '86400'
         },
@@ -298,11 +314,12 @@ export const articleFactbox: GetDocumentResponse = {
         uri: '',
         url: '',
         uuid: '',
-        value: '4'
+        value: '4',
+        sensitivity: ''
       },
       {
         content: [],
-        contentType: '',
+        contenttype: '',
         data: {
           text: 'Lorem ipsum dolor sit amet. 11'
         },
@@ -317,11 +334,12 @@ export const articleFactbox: GetDocumentResponse = {
         uri: '',
         url: '',
         uuid: '',
-        value: ''
+        value: '',
+        sensitivity: ''
       },
       {
         content: [],
-        contentType: '',
+        contenttype: '',
         data: {},
         id: '',
         links: [],
@@ -334,7 +352,8 @@ export const articleFactbox: GetDocumentResponse = {
         uri: '',
         url: '',
         uuid: '',
-        value: 'Lorem ipsum 12'
+        value: 'Lorem ipsum 12',
+        sensitivity: ''
       }
     ],
     title: 'Lorem ipsum title',

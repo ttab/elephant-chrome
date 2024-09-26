@@ -1,6 +1,6 @@
 import { useYValue } from '@/hooks/useYValue'
 import { cn } from '@ttab/elephant-ui/utils'
-import { type Block } from '@/protos/service'
+import { type Block } from '@ttab/elephant-api/newsdoc'
 
 import { Alert, AlertDescription } from '@ttab/elephant-ui'
 import { Building, Globe } from '@ttab/elephant-ui/icons'
