@@ -3,7 +3,6 @@
 import { CalendarFoldIcon, CalendarClockIcon, Clock1Icon, Clock2Icon, Clock3Icon, Clock4Icon, Clock5Icon, Clock6Icon, Clock7Icon, Clock8Icon, Clock9Icon, Clock10Icon, Clock11Icon, Clock12Icon } from '@ttab/elephant-ui/icons'
 // import { useYObserver } from '@/hooks'
 import { useYValue } from '@/hooks/useYValue'
-import { useState, useRef, useEffect } from 'react'
 import { Block } from '@/protos/service'
 import { TimeDeliveryMenu } from './TimeDeliveryMenu'
 import { cn } from '@ttab/elephant-ui/utils'
@@ -88,14 +87,6 @@ const getMidnightISOString = (endDate: string) => {
   const endDateIsoString = (new Date(endDateString)).toISOString()
   return endDateIsoString
 }
-
-const getEndDateTimeISOString = (endDate: string, hours: number) => {
-  const newDate = new Date(endDate)
-  newDate.setHours(hours, 59, 59)
-  const hoursString = newDate.toISOString()
-  return hoursString
-}
-
 export interface AssignmentData {
   end_date?: string
   full_day?: string
@@ -250,7 +241,7 @@ export const AssignmentTime = ({ index }: {
 
       >
         {selectedOption?.icon
-          ? <div><selectedOption.icon {...iconProps} className={cn('text-foreground', className)} />{selectedLabel} </div>
+          ? <div className='flex flex-row p-1'><selectedOption.icon {...iconProps} className={cn('text-foreground', className)} /><div className='pl-1'>{selectedLabel}</div></div>
           : <CalendarFoldIcon size={18} strokeWidth={1.75} className={'text-muted-foreground'} />
         }
       </TimeDeliveryMenu>)

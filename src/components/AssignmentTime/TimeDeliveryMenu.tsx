@@ -47,7 +47,7 @@ export const TimeDeliveryMenu = ({
         <Button
           size={'sm'}
           variant={'outline'}
-          className={'w-9 h-9 text-muted-foreground font-sans font-normal whitespace-nowrap p-0'}
+          className={'h-9 text-muted-foreground font-sans font-normal whitespace-nowrap p-0'}
         >
            {children}
         </Button>
