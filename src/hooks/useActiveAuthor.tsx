@@ -13,7 +13,7 @@ const BASE_URL = import.meta.env.BASE_URL || ''
  */
 export const useActiveAuthor = ({ full = false }: {
   full?: boolean
-}): Document | IDBAuthor | null | undefined => {
+} = {}): Document | IDBAuthor | null | undefined => {
   const session = useSession()
   const authors = useAuthors()
   const [author, setAuthor] = useState<Document | IDBAuthor | null | undefined>(undefined)
@@ -35,11 +35,11 @@ export const useActiveAuthor = ({ full = false }: {
       return
     }
 
-    if (!full) {
+    if (full) {
+      void fetchData(author.id)
+    } else {
       setAuthor(author)
     }
-
-    void fetchData(author.id)
   }, [authors, full, session?.data?.user.email])
 
   return author

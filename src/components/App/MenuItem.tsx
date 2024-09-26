@@ -12,6 +12,7 @@ import * as Templates from '@/defaults/templates'
 import { type View } from '@/types/index'
 import { useMemo } from 'react'
 import { createDocument } from '@/lib/createYItem'
+import type { IDBAuthor } from 'src/datastore/types'
 
 
 export const MenuItem = ({ menuItem }: {
@@ -109,7 +110,7 @@ const FlashDialogContent = ({ menuItem, onDialogClose }: {
   const { name } = menuItem
   const DocumentView = name && Views[name]
   const activeDocument = useActiveDocument({ type: 'Planning' })
-  const author = useActiveAuthor({ full: true })
+  const author = useActiveAuthor() as IDBAuthor
 
   const document = useMemo(() => {
     if ([activeDocument, author].includes(undefined)) {
@@ -119,8 +120,8 @@ const FlashDialogContent = ({ menuItem, onDialogClose }: {
     const flashDefaults: Record<string, unknown> = {}
 
     flashDefaults.title = activeDocument?.title || ''
-    if (author !== undefined) {
-      // FIXME: Set author
+    if (author) {
+      flashDefaults.authors = [{ uuid: author.id, name: author.name }]
     }
 
     const section = (activeDocument?.links as unknown as Record<string, Block[]>)?.['core/section']?.[0]

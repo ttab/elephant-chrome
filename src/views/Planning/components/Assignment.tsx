@@ -4,9 +4,9 @@ import { Clock10Icon, MessageCircleMore } from '@ttab/elephant-ui/icons'
 import { cn } from '@ttab/elephant-ui/utils'
 import { AssignmentType } from '@/components/DataItem/AssignmentType'
 import { useYValue } from '@/hooks/useYValue'
-import { Assignees } from './AssignmentAssignees'
 import { useKeydownGlobal } from '@/hooks/useKeydownGlobal'
 import { type Block } from '@/protos/service'
+import { Assignees } from '@/components/Assignees'
 
 export const Assignment = ({ index, onAbort, onClose, className }: {
   index: number
@@ -72,8 +72,11 @@ export const Assignment = ({ index, onAbort, onClose, className }: {
             path={`core/assignment[${index}].meta.core/assignment-type`}
             editable={inProgress}
           />
-          <Assignees path={`meta.core/assignment[${index}].links.core/author`} />
-
+          <Assignees
+            name="AssignmentAssignees"
+            path={`meta.core/assignment[${index}].links.core/author`}
+            placeholder='Lägg till uppdragstagare'
+          />
           <Clock10Icon size={20} strokeWidth={1.75} />
         </div>
 

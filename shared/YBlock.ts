@@ -9,7 +9,7 @@ export const YBlock = {
       clone.type = '__tempKey'
     }
 
-    // We only want to return the actual YBlock[]
+    // We only want to return the actual EleBlock[]
     return group([Block.create(clone)], 'type')[clone.type]
   }
 }

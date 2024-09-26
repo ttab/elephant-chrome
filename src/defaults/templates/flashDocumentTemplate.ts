@@ -13,11 +13,8 @@ export function flashDocumentTemplate(id: string, defaults: {
   }
   authors?: Array<{
     uuid: string
-    title: string
+    name: string
   }>
-  assignment?: {
-    uuid: string
-  }
 } = {}): Document {
   const {
     title = '',
@@ -70,13 +67,12 @@ export function flashDocumentTemplate(id: string, defaults: {
 
 
   for (const author of authors || []) {
-    // FIXME: Should we set .name as well?
-    // FIXME: Should we set .data.email and .data.shortDescription (e.g. dlq) as well?
     doc.links.push(Block.create({
       type: 'core/author',
       rel: 'author',
+      role: 'primary',
       uuid: author.uuid,
-      title: author.title
+      name: author.name
     }))
   }
 

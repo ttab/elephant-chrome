@@ -22,6 +22,7 @@ import { cva } from 'class-variance-authority'
 import { cn } from '@ttab/elephant-ui/utils'
 import { createStateless, StatelessType } from '@/shared/stateless'
 import { useSession } from 'next-auth/react'
+import { Assignees } from '@/components/Assignees'
 
 const meta: ViewMetadata = {
   name: 'Flash',
@@ -60,6 +61,8 @@ const FlashViewContent = (props: ViewProps & { documentId: string }): JSX.Elemen
   const { provider } = useCollaboration()
   const { data, status } = useSession()
   const [documentStatus, setDocumentStatus] = useDocumentStatus(props.documentId)
+
+  console.log(provider?.document.toJSON())
 
   const viewVariants = cva('flex flex-col', {
     variants: {
@@ -115,7 +118,12 @@ const FlashViewContent = (props: ViewProps & { documentId: string }): JSX.Elemen
             />
           </div>
 
-          <div className="flex flex-col space-y-2">
+          <div className="flex flex-row items-center">
+            <Assignees
+              path='links.core/author'
+              name='FlashAssignees'
+              placeholder='Byline'
+            />
             <Section />
           </div>
 
