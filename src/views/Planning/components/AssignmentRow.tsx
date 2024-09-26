@@ -11,7 +11,7 @@ import { Prompt } from './Prompt'
 import { appendArticle } from '@/lib/createYItem'
 import { useCollaboration } from '@/hooks/useCollaboration'
 import { Button } from '@ttab/elephant-ui'
-import { type Block } from '@/protos/service'
+import { type Block } from '@ttab/elephant-api/newsdoc'
 import { deleteByYPath } from '@/lib/yUtils'
 
 export const AssignmentRow = ({ index, onSelect }: {

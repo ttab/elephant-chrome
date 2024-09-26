@@ -4,7 +4,8 @@ import * as Y from 'yjs'
 import { planning } from './data/planning-newsdoc'
 import { articleFactbox } from './data/article-factbox-newsdoc'
 import { article } from './data/article-newsdoc'
-import { Block, type GetDocumentResponse } from '@/protos/service'
+import { type GetDocumentResponse } from '@ttab/elephant-api/repository'
+import { Block } from '@ttab/elephant-api/newsdoc'
 
 /*
   * Array order is not guaranteed.

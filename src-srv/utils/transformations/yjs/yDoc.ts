@@ -1,5 +1,6 @@
 import * as Y from 'yjs'
-import { Block, type GetDocumentResponse } from '@/protos/service.js'
+import { type GetDocumentResponse } from '@ttab/elephant-api/repository'
+import { Block } from '@ttab/elephant-api/newsdoc'
 import { toYMap } from '../lib/toYMap.js'
 import { group, ungroup } from '../lib/group.js'
 import { newsDocToSlate, slateToNewsDoc } from '../newsdoc/index.js'
@@ -152,6 +153,8 @@ export async function yDocToNewsDoc(yDoc: Y.Doc): Promise<GetDocumentResponse> {
     const version = yDoc.getMap('version').get('version') as string
     return {
       version: version ? BigInt(version) : 0n,
+      isMetaDocument: false,
+      mainDocument: '',
       document: {
         uuid,
         type,

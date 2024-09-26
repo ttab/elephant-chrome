@@ -6,7 +6,7 @@ import useSWR from 'swr'
 import { useSession } from 'next-auth/react'
 import { Repository } from '@/shared/Repository'
 import { useMemo } from 'react'
-import { type ValidationResult } from '@/protos/service'
+import { type ValidationResult } from '@ttab/elephant-api/repository'
 
 interface Entity {
   refType: string

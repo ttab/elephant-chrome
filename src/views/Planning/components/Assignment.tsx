@@ -6,7 +6,7 @@ import { AssignmentType } from '@/components/DataItem/AssignmentType'
 import { useYValue } from '@/hooks/useYValue'
 import { Assignees } from './AssignmentAssignees'
 import { useKeydownGlobal } from '@/hooks/useKeydownGlobal'
-import { type Block } from '@/protos/service'
+import { type Block } from '@ttab/elephant-api/newsdoc'
 
 export const Assignment = ({ index, onAbort, onClose, className }: {
   index: number

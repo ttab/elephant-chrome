@@ -1,4 +1,4 @@
-import { Block } from '@/shared/protos/service.js'
+import { Block } from '@ttab/elephant-api/newsdoc'
 import { type TBElement } from '@ttab/textbit'
 import { newsDocToSlate, slateToNewsDoc } from '../index.js'
 

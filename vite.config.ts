@@ -31,7 +31,6 @@ export default defineConfig(() => {
         '@/types': path.resolve(__dirname, './src/types'),
         '@/navigation': path.resolve(__dirname, './src/navigation'),
         '@/defaults': path.resolve(__dirname, './src/defaults'),
-        '@/protos': path.resolve(__dirname, './shared/protos'),
         '@/shared': path.resolve(__dirname, './shared')
       }
     },
