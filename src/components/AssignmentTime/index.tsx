@@ -42,8 +42,7 @@ export const AssignmentTime = ({ index }: {
         minute: '2-digit'
       })
       return option
-    }
-    else if (publishSlot) {
+    } else if (publishSlot) {
       const ts = getTimeSlot(publishSlot)
       if (ts && ts.value === option.value) {
         selectedLabel = option.label
@@ -123,7 +122,7 @@ export const AssignmentTime = ({ index }: {
   }
 
   const onExcecutionTimeSelect = (
-    { excecutionStart, executionEnd }: { excecutionStart: string | undefined, executionEnd: string | undefined }) => {
+    { excecutionStart, executionEnd }: { excecutionStart: string | undefined, executionEnd: string | undefined }): void => {
     const block = Block.create({
       data: {
         end_date: data?.end_date,
