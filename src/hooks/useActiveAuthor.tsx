@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { type Document } from '@/protos/service'
+import { type Document } from '@ttab/elephant-api/newsdoc'
 import { useAuthors } from './useAuthors'
 import { useSession } from 'next-auth/react'
 import { type IDBAuthor } from 'src/datastore/types'

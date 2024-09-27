@@ -1,4 +1,4 @@
-import { Block } from '@/protos/service'
+import { Block } from '@ttab/elephant-api/newsdoc'
 import { type PartialMessage } from '@protobuf-ts/runtime'
 import { group } from '../src-srv/utils/transformations/groupedNewsDoc'
 

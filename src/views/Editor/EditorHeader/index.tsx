@@ -1,50 +1,31 @@
-import { useYObserver } from '@/hooks'
-import { Newsvalues } from '@/defaults'
+import { useCollaboration, useView, useYValue } from '@/hooks'
 import { NewsValueTimeDropDown } from './NewsValueTimeDropDown'
-import { NewsValueScoreDropDown } from './NewsValueScoreDropDown'
+import { Newsvalue } from '@/components/Newsvalue'
+import { useEffect, useRef } from 'react'
+import { MetaSheet } from '../components/MetaSheet'
 
 export const EditorHeader = (): JSX.Element => {
-  const {
-    get: getScore,
-    set: setScore,
-    loading: loadingScore
-  } = useYObserver('meta', 'core/newsvalue[0]')
+  const [duration, setDuration] = useYValue<string | undefined>('meta.core/newsvalue.data.duration')
+  const [end, setEnd] = useYValue<string | undefined>('meta.core/newsvalue.data.end')
 
-  const {
-    get: getDuration,
-    set: setDuration,
-    loading: loadingDuration
-  } = useYObserver('meta', 'core/newsvalue/data')
+  const { viewId } = useView()
+  const { synced } = useCollaboration()
 
-  const {
-    get: getEnd,
-    set: setEnd
-  } = useYObserver('meta', 'core/newsvalue.data')
+  const containerRef = useRef<HTMLElement | null>(null)
+
+  useEffect(() => {
+    containerRef.current = (document.getElementById(viewId))
+  }, [viewId])
 
   return (
-    <>
-      <NewsValueScoreDropDown
-        value={getScore('value') as string}
-        loading={loadingScore}
-        onChange={(value) => {
-          setScore(value as string, 'value')
-        }}
-        options={Newsvalues.map(p => {
-          return {
-            label: p.label,
-            value: p.value,
-            icon: p.icon &&
-              <p.icon color={p.color} size={18} strokeWidth={1.75} />
-          }
-        })}
-      />
-
+    <div id={viewId} className='flex flex-row items-center'>
+      <Newsvalue />
       <NewsValueTimeDropDown
-        duration={typeof getDuration('duration') === 'string'
-          ? getDuration('duration') as string
+        duration={typeof duration === 'string'
+          ? duration
           : undefined}
-        end={typeof getEnd('end') === 'string' ? getEnd('end') as string : undefined}
-        loading={loadingDuration}
+        end={typeof end === 'string' ? end : undefined}
+        loading={!synced}
         onChange={(newDuration, newEnd) => {
           if (newDuration && newEnd) {
             setDuration(newDuration)
@@ -52,6 +33,7 @@ export const EditorHeader = (): JSX.Element => {
           }
         }}
       />
-    </>
+      <MetaSheet container={containerRef.current} />
+    </div>
   )
 }

@@ -13,9 +13,9 @@ export const Newsvalue = ({ newsvalue }: { newsvalue: DefaultValueOption }): JSX
           variant='outline'
           className='rounded-lg px-1 sm:px-2 py-1 bg-background w-5 sm:w-10 h-7'>
           <newsvalue.icon
+            {...newsvalue.iconProps}
             size={16}
             strokeWidth={2}
-            color={newsvalue.color}
             className='p-0 hidden sm:block'
           />
           <span className='text-muted-foreground text-sm font-sans font-normal'>

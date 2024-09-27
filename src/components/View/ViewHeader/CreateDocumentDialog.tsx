@@ -9,7 +9,7 @@ import { createDocument } from '@/lib/createYItem'
 import * as Views from '@/views'
 import * as Templates from '@/defaults/templates'
 import { type View } from '@/types/index'
-import { type Document } from '@/protos/service'
+import { type Document } from '@ttab/elephant-api/newsdoc'
 import { type TemplatePayload } from '@/lib/createYItem'
 
 export type Template = keyof typeof Templates

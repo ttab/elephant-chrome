@@ -1,4 +1,4 @@
-import express from 'express'
+import express, { type NextFunction, type Request, type Response } from 'express'
 import type { RequestHandler, Express } from 'express-serve-static-core'
 import expressWebsockets from 'express-ws'
 import cors from 'cors'
@@ -8,8 +8,8 @@ import { fileURLToPath } from 'node:url'
 
 import { connectRouteHandlers, mapRoutes } from './routes.js'
 import ViteExpress from 'vite-express'
+import { Repository } from '@/shared/Repository.js'
 import {
-  Repository,
   RedisCache,
   CollaborationServer
 } from './utils/index.js'
@@ -17,6 +17,9 @@ import {
 import { ExpressAuth } from '@auth/express'
 import { assertAuthenticatedUser } from './utils/assertAuthenticatedUser.js'
 import { authConfig } from './utils/authConfig.js'
+import logger from './lib/logger.js'
+import { pinoHttp } from 'pino-http'
+import assertEnvs from './lib/assertEnvs.js'
 
 /*
  * Read and normalize all environment variables
@@ -25,32 +28,21 @@ const NODE_ENV = process.env.NODE_ENV === 'production' ? 'production' : 'develop
 const PROTOCOL = process.env.VITE_PROTOCOL || 'https'
 const HOST = process.env.HOST || '127.0.0.1'
 const PORT = process.env.PORT ? parseInt(process.env.PORT) : 5183
-const REPOSITORY_URL = process.env.REPOSITORY_URL
-const ISSUER_URL = process.env.AUTH_KEYCLOAK_ISSUER
-const REDIS_URL = process.env.REDIS_URL
+const REPOSITORY_URL = process.env.REPOSITORY_URL || ''
+const REDIS_URL = process.env.REDIS_URL || ''
 const BASE_URL = process.env.BASE_URL || ''
 
 /**
  * Run the server
  */
 export async function runServer(): Promise<string> {
+  assertEnvs()
+
   const { apiDir, distDir } = getPaths()
   const { app } = expressWebsockets(express())
 
 
   const routes = await mapRoutes(apiDir)
-
-  if (!ISSUER_URL) {
-    throw new Error('Missing ISSUER_URL')
-  }
-
-  if (!REPOSITORY_URL) {
-    throw new Error('Missing REPOSITORY_URL')
-  }
-
-  if (!REDIS_URL) {
-    throw new Error('Missing REDIS_URL')
-  }
 
   // Connect to Redis
   const cache = new RedisCache(REDIS_URL)
@@ -74,6 +66,15 @@ export async function runServer(): Promise<string> {
   app.use(cookieParser())
   app.use(BASE_URL, express.json())
 
+  app.use((err: unknown, req: Request, res: Response, next: NextFunction) => {
+    if (err) {
+      req.log.error({ err }, 'Error occurred')
+      res.status(500).send('Internal Server Error')
+    } else {
+      next()
+    }
+  })
+
   // Create collaboration and hocuspocus server
   const collaborationServer = new CollaborationServer({
     name: 'Elephant',
@@ -94,18 +95,48 @@ export async function runServer(): Promise<string> {
     collaborationServer
   })
 
+
+  process.on('unhandledException', (ex) => {
+    logger.fatal('Unhandled exception', { cause: ex })
+
+    collaborationServer.close().then(() => {
+      process.exit(1)
+    }).catch(ex => logger.fatal(ex))
+
+    setTimeout(() => {
+      process.abort()
+    }, 1000).unref()
+
+    process.exit(1)
+  })
+
+  process.on('unhandledRejection', (ex) => {
+    logger.fatal('Unhandled rejection', { cause: ex })
+
+    collaborationServer.close().then(() => {
+      process.exit(1)
+    }).catch(ex => logger.fatal(ex))
+
+    setTimeout(() => {
+      process.abort()
+    }, 1000).unref()
+
+    process.exit(1)
+  })
+
   const serverUrl = `${PROTOCOL}://${HOST}:${PORT}${BASE_URL || ''}`
 
   switch (NODE_ENV) {
     case 'development': {
       ViteExpress.listen(app as unknown as Express, PORT, () => {
-        console.log(`Development Server running on ${serverUrl}`)
+        logger.info(`Development Server running on ${serverUrl}`)
       })
 
       break
     }
     case 'production': {
       // Catch all other requests and serve bundled app
+      app.use(pinoHttp({ logger }))
       app.use(BASE_URL || '', express.static(distDir))
       app.get('*', (_, res) => {
         res.sendFile(path.join(distDir, 'index.html'))
@@ -120,7 +151,7 @@ export async function runServer(): Promise<string> {
 }
 
 runServer().then(url => {
-  console.info(`Serving API on ${url}/api`)
+  logger.info(`Serving API on ${url}/api`)
 }).catch(ex => {
   console.error(ex)
   process.exit(1)

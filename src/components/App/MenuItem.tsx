@@ -5,7 +5,7 @@ import {
 import { SheetClose } from '@ttab/elephant-ui'
 import { useModal } from '../Modal/useModal'
 import * as Views from '@/views'
-import type { Block, Document } from '@/protos/service'
+import type { Block, Document } from '@ttab/elephant-api/newsdoc'
 import { useActiveDocument } from '@/hooks/useActiveDocument'
 import { useActiveAuthor } from '@/hooks/useActiveAuthor'
 import * as Templates from '@/defaults/templates'

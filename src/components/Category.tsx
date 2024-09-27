@@ -1,7 +1,8 @@
 import { Awareness } from '@/components'
 import { ComboBox } from '@ttab/elephant-ui'
 import { useCategories, useYValue } from '@/hooks'
-import { Block } from '@/protos/service'
+import { Block } from '@ttab/elephant-api/newsdoc'
+
 import { useRef } from 'react'
 
 export const Category = (): JSX.Element => {
@@ -23,7 +24,8 @@ export const Category = (): JSX.Element => {
     <Awareness name='Category' ref={setFocused}>
       <ComboBox
         max={3}
-        className='w-fit text-muted-foreground font-sans font-normal whitespace-nowrap text-ellipsis px-2 h-7'
+        sortOrder='label'
+        size='xs'
         options={allCategories}
         selectedOptions={selectedOptions}
         placeholder={'Lägg till ämne'}

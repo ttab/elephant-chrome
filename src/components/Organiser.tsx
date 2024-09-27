@@ -1,7 +1,8 @@
 import { Awareness } from '@/components'
 import { ComboBox } from '@ttab/elephant-ui'
 import { useOrganisers, useYValue } from '@/hooks'
-import { Block } from '@/protos/service'
+import { Block } from '@ttab/elephant-api/newsdoc'
+
 import { useRef } from 'react'
 
 export const Organiser = (): JSX.Element => {
@@ -21,8 +22,7 @@ export const Organiser = (): JSX.Element => {
     <Awareness name='Organiser' ref={setFocused}>
       <ComboBox
         max={1}
-        size='lg'
-        className='w-fit text-muted-foreground font-sans font-normal whitespace-nowrap text-ellipsis px-2 h-7'
+        size='xs'
         options={allOrganisers}
         selectedOptions={selectedOptions}
         placeholder={organiser?.title || 'Lägg till organisatör'}
@@ -35,8 +35,8 @@ export const Organiser = (): JSX.Element => {
           setOrganiser(organiser?.title === option.label
             ? undefined
             : Block.create({
-              type: 'core/section',
-              rel: 'section',
+              type: 'core/organiser',
+              rel: 'organiser',
               uuid: option.value,
               title: option.label
             })

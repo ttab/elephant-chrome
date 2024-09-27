@@ -1,5 +1,5 @@
 import { Awareness } from '@/components'
-import { ComboBox } from '@/components/ui'
+import { ComboBox } from '@ttab/elephant-ui'
 import { useAuthors } from '@/hooks/useAuthors'
 import { useYValue } from '@/hooks/useYValue'
 import { UserPlus } from '@ttab/elephant-ui/icons'
@@ -33,10 +33,10 @@ export const Assignees = ({ path, name, placeholder }: {
     <div className="flex gap-2 items-center">
       <Awareness name={name} ref={setFocused}>
         <ComboBox
+          variant={'ghost'}
           size='xs'
-          className='w-fit text-muted-foreground font-sans font-normal text-ellipsis px-2 h-7'
           options={allAuthors}
-          selectedOption={selectedOptions}
+          selectedOptions={selectedOptions}
           placeholder={placeholder}
           closeOnSelect={false}
           onOpenChange={(isOpen: boolean) => {

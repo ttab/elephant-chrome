@@ -5,8 +5,8 @@ import { cn } from '@ttab/elephant-ui/utils'
 import { AssignmentType } from '@/components/DataItem/AssignmentType'
 import { useYValue } from '@/hooks/useYValue'
 import { useKeydownGlobal } from '@/hooks/useKeydownGlobal'
-import { type Block } from '@/protos/service'
 import { Assignees } from '@/components/Assignees'
+import { type Block } from '@ttab/elephant-api/newsdoc'
 
 export const Assignment = ({ index, onAbort, onClose, className }: {
   index: number
@@ -69,7 +69,7 @@ export const Assignment = ({ index, onAbort, onClose, className }: {
       <div className='flex items-center justify-between border-t p-4'>
         <div className='flex items-center justify-start gap-6'>
           <AssignmentType
-            path={`core/assignment[${index}].meta.core/assignment-type`}
+            path={`meta.core/assignment[${index}].meta.core/assignment-type`}
             editable={inProgress}
           />
           <Assignees

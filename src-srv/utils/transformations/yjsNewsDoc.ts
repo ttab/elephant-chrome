@@ -65,6 +65,8 @@ export async function fromYjsNewsDoc(yDoc: Y.Doc): Promise<{
 
   const responseDocument = {
     version: yDoc.getMap('version').get('version') as string,
+    isMetaDocument: false,
+    mainDocument: '',
     document: {
       uuid,
       type,

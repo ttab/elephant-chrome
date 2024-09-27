@@ -1,7 +1,7 @@
 import { transformText, revertText } from './core/index.js'
 import { transformVisual, revertVisual } from './tt/visual.js'
 import type { TBElement } from '@ttab/textbit'
-import type { Block } from '@/protos/service.js'
+import type { Block } from '@ttab/elephant-api/newsdoc'
 import { revertFactbox, transformFactbox } from './core/factbox.js'
 
 /**
@@ -38,7 +38,7 @@ export async function slateToNewsDoc(elements: TBElement[]): Promise<Block[] | u
         case 'core/image':
           return revertVisual(element)
         case 'core/factbox':
-          return revertFactbox(element)
+          return await revertFactbox(element)
         default:
           throw new Error(`Element not implemented: ${element.type}`)
       }

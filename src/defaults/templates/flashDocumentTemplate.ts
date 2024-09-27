@@ -1,4 +1,4 @@
-import { Block, Document } from '@/protos/service'
+import { Block, Document } from '@ttab/elephant-api/newsdoc'
 
 /**
 * Create a template for a flash article document

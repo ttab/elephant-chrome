@@ -2,7 +2,7 @@ import fs from 'node:fs'
 import path from 'node:path'
 import type { Request, Response } from 'express'
 import type { Application, WebsocketRequestHandler } from 'express-ws'
-import type { Repository } from './utils/Repository.js'
+import type { Repository } from '@/shared/Repository.js'
 import type { CollaborationServer } from './utils/CollaborationServer.js'
 import type { RedisCache } from './utils/RedisCache.js'
 

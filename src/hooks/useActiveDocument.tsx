@@ -1,5 +1,5 @@
 import { useNavigation } from '@/navigation/hooks/useNavigation'
-import { type Document } from '@/protos/service'
+import { type Document } from '@ttab/elephant-api/newsdoc'
 import { useEffect, useState } from 'react'
 
 const BASE_URL = import.meta.env.BASE_URL || ''

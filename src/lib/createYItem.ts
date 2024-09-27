@@ -1,6 +1,6 @@
 import * as Y from 'yjs'
-import { Block, type Document } from '@/protos/service'
 import { assignmentPlanningTemplate } from '../defaults/templates/assignmentPlanningTemplate'
+import { Block, type Document } from '@ttab/elephant-api/newsdoc'
 import { toYMap } from '../../src-srv/utils/transformations/lib/toYMap'
 import { get } from './yMapValueByPath'
 import { toGroupedNewsDoc, group } from '../../src-srv/utils/transformations/groupedNewsDoc'
@@ -34,6 +34,8 @@ export function createDocument(
   toYjsNewsDoc(
     toGroupedNewsDoc({
       version: 0n,
+      isMetaDocument: false,
+      mainDocument: '',
       document: template(documentId, payload)
     }),
     yDoc

@@ -1,43 +1,57 @@
 import { useRef } from 'react'
-import { ComboBox } from '@/components/ui'
+import { ComboBox } from '@ttab/elephant-ui'
 import { VisibilityStatuses } from '@/defaults'
-import { useYObserver } from '@/hooks'
+import { useYValue } from '@/hooks'
 import { Awareness } from '@/components'
+import { Block } from '@ttab/elephant-api/newsdoc'
 
 export const VisibilityStatus = (): JSX.Element => {
-  const { get, set } = useYObserver('meta', 'core/planning-item[0].data')
+  const [status, setStatus] = useYValue<Block | undefined>('meta.core/planning-item[0]')
 
   const setFocused = useRef<(value: boolean) => void>(null)
 
-  const selectedOption = VisibilityStatuses.find(type => {
-    const value = get('public') === 'true' ? 'public' : 'internal'
+  const selectedOptions = VisibilityStatuses.filter(type => {
+    const value = status?.data.public === 'true' ? 'public' : 'internal'
 
     return type.value === value
   })
 
+  const SelectedIcon = selectedOptions[0].icon
+
   return (
     <Awareness name='PlanStatus' ref={setFocused}>
       <ComboBox
-        className='h-9 w-9 p-0'
-        options={VisibilityStatuses}
+        max={1}
+        size='sm'
         variant={'ghost'}
-        selectedOption={selectedOption}
+        options={VisibilityStatuses}
+        selectedOptions={selectedOptions}
         onOpenChange={(isOpen: boolean) => {
           if (setFocused?.current) {
             setFocused.current(isOpen)
           }
         }}
-        onSelect={(option) => set(
-          option.value === 'public' ? 'true' : 'false',
-          'public'
-        )}
+        onSelect={(option) => {
+          setStatus(Block.create({
+            type: 'core/planning-item',
+            ...status,
+            data: {
+              ...status?.data,
+              public: option.value === 'public'
+                ? 'true'
+                : 'false'
+            },
+            links: [],
+            meta: [],
+            content: []
+          }))
+        }}
         hideInput
       >
-        {selectedOption?.icon
-          ? <selectedOption.icon {...selectedOption.iconProps} />
-
-          : selectedOption?.label
-        }
+        {SelectedIcon
+          ? <SelectedIcon { ...selectedOptions[0].iconProps } />
+          : selectedOptions[0].label
+          }
       </ComboBox>
     </Awareness>
   )

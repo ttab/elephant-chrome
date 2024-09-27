@@ -1,12 +1,6 @@
-import type {
-  GetDocumentResponse,
-  Document,
-  Block
-} from '../protos/service.js'
-
-import type {
-  TBElement
-} from '@ttab/textbit'
+import type { Document, Block } from '@ttab/elephant-api/newsdoc'
+import type { GetDocumentResponse } from '@ttab/elephant-api/repository'
+import type { TBElement } from '@ttab/textbit'
 
 /**
  * Defines the raw NewsDoc object model used in Elepahant chrome which is

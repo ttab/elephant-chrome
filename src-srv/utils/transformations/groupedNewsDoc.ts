@@ -1,8 +1,5 @@
-import {
-  Block,
-  type Document,
-  type GetDocumentResponse
-} from '@/shared/protos/service.js'
+import { type GetDocumentResponse } from '@ttab/elephant-api/repository'
+import { Block, type Document } from '@ttab/elephant-api/newsdoc'
 
 import type {
   EleDocumentResponse,
@@ -18,7 +15,7 @@ import { newsDocToSlate, slateToNewsDoc } from './newsdoc/index.js'
  */
 export const toGroupedNewsDoc = (payload: GetDocumentResponse): EleDocumentResponse => {
   // Create clone of document so not to change original document/cause sideffects
-  const { document, version } = structuredClone(payload)
+  const { document, version, isMetaDocument, mainDocument } = structuredClone(payload)
 
   if (!document) {
     throw new Error('GetDocumentResponse contains no document')
@@ -38,6 +35,8 @@ export const toGroupedNewsDoc = (payload: GetDocumentResponse): EleDocumentRespo
 
   return {
     version: version.toString(),
+    isMetaDocument,
+    mainDocument,
     document: yDocument
   }
 }
@@ -47,7 +46,7 @@ export const toGroupedNewsDoc = (payload: GetDocumentResponse): EleDocumentRespo
  *  Convert grouped YDocument format to the repository format NewsDoc
  */
 export const fromGroupedNewsDoc = async (payload: EleDocumentResponse): Promise<{ document: Document } & Omit<GetDocumentResponse, 'document'>> => {
-  const { document, version } = payload
+  const { document, version, isMetaDocument, mainDocument } = payload
 
   if (!document) {
     throw new Error('YDocumentResponse contains no document')
@@ -67,7 +66,9 @@ export const fromGroupedNewsDoc = async (payload: EleDocumentResponse): Promise<
 
   return {
     version: BigInt(version),
-    document: newsDocument
+    document: newsDocument,
+    isMetaDocument,
+    mainDocument
   }
 }
 

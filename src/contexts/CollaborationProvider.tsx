@@ -108,7 +108,7 @@ export const CollaborationProviderContext = ({ documentId, document, children }:
   useEffect(() => {
     // When the token is refreshed we need to send it to the server
     // and update the connection context with the new token
-    provider?.sendStateless(createStateless(StatelessType.AUTH, data.accessToken || ''))
+    provider?.sendStateless(createStateless(StatelessType.AUTH, { accessToken: data.accessToken || '' }))
   }, [provider, data.accessToken])
 
   // Awareness user data

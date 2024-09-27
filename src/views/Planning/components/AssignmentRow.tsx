@@ -11,7 +11,7 @@ import { Prompt } from './Prompt'
 import { appendArticle } from '@/lib/createYItem'
 import { useCollaboration } from '@/hooks/useCollaboration'
 import { Button } from '@ttab/elephant-ui'
-import { type Block } from '@/protos/service'
+import { type Block } from '@ttab/elephant-api/newsdoc'
 import { deleteByYPath } from '@/lib/yUtils'
 
 export const AssignmentRow = ({ index, onSelect }: {
@@ -110,7 +110,7 @@ const AssignmentRowContent = ({ index, onSelect }: {
       <div className="flex flex-row gap-6 items-center justify-items-between justify-between">
 
         <div className="flex grow gap-4 items-center">
-          <AssignmentType path={`core/assignment[${index}].meta.core/assignment-type`} />
+          <AssignmentType path={`meta.core/assignment[${index}].meta.core/assignment-type`} />
           <AssigneeAvatars assignees={authors.map((author) => author.name)} />
 
           <div className="hidden items-center @3xl/view:flex">
