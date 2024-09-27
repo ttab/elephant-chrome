@@ -39,7 +39,7 @@ const DateLabel = ({ fromDate, toDate }: { fromDate?: string | undefined, toDate
 
 const testValid = (time: string): boolean => {
   return (/^([0-1]?[0-9]|2[0-4]):([0-5][0-9])(:[0-5][0-9])?$/.test(time))
- }
+}
 
 export const ExcecutionTimeMenu = ({ handleOnSelect, index, startDate }: ExcecutionTimeItemsProps): JSX.Element => {
   const [open, setOpen] = useState(false)
