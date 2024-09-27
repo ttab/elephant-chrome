@@ -1,10 +1,11 @@
 import { TextBox } from '@/components/ui'
 import { Button } from '@ttab/elephant-ui'
-import { Clock10Icon, MessageCircleMore } from '@ttab/elephant-ui/icons'
+import { MessageCircleMore } from '@ttab/elephant-ui/icons'
 import { cn } from '@ttab/elephant-ui/utils'
 import { AssignmentType } from '@/components/DataItem/AssignmentType'
 import { useYValue } from '@/hooks/useYValue'
 import { Assignees } from './AssignmentAssignees'
+import { AssignmentTime } from '@/components/AssignmentTime'
 import { useKeydownGlobal } from '@/hooks/useKeydownGlobal'
 import { type Block } from '@ttab/elephant-api/newsdoc'
 
@@ -74,7 +75,11 @@ export const Assignment = ({ index, onAbort, onClose, className }: {
           />
           <Assignees path={`meta.core/assignment[${index}].links.core/author`} />
 
-          <Clock10Icon size={20} strokeWidth={1.75} />
+          <AssignmentTime
+            index={index}
+          />
+
+          {/* <Clock10Icon size={20} strokeWidth={1.75} /> */}
         </div>
 
         <div className='flex items-center justify-end gap-4'>
