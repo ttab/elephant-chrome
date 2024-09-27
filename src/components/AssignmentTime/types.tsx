@@ -1,4 +1,4 @@
-import { type Block } from '@/protos/service'
+import { Block } from '@ttab/elephant-api/newsdoc'
 import { type LucideIcon } from '@ttab/elephant-ui/icons'
 
 export interface AssignmentValueOption {

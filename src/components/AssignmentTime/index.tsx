@@ -1,6 +1,6 @@
 import { CalendarFoldIcon } from '@ttab/elephant-ui/icons'
 import { useYValue } from '@/hooks/useYValue'
-import { Block } from '@/protos/service'
+import { Block } from '@ttab/elephant-api/newsdoc'
 import { TimeDeliveryMenu } from './TimeDeliveryMenu'
 import { cn } from '@ttab/elephant-ui/utils'
 import { type AssignmentValueOption, type AssignmentData } from './types'
@@ -30,25 +30,25 @@ export const AssignmentTime = ({ index }: {
   const { full_day: fullDay, end, publish_slot: publishSlot, end_date: endDate, start_date: startDate } = data || {}
 
   let selectedLabel = ''
-  timeSlotTypes.concat(timePickTypes)
   const selectedOption = timeSlotTypes.concat(timePickTypes).find(option => {
     if (fullDay === 'true' && option.value === 'fullday') {
       selectedLabel = option.label
-      return option
+      return true
     } else if (end && option.value === 'endexcecution') {
       const aDate = new Date(end.toString())
       selectedLabel = aDate.toLocaleString('sv-SE', {
         hour: '2-digit',
         minute: '2-digit'
       })
-      return option
+      return true
     } else if (publishSlot) {
       const ts = getTimeSlot(publishSlot)
       if (ts && ts.value === option.value) {
         selectedLabel = option.label
-        return option
+        return true
       }
     }
+    return false
   })
 
   const { className = '', ...iconProps } = selectedOption?.iconProps || {}
