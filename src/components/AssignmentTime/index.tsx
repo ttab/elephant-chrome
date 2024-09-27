@@ -16,7 +16,7 @@ const getMedianSlot = (slots: AssignmentValueOption[], value: string): string =>
   return slotMedian || '-1'
 }
 
-const getMidnightISOString = (endDate: string): string => {
+const getMidnightISOString = (endDate: string | undefined): string => {
   const endDateString = `${endDate}T00:00:00`
   const endDateIsoString = (new Date(endDateString)).toISOString()
   return endDateIsoString
@@ -56,13 +56,12 @@ export const AssignmentTime = ({ index }: {
   const handleOnSelect = ({ value, selectValue }: { value: string, selectValue: string }): void => {
     switch (value) {
       case 'fullday':
-
         setData(Block.create({
           data: {
             end_date: data?.end_date,
             full_day: 'true',
             start_date: data?.start_date,
-            start: getMidnightISOString(endDate as string),
+            start: getMidnightISOString(endDate),
             public: data?.public,
             publish: data?.publish
           }
@@ -80,43 +79,25 @@ export const AssignmentTime = ({ index }: {
             public: data?.public,
             publish: data?.publish,
             publish_slot: (getMedianSlot(timeSlotTypes, value)) + '',
-            start: getMidnightISOString(endDate as string)
+            start: getMidnightISOString(endDate)
           }
         }).data)
         break
 
       case 'endexcecution':
-        const endDateString = `${endDate}T${selectValue}`
-        const endDateIsoString = new Date(endDateString).toISOString()
         setData(Block.create({
           data: {
             end_date: data?.end_date,
             full_day: 'false',
             start_date: data?.start_date,
-            end: endDateIsoString,
-            start: getMidnightISOString(endDate as string),
-            public: data?.public,
-            publish: data?.publish
-          }
-        }).data)
-        break
-      case 'start-end-excecution':
-        const startDateString = `${endDate}T${selectValue}`
-        const startDateIsoString = new Date(startDateString).toISOString()
-        console.log('start-end-excecution', startDateIsoString)
-        setData(Block.create({
-          data: {
-            end_date: data?.end_date,
-            full_day: 'false',
-            start_date: data?.start_date,
-            start: startDateIsoString,
+            end: new Date(`${endDate}T${selectValue}`).toISOString(),
+            start: getMidnightISOString(endDate),
             public: data?.public,
             publish: data?.publish
           }
         }).data)
         break
       default:
-
         break
     }
   }
@@ -143,7 +124,7 @@ export const AssignmentTime = ({ index }: {
 
   return (
     (assignmentType && assignmentType === 'picture')
-      ? (<ExcecutionTimeMenu handleOnSelect={onExcecutionTimeSelect} index={index} startDate={startDate as string} />)
+      ? (<ExcecutionTimeMenu handleOnSelect={onExcecutionTimeSelect} index={index} startDate={startDate} />)
       : (<TimeDeliveryMenu
           handleOnSelect={handleOnSelect}
           className='w-fit text-muted-foreground font-sans font-normal text-ellipsis px-2 h-7'
@@ -155,6 +136,5 @@ export const AssignmentTime = ({ index }: {
           : <CalendarFoldIcon size={18} strokeWidth={1.75} className={'text-muted-foreground'} />
         }
       </TimeDeliveryMenu>)
-
   )
 }

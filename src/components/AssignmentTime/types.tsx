@@ -1,4 +1,4 @@
-import { Block } from '@ttab/elephant-api/newsdoc'
+import { type Block } from '@ttab/elephant-api/newsdoc'
 import { type LucideIcon } from '@ttab/elephant-ui/icons'
 
 export interface AssignmentValueOption {

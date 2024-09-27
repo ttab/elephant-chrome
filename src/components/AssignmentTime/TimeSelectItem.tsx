@@ -22,6 +22,7 @@ export const TimeSelectItem = ({ handleOnSelect, index, handleParentOpenChange }
   const inputRef = useRef(null)
   const [endTime, setEndTime] = useState('')
   const [data] = useYValue<AssignmentData>(`meta.core/assignment[${index}].data`)
+  const [valid, setValid] = useState(false)
 
   useEffect(() => {
     if (data?.end) {
@@ -41,6 +42,7 @@ export const TimeSelectItem = ({ handleOnSelect, index, handleParentOpenChange }
   const handleTimeChange: ChangeEventHandler<HTMLInputElement> = (e) => {
     const time = e.target.value
     setEndTime(time)
+    setValid(/^([0-1]?[0-9]|2[0-4]):([0-5][0-9])(:[0-5][0-9])?$/.test(time))
   }
   const timePickType = timePickTypes[0]
 
@@ -73,7 +75,7 @@ export const TimeSelectItem = ({ handleOnSelect, index, handleParentOpenChange }
                 }
                 if (e.key === 'Enter') {
                   e.preventDefault()
-                  handleOnSelect({ value: timePickType.value, selectValue: endTime })
+                  valid && handleOnSelect({ value: timePickType.value, selectValue: endTime })
                   setOpen(false)
                   handleParentOpenChange(false)
                 }
@@ -100,6 +102,7 @@ export const TimeSelectItem = ({ handleOnSelect, index, handleParentOpenChange }
                   setOpen(false)
                   handleParentOpenChange(false)
                 }}
+                disabled={!valid}
               >
                 Klar
               </Button>

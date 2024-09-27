@@ -19,7 +19,7 @@ interface ExcecutionTimeItemsProps extends React.PropsWithChildren {
   handleOnSelect: ({ excecutionStart, executionEnd }: { excecutionStart: string | undefined, executionEnd: string | undefined }) => void
   className?: string
   index?: number
-  startDate: string
+  startDate?: string
 }
 
 const fortmatIsoStringToLocalTime = (isoString: string): JSX.Element => {
@@ -37,6 +37,10 @@ const DateLabel = ({ fromDate, toDate }: { fromDate?: string | undefined, toDate
   )
 }
 
+const testValid = (time: string): boolean => {
+  return (/^([0-1]?[0-9]|2[0-4]):([0-5][0-9])(:[0-5][0-9])?$/.test(time))
+ }
+
 export const ExcecutionTimeMenu = ({ handleOnSelect, index, startDate }: ExcecutionTimeItemsProps): JSX.Element => {
   const [open, setOpen] = useState(false)
   const inputRef = useRef(null)
@@ -49,6 +53,8 @@ export const ExcecutionTimeMenu = ({ handleOnSelect, index, startDate }: Excecut
   const [hasEndTime, setHasEndTime] = useState<boolean>()
   const { locale, timeZone } = useRegistry()
   const [mounted, setMounted] = useState(false)
+  const [startTimeValid, setStartTimeValid] = useState(false)
+  const [endTimeValid, setEndTimeValid] = useState(false)
 
   useEffect(() => {
     if (!mounted && data) {
@@ -62,7 +68,7 @@ export const ExcecutionTimeMenu = ({ handleOnSelect, index, startDate }: Excecut
         })
         setStartTimeValue(startValue)
         setStartDateValue(data.start)
-
+        setStartTimeValid(testValid(startValue))
 
         const startDateObject = new Date(data.start)
         const newStartDayWithTime = new Date(
@@ -86,6 +92,7 @@ export const ExcecutionTimeMenu = ({ handleOnSelect, index, startDate }: Excecut
         setEndTimeValue(endValue)
         setEndDateValue(data.end)
         setHasEndTime(true)
+        setEndTimeValid(testValid(endValue))
 
         const endDate = new Date(data.end)
         const newEndDayWithTime = new Date(
@@ -109,11 +116,15 @@ export const ExcecutionTimeMenu = ({ handleOnSelect, index, startDate }: Excecut
 
   const handleStartTimeChange: ChangeEventHandler<HTMLInputElement> = (e) => {
     const time = e.target.value
-    const [hours, minutes] = time.split(':').map((str: string) => parseInt(str, 10))
-    const newSelectedDate = new Date(selected[0])
-    newSelectedDate.setHours(hours, minutes)
     setStartTimeValue(time)
-    setStartDateValue(newSelectedDate.toISOString())
+    const valid = testValid(time)
+    setStartTimeValid(valid)
+    if (valid) {
+      const [hours, minutes] = time.split(':').map((str: string) => parseInt(str, 10))
+      const newSelectedDate = new Date(selected[0])
+      newSelectedDate.setHours(hours, minutes)
+      setStartDateValue(newSelectedDate.toISOString())
+    }
   }
 
   const handleEndTime = (time: string): void => {
@@ -132,7 +143,9 @@ export const ExcecutionTimeMenu = ({ handleOnSelect, index, startDate }: Excecut
   const handleEndTimeChange: ChangeEventHandler<HTMLInputElement> = (e) => {
     const time = e.target.value
     setEndTimeValue(time)
-    handleEndTime(time)
+    const valid = testValid(time)
+    setEndTimeValid(valid)
+    valid && handleEndTime(time)
   }
 
   const handleDayClick: CalendarTypes.DayClickEventHandler = (day, modifiers) => {
@@ -222,7 +235,6 @@ export const ExcecutionTimeMenu = ({ handleOnSelect, index, startDate }: Excecut
                 ref={inputRef}
                 value={startTimeValue}
                 onChange={handleStartTimeChange}
-
                 placeholder={'hh:mm ex 11:00'}
                 className="h-9 border-none"
                 onKeyDown={(e) => {
@@ -231,10 +243,12 @@ export const ExcecutionTimeMenu = ({ handleOnSelect, index, startDate }: Excecut
                   }
                   if (e.key === 'Enter') {
                     e.preventDefault()
-                    handleOnSelect({
-                      excecutionStart: startDateValue,
-                      executionEnd: hasEndTime ? endDateValue : undefined
-                    })
+                    if (hasEndTime ? (!startTimeValid || !endTimeValid) : !startTimeValid) {
+                      handleOnSelect({
+                        excecutionStart: startDateValue,
+                        executionEnd: hasEndTime ? endDateValue : undefined
+                      })
+                    }
                     setOpen(false)
                   }
                 }}
@@ -265,11 +279,13 @@ export const ExcecutionTimeMenu = ({ handleOnSelect, index, startDate }: Excecut
                     }
                     if (e.key === 'Enter') {
                       e.preventDefault()
-                      handleOnSelect({
-                        excecutionStart: startDateValue,
-                        executionEnd: hasEndTime ? endDateValue : undefined
-                      })
-                      setOpen(false)
+                      if (startTimeValid && endTimeValid) {
+                        handleOnSelect({
+                          excecutionStart: startDateValue,
+                          executionEnd: hasEndTime ? endDateValue : undefined
+                        })
+                        setOpen(false)
+                      }
                     }
                   }}
                 />
@@ -288,9 +304,11 @@ export const ExcecutionTimeMenu = ({ handleOnSelect, index, startDate }: Excecut
             </Button>
             <Button
               variant="outline"
+              disabled={ hasEndTime ? (!startTimeValid || !endTimeValid) : !startTimeValid}
               onClick={(evt) => {
                 evt.preventDefault()
                 evt.stopPropagation()
+
                 handleOnSelect({
                   excecutionStart: startDateValue,
                   executionEnd: hasEndTime ? endDateValue : undefined
