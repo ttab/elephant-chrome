@@ -3,7 +3,7 @@ import { ComboBox } from '@ttab/elephant-ui'
 import { VisibilityStatuses } from '@/defaults'
 import { useYValue } from '@/hooks'
 import { Awareness } from '@/components'
-import { Block } from '@/protos/service'
+import { Block } from '@ttab/elephant-api/newsdoc'
 
 export const VisibilityStatus = (): JSX.Element => {
   const [status, setStatus] = useYValue<Block | undefined>('meta.core/planning-item[0]')

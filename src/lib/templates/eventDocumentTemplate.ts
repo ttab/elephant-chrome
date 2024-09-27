@@ -1,4 +1,4 @@
-import { Document, Block } from '@/protos/service'
+import { Document, Block } from '@ttab/elephant-api/newsdoc'
 
 /**
  * Create a template structure for a event document

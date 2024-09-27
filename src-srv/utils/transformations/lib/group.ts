@@ -1,4 +1,4 @@
-import { Block } from '@/protos/service.js'
+import { Block } from '@ttab/elephant-api/newsdoc'
 import { type YBlock } from '@/shared/types/index.js'
 
 /**

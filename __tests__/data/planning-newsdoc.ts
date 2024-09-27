@@ -1,7 +1,9 @@
-import { type GetDocumentResponse } from '@/protos/service'
+import { type GetDocumentResponse } from '@ttab/elephant-api/repository'
 
 export const planning: GetDocumentResponse = {
   version: 21n,
+  mainDocument: '',
+  isMetaDocument: false,
   document: {
     uuid: '726045e7-a52b-4737-8fba-c8149f7e2c2d',
     type: 'core/planning-item',
@@ -27,7 +29,8 @@ export const planning: GetDocumentResponse = {
         role: '',
         name: '',
         value: '',
-        contentType: '',
+        contenttype: '',
+        sensitivity: '',
         links: [],
         content: [],
         meta: []
@@ -44,7 +47,8 @@ export const planning: GetDocumentResponse = {
         role: '',
         name: '',
         value: '4',
-        contentType: '',
+        contenttype: '',
+        sensitivity: '',
         links: [],
         content: [],
         meta: []
@@ -69,7 +73,8 @@ export const planning: GetDocumentResponse = {
         role: '',
         name: '',
         value: '',
-        contentType: '',
+        contenttype: '',
+        sensitivity: '',
         links: [
           {
             id: '',
@@ -83,7 +88,8 @@ export const planning: GetDocumentResponse = {
             role: 'primary',
             name: 'John Doe/TT',
             value: '',
-            contentType: '',
+            contenttype: '',
+            sensitivity: '',
             links: [],
             content: [],
             meta: []
@@ -100,7 +106,8 @@ export const planning: GetDocumentResponse = {
             role: '',
             name: '',
             value: '',
-            contentType: '',
+            contenttype: '',
+            sensitivity: '',
             links: [],
             content: [],
             meta: []
@@ -117,7 +124,8 @@ export const planning: GetDocumentResponse = {
             role: 'primary',
             name: 'Jane Doe/TT',
             value: '',
-            contentType: '',
+            contenttype: '',
+            sensitivity: '',
             links: [],
             content: [],
             meta: []
@@ -134,7 +142,8 @@ export const planning: GetDocumentResponse = {
             role: '',
             name: '',
             value: '',
-            contentType: '',
+            contenttype: '',
+            sensitivity: '',
             links: [],
             content: [],
             meta: []
@@ -154,7 +163,8 @@ export const planning: GetDocumentResponse = {
             role: '',
             name: '',
             value: 'lands-tomasson',
-            contentType: '',
+            contenttype: '',
+            sensitivity: '',
             links: [],
             content: [],
             meta: []
@@ -171,7 +181,8 @@ export const planning: GetDocumentResponse = {
             role: '',
             name: '',
             value: 'text',
-            contentType: '',
+            contenttype: '',
+            sensitivity: '',
             links: [],
             content: [],
             meta: []
@@ -200,7 +211,8 @@ export const planning: GetDocumentResponse = {
         role: '',
         name: '',
         value: '',
-        contentType: '',
+        contenttype: '',
+        sensitivity: '',
         links: [
           {
             id: '',
@@ -214,7 +226,8 @@ export const planning: GetDocumentResponse = {
             role: 'primary',
             name: 'John Doe/TT',
             value: '',
-            contentType: '',
+            contenttype: '',
+            sensitivity: '',
             links: [],
             content: [],
             meta: []
@@ -231,7 +244,8 @@ export const planning: GetDocumentResponse = {
             role: '',
             name: '',
             value: '',
-            contentType: '',
+            contenttype: '',
+            sensitivity: '',
             links: [],
             content: [],
             meta: []
@@ -248,7 +262,8 @@ export const planning: GetDocumentResponse = {
             role: 'primary',
             name: 'Jane Doe/TT',
             value: '',
-            contentType: '',
+            contenttype: '',
+            sensitivity: '',
             links: [],
             content: [],
             meta: []
@@ -265,7 +280,8 @@ export const planning: GetDocumentResponse = {
             role: '',
             name: '',
             value: '',
-            contentType: '',
+            contenttype: '',
+            sensitivity: '',
             links: [],
             content: [],
             meta: []
@@ -285,7 +301,8 @@ export const planning: GetDocumentResponse = {
             role: '',
             name: '',
             value: 'text',
-            contentType: '',
+            contenttype: '',
+            sensitivity: '',
             links: [],
             content: [],
             meta: []
@@ -306,7 +323,8 @@ export const planning: GetDocumentResponse = {
         role: '',
         name: '',
         value: '',
-        contentType: '',
+        contenttype: '',
+        sensitivity: '',
         links: [],
         content: [],
         meta: []

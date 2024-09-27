@@ -7,7 +7,7 @@ exports[`Transform full article newsdoc document to internal YDoc representation
     "core/assignment": [
       {
         "content": {},
-        "contentType": "",
+        "contenttype": "",
         "data": {},
         "id": "",
         "links": {},
@@ -15,6 +15,7 @@ exports[`Transform full article newsdoc document to internal YDoc representation
         "name": "",
         "rel": "assignment",
         "role": "",
+        "sensitivity": "",
         "title": "",
         "type": "core/assignment",
         "uri": "",
@@ -26,7 +27,7 @@ exports[`Transform full article newsdoc document to internal YDoc representation
     "core/content-source": [
       {
         "content": {},
-        "contentType": "",
+        "contenttype": "",
         "data": {},
         "id": "",
         "links": {},
@@ -34,6 +35,7 @@ exports[`Transform full article newsdoc document to internal YDoc representation
         "name": "",
         "rel": "source",
         "role": "",
+        "sensitivity": "",
         "title": "",
         "type": "core/content-source",
         "uri": "tt://content-source/tt",
@@ -45,7 +47,7 @@ exports[`Transform full article newsdoc document to internal YDoc representation
     "core/section": [
       {
         "content": {},
-        "contentType": "",
+        "contenttype": "",
         "data": {},
         "id": "",
         "links": {},
@@ -53,6 +55,7 @@ exports[`Transform full article newsdoc document to internal YDoc representation
         "name": "",
         "rel": "subject",
         "role": "",
+        "sensitivity": "",
         "title": "Inrikes",
         "type": "core/section",
         "uri": "",
@@ -66,7 +69,7 @@ exports[`Transform full article newsdoc document to internal YDoc representation
     "core/newsvalue": [
       {
         "content": {},
-        "contentType": "",
+        "contenttype": "",
         "data": {
           "duration": "86400",
           "score": "2",
@@ -77,6 +80,7 @@ exports[`Transform full article newsdoc document to internal YDoc representation
         "name": "",
         "rel": "",
         "role": "",
+        "sensitivity": "",
         "title": "",
         "type": "core/newsvalue",
         "uri": "",
@@ -88,7 +92,7 @@ exports[`Transform full article newsdoc document to internal YDoc representation
     "tt/slugline": [
       {
         "content": {},
-        "contentType": "",
+        "contenttype": "",
         "data": {},
         "id": "",
         "links": {},
@@ -96,6 +100,7 @@ exports[`Transform full article newsdoc document to internal YDoc representation
         "name": "",
         "rel": "",
         "role": "",
+        "sensitivity": "",
         "title": "",
         "type": "tt/slugline",
         "uri": "",
@@ -123,7 +128,7 @@ exports[`Transform full planning newsdoc document to internal YDoc representatio
     "core/section": [
       {
         "content": {},
-        "contentType": "",
+        "contenttype": "",
         "data": {},
         "id": "",
         "links": {},
@@ -131,6 +136,7 @@ exports[`Transform full planning newsdoc document to internal YDoc representatio
         "name": "",
         "rel": "section",
         "role": "",
+        "sensitivity": "",
         "title": "Sport",
         "type": "core/section",
         "uri": "",
@@ -144,7 +150,7 @@ exports[`Transform full planning newsdoc document to internal YDoc representatio
     "core/assignment": [
       {
         "content": {},
-        "contentType": "",
+        "contenttype": "",
         "data": {
           "end": "2024-02-09T22:59:59Z",
           "end_date": "2024-02-09",
@@ -159,7 +165,7 @@ exports[`Transform full planning newsdoc document to internal YDoc representatio
           "core/article": [
             {
               "content": {},
-              "contentType": "",
+              "contenttype": "",
               "data": {},
               "id": "",
               "links": {},
@@ -167,6 +173,7 @@ exports[`Transform full planning newsdoc document to internal YDoc representatio
               "name": "",
               "rel": "deliverable",
               "role": "",
+              "sensitivity": "",
               "title": "",
               "type": "core/article",
               "uri": "",
@@ -176,7 +183,7 @@ exports[`Transform full planning newsdoc document to internal YDoc representatio
             },
             {
               "content": {},
-              "contentType": "",
+              "contenttype": "",
               "data": {},
               "id": "",
               "links": {},
@@ -184,6 +191,7 @@ exports[`Transform full planning newsdoc document to internal YDoc representatio
               "name": "",
               "rel": "deliverable",
               "role": "",
+              "sensitivity": "",
               "title": "",
               "type": "core/article",
               "uri": "",
@@ -195,7 +203,7 @@ exports[`Transform full planning newsdoc document to internal YDoc representatio
           "core/author": [
             {
               "content": {},
-              "contentType": "",
+              "contenttype": "",
               "data": {},
               "id": "",
               "links": {},
@@ -203,6 +211,7 @@ exports[`Transform full planning newsdoc document to internal YDoc representatio
               "name": "John Doe/TT",
               "rel": "assignee",
               "role": "primary",
+              "sensitivity": "",
               "title": "",
               "type": "core/author",
               "uri": "",
@@ -212,7 +221,7 @@ exports[`Transform full planning newsdoc document to internal YDoc representatio
             },
             {
               "content": {},
-              "contentType": "",
+              "contenttype": "",
               "data": {},
               "id": "",
               "links": {},
@@ -220,6 +229,7 @@ exports[`Transform full planning newsdoc document to internal YDoc representatio
               "name": "Jane Doe/TT",
               "rel": "assignee",
               "role": "primary",
+              "sensitivity": "",
               "title": "",
               "type": "core/author",
               "uri": "",
@@ -233,7 +243,7 @@ exports[`Transform full planning newsdoc document to internal YDoc representatio
           "core/assignment-type": [
             {
               "content": {},
-              "contentType": "",
+              "contenttype": "",
               "data": {},
               "id": "",
               "links": {},
@@ -241,6 +251,7 @@ exports[`Transform full planning newsdoc document to internal YDoc representatio
               "name": "",
               "rel": "",
               "role": "",
+              "sensitivity": "",
               "title": "",
               "type": "core/assignment-type",
               "uri": "",
@@ -252,7 +263,7 @@ exports[`Transform full planning newsdoc document to internal YDoc representatio
           "core/description": [
             {
               "content": [],
-              "contentType": "",
+              "contenttype": "",
               "data": {
                 "text": "",
               },
@@ -262,6 +273,7 @@ exports[`Transform full planning newsdoc document to internal YDoc representatio
               "name": "",
               "rel": "",
               "role": "public",
+              "sensitivity": "",
               "title": "",
               "type": "core/description",
               "uri": "",
@@ -271,7 +283,7 @@ exports[`Transform full planning newsdoc document to internal YDoc representatio
             },
             {
               "content": [],
-              "contentType": "",
+              "contenttype": "",
               "data": {
                 "text": "",
               },
@@ -281,6 +293,7 @@ exports[`Transform full planning newsdoc document to internal YDoc representatio
               "name": "",
               "rel": "",
               "role": "internal",
+              "sensitivity": "",
               "title": "",
               "type": "core/description",
               "uri": "",
@@ -292,7 +305,7 @@ exports[`Transform full planning newsdoc document to internal YDoc representatio
           "tt/slugline": [
             {
               "content": {},
-              "contentType": "",
+              "contenttype": "",
               "data": {},
               "id": "",
               "links": {},
@@ -300,6 +313,7 @@ exports[`Transform full planning newsdoc document to internal YDoc representatio
               "name": "",
               "rel": "",
               "role": "",
+              "sensitivity": "",
               "title": "",
               "type": "tt/slugline",
               "uri": "",
@@ -312,6 +326,7 @@ exports[`Transform full planning newsdoc document to internal YDoc representatio
         "name": "",
         "rel": "",
         "role": "",
+        "sensitivity": "",
         "title": "Kortare text utsänd. Uppdateras",
         "type": "core/assignment",
         "uri": "",
@@ -321,7 +336,7 @@ exports[`Transform full planning newsdoc document to internal YDoc representatio
       },
       {
         "content": {},
-        "contentType": "",
+        "contenttype": "",
         "data": {
           "end": "2024-02-09T22:59:59Z",
           "end_date": "2024-02-09",
@@ -336,7 +351,7 @@ exports[`Transform full planning newsdoc document to internal YDoc representatio
           "core/article": [
             {
               "content": {},
-              "contentType": "",
+              "contenttype": "",
               "data": {},
               "id": "",
               "links": {},
@@ -344,6 +359,7 @@ exports[`Transform full planning newsdoc document to internal YDoc representatio
               "name": "",
               "rel": "deliverable",
               "role": "",
+              "sensitivity": "",
               "title": "",
               "type": "core/article",
               "uri": "",
@@ -353,7 +369,7 @@ exports[`Transform full planning newsdoc document to internal YDoc representatio
             },
             {
               "content": {},
-              "contentType": "",
+              "contenttype": "",
               "data": {},
               "id": "",
               "links": {},
@@ -361,6 +377,7 @@ exports[`Transform full planning newsdoc document to internal YDoc representatio
               "name": "",
               "rel": "deliverable",
               "role": "",
+              "sensitivity": "",
               "title": "",
               "type": "core/article",
               "uri": "",
@@ -372,7 +389,7 @@ exports[`Transform full planning newsdoc document to internal YDoc representatio
           "core/author": [
             {
               "content": {},
-              "contentType": "",
+              "contenttype": "",
               "data": {},
               "id": "",
               "links": {},
@@ -380,6 +397,7 @@ exports[`Transform full planning newsdoc document to internal YDoc representatio
               "name": "John Doe/TT",
               "rel": "assignee",
               "role": "primary",
+              "sensitivity": "",
               "title": "",
               "type": "core/author",
               "uri": "",
@@ -389,7 +407,7 @@ exports[`Transform full planning newsdoc document to internal YDoc representatio
             },
             {
               "content": {},
-              "contentType": "",
+              "contenttype": "",
               "data": {},
               "id": "",
               "links": {},
@@ -397,6 +415,7 @@ exports[`Transform full planning newsdoc document to internal YDoc representatio
               "name": "Jane Doe/TT",
               "rel": "assignee",
               "role": "primary",
+              "sensitivity": "",
               "title": "",
               "type": "core/author",
               "uri": "",
@@ -410,7 +429,7 @@ exports[`Transform full planning newsdoc document to internal YDoc representatio
           "core/assignment-type": [
             {
               "content": {},
-              "contentType": "",
+              "contenttype": "",
               "data": {},
               "id": "",
               "links": {},
@@ -418,6 +437,7 @@ exports[`Transform full planning newsdoc document to internal YDoc representatio
               "name": "",
               "rel": "",
               "role": "",
+              "sensitivity": "",
               "title": "",
               "type": "core/assignment-type",
               "uri": "",
@@ -429,7 +449,7 @@ exports[`Transform full planning newsdoc document to internal YDoc representatio
           "core/description": [
             {
               "content": [],
-              "contentType": "",
+              "contenttype": "",
               "data": {
                 "text": "",
               },
@@ -439,6 +459,7 @@ exports[`Transform full planning newsdoc document to internal YDoc representatio
               "name": "",
               "rel": "",
               "role": "public",
+              "sensitivity": "",
               "title": "",
               "type": "core/description",
               "uri": "",
@@ -448,7 +469,7 @@ exports[`Transform full planning newsdoc document to internal YDoc representatio
             },
             {
               "content": [],
-              "contentType": "",
+              "contenttype": "",
               "data": {
                 "text": "",
               },
@@ -458,6 +479,7 @@ exports[`Transform full planning newsdoc document to internal YDoc representatio
               "name": "",
               "rel": "",
               "role": "internal",
+              "sensitivity": "",
               "title": "",
               "type": "core/description",
               "uri": "",
@@ -469,7 +491,7 @@ exports[`Transform full planning newsdoc document to internal YDoc representatio
           "tt/slugline": [
             {
               "content": [],
-              "contentType": "",
+              "contenttype": "",
               "data": {},
               "id": "",
               "links": [],
@@ -477,6 +499,7 @@ exports[`Transform full planning newsdoc document to internal YDoc representatio
               "name": "",
               "rel": "",
               "role": "",
+              "sensitivity": "",
               "title": "",
               "type": "tt/slugline",
               "uri": "",
@@ -489,6 +512,7 @@ exports[`Transform full planning newsdoc document to internal YDoc representatio
         "name": "",
         "rel": "",
         "role": "",
+        "sensitivity": "",
         "title": "Assignment 2",
         "type": "core/assignment",
         "uri": "",
@@ -500,7 +524,7 @@ exports[`Transform full planning newsdoc document to internal YDoc representatio
     "core/description": [
       {
         "content": [],
-        "contentType": "",
+        "contenttype": "",
         "data": {
           "text": "",
         },
@@ -510,6 +534,7 @@ exports[`Transform full planning newsdoc document to internal YDoc representatio
         "name": "",
         "rel": "",
         "role": "public",
+        "sensitivity": "",
         "title": "",
         "type": "core/description",
         "uri": "",
@@ -519,7 +544,7 @@ exports[`Transform full planning newsdoc document to internal YDoc representatio
       },
       {
         "content": [],
-        "contentType": "",
+        "contenttype": "",
         "data": {
           "text": "",
         },
@@ -529,6 +554,7 @@ exports[`Transform full planning newsdoc document to internal YDoc representatio
         "name": "",
         "rel": "",
         "role": "internal",
+        "sensitivity": "",
         "title": "",
         "type": "core/description",
         "uri": "",
@@ -540,7 +566,7 @@ exports[`Transform full planning newsdoc document to internal YDoc representatio
     "core/newsvalue": [
       {
         "content": {},
-        "contentType": "",
+        "contenttype": "",
         "data": {},
         "id": "",
         "links": {},
@@ -548,6 +574,7 @@ exports[`Transform full planning newsdoc document to internal YDoc representatio
         "name": "",
         "rel": "",
         "role": "",
+        "sensitivity": "",
         "title": "",
         "type": "core/newsvalue",
         "uri": "",
@@ -559,7 +586,7 @@ exports[`Transform full planning newsdoc document to internal YDoc representatio
     "core/planning-item": [
       {
         "content": {},
-        "contentType": "",
+        "contenttype": "",
         "data": {
           "end_date": "2024-02-09",
           "public": "true",
@@ -572,6 +599,7 @@ exports[`Transform full planning newsdoc document to internal YDoc representatio
         "name": "",
         "rel": "",
         "role": "",
+        "sensitivity": "",
         "title": "",
         "type": "core/planning-item",
         "uri": "",
@@ -583,7 +611,7 @@ exports[`Transform full planning newsdoc document to internal YDoc representatio
     "tt/slugline": [
       {
         "content": [],
-        "contentType": "",
+        "contenttype": "",
         "data": {},
         "id": "",
         "links": [],
@@ -591,6 +619,7 @@ exports[`Transform full planning newsdoc document to internal YDoc representatio
         "name": "",
         "rel": "",
         "role": "",
+        "sensitivity": "",
         "title": "",
         "type": "tt/slugline",
         "uri": "",

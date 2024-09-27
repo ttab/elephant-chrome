@@ -1,56 +1,61 @@
 import { Awareness } from '@/components'
 import { ComboBox } from '@ttab/elephant-ui'
-import { useSections, useYValue } from '@/hooks'
+import { useAuthors, useYValue } from '@/hooks'
 import { Block } from '@ttab/elephant-api/newsdoc'
 import { useRef } from 'react'
 import { Validation } from './Validation'
 
-export const Section = ({ onValidation }: {
+export const Byline = ({ onValidation }: {
   onValidation?: (block: string, label: string, value: string | undefined, reason: string) => boolean
 }): JSX.Element => {
-  const allSections = useSections().map((_) => {
+  const allAuthors = useAuthors().map((_) => {
     return {
       value: _.id,
       label: _.title
     }
   })
-  const path = 'links.core/section[0]'
 
-  const [section, setSection] = useYValue<Block | undefined>(path)
+  const path = 'links.core/author'
+
+  const [authors, setAuthors] = useYValue<Block[] | undefined>(path)
 
   const setFocused = useRef<(value: boolean) => void>(null)
-  const selectedOptions = (allSections || [])?.filter(s => s.value === section?.uuid)
+  const selectedOptions = allAuthors.filter(author =>
+    authors?.some(a => a.uuid === author.value))
 
   return (
     <Awareness name='Section' ref={setFocused} className='flex flex-col gap-2'>
       <ComboBox
-        max={1}
         size='xs'
         sortOrder='label'
-        options={allSections}
+        options={allAuthors}
         selectedOptions={selectedOptions}
-        placeholder={section?.title || 'Lägg till sektion'}
+        placeholder={'Lägg till byline'}
         onOpenChange={(isOpen: boolean) => {
           if (setFocused?.current) {
             setFocused.current(isOpen)
           }
         }}
         onSelect={(option) => {
-          setSection(section?.title === option.label
-            ? undefined
-            : Block.create({
-              type: 'core/section',
-              rel: 'section',
+          if ((authors || [])?.some((a) => a.uuid === option.value)) {
+            setAuthors(authors?.filter((a: Block) => {
+              return a.uuid !== option.value
+            }))
+          } else {
+            setAuthors([...(authors || []), Block.create({
+              type: 'core/author',
+              rel: 'author',
               uuid: option.value,
               title: option.label
-            }))
+            })])
+          }
         }}
       />
       {onValidation &&
         <Validation
-          label='Sektion'
+          label='Byline'
           path={path}
-          block='core/section'
+          block='core/author'
           onValidation={onValidation}
           />
       }
