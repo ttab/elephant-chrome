@@ -3,6 +3,7 @@ import {
   getFacetedRowModel,
   getFacetedUniqueValues,
   getFilteredRowModel,
+  getGroupedRowModel,
   getSortedRowModel,
   useReactTable,
   type ColumnDef,
@@ -74,7 +75,8 @@ export const TableProvider = <T,>({
       sorting,
       columnVisibility,
       rowSelection,
-      columnFilters
+      columnFilters,
+      grouping: ['newsvalue']
     },
     enableRowSelection: true,
     enableMultiRowSelection: false,
@@ -86,7 +88,8 @@ export const TableProvider = <T,>({
     getFilteredRowModel: getFilteredRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getFacetedRowModel: getFacetedRowModel(),
-    getFacetedUniqueValues: getFacetedUniqueValues()
+    getFacetedUniqueValues: getFacetedUniqueValues(),
+    getGroupedRowModel: getGroupedRowModel()
   })
 
   const value = useMemo(() => ({

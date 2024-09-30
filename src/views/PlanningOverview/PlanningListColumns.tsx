@@ -75,6 +75,7 @@ export function planningTableColumns({ sections = [], authors = [] }: {
     },
     {
       id: 'newsvalue',
+      enableGrouping: true,
       meta: {
         Filter: ({ column, setSearch }) => (
           <FacetedFilter column={column} setSearch={setSearch} />

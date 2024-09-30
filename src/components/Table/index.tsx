@@ -1,15 +1,21 @@
-import { type MouseEvent, useEffect, useCallback, useMemo } from 'react'
+import React, { type MouseEvent, useEffect, useCallback, useMemo } from 'react'
 import {
   type ColumnDef,
   flexRender
 } from '@tanstack/react-table'
 
-import { Table as _Table, TableBody, TableCell, TableRow } from '@ttab/elephant-ui'
+import {
+  Table as _Table,
+  TableBody,
+  TableCell,
+  TableRow
+} from '@ttab/elephant-ui'
 import { Toolbar } from './Toolbar'
 import { useNavigation, useView, useTable } from '@/hooks'
 import { isEditableTarget } from '@/lib/isEditableTarget'
 import { cn } from '@ttab/elephant-ui/utils'
 import { handleLink } from '@/components/Link/lib/handleLink'
+import { GroupingNewsvalue } from '../DataItem/GroupingNewsvalue'
 
 interface TableProps<TData, TValue> {
   columns: Array<ColumnDef<TData, TValue>>
@@ -82,7 +88,7 @@ export const Table = <TData, TValue>({
         <TableRow>
           <TableCell
             colSpan={columns.length}
-            className="h-24 text-center"
+            className='h-24 text-center'
           >
             {loading ? 'Loading...' : 'No results.'}
           </TableCell>
@@ -90,63 +96,81 @@ export const Table = <TData, TValue>({
       )
     }
 
-    return table.getRowModel().rows.map((row) => (
-      <TableRow
-        key={`calendar/${row.id}`}
-        className='cursor-default'
-        data-state={row.getIsSelected() && 'selected'}
-        onClick={<T extends HTMLElement>(event: MouseEvent<T>) => {
-          // @ts-expect-error unknown
-          if (!event.nativeEvent.target?.dataset?.rowAction) {
-            if (!onRowSelected) {
-              return
-            }
+    return table.getRowModel().rows.map((row) => {
+      // Render group header
+      return (
+        <React.Fragment key={row.id}>
+          <TableRow className='sticky top-0 bg-gray-100 z-10'>
+            <TableCell colSpan={columns.length} className='pl-6 '>
+              <GroupingNewsvalue newsvalue={row.groupingValue as string} />
+            </TableCell>
+            <TableCell colSpan={columns.length} className='pl-6 '>
+              <span className='inline-flex items-center justify-center w-6 h-6 bg-white text-gray-800 font-bold rounded-full ring-1 ring-gray-300 shadow-md'>
+                {row.subRows.length}
+              </span>
+            </TableCell>
+          </TableRow>
+          {row.subRows.map((subRow) => (
+            <TableRow
+              key={subRow.id}
+              className='cursor-default'
+              data-state={subRow.getIsSelected() && 'selected'}
+              onClick={<T extends HTMLElement>(event: MouseEvent<T>) => {
+                // @ts-expect-error unknown
+                if (!event.nativeEvent.target?.dataset?.rowAction) {
+                  if (!onRowSelected) {
+                    return
+                  }
 
-            handleLink({
-              event,
-              dispatch,
-              viewItem: state.viewRegistry.get(type),
-              viewRegistry: state.viewRegistry,
-              // @ts-expect-error unknown type
-              props: { id: row.original._id },
-              viewId: crypto.randomUUID(),
-              origin
-            })
-          }
-          setTimeout(() => {
-            row.toggleSelected(!row.getIsSelected())
-          }, 0)
-        }}
-      >
-        {row.getVisibleCells().map((cell) => (
-          <TableCell
-            key={cell.id}
-            className={cn(
-              'first:pl-2 last:pr-2 sm:first:pl-6 sm:last:pr-6',
-              cell.column.columnDef.meta?.className
-            )}
-          >
-            {flexRender(
-              cell.column.columnDef.cell,
-              cell.getContext()
-            )}
-          </TableCell>
-        ))}
-      </TableRow>
-    ))
+                  handleLink({
+                    event,
+                    dispatch,
+                    viewItem: state.viewRegistry.get(type),
+                    viewRegistry: state.viewRegistry,
+                    // @ts-expect-error unknown type
+                    props: { id: subRow.original._id },
+                    viewId: crypto.randomUUID(),
+                    origin
+                  })
+                }
+                setTimeout(() => {
+                  subRow.toggleSelected(!subRow.getIsSelected())
+                }, 0)
+              }}
+              >
+              {subRow.getVisibleCells().map((cell) => {
+                return <TableCell
+                  key={cell.id}
+                  className={cn(
+                    'first:pl-2 last:pr-2 sm:first:pl-6 sm:last:pr-6',
+                    cell.column.columnDef.meta?.className
+                  )}
+                  >
+                  {flexRender(
+                    cell.column.columnDef.cell,
+                    cell.getContext()
+                  )}
+                </TableCell>
+              })}
+            </TableRow>
+          ))}
+        </React.Fragment>
+      )
+
+      // Render regular row
+    })
   }, [table, columns.length, loading, onRowSelected, dispatch, state.viewRegistry, type, origin])
 
+
   return (
-    <>
+    <div className='h-screen w-screen'>
       <Toolbar table={table} />
-      <div className="rounded-md">
-        <_Table className='table-fixed'>
-          <TableBody>
-            {TableBodyElement}
-          </TableBody>
-        </_Table>
-      </div>
-    </>
+      <_Table className='table-auto w-full relative border-separate'>
+
+        <TableBody className='table-auto w-full relative'>
+          {TableBodyElement}
+        </TableBody>
+      </_Table>
+    </div>
   )
 }
-
