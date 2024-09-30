@@ -4,7 +4,6 @@ import { Title } from '@/components/Table/Items/Title'
 
 import {
   CircleCheck,
-  Clock3Icon,
   Crosshair,
   Shapes,
   SignalHigh,
@@ -17,7 +16,7 @@ import { FacetedFilter } from '@/components/Commands/FacetedFilter'
 import { Assignees } from '@/components/Table/Items/Assignees'
 import { AssignmentTypes } from '@/defaults/assignmentTypes'
 import { Type } from '@/components/Table/Items/Type'
-import { Time } from '@/components/Table/Items/Time'
+// import { Time } from '@/components/Table/Items/Time'
 import { Newsvalues } from '@/defaults/newsvalues'
 import { NewsvalueMap } from '@/defaults/newsvalueMap'
 import { Newsvalue } from '@/components/Table/Items/Newsvalue'

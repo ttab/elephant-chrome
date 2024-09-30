@@ -51,6 +51,23 @@ export const AssignmentsList = ({ date }: { date: Date }): JSX.Element => {
       }
     })
     if (result.ok) {
+      // TESTING
+      const assignments: Planning[] = []
+
+      result.hits.map(hit => {
+        if (hit._source['document.meta.core_assignment.meta.core_assignment_type.value'].length > 0) {
+          const assignment: { 'document.meta.core_assignment.meta.core_assignment_type.value'?: string } = {}
+
+          hit._source['document.meta.core_assignment.meta.core_assignment_type.value'].forEach(type => {
+            assignment['document.meta.core_assignment.meta.core_assignment_type.value'] = type
+          })
+          hit = assignment
+        }
+        return hit
+      })
+      result.hits = assignments
+
+      // TESTING
       console.log(result.hits.slice(0, 10))
       setData(result)
       return result
