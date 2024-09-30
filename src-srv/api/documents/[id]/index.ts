@@ -5,6 +5,7 @@ import { isValidUUID } from '../../../utils/isValidUUID.js'
 import { toGroupedNewsDoc } from '../../../utils/transformations/groupedNewsDoc.js'
 import { fromYjsNewsDoc } from '../../../utils/transformations/yjsNewsDoc.js'
 import * as Y from 'yjs'
+import logger from '../../../lib/logger.js'
 
 /**
  * Fetch a fresh document, either directly from Redis cache if it is there or from reposity if not,
@@ -76,7 +77,7 @@ export const GET: RouteHandler = async (req: Request, { cache, repository }) => 
       }
     }
   } catch (ex) {
-    console.error(ex)
+    logger.error(ex)
 
     return {
       statusCode: 500,

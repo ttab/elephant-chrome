@@ -62,8 +62,6 @@ const FlashViewContent = (props: ViewProps & { documentId: string }): JSX.Elemen
   const { data, status } = useSession()
   const [documentStatus, setDocumentStatus] = useDocumentStatus(props.documentId)
 
-  console.log(provider?.document.toJSON())
-
   const viewVariants = cva('flex flex-col', {
     variants: {
       asCreateDialog: {
@@ -126,8 +124,6 @@ const FlashViewContent = (props: ViewProps & { documentId: string }): JSX.Elemen
             />
             <Section />
           </div>
-
-          {/* <AssignmentTable /> */}
         </section>
 
         {props.asDialog && (

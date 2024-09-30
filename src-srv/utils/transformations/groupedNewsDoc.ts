@@ -25,7 +25,6 @@ export const toGroupedNewsDoc = (payload: GetDocumentResponse): EleDocumentRespo
     assertPlanningHasNecessaryProperties(document)
   }
 
-  // const { meta, links, content, ...properties } = document
   const yDocument: EleDocument = {
     ...document,
     content: newsDocToSlate(document.content),

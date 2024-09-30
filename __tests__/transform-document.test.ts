@@ -103,7 +103,7 @@ describe('Transform article GetDocumentResponse', () => {
     const ungroupedArticle = await fromGroupedNewsDoc(documentResponse)
 
     expect(ungroupedArticle.version).toBe(article.version)
-    // expect(sortDocument(ungroupedArticle.document)).toEqual(sortDocument(article.document))
+    expect(sortDocument(ungroupedArticle.document)).toEqual(sortDocument(article.document))
   })
 })
 

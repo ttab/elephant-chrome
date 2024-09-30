@@ -380,7 +380,7 @@ export class CollaborationServer {
       throw new Error('Update document with new hash and version failed', { cause: ex })
     })
 
-    console.debug('::: Document saved to repository: ', result.response.version, 'new hash:', updatedHash)
+    logger.debug('::: Document saved to repository: ', result.response.version, 'new hash:', updatedHash)
   }
 
   /**
