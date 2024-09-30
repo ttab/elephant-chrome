@@ -100,11 +100,13 @@ export const Table = <TData, TValue>({
       // Render group header
       return (
         <React.Fragment key={row.id}>
-          <TableRow className='sticky top-0 bg-gray-100 z-10'>
-            <TableCell colSpan={columns.length} className='pl-6 '>
-              <GroupingNewsvalue newsvalue={row.groupingValue as string} />
+          <TableRow className='sticky top-0 bg-gray-100 z-10 border-b-2'>
+            <TableCell colSpan={columns.length - 1} className='pl-6 '>
+              <span className='inline-flex items-center justify-center w-6 h-6 bg-white text-gray-800 font-bold rounded-full ring-1 ring-gray-300 shadow-md'>
+                {row.groupingValue as string}
+              </span>
             </TableCell>
-            <TableCell colSpan={columns.length} className='pl-6 '>
+            <TableCell colSpan={1} className='pl-6 '>
               <span className='inline-flex items-center justify-center w-6 h-6 bg-white text-gray-800 font-bold rounded-full ring-1 ring-gray-300 shadow-md'>
                 {row.subRows.length}
               </span>
@@ -156,8 +158,6 @@ export const Table = <TData, TValue>({
           ))}
         </React.Fragment>
       )
-
-      // Render regular row
     })
   }, [table, columns.length, loading, onRowSelected, dispatch, state.viewRegistry, type, origin])
 
@@ -165,7 +165,7 @@ export const Table = <TData, TValue>({
   return (
     <div className='h-screen w-screen'>
       <Toolbar table={table} />
-      <_Table className='table-auto w-full relative border-separate'>
+      <_Table className='table-auto w-full relative'>
 
         <TableBody className='table-auto w-full relative'>
           {TableBodyElement}
