@@ -68,7 +68,7 @@ const PlanningViewContent = (props: ViewProps & { documentId: string }): JSX.Ele
   const { provider } = useCollaboration()
   const { data, status } = useSession()
   const [documentStatus, setDocumentStatus] = useDocumentStatus(props.documentId)
-  const [validateForm, setValidateForm] = useState<boolean>(!props.asCreateDialog)
+  const [validateForm, setValidateForm] = useState<boolean>(!props.asDialog)
   const validateStateRef = useRef<ValidateState>({})
 
   const handleValidation = (block: string, label: string, value: string | undefined, reason: string): boolean => {
@@ -107,18 +107,18 @@ const PlanningViewContent = (props: ViewProps & { documentId: string }): JSX.Ele
 
   return (
     <div className={cn(viewVariants({
-      asCreateDialog: !!props.asCreateDialog,
+      asCreateDialog: !!props.asDialog,
       className: props?.className
     }))}>
       <div className="grow-0">
         <ViewHeader.Root>
-          {!props.asCreateDialog &&
+          {!props.asDialog &&
             <ViewHeader.Title title='Planering' icon={GanttChartSquare} iconColor='#DAC9F2' />
           }
 
           <ViewHeader.Content>
             <div className='flex w-full h-full items-center space-x-2'>
-              {!props.asCreateDialog &&
+              {!props.asDialog &&
                 <DocumentStatus status={documentStatus} setStatus={setDocumentStatus} />}
               <VisibilityStatus />
               <Newsvalue />
@@ -126,7 +126,7 @@ const PlanningViewContent = (props: ViewProps & { documentId: string }): JSX.Ele
           </ViewHeader.Content>
 
           <ViewHeader.Action onDialogClose={props.onDialogClose}>
-            {!props.asCreateDialog && !!props.documentId &&
+            {!props.asDialog && !!props.documentId &&
               <ViewHeader.RemoteUsers documentId={props.documentId} />
             }
           </ViewHeader.Action>
@@ -134,12 +134,13 @@ const PlanningViewContent = (props: ViewProps & { documentId: string }): JSX.Ele
       </div>
 
       <ScrollArea className='grid @5xl:place-content-center'>
-        <section className={cn(sectionVariants({ asCreateDialog: !!props?.asCreateDialog }))}>
+        <section className={cn(sectionVariants({ asCreateDialog: !!props?.asDialog }))}>
           <ValidationAlert validateStateRef={validateStateRef} />
+
           <div className='flex flex-col gap-2 pl-0.5'>
             <div className='flex space-x-2 items-start'>
               <Title
-                autoFocus={props.asCreateDialog}
+                autoFocus={props.asDialog}
                 placeholder='Planeringsrubrik'
                 onValidation={handleValidation}
               />
@@ -169,7 +170,7 @@ const PlanningViewContent = (props: ViewProps & { documentId: string }): JSX.Ele
           <AssignmentTable />
         </section>
 
-        {props.asCreateDialog && (
+        {props.asDialog && (
           <div>
             <Separator className='ml-0' />
             <div className='flex justify-end px-6 py-4'>
@@ -177,7 +178,7 @@ const PlanningViewContent = (props: ViewProps & { documentId: string }): JSX.Ele
                 setValidateForm(true)
                 // if all fields are valid close and save
                 if (Object.values(validateStateRef.current).every((block) => block.valid)) {
-                // Get the id, post it, and open it in a view?
+                  // Get the id, post it, and open it in a view?
                   if (props?.onDialogClose) {
                     props.onDialogClose(props.documentId, title)
                   }

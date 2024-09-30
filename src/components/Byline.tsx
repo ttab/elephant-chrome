@@ -11,7 +11,7 @@ export const Byline = ({ onValidation }: {
   const allAuthors = useAuthors().map((_) => {
     return {
       value: _.id,
-      label: _.title
+      label: _.name
     }
   })
 
@@ -57,7 +57,7 @@ export const Byline = ({ onValidation }: {
           path={path}
           block='core/author'
           onValidation={onValidation}
-          />
+        />
       }
     </Awareness>
   )
