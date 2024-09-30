@@ -47,7 +47,7 @@
     "get-user-locale": "^2.3.2",
     "html-entities": "^2.5.2",
     "lodash-es": "^4.17.21",
-    "next-auth": "^5.0.0-beta.21",
+    "next-auth": "^5.0.0-beta.22",
     "node-html-parser": "^6.1.13",
     "pino": "^9.4.0",
     "pino-http": "^10.3.0",
