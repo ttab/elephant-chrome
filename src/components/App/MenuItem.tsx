@@ -51,7 +51,7 @@ export const MenuItemDialogOpener = ({ menuItem }: {
   return (
     <SheetClose
       key={menuItem.name}
-      className='flex gap-3 items-center px-3 py-2 rounded-md hover:bg-gray-100 hover:cursor-pointer'
+      className='w-full flex gap-3 items-center px-3 py-2 rounded-md hover:bg-gray-100 hover:cursor-pointer'
       onClick={() => {
         showModal(<>
           {

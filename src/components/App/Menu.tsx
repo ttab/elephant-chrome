@@ -46,29 +46,27 @@ export const Menu = (): JSX.Element => {
           </div>
         </div>
 
-        <div className="justify-self-end flex flex-col items-center justify-center rounded-md bg-gray-100 dark:bg-gray-800 mt-10">
+        <div className="justify-self-end flex flex-col items-center justify-center rounded-md bg-gray-100 dark:bg-gray-800 mt-10 pb-6">
           <div className="border-4 border-background rounded-full -mt-7">
             <Avatar user={data?.user} size="xl" variant="color" />
           </div>
 
-          <div className="p-2 py-4 pb-10 leading-loose text-center">
+          <div className="p-2 py-4 pb-4 leading-loose text-center">
             <div className="font-bold">{data?.user.name || '(Namn saknas)'}</div>
             <div className="text-xs opacity-60">{''}</div>
           </div>
 
           <SheetClose asChild>
-            <a href='' onClick={(event) => {
+            <a href='#' onClick={(event) => {
               event.preventDefault()
               signOut()
                 .catch((error) => console.error(error))
               localStorage.removeItem('trustGoogle')
-            }}>
-              <div className="flex gap-3 items-center px-3 py-2 rounded-md hover:bg-gray-100">
-                <div className="flex items-center justify-center opacity-80 pr-2">
-                  <LogOut strokeWidth={1.75} size={18} />
-                </div>
-                <div>Logga ut</div>
+            }} className="flex gap-1 items-center px-3 py-2 -ms-0.5 rounded-md text-sm bg-gray-200 hover:bg-gray-300">
+              <div className="flex items-center justify-center opacity-80 pr-2">
+                <LogOut strokeWidth={1.75} size={18} />
               </div>
+              <div>Logga ut</div>
             </a>
           </SheetClose>
 
