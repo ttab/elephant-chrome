@@ -146,7 +146,7 @@ export function planningTableColumns({ sections = [], authors = [] }: {
     {
       id: 'assignees',
       meta: {
-        options: authors.map((_) => ({ value: _.title, label: _.title })),
+        options: authors.map((_) => ({ value: _.name, label: _.name })),
         Filter: ({ column, setSearch }) => (
           <FacetedFilter column={column} setSearch={setSearch} facetFn={() => getNestedFacetedUniqueValues(column)} />
         ),

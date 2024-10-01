@@ -1,6 +1,6 @@
 import { Document, Block } from '@ttab/elephant-api/newsdoc'
-import { currentDateInUTC } from '../datetime'
-import { type TemplatePayload } from '../createYItem'
+import { currentDateInUTC } from '../../lib/datetime'
+import { type TemplatePayload } from '../../lib/createYItem'
 
 /**
  * Create a template structure for a planning document

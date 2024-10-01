@@ -66,7 +66,7 @@ const EventViewContent = (props: ViewProps & { documentId: string }): JSX.Elemen
   const { provider } = useCollaboration()
   const { data, status } = useSession()
   const [documentStatus, setDocumentStatus] = useDocumentStatus(props.documentId)
-  const [validateForm, setValidateForm] = useState<boolean>(!props.asCreateDialog)
+  const [validateForm, setValidateForm] = useState<boolean>(!props.asDialog)
   const validateStateRef = useRef<ValidateState>({})
 
   const handleValidation = (block: string, label: string, value: string | undefined, reason: string): boolean => {
@@ -104,10 +104,10 @@ const EventViewContent = (props: ViewProps & { documentId: string }): JSX.Elemen
   })
 
   return (
-    <div className={cn(viewVariants({ asCreateDialog: !!props.asCreateDialog, className: props?.className }))}>
+    <div className={cn(viewVariants({ asCreateDialog: !!props.asDialog, className: props?.className }))}>
       <div className='grow-0'>
         <ViewHeader.Root>
-          {!props.asCreateDialog &&
+          {!props.asDialog &&
             <ViewHeader.Title title='Händelse' icon={Ticket} iconColor='#DAC9F2' />
           }
 
@@ -119,7 +119,7 @@ const EventViewContent = (props: ViewProps & { documentId: string }): JSX.Elemen
           </ViewHeader.Content>
 
           <ViewHeader.Action onDialogClose={props.onDialogClose}>
-            {!props.asCreateDialog && !!props.documentId &&
+            {!props.asDialog && !!props.documentId &&
               <ViewHeader.RemoteUsers documentId={props.documentId} />
             }
           </ViewHeader.Action>
@@ -127,12 +127,12 @@ const EventViewContent = (props: ViewProps & { documentId: string }): JSX.Elemen
       </div>
 
       <ScrollArea className='grid @5xl:place-content-center'>
-        <section className={cn(sectionVariants({ asCreateDialog: !!props?.asCreateDialog }))}>
+        <section className={cn(sectionVariants({ asCreateDialog: !!props?.asDialog }))}>
           <ValidationAlert validateStateRef={validateStateRef} />
           <div className='flex flex-col gap-2 pl-0.5'>
             <div className='flex space-x-2 items-start'>
               <Title
-                autoFocus={props.asCreateDialog}
+                autoFocus={props.asDialog}
                 placeholder='Händelserubrik'
                 onValidation={handleValidation}
               />
@@ -157,7 +157,7 @@ const EventViewContent = (props: ViewProps & { documentId: string }): JSX.Elemen
 
         </section>
 
-        {props.asCreateDialog && (
+        {props.asDialog && (
           <div>
             <Separator className='ml-0' />
             <div className='flex justify-end px-6 py-4'>
@@ -165,7 +165,7 @@ const EventViewContent = (props: ViewProps & { documentId: string }): JSX.Elemen
                 setValidateForm(true)
                 // if all fields are valid close and save
                 if (Object.values(validateStateRef.current).every((state) => !!state)) {
-                // Get the id, post it, and open it in a view?
+                  // Get the id, post it, and open it in a view?
                   if (props?.onDialogClose) {
                     props.onDialogClose()
                   }
@@ -188,7 +188,7 @@ const EventViewContent = (props: ViewProps & { documentId: string }): JSX.Elemen
           </div>)}
 
       </ScrollArea>
-    </div>
+    </div >
   )
 }
 

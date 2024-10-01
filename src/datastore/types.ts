@@ -13,7 +13,7 @@ export interface IDBStory {
 /** Author structure in indexedDB objectStore */
 export interface IDBAuthor {
   id: string
-  title: string
+  name: string
   firstName: string
   lastName: string
   initials: string

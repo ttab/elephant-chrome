@@ -2,9 +2,9 @@ import { useContext } from 'react'
 import { CoreAuthorContext } from '../datastore/contexts/CoreAuthorProvider'
 import { type IDBAuthor } from '../datastore/types'
 
-export const useAuthors = (options?: { sort?: 'title' | 'firstName' | 'lastName' }): IDBAuthor[] => {
+export const useAuthors = (options?: { sort?: 'name' | 'firstName' | 'lastName' }): IDBAuthor[] => {
   const { objects } = useContext(CoreAuthorContext)
-  const sortKey = (['title', 'firstName', 'lastName'].includes(options?.sort || '')) ? options?.sort : 'title'
+  const sortKey = (['name', 'firstName', 'lastName'].includes(options?.sort || '')) ? options?.sort : 'name'
 
   return (objects).sort((a1, a2) => {
     if (sortKey === 'firstName') {
@@ -20,6 +20,6 @@ export const useAuthors = (options?: { sort?: 'title' | 'firstName' | 'lastName'
     }
 
     // Default sorting
-    return a1.title.localeCompare(a2.title)
+    return a1.name.localeCompare(a2.name)
   })
 }

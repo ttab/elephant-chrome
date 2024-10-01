@@ -2,14 +2,18 @@ import React from 'react'
 import { CollaborationContext } from '@/contexts/CollaborationProvider'
 import { newHocuspocusProvider } from './newHocuspocusProvider'
 import { newHocuspocus } from './newHocuspocus'
-import { newsDocToYDoc } from '../../src-srv/utils/transformations/yjs/yDoc'
 import { planning } from '../data/planning-newsdoc'
 import * as Y from 'yjs'
 import { type Hocuspocus } from '@hocuspocus/server'
 import { type HocuspocusProvider } from '@hocuspocus/provider'
+import { toYjsNewsDoc } from '../../src-srv/utils/transformations/yjsNewsDoc'
+import { toGroupedNewsDoc } from '../../src-srv/utils/transformations/groupedNewsDoc'
 
 const yDoc = new Y.Doc()
-newsDocToYDoc(yDoc, planning)
+toYjsNewsDoc(
+  toGroupedNewsDoc(planning),
+  yDoc
+)
 
 export interface CollaborationWrapper {
   wrapper: (props: React.PropsWithChildren) => JSX.Element
@@ -41,4 +45,3 @@ export const initializeCollaborationWrapper = async (): Promise<CollaborationWra
 
   return { wrapper, server, provider }
 }
-

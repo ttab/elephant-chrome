@@ -46,4 +46,3 @@ async function validateAccessToken(accessToken: string): Promise<boolean> {
 
   return response.ok
 }
-
