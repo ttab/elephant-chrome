@@ -61,9 +61,6 @@
       "@/defaults": [
         "./src/defaults/index.tsx"
       ],
-      "@/protos/*": [
-        "./shared/protos/*"
-      ],
       "@/types/*": [
         "./src/types/*"
       ],
@@ -99,5 +96,5 @@
     "__tests__/**/*",
     "__mocks__",
     "types/**/*"
-  ]
+, "src-srv/utils/transformations/groupedNewsDoc.ts"  ]
 }

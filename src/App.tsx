@@ -8,6 +8,7 @@ import { CoreStoryProvider } from './datastore/contexts/CoreStoryProvider'
 import { CoreSectionProvider } from './datastore/contexts/CoreSectionProvider'
 import { CoreCategoryProvider } from './datastore/contexts/CoreCategoryProvider'
 import { CoreOrganiserProvider } from './datastore/contexts/CoreOrganiserProvider'
+import { ModalProvider } from './components/Modal/ModalProvider'
 
 export const App = (): JSX.Element => {
   const { data: session, status } = useSession()
@@ -25,27 +26,30 @@ export const App = (): JSX.Element => {
 
 
   return (
-    <div className='relative flex h-screen flex-col'>
-      <div className='grid grid-cols-12 divide-x-2 h-screen'>
-        <DocTrackerProvider>
-          <CoreSectionProvider>
-            <CoreAuthorProvider>
-              <CoreStoryProvider>
-                <CoreCategoryProvider>
-                  <CoreOrganiserProvider>
-                    <AppContent />
-                  </CoreOrganiserProvider>
-                </CoreCategoryProvider>
-              </CoreStoryProvider>
-            </CoreAuthorProvider>
-          </CoreSectionProvider>
-        </DocTrackerProvider>
-      </div>
+    <DocTrackerProvider>
+      <CoreSectionProvider>
+        <CoreAuthorProvider>
+          <CoreStoryProvider>
+            <CoreCategoryProvider>
+              <CoreOrganiserProvider>
 
-      <div className='absolute top-0 left-0 z-10'>
-        <AppHeader />
-      </div>
+                <ModalProvider>
+                  <div className='relative flex h-screen flex-col'>
+                    <div className='grid grid-cols-12 divide-x-2 h-screen'>
+                      <AppContent />
+                    </div>
 
-    </div>
+                    <div className='absolute top-0 left-0'>
+                      <AppHeader />
+                    </div>
+                  </div>
+                </ModalProvider>
+
+              </CoreOrganiserProvider>
+            </CoreCategoryProvider>
+          </CoreStoryProvider>
+        </CoreAuthorProvider>
+      </CoreSectionProvider>
+    </DocTrackerProvider>
   )
 }

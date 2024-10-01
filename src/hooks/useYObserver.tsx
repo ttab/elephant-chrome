@@ -3,7 +3,7 @@ import { useCollaboration } from '.'
 import { useCallback, useEffect, useState } from 'react'
 import * as Y from 'yjs'
 import { toYMap } from '../../src-srv/utils/transformations/lib/toYMap'
-import { type Block } from '@/protos/service'
+import { type Block } from '@ttab/elephant-api/newsdoc'
 
 const useForceUpdate = (): () => void => {
   const [, dispatch] = useState(Object.create(null))
@@ -20,7 +20,11 @@ interface YObserved {
   state: Block[]
   loading: boolean
 }
-
+/**
+ * Should not be used as it is replaced by useYValue().
+ *
+ * @deprecated
+ */
 export function useYObserver(name: string, path: string): YObserved {
   const forceUpdate = useForceUpdate()
 

@@ -14,9 +14,6 @@
       "@/shared": [
         "../shared/index.ts"
       ],
-      "@/protos/*": [
-        "../shared/protos/*"
-      ]
     }
   }
 }

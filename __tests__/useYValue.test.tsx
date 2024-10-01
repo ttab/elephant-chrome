@@ -2,7 +2,7 @@ import { renderHook } from '@testing-library/react'
 import { useYValue } from '@/hooks/useYValue'
 import { type CollaborationWrapper, initializeCollaborationWrapper } from './utils/initializeCollaborationWrapper'
 import { act } from '../setupTests'
-import { Block } from '@/protos/service'
+import { Block } from '@ttab/elephant-api/newsdoc'
 import type * as Y from 'yjs'
 
 let init: CollaborationWrapper

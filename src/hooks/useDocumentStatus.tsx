@@ -35,7 +35,7 @@ export const useDocumentStatus = (documentId?: string): [
       if (!result) return undefined
 
 
-      const version = result.meta?.current_version || 0n
+      const version = result.meta?.currentVersion || 0n
       const heads = result.meta?.heads
 
       if (!heads) {

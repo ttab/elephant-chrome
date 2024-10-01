@@ -1,5 +1,6 @@
 import { useMemo, type PropsWithChildren, useEffect, useState } from 'react'
 import { AwarenessDocument, ViewHeader } from '@/components'
+import { Notes } from './components/Notes'
 import { PenBoxIcon } from '@ttab/elephant-ui/icons'
 
 import { createEditor } from 'slate'
@@ -30,7 +31,7 @@ import { EditorHeader } from './EditorHeader'
 import { type HocuspocusProvider } from '@hocuspocus/provider'
 import { type AwarenessUserData } from '@/contexts/CollaborationProvider'
 import { type YXmlText } from 'node_modules/yjs/dist/src/internals'
-import { articleDocumentTemplate } from '@/lib/templates/articleDocumentTemplate'
+import { articleDocumentTemplate } from '@/defaults/templates/articleDocumentTemplate'
 import { createDocument } from '@/lib/createYItem'
 
 const meta: ViewMetadata = {
@@ -106,6 +107,9 @@ function EditorWrapper(props: ViewProps & {
 
       </ViewHeader.Root>
 
+      <div className='p-4'>
+        <Notes />
+      </div>
       <div className="flex-grow overflow-auto pr-12 max-w-screen-xl">
         {!!provider && synced
           ? <EditorContent provider={provider} user={user} />

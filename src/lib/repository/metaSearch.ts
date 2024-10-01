@@ -1,4 +1,4 @@
-import { type GetMetaResponse } from '@/protos/service'
+import { type GetMetaResponse } from '@ttab/elephant-api/repository'
 import { type Session } from 'next-auth'
 
 export const metaSearch = async ({ session, documentId, repositoryUrl }: {

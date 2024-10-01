@@ -1,6 +1,6 @@
 import { Awareness } from '@/components'
 import { useStories, useYValue } from '@/hooks'
-import { Block } from '@/protos/service'
+import { Block } from '@ttab/elephant-api/newsdoc'
 import { ComboBox } from '@ttab/elephant-ui'
 import { useRef } from 'react'
 

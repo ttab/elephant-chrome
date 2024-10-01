@@ -1,5 +1,8 @@
 import * as Y from 'yjs'
 
+/**
+ * @deprecated
+ */
 export function get(y: Y.Map<unknown> | undefined, path?: string): Y.Map<unknown> | undefined {
   if (!y) {
     return
@@ -30,12 +33,15 @@ export function get(y: Y.Map<unknown> | undefined, path?: string): Y.Map<unknown
 }
 
 /*
-  * Traverse Y.Map and SET value by provided path
-  * @param {Y.Map} ymap
-  * @param string path
-  * @param string value
-  * @return void
-*/
+ * Traverse Y.Map and SET value by provided path, deprecated.
+ *
+ * @deprecated
+ *
+ * @param {Y.Map} ymap
+ * @param string path
+ * @param string value
+ * @return void
+ */
 export function set(ymap: Y.Map<unknown>, path: string, value: unknown): void {
   const keys: string[] = path
     .replace(/(\[|\])/g, '.')

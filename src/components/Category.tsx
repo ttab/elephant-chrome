@@ -1,7 +1,8 @@
 import { Awareness } from '@/components'
 import { ComboBox } from '@ttab/elephant-ui'
 import { useCategories, useYValue } from '@/hooks'
-import { Block } from '@/protos/service'
+import { Block } from '@ttab/elephant-api/newsdoc'
+
 import { useRef } from 'react'
 
 export const Category = (): JSX.Element => {

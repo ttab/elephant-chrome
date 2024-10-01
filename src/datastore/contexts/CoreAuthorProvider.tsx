@@ -41,7 +41,7 @@ export const CoreAuthorProvider = ({ children }: {
         const { _id: id, _source: _ } = item
         return {
           id,
-          title: _['document.title'][0].trim(),
+          name: _['document.title'][0].trim(),
           firstName: _?.['document.meta.core_author.data.firstName']?.[0].trim() || '',
           lastName: _?.['document.meta.core_author.data.lastName']?.[0].trim() || '',
           initials: _?.['document.meta.core_author.data.initials']?.[0].trim() || '',

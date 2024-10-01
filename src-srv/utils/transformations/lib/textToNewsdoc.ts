@@ -1,4 +1,4 @@
-import { Block } from '@/protos/service.js'
+import { Block } from '@ttab/elephant-api/newsdoc'
 
 export function textToNewsDoc(text: string): Block[] {
   return (text || '').split('\n').map((line) => {

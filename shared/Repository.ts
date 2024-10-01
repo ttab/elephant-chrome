@@ -1,21 +1,24 @@
 import { TwirpFetchTransport } from '@protobuf-ts/twirp-transport'
-import { DocumentsClient } from '@/protos/service.client.js'
-import type { Document, GetDocumentResponse, UpdateRequest, UpdateResponse, ValidateRequest, ValidateResponse } from '@/protos/service.js'
+import { DocumentsClient } from '@ttab/elephant-api/repository'
+import type {
+  GetDocumentResponse,
+  UpdateRequest,
+  UpdateResponse,
+  ValidateRequest,
+  ValidateResponse
+} from '@ttab/elephant-api/repository'
+import type { Document } from '@ttab/elephant-api/newsdoc'
 import { type FinishedUnaryCall } from '@protobuf-ts/runtime-rpc'
 import type * as Y from 'yjs'
-import { yDocToNewsDoc } from '../src-srv/utils/transformations/yjs/yDoc.js'
+import { isValidUUID } from '../src-srv/utils/isValidUUID.js'
+import { fromYjsNewsDoc } from '../src-srv/utils/transformations/yjsNewsDoc.js'
+import { fromGroupedNewsDoc } from '../src-srv/utils/transformations/groupedNewsDoc.js'
 
 export interface Session {
   access_token: string
   token_type: 'Bearer'
   expires_in: number
   refresh_token: string
-}
-
-function validateUUID(uuid: string): boolean {
-  // https://github.com/uuidjs/uuid/blob/main/src/regex.js
-  const UUIDRegEx = /^(?:[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}|00000000-0000-0000-0000-000000000000)$/i
-  return UUIDRegEx.test(uuid)
 }
 
 export class Repository {
@@ -36,7 +39,7 @@ export class Repository {
    * @returns Promise<GetDocumentResponse>
    */
   async getDoc({ uuid, accessToken }: { uuid: string, accessToken: string }): Promise<GetDocumentResponse | null> {
-    if (!validateUUID(uuid)) {
+    if (!isValidUUID(uuid)) {
       throw new Error('Invalid uuid format')
     }
 
@@ -45,7 +48,8 @@ export class Repository {
         uuid,
         version: 0n,
         status: '',
-        lock: false
+        lock: false,
+        metaDocument: 1
       }, meta(accessToken))
 
       return response
@@ -64,15 +68,16 @@ export class Repository {
    * @param accessToken string
    * @returns Promise<FinishedUnaryCall<UpdateRequest, UpdateResponse>
    */
-  async saveDoc(document: Document, accessToken: string, version: bigint):
-  Promise<FinishedUnaryCall<UpdateRequest, UpdateResponse> | undefined> {
+  async saveDoc(document: Document, accessToken: string, version: bigint): Promise<FinishedUnaryCall<UpdateRequest, UpdateResponse> | undefined> {
     const payload: UpdateRequest = {
       document,
       meta: {},
       ifMatch: version,
       status: [],
       acl: [{ uri: 'core://unit/redaktionen', permissions: ['r', 'w'] }],
-      uuid: document.uuid
+      uuid: document.uuid,
+      lockToken: '',
+      updateMetaDocument: false
     }
 
     return await this.#client.update(
@@ -85,15 +90,12 @@ export class Repository {
   * @param yDoc Y.Doc
   * @returns Promise<FinishedUnaryCall<ValidateRequest, ValidateResponse>>
   */
-  async validateDoc(ydoc: Y.Doc):
-  Promise<FinishedUnaryCall<ValidateRequest, ValidateResponse>> {
-    const { document, version } = await yDocToNewsDoc(ydoc)
-    const payload = {
-      version: BigInt(version),
-      document
-    }
+  async validateDoc(ydoc: Y.Doc): Promise<FinishedUnaryCall<ValidateRequest, ValidateResponse>> {
+    const { documentResponse } = await fromYjsNewsDoc(ydoc)
 
-    return await this.#client.validate(payload)
+    return await this.#client.validate(
+      await fromGroupedNewsDoc(documentResponse)
+    )
   }
 }
 

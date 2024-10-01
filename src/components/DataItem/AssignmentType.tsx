@@ -1,7 +1,7 @@
 import { AssignmentTypes } from '@/defaults'
 import { ComboBox } from '@ttab/elephant-ui'
 import { cn } from '@ttab/elephant-ui/utils'
-import { Block } from '@/protos/service'
+import { Block } from '@ttab/elephant-api/newsdoc'
 import { useYValue } from '@/hooks/useYValue'
 
 export const AssignmentType = ({ path, editable = false }: {

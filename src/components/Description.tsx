@@ -1,6 +1,6 @@
 import { Building, Text } from '@ttab/elephant-ui/icons'
 import { TextBox } from '@/components/ui'
-import { type Block } from '@/protos/service'
+import { type Block } from '@ttab/elephant-api/newsdoc'
 import { useYValue } from '@/hooks/useYValue'
 
 

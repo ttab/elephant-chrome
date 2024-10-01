@@ -1,5 +1,5 @@
 import { type Session } from 'next-auth'
-import { type UpdateResponse } from '@/protos/service'
+import { type UpdateResponse } from '@ttab/elephant-api/repository'
 
 export const update = async ({ session, status }: {
   session: Session | null

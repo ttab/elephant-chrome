@@ -1,6 +1,8 @@
-import { type GetDocumentResponse } from '@/protos/service'
+import { type GetDocumentResponse } from '@ttab/elephant-api/repository'
 
 export const event: GetDocumentResponse = {
+  mainDocument: '',
+  isMetaDocument: false,
   version: 1n,
   document: {
     uuid: 'be0e2313-a8d4-4575-9816-8828b8827f10',
@@ -27,7 +29,8 @@ export const event: GetDocumentResponse = {
         role: '',
         name: '',
         value: '',
-        contentType: '',
+        contenttype: '',
+        sensitivity: '',
         links: [],
         content: [],
         meta: []
@@ -44,7 +47,8 @@ export const event: GetDocumentResponse = {
         role: '',
         name: '',
         value: '4',
-        contentType: '',
+        contenttype: '',
+        sensitivity: '',
         links: [],
         content: [],
         meta: []
@@ -63,7 +67,8 @@ export const event: GetDocumentResponse = {
         role: 'public',
         name: '',
         value: '',
-        contentType: '',
+        contenttype: '',
+        sensitivity: '',
         links: [],
         content: [],
         meta: []
@@ -82,7 +87,8 @@ export const event: GetDocumentResponse = {
         role: '',
         name: '',
         value: '',
-        contentType: '',
+        contenttype: '',
+        sensitivity: '',
         links: [],
         content: [],
         meta: []
@@ -99,7 +105,8 @@ export const event: GetDocumentResponse = {
         role: '',
         name: '',
         value: '',
-        contentType: '',
+        contenttype: '',
+        sensitivity: '',
         links: [],
         content: [],
         meta: []
@@ -116,7 +123,8 @@ export const event: GetDocumentResponse = {
         role: '',
         name: '',
         value: '',
-        contentType: '',
+        contenttype: '',
+        sensitivity: '',
         links: [],
         content: [],
         meta: []
@@ -133,7 +141,8 @@ export const event: GetDocumentResponse = {
         role: '',
         name: '',
         value: '',
-        contentType: '',
+        contenttype: '',
+        sensitivity: '',
         links: [],
         content: [],
         meta: []

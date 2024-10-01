@@ -1,6 +1,6 @@
 import { decode, encode } from 'html-entities'
 import { parse, type HTMLElement } from 'node-html-parser'
-import { Block } from '@/protos/service.js'
+import { Block } from '@ttab/elephant-api/newsdoc'
 import type { Text } from 'slate'
 import {
   type TBElement,
