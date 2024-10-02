@@ -1,4 +1,4 @@
-import React, { type MouseEvent, useEffect, useCallback, useMemo } from 'react'
+import React, { type MouseEvent, useEffect, useCallback, useMemo, useDeferredValue } from 'react'
 import {
   type ColumnDef,
   flexRender
@@ -31,7 +31,7 @@ export const Table = <TData, TValue>({
   const { state, dispatch } = useNavigation()
   const { viewId: origin } = useView()
 
-  const { table, loading } = useTable()
+  const { table } = useTable()
 
   const keyDownHandler = useCallback((evt: KeyboardEvent): void => {
     if (!isActiveView || isEditableTarget(evt)) {
@@ -81,24 +81,28 @@ export const Table = <TData, TValue>({
     }
   }, [table, onRowSelected])
 
+  // Needed for the useMemo to refresh when new data is set in the table
+  // Defer to previous table untill ready
+  const deferredRows = useDeferredValue(table.getRowModel().rows)
+
   const TableBodyElement = useMemo(() => {
-    if (table.getRowModel().rows?.length === 0) {
+    if (deferredRows?.length === 0) {
       return (
         <TableRow>
           <TableCell
             colSpan={columns.length}
             className='h-24 text-center'
           >
-            {loading ? 'Loading...' : 'No results.'}
+            No results.
           </TableCell>
         </TableRow>
       )
     }
 
-    return table.getRowModel().rows.map((row) => {
+    return deferredRows.map((row) => {
       return (
         <React.Fragment key={row.id}>
-          <TableRow className='sticky top-0 bg-gray-100 z-10'>
+          <TableRow className='sticky top-0 bg-gray-100 z-10 border-b-2'>
             <TableCell colSpan={columns.length - 1} className='pl-6 space-x-2 items-baseline'>
               <span className='font-thin text-gray-500'>Nyhetsvärde</span>
               <span className='inline-flex items-center justify-center w-6 h-6 bg-white text-gray-800 rounded-full ring-1 ring-gray-300 shadow-md'>
@@ -159,7 +163,7 @@ export const Table = <TData, TValue>({
         </React.Fragment>
       )
     })
-  }, [table, columns.length, loading, onRowSelected, dispatch, state.viewRegistry, type, origin])
+  }, [deferredRows, columns.length, onRowSelected, dispatch, state.viewRegistry, type, origin])
 
 
   return (

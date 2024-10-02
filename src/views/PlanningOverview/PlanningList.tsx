@@ -8,16 +8,18 @@ import {
 import { Table } from '@/components/Table'
 import { planningTableColumns } from '@/views/PlanningOverview/PlanningListColumns'
 
-export const PlanningList = (): JSX.Element => {
+export const PlanningList = ({ from, to }: {
+  from: string
+  to: string
+}): JSX.Element => {
   const sections = useSections()
 
+
+  const { mutate, error } = useSWR(['Plannings', from, to])
   const columns = useMemo(() => planningTableColumns({ sections }), [sections])
 
-  const { mutate, error, isLoading } = useSWR('Plannings')
-
-
   if (error) {
-    console.error('Error when fetching Planning list', error)
+    console.error('Error when fetching PlanningList', error)
   }
   // FIXME: This should be supported by the useRepositoryEvents hook
   // but isn't working right now. The message goes only to the leader tab
@@ -43,10 +45,6 @@ export const PlanningList = (): JSX.Element => {
     return row
   }, [])
 
-
-  if (isLoading) {
-    return <div>Loading...</div>
-  }
 
   if (error) {
     return <pre>{error.message}</pre>

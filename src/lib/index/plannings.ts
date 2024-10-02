@@ -15,8 +15,6 @@ interface SearchPlanningParams {
 }
 
 const search = async (endpoint: URL, accessToken: string, params?: SearchPlanningParams): Promise<SearchIndexResponse<Planning>> => {
-  const start = params?.where?.start ? new Date(params.where.start) : new Date()
-  const end = params?.where?.end ? new Date(params.where.end) : new Date()
   const sort: Array<Record<string, 'asc' | 'desc'>> = []
 
   if (params?.sort?.start && ['asc', 'desc'].includes(params.sort.start)) {
@@ -36,8 +34,8 @@ const search = async (endpoint: URL, accessToken: string, params?: SearchPlannin
           {
             range: {
               'document.meta.core_planning_item.data.start_date': {
-                gte: start.toISOString(),
-                lte: end.toISOString()
+                gte: params?.where?.start,
+                lte: params?.where?.end
               }
             }
           }

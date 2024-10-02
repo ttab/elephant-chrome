@@ -3,7 +3,6 @@ import { type SearchIndexResponse } from '@/lib/index'
 import { useSession } from 'next-auth/react'
 import { type Session } from 'next-auth'
 import { useIndexUrl } from './useIndexUrl'
-import { convertToISOStringInUTC } from '@/lib/datetime'
 import { useTable } from './useTable'
 
 interface FetchOptions {
@@ -14,11 +13,11 @@ interface FetchOptions {
   }
 }
 
-interface Fetcher<T> {
+export interface Fetcher<T> {
   search: (url: URL, token: string, options: FetchOptions) => Promise<SearchIndexResponse<T>>
 }
 
-interface SourceAddtions {
+export interface SourceAddtions {
   _source: {
     created: string[]
     current_version: string[]
@@ -48,7 +47,7 @@ const getCurrentDocumentStatus = <T extends SourceAddtions>(obj: T): string => {
 }
 
 export const useFetcher = <T extends SourceAddtions>(Fetcher: Fetcher<T>):
-({ startDate, endDate }: { startDate: Date, endDate: Date })
+({ from, to }: { from: string, to: string })
 => Promise<SearchIndexResponse<T> | undefined> => {
   const { data: session } = useSession()
   const sessionRef = useRef<Session | null>(session)
@@ -61,23 +60,20 @@ export const useFetcher = <T extends SourceAddtions>(Fetcher: Fetcher<T>):
   const indexUrl = useIndexUrl()
 
   return useCallback(
-    async ({ startDate, endDate }: {
-      startDate: Date
-      endDate: Date
+    async ({ from, to }: {
+      from: string
+      to: string
     }): Promise<SearchIndexResponse<T> | undefined> => {
       const currentSession = sessionRef.current
       if (!currentSession) return undefined
 
-      const start = convertToISOStringInUTC(startDate)
-      const end = convertToISOStringInUTC(endDate)
-
       const searchUrl = new URL(indexUrl)
-      searchUrl.search = new URLSearchParams({ start, end }).toString()
 
       const result = await Fetcher.search(searchUrl, currentSession.accessToken, {
         size: 100,
-        where: { start, end }
+        where: { start: from, end: to }
       })
+
 
       if (result.ok) {
         const itemsWithStatus = {
@@ -91,6 +87,8 @@ export const useFetcher = <T extends SourceAddtions>(Fetcher: Fetcher<T>):
             return item
           })
         }
+
+
         setData(itemsWithStatus)
         return itemsWithStatus
       }

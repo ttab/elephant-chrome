@@ -1,10 +1,9 @@
-import { type PropsWithChildren, useEffect, useState } from 'react'
+import { useMemo, useState } from 'react'
 import { type ViewMetadata } from '@/types'
 import { ViewHeader } from '@/components'
 import { CalendarDaysIcon } from '@ttab/elephant-ui/icons'
 import { ScrollArea, Tabs, TabsContent } from '@ttab/elephant-ui'
 
-import { PlanningGrid } from './PlanningGrid'
 import { PlanningList } from './PlanningList'
 import { TableProvider } from '@/contexts/TableProvider'
 
@@ -15,8 +14,8 @@ import { planningTableColumns } from './PlanningListColumns'
 import { type Planning as PlanningType, Plannings as PlanningsIndex } from '@/lib/index'
 import { useSections } from '@/hooks/useSections'
 import { useAuthors } from '@/hooks/useAuthors'
-import { SWRConfig } from 'swr'
-import { useFetcher } from '@/hooks/useFetcher'
+import { SWRProvider } from '@/contexts/SWRProvider'
+import { getDateTimeBoundariesUTC } from '@/lib/datetime'
 
 const meta: ViewMetadata = {
   name: 'Plannings',
@@ -36,36 +35,15 @@ const meta: ViewMetadata = {
 
 export const Plannings = (): JSX.Element => {
   const [startDate, setStartDate] = useState<Date>(new Date())
-  const [endDate, setEndDate] = useState<Date>(getEndDate(startDate))
   const [currentTab, setCurrentTab] = useState<string>('list')
   const sections = useSections()
   const authors = useAuthors()
 
-  useEffect(() => {
-    setEndDate(getEndDate(startDate))
-  }, [startDate])
-
-
-  const SWRProvider = ({ children }: PropsWithChildren): JSX.Element => {
-    const fetcher = useFetcher<PlanningType>(PlanningsIndex)
-
-    return (
-      <SWRConfig
-        value={{
-          fetcher: async () => await fetcher({ startDate, endDate }),
-          revalidateOnFocus: false,
-          revalidateOnReconnect: false
-        }}
-        >
-        {children}
-      </SWRConfig>
-    )
-  }
-
+  const { from, to } = useMemo(() => getDateTimeBoundariesUTC(startDate), [startDate])
 
   return (
     <TableProvider<PlanningType> columns={planningTableColumns({ sections, authors })}>
-      <SWRProvider>
+      <SWRProvider<PlanningType> index={PlanningsIndex}>
         <Tabs defaultValue={currentTab} className='flex-1' onValueChange={setCurrentTab}>
 
           <TableCommandMenu>
@@ -86,8 +64,6 @@ export const Plannings = (): JSX.Element => {
                   tab={currentTab}
                   startDate={startDate}
                   setStartDate={setStartDate}
-                  endDate={endDate}
-                  setEndDate={setEndDate}
               />
               </ViewHeader.Content>
 
@@ -96,11 +72,10 @@ export const Plannings = (): JSX.Element => {
 
             <ScrollArea>
               <TabsContent value='list' className='mt-0'>
-                <PlanningList />
+                <PlanningList from={from} to={to} />
               </TabsContent>
 
               <TabsContent value='grid'>
-                <PlanningGrid startDate={startDate} endDate={endDate} />
               </TabsContent>
             </ScrollArea>
           </div>
@@ -112,9 +87,3 @@ export const Plannings = (): JSX.Element => {
 }
 
 Plannings.meta = meta
-
-function getEndDate(startDate: Date): Date {
-  const endDate = new Date()
-  endDate.setDate(startDate.getDate() + 6)
-  return endDate
-}
