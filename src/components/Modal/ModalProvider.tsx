@@ -34,8 +34,15 @@ export const ModalProvider = ({ children }: PropsWithChildren): JSX.Element => {
     <ModalContext.Provider value={{ showModal, hideModal }}>
       {children}
 
+      {/*
+        * FIXME: We need this to be modal. But for now the prop
+        * modal is set to false due to bug in radix which result
+        * in portal mouse events conflicts.
+        *
+        * https://github.com/radix-ui/primitives/issues/3141
+        */}
       {isVisible && (
-        <Dialog open={isVisible}>
+        <Dialog modal={false} open={isVisible}>
           <DialogContent className="p-0">
             {modalContent}
           </DialogContent>
