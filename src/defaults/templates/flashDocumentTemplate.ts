@@ -11,6 +11,10 @@ export function flashDocumentTemplate(id: string, defaults: {
     uuid: string
     title: string
   }
+  planningItem?: {
+    uuid: string
+    title: string
+  }
   authors?: Array<{
     uuid: string
     name: string
@@ -18,7 +22,8 @@ export function flashDocumentTemplate(id: string, defaults: {
 } = {}): Document {
   const {
     title = '',
-    section = undefined,
+    section,
+    planningItem,
     authors = []
   } = defaults
 
@@ -65,6 +70,13 @@ export function flashDocumentTemplate(id: string, defaults: {
     }))
   }
 
+  if (planningItem) {
+    doc.links.push(Block.create({
+      type: 'core/planning-item',
+      uuid: planningItem.uuid,
+      title: planningItem.title
+    }))
+  }
 
   for (const author of authors || []) {
     doc.links.push(Block.create({

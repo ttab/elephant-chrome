@@ -117,7 +117,12 @@ const FlashDialogContent = ({ menuItem, onDialogClose }: {
       return
     }
 
-    const flashDefaults: Record<string, unknown> = {}
+    const flashDefaults: Record<string, unknown> = {
+      planningItem: {
+        uuid: activeDocument?.uuid,
+        title: activeDocument?.title
+      }
+    }
 
     flashDefaults.title = activeDocument?.title || ''
     if (author) {
