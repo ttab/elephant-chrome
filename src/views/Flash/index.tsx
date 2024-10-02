@@ -1,9 +1,6 @@
 import {
   AwarenessDocument,
   ViewHeader,
-  DocumentStatus,
-  VisibilityStatus,
-  Newsvalue,
   Title,
   Section,
   Awareness
@@ -11,12 +8,11 @@ import {
 import { DefaultValueOption, type ViewMetadata, type ViewProps } from '@/types'
 import { NewsvalueMap } from '@/defaults'
 import { Button, ComboBox, ScrollArea, Separator } from '@ttab/elephant-ui'
-import { CalendarDaysIcon, TagsIcon, ZapIcon } from '@ttab/elephant-ui/icons'
+import { GanttChartSquareIcon, TagsIcon, ZapIcon } from '@ttab/elephant-ui/icons'
 import {
   useCollaboration,
   useQuery,
   useYValue,
-  useDocumentStatus,
   useIndexUrl
 } from '@/hooks'
 
@@ -71,8 +67,6 @@ const FlashViewContent = (props: ViewProps & { documentId: string }): JSX.Elemen
   const indexUrl = useIndexUrl()
   const planningAwareness = useRef<(value: boolean) => void>(null)
 
-  // const [planningItemUuid, setPlanningItemUiid] = useYValue<string>('links.core/planning-item[0].uuid')
-  // const [planningItemTitle, setPlanningItemTitle] = useYValue<string>('links.core/planning-item[0].title')
   const [planningItems, setPlanningItems] = useYValue<EleBlock[] | undefined>('links.core/planning-item')
   const [selectedOption, setSelectedOption] = useState()
 
@@ -177,7 +171,7 @@ const FlashViewContent = (props: ViewProps & { documentId: string }): JSX.Elemen
           <div className="flex flex-row items-center">
             <div className="flex flex-row gap-5">
               <div className="pt-1">
-                <CalendarDaysIcon size={18} strokeWidth={1.75} />
+                <GanttChartSquareIcon size={18} strokeWidth={1.75} className='text-muted-foreground' />
               </div>
 
               <Awareness name="FlashPlanningItem" ref={planningAwareness}>
@@ -214,7 +208,7 @@ const FlashViewContent = (props: ViewProps & { documentId: string }): JSX.Elemen
           <div className="flex flex-row items-center">
             <div className="flex flex-row gap-5">
               <div className="pt-1">
-                <TagsIcon size={18} strokeWidth={1.75} />
+                <TagsIcon size={18} strokeWidth={1.75} className='text-muted-foreground' />
               </div>
 
               <Section />
