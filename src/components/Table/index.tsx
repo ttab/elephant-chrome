@@ -15,7 +15,6 @@ import { useNavigation, useView, useTable } from '@/hooks'
 import { isEditableTarget } from '@/lib/isEditableTarget'
 import { cn } from '@ttab/elephant-ui/utils'
 import { handleLink } from '@/components/Link/lib/handleLink'
-import { GroupingNewsvalue } from '../DataItem/GroupingNewsvalue'
 
 interface TableProps<TData, TValue> {
   columns: Array<ColumnDef<TData, TValue>>
@@ -97,19 +96,18 @@ export const Table = <TData, TValue>({
     }
 
     return table.getRowModel().rows.map((row) => {
-      // Render group header
       return (
         <React.Fragment key={row.id}>
-          <TableRow className='sticky top-0 bg-gray-100 z-10 border-b-2'>
+          <TableRow className='sticky top-0 bg-gray-100 z-10'>
             <TableCell colSpan={columns.length - 1} className='pl-6 space-x-2 items-baseline'>
               <span className='font-thin text-gray-500'>Nyhetsvärde</span>
-              <span className='inline-flex items-center justify-center w-6 h-6 bg-white text-gray-800 font-bold rounded-full ring-1 ring-gray-300 shadow-md'>
+              <span className='inline-flex items-center justify-center w-6 h-6 bg-white text-gray-800 rounded-full ring-1 ring-gray-300 shadow-md'>
                 {row.groupingValue as string}
               </span>
             </TableCell>
             <TableCell colSpan={1} className='pl-6 flex flex-row space-x-2 items-baseline'>
               <span className='font-thin text-gray-500'>Antal</span>
-              <span className='inline-flex items-center justify-center w-6 h-6 bg-white text-gray-800 font-bold rounded-full ring-1 ring-gray-300 shadow-md'>
+              <span className='inline-flex items-center justify-center w-6 h-6 bg-white text-gray-800 rounded-full ring-1 ring-gray-300 shadow-md'>
                 {row.subRows.length}
               </span>
             </TableCell>

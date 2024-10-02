@@ -1,104 +1,24 @@
-import { type Dispatch, useCallback, useMemo } from 'react'
+import { useCallback, useMemo } from 'react'
 import useSWR from 'swr'
-import { useIndexUrl, useTable, useSections, useRepositoryEvents } from '@/hooks'
-import { useSession } from 'next-auth/react'
-import type { Session } from 'next-auth'
+import { useSections, useRepositoryEvents } from '@/hooks'
 import {
-  type SearchIndexResponse,
-  type Planning,
-  Plannings
+  type Planning
 } from '@/lib/index'
 
 import { Table } from '@/components/Table'
 import { planningTableColumns } from '@/views/PlanningOverview/PlanningListColumns'
-import { convertToISOStringInUTC, getDateTimeBoundaries } from '@/lib/datetime'
 
-const getCurrentDocumentStatus = (obj: Planning): string => {
-  const item: Record<string, null | string[]> = obj._source
-  const defaultStatus = 'draft'
-
-  const createdValues = Object.keys(item)
-    .filter(key => key.startsWith('heads.') && key.includes('.created'))
-    .map(key => {
-      const newkey = key.replace('heads.', '').replace('.created', '')
-      const dateCreated = item[key] ? item[key][0] : null
-      return { status: newkey, created: dateCreated }
-    })
-
-  createdValues.sort((a, b) => {
-    if (a.created === null) return 1
-    if (b.created === null) return -1
-    return a.created > b.created ? -1 : 1
-  })
-
-  return createdValues[0]?.status || defaultStatus
-}
-
-const fetchPlannings = async (
-  setData: Dispatch<SearchIndexResponse<Planning>>,
-  indexUrl: URL,
-  session: Session | null,
-  date: Date
-): Promise<SearchIndexResponse<Planning> | undefined> => {
-  if (!session) return undefined
-
-  const { startTime, endTime } = getDateTimeBoundaries(date)
-  const result = await Plannings.search(indexUrl, session.accessToken, {
-    size: 100,
-    where: {
-      start: convertToISOStringInUTC(startTime),
-      end: convertToISOStringInUTC(endTime)
-    }
-  })
-
-  if (result.ok) {
-    const planningsWithStatus = {
-      ...result,
-      hits: result?.hits?.map((planningItem: Planning) => {
-        const status = getCurrentDocumentStatus(planningItem)
-        planningItem._source = {
-          ...planningItem._source,
-          'document.meta.status': [status]
-        }
-        return planningItem
-      })
-    }
-    setData(planningsWithStatus)
-    return planningsWithStatus
-  }
-}
-
-export const PlanningList = ({ date }: { date: Date }): JSX.Element => {
-  const { setData } = useTable<Planning>()
-  const { data: session } = useSession()
-
+export const PlanningList = (): JSX.Element => {
   const sections = useSections()
-  const indexUrl = useIndexUrl()
-  const { startTime, endTime } = getDateTimeBoundaries(date)
 
   const columns = useMemo(() => planningTableColumns({ sections }), [sections])
 
-  // Create url to base SWR caching on
-  const searchUrl = useMemo(() => {
-    if (!indexUrl) {
-      return
-    }
+  const { mutate, error, isLoading } = useSWR('Plannings')
 
-    const start = convertToISOStringInUTC(startTime)
-    const end = convertToISOStringInUTC(endTime)
-    const searchUrl = new URL(indexUrl)
 
-    searchUrl.search = new URLSearchParams({ start, end }).toString()
-    return searchUrl
-  }, [startTime, endTime, indexUrl])
-
-  const { data, mutate } = useSWR(
-    searchUrl?.href, async () =>
-      await fetchPlannings(setData, indexUrl, session, date), {
-      revalidateOnFocus: false,
-      revalidateOnReconnect: false
-    })
-
+  if (error) {
+    console.error('Error when fetching Planning list', error)
+  }
   // FIXME: This should be supported by the useRepositoryEvents hook
   // but isn't working right now. The message goes only to the leader tab
   useRepositoryEvents(
@@ -124,15 +44,22 @@ export const PlanningList = ({ date }: { date: Date }): JSX.Element => {
   }, [])
 
 
+  if (isLoading) {
+    return <div>Loading...</div>
+  }
+
+  if (error) {
+    return <pre>{error.message}</pre>
+  }
+
+
   return (
     <>
-      {data?.ok &&
-        <Table
-          type='Planning'
-          columns={columns}
-          onRowSelected={onRowSelected}
+      <Table
+        type='Planning'
+        columns={columns}
+        onRowSelected={onRowSelected}
         />
-      }
     </>
   )
 }

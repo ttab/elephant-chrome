@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { type PropsWithChildren, useEffect, useState } from 'react'
 import { type ViewMetadata } from '@/types'
 import { ViewHeader } from '@/components'
 import { CalendarDaysIcon } from '@ttab/elephant-ui/icons'
@@ -12,9 +12,11 @@ import { TableCommandMenu } from '@/components/Commands/TableCommand'
 import { Header } from '@/views/PlanningOverview/PlanningHeader'
 import { PlanningCommands } from './PlanningCommands'
 import { planningTableColumns } from './PlanningListColumns'
-import { type Planning } from '@/lib/index'
+import { type Planning as PlanningType, Plannings as PlanningsIndex } from '@/lib/index'
 import { useSections } from '@/hooks/useSections'
 import { useAuthors } from '@/hooks/useAuthors'
+import { SWRConfig } from 'swr'
+import { useFetcher } from '@/hooks/useFetcher'
 
 const meta: ViewMetadata = {
   name: 'Plannings',
@@ -43,43 +45,68 @@ export const Plannings = (): JSX.Element => {
     setEndDate(getEndDate(startDate))
   }, [startDate])
 
+
+  const SWRProvider = ({ children }: PropsWithChildren): JSX.Element => {
+    const fetcher = useFetcher<PlanningType>(PlanningsIndex)
+
+    return (
+      <SWRConfig
+        value={{
+          fetcher: async () => await fetcher({ startDate, endDate }),
+          revalidateOnFocus: false,
+          revalidateOnReconnect: false
+        }}
+        >
+        {children}
+      </SWRConfig>
+    )
+  }
+
+
   return (
-    <TableProvider<Planning> columns={planningTableColumns({ sections, authors })}>
-      <Tabs defaultValue={currentTab} className='flex-1' onValueChange={setCurrentTab}>
+    <TableProvider<PlanningType> columns={planningTableColumns({ sections, authors })}>
+      <SWRProvider>
+        <Tabs defaultValue={currentTab} className='flex-1' onValueChange={setCurrentTab}>
 
-        <TableCommandMenu>
-          <PlanningCommands />
-        </TableCommandMenu>
+          <TableCommandMenu>
+            <PlanningCommands />
+          </TableCommandMenu>
 
-        <div className="flex flex-col h-screen">
-          <ViewHeader.Root>
-            <ViewHeader.Title title="Planeringar" short="Planeringar" icon={CalendarDaysIcon} iconColor='#FF971E' />
-
-            <ViewHeader.Content>
-              <Header
-                tab={currentTab}
-                startDate={startDate}
-                setStartDate={setStartDate}
-                endDate={endDate}
-                setEndDate={setEndDate}
+          <div className="flex flex-col h-screen">
+            <ViewHeader.Root>
+              <ViewHeader.Title
+                title="Planeringar"
+                short="Planeringar"
+                icon={CalendarDaysIcon}
+                iconColor='#FF971E'
               />
-            </ViewHeader.Content>
 
-            <ViewHeader.Action />
-          </ViewHeader.Root>
+              <ViewHeader.Content>
+                <Header
+                  tab={currentTab}
+                  startDate={startDate}
+                  setStartDate={setStartDate}
+                  endDate={endDate}
+                  setEndDate={setEndDate}
+              />
+              </ViewHeader.Content>
 
-          <ScrollArea>
-            <TabsContent value='list' className='mt-0'>
-              <PlanningList date={startDate} />
-            </TabsContent>
+              <ViewHeader.Action />
+            </ViewHeader.Root>
 
-            <TabsContent value='grid'>
-              <PlanningGrid startDate={startDate} endDate={endDate} />
-            </TabsContent>
-          </ScrollArea>
-        </div>
+            <ScrollArea>
+              <TabsContent value='list' className='mt-0'>
+                <PlanningList />
+              </TabsContent>
 
-      </Tabs>
+              <TabsContent value='grid'>
+                <PlanningGrid startDate={startDate} endDate={endDate} />
+              </TabsContent>
+            </ScrollArea>
+          </div>
+
+        </Tabs>
+      </SWRProvider>
     </TableProvider>
   )
 }
