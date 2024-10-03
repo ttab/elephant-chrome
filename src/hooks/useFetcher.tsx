@@ -68,7 +68,7 @@ export const useFetcher = <T extends Source>(Fetcher: Fetcher<T>):
 
         if (result.ok) {
           if (options?.withStatus) {
-            const itemsWithStatus = appendStatus(result)
+            const itemsWithStatus = withStatus(result)
 
             setData(itemsWithStatus)
             return itemsWithStatus
@@ -77,7 +77,7 @@ export const useFetcher = <T extends Source>(Fetcher: Fetcher<T>):
           if (options?.withPlannings) {
             if (!sessionRef.current) return result
 
-            const itemsWithPlannings = await appendPlannings({ result, session: sessionRef.current, from, to, indexUrl })
+            const itemsWithPlannings = await withPlannings({ result, session: sessionRef.current, from, to, indexUrl })
 
             setData(itemsWithPlannings)
             return itemsWithPlannings
@@ -116,7 +116,7 @@ function getCurrentDocumentStatus<T extends Source>(obj: T): string {
   return createdValues[0]?.status || defaultStatus
 }
 
-function appendStatus<T extends Source>(result: SearchIndexResult<T>): SearchIndexResult<T> {
+function withStatus<T extends Source>(result: SearchIndexResult<T>): SearchIndexResult<T> {
   return {
     ...result,
     hits: result?.hits?.map((item) => {
@@ -130,7 +130,7 @@ function appendStatus<T extends Source>(result: SearchIndexResult<T>): SearchInd
   }
 }
 
-async function appendPlannings<T extends Source>({ result, session, from, to, indexUrl }: {
+async function withPlannings<T extends Source>({ result, session, from, to, indexUrl }: {
   result: SearchIndexResponse<T>
   session: Session | null
   from: string
