@@ -112,9 +112,9 @@ const FlashDialogContent = ({ menuItem, onDialogClose }: {
   const activeDocument = useActiveDocument({ type: 'Planning' })
   const author = useActiveAuthor() as IDBAuthor
 
-  const document = useMemo(() => {
+  const [document, planning] = useMemo(() => {
     if ([activeDocument, author].includes(undefined)) {
-      return
+      return []
     }
 
     const flashDefaults: Record<string, unknown> = {
@@ -125,22 +125,27 @@ const FlashDialogContent = ({ menuItem, onDialogClose }: {
       flashDefaults.authors = [{ uuid: author.id, name: author.name }]
     }
 
-    if (activeDocument) {
-      flashDefaults.planningItem = {
+    const planning = activeDocument
+      ? {
         uuid: activeDocument?.uuid,
         title: activeDocument?.title
       }
+      : undefined
 
-      const section = (activeDocument?.links as unknown as Record<string, Block[]>)?.['core/section']?.[0]
-      if (section) {
-        flashDefaults.section = {
-          uuid: section.uuid,
-          title: section.title
-        }
+    const section = (activeDocument?.links as unknown as Record<string, Block[]>)?.['core/section']?.[0]
+    if (section) {
+      flashDefaults.section = {
+        uuid: section.uuid,
+        title: section.title
       }
     }
 
-    return createDocument(getTemplate(name), true, { ...flashDefaults })
+    return [
+      createDocument(
+        getTemplate(name), true, { ...flashDefaults }
+      ),
+      planning
+    ]
   }, [name, activeDocument, author])
 
   if (!document) {
@@ -150,6 +155,7 @@ const FlashDialogContent = ({ menuItem, onDialogClose }: {
   return <DocumentView
     id={document[0]}
     document={document[1]}
+    defaultPlanningItem={planning}
     className='p-0 rounded-md'
     asDialog={true}
     onDialogClose={onDialogClose}

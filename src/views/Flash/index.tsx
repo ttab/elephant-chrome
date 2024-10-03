@@ -22,11 +22,10 @@ import { cn } from '@ttab/elephant-ui/utils'
 import { createStateless, StatelessType } from '@/shared/stateless'
 import { useSession } from 'next-auth/react'
 import { Assignees } from '@/components/Assignees'
-import { useRef } from 'react'
+import { useRef, useState } from 'react'
 import { type Planning, Plannings } from '@/lib/index'
 import { convertToISOStringInUTC, getDateTimeBoundaries } from '@/lib/datetime'
-import type { EleBlock } from '@/shared/types'
-import { YBlock } from '@/shared/YBlock'
+import { FlashEditor } from './FlashEditor'
 
 const meta: ViewMetadata = {
   name: 'Flash',
@@ -44,8 +43,16 @@ const meta: ViewMetadata = {
   }
 }
 
+interface DefaultPlanningItem {
+  uuid: string,
+  title: string
+}
 
-export const Flash = (props: ViewProps & { document?: Y.Doc }): JSX.Element => {
+
+export const Flash = (props: ViewProps & {
+  document?: Y.Doc,
+  defaultPlanningItem?: DefaultPlanningItem
+}): JSX.Element => {
   const query = useQuery()
   const documentId = props.id || query.id
 
@@ -53,7 +60,7 @@ export const Flash = (props: ViewProps & { document?: Y.Doc }): JSX.Element => {
     <>
       {documentId
         ? <AwarenessDocument documentId={documentId} document={props.document}>
-          <FlashViewContent {...props} documentId={documentId} />
+          <FlashViewContent {...props} documentId={documentId} defaultPlanningItem={props.defaultPlanningItem} />
         </AwarenessDocument>
         : <></>
       }
@@ -61,17 +68,22 @@ export const Flash = (props: ViewProps & { document?: Y.Doc }): JSX.Element => {
   )
 }
 
-const FlashViewContent = (props: ViewProps & { documentId: string }): JSX.Element | undefined => {
+const FlashViewContent = (props: ViewProps & {
+  documentId: string,
+  defaultPlanningItem?: DefaultPlanningItem
+}): JSX.Element | undefined => {
   const { provider } = useCollaboration()
   const { status, data: session } = useSession()
   const indexUrl = useIndexUrl()
   const planningAwareness = useRef<(value: boolean) => void>(null)
-
-  const [planningItems, setPlanningItems] = useYValue<EleBlock[] | undefined>('links.core/planning-item')
-
-  console.log(provider?.document.toJSON())
-  console.log(planningItems)
-
+  const [selectedOptions, setSelectedOptions] = useState<DefaultValueOption[]>(props.defaultPlanningItem
+    ? [{
+      value: props.defaultPlanningItem.uuid,
+      label: props.defaultPlanningItem.title
+    }]
+    : []
+  )
+  const [title] = useYValue<string | undefined>('title')
   /*
    *  Helper function to search for planning items.
    */
@@ -134,14 +146,6 @@ const FlashViewContent = (props: ViewProps & { documentId: string }): JSX.Elemen
     }
   })
 
-  const [title] = useYValue<string | undefined>('title')
-  const selectedOptions = !planningItems?.length
-    ? []
-    : [{
-      value: planningItems[0].uuid,
-      label: planningItems[0].title
-    }]
-
   return (
     <div className={cn(viewVariants({ asCreateDialog: !!props.asDialog, className: props?.className }))}>
       <div className="grow-0">
@@ -166,75 +170,73 @@ const FlashViewContent = (props: ViewProps & { documentId: string }): JSX.Elemen
 
       <ScrollArea className='grid @5xl:place-content-center'>
         <section className={cn(sectionVariants({ asCreateDialog: !!props?.asDialog }))}>
-          <div className='flex flex-col gap-2 pl-0.5'>
-            <Title
-              autoFocus={props.asDialog}
-              placeholder='Rubrik'
+          <Title
+            autoFocus={props.asDialog}
+            placeholder='Rubrik'
+          />
+
+          <div className="flex flex-row gap-5 items-center">
+            <div>
+              <GanttChartSquareIcon size={18} strokeWidth={1.75} className='text-muted-foreground' />
+            </div>
+
+            <div className="flex flex-row items-center gap-2">
+              <Awareness name="FlashPlanningItem" ref={planningAwareness}>
+                <ComboBox
+                  max={1}
+                  size='xs'
+                  className='max-w-96 truncate justify-start'
+                  selectedOptions={selectedOptions}
+                  placeholder={'Välj planering'}
+                  onOpenChange={(isOpen: boolean) => {
+                    if (planningAwareness?.current) {
+                      planningAwareness.current(isOpen)
+                    }
+                  }}
+                  fetch={fetchAsyncData}
+                  minSearchChars={2}
+                  onSelect={(option) => {
+                    if (option) {
+                      setSelectedOptions([option as DefaultValueOption])
+                    } else {
+                      setSelectedOptions([])
+                    }
+                  }}
+                ></ComboBox>
+              </Awareness>
+
+              {!!setSelectedOptions?.length &&
+                <Button
+                  variant='ghost'
+                  className="text-muted-foreground flex h-7 w-7 p-0 data-[state=open]:bg-muted hover:bg-accent2"
+                  onClick={(e) => {
+                    e.preventDefault()
+                    setSelectedOptions([])
+                  }}
+                >
+                  <CircleXIcon size={18} strokeWidth={1.75} />
+                </Button>
+              }
+            </div>
+          </div>
+
+          <div className="flex flex-row gap-5 items-center">
+            <div className="pt-1">
+              <TagsIcon size={18} strokeWidth={1.75} className='text-muted-foreground' />
+            </div>
+
+            <Section />
+
+            <Assignees
+              path='links.core/author'
+              name='FlashAssignees'
+              placeholder='Byline'
             />
           </div>
+        </section>
 
-          <div className="flex flex-row items-center">
-            <div className="flex flex-row gap-5 items-center">
-              <div>
-                <GanttChartSquareIcon size={18} strokeWidth={1.75} className='text-muted-foreground' />
-              </div>
-
-              <div className="flex flex-row items-center gap-2">
-                <Awareness name="FlashPlanningItem" ref={planningAwareness}>
-                  <ComboBox
-                    max={1}
-                    size='xs'
-                    className='max-w-96 truncate justify-start'
-                    selectedOptions={selectedOptions}
-                    placeholder={'Välj planering'}
-                    onOpenChange={(isOpen: boolean) => {
-                      if (planningAwareness?.current) {
-                        planningAwareness.current(isOpen)
-                      }
-                    }}
-                    fetch={fetchAsyncData}
-                    minSearchChars={2}
-                    onSelect={(option) => {
-                      setPlanningItems(YBlock.create({
-                        type: 'core/planning-item',
-                        uuid: option.value,
-                        title: option.label
-                      }))
-                    }}
-                  ></ComboBox>
-                </Awareness>
-
-                {!!planningItems?.length &&
-                  <Button
-                    variant='ghost'
-                    className="text-muted-foreground flex h-7 w-7 p-0 data-[state=open]:bg-muted hover:bg-accent2"
-                    onClick={(e) => {
-                      e.preventDefault()
-                      setPlanningItems([])
-                    }}
-                  >
-                    <CircleXIcon size={18} strokeWidth={1.75} />
-                  </Button>
-                }
-              </div>
-            </div>
-          </div>
-
-          <div className="flex flex-row items-center">
-            <div className="flex flex-row gap-5 items-center">
-              <div className="pt-1">
-                <TagsIcon size={18} strokeWidth={1.75} className='text-muted-foreground' />
-              </div>
-
-              <Section />
-
-              <Assignees
-                path='links.core/author'
-                name='FlashAssignees'
-                placeholder='Byline'
-              />
-            </div>
-          </div>
+        <section className={cn(sectionVariants({ asCreateDialog: !!props?.asDialog }))}>
+          <FlashEditor />
         </section>
 
         {props.asDialog && (
