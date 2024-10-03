@@ -94,10 +94,11 @@ export const TableProvider = <T,>({
 
   const value = useMemo(() => ({
     table,
+    filters: columnFilters,
     setData,
     loading: !data?.hits?.length,
     command
-  }), [table, data, command])
+  }), [table, data, command, columnFilters])
 
   return (
     <TableContext.Provider value={value}>
