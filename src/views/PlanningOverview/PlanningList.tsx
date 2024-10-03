@@ -15,12 +15,9 @@ export const PlanningList = ({ from, to }: {
   const sections = useSections()
 
 
-  const { mutate, error } = useSWR(['Plannings', from, to])
+  const { mutate, error } = useSWR(['Plannings', from, to, { withStatus: true }])
   const columns = useMemo(() => planningTableColumns({ sections }), [sections])
 
-  if (error) {
-    console.error('Error when fetching PlanningList', error)
-  }
   // FIXME: This should be supported by the useRepositoryEvents hook
   // but isn't working right now. The message goes only to the leader tab
   useRepositoryEvents(
@@ -49,7 +46,6 @@ export const PlanningList = ({ from, to }: {
   if (error) {
     return <pre>{error.message}</pre>
   }
-
 
   return (
     <>

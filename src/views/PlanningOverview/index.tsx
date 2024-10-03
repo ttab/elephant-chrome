@@ -39,10 +39,11 @@ export const Plannings = (): JSX.Element => {
   const sections = useSections()
   const authors = useAuthors()
 
+  const columns = useMemo(() => planningTableColumns({ sections, authors }), [sections, authors])
   const { from, to } = useMemo(() => getDateTimeBoundariesUTC(startDate), [startDate])
 
   return (
-    <TableProvider<PlanningType> columns={planningTableColumns({ sections, authors })}>
+    <TableProvider<PlanningType> columns={columns}>
       <SWRProvider<PlanningType> index={PlanningsIndex}>
         <Tabs defaultValue={currentTab} className='flex-1' onValueChange={setCurrentTab}>
 
