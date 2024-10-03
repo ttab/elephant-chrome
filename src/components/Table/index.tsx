@@ -31,7 +31,7 @@ export const Table = <TData, TValue>({
   const { state, dispatch } = useNavigation()
   const { viewId: origin } = useView()
 
-  const { table } = useTable()
+  const { table, loading } = useTable()
 
   const keyDownHandler = useCallback((evt: KeyboardEvent): void => {
     if (!isActiveView || isEditableTarget(evt)) {
@@ -86,14 +86,14 @@ export const Table = <TData, TValue>({
   const deferredRows = useDeferredValue(table.getRowModel().rows)
 
   const TableBodyElement = useMemo(() => {
-    if (deferredRows?.length === 0) {
+    if (loading || !deferredRows?.length) {
       return (
         <TableRow>
           <TableCell
             colSpan={columns.length}
             className='h-24 text-center'
           >
-            No results.
+            {loading ? 'Laddar...' : 'Inga planeringar funna.'}
           </TableCell>
         </TableRow>
       )
@@ -102,14 +102,14 @@ export const Table = <TData, TValue>({
     return deferredRows.map((row) => {
       return (
         <React.Fragment key={row.id}>
-          <TableRow className='sticky top-0 bg-gray-100 z-10 border-b-2'>
+          <TableRow className='sticky top-0 bg-gray-100 border-b-2'>
             <TableCell colSpan={columns.length - 1} className='pl-6 space-x-2 items-baseline'>
               <span className='font-thin text-gray-500'>Nyhetsvärde</span>
               <span className='inline-flex items-center justify-center w-6 h-6 bg-white text-gray-800 rounded-full ring-1 ring-gray-300 shadow-md'>
                 {row.groupingValue as string}
               </span>
             </TableCell>
-            <TableCell colSpan={1} className='pl-6 flex flex-row space-x-2 items-baseline'>
+            <TableCell colSpan={1} className='px-6 flex flex-row space-x-2 items-baseline'>
               <span className='font-thin text-gray-500'>Antal</span>
               <span className='inline-flex items-center justify-center w-6 h-6 bg-white text-gray-800 rounded-full ring-1 ring-gray-300 shadow-md'>
                 {row.subRows.length}

@@ -96,7 +96,7 @@ export const TableProvider = <T,>({
     table,
     filters: columnFilters,
     setData,
-    loading: !data?.hits?.length,
+    loading: data?.hits === undefined,
     command
   }), [table, data, command, columnFilters])
 
