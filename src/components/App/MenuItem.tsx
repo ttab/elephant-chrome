@@ -118,28 +118,30 @@ const FlashDialogContent = ({ menuItem, onDialogClose }: {
     }
 
     const flashDefaults: Record<string, unknown> = {
-      planningItem: {
-        uuid: activeDocument?.uuid,
-        title: activeDocument?.title
-      }
+      title: activeDocument?.title || ''
     }
 
-    flashDefaults.title = activeDocument?.title || ''
     if (author) {
       flashDefaults.authors = [{ uuid: author.id, name: author.name }]
     }
 
-    const section = (activeDocument?.links as unknown as Record<string, Block[]>)?.['core/section']?.[0]
-    if (section) {
-      flashDefaults.section = {
-        uuid: section.uuid,
-        title: section.title
+    if (activeDocument) {
+      flashDefaults.planningItem = {
+        uuid: activeDocument?.uuid,
+        title: activeDocument?.title
+      }
+
+      const section = (activeDocument?.links as unknown as Record<string, Block[]>)?.['core/section']?.[0]
+      if (section) {
+        flashDefaults.section = {
+          uuid: section.uuid,
+          title: section.title
+        }
       }
     }
 
     return createDocument(getTemplate(name), true, { ...flashDefaults })
   }, [name, activeDocument, author])
-
 
   if (!document) {
     return <></>

@@ -5,10 +5,10 @@ import {
   Section,
   Awareness
 } from '@/components'
-import { DefaultValueOption, type ViewMetadata, type ViewProps } from '@/types'
+import type { DefaultValueOption, ViewMetadata, ViewProps } from '@/types'
 import { NewsvalueMap } from '@/defaults'
 import { Button, ComboBox, ScrollArea, Separator } from '@ttab/elephant-ui'
-import { GanttChartSquareIcon, TagsIcon, ZapIcon } from '@ttab/elephant-ui/icons'
+import { CircleXIcon, GanttChartSquareIcon, TagsIcon, ZapIcon } from '@ttab/elephant-ui/icons'
 import {
   useCollaboration,
   useQuery,
@@ -22,10 +22,10 @@ import { cn } from '@ttab/elephant-ui/utils'
 import { createStateless, StatelessType } from '@/shared/stateless'
 import { useSession } from 'next-auth/react'
 import { Assignees } from '@/components/Assignees'
-import { useRef, useState } from 'react'
-import { Planning, Plannings } from '@/lib/index'
+import { useRef } from 'react'
+import { type Planning, Plannings } from '@/lib/index'
 import { convertToISOStringInUTC, getDateTimeBoundaries } from '@/lib/datetime'
-import { EleBlock } from '@/shared/types'
+import type { EleBlock } from '@/shared/types'
 import { YBlock } from '@/shared/YBlock'
 
 const meta: ViewMetadata = {
@@ -68,7 +68,6 @@ const FlashViewContent = (props: ViewProps & { documentId: string }): JSX.Elemen
   const planningAwareness = useRef<(value: boolean) => void>(null)
 
   const [planningItems, setPlanningItems] = useYValue<EleBlock[] | undefined>('links.core/planning-item')
-  const [selectedOption, setSelectedOption] = useState()
 
   console.log(provider?.document.toJSON())
   console.log(planningItems)
@@ -136,6 +135,12 @@ const FlashViewContent = (props: ViewProps & { documentId: string }): JSX.Elemen
   })
 
   const [title] = useYValue<string | undefined>('title')
+  const selectedOptions = !planningItems?.length
+    ? []
+    : [{
+      value: planningItems[0].uuid,
+      label: planningItems[0].title
+    }]
 
   return (
     <div className={cn(viewVariants({ asCreateDialog: !!props.asDialog, className: props?.className }))}>
@@ -169,44 +174,54 @@ const FlashViewContent = (props: ViewProps & { documentId: string }): JSX.Elemen
           </div>
 
           <div className="flex flex-row items-center">
-            <div className="flex flex-row gap-5">
-              <div className="pt-1">
+            <div className="flex flex-row gap-5 items-center">
+              <div>
                 <GanttChartSquareIcon size={18} strokeWidth={1.75} className='text-muted-foreground' />
               </div>
 
-              <Awareness name="FlashPlanningItem" ref={planningAwareness}>
-                <ComboBox
-                  max={1}
-                  size='xs'
-                  selectedOptions={!planningItems?.length
-                    ? []
-                    : [{
-                      value: planningItems[0].uuid,
-                      label: planningItems[0].title
-                    }]
-                  }
-                  placeholder={'Välj planering'}
-                  onOpenChange={(isOpen: boolean) => {
-                    if (planningAwareness?.current) {
-                      planningAwareness.current(isOpen)
-                    }
-                  }}
-                  fetch={fetchAsyncData}
-                  minSearchChars={2}
-                  onSelect={(option) => {
-                    setPlanningItems(YBlock.create({
-                      type: 'core/planning-item',
-                      uuid: option.value,
-                      title: option.label
-                    }))
-                  }}
-                ></ComboBox>
-              </Awareness>
+              <div className="flex flex-row items-center gap-2">
+                <Awareness name="FlashPlanningItem" ref={planningAwareness}>
+                  <ComboBox
+                    max={1}
+                    size='xs'
+                    className='max-w-96 truncate justify-start'
+                    selectedOptions={selectedOptions}
+                    placeholder={'Välj planering'}
+                    onOpenChange={(isOpen: boolean) => {
+                      if (planningAwareness?.current) {
+                        planningAwareness.current(isOpen)
+                      }
+                    }}
+                    fetch={fetchAsyncData}
+                    minSearchChars={2}
+                    onSelect={(option) => {
+                      setPlanningItems(YBlock.create({
+                        type: 'core/planning-item',
+                        uuid: option.value,
+                        title: option.label
+                      }))
+                    }}
+                  ></ComboBox>
+                </Awareness>
+
+                {!!planningItems?.length &&
+                  <Button
+                    variant='ghost'
+                    className="text-muted-foreground flex h-7 w-7 p-0 data-[state=open]:bg-muted hover:bg-accent2"
+                    onClick={(e) => {
+                      e.preventDefault()
+                      setPlanningItems([])
+                    }}
+                  >
+                    <CircleXIcon size={18} strokeWidth={1.75} />
+                  </Button>
+                }
+              </div>
             </div>
           </div>
 
           <div className="flex flex-row items-center">
-            <div className="flex flex-row gap-5">
+            <div className="flex flex-row gap-5 items-center">
               <div className="pt-1">
                 <TagsIcon size={18} strokeWidth={1.75} className='text-muted-foreground' />
               </div>

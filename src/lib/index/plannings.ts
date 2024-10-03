@@ -33,40 +33,38 @@ const search = async (endpoint: URL, accessToken: string, params?: SearchPlannin
   const textCriteria = !params?.where?.text
     ? undefined
     : {
-      bool: {
-        should: [
-          {
-            prefix: {
-              'document.title': {
-                value: params.where.text,
-                "boost": 2
+        bool: {
+          should: [
+            {
+              prefix: {
+                'document.title': {
+                  value: params.where.text,
+                  boost: 2
+                }
+              }
+            },
+            {
+              prefix: {
+                'document.rel.section.title': {
+                  value: params.where.text
+                }
               }
             }
-          },
-          {
-            prefix: {
-              'document.rel.section.title': {
-                value: params.where.text
-              }
-            }
-          }
-        ]
+          ]
+        }
       }
-    }
 
   const query = {
     query: {
       bool: {
-        must: [
-          {
-            range: {
-              'document.meta.core_planning_item.data.start_date': {
-                gte: start.toISOString(),
-                lte: end.toISOString()
-              }
+        must: [{
+          range: {
+            'document.meta.core_planning_item.data.start_date': {
+              gte: start.toISOString(),
+              lte: end.toISOString()
             }
           }
-        ]
+        }]
       }
     },
     _source: true,
@@ -78,6 +76,7 @@ const search = async (endpoint: URL, accessToken: string, params?: SearchPlannin
   }
 
   if (textCriteria) {
+    // @ts-expect-error We don't have types for opensearch queries
     query.query.bool.must.push(textCriteria)
   }
 
