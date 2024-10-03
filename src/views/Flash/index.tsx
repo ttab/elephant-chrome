@@ -7,14 +7,9 @@ import {
 } from '@/components'
 import type { DefaultValueOption, ViewMetadata, ViewProps } from '@/types'
 import { NewsvalueMap } from '@/defaults'
-import { Button, ComboBox, ScrollArea, Separator } from '@ttab/elephant-ui'
-import { CircleXIcon, GanttChartSquareIcon, TagsIcon, ZapIcon } from '@ttab/elephant-ui/icons'
-import {
-  useCollaboration,
-  useQuery,
-  useYValue,
-  useIndexUrl
-} from '@/hooks'
+import { Button, ComboBox, ScrollArea, Separator, Alert, AlertTitle, AlertDescription } from '@ttab/elephant-ui'
+import { CircleXIcon, GanttChartSquareIcon, TagsIcon, ZapIcon, Circle, InfoIcon } from '@ttab/elephant-ui/icons'
+import { useCollaboration, useQuery, useYValue, useIndexUrl } from '@/hooks'
 
 import type * as Y from 'yjs'
 import { cva } from 'class-variance-authority'
@@ -137,11 +132,11 @@ const FlashViewContent = (props: ViewProps & {
     }
   })
 
-  const sectionVariants = cva('overscroll-auto @5xl:w-[1024px] space-y-5', {
+  const sectionVariants = cva('overscroll-auto @5xl:w-[1024px] space-y-4', {
     variants: {
       asCreateDialog: {
-        false: 'p-8',
-        true: 'p-6'
+        false: 'px-8',
+        true: 'px-6'
       }
     }
   })
@@ -169,75 +164,91 @@ const FlashViewContent = (props: ViewProps & {
       </div>
 
       <ScrollArea className='grid @5xl:place-content-center'>
-        <section className={cn(sectionVariants({ asCreateDialog: !!props?.asDialog }))}>
-          <Title
-            autoFocus={props.asDialog}
-            placeholder='Rubrik'
-          />
-
-          <div className="flex flex-row gap-5 items-center">
-            <div>
-              <GanttChartSquareIcon size={18} strokeWidth={1.75} className='text-muted-foreground' />
+        <div className="space-y-5 py-5">
+          <section className={cn(sectionVariants({ asCreateDialog: !!props?.asDialog }))}>
+            <div className="ps-1">
+              <Title
+                autoFocus={props.asDialog}
+                placeholder='Rubrik'
+              />
             </div>
 
-            <div className="flex flex-row items-center gap-2">
-              <Awareness name="FlashPlanningItem" ref={planningAwareness}>
-                <ComboBox
-                  max={1}
-                  size='xs'
-                  className='max-w-96 truncate justify-start'
-                  selectedOptions={selectedOptions}
-                  placeholder={'Välj planering'}
-                  onOpenChange={(isOpen: boolean) => {
-                    if (planningAwareness?.current) {
-                      planningAwareness.current(isOpen)
-                    }
-                  }}
-                  fetch={fetchAsyncData}
-                  minSearchChars={2}
-                  onSelect={(option) => {
-                    if (option) {
-                      setSelectedOptions([option as DefaultValueOption])
-                    } else {
+            <div className="flex flex-row gap-5 items-center">
+              <div>
+                <GanttChartSquareIcon size={18} strokeWidth={1.75} className='text-muted-foreground' />
+              </div>
+
+              <div className="flex flex-row items-center gap-2">
+                <Awareness name="FlashPlanningItem" ref={planningAwareness}>
+                  <ComboBox
+                    max={1}
+                    size='xs'
+                    className='max-w-96 truncate justify-start'
+                    selectedOptions={selectedOptions}
+                    placeholder={'Välj planering'}
+                    onOpenChange={(isOpen: boolean) => {
+                      if (planningAwareness?.current) {
+                        planningAwareness.current(isOpen)
+                      }
+                    }}
+                    fetch={fetchAsyncData}
+                    minSearchChars={2}
+                    onSelect={(option) => {
+                      if (option) {
+                        setSelectedOptions([option as DefaultValueOption])
+                      } else {
+                        setSelectedOptions([])
+                      }
+                    }}
+                  ></ComboBox>
+                </Awareness>
+
+                {!!setSelectedOptions?.length &&
+                  <Button
+                    variant='ghost'
+                    className="text-muted-foreground flex h-7 w-7 p-0 data-[state=open]:bg-muted hover:bg-accent2"
+                    onClick={(e) => {
+                      e.preventDefault()
                       setSelectedOptions([])
-                    }
-                  }}
-                ></ComboBox>
-              </Awareness>
-
-              {!!setSelectedOptions?.length &&
-                <Button
-                  variant='ghost'
-                  className="text-muted-foreground flex h-7 w-7 p-0 data-[state=open]:bg-muted hover:bg-accent2"
-                  onClick={(e) => {
-                    e.preventDefault()
-                    setSelectedOptions([])
-                  }}
-                >
-                  <CircleXIcon size={18} strokeWidth={1.75} />
-                </Button>
-              }
-            </div>
-          </div>
-
-          <div className="flex flex-row gap-5 items-center">
-            <div className="pt-1">
-              <TagsIcon size={18} strokeWidth={1.75} className='text-muted-foreground' />
+                    }}
+                  >
+                    <CircleXIcon size={18} strokeWidth={1.75} />
+                  </Button>
+                }
+              </div>
             </div>
 
-            <Section />
+            <div className="flex flex-row gap-5 items-center">
+              <div className="pt-1">
+                <TagsIcon size={18} strokeWidth={1.75} className='text-muted-foreground' />
+              </div>
 
-            <Assignees
-              path='links.core/author'
-              name='FlashAssignees'
-              placeholder='Byline'
-            />
-          </div>
-        </section>
+              <Section />
 
-        <section className={cn(sectionVariants({ asCreateDialog: !!props?.asDialog }))}>
-          <FlashEditor />
-        </section>
+              <Assignees
+                path='links.core/author'
+                name='FlashAssignees'
+                placeholder='Byline'
+              />
+            </div>
+          </section>
+
+          <section className={cn(sectionVariants({ asCreateDialog: !!props?.asDialog }), 'px-0')}>
+            <FlashEditor />
+          </section>
+
+          <section className={cn(sectionVariants({ asCreateDialog: !!props?.asDialog }))}>
+            <Alert>
+              <InfoIcon size={18} strokeWidth={1.75} className='text-muted-foreground' />
+              <AlertDescription>
+                {!selectedOptions?.length
+                  ? <>Väljer du ingen planering kommer en ny planering med tillhörande uppdrag skapas åt dig.</>
+                  : <>Denna flash kommer läggas i ett nytt uppdrag i den valda planeringen</>
+                }
+              </AlertDescription>
+            </Alert>
+          </section>
+        </div>
 
         {props.asDialog && (
           <div>
@@ -267,7 +278,7 @@ const FlashViewContent = (props: ViewProps & {
           </div>)}
 
       </ScrollArea>
-    </div>
+    </div >
   )
 }
 

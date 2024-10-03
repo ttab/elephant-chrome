@@ -17,7 +17,7 @@ export const FlashEditor = (): JSX.Element => {
     <Textbit.Root
       plugins={plugins.map(initPlugin => initPlugin())}
       placeholders="multiple"
-      className="border p-6 rounded-md pl-1.5"
+      className="border-y"
     >
       {!!provider && synced
         ? <EditorContent provider={provider} user={user} />
@@ -163,7 +163,7 @@ function EditorContent({ provider, user }: {
 
   return (
     <div className='w-full'>
-      <Textbit.Editable yjsEditor={yjsEditor} className="w-full outline-none h-full dark:text-slate-100">
+      <Textbit.Editable yjsEditor={yjsEditor} className="w-full outline-none h-full dark:text-slate-100 py-5">
         <DropMarker className="h-[3px] rounded bg-blue-400/75 dark:bg-blue-500/75 data-[state='between']:block" />
         <ToolbarMenu />
         <Textbit.Gutter className="w-14">
