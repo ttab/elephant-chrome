@@ -7,8 +7,8 @@ import {
 } from '@/components'
 import type { DefaultValueOption, ViewMetadata, ViewProps } from '@/types'
 import { NewsvalueMap } from '@/defaults'
-import { Button, ComboBox, ScrollArea, Separator, Alert, AlertTitle, AlertDescription } from '@ttab/elephant-ui'
-import { CircleXIcon, GanttChartSquareIcon, TagsIcon, ZapIcon, Circle, InfoIcon } from '@ttab/elephant-ui/icons'
+import { Button, ComboBox, ScrollArea, Separator, Alert, AlertDescription } from '@ttab/elephant-ui'
+import { CircleXIcon, GanttChartSquareIcon, TagsIcon, ZapIcon, InfoIcon } from '@ttab/elephant-ui/icons'
 import { useCollaboration, useQuery, useYValue, useIndexUrl } from '@/hooks'
 
 import type * as Y from 'yjs'
@@ -238,7 +238,7 @@ const FlashViewContent = (props: ViewProps & {
           </section>
 
           <section className={cn(sectionVariants({ asCreateDialog: !!props?.asDialog }))}>
-            <Alert>
+            <Alert className='bg-gray-50'>
               <InfoIcon size={18} strokeWidth={1.75} className='text-muted-foreground' />
               <AlertDescription>
                 {!selectedOptions?.length

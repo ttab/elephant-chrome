@@ -1,6 +1,6 @@
 import { useCollaboration } from '@/hooks'
 import { Bold, Italic, Text, OrderedList, UnorderedList } from '@ttab/textbit-plugins'
-import Textbit, { DropMarker, Menu, type PluginRegistryAction, Toolbar, usePluginRegistry, useTextbit } from '@ttab/textbit'
+import Textbit, { DropMarker, Menu, type PluginRegistryAction, Toolbar, usePluginRegistry } from '@ttab/textbit'
 import { type HocuspocusProvider } from '@hocuspocus/provider'
 import { type AwarenessUserData } from '@/contexts/CollaborationProvider'
 import { type PropsWithChildren, useEffect, useMemo } from 'react'
@@ -171,22 +171,5 @@ function EditorContent({ provider, user }: {
         </Textbit.Gutter>
       </Textbit.Editable>
     </div>
-  )
-}
-
-function Footer(): JSX.Element {
-  const { words, characters } = useTextbit()
-
-  return (
-    <footer className="flex line font-sans h-14 border-t text-sm p-3 pr-8 text-right gap-4 justify-end items-center">
-      <div className="flex gap-2">
-        <strong>Ord:</strong>
-        <span>{words}</span>
-      </div>
-      <div className="flex gap-2">
-        <strong>Tecken:</strong>
-        <span>{characters}</span>
-      </div>
-    </footer>
   )
 }
