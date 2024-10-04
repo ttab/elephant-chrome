@@ -43,7 +43,7 @@ export const ModalProvider = ({ children }: PropsWithChildren): JSX.Element => {
         */}
       {isVisible && (
         <Dialog modal={false} open={isVisible}>
-          <DialogContent className="p-0">
+          <DialogContent className="p-0 w-[94vw]">
             {modalContent}
           </DialogContent>
         </Dialog>
