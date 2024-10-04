@@ -82,18 +82,19 @@ export const Table = <TData, TValue>({
   }, [table, onRowSelected])
 
   // Needed for the useMemo to refresh when new data is set in the table
-  // Defer to previous table untill ready
+  // Defer to previous table and loading state until ready, reduces flickering
   const deferredRows = useDeferredValue(table.getRowModel().rows)
+  const deferredLoading = useDeferredValue(loading)
 
   const TableBodyElement = useMemo(() => {
-    if (loading || !deferredRows?.length) {
+    if (deferredLoading || !deferredRows?.length) {
       return (
         <TableRow>
           <TableCell
             colSpan={columns.length}
             className='h-24 text-center'
           >
-            {loading ? 'Laddar...' : 'Inga planeringar funna.'}
+            {deferredLoading ? 'Laddar...' : 'Inga planeringar funna.'}
           </TableCell>
         </TableRow>
       )
@@ -102,18 +103,22 @@ export const Table = <TData, TValue>({
     return deferredRows.map((row) => {
       return (
         <React.Fragment key={row.id}>
-          <TableRow className='sticky top-0 bg-gray-100 border-b-2'>
-            <TableCell colSpan={columns.length - 1} className='pl-6 space-x-2 items-baseline'>
-              <span className='font-thin text-gray-500'>Nyhetsvärde</span>
-              <span className='inline-flex items-center justify-center w-6 h-6 bg-white text-gray-800 rounded-full ring-1 ring-gray-300 shadow-md'>
-                {row.groupingValue as string}
-              </span>
-            </TableCell>
-            <TableCell colSpan={1} className='px-6 flex flex-row space-x-2 items-baseline'>
-              <span className='font-thin text-gray-500'>Antal</span>
-              <span className='inline-flex items-center justify-center w-6 h-6 bg-white text-gray-800 rounded-full ring-1 ring-gray-300 shadow-md'>
-                {row.subRows.length}
-              </span>
+          <TableRow className='w-full sticky top-0 bg-muted'>
+            <TableCell colSpan={columns.length} className='pl-6'>
+              <div className='flex justify-between items-center'>
+                <div className='flex items-center space-x-2'>
+                  <span className='font-thin text-muted-foreground'>Nyhetsvärde</span>
+                  <span className='inline-flex items-center justify-center w-6 h-6 bg-background rounded-full ring-1 ring-gray-300 shadow-md'>
+                    {row.groupingValue as string}
+                  </span>
+                </div>
+                <div className='flex items-center space-x-2 px-6'>
+                  <span className='font-thin text-muted-foreground'>Antal</span>
+                  <span className='inline-flex items-center justify-center w-6 h-6 bg-background rounded-full ring-1 ring-gray-300 shadow-md'>
+                    {row.subRows.length}
+                  </span>
+                </div>
+              </div>
             </TableCell>
           </TableRow>
           {row.subRows.map((subRow) => (
@@ -163,7 +168,7 @@ export const Table = <TData, TValue>({
         </React.Fragment>
       )
     })
-  }, [deferredRows, columns.length, onRowSelected, dispatch, state.viewRegistry, type, origin])
+  }, [deferredRows, columns.length, onRowSelected, dispatch, state.viewRegistry, type, origin, deferredLoading])
 
 
   return (
@@ -171,7 +176,7 @@ export const Table = <TData, TValue>({
       <Toolbar table={table} />
       <_Table className='table-auto w-full relative'>
 
-        <TableBody className='table-auto w-full relative'>
+        <TableBody>
           {TableBodyElement}
         </TableBody>
       </_Table>
