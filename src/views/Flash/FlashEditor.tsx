@@ -163,7 +163,7 @@ function EditorContent({ provider, user }: {
 
   return (
     <div className='w-full'>
-      <Textbit.Editable yjsEditor={yjsEditor} className="w-full outline-none h-full max-h-[40vh] overflow-y-scroll dark:text-slate-100 py-5">
+      <Textbit.Editable yjsEditor={yjsEditor} className="w-full outline-none h-full min-h-[20vh] max-h-[40vh] overflow-y-scroll dark:text-slate-100 py-5">
         <DropMarker className="h-[3px] rounded bg-blue-400/75 dark:bg-blue-500/75 data-[state='between']:block" />
         <ToolbarMenu />
         <Textbit.Gutter className="w-14">

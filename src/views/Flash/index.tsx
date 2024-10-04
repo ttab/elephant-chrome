@@ -21,6 +21,7 @@ import { useRef, useState } from 'react'
 import { type Planning, Plannings } from '@/lib/index'
 import { convertToISOStringInUTC, getDateTimeBoundaries } from '@/lib/datetime'
 import { FlashEditor } from './FlashEditor'
+import { useCollaborationDocument } from '@/hooks/useCollaborationDocument'
 
 const meta: ViewMetadata = {
   name: 'Flash',
@@ -79,9 +80,9 @@ const FlashViewContent = (props: ViewProps & {
     : []
   )
   const [title] = useYValue<string | undefined>('title')
-  /*
-   *  Helper function to search for planning items.
-   */
+  const { document: planningDocument } = useCollaborationDocument({ documentId: selectedOptions?.[0]?.value })
+
+  //  Helper function to search for planning items.
   const fetchAsyncData = async (str: string): Promise<DefaultValueOption[]> => {
     if (!session || !indexUrl) {
       return []
@@ -194,11 +195,7 @@ const FlashViewContent = (props: ViewProps & {
                     fetch={fetchAsyncData}
                     minSearchChars={2}
                     onSelect={(option) => {
-                      if (option) {
-                        setSelectedOptions([option as DefaultValueOption])
-                      } else {
-                        setSelectedOptions([])
-                      }
+                      setSelectedOptions(option ? [option as DefaultValueOption] : [])
                     }}
                   ></ComboBox>
                 </Awareness>
@@ -259,6 +256,10 @@ const FlashViewContent = (props: ViewProps & {
                 if (props?.onDialogClose) {
                   props.onDialogClose(props.documentId, title)
                 }
+
+                // TODO: Use planningDocument and add assignment and flash
+
+                // TODO: Open planningDocument in a new view
 
                 if (provider && status === 'authenticated') {
                   provider.sendStateless(
