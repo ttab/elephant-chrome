@@ -1,7 +1,14 @@
-import React, { type MouseEvent, useEffect, useCallback, useMemo, useDeferredValue } from 'react'
+import React, {
+  type MouseEvent,
+  useEffect,
+  useCallback,
+  useMemo,
+  useDeferredValue
+} from 'react'
 import {
   type ColumnDef,
-  flexRender
+  flexRender,
+  type Row
 } from '@tanstack/react-table'
 
 import {
@@ -33,12 +40,36 @@ export const Table = <TData, TValue>({
 
   const { table, loading } = useTable()
 
+  const handleOpen = useCallback((event: MouseEvent<HTMLTableRowElement> | KeyboardEvent, subRow: Row<unknown>): void => {
+    setTimeout(() => {
+      subRow.toggleSelected(!subRow.getIsSelected())
+    }, 0)
+
+    const target = event.target as HTMLElement
+    if (target && 'dataset' in target && !target.dataset.rowAction) {
+      if (!onRowSelected) {
+        return
+      }
+
+      handleLink({
+        event,
+        dispatch,
+        viewItem: state.viewRegistry.get(type),
+        viewRegistry: state.viewRegistry,
+        // @ts-expect-error unknown type
+        props: { id: subRow.original._id },
+        viewId: crypto.randomUUID(),
+        origin
+      })
+    }
+  }, [dispatch, state.viewRegistry, onRowSelected, origin, type])
+
   const keyDownHandler = useCallback((evt: KeyboardEvent): void => {
     if (!isActiveView || isEditableTarget(evt)) {
       return
     }
 
-    if (!table || !['ArrowDown', 'ArrowUp', 'Escape'].includes(evt.key)) {
+    if (!table || !['ArrowDown', 'ArrowUp', 'Escape', 'Enter'].includes(evt.key)) {
       return
     }
 
@@ -48,20 +79,28 @@ export const Table = <TData, TValue>({
       return
     }
 
-    const selectedRows = table.getSelectedRowModel()
-    const selectedRow = selectedRows?.rows[0]
+    const selectedRows = table.getGroupedSelectedRowModel()
+    const selectedRow = selectedRows?.flatRows[0]
+
+    const subRows = rows.flatMap(row => [...row.subRows])
+
+    if (evt.key === 'Enter') {
+      if (!selectedRow) return
+
+      handleOpen(evt, selectedRow)
+    }
 
     if (evt.key === 'Escape') {
       selectedRow?.toggleSelected(false)
     } else if (!selectedRow) {
-      const idx = evt.key === 'ArrowDown' ? 0 : rows.length - 1
-      rows[idx].toggleSelected(true)
+      const idx = evt.key === 'ArrowDown' ? 0 : subRows.length - 1
+      subRows[idx].toggleSelected(true)
     } else {
       const nextIdx = selectedRow.index + (evt.key === 'ArrowDown' ? 1 : -1)
-      const idx = nextIdx < 0 ? rows.length - 1 : nextIdx >= rows.length ? 0 : nextIdx
-      rows[idx].toggleSelected(true)
+      const idx = nextIdx < 0 ? subRows.length - 1 : nextIdx >= subRows.length ? 0 : nextIdx
+      subRows[idx].toggleSelected(true)
     }
-  }, [table, isActiveView])
+  }, [table, isActiveView, handleOpen])
 
   useEffect(() => {
     if (!onRowSelected) {
@@ -94,7 +133,10 @@ export const Table = <TData, TValue>({
             colSpan={columns.length}
             className='h-24 text-center'
           >
-            {deferredLoading ? 'Laddar...' : 'Inga planeringar funna.'}
+            {deferredLoading
+              ? 'Laddar...'
+              : 'Inga planeringar funna.'
+            }
           </TableCell>
         </TableRow>
       )
@@ -126,29 +168,8 @@ export const Table = <TData, TValue>({
               key={subRow.id}
               className='cursor-default'
               data-state={subRow.getIsSelected() && 'selected'}
-              onClick={<T extends HTMLElement>(event: MouseEvent<T>) => {
-                // @ts-expect-error unknown
-                if (!event.nativeEvent.target?.dataset?.rowAction) {
-                  if (!onRowSelected) {
-                    return
-                  }
-
-                  handleLink({
-                    event,
-                    dispatch,
-                    viewItem: state.viewRegistry.get(type),
-                    viewRegistry: state.viewRegistry,
-                    // @ts-expect-error unknown type
-                    props: { id: subRow.original._id },
-                    viewId: crypto.randomUUID(),
-                    origin
-                  })
-                }
-                setTimeout(() => {
-                  subRow.toggleSelected(!subRow.getIsSelected())
-                }, 0)
-              }}
-              >
+              onClick={(event: MouseEvent<HTMLTableRowElement>) => handleOpen(event, subRow) }
+            >
               {subRow.getVisibleCells().map((cell) => {
                 return <TableCell
                   key={cell.id}
@@ -168,7 +189,7 @@ export const Table = <TData, TValue>({
         </React.Fragment>
       )
     })
-  }, [deferredRows, columns.length, onRowSelected, dispatch, state.viewRegistry, type, origin, deferredLoading])
+  }, [deferredRows, columns.length, deferredLoading, handleOpen])
 
 
   return (

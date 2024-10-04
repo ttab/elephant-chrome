@@ -1,4 +1,4 @@
-import type { KeyboardEvent, MouseEvent } from 'react'
+import type { MouseEvent } from 'react'
 import {
   NavigationActionType,
   type NavigationAction,
@@ -10,8 +10,8 @@ import {
 import { toQueryString } from './toQueryString'
 import { minimumSpaceRequired } from '@/navigation/lib'
 
-interface LinkClick<T> {
-  event?: MouseEvent<T> | KeyboardEvent<T>
+interface LinkClick {
+  event?: MouseEvent<Element> | KeyboardEvent
   dispatch: React.Dispatch<NavigationAction>
   viewItem: ViewRegistryItem
   viewRegistry: ViewRegistry
@@ -21,7 +21,7 @@ interface LinkClick<T> {
   onDocumentCreated?: () => void
 }
 
-export function handleLink<T>({
+export function handleLink({
   event,
   dispatch,
   viewItem,
@@ -30,7 +30,7 @@ export function handleLink<T>({
   viewId,
   origin,
   onDocumentCreated
-}: LinkClick<T>): void {
+}: LinkClick): void {
   if (event?.ctrlKey || event?.metaKey) {
     return
   }
@@ -59,6 +59,7 @@ export function handleLink<T>({
   }
 
   event?.preventDefault()
+  event?.stopPropagation()
 
 
   // Remove what does not fit

@@ -35,6 +35,8 @@ export interface TableProviderState<TData> {
   setData: Dispatch<SearchIndexResponse<TData>>
   loading: boolean
   command: CommandArgs
+  filters: ColumnFiltersState
+  selectedRow: Record<string, boolean>
 }
 
 const initialState = {
@@ -80,6 +82,7 @@ export const TableProvider = <T,>({
     },
     enableRowSelection: true,
     enableMultiRowSelection: false,
+    enableSubRowSelection: true,
     onRowSelectionChange: setRowSelection,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
@@ -95,10 +98,11 @@ export const TableProvider = <T,>({
   const value = useMemo(() => ({
     table,
     filters: columnFilters,
+    selectedRow: rowSelection,
     setData,
     loading: data?.hits === undefined,
     command
-  }), [table, data, command, columnFilters])
+  }), [table, data, command, columnFilters, rowSelection])
 
   return (
     <TableContext.Provider value={value}>
