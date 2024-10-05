@@ -67,6 +67,10 @@ export const Table = <TData, TValue>({
     }
   }, [dispatch, state.viewRegistry, onRowSelected, origin, type])
 
+  const scrollToRow = useCallback((rowId: string) => {
+    rowRefs.current.get(rowId)?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  }, [rowRefs])
+
   const keyDownHandler = useCallback((evt: KeyboardEvent): void => {
     if (!isActiveView || isEditableTarget(evt)) {
       return
@@ -100,7 +104,7 @@ export const Table = <TData, TValue>({
 
       // Set selected row and scroll into view
       subRows[idx].toggleSelected(true)
-      rowRefs.current.get(subRows[idx].id)?.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
+      scrollToRow(subRows[idx].id)
     } else {
       // Get next row
       const nextIdx = selectedRow.index + (evt.key === 'ArrowDown' ? 1 : -1)
@@ -108,9 +112,9 @@ export const Table = <TData, TValue>({
 
       // Set selected row and scroll into view
       subRows[idx].toggleSelected(true)
-      rowRefs.current.get(subRows[idx].id)?.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
+      scrollToRow(subRows[idx].id)
     }
-  }, [table, isActiveView, handleOpen])
+  }, [table, isActiveView, handleOpen, scrollToRow])
 
   useEffect(() => {
     if (!onRowSelected) {
@@ -177,7 +181,7 @@ export const Table = <TData, TValue>({
           {row.subRows.map((subRow) => (
             <TableRow
               key={subRow.id}
-              className='cursor-default'
+              className='cursor-default scroll-mt-10'
               data-state={subRow.getIsSelected() && 'selected'}
               onClick={(event: MouseEvent<HTMLTableRowElement>) => handleOpen(event, subRow) }
               ref={(el) => {
