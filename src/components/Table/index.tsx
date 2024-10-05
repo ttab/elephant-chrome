@@ -68,7 +68,7 @@ export const Table = <TData, TValue>({
   }, [dispatch, state.viewRegistry, onRowSelected, origin, type])
 
   const scrollToRow = useCallback((rowId: string) => {
-    rowRefs.current.get(rowId)?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    rowRefs.current.get(rowId)?.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
   }, [rowRefs])
 
   const keyDownHandler = useCallback((evt: KeyboardEvent): void => {
