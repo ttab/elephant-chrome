@@ -3,7 +3,8 @@ import React, {
   useEffect,
   useCallback,
   useMemo,
-  useDeferredValue
+  useDeferredValue,
+  useRef
 } from 'react'
 import {
   type ColumnDef,
@@ -39,6 +40,8 @@ export const Table = <TData, TValue>({
   const { viewId: origin } = useView()
 
   const { table, loading } = useTable()
+
+  const rowRefs = useRef<Map<string, HTMLTableRowElement>>(new Map())
 
   const handleOpen = useCallback((event: MouseEvent<HTMLTableRowElement> | KeyboardEvent, subRow: Row<unknown>): void => {
     setTimeout(() => {
@@ -94,11 +97,18 @@ export const Table = <TData, TValue>({
       selectedRow?.toggleSelected(false)
     } else if (!selectedRow) {
       const idx = evt.key === 'ArrowDown' ? 0 : subRows.length - 1
+
+      // Set selected row and scroll into view
       subRows[idx].toggleSelected(true)
+      rowRefs.current.get(subRows[idx].id)?.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
     } else {
+      // Get next row
       const nextIdx = selectedRow.index + (evt.key === 'ArrowDown' ? 1 : -1)
       const idx = nextIdx < 0 ? subRows.length - 1 : nextIdx >= subRows.length ? 0 : nextIdx
+
+      // Set selected row and scroll into view
       subRows[idx].toggleSelected(true)
+      rowRefs.current.get(subRows[idx].id)?.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
     }
   }, [table, isActiveView, handleOpen])
 
@@ -170,6 +180,13 @@ export const Table = <TData, TValue>({
               className='cursor-default'
               data-state={subRow.getIsSelected() && 'selected'}
               onClick={(event: MouseEvent<HTMLTableRowElement>) => handleOpen(event, subRow) }
+              ref={(el) => {
+                if (el) {
+                  rowRefs.current.set(subRow.id, el)
+                } else {
+                  rowRefs.current.delete(subRow.id)
+                }
+              }}
             >
               {subRow.getVisibleCells().map((cell) => {
                 return <TableCell
