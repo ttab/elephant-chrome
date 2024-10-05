@@ -145,9 +145,9 @@ export const Table = <TData, TValue>({
     return deferredRows.map((row) => {
       return (
         <React.Fragment key={row.id}>
-          <TableRow className='w-full sticky top-0 bg-muted'>
+          <TableRow className='sticky top-0 bg-muted'>
             <TableCell colSpan={columns.length} className='pl-6'>
-              <div className='flex justify-between items-center'>
+              <div className='flex justify-between items-center flex-wrap'>
                 <div className='flex items-center space-x-2'>
                   <span className='font-thin text-muted-foreground'>Nyhetsvärde</span>
                   <span className='inline-flex items-center justify-center w-6 h-6 bg-background rounded-full ring-1 ring-gray-300 shadow-md'>
@@ -163,6 +163,7 @@ export const Table = <TData, TValue>({
               </div>
             </TableCell>
           </TableRow>
+
           {row.subRows.map((subRow) => (
             <TableRow
               key={subRow.id}
