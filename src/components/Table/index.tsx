@@ -215,7 +215,7 @@ export const Table = <TData, TValue>({
 
 
   return (
-    <div className='h-screen w-screen'>
+    <>
       <Toolbar table={table} />
       <_Table className='table-auto w-full relative'>
 
@@ -223,6 +223,6 @@ export const Table = <TData, TValue>({
           {TableBodyElement}
         </TableBody>
       </_Table>
-    </div>
+    </>
   )
 }

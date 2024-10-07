@@ -65,7 +65,7 @@ export const Plannings = (): JSX.Element => {
                   tab={currentTab}
                   startDate={startDate}
                   setStartDate={setStartDate}
-              />
+                />
               </ViewHeader.Content>
 
               <ViewHeader.Action />
