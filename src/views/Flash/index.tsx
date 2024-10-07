@@ -9,9 +9,9 @@ import type { DefaultValueOption, ViewMetadata, ViewProps } from '@/types'
 import { NewsvalueMap } from '@/defaults'
 import { Button, ComboBox, ScrollArea, Separator, Alert, AlertDescription } from '@ttab/elephant-ui'
 import { CircleXIcon, GanttChartSquareIcon, TagsIcon, ZapIcon, InfoIcon } from '@ttab/elephant-ui/icons'
-import { useCollaboration, useQuery, useYValue, useIndexUrl } from '@/hooks'
+import { useCollaboration, useQuery, useYValue, useIndexUrl, useRegistry } from '@/hooks'
 
-import type * as Y from 'yjs'
+import * as Y from 'yjs'
 import { cva } from 'class-variance-authority'
 import { cn } from '@ttab/elephant-ui/utils'
 import { createStateless, StatelessType } from '@/shared/stateless'
@@ -19,9 +19,15 @@ import { useSession } from 'next-auth/react'
 import { Assignees } from '@/components/Assignees'
 import { useRef, useState } from 'react'
 import { type Planning, Plannings } from '@/lib/index'
-import { convertToISOStringInUTC, getDateTimeBoundaries } from '@/lib/datetime'
+import { convertToISOStringInTimeZone, convertToISOStringInUTC, getDateTimeBoundaries } from '@/lib/datetime'
 import { FlashEditor } from './FlashEditor'
 import { useCollaborationDocument } from '@/hooks/useCollaborationDocument'
+import { getValueByYPath } from '@/lib/yUtils'
+import { YBlock } from '@/shared/YBlock'
+import { toYMap } from '../../../src-srv/utils/transformations/lib/toYMap'
+import { createDocument } from '@/lib/createYItem'
+import * as Templates from '@/defaults/templates'
+import { isYMap } from '@/lib/isType'
 
 const meta: ViewMetadata = {
   name: 'Flash',
@@ -71,6 +77,7 @@ const FlashViewContent = (props: ViewProps & {
   const { provider } = useCollaboration()
   const { status, data: session } = useSession()
   const indexUrl = useIndexUrl()
+  const { timeZone } = useRegistry()
   const planningAwareness = useRef<(value: boolean) => void>(null)
   const [selectedOptions, setSelectedOptions] = useState<DefaultValueOption[]>(props.defaultPlanningItem
     ? [{
@@ -80,7 +87,13 @@ const FlashViewContent = (props: ViewProps & {
     : []
   )
   const [title] = useYValue<string | undefined>('title')
-  const { document: planningDocument } = useCollaborationDocument({ documentId: selectedOptions?.[0]?.value })
+
+  const { document: planningDocument } = useCollaborationDocument({
+    documentId: selectedOptions?.[0]?.value,
+    initialDocument: !selectedOptions?.[0]?.value
+      ? createDocument(Templates.planning, true, {})[1]
+      : undefined
+  })
 
   //  Helper function to search for planning items.
   const fetchAsyncData = async (str: string): Promise<DefaultValueOption[]> => {
@@ -184,7 +197,7 @@ const FlashViewContent = (props: ViewProps & {
                   <ComboBox
                     max={1}
                     size='xs'
-                    className='max-w-96 truncate justify-start'
+                    className='max-w-46 truncate justify-start'
                     selectedOptions={selectedOptions}
                     placeholder={'Välj planering'}
                     onOpenChange={(isOpen: boolean) => {
@@ -252,16 +265,12 @@ const FlashViewContent = (props: ViewProps & {
             <Separator className='ml-0' />
             <div className='flex justify-end px-6 py-4'>
               <Button onClick={(): void => {
-                // Get the id, post it, and open it in a view?
                 if (props?.onDialogClose) {
                   props.onDialogClose(props.documentId, title)
                 }
 
-                // TODO: Use planningDocument and add assignment and flash
-
-                // TODO: Open planningDocument in a new view
-
                 if (provider && status === 'authenticated') {
+                  // First and foremost we persist the flash
                   provider.sendStateless(
                     createStateless(StatelessType.IN_PROGRESS, {
                       state: false,
@@ -271,16 +280,107 @@ const FlashViewContent = (props: ViewProps & {
                       }
                     })
                   )
+
+                  // Next we add it to an assignment in a planning.
+                  // We won't let errors interfere with the publishing of the flash.
+                  try {
+                    if (planningDocument) {
+                      const planningId = addFlashToPlanning(provider.document, planningDocument, timeZone)
+
+                      provider.sendStateless(
+                        createStateless(StatelessType.IN_PROGRESS, {
+                          state: false,
+                          id: planningId,
+                          context: {
+                            accessToken: session.accessToken
+                          }
+                        })
+                      )
+
+                    } else {
+                      throw new Error(`Failed adding flash ${props.documentId} - ${title} to a planning`)
+                    }
+                  } catch (err) {
+                    console.error(err)
+                  }
                 }
               }}>
                 Skapa flash
               </Button>
             </div>
-          </div>)}
+          </div>)
+        }
 
-      </ScrollArea>
+      </ScrollArea >
     </div >
   )
 }
 
 Flash.meta = meta
+
+function addFlashToPlanning(flashDoc: Y.Doc, planningDoc: Y.Doc, timeZone: string): string {
+  const flash = flashDoc.getMap('ele') as Y.Map<unknown>
+  const [flashId] = getValueByYPath<string>(flash, 'root.uuid')
+  const [flashTitle] = getValueByYPath<string>(flash, 'root.title')
+  const [flashSection] = getValueByYPath<Y.Map<unknown>>(flash, 'links.core/section[0]')
+
+  const planning = planningDoc.getMap('ele') as Y.Map<unknown>
+  const [planningTitle, planningRoot] = getValueByYPath<string>(planning, 'root.title')
+  const [planningLinks] = getValueByYPath<Y.Map<Y.Array<unknown>>>(planning, 'links')
+
+  if (!flashId || !flashTitle || !flashSection) {
+    throw new Error('Id, title and section is missing on new flash')
+  }
+
+  if (!isYMap(planningRoot)) {
+    throw new Error('Planning document is faulty, no root Y.Map exists')
+  }
+
+  // If no planning title exists this is a new planning
+  if (!planningTitle) {
+    (planningRoot as Y.Map<unknown>).set('title', flashTitle)
+
+    const planningSections = new Y.Array()
+    planningSections.push([flashSection.clone()])
+    planningLinks?.set('core/section', planningSections)
+  }
+
+  // Create assignment
+  const dt = new Date()
+  const eleAssignment = YBlock.create({
+    id: crypto.randomUUID(),
+    type: 'core/assignment',
+    title: flashTitle,
+    data: {
+      full_day: 'false',
+      start_date: convertToISOStringInTimeZone(dt, timeZone).slice(0, 10),
+      end_date: convertToISOStringInTimeZone(dt, timeZone).slice(0, 10),
+      public: 'true',
+      publish: convertToISOStringInTimeZone(dt, timeZone)
+    },
+    meta: [{
+      type: 'core/assignment-type',
+      value: 'flash'
+    }],
+    links: [{
+      type: 'core/flash',
+      rel: 'flash',
+      uuid: flashId
+    }]
+  })
+
+  const yAssignment = toYMap(eleAssignment as unknown as Record<string, unknown>)
+
+  const [yAssignments] = getValueByYPath(planning, 'meta.core/assignment')
+  if (yAssignments) {
+    (yAssignments as Y.Array<Y.Map<unknown>>).push([yAssignment])
+  } else {
+    const yMeta = planning.get('meta') as Y.Map<unknown>
+    const newYAssignments = new Y.Array()
+
+    newYAssignments.push([yAssignment])
+    yMeta.set('core/assignment', newYAssignments)
+  }
+
+  return getValueByYPath<string>(planning, 'root.uuid')?.[0] || ''
+}
