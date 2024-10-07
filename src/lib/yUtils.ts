@@ -23,11 +23,11 @@ export function getValueByYPath<T>(yRoot: Y.Map<unknown> | undefined, path: YPat
     return [undefined, undefined]
   }
 
-  const lastIndex = path.length - 1
+  const lastIndex = yPath.length - 1
   let parent: YParent = yRoot
 
-  for (let i = 0; i < path.length; i++) {
-    const key = path[i]
+  for (let i = 0; i < yPath.length; i++) {
+    const key = yPath[i]
     let current: unknown
 
     if (isYArray(parent) && isNumber(key)) {
@@ -42,7 +42,7 @@ export function getValueByYPath<T>(yRoot: Y.Map<unknown> | undefined, path: YPat
     }
 
     if (i === lastIndex) {
-      // We're done, we've reached the endpoint of the path
+      // We're done, we've reached the endpoint of the yPath
       return [
         (!raw && (isYContainer(current) || isYXmlText(current))) ? current.toJSON() as T : current as T,
         parent
