@@ -8,9 +8,6 @@ interface SearchIndexOptions {
 export interface SearchIndexResult<T> {
   ok: boolean
   total: number
-  page: number
-  pages: number
-  pageSize: number
   hits: T[]
 }
 

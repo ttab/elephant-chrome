@@ -15,8 +15,6 @@ interface SearchEventsParams {
 }
 
 export const search = async (endpoint: URL, accessToken: string, params?: SearchEventsParams): Promise<SearchIndexResponse<Event>> => {
-  const start = params?.where?.start ? new Date(params.where.start) : new Date()
-  const end = params?.where?.end ? new Date(params.where.end) : new Date()
   const sort: Array<Record<string, 'asc' | 'desc'>> = []
 
   if (params?.sort?.start && ['asc', 'desc'].includes(params.sort.start)) {
@@ -36,8 +34,8 @@ export const search = async (endpoint: URL, accessToken: string, params?: Search
           {
             range: {
               'document.meta.core_event.data.start': {
-                gte: start.toISOString(),
-                lte: end.toISOString()
+                gte: params?.where?.start,
+                lte: params?.where?.end
               }
             }
           }
@@ -59,14 +57,34 @@ export const search = async (endpoint: URL, accessToken: string, params?: Search
     sort
   }
 
-  return await searchIndex(
-    query,
-    {
-      index: 'core_event',
-      endpoint,
-      accessToken
-    },
-    params?.skip,
-    params?.size
-  )
+  const allResults: Event[] = []
+  let skip = 0
+  const size = params?.size || 100 // Default size if not provided
+
+  while (true) {
+    const response: SearchIndexResponse<Event> = await searchIndex(
+      query,
+      {
+        index: 'core_event',
+        endpoint,
+        accessToken
+      },
+      skip,
+      size
+    )
+
+    allResults.push(...response.hits)
+
+    if (response.hits.length < size) {
+      break
+    }
+
+    skip += size
+  }
+
+  return {
+    hits: allResults,
+    total: allResults.length,
+    ok: true
+  }
 }

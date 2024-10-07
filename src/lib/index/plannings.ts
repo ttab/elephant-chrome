@@ -50,16 +50,37 @@ const search = async (endpoint: URL, accessToken: string, params?: SearchPlannin
     sort
   }
 
-  return await searchIndex(
-    query,
-    {
-      index: 'core_planning_item',
-      endpoint,
-      accessToken
-    },
-    params?.page,
-    params?.size
-  )
+  const allResults: Planning[] = []
+  let page = 1
+  const size = params?.size || 100
+
+  while (true) {
+    const response: SearchIndexResponse<Planning> = await searchIndex(
+      query,
+      {
+        index: 'core_planning_item',
+        endpoint,
+        accessToken
+      },
+      page,
+      size
+    )
+
+
+    allResults.push(...response.hits)
+
+    if (response.hits.length < size) {
+      break
+    }
+
+    page += 1
+  }
+
+  return {
+    hits: allResults,
+    total: allResults.length,
+    ok: true
+  }
 }
 
 export const Plannings = {
