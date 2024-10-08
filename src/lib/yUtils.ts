@@ -12,6 +12,7 @@ export type YPath = Array<string | number>
  *
  * @param yRoot Y.Map - Root yMap, can be undefined to make it simpler to call without checking the value first (i.e provider.document.getMap('ele'))
  * @param path string - Path in dot notation from yRoot including the index or property
+ * @param raw boolean | undefined - Optionally return raw yjs value, default is false
  */
 export function getValueByYPath<T>(yRoot: Y.Map<unknown> | undefined, path: YPath | string, raw: boolean = false): [T | undefined, YParent] {
   if (!yRoot?.doc) {

@@ -10,6 +10,7 @@ import { NewsvalueMap } from '@/defaults'
 import { Button, ComboBox, ScrollArea, Separator, Alert, AlertDescription } from '@ttab/elephant-ui'
 import { CircleXIcon, GanttChartSquareIcon, TagsIcon, ZapIcon, InfoIcon } from '@ttab/elephant-ui/icons'
 import { useCollaboration, useQuery, useYValue, useIndexUrl, useRegistry } from '@/hooks'
+import { type PartialMessage } from '@protobuf-ts/runtime'
 
 import * as Y from 'yjs'
 import { cva } from 'class-variance-authority'
@@ -28,6 +29,7 @@ import { toYMap } from '../../../src-srv/utils/transformations/lib/toYMap'
 import { createDocument } from '@/lib/createYItem'
 import * as Templates from '@/defaults/templates'
 import { isYMap } from '@/lib/isType'
+import { Block } from '@ttab/elephant-api/newsdoc'
 
 const meta: ViewMetadata = {
   name: 'Flash',
@@ -282,7 +284,6 @@ const FlashViewContent = (props: ViewProps & {
                   )
 
                   // Next we add it to an assignment in a planning.
-                  // We won't let errors interfere with the publishing of the flash.
                   try {
                     if (planningDocument) {
                       const planningId = addFlashToPlanning(provider.document, planningDocument, timeZone)
@@ -301,6 +302,7 @@ const FlashViewContent = (props: ViewProps & {
                       throw new Error(`Failed adding flash ${props.documentId} - ${title} to a planning`)
                     }
                   } catch (err) {
+                    // We won't let errors interfere with the publishing of the flash.
                     console.error(err)
                   }
                 }
@@ -322,11 +324,13 @@ function addFlashToPlanning(flashDoc: Y.Doc, planningDoc: Y.Doc, timeZone: strin
   const flash = flashDoc.getMap('ele') as Y.Map<unknown>
   const [flashId] = getValueByYPath<string>(flash, 'root.uuid')
   const [flashTitle] = getValueByYPath<string>(flash, 'root.title')
+
+  // FIXME: Should this be raw=true?
   const [flashSection] = getValueByYPath<Y.Map<unknown>>(flash, 'links.core/section[0]')
 
   const planning = planningDoc.getMap('ele') as Y.Map<unknown>
   const [planningTitle, planningRoot] = getValueByYPath<string>(planning, 'root.title')
-  const [planningLinks] = getValueByYPath<Y.Map<Y.Array<unknown>>>(planning, 'links')
+
 
   if (!flashId || !flashTitle || !flashSection) {
     throw new Error('Id, title and section is missing on new flash')
@@ -342,36 +346,51 @@ function addFlashToPlanning(flashDoc: Y.Doc, planningDoc: Y.Doc, timeZone: strin
 
     const planningSections = new Y.Array()
     planningSections.push([flashSection.clone()])
+
+    const [planningLinks] = getValueByYPath<Y.Map<Y.Array<unknown>>>(planning, 'links', true)
     planningLinks?.set('core/section', planningSections)
   }
 
   // Create assignment
   const dt = new Date()
+  const zuluISODate = `${new Date().toISOString().split('.')[0]}Z` // Remove ms, add Z back again
+  const localISODateTime = convertToISOStringInTimeZone(dt, timeZone).slice(0, 10)
+
   const eleAssignment = YBlock.create({
     id: crypto.randomUUID(),
     type: 'core/assignment',
     title: flashTitle,
     data: {
       full_day: 'false',
-      start_date: convertToISOStringInTimeZone(dt, timeZone).slice(0, 10),
-      end_date: convertToISOStringInTimeZone(dt, timeZone).slice(0, 10),
+      start_date: localISODateTime,
+      end_date: localISODateTime,
+      start: zuluISODate,
+      end: zuluISODate,
       public: 'true',
-      publish: convertToISOStringInTimeZone(dt, timeZone)
+      publish: zuluISODate
     },
-    meta: [{
-      type: 'core/assignment-type',
-      value: 'flash'
-    }],
+    meta: [
+      {
+        type: 'core/assignment-type',
+        value: 'flash'
+      },
+      {
+        type: 'core/description',
+        data: {
+          text: ''
+        }
+      }
+    ],
     links: [{
       type: 'core/flash',
-      rel: 'flash',
+      rel: 'deliverable',
       uuid: flashId
     }]
   })
 
-  const yAssignment = toYMap(eleAssignment as unknown as Record<string, unknown>)
+  const yAssignment = toYMap(eleAssignment[0] as unknown as Record<string, unknown>)
 
-  const [yAssignments] = getValueByYPath(planning, 'meta.core/assignment')
+  const [yAssignments] = getValueByYPath(planning, 'meta.core/assignment', true)
   if (yAssignments) {
     (yAssignments as Y.Array<Y.Map<unknown>>).push([yAssignment])
   } else {
@@ -380,6 +399,13 @@ function addFlashToPlanning(flashDoc: Y.Doc, planningDoc: Y.Doc, timeZone: strin
 
     newYAssignments.push([yAssignment])
     yMeta.set('core/assignment', newYAssignments)
+  }
+
+  // Add authors
+  const [links] = getValueByYPath<Y.Map<unknown>>(yAssignment, 'links', true)
+  const [flashAuthors] = getValueByYPath<Y.Array<unknown>>(flash, 'links.core/author', true)
+  if (links && flashAuthors) {
+    links.set('core/author', flashAuthors.clone())
   }
 
   return getValueByYPath<string>(planning, 'root.uuid')?.[0] || ''
