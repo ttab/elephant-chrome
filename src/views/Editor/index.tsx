@@ -31,7 +31,7 @@ import { EditorHeader } from './EditorHeader'
 import { type HocuspocusProvider } from '@hocuspocus/provider'
 import { type AwarenessUserData } from '@/contexts/CollaborationProvider'
 import { type YXmlText } from 'node_modules/yjs/dist/src/internals'
-import { articleDocumentTemplate } from '@/lib/templates/articleDocumentTemplate'
+import { articleDocumentTemplate } from '@/defaults/templates/articleDocumentTemplate'
 import { createDocument } from '@/lib/createYItem'
 
 const meta: ViewMetadata = {

@@ -4,9 +4,9 @@ import { MessageCircleMore } from '@ttab/elephant-ui/icons'
 import { cn } from '@ttab/elephant-ui/utils'
 import { AssignmentType } from '@/components/DataItem/AssignmentType'
 import { useYValue } from '@/hooks/useYValue'
-import { Assignees } from './AssignmentAssignees'
 import { AssignmentTime } from '@/components/AssignmentTime'
 import { useKeydownGlobal } from '@/hooks/useKeydownGlobal'
+import { Assignees } from '@/components/Assignees'
 import { type Block } from '@ttab/elephant-api/newsdoc'
 
 export const Assignment = ({ index, onAbort, onClose, className }: {
@@ -73,13 +73,14 @@ export const Assignment = ({ index, onAbort, onClose, className }: {
             path={`meta.core/assignment[${index}].meta.core/assignment-type`}
             editable={inProgress}
           />
-          <Assignees path={`meta.core/assignment[${index}].links.core/author`} />
-
+          <Assignees
+            name="AssignmentAssignees"
+            path={`meta.core/assignment[${index}].links.core/author`}
+            placeholder='Lägg till uppdragstagare'
+          />
           <AssignmentTime
             index={index}
           />
-
-          {/* <Clock10Icon size={20} strokeWidth={1.75} /> */}
         </div>
 
         <div className='flex items-center justify-end gap-4'>

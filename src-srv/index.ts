@@ -91,6 +91,7 @@ export async function runServer(): Promise<string> {
 
   connectRouteHandlers(app, routes, {
     repository,
+    cache,
     collaborationServer
   })
 

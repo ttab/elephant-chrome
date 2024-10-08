@@ -7,12 +7,12 @@ import React, { type PropsWithChildren, useState } from 'react'
 import { useKeydownGlobal } from '@/hooks/useKeydownGlobal'
 import { createDocument } from '@/lib/createYItem'
 import * as Views from '@/views'
-import * as templates from '@/lib/templates'
+import * as Templates from '@/defaults/templates'
 import { type View } from '@/types/index'
 import { type Document } from '@ttab/elephant-api/newsdoc'
 import { type TemplatePayload } from '@/lib/createYItem'
 
-export type Template = keyof typeof templates
+export type Template = keyof typeof Templates
 
 export const CreateDocumentDialog = ({ type, payload, children, mutator }: PropsWithChildren<{
   type: View
@@ -30,7 +30,7 @@ export const CreateDocumentDialog = ({ type, payload, children, mutator }: Props
   const Document = type && Views[type]
 
   return (
-    <Dialog open={!!document[0]} >
+    <Dialog open={!!document[0]}>
       <DialogTrigger asChild>
         {React.isValidElement<{
           onClick?: (event: React.MouseEvent<HTMLElement>) => Promise<void>
@@ -41,7 +41,9 @@ export const CreateDocumentDialog = ({ type, payload, children, mutator }: Props
               if (type) {
                 setDocument(
                   createDocument(
-                    getTemplate(type), true, payload
+                    getTemplate(type),
+                    true,
+                    payload
                   )
                 )
               }
@@ -55,7 +57,7 @@ export const CreateDocumentDialog = ({ type, payload, children, mutator }: Props
             id={document[0]}
             document={document[1]}
             className='p-0 rounded-md'
-            asCreateDialog
+            asDialog
             onDialogClose={(id, title: string = 'Untitled') => {
               setDocument([undefined, undefined])
 
@@ -77,9 +79,9 @@ export const CreateDocumentDialog = ({ type, payload, children, mutator }: Props
 function getTemplate(type: View): (id: string) => Document {
   switch (type) {
     case 'Planning':
-      return templates.planning
+      return Templates.planning
     case 'Event':
-      return templates.event
+      return Templates.event
     default:
       throw new Error(`No template for ${type}`)
   }

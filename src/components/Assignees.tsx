@@ -2,37 +2,36 @@ import { Awareness } from '@/components'
 import { ComboBox } from '@ttab/elephant-ui'
 import { useAuthors } from '@/hooks/useAuthors'
 import { useYValue } from '@/hooks/useYValue'
-import { Block } from '@ttab/elephant-api/newsdoc'
 import { UserPlus } from '@ttab/elephant-ui/icons'
 import { useRef } from 'react'
 
 import { AssigneeAvatars } from '@/components/DataItem/AssigneeAvatars'
+import { YBlock } from '@/shared/YBlock'
+import type { EleBlock } from '@/shared/types'
 
-export const Assignees = ({ path }: {
+export const Assignees = ({ path, name, placeholder }: {
+  name: string
+  placeholder: string
   path: string
 }): JSX.Element | undefined => {
   const allAuthors = useAuthors().map((_) => {
     return {
       value: _.id,
-      label: _.title
+      label: _.name
     }
   })
-
-  const [assignees, setAssignees] = useYValue<Block[]>(path)
-
+  const [assignees, setAssignees] = useYValue<EleBlock[]>(path)
   const selectedOptions = ((assignees || [])?.map(a => {
     return {
       value: a.uuid,
       label: a.name
     }
   }))
-
   const setFocused = useRef<(value: boolean) => void>(null)
-  const placeholder = 'Lägg till uppdragstagare'
 
   return (
     <div className="flex gap-2 items-center">
-      <Awareness name='AssignmentAssignees' ref={setFocused}>
+      <Awareness name={name} ref={setFocused}>
         <ComboBox
           variant={'ghost'}
           size='xs'
@@ -46,18 +45,18 @@ export const Assignees = ({ path }: {
             }
           }}
           onSelect={(option) => {
-            const selectedAuthor = selectedOptions.findIndex(sa => sa.value === option.value)
+            const selectedAssignee = selectedOptions.findIndex(sa => sa.value === option.value)
 
-            if (selectedAuthor > -1) {
+            if (selectedAssignee > -1) {
               setAssignees((assignees || []).filter(a => a.uuid !== option.value))
             } else {
-              setAssignees([...(assignees || []), Block.create({
+              setAssignees([...(assignees || []), YBlock.create({
                 type: 'core/author',
                 uuid: option.value,
                 name: option.label,
                 rel: 'assignee',
                 role: 'primary'
-              })
+              })[0]
               ])
             }
           }}
