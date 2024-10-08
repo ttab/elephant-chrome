@@ -164,13 +164,13 @@ export const Table = <TData, TValue>({
               <div className='flex justify-between items-center flex-wrap'>
                 <div className='flex items-center space-x-2'>
                   <span className='font-thin text-muted-foreground'>Nyhetsvärde</span>
-                  <span className='inline-flex items-center justify-center w-6 h-6 bg-background rounded-full ring-1 ring-gray-300 shadow-md'>
+                  <span className='inline-flex items-center justify-center size-5 bg-background rounded-full ring-1 ring-gray-300'>
                     {row.groupingValue as string}
                   </span>
                 </div>
                 <div className='flex items-center space-x-2 px-6'>
                   <span className='font-thin text-muted-foreground'>Antal</span>
-                  <span className='inline-flex items-center justify-center w-6 h-6 bg-background rounded-full ring-1 ring-gray-300 shadow-md'>
+                  <span className='inline-flex items-center justify-center size-5 bg-background rounded-full ring-1 ring-gray-300'>
                     {row.subRows.length}
                   </span>
                 </div>
