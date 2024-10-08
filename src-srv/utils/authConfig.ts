@@ -1,5 +1,5 @@
 import { type AuthConfig } from '@auth/core'
-import { type JWTPayload } from 'jose'
+import { decodeJwt, type JWTPayload } from 'jose'
 import Keycloak from '@auth/express/providers/keycloak'
 
 const scopes = [
@@ -67,18 +67,15 @@ export const authConfig: AuthConfig = {
     async session({ session, token }) {
       return {
         ...session,
-        ...token,
-        user: {
-          ...token.user as Record<string, unknown>,
-          id: token.id as string
-        },
-        accessToken: token.accessToken,
-        error: token.error
+        ...token
       }
     },
     async jwt({ token, user, account }) {
       // First time user is logging in
       if (account && user) {
+        if (account.access_token) {
+          user.sub = decodeJwt(account.access_token).sub
+        }
         return {
           accessToken: account.access_token,
           accessTokenExpires: Date.now() + (150) * 1000,

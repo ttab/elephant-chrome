@@ -232,6 +232,12 @@ export class CollaborationServer {
     const msg = parseStateless(payload.payload)
 
     if (msg.type === StatelessType.IN_PROGRESS && !msg.message.state) {
+      const userTrackerConnection = await this.#server.openDirectConnection(
+        msg.message.context.user.sub, { ...msg.message.context, agent: 'server' }
+      ).catch(ex => {
+        throw new Error('acquire connection', { cause: ex })
+      })
+
       const connection = await this.#server.openDirectConnection(
         msg.message.id, { ...msg.message.context, agent: 'server' }
       ).catch(ex => {
@@ -264,6 +270,18 @@ export class CollaborationServer {
         msg.message.context.accessToken,
         msg.message.context
       )
+
+      userTrackerConnection.transact(doc => {
+        const documents = doc.getMap('documents')
+        if (!documents.get('plannings')) {
+          documents.set('plannings', new Y.Array())
+        }
+
+        const plannings = documents.get('plannings') as Y.Array<unknown>
+        plannings.push([msg.message.id])
+      }).catch(ex => {
+        throw new Error('error', { cause: ex })
+      })
     }
   }
 
@@ -390,6 +408,7 @@ export class CollaborationServer {
    * tracker document. Or increase the number of times the user have this document open.
    */
   async #connected({ documentName, context, socketId }: connectedPayload): Promise<void> {
+    console.log('collaboration server', JSON.stringify(context, null, 2))
     if (!this.#openDocuments || documentName === 'document-tracker') {
       return
     }

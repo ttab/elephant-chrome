@@ -189,7 +189,8 @@ const PlanningViewContent = (props: ViewProps & { documentId: string }): JSX.Ele
                         state: false,
                         id: props.documentId,
                         context: {
-                          accessToken: data.accessToken
+                          accessToken: data.accessToken,
+                          user: data.user
                         }
                       })
                     )

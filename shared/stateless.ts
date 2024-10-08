@@ -19,7 +19,14 @@ const inProgressMessageSchema = z.object({
   state: z.boolean(),
   id: z.string(),
   context: z.object({
-    accessToken: z.string()
+    accessToken: z.string(),
+    user: z.object({
+      name: z.string(),
+      email: z.string(),
+      image: z.string(),
+      id: z.string(),
+      sub: z.string()
+    })
   })
 })
 

@@ -23,6 +23,7 @@ import { useNavigation, useView, useTable } from '@/hooks'
 import { isEditableTarget } from '@/lib/isEditableTarget'
 import { cn } from '@ttab/elephant-ui/utils'
 import { handleLink } from '@/components/Link/lib/handleLink'
+import { NewItems } from './NewItems'
 
 interface TableProps<TData, TValue> {
   columns: Array<ColumnDef<TData, TValue>>
@@ -217,8 +218,8 @@ export const Table = <TData, TValue>({
   return (
     <>
       <Toolbar table={table} />
+      <NewItems />
       <_Table className='table-auto w-full relative'>
-
         <TableBody>
           {TableBodyElement}
         </TableBody>
