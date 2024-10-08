@@ -160,7 +160,7 @@ export const Table = <TData, TValue>({
       return (
         <React.Fragment key={row.id}>
           <TableRow className='sticky top-0 bg-muted'>
-            <TableCell colSpan={columns.length} className='pl-6'>
+            <TableCell colSpan={columns.length} className='pl-6 px-2 py-1'>
               <div className='flex justify-between items-center flex-wrap'>
                 <div className='flex items-center space-x-2'>
                   <span className='font-thin text-muted-foreground'>Nyhetsvärde</span>
