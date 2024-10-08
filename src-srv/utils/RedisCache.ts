@@ -23,6 +23,7 @@ export class RedisCache {
   async get(key: string): Promise<Uint8Array | undefined> {
     const cachedDoc = await this.redisClient?.get(`elc::hp:${key}`)
     if (!cachedDoc) {
+      await this.redisClient?.zAdd('elc::doc_touched', { score: Date.now(), value: key })
       return
     }
 
