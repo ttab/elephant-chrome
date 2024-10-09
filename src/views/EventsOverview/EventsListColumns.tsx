@@ -35,7 +35,7 @@ export function eventTableColumns({ sections = [] }: {
         options: Newsvalues,
         name: 'Nyhetsvärde',
         columnIcon: SignalHigh,
-        className: 'box-content w-4 sm:w-8 pr-1 sm:pr-4'
+        className: 'flex-none'
       },
       accessorFn: (data) => data._source['document.meta.core_newsvalue.value']?.[0],
       cell: ({ row }) => {
@@ -55,7 +55,7 @@ export function eventTableColumns({ sections = [] }: {
       meta: {
         name: 'Slugg',
         columnIcon: Pen,
-        className: 'box-content truncate'
+        className: 'flex-1 w-[400px]'
       },
       accessorFn: (data) => data._source['document.title'][0],
       cell: ({ row }) => {
@@ -81,7 +81,7 @@ export function eventTableColumns({ sections = [] }: {
         ),
         name: 'Sektion',
         columnIcon: Shapes,
-        className: 'box-content w-[115px] hidden @4xl/view:[display:revert]'
+        className: 'flex-none w-[115px] hidden @4xl/view:[display:revert]'
       },
       accessorFn: (data) => data._source['document.rel.section.title']?.[0],
       cell: ({ row }) => {
@@ -103,7 +103,7 @@ export function eventTableColumns({ sections = [] }: {
         options: [{ label: 'Planerad', value: 'planned' }, { label: 'Ej planerad', value: 'unplanned' }],
         name: 'Planeringsstatus',
         columnIcon: NotebookPen,
-        className: 'box-content w-[112px] hidden @5xl/view:[display:revert]'
+        className: 'flex-none w-[112px] hidden @5xl/view:[display:revert]'
       },
       accessorFn: (data) => Array.isArray(data?._relatedPlannings)
         ? 'planned'
@@ -125,7 +125,7 @@ export function eventTableColumns({ sections = [] }: {
         ),
         name: 'Tid',
         columnIcon: Clock3Icon,
-        className: 'box-content w-[112px] hidden @5xl/view:[display:revert]'
+        className: 'flex-none w-[112px] hidden @5xl/view:[display:revert]'
       },
       accessorFn: (data) => {
         const startTime = new Date(data._source['document.meta.core_event.data.start'][0])
@@ -143,7 +143,7 @@ export function eventTableColumns({ sections = [] }: {
       meta: {
         name: 'Action',
         columnIcon: Navigation,
-        className: 'box-content w-[32px]'
+        className: 'flex-none'
       },
       cell: () => {
         return <DotDropdownMenu items={menuItems} />

@@ -273,12 +273,13 @@ export class CollaborationServer {
 
       userTrackerConnection.transact(doc => {
         const documents = doc.getMap('ele')
-        if (!documents.get('plannings')) {
-          documents.set('plannings', new Y.Array())
+        const type = msg.message.context.type
+        if (!documents.get(type)) {
+          documents.set(type, new Y.Array())
         }
 
-        const plannings = documents.get('plannings') as Y.Array<unknown>
-        plannings.push([msg.message.id])
+        const items = documents.get(type) as Y.Array<unknown>
+        items.push([msg.message.id])
       }).catch(ex => {
         throw new Error('error', { cause: ex })
       })

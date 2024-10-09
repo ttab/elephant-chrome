@@ -26,7 +26,8 @@ const inProgressMessageSchema = z.object({
       image: z.string(),
       id: z.string(),
       sub: z.string()
-    })
+    }),
+    type: z.string()
   })
 })
 

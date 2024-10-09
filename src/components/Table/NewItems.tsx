@@ -12,26 +12,35 @@ import { useSession } from 'next-auth/react'
 import { AwarenessDocument } from '../AwarenessDocument'
 import { useLink } from '@/hooks/useLink'
 import { Check, CheckCheck } from '@ttab/elephant-ui/icons'
+import { type View } from '@/types/index'
 
 
-export const NewItems = (): JSX.Element | null => {
+export const NewItems = ({ type, header }: {
+  type: View
+  header: string
+}): JSX.Element | null => {
   const { data } = useSession()
+
   return data?.user.sub
     ? (
       <AwarenessDocument documentId={data?.user.sub}>
-        <NewItemsContent />
+        <NewItemsContent type={type} header={header} />
       </AwarenessDocument>)
     : null
 }
-export const NewItemsContent = (): JSX.Element | null => {
-  const openPlanningView = useLink('Planning')
-  const [plannings, setPlannings] = useYValue<string[]>('plannings')
+
+export const NewItemsContent = ({ type, header }: {
+  type: View
+  header: string
+}): JSX.Element | null => {
+  const openEditingView = useLink(type)
+  const [documentIds, setDocumentIds] = useYValue<string[]>(type)
 
   const { data: documents, error } = useSWR(
-    plannings?.length ? plannings : null,
-    async (plannings: string[]): Promise<EleDocumentResponse[]> => {
-      const results = await Promise.all(plannings.map(async planning => {
-        const response = await fetch(`${process.env.BASE_URL}/api/documents/${planning}`)
+    documentIds?.length ? documentIds : null,
+    async (documentIds: string[]): Promise<EleDocumentResponse[]> => {
+      const results = await Promise.all(documentIds.map(async (id) => {
+        const response = await fetch(`${process.env.BASE_URL}/api/documents/${id}`)
         const result = await response.json()
         return result
       }))
@@ -48,11 +57,11 @@ export const NewItemsContent = (): JSX.Element | null => {
       <TableBody className='[&_tr:last-child]:border-b'>
         <TableRow className='bg-muted'>
           <TableCell colSpan={8} className='flex justify-between items-center px-2 py-1 border-b'>
-            <span className='text-sm font-thin text-muted-foreground'>Dina senaste planeringar</span>
+            <span className='text-sm font-thin text-muted-foreground'>{header}</span>
             <Button
               variant='icon'
               size='xs'
-              onClick={() => setPlannings([])}
+              onClick={() => setDocumentIds([])}
               >
               <CheckCheck size={18} strokeWidth={1.75} />
             </Button>
@@ -71,7 +80,7 @@ export const NewItemsContent = (): JSX.Element | null => {
             <TableRow
               key={index}
               className='flex items-center cursor-default'
-              onClick={(event) => openPlanningView(event, {
+              onClick={(event) => openEditingView(event, {
                 id: document?.uuid
               })}
             >
@@ -101,8 +110,8 @@ export const NewItemsContent = (): JSX.Element | null => {
                   size='xs'
                   onClick={(event) => {
                     event.stopPropagation()
-                    if (plannings?.length) {
-                      setPlannings(plannings.filter((planning) => planning !== document?.uuid))
+                    if (documentIds?.length) {
+                      setDocumentIds(documentIds.filter((id) => id !== document?.uuid))
                     }
                   }}
                   >
