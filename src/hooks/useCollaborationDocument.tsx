@@ -1,9 +1,8 @@
-import { useState, useEffect, useContext } from 'react'
-import { HocuspocusProvider } from '@hocuspocus/provider'
+import { useState, useEffect, useMemo } from 'react'
+import { HocuspocusProvider, HocuspocusProviderWebsocket } from '@hocuspocus/provider'
 import { useSession } from 'next-auth/react'
 import * as Y from 'yjs'
-import { HPWebSocketProviderContext } from '@/contexts'
-import { createStateless, StatelessType } from '@/shared/stateless'
+import { useRegistry } from './useRegistry'
 
 interface UseHocusPocusDocumentProps {
   documentId: string
@@ -17,13 +16,22 @@ interface UseHocusPocusDocumentResult {
 }
 
 export const useCollaborationDocument = ({ documentId, initialDocument }: UseHocusPocusDocumentProps): UseHocusPocusDocumentResult => {
-  const { webSocket } = useContext(HPWebSocketProviderContext)
   const { data: sessionData, status } = useSession()
-
+  const { server: { webSocketUrl } } = useRegistry()
   const [synced, setSynced] = useState<boolean>(false)
   const [connected, setConnected] = useState<boolean>(false)
   const [document, setDocument] = useState<Y.Doc | undefined>(initialDocument)
   const [provider, setProvider] = useState<HocuspocusProvider>()
+
+  // This hook is most often used to edit documents, that might be
+  // open in another view, in a dialog.
+  //
+  // Use a new HP websocket for every document here so we can use
+  // this extra editing without stopping yjs syncing to the already
+  // open collaboration documents.
+  const webSocket = useMemo(() => {
+    return (!webSocketUrl) ? undefined : new HocuspocusProviderWebsocket({ url: webSocketUrl.toString() })
+  }, [webSocketUrl, documentId])
 
   useEffect(() => {
     if (synced && !document) {

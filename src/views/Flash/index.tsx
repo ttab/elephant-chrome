@@ -2,7 +2,6 @@ import {
   AwarenessDocument,
   ViewHeader,
   Title,
-  Section,
   Awareness,
   Byline
 } from '@/components'
@@ -197,7 +196,7 @@ const FlashViewContent = (props: ViewProps & {
                   <ComboBox
                     max={1}
                     size='xs'
-                    className='max-w-46 truncate justify-start'
+                    className='min-w-0 max-w-46 truncate justify-start'
                     selectedOptions={selectedOptions}
                     placeholder={'Välj planering'}
                     onOpenChange={(isOpen: boolean) => {
