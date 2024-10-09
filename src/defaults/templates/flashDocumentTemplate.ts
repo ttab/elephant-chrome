@@ -32,16 +32,9 @@ export function flashDocumentTemplate(id: string, defaults: {
       Block.create({
         type: 'core/text',
         data: {
-          text: `Flash: ${title}` || 'Flash: '
+          text: title || ''
         },
         role: 'heading-1'
-      }),
-      Block.create({
-        type: 'core/text',
-        data: {
-          text: ''
-        },
-        role: 'preamble'
       }),
       Block.create({
         type: 'core/text',
@@ -60,6 +53,7 @@ export function flashDocumentTemplate(id: string, defaults: {
   if (section) {
     doc.links.push(Block.create({
       type: 'core/section',
+      rel: 'section',
       uuid: section.uuid,
       title: section.title
     }))
@@ -71,7 +65,7 @@ export function flashDocumentTemplate(id: string, defaults: {
       rel: 'author',
       role: 'primary',
       uuid: author.uuid,
-      name: author.name
+      title: author.name
     }))
   }
 

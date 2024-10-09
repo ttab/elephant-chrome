@@ -3,21 +3,20 @@ import {
   ViewHeader,
   Title,
   Section,
-  Awareness
+  Awareness,
+  Byline
 } from '@/components'
 import type { DefaultValueOption, ViewMetadata, ViewProps } from '@/types'
 import { NewsvalueMap } from '@/defaults'
 import { Button, ComboBox, ScrollArea, Separator, Alert, AlertDescription } from '@ttab/elephant-ui'
 import { CircleXIcon, GanttChartSquareIcon, TagsIcon, ZapIcon, InfoIcon } from '@ttab/elephant-ui/icons'
 import { useCollaboration, useQuery, useYValue, useIndexUrl, useRegistry } from '@/hooks'
-import { type PartialMessage } from '@protobuf-ts/runtime'
 
 import * as Y from 'yjs'
 import { cva } from 'class-variance-authority'
 import { cn } from '@ttab/elephant-ui/utils'
 import { createStateless, StatelessType } from '@/shared/stateless'
 import { useSession } from 'next-auth/react'
-import { Assignees } from '@/components/Assignees'
 import { useRef, useState } from 'react'
 import { type Planning, Plannings } from '@/lib/index'
 import { convertToISOStringInTimeZone, convertToISOStringInUTC, getDateTimeBoundaries } from '@/lib/datetime'
@@ -29,7 +28,6 @@ import { toYMap } from '../../../src-srv/utils/transformations/lib/toYMap'
 import { createDocument } from '@/lib/createYItem'
 import * as Templates from '@/defaults/templates'
 import { isYMap } from '@/lib/isType'
-import { Block } from '@ttab/elephant-api/newsdoc'
 
 const meta: ViewMetadata = {
   name: 'Flash',
@@ -235,13 +233,7 @@ const FlashViewContent = (props: ViewProps & {
                 <TagsIcon size={18} strokeWidth={1.75} className='text-muted-foreground' />
               </div>
 
-              <Section />
-
-              <Assignees
-                path='links.core/author'
-                name='FlashAssignees'
-                placeholder='Byline'
-              />
+              <Byline name='FlashByline' />
             </div>
           </section>
 
@@ -272,7 +264,10 @@ const FlashViewContent = (props: ViewProps & {
                 }
 
                 if (provider && status === 'authenticated') {
-                  // First and foremost we persist the flash
+                  // First and foremost we persist the flash, it needs an assignment
+                  const assignmentId = crypto.randomUUID()
+                  addAssignmentLinkToFlash(provider.document, assignmentId)
+
                   provider.sendStateless(
                     createStateless(StatelessType.IN_PROGRESS, {
                       state: false,
@@ -286,7 +281,7 @@ const FlashViewContent = (props: ViewProps & {
                   // Next we add it to an assignment in a planning.
                   try {
                     if (planningDocument) {
-                      const planningId = addFlashToPlanning(provider.document, planningDocument, timeZone)
+                      const planningId = addFlashToPlanning(provider.document, planningDocument, assignmentId, timeZone)
 
                       provider.sendStateless(
                         createStateless(StatelessType.IN_PROGRESS, {
@@ -320,12 +315,34 @@ const FlashViewContent = (props: ViewProps & {
 
 Flash.meta = meta
 
-function addFlashToPlanning(flashDoc: Y.Doc, planningDoc: Y.Doc, timeZone: string): string {
+
+function addAssignmentLinkToFlash(flashDoc: Y.Doc, assignmentId: string): void {
+  const flash = flashDoc.getMap('ele') as Y.Map<unknown>
+  const [flashLinks] = getValueByYPath<Y.Map<Y.Array<unknown>>>(flash, 'links', true)
+
+  if (!flashLinks) {
+    throw new Error('Flash document is missing links array, could not create flash')
+  }
+
+  const assignmentLink = toYMap(
+    YBlock.create({
+      type: 'core/assignment',
+      rel: 'assignment',
+      uuid: assignmentId
+    })[0] as unknown as Record<string, unknown>
+  )
+
+  const assignmentLinks = new Y.Array()
+  assignmentLinks.push([assignmentLink])
+  flashLinks.set('core/assignment', assignmentLinks)
+}
+
+
+function addFlashToPlanning(flashDoc: Y.Doc, planningDoc: Y.Doc, assignmentId: string, timeZone: string): string {
   const flash = flashDoc.getMap('ele') as Y.Map<unknown>
   const [flashId] = getValueByYPath<string>(flash, 'root.uuid')
   const [flashTitle] = getValueByYPath<string>(flash, 'root.title')
 
-  // FIXME: Should this be raw=true?
   const [flashSection] = getValueByYPath<Y.Map<unknown>>(flash, 'links.core/section[0]')
 
   const planning = planningDoc.getMap('ele') as Y.Map<unknown>
@@ -351,13 +368,13 @@ function addFlashToPlanning(flashDoc: Y.Doc, planningDoc: Y.Doc, timeZone: strin
     planningLinks?.set('core/section', planningSections)
   }
 
-  // Create assignment
+  // Create assignment (using given assignment id)
   const dt = new Date()
   const zuluISODate = `${new Date().toISOString().split('.')[0]}Z` // Remove ms, add Z back again
   const localISODateTime = convertToISOStringInTimeZone(dt, timeZone).slice(0, 10)
 
   const eleAssignment = YBlock.create({
-    id: crypto.randomUUID(),
+    id: assignmentId,
     type: 'core/assignment',
     title: flashTitle,
     data: {
@@ -401,11 +418,29 @@ function addFlashToPlanning(flashDoc: Y.Doc, planningDoc: Y.Doc, timeZone: strin
     yMeta.set('core/assignment', newYAssignments)
   }
 
-  // Add authors
+  // Add assignees from flash authors
   const [links] = getValueByYPath<Y.Map<unknown>>(yAssignment, 'links', true)
-  const [flashAuthors] = getValueByYPath<Y.Array<unknown>>(flash, 'links.core/author', true)
+  const [flashAuthors] = getValueByYPath<Y.Array<Y.Map<unknown>>>(flash, 'links.core/author', true)
+
   if (links && flashAuthors) {
-    links.set('core/author', flashAuthors.clone())
+    const assignees = new Y.Array() as Y.Array<Y.Map<unknown>>
+    links.set('core/author', assignees)
+
+    flashAuthors.forEach(author => {
+      const eleAssignee = YBlock.create({
+        type: 'core/author',
+        rel: 'assignee',
+        role: 'primary',
+        uuid: author.get('uuid') as string,
+        name: (author.get('title') as Y.XmlText).toJSON() as string, // FIXME: Use title for both when repo schema is fixed
+      })
+
+      const assignee = toYMap(eleAssignee[0] as unknown as Record<string, unknown>)
+
+      assignees.push([assignee])
+    })
+
+
   }
 
   return getValueByYPath<string>(planning, 'root.uuid')?.[0] || ''
