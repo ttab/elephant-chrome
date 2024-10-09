@@ -161,7 +161,7 @@ export const Table = <TData, TValue>({
       return (
         <React.Fragment key={row.id}>
           <TableRow className='sticky top-0 bg-muted'>
-            <TableCell colSpan={columns.length} className='pl-6 px-2 py-1'>
+            <TableCell colSpan={columns.length} className='pl-6 px-2 py-1 border-b'>
               <div className='flex justify-between items-center flex-wrap'>
                 <div className='flex items-center space-x-2'>
                   <span className='font-thin text-muted-foreground'>Nyhetsvärde</span>
@@ -182,7 +182,7 @@ export const Table = <TData, TValue>({
           {row.subRows.map((subRow) => (
             <TableRow
               key={subRow.id}
-              className='cursor-default scroll-mt-10'
+              className='flex items-center cursor-default scroll-mt-10'
               data-state={subRow.getIsSelected() && 'selected'}
               onClick={(event: MouseEvent<HTMLTableRowElement>) => handleOpen(event, subRow) }
               ref={(el) => {
@@ -219,7 +219,7 @@ export const Table = <TData, TValue>({
     <>
       <Toolbar table={table} />
       <NewItems />
-      <_Table className='table-auto w-full relative'>
+      <_Table className='table-auto relative'>
         <TableBody>
           {TableBodyElement}
         </TableBody>

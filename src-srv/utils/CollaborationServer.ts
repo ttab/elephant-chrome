@@ -272,7 +272,7 @@ export class CollaborationServer {
       )
 
       userTrackerConnection.transact(doc => {
-        const documents = doc.getMap('documents')
+        const documents = doc.getMap('ele')
         if (!documents.get('plannings')) {
           documents.set('plannings', new Y.Array())
         }
