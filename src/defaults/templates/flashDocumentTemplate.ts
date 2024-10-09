@@ -42,13 +42,9 @@ export function flashDocumentTemplate(id: string, defaults: {
           text: ''
         }
       })
-    ]
+    ],
+    links: []
   })
-
-  // Create links array if needed
-  if (section || authors?.length) {
-    doc.links = []
-  }
 
   if (section) {
     doc.links.push(Block.create({

@@ -3,9 +3,10 @@ import {
   ViewHeader,
   Title,
   Awareness,
-  Byline
+  Byline,
+  Section
 } from '@/components'
-import type { DefaultValueOption, ViewMetadata, ViewProps } from '@/types'
+import type { DefaultValueOption, ValidateState, ViewMetadata, ViewProps } from '@/types'
 import { NewsvalueMap } from '@/defaults'
 import { Button, ComboBox, ScrollArea, Separator, Alert, AlertDescription } from '@ttab/elephant-ui'
 import { CircleXIcon, GanttChartSquareIcon, TagsIcon, ZapIcon, InfoIcon } from '@ttab/elephant-ui/icons'
@@ -16,7 +17,7 @@ import { cva } from 'class-variance-authority'
 import { cn } from '@ttab/elephant-ui/utils'
 import { createStateless, StatelessType } from '@/shared/stateless'
 import { useSession } from 'next-auth/react'
-import { useRef, useState } from 'react'
+import { useMemo, useRef, useState } from 'react'
 import { type Planning, Plannings } from '@/lib/index'
 import { convertToISOStringInTimeZone, convertToISOStringInUTC, getDateTimeBoundaries } from '@/lib/datetime'
 import { FlashEditor } from './FlashEditor'
@@ -27,6 +28,7 @@ import { toYMap } from '../../../src-srv/utils/transformations/lib/toYMap'
 import { createDocument } from '@/lib/createYItem'
 import * as Templates from '@/defaults/templates'
 import { isYMap } from '@/lib/isType'
+import { ValidationAlert } from '@/components/ValidationAlert'
 
 const meta: ViewMetadata = {
   name: 'Flash',
@@ -86,12 +88,20 @@ const FlashViewContent = (props: ViewProps & {
     : []
   )
   const [title] = useYValue<string | undefined>('title')
+  const [validateForm, setValidateForm] = useState<boolean>(!props.asDialog)
+  const validateStateRef = useRef<ValidateState>({})
+
+  const [newPlanningId, newPlanningYDoc] = useMemo(() => {
+    return createDocument(Templates.planning, true, {})
+  }, [status])
+
+  const { document: newPlanningDocument } = useCollaborationDocument({
+    documentId: newPlanningId,
+    initialDocument: newPlanningYDoc
+  })
 
   const { document: planningDocument } = useCollaborationDocument({
-    documentId: selectedOptions?.[0]?.value,
-    initialDocument: !selectedOptions?.[0]?.value
-      ? createDocument(Templates.planning, true, {})[1]
-      : undefined
+    documentId: selectedOptions?.[0]?.value
   })
 
   //  Helper function to search for planning items.
@@ -154,6 +164,19 @@ const FlashViewContent = (props: ViewProps & {
     }
   })
 
+  const handleValidation = (block: string, label: string, value: string | undefined, reason: string): boolean => {
+    validateStateRef.current = {
+      ...validateStateRef.current,
+      [block]: { label, valid: !!value, reason }
+    }
+
+    if (validateForm) {
+      return !!value
+    }
+
+    return true
+  }
+
   return (
     <div className={cn(viewVariants({ asCreateDialog: !!props.asDialog, className: props?.className }))}>
       <div className="grow-0">
@@ -177,12 +200,15 @@ const FlashViewContent = (props: ViewProps & {
       </div>
 
       <ScrollArea className='grid @5xl:place-content-center'>
+        <ValidationAlert validateStateRef={validateStateRef} />
+
         <div className="space-y-5 py-5">
           <section className={cn(sectionVariants({ asCreateDialog: !!props?.asDialog }))}>
             <div className="ps-1">
               <Title
                 autoFocus={props.asDialog}
                 placeholder='Rubrik'
+                onValidation={handleValidation}
               />
             </div>
 
@@ -227,12 +253,16 @@ const FlashViewContent = (props: ViewProps & {
               </div>
             </div>
 
-            <div className="flex flex-row gap-5 items-center">
+            <div className="flex flex-row gap-5 items-start">
               <div className="pt-1">
                 <TagsIcon size={18} strokeWidth={1.75} className='text-muted-foreground' />
               </div>
 
-              <Byline name='FlashByline' />
+              <Byline name='FlashByline' onValidation={handleValidation} />
+
+              {!!setSelectedOptions?.length &&
+                <Section onValidation={handleValidation} />
+              }
             </div>
           </section>
 
@@ -256,8 +286,19 @@ const FlashViewContent = (props: ViewProps & {
         {props.asDialog && (
           <div>
             <Separator className='ml-0' />
+
             <div className='flex justify-end px-6 py-4'>
               <Button onClick={(): void => {
+                setValidateForm(true)
+
+                if (!Object.values(validateStateRef.current).every((block) => block.valid)) {
+                  return
+                }
+
+                if (!planningDocument && !newPlanningDocument) {
+                  return
+                }
+
                 if (props?.onDialogClose) {
                   props.onDialogClose(props.documentId, title)
                 }
@@ -279,8 +320,13 @@ const FlashViewContent = (props: ViewProps & {
 
                   // Next we add it to an assignment in a planning.
                   try {
-                    if (planningDocument) {
-                      const planningId = addFlashToPlanning(provider.document, planningDocument, assignmentId, timeZone)
+                    if (planningDocument || newPlanningDocument) {
+                      const planningId = addFlashToPlanning(
+                        provider.document,
+                        (planningDocument ?? newPlanningDocument)!,
+                        assignmentId,
+                        timeZone
+                      )
 
                       provider.sendStateless(
                         createStateless(StatelessType.IN_PROGRESS, {
@@ -341,14 +387,14 @@ function addFlashToPlanning(flashDoc: Y.Doc, planningDoc: Y.Doc, assignmentId: s
   const flash = flashDoc.getMap('ele') as Y.Map<unknown>
   const [flashId] = getValueByYPath<string>(flash, 'root.uuid')
   const [flashTitle] = getValueByYPath<string>(flash, 'root.title')
-
-  const [flashSection] = getValueByYPath<Y.Map<unknown>>(flash, 'links.core/section[0]')
+  const [flashSections] = getValueByYPath<Y.Array<unknown>>(flash, 'links.core/section', true)
+  const [flashLinks] = getValueByYPath<Y.Map<unknown>>(flash, 'links', true)
 
   const planning = planningDoc.getMap('ele') as Y.Map<unknown>
   const [planningTitle, planningRoot] = getValueByYPath<string>(planning, 'root.title')
 
 
-  if (!flashId || !flashTitle || !flashSection) {
+  if (!flashId || !flashTitle || (!planningTitle && !flashSections?.length)) {
     throw new Error('Id, title and section is missing on new flash')
   }
 
@@ -360,11 +406,14 @@ function addFlashToPlanning(flashDoc: Y.Doc, planningDoc: Y.Doc, assignmentId: s
   if (!planningTitle) {
     (planningRoot as Y.Map<unknown>).set('title', flashTitle)
 
-    const planningSections = new Y.Array()
-    planningSections.push([flashSection.clone()])
-
+    // Transfer section to planning
     const [planningLinks] = getValueByYPath<Y.Map<Y.Array<unknown>>>(planning, 'links', true)
-    planningLinks?.set('core/section', planningSections)
+    planningLinks?.set('core/section', (flashSections)!.clone())
+  }
+
+  // Make sure flash does not have any section left
+  if (flashLinks?.get('core/section')) {
+    flashLinks?.delete('core/section')
   }
 
   // Create assignment (using given assignment id)
