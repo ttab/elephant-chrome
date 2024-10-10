@@ -15,5 +15,9 @@
         "../shared/index.ts"
       ],
     }
-  }
+  },
+  "include": [
+    "./**/*.ts",
+    "../src/types/next-auth.d.ts"
+  ],
 }

@@ -64,7 +64,6 @@ export async function runServer(): Promise<string> {
 
   }))
   app.use(cookieParser())
-  // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
   app.use(BASE_URL, express.json())
 
   app.use((err: unknown, req: Request, res: Response, next: NextFunction) => {
@@ -138,7 +137,6 @@ export async function runServer(): Promise<string> {
     case 'production': {
       // Catch all other requests and serve bundled app
       app.use(pinoHttp({ logger }))
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       app.use(BASE_URL || '', express.static(distDir))
       app.get('*', (_, res) => {
         res.sendFile(path.join(distDir, 'index.html'))
