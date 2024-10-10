@@ -1,6 +1,6 @@
 import { useCallback, useMemo } from 'react'
 import useSWR from 'swr'
-import { useSections, useRepositoryEvents } from '@/hooks'
+import { useSections } from '@/hooks'
 import {
   type Planning
 } from '@/lib/index'
@@ -15,23 +15,8 @@ export const PlanningList = ({ from, to }: {
   const sections = useSections()
 
 
-  const { mutate, error } = useSWR(['Plannings', from, to, { withStatus: true }])
+  const { error } = useSWR(['Plannings', from, to, { withStatus: true }])
   const columns = useMemo(() => planningTableColumns({ sections }), [sections])
-
-  // FIXME: This should be supported by the useRepositoryEvents hook
-  // but isn't working right now. The message goes only to the leader tab
-  useRepositoryEvents(
-    'core/planning-item',
-    useCallback(() => {
-      void (async () => {
-        try {
-          await mutate()
-        } catch (error) {
-          console.error('Error when mutating Planning list', error)
-        }
-      })()
-    }, [mutate])
-  )
 
   const onRowSelected = useCallback((row?: Planning) => {
     if (row) {

@@ -13,6 +13,8 @@ import { AwarenessDocument } from '../AwarenessDocument'
 import { useLink } from '@/hooks/useLink'
 import { Check, CheckCheck } from '@ttab/elephant-ui/icons'
 import { type View } from '@/types/index'
+import { useRepositoryEvents } from '@/hooks/useRepositoryEvents'
+import { useCallback } from 'react'
 
 
 export const NewItems = ({ type, header }: {
@@ -34,19 +36,45 @@ export const NewItemsContent = ({ type, header }: {
   header: string
 }): JSX.Element | null => {
   const openEditingView = useLink(type)
-  const [documentIds, setDocumentIds] = useYValue<string[]>(type)
+  const [newDocuments = [], setNewDocuments] = useYValue<Array<{
+    id: string
+    timestamp: number
+  }>>(type)
 
-  const { data: documents, error } = useSWR(
-    documentIds?.length ? documentIds : null,
-    async (documentIds: string[]): Promise<EleDocumentResponse[]> => {
-      const results = await Promise.all(documentIds.map(async (id) => {
-        const response = await fetch(`${process.env.BASE_URL}/api/documents/${id}`)
+  const { data: documents, mutate, error } = useSWR(
+    newDocuments?.length ? newDocuments : null,
+    async (newDocuments): Promise<EleDocumentResponse[]> => {
+      const results = await Promise.all(newDocuments.map(async (newDocument) => {
+        const response = await fetch(`${process.env.BASE_URL}/api/documents/${newDocument.id}`)
         const result = await response.json()
         return result
       }))
       return results
     }
   )
+
+  useRepositoryEvents(
+    'core/planning-item',
+    useCallback((event) => {
+      void (async () => {
+        const expiredDocuments = newDocuments?.filter(({ timestamp }) => Date.now() - timestamp > (60000 * 10))
+
+        if (event.event === 'document' &&
+            event.type === 'core/planning-item' &&
+            expiredDocuments.length
+        ) {
+          setNewDocuments(newDocuments?.filter(({ id }) => !expiredDocuments.some(({ id: expiredId }) => expiredId === id)))
+          await mutate()
+        }
+        try {
+          // await mutate()
+        } catch (error) {
+          console.error('Error when mutating Planning list', error)
+        }
+      })()
+    }, [newDocuments, setNewDocuments, mutate])
+  )
+
 
   if (error) return <div>Failed to load</div>
   if (!documents) return null
@@ -61,7 +89,7 @@ export const NewItemsContent = ({ type, header }: {
             <Button
               variant='icon'
               size='xs'
-              onClick={() => setDocumentIds([])}
+              onClick={() => setNewDocuments([])}
               >
               <CheckCheck size={18} strokeWidth={1.75} />
             </Button>
@@ -72,8 +100,8 @@ export const NewItemsContent = ({ type, header }: {
           const { document } = doc
           const newsvalue = document?.meta && NewsvalueMap[document?.meta['core/newsvalue']?.[0]?.value]
           const title = document?.title || ''
-          const slugline = document?.meta['tt/slugline']?.[0]?.value || 'N/A'
-          const section = document?.links['core/section']?.[0]?.title || 'N/A'
+          const slugline = document?.meta['tt/slugline']?.[0]?.value || ''
+          const section = document?.links['core/section']?.[0]?.title
           const visibility = document?.meta['core/planning-item']?.[0]?.data?.public === 'true' ? 'public' : 'internal'
 
           return (
@@ -87,12 +115,16 @@ export const NewItemsContent = ({ type, header }: {
               <TableCell className='flex-none first:pl-2 last:pr-2 sm:first:pl-6 sm:last:pr-6'>
                 {newsvalue && <Newsvalue newsvalue={newsvalue} />}
               </TableCell>
-              <TableCell className='flex-none first:pl-2 last:pr-2 sm:first:pl-6 sm:last:pr-6'>
-                <DocumentStatus status='draft' />
-              </TableCell>
-              <TableCell className='flex-none first:pl-2 last:pr-2 sm:first:pl-6 sm:last:pr-6'>
-                <StatusIndicator visibility={visibility} />
-              </TableCell>
+              {type === 'Planning' && (
+                <>
+                  <TableCell className='flex-none first:pl-2 last:pr-2 sm:first:pl-6 sm:last:pr-6'>
+                    <DocumentStatus status='draft' />
+                  </TableCell>
+                  <TableCell className='flex-none first:pl-2 last:pr-2 sm:first:pl-6 sm:last:pr-6'>
+                    <StatusIndicator visibility={visibility} />
+                  </TableCell>
+                </>)
+              }
               <TableCell className='flex-1 w-[300px]'>
                 <Title title={title} slugline={slugline} />
 
@@ -110,8 +142,8 @@ export const NewItemsContent = ({ type, header }: {
                   size='xs'
                   onClick={(event) => {
                     event.stopPropagation()
-                    if (documentIds?.length) {
-                      setDocumentIds(documentIds.filter((id) => id !== document?.uuid))
+                    if (newDocuments?.length) {
+                      setNewDocuments(newDocuments.filter(({ id }) => id !== document?.uuid))
                     }
                   }}
                   >

@@ -279,7 +279,7 @@ export class CollaborationServer {
         }
 
         const items = documents.get(type) as Y.Array<unknown>
-        items.push([msg.message.id])
+        items.push([{ id: msg.message.id, timestamp: Date.now() }])
       }).catch(ex => {
         throw new Error('error', { cause: ex })
       })
@@ -348,12 +348,11 @@ export class CollaborationServer {
       return
     }
 
-    // const { document, version } = await fromGroupedNewsDoc(documentResponse)
     await this.#storeDocumentInRepository(
       documentName,
       await fromGroupedNewsDoc(documentResponse),
       updatedHash,
-      context.token as string,
+      context.accessToken as string,
       context
     )
   }
@@ -409,7 +408,6 @@ export class CollaborationServer {
    * tracker document. Or increase the number of times the user have this document open.
    */
   async #connected({ documentName, context, socketId }: connectedPayload): Promise<void> {
-    console.log('collaboration server', JSON.stringify(context, null, 2))
     if (!this.#openDocuments || documentName === 'document-tracker') {
       return
     }
