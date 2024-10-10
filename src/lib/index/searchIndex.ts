@@ -5,9 +5,12 @@ interface SearchIndexOptions {
   useCache?: boolean
 }
 
-export interface SearchIndexResult<T> {
+interface SearchIndexResult<T> {
   ok: boolean
   total: number
+  page: number
+  pages: number
+  pageSize: number
   hits: T[]
 }
 

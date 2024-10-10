@@ -18,7 +18,7 @@ export function flashDocumentTemplate(id: string, defaults: {
 } = {}): Document {
   const {
     title = '',
-    section = undefined,
+    section,
     authors = []
   } = defaults
 
@@ -32,7 +32,7 @@ export function flashDocumentTemplate(id: string, defaults: {
       Block.create({
         type: 'core/text',
         data: {
-          text: title
+          text: title || ''
         },
         role: 'heading-1'
       }),
@@ -40,31 +40,20 @@ export function flashDocumentTemplate(id: string, defaults: {
         type: 'core/text',
         data: {
           text: ''
-        },
-        role: 'preamble'
-      }),
-      Block.create({
-        type: 'core/text',
-        data: {
-          text: ''
         }
       })
-    ]
+    ],
+    links: []
   })
-
-  // Create links array if needed
-  if (section || authors?.length) {
-    doc.links = []
-  }
 
   if (section) {
     doc.links.push(Block.create({
       type: 'core/section',
+      rel: 'section',
       uuid: section.uuid,
       title: section.title
     }))
   }
-
 
   for (const author of authors || []) {
     doc.links.push(Block.create({
@@ -72,10 +61,9 @@ export function flashDocumentTemplate(id: string, defaults: {
       rel: 'author',
       role: 'primary',
       uuid: author.uuid,
-      name: author.name
+      title: author.name
     }))
   }
-
 
   return doc
 }
