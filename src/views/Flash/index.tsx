@@ -82,9 +82,9 @@ const FlashViewContent = (props: ViewProps & {
   const planningAwareness = useRef<(value: boolean) => void>(null)
   const [selectedOptions, setSelectedOptions] = useState<DefaultValueOption[]>(props.defaultPlanningItem
     ? [{
-      value: props.defaultPlanningItem.uuid,
-      label: props.defaultPlanningItem.title
-    }]
+        value: props.defaultPlanningItem.uuid,
+        label: props.defaultPlanningItem.title
+      }]
     : []
   )
   const [title] = useYValue<string | undefined>('title')
