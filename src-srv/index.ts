@@ -64,6 +64,7 @@ export async function runServer(): Promise<string> {
 
   }))
   app.use(cookieParser())
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
   app.use(BASE_URL, express.json())
 
   app.use((err: unknown, req: Request, res: Response, next: NextFunction) => {
