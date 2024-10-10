@@ -142,7 +142,9 @@ const FlashViewContent = (props: ViewProps & { documentId: string }): JSX.Elemen
                       state: false,
                       id: props.documentId,
                       context: {
-                        accessToken: data.accessToken
+                        accessToken: data.accessToken,
+                        user: data.user,
+                        type: 'Flash'
                       }
                     })
                   )
