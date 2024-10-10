@@ -95,6 +95,7 @@
     "__mocks__/**/*",
     "__tests__/**/*",
     "__mocks__",
-    "types/**/*"
-, "src-srv/utils/transformations/groupedNewsDoc.ts"  ]
+    "types/**/*",
+    "src-srv/utils/transformations/groupedNewsDoc.ts"
+  ]
 }
