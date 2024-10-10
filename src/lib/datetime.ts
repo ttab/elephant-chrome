@@ -10,7 +10,8 @@ export function convertToISOStringInUTC(localDate: Date): string {
 }
 
 /**
- * Format a date/time to ISO format but in the local timezone.
+ * Format a date/time to ISO format but in the local timezone. Using sv-SE locale as
+ * this will output date and time in ISO format.
  *
  * @param localDate
  * @param locale
@@ -18,7 +19,7 @@ export function convertToISOStringInUTC(localDate: Date): string {
  * @returns string
  */
 export function convertToISOStringInTimeZone(localDate: Date, timeZone: string): string {
-  return localDate.toLocaleString('en-US', {
+  return localDate.toLocaleString('sv-SE', {
     year: 'numeric',
     month: '2-digit',
     day: '2-digit',
