@@ -20,7 +20,6 @@ import {
   type PropsWithChildren,
   type SetStateAction
 } from 'react'
-import type { SearchIndexResponse } from '@/lib/index'
 
 export interface CommandArgs {
   pages: string[]
@@ -32,7 +31,7 @@ export interface CommandArgs {
 
 export interface TableProviderState<TData> {
   table: Table<TData>
-  setData: Dispatch<SearchIndexResponse<TData>>
+  setData: Dispatch<TData[]>
   loading: boolean
   command: CommandArgs
   filters: ColumnFiltersState
@@ -51,7 +50,7 @@ export const TableProvider = <T,>({
   children,
   columns
 }: PropsWithChildren<{ columns: Array<ColumnDef<T, unknown>> }>): JSX.Element => {
-  const [data, setData] = useState<SearchIndexResponse<T> | null>([] as unknown as SearchIndexResponse<T>)
+  const [data, setData] = useState<T[] | null>()
 
   const [rowSelection, setRowSelection] = useState({})
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
@@ -71,7 +70,7 @@ export const TableProvider = <T,>({
   }), [pages, page, search])
 
   const table = useReactTable({
-    data: data?.hits || [],
+    data: data || [],
     columns,
     state: {
       sorting,
@@ -100,7 +99,7 @@ export const TableProvider = <T,>({
     filters: columnFilters,
     selectedRow: rowSelection,
     setData,
-    loading: data?.hits === undefined,
+    loading: data === undefined,
     command
   }), [table, data, command, columnFilters, rowSelection])
 

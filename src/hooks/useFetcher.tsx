@@ -8,13 +8,14 @@ import { Events } from '@/lib/events'
 
 interface FetchOptions {
   size: number
+  page: number
   where: {
     start: string
     end: string
   }
 }
 
-export interface Fetcher<T> {
+export interface Fetcher<T extends Source> {
   search: (url: URL, token: string, options: FetchOptions) => Promise<SearchIndexResponse<T> | SearchIndexError>
 }
 
@@ -36,7 +37,7 @@ export const useFetcher = <T extends Source>(Fetcher: Fetcher<T>):
     withStatus?: boolean
     withPlannings?: boolean
   }
-}) => Promise<SearchIndexResponse<T> | undefined> => {
+}) => Promise<T[] | undefined> => {
   const { data: session } = useSession()
   const sessionRef = useRef<Session | null>(session)
   const { setData } = useTable<T>()
@@ -55,39 +56,62 @@ export const useFetcher = <T extends Source>(Fetcher: Fetcher<T>):
         withStatus?: boolean
         withPlannings?: boolean
       }
-    }): Promise<SearchIndexResponse<T> | undefined> => {
+    }): Promise<T[] | undefined> => {
       const currentSession = sessionRef.current
       if (!currentSession) return undefined
 
+      const allResults: T[] = []
+      let page = 1
+      const size = 100
+
       try {
-        const result = await Fetcher.search(indexUrl, currentSession.accessToken, {
-          size: 100,
-          where: { start: from, end: to }
-        })
+        while (true) {
+          const result = await Fetcher.search(indexUrl, currentSession.accessToken, {
+            size,
+            page,
+            where: { start: from, end: to }
+          })
 
 
-        if (result.ok) {
-          if (options?.withStatus) {
-            const itemsWithStatus = withStatus(result)
-
-            setData(itemsWithStatus)
-            return itemsWithStatus
+          if (!Array.isArray(result.hits)) {
+            break
           }
 
-          if (options?.withPlannings) {
-            if (!sessionRef.current) return result
+          // Not ok, abort
+          if (!result.ok) {
+            throw new Error('Failed to fetch data', { cause: result })
+          }
+
+          // Append statuses
+          if (options?.withStatus) {
+            const itemsWithStatus: T[] = withStatus(result)
+
+            allResults.push(...itemsWithStatus)
+
+          // Append plannings
+          } else if (options?.withPlannings) {
+            if (!sessionRef.current) {
+              throw new Error('Session is not available')
+            }
 
             const itemsWithPlannings = await withPlannings({ result, session: sessionRef.current, from, to, indexUrl })
 
-            setData(itemsWithPlannings)
-            return itemsWithPlannings
+            allResults.push(...itemsWithPlannings)
+
+          // return unalterated results
+          } else {
+            allResults.push(...result.hits)
           }
 
-          setData(result)
-          return result
+          if (result.hits.length < size) {
+            break
+          }
+
+          page++
         }
 
-        throw new Error('Failed to fetch data', { cause: result })
+        setData(allResults)
+        return allResults
       } catch (ex) {
         throw new Error('Failed to fetch data', { cause: ex })
       }
@@ -116,18 +140,15 @@ function getCurrentDocumentStatus<T extends Source>(obj: T): string {
   return createdValues[0]?.status || defaultStatus
 }
 
-function withStatus<T extends Source>(result: SearchIndexResult<T>): SearchIndexResult<T> {
-  return {
-    ...result,
-    hits: result?.hits?.map((item) => {
-      const status = getCurrentDocumentStatus(item)
-      item._source = {
-        ...item._source,
-        'document.meta.status': [status]
-      }
-      return item
-    })
-  }
+function withStatus<T extends Source>(result: SearchIndexResult<T>): T[] {
+  return result?.hits?.map((item: T) => {
+    const status = getCurrentDocumentStatus(item)
+    item._source = {
+      ...item._source,
+      'document.meta.status': [status]
+    }
+    return item
+  })
 }
 
 async function withPlannings<T extends Source>({ result, session, from, to, indexUrl }: {
@@ -136,8 +157,8 @@ async function withPlannings<T extends Source>({ result, session, from, to, inde
   from: string
   to: string
   indexUrl: URL
-}): Promise<SearchIndexResponse<T>> {
-  if (!session) return result
+}): Promise<T[]> {
+  if (!session) return result.hits
 
   const eventIDs: string[] = result.hits?.map(hit => hit?._id)
   const statusResults = await Events.relatedPlanningSearch(indexUrl, session.accessToken, eventIDs, {
@@ -159,7 +180,6 @@ async function withPlannings<T extends Source>({ result, session, from, to, inde
     return hit
   })
 
-  result.hits = hitsWithPlannings
-  return result
+  return hitsWithPlannings
 }
 
