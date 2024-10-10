@@ -24,7 +24,7 @@ export const useActiveDocument = ({ type }: {
         return (type && s.props.name === type) && (s.key === state.active || state.content.length === 1)
       })?.props.children.props.id
 
-      if (!documentId) {
+      if (!documentId || typeof documentId !== 'string') {
         setDocument(null)
         return
       }

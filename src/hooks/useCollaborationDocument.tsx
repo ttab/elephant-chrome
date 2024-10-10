@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from 'react'
 import { HocuspocusProvider, HocuspocusProviderWebsocket } from '@hocuspocus/provider'
 import { useSession } from 'next-auth/react'
-import * as Y from 'yjs'
+import type * as Y from 'yjs'
 import { useRegistry } from './useRegistry'
 
 interface UseHocusPocusDocumentProps {
@@ -31,13 +31,13 @@ export const useCollaborationDocument = ({ documentId, initialDocument }: UseHoc
   // open collaboration documents.
   const webSocket = useMemo(() => {
     return (!webSocketUrl) ? undefined : new HocuspocusProviderWebsocket({ url: webSocketUrl.toString() })
-  }, [webSocketUrl, documentId])
+  }, [webSocketUrl])
 
   useEffect(() => {
     if (synced && !document) {
       setDocument(provider?.document)
     }
-  }, [synced])
+  }, [synced, document, provider?.document])
 
   useEffect(() => {
     if (!documentId || !webSocket || status !== 'authenticated') {
@@ -74,7 +74,7 @@ export const useCollaborationDocument = ({ documentId, initialDocument }: UseHoc
       provider.destroy()
       setProvider(undefined)
     }
-  }, [documentId, initialDocument, webSocket, sessionData?.accessToken, status])
+  }, [documentId, document, initialDocument, webSocket, sessionData?.accessToken, status])
 
   return {
     document,

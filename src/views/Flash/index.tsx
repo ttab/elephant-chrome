@@ -47,13 +47,13 @@ const meta: ViewMetadata = {
 }
 
 interface DefaultPlanningItem {
-  uuid: string,
+  uuid: string
   title: string
 }
 
 
 export const Flash = (props: ViewProps & {
-  document?: Y.Doc,
+  document?: Y.Doc
   defaultPlanningItem?: DefaultPlanningItem
 }): JSX.Element => {
   const query = useQuery()
@@ -72,7 +72,7 @@ export const Flash = (props: ViewProps & {
 }
 
 const FlashViewContent = (props: ViewProps & {
-  documentId: string,
+  documentId: string
   defaultPlanningItem?: DefaultPlanningItem
 }): JSX.Element | undefined => {
   const { provider } = useCollaboration()
@@ -82,9 +82,9 @@ const FlashViewContent = (props: ViewProps & {
   const planningAwareness = useRef<(value: boolean) => void>(null)
   const [selectedOptions, setSelectedOptions] = useState<DefaultValueOption[]>(props.defaultPlanningItem
     ? [{
-      value: props.defaultPlanningItem.uuid,
-      label: props.defaultPlanningItem.title
-    }]
+        value: props.defaultPlanningItem.uuid,
+        label: props.defaultPlanningItem.title
+      }]
     : []
   )
   const [title] = useYValue<string | undefined>('title')
@@ -93,7 +93,7 @@ const FlashViewContent = (props: ViewProps & {
 
   const [newPlanningId, newPlanningYDoc] = useMemo(() => {
     return createDocument(Templates.planning, true, {})
-  }, [status])
+  }, [])
 
   const { document: newPlanningDocument } = useCollaborationDocument({
     documentId: newPlanningId,
@@ -323,7 +323,8 @@ const FlashViewContent = (props: ViewProps & {
                     if (planningDocument || newPlanningDocument) {
                       const planningId = addFlashToPlanning(
                         provider.document,
-                        (planningDocument ?? newPlanningDocument)!,
+                        // @ts-expect-error Typescript don't understand the safeguard above
+                        planningDocument ?? newPlanningDocument,
                         assignmentId,
                         timeZone
                       )
@@ -337,7 +338,6 @@ const FlashViewContent = (props: ViewProps & {
                           }
                         })
                       )
-
                     } else {
                       throw new Error(`Failed adding flash ${props.documentId} - ${title} to a planning`)
                     }
@@ -362,7 +362,7 @@ Flash.meta = meta
 
 
 function addAssignmentLinkToFlash(flashDoc: Y.Doc, assignmentId: string): void {
-  const flash = flashDoc.getMap('ele') as Y.Map<unknown>
+  const flash = flashDoc.getMap('ele')
   const [flashLinks] = getValueByYPath<Y.Map<Y.Array<unknown>>>(flash, 'links', true)
 
   if (!flashLinks) {
@@ -384,13 +384,13 @@ function addAssignmentLinkToFlash(flashDoc: Y.Doc, assignmentId: string): void {
 
 
 function addFlashToPlanning(flashDoc: Y.Doc, planningDoc: Y.Doc, assignmentId: string, timeZone: string): string {
-  const flash = flashDoc.getMap('ele') as Y.Map<unknown>
+  const flash = flashDoc.getMap('ele')
   const [flashId] = getValueByYPath<string>(flash, 'root.uuid')
   const [flashTitle] = getValueByYPath<string>(flash, 'root.title')
   const [flashSections] = getValueByYPath<Y.Array<unknown>>(flash, 'links.core/section', true)
   const [flashLinks] = getValueByYPath<Y.Map<unknown>>(flash, 'links', true)
 
-  const planning = planningDoc.getMap('ele') as Y.Map<unknown>
+  const planning = planningDoc.getMap('ele')
   const [planningTitle, planningRoot] = getValueByYPath<string>(planning, 'root.title')
 
 
@@ -404,11 +404,12 @@ function addFlashToPlanning(flashDoc: Y.Doc, planningDoc: Y.Doc, assignmentId: s
 
   // If no planning title exists this is a new planning
   if (!planningTitle) {
-    (planningRoot as Y.Map<unknown>).set('title', flashTitle)
+    (planningRoot).set('title', flashTitle)
 
     // Transfer section to planning
     const [planningLinks] = getValueByYPath<Y.Map<Y.Array<unknown>>>(planning, 'links', true)
-    planningLinks?.set('core/section', (flashSections)!.clone())
+    // @ts-expect-error Typescript don't understand safeguard !flashSections?.length
+    planningLinks?.set('core/section', flashSections.clone())
   }
 
   // Make sure flash does not have any section left
@@ -471,7 +472,7 @@ function addFlashToPlanning(flashDoc: Y.Doc, planningDoc: Y.Doc, assignmentId: s
   const [flashAuthors] = getValueByYPath<Y.Array<Y.Map<unknown>>>(flash, 'links.core/author', true)
 
   if (links && flashAuthors) {
-    const assignees = new Y.Array() as Y.Array<Y.Map<unknown>>
+    const assignees = new Y.Array()
     links.set('core/author', assignees)
 
     flashAuthors.forEach(author => {
@@ -480,15 +481,13 @@ function addFlashToPlanning(flashDoc: Y.Doc, planningDoc: Y.Doc, assignmentId: s
         rel: 'assignee',
         role: 'primary',
         uuid: author.get('uuid') as string,
-        name: (author.get('title') as Y.XmlText).toJSON() as string, // FIXME: Use title for both when repo schema is fixed
+        name: (author.get('title') as Y.XmlText).toJSON() // FIXME: Use title for both when repo schema is fixed
       })
 
       const assignee = toYMap(eleAssignee[0] as unknown as Record<string, unknown>)
 
       assignees.push([assignee])
     })
-
-
   }
 
   return getValueByYPath<string>(planning, 'root.uuid')?.[0] || ''

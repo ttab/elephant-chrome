@@ -5,7 +5,7 @@ import {
 import { SheetClose } from '@ttab/elephant-ui'
 import { useModal } from '../Modal/useModal'
 import * as Views from '@/views'
-import type { Document } from '@ttab/elephant-api/newsdoc'
+import type { Block, Document } from '@ttab/elephant-api/newsdoc'
 import { useActiveDocument } from '@/hooks/useActiveDocument'
 import { useActiveAuthor } from '@/hooks/useActiveAuthor'
 import * as Templates from '@/defaults/templates'
@@ -127,9 +127,9 @@ const FlashDialogContent = ({ menuItem, onDialogClose }: {
 
     const planning = activeDocument
       ? {
-        uuid: activeDocument?.uuid,
-        title: activeDocument?.title
-      }
+          uuid: activeDocument?.uuid,
+          title: activeDocument?.title
+        }
       : undefined
 
     const section = (activeDocument?.links as unknown as Record<string, Block[]>)?.['core/section']?.[0]
