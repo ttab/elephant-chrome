@@ -313,7 +313,9 @@ const FlashViewContent = (props: ViewProps & {
                       state: false,
                       id: props.documentId,
                       context: {
-                        accessToken: session.accessToken
+                        accessToken: session.accessToken,
+                        user: session.user,
+                        type: 'Flash'
                       }
                     })
                   )
@@ -334,7 +336,9 @@ const FlashViewContent = (props: ViewProps & {
                           state: false,
                           id: planningId,
                           context: {
-                            accessToken: session.accessToken
+                            accessToken: session.accessToken,
+                            user: session.user,
+                            type: 'Planning'
                           }
                         })
                       )

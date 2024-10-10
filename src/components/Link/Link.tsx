@@ -1,4 +1,4 @@
-import { type ForwardedRef, forwardRef } from 'react'
+import { type ForwardedRef, forwardRef, type MouseEvent } from 'react'
 import { type View, type ViewProps } from '@/types'
 import { useNavigation, useView } from '@/hooks'
 
@@ -9,7 +9,7 @@ interface LinkProps {
   children: React.ReactNode
   to: View
   props?: ViewProps
-  onClick?: (event: unknown) => void
+  onClick?: (event: MouseEvent<HTMLAnchorElement>) => void
   className?: string
 }
 
@@ -26,7 +26,7 @@ export const Link = forwardRef((props: LinkProps, ref: ForwardedRef<HTMLAnchorEl
       className={props?.className || ''}
       {...props}
       href={`${viewItem.meta.path}${qs || ''}`}
-      onClick={(event) => {
+      onClick={(event: MouseEvent<HTMLAnchorElement>) => {
         event.stopPropagation()
         // Execute forwarded onClick handler
         props.onClick && props.onClick(event)

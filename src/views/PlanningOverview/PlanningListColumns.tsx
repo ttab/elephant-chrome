@@ -38,7 +38,7 @@ export function planningTableColumns({ sections = [], authors = [] }: {
         options: DocumentStatuses,
         name: 'Status',
         columnIcon: CircleCheck,
-        className: 'box-content w-6 pr-0'
+        className: 'flex-none'
       },
       accessorFn: (data) => data?._source['document.meta.status'][0],
       cell: ({ row }) => {
@@ -58,7 +58,7 @@ export function planningTableColumns({ sections = [], authors = [] }: {
         options: VisibilityStatuses,
         name: 'Synlighet',
         columnIcon: Eye,
-        className: 'box-content w-6 pr-0'
+        className: 'flex-none'
       },
       accessorFn: (data) => (
         data._source['document.meta.core_planning_item.data.public'][0] === 'true'
@@ -75,6 +75,7 @@ export function planningTableColumns({ sections = [], authors = [] }: {
     },
     {
       id: 'newsvalue',
+      enableGrouping: true,
       meta: {
         Filter: ({ column, setSearch }) => (
           <FacetedFilter column={column} setSearch={setSearch} />
@@ -82,7 +83,7 @@ export function planningTableColumns({ sections = [], authors = [] }: {
         options: Newsvalues,
         name: 'Nyhetsvärde',
         columnIcon: SignalHigh,
-        className: 'box-content w-4 sm:w-8 pr-1 sm:pr-4'
+        className: 'flex-none'
       },
       accessorFn: (data) => data._source['document.meta.core_newsvalue.value']?.[0],
       cell: ({ row }) => {
@@ -103,7 +104,7 @@ export function planningTableColumns({ sections = [], authors = [] }: {
       meta: {
         name: 'Slugg',
         columnIcon: Pen,
-        className: 'box-content truncate'
+        className: 'flex-1 w-[400px]'
       },
       accessorFn: (data) => data._source['document.title'][0],
       cell: ({ row }) => {
@@ -127,7 +128,7 @@ export function planningTableColumns({ sections = [], authors = [] }: {
         ),
         name: 'Sektion',
         columnIcon: Shapes,
-        className: 'box-content w-[115px] hidden @4xl/view:[display:revert]'
+        className: 'flex-none w-[115px] hidden @4xl/view:[display:revert]'
       },
       accessorFn: (data) => {
         return data._source['document.rel.section.uuid']?.[0]
@@ -151,7 +152,7 @@ export function planningTableColumns({ sections = [], authors = [] }: {
         ),
         name: 'Uppdragstagare',
         columnIcon: Users,
-        className: 'box-content w-[112px] hidden @5xl/view:[display:revert]'
+        className: 'flex-none w-[112px] hidden @5xl/view:[display:revert]'
       },
       accessorFn: (data) => data._source['document.meta.core_assignment.rel.assignee.name'],
       cell: ({ row }) => {
@@ -173,7 +174,7 @@ export function planningTableColumns({ sections = [], authors = [] }: {
         options: AssignmentTypes,
         name: 'Typ',
         columnIcon: Crosshair,
-        className: 'box-content w-[120px] hidden @6xl/view:[display:revert]'
+        className: 'flex-none w-[120px] hidden @6xl/view:[display:revert]'
       },
       accessorFn: (data) => data._source['document.meta.core_assignment.meta.core_assignment_type.value'],
       cell: ({ row }) => {
@@ -195,7 +196,7 @@ export function planningTableColumns({ sections = [], authors = [] }: {
       meta: {
         name: 'Action',
         columnIcon: Navigation,
-        className: 'box-content w-[32px]'
+        className: 'flex-none'
       },
       cell: ({ row }) => {
         const deliverableUuids = row.original._source['document.meta.core_assignment.rel.deliverable.uuid'] || []

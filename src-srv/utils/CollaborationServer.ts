@@ -232,6 +232,12 @@ export class CollaborationServer {
     const msg = parseStateless(payload.payload)
 
     if (msg.type === StatelessType.IN_PROGRESS && !msg.message.state) {
+      const userTrackerConnection = await this.#server.openDirectConnection(
+        msg.message.context.user.sub, { ...msg.message.context, agent: 'server' }
+      ).catch(ex => {
+        throw new Error('acquire connection', { cause: ex })
+      })
+
       const connection = await this.#server.openDirectConnection(
         msg.message.id, { ...msg.message.context, agent: 'server' }
       ).catch(ex => {
@@ -264,6 +270,19 @@ export class CollaborationServer {
         msg.message.context.accessToken,
         msg.message.context
       )
+
+      userTrackerConnection.transact(doc => {
+        const documents = doc.getMap('ele')
+        const type = msg.message.context.type
+        if (!documents.get(type)) {
+          documents.set(type, new Y.Array())
+        }
+
+        const items = documents.get(type) as Y.Array<unknown>
+        items.push([{ id: msg.message.id, timestamp: Date.now() }])
+      }).catch(ex => {
+        throw new Error('error', { cause: ex })
+      })
     }
   }
 
@@ -329,12 +348,11 @@ export class CollaborationServer {
       return
     }
 
-    // const { document, version } = await fromGroupedNewsDoc(documentResponse)
     await this.#storeDocumentInRepository(
       documentName,
       await fromGroupedNewsDoc(documentResponse),
       updatedHash,
-      context.token as string,
+      context.accessToken as string,
       context
     )
   }

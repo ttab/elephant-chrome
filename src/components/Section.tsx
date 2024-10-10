@@ -27,6 +27,7 @@ export const Section = ({ onValidation }: {
       <ComboBox
         max={1}
         size='xs'
+        modal={true}
         sortOrder='label'
         options={allSections}
         selectedOptions={selectedOptions}

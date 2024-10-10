@@ -1,94 +1,40 @@
-import { useMemo } from 'react'
+import { useCallback, useMemo } from 'react'
 import useSWR from 'swr'
 
-import { useIndexUrl, useTable, useSections } from '@/hooks'
-import { useSession } from 'next-auth/react'
-import { type SearchIndexResponse } from '@/lib/index/searchIndex'
-import { Events } from '@/lib/events'
+import { useSections } from '@/hooks'
 import { type Event } from '@/lib/index/schemas'
 import { eventTableColumns } from '@/views/EventsOverview/EventsListColumns'
 
-import { convertToISOStringInUTC, getDateTimeBoundaries } from '@/lib/datetime'
 import { Table } from '@/components/Table'
 
-export const EventsList = ({ date }: { date: Date }): JSX.Element => {
-  const { setData } = useTable<Event>()
-  const { data: session, status } = useSession()
-
-  const indexUrl = useIndexUrl()
-  const { startTime, endTime } = getDateTimeBoundaries(date)
+export const EventsList = ({ from, to }: {
+  from: string
+  to: string
+}): JSX.Element => {
   const sections = useSections()
 
-  // Create url to base SWR caching on
-  const searchUrl = useMemo(() => {
-    const start = convertToISOStringInUTC(startTime)
-    const end = convertToISOStringInUTC(endTime)
-    const searchUrl = new URL(indexUrl)
+  const { error } = useSWR(['Events', from, to, { withPlannings: true }])
+  const columns = useMemo(() => eventTableColumns({ sections }), [sections])
 
-    searchUrl.search = new URLSearchParams({ start, end }).toString()
-    return searchUrl
-  }, [startTime, endTime, indexUrl])
-
-
-  const { data } = useSWR(['eventitems', status, searchUrl.href], async (): Promise<SearchIndexResponse<Event> & { planningItem?: string } | undefined> => {
-    if (status !== 'authenticated') {
-      return
+  const onRowSelected = useCallback((row?: Event) => {
+    if (row) {
+      console.info(`Selected planning item ${row._id}`)
+    } else {
+      console.info('Deselected row')
     }
+    return row
+  }, [])
 
-    const { startTime, endTime } = getDateTimeBoundaries(date)
-    const result = await Events.search(indexUrl, session.accessToken, {
-      sort: { start: 'asc' },
-      size: 100,
-      where: {
-        start: convertToISOStringInUTC(startTime),
-        end: convertToISOStringInUTC(endTime)
-      }
-    })
-    if (result?.ok) {
-      const eventIDs = result.hits?.map(hit => hit?._id)
-      const statusResults = await Events.relatedPlanningSearch(indexUrl, session.accessToken, eventIDs, {
-        size: 100,
-        where: {
-          start: convertToISOStringInUTC(startTime),
-          end: convertToISOStringInUTC(endTime)
-        }
-      })
-      const hasPlannings = statusResults.hits?.map(hit => hit._source['document.rel.event.uuid'])
-      const hitsWithPlannings = result.hits.map(hit => {
-        const relatedItemIndex = hasPlannings.findIndex(item => item[0] === hit._id)
-        if (relatedItemIndex !== -1) {
-          return {
-            ...hit,
-            _relatedPlannings: hasPlannings[relatedItemIndex]
-          }
-        }
-        return hit
-      })
 
-      result.hits = hitsWithPlannings
-
-      setData(result)
-      return result
-    }
-  })
-
-  const columns = eventTableColumns({ sections })
+  if (error) {
+    return <pre>{error.message}</pre>
+  }
 
   return (
-    <>
-      {data?.ok === true &&
-        <Table
-          type='Event'
-          columns={columns}
-          onRowSelected={(row): void => {
-            if (row) {
-              console.log(`Selected event item ${row._id}`)
-            } else {
-              console.log('Deselected row')
-            }
-          }}
-        />
-      }
-    </>
+    <Table
+      type='Event'
+      columns={columns}
+      onRowSelected={onRowSelected}
+    />
   )
 }

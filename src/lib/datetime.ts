@@ -1,3 +1,6 @@
+import { UTCDate } from '@date-fns/utc'
+import { startOfDay, endOfDay } from 'date-fns'
+
 /**
  * Format a local date/time to ISO format but in the UTC timezone.
  *
@@ -106,6 +109,16 @@ export function getDateTimeBoundaries(localDate: Date): { startTime: Date, endTi
   return {
     startTime,
     endTime
+  }
+}
+
+export function getDateTimeBoundariesUTC(localDate: Date): { from: string, to: string } {
+  const startTime = startOfDay(new UTCDate(localDate))
+  const endTime = endOfDay(new UTCDate(localDate))
+
+  return {
+    from: startTime.toISOString(),
+    to: endTime.toISOString()
   }
 }
 /**

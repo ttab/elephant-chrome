@@ -1,18 +1,25 @@
-import { useState, createContext, type Dispatch, type PropsWithChildren, type SetStateAction } from 'react'
 import {
-  type Table,
-  type ColumnFiltersState,
-  type SortingState,
-  type VisibilityState,
   getCoreRowModel,
   getFacetedRowModel,
   getFacetedUniqueValues,
   getFilteredRowModel,
+  getGroupedRowModel,
   getSortedRowModel,
   useReactTable,
-  type ColumnDef
+  type ColumnDef,
+  type ColumnFiltersState,
+  type SortingState,
+  type Table,
+  type VisibilityState
 } from '@tanstack/react-table'
-import type { SearchIndexResponse } from '@/lib/index'
+import {
+  createContext,
+  useMemo,
+  useState,
+  type Dispatch,
+  type PropsWithChildren,
+  type SetStateAction
+} from 'react'
 
 export interface CommandArgs {
   pages: string[]
@@ -24,9 +31,11 @@ export interface CommandArgs {
 
 export interface TableProviderState<TData> {
   table: Table<TData>
-  setData: Dispatch<SearchIndexResponse<TData>>
+  setData: Dispatch<TData[]>
   loading: boolean
   command: CommandArgs
+  filters: ColumnFiltersState
+  selectedRow: Record<string, boolean>
 }
 
 const initialState = {
@@ -41,7 +50,7 @@ export const TableProvider = <T,>({
   children,
   columns
 }: PropsWithChildren<{ columns: Array<ColumnDef<T, unknown>> }>): JSX.Element => {
-  const [data, setData] = useState<SearchIndexResponse<T> | null>([] as unknown as SearchIndexResponse<T>)
+  const [data, setData] = useState<T[] | null>()
 
   const [rowSelection, setRowSelection] = useState({})
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
@@ -52,25 +61,27 @@ export const TableProvider = <T,>({
   const page = pages[pages.length - 1]
   const [search, setSearch] = useState<string | undefined>()
 
-  const command = {
+  const command = useMemo(() => ({
     pages,
     setPages,
     page,
     setSearch,
     search
-  }
+  }), [pages, page, search])
 
   const table = useReactTable({
-    data: data?.hits || [],
+    data: data || [],
     columns,
     state: {
       sorting,
       columnVisibility,
       rowSelection,
-      columnFilters
+      columnFilters,
+      grouping: ['newsvalue']
     },
     enableRowSelection: true,
     enableMultiRowSelection: false,
+    enableSubRowSelection: true,
     onRowSelectionChange: setRowSelection,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
@@ -79,11 +90,21 @@ export const TableProvider = <T,>({
     getFilteredRowModel: getFilteredRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getFacetedRowModel: getFacetedRowModel(),
-    getFacetedUniqueValues: getFacetedUniqueValues()
+    getFacetedUniqueValues: getFacetedUniqueValues(),
+    getGroupedRowModel: getGroupedRowModel()
   })
 
+  const value = useMemo(() => ({
+    table,
+    filters: columnFilters,
+    selectedRow: rowSelection,
+    setData,
+    loading: data === undefined,
+    command
+  }), [table, data, command, columnFilters, rowSelection])
+
   return (
-    <TableContext.Provider value={{ table, setData, loading: !table.options.data.length, command }}>
+    <TableContext.Provider value={value}>
       {children}
     </TableContext.Provider>
   )

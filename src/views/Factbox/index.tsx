@@ -105,7 +105,9 @@ function Wrapper(props: ViewProps & { documentId: string }): JSX.Element {
                       state: false,
                       id: props.documentId,
                       context: {
-                        accessToken: session.accessToken
+                        accessToken: session.accessToken,
+                        user: session.user,
+                        type: 'Factbox'
                       }
                     }))
                 }
