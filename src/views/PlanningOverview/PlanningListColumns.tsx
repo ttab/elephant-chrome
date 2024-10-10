@@ -83,7 +83,7 @@ export function planningTableColumns({ sections = [], authors = [] }: {
         options: Newsvalues,
         name: 'Nyhetsvärde',
         columnIcon: SignalHigh,
-        className: 'flex-none'
+        className: 'flex-none hidden @3xl/view:[display:revert]'
       },
       accessorFn: (data) => data._source['document.meta.core_newsvalue.value']?.[0],
       cell: ({ row }) => {
@@ -104,7 +104,7 @@ export function planningTableColumns({ sections = [], authors = [] }: {
       meta: {
         name: 'Slugg',
         columnIcon: Pen,
-        className: 'flex-1 w-[400px]'
+        className: 'flex-1 w-[200px]'
       },
       accessorFn: (data) => data._source['document.title'][0],
       cell: ({ row }) => {
