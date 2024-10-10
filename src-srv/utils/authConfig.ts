@@ -74,6 +74,7 @@ export const authConfig: AuthConfig = {
       // First time user is logging in
       if (account && user) {
         if (account.access_token) {
+          // @ts-expect-error The sub claim is always present in the JWT
           user.sub = decodeJwt(account.access_token).sub
         }
         return {
