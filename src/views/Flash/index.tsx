@@ -28,7 +28,6 @@ import { toYMap } from '../../../src-srv/utils/transformations/lib/toYMap'
 import { createDocument } from '@/lib/createYItem'
 import * as Templates from '@/defaults/templates'
 import { isYMap } from '@/lib/isType'
-import { ValidationAlert } from '@/components/ValidationAlert'
 
 const meta: ViewMetadata = {
   name: 'Flash',
@@ -82,9 +81,9 @@ const FlashViewContent = (props: ViewProps & {
   const planningAwareness = useRef<(value: boolean) => void>(null)
   const [selectedOptions, setSelectedOptions] = useState<DefaultValueOption[]>(props.defaultPlanningItem
     ? [{
-        value: props.defaultPlanningItem.uuid,
-        label: props.defaultPlanningItem.title
-      }]
+      value: props.defaultPlanningItem.uuid,
+      label: props.defaultPlanningItem.title
+    }]
     : []
   )
   const [title] = useYValue<string | undefined>('title')
@@ -200,8 +199,6 @@ const FlashViewContent = (props: ViewProps & {
       </div>
 
       <ScrollArea className='grid @5xl:place-content-center'>
-        <ValidationAlert validateStateRef={validateStateRef} />
-
         <div className="space-y-5 py-5">
           <section className={cn(sectionVariants({ asCreateDialog: !!props?.asDialog }))}>
             <div className="ps-1">
