@@ -5,7 +5,8 @@ import {
 } from 'react'
 import {
   Dialog,
-  DialogContent
+  DialogContent,
+  DialogTitle
 } from '@ttab/elephant-ui'
 import { ModalContext } from './ModalContext'
 import { useKeydownGlobal } from '@/hooks/useKeydownGlobal'
@@ -43,6 +44,7 @@ export const ModalProvider = ({ children }: PropsWithChildren): JSX.Element => {
         */}
       {isVisible && (
         <Dialog modal={false} open={isVisible}>
+          <DialogTitle></DialogTitle>
           <DialogContent className="p-0 w-[94vw]">
             {modalContent}
           </DialogContent>
