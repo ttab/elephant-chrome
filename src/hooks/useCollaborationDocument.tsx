@@ -5,7 +5,7 @@ import type * as Y from 'yjs'
 import { useRegistry } from './useRegistry'
 
 interface UseHocusPocusDocumentProps {
-  documentId: string
+  documentId?: string
   initialDocument?: Y.Doc
 }
 
