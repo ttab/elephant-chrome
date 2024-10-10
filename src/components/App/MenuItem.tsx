@@ -127,9 +127,9 @@ const FlashDialogContent = ({ menuItem, onDialogClose }: {
 
     const planning = activeDocument
       ? {
-          uuid: activeDocument?.uuid,
-          title: activeDocument?.title
-        }
+        uuid: activeDocument?.uuid,
+        title: activeDocument?.title
+      }
       : undefined
 
     const section = (activeDocument?.links as unknown as Record<string, Block[]>)?.['core/section']?.[0]

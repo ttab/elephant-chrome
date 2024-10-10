@@ -57,16 +57,18 @@ export const Menu = (): JSX.Element => {
           </div>
 
           <SheetClose asChild>
-            <a href='#' onClick={(event) => {
+            <a href='' onClick={(event) => {
               event.preventDefault()
               signOut()
                 .catch((error) => console.error(error))
               localStorage.removeItem('trustGoogle')
-            }} className="flex gap-1 items-center px-3 py-2 -ms-0.5 rounded-md text-sm bg-gray-200 hover:bg-gray-300">
-              <div className="flex items-center justify-center opacity-80 pr-2">
-                <LogOut strokeWidth={1.75} size={18} />
+            }}>
+              <div className="flex gap-3 items-center px-3 py-2 rounded-md hover:bg-gray-100">
+                <div className="flex items-center justify-center opacity-80 pr-2">
+                  <LogOut strokeWidth={1.75} size={18} />
+                </div>
+                <div>Logga ut</div>
               </div>
-              <div>Logga ut</div>
             </a>
           </SheetClose>
 
