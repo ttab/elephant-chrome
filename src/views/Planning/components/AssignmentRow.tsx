@@ -196,6 +196,7 @@ const AssignmentRowContent = ({ index, onSelect }: {
 
             openArticle(event,
               { id },
+              'blank',
               { onDocumentCreated }
             )
           }}
