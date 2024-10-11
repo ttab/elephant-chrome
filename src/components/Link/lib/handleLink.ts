@@ -62,6 +62,7 @@ export function handleLink({
   }
 
   event?.preventDefault()
+  event?.stopPropagation()
 
 
   // Remove what does not fit
