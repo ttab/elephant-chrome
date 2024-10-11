@@ -1,4 +1,4 @@
-import * as Y from 'yjs'
+import type * as Y from 'yjs'
 import { AwarenessDocument } from '@/components'
 import type { ViewMetadata, ViewProps } from '@/types'
 import { useQuery } from '@/hooks'

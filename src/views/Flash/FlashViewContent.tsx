@@ -10,7 +10,7 @@ import { Button, ComboBox, ScrollArea, Separator, Alert, AlertDescription } from
 import { CircleXIcon, GanttChartSquareIcon, TagsIcon, ZapIcon, InfoIcon } from '@ttab/elephant-ui/icons'
 import { useCollaboration, useYValue, useIndexUrl, useRegistry } from '@/hooks'
 
-import * as Y from 'yjs'
+import type * as Y from 'yjs'
 import { cva } from 'class-variance-authority'
 import { cn } from '@ttab/elephant-ui/utils'
 import { createStateless, StatelessType } from '@/shared/stateless'
@@ -23,7 +23,7 @@ import { useCollaborationDocument } from '@/hooks/useCollaborationDocument'
 import { createDocument } from '@/lib/createYItem'
 import * as Templates from '@/defaults/templates'
 import { Prompt } from '../Planning/components/Prompt'
-import { HocuspocusProvider } from '@hocuspocus/provider'
+import { type HocuspocusProvider } from '@hocuspocus/provider'
 import { type Session } from 'next-auth'
 import { addFlashToPlanning } from './addFlashToPlanning'
 import { addAssignmentLinkToFlash } from './addAssignmentToFlash'
@@ -46,9 +46,9 @@ export const FlashViewContent = (props: ViewProps & {
   const [showVerifyDialog, setShowVerifyDialog] = useState(false)
   const [selectedPlanning, setSelectedPlanning] = useState<DefaultValueOption | undefined>(props.defaultPlanningItem
     ? {
-      value: props.defaultPlanningItem.uuid,
-      label: props.defaultPlanningItem.title
-    }
+        value: props.defaultPlanningItem.uuid,
+        label: props.defaultPlanningItem.title
+      }
     : undefined
   )
 
@@ -78,9 +78,8 @@ export const FlashViewContent = (props: ViewProps & {
       if (planningSection) {
         setSection(planningSection)
       }
-
     }
-  }, [planningDocument])
+  }, [planningDocument, setSection])
 
   //  Helper function to search for planning items.
   const fetchAsyncData = async (str: string): Promise<DefaultValueOption[]> => {
@@ -329,8 +328,16 @@ export const FlashViewContent = (props: ViewProps & {
   )
 }
 
-function createFlash(documentId: string, title: string | undefined, provider: HocuspocusProvider, status: string, session: Session, planningDocument: Y.Doc | undefined, newPlanningDocument: Y.Doc | undefined, timeZone: string) {
-
+function createFlash(
+  documentId: string,
+  title: string | undefined,
+  provider: HocuspocusProvider,
+  status: string,
+  session: Session,
+  planningDocument: Y.Doc | undefined,
+  newPlanningDocument: Y.Doc | undefined,
+  timeZone: string
+): void {
   if (provider && status === 'authenticated') {
     // First and foremost we persist the flash, it needs an assignment
     const assignmentId = crypto.randomUUID()

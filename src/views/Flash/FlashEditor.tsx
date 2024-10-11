@@ -1,6 +1,6 @@
 import { useCollaboration } from '@/hooks'
 import { Bold, Italic, Text, OrderedList, UnorderedList } from '@ttab/textbit-plugins'
-import Textbit, { DropMarker, Menu, type PluginRegistryAction, TBText, Toolbar, usePluginRegistry } from '@ttab/textbit'
+import Textbit, { DropMarker, Menu, type PluginRegistryAction, type TBText, Toolbar, usePluginRegistry } from '@ttab/textbit'
 import { type HocuspocusProvider } from '@hocuspocus/provider'
 import { type AwarenessUserData } from '@/contexts/CollaborationProvider'
 import { type PropsWithChildren, useEffect, useMemo } from 'react'
