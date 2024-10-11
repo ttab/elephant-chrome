@@ -186,10 +186,7 @@ function EditorContent({ provider, user, setTitle }: {
 }
 
 /**
- * Recursively traverse the text nodes to extract the correct values
- *
- * @param node
- * @returns
+ * Recursively traverse the text nodes to extract the string
  */
 function extractText(node?: TBText): string {
   if (!node) {
