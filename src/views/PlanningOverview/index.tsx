@@ -16,6 +16,7 @@ import { useSections } from '@/hooks/useSections'
 import { useAuthors } from '@/hooks/useAuthors'
 import { SWRProvider } from '@/contexts/SWRProvider'
 import { getDateTimeBoundariesUTC } from '@/lib/datetime'
+import { useQuery } from '@/hooks/useQuery'
 
 const meta: ViewMetadata = {
   name: 'Plannings',
@@ -34,13 +35,18 @@ const meta: ViewMetadata = {
 }
 
 export const Plannings = (): JSX.Element => {
-  const [startDate, setStartDate] = useState<Date>(new Date())
+  const query = useQuery()
+  const { from, to } = useMemo(() =>
+    getDateTimeBoundariesUTC(query.from
+      ? new Date(`${query.from}T00:00:00.000Z`)
+      : new Date()),
+  [query.from])
+
   const [currentTab, setCurrentTab] = useState<string>('list')
   const sections = useSections()
   const authors = useAuthors()
 
   const columns = useMemo(() => planningTableColumns({ sections, authors }), [sections, authors])
-  const { from, to } = useMemo(() => getDateTimeBoundariesUTC(startDate), [startDate])
 
   return (
     <TableProvider<PlanningType> columns={columns}>
@@ -63,8 +69,6 @@ export const Plannings = (): JSX.Element => {
               <ViewHeader.Content>
                 <Header
                   tab={currentTab}
-                  startDate={startDate}
-                  setStartDate={setStartDate}
                 />
               </ViewHeader.Content>
 

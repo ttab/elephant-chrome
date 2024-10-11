@@ -10,7 +10,7 @@ import { EventsCommands } from '../EventsCommands'
 import { Button } from '@ttab/elephant-ui'
 import { PlusIcon } from '@ttab/elephant-ui/icons'
 
-export const Header = ({ tab, startDate, setStartDate, endDate, setEndDate }: {
+export const Header = ({ tab }: {
   tab: string
   startDate: Date
   setStartDate: Dispatch<SetStateAction<Date>>
@@ -29,14 +29,11 @@ export const Header = ({ tab, startDate, setStartDate, endDate, setEndDate }: {
     </div>
 
     {tab === 'list' &&
-      <DateChanger startDate={startDate} setStartDate={setStartDate} />
+      <DateChanger />
     }
 
     {tab === 'grid' &&
-      <DateChanger
-        startDate={startDate} setStartDate={setStartDate}
-        endDate={endDate} setEndDate={setEndDate}
-      />
+      <DateChanger />
     }
 
     <Filter>

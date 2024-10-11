@@ -80,6 +80,7 @@ export interface ViewProps {
   asDialog?: boolean
   onDialogClose?: (id?: string, title?: string) => void
   onDocumentCreated?: () => void
+  from?: string
   className?: string
 }
 
