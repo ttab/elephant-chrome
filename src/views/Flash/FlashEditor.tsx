@@ -1,6 +1,6 @@
 import { useCollaboration } from '@/hooks'
 import { Bold, Italic, Text, OrderedList, UnorderedList } from '@ttab/textbit-plugins'
-import Textbit, { DropMarker, Menu, type PluginRegistryAction, Toolbar, usePluginRegistry } from '@ttab/textbit'
+import Textbit, { DropMarker, Menu, type PluginRegistryAction, TBText, Toolbar, usePluginRegistry } from '@ttab/textbit'
 import { type HocuspocusProvider } from '@hocuspocus/provider'
 import { type AwarenessUserData } from '@/contexts/CollaborationProvider'
 import { type PropsWithChildren, useEffect, useMemo } from 'react'
@@ -9,7 +9,9 @@ import { createEditor } from 'slate'
 import { type YXmlText } from 'node_modules/yjs/dist/src/internals'
 
 
-export const FlashEditor = (): JSX.Element => {
+export const FlashEditor = ({ setTitle }: {
+  setTitle: (value: string | undefined) => void
+}): JSX.Element => {
   const plugins = [Text, UnorderedList, OrderedList, Bold, Italic]
   const { provider, synced, user } = useCollaboration()
 
@@ -20,7 +22,7 @@ export const FlashEditor = (): JSX.Element => {
       className="border-y"
     >
       {!!provider && synced
-        ? <EditorContent provider={provider} user={user} />
+        ? <EditorContent provider={provider} user={user} setTitle={setTitle} />
         : <></>
       }
     </Textbit.Root>
@@ -129,19 +131,20 @@ function ToolbarMenu(): JSX.Element {
   )
 }
 
-function EditorContent({ provider, user }: {
+function EditorContent({ provider, user, setTitle }: {
   provider: HocuspocusProvider
   user: AwarenessUserData
+  setTitle: (value: string | undefined) => void
 }): JSX.Element {
   const yjsEditor = useMemo(() => {
     if (!provider?.awareness) {
       return
     }
     const content = provider.document.getMap('ele').get('content') as YXmlText
-
     if (!content) {
       return
     }
+
     return withYHistory(
       withCursors(
         withYjs(
@@ -163,7 +166,15 @@ function EditorContent({ provider, user }: {
 
   return (
     <div className='w-full'>
-      <Textbit.Editable yjsEditor={yjsEditor} className="w-full outline-none h-full min-h-[20vh] max-h-[40vh] overflow-y-scroll dark:text-slate-100 py-5">
+      <Textbit.Editable
+        yjsEditor={yjsEditor}
+        onChange={(value) => {
+          // @ts-expect-error Textbit plugins needs to expose plugin types better
+          const titleNode = value?.find(child => child.class === 'text' && child?.properties?.role === 'heading-1')
+          setTitle(extractText(titleNode as TBText))
+        }}
+        className="w-full outline-none h-full min-h-[20vh] max-h-[40vh] overflow-y-scroll dark:text-slate-100 py-5"
+      >
         <DropMarker className="h-[3px] rounded bg-blue-400/75 dark:bg-blue-500/75 data-[state='between']:block" />
         <ToolbarMenu />
         <Textbit.Gutter className="w-14">
@@ -172,4 +183,22 @@ function EditorContent({ provider, user }: {
       </Textbit.Editable>
     </div>
   )
+}
+
+/**
+ * Recursively traverse the text nodes to extract the correct values
+ *
+ * @param node
+ * @returns
+ */
+function extractText(node?: TBText): string {
+  if (!node) {
+    return ''
+  }
+
+  if (Array.isArray(node.children)) {
+    return node.children.map(extractText).join('')
+  }
+
+  return node?.text || ''
 }

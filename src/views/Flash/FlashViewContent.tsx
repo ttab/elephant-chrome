@@ -1,6 +1,5 @@
 import {
   ViewHeader,
-  Title,
   Awareness,
   Byline,
   Section
@@ -29,6 +28,7 @@ import { type Session } from 'next-auth'
 import { addFlashToPlanning } from './addFlashToPlanning'
 import { addAssignmentLinkToFlash } from './addAssignmentToFlash'
 import { type EleBlock } from '@/shared/types'
+import { Validation } from '@/components/Validation'
 
 export const FlashViewContent = (props: ViewProps & {
   documentId: string
@@ -51,7 +51,7 @@ export const FlashViewContent = (props: ViewProps & {
     : undefined
   )
 
-  const [title] = useYValue<string | undefined>('title')
+  const [title, setTitle] = useYValue<string | undefined>('root.title', false)
   const [, setSections] = useYValue<EleBlock | undefined>('links.core/section')
   const [validateForm, setValidateForm] = useState<boolean>(!props.asDialog)
   const validateStateRef = useRef<ValidateState>({})
@@ -169,14 +169,6 @@ export const FlashViewContent = (props: ViewProps & {
       <ScrollArea className='grid @5xl:place-content-center'>
         <div className="space-y-5 py-5">
           <section className={cn(sectionVariants({ asCreateDialog: !!props?.asDialog }))}>
-            <div className="ps-1">
-              <Title
-                autoFocus={props.asDialog}
-                placeholder='Rubrik'
-                onValidation={handleValidation}
-              />
-            </div>
-
             <div className="flex flex-row gap-5 items-center">
               <div>
                 <GanttChartSquareIcon size={18} strokeWidth={1.75} className='text-muted-foreground' />
@@ -202,8 +194,10 @@ export const FlashViewContent = (props: ViewProps & {
                         setSections(undefined)
                         setSelectedPlanning({
                           value: option.value,
-                          label: option.value
+                          label: option.label
                         })
+                        // Clear validation for sektion
+                        handleValidation('core/section[0]', 'Sektion', 'dummy', '')
                       } else {
                         setSelectedPlanning(undefined)
                       }
@@ -240,7 +234,17 @@ export const FlashViewContent = (props: ViewProps & {
           </section>
 
           <section className={cn(sectionVariants({ asCreateDialog: !!props?.asDialog }), 'px-0')}>
-            <FlashEditor />
+            <FlashEditor setTitle={setTitle} />
+            <div className="px-6">
+              <div className="-mt-3">
+                <Validation
+                  label='Rubrk och innehåll'
+                  path='root.title'
+                  block='title'
+                  onValidation={handleValidation}
+                />
+              </div>
+            </div>
           </section>
 
           <section className={cn(sectionVariants({ asCreateDialog: !!props?.asDialog }))}>
@@ -257,7 +261,8 @@ export const FlashViewContent = (props: ViewProps & {
         </div>
 
 
-        {showVerifyDialog &&
+        {
+          showVerifyDialog &&
           <Prompt
             title="Skapa och skicka flash?"
             description={!selectedPlanning
@@ -286,28 +291,29 @@ export const FlashViewContent = (props: ViewProps & {
           />
         }
 
-        {props.asDialog && (
-          <div>
-            <Separator className='ml-0' />
+        {
+          props.asDialog && (
+            <div>
+              <Separator className='ml-0' />
 
-            <div className='flex justify-end px-6 py-4'>
-              <Button onClick={(): void => {
-                setValidateForm(true)
+              <div className='flex justify-end px-6 py-4'>
+                <Button onClick={(): void => {
+                  setValidateForm(true)
 
-                if (!Object.values(validateStateRef.current).every((block) => block.valid)) {
-                  return
-                }
+                  if (!Object.values(validateStateRef.current).every((block) => block.valid)) {
+                    return
+                  }
 
-                if (!planningDocument && !newPlanningDocument) {
-                  return
-                }
+                  if (!planningDocument && !newPlanningDocument) {
+                    return
+                  }
 
-                setShowVerifyDialog(true)
-              }}>
-                Skicka flash!
-              </Button>
-            </div>
-          </div>)
+                  setShowVerifyDialog(true)
+                }}>
+                  Skicka flash!
+                </Button>
+              </div>
+            </div>)
         }
 
       </ScrollArea >
