@@ -270,7 +270,7 @@ export const FlashViewContent = (props: ViewProps & {
               : `Denna flash kommer att läggas i ett nytt uppdrag i planeringen "${selectedPlanning.label}`
             }
             secondaryLabel='Avbryt'
-            primaryLabel='Ta bort'
+            primaryLabel='Skicka'
             onPrimary={() => {
               if (!provider || !props.documentId || !provider || !session) {
                 console.error('Environment is not sane, flash cannot be created')
