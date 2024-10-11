@@ -111,7 +111,7 @@ const AssignmentRowContent = ({ index, onSelect }: {
 
         <div className="flex grow gap-4 items-center">
           <AssignmentType path={`meta.core/assignment[${index}].meta.core/assignment-type`} />
-          <AssigneeAvatars assignees={authors.map((author) => author.name)} />
+          <AssigneeAvatars assignees={authors.map((author) => author.title)} />
 
           <div className="hidden items-center @3xl/view:flex">
             <SluglineButton path={`meta.core/assignment[${index}].meta.tt/slugline[0].value`} />
