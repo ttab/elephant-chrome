@@ -22,6 +22,7 @@ export const Story = (): JSX.Element => {
       <ComboBox
         max={1}
         size='xs'
+        modal={true}
         sortOrder='label'
         options={allStories}
         selectedOptions={selectedOptions}

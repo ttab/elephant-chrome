@@ -16,7 +16,6 @@ export const getAllAssignments = (result: Response<Item>): (MetaTwo[] | undefine
     const assignmentMetas = meta?.filter((assignmentMeta: MetaValueType) => assignmentMeta.type === 'core/assignment') as MetaTwo[]
     const newsvalue: (TypeValue | undefined) = meta?.find(assignmentMeta => assignmentMeta.type === 'core/newsvalue') as TypeValue
     assignmentMetas?.forEach((assignmentMeta: MetaTwo) => {
-      console.log('🍄 ~ assignmentMetas?.forEach ~ assignmentMeta ✅ ', assignmentMeta)
       assignments.push({
         ...assignmentMeta,
         planningTitle,

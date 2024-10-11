@@ -16,6 +16,7 @@ export const Section = ({ onValidation }: {
   })
   const path = 'links.core/section[0]'
 
+  const [, setSections] = useYValue<Block[] | undefined>(path)
   const [section, setSection] = useYValue<Block | undefined>(path)
 
   const setFocused = useRef<(value: boolean) => void>(null)
@@ -26,6 +27,7 @@ export const Section = ({ onValidation }: {
       <ComboBox
         max={1}
         size='xs'
+        modal={true}
         sortOrder='label'
         options={allSections}
         selectedOptions={selectedOptions}
@@ -36,14 +38,16 @@ export const Section = ({ onValidation }: {
           }
         }}
         onSelect={(option) => {
-          setSection(section?.title === option.label
-            ? undefined
-            : Block.create({
+          if (section?.title === option.label) {
+            setSections([])
+          } else {
+            setSection(Block.create({
               type: 'core/section',
               rel: 'section',
               uuid: option.value,
               title: option.label
             }))
+          }
         }}
       />
       {onValidation &&
@@ -52,7 +56,7 @@ export const Section = ({ onValidation }: {
           path={path}
           block='core/section'
           onValidation={onValidation}
-          />
+        />
       }
     </Awareness>
   )

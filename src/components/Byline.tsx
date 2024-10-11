@@ -5,8 +5,9 @@ import { Block } from '@ttab/elephant-api/newsdoc'
 import { useRef } from 'react'
 import { Validation } from './Validation'
 
-export const Byline = ({ onValidation }: {
+export const Byline = ({ onValidation, name }: {
   onValidation?: (block: string, label: string, value: string | undefined, reason: string) => boolean
+  name?: string
 }): JSX.Element => {
   const allAuthors = useAuthors().map((_) => {
     return {
@@ -24,7 +25,7 @@ export const Byline = ({ onValidation }: {
     authors?.some(a => a.uuid === author.value))
 
   return (
-    <Awareness name='Section' ref={setFocused} className='flex flex-col gap-2'>
+    <Awareness name={name || 'Byline'} ref={setFocused} className='flex flex-col gap-2'>
       <ComboBox
         size='xs'
         sortOrder='label'

@@ -4,7 +4,8 @@ import {
   Image,
   Camera,
   Video,
-  Aperture
+  Aperture,
+  ZapIcon
 } from '@ttab/elephant-ui/icons'
 
 const iconProps = {
@@ -18,6 +19,12 @@ export const AssignmentTypes: DefaultValueOption[] = [
     label: 'Text',
     value: 'text',
     icon: FileText,
+    iconProps
+  },
+  {
+    label: 'Flash',
+    value: 'flash',
+    icon: ZapIcon,
     iconProps
   },
   {

@@ -1,8 +1,7 @@
+import { get } from '@/lib/repository/get'
 import { useNavigation } from '@/navigation/hooks/useNavigation'
 import { type Document } from '@ttab/elephant-api/newsdoc'
 import { useEffect, useState } from 'react'
-
-const BASE_URL = import.meta.env.BASE_URL || ''
 
 /**
  * Return a copy of the NewsDoc document of the currently active view if any.
@@ -22,21 +21,15 @@ export const useActiveDocument = ({ type }: {
   useEffect(() => {
     const fetchData = async (): Promise<void> => {
       const documentId = state.content.find(s => {
-        return (type && s.props.name === type) && s.key === state.active
+        return (type && s.props.name === type) && (s.key === state.active || state.content.length === 1)
       })?.props.children.props.id
 
-      if (!documentId) {
+      if (!documentId || typeof documentId !== 'string') {
         setDocument(null)
         return
       }
 
-      const response = await fetch(`${BASE_URL}/api/documents/${documentId}`)
-      if (!response.ok) {
-        setDocument(null)
-        return
-      }
-
-      setDocument((await response.json() as Record<string, unknown>)?.document as Document || null)
+      setDocument(await get(documentId))
     }
 
     void fetchData()

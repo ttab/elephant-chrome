@@ -50,7 +50,6 @@ export async function fetchOrRefresh<TObject, TIndexItem>(
   return cachedAuthors || []
 }
 
-
 /**
  * Fetch all items of specified documentType from index, use supplied
  * transformer to transform each item from indexed datastructure to
@@ -63,18 +62,18 @@ export async function fetchFromIndex<TObject, TIndexItem>(
   transformer: (item: TIndexItem) => TObject
 ): Promise<TObject[] | undefined> {
   let page = 1
-  let totalPages: number | undefined
+  const size = 500
   const objs: TObject[] = []
 
   try {
-    do {
+    while (true) {
       const result = await get<TIndexItem>(
         new URL(indexUrl),
         accessToken,
         documentType,
         {
           page,
-          size: 500
+          size
         }
       )
 
@@ -86,9 +85,12 @@ export async function fetchFromIndex<TObject, TIndexItem>(
         objs.push(transformer(hit))
       })
 
+      if (result.hits.length < size) {
+        break
+      }
+
       page++
-      totalPages = result.pages
-    } while (totalPages && page <= totalPages)
+    }
   } catch (ex) {
     console.warn(ex)
     return

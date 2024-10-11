@@ -8,12 +8,12 @@ interface TitleProps {
 
 export const Title = ({ slugline, title }: TitleProps): JSX.Element => {
   return useMemo(() => (
-    <div className='flex space-x-2 justify-start items-center'>
-      <span className='truncate font-medium text-sm'>
+    <div className='truncate space-x-2 justify-start items-center'>
+      <span className='font-medium text-sm'>
         {title}
       </span>
 
-      <span className='hidden @2xl/view:[display:revert]'>
+      <span className=''>
         <SluglineButton value={slugline} />
       </span>
     </div>

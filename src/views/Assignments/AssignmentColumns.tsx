@@ -1,37 +1,73 @@
 /* eslint-disable react/prop-types */
 import { type ColumnDef } from '@tanstack/react-table'
-
-// import {
-//   CircleCheck,
-//   Crosshair,
-//   Shapes,
-//   SignalHigh,
-//   Users
-// } from '@ttab/elephant-ui/icons'
-// import { type IDBSection, type IDBAuthor } from 'src/datastore/types'
-// import { getNestedFacetedUniqueValues } from '@/components/Filter/lib/getNestedFacetedUniqueValues'
-// import { FacetedFilter } from '@/components/Commands/FacetedFilter'
-// import { Assignees } from '@/components/Table/Items/Assignees'
-// import { AssignmentTypes } from '@/defaults/assignmentTypes'
-// import { Type } from '@/components/Table/Items/Type'
-// import { Time } from '@/components/Table/Items/Time'
-// import { Newsvalues } from '@/defaults/newsvalues'
 import { NewsvalueMap } from '@/defaults/newsvalueMap'
 import { Newsvalue } from '@/components/Table/Items/Newsvalue'
 import { type MetaValueType, type MetaTwo } from './types'
-import { Briefcase, SignalHigh } from '@ttab/elephant-ui/icons'
+import { Briefcase, Crosshair, SignalHigh } from '@ttab/elephant-ui/icons'
 import { Newsvalues } from '@/defaults/newsvalues'
-import { Title } from '@/components/Table/Items/Title'
 import { FacetedFilter } from '@/components/Commands/FacetedFilter'
-import { typeFormat } from './lib/assignmentType'
 import { AssignmentTypes } from '@/defaults/assignmentTypes'
 import { Type } from '@/components/Table/Items/Type'
+import { getNestedFacetedUniqueValues } from '@/components/Filter/lib/getNestedFacetedUniqueValues'
+import { type DefaultValueOption } from '@/types/index'
 
 export function assignmentColumns(/* { authors = [], sections = [] }: {
   authors?: IDBAuthor[]
   sections?: IDBSection[]
 } */): Array<ColumnDef<MetaTwo & { planningTitle: string, newsvalue: string }>> {
   return [
+    {
+      id: 'assignmentType',
+      meta: {
+        Filter: ({ column, setSearch }) => (
+          <FacetedFilter column={column} setSearch={setSearch} facetFn={() => getNestedFacetedUniqueValues(column)} />
+        ),
+        options: AssignmentTypes,
+        name: 'Uppdragstyp',
+        columnIcon: Crosshair,
+        className: 'box-content w-8 sm:w-8 pr-1 sm:pr-4'
+      },
+      accessorFn: (data) => {
+        const assignmentTypes = data?.meta?.filter((metaType: MetaValueType) => metaType.type === 'core/assignment-type')
+        return assignmentTypes?.map(type => {
+          return AssignmentTypes.find(aType => {
+            return aType.value === type.value && type.value
+          })
+        })
+      },
+      cell: ({ row }) => {
+        const values: DefaultValueOption[] = row.getValue('assignmentType')
+        console.log('🍄 ~ values ✅ ', values)
+        return <Type data={values} />
+      }
+    },
+    {
+      id: 'titles',
+      meta: {
+        name: 'Uppdragstitlar',
+        columnIcon: Briefcase,
+        className: 'box-content sm:w-4 pr-1 sm:pr-4'
+      },
+      accessorFn: (data) => {
+        const documentTitle = data.planningTitle
+        const assignmentTitle = data.title
+        return {
+          documentTitle,
+          assignmentTitle
+        }
+      },
+      cell: ({ row }) => {
+        const data: { documentTitle: string, assignmentTitle: string } = row.getValue('titles') || {}
+        const { assignmentTitle, documentTitle } = data
+        return (
+          <div className='flex gap-1 items-center flex-1 w-[450px]'>
+            <div className='truncate space-x-2 justify-start items-center text-muted-foreground w-[300px]'>{documentTitle}</div>
+            {'>'}
+            <div className='space-x-2 justify-start items-center'>{assignmentTitle}</div>
+          </div>
+        )
+      }
+    },
     {
       id: 'newsvalue',
       meta: {
@@ -56,60 +92,6 @@ export function assignmentColumns(/* { authors = [], sections = [] }: {
       },
       filterFn: (row, id, value) => {
         return value.includes(row.getValue(id))
-      }
-    },
-    {
-      id: 'titles',
-      meta: {
-        name: 'Uppdragstitlar',
-        columnIcon: Briefcase,
-        className: 'box-content w-8 sm:w-8 pr-1 sm:pr-4'
-      },
-      accessorFn: (data) => {
-        const documentTitle = data.planningTitle
-        const assignmentTitle = data.title
-        return {
-          documentTitle,
-          assignmentTitle
-        }
-      },
-      cell: ({ row }) => {
-        const data: { documentTitle: string, assignmentTitle: string } = row.getValue('titles') || {}
-        const { assignmentTitle, documentTitle } = data
-
-        return (
-          <div>
-            <div className='flex gap-4'>
-              <Title title={documentTitle} slugline='' />
-              <div>{'>'}</div>
-              <Title title={assignmentTitle} slugline='' />
-            </div>
-          </div>
-        )
-      }
-    },
-    {
-      id: 'assignmentType',
-      meta: {
-        name: 'Uppdragstyp',
-        columnIcon: Briefcase,
-        className: 'box-content w-8 sm:w-8 pr-1 sm:pr-4'
-      },
-      accessorFn: (data) => {
-        const assignmentTypes = data?.meta?.filter((metaType: MetaValueType) => metaType.type === 'core/assignment-type')
-        return assignmentTypes?.map(type => {
-          return AssignmentTypes.find(aType => {
-            console.log('atype', aType)
-            console.log('type value', type.value)
-            return aType.value === type.value && type.value
-          })
-        })
-      },
-      cell: ({ row }) => {
-        const values = row.getValue('assignmentType')
-        console.log('🍄 ~ values ✅ ', values)
-        return <Type data={values} />
-        // return values.map((v: 'text' | 'picture') => typeFormat[v])
       }
     }
   ]

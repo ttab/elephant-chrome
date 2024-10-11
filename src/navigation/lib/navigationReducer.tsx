@@ -52,7 +52,7 @@ export function navigationReducer(state: NavigationState, action: NavigationActi
         throw new Error('ViewId is undefined')
       }
 
-      const current: ContentState = history.state.contentState.find((item: HistoryState) => item.viewId === action.viewId)
+      const current: ContentState = history.state.contentState.find((item: HistoryState) => item.viewId === action.viewId) || {}
 
       history.replaceState({
         id: action.viewId,

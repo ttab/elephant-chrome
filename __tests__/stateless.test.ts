@@ -18,7 +18,21 @@ describe('stateless', () => {
   })
 
   it('should create and parse a stateless in progress message', () => {
-    const message = { state: false, id: 'abce123', context: { accessToken: 'secrettoken' } }
+    const message = {
+      state: false,
+      id: 'abce123',
+      context: {
+        accessToken: 'secrettoken',
+        user: {
+          id: 'abce123',
+          sub: '123abc',
+          image: 'https://example.com/image.jpg',
+          name: 'Name Name',
+          email: 'name@example.com'
+        },
+        type: 'Planning'
+      }
+    }
 
     const statelessMsg = createStateless(StatelessType.IN_PROGRESS, message)
     expect(statelessMsg).toEqual(`${StatelessType.IN_PROGRESS}@${JSON.stringify(message)}`)

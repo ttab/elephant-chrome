@@ -46,12 +46,12 @@ export const Menu = (): JSX.Element => {
           </div>
         </div>
 
-        <div className="justify-self-end flex flex-col items-center justify-center rounded-md bg-gray-100 dark:bg-gray-800 mt-10">
+        <div className="justify-self-end flex flex-col items-center justify-center rounded-md bg-gray-100 dark:bg-gray-800 mt-10 pb-6">
           <div className="border-4 border-background rounded-full -mt-7">
             <Avatar user={data?.user} size="xl" variant="color" />
           </div>
 
-          <div className="p-2 py-4 pb-10 leading-loose text-center">
+          <div className="p-2 py-4 pb-4 leading-loose text-center">
             <div className="font-bold">{data?.user.name || '(Namn saknas)'}</div>
             <div className="text-xs opacity-60">{''}</div>
           </div>
