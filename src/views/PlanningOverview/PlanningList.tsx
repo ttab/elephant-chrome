@@ -35,7 +35,9 @@ export const PlanningList = ({ date }: { date: Date }): JSX.Element => {
   }, [startTime, endTime, indexUrl])
 
   console.log('searchurl', searchUrl)
+
   const { data, mutate } = useSWR(searchUrl?.href, async (): Promise<SearchIndexResponse<Planning> | undefined> => {
+    console.log('running fetch')
     if (status !== 'authenticated' || !indexUrl) {
       return
     }
@@ -48,6 +50,7 @@ export const PlanningList = ({ date }: { date: Date }): JSX.Element => {
         end: convertToISOStringInUTC(endTime)
       }
     })
+    console.log('🍄 ~ const{data,mutate}=useSWR ~ result ✅ ', result)
     if (result.ok) {
       const getCurrentDocumentStatus = (obj: Planning): string => {
         const item: Record<string, null | string[]> = obj._source

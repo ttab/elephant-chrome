@@ -13,6 +13,7 @@ import {
   type ColumnDef
 } from '@tanstack/react-table'
 import type { SearchIndexResponse } from '@/lib/index'
+import { type Item } from '@/views/Assignments/types'
 
 export interface CommandArgs {
   pages: string[]
@@ -41,7 +42,7 @@ export const TableProvider = <T,>({
   children,
   columns
 }: PropsWithChildren<{ columns: Array<ColumnDef<T, unknown>> }>): JSX.Element => {
-  const [data, setData] = useState<SearchIndexResponse<T> | null>([] as unknown as SearchIndexResponse<T>)
+  const [data, setData] = useState<SearchIndexResponse<T> | Response | null>([] as unknown as (SearchIndexResponse<T> | Response))
 
   const [rowSelection, setRowSelection] = useState({})
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
@@ -61,7 +62,7 @@ export const TableProvider = <T,>({
   }
 
   const table = useReactTable({
-    data: data?.hits || [],
+    data: data?.hits || data || [],
     columns,
     state: {
       sorting,

@@ -1,77 +1,77 @@
-import { searchIndex, type SearchIndexResponse } from './searchIndex'
-import { type Planning } from '@/lib/index/schemas'
+import { type Item, type Response } from '@/views/Assignments/types'
 
-interface Params {
-  page?: number
-  size?: number
-  query?: object
-  where?: {
-    start?: string | Date
-    end?: string | Date
-  }
-  sort?: {
-    start?: 'asc' | 'desc'
-    end?: 'asc' | 'desc'
-  }
-}
 
-// Since assignment posts are not separate document, searches for the Assignments overview are
-// conducted against the core_planning_item index.
-const search = async (endpoint: URL, accessToken: string, params: Params): Promise<SearchIndexResponse<Planning>> => {
-  const start = params?.where?.start ? new Date(params.where.start) : new Date()
-  const end = params?.where?.end ? new Date(params.where.end) : new Date()
+// interface Params {
+//   page?: number
+//   size?: number
+//   query?: object
+//   where?: {
+//     start?: string | Date
+//     end?: string | Date
+//   }
+//   sort?: {
+//     start?: 'asc' | 'desc'
+//     end?: 'asc' | 'desc'
+//   }
+// }
 
-  const sort: Array<Record<string, 'asc' | 'desc'>> = []
 
-  if (params?.sort?.start && ['asc', 'desc'].includes(params.sort.start)) {
-    sort.push({ 'document.meta.core_assignment.data.start': params.sort.start })
-  }
+const search = async (endpoint: URL, accessToken: string): Promise<Response<Item>> => {
+  // const start = params?.where?.start ? new Date(params.where.start) : new Date()
+  // const end = params?.where?.end ? new Date(params.where.end) : new Date()
 
-  if (params?.sort?.end) {
-    sort.push({ 'document.meta.core_assignment.data.end': params.sort.end })
-  }
+  const today = new Date()
+  today.setHours(0, 0, 0, 0)
 
-  sort.push({ 'document.meta.core_newsvalue.value': 'desc' })
+  const year = new Intl.DateTimeFormat('en', { year: 'numeric' }).format(today)
+  const month = new Intl.DateTimeFormat('en', { month: '2-digit' }).format(today)
+  const day = new Intl.DateTimeFormat('en', { day: '2-digit' }).format(today)
+
+  const hour = new Intl.DateTimeFormat('en', { hour: '2-digit', hourCycle: 'h23' }).format(today).padStart(2, '0')
+  const minute = new Intl.DateTimeFormat('en', { minute: '2-digit' }).format(today).padStart(2, '0')
+  const second = new Intl.DateTimeFormat('en', { second: '2-digit' }).format(today).padStart(2, '0')
+
+  const todayFormatted = `${year}-${month}-${day}T${hour}:${minute}:${second}Z`
 
   const query = {
+    document_type: 'core/planning-item',
     query: {
       bool: {
         must: [
           {
-            exists: {
-              field: 'document.meta.core_assignment.data.start'
+            term: {
+              field: 'document.meta.core_assignment.data.start_date',
+              value: todayFormatted
             }
           },
           {
-            exists: {
-              field: 'document.meta.core_assignment.data.end'
-            }
-          },
-          {
-            range: {
-              'document.meta.core_assignment.data.start': {
-                gte: start.toISOString(),
-                lte: end.toISOString()
-              }
+            term: {
+              field: 'document.meta.core_planning_item.data.start_date',
+              value: todayFormatted
             }
           }
         ]
       }
     },
-    _source: true,
-    sort
+    load_document: true,
+    sort: [
+      {
+        field: 'document.meta.core_assignment.data.start'
+      }
+    ]
   }
 
-  return await searchIndex(
-    query,
-    {
-      index: 'core_planning_item',
-      endpoint,
-      accessToken
+  const response = await fetch(endpoint, {
+    method: 'POST',
+    mode: 'cors',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: 'Bearer ' + accessToken
     },
-    params?.page,
-    params.size
-  )
+    body: JSON.stringify(query)
+  })
+
+  return await response.json()
 }
 
 export const Assignments = {

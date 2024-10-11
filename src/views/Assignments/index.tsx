@@ -6,11 +6,10 @@ import { ScrollArea, Tabs, TabsContent } from '@ttab/elephant-ui'
 import { TableProvider } from '@/contexts/TableProvider'
 import { TableCommandMenu } from '@/components/Commands/TableCommand'
 import { Header } from '@/components/Header'
-import { type Planning } from '@/lib/index/schemas/planning'
 import { AssignmentsList } from './AssignmentsList'
 import { assignmentColumns } from './AssignmentColumns'
-import { useAuthors } from '@/hooks/useAuthors'
 import { Commands } from '@/components/Commands'
+import { type Item } from './types'
 
 const meta: ViewMetadata = {
   name: 'Assignments',
@@ -32,14 +31,13 @@ export const Assignments = (): JSX.Element => {
   const [startDate, setStartDate] = useState<Date>(new Date())
   const [endDate, setEndDate] = useState<Date>(getEndDate(startDate))
   const [currentTab, setCurrentTab] = useState<string>('list')
-  const authors = useAuthors()
 
   useEffect(() => {
     setEndDate(getEndDate(startDate))
   }, [startDate])
 
   return (
-    <TableProvider<Planning> columns={assignmentColumns({ authors })}>
+    <TableProvider<Item> columns={assignmentColumns()}>
       <Tabs defaultValue={currentTab} className='flex-1' onValueChange={setCurrentTab}>
         <TableCommandMenu heading='Assignments'>
           <Commands />

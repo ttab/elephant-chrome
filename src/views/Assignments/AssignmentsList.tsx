@@ -1,27 +1,27 @@
 import { useMemo } from 'react'
 import useSWR from 'swr'
-import { useAuthors, useIndexUrl, useSections, useTable } from '@/hooks'
+import { useIndexUrl, useTable } from '@/hooks'
 import { useSession } from 'next-auth/react'
 import {
-  type SearchIndexResponse,
   Assignments
 } from '@/lib/index'
-import { type Planning } from '@/lib/index/schemas/planning'
-
 import { Table } from '@/components/Table'
+
 import { convertToISOStringInUTC, getDateTimeBoundaries } from '@/lib/datetime'
+import { type MetaTwo, type Item } from './types'
+
 import { assignmentColumns } from './AssignmentColumns'
+import { getAllAssignments, getAssignments, getNewsvalue } from './lib'
 
 export const AssignmentsList = ({ date }: { date: Date }): JSX.Element => {
-  const { setData } = useTable<Planning>()
+  const { setData } = useTable<Item>()
   const { data: session, status } = useSession()
 
   const indexUrl = useIndexUrl()
-  const authors = useAuthors()
-  const sections = useSections()
+  // const authors = useAuthors()
+  // const sections = useSections()
   const { startTime, endTime } = getDateTimeBoundaries(date)
 
-  // Create url to base SWR caching on
   const searchUrl = useMemo(() => {
     if (!indexUrl) {
       return
@@ -35,60 +35,37 @@ export const AssignmentsList = ({ date }: { date: Date }): JSX.Element => {
     return searchUrl
   }, [startTime, endTime, indexUrl])
 
-  const { data } = useSWR(searchUrl?.href, async (): Promise<SearchIndexResponse<Planning> | undefined> => {
+  useSWR(searchUrl?.href, async (): Promise<void> => {
     if (status !== 'authenticated' || !indexUrl) {
       return
     }
 
-    const result = await Assignments.search(indexUrl, session.accessToken, {
-      size: 100,
-      where: {
-        start: convertToISOStringInUTC(startTime),
-        end: convertToISOStringInUTC(endTime)
-      },
-      sort: {
-        start: 'asc'
-      }
-    })
-    if (result.ok) {
-      // TESTING
-      const assignments: Planning[] = []
-
-      result.hits.map(hit => {
-        if (hit._source['document.meta.core_assignment.meta.core_assignment_type.value'].length > 0) {
-          const assignment: { 'document.meta.core_assignment.meta.core_assignment_type.value'?: string } = {}
-
-          hit._source['document.meta.core_assignment.meta.core_assignment_type.value'].forEach(type => {
-            assignment['document.meta.core_assignment.meta.core_assignment_type.value'] = type
-          })
-          hit = assignment
+    const url = new URL('/twirp/elephant.index.SearchV1/Query', indexUrl)
+    let result = await Assignments.search(url, session.accessToken)
+    if (result?.hits?.hits?.length > 0) {
+      const allassignments = getAllAssignments(result)
+      // console.log('🍄 ~ useSWR ~ allassignments ✅ ', allassignments)
+      result = {
+        ...result,
+        hits: {
+          hits: allassignments
         }
-        return hit
-      })
-      result.hits = assignments
-
-      // TESTING
-      console.log(result.hits.slice(0, 10))
-      setData(result)
-      return result
+      }
+      setData(result.hits)
     }
   })
 
   return (
-    <>
-      {data?.ok === true &&
-        <Table
-          type='Planning'
-          columns={assignmentColumns({ authors, sections })}
-          onRowSelected={(row): void => {
-            if (row) {
-              console.info(`Selected assignment item ${row._id}`)
-            } else {
-              console.info('Deselected row')
-            }
-          }}
-        />
-      }
-    </>
+    <Table
+      type='Assignments'
+      columns={assignmentColumns()}
+      onRowSelected={(row): void => {
+        if (row) {
+          console.info(`Selected assignment item ${row.id}`)
+        } else {
+          console.info('Deselected row')
+        }
+      }}
+    />
   )
 }
