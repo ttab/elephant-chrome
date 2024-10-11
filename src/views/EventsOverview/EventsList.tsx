@@ -44,6 +44,7 @@ export const EventsList = ({ date }: { date: Date }): JSX.Element => {
         end: convertToISOStringInUTC(endTime)
       }
     })
+    console.log(convertToISOStringInUTC(startTime))
     if (result?.ok) {
       const eventIDs = result.hits?.map(hit => hit?._id)
       const statusResults = await Events.relatedPlanningSearch(indexUrl, session.accessToken, eventIDs, {

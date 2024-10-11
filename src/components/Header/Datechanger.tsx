@@ -1,30 +1,28 @@
 import { ChevronLeft, ChevronRight } from '@ttab/elephant-ui/icons'
+import { Link } from '@/components'
 import { DatePicker } from '../Datepicker'
 import {
   useEffect,
-  type Dispatch,
-  type SetStateAction
+  useMemo
 } from 'react'
-import { useView } from '@/hooks'
+import { useQuery, useView, useLink } from '@/hooks'
 import { isEditableTarget } from '@/lib/isEditableTarget'
-
-interface DateChangerProps {
-  startDate: Date
-  setStartDate: Dispatch<SetStateAction<Date>>
-  endDate?: Date
-  setEndDate?: Dispatch<SetStateAction<Date>>
-}
 
 // FIXME: Implement handling of date intervals, commented out at the moment
 
-export const DateChanger = ({
-  startDate,
-  setStartDate,
-  endDate,
-  setEndDate
-}: DateChangerProps): JSX.Element => {
+export const DateChanger = (): JSX.Element => {
   const { isActive } = useView()
-  const steps = !!endDate && !!setEndDate ? 7 : 1
+  const { startDate, endDate } = useQuery()
+  const _startDate = useMemo(() => {
+    console.log(startDate)
+    return startDate
+      ? new Date(startDate)
+      : new Date()
+  }, [startDate])
+
+  const steps = endDate ? 7 : 1
+
+  const changeDate = useLink('Plannings')
 
   useEffect(() => {
     const keyDownHandler = (evt: KeyboardEvent): void => {
@@ -34,36 +32,48 @@ export const DateChanger = ({
 
       if (evt.key === 'ArrowLeft' && !evt.altKey) {
         evt.stopPropagation()
-        setStartDate(decrementDate(startDate, steps))
+        changeDate(evt, { startDate: decrementDate(_startDate, steps) }, 'self')
       } else if (evt.key === 'ArrowRight' && !evt.altKey) {
         evt.stopPropagation()
-        setStartDate(incrementDate(startDate, steps))
+        changeDate(evt, { startDate: incrementDate(_startDate, steps) }, 'self')
       }
     }
 
     document.addEventListener('keydown', keyDownHandler)
     return () => document.removeEventListener('keydown', keyDownHandler)
-  }, [isActive, setStartDate, startDate, steps])
+  }, [isActive, _startDate, steps, changeDate])
 
   return (
     <div className="flex items-center">
-      <ChevronLeft
-        strokeWidth={1.75}
-        className='w-6 h-8 px-1 py-2 rounded cursor-pointer hover:bg-muted'
-        onClick={() => setStartDate(decrementDate(startDate, steps))}
+      <Link
+        to='Plannings'
+        props={{ startDate: decrementDate(_startDate, steps).toISOString().split('T')[0] }}
+        target='self'>
+        <ChevronLeft
+          strokeWidth={1.75}
+          className='w-6 h-8 px-1 py-2 rounded cursor-pointer hover:bg-muted'
       />
+      </Link>
 
-      <DatePicker date={startDate} setDate={setStartDate} />
+      <DatePicker date={_startDate} />
 
       {/* {!!endDate && !!setEndDate &&
         <DatePicker date={endDate} setDate={setEndDate} />
       } */}
 
-      <ChevronRight
-        strokeWidth={1.75}
-        className='w-6 h-8 px-1 py-2 rounded cursor-pointer hover:bg-muted'
-        onClick={() => setStartDate(incrementDate(startDate, steps))}
+      <Link
+        to='Plannings'
+        props={{ startDate: incrementDate(_startDate, steps).toISOString().split('T')[0] }}
+        target='self'
+      >
+        <ChevronRight
+          strokeWidth={1.75}
+          className='w-6 h-8 px-1 py-2 rounded cursor-pointer hover:bg-muted'
+          onClick={() => {
+            console.log(incrementDate(_startDate, steps).toISOString().split('T')[0])
+          }}
       />
+      </Link>
     </div>
   )
 }

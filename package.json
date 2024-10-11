@@ -18,8 +18,8 @@
     "start:local": "NODE_ENV=production node --env-file .env dist/src-srv/index.js",
     "lint": "npm run tsc && eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "tsc": "tsc --noEmit",
-    "test": "vitest run",
-    "test:watch": "vitest",
+    "test": "TZ=Europe/Stockholm vitest run",
+    "test:watch": "TZ=Europe/Stockholm vitest",
     "test:coverage": "vitest run --coverage",
     "preview": "vite preview"
   },

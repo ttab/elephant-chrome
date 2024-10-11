@@ -10,6 +10,7 @@ export const useLink = <T extends HTMLElement>(viewName: View) => {
   return (
     event: MouseEvent<T> | KeyboardEvent<T>,
     props: Record<string, unknown>,
+    target?: 'self',
     callbacks?: Record<string, () => void>
   ): void => {
     handleLink({
@@ -20,6 +21,7 @@ export const useLink = <T extends HTMLElement>(viewName: View) => {
       props: { ...props },
       viewId: crypto.randomUUID(),
       origin,
+      target,
       onDocumentCreated: callbacks?.onDocumentCreated
     })
   }

@@ -10,6 +10,7 @@ interface LinkProps {
   to: View
   props?: ViewProps
   onClick?: (event: unknown) => void
+  target?: 'self'
   className?: string
 }
 
@@ -39,7 +40,8 @@ export const Link = forwardRef((props: LinkProps, ref: ForwardedRef<HTMLAnchorEl
           viewRegistry: state.viewRegistry,
           props: { ...props.props },
           viewId,
-          origin
+          origin,
+          target: props.target
         })
       }}
       ref={ref}>

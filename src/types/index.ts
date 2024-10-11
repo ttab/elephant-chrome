@@ -79,6 +79,7 @@ export interface ViewProps {
   asCreateDialog?: boolean
   onDialogClose?: (id?: string) => void
   onDocumentCreated?: () => void
+  startDate?: string
   className?: string
 }
 

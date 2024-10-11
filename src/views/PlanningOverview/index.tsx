@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { type ViewMetadata } from '@/types'
 import { ViewHeader } from '@/components'
 import { CalendarDaysIcon } from '@ttab/elephant-ui/icons'
@@ -13,8 +13,11 @@ import { Header } from '@/views/PlanningOverview/PlanningHeader'
 import { PlanningCommands } from './PlanningCommands'
 import { planningTableColumns } from './PlanningListColumns'
 import { type Planning } from '@/lib/index'
-import { useSections } from '@/hooks/useSections'
-import { useAuthors } from '@/hooks/useAuthors'
+import {
+  useSections,
+  useAuthors,
+  useQuery
+} from '@/hooks'
 
 const meta: ViewMetadata = {
   name: 'Plannings',
@@ -33,15 +36,16 @@ const meta: ViewMetadata = {
 }
 
 export const Plannings = (): JSX.Element => {
-  const [startDate, setStartDate] = useState<Date>(new Date())
-  const [endDate, setEndDate] = useState<Date>(getEndDate(startDate))
+  const { startDate } = useQuery()
+  const _startDate = useMemo(() => new Date(startDate || Date.now()), [startDate])
+  const [endDate, setEndDate] = useState<Date>(getEndDate(_startDate))
   const [currentTab, setCurrentTab] = useState<string>('list')
   const sections = useSections()
   const authors = useAuthors()
 
   useEffect(() => {
-    setEndDate(getEndDate(startDate))
-  }, [startDate])
+    setEndDate(getEndDate(_startDate))
+  }, [_startDate])
 
   return (
     <TableProvider<Planning> columns={planningTableColumns({ sections, authors })}>
@@ -58,10 +62,6 @@ export const Plannings = (): JSX.Element => {
             <ViewHeader.Content>
               <Header
                 tab={currentTab}
-                startDate={startDate}
-                setStartDate={setStartDate}
-                endDate={endDate}
-                setEndDate={setEndDate}
               />
             </ViewHeader.Content>
 
@@ -70,11 +70,11 @@ export const Plannings = (): JSX.Element => {
 
           <ScrollArea>
             <TabsContent value='list' className='mt-0'>
-              <PlanningList date={startDate} />
+              <PlanningList date={_startDate} />
             </TabsContent>
 
             <TabsContent value='grid'>
-              <PlanningGrid startDate={startDate} endDate={endDate} />
+              <PlanningGrid startDate={_startDate} endDate={endDate} />
             </TabsContent>
           </ScrollArea>
         </div>

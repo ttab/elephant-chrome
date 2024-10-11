@@ -18,6 +18,7 @@ interface LinkClick<T> {
   viewId: string
   props?: ViewProps
   origin: string
+  target?: 'self'
   onDocumentCreated?: () => void
 }
 
@@ -29,6 +30,7 @@ export function handleLink<T>({
   props,
   viewId,
   origin,
+  target,
   onDocumentCreated
 }: LinkClick<T>): void {
   if (event?.ctrlKey || event?.metaKey) {
@@ -49,13 +51,14 @@ export function handleLink<T>({
 
   // If modifier is used, open furthest to the right
   // Otherwise open to the right of origin
+  const currentIndex = content.findIndex(c => c.viewId === origin)
   if (event?.shiftKey) {
     content.push(newContent)
+  } else if (target === 'self') {
+    console.log('self')
+    content.splice(currentIndex - 1, 1, newContent)
   } else {
-    const currentIndex = content.findIndex(c => c.viewId === origin)
-
-    content.splice(currentIndex + 1)
-    content.push(newContent)
+    content.splice(currentIndex + 1, Infinity, newContent)
   }
 
   event?.preventDefault()
