@@ -15,7 +15,7 @@ import { cva } from 'class-variance-authority'
 import { cn } from '@ttab/elephant-ui/utils'
 import { createStateless, StatelessType } from '@/shared/stateless'
 import { useSession } from 'next-auth/react'
-import { useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { type Planning, Plannings } from '@/lib/index'
 import { convertToISOStringInUTC, getDateTimeBoundaries } from '@/lib/datetime'
 import { FlashEditor } from './FlashEditor'
@@ -29,6 +29,7 @@ import { addFlashToPlanning } from './addFlashToPlanning'
 import { addAssignmentLinkToFlash } from './addAssignmentToFlash'
 import { type EleBlock } from '@/shared/types'
 import { Validation } from '@/components/Validation'
+import { getValueByYPath } from '@/lib/yUtils'
 
 export const FlashViewContent = (props: ViewProps & {
   documentId: string
@@ -52,7 +53,7 @@ export const FlashViewContent = (props: ViewProps & {
   )
 
   const [title, setTitle] = useYValue<string | undefined>('root.title', false)
-  const [, setSections] = useYValue<EleBlock | undefined>('links.core/section')
+  const [, setSection] = useYValue<EleBlock | undefined>('links.core/section[0]')
   const [validateForm, setValidateForm] = useState<boolean>(!props.asDialog)
   const validateStateRef = useRef<ValidateState>({})
 
@@ -70,6 +71,16 @@ export const FlashViewContent = (props: ViewProps & {
   const { document: planningDocument } = useCollaborationDocument({
     documentId: selectedPlanning?.value
   })
+
+  useEffect(() => {
+    if (planningDocument) {
+      const [planningSection] = getValueByYPath<EleBlock>(planningDocument.getMap('ele'), 'links.core/section[0]')
+      if (planningSection) {
+        setSection(planningSection)
+      }
+
+    }
+  }, [planningDocument])
 
   //  Helper function to search for planning items.
   const fetchAsyncData = async (str: string): Promise<DefaultValueOption[]> => {
@@ -191,13 +202,10 @@ export const FlashViewContent = (props: ViewProps & {
                     minSearchChars={2}
                     onSelect={(option) => {
                       if (option) {
-                        setSections(undefined)
                         setSelectedPlanning({
                           value: option.value,
                           label: option.label
                         })
-                        // Clear validation for sektion
-                        handleValidation('core/section[0]', 'Sektion', 'dummy', '')
                       } else {
                         setSelectedPlanning(undefined)
                       }

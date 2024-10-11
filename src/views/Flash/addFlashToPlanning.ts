@@ -10,7 +10,6 @@ export function addFlashToPlanning(flashDoc: Y.Doc, planningDoc: Y.Doc, assignme
   const [flashId] = getValueByYPath<string>(flash, 'root.uuid')
   const [flashTitle] = getValueByYPath<string>(flash, 'root.title')
   const [flashSections] = getValueByYPath<Y.Array<unknown>>(flash, 'links.core/section', true)
-  const [flashLinks] = getValueByYPath<Y.Map<unknown>>(flash, 'links', true)
 
   const planning = planningDoc.getMap('ele')
   const [planningTitle, planningRoot] = getValueByYPath<string>(planning, 'root.title')
@@ -32,11 +31,6 @@ export function addFlashToPlanning(flashDoc: Y.Doc, planningDoc: Y.Doc, assignme
     const [planningLinks] = getValueByYPath<Y.Map<Y.Array<unknown>>>(planning, 'links', true)
     // @ts-expect-error Typescript don't understand safeguard !flashSections?.length
     planningLinks?.set('core/section', flashSections.clone())
-  }
-
-  // Make sure flash does not have any section left
-  if (flashLinks?.get('core/section')) {
-    flashLinks?.delete('core/section')
   }
 
   // Create assignment (using given assignment id)
