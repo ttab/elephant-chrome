@@ -66,7 +66,7 @@ export const DatePicker = ({ date, changeDate, setDate, forceYear = false }: {
             !date && 'text-muted-foreground'
           )}
         >
-          <CalendarIcon size={18} strokeWidth={1.75} className='mr-3.5' />
+          <CalendarIcon size={18} strokeWidth={1.75} className='hidden @3xl/view:inline mr-3.5' />
 
           <span className={cn(defaultDate({ forceYear }))}>{formattedDate}</span>
           <span className={cn(longDate({ forceYear }))}>{longFormattedDate}</span>
