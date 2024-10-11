@@ -1,6 +1,6 @@
 import { convertToISOStringInTimeZone } from '@/lib/datetime'
 import { isYMap } from '@/lib/isType'
-import { getValueByYPath } from '@/lib/yUtils'
+import { getValueByYPath, toSlateYXmlText } from '@/lib/yUtils'
 import { YBlock } from '@/shared/YBlock'
 import { toYMap } from '../../../src-srv/utils/transformations/lib/toYMap'
 import * as Y from 'yjs'
@@ -25,7 +25,7 @@ export function addFlashToPlanning(flashDoc: Y.Doc, planningDoc: Y.Doc, assignme
 
   // If no planning title exists this is a new planning
   if (!planningTitle) {
-    (planningRoot).set('title', flashTitle)
+    (planningRoot).set('title', toSlateYXmlText(flashTitle))
 
     // Transfer section to planning
     const [planningLinks] = getValueByYPath<Y.Map<Y.Array<unknown>>>(planning, 'links', true)

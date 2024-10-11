@@ -220,7 +220,7 @@ export function toYStructure(value: unknown): unknown {
  * @param value string
  * @returns Y.XmlText
  */
-function toSlateYXmlText(value: string): Y.XmlText {
+export function toSlateYXmlText(value: string): Y.XmlText {
   const elements = stringToTextbitText(value)
 
   const yXmlText = new Y.XmlText()
