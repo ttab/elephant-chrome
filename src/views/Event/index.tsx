@@ -28,6 +28,7 @@ import {
 import { PlanningTable } from './components/PlanningTable'
 import { useState, useRef } from 'react'
 import { ValidationAlert } from '@/components/ValidationAlert'
+import { EventTimeMenu } from './components/EventTime'
 
 const meta: ViewMetadata = {
   name: 'Event',
@@ -141,7 +142,7 @@ const EventViewContent = (props: ViewProps & { documentId: string }): JSX.Elemen
             <Description role='public' />
             <Registration />
 
-            <p>Datetime TODO</p>
+            <EventTimeMenu />
           </div>
 
           <div className='flex flex-col space-y-2 w-fit'>

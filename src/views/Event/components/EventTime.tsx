@@ -23,8 +23,8 @@ interface EventData {
   dateGranularity: 'date' | 'datetime'
 }
 
-interface ExcecutionTimeItemsProps extends React.PropsWithChildren {
-  handleOnSelect: ({ excecutionStart, executionEnd }: { excecutionStart: string | undefined, executionEnd: string | undefined }) => void
+interface EventTimeItemsProps extends React.PropsWithChildren {
+  // handleOnSelect?: ({ excecutionStart, executionEnd }: { excecutionStart: string | undefined, executionEnd: string | undefined }) => void
   className?: string
   index?: number
   startDate?: string
@@ -49,7 +49,27 @@ const testValid = (time: string): boolean => {
   return (/^([0-1]?[0-9]|2[0-4]):([0-5][0-9])(:[0-5][0-9])?$/.test(time))
 }
 
-export const ExcecutionTimeMenu = ({ startDate }: ExcecutionTimeItemsProps): JSX.Element => {
+const dateMidnight = (date: Date): Date => {
+  return new Date(
+    date.getFullYear(),
+    date.getMonth(),
+    date.getDate(),
+    0,
+    0,
+    0,
+    0
+  )
+}
+
+const dateToReadableDay = (date: Date, locale: string, timeZone: string) => {
+  return new Intl.DateTimeFormat(locale, {
+    timeZone,
+    day: 'numeric',
+    month: 'short',
+  }).format(date)
+}
+
+export const EventTimeMenu = ({ startDate }: EventTimeItemsProps): JSX.Element => {
   const [open, setOpen] = useState(false)
   const inputRef = useRef(null)
   const [eventData, setEventData] = useYValue<EventData>('meta.core/event[0].data')
@@ -65,10 +85,13 @@ export const ExcecutionTimeMenu = ({ startDate }: ExcecutionTimeItemsProps): JSX
   const [mounted, setMounted] = useState(false)
   const [startTimeValid, setStartTimeValid] = useState(false)
   const [endTimeValid, setEndTimeValid] = useState(false)
+  const [fullDay, setFullDay] = useState(true)
 
   useEffect(() => {
     if (!mounted && eventData) {
       const dates: Date[] = []
+
+      setFullDay(eventData?.dateGranularity === 'date')
 
       if (eventData?.start) {
         const aDate = new Date(eventData.start.toString())
@@ -81,15 +104,7 @@ export const ExcecutionTimeMenu = ({ startDate }: ExcecutionTimeItemsProps): JSX
         setStartTimeValid(testValid(startValue))
 
         const startDateObject = new Date(eventData.start)
-        const newStartDayWithTime = new Date(
-          startDateObject.getFullYear(),
-          startDateObject.getMonth(),
-          startDateObject.getDate(),
-          0,
-          0,
-          0,
-          0
-        )
+        const newStartDayWithTime = dateMidnight(startDateObject)
         dates.push(newStartDayWithTime)
       }
 
@@ -105,15 +120,7 @@ export const ExcecutionTimeMenu = ({ startDate }: ExcecutionTimeItemsProps): JSX
         setEndTimeValid(testValid(endValue))
 
         const endDate = new Date(eventData.end)
-        const newEndDayWithTime = new Date(
-          endDate.getFullYear(),
-          endDate.getMonth(),
-          endDate.getDate(),
-          0,
-          0,
-          0,
-          0
-        )
+        const newEndDayWithTime = dateMidnight(endDate)
         if (dates.length === 1 && (dates[0].getTime() !== newEndDayWithTime.getTime())) {
           dates.push(newEndDayWithTime)
         }
@@ -124,8 +131,34 @@ export const ExcecutionTimeMenu = ({ startDate }: ExcecutionTimeItemsProps): JSX
     }
   }, [eventData, mounted])
 
-  const handleOnSelect = ({eventStart, eventEnd}: {eventStart: string | undefined, eventEnd: string | undefined}) => {
-    console.log('XXX event', eventStart, eventEnd)
+  const handleOnSelect = ({ eventStart, eventEnd, fullDay }: { eventStart: string, eventEnd: string, fullDay: boolean | undefined }) => {
+    console.log('XXX event', eventStart, eventEnd, fullDay)
+    let startDate = eventStart
+    let endDate = eventEnd
+    if (fullDay) {
+      const start = new Date(eventStart)
+      const startMidnight = dateMidnight(start)
+      startDate = startMidnight.toISOString()
+
+      const end = new Date(eventEnd)
+      const endDay = new Date(
+        end.getFullYear(),
+        end.getMonth(),
+        end.getDate(),
+        23,
+        59,
+        59,
+        999
+      )
+      endDate = endDay.toISOString()
+    }
+    const newEventData: EventData = {
+      start: startDate,
+      end: endDate,
+      dateGranularity: fullDay ? 'date' : 'datetime',
+      registration: eventData?.registration ? eventData.registration : ''
+    }
+    setEventData(newEventData)
   }
 
   const handleStartTimeChange: ChangeEventHandler<HTMLInputElement> = (e) => {
@@ -213,8 +246,7 @@ export const ExcecutionTimeMenu = ({ startDate }: ExcecutionTimeItemsProps): JSX
   }
 
   const handleCheckedChange = (checked: boolean): void => {
-    setHasEndTime(checked)
-    handleEndTime(endTimeValue)
+    setFullDay(checked)
   }
   const iconProps = {
     size: 18,
@@ -237,7 +269,7 @@ export const ExcecutionTimeMenu = ({ startDate }: ExcecutionTimeItemsProps): JSX
           <DateLabel fromDate={eventData?.start} toDate={eventData?.end} />
         </div>
       </PopoverTrigger>
-      <PopoverContent>
+      <PopoverContent asChild align='center' side='bottom' sideOffset={-150}>
         <div>
           <Calendar
             mode='multiple'
@@ -249,16 +281,20 @@ export const ExcecutionTimeMenu = ({ startDate }: ExcecutionTimeItemsProps): JSX
             initialFocus
             className='p-0'
           />
+          <div className='flex pt-2 pb-2 '>
+            <Switch onCheckedChange={checked => handleCheckedChange(checked)} checked={fullDay} className=' self-center' /><label className='text-sm self-center p-2'>Heldag</label>
+          </div>
           <div className='flex justify-between border-2 rounded-md border-slate-100'>
-            <div className='px-3 py-2 text-sm'>
-              {startDateValue && dateToReadableDateTime(new Date(startDateValue), locale, timeZone)}
+            <div className='px-3 py-2 text-sm text-gray-400'>
+              {startDateValue && dateToReadableDay(new Date(startDateValue), locale, timeZone)}
             </div>
             <div>
               <Input
                 type='time'
                 ref={inputRef}
-                value={startTimeValue}
+                value={fullDay ? '' : startTimeValue}
                 onChange={handleStartTimeChange}
+                disabled={fullDay}
                 placeholder={'hh:mm ex 11:00'}
                 className="h-9 border-none"
                 onKeyDown={(e) => {
@@ -267,55 +303,52 @@ export const ExcecutionTimeMenu = ({ startDate }: ExcecutionTimeItemsProps): JSX
                   }
                   if (e.key === 'Enter') {
                     e.preventDefault()
-                    if (hasEndTime ? (!startTimeValid || !endTimeValid) : !startTimeValid) {
-                      handleOnSelect({
-                        eventStart: startDateValue,
-                        eventEnd: hasEndTime ? endDateValue : undefined
-                      })
-                    }
+
+                    handleOnSelect({
+                      eventStart: startDateValue as string,
+                      eventEnd: endDateValue as string,
+                      fullDay: fullDay as boolean
+                    })
+
                     setOpen(false)
                   }
                 }}
               />
             </div>
           </div>
-          <div>
-            <div className='pt-2 pb-2'>
-              <Switch onCheckedChange={handleCheckedChange} checked={hasEndTime}>Från-till</Switch>
+          <div className='flex justify-between border-2 rounded-md border-slate-100 mt-2'>
+            <div className='px-3 py-2 text-sm text-gray-400'>
+              {endDateValue && dateToReadableDay(new Date(endDateValue), locale, timeZone)}
             </div>
-
-            <div className='flex justify-between border-2 rounded-md border-slate-100'>
-              <div className='px-3 py-2 text-sm'>
-                {(hasEndTime && endDateValue) && dateToReadableDateTime(new Date(endDateValue), locale, timeZone)}
-              </div>
-              <div>
-                <Input
-                  type='time'
-                  ref={inputRef}
-                  value={hasEndTime ? endTimeValue : ''}
-                  onChange={handleEndTimeChange}
-                  disabled={!hasEndTime}
-                  placeholder={'hh:mm ex 11:00'}
-                  className="h-9 border-none"
-                  onKeyDown={(e) => {
-                    if (e.key === 'Escape') {
+            <div>
+              <Input
+                type='time'
+                ref={inputRef}
+                value={fullDay ? '' : endTimeValue}
+                onChange={handleEndTimeChange}
+                disabled={fullDay}
+                placeholder={'hh:mm ex 11:00'}
+                className="h-9 border-none"
+                onKeyDown={(e) => {
+                  if (e.key === 'Escape') {
+                    setOpen(false)
+                  }
+                  if (e.key === 'Enter') {
+                    e.preventDefault()
+                    if (startTimeValid && endTimeValid) {
+                      handleOnSelect({
+                        eventStart: startDateValue as string,
+                        eventEnd: endDateValue as string,
+                        fullDay: fullDay
+                      })
                       setOpen(false)
                     }
-                    if (e.key === 'Enter') {
-                      e.preventDefault()
-                      if (startTimeValid && endTimeValid) {
-                        handleOnSelect({
-                          eventStart: startDateValue,
-                          eventEnd: hasEndTime ? endDateValue : undefined
-                        })
-                        setOpen(false)
-                      }
-                    }
-                  }}
-                />
-              </div>
+                  }
+                }}
+              />
             </div>
           </div>
+
           <div className='flex items-center justify-end gap-4 pt-2'>
             <Button
               variant="ghost"
@@ -328,14 +361,15 @@ export const ExcecutionTimeMenu = ({ startDate }: ExcecutionTimeItemsProps): JSX
             </Button>
             <Button
               variant="outline"
-              disabled={ hasEndTime ? (!startTimeValid || !endTimeValid) : !startTimeValid}
+              disabled={hasEndTime ? (!startTimeValid || !endTimeValid) : !startTimeValid}
               onClick={(evt) => {
                 evt.preventDefault()
                 evt.stopPropagation()
 
                 handleOnSelect({
-                  eventStart: startDateValue,
-                  eventEnd: hasEndTime ? endDateValue : undefined
+                  eventStart: startDateValue as string,
+                  eventEnd: endDateValue as string,
+                  fullDay: fullDay
                 })
                 setOpen(false)
               }}
