@@ -16,7 +16,6 @@ export const Section = ({ onValidation }: {
   })
   const path = 'links.core/section[0]'
 
-  const [, setSections] = useYValue<Block[] | undefined>(path)
   const [section, setSection] = useYValue<Block | undefined>(path)
 
   const setFocused = useRef<(value: boolean) => void>(null)
@@ -39,7 +38,7 @@ export const Section = ({ onValidation }: {
         }}
         onSelect={(option) => {
           if (section?.title === option.label) {
-            setSections([])
+            setSection(undefined)
           } else {
             setSection(Block.create({
               type: 'core/section',
@@ -54,7 +53,7 @@ export const Section = ({ onValidation }: {
         <Validation
           label='Sektion'
           path={path}
-          block='core/section'
+          block='core/section[0]'
           onValidation={onValidation}
         />
       }
