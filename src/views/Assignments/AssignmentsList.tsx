@@ -1,6 +1,6 @@
 import { useMemo } from 'react'
 import useSWR from 'swr'
-import { useIndexUrl, useTable } from '@/hooks'
+import { useAuthors, useIndexUrl, useTable } from '@/hooks'
 import { useSession } from 'next-auth/react'
 import {
   Assignments
@@ -18,7 +18,7 @@ export const AssignmentsList = ({ date }: { date: Date }): JSX.Element => {
   const { data: session, status } = useSession()
 
   const indexUrl = useIndexUrl()
-  // const authors = useAuthors()
+  const authors = useAuthors()
   // const sections = useSections()
   const { startTime, endTime } = getDateTimeBoundaries(date)
 
@@ -58,7 +58,7 @@ export const AssignmentsList = ({ date }: { date: Date }): JSX.Element => {
   return (
     <Table
       type='Assignments'
-      columns={assignmentColumns()}
+      columns={assignmentColumns({ authors })}
       onRowSelected={(row): void => {
         if (row) {
           console.info(`Selected assignment item ${row.id}`)

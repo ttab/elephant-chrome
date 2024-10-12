@@ -10,6 +10,7 @@ import { AssignmentsList } from './AssignmentsList'
 import { assignmentColumns } from './AssignmentColumns'
 import { Commands } from '@/components/Commands'
 import { type Item } from './types'
+import { useAuthors } from '@/hooks/useAuthors'
 
 const meta: ViewMetadata = {
   name: 'Assignments',
@@ -31,13 +32,14 @@ export const Assignments = (): JSX.Element => {
   const [startDate, setStartDate] = useState<Date>(new Date())
   const [endDate, setEndDate] = useState<Date>(getEndDate(startDate))
   const [currentTab, setCurrentTab] = useState<string>('list')
+  const authors = useAuthors()
 
   useEffect(() => {
     setEndDate(getEndDate(startDate))
   }, [startDate])
 
   return (
-    <TableProvider<Item> columns={assignmentColumns()}>
+    <TableProvider<Item> columns={assignmentColumns({ authors })}>
       <Tabs defaultValue={currentTab} className='flex-1' onValueChange={setCurrentTab}>
         <TableCommandMenu heading='Assignments'>
           <Commands />

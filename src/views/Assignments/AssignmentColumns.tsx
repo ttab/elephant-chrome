@@ -1,20 +1,21 @@
 /* eslint-disable react/prop-types */
-import { type ColumnDef } from '@tanstack/react-table'
 import { NewsvalueMap } from '@/defaults/newsvalueMap'
 import { Newsvalue } from '@/components/Table/Items/Newsvalue'
-import { type MetaValueType, type MetaTwo } from './types'
-import { Briefcase, Crosshair, SignalHigh } from '@ttab/elephant-ui/icons'
+import { Briefcase, Crosshair, SignalHigh, Users } from '@ttab/elephant-ui/icons'
 import { Newsvalues } from '@/defaults/newsvalues'
 import { FacetedFilter } from '@/components/Commands/FacetedFilter'
 import { AssignmentTypes } from '@/defaults/assignmentTypes'
 import { Type } from '@/components/Table/Items/Type'
 import { getNestedFacetedUniqueValues } from '@/components/Filter/lib/getNestedFacetedUniqueValues'
+import { type MetaValueType, type MetaTwo, Assignee, AssigneeMeta, Status } from './types'
+import { type ColumnDef } from '@tanstack/react-table'
 import { type DefaultValueOption } from '@/types/index'
+import { type IDBAuthor } from 'src/datastore/types'
+import { Assignees } from '@/components/Table/Items/Assignees'
 
-export function assignmentColumns(/* { authors = [], sections = [] }: {
+export function assignmentColumns({ authors = [] }: {
   authors?: IDBAuthor[]
-  sections?: IDBSection[]
-} */): Array<ColumnDef<MetaTwo & { planningTitle: string, newsvalue: string }>> {
+}): Array<ColumnDef<MetaTwo & { planningTitle: string, newsvalue: string }>> {
   return [
     {
       id: 'assignmentType',
@@ -37,16 +38,15 @@ export function assignmentColumns(/* { authors = [], sections = [] }: {
       },
       cell: ({ row }) => {
         const values: DefaultValueOption[] = row.getValue('assignmentType')
-        console.log('🍄 ~ values ✅ ', values)
         return <Type data={values} />
       }
     },
     {
       id: 'titles',
       meta: {
-        name: 'Uppdragstitlar',
+        name: 'Titlar',
         columnIcon: Briefcase,
-        className: 'box-content sm:w-4 pr-1 sm:pr-4'
+        className: 'box-content w-[450px]'
       },
       accessorFn: (data) => {
         const documentTitle = data.planningTitle
@@ -60,10 +60,10 @@ export function assignmentColumns(/* { authors = [], sections = [] }: {
         const data: { documentTitle: string, assignmentTitle: string } = row.getValue('titles') || {}
         const { assignmentTitle, documentTitle } = data
         return (
-          <div className='flex gap-1 items-center flex-1 w-[450px]'>
-            <div className='truncate space-x-2 justify-start items-center text-muted-foreground w-[300px]'>{documentTitle}</div>
+          <div className='truncate pr-1 sm:pr-4 gap-1 items-center flex w-[450px]'>
+            <div className='truncate space-x-2 items-center text-muted-foreground w-[200px] max-w-[200px] min-w-[200px]'>{documentTitle}</div>
             {'>'}
-            <div className='space-x-2 justify-start items-center'>{assignmentTitle}</div>
+            <div className='flex flex-1 space-x-2 items-center'>{assignmentTitle}</div>
           </div>
         )
       }
@@ -93,6 +93,32 @@ export function assignmentColumns(/* { authors = [], sections = [] }: {
       filterFn: (row, id, value) => {
         return value.includes(row.getValue(id))
       }
+    },
+    {
+      id: 'assignees',
+      meta: {
+        options: authors.map((_) => ({ value: _.name, label: _.name })),
+        Filter: ({ column, setSearch }) => (
+          <FacetedFilter column={column} setSearch={setSearch} facetFn={() => getNestedFacetedUniqueValues(column)} />
+        ),
+        name: 'Uppdragstagare',
+        columnIcon: Users,
+        className: 'flex-none w-[112px] hidden @5xl/view:[display:revert]'
+      },
+      accessorFn: (data) => data.links,
+      cell: ({ row }) => {
+        const data = row.getValue<Array<AssigneeMeta | Status>>('assignees') || [] as AssigneeMeta[]
+        console.log('🍄 ~ data ✅ ', data)
+        const assignees = data.map((assignee: AssigneeMeta) => assignee?.title)
+        // const _assignees = ['Victor Lindh']
+
+        return <Assignees assignees={assignees} />
+      },
+      filterFn: (row, id, value) => (
+        typeof value?.[0] === 'string'
+          ? (row.getValue<string[]>(id) || []).includes(value[0])
+          : false
+      )
     }
   ]
 }

@@ -1,14 +1,15 @@
 
 
-interface Assignee {
+export interface AssigneeMeta {
   name: string
   rel: string
   role: string
+  title: string
   type: string
   uuid: string
 }
 
-interface Status {
+export interface Status {
   rel: string
   type: string
   uuid: string
@@ -46,7 +47,7 @@ export type MetaValueType = MetaOne | MetaTwo | TypeValue
 export interface MetaTwo {
   data: EventDetails
   id: string
-  links: Array<Assignee | Status>
+  links: Array<AssigneeMeta | Status>
   meta: TypeValue[]
   title: string
   type: string | undefined
@@ -54,7 +55,7 @@ export interface MetaTwo {
 
 interface Document {
   language: string
-  links: Array<Assignee | Status>
+  links: Array<AssigneeMeta | Status>
   meta?: MetaValueType[]
   title: string
   type: string

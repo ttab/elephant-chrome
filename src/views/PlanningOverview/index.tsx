@@ -47,8 +47,8 @@ export const Plannings = (): JSX.Element => {
       <SWRProvider<PlanningType> index={PlanningsIndex}>
         <Tabs defaultValue={currentTab} className='flex-1' onValueChange={setCurrentTab}>
 
-          <TableCommandMenu>
-            <PlanningCommands />
+          <TableCommandMenu heading='Plannings'>
+            <Commands />
           </TableCommandMenu>
 
           <div className="flex flex-col h-screen">
@@ -65,6 +65,7 @@ export const Plannings = (): JSX.Element => {
                   tab={currentTab}
                   startDate={startDate}
                   setStartDate={setStartDate}
+                  type='Plannings'
                 />
               </ViewHeader.Content>
 
