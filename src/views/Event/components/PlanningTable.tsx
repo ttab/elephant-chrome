@@ -5,7 +5,8 @@ import { useRepositoryEvents } from '@/hooks/useRepositoryEvents'
 import { Events } from '@/lib/events'
 import { CalendarDays, PlusIcon } from '@ttab/elephant-ui/icons'
 import { useSession } from 'next-auth/react'
-import { useCallback, useRef } from 'react'
+import { useRef } from 'react'
+import { NewItems } from '@/components/Table/NewItems'
 import useSWR from 'swr'
 
 export const PlanningTable = ({ eventId, eventTitle }: {
@@ -35,12 +36,6 @@ export const PlanningTable = ({ eventId, eventTitle }: {
     }))
   })
 
-  // Mutator function to update the planning table once a new planning is created
-  const mutator = useCallback(async (id: string, title: string): Promise<void> => {
-    const newData = [...(data || []), { title, uuid: id }]
-    await mutate(newData, { optimisticData: newData, revalidate: false })
-  }, [data, mutate])
-
   useRepositoryEvents('core/planning-item', (event) => {
     if (createdDocumentIdRef.current === event.uuid && event.type === 'document') {
       void (async () => {
@@ -63,7 +58,6 @@ export const PlanningTable = ({ eventId, eventTitle }: {
         <CreateDocumentDialog
           type='Planning'
           payload={{ eventId, eventTitle, createdDocumentIdRef }}
-          mutator={mutator}
         >
           <a
             href='#'
@@ -87,6 +81,9 @@ export const PlanningTable = ({ eventId, eventTitle }: {
             {planning.title}
           </a>
         </div>))}
+      <NewItems.Root>
+        <NewItems.List type='Planning' createdIdRef={createdDocumentIdRef} />
+      </NewItems.Root>
     </div>
   )
 }

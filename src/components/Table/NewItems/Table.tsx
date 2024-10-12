@@ -1,37 +1,20 @@
 import useSWR from 'swr'
-import { Newsvalue } from './Items/Newsvalue'
+import { Newsvalue } from '../Items/Newsvalue'
 import { NewsvalueMap } from '@/defaults/newsvalueMap'
 import { Title } from '@/components/Table/Items/Title'
-import { SectionBadge } from '../DataItem/SectionBadge'
+import { SectionBadge } from '../../DataItem/SectionBadge'
 import { type EleDocumentResponse } from '@/shared/types'
-import { Button, Table, TableBody, TableCell, TableRow } from '@ttab/elephant-ui'
-import { DocumentStatus } from './Items/DocumentStatus'
-import { StatusIndicator } from '../DataItem/StatusIndicator'
+import { Button, Table as _Table, TableBody, TableCell, TableRow } from '@ttab/elephant-ui'
+import { DocumentStatus } from '../Items/DocumentStatus'
+import { StatusIndicator } from '../../DataItem/StatusIndicator'
 import { useYValue } from '@/hooks/useYValue'
-import { useSession } from 'next-auth/react'
-import { AwarenessDocument } from '../AwarenessDocument'
 import { useLink } from '@/hooks/useLink'
 import { Check, CheckCheck } from '@ttab/elephant-ui/icons'
 import { type View } from '@/types/index'
 import { useRepositoryEvents } from '@/hooks/useRepositoryEvents'
 import { useCallback } from 'react'
 
-
-export const NewItems = ({ type, header }: {
-  type: View
-  header: string
-}): JSX.Element | null => {
-  const { data } = useSession()
-
-  return data?.user.sub
-    ? (
-      <AwarenessDocument documentId={data?.user.sub}>
-        <NewItemsContent type={type} header={header} />
-      </AwarenessDocument>)
-    : null
-}
-
-export const NewItemsContent = ({ type, header }: {
+export const Table = ({ type, header }: {
   type: View
   header: string
 }): JSX.Element | null => {
@@ -81,7 +64,7 @@ export const NewItemsContent = ({ type, header }: {
 
 
   return (
-    <Table className='table-auto w-full relative'>
+    <_Table className='table-auto w-full relative'>
       <TableBody className='[&_tr:last-child]:border-b'>
         <TableRow className='bg-muted'>
           <TableCell colSpan={8} className='flex justify-between items-center px-2 py-1 border-b'>
@@ -154,6 +137,6 @@ export const NewItemsContent = ({ type, header }: {
           )
         })}
       </TableBody>
-    </Table>
+    </_Table>
   )
 }
