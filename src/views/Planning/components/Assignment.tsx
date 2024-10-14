@@ -6,7 +6,10 @@ import { AssignmentType } from '@/components/DataItem/AssignmentType'
 import { useYValue } from '@/hooks/useYValue'
 import { useKeydownGlobal } from '@/hooks/useKeydownGlobal'
 import { Assignees } from '@/components/Assignees'
-import { type Block } from '@ttab/elephant-api/newsdoc'
+import { Title } from '@/components/Title'
+import { type ValidateState } from '@/types/index'
+import { useRef, useState } from 'react'
+import { SluglineEditable } from '@/components/DataItem/SluglineEditable'
 
 export const Assignment = ({ index, onAbort, onClose, className }: {
   index: number
@@ -16,10 +19,23 @@ export const Assignment = ({ index, onAbort, onClose, className }: {
 }): JSX.Element => {
   const [assignment] = useYValue<boolean>(`meta.core/assignment[${index}]`)
   const [inProgress] = useYValue<boolean>(`meta.core/assignment[${index}].__inProgress`)
-  const [title] = useYValue<string | undefined>(`meta.core/assignment[${index}].title`)
-  const [slugLine] = useYValue<Block[] | undefined>(`meta.core/assignment[${index}].meta.tt/slugline[0].value`)
   const [assignmentType] = useYValue<string | undefined>(`meta.core/assignment[${index}].meta.core/assignment-type[0].value`)
+  const [validateForm, setValidateForm] = useState<boolean>(false)
 
+  const validateStateRef = useRef<ValidateState>({})
+
+  const handleValidation = (block: string, label: string, value: string | undefined, reason: string): boolean => {
+    validateStateRef.current = {
+      ...validateStateRef.current,
+      [block]: { label, valid: !!value, reason }
+    }
+
+    if (validateForm) {
+      return !!value
+    }
+
+    return true
+  }
   useKeydownGlobal((evt) => {
     if (evt.key === 'Escape') {
       if (onAbort) {
@@ -37,20 +53,18 @@ export const Assignment = ({ index, onAbort, onClose, className }: {
   return (
     <div className={cn('border rounded-md shadow-xl', className)}>
       <div className="flex flex-col gap-6 p-6">
-        <TextBox
+        <Title
           path={`meta.core/assignment[${index}].title`}
           placeholder='Uppdragsrubrik'
           className="font-semibold text-sm leading-5"
-          singleLine={true}
           autoFocus={true}
+          onValidation={handleValidation}
         />
 
-        {assignmentType === 'text' &&
-          <TextBox
+        { assignmentType === 'text' &&
+          <SluglineEditable
             path={`meta.core/assignment[${index}].meta.tt/slugline[0].value`}
-            placeholder='Lägg till slug'
-            className="text-sm leading-4 px-0 opacity-80"
-            singleLine={true}
+            onValidation={handleValidation}
           />
         }
 
@@ -95,11 +109,15 @@ export const Assignment = ({ index, onAbort, onClose, className }: {
 
           <Button
             variant="outline"
-            disabled={!title || (assignmentType === 'text' && !slugLine)}
             onClick={(evt) => {
+              setValidateForm(true)
               evt.preventDefault()
               evt.stopPropagation()
-              onClose()
+
+
+              if (Object.values(validateStateRef.current).every((block) => block.valid)) {
+                onClose()
+              }
             }}
           >
             {inProgress ? 'Lägg till' : 'Stäng'}
