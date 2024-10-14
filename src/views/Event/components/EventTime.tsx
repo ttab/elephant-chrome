@@ -10,20 +10,18 @@ import {
   Switch
 } from '@ttab/elephant-ui'
 import { useYValue } from '@/hooks/useYValue'
-import { TimeDisplay } from '@/components/DataItem/TimeDisplay'
 import { useRegistry } from '@/hooks'
 import { CalendarClockIcon } from '@ttab/elephant-ui/icons'
 import { dateToReadableDateTime } from '@/lib/datetime'
 
 interface EventData {
-  end: string,
-  start: string,
-  registration: string,
+  end: string
+  start: string
+  registration: string
   dateGranularity: 'date' | 'datetime'
 }
 
 interface EventTimeItemsProps extends React.PropsWithChildren {
-  // handleOnSelect?: ({ excecutionStart, executionEnd }: { excecutionStart: string | undefined, executionEnd: string | undefined }) => void
   className?: string
   index?: number
   startDate?: string
@@ -41,14 +39,13 @@ const fortmatIsoStringToLocalDateTime = (isoString: string, locale: string, time
 }
 
 const DateLabel = ({ fromDate, toDate, locale, timeZone }: { fromDate?: string | undefined, toDate?: string | undefined, locale: string, timeZone: string }): JSX.Element => {
-    const from = fromDate ? fortmatIsoStringToLocalDateTime(fromDate, locale, timeZone) : null
-    const to = toDate ? fortmatIsoStringToLocalDateTime(toDate, locale, timeZone) : null
-    return (
-      <div>
-        {from} {to ? '-' : ''} {to}
-      </div>
-    )
-
+  const from = fromDate ? fortmatIsoStringToLocalDateTime(fromDate, locale, timeZone) : null
+  const to = toDate ? fortmatIsoStringToLocalDateTime(toDate, locale, timeZone) : null
+  return (
+    <div>
+      {from} {to ? '-' : ''} {to}
+    </div>
+  )
 }
 
 const testValid = (time: string): boolean => {
@@ -67,11 +64,11 @@ const dateMidnight = (date: Date): Date => {
   )
 }
 
-const dateToReadableDay = (date: Date, locale: string, timeZone: string) => {
+const dateToReadableDay = (date: Date, locale: string, timeZone: string): string => {
   return new Intl.DateTimeFormat(locale, {
     timeZone,
     day: 'numeric',
-    month: 'short',
+    month: 'short'
   }).format(date)
 }
 
@@ -137,34 +134,38 @@ export const EventTimeMenu = ({ startDate }: EventTimeItemsProps): JSX.Element =
     }
   }, [eventData, mounted])
 
-  const handleOnSelect = ({ eventStart, eventEnd, fullDay }: { eventStart: string, eventEnd: string, fullDay: boolean | undefined }) => {
-    let startDate = eventStart
-    let endDate = eventEnd
-    if (fullDay) {
-      const start = new Date(eventStart)
-      const startMidnight = dateMidnight(start)
-      startDate = startMidnight.toISOString()
+  const handleOnSelect =
+    ({ eventStart, eventEnd, fullDay }:
+    { eventStart: string | undefined, eventEnd: string | undefined, fullDay: boolean | undefined }):
+    void => {
+      if (!eventStart || !eventEnd) { return }
+      let startDate = eventStart
+      let endDate = eventEnd
+      if (fullDay) {
+        const start = new Date(eventStart)
+        const startMidnight = dateMidnight(start)
+        startDate = startMidnight.toISOString()
 
-      const end = new Date(eventEnd)
-      const endDay = new Date(
-        end.getFullYear(),
-        end.getMonth(),
-        end.getDate(),
-        23,
-        59,
-        59,
-        999
-      )
-      endDate = endDay.toISOString()
+        const end = new Date(eventEnd)
+        const endDay = new Date(
+          end.getFullYear(),
+          end.getMonth(),
+          end.getDate(),
+          23,
+          59,
+          59,
+          999
+        )
+        endDate = endDay.toISOString()
+      }
+      const newEventData: EventData = {
+        start: startDate,
+        end: endDate,
+        dateGranularity: fullDay ? 'date' : 'datetime',
+        registration: eventData?.registration ? eventData.registration : ''
+      }
+      setEventData(newEventData)
     }
-    const newEventData: EventData = {
-      start: startDate,
-      end: endDate,
-      dateGranularity: fullDay ? 'date' : 'datetime',
-      registration: eventData?.registration ? eventData.registration : ''
-    }
-    setEventData(newEventData)
-  }
 
   const handleStartTimeChange: ChangeEventHandler<HTMLInputElement> = (e) => {
     const time = e.target.value
@@ -256,7 +257,7 @@ export const EventTimeMenu = ({ startDate }: EventTimeItemsProps): JSX.Element =
   const iconProps = {
     size: 18,
     strokeWidth: 1.75,
-    className: 'text-muted-foreground',
+    className: 'text-muted-foreground'
   }
 
   const timePickType = {
@@ -270,8 +271,8 @@ export const EventTimeMenu = ({ startDate }: EventTimeItemsProps): JSX.Element =
     <Popover open={open} onOpenChange={handleOpenChange}>
       <PopoverTrigger asChild>
         <div className='flex flex-row space-x-2 items-center align-middle font-sans text-sm cursor-pointer'>
-          {timePickType.icon && <div className='pr-2'><timePickType.icon {...timePickType.iconProps}/></div>}
-          {fullDay ? <div>Heldag</div> : <DateLabel fromDate={eventData?.start} toDate={eventData?.end} locale={locale} timeZone={timeZone}/>}
+          {timePickType.icon && <div className='pr-2'><timePickType.icon {...timePickType.iconProps} /></div>}
+          {fullDay ? <div>Heldag</div> : <DateLabel fromDate={eventData?.start} toDate={eventData?.end} locale={locale} timeZone={timeZone} />}
         </div>
       </PopoverTrigger>
       <PopoverContent asChild align='center' side='bottom' sideOffset={-150}>
@@ -310,9 +311,9 @@ export const EventTimeMenu = ({ startDate }: EventTimeItemsProps): JSX.Element =
                     e.preventDefault()
 
                     handleOnSelect({
-                      eventStart: startDateValue as string,
-                      eventEnd: endDateValue as string,
-                      fullDay: fullDay as boolean
+                      eventStart: startDateValue,
+                      eventEnd: endDateValue,
+                      fullDay
                     })
 
                     setOpen(false)
@@ -342,9 +343,9 @@ export const EventTimeMenu = ({ startDate }: EventTimeItemsProps): JSX.Element =
                     e.preventDefault()
                     if (startTimeValid && endTimeValid) {
                       handleOnSelect({
-                        eventStart: startDateValue as string,
-                        eventEnd: endDateValue as string,
-                        fullDay: fullDay
+                        eventStart: startDateValue,
+                        eventEnd: endDateValue,
+                        fullDay
                       })
                       setOpen(false)
                     }
@@ -372,9 +373,9 @@ export const EventTimeMenu = ({ startDate }: EventTimeItemsProps): JSX.Element =
                 evt.stopPropagation()
 
                 handleOnSelect({
-                  eventStart: startDateValue as string,
-                  eventEnd: endDateValue as string,
-                  fullDay: fullDay
+                  eventStart: startDateValue,
+                  eventEnd: endDateValue,
+                  fullDay
                 })
                 setOpen(false)
               }}
