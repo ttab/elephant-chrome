@@ -15,14 +15,14 @@ export interface Status {
   uuid: string
 }
 
-interface EventData {
+interface AssignmentEventData {
   end_date: string
   public: boolean
   start_date: string
   tentative: boolean
 }
 
-interface EventDetails {
+export interface AssignmentDateDetails {
   end: string
   end_date: string
   full_day: 'true' | 'false'
@@ -37,21 +37,21 @@ export interface TypeValue {
   value: string
 }
 
-export interface MetaOne {
-  data: EventData
+export interface TypeData {
   type: string
+  data: AssignmentEventData
 }
 
-export type MetaValueType = MetaOne | MetaTwo | TypeValue
-
-export interface MetaTwo {
-  data: EventDetails
+export interface AssignmentMeta {
+  data: AssignmentDateDetails
   id: string
   links: Array<AssigneeMeta | Status>
   meta: TypeValue[]
   title: string
   type: string | undefined
 }
+
+export type MetaValueType = TypeData | AssignmentMeta | TypeValue
 
 interface Document {
   language: string

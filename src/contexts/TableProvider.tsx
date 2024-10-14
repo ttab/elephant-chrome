@@ -12,8 +12,6 @@ import {
   type Table,
   type VisibilityState
 } from '@tanstack/react-table'
-import type { SearchIndexResponse } from '@/lib/index'
-import { type Item } from '@/views/Assignments/types'
 import {
   createContext,
   useMemo,
@@ -72,7 +70,7 @@ export const TableProvider = <T,>({
   }), [pages, page, search])
 
   const table = useReactTable({
-    data: data?.hits || data || [],
+    data: data || [],
     columns,
     state: {
       sorting,

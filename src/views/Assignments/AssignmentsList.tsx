@@ -1,6 +1,6 @@
 import { useMemo } from 'react'
 import useSWR from 'swr'
-import { useAuthors, useIndexUrl, useTable } from '@/hooks'
+import { useAuthors, useIndexUrl, useTable, useRegistry } from '@/hooks'
 import { useSession } from 'next-auth/react'
 import {
   Assignments
@@ -8,18 +8,19 @@ import {
 import { Table } from '@/components/Table'
 
 import { convertToISOStringInUTC, getDateTimeBoundaries } from '@/lib/datetime'
-import { type MetaTwo, type Item } from './types'
+import { type AssignmentMeta } from './types'
 
 import { assignmentColumns } from './AssignmentColumns'
-import { getAllAssignments, getAssignments, getNewsvalue } from './lib'
+import { getAllAssignments } from './lib'
+
 
 export const AssignmentsList = ({ date }: { date: Date }): JSX.Element => {
-  const { setData } = useTable<Item>()
+  const { setData } = useTable<AssignmentMeta>()
   const { data: session, status } = useSession()
+  const { locale, timeZone } = useRegistry()
 
   const indexUrl = useIndexUrl()
   const authors = useAuthors()
-  // const sections = useSections()
   const { startTime, endTime } = getDateTimeBoundaries(date)
 
   const searchUrl = useMemo(() => {
@@ -41,24 +42,17 @@ export const AssignmentsList = ({ date }: { date: Date }): JSX.Element => {
     }
 
     const url = new URL('/twirp/elephant.index.SearchV1/Query', indexUrl)
-    let result = await Assignments.search(url, session.accessToken)
+    const result = await Assignments.search(url, session.accessToken)
     if (result?.hits?.hits?.length > 0) {
-      const allassignments = getAllAssignments(result)
-      // console.log('🍄 ~ useSWR ~ allassignments ✅ ', allassignments)
-      result = {
-        ...result,
-        hits: {
-          hits: allassignments
-        }
-      }
-      setData(result.hits)
+      const assignments = getAllAssignments(result)
+      setData(assignments)
     }
   })
 
   return (
     <Table
       type='Assignments'
-      columns={assignmentColumns({ authors })}
+      columns={assignmentColumns({ authors, locale, timeZone })}
       onRowSelected={(row): void => {
         if (row) {
           console.info(`Selected assignment item ${row.id}`)

@@ -7,7 +7,6 @@ export function getNestedFacetedUniqueValues<TData, TValue>(
   column: Column<TData, TValue> | undefined
 ): Map<string, number> {
   const uniqueValues = new Map<string, number>()
-  console.log('column', column)
   if (!column) {
     return uniqueValues
   }
@@ -20,6 +19,5 @@ export function getNestedFacetedUniqueValues<TData, TValue>(
       uniqueValues.set(value, (uniqueValues.get(value) || 0) + 1)
     })
   })
-  console.log('unique', uniqueValues)
   return uniqueValues
 }

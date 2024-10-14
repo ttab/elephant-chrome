@@ -1,21 +1,33 @@
 /* eslint-disable react/prop-types */
 import { NewsvalueMap } from '@/defaults/newsvalueMap'
 import { Newsvalue } from '@/components/Table/Items/Newsvalue'
-import { Briefcase, Crosshair, SignalHigh, Users } from '@ttab/elephant-ui/icons'
+import { Briefcase, Clock3Icon, Clock9Icon, Crosshair, Navigation, SignalHigh, Users } from '@ttab/elephant-ui/icons'
 import { Newsvalues } from '@/defaults/newsvalues'
 import { FacetedFilter } from '@/components/Commands/FacetedFilter'
 import { AssignmentTypes } from '@/defaults/assignmentTypes'
 import { Type } from '@/components/Table/Items/Type'
 import { getNestedFacetedUniqueValues } from '@/components/Filter/lib/getNestedFacetedUniqueValues'
-import { type MetaValueType, type MetaTwo, Assignee, AssigneeMeta, Status } from './types'
+import {
+  type MetaValueType,
+  type AssignmentMeta,
+  type AssigneeMeta,
+  type AssignmentDateDetails
+} from './types'
 import { type ColumnDef } from '@tanstack/react-table'
 import { type DefaultValueOption } from '@/types/index'
 import { type IDBAuthor } from 'src/datastore/types'
 import { Assignees } from '@/components/Table/Items/Assignees'
+import { AssignmentTitles } from '@/components/Table/Items/AssignmentTitles'
+import { Time } from '@/components/Table/Items/Time'
+import { Actions } from '@/components/Table/Items/Actions'
+import { Tooltip } from '@ttab/elephant-ui'
+import { dateToReadableDateTime } from '@/lib/datetime'
 
-export function assignmentColumns({ authors = [] }: {
+export function assignmentColumns({ authors = [], locale, timeZone }: {
   authors?: IDBAuthor[]
-}): Array<ColumnDef<MetaTwo & { planningTitle: string, newsvalue: string }>> {
+  locale: string
+  timeZone: string
+}): Array<ColumnDef<AssignmentMeta & { planningTitle: string, newsvalue: string }>> {
   return [
     {
       id: 'assignmentType',
@@ -39,6 +51,12 @@ export function assignmentColumns({ authors = [] }: {
       cell: ({ row }) => {
         const values: DefaultValueOption[] = row.getValue('assignmentType')
         return <Type data={values} />
+      },
+      filterFn: (row, id, value) => {
+        const types = row.getValue<Array<{ value: string }> | undefined>(id)?.map((type) => type.value)
+        return (
+          value.some((v: string) => types?.includes(v))
+        )
       }
     },
     {
@@ -46,26 +64,19 @@ export function assignmentColumns({ authors = [] }: {
       meta: {
         name: 'Titlar',
         columnIcon: Briefcase,
-        className: 'box-content w-[450px]'
+        className: 'flex-1'
       },
       accessorFn: (data) => {
-        const documentTitle = data.planningTitle
-        const assignmentTitle = data.title
+        const { planningTitle, title: assignmentTitle } = data
         return {
-          documentTitle,
+          planningTitle,
           assignmentTitle
         }
       },
       cell: ({ row }) => {
-        const data: { documentTitle: string, assignmentTitle: string } = row.getValue('titles') || {}
-        const { assignmentTitle, documentTitle } = data
-        return (
-          <div className='truncate pr-1 sm:pr-4 gap-1 items-center flex w-[450px]'>
-            <div className='truncate space-x-2 items-center text-muted-foreground w-[200px] max-w-[200px] min-w-[200px]'>{documentTitle}</div>
-            {'>'}
-            <div className='flex flex-1 space-x-2 items-center'>{assignmentTitle}</div>
-          </div>
-        )
+        const data: { planningTitle: string, assignmentTitle: string } = row.getValue('titles') || {}
+        const { assignmentTitle, planningTitle } = data
+        return <AssignmentTitles planningTitle={planningTitle} assignmentTitle={assignmentTitle} />
       }
     },
     {
@@ -105,147 +116,82 @@ export function assignmentColumns({ authors = [] }: {
         columnIcon: Users,
         className: 'flex-none w-[112px] hidden @5xl/view:[display:revert]'
       },
-      accessorFn: (data) => data.links,
+      accessorFn: (data) => {
+        const authors = data?.links?.filter(link => link?.type === 'core/author') as AssigneeMeta[]
+        return authors?.map((author: AssigneeMeta) => author?.title || author?.name)
+      },
       cell: ({ row }) => {
-        const data = row.getValue<Array<AssigneeMeta | Status>>('assignees') || [] as AssigneeMeta[]
-        console.log('🍄 ~ data ✅ ', data)
-        const assignees = data.map((assignee: AssigneeMeta) => assignee?.title)
-        // const _assignees = ['Victor Lindh']
-
+        const assignees = row.getValue<string[]>('assignees') || []
         return <Assignees assignees={assignees} />
       },
-      filterFn: (row, id, value) => (
-        typeof value?.[0] === 'string'
-          ? (row.getValue<string[]>(id) || []).includes(value[0])
-          : false
-      )
+      filterFn: (row, id, value) => {
+        const assignees = row.getValue<string[]>(id) || [] as string[]
+        return (
+          typeof value[0] === 'string'
+            ? assignees.includes(value[0])
+            : false
+        )
+      }
+    },
+    {
+      id: 'assignment_time',
+      meta: {
+        Filter: ({ column, setSearch }) => (
+          <FacetedFilter column={column} setSearch={setSearch} />
+        ),
+        name: 'Uppdragstid',
+        columnIcon: Clock3Icon,
+        className: 'flex-none w-[112px] hidden @5xl/view:[display:revert]'
+      },
+      accessorFn: ({ data }: { data: AssignmentDateDetails }) => {
+        const startTime = new Date(data?.start)
+        const endTime = new Date(data?.end)
+        return [startTime, endTime]
+      },
+      cell: ({ row }) => {
+        const [startTime, endTime] = row.getValue<Date[]>('assignment_time') || undefined
+        return (
+          <Tooltip content='Uppdragstid'>
+            <Time startTime={startTime} endTime={endTime} />
+          </Tooltip>
+        )
+      }
+    },
+    {
+      id: 'publish_time',
+      meta: {
+        Filter: ({ column, setSearch }) => (
+          <FacetedFilter column={column} setSearch={setSearch} />
+        ),
+        name: 'Publiceringstid',
+        columnIcon: Clock9Icon,
+        className: 'flex-none w-[112px] hidden @5xl/view:[display:revert]'
+      },
+      accessorFn: ({ data }: { data: AssignmentDateDetails }) => {
+        if (data?.publish) {
+          const date = new Date(data?.publish)
+          const publishTime = dateToReadableDateTime(date, locale, timeZone)
+          console.log('data publish < today?', new Date(data?.publish) < new Date())
+          return <Tooltip content='Publiceringstid'>{publishTime}</Tooltip>
+        }
+        return <></>
+      },
+      cell: ({ row }) => {
+        return row.getValue<Date[]>('publish_time') || undefined
+      }
+    },
+    {
+      id: 'action',
+      meta: {
+        name: 'Action',
+        columnIcon: Navigation,
+        className: 'flex-none'
+      },
+      cell: ({ row }) => {
+        const deliverableUuid = row.original?.links?.find(link => link?.rel === 'deliverable')?.uuid || ''
+        const planningId = row.original.id
+        return <Actions deliverableUuids={[deliverableUuid]} planningId={planningId} />
+      }
     }
   ]
 }
-
-// export function assignmentColumns({ authors = [], sections = [] }: {
-//   authors?: IDBAuthor[]
-//   sections?: IDBSection[]
-// }): Array<ColumnDef<Planning>> {
-//   return [
-//     {
-//       id: 'newsvalue',
-//       meta: {
-//         Filter: ({ column, setSearch }) => (
-//           <FacetedFilter column={column} setSearch={setSearch} />
-//         ),
-//         options: Newsvalues,
-//         name: 'Nyhetsvärde',
-//         columnIcon: SignalHigh,
-//         className: 'box-content w-4 sm:w-8 pr-1 sm:pr-4'
-//       },
-//       accessorFn: (data) => data._source['document.meta.core_newsvalue.value']?.[0],
-//       cell: ({ row }) => {
-//         const value: string = row.getValue('newsvalue') || ''
-//         const newsvalue = NewsvalueMap[value]
-
-//         if (newsvalue) {
-//           return <Newsvalue newsvalue={newsvalue} />
-//         }
-//       },
-//       filterFn: (row, id, value) => {
-//         return value.includes(row.getValue(id))
-//       }
-//     },
-//     {
-//       id: 'title',
-//       meta: {
-//         name: 'Titel',
-//         columnIcon: CircleCheck,
-//         className: 'box-content truncate'
-//       },
-//       accessorFn: (data) => {
-//         const docTitle = data?._source['document.title'][0]
-//         const assignmentTitle = data?._source['document.meta.core_assignment.title'][0]
-//         return `${docTitle}${docTitle ? ', ' + assignmentTitle : assignmentTitle}`
-//       },
-//       cell: ({ row }) => {
-//         const title = row.getValue<string>('title')
-//         const slugline = row.original._source['document.meta.tt_slugline.value']?.[0]
-//         return <Title title={title} slugline={slugline} />
-//       }
-//     },
-//     {
-//       id: 'section',
-//       meta: {
-//         options: sections.map(_ => {
-//           return {
-//             value: _.id,
-//             label: _.title
-//           }
-//         }),
-//         Filter: ({ column, setSearch }) => (
-//           <FacetedFilter column={column} setSearch={setSearch} />
-//         ),
-//         name: 'Sektion',
-//         columnIcon: Shapes,
-//         className: 'box-content w-[115px] hidden @4xl/view:[display:revert]'
-//       },
-//       accessorFn: (data) => {
-//         return data._source['document.rel.section.uuid']?.[0]
-//       },
-//       cell: ({ row }) => {
-//         const sectionTitle = row.original._source['document.rel.section.title']?.[0]
-//         return <>
-//           {sectionTitle && <SectionBadge title={sectionTitle} color='bg-[#BD6E11]' />}
-//         </>
-//       },
-//       filterFn: (row, id, value) => {
-//         return value.includes(row.getValue(id))
-//       }
-//     },
-//     {
-//       id: 'assignees',
-//       meta: {
-//         options: authors?.map((_) => ({ value: _.title, label: _.title })),
-//         Filter: ({ column, setSearch }) => (
-//           <FacetedFilter column={column} setSearch={setSearch} facetFn={() => getNestedFacetedUniqueValues(column)} />
-//         ),
-//         name: 'Uppdragstagare',
-//         columnIcon: Users,
-//         className: 'box-content w-[112px] hidden @5xl/view:[display:revert]'
-//       },
-//       accessorFn: (data) => data._source['document.meta.core_assignment.rel.assignee.name'],
-//       cell: ({ row }) => {
-//         const assignees = row.getValue<string[]>('assignees') || []
-//         return <Assignees assignees={assignees} />
-//       },
-//       filterFn: (row, id, value) => (
-//         typeof value?.[0] === 'string'
-//           ? (row.getValue<string[]>(id) || []).includes(value[0])
-//           : false
-//       )
-//     },
-//     {
-//       id: 'type',
-//       meta: {
-//         Filter: ({ column, setSearch }) => (
-//           <FacetedFilter column={column} setSearch={setSearch} facetFn={() => getNestedFacetedUniqueValues(column)} />
-//         ),
-//         options: AssignmentTypes,
-//         name: 'Typ',
-//         columnIcon: Crosshair,
-//         className: 'box-content hidden w-[120px] @6xl/view:[display:revert]'
-//       },
-//       accessorFn: (data) => data._source['document.meta.core_assignment.meta.core_assignment_type.value'],
-//       cell: ({ row }) => {
-//         const data = AssignmentTypes.filter(
-//           (assignmentType) => (row.getValue<string[]>('type') || []).includes(assignmentType.value)
-//         )
-//         if (data.length === 0) {
-//           return null
-//         }
-
-//         return <Type data={data} />
-//       },
-//       filterFn: (row, id, value) => (
-//         value.some((v: string) => row.getValue<string[] | undefined>(id)?.includes(v))
-//       )
-//     }
-//   ]
-// }

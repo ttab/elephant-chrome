@@ -181,7 +181,6 @@ export function planningTableColumns({ sections = [], authors = [] }: {
         const data = AssignmentTypes.filter(
           (assignmentType) => (row.getValue<string[]>('type') || []).includes(assignmentType.value)
         )
-        console.log('🍄 ~ data ✅ ', data)
         if (data.length === 0) {
           return null
         }

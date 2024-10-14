@@ -9,8 +9,9 @@ import { Header } from '@/components/Header'
 import { AssignmentsList } from './AssignmentsList'
 import { assignmentColumns } from './AssignmentColumns'
 import { Commands } from '@/components/Commands'
-import { type Item } from './types'
+import { type AssignmentMeta } from './types'
 import { useAuthors } from '@/hooks/useAuthors'
+import { useRegistry } from '@/hooks/useRegistry'
 
 const meta: ViewMetadata = {
   name: 'Assignments',
@@ -33,13 +34,14 @@ export const Assignments = (): JSX.Element => {
   const [endDate, setEndDate] = useState<Date>(getEndDate(startDate))
   const [currentTab, setCurrentTab] = useState<string>('list')
   const authors = useAuthors()
+  const { locale, timeZone } = useRegistry()
 
   useEffect(() => {
     setEndDate(getEndDate(startDate))
   }, [startDate])
 
   return (
-    <TableProvider<Item> columns={assignmentColumns({ authors })}>
+    <TableProvider<AssignmentMeta & { planningTitle: string, newsvalue: string }> columns={assignmentColumns({ authors, locale, timeZone })}>
       <Tabs defaultValue={currentTab} className='flex-1' onValueChange={setCurrentTab}>
         <TableCommandMenu heading='Assignments'>
           <Commands />
