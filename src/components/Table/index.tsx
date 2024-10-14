@@ -218,7 +218,9 @@ export const Table = <TData, TValue>({
   return (
     <>
       <Toolbar table={table} />
-      <NewItems header={`Dina nya skapade ${type === 'Planning' ? 'planeringar' : 'händelser'}`} type={type} />
+      <NewItems.Root>
+        <NewItems.Table header={`Dina nya skapade ${type === 'Planning' ? 'planeringar' : 'händelser'}`} type={type} />
+      </NewItems.Root>
       <_Table className='table-auto relative'>
         <TableBody>
           {TableBodyElement}
