@@ -33,6 +33,7 @@ import { type AwarenessUserData } from '@/contexts/CollaborationProvider'
 import { type YXmlText } from 'node_modules/yjs/dist/src/internals'
 import { articleDocumentTemplate, type ArticlePayload } from '@/defaults/templates/articleDocumentTemplate'
 import { createDocument } from '@/lib/createYItem'
+import { Error } from '../Error'
 
 const meta: ViewMetadata = {
   name: 'Editor',
@@ -57,10 +58,10 @@ const Editor = (props: ViewProps): JSX.Element => {
   const documentId = props.id || query.id
 
   if (!documentId) {
-    // TODO: Should we have a skeleton loading screen here
-    // Or maybe a message that says "No document selected"?
-    // This option shouldn't be possible in the UI, but it's possible to navigate to /editor without a document id
-    return <></>
+    return <Error
+      title='Artikeldokument saknas'
+      message='Inget artikeldokument är angivet. Navigera tillbaka till översikten och försök igen.'
+    />
   }
 
   if (props.onDocumentCreated && !document) {

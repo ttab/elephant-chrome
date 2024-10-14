@@ -31,6 +31,7 @@ import { createStateless, StatelessType } from '@/shared/stateless'
 import { useSession } from 'next-auth/react'
 import { useRef, useState } from 'react'
 import { ValidationAlert } from '@/components/ValidationAlert'
+import { Error } from '../Error'
 
 const meta: ViewMetadata = {
   name: 'Planning',
@@ -58,7 +59,10 @@ export const Planning = (props: ViewProps & { document?: Y.Doc }): JSX.Element =
         ? <AwarenessDocument documentId={documentId} document={props.document}>
           <PlanningViewContent {...props} documentId={documentId} />
         </AwarenessDocument>
-        : <></>
+        : <Error
+            title='Planeringsdokument saknas'
+            message='Inget planeringsdokument är angivet. Navigera tillbaka till översikten och försök igen.'
+        />
       }
     </>
   )
