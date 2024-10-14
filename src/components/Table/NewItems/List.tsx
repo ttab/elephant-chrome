@@ -16,7 +16,6 @@ export const List = ({ type, createdIdRef }: {
   }>>(type)
 
   const createdDocument = newDocuments.find(({ id }) => id === createdIdRef.current)
-  console.log('createdDocument', createdDocument)
 
   const { data: document, error } = useSWR(
     createdDocument || null,
@@ -26,7 +25,6 @@ export const List = ({ type, createdIdRef }: {
       return result
     }
   )
-  console.log('document', document)
 
   if (error) return <div>Failed to load</div>
   if (!document) return null
