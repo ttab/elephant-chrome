@@ -9,12 +9,11 @@ import {
   Button,
   Switch
 } from '@ttab/elephant-ui'
-// import { timePickTypes } from './constants'
 import { useYValue } from '@/hooks/useYValue'
 import { TimeDisplay } from '@/components/DataItem/TimeDisplay'
-import { dateToReadableDateTime } from '@/lib/datetime'
 import { useRegistry } from '@/hooks'
 import { CalendarClockIcon } from '@ttab/elephant-ui/icons'
+import { dateToReadableDateTime } from '@/lib/datetime'
 
 interface EventData {
   end: string,
@@ -30,19 +29,26 @@ interface EventTimeItemsProps extends React.PropsWithChildren {
   startDate?: string
 }
 
-const fortmatIsoStringToLocalTime = (isoString: string): JSX.Element => {
+const fortmatIsoStringToLocalDateTime = (isoString: string, locale: string, timeZone: string): JSX.Element => {
   const date = new Date(isoString)
-  return <TimeDisplay date={date} />
+  return (
+    <span >
+      {dateToReadableDateTime(date, locale, timeZone) || '-'}
+    </span>
+
+  )
+  // return <TimeDisplay date={date} />
 }
 
-const DateLabel = ({ fromDate, toDate }: { fromDate?: string | undefined, toDate?: string | undefined }): JSX.Element => {
-  const from = fromDate ? fortmatIsoStringToLocalTime(fromDate) : null
-  const to = toDate ? fortmatIsoStringToLocalTime(toDate) : null
-  return (
-    <span>
-      {from} {to ? '-' : ''} {to}
-    </span>
-  )
+const DateLabel = ({ fromDate, toDate, locale, timeZone }: { fromDate?: string | undefined, toDate?: string | undefined, locale: string, timeZone: string }): JSX.Element => {
+    const from = fromDate ? fortmatIsoStringToLocalDateTime(fromDate, locale, timeZone) : null
+    const to = toDate ? fortmatIsoStringToLocalDateTime(toDate, locale, timeZone) : null
+    return (
+      <div>
+        {from} {to ? '-' : ''} {to}
+      </div>
+    )
+
 }
 
 const testValid = (time: string): boolean => {
@@ -132,7 +138,6 @@ export const EventTimeMenu = ({ startDate }: EventTimeItemsProps): JSX.Element =
   }, [eventData, mounted])
 
   const handleOnSelect = ({ eventStart, eventEnd, fullDay }: { eventStart: string, eventEnd: string, fullDay: boolean | undefined }) => {
-    console.log('XXX event', eventStart, eventEnd, fullDay)
     let startDate = eventStart
     let endDate = eventEnd
     if (fullDay) {
@@ -251,7 +256,7 @@ export const EventTimeMenu = ({ startDate }: EventTimeItemsProps): JSX.Element =
   const iconProps = {
     size: 18,
     strokeWidth: 1.75,
-    className: 'text-muted-foreground'
+    className: 'text-muted-foreground',
   }
 
   const timePickType = {
@@ -264,9 +269,9 @@ export const EventTimeMenu = ({ startDate }: EventTimeItemsProps): JSX.Element =
   return (
     <Popover open={open} onOpenChange={handleOpenChange}>
       <PopoverTrigger asChild>
-        <div className='flex flex-row space-x-2 items-center align-middle'>
-          {timePickType.icon && <timePickType.icon {...timePickType.iconProps} />}
-          <DateLabel fromDate={eventData?.start} toDate={eventData?.end} />
+        <div className='flex flex-row space-x-2 items-center align-middle font-sans text-sm cursor-pointer'>
+          {timePickType.icon && <div className='pr-2'><timePickType.icon {...timePickType.iconProps}/></div>}
+          {fullDay ? <div>Heldag</div> : <DateLabel fromDate={eventData?.start} toDate={eventData?.end} locale={locale} timeZone={timeZone}/>}
         </div>
       </PopoverTrigger>
       <PopoverContent asChild align='center' side='bottom' sideOffset={-150}>
