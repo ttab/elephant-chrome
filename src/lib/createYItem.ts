@@ -15,19 +15,15 @@ export interface TemplatePayload {
 * General function to create a new document as Y.Doc from a template
 * @returns [string, Y.Doc]
 */
-export function createDocument(
+export function createDocument<T>(
   template: (
     documentId: string,
-    payload?: TemplatePayload
+    payload?: T
   ) => Document,
   inProgress?: boolean,
-  payload?: TemplatePayload
+  payload?: T
 ): [string, Y.Doc] {
   const documentId = crypto.randomUUID()
-
-  if (payload?.createdDocumentIdRef) {
-    payload.createdDocumentIdRef.current = documentId
-  }
 
   const yDoc = new Y.Doc()
 
