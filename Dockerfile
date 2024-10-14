@@ -17,7 +17,7 @@ RUN rm -fr node_modules && \
   npm ci --include prod && \
   rm -f .npmrc
 
-FROM node:20.12.2-slim
+FROM node:22.9.0-slim
 
 RUN apt-get update && apt-get upgrade -y && apt-get clean
 
