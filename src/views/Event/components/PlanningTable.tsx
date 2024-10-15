@@ -58,6 +58,7 @@ export const PlanningTable = ({ eventId, eventTitle }: {
         <CreateDocumentDialog
           type='Planning'
           payload={{ eventId, eventTitle, createdDocumentIdRef }}
+          createdDocumentIdRef={createdDocumentIdRef}
         >
           <a
             href='#'
