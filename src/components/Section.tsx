@@ -26,6 +26,7 @@ export const Section = ({ onValidation }: {
       <ComboBox
         max={1}
         size='xs'
+        modal={true}
         sortOrder='label'
         options={allSections}
         selectedOptions={selectedOptions}
@@ -36,23 +37,25 @@ export const Section = ({ onValidation }: {
           }
         }}
         onSelect={(option) => {
-          setSection(section?.title === option.label
-            ? undefined
-            : Block.create({
+          if (section?.title === option.label) {
+            setSection(undefined)
+          } else {
+            setSection(Block.create({
               type: 'core/section',
               rel: 'section',
               uuid: option.value,
               title: option.label
             }))
+          }
         }}
       />
       {onValidation &&
         <Validation
           label='Sektion'
           path={path}
-          block='core/section'
+          block='core/section[0]'
           onValidation={onValidation}
-          />
+        />
       }
     </Awareness>
   )

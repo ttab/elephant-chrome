@@ -5,7 +5,8 @@ import {
 } from 'react'
 import {
   Dialog,
-  DialogContent
+  DialogContent,
+  DialogTitle
 } from '@ttab/elephant-ui'
 import { ModalContext } from './ModalContext'
 import { useKeydownGlobal } from '@/hooks/useKeydownGlobal'
@@ -34,9 +35,17 @@ export const ModalProvider = ({ children }: PropsWithChildren): JSX.Element => {
     <ModalContext.Provider value={{ showModal, hideModal }}>
       {children}
 
+      {/*
+        * FIXME: We need this to be modal. But for now the prop
+        * modal is set to false due to bug in radix which result
+        * in portal mouse events conflicts.
+        *
+        * https://github.com/radix-ui/primitives/issues/3141
+        */}
       {isVisible && (
-        <Dialog open={isVisible}>
-          <DialogContent className="p-0">
+        <Dialog modal={false} open={isVisible}>
+          <DialogTitle></DialogTitle>
+          <DialogContent className="p-0 w-[94vw]">
             {modalContent}
           </DialogContent>
         </Dialog>

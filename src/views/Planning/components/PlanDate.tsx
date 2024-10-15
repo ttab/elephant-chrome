@@ -10,7 +10,7 @@ export const PlanDate = (): JSX.Element => {
 
   const setDate = () => (date: Date) => { set(format(date, timeZone), 'start_date') }
 
-  return <DatePicker date={date} setDate={setDate()} forceYear={true} />
+  return <DatePicker date={date} setDate={setDate} forceYear={true} />
 }
 
 function parseDate(value: string): Date | undefined {

@@ -24,7 +24,7 @@ export const Assignees = ({ path, name, placeholder }: {
   const selectedOptions = ((assignees || [])?.map(a => {
     return {
       value: a.uuid,
-      label: a.name
+      label: a.title
     }
   }))
   const setFocused = useRef<(value: boolean) => void>(null)
@@ -53,7 +53,7 @@ export const Assignees = ({ path, name, placeholder }: {
               setAssignees([...(assignees || []), YBlock.create({
                 type: 'core/author',
                 uuid: option.value,
-                name: option.label,
+                title: option.label,
                 rel: 'assignee',
                 role: 'primary'
               })[0]

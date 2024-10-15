@@ -13,6 +13,7 @@ import { useCollaboration } from '@/hooks/useCollaboration'
 import { Button } from '@ttab/elephant-ui'
 import { type Block } from '@ttab/elephant-api/newsdoc'
 import { deleteByYPath } from '@/lib/yUtils'
+import { createArticlePayload } from '@/defaults/templates/articleDocumentTemplate'
 
 export const AssignmentRow = ({ index, onSelect }: {
   index: number
@@ -111,7 +112,7 @@ const AssignmentRowContent = ({ index, onSelect }: {
 
         <div className="flex grow gap-4 items-center">
           <AssignmentType path={`meta.core/assignment[${index}].meta.core/assignment-type`} />
-          <AssigneeAvatars assignees={authors.map((author) => author.name)} />
+          <AssigneeAvatars assignees={authors.map((author) => author.title)} />
 
           <div className="hidden items-center @3xl/view:flex">
             <SluglineButton path={`meta.core/assignment[${index}].meta.tt/slugline[0].value`} />
@@ -178,7 +179,7 @@ const AssignmentRowContent = ({ index, onSelect }: {
       {showCreateDialog &&
         <Prompt
           title="Skapa artikel?"
-          description={`Vill du skapa en artikel för uppdraget${` ${title}` || ''}?`}
+          description={`Vill du skapa en artikel för uppdraget${` ${title}` || ''}?`} // TODO: Display information that will be forwarded from the assignment
           secondaryLabel='Avbryt'
           primaryLabel='Skapa'
           onPrimary={(event) => {
@@ -194,8 +195,11 @@ const AssignmentRowContent = ({ index, onSelect }: {
               }, 0)
             }
 
+            const payload = createArticlePayload(provider?.document, index)
+
             openArticle(event,
-              { id },
+              { id, payload },
+              'blank',
               { onDocumentCreated }
             )
           }}

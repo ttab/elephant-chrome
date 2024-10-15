@@ -36,8 +36,12 @@ export const Filter = ({ children }: PropsWithChildren): JSX.Element => {
           aria-expanded={open}
           className="hidden sm:flex"
         >
-          <ListFilter size={18} strokeWidth={1.75} className="shrink-0 mr-2" />
-          Filter
+          <ListFilter
+            size={18}
+            strokeWidth={1.75}
+            className="@3xl/view:shrink-0 @3xl/view:mr-2"
+          />
+          <span className="hidden @3xl/view:inline">Filter</span>
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-[200px] p-0" align='start'>

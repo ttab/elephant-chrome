@@ -1,10 +1,9 @@
-import { useEffect, useState } from 'react'
+import { useMemo, useState } from 'react'
 import { type ViewMetadata } from '@/types'
 import { ViewHeader } from '@/components'
 import { CalendarDaysIcon } from '@ttab/elephant-ui/icons'
 import { ScrollArea, Tabs, TabsContent } from '@ttab/elephant-ui'
 
-import { PlanningGrid } from './PlanningGrid'
 import { PlanningList } from './PlanningList'
 import { TableProvider } from '@/contexts/TableProvider'
 
@@ -12,9 +11,12 @@ import { TableCommandMenu } from '@/components/Commands/TableCommand'
 import { Header } from '@/views/PlanningOverview/PlanningHeader'
 import { PlanningCommands } from './PlanningCommands'
 import { planningTableColumns } from './PlanningListColumns'
-import { type Planning } from '@/lib/index'
+import { type Planning as PlanningType, Plannings as PlanningsIndex } from '@/lib/index'
 import { useSections } from '@/hooks/useSections'
 import { useAuthors } from '@/hooks/useAuthors'
+import { SWRProvider } from '@/contexts/SWRProvider'
+import { getDateTimeBoundariesUTC } from '@/lib/datetime'
+import { useQuery } from '@/hooks/useQuery'
 
 const meta: ViewMetadata = {
   name: 'Plannings',
@@ -33,61 +35,60 @@ const meta: ViewMetadata = {
 }
 
 export const Plannings = (): JSX.Element => {
-  const [startDate, setStartDate] = useState<Date>(new Date())
-  const [endDate, setEndDate] = useState<Date>(getEndDate(startDate))
+  const query = useQuery()
+  const { from, to } = useMemo(() =>
+    getDateTimeBoundariesUTC(query.from
+      ? new Date(`${query.from}T00:00:00.000Z`)
+      : new Date()),
+  [query.from])
+
   const [currentTab, setCurrentTab] = useState<string>('list')
   const sections = useSections()
   const authors = useAuthors()
 
-  useEffect(() => {
-    setEndDate(getEndDate(startDate))
-  }, [startDate])
+  const columns = useMemo(() => planningTableColumns({ sections, authors }), [sections, authors])
 
   return (
-    <TableProvider<Planning> columns={planningTableColumns({ sections, authors })}>
-      <Tabs defaultValue={currentTab} className='flex-1' onValueChange={setCurrentTab}>
+    <TableProvider<PlanningType> columns={columns}>
+      <SWRProvider<PlanningType> index={PlanningsIndex}>
+        <Tabs defaultValue={currentTab} className='flex-1' onValueChange={setCurrentTab}>
 
-        <TableCommandMenu>
-          <PlanningCommands />
-        </TableCommandMenu>
+          <TableCommandMenu>
+            <PlanningCommands />
+          </TableCommandMenu>
 
-        <div className="flex flex-col h-screen">
-          <ViewHeader.Root>
-            <ViewHeader.Title title="Planeringar" short="Planeringar" icon={CalendarDaysIcon} iconColor='#FF971E' />
-
-            <ViewHeader.Content>
-              <Header
-                tab={currentTab}
-                startDate={startDate}
-                setStartDate={setStartDate}
-                endDate={endDate}
-                setEndDate={setEndDate}
+          <div className="flex flex-col h-screen">
+            <ViewHeader.Root>
+              <ViewHeader.Title
+                title="Planeringar"
+                short="Planeringar"
+                icon={CalendarDaysIcon}
+                iconColor='#FF971E'
               />
-            </ViewHeader.Content>
 
-            <ViewHeader.Action />
-          </ViewHeader.Root>
+              <ViewHeader.Content>
+                <Header
+                  tab={currentTab}
+                />
+              </ViewHeader.Content>
 
-          <ScrollArea>
-            <TabsContent value='list' className='mt-0'>
-              <PlanningList date={startDate} />
-            </TabsContent>
+              <ViewHeader.Action />
+            </ViewHeader.Root>
 
-            <TabsContent value='grid'>
-              <PlanningGrid startDate={startDate} endDate={endDate} />
-            </TabsContent>
-          </ScrollArea>
-        </div>
+            <ScrollArea>
+              <TabsContent value='list' className='mt-0'>
+                <PlanningList from={from} to={to} />
+              </TabsContent>
 
-      </Tabs>
+              <TabsContent value='grid'>
+              </TabsContent>
+            </ScrollArea>
+          </div>
+
+        </Tabs>
+      </SWRProvider>
     </TableProvider>
   )
 }
 
 Plannings.meta = meta
-
-function getEndDate(startDate: Date): Date {
-  const endDate = new Date()
-  endDate.setDate(startDate.getDate() + 6)
-  return endDate
-}

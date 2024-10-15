@@ -1,4 +1,4 @@
-import { type ForwardedRef, forwardRef } from 'react'
+import { type ForwardedRef, type MouseEvent, forwardRef } from 'react'
 import { type View, type ViewProps } from '@/types'
 import { useNavigation, useView } from '@/hooks'
 
@@ -9,7 +9,8 @@ interface LinkProps {
   children: React.ReactNode
   to: View
   props?: ViewProps
-  onClick?: (event: unknown) => void
+  onClick?: (event: MouseEvent<HTMLAnchorElement>) => void
+  target?: 'self'
   className?: string
 }
 
@@ -39,7 +40,8 @@ export const Link = forwardRef((props: LinkProps, ref: ForwardedRef<HTMLAnchorEl
           viewRegistry: state.viewRegistry,
           props: { ...props.props },
           viewId,
-          origin
+          origin,
+          target: props.target
         })
       }}
       ref={ref}>

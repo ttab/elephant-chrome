@@ -1,114 +1,44 @@
-import { useMemo } from 'react'
+import { useCallback, useMemo } from 'react'
 import useSWR from 'swr'
-import { useIndexUrl, useTable, useSections, useRepositoryEvents } from '@/hooks'
-import { useSession } from 'next-auth/react'
+import { useSections } from '@/hooks'
 import {
-  type SearchIndexResponse,
-  type Planning,
-  Plannings
+  type Planning
 } from '@/lib/index'
 
 import { Table } from '@/components/Table'
 import { planningTableColumns } from '@/views/PlanningOverview/PlanningListColumns'
-import { convertToISOStringInUTC, getDateTimeBoundaries } from '@/lib/datetime'
 
-export const PlanningList = ({ date }: { date: Date }): JSX.Element => {
-  const { setData } = useTable<Planning>()
-  const { data: session, status } = useSession()
-
+export const PlanningList = ({ from, to }: {
+  from: string
+  to: string
+}): JSX.Element => {
   const sections = useSections()
-  const indexUrl = useIndexUrl()
-  const { startTime, endTime } = getDateTimeBoundaries(date)
 
-  // Create url to base SWR caching on
-  const searchUrl = useMemo(() => {
-    if (!indexUrl) {
-      return
+
+  const { error } = useSWR(['Plannings', from, to, { withStatus: true }])
+  const columns = useMemo(() => planningTableColumns({ sections }), [sections])
+
+  const onRowSelected = useCallback((row?: Planning) => {
+    if (row) {
+      console.info(`Selected planning item ${row._id}`)
+    } else {
+      console.info('Deselected row')
     }
+    return row
+  }, [])
 
-    const start = convertToISOStringInUTC(startTime)
-    const end = convertToISOStringInUTC(endTime)
-    const searchUrl = new URL(indexUrl)
 
-    searchUrl.search = new URLSearchParams({ start, end }).toString()
-    return searchUrl
-  }, [startTime, endTime, indexUrl])
-
-  const { data, mutate } = useSWR(searchUrl?.href, async (): Promise<SearchIndexResponse<Planning> | undefined> => {
-    if (status !== 'authenticated' || !indexUrl) {
-      return
-    }
-
-    const { startTime, endTime } = getDateTimeBoundaries(date)
-    const result = await Plannings.search(indexUrl, session.accessToken, {
-      size: 100,
-      where: {
-        start: convertToISOStringInUTC(startTime),
-        end: convertToISOStringInUTC(endTime)
-      }
-    })
-    if (result.ok) {
-      const getCurrentDocumentStatus = (obj: Planning): string => {
-        const item: Record<string, null | string[]> = obj._source
-        const defaultStatus = 'draft'
-        const createdValues = []
-        for (const key in item) {
-          if (Array.isArray(item[key])) {
-            if (Object.prototype.hasOwnProperty.call(item, key) && key.startsWith('heads.')) {
-              let newkey = key.split('heads.')[1]
-              if (newkey.includes('.created')) {
-                newkey = newkey.replace('.created', '')
-                const [dateCreated] = item[key]
-                createdValues.push({ status: newkey, created: dateCreated })
-              }
-            }
-          }
-        }
-        createdValues.sort((a, b) => a?.created > b?.created ? -1 : 1)
-        return createdValues[0]?.status || defaultStatus
-      }
-      const planningsWithStatus = {
-        ...result,
-        hits: result?.hits?.map((planningItem: Planning) => {
-          const status = getCurrentDocumentStatus(planningItem)
-          planningItem._source = Object.assign({}, planningItem._source, {
-            'document.meta.status': [status]
-          })
-          return planningItem
-        })
-      }
-      setData(planningsWithStatus)
-      return planningsWithStatus
-    }
-  })
-
-  // FIXME: This should be supported by the useRepositoryEvents hook
-  // but isn't working right now. The message goes only to the leader tab
-  useRepositoryEvents('core/planning-item', () => {
-    void (async () => {
-      try {
-        await mutate()
-      } catch (error) {
-        console.error('Error when mutating Planning list', error)
-      }
-    })()
-  })
+  if (error) {
+    return <pre>{error.message}</pre>
+  }
 
   return (
     <>
-      {data?.ok === true &&
-        <Table
-          type='Planning'
-          columns={planningTableColumns({ sections })}
-          onRowSelected={(row): void => {
-            if (row) {
-              console.info(`Selected planning item ${row._id}`)
-            } else {
-              console.info('Deselected row')
-            }
-          }}
+      <Table
+        type='Planning'
+        columns={columns}
+        onRowSelected={onRowSelected}
         />
-      }
     </>
   )
 }
