@@ -22,8 +22,6 @@ interface EventData {
 }
 
 interface EventTimeItemsProps extends React.PropsWithChildren {
-  className?: string
-  index?: number
   startDate?: string
 }
 
@@ -267,27 +265,15 @@ export const EventTimeMenu = ({ startDate }: EventTimeItemsProps): JSX.Element =
   const handleCheckedChange = (checked: boolean): void => {
     setFullDay(checked)
   }
-  const iconProps = {
-    size: 18,
-    strokeWidth: 1.75,
-    className: 'text-muted-foreground'
-  }
-
-  const timePickType = {
-    label: 'Välj tid',
-    value: 'endexcecution',
-    icon: CalendarClockIcon,
-    iconProps
-  }
 
   return (
     <Popover open={open} onOpenChange={handleOpenChange}>
       <PopoverTrigger asChild>
         <div className='flex flex-row space-x-2 items-center align-middle cursor-pointer'>
-          {timePickType.icon && <div className='pr-2'><timePickType.icon {...timePickType.iconProps} /></div>}
+          <div className='pr-2'><CalendarClockIcon size={18} strokeWidth = {1.75} className='text-muted-foreground' /></div>
           {fullDay
-            ? <DateLabel fromDate={eventData?.start}  toDate={eventData?.end} locale={locale} timeZone={timeZone}/>
-            : <DateTimeLabel fromDate={eventData?.start} toDate={eventData?.end} locale={locale} timeZone={timeZone}/>
+            ? <DateLabel fromDate={eventData?.start} toDate={eventData?.end} locale={locale} timeZone={timeZone} />
+            : <DateTimeLabel fromDate={eventData?.start} toDate={eventData?.end} locale={locale} timeZone={timeZone} />
           }
         </div>
       </PopoverTrigger>
