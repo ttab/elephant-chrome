@@ -12,7 +12,7 @@ import {
 import { useYValue } from '@/hooks/useYValue'
 import { useRegistry } from '@/hooks'
 import { CalendarClockIcon } from '@ttab/elephant-ui/icons'
-import { dateToReadableDateTime } from '@/lib/datetime'
+import { dateToReadableDateTime, dateToReadableTime } from '@/lib/datetime'
 
 interface EventData {
   end: string
@@ -35,33 +35,51 @@ const dateToReadableDay = (date: Date, locale: string, timeZone: string): string
   }).format(date)
 }
 
-const fortmatIsoStringToLocalDateTime = (isoString: string, locale: string, timeZone: string): JSX.Element => {
-  const date = new Date(isoString)
-  return (
-    <span >
-      {dateToReadableDateTime(date, locale, timeZone) || '-'}
-    </span>
+// const fortmatIsoStringToLocalDateTime = (isoString: string, locale: string, timeZone: string): JSX.Element => {
+//   const date = new Date(isoString)
+//   return (
+//     <span >
+//       {dateToReadableDateTime(date, locale, timeZone) || '-'}
+//     </span>
 
-  )
+//   )
+// }
+
+const isSameDate = (fromDate: string, toDate: string): boolean => {
+  const f = new Date(fromDate)
+  const t = new Date(toDate)
+
+  return f.getFullYear() === t.getFullYear() && f.getMonth() === t.getMonth() && f.getDate() === t.getDate()
 }
 
 const DateTimeLabel = ({ fromDate, toDate, locale, timeZone }: { fromDate?: string | undefined, toDate?: string | undefined, locale: string, timeZone: string }): JSX.Element => {
-  const from = fromDate ? fortmatIsoStringToLocalDateTime(fromDate, locale, timeZone) : null
-  const to = toDate ? fortmatIsoStringToLocalDateTime(toDate, locale, timeZone) : null
+  if (!fromDate || !toDate) {
+    return <></>
+  }
+  const sameDay = isSameDate(fromDate, toDate)
+  const sameTime = fromDate === toDate
+  const from = dateToReadableDateTime(new Date(fromDate), locale, timeZone)
+  const to = sameDay ? dateToReadableTime(new Date(toDate), locale, timeZone) : dateToReadableDateTime(new Date(toDate), locale, timeZone)
   return (
     <div>
-      {from} {to ? '-' : ''} {to}
+      {from} {!sameTime ? ` - ${to}` : ''}
     </div>
   )
 }
 
-// const DateLabel = ({ fromDate, toDate, locale, timeZone }: { fromDate?: string | undefined, toDate?: string | undefined, locale: string, timeZone: string }): JSX.Element => {
-
-//   const from = dateToReadableDay(new Date(fromDate))
-//   return (
-//     <div></div>
-//   )
-// }
+const DateLabel = ({ fromDate, toDate, locale, timeZone }: { fromDate?: string | undefined, toDate?: string | undefined, locale: string, timeZone: string }): JSX.Element => {
+  if (!fromDate || !toDate) {
+    return <></>
+  }
+  const fromDateObject = new Date(fromDate)
+  const toDateObject = new Date(toDate)
+  const sameDay = isSameDate(fromDate, toDate)
+  const from = dateToReadableDay(fromDateObject, locale, timeZone)
+  const to = dateToReadableDay(toDateObject, locale, timeZone)
+  return (
+    <div>Heldag {sameDay ? from : `${from} - ${to}`}</div>
+  )
+}
 
 const testValid = (time: string): boolean => {
   return (/^([0-1]?[0-9]|2[0-4]):([0-5][0-9])(:[0-5][0-9])?$/.test(time))
@@ -85,8 +103,6 @@ export const EventTimeMenu = ({ startDate }: EventTimeItemsProps): JSX.Element =
   const [open, setOpen] = useState(false)
   const inputRef = useRef(null)
   const [eventData, setEventData] = useYValue<EventData>('meta.core/event[0].data')
-
-  // const [data] = useYValue<AssignmentData>(`meta.core/assignment[${index}].data`)
   const [selected, setSelected] = useState<Date[]>([new Date(`${startDate}T00:00:00`)])
   const [startTimeValue, setStartTimeValue] = useState<string>('00:00')
   const [endTimeValue, setEndTimeValue] = useState<string>('23:59')
@@ -281,7 +297,10 @@ export const EventTimeMenu = ({ startDate }: EventTimeItemsProps): JSX.Element =
       <PopoverTrigger asChild>
         <div className='flex flex-row space-x-2 items-center align-middle font-sans text-sm cursor-pointer'>
           {timePickType.icon && <div className='pr-2'><timePickType.icon {...timePickType.iconProps} /></div>}
-          {fullDay ? <div>Heldag</div> : <DateTimeLabel fromDate={eventData?.start} toDate={eventData?.end} locale={locale} timeZone={timeZone} />}
+          {fullDay
+            ? <DateLabel fromDate={eventData?.start}  toDate={eventData?.end} locale={locale} timeZone={timeZone}/>
+            : <DateTimeLabel fromDate={eventData?.start} toDate={eventData?.end} locale={locale} timeZone={timeZone}/>
+          }
         </div>
       </PopoverTrigger>
       <PopoverContent asChild align='center' side='bottom' sideOffset={-150}>
