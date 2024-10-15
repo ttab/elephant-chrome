@@ -27,6 +27,14 @@ interface EventTimeItemsProps extends React.PropsWithChildren {
   startDate?: string
 }
 
+const dateToReadableDay = (date: Date, locale: string, timeZone: string): string => {
+  return new Intl.DateTimeFormat(locale, {
+    timeZone,
+    day: 'numeric',
+    month: 'short'
+  }).format(date)
+}
+
 const fortmatIsoStringToLocalDateTime = (isoString: string, locale: string, timeZone: string): JSX.Element => {
   const date = new Date(isoString)
   return (
@@ -35,10 +43,9 @@ const fortmatIsoStringToLocalDateTime = (isoString: string, locale: string, time
     </span>
 
   )
-  // return <TimeDisplay date={date} />
 }
 
-const DateLabel = ({ fromDate, toDate, locale, timeZone }: { fromDate?: string | undefined, toDate?: string | undefined, locale: string, timeZone: string }): JSX.Element => {
+const DateTimeLabel = ({ fromDate, toDate, locale, timeZone }: { fromDate?: string | undefined, toDate?: string | undefined, locale: string, timeZone: string }): JSX.Element => {
   const from = fromDate ? fortmatIsoStringToLocalDateTime(fromDate, locale, timeZone) : null
   const to = toDate ? fortmatIsoStringToLocalDateTime(toDate, locale, timeZone) : null
   return (
@@ -47,6 +54,14 @@ const DateLabel = ({ fromDate, toDate, locale, timeZone }: { fromDate?: string |
     </div>
   )
 }
+
+// const DateLabel = ({ fromDate, toDate, locale, timeZone }: { fromDate?: string | undefined, toDate?: string | undefined, locale: string, timeZone: string }): JSX.Element => {
+
+//   const from = dateToReadableDay(new Date(fromDate))
+//   return (
+//     <div></div>
+//   )
+// }
 
 const testValid = (time: string): boolean => {
   return (/^([0-1]?[0-9]|2[0-4]):([0-5][0-9])(:[0-5][0-9])?$/.test(time))
@@ -64,13 +79,7 @@ const dateMidnight = (date: Date): Date => {
   )
 }
 
-const dateToReadableDay = (date: Date, locale: string, timeZone: string): string => {
-  return new Intl.DateTimeFormat(locale, {
-    timeZone,
-    day: 'numeric',
-    month: 'short'
-  }).format(date)
-}
+
 
 export const EventTimeMenu = ({ startDate }: EventTimeItemsProps): JSX.Element => {
   const [open, setOpen] = useState(false)
@@ -272,7 +281,7 @@ export const EventTimeMenu = ({ startDate }: EventTimeItemsProps): JSX.Element =
       <PopoverTrigger asChild>
         <div className='flex flex-row space-x-2 items-center align-middle font-sans text-sm cursor-pointer'>
           {timePickType.icon && <div className='pr-2'><timePickType.icon {...timePickType.iconProps} /></div>}
-          {fullDay ? <div>Heldag</div> : <DateLabel fromDate={eventData?.start} toDate={eventData?.end} locale={locale} timeZone={timeZone} />}
+          {fullDay ? <div>Heldag</div> : <DateTimeLabel fromDate={eventData?.start} toDate={eventData?.end} locale={locale} timeZone={timeZone} />}
         </div>
       </PopoverTrigger>
       <PopoverContent asChild align='center' side='bottom' sideOffset={-150}>
