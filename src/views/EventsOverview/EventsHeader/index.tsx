@@ -29,11 +29,11 @@ export const Header = ({ tab }: {
     </div>
 
     {tab === 'list' &&
-      <DateChanger />
+      <DateChanger type='Events' />
     }
 
     {tab === 'grid' &&
-      <DateChanger />
+      <DateChanger type='Events' />
     }
 
     <Filter>

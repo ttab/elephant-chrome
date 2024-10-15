@@ -2,6 +2,7 @@ import {
   Sheet,
   SheetClose,
   SheetContent,
+  SheetDescription,
   SheetHeader,
   SheetTitle,
   SheetTrigger
@@ -25,6 +26,7 @@ export const Menu = (): JSX.Element => {
       <SheetContent side="left" className="p-0 flex flex-col justify-between">
         <div>
           <SheetHeader>
+            <SheetDescription />
             <SheetTitle className="flex flex-row gap-4 justify-between justify-items-center items-center h-14 px-4">
               <SheetClose className="rounded-md hover:bg-gray-100 w-9 h-9 flex items-center justify-center">
                 <X strokeWidth={2.25} />

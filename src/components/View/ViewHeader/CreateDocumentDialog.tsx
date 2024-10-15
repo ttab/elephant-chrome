@@ -1,5 +1,5 @@
 import {
-  Dialog, DialogContent, DialogTrigger
+  Dialog, DialogContent, DialogDescription, DialogTitle, DialogTrigger
 } from '@ttab/elephant-ui'
 import type * as Y from 'yjs'
 
@@ -49,7 +49,8 @@ export const CreateDocumentDialog = ({ type, payload, children }: PropsWithChild
             }
           })}
       </DialogTrigger>
-
+      <DialogDescription />
+      <DialogTitle />
       <DialogContent className='p-0 rounded-md'>
         {document !== null && Document &&
           <Document

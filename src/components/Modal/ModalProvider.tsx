@@ -6,6 +6,7 @@ import {
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogTitle
 } from '@ttab/elephant-ui'
 import { ModalContext } from './ModalContext'
@@ -44,7 +45,8 @@ export const ModalProvider = ({ children }: PropsWithChildren): JSX.Element => {
         */}
       {isVisible && (
         <Dialog modal={false} open={isVisible}>
-          <DialogTitle></DialogTitle>
+          <DialogDescription />
+          <DialogTitle />
           <DialogContent className="p-0 w-[94vw]">
             {modalContent}
           </DialogContent>

@@ -8,8 +8,11 @@ import {
 import { useQuery, useView, useLink } from '@/hooks'
 import { isEditableTarget } from '@/lib/isEditableTarget'
 import { addDays, subDays } from 'date-fns'
+import { type View } from '@/types/index'
 
-export const DateChanger = (): JSX.Element => {
+export const DateChanger = ({ type }: {
+  type: View
+}): JSX.Element => {
   const { isActive } = useView()
   const { from, to } = useQuery()
 
@@ -21,7 +24,7 @@ export const DateChanger = (): JSX.Element => {
 
   const steps = to ? 7 : 1
 
-  const changeDate = useLink('Plannings')
+  const changeDate = useLink(type)
 
   useEffect(() => {
     const keyDownHandler = (evt: KeyboardEvent): void => {
@@ -31,10 +34,22 @@ export const DateChanger = (): JSX.Element => {
 
       if (evt.key === 'ArrowLeft' && !evt.altKey) {
         evt.stopPropagation()
-        changeDate(evt, { from: decrementDate(currentDate, steps).toISOString() }, 'self')
+        changeDate(evt,
+          {
+            from: decrementDate(currentDate, steps)
+              .toISOString()
+              .split('T')[0]
+          },
+          'self')
       } else if (evt.key === 'ArrowRight' && !evt.altKey) {
         evt.stopPropagation()
-        changeDate(evt, { from: incrementDate(currentDate, steps).toISOString() }, 'self')
+        changeDate(evt,
+          {
+            from: incrementDate(currentDate, steps)
+              .toISOString()
+              .split('T')[0]
+          },
+          'self')
       }
     }
 
@@ -45,7 +60,7 @@ export const DateChanger = (): JSX.Element => {
   return (
     <div className="flex items-center">
       <Link
-        to='Plannings'
+        to={type}
         props={{ from: decrementDate(currentDate, steps).toISOString().split('T')[0] }}
         target='self'
       >
@@ -58,7 +73,7 @@ export const DateChanger = (): JSX.Element => {
       <DatePicker date={currentDate} changeDate={changeDate} />
 
       <Link
-        to='Plannings'
+        to={type}
         props={{ from: incrementDate(currentDate, steps).toISOString().split('T')[0] }}
         target='self'
       >
