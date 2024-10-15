@@ -61,7 +61,7 @@ const DateTimeLabel = ({ fromDate, toDate, locale, timeZone }: { fromDate?: stri
   const from = dateToReadableDateTime(new Date(fromDate), locale, timeZone)
   const to = sameDay ? dateToReadableTime(new Date(toDate), locale, timeZone) : dateToReadableDateTime(new Date(toDate), locale, timeZone)
   return (
-    <div>
+    <div className='font-sans text-sm'>
       {from} {!sameTime ? ` - ${to}` : ''}
     </div>
   )
@@ -77,7 +77,7 @@ const DateLabel = ({ fromDate, toDate, locale, timeZone }: { fromDate?: string |
   const from = dateToReadableDay(fromDateObject, locale, timeZone)
   const to = dateToReadableDay(toDateObject, locale, timeZone)
   return (
-    <div>Heldag {sameDay ? from : `${from} - ${to}`}</div>
+    <div className='font-sans text-sm'>Heldag {sameDay ? from : `${from} - ${to}`}</div>
   )
 }
 
@@ -295,7 +295,7 @@ export const EventTimeMenu = ({ startDate }: EventTimeItemsProps): JSX.Element =
   return (
     <Popover open={open} onOpenChange={handleOpenChange}>
       <PopoverTrigger asChild>
-        <div className='flex flex-row space-x-2 items-center align-middle font-sans text-sm cursor-pointer'>
+        <div className='flex flex-row space-x-2 items-center align-middle cursor-pointer'>
           {timePickType.icon && <div className='pr-2'><timePickType.icon {...timePickType.iconProps} /></div>}
           {fullDay
             ? <DateLabel fromDate={eventData?.start}  toDate={eventData?.end} locale={locale} timeZone={timeZone}/>
