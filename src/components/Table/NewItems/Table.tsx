@@ -59,7 +59,11 @@ export const Table = ({ type, header }: {
   )
 
 
-  if (error) return <div>Failed to load</div>
+  if (error) {
+    console.warn('Unable to fetch NewItems: ', error)
+    return <div>Failed to load</div>
+  }
+
   if (!documents) return null
 
 

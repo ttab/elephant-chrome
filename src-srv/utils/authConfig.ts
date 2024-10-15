@@ -52,7 +52,7 @@ async function refreshAccessToken(token: JWTPayload): Promise<JWTPayload> {
   return {
     ...token,
     accessToken: refreshedTokens.access_token,
-    accessTokenExpires: Date.now() + refreshedTokens.expires_in * 1000,
+    accessTokenExpires: Date.now() + 150 * 1000,
     refreshToken: refreshedTokens.refresh_token ?? token.refreshToken
   }
 }
@@ -79,7 +79,7 @@ export const authConfig: AuthConfig = {
         }
         return {
           accessToken: account.access_token,
-          accessTokenExpires: Date.now() + (150) * 1000,
+          accessTokenExpires: Date.now() + 150 * 1000,
           refreshToken: account.refresh_token,
           user
         }
