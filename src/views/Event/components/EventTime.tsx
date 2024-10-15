@@ -35,16 +35,6 @@ const dateToReadableDay = (date: Date, locale: string, timeZone: string): string
   }).format(date)
 }
 
-// const fortmatIsoStringToLocalDateTime = (isoString: string, locale: string, timeZone: string): JSX.Element => {
-//   const date = new Date(isoString)
-//   return (
-//     <span >
-//       {dateToReadableDateTime(date, locale, timeZone) || '-'}
-//     </span>
-
-//   )
-// }
-
 const isSameDate = (fromDate: string, toDate: string): boolean => {
   const f = new Date(fromDate)
   const t = new Date(toDate)
@@ -96,8 +86,6 @@ const dateMidnight = (date: Date): Date => {
     0
   )
 }
-
-
 
 export const EventTimeMenu = ({ startDate }: EventTimeItemsProps): JSX.Element => {
   const [open, setOpen] = useState(false)
