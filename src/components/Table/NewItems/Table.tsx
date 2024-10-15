@@ -14,6 +14,8 @@ import { type View } from '@/types/index'
 import { useRepositoryEvents } from '@/hooks/useRepositoryEvents'
 import { useCallback } from 'react'
 
+const BASE_URL = process.env.BASE_URL || ''
+
 export const Table = ({ type, header }: {
   type: View
   header: string
@@ -28,7 +30,7 @@ export const Table = ({ type, header }: {
     newDocuments?.length ? newDocuments : null,
     async (newDocuments): Promise<EleDocumentResponse[]> => {
       const results = await Promise.all(newDocuments.map(async (newDocument) => {
-        const response = await fetch(`${process.env.BASE_URL}/api/documents/${newDocument.id}`)
+        const response = await fetch(`${BASE_URL}/api/documents/${newDocument.id}`)
         const result = await response.json()
         return result
       }))
