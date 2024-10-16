@@ -6,19 +6,15 @@ import {
   Assignments
 } from '@/lib/index'
 import { Table } from '@/components/Table'
-
 import { convertToISOStringInUTC, getDateTimeBoundaries } from '@/lib/datetime'
-import { type AssignmentMeta } from './types'
-
 import { assignmentColumns } from './AssignmentColumns'
 import { getAllAssignments } from './lib'
-
+import { type AssignmentMeta } from './types'
 
 export const AssignmentsList = ({ date }: { date: Date }): JSX.Element => {
   const { setData } = useTable<AssignmentMeta>()
   const { data: session, status } = useSession()
   const { locale, timeZone } = useRegistry()
-
   const indexUrl = useIndexUrl()
   const authors = useAuthors()
   const { startTime, endTime } = getDateTimeBoundaries(date)
@@ -40,9 +36,8 @@ export const AssignmentsList = ({ date }: { date: Date }): JSX.Element => {
     if (status !== 'authenticated' || !indexUrl) {
       return
     }
-
-    const url = new URL('/twirp/elephant.index.SearchV1/Query', indexUrl)
-    const result = await Assignments.search(url, session.accessToken)
+    const endpoint = new URL('/twirp/elephant.index.SearchV1/Query', indexUrl)
+    const result = await Assignments.search({ endpoint, accessToken: session.accessToken })
     if (result?.hits?.hits?.length > 0) {
       const assignments = getAllAssignments(result)
       setData(assignments)
@@ -53,6 +48,7 @@ export const AssignmentsList = ({ date }: { date: Date }): JSX.Element => {
     <Table
       type='Assignments'
       columns={assignmentColumns({ authors, locale, timeZone })}
+
       onRowSelected={(row): void => {
         if (row) {
           console.info(`Selected assignment item ${row.id}`)

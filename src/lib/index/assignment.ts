@@ -15,8 +15,12 @@ import { type Item, type Response } from '@/views/Assignments/types'
 //   }
 // }
 
+interface Params {
+  endpoint: URL
+  accessToken: string
+}
 
-const search = async (endpoint: URL, accessToken: string): Promise<Response<Item>> => {
+const search = async ({ endpoint, accessToken }: Params): Promise<Response<Item>> => {
   // const start = params?.where?.start ? new Date(params.where.start) : new Date()
   // const end = params?.where?.end ? new Date(params.where.end) : new Date()
 
@@ -33,24 +37,27 @@ const search = async (endpoint: URL, accessToken: string): Promise<Response<Item
 
   const todayFormatted = `${year}-${month}-${day}T${hour}:${minute}:${second}Z`
 
+  const must = [
+    {
+      term: {
+        field: 'document.meta.core_assignment.data.start_date',
+        value: todayFormatted
+      }
+    },
+    {
+      term: {
+        field: 'document.meta.core_planning_item.data.start_date',
+        value: todayFormatted
+      }
+    }
+  ]
+
+  console.log('must', must)
   const query = {
     document_type: 'core/planning-item',
     query: {
       bool: {
-        must: [
-          {
-            term: {
-              field: 'document.meta.core_assignment.data.start_date',
-              value: todayFormatted
-            }
-          },
-          {
-            term: {
-              field: 'document.meta.core_planning_item.data.start_date',
-              value: todayFormatted
-            }
-          }
-        ]
+        must
       }
     },
     load_document: true,

@@ -7,21 +7,22 @@ import { FacetedFilter } from '@/components/Commands/FacetedFilter'
 import { AssignmentTypes } from '@/defaults/assignmentTypes'
 import { Type } from '@/components/Table/Items/Type'
 import { getNestedFacetedUniqueValues } from '@/components/Filter/lib/getNestedFacetedUniqueValues'
-import {
-  type MetaValueType,
-  type AssignmentMeta,
-  type AssigneeMeta,
-  type AssignmentDateDetails
-} from './types'
-import { type ColumnDef } from '@tanstack/react-table'
-import { type DefaultValueOption } from '@/types/index'
-import { type IDBAuthor } from 'src/datastore/types'
 import { Assignees } from '@/components/Table/Items/Assignees'
 import { AssignmentTitles } from '@/components/Table/Items/AssignmentTitles'
 import { Time } from '@/components/Table/Items/Time'
 import { Actions } from '@/components/Table/Items/Actions'
 import { Tooltip } from '@ttab/elephant-ui'
 import { dateToReadableDateTime } from '@/lib/datetime'
+import { type ColumnDef } from '@tanstack/react-table'
+import { type DefaultValueOption } from '@/types/index'
+import { type IDBAuthor } from 'src/datastore/types'
+import {
+  type MetaValueType,
+  type AssignmentMeta,
+  type AssigneeMeta,
+  type AssignmentDateDetails
+} from './types'
+
 
 export function assignmentColumns({ authors = [], locale, timeZone }: {
   authors?: IDBAuthor[]
@@ -171,7 +172,6 @@ export function assignmentColumns({ authors = [], locale, timeZone }: {
         if (data?.publish) {
           const date = new Date(data?.publish)
           const publishTime = dateToReadableDateTime(date, locale, timeZone)
-          console.log('data publish < today?', new Date(data?.publish) < new Date())
           return <Tooltip content='Publiceringstid'>{publishTime}</Tooltip>
         }
         return <></>

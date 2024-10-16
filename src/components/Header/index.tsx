@@ -10,14 +10,16 @@ import { Button } from '@ttab/elephant-ui'
 import { PlusIcon } from '@ttab/elephant-ui/icons'
 import { type View } from '@/types/index'
 import { Commands } from '../Commands'
+import { PersonalAssignmentFilter } from './PersonalAssignmentFilter'
 
-export const Header = ({ tab, startDate, setStartDate, endDate, setEndDate, type }: {
+export const Header = ({ tab, startDate, setStartDate, endDate, setEndDate, type, assigneeUserName }: {
   tab: string
   startDate: Date
   setStartDate: Dispatch<SetStateAction<Date>>
   endDate?: Date
   setEndDate?: Dispatch<SetStateAction<Date>>
   type: View
+  assigneeUserName?: string
 }): JSX.Element => {
   return <>
     <CreateDocumentDialog type={type}>
@@ -44,5 +46,8 @@ export const Header = ({ tab, startDate, setStartDate, endDate, setEndDate, type
     <Filter>
       <Commands />
     </Filter>
+    {type === 'Assignments' && assigneeUserName &&
+      <PersonalAssignmentFilter assigneeUserName={assigneeUserName} />
+    }
   </>
 }
