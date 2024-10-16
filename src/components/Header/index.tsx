@@ -10,7 +10,7 @@ import { Button } from '@ttab/elephant-ui'
 import { PlusIcon } from '@ttab/elephant-ui/icons'
 import { type View } from '@/types/index'
 import { Commands } from '../Commands'
-import { PersonalAssignmentFilter } from './PersonalAssignmentFilter'
+import { PersonalAssignmentsFilter } from './PersonalAssignmentsFilter'
 
 export const Header = ({ tab, startDate, setStartDate, endDate, setEndDate, type, assigneeUserName }: {
   tab: string
@@ -47,7 +47,7 @@ export const Header = ({ tab, startDate, setStartDate, endDate, setEndDate, type
       <Commands />
     </Filter>
     {type === 'Assignments' && assigneeUserName &&
-      <PersonalAssignmentFilter assigneeUserName={assigneeUserName} />
+      <PersonalAssignmentsFilter assigneeUserName={assigneeUserName} />
     }
   </>
 }

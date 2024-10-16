@@ -6,7 +6,7 @@ interface PAFProps {
   assigneeUserName: string
 }
 
-export const PersonalAssignmentFilter = ({ assigneeUserName }: PAFProps): JSX.Element => {
+export const PersonalAssignmentsFilter = ({ assigneeUserName }: PAFProps): JSX.Element => {
   const { table } = useTable()
 
   return (
