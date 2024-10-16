@@ -39,7 +39,7 @@ export const Assignments = (): JSX.Element => {
   const { locale, timeZone } = useRegistry()
   const { data: session } = useSession()
 
-  const userAuthorName = useMemo(() => {
+  const assigneeUserName = useMemo(() => {
     const userEmail = session?.user.email
     const author = authors.find((_: IDBAuthor) => _?.email === userEmail)
     return author?.name
@@ -73,7 +73,7 @@ export const Assignments = (): JSX.Element => {
                 endDate={endDate}
                 setEndDate={setEndDate}
                 type='Assignments'
-                assigneeUserName={userAuthorName}
+                assigneeUserName={assigneeUserName}
               />
             </ViewHeader.Content>
 
