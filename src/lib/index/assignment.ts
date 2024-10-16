@@ -37,27 +37,24 @@ const search = async ({ endpoint, accessToken }: Params): Promise<Response<Item>
 
   const todayFormatted = `${year}-${month}-${day}T${hour}:${minute}:${second}Z`
 
-  const must = [
-    {
-      term: {
-        field: 'document.meta.core_assignment.data.start_date',
-        value: todayFormatted
-      }
-    },
-    {
-      term: {
-        field: 'document.meta.core_planning_item.data.start_date',
-        value: todayFormatted
-      }
-    }
-  ]
-
-  console.log('must', must)
   const query = {
     document_type: 'core/planning-item',
     query: {
       bool: {
-        must
+        must: [
+          {
+            term: {
+              field: 'document.meta.core_assignment.data.start_date',
+              value: todayFormatted
+            }
+          },
+          {
+            term: {
+              field: 'document.meta.core_planning_item.data.start_date',
+              value: todayFormatted
+            }
+          }
+        ]
       }
     },
     load_document: true,
