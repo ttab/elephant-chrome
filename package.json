@@ -23,6 +23,11 @@
     "test:coverage": "vitest run --coverage",
     "preview": "vite preview"
   },
+  "overrides": {
+    "vite": {
+      "rollup": "npm:@rollup/wasm-node"
+    }
+  },
   "dependencies": {
     "@auth/express": "^0.8.0",
     "@date-fns/utc": "^2.1.0",
