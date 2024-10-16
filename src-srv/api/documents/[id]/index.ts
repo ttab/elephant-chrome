@@ -1,5 +1,4 @@
 import type { Request } from 'express'
-import { getToken } from 'next-auth/jwt'
 import type { RouteHandler } from '../../../routes.js'
 import { isValidUUID } from '../../../utils/isValidUUID.js'
 import { toGroupedNewsDoc } from '../../../utils/transformations/groupedNewsDoc.js'
@@ -10,25 +9,10 @@ import logger from '../../../lib/logger.js'
 /**
  * Fetch a fresh document, either directly from Redis cache if it is there or from reposity if not,
  */
-export const GET: RouteHandler = async (req: Request, { cache, repository }) => {
+export const GET: RouteHandler = async (req: Request, { cache, repository, res }) => {
   const uuid = req.params.id
-  const secret = process.env.AUTH_SECRET
 
-  if (typeof secret !== 'string') {
-    return {
-      statusCode: 400,
-      statusMessage: 'Application error'
-    }
-  }
-
-  // @ts-expect-error Mismatch between request param types
-  const { accessToken = undefined } = await getToken({ req, secret }) || {}
-  if (!accessToken || typeof accessToken !== 'string') {
-    return {
-      statusCode: 403,
-      statusMessage: 'Forbidden'
-    }
-  }
+  const { session } = res.locals
 
   if (!uuid || typeof uuid !== 'string' || !isValidUUID(uuid)) {
     return {
@@ -56,7 +40,7 @@ export const GET: RouteHandler = async (req: Request, { cache, repository }) => 
     // Fetch content fron repository
     const doc = await repository.getDoc({
       uuid,
-      accessToken
+      accessToken: session?.accessToken
     }).catch(ex => {
       throw new Error('get document from repository', { cause: ex })
     })
