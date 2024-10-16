@@ -19,7 +19,7 @@ ReactDOM.createRoot(root).render(
   <IndexedDBProvider>
     <RegistryProvider>
       <HPWebSocketProvider>
-        <SessionProvider refetchOnWindowFocus={false} basePath={`${import.meta.env.BASE_URL}/api/auth`} refetchInterval={180}>
+        <SessionProvider refetchOnWindowFocus={false} basePath={`${import.meta.env.BASE_URL}/api/auth`} refetchInterval={150}>
           <RepositoryEventsProvider>
             <ThemeProvider defaultTheme='light' storageKey='ele-ui-theme' >
               <NavigationProvider>

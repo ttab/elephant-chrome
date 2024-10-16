@@ -21,9 +21,16 @@ export function createDocument<T>(
     payload?: T
   ) => Document,
   inProgress?: boolean,
-  payload?: T
+  payload?: T,
+  createdDocumentIdRef?: React.MutableRefObject<string | undefined>
 ): [string, Y.Doc] {
   const documentId = crypto.randomUUID()
+
+  // Set generated documentId to ref so that it can be
+  // accessed from creating component
+  if (createdDocumentIdRef) {
+    createdDocumentIdRef.current = documentId
+  }
 
   const yDoc = new Y.Doc()
 

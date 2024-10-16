@@ -14,6 +14,8 @@ import { type View } from '@/types/index'
 import { useRepositoryEvents } from '@/hooks/useRepositoryEvents'
 import { useCallback } from 'react'
 
+const BASE_URL = import.meta.env.BASE_URL || ''
+
 export const Table = ({ type, header }: {
   type: View
   header: string
@@ -28,7 +30,7 @@ export const Table = ({ type, header }: {
     newDocuments?.length ? newDocuments : null,
     async (newDocuments): Promise<EleDocumentResponse[]> => {
       const results = await Promise.all(newDocuments.map(async (newDocument) => {
-        const response = await fetch(`${process.env.BASE_URL}/api/documents/${newDocument.id}`)
+        const response = await fetch(`${BASE_URL}/api/documents/${newDocument.id}`)
         const result = await response.json()
         return result
       }))
@@ -59,7 +61,11 @@ export const Table = ({ type, header }: {
   )
 
 
-  if (error) return <div>Failed to load</div>
+  if (error) {
+    console.warn('Unable to fetch NewItems: ', error)
+    return <div>Failed to load</div>
+  }
+
   if (!documents) return null
 
 

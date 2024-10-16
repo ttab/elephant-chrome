@@ -1,5 +1,5 @@
 import {
-  Dialog, DialogContent, DialogTrigger
+  Dialog, DialogContent, DialogDescription, DialogTitle, DialogTrigger
 } from '@ttab/elephant-ui'
 import type * as Y from 'yjs'
 
@@ -14,9 +14,10 @@ import { type TemplatePayload } from '@/lib/createYItem'
 
 export type Template = keyof typeof Templates
 
-export const CreateDocumentDialog = ({ type, payload, children }: PropsWithChildren<{
+export const CreateDocumentDialog = ({ type, payload, createdDocumentIdRef, children }: PropsWithChildren<{
   type: View
   payload?: TemplatePayload
+  createdDocumentIdRef?: React.MutableRefObject<string | undefined>
 }>): JSX.Element | null => {
   const [document, setDocument] = useState<[string | undefined, Y.Doc | undefined]>([undefined, undefined])
 
@@ -42,14 +43,16 @@ export const CreateDocumentDialog = ({ type, payload, children }: PropsWithChild
                   createDocument(
                     getTemplate(type),
                     true,
-                    payload
+                    payload,
+                    createdDocumentIdRef
                   )
                 )
               }
             }
           })}
       </DialogTrigger>
-
+      <DialogDescription />
+      <DialogTitle />
       <DialogContent className='p-0 rounded-md'>
         {document !== null && Document &&
           <Document
