@@ -40,9 +40,8 @@ export const Assignments = (): JSX.Element => {
   const { data: session } = useSession()
 
   const userAuthorName = useMemo(() => {
-    const userEmail = 'Anders.Wallin@tt.se' || session?.user.email
+    const userEmail = session?.user.email
     const author = authors.find((_: IDBAuthor) => _?.email === userEmail)
-    console.log('🍄 ~ userAuthorName ~ authors ✅ ', authors)
     return author?.name
   }, [authors, session?.user?.email])
 
