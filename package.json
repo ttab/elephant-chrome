@@ -51,7 +51,7 @@
     "lodash-es": "^4.17.21",
     "next-auth": "^5.0.0-beta.22",
     "node-html-parser": "^6.1.13",
-    "pino": "^9.4.0",
+    "pino": "^9.5.0",
     "pino-http": "^10.3.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
