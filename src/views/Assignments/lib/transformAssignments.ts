@@ -22,5 +22,5 @@ export const transformAssignments = (result: Response<Item>): (AssignmentMeta[])
     })
   })
 
-  return assignments
+  return assignments.sort((a, b) => a.data.start < b.data.start ? -1 : 1)
 }

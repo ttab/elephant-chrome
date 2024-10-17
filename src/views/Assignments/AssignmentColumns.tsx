@@ -29,32 +29,6 @@ export function assignmentColumns({ authors = [], locale, timeZone }: {
 }): Array<ColumnDef<AssignmentMeta & { planningTitle: string, newsvalue: string }>> {
   return [
     {
-      id: 'assignmentType',
-      meta: {
-        Filter: ({ column, setSearch }) => (
-          <FacetedFilter column={column} setSearch={setSearch} facetFn={() => getNestedFacetedUniqueValues(column)} />
-        ),
-        options: AssignmentTypes,
-        name: 'Typ',
-        columnIcon: Crosshair,
-        className: 'box-content w-8 sm:w-8 pr-1 sm:pr-4'
-      },
-      accessorFn: ({ meta }) => {
-        const assignmentTypes = meta?.filter((metaType: MetaValueType) => metaType.type === 'core/assignment-type')
-        return assignmentTypes?.map(type => AssignmentTypes.find(aType => aType.value === type?.value))
-      },
-      cell: ({ row }) => {
-        const values: DefaultValueOption[] = row.getValue('assignmentType')
-        return <Type data={values} />
-      },
-      filterFn: (row, id, value) => {
-        const types = row.getValue<Array<{ value: string }> | undefined>(id)?.map((type) => type.value)
-        return (
-          value.some((v: string) => types?.includes(v))
-        )
-      }
-    },
-    {
       id: 'titles',
       meta: {
         name: 'Titlar',
@@ -219,6 +193,32 @@ export function assignmentColumns({ authors = [], locale, timeZone }: {
         if (val) {
           return value.includes(row.getValue(id))
         }
+      }
+    },
+    {
+      id: 'assignmentType',
+      meta: {
+        Filter: ({ column, setSearch }) => (
+          <FacetedFilter column={column} setSearch={setSearch} facetFn={() => getNestedFacetedUniqueValues(column)} />
+        ),
+        options: AssignmentTypes,
+        name: 'Typ',
+        columnIcon: Crosshair,
+        className: 'box-content w-8 sm:w-8 pr-1 sm:pr-4'
+      },
+      accessorFn: ({ meta }) => {
+        const assignmentTypes = meta?.filter((metaType: MetaValueType) => metaType.type === 'core/assignment-type')
+        return assignmentTypes?.map(type => AssignmentTypes.find(aType => aType.value === type?.value))
+      },
+      cell: ({ row }) => {
+        const values: DefaultValueOption[] = row.getValue('assignmentType')
+        return <Type data={values} />
+      },
+      filterFn: (row, id, value) => {
+        const types = row.getValue<Array<{ value: string }> | undefined>(id)?.map((type) => type.value)
+        return (
+          value.some((v: string) => types?.includes(v))
+        )
       }
     },
     {
