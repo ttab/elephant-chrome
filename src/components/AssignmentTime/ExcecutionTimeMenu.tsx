@@ -15,21 +15,21 @@ import { TimeDisplay } from '../DataItem/TimeDisplay'
 import { dateToReadableDateTime } from '@/lib/datetime'
 import { useRegistry } from '@/hooks'
 import { type AssignmentData } from './types'
-interface ExcecutionTimeItemsProps extends React.PropsWithChildren {
-  handleOnSelect: ({ excecutionStart, executionEnd }: { excecutionStart: string | undefined, executionEnd: string | undefined }) => void
+interface ExecutionTimeItemsProps extends React.PropsWithChildren {
+  handleOnSelect: ({ executionStart, executionEnd }: { executionStart: string | undefined, executionEnd: string | undefined }) => void
   className?: string
   index?: number
   startDate?: string
 }
 
-const fortmatIsoStringToLocalTime = (isoString: string): JSX.Element => {
+const IsoStringTimeDisplay = (isoString: string): JSX.Element => {
   const date = new Date(isoString)
   return <TimeDisplay date={date} />
 }
 
 const DateLabel = ({ fromDate, toDate }: { fromDate?: string | undefined, toDate?: string | undefined }): JSX.Element => {
-  const from = fromDate ? fortmatIsoStringToLocalTime(fromDate) : null
-  const to = toDate ? fortmatIsoStringToLocalTime(toDate) : null
+  const from = fromDate ? IsoStringTimeDisplay(fromDate) : null
+  const to = toDate ? IsoStringTimeDisplay(toDate) : null
   return (
     <span>
       {from} {to ? '-' : ''} {to}
@@ -41,7 +41,7 @@ const testValid = (time: string): boolean => {
   return (/^([0-1]?[0-9]|2[0-4]):([0-5][0-9])(:[0-5][0-9])?$/.test(time))
 }
 
-export const ExcecutionTimeMenu = ({ handleOnSelect, index, startDate }: ExcecutionTimeItemsProps): JSX.Element => {
+export const ExecutionTimeMenu = ({ handleOnSelect, index, startDate }: ExecutionTimeItemsProps): JSX.Element => {
   const [open, setOpen] = useState(false)
   const inputRef = useRef(null)
   const [data] = useYValue<AssignmentData>(`meta.core/assignment[${index}].data`)
@@ -245,7 +245,7 @@ export const ExcecutionTimeMenu = ({ handleOnSelect, index, startDate }: Excecut
                     e.preventDefault()
                     if (hasEndTime ? (!startTimeValid || !endTimeValid) : !startTimeValid) {
                       handleOnSelect({
-                        excecutionStart: startDateValue,
+                        executionStart: startDateValue,
                         executionEnd: hasEndTime ? endDateValue : undefined
                       })
                     }
@@ -281,7 +281,7 @@ export const ExcecutionTimeMenu = ({ handleOnSelect, index, startDate }: Excecut
                       e.preventDefault()
                       if (startTimeValid && endTimeValid) {
                         handleOnSelect({
-                          excecutionStart: startDateValue,
+                          executionStart: startDateValue,
                           executionEnd: hasEndTime ? endDateValue : undefined
                         })
                         setOpen(false)
@@ -310,7 +310,7 @@ export const ExcecutionTimeMenu = ({ handleOnSelect, index, startDate }: Excecut
                 evt.stopPropagation()
 
                 handleOnSelect({
-                  excecutionStart: startDateValue,
+                  executionStart: startDateValue,
                   executionEnd: hasEndTime ? endDateValue : undefined
                 })
                 setOpen(false)
