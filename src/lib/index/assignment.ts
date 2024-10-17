@@ -58,6 +58,7 @@ const search = async ({ endpoint, accessToken }: Params): Promise<Response<Item>
       }
     },
     load_document: true,
+    /* size: 100, */
     sort: [
       {
         field: 'document.meta.core_assignment.data.start'
@@ -75,6 +76,7 @@ const search = async ({ endpoint, accessToken }: Params): Promise<Response<Item>
     body: JSON.stringify(query)
   })
 
+  console.log('🍄 ~ search ~ response ✅ ', await response.json())
   return await response.json()
 }
 

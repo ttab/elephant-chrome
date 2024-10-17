@@ -8,7 +8,7 @@ import {
 import { Table } from '@/components/Table'
 import { convertToISOStringInUTC, getDateTimeBoundaries } from '@/lib/datetime'
 import { assignmentColumns } from './AssignmentColumns'
-import { getAllAssignments } from './lib'
+import { transformAssignments } from './lib/transformAssignments'
 import { type AssignmentMeta } from './types'
 
 export const AssignmentsList = ({ date }: { date: Date }): JSX.Element => {
@@ -39,7 +39,7 @@ export const AssignmentsList = ({ date }: { date: Date }): JSX.Element => {
     const endpoint = new URL('/twirp/elephant.index.SearchV1/Query', indexUrl)
     const result = await Assignments.search({ endpoint, accessToken: session.accessToken })
     if (result?.hits?.hits?.length > 0) {
-      const assignments = getAllAssignments(result)
+      const assignments = transformAssignments(result)
       setData(assignments)
     }
   })

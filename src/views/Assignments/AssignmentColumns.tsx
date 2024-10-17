@@ -9,20 +9,18 @@ import { Type } from '@/components/Table/Items/Type'
 import { getNestedFacetedUniqueValues } from '@/components/Filter/lib/getNestedFacetedUniqueValues'
 import { Assignees } from '@/components/Table/Items/Assignees'
 import { AssignmentTitles } from '@/components/Table/Items/AssignmentTitles'
-import { Time } from '@/components/Table/Items/Time'
 import { Actions } from '@/components/Table/Items/Actions'
 import { Tooltip } from '@ttab/elephant-ui'
-import { dateToReadableDateTime } from '@/lib/datetime'
+import { formatDate } from '@/lib/datetime'
 import { type ColumnDef } from '@tanstack/react-table'
 import { type DefaultValueOption } from '@/types/index'
 import { type IDBAuthor } from 'src/datastore/types'
 import {
   type MetaValueType,
   type AssignmentMeta,
-  type AssigneeMeta,
-  type AssignmentDateDetails
+  type AssigneeMeta
 } from './types'
-
+import { slotLabels, timesSlots } from '@/defaults/assignmentTimeslots'
 
 export function assignmentColumns({ authors = [], locale, timeZone }: {
   authors?: IDBAuthor[]
@@ -37,17 +35,13 @@ export function assignmentColumns({ authors = [], locale, timeZone }: {
           <FacetedFilter column={column} setSearch={setSearch} facetFn={() => getNestedFacetedUniqueValues(column)} />
         ),
         options: AssignmentTypes,
-        name: 'Uppdragstyp',
+        name: 'Typ',
         columnIcon: Crosshair,
         className: 'box-content w-8 sm:w-8 pr-1 sm:pr-4'
       },
-      accessorFn: (data) => {
-        const assignmentTypes = data?.meta?.filter((metaType: MetaValueType) => metaType.type === 'core/assignment-type')
-        return assignmentTypes?.map(type => {
-          return AssignmentTypes.find(aType => {
-            return aType.value === type.value && type.value
-          })
-        })
+      accessorFn: ({ meta }) => {
+        const assignmentTypes = meta?.filter((metaType: MetaValueType) => metaType.type === 'core/assignment-type')
+        return assignmentTypes?.map(type => AssignmentTypes.find(aType => aType.value === type?.value))
       },
       cell: ({ row }) => {
         const values: DefaultValueOption[] = row.getValue('assignmentType')
@@ -67,8 +61,7 @@ export function assignmentColumns({ authors = [], locale, timeZone }: {
         columnIcon: Briefcase,
         className: 'flex-1'
       },
-      accessorFn: (data) => {
-        const { planningTitle, title: assignmentTitle } = data
+      accessorFn: ({ planningTitle, title: assignmentTitle }) => {
         return {
           planningTitle,
           assignmentTitle
@@ -91,8 +84,8 @@ export function assignmentColumns({ authors = [], locale, timeZone }: {
         columnIcon: SignalHigh,
         className: 'box-content w-4 sm:w-8 pr-1 sm:pr-4'
       },
-      accessorFn: (data) => {
-        return data.newsvalue
+      accessorFn: ({ newsvalue }) => {
+        return newsvalue
       },
       cell: ({ row }) => {
         const value: string = row.getValue('newsvalue') || ''
@@ -137,6 +130,7 @@ export function assignmentColumns({ authors = [], locale, timeZone }: {
     {
       id: 'assignment_time',
       meta: {
+        options: slotLabels,
         Filter: ({ column, setSearch }) => (
           <FacetedFilter column={column} setSearch={setSearch} />
         ),
@@ -144,23 +138,64 @@ export function assignmentColumns({ authors = [], locale, timeZone }: {
         columnIcon: Clock3Icon,
         className: 'flex-none w-[112px] hidden @5xl/view:[display:revert]'
       },
-      accessorFn: ({ data }: { data: AssignmentDateDetails }) => {
-        const startTime = new Date(data?.start)
-        const endTime = new Date(data?.end)
-        return [startTime, endTime]
+      accessorFn: ({ data }) => {
+        const start = data?.start
+        const end = data?.end
+        const hour = new Date(start).getHours()
+        const slotEntries = Object.entries(timesSlots)
+        const slotName: (string | undefined) = slotEntries.find(([_, s]): boolean => s.slots.includes(hour))?.[0]
+        const slot = slotName ? timesSlots[slotName].label : 'Heldag'
+        return [start, end, data?.full_day, slot]
       },
       cell: ({ row }) => {
-        const [startTime, endTime] = row.getValue<Date[]>('assignment_time') || undefined
-        return (
-          <Tooltip content='Uppdragstid'>
-            <Time startTime={startTime} endTime={endTime} />
-          </Tooltip>
-        )
+        const [start, end, fullday, slot] = row.getValue<string[]>('assignment_time') || undefined
+        const isFullday = fullday === 'true'
+        const types: string[] = row.getValue<DefaultValueOption[]>('assignmentType')?.map(t => t.value)
+        const formattedStart = formatDate(start, locale, timeZone)
+        const formattedEnd = formatDate(end, locale, timeZone)
+        const formattedDatestring = `${formattedStart} - ${formattedEnd}`
+
+        if (!types.includes('picture')) {
+          if (isFullday) {
+            return (
+              <Tooltip content='Uppdragstid'>
+                <div>Heldag</div>
+              </Tooltip>
+            )
+          } else {
+            return (
+              <Tooltip content={`Uppdragstid: ${formattedDatestring}`}>
+                <div>{slot}</div>
+              </Tooltip>
+            )
+          }
+        }
+        /* Assignment type: picture */
+        if (isFullday) {
+          return (
+            <Tooltip content='Uppdragstid'>
+              <div>Heldag</div>
+            </Tooltip>
+          )
+        } else {
+          return (
+            <Tooltip content={`Uppdragstid: ${formattedDatestring}`}>
+              <div>{slot}</div>
+            </Tooltip>
+          )
+        }
+      },
+      filterFn: (row, id, value) => {
+        const val = row.getValue<string[]>(id) || undefined
+        if (val) {
+          return val.includes(timesSlots[value[0]]?.label)
+        }
       }
     },
     {
       id: 'publish_time',
       meta: {
+        options: slotLabels,
         Filter: ({ column, setSearch }) => (
           <FacetedFilter column={column} setSearch={setSearch} />
         ),
@@ -168,16 +203,22 @@ export function assignmentColumns({ authors = [], locale, timeZone }: {
         columnIcon: Clock9Icon,
         className: 'flex-none w-[112px] hidden @5xl/view:[display:revert]'
       },
-      accessorFn: ({ data }: { data: AssignmentDateDetails }) => {
-        if (data?.publish) {
-          const date = new Date(data?.publish)
-          const publishTime = dateToReadableDateTime(date, locale, timeZone)
+      accessorFn: ({ data }) => {
+        return [data?.publish]
+      },
+      cell: ({ row }) => {
+        const [publishValue] = row.getValue<Array<string | undefined>>('publish_time') || undefined
+        if (publishValue) {
+          const publishTime = formatDate(publishValue, locale, timeZone)
           return <Tooltip content='Publiceringstid'>{publishTime}</Tooltip>
         }
         return <></>
       },
-      cell: ({ row }) => {
-        return row.getValue<Date[]>('publish_time') || undefined
+      filterFn: (row, id, value) => {
+        const val = row.getValue<Date>('publish_time') || undefined
+        if (val) {
+          return value.includes(row.getValue(id))
+        }
       }
     },
     {
