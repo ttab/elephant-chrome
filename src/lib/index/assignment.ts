@@ -58,12 +58,12 @@ const search = async ({ endpoint, accessToken }: Params): Promise<Response<Item>
       }
     },
     load_document: true,
-    size: 120
-    // sort: [
-    //   {
-    //     field: 'document.meta.core_assignment.data.start'
-    //   }
-    // ]
+    size: 150,
+    sort: [
+      {
+        field: 'document.meta.core_newsvalue.value'
+      }
+    ]
   }
 
   const response = await fetch(endpoint, {
