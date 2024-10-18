@@ -6,8 +6,8 @@ import { ScrollArea, Tabs, TabsContent } from '@ttab/elephant-ui'
 import { TableProvider } from '@/contexts/TableProvider'
 import { TableCommandMenu } from '@/components/Commands/TableCommand'
 import { EventsList } from './EventsList'
-import { Header } from './EventsHeader'
-import { EventsCommands } from './EventsCommands'
+import { Header } from '@/components/Header'
+import { Commands } from '@/components/Commands'
 import { eventTableColumns } from './EventsListColumns'
 import { type Event } from '@/lib/index'
 import { Events as EventsIndex } from '@/lib/events'
@@ -44,8 +44,8 @@ export const Events = (): JSX.Element => {
       <SWRProvider<Event> index={EventsIndex}>
         <Tabs defaultValue={currentTab} className='flex-1' onValueChange={setCurrentTab}>
 
-          <TableCommandMenu>
-            <EventsCommands />
+          <TableCommandMenu heading='Events'>
+            <Commands />
           </TableCommandMenu>
 
           <div className="flex flex-col h-screen">
@@ -53,11 +53,7 @@ export const Events = (): JSX.Element => {
               <ViewHeader.Title title="Händelser" short="Händelser" icon={CalendarPlus2} iconColor='#5E9F5D' />
 
               <ViewHeader.Content>
-                <Header
-                  tab={currentTab}
-                  startDate={startDate}
-                  setStartDate={setStartDate}
-              />
+                <Header tab={currentTab} type='Events' />
               </ViewHeader.Content>
 
               <ViewHeader.Action />
