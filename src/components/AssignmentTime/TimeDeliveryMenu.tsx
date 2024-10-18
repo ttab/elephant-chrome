@@ -37,7 +37,7 @@ export const TimeDeliveryMenu = ({
       <PopoverTrigger asChild>
         <Button
           size={'sm'}
-          variant={'outline'}
+          variant={'ghost'}
           className={'h-9 text-muted-foreground font-sans font-normal whitespace-nowrap p-0'}
         >
           {children}
