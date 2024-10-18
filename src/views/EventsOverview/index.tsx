@@ -6,14 +6,15 @@ import { ScrollArea, Tabs, TabsContent } from '@ttab/elephant-ui'
 import { TableProvider } from '@/contexts/TableProvider'
 import { TableCommandMenu } from '@/components/Commands/TableCommand'
 import { EventsList } from './EventsList'
-import { Header } from './EventsHeader'
-import { EventsCommands } from './EventsCommands'
+import { Header } from '@/components/Header'
+import { Commands } from '@/components/Commands'
 import { eventTableColumns } from './EventsListColumns'
 import { type Event } from '@/lib/index'
 import { Events as EventsIndex } from '@/lib/events'
 import { useSections } from '@/hooks/useSections'
 import { SWRProvider } from '@/contexts/SWRProvider'
 import { getDateTimeBoundariesUTC } from '@/lib/datetime'
+import { useQuery } from '@/hooks/useQuery'
 
 const meta: ViewMetadata = {
   name: 'Events',
@@ -32,20 +33,24 @@ const meta: ViewMetadata = {
 }
 
 export const Events = (): JSX.Element => {
-  const [startDate, setStartDate] = useState<Date>(new Date())
   const [currentTab, setCurrentTab] = useState<string>('list')
   const sections = useSections()
+  const query = useQuery()
+  const { from, to } = useMemo(() =>
+    getDateTimeBoundariesUTC(query.from
+      ? new Date(`${query.from}T00:00:00.000Z`)
+      : new Date()),
+  [query.from])
 
   const columns = useMemo(() => eventTableColumns({ sections }), [sections])
-  const { from, to } = useMemo(() => getDateTimeBoundariesUTC(startDate), [startDate])
 
   return (
     <TableProvider<Event> columns={columns}>
       <SWRProvider<Event> index={EventsIndex}>
         <Tabs defaultValue={currentTab} className='flex-1' onValueChange={setCurrentTab}>
 
-          <TableCommandMenu>
-            <EventsCommands />
+          <TableCommandMenu heading='Events'>
+            <Commands />
           </TableCommandMenu>
 
           <div className="flex flex-col h-screen">
@@ -53,11 +58,7 @@ export const Events = (): JSX.Element => {
               <ViewHeader.Title title="Händelser" short="Händelser" icon={CalendarPlus2} iconColor='#5E9F5D' />
 
               <ViewHeader.Content>
-                <Header
-                  tab={currentTab}
-                  startDate={startDate}
-                  setStartDate={setStartDate}
-              />
+                <Header tab={currentTab} type='Events' />
               </ViewHeader.Content>
 
               <ViewHeader.Action />
