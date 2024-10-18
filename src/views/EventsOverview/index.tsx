@@ -14,6 +14,7 @@ import { Events as EventsIndex } from '@/lib/events'
 import { useSections } from '@/hooks/useSections'
 import { SWRProvider } from '@/contexts/SWRProvider'
 import { getDateTimeBoundariesUTC } from '@/lib/datetime'
+import { useQuery } from '@/hooks/useQuery'
 
 const meta: ViewMetadata = {
   name: 'Events',
@@ -32,12 +33,16 @@ const meta: ViewMetadata = {
 }
 
 export const Events = (): JSX.Element => {
-  const [startDate, setStartDate] = useState<Date>(new Date())
   const [currentTab, setCurrentTab] = useState<string>('list')
   const sections = useSections()
+  const query = useQuery()
+  const { from, to } = useMemo(() =>
+    getDateTimeBoundariesUTC(query.from
+      ? new Date(`${query.from}T00:00:00.000Z`)
+      : new Date()),
+  [query.from])
 
   const columns = useMemo(() => eventTableColumns({ sections }), [sections])
-  const { from, to } = useMemo(() => getDateTimeBoundariesUTC(startDate), [startDate])
 
   return (
     <TableProvider<Event> columns={columns}>
