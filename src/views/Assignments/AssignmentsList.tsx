@@ -50,7 +50,7 @@ export const AssignmentsList = ({ startDate }: { startDate: string }): JSX.Eleme
 
   return (
     <Table
-      type='Assignments'
+      type='Planning'
       columns={assignmentColumns({ authors, locale, timeZone })}
 
       onRowSelected={(row): void => {
