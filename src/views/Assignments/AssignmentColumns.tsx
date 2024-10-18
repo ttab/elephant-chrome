@@ -11,7 +11,7 @@ import { Assignees } from '@/components/Table/Items/Assignees'
 import { AssignmentTitles } from '@/components/Table/Items/AssignmentTitles'
 import { Actions } from '@/components/Table/Items/Actions'
 import { Tooltip } from '@ttab/elephant-ui'
-import { formatDate } from '@/lib/datetime'
+import { dateInTimestampOrShortMonthDayTimestamp } from '@/lib/datetime'
 import { type ColumnDef } from '@tanstack/react-table'
 import { type DefaultValueOption } from '@/types/index'
 import { type IDBAuthor } from 'src/datastore/types'
@@ -125,8 +125,8 @@ export function assignmentColumns({ authors = [], locale, timeZone }: {
         const [start, end, fullday, slot] = row.getValue<string[]>('assignment_time') || undefined
         const isFullday = fullday === 'true'
         const types: string[] = row.getValue<DefaultValueOption[]>('assignmentType')?.map(t => t.value)
-        const formattedStart = formatDate(start, locale, timeZone)
-        const formattedEnd = formatDate(end, locale, timeZone)
+        const formattedStart = dateInTimestampOrShortMonthDayTimestamp(start, locale, timeZone)
+        const formattedEnd = dateInTimestampOrShortMonthDayTimestamp(end, locale, timeZone)
         const formattedDatestring = `${formattedStart} - ${formattedEnd}`
 
         if (!types.includes('picture')) {
@@ -183,7 +183,7 @@ export function assignmentColumns({ authors = [], locale, timeZone }: {
       cell: ({ row }) => {
         const [publishValue] = row.getValue<Array<string | undefined>>('publish_time') || undefined
         if (publishValue) {
-          const publishTime = formatDate(publishValue, locale, timeZone)
+          const publishTime = dateInTimestampOrShortMonthDayTimestamp(publishValue, locale, timeZone)
           return <Tooltip content='Publiceringstid'>{publishTime}</Tooltip>
         }
         return <></>
