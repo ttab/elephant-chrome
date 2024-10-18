@@ -74,12 +74,9 @@ export const Assignment = ({ index, onAbort, onClose, className }: {
             editable={inProgress}
           />
           <Assignees path={`meta.core/assignment[${index}].links.core/author`} />
-
           <AssignmentTime
             index={index}
           />
-
-          {/* <Clock10Icon size={20} strokeWidth={1.75} /> */}
         </div>
 
         <div className='flex items-center justify-end gap-4'>
