@@ -26,7 +26,7 @@ export function assignmentColumns({ authors = [], locale, timeZone }: {
   authors?: IDBAuthor[]
   locale: string
   timeZone: string
-}): Array<ColumnDef<AssignmentMeta & { planningTitle: string, newsvalue: string }>> {
+}): Array<ColumnDef<AssignmentMeta & { planningTitle: string, newsvalue: string, _id: string }>> {
   return [
     {
       id: 'titles',

@@ -7,7 +7,7 @@ import {
 } from '../types'
 
 export const transformAssignments = (result: AssignmentResponse<LoadedDocumentItem>): (AssignmentMeta[]) => {
-  const assignments: (Array<AssignmentMeta & { planningTitle: string, newsvalue: string }>) = []
+  const assignments: (Array<AssignmentMeta & { planningTitle: string, newsvalue: string, _id: string }>) = []
 
   result.hits.hits.forEach((hit: LoadedDocumentItem) => {
     const { title: planningTitle, meta } = hit.document
@@ -17,7 +17,8 @@ export const transformAssignments = (result: AssignmentResponse<LoadedDocumentIt
       assignments.push({
         ...assignmentMeta,
         planningTitle,
-        newsvalue: newsvalue?.value
+        newsvalue: newsvalue?.value,
+        _id: hit.id
       })
     })
   })

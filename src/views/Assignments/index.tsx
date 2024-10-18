@@ -52,7 +52,7 @@ export const Assignments = (): JSX.Element => {
   }, [authors, session?.user?.email])
 
   return (
-    <TableProvider<AssignmentMeta & { planningTitle: string, newsvalue: string }>
+    <TableProvider<AssignmentMeta & { planningTitle: string, newsvalue: string, _id: string }>
       columns={assignmentColumns({ authors, locale, timeZone })}
     >
       <Tabs defaultValue={currentTab} className='flex-1' onValueChange={setCurrentTab}>
