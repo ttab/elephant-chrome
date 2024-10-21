@@ -24,11 +24,5 @@ export const transformAssignments = (result: AssignmentResponse<LoadedDocumentIt
     })
   })
 
-  return assignments.sort((a, b) => {
-    if (a.newsvalue > b.newsvalue) return -1
-    if (a.newsvalue < b.newsvalue) return 1
-    if (a.data.start < b.data.start) return -1
-    if (a.data.start > b.data.start) return 1
-    return 0
-  })
+  return assignments
 }

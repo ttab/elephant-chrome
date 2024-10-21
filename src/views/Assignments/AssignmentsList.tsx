@@ -40,12 +40,29 @@ export const AssignmentsList = ({ startDate }: { startDate: string }): JSX.Eleme
       throw new Error('Start or end cant be null')
     }
 
+    const items: AssignmentMetaExtended[] = []
+    let page = 1
+    const searchSize = 100
     const endpoint = new URL('/twirp/elephant.index.SearchV1/Query', indexUrl)
-    const result = await Assignments.search({ endpoint, accessToken: session.accessToken, start: startTime })
-    if (result?.hits?.hits?.length > 0) {
-      const assignments = transformAssignments(result)
-      setData(assignments)
+    while (true) {
+      const result = await Assignments.search({ endpoint, accessToken: session.accessToken, start: startTime, page, size: searchSize })
+      if (result?.hits?.hits?.length > 0) {
+        const assignments: AssignmentMetaExtended[] = transformAssignments(result)
+        items.push(...assignments)
+      }
+      if (result.hits.hits.length < searchSize) {
+        break
+      }
+      page++
     }
+    items.sort((a, b) => {
+      if (a.newsvalue > b.newsvalue) return -1
+      if (a.newsvalue < b.newsvalue) return 1
+      if (a.data.start < b.data.start) return -1
+      if (a.data.start > b.data.start) return 1
+      return 0
+    })
+    setData(items)
   })
 
   return (

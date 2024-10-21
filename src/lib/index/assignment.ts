@@ -48,14 +48,14 @@ const search = async ({ endpoint, accessToken, start, page = 1, size = 100 }: Pa
         ]
       }
     },
-    load_document: true,
-    size: 150,
-    sort: [
-      {
-        field: 'document.meta.core_newsvalue.value'
-      }
-    ]
+    load_document: true
   }
+
+  const body = JSON.stringify({
+    from,
+    size: pageSize,
+    ...query
+  })
 
   const response = await fetch(endpoint, {
     method: 'POST',
@@ -64,7 +64,7 @@ const search = async ({ endpoint, accessToken, start, page = 1, size = 100 }: Pa
       'Content-Type': 'application/json',
       Authorization: 'Bearer ' + accessToken
     },
-    body: JSON.stringify(query)
+    body
   })
 
   return await response.json()
