@@ -1,9 +1,10 @@
-import React, { useState, useEffect, type ChangeEventHandler } from 'react'
+import React, { useState, useRef, useEffect, type ChangeEventHandler } from 'react'
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
   Calendar,
+  Input,
   type CalendarTypes,
   Button,
   Switch
@@ -11,8 +12,10 @@ import {
 import { timePickTypes } from './constants'
 import { useYValue } from '@/hooks/useYValue'
 import { TimeDisplay } from '../DataItem/TimeDisplay'
+import { dateToReadableDateTime } from '@/lib/datetime'
+import { useRegistry } from '@/hooks'
 import { type AssignmentData } from './types'
-import { TimePicker } from './TimePicker'
+
 interface ExecutionTimeItemsProps extends React.PropsWithChildren {
   handleOnSelect: ({ executionStart, executionEnd }: { executionStart: string | undefined, executionEnd: string | undefined }) => void
   className?: string
@@ -41,15 +44,17 @@ const testValid = (time: string): boolean => {
 
 export const ExecutionTimeMenu = ({ handleOnSelect, index, startDate }: ExecutionTimeItemsProps): JSX.Element => {
   const [open, setOpen] = useState(false) // show popover
+  // const inputRef = useRef(null) // ref for input
   const [data] = useYValue<AssignmentData>(`meta.core/assignment[${index}].data`)
-  const [selected, setSelected] = useState<Date[]>([new Date(`${startDate}T00:00:00`)]) // Calendar dates
-  // const [startTimeValue, setStartTimeValue] = useState<string>('00:00') // Input time
-  // const [endTimeValue, setEndTimeValue] = useState<string>('23:59') // Input time
+  const [selected, setSelected] = useState<Date[]>([new Date(`${startDate}T00:00:00`)]) // Calendar date
+  const [startTimeValue, setStartTimeValue] = useState<string>('00:00') // Input time
+  const [endTimeValue, setEndTimeValue] = useState<string>('23:59') // Input time
   const [startDateValue, setStartDateValue] = useState<string>() // Value to save
   const [endDateValue, setEndDateValue] = useState<string>()  // Value to save
-  const [hasEndTime, setHasEndTime] = useState<boolean>(false) // If end time switch enabled
+  const [hasEndTime, setHasEndTime] = useState<boolean>() // If end time switch enabled
+  const { locale, timeZone } = useRegistry()
   const [mounted, setMounted] = useState(false)
-  // const [startTimeValid, setStartTimeValid] = useState(false) // valid hh:mm format
+  const [startTimeValid, setStartTimeValid] = useState(false) // valid hh:mm format
   const [endTimeValid, setEndTimeValid] = useState(false) // valid hh:mm format
 
   useEffect(() => {
@@ -221,27 +226,75 @@ export const ExecutionTimeMenu = ({ handleOnSelect, index, startDate }: Executio
             initialFocus
             className='p-0'
           />
+          <div className='flex justify-between border-2 rounded-md border-slate-100'>
+            <div className='px-3 py-2 text-sm'>
+              {startDateValue && dateToReadableDateTime(new Date(startDateValue), locale, timeZone)}
+            </div>
+            <div>
 
-          <TimePicker
-            isEndTime={false}
-            setOpen={setOpen}
-            handleOnSave={() => { }}
-            selectedDate={selected[0]}
-            hasEndTime={hasEndTime}
-            defaultDate={data?.start}
-          />
-          <div className='pt-2 pb-2'>
-            <Switch onCheckedChange={handleCheckedChange} checked={hasEndTime}>Från-till</Switch>
+              <Input
+                type='time'
+                ref={inputRef}
+                value={startTimeValue}
+                onChange={handleStartTimeChange}
+                placeholder={'hh:mm ex 11:00'}
+                className="h-9 border-none"
+                onKeyDown={(e) => {
+                  if (e.key === 'Escape') {
+                    setOpen(false)
+                  }
+                  if (e.key === 'Enter') {
+                    e.preventDefault()
+                    if (hasEndTime ? (!startTimeValid || !endTimeValid) : !startTimeValid) {
+                      handleOnSelect({
+                        executionStart: startDateValue,
+                        executionEnd: hasEndTime ? endDateValue : undefined
+                      })
+                    }
+                    setOpen(false)
+                  }
+                }}
+              />
+            </div>
           </div>
-          <TimePicker
-            isEndTime={true}
-            setOpen={setOpen}
-            handleOnSave={() => { }}
-            selectedDate={selected.length === 2 ? selected[1] : selected[0]}
-            hasEndTime={hasEndTime}
-            defaultDate={data?.end}
-          />
+          <div>
+            <div className='pt-2 pb-2'>
+              <Switch onCheckedChange={handleCheckedChange} checked={hasEndTime}>Från-till</Switch>
+            </div>
 
+            <div className='flex justify-between border-2 rounded-md border-slate-100'>
+              <div className='px-3 py-2 text-sm'>
+                {(hasEndTime && endDateValue) && dateToReadableDateTime(new Date(endDateValue), locale, timeZone)}
+              </div>
+              <div>
+
+                <Input
+                  type='time'
+                  ref={inputRef}
+                  value={hasEndTime ? endTimeValue : ''}
+                  onChange={handleEndTimeChange}
+                  disabled={!hasEndTime}
+                  placeholder={'hh:mm ex 11:00'}
+                  className="h-9 border-none"
+                  onKeyDown={(e) => {
+                    if (e.key === 'Escape') {
+                      setOpen(false)
+                    }
+                    if (e.key === 'Enter') {
+                      e.preventDefault()
+                      if (startTimeValid && endTimeValid) {
+                        handleOnSelect({
+                          executionStart: startDateValue,
+                          executionEnd: hasEndTime ? endDateValue : undefined
+                        })
+                        setOpen(false)
+                      }
+                    }
+                  }}
+                />
+              </div>
+            </div>
+          </div>
           <div className='flex items-center justify-end gap-4 pt-2'>
             <Button
               variant="ghost"
@@ -254,7 +307,7 @@ export const ExecutionTimeMenu = ({ handleOnSelect, index, startDate }: Executio
             </Button>
             <Button
               variant="outline"
-              disabled={hasEndTime ? (!startTimeValid || !endTimeValid) : !startTimeValid}
+              disabled={ hasEndTime ? (!startTimeValid || !endTimeValid) : !startTimeValid}
               onClick={(evt) => {
                 evt.preventDefault()
                 evt.stopPropagation()

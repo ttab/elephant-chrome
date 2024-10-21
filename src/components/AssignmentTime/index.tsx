@@ -4,7 +4,7 @@ import { Block } from '@ttab/elephant-api/newsdoc'
 import { TimeDeliveryMenu } from './TimeDeliveryMenu'
 import { cn } from '@ttab/elephant-ui/utils'
 import { type AssignmentValueOption, type AssignmentData } from './types'
-import { ExcecutionTimeMenu } from './ExcecutionTimeMenu'
+import { ExecutionTimeMenu } from './ExcecutionTimeMenu'
 import { timeSlotTypes, timePickTypes } from './constants'
 
 const getTimeSlot = (timeSlot: string): AssignmentValueOption | undefined => {
@@ -124,7 +124,7 @@ export const AssignmentTime = ({ index }: {
 
   return (
     (assignmentType && assignmentType === 'picture')
-      ? (<ExcecutionTimeMenu handleOnSelect={onExcecutionTimeSelect} index={index} startDate={startDate} />)
+      ? (<ExecutionTimeMenu handleOnSelect={onExcecutionTimeSelect} index={index} startDate={startDate} />)
       : (<TimeDeliveryMenu
           handleOnSelect={handleOnSelect}
           className='w-fit text-muted-foreground font-sans font-normal text-ellipsis px-2 h-7'
