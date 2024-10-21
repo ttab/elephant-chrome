@@ -76,7 +76,7 @@ export function assignmentColumns({ authors = [], locale, timeZone }: {
     {
       id: 'assignees',
       meta: {
-        options: authors.map((_) => ({ value: _.name, label: _.name })),
+        options: authors.map((a) => ({ value: a.name, label: a.name })),
         Filter: ({ column, setSearch }) => (
           <FacetedFilter column={column} setSearch={setSearch} facetFn={() => getNestedFacetedUniqueValues(column)} />
         ),

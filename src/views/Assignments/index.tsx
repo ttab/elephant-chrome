@@ -47,7 +47,7 @@ export const Assignments = (): JSX.Element => {
 
   const assigneeUserName = useMemo(() => {
     const userEmail = session?.user.email
-    const author = authors.find((_: IDBAuthor) => _?.email === userEmail)
+    const author = authors.find((a: IDBAuthor) => a?.email === userEmail)
     return author?.name
   }, [authors, session?.user?.email])
 
