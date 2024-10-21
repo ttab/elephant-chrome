@@ -1,4 +1,4 @@
-
+export type AssignmentMetaExtended = AssignmentMeta & { planningTitle: string, newsvalue: string, _id: string }
 
 export interface AssigneeMeta {
   name: string

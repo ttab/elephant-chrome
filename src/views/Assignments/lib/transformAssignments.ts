@@ -3,15 +3,16 @@ import {
   type LoadedDocumentItem,
   type AssignmentMeta,
   type MetaValueType,
-  type TypeValue
+  type TypeValue,
+  type AssignmentMetaExtended
 } from '../types'
 
-export const transformAssignments = (result: AssignmentResponse<LoadedDocumentItem>): (AssignmentMeta[]) => {
-  const assignments: (Array<AssignmentMeta & { planningTitle: string, newsvalue: string, _id: string }>) = []
+export const transformAssignments = (result: AssignmentResponse<LoadedDocumentItem>): (AssignmentMetaExtended[]) => {
+  const assignments: (AssignmentMetaExtended[]) = []
 
   result.hits.hits.forEach((hit: LoadedDocumentItem) => {
     const { title: planningTitle, meta } = hit.document
-    const assignmentMetas = meta?.filter((assignmentMeta: MetaValueType) => assignmentMeta.type === 'core/assignment') as AssignmentMeta[]
+    const assignmentMetas = meta?.filter((assignmentMeta: MetaValueType) => assignmentMeta.type === 'core/assignment') as AssignmentMetaExtended[]
     const newsvalue: (TypeValue | undefined) = meta?.find(assignmentMeta => assignmentMeta.type === 'core/newsvalue') as TypeValue
     assignmentMetas?.forEach((assignmentMeta: AssignmentMeta) => {
       assignments.push({

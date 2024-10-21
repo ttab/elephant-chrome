@@ -7,10 +7,10 @@ import { Table } from '@/components/Table'
 import { convertToISOStringInUTC, getDateTimeBoundaries } from '@/lib/datetime'
 import { assignmentColumns } from './AssignmentColumns'
 import { transformAssignments } from './lib/transformAssignments'
-import { type AssignmentMeta } from './types'
+import { type AssignmentMetaExtended } from './types'
 
 export const AssignmentsList = ({ startDate }: { startDate: string }): JSX.Element => {
-  const { setData } = useTable<AssignmentMeta>()
+  const { setData } = useTable<AssignmentMetaExtended>()
   const { data: session, status } = useSession()
   const { locale, timeZone } = useRegistry()
   const indexUrl = useIndexUrl()
