@@ -1,12 +1,20 @@
 import { type LoadedDocumentItem, type AssignmentResponse } from '@/views/Assignments/types'
+import { pagination } from '../pagination'
 
 interface Params {
   endpoint: URL
   accessToken: string
   start: Date
+  page?: number
+  size?: number
 }
 
-const search = async ({ endpoint, accessToken, start }: Params): Promise<AssignmentResponse<LoadedDocumentItem>> => {
+const search = async ({ endpoint, accessToken, start, page = 1, size = 100 }: Params): Promise<AssignmentResponse<LoadedDocumentItem>> => {
+  const { from, pageSize } = pagination({
+    page,
+    size
+  })
+
   const today = new Date(start)
   today.setHours(0, 0, 0, 0)
 

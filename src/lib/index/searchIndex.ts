@@ -1,3 +1,5 @@
+import { pagination } from '../pagination'
+
 interface SearchIndexOptions {
   accessToken: string
   index: string
@@ -92,31 +94,5 @@ function responseError(errorCode: number, errorMessage: string): SearchIndexErro
     total: 0,
     pages: 0,
     hits: []
-  }
-}
-
-function pagination(paginationOptions?: {
-  page: number
-  size: number
-}): { from: number, pageSize: number } {
-  const defaultPageSize = 100
-  const defaultPage = 1
-
-  let {
-    page = defaultPage,
-    size: pageSize = defaultPageSize
-  } = paginationOptions || {}
-
-  if (isNaN(page) || page < 1) {
-    page = defaultPage
-  }
-
-  if (isNaN(pageSize) || pageSize < 1 || pageSize > 1000) {
-    pageSize = defaultPageSize
-  }
-
-  return {
-    from: (page - 1) * pageSize,
-    pageSize
   }
 }
