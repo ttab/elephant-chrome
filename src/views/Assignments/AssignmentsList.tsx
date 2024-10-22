@@ -2,12 +2,15 @@ import { useMemo } from 'react'
 import useSWR from 'swr'
 import { useAuthors, useIndexUrl, useTable, useRegistry } from '@/hooks'
 import { useSession } from 'next-auth/react'
-import { Assignments } from '@/lib/index'
+import { Assignments, type SearchIndexResponse } from '@/lib/index'
 import { Table } from '@/components/Table'
 import { convertToISOStringInUTC, getDateTimeBoundaries } from '@/lib/datetime'
 import { assignmentColumns } from './AssignmentColumns'
 import { transformAssignments } from './lib/transformAssignments'
-import { type AssignmentMetaExtended } from './types'
+import {
+  type LoadedDocumentItem,
+  type AssignmentMetaExtended
+} from './types'
 
 export const AssignmentsList = ({ startDate }: { startDate: string }): JSX.Element => {
   const { setData } = useTable<AssignmentMetaExtended>()
@@ -45,12 +48,12 @@ export const AssignmentsList = ({ startDate }: { startDate: string }): JSX.Eleme
     const searchSize = 100
     const endpoint = new URL('/twirp/elephant.index.SearchV1/Query', indexUrl)
     while (true) {
-      const result = await Assignments.search({ endpoint, accessToken: session.accessToken, start: startTime, page, size: searchSize })
-      if (result?.hits?.hits?.length > 0) {
+      const result: SearchIndexResponse<LoadedDocumentItem> = await Assignments.search({ endpoint, accessToken: session.accessToken, start: startTime, page, size: searchSize })
+      if (result?.hits?.length > 0) {
         const assignments: AssignmentMetaExtended[] = transformAssignments(result)
         items.push(...assignments)
       }
-      if (result.hits.hits.length < searchSize) {
+      if (result.hits.length < searchSize) {
         break
       }
       page++

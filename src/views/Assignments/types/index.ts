@@ -63,27 +63,9 @@ interface Document {
   uuid: string
 }
 
-
 export interface LoadedDocumentItem {
   document: Document
   id: string
   score: number
   sort?: string[]
 }
-
-export interface AssignmentResponse<T> {
-  took: string
-  shards: {
-    total: number
-    successful: number
-  }
-  hits: {
-    total: {
-      value: string
-      relation: string
-    }
-    hits: T[]
-  }
-}
-
-export type AssignmentItemResponse<T> = AssignmentResponse<T>

@@ -1,5 +1,5 @@
-import { type LoadedDocumentItem, type AssignmentResponse } from '@/views/Assignments/types'
-import { pagination } from '../pagination'
+import { type LoadedDocumentItem } from '@/views/Assignments/types'
+import { searchIndex, type SearchIndexResponse } from './searchIndex'
 
 interface Params {
   endpoint: URL
@@ -9,12 +9,7 @@ interface Params {
   size?: number
 }
 
-const search = async ({ endpoint, accessToken, start, page = 1, size = 100 }: Params): Promise<AssignmentResponse<LoadedDocumentItem>> => {
-  const { from, pageSize } = pagination({
-    page,
-    size
-  })
-
+const search = async ({ endpoint, accessToken, start, page = 1, size = 100 }: Params): Promise<SearchIndexResponse<LoadedDocumentItem>> => {
   const today = new Date(start)
   today.setHours(0, 0, 0, 0)
 
@@ -51,23 +46,17 @@ const search = async ({ endpoint, accessToken, start, page = 1, size = 100 }: Pa
     load_document: true
   }
 
-  const body = JSON.stringify({
-    from,
-    size: pageSize,
-    ...query
-  })
-
-  const response = await fetch(endpoint, {
-    method: 'POST',
-    mode: 'cors',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: 'Bearer ' + accessToken
+  return await searchIndex(
+    query,
+    {
+      index: '',
+      endpoint,
+      accessToken,
+      assignmentSearch: true
     },
-    body
-  })
-
-  return await response.json()
+    page,
+    size
+  )
 }
 
 export const Assignments = {

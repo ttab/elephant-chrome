@@ -5,6 +5,7 @@ interface SearchIndexOptions {
   index: string
   endpoint: URL
   useCache?: boolean
+  assignmentSearch?: boolean
 }
 
 export interface SearchIndexResult<T> {
@@ -35,7 +36,7 @@ export type SearchIndexResponse<T> = SearchIndexError | SearchIndexResult<T>
  * @returns Promise<SearchIndexResponse>
  */
 export async function searchIndex<T>(search: object, options: SearchIndexOptions, page: number = 1, size: number = 100): Promise<SearchIndexResponse<T>> {
-  const endpoint = new URL(`${options.index.replaceAll('/', '_')}/_search`, options.endpoint)
+  const endpoint = options?.assignmentSearch ? options.endpoint : new URL(`${options.index.replaceAll('/', '_')}/_search`, options.endpoint)
   const { from, pageSize } = pagination({
     page,
     size
