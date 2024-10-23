@@ -1,24 +1,20 @@
 import { DateChanger } from '@/components/Header/Datechanger'
-import { TabsGrid } from '@/components/Header/LayoutSwitch'
-import {
-  type Dispatch,
-  type SetStateAction
-} from 'react'
 import { Filter } from '@/components'
 import { CreateDocumentDialog } from '@/components/View/ViewHeader/CreateDocumentDialog'
-import { EventsCommands } from '../EventsCommands'
+import { TabsGrid } from '@/components/Header/LayoutSwitch'
 import { Button } from '@ttab/elephant-ui'
 import { PlusIcon } from '@ttab/elephant-ui/icons'
+import { type View } from '@/types/index'
+import { Commands } from '../Commands'
+import { PersonalAssignmentsFilter } from './PersonalAssignmentsFilter'
 
-export const Header = ({ tab }: {
+export const Header = ({ tab, assigneeUserName, type }: {
   tab: string
-  startDate: Date
-  setStartDate: Dispatch<SetStateAction<Date>>
-  endDate?: Date
-  setEndDate?: Dispatch<SetStateAction<Date>>
+  type: View
+  assigneeUserName?: string | undefined
 }): JSX.Element => {
   return <>
-    <CreateDocumentDialog type='Event'>
+    <CreateDocumentDialog type={type}>
       <Button size='sm' className='h-8 pr-4'>
         <PlusIcon size={18} strokeWidth={1.75} /> Ny
       </Button>
@@ -29,15 +25,17 @@ export const Header = ({ tab }: {
     </div>
 
     {tab === 'list' &&
-      <DateChanger type='Events' />
+      <DateChanger type={type} />
     }
 
     {tab === 'grid' &&
-      <DateChanger type='Events' />
+      <DateChanger type={type} />
     }
 
     <Filter>
-      <EventsCommands />
+      <Commands />
     </Filter>
+    {type === 'Assignments' && <PersonalAssignmentsFilter assigneeUserName={assigneeUserName} />
+    }
   </>
 }

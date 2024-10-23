@@ -3,17 +3,15 @@ import { type ViewMetadata } from '@/types'
 import { ViewHeader } from '@/components'
 import { CalendarDaysIcon } from '@ttab/elephant-ui/icons'
 import { ScrollArea, Tabs, TabsContent } from '@ttab/elephant-ui'
-
 import { PlanningList } from './PlanningList'
 import { TableProvider } from '@/contexts/TableProvider'
-
 import { TableCommandMenu } from '@/components/Commands/TableCommand'
-import { Header } from '@/views/PlanningOverview/PlanningHeader'
-import { PlanningCommands } from './PlanningCommands'
+import { Header } from '@/components/Header'
 import { planningTableColumns } from './PlanningListColumns'
 import { type Planning as PlanningType, Plannings as PlanningsIndex } from '@/lib/index'
 import { useSections } from '@/hooks/useSections'
 import { useAuthors } from '@/hooks/useAuthors'
+import { Commands } from '@/components/Commands'
 import { SWRProvider } from '@/contexts/SWRProvider'
 import { getDateTimeBoundariesUTC } from '@/lib/datetime'
 import { useQuery } from '@/hooks/useQuery'
@@ -53,8 +51,8 @@ export const Plannings = (): JSX.Element => {
       <SWRProvider<PlanningType> index={PlanningsIndex}>
         <Tabs defaultValue={currentTab} className='flex-1' onValueChange={setCurrentTab}>
 
-          <TableCommandMenu>
-            <PlanningCommands />
+          <TableCommandMenu heading='Plannings'>
+            <Commands />
           </TableCommandMenu>
 
           <div className="flex flex-col h-screen">
@@ -67,9 +65,7 @@ export const Plannings = (): JSX.Element => {
               />
 
               <ViewHeader.Content>
-                <Header
-                  tab={currentTab}
-                />
+                <Header tab={currentTab} type='Plannings' />
               </ViewHeader.Content>
 
               <ViewHeader.Action />
