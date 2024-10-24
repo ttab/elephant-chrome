@@ -155,7 +155,9 @@ const PlanningViewContent = (props: ViewProps & { documentId: string }): JSX.Ele
 
           </Form.Content>
 
-          <AssignmentTable />
+          <Form.Table>
+            <AssignmentTable />
+          </Form.Table>
 
           <Form.Footer>
             <Form.Submit documentId={props.documentId} onSubmit={handleSubmit}>

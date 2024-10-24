@@ -37,7 +37,7 @@ export const AssignmentTable = (): JSX.Element => {
 
 
   return (
-    <div className='flex flex-col w-full px-4 pb-10'>
+    <>
       {newAssigment === undefined && provider?.document &&
         <div className={cn('flex flex-start pt-2 text-primary pb-4',
           selectedAssignment != null ? 'opacity-50' : '')}>
@@ -107,6 +107,6 @@ export const AssignmentTable = (): JSX.Element => {
           ))}
         </div>
       }
-    </div>
+    </>
   )
 }

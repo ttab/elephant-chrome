@@ -4,7 +4,7 @@ import { Root } from './Root'
 import { Group } from './Group'
 import { Footer } from './Footer'
 import { Submit } from './Submit'
-import { Separator } from './Separator'
+import { Table } from './Table'
 
 export const Form = {
   Root,
@@ -13,5 +13,5 @@ export const Form = {
   Group,
   Footer,
   Submit,
-  Separator
+  Table
 }

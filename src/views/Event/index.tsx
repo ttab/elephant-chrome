@@ -11,7 +11,7 @@ import { useSession } from 'next-auth/react'
 import { ViewHeader } from '@/components/View'
 import { createStateless, StatelessType } from '@/shared/stateless'
 import { ScrollArea, Separator, Button } from '@ttab/elephant-ui'
-import { Ticket } from '@ttab/elephant-ui/icons'
+import { Tags, Ticket, Calendar } from '@ttab/elephant-ui/icons'
 import { cn } from '@ttab/elephant-ui/utils'
 import { cva } from 'class-variance-authority'
 import {
@@ -27,8 +27,8 @@ import {
 } from '@/components'
 import { PlanningTable } from './components/PlanningTable'
 import { useState, useRef } from 'react'
-import { ValidationAlert } from '@/components/ValidationAlert'
 import { Error } from '../Error'
+import { Form } from '@/components/Form'
 
 const meta: ViewMetadata = {
   name: 'Event',
@@ -98,15 +98,6 @@ const EventViewContent = (props: ViewProps & { documentId: string }): JSX.Elemen
     }
   })
 
-  const sectionVariants = cva('overscroll-auto @5xl:w-[1024px] space-y-5', {
-    variants: {
-      asCreateDialog: {
-        false: 'p-8',
-        true: 'p-6'
-      }
-    }
-  })
-
   return (
     <div className={cn(viewVariants({ asCreateDialog: !!props.asDialog, className: props?.className }))}>
       <div className='grow-0'>
@@ -131,68 +122,72 @@ const EventViewContent = (props: ViewProps & { documentId: string }): JSX.Elemen
       </div>
 
       <ScrollArea className='grid @5xl:place-content-center'>
-        <section className={cn(sectionVariants({ asCreateDialog: !!props?.asDialog }))}>
-          <ValidationAlert validateStateRef={validateStateRef} />
-          <div className='flex flex-col gap-2 pl-0.5'>
-            <div className='flex space-x-2 items-start'>
+        <Form.Root asDialog={props.asDialog}>
+          <Form.Content>
+            <Form.Title>
               <Title
                 autoFocus={props.asDialog}
                 placeholder='Händelserubrik'
                 onValidation={handleValidation}
               />
-            </div>
 
+            </Form.Title>
             <Description role='public' />
             <Registration />
 
-            <p>Datetime TODO</p>
-          </div>
+            <Form.Group icon={Calendar}>
+              <p>Datetime TODO</p>
+            </Form.Group>
 
-          <div className='flex flex-col space-y-2 w-fit'>
-            <div className='flex flex-wrap gap-2'>
+            <Form.Group icon={Tags}>
               <Organiser />
               <Section onValidation={handleValidation} />
               <Category />
               <Story />
-            </div>
+            </Form.Group>
 
+          </Form.Content>
+
+          <Form.Table>
             <PlanningTable eventId={props.documentId} eventTitle={eventTitle} />
-          </div>
+          </Form.Table>
 
-        </section>
+          <Form.Footer>
+            <Form.Submit>
+              {props.asDialog && (
+              <div>
+                <Separator className='ml-0' />
+                <div className='flex justify-end px-6 py-4'>
+                  <Button onClick={() => {
+                    setValidateForm(true)
+                    // if all fields are valid close and save
+                    if (Object.values(validateStateRef.current).every((state) => !!state)) {
+                      // Get the id, post it, and open it in a view?
+                      if (props?.onDialogClose) {
+                        props.onDialogClose()
+                      }
 
-        {props.asDialog && (
-          <div>
-            <Separator className='ml-0' />
-            <div className='flex justify-end px-6 py-4'>
-              <Button onClick={() => {
-                setValidateForm(true)
-                // if all fields are valid close and save
-                if (Object.values(validateStateRef.current).every((state) => !!state)) {
-                  // Get the id, post it, and open it in a view?
-                  if (props?.onDialogClose) {
-                    props.onDialogClose()
-                  }
-
-                  if (provider && status === 'authenticated') {
-                    provider.sendStateless(
-                      createStateless(StatelessType.IN_PROGRESS, {
-                        state: false,
-                        id: props.documentId,
-                        context: {
-                          accessToken: data.accessToken,
-                          user: data.user,
-                          type: 'Event'
-                        }
-                      }))
-                  }
-                }
-              }}>
-                Skapa händelse
-              </Button>
-            </div>
-          </div>)}
-
+                      if (provider && status === 'authenticated') {
+                        provider.sendStateless(
+                          createStateless(StatelessType.IN_PROGRESS, {
+                            state: false,
+                            id: props.documentId,
+                            context: {
+                              accessToken: data.accessToken,
+                              user: data.user,
+                              type: 'Event'
+                            }
+                          }))
+                      }
+                    }
+                  }}>
+                    Skapa händelse
+                  </Button>
+                </div>
+              </div>)}
+            </Form.Submit>
+          </Form.Footer>
+        </Form.Root>
       </ScrollArea>
     </div >
   )
