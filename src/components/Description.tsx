@@ -13,12 +13,12 @@ export const Description = ({ role }: {
   const path = `meta.core/description[${index}].data.text`
 
   return (
-    <div className='flex w-full -ml-1' >
+    <div className='flex w-full' >
       <TextBox
         path={path}
         icon={role === 'internal'
-          ? <Building size={20} strokeWidth={1.75} className='text-muted-foreground' />
-          : <Text size={20} strokeWidth={1.75} className='text-muted-foreground' />
+          ? <Building size={18} strokeWidth={1.75} className='text-muted-foreground mr-4' />
+          : <Text size={18} strokeWidth={1.75} className='text-muted-foreground mr-4' />
         }
         placeholder={role === 'public' ? 'Publik beskrivning' : 'Internt meddelande'}
         className='text-sm'
