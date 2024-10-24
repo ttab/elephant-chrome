@@ -1,5 +1,5 @@
 import type * as Y from 'yjs'
-import { type ValidateState, type ViewMetadata, type ViewProps } from '@/types/index'
+import { type ViewMetadata, type ViewProps } from '@/types/index'
 import { AwarenessDocument } from '@/components/AwarenessDocument'
 import {
   useCollaboration,
@@ -10,7 +10,7 @@ import {
 import { useSession } from 'next-auth/react'
 import { ViewHeader } from '@/components/View'
 import { createStateless, StatelessType } from '@/shared/stateless'
-import { ScrollArea, Separator, Button } from '@ttab/elephant-ui'
+import { ScrollArea, Button } from '@ttab/elephant-ui'
 import { Tags, Ticket, Calendar } from '@ttab/elephant-ui/icons'
 import { cn } from '@ttab/elephant-ui/utils'
 import { cva } from 'class-variance-authority'
@@ -26,7 +26,6 @@ import {
   Organiser
 } from '@/components'
 import { PlanningTable } from './components/PlanningTable'
-import { useState, useRef } from 'react'
 import { Error } from '../Error'
 import { Form } from '@/components/Form'
 
@@ -70,20 +69,24 @@ const EventViewContent = (props: ViewProps & { documentId: string }): JSX.Elemen
   const { provider } = useCollaboration()
   const { data, status } = useSession()
   const [documentStatus, setDocumentStatus] = useDocumentStatus(props.documentId)
-  const [validateForm, setValidateForm] = useState<boolean>(!props.asDialog)
-  const validateStateRef = useRef<ValidateState>({})
 
-  const handleValidation = (block: string, label: string, value: string | undefined, reason: string): boolean => {
-    validateStateRef.current = {
-      ...validateStateRef.current,
-      [block]: { label, valid: !!value, reason }
+  const handleSubmit = (): void => {
+    if (props?.onDialogClose) {
+      props.onDialogClose()
     }
 
-    if (validateForm) {
-      return !!value
+    if (provider && status === 'authenticated') {
+      provider.sendStateless(
+        createStateless(StatelessType.IN_PROGRESS, {
+          state: false,
+          id: props.documentId,
+          context: {
+            accessToken: data.accessToken,
+            user: data.user,
+            type: 'Event'
+          }
+        }))
     }
-
-    return true
   }
 
 
@@ -128,7 +131,6 @@ const EventViewContent = (props: ViewProps & { documentId: string }): JSX.Elemen
               <Title
                 autoFocus={props.asDialog}
                 placeholder='Händelserubrik'
-                onValidation={handleValidation}
               />
 
             </Form.Title>
@@ -140,8 +142,11 @@ const EventViewContent = (props: ViewProps & { documentId: string }): JSX.Elemen
             </Form.Group>
 
             <Form.Group icon={Tags}>
+              <Section />
               <Organiser />
-              <Section onValidation={handleValidation} />
+            </Form.Group>
+
+            <Form.Group icon={Tags}>
               <Category />
               <Story />
             </Form.Group>
@@ -153,38 +158,13 @@ const EventViewContent = (props: ViewProps & { documentId: string }): JSX.Elemen
           </Form.Table>
 
           <Form.Footer>
-            <Form.Submit>
-              {props.asDialog && (
-              <div>
-                <Separator className='ml-0' />
-                <div className='flex justify-end px-6 py-4'>
-                  <Button onClick={() => {
-                    setValidateForm(true)
-                    // if all fields are valid close and save
-                    if (Object.values(validateStateRef.current).every((state) => !!state)) {
-                      // Get the id, post it, and open it in a view?
-                      if (props?.onDialogClose) {
-                        props.onDialogClose()
-                      }
+            <Form.Submit onSubmit={handleSubmit}>
 
-                      if (provider && status === 'authenticated') {
-                        provider.sendStateless(
-                          createStateless(StatelessType.IN_PROGRESS, {
-                            state: false,
-                            id: props.documentId,
-                            context: {
-                              accessToken: data.accessToken,
-                              user: data.user,
-                              type: 'Event'
-                            }
-                          }))
-                      }
-                    }
-                  }}>
-                    Skapa händelse
-                  </Button>
-                </div>
-              </div>)}
+              <div className='flex justify-end px-6 py-4'>
+                <Button type='submit'>
+                  Skapa händelse
+                </Button>
+              </div>
             </Form.Submit>
           </Form.Footer>
         </Form.Root>
