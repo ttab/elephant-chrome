@@ -48,11 +48,12 @@ export const TextBox = ({ icon, placeholder, path, className, singleLine = false
             inputStyle: true,
             styles: ['body']
           })]}
-          className={cn('h-min-12 w-full', className)}
+          className={cn('h-min-2 w-full', className)}
         >
           <TextboxEditable
             content={content}
             provider={provider}
+            singleLine={singleLine}
             user={user}
             icon={icon}
           />
@@ -62,8 +63,9 @@ export const TextBox = ({ icon, placeholder, path, className, singleLine = false
   )
 }
 
-const TextboxEditable = ({ provider, user, icon, content }: {
+const TextboxEditable = ({ provider, user, icon: Icon, content, singleLine }: {
   provider: HocuspocusProvider
+  singleLine: boolean
   user: AwarenessUserData
   icon?: React.ReactNode
   content: Y.XmlText
@@ -92,27 +94,29 @@ const TextboxEditable = ({ provider, user, icon, content }: {
     }
   }, [yjsEditor])
   return (
-    <>
-      {icon
-        ? <div className='flex flex-row'>
-          <div className='pt-1.5'>
-            {icon}
-          </div>
-
-          <div className='grow'>
-            <Textbit.Editable
-              yjsEditor={yjsEditor}
-              className='p-1 py-1.5 -ms-7 ps-11 rounded-sm outline-none ring-offset-background data-[state="focused"]:ring-1 ring-gray-300 data-[state="focused"]:dark:ring-gray-600'
-            />
-          </div>
-        </div>
-        : <div>
+    <div className='flex flex-col space-y-2'>
+      <div className='flex space-x-2 items-baseline'>
+        {Icon && <div className='pt-1.5'>
+          {Icon}
+        </div>}
+        <div className='flex-grow'>
           <Textbit.Editable
             yjsEditor={yjsEditor}
-            className='p-1 py-1.5 -ms-2 ps-2 rounded-sm outline-none ring-offset-background data-[state="focused"]:ring-1 ring-gray-300 data-[state="focused"]:dark:ring-gray-600 whitespace-nowrap'
+            className={cn(!singleLine && '!min-h-20',
+              `p-1
+               py-1.5
+               ps-2
+               rounded-md
+               outline-none
+               ring-offset-background
+               focus:ring-1
+               ring-input
+               focus:dark:ring-gray-600
+               whitespace-nowrap`
+            )}
           />
         </div>
-      }
-    </>
+      </div>
+    </div>
   )
 }
