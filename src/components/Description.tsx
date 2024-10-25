@@ -13,7 +13,7 @@ export const Description = ({ role }: {
   const path = `meta.core/description[${index}].data.text`
 
   return (
-    <div className='flex w-full' >
+    <div className='flex w-full'>
       <TextBox
         path={path}
         icon={role === 'internal'
