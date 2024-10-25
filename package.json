@@ -76,7 +76,7 @@
     "@ttab/elephant-api": "^0.15.0",
     "@types/cookie-parser": "^1.4.7",
     "@types/cors": "^2.8.17",
-    "@types/express": "^4.17.21",
+    "@types/express": "^5.0.0",
     "@types/express-serve-static-core": "^4.19.3",
     "@types/express-ws": "^3.0.5",
     "@types/jest": "^29.5.14",
