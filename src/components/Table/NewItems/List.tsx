@@ -5,7 +5,7 @@ import { type View } from '@/types/index'
 import { CalendarDays } from '@ttab/elephant-ui/icons'
 import useSWR from 'swr'
 
-const BASE_URL = process.env.BASE_URL || ''
+const BASE_URL = import.meta.env.BASE_URL || ''
 
 export const List = ({ type, createdIdRef }: {
   type: View
