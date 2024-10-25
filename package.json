@@ -95,7 +95,7 @@
     "eslint-config-love": "^47.0.0",
     "eslint-plugin-react": "^7.37.2",
     "eslint-plugin-react-hooks": "^5.0.0",
-    "eslint-plugin-react-refresh": "^0.4.12",
+    "eslint-plugin-react-refresh": "^0.4.14",
     "fake-indexeddb": "^6.0.0",
     "jest-environment-jsdom": "^29.7.0",
     "jsdom": "^25.0.1",
