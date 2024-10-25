@@ -65,7 +65,7 @@ export const Plannings = (): JSX.Element => {
               />
 
               <ViewHeader.Content>
-                <Header tab={currentTab} type='Plannings' />
+                <Header tab={currentTab} type='Planning' />
               </ViewHeader.Content>
 
               <ViewHeader.Action />
