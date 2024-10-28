@@ -5,7 +5,7 @@ export const Footer = ({ children, asDialog, setValidateForm, validateStateRef }
   if (!asDialog) return null
 
   return (
-    <div className='border-t pb-4 pr-6'>
+    <div className='border-t p-5'>
       {React.Children.map(children, (child: React.ReactNode): React.ReactNode =>
         React.isValidElement<FormProps>(child)
           ? React.cloneElement(child, {

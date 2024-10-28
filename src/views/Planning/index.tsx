@@ -161,7 +161,7 @@ const PlanningViewContent = (props: ViewProps & { documentId: string }): JSX.Ele
 
           <Form.Footer>
             <Form.Submit documentId={props.documentId} onSubmit={handleSubmit}>
-              <div className='flex justify-end px-6 py-4'>
+              <div className='flex justify-end'>
                 <Button
                   type='submit'
                 >
