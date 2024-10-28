@@ -179,7 +179,8 @@ export const Factboxes = (): JSX.Element => {
           query: {
             prefix: {
               'document.content.core_text.data.text': {
-                value: inputValue
+                value: inputValue,
+                case_insensitive: true
               }
             }
           },
