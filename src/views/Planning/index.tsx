@@ -156,7 +156,7 @@ const PlanningViewContent = (props: ViewProps & { documentId: string }): JSX.Ele
           </Form.Content>
 
           <Form.Table>
-            <AssignmentTable />
+            <AssignmentTable asDialog={props.asDialog} />
           </Form.Table>
 
           <Form.Footer>

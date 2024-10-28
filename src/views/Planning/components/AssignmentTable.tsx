@@ -8,8 +8,11 @@ import { useMemo, useState } from 'react'
 import { deleteByYPath } from '@/lib/yUtils'
 import { cn } from '@ttab/elephant-ui/utils'
 import { type EleBlock } from '@/shared/types'
+import { cva } from 'class-variance-authority'
 
-export const AssignmentTable = (): JSX.Element => {
+export const AssignmentTable = ({ asDialog = false }: {
+  asDialog?: boolean
+}): JSX.Element => {
   const { provider } = useCollaboration()
   const [assignments] = useYValue<EleBlock[]>('meta.core/assignment')
   const [planningSlugLine] = useYValue<string | undefined>('meta.tt/slugline[0].value')
@@ -35,13 +38,22 @@ export const AssignmentTable = (): JSX.Element => {
     return provider?.document.getMap('ele')
   }, [provider?.document])
 
+  const variants = cva('',
+    {
+      variants: {
+        asDialog: {
+          false: 'pl-6',
+          true: 'pl-2'
+        }
+      }
+    })
 
   return (
     <>
       {newAssigment === undefined && provider?.document &&
         <div className={cn('flex flex-start pt-2 text-primary pb-4',
           selectedAssignment != null ? 'opacity-50' : '')}>
-          <div className='pl-6'>
+          <div className={variants({ asDialog })}>
             <a href='#'
               className={cn('flex flex-start items-center text-sm gap-2 p-2 -ml-2 rounded-sm',
                 selectedAssignment != null
@@ -68,7 +80,7 @@ export const AssignmentTable = (): JSX.Element => {
                   strokeWidth={2.25}
                   color='#FFFFFF'
                   className='absolute inset-0 m-auto'
-              />
+                />
               </div>
               Lägg till uppdrag
             </a>
