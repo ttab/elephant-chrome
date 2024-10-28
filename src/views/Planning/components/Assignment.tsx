@@ -49,11 +49,10 @@ export const Assignment = ({ index, onAbort, onClose }: {
             path={`meta.core/assignment[${index}].meta.core/description[0].data.text`}
             placeholder='Internt meddelande'
             icon={<MessageCircleMore
-              size={20}
+              size={18}
               strokeWidth={1.75}
-              className='p-0 text-muted-foreground'
+              className='text-muted-foreground mr-4'
           />}
-            className='text-sm px-0'
         />
 
           {assignmentType === 'text' &&
