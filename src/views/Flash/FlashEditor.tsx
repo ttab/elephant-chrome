@@ -1,6 +1,6 @@
 import { useCollaboration } from '@/hooks'
 import { Bold, Italic, Text, OrderedList, UnorderedList } from '@ttab/textbit-plugins'
-import Textbit, { DropMarker, type TBText } from '@ttab/textbit'
+import Textbit, { type TBText } from '@ttab/textbit'
 import { type HocuspocusProvider } from '@hocuspocus/provider'
 import { type AwarenessUserData } from '@/contexts/CollaborationProvider'
 import { useEffect, useMemo } from 'react'
@@ -8,7 +8,8 @@ import { withCursors, withYHistory, withYjs, YjsEditor } from '@slate-yjs/core'
 import { createEditor } from 'slate'
 import { type YXmlText } from 'node_modules/yjs/dist/src/internals'
 import { Toolbar } from '@/components/Editor/Toolbar'
-import { ContentMenu } from '@/components/Editor/ContentMenu'
+import { DropMarker } from '@/components/Editor/DropMarker'
+import { ContextMenu } from '@/components/Editor/ContextMenu'
 
 
 export const FlashEditor = ({ setTitle }: {
@@ -66,7 +67,7 @@ function EditorContent({ provider, user, setTitle }: {
   }, [yjsEditor])
 
   return (
-    <div className='w-full'>
+    <div className='w-full px-6'>
       <Textbit.Editable
         yjsEditor={yjsEditor}
         onChange={(value) => {
@@ -76,11 +77,9 @@ function EditorContent({ provider, user, setTitle }: {
         }}
         className="w-full outline-none h-full min-h-[20vh] max-h-[40vh] overflow-y-scroll dark:text-slate-100 py-5"
       >
-        <DropMarker className="h-[3px] rounded bg-blue-400/75 dark:bg-blue-500/75 data-[state='between']:block" />
+        <DropMarker />
         <Toolbar />
-        <Textbit.Gutter className="w-14">
-          <ContentMenu />
-        </Textbit.Gutter>
+        <ContextMenu />
       </Textbit.Editable>
     </div>
   )

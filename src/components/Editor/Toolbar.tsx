@@ -4,7 +4,7 @@ import {
 } from '@ttab/textbit'
 import { ToolbarItem } from './ToolbarItem'
 
-export function Toolbar(): JSX.Element {
+export const Toolbar = (): JSX.Element => {
   const { actions } = usePluginRegistry()
   const leafActions = actions.filter(action => ['leaf'].includes(action.plugin.class))
   const inlineActions = actions.filter(action => ['inline'].includes(action.plugin.class))

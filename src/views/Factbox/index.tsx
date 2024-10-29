@@ -5,7 +5,7 @@ import { ViewHeader } from '@/components/View'
 import { BookTextIcon } from '@ttab/elephant-ui/icons'
 import type * as Y from 'yjs'
 import { Bold, Italic, Text, OrderedList, UnorderedList } from '@ttab/textbit-plugins'
-import Textbit, { DropMarker, useTextbit } from '@ttab/textbit'
+import Textbit, { useTextbit } from '@ttab/textbit'
 import { type HocuspocusProvider } from '@hocuspocus/provider'
 import { type AwarenessUserData } from '@/contexts/CollaborationProvider'
 import { useEffect, useMemo, useState } from 'react'
@@ -20,6 +20,9 @@ import { createDocument } from '@/lib/createYItem'
 import { factboxDocumentTemplate } from '@/defaults/templates/factboxDocumentTemplate'
 import { ContentMenu } from '@/components/Editor/ContentMenu'
 import { Toolbar } from '@/components/Editor/Toolbar'
+import { Gutter } from '@/components/Editor/Gutter'
+import { DropMarker } from '@/components/Editor/DropMarker'
+import { ContextMenu } from '@/components/Editor/ContextMenu'
 
 const meta: ViewMetadata = {
   name: 'Factbox',
@@ -168,11 +171,14 @@ function EditorContent({ provider, user }: {
         singleLine={true}
       />
       <Textbit.Editable yjsEditor={yjsEditor} className="w-full outline-none h-full dark:text-slate-100">
-        <DropMarker className="h-[3px] rounded bg-blue-400/75 dark:bg-blue-500/75 data-[state='between']:block" />
-        <Toolbar />
-        <Textbit.Gutter className="w-14">
+        <DropMarker />
+
+        <Gutter>
           <ContentMenu />
-        </Textbit.Gutter>
+        </Gutter>
+
+        <Toolbar />
+        <ContextMenu />
       </Textbit.Editable>
     </div>
   )

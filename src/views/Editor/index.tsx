@@ -7,7 +7,7 @@ import { createEditor } from 'slate'
 import { YjsEditor, withCursors, withYHistory, withYjs } from '@slate-yjs/core'
 import type * as Y from 'yjs'
 
-import { Textbit, DropMarker, useTextbit } from '@ttab/textbit'
+import { Textbit, useTextbit } from '@ttab/textbit'
 
 import { ImageSearchPlugin } from '../../plugins/ImageSearch'
 import { FactboxPlugin } from '../../plugins/Factboxes'
@@ -28,6 +28,9 @@ import { createDocument } from '@/lib/createYItem'
 import { Error } from '../Error'
 import { ContentMenu } from '@/components/Editor/ContentMenu'
 import { Toolbar } from '@/components/Editor/Toolbar'
+import { ContextMenu } from '@/components/Editor/ContextMenu'
+import { Gutter } from '@/components/Editor/Gutter'
+import { DropMarker } from '@/components/Editor/DropMarker'
 
 const meta: ViewMetadata = {
   name: 'Editor',
@@ -153,11 +156,14 @@ function EditorContent({ provider, user }: {
 
   return (
     <Textbit.Editable yjsEditor={yjsEditor} className="outline-none h-full dark:text-slate-100">
-      <DropMarker className="h-[3px] rounded bg-blue-400/75 dark:bg-blue-500/75 data-[state='between']:block" />
-      <Toolbar />
-      <Textbit.Gutter className="w-14">
+      <DropMarker />
+
+      <Gutter>
         <ContentMenu />
-      </Textbit.Gutter>
+      </Gutter>
+
+      <Toolbar />
+      <ContextMenu />
     </Textbit.Editable>
   )
 }

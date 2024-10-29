@@ -2,7 +2,7 @@ import { Menu, usePluginRegistry } from '@ttab/textbit'
 import { ContentMenuGroup } from './ContentMenuGroup'
 import { ContentMenuItem } from './ContentMenuItem'
 
-export function ContentMenu(): JSX.Element {
+export const ContentMenu = (): JSX.Element => {
   const { actions } = usePluginRegistry()
 
   const textActions = actions.filter(action => action.plugin.class === 'text')

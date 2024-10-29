@@ -3,7 +3,7 @@ import {
   type PluginRegistryAction
 } from '@ttab/textbit'
 
-export function ContentMenuItem({ action }: { action: PluginRegistryAction }): JSX.Element {
+export const ContentMenuItem = ({ action }: { action: PluginRegistryAction }): JSX.Element => {
   return (
     <Menu.Item
       action={action.name}
