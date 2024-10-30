@@ -22,7 +22,7 @@ export async function assertAuthenticatedUser(
 }
 
 
-function isUnprotectedRoute(req: Request): boolean {
+export function isUnprotectedRoute(req: Request): boolean {
   const unprotectedRoutes = [
     '/auth/',
     '/init'
