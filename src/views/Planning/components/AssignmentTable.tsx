@@ -7,21 +7,20 @@ import { type Block } from '@ttab/elephant-api/newsdoc'
 import { useMemo, useState } from 'react'
 import { deleteByYPath } from '@/lib/yUtils'
 import { cn } from '@ttab/elephant-ui/utils'
+import { type EleBlock } from '@/shared/types'
 
 export const AssignmentTable = (): JSX.Element => {
   const { provider } = useCollaboration()
-  const [assignments] = useYValue<Block[]>('meta.core/assignment')
+  const [assignments] = useYValue<EleBlock[]>('meta.core/assignment')
   const [planningSlugLine] = useYValue<string | undefined>('meta.tt/slugline[0].value')
   const [selectedAssignment, setSelectedAssignment] = useState<number | undefined>(undefined)
 
   const newAssigment = useMemo(() => {
-    /* @ts-expect-error FIXME: Remove this line when __inProgress is part of the format */
     const index = assignments?.findIndex(a => a.__inProgress) ?? -1
     return (index < 0) ? undefined : { assignment: assignments?.[index], index }
   }, [assignments])
 
   const existingAssigments = useMemo(() => {
-    /* @ts-expect-error FIXME: Remove this line when __inProgress is part of the format */
     return assignments?.filter(a => !a.__inProgress) ?? []
   }, [assignments])
 

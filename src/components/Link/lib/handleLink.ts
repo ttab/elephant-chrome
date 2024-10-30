@@ -41,8 +41,7 @@ export function handleLink({
 
   // Create next (wanted) content state
   // Beware, props can not be functions
-  const newContent: ContentState =
-  {
+  const newContent: ContentState = {
     props,
     viewId,
     name: viewItem.meta.name,

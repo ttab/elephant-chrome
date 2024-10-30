@@ -2,7 +2,7 @@ import { DateChanger } from '@/components/Header/Datechanger'
 import { Filter } from '@/components'
 import { CreateDocumentDialog } from '@/components/View/ViewHeader/CreateDocumentDialog'
 import { TabsGrid } from '@/components/Header/LayoutSwitch'
-import { PlanningCommands } from '../PlanningCommands'
+import { Commands } from '@/components/Commands'
 import { Button } from '@ttab/elephant-ui'
 import { PlusIcon } from '@ttab/elephant-ui/icons'
 
@@ -21,15 +21,15 @@ export const Header = ({ tab }: {
     </div>
 
     {tab === 'list' &&
-      <DateChanger />
+      <DateChanger type='Plannings' />
     }
 
     {tab === 'grid' &&
-      <DateChanger />
+      <DateChanger type='Plannings' />
     }
 
     <Filter>
-      <PlanningCommands />
+      <Commands />
     </Filter>
   </>
 }

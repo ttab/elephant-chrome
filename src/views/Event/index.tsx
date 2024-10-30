@@ -28,6 +28,7 @@ import {
 import { PlanningTable } from './components/PlanningTable'
 import { useState, useRef } from 'react'
 import { ValidationAlert } from '@/components/ValidationAlert'
+import { Error } from '../Error'
 
 const meta: ViewMetadata = {
   name: 'Event',
@@ -56,7 +57,10 @@ export const Event = (props: ViewProps & { document?: Y.Doc }): JSX.Element => {
         ? <AwarenessDocument documentId={documentId} document={props.document}>
           <EventViewContent {...props} documentId={documentId} />
         </AwarenessDocument>
-        : <></>
+        : <Error
+            title='Händelsedokument saknas'
+            message='Inget händelsedokument är angivet. Navigera tillbaka till översikten och försök igen'
+        />
       }
     </>
   )

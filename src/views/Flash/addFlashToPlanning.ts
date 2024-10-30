@@ -97,7 +97,7 @@ export function addFlashToPlanning(flashDoc: Y.Doc, planningDoc: Y.Doc, assignme
         rel: 'assignee',
         role: 'primary',
         uuid: author.get('uuid') as string,
-        name: (author.get('title') as Y.XmlText).toJSON() // FIXME: Use title for both when repo schema is fixed
+        title: (author.get('title') as Y.XmlText).toJSON()
       })
 
       const assignee = toYMap(eleAssignee[0] as unknown as Record<string, unknown>)

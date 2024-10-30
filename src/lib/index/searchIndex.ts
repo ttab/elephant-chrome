@@ -1,8 +1,11 @@
+import { pagination } from '../pagination'
+
 interface SearchIndexOptions {
   accessToken: string
   index: string
   endpoint: URL
   useCache?: boolean
+  assignmentSearch?: boolean
 }
 
 export interface SearchIndexResult<T> {
@@ -33,7 +36,7 @@ export type SearchIndexResponse<T> = SearchIndexError | SearchIndexResult<T>
  * @returns Promise<SearchIndexResponse>
  */
 export async function searchIndex<T>(search: object, options: SearchIndexOptions, page: number = 1, size: number = 100): Promise<SearchIndexResponse<T>> {
-  const endpoint = new URL(`${options.index.replaceAll('/', '_')}/_search`, options.endpoint)
+  const endpoint = options?.assignmentSearch ? options.endpoint : new URL(`${options.index.replaceAll('/', '_')}/_search`, options.endpoint)
   const { from, pageSize } = pagination({
     page,
     size
@@ -92,31 +95,5 @@ function responseError(errorCode: number, errorMessage: string): SearchIndexErro
     total: 0,
     pages: 0,
     hits: []
-  }
-}
-
-function pagination(paginationOptions?: {
-  page: number
-  size: number
-}): { from: number, pageSize: number } {
-  const defaultPageSize = 100
-  const defaultPage = 1
-
-  let {
-    page = defaultPage,
-    size: pageSize = defaultPageSize
-  } = paginationOptions || {}
-
-  if (isNaN(page) || page < 1) {
-    page = defaultPage
-  }
-
-  if (isNaN(pageSize) || pageSize < 1 || pageSize > 1000) {
-    pageSize = defaultPageSize
-  }
-
-  return {
-    from: (page - 1) * pageSize,
-    pageSize
   }
 }

@@ -15,7 +15,7 @@ export const ClearFilter = (): JSX.Element | null => {
         }}
     >
       <X size={18} strokeWidth={1.75} />
-      Clear filters
+      Rensa filter
     </CommandItem>
     : null
 }

@@ -39,14 +39,16 @@ const search = async (endpoint: URL, accessToken: string, params?: SearchPlannin
               prefix: {
                 'document.title': {
                   value: params.where.text,
-                  boost: 2
+                  boost: 2,
+                  case_insensitive: true
                 }
               }
             },
             {
               prefix: {
                 'document.rel.section.title': {
-                  value: params.where.text
+                  value: params.where.text,
+                  case_insensitive: true
                 }
               }
             }

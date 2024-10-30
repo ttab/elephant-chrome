@@ -1,5 +1,5 @@
 import {
-  Dialog, DialogContent, DialogTrigger
+  Dialog, DialogContent, DialogDescription, DialogTitle, DialogTrigger
 } from '@ttab/elephant-ui'
 import type * as Y from 'yjs'
 
@@ -14,10 +14,10 @@ import { type TemplatePayload } from '@/lib/createYItem'
 
 export type Template = keyof typeof Templates
 
-export const CreateDocumentDialog = ({ type, payload, children, mutator }: PropsWithChildren<{
+export const CreateDocumentDialog = ({ type, payload, createdDocumentIdRef, children }: PropsWithChildren<{
   type: View
   payload?: TemplatePayload
-  mutator?: (id: string, title: string) => Promise<void>
+  createdDocumentIdRef?: React.MutableRefObject<string | undefined>
 }>): JSX.Element | null => {
   const [document, setDocument] = useState<[string | undefined, Y.Doc | undefined]>([undefined, undefined])
 
@@ -43,14 +43,16 @@ export const CreateDocumentDialog = ({ type, payload, children, mutator }: Props
                   createDocument(
                     getTemplate(type),
                     true,
-                    payload
+                    payload,
+                    createdDocumentIdRef
                   )
                 )
               }
             }
           })}
       </DialogTrigger>
-
+      <DialogDescription />
+      <DialogTitle />
       <DialogContent className='p-0 rounded-md'>
         {document !== null && Document &&
           <Document
@@ -58,16 +60,8 @@ export const CreateDocumentDialog = ({ type, payload, children, mutator }: Props
             document={document[1]}
             className='p-0 rounded-md'
             asDialog
-            onDialogClose={(id, title: string = 'Untitled') => {
+            onDialogClose={() => {
               setDocument([undefined, undefined])
-
-              if (id && mutator) {
-                mutator(id, title).catch((error: unknown) => {
-                  if (error instanceof Error) {
-                    throw new Error(`Error when mutating Planning list: ${error.message}`)
-                  }
-                })
-              }
             }}
           />
         }
