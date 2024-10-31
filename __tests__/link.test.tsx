@@ -3,18 +3,15 @@ import userEvent from '@testing-library/user-event'
 
 import { render, screen } from '../setupTests'
 import { Link } from '@/components'
-import { SessionProvider } from 'next-auth/react'
 
 describe('Link', () => {
   it('should render Link component', async () => {
     render(
-      <SessionProvider>
-        <NavigationProvider>
-          <Link to='Editor' props={{ id: 'abc123' }}>
-            Planning Overview
-          </Link>
-        </NavigationProvider>
-      </SessionProvider>
+      <NavigationProvider>
+        <Link to='Editor' props={{ id: 'abc123' }}>
+          Planning Overview
+        </Link>
+      </NavigationProvider>
     )
     expect(screen.getByText('Planning Overview')).toBeInTheDocument()
 
