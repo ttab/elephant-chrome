@@ -8,8 +8,11 @@ import { useMemo, useState } from 'react'
 import { deleteByYPath } from '@/lib/yUtils'
 import { cn } from '@ttab/elephant-ui/utils'
 import { type EleBlock } from '@/shared/types'
+import { cva } from 'class-variance-authority'
 
-export const AssignmentTable = (): JSX.Element => {
+export const AssignmentTable = ({ asDialog = false }: {
+  asDialog?: boolean
+}): JSX.Element => {
   const { provider } = useCollaboration()
   const [assignments] = useYValue<EleBlock[]>('meta.core/assignment')
   const [planningSlugLine] = useYValue<string | undefined>('meta.tt/slugline[0].value')
@@ -35,51 +38,73 @@ export const AssignmentTable = (): JSX.Element => {
     return provider?.document.getMap('ele')
   }, [provider?.document])
 
+  const variants = cva('',
+    {
+      variants: {
+        asDialog: {
+          false: 'pl-6',
+          true: 'pl-2'
+        }
+      }
+    })
 
   return (
-    <div className='flex flex-col gap-2 pt-4'>
+    <>
       {newAssigment === undefined && provider?.document &&
-        <div className={cn('flex flex-start pb-2', selectedAssignment != null ? 'opacity-50' : '')}>
-          <a href="#"
-            className={cn('flex flex-start items-center text-sm gap-2 p-2 -ml-2 rounded-sm', selectedAssignment != null ? 'hover:cursor-default' : 'hover:bg-gray-100')}
-            onClick={(evt) => {
-              evt.preventDefault()
-              if (selectedAssignment != null) {
-                return
-              }
+        <div className={cn('flex flex-start pt-2 text-primary pb-4',
+          selectedAssignment != null ? 'opacity-50' : '')}>
+          <div className={variants({ asDialog })}>
+            <a href='#'
+              className={cn('flex flex-start items-center text-sm gap-2 p-2 -ml-2 rounded-sm',
+                selectedAssignment != null
+                  ? 'hover:cursor-default opacity-50'
+                  : 'hover:bg-muted')}
+              onClick={(evt) => {
+                evt.preventDefault()
+                if (selectedAssignment != null) {
+                  return
+                }
 
-              appendAssignment({
-                document: provider.document,
-                inProgress: true,
-                slugLine: (!slugLines?.includes(planningSlugLine || '')) ? planningSlugLine : undefined
-              })
-            }}
+                appendAssignment({
+                  document: provider.document,
+                  inProgress: true,
+                  slugLine: (!slugLines?.includes(planningSlugLine || ''))
+                    ? planningSlugLine
+                    : undefined
+                })
+              }}
           >
-            <div className='bg-primary rounded-full text-white w-5 h-5 flex justify-center items-center'>
-              <PlusIcon size={14} strokeWidth={1.75} className='rounded-full' />
-            </div>
-            Lägg till uppdrag
-          </a>
+              <div className='bg-primary rounded-full w-5 h-5 relative'>
+                <PlusIcon
+                  size={15}
+                  strokeWidth={2.25}
+                  color='#FFFFFF'
+                  className='absolute inset-0 m-auto'
+                />
+              </div>
+              Lägg till uppdrag
+            </a>
+          </div>
         </div>
       }
 
       {!!newAssigment &&
-        <Assignment
-          index={newAssigment.index}
-          onAbort={() => {
-            deleteByYPath(yRoot, `meta.core/assignment[${newAssigment.index}]`)
-          }}
-          onClose={() => {
-            deleteByYPath(yRoot, `meta.core/assignment[${newAssigment.index}].__inProgress`)
-          }}
-          className='mb-6'
-        />
+      <Assignment
+        index={newAssigment.index}
+        onAbort={() => {
+          deleteByYPath(yRoot, `meta.core/assignment[${newAssigment.index}]`)
+        }}
+        onClose={() => {
+          deleteByYPath(yRoot, `meta.core/assignment[${newAssigment.index}].__inProgress`)
+        }}
+        className='mb-6'
+          />
       }
 
       {!!existingAssigments.length &&
-        <div className="divide-y border-y">
+        <div className='border rounded-md'>
           {existingAssigments?.map((_, index: number) => (
-            <div key={`${_.id}`}>
+            <div key={`${_.id}`} className='border-b last:border-0'>
               {selectedAssignment === index
                 ? <Assignment index={index} onClose={() => {
                   setSelectedAssignment(undefined)
@@ -94,6 +119,6 @@ export const AssignmentTable = (): JSX.Element => {
           ))}
         </div>
       }
-    </div >
+    </>
   )
 }

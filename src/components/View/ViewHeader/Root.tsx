@@ -8,7 +8,7 @@ export const Root = ({ children, className }: PropsWithChildren &
   return (
     <header className={
       cn(
-        'sticky top-0 flex items-center justify-items-start group-first/view-container:ml-[2.5rem] h-14 gap-4 px-3 border-b bg-background z-50',
+        'sticky top-0 flex items-center justify-items-start group-first/view-container:ml-[2.5rem] h-14 gap-4 pl-6 pr-3 border-b bg-background z-50',
         className
       )
     }>
