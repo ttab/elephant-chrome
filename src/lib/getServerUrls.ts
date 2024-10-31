@@ -6,6 +6,7 @@ interface ServerUrls {
   repositoryEventsUrl: URL
   repositoryUrl: URL
   contentApiUrl: URL
+  spellcheckUrl: URL
 }
 
 export async function getServerUrls(): Promise<ServerUrls> {
@@ -20,14 +21,16 @@ export async function getServerUrls(): Promise<ServerUrls> {
       indexUrl,
       repositoryUrl,
       webSocketUrl,
-      contentApiUrl
+      contentApiUrl,
+      spellcheckUrl
     } = await response.json()
 
 
     if (typeof indexUrl !== 'string' || indexUrl === '' ||
       typeof repositoryUrl !== 'string' || repositoryUrl === '' ||
       typeof webSocketUrl !== 'string' || webSocketUrl === '' ||
-      typeof contentApiUrl !== 'string' || contentApiUrl === ''
+      typeof contentApiUrl !== 'string' || contentApiUrl === '' ||
+      typeof spellcheckUrl !== 'string' || spellcheckUrl === ''
     ) {
       throw new Error('One or several server urls are empty')
     }
@@ -38,7 +41,8 @@ export async function getServerUrls(): Promise<ServerUrls> {
       indexUrl: new URL(indexUrl),
       repositoryEventsUrl: new URL('/sse', repositoryUrl),
       repositoryUrl: new URL(repositoryUrl),
-      contentApiUrl: new URL(contentApiUrl)
+      contentApiUrl: new URL(contentApiUrl),
+      spellcheckUrl: new URL(spellcheckUrl)
     }
   } catch (ex) {
     throw new Error('Failed fetching remote server urls in getServerUrls', { cause: ex as Error })

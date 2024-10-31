@@ -23,6 +23,7 @@ export interface RegistryProviderState {
     repositoryEventsUrl: URL
     repositoryUrl: URL
     contentApiUrl: URL
+    spellcheckUrl: URL
   }
   dispatch: React.Dispatch<Partial<RegistryProviderState>>
 }
@@ -36,7 +37,8 @@ const initialState: RegistryProviderState = {
     indexUrl: new URL('http://localhost'),
     repositoryEventsUrl: new URL('http://localhost'),
     repositoryUrl: new URL('http://localhost'),
-    contentApiUrl: new URL('http://localhost')
+    contentApiUrl: new URL('http://localhost'),
+    spellcheckUrl: new URL('http://localhost')
   },
   dispatch: () => { }
 }

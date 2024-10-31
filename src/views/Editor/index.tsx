@@ -16,7 +16,8 @@ import { Bold, Italic, Link, Text, OrderedList, UnorderedList, TTVisual, Factbox
 
 import {
   useQuery,
-  useCollaboration
+  useCollaboration,
+  useRegistry
 } from '@/hooks'
 import { type ViewMetadata, type ViewProps } from '@/types'
 import { EditorHeader } from './EditorHeader'
@@ -31,6 +32,8 @@ import { Toolbar } from '@/components/Editor/Toolbar'
 import { ContextMenu } from '@/components/Editor/ContextMenu'
 import { Gutter } from '@/components/Editor/Gutter'
 import { DropMarker } from '@/components/Editor/DropMarker'
+import { useSession } from 'next-auth/react'
+import { Repository } from '@/lib/repository'
 
 const meta: ViewMetadata = {
   name: 'Editor',
@@ -93,6 +96,7 @@ function EditorWrapper(props: ViewProps & {
     <Textbit.Root plugins={plugins.map(initPlugin => initPlugin())} placeholders="multiple" className="h-screen max-h-screen flex flex-col">
       <ViewHeader.Root>
         <ViewHeader.Title title='Editor' icon={PenBoxIcon} />
+
         <ViewHeader.Content>
           <EditorHeader />
         </ViewHeader.Content>
@@ -102,12 +106,12 @@ function EditorWrapper(props: ViewProps & {
             <ViewHeader.RemoteUsers documentId={props.documentId} />
           }
         </ViewHeader.Action>
-
       </ViewHeader.Root>
 
       <div className='p-4'>
         <Notes />
       </div>
+
       <div className="flex-grow overflow-auto pr-12 max-w-screen-xl">
         {!!provider && synced
           ? <EditorContent provider={provider} user={user} />
@@ -126,6 +130,9 @@ function EditorContent({ provider, user }: {
   provider: HocuspocusProvider
   user: AwarenessUserData
 }): JSX.Element {
+  const { data: session } = useSession()
+  const { server: { spellcheckUrl } } = useRegistry()
+
   const yjsEditor = useMemo(() => {
     if (!provider?.awareness) {
       return
@@ -155,7 +162,17 @@ function EditorContent({ provider, user }: {
   }, [yjsEditor])
 
   return (
-    <Textbit.Editable yjsEditor={yjsEditor} className="outline-none h-full dark:text-slate-100">
+    <Textbit.Editable
+      onSpellcheck={async (texts) => await Repository.checkSpelling(session, spellcheckUrl, texts)}
+      yjsEditor={yjsEditor}
+      className="outline-none
+        h-full
+        dark:text-slate-100
+        [&_[data-spelling-error]]:border-b-2
+        [&_[data-spelling-error]]:border-dotted
+        [&_[data-spelling-error]]:border-red-500
+      "
+    >
       <DropMarker />
 
       <Gutter>
