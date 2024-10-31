@@ -6,7 +6,6 @@ import { render, screen } from '../setupTests'
 import { ViewFocus } from '@/components/View/ViewHeader/ViewFocus'
 import { type NavigationActionType } from '@/types'
 import { initializeNavigationState } from '@/navigation/lib'
-import { SessionProvider } from 'next-auth/react'
 import { type Mock, vi } from 'vitest'
 
 
@@ -25,11 +24,9 @@ const mockDispatch = vi.fn() as Dispatch<NavigationActionType>
 describe('ViewFocus', () => {
   it('should render ViewFocus component', async () => {
     render(
-      <SessionProvider>
-        <NavigationProvider>
-          <ViewFocus viewId={'abc123'} />
-        </NavigationProvider>
-      </SessionProvider>
+      <NavigationProvider>
+        <ViewFocus viewId={'abc123'} />
+      </NavigationProvider>
     )
 
     // Open with button, close with escape
