@@ -24,7 +24,14 @@ export const DateChanger = ({ type }: {
 
   const steps = to ? 7 : 1
 
-  const changeDate = useLink(type)
+  const validViews: View[] = ['Plannings', 'Events']
+  const linkTarget = validViews.find((view) => view.startsWith(type))
+
+  if (!linkTarget) {
+    throw new Error('Invalid view')
+  }
+
+  const changeDate = useLink(linkTarget)
 
   useEffect(() => {
     const keyDownHandler = (evt: KeyboardEvent): void => {
@@ -60,7 +67,7 @@ export const DateChanger = ({ type }: {
   return (
     <div className="flex items-center">
       <Link
-        to={type}
+        to={linkTarget}
         props={{ from: decrementDate(currentDate, steps).toISOString().split('T')[0] }}
         target='self'
       >
@@ -73,7 +80,7 @@ export const DateChanger = ({ type }: {
       <DatePicker date={currentDate} changeDate={changeDate} />
 
       <Link
-        to={type}
+        to={linkTarget}
         props={{ from: incrementDate(currentDate, steps).toISOString().split('T')[0] }}
         target='self'
       >
