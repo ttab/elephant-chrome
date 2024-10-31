@@ -39,6 +39,7 @@ export const Assignees = ({ path, name, placeholder }: {
           selectedOptions={selectedOptions}
           placeholder={placeholder}
           closeOnSelect={false}
+          modal={true}
           onOpenChange={(isOpen: boolean) => {
             if (setFocused?.current) {
               setFocused.current(isOpen)
