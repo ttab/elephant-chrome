@@ -1,5 +1,5 @@
 import { decode, encode } from 'html-entities'
-import { parse, type HTMLElement } from 'node-html-parser'
+import { NodeType, parse, type HTMLElement } from 'node-html-parser'
 import { Block } from '@ttab/elephant-api/newsdoc'
 import type { Text } from 'slate'
 import {
@@ -81,15 +81,14 @@ export function transformText(element: Block): TBElement {
     type: 'core/text',
     ...properties,
     children: nodes.map((node): (TBElement | TBText) => {
-      // Html entity
-      if (node.nodeType === 1) {
+      if (node.nodeType === NodeType.ELEMENT_NODE) {
         return {
           class: 'inline',
           ...transformInlineElement(node)
         }
       }
       // Plain text
-      if (node.nodeType === 3) {
+      if (node.nodeType === NodeType.TEXT_NODE) {
         return {
           text: decode(node.text)
         }

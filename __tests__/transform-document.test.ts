@@ -119,7 +119,7 @@ describe('Description and slugline handling in planning', () => {
     const ele = yDoc.getMap('ele')
     const meta = ele.get('meta') as Y.Map<unknown>
 
-    it('adds slugline to planning and assignment', async () => {
+    it('adds slugline to planning and assignment', () => {
       const sluglineBefore = planning.document?.meta.find((meta) => meta.type === 'tt/slugline')
       expect(sluglineBefore).toBeUndefined()
 

@@ -31,7 +31,8 @@ export const AssignmentRow = ({ index, onSelect }: {
       ev.preventDefault()
       ev.stopPropagation()
       onSelect()
-    }}>
+    }}
+    >
       <AssignmentRowContent
         index={index}
         onSelect={onSelect}
@@ -108,59 +109,64 @@ const AssignmentRowContent = ({ index, onSelect }: {
 
   return (
     <div className='flex flex-col gap-2 text-sm px-4 pt-2.5 pb-4 hover:bg-muted'>
-      <div className="flex flex-row gap-6 items-center justify-items-between justify-between">
+      <div className='flex flex-row gap-6 items-center justify-items-between justify-between'>
 
-        <div className="flex grow gap-4 items-center">
+        <div className='flex grow gap-4 items-center'>
           <AssignmentType path={`meta.core/assignment[${index}].meta.core/assignment-type`} />
           <AssigneeAvatars assignees={authors.map((author) => author.title)} />
 
-          <div className="hidden items-center @3xl/view:flex">
+          <div className='hidden items-center @3xl/view:flex'>
             <SluglineButton path={`meta.core/assignment[${index}].meta.tt/slugline[0].value`} />
           </div>
         </div>
 
-        <div className="flex grow items-center justify-end gap-1.5">
-          <div className="min-w-[64px] whitespace-nowrap">
+        <div className='flex grow items-center justify-end gap-1.5'>
+          <div className='min-w-[64px] whitespace-nowrap'>
             {assTime ? <TimeDisplay date={assTime} /> : ''}
           </div>
 
-          {assignmentType === 'text' &&
+          {assignmentType === 'text'
+          && (
             <Button
               variant='ghost'
-              className="flex h-8 w-8 p-0 data-[state=open]:bg-muted hover:bg-accent2"
+              className='flex h-8 w-8 p-0 data-[state=open]:bg-muted hover:bg-accent2'
               onClick={<T extends HTMLElement>(event: MouseEvent<T>) => {
                 onOpenArticleEvent(event)
-              }}>
+              }}
+            >
               <FileInput size={18} strokeWidth={1.75} />
             </Button>
-          }
+          )}
 
-          {!inProgress &&
+          {!inProgress
+          && (
             <DotDropdownMenu
               items={menuItems}
             />
-          }
+          )}
         </div>
       </div>
 
-      <div className="text-[15px] font-medium">
+      <div className='text-[15px] font-medium'>
         <span className='pr-2 leading-relaxed group-hover/assrow:underline'>{title}</span>
       </div>
 
-      {!!description &&
+      {!!description
+      && (
         <div className='font-light'>
           {description}
         </div>
-      }
+      )}
 
-      <div className="@3xl/view:hidden">
+      <div className='@3xl/view:hidden'>
         <SluglineButton path={`meta.core/assignment[${index}].meta.tt/slugline[0].value`} />
       </div>
 
-      {showVerifyDialog &&
+      {showVerifyDialog
+      && (
         <Prompt
-          title="Ta bort?"
-          description={`Vill du ta bort uppdraget${` ${title}` || ''}?`}
+          title='Ta bort?'
+          description={`Vill du ta bort uppdraget${title ? ' ' + title : ''}?`}
           secondaryLabel='Avbryt'
           primaryLabel='Ta bort'
           onPrimary={() => {
@@ -174,12 +180,13 @@ const AssignmentRowContent = ({ index, onSelect }: {
             setShowVerifyDialog(false)
           }}
         />
-      }
+      )}
 
-      {showCreateDialog &&
+      {showCreateDialog
+      && (
         <Prompt
-          title="Skapa artikel?"
-          description={`Vill du skapa en artikel för uppdraget${` ${title}` || ''}?`} // TODO: Display information that will be forwarded from the assignment
+          title='Skapa artikel?'
+          description={`Vill du skapa en artikel för uppdraget${title ? ' ' + title : ''}?`} // TODO: Display information that will be forwarded from the assignment
           secondaryLabel='Avbryt'
           primaryLabel='Skapa'
           onPrimary={(event) => {
@@ -207,7 +214,7 @@ const AssignmentRowContent = ({ index, onSelect }: {
             setShowCreateDialog(false)
           }}
         />
-      }
+      )}
     </div>
   )
 }

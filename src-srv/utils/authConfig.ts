@@ -56,7 +56,7 @@ async function refreshAccessToken(token: JWTPayload): Promise<JWTPayload> {
       accessTokenExpires: Date.now() + 150 * 1000,
       refreshToken: refreshedTokens.refresh_token ?? token.refreshToken
     }
-  } catch (ex) {
+  } catch (_ex) {
     return { ...token, error: 'refreshAccessTokenError' }
   }
 }
@@ -69,10 +69,10 @@ export const authConfig: AuthConfig = {
   ],
   callbacks: {
     async session({ session, token }) {
-      return {
+      return Promise.resolve({
         ...session,
         ...token
-      }
+      })
     },
     async jwt({ token, user, account }) {
       // First time user is logging in

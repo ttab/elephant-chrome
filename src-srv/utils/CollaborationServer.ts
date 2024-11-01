@@ -56,7 +56,6 @@ type CollaborationSnapshot = Array<{
 }>
 
 export class CollaborationServer {
-  readonly #name: string
   readonly #port: number
   readonly #quiet: boolean
   readonly #expressServer: Application
@@ -73,10 +72,9 @@ export class CollaborationServer {
    * a Hocuspocus server and it's extensions. Call listen() to
    * open collaboration server for business.
    */
-  constructor({ name, port, redisUrl, redisCache, repository, expressServer, quiet = false }: CollaborationServerOptions) {
+  constructor({ port, redisUrl, redisCache, repository, expressServer, quiet = false }: CollaborationServerOptions) {
     this.#quiet = quiet
     this.#port = port
-    this.#name = name
     this.#expressServer = expressServer
     this.#redisCache = redisCache
     this.#repository = repository
@@ -129,7 +127,7 @@ export class CollaborationServer {
         }),
         new Snapshot({
           debounce: 120000,
-          snapshot: async (payload: onStoreDocumentPayload) => {
+          snapshot: (payload: onStoreDocumentPayload) => {
             return async () => {
               await this.#snapshotDocument(payload).catch(ex => {
                 this.#errorHandler.error(ex, {
@@ -409,7 +407,7 @@ export class CollaborationServer {
    */
   async #connected({ documentName, context, socketId }: connectedPayload): Promise<void> {
     if (!this.#openDocuments || documentName === 'document-tracker') {
-      return
+      return await Promise.resolve()
     }
 
     const { sub: userId, sub_name: userName } = context.user as { sub: string, sub_name: string }
@@ -447,7 +445,7 @@ export class CollaborationServer {
    */
   async #onDisconnect({ documentName, context }: onDisconnectPayload): Promise<void> {
     if (!this.#openDocuments || documentName === 'document-tracker') {
-      return
+      return await Promise.resolve()
     }
 
     const { sub: userId } = context.user as { sub: string, sub_name: string }
@@ -474,7 +472,7 @@ export class CollaborationServer {
    */
   async #afterUnloadDocument({ documentName }: afterUnloadDocumentPayload): Promise<void> {
     if (!this.#openDocuments || documentName === 'document-tracker') {
-      return
+      return await Promise.resolve()
     }
 
     const documents = this.#openDocuments.getMap('open-documents')

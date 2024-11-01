@@ -139,7 +139,7 @@ export const RepositoryEventsProvider = ({ children }: {
             }
           }
         })
-      } catch (ex) {
+      } catch (_ex) {
         setListeningForSSE(false)
       }
     }

@@ -24,7 +24,7 @@ export function initializeNavigationState(): NavigationState {
 
     try {
       InititalView = viewRegistry.getByPath(window.location.pathname)
-    } catch (ex) {
+    } catch (_ex) {
       const isRoot = (x: string): boolean => x === import.meta.env.BASE_URL || x === `${import.meta.env.BASE_URL}/`
       if (isRoot(window.location.pathname)) {
         InititalView = viewRegistry.getByPath(`${import.meta.env.BASE_URL || ''}/plannings`)

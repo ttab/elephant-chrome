@@ -1,10 +1,13 @@
 import React from 'react'
 import { SearchIcon } from '@ttab/elephant-ui/icons'
 
-interface SearchInputProps extends React.InputHTMLAttributes<HTMLInputElement> { }
+interface SearchInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
+  className?: string
+  type?: string
+}
 
 export const SearchInput = React.forwardRef<HTMLInputElement, SearchInputProps>(
-  ({ className, type, ...props }, ref): JSX.Element => {
+  ({ className, type = 'text', ...props }, ref): JSX.Element => {
     return (
       <div className='flex gap-1'>
         <div className='pl-1 flex items-center pointer-events-none'>

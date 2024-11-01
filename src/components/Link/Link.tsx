@@ -30,7 +30,9 @@ export const Link = forwardRef((props: LinkProps, ref: ForwardedRef<HTMLAnchorEl
       onClick={(event) => {
         event.stopPropagation()
         // Execute forwarded onClick handler
-        props.onClick && props.onClick(event)
+        if (props.onClick) {
+          props.onClick(event)
+        }
 
         // Our onClick handler
         handleLink({

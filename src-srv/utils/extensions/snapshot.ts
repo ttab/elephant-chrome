@@ -10,7 +10,7 @@ interface DefaultConfiguration {
 }
 
 interface Configuration extends DefaultConfiguration {
-  snapshot: (payload: onStoreDocumentPayload) => Promise<() => Promise<void>>
+  snapshot: (payload: onStoreDocumentPayload) => () => Promise<void>
 }
 
 const debounceMap = new Map<string, DebouncedFunc<() => Promise<void>>>()
@@ -37,7 +37,7 @@ export class Snapshot implements Extension {
       debounceMap.get(documentName)?.cancel()
 
       // Create debounce
-      const fn = await this.configuration.snapshot(payload)
+      const fn = this.configuration.snapshot(payload)
       const debouncedFn = debounce(fn, this.configuration.debounce)
 
       // Set new debounce

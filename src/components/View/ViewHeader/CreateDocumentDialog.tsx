@@ -33,19 +33,18 @@ export const CreateDocumentDialog = ({ type, payload, createdDocumentIdRef, chil
     <Dialog open={!!document[0]}>
       <DialogTrigger asChild>
         {React.isValidElement<{
-          onClick?: (event: React.MouseEvent<HTMLElement>) => Promise<void>
-        }>(children) &&
-          React.cloneElement(children, {
-            onClick: async (event: React.MouseEvent<HTMLElement>) => {
-              event.preventDefault()
-              if (type) {
-                setDocument(
-                  createDocument(
-                    getTemplate(type),
-                    true,
-                    payload,
-                    createdDocumentIdRef
-                  )
+          onClick?: (event: React.MouseEvent<HTMLElement>) => void
+        }>(children)
+        && React.cloneElement(children, {
+          onClick: (event: React.MouseEvent<HTMLElement>) => {
+            event.preventDefault()
+            if (type) {
+              setDocument(
+                createDocument(
+                  getTemplate(type),
+                  true,
+                  payload,
+                  createdDocumentIdRef
                 )
               }
             }

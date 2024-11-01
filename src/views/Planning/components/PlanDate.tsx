@@ -8,7 +8,10 @@ export const PlanDate = (): JSX.Element => {
 
   const date = parseDate(get('start_date') as string) || new Date()
 
-  const setDate = () => (date: Date) => { set(format(date, timeZone), 'start_date') }
+  const setDate = () => (date: Date) => {
+    set(format(date, timeZone),
+      'start_date')
+  }
 
   return <DatePicker date={date} setDate={setDate} forceYear={true} />
 }

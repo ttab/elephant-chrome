@@ -69,7 +69,10 @@ function calculateViewColSpans(
   })
 
   // Assign extra space left to the last view so it expands if necessary
-  const usedColSpan = widths.reduce((total, item) => { return item.colSpan + total }, 0)
+  const usedColSpan = widths.reduce((total, item) => {
+    return item.colSpan + total
+  }, 0)
+
   if (usedColSpan < 12) {
     widths[widths.length - 1].colSpan += 12 - usedColSpan
   }
