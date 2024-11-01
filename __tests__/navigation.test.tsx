@@ -1,5 +1,4 @@
 import { type Dispatch } from 'react'
-import { SessionProvider } from 'next-auth/react'
 import { NavigationProvider } from '@/navigation'
 
 import { useNavigation } from '@/hooks'
@@ -35,13 +34,11 @@ describe('Use NavigationProvider', () => {
   it('should render view from registry', async () => {
     render(
       <IndexedDBProvider>
-        <SessionProvider>
-          <NavigationProvider>
-            <DocTrackerContext.Provider value={{ synced: true, connected: true, provider }}>
-              <AppContent />
-            </DocTrackerContext.Provider>
-          </NavigationProvider>
-        </SessionProvider>
+        <NavigationProvider>
+          <DocTrackerContext.Provider value={{ synced: true, connected: true, provider }}>
+            <AppContent />
+          </DocTrackerContext.Provider>
+        </NavigationProvider>
       </IndexedDBProvider>
     )
 

@@ -1,4 +1,4 @@
-FROM node:20.12.2-slim AS build
+FROM node:22.9.0-slim AS build
 
 ARG npm_authtoken
 
@@ -14,10 +14,10 @@ COPY . /usr/src/app
 RUN npm run build
 
 RUN rm -fr node_modules && \
-    npm ci --include prod && \
-    rm -f .npmrc
+  npm ci --include prod && \
+  rm -f .npmrc
 
-FROM node:20.12.2-slim
+FROM node:22.9.0-slim
 
 RUN apt-get update && apt-get upgrade -y && apt-get clean
 
