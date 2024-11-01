@@ -32,7 +32,7 @@ export const AssignmentRow = ({ index, onSelect }: {
       ev.stopPropagation()
       onSelect()
     }}
-    >
+      >
       <AssignmentRowContent
         index={index}
         onSelect={onSelect}
@@ -108,11 +108,18 @@ const AssignmentRowContent = ({ index, onSelect }: {
   }
 
   return (
-    <div className='flex flex-col gap-2 text-sm px-4 pt-2.5 pb-4 hover:bg-muted'>
+    <div className='flex flex-col gap-2 text-sm px-6 pt-2.5 pb-4 hover:bg-muted'>
       <div className='flex flex-row gap-6 items-center justify-items-between justify-between'>
 
-        <div className='flex grow gap-4 items-center'>
-          <AssignmentType path={`meta.core/assignment[${index}].meta.core/assignment-type`} />
+        <div className='flex grow gap-2 items-center'>
+          <Button
+            variant='icon'
+            className='p-0 pr-2'
+            onClick={<T extends HTMLElement>(event: MouseEvent<T>) => {
+              onOpenArticleEvent(event)
+            }}>
+            <AssignmentType path={`meta.core/assignment[${index}].meta.core/assignment-type`} />
+          </Button>
           <AssigneeAvatars assignees={authors.map((author) => author.title)} />
 
           <div className='hidden items-center @3xl/view:flex'>
@@ -125,21 +132,7 @@ const AssignmentRowContent = ({ index, onSelect }: {
             {assTime ? <TimeDisplay date={assTime} /> : ''}
           </div>
 
-          {assignmentType === 'text'
-          && (
-            <Button
-              variant='ghost'
-              className='flex h-8 w-8 p-0 data-[state=open]:bg-muted hover:bg-accent2'
-              onClick={<T extends HTMLElement>(event: MouseEvent<T>) => {
-                onOpenArticleEvent(event)
-              }}
-            >
-              <FileInput size={18} strokeWidth={1.75} />
-            </Button>
-          )}
-
-          {!inProgress
-          && (
+          {!inProgress &&
             <DotDropdownMenu
               items={menuItems}
             />
@@ -147,13 +140,12 @@ const AssignmentRowContent = ({ index, onSelect }: {
         </div>
       </div>
 
-      <div className='text-[15px] font-medium'>
-        <span className='pr-2 leading-relaxed group-hover/assrow:underline'>{title}</span>
+      <div className='text-[15px] font-medium pl-10'>
+        <span className='leading-relaxed group-hover/assrow:underline'>{title}</span>
       </div>
 
-      {!!description
-      && (
-        <div className='font-light'>
+      {!!description &&
+        <div className='font-light pl-10'>
           {description}
         </div>
       )}

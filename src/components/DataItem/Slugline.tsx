@@ -57,6 +57,7 @@ function StaticSluglineByValue({ value }: {
   return <Button
     className='text-muted-foreground h-7 px-2 font-normal text-sm whitespace-nowrap hover:bg-background hover:text-muted-foreground hover:cursor-default'
     variant='outline'
+    type='button'
   >
     {value || 'Slugg...'}
   </Button >
