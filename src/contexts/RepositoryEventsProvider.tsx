@@ -127,7 +127,7 @@ export const RepositoryEventsProvider = ({ children }: {
               lastEventId: msg.id,
               timestamp: msg.timestamp
             })
-            callbacks.forEach(callback => callback(msg))
+            callbacks.forEach((callback) => callback(msg))
           },
           onclose() {
             // If connection is unexpectedly closed by server, retry
@@ -151,7 +151,7 @@ export const RepositoryEventsProvider = ({ children }: {
   }, [subscribers])
 
   const unsubscribe = useCallback((eventType: string, callback: (data: ElephantRepositoryEvent) => void) => {
-    subscribers.current[eventType] = (subscribers.current[eventType] || []).filter(cb => cb !== callback)
+    subscribers.current[eventType] = (subscribers.current[eventType] || []).filter((cb) => cb !== callback)
   }, [subscribers])
 
   return (

@@ -48,7 +48,7 @@ export async function runServer(): Promise<string> {
   // Connect to Redis
   const cache = new RedisCache(REDIS_URL)
 
-  await cache.connect().catch(ex => {
+  await cache.connect().catch((ex) => {
     throw new Error('connect to redis cache', { cause: ex })
   })
 
@@ -87,7 +87,7 @@ export async function runServer(): Promise<string> {
     expressServer: app
   })
 
-  await collaborationServer.listen([`${BASE_URL}/:document`]).catch(ex => {
+  await collaborationServer.listen([`${BASE_URL}/:document`]).catch((ex) => {
     throw new Error(`start collaboration server on port ${PORT}`, { cause: ex })
   })
 
@@ -103,7 +103,7 @@ export async function runServer(): Promise<string> {
 
     collaborationServer.close().then(() => {
       process.exit(1)
-    }).catch(ex => logger.fatal(ex))
+    }).catch((ex) => logger.fatal(ex))
 
     setTimeout(() => {
       process.abort()
@@ -117,7 +117,7 @@ export async function runServer(): Promise<string> {
 
     collaborationServer.close().then(() => {
       process.exit(1)
-    }).catch(ex => logger.fatal(ex))
+    }).catch((ex) => logger.fatal(ex))
 
     setTimeout(() => {
       process.abort()
@@ -152,9 +152,9 @@ export async function runServer(): Promise<string> {
   return serverUrl
 }
 
-runServer().then(url => {
+runServer().then((url) => {
   logger.info(`Serving API on ${url}/api`)
-}).catch(ex => {
+}).catch((ex) => {
   console.error(ex)
   process.exit(1)
 })

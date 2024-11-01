@@ -113,14 +113,14 @@ export class CollaborationServer {
         }),
         new Database({
           fetch: async (payload: fetchPayload) => {
-            const document = await this.#fetchDocument(payload).catch(ex => {
+            const document = await this.#fetchDocument(payload).catch((ex) => {
               this.#errorHandler.error(ex)
             })
 
             return document || null
           },
           store: async (payload) => {
-            await this.#storeDocument(payload).catch(ex => {
+            await this.#storeDocument(payload).catch((ex) => {
               this.#errorHandler.error(ex)
             })
           }
@@ -129,7 +129,7 @@ export class CollaborationServer {
           debounce: 120000,
           snapshot: (payload: onStoreDocumentPayload) => {
             return async () => {
-              await this.#snapshotDocument(payload).catch(ex => {
+              await this.#snapshotDocument(payload).catch((ex) => {
                 this.#errorHandler.error(ex, {
                   id: payload.documentName,
                   accessToken: payload.context.accessToken
@@ -145,7 +145,7 @@ export class CollaborationServer {
       // Add user as having a tracked document open (or increase nr of times
       // user have it open)
       connected: async (payload) => {
-        await this.#connected(payload).catch(ex => {
+        await this.#connected(payload).catch((ex) => {
           this.#errorHandler.error(ex)
         })
       },
@@ -153,20 +153,20 @@ export class CollaborationServer {
       // Remove user from having a tracked doc open (or decrease the nr of times
       // user have it open)
       onDisconnect: async (payload) => {
-        await this.#onDisconnect(payload).catch(ex => {
+        await this.#onDisconnect(payload).catch((ex) => {
           this.#errorHandler.error(ex)
         })
       },
 
       // No users have this doc open, remove it from tracked documents
       afterUnloadDocument: async (payload) => {
-        await this.#afterUnloadDocument(payload).catch(ex => {
+        await this.#afterUnloadDocument(payload).catch((ex) => {
           this.#errorHandler.error(ex)
         })
       },
 
       onStateless: async (payload) => {
-        await this.#statelessHandler(payload).catch(ex => {
+        await this.#statelessHandler(payload).catch((ex) => {
           this.#errorHandler.error(ex)
         })
       }
@@ -193,7 +193,7 @@ export class CollaborationServer {
     }
 
     try {
-      paths.forEach(path => {
+      paths.forEach((path) => {
         this.#expressServer.ws(path, (websocket, request) => {
           this.#server.handleConnection(websocket, request)
         })
@@ -232,21 +232,21 @@ export class CollaborationServer {
     if (msg.type === StatelessType.IN_PROGRESS && !msg.message.state) {
       const userTrackerConnection = await this.#server.openDirectConnection(
         msg.message.context.user.sub, { ...msg.message.context, agent: 'server' }
-      ).catch(ex => {
+      ).catch((ex) => {
         throw new Error('acquire connection', { cause: ex })
       })
 
       const connection = await this.#server.openDirectConnection(
         msg.message.id, { ...msg.message.context, agent: 'server' }
-      ).catch(ex => {
+      ).catch((ex) => {
         throw new Error('acquire connection', { cause: ex })
       })
 
-      await connection.transact(doc => {
+      await connection.transact((doc) => {
         const ele = doc.getMap('ele')
         const root = ele.get('root') as Y.Map<unknown>
         root.delete('__inProgress')
-      }).catch(ex => {
+      }).catch((ex) => {
         throw new Error('remove in progress flag', { cause: ex })
       })
 
@@ -269,7 +269,7 @@ export class CollaborationServer {
         msg.message.context
       )
 
-      userTrackerConnection.transact(doc => {
+      userTrackerConnection.transact((doc) => {
         const documents = doc.getMap('ele')
         const type = msg.message.context.type
         if (!documents.get(type)) {
@@ -278,7 +278,7 @@ export class CollaborationServer {
 
         const items = documents.get(type) as Y.Array<unknown>
         items.push([{ id: msg.message.id, timestamp: Date.now() }])
-      }).catch(ex => {
+      }).catch((ex) => {
         throw new Error('error', { cause: ex })
       })
     }
@@ -302,7 +302,7 @@ export class CollaborationServer {
     }
 
     // Fetch from Redis if exists
-    const state = await this.#redisCache.get(uuid).catch(ex => {
+    const state = await this.#redisCache.get(uuid).catch((ex) => {
       throw new Error('get cached document', { cause: ex })
     })
 
@@ -314,7 +314,7 @@ export class CollaborationServer {
     const newsDoc = await this.#repository.getDoc({
       uuid,
       accessToken: context.accessToken
-    }).catch(ex => {
+    }).catch((ex) => {
       throw new Error('get document from repository', { cause: ex })
     })
 
@@ -382,17 +382,17 @@ export class CollaborationServer {
     const connection = await this.#server.openDirectConnection(documentName, {
       ...context as Record<string, unknown> || {},
       agent: 'server'
-    }).catch(ex => {
+    }).catch((ex) => {
       throw new Error('Open hocuspocus connection failed', { cause: ex })
     })
 
-    await connection.transact(doc => {
+    await connection.transact((doc) => {
       const versionMap = doc.getMap('version')
       const hashMap = doc.getMap('hash')
 
       versionMap.set('version', result?.response.version.toString())
       hashMap.set('hash', updatedHash)
-    }).catch(ex => {
+    }).catch((ex) => {
       throw new Error('Update document with new hash and version failed', { cause: ex })
     })
 
@@ -488,7 +488,7 @@ export class CollaborationServer {
    * Store document in redis cache
    */
   async #storeDocument({ documentName, state }: storePayload): Promise<void> {
-    await this.#redisCache.store(documentName, state).catch(ex => {
+    await this.#redisCache.store(documentName, state).catch((ex) => {
       this.#errorHandler.error(ex)
     })
   }
@@ -523,7 +523,7 @@ export class CollaborationServer {
     const yDocMap: Y.Map<Y.Map<Y.Map<string>>> = this.#openDocuments.getMap('open-documents')
     yDocMap.forEach((yUsersMap, uuid) => {
       const users: CollaborationSnapshotUser[] = []
-      yUsersMap.forEach(yUser => {
+      yUsersMap.forEach((yUser) => {
         users.push(yUser.toJSON() as CollaborationSnapshotUser)
       })
 

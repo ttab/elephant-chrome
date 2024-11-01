@@ -76,20 +76,20 @@ export const ValidationAlert = ({ validateStateRef }: {
 }
 
 function isBlockAndInvalid(entity: Entity, validateStateRef: ValidateStateRef): boolean {
-  return (entity.refType === 'block' &&
-    validateStateRef.current?.[entity?.type] &&
-      !validateStateRef.current[entity.type].valid)
+  return (entity.refType === 'block'
+    && validateStateRef.current?.[entity?.type]
+    && !validateStateRef.current[entity.type].valid)
 }
 
 function hasInvalidBlock(error: ValidationResult, validateStateRef: ValidateStateRef): boolean {
-  return error.entity.some(entity => isBlockAndInvalid(entity, validateStateRef))
+  return error.entity.some((entity) => isBlockAndInvalid(entity, validateStateRef))
 }
 
 function createValidationMessage(errors: ValidationResult[], validateStateRef: ValidateStateRef): string[] {
   return errors
-    .filter(error => !hasInvalidBlock(error, validateStateRef))
+    .filter((error) => !hasInvalidBlock(error, validateStateRef))
     .map((error, index) => {
-      const entityDescriptions = error.entity.map(entity => {
+      const entityDescriptions = error.entity.map((entity) => {
         if (entity.refType === 'attribute') {
           return `attribute "${entity.name}"`
         } else if (entity.refType === 'block') {

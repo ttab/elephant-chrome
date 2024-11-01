@@ -52,10 +52,10 @@ export const RegistryProvider = ({ children }: PropsWithChildren): JSX.Element =
   const [isInitialized, setIsInitialized] = useState<boolean>(false)
 
   useEffect(() => {
-    getServerUrls().then(server => {
+    getServerUrls().then((server) => {
       dispatch({ server })
       setIsInitialized(true)
-    }).catch(ex => {
+    }).catch((ex) => {
       console.error(`Failed fetching server urls in RegistryProvider, ${ex.message}`, ex)
     })
   }, [])

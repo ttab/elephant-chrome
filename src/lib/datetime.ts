@@ -134,8 +134,8 @@ export function is12HourcycleFromLocale(locale: string): boolean {
 
     const formattedDate = formatter.formatToParts(sampleDate)
 
-    return formattedDate.some(part => part.type === 'dayPeriod' &&
-      (part.value === 'AM' || part.value === 'PM'))
+    return formattedDate.some((part) => part.type === 'dayPeriod'
+      && (part.value === 'AM' || part.value === 'PM'))
   } catch (error) {
     console.error('Error getting hour cycle:', error)
     return false
@@ -158,9 +158,9 @@ export function dateInTimestampOrShortMonthDayTimestamp(date: string, locale: st
   const inputDate = new Date(date)
   const today = new Date()
 
-  const isToday = inputDate.getDate() === today.getDate() &&
-                  inputDate.getMonth() === today.getMonth() &&
-                  inputDate.getFullYear() === today.getFullYear()
+  const isToday = inputDate.getDate() === today.getDate()
+    && inputDate.getMonth() === today.getMonth()
+    && inputDate.getFullYear() === today.getFullYear()
 
   const timeFormatter = new Intl.DateTimeFormat(locale, {
     hour: '2-digit',

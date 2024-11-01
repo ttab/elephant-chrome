@@ -26,7 +26,7 @@ function sortDocument(json: any): any {
       })
   } else if (typeof json === 'object' && json !== null) {
     const sortedObject: Record<string, unknown> = {}
-    Object.keys(json as Record<string, unknown>).sort().forEach(key => {
+    Object.keys(json as Record<string, unknown>).sort().forEach((key) => {
       sortedObject[key] = sortDocument(json[key])
     })
     return sortedObject
@@ -155,12 +155,12 @@ describe('Description and slugline handling in planning', () => {
       const revertedAssignments = document?.meta.filter((meta) => meta.type === 'core/assignment')
 
       // First assignment slugline is kept
-      const firstRevertedAssignment = revertedAssignments?.[0].meta.filter(meta => meta.type === 'tt/slugline')
+      const firstRevertedAssignment = revertedAssignments?.[0].meta.filter((meta) => meta.type === 'tt/slugline')
       expect(firstRevertedAssignment).toHaveLength(1)
       expect(firstRevertedAssignment?.[0].value).toBe('lands-tomasson')
 
       // Second assignment slugline is removed
-      const secondRevertedAssignment = revertedAssignments?.[1].meta.filter(meta => meta.type === 'tt/slugline')
+      const secondRevertedAssignment = revertedAssignments?.[1].meta.filter((meta) => meta.type === 'tt/slugline')
       expect(secondRevertedAssignment).toHaveLength(0)
     })
   })

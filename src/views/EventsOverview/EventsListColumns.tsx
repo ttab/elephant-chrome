@@ -68,7 +68,7 @@ export function eventTableColumns({ sections = [] }: {
     {
       id: 'section',
       meta: {
-        options: sections.map(_ => {
+        options: sections.map((_) => {
           return {
             value: _.id,
             label: _.title
@@ -84,9 +84,11 @@ export function eventTableColumns({ sections = [] }: {
       accessorFn: (data) => data._source['document.rel.section.title']?.[0],
       cell: ({ row }) => {
         const sectionTitle = row.getValue<string | undefined>('section')
-        return <>
-          {sectionTitle && <SectionBadge title={sectionTitle} color='bg-[#BD6E11]' />}
-        </>
+        return (
+          <>
+            {sectionTitle && <SectionBadge title={sectionTitle} color='bg-[#BD6E11]' />}
+          </>
+        )
       },
       filterFn: (row, id, value) => (
         value.includes(row.getValue(id))

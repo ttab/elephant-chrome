@@ -38,7 +38,7 @@ async function refreshAccessToken(token: JWTPayload): Promise<JWTPayload> {
         Accept: 'application/json'
       },
       body: params
-    }).catch(ex => {
+    }).catch((ex) => {
       throw new Error('refresh token grant request', { cause: ex })
     })
 
@@ -46,8 +46,8 @@ async function refreshAccessToken(token: JWTPayload): Promise<JWTPayload> {
 
     if (!response.ok) {
       throw new Error(
-      `refresh request error response: ${response.statusText}`,
-      { cause: refreshedTokens })
+        `refresh request error response: ${response.statusText}`,
+        { cause: refreshedTokens })
     }
 
     return {

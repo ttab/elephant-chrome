@@ -43,24 +43,28 @@ export const Assignment = ({ index, onAbort, onClose }: {
               path={`meta.core/assignment[${index}].title`}
               placeholder='Uppdragsrubrik'
               autoFocus={true}
-        />
+            />
           </Form.Title>
           <TextBox
             path={`meta.core/assignment[${index}].meta.core/description[0].data.text`}
             placeholder='Internt meddelande'
-            icon={<MessageCircleMore
-              size={18}
-              strokeWidth={1.75}
-              className='text-muted-foreground mr-4'
-          />}
-        />
+            icon={(
+              <MessageCircleMore
+                size={18}
+                strokeWidth={1.75}
+                className='text-muted-foreground mr-4'
+              />
+            )}
+          />
 
-          {assignmentType === 'text' &&
+          {assignmentType === 'text'
+          && (
             <Form.Group icon={Tags}>
               <SluglineEditable
                 path={`meta.core/assignment[${index}].meta.tt/slugline[0].value`}
-          />
-            </Form.Group>}
+              />
+            </Form.Group>
+          )}
 
 
           <Form.Group>
@@ -72,7 +76,7 @@ export const Assignment = ({ index, onAbort, onClose }: {
               name='AssignmentAssignees'
               path={`meta.core/assignment[${index}].links.core/author`}
               placeholder='Lägg till uppdragstagare'
-              />
+            />
             <Clock10Icon size={20} strokeWidth={1.75} />
           </Form.Group>
 
@@ -80,19 +84,20 @@ export const Assignment = ({ index, onAbort, onClose }: {
         <Form.Footer>
           <Form.Submit onSubmit={onClose} onReset={onAbort}>
             <div className='flex gap-2 justify-end pt-4'>
-              {inProgress && !!onAbort &&
+              {inProgress && !!onAbort
+              && (
                 <Button
                   type='reset'
-                  variant='ghost'>
+                  variant='ghost'
+                >
                   Avbryt
                 </Button>
-
-                }
+              )}
               <Button
                 type='submit'
                 variant='outline'
                 className='whitespace-nowrap'
-                  >
+              >
                 {inProgress ? 'Lägg till' : 'Stäng'}
               </Button>
             </div>

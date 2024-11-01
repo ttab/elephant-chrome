@@ -1,8 +1,8 @@
 export const currentView = (): { name: string, props: Record<string, string> } => {
   let name = ''
 
-  if (window.location.pathname !== import.meta.env.BASE_URL &&
-    window.location.pathname !== import.meta.env.BASE_URL + '/') {
+  if (window.location.pathname !== import.meta.env.BASE_URL
+    && window.location.pathname !== import.meta.env.BASE_URL + '/') {
     const nameFromPath = window.location.pathname
       .replace(import.meta.env.BASE_URL, '')
       .replace(/\/$/, '')

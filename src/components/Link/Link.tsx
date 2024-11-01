@@ -46,7 +46,8 @@ export const Link = forwardRef((props: LinkProps, ref: ForwardedRef<HTMLAnchorEl
           target: props.target
         })
       }}
-      ref={ref}>
+      ref={ref}
+    >
       {props.children}
     </a>
   )

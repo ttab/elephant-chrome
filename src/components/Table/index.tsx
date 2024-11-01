@@ -90,7 +90,7 @@ export const Table = <TData, TValue>({
     const selectedRows = table.getGroupedSelectedRowModel()
     const selectedRow = selectedRows?.flatRows[0]
 
-    const subRows = rows.flatMap(row => [...row.subRows])
+    const subRows = rows.flatMap((row) => [...row.subRows])
 
     if (evt.key === 'Enter') {
       if (!selectedRow) return
@@ -150,8 +150,7 @@ export const Table = <TData, TValue>({
           >
             {deferredLoading
               ? 'Laddar...'
-              : 'Inga planeringar funna.'
-            }
+              : 'Inga planeringar funna.'}
           </TableCell>
         </TableRow>
       )
@@ -184,7 +183,7 @@ export const Table = <TData, TValue>({
               key={subRow.id}
               className='flex items-center cursor-default scroll-mt-10'
               data-state={subRow.getIsSelected() && 'selected'}
-              onClick={(event: MouseEvent<HTMLTableRowElement>) => handleOpen(event, subRow) }
+              onClick={(event: MouseEvent<HTMLTableRowElement>) => handleOpen(event, subRow)}
               ref={(el) => {
                 if (el) {
                   rowRefs.current.set(subRow.id, el)
@@ -194,18 +193,20 @@ export const Table = <TData, TValue>({
               }}
             >
               {subRow.getVisibleCells().map((cell) => {
-                return <TableCell
-                  key={cell.id}
-                  className={cn(
-                    'first:pl-2 last:pr-2 sm:first:pl-6 sm:last:pr-6',
-                    cell.column.columnDef.meta?.className
-                  )}
+                return (
+                  <TableCell
+                    key={cell.id}
+                    className={cn(
+                      'first:pl-2 last:pr-2 sm:first:pl-6 sm:last:pr-6',
+                      cell.column.columnDef.meta?.className
+                    )}
                   >
-                  {flexRender(
-                    cell.column.columnDef.cell,
-                    cell.getContext()
-                  )}
-                </TableCell>
+                    {flexRender(
+                      cell.column.columnDef.cell,
+                      cell.getContext()
+                    )}
+                  </TableCell>
+                )
               })}
             </TableRow>
           ))}

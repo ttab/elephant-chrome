@@ -24,10 +24,10 @@ export async function getServerUrls(): Promise<ServerUrls> {
     } = await response.json()
 
 
-    if (typeof indexUrl !== 'string' || indexUrl === '' ||
-      typeof repositoryUrl !== 'string' || repositoryUrl === '' ||
-      typeof webSocketUrl !== 'string' || webSocketUrl === '' ||
-      typeof contentApiUrl !== 'string' || contentApiUrl === ''
+    if (typeof indexUrl !== 'string' || indexUrl === ''
+      || typeof repositoryUrl !== 'string' || repositoryUrl === ''
+      || typeof webSocketUrl !== 'string' || webSocketUrl === ''
+      || typeof contentApiUrl !== 'string' || contentApiUrl === ''
     ) {
       throw new Error('One or several server urls are empty')
     }

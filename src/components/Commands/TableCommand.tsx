@@ -36,7 +36,7 @@ export const TableCommandMenu = ({ children, heading }: PropsWithChildren & { he
           }
         }
       }}
-      >
+    >
       <CommandGroup heading={heading}>
         {children}
       </CommandGroup>

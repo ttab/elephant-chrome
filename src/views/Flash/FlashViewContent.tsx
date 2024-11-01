@@ -109,7 +109,7 @@ export const FlashViewContent = (props: ViewProps & {
       const info = [
         planning._source['document.meta.tt_slugline.value']?.[0],
         planning._source['document.rel.section.title']?.[0]
-      ].filter(v => v).join(', ')
+      ].filter((v) => v).join(', ')
 
       return {
         value: id,
@@ -156,11 +156,10 @@ export const FlashViewContent = (props: ViewProps & {
 
   return (
     <div className={cn(viewVariants({ asCreateDialog: !!props.asDialog, className: props?.className }))}>
-      <div className="grow-0">
+      <div className='grow-0'>
         <ViewHeader.Root>
-          {!props.asDialog &&
-            <ViewHeader.Title title='Flash' icon={ZapIcon} iconColor='#FF5150' />
-          }
+          {!props.asDialog
+          && <ViewHeader.Title title='Flash' icon={ZapIcon} iconColor='#FF5150' />}
 
           <ViewHeader.Content>
             <div className='flex w-full h-full items-center space-x-2 font-bold'>
@@ -169,29 +168,28 @@ export const FlashViewContent = (props: ViewProps & {
           </ViewHeader.Content>
 
           <ViewHeader.Action onDialogClose={props.onDialogClose}>
-            {!props.asDialog && !!props.documentId &&
-              <ViewHeader.RemoteUsers documentId={props.documentId} />
-            }
+            {!props.asDialog && !!props.documentId
+            && <ViewHeader.RemoteUsers documentId={props.documentId} />}
           </ViewHeader.Action>
         </ViewHeader.Root>
       </div>
 
       <ScrollArea className='grid @5xl:place-content-center'>
-        <div className="space-y-5 py-5">
+        <div className='space-y-5 py-5'>
           <section className={cn(sectionVariants({ asCreateDialog: !!props?.asDialog }))}>
-            <div className="flex flex-row gap-5 items-center">
+            <div className='flex flex-row gap-5 items-center'>
               <div>
                 <GanttChartSquareIcon size={18} strokeWidth={1.75} className='text-muted-foreground' />
               </div>
 
-              <div className="flex flex-row items-center gap-2">
-                <Awareness name="FlashPlanningItem" ref={planningAwareness}>
+              <div className='flex flex-row items-center gap-2'>
+                <Awareness name='FlashPlanningItem' ref={planningAwareness}>
                   <ComboBox
                     max={1}
                     size='xs'
                     className='min-w-0 max-w-46 truncate justify-start'
                     selectedOptions={selectedPlanning ? [selectedPlanning] : []}
-                    placeholder={'Välj planering'}
+                    placeholder='Välj planering'
                     onOpenChange={(isOpen: boolean) => {
                       if (planningAwareness?.current) {
                         planningAwareness.current(isOpen)
@@ -209,13 +207,15 @@ export const FlashViewContent = (props: ViewProps & {
                         setSelectedPlanning(undefined)
                       }
                     }}
-                  ></ComboBox>
+                  >
+                  </ComboBox>
                 </Awareness>
 
-                {!!selectedPlanning &&
+                {!!selectedPlanning
+                && (
                   <Button
                     variant='ghost'
-                    className="text-muted-foreground flex h-7 w-7 p-0 data-[state=open]:bg-muted hover:bg-accent2"
+                    className='text-muted-foreground flex h-7 w-7 p-0 data-[state=open]:bg-muted hover:bg-accent2'
                     onClick={(e) => {
                       e.preventDefault()
                       setSelectedPlanning(undefined)
@@ -223,27 +223,26 @@ export const FlashViewContent = (props: ViewProps & {
                   >
                     <CircleXIcon size={18} strokeWidth={1.75} />
                   </Button>
-                }
+                )}
               </div>
             </div>
 
-            <div className="flex flex-row gap-5 items-start">
-              <div className="pt-1">
+            <div className='flex flex-row gap-5 items-start'>
+              <div className='pt-1'>
                 <TagsIcon size={18} strokeWidth={1.75} className='text-muted-foreground' />
               </div>
 
               <Byline name='FlashByline' onValidation={handleValidation} />
 
-              {!selectedPlanning &&
-                <Section onValidation={handleValidation} />
-              }
+              {!selectedPlanning
+              && <Section onValidation={handleValidation} />}
             </div>
           </section>
 
           <section className={cn(sectionVariants({ asCreateDialog: !!props?.asDialog }), 'px-0')}>
             <FlashEditor setTitle={setTitle} />
-            <div className="px-6">
-              <div className="-mt-3">
+            <div className='px-6'>
+              <div className='-mt-3'>
                 <Validation
                   label='Rubrk och innehåll'
                   path='root.title'
@@ -260,8 +259,7 @@ export const FlashViewContent = (props: ViewProps & {
               <AlertDescription>
                 {!selectedPlanning
                   ? <>Väljer du ingen planering kommer en ny planering med tillhörande uppdrag skapas åt dig.</>
-                  : <>Denna flash kommer läggas i ett nytt uppdrag i den valda planeringen</>
-                }
+                  : <>Denna flash kommer läggas i ett nytt uppdrag i den valda planeringen</>}
               </AlertDescription>
             </Alert>
           </section>
@@ -269,33 +267,34 @@ export const FlashViewContent = (props: ViewProps & {
 
 
         {
-          showVerifyDialog &&
-          <Prompt
-            title="Skapa och skicka flash?"
-            description={!selectedPlanning
-              ? 'En ny planering med tillhörande uppdrag för denna flash kommer att skapas åt dig.'
-              : `Denna flash kommer att läggas i ett nytt uppdrag i planeringen "${selectedPlanning.label}`
-            }
-            secondaryLabel='Avbryt'
-            primaryLabel='Skicka'
-            onPrimary={() => {
-              if (!provider || !props.documentId || !provider || !session) {
-                console.error('Environment is not sane, flash cannot be created')
-                return
-              }
+          showVerifyDialog
+          && (
+            <Prompt
+              title='Skapa och skicka flash?'
+              description={!selectedPlanning
+                ? 'En ny planering med tillhörande uppdrag för denna flash kommer att skapas åt dig.'
+                : `Denna flash kommer att läggas i ett nytt uppdrag i planeringen "${selectedPlanning.label}`}
+              secondaryLabel='Avbryt'
+              primaryLabel='Skicka'
+              onPrimary={() => {
+                if (!provider || !props.documentId || !provider || !session) {
+                  console.error('Environment is not sane, flash cannot be created')
+                  return
+                }
 
-              if (props?.onDialogClose) {
-                props.onDialogClose(props.documentId, title)
-              }
+                if (props?.onDialogClose) {
+                  props.onDialogClose(props.documentId, title)
+                }
 
-              createFlash(props.documentId, title, provider, status, session, planningDocument, newPlanningDocument, timeZone)
+                createFlash(props.documentId, title, provider, status, session, planningDocument, newPlanningDocument, timeZone)
 
-              setShowVerifyDialog(false)
-            }}
-            onSecondary={() => {
-              setShowVerifyDialog(false)
-            }}
-          />
+                setShowVerifyDialog(false)
+              }}
+              onSecondary={() => {
+                setShowVerifyDialog(false)
+              }}
+            />
+          )
         }
 
         {
@@ -316,15 +315,17 @@ export const FlashViewContent = (props: ViewProps & {
                   }
 
                   setShowVerifyDialog(true)
-                }}>
+                }}
+                >
                   Skicka flash!
                 </Button>
               </div>
-            </div>)
+            </div>
+          )
         }
 
-      </ScrollArea >
-    </div >
+      </ScrollArea>
+    </div>
   )
 }
 

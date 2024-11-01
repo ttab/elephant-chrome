@@ -30,7 +30,7 @@ function calculateViewColSpans(
   content: ContentState[]
 ): Array<{ name: string, colSpan: number }> {
   let screen = screenDefinitions[screenDefinitions.length - 1]
-  const screens = screenDefinitions.filter(s => {
+  const screens = screenDefinitions.filter((s) => {
     return s.value > window.innerWidth
   }).reverse()
 
@@ -41,7 +41,7 @@ function calculateViewColSpans(
 
   // Extracts all current views based from components content as name/wanted minimum width
   const views = content
-    .filter(item => !!item.name) // Happens during init phase
+    .filter((item) => !!item.name) // Happens during init phase
     .map((item): { name: string, width: number } => {
       const name = item.name
       return {
@@ -61,7 +61,7 @@ function calculateViewColSpans(
   }, 0)
 
   // Calculate what colSpan each view is assigned
-  const widths = views.map(view => {
+  const widths = views.map((view) => {
     return {
       name: view.name,
       colSpan: Math.floor(12 * (view.width / usedSpace))

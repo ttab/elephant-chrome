@@ -44,9 +44,9 @@ export const Table = ({ type, header }: {
       void (async () => {
         const expiredDocuments = newDocuments?.filter(({ timestamp }) => Date.now() - timestamp > (60000 * 10))
 
-        if (event.event === 'document' &&
-            event.type === 'core/planning-item' &&
-            expiredDocuments.length
+        if (event.event === 'document'
+          && event.type === 'core/planning-item'
+          && expiredDocuments.length
         ) {
           setNewDocuments(newDocuments?.filter(({ id }) => !expiredDocuments.some(({ id: expiredId }) => expiredId === id)))
           await mutate()
@@ -63,7 +63,12 @@ export const Table = ({ type, header }: {
 
   if (error) {
     console.warn('Unable to fetch NewItems: ', error)
-    return <div>Failed to load: {error.message}</div>
+    return (
+      <div>
+        Failed to load:
+        {error.message}
+      </div>
+    )
   }
 
   if (!documents) return null
@@ -79,7 +84,7 @@ export const Table = ({ type, header }: {
               variant='icon'
               size='xs'
               onClick={() => setNewDocuments([])}
-              >
+            >
               <CheckCheck size={18} strokeWidth={1.75} />
             </Button>
           </TableCell>
@@ -112,8 +117,8 @@ export const Table = ({ type, header }: {
                   <TableCell className='flex-none first:pl-2 last:pr-2 sm:first:pl-6 sm:last:pr-6'>
                     <StatusIndicator visibility={visibility} />
                   </TableCell>
-                </>)
-              }
+                </>
+              )}
               <TableCell className='flex-1 w-[300px]'>
                 <Title title={title} slugline={slugline} />
 
@@ -135,7 +140,7 @@ export const Table = ({ type, header }: {
                       setNewDocuments(newDocuments.filter(({ id }) => id !== document?.uuid))
                     }
                   }}
-                  >
+                >
                   <Check size={18} strokeWidth={1.75} />
                 </Button>
               </TableCell>

@@ -41,7 +41,7 @@ describe('Use NavigationProvider', () => {
               <AppContent />
             </DocTrackerContext.Provider>
           </NavigationProvider>
-        </SessionProvider >
+        </SessionProvider>
       </IndexedDBProvider>
     )
 

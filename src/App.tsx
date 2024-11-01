@@ -19,9 +19,11 @@ export const App = (): JSX.Element => {
 
   if (status === 'unauthenticated' || !session || session.error) {
     const callbackUrl = window.location.href.replace(window.location.origin, '')
-    return <div className='relative flex h-screen flex-col'>
-      <Login callbackUrl={callbackUrl} />
-    </div>
+    return (
+      <div className='relative flex h-screen flex-col'>
+        <Login callbackUrl={callbackUrl} />
+      </div>
+    )
   }
 
 

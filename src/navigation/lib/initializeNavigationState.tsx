@@ -46,7 +46,7 @@ export function initializeNavigationState(): NavigationState {
           focus: null,
           active: viewId,
           content: [(
-            <ViewWrapper key={viewId} viewId={viewId} name={'Plannings'} colSpan={12}>
+            <ViewWrapper key={viewId} viewId={viewId} name='Plannings' colSpan={12}>
               <InititalView.component {...props} />
             </ViewWrapper>
           )]
@@ -64,7 +64,7 @@ export function initializeNavigationState(): NavigationState {
         focus: null,
         active: viewId,
         content: [(
-          <ViewWrapper key={viewId} viewId={viewId} name={'Error'} colSpan={12}>
+          <ViewWrapper key={viewId} viewId={viewId} name='Error' colSpan={12}>
             <InititalView.component {...props} />
           </ViewWrapper>
         )]

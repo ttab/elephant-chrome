@@ -25,8 +25,8 @@ vi.spyOn(hooks, 'useAwareness').mockReturnValue([
 describe('Awareness component', () => {
   it('renders children with proper className when visual is true', () => {
     render(
-      <Awareness name="test" visual={true}>
-        <div data-testid="child">Child Component</div>
+      <Awareness name='test' visual={true}>
+        <div data-testid='child'>Child Component</div>
       </Awareness>
     )
 
@@ -41,8 +41,8 @@ describe('Awareness component', () => {
 
   it('renders children without ring className when visual is false', () => {
     render(
-      <Awareness name="test" visual={false}>
-        <div data-testid="child">Child Component</div>
+      <Awareness name='test' visual={false}>
+        <div data-testid='child'>Child Component</div>
       </Awareness>
     )
 
@@ -58,8 +58,8 @@ describe('Awareness component', () => {
     const ref = createRef<() => void>()
 
     render(
-      <Awareness name="test" visual={true} ref={ref}>
-        <div data-testid="child">Child Component</div>
+      <Awareness name='test' visual={true} ref={ref}>
+        <div data-testid='child'>Child Component</div>
       </Awareness>
     );
 

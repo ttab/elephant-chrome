@@ -58,7 +58,7 @@ export const DateChanger = ({ type }: {
   }, [isActive, currentDate, steps, changeDate])
 
   return (
-    <div className="flex items-center">
+    <div className='flex items-center'>
       <Link
         to={type}
         props={{ from: decrementDate(currentDate, steps).toISOString().split('T')[0] }}
@@ -67,7 +67,7 @@ export const DateChanger = ({ type }: {
         <ChevronLeft
           strokeWidth={1.75}
           className='w-6 h-8 px-1 py-2 rounded cursor-pointer hover:bg-muted'
-      />
+        />
       </Link>
 
       <DatePicker date={currentDate} changeDate={changeDate} />
@@ -80,7 +80,7 @@ export const DateChanger = ({ type }: {
         <ChevronRight
           strokeWidth={1.75}
           className='w-6 h-8 px-1 py-2 rounded cursor-pointer hover:bg-muted'
-      />
+        />
       </Link>
     </div>
   )

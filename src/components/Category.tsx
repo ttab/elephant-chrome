@@ -16,8 +16,8 @@ export const Category = (): JSX.Element => {
   const [categories, setCategories] = useYValue<Block[] | undefined>('links.core/category')
 
   const setFocused = useRef<(value: boolean) => void>(null)
-  const selectedOptions = allCategories.filter(category =>
-    categories?.some(cat => cat.uuid === category.value)
+  const selectedOptions = allCategories.filter((category) =>
+    categories?.some((cat) => cat.uuid === category.value)
   )
 
   return (
@@ -28,7 +28,7 @@ export const Category = (): JSX.Element => {
         size='xs'
         options={allCategories}
         selectedOptions={selectedOptions}
-        placeholder={'Lägg till ämne'}
+        placeholder='Lägg till ämne'
         onOpenChange={(isOpen: boolean) => {
           if (setFocused?.current) {
             setFocused.current(isOpen)

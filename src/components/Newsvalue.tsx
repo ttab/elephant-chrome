@@ -9,7 +9,7 @@ export const Newsvalue = (): JSX.Element => {
 
   const setFocused = useRef<(value: boolean) => void>(null)
 
-  const selectedOptions = Newsvalues.filter(type => {
+  const selectedOptions = Newsvalues.filter((type) => {
     return type.value === newsvalue
   })
 
@@ -21,7 +21,7 @@ export const Newsvalue = (): JSX.Element => {
         max={1}
         size='sm'
         modal={true}
-        variant={'ghost'}
+        variant='ghost'
         options={Newsvalues}
         selectedOptions={selectedOptions}
         onOpenChange={(isOpen: boolean) => {
@@ -35,9 +35,8 @@ export const Newsvalue = (): JSX.Element => {
         hideInput
       >
         {SelectedIcon
-          ? <SelectedIcon { ...selectedOptions[0].iconProps } />
-          : selectedOptions?.[0]?.label
-          }
+          ? <SelectedIcon {...selectedOptions[0].iconProps} />
+          : selectedOptions?.[0]?.label}
       </ComboBox>
     </Awareness>
   )

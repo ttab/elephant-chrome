@@ -59,8 +59,8 @@ export const DatePicker = ({ date, changeDate, setDate, forceYear = false }: {
       <PopoverTrigger asChild>
 
         <Button
-          variant={'outline'}
-          size={'xs'}
+          variant='outline'
+          size='xs'
           className='justify-center text-left font-normal text-sm whitespace-nowrap px-2 text-muted-foreground'
         >
           <span className={cn(defaultDate({ forceYear }))}>{formattedDate}</span>
@@ -82,8 +82,7 @@ export const DatePicker = ({ date, changeDate, setDate, forceYear = false }: {
             if (setDate) {
               setDate(selectedDate)
             }
-          }
-          }
+          }}
           initialFocus
         />
       </PopoverContent>

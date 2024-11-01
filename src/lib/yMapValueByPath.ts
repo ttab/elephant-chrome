@@ -11,7 +11,7 @@ export function get(y: Y.Map<unknown> | undefined, path?: string): Y.Map<unknown
   const keys = path
     ?.replace(/(\[|\])/g, '.')
     .split('.')
-    .filter(x => x) || ''
+    .filter((x) => x) || ''
 
   let current = y
 
@@ -46,7 +46,7 @@ export function set(ymap: Y.Map<unknown>, path: string, value: unknown): void {
   const keys: string[] = path
     .replace(/(\[|\])/g, '.')
     .split('.')
-    .filter(x => x !== '')
+    .filter((x) => x !== '')
 
   let current: Y.Map<unknown> | Y.Array<unknown> | undefined = ymap
 

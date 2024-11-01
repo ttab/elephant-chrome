@@ -160,7 +160,7 @@ async function withPlannings<T extends Source>({ result, session, from, to, inde
 }): Promise<T[]> {
   if (!session) return result.hits
 
-  const eventIDs: string[] = result.hits?.map(hit => hit?._id)
+  const eventIDs: string[] = result.hits?.map((hit) => hit?._id)
   const statusResults = await Events.relatedPlanningSearch(indexUrl, session.accessToken, eventIDs, {
     size: 100,
     where: {
@@ -168,9 +168,9 @@ async function withPlannings<T extends Source>({ result, session, from, to, inde
       end: to
     }
   })
-  const hasPlannings = statusResults.hits?.map(hit => hit._source['document.rel.event.uuid'])
-  const hitsWithPlannings = result.hits.map(hit => {
-    const relatedItemIndex = hasPlannings.findIndex(item => item[0] === hit._id)
+  const hasPlannings = statusResults.hits?.map((hit) => hit._source['document.rel.event.uuid'])
+  const hitsWithPlannings = result.hits.map((hit) => {
+    const relatedItemIndex = hasPlannings.findIndex((item) => item[0] === hit._id)
     if (relatedItemIndex !== -1) {
       return {
         ...hit,

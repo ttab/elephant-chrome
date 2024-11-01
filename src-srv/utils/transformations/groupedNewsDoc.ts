@@ -82,7 +82,7 @@ export const fromGroupedNewsDoc = async (payload: EleDocumentResponse): Promise<
 export function group(objects: Block[], groupKey: keyof Block): EleBlockGroup {
   const groupedObjects: EleBlockGroup = {}
 
-  objects.forEach(object => {
+  objects.forEach((object) => {
     const key = object[groupKey] as string | undefined
     if (!key) return
 
@@ -116,7 +116,7 @@ export function group(objects: Block[], groupKey: keyof Block): EleBlockGroup {
 export function ungroup(obj: EleBlockGroup): Block[] {
   const result: Block[] = []
 
-  Object.keys(obj).forEach(key => {
+  Object.keys(obj).forEach((key) => {
     if (Array.isArray(obj[key])) {
       obj[key].forEach((item) => {
         // Ignore __inProgress items
@@ -141,7 +141,7 @@ export function ungroup(obj: EleBlockGroup): Block[] {
  *  Assert that we don't leave empty sluglines or descriptions on planning documents
  */
 function assertPlanningHasNoEmptyProperties(obj: Document | Block): void {
-  obj.meta = obj.meta.filter(block => {
+  obj.meta = obj.meta.filter((block) => {
     if (block.type === 'core/description' && !block.data.text) {
       return false
     } else if (block.type === 'tt/slugline' && !block.value) {
@@ -151,7 +151,7 @@ function assertPlanningHasNoEmptyProperties(obj: Document | Block): void {
     return true
   })
 
-  obj.meta.forEach(block => {
+  obj.meta.forEach((block) => {
     if (block.type === 'core/assignment') {
       assertPlanningHasNoEmptyProperties(block)
     }
@@ -163,9 +163,9 @@ function assertPlanningHasNoEmptyProperties(obj: Document | Block): void {
  *  Assert that slugline and both internal and public descriptions exist on planning documents
  */
 function assertPlanningHasNecessaryProperties(obj: Document | Block): void {
-  const internalDesc = obj.meta.find(item => item.type === 'core/description' && item.role === 'internal')
-  const publicDesc = obj.meta.find(item => item.type === 'core/description' && item.role === 'public')
-  const slugline = obj.meta.find(item => item.type === 'tt/slugline')
+  const internalDesc = obj.meta.find((item) => item.type === 'core/description' && item.role === 'internal')
+  const publicDesc = obj.meta.find((item) => item.type === 'core/description' && item.role === 'public')
+  const slugline = obj.meta.find((item) => item.type === 'tt/slugline')
 
   if (!slugline) {
     obj.meta.push(Block.create({
@@ -189,7 +189,7 @@ function assertPlanningHasNecessaryProperties(obj: Document | Block): void {
     }))
   }
 
-  obj.meta.forEach(block => {
+  obj.meta.forEach((block) => {
     if (block.type === 'core/assignment') {
       assertPlanningHasNecessaryProperties(block)
     }

@@ -32,7 +32,7 @@ export const AssignmentRow = ({ index, onSelect }: {
       ev.stopPropagation()
       onSelect()
     }}
-      >
+    >
       <AssignmentRowContent
         index={index}
         onSelect={onSelect}
@@ -117,7 +117,8 @@ const AssignmentRowContent = ({ index, onSelect }: {
             className='p-0 pr-2'
             onClick={<T extends HTMLElement>(event: MouseEvent<T>) => {
               onOpenArticleEvent(event)
-            }}>
+            }}
+          >
             <AssignmentType path={`meta.core/assignment[${index}].meta.core/assignment-type`} />
           </Button>
           <AssigneeAvatars assignees={authors.map((author) => author.title)} />
@@ -132,7 +133,8 @@ const AssignmentRowContent = ({ index, onSelect }: {
             {assTime ? <TimeDisplay date={assTime} /> : ''}
           </div>
 
-          {!inProgress &&
+          {!inProgress
+          && (
             <DotDropdownMenu
               items={menuItems}
             />
@@ -144,7 +146,8 @@ const AssignmentRowContent = ({ index, onSelect }: {
         <span className='leading-relaxed group-hover/assrow:underline'>{title}</span>
       </div>
 
-      {!!description &&
+      {!!description
+      && (
         <div className='font-light pl-10'>
           {description}
         </div>

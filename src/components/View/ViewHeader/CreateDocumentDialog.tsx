@@ -21,7 +21,7 @@ export const CreateDocumentDialog = ({ type, payload, createdDocumentIdRef, chil
 }>): JSX.Element | null => {
   const [document, setDocument] = useState<[string | undefined, Y.Doc | undefined]>([undefined, undefined])
 
-  useKeydownGlobal(evt => {
+  useKeydownGlobal((evt) => {
     if (evt.key === 'Escape') {
       setDocument([undefined, undefined])
     }
@@ -46,14 +46,16 @@ export const CreateDocumentDialog = ({ type, payload, createdDocumentIdRef, chil
                   payload,
                   createdDocumentIdRef
                 )
-              }
+              )
             }
-          })}
+          }
+        })}
       </DialogTrigger>
       <DialogDescription />
       <DialogTitle />
       <DialogContent className='p-0 rounded-md'>
-        {document !== null && Document &&
+        {document !== null && Document
+        && (
           <Document
             id={document[0]}
             document={document[1]}
@@ -63,7 +65,7 @@ export const CreateDocumentDialog = ({ type, payload, createdDocumentIdRef, chil
               setDocument([undefined, undefined])
             }}
           />
-        }
+        )}
       </DialogContent>
     </Dialog>
   )

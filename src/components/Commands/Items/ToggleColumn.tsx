@@ -15,7 +15,7 @@ export const ToggleColumn = (): JSX.Element | null => {
           setSearch('')
         }}
       >
-        <SlidersHorizontal size={18} strokeWidth={18} className="mr-2" />
+        <SlidersHorizontal size={18} strokeWidth={18} className='mr-2' />
         Kolumner
       </CommandItem>
     )
@@ -36,7 +36,7 @@ export const ToggleColumn = (): JSX.Element | null => {
               <CommandItem
                 key={column.id}
                 onSelect={() => column.toggleVisibility(!isSelected)}
-            >
+              >
                 <div
                   className={cn(
                     'mr-2 flex h-4 w-4 items-center justify-center rounded-sm border border-primary',
@@ -44,7 +44,7 @@ export const ToggleColumn = (): JSX.Element | null => {
                       ? 'bg-primary text-primary-foreground'
                       : 'opacity-50 [&_svg]:invisible'
                   )}
-              >
+                >
                   <CheckIcon size={18} strokeWidth={1.75} />
                 </div>
 

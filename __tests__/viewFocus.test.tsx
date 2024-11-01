@@ -27,7 +27,7 @@ describe('ViewFocus', () => {
     render(
       <SessionProvider>
         <NavigationProvider>
-          <ViewFocus viewId={'abc123'} />
+          <ViewFocus viewId='abc123' />
         </NavigationProvider>
       </SessionProvider>
     )

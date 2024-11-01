@@ -18,8 +18,7 @@ export const Description = ({ role }: {
         path={path}
         icon={role === 'internal'
           ? <Building size={18} strokeWidth={1.75} className='text-muted-foreground mr-4' />
-          : <Text size={18} strokeWidth={1.75} className='text-muted-foreground mr-4' />
-        }
+          : <Text size={18} strokeWidth={1.75} className='text-muted-foreground mr-4' />}
         placeholder={role === 'public' ? 'Publik beskrivning' : 'Internt meddelande'}
         className='text-sm'
       />

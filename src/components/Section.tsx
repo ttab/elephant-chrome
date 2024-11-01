@@ -18,7 +18,7 @@ export const Section = ({ onValidation }: FormProps): JSX.Element => {
   const [section, setSection] = useYValue<Block | undefined>(path)
 
   const setFocused = useRef<(value: boolean) => void>(null)
-  const selectedOptions = (allSections || [])?.filter(s => s.value === section?.uuid)
+  const selectedOptions = (allSections || [])?.filter((s) => s.value === section?.uuid)
 
   return (
     <Awareness name='Section' ref={setFocused}>

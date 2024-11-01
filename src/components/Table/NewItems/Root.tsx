@@ -7,9 +7,10 @@ export const Root = ({ children }: PropsWithChildren): JSX.Element | null => {
 
   return data?.user.sub
     ? (
-      <AwarenessDocument documentId={data?.user.sub}>
-        {children}
-      </AwarenessDocument>)
+        <AwarenessDocument documentId={data?.user.sub}>
+          {children}
+        </AwarenessDocument>
+      )
     : null
 }
 

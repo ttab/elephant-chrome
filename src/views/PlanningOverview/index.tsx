@@ -55,11 +55,11 @@ export const Plannings = (): JSX.Element => {
             <Commands />
           </TableCommandMenu>
 
-          <div className="flex flex-col h-screen">
+          <div className='flex flex-col h-screen'>
             <ViewHeader.Root>
               <ViewHeader.Title
-                title="Planeringar"
-                short="Planeringar"
+                title='Planeringar'
+                short='Planeringar'
                 icon={CalendarDaysIcon}
                 iconColor='#FF971E'
               />
