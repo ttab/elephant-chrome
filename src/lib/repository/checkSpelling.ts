@@ -4,7 +4,7 @@ interface ElephantSpellCheckResponse {
   misspelled: Array<{
     entries: Array<{
       text: string
-      suggestions: Array<{
+      suggestions?: Array<{
         text: string
       }>
     }>
@@ -17,7 +17,6 @@ export const checkSpelling = async (session: Session | null, spellcheckUrl: URL,
 }>>> => {
   try {
     const spellingUrl = new URL('/twirp/elephant.spell.Check/Text', spellcheckUrl.href)
-
     const response = await fetch(spellingUrl, {
       method: 'POST',
       mode: 'cors',
@@ -41,7 +40,7 @@ export const checkSpelling = async (session: Session | null, spellcheckUrl: URL,
             : misspelled.entries.map(entry => {
               return {
                 text: entry.text,
-                suggestions: entry.suggestions.map(s => s.text)
+                suggestions: (entry.suggestions || []).map(s => s.text)
               }
             })
         })

@@ -6,13 +6,7 @@ import { ContextMenuItem } from './ContextMenuItem'
 import { ContextMenuGroup } from './ContextMenuGroup'
 
 export const ContextMenu = (): JSX.Element => {
-  const { spelling } = useContextMenuHints() as {
-    spelling: {
-      text: string
-      suggestions: string[]
-      apply: (t: string) => void
-    }
-  }
+  const { spelling } = useContextMenuHints()
 
   return (
     <TextbitContextMenu.Root className='
