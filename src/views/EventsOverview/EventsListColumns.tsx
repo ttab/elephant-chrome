@@ -1,4 +1,4 @@
-/* eslint-disable react/prop-types */
+
 import { type ColumnDef } from '@tanstack/react-table'
 import { type Event } from '@/lib/index/schemas/event'
 import { Newsvalue } from '@/components/Table/Items/Newsvalue'
