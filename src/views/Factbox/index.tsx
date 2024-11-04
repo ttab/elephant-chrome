@@ -57,11 +57,9 @@ export const Factbox = (props: ViewProps & { document?: Y.Doc }): JSX.Element =>
   return (
     <>
       {documentId
-        ? (
-          <AwarenessDocument documentId={documentId} document={document} className='h-full'>
-            <Wrapper {...props} documentId={documentId} />
-          </AwarenessDocument>
-        )
+        ? <AwarenessDocument documentId={documentId} document={document} className='h-full'>
+          <Wrapper {...props} documentId={documentId} />
+        </AwarenessDocument>
         : <></>
       }
     </>

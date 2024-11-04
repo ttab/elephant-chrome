@@ -33,7 +33,6 @@ import { ContextMenu } from '@/components/Editor/ContextMenu'
 import { Gutter } from '@/components/Editor/Gutter'
 import { DropMarker } from '@/components/Editor/DropMarker'
 import { useSession } from 'next-auth/react'
-import { Repository } from '@/lib/repository'
 
 const meta: ViewMetadata = {
   name: 'Editor',
@@ -91,7 +90,6 @@ function EditorWrapper(props: ViewProps & {
     synced,
     user
   } = useCollaboration()
-
   return (
     <Textbit.Root plugins={plugins.map(initPlugin => initPlugin())} placeholders="multiple" className="h-screen max-h-screen flex flex-col">
       <ViewHeader.Root>
@@ -131,7 +129,7 @@ function EditorContent({ provider, user }: {
   user: AwarenessUserData
 }): JSX.Element {
   const { data: session } = useSession()
-  const { server: { spellcheckUrl } } = useRegistry()
+  const { spellchecker, locale } = useRegistry()
 
   const yjsEditor = useMemo(() => {
     if (!provider?.awareness) {
@@ -163,7 +161,10 @@ function EditorContent({ provider, user }: {
 
   return (
     <Textbit.Editable
-      onSpellcheck={async (texts) => await Repository.checkSpelling(session, spellcheckUrl, texts)}
+      onSpellcheck={async (texts) => {
+        return await spellchecker?.check(texts, locale, session?.accessToken ?? '') ?? []
+      }
+      }
       yjsEditor={yjsEditor}
       className="outline-none
         h-full
