@@ -1,4 +1,4 @@
-import { useQuery, useCollaboration, useYValue } from '@/hooks'
+import { useQuery, useCollaboration, useYValue, useRegistry } from '@/hooks'
 import { AwarenessDocument } from '@/components/AwarenessDocument'
 import { type ViewProps, type ViewMetadata } from '@/types/index'
 import { ViewHeader } from '@/components/View'
@@ -131,6 +131,9 @@ function EditorContent({ provider, user }: {
   provider: HocuspocusProvider
   user: AwarenessUserData
 }): JSX.Element {
+  const { data: session } = useSession()
+  const { spellchecker, locale } = useRegistry()
+
   const yjsEditor = useMemo(() => {
     if (!provider?.awareness) {
       return
@@ -168,7 +171,19 @@ function EditorContent({ provider, user }: {
         autoFocus={true}
         singleLine={true}
       />
-      <Textbit.Editable yjsEditor={yjsEditor} className="w-full outline-none h-full dark:text-slate-100">
+      <Textbit.Editable
+        yjsEditor={yjsEditor}
+        onSpellcheck={async (texts) => {
+          return await spellchecker?.check(texts, locale, session?.accessToken ?? '') ?? []
+        }}
+        className="outline-none
+          h-full
+          dark:text-slate-100
+          [&_[data-spelling-error]]:border-b-2
+          [&_[data-spelling-error]]:border-dotted
+          [&_[data-spelling-error]]:border-red-500
+        "
+      >
         <DropMarker />
 
         <Gutter>
