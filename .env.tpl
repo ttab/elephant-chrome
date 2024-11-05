@@ -22,6 +22,9 @@ WS_URL=https:// ...
 # Image resource
 CONTENT_API_URL=https:// ...
 
+# Spelling backend
+SPELLCHECK_URL=https:// ...
+
 # Server configuration
 PROTOCOL=http
 HOST=localhost

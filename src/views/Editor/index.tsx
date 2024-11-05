@@ -1,4 +1,4 @@
-import { useMemo, type PropsWithChildren, useEffect, useState } from 'react'
+import { useMemo, useEffect, useState } from 'react'
 import { AwarenessDocument, ViewHeader } from '@/components'
 import { Notes } from './components/Notes'
 import { PenBoxIcon } from '@ttab/elephant-ui/icons'
@@ -7,15 +7,7 @@ import { createEditor } from 'slate'
 import { YjsEditor, withCursors, withYHistory, withYjs } from '@slate-yjs/core'
 import type * as Y from 'yjs'
 
-import {
-  Textbit,
-  Menu,
-  Toolbar,
-  DropMarker,
-  useTextbit,
-  usePluginRegistry,
-  type PluginRegistryAction
-} from '@ttab/textbit'
+import { Textbit, useTextbit } from '@ttab/textbit'
 
 import { ImageSearchPlugin } from '../../plugins/ImageSearch'
 import { FactboxPlugin } from '../../plugins/Factboxes'
@@ -24,7 +16,8 @@ import { Bold, Italic, Link, Text, OrderedList, UnorderedList, TTVisual, Factbox
 
 import {
   useQuery,
-  useCollaboration
+  useCollaboration,
+  useRegistry
 } from '@/hooks'
 import { type ViewMetadata, type ViewProps } from '@/types'
 import { EditorHeader } from './EditorHeader'
@@ -34,6 +27,12 @@ import { type YXmlText } from 'node_modules/yjs/dist/src/internals'
 import { articleDocumentTemplate, type ArticlePayload } from '@/defaults/templates/articleDocumentTemplate'
 import { createDocument } from '@/lib/createYItem'
 import { Error } from '../Error'
+import { ContentMenu } from '@/components/Editor/ContentMenu'
+import { Toolbar } from '@/components/Editor/Toolbar'
+import { ContextMenu } from '@/components/Editor/ContextMenu'
+import { Gutter } from '@/components/Editor/Gutter'
+import { DropMarker } from '@/components/Editor/DropMarker'
+import { useSession } from 'next-auth/react'
 
 const meta: ViewMetadata = {
   name: 'Editor',
@@ -91,11 +90,11 @@ function EditorWrapper(props: ViewProps & {
     synced,
     user
   } = useCollaboration()
-
   return (
     <Textbit.Root plugins={plugins.map(initPlugin => initPlugin())} placeholders="multiple" className="h-screen max-h-screen flex flex-col">
       <ViewHeader.Root>
         <ViewHeader.Title title='Editor' icon={PenBoxIcon} />
+
         <ViewHeader.Content>
           <EditorHeader />
         </ViewHeader.Content>
@@ -105,12 +104,12 @@ function EditorWrapper(props: ViewProps & {
             <ViewHeader.RemoteUsers documentId={props.documentId} />
           }
         </ViewHeader.Action>
-
       </ViewHeader.Root>
 
       <div className='p-4'>
         <Notes />
       </div>
+
       <div className="flex-grow overflow-auto pr-12 max-w-screen-xl">
         {!!provider && synced
           ? <EditorContent provider={provider} user={user} />
@@ -129,6 +128,9 @@ function EditorContent({ provider, user }: {
   provider: HocuspocusProvider
   user: AwarenessUserData
 }): JSX.Element {
+  const { data: session } = useSession()
+  const { spellchecker, locale } = useRegistry()
+
   const yjsEditor = useMemo(() => {
     if (!provider?.awareness) {
       return
@@ -158,102 +160,32 @@ function EditorContent({ provider, user }: {
   }, [yjsEditor])
 
   return (
-    <Textbit.Editable yjsEditor={yjsEditor} className="outline-none h-full dark:text-slate-100">
-      <DropMarker className="h-[3px] rounded bg-blue-400/75 dark:bg-blue-500/75 data-[state='between']:block" />
-      <ToolbarMenu />
-      <Textbit.Gutter className="w-14">
+    <Textbit.Editable
+      onSpellcheck={async (texts) => {
+        return await spellchecker?.check(texts, locale, session?.accessToken ?? '') ?? []
+      }
+      }
+      yjsEditor={yjsEditor}
+      className="outline-none
+        h-full
+        dark:text-slate-100
+        [&_[data-spelling-error]]:border-b-2
+        [&_[data-spelling-error]]:border-dotted
+        [&_[data-spelling-error]]:border-red-500
+      "
+    >
+      <DropMarker />
+
+      <Gutter>
         <ContentMenu />
-      </Textbit.Gutter>
+      </Gutter>
+
+      <Toolbar />
+      <ContextMenu />
     </Textbit.Editable>
   )
 }
 
-function ToolbarMenu(): JSX.Element {
-  const { actions } = usePluginRegistry()
-  const leafActions = actions.filter(action => ['leaf'].includes(action.plugin.class))
-  const inlineActions = actions.filter(action => ['inline'].includes(action.plugin.class))
-
-  return (
-    <Toolbar.Root
-      className="flex min-w-12 select-none divide-x p-1 rounded-lg cursor-default shadow-xl border bg-white border-gray-100 dark:text-white dark:bg-slate-900 dark:border-slate-800 dark:divide-slate-800 dark:shadow-none"
-    >
-      <Toolbar.Group key="leafs" className="flex place-items-center pr-1 gap-1">
-        {leafActions.map(action => {
-          return <ToolbarItem action={action} key={`${action.plugin.name}`} />
-        })}
-      </Toolbar.Group>
-
-      <Toolbar.Group key="inlines" className="flex pl-1">
-        {inlineActions.map(action => {
-          return <ToolbarItem
-            action={action}
-            key={`${action.plugin.name}`}
-          />
-        })}
-      </Toolbar.Group>
-    </Toolbar.Root>
-  )
-}
-
-function ToolbarItem({ action }: { action: PluginRegistryAction }): JSX.Element {
-  return <Toolbar.Item
-    action={action}
-    className="p-2 w-8 h-8 flex place-items-center rounded border border-white hover:bg-gray-100 hover:border-gray-200 pointer data-[state='active']:bg-gray-100 data-[state='active']:border-gray-200 dark:border-gray-900 dark:hover:bg-slate-800 dark:hover:border-slate-700 dark:data-[state='active']:bg-gray-800 dark:data-[state='active']:border-slate-800 dark:hover:data-[state='active']:border-slate-700"
-  />
-}
-
-function ContentMenu(): JSX.Element {
-  const { actions } = usePluginRegistry()
-
-  const textActions = actions.filter(action => action.plugin.class === 'text')
-  const textblockActions = actions.filter(action => action.plugin.class === 'textblock')
-  const blockActions = actions.filter(action => action.plugin.class === 'block')
-
-  return (
-    <Menu.Root className="group">
-      <Menu.Trigger className="flex justify-center place-items-center center font-bold border w-8 h-8 ml-3 rounded-full cursor-default group-data-[state='open']:border-gray-200 hover:border-gray-400 dark:text-slate-200 dark:bg-slate-950 dark:border-slate-600 dark:group-data-[state='open']:border-slate-700 dark:hover:border-slate-500">⋮</Menu.Trigger>
-      <Menu.Content className="flex flex-col -mt-[0.75rem] ml-[2.25rem] border rounded-lg divide-y shadow-xl bg-white border-gray-100 dark:text-white dark:bg-slate-900 dark:border-slate-800 dark:divide-slate-800 dark:shadow-none">
-        {textActions.length > 0 &&
-          <ContentMenuGroup>
-            {textActions.map(action => <ContentMenuItem action={action} key={action.name} />)}
-          </ContentMenuGroup>
-        }
-
-        {textblockActions.length > 0 &&
-          <ContentMenuGroup>
-            {textblockActions.map(action => <ContentMenuItem action={action} key={action.name} />)}
-          </ContentMenuGroup>
-        }
-        {blockActions.length > 0 &&
-          <ContentMenuGroup>
-            {blockActions.map(action => <ContentMenuItem action={action} key={action.name} />)}
-          </ContentMenuGroup>
-        }
-      </Menu.Content>
-    </Menu.Root>
-  )
-}
-
-function ContentMenuGroup({ children }: PropsWithChildren): JSX.Element {
-  return (
-    <Menu.Group className="flex flex-col p-1 text-md">
-      {children}
-    </Menu.Group>
-  )
-}
-
-function ContentMenuItem({ action }: { action: PluginRegistryAction }): JSX.Element {
-  return (
-    <Menu.Item
-      action={action.name}
-      className="grid gap-x-5 py-[0.4rem] border group grid-cols-[1.5rem_minmax(max-content,_220px)_minmax(max-content,_90px)] rounded cursor-default border-white hover:border-gray-200 hover:bg-gray-100 dark:border-slate-900 dark:hover:border-slate-700 dark:hover:bg-slate-800"
-    >
-      <Menu.Icon className="flex justify-self-end self-center group-data-[state='active']:font-semibold" />
-      <Menu.Label className="self-center text-sm group-data-[state='active']:font-semibold" />
-      <Menu.Hotkey className="justify-self-end self-center pl-6 pr-3 text-sm opacity-70" />
-    </Menu.Item>
-  )
-}
 
 function Footer(): JSX.Element {
   const { words, characters } = useTextbit()
