@@ -15,6 +15,7 @@ import { TimeDisplay } from '../DataItem/TimeDisplay'
 import { dateToReadableDateTime } from '@/lib/datetime'
 import { useRegistry } from '@/hooks'
 import { type AssignmentData } from './types'
+import { TimeInput } from './TimeInput'
 interface ExecutionTimeItemsProps extends React.PropsWithChildren {
   handleOnSelect: ({ executionStart, executionEnd }: { executionStart: string | undefined, executionEnd: string | undefined }) => void
   className?: string
@@ -43,11 +44,11 @@ const testValid = (time: string): boolean => {
 
 export const ExecutionTimeMenu = ({ handleOnSelect, index, startDate }: ExecutionTimeItemsProps): JSX.Element => {
   const [open, setOpen] = useState(false)
-  const inputRef = useRef(null)
+  // const inputRef = useRef(null)
   const [data] = useYValue<AssignmentData>(`meta.core/assignment[${index}].data`)
   const [selected, setSelected] = useState<Date[]>([new Date(`${startDate}T00:00:00`)])
-  const [startTimeValue, setStartTimeValue] = useState<string>('00:00')
-  const [endTimeValue, setEndTimeValue] = useState<string>('23:59')
+  // const [startTimeValue, setStartTimeValue] = useState<string>('00:00')
+  // const [endTimeValue, setEndTimeValue] = useState<string>('23:59')
   const [startDateValue, setStartDateValue] = useState<string>()
   const [endDateValue, setEndDateValue] = useState<string>()
   const [hasEndTime, setHasEndTime] = useState<boolean>()
@@ -55,6 +56,8 @@ export const ExecutionTimeMenu = ({ handleOnSelect, index, startDate }: Executio
   const [mounted, setMounted] = useState(false)
   const [startTimeValid, setStartTimeValid] = useState(false)
   const [endTimeValid, setEndTimeValid] = useState(false)
+  let startTimeValue = '00:00'
+  let endTimeValue = '23:59'
 
   useEffect(() => {
     if (!mounted && data) {
@@ -66,7 +69,8 @@ export const ExecutionTimeMenu = ({ handleOnSelect, index, startDate }: Executio
           hour: '2-digit',
           minute: '2-digit'
         })
-        setStartTimeValue(startValue)
+        startTimeValue = startValue
+        // setStartTimeValue(startValue)
         setStartDateValue(data.start)
         setStartTimeValid(testValid(startValue))
 
@@ -89,7 +93,8 @@ export const ExecutionTimeMenu = ({ handleOnSelect, index, startDate }: Executio
           hour: '2-digit',
           minute: '2-digit'
         })
-        setEndTimeValue(endValue)
+        // setEndTimeValue(endValue)
+        endTimeValue = endValue
         setEndDateValue(data.end)
         setHasEndTime(true)
         setEndTimeValid(testValid(endValue))
@@ -114,9 +119,23 @@ export const ExecutionTimeMenu = ({ handleOnSelect, index, startDate }: Executio
     }
   }, [data, mounted])
 
-  const handleStartTimeChange: ChangeEventHandler<HTMLInputElement> = (e) => {
-    const time = e.target.value
-    setStartTimeValue(time)
+  // const handleStartTimeChange: ChangeEventHandler<HTMLInputElement> = (e) => {
+  //   const time = e.target.value
+  //   setStartTimeValue(time)
+  //   const valid = testValid(time)
+  //   setStartTimeValid(valid)
+  //   if (valid) {
+  //     const [hours, minutes] = time.split(':').map((str: string) => parseInt(str, 10))
+  //     const newSelectedDate = new Date(selected[0])
+  //     newSelectedDate.setHours(hours, minutes)
+  //     setStartDateValue(newSelectedDate.toISOString())
+  //   }
+  // }
+
+  const handleStartTimeChange = (time: string) => {
+    // const time = e.target.value
+    // setStartTimeValue(time)
+    startTimeValue = time
     const valid = testValid(time)
     setStartTimeValid(valid)
     if (valid) {
@@ -140,9 +159,18 @@ export const ExecutionTimeMenu = ({ handleOnSelect, index, startDate }: Executio
       setEndDateValue(newDate.toISOString())
     }
   }
-  const handleEndTimeChange: ChangeEventHandler<HTMLInputElement> = (e) => {
-    const time = e.target.value
-    setEndTimeValue(time)
+  // const handleEndTimeChange: ChangeEventHandler<HTMLInputElement> = (e) => {
+  //   const time = e.target.value
+  //   setEndTimeValue(time)
+  //   const valid = testValid(time)
+  //   setEndTimeValid(valid)
+  //   valid && handleEndTime(time)
+  // }
+
+  const handleEndTimeChange = (time: string): void => {
+    // const time = e.target.value
+    // setEndTimeValue(time)
+    endTimeValue = time
     const valid = testValid(time)
     setEndTimeValid(valid)
     valid && handleEndTime(time)
@@ -203,6 +231,15 @@ export const ExecutionTimeMenu = ({ handleOnSelect, index, startDate }: Executio
     handleEndTime(endTimeValue)
   }
 
+  const handleOnTimeSelect = () => {
+    if (hasEndTime ? (!startTimeValid || !endTimeValid) : !startTimeValid) {
+      handleOnSelect({
+        executionStart: startDateValue,
+        executionEnd: hasEndTime ? endDateValue : undefined
+      })
+    }
+  }
+
   const timePickType = timePickTypes[1]
 
   return (
@@ -230,7 +267,13 @@ export const ExecutionTimeMenu = ({ handleOnSelect, index, startDate }: Executio
               {startDateValue && dateToReadableDateTime(new Date(startDateValue), locale, timeZone)}
             </div>
             <div>
-              <Input
+              <TimeInput
+                defaultTime={startTimeValue}
+                handleOnChange={handleStartTimeChange}
+                handleOnSelect={handleOnTimeSelect}
+                setOpen={setOpen}
+                />
+              {/* <Input
                 type='time'
                 ref={inputRef}
                 value={startTimeValue}
@@ -252,7 +295,7 @@ export const ExecutionTimeMenu = ({ handleOnSelect, index, startDate }: Executio
                     setOpen(false)
                   }
                 }}
-              />
+              /> */}
             </div>
           </div>
           <div>
@@ -265,7 +308,13 @@ export const ExecutionTimeMenu = ({ handleOnSelect, index, startDate }: Executio
                 {(hasEndTime && endDateValue) && dateToReadableDateTime(new Date(endDateValue), locale, timeZone)}
               </div>
               <div>
-                <Input
+              <TimeInput
+                defaultTime={startTimeValue}
+                handleOnChange={handleEndTimeChange}
+                handleOnSelect={handleOnTimeSelect}
+                setOpen={setOpen}
+                />
+                {/* <Input
                   type='time'
                   ref={inputRef}
                   value={hasEndTime ? endTimeValue : ''}
@@ -288,7 +337,7 @@ export const ExecutionTimeMenu = ({ handleOnSelect, index, startDate }: Executio
                       }
                     }
                   }}
-                />
+                /> */}
               </div>
             </div>
           </div>
