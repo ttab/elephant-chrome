@@ -1,11 +1,10 @@
 import * as Y from 'yjs'
+import { assignmentPlanningTemplate } from '../defaults/templates/assignmentPlanningTemplate'
 import { Block, type Document } from '@ttab/elephant-api/newsdoc'
-import { newsDocToYDoc } from '../../src-srv/utils/transformations/yjs/yDoc'
-import { assignmentPlanningTemplate } from './templates/assignmentPlanningTemplate'
 import { toYMap } from '../../src-srv/utils/transformations/lib/toYMap'
-import { type YBlock } from '@/shared/types'
 import { get } from './yMapValueByPath'
-import { group } from '../../src-srv/utils/transformations/lib/group'
+import { toGroupedNewsDoc, group } from '../../src-srv/utils/transformations/groupedNewsDoc'
+import { toYjsNewsDoc } from '../../src-srv/utils/transformations/yjsNewsDoc'
 
 export interface TemplatePayload {
   eventId?: string
@@ -16,28 +15,34 @@ export interface TemplatePayload {
 * General function to create a new document as Y.Doc from a template
 * @returns [string, Y.Doc]
 */
-export function createDocument(
+export function createDocument<T>(
   template: (
     documentId: string,
-    payload?: TemplatePayload
+    payload?: T
   ) => Document,
   inProgress?: boolean,
-  payload?: TemplatePayload
+  payload?: T,
+  createdDocumentIdRef?: React.MutableRefObject<string | undefined>
 ): [string, Y.Doc] {
   const documentId = crypto.randomUUID()
 
-  if (payload?.createdDocumentIdRef) {
-    payload.createdDocumentIdRef.current = documentId
+  // Set generated documentId to ref so that it can be
+  // accessed from creating component
+  if (createdDocumentIdRef) {
+    createdDocumentIdRef.current = documentId
   }
 
   const yDoc = new Y.Doc()
 
-  newsDocToYDoc(yDoc, {
-    version: 0n,
-    isMetaDocument: false,
-    mainDocument: '',
-    document: template(documentId, payload)
-  })
+  toYjsNewsDoc(
+    toGroupedNewsDoc({
+      version: 0n,
+      isMetaDocument: false,
+      mainDocument: '',
+      document: template(documentId, payload)
+    }),
+    yDoc
+  )
 
   if (inProgress) {
     const yRoot = yDoc.getMap('ele').get('root') as Y.Map<unknown>
@@ -69,7 +74,7 @@ export function appendAssignment({ document, inProgress, slugLine }: {
   const yAssignments = meta.get('core/assignment') as Y.Array<unknown>
 
   // Create new assignment from template
-  const assignment: YBlock = assignmentPlanningTemplate({
+  const assignment = assignmentPlanningTemplate({
     assignmentType: 'text',
     planningDate: get(meta, 'core/planning-item[0].data.start_date') as unknown as string,
     slugLine
@@ -77,6 +82,7 @@ export function appendAssignment({ document, inProgress, slugLine }: {
 
   // Append __inProgress if needed
   if (inProgress) {
+    // @ts-expect-error We need to override Block to add this property
     assignment.__inProgress = true
   }
 

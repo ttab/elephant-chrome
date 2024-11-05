@@ -2,6 +2,7 @@ import { type Block } from '@ttab/elephant-api/newsdoc'
 import type * as views from '@/views'
 import { type RpcError } from '@protobuf-ts/runtime-rpc'
 import { type LucideIcon } from '@ttab/elephant-ui/icons'
+import { type ArticlePayload } from '@/defaults/templates/articleDocumentTemplate'
 
 export enum NavigationActionType {
   SET = 'set',
@@ -77,10 +78,12 @@ export interface HistoryState {
 
 export interface ViewProps {
   id?: string | null
-  asCreateDialog?: boolean
+  asDialog?: boolean
   onDialogClose?: (id?: string, title?: string) => void
   onDocumentCreated?: () => void
+  from?: string
   className?: string
+  payload?: ArticlePayload
 }
 
 export type Theme = 'dark' | 'light' | 'system'

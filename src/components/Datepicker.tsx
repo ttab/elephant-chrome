@@ -1,6 +1,4 @@
-import { type Dispatch, type SetStateAction } from 'react'
-
-import { Calendar as CalendarIcon } from '@ttab/elephant-ui/icons'
+import { type Dispatch, type SetStateAction, type MouseEvent } from 'react'
 
 import {
   Button,
@@ -12,11 +10,13 @@ import {
 import { cn } from '@ttab/elephant-ui/utils'
 import { useRegistry } from '@/hooks'
 import { cva } from 'class-variance-authority'
+import { format } from 'date-fns'
+import { type ViewProps } from '../types'
 
-
-export const DatePicker = ({ date, setDate, forceYear = false }: {
+export const DatePicker = ({ date, changeDate, setDate, forceYear = false }: {
   date: Date
-  setDate: Dispatch<SetStateAction<Date>> | ((arg: Date) => void)
+  changeDate?: (event: MouseEvent<Element> | KeyboardEvent | undefined, props: ViewProps, target?: 'self') => void
+  setDate?: Dispatch<SetStateAction<Date>> | ((arg: Date) => void)
   forceYear?: boolean
 }): JSX.Element => {
   const { locale, timeZone } = useRegistry()
@@ -59,14 +59,10 @@ export const DatePicker = ({ date, setDate, forceYear = false }: {
       <PopoverTrigger asChild>
 
         <Button
-          variant={'ghost'}
-          className={cn(
-            'justify-center text-left font-normal h-9 whitespace-nowrap px-2',
-            !date && 'text-muted-foreground'
-          )}
+          variant={'outline'}
+          size={'xs'}
+          className='justify-center text-left font-normal text-sm whitespace-nowrap px-2 text-muted-foreground'
         >
-          <CalendarIcon size={18} strokeWidth={1.75} className='mr-3.5' />
-
           <span className={cn(defaultDate({ forceYear }))}>{formattedDate}</span>
           <span className={cn(longDate({ forceYear }))}>{longFormattedDate}</span>
         </Button>
@@ -76,7 +72,18 @@ export const DatePicker = ({ date, setDate, forceYear = false }: {
         <Calendar
           mode='single'
           selected={date}
-          onSelect={(selectedDate) => selectedDate && setDate(selectedDate)}
+          onSelect={(selectedDate) => {
+            if (!selectedDate) return
+
+            if (changeDate) {
+              changeDate(undefined, { from: format(selectedDate, 'yyyy-MM-dd') }, 'self')
+            }
+
+            if (setDate) {
+              setDate(selectedDate)
+            }
+          }
+          }
           initialFocus
         />
       </PopoverContent>

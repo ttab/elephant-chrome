@@ -1,24 +1,23 @@
 import { TextBox } from '@/components/ui'
 import { Button } from '@ttab/elephant-ui'
-import { MessageCircleMore } from '@ttab/elephant-ui/icons'
-import { cn } from '@ttab/elephant-ui/utils'
+import { Clock10Icon, MessageCircleMore, Tags } from '@ttab/elephant-ui/icons'
 import { AssignmentType } from '@/components/DataItem/AssignmentType'
 import { useYValue } from '@/hooks/useYValue'
-import { Assignees } from './AssignmentAssignees'
-import { AssignmentTime } from '@/components/AssignmentTime'
 import { useKeydownGlobal } from '@/hooks/useKeydownGlobal'
-import { type Block } from '@ttab/elephant-api/newsdoc'
+import { Assignees } from '@/components/Assignees'
+import { Title } from '@/components/Title'
+import { SluglineEditable } from '@/components/DataItem/SluglineEditable'
+import { Form } from '@/components/Form'
+import { type FormProps } from '@/components/Form/Root'
 
-export const Assignment = ({ index, onAbort, onClose, className }: {
+export const Assignment = ({ index, onAbort, onClose }: {
   index: number
   onClose: () => void
   onAbort?: () => void
   className?: string
-}): JSX.Element => {
+} & FormProps): JSX.Element => {
   const [assignment] = useYValue<boolean>(`meta.core/assignment[${index}]`)
   const [inProgress] = useYValue<boolean>(`meta.core/assignment[${index}].__inProgress`)
-  const [title] = useYValue<string | undefined>(`meta.core/assignment[${index}].title`)
-  const [slugLine] = useYValue<Block[] | undefined>(`meta.core/assignment[${index}].meta.tt/slugline[0].value`)
   const [assignmentType] = useYValue<string | undefined>(`meta.core/assignment[${index}].meta.core/assignment-type[0].value`)
 
   useKeydownGlobal((evt) => {
@@ -36,75 +35,71 @@ export const Assignment = ({ index, onAbort, onClose, className }: {
   }
 
   return (
-    <div className={cn('border rounded-md shadow-xl', className)}>
-      <div className="flex flex-col gap-6 p-6">
-        <TextBox
-          path={`meta.core/assignment[${index}].title`}
-          placeholder='Uppdragsrubrik'
-          className="font-semibold text-sm leading-5"
-          singleLine={true}
-          autoFocus={true}
+    <div className='flex flex-col rounded-md border shadow-xl -mx-1 -my-1 z-10 bg-background'>
+      <Form.Root asDialog={true}>
+        <Form.Content>
+          <Form.Title>
+            <Title
+              path={`meta.core/assignment[${index}].title`}
+              placeholder='Uppdragsrubrik'
+              autoFocus={true}
         />
-
-        {assignmentType === 'text' &&
+          </Form.Title>
           <TextBox
-            path={`meta.core/assignment[${index}].meta.tt/slugline[0].value`}
-            placeholder='Lägg till slug'
-            className="text-sm leading-4 px-0 opacity-80"
-            singleLine={true}
-          />
-        }
-
-        <TextBox
-          path={`meta.core/assignment[${index}].meta.core/description[0].data.text`}
-          placeholder='Internt meddelande'
-          icon={<MessageCircleMore
-            size={20}
-            strokeWidth={1.75}
-            className='p-0 text-muted-foreground'
+            path={`meta.core/assignment[${index}].meta.core/description[0].data.text`}
+            placeholder='Internt meddelande'
+            icon={<MessageCircleMore
+              size={18}
+              strokeWidth={1.75}
+              className='text-muted-foreground mr-4'
           />}
-          className="text-sm px-0 bg-gray"
         />
-      </div>
 
-      <div className='flex items-center justify-between border-t p-4'>
-        <div className='flex items-center justify-start gap-6'>
-          <AssignmentType
-            path={`meta.core/assignment[${index}].meta.core/assignment-type`}
-            editable={inProgress}
+          {assignmentType === 'text' &&
+            <Form.Group icon={Tags}>
+              <SluglineEditable
+                path={`meta.core/assignment[${index}].meta.tt/slugline[0].value`}
           />
-          <Assignees path={`meta.core/assignment[${index}].links.core/author`} />
-          <AssignmentTime
-            index={index}
-          />
-        </div>
+            </Form.Group>}
 
-        <div className='flex items-center justify-end gap-4'>
-          {inProgress && !!onAbort &&
-            <Button
-              variant="ghost"
-              onClick={(evt) => {
-                evt.preventDefault()
-                evt.stopPropagation()
-                onAbort()
-              }}>
-              Avbryt
-            </Button>
-          }
 
-          <Button
-            variant="outline"
-            disabled={!title || (assignmentType === 'text' && !slugLine)}
-            onClick={(evt) => {
-              evt.preventDefault()
-              evt.stopPropagation()
-              onClose()
-            }}
-          >
-            {inProgress ? 'Lägg till' : 'Stäng'}
-          </Button>
-        </div>
-      </div>
+          <Form.Group>
+            <AssignmentType
+              path={`meta.core/assignment[${index}].meta.core/assignment-type`}
+              editable={inProgress}
+            />
+            <Assignees
+              name='AssignmentAssignees'
+              path={`meta.core/assignment[${index}].links.core/author`}
+              placeholder='Lägg till uppdragstagare'
+              />
+            <Clock10Icon size={20} strokeWidth={1.75} />
+          </Form.Group>
+
+        </Form.Content>
+        <Form.Footer>
+          <Form.Submit onSubmit={onClose} onReset={onAbort}>
+            <div className='flex gap-2 justify-end pt-4'>
+              {inProgress && !!onAbort &&
+                <Button
+                  type='reset'
+                  variant='ghost'>
+                  Avbryt
+                </Button>
+
+                }
+              <Button
+                type='submit'
+                variant='outline'
+                className='whitespace-nowrap'
+                  >
+                {inProgress ? 'Lägg till' : 'Stäng'}
+              </Button>
+            </div>
+
+          </Form.Submit>
+        </Form.Footer>
+      </Form.Root>
     </div>
   )
 }

@@ -1,0 +1,6 @@
+export { articleDocumentTemplate as article } from './articleDocumentTemplate'
+export { flashDocumentTemplate as flash } from './flashDocumentTemplate'
+export { factboxDocumentTemplate as factbox } from './factboxDocumentTemplate'
+export { assignmentPlanningTemplate as assignment } from './assignmentPlanningTemplate'
+export { planningDocumentTemplate as planning } from './planningDocumentTemplate'
+export { eventDocumentTemplate as event } from './eventDocumentTemplate'

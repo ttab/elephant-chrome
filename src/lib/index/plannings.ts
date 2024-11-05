@@ -7,6 +7,7 @@ interface SearchPlanningParams {
   where?: {
     start?: string | Date
     end?: string | Date
+    text?: string
   }
   sort?: {
     start?: 'asc' | 'desc'
@@ -29,19 +30,43 @@ const search = async (endpoint: URL, accessToken: string, params?: SearchPlannin
 
   sort.push({ 'document.meta.core_newsvalue.value': 'desc' })
 
+  const textCriteria = !params?.where?.text
+    ? undefined
+    : {
+        bool: {
+          should: [
+            {
+              prefix: {
+                'document.title': {
+                  value: params.where.text,
+                  boost: 2,
+                  case_insensitive: true
+                }
+              }
+            },
+            {
+              prefix: {
+                'document.rel.section.title': {
+                  value: params.where.text,
+                  case_insensitive: true
+                }
+              }
+            }
+          ]
+        }
+      }
+
   const query = {
     query: {
       bool: {
-        must: [
-          {
-            range: {
-              'document.meta.core_planning_item.data.start_date': {
-                gte: start.toISOString(),
-                lte: end.toISOString()
-              }
+        must: [{
+          range: {
+            'document.meta.core_planning_item.data.start_date': {
+              gte: start.toISOString(),
+              lte: end.toISOString()
             }
           }
-        ]
+        }]
       }
     },
     _source: true,
@@ -50,6 +75,11 @@ const search = async (endpoint: URL, accessToken: string, params?: SearchPlannin
       'heads.usable.*'
     ],
     sort
+  }
+
+  if (textCriteria) {
+    // @ts-expect-error We don't have types for opensearch queries
+    query.query.bool.must.push(textCriteria)
   }
 
   return await searchIndex(

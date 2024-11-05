@@ -120,7 +120,7 @@ const FactboxContent = ({ factboxes = [], loading, message }: FactboxContentI): 
         <Button onClick={(event) => {
           const id = crypto.randomUUID()
           function onDocumentCreated(): void {}
-          openFactboxEditor(event, { id }, { onDocumentCreated })
+          openFactboxEditor(event, { id }, 'blank', { onDocumentCreated })
         }}>
           <PlusIcon size={18} strokeWidth={1.75} /> Ny
         </Button>
@@ -179,7 +179,8 @@ export const Factboxes = (): JSX.Element => {
           query: {
             prefix: {
               'document.content.core_text.data.text': {
-                value: inputValue
+                value: inputValue,
+                case_insensitive: true
               }
             }
           },

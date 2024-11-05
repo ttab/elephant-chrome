@@ -20,6 +20,7 @@ export const Newsvalue = (): JSX.Element => {
       <ComboBox
         max={1}
         size='sm'
+        modal={true}
         variant={'ghost'}
         options={Newsvalues}
         selectedOptions={selectedOptions}

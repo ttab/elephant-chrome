@@ -1,14 +1,27 @@
 import { type ViewProps } from '@/types'
 
-
-// FIX ME: ViewProps has transformed and is not longer only string or scalar values
-// It contains functions that can not be serialized to a query string
 export type ToQueryStringProps = Record<string, string> | Omit<ViewProps, 'id'> | undefined
 
+function isScalar(value: unknown): boolean {
+  return ['string', 'number', 'boolean'].includes(typeof value)
+}
+
+// We only want to include props that can be represented as a string in the query string
 export function toQueryString(obj: ToQueryStringProps): string {
   if (!obj || Object.keys(obj).length === 0) {
     return ''
   }
 
-  return `?${new URLSearchParams(obj as Record<string, string>).toString()}`
+  const scalarObj: Record<string, string> = {}
+
+  for (const key in obj) {
+    if (Object.prototype.hasOwnProperty.call(obj, key)) {
+      const value = (obj as Record<string, unknown>)[key]
+      if (isScalar(value)) {
+        scalarObj[key] = String(value)
+      }
+    }
+  }
+
+  return `?${new URLSearchParams(scalarObj).toString()}`
 }

@@ -23,7 +23,7 @@ const avatarVariants = cva('',
       },
       size: {
         xs: 'size-6 mr-1.5 font-normal text-xs',
-        sm: 'size-7 mr-2 font-normal text-xs',
+        sm: 'size-7 font-normal text-xs',
         lg: 'size-9 font-semibold text-md',
         xl: 'size-12 font-semibold text-md',
         default: 'size-8 font-semibold text-sm'

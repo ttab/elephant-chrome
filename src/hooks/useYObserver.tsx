@@ -20,7 +20,11 @@ interface YObserved {
   state: Block[]
   loading: boolean
 }
-
+/**
+ * Should not be used as it is replaced by useYValue().
+ *
+ * @deprecated
+ */
 export function useYObserver(name: string, path: string): YObserved {
   const forceUpdate = useForceUpdate()
 

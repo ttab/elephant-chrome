@@ -1,4 +1,4 @@
-import type { KeyboardEvent, MouseEvent } from 'react'
+import type { MouseEvent } from 'react'
 import {
   NavigationActionType,
   type NavigationAction,
@@ -10,18 +10,19 @@ import {
 import { toQueryString } from './toQueryString'
 import { minimumSpaceRequired } from '@/navigation/lib'
 
-interface LinkClick<T> {
-  event?: MouseEvent<T> | KeyboardEvent<T>
+interface LinkClick {
+  event?: MouseEvent<Element> | KeyboardEvent
   dispatch: React.Dispatch<NavigationAction>
   viewItem: ViewRegistryItem
   viewRegistry: ViewRegistry
   viewId: string
   props?: ViewProps
   origin: string
+  target?: 'self' | 'blank'
   onDocumentCreated?: () => void
 }
 
-export function handleLink<T>({
+export function handleLink({
   event,
   dispatch,
   viewItem,
@@ -29,8 +30,9 @@ export function handleLink<T>({
   props,
   viewId,
   origin,
+  target,
   onDocumentCreated
-}: LinkClick<T>): void {
+}: LinkClick): void {
   if (event?.ctrlKey || event?.metaKey) {
     return
   }
@@ -39,8 +41,7 @@ export function handleLink<T>({
 
   // Create next (wanted) content state
   // Beware, props can not be functions
-  const newContent: ContentState =
-  {
+  const newContent: ContentState = {
     props,
     viewId,
     name: viewItem.meta.name,
@@ -49,16 +50,18 @@ export function handleLink<T>({
 
   // If modifier is used, open furthest to the right
   // Otherwise open to the right of origin
+  const currentIndex = content.findIndex(c => c.viewId === origin)
+
   if (event?.shiftKey) {
     content.push(newContent)
+  } else if (target === 'self') {
+    content.splice(currentIndex - 1, 1, newContent)
   } else {
-    const currentIndex = content.findIndex(c => c.viewId === origin)
-
-    content.splice(currentIndex + 1)
-    content.push(newContent)
+    content.splice(currentIndex + 1, Infinity, newContent)
   }
 
   event?.preventDefault()
+  event?.stopPropagation()
 
 
   // Remove what does not fit

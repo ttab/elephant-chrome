@@ -1,28 +1,25 @@
 import { TextBox } from '@/components/ui'
 import { Validation } from './Validation'
+import { type FormProps } from './Form/Root'
 
 
-export const Title = ({ autoFocus, placeholder, onValidation }: {
+export const Title = ({ autoFocus, placeholder, path, className, onValidation }: FormProps & {
   autoFocus?: boolean
   placeholder: string
-  onValidation?: (block: string, label: string, value: string | undefined, reason: string) => boolean
+  path?: string
+  className?: string
 }): JSX.Element => (
-
-  <div className='flex-grow'>
+  <Validation
+    label='Titel'
+    path={path || 'root.title'}
+    block='title'
+    onValidation={onValidation}
+  >
     <TextBox
-      path='root.title'
+      path={path || 'root.title'}
       placeholder={placeholder}
-      className='font-bold text-lg leading-6'
+      className={className}
       autoFocus={!!autoFocus}
       singleLine={true}
-      />
-    {onValidation &&
-      <Validation
-        label='Titel'
-        path='root.title'
-        block='title'
-        onValidation={onValidation}
-      />
-    }
-  </div>
-)
+    />
+  </Validation>)

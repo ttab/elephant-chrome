@@ -5,7 +5,8 @@ import { useRepositoryEvents } from '@/hooks/useRepositoryEvents'
 import { Events } from '@/lib/events'
 import { CalendarDays, PlusIcon } from '@ttab/elephant-ui/icons'
 import { useSession } from 'next-auth/react'
-import { useCallback, useRef } from 'react'
+import { useRef } from 'react'
+import { NewItems } from '@/components/Table/NewItems'
 import useSWR from 'swr'
 
 export const PlanningTable = ({ eventId, eventTitle }: {
@@ -35,12 +36,6 @@ export const PlanningTable = ({ eventId, eventTitle }: {
     }))
   })
 
-  // Mutator function to update the planning table once a new planning is created
-  const mutator = useCallback(async (id: string, title: string): Promise<void> => {
-    const newData = [...(data || []), { title, uuid: id }]
-    await mutate(newData, { optimisticData: newData, revalidate: false })
-  }, [data, mutate])
-
   useRepositoryEvents('core/planning-item', (event) => {
     if (createdDocumentIdRef.current === event.uuid && event.type === 'document') {
       void (async () => {
@@ -58,19 +53,24 @@ export const PlanningTable = ({ eventId, eventTitle }: {
   }
 
   return (
-    <div className='flex flex-col gap-2 pt-4'>
+    <div className='pl-6'>
       <div className='flex flex-start pb-2'>
         <CreateDocumentDialog
           type='Planning'
           payload={{ eventId, eventTitle, createdDocumentIdRef }}
-          mutator={mutator}
+          createdDocumentIdRef={createdDocumentIdRef}
         >
           <a
             href='#'
             className='flex flex-start items-center text-sm gap-2 p-2 -ml-2 rounded-sm hover:bg-gray-100'
           >
-            <div className='bg-primary rounded-full text-white w-5 h-5 flex justify-center items-center'>
-              <PlusIcon size={14} strokeWidth={1.75} className='rounded-full' />
+            <div className='bg-primary rounded-full w-5 h-5 relative'>
+              <PlusIcon
+                size={15}
+                strokeWidth={2.25}
+                color='#FFFFFF'
+                className='absolute inset-0 m-auto'
+              />
             </div>
             Lägg till planering
           </a>
@@ -87,6 +87,9 @@ export const PlanningTable = ({ eventId, eventTitle }: {
             {planning.title}
           </a>
         </div>))}
+      <NewItems.Root>
+        <NewItems.List type='Planning' createdIdRef={createdDocumentIdRef} />
+      </NewItems.Root>
     </div>
   )
 }

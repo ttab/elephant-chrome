@@ -45,8 +45,18 @@ export default defineConfig(() => {
         awaitWriteFinish: true
       }
     },
+    optimizeDeps: {
+      include: ['date-fns']
+    },
     test: {
       include: ['__tests__/**/*.test.ts(x)?'],
+      deps: {
+        optimizer: {
+          web: {
+            include: ['date-fns']
+          }
+        }
+      },
       globals: true,
       setupFiles: ['./setupTests.ts'],
       environment: 'jsdom',
