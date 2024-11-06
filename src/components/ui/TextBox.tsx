@@ -126,7 +126,7 @@ const TextboxEditable = ({ provider, user, icon: Icon, content, singleLine }: {
                [&_[data-spelling-error]]:border-red-500`
             )}
           >
-            <ContextMenu />
+            <ContextMenu className='fooo z-[9999]' />
           </Textbit.Editable>
         </div>
       </div>
