@@ -4,9 +4,11 @@ import { useAuthors, useYValue } from '@/hooks'
 import { Block } from '@ttab/elephant-api/newsdoc'
 import { useRef } from 'react'
 import { Validation } from './Validation'
+import { type ValidateState } from '../types'
 
-export const Byline = ({ onValidation, name }: {
+export const Byline = ({ onValidation, validateStateRef, name }: {
   onValidation?: (block: string, label: string, value: string | undefined, reason: string) => boolean
+  validateStateRef: React.MutableRefObject<ValidateState>
   name?: string
 }): JSX.Element => {
   const allAuthors = useAuthors().map((_) => {
@@ -58,6 +60,7 @@ export const Byline = ({ onValidation, name }: {
           path={path}
           block='core/author'
           onValidation={onValidation}
+          validateStateRef={validateStateRef}
         />
       }
     </Awareness>

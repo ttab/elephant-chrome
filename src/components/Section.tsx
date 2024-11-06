@@ -6,7 +6,7 @@ import { useRef } from 'react'
 import { Validation } from './Validation'
 import { type FormProps } from './Form/Root'
 
-export const Section = ({ onValidation }: FormProps): JSX.Element => {
+export const Section = ({ onValidation, validateStateRef }: FormProps): JSX.Element => {
   const allSections = useSections().map((_) => {
     return {
       value: _.id,
@@ -27,6 +27,7 @@ export const Section = ({ onValidation }: FormProps): JSX.Element => {
         path={path}
         block='core/section[0]'
         onValidation={onValidation}
+        validateStateRef={validateStateRef}
       >
         <ComboBox
           max={1}

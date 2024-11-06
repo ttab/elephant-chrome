@@ -2,7 +2,7 @@ import React from 'react'
 import { type FormProps } from './Root'
 import { cva } from 'class-variance-authority'
 
-export const Content = ({ children, asDialog, onValidation }: FormProps): JSX.Element => {
+export const Content = ({ children, asDialog, onValidation, validateStateRef }: FormProps): JSX.Element => {
   const variants = cva('flex flex-col gap-4 items-start',
     {
       variants: {
@@ -19,7 +19,8 @@ export const Content = ({ children, asDialog, onValidation }: FormProps): JSX.El
         React.isValidElement<FormProps>(child)
           ? React.cloneElement(child, {
             asDialog,
-            onValidation
+            onValidation,
+            validateStateRef
           })
           : child
       )}
