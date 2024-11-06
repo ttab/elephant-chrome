@@ -1,4 +1,4 @@
-import { useCollaboration } from '@/hooks'
+import { useCollaboration, useRegistry } from '@/hooks'
 import { Bold, Italic, Text, OrderedList, UnorderedList } from '@ttab/textbit-plugins'
 import Textbit, { type TBText } from '@ttab/textbit'
 import { type HocuspocusProvider } from '@hocuspocus/provider'
@@ -10,6 +10,7 @@ import { type YXmlText } from 'node_modules/yjs/dist/src/internals'
 import { Toolbar } from '@/components/Editor/Toolbar'
 import { DropMarker } from '@/components/Editor/DropMarker'
 import { ContextMenu } from '@/components/Editor/ContextMenu'
+import { useSession } from 'next-auth/react'
 
 
 export const FlashEditor = ({ setTitle }: {
@@ -38,6 +39,9 @@ function EditorContent({ provider, user, setTitle }: {
   user: AwarenessUserData
   setTitle: (value: string | undefined) => void
 }): JSX.Element {
+  const { data: session } = useSession()
+  const { spellchecker, locale } = useRegistry()
+
   const yjsEditor = useMemo(() => {
     if (!provider?.awareness) {
       return
@@ -70,16 +74,28 @@ function EditorContent({ provider, user, setTitle }: {
     <div className='w-full px-6'>
       <Textbit.Editable
         yjsEditor={yjsEditor}
+        onSpellcheck={async (texts) => {
+          return await spellchecker?.check(texts, locale, session?.accessToken ?? '') ?? []
+        }}
         onChange={(value) => {
           // @ts-expect-error Textbit plugins needs to expose plugin types better
           const titleNode = value?.find(child => child.class === 'text' && child?.properties?.role === 'heading-1')
           setTitle(extractText(titleNode as TBText))
         }}
-        className="w-full outline-none h-full min-h-[20vh] max-h-[40vh] overflow-y-scroll dark:text-slate-100 py-5"
+        className="outline-none
+        h-full min-h-[20vh]
+        max-h-[40vh]
+        overflow-y-scroll
+        dark:text-slate-100
+        py-5
+        [&_[data-spelling-error]]:border-b-2
+        [&_[data-spelling-error]]:border-dotted
+        [&_[data-spelling-error]]:border-red-500
+        "
       >
         <DropMarker />
         <Toolbar />
-        <ContextMenu />
+        <ContextMenu className='fooo z-[9999]' />
       </Textbit.Editable>
     </div>
   )

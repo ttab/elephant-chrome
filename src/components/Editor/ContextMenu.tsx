@@ -4,12 +4,13 @@ import {
 } from '@ttab/textbit'
 import { ContextMenuItem } from './ContextMenuItem'
 import { ContextMenuGroup } from './ContextMenuGroup'
+import { cn } from '@ttab/elephant-ui/utils'
 
-export const ContextMenu = (): JSX.Element => {
+export const ContextMenu = ({ className }: { className?: string }): JSX.Element => {
   const { spelling } = useContextMenuHints()
 
   return (
-    <TextbitContextMenu.Root className='
+    <TextbitContextMenu.Root className={cn(`
       group
       flex
       flex-col
@@ -24,7 +25,7 @@ export const ContextMenu = (): JSX.Element => {
       dark:border-slate-800
       dark:divide-slate-800
       dark:shadow-none
-    '>
+      `, className)}>
       {!!spelling?.suggestions &&
         <ContextMenuGroup>
           <>
@@ -34,8 +35,11 @@ export const ContextMenu = (): JSX.Element => {
           </>
           <>
             {spelling.suggestions.map((suggestion) => (
-              <ContextMenuItem key={suggestion} apply={() => { spelling.apply(suggestion) }}>
-                {suggestion}
+              <ContextMenuItem key={suggestion.text} apply={() => { spelling.apply(suggestion.text) }}>
+                {suggestion.text}
+                {!!suggestion.description &&
+                  <span className="em text-muted-foreground text-xs max-w-60 pt-1">{suggestion.description}</span>
+                }
               </ContextMenuItem>
             ))}
           </>

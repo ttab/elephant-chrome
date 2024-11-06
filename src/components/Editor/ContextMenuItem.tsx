@@ -9,7 +9,7 @@ export const ContextMenuItem = ({ apply, children }: PropsWithChildren & {
       className='
         grid
         gap-x-5
-        py-[0.4rem]
+        p-[0.4rem]
         min-w-64
         text-sm
         group
