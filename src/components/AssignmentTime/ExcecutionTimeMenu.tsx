@@ -259,7 +259,7 @@ export const ExecutionTimeMenu = ({ handleOnSelect, index, startDate }: Executio
             selected={selected}
             weekStartsOn={1}
             onDayClick={handleDayClick}
-            initialFocus
+            // initialFocus
             className='p-0'
           />
           <div className='flex justify-between border-2 rounded-md border-slate-100'>
