@@ -74,7 +74,7 @@ export const Assignment = ({ index, onAbort, onClose }: {
               path={`meta.core/assignment[${index}].links.core/author`}
               placeholder='Lägg till uppdragstagare'
               />
-            <AssignmentTime  index={index}/>
+            <AssignmentTime index={index}/>
 
           </Form.Group>
 
