@@ -309,7 +309,7 @@ export const ExecutionTimeMenu = ({ handleOnSelect, index, startDate }: Executio
               </div>
               <div>
               <TimeInput
-                defaultTime={startTimeValue}
+                defaultTime={endTimeValue}
                 handleOnChange={handleEndTimeChange}
                 handleOnSelect={handleOnTimeSelect}
                 setOpen={setOpen}

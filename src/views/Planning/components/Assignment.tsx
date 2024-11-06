@@ -1,6 +1,6 @@
 import { TextBox } from '@/components/ui'
 import { Button } from '@ttab/elephant-ui'
-import { Clock10Icon, MessageCircleMore, Tags } from '@ttab/elephant-ui/icons'
+import { MessageCircleMore, Tags } from '@ttab/elephant-ui/icons'
 import { AssignmentType } from '@/components/DataItem/AssignmentType'
 import { useYValue } from '@/hooks/useYValue'
 import { useKeydownGlobal } from '@/hooks/useKeydownGlobal'
