@@ -8,11 +8,11 @@ interface TimeInpuProps {
   handleOnChange: (time: string) => void
   handleOnSelect: () => void
   setOpen: React.Dispatch<React.SetStateAction<boolean>>
-
+  disabled?: boolean
  }
 
 
-export const TimeInput = ({defaultTime, handleOnChange, handleOnSelect, setOpen}: TimeInpuProps) => {
+export const TimeInput = ({defaultTime, handleOnChange, handleOnSelect, setOpen, disabled=false}: TimeInpuProps) => {
   const inputRef = useRef(null)
   const [timeValue, setTimeValue] = useState<string>(defaultTime)
 
@@ -27,10 +27,11 @@ export const TimeInput = ({defaultTime, handleOnChange, handleOnSelect, setOpen}
     <Input
       type='time'
       ref={inputRef}
-      value={timeValue}
+      value={!disabled ? timeValue : ''}
       onChange={handleTimeChange}
       placeholder={'hh:mm ex 11:00'}
       className="h-9 border-none"
+      disabled={disabled}
       onKeyDown={(e) => {
         if (e.key === 'Escape') {
           setOpen(false)

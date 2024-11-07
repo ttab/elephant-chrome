@@ -123,19 +123,18 @@ export const AssignmentTime = ({ index }: {
   }
 
   return (
-    <ExecutionTimeMenu handleOnSelect={onExecutionTimeSelect} index={index} startDate={startDate} />
-    // (assignmentType && assignmentType === 'picture')
-    //   ? (<ExecutionTimeMenu handleOnSelect={onExecutionTimeSelect} index={index} startDate={startDate} />)
-    //   : (<TimeDeliveryMenu
-    //       handleOnSelect={handleOnSelect}
-    //       className='w-fit text-muted-foreground font-sans font-normal text-ellipsis px-2 h-7'
-    //       selectedOption={selectedOption}
-    //       index={index}
-    //   >
-    //     {selectedOption?.icon
-    //       ? <div className='flex flex-row p-1'><selectedOption.icon {...iconProps} className={cn('text-foreground', className)} /><div className='pl-1'>{selectedLabel}</div></div>
-    //       : <CalendarFoldIcon size={18} strokeWidth={1.75} className={'text-muted-foreground'} />
-    //     }
-    //   </TimeDeliveryMenu>)
+    (assignmentType && assignmentType === 'picture')
+      ? (<ExecutionTimeMenu handleOnSelect={onExecutionTimeSelect} index={index} startDate={startDate} />)
+      : (<TimeDeliveryMenu
+          handleOnSelect={handleOnSelect}
+          className='w-fit text-muted-foreground font-sans font-normal text-ellipsis px-2 h-7'
+          selectedOption={selectedOption}
+          index={index}
+      >
+        {selectedOption?.icon
+          ? <div className='flex flex-row p-1'><selectedOption.icon {...iconProps} className={cn('text-foreground', className)} /><div className='pl-1'>{selectedLabel}</div></div>
+          : <CalendarFoldIcon size={18} strokeWidth={1.75} className={'text-muted-foreground'} />
+        }
+      </TimeDeliveryMenu>)
   )
 }

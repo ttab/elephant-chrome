@@ -1,10 +1,9 @@
-import React, { useState, useRef, useEffect, type ChangeEventHandler } from 'react'
+import React, { useState, useEffect } from 'react'
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
   Calendar,
-  Input,
   type CalendarTypes,
   Button,
   Switch
@@ -44,24 +43,21 @@ const testValid = (time: string): boolean => {
 
 export const ExecutionTimeMenu = ({ handleOnSelect, index, startDate }: ExecutionTimeItemsProps): JSX.Element => {
   const [open, setOpen] = useState(false)
-  // const inputRef = useRef(null)
   const [data] = useYValue<AssignmentData>(`meta.core/assignment[${index}].data`)
-  const [selected, setSelected] = useState<Date[]>([new Date(`${startDate}T00:00:00`)])
-  // const [startTimeValue, setStartTimeValue] = useState<string>('00:00')
-  // const [endTimeValue, setEndTimeValue] = useState<string>('23:59')
-  const [startDateValue, setStartDateValue] = useState<string>()
-  const [endDateValue, setEndDateValue] = useState<string>()
+  const [selected, setSelected] = useState<CalendarTypes.DateRange | undefined>({from: new Date(`${startDate}T00:00:00`)})
+  const [startTimeValue, setStartTimeValue] = useState<string>('00:00')
+  const [endTimeValue, setEndTimeValue] = useState<string>('23:59')
+  const [startDateValue, setStartDateValue] = useState<string>('')
+  const [endDateValue, setEndDateValue] = useState<string>('')
   const [hasEndTime, setHasEndTime] = useState<boolean>()
   const { locale, timeZone } = useRegistry()
   const [mounted, setMounted] = useState(false)
   const [startTimeValid, setStartTimeValid] = useState(false)
   const [endTimeValid, setEndTimeValid] = useState(false)
-  let startTimeValue = '00:00'
-  let endTimeValue = '23:59'
 
   useEffect(() => {
     if (!mounted && data) {
-      const dates: Date[] = []
+      const savedDates: CalendarTypes.DateRange = {from: undefined,  to: undefined}
 
       if (data?.start) {
         const aDate = new Date(data.start.toString())
@@ -69,22 +65,13 @@ export const ExecutionTimeMenu = ({ handleOnSelect, index, startDate }: Executio
           hour: '2-digit',
           minute: '2-digit'
         })
-        startTimeValue = startValue
-        // setStartTimeValue(startValue)
+        setStartTimeValue(startValue)
         setStartDateValue(data.start)
         setStartTimeValid(testValid(startValue))
 
         const startDateObject = new Date(data.start)
-        const newStartDayWithTime = new Date(
-          startDateObject.getFullYear(),
-          startDateObject.getMonth(),
-          startDateObject.getDate(),
-          0,
-          0,
-          0,
-          0
-        )
-        dates.push(newStartDayWithTime)
+        const newStartDayWithTime = createDateWithTime(startDateObject, '00.00')
+        savedDates.from = newStartDayWithTime
       }
 
       if (data?.end) {
@@ -93,142 +80,95 @@ export const ExecutionTimeMenu = ({ handleOnSelect, index, startDate }: Executio
           hour: '2-digit',
           minute: '2-digit'
         })
-        // setEndTimeValue(endValue)
-        endTimeValue = endValue
+        setEndTimeValue(endValue)
         setEndDateValue(data.end)
         setHasEndTime(true)
         setEndTimeValid(testValid(endValue))
 
         const endDate = new Date(data.end)
-        const newEndDayWithTime = new Date(
-          endDate.getFullYear(),
-          endDate.getMonth(),
-          endDate.getDate(),
-          0,
-          0,
-          0,
-          0
-        )
-        if (dates.length === 1 && (dates[0].getTime() !== newEndDayWithTime.getTime())) {
-          dates.push(newEndDayWithTime)
-        }
+        const newEndDayWithTime = createDateWithTime(endDate, '00:00')
+        savedDates.to = newEndDayWithTime
       }
 
-      setSelected(dates)
+      setSelected(savedDates)
       setMounted(true)
     }
   }, [data, mounted])
 
-  // const handleStartTimeChange: ChangeEventHandler<HTMLInputElement> = (e) => {
-  //   const time = e.target.value
-  //   setStartTimeValue(time)
-  //   const valid = testValid(time)
-  //   setStartTimeValid(valid)
-  //   if (valid) {
-  //     const [hours, minutes] = time.split(':').map((str: string) => parseInt(str, 10))
-  //     const newSelectedDate = new Date(selected[0])
-  //     newSelectedDate.setHours(hours, minutes)
-  //     setStartDateValue(newSelectedDate.toISOString())
-  //   }
-  // }
+  const createDateWithTime = (date: Date, time: string) => {
+    const [hours, minutes] = time.split(':').map((str) => parseInt(str, 10))
+
+    return new Date(
+      date.getFullYear(),
+      date.getMonth(),
+      date.getDate(),
+      hours,
+      minutes
+    )
+  }
 
   const handleStartTimeChange = (time: string) => {
-    // const time = e.target.value
-    // setStartTimeValue(time)
-    startTimeValue = time
+    setStartTimeValue(time)
     const valid = testValid(time)
     setStartTimeValid(valid)
-    if (valid) {
+    if (valid && selected?.from) {
       const [hours, minutes] = time.split(':').map((str: string) => parseInt(str, 10))
-      const newSelectedDate = new Date(selected[0])
+      const newSelectedDate = new Date(selected.from)
       newSelectedDate.setHours(hours, minutes)
       setStartDateValue(newSelectedDate.toISOString())
     }
   }
 
-  const handleEndTime = (time: string): void => {
-    const [hours, minutes] = time.split(':').map((str: string) => parseInt(str, 10))
-
-    if (selected.length === 2) {
-      const newSelectedDate = new Date(selected[1])
-      newSelectedDate.setHours(hours, minutes)
-      setEndDateValue(newSelectedDate.toISOString())
-    } else {
-      const newDate = new Date(selected[0])
-      newDate.setHours(hours, minutes)
-      setEndDateValue(newDate.toISOString())
-    }
-  }
-  // const handleEndTimeChange: ChangeEventHandler<HTMLInputElement> = (e) => {
-  //   const time = e.target.value
-  //   setEndTimeValue(time)
-  //   const valid = testValid(time)
-  //   setEndTimeValid(valid)
-  //   valid && handleEndTime(time)
-  // }
-
   const handleEndTimeChange = (time: string): void => {
-    // const time = e.target.value
-    // setEndTimeValue(time)
-    endTimeValue = time
+    setEndDateValue(time)
     const valid = testValid(time)
     setEndTimeValid(valid)
-    valid && handleEndTime(time)
+    if (valid) {
+      const [hours, minutes] = time.split(':').map((str: string) => parseInt(str, 10))
+
+      if (selected?.to) {
+        const newSelectedDate = new Date(selected.to)
+        newSelectedDate.setHours(hours, minutes)
+        setEndDateValue(newSelectedDate.toISOString())
+      } else if (selected?.from) {
+        const newDate = new Date(selected.from)
+        newDate.setHours(hours, minutes)
+        setEndDateValue(newDate.toISOString())
+      }
+    }
   }
 
-  const handleDayClick: CalendarTypes.DayClickEventHandler = (day, modifiers) => {
-    const selectedDays = [...selected]
-
-    if (modifiers.selected) {
-      const index = selected.findIndex((d) => d.getTime() === day.getTime())
-      selectedDays.splice(index, 1)
-    } else {
-      selectedDays.push(day)
-    }
-    selectedDays.sort((aDay, bDay) => aDay.getTime() - bDay.getTime())
-
-    if (selectedDays.length > 0) {
-      const endDate = selectedDays.length === 2 ? new Date(selectedDays[1]) : new Date(selectedDays[0])
-      const [hours, minutes] = endTimeValue.split(':').map((str) => parseInt(str, 10))
-      const newDayWithTime = new Date(
-        endDate.getFullYear(),
-        endDate.getMonth(),
-        endDate.getDate(),
-        hours,
-        minutes
-      )
-      setEndDateValue(newDayWithTime.toISOString())
-
-      const startDate = new Date(selectedDays[0])
-      const [startHours, startMinutes] = startTimeValue.split(':').map((str) => parseInt(str, 10))
-
-      const newStartDayWithTime = new Date(
-        startDate.getFullYear(),
-        startDate.getMonth(),
-        startDate.getDate(),
-        startHours,
-        startMinutes
-      )
-      setStartDateValue(newStartDayWithTime.toISOString())
-    } else {
-      setEndDateValue('')
-    }
-
-    if (selectedDays.length === 2) {
-      setHasEndTime(true)
-    }
-
+  const handleOnSelectDay: CalendarTypes.OnSelectHandler<CalendarTypes.DateRange | undefined> = (selectedDays, triggerDate, modifiers) => {
     setSelected(selectedDays)
-  }
+    if (selectedDays?.from) {
+      const startDate = new Date(selectedDays.from)
+      const newStartDayWithTime = createDateWithTime(startDate, startTimeValue)
+      const endDateValueWithTime = createDateWithTime(startDate, endTimeValue)
+      setStartDateValue(newStartDayWithTime.toISOString())
+      setEndDateValue(endDateValueWithTime.toISOString())
+    }
 
+    if (selectedDays?.to && selectedDays.from) {
+      const endDate = new Date(selectedDays.to)
+      const EndDayWithTime = createDateWithTime(endDate, endTimeValue)
+      setEndDateValue(EndDayWithTime.toISOString())
+      const startDate = new Date(selectedDays.from)
+      const startDayWithTime = createDateWithTime(startDate, startTimeValue)
+      setStartDateValue(startDayWithTime.toISOString())
+    }
+
+    console.log('selected', selectedDays)
+    console.log('triggerDate', triggerDate)
+    console.log('modifiers', modifiers)
+  }
 
   const handleOpenChange = (isOpen: boolean): void => {
     setOpen(isOpen)
   }
 
-  const handleCheckedChange = (checked: boolean): void => {
+  const handleHasEndTime = (checked: boolean): void => {
     setHasEndTime(checked)
-    handleEndTime(endTimeValue)
+    handleEndTimeChange(endTimeValue)
   }
 
   const handleOnTimeSelect = () => {
@@ -247,19 +187,17 @@ export const ExecutionTimeMenu = ({ handleOnSelect, index, startDate }: Executio
       <PopoverTrigger asChild>
         <div className='flex flex-row space-x-2 items-center align-middle'>
           {timePickType.icon && <timePickType.icon {...timePickType.iconProps} />}
-          <DateLabel fromDate={data?.start} toDate={data?.end} />
+          <DateLabel fromDate={startDateValue} toDate={endDateValue} />
         </div>
       </PopoverTrigger>
       <PopoverContent>
         <div>
           <Calendar
-            mode='multiple'
-            min={1}
-            max={2}
+            mode="range"
+            required={false}
             selected={selected}
             weekStartsOn={1}
-            onDayClick={handleDayClick}
-            // initialFocus
+            onSelect={handleOnSelectDay}
             className='p-0'
           />
           <div className='flex justify-between border-2 rounded-md border-slate-100'>
@@ -272,35 +210,12 @@ export const ExecutionTimeMenu = ({ handleOnSelect, index, startDate }: Executio
                 handleOnChange={handleStartTimeChange}
                 handleOnSelect={handleOnTimeSelect}
                 setOpen={setOpen}
-                />
-              {/* <Input
-                type='time'
-                ref={inputRef}
-                value={startTimeValue}
-                onChange={handleStartTimeChange}
-                placeholder={'hh:mm ex 11:00'}
-                className="h-9 border-none"
-                onKeyDown={(e) => {
-                  if (e.key === 'Escape') {
-                    setOpen(false)
-                  }
-                  if (e.key === 'Enter') {
-                    e.preventDefault()
-                    if (hasEndTime ? (!startTimeValid || !endTimeValid) : !startTimeValid) {
-                      handleOnSelect({
-                        executionStart: startDateValue,
-                        executionEnd: hasEndTime ? endDateValue : undefined
-                      })
-                    }
-                    setOpen(false)
-                  }
-                }}
-              /> */}
+              />
             </div>
           </div>
           <div>
             <div className='pt-2 pb-2'>
-              <Switch onCheckedChange={handleCheckedChange} checked={hasEndTime}>Från-till</Switch>
+              <Switch onCheckedChange={handleHasEndTime} checked={hasEndTime}>Från-till</Switch>
             </div>
 
             <div className='flex justify-between border-2 rounded-md border-slate-100'>
@@ -308,36 +223,13 @@ export const ExecutionTimeMenu = ({ handleOnSelect, index, startDate }: Executio
                 {(hasEndTime && endDateValue) && dateToReadableDateTime(new Date(endDateValue), locale, timeZone)}
               </div>
               <div>
-              <TimeInput
-                defaultTime={endTimeValue}
-                handleOnChange={handleEndTimeChange}
-                handleOnSelect={handleOnTimeSelect}
-                setOpen={setOpen}
-                />
-                {/* <Input
-                  type='time'
-                  ref={inputRef}
-                  value={hasEndTime ? endTimeValue : ''}
-                  onChange={handleEndTimeChange}
+                <TimeInput
+                  defaultTime={endTimeValue}
+                  handleOnChange={handleEndTimeChange}
+                  handleOnSelect={handleOnTimeSelect}
+                  setOpen={setOpen}
                   disabled={!hasEndTime}
-                  placeholder={'hh:mm ex 11:00'}
-                  className="h-9 border-none"
-                  onKeyDown={(e) => {
-                    if (e.key === 'Escape') {
-                      setOpen(false)
-                    }
-                    if (e.key === 'Enter') {
-                      e.preventDefault()
-                      if (startTimeValid && endTimeValid) {
-                        handleOnSelect({
-                          executionStart: startDateValue,
-                          executionEnd: hasEndTime ? endDateValue : undefined
-                        })
-                        setOpen(false)
-                      }
-                    }
-                  }}
-                /> */}
+                />
               </div>
             </div>
           </div>
@@ -353,7 +245,7 @@ export const ExecutionTimeMenu = ({ handleOnSelect, index, startDate }: Executio
             </Button>
             <Button
               variant="outline"
-              disabled={ hasEndTime ? (!startTimeValid || !endTimeValid) : !startTimeValid}
+              disabled={hasEndTime ? (!startTimeValid || !endTimeValid) : !startTimeValid}
               onClick={(evt) => {
                 evt.preventDefault()
                 evt.stopPropagation()
