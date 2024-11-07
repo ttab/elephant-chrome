@@ -78,6 +78,7 @@ export const authConfig: AuthConfig = {
       // First time user is logging in
       if (account && user) {
         if (account.access_token) {
+          // @ts-expect-error sub exists
           user.sub = decodeJwt(account.access_token).sub
         }
         return {
