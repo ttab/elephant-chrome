@@ -3,7 +3,7 @@ import { Validation } from './Validation'
 import { type FormProps } from './Form/Root'
 
 
-export const Title = ({ autoFocus, placeholder, path, className, onValidation }: FormProps & {
+export const Title = ({ autoFocus, placeholder, path, className, onValidation, validateStateRef }: FormProps & {
   autoFocus?: boolean
   placeholder: string
   path?: string
@@ -14,6 +14,7 @@ export const Title = ({ autoFocus, placeholder, path, className, onValidation }:
     path={path || 'root.title'}
     block='title'
     onValidation={onValidation}
+    validateStateRef={validateStateRef}
   >
     <TextBox
       path={path || 'root.title'}

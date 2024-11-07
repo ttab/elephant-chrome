@@ -42,7 +42,6 @@ export const Root = ({ children, asDialog = false, className }: PropsWithChildre
   }
 
   return (
-
     <section>
       <ValidationAlert validateStateRef={validateStateRef} />
       <div className={cn(formRootStyle, className)}>
