@@ -100,7 +100,7 @@ const TextboxEditable = ({ provider, user, icon: Icon, content, singleLine }: {
   }, [yjsEditor])
   return (
     <div className='flex flex-col space-y-2'>
-      <div className='flex space-x-2 items-baseline'>
+      <div className='flex space-x-2'>
         {Icon && <div className='pt-1.5'>
           {Icon}
         </div>}
