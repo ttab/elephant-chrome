@@ -41,7 +41,7 @@ const testValid = (time: string): boolean => {
   return (/^([0-1]?[0-9]|2[0-4]):([0-5][0-9])(:[0-5][0-9])?$/.test(time))
 }
 
-const createDateWithTime = (date: Date, time: string) => {
+const createDateWithTime = (date: Date, time: string): Date => {
   const [hours, minutes] = time.split(':').map((str) => parseInt(str, 10))
   return new Date(
     date.getFullYear(),
@@ -55,7 +55,7 @@ const createDateWithTime = (date: Date, time: string) => {
 export const ExecutionTimeMenu = ({ handleOnSelect, index, startDate }: ExecutionTimeItemsProps): JSX.Element => {
   const [open, setOpen] = useState(false)
   const [data] = useYValue<AssignmentData>(`meta.core/assignment[${index}].data`)
-  const [selected, setSelected] = useState<CalendarTypes.DateRange | undefined>({from: new Date(`${startDate}T00:00:00`)})
+  const [selected, setSelected] = useState<CalendarTypes.DateRange | undefined>({ from: new Date(`${startDate}T00:00:00`) })
   const [startTimeValue, setStartTimeValue] = useState<string>('00:00')
   const [endTimeValue, setEndTimeValue] = useState<string>('23:59')
   const [startDateValue, setStartDateValue] = useState<string>('')
@@ -68,7 +68,7 @@ export const ExecutionTimeMenu = ({ handleOnSelect, index, startDate }: Executio
 
   useEffect(() => {
     if (!mounted && data) {
-      const savedDates: CalendarTypes.DateRange = {from: undefined,  to: undefined}
+      const savedDates: CalendarTypes.DateRange = { from: undefined, to: undefined }
 
       if (data?.start) {
         const aDate = new Date(data.start.toString())
@@ -106,7 +106,7 @@ export const ExecutionTimeMenu = ({ handleOnSelect, index, startDate }: Executio
     }
   }, [data, mounted])
 
-  const handleStartTimeChange = (time: string) => {
+  const handleStartTimeChange = (time: string): void => {
     setStartTimeValue(time)
     const valid = testValid(time)
     setStartTimeValid(valid)
@@ -167,7 +167,7 @@ export const ExecutionTimeMenu = ({ handleOnSelect, index, startDate }: Executio
     handleEndTimeChange(endTimeValue)
   }
 
-  const handleOnTimeSelect = () => {
+  const handleOnTimeSelect = (): void => {
     if (hasEndTime ? (!startTimeValid || !endTimeValid) : !startTimeValid) {
       handleOnSelect({
         executionStart: startDateValue,

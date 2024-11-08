@@ -1,4 +1,4 @@
-import { useRef, useState, type ChangeEventHandler  } from 'react'
+import { useRef, useState, type ChangeEventHandler } from 'react'
 import {
   Input
 } from '@ttab/elephant-ui'
@@ -9,10 +9,9 @@ interface TimeInpuProps {
   handleOnSelect: () => void
   setOpen: React.Dispatch<React.SetStateAction<boolean>>
   disabled?: boolean
- }
+}
 
-
-export const TimeInput = ({defaultTime, handleOnChange, handleOnSelect, setOpen, disabled=false}: TimeInpuProps) => {
+export const TimeInput = ({ defaultTime, handleOnChange, handleOnSelect, setOpen, disabled = false }: TimeInpuProps): JSX.Element => {
   const inputRef = useRef(null)
   const [timeValue, setTimeValue] = useState<string>(defaultTime)
 
@@ -39,12 +38,6 @@ export const TimeInput = ({defaultTime, handleOnChange, handleOnSelect, setOpen,
         if (e.key === 'Enter') {
           e.preventDefault()
           handleOnSelect()
-          // if (hasEndTime ? (!startTimeValid || !endTimeValid) : !startTimeValid) {
-          //   handleOnSelect({
-          //     executionStart: startDateValue,
-          //     executionEnd: hasEndTime ? endDateValue : undefined
-          //   })
-          // }
           setOpen(false)
         }
       }}

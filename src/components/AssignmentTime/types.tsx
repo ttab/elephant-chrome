@@ -1,4 +1,4 @@
-import { DefaultValueOption } from '@ttab/elephant-ui'
+import { type DefaultValueOption } from '@ttab/elephant-ui'
 export interface AssignmentValueOption extends DefaultValueOption {
   slots?: string[]
   median?: string
