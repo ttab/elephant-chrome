@@ -11,7 +11,7 @@ import {
 import { timePickTypes } from './constants'
 import { useYValue } from '@/hooks/useYValue'
 import { TimeDisplay } from '../DataItem/TimeDisplay'
-import { dateToReadableDateTime, isSameDay } from '@/lib/datetime'
+import { dateToReadableDateTime } from '@/lib/datetime'
 import { useRegistry } from '@/hooks'
 import { type AssignmentData } from './types'
 import { TimeInput } from './TimeInput'
@@ -134,27 +134,27 @@ export const ExecutionTimeMenu = ({ handleOnSelect, index, startDate }: Executio
         newDate.setHours(hours, minutes)
         setEndDateValue(newDate.toISOString())
       }
+      console.log('XXX endDate3', endDateValue)
     }
   }
 
   const handleOnSelectDay: CalendarTypes.OnSelectHandler<CalendarTypes.DateRange | undefined> = (selectedDays) => {
     setSelected(selectedDays)
-    if (selectedDays?.from) {
-      const startDate = new Date(selectedDays.from)
-      const newStartDayWithTime = createDateWithTime(startDate, startTimeValue)
-      const endDateValueWithTime = createDateWithTime(startDate, endTimeValue)
+    if (selectedDays?.from && !selectedDays.to) {
+      const newStartDayWithTime = createDateWithTime(selectedDays.from, startTimeValue)
+      const endDateValueWithTime = createDateWithTime(selectedDays.from, endTimeValue)
       setStartDateValue(newStartDayWithTime.toISOString())
       setEndDateValue(endDateValueWithTime.toISOString())
     }
 
     if (selectedDays?.to && selectedDays.from) {
-      const endDate = new Date(selectedDays.to)
-      const EndDayWithTime = createDateWithTime(endDate, endTimeValue)
-      setEndDateValue(EndDayWithTime.toISOString())
-      const startDate = new Date(selectedDays.from)
-      const startDayWithTime = createDateWithTime(startDate, startTimeValue)
+      const endDayWithTime = createDateWithTime(selectedDays.to, endTimeValue)
+      setEndDateValue(endDayWithTime.toISOString())
+      console.log('XXX endDate2', endDateValue)
+      const startDayWithTime = createDateWithTime(selectedDays.from, startTimeValue)
       setStartDateValue(startDayWithTime.toISOString())
-      !isSameDay(selectedDays.from, selectedDays.to) || setHasEndTime(true)
+      setEndTimeValid( testValid(endTimeValue))
+      setHasEndTime(true)
     }
   }
 
