@@ -1,4 +1,4 @@
-import { dateToReadableTime, dateToReadableDateTime } from "@/lib/datetime"
+import { dateToReadableTime, dateToReadableDateTime } from '@/lib/datetime'
 
 const isSameDate = (fromDate: string, toDate: string): boolean => {
   const f = new Date(fromDate)
@@ -23,7 +23,7 @@ export const FromToDateTimeLabel = ({ fromDate, toDate, locale, timeZone }: { fr
 }
 
 export const FromDateTimeLabel = ({ fromDate, locale, timeZone }: { fromDate?: string | undefined, locale: string, timeZone: string }): JSX.Element => {
-  if (!fromDate ) {
+  if (!fromDate) {
     return <></>
   }
   const from = dateToReadableDateTime(new Date(fromDate), locale, timeZone)
