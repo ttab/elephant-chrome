@@ -183,3 +183,11 @@ export function dateInTimestampOrShortMonthDayTimestamp(date: string, locale: st
     return dateFormatter.format(inputDate)
   }
 }
+
+export function dateToReadableDay(date: Date, locale: string, timeZone: string): string {
+  return new Intl.DateTimeFormat(locale, {
+    timeZone,
+    day: 'numeric',
+    month: 'short'
+  }).format(date)
+}

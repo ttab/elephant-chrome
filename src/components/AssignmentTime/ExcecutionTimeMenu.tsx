@@ -15,6 +15,7 @@ import { dateToReadableDateTime } from '@/lib/datetime'
 import { useRegistry } from '@/hooks'
 import { type AssignmentData } from './types'
 import { TimeInput } from './TimeInput'
+import { FromDateTimeLabel, FromToDateTimeLabel } from './TimeLabel'
 interface ExecutionTimeItemsProps extends React.PropsWithChildren {
   handleOnSelect: ({ executionStart, executionEnd }: { executionStart: string | undefined, executionEnd: string | undefined }) => void
   className?: string
@@ -27,15 +28,15 @@ const IsoStringTimeDisplay = (isoString: string): JSX.Element => {
   return <TimeDisplay date={date} />
 }
 
-const DateLabel = ({ fromDate, toDate }: { fromDate?: string | undefined, toDate?: string | undefined }): JSX.Element => {
-  const from = fromDate ? IsoStringTimeDisplay(fromDate) : null
-  const to = toDate ? IsoStringTimeDisplay(toDate) : null
-  return (
-    <span>
-      {from} {to ? '-' : ''} {to}
-    </span>
-  )
-}
+// const DateLabel = ({ fromDate, toDate }: { fromDate?: string | undefined, toDate?: string | undefined }): JSX.Element => {
+//   const from = fromDate ? IsoStringTimeDisplay(fromDate) : null
+//   const to = toDate ? IsoStringTimeDisplay(toDate) : null
+//   return (
+//     <span>
+//       {from} {to ? '-' : ''} {to}
+//     </span>
+//   )
+// }
 
 const testValid = (time: string): boolean => {
   return (/^([0-1]?[0-9]|2[0-4]):([0-5][0-9])(:[0-5][0-9])?$/.test(time))
@@ -119,7 +120,7 @@ export const ExecutionTimeMenu = ({ handleOnSelect, index, startDate }: Executio
   }
 
   const handleEndTimeChange = (time: string): void => {
-    setEndDateValue(time)
+    setEndTimeValue(time)
     const valid = testValid(time)
     setEndTimeValid(valid)
     if (valid) {
@@ -152,7 +153,8 @@ export const ExecutionTimeMenu = ({ handleOnSelect, index, startDate }: Executio
       const startDayWithTime = createDateWithTime(selectedDays.from, startTimeValue)
       setStartDateValue(startDayWithTime.toISOString())
       setEndTimeValid(testValid(endTimeValue))
-      setHasEndTime(true)
+
+      selectedDays.to !== selectedDays.from && setHasEndTime(true)
     }
   }
 
@@ -181,7 +183,11 @@ export const ExecutionTimeMenu = ({ handleOnSelect, index, startDate }: Executio
       <PopoverTrigger asChild>
         <div className='flex flex-row space-x-2 items-center align-middle'>
           {timePickType.icon && <timePickType.icon {...timePickType.iconProps} />}
-          <DateLabel fromDate={startDateValue} toDate={endDateValue} />
+          {
+            hasEndTime
+              ? <FromToDateTimeLabel fromDate={startDateValue} toDate={endDateValue} locale={locale} timeZone={timeZone} />
+              : <FromDateTimeLabel fromDate={startDateValue} locale={locale} timeZone={timeZone} />
+          }
         </div>
       </PopoverTrigger>
       <PopoverContent>
