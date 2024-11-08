@@ -11,7 +11,7 @@ import {
 import { timePickTypes } from './constants'
 import { useYValue } from '@/hooks/useYValue'
 import { TimeDisplay } from '../DataItem/TimeDisplay'
-import { dateToReadableDateTime } from '@/lib/datetime'
+import { dateToReadableDateTime, isSameDay } from '@/lib/datetime'
 import { useRegistry } from '@/hooks'
 import { type AssignmentData } from './types'
 import { TimeInput } from './TimeInput'
@@ -39,6 +39,17 @@ const DateLabel = ({ fromDate, toDate }: { fromDate?: string | undefined, toDate
 
 const testValid = (time: string): boolean => {
   return (/^([0-1]?[0-9]|2[0-4]):([0-5][0-9])(:[0-5][0-9])?$/.test(time))
+}
+
+const createDateWithTime = (date: Date, time: string) => {
+  const [hours, minutes] = time.split(':').map((str) => parseInt(str, 10))
+  return new Date(
+    date.getFullYear(),
+    date.getMonth(),
+    date.getDate(),
+    hours,
+    minutes
+  )
 }
 
 export const ExecutionTimeMenu = ({ handleOnSelect, index, startDate }: ExecutionTimeItemsProps): JSX.Element => {
@@ -70,7 +81,7 @@ export const ExecutionTimeMenu = ({ handleOnSelect, index, startDate }: Executio
         setStartTimeValid(testValid(startValue))
 
         const startDateObject = new Date(data.start)
-        const newStartDayWithTime = createDateWithTime(startDateObject, '00.00')
+        const newStartDayWithTime = createDateWithTime(startDateObject, '00:00')
         savedDates.from = newStartDayWithTime
       }
 
@@ -94,18 +105,6 @@ export const ExecutionTimeMenu = ({ handleOnSelect, index, startDate }: Executio
       setMounted(true)
     }
   }, [data, mounted])
-
-  const createDateWithTime = (date: Date, time: string) => {
-    const [hours, minutes] = time.split(':').map((str) => parseInt(str, 10))
-
-    return new Date(
-      date.getFullYear(),
-      date.getMonth(),
-      date.getDate(),
-      hours,
-      minutes
-    )
-  }
 
   const handleStartTimeChange = (time: string) => {
     setStartTimeValue(time)
@@ -149,17 +148,15 @@ export const ExecutionTimeMenu = ({ handleOnSelect, index, startDate }: Executio
     }
 
     if (selectedDays?.to && selectedDays.from) {
+      console.log('selectedDay', selectedDays)
       const endDate = new Date(selectedDays.to)
       const EndDayWithTime = createDateWithTime(endDate, endTimeValue)
       setEndDateValue(EndDayWithTime.toISOString())
       const startDate = new Date(selectedDays.from)
       const startDayWithTime = createDateWithTime(startDate, startTimeValue)
       setStartDateValue(startDayWithTime.toISOString())
+      !isSameDay(selectedDays.from, selectedDays.to) || setHasEndTime(true)
     }
-
-    console.log('selected', selectedDays)
-    console.log('triggerDate', triggerDate)
-    console.log('modifiers', modifiers)
   }
 
   const handleOpenChange = (isOpen: boolean): void => {
@@ -215,7 +212,7 @@ export const ExecutionTimeMenu = ({ handleOnSelect, index, startDate }: Executio
           </div>
           <div>
             <div className='pt-2 pb-2'>
-              <Switch onCheckedChange={handleHasEndTime} checked={hasEndTime}>Från-till</Switch>
+              <Switch onCheckedChange={handleHasEndTime} checked={hasEndTime}></Switch>
             </div>
 
             <div className='flex justify-between border-2 rounded-md border-slate-100'>
