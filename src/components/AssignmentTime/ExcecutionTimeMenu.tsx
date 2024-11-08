@@ -137,7 +137,7 @@ export const ExecutionTimeMenu = ({ handleOnSelect, index, startDate }: Executio
     }
   }
 
-  const handleOnSelectDay: CalendarTypes.OnSelectHandler<CalendarTypes.DateRange | undefined> = (selectedDays, triggerDate, modifiers) => {
+  const handleOnSelectDay: CalendarTypes.OnSelectHandler<CalendarTypes.DateRange | undefined> = (selectedDays) => {
     setSelected(selectedDays)
     if (selectedDays?.from) {
       const startDate = new Date(selectedDays.from)
@@ -148,7 +148,6 @@ export const ExecutionTimeMenu = ({ handleOnSelect, index, startDate }: Executio
     }
 
     if (selectedDays?.to && selectedDays.from) {
-      console.log('selectedDay', selectedDays)
       const endDate = new Date(selectedDays.to)
       const EndDayWithTime = createDateWithTime(endDate, endTimeValue)
       setEndDateValue(EndDayWithTime.toISOString())
