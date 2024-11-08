@@ -1,16 +1,16 @@
-import React, { useState, useRef, useEffect, type ChangeEventHandler } from 'react'
+import React, { useState, useEffect } from 'react'
 import {
   Command,
   CommandItem,
   Popover,
   PopoverContent,
   PopoverTrigger,
-  Input,
   Button
 } from '@ttab/elephant-ui'
 import { timePickTypes } from './constants'
 import { useYValue } from '@/hooks/useYValue'
 import { type AssignmentData } from './types'
+import { TimeInput } from './TimeInput'
 interface TimeSelectItemProps extends React.PropsWithChildren {
   handleOnSelect: ({ value, selectValue }: { value: string, selectValue: string }) => void
   className?: string
@@ -19,7 +19,6 @@ interface TimeSelectItemProps extends React.PropsWithChildren {
 }
 export const TimeSelectItem = ({ handleOnSelect, index, handleParentOpenChange }: TimeSelectItemProps): JSX.Element => {
   const [open, setOpen] = useState(false)
-  const inputRef = useRef(null)
   const [endTime, setEndTime] = useState('')
   const [data] = useYValue<AssignmentData>(`meta.core/assignment[${index}].data`)
   const [valid, setValid] = useState(false)
@@ -39,10 +38,17 @@ export const TimeSelectItem = ({ handleOnSelect, index, handleParentOpenChange }
     setOpen(isOpen)
   }
 
-  const handleTimeChange: ChangeEventHandler<HTMLInputElement> = (e) => {
-    const time = e.target.value
+  const handleTimeChange = (time: string) => {
     setEndTime(time)
     setValid(/^([0-1]?[0-9]|2[0-4]):([0-5][0-9])(:[0-5][0-9])?$/.test(time))
+  }
+
+  const handleOnTimeSelect = (): void => {
+    if (valid) {
+      handleOnSelect({ value: timePickType.value, selectValue: endTime })
+      setOpen(false)
+      handleParentOpenChange(false)
+    }
   }
   const timePickType = timePickTypes[0]
 
@@ -61,26 +67,7 @@ export const TimeSelectItem = ({ handleOnSelect, index, handleParentOpenChange }
         </PopoverTrigger>
         <PopoverContent>
           <Command>
-            <Input
-              type='time'
-              ref={inputRef}
-              value={endTime}
-              onChange={handleTimeChange}
-              placeholder={'hh:mm ex 11:00'}
-              className="h-9"
-              onKeyDown={(e) => {
-                if (e.key === 'Escape') {
-                  setOpen(false)
-                  handleParentOpenChange(false)
-                }
-                if (e.key === 'Enter') {
-                  e.preventDefault()
-                  valid && handleOnSelect({ value: timePickType.value, selectValue: endTime })
-                  setOpen(false)
-                  handleParentOpenChange(false)
-                }
-              }}
-            />
+            <TimeInput defaultTime={endTime} handleOnChange={handleTimeChange} handleOnSelect={handleOnTimeSelect} setOpen={setOpen}/>
             <div className='flex items-center justify-end gap-4 p-2'>
               <Button
                 variant="ghost"

@@ -75,7 +75,6 @@ export const Assignment = ({ index, onAbort, onClose }: {
               placeholder='Lägg till uppdragstagare'
               />
             <AssignmentTime index={index} />
-
           </Form.Group>
 
         </Form.Content>
