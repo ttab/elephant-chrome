@@ -10,33 +10,17 @@ import {
 } from '@ttab/elephant-ui'
 import { timePickTypes } from './constants'
 import { useYValue } from '@/hooks/useYValue'
-import { TimeDisplay } from '../DataItem/TimeDisplay'
 import { dateToReadableDateTime } from '@/lib/datetime'
 import { useRegistry } from '@/hooks'
 import { type AssignmentData } from './types'
 import { TimeInput } from './TimeInput'
-import { FromDateTimeLabel, FromToDateTimeLabel } from './TimeLabel'
+import { FromDateTimeLabel, FromToDateTimeLabel } from './ExecutionTimeLabel'
 interface ExecutionTimeItemsProps extends React.PropsWithChildren {
   handleOnSelect: ({ executionStart, executionEnd }: { executionStart: string | undefined, executionEnd: string | undefined }) => void
   className?: string
   index?: number
   startDate?: string
 }
-
-const IsoStringTimeDisplay = (isoString: string): JSX.Element => {
-  const date = new Date(isoString)
-  return <TimeDisplay date={date} />
-}
-
-// const DateLabel = ({ fromDate, toDate }: { fromDate?: string | undefined, toDate?: string | undefined }): JSX.Element => {
-//   const from = fromDate ? IsoStringTimeDisplay(fromDate) : null
-//   const to = toDate ? IsoStringTimeDisplay(toDate) : null
-//   return (
-//     <span>
-//       {from} {to ? '-' : ''} {to}
-//     </span>
-//   )
-// }
 
 const testValid = (time: string): boolean => {
   return (/^([0-1]?[0-9]|2[0-4]):([0-5][0-9])(:[0-5][0-9])?$/.test(time))
@@ -217,11 +201,6 @@ export const ExecutionTimeMenu = ({ handleOnSelect, index, startDate }: Executio
             <div className='flex pt-2 pb-2'>
               <Switch onCheckedChange={handleHasEndTime} checked={hasEndTime} className='self-center'></Switch><label className='text-sm self-center p-2'>Tid från-till</label>
             </div>
-
-            {/* <div className='flex pt-2 pb-2 '>
-            <Switch onCheckedChange={checked => handleCheckedChange(checked)} checked={fullDay} className=' self-center' /><label className='text-sm self-center p-2'>Heldag</label>
-          </div> */}
-
             <div className='flex justify-between border-2 rounded-md border-slate-100'>
               <div className='px-3 py-2 text-sm'>
                 {(hasEndTime && endDateValue) && dateToReadableDateTime(new Date(endDateValue), locale, timeZone)}
