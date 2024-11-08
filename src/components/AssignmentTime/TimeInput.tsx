@@ -22,7 +22,6 @@ export const TimeInput = ({ defaultTime, handleOnChange, handleOnSelect, setOpen
   }
 
   return (
-
     <Input
       type='time'
       ref={inputRef}

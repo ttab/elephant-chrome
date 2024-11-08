@@ -165,7 +165,7 @@ export const ExecutionTimeMenu = ({ handleOnSelect, index, startDate }: Executio
   return (
     <Popover open={open} onOpenChange={handleOpenChange}>
       <PopoverTrigger asChild>
-        <div className='flex flex-row space-x-2 items-center align-middle'>
+        <div className='flex flex-row space-x-2 items-center align-middle cursor-pointer'>
           {timePickType.icon && <timePickType.icon {...timePickType.iconProps} />}
           {
             hasEndTime

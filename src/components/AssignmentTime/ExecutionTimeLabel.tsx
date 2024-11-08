@@ -16,7 +16,7 @@ export const FromToDateTimeLabel = ({ fromDate, toDate, locale, timeZone }: { fr
   const from = dateToReadableDateTime(new Date(fromDate), locale, timeZone)
   const to = sameDay ? dateToReadableTime(new Date(toDate), locale, timeZone) : dateToReadableDateTime(new Date(toDate), locale, timeZone)
   return (
-    <div className='font-sans text-sm'>
+    <div className='text-sm text-muted-foreground font-sans font-normal'>
       {from} {!sameTime ? ` - ${to}` : ''}
     </div>
   )
@@ -28,6 +28,6 @@ export const FromDateTimeLabel = ({ fromDate, locale, timeZone }: { fromDate?: s
   }
   const from = dateToReadableDateTime(new Date(fromDate), locale, timeZone)
   return (
-    <div className='font-sans text-sm'>{`${from}`}</div>
+    <div className='text-sm text-muted-foreground font-sans font-normal'>{`${from}`}</div>
   )
 }
