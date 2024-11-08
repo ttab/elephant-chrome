@@ -1,7 +1,7 @@
 import { Textbit } from '@ttab/textbit'
 import { createEditor } from 'slate'
 import { cn } from '@ttab/elephant-ui/utils'
-import { useCollaboration } from '@/hooks'
+import { useCollaboration, useRegistry } from '@/hooks'
 import { useLayoutEffect, useMemo } from 'react'
 import { YjsEditor, withCursors, withYHistory, withYjs } from '@slate-yjs/core'
 import { type HocuspocusProvider } from '@hocuspocus/provider'
@@ -9,6 +9,8 @@ import { type AwarenessUserData } from '@/contexts/CollaborationProvider'
 import type * as Y from 'yjs'
 import { Text } from '@ttab/textbit-plugins'
 import { useYValue } from '@/hooks/useYValue'
+import { useSession } from 'next-auth/react'
+import { ContextMenu } from '../Editor/ContextMenu'
 
 export const TextBox = ({ icon, placeholder, path, className, singleLine = false, autoFocus = false, onBlur, onFocus }: {
   path: string
@@ -70,6 +72,9 @@ const TextboxEditable = ({ provider, user, icon: Icon, content, singleLine }: {
   icon?: React.ReactNode
   content: Y.XmlText
 }): JSX.Element | undefined => {
+  const { data: session } = useSession()
+  const { spellchecker, locale } = useRegistry()
+
   const yjsEditor = useMemo(() => {
     if (!provider?.awareness) {
       return
@@ -95,13 +100,16 @@ const TextboxEditable = ({ provider, user, icon: Icon, content, singleLine }: {
   }, [yjsEditor])
   return (
     <div className='flex flex-col space-y-2'>
-      <div className='flex space-x-2 items-baseline'>
+      <div className='flex space-x-2'>
         {Icon && <div className='pt-1.5'>
           {Icon}
         </div>}
         <div className='flex-grow'>
           <Textbit.Editable
             yjsEditor={yjsEditor}
+            onSpellcheck={async (texts) => {
+              return await spellchecker?.check(texts, locale, session?.accessToken ?? '') ?? []
+            }}
             className={cn(!singleLine && '!min-h-20',
               `p-1
                py-1.5
@@ -112,9 +120,14 @@ const TextboxEditable = ({ provider, user, icon: Icon, content, singleLine }: {
                focus:ring-1
                ring-input
                focus:dark:ring-gray-600
-               whitespace-nowrap`
+               whitespace-nowrap
+               [&_[data-spelling-error]]:border-b-2
+               [&_[data-spelling-error]]:border-dotted
+               [&_[data-spelling-error]]:border-red-500`
             )}
-          />
+          >
+            <ContextMenu className='fooo z-[9999]' />
+          </Textbit.Editable>
         </div>
       </div>
     </div>

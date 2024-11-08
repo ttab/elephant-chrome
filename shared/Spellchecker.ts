@@ -23,7 +23,10 @@ export class Spellchecker {
    */
   async check(text: string[], locale: string, accessToken: string): Promise<Array<Array<{
     text: string
-    suggestions: string[]
+    suggestions: Array<{
+      text: string
+      description: string
+    }>
   }>>> {
     if (!accessToken) {
       console.warn('No access token, no spellchecking')
@@ -51,7 +54,7 @@ export class Spellchecker {
             : misspelled.entries.map(entry => {
               return {
                 text: entry.text,
-                suggestions: (entry.suggestions || []).map(s => s.text)
+                suggestions: entry.suggestions || []
               }
             })
         })

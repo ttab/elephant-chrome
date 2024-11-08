@@ -5,12 +5,13 @@ import { useYValue } from '@/hooks/useYValue'
 import type * as Y from 'yjs'
 import { Validation } from '../Validation'
 import { SluglineButton } from './Slugline'
+import { type FormProps } from '../Form/Root'
 
-export const SluglineEditable = ({ path, documentStatus, onValidation }: {
+export const SluglineEditable = ({ path, documentStatus, onValidation, validateStateRef }: {
   path: string
   documentStatus?: string
   onValidation?: (label: string, block: string, value: string | undefined, reason: string) => boolean
-}): JSX.Element => {
+} & FormProps): JSX.Element => {
   const setFocused = useRef<(value: boolean) => void>(null)
   const [slugLine] = useYValue<Y.XmlText | undefined>(path)
 
@@ -31,6 +32,7 @@ export const SluglineEditable = ({ path, documentStatus, onValidation }: {
               block='tt/slugline'
               path={path}
               onValidation={onValidation}
+              validateStateRef={validateStateRef}
             >
               <TextBox
                 path={path}

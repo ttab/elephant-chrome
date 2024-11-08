@@ -9,7 +9,7 @@ export const Title = ({ children, asDialog, onValidation }: FormProps): JSX.Elem
       asDialog: {
         false: `pt-8
           -ml-1
-          [&_[role="textbox"]]:text-lg
+          [&_[role="textbox"]]:!text-lg
           [&_[role="textbox"]]:font-bold
           [&_[role="textbox"]]:leading-6`,
         true: 'pt-2 [&_[role="textbox"]]:text-medium'

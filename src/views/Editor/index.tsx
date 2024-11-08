@@ -161,10 +161,10 @@ function EditorContent({ provider, user }: {
 
   return (
     <Textbit.Editable
+      yjsEditor={yjsEditor}
       onSpellcheck={async (texts) => {
         return await spellchecker?.check(texts, locale, session?.accessToken ?? '') ?? []
       }}
-      yjsEditor={yjsEditor}
       className="outline-none
         h-full
         dark:text-slate-100
