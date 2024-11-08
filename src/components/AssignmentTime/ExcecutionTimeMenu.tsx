@@ -134,7 +134,6 @@ export const ExecutionTimeMenu = ({ handleOnSelect, index, startDate }: Executio
         newDate.setHours(hours, minutes)
         setEndDateValue(newDate.toISOString())
       }
-      console.log('XXX endDate3', endDateValue)
     }
   }
 
@@ -150,10 +149,9 @@ export const ExecutionTimeMenu = ({ handleOnSelect, index, startDate }: Executio
     if (selectedDays?.to && selectedDays.from) {
       const endDayWithTime = createDateWithTime(selectedDays.to, endTimeValue)
       setEndDateValue(endDayWithTime.toISOString())
-      console.log('XXX endDate2', endDateValue)
       const startDayWithTime = createDateWithTime(selectedDays.from, startTimeValue)
       setStartDateValue(startDayWithTime.toISOString())
-      setEndTimeValid( testValid(endTimeValue))
+      setEndTimeValid(testValid(endTimeValue))
       setHasEndTime(true)
     }
   }
