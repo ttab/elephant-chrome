@@ -7,7 +7,7 @@ import {
   PopoverTrigger,
   Button
 } from '@ttab/elephant-ui'
-import { timePickTypes } from './constants'
+import { timePickTypes } from '../../defaults/assignmentTimeConstants'
 import { useYValue } from '@/hooks/useYValue'
 import { type AssignmentData } from './types'
 import { TimeInput } from './TimeInput'

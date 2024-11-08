@@ -5,7 +5,7 @@ import { TimeDeliveryMenu } from './TimeDeliveryMenu'
 import { cn } from '@ttab/elephant-ui/utils'
 import { type AssignmentValueOption, type AssignmentData } from './types'
 import { ExecutionTimeMenu } from './ExcecutionTimeMenu'
-import { timeSlotTypes, timePickTypes } from './constants'
+import { timeSlotTypes, timePickTypes } from '../../defaults/assignmentTimeConstants'
 
 const getTimeSlot = (timeSlot: string): AssignmentValueOption | undefined => {
   return timeSlotTypes.find(type => type.slots?.includes(timeSlot))

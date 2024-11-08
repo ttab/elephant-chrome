@@ -8,7 +8,7 @@ import {
   Button,
   Switch
 } from '@ttab/elephant-ui'
-import { timePickTypes } from './constants'
+import { timePickTypes } from '../../defaults/assignmentTimeConstants'
 import { useYValue } from '@/hooks/useYValue'
 import { dateToReadableDateTime } from '@/lib/datetime'
 import { useRegistry } from '@/hooks'

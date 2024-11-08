@@ -1,5 +1,5 @@
 import { CalendarFoldIcon, CalendarClockIcon, Clock2Icon, Clock5Icon, Clock6Icon, Clock10Icon } from '@ttab/elephant-ui/icons'
-import { type AssignmentValueOption } from './types'
+import { type AssignmentValueOption } from '../components/AssignmentTime/types'
 
 
 const iconProps = {
