@@ -38,7 +38,7 @@ export const TimeSelectItem = ({ handleOnSelect, index, handleParentOpenChange }
     setOpen(isOpen)
   }
 
-  const handleTimeChange = (time: string) => {
+  const handleTimeChange = (time: string): void => {
     setEndTime(time)
     setValid(/^([0-1]?[0-9]|2[0-4]):([0-5][0-9])(:[0-5][0-9])?$/.test(time))
   }
@@ -67,7 +67,7 @@ export const TimeSelectItem = ({ handleOnSelect, index, handleParentOpenChange }
         </PopoverTrigger>
         <PopoverContent>
           <Command>
-            <TimeInput defaultTime={endTime} handleOnChange={handleTimeChange} handleOnSelect={handleOnTimeSelect} setOpen={setOpen}/>
+            <TimeInput defaultTime={endTime} handleOnChange={handleTimeChange} handleOnSelect={handleOnTimeSelect} setOpen={setOpen} />
             <div className='flex items-center justify-end gap-4 p-2'>
               <Button
                 variant="ghost"
