@@ -7,20 +7,45 @@ interface Reset {
 export function handleClose({ viewId, dispatch }: Reset): void {
   const content: ContentState[] = history.state.contentState
 
-  const newContent = content.filter(obj => obj.viewId !== viewId)
-  const newActive = newContent[newContent.length - 1]
+  const contentLength = content.length
+  const index = content.findIndex((obj) => obj.viewId === viewId)
 
+  // If it is the last view being removed, simply
+  // move backwards one step in the history
+  if (index === contentLength - 1) {
+    history.go(-1)
+    return
+  }
 
-  // Set history state first, then navigation state
-  history.pushState({
-    viewId,
-    props: newActive.props,
-    viewName: newActive.name,
-    contentState: newContent
-  }, newActive.name, `${newActive.path}`)
+  // Create new content state without the removed view
+  const beforeContent = content.slice(0, index)
+  const afterContent = content.slice(index + 1)
+  const newContent = [
+    ...beforeContent,
+    ...afterContent
+  ]
 
-  dispatch({
-    type: NavigationActionType.SET,
-    content: newContent
-  })
+  // When navigation finished.
+  window.addEventListener('popstate', () => {
+    const newActive = newContent[newContent.length - 1]
+
+    // Push the new state to add the views that existed
+    // after the removed view.
+    history.pushState({
+      viewId,
+      props: newActive.props,
+      viewName: newActive.name,
+      contentState: newContent
+    }, newActive.name, `${newActive.path}`)
+
+    // Set elephant navigation state
+    dispatch({
+      type: NavigationActionType.SET,
+      content: newContent
+    })
+  }, { once: true })
+
+  // Trigger backwards navigation to just before
+  // the removed item was added originally.
+  history.go(-(afterContent.length + 1))
 }
