@@ -27,7 +27,7 @@ import { NewItems } from './NewItems'
 
 interface TableProps<TData, TValue> {
   columns: Array<ColumnDef<TData, TValue>>
-  type: 'Planning' | 'Event' | 'Assignments'
+  type: 'Planning' | 'Event' | 'Assignments' | 'Search'
   onRowSelected?: (row?: TData) => void
 }
 
@@ -142,13 +142,14 @@ export const Table = <TData, TValue>({
 
   const TableBodyElement = useMemo(() => {
     if (deferredLoading || !deferredRows?.length) {
+      const isSearchTable = window.location.pathname.includes('/elephant/search')
       return (
         <TableRow>
           <TableCell
             colSpan={columns.length}
             className='h-24 text-center'
           >
-            {deferredLoading
+            {isSearchTable ? deferredLoading ? '' : 'Inga poster funna.' : deferredLoading
               ? 'Laddar...'
               : 'Inga planeringar funna.'
             }
@@ -165,9 +166,9 @@ export const Table = <TData, TValue>({
               <div className='flex justify-between items-center flex-wrap'>
                 <div className='flex items-center space-x-2'>
                   <span className='font-thin text-muted-foreground'>Nyhetsvärde</span>
-                  <span className='inline-flex items-center justify-center size-5 bg-background rounded-full ring-1 ring-gray-300'>
-                    {row.groupingValue as string}
-                  </span>
+                    <span className='inline-flex items-center justify-center size-5 bg-background rounded-full ring-1 ring-gray-300'>
+                    {row.groupingValue !== 'undefined' ? row.groupingValue as string : '-'}
+                    </span>
                 </div>
                 <div className='flex items-center space-x-2 px-6'>
                   <span className='font-thin text-muted-foreground'>Antal</span>
@@ -221,11 +222,14 @@ export const Table = <TData, TValue>({
       <NewItems.Root>
         <NewItems.Table header={`Dina nya skapade ${type === 'Planning' ? 'planeringar' : 'händelser'}`} type={type} />
       </NewItems.Root>
-      <_Table className='table-auto relative'>
+      {type === 'Search' && deferredLoading ? null : (
+
+        <_Table className='table-auto relative'>
         <TableBody>
           {TableBodyElement}
         </TableBody>
       </_Table>
+      )}
     </>
   )
 }
