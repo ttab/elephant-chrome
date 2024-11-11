@@ -159,8 +159,8 @@ export function dateInTimestampOrShortMonthDayTimestamp(date: string, locale: st
   const today = new Date()
 
   const isToday = inputDate.getDate() === today.getDate() &&
-                  inputDate.getMonth() === today.getMonth() &&
-                  inputDate.getFullYear() === today.getFullYear()
+    inputDate.getMonth() === today.getMonth() &&
+    inputDate.getFullYear() === today.getFullYear()
 
   const timeFormatter = new Intl.DateTimeFormat(locale, {
     hour: '2-digit',
@@ -184,3 +184,10 @@ export function dateInTimestampOrShortMonthDayTimestamp(date: string, locale: st
   }
 }
 
+export function dateToReadableDay(date: Date, locale: string, timeZone: string): string {
+  return new Intl.DateTimeFormat(locale, {
+    timeZone,
+    day: 'numeric',
+    month: 'short'
+  }).format(date)
+}
