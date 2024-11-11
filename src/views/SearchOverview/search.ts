@@ -4,7 +4,7 @@ import { transformAssignments } from "../Assignments/lib/transformAssignments"
 import { withStatus } from "@/hooks/useFetcher"
 import { type AssignmentMetaExtended } from "../Assignments/types"
 import { type Session } from 'next-auth'
-import { type Dispatch, type SetStateAction } from "react"
+import { type Dispatch, type SetStateAction } from 'react'
 
 interface Props {
   setLoading: React.Dispatch<SetStateAction<boolean>>
@@ -58,7 +58,7 @@ export const search = ({
           : await Events.search(indexUrl, session.accessToken, params)
         if (result.ok) {
           if (pool === 'plannings') {
-            const planningsWithstatus = withStatus(result)
+            const planningsWithstatus = withStatus<any>(result)
             setTotalHits(planningsWithstatus.length)
             allData.push(...planningsWithstatus)
           } else {
