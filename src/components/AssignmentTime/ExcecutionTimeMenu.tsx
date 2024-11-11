@@ -138,7 +138,9 @@ export const ExecutionTimeMenu = ({ handleOnSelect, index, startDate }: Executio
       setStartDateValue(startDayWithTime.toISOString())
       setEndTimeValid(testValid(endTimeValue))
 
-      selectedDays.to !== selectedDays.from && setHasEndTime(true)
+      if (selectedDays.to !== selectedDays.from) {
+        setHasEndTime(true)
+      }
     }
   }
 

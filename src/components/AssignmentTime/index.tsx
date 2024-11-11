@@ -116,8 +116,13 @@ export const AssignmentTime = ({ index }: {
       }
     })
 
-    if (!executionStart) { delete block.data.start }
-    if (!executionEnd) { delete block.data.end }
+    if (!executionStart) {
+      delete block.data.start
+    }
+
+    if (!executionEnd) {
+      delete block.data.end
+    }
 
     setData(block.data)
   }
