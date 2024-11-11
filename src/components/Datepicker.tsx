@@ -83,7 +83,7 @@ export const DatePicker = ({ date, changeDate, setDate, forceYear = false }: {
               setDate(selectedDate)
             }
           }}
-          initialFocus
+          // initialFocus
         />
       </PopoverContent>
     </Popover>

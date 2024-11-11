@@ -1,6 +1,6 @@
 import { TextBox } from '@/components/ui'
 import { Button } from '@ttab/elephant-ui'
-import { Clock10Icon, MessageCircleMore, Tags } from '@ttab/elephant-ui/icons'
+import { MessageCircleMore, Tags } from '@ttab/elephant-ui/icons'
 import { AssignmentType } from '@/components/DataItem/AssignmentType'
 import { useYValue } from '@/hooks/useYValue'
 import { useKeydownGlobal } from '@/hooks/useKeydownGlobal'
@@ -9,6 +9,7 @@ import { Title } from '@/components/Title'
 import { SluglineEditable } from '@/components/DataItem/SluglineEditable'
 import { Form } from '@/components/Form'
 import { type FormProps } from '@/components/Form/Root'
+import { AssignmentTime } from '@/components/AssignmentTime'
 
 export const Assignment = ({ index, onAbort, onClose }: {
   index: number
@@ -77,7 +78,7 @@ export const Assignment = ({ index, onAbort, onClose }: {
               path={`meta.core/assignment[${index}].links.core/author`}
               placeholder='Lägg till uppdragstagare'
             />
-            <Clock10Icon size={20} strokeWidth={1.75} />
+            <AssignmentTime index={index} />
           </Form.Group>
 
         </Form.Content>

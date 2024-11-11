@@ -4,8 +4,6 @@ import type { ValidateStateRef } from '@/types/index'
 import { Files, FileWarning } from '@ttab/elephant-ui/icons'
 import useSWR from 'swr'
 import { useSession } from 'next-auth/react'
-import { Repository } from '@/shared/Repository'
-import { useMemo } from 'react'
 import { type ValidationResult } from '@ttab/elephant-api/repository'
 
 interface Entity {
@@ -20,10 +18,8 @@ export const ValidationAlert = ({ validateStateRef }: {
 }): JSX.Element | null => {
   const { id: documentId } = useQuery()
   const { data: session } = useSession()
-  const { server: { repositoryUrl } } = useRegistry()
+  const { server: { repositoryUrl }, repository } = useRegistry()
   const { provider, synced } = useCollaboration()
-
-  const repository = useMemo(() => new Repository(repositoryUrl.href), [repositoryUrl.href])
 
   const fetcher = async (): Promise<string | undefined | null> => {
     if (!session || !repositoryUrl || !documentId) return undefined
@@ -31,9 +27,9 @@ export const ValidationAlert = ({ validateStateRef }: {
     const yDoc = provider?.document
     if (!yDoc) return null
 
-    const result = await repository.validateDoc(yDoc)
+    const result = await repository?.validateDoc(yDoc)
 
-    if (result.response.errors.length === 0) {
+    if (!result || result.response.errors.length === 0) {
       return null
     } else {
       const message = createValidationMessage(result.response.errors, validateStateRef)
@@ -102,4 +98,3 @@ function createValidationMessage(errors: ValidationResult[], validateStateRef: V
       return `${index}: ${entityDescriptions}: ${error.error}`
     })
 }
-

@@ -1,13 +1,14 @@
 import { useCollaboration, useYValue } from '@/hooks'
 import { TriangleAlert } from '@ttab/elephant-ui/icons'
-import { type PropsWithChildren, useMemo } from 'react'
+import { useEffect, useMemo } from 'react'
+import { type FormProps } from './Form/Root'
 
-export const Validation = ({ children, path, label, block, onValidation }: PropsWithChildren<{
+export const Validation = ({ children, path, label, block, onValidation, validateStateRef }: {
   path: string
   label: string
   block: string
   onValidation?: (block: string, label: string, value: string | undefined, reason: string) => boolean
-}>): JSX.Element | null => {
+} & FormProps): JSX.Element | null => {
   const [value] = useYValue<string | undefined>(path)
   const { synced } = useCollaboration()
 
@@ -16,6 +17,18 @@ export const Validation = ({ children, path, label, block, onValidation }: Props
       ? onValidation(block, label, value, 'cannot be empty')
       : true
   }, [value, onValidation, label, block])
+
+  useEffect(() => {
+    return () => {
+      if (validateStateRef?.current[block]) {
+        validateStateRef.current = Object.fromEntries(
+          Object.entries(validateStateRef.current)
+            .filter(([key]) => key !== block)
+        )
+      }
+    }
+  }, [block, validateStateRef])
+
 
   return synced && !isValid
     ? (

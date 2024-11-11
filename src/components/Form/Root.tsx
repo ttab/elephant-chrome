@@ -25,6 +25,7 @@ export const Root = ({ children, asDialog = false, className }: PropsWithChildre
     [&_[role="textbox"]:focus]:bg-violet-50
     [&_[role="textbox"]]:placeholder-gray-500
     [&_[role="textbox"]]:text-base
+    [&_[role="textbox"]]:text-sm
     [&_[role="textbox"]]:leading-tight
     [&_[role="textbox"]]:tracking-right`
 
@@ -42,7 +43,6 @@ export const Root = ({ children, asDialog = false, className }: PropsWithChildre
   }
 
   return (
-
     <section>
       <ValidationAlert validateStateRef={validateStateRef} />
       <div className={cn(formRootStyle, className)}>

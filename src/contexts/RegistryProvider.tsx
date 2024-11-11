@@ -9,6 +9,8 @@ import React, {
 import { getServerUrls } from '@/lib/getServerUrls'
 import { getUserLocale } from 'get-user-locale'
 import { getUserTimeZone } from '@/lib/getUserTimeZone'
+import { Repository } from '@/shared/Repository'
+import { Spellchecker } from '@/shared/Spellchecker'
 
 const DEFAULT_LOCALE = 'en-BR'
 const DEFAULT_TIMEZONE = 'Europe/Stockholm'
@@ -23,7 +25,10 @@ export interface RegistryProviderState {
     repositoryEventsUrl: URL
     repositoryUrl: URL
     contentApiUrl: URL
+    spellcheckUrl: URL
   }
+  repository?: Repository
+  spellchecker?: Spellchecker
   dispatch: React.Dispatch<Partial<RegistryProviderState>>
 }
 
@@ -36,7 +41,8 @@ const initialState: RegistryProviderState = {
     indexUrl: new URL('http://localhost'),
     repositoryEventsUrl: new URL('http://localhost'),
     repositoryUrl: new URL('http://localhost'),
-    contentApiUrl: new URL('http://localhost')
+    contentApiUrl: new URL('http://localhost'),
+    spellcheckUrl: new URL('http://localhost')
   },
   dispatch: () => { }
 }
@@ -53,7 +59,14 @@ export const RegistryProvider = ({ children }: PropsWithChildren): JSX.Element =
 
   useEffect(() => {
     getServerUrls().then((server) => {
-      dispatch({ server })
+      const repository = new Repository(server.repositoryUrl.href)
+      const spellchecker = new Spellchecker(server.spellcheckUrl.href)
+
+      dispatch({
+        server,
+        repository,
+        spellchecker
+      })
       setIsInitialized(true)
     }).catch((ex) => {
       console.error(`Failed fetching server urls in RegistryProvider, ${ex.message}`, ex)
@@ -72,7 +85,7 @@ export const RegistryProvider = ({ children }: PropsWithChildren): JSX.Element =
  * Registry context reducer
  */
 const reducer = (state: RegistryProviderState, action: Partial<RegistryProviderState>): RegistryProviderState => {
-  const { locale, timeZone, server } = action
+  const { locale, timeZone, server, repository, spellchecker } = action
   const partialState: Partial<RegistryProviderState> = {}
 
   if (typeof locale === 'string') {
@@ -81,6 +94,14 @@ const reducer = (state: RegistryProviderState, action: Partial<RegistryProviderS
 
   if (typeof timeZone === 'string') {
     partialState.timeZone = timeZone
+  }
+
+  if (typeof repository === 'object') {
+    partialState.repository = repository
+  }
+
+  if (typeof spellchecker === 'object') {
+    partialState.spellchecker = spellchecker
   }
 
   if (typeof server === 'object') {
