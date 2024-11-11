@@ -18,14 +18,11 @@ export function handleClose({ viewId, dispatch }: Reset): void {
   }
 
   // Create new content state without the removed view
-  const beforeContent = content.slice(0, index)
-  const afterContent = content.slice(index + 1)
-  const newContent = [
-    ...beforeContent,
-    ...afterContent
-  ]
+  const beforeRemoved = content.slice(0, index)
+  const afterRemoved = content.slice(index + 1)
+  const newContent = [...beforeRemoved, ...afterRemoved]
 
-  // When navigation finished.
+  // Setup event to fire once when navigation has finished.
   window.addEventListener('popstate', () => {
     const newActive = newContent[newContent.length - 1]
 
@@ -47,5 +44,5 @@ export function handleClose({ viewId, dispatch }: Reset): void {
 
   // Trigger backwards navigation to just before
   // the removed item was added originally.
-  history.go(-(afterContent.length + 1))
+  history.go(-(afterRemoved.length + 1))
 }
