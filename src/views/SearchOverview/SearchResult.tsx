@@ -1,0 +1,48 @@
+import useSWR from 'swr'
+import { useCallback, useMemo } from 'react'
+import { Table } from '@/components/Table'
+import { searchWideColumns } from './SearchColumns'
+import { useRegistry } from '@/hooks/useRegistry'
+import { useSections } from '@/hooks/useSections'
+import { Article, type Event, type Planning } from '@/lib/index'
+import { type AssignmentMetaExtended } from '../Assignments/types'
+
+export const SearchResult = ({ from, to, isLoading, pool, page }: {
+  from: string
+  to: string
+  isLoading: boolean
+  pool: string
+  page: number
+}): JSX.Element => {
+  const sections = useSections()
+  const { error } = useSWR(['Search', pool, page, from, to, { withStatus: true }])
+  const { locale, timeZone } = useRegistry()
+  const onRowSelected = useCallback((row?: Planning | Event | AssignmentMetaExtended | Article) => {
+    if (row) {
+      console.info(`Selected planning item ${row._id}`)
+    } else {
+      console.info('Deselected row')
+    }
+    return row
+  }, [])
+
+  if (error) {
+    return <pre>{error.message}</pre>
+  }
+
+  const columns = useMemo(() => searchWideColumns({ locale, timeZone, sections }), [locale, timeZone, sections, isLoading])
+
+  return (
+    <>
+      {isLoading ? (
+        <div className='flex w-full justify-center pt-8'>Laddar...</div>
+      ) : (
+        <Table
+          type='Planning'
+          columns={columns}
+          onRowSelected={onRowSelected}
+        />
+      )}
+    </>
+  )
+}
