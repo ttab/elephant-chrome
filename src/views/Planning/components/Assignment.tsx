@@ -61,39 +61,7 @@ export const Assignment = ({ index, onAbort, onClose }: {
               <SluglineEditable
                 path={`meta.core/assignment[${index}].meta.tt/slugline[0].value`}
           />
-<<<<<<< HEAD
-          <Assignees
-            name="AssignmentAssignees"
-            path={`meta.core/assignment[${index}].links.core/author`}
-            placeholder='Lägg till uppdragstagare'
-          />
-          <AssignmentTime
-            index={index}
-          />
-        </div>
-
-        <div className='flex items-center justify-end gap-4'>
-          {inProgress && !!onAbort &&
-            <Button
-              variant="ghost"
-              onClick={(evt) => {
-                evt.preventDefault()
-                evt.stopPropagation()
-                onAbort()
-              }}>
-              Avbryt
-            </Button>
-          }
-
-          <Button
-            variant="outline"
-            onClick={(evt) => {
-              setValidateForm(true)
-              evt.preventDefault()
-              evt.stopPropagation()
-=======
             </Form.Group>}
->>>>>>> main
 
 
           <Form.Group>
