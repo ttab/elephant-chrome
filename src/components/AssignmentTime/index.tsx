@@ -4,8 +4,8 @@ import { Block } from '@ttab/elephant-api/newsdoc'
 import { TimeDeliveryMenu } from './TimeDeliveryMenu'
 import { cn } from '@ttab/elephant-ui/utils'
 import { type AssignmentValueOption, type AssignmentData } from './types'
-import { ExcecutionTimeMenu } from './ExcecutionTimeMenu'
-import { timeSlotTypes, timePickTypes } from './constants'
+import { ExecutionTimeMenu } from './ExcecutionTimeMenu'
+import { timeSlotTypes, timePickTypes } from '../../defaults/assignmentTimeConstants'
 
 const getTimeSlot = (timeSlot: string): AssignmentValueOption | undefined => {
   return timeSlotTypes.find(type => type.slots?.includes(timeSlot))
@@ -102,21 +102,21 @@ export const AssignmentTime = ({ index }: {
     }
   }
 
-  const onExcecutionTimeSelect = (
-    { excecutionStart, executionEnd }: { excecutionStart: string | undefined, executionEnd: string | undefined }): void => {
+  const onExecutionTimeSelect = (
+    { executionStart, executionEnd }: { executionStart: string | undefined, executionEnd: string | undefined }): void => {
     const block = Block.create({
       data: {
         end_date: data?.end_date,
         full_day: 'false',
         start_date: data?.start_date,
         end: executionEnd,
-        start: excecutionStart,
+        start: executionStart,
         public: data?.public,
         publish: data?.publish
       }
     })
 
-    if (!excecutionStart) { delete block.data.start }
+    if (!executionStart) { delete block.data.start }
     if (!executionEnd) { delete block.data.end }
 
     setData(block.data)
@@ -124,7 +124,7 @@ export const AssignmentTime = ({ index }: {
 
   return (
     (assignmentType && assignmentType === 'picture')
-      ? (<ExcecutionTimeMenu handleOnSelect={onExcecutionTimeSelect} index={index} startDate={startDate} />)
+      ? (<ExecutionTimeMenu handleOnSelect={onExecutionTimeSelect} index={index} startDate={startDate} />)
       : (<TimeDeliveryMenu
           handleOnSelect={handleOnSelect}
           className='w-fit text-muted-foreground font-sans font-normal text-ellipsis px-2 h-7'

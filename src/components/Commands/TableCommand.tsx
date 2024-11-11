@@ -3,8 +3,9 @@ import { CommandGroup } from '@ttab/elephant-ui'
 import { useTable } from '@/hooks'
 import { type CommandArgs } from '@/contexts/TableProvider'
 import { type PropsWithChildren } from 'react'
+import { type View } from '@/types/index'
 
-export const TableCommandMenu = ({ children }: PropsWithChildren): JSX.Element => {
+export const TableCommandMenu = ({ children, heading }: PropsWithChildren & { heading: View }): JSX.Element => {
   const { table } = useTable()
 
   const handleChange = (value: string | undefined, args: CommandArgs): void => {
@@ -36,7 +37,7 @@ export const TableCommandMenu = ({ children }: PropsWithChildren): JSX.Element =
         }
       }}
       >
-      <CommandGroup heading='Events'>
+      <CommandGroup heading={heading}>
         {children}
       </CommandGroup>
     </CommandMenu>

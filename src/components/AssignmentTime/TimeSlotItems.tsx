@@ -3,7 +3,7 @@ import {
   CommandItem
 } from '@ttab/elephant-ui'
 
-import { timeSlotTypes } from './constants'
+import { timeSlotTypes } from '../../defaults/assignmentTimeConstants'
 interface TimeMenuItemsProps extends React.PropsWithChildren {
   handleOnSelect: ({ value, selectValue }: { value: string, selectValue: string }) => void
 }

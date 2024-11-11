@@ -1,7 +1,7 @@
 import type { RouteHandler } from '../../routes.js'
 
 
-export const GET: RouteHandler = async (req, { collaborationServer, res }) => {
+export const GET: RouteHandler = async (_, { collaborationServer }) => {
   try {
     return {
       payload: collaborationServer.getSnapshot()

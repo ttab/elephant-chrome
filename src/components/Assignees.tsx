@@ -8,12 +8,13 @@ import { useRef } from 'react'
 import { AssigneeAvatars } from '@/components/DataItem/AssigneeAvatars'
 import { YBlock } from '@/shared/YBlock'
 import type { EleBlock } from '@/shared/types'
+import { type FormProps } from './Form/Root'
 
-export const Assignees = ({ path, name, placeholder }: {
+export const Assignees = ({ path, name, placeholder, asDialog }: {
   name: string
   placeholder: string
   path: string
-}): JSX.Element | undefined => {
+} & FormProps): JSX.Element | undefined => {
   const allAuthors = useAuthors().map((_) => {
     return {
       value: _.id,
@@ -39,6 +40,7 @@ export const Assignees = ({ path, name, placeholder }: {
           selectedOptions={selectedOptions}
           placeholder={placeholder}
           closeOnSelect={false}
+          modal={asDialog}
           onOpenChange={(isOpen: boolean) => {
             if (setFocused?.current) {
               setFocused.current(isOpen)

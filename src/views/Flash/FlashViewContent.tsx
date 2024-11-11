@@ -232,7 +232,7 @@ export const FlashViewContent = (props: ViewProps & {
                 <TagsIcon size={18} strokeWidth={1.75} className='text-muted-foreground' />
               </div>
 
-              <Byline name='FlashByline' onValidation={handleValidation} />
+              <Byline name='FlashByline' onValidation={handleValidation} validateStateRef={validateStateRef} />
 
               {!selectedPlanning &&
                 <Section onValidation={handleValidation} />

@@ -20,6 +20,7 @@ import { authConfig } from './utils/authConfig.js'
 import logger from './lib/logger.js'
 import { pinoHttp } from 'pino-http'
 import assertEnvs from './lib/assertEnvs.js'
+import { authSession } from './utils/authSession.js'
 
 /*
  * Read and normalize all environment variables
@@ -65,6 +66,7 @@ export async function runServer(): Promise<string> {
   }))
   app.use(cookieParser())
   app.use(BASE_URL, express.json())
+  app.use(authSession)
 
   app.use((err: unknown, req: Request, res: Response, next: NextFunction) => {
     if (err) {
@@ -111,7 +113,7 @@ export async function runServer(): Promise<string> {
   })
 
   process.on('unhandledRejection', (ex) => {
-    logger.fatal('Unhandled rejection', { cause: ex })
+    logger.fatal('Unhandled rejection', ex)
 
     collaborationServer.close().then(() => {
       process.exit(1)

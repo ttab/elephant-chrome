@@ -1,5 +1,4 @@
 import { type Dispatch, type SetStateAction, type MouseEvent } from 'react'
-import { Calendar as CalendarIcon } from '@ttab/elephant-ui/icons'
 
 import {
   Button,
@@ -60,14 +59,10 @@ export const DatePicker = ({ date, changeDate, setDate, forceYear = false }: {
       <PopoverTrigger asChild>
 
         <Button
-          variant={'ghost'}
-          className={cn(
-            'justify-center text-left font-normal h-9 whitespace-nowrap px-2',
-            !date && 'text-muted-foreground'
-          )}
+          variant={'outline'}
+          size={'xs'}
+          className='justify-center text-left font-normal text-sm whitespace-nowrap px-2 text-muted-foreground'
         >
-          <CalendarIcon size={18} strokeWidth={1.75} className='hidden @3xl/view:inline mr-3.5' />
-
           <span className={cn(defaultDate({ forceYear }))}>{formattedDate}</span>
           <span className={cn(longDate({ forceYear }))}>{longFormattedDate}</span>
         </Button>
@@ -89,7 +84,7 @@ export const DatePicker = ({ date, changeDate, setDate, forceYear = false }: {
             }
           }
           }
-          initialFocus
+          // initialFocus
         />
       </PopoverContent>
     </Popover>

@@ -53,18 +53,24 @@ export const PlanningTable = ({ eventId, eventTitle }: {
   }
 
   return (
-    <div className='flex flex-col gap-2 pt-4'>
+    <div className='pl-6'>
       <div className='flex flex-start pb-2'>
         <CreateDocumentDialog
           type='Planning'
           payload={{ eventId, eventTitle, createdDocumentIdRef }}
+          createdDocumentIdRef={createdDocumentIdRef}
         >
           <a
             href='#'
             className='flex flex-start items-center text-sm gap-2 p-2 -ml-2 rounded-sm hover:bg-gray-100'
           >
-            <div className='bg-primary rounded-full text-white w-5 h-5 flex justify-center items-center'>
-              <PlusIcon size={14} strokeWidth={1.75} className='rounded-full' />
+            <div className='bg-primary rounded-full w-5 h-5 relative'>
+              <PlusIcon
+                size={15}
+                strokeWidth={2.25}
+                color='#FFFFFF'
+                className='absolute inset-0 m-auto'
+              />
             </div>
             Lägg till planering
           </a>

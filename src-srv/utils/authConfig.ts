@@ -21,39 +21,43 @@ if (process.env.AUTH_KEYCLOAK_IDP_HINT) {
 }
 
 async function refreshAccessToken(token: JWTPayload): Promise<JWTPayload> {
-  const url = `${process.env.AUTH_KEYCLOAK_ISSUER}/protocol/openid-connect/token`
+  try {
+    const url = `${process.env.AUTH_KEYCLOAK_ISSUER}/protocol/openid-connect/token`
 
-  const params = new URLSearchParams({
-    client_id: process.env.AUTH_KEYCLOAK_ID ?? '',
-    client_secret: process.env.AUTH_KEYCLOAK_SECRET ?? '',
-    grant_type: 'refresh_token',
-    refresh_token: token.refreshToken as string ?? ''
-  })
+    const params = new URLSearchParams({
+      client_id: process.env.AUTH_KEYCLOAK_ID ?? '',
+      client_secret: process.env.AUTH_KEYCLOAK_SECRET ?? '',
+      grant_type: 'refresh_token',
+      refresh_token: token.refreshToken as string ?? ''
+    })
 
-  const response = await fetch(url, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/x-www-form-urlencoded',
-      Accept: 'application/json'
-    },
-    body: params
-  }).catch(ex => {
-    throw new Error('refresh token grant request', { cause: ex })
-  })
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        Accept: 'application/json'
+      },
+      body: params
+    }).catch(ex => {
+      throw new Error('refresh token grant request', { cause: ex })
+    })
 
-  const refreshedTokens = await response.json()
+    const refreshedTokens = await response.json()
 
-  if (!response.ok) {
-    throw new Error(
+    if (!response.ok) {
+      throw new Error(
       `refresh request error response: ${response.statusText}`,
       { cause: refreshedTokens })
-  }
+    }
 
-  return {
-    ...token,
-    accessToken: refreshedTokens.access_token,
-    accessTokenExpires: Date.now() + 150 * 1000,
-    refreshToken: refreshedTokens.refresh_token ?? token.refreshToken
+    return {
+      ...token,
+      accessToken: refreshedTokens.access_token,
+      accessTokenExpires: Date.now() + 150 * 1000,
+      refreshToken: refreshedTokens.refresh_token ?? token.refreshToken
+    }
+  } catch (ex) {
+    return { ...token, error: 'refreshAccessTokenError' }
   }
 }
 
@@ -74,7 +78,7 @@ export const authConfig: AuthConfig = {
       // First time user is logging in
       if (account && user) {
         if (account.access_token) {
-          // @ts-expect-error The sub claim is always present in the JWT
+          // @ts-expect-error sub exists
           user.sub = decodeJwt(account.access_token).sub
         }
         return {

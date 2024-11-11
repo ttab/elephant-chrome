@@ -149,3 +149,45 @@ export function currentDateInUTC(): string {
   const dateString = new Date().toISOString()
   return dateString.split('T')[0]
 }
+
+/**
+* Get date 24-hour timestamp date (16:10) if today's date,
+* otherwise in shortened version of month and day (20 feb 16:10).
+**/
+export function dateInTimestampOrShortMonthDayTimestamp(date: string, locale: string, timeZone: string): string {
+  const inputDate = new Date(date)
+  const today = new Date()
+
+  const isToday = inputDate.getDate() === today.getDate() &&
+    inputDate.getMonth() === today.getMonth() &&
+    inputDate.getFullYear() === today.getFullYear()
+
+  const timeFormatter = new Intl.DateTimeFormat(locale, {
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false,
+    timeZone
+  })
+
+  if (isToday) {
+    return timeFormatter.format(inputDate)
+  } else {
+    const dateFormatter = new Intl.DateTimeFormat(locale, {
+      day: 'numeric',
+      month: 'short',
+      hour: '2-digit',
+      minute: '2-digit',
+      hour12: false,
+      timeZone
+    })
+    return dateFormatter.format(inputDate)
+  }
+}
+
+export function dateToReadableDay(date: Date, locale: string, timeZone: string): string {
+  return new Intl.DateTimeFormat(locale, {
+    timeZone,
+    day: 'numeric',
+    month: 'short'
+  }).format(date)
+}
