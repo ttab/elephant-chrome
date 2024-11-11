@@ -8,11 +8,11 @@ import { ExecutionTimeMenu } from './ExcecutionTimeMenu'
 import { timeSlotTypes, timePickTypes } from '../../defaults/assignmentTimeConstants'
 
 const getTimeSlot = (timeSlot: string): AssignmentValueOption | undefined => {
-  return timeSlotTypes.find(type => type.slots?.includes(timeSlot))
+  return timeSlotTypes.find((type) => type.slots?.includes(timeSlot))
 }
 
 const getMedianSlot = (slots: AssignmentValueOption[], value: string): string => {
-  const slotMedian = slots.find(slot => slot.value === value)?.median
+  const slotMedian = slots.find((slot) => slot.value === value)?.median
   return slotMedian || '-1'
 }
 
@@ -30,7 +30,7 @@ export const AssignmentTime = ({ index }: {
   const { full_day: fullDay, end, publish_slot: publishSlot, end_date: endDate, start_date: startDate } = data || {}
 
   let selectedLabel = ''
-  const selectedOption = timeSlotTypes.concat(timePickTypes).find(option => {
+  const selectedOption = timeSlotTypes.concat(timePickTypes).find((option) => {
     if (fullDay === 'true' && option.value === 'fullday') {
       selectedLabel = option.label
       return true
@@ -125,16 +125,22 @@ export const AssignmentTime = ({ index }: {
   return (
     (assignmentType && assignmentType === 'picture')
       ? (<ExecutionTimeMenu handleOnSelect={onExecutionTimeSelect} index={index} startDate={startDate} />)
-      : (<TimeDeliveryMenu
-          handleOnSelect={handleOnSelect}
-          className='w-fit text-muted-foreground font-sans font-normal text-ellipsis px-2 h-7'
-          selectedOption={selectedOption}
-          index={index}
-      >
-        {selectedOption?.icon
-          ? <div className='flex flex-row p-1'><selectedOption.icon {...iconProps} className={cn('text-foreground', className)} /><div className='pl-1'>{selectedLabel}</div></div>
-          : <CalendarFoldIcon size={18} strokeWidth={1.75} className={'text-muted-foreground'} />
-        }
-      </TimeDeliveryMenu>)
+      : (
+          <TimeDeliveryMenu
+            handleOnSelect={handleOnSelect}
+            className='w-fit text-muted-foreground font-sans font-normal text-ellipsis px-2 h-7'
+            selectedOption={selectedOption}
+            index={index}
+          >
+            {selectedOption?.icon
+              ? (
+                  <div className='flex flex-row p-1'>
+                    <selectedOption.icon {...iconProps} className={cn('text-foreground', className)} />
+                    <div className='pl-1'>{selectedLabel}</div>
+                  </div>
+                )
+              : <CalendarFoldIcon size={18} strokeWidth={1.75} className='text-muted-foreground' />}
+          </TimeDeliveryMenu>
+        )
   )
 }

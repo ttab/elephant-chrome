@@ -177,7 +177,7 @@ export const ExecutionTimeMenu = ({ handleOnSelect, index, startDate }: Executio
       <PopoverContent>
         <div>
           <Calendar
-            mode="range"
+            mode='range'
             required={false}
             selected={selected}
             weekStartsOn={1}
@@ -199,7 +199,8 @@ export const ExecutionTimeMenu = ({ handleOnSelect, index, startDate }: Executio
           </div>
           <div>
             <div className='flex pt-2 pb-2'>
-              <Switch onCheckedChange={handleHasEndTime} checked={hasEndTime} className='self-center'></Switch><label className='text-sm self-center p-2'>Tid från-till</label>
+              <Switch onCheckedChange={handleHasEndTime} checked={hasEndTime} className='self-center'></Switch>
+              <label className='text-sm self-center p-2'>Tid från-till</label>
             </div>
             <div className='flex justify-between border-2 rounded-md border-slate-100'>
               <div className='px-3 py-2 text-sm'>
@@ -218,16 +219,17 @@ export const ExecutionTimeMenu = ({ handleOnSelect, index, startDate }: Executio
           </div>
           <div className='flex items-center justify-end gap-4 pt-2'>
             <Button
-              variant="ghost"
+              variant='ghost'
               onClick={(evt) => {
                 evt.preventDefault()
                 evt.stopPropagation()
                 setOpen(false)
-              }}>
+              }}
+            >
               Avbryt
             </Button>
             <Button
-              variant="outline"
+              variant='outline'
               disabled={hasEndTime ? (!startTimeValid || !endTimeValid) : !startTimeValid}
               onClick={(evt) => {
                 evt.preventDefault()
