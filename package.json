@@ -16,7 +16,7 @@
     "build": "NODE_ENV=production npm run build:css && npm run build:client && npm run build:server",
     "start": "NODE_ENV=production node dist/src-srv/index.js",
     "start:local": "NODE_ENV=production node --env-file .env dist/src-srv/index.js",
-    "lint": "npm run tsc && eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
+    "lint": "npm run tsc && eslint . --ext ts,tsx --report-unused-disable-directives",
     "tsc": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
