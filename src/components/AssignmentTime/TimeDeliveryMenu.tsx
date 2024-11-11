@@ -43,20 +43,23 @@ export const TimeDeliveryMenu = ({
           {children}
         </Button>
       </PopoverTrigger>
-      <PopoverContent>
+
+      <PopoverContent className='p-0'>
         <Command>
           <CommandInput placeholder='' />
           <CommandList>
             <CommandEmpty>Ingenting hittades</CommandEmpty>
-            <CommandGroup>
-              <TimeSlotItems handleOnSelect={handleOnSelect} />
-            </CommandGroup>
-            <CommandGroup>
-              <TimeSelectItem handleOnSelect={handleOnSelect} index={index} handleParentOpenChange={handleOpenChange} />
-            </CommandGroup>
+            <div className='flex flex-col divide-y'>
+              <CommandGroup>
+                <TimeSlotItems handleOnSelect={handleOnSelect} />
+              </CommandGroup>
+              <CommandGroup>
+                <TimeSelectItem handleOnSelect={handleOnSelect} index={index} handleParentOpenChange={handleOpenChange} />
+              </CommandGroup>
+            </div>
           </CommandList>
         </Command>
       </PopoverContent>
-    </Popover>
+    </Popover >
   )
 }

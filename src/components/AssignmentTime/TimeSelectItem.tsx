@@ -54,45 +54,50 @@ export const TimeSelectItem = ({ handleOnSelect, index, handleParentOpenChange }
 
   return (
     <CommandItem
-      className='border-t'
       key={timePickTypes[0].label}
       value={timePickTypes[0].label}
     >
       <Popover open={open} onOpenChange={handleOpenChange}>
         <PopoverTrigger asChild>
-          <div className='flex flex-row space-x-2 items-center  pt-2'>
+          <div className='flex flex-row space-x-2 items-center grow'>
             {timePickType.icon && <timePickType.icon {...timePickType.iconProps} />}
             <div>Välj tid</div>
           </div>
         </PopoverTrigger>
-        <PopoverContent>
-          <Command>
-            <TimeInput defaultTime={endTime} handleOnChange={handleTimeChange} handleOnSelect={handleOnTimeSelect} setOpen={setOpen} />
-            <div className='flex items-center justify-end gap-4 p-2'>
-              <Button
-                variant="ghost"
-                onClick={(evt) => {
-                  evt.preventDefault()
-                  evt.stopPropagation()
-                  setOpen(false)
-                  handleParentOpenChange(false)
-                }}>
-                Avbryt
-              </Button>
 
-              <Button
-                variant="outline"
-                onClick={(evt) => {
-                  evt.preventDefault()
-                  evt.stopPropagation()
-                  handleOnSelect({ value: timePickType.value, selectValue: endTime })
-                  setOpen(false)
-                  handleParentOpenChange(false)
-                }}
-                disabled={!valid}
-              >
-                Klar
-              </Button>
+        <PopoverContent className='p-0'>
+          <Command>
+            <div className='py-2'>
+              <div className='p-2'>
+                <TimeInput defaultTime={endTime} handleOnChange={handleTimeChange} handleOnSelect={handleOnTimeSelect} setOpen={setOpen} />
+              </div>
+
+              <div className='flex items-center justify-end gap-4 px-2 pt-2'>
+                <Button
+                  variant="ghost"
+                  onClick={(evt) => {
+                    evt.preventDefault()
+                    evt.stopPropagation()
+                    setOpen(false)
+                    handleParentOpenChange(false)
+                  }}>
+                  Avbryt
+                </Button>
+
+                <Button
+                  variant="outline"
+                  onClick={(evt) => {
+                    evt.preventDefault()
+                    evt.stopPropagation()
+                    handleOnSelect({ value: timePickType.value, selectValue: endTime })
+                    setOpen(false)
+                    handleParentOpenChange(false)
+                  }}
+                  disabled={!valid}
+                >
+                  Klar
+                </Button>
+              </div>
             </div>
           </Command>
         </PopoverContent>
