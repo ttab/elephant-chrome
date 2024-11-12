@@ -28,7 +28,6 @@ import {
 import { PlanningTable } from './components/PlanningTable'
 import { Error } from '../Error'
 import { Form } from '@/components/Form'
-// import { EventTimeMenu } from './components/EventTime'
 import { EventTimeMenu } from './components/EventTime'
 
 const meta: ViewMetadata = {
