@@ -13,8 +13,9 @@ import { useYValue } from '@/hooks/useYValue'
 import { dateToReadableDateTime } from '@/lib/datetime'
 import { useRegistry } from '@/hooks'
 import { type AssignmentData } from './types'
-import { TimeInput } from './TimeInput'
+import { TimeInput } from '../TimeInput'
 import { FromDateTimeLabel, FromToDateTimeLabel } from './ExecutionTimeLabel'
+import { createDateWithTime } from '@/lib/datetime'
 interface ExecutionTimeItemsProps extends React.PropsWithChildren {
   handleOnSelect: ({ executionStart, executionEnd }: { executionStart: string | undefined, executionEnd: string | undefined }) => void
   className?: string
@@ -24,17 +25,6 @@ interface ExecutionTimeItemsProps extends React.PropsWithChildren {
 
 const testValid = (time: string): boolean => {
   return (/^([0-1]?[0-9]|2[0-4]):([0-5][0-9])(:[0-5][0-9])?$/.test(time))
-}
-
-const createDateWithTime = (date: Date, time: string): Date => {
-  const [hours, minutes] = time.split(':').map((str) => parseInt(str, 10))
-  return new Date(
-    date.getFullYear(),
-    date.getMonth(),
-    date.getDate(),
-    hours,
-    minutes
-  )
 }
 
 export const ExecutionTimeMenu = ({ handleOnSelect, index, startDate }: ExecutionTimeItemsProps): JSX.Element => {

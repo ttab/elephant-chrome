@@ -1,10 +1,9 @@
-import React, { useState, useRef, useEffect, type ChangeEventHandler } from 'react'
+import React, { useState, useEffect } from 'react'
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
   Calendar,
-  Input,
   type CalendarTypes,
   Button,
   Switch
@@ -12,7 +11,9 @@ import {
 import { useYValue } from '@/hooks/useYValue'
 import { useRegistry } from '@/hooks'
 import { CalendarClockIcon } from '@ttab/elephant-ui/icons'
-import { dateToReadableDateTime, dateToReadableTime } from '@/lib/datetime'
+import { dateToReadableDateTime, dateToReadableTime, dateToReadableDay } from '@/lib/datetime'
+import { TimeInput } from '@/components/TimeInput'
+import { createDateWithTime } from '@/lib/datetime'
 
 interface EventData {
   end: string
@@ -23,14 +24,6 @@ interface EventData {
 
 interface EventTimeItemsProps extends React.PropsWithChildren {
   startDate?: string
-}
-
-const dateToReadableDay = (date: Date, locale: string, timeZone: string): string => {
-  return new Intl.DateTimeFormat(locale, {
-    timeZone,
-    day: 'numeric',
-    month: 'short'
-  }).format(date)
 }
 
 const isSameDate = (fromDate: string, toDate: string): boolean => {
@@ -87,14 +80,12 @@ const dateMidnight = (date: Date): Date => {
 
 export const EventTimeMenu = ({ startDate }: EventTimeItemsProps): JSX.Element => {
   const [open, setOpen] = useState(false)
-  const inputRef = useRef(null)
   const [eventData, setEventData] = useYValue<EventData>('meta.core/event[0].data')
-  const [selected, setSelected] = useState<Date[]>([new Date(`${startDate}T00:00:00`)])
+  const [selected, setSelected] = useState<CalendarTypes.DateRange | undefined>({ from: new Date(`${startDate}T00:00:00`) })
   const [startTimeValue, setStartTimeValue] = useState<string>('00:00')
   const [endTimeValue, setEndTimeValue] = useState<string>('23:59')
   const [startDateValue, setStartDateValue] = useState<string>()
   const [endDateValue, setEndDateValue] = useState<string>()
-  const [hasEndTime, setHasEndTime] = useState<boolean>()
   const { locale, timeZone } = useRegistry()
   const [mounted, setMounted] = useState(false)
   const [startTimeValid, setStartTimeValid] = useState(false)
@@ -103,8 +94,8 @@ export const EventTimeMenu = ({ startDate }: EventTimeItemsProps): JSX.Element =
 
   useEffect(() => {
     if (!mounted && eventData) {
-      const dates: Date[] = []
-
+      console.log('XXX eventData', eventData)
+      const savedDates: CalendarTypes.DateRange = { from: undefined, to: undefined }
       setFullDay(eventData?.dateGranularity === 'date')
 
       if (eventData?.start) {
@@ -118,8 +109,8 @@ export const EventTimeMenu = ({ startDate }: EventTimeItemsProps): JSX.Element =
         setStartTimeValid(testValid(startValue))
 
         const startDateObject = new Date(eventData.start)
-        const newStartDayWithTime = dateMidnight(startDateObject)
-        dates.push(newStartDayWithTime)
+        const newStartDayWithTime = createDateWithTime(startDateObject, '00:00')
+        savedDates.from = newStartDayWithTime
       }
 
       if (eventData?.end) {
@@ -130,25 +121,22 @@ export const EventTimeMenu = ({ startDate }: EventTimeItemsProps): JSX.Element =
         })
         setEndTimeValue(endValue)
         setEndDateValue(eventData.end)
-        setHasEndTime(true)
         setEndTimeValid(testValid(endValue))
 
         const endDate = new Date(eventData.end)
-        const newEndDayWithTime = dateMidnight(endDate)
-        if (dates.length === 1 && (dates[0].getTime() !== newEndDayWithTime.getTime())) {
-          dates.push(newEndDayWithTime)
-        }
+        const newEndDayWithTime = createDateWithTime(endDate, '00:00')
+        savedDates.to = newEndDayWithTime
       }
 
-      setSelected(dates)
+      setSelected(savedDates)
       setMounted(true)
     }
   }, [eventData, mounted])
 
   const handleOnSelect =
     ({ eventStart, eventEnd, fullDay }:
-    { eventStart: string | undefined, eventEnd: string | undefined, fullDay: boolean | undefined }):
-    void => {
+      { eventStart: string | undefined, eventEnd: string | undefined, fullDay: boolean | undefined }):
+      void => {
       if (!eventStart || !eventEnd) { return }
       let startDate = eventStart
       let endDate = eventEnd
@@ -178,85 +166,50 @@ export const EventTimeMenu = ({ startDate }: EventTimeItemsProps): JSX.Element =
       setEventData(newEventData)
     }
 
-  const handleStartTimeChange: ChangeEventHandler<HTMLInputElement> = (e) => {
-    const time = e.target.value
-    setStartTimeValue(time)
+  const handleStartTimeChange = (time: string): void => {
+
     const valid = testValid(time)
     setStartTimeValid(valid)
-    if (valid) {
+    if (valid && selected?.from) {
+      setStartTimeValue(time)
       const [hours, minutes] = time.split(':').map((str: string) => parseInt(str, 10))
-      const newSelectedDate = new Date(selected[0])
+      const newSelectedDate = new Date(selected.from)
       newSelectedDate.setHours(hours, minutes)
       setStartDateValue(newSelectedDate.toISOString())
     }
   }
 
-  const handleEndTime = (time: string): void => {
-    const [hours, minutes] = time.split(':').map((str: string) => parseInt(str, 10))
+  const handleEndTimeChange = (time: string): void => {
 
-    if (selected.length === 2) {
-      const newSelectedDate = new Date(selected[1])
-      newSelectedDate.setHours(hours, minutes)
-      setEndDateValue(newSelectedDate.toISOString())
-    } else {
-      const newDate = new Date(selected[0])
-      newDate.setHours(hours, minutes)
-      setEndDateValue(newDate.toISOString())
-    }
-  }
-  const handleEndTimeChange: ChangeEventHandler<HTMLInputElement> = (e) => {
-    const time = e.target.value
-    setEndTimeValue(time)
     const valid = testValid(time)
     setEndTimeValid(valid)
-    valid && handleEndTime(time)
+
+      if (valid && selected?.to) {
+        setEndTimeValue(time)
+        const [hours, minutes] = time.split(':').map((str: string) => parseInt(str, 10))
+        const newSelectedDate = new Date(selected.to)
+        newSelectedDate.setHours(hours, minutes)
+        setEndDateValue(newSelectedDate.toISOString())
+      }
   }
 
-  const handleDayClick: CalendarTypes.DayClickEventHandler = (day, modifiers) => {
-    const selectedDays = [...selected]
-
-    if (modifiers.selected) {
-      const index = selected.findIndex((d) => d.getTime() === day.getTime())
-      selectedDays.splice(index, 1)
-    } else {
-      selectedDays.push(day)
-    }
-    selectedDays.sort((aDay, bDay) => aDay.getTime() - bDay.getTime())
-
-    if (selectedDays.length > 0) {
-      const endDate = selectedDays.length === 2 ? new Date(selectedDays[1]) : new Date(selectedDays[0])
-      const [hours, minutes] = endTimeValue.split(':').map((str) => parseInt(str, 10))
-      const newDayWithTime = new Date(
-        endDate.getFullYear(),
-        endDate.getMonth(),
-        endDate.getDate(),
-        hours,
-        minutes
-      )
-      setEndDateValue(newDayWithTime.toISOString())
-
-      const startDate = new Date(selectedDays[0])
-      const [startHours, startMinutes] = startTimeValue.split(':').map((str) => parseInt(str, 10))
-
-      const newStartDayWithTime = new Date(
-        startDate.getFullYear(),
-        startDate.getMonth(),
-        startDate.getDate(),
-        startHours,
-        startMinutes
-      )
-      setStartDateValue(newStartDayWithTime.toISOString())
-    } else {
-      setEndDateValue('')
-    }
-
-    if (selectedDays.length === 2) {
-      setHasEndTime(true)
-    }
-
+  const handleOnSelectDay: CalendarTypes.OnSelectHandler<CalendarTypes.DateRange | undefined> = (selectedDays) => {
     setSelected(selectedDays)
-  }
+    if (selectedDays?.from && !selectedDays.to) {
+      const newStartDayWithTime = createDateWithTime(selectedDays.from, startTimeValue)
+      const endDateValueWithTime = createDateWithTime(selectedDays.from, endTimeValue)
+      setStartDateValue(newStartDayWithTime.toISOString())
+      setEndDateValue(endDateValueWithTime.toISOString())
+    }
 
+    if (selectedDays?.to && selectedDays.from) {
+      const endDayWithTime = createDateWithTime(selectedDays.to, endTimeValue)
+      setEndDateValue(endDayWithTime.toISOString())
+      const startDayWithTime = createDateWithTime(selectedDays.from, startTimeValue)
+      setStartDateValue(startDayWithTime.toISOString())
+      setEndTimeValid(testValid(endTimeValue))
+    }
+  }
 
   const handleOpenChange = (isOpen: boolean): void => {
     setOpen(isOpen)
@@ -266,11 +219,21 @@ export const EventTimeMenu = ({ startDate }: EventTimeItemsProps): JSX.Element =
     setFullDay(checked)
   }
 
+  const handleOnTimeSelect = (): void => {
+    if (startTimeValid && endTimeValid) {
+      handleOnSelect({
+        eventStart: startDateValue,
+        eventEnd: endDateValue,
+        fullDay
+      })
+    }
+  }
+
   return (
     <Popover open={open} onOpenChange={handleOpenChange}>
       <PopoverTrigger asChild>
         <div className='flex flex-row space-x-2 items-center align-middle cursor-pointer'>
-          <div className='pr-2'><CalendarClockIcon size={18} strokeWidth = {1.75} className='text-muted-foreground' /></div>
+          <div className='pr-2'><CalendarClockIcon size={18} strokeWidth={1.75} className='text-muted-foreground' /></div>
           {fullDay
             ? <DateLabel fromDate={eventData?.start} toDate={eventData?.end} locale={locale} timeZone={timeZone} />
             : <DateTimeLabel fromDate={eventData?.start} toDate={eventData?.end} locale={locale} timeZone={timeZone} />
@@ -280,13 +243,11 @@ export const EventTimeMenu = ({ startDate }: EventTimeItemsProps): JSX.Element =
       <PopoverContent asChild align='center' side='bottom' sideOffset={-150}>
         <div>
           <Calendar
-            mode='multiple'
-            min={1}
-            max={2}
+            mode="range"
+            required={false}
             selected={selected}
             weekStartsOn={1}
-            onDayClick={handleDayClick}
-            initialFocus
+            onSelect={handleOnSelectDay}
             className='p-0'
           />
           <div className='flex pt-2 pb-2 '>
@@ -297,30 +258,12 @@ export const EventTimeMenu = ({ startDate }: EventTimeItemsProps): JSX.Element =
               {startDateValue && dateToReadableDay(new Date(startDateValue), locale, timeZone)}
             </div>
             <div>
-              <Input
-                type='time'
-                ref={inputRef}
-                value={fullDay ? '' : startTimeValue}
-                onChange={handleStartTimeChange}
+              <TimeInput
+                defaultTime={startTimeValue}
+                handleOnChange={handleStartTimeChange}
+                handleOnSelect={handleOnTimeSelect}
+                setOpen={setOpen}
                 disabled={fullDay}
-                placeholder={'hh:mm ex 11:00'}
-                className="h-9 border-none"
-                onKeyDown={(e) => {
-                  if (e.key === 'Escape') {
-                    setOpen(false)
-                  }
-                  if (e.key === 'Enter') {
-                    e.preventDefault()
-
-                    handleOnSelect({
-                      eventStart: startDateValue,
-                      eventEnd: endDateValue,
-                      fullDay
-                    })
-
-                    setOpen(false)
-                  }
-                }}
               />
             </div>
           </div>
@@ -329,30 +272,12 @@ export const EventTimeMenu = ({ startDate }: EventTimeItemsProps): JSX.Element =
               {endDateValue && dateToReadableDay(new Date(endDateValue), locale, timeZone)}
             </div>
             <div>
-              <Input
-                type='time'
-                ref={inputRef}
-                value={fullDay ? '' : endTimeValue}
-                onChange={handleEndTimeChange}
+              <TimeInput
+                defaultTime={endTimeValue}
+                handleOnChange={handleEndTimeChange}
+                handleOnSelect={handleOnTimeSelect}
+                setOpen={setOpen}
                 disabled={fullDay}
-                placeholder={'hh:mm ex 11:00'}
-                className="h-9 border-none"
-                onKeyDown={(e) => {
-                  if (e.key === 'Escape') {
-                    setOpen(false)
-                  }
-                  if (e.key === 'Enter') {
-                    e.preventDefault()
-                    if (startTimeValid && endTimeValid) {
-                      handleOnSelect({
-                        eventStart: startDateValue,
-                        eventEnd: endDateValue,
-                        fullDay
-                      })
-                      setOpen(false)
-                    }
-                  }
-                }}
               />
             </div>
           </div>
@@ -369,7 +294,7 @@ export const EventTimeMenu = ({ startDate }: EventTimeItemsProps): JSX.Element =
             </Button>
             <Button
               variant="outline"
-              disabled={hasEndTime ? (!startTimeValid || !endTimeValid) : !startTimeValid}
+              disabled={!fullDay && !startTimeValid || !endTimeValid}
               onClick={(evt) => {
                 evt.preventDefault()
                 evt.stopPropagation()
