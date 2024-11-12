@@ -38,7 +38,8 @@ const DateTimeLabel = ({ fromDate, toDate, locale, timeZone }: { fromDate?: stri
   const to = sameDay ? dateToReadableTime(new Date(toDate), locale, timeZone) : dateToReadableDateTime(new Date(toDate), locale, timeZone)
   return (
     <div className='font-sans text-sm'>
-      {from} {!sameTime ? ` - ${to}` : ''}
+      {from}
+      {!sameTime ? ` - ${to}` : ''}
     </div>
   )
 }
@@ -53,7 +54,12 @@ const DateLabel = ({ fromDate, toDate, locale, timeZone }: { fromDate?: string |
   const from = dateToReadableDay(fromDateObject, locale, timeZone)
   const to = dateToReadableDay(toDateObject, locale, timeZone)
   return (
-    <div className='font-sans text-sm'>Heldag {sameDay ? from : `${from} - ${to}`}</div>
+    <div className='font-sans text-sm'>
+      Heldag
+      {sameDay
+        ? from
+        : `${from} - ${to}`}
+    </div>
   )
 }
 
@@ -128,9 +134,11 @@ export const EventTimeMenu = (): JSX.Element => {
     }
   }, [eventData, mounted])
 
-  const handleOnSelect =
-    ({ eventStart, eventEnd, fullDay }: { eventStart: string | undefined, eventEnd: string | undefined, fullDay: boolean | undefined }): void => {
-      if (!eventStart || !eventEnd) { return }
+  const handleOnSelect
+    = ({ eventStart, eventEnd, fullDay }: { eventStart: string | undefined, eventEnd: string | undefined, fullDay: boolean | undefined }): void => {
+      if (!eventStart || !eventEnd) {
+        return
+      }
       let startDate = eventStart
       let endDate = eventEnd
       if (fullDay) {
@@ -227,14 +235,13 @@ export const EventTimeMenu = (): JSX.Element => {
           <div className='pr-2'><CalendarClockIcon size={18} strokeWidth={1.75} className='text-muted-foreground' /></div>
           {fullDay
             ? <DateLabel fromDate={eventData?.start} toDate={eventData?.end} locale={locale} timeZone={timeZone} />
-            : <DateTimeLabel fromDate={eventData?.start} toDate={eventData?.end} locale={locale} timeZone={timeZone} />
-          }
+            : <DateTimeLabel fromDate={eventData?.start} toDate={eventData?.end} locale={locale} timeZone={timeZone} />}
         </div>
       </PopoverTrigger>
       <PopoverContent asChild align='center' side='bottom' sideOffset={-150}>
         <div>
           <Calendar
-            mode="range"
+            mode='range'
             required={false}
             selected={selected}
             weekStartsOn={1}
@@ -242,7 +249,8 @@ export const EventTimeMenu = (): JSX.Element => {
             className='p-0'
           />
           <div className='flex pt-2 pb-2 '>
-            <Switch onCheckedChange={checked => handleCheckedChange(checked)} checked={fullDay} className=' self-center' /><label className='text-sm self-center p-2'>Heldag</label>
+            <Switch onCheckedChange={(checked) => handleCheckedChange(checked)} checked={fullDay} className=' self-center' />
+            <label className='text-sm self-center p-2'>Heldag</label>
           </div>
           <div className='flex justify-between border-2 rounded-md border-slate-100'>
             <div className='px-3 py-2 text-sm text-gray-400'>
@@ -275,16 +283,17 @@ export const EventTimeMenu = (): JSX.Element => {
 
           <div className='flex items-center justify-end gap-4 pt-2'>
             <Button
-              variant="ghost"
+              variant='ghost'
               onClick={(evt) => {
                 evt.preventDefault()
                 evt.stopPropagation()
                 setOpen(false)
-              }}>
+              }}
+            >
               Avbryt
             </Button>
             <Button
-              variant="outline"
+              variant='outline'
               disabled={!fullDay && (!startTimeValid || !endTimeValid)}
               onClick={(evt) => {
                 evt.preventDefault()
