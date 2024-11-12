@@ -8,7 +8,7 @@ import {
 import type { NavigationState, NavigationAction, ContentState } from '@/types'
 import { NavigationActionType } from '@/types'
 
-import { useHistory, useResize } from '@/hooks'
+import { useHistory, useResize, useNavigationKeys } from '@/hooks'
 import {
   minimumSpaceRequired,
   navigationReducer,
@@ -49,6 +49,33 @@ export const NavigationProvider = ({ children }: PropsWithChildren): JSX.Element
     debouncedCalculateView(history, state, dispatch)
     // eslint-disable-next-line
   }, [screenSize])
+
+
+  // Let the user navigate between open views using <- and ->
+  useNavigationKeys({
+    onNavigation: (event) => {
+      if (!historyState) {
+        return
+      }
+
+      const content: ContentState[] = historyState.contentState
+      let activeIndex = content.findIndex((obj) => obj.viewId === state.active)
+
+      if (event.key === 'ArrowLeft' && activeIndex > 0) {
+        activeIndex--
+      } else if (event.key === 'ArrowRight' && activeIndex < content.length - 1) {
+        activeIndex++
+      } else {
+        return
+      }
+
+      dispatch({
+        type: NavigationActionType.ACTIVE,
+        viewId: content[activeIndex].viewId
+      })
+    },
+    keys: ['ArrowLeft', 'ArrowRight']
+  })
 
   return (
     <NavigationContext.Provider value={{ state, dispatch }}>

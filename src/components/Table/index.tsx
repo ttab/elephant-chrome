@@ -72,6 +72,8 @@ export const Table = <TData, TValue>({
     rowRefs.current.get(rowId)?.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
   }, [rowRefs])
 
+  // TODO: We should extend useNavigationKeys hook to accomodate this functionality
+  // TODO: We should then remove isEditableTarget as it is built into useNavigationKeys
   const keyDownHandler = useCallback((evt: KeyboardEvent): void => {
     if (!isActiveView || isEditableTarget(evt)) {
       return
@@ -184,7 +186,7 @@ export const Table = <TData, TValue>({
               key={subRow.id}
               className='flex items-center cursor-default scroll-mt-10'
               data-state={subRow.getIsSelected() && 'selected'}
-              onClick={(event: MouseEvent<HTMLTableRowElement>) => handleOpen(event, subRow) }
+              onClick={(event: MouseEvent<HTMLTableRowElement>) => handleOpen(event, subRow)}
               ref={(el) => {
                 if (el) {
                   rowRefs.current.set(subRow.id, el)
@@ -200,7 +202,7 @@ export const Table = <TData, TValue>({
                     'first:pl-2 last:pr-2 sm:first:pl-6 sm:last:pr-6',
                     cell.column.columnDef.meta?.className
                   )}
-                  >
+                >
                   {flexRender(
                     cell.column.columnDef.cell,
                     cell.getContext()
