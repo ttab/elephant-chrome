@@ -10,7 +10,7 @@ export const Action = ({ onDialogClose = undefined, children }: PropsWithChildre
   const { state, dispatch } = useNavigation()
   const { viewId } = useView()
 
-  const closer = onDialogClose || (() => handleClose({ viewId, dispatch }))
+  const closer = onDialogClose || (() => handleClose({ viewId, state, dispatch }))
 
   return (
     <div className="flex flex-1 gap-2 items-center justify-end h-14">
