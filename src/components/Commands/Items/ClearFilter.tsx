@@ -8,14 +8,16 @@ export const ClearFilter = (): JSX.Element | null => {
   const { columnFilters, globalFilter } = table.getState()
 
   return columnFilters.length || globalFilter
-    ? <CommandItem
-        onSelect={() => {
-          table.resetColumnFilters()
-          table.resetGlobalFilter()
-        }}
-    >
-      <X size={18} strokeWidth={1.75} />
-      Rensa filter
-    </CommandItem>
+    ? (
+        <CommandItem
+          onSelect={() => {
+            table.resetColumnFilters()
+            table.resetGlobalFilter()
+          }}
+        >
+          <X size={18} strokeWidth={1.75} />
+          Rensa filter
+        </CommandItem>
+      )
     : null
 }

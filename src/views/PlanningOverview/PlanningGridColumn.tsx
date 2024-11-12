@@ -53,13 +53,13 @@ export const PlanningGridColumn = ({ date, items }: PlanningGridColumnProps): JS
 
   return (
     <div>
-      <div className="border-b pt-3 pb-3 px-3">
-        <div className="text-sm text-muted-foreground leading-tight">{weekday}</div>
-        <div className="text-lg text-muted-foreground leading-tight">{day}</div>
+      <div className='border-b pt-3 pb-3 px-3'>
+        <div className='text-sm text-muted-foreground leading-tight'>{weekday}</div>
+        <div className='text-lg text-muted-foreground leading-tight'>{day}</div>
       </div>
 
-      <div className="border-r h-full flex flex-col p-4 gap-8">
-        {items.map(item => {
+      <div className='border-r h-full flex flex-col p-4 gap-8'>
+        {items.map((item) => {
           const visibility = item._source['document.meta.core_planning_item.data.public'][0] === 'true' ? 'public' : 'internal'
           const title = item._source['document.title'][0]
           const slugLines = item._source['document.meta.core_assignment.meta.tt_slugline.value']
@@ -70,17 +70,18 @@ export const PlanningGridColumn = ({ date, items }: PlanningGridColumnProps): JS
           const section = sections.find((section) => section.id === item._source['document.rel.section.uuid'][0])
           const activeUsers = users?.[deliverable]
 
-          return <PlanningItem
-            key={id}
-            id={id}
-            visibility={visibility}
-            title={title}
-            slugLine={slugLine}
-            section={section}
-            users={activeUsers}
-          />
-        })
-        }
+          return (
+            <PlanningItem
+              key={id}
+              id={id}
+              visibility={visibility}
+              title={title}
+              slugLine={slugLine}
+              section={section}
+              users={activeUsers}
+            />
+          )
+        })}
       </div>
     </div>
   )
@@ -98,34 +99,35 @@ function PlanningItem(props: {
   const { visibility, title, slugLine, section, users } = props
 
   return (
-    <div className="flex gap-2">
-      <StatusIndicator visibility={visibility} className="pt-0.5 flex-none" />
+    <div className='flex gap-2'>
+      <StatusIndicator visibility={visibility} className='pt-0.5 flex-none' />
 
-      <div className="flex flex-col w-full gap-2">
-        <div className="font-medium text-sm line-clamp-3">
+      <div className='flex flex-col w-full gap-2'>
+        <div className='font-medium text-sm line-clamp-3'>
           {title}
         </div>
 
-        <div className="flex justify-between gap-2">
-          <span className="text-sm text-muted-foreground whitespace-nowrap overflow-hidden text-ellipsis">{slugLine}</span>
-          {!!section &&
-            <SectionBadge title={section.title} />
-          }
+        <div className='flex justify-between gap-2'>
+          <span className='text-sm text-muted-foreground whitespace-nowrap overflow-hidden text-ellipsis'>{slugLine}</span>
+          {!!section
+          && <SectionBadge title={section.title} />}
         </div>
 
         <div className='flex'>
           <AvatarGroup>
-            {Object.keys(users || {}).map(user => {
-              return <span
-                key={users?.[user].userName}
-                title={`${users?.[user].userName} (${users?.[user].count})`}
-              >
-                <Avatar size="sm" variant="muted" value={users?.[user].userName || ''} />
-              </span>
+            {Object.keys(users || {}).map((user) => {
+              return (
+                <span
+                  key={users?.[user].userName}
+                  title={`${users?.[user].userName} (${users?.[user].count})`}
+                >
+                  <Avatar size='sm' variant='muted' value={users?.[user].userName || ''} />
+                </span>
+              )
             })}
           </AvatarGroup>
         </div>
       </div>
-    </div >
+    </div>
   )
 }

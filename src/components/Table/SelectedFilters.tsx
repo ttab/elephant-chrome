@@ -20,20 +20,22 @@ const SelectedBadge = ({ value, options }: SelectedBase & {
     if (value.length > 2) {
       return (
         <Badge
-          variant="secondary"
-          className="rounded-sm px-1 font-normal"
-      >
-          {value.length} selected
+          variant='secondary'
+          className='rounded-sm px-1 font-normal'
+        >
+          {value.length}
+          {' '}
+          selected
         </Badge>
       )
     } else {
       return value.map((v, index: number) => (
         <div key={index}>
           <Badge
-            variant="secondary"
-            className="rounded-sm px-1 font-normal mr-1"
-        >
-            {typeof v === 'string' ? options?.find(option => option.value === v)?.label || v : ''}
+            variant='secondary'
+            className='rounded-sm px-1 font-normal mr-1'
+          >
+            {typeof v === 'string' ? options?.find((option) => option.value === v)?.label || v : ''}
           </Badge>
         </div>
       ))
@@ -47,9 +49,9 @@ const SelectedButton = <TData, >({ id, value, table }: SelectedButtonProps<TData
 
   return (
     <Button
-      variant="outline"
-      size="sm"
-      className="h-8 border-dashed"
+      variant='outline'
+      size='sm'
+      className='h-8 border-dashed'
       onClick={() => table.resetColumnFilters()}
     >
       {FilterIcon && <FilterIcon size={18} strokeWidth={1.75} className='mr-2' />}
@@ -64,21 +66,22 @@ export const SelectedFilters = <TData, >({ table }: { table: Table<TData> }): Re
 
   const GlobalFilter = globalFilter
     ? (
-      <Button
-        key='globalFilter'
-        variant='outline'
-        size='sm'
-        className='h-8 border-dashed'
-        onClick={() => table.resetGlobalFilter()}
-      >
-        <Search className='h4 w-4 mr-2' />
-        {`"${globalFilter}"`}
-        <X className='h-4 w-4 ml-2' />
-      </Button>)
+        <Button
+          key='globalFilter'
+          variant='outline'
+          size='sm'
+          className='h-8 border-dashed'
+          onClick={() => table.resetGlobalFilter()}
+        >
+          <Search className='h4 w-4 mr-2' />
+          {`"${globalFilter}"`}
+          <X className='h-4 w-4 ml-2' />
+        </Button>
+      )
     : null
 
   const ColumnFilters = columnFilters.map((filter, index) => (
     <SelectedButton key={index} id={filter.id} value={filter.value} table={table} />
   ))
-  return [...ColumnFilters, GlobalFilter].filter(x => x)
+  return [...ColumnFilters, GlobalFilter].filter((x) => x)
 }

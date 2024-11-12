@@ -7,7 +7,7 @@ interface Reset {
 export function handleClose({ viewId, dispatch }: Reset): void {
   const content: ContentState[] = history.state.contentState
 
-  const newContent = content.filter(obj => obj.viewId !== viewId)
+  const newContent = content.filter((obj) => obj.viewId !== viewId)
   const newActive = newContent[newContent.length - 1]
 
 

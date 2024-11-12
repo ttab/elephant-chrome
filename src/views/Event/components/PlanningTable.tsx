@@ -30,7 +30,7 @@ export const PlanningTable = ({ eventId, eventTitle }: {
       size: 100
     })
 
-    return statusResults.hits.map(hit => ({
+    return statusResults.hits.map((hit) => ({
       title: hit._source['document.title'][0],
       uuid: hit._id
     }))
@@ -76,17 +76,20 @@ export const PlanningTable = ({ eventId, eventTitle }: {
           </a>
         </CreateDocumentDialog>
       </div>
-      {data?.map(planning => (
+      {data?.map((planning) => (
         <div key={planning.uuid}>
-          <a href='#'
+          <a
+            href='#'
             className='flex flex-start items-center text-sm gap-2 p-2 -ml-2 rounded-sm hover:bg-gray-100'
             onClick={(evt) => {
               openPlanning(evt, { id: planning.uuid })
-            }}>
+            }}
+          >
             <CalendarDays strokeWidth={1.75} size={18} />
             {planning.title}
           </a>
-        </div>))}
+        </div>
+      ))}
       <NewItems.Root>
         <NewItems.List type='Planning' createdIdRef={createdDocumentIdRef} />
       </NewItems.Root>

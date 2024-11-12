@@ -28,16 +28,19 @@ export const TextBox = ({ icon, placeholder, path, className, singleLine = false
 
   if (content === undefined) {
     // Empty placeholder while waiting for data
-    return <div className={cn('h-10 w-full flex flex-row', className)}>
-      <div className="pt-1.5">
-        {icon}
+    return (
+      <div className={cn('h-10 w-full flex flex-row', className)}>
+        <div className='pt-1.5'>
+          {icon}
+        </div>
       </div>
-    </div>
+    )
   }
 
   return (
     <>
-      {!!provider && content &&
+      {!!provider && content
+      && (
         <Textbit.Root
           verbose={true}
           debounce={0}
@@ -60,7 +63,7 @@ export const TextBox = ({ icon, placeholder, path, className, singleLine = false
             icon={icon}
           />
         </Textbit.Root>
-      }
+      )}
     </>
   )
 }
@@ -101,9 +104,11 @@ const TextboxEditable = ({ provider, user, icon: Icon, content, singleLine }: {
   return (
     <div className='flex flex-col space-y-2'>
       <div className='flex space-x-2'>
-        {Icon && <div className='pt-1.5'>
-          {Icon}
-        </div>}
+        {Icon && (
+          <div className='pt-1.5'>
+            {Icon}
+          </div>
+        )}
         <div className='flex-grow'>
           <Textbit.Editable
             yjsEditor={yjsEditor}

@@ -28,13 +28,15 @@ function EditableSlugline({ path, setActive }: {
 }): JSX.Element {
   const [slugLine] = useYValue<string | undefined>(path)
 
-  return <Button
-    className='text-muted-foreground h-7 font-normal text-sm whitespace-nowrap'
-    variant='outline'
-    onClick={() => setActive(true)}
-  >
-    {slugLine || 'Slugg...'}
-  </Button >
+  return (
+    <Button
+      className='text-muted-foreground h-7 font-normal text-sm whitespace-nowrap'
+      variant='outline'
+      onClick={() => setActive(true)}
+    >
+      {slugLine || 'Slugg...'}
+    </Button>
+  )
 }
 
 
@@ -54,11 +56,13 @@ function StaticSluglineByValue({ value }: {
     return <></>
   }
 
-  return <Button
-    className='text-muted-foreground h-7 px-2 font-normal text-sm whitespace-nowrap hover:bg-background hover:text-muted-foreground hover:cursor-default'
-    variant='outline'
-    type='button'
-  >
-    {value || 'Slugg...'}
-  </Button >
+  return (
+    <Button
+      className='text-muted-foreground h-7 px-2 font-normal text-sm whitespace-nowrap hover:bg-background hover:text-muted-foreground hover:cursor-default'
+      variant='outline'
+      type='button'
+    >
+      {value || 'Slugg...'}
+    </Button>
+  )
 }

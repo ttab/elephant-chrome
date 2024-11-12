@@ -16,7 +16,7 @@ export const ModalProvider = ({ children }: PropsWithChildren): JSX.Element => {
   const [isVisible, setIsVisible] = useState(false)
   const [modalContent, setModalContent] = useState<ReactNode | null>(null)
 
-  useKeydownGlobal(evt => {
+  useKeydownGlobal((evt) => {
     if (evt.key === 'Escape') {
       hideModal()
     }
@@ -47,7 +47,7 @@ export const ModalProvider = ({ children }: PropsWithChildren): JSX.Element => {
         <Dialog modal={false} open={isVisible}>
           <DialogDescription />
           <DialogTitle />
-          <DialogContent className="p-0 w-[94vw]">
+          <DialogContent className='p-0 w-[94vw]'>
             {modalContent}
           </DialogContent>
         </Dialog>

@@ -89,10 +89,19 @@ const FactboxItem = ({ factbox, openFactbox, locale, timeZone }: FBItem): JSX.El
       <div className='w-3/4 flex flex-col' draggable>
         <p className='w-full truncate text-sm font-bold'>{title}</p>
         <p className='w-full truncate text-xs'>{text}</p>
-        {modified ? <p className='w-full truncate text-xs'><em>Senast ändrad {convertedDate}</em></p> : null}
+        {modified
+          ? (
+              <p className='w-full truncate text-xs'>
+                <em>
+                  Senast ändrad
+                  {convertedDate}
+                </em>
+              </p>
+            )
+          : null}
       </div>
       <a onClick={(e) => openFactbox(e, factbox)} className='cursor-pointer flex items-center p-2 rounded-md  hover:bg-gray-100'>
-        <Tooltip content={'Redigera för alla'}>
+        <Tooltip content='Redigera för alla'>
           <FileInput size={18} strokeWidth={1.75} />
         </Tooltip>
       </a>
@@ -121,8 +130,11 @@ const FactboxContent = ({ factboxes = [], loading, message }: FactboxContentI): 
           const id = crypto.randomUUID()
           function onDocumentCreated(): void {}
           openFactboxEditor(event, { id }, 'blank', { onDocumentCreated })
-        }}>
-          <PlusIcon size={18} strokeWidth={1.75} /> Ny
+        }}
+        >
+          <PlusIcon size={18} strokeWidth={1.75} />
+          {' '}
+          Ny
         </Button>
       </div>
       <div className='h-screen max-h-screen flex flex-col gap-2 divide-y divide-slate-600'>
@@ -139,18 +151,20 @@ const FactboxContent = ({ factboxes = [], loading, message }: FactboxContentI): 
           : null}
         {message?.text
           ? (
-            <div className='m-4'>
-              <Badge
-                variant={message.type === 'error' ? 'destructive' : 'secondary'}
-                className='p-2 rounded-md w-fit'
+              <div className='m-4'>
+                <Badge
+                  variant={message.type === 'error' ? 'destructive' : 'secondary'}
+                  className='p-2 rounded-md w-fit'
                 >
-                <div className='rounded-full flex justify-center items-center h-fit'>
-                  <div
-                    className='text-muted-foreground text-sm font-sans font-normal whitespace-nowrap text-ellipsis'
-                    >{message?.text}</div>
-                </div>
-              </Badge>
-            </div>
+                  <div className='rounded-full flex justify-center items-center h-fit'>
+                    <div
+                      className='text-muted-foreground text-sm font-sans font-normal whitespace-nowrap text-ellipsis'
+                    >
+                      {message?.text}
+                    </div>
+                  </div>
+                </Badge>
+              </div>
             )
           : null}
         {loading && <p>Söker...</p>}
@@ -209,31 +223,33 @@ export const Factboxes = (): JSX.Element => {
     <div className='h-screen max-h-screen flex flex-col p-2 overflow-auto gap-2'>
       <ViewHeader.Root>
         <ViewHeader.Content>
-          <form className='grow' onSubmit={(e): void => {
-            void (async () => {
-              e.preventDefault()
-              const value: string | undefined = inputRef?.current?.value
-              if (!value) {
-                return
-              }
-              try {
-                const data = await fetchData(value)
-                setFactboxes(data || [])
-              } catch (error) {
-                if (error instanceof Error) {
-                  setMessage({ type: 'error', text: error?.message })
-                } else {
-                  setMessage({ type: 'error', text: String(error) })
+          <form
+            className='grow'
+            onSubmit={(e): void => {
+              void (async () => {
+                e.preventDefault()
+                const value: string | undefined = inputRef?.current?.value
+                if (!value) {
+                  return
                 }
-              }
-            })()
-          }}
+                try {
+                  const data = await fetchData(value)
+                  setFactboxes(data || [])
+                } catch (error) {
+                  if (error instanceof Error) {
+                    setMessage({ type: 'error', text: error?.message })
+                  } else {
+                    setMessage({ type: 'error', text: String(error) })
+                  }
+                }
+              })()
+            }}
           >
             <SearchInput
-              className="p-4 w-full text-sm border-none focus:border-none"
-              type="text"
+              className='p-4 w-full text-sm border-none focus:border-none'
+              type='text'
               placeholder='Sök faktaruta'
-              name="factboxes"
+              name='factboxes'
               ref={inputRef}
             />
           </form>

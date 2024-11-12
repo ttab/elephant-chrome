@@ -1,5 +1,5 @@
-export async function GET(): Promise<unknown> {
-  return {
+export const GET = (): Promise<unknown> => {
+  return Promise.resolve({
     payload: {
       indexUrl: process.env.INDEX_URL ?? '',
       webSocketUrl: process.env.WS_URL ?? '',
@@ -7,5 +7,5 @@ export async function GET(): Promise<unknown> {
       contentApiUrl: process.env.CONTENT_API_URL ?? '',
       spellcheckUrl: process.env.SPELLCHECK_URL ?? ''
     }
-  }
+  })
 }

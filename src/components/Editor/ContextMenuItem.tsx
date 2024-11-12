@@ -25,9 +25,8 @@ export const ContextMenuItem = ({ apply, children }: PropsWithChildren & {
       func={apply}
     >
       {/* FIXME: Imports are strange... should not have to do it like this. */}
-      {!!children &&
-        <>{children}</>
-      }
+      {!!children
+      && <>{children}</>}
     </ContextMenu.Item>
   )
 }

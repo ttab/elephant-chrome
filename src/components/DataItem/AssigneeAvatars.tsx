@@ -24,13 +24,15 @@ export const AssigneeAvatars = ({ assignees, size = 'sm' }: {
             <div key={index} className='flex p-1 text-xs font-semibold leading-7 items-center'>
               <Avatar variant='muted' size='sm' value={assignee} className='mr-4' />
               <p>{assignee}</p>
-            </div>))
-        }>
+            </div>
+          ))
+        }
+        >
           <span className='font-semibold text-muted-foreground px-4 pt-1 text-xs'>
             {assignees.length > 3 && `+${assignees.length - 3}`}
           </span>
-        </Tooltip>)
-      }
+        </Tooltip>
+      )}
     </AvatarGroup>
   )
 }

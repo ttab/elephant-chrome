@@ -1,4 +1,4 @@
-/* eslint-disable react/prop-types */
+
 import { type ColumnDef } from '@tanstack/react-table'
 import { type Planning } from '@/lib/index/schemas/planning'
 import { Newsvalue } from '@/components/Table/Items/Newsvalue'
@@ -117,7 +117,7 @@ export function planningTableColumns({ sections = [], authors = [] }: {
     {
       id: 'section',
       meta: {
-        options: sections.map(_ => {
+        options: sections.map((_) => {
           return {
             value: _.id,
             label: _.title
@@ -135,9 +135,11 @@ export function planningTableColumns({ sections = [], authors = [] }: {
       },
       cell: ({ row }) => {
         const sectionTitle = row.original._source['document.rel.section.title']?.[0]
-        return <>
-          {sectionTitle && <SectionBadge title={sectionTitle} color='bg-[#BD6E11]' />}
-        </>
+        return (
+          <>
+            {sectionTitle && <SectionBadge title={sectionTitle} color='bg-[#BD6E11]' />}
+          </>
+        )
       },
       filterFn: (row, id, value) => {
         return value.includes(row.getValue(id))

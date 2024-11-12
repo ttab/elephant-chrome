@@ -7,9 +7,9 @@ export const Type = ({ data }: { data: DefaultValueOption[] }): JSX.Element => {
     <div className='flex items-center'>
       {data.map((item, index) => {
         return item.icon && (
-        <Tooltip key={index} content={item.label}>
-          <item.icon size={18} strokeWidth={1.75} className='mr-2 text-muted-foreground' />
-        </Tooltip>
+          <Tooltip key={index} content={item.label}>
+            <item.icon size={18} strokeWidth={1.75} className='mr-2 text-muted-foreground' />
+          </Tooltip>
         )
       })}
     </div>

@@ -50,7 +50,7 @@ export function handleLink({
 
   // If modifier is used, open furthest to the right
   // Otherwise open to the right of origin
-  const currentIndex = content.findIndex(c => c.viewId === origin)
+  const currentIndex = content.findIndex((c) => c.viewId === origin)
 
   if (event?.shiftKey) {
     content.push(newContent)
@@ -80,7 +80,7 @@ export function handleLink({
   // Append onDocumentCreated to props if available
   // This since we can't save a function to history state
   if (onDocumentCreated) {
-    const currentIndex = content.findIndex(c => c.viewId === viewId)
+    const currentIndex = content.findIndex((c) => c.viewId === viewId)
 
     content[currentIndex].props = { ...content[currentIndex].props, onDocumentCreated }
   }

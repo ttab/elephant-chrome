@@ -11,7 +11,7 @@ export function get(y: Y.Map<unknown> | undefined, path?: string): Y.Map<unknown
   const keys = path
     ?.replace(/(\[|\])/g, '.')
     .split('.')
-    .filter(x => x) || ''
+    .filter((x) => x) || ''
 
   let current = y
 
@@ -46,7 +46,7 @@ export function set(ymap: Y.Map<unknown>, path: string, value: unknown): void {
   const keys: string[] = path
     .replace(/(\[|\])/g, '.')
     .split('.')
-    .filter(x => x !== '')
+    .filter((x) => x !== '')
 
   let current: Y.Map<unknown> | Y.Array<unknown> | undefined = ymap
 
@@ -120,7 +120,9 @@ export function set(ymap: Y.Map<unknown>, path: string, value: unknown): void {
         // If value doesn't exist, insert it.
         // Either transactValue if it's the index we're looking for, or null
         if (!hasValue) {
-          current.length - 1 >= transactIndex && current.delete(transactIndex)
+          if (current.length - 1 >= transactIndex) {
+            current.delete(transactIndex)
+          }
           current.insert(transactIndex, [transactValue])
         }
       })

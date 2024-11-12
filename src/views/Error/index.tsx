@@ -26,24 +26,27 @@ export const Error = (props: ViewProps & {
 }): JSX.Element => {
   return (
     <div className={cn('flex flex-col h-screen', props?.className)}>
-      <div className="grow-1">
+      <div className='grow-1'>
         <ViewHeader.Root>
           <ViewHeader.Title title='Ett fel har uppstått!' icon={MessageCircleWarning} />
         </ViewHeader.Root>
       </div>
 
-      <section className="flex justify-center align">
-        <div className="max-w-screen-md pt-10">
-          <h1 className="text-3xl font-bold py-10">{props?.title || 'Okänt fel'}</h1>
+      <section className='flex justify-center align'>
+        <div className='max-w-screen-md pt-10'>
+          <h1 className='text-3xl font-bold py-10'>{props?.title || 'Okänt fel'}</h1>
 
           {props?.message
-            ? <p className="text-md">
-              {props.message}
-            </p>
-            : <p className="text-md">
-              Ett okänt fel, eller ett fel som saknar felmeddelande har uppstått. Kontakta systemadministratören.
-            </p>
-          }
+            ? (
+                <p className='text-md'>
+                  {props.message}
+                </p>
+              )
+            : (
+                <p className='text-md'>
+                  Ett okänt fel, eller ett fel som saknar felmeddelande har uppstått. Kontakta systemadministratören.
+                </p>
+              )}
         </div>
       </section>
     </div>

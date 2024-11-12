@@ -84,11 +84,12 @@ export const DocTrackerProvider = ({ children }: DocTrackerContextProviderProps)
 
   return (
     <>
-      {!!provider &&
+      {!!provider
+      && (
         <DocTrackerContext.Provider value={{ ...state }}>
           {children}
         </DocTrackerContext.Provider>
-      }
+      )}
     </>
   )
 }

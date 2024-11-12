@@ -16,13 +16,13 @@ export const ImageSearchInput = ({ setQueryString }: {
   return (
     <form
       onSubmit={handleSubmit}
-      className="self-center w-full p-2 flex flex-row"
+      className='self-center w-full p-2 flex flex-row'
     >
       <SearchInput
-        className="p-2 w-full text-sm border-none focus:border-none"
-        type="text"
+        className='p-2 w-full text-sm border-none focus:border-none'
+        type='text'
         placeholder='Sök bild'
-        name="imagesearch"
+        name='imagesearch'
         ref={inputRef}
         onChange={(e) => setQuery(e.currentTarget.value)}
       />

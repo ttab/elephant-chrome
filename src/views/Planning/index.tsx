@@ -54,14 +54,17 @@ export const Planning = (props: ViewProps & { document?: Y.Doc }): JSX.Element =
   return (
     <>
       {documentId
-        ? <AwarenessDocument documentId={documentId} document={props.document}>
-          <PlanningViewContent {...props} documentId={documentId} />
-        </AwarenessDocument>
-        : <Error
-            title='Planeringsdokument saknas'
-            message='Inget planeringsdokument är angivet. Navigera tillbaka till översikten och försök igen.'
-        />
-      }
+        ? (
+            <AwarenessDocument documentId={documentId} document={props.document}>
+              <PlanningViewContent {...props} documentId={documentId} />
+            </AwarenessDocument>
+          )
+        : (
+            <Error
+              title='Planeringsdokument saknas'
+              message='Inget planeringsdokument är angivet. Navigera tillbaka till översikten och försök igen.'
+            />
+          )}
     </>
   )
 }
@@ -104,26 +107,25 @@ const PlanningViewContent = (props: ViewProps & { documentId: string }): JSX.Ele
     <div className={cn(viewVariants({
       asCreateDialog: !!props.asDialog,
       className: props?.className
-    }))}>
+    }))}
+    >
       <div className='grow-0'>
         <ViewHeader.Root>
-          {!props.asDialog &&
-            <ViewHeader.Title title='Planering' icon={GanttChartSquare} iconColor='#DAC9F2' />
-          }
+          {!props.asDialog
+          && <ViewHeader.Title title='Planering' icon={GanttChartSquare} iconColor='#DAC9F2' />}
 
           <ViewHeader.Content>
             <div className='flex w-full h-full items-center space-x-2'>
-              {!props.asDialog &&
-                <DocumentStatus status={documentStatus} setStatus={setDocumentStatus} />}
+              {!props.asDialog
+              && <DocumentStatus status={documentStatus} setStatus={setDocumentStatus} />}
               <VisibilityStatus />
               <Newsvalue />
             </div>
           </ViewHeader.Content>
 
           <ViewHeader.Action onDialogClose={props.onDialogClose}>
-            {!props.asDialog && !!props.documentId &&
-              <ViewHeader.RemoteUsers documentId={props.documentId} />
-            }
+            {!props.asDialog && !!props.documentId
+            && <ViewHeader.RemoteUsers documentId={props.documentId} />}
           </ViewHeader.Action>
         </ViewHeader.Root>
       </div>
@@ -135,7 +137,7 @@ const PlanningViewContent = (props: ViewProps & { documentId: string }): JSX.Ele
               <Title
                 autoFocus={props.asDialog}
                 placeholder='Planeringstitel'
-            />
+              />
             </Form.Title>
             <Description role='public' />
             <Description role='internal' />
@@ -148,7 +150,7 @@ const PlanningViewContent = (props: ViewProps & { documentId: string }): JSX.Ele
               <SluglineEditable
                 path='meta.tt/slugline[0].value'
                 documentStatus={documentStatus?.name}
-            />
+              />
               <Section />
               <Story />
             </Form.Group>

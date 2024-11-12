@@ -27,8 +27,8 @@ export const TimeInput = ({ defaultTime, handleOnChange, handleOnSelect, setOpen
       ref={inputRef}
       value={!disabled ? timeValue : ''}
       onChange={handleTimeChange}
-      placeholder={'hh:mm ex 11:00'}
-      className="h-8 text-sm border-none"
+      placeholder='hh:mm ex 11:00'
+      className='h-8 text-sm border-none'
       disabled={disabled}
       onKeyDown={(e) => {
         if (e.key === 'Escape') {

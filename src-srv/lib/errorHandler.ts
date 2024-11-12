@@ -67,9 +67,9 @@ class CollaborationServerErrorHandler {
       ...rest,
       agent: 'server'
     })
-      .then(connection => {
+      .then((connection) => {
         if (connection) {
-          connection.transact(doc => {
+          connection.transact((doc) => {
             const ele = doc.getMap('ele')
             ele.set('validation', {
               code: error.code,

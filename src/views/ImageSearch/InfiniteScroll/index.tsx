@@ -24,7 +24,11 @@ const useIntersection = <T extends HTMLElement>(): [boolean, Ref<T>] => {
   }, [element])
   return [
     intersecting,
-    (el) => { el && setElement(el) }
+    (el) => {
+      if (el) {
+        setElement(el)
+      }
+    }
   ]
 }
 

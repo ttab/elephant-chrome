@@ -15,7 +15,7 @@ export const SWRProvider = <T extends Source>({ index, children }: PropsWithChil
         revalidateOnFocus: false,
         revalidateOnReconnect: false
       }}
-        >
+    >
       {children}
     </SWRConfig>
   )
