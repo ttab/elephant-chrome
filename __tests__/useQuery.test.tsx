@@ -8,20 +8,14 @@ describe('useQuery hook', () => {
   beforeEach(() => {
     // Mock window.history.replaceState
     replaceStateMock = vi.spyOn(window.history, 'replaceState').mockImplementation((_, __, url) => {
-      console.log('typeof url', typeof url)
       if (typeof url === 'string') {
         const search = url.split('?')[1] || ''
+
         Object.defineProperty(window, 'location', {
           writable: true,
           value: { search: search ? `?${search}` : '' }
         })
       }
-    })
-
-    // Mock window.location.search
-    Object.defineProperty(window, 'location', {
-      writable: true,
-      value: { search: '' }
     })
   })
 
@@ -75,5 +69,24 @@ describe('useQuery hook', () => {
 
     expect(result.current[0]).toEqual({})
     expect(window.location.search).toBe('')
+  })
+
+  it('should encode query params', () => {
+    const { result } = renderHook(() => useQuery())
+
+    act(() => {
+      result.current[1]({ foo: 'bör' })
+    })
+
+    expect(result.current[0]).toEqual({ foo: 'bör' })
+    expect(window.location.search).toBe('?foo=b%C3%B6r')
+  })
+
+  it('should decode hook value', () => {
+    window.location.search = '?foo=b%C3%B6r'
+    const { result } = renderHook(() => useQuery())
+
+    expect(result.current[0]).toEqual({ foo: 'bör' })
+    expect(window.location.search).toBe('?foo=b%C3%B6r')
   })
 })
