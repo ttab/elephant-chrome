@@ -27,7 +27,7 @@ export const Flash = (props: ViewProps & {
     title: string
   }
 }): JSX.Element => {
-  const query = useQuery()
+  const [query] = useQuery()
   const documentId = props.id || query.id
 
   return (

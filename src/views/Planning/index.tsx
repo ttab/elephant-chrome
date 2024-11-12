@@ -48,7 +48,7 @@ const meta: ViewMetadata = {
 }
 
 export const Planning = (props: ViewProps & { document?: Y.Doc }): JSX.Element => {
-  const query = useQuery()
+  const [query] = useQuery()
   const documentId = props.id || query.id
 
   return (
@@ -103,8 +103,6 @@ const PlanningViewContent = (props: ViewProps & { documentId: string }): JSX.Ele
     }
   }
 
-  const [query, setQuery] = useQuery()
-
   return (
     <div className={cn(viewVariants({
       asCreateDialog: !!props.asDialog,
@@ -136,12 +134,6 @@ const PlanningViewContent = (props: ViewProps & { documentId: string }): JSX.Ele
         <Form.Root asDialog={props.asDialog}>
           <Form.Content>
             <Form.Title>
-              <Button onClick={() => {
-                setQuery({ test: '123' })
-              }}
-              >
-                Click me
-              </Button>
               <Title
                 autoFocus={props.asDialog}
                 placeholder='Planeringstitel'

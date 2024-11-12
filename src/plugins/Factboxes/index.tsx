@@ -21,8 +21,7 @@ export const FactboxPlugin: Plugin.InitFunction = () => {
   const { state, dispatch } = useNavigation()
   const { viewId: origin } = useView()
   const viewRegistry = state.viewRegistry
-  const query = useQuery()
-  const { id } = query
+  const [{ id }] = useQuery()
 
   return {
     class: 'block',

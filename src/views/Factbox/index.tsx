@@ -41,7 +41,7 @@ const meta: ViewMetadata = {
 }
 
 export const Factbox = (props: ViewProps & { document?: Y.Doc }): JSX.Element => {
-  const query = useQuery()
+  const [query] = useQuery()
   const [document, setDocument] = useState<Y.Doc>()
   const documentId = props.id || query.id
 
