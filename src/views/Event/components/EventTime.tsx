@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import {
   Popover,
   PopoverContent,
@@ -11,19 +11,14 @@ import {
 import { useYValue } from '@/hooks/useYValue'
 import { useRegistry } from '@/hooks'
 import { CalendarClockIcon } from '@ttab/elephant-ui/icons'
-import { dateToReadableDateTime, dateToReadableTime, dateToReadableDay } from '@/lib/datetime'
+import { dateToReadableDateTime, dateToReadableTime, dateToReadableDay, createDateWithTime } from '@/lib/datetime'
 import { TimeInput } from '@/components/TimeInput'
-import { createDateWithTime } from '@/lib/datetime'
 
 interface EventData {
   end: string
   start: string
   registration: string
   dateGranularity: 'date' | 'datetime'
-}
-
-interface EventTimeItemsProps extends React.PropsWithChildren {
-  startDate?: string
 }
 
 const isSameDate = (fromDate: string, toDate: string): boolean => {
@@ -78,10 +73,10 @@ const dateMidnight = (date: Date): Date => {
   )
 }
 
-export const EventTimeMenu = ({ startDate }: EventTimeItemsProps): JSX.Element => {
+export const EventTimeMenu = (): JSX.Element => {
   const [open, setOpen] = useState(false)
   const [eventData, setEventData] = useYValue<EventData>('meta.core/event[0].data')
-  const [selected, setSelected] = useState<CalendarTypes.DateRange | undefined>({ from: new Date(`${startDate}T00:00:00`) })
+  const [selected, setSelected] = useState<CalendarTypes.DateRange | undefined>({ from: dateMidnight(new Date()) })
   const [startTimeValue, setStartTimeValue] = useState<string>('00:00')
   const [endTimeValue, setEndTimeValue] = useState<string>('23:59')
   const [startDateValue, setStartDateValue] = useState<string>()
@@ -134,9 +129,7 @@ export const EventTimeMenu = ({ startDate }: EventTimeItemsProps): JSX.Element =
   }, [eventData, mounted])
 
   const handleOnSelect =
-    ({ eventStart, eventEnd, fullDay }:
-      { eventStart: string | undefined, eventEnd: string | undefined, fullDay: boolean | undefined }):
-      void => {
+    ({ eventStart, eventEnd, fullDay }: { eventStart: string | undefined, eventEnd: string | undefined, fullDay: boolean | undefined }): void => {
       if (!eventStart || !eventEnd) { return }
       let startDate = eventStart
       let endDate = eventEnd
@@ -167,7 +160,6 @@ export const EventTimeMenu = ({ startDate }: EventTimeItemsProps): JSX.Element =
     }
 
   const handleStartTimeChange = (time: string): void => {
-
     const valid = testValid(time)
     setStartTimeValid(valid)
     if (valid && selected?.from) {
@@ -180,17 +172,16 @@ export const EventTimeMenu = ({ startDate }: EventTimeItemsProps): JSX.Element =
   }
 
   const handleEndTimeChange = (time: string): void => {
-
     const valid = testValid(time)
     setEndTimeValid(valid)
 
-      if (valid && selected?.to) {
-        setEndTimeValue(time)
-        const [hours, minutes] = time.split(':').map((str: string) => parseInt(str, 10))
-        const newSelectedDate = new Date(selected.to)
-        newSelectedDate.setHours(hours, minutes)
-        setEndDateValue(newSelectedDate.toISOString())
-      }
+    if (valid && selected?.to) {
+      setEndTimeValue(time)
+      const [hours, minutes] = time.split(':').map((str: string) => parseInt(str, 10))
+      const newSelectedDate = new Date(selected.to)
+      newSelectedDate.setHours(hours, minutes)
+      setEndDateValue(newSelectedDate.toISOString())
+    }
   }
 
   const handleOnSelectDay: CalendarTypes.OnSelectHandler<CalendarTypes.DateRange | undefined> = (selectedDays) => {
@@ -294,7 +285,7 @@ export const EventTimeMenu = ({ startDate }: EventTimeItemsProps): JSX.Element =
             </Button>
             <Button
               variant="outline"
-              disabled={!fullDay && !startTimeValid || !endTimeValid}
+              disabled={!fullDay && (!startTimeValid || !endTimeValid)}
               onClick={(evt) => {
                 evt.preventDefault()
                 evt.stopPropagation()

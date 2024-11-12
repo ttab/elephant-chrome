@@ -139,10 +139,8 @@ const EventViewContent = (props: ViewProps & { documentId: string }): JSX.Elemen
             <Description role='public' />
             <Registration />
 
-
-
             <Form.Group icon={Calendar}>
-            <EventTimeMenu />
+              <EventTimeMenu />
             </Form.Group>
 
             <Form.Group icon={Tags}>
