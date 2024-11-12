@@ -20,7 +20,7 @@ export const useActiveDocument = ({ type }: {
 
   useEffect(() => {
     const fetchData = async (): Promise<void> => {
-      const documentId = state.content.find(s => {
+      const documentId = state.content.find((s) => {
         return (type && s.props.name === type) && (s.key === state.active || state.content.length === 1)
       })?.props.children.props.id
 

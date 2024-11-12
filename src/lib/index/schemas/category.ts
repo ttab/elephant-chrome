@@ -9,5 +9,5 @@ const CategorySchema = z.object({
   })
 })
 
-const FullCategorySchema = BaseSchema.and(CategorySchema)
-export type IndexedCategory = z.infer<typeof FullCategorySchema>
+const _FullCategorySchema = BaseSchema.and(CategorySchema)
+export type IndexedCategory = z.infer<typeof _FullCategorySchema>

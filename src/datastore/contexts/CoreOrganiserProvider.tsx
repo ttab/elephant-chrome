@@ -70,7 +70,7 @@ export const CoreOrganiserProvider = ({ children }: {
    * Then just clear and refresh the object store cache.
    */
   useRepositoryEvents(documentType, () => {
-    getOrRefreshCache(true).catch(ex => {
+    getOrRefreshCache(true).catch((ex) => {
       console.error(ex)
     })
   })
@@ -78,6 +78,6 @@ export const CoreOrganiserProvider = ({ children }: {
   return (
     <CoreOrganiserContext.Provider value={{ objects }}>
       {children}
-    </CoreOrganiserContext.Provider >
+    </CoreOrganiserContext.Provider>
   )
 }

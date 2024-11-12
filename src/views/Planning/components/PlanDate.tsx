@@ -1,17 +1,14 @@
 import { DatePicker } from '@/components/Datepicker'
-import { useYObserver, useRegistry } from '@/hooks'
+import { useYValue } from '@/hooks'
 
 export const PlanDate = (): JSX.Element => {
-  const { get, set } = useYObserver('meta', 'core/planning-item[0].data')
-  const { timeZone } = useRegistry()
+  const [dateString, setDateString] = useYValue<string>('meta.core/planning-item[0].data.start_date')
 
-
-  const date = parseDate(get('start_date') as string) || new Date()
-  const setDate = () => (date: Date) => { set(format(date, timeZone), 'start_date') }
+  const date = dateString ? parseDate(dateString) || new Date() : new Date()
 
   return (
     <div>
-      <DatePicker date={date} setDate={setDate} forceYear={true} />
+      <DatePicker date={date} setDate={setDateString} forceYear={true} />
     </div>
   )
 }
@@ -28,23 +25,4 @@ function parseDate(value: string): Date | undefined {
     parseInt(parts[1], 10) - 1,
     parseInt(parts[2], 10)
   )
-}
-
-function format(date: Date, timeZone: string): string {
-  const formatter = new Intl.DateTimeFormat('en-US', {
-    year: 'numeric',
-    month: '2-digit',
-    day: '2-digit',
-    timeZone
-  })
-
-  const [
-    { value: month },
-    ,
-    { value: day },
-    ,
-    { value: year }
-  ] = formatter.formatToParts(date)
-
-  return `${year}-${month}-${day}`
 }

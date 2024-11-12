@@ -20,7 +20,9 @@ export const Submit = ({
       func()
     }
 
-    setValidateForm && setValidateForm(true)
+    if (setValidateForm) {
+      setValidateForm(true)
+    }
   }
 
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>, type: 'submit' | 'reset'): void => {
@@ -39,7 +41,7 @@ export const Submit = ({
   const applyOnClickHandler = (child: React.ReactNode): React.ReactNode => {
     if (React.isValidElement(child)) {
       const props: FormProps &
-      { onClick?: (event: React.MouseEvent<HTMLButtonElement>) => void } = {}
+        { onClick?: (event: React.MouseEvent<HTMLButtonElement>) => void } = {}
 
       if (child.props && 'type' in child.props) {
         if (child.props.type === 'submit') {

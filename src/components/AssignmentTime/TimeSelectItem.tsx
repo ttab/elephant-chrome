@@ -74,18 +74,19 @@ export const TimeSelectItem = ({ handleOnSelect, index, handleParentOpenChange }
 
               <div className='flex items-center justify-end gap-4 px-2 pt-2'>
                 <Button
-                  variant="ghost"
+                  variant='ghost'
                   onClick={(evt) => {
                     evt.preventDefault()
                     evt.stopPropagation()
                     setOpen(false)
                     handleParentOpenChange(false)
-                  }}>
+                  }}
+                >
                   Avbryt
                 </Button>
 
                 <Button
-                  variant="outline"
+                  variant='outline'
                   onClick={(evt) => {
                     evt.preventDefault()
                     evt.stopPropagation()

@@ -11,8 +11,7 @@ export const StatusIndicator = ({ visibility, className }: {
       <div className={cn('items-center', className)}>
         {visibility === 'internal'
           ? <Building size={18} strokeWidth={1.75} className='text-muted-foreground' />
-          : <Globe size={18} strokeWidth={1.75} className='text-muted-foreground' />
-        }
+          : <Globe size={18} strokeWidth={1.75} className='text-muted-foreground' />}
       </div>
 
     </Tooltip>

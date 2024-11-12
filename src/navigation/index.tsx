@@ -82,7 +82,7 @@ function calculateViews(
   }
 
   // Get active id, or set it to the leftmost view if the active view was removed
-  const activeId = content.find(c => c.viewId === state.active)?.viewId || content[0].viewId
+  const activeId = content.find((c) => c.viewId === state.active)?.viewId || content[0].viewId
 
   // Set new state
   dispatch({

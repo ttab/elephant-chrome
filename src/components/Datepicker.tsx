@@ -1,4 +1,4 @@
-import { type Dispatch, type SetStateAction, type MouseEvent } from 'react'
+import { type MouseEvent } from 'react'
 
 import {
   Button,
@@ -16,7 +16,7 @@ import { type ViewProps } from '../types'
 export const DatePicker = ({ date, changeDate, setDate, forceYear = false }: {
   date: Date
   changeDate?: (event: MouseEvent<Element> | KeyboardEvent | undefined, props: ViewProps, target?: 'self') => void
-  setDate?: Dispatch<SetStateAction<Date>> | ((arg: Date) => void)
+  setDate?: ((arg: string) => void)
   forceYear?: boolean
 }): JSX.Element => {
   const { locale, timeZone } = useRegistry()
@@ -55,12 +55,12 @@ export const DatePicker = ({ date, changeDate, setDate, forceYear = false }: {
   })
 
   return (
-    <Popover>
+    <Popover modal={true}>
       <PopoverTrigger asChild>
 
         <Button
-          variant={'outline'}
-          size={'xs'}
+          variant='outline'
+          size='xs'
           className='justify-center text-left font-normal text-sm whitespace-nowrap px-2 text-muted-foreground'
         >
           <span className={cn(defaultDate({ forceYear }))}>{formattedDate}</span>
@@ -80,10 +80,9 @@ export const DatePicker = ({ date, changeDate, setDate, forceYear = false }: {
             }
 
             if (setDate) {
-              setDate(selectedDate)
+              setDate(format(selectedDate, 'yyyy-MM-dd'))
             }
-          }
-          }
+          }}
           // initialFocus
         />
       </PopoverContent>

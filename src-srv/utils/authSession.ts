@@ -8,11 +8,11 @@ export function authSession(req: Request, res: Response, next: NextFunction): vo
     next()
   } else {
     getSession(req, authConfig)
-      .then(session => {
+      .then((session) => {
         res.locals.session = session
         next()
       })
-      .catch(error => {
+      .catch((error) => {
         next(error)
       })
   }

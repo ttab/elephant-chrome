@@ -36,9 +36,9 @@ export const TimeDeliveryMenu = ({
     <Popover open={open} onOpenChange={handleOpenChange}>
       <PopoverTrigger asChild>
         <Button
-          size={'sm'}
-          variant={'ghost'}
-          className={'h-9 text-muted-foreground font-sans font-normal whitespace-nowrap p-0'}
+          size='sm'
+          variant='ghost'
+          className='h-9 text-muted-foreground font-sans font-normal whitespace-nowrap p-0'
         >
           {children}
         </Button>
@@ -60,6 +60,6 @@ export const TimeDeliveryMenu = ({
           </CommandList>
         </Command>
       </PopoverContent>
-    </Popover >
+    </Popover>
   )
 }

@@ -11,5 +11,5 @@ const OrganiserSchema = z.object({
   })
 })
 
-const FullOrganiserSchema = BaseSchema.and(OrganiserSchema)
-export type IndexedOrganiser = z.infer<typeof FullOrganiserSchema>
+const _FullOrganiserSchema = BaseSchema.and(OrganiserSchema)
+export type IndexedOrganiser = z.infer<typeof _FullOrganiserSchema>

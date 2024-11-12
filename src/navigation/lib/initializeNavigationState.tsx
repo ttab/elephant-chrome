@@ -24,7 +24,7 @@ export function initializeNavigationState(): NavigationState {
 
     try {
       InititalView = viewRegistry.getByPath(window.location.pathname)
-    } catch (ex) {
+    } catch (_ex) {
       const isRoot = (x: string): boolean => x === import.meta.env.BASE_URL || x === `${import.meta.env.BASE_URL}/`
       if (isRoot(window.location.pathname)) {
         InititalView = viewRegistry.getByPath(`${import.meta.env.BASE_URL || ''}/plannings`)
@@ -46,7 +46,7 @@ export function initializeNavigationState(): NavigationState {
           focus: null,
           active: viewId,
           content: [(
-            <ViewWrapper key={viewId} viewId={viewId} name={'Plannings'} colSpan={12}>
+            <ViewWrapper key={viewId} viewId={viewId} name='Plannings' colSpan={12}>
               <InititalView.component {...props} />
             </ViewWrapper>
           )]
@@ -64,7 +64,7 @@ export function initializeNavigationState(): NavigationState {
         focus: null,
         active: viewId,
         content: [(
-          <ViewWrapper key={viewId} viewId={viewId} name={'Error'} colSpan={12}>
+          <ViewWrapper key={viewId} viewId={viewId} name='Error' colSpan={12}>
             <InititalView.component {...props} />
           </ViewWrapper>
         )]

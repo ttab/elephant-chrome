@@ -38,7 +38,7 @@ async function refreshAccessToken(token: JWTPayload): Promise<JWTPayload> {
         Accept: 'application/json'
       },
       body: params
-    }).catch(ex => {
+    }).catch((ex) => {
       throw new Error('refresh token grant request', { cause: ex })
     })
 
@@ -46,8 +46,8 @@ async function refreshAccessToken(token: JWTPayload): Promise<JWTPayload> {
 
     if (!response.ok) {
       throw new Error(
-      `refresh request error response: ${response.statusText}`,
-      { cause: refreshedTokens })
+        `refresh request error response: ${response.statusText}`,
+        { cause: refreshedTokens })
     }
 
     return {
@@ -56,7 +56,7 @@ async function refreshAccessToken(token: JWTPayload): Promise<JWTPayload> {
       accessTokenExpires: Date.now() + 150 * 1000,
       refreshToken: refreshedTokens.refresh_token ?? token.refreshToken
     }
-  } catch (ex) {
+  } catch (_ex) {
     return { ...token, error: 'refreshAccessTokenError' }
   }
 }
@@ -69,10 +69,10 @@ export const authConfig: AuthConfig = {
   ],
   callbacks: {
     async session({ session, token }) {
-      return {
+      return Promise.resolve({
         ...session,
         ...token
-      }
+      })
     },
     async jwt({ token, user, account }) {
       // First time user is logging in

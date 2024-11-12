@@ -33,11 +33,12 @@ export const Flash = (props: ViewProps & {
   return (
     <>
       {documentId
-        ? <AwarenessDocument documentId={documentId} document={props.document}>
-          <FlashViewContent {...props} documentId={documentId} defaultPlanningItem={props.defaultPlanningItem} />
-        </AwarenessDocument>
-        : <></>
-      }
+        ? (
+            <AwarenessDocument documentId={documentId} document={props.document}>
+              <FlashViewContent {...props} documentId={documentId} defaultPlanningItem={props.defaultPlanningItem} />
+            </AwarenessDocument>
+          )
+        : <></>}
     </>
   )
 }

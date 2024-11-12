@@ -21,7 +21,7 @@ export const CreateDocumentDialog = ({ type, payload, createdDocumentIdRef, chil
 }>): JSX.Element | null => {
   const [document, setDocument] = useState<[string | undefined, Y.Doc | undefined]>([undefined, undefined])
 
-  useKeydownGlobal(evt => {
+  useKeydownGlobal((evt) => {
     if (evt.key === 'Escape') {
       setDocument([undefined, undefined])
     }
@@ -33,28 +33,29 @@ export const CreateDocumentDialog = ({ type, payload, createdDocumentIdRef, chil
     <Dialog open={!!document[0]}>
       <DialogTrigger asChild>
         {React.isValidElement<{
-          onClick?: (event: React.MouseEvent<HTMLElement>) => Promise<void>
-        }>(children) &&
-          React.cloneElement(children, {
-            onClick: async (event: React.MouseEvent<HTMLElement>) => {
-              event.preventDefault()
-              if (type) {
-                setDocument(
-                  createDocument(
-                    getTemplate(type),
-                    true,
-                    payload,
-                    createdDocumentIdRef
-                  )
+          onClick?: (event: React.MouseEvent<HTMLElement>) => void
+        }>(children)
+        && React.cloneElement(children, {
+          onClick: (event: React.MouseEvent<HTMLElement>) => {
+            event.preventDefault()
+            if (type) {
+              setDocument(
+                createDocument(
+                  getTemplate(type),
+                  true,
+                  payload,
+                  createdDocumentIdRef
                 )
-              }
+              )
             }
-          })}
+          }
+        })}
       </DialogTrigger>
       <DialogDescription />
       <DialogTitle />
       <DialogContent className='p-0 rounded-md'>
-        {document !== null && Document &&
+        {document !== null && Document
+        && (
           <Document
             id={document[0]}
             document={document[1]}
@@ -64,7 +65,7 @@ export const CreateDocumentDialog = ({ type, payload, createdDocumentIdRef, chil
               setDocument([undefined, undefined])
             }}
           />
-        }
+        )}
       </DialogContent>
     </Dialog>
   )

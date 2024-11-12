@@ -17,7 +17,7 @@ export const Organiser = ({ asDialog }: FormProps): JSX.Element => {
   const [organiser, setOrganiser] = useYValue<Block | undefined>('links.core/organiser[0]')
 
   const setFocused = useRef<(value: boolean) => void>(null)
-  const selectedOptions = (allOrganisers || []).filter(s => s.value === organiser?.uuid)
+  const selectedOptions = (allOrganisers || []).filter((s) => s.value === organiser?.uuid)
 
   return (
     <Awareness name='Organiser' ref={setFocused}>

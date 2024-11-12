@@ -32,7 +32,7 @@ export const AssignmentRow = ({ index, onSelect }: {
       ev.stopPropagation()
       onSelect()
     }}
-      >
+    >
       <AssignmentRowContent
         index={index}
         onSelect={onSelect}
@@ -97,7 +97,7 @@ const AssignmentRowContent = ({ index, onSelect }: {
     }
   ]
 
-  if (assignmentType === 'text') {
+  if (assignmentType === 'text' || assignmentType === 'flash') {
     menuItems.push({
       label: 'Öppna artikel',
       icon: FileInput,
@@ -116,8 +116,11 @@ const AssignmentRowContent = ({ index, onSelect }: {
             variant='icon'
             className='p-0 pr-2'
             onClick={<T extends HTMLElement>(event: MouseEvent<T>) => {
-              onOpenArticleEvent(event)
-            }}>
+              if (assignmentType === 'text' || assignmentType === 'flash') {
+                onOpenArticleEvent(event)
+              }
+            }}
+          >
             <AssignmentType path={`meta.core/assignment[${index}].meta.core/assignment-type`} />
           </Button>
           <AssigneeAvatars assignees={authors.map((author) => author.title)} />
@@ -132,11 +135,12 @@ const AssignmentRowContent = ({ index, onSelect }: {
             {assTime ? <TimeDisplay date={assTime} /> : ''}
           </div>
 
-          {!inProgress &&
+          {!inProgress
+          && (
             <DotDropdownMenu
               items={menuItems}
             />
-          }
+          )}
         </div>
       </div>
 
@@ -144,20 +148,22 @@ const AssignmentRowContent = ({ index, onSelect }: {
         <span className='leading-relaxed group-hover/assrow:underline'>{title}</span>
       </div>
 
-      {!!description &&
+      {!!description
+      && (
         <div className='font-light pl-10'>
           {description}
         </div>
-      }
+      )}
 
       <div className='@3xl/view:hidden'>
         <SluglineButton path={`meta.core/assignment[${index}].meta.tt/slugline[0].value`} />
       </div>
 
-      {showVerifyDialog &&
+      {showVerifyDialog
+      && (
         <Prompt
           title='Ta bort?'
-          description={`Vill du ta bort uppdraget${` ${title}` || ''}?`}
+          description={`Vill du ta bort uppdraget${title ? ' ' + title : ''}?`}
           secondaryLabel='Avbryt'
           primaryLabel='Ta bort'
           onPrimary={() => {
@@ -171,12 +177,13 @@ const AssignmentRowContent = ({ index, onSelect }: {
             setShowVerifyDialog(false)
           }}
         />
-      }
+      )}
 
-      {showCreateDialog &&
+      {showCreateDialog
+      && (
         <Prompt
           title='Skapa artikel?'
-          description={`Vill du skapa en artikel för uppdraget${` ${title}` || ''}?`} // TODO: Display information that will be forwarded from the assignment
+          description={`Vill du skapa en artikel för uppdraget${title ? ' ' + title : ''}?`} // TODO: Display information that will be forwarded from the assignment
           secondaryLabel='Avbryt'
           primaryLabel='Skapa'
           onPrimary={(event) => {
@@ -204,7 +211,7 @@ const AssignmentRowContent = ({ index, onSelect }: {
             setShowCreateDialog(false)
           }}
         />
-      }
+      )}
     </div>
   )
 }

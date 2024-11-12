@@ -31,13 +31,15 @@ export const Validation = ({ children, path, label, block, onValidation, validat
 
 
   return synced && !isValid
-    ? <div className="relative flex items-center">
-      <div className="absolute -top-1 right-0 h-2 w-2 z-10">
-        <TriangleAlert color='red' fill='#ffffff' size={15} strokeWidth={1.75} />
-      </div>
-      <div data-ele-validation={!!onValidation} className='flex flex-col w-full'>
-        {children}
-      </div>
-    </div>
-    : <div className="flex items-center">{children}</div>
+    ? (
+        <div className='relative flex items-center'>
+          <div className='absolute -top-1 right-0 h-2 w-2 z-10'>
+            <TriangleAlert color='red' fill='#ffffff' size={15} strokeWidth={1.75} />
+          </div>
+          <div data-ele-validation={!!onValidation} className='flex flex-col w-full'>
+            {children}
+          </div>
+        </div>
+      )
+    : <div className='flex items-center'>{children}</div>
 }

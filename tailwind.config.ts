@@ -1,5 +1,6 @@
 import type { Config } from 'tailwindcss'
 import preset from '@ttab/elephant-ui/styles/preset.ts'
+import containerQueries from '@tailwindcss/container-queries'
 
 export default {
   darkMode: 'class',
@@ -13,6 +14,6 @@ export default {
     extend: {}
   },
   plugins: [
-    require('@tailwindcss/container-queries')
+    containerQueries
   ]
 } satisfies Config

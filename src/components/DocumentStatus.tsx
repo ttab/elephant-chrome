@@ -9,7 +9,7 @@ export const DocumentStatus = ({ status, setStatus }: {
   setStatus: (newStatusName: string) => Promise<void>
 }): JSX.Element => {
   const setFocused = useRef<(value: boolean) => void>(null)
-  const selectedOptions = DocumentStatuses.filter(type => type.value === (status?.name || 'draft'))
+  const selectedOptions = DocumentStatuses.filter((type) => type.value === (status?.name || 'draft'))
 
   const SelectedIcon = selectedOptions[0].icon
 
@@ -19,7 +19,7 @@ export const DocumentStatus = ({ status, setStatus }: {
         max={1}
         size='sm'
         options={DocumentStatuses}
-        variant={'ghost'}
+        variant='ghost'
         selectedOptions={selectedOptions}
         onSelect={(option) => {
           if (status?.version) {
@@ -29,9 +29,8 @@ export const DocumentStatus = ({ status, setStatus }: {
         hideInput
       >
         {SelectedIcon
-          ? <SelectedIcon { ...selectedOptions[0].iconProps } />
-          : selectedOptions[0].label
-          }
+          ? <SelectedIcon {...selectedOptions[0].iconProps} />
+          : selectedOptions[0].label}
       </ComboBox>
     </Awareness>
   )

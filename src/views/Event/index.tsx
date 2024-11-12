@@ -55,14 +55,17 @@ export const Event = (props: ViewProps & { document?: Y.Doc }): JSX.Element => {
   return (
     <>
       {documentId
-        ? <AwarenessDocument documentId={documentId} document={props.document}>
-          <EventViewContent {...props} documentId={documentId} />
-        </AwarenessDocument>
-        : <Error
-            title='Händelsedokument saknas'
-            message='Inget händelsedokument är angivet. Navigera tillbaka till översikten och försök igen'
-        />
-      }
+        ? (
+            <AwarenessDocument documentId={documentId} document={props.document}>
+              <EventViewContent {...props} documentId={documentId} />
+            </AwarenessDocument>
+          )
+        : (
+            <Error
+              title='Händelsedokument saknas'
+              message='Inget händelsedokument är angivet. Navigera tillbaka till översikten och försök igen'
+            />
+          )}
     </>
   )
 }
@@ -107,9 +110,8 @@ const EventViewContent = (props: ViewProps & { documentId: string }): JSX.Elemen
     <div className={cn(viewVariants({ asCreateDialog: !!props.asDialog, className: props?.className }))}>
       <div className='grow-0'>
         <ViewHeader.Root>
-          {!props.asDialog &&
-            <ViewHeader.Title title='Händelse' icon={Ticket} iconColor='#DAC9F2' />
-          }
+          {!props.asDialog
+          && <ViewHeader.Title title='Händelse' icon={Ticket} iconColor='#DAC9F2' />}
 
           <ViewHeader.Content>
             <div className='flex w-full h-full items-center space-x-2'>
@@ -119,14 +121,13 @@ const EventViewContent = (props: ViewProps & { documentId: string }): JSX.Elemen
           </ViewHeader.Content>
 
           <ViewHeader.Action onDialogClose={props.onDialogClose}>
-            {!props.asDialog && !!props.documentId &&
-              <ViewHeader.RemoteUsers documentId={props.documentId} />
-            }
+            {!props.asDialog && !!props.documentId
+            && <ViewHeader.RemoteUsers documentId={props.documentId} />}
           </ViewHeader.Action>
         </ViewHeader.Root>
       </div>
 
-      <ScrollArea className='grid @5xl:place-content-center'>
+      <ScrollArea className='grid @5xl:place-content-center @5xl:max-w-[1200px] mx-auto'>
         <Form.Root asDialog={props.asDialog}>
           <Form.Content>
             <Form.Title>
@@ -171,7 +172,7 @@ const EventViewContent = (props: ViewProps & { documentId: string }): JSX.Elemen
           </Form.Footer>
         </Form.Root>
       </ScrollArea>
-    </div >
+    </div>
   )
 }
 

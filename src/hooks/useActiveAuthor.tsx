@@ -29,7 +29,7 @@ export const useActiveAuthor = ({ full = false }: {
       setAuthor((await response.json() as Record<string, unknown>)?.document as Document || null)
     }
 
-    const author = authors.find(a => a.email === session.data?.user.email)
+    const author = authors.find((a) => a.email === session.data?.user.email)
     if (!author) {
       setAuthor(null)
       return

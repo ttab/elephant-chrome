@@ -20,11 +20,10 @@ export const Group = ({ children, icon: Icon, asDialog, onValidation, validateSt
       [&_[data-ele-placeholder="true"][data-ele-validation="true"]]:text-[#5D709F]
       [&_[data-ele-validation="true"]_[role="textbox"]:has([data-slate-placeholder="true"])]:text-[#5D709F]
       [&_[data-ele-validation="true"]_[role="textbox"]:has([data-slate-placeholder="true"])]:border-[#5D709F]'
-    >
+  >
     <div className='flex gap-2 w-full items-center'>
-      {Icon &&
-        <Icon size={18} strokeWidth={1.75} className='text-muted-foreground mr-4' />
-      }
+      {Icon
+      && <Icon size={18} strokeWidth={1.75} className='text-muted-foreground mr-4' />}
       {React.Children.map(children, (child: React.ReactNode): React.ReactNode =>
         React.isValidElement<FormProps>(child)
           ? React.cloneElement(child, {

@@ -28,12 +28,12 @@ async function open(storeName: string): Promise<IDBDatabase> {
   })
 }
 
-async function get(store: IDBObjectStore, key?: string): Promise<unknown[] | unknown> {
+async function get(store: IDBObjectStore, key?: string): Promise<unknown[]> {
   return await new Promise((resolve, reject) => {
     const request = key ? store.get(key) : store.getAll()
 
     request.onsuccess = (event) => {
-      resolve((event.target as IDBRequest)?.result)
+      resolve((event.target as IDBRequest<unknown[]>).result)
     }
 
     request.onerror = (event) => {

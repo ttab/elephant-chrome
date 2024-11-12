@@ -53,9 +53,9 @@ export const Events = (): JSX.Element => {
             <Commands />
           </TableCommandMenu>
 
-          <div className="flex flex-col h-screen">
+          <div className='flex flex-col h-screen'>
             <ViewHeader.Root>
-              <ViewHeader.Title title="Händelser" short="Händelser" icon={CalendarPlus2} iconColor='#5E9F5D' />
+              <ViewHeader.Title title='Händelser' short='Händelser' icon={CalendarPlus2} iconColor='#5E9F5D' />
 
               <ViewHeader.Content>
                 <Header tab={currentTab} type='Event' />

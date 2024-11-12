@@ -40,11 +40,11 @@ export function useYObserver(name: string, path: string): YObserved {
   useEffect(() => {
     yRoot?.observeDeep((events) => {
       // Do actions on change
-      events.forEach(ev => {
+      events.forEach((ev) => {
         // Convert provided path to a comparable array
         const pathAsArray = path
           .split(/\.|\[|\]/g)
-          .filter(x => x !== '')
+          .filter((x) => x !== '')
 
         // Check if observed change is on same path as provided path
         // This will also register changes on same path before observed value
