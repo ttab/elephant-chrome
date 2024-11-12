@@ -57,8 +57,8 @@ const DateLabel = ({ fromDate, toDate, locale, timeZone }: { fromDate?: string |
     <div className='font-sans text-sm'>
       Heldag
       {sameDay
-        ? from
-        : `${from} - ${to}`}
+        ? ` ${from}`
+        : ` ${from} - ${to}`}
     </div>
   )
 }
