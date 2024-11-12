@@ -97,7 +97,7 @@ const AssignmentRowContent = ({ index, onSelect }: {
     }
   ]
 
-  if (assignmentType === 'text') {
+  if (assignmentType === 'text' || assignmentType === 'flash') {
     menuItems.push({
       label: 'Öppna artikel',
       icon: FileInput,
@@ -116,7 +116,9 @@ const AssignmentRowContent = ({ index, onSelect }: {
             variant='icon'
             className='p-0 pr-2'
             onClick={<T extends HTMLElement>(event: MouseEvent<T>) => {
-              onOpenArticleEvent(event)
+              if (assignmentType === 'text' || assignmentType === 'flash') {
+                onOpenArticleEvent(event)
+              }
             }}
           >
             <AssignmentType path={`meta.core/assignment[${index}].meta.core/assignment-type`} />

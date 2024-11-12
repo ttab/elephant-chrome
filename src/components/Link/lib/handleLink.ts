@@ -55,7 +55,7 @@ export function handleLink({
   if (event?.shiftKey) {
     content.push(newContent)
   } else if (target === 'self') {
-    content.splice(currentIndex - 1, 1, newContent)
+    content.splice(currentIndex, 1, newContent)
   } else {
     content.splice(currentIndex + 1, Infinity, newContent)
   }
