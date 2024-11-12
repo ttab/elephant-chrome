@@ -1,4 +1,4 @@
-/* eslint-disable react/prop-types */
+
 import { NewsvalueMap } from '@/defaults/newsvalueMap'
 import { Newsvalue } from '@/components/Table/Items/Newsvalue'
 import { Briefcase, Clock3Icon, Clock9Icon, Crosshair, Navigation, SignalHigh, Users } from '@ttab/elephant-ui/icons'
@@ -85,7 +85,7 @@ export function assignmentColumns({ authors = [], locale, timeZone }: {
         className: 'flex-none w-[112px] hidden @5xl/view:[display:revert]'
       },
       accessorFn: (data) => {
-        const authors = data?.links?.filter(link => link?.type === 'core/author') as AssigneeMeta[]
+        const authors = data?.links?.filter((link) => link?.type === 'core/author') as AssigneeMeta[]
         return authors?.map((author: AssigneeMeta) => author?.title || author?.name)
       },
       cell: ({ row }) => {
@@ -124,7 +124,7 @@ export function assignmentColumns({ authors = [], locale, timeZone }: {
       cell: ({ row }) => {
         const [start, end, fullday, slot] = row.getValue<string[]>('assignment_time') || undefined
         const isFullday = fullday === 'true'
-        const types: string[] = row.getValue<DefaultValueOption[]>('assignmentType')?.map(t => t.value)
+        const types: string[] = row.getValue<DefaultValueOption[]>('assignmentType')?.map((t) => t.value)
         const formattedStart = dateInTimestampOrShortMonthDayTimestamp(start, locale, timeZone)
         const formattedEnd = dateInTimestampOrShortMonthDayTimestamp(end, locale, timeZone)
         const formattedDatestring = `${formattedStart} - ${formattedEnd}`
@@ -208,7 +208,7 @@ export function assignmentColumns({ authors = [], locale, timeZone }: {
       },
       accessorFn: ({ meta }) => {
         const assignmentTypes = meta?.filter((metaType: MetaValueType) => metaType.type === 'core/assignment-type')
-        return assignmentTypes?.map(type => AssignmentTypes.find(aType => aType.value === type?.value))
+        return assignmentTypes?.map((type) => AssignmentTypes.find((aType) => aType.value === type?.value))
       },
       cell: ({ row }) => {
         const values: DefaultValueOption[] = row.getValue('assignmentType')
@@ -229,7 +229,7 @@ export function assignmentColumns({ authors = [], locale, timeZone }: {
         className: 'flex-none'
       },
       cell: ({ row }) => {
-        const deliverableUuid = row.original?.links?.find(link => link?.rel === 'deliverable')?.uuid || ''
+        const deliverableUuid = row.original?.links?.find((link) => link?.rel === 'deliverable')?.uuid || ''
         const planningId = row.original.id
         return <Actions deliverableUuids={[deliverableUuid]} planningId={planningId} />
       }

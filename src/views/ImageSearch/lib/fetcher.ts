@@ -1,7 +1,7 @@
 import { type ttninjs, type facet } from '@ttab/api-client'
 import { Api } from '@ttab/api-client'
 
-async function apiClient(token: string, host: URL): Promise<Api> {
+function apiClient(token: string, host: URL): Api {
   const client = new Api({ host: host.origin, token, timeout: 6000 })
   return client
 }
@@ -18,6 +18,6 @@ export const createFetcher = (url: URL) =>
       copyrightholder?: facet[]
     }
   }> => {
-    const client = await apiClient('', url)
+    const client = apiClient('', url)
     return await client.content.search('image', { q: queryString, s: SIZE, fr: (index) * SIZE })
   }

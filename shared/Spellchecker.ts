@@ -51,7 +51,7 @@ export class Spellchecker {
         : response.misspelled.map((misspelled) => {
           return !Array.isArray(misspelled.entries)
             ? []
-            : misspelled.entries.map(entry => {
+            : misspelled.entries.map((entry) => {
               return {
                 text: entry.text,
                 suggestions: entry.suggestions || []

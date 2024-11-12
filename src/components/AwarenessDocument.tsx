@@ -31,9 +31,11 @@ export const AwarenessDocument = ({ children, documentId, document, className }:
     }
   }, [setAsOpen])
 
-  return <CollaborationProviderContext documentId={documentId} document={document}>
-    <Awareness name={documentId} ref={setAsOpen} visual={false} className={className}>
-      {children}
-    </Awareness>
-  </CollaborationProviderContext>
+  return (
+    <CollaborationProviderContext documentId={documentId} document={document}>
+      <Awareness name={documentId} ref={setAsOpen} visual={false} className={className}>
+        {children}
+      </Awareness>
+    </CollaborationProviderContext>
+  )
 }

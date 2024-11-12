@@ -58,7 +58,7 @@ export const RegistryProvider = ({ children }: PropsWithChildren): JSX.Element =
   const [isInitialized, setIsInitialized] = useState<boolean>(false)
 
   useEffect(() => {
-    getServerUrls().then(server => {
+    getServerUrls().then((server) => {
       const repository = new Repository(server.repositoryUrl.href)
       const spellchecker = new Spellchecker(server.spellcheckUrl.href)
 
@@ -68,7 +68,7 @@ export const RegistryProvider = ({ children }: PropsWithChildren): JSX.Element =
         spellchecker
       })
       setIsInitialized(true)
-    }).catch(ex => {
+    }).catch((ex) => {
       console.error(`Failed fetching server urls in RegistryProvider, ${ex.message}`, ex)
     })
   }, [])

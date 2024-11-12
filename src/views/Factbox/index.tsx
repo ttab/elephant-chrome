@@ -57,11 +57,12 @@ export const Factbox = (props: ViewProps & { document?: Y.Doc }): JSX.Element =>
   return (
     <>
       {documentId
-        ? <AwarenessDocument documentId={documentId} document={document} className='h-full'>
-          <Wrapper {...props} documentId={documentId} />
-        </AwarenessDocument>
-        : <></>
-      }
+        ? (
+            <AwarenessDocument documentId={documentId} document={document} className='h-full'>
+              <Wrapper {...props} documentId={documentId} />
+            </AwarenessDocument>
+          )
+        : <></>}
     </>
   )
 }
@@ -78,48 +79,49 @@ function Wrapper(props: ViewProps & { documentId: string }): JSX.Element {
   const [inProgress] = useYValue('root.__inProgress')
 
   return (
-    <Textbit.Root plugins={plugins.map(initPlugin => initPlugin())} placeholders="multiple" className="h-screen max-h-screen flex flex-col">
+    <Textbit.Root plugins={plugins.map((initPlugin) => initPlugin())} placeholders='multiple' className='h-screen max-h-screen flex flex-col'>
       <ViewHeader.Root>
         <ViewHeader.Title title='Faktaruta' icon={BookTextIcon} />
 
         <ViewHeader.Action>
-          {!!props.documentId &&
-            <ViewHeader.RemoteUsers documentId={props.documentId} />
-          }
+          {!!props.documentId
+          && <ViewHeader.RemoteUsers documentId={props.documentId} />}
         </ViewHeader.Action>
 
       </ViewHeader.Root>
 
-      <div className="flex-grow overflow-auto pr-12 max-w-screen-xl">
+      <div className='flex-grow overflow-auto pr-12 max-w-screen-xl'>
         {!!provider && synced
           ? <EditorContent provider={provider} user={user} />
-          : <></>
-        }
+          : <></>}
       </div>
       <div className='p-2'>
         {inProgress || isSaved
           ? (
-            <Button
-              disabled={isSaved}
-              onClick={() => {
-                if (provider && status === 'authenticated') {
-                  provider.sendStateless(
-                    createStateless(StatelessType.IN_PROGRESS, {
-                      state: false,
-                      id: props.documentId,
-                      context: {
-                        accessToken: session.accessToken,
-                        user: session.user,
-                        type: 'Factbox'
-                      }
-                    }))
-                }
-                setSaved(true)
-              }}>Spara
-            </Button>)
+              <Button
+                disabled={isSaved}
+                onClick={() => {
+                  if (provider && status === 'authenticated') {
+                    provider.sendStateless(
+                      createStateless(StatelessType.IN_PROGRESS, {
+                        state: false,
+                        id: props.documentId,
+                        context: {
+                          accessToken: session.accessToken,
+                          user: session.user,
+                          type: 'Factbox'
+                        }
+                      }))
+                  }
+                  setSaved(true)
+                }}
+              >
+                Spara
+              </Button>
+            )
           : null}
       </div>
-      <div className="h-14 basis-14">
+      <div className='h-14 basis-14'>
         <Footer />
       </div>
     </Textbit.Root>
@@ -176,13 +178,13 @@ function EditorContent({ provider, user }: {
         onSpellcheck={async (texts) => {
           return await spellchecker?.check(texts, locale, session?.accessToken ?? '') ?? []
         }}
-        className="outline-none
+        className='outline-none
           h-full
           dark:text-slate-100
           [&_[data-spelling-error]]:border-b-2
           [&_[data-spelling-error]]:border-dotted
           [&_[data-spelling-error]]:border-red-500
-        "
+        '
       >
         <DropMarker />
 
@@ -201,12 +203,12 @@ function Footer(): JSX.Element {
   const { words, characters } = useTextbit()
 
   return (
-    <footer className="flex line font-sans h-14 border-t text-sm p-3 pr-8 text-right gap-4 justify-end items-center">
-      <div className="flex gap-2">
+    <footer className='flex line font-sans h-14 border-t text-sm p-3 pr-8 text-right gap-4 justify-end items-center'>
+      <div className='flex gap-2'>
         <strong>Ord:</strong>
         <span>{words}</span>
       </div>
-      <div className="flex gap-2">
+      <div className='flex gap-2'>
         <strong>Tecken:</strong>
         <span>{characters}</span>
       </div>

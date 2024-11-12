@@ -23,7 +23,7 @@ export const GET: RouteHandler = async (req: Request, { cache, repository, res }
 
   try {
     // Fetch from Redis if exists
-    const state = await cache.get(uuid).catch(ex => {
+    const state = await cache.get(uuid).catch((ex) => {
       throw new Error('get cached document', { cause: ex })
     })
 
@@ -41,7 +41,7 @@ export const GET: RouteHandler = async (req: Request, { cache, repository, res }
     const doc = await repository.getDoc({
       uuid,
       accessToken: session?.accessToken
-    }).catch(ex => {
+    }).catch((ex) => {
       throw new Error('get document from repository', { cause: ex })
     })
 

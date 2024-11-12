@@ -1,6 +1,6 @@
 import { z } from 'zod'
 
-const EventsSchema = z.object({
+const _EventsSchema = z.object({
   _index: z.string(),
   _id: z.string(),
   _score: z.nullable(z.number()),
@@ -55,4 +55,4 @@ const EventsSchema = z.object({
   sort: z.array(z.number())
 })
 
-export type Event = z.infer<typeof EventsSchema>
+export type Event = z.infer<typeof _EventsSchema>

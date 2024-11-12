@@ -26,24 +26,24 @@ export const SluglineEditable = ({ path, documentStatus, onValidation, validateS
     >
       {documentStatus !== 'usable'
         ? (
-          <Awareness name={`PlanSlugline-${path}`} ref={setFocused}>
-            <Validation
-              label='Slugline'
-              block='tt/slugline'
-              path={path}
-              onValidation={onValidation}
-              validateStateRef={validateStateRef}
-            >
-              <TextBox
+            <Awareness name={`PlanSlugline-${path}`} ref={setFocused}>
+              <Validation
+                label='Slugline'
+                block='tt/slugline'
                 path={path}
-                placeholder='Lägg till slugg'
-                singleLine={true}
-                className='h-6 font-normal text-sm whitespace-nowrap mb-1'
-              />
-            </Validation>
-          </Awareness>)
-        : <SluglineButton path={path} />
-      }
+                onValidation={onValidation}
+                validateStateRef={validateStateRef}
+              >
+                <TextBox
+                  path={path}
+                  placeholder='Lägg till slugg'
+                  singleLine={true}
+                  className='h-6 font-normal text-sm whitespace-nowrap mb-1'
+                />
+              </Validation>
+            </Awareness>
+          )
+        : <SluglineButton path={path} />}
     </div>
   )
 }

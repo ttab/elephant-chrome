@@ -13,7 +13,7 @@ export class RedisCache {
   async connect(): Promise<void> {
     const client = createClient({ url: this.#url })
 
-    await client.connect().catch(ex => {
+    await client.connect().catch((ex) => {
       throw new Error('connect to redis', { cause: ex })
     })
 

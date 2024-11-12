@@ -1,4 +1,4 @@
-export interface Slots extends Record<string, { slots: number[], label: string }> {}
+type Slots = Record<string, { slots: number[], label: string }>
 
 export const timesSlots: Slots = {
   fullday: {

@@ -59,11 +59,11 @@ export const Assignments = (): JSX.Element => {
         <TableCommandMenu heading='Assignments'>
           <Commands />
         </TableCommandMenu>
-        <div className="flex flex-col h-screen">
+        <div className='flex flex-col h-screen'>
           <ViewHeader.Root>
             <ViewHeader.Title
-              title="Uppdrag"
-              short="Uppdrag"
+              title='Uppdrag'
+              short='Uppdrag'
               iconColor='#006bb3'
               icon={BriefcaseBusinessIcon}
             />

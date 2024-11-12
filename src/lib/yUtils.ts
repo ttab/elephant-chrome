@@ -239,7 +239,7 @@ export function toSlateYXmlText(value: string): Y.XmlText {
 function stringToTextbitText(value: string): TBElement[] {
   const lines = value.trim().split('\n')
 
-  return lines.map(line => {
+  return lines.map((line) => {
     return {
       id: crypto.randomUUID(),
       class: 'text',

@@ -22,7 +22,7 @@ export const Assignees = ({ path, name, placeholder, asDialog }: {
     }
   })
   const [assignees, setAssignees] = useYValue<EleBlock[]>(path)
-  const selectedOptions = ((assignees || [])?.map(a => {
+  const selectedOptions = ((assignees || [])?.map((a) => {
     return {
       value: a.uuid,
       label: a.title
@@ -31,10 +31,10 @@ export const Assignees = ({ path, name, placeholder, asDialog }: {
   const setFocused = useRef<(value: boolean) => void>(null)
 
   return (
-    <div className="flex gap-2 items-center">
+    <div className='flex gap-2 items-center'>
       <Awareness name={name} ref={setFocused}>
         <ComboBox
-          variant={'ghost'}
+          variant='ghost'
           size='xs'
           options={allAuthors}
           selectedOptions={selectedOptions}
@@ -47,10 +47,10 @@ export const Assignees = ({ path, name, placeholder, asDialog }: {
             }
           }}
           onSelect={(option) => {
-            const selectedAssignee = selectedOptions.findIndex(sa => sa.value === option.value)
+            const selectedAssignee = selectedOptions.findIndex((sa) => sa.value === option.value)
 
             if (selectedAssignee > -1) {
-              setAssignees((assignees || []).filter(a => a.uuid !== option.value))
+              setAssignees((assignees || []).filter((a) => a.uuid !== option.value))
             } else {
               setAssignees([...(assignees || []), YBlock.create({
                 type: 'core/author',
@@ -67,7 +67,7 @@ export const Assignees = ({ path, name, placeholder, asDialog }: {
         </ComboBox>
       </Awareness>
 
-      <div className="opacity-80 cursor-default">
+      <div className='opacity-80 cursor-default'>
         <AssigneeAvatars
           assignees={selectedOptions.map((author) => author.label)}
           size='xs'

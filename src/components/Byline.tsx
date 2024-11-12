@@ -23,8 +23,8 @@ export const Byline = ({ onValidation, validateStateRef, name }: {
   const [authors, setAuthors] = useYValue<Block[] | undefined>(path)
 
   const setFocused = useRef<(value: boolean) => void>(null)
-  const selectedOptions = allAuthors.filter(author =>
-    authors?.some(a => a.uuid === author.value))
+  const selectedOptions = allAuthors.filter((author) =>
+    authors?.some((a) => a.uuid === author.value))
 
   return (
     <Awareness name={name || 'Byline'} ref={setFocused} className='flex flex-col gap-2'>
@@ -34,13 +34,13 @@ export const Byline = ({ onValidation, validateStateRef, name }: {
         block='core/author'
         onValidation={onValidation}
         validateStateRef={validateStateRef}
-        >
+      >
         <ComboBox
           size='xs'
           sortOrder='label'
           options={allAuthors}
           selectedOptions={selectedOptions}
-          placeholder={'Lägg till byline'}
+          placeholder='Lägg till byline'
           onOpenChange={(isOpen: boolean) => {
             if (setFocused?.current) {
               setFocused.current(isOpen)
@@ -60,7 +60,7 @@ export const Byline = ({ onValidation, validateStateRef, name }: {
               })])
             }
           }}
-      />
+        />
       </Validation>
     </Awareness>
   )

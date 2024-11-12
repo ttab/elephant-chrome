@@ -20,19 +20,19 @@ export const Prompt = ({ title, description, primaryLabel, secondaryLabel, onPri
     <Dialog open={true}>
       <DialogContent>
         <DialogHeader>
-          {!!title &&
-            <DialogTitle>{title}</DialogTitle>
-          }
+          {!!title
+          && <DialogTitle>{title}</DialogTitle>}
         </DialogHeader>
 
         <DialogDescription>
           {description}
         </DialogDescription>
 
-        <DialogFooter className="flex flex-col gap-2 pt-4">
-          {!!onSecondary && !!secondaryLabel &&
+        <DialogFooter className='flex flex-col gap-2 pt-4'>
+          {!!onSecondary && !!secondaryLabel
+          && (
             <Button
-              variant="secondary"
+              variant='secondary'
               onClick={(event) => {
                 event.preventDefault()
                 event.stopPropagation()
@@ -41,17 +41,18 @@ export const Prompt = ({ title, description, primaryLabel, secondaryLabel, onPri
             >
               {secondaryLabel}
             </Button>
-          }
+          )}
 
           <Button onClick={(event) => {
             event.preventDefault()
             event.stopPropagation()
             onPrimary(event)
-          }}>
+          }}
+          >
             {primaryLabel}
           </Button>
         </DialogFooter>
       </DialogContent>
-    </Dialog >
+    </Dialog>
   )
 }

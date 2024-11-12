@@ -8,5 +8,5 @@ const StorySchema = z.object({
   })
 })
 
-const FullStorySchema = BaseSchema.and(StorySchema)
-export type IndexedStory = z.infer<typeof FullStorySchema>
+const _FullStorySchema = BaseSchema.and(StorySchema)
+export type IndexedStory = z.infer<typeof _FullStorySchema>

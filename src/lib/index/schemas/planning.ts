@@ -1,6 +1,6 @@
 import { z } from 'zod'
 
-const PlanningSchema = z.object({
+const _PlanningSchema = z.object({
   _index: z.string(),
   _id: z.string(),
   _score: z.nullable(z.number()),
@@ -61,4 +61,4 @@ const PlanningSchema = z.object({
   sort: z.array(z.number())
 })
 
-export type Planning = z.infer<typeof PlanningSchema>
+export type Planning = z.infer<typeof _PlanningSchema>

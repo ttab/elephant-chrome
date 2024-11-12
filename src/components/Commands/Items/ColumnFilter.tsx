@@ -13,22 +13,22 @@ export const ColumnFilter = (): ReactNode => {
     return columns.map((column) => {
       return column.columnDef.meta?.Filter
         ? (
-          <CommandItem
-            key={column.id}
-            value={column.id}
-            onSelect={() => {
-              setPages([...pages, column.id])
-              setSearch('')
-            }}
+            <CommandItem
+              key={column.id}
+              value={column.id}
+              onSelect={() => {
+                setPages([...pages, column.id])
+                setSearch('')
+              }}
             >
-            {column.columnDef.meta?.columnIcon
-              ? <column.columnDef.meta.columnIcon size={18} strokeWidth={1.75} className='mr-2' />
-              : <FileQuestion size={18} strokeWidth={1.75} className='mr-2' />
-              }
-            {column.columnDef.meta?.name || 'unknown'}
-          </CommandItem>)
+              {column.columnDef.meta?.columnIcon
+                ? <column.columnDef.meta.columnIcon size={18} strokeWidth={1.75} className='mr-2' />
+                : <FileQuestion size={18} strokeWidth={1.75} className='mr-2' />}
+              {column.columnDef.meta?.name || 'unknown'}
+            </CommandItem>
+          )
         : null
-    }).filter(x => x)
+    }).filter((x) => x)
   }
 
   if (page === 'textFilter') {

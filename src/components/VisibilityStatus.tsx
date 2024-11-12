@@ -10,7 +10,7 @@ export const VisibilityStatus = (): JSX.Element => {
 
   const setFocused = useRef<(value: boolean) => void>(null)
 
-  const selectedOptions = VisibilityStatuses.filter(type => {
+  const selectedOptions = VisibilityStatuses.filter((type) => {
     const value = status?.data.public === 'true' ? 'public' : 'internal'
 
     return type.value === value
@@ -23,7 +23,7 @@ export const VisibilityStatus = (): JSX.Element => {
       <ComboBox
         max={1}
         size='sm'
-        variant={'ghost'}
+        variant='ghost'
         options={VisibilityStatuses}
         selectedOptions={selectedOptions}
         onOpenChange={(isOpen: boolean) => {
@@ -49,9 +49,8 @@ export const VisibilityStatus = (): JSX.Element => {
         hideInput
       >
         {SelectedIcon
-          ? <SelectedIcon { ...selectedOptions[0].iconProps } />
-          : selectedOptions[0].label
-          }
+          ? <SelectedIcon {...selectedOptions[0].iconProps} />
+          : selectedOptions[0].label}
       </ComboBox>
     </Awareness>
   )

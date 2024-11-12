@@ -57,15 +57,13 @@ export const FacetedFilter = <TData, TValue>({
             <option.icon size={18} strokeWidth={1.75} />
           )}
           <span>{option.label}</span>
-          {(
-            <span className="ml-auto flex h-4 w-4 items-center justify-center font-mono text-xs">
-              {facets?.get(option.value) && (
-                <span className="ml-auto flex h-4 w-4 items-center justify-center font-mono text-xs">
-                  {facets.get(option.value) || 0}
-                </span>
-              )}
-            </span>
-          )}
+          <span className='ml-auto flex h-4 w-4 items-center justify-center font-mono text-xs'>
+            {facets?.get(option.value) && (
+              <span className='ml-auto flex h-4 w-4 items-center justify-center font-mono text-xs'>
+                {facets.get(option.value) || 0}
+              </span>
+            )}
+          </span>
         </CommandItem>
       )
     })

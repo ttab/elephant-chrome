@@ -9,14 +9,16 @@ const Note = ({ note }: { note: Block }): JSX.Element => {
   return (
     <Alert className={cn('flex', note.role === 'public'
       ? 'bg-blue-50'
-      : 'bg-yellow-50')}>
+      : 'bg-yellow-50')}
+    >
       <AlertDescription className='flex space-x-2 items-center'>
         {note.role === 'public'
           ? <Globe strokeWidth={1.75} size={18} />
           : <Building strokeWidth={1.75} size={18} />}
         <pre className='font-thin text-sm whitespace-pre-wrap break-words'>{note.data.text}</pre>
       </AlertDescription>
-    </Alert>)
+    </Alert>
+  )
 }
 
 export const Notes = (): JSX.Element[] | null => {

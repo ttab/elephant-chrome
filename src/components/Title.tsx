@@ -23,4 +23,5 @@ export const Title = ({ autoFocus, placeholder, path, className, onValidation, v
       autoFocus={!!autoFocus}
       singleLine={true}
     />
-  </Validation>)
+  </Validation>
+)

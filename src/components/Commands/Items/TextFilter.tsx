@@ -12,14 +12,15 @@ export const TextFilter = (): JSX.Element | null => {
 
   return !page
     ? (
-      <CommandItem
-        onSelect={() => {
-          setPages([...pages, 'textFilter'])
-          setSearch(globalFilter)
-        }}>
-        <Search size={18} strokeWidth={1.75} className='mr-2' />
-        Text
-      </CommandItem>
+        <CommandItem
+          onSelect={() => {
+            setPages([...pages, 'textFilter'])
+            setSearch(globalFilter)
+          }}
+        >
+          <Search size={18} strokeWidth={1.75} className='mr-2' />
+          Text
+        </CommandItem>
       )
     : null
 }

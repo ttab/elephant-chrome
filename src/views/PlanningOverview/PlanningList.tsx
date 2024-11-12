@@ -38,7 +38,7 @@ export const PlanningList = ({ from, to }: {
         type='Planning'
         columns={columns}
         onRowSelected={onRowSelected}
-        />
+      />
     </>
   )
 }

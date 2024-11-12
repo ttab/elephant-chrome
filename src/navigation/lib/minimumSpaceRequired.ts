@@ -14,7 +14,7 @@ export function minimumSpaceRequired(
 ): number {
   // Default to biggest screen, then find biggest screen size allowed
   let screen = screenDefinitions.slice(-1)[0]
-  const filteredScreens = screenDefinitions.filter(s => {
+  const filteredScreens = screenDefinitions.filter((s) => {
     return s.value > window.innerWidth
   }).reverse()
 
@@ -24,7 +24,7 @@ export function minimumSpaceRequired(
   }
 
   const views = content
-    .filter(item => !!item.name)
+    .filter((item) => !!item.name)
     .map((item): { name: string, width: number } => {
       const name = item.name
       return {

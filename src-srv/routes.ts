@@ -144,7 +144,7 @@ function connectRouteHandler(app: Application, routePath: string, func: RouteHan
           statusMessage: 'Incorrect response from route handler. Expected payload or statusCode plus statusMessage.'
         })
       }
-    }).catch(ex => {
+    }).catch((ex) => {
       console.error(ex)
       res.statusCode = 500
       res.statusMessage = ex?.message || 'Unknown error'
@@ -184,7 +184,7 @@ function connectWebsocketHandler(app: Application, routePath: string, func: Webs
 function buildRoutes(routes: RouteMap, directory: string, baseRoute: string = ''): void {
   const items = fs.readdirSync(directory)
 
-  items.forEach(item => {
+  items.forEach((item) => {
     const itemPath = path.join(directory, item)
     const route = path.join(baseRoute, item)
 

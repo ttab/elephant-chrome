@@ -81,7 +81,7 @@ export async function fetchFromIndex<TObject, TIndexItem>(
         break
       }
 
-      result.hits.forEach(hit => {
+      result.hits.forEach((hit) => {
         objs.push(transformer(hit))
       })
 

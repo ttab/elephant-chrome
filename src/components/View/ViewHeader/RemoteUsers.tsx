@@ -10,7 +10,7 @@ export const RemoteUsers = ({ documentId }: PropsWithChildren & {
   const [states] = useAwareness(documentId)
 
   const users = states.reduce<AwarenessStates>((remoteUsers, state) => {
-    if (!remoteUsers.find(ru => ru.clientId === state.clientId)) {
+    if (!remoteUsers.find((ru) => ru.clientId === state.clientId)) {
       remoteUsers.push({
         clientId: state.clientId,
         data: state.data
@@ -21,15 +21,17 @@ export const RemoteUsers = ({ documentId }: PropsWithChildren & {
   }, [])
 
   return (
-    <div className="flex-grow flex items-center justify-end">
+    <div className='flex-grow flex items-center justify-end'>
       <AvatarGroup>
-        {users.map(user => {
-          return <Avatar
-            key={user.clientId}
-            value={user.data.name}
-            variant="color"
-            color={user.data.color}
-          />
+        {users.map((user) => {
+          return (
+            <Avatar
+              key={user.clientId}
+              value={user.data.name}
+              variant='color'
+              color={user.data.color}
+            />
+          )
         })}
       </AvatarGroup>
     </div>

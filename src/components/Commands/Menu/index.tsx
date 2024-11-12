@@ -61,20 +61,20 @@ export const CommandMenu = ({ children, onKeyDown, onChange }: CommandMenuProps)
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="overflow-hidden p-0 shadow-lg">
+      <DialogContent className='overflow-hidden p-0 shadow-lg'>
         <Command
-          className="[&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:font-medium [&_[cmdk-group-heading]]:text-muted-foreground [&_[cmdk-group]:not([hidden])_~[cmdk-group]]:pt-0 [&_[cmdk-group]]:px-2 [&_[cmdk-input-wrapper]_svg]:h-5 [&_[cmdk-input-wrapper]_svg]:w-5 [&_[cmdk-input]]:h-12 [&_[cmdk-item]]:px-2 [&_[cmdk-item]]:py-3 [&_[cmdk-item]_svg]:h-5 [&_[cmdk-item]_svg]:w-5"
+          className='[&_[cmdk-group-heading]]:px-2 [&_[cmdk-group-heading]]:font-medium [&_[cmdk-group-heading]]:text-muted-foreground [&_[cmdk-group]:not([hidden])_~[cmdk-group]]:pt-0 [&_[cmdk-group]]:px-2 [&_[cmdk-input-wrapper]_svg]:h-5 [&_[cmdk-input-wrapper]_svg]:w-5 [&_[cmdk-input]]:h-12 [&_[cmdk-item]]:px-2 [&_[cmdk-item]]:py-3 [&_[cmdk-item]_svg]:h-5 [&_[cmdk-item]_svg]:w-5'
           onKeyDown={(e) => onKeyDown(e, setOpen, command)}
         >
           <DebouncedCommandInput
             value={search}
             onChange={(value) => onChange(value, command)}
             placeholder={getPlaceholder(pages, page)}
-            className="h-9"
+            className='h-9'
           />
           {children}
           {!page && (
-            <CommandGroup heading="Suggestions">
+            <CommandGroup heading='Suggestions'>
               <CommandItem
                 onSelect={() => runCommand(() => handleLink({
                   dispatch,
@@ -84,7 +84,7 @@ export const CommandMenu = ({ children, onKeyDown, onChange }: CommandMenuProps)
                   origin: viewId
                 }))}
               >
-                <GanttChart size={18} strokeWidth={1.75} className="mr-2" />
+                <GanttChart size={18} strokeWidth={1.75} className='mr-2' />
                 <span>Planning overview</span>
               </CommandItem>
             </CommandGroup>

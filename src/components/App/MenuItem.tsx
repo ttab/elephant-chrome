@@ -22,8 +22,7 @@ export const MenuItem = ({ menuItem }: {
     <>
       {menuItem?.target !== 'dialog'
         ? <MenuItemViewOpener menuItem={menuItem} />
-        : <MenuItemDialogOpener menuItem={menuItem} />
-      }
+        : <MenuItemDialogOpener menuItem={menuItem} />}
     </>
   )
 }
@@ -38,8 +37,8 @@ export const MenuItemViewOpener = ({ menuItem }: {
           <menuItem.icon strokeWidth={1.75} size={18} />
         </div>
         <div>{menuItem.label}</div>
-      </Link >
-    </SheetClose >
+      </Link>
+    </SheetClose>
   )
 }
 
@@ -53,19 +52,22 @@ export const MenuItemDialogOpener = ({ menuItem }: {
       key={menuItem.name}
       className='w-full flex gap-3 items-center px-3 py-2 rounded-md hover:bg-gray-100 hover:cursor-pointer'
       onClick={() => {
-        showModal(<>
-          {
-            menuItem.name === 'Flash'
-              ? <FlashDialogContent menuItem={menuItem} onDialogClose={hideModal} />
-              : <DialogContent menuItem={menuItem} onDialogClose={hideModal} />
-          }
-        </>)
-      }}>
+        showModal(
+          <>
+            {
+              menuItem.name === 'Flash'
+                ? <FlashDialogContent menuItem={menuItem} onDialogClose={hideModal} />
+                : <DialogContent menuItem={menuItem} onDialogClose={hideModal} />
+            }
+          </>
+        )
+      }}
+    >
       <div className='flex items-center justify-center opacity-80 pr-2'>
         <menuItem.icon strokeWidth={1.75} size={18} />
       </div>
       <div>{menuItem.label}</div>
-    </SheetClose >
+    </SheetClose>
   )
 }
 
@@ -88,13 +90,15 @@ const DialogContent = ({ menuItem, onDialogClose }: {
     return <></>
   }
 
-  return <DocumentView
-    id={document[0]}
-    document={document[1]}
-    className='p-0 rounded-md'
-    asDialog={true}
-    onDialogClose={onDialogClose}
-  />
+  return (
+    <DocumentView
+      id={document[0]}
+      document={document[1]}
+      className='p-0 rounded-md'
+      asDialog={true}
+      onDialogClose={onDialogClose}
+    />
+  )
 }
 
 
@@ -152,14 +156,16 @@ const FlashDialogContent = ({ menuItem, onDialogClose }: {
     return <></>
   }
 
-  return <DocumentView
-    id={document[0]}
-    document={document[1]}
-    defaultPlanningItem={planning}
-    className='p-0 rounded-md'
-    asDialog={true}
-    onDialogClose={onDialogClose}
-  />
+  return (
+    <DocumentView
+      id={document[0]}
+      document={document[1]}
+      defaultPlanningItem={planning}
+      className='p-0 rounded-md'
+      asDialog={true}
+      onDialogClose={onDialogClose}
+    />
+  )
 }
 
 

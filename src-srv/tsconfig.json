@@ -18,6 +18,7 @@
   },
   "include": [
     "./**/*.ts",
+    "../eslint.config.mjs",
     "../src/types/next-auth.d.ts"
   ],
 }
