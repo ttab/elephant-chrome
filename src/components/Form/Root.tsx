@@ -19,6 +19,8 @@ export const Root = ({ children, asDialog = false, className }: PropsWithChildre
   const [validateForm, setValidateForm] = useState<boolean>(!asDialog)
   const formRootStyle = `
     w-full
+    flex
+    flex-col
     space-y-4
     [&_[role="textbox"]:focus]:ring-indigo-200
     [&_[role="textbox"]:has([data-slate-placeholder="true"])]:ring-1
