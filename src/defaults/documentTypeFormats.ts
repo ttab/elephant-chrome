@@ -21,5 +21,5 @@ export const documentTypeValueFormat: Record<string, { icon: LucideIcon, label: 
     icon: NewspaperIcon,
     label: 'Artikel',
     color: '#50BEBF'
-  },
+  }
 }

@@ -42,7 +42,7 @@ export function isRecord(value: unknown): value is Record<string, unknown> {
 }
 
 export function isEvent(data: Planning | Event | Article): data is Event {
-  return '_index' in data && data._index.includes('core_event');
+  return '_index' in data && data._index.includes('core_event')
 }
 
 export function isPlanning(data: Planning | Event | Article): data is Planning {
@@ -53,5 +53,5 @@ export function isPlanning(data: Planning | Event | Article): data is Planning {
 }
 
 export function isArticle(data: Planning | Event | Article): data is Article {
-  return '_index' in data && data._index.includes('core_article');
+  return '_index' in data && data._index.includes('core_article')
 }

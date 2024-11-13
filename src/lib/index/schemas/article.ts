@@ -1,6 +1,6 @@
 import { z } from 'zod'
 
-const ArticleSchema = z.object({
+const _ArticleSchema = z.object({
   _index: z.string(),
   _id: z.string(),
   _score: z.nullable(z.number()),
@@ -60,4 +60,4 @@ const ArticleSchema = z.object({
   sort: z.array(z.number())
 })
 
-export type Article = z.infer<typeof ArticleSchema>
+export type Article = z.infer<typeof _ArticleSchema>
