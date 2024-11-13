@@ -51,7 +51,7 @@ const meta: ViewMetadata = {
 }
 
 const Editor = (props: ViewProps): JSX.Element => {
-  const query = useQuery()
+  const [query] = useQuery()
   const [document, setDocument] = useState<Y.Doc | undefined>(undefined)
 
   const documentId = props.id || query.id
