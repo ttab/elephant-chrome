@@ -154,9 +154,9 @@ export function currentDateInUTC(): string {
 * Get date 24-hour timestamp date (16:10) if today's date,
 * otherwise in shortened version of month and day (20 feb 16:10).
 **/
-export function dateInTimestampOrShortMonthDayTimestamp(date: string, locale: string, timeZone: string): string | undefined {
+export function dateInTimestampOrShortMonthDayTimestamp(date: string, locale: string, timeZone: string): string {
   if (!date) {
-    return
+    return '??'
   }
 
   const inputDate = new Date(date)

@@ -127,7 +127,7 @@ export function assignmentColumns({ authors = [], locale, timeZone }: {
         const types: string[] = row.getValue<DefaultValueOption[]>('assignmentType')?.map((t) => t.value)
         const formattedStart = dateInTimestampOrShortMonthDayTimestamp(start, locale, timeZone)
         const formattedEnd = dateInTimestampOrShortMonthDayTimestamp(end, locale, timeZone)
-        const formattedDatestring = `${formattedStart} - ${formattedEnd}`.replace('undefined', '??')
+        const formattedDatestring = `${formattedStart} - ${formattedEnd}`
 
         if (!types.includes('picture')) {
           if (isFullday) {
