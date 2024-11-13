@@ -60,6 +60,7 @@ export const TableProvider = <T,>({
   const [pages, setPages] = useState<string[]>([])
   const page = pages[pages.length - 1]
   const [search, setSearch] = useState<string | undefined>()
+  const [grouping, setGrouping] = useState<string[]>([])
 
   const command = useMemo(() => ({
     pages,
@@ -77,12 +78,13 @@ export const TableProvider = <T,>({
       columnVisibility,
       rowSelection,
       columnFilters,
-      grouping: ['newsvalue']
+      grouping
     },
     enableRowSelection: true,
     enableMultiRowSelection: false,
     enableSubRowSelection: true,
     onRowSelectionChange: setRowSelection,
+    onGroupingChange: setGrouping,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
     onColumnVisibilityChange: setColumnVisibility,

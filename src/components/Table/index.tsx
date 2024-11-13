@@ -1,4 +1,4 @@
-import React, {
+import {
   type MouseEvent,
   useEffect,
   useCallback,
@@ -8,7 +8,6 @@ import React, {
 } from 'react'
 import {
   type ColumnDef,
-  flexRender,
   type Row
 } from '@tanstack/react-table'
 
@@ -21,9 +20,10 @@ import {
 import { Toolbar } from './Toolbar'
 import { useNavigation, useView, useTable } from '@/hooks'
 import { isEditableTarget } from '@/lib/isEditableTarget'
-import { cn } from '@ttab/elephant-ui/utils'
 import { handleLink } from '@/components/Link/lib/handleLink'
 import { NewItems } from './NewItems'
+import { GroupedRows } from './GroupedRows'
+import { Rows } from './Rows'
 
 interface TableProps<TData, TValue> {
   columns: Array<ColumnDef<TData, TValue>>
@@ -156,65 +156,12 @@ export const Table = <TData, TValue>({
       )
     }
 
-    return deferredRows.map((row) => {
-      return (
-        <React.Fragment key={row.id}>
-          <TableRow className='sticky top-0 bg-muted'>
-            <TableCell colSpan={columns.length} className='pl-6 px-2 py-1 border-b'>
-              <div className='flex justify-between items-center flex-wrap'>
-                <div className='flex items-center space-x-2'>
-                  <span className='font-thin text-muted-foreground'>Nyhetsvärde</span>
-                  <span className='inline-flex items-center justify-center size-5 bg-background rounded-full ring-1 ring-gray-300'>
-                    {row.groupingValue as string}
-                  </span>
-                </div>
-                <div className='flex items-center space-x-2 px-6'>
-                  <span className='font-thin text-muted-foreground'>Antal</span>
-                  <span className='inline-flex items-center justify-center size-5 bg-background rounded-full ring-1 ring-gray-300'>
-                    {row.subRows.length}
-                  </span>
-                </div>
-              </div>
-            </TableCell>
-          </TableRow>
-
-          {row.subRows.map((subRow) => (
-            <TableRow
-              key={subRow.id}
-              className='flex items-center cursor-default scroll-mt-10'
-              data-state={subRow.getIsSelected() && 'selected'}
-              onClick={(event: MouseEvent<HTMLTableRowElement>) => handleOpen(event, subRow)}
-              ref={(el) => {
-                if (el) {
-                  rowRefs.current.set(subRow.id, el)
-                } else {
-                  rowRefs.current.delete(subRow.id)
-                }
-              }}
-            >
-              {subRow.getVisibleCells().map((cell) => {
-                return (
-                  <TableCell
-                    key={cell.id}
-                    className={cn(
-                      'first:pl-2 last:pr-2 sm:first:pl-6 sm:last:pr-6',
-                      cell.column.columnDef.meta?.className
-                    )}
-                  >
-                    {flexRender(
-                      cell.column.columnDef.cell,
-                      cell.getContext()
-                    )}
-                  </TableCell>
-                )
-              })}
-            </TableRow>
-          ))}
-        </React.Fragment>
-      )
-    })
-  }, [deferredRows, columns.length, deferredLoading, handleOpen])
-
+    return deferredRows.map((row, index) => (
+      table.getState().grouping.length)
+      ? <GroupedRows<TData, TValue> key={index} row={row} columns={columns} handleOpen={handleOpen} rowRefs={rowRefs} />
+      : <Rows key={index} row={row} handleOpen={handleOpen} rowRefs={rowRefs} />
+    )
+  }, [deferredRows, columns, deferredLoading, handleOpen, table])
 
   return (
     <>

@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { useEffect, useMemo } from 'react'
 import useSWR from 'swr'
 import { useAuthors, useIndexUrl, useTable, useRegistry } from '@/hooks'
 import { useSession } from 'next-auth/react'
@@ -67,6 +67,12 @@ export const AssignmentsList = ({ startDate }: { startDate: string }): JSX.Eleme
     })
     setData(items)
   })
+
+  const { table } = useTable()
+
+  useEffect(() => {
+    table.setGrouping(['newsvalue'])
+  }, [table])
 
   return (
     <Table

@@ -1,7 +1,7 @@
-import { useCallback, useMemo } from 'react'
+import { useCallback, useEffect, useMemo } from 'react'
 import useSWR from 'swr'
 
-import { useSections } from '@/hooks'
+import { useSections, useTable } from '@/hooks'
 import { type Event } from '@/lib/index/schemas'
 import { eventTableColumns } from '@/views/EventsOverview/EventsListColumns'
 
@@ -13,8 +13,13 @@ export const EventsList = ({ from, to }: {
 }): JSX.Element => {
   const sections = useSections()
 
-  const { error } = useSWR(['Events', from, to, { withPlannings: true }])
+  const { error } = useSWR<Event[], Error>(['Events', from, to, { withPlannings: true }])
   const columns = useMemo(() => eventTableColumns({ sections }), [sections])
+  const { table } = useTable()
+
+  useEffect(() => {
+    table.setGrouping(['newsvalue'])
+  }, [table])
 
   const onRowSelected = useCallback((row?: Event) => {
     if (row) {
