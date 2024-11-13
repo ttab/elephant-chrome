@@ -14,7 +14,7 @@ export const DateChanger = ({ type }: {
   type: View
 }): JSX.Element => {
   const { isActive } = useView()
-  const { from, to } = useQuery()
+  const [{ from, to }] = useQuery()
 
   const currentDate = useMemo(() => {
     return from

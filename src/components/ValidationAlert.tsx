@@ -16,7 +16,7 @@ interface Entity {
 export const ValidationAlert = ({ validateStateRef }: {
   validateStateRef: ValidateStateRef
 }): JSX.Element | null => {
-  const { id: documentId } = useQuery()
+  const [{ id: documentId }] = useQuery()
   const { data: session } = useSession()
   const { server: { repositoryUrl }, repository } = useRegistry()
   const { provider, synced } = useCollaboration()

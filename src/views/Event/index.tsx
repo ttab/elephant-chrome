@@ -46,7 +46,7 @@ const meta: ViewMetadata = {
 }
 
 export const Event = (props: ViewProps & { document?: Y.Doc }): JSX.Element => {
-  const query = useQuery()
+  const [query] = useQuery()
   const documentId = props.id || query.id
 
 
