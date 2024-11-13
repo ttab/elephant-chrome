@@ -35,7 +35,7 @@ export const GroupedRows = <TData, TValue>({ row, columns, handleOpen, rowRefs }
           key={subRow.id}
           className='flex items-center cursor-default scroll-mt-10'
           data-state={subRow.getIsSelected() && 'selected'}
-          onClick={(event: MouseEvent<HTMLTableRowElement>) => handleOpen(event, subRow) }
+          onClick={(event: MouseEvent<HTMLTableRowElement>) => handleOpen(event, subRow)}
           ref={(el) => {
             if (el) {
               rowRefs.current.set(subRow.id, el)
@@ -43,20 +43,22 @@ export const GroupedRows = <TData, TValue>({ row, columns, handleOpen, rowRefs }
               rowRefs.current.delete(subRow.id)
             }
           }}
-              >
+        >
           {subRow.getVisibleCells().map((cell) => {
-            return <TableCell
-              key={cell.id}
-              className={cn(
-                'first:pl-2 last:pr-2 sm:first:pl-6 sm:last:pr-6',
-                cell.column.columnDef.meta?.className
-              )}
-                    >
-              {flexRender(
-                cell.column.columnDef.cell,
-                cell.getContext()
-              )}
-            </TableCell>
+            return (
+              <TableCell
+                key={cell.id}
+                className={cn(
+                  'first:pl-2 last:pr-2 sm:first:pl-6 sm:last:pr-6',
+                  cell.column.columnDef.meta?.className
+                )}
+              >
+                {flexRender(
+                  cell.column.columnDef.cell,
+                  cell.getContext()
+                )}
+              </TableCell>
+            )
           })}
         </TableRow>
       ))}
