@@ -1,14 +1,9 @@
-import { ViewWrapper } from '@/components'
-
 import {
   NavigationActionType,
   type ContentState,
-  type HistoryState,
   type NavigationAction,
   type NavigationState
 } from '@/types'
-
-import { calculateViewWidths } from './calculateViewWidths'
 
 export function navigationReducer(state: NavigationState, action: NavigationAction): NavigationState {
   switch (action.type) {
@@ -17,23 +12,14 @@ export function navigationReducer(state: NavigationState, action: NavigationActi
         throw new Error('Content is undefined')
       }
 
-      const views = calculateViewWidths(state.viewRegistry, action.content)
-
       return {
         ...state,
-        views,
         focus: null,
         active: action?.active || action.content[action.content.length - 1].viewId,
-        content: action.content.map((item: ContentState, index): JSX.Element => {
-          const Component = state.viewRegistry.get(item.name)?.component
-          const { colSpan } = views[index]
-
-          return (
-            <ViewWrapper key={item.viewId} viewId={item.viewId} name={item.name} colSpan={colSpan}>
-              <Component {...item.props} />
-            </ViewWrapper>
-          )
-        })
+        components: action.content.map((item: ContentState) => {
+          return state.viewRegistry.get(item.name)?.component
+        }),
+        content: action.content
       }
     }
 
@@ -51,16 +37,6 @@ export function navigationReducer(state: NavigationState, action: NavigationActi
       if (action.viewId === undefined) {
         throw new Error('ViewId is undefined')
       }
-
-      // FIXME: current is sometimes empty
-      const current: ContentState = history.state.contentState.find((item: HistoryState) => item.viewId === action.viewId) || {}
-      history.replaceState({
-        id: action.viewId,
-        viewName: current.name,
-        path: current.path,
-        contentState: history.state.contentState
-      }, current.name, `${window.location.protocol}//${window.location.host}${current.path}`)
-
 
       return {
         ...state,

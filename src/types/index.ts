@@ -54,10 +54,10 @@ export interface ViewRegistry {
 
 export interface NavigationState {
   viewRegistry: ViewRegistry
-  views: Array<{ name: string, colSpan: number }>
   focus: string | null
   active: string | undefined
-  content: JSX.Element[]
+  components: Array<React.FC<ViewProps>>
+  content: ContentState[]
 }
 
 export interface ContentState {
@@ -65,15 +65,6 @@ export interface ContentState {
   name: View
   path: string
   props?: ViewProps
-}
-
-export interface HistoryState {
-  viewId: string
-  viewName: string
-  props: Record<string, unknown>
-  path: string
-  type: 'popstate' | 'pushstate' | 'replacestate'
-  contentState: ContentState[]
 }
 
 export interface ViewProps {

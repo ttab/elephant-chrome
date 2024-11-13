@@ -9,6 +9,7 @@ import {
 } from '@/types'
 import { toQueryString } from './toQueryString'
 import { minimumSpaceRequired } from '@/navigation/lib'
+import type { HistoryInterface } from '@/navigation/hooks/useHistory'
 
 interface LinkClick {
   event?: MouseEvent<Element> | KeyboardEvent
@@ -20,38 +21,40 @@ interface LinkClick {
   origin: string
   target?: 'self' | 'blank'
   onDocumentCreated?: () => void
+  history: HistoryInterface
 }
 
 export function handleLink({
   event,
-  dispatch,
+  dispatch, // FIXME: Is this necessary?
   viewItem,
   viewRegistry,
   props,
   viewId,
   origin,
   target,
-  onDocumentCreated
+  onDocumentCreated,
+  history
 }: LinkClick): void {
   if (event?.ctrlKey || event?.metaKey) {
     return
   }
+  event?.preventDefault()
+  event?.stopPropagation()
 
-  const content: ContentState[] = history.state.contentState
+  // Get current state from history
+  const content: ContentState[] = history.state?.contentState || []
 
-  // Create next (wanted) content state
-  // Beware, props can not be functions
+  // Create next (wanted) content state (props can not be functions!)
   const newContent: ContentState = {
-    props,
     viewId,
     name: viewItem.meta.name,
-    path: `${viewItem.meta.path}${toQueryString(props)}`
+    path: `${viewItem.meta.path}${toQueryString(props)}`,
+    props
   }
 
-  // If modifier is used, open furthest to the right
-  // Otherwise open to the right of origin
+  // If modifier is used, open furthest to the right, otherwise to the right of origin view
   const currentIndex = content.findIndex(c => c.viewId === origin)
-
   if (event?.shiftKey) {
     content.push(newContent)
   } else if (target === 'self') {
@@ -60,33 +63,31 @@ export function handleLink({
     content.splice(currentIndex + 1, Infinity, newContent)
   }
 
-  event?.preventDefault()
-  event?.stopPropagation()
-
-
-  // Remove what does not fit
+  // Remove views what does not fit to the left
   while (minimumSpaceRequired(content, viewRegistry) > 12) {
     content.shift()
   }
 
-  // Set history state first, then navigation state
-  history.pushState({
+  // Push new history state
+  history.pushState(`${viewItem.meta.path}${toQueryString(props)}`, {
     viewId,
-    props,
-    viewName: viewItem.meta.name,
     contentState: content
-  }, viewItem.meta.name, `${viewItem.meta.path}${toQueryString(props)}`)
+  })
+
+  //
+  // FIXME: Creeate solution for onDocumentCreated!!! (Could be sent with pushState and dispatched to navigation...?)
+  //
 
   // Append onDocumentCreated to props if available
   // This since we can't save a function to history state
-  if (onDocumentCreated) {
-    const currentIndex = content.findIndex(c => c.viewId === viewId)
+  // if (onDocumentCreated) {
+  //   const currentIndex = content.findIndex(c => c.viewId === viewId)
 
-    content[currentIndex].props = { ...content[currentIndex].props, onDocumentCreated }
-  }
+  //   content[currentIndex].props = { ...content[currentIndex].props, onDocumentCreated }
+  // }
 
-  dispatch({
-    type: NavigationActionType.SET,
-    content
-  })
+  // dispatch({
+  //   type: NavigationActionType.SET,
+  //   content
+  // })
 }

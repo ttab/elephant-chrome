@@ -1,28 +1,9 @@
 import { TextSearchIcon } from '@ttab/elephant-ui/icons'
-import { handleLink } from '@/components/Link/lib/handleLink'
-import { useNavigation, useQuery, useView } from '@/hooks'
-import { type ActionHandlerI } from '../types'
+import { useLink } from '@/hooks'
 import { type Plugin } from '@ttab/textbit'
 
-function handler({ dispatch, viewRegistry, origin, id }: ActionHandlerI): boolean {
-  handleLink({
-    event: undefined,
-    dispatch,
-    viewItem: viewRegistry?.get('Factboxes'),
-    viewRegistry,
-    viewId: crypto.randomUUID(),
-    props: { id },
-    origin
-  })
-  return true
-}
-
 export const FactboxPlugin: Plugin.InitFunction = () => {
-  const { state, dispatch } = useNavigation()
-  const { viewId: origin } = useView()
-  const viewRegistry = state.viewRegistry
-  const query = useQuery()
-  const { id } = query
+  const openFactboxes = useLink('Factboxes')
 
   return {
     class: 'block',
@@ -37,7 +18,7 @@ export const FactboxPlugin: Plugin.InitFunction = () => {
         title: 'Factbox search',
         tool: () => <TextSearchIcon style={{ width: '1em', height: '1em' }} />,
         handler: () => {
-          return handler({ dispatch, viewRegistry, origin, id })
+          openFactboxes(undefined, {})
         },
         visibility: () => {
           return [

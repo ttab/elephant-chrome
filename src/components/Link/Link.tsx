@@ -1,6 +1,6 @@
 import { type ForwardedRef, type MouseEvent, forwardRef } from 'react'
 import { type View, type ViewProps } from '@/types'
-import { useNavigation, useView } from '@/hooks'
+import { useHistory, useNavigation, useView } from '@/hooks'
 
 import { handleLink } from './lib/handleLink'
 import { toQueryString } from './lib/toQueryString'
@@ -16,6 +16,7 @@ interface LinkProps {
 
 export const Link = forwardRef((props: LinkProps, ref: ForwardedRef<HTMLAnchorElement>) => {
   const { state, dispatch } = useNavigation()
+  const history = useHistory()
   const viewId = crypto.randomUUID()
   const viewItem = state.viewRegistry.get(props.to)
   const qs = toQueryString(props.props)
@@ -41,7 +42,8 @@ export const Link = forwardRef((props: LinkProps, ref: ForwardedRef<HTMLAnchorEl
           props: { ...props.props },
           viewId,
           origin,
-          target: props.target
+          target: props.target,
+          history
         })
       }}
       ref={ref}>

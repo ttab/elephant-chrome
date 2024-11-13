@@ -19,7 +19,7 @@ import {
   TableRow
 } from '@ttab/elephant-ui'
 import { Toolbar } from './Toolbar'
-import { useNavigation, useView, useTable } from '@/hooks'
+import { useNavigation, useView, useTable, useHistory } from '@/hooks'
 import { isEditableTarget } from '@/lib/isEditableTarget'
 import { cn } from '@ttab/elephant-ui/utils'
 import { handleLink } from '@/components/Link/lib/handleLink'
@@ -38,6 +38,7 @@ export const Table = <TData, TValue>({
 }: TableProps<TData, TValue>): JSX.Element => {
   const { isActive: isActiveView } = useView()
   const { state, dispatch } = useNavigation()
+  const history = useHistory()
   const { viewId: origin } = useView()
 
   const { table, loading } = useTable()
@@ -63,10 +64,11 @@ export const Table = <TData, TValue>({
         // @ts-expect-error unknown type
         props: { id: subRow.original._id },
         viewId: crypto.randomUUID(),
-        origin
+        origin,
+        history
       })
     }
-  }, [dispatch, state.viewRegistry, onRowSelected, origin, type])
+  }, [dispatch, state.viewRegistry, onRowSelected, origin, type, history])
 
   const scrollToRow = useCallback((rowId: string) => {
     rowRefs.current.get(rowId)?.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
