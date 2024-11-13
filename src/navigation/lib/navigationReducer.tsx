@@ -52,8 +52,8 @@ export function navigationReducer(state: NavigationState, action: NavigationActi
         throw new Error('ViewId is undefined')
       }
 
+      // FIXME: current is sometimes empty
       const current: ContentState = history.state.contentState.find((item: HistoryState) => item.viewId === action.viewId) || {}
-
       history.replaceState({
         id: action.viewId,
         viewName: current.name,
