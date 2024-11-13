@@ -248,8 +248,13 @@ export const EventTimeMenu = (): JSX.Element => {
             className='p-0'
           />
           <div className='flex pt-2 pb-2 '>
-            <Switch onCheckedChange={(checked) => handleCheckedChange(checked)} checked={fullDay} className=' self-center' />
-            <label className='text-sm self-center p-2'>Heldag</label>
+            <Switch
+              id='wholeDaySwitch'
+              onCheckedChange={(checked) => handleCheckedChange(checked)}
+              checked={fullDay}
+              className=' self-center'
+            />
+            <label htmlFor='wholeDaySwitch' className='text-sm self-center p-2'>Heldag</label>
           </div>
           <div className='flex justify-between border-2 rounded-md border-slate-100'>
             <div className='px-3 py-2 text-sm text-gray-400'>
