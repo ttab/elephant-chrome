@@ -16,33 +16,39 @@ export interface ApplicationMenuItem {
   label: string
   icon: LucideIcon
   target?: 'view' | 'dialog'
+  color?: string
 }
 
 export const applicationMenuItems: ApplicationMenuItem[] = [
   {
-    name: 'Search',
-    label: 'Sök',
-    icon: SearchIcon
-  },
-  {
     name: 'Plannings',
     label: 'Planeringar',
-    icon: CalendarDaysIcon
+    icon: CalendarDaysIcon,
+    color: '#FF971E'
   },
   {
     name: 'Events',
     label: 'Händelser',
-    icon: CalendarPlus2
+    icon: CalendarPlus2,
+    color: '#5E9F5D'
   },
   {
     name: 'Assignments',
     label: 'Uppdrag',
-    icon: BriefcaseBusiness
+    icon: BriefcaseBusiness,
+    color: '#006bb3'
   },
   {
     name: 'Flash',
     label: 'Skapa flash',
     icon: ZapIcon,
+    color: '#FF5150',
     target: 'dialog'
+  },
+  {
+    name: 'Search',
+    label: 'Sök',
+    icon: SearchIcon,
+    color: '#F06F21'
   }
 ]
