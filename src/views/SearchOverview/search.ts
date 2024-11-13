@@ -85,7 +85,7 @@ export const search = ({
           : await Events.search(indexUrl, accessToken, params)
         if (result.ok) {
           if (pool === 'plannings') {
-            const planningsWithstatus = withStatus<any>(result)
+            const planningsWithstatus = withStatus<Planning | Event>(result)
             setTotalHits(planningsWithstatus.length)
             allData.push(...planningsWithstatus)
           } else {
