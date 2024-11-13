@@ -1,6 +1,6 @@
-import { useCallback, useMemo } from 'react'
+import { useCallback, useEffect, useMemo } from 'react'
 import useSWR from 'swr'
-import { useSections } from '@/hooks'
+import { useSections, useTable } from '@/hooks'
 import {
   type Planning
 } from '@/lib/index'
@@ -14,9 +14,14 @@ export const PlanningList = ({ from, to }: {
 }): JSX.Element => {
   const sections = useSections()
 
-
-  const { error } = useSWR(['Plannings', from, to, { withStatus: true }])
+  const { error } = useSWR<Planning[], Error>(['Plannings', from, to, { withStatus: true }])
   const columns = useMemo(() => planningTableColumns({ sections }), [sections])
+
+  const { table } = useTable()
+
+  useEffect(() => {
+    table.setGrouping(['newsvalue'])
+  }, [table])
 
   const onRowSelected = useCallback((row?: Planning) => {
     if (row) {
