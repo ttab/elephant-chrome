@@ -10,7 +10,6 @@ import {
 } from '@ttab/elephant-ui'
 import { useYValue } from '@/hooks/useYValue'
 import { useRegistry } from '@/hooks'
-import { CalendarClockIcon } from '@ttab/elephant-ui/icons'
 import { dateToReadableDateTime, dateToReadableTime, dateToReadableDay, createDateWithTime } from '@/lib/datetime'
 import { TimeInput } from '@/components/TimeInput'
 
