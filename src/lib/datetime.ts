@@ -155,6 +155,10 @@ export function currentDateInUTC(): string {
 * otherwise in shortened version of month and day (20 feb 16:10).
 **/
 export function dateInTimestampOrShortMonthDayTimestamp(date: string, locale: string, timeZone: string): string {
+  if (!date) {
+    return '??'
+  }
+
   const inputDate = new Date(date)
   const today = new Date()
 
