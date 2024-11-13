@@ -33,7 +33,10 @@ export const search = async (endpoint: URL, accessToken: string, params?: Search
     sort.push({ 'document.meta.core_event.data.end': params.sort.end })
   }
 
-  sort.push({ 'document.meta.core_newsvalue.value': 'desc' })
+  if (params?.when !== 'anytime') {
+    // in Search view we don't group by newsvalue, so sorting by doesn't make sense
+    sort.push({ 'document.meta.core_newsvalue.value': 'desc' })
+  }
 
   if (params?.when === 'anytime') {
     sort.push({ 'document.meta.core_event.data.start': 'desc' })
@@ -96,6 +99,7 @@ export const search = async (endpoint: URL, accessToken: string, params?: Search
     ],
     sort
   }
+
   if (textCriteria) {
     // @ts-expect-error We don't have types for opensearch queries
     query.query.bool.must.push(textCriteria)

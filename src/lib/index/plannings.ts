@@ -32,7 +32,10 @@ const search = async (endpoint: URL, accessToken: string, params?: SearchPlannin
     sort.push({ 'document.meta.core_assignment.data.end': params.sort.end })
   }
 
-  sort.push({ 'document.meta.core_newsvalue.value': 'desc' })
+  if (params?.when !== 'anytime') {
+    // in search view we don't group by newsvalue, so sorting by doesn't make sense
+    sort.push({ 'document.meta.core_newsvalue.value': 'desc' })
+  }
 
   if (params?.when === 'anytime') {
     sort.push({ 'document.meta.core_planning_item.data.start_date': 'desc' })

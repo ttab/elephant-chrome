@@ -14,39 +14,35 @@ interface SearchArticlesParams {
 }
 
 const search = async (endpoint: URL, accessToken: string, params?: SearchArticlesParams): Promise<SearchIndexResponse<Article>> => {
-  const sort: Array<Record<string, 'asc' | 'desc'>> = [
-    { 'document.meta.core_newsvalue.value': 'desc' },
-    { created: 'desc' },
-    { modified: 'desc' }
-  ]
+  const sort: Array<Record<string, 'asc' | 'desc'>> = [{ 'heads.usable.created': 'desc' }]
 
   const query = {
     query: {
       bool: {
         must: [
-            // The core_article index includes items written in e.g. norwegian or danish, so we filter those out
-            {
-              term: {
-                'document.language': 'sv'
-              }
-            },
-            {
-             prefix: {
-               'document.title': {
-                 value: params?.where?.text,
-                 boost: 2.0,
-                 case_insensitive: true
-               }
-             }
+          // The core_article index includes items written in e.g. norwegian or danish, so we filter those out
+          {
+            term: {
+              'document.language': 'sv'
             }
-          ]
-        }
-      },
+          },
+          {
+            prefix: {
+              'document.title': {
+                value: params?.where?.text,
+                boost: 2.0,
+                case_insensitive: true
+              }
+            }
+          }
+        ]
+      }
+    },
     _source: true,
     fields: [
       'document.title',
       'heads.usable.*'
-  ],
+    ],
     sort
   }
   return await searchIndex(
