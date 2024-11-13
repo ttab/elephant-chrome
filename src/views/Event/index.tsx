@@ -11,7 +11,7 @@ import { useSession } from 'next-auth/react'
 import { ViewHeader } from '@/components/View'
 import { createStateless, StatelessType } from '@/shared/stateless'
 import { ScrollArea, Button } from '@ttab/elephant-ui'
-import { Tags, Ticket, Calendar } from '@ttab/elephant-ui/icons'
+import { Tags, Ticket, CalendarClock } from '@ttab/elephant-ui/icons'
 import { cn } from '@ttab/elephant-ui/utils'
 import { cva } from 'class-variance-authority'
 import {
@@ -139,7 +139,7 @@ const EventViewContent = (props: ViewProps & { documentId: string }): JSX.Elemen
             <Description role='public' />
             <Registration />
 
-            <Form.Group icon={Calendar}>
+            <Form.Group icon={CalendarClock}>
               <EventTimeMenu />
             </Form.Group>
 

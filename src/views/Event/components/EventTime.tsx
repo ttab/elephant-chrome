@@ -232,7 +232,6 @@ export const EventTimeMenu = (): JSX.Element => {
     <Popover open={open} onOpenChange={handleOpenChange}>
       <PopoverTrigger asChild>
         <div className='flex flex-row space-x-2 items-center align-middle cursor-pointer'>
-          <div className='pr-2'><CalendarClockIcon size={18} strokeWidth={1.75} className='text-muted-foreground' /></div>
           {fullDay
             ? <DateLabel fromDate={eventData?.start} toDate={eventData?.end} locale={locale} timeZone={timeZone} />
             : <DateTimeLabel fromDate={eventData?.start} toDate={eventData?.end} locale={locale} timeZone={timeZone} />}
