@@ -125,7 +125,7 @@ const EventViewContent = (props: ViewProps & { documentId: string }): JSX.Elemen
         </ViewHeader.Root>
       </div>
 
-      <ScrollArea className='grid @5xl:place-content-center @5xl:max-w-[1200px] mx-auto'>
+      <ScrollArea className='w-full grid @5xl:place-content-center @5xl:max-w-[1200px] mx-auto'>
         <Form.Root asDialog={props.asDialog}>
           <Form.Content>
             <Form.Title>
