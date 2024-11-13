@@ -1,9 +1,15 @@
-import { Article, Articles, Assignments, Event, Planning, Plannings } from "@/lib/index"
-import { Events } from "@/lib/events"
-import { transformAssignments } from "../Assignments/lib/transformAssignments"
-import { withStatus } from "@/hooks/useFetcher"
-import { type AssignmentMetaExtended } from "../Assignments/types"
-import { type Session } from 'next-auth'
+import { Events } from '@/lib/events'
+import { transformAssignments } from '../Assignments/lib/transformAssignments'
+import { withStatus } from '@/hooks/useFetcher'
+import {
+  Articles,
+  Assignments,
+  Plannings,
+  type Article,
+  type Planning,
+  type Event
+} from '@/lib/index'
+import { type AssignmentMetaExtended } from '../Assignments/types'
 import { type Dispatch, type SetStateAction } from 'react'
 
 interface Props {
@@ -12,10 +18,25 @@ interface Props {
   page: number
   text: string | undefined
   pool: string
-  session: Session | null
+  accessToken: string | undefined
   indexUrl: URL
   setData: Dispatch<Array<Planning | Event | AssignmentMetaExtended | Article>>
   status: string
+}
+
+interface Params {
+  page?: number
+  size?: number
+  when?: 'anytime' | 'fixed'
+  where: {
+    start?: string | Date
+    end?: string | Date
+    text: string
+  }
+  sort?: {
+    start?: 'asc' | 'desc'
+    end?: 'asc' | 'desc'
+  }
 }
 
 export const search = ({
@@ -24,38 +45,39 @@ export const search = ({
   setLoading,
   setTotalHits,
   pool,
-  session,
+  accessToken,
   indexUrl,
   setData,
   status
-}: Props) => {
+}: Props): void => {
   void (async () => {
-    if (!session?.accessToken || status !== 'authenticated') {
+    if (!accessToken || status !== 'authenticated' || (!text || text?.length < 1)) {
       return
     }
-    if (!text || text?.length < 1) {
-      return
-    }
-    const params = {
+    const params: Params = {
       when: 'anytime',
       page,
       size: 100,
       where: {
         text
-      },
-      sort: {
-        start: 'desc'
       }
     } as const
 
     try {
-      let allData: Array<Planning | Event | Article | AssignmentMetaExtended> = []
+      const allData: Array<Planning | Event | Article | AssignmentMetaExtended> = []
       setLoading(true)
       const isPlanningOrEventSearch = pool === 'plannings' || pool === 'events'
       if (isPlanningOrEventSearch) {
+        if (pool === 'events') {
+          // in Plannings view we use the sort.start parameter to sort by assignment time,
+          // which should not be done in Search view
+          params.sort = {
+            start: 'desc'
+          }
+        }
         const result = pool === 'plannings'
-          ? await Plannings.search(indexUrl, session.accessToken, params)
-          : await Events.search(indexUrl, session.accessToken, params)
+          ? await Plannings.search(indexUrl, accessToken, params)
+          : await Events.search(indexUrl, accessToken, params)
         if (result.ok) {
           if (pool === 'plannings') {
             const planningsWithstatus = withStatus<any>(result)
@@ -69,13 +91,13 @@ export const search = ({
       }
       if (pool === 'assignments') {
         const endpoint = new URL('/twirp/elephant.index.SearchV1/Query', indexUrl)
-        const result = await Assignments.search({ endpoint, accessToken: session.accessToken, text, page })
+        const result = await Assignments.search({ endpoint, accessToken, text, page })
         const assignments: AssignmentMetaExtended[] = transformAssignments(result)
         setTotalHits(assignments.length)
         allData.push(...assignments)
       }
       if (pool === 'articles') {
-        const result = await Articles.search(indexUrl, session.accessToken, params)
+        const result = await Articles.search(indexUrl, accessToken, params)
         if (result.ok) {
           setTotalHits(result.total)
           allData.push(...result.hits)
