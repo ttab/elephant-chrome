@@ -1,42 +1,46 @@
-import { SetStateAction, useRef, useEffect } from 'react'
+import { type SetStateAction, useRef, useEffect } from 'react'
 import { SearchInput } from '@/components/SearchInput'
 import { useIndexUrl } from '@/hooks/useIndexUrl'
 import { useSession } from 'next-auth/react'
+import { useTable } from '@/hooks/useTable'
+import { search } from './search'
 import {
   type Article,
   type Event,
   type Planning
 } from '@/lib/index'
-import { useTable } from '@/hooks/useTable'
 import { type AssignmentMetaExtended } from '../Assignments/types'
-import { search } from './search'
+import { useQuery } from '@/hooks/useQuery'
 
-export const SearchBar = ({ setLoading, setTotalHits, pool, page }: {
-  setLoading: React.Dispatch<SetStateAction<boolean>>,
-  setTotalHits: React.Dispatch<SetStateAction<number>>,
-  pool: string,
+export const SearchBar = ({ setLoading, setTotalHits, pool, page, width }: {
+  setLoading: React.Dispatch<SetStateAction<boolean>>
+  setTotalHits: React.Dispatch<SetStateAction<number>>
+  pool: string
   page: number
- }): JSX.Element => {
+  width?: string
+}): JSX.Element => {
   const indexUrl = useIndexUrl()
   const { data: session, status } = useSession()
+  const accessToken = session?.accessToken
   const { setData } = useTable<Planning | Event | AssignmentMetaExtended | Article>()
   const inputRef = useRef<HTMLInputElement | null>(null)
   const formRef = useRef<HTMLFormElement>(null)
+  const [query, setQueryString] = useQuery()
 
   useEffect(() => {
-    const text = inputRef?.current?.value
+    const text = query?.q || inputRef?.current?.value
     search({
       text,
       page,
       setLoading,
       setTotalHits,
       pool,
-      session,
+      accessToken,
       indexUrl,
       setData,
       status
     })
-  }, [page])
+  }, [page, indexUrl, accessToken, query.q, pool, status, setLoading, setData, setTotalHits])
 
   useEffect(() => {
     formRef?.current?.reset()
@@ -47,16 +51,18 @@ export const SearchBar = ({ setLoading, setTotalHits, pool, page }: {
   return (
     <form
       ref={formRef}
+      className={width ? width : 'w-[200px]'}
       onSubmit={(e): void => {
         e.preventDefault()
         const text = inputRef?.current?.value
+        setQueryString({ s: pool, q: text })
         search({
           text,
           page,
           setLoading,
           setTotalHits,
           pool,
-          session,
+          accessToken,
           indexUrl,
           setData,
           status
@@ -64,11 +70,11 @@ export const SearchBar = ({ setLoading, setTotalHits, pool, page }: {
       }}
     >
       <SearchInput
-        className="w-[200px] p-4 text-sm focus:ring-1 focus:ring-indigo-200 focus:dark:ring-gray-600"
-        type="text"
-        placeholder='Sök'
+        className='w-full flex p-4 text-sm focus:ring-1 focus:ring-indigo-200 focus:dark:ring-gray-600'
+        type='text'
+        placeholder={query?.q || 'Sök'}
         autoFocus
-        name="search"
+        name='search'
         ref={inputRef}
         withIcon={false}
       />
