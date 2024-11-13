@@ -27,7 +27,7 @@ import { Rows } from './Rows'
 
 interface TableProps<TData, TValue> {
   columns: Array<ColumnDef<TData, TValue>>
-  type: 'Planning' | 'Event' | 'Assignments' | 'Wires'
+  type: 'Planning' | 'Event' | 'Assignments'
   onRowSelected?: (row?: TData) => void
 }
 
