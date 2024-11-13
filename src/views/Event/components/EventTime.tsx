@@ -95,7 +95,6 @@ export const EventTimeMenu = (): JSX.Element => {
 
   useEffect(() => {
     if (!mounted && eventData) {
-      console.log('XXX eventData', eventData)
       const savedDates: CalendarTypes.DateRange = { from: undefined, to: undefined }
       setFullDay(eventData?.dateGranularity === 'date')
 
@@ -134,38 +133,41 @@ export const EventTimeMenu = (): JSX.Element => {
     }
   }, [eventData, mounted])
 
-  const handleOnSelect
-    = ({ eventStart, eventEnd, fullDay }: { eventStart: string | undefined, eventEnd: string | undefined, fullDay: boolean | undefined }): void => {
-      if (!eventStart || !eventEnd) {
-        return
-      }
-      let startDate = eventStart
-      let endDate = eventEnd
-      if (fullDay) {
-        const start = new Date(eventStart)
-        const startMidnight = dateMidnight(start)
-        startDate = startMidnight.toISOString()
-
-        const end = new Date(eventEnd)
-        const endDay = new Date(
-          end.getFullYear(),
-          end.getMonth(),
-          end.getDate(),
-          23,
-          59,
-          59,
-          999
-        )
-        endDate = endDay.toISOString()
-      }
-      const newEventData: EventData = {
-        start: startDate,
-        end: endDate,
-        dateGranularity: fullDay ? 'date' : 'datetime',
-        registration: eventData?.registration ? eventData.registration : ''
-      }
-      setEventData(newEventData)
+  const handleOnSelect = ({ eventStart, eventEnd, fullDay }: {
+    eventStart: string | undefined
+    eventEnd: string | undefined
+    fullDay: boolean | undefined
+  }): void => {
+    if (!eventStart || !eventEnd) {
+      return
     }
+    let startDate = eventStart
+    let endDate = eventEnd
+    if (fullDay) {
+      const start = new Date(eventStart)
+      const startMidnight = dateMidnight(start)
+      startDate = startMidnight.toISOString()
+
+      const end = new Date(eventEnd)
+      const endDay = new Date(
+        end.getFullYear(),
+        end.getMonth(),
+        end.getDate(),
+        23,
+        59,
+        59,
+        999
+      )
+      endDate = endDay.toISOString()
+    }
+    const newEventData: EventData = {
+      start: startDate,
+      end: endDate,
+      dateGranularity: fullDay ? 'date' : 'datetime',
+      registration: eventData?.registration ? eventData.registration : ''
+    }
+    setEventData(newEventData)
+  }
 
   const handleStartTimeChange = (time: string): void => {
     const valid = testValid(time)
