@@ -4,7 +4,7 @@ import { Block } from '@ttab/elephant-api/newsdoc'
 import { TimeDeliveryMenu } from './TimeDeliveryMenu'
 import { cn } from '@ttab/elephant-ui/utils'
 import { type AssignmentValueOption, type AssignmentData } from './types'
-import { ExecutionTimeMenu } from './ExcecutionTimeMenu'
+import { ExecutionTimeMenu } from './ExecutionTimeMenu'
 import { timeSlotTypes, timePickTypes } from '../../defaults/assignmentTimeConstants'
 
 const getTimeSlot = (timeSlot: string): AssignmentValueOption | undefined => {

@@ -195,3 +195,19 @@ export function dateToReadableDay(date: Date, locale: string, timeZone: string):
     month: 'short'
   }).format(date)
 }
+
+/**
+* Set hours and minutes to a Date object.
+* * @param date Date
+*   @param time string ex: '22:30'
+**/
+export function createDateWithTime(date: Date, time: string): Date {
+  const [hours, minutes] = time.split(':').map((str) => parseInt(str, 10))
+  return new Date(
+    date.getFullYear(),
+    date.getMonth(),
+    date.getDate(),
+    hours,
+    minutes
+  )
+}

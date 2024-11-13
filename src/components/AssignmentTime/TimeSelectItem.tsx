@@ -10,7 +10,7 @@ import {
 import { timePickTypes } from '../../defaults/assignmentTimeConstants'
 import { useYValue } from '@/hooks/useYValue'
 import { type AssignmentData } from './types'
-import { TimeInput } from './TimeInput'
+import { TimeInput } from '../TimeInput'
 interface TimeSelectItemProps extends React.PropsWithChildren {
   handleOnSelect: ({ value, selectValue }: { value: string, selectValue: string }) => void
   className?: string
