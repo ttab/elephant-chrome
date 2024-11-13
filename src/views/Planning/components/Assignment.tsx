@@ -3,13 +3,13 @@ import { Button } from '@ttab/elephant-ui'
 import { MessageCircleMore, Tags } from '@ttab/elephant-ui/icons'
 import { AssignmentType } from '@/components/DataItem/AssignmentType'
 import { useYValue } from '@/hooks/useYValue'
+import { AssignmentTime } from '@/components/AssignmentTime'
 import { useKeydownGlobal } from '@/hooks/useKeydownGlobal'
 import { Assignees } from '@/components/Assignees'
 import { Title } from '@/components/Title'
 import { SluglineEditable } from '@/components/DataItem/SluglineEditable'
 import { Form } from '@/components/Form'
 import { type FormProps } from '@/components/Form/Root'
-import { AssignmentTime } from '@/components/AssignmentTime'
 
 export const Assignment = ({ index, onAbort, onClose }: {
   index: number

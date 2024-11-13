@@ -11,7 +11,7 @@ import { useSession } from 'next-auth/react'
 import { ViewHeader } from '@/components/View'
 import { createStateless, StatelessType } from '@/shared/stateless'
 import { ScrollArea, Button } from '@ttab/elephant-ui'
-import { Tags, Ticket, Calendar } from '@ttab/elephant-ui/icons'
+import { Tags, Ticket, CalendarClock } from '@ttab/elephant-ui/icons'
 import { cn } from '@ttab/elephant-ui/utils'
 import { cva } from 'class-variance-authority'
 import {
@@ -28,6 +28,7 @@ import {
 import { PlanningTable } from './components/PlanningTable'
 import { Error } from '../Error'
 import { Form } from '@/components/Form'
+import { EventTimeMenu } from './components/EventTime'
 
 const meta: ViewMetadata = {
   name: 'Event',
@@ -138,8 +139,8 @@ const EventViewContent = (props: ViewProps & { documentId: string }): JSX.Elemen
             <Description role='public' />
             <Registration />
 
-            <Form.Group icon={Calendar}>
-              <p>Datetime TODO</p>
+            <Form.Group icon={CalendarClock}>
+              <EventTimeMenu />
             </Form.Group>
 
             <Form.Group icon={Tags}>

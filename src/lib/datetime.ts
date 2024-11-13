@@ -155,6 +155,10 @@ export function currentDateInUTC(): string {
 * otherwise in shortened version of month and day (20 feb 16:10).
 **/
 export function dateInTimestampOrShortMonthDayTimestamp(date: string, locale: string, timeZone: string): string {
+  if (!date) {
+    return '??'
+  }
+
   const inputDate = new Date(date)
   const today = new Date()
 
@@ -190,4 +194,20 @@ export function dateToReadableDay(date: Date, locale: string, timeZone: string):
     day: 'numeric',
     month: 'short'
   }).format(date)
+}
+
+/**
+* Set hours and minutes to a Date object.
+* * @param date Date
+*   @param time string ex: '22:30'
+**/
+export function createDateWithTime(date: Date, time: string): Date {
+  const [hours, minutes] = time.split(':').map((str) => parseInt(str, 10))
+  return new Date(
+    date.getFullYear(),
+    date.getMonth(),
+    date.getDate(),
+    hours,
+    minutes
+  )
 }
