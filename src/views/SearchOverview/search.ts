@@ -73,8 +73,9 @@ export const search = ({
 
       if (isPlanningOrEventSearch) {
         if (pool === 'events') {
-          // in Plannings view we use the sort.start parameter to sort by assignment time,
-          // which should not be done in Search view
+          /* in Plannings view we use the sort.start parameter to sort by assignment time,
+          which should not be done in Search view. However, the same parameter in Events
+          view can also be used in Search view to get correct sorting */
           params.sort = {
             start: 'desc'
           }
