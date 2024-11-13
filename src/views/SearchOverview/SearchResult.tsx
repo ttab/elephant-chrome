@@ -4,7 +4,7 @@ import { Table } from '@/components/Table'
 import { searchWideColumns } from './SearchColumns'
 import { useRegistry } from '@/hooks/useRegistry'
 import { useSections } from '@/hooks/useSections'
-import { Article, type Event, type Planning } from '@/lib/index'
+import { type Article, type Event, type Planning } from '@/lib/index'
 import { type AssignmentMetaExtended } from '../Assignments/types'
 
 export const SearchResult = ({ from, to, isLoading, pool, page }: {
@@ -26,23 +26,25 @@ export const SearchResult = ({ from, to, isLoading, pool, page }: {
     return row
   }, [])
 
+  const columns = useMemo(() => searchWideColumns({ locale, timeZone, sections }), [locale, timeZone, sections])
+
   if (error) {
     return <pre>{error.message}</pre>
   }
 
-  const columns = useMemo(() => searchWideColumns({ locale, timeZone, sections }), [locale, timeZone, sections, isLoading])
-
   return (
     <>
-      {isLoading ? (
-        <div className='flex w-full justify-center pt-8'>Laddar...</div>
-      ) : (
-        <Table
-          type='Planning'
-          columns={columns}
-          onRowSelected={onRowSelected}
-        />
-      )}
+      {isLoading
+        ? (
+            <div className='flex w-full justify-center pt-8'>Laddar...</div>
+          )
+        : (
+            <Table
+              type='Planning'
+              columns={columns}
+              onRowSelected={onRowSelected}
+            />
+          )}
     </>
   )
 }
