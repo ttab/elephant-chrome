@@ -24,6 +24,9 @@ interface Props {
   status: string
 }
 
+type DataType<T> = T[]
+type Types = Planning | Event | AssignmentMetaExtended | Article
+
 interface Params {
   page?: number
   size?: number
@@ -64,9 +67,10 @@ export const search = ({
     } as const
 
     try {
-      const allData: Array<Planning | Event | Article | AssignmentMetaExtended> = []
+      const allData: DataType<Types> = []
       setLoading(true)
       const isPlanningOrEventSearch = pool === 'plannings' || pool === 'events'
+
       if (isPlanningOrEventSearch) {
         if (pool === 'events') {
           // in Plannings view we use the sort.start parameter to sort by assignment time,
