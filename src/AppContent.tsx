@@ -1,7 +1,8 @@
+import React, { useMemo } from 'react'
 import { useHistory, useNavigation, useResize } from '@/hooks'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@ttab/elephant-ui'
 import { useIndexedDB } from './datastore/hooks/useIndexedDB'
-import { calculateViewWidths, minimumSpaceRequired } from './navigation/lib'
+import { calculateViewWidths, minimumSpaceRequired } from '@/navigation/lib'
 import type { ContentState, NavigationState, ViewProps } from './types'
 import { ViewWrapper } from './components'
 
@@ -9,12 +10,15 @@ export const AppContent = (): JSX.Element => {
   const { setActiveView } = useHistory()
   const { state } = useNavigation()
   const IDB = useIndexedDB()
+  useResize()
 
-  // FIXME: Must trigger rerender when resizing
-  const size = useResize()
-
-  const { components, content } = getVisibleContent(state, setActiveView)
-  const views = calculateViewWidths(state.viewRegistry, content)
+  const { components, content } = useMemo(() => {
+    return getVisibleContent(state, setActiveView)
+  }, [state, setActiveView])
+  console.log(components, content)
+  const views = useMemo(() => {
+    return calculateViewWidths(state.viewRegistry, content)
+  }, [state.viewRegistry, content])
 
   return (
     <>
@@ -54,7 +58,7 @@ function getVisibleContent(state: NavigationState, setActiveView: (viewId: strin
   const content = [...state.content]
 
   let spaceRequired = minimumSpaceRequired(content, state.viewRegistry)
-  if (spaceRequired) {
+  if (spaceRequired <= 12) {
     return {
       components,
       content

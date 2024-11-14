@@ -25,9 +25,6 @@ export const NavigationProvider = ({ children }: PropsWithChildren): JSX.Element
    * Handle user navigating browser history back and forth
    */
   useLayoutEffect(() => {
-    // FIXME: This effect is triggered by custom event useEffect below
-    const dt = new Date()
-    console.log('History changed!', dt.getSeconds(), dt.getMilliseconds())
     if (history.state) {
       dispatch({
         type: NavigationActionType.SET,
@@ -68,11 +65,6 @@ export const NavigationProvider = ({ children }: PropsWithChildren): JSX.Element
       } else {
         return
       }
-
-      // FiXME: This makes active view change slow, we need a way to short circuit it
-      // Almost 200ms before useLayoutEffect() based on history.state above is triggered!
-      const dt = new Date()
-      console.log('Key nav!', dt.getSeconds(), dt.getMilliseconds())
 
       history.replaceState(content[idx].path, {
         viewId: content[idx].viewId,
