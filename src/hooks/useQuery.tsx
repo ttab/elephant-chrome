@@ -95,7 +95,7 @@ export const useQuery = (): [Record<string, string | undefined>, (params: Record
     const newUrl = new URL(window.location.href)
     newUrl.search = searchParams.toString()
 
-    window.history.replaceState(newState, '', newUrl)
+    window.history.replaceState(newState, '', newUrl.href)
     setQueryParams(parseQueryString())
 
     window.dispatchEvent(new Event('queryChange'))
