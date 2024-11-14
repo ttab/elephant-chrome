@@ -12,7 +12,7 @@ import { LogOut, Menu as MenuIcon, X } from '@ttab/elephant-ui/icons'
 import { ThemeSwitcher } from './ThemeSwitcher'
 import { MenuItem } from './MenuItem'
 import { signOut, useSession } from 'next-auth/react'
-import { applicationMenuItems } from '@/defaults/applicationMenuItems'
+import { applicationMenu, type ApplicationMenuItem, type MenuGroups } from '@/defaults/applicationMenuItems'
 
 export const Menu = (): JSX.Element => {
   const { data } = useSession()
@@ -41,9 +41,15 @@ export const Menu = (): JSX.Element => {
             </SheetTitle>
           </SheetHeader>
 
-          <div className='px-3 py-4 border-t'>
-            {applicationMenuItems.map((item) => {
-              return <MenuItem key={item.name} menuItem={item} />
+          <div className='px-3 py-4 border-t flex flex-col divide-y divide-slate-300'>
+            {applicationMenu.groups.map((group: MenuGroups) => {
+              return (
+                <div key={group.name}>
+                  {group.items.map((item: ApplicationMenuItem) => {
+                    return <MenuItem key={item.name} menuItem={item} />
+                  })}
+                </div>
+              )
             })}
           </div>
         </div>
