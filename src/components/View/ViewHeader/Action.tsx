@@ -73,12 +73,13 @@ function handleClose(
   // When the full backwards navigation finish, add history items back one by one
   window.addEventListener('popstate', () => {
     const newContent = [...beforeRemoved]
-    const activeViewId = (preserveActiveId && newContent.findIndex((v) => v.viewId === state.active) === -1)
 
     for (const view of afterRemoved) {
       newContent.push(view)
+      const activeViewId = (preserveActiveId && newContent.findIndex((v) => v.viewId === state.active) === -1)
+
       history.pushState(view.path, {
-        viewId: activeViewId ? view.viewId : viewId,
+        viewId: activeViewId ? viewId : view.viewId,
         contentState: newContent
       })
     }
