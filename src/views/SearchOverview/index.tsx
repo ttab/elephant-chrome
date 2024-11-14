@@ -41,10 +41,10 @@ export const Search = (): JSX.Element => {
   const [query] = useQuery()
   const { locale, timeZone } = useRegistry()
   const sections = useSections()
-  const [pool, setPool] = useState<string>(query?.s || 'plannings')
+  const [pool, setPool] = useState<string>(query?.type || 'plannings')
   const columns = useMemo(() => searchWideColumns({ locale, timeZone, sections }), [locale, timeZone, sections])
 
-  const queryString = new URLSearchParams(window.location.search).get('q')
+  const queryString = new URLSearchParams(window.location.search).get('query')
 
   if (!validPools.map((p) => p.value).includes(pool)) {
     return <></>

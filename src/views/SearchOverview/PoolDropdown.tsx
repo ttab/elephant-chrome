@@ -16,7 +16,7 @@ export const pools: { value: string, label: string }[] = [
 
 export const PoolDropdown = ({ pool, setPool }: DropdownProps) => {
   const selected = useMemo(() => pools.filter((p) => p.value === pool), [pool])
-  const [query, setQueryString] = useQuery()
+  const [, setQueryString] = useQuery()
 
   return (
     <ComboBox
@@ -25,7 +25,7 @@ export const PoolDropdown = ({ pool, setPool }: DropdownProps) => {
       options={pools}
       onSelect={(e) => {
         setPool(e.value)
-        setQueryString({ ...query, s: e.value })
+        setQueryString({ type: e.value })
       }}
     />
   )

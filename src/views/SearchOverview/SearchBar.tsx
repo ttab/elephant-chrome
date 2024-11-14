@@ -28,7 +28,7 @@ export const SearchBar = ({ setLoading, setTotalHits, pool, page, width }: {
   const [query, setQueryString] = useQuery()
 
   useEffect(() => {
-    const text = query?.q || inputRef?.current?.value
+    const text = query?.query || inputRef?.current?.value
     search({
       text,
       page,
@@ -40,7 +40,7 @@ export const SearchBar = ({ setLoading, setTotalHits, pool, page, width }: {
       setData,
       status
     })
-  }, [page, indexUrl, accessToken, query.q, pool, status, setLoading, setData, setTotalHits])
+  }, [page, indexUrl, accessToken, query.query, pool, status, setLoading, setData, setTotalHits])
 
   useEffect(() => {
     formRef?.current?.reset()
@@ -55,7 +55,7 @@ export const SearchBar = ({ setLoading, setTotalHits, pool, page, width }: {
       onSubmit={(e): void => {
         e.preventDefault()
         const text = inputRef?.current?.value
-        setQueryString({ s: pool, q: text })
+        setQueryString({ type: pool, query: text })
         search({
           text,
           page,
@@ -72,7 +72,7 @@ export const SearchBar = ({ setLoading, setTotalHits, pool, page, width }: {
       <SearchInput
         className='w-full flex p-4 text-sm focus:ring-1 focus:ring-indigo-200 focus:dark:ring-gray-600'
         type='text'
-        placeholder={query?.q || 'Sök'}
+        placeholder={query?.query || 'Sök'}
         autoFocus
         name='search'
         ref={inputRef}
