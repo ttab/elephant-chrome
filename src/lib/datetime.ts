@@ -211,3 +211,28 @@ export function createDateWithTime(date: Date, time: string): Date {
     minutes
   )
 }
+
+/**
+ *
+ * @param date Date
+ * @param locale locale
+ * @param timeZone timeZone
+ * @returns Date format example: 16 feb 2024 (empty year if current year)
+ */
+export function dateToReadableShort(date: Date, locale: string, timeZone: string): string {
+  const now = new Date()
+  // Format day and short month name
+  const dayMonth = new Intl.DateTimeFormat(locale, {
+    day: '2-digit',
+    month: 'short',
+    timeZone
+  }).format(date)
+
+  // Conditionally format the year if different from the current year
+  const year = date.getFullYear() !== now.getFullYear()
+    ? new Intl.DateTimeFormat(locale, { year: 'numeric', timeZone }).format(date)
+    : ''
+
+  // Return formatted date string
+  return `${dayMonth} ${year}`.trim()
+}

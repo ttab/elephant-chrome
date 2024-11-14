@@ -28,7 +28,7 @@ import { Pagination } from './Pagination'
 
 interface TableProps<TData, TValue> {
   columns: Array<ColumnDef<TData, TValue>>
-  type: 'Planning' | 'Event' | 'Assignments' | 'Wires'
+  type: 'Planning' | 'Event' | 'Assignments' | 'Search' | 'Wires'
   onRowSelected?: (row?: TData) => void
 }
 
@@ -148,6 +148,7 @@ export const Table = <TData, TValue>({
 
   const TableBodyElement = useMemo(() => {
     if (deferredLoading || !deferredRows?.length) {
+      const isSearchTable = window.location.pathname.includes('/elephant/search')
       return (
         <TableRow>
           <TableCell
@@ -155,8 +156,10 @@ export const Table = <TData, TValue>({
             className='h-24 text-center'
           >
             {deferredLoading
-              ? 'Laddar...'
-              : 'Inga planeringar funna.'}
+              ? isSearchTable
+                ? ''
+                : 'Laddar...'
+              : 'Inga poster funna.'}
           </TableCell>
         </TableRow>
       )
@@ -176,12 +179,18 @@ export const Table = <TData, TValue>({
       <NewItems.Root>
         <NewItems.Table header={`Dina nya skapade ${type === 'Planning' ? 'planeringar' : 'händelser'}`} type={type} />
       </NewItems.Root>
-      <_Table className='table-auto relative'>
-        <TableBody>
-          {TableBodyElement}
-        </TableBody>
-      </_Table>
-      <Pagination />
+      {type === 'Search' && deferredLoading
+        ? null
+        : (
+            <>
+              <_Table className='table-auto relative'>
+                <TableBody>
+                  {TableBodyElement}
+                </TableBody>
+              </_Table>
+              <Pagination />
+            </>
+          )}
     </>
   )
 }

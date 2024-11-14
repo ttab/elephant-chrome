@@ -34,7 +34,7 @@ export const MenuItemViewOpener = ({ menuItem }: {
     <SheetClose asChild key={menuItem.name}>
       <Link to={menuItem.name} className='flex gap-3 items-center px-3 py-2 rounded-md hover:bg-gray-100'>
         <div className='flex items-center justify-center opacity-80 pr-2'>
-          <menuItem.icon strokeWidth={1.75} size={18} />
+          <menuItem.icon strokeWidth={1.75} size={18} color={menuItem.color} />
         </div>
         <div>{menuItem.label}</div>
       </Link>
@@ -64,7 +64,7 @@ export const MenuItemDialogOpener = ({ menuItem }: {
       }}
     >
       <div className='flex items-center justify-center opacity-80 pr-2'>
-        <menuItem.icon strokeWidth={1.75} size={18} />
+        <menuItem.icon strokeWidth={1.75} size={18} color={menuItem.color} />
       </div>
       <div>{menuItem.label}</div>
     </SheetClose>
