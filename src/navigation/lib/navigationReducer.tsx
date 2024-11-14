@@ -1,6 +1,5 @@
 import {
   NavigationActionType,
-  type ContentState,
   type NavigationAction,
   type NavigationState
 } from '@/types'
@@ -16,9 +15,6 @@ export function navigationReducer(state: NavigationState, action: NavigationActi
         ...state,
         focus: null,
         active: action?.active || action.content[action.content.length - 1].viewId,
-        components: action.content.map((item: ContentState) => {
-          return state.viewRegistry.get(item.name)?.component
-        }),
         content: action.content
       }
     }

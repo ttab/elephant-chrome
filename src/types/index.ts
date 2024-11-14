@@ -56,7 +56,6 @@ export interface NavigationState {
   viewRegistry: ViewRegistry
   focus: string | null
   active: string | undefined
-  components: Array<React.FC<ViewProps>>
   content: ContentState[]
 }
 

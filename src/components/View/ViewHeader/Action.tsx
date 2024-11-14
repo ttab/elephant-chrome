@@ -22,11 +22,11 @@ export const Action = ({ onDialogClose = undefined, children }: PropsWithChildre
         {children}
       </div>
 
-      {!onDialogClose && state.components.length > 1 &&
+      {!onDialogClose && state.content.length > 1 &&
         <ViewFocus viewId={viewId} />
       }
 
-      {(onDialogClose || state.components.length > 1) &&
+      {(onDialogClose || state.content.length > 1) &&
         <ViewDialogClose onClick={closer} />
       }
     </div>
