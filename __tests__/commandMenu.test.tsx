@@ -1,5 +1,5 @@
 import { TableProvider } from '@/contexts'
-import { NavigationProvider } from '@/navigation'
+import { NavigationProvider } from '@/navigation/NavigationProvider'
 import { render, screen } from '../setupTests'
 import { CommandMenu } from '@/components/Commands/Menu'
 import userEvent from '@testing-library/user-event'

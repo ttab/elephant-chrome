@@ -1,4 +1,4 @@
-import { NavigationProvider } from '@/navigation'
+import { NavigationProvider } from '@/navigation/NavigationProvider'
 import userEvent from '@testing-library/user-event'
 
 import { render, screen } from '../setupTests'
