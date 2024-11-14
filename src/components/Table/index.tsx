@@ -149,13 +149,11 @@ export const Table = <TData, TValue>({
             colSpan={columns.length}
             className='h-24 text-center'
           >
-            {isSearchTable
-              ? deferredLoading
+            {deferredLoading
+              ? isSearchTable
                 ? ''
-                : 'Inga poster funna.'
-              : deferredLoading
-                ? 'Laddar...'
-                : 'Inga planeringar funna.'}
+                : 'Laddar...'
+              : 'Inga poster funna.'}
           </TableCell>
         </TableRow>
       )
