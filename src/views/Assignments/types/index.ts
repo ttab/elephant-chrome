@@ -1,4 +1,9 @@
-export type AssignmentMetaExtended = AssignmentMeta & { planningTitle: string, newsvalue: string, _id: string }
+export type AssignmentMetaExtended = AssignmentMeta & {
+  planningTitle: string
+  newsvalue: string
+  _id: string
+  section: string
+}
 
 export interface AssigneeMeta {
   name: string
@@ -13,6 +18,10 @@ export interface Status {
   rel: string
   type: string
   uuid: string
+}
+
+export interface LinkMeta extends Status {
+  title: string
 }
 
 interface AssignmentEventData {
@@ -45,7 +54,7 @@ export interface TypeData {
 export interface AssignmentMeta {
   data: AssignmentDateDetails
   id: string
-  links: Array<AssigneeMeta | Status>
+  links: Array<AssigneeMeta | Status | LinkMeta>
   meta: TypeValue[]
   title: string
   type: string | undefined
@@ -55,7 +64,7 @@ export type MetaValueType = TypeData | AssignmentMeta | TypeValue
 
 interface Document {
   language: string
-  links: Array<AssigneeMeta | Status>
+  links: Array<AssigneeMeta | Status | LinkMeta>
   meta?: MetaValueType[]
   title: string
   type: string

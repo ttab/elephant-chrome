@@ -140,7 +140,7 @@ function getCurrentDocumentStatus<T extends Source>(obj: T): string {
   return createdValues[0]?.status || defaultStatus
 }
 
-function withStatus<T extends Source>(result: SearchIndexResult<T>): T[] {
+export function withStatus<T extends Source>(result: SearchIndexResult<T>): T[] {
   return result?.hits?.map((item: T) => {
     const status = getCurrentDocumentStatus(item)
     item._source = {

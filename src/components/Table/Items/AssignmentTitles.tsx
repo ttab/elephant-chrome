@@ -10,7 +10,7 @@ export const AssignmentTitles = ({ planningTitle, assignmentTitle }: TitleProps)
     <div className='gap-1 items-center flex'>
       <div className='hidden sm:flex'>
         <Tooltip content={planningTitle}>
-          <div className='w-[200px] min-w-[200px] max-w-[200px] truncate space-x-2 items-center text-muted-foreground'>{planningTitle}</div>
+          <div className='sm:hidden w-[200px] min-w-[200px] max-w-[200px] truncate space-x-2 items-center text-muted-foreground'>{planningTitle}</div>
         </Tooltip>
       </div>
       <Tooltip content={planningTitle}>

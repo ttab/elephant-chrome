@@ -1,5 +1,6 @@
 import React from 'react'
 import { SearchIcon } from '@ttab/elephant-ui/icons'
+import { cn } from '@ttab/elephant-ui/utils'
 
 interface SearchInputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   className?: string
@@ -15,7 +16,7 @@ export const SearchInput = React.forwardRef<HTMLInputElement, SearchInputProps>(
         </div>
         <input
           type={type}
-          className='flex h-10
+          className={cn(`flex h-10
             w-full
             border
             border-input
@@ -29,7 +30,7 @@ export const SearchInput = React.forwardRef<HTMLInputElement, SearchInputProps>(
             placeholder:text-muted-foreground
             focus-visible:outline-none focus-visible:0
             disabled:cursor-not-allowed
-            disabled:opacity-50'
+            disabled:opacity-50`, className)}
           ref={ref}
           {...props}
         />

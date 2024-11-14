@@ -1,4 +1,5 @@
 import * as Y from 'yjs'
+import { Article, Event, Planning } from './index'
 
 export function isYMap(value: unknown): value is Y.Map<unknown> {
   return value instanceof Y.Map
@@ -38,4 +39,19 @@ export function isNumber(value: unknown): value is number {
 
 export function isRecord(value: unknown): value is Record<string, unknown> {
   return !!value && typeof value === 'object' && value.constructor === Object
+}
+
+export function isEvent(data: Planning | Event | Article): data is Event {
+  return '_index' in data && data._index.includes('core_event')
+}
+
+export function isPlanning(data: Planning | Event | Article): data is Planning {
+  if ('_relatedPlannings' in data) {
+    return false
+  }
+  return '_index' in data && data._index.includes('core_planning_item')
+}
+
+export function isArticle(data: Planning | Event | Article): data is Article {
+  return '_index' in data && data._index.includes('core_article')
 }
