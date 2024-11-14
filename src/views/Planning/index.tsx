@@ -2,7 +2,6 @@ import {
   AwarenessDocument,
   ViewHeader,
   DocumentStatus,
-  VisibilityStatus,
   Newsvalue,
   Title,
   Description,
@@ -118,7 +117,6 @@ const PlanningViewContent = (props: ViewProps & { documentId: string }): JSX.Ele
             <div className='flex w-full h-full items-center space-x-2'>
               {!props.asDialog
               && <DocumentStatus status={documentStatus} setStatus={setDocumentStatus} />}
-              <VisibilityStatus />
               <Newsvalue />
             </div>
           </ViewHeader.Content>

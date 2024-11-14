@@ -2,7 +2,6 @@ import { useContext, useEffect, useState } from 'react'
 import { type Event } from '@/lib/index'
 import { useRegistry, useSections } from '@/hooks'
 import { SectionBadge } from '@/components/DataItem/SectionBadge'
-import { StatusIndicator } from '@/components/DataItem/StatusIndicator'
 import { DocTrackerContext } from '@/contexts/DocTrackerProvider'
 import { Avatar } from '@/components'
 import { AvatarGroup } from '@/components/AvatarGroup'
@@ -100,12 +99,10 @@ function EventItem(props: {
   }
   users?: Record<string, TrackedUser>
 }): JSX.Element {
-  const { visibility, title, slugLine, section, users } = props
+  const { title, slugLine, section, users } = props
 
   return (
     <div className='flex gap-2'>
-      <StatusIndicator visibility={visibility} className='pt-0.5 flex-none' />
-
       <div className='flex flex-col w-full gap-2'>
         <div className='font-medium text-sm line-clamp-3'>
           {title}
