@@ -1,5 +1,4 @@
 import { type SetStateAction, useRef, useEffect } from 'react'
-import { SearchInput } from '@/components/SearchInput'
 import { useIndexUrl } from '@/hooks/useIndexUrl'
 import { useSession } from 'next-auth/react'
 import { useTable } from '@/hooks/useTable'
@@ -11,6 +10,7 @@ import {
 } from '@/lib/index'
 import { type AssignmentMetaExtended } from '../Assignments/types'
 import { useQuery } from '@/hooks/useQuery'
+import { Input } from '@ttab/elephant-ui'
 
 export const SearchBar = ({ setLoading, setTotalHits, pool, page, width }: {
   setLoading: React.Dispatch<SetStateAction<boolean>>
@@ -69,15 +69,7 @@ export const SearchBar = ({ setLoading, setTotalHits, pool, page, width }: {
         })
       }}
     >
-      <SearchInput
-        className='w-full flex p-4 text-sm focus:ring-1 focus:ring-indigo-200 focus:dark:ring-gray-600'
-        type='text'
-        placeholder={query?.query || 'Sök'}
-        autoFocus
-        name='search'
-        ref={inputRef}
-        withIcon={false}
-      />
+      <Input autoFocus placeholder={query?.query || 'Sök'} ref={inputRef} name='search' />
     </form>
   )
 }
