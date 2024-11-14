@@ -15,6 +15,7 @@ import { useSections } from '@/hooks/useSections'
 import { SWRProvider } from '@/contexts/SWRProvider'
 import { getDateTimeBoundariesUTC } from '@/lib/datetime'
 import { useQuery } from '@/hooks/useQuery'
+import { type EventSearchParams } from '@/lib/events/search'
 
 const meta: ViewMetadata = {
   name: 'Events',
@@ -46,7 +47,7 @@ export const Events = (): JSX.Element => {
 
   return (
     <TableProvider<Event> columns={columns}>
-      <SWRProvider<Event> index={EventsIndex}>
+      <SWRProvider<Event, EventSearchParams> index={EventsIndex}>
         <Tabs defaultValue={currentTab} className='flex-1' onValueChange={setCurrentTab}>
 
           <TableCommandMenu heading='Events'>

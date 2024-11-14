@@ -36,3 +36,9 @@ export interface IDBOrganiser {
   phone: string
   streetAddress: string
 }
+
+/** Category structure in indexedDB objectStore */
+export interface IDBWireSource {
+  uri: string
+  title: string
+}

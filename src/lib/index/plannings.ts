@@ -1,7 +1,7 @@
 import { type Planning } from './schemas'
 import { searchIndex, type SearchIndexResponse } from './searchIndex'
 
-interface SearchPlanningParams {
+export interface PlanningSearchParams {
   page?: number
   size?: number
   where?: {
@@ -15,7 +15,7 @@ interface SearchPlanningParams {
   }
 }
 
-const search = async (endpoint: URL, accessToken: string, params?: SearchPlanningParams): Promise<SearchIndexResponse<Planning>> => {
+const search = async (endpoint: URL, accessToken: string, params?: PlanningSearchParams): Promise<SearchIndexResponse<Planning>> => {
   const start = params?.where?.start ? new Date(params.where.start) : new Date()
   const end = params?.where?.end ? new Date(params.where.end) : new Date()
   const sort: Array<Record<string, 'asc' | 'desc'>> = []

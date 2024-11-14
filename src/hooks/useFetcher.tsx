@@ -1,22 +1,13 @@
 import { useCallback, useEffect, useRef } from 'react'
-import { type SearchIndexResult, type SearchIndexError, type SearchIndexResponse } from '@/lib/index'
+import { type SearchIndexResult, type SearchIndexError, type SearchIndexResponse, type PlanningSearchParams } from '@/lib/index'
 import { useSession } from 'next-auth/react'
 import { type Session } from 'next-auth'
 import { useIndexUrl } from './useIndexUrl'
 import { useTable } from './useTable'
 import { Events } from '@/lib/events'
 
-interface FetchOptions {
-  size: number
-  page: number
-  where: {
-    start: string
-    end: string
-  }
-}
-
-export interface Fetcher<T extends Source> {
-  search: (url: URL, token: string, options: FetchOptions) => Promise<SearchIndexResponse<T> | SearchIndexError>
+export interface Fetcher<T extends Source, R> {
+  search: (url: URL, token: string, options: R) => Promise<SearchIndexResponse<T> | SearchIndexError>
 }
 
 export interface Source {
@@ -29,11 +20,15 @@ export interface Source {
   }
 }
 
-export const useFetcher = <T extends Source>(Fetcher: Fetcher<T>):
-({ from, to, options }: {
-  from: string
-  to: string
+function hasPagination(params: unknown): params is { page: string } {
+  return typeof (params as { page: string }).page === 'string'
+}
+
+export const useFetcher = <T extends Source, R>(Fetcher: Fetcher<T, R>):
+({ params, options }: {
+  params: R
   options?: {
+    aggregate?: boolean
     withStatus?: boolean
     withPlannings?: boolean
   }
@@ -49,10 +44,10 @@ export const useFetcher = <T extends Source>(Fetcher: Fetcher<T>):
   const indexUrl = useIndexUrl()
 
   return useCallback(
-    async ({ from, to, options }: {
-      from: string
-      to: string
+    async ({ params, options }: {
+      params: R
       options?: {
+        aggregate?: boolean
         withStatus?: boolean
         withPlannings?: boolean
       }
@@ -62,16 +57,21 @@ export const useFetcher = <T extends Source>(Fetcher: Fetcher<T>):
 
       const allResults: T[] = []
       let page = 1
+
+      if (hasPagination(params)) {
+        page = Number(params.page)
+      }
+
       const size = 100
 
       try {
         while (true) {
           const result = await Fetcher.search(indexUrl, currentSession.accessToken, {
-            size,
-            page,
-            where: { start: from, end: to }
+            ...params,
+            page
           })
 
+          console.log('result', result)
 
           if (!Array.isArray(result.hits)) {
             break
@@ -94,7 +94,12 @@ export const useFetcher = <T extends Source>(Fetcher: Fetcher<T>):
               throw new Error('Session is not available')
             }
 
-            const itemsWithPlannings = await withPlannings({ result, session: sessionRef.current, from, to, indexUrl })
+            const itemsWithPlannings = await withPlannings({
+              result,
+              session: sessionRef.current,
+              params: params as PlanningSearchParams,
+              indexUrl
+            })
 
             allResults.push(...itemsWithPlannings)
 
@@ -103,7 +108,7 @@ export const useFetcher = <T extends Source>(Fetcher: Fetcher<T>):
             allResults.push(...result.hits)
           }
 
-          if (result.hits.length < size) {
+          if (result.hits.length < size || hasPagination(params)) {
             break
           }
 
@@ -151,11 +156,10 @@ function withStatus<T extends Source>(result: SearchIndexResult<T>): T[] {
   })
 }
 
-async function withPlannings<T extends Source>({ result, session, from, to, indexUrl }: {
+async function withPlannings<T extends Source>({ result, session, params, indexUrl }: {
   result: SearchIndexResponse<T>
   session: Session | null
-  from: string
-  to: string
+  params: PlanningSearchParams
   indexUrl: URL
 }): Promise<T[]> {
   if (!session) return result.hits
@@ -164,8 +168,8 @@ async function withPlannings<T extends Source>({ result, session, from, to, inde
   const statusResults = await Events.relatedPlanningSearch(indexUrl, session.accessToken, eventIDs, {
     size: 100,
     where: {
-      start: from,
-      end: to
+      start: params?.where?.start,
+      end: params?.where?.end
     }
   })
   const hasPlannings = statusResults.hits?.map((hit) => hit._source['document.rel.event.uuid'])

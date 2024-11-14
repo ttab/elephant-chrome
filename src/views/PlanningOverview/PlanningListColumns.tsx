@@ -24,7 +24,7 @@ import { type IDBAuthor, type IDBSection } from 'src/datastore/types'
 import { FacetedFilter } from '@/components/Commands/FacetedFilter'
 import { getNestedFacetedUniqueValues } from '@/components/Filter/lib/getNestedFacetedUniqueValues'
 
-export function planningTableColumns({ sections = [], authors = [] }: {
+export function planningListColumns({ sections = [], authors = [] }: {
   sections?: IDBSection[]
   authors?: IDBAuthor[]
 }): Array<ColumnDef<Planning>> {

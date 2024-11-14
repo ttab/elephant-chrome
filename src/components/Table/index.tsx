@@ -24,10 +24,11 @@ import { handleLink } from '@/components/Link/lib/handleLink'
 import { NewItems } from './NewItems'
 import { GroupedRows } from './GroupedRows'
 import { Rows } from './Rows'
+import { Pagination } from './Pagination'
 
 interface TableProps<TData, TValue> {
   columns: Array<ColumnDef<TData, TValue>>
-  type: 'Planning' | 'Event' | 'Assignments'
+  type: 'Planning' | 'Event' | 'Assignments' | 'Wires'
   onRowSelected?: (row?: TData) => void
 }
 
@@ -45,6 +46,7 @@ export const Table = <TData, TValue>({
   const rowRefs = useRef<Map<string, HTMLTableRowElement>>(new Map())
 
   const handleOpen = useCallback((event: MouseEvent<HTMLTableRowElement> | KeyboardEvent, subRow: Row<unknown>): void => {
+    const viewType = type === 'Wires' ? 'Editor' : type
     setTimeout(() => {
       subRow.toggleSelected(!subRow.getIsSelected())
     }, 0)
@@ -58,7 +60,7 @@ export const Table = <TData, TValue>({
       handleLink({
         event,
         dispatch,
-        viewItem: state.viewRegistry.get(type),
+        viewItem: state.viewRegistry.get(viewType),
         viewRegistry: state.viewRegistry,
         // @ts-expect-error unknown type
         props: { id: subRow.original._id },
@@ -90,7 +92,9 @@ export const Table = <TData, TValue>({
     const selectedRows = table.getGroupedSelectedRowModel()
     const selectedRow = selectedRows?.flatRows[0]
 
-    const subRows = rows.flatMap((row) => [...row.subRows])
+    const currentRows = table.getState().grouping.length
+      ? rows.flatMap((row) => [...row.subRows])
+      : rows
 
     if (evt.key === 'Enter') {
       if (!selectedRow) return
@@ -101,19 +105,19 @@ export const Table = <TData, TValue>({
     if (evt.key === 'Escape') {
       selectedRow?.toggleSelected(false)
     } else if (!selectedRow) {
-      const idx = evt.key === 'ArrowDown' ? 0 : subRows.length - 1
+      const idx = evt.key === 'ArrowDown' ? 0 : currentRows.length - 1
 
       // Set selected row and scroll into view
-      subRows[idx].toggleSelected(true)
-      scrollToRow(subRows[idx].id)
+      currentRows[idx].toggleSelected(true)
+      scrollToRow(currentRows[idx].id)
     } else {
       // Get next row
       const nextIdx = selectedRow.index + (evt.key === 'ArrowDown' ? 1 : -1)
-      const idx = nextIdx < 0 ? subRows.length - 1 : nextIdx >= subRows.length ? 0 : nextIdx
+      const idx = nextIdx < 0 ? currentRows.length - 1 : nextIdx >= currentRows.length ? 0 : nextIdx
 
       // Set selected row and scroll into view
-      subRows[idx].toggleSelected(true)
-      scrollToRow(subRows[idx].id)
+      currentRows[idx].toggleSelected(true)
+      scrollToRow(currentRows[idx].id)
     }
   }, [table, isActiveView, handleOpen, scrollToRow])
 
@@ -140,6 +144,8 @@ export const Table = <TData, TValue>({
   const deferredRows = useDeferredValue(table.getRowModel().rows)
   const deferredLoading = useDeferredValue(loading)
 
+  const rowSelection = table.getState().rowSelection
+
   const TableBodyElement = useMemo(() => {
     if (deferredLoading || !deferredRows?.length) {
       return (
@@ -161,7 +167,8 @@ export const Table = <TData, TValue>({
       ? <GroupedRows<TData, TValue> key={index} row={row} columns={columns} handleOpen={handleOpen} rowRefs={rowRefs} />
       : <Rows key={index} row={row} handleOpen={handleOpen} rowRefs={rowRefs} />
     )
-  }, [deferredRows, columns, deferredLoading, handleOpen, table])
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [deferredRows, columns, deferredLoading, handleOpen, table, rowSelection])
 
   return (
     <>
@@ -174,6 +181,7 @@ export const Table = <TData, TValue>({
           {TableBodyElement}
         </TableBody>
       </_Table>
+      <Pagination />
     </>
   )
 }

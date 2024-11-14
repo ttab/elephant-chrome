@@ -1,4 +1,6 @@
-import { BriefcaseBusiness, CalendarDaysIcon, CalendarPlus2, ZapIcon, type LucideIcon } from '@ttab/elephant-ui/icons'
+import {
+  Cable, BriefcaseBusiness, CalendarDaysIcon, CalendarPlus2, ZapIcon, type LucideIcon
+} from '@ttab/elephant-ui/icons'
 import { type View } from '../types'
 
 /**
@@ -33,6 +35,11 @@ export const applicationMenuItems: ApplicationMenuItem[] = [
     name: 'Assignments',
     label: 'Uppdrag',
     icon: BriefcaseBusiness
+  },
+  {
+    name: 'Wires',
+    label: 'Telegram',
+    icon: Cable
   },
   {
     name: 'Flash',
