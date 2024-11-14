@@ -66,6 +66,7 @@ export const NavigationProvider = ({ children }: PropsWithChildren): JSX.Element
         return
       }
 
+      // FIXME: use history.setActiveView()...
       history.replaceState(content[idx].path, {
         viewId: content[idx].viewId,
         contentState: content

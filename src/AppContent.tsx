@@ -26,6 +26,7 @@ export const AppContent = (): JSX.Element => {
         const item = content[n]
         const { colSpan } = views[n]
 
+        // FIXME: This whole thing must be memoized(?), or could we handle colSpan better further down the tree?
         return (
           <ViewWrapper key={item.viewId} viewId={item.viewId} name={item.name} colSpan={colSpan}>
             <Component {...item.props} />

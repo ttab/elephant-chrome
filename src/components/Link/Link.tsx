@@ -38,7 +38,6 @@ export const Link = forwardRef((props: LinkProps, ref: ForwardedRef<HTMLAnchorEl
           event,
           dispatch,
           viewItem,
-          viewRegistry: state.viewRegistry,
           props: { ...props.props },
           viewId,
           origin,

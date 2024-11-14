@@ -18,7 +18,6 @@ export const useLink = (viewName: View) => {
       event,
       dispatch,
       viewItem: state.viewRegistry.get(viewName),
-      viewRegistry: state.viewRegistry,
       props: { ...props },
       viewId: crypto.randomUUID(),
       origin,

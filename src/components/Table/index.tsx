@@ -60,7 +60,6 @@ export const Table = <TData, TValue>({
         event,
         dispatch,
         viewItem: state.viewRegistry.get(type),
-        viewRegistry: state.viewRegistry,
         // @ts-expect-error unknown type
         props: { id: subRow.original._id },
         viewId: crypto.randomUUID(),

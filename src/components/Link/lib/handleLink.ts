@@ -1,6 +1,5 @@
 import type { MouseEvent } from 'react'
 import {
-  NavigationActionType,
   type NavigationAction,
   type ViewProps,
   type ViewRegistryItem,
@@ -8,14 +7,12 @@ import {
   type ViewRegistry
 } from '@/types'
 import { toQueryString } from './toQueryString'
-import { minimumSpaceRequired } from '@/navigation/lib'
 import type { HistoryInterface } from '@/navigation/hooks/useHistory'
 
 interface LinkClick {
   event?: MouseEvent<Element> | KeyboardEvent
   dispatch: React.Dispatch<NavigationAction>
   viewItem: ViewRegistryItem
-  viewRegistry: ViewRegistry
   viewId: string
   props?: ViewProps
   origin: string
@@ -28,12 +25,11 @@ export function handleLink({
   event,
   dispatch, // FIXME: Is this necessary?
   viewItem,
-  viewRegistry,
   props,
   viewId,
   origin,
   target,
-  onDocumentCreated,
+  onDocumentCreated, // FIXME: This must work!!!
   history
 }: LinkClick): void {
   if (event?.ctrlKey || event?.metaKey) {
@@ -60,12 +56,8 @@ export function handleLink({
   } else if (target === 'self') {
     content.splice(currentIndex - 1, 1, newContent)
   } else {
+    // FIXME: Add state counter on this view post so we know how many history items this has produced
     content.splice(currentIndex + 1, Infinity, newContent)
-  }
-
-  // Remove views what does not fit to the left
-  while (minimumSpaceRequired(content, viewRegistry) > 12) {
-    content.shift()
   }
 
   // Push new history state
