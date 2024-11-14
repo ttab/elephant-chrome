@@ -71,8 +71,6 @@ export const useFetcher = <T extends Source, R>(Fetcher: Fetcher<T, R>):
             page
           })
 
-          console.log('result', result)
-
           if (!Array.isArray(result.hits)) {
             break
           }

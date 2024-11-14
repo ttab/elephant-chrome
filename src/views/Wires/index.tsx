@@ -13,6 +13,7 @@ import { WireList } from './WiresList'
 import { type Wire as WireType } from '@/lib/index/schemas/wire'
 import { type WireSearchParams, Wires as WiresIndex } from '@/lib/index'
 import { SWRProvider } from '@/contexts/SWRProvider'
+import { Pagination } from '@/components/Table/Pagination'
 
 const meta: ViewMetadata = {
   name: 'Wires',
@@ -59,6 +60,7 @@ export const Wires = (): JSX.Element => {
 
           <ScrollArea>
             <WireList />
+            <Pagination />
           </ScrollArea>
         </div>
       </SWRProvider>
