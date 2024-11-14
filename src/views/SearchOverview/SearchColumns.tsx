@@ -42,7 +42,10 @@ export function searchWideColumns({ locale, timeZone, sections }: {
       },
       cell: ({ row }) => {
         const status = row.getValue<string>('documentStatus')
-        return <DocumentStatus status={status} />
+        if (status) {
+          return <DocumentStatus status={status} />
+        }
+        return <></>
       },
       filterFn: (row, id, value) => (
         (value as string[]).includes(row.getValue(id))
