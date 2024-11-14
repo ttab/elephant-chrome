@@ -21,6 +21,7 @@ export const PoolDropdown = ({ pool, setPool }: DropdownProps) => {
   return (
     <ComboBox
       selectedOptions={selected}
+      placeholder={pools.find((p) => p.value === pool)?.label}
       max={1}
       options={pools}
       onSelect={(e) => {
