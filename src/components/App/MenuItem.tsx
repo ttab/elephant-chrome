@@ -116,7 +116,7 @@ const FlashDialogContent = ({ menuItem, onDialogClose }: {
 
   const [document] = useMemo(() => {
     const flashDefaults: Record<string, unknown> = {
-      title: activeDocument?.title || ''
+      title: ''
     }
 
     if (author) {
