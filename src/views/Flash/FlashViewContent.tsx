@@ -188,7 +188,7 @@ export const FlashViewContent = (props: ViewProps & {
                     fetch={fetchAsyncData}
                     minSearchChars={2}
                     onSelect={(option) => {
-                      if (option) {
+                      if (option.value !== selectedPlanning?.value) {
                         setSelectedPlanning({
                           value: option.value,
                           label: option.label
