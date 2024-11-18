@@ -8,6 +8,7 @@ import { CoreStoryProvider } from './datastore/contexts/CoreStoryProvider'
 import { CoreSectionProvider } from './datastore/contexts/CoreSectionProvider'
 import { CoreCategoryProvider } from './datastore/contexts/CoreCategoryProvider'
 import { CoreOrganiserProvider } from './datastore/contexts/CoreOrganiserProvider'
+import { TTWireSourceProvider } from './datastore/contexts/TTWireSourceProvider'
 import { ModalProvider } from './components/Modal/ModalProvider'
 
 export const App = (): JSX.Element => {
@@ -34,19 +35,21 @@ export const App = (): JSX.Element => {
           <CoreStoryProvider>
             <CoreCategoryProvider>
               <CoreOrganiserProvider>
+                <TTWireSourceProvider>
 
-                <ModalProvider>
-                  <div className='relative flex h-screen flex-col'>
-                    <div className='grid grid-cols-12 divide-x-2 h-screen'>
-                      <AppContent />
+                  <ModalProvider>
+                    <div className='relative flex h-screen flex-col'>
+                      <div className='grid grid-cols-12 divide-x-2 h-screen'>
+                        <AppContent />
+                      </div>
+
+                      <div className='absolute top-0 left-0'>
+                        <AppHeader />
+                      </div>
                     </div>
+                  </ModalProvider>
 
-                    <div className='absolute top-0 left-0'>
-                      <AppHeader />
-                    </div>
-                  </div>
-                </ModalProvider>
-
+                </TTWireSourceProvider>
               </CoreOrganiserProvider>
             </CoreCategoryProvider>
           </CoreStoryProvider>

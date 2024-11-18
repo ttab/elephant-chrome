@@ -73,6 +73,7 @@ export const TableProvider = <T,>({
   const table = useReactTable({
     data: data || [],
     columns,
+    manualPagination: true,
     state: {
       sorting,
       columnVisibility,

@@ -13,7 +13,12 @@ export const EventsList = ({ from, to }: {
 }): JSX.Element => {
   const sections = useSections()
 
-  const { error } = useSWR<Event[], Error>(['Events', from, to, { withPlannings: true }])
+  const { error } = useSWR<Event[], Error>(['Events', {
+    where: {
+      start: from,
+      end: to
+    }
+  }, { withPlannings: true }])
   const columns = useMemo(() => eventTableColumns({ sections }), [sections])
   const { table } = useTable()
 

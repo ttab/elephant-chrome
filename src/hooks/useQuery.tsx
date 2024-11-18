@@ -12,6 +12,12 @@ import { ContentState, HistoryState } from '../types'
  * - To add or update a parameter, pass an object with the parameter name and value.
  * - To remove a parameter, pass an object with the parameter name and `undefined` as the value.
  * - To reset all parameters, pass an empty object.
+ *
+ * Events are finicky, we can not call setQueryParams(parseQueryString()) directly after
+ * window.history.replaceState.
+ * We are not guaranteed that the state has been updated yet. Instead, we dispatch a
+ * custom event to trigger the update. That custom event is _after_ the replaceState call
+ * on the stack and will be called afterwards.
  */
 export const useQuery = (): [Record<string, string | undefined>, (params: Record<string, string | undefined>) => void] => {
   const parseQueryString = useCallback((): Record<string, string | undefined> => {
@@ -33,8 +39,10 @@ export const useQuery = (): [Record<string, string | undefined>, (params: Record
     }
 
     window.addEventListener('popstate', handlePopstate)
+    window.addEventListener('queryChange', handlePopstate)
     return () => {
       window.removeEventListener('popstate', handlePopstate)
+      window.removeEventListener('queryChange', handlePopstate)
     }
   }, [parseQueryString])
 
@@ -60,7 +68,6 @@ export const useQuery = (): [Record<string, string | undefined>, (params: Record
       })
     }
 
-
     // Create a new content state with updated props
     const newContentState: ContentState[] = historyState.contentState.map((content: ContentState) => {
       if (historyState.viewId === content.viewId) {
@@ -85,9 +92,13 @@ export const useQuery = (): [Record<string, string | undefined>, (params: Record
       contentState: newContentState
     }
 
-    const newUrl = `${window.location.pathname || '/'}?${searchParams.toString()}`
-    window.history.replaceState(newState, '', newUrl)
+    const newUrl = new URL(window.location.href)
+    newUrl.search = searchParams.toString()
+
+    window.history.replaceState(newState, '', newUrl.href)
     setQueryParams(parseQueryString())
+
+    window.dispatchEvent(new Event('queryChange'))
   }
 
   return [queryParams, setQueryString]

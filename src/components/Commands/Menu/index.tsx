@@ -81,7 +81,8 @@ export const CommandMenu = ({ children, onKeyDown, onChange }: CommandMenuProps)
                   viewItem: state.viewRegistry.get('Plannings'),
                   viewId: crypto.randomUUID(),
                   viewRegistry: state.viewRegistry,
-                  origin: viewId
+                  origin: viewId,
+                  target: 'self'
                 }))}
               >
                 <GanttChart size={18} strokeWidth={1.75} className='mr-2' />

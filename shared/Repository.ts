@@ -13,6 +13,7 @@ import type * as Y from 'yjs'
 import { isValidUUID } from '../src-srv/utils/isValidUUID.js'
 import { fromYjsNewsDoc } from '../src-srv/utils/transformations/yjsNewsDoc.js'
 import { fromGroupedNewsDoc } from '../src-srv/utils/transformations/groupedNewsDoc.js'
+import { meta } from './meta.js'
 
 export interface Session {
   access_token: string
@@ -96,16 +97,5 @@ export class Repository {
     return await this.#client.validate(
       await fromGroupedNewsDoc(documentResponse)
     )
-  }
-}
-
-/**
- * Helper function to create meta auth obj
- */
-function meta(token: string): { meta: { authorization: string } } {
-  return {
-    meta: {
-      authorization: `bearer ${token}`
-    }
   }
 }

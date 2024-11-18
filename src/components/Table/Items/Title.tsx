@@ -1,12 +1,10 @@
 import { SluglineButton } from '@/components/DataItem/Slugline'
 import { useMemo } from 'react'
 
-interface TitleProps {
-  slugline: string
+export const Title = ({ slugline, title }: {
+  slugline?: string
   title: string
-}
-
-export const Title = ({ slugline, title }: TitleProps): JSX.Element => {
+}): JSX.Element => {
   return useMemo(() => (
     <div className='truncate space-x-2 justify-start items-center'>
       <span className='font-medium text-sm'>

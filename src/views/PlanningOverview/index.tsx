@@ -7,8 +7,8 @@ import { PlanningList } from './PlanningList'
 import { TableProvider } from '@/contexts/TableProvider'
 import { TableCommandMenu } from '@/components/Commands/TableCommand'
 import { Header } from '@/components/Header'
-import { planningTableColumns } from './PlanningListColumns'
-import { type Planning as PlanningType, Plannings as PlanningsIndex } from '@/lib/index'
+import { planningListColumns } from './PlanningListColumns'
+import { type PlanningSearchParams, type Planning as PlanningType, Plannings as PlanningsIndex } from '@/lib/index'
 import { useSections } from '@/hooks/useSections'
 import { useAuthors } from '@/hooks/useAuthors'
 import { Commands } from '@/components/Commands'
@@ -44,11 +44,11 @@ export const Plannings = (): JSX.Element => {
   const sections = useSections()
   const authors = useAuthors()
 
-  const columns = useMemo(() => planningTableColumns({ sections, authors }), [sections, authors])
+  const columns = useMemo(() => planningListColumns({ sections, authors }), [sections, authors])
 
   return (
     <TableProvider<PlanningType> columns={columns}>
-      <SWRProvider<PlanningType> index={PlanningsIndex}>
+      <SWRProvider<PlanningType, PlanningSearchParams> index={PlanningsIndex}>
         <Tabs defaultValue={currentTab} className='flex-1' onValueChange={setCurrentTab}>
 
           <TableCommandMenu heading='Plannings'>

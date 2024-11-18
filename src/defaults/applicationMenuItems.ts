@@ -1,4 +1,4 @@
-import { BriefcaseBusiness, CalendarDaysIcon, CalendarPlus2, SearchIcon, ZapIcon, type LucideIcon } from '@ttab/elephant-ui/icons'
+import { Cable, BriefcaseBusiness, CalendarDaysIcon, CalendarPlus2, SearchIcon, ZapIcon, type LucideIcon } from '@ttab/elephant-ui/icons'
 import { type View } from '../types'
 
 /**
@@ -46,6 +46,12 @@ export const applicationMenu: ApplicationMenu = {
           label: 'Uppdrag',
           icon: BriefcaseBusiness,
           color: '#006bb3'
+        },
+        {
+          name: 'Wires',
+          label: 'Telegram',
+          icon: Cable,
+          color: '#FF6347'
         }
       ]
     },
