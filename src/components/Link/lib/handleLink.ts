@@ -4,7 +4,8 @@ import {
   type ViewProps,
   type ViewRegistryItem,
   type ContentState,
-  type ViewRegistry
+  type ViewRegistry,
+  NavigationActionType
 } from '@/types'
 import { toQueryString } from './toQueryString'
 import type { HistoryInterface } from '@/navigation/hooks/useHistory'
@@ -66,20 +67,20 @@ export function handleLink({
     contentState: content
   })
 
-  //
-  // FIXME: Creeate solution for onDocumentCreated!!! (Could be sent with pushState and dispatched to navigation...?)
-  //
+  if (!onDocumentCreated) {
+    return
+  }
 
-  // Append onDocumentCreated to props if available
-  // This since we can't save a function to history state
-  // if (onDocumentCreated) {
-  //   const currentIndex = content.findIndex(c => c.viewId === viewId)
+  // Listen for when the change has been done and then add onDocumentCreated callback
+  // to the navigation state as we can't store functions in history state.
+  window.addEventListener('popstate', () => {
+    const currentIndex = content.findIndex(c => c.viewId === viewId)
+    content[currentIndex].props = { ...content[currentIndex].props, onDocumentCreated }
 
-  //   content[currentIndex].props = { ...content[currentIndex].props, onDocumentCreated }
-  // }
-
-  // dispatch({
-  //   type: NavigationActionType.SET,
-  //   content
-  // })
+    dispatch({
+      viewId,
+      type: NavigationActionType.ON_DOC_CREATED,
+      callback: onDocumentCreated
+    })
+  }, { once: true })
 }

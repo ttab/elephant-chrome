@@ -4,7 +4,7 @@ import {
   type NavigationState
 } from '@/types'
 
-export function navigationReducer(state: NavigationState, action: NavigationAction): NavigationState {
+export function navigationReducer(prevState: NavigationState, action: NavigationAction): NavigationState {
   switch (action.type) {
     case NavigationActionType.SET: {
       if (action.content === undefined) {
@@ -12,7 +12,7 @@ export function navigationReducer(state: NavigationState, action: NavigationActi
       }
 
       return {
-        ...state,
+        ...prevState,
         focus: null,
         active: action?.active || action.content[action.content.length - 1].viewId,
         content: action.content
@@ -25,8 +25,8 @@ export function navigationReducer(state: NavigationState, action: NavigationActi
       }
 
       return {
-        ...state,
-        focus: action.viewId === state.focus ? null : action.viewId
+        ...prevState,
+        focus: action.viewId === prevState.focus ? null : action.viewId
       }
 
     case NavigationActionType.ACTIVE: {
@@ -35,8 +35,26 @@ export function navigationReducer(state: NavigationState, action: NavigationActi
       }
 
       return {
-        ...state,
+        ...prevState,
         focus: null,
+        active: action.viewId
+      }
+    }
+
+    case NavigationActionType.ON_DOC_CREATED: {
+      const nextState = { ...prevState }
+      nextState.content.forEach((content) => {
+        if (content.viewId === action.viewId) {
+          const props = content.props || {}
+          content.props = {
+            ...props,
+            onDocumentCreated: action.callback
+          }
+        }
+      })
+
+      return {
+        ...prevState,
         active: action.viewId
       }
     }

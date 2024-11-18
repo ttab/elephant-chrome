@@ -7,7 +7,8 @@ import { type ArticlePayload } from '@/defaults/templates/articleDocumentTemplat
 export enum NavigationActionType {
   SET = 'set',
   FOCUS = 'focus',
-  ACTIVE = 'active'
+  ACTIVE = 'active',
+  ON_DOC_CREATED = 'onDocumentCreated'
 }
 
 export type View = keyof typeof views
@@ -18,6 +19,7 @@ export interface NavigationAction {
   content?: ContentState[]
   viewId?: string
   active?: string
+  callback?: (() => void) | undefined
 }
 
 interface ViewWidths {
