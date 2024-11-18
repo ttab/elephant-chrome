@@ -1,7 +1,6 @@
 import {
   ViewHeader,
   Awareness,
-  Byline,
   Section
 } from '@/components'
 import type { DefaultValueOption, ValidateState, ViewProps } from '@/types'
@@ -9,7 +8,6 @@ import { NewsvalueMap } from '@/defaults'
 import { Button, ComboBox, ScrollArea, Separator, Alert, AlertDescription } from '@ttab/elephant-ui'
 import { CircleXIcon, GanttChartSquareIcon, TagsIcon, ZapIcon, InfoIcon } from '@ttab/elephant-ui/icons'
 import { useCollaboration, useYValue, useIndexUrl, useRegistry } from '@/hooks'
-
 import type * as Y from 'yjs'
 import { cva } from 'class-variance-authority'
 import { cn } from '@ttab/elephant-ui/utils'
@@ -222,7 +220,6 @@ export const FlashViewContent = (props: ViewProps & {
                 <TagsIcon size={18} strokeWidth={1.75} className='text-muted-foreground' />
               </div>
 
-              <Byline name='FlashByline' onValidation={handleValidation} validateStateRef={validateStateRef} />
 
               {!selectedPlanning
               && <Section onValidation={handleValidation} />}
