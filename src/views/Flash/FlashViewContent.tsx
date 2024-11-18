@@ -233,7 +233,7 @@ export const FlashViewContent = (props: ViewProps & {
             <div className='px-6'>
               <div className='-mt-3'>
                 <Validation
-                  label='Rubrk och innehåll'
+                  label='Rubrik och innehåll'
                   path='root.title'
                   block='title'
                   onValidation={handleValidation}
