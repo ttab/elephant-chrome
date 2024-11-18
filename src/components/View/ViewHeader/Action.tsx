@@ -33,7 +33,6 @@ export const Action = ({ onDialogClose = undefined, children }: PropsWithChildre
   )
 }
 
-// FIXME: Must take into a account the "view counter" when closing (moving backwards in history)
 function handleClose(
   viewId: string,
   state: NavigationState,

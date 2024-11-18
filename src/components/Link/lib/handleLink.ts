@@ -4,7 +4,6 @@ import {
   type ViewProps,
   type ViewRegistryItem,
   type ContentState,
-  type ViewRegistry,
   NavigationActionType
 } from '@/types'
 import { toQueryString } from './toQueryString'
@@ -24,13 +23,13 @@ interface LinkClick {
 
 export function handleLink({
   event,
-  dispatch, // FIXME: Is this necessary?
+  dispatch,
   viewItem,
   props,
   viewId,
   origin,
   target,
-  onDocumentCreated, // FIXME: This must work!!!
+  onDocumentCreated,
   history
 }: LinkClick): void {
   if (event?.ctrlKey || event?.metaKey) {
@@ -57,7 +56,6 @@ export function handleLink({
   } else if (target === 'self') {
     content.splice(currentIndex - 1, 1, newContent)
   } else {
-    // FIXME: Add state counter on this view post so we know how many history items this has produced
     content.splice(currentIndex + 1, Infinity, newContent)
   }
 

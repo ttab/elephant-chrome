@@ -1,10 +1,6 @@
-import type { NavigationState, ViewRegistryItem, View, ContentState } from '@/types'
-import { ViewWrapper } from '@/components'
+import type { NavigationState, ViewRegistryItem, View } from '@/types'
 import * as views from '@/views'
-import {
-  currentView,
-  calculateViewWidths
-} from '@/navigation/lib'
+import { currentView } from '@/navigation/lib'
 
 const registeredComponents = new Map() as Map<string, ViewRegistryItem>
 
@@ -17,61 +13,9 @@ export function initializeNavigationState(): NavigationState {
   })
 
   const { name, props } = currentView()
-  // Initialize navigationstate from scratch if no contentState exists (or is empty []) in history
   if (!history?.state?.contentState?.length) {
     const viewId = crypto.randomUUID()
-    let InititalView: ViewRegistryItem
-
-    try {
-      InititalView = viewRegistry.getByPath(window.location.pathname)
-    } catch (ex) {
-      const isRoot = (x: string): boolean => x === import.meta.env.BASE_URL || x === `${import.meta.env.BASE_URL}/`
-      if (isRoot(window.location.pathname)) {
-        InititalView = viewRegistry.getByPath(`${import.meta.env.BASE_URL || ''}/plannings`)
-
-        history.pushState({
-          viewId,
-          viewName: name,
-          contentState: [{
-            viewId,
-            name,
-            props,
-            path: window.location.pathname
-          }]
-        }, '', `${import.meta.env.BASE_URL}/plannings`)
-
-        return {
-          viewRegistry,
-          views: [{ name: 'Plannings', colSpan: 12 }],
-          focus: null,
-          active: viewId,
-          content: [(
-            <ViewWrapper key={viewId} viewId={viewId} name={'Plannings'} colSpan={12}>
-              <InititalView.component {...props} />
-            </ViewWrapper>
-          )]
-        }
-      }
-      // TODO: Refactor this funtionality so that it is easy to reuse in different situations
-      InititalView = viewRegistry.getByPath(`${import.meta.env.BASE_URL || ''}/error`)
-
-      props.title = 'Felaktig länk!'
-      props.message = 'Den länk du angav verkar inte leda någonstans. Kontrollera länken noga och försök igen.'
-
-      return {
-        viewRegistry,
-        views: [{ name: 'Error', colSpan: 12 }],
-        focus: null,
-        active: viewId,
-        content: [(
-          <ViewWrapper key={viewId} viewId={viewId} name={'Error'} colSpan={12}>
-            <InititalView.component {...props} />
-          </ViewWrapper>
-        )]
-      }
-    }
-
-    history.replaceState({
+    history.pushState({
       viewId,
       viewName: name,
       contentState: [{
@@ -80,45 +24,25 @@ export function initializeNavigationState(): NavigationState {
         props,
         path: window.location.pathname
       }]
-    }, '', window.location.href)
+    }, '', `${import.meta.env.BASE_URL}/${name.toLowerCase()}`)
 
     return {
       viewRegistry,
-      views: [{ name, colSpan: 12 }],
       focus: null,
       active: viewId,
-      content: [(
-        <ViewWrapper key={viewId} viewId={viewId} name={name} colSpan={12}>
-          <InititalView.component {...props} />
-        </ViewWrapper>
-      )]
+      content: [{
+        viewId,
+        name: name as View,
+        props,
+        path: window.location.pathname
+      }]
     }
-  }
-
-
-  // Recreate navigationstate from history when contentState exist in history
-  const preContent: ContentState[] = history.state.contentState.map((item: ContentState): { name: string } => {
-    return item
-  })
-  const widths = calculateViewWidths(viewRegistry, preContent)
-
-  const content = history.state.contentState.map((item: ContentState, index: number): JSX.Element => {
-    const Component = viewRegistry.get(item.name)?.component
-    const { colSpan } = widths[index]
-
-    return (
-      <ViewWrapper key={item.viewId} viewId={item.viewId} name={item.name} colSpan={colSpan}>
-        <Component {...item.props} />
-      </ViewWrapper>
-    )
-  })
-
-  return {
-    viewRegistry,
-    views: widths,
-    focus: null,
-    active: history.state.id,
-    content
+  } else {
+    return {
+      viewRegistry,
+      focus: null,
+      ...window.history.state
+    }
   }
 }
 
@@ -128,21 +52,11 @@ const viewRegistry = {
     const registryItem = registeredComponents.get(name)
 
     if (registryItem === undefined) {
-      throw new Error(`Can't find component: ${name}`)
+      // We must always have an Error view registered!
+      return registeredComponents.get('Error') as unknown as ViewRegistryItem
     }
 
     return registryItem
-  },
-
-  getByPath: (path: string): ViewRegistryItem => {
-    for (const [, registryItem] of registeredComponents) {
-      // remove trailing slashes
-      if (registryItem.meta.path === path || registryItem.meta.path === path.replace(/\/$/, '')) {
-        return registryItem
-      }
-    }
-
-    throw new Error(`Can't find component by path: ${path}`)
   },
 
   set: () => {

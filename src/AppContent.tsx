@@ -45,7 +45,6 @@ export const AppContent = (): JSX.Element => {
           </DialogHeader>
         </DialogContent>
       </Dialog>
-
     </>
   )
 }
