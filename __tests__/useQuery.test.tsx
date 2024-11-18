@@ -13,7 +13,10 @@ describe('useQuery hook', () => {
 
         Object.defineProperty(window, 'location', {
           writable: true,
-          value: { search: search ? `?${search}` : '' }
+          value: {
+            search: search ? `?${search}` : '',
+            href: 'https://example.com/'
+          }
         })
       }
     })

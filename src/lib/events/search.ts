@@ -1,7 +1,7 @@
 import { type SearchIndexResponse, type Event } from '../index'
 import { searchIndex } from '../index'
 
-interface SearchEventsParams {
+export interface EventSearchParams {
   page?: number
   skip?: number
   size?: number
@@ -17,7 +17,7 @@ interface SearchEventsParams {
   }
 }
 
-export const search = async (endpoint: URL, accessToken: string, params?: SearchEventsParams): Promise<SearchIndexResponse<Event>> => {
+export const search = async (endpoint: URL, accessToken: string, params?: EventSearchParams): Promise<SearchIndexResponse<Event>> => {
   if (params && (!params?.when || params?.when !== 'anytime')) {
     params.when = 'fixed'
   }

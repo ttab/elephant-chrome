@@ -6,7 +6,7 @@ import {
 } from '@/lib/index'
 
 import { Table } from '@/components/Table'
-import { planningTableColumns } from '@/views/PlanningOverview/PlanningListColumns'
+import { planningListColumns } from '@/views/PlanningOverview/PlanningListColumns'
 
 export const PlanningList = ({ from, to }: {
   from: string
@@ -14,8 +14,13 @@ export const PlanningList = ({ from, to }: {
 }): JSX.Element => {
   const sections = useSections()
 
-  const { error } = useSWR<Planning[], Error>(['Plannings', from, to, { withStatus: true }])
-  const columns = useMemo(() => planningTableColumns({ sections }), [sections])
+  const { error } = useSWR<Planning[], Error>(['Plannings', {
+    where: {
+      start: from,
+      end: to
+    }
+  }, { withStatus: true }])
+  const columns = useMemo(() => planningListColumns({ sections }), [sections])
 
   const { table } = useTable()
 
@@ -37,13 +42,12 @@ export const PlanningList = ({ from, to }: {
     return <pre>{error.message}</pre>
   }
 
+
   return (
-    <>
-      <Table
-        type='Planning'
-        columns={columns}
-        onRowSelected={onRowSelected}
-      />
-    </>
+    <Table
+      type='Planning'
+      columns={columns}
+      onRowSelected={onRowSelected}
+    />
   )
 }

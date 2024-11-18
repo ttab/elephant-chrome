@@ -1,5 +1,6 @@
 import { TwirpFetchTransport } from '@protobuf-ts/twirp-transport'
 import { CheckClient } from '@ttab/elephant-api/spell'
+import { meta } from './meta'
 
 export class Spellchecker {
   readonly #client: CheckClient
@@ -66,17 +67,5 @@ export class Spellchecker {
     }
 
     return []
-  }
-}
-
-
-/**
- * Helper function to create meta auth obj
- */
-function meta(token: string): { meta: { authorization: string } } {
-  return {
-    meta: {
-      authorization: `bearer ${token}`
-    }
   }
 }
