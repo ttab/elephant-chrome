@@ -10,7 +10,7 @@ import {
 import { timePickTypes } from '../../defaults/assignmentTimeConstants'
 import { useYValue } from '@/hooks/useYValue'
 import { type AssignmentData } from './types'
-import { TimeInput } from './TimeInput'
+import { TimeInput } from '../TimeInput'
 interface TimeSelectItemProps extends React.PropsWithChildren {
   handleOnSelect: ({ value, selectValue }: { value: string, selectValue: string }) => void
   className?: string
@@ -74,18 +74,19 @@ export const TimeSelectItem = ({ handleOnSelect, index, handleParentOpenChange }
 
               <div className='flex items-center justify-end gap-4 px-2 pt-2'>
                 <Button
-                  variant="ghost"
+                  variant='ghost'
                   onClick={(evt) => {
                     evt.preventDefault()
                     evt.stopPropagation()
                     setOpen(false)
                     handleParentOpenChange(false)
-                  }}>
+                  }}
+                >
                   Avbryt
                 </Button>
 
                 <Button
-                  variant="outline"
+                  variant='outline'
                   onClick={(evt) => {
                     evt.preventDefault()
                     evt.stopPropagation()

@@ -50,11 +50,12 @@ export function handleLink({
   }
 
   // If modifier is used, open furthest to the right, otherwise to the right of origin view
-  const currentIndex = content.findIndex(c => c.viewId === origin)
+  const currentIndex = content.findIndex((c) => c.viewId === origin)
+
   if (event?.shiftKey) {
     content.push(newContent)
   } else if (target === 'self') {
-    content.splice(currentIndex - 1, 1, newContent)
+    content.splice(currentIndex, 1, newContent)
   } else {
     content.splice(currentIndex + 1, Infinity, newContent)
   }
@@ -72,7 +73,7 @@ export function handleLink({
   // Listen for when the change has been done and then add onDocumentCreated callback
   // to the navigation state as we can't store functions in history state.
   window.addEventListener('popstate', () => {
-    const currentIndex = content.findIndex(c => c.viewId === viewId)
+    const currentIndex = content.findIndex((c) => c.viewId === viewId)
     content[currentIndex].props = { ...content[currentIndex].props, onDocumentCreated }
 
     dispatch({

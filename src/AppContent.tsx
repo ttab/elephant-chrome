@@ -55,7 +55,7 @@ function getVisibleContent(state: NavigationState, setActiveView: (viewId: strin
   content: ContentState[]
 } {
   const content = [...state.content ?? []]
-  const components = content.map(c => state.viewRegistry.get(c.name).component)
+  const components = content.map((c) => state.viewRegistry.get(c.name).component)
 
   let spaceRequired = minimumSpaceRequired(content, state.viewRegistry)
   if (spaceRequired <= 12) {
@@ -73,7 +73,7 @@ function getVisibleContent(state: NavigationState, setActiveView: (viewId: strin
   } while (spaceRequired > 12 && components.length > 1)
 
   // Get active id, or set it to the leftmost view if the active view did not fit
-  const activeId = content.find(c => c.viewId === state.active)?.viewId || content[0].viewId
+  const activeId = content.find((c) => c.viewId === state.active)?.viewId || content[0].viewId
   setTimeout(() => {
     if (activeId !== state.active) {
       setActiveView(activeId)

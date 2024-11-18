@@ -1,6 +1,6 @@
 import { z } from 'zod'
 
-const FactboxSchema = z.object({
+const _FactboxSchema = z.object({
   _id: z.string(),
   _index: z.string(),
   _score: z.nullable(z.number()),
@@ -18,4 +18,4 @@ const FactboxSchema = z.object({
   })
 })
 
-export type Factbox = z.infer<typeof FactboxSchema>
+export type Factbox = z.infer<typeof _FactboxSchema>

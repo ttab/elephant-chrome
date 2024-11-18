@@ -116,7 +116,7 @@ export const CollaborationProviderContext = ({ documentId, document, children }:
     const colors = Object.keys(Collaboration.colors)
     return {
       name: data?.user.name,
-      initials: data?.user.name.split(' ').map(t => t.substring(0, 1)).join(''),
+      initials: data?.user.name.split(' ').map((t) => t.substring(0, 1)).join(''),
       color: colors[Math.floor(Math.random() * colors.length)],
       avatar: undefined
     }
@@ -133,11 +133,12 @@ export const CollaborationProviderContext = ({ documentId, document, children }:
 
   return (
     <>
-      {!!provider &&
+      {!!provider
+      && (
         <CollaborationContext.Provider value={{ ...state }}>
           {children}
-        </CollaborationContext.Provider >
-      }
+        </CollaborationContext.Provider>
+      )}
     </>
   )
 }

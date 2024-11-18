@@ -1,4 +1,4 @@
-/* eslint-disable react/prop-types */
+
 import { type ColumnDef } from '@tanstack/react-table'
 import { type Planning } from '@/lib/index/schemas/planning'
 import { Newsvalue } from '@/components/Table/Items/Newsvalue'
@@ -13,18 +13,16 @@ import {
   Users,
   Crosshair,
   Navigation,
-  Eye,
   CircleCheck
 } from '@ttab/elephant-ui/icons'
-import { Newsvalues, NewsvalueMap, AssignmentTypes, VisibilityStatuses, DocumentStatuses } from '@/defaults'
-import { StatusIndicator } from '@/components/DataItem/StatusIndicator'
+import { Newsvalues, NewsvalueMap, AssignmentTypes, DocumentStatuses } from '@/defaults'
 import { DocumentStatus } from '@/components/Table/Items/DocumentStatus'
 import { SectionBadge } from '@/components/DataItem/SectionBadge'
 import { type IDBAuthor, type IDBSection } from 'src/datastore/types'
 import { FacetedFilter } from '@/components/Commands/FacetedFilter'
 import { getNestedFacetedUniqueValues } from '@/components/Filter/lib/getNestedFacetedUniqueValues'
 
-export function planningTableColumns({ sections = [], authors = [] }: {
+export function planningListColumns({ sections = [], authors = [] }: {
   sections?: IDBSection[]
   authors?: IDBAuthor[]
 }): Array<ColumnDef<Planning>> {
@@ -44,30 +42,6 @@ export function planningTableColumns({ sections = [], authors = [] }: {
       cell: ({ row }) => {
         const status = row.getValue<string>('documentStatus')
         return <DocumentStatus status={status} />
-      },
-      filterFn: (row, id, value) => (
-        value.includes(row.getValue(id))
-      )
-    },
-    {
-      id: 'visibilityStatus',
-      meta: {
-        Filter: ({ column, setSearch }) => (
-          <FacetedFilter column={column} setSearch={setSearch} />
-        ),
-        options: VisibilityStatuses,
-        name: 'Synlighet',
-        columnIcon: Eye,
-        className: 'flex-none'
-      },
-      accessorFn: (data) => (
-        data._source['document.meta.core_planning_item.data.public'][0] === 'true'
-          ? 'public'
-          : 'internal'
-      ),
-      cell: ({ row }) => {
-        const visibility = row.getValue<'internal' | 'public'>('visibilityStatus')
-        return <StatusIndicator visibility={visibility} />
       },
       filterFn: (row, id, value) => (
         value.includes(row.getValue(id))
@@ -117,7 +91,7 @@ export function planningTableColumns({ sections = [], authors = [] }: {
     {
       id: 'section',
       meta: {
-        options: sections.map(_ => {
+        options: sections.map((_) => {
           return {
             value: _.id,
             label: _.title
@@ -135,9 +109,11 @@ export function planningTableColumns({ sections = [], authors = [] }: {
       },
       cell: ({ row }) => {
         const sectionTitle = row.original._source['document.rel.section.title']?.[0]
-        return <>
-          {sectionTitle && <SectionBadge title={sectionTitle} color='bg-[#BD6E11]' />}
-        </>
+        return (
+          <>
+            {sectionTitle && <SectionBadge title={sectionTitle} color='bg-[#BD6E11]' />}
+          </>
+        )
       },
       filterFn: (row, id, value) => {
         return value.includes(row.getValue(id))

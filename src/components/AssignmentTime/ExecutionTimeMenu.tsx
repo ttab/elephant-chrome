@@ -10,10 +10,10 @@ import {
 } from '@ttab/elephant-ui'
 import { timePickTypes } from '../../defaults/assignmentTimeConstants'
 import { useYValue } from '@/hooks/useYValue'
-import { dateToReadableDateTime } from '@/lib/datetime'
+import { dateToReadableDateTime, createDateWithTime } from '@/lib/datetime'
 import { useRegistry } from '@/hooks'
 import { type AssignmentData } from './types'
-import { TimeInput } from './TimeInput'
+import { TimeInput } from '../TimeInput'
 import { FromDateTimeLabel, FromToDateTimeLabel } from './ExecutionTimeLabel'
 interface ExecutionTimeItemsProps extends React.PropsWithChildren {
   handleOnSelect: ({ executionStart, executionEnd }: { executionStart: string | undefined, executionEnd: string | undefined }) => void
@@ -24,17 +24,6 @@ interface ExecutionTimeItemsProps extends React.PropsWithChildren {
 
 const testValid = (time: string): boolean => {
   return (/^([0-1]?[0-9]|2[0-4]):([0-5][0-9])(:[0-5][0-9])?$/.test(time))
-}
-
-const createDateWithTime = (date: Date, time: string): Date => {
-  const [hours, minutes] = time.split(':').map((str) => parseInt(str, 10))
-  return new Date(
-    date.getFullYear(),
-    date.getMonth(),
-    date.getDate(),
-    hours,
-    minutes
-  )
 }
 
 export const ExecutionTimeMenu = ({ handleOnSelect, index, startDate }: ExecutionTimeItemsProps): JSX.Element => {
@@ -138,7 +127,9 @@ export const ExecutionTimeMenu = ({ handleOnSelect, index, startDate }: Executio
       setStartDateValue(startDayWithTime.toISOString())
       setEndTimeValid(testValid(endTimeValue))
 
-      selectedDays.to !== selectedDays.from && setHasEndTime(true)
+      if (selectedDays.to !== selectedDays.from) {
+        setHasEndTime(true)
+      }
     }
   }
 
@@ -177,7 +168,7 @@ export const ExecutionTimeMenu = ({ handleOnSelect, index, startDate }: Executio
       <PopoverContent>
         <div>
           <Calendar
-            mode="range"
+            mode='range'
             required={false}
             selected={selected}
             weekStartsOn={1}
@@ -199,7 +190,8 @@ export const ExecutionTimeMenu = ({ handleOnSelect, index, startDate }: Executio
           </div>
           <div>
             <div className='flex pt-2 pb-2'>
-              <Switch onCheckedChange={handleHasEndTime} checked={hasEndTime} className='self-center'></Switch><label className='text-sm self-center p-2'>Tid från-till</label>
+              <Switch onCheckedChange={handleHasEndTime} checked={hasEndTime} className='self-center'></Switch>
+              <label className='text-sm self-center p-2'>Tid från-till</label>
             </div>
             <div className='flex justify-between border-2 rounded-md border-slate-100'>
               <div className='px-3 py-2 text-sm'>
@@ -218,16 +210,17 @@ export const ExecutionTimeMenu = ({ handleOnSelect, index, startDate }: Executio
           </div>
           <div className='flex items-center justify-end gap-4 pt-2'>
             <Button
-              variant="ghost"
+              variant='ghost'
               onClick={(evt) => {
                 evt.preventDefault()
                 evt.stopPropagation()
                 setOpen(false)
-              }}>
+              }}
+            >
               Avbryt
             </Button>
             <Button
-              variant="outline"
+              variant='outline'
               disabled={hasEndTime ? (!startTimeValid || !endTimeValid) : !startTimeValid}
               onClick={(evt) => {
                 evt.preventDefault()

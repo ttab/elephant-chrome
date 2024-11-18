@@ -72,6 +72,7 @@ export interface ViewProps {
   onDialogClose?: (id?: string, title?: string) => void
   onDocumentCreated?: () => void
   from?: string
+  source?: string
   className?: string
   payload?: ArticlePayload
 }

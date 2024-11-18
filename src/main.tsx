@@ -21,11 +21,11 @@ ReactDOM.createRoot(root).render(
       <HPWebSocketProvider>
         <SessionProvider refetchOnWindowFocus={false} basePath={`${import.meta.env.BASE_URL}/api/auth`} refetchInterval={150}>
           <RepositoryEventsProvider>
-            <ThemeProvider defaultTheme='light' storageKey='ele-ui-theme' >
+            <ThemeProvider defaultTheme='light' storageKey='ele-ui-theme'>
               <NavigationProvider>
                 <App />
               </NavigationProvider>
-            </ThemeProvider >
+            </ThemeProvider>
           </RepositoryEventsProvider>
         </SessionProvider>
       </HPWebSocketProvider>

@@ -11,7 +11,8 @@ export const Newsvalue = ({ newsvalue }: { newsvalue: DefaultValueOption }): JSX
       {newsvalue.icon && (
         <Badge
           variant='outline'
-          className='rounded-lg px-1 sm:px-2 py-1 bg-background w-5 sm:w-10 h-7'>
+          className='rounded-lg px-1 sm:px-2 py-1 bg-background w-5 sm:w-10 h-7'
+        >
           <newsvalue.icon
             {...newsvalue.iconProps}
             size={16}

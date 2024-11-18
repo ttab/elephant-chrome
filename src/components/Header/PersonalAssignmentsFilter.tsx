@@ -16,10 +16,10 @@ export const PersonalAssignmentsFilter = ({ assigneeUserName }: PAFProps): JSX.E
       disabled={!assigneeUserName}
       className={`${!assigneeUserName ? 'opacity-50' : ''}`}
       onClick={() => {
-        table.setColumnFilters(prev => {
-          const isColumnFiltered = prev.find(column => column.id === 'assignees')
+        table.setColumnFilters((prev) => {
+          const isColumnFiltered = prev.find((column) => column.id === 'assignees')
           if (isColumnFiltered) {
-            return prev.filter(column => column.id !== 'assignees')
+            return prev.filter((column) => column.id !== 'assignees')
           }
           if (!isColumnFiltered) {
             return prev.concat([{ id: 'assignees', value: [assigneeUserName] }])

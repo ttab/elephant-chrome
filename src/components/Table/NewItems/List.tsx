@@ -33,11 +33,13 @@ export const List = ({ type, createdIdRef }: {
 
   return (
     <div>
-      <a href='#'
+      <a
+        href='#'
         className='flex flex-start items-center text-sm gap-2 p-2 -ml-2 rounded-sm hover:bg-gray-100'
         onClick={(evt) => {
           openPlanning(evt, { id: document?.document?.uuid })
-        }}>
+        }}
+      >
         <CalendarDays strokeWidth={1.75} size={18} />
         {document.document?.title}
       </a>

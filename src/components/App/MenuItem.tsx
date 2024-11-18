@@ -5,8 +5,7 @@ import {
 import { SheetClose } from '@ttab/elephant-ui'
 import { useModal } from '../Modal/useModal'
 import * as Views from '@/views'
-import type { Block, Document } from '@ttab/elephant-api/newsdoc'
-import { useActiveDocument } from '@/hooks/useActiveDocument'
+import type { Document } from '@ttab/elephant-api/newsdoc'
 import { useActiveAuthor } from '@/hooks/useActiveAuthor'
 import * as Templates from '@/defaults/templates'
 import { type View } from '@/types/index'
@@ -22,8 +21,7 @@ export const MenuItem = ({ menuItem }: {
     <>
       {menuItem?.target !== 'dialog'
         ? <MenuItemViewOpener menuItem={menuItem} />
-        : <MenuItemDialogOpener menuItem={menuItem} />
-      }
+        : <MenuItemDialogOpener menuItem={menuItem} />}
     </>
   )
 }
@@ -35,11 +33,11 @@ export const MenuItemViewOpener = ({ menuItem }: {
     <SheetClose asChild key={menuItem.name}>
       <Link to={menuItem.name} className='flex gap-3 items-center px-3 py-2 rounded-md hover:bg-gray-100'>
         <div className='flex items-center justify-center opacity-80 pr-2'>
-          <menuItem.icon strokeWidth={1.75} size={18} />
+          <menuItem.icon strokeWidth={1.75} size={18} color={menuItem.color} />
         </div>
         <div>{menuItem.label}</div>
-      </Link >
-    </SheetClose >
+      </Link>
+    </SheetClose>
   )
 }
 
@@ -53,19 +51,22 @@ export const MenuItemDialogOpener = ({ menuItem }: {
       key={menuItem.name}
       className='w-full flex gap-3 items-center px-3 py-2 rounded-md hover:bg-gray-100 hover:cursor-pointer'
       onClick={() => {
-        showModal(<>
-          {
-            menuItem.name === 'Flash'
-              ? <FlashDialogContent menuItem={menuItem} onDialogClose={hideModal} />
-              : <DialogContent menuItem={menuItem} onDialogClose={hideModal} />
-          }
-        </>)
-      }}>
+        showModal(
+          <>
+            {
+              menuItem.name === 'Flash'
+                ? <FlashDialogContent menuItem={menuItem} onDialogClose={hideModal} />
+                : <DialogContent menuItem={menuItem} onDialogClose={hideModal} />
+            }
+          </>
+        )
+      }}
+    >
       <div className='flex items-center justify-center opacity-80 pr-2'>
-        <menuItem.icon strokeWidth={1.75} size={18} />
+        <menuItem.icon strokeWidth={1.75} size={18} color={menuItem.color} />
       </div>
       <div>{menuItem.label}</div>
-    </SheetClose >
+    </SheetClose>
   )
 }
 
@@ -88,13 +89,15 @@ const DialogContent = ({ menuItem, onDialogClose }: {
     return <></>
   }
 
-  return <DocumentView
-    id={document[0]}
-    document={document[1]}
-    className='p-0 rounded-md'
-    asDialog={true}
-    onDialogClose={onDialogClose}
-  />
+  return (
+    <DocumentView
+      id={document[0]}
+      document={document[1]}
+      className='p-0 rounded-md'
+      asDialog={true}
+      onDialogClose={onDialogClose}
+    />
+  )
 }
 
 
@@ -109,57 +112,37 @@ const FlashDialogContent = ({ menuItem, onDialogClose }: {
 }): JSX.Element => {
   const { name } = menuItem
   const DocumentView = name && Views[name]
-  const activeDocument = useActiveDocument({ type: 'Planning' })
   const author = useActiveAuthor() as IDBAuthor
 
-  const [document, planning] = useMemo(() => {
-    if ([activeDocument, author].includes(undefined)) {
-      return []
-    }
-
+  const [document] = useMemo(() => {
     const flashDefaults: Record<string, unknown> = {
-      title: activeDocument?.title || ''
+      title: ''
     }
 
     if (author) {
       flashDefaults.authors = [{ uuid: author.id, name: author.name }]
     }
 
-    const planning = activeDocument
-      ? {
-          uuid: activeDocument?.uuid,
-          title: activeDocument?.title
-        }
-      : undefined
-
-    const section = (activeDocument?.links as unknown as Record<string, Block[]>)?.['core/section']?.[0]
-    if (section) {
-      flashDefaults.section = {
-        uuid: section.uuid,
-        title: section.title
-      }
-    }
-
     return [
       createDocument(
         getTemplate(name), true, { ...flashDefaults }
-      ),
-      planning
+      )
     ]
-  }, [name, activeDocument, author])
+  }, [name, author])
 
   if (!document) {
     return <></>
   }
 
-  return <DocumentView
-    id={document[0]}
-    document={document[1]}
-    defaultPlanningItem={planning}
-    className='p-0 rounded-md'
-    asDialog={true}
-    onDialogClose={onDialogClose}
-  />
+  return (
+    <DocumentView
+      id={document[0]}
+      document={document[1]}
+      className='p-0 rounded-md'
+      asDialog={true}
+      onDialogClose={onDialogClose}
+    />
+  )
 }
 
 

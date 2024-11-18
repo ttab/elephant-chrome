@@ -31,20 +31,20 @@ export const Filter = ({ children }: PropsWithChildren): JSX.Element => {
     <Popover open={open} onOpenChange={onOpenChange}>
       <PopoverTrigger asChild>
         <Button
-          variant="outline"
-          role="combobox"
+          variant='outline'
+          role='combobox'
           aria-expanded={open}
-          className="hidden sm:flex"
+          className='hidden sm:flex'
         >
           <ListFilter
             size={18}
             strokeWidth={1.75}
-            className="@3xl/view:shrink-0 @3xl/view:mr-2"
+            className='@3xl/view:shrink-0 @3xl/view:mr-2'
           />
-          <span className="hidden @3xl/view:inline">Filter</span>
+          <span className='hidden @3xl/view:inline'>Filter</span>
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-[200px] p-0" align='start'>
+      <PopoverContent className='w-[200px] p-0' align='start'>
         <Command
           onKeyDown={(e) => {
             if (e.key === 'Escape') {
@@ -72,7 +72,7 @@ export const Filter = ({ children }: PropsWithChildren): JSX.Element => {
               }
             }}
             placeholder={page === 'textFilter' ? 'Sök' : 'Filter'}
-            className="h-9"
+            className='h-9'
           />
           {children}
         </Command>

@@ -12,5 +12,5 @@ const AuthorSchema = z.object({
   })
 })
 
-const FullAuthorSchema = BaseSchema.and(AuthorSchema)
-export type IndexedAuthor = z.infer<typeof FullAuthorSchema>
+const _FullAuthorSchema = BaseSchema.and(AuthorSchema)
+export type IndexedAuthor = z.infer<typeof _FullAuthorSchema>

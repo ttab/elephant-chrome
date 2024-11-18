@@ -91,7 +91,7 @@ export function addFlashToPlanning(flashDoc: Y.Doc, planningDoc: Y.Doc, assignme
     const assignees = new Y.Array()
     links.set('core/author', assignees)
 
-    flashAuthors.forEach(author => {
+    flashAuthors.forEach((author) => {
       const eleAssignee = YBlock.create({
         type: 'core/author',
         rel: 'assignee',

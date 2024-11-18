@@ -11,7 +11,7 @@ import { useSession } from 'next-auth/react'
 import { ViewHeader } from '@/components/View'
 import { createStateless, StatelessType } from '@/shared/stateless'
 import { ScrollArea, Button } from '@ttab/elephant-ui'
-import { Tags, Ticket, Calendar } from '@ttab/elephant-ui/icons'
+import { Tags, Ticket, CalendarClock } from '@ttab/elephant-ui/icons'
 import { cn } from '@ttab/elephant-ui/utils'
 import { cva } from 'class-variance-authority'
 import {
@@ -28,6 +28,7 @@ import {
 import { PlanningTable } from './components/PlanningTable'
 import { Error } from '../Error'
 import { Form } from '@/components/Form'
+import { EventTimeMenu } from './components/EventTime'
 
 const meta: ViewMetadata = {
   name: 'Event',
@@ -46,21 +47,24 @@ const meta: ViewMetadata = {
 }
 
 export const Event = (props: ViewProps & { document?: Y.Doc }): JSX.Element => {
-  const query = useQuery()
+  const [query] = useQuery()
   const documentId = props.id || query.id
 
 
   return (
     <>
       {documentId
-        ? <AwarenessDocument documentId={documentId} document={props.document}>
-          <EventViewContent {...props} documentId={documentId} />
-        </AwarenessDocument>
-        : <Error
-            title='Händelsedokument saknas'
-            message='Inget händelsedokument är angivet. Navigera tillbaka till översikten och försök igen'
-        />
-      }
+        ? (
+            <AwarenessDocument documentId={documentId} document={props.document}>
+              <EventViewContent {...props} documentId={documentId} />
+            </AwarenessDocument>
+          )
+        : (
+            <Error
+              title='Händelsedokument saknas'
+              message='Inget händelsedokument är angivet. Navigera tillbaka till översikten och försök igen'
+            />
+          )}
     </>
   )
 }
@@ -105,9 +109,8 @@ const EventViewContent = (props: ViewProps & { documentId: string }): JSX.Elemen
     <div className={cn(viewVariants({ asCreateDialog: !!props.asDialog, className: props?.className }))}>
       <div className='grow-0'>
         <ViewHeader.Root>
-          {!props.asDialog &&
-            <ViewHeader.Title title='Händelse' icon={Ticket} iconColor='#DAC9F2' />
-          }
+          {!props.asDialog
+          && <ViewHeader.Title title='Händelse' icon={Ticket} iconColor='#DAC9F2' />}
 
           <ViewHeader.Content>
             <div className='flex w-full h-full items-center space-x-2'>
@@ -117,14 +120,13 @@ const EventViewContent = (props: ViewProps & { documentId: string }): JSX.Elemen
           </ViewHeader.Content>
 
           <ViewHeader.Action onDialogClose={props.onDialogClose}>
-            {!props.asDialog && !!props.documentId &&
-              <ViewHeader.RemoteUsers documentId={props.documentId} />
-            }
+            {!props.asDialog && !!props.documentId
+            && <ViewHeader.RemoteUsers documentId={props.documentId} />}
           </ViewHeader.Action>
         </ViewHeader.Root>
       </div>
 
-      <ScrollArea className='grid @5xl:place-content-center @5xl:max-w-[1200px] mx-auto'>
+      <ScrollArea className='w-full grid @5xl:place-content-center @5xl:max-w-[1200px] mx-auto'>
         <Form.Root asDialog={props.asDialog}>
           <Form.Content>
             <Form.Title>
@@ -137,8 +139,8 @@ const EventViewContent = (props: ViewProps & { documentId: string }): JSX.Elemen
             <Description role='public' />
             <Registration />
 
-            <Form.Group icon={Calendar}>
-              <p>Datetime TODO</p>
+            <Form.Group icon={CalendarClock}>
+              <EventTimeMenu />
             </Form.Group>
 
             <Form.Group icon={Tags}>
@@ -169,7 +171,7 @@ const EventViewContent = (props: ViewProps & { documentId: string }): JSX.Elemen
           </Form.Footer>
         </Form.Root>
       </ScrollArea>
-    </div >
+    </div>
   )
 }
 

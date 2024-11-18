@@ -9,7 +9,7 @@ import { type View } from '@/types/index'
 export const DateChanger = ({ type }: {
   type: View
 }): JSX.Element => {
-  const { from, to } = useQuery()
+  const [{ from, to }] = useQuery()
 
   const currentDate = useMemo(() => {
     return from
@@ -29,7 +29,7 @@ export const DateChanger = ({ type }: {
   const changeDate = useLink(linkTarget)
 
   return (
-    <div className="flex items-center">
+    <div className='flex items-center'>
       <Link
         to={linkTarget}
         props={{ from: decrementDate(currentDate, steps).toISOString().split('T')[0] }}

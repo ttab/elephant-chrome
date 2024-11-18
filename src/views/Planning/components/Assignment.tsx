@@ -3,13 +3,13 @@ import { Button } from '@ttab/elephant-ui'
 import { MessageCircleMore, Tags } from '@ttab/elephant-ui/icons'
 import { AssignmentType } from '@/components/DataItem/AssignmentType'
 import { useYValue } from '@/hooks/useYValue'
+import { AssignmentTime } from '@/components/AssignmentTime'
 import { useKeydownGlobal } from '@/hooks/useKeydownGlobal'
 import { Assignees } from '@/components/Assignees'
 import { Title } from '@/components/Title'
 import { SluglineEditable } from '@/components/DataItem/SluglineEditable'
 import { Form } from '@/components/Form'
 import { type FormProps } from '@/components/Form/Root'
-import { AssignmentTime } from '@/components/AssignmentTime'
 
 export const Assignment = ({ index, onAbort, onClose }: {
   index: number
@@ -44,24 +44,28 @@ export const Assignment = ({ index, onAbort, onClose }: {
               path={`meta.core/assignment[${index}].title`}
               placeholder='Uppdragsrubrik'
               autoFocus={true}
-        />
+            />
           </Form.Title>
           <TextBox
             path={`meta.core/assignment[${index}].meta.core/description[0].data.text`}
             placeholder='Internt meddelande'
-            icon={<MessageCircleMore
-              size={18}
-              strokeWidth={1.75}
-              className='text-muted-foreground mr-4'
-          />}
-        />
+            icon={(
+              <MessageCircleMore
+                size={18}
+                strokeWidth={1.75}
+                className='text-muted-foreground mr-4'
+              />
+            )}
+          />
 
-          {assignmentType === 'text' &&
+          {assignmentType === 'text'
+          && (
             <Form.Group icon={Tags}>
               <SluglineEditable
                 path={`meta.core/assignment[${index}].meta.tt/slugline[0].value`}
-          />
-            </Form.Group>}
+              />
+            </Form.Group>
+          )}
 
 
           <Form.Group>
@@ -73,7 +77,7 @@ export const Assignment = ({ index, onAbort, onClose }: {
               name='AssignmentAssignees'
               path={`meta.core/assignment[${index}].links.core/author`}
               placeholder='Lägg till uppdragstagare'
-              />
+            />
             <AssignmentTime index={index} />
           </Form.Group>
 
@@ -81,19 +85,20 @@ export const Assignment = ({ index, onAbort, onClose }: {
         <Form.Footer>
           <Form.Submit onSubmit={onClose} onReset={onAbort}>
             <div className='flex gap-2 justify-end pt-4'>
-              {inProgress && !!onAbort &&
+              {inProgress && !!onAbort
+              && (
                 <Button
                   type='reset'
-                  variant='ghost'>
+                  variant='ghost'
+                >
                   Avbryt
                 </Button>
-
-                }
+              )}
               <Button
                 type='submit'
                 variant='outline'
                 className='whitespace-nowrap'
-                  >
+              >
                 {inProgress ? 'Lägg till' : 'Stäng'}
               </Button>
             </div>

@@ -15,7 +15,7 @@ export const Story = (): JSX.Element => {
   const [story, setStory] = useYValue<Block | undefined>('links.core/story[0]')
 
   const setFocused = useRef<(value: boolean) => void>(null)
-  const selectedOptions = (allStories || []).filter(s => s.value === story?.uuid)
+  const selectedOptions = (allStories || []).filter((s) => s.value === story?.uuid)
 
   return (
     <Awareness name='Story' ref={setFocused}>

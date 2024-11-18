@@ -17,10 +17,10 @@ export const ActionMenu = ({ deliverableUuids, planningId }: { deliverableUuids:
       <DropdownMenuTrigger asChild>
         <Button
           variant='ghost'
-          className="flex h-8 w-8 p-0 data-[state=open]:bg-muted hover:bg-accent2"
+          className='flex h-8 w-8 p-0 data-[state=open]:bg-muted hover:bg-accent2'
         >
           <MoreHorizontal size={18} strokeWidth={1.75} />
-          <span className="sr-only">Open</span>
+          <span className='sr-only'>Open</span>
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent className='w-56'>
@@ -42,8 +42,7 @@ export const ActionMenu = ({ deliverableUuids, planningId }: { deliverableUuids:
                   </DropdownMenuItem>
                 )
               })
-              : 'No deliverables'
-            }
+              : 'No deliverables'}
           </DropdownMenuSubContent>
         </DropdownMenuSub>
       </DropdownMenuContent>

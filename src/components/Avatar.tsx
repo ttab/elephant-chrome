@@ -34,13 +34,13 @@ const avatarVariants = cva('',
 export type AvatarSize = 'xs' | 'sm' | 'lg' | 'xl' | 'default' | undefined | null
 
 export const Avatar = ({ user, value, variant = 'default', size = 'default', color = 'default', stacked = false, className }:
-React.HTMLAttributes<HTMLDivElement> &
-VariantProps<typeof avatarVariants> & {
-  value?: string
-  user?: Session['user'] | undefined
-  color?: string
-  stacked?: boolean
-}): JSX.Element => {
+  React.HTMLAttributes<HTMLDivElement> &
+  VariantProps<typeof avatarVariants> & {
+    value?: string
+    user?: Session['user'] | undefined
+    color?: string
+    stacked?: boolean
+  }): JSX.Element => {
   const bg = Collaboration.colors[color]?.bg || ''
   const border = Collaboration.colors[color]?.border || ''
 
@@ -54,6 +54,6 @@ VariantProps<typeof avatarVariants> & {
       >
         {getInitials(user?.name || value)}
       </AvatarFallback>
-    </AvatarMain >
+    </AvatarMain>
   )
 }

@@ -22,22 +22,19 @@ const meta: ViewMetadata = {
 
 export const Flash = (props: ViewProps & {
   document?: Y.Doc
-  defaultPlanningItem?: {
-    uuid: string
-    title: string
-  }
 }): JSX.Element => {
-  const query = useQuery()
+  const [query] = useQuery()
   const documentId = props.id || query.id
 
   return (
     <>
       {documentId
-        ? <AwarenessDocument documentId={documentId} document={props.document}>
-          <FlashViewContent {...props} documentId={documentId} defaultPlanningItem={props.defaultPlanningItem} />
-        </AwarenessDocument>
-        : <></>
-      }
+        ? (
+            <AwarenessDocument documentId={documentId} document={props.document}>
+              <FlashViewContent {...props} documentId={documentId} />
+            </AwarenessDocument>
+          )
+        : <></>}
     </>
   )
 }

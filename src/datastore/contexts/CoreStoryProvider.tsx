@@ -92,7 +92,7 @@ export const CoreStoryProvider = ({ children }: {
    * Then just clear and refresh the object store cache.
    */
   useRepositoryEvents(documentType, () => {
-    getOrRefreshCache(true).catch(ex => {
+    getOrRefreshCache(true).catch((ex) => {
       console.error(ex)
     })
   })
@@ -100,6 +100,6 @@ export const CoreStoryProvider = ({ children }: {
   return (
     <CoreStoryContext.Provider value={{ objects }}>
       {children}
-    </CoreStoryContext.Provider >
+    </CoreStoryContext.Provider>
   )
 }

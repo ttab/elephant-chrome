@@ -1,4 +1,4 @@
-import React, {
+import {
   type MouseEvent,
   useEffect,
   useCallback,
@@ -8,7 +8,6 @@ import React, {
 } from 'react'
 import {
   type ColumnDef,
-  flexRender,
   type Row
 } from '@tanstack/react-table'
 
@@ -21,13 +20,14 @@ import {
 import { Toolbar } from './Toolbar'
 import { useNavigation, useView, useTable, useHistory } from '@/hooks'
 import { isEditableTarget } from '@/lib/isEditableTarget'
-import { cn } from '@ttab/elephant-ui/utils'
 import { handleLink } from '@/components/Link/lib/handleLink'
 import { NewItems } from './NewItems'
+import { GroupedRows } from './GroupedRows'
+import { Rows } from './Rows'
 
 interface TableProps<TData, TValue> {
   columns: Array<ColumnDef<TData, TValue>>
-  type: 'Planning' | 'Event' | 'Assignments'
+  type: 'Planning' | 'Event' | 'Assignments' | 'Search' | 'Wires'
   onRowSelected?: (row?: TData) => void
 }
 
@@ -46,6 +46,7 @@ export const Table = <TData, TValue>({
   const rowRefs = useRef<Map<string, HTMLTableRowElement>>(new Map())
 
   const handleOpen = useCallback((event: MouseEvent<HTMLTableRowElement> | KeyboardEvent, subRow: Row<unknown>): void => {
+    const viewType = type === 'Wires' ? 'Editor' : type
     setTimeout(() => {
       subRow.toggleSelected(!subRow.getIsSelected())
     }, 0)
@@ -59,7 +60,7 @@ export const Table = <TData, TValue>({
       handleLink({
         event,
         dispatch,
-        viewItem: state.viewRegistry.get(type),
+        viewItem: state.viewRegistry.get(viewType),
         // @ts-expect-error unknown type
         props: { id: subRow.original._id },
         viewId: crypto.randomUUID(),
@@ -93,7 +94,9 @@ export const Table = <TData, TValue>({
     const selectedRows = table.getGroupedSelectedRowModel()
     const selectedRow = selectedRows?.flatRows[0]
 
-    const subRows = rows.flatMap(row => [...row.subRows])
+    const currentRows = table.getState().grouping.length
+      ? rows.flatMap((row) => [...row.subRows])
+      : rows
 
     if (evt.key === 'Enter') {
       if (!selectedRow) return
@@ -104,19 +107,19 @@ export const Table = <TData, TValue>({
     if (evt.key === 'Escape') {
       selectedRow?.toggleSelected(false)
     } else if (!selectedRow) {
-      const idx = evt.key === 'ArrowDown' ? 0 : subRows.length - 1
+      const idx = evt.key === 'ArrowDown' ? 0 : currentRows.length - 1
 
       // Set selected row and scroll into view
-      subRows[idx].toggleSelected(true)
-      scrollToRow(subRows[idx].id)
+      currentRows[idx].toggleSelected(true)
+      scrollToRow(currentRows[idx].id)
     } else {
       // Get next row
       const nextIdx = selectedRow.index + (evt.key === 'ArrowDown' ? 1 : -1)
-      const idx = nextIdx < 0 ? subRows.length - 1 : nextIdx >= subRows.length ? 0 : nextIdx
+      const idx = nextIdx < 0 ? currentRows.length - 1 : nextIdx >= currentRows.length ? 0 : nextIdx
 
       // Set selected row and scroll into view
-      subRows[idx].toggleSelected(true)
-      scrollToRow(subRows[idx].id)
+      currentRows[idx].toggleSelected(true)
+      scrollToRow(currentRows[idx].id)
     }
   }, [table, isActiveView, handleOpen, scrollToRow])
 
@@ -143,8 +146,11 @@ export const Table = <TData, TValue>({
   const deferredRows = useDeferredValue(table.getRowModel().rows)
   const deferredLoading = useDeferredValue(loading)
 
+  const rowSelection = table.getState().rowSelection
+
   const TableBodyElement = useMemo(() => {
     if (deferredLoading || !deferredRows?.length) {
+      const isSearchTable = window.location.pathname.includes('/elephant/search')
       return (
         <TableRow>
           <TableCell
@@ -152,71 +158,22 @@ export const Table = <TData, TValue>({
             className='h-24 text-center'
           >
             {deferredLoading
-              ? 'Laddar...'
-              : 'Inga planeringar funna.'
-            }
+              ? isSearchTable
+                ? ''
+                : 'Laddar...'
+              : 'Inga poster funna.'}
           </TableCell>
         </TableRow>
       )
     }
 
-    return deferredRows.map((row) => {
-      return (
-        <React.Fragment key={row.id}>
-          <TableRow className='sticky top-0 bg-muted'>
-            <TableCell colSpan={columns.length} className='pl-6 px-2 py-1 border-b'>
-              <div className='flex justify-between items-center flex-wrap'>
-                <div className='flex items-center space-x-2'>
-                  <span className='font-thin text-muted-foreground'>Nyhetsvärde</span>
-                  <span className='inline-flex items-center justify-center size-5 bg-background rounded-full ring-1 ring-gray-300'>
-                    {row.groupingValue as string}
-                  </span>
-                </div>
-                <div className='flex items-center space-x-2 px-6'>
-                  <span className='font-thin text-muted-foreground'>Antal</span>
-                  <span className='inline-flex items-center justify-center size-5 bg-background rounded-full ring-1 ring-gray-300'>
-                    {row.subRows.length}
-                  </span>
-                </div>
-              </div>
-            </TableCell>
-          </TableRow>
-
-          {row.subRows.map((subRow) => (
-            <TableRow
-              key={subRow.id}
-              className='flex items-center cursor-default scroll-mt-10'
-              data-state={subRow.getIsSelected() && 'selected'}
-              onClick={(event: MouseEvent<HTMLTableRowElement>) => handleOpen(event, subRow)}
-              ref={(el) => {
-                if (el) {
-                  rowRefs.current.set(subRow.id, el)
-                } else {
-                  rowRefs.current.delete(subRow.id)
-                }
-              }}
-            >
-              {subRow.getVisibleCells().map((cell) => {
-                return <TableCell
-                  key={cell.id}
-                  className={cn(
-                    'first:pl-2 last:pr-2 sm:first:pl-6 sm:last:pr-6',
-                    cell.column.columnDef.meta?.className
-                  )}
-                >
-                  {flexRender(
-                    cell.column.columnDef.cell,
-                    cell.getContext()
-                  )}
-                </TableCell>
-              })}
-            </TableRow>
-          ))}
-        </React.Fragment>
-      )
-    })
-  }, [deferredRows, columns.length, deferredLoading, handleOpen])
-
+    return deferredRows.map((row, index) => (
+      table.getState().grouping.length)
+      ? <GroupedRows<TData, TValue> key={index} row={row} columns={columns} handleOpen={handleOpen} rowRefs={rowRefs} />
+      : <Rows key={index} row={row} handleOpen={handleOpen} rowRefs={rowRefs} />
+    )
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [deferredRows, columns, deferredLoading, handleOpen, table, rowSelection])
 
   return (
     <>
@@ -224,11 +181,17 @@ export const Table = <TData, TValue>({
       <NewItems.Root>
         <NewItems.Table header={`Dina nya skapade ${type === 'Planning' ? 'planeringar' : 'händelser'}`} type={type} />
       </NewItems.Root>
-      <_Table className='table-auto relative'>
-        <TableBody>
-          {TableBodyElement}
-        </TableBody>
-      </_Table>
+      {type === 'Search' && deferredLoading
+        ? null
+        : (
+            <>
+              <_Table className='table-auto relative'>
+                <TableBody>
+                  {TableBodyElement}
+                </TableBody>
+              </_Table>
+            </>
+          )}
     </>
   )
 }

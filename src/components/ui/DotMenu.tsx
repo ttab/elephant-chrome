@@ -52,22 +52,21 @@ export const DotDropdownMenu = ({ trigger = 'horizontal', items }: {
   trigger?: 'horizontal' | 'vertical'
   items: DotDropdownMenuActionItem[]
 }): JSX.Element => {
-  const hasIcons = items.findIndex(item => !!item.icon) !== -1
+  const hasIcons = items.findIndex((item) => !!item.icon) !== -1
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <Button variant='ghost' className="flex h-8 w-8 p-0 data-[state=open]:bg-muted hover:bg-accent2">
+        <Button variant='ghost' className='flex h-8 w-8 p-0 data-[state=open]:bg-muted hover:bg-accent2'>
           {trigger === 'horizontal'
             ? <MoreHorizontal size={18} strokeWidth={1.75} />
-            : <MoreVertical size={18} strokeWidth={1.75} />
-          }
+            : <MoreVertical size={18} strokeWidth={1.75} />}
         </Button>
       </DropdownMenuTrigger>
 
 
       <DropdownMenuContent className='w-56'>
-        {items.map(item => {
+        {items.map((item) => {
           return <DotDropdownMenuItem key={item.label} item={item} hasIcons={hasIcons} />
         })}
       </DropdownMenuContent>
@@ -89,19 +88,20 @@ function DotDropdownMenuItem({ item, hasIcons }: {
           evt.preventDefault()
           Item(evt)
         }
-      }}>
+      }}
+      >
         <DotDropdownMenuItemContent item={item} hasIcons={hasIcons} />
       </DropdownMenuItem>
     )
   }
 
-  const subMenuHasIcons = typeof Item.findIndex(item => item.icon) === 'number'
+  const subMenuHasIcons = typeof Item.findIndex((item) => item.icon) === 'number'
 
   return (
     <DropdownMenuSub>
       <DropdownMenuSubTrigger>{label}</DropdownMenuSubTrigger>
       <DropdownMenuSubContent>
-        {Item.map(item => {
+        {Item.map((item) => {
           return <DotDropdownMenuItem key={item.label} item={item} hasIcons={subMenuHasIcons} />
         })}
       </DropdownMenuSubContent>
@@ -117,20 +117,19 @@ function DotDropdownMenuItemContent({ item, hasIcons }: {
   const { label, icon: Icon, item: Item } = item
 
   return (
-    <div className="flex flex-row justify-center items-center">
-      {hasIcons &&
-        <div className="opacity-70 flex-none w-7">
-          {!!Icon &&
-            <Icon size={16} strokeWidth={1.75} />
-          }
+    <div className='flex flex-row justify-center items-center'>
+      {hasIcons
+      && (
+        <div className='opacity-70 flex-none w-7'>
+          {!!Icon
+          && <Icon size={16} strokeWidth={1.75} />}
         </div>
-      }
+      )}
 
-      <div className="grow">
+      <div className='grow'>
         {React.isValidElement(Item)
           ? <>{Item}</>
-          : <>{label}</>
-        }
+          : <>{label}</>}
       </div>
     </div>
   )

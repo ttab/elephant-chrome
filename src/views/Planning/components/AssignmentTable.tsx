@@ -19,12 +19,12 @@ export const AssignmentTable = ({ asDialog = false }: {
   const [selectedAssignment, setSelectedAssignment] = useState<number | undefined>(undefined)
 
   const newAssigment = useMemo(() => {
-    const index = assignments?.findIndex(a => a.__inProgress) ?? -1
+    const index = assignments?.findIndex((a) => a.__inProgress) ?? -1
     return (index < 0) ? undefined : { assignment: assignments?.[index], index }
   }, [assignments])
 
   const existingAssigments = useMemo(() => {
-    return assignments?.filter(a => !a.__inProgress) ?? []
+    return assignments?.filter((a) => !a.__inProgress) ?? []
   }, [assignments])
 
   const slugLines = useMemo(() => {
@@ -50,11 +50,14 @@ export const AssignmentTable = ({ asDialog = false }: {
 
   return (
     <>
-      {newAssigment === undefined && provider?.document &&
+      {newAssigment === undefined && provider?.document
+      && (
         <div className={cn('flex flex-start pt-2 text-primary pb-4',
-          selectedAssignment != null ? 'opacity-50' : '')}>
+          selectedAssignment != null ? 'opacity-50' : '')}
+        >
           <div className={variants({ asDialog })}>
-            <a href='#'
+            <a
+              href='#'
               className={cn('flex flex-start items-center text-sm gap-2 p-2 -ml-2 rounded-sm',
                 selectedAssignment != null
                   ? 'hover:cursor-default opacity-50'
@@ -73,7 +76,7 @@ export const AssignmentTable = ({ asDialog = false }: {
                     : undefined
                 })
               }}
-          >
+            >
               <div className='bg-primary rounded-full w-5 h-5 relative'>
                 <PlusIcon
                   size={15}
@@ -86,39 +89,51 @@ export const AssignmentTable = ({ asDialog = false }: {
             </a>
           </div>
         </div>
-      }
+      )}
 
-      {!!newAssigment &&
-      <Assignment
-        index={newAssigment.index}
-        onAbort={() => {
-          deleteByYPath(yRoot, `meta.core/assignment[${newAssigment.index}]`)
-        }}
-        onClose={() => {
-          deleteByYPath(yRoot, `meta.core/assignment[${newAssigment.index}].__inProgress`)
-        }}
-        className='mb-6'
-          />
-      }
+      {!!newAssigment
+      && (
+        <Assignment
+          index={newAssigment.index}
+          onAbort={() => {
+            deleteByYPath(yRoot, `meta.core/assignment[${newAssigment.index}]`)
+          }}
+          onClose={() => {
+            deleteByYPath(yRoot, `meta.core/assignment[${newAssigment.index}].__inProgress`)
+          }}
+          className='mb-6'
+        />
+      )}
 
-      {!!existingAssigments.length &&
+      {!!existingAssigments.length
+      && (
         <div className='border rounded-md'>
           {existingAssigments?.map((_, index: number) => (
             <div key={`${_.id}`} className='border-b last:border-0'>
               {selectedAssignment === index
-                ? <Assignment index={index} onClose={() => {
-                  setSelectedAssignment(undefined)
-                }} className='-my-[1px] -mx-[5px]' />
-                : <AssignmentRow index={index} onSelect={() => {
-                  if (!newAssigment) {
-                    setSelectedAssignment(index)
-                  }
-                }} />
-              }
+                ? (
+                    <Assignment
+                      index={index}
+                      onClose={() => {
+                        setSelectedAssignment(undefined)
+                      }}
+                      className='-my-[1px] -mx-[5px]'
+                    />
+                  )
+                : (
+                    <AssignmentRow
+                      index={index}
+                      onSelect={() => {
+                        if (!newAssigment) {
+                          setSelectedAssignment(index)
+                        }
+                      }}
+                    />
+                  )}
             </div>
           ))}
         </div>
-      }
+      )}
     </>
   )
 }

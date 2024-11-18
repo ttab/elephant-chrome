@@ -31,20 +31,20 @@ describe('useYValue', () => {
     init.provider.destroy()
   })
 
-  it('gets a simple value', async () => {
+  it('gets a simple value', () => {
     const { result } = renderHook(() =>
       useYValue<string>('meta.core/assignment[0].title'), { wrapper: init.wrapper })
     expect(result.current[0]).toBe('Kortare text utsänd. Uppdateras')
   })
 
-  it('sets a simple value', async () => {
+  it('sets a simple value', () => {
     const { result } = renderHook(() =>
       useYValue<string>('meta.core/assignment[0].title'), { wrapper: init.wrapper })
     act(() => result.current[1]('Kortare text utbytt. Uppdaterats'))
     expect(result.current[0]).toBe('Kortare text utbytt. Uppdaterats')
   })
 
-  it('gets an object from an array, SPT', async () => {
+  it('gets an object from an array, SPT', () => {
     const { result } = renderHook(() =>
       useYValue<Block>('links.core/section[0]'), { wrapper: init.wrapper })
 
@@ -57,7 +57,7 @@ describe('useYValue', () => {
   })
 
 
-  it('replaces an object in an array, from SPT to KLT', async () => {
+  it('replaces an object in an array, from SPT to KLT', () => {
     const { result } = renderHook(() =>
       useYValue<Block>('links.core/section[0]'), { wrapper: init.wrapper })
 
@@ -65,7 +65,7 @@ describe('useYValue', () => {
     expect(result.current[0]).toEqual(culturePayload)
   })
 
-  it('appends and removes an object to an array', async () => {
+  it('appends and removes an object to an array', () => {
     const { result } = renderHook(() =>
       useYValue<Block[] | undefined>('links.core/section'), { wrapper: init.wrapper })
 
@@ -80,7 +80,7 @@ describe('useYValue', () => {
     expect(result.current[0]).toHaveLength(1)
   })
 
-  it('modifies existing slugline', async () => {
+  it('modifies existing slugline', () => {
     const { result } = renderHook(() =>
       useYValue<string | undefined>('meta.core/assignment[0].meta.tt/slugline[0].value'), { wrapper: init.wrapper })
 
@@ -89,7 +89,7 @@ describe('useYValue', () => {
     expect(result.current[0]).toEqual('test')
   })
 
-  it('creates non-existing slugline', async () => {
+  it('creates non-existing slugline', () => {
     const { result } = renderHook(() =>
       useYValue<string | undefined>('meta.core/assignment[1].meta.tt/slugline[0].value'), { wrapper: init.wrapper })
 
@@ -98,7 +98,7 @@ describe('useYValue', () => {
     expect(result.current[0]).toEqual('test')
   })
 
-  it('handles __inProgress', async () => {
+  it('handles __inProgress', () => {
     const { result } = renderHook(() => {
       return {
         progress: useYValue<boolean | undefined>('meta.core/assignment[0].__inProgress'),

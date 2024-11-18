@@ -134,8 +134,8 @@ export function is12HourcycleFromLocale(locale: string): boolean {
 
     const formattedDate = formatter.formatToParts(sampleDate)
 
-    return formattedDate.some(part => part.type === 'dayPeriod' &&
-      (part.value === 'AM' || part.value === 'PM'))
+    return formattedDate.some((part) => part.type === 'dayPeriod'
+      && (part.value === 'AM' || part.value === 'PM'))
   } catch (error) {
     console.error('Error getting hour cycle:', error)
     return false
@@ -155,12 +155,16 @@ export function currentDateInUTC(): string {
 * otherwise in shortened version of month and day (20 feb 16:10).
 **/
 export function dateInTimestampOrShortMonthDayTimestamp(date: string, locale: string, timeZone: string): string {
+  if (!date) {
+    return '??'
+  }
+
   const inputDate = new Date(date)
   const today = new Date()
 
-  const isToday = inputDate.getDate() === today.getDate() &&
-    inputDate.getMonth() === today.getMonth() &&
-    inputDate.getFullYear() === today.getFullYear()
+  const isToday = inputDate.getDate() === today.getDate()
+    && inputDate.getMonth() === today.getMonth()
+    && inputDate.getFullYear() === today.getFullYear()
 
   const timeFormatter = new Intl.DateTimeFormat(locale, {
     hour: '2-digit',
@@ -190,4 +194,45 @@ export function dateToReadableDay(date: Date, locale: string, timeZone: string):
     day: 'numeric',
     month: 'short'
   }).format(date)
+}
+
+/**
+* Set hours and minutes to a Date object.
+* * @param date Date
+*   @param time string ex: '22:30'
+**/
+export function createDateWithTime(date: Date, time: string): Date {
+  const [hours, minutes] = time.split(':').map((str) => parseInt(str, 10))
+  return new Date(
+    date.getFullYear(),
+    date.getMonth(),
+    date.getDate(),
+    hours,
+    minutes
+  )
+}
+
+/**
+ *
+ * @param date Date
+ * @param locale locale
+ * @param timeZone timeZone
+ * @returns Date format example: 16 feb 2024 (empty year if current year)
+ */
+export function dateToReadableShort(date: Date, locale: string, timeZone: string): string {
+  const now = new Date()
+  // Format day and short month name
+  const dayMonth = new Intl.DateTimeFormat(locale, {
+    day: '2-digit',
+    month: 'short',
+    timeZone
+  }).format(date)
+
+  // Conditionally format the year if different from the current year
+  const year = date.getFullYear() !== now.getFullYear()
+    ? new Intl.DateTimeFormat(locale, { year: 'numeric', timeZone }).format(date)
+    : ''
+
+  // Return formatted date string
+  return `${dayMonth} ${year}`.trim()
 }

@@ -15,6 +15,7 @@ import { useSections } from '@/hooks/useSections'
 import { SWRProvider } from '@/contexts/SWRProvider'
 import { getDateTimeBoundariesUTC } from '@/lib/datetime'
 import { useQuery } from '@/hooks/useQuery'
+import { type EventSearchParams } from '@/lib/events/search'
 
 const meta: ViewMetadata = {
   name: 'Events',
@@ -35,7 +36,7 @@ const meta: ViewMetadata = {
 export const Events = (): JSX.Element => {
   const [currentTab, setCurrentTab] = useState<string>('list')
   const sections = useSections()
-  const query = useQuery()
+  const [query] = useQuery()
   const { from, to } = useMemo(() =>
     getDateTimeBoundariesUTC(query.from
       ? new Date(`${query.from}T00:00:00.000Z`)
@@ -46,16 +47,16 @@ export const Events = (): JSX.Element => {
 
   return (
     <TableProvider<Event> columns={columns}>
-      <SWRProvider<Event> index={EventsIndex}>
+      <SWRProvider<Event, EventSearchParams> index={EventsIndex}>
         <Tabs defaultValue={currentTab} className='flex-1' onValueChange={setCurrentTab}>
 
           <TableCommandMenu heading='Events'>
             <Commands />
           </TableCommandMenu>
 
-          <div className="flex flex-col h-screen">
+          <div className='flex flex-col h-screen'>
             <ViewHeader.Root>
-              <ViewHeader.Title title="Händelser" short="Händelser" icon={CalendarPlus2} iconColor='#5E9F5D' />
+              <ViewHeader.Title title='Händelser' short='Händelser' icon={CalendarPlus2} iconColor='#5E9F5D' />
 
               <ViewHeader.Content>
                 <Header tab={currentTab} type='Event' />

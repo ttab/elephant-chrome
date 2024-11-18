@@ -34,7 +34,7 @@ const meta: ViewMetadata = {
 }
 
 export const Assignments = (): JSX.Element => {
-  const query = useQuery()
+  const [query] = useQuery()
   const { from } = useMemo(() =>
     getDateTimeBoundariesUTC(query.from
       ? new Date(`${query.from}T00:00:00.000Z`)
@@ -59,11 +59,11 @@ export const Assignments = (): JSX.Element => {
         <TableCommandMenu heading='Assignments'>
           <Commands />
         </TableCommandMenu>
-        <div className="flex flex-col h-screen">
+        <div className='flex flex-col h-screen'>
           <ViewHeader.Root>
             <ViewHeader.Title
-              title="Uppdrag"
-              short="Uppdrag"
+              title='Uppdrag'
+              short='Uppdrag'
               iconColor='#006bb3'
               icon={BriefcaseBusinessIcon}
             />

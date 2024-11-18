@@ -79,17 +79,15 @@ const ImageSearchContent = (): JSX.Element => {
       <ImageSearchResult total={0}>
         <InfiniteScroll
           swr={swr}
-          loadingIndicator={<LoaderIcon size={'50%'} color='#9ca3af' strokeWidth='1' />}
-          endingIndicator={<ListEndIcon size={'50%'} color='#9ca3af' strokeWidth='1' />}
+          loadingIndicator={<LoaderIcon size='50%' color='#9ca3af' strokeWidth='1' />}
+          endingIndicator={<ListEndIcon size='50%' color='#9ca3af' strokeWidth='1' />}
           isReachingEnd={(swr) =>
-            swr.data?.[0].hits.length === 0 || (swr.data?.[swr.data?.length - 1]?.hits.length ?? 0) < SIZE
-          }
+            swr.data?.[0].hits.length === 0 || (swr.data?.[swr.data?.length - 1]?.hits.length ?? 0) < SIZE}
         >
           {(data) =>
             data.hits.map((hit: ttninjs) => (
               <Thumbnail key={hit.uri} hit={hit} />
-            ))
-          }
+            ))}
         </InfiniteScroll>
       </ImageSearchResult>
     </div>

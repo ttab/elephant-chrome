@@ -1,15 +1,15 @@
 import type { RouteHandler } from '../../routes.js'
 
 
-export const GET: RouteHandler = async (_, { collaborationServer }) => {
+export const GET: RouteHandler = (_, { collaborationServer }) => {
   try {
-    return {
+    return Promise.resolve({
       payload: collaborationServer.getSnapshot()
-    }
-  } catch (ex) {
-    return {
+    })
+  } catch (_ex) {
+    return Promise.resolve({
       statusCode: 500,
       statusMessage: 'Not authorized'
-    }
+    })
   }
 }

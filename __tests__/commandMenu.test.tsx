@@ -3,14 +3,14 @@ import { NavigationProvider } from '@/navigation/NavigationProvider'
 import { render, screen } from '../setupTests'
 import { CommandMenu } from '@/components/Commands/Menu'
 import userEvent from '@testing-library/user-event'
-import { planningTableColumns } from '@/views/PlanningOverview/PlanningListColumns'
+import { planningListColumns } from '@/views/PlanningOverview/PlanningListColumns'
 import { type Planning } from '@/lib/index'
 
 describe('CommandMenu', () => {
   it('should render CommandMenu component', async () => {
     render(
       <NavigationProvider>
-        <TableProvider<Planning> columns={planningTableColumns({})}>
+        <TableProvider<Planning> columns={planningListColumns({})}>
           <CommandMenu onKeyDown={() => { }} onChange={() => { }}>
             <p>test</p>
           </CommandMenu>

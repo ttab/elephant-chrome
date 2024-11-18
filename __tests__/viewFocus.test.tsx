@@ -25,7 +25,7 @@ describe('ViewFocus', () => {
   it('should render ViewFocus component', async () => {
     render(
       <NavigationProvider>
-        <ViewFocus viewId={'abc123'} />
+        <ViewFocus viewId='abc123' />
       </NavigationProvider>
     )
 

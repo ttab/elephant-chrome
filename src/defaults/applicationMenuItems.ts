@@ -1,4 +1,4 @@
-import { BriefcaseBusiness, CalendarDaysIcon, CalendarPlus2, ZapIcon, type LucideIcon } from '@ttab/elephant-ui/icons'
+import { Cable, BriefcaseBusiness, CalendarDaysIcon, CalendarPlus2, SearchIcon, ZapIcon, type LucideIcon } from '@ttab/elephant-ui/icons'
 import { type View } from '../types'
 
 /**
@@ -11,33 +11,67 @@ import { type View } from '../types'
  * we want to pick up suggestions to the user based on what the user have
  * is working on right now.
  */
+
+export type MenuGroups = { name: string, items: ApplicationMenuItem[] }
+interface ApplicationMenu {
+  groups: MenuGroups[]
+}
 export interface ApplicationMenuItem {
   name: View
   label: string
   icon: LucideIcon
   target?: 'view' | 'dialog'
+  color?: string
 }
 
-export const applicationMenuItems: ApplicationMenuItem[] = [
-  {
-    name: 'Plannings',
-    label: 'Planeringar',
-    icon: CalendarDaysIcon
-  },
-  {
-    name: 'Events',
-    label: 'Händelser',
-    icon: CalendarPlus2
-  },
-  {
-    name: 'Assignments',
-    label: 'Uppdrag',
-    icon: BriefcaseBusiness
-  },
-  {
-    name: 'Flash',
-    label: 'Skapa flash',
-    icon: ZapIcon,
-    target: 'dialog'
-  }
-]
+export const applicationMenu: ApplicationMenu = {
+  groups: [
+    {
+      name: 'views',
+      items: [
+        {
+          name: 'Plannings',
+          label: 'Planeringar',
+          icon: CalendarDaysIcon,
+          color: '#FF971E'
+        },
+        {
+          name: 'Events',
+          label: 'Händelser',
+          icon: CalendarPlus2,
+          color: '#5E9F5D'
+        },
+        {
+          name: 'Assignments',
+          label: 'Uppdrag',
+          icon: BriefcaseBusiness,
+          color: '#006bb3'
+        },
+        {
+          name: 'Wires',
+          label: 'Telegram',
+          icon: Cable,
+          color: '#FF6347'
+        }
+      ]
+    },
+    {
+      name: 'actions',
+      items: [
+        {
+          name: 'Flash',
+          label: 'Skapa flash',
+          icon: ZapIcon,
+          color: '#FF5150',
+          target: 'dialog'
+        },
+        {
+          name: 'Search',
+          label: 'Sök',
+          icon: SearchIcon,
+          color: '#F06F21'
+        }
+      ]
+    }
+  ]
+}

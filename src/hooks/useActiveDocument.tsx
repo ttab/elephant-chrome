@@ -20,7 +20,8 @@ export const useActiveDocument = ({ type }: {
 
   useEffect(() => {
     const fetchData = async (): Promise<void> => {
-      const documentId = state.content.find(s => s.viewId === state.active)?.props?.id
+      const documentId = state.content.find((s) => s.viewId === state.active)?.props?.id
+
       if (!documentId || typeof documentId !== 'string') {
         setDocument(null)
         return

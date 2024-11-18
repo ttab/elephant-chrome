@@ -11,24 +11,24 @@ interface ToolbarProps<TData> {
 export const Toolbar = <TData,>({
   table
 }: ToolbarProps<TData>): JSX.Element => {
-  const isFiltered = table.getState().columnFilters.length > 0 ||
-    !!table.getState().globalFilter
+  const isFiltered = table.getState().columnFilters.length > 0
+    || !!table.getState().globalFilter
 
   return (
-    <div className="flex items-center justify-between">
-      <div className="flex flex-1 items-center space-x-2">
+    <div className='flex items-center justify-between'>
+      <div className='flex flex-1 items-center space-x-2'>
         <SelectedFilters table={table} />
         {isFiltered && (
           <Button
-            variant="ghost"
+            variant='ghost'
             onClick={() => {
               table.resetColumnFilters()
               table.resetGlobalFilter()
             }}
-            className="h-8 px-2 lg:px-3"
+            className='h-8 px-2 lg:px-3'
           >
             Rensa
-            <X size={18} strokeWidth={1.75} className="ml-2" />
+            <X size={18} strokeWidth={1.75} className='ml-2' />
           </Button>
         )}
       </div>

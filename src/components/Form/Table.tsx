@@ -12,7 +12,9 @@ export const Table = ({ children, asDialog }: FormProps): JSX.Element => {
       }
     })
 
-  return <div className={variants({ asDialog })}>
-    {children}
-  </div>
+  return (
+    <div className={variants({ asDialog })}>
+      {children}
+    </div>
+  )
 }
