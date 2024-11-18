@@ -218,9 +218,11 @@ export const FlashViewContent = (props: ViewProps & {
             </div>
 
             <div className='flex flex-row gap-5 items-start'>
-              <div className='pt-1'>
-                <TagsIcon size={18} strokeWidth={1.75} className='text-muted-foreground' />
-              </div>
+              {!selectedPlanning && (
+                <div className='pt-1'>
+                  <TagsIcon size={18} strokeWidth={1.75} className='text-muted-foreground' />
+                </div>
+              )}
 
 
               {!selectedPlanning
