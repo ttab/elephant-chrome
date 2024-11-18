@@ -2,7 +2,7 @@ import { useLink } from '@/hooks/useLink'
 import { useYValue } from '@/hooks/useYValue'
 import { type EleDocumentResponse } from '@/shared/types'
 import { type View } from '@/types/index'
-import { CalendarDays } from '@ttab/elephant-ui/icons'
+import { GanttChartSquare } from '@ttab/elephant-ui/icons'
 import useSWR from 'swr'
 
 const BASE_URL = import.meta.env.BASE_URL || ''
@@ -40,7 +40,7 @@ export const List = ({ type, createdIdRef }: {
           openPlanning(evt, { id: document?.document?.uuid })
         }}
       >
-        <CalendarDays strokeWidth={1.75} size={18} />
+        <GanttChartSquare strokeWidth={1.75} size={18} className='text-muted-foreground' />
         {document.document?.title}
       </a>
     </div>
