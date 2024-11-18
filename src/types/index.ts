@@ -15,8 +15,6 @@ export type View = keyof typeof views
 export interface NavigationAction {
   type: NavigationActionType
   props?: ViewProps
-  name?: string
-  component?: React.FC<ViewProps>
   content?: ContentState[]
   viewId?: string
   active?: string

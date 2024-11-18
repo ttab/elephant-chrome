@@ -45,6 +45,14 @@ export function useHistory(): HistoryInterface {
   )
 
   const pushState = (url: string, newState: HistoryState): void => {
+    const n = newState.contentState.length - 1
+    if (newState.contentState.length === window.history.state.contentState.length &&
+      newState.contentState[n].name === window.history.state.contentState[n].name) {
+      // As we open the same type of view in the same slot, replace it instead
+      replaceState(url, newState)
+      return
+    }
+
     window.history.pushState(newState, '', url)
     window.dispatchEvent(new PopStateEvent('popstate', { state: newState }))
   }

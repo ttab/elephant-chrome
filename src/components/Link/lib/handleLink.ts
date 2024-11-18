@@ -39,7 +39,7 @@ export function handleLink({
   event?.stopPropagation()
 
   // Get current state from history
-  const content: ContentState[] = history.state?.contentState || []
+  const content: ContentState[] = [...history.state?.contentState || []]
 
   // Create next (wanted) content state (props can not be functions!)
   const newContent: ContentState = {
