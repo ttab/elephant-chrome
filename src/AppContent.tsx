@@ -54,7 +54,7 @@ function getVisibleContent(state: NavigationState, setActiveView: (viewId: strin
   components: Array<React.FC<ViewProps>>
   content: ContentState[]
 } {
-  const content = [...state.content]
+  const content = [...state.content ?? []]
   const components = content.map(c => state.viewRegistry.get(c.name).component)
 
   let spaceRequired = minimumSpaceRequired(content, state.viewRegistry)

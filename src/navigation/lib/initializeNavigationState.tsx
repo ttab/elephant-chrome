@@ -1,6 +1,7 @@
 import type { NavigationState, ViewRegistryItem, View } from '@/types'
 import * as views from '@/views'
 import { currentView } from '@/navigation/lib'
+import { type HistoryState } from '../hooks/useHistory'
 
 const registeredComponents = new Map() as Map<string, ViewRegistryItem>
 
@@ -17,7 +18,6 @@ export function initializeNavigationState(): NavigationState {
     const viewId = crypto.randomUUID()
     history.pushState({
       viewId,
-      viewName: name,
       contentState: [{
         viewId,
         name,
@@ -38,10 +38,12 @@ export function initializeNavigationState(): NavigationState {
       }]
     }
   } else {
+    const { viewId, contentState } = window.history.state as HistoryState
     return {
       viewRegistry,
       focus: null,
-      ...window.history.state
+      active: viewId,
+      content: contentState
     }
   }
 }
