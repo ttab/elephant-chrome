@@ -40,8 +40,7 @@ export const FlashViewContent = (props: ViewProps & {
   const planningAwareness = useRef<(value: boolean) => void>(null)
   const [showVerifyDialog, setShowVerifyDialog] = useState(false)
   const [selectedPlanning, setSelectedPlanning] = useState<DefaultValueOption | undefined>(undefined)
-
-  const [title, setTitle] = useYValue<string | undefined>('', false)
+  const [title, setTitle] = useYValue<string | undefined>('root.title', true)
   const [, setSection] = useYValue<EleBlock | undefined>('links.core/section[0]')
   const [validateForm, setValidateForm] = useState<boolean>(!props.asDialog)
   const validateStateRef = useRef<ValidateState>({})
