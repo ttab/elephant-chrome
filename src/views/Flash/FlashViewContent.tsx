@@ -33,10 +33,6 @@ import { getValueByYPath } from '@/lib/yUtils'
 
 export const FlashViewContent = (props: ViewProps & {
   documentId: string
-  defaultPlanningItem?: {
-    uuid: string
-    title: string
-  }
 }): JSX.Element | undefined => {
   const { provider } = useCollaboration()
   const { status, data: session } = useSession()
@@ -44,15 +40,9 @@ export const FlashViewContent = (props: ViewProps & {
   const { timeZone } = useRegistry()
   const planningAwareness = useRef<(value: boolean) => void>(null)
   const [showVerifyDialog, setShowVerifyDialog] = useState(false)
-  const [selectedPlanning, setSelectedPlanning] = useState<DefaultValueOption | undefined>(props.defaultPlanningItem
-    ? {
-        value: props.defaultPlanningItem.uuid,
-        label: props.defaultPlanningItem.title
-      }
-    : undefined
-  )
+  const [selectedPlanning, setSelectedPlanning] = useState<DefaultValueOption | undefined>(undefined)
 
-  const [title, setTitle] = useYValue<string | undefined>('root.title', false)
+  const [title, setTitle] = useYValue<string | undefined>('', false)
   const [, setSection] = useYValue<EleBlock | undefined>('links.core/section[0]')
   const [validateForm, setValidateForm] = useState<boolean>(!props.asDialog)
   const validateStateRef = useRef<ValidateState>({})
@@ -198,7 +188,7 @@ export const FlashViewContent = (props: ViewProps & {
                     fetch={fetchAsyncData}
                     minSearchChars={2}
                     onSelect={(option) => {
-                      if (option) {
+                      if (option.value !== selectedPlanning?.value) {
                         setSelectedPlanning({
                           value: option.value,
                           label: option.label
