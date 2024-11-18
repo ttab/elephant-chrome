@@ -5,8 +5,7 @@ import {
 import { SheetClose } from '@ttab/elephant-ui'
 import { useModal } from '../Modal/useModal'
 import * as Views from '@/views'
-import type { Block, Document } from '@ttab/elephant-api/newsdoc'
-import { useActiveDocument } from '@/hooks/useActiveDocument'
+import type { Document } from '@ttab/elephant-api/newsdoc'
 import { useActiveAuthor } from '@/hooks/useActiveAuthor'
 import * as Templates from '@/defaults/templates'
 import { type View } from '@/types/index'
@@ -113,44 +112,23 @@ const FlashDialogContent = ({ menuItem, onDialogClose }: {
 }): JSX.Element => {
   const { name } = menuItem
   const DocumentView = name && Views[name]
-  const activeDocument = useActiveDocument({ type: 'Planning' })
   const author = useActiveAuthor() as IDBAuthor
 
-  const [document, planning] = useMemo(() => {
-    if ([activeDocument, author].includes(undefined)) {
-      return []
-    }
-
+  const [document] = useMemo(() => {
     const flashDefaults: Record<string, unknown> = {
-      title: activeDocument?.title || ''
+      title: ''
     }
 
     if (author) {
       flashDefaults.authors = [{ uuid: author.id, name: author.name }]
     }
 
-    const planning = activeDocument
-      ? {
-          uuid: activeDocument?.uuid,
-          title: activeDocument?.title
-        }
-      : undefined
-
-    const section = (activeDocument?.links as unknown as Record<string, Block[]>)?.['core/section']?.[0]
-    if (section) {
-      flashDefaults.section = {
-        uuid: section.uuid,
-        title: section.title
-      }
-    }
-
     return [
       createDocument(
         getTemplate(name), true, { ...flashDefaults }
-      ),
-      planning
+      )
     ]
-  }, [name, activeDocument, author])
+  }, [name, author])
 
   if (!document) {
     return <></>
@@ -160,7 +138,6 @@ const FlashDialogContent = ({ menuItem, onDialogClose }: {
     <DocumentView
       id={document[0]}
       document={document[1]}
-      defaultPlanningItem={planning}
       className='p-0 rounded-md'
       asDialog={true}
       onDialogClose={onDialogClose}

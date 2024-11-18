@@ -6,7 +6,6 @@ import { SectionBadge } from '../../DataItem/SectionBadge'
 import { type EleDocumentResponse } from '@/shared/types'
 import { Button, Table as _Table, TableBody, TableCell, TableRow } from '@ttab/elephant-ui'
 import { DocumentStatus } from '../Items/DocumentStatus'
-import { StatusIndicator } from '../../DataItem/StatusIndicator'
 import { useYValue } from '@/hooks/useYValue'
 import { useLink } from '@/hooks/useLink'
 import { Check, CheckCheck } from '@ttab/elephant-ui/icons'
@@ -96,7 +95,6 @@ export const Table = ({ type, header }: {
           const title = document?.title || ''
           const slugline = document?.meta['tt/slugline']?.[0]?.value || ''
           const section = document?.links['core/section']?.[0]?.title
-          const visibility = document?.meta['core/planning-item']?.[0]?.data?.public === 'true' ? 'public' : 'internal'
 
           return (
             <TableRow
@@ -113,9 +111,6 @@ export const Table = ({ type, header }: {
                 <>
                   <TableCell className='flex-none first:pl-2 last:pr-2 sm:first:pl-6 sm:last:pr-6'>
                     <DocumentStatus status='draft' />
-                  </TableCell>
-                  <TableCell className='flex-none first:pl-2 last:pr-2 sm:first:pl-6 sm:last:pr-6'>
-                    <StatusIndicator visibility={visibility} />
                   </TableCell>
                 </>
               )}
