@@ -28,6 +28,7 @@ import { addAssignmentLinkToFlash } from './addAssignmentToFlash'
 import { type EleBlock } from '@/shared/types'
 import { Validation } from '@/components/Validation'
 import { getValueByYPath } from '@/lib/yUtils'
+import { Block } from '@ttab/elephant-api/newsdoc'
 
 export const FlashViewContent = (props: ViewProps & {
   documentId: string
@@ -44,6 +45,7 @@ export const FlashViewContent = (props: ViewProps & {
   const [, setSection] = useYValue<EleBlock | undefined>('links.core/section[0]')
   const [validateForm, setValidateForm] = useState<boolean>(!props.asDialog)
   const validateStateRef = useRef<ValidateState>({})
+  const [author] = useYValue<EleBlock | undefined>('links.core/author[0]')
 
   const [newPlanningId, newPlanningYDoc] = useMemo(() => {
     return createDocument(Templates.planning, true, {})
@@ -68,6 +70,7 @@ export const FlashViewContent = (props: ViewProps & {
       }
     }
   }, [planningDocument, setSection])
+
 
   //  Helper function to search for planning items.
   const fetchAsyncData = async (str: string): Promise<DefaultValueOption[]> => {
@@ -273,7 +276,7 @@ export const FlashViewContent = (props: ViewProps & {
                   props.onDialogClose(props.documentId, title)
                 }
 
-                createFlash(props.documentId, title, provider, status, session, planningDocument, newPlanningDocument, timeZone)
+                createFlash(props.documentId, title, provider, status, session, planningDocument, newPlanningDocument, timeZone, author)
 
                 setShowVerifyDialog(false)
               }}
@@ -324,12 +327,22 @@ function createFlash(
   session: Session,
   planningDocument: Y.Doc | undefined,
   newPlanningDocument: Y.Doc | undefined,
-  timeZone: string
+  timeZone: string,
+  author: EleBlock | undefined
 ): void {
   if (provider && status === 'authenticated') {
     // First and foremost we persist the flash, it needs an assignment
     const assignmentId = crypto.randomUUID()
     addAssignmentLinkToFlash(provider.document, assignmentId)
+
+    if (author) {
+      Block.create({
+        type: 'core/author',
+        rel: 'author',
+        uuid: author.uuid,
+        title: author.title
+      })
+    }
 
     provider.sendStateless(
       createStateless(StatelessType.IN_PROGRESS, {
