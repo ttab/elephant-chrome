@@ -248,15 +248,13 @@ export const FlashViewContent = (props: ViewProps & {
 
           {
             props.asDialog && (
-              <Form.Submit onSubmit={handleSubmit}>
-                <div>
-                  <Separator className='ml-0' />
-
-                  <div className='flex justify-end px-6 py-4'>
+              <Form.Footer>
+                <Form.Submit onSubmit={handleSubmit}>
+                  <div className='flex justify-end'>
                     <Button type='submit'>Skicka flash</Button>
                   </div>
-                </div>
-              </Form.Submit>
+                </Form.Submit>
+              </Form.Footer>
             )
           }
         </Form.Root>
