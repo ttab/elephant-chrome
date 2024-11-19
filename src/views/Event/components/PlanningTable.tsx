@@ -3,7 +3,7 @@ import { useIndexUrl } from '@/hooks/useIndexUrl'
 import { useLink } from '@/hooks/useLink'
 import { useRepositoryEvents } from '@/hooks/useRepositoryEvents'
 import { Events } from '@/lib/events'
-import { CalendarDays, PlusIcon } from '@ttab/elephant-ui/icons'
+import { GanttChartSquare, PlusIcon } from '@ttab/elephant-ui/icons'
 import { useSession } from 'next-auth/react'
 import { useRef } from 'react'
 import { NewItems } from '@/components/Table/NewItems'
@@ -85,7 +85,7 @@ export const PlanningTable = ({ eventId, eventTitle }: {
               openPlanning(evt, { id: planning.uuid })
             }}
           >
-            <CalendarDays strokeWidth={1.75} size={18} />
+            <GanttChartSquare strokeWidth={1.75} size={18} className='text-muted-foreground' />
             {planning.title}
           </a>
         </div>

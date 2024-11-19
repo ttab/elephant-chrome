@@ -1,4 +1,4 @@
-import { Building, Text } from '@ttab/elephant-ui/icons'
+import { MessageCircleMore, Text } from '@ttab/elephant-ui/icons'
 import { TextBox } from '@/components/ui'
 import { type Block } from '@ttab/elephant-api/newsdoc'
 import { useYValue } from '@/hooks/useYValue'
@@ -17,7 +17,7 @@ export const Description = ({ role }: {
       <TextBox
         path={path}
         icon={role === 'internal'
-          ? <Building size={18} strokeWidth={1.75} className='text-muted-foreground mr-4' />
+          ? <MessageCircleMore size={18} strokeWidth={1.75} className='text-muted-foreground mr-4' />
           : <Text size={18} strokeWidth={1.75} className='text-muted-foreground mr-4' />}
         placeholder={role === 'public' ? 'Publik beskrivning' : 'Internt meddelande'}
         className='text-sm'
