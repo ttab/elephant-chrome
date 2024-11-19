@@ -6,7 +6,7 @@ import {
 import type { DefaultValueOption, ValidateState, ViewProps } from '@/types'
 import { NewsvalueMap } from '@/defaults'
 import { Button, ComboBox, ScrollArea, Separator, Alert, AlertDescription } from '@ttab/elephant-ui'
-import { CircleXIcon, GanttChartSquareIcon, TagsIcon, ZapIcon, InfoIcon } from '@ttab/elephant-ui/icons'
+import { CircleXIcon, GanttChartSquareIcon, TagsIcon, ZapIcon, InfoIcon, ShieldAlert } from '@ttab/elephant-ui/icons'
 import { useCollaboration, useYValue, useIndexUrl, useRegistry } from '@/hooks'
 import type * as Y from 'yjs'
 import { cva } from 'class-variance-authority'
@@ -242,12 +242,14 @@ export const FlashViewContent = (props: ViewProps & {
           </section>
 
           <section className={cn(sectionVariants({ asCreateDialog: !!props?.asDialog }))}>
-            <Alert className='bg-gray-50'>
-              <InfoIcon size={18} strokeWidth={1.75} className='text-muted-foreground' />
+            <Alert className='bg-gray-50' variant={author ? 'default' : 'destructive'}>
+              {author ? <InfoIcon size={18} strokeWidth={1.75} className='text-muted-foreground' /> : <ShieldAlert size={18} strokeWidth={1.75} className='text-muted-foreground' />}
               <AlertDescription>
-                {!selectedPlanning
-                  ? <>Väljer du ingen planering kommer en ny planering med tillhörande uppdrag skapas åt dig.</>
-                  : <>Denna flash kommer läggas i ett nytt uppdrag i den valda planeringen</>}
+                {!author
+                  ? <>Hittade inget författardokument. Flash kan inte skickas.</>
+                  : !selectedPlanning
+                      ? <>Väljer du ingen planering kommer en ny planering med tillhörande uppdrag skapas åt dig.</>
+                      : <>Denna flash kommer läggas i ett nytt uppdrag i den valda planeringen</>}
               </AlertDescription>
             </Alert>
           </section>
@@ -291,19 +293,21 @@ export const FlashViewContent = (props: ViewProps & {
               <Separator className='ml-0' />
 
               <div className='flex justify-end px-6 py-4'>
-                <Button onClick={(): void => {
-                  setValidateForm(true)
+                <Button
+                  disabled={!author}
+                  onClick={(): void => {
+                    setValidateForm(true)
 
-                  if (!Object.values(validateStateRef.current).every((block) => block.valid)) {
-                    return
-                  }
+                    if (!Object.values(validateStateRef.current).every((block) => block.valid)) {
+                      return
+                    }
 
-                  if (!planningDocument && !newPlanningDocument) {
-                    return
-                  }
+                    if (!planningDocument && !newPlanningDocument) {
+                      return
+                    }
 
-                  setShowVerifyDialog(true)
-                }}
+                    setShowVerifyDialog(true)
+                  }}
                 >
                   Skicka flash!
                 </Button>
