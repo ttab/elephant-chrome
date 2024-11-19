@@ -5,7 +5,7 @@ import {
 } from '@/components'
 import type { DefaultValueOption, ViewProps } from '@/types'
 import { NewsvalueMap } from '@/defaults'
-import { Button, ComboBox, ScrollArea, Separator, Alert, AlertDescription } from '@ttab/elephant-ui'
+import { Button, ComboBox, ScrollArea, Alert, AlertDescription } from '@ttab/elephant-ui'
 import { CircleXIcon, ZapIcon, InfoIcon, Tags, GanttChartSquare } from '@ttab/elephant-ui/icons'
 import { useCollaboration, useYValue, useIndexUrl, useRegistry } from '@/hooks'
 import type * as Y from 'yjs'
