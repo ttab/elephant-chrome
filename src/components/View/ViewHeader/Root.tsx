@@ -6,7 +6,7 @@ export const Root = ({ children, className, asDialog }: {
   className?: string
   asDialog?: boolean
 } & PropsWithChildren): JSX.Element => {
-  const viewVariants = cva('sticky top-0 flex items-center justify-items-start group-first/view-container:ml-[2.5rem] h-14 gap-4 pl-6 pr-3 border-b z-50', {
+  const viewVariants = cva('sticky top-0 flex items-center justify-items-start group-first/view-container:ml-[3.5rem] h-14 gap-4 pr-3 border-b z-50', {
     variants: {
       asDialog: {
         false: 'bg-background',
