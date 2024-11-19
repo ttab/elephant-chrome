@@ -24,7 +24,7 @@ export function initializeNavigationState(): NavigationState {
         props,
         path: window.location.pathname
       }]
-    }, '', `${import.meta.env.BASE_URL}/${name.toLowerCase()}`)
+    }, '', window.location.href)
 
     return {
       viewRegistry,
