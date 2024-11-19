@@ -1,8 +1,7 @@
 import { cn } from '@ttab/elephant-ui/utils'
 import { type PropsWithChildren } from 'react'
 
-export const Root = ({ children, className }: PropsWithChildren &
-{
+export const Root = ({ children, className }: PropsWithChildren & {
   className?: string
 }): JSX.Element => {
   return (
