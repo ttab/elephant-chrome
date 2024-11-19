@@ -176,7 +176,12 @@ export const Table = <TData, TValue>({
     <>
       <Toolbar table={table} />
       <NewItems.Root>
-        <NewItems.Table header={`Dina nya skapade ${type === 'Planning' ? 'planeringar' : 'händelser'}`} type={type} />
+        <NewItems.Table
+          header={`Dina nya skapade ${type === 'Planning'
+            ? 'planeringar'
+            : 'händelser'}`}
+          type={type as 'Planning' | 'Event'}
+        />
       </NewItems.Root>
       {type === 'Search' && deferredLoading
         ? null
