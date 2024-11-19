@@ -1,58 +1,107 @@
 import { useSyncExternalStore } from 'react'
-import { type HistoryState } from '@/types'
+import type { ContentState } from '@/types/index'
 
-interface HistoryEvent extends Event {
-  state: HistoryState
-}
-
-// Patch history to be able to differentiate between pushstate, replacestate and popstate actions
-if (typeof history !== 'undefined') {
-  for (const type of ['pushstate', 'replacestate', 'popstate']) {
-    const original = history[type as keyof typeof history]
-
-    // @ts-expect-error history state and length are readonly
-    history[type as keyof typeof history] = (state: HistoryState, title: string, url?: string | null) => {
-      const result = original.apply(this, [state, title, url])
-      const event = new Event(type.toLowerCase()) as HistoryEvent
-      event.state = state
-      window.dispatchEvent(event)
-      return result
-    }
+export interface HistoryEvent extends Partial<CustomEvent> {
+  detail?: {
+    viewId: string
+    contentState?: ContentState[]
   }
 }
 
-let state: HistoryState = history.state
+export interface HistoryState {
+  viewId: string
+  contentState: ContentState[]
+}
 
-export const useHistory = (): HistoryState | null => {
-  function subscribe(callback: () => void): () => void {
-    window.addEventListener('pushstate', ((event: HistoryEvent) => {
-      event.state.type = 'pushstate'
-      state = event.state
-      callback()
-    }) as EventListener)
+export interface HistoryInterface {
+  state: HistoryState | null
+  pushState: (url: string, state: HistoryState) => void
+  replaceState: (url: string, state: HistoryState, silent?: boolean) => void
+  setActiveView: (viewId: string) => void
+  back: () => void
+  forward: () => void
+  go: (delta: number) => void
+}
 
-    window.addEventListener('replacestate', ((event: HistoryEvent) => {
-      event.state.type = 'replacestate'
-      state = event.state
-      callback()
-    }) as EventListener)
 
-    window.addEventListener('popstate', ((event: HistoryEvent) => {
-      event.state.type = 'popstate'
-      state = event.state
-      callback()
-    }) as EventListener)
+/**
+ * History hook for managing browser history state
+ */
+export function useHistory(): HistoryInterface {
+  const subscribe = (callback: () => void): (() => void) => {
+    window.addEventListener('popstate', callback)
+    return () => window.removeEventListener('popstate', callback)
+  }
 
-    return () => {
-      window.removeEventListener('pushstate', callback)
-      window.removeEventListener('replacestate', callback)
-      window.removeEventListener('popstate', callback)
+  const getSnapshot = (): HistoryState | null => {
+    return window.history.state as HistoryState | null
+  }
+
+  // Get the current state using useSyncExternalStore
+  const state = useSyncExternalStore<HistoryState | null>(
+    subscribe,
+    getSnapshot,
+    () => null // Server-side snapshot
+  )
+
+  const pushState = (url: string, newState: HistoryState): void => {
+    const n = newState.contentState.length - 1
+    if (newState.contentState.length === window.history.state.contentState.length
+      && newState.contentState[n].name === window.history.state.contentState[n].name) {
+      // As we open the same type of view in the same slot, replace it instead
+      replaceState(url, newState)
+      return
+    }
+
+    window.history.pushState(newState, '', url)
+    window.dispatchEvent(new PopStateEvent('popstate', { state: newState }))
+  }
+
+  const replaceState = (url: string, newState: HistoryState, dispatchEvent = true): void => {
+    window.history.replaceState(newState, '', url)
+
+    if (dispatchEvent) {
+      window.dispatchEvent(new PopStateEvent('popstate', { state: newState }))
     }
   }
 
-  function getSnapshot(): HistoryState | null {
-    return state
+  const setActiveView = (viewId: string): void => {
+    const view = state?.contentState.find((v) => v.viewId === viewId)
+    if (!view) {
+      return
+    }
+
+    const newState = {
+      viewId,
+      contentState: state?.contentState || []
+    }
+
+    replaceState(view.path, newState, false)
+
+    window.dispatchEvent(new CustomEvent('activeview', {
+      detail: newState
+    }))
   }
 
-  return useSyncExternalStore(subscribe, getSnapshot)
+  const back = (): void => {
+    window.history.go(-1)
+  }
+
+  const forward = (): void => {
+    window.history.go(1)
+  }
+
+  const go = (delta: number): void => {
+    window.history.go(delta)
+  }
+
+  return {
+    state,
+    pushState,
+    replaceState,
+    setActiveView,
+    back,
+    forward,
+    go
+  }
 }

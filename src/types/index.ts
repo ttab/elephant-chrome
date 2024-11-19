@@ -7,7 +7,8 @@ import { type ArticlePayload } from '@/defaults/templates/articleDocumentTemplat
 export enum NavigationActionType {
   SET = 'set',
   FOCUS = 'focus',
-  ACTIVE = 'active'
+  ACTIVE = 'active',
+  ON_DOC_CREATED = 'onDocumentCreated'
 }
 
 export type View = keyof typeof views
@@ -15,11 +16,10 @@ export type View = keyof typeof views
 export interface NavigationAction {
   type: NavigationActionType
   props?: ViewProps
-  name?: string
-  component?: React.FC<ViewProps>
   content?: ContentState[]
   viewId?: string
   active?: string
+  callback?: (() => void) | undefined
 }
 
 interface ViewWidths {
@@ -54,10 +54,9 @@ export interface ViewRegistry {
 
 export interface NavigationState {
   viewRegistry: ViewRegistry
-  views: Array<{ name: string, colSpan: number }>
   focus: string | null
   active: string | undefined
-  content: JSX.Element[]
+  content: ContentState[]
 }
 
 export interface ContentState {
@@ -65,15 +64,6 @@ export interface ContentState {
   name: View
   path: string
   props?: ViewProps
-}
-
-export interface HistoryState {
-  viewId: string
-  viewName: string
-  props: Record<string, unknown>
-  path: string
-  type: 'popstate' | 'pushstate' | 'replacestate'
-  contentState: ContentState[]
 }
 
 export interface ViewProps {

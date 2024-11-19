@@ -1,39 +1,21 @@
-import { ViewWrapper } from '@/components'
-
 import {
   NavigationActionType,
-  type ContentState,
-  type HistoryState,
   type NavigationAction,
   type NavigationState
 } from '@/types'
 
-import { calculateViewWidths } from './calculateViewWidths'
-
-export function navigationReducer(state: NavigationState, action: NavigationAction): NavigationState {
+export function navigationReducer(prevState: NavigationState, action: NavigationAction): NavigationState {
   switch (action.type) {
     case NavigationActionType.SET: {
       if (action.content === undefined) {
         throw new Error('Content is undefined')
       }
 
-      const views = calculateViewWidths(state.viewRegistry, action.content)
-
       return {
-        ...state,
-        views,
+        ...prevState,
         focus: null,
         active: action?.active || action.content[action.content.length - 1].viewId,
-        content: action.content.map((item: ContentState, index): JSX.Element => {
-          const Component = state.viewRegistry.get(item.name)?.component
-          const { colSpan } = views[index]
-
-          return (
-            <ViewWrapper key={item.viewId} viewId={item.viewId} name={item.name} colSpan={colSpan}>
-              <Component {...item.props} />
-            </ViewWrapper>
-          )
-        })
+        content: action.content
       }
     }
 
@@ -43,8 +25,8 @@ export function navigationReducer(state: NavigationState, action: NavigationActi
       }
 
       return {
-        ...state,
-        focus: action.viewId === state.focus ? null : action.viewId
+        ...prevState,
+        focus: action.viewId === prevState.focus ? null : action.viewId
       }
 
     case NavigationActionType.ACTIVE: {
@@ -52,19 +34,27 @@ export function navigationReducer(state: NavigationState, action: NavigationActi
         throw new Error('ViewId is undefined')
       }
 
-      const current: ContentState = history.state.contentState.find((item: HistoryState) => item.viewId === action.viewId) || {}
+      return {
+        ...prevState,
+        focus: null,
+        active: action.viewId
+      }
+    }
 
-      history.replaceState({
-        id: action.viewId,
-        viewName: current.name,
-        path: current.path,
-        contentState: history.state.contentState
-      }, current.name, `${window.location.protocol}//${window.location.host}${current.path}`)
-
+    case NavigationActionType.ON_DOC_CREATED: {
+      const nextState = { ...prevState }
+      nextState.content.forEach((content) => {
+        if (content.viewId === action.viewId) {
+          const props = content.props || {}
+          content.props = {
+            ...props,
+            onDocumentCreated: action.callback
+          }
+        }
+      })
 
       return {
-        ...state,
-        focus: null,
+        ...prevState,
         active: action.viewId
       }
     }

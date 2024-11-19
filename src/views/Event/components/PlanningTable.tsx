@@ -8,11 +8,12 @@ import { useSession } from 'next-auth/react'
 import { useRef } from 'react'
 import { NewItems } from '@/components/Table/NewItems'
 import useSWR from 'swr'
+import { FormProps } from '@/components/Form/Root'
 
-export const PlanningTable = ({ eventId, eventTitle }: {
+export const PlanningTable = ({ eventId, eventTitle, asDialog }: {
   eventId: string
   eventTitle?: string
-}): JSX.Element => {
+} & FormProps): JSX.Element => {
   const { data: session, status } = useSession()
   const openPlanning = useLink('Planning')
   const createdDocumentIdRef = useRef<string | undefined>()
@@ -90,9 +91,11 @@ export const PlanningTable = ({ eventId, eventTitle }: {
           </a>
         </div>
       ))}
-      <NewItems.Root>
-        <NewItems.List type='Planning' createdIdRef={createdDocumentIdRef} />
-      </NewItems.Root>
+      {asDialog && (
+        <NewItems.Root>
+          <NewItems.List type='Planning' createdIdRef={createdDocumentIdRef} />
+        </NewItems.Root>
+      )}
     </div>
   )
 }

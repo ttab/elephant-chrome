@@ -1,5 +1,5 @@
 import { type Dispatch } from 'react'
-import { NavigationProvider } from '@/navigation'
+import { NavigationProvider } from '@/navigation/NavigationProvider'
 
 import { useNavigation } from '@/hooks'
 

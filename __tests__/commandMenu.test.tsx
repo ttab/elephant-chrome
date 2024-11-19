@@ -1,5 +1,5 @@
 import { TableProvider } from '@/contexts'
-import { NavigationProvider } from '@/navigation'
+import { NavigationProvider } from '@/navigation/NavigationProvider'
 import { render, screen } from '../setupTests'
 import { CommandMenu } from '@/components/Commands/Menu'
 import userEvent from '@testing-library/user-event'
@@ -20,6 +20,6 @@ describe('CommandMenu', () => {
     await userEvent.keyboard('{Control>}k')
     expect(screen.getByText('Planning overview')).toBeInTheDocument()
     await userEvent.click(screen.getByRole('option'))
-    expect(history.state.viewName).toBe('Plannings')
+    expect(history.state.contentState[0].name).toBe('Plannings')
   })
 })
