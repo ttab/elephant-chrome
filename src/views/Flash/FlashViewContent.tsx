@@ -5,8 +5,8 @@ import {
 } from '@/components'
 import type { DefaultValueOption, ViewProps } from '@/types'
 import { NewsvalueMap } from '@/defaults'
-import { Button, ComboBox, ScrollArea, Alert, AlertDescription } from '@ttab/elephant-ui'
-import { CircleXIcon, ZapIcon, InfoIcon, Tags, GanttChartSquare } from '@ttab/elephant-ui/icons'
+import { Button, ComboBox, ScrollArea } from '@ttab/elephant-ui'
+import { CircleXIcon, ZapIcon, Tags, GanttChartSquare } from '@ttab/elephant-ui/icons'
 import { useCollaboration, useYValue, useIndexUrl, useRegistry } from '@/hooks'
 import type * as Y from 'yjs'
 import { cva } from 'class-variance-authority'
@@ -28,6 +28,7 @@ import { addAssignmentLinkToFlash } from './addAssignmentToFlash'
 import { type EleBlock } from '@/shared/types'
 import { getValueByYPath } from '@/lib/yUtils'
 import { Block } from '@ttab/elephant-api/newsdoc'
+import { UserMessage } from './UserMessage'
 import { Form } from '@/components/Form'
 
 export const FlashViewContent = (props: ViewProps & {
@@ -204,14 +205,7 @@ export const FlashViewContent = (props: ViewProps & {
 
             <FlashEditor setTitle={setTitle} />
 
-            <Alert className='bg-gray-50'>
-              <InfoIcon size={18} strokeWidth={1.75} className='text-muted-foreground' />
-              <AlertDescription>
-                {!selectedPlanning
-                  ? <>Väljer du ingen planering kommer en ny planering med tillhörande uppdrag skapas åt dig.</>
-                  : <>Denna flash kommer läggas i ett nytt uppdrag i den valda planeringen</>}
-              </AlertDescription>
-            </Alert>
+            <UserMessage author={author} selectedPlanning={selectedPlanning} asDialog={!!props?.asDialog} />
 
           </Form.Content>
 
@@ -251,7 +245,7 @@ export const FlashViewContent = (props: ViewProps & {
               <Form.Footer>
                 <Form.Submit onSubmit={handleSubmit}>
                   <div className='flex justify-end'>
-                    <Button type='submit'>Skicka flash</Button>
+                    <Button type='submit' disabled={!author}>Skicka flash</Button>
                   </div>
                 </Form.Submit>
               </Form.Footer>
