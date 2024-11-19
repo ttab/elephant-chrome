@@ -10,6 +10,11 @@ import { NewItems } from '@/components/Table/NewItems'
 import useSWR from 'swr'
 import { FormProps } from '@/components/Form/Root'
 
+interface StatusResult {
+  title: string
+  uuid: string | undefined
+}
+
 export const PlanningTable = ({ eventId, eventTitle, asDialog }: {
   eventId: string
   eventTitle?: string
@@ -19,11 +24,11 @@ export const PlanningTable = ({ eventId, eventTitle, asDialog }: {
   const createdDocumentIdRef = useRef<string | undefined>()
   const indexUrl = useIndexUrl()
 
-  const { data, mutate } = useSWR([`relatedPlanningItems/${eventId}`, status, indexUrl.href], async (): Promise<Array<{
-    title: string
-    uuid: string | undefined
-  }
-  > | undefined> => {
+  const { data, mutate, error } = useSWR<StatusResult[] | undefined, Error>([
+    `relatedPlanningItems/${eventId}`,
+    status,
+    indexUrl.href
+  ], async (): Promise<StatusResult[] | undefined> => {
     if (status !== 'authenticated') {
       throw new Error('Not authenticated')
     }
@@ -51,6 +56,10 @@ export const PlanningTable = ({ eventId, eventTitle, asDialog }: {
 
   if (!data) {
     return <>Loading...</>
+  }
+
+  if (error) {
+    return <pre>{error.message}</pre>
   }
 
   return (

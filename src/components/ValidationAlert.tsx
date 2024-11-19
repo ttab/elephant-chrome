@@ -44,7 +44,7 @@ export const ValidationAlert = ({ validateStateRef }: {
 
 
   // If validation error is found, start polling for updated validation status
-  const { data: validationError, error } = useSWR(
+  const { data: validationError, error } = useSWR<string | null | undefined, Error>(
     documentId && synced ? [`validation/${documentId}`] : null,
     fetcher,
 

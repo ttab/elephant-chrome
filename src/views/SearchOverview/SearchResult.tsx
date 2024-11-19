@@ -15,7 +15,7 @@ export const SearchResult = ({ from, to, isLoading, pool, page }: {
   page: number
 }): JSX.Element => {
   const sections = useSections()
-  const { error } = useSWR(['Search', pool, page, from, to, { withStatus: true }])
+  const { error } = useSWR<unknown, Error>(['Search', pool, page, from, to, { withStatus: true }])
   const { locale, timeZone } = useRegistry()
   const onRowSelected = useCallback((row?: Planning | Event | AssignmentMetaExtended | Article) => {
     if (row) {
