@@ -18,7 +18,7 @@ import {
   TableRow
 } from '@ttab/elephant-ui'
 import { Toolbar } from './Toolbar'
-import { useNavigation, useView, useTable } from '@/hooks'
+import { useNavigation, useView, useTable, useHistory } from '@/hooks'
 import { isEditableTarget } from '@/lib/isEditableTarget'
 import { handleLink } from '@/components/Link/lib/handleLink'
 import { NewItems } from './NewItems'
@@ -38,6 +38,7 @@ export const Table = <TData, TValue>({
 }: TableProps<TData, TValue>): JSX.Element => {
   const { isActive: isActiveView } = useView()
   const { state, dispatch } = useNavigation()
+  const history = useHistory()
   const { viewId: origin } = useView()
 
   const { table, loading } = useTable()
@@ -60,19 +61,21 @@ export const Table = <TData, TValue>({
         event,
         dispatch,
         viewItem: state.viewRegistry.get(viewType),
-        viewRegistry: state.viewRegistry,
         // @ts-expect-error unknown type
         props: { id: subRow.original._id },
         viewId: crypto.randomUUID(),
-        origin
+        origin,
+        history
       })
     }
-  }, [dispatch, state.viewRegistry, onRowSelected, origin, type])
+  }, [dispatch, state.viewRegistry, onRowSelected, origin, type, history])
 
   const scrollToRow = useCallback((rowId: string) => {
     rowRefs.current.get(rowId)?.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
   }, [rowRefs])
 
+  // TODO: We should extend useNavigationKeys hook to accomodate this functionality
+  // TODO: We should then remove isEditableTarget as it is built into useNavigationKeys
   const keyDownHandler = useCallback((evt: KeyboardEvent): void => {
     if (!isActiveView || isEditableTarget(evt)) {
       return
@@ -169,7 +172,7 @@ export const Table = <TData, TValue>({
       ? <GroupedRows<TData, TValue> key={index} row={row} columns={columns} handleOpen={handleOpen} rowRefs={rowRefs} />
       : <Rows key={index} row={row} handleOpen={handleOpen} rowRefs={rowRefs} />
     )
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [deferredRows, columns, deferredLoading, handleOpen, table, rowSelection])
 
   return (

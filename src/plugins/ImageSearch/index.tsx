@@ -1,27 +1,9 @@
 import { ScanSearch } from '@ttab/elephant-ui/icons'
-import { handleLink } from '@/components/Link/lib/handleLink'
-import { useNavigation, useQuery, useView } from '@/hooks'
-import { type ActionHandlerI } from '../types'
+import { useLink } from '@/hooks'
 import { type Plugin } from '@ttab/textbit'
 
-function handler({ dispatch, viewRegistry, origin, id }: ActionHandlerI): boolean {
-  handleLink({
-    event: undefined,
-    dispatch,
-    viewItem: viewRegistry?.get('ImageSearch'),
-    viewRegistry,
-    viewId: crypto.randomUUID(),
-    props: { id },
-    origin
-  })
-  return true
-}
-
 export const ImageSearchPlugin: Plugin.InitFunction = () => {
-  const { state, dispatch } = useNavigation()
-  const { viewId: origin } = useView()
-  const viewRegistry = state.viewRegistry
-  const [{ id }] = useQuery()
+  const openImageSearch = useLink('ImageSearch')
 
   return {
     class: 'block',
@@ -37,7 +19,7 @@ export const ImageSearchPlugin: Plugin.InitFunction = () => {
         title: 'Image search',
         tool: () => <ScanSearch style={{ width: '1em', height: '1em' }} />,
         handler: () => {
-          return handler({ dispatch, viewRegistry, origin, id })
+          openImageSearch(undefined, {})
         },
         visibility: () => {
           return [

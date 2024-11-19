@@ -57,7 +57,6 @@ const mockState = initializeNavigationState()
 
 history.pushState({
   viewId: 'eddbfe39-57d4-4b32-b9a1-a555e39139ea',
-  viewName: 'Plannings',
   contentState: [
     {
       viewId: 'eddbfe39-57d4-4b32-b9a1-a555e39139ea',

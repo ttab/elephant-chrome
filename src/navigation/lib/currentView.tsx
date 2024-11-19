@@ -7,7 +7,9 @@ export const currentView = (): { name: string, props: Record<string, string> } =
       .replace(import.meta.env.BASE_URL, '')
       .replace(/\/$/, '')
 
-    name = nameFromPath[1]?.toUpperCase() + nameFromPath.slice(2)
+    if (nameFromPath[1]) {
+      name = nameFromPath[1]?.toUpperCase() + nameFromPath.slice(2)
+    }
   } else {
     name = 'Plannings'
   }
@@ -15,7 +17,7 @@ export const currentView = (): { name: string, props: Record<string, string> } =
   const props = Object.fromEntries(new URLSearchParams(window.location.search))
 
   return {
-    name,
-    props
+    name: name || 'Plannings',
+    props: props || {}
   }
 }

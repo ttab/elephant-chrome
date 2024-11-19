@@ -10,6 +10,7 @@ export const update = async ({ session, status }: {
   }
 }): Promise<UpdateResponse> => {
   const { documentId, version, name } = status
+  // FIXME: process.env is only available on backend
   const response = await fetch(`${process.env.REPOSITORY_URL}/twirp/elephant.repository.Documents/Update`, {
     method: 'POST',
     mode: 'cors',
