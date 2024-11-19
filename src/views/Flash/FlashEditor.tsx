@@ -11,24 +11,35 @@ import { Toolbar } from '@/components/Editor/Toolbar'
 import { DropMarker } from '@/components/Editor/DropMarker'
 import { ContextMenu } from '@/components/Editor/ContextMenu'
 import { useSession } from 'next-auth/react'
+import { Validation } from '@/components/Validation'
+import { FormProps } from '@/components/Form/Root'
 
 
-export const FlashEditor = ({ setTitle }: {
+export const FlashEditor = ({ setTitle, onValidation, validateStateRef }: {
   setTitle: (value: string | undefined) => void
-}): JSX.Element => {
+} & FormProps): JSX.Element => {
   const plugins = [Text, UnorderedList, OrderedList, Bold, Italic]
   const { provider, synced, user } = useCollaboration()
 
   return (
-    <Textbit.Root
-      plugins={plugins.map((initPlugin) => initPlugin())}
-      placeholders='multiple'
-      className='border-y'
+    <Validation
+      label='Rubrik och innehåll'
+      path='root.title'
+      block='title'
+      onValidation={onValidation}
+      validateStateRef={validateStateRef}
     >
-      {!!provider && synced
-        ? <EditorContent provider={provider} user={user} setTitle={setTitle} />
-        : <></>}
-    </Textbit.Root>
+      <Textbit.Root
+        plugins={plugins.map((initPlugin) => initPlugin())}
+        placeholders='multiple'
+        className='w-full h-full rounded-md border
+        '
+      >
+        {!!provider && synced
+          ? <EditorContent provider={provider} user={user} setTitle={setTitle} />
+          : <></>}
+      </Textbit.Root>
+    </Validation>
   )
 }
 
@@ -70,33 +81,32 @@ function EditorContent({ provider, user, setTitle }: {
   }, [yjsEditor])
 
   return (
-    <div className='w-full px-6'>
-      <Textbit.Editable
-        yjsEditor={yjsEditor}
-        onSpellcheck={async (texts) => {
-          return await spellchecker?.check(texts, locale, session?.accessToken ?? '') ?? []
-        }}
-        onChange={(value) => {
-          // @ts-expect-error Textbit plugins needs to expose plugin types better
-          const titleNode = value?.find((child) => child.class === 'text' && child?.properties?.role === 'heading-1')
-          setTitle(extractText(titleNode as TBText))
-        }}
-        className='outline-none
-        h-full min-h-[20vh]
+    <Textbit.Editable
+      yjsEditor={yjsEditor}
+      onSpellcheck={async (texts) => {
+        return await spellchecker?.check(texts, locale, session?.accessToken ?? '') ?? []
+      }}
+      onChange={(value) => {
+        // @ts-expect-error Textbit plugins needs to expose plugin types better
+        const titleNode = value?.find((child) => child.class === 'text' && child?.properties?.role === 'heading-1')
+        setTitle(extractText(titleNode as TBText))
+      }}
+      className='outline-none
+        h-full
+        min-h-[20vh]
         max-h-[40vh]
         overflow-y-scroll
         dark:text-slate-100
-        py-5
+        px-2
         [&_[data-spelling-error]]:border-b-2
         [&_[data-spelling-error]]:border-dotted
         [&_[data-spelling-error]]:border-red-500
         '
-      >
-        <DropMarker />
-        <Toolbar />
-        <ContextMenu className='fooo z-[9999]' />
-      </Textbit.Editable>
-    </div>
+    >
+      <DropMarker />
+      <Toolbar />
+      <ContextMenu className='fooo z-[9999]' />
+    </Textbit.Editable>
   )
 }
 
