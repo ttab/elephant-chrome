@@ -3,7 +3,7 @@ import { cn } from '@ttab/elephant-ui/utils'
 import { type Block } from '@ttab/elephant-api/newsdoc'
 
 import { Alert, AlertDescription } from '@ttab/elephant-ui'
-import { Building, Globe } from '@ttab/elephant-ui/icons'
+import { MessageCircleMore, Text } from '@ttab/elephant-ui/icons'
 
 const Note = ({ note }: { note: Block }): JSX.Element => {
   return (
@@ -13,8 +13,8 @@ const Note = ({ note }: { note: Block }): JSX.Element => {
     >
       <AlertDescription className='flex space-x-2 items-center'>
         {note.role === 'public'
-          ? <Globe strokeWidth={1.75} size={18} />
-          : <Building strokeWidth={1.75} size={18} />}
+          ? <Text strokeWidth={1.75} size={18} />
+          : <MessageCircleMore strokeWidth={1.75} size={18} />}
         <pre className='font-thin text-sm whitespace-pre-wrap break-words'>{note.data.text}</pre>
       </AlertDescription>
     </Alert>

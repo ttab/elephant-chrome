@@ -269,9 +269,11 @@ export class CollaborationServer {
         msg.message.context
       )
 
+      // Create a tracker document that keeps track of the user history
       userTrackerConnection.transact((doc) => {
         const documents = doc.getMap('ele')
         const type = msg.message.context.type
+
         if (!documents.get(type)) {
           documents.set(type, new Y.Array())
         }

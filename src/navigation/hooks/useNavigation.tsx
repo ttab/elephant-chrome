@@ -1,5 +1,5 @@
 import { type Dispatch, useContext } from 'react'
-import { NavigationContext } from '@/navigation'
+import { NavigationContext } from '@/navigation/NavigationContext'
 import type { NavigationAction, NavigationState } from '@/types'
 
 export const useNavigation = (): { state: NavigationState, dispatch: Dispatch<NavigationAction> } => {

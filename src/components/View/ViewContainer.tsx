@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useRef } from 'react'
-import { useNavigation, useView } from '@/hooks'
-import { NavigationActionType } from '@/types'
+import { useHistory, useView } from '@/hooks'
 import { cn } from '@ttab/elephant-ui/utils'
 import { cva } from 'class-variance-authority'
 
@@ -49,7 +48,7 @@ export const ViewContainer = ({ children, colSpan: wantedColSpan }: {
   children: JSX.Element
   colSpan: number
 }): JSX.Element => {
-  const { dispatch } = useNavigation()
+  const { state, replaceState, setActiveView } = useHistory()
   const { viewId, isActive, isFocused, isHidden } = useView()
   const sectionRef = useRef<HTMLElement>(null)
 
@@ -60,27 +59,16 @@ export const ViewContainer = ({ children, colSpan: wantedColSpan }: {
       : 12
   ) as keyof typeof section
 
-  // Make sure content does not rerender every time active view changes
-  const memoizedContent = useMemo((): JSX.Element => {
-    return <>{children}</>
-  }, [children])
-
   useEffect(() => {
     const handleSetActive = (e: MouseEvent): void => {
-      if (sectionRef.current && sectionRef.current.contains(e.target as Node) && !isActive) {
-        dispatch({
-          viewId,
-          type: NavigationActionType.ACTIVE
-        })
+      if (!isActive && sectionRef.current?.contains(e.target as Node)) {
+        setActiveView(viewId)
       }
     }
 
     document.addEventListener('click', handleSetActive)
-
-    return () => {
-      document.removeEventListener('click', handleSetActive)
-    }
-  }, [dispatch, viewId, isActive])
+    return () => document.removeEventListener('click', handleSetActive)
+  }, [viewId, isActive, state?.contentState, replaceState, setActiveView])
 
   return useMemo(() => {
     return (
@@ -95,8 +83,8 @@ export const ViewContainer = ({ children, colSpan: wantedColSpan }: {
           })
         )}
       >
-        {memoizedContent}
+        {children}
       </section>
     )
-  }, [memoizedContent, isFocused, isHidden, isActive, colSpan])
+  }, [children, isFocused, isHidden, isActive, colSpan])
 }

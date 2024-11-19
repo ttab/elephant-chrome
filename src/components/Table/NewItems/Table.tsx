@@ -9,36 +9,48 @@ import { DocumentStatus } from '../Items/DocumentStatus'
 import { useYValue } from '@/hooks/useYValue'
 import { useLink } from '@/hooks/useLink'
 import { Check, CheckCheck } from '@ttab/elephant-ui/icons'
-import { type View } from '@/types/index'
 import { useRepositoryEvents } from '@/hooks/useRepositoryEvents'
 import { useCallback } from 'react'
 
 const BASE_URL = import.meta.env.BASE_URL || ''
 
+const eventTypes = {
+  Event: 'core/event',
+  Planning: 'core/planning-item'
+} as const
+
+export type EventType = keyof typeof eventTypes
+interface NewItem {
+  id: string
+  timestamp: number
+}
+
 export const Table = ({ type, header }: {
-  type: View
+  type: EventType
   header: string
 }): JSX.Element | null => {
   const openEditingView = useLink(type)
-  const [newDocuments = [], setNewDocuments] = useYValue<Array<{
-    id: string
-    timestamp: number
-  }>>(type)
 
-  const { data: documents, mutate, error } = useSWR(
+  const [newDocuments = [], setNewDocuments] = useYValue<NewItem[]>(type)
+
+  const { data: documents, mutate, error } = useSWR<EleDocumentResponse[], Error>(
     newDocuments?.length ? newDocuments : null,
-    async (newDocuments): Promise<EleDocumentResponse[]> => {
+
+    async (): Promise<EleDocumentResponse[]> => {
       const results = await Promise.all(newDocuments.map(async (newDocument) => {
         const response = await fetch(`${BASE_URL}/api/documents/${newDocument.id}`)
-        const result = await response.json()
+        const result = await response.json() as EleDocumentResponse
         return result
       }))
+
       return results
     }
   )
 
+  const eventType = eventTypes[type]
+
   useRepositoryEvents(
-    'core/planning-item',
+    eventType,
     useCallback((event) => {
       void (async () => {
         const expiredDocuments = newDocuments?.filter(({ timestamp }) => Date.now() - timestamp > (60000 * 10))
@@ -51,12 +63,20 @@ export const Table = ({ type, header }: {
           await mutate()
         }
         try {
-          // await mutate()
+          const expiredDocuments = newDocuments?.filter(({ timestamp }) => Date.now() - timestamp > (60000 * 10))
+
+          if (event.event === 'document'
+            && event.type === eventType
+            && expiredDocuments.length
+          ) {
+            setNewDocuments(newDocuments?.filter(({ id }) => !expiredDocuments.some(({ id: expiredId }) => expiredId === id)))
+            await mutate()
+          }
         } catch (error) {
-          console.error('Error when mutating Planning list', error)
+          console.error(`Error when mutating ${type} list`, error)
         }
       })()
-    }, [newDocuments, setNewDocuments, mutate])
+    }, [newDocuments, setNewDocuments, mutate, eventType, type])
   )
 
 

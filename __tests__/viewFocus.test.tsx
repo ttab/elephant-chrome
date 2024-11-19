@@ -1,5 +1,5 @@
 import { type Dispatch } from 'react'
-import { NavigationProvider } from '@/navigation'
+import { NavigationProvider } from '@/navigation/NavigationProvider'
 import userEvent from '@testing-library/user-event'
 import { useNavigation } from '@/hooks'
 import { render, screen } from '../setupTests'

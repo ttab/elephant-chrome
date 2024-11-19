@@ -1,15 +1,22 @@
-import { useSyncExternalStore } from 'react'
+import { debounce } from '@/lib/debounce'
+import { useState, useEffect } from 'react'
 
-export const useResize = (): number => {
-  function subscribe(callback: () => void): () => void {
-    window.addEventListener('resize', callback)
+export const useResize = (delay: number = 50): {
+  width: number
+  height: number
+} => {
+  const [size, setSize] = useState({ width: window.innerWidth, height: window.innerHeight })
+
+  useEffect(() => {
+    const handleResize = (): void => setSize({ width: window.innerWidth, height: window.innerHeight })
+
+    const debouncedResize = debounce(handleResize, delay)
+    window.addEventListener('resize', debouncedResize)
+
     return () => {
-      window.removeEventListener('resize', callback)
+      window.removeEventListener('resize', debouncedResize)
     }
-  }
+  }, [delay])
 
-  function getSnapshot(): number {
-    return window.innerWidth
-  }
-  return useSyncExternalStore(subscribe, getSnapshot)
+  return size
 }

@@ -1,9 +1,10 @@
 import type { MouseEvent } from 'react'
-import { useNavigation, useView } from '@/hooks'
+import { useHistory, useNavigation, useView } from '@/hooks'
 import { handleLink } from '@/components/Link/lib/handleLink'
 import { type ViewProps, type View } from '../types'
 
 export const useLink = (viewName: View) => {
+  const history = useHistory()
   const { state, dispatch } = useNavigation()
   const { viewId: origin } = useView()
 
@@ -17,12 +18,12 @@ export const useLink = (viewName: View) => {
       event,
       dispatch,
       viewItem: state.viewRegistry.get(viewName),
-      viewRegistry: state.viewRegistry,
       props: { ...props },
       viewId: crypto.randomUUID(),
       origin,
       target,
-      onDocumentCreated: callbacks?.onDocumentCreated
+      onDocumentCreated: callbacks?.onDocumentCreated,
+      history
     })
   }
 }
