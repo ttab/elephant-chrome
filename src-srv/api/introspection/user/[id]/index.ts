@@ -31,6 +31,11 @@ export const GET: RouteHandler = async (req: Request, { cache }) => {
         payload: yDoc.getMap('ele')
       }
     }
+
+    return {
+      statusCode: 404,
+      statusMessage: 'Not Found'
+    }
   } catch (ex) {
     logger.error(ex)
 
