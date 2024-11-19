@@ -109,15 +109,15 @@ const PlanningViewContent = (props: ViewProps & { documentId: string }): JSX.Ele
     }))}
     >
       <div className='grow-0'>
-        <ViewHeader.Root>
+        <ViewHeader.Root asDialog={!!props.asDialog}>
           {!props.asDialog
-          && <ViewHeader.Title title='Planering' icon={GanttChartSquare} iconColor='#DAC9F2' />}
+            ? <ViewHeader.Title title='Planering' icon={GanttChartSquare} iconColor='#DAC9F2' />
+            : <ViewHeader.Title title='Skapa ny planering' icon={GanttChartSquare} iconColor='#DAC9F2' asDialog />}
 
           <ViewHeader.Content>
             <div className='flex w-full h-full items-center space-x-2'>
               {!props.asDialog
               && <DocumentStatus status={documentStatus} setStatus={setDocumentStatus} />}
-              <Newsvalue />
             </div>
           </ViewHeader.Content>
 
@@ -149,6 +149,10 @@ const PlanningViewContent = (props: ViewProps & { documentId: string }): JSX.Ele
                 path='meta.tt/slugline[0].value'
                 documentStatus={documentStatus?.name}
               />
+              <Newsvalue />
+            </Form.Group>
+
+            <Form.Group icon={Tags}>
               <Section />
               <Story />
             </Form.Group>

@@ -1,17 +1,22 @@
 import { cn } from '@ttab/elephant-ui/utils'
-import { type PropsWithChildren } from 'react'
+import { cva } from 'class-variance-authority'
+import { PropsWithChildren } from 'react'
 
-export const Root = ({ children, className }: PropsWithChildren & {
+export const Root = ({ children, className, asDialog }: {
   className?: string
-}): JSX.Element => {
-  return (
-    <header className={
-      cn(
-        'sticky top-0 flex items-center justify-items-start group-first/view-container:ml-[3.5rem] h-14 gap-4 pr-3 border-b bg-background z-50',
-        className
-      )
+  asDialog?: boolean
+} & PropsWithChildren): JSX.Element => {
+  const viewVariants = cva('sticky top-0 flex items-center justify-items-start group-first/view-container:ml-[3.5rem] h-14 gap-4 pr-3 border-b z-50', {
+    variants: {
+      asDialog: {
+        false: 'bg-background',
+        true: 'bg-gray-50'
+      }
     }
-    >
+  })
+
+  return (
+    <header className={cn(viewVariants({ asDialog }), className)}>
       {children}
     </header>
   )
