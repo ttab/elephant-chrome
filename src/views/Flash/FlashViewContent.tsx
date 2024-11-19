@@ -217,17 +217,14 @@ export const FlashViewContent = (props: ViewProps & {
               </div>
             </div>
 
-            <div className='flex flex-row gap-5 items-start'>
-              {!selectedPlanning && (
+            {!selectedPlanning && (
+              <div className='flex flex-row gap-5 items-start'>
                 <div className='pt-1'>
                   <TagsIcon size={18} strokeWidth={1.75} className='text-muted-foreground' />
                 </div>
-              )}
-
-
-              {!selectedPlanning
-              && <Section onValidation={handleValidation} />}
-            </div>
+                <Section onValidation={handleValidation} validateStateRef={validateStateRef} />
+              </div>
+            )}
           </section>
 
           <section className={cn(sectionVariants({ asCreateDialog: !!props?.asDialog }), 'px-0')}>
