@@ -5,8 +5,8 @@ import {
 } from '@/components'
 import type { DefaultValueOption, ValidateState, ViewProps } from '@/types'
 import { NewsvalueMap } from '@/defaults'
-import { Button, ComboBox, ScrollArea, Separator, Alert, AlertDescription } from '@ttab/elephant-ui'
-import { CircleXIcon, GanttChartSquareIcon, TagsIcon, ZapIcon, InfoIcon, ShieldAlert } from '@ttab/elephant-ui/icons'
+import { Button, ComboBox, ScrollArea, Separator } from '@ttab/elephant-ui'
+import { CircleXIcon, GanttChartSquareIcon, TagsIcon, ZapIcon } from '@ttab/elephant-ui/icons'
 import { useCollaboration, useYValue, useIndexUrl, useRegistry } from '@/hooks'
 import type * as Y from 'yjs'
 import { cva } from 'class-variance-authority'
@@ -29,6 +29,7 @@ import { type EleBlock } from '@/shared/types'
 import { Validation } from '@/components/Validation'
 import { getValueByYPath } from '@/lib/yUtils'
 import { Block } from '@ttab/elephant-api/newsdoc'
+import { UserMessage } from './UserMessage'
 
 export const FlashViewContent = (props: ViewProps & {
   documentId: string
@@ -242,16 +243,7 @@ export const FlashViewContent = (props: ViewProps & {
           </section>
 
           <section className={cn(sectionVariants({ asCreateDialog: !!props?.asDialog }))}>
-            <Alert className='bg-gray-50' variant={author ? 'default' : 'destructive'}>
-              {author ? <InfoIcon size={18} strokeWidth={1.75} className='text-muted-foreground' /> : <ShieldAlert size={18} strokeWidth={1.75} className='text-muted-foreground' />}
-              <AlertDescription>
-                {!author
-                  ? <>Hittade inget författardokument. Flash kan inte skickas.</>
-                  : !selectedPlanning
-                      ? <>Väljer du ingen planering kommer en ny planering med tillhörande uppdrag skapas åt dig.</>
-                      : <>Denna flash kommer läggas i ett nytt uppdrag i den valda planeringen</>}
-              </AlertDescription>
-            </Alert>
+            <UserMessage author={author} selectedPlanning={selectedPlanning} />
           </section>
         </div>
 
