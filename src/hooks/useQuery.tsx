@@ -78,8 +78,9 @@ export const useQuery = (): [Record<string, string | undefined>, (params: Record
       newUrl.search = searchParams.toString()
 
       replaceState(newUrl.href, newHistoryState)
+      setQueryParams(parseQueryString())
     })
-  }, [historyState])
+  }, [historyState, replaceState])
 
   return [queryParams, setQueryString]
 }
