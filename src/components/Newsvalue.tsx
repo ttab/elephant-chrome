@@ -41,7 +41,11 @@ export const Newsvalue = ({ onValidation, validateStateRef }: FormProps): JSX.El
             }
           }}
           onSelect={(option) => {
-            setNewsvalue(option.value)
+            if (newsvalue === option.value) {
+              setNewsvalue(undefined)
+            } else {
+              setNewsvalue(option.value)
+            }
           }}
           hideInput
         >
