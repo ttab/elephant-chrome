@@ -3,10 +3,10 @@ import {
   Awareness,
   Section
 } from '@/components'
-import type { DefaultValueOption, ValidateState, ViewProps } from '@/types'
+import type { DefaultValueOption, ViewProps } from '@/types'
 import { NewsvalueMap } from '@/defaults'
 import { Button, ComboBox, ScrollArea, Separator, Alert, AlertDescription } from '@ttab/elephant-ui'
-import { CircleXIcon, GanttChartSquareIcon, TagsIcon, ZapIcon, InfoIcon } from '@ttab/elephant-ui/icons'
+import { CircleXIcon, ZapIcon, InfoIcon, Tags, GanttChartSquare } from '@ttab/elephant-ui/icons'
 import { useCollaboration, useYValue, useIndexUrl, useRegistry } from '@/hooks'
 import type * as Y from 'yjs'
 import { cva } from 'class-variance-authority'
@@ -26,9 +26,9 @@ import { type Session } from 'next-auth'
 import { addFlashToPlanning } from './addFlashToPlanning'
 import { addAssignmentLinkToFlash } from './addAssignmentToFlash'
 import { type EleBlock } from '@/shared/types'
-import { Validation } from '@/components/Validation'
 import { getValueByYPath } from '@/lib/yUtils'
 import { Block } from '@ttab/elephant-api/newsdoc'
+import { Form } from '@/components/Form'
 
 export const FlashViewContent = (props: ViewProps & {
   documentId: string
@@ -42,8 +42,6 @@ export const FlashViewContent = (props: ViewProps & {
   const [selectedPlanning, setSelectedPlanning] = useState<DefaultValueOption | undefined>(undefined)
   const [title, setTitle] = useYValue<string | undefined>('root.title', true)
   const [, setSection] = useYValue<EleBlock | undefined>('links.core/section[0]')
-  const [validateForm, setValidateForm] = useState<boolean>(!props.asDialog)
-  const validateStateRef = useRef<ValidateState>({})
   const [author] = useYValue<EleBlock | undefined>('links.core/author[0]')
 
   const [newPlanningId, newPlanningYDoc] = useMemo(() => {
@@ -122,26 +120,11 @@ export const FlashViewContent = (props: ViewProps & {
     }
   })
 
-  const sectionVariants = cva('overscroll-auto @5xl:w-[1024px] space-y-4', {
-    variants: {
-      asCreateDialog: {
-        false: 'px-8',
-        true: 'px-6'
-      }
+  const handleSubmit = (): void => {
+    if (!planningDocument && !newPlanningDocument) {
+      return
     }
-  })
-
-  const handleValidation = (block: string, label: string, value: string | undefined, reason: string): boolean => {
-    validateStateRef.current = {
-      ...validateStateRef.current,
-      [block]: { label, valid: !!value, reason }
-    }
-
-    if (validateForm) {
-      return !!value
-    }
-
-    return true
+    setShowVerifyDialog(true)
   }
 
   return (
@@ -165,86 +148,62 @@ export const FlashViewContent = (props: ViewProps & {
       </div>
 
       <ScrollArea className='grid @5xl:place-content-center'>
-        <div className='space-y-5 py-5'>
-          <section className={cn(sectionVariants({ asCreateDialog: !!props?.asDialog }))}>
-            <div className='flex flex-row gap-5 items-center'>
-              <div>
-                <GanttChartSquareIcon size={18} strokeWidth={1.75} className='text-muted-foreground' />
-              </div>
-
-              <div className='flex flex-row items-center gap-2'>
-                <Awareness name='FlashPlanningItem' ref={planningAwareness}>
-                  <ComboBox
-                    max={1}
-                    size='xs'
-                    className='min-w-0 max-w-46 truncate justify-start'
-                    selectedOptions={selectedPlanning ? [selectedPlanning] : []}
-                    placeholder='Välj planering'
-                    onOpenChange={(isOpen: boolean) => {
-                      if (planningAwareness?.current) {
-                        planningAwareness.current(isOpen)
-                      }
-                    }}
-                    fetch={fetchAsyncData}
-                    minSearchChars={2}
-                    onSelect={(option) => {
-                      if (option.value !== selectedPlanning?.value) {
-                        setSelectedPlanning({
-                          value: option.value,
-                          label: option.label
-                        })
-                      } else {
-                        setSelectedPlanning(undefined)
-                      }
-                    }}
-                  >
-                  </ComboBox>
-                </Awareness>
-
-                {!!selectedPlanning
-                && (
-                  <Button
-                    variant='ghost'
-                    className='text-muted-foreground flex h-7 w-7 p-0 data-[state=open]:bg-muted hover:bg-accent2'
-                    onClick={(e) => {
-                      e.preventDefault()
+        <Form.Root asDialog={props.asDialog}>
+          <Form.Content>
+            <Form.Group icon={GanttChartSquare}>
+              <Awareness name='FlashPlanningItem' ref={planningAwareness}>
+                <ComboBox
+                  max={1}
+                  size='xs'
+                  className='min-w-0 max-w-46 truncate justify-start'
+                  selectedOptions={selectedPlanning ? [selectedPlanning] : []}
+                  placeholder='Välj planering'
+                  onOpenChange={(isOpen: boolean) => {
+                    if (planningAwareness?.current) {
+                      planningAwareness.current(isOpen)
+                    }
+                  }}
+                  fetch={fetchAsyncData}
+                  minSearchChars={2}
+                  onSelect={(option) => {
+                    if (option.value !== selectedPlanning?.value) {
+                      setSelectedPlanning({
+                        value: option.value,
+                        label: option.label
+                      })
+                    } else {
                       setSelectedPlanning(undefined)
-                    }}
-                  >
-                    <CircleXIcon size={18} strokeWidth={1.75} />
-                  </Button>
-                )}
-              </div>
-            </div>
+                    }
+                  }}
+                >
+                </ComboBox>
+              </Awareness>
 
-            <div className='flex flex-row gap-5 items-start'>
-              {!selectedPlanning && (
-                <div className='pt-1'>
-                  <TagsIcon size={18} strokeWidth={1.75} className='text-muted-foreground' />
-                </div>
+              {!!selectedPlanning
+              && (
+                <Button
+                  variant='ghost'
+                  className='text-muted-foreground flex h-7 w-7 p-0 data-[state=open]:bg-muted hover:bg-accent2'
+                  onClick={(e) => {
+                    e.preventDefault()
+                    setSelectedPlanning(undefined)
+                  }}
+                >
+                  <CircleXIcon size={18} strokeWidth={1.75} />
+                </Button>
               )}
+            </Form.Group>
 
 
-              {!selectedPlanning
-              && <Section onValidation={handleValidation} />}
-            </div>
-          </section>
+            {!selectedPlanning
+            && (
+              <Form.Group icon={Tags}>
+                <Section />
+              </Form.Group>
+            )}
 
-          <section className={cn(sectionVariants({ asCreateDialog: !!props?.asDialog }), 'px-0')}>
             <FlashEditor setTitle={setTitle} />
-            <div className='px-6'>
-              <div className='-mt-3'>
-                <Validation
-                  label='Rubrik och innehåll'
-                  path='root.title'
-                  block='title'
-                  onValidation={handleValidation}
-                />
-              </div>
-            </div>
-          </section>
 
-          <section className={cn(sectionVariants({ asCreateDialog: !!props?.asDialog }))}>
             <Alert className='bg-gray-50'>
               <InfoIcon size={18} strokeWidth={1.75} className='text-muted-foreground' />
               <AlertDescription>
@@ -253,68 +212,54 @@ export const FlashViewContent = (props: ViewProps & {
                   : <>Denna flash kommer läggas i ett nytt uppdrag i den valda planeringen</>}
               </AlertDescription>
             </Alert>
-          </section>
-        </div>
 
+          </Form.Content>
 
-        {
-          showVerifyDialog
-          && (
-            <Prompt
-              title='Skapa och skicka flash?'
-              description={!selectedPlanning
-                ? 'En ny planering med tillhörande uppdrag för denna flash kommer att skapas åt dig.'
-                : `Denna flash kommer att läggas i ett nytt uppdrag i planeringen "${selectedPlanning.label}`}
-              secondaryLabel='Avbryt'
-              primaryLabel='Skicka'
-              onPrimary={() => {
-                if (!provider || !props.documentId || !provider || !session) {
-                  console.error('Environment is not sane, flash cannot be created')
-                  return
-                }
-
-                if (props?.onDialogClose) {
-                  props.onDialogClose(props.documentId, title)
-                }
-
-                createFlash(props.documentId, title, provider, status, session, planningDocument, newPlanningDocument, timeZone, author)
-
-                setShowVerifyDialog(false)
-              }}
-              onSecondary={() => {
-                setShowVerifyDialog(false)
-              }}
-            />
-          )
-        }
-
-        {
-          props.asDialog && (
-            <div>
-              <Separator className='ml-0' />
-
-              <div className='flex justify-end px-6 py-4'>
-                <Button onClick={(): void => {
-                  setValidateForm(true)
-
-                  if (!Object.values(validateStateRef.current).every((block) => block.valid)) {
+          {
+            showVerifyDialog
+            && (
+              <Prompt
+                title='Skapa och skicka flash?'
+                description={!selectedPlanning
+                  ? 'En ny planering med tillhörande uppdrag för denna flash kommer att skapas åt dig.'
+                  : `Denna flash kommer att läggas i ett nytt uppdrag i planeringen "${selectedPlanning.label}`}
+                secondaryLabel='Avbryt'
+                primaryLabel='Skicka'
+                onPrimary={() => {
+                  if (!provider || !props.documentId || !provider || !session) {
+                    console.error('Environment is not sane, flash cannot be created')
                     return
                   }
 
-                  if (!planningDocument && !newPlanningDocument) {
-                    return
+                  if (props?.onDialogClose) {
+                    props.onDialogClose(props.documentId, title)
                   }
 
-                  setShowVerifyDialog(true)
+                  createFlash(props.documentId, title, provider, status, session, planningDocument, newPlanningDocument, timeZone, author)
+
+                  setShowVerifyDialog(false)
                 }}
-                >
-                  Skicka flash!
-                </Button>
-              </div>
-            </div>
-          )
-        }
+                onSecondary={() => {
+                  setShowVerifyDialog(false)
+                }}
+              />
+            )
+          }
 
+          {
+            props.asDialog && (
+              <Form.Submit onSubmit={handleSubmit}>
+                <div>
+                  <Separator className='ml-0' />
+
+                  <div className='flex justify-end px-6 py-4'>
+                    <Button type='submit'>Skicka flash</Button>
+                  </div>
+                </div>
+              </Form.Submit>
+            )
+          }
+        </Form.Root>
       </ScrollArea>
     </div>
   )
