@@ -19,7 +19,7 @@ export const Menu = (): JSX.Element => {
 
   return (
     <Sheet>
-      <SheetTrigger className='rounded-md hover:bg-gray-100 w-9 h-9 flex items-center justify-center'>
+      <SheetTrigger className='rounded-md hover:bg-gray-100 hover:border w-9 h-9 flex items-center justify-center'>
         <MenuIcon strokeWidth={2.25} size={18} />
       </SheetTrigger>
 

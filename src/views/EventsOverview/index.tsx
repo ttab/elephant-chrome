@@ -1,8 +1,8 @@
 import { useMemo, useState } from 'react'
 import { type ViewMetadata } from '@/types'
-import { ViewHeader } from '@/components'
+import { View, ViewHeader } from '@/components'
 import { CalendarPlus2 } from '@ttab/elephant-ui/icons'
-import { ScrollArea, Tabs, TabsContent } from '@ttab/elephant-ui'
+import { Tabs, TabsContent } from '@ttab/elephant-ui'
 import { TableProvider } from '@/contexts/TableProvider'
 import { TableCommandMenu } from '@/components/Commands/TableCommand'
 import { EventsList } from './EventsList'
@@ -41,43 +41,45 @@ export const Events = (): JSX.Element => {
     getDateTimeBoundariesUTC(query.from
       ? new Date(`${query.from}T00:00:00.000Z`)
       : new Date()),
-  [query.from])
+    [query.from])
 
   const columns = useMemo(() => eventTableColumns({ sections }), [sections])
 
   return (
-    <TableProvider<Event> columns={columns}>
-      <SWRProvider<Event, EventSearchParams> index={EventsIndex}>
-        <Tabs defaultValue={currentTab} className='flex-1' onValueChange={setCurrentTab}>
+    <View.Root>
+      <TableProvider<Event> columns={columns}>
+        <SWRProvider<Event, EventSearchParams> index={EventsIndex}>
+          <Tabs defaultValue={currentTab} className='flex-1' onValueChange={setCurrentTab}>
 
-          <TableCommandMenu heading='Events'>
-            <Commands />
-          </TableCommandMenu>
+            <TableCommandMenu heading='Events'>
+              <Commands />
+            </TableCommandMenu>
 
-          <div className='flex flex-col h-screen'>
-            <ViewHeader.Root>
-              <ViewHeader.Title title='Händelser' short='Händelser' icon={CalendarPlus2} iconColor='#5E9F5D' />
+            <div className='flex flex-col h-screen'>
+              <ViewHeader.Root>
+                <ViewHeader.Title title='Händelser' short='Händelser' icon={CalendarPlus2} iconColor='#5E9F5D' />
 
-              <ViewHeader.Content>
-                <Header tab={currentTab} type='Event' />
-              </ViewHeader.Content>
+                <ViewHeader.Content>
+                  <Header tab={currentTab} type='Event' />
+                </ViewHeader.Content>
 
-              <ViewHeader.Action />
-            </ViewHeader.Root>
+                <ViewHeader.Action />
+              </ViewHeader.Root>
 
-            <ScrollArea>
-              <TabsContent value='list' className='mt-0'>
-                <EventsList from={from} to={to} />
-              </TabsContent>
+              <View.Content>
+                <TabsContent value='list' className='mt-0'>
+                  <EventsList from={from} to={to} />
+                </TabsContent>
 
-              <TabsContent value='grid'>
-              </TabsContent>
-            </ScrollArea>
-          </div>
+                <TabsContent value='grid'>
+                </TabsContent>
+              </View.Content>
+            </div>
 
-        </Tabs>
-      </SWRProvider>
-    </TableProvider>
+          </Tabs>
+        </SWRProvider>
+      </TableProvider>
+    </View.Root>
   )
 }
 

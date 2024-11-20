@@ -1,5 +1,5 @@
 export { AppHeader } from './App'
-export { ViewWrapper } from './View'
+export { ViewWrapper, View } from './View'
 export { Link } from './Link/Link'
 export { ViewHeader } from './View'
 export { Awareness } from './Awareness'

@@ -45,7 +45,7 @@ export const Root = ({ children, asDialog = false, className }: PropsWithChildre
   }
 
   return (
-    <section>
+    <>
       <ValidationAlert validateStateRef={validateStateRef} />
       <div className={cn(formRootStyle, className)}>
         {React.Children.map(children, (child: React.ReactNode): React.ReactNode =>
@@ -59,6 +59,6 @@ export const Root = ({ children, asDialog = false, className }: PropsWithChildre
             : child
         )}
       </div>
-    </section>
+    </>
   )
 }

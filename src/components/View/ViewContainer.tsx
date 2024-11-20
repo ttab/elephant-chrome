@@ -12,8 +12,8 @@ import { cva } from 'class-variance-authority'
 const section = cva('@container/view', {
   variants: {
     isActive: {
-      true: 'shadow-2xl',
-      false: 'opacity-90'
+      true: 'shadow-3xl rounded-t-2xl overflow-hidden is-active peer',
+      false: 'opacity-90 border-l peer-[.is-active]:border-0'
     },
     isFocused: {
       true: 'absolute inset-y-0 left-0 z-10 w-screen h-screen bg-background dark:bg-background basis-full',

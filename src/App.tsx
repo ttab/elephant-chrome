@@ -39,7 +39,7 @@ export const App = (): JSX.Element => {
 
                   <ModalProvider>
                     <div className='relative flex h-screen flex-col'>
-                      <div className='grid grid-cols-12 divide-x-2 h-screen'>
+                      <div className='grid grid-cols-12 h-screen'>
                         <AppContent />
                       </div>
 
