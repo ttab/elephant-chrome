@@ -16,7 +16,7 @@ const section = cva('@container/view first:border-l-0', {
       false: 'opacity-90 border-l [.is-active+&]:border-0 [.is-active+&]:ml-[1px]'
     },
     isFocused: {
-      true: 'absolute inset-y-0 left-0 z-10 w-screen h-screen bg-background dark:bg-background basis-full',
+      true: 'absolute inset-y-3 inset-x-3 z-10 bg-background dark:bg-background basis-full shadow-3xl rounded-2xl',
       false: 'relative group/view-container'
     },
     isHidden: {
