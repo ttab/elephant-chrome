@@ -14,7 +14,7 @@ export const Root = ({ children, className, asDialog }: {
   const viewVariants = cva('sticky flex items-center justify-items-start px-4 group-first/view-container:ps-16 h-14 gap-4 border-b overflow-hidden', {
     variants: {
       isActiveView: {
-        true: 'rounded-t-2xl bg-gray-75'
+        true: 'rounded-t-2xl bg-gray-75 dark:bg-secondary'
       },
       isSingleView: {
         true: 'bg-background'
