@@ -20,13 +20,13 @@ export const Root = ({ children, className, tab, onTabChange, asDialog = false }
 
   return tab && onTabChange
     ? (
-      <Tabs defaultValue={tab} onValueChange={onTabChange} className={cn(variants({ asDialog }), className)}>
-        {children}
-      </Tabs>
-    )
+        <Tabs defaultValue={tab} onValueChange={onTabChange} className={cn(variants({ asDialog }), className)}>
+          {children}
+        </Tabs>
+      )
     : (
-      <div className={cn(variants({ asDialog }), className)}>
-        {children}
-      </div>
-    )
+        <div className={cn(variants({ asDialog }), className)}>
+          {children}
+        </div>
+      )
 }

@@ -39,7 +39,7 @@ export const Assignments = (): JSX.Element => {
     getDateTimeBoundariesUTC(query.from
       ? new Date(`${query.from}T00:00:00.000Z`)
       : new Date()),
-    [query.from])
+  [query.from])
   const [currentTab, setCurrentTab] = useState<string>('list')
   const authors = useAuthors()
   const { locale, timeZone } = useRegistry()

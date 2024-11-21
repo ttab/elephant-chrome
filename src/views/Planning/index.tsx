@@ -22,12 +22,10 @@ import {
 } from './components'
 
 import type * as Y from 'yjs'
-import { cva } from 'class-variance-authority'
-import { cn } from '@ttab/elephant-ui/utils'
 import { Error } from '../Error'
 import { Form } from '@/components/Form'
 import { SluglineEditable } from '@/components/DataItem/SluglineEditable'
-import { Button, ScrollArea } from '@ttab/elephant-ui'
+import { Button } from '@ttab/elephant-ui'
 import { createStateless, StatelessType } from '@/shared/stateless'
 import { useSession } from 'next-auth/react'
 
@@ -55,16 +53,16 @@ export const Planning = (props: ViewProps & { document?: Y.Doc }): JSX.Element =
     <>
       {documentId
         ? (
-          <AwarenessDocument documentId={documentId} document={props.document}>
-            <PlanningViewContent {...props} documentId={documentId} />
-          </AwarenessDocument>
-        )
+            <AwarenessDocument documentId={documentId} document={props.document}>
+              <PlanningViewContent {...props} documentId={documentId} />
+            </AwarenessDocument>
+          )
         : (
-          <Error
-            title='Planeringsdokument saknas'
-            message='Inget planeringsdokument är angivet. Navigera tillbaka till översikten och försök igen.'
-          />
-        )}
+            <Error
+              title='Planeringsdokument saknas'
+              message='Inget planeringsdokument är angivet. Navigera tillbaka till översikten och försök igen.'
+            />
+          )}
     </>
   )
 }
@@ -73,15 +71,6 @@ const PlanningViewContent = (props: ViewProps & { documentId: string }): JSX.Ele
   const { provider } = useCollaboration()
   const { data, status } = useSession()
   const [documentStatus, setDocumentStatus] = useDocumentStatus(props.documentId)
-
-  // const viewVariants = cva('flex flex-col', {
-  //   variants: {
-  //     asCreateDialog: {
-  //       false: 'h-screen',
-  //       true: 'overflow-hidden'
-  //     }
-  //   }
-  // })
 
   const handleSubmit = (): void => {
     if (props.onDialogClose) {
