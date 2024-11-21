@@ -28,7 +28,7 @@ export const Flash = (props: ViewProps & {
 
   return (
     <>
-      {documentId
+      {typeof documentId === 'string'
         ? (
             <AwarenessDocument documentId={documentId} document={props.document}>
               <FlashViewContent {...props} documentId={documentId} />

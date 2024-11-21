@@ -38,7 +38,7 @@ export const Events = (): JSX.Element => {
   const sections = useSections()
   const [query] = useQuery()
   const { from, to } = useMemo(() =>
-    getDateTimeBoundariesUTC(query.from
+    getDateTimeBoundariesUTC(typeof query.from === 'string'
       ? new Date(`${query.from}T00:00:00.000Z`)
       : new Date()),
   [query.from])

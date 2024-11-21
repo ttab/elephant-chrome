@@ -56,7 +56,7 @@ const Editor = (props: ViewProps): JSX.Element => {
 
   const documentId = props.id || query.id
 
-  if (!documentId) {
+  if (!documentId || typeof documentId !== 'string') {
     return (
       <Error
         title='Artikeldokument saknas'

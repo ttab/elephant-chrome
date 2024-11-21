@@ -52,7 +52,7 @@ export const Planning = (props: ViewProps & { document?: Y.Doc }): JSX.Element =
 
   return (
     <>
-      {documentId
+      {typeof documentId === 'string'
         ? (
             <AwarenessDocument documentId={documentId} document={props.document}>
               <PlanningViewContent {...props} documentId={documentId} />
