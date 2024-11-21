@@ -1,3 +1,4 @@
+import { useHistory } from '@/hooks/index'
 import { useView } from '@/hooks/useView'
 import { cn } from '@ttab/elephant-ui/utils'
 import { cva } from 'class-variance-authority'
@@ -8,11 +9,15 @@ export const Root = ({ children, className, asDialog }: {
   asDialog?: boolean
 } & PropsWithChildren): JSX.Element => {
   const { isActive } = useView()
+  const { state } = useHistory()
 
   const viewVariants = cva('sticky flex items-center justify-items-start px-4 group-first/view-container:ps-16 h-14 gap-4 border-b overflow-hidden', {
     variants: {
-      isActive: {
+      isActiveView: {
         true: 'rounded-t-2xl bg-gray-75'
+      },
+      isSingleView: {
+        true: 'bg-background'
       },
       asDialog: {
         true: 'bg-gray-50'
@@ -20,8 +25,11 @@ export const Root = ({ children, className, asDialog }: {
     }
   })
 
+  const isSingleView = (state?.contentState.length === 1 && !asDialog)
+  const isActiveView = (isActive && !asDialog)
+
   return (
-    <header className={cn(viewVariants({ asDialog, isActive }), className)}>
+    <header className={cn(viewVariants({ asDialog, isActiveView, isSingleView }), className)}>
       {children}
     </header>
   )

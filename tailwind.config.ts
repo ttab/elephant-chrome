@@ -18,7 +18,12 @@ export default {
         }
       },
       boxShadow: {
-        '3xl': '0 0 50px -12px rgb(0 0 0 / 0.3)'
+        '3xl': `0 1px 1px hsl(0deg 0% 0% / 0.075),
+              0 2px 2px hsl(0deg 0% 0% / 0.075),
+              0 4px 4px hsl(0deg 0% 0% / 0.075),
+              0 8px 8px hsl(0deg 0% 0% / 0.075),
+              0 16px 16px hsl(0deg 0% 0% / 0.075),
+              0 5px 10px 30px  hsl(0deg 0% 0% / 0.015)`
       }
     }
   },
