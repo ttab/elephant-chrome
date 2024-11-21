@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useHistory } from '@/navigation/hooks/useHistory'
+import { useView } from './useView'
 
 /**
  * Custom hook to manage URL query parameters.
@@ -13,33 +14,41 @@ import { useHistory } from '@/navigation/hooks/useHistory'
  * - To remove a parameter, pass an object with the parameter name and `undefined` as the value.
  * - To reset all parameters, pass an empty object.
  */
-export const useQuery = (): [Record<string, string | undefined>, (params: Record<string, string | undefined>) => void] => {
+export const useQuery = (): [Record<string, string | string[] | undefined>, (params: Record<string, string | string[] | undefined>) => void] => {
   const {
     state: historyState,
     replaceState
   } = useHistory()
 
-  const parseQueryString = (): Record<string, string | undefined> => {
+  const { viewId } = useView()
+
+  const parseQueryString = (): Record<string, string | string[] | undefined> => {
     const searchParams = new URLSearchParams(window.location.search)
-    const params: Record<string, string | undefined> = {}
+    const params: Record<string, string | string[] | undefined> = {}
 
     for (const [key, value] of searchParams.entries()) {
-      params[key] = value
+      if (value.includes(',')) {
+        params[key] = value.split(',')
+      } else {
+        params[key] = value
+      }
     }
 
     return params
   }
 
-  const [queryParams, setQueryParams] = useState<Record<string, string | undefined>>(parseQueryString)
+  const [queryParams, setQueryParams] = useState<Record<string, string | string[] | undefined>>(parseQueryString)
 
   // Update queryParams state when historyState changes
   useEffect(() => {
-    setQueryParams(parseQueryString())
-  }, [historyState])
+    if (historyState?.viewId === viewId) {
+      setQueryParams(parseQueryString())
+    }
+  }, [historyState, viewId])
 
 
-  const setQueryString = useCallback((params: Record<string, string | undefined>): void => {
-    if (!historyState?.contentState) {
+  const setQueryString = useCallback((params: Record<string, string | string[] | undefined>): void => {
+    if (!historyState?.contentState || historyState.viewId !== viewId) {
       return
     }
 
@@ -56,7 +65,9 @@ export const useQuery = (): [Record<string, string | undefined>, (params: Record
     } else {
       Object.entries(params).forEach(([key, value]) => {
         if (value !== undefined) {
-          searchParams.set(key, value)
+          searchParams.set(key, Array.isArray(value)
+            ? value.join(',')
+            : value)
         } else {
           searchParams.delete(key)
         }
@@ -74,13 +85,15 @@ export const useQuery = (): [Record<string, string | undefined>, (params: Record
         ...Object.fromEntries(searchParams)
       }
 
-      const newUrl = new URL(window.location.href)
-      newUrl.search = searchParams.toString()
-
-      replaceState(newUrl.href, newHistoryState)
-      setQueryParams(parseQueryString())
+      cs.path = `${import.meta.env.BASE_URL || ''}/${cs.name.toLocaleLowerCase()}?${searchParams.toString()}`
     })
-  }, [historyState, replaceState])
+
+    const newUrl = new URL(window.location.href)
+    newUrl.search = searchParams.toString()
+
+    replaceState(newUrl.href, newHistoryState)
+    setQueryParams(parseQueryString())
+  }, [historyState, replaceState, viewId])
 
   return [queryParams, setQueryString]
 }
