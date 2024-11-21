@@ -9,11 +9,11 @@ import { cva } from 'class-variance-authority'
  *
  * <div className="hidden @lg/view:block">Only shown in @lg sized components</div>
  */
-const section = cva('@container/view', {
+const section = cva('@container/view first:border-l-0', {
   variants: {
     isActive: {
-      true: 'shadow-3xl rounded-t-2xl overflow-hidden is-active peer',
-      false: 'opacity-90 border-l peer-[.is-active]:border-0'
+      true: 'shadow-3xl rounded-t-2xl overflow-hidden is-active ml-[1px] first:ml-[0]',
+      false: 'opacity-90 border-l [.is-active+&]:border-0 [.is-active+&]:ml-[1px]'
     },
     isFocused: {
       true: 'absolute inset-y-0 left-0 z-10 w-screen h-screen bg-background dark:bg-background basis-full',
