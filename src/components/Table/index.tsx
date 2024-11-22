@@ -24,6 +24,7 @@ import { handleLink } from '@/components/Link/lib/handleLink'
 import { NewItems } from './NewItems'
 import { GroupedRows } from './GroupedRows'
 import { Rows } from './Rows'
+import { LoadingText } from '../LoadingText'
 
 interface TableProps<TData, TValue> {
   columns: Array<ColumnDef<TData, TValue>>
@@ -157,11 +158,13 @@ export const Table = <TData, TValue>({
             colSpan={columns.length}
             className='h-24 text-center'
           >
-            {deferredLoading
-              ? isSearchTable
-                ? ''
-                : 'Laddar...'
-              : 'Inga poster funna.'}
+            <LoadingText>
+              {deferredLoading
+                ? isSearchTable
+                  ? ''
+                  : 'Laddar...'
+                : 'Inga resultat hittades'}
+            </LoadingText>
           </TableCell>
         </TableRow>
       )

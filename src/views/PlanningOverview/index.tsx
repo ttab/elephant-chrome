@@ -1,8 +1,8 @@
 import { useMemo, useState } from 'react'
 import { type ViewMetadata } from '@/types'
-import { ViewHeader } from '@/components'
+import { ViewHeader, View } from '@/components'
 import { CalendarDaysIcon } from '@ttab/elephant-ui/icons'
-import { ScrollArea, Tabs, TabsContent } from '@ttab/elephant-ui'
+import { TabsContent } from '@ttab/elephant-ui'
 import { PlanningList } from './PlanningList'
 import { TableProvider } from '@/contexts/TableProvider'
 import { TableCommandMenu } from '@/components/Commands/TableCommand'
@@ -34,11 +34,11 @@ const meta: ViewMetadata = {
 
 export const Plannings = (): JSX.Element => {
   const [query] = useQuery()
-  const { from, to } = useMemo(() =>
-    getDateTimeBoundariesUTC(query.from
+  const { from, to } = useMemo(() => {
+    return getDateTimeBoundariesUTC(query.from
       ? new Date(`${query.from}T00:00:00.000Z`)
-      : new Date()),
-  [query.from])
+      : new Date())
+  }, [query.from])
 
   const [currentTab, setCurrentTab] = useState<string>('list')
   const sections = useSections()
@@ -47,43 +47,39 @@ export const Plannings = (): JSX.Element => {
   const columns = useMemo(() => planningListColumns({ sections, authors }), [sections, authors])
 
   return (
-    <TableProvider<PlanningType> columns={columns}>
-      <SWRProvider<PlanningType, PlanningSearchParams> index={PlanningsIndex}>
-        <Tabs defaultValue={currentTab} className='flex-1' onValueChange={setCurrentTab}>
+    <View.Root tab={currentTab} onTabChange={setCurrentTab}>
+      <TableProvider<PlanningType> columns={columns}>
+        <SWRProvider<PlanningType, PlanningSearchParams> index={PlanningsIndex}>
 
           <TableCommandMenu heading='Plannings'>
             <Commands />
           </TableCommandMenu>
 
-          <div className='flex flex-col h-screen'>
-            <ViewHeader.Root>
-              <ViewHeader.Title
-                title='Planeringar'
-                short='Planeringar'
-                icon={CalendarDaysIcon}
-                iconColor='#FF971E'
-              />
+          <ViewHeader.Root>
+            <ViewHeader.Title
+              title='Planeringar'
+              short='Planeringar'
+              icon={CalendarDaysIcon}
+              iconColor='#FF971E'
+            />
+            <ViewHeader.Content>
+              <Header tab={currentTab} type='Planning' />
+            </ViewHeader.Content>
+            <ViewHeader.Action />
+          </ViewHeader.Root>
 
-              <ViewHeader.Content>
-                <Header tab={currentTab} type='Planning' />
-              </ViewHeader.Content>
+          <View.Content>
+            <TabsContent value='list' className='mt-0'>
+              <PlanningList from={from} to={to} />
+            </TabsContent>
 
-              <ViewHeader.Action />
-            </ViewHeader.Root>
+            <TabsContent value='grid'>
+            </TabsContent>
+          </View.Content>
 
-            <ScrollArea>
-              <TabsContent value='list' className='mt-0'>
-                <PlanningList from={from} to={to} />
-              </TabsContent>
-
-              <TabsContent value='grid'>
-              </TabsContent>
-            </ScrollArea>
-          </div>
-
-        </Tabs>
-      </SWRProvider>
-    </TableProvider>
+        </SWRProvider>
+      </TableProvider>
+    </View.Root>
   )
 }
 
