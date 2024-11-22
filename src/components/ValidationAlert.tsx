@@ -45,7 +45,7 @@ export const ValidationAlert = ({ validateStateRef }: {
 
   // If validation error is found, start polling for updated validation status
   const { data: validationError, error } = useSWR(
-    documentId && synced ? [`validation/${documentId}`] : null,
+    typeof documentId === 'string' && synced ? [`validation/${documentId}`] : null,
     fetcher,
 
     // TODO: Implement exponential backoff, is it possible with SWR?

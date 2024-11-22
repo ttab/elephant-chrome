@@ -39,7 +39,7 @@ export const Search = (): JSX.Element => {
   const [{ page = '1', query, type }] = useQuery()
   const { locale, timeZone } = useRegistry()
   const sections = useSections()
-  const [pool, setPool] = useState<string>(type || 'plannings')
+  const [pool, setPool] = useState<string>(typeof type === 'string' ? type : 'plannings')
   const columns = useMemo(() => searchWideColumns({ locale, timeZone, sections }), [locale, timeZone, sections])
 
 

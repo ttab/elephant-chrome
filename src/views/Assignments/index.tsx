@@ -36,7 +36,7 @@ const meta: ViewMetadata = {
 export const Assignments = (): JSX.Element => {
   const [query] = useQuery()
   const { from } = useMemo(() =>
-    getDateTimeBoundariesUTC(query.from
+    getDateTimeBoundariesUTC(typeof query.from === 'string'
       ? new Date(`${query.from}T00:00:00.000Z`)
       : new Date()),
   [query.from])

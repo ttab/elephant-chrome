@@ -92,4 +92,25 @@ describe('useQuery hook', () => {
     expect(result.current[0]).toEqual({ foo: 'bör' })
     expect(window.location.search).toBe('?foo=b%C3%B6r')
   })
+
+  it('should handle setting array values', () => {
+    const { result } = renderHook(() => useQuery())
+
+    act(() => {
+      result.current[1]({ foo: ['bar', 'baz'] })
+    })
+
+    expect(result.current[0]).toEqual({ foo: ['bar', 'baz'] })
+    expect(window.location.search).toBe('?foo=bar%2Cbaz')
+  })
+
+
+  it('should handle reading array values', () => {
+    window.location.search = '?foo=bar%2Cbaz'
+    const { result } = renderHook(() => useQuery())
+
+    expect(result.current[0]).toEqual({ foo: ['bar', 'baz'] })
+    expect(window.location.search).toBe('?foo=bar%2Cbaz')
+  })
 })
+

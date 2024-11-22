@@ -34,11 +34,11 @@ const meta: ViewMetadata = {
 
 export const Plannings = (): JSX.Element => {
   const [query] = useQuery()
-  const { from, to } = useMemo(() => {
-    return getDateTimeBoundariesUTC(query.from
+  const { from, to } = useMemo(() =>
+    getDateTimeBoundariesUTC(typeof query.from === 'string'
       ? new Date(`${query.from}T00:00:00.000Z`)
       : new Date())
-  }, [query.from])
+  , [query.from])
 
   const [currentTab, setCurrentTab] = useState<string>('list')
   const sections = useSections()

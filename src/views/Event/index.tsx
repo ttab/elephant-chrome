@@ -53,7 +53,7 @@ export const Event = (props: ViewProps & { document?: Y.Doc }): JSX.Element => {
 
   return (
     <>
-      {documentId
+      {typeof documentId === 'string'
         ? (
             <AwarenessDocument documentId={documentId} document={props.document}>
               <EventViewContent {...props} documentId={documentId} />
