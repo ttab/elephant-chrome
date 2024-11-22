@@ -27,11 +27,9 @@ export const Header = ({ tab, assigneeUserName, type }: {
         <TabsGrid />
       </div>
 
-      {tab === 'list'
-      && <DateChanger type={type} />}
+      {tab === 'list' && <DateChanger type={type} />}
 
-      {tab === 'grid'
-      && <DateChanger type={type} />}
+      {tab === 'grid' && <DateChanger type={type} />}
 
       <Filter>
         <Commands />

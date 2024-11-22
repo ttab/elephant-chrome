@@ -10,9 +10,6 @@ export default {
     './node_modules/@ttab/elephant-ui/dist/src/components/ui/*.js',
     './node_modules/@ttab/textbit-plugins/dist/**/*.es.js'
   ],
-  theme: {
-    extend: {}
-  },
   plugins: [
     containerQueries
   ]

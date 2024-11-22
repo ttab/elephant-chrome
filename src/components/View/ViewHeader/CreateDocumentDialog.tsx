@@ -53,7 +53,7 @@ export const CreateDocumentDialog = ({ type, payload, createdDocumentIdRef, chil
       </DialogTrigger>
       <DialogDescription />
       <DialogTitle />
-      <DialogContent className='p-0 rounded-md'>
+      <DialogContent className='p-0 overflow-hidden'>
         {document !== null && Document
         && (
           <Document

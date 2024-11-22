@@ -25,6 +25,7 @@ export const Root = ({ children, asDialog = false, className }: PropsWithChildre
     [&_[role="textbox"]:focus]:ring-indigo-200
     [&_[role="textbox"]:has([data-slate-placeholder="true"])]:ring-1
     [&_[role="textbox"]:focus]:bg-violet-50
+    dark:[&_[role="textbox"]:focus]:bg-[#36363a]
     [&_[role="textbox"]]:placeholder-gray-500
     [&_[role="textbox"]]:text-base
     [&_[role="textbox"]]:text-sm
@@ -45,7 +46,7 @@ export const Root = ({ children, asDialog = false, className }: PropsWithChildre
   }
 
   return (
-    <section>
+    <>
       <ValidationAlert validateStateRef={validateStateRef} />
       <div className={cn(formRootStyle, className)}>
         {React.Children.map(children, (child: React.ReactNode): React.ReactNode =>
@@ -59,6 +60,6 @@ export const Root = ({ children, asDialog = false, className }: PropsWithChildre
             : child
         )}
       </div>
-    </section>
+    </>
   )
 }

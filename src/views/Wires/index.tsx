@@ -1,6 +1,5 @@
-import { ViewHeader } from '@/components/View'
+import { View, ViewHeader } from '@/components/View'
 import { type ViewMetadata } from '@/types/index'
-import { ScrollArea } from '@ttab/elephant-ui'
 import { Cable } from '@ttab/elephant-ui/icons'
 import { useMemo } from 'react'
 import { Sources } from './components'
@@ -37,12 +36,13 @@ export const Wires = (): JSX.Element => {
   const columns = useMemo(() => wiresListColumns({ sections }), [sections])
 
   return (
-    <TableProvider<WireType> columns={columns}>
-      <SWRProvider<WireType, WireSearchParams> index={WiresIndex}>
-        <TableCommandMenu heading='Wires'>
-          <Commands />
-        </TableCommandMenu>
-        <div className='flex flex-col h-screen'>
+    <View.Root>
+      <TableProvider<WireType> columns={columns}>
+        <SWRProvider<WireType, WireSearchParams> index={WiresIndex}>
+          <TableCommandMenu heading='Wires'>
+            <Commands />
+          </TableCommandMenu>
+
           <ViewHeader.Root>
             <ViewHeader.Title
               title='Telegram'
@@ -58,13 +58,14 @@ export const Wires = (): JSX.Element => {
             <ViewHeader.Action />
           </ViewHeader.Root>
 
-          <ScrollArea>
+          <View.Content>
             <WireList />
             <Pagination />
-          </ScrollArea>
-        </div>
-      </SWRProvider>
-    </TableProvider>
+          </View.Content>
+
+        </SWRProvider>
+      </TableProvider>
+    </View.Root>
   )
 }
 
