@@ -16,9 +16,6 @@ export const Root = ({ children, className, asDialog }: {
       isActiveView: {
         true: 'rounded-t-2xl bg-gray-75 dark:bg-secondary'
       },
-      isFocused: {
-        true: 'rounded-t-2xl bg-gray-75 dark:bg-secondary'
-      },
       isSingleView: {
         true: 'bg-background'
       },
