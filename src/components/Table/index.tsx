@@ -18,8 +18,7 @@ import {
   TableRow
 } from '@ttab/elephant-ui'
 import { Toolbar } from './Toolbar'
-import { useNavigation, useView, useTable, useHistory } from '@/hooks'
-import { isEditableTarget } from '@/lib/isEditableTarget'
+import { useNavigation, useView, useTable, useHistory, useNavigationKeys } from '@/hooks'
 import { handleLink } from '@/components/Link/lib/handleLink'
 import { NewItems } from './NewItems'
 import { GroupedRows } from './GroupedRows'
@@ -37,7 +36,6 @@ export const Table = <TData, TValue>({
   type,
   onRowSelected
 }: TableProps<TData, TValue>): JSX.Element => {
-  const { isActive: isActiveView } = useView()
   const { state, dispatch } = useNavigation()
   const history = useHistory()
   const { viewId: origin } = useView()
@@ -72,67 +70,41 @@ export const Table = <TData, TValue>({
   }, [dispatch, state.viewRegistry, onRowSelected, origin, type, history])
 
   const scrollToRow = useCallback((rowId: string) => {
-    rowRefs.current.get(rowId)?.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
+    rowRefs.current.get(rowId)?.scrollIntoView({ behavior: 'auto', block: 'nearest' })
   }, [rowRefs])
 
-  // TODO: We should extend useNavigationKeys hook to accomodate this functionality
-  // TODO: We should then remove isEditableTarget as it is built into useNavigationKeys
-  const keyDownHandler = useCallback((evt: KeyboardEvent): void => {
-    if (!isActiveView || isEditableTarget(evt)) {
-      return
-    }
+  useNavigationKeys({
+    keys: ['ArrowUp', 'ArrowDown', 'Enter', 'Escape'],
+    onNavigation: (event) => {
+      const rows = table.getRowModel().rows
+      if (!rows?.length) {
+        return
+      }
 
-    if (!table || !['ArrowDown', 'ArrowUp', 'Escape', 'Enter'].includes(evt.key)) {
-      return
-    }
+      const selectedRow = table.getGroupedSelectedRowModel()?.flatRows?.[0]
+      const currentRows = table.getState().grouping.length
+        ? rows.flatMap((row) => [...row.subRows])
+        : rows
 
-    evt.preventDefault()
-    const rows = table.getRowModel().rows
-    if (!rows?.length) {
-      return
-    }
+      if (event.key === 'Enter' && selectedRow) {
+        handleOpen(event, selectedRow)
+        return
+      }
 
-    const selectedRows = table.getGroupedSelectedRowModel()
-    const selectedRow = selectedRows?.flatRows[0]
+      if (event.key === 'Escape') {
+        selectedRow?.toggleSelected(false)
+        return
+      }
 
-    const currentRows = table.getState().grouping.length
-      ? rows.flatMap((row) => [...row.subRows])
-      : rows
+      // ArrowDown and ArrowUp
+      const idx = !selectedRow
+        ? (event.key === 'ArrowDown' ? 0 : currentRows.length - 1)
+        : (selectedRow.index + (event.key === 'ArrowDown' ? 1 : -1) + currentRows.length) % currentRows.length
 
-    if (evt.key === 'Enter') {
-      if (!selectedRow) return
-
-      handleOpen(evt, selectedRow)
-    }
-
-    if (evt.key === 'Escape') {
-      selectedRow?.toggleSelected(false)
-    } else if (!selectedRow) {
-      const idx = evt.key === 'ArrowDown' ? 0 : currentRows.length - 1
-
-      // Set selected row and scroll into view
-      currentRows[idx].toggleSelected(true)
-      scrollToRow(currentRows[idx].id)
-    } else {
-      // Get next row
-      const nextIdx = selectedRow.index + (evt.key === 'ArrowDown' ? 1 : -1)
-      const idx = nextIdx < 0 ? currentRows.length - 1 : nextIdx >= currentRows.length ? 0 : nextIdx
-
-      // Set selected row and scroll into view
       currentRows[idx].toggleSelected(true)
       scrollToRow(currentRows[idx].id)
     }
-  }, [table, isActiveView, handleOpen, scrollToRow])
-
-  useEffect(() => {
-    if (!onRowSelected) {
-      return
-    }
-
-    document.addEventListener('keydown', keyDownHandler)
-
-    return () => document.removeEventListener('keydown', keyDownHandler)
-  }, [keyDownHandler, onRowSelected])
+  })
 
   useEffect(() => {
     if (onRowSelected) {
@@ -192,14 +164,14 @@ export const Table = <TData, TValue>({
       {type === 'Search' && deferredLoading
         ? null
         : (
-            <>
-              <_Table className='table-auto relative'>
-                <TableBody>
-                  {TableBodyElement}
-                </TableBody>
-              </_Table>
-            </>
-          )}
+          <>
+            <_Table className='table-auto relative'>
+              <TableBody>
+                {TableBodyElement}
+              </TableBody>
+            </_Table>
+          </>
+        )}
     </>
   )
 }

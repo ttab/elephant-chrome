@@ -1,6 +1,7 @@
 import { useEffect, useCallback } from 'react'
+import { useView } from './useView'
 
-type NavigationKey = 'ArrowLeft' | 'ArrowUp' | 'ArrowRight' | 'ArrowDown'
+type NavigationKey = 'ArrowLeft' | 'ArrowUp' | 'ArrowRight' | 'ArrowDown' | 'Enter' | 'Escape' | 'Space'
 interface useNavigationKeysOptions {
   onNavigation: (event: KeyboardEvent) => void
   keys: NavigationKey[]
@@ -12,7 +13,13 @@ interface useNavigationKeysOptions {
 export const useNavigationKeys = (
   { onNavigation, keys, stopPropagation = false, preventDefault = false, enabled = true }: useNavigationKeysOptions
 ): void => {
+  const { viewId, isActive } = useView()
+
   const handleKeyDown = useCallback((event: KeyboardEvent) => {
+    if (viewId && !isActive) {
+      return
+    }
+
     // Unfocus if active element is an editable element on Escape
     if (event.key === 'Escape' && isEditableElement(document.activeElement)) {
       document.activeElement.blur()
@@ -41,7 +48,7 @@ export const useNavigationKeys = (
 
       onNavigation(event)
     }
-  }, [onNavigation, keys, preventDefault, stopPropagation])
+  }, [onNavigation, keys, preventDefault, stopPropagation, isActive, viewId])
 
   useEffect(() => {
     if (!enabled) {
