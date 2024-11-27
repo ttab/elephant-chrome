@@ -11,11 +11,11 @@ export const GroupedRows = <TData, TValue>({ row, columns, handleOpen, rowRefs }
 }): JSX.Element => {
   return (
     <React.Fragment key={row.id}>
-      <TableRow className='sticky top-0 bg-muted'>
+      <TableRow className='sticky top-0 bg-gray-200'>
         <TableCell colSpan={columns.length} className='pl-6 px-2 py-1 border-b'>
           <div className='flex justify-between items-center flex-wrap'>
             <div className='flex items-center space-x-2'>
-              <span className='font-thin text-muted-foreground'>Nyhetsvärde</span>
+              <span className='font-thin text-muted-foreground'>Timme</span>
               <span className='inline-flex items-center justify-center size-5 bg-background rounded-full ring-1 ring-gray-300'>
                 {row.groupingValue as string}
               </span>

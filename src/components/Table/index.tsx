@@ -3,7 +3,6 @@ import {
   useEffect,
   useCallback,
   useMemo,
-  useDeferredValue,
   useRef
 } from 'react'
 import {
@@ -25,6 +24,8 @@ import { NewItems } from './NewItems'
 import { GroupedRows } from './GroupedRows'
 import { Rows } from './Rows'
 import { LoadingText } from '../LoadingText'
+import { useModal } from '../Modal/useModal'
+import { Editor } from '@/components/PlainEditor'
 
 interface TableProps<TData, TValue> {
   columns: Array<ColumnDef<TData, TValue>>
@@ -44,12 +45,14 @@ export const Table = <TData, TValue>({
 
   const { table, loading } = useTable()
 
+  const { showModal, hideModal } = useModal()
+
   const rowRefs = useRef<Map<string, HTMLTableRowElement>>(new Map())
 
-  const handleOpen = useCallback((event: MouseEvent<HTMLTableRowElement> | KeyboardEvent, subRow: Row<unknown>): void => {
+  const handleOpen = useCallback((event: MouseEvent<HTMLTableRowElement> | KeyboardEvent, row: Row<unknown>): void => {
     const viewType = type === 'Wires' ? 'Editor' : type
     setTimeout(() => {
-      subRow.toggleSelected(!subRow.getIsSelected())
+      row.toggleSelected(!row.getIsSelected())
     }, 0)
 
     const target = event.target as HTMLElement
@@ -63,7 +66,7 @@ export const Table = <TData, TValue>({
         dispatch,
         viewItem: state.viewRegistry.get(viewType),
         // @ts-expect-error unknown type
-        props: { id: subRow.original._id },
+        props: { id: row.original._id },
         viewId: crypto.randomUUID(),
         origin,
         history
@@ -82,7 +85,7 @@ export const Table = <TData, TValue>({
       return
     }
 
-    if (!table || !['ArrowDown', 'ArrowUp', 'Escape', 'Enter'].includes(evt.key)) {
+    if (!table || !['ArrowDown', 'ArrowUp', 'Escape', 'Enter', ' '].includes(evt.key)) {
       return
     }
 
@@ -102,18 +105,32 @@ export const Table = <TData, TValue>({
     if (evt.key === 'Enter') {
       if (!selectedRow) return
 
+      hideModal()
       handleOpen(evt, selectedRow)
+      return
+    }
+
+    if (evt.key === ' ' && type === 'Wires') {
+      // @ts-expect-error unknown type
+      showModal(<Editor id={selectedRow.original._id} />, 'sheet')
+      return
     }
 
     if (evt.key === 'Escape') {
       selectedRow?.toggleSelected(false)
-    } else if (!selectedRow) {
+      return
+    }
+
+    if ((evt.key === 'ArrowDown' || evt.key === 'ArrowUp') && !selectedRow) {
       const idx = evt.key === 'ArrowDown' ? 0 : currentRows.length - 1
 
       // Set selected row and scroll into view
       currentRows[idx].toggleSelected(true)
       scrollToRow(currentRows[idx].id)
-    } else {
+      return
+    }
+
+    if (evt.key === 'ArrowDown' || evt.key === 'ArrowUp') {
       // Get next row
       const nextIdx = selectedRow.index + (evt.key === 'ArrowDown' ? 1 : -1)
       const idx = nextIdx < 0 ? currentRows.length - 1 : nextIdx >= currentRows.length ? 0 : nextIdx
@@ -142,15 +159,11 @@ export const Table = <TData, TValue>({
     }
   }, [table, onRowSelected])
 
-  // Needed for the useMemo to refresh when new data is set in the table
-  // Defer to previous table and loading state until ready, reduces flickering
-  const deferredRows = useDeferredValue(table.getRowModel().rows)
-  const deferredLoading = useDeferredValue(loading)
-
+  const rows = table.getRowModel().rows
   const rowSelection = table.getState().rowSelection
 
   const TableBodyElement = useMemo(() => {
-    if (deferredLoading || !deferredRows?.length) {
+    if (loading || !rows?.length) {
       const isSearchTable = window.location.pathname.includes('/elephant/search')
       return (
         <TableRow>
@@ -159,7 +172,7 @@ export const Table = <TData, TValue>({
             className='h-24 text-center'
           >
             <LoadingText>
-              {deferredLoading
+              {loading
                 ? isSearchTable
                   ? ''
                   : 'Laddar...'
@@ -170,26 +183,28 @@ export const Table = <TData, TValue>({
       )
     }
 
-    return deferredRows.map((row, index) => (
+    return rows.map((row, index) => (
       table.getState().grouping.length)
       ? <GroupedRows<TData, TValue> key={index} row={row} columns={columns} handleOpen={handleOpen} rowRefs={rowRefs} />
       : <Rows key={index} row={row} handleOpen={handleOpen} rowRefs={rowRefs} />
     )
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [deferredRows, columns, deferredLoading, handleOpen, table, rowSelection])
+  }, [rows, columns, loading, handleOpen, table, rowSelection])
 
   return (
     <>
       <Toolbar table={table} />
-      <NewItems.Root>
-        <NewItems.Table
-          header={`Dina nya skapade ${type === 'Planning'
-            ? 'planeringar'
-            : 'händelser'}`}
-          type={type as 'Planning' | 'Event'}
-        />
-      </NewItems.Root>
-      {type === 'Search' && deferredLoading
+      {(type === 'Planning' || type === 'Event') && (
+        <NewItems.Root>
+          <NewItems.Table
+            header={`Dina nya skapade ${type === 'Planning'
+              ? 'planeringar'
+              : 'händelser'}`}
+            type={type}
+          />
+        </NewItems.Root>
+      )}
+      {type === 'Search' && loading
         ? null
         : (
             <>

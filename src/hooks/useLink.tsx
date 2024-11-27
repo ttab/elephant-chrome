@@ -11,7 +11,7 @@ export const useLink = (viewName: View) => {
   return (
     event: MouseEvent<Element> | KeyboardEvent | undefined,
     props: ViewProps,
-    target?: 'self' | 'blank',
+    target?: 'self' | 'blank' | 'last',
     callbacks?: Record<string, () => void>
   ): void => {
     handleLink({

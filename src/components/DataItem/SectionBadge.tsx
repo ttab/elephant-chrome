@@ -6,7 +6,7 @@ export const SectionBadge = ({ title, color }: {
   color?: string
 }): JSX.Element => (
   <Badge
-    variant='outline'
+    variant='ghost'
     className='rounded-md bg-background h-7'
     data-row-action
   >

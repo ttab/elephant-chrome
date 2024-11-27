@@ -1,5 +1,5 @@
-import { useCallback, useMemo } from 'react'
-import { useQuery, useSections, useWireSources } from '@/hooks'
+import { useCallback, useEffect, useMemo } from 'react'
+import { useQuery, useSections, useTable, useWireSources } from '@/hooks'
 
 import { Table } from '@/components/Table'
 import { wiresListColumns } from './WiresListColumns'
@@ -10,9 +10,11 @@ export const WireList = (): JSX.Element => {
   const sections = useSections()
   const [{ source, page }] = useQuery()
 
-  const sourceUri = useWireSources().filter((_) => _.title === source)[0]?.uri
+  const sourceUri = useWireSources()
+    .filter((_) => source?.includes(_.title))
+    .map((_) => _.uri)
 
-  const { error } = useSWR<Wire[], Error>(['Wires', { source: sourceUri, size: 20, page }, { onePage: true }])
+  const { error } = useSWR<Wire[], Error>(['Wires', { source: sourceUri, size: 47, page }])
   const columns = useMemo(() => wiresListColumns({ sections }), [sections])
 
   const onRowSelected = useCallback((row?: Wire) => {
@@ -23,6 +25,12 @@ export const WireList = (): JSX.Element => {
     }
     return row
   }, [])
+
+  const { table } = useTable()
+
+  useEffect(() => {
+    table.setGrouping(['issued'])
+  }, [table])
 
   if (error) {
     return <pre>{error.message}</pre>

@@ -1,5 +1,5 @@
 import { Cable, BriefcaseBusiness, CalendarDaysIcon, CalendarPlus2, SearchIcon, ZapIcon, type LucideIcon } from '@ttab/elephant-ui/icons'
-import { type View } from '../types'
+import { ViewProps, type View } from '../types'
 
 /**
  * Defines a menu item in the main application menu.
@@ -22,6 +22,7 @@ export interface ApplicationMenuItem {
   icon: LucideIcon
   target?: 'view' | 'dialog'
   color?: string
+  props?: ViewProps
 }
 
 export const applicationMenu: ApplicationMenu = {
@@ -51,6 +52,7 @@ export const applicationMenu: ApplicationMenu = {
           name: 'Wires',
           label: 'Telegram',
           icon: Cable,
+          props: { source: 'init' },
           color: '#FF6347'
         }
       ]
