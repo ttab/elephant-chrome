@@ -15,7 +15,8 @@ describe('useQuery hook', () => {
           writable: true,
           value: {
             search: search ? `?${search}` : '',
-            href: 'https://example.com/'
+            href: 'https://example.com/',
+            pathname: '/elephant/plannings'
           }
         })
       }
