@@ -19,7 +19,7 @@ export function wiresListColumns({ sections = [] }: {
       id: 'issued',
       enableGrouping: true,
       meta: {
-        name: 'Utgiven',
+        name: 'Tid',
         columnIcon: SignalHigh,
         className: 'hidden'
       },
@@ -33,7 +33,6 @@ export function wiresListColumns({ sections = [] }: {
     },
     {
       id: 'issuedMinutes',
-      enableGrouping: true,
       meta: {
         name: 'Utgiven',
         columnIcon: SignalHigh,
@@ -49,7 +48,6 @@ export function wiresListColumns({ sections = [] }: {
     },
     {
       id: 'newsvalue',
-      enableGrouping: true,
       meta: {
         Filter: ({ column, setSearch }) => (
           <FacetedFilter column={column} setSearch={setSearch} />
