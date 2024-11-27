@@ -12,6 +12,7 @@ import { AppContent } from '../src/AppContent'
 import { type Mock, vi } from 'vitest'
 import { IndexedDBProvider } from '../src/datastore/contexts/IndexedDBProvider'
 import indexeddb from 'fake-indexeddb'
+import { ModalProvider } from '@/components/Modal/ModalProvider'
 
 globalThis.indexedDB = indexeddb
 
@@ -33,13 +34,15 @@ const provider = true as unknown as HocuspocusProvider
 describe('Use NavigationProvider', () => {
   it('should render view from registry', async () => {
     render(
-      <IndexedDBProvider>
-        <NavigationProvider>
-          <DocTrackerContext.Provider value={{ synced: true, connected: true, provider }}>
-            <AppContent />
-          </DocTrackerContext.Provider>
-        </NavigationProvider>
-      </IndexedDBProvider>
+      <ModalProvider>
+        <IndexedDBProvider>
+          <NavigationProvider>
+            <DocTrackerContext.Provider value={{ synced: true, connected: true, provider }}>
+              <AppContent />
+            </DocTrackerContext.Provider>
+          </NavigationProvider>
+        </IndexedDBProvider>
+      </ModalProvider>
     )
 
     expect(await screen.findByRole('header-title')).toBeInTheDocument()
