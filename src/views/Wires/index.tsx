@@ -14,7 +14,7 @@ import { SWRProvider } from '@/contexts/SWRProvider'
 import { Pagination } from '@/components/Table/Pagination'
 import { Controller } from './components/Controller'
 import { useView, useHistory, useSections } from '@/hooks'
-import { HistoryInterface } from '@/navigation/hooks/useHistory'
+import type { HistoryInterface } from '@/navigation/hooks/useHistory'
 import { ViewDialogClose } from '@/components/View/ViewHeader/ViewDialogClose'
 import { ViewFocus } from '@/components/View/ViewHeader/ViewFocus'
 
@@ -63,15 +63,15 @@ export const Wires = (): JSX.Element => {
 
             <ViewHeader.Content>
               <Sources />
+              {!isFocused && isLast && (
+                <Controller />
+              )}
             </ViewHeader.Content>
 
             <div className='flex gap-2'>
               <ViewFocus viewId={viewId} />
               {!isFocused && (history.state?.contentState?.length ?? 0) > 1
               && <ViewDialogClose onClick={() => handleClose(viewId, history)} Icon={Minus} />}
-              {!isFocused && isLast && (
-                <Controller />
-              )}
             </div>
           </ViewHeader.Root>
 
