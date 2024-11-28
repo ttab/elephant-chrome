@@ -5,7 +5,7 @@ import { CommandMenu } from '@/components/Commands/Menu'
 import userEvent from '@testing-library/user-event'
 import { planningListColumns } from '@/views/PlanningOverview/PlanningListColumns'
 import { type Planning } from '@/lib/index'
-import { HistoryState } from '@/navigation/hooks/useHistory'
+import type { HistoryState } from '@/navigation/hooks/useHistory'
 
 describe('CommandMenu', () => {
   it('should render CommandMenu component', async () => {
