@@ -43,7 +43,7 @@ export function wiresListColumns({ sections = [] }: {
       },
       cell: ({ row }) => {
         const date = new Date(row.getValue('issuedMinutes'))
-        return <span className='font-thin text-xs'>{date.getMinutes()}</span>
+        return <span className='font-thin text-xs'>{date.getMinutes().toString().padStart(2, '0')}</span>
       }
     },
     {
