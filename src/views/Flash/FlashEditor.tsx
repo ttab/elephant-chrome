@@ -12,7 +12,7 @@ import { DropMarker } from '@/components/Editor/DropMarker'
 import { ContextMenu } from '@/components/Editor/ContextMenu'
 import { useSession } from 'next-auth/react'
 import { Validation } from '@/components/Validation'
-import { FormProps } from '@/components/Form/Root'
+import type { FormProps } from '@/components/Form/Root'
 
 
 export const FlashEditor = ({ setTitle, onValidation, validateStateRef }: {

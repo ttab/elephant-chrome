@@ -1,5 +1,5 @@
 import { Sheet, SheetHeader, SheetContent, SheetDescription, SheetTitle } from '@ttab/elephant-ui'
-import { PropsWithChildren } from 'react'
+import type { PropsWithChildren } from 'react'
 
 export const ModalSheet = ({ children, isVisible }: {
   isVisible: boolean

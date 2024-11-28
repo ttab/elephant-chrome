@@ -4,7 +4,7 @@ import { useQuery, useSections, useTable, useWireSources } from '@/hooks'
 import { Table } from '@/components/Table'
 import { wiresListColumns } from './WiresListColumns'
 import useSWR from 'swr'
-import { Wire } from '@/lib/index/schemas/wire'
+import type { Wire } from '@/lib/index/schemas/wire'
 
 export const WireList = (): JSX.Element => {
   const sections = useSections()

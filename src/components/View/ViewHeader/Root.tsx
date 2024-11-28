@@ -2,7 +2,7 @@ import { useHistory } from '@/hooks/index'
 import { useView } from '@/hooks/useView'
 import { cn } from '@ttab/elephant-ui/utils'
 import { cva } from 'class-variance-authority'
-import { PropsWithChildren } from 'react'
+import type { PropsWithChildren } from 'react'
 
 export const Root = ({ children, className, asDialog }: {
   className?: string

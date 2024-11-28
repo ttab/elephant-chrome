@@ -1,5 +1,5 @@
 import { Cable, BriefcaseBusiness, CalendarDaysIcon, CalendarPlus2, SearchIcon, ZapIcon, type LucideIcon } from '@ttab/elephant-ui/icons'
-import { ViewProps, type View } from '../types'
+import type { ViewProps, View } from '../types'
 
 /**
  * Defines a menu item in the main application menu.

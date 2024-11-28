@@ -8,7 +8,7 @@ import { useSession } from 'next-auth/react'
 import { useRef } from 'react'
 import { NewItems } from '@/components/Table/NewItems'
 import useSWR from 'swr'
-import { FormProps } from '@/components/Form/Root'
+import type { FormProps } from '@/components/Form/Root'
 
 interface StatusResult {
   title: string
