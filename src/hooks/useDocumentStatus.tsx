@@ -24,7 +24,7 @@ export const useDocumentStatus = (documentId?: string): [
 
   const doFetch = documentId && synced && !inProgress && session && repositoryUrl
 
-  const { data: documentStatus, mutate, error } = useSWR(
+  const { data: documentStatus, mutate, error } = useSWR<Status | undefined, Error>(
     doFetch ? [`status/${documentId}`] : null,
     async () => {
       // Dont try to fetch if document is inProgress
