@@ -80,21 +80,23 @@ export function transformText(element: Block): TBElement {
     class: 'text',
     type: 'core/text',
     ...properties,
-    children: nodes.map((node): (TBElement | TBText) => {
-      if (node.nodeType === NodeType.ELEMENT_NODE) {
-        return {
-          class: 'inline',
-          ...transformInlineElement(node)
+    children: nodes.length
+      ? nodes.map((node): (TBElement | TBText) => {
+        if (node.nodeType === NodeType.ELEMENT_NODE) {
+          return {
+            class: 'inline',
+            ...transformInlineElement(node)
+          }
         }
-      }
-      // Plain text
-      if (node.nodeType === NodeType.TEXT_NODE) {
-        return {
-          text: decode(node.text)
+        // Plain text
+        if (node.nodeType === NodeType.TEXT_NODE) {
+          return {
+            text: decode(node.text)
+          }
         }
-      }
-      throw new Error('Unknown nodeType')
-    })
+        throw new Error('Unknown nodeType')
+      })
+      : [{ text: '' }]
   }
 }
 

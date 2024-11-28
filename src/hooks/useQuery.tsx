@@ -22,8 +22,11 @@ export const useQuery = (): [Record<string, string | string[] | undefined>, (par
 
   const { viewId } = useView()
 
-  const parseQueryString = (): Record<string, string | string[] | undefined> => {
-    const searchParams = new URLSearchParams(window.location.search)
+  const parseQueryString = useCallback((): Record<string, string | string[] | undefined> => {
+    // Get search from history state instead of window.location.search
+    const historyPath = historyState?.contentState.find((cs) => cs.viewId === viewId)?.path
+
+    const searchParams = new URLSearchParams(historyPath?.replace(window.location.pathname, ''))
     const params: Record<string, string | string[] | undefined> = {}
 
     for (const [key, value] of searchParams.entries()) {
@@ -35,7 +38,7 @@ export const useQuery = (): [Record<string, string | string[] | undefined>, (par
     }
 
     return params
-  }
+  }, [historyState, viewId])
 
   const [queryParams, setQueryParams] = useState<Record<string, string | string[] | undefined>>(parseQueryString)
 
@@ -44,7 +47,7 @@ export const useQuery = (): [Record<string, string | string[] | undefined>, (par
     if (historyState?.viewId === viewId) {
       setQueryParams(parseQueryString())
     }
-  }, [historyState, viewId])
+  }, [historyState, viewId, parseQueryString])
 
 
   const setQueryString = useCallback((params: Record<string, string | string[] | undefined>): void => {
@@ -85,7 +88,7 @@ export const useQuery = (): [Record<string, string | string[] | undefined>, (par
         ...Object.fromEntries(searchParams)
       }
 
-      cs.path = `${import.meta.env.BASE_URL || ''}/${cs.name.toLocaleLowerCase()}?${searchParams.toString()}`
+      cs.path = `${import.meta.env.BASE_URL || ''}/${cs.name.toLocaleLowerCase()}${searchParams.toString() ? `?${searchParams.toString()}` : ''}`
     })
 
     const newUrl = new URL(window.location.href)
@@ -93,7 +96,7 @@ export const useQuery = (): [Record<string, string | string[] | undefined>, (par
 
     replaceState(newUrl.href, newHistoryState)
     setQueryParams(parseQueryString())
-  }, [historyState, replaceState, viewId])
+  }, [historyState, replaceState, viewId, parseQueryString])
 
   return [queryParams, setQueryString]
 }

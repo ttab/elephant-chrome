@@ -5,37 +5,30 @@ export interface WireSearchParams {
   page?: number
   size?: number
   sort?: {
-    start?: 'asc' | 'desc'
-    end?: 'asc' | 'desc'
+    issued?: 'asc' | 'desc'
   }
-  source?: string
+  source?: string[]
 }
 
 const search = async (endpoint: URL, accessToken: string, params?: WireSearchParams): Promise<SearchIndexResponse<Wire>> => {
   const sort: Array<Record<string, 'asc' | 'desc'>> = []
 
-  if (params?.sort?.start && ['asc', 'desc'].includes(params.sort.start)) {
-    sort.push({ 'document.meta.core_assignment.data.start': params.sort.start })
-  }
-
-  if (params?.sort?.end) {
-    sort.push({ 'document.meta.core_assignment.data.end': params.sort.end })
-  }
-
-  sort.push({ created: 'desc' })
+  sort.push({ 'document.meta.tt_wire.data.issued': 'desc' })
 
   const sourceQuery = {
     bool: {
       must: [{
-        term: {
-          'document.rel.source.uri': params?.source || '*'
+        terms: {
+          'document.rel.source.uri': Array.isArray(params?.source)
+            ? params.source
+            : [params?.source]
         }
       }]
     }
   }
 
   const query = {
-    query: params?.source ? sourceQuery : { match_all: {} },
+    query: params?.source?.length ? sourceQuery : { match_all: {} },
     _source: true,
     fields: [
       'document.title',

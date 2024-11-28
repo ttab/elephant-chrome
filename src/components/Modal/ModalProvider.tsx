@@ -3,18 +3,15 @@ import {
   type PropsWithChildren,
   type ReactNode
 } from 'react'
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogTitle
-} from '@ttab/elephant-ui'
 import { ModalContext } from './ModalContext'
 import { useKeydownGlobal } from '@/hooks/useKeydownGlobal'
+import { ModalDialog } from './ModalDialog'
+import { ModalSheet } from './ModalSheet'
 
 export const ModalProvider = ({ children }: PropsWithChildren): JSX.Element => {
   const [isVisible, setIsVisible] = useState(false)
   const [modalContent, setModalContent] = useState<ReactNode | null>(null)
+  const [modalType, setModalType] = useState<string | undefined>(undefined)
 
   useKeydownGlobal((evt) => {
     if (evt.key === 'Escape') {
@@ -22,35 +19,30 @@ export const ModalProvider = ({ children }: PropsWithChildren): JSX.Element => {
     }
   })
 
-  const showModal = (content: ReactNode): void => {
+  const showModal = (content: ReactNode, type: string = 'dialog'): void => {
     setModalContent(content)
+    setModalType(type)
     setIsVisible(true)
   }
 
   const hideModal = (): void => {
     setIsVisible(false)
     setModalContent(null)
+    setModalType(undefined)
   }
 
   return (
     <ModalContext.Provider value={{ showModal, hideModal }}>
       {children}
-
-      {/*
-        * FIXME: We need this to be modal. But for now the prop
-        * modal is set to false due to bug in radix which result
-        * in portal mouse events conflicts.
-        *
-        * https://github.com/radix-ui/primitives/issues/3141
-        */}
-      {isVisible && (
-        <Dialog modal={false} open={isVisible}>
-          <DialogDescription />
-          <DialogTitle />
-          <DialogContent className='p-0 w-[94vw]'>
-            {modalContent}
-          </DialogContent>
-        </Dialog>
+      { modalType === 'dialog' && (
+        <ModalDialog isVisible={isVisible}>
+          {modalContent}
+        </ModalDialog>
+      )}
+      { modalType === 'sheet' && (
+        <ModalSheet isVisible={isVisible}>
+          {modalContent}
+        </ModalSheet>
       )}
     </ModalContext.Provider>
   )
