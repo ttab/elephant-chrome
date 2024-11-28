@@ -1,5 +1,6 @@
 import { useQuery, useWireSources } from '@/hooks'
-import { ComboBox, DefaultValueOption } from '@ttab/elephant-ui'
+import type { DefaultValueOption } from '@ttab/elephant-ui'
+import { ComboBox } from '@ttab/elephant-ui'
 
 export const Sources = (): JSX.Element => {
   const allSources = useWireSources().map(({ uri, title }) => ({

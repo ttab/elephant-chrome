@@ -1,5 +1,5 @@
 import * as Y from 'yjs'
-import { Article, Event, Planning } from './index'
+import type { Article, Event, Planning } from './index'
 
 export function isYMap(value: unknown): value is Y.Map<unknown> {
   return value instanceof Y.Map

@@ -3,7 +3,7 @@ import userEvent from '@testing-library/user-event'
 
 import { render, screen } from '../setupTests'
 import { Link } from '@/components'
-import { HistoryState } from '@/navigation/hooks/useHistory'
+import type { HistoryState } from '@/navigation/hooks/useHistory'
 
 describe('Link', () => {
   it('should render Link component', async () => {

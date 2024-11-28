@@ -1,6 +1,6 @@
 import { ScrollArea } from '@ttab/elephant-ui'
 import { cn } from '@ttab/elephant-ui/utils'
-import { PropsWithChildren } from 'react'
+import type { PropsWithChildren } from 'react'
 
 export const Content = ({ children, className }: {
   className?: string

@@ -1,5 +1,6 @@
 import { Button } from '@ttab/elephant-ui'
-import { LucideIcon, XIcon } from '@ttab/elephant-ui/icons'
+import type { LucideIcon } from '@ttab/elephant-ui/icons'
+import { XIcon } from '@ttab/elephant-ui/icons'
 
 export const ViewDialogClose = ({ onClick, Icon = XIcon }: {
   Icon?: LucideIcon

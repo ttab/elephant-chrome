@@ -4,7 +4,7 @@ import { Newsvalues } from '@/defaults'
 import { useYValue } from '@/hooks'
 import { Awareness } from '@/components'
 import { Validation } from './Validation'
-import { FormProps } from './Form/Root'
+import type { FormProps } from './Form/Root'
 
 export const Newsvalue = ({ onValidation, validateStateRef }: FormProps): JSX.Element => {
   const [newsvalue, setNewsvalue] = useYValue<string | undefined>('meta.core/newsvalue[0].value')

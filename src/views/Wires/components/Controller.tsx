@@ -1,7 +1,7 @@
 import { AwarenessDocument } from '@/components/AwarenessDocument'
 import { useHistory, useLink } from '@/hooks/index'
 import { useCollaboration } from '@/hooks/useCollaboration'
-import { HistoryState } from '@/navigation/hooks/useHistory'
+import type { HistoryState } from '@/navigation/hooks/useHistory'
 import { Button } from '@ttab/elephant-ui'
 import { Plus } from '@ttab/elephant-ui/icons'
 import { useSession } from 'next-auth/react'

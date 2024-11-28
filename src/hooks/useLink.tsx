@@ -1,6 +1,6 @@
 import type { MouseEvent } from 'react'
 import { useHistory, useNavigation, useView } from '@/hooks'
-import { handleLink, Target } from '@/components/Link/lib/handleLink'
+import { type Target, handleLink } from '@/components/Link/lib/handleLink'
 import { type ViewProps, type View } from '../types'
 
 export const useLink = (viewName: View) => {

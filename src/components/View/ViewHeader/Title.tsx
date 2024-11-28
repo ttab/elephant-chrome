@@ -1,6 +1,6 @@
 import { type LucideIcon } from '@ttab/elephant-ui/icons'
 import { cva } from 'class-variance-authority'
-import { PropsWithChildren } from 'react'
+import type { PropsWithChildren } from 'react'
 
 export const Title = ({ title, short: shortTitle, icon: Icon, iconColor, asDialog }: {
   title: string

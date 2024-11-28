@@ -1,5 +1,6 @@
-import { EleDocumentResponse } from '@/shared/types'
-import Textbit, { TBElement } from '@ttab/textbit'
+import type { EleDocumentResponse } from '@/shared/types'
+import type { TBElement } from '@ttab/textbit'
+import Textbit from '@ttab/textbit'
 import useSWR from 'swr'
 import { LoadingText } from './LoadingText'
 import { Bold, Italic, Link, Text, OrderedList, UnorderedList, TTVisual, Factbox } from '@ttab/textbit-plugins'

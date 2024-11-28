@@ -1,5 +1,5 @@
-import { EleBlock } from '@/shared/types'
-import { DefaultValueOption } from '@/types/index'
+import type { EleBlock } from '@/shared/types'
+import type { DefaultValueOption } from '@/types/index'
 import { Alert, AlertDescription } from '@ttab/elephant-ui'
 import { InfoIcon, ShieldAlert } from '@ttab/elephant-ui/icons'
 import { cn } from '@ttab/elephant-ui/utils'
