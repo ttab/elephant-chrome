@@ -39,7 +39,6 @@ export const Table = <TData, TValue>({
   const { state, dispatch } = useNavigation()
   const history = useHistory()
   const { viewId: origin } = useView()
-
   const { table, loading } = useTable()
 
   const rowRefs = useRef<Map<string, HTMLTableRowElement>>(new Map())
@@ -164,14 +163,14 @@ export const Table = <TData, TValue>({
       {type === 'Search' && deferredLoading
         ? null
         : (
-          <>
-            <_Table className='table-auto relative'>
-              <TableBody>
-                {TableBodyElement}
-              </TableBody>
-            </_Table>
-          </>
-        )}
+            <>
+              <_Table className='table-auto relative'>
+                <TableBody>
+                  {TableBodyElement}
+                </TableBody>
+              </_Table>
+            </>
+          )}
     </>
   )
 }

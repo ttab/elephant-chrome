@@ -14,10 +14,14 @@ import { Button } from '@ttab/elephant-ui'
 import { type Block } from '@ttab/elephant-api/newsdoc'
 import { deleteByYPath } from '@/lib/yUtils'
 import { createArticlePayload } from '@/defaults/templates/articleDocumentTemplate'
+import { useOpenDocuments } from '@/hooks/useOpenDocuments'
+import { cn } from '@ttab/elephant-ui/utils'
+import { useNavigationKeys } from '@/hooks/useNavigationKeys'
 
-export const AssignmentRow = ({ index, onSelect }: {
+export const AssignmentRow = ({ index, onSelect, focused }: {
   index: number
   onSelect: () => void
+  focused?: boolean
 }): JSX.Element => {
   const assPath = `meta.core/assignment[${index}]`
   const [inProgress] = useYValue(`${assPath}.__inProgress`)
@@ -36,17 +40,21 @@ export const AssignmentRow = ({ index, onSelect }: {
       <AssignmentRowContent
         index={index}
         onSelect={onSelect}
+        focused={focused}
       />
     </div>
   )
 }
 
-const AssignmentRowContent = ({ index, onSelect }: {
+const AssignmentRowContent = ({ index, onSelect, focused = false }: {
   index: number
   onSelect: () => void
+  focused?: boolean
 }): JSX.Element => {
   const { provider } = useCollaboration()
   const openArticle = useLink('Editor')
+  const openDocuments = useOpenDocuments({ idOnly: true, name: 'Editor' })
+
   const base = `meta.core/assignment[${index}]`
   const [inProgress] = useYValue(`${base}.__inProgress`)
   const [articleId] = useYValue<string>(`${base}.links.core/article[0].uuid`)
@@ -63,7 +71,7 @@ const AssignmentRowContent = ({ index, onSelect }: {
     return publishTime ? new Date(publishTime) : undefined
   }, [publishTime])
 
-  const onOpenArticleEvent = useCallback(<T extends HTMLElement>(event: MouseEvent<T>) => {
+  const onOpenArticleEvent = useCallback(<T extends HTMLElement>(event: MouseEvent<T> | KeyboardEvent) => {
     event.preventDefault()
     event.stopPropagation()
 
@@ -75,6 +83,16 @@ const AssignmentRowContent = ({ index, onSelect }: {
       setShowCreateDialog(true)
     }
   }, [articleId, openArticle, setShowCreateDialog])
+
+  useNavigationKeys({
+    keys: ['Enter', 'Space'],
+    onNavigation: (event) => {
+      if (assignmentType === 'text' || assignmentType === 'flash') {
+        // FIXME: This opens the same (first) article all the time
+        onOpenArticleEvent(event)
+      }
+    }
+  })
 
   const menuItems = [
     {
@@ -107,8 +125,15 @@ const AssignmentRowContent = ({ index, onSelect }: {
     })
   }
 
+  const selected = articleId && openDocuments.includes(articleId)
+
   return (
-    <div className='flex flex-col gap-2 text-sm px-6 pt-2.5 pb-4 hover:bg-muted'>
+    <div className={cn(
+      'flex flex-col gap-2 text-sm px-6 pt-2.5 pb-4 hover:bg-muted',
+      selected ? 'border border-table-selected bg-table-focused' : '',
+      focused ? 'bg-table-focused' : ''
+    )}
+    >
       <div className='flex flex-row gap-6 items-center justify-items-between justify-between'>
 
         <div className='flex grow gap-2 items-center'>
@@ -135,12 +160,7 @@ const AssignmentRowContent = ({ index, onSelect }: {
             {assTime ? <TimeDisplay date={assTime} /> : ''}
           </div>
 
-          {!inProgress
-          && (
-            <DotDropdownMenu
-              items={menuItems}
-            />
-          )}
+          {!inProgress && <DotDropdownMenu items={menuItems} />}
         </div>
       </div>
 
@@ -148,8 +168,7 @@ const AssignmentRowContent = ({ index, onSelect }: {
         <span className='leading-relaxed group-hover/assrow:underline'>{title}</span>
       </div>
 
-      {!!description
-      && (
+      {!!description && (
         <div className='font-light pl-10'>
           {description}
         </div>
@@ -159,8 +178,7 @@ const AssignmentRowContent = ({ index, onSelect }: {
         <SluglineButton path={`meta.core/assignment[${index}].meta.tt/slugline[0].value`} />
       </div>
 
-      {showVerifyDialog
-      && (
+      {showVerifyDialog && (
         <Prompt
           title='Ta bort?'
           description={`Vill du ta bort uppdraget${title ? ' ' + title : ''}?`}
@@ -179,8 +197,7 @@ const AssignmentRowContent = ({ index, onSelect }: {
         />
       )}
 
-      {showCreateDialog
-      && (
+      {showCreateDialog && (
         <Prompt
           title='Skapa artikel?'
           description={`Vill du skapa en artikel för uppdraget${title ? ' ' + title : ''}?`} // TODO: Display information that will be forwarded from the assignment
