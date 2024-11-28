@@ -52,7 +52,6 @@ export const applicationMenu: ApplicationMenu = {
           name: 'Wires',
           label: 'Telegram',
           icon: Cable,
-          props: { source: 'init' },
           color: '#FF6347'
         }
       ]

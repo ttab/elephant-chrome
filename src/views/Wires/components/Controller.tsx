@@ -28,20 +28,20 @@ const ControllerContent = (): JSX.Element => {
 
   useEffect(() => {
     // Initialize Wires
-    if (provider?.synced && state?.contentState.every((s) => s.props?.source === 'init')) {
+    if (provider?.synced && isInit(state)) {
       const ele = provider.document.getMap('ele')
       const wiresHistory = (ele?.get('Wires') as HistoryState[])?.[0]
 
       // When we have a contentState for Wires that we can use, load it.
-      if (wiresHistory && wiresHistory.contentState.every((s) => s.props?.source !== 'init')) {
+      if (wiresHistory && !isInit(wiresHistory)) {
         replaceState(wiresHistory.contentState[0].path, wiresHistory)
       } else {
         // Otherwise, create a new Wires contentState.
-        const newPath = window.location.href.replace('?source=init', '')
+        const newPath = window.location.href
         const newContentState = wiresHistory.contentState.map((s) => ({
           ...s,
           path: newPath,
-          props: { ...s.props, source: undefined }
+          props: { ...s.props, source: 'init' }
         }))
 
         replaceState(newPath, { ...wiresHistory, contentState: newContentState })
@@ -68,3 +68,9 @@ const ControllerContent = (): JSX.Element => {
 }
 
 export { Root as Controller }
+
+function isInit(state: HistoryState | null): boolean {
+  if (!state) return true
+
+  return state.contentState.length === 1 && !state.contentState[0].props?.source
+}

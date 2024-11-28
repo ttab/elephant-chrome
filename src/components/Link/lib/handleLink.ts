@@ -9,6 +9,7 @@ import {
 import { toQueryString } from './toQueryString'
 import type { HistoryInterface } from '@/navigation/hooks/useHistory'
 
+export type Target = 'self' | 'blank' | 'last'
 interface LinkClick {
   event?: MouseEvent<Element> | KeyboardEvent
   dispatch: React.Dispatch<NavigationAction>
@@ -16,7 +17,7 @@ interface LinkClick {
   viewId: string
   props?: ViewProps
   origin: string
-  target?: 'self' | 'blank' | 'last'
+  target?: Target
   onDocumentCreated?: () => void
   history: HistoryInterface
 }
