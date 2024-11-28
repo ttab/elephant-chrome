@@ -6,7 +6,7 @@ import { TextEncoder, TextDecoder } from 'util'
 import { type Mock, vi } from 'vitest'
 import { initializeNavigationState } from '@/navigation/lib'
 import { type Dispatch } from 'react'
-import { useNavigation } from './src/hooks'
+import { useNavigation, useView } from './src/hooks'
 import { type NavigationActionType } from './src/types'
 export * from '@testing-library/react'
 
@@ -49,6 +49,13 @@ global.fetch = vi.fn().mockImplementation(async (url: string) => {
   })
 })
 
+vi.mock('@/hooks/useView', () => ({
+  useView: vi.fn()
+}));
+
+(useView as Mock).mockReturnValue({
+  viewId: 'eddbfe39-57d4-4b32-b9a1-a555e39139ea'
+})
 
 vi.mock('@/navigation/hooks/useNavigation', () => ({
   useNavigation: vi.fn()

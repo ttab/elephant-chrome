@@ -6,6 +6,7 @@ import { useRegistry } from '@/hooks/useRegistry'
 import { useSections } from '@/hooks/useSections'
 import { type Article, type Event, type Planning } from '@/lib/index'
 import { type AssignmentMetaExtended } from '../Assignments/types'
+import { LoadingText } from '@/components/LoadingText'
 
 export const SearchResult = ({ from, to, isLoading, pool, page }: {
   from: string
@@ -36,7 +37,7 @@ export const SearchResult = ({ from, to, isLoading, pool, page }: {
     <>
       {isLoading
         ? (
-            <div className='flex w-full justify-center pt-8'>Laddar...</div>
+            <LoadingText>Laddar...</LoadingText>
           )
         : (
             <Table

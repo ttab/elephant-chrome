@@ -28,7 +28,10 @@ export const SearchBar = ({ setLoading, setTotalHits, pool, page, width }: {
   const [query, setQueryString] = useQuery()
 
   useEffect(() => {
-    const text = query?.query || inputRef?.current?.value
+    const text = typeof query?.query === 'string'
+      ? query.query
+      : inputRef?.current?.value
+
     search({
       text,
       page,
@@ -69,7 +72,14 @@ export const SearchBar = ({ setLoading, setTotalHits, pool, page, width }: {
         })
       }}
     >
-      <Input autoFocus placeholder={query?.query || 'Sök'} ref={inputRef} name='search' />
+      <Input
+        autoFocus
+        placeholder={typeof query?.query === 'string'
+          ? query.query
+          : 'Sök'}
+        ref={inputRef}
+        name='search'
+      />
     </form>
   )
 }

@@ -3,7 +3,7 @@ import userEvent from '@testing-library/user-event'
 
 import { render, screen } from '../setupTests'
 import { Link } from '@/components'
-import { HistoryState } from '@/navigation/hooks/useHistory'
+import type { HistoryState } from '@/navigation/hooks/useHistory'
 
 describe('Link', () => {
   it('should render Link component', async () => {
@@ -17,12 +17,10 @@ describe('Link', () => {
     expect(screen.getByText('Planning Overview')).toBeInTheDocument()
 
     await userEvent.click(screen.getByText('Planning Overview'))
-    setTimeout(() => {
-      const historyState = history.state as HistoryState
+    const historyState = history.state as HistoryState
 
-      expect(historyState?.contentState[0].props?.id).toBe('abc123')
-      expect(historyState?.contentState[0].name).toBe('Editor')
-      expect(historyState?.contentState[0].path).toBe('/elephant/editor?id=abc123')
-    })
+    expect(historyState?.contentState[1].props?.id).toBe('abc123')
+    expect(historyState?.contentState[1].name).toBe('Editor')
+    expect(historyState?.contentState[1].path).toBe('/elephant/editor?id=abc123')
   })
 })
