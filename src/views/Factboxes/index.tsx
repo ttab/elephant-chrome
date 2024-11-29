@@ -106,8 +106,8 @@ const FactboxItem = ({ factbox, openFactbox, locale, timeZone }: FBItem): JSX.El
           ? (
               <p className='w-full truncate text-xs'>
                 <em>
-                  Senast ändrad
-                  {convertedDate}
+                  {/* eslint-disable-next-line */}
+                  Senast ändrad {convertedDate}
                 </em>
               </p>
             )
