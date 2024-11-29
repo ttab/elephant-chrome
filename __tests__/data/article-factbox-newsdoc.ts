@@ -48,7 +48,7 @@ export const articleFactbox: GetDocumentResponse = {
           type: '',
           uri: '',
           url: '',
-          uuid: '',
+          uuid: '863349ac-cd21-485a-9d24-96b0b88a09e5',
           value: '',
           sensitivity: ''
         }],
