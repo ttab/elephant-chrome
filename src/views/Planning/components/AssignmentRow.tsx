@@ -134,14 +134,14 @@ const AssignmentRowContent = ({ index, onSelect, isFocused = false }: {
   }
 
   const selected = articleId && openDocuments.includes(articleId)
-
+  console.log(articleId, selected, openDocuments)
   return (
     <div
       ref={rowRef}
       tabIndex={0}
       className={cn(
         'flex flex-col gap-2 text-sm px-6 pt-2.5 pb-4 hover:bg-muted focus:outline-table-selected',
-        selected ? 'bg-table-focused focus:bg-table-focused' : ''
+        selected ? 'bg-table-selected focus:bg-table-selected' : ''
       )}
     >
       <div className='flex flex-row gap-6 items-center justify-items-between justify-between'>

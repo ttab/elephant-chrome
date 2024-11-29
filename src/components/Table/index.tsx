@@ -3,12 +3,11 @@ import {
   useEffect,
   useCallback,
   useMemo,
-  useDeferredValue,
-  useRef
+  useDeferredValue
 } from 'react'
 import {
   type ColumnDef,
-  type Row
+  type Row as RowType
 } from '@tanstack/react-table'
 
 import {
@@ -18,12 +17,12 @@ import {
   TableRow
 } from '@ttab/elephant-ui'
 import { Toolbar } from './Toolbar'
-import { useNavigation, useView, useTable, useHistory, useNavigationKeys } from '@/hooks'
+import { useNavigation, useView, useTable, useHistory, useNavigationKeys, useOpenDocuments } from '@/hooks'
 import { handleLink } from '@/components/Link/lib/handleLink'
 import { NewItems } from './NewItems'
 import { GroupedRows } from './GroupedRows'
-import { Rows } from './Rows'
 import { LoadingText } from '../LoadingText'
+import { Row } from './Row'
 
 interface TableProps<TData, TValue> {
   columns: Array<ColumnDef<TData, TValue>>
@@ -40,15 +39,10 @@ export const Table = <TData, TValue>({
   const history = useHistory()
   const { viewId: origin } = useView()
   const { table, loading } = useTable()
+  const openDocuments = useOpenDocuments({ idOnly: true })
 
-  const rowRefs = useRef<Map<string, HTMLTableRowElement>>(new Map())
-
-  const handleOpen = useCallback((event: MouseEvent<HTMLTableRowElement> | KeyboardEvent, subRow: Row<unknown>): void => {
+  const handleOpen = useCallback((event: MouseEvent<HTMLTableRowElement> | KeyboardEvent, subRow: RowType<unknown>): void => {
     const viewType = type === 'Wires' ? 'Editor' : type
-    setTimeout(() => {
-      subRow.toggleSelected(!subRow.getIsSelected())
-    }, 0)
-
     const target = event.target as HTMLElement
     if (target && 'dataset' in target && !target.dataset.rowAction) {
       if (!onRowSelected) {
@@ -68,9 +62,6 @@ export const Table = <TData, TValue>({
     }
   }, [dispatch, state.viewRegistry, onRowSelected, origin, type, history])
 
-  const scrollToRow = useCallback((rowId: string) => {
-    rowRefs.current.get(rowId)?.scrollIntoView({ behavior: 'auto', block: 'nearest' })
-  }, [rowRefs])
 
   useNavigationKeys({
     keys: ['ArrowUp', 'ArrowDown', 'Enter', 'Escape'],
@@ -101,7 +92,6 @@ export const Table = <TData, TValue>({
         : (selectedRow.index + (event.key === 'ArrowDown' ? 1 : -1) + currentRows.length) % currentRows.length
 
       currentRows[idx].toggleSelected(true)
-      scrollToRow(currentRows[idx].id)
     }
   })
 
@@ -143,8 +133,8 @@ export const Table = <TData, TValue>({
 
     return deferredRows.map((row, index) => (
       table.getState().grouping.length)
-      ? <GroupedRows<TData, TValue> key={index} row={row} columns={columns} handleOpen={handleOpen} rowRefs={rowRefs} />
-      : <Rows key={index} row={row} handleOpen={handleOpen} rowRefs={rowRefs} />
+      ? <GroupedRows<TData, TValue> key={index} row={row} columns={columns} handleOpen={handleOpen} openDocuments={openDocuments} />
+      : <Row key={index} row={row} handleOpen={handleOpen} openDocuments={openDocuments} />
     )
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [deferredRows, columns, deferredLoading, handleOpen, table, rowSelection])
@@ -152,6 +142,7 @@ export const Table = <TData, TValue>({
   return (
     <>
       <Toolbar table={table} />
+
       <NewItems.Root>
         <NewItems.Table
           header={`Dina nya skapade ${type === 'Planning'
@@ -160,17 +151,14 @@ export const Table = <TData, TValue>({
           type={type as 'Planning' | 'Event'}
         />
       </NewItems.Root>
-      {type === 'Search' && deferredLoading
-        ? null
-        : (
-          <>
-            <_Table className='table-auto relative'>
-              <TableBody>
-                {TableBodyElement}
-              </TableBody>
-            </_Table>
-          </>
-        )}
+
+      {(type !== 'Search' || !deferredLoading) && (
+        <_Table className='table-auto relative'>
+          <TableBody>
+            {TableBodyElement}
+          </TableBody>
+        </_Table>
+      )}
     </>
   )
 }
