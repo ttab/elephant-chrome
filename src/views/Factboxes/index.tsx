@@ -98,6 +98,10 @@ const FactboxItem = ({ factbox, openFactbox, locale, timeZone }: FBItem): JSX.El
       <div className='w-3/4 flex flex-col' draggable>
         <p className='w-full truncate text-sm font-bold'>{title}</p>
         <p className='w-full truncate text-xs'>{text}</p>
+        <p className='w-full truncate text-xs'>
+          {/* eslint-disable-next-line */}
+          <em>Skapad {createdFormatted}</em>
+        </p>
         {modified
           ? (
               <p className='w-full truncate text-xs'>
