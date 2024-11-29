@@ -2,21 +2,30 @@ import { useEffect, useCallback } from 'react'
 import { useView } from './useView'
 
 type NavigationKey = 'ArrowLeft' | 'ArrowUp' | 'ArrowRight' | 'ArrowDown' | 'Enter' | 'Escape' | 'Space'
+
 interface useNavigationKeysOptions {
   onNavigation: (event: KeyboardEvent) => void
   keys: NavigationKey[]
   stopPropagation?: boolean
   preventDefault?: boolean
   enabled?: boolean
+  elementRef?: React.RefObject<HTMLElement>
 }
 
 export const useNavigationKeys = (
-  { onNavigation, keys, stopPropagation = false, preventDefault = false, enabled = true }: useNavigationKeysOptions
+  { onNavigation, keys, stopPropagation = true, preventDefault = true, enabled = true, elementRef }: useNavigationKeysOptions
 ): void => {
   const { viewId, isActive } = useView()
 
   const handleKeyDown = useCallback((event: KeyboardEvent) => {
     if (viewId && !isActive) {
+      return
+    }
+
+    const target = event.target as HTMLElement
+
+    // If a ref is provided, only process events within that element
+    if (elementRef?.current && !elementRef.current.contains(target)) {
       return
     }
 
@@ -27,7 +36,7 @@ export const useNavigationKeys = (
     }
 
     // Don't override arrow navigation in editable targets
-    if (event.target && isEditableElement(event.target as HTMLElement)) {
+    if (target && isEditableElement(target)) {
       return
     }
 
@@ -48,7 +57,7 @@ export const useNavigationKeys = (
 
       onNavigation(event)
     }
-  }, [onNavigation, keys, preventDefault, stopPropagation, isActive, viewId])
+  }, [onNavigation, keys, preventDefault, stopPropagation, isActive, viewId, elementRef])
 
   useEffect(() => {
     if (!enabled) {
@@ -60,7 +69,7 @@ export const useNavigationKeys = (
   }, [enabled, handleKeyDown])
 }
 
-export function isEditableElement(element: Element | null): element is HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement | HTMLElement {
+function isEditableElement(element: Element | null): element is HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement | HTMLElement {
   if (!element) {
     return false
   }

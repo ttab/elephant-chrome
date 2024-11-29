@@ -163,14 +163,14 @@ export const Table = <TData, TValue>({
       {type === 'Search' && deferredLoading
         ? null
         : (
-            <>
-              <_Table className='table-auto relative'>
-                <TableBody>
-                  {TableBodyElement}
-                </TableBody>
-              </_Table>
-            </>
-          )}
+          <>
+            <_Table className='table-auto relative'>
+              <TableBody>
+                {TableBodyElement}
+              </TableBody>
+            </_Table>
+          </>
+        )}
     </>
   )
 }
