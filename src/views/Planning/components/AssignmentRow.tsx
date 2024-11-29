@@ -3,7 +3,7 @@ import { AssignmentType } from '@/components/DataItem/AssignmentType'
 import { AssigneeAvatars } from '@/components/DataItem/AssigneeAvatars'
 import { DotDropdownMenu } from '@/components/ui/DotMenu'
 import { Delete, Edit, FileInput } from '@ttab/elephant-ui/icons'
-import { type MouseEvent, useMemo, useState, useCallback } from 'react'
+import { type MouseEvent, useMemo, useState, useCallback, useEffect, useRef } from 'react'
 import { SluglineButton } from '@/components/DataItem/Slugline'
 import { useYValue } from '@/hooks/useYValue'
 import { useLink } from '@/hooks/useLink'
@@ -18,10 +18,10 @@ import { useOpenDocuments } from '@/hooks/useOpenDocuments'
 import { cn } from '@ttab/elephant-ui/utils'
 import { useNavigationKeys } from '@/hooks/useNavigationKeys'
 
-export const AssignmentRow = ({ index, onSelect, focused }: {
+export const AssignmentRow = ({ index, onSelect, isFocused }: {
   index: number
   onSelect: () => void
-  focused?: boolean
+  isFocused?: boolean
 }): JSX.Element => {
   const assPath = `meta.core/assignment[${index}]`
   const [inProgress] = useYValue(`${assPath}.__inProgress`)
@@ -40,16 +40,16 @@ export const AssignmentRow = ({ index, onSelect, focused }: {
       <AssignmentRowContent
         index={index}
         onSelect={onSelect}
-        focused={focused}
+        isFocused={isFocused}
       />
     </div>
   )
 }
 
-const AssignmentRowContent = ({ index, onSelect, focused = false }: {
+const AssignmentRowContent = ({ index, onSelect, isFocused = false }: {
   index: number
   onSelect: () => void
-  focused?: boolean
+  isFocused?: boolean
 }): JSX.Element => {
   const { provider } = useCollaboration()
   const openArticle = useLink('Editor')
@@ -84,7 +84,15 @@ const AssignmentRowContent = ({ index, onSelect, focused = false }: {
     }
   }, [articleId, openArticle, setShowCreateDialog])
 
+  const rowRef = useRef<HTMLDivElement>(null)
+  useEffect(() => {
+    if (rowRef?.current && isFocused) {
+      rowRef.current.focus()
+    }
+  })
+
   useNavigationKeys({
+    elementRef: rowRef,
     keys: ['Enter', 'Space'],
     onNavigation: (event) => {
       if (assignmentType === 'text' || assignmentType === 'flash') {
@@ -128,11 +136,13 @@ const AssignmentRowContent = ({ index, onSelect, focused = false }: {
   const selected = articleId && openDocuments.includes(articleId)
 
   return (
-    <div className={cn(
-      'flex flex-col gap-2 text-sm px-6 pt-2.5 pb-4 hover:bg-muted',
-      selected ? 'border border-table-selected bg-table-focused' : '',
-      focused ? 'bg-table-focused' : ''
-    )}
+    <div
+      ref={rowRef}
+      tabIndex={0}
+      className={cn(
+        'flex flex-col gap-2 text-sm px-6 pt-2.5 pb-4 hover:bg-muted focus:outline-table-selected',
+        selected ? 'bg-table-focused focus:bg-table-focused' : ''
+      )}
     >
       <div className='flex flex-row gap-6 items-center justify-items-between justify-between'>
 
