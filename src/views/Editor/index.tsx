@@ -88,7 +88,7 @@ const Editor = (props: ViewProps): JSX.Element => {
 function EditorWrapper(props: ViewProps & {
   documentId: string
 }): JSX.Element {
-  const plugins = [Text, UnorderedList, OrderedList, Bold, Italic, Link, TTVisual, ImageSearchPlugin, Factbox, FactboxPlugin]
+  const plugins = [Text, UnorderedList, OrderedList, Bold, Italic, Link, TTVisual, ImageSearchPlugin, FactboxPlugin]
   const {
     provider,
     synced,
@@ -99,7 +99,22 @@ function EditorWrapper(props: ViewProps & {
   const statusName = useMemo(() => documentStatus?.name, [documentStatus])
 
   return (
-    <Textbit.Root plugins={plugins.map((initPlugin) => initPlugin())} placeholders='multiple' className='h-screen max-h-screen flex flex-col'>
+    <Textbit.Root
+      plugins={
+        [...plugins.map((initPlugin) => initPlugin()),
+          Factbox(statusName !== 'usable'
+            ? {
+                onEditOriginal: (id: string) => {
+                  openFactboxEditor(undefined, { id })
+                }
+              }
+            : undefined
+          )
+        ]
+      }
+      placeholders='multiple'
+      className='h-screen max-h-screen flex flex-col'
+    >
       <ViewHeader.Root>
         <ViewHeader.Title title='Editor' icon={PenBoxIcon} />
 
