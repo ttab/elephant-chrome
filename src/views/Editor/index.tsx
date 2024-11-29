@@ -1,5 +1,5 @@
 import { useMemo, useEffect, useState } from 'react'
-import { AwarenessDocument, ViewHeader } from '@/components'
+import { AwarenessDocument, View, ViewHeader } from '@/components'
 import { Notes } from './components/Notes'
 import { PenBoxIcon } from '@ttab/elephant-ui/icons'
 
@@ -19,7 +19,8 @@ import {
   useCollaboration,
   useRegistry,
   useLink,
-  useDocumentStatus
+  useDocumentStatus,
+  useYValue
 } from '@/hooks'
 import { type ViewMetadata, type ViewProps } from '@/types'
 import { EditorHeader } from './EditorHeader'
@@ -35,6 +36,7 @@ import { ContextMenu } from '@/components/Editor/ContextMenu'
 import { Gutter } from '@/components/Editor/Gutter'
 import { DropMarker } from '@/components/Editor/DropMarker'
 import { useSession } from 'next-auth/react'
+import type { Block } from '@ttab/elephant-api/newsdoc'
 
 const meta: ViewMetadata = {
   name: 'Editor',
@@ -58,7 +60,7 @@ const Editor = (props: ViewProps): JSX.Element => {
 
   const documentId = props.id || query.id
 
-  if (!documentId) {
+  if (!documentId || typeof documentId !== 'string') {
     return (
       <Error
         title='Artikeldokument saknas'
@@ -89,59 +91,58 @@ function EditorWrapper(props: ViewProps & {
   documentId: string
 }): JSX.Element {
   const plugins = [Text, UnorderedList, OrderedList, Bold, Italic, Link, TTVisual, ImageSearchPlugin, FactboxPlugin]
-  const {
-    provider,
-    synced,
-    user
-  } = useCollaboration()
+  const { provider, synced, user } = useCollaboration()
   const openFactboxEditor = useLink('Factbox')
   const [documentStatus] = useDocumentStatus(props.documentId)
   const statusName = useMemo(() => documentStatus?.name, [documentStatus])
+  const [notes] = useYValue<Block[] | undefined>('meta.core/note')
 
   return (
-    <Textbit.Root
-      plugins={
-        [...plugins.map((initPlugin) => initPlugin()),
-          Factbox(statusName !== 'usable'
-            ? {
-                onEditOriginal: (id: string) => {
-                  openFactboxEditor(undefined, { id })
+    <View.Root>
+      <Textbit.Root
+        plugins={
+          [...plugins.map((initPlugin) => initPlugin()),
+            Factbox(statusName !== 'usable'
+              ? {
+                  onEditOriginal: (id: string) => {
+                    openFactboxEditor(undefined, { id })
+                  }
                 }
-              }
-            : undefined
-          )
-        ]
-      }
-      placeholders='multiple'
-      className='h-screen max-h-screen flex flex-col'
-    >
-      <ViewHeader.Root>
-        <ViewHeader.Title title='Editor' icon={PenBoxIcon} />
+              : undefined
+            )
+          ]
+        }
+        placeholders='multiple'
+        className='h-screen max-h-screen flex flex-col'
+      >
+        <ViewHeader.Root>
+          <ViewHeader.Title title='Editor' icon={PenBoxIcon} />
 
-        <ViewHeader.Content>
-          <EditorHeader />
-        </ViewHeader.Content>
+          <ViewHeader.Content>
+            <EditorHeader />
+          </ViewHeader.Content>
 
-        <ViewHeader.Action>
-          {!!props.documentId
-          && <ViewHeader.RemoteUsers documentId={props.documentId} />}
-        </ViewHeader.Action>
-      </ViewHeader.Root>
+          <ViewHeader.Action>
+            {!!props.documentId && <ViewHeader.RemoteUsers documentId={props.documentId} />}
+          </ViewHeader.Action>
+        </ViewHeader.Root>
 
-      <div className='p-4'>
-        <Notes />
-      </div>
+        <View.Content className='flex flex-col'>
+          {notes?.length && <div className='p-4'><Notes /></div>}
 
-      <div className='flex-grow overflow-auto pr-12 max-w-screen-xl'>
-        {!!provider && synced
-          ? <EditorContent provider={provider} user={user} />
-          : <></>}
-      </div>
+          <div className='flex-grow overflow-auto pr-12 max-w-screen-xl'>
+            {!!provider && synced
+              ? <EditorContent provider={provider} user={user} />
+              : <></>}
+          </div>
+        </View.Content>
 
-      <div className='h-14 basis-14'>
-        <Footer />
-      </div>
-    </Textbit.Root>
+        <div className='h-14 basis-14'>
+          <Footer />
+        </div>
+
+      </Textbit.Root>
+    </View.Root>
   )
 }
 

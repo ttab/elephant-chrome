@@ -9,7 +9,7 @@ import type { NavigationState } from '@/types'
 export const Action = ({ onDialogClose = undefined, children }: PropsWithChildren & {
   onDialogClose?: () => void
 }): JSX.Element => {
-  const { viewId } = useView()
+  const { viewId, isFocused } = useView()
   const { state } = useNavigation()
   const history = useHistory()
 
@@ -22,11 +22,13 @@ export const Action = ({ onDialogClose = undefined, children }: PropsWithChildre
         {children}
       </div>
 
-      {!onDialogClose && state.content.length > 1
-      && <ViewFocus viewId={viewId} />}
+      {(!onDialogClose && state.content.length > 1) && (
+        <ViewFocus viewId={viewId} />
+      )}
 
-      {(onDialogClose || state.content.length > 1)
-      && <ViewDialogClose onClick={closer} />}
+      {((onDialogClose || state.content.length > 1) && !isFocused) && (
+        <ViewDialogClose onClick={closer} />
+      )}
     </div>
   )
 }

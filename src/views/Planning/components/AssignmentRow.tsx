@@ -2,7 +2,7 @@ import { TimeDisplay } from '@/components/DataItem/TimeDisplay'
 import { AssignmentType } from '@/components/DataItem/AssignmentType'
 import { AssigneeAvatars } from '@/components/DataItem/AssigneeAvatars'
 import { DotDropdownMenu } from '@/components/ui/DotMenu'
-import { Delete, Edit, FileInput } from '@ttab/elephant-ui/icons'
+import { Delete, Edit, FileInput, Pen } from '@ttab/elephant-ui/icons'
 import { type MouseEvent, useMemo, useState, useCallback } from 'react'
 import { SluglineButton } from '@/components/DataItem/Slugline'
 import { useYValue } from '@/hooks/useYValue'
@@ -27,17 +27,10 @@ export const AssignmentRow = ({ index, onSelect }: {
   }
 
   return (
-    <div onClick={(ev) => {
-      ev.preventDefault()
-      ev.stopPropagation()
-      onSelect()
-    }}
-    >
-      <AssignmentRowContent
-        index={index}
-        onSelect={onSelect}
-      />
-    </div>
+    <AssignmentRowContent
+      index={index}
+      onSelect={onSelect}
+    />
   )
 }
 
@@ -108,18 +101,22 @@ const AssignmentRowContent = ({ index, onSelect }: {
   }
 
   return (
-    <div className='flex flex-col gap-2 text-sm px-6 pt-2.5 pb-4 hover:bg-muted'>
+    <div
+      onClick={(event) => {
+        if (assignmentType === 'text' || assignmentType === 'flash') {
+          onOpenArticleEvent(event)
+        } else {
+          onSelect()
+        }
+      }}
+      className='flex flex-col gap-2 text-sm px-6 pt-2.5 pb-4 hover:bg-muted'
+    >
       <div className='flex flex-row gap-6 items-center justify-items-between justify-between'>
 
         <div className='flex grow gap-2 items-center'>
           <Button
             variant='icon'
             className='p-0 pr-2'
-            onClick={<T extends HTMLElement>(event: MouseEvent<T>) => {
-              if (assignmentType === 'text' || assignmentType === 'flash') {
-                onOpenArticleEvent(event)
-              }
-            }}
           >
             <AssignmentType path={`meta.core/assignment[${index}].meta.core/assignment-type`} />
           </Button>
@@ -135,6 +132,19 @@ const AssignmentRowContent = ({ index, onSelect }: {
             {assTime ? <TimeDisplay date={assTime} /> : ''}
           </div>
 
+          <Button
+            variant='ghost'
+            size='sm'
+            className='w-9 px-0 hover:bg-accent2'
+            onClick={(event) => {
+              event.preventDefault()
+              event.stopPropagation()
+              onSelect()
+            }}
+          >
+            <Pen size={18} strokeWidth={1.75} className='text-muted-foreground' />
+          </Button>
+
           {!inProgress
           && (
             <DotDropdownMenu
@@ -144,7 +154,7 @@ const AssignmentRowContent = ({ index, onSelect }: {
         </div>
       </div>
 
-      <div className='text-[15px] font-medium pl-10'>
+      <div className='text-[15px] font-medium'>
         <span className='leading-relaxed group-hover/assrow:underline'>{title}</span>
       </div>
 

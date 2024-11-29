@@ -3,8 +3,10 @@ import { ComboBox } from '@ttab/elephant-ui'
 import { Newsvalues } from '@/defaults'
 import { useYValue } from '@/hooks'
 import { Awareness } from '@/components'
+import { Validation } from './Validation'
+import type { FormProps } from './Form/Root'
 
-export const Newsvalue = (): JSX.Element => {
+export const Newsvalue = ({ onValidation, validateStateRef }: FormProps): JSX.Element => {
   const [newsvalue, setNewsvalue] = useYValue<string | undefined>('meta.core/newsvalue[0].value')
 
   const setFocused = useRef<(value: boolean) => void>(null)
@@ -17,27 +19,45 @@ export const Newsvalue = (): JSX.Element => {
 
   return (
     <Awareness name='Newsvalue' ref={setFocused}>
-      <ComboBox
-        max={1}
-        size='sm'
-        modal={true}
-        variant='ghost'
-        options={Newsvalues}
-        selectedOptions={selectedOptions}
-        onOpenChange={(isOpen: boolean) => {
-          if (setFocused?.current) {
-            setFocused.current(isOpen)
-          }
-        }}
-        onSelect={(option) => {
-          setNewsvalue(option.value)
-        }}
-        hideInput
+      <Validation
+        label='Nyhetsvärde'
+        path='meta.core/newsvalue[0].value'
+        block='core/newsvalue[0]'
+        onValidation={onValidation}
+        validateStateRef={validateStateRef}
       >
-        {SelectedIcon
-          ? <SelectedIcon {...selectedOptions[0].iconProps} />
-          : selectedOptions?.[0]?.label}
-      </ComboBox>
+        <ComboBox
+          max={1}
+          size='xs'
+          modal={true}
+          variant='outline'
+          options={Newsvalues}
+          selectedOptions={selectedOptions}
+          placeholder='Lägg till nyhetsvärde'
+          validation={!!onValidation}
+          onOpenChange={(isOpen: boolean) => {
+            if (setFocused?.current) {
+              setFocused.current(isOpen)
+            }
+          }}
+          onSelect={(option) => {
+            if (newsvalue === option.value) {
+              setNewsvalue(undefined)
+            } else {
+              setNewsvalue(option.value)
+            }
+          }}
+          hideInput
+        >
+
+          {selectedOptions?.[0] && SelectedIcon && (
+            <div className='flex'>
+              <SelectedIcon {...selectedOptions[0].iconProps} />
+              {selectedOptions?.[0]?.label}
+            </div>
+          )}
+        </ComboBox>
+      </Validation>
     </Awareness>
   )
 }

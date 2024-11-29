@@ -6,6 +6,7 @@ import { Title } from '@/components/Table/Items/Title'
 import { NewsvalueMap } from '@/defaults/newsvalueMap'
 import { Newsvalues } from '@/defaults/newsvalues'
 import { type Wire } from '@/lib/index/schemas/wire'
+import { UTCDate } from '@date-fns/utc'
 import { type ColumnDef } from '@tanstack/react-table'
 import { Pen, Shapes, SignalHigh } from '@ttab/elephant-ui/icons'
 import { type IDBSection } from 'src/datastore/types'
@@ -15,8 +16,38 @@ export function wiresListColumns({ sections = [] }: {
 }): Array<ColumnDef<Wire>> {
   return [
     {
-      id: 'newsvalue',
+      id: 'issued',
       enableGrouping: true,
+      meta: {
+        name: 'Tid',
+        columnIcon: SignalHigh,
+        className: 'hidden'
+      },
+      accessorFn: (data) => {
+        const date = new UTCDate(data._source['document.meta.tt_wire.data.issued']?.[0])
+        return date.getHours()
+      },
+      cell: () => {
+        return undefined
+      }
+    },
+    {
+      id: 'issuedMinutes',
+      meta: {
+        name: 'Utgiven',
+        columnIcon: SignalHigh,
+        className: 'flex-px-3'
+      },
+      accessorFn: (data) => {
+        return data._source['document.meta.tt_wire.data.issued']?.[0]
+      },
+      cell: ({ row }) => {
+        const date = new Date(row.getValue('issuedMinutes'))
+        return <span className='font-thin text-xs'>{date.getMinutes().toString().padStart(2, '0')}</span>
+      }
+    },
+    {
+      id: 'newsvalue',
       meta: {
         Filter: ({ column, setSearch }) => (
           <FacetedFilter column={column} setSearch={setSearch} />
@@ -24,7 +55,7 @@ export function wiresListColumns({ sections = [] }: {
         options: Newsvalues,
         name: 'Nyhetsvärde',
         columnIcon: SignalHigh,
-        className: 'flex-none hidden @3xl/view:[display:revert]'
+        className: 'flex-none hidden @3xl/view:[display:revert] px-3'
       },
       accessorFn: (data) => data._source['document.meta.core_newsvalue.value']?.[0],
       cell: ({ row }) => {
@@ -51,7 +82,7 @@ export function wiresListColumns({ sections = [] }: {
       cell: ({ row }) => {
         const title = row.getValue('title')
 
-        return <Title title={title as string} />
+        return <Title title={title as string} className='text-xs' />
       }
     },
     {

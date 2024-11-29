@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react'
-import { ViewHeader } from '@/components'
+import { View, ViewHeader } from '@/components'
 import { BriefcaseBusinessIcon } from '@ttab/elephant-ui/icons'
-import { ScrollArea, Tabs, TabsContent } from '@ttab/elephant-ui'
+import { TabsContent } from '@ttab/elephant-ui'
 import { TableProvider } from '@/contexts/TableProvider'
 import { TableCommandMenu } from '@/components/Commands/TableCommand'
 import { Header } from '@/components/Header'
@@ -36,7 +36,7 @@ const meta: ViewMetadata = {
 export const Assignments = (): JSX.Element => {
   const [query] = useQuery()
   const { from } = useMemo(() =>
-    getDateTimeBoundariesUTC(query.from
+    getDateTimeBoundariesUTC(typeof query.from === 'string'
       ? new Date(`${query.from}T00:00:00.000Z`)
       : new Date()),
   [query.from])
@@ -52,41 +52,39 @@ export const Assignments = (): JSX.Element => {
   }, [authors, session?.user?.email])
 
   return (
-    <TableProvider<AssignmentMeta & { planningTitle: string, newsvalue: string, _id: string }>
-      columns={assignmentColumns({ authors, locale, timeZone })}
-    >
-      <Tabs defaultValue={currentTab} className='flex-1' onValueChange={setCurrentTab}>
+    <View.Root tab={currentTab} onTabChange={setCurrentTab}>
+      <TableProvider<AssignmentMeta & { planningTitle: string, newsvalue: string, _id: string }>
+        columns={assignmentColumns({ authors, locale, timeZone })}
+      >
         <TableCommandMenu heading='Assignments'>
           <Commands />
         </TableCommandMenu>
-        <div className='flex flex-col h-screen'>
-          <ViewHeader.Root>
-            <ViewHeader.Title
-              title='Uppdrag'
-              short='Uppdrag'
-              iconColor='#006bb3'
-              icon={BriefcaseBusinessIcon}
+
+        <ViewHeader.Root>
+          <ViewHeader.Title
+            title='Uppdrag'
+            short='Uppdrag'
+            iconColor='#006bb3'
+            icon={BriefcaseBusinessIcon}
+          />
+          <ViewHeader.Content>
+            <Header
+              tab={currentTab}
+              type='Assignments'
+              assigneeUserName={assigneeUserName}
             />
-            <ViewHeader.Content>
-              <Header
-                tab={currentTab}
-                type='Assignments'
-                assigneeUserName={assigneeUserName}
-              />
-            </ViewHeader.Content>
+          </ViewHeader.Content>
+          <ViewHeader.Action />
+        </ViewHeader.Root>
 
-            <ViewHeader.Action />
-          </ViewHeader.Root>
+        <View.Content>
+          <TabsContent value='list' className='mt-0'>
+            <AssignmentsList startDate={from} />
+          </TabsContent>
+        </View.Content>
 
-          <ScrollArea>
-            <TabsContent value='list' className='mt-0'>
-              <AssignmentsList startDate={from} />
-            </TabsContent>
-          </ScrollArea>
-        </div>
-
-      </Tabs>
-    </TableProvider>
+      </TableProvider>
+    </View.Root>
   )
 }
 

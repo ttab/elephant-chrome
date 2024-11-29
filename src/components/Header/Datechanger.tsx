@@ -12,7 +12,7 @@ export const DateChanger = ({ type }: {
   const [{ from, to }] = useQuery()
 
   const currentDate = useMemo(() => {
-    return from
+    return typeof from === 'string'
       ? new Date(from)
       : new Date()
   }, [from])

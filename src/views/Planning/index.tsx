@@ -6,7 +6,8 @@ import {
   Title,
   Description,
   Story,
-  Section
+  Section,
+  View
 } from '@/components'
 import { type ViewMetadata, type ViewProps } from '@/types'
 import { GanttChartSquare, Tags, Calendar } from '@ttab/elephant-ui/icons'
@@ -21,12 +22,10 @@ import {
 } from './components'
 
 import type * as Y from 'yjs'
-import { cva } from 'class-variance-authority'
-import { cn } from '@ttab/elephant-ui/utils'
 import { Error } from '../Error'
 import { Form } from '@/components/Form'
 import { SluglineEditable } from '@/components/DataItem/SluglineEditable'
-import { Button, ScrollArea } from '@ttab/elephant-ui'
+import { Button } from '@ttab/elephant-ui'
 import { createStateless, StatelessType } from '@/shared/stateless'
 import { useSession } from 'next-auth/react'
 
@@ -52,7 +51,7 @@ export const Planning = (props: ViewProps & { document?: Y.Doc }): JSX.Element =
 
   return (
     <>
-      {documentId
+      {typeof documentId === 'string'
         ? (
             <AwarenessDocument documentId={documentId} document={props.document}>
               <PlanningViewContent {...props} documentId={documentId} />
@@ -72,15 +71,6 @@ const PlanningViewContent = (props: ViewProps & { documentId: string }): JSX.Ele
   const { provider } = useCollaboration()
   const { data, status } = useSession()
   const [documentStatus, setDocumentStatus] = useDocumentStatus(props.documentId)
-
-  const viewVariants = cva('flex flex-col', {
-    variants: {
-      asCreateDialog: {
-        false: 'h-screen',
-        true: 'overflow-hidden'
-      }
-    }
-  })
 
   const handleSubmit = (): void => {
     if (props.onDialogClose) {
@@ -103,32 +93,24 @@ const PlanningViewContent = (props: ViewProps & { documentId: string }): JSX.Ele
   }
 
   return (
-    <div className={cn(viewVariants({
-      asCreateDialog: !!props.asDialog,
-      className: props?.className
-    }))}
-    >
-      <div className='grow-0'>
-        <ViewHeader.Root>
-          {!props.asDialog
-          && <ViewHeader.Title title='Planering' icon={GanttChartSquare} iconColor='#DAC9F2' />}
+    <View.Root asDialog={props.asDialog} className={props?.className}>
+      <ViewHeader.Root asDialog={!!props.asDialog}>
+        {!props.asDialog
+          ? <ViewHeader.Title title='Planering' icon={GanttChartSquare} iconColor='#DAC9F2' />
+          : <ViewHeader.Title title='Skapa ny planering' icon={GanttChartSquare} iconColor='#DAC9F2' asDialog />}
 
-          <ViewHeader.Content>
-            <div className='flex w-full h-full items-center space-x-2'>
-              {!props.asDialog
-              && <DocumentStatus status={documentStatus} setStatus={setDocumentStatus} />}
-              <Newsvalue />
-            </div>
-          </ViewHeader.Content>
+        <ViewHeader.Content>
+          <div className='flex w-full h-full items-center space-x-2'>
+            {!props.asDialog && <DocumentStatus status={documentStatus} setStatus={setDocumentStatus} />}
+          </div>
+        </ViewHeader.Content>
 
-          <ViewHeader.Action onDialogClose={props.onDialogClose}>
-            {!props.asDialog && !!props.documentId
-            && <ViewHeader.RemoteUsers documentId={props.documentId} />}
-          </ViewHeader.Action>
-        </ViewHeader.Root>
-      </div>
+        <ViewHeader.Action onDialogClose={props.onDialogClose}>
+          {!props.asDialog && !!props.documentId && <ViewHeader.RemoteUsers documentId={props.documentId} />}
+        </ViewHeader.Action>
+      </ViewHeader.Root>
 
-      <ScrollArea className='w-full grid @5xl:place-content-center @5xl:max-w-[1200px] mx-auto'>
+      <View.Content className='max-w-[1000px]'>
         <Form.Root asDialog={props.asDialog}>
           <Form.Content>
             <Form.Title>
@@ -149,6 +131,10 @@ const PlanningViewContent = (props: ViewProps & { documentId: string }): JSX.Ele
                 path='meta.tt/slugline[0].value'
                 documentStatus={documentStatus?.name}
               />
+              <Newsvalue />
+            </Form.Group>
+
+            <Form.Group icon={Tags}>
               <Section />
               <Story />
             </Form.Group>
@@ -171,9 +157,8 @@ const PlanningViewContent = (props: ViewProps & { documentId: string }): JSX.Ele
             </Form.Submit>
           </Form.Footer>
         </Form.Root>
-      </ScrollArea>
-
-    </div>
+      </View.Content>
+    </View.Root>
   )
 }
 

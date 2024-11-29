@@ -1,4 +1,5 @@
 import {
+  Button,
   Sheet,
   SheetClose,
   SheetContent,
@@ -8,7 +9,7 @@ import {
   SheetTrigger
 } from '@ttab/elephant-ui'
 import { Avatar, Link } from '@/components'
-import { LogOut, Menu as MenuIcon, X } from '@ttab/elephant-ui/icons'
+import { Menu as MenuIcon, X } from '@ttab/elephant-ui/icons'
 import { ThemeSwitcher } from './ThemeSwitcher'
 import { MenuItem } from './MenuItem'
 import { signOut, useSession } from 'next-auth/react'
@@ -19,7 +20,7 @@ export const Menu = (): JSX.Element => {
 
   return (
     <Sheet>
-      <SheetTrigger className='rounded-md hover:bg-gray-100 w-9 h-9 flex items-center justify-center'>
+      <SheetTrigger className='rounded-md hover:bg-gray-100 hover:border w-9 h-9 flex items-center justify-center'>
         <MenuIcon strokeWidth={2.25} size={18} />
       </SheetTrigger>
 
@@ -65,22 +66,18 @@ export const Menu = (): JSX.Element => {
           </div>
 
           <SheetClose asChild>
-            <a
-              href=''
+            <Button
+              variant='outline'
               onClick={(event) => {
                 event.preventDefault()
                 signOut()
                   .catch((error) => console.error(error))
                 localStorage.removeItem('trustGoogle')
               }}
+              className='gap-4'
             >
-              <div className='flex gap-3 items-center px-3 py-2 rounded-md hover:bg-gray-100'>
-                <div className='flex items-center justify-center opacity-80 pr-2'>
-                  <LogOut strokeWidth={1.75} size={18} />
-                </div>
-                <div>Logga ut</div>
-              </div>
-            </a>
+              Logga ut
+            </Button>
           </SheetClose>
 
         </div>
