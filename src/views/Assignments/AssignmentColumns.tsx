@@ -69,9 +69,8 @@ export function assignmentColumns({ authors = [], locale, timeZone }: {
           return <Newsvalue newsvalue={newsvalue} />
         }
       },
-      filterFn: (row, id, value) => {
-        return value.includes(row.getValue(id))
-      }
+      filterFn: (row, id, value: string[]) =>
+        value.includes(row.getValue(id))
     },
     {
       id: 'assignees',
@@ -92,8 +91,8 @@ export function assignmentColumns({ authors = [], locale, timeZone }: {
         const assignees = row.getValue<string[]>('assignees') || []
         return <Assignees assignees={assignees} />
       },
-      filterFn: (row, id, value) => {
-        const assignees = row.getValue<string[]>(id) || [] as string[]
+      filterFn: (row, id, value: string[]) => {
+        const assignees = row.getValue<string[]>(id) || []
         return (
           typeof value[0] === 'string'
             ? assignees.includes(value[0])
@@ -159,11 +158,12 @@ export function assignmentColumns({ authors = [], locale, timeZone }: {
           )
         }
       },
-      filterFn: (row, id, value) => {
+      filterFn: (row, id, value: string[]) => {
         const val = row.getValue<string[]>(id) || undefined
         if (val) {
           return val.includes(timesSlots[value[0]]?.label)
         }
+        return false
       }
     },
     {
@@ -188,11 +188,13 @@ export function assignmentColumns({ authors = [], locale, timeZone }: {
         }
         return <></>
       },
-      filterFn: (row, id, value) => {
+      filterFn: (row, id, value: string[]) => {
         const val = row.getValue<Date>('publish_time') || undefined
         if (val) {
           return value.includes(row.getValue(id))
         }
+
+        return false
       }
     },
     {
@@ -214,7 +216,7 @@ export function assignmentColumns({ authors = [], locale, timeZone }: {
         const values: DefaultValueOption[] = row.getValue('assignmentType')
         return <Type data={values} />
       },
-      filterFn: (row, id, value) => {
+      filterFn: (row, id, value: string[]) => {
         const types = row.getValue<Array<{ value: string }> | undefined>(id)?.map((type) => type.value)
         return (
           value.some((v: string) => types?.includes(v))

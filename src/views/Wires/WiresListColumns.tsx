@@ -1,4 +1,3 @@
-
 import { FacetedFilter } from '@/components/Commands/FacetedFilter'
 import { SectionBadge } from '@/components/DataItem/SectionBadge'
 import { Newsvalue } from '@/components/Table/Items/Newsvalue'
@@ -67,9 +66,9 @@ export function wiresListColumns({ sections = [] }: {
         }
       },
 
-      filterFn: (row, id, value) => {
-        return value.includes(row.getValue(id))
-      }
+      filterFn: (row, id, value: string[]) =>
+        value.includes(row.getValue(id))
+
     },
     {
       id: 'title',
@@ -108,9 +107,8 @@ export function wiresListColumns({ sections = [] }: {
         const sectionTitle = row.original._source['document.rel.section.title']?.[0]
         return sectionTitle && <SectionBadge title={sectionTitle} color='bg-[#BD6E11]' />
       },
-      filterFn: (row, id, value) => {
-        return value.includes(row.getValue(id))
-      }
+      filterFn: (row, id, value: string[]) =>
+        value.includes(row.getValue(id))
     }
   ]
 }

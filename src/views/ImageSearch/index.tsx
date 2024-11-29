@@ -58,7 +58,7 @@ const ImageSearchContent = (): JSX.Element => {
   const [queryString, setQueryString] = useState('')
   const SIZE = 10
 
-  const swr = useSWRInfinite(
+  const swr = useSWRInfinite<{ hits: ttninjs[] }, Error>(
     (index) => {
       return [queryString, index, SIZE]
     },
@@ -85,7 +85,7 @@ const ImageSearchContent = (): JSX.Element => {
             swr.data?.[0].hits.length === 0 || (swr.data?.[swr.data?.length - 1]?.hits.length ?? 0) < SIZE}
         >
           {(data) =>
-            data.hits.map((hit: ttninjs) => (
+            data.hits.map((hit) => (
               <Thumbnail key={hit.uri} hit={hit} />
             ))}
         </InfiniteScroll>
