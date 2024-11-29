@@ -78,7 +78,7 @@ export async function revertFactbox(element: TBElement): Promise<Block> {
     links: [
       {
         rel: 'source',
-        uuid: properties?.original_id as string
+        uuid: toString(properties?.original_id)
       }
     ],
     content: await slateToNewsDoc(factboxChildren as TBElement[])
