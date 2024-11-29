@@ -19,7 +19,6 @@ import {
   useCollaboration,
   useRegistry,
   useLink,
-  useDocumentStatus,
   useYValue
 } from '@/hooks'
 import { type ViewMetadata, type ViewProps } from '@/types'
@@ -93,8 +92,6 @@ function EditorWrapper(props: ViewProps & {
   const plugins = [Text, UnorderedList, OrderedList, Bold, Italic, Link, TTVisual, ImageSearchPlugin, FactboxPlugin]
   const { provider, synced, user } = useCollaboration()
   const openFactboxEditor = useLink('Factbox')
-  const [documentStatus] = useDocumentStatus(props.documentId)
-  const statusName = useMemo(() => documentStatus?.name, [documentStatus])
   const [notes] = useYValue<Block[] | undefined>('meta.core/note')
 
   return (
@@ -102,13 +99,11 @@ function EditorWrapper(props: ViewProps & {
       <Textbit.Root
         plugins={
           [...plugins.map((initPlugin) => initPlugin()),
-            Factbox(statusName !== 'usable'
-              ? {
-                  onEditOriginal: (id: string) => {
-                    openFactboxEditor(undefined, { id })
-                  }
-                }
-              : undefined
+            Factbox({
+              onEditOriginal: (id: string) => {
+                openFactboxEditor(undefined, { id })
+              }
+            }
             )
           ]
         }
