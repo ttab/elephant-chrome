@@ -18,6 +18,7 @@ import {
   useQuery,
   useCollaboration,
   useRegistry,
+  useLink,
   useYValue
 } from '@/hooks'
 import { type ViewMetadata, type ViewProps } from '@/types'
@@ -88,13 +89,27 @@ const Editor = (props: ViewProps): JSX.Element => {
 function EditorWrapper(props: ViewProps & {
   documentId: string
 }): JSX.Element {
-  const [notes] = useYValue<Block[] | undefined>('meta.core/note')
-  const plugins = [Text, UnorderedList, OrderedList, Bold, Italic, Link, TTVisual, ImageSearchPlugin, Factbox, FactboxPlugin]
+  const plugins = [Text, UnorderedList, OrderedList, Bold, Italic, Link, TTVisual, ImageSearchPlugin, FactboxPlugin]
   const { provider, synced, user } = useCollaboration()
+  const openFactboxEditor = useLink('Factbox')
+  const [notes] = useYValue<Block[] | undefined>('meta.core/note')
 
   return (
     <View.Root>
-      <Textbit.Root plugins={plugins.map((initPlugin) => initPlugin())} placeholders='multiple' className='h-screen max-h-screen flex flex-col'>
+      <Textbit.Root
+        plugins={
+          [...plugins.map((initPlugin) => initPlugin()),
+            Factbox({
+              onEditOriginal: (id: string) => {
+                openFactboxEditor(undefined, { id })
+              }
+            }
+            )
+          ]
+        }
+        placeholders='multiple'
+        className='h-screen max-h-screen flex flex-col'
+      >
         <ViewHeader.Root>
           <ViewHeader.Title title='Editor' icon={PenBoxIcon} />
 

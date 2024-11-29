@@ -8,11 +8,10 @@ import { type Factbox as FactboxSchema } from '@/lib/index/schemas/factbox'
 import { Factbox } from '@/lib/index'
 import { getFactboxRowValue } from './getFactboxRowValue'
 import { ViewHeader } from '@/components'
-import { SearchInput } from '@/components/SearchInput'
+import { Input } from '@ttab/elephant-ui'
 import { Badge, Button, Tooltip } from '@ttab/elephant-ui'
 import { FileInput, PlusIcon } from '@ttab/elephant-ui/icons'
 import { dateToReadableDateTime } from '@/lib/datetime'
-import { formatModified } from '@/lib/formatModified'
 
 const meta: ViewMetadata = {
   name: 'Factboxes',
@@ -49,11 +48,14 @@ interface FactboxContentI {
 }
 
 const FactboxItem = ({ factbox, openFactbox, locale, timeZone }: FBItem): JSX.Element => {
+  const id = factbox._id
+  const [version] = getFactboxRowValue(factbox, 'current_version')
+  const [created] = getFactboxRowValue(factbox, 'created')
   const [title] = getFactboxRowValue(factbox, 'document.title')
   const [text] = getFactboxRowValue(factbox, 'document.content.core_text.data.text')
   const [modified] = getFactboxRowValue(factbox, 'modified')
-  const modifiedFormatted = formatModified(modified)
   const convertedDate = dateToReadableDateTime(new Date(modified), locale, timeZone, { includeYear: true })
+  const createdFormatted = dateToReadableDateTime(new Date(created), locale, timeZone)
   const factboxRef = useRef<HTMLDivElement>(null)
 
   return (
@@ -77,7 +79,14 @@ const FactboxItem = ({ factbox, openFactbox, locale, timeZone }: FBItem): JSX.El
         el.style.opacity = '0.5'
         e.dataTransfer.clearData()
 
-        e.dataTransfer.setData('core/factbox', JSON.stringify({ title, text, modified: modifiedFormatted }))
+        e.dataTransfer.setData('core/factbox', JSON.stringify({
+          title,
+          text,
+          modified,
+          id,
+          original_updated: modified,
+          original_version: version
+        }))
       }}
       onDragEndCapture={() => {
         const el = factboxRef.current
@@ -89,22 +98,27 @@ const FactboxItem = ({ factbox, openFactbox, locale, timeZone }: FBItem): JSX.El
       <div className='w-3/4 flex flex-col' draggable>
         <p className='w-full truncate text-sm font-bold'>{title}</p>
         <p className='w-full truncate text-xs'>{text}</p>
+        <p className='w-full truncate text-xs'>
+          {/* eslint-disable-next-line */}
+          <em>Skapad {createdFormatted}</em>
+        </p>
         {modified
           ? (
               <p className='w-full truncate text-xs'>
                 <em>
-                  Senast ändrad
-                  {convertedDate}
+                  {/* eslint-disable-next-line */}
+                  Senast ändrad {convertedDate}
                 </em>
               </p>
             )
           : null}
       </div>
-      <a onClick={(e) => openFactbox(e, factbox)} className='cursor-pointer flex items-center p-2 rounded-md  hover:bg-gray-100'>
-        <Tooltip content='Redigera för alla'>
+
+      <Tooltip content='Redigera original'>
+        <a onClick={(e) => openFactbox(e, factbox)} className='cursor-pointer flex relative items-center p-2 rounded-md  hover:bg-gray-100'>
           <FileInput size={18} strokeWidth={1.75} />
-        </Tooltip>
-      </a>
+        </a>
+      </Tooltip>
     </div>
   )
 }
@@ -245,13 +259,7 @@ export const Factboxes = (): JSX.Element => {
               })()
             }}
           >
-            <SearchInput
-              className='p-4 w-full text-sm border-none focus:border-none'
-              type='text'
-              placeholder='Sök faktaruta'
-              name='factboxes'
-              ref={inputRef}
-            />
+            <Input placeholder='Sök faktaruta' ref={inputRef} name='factboxes' autoFocus />
           </form>
         </ViewHeader.Content>
         <ViewHeader.Action />
