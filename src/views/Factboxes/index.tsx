@@ -48,10 +48,14 @@ interface FactboxContentI {
 }
 
 const FactboxItem = ({ factbox, openFactbox, locale, timeZone }: FBItem): JSX.Element => {
+  const id = factbox._id
+  const [version] = getFactboxRowValue(factbox, 'current_version')
+  const [created] = getFactboxRowValue(factbox, 'created')
   const [title] = getFactboxRowValue(factbox, 'document.title')
   const [text] = getFactboxRowValue(factbox, 'document.content.core_text.data.text')
   const [modified] = getFactboxRowValue(factbox, 'modified')
   const convertedDate = dateToReadableDateTime(new Date(modified), locale, timeZone, { includeYear: true })
+  const createdFormatted = dateToReadableDateTime(new Date(created), locale, timeZone)
   const factboxRef = useRef<HTMLDivElement>(null)
 
   return (
@@ -75,7 +79,14 @@ const FactboxItem = ({ factbox, openFactbox, locale, timeZone }: FBItem): JSX.El
         el.style.opacity = '0.5'
         e.dataTransfer.clearData()
 
-        e.dataTransfer.setData('core/factbox', JSON.stringify({ title, text, modified: modifiedFormatted }))
+        e.dataTransfer.setData('core/factbox', JSON.stringify({
+          title,
+          text,
+          modified,
+          id,
+          original_updated: modified,
+          original_version: version
+        }))
       }}
       onDragEndCapture={() => {
         const el = factboxRef.current
