@@ -2,7 +2,7 @@ import { useQuery, useCollaboration, useYValue, useRegistry } from '@/hooks'
 import { AwarenessDocument } from '@/components/AwarenessDocument'
 import { type ViewProps, type ViewMetadata } from '@/types/index'
 import { ViewHeader } from '@/components/View'
-import { BookTextIcon } from '@ttab/elephant-ui/icons'
+import { BookTextIcon, InfoIcon } from '@ttab/elephant-ui/icons'
 import type * as Y from 'yjs'
 import { Bold, Italic, Text, OrderedList, UnorderedList } from '@ttab/textbit-plugins'
 import Textbit, { useTextbit } from '@ttab/textbit'
@@ -13,7 +13,7 @@ import { withCursors, withYHistory, withYjs, YjsEditor } from '@slate-yjs/core'
 import { createEditor } from 'slate'
 import { type YXmlText } from 'node_modules/yjs/dist/src/internals'
 import { TextBox } from '@/components/ui'
-import { Button } from '@ttab/elephant-ui'
+import { Alert, AlertDescription, Button } from '@ttab/elephant-ui'
 import { createStateless, StatelessType } from '@/shared/stateless'
 import { useSession } from 'next-auth/react'
 import { createDocument } from '@/lib/createYItem'
@@ -79,52 +79,68 @@ function Wrapper(props: ViewProps & { documentId: string }): JSX.Element {
   const [inProgress] = useYValue('root.__inProgress')
 
   return (
-    <Textbit.Root plugins={plugins.map((initPlugin) => initPlugin())} placeholders='multiple' className='h-screen max-h-screen flex flex-col'>
-      <ViewHeader.Root>
-        <ViewHeader.Title title='Faktaruta' icon={BookTextIcon} />
+    <>
+      <Textbit.Root plugins={plugins.map((initPlugin) => initPlugin())} placeholders='multiple' className='h-screen max-h-screen flex flex-col'>
+        <ViewHeader.Root>
+          <ViewHeader.Title title='Faktaruta' icon={BookTextIcon} />
 
-        <ViewHeader.Action>
-          {!!props.documentId
-          && <ViewHeader.RemoteUsers documentId={props.documentId} />}
-        </ViewHeader.Action>
+          <ViewHeader.Action>
+            {!!props.documentId
+            && <ViewHeader.RemoteUsers documentId={props.documentId} />}
+          </ViewHeader.Action>
 
-      </ViewHeader.Root>
+        </ViewHeader.Root>
+        <div className='flex-grow overflow-auto pr-12 max-w-screen-xl'>
+          {!!provider && synced
+            ? (
+                <>
+                  {!inProgress && !isSaved && (
+                    <div className='p-4'>
+                      <Alert className='bg-gray-50' variant='destructive'>
+                        <InfoIcon size={18} strokeWidth={1.75} className='text-muted-foreground' />
+                        <AlertDescription>
+                          <>Du redigerar nu faktarutans original.</>
+                        </AlertDescription>
+                      </Alert>
+                    </div>
+                  )}
+                  <EditorContent provider={provider} user={user} />
+                </>
+              )
+            : <></>}
+        </div>
+        <div className='p-2'>
+          {inProgress || isSaved
+            ? (
+                <Button
+                  disabled={isSaved}
+                  onClick={() => {
+                    if (provider && status === 'authenticated') {
+                      provider.sendStateless(
+                        createStateless(StatelessType.IN_PROGRESS, {
+                          state: false,
+                          id: props.documentId,
+                          context: {
+                            accessToken: session.accessToken,
+                            user: session.user,
+                            type: 'Factbox'
+                          }
+                        }))
+                    }
+                    setSaved(true)
+                  }}
+                >
+                  Spara
+                </Button>
+              )
+            : null}
+        </div>
+        <div className='h-14 basis-14'>
+          <Footer />
+        </div>
+      </Textbit.Root>
+    </>
 
-      <div className='flex-grow overflow-auto pr-12 max-w-screen-xl'>
-        {!!provider && synced
-          ? <EditorContent provider={provider} user={user} />
-          : <></>}
-      </div>
-      <div className='p-2'>
-        {inProgress || isSaved
-          ? (
-              <Button
-                disabled={isSaved}
-                onClick={() => {
-                  if (provider && status === 'authenticated') {
-                    provider.sendStateless(
-                      createStateless(StatelessType.IN_PROGRESS, {
-                        state: false,
-                        id: props.documentId,
-                        context: {
-                          accessToken: session.accessToken,
-                          user: session.user,
-                          type: 'Factbox'
-                        }
-                      }))
-                  }
-                  setSaved(true)
-                }}
-              >
-                Spara
-              </Button>
-            )
-          : null}
-      </div>
-      <div className='h-14 basis-14'>
-        <Footer />
-      </div>
-    </Textbit.Root>
   )
 }
 
