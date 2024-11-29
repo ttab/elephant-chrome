@@ -17,7 +17,9 @@ import { Bold, Italic, Link, Text, OrderedList, UnorderedList, TTVisual, Factbox
 import {
   useQuery,
   useCollaboration,
-  useRegistry
+  useRegistry,
+  useLink,
+  useDocumentStatus
 } from '@/hooks'
 import { type ViewMetadata, type ViewProps } from '@/types'
 import { EditorHeader } from './EditorHeader'
@@ -92,6 +94,10 @@ function EditorWrapper(props: ViewProps & {
     synced,
     user
   } = useCollaboration()
+  const openFactboxEditor = useLink('Factbox')
+  const [documentStatus] = useDocumentStatus(props.documentId)
+  const statusName = useMemo(() => documentStatus?.name, [documentStatus])
+
   return (
     <Textbit.Root plugins={plugins.map((initPlugin) => initPlugin())} placeholders='multiple' className='h-screen max-h-screen flex flex-col'>
       <ViewHeader.Root>
