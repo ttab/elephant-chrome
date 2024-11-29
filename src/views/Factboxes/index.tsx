@@ -113,11 +113,12 @@ const FactboxItem = ({ factbox, openFactbox, locale, timeZone }: FBItem): JSX.El
             )
           : null}
       </div>
-      <a onClick={(e) => openFactbox(e, factbox)} className='cursor-pointer flex items-center p-2 rounded-md  hover:bg-gray-100'>
-        <Tooltip content='Redigera för alla'>
+
+      <Tooltip content='Redigera original'>
+        <a onClick={(e) => openFactbox(e, factbox)} className='cursor-pointer flex relative items-center p-2 rounded-md  hover:bg-gray-100'>
           <FileInput size={18} strokeWidth={1.75} />
-        </Tooltip>
-      </a>
+        </a>
+      </Tooltip>
     </div>
   )
 }
