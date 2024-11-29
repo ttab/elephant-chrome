@@ -8,7 +8,7 @@ import { type Factbox as FactboxSchema } from '@/lib/index/schemas/factbox'
 import { Factbox } from '@/lib/index'
 import { getFactboxRowValue } from './getFactboxRowValue'
 import { ViewHeader } from '@/components'
-import { SearchInput } from '@/components/SearchInput'
+import { Input } from '@ttab/elephant-ui'
 import { Badge, Button, Tooltip } from '@ttab/elephant-ui'
 import { FileInput, PlusIcon } from '@ttab/elephant-ui/icons'
 import { dateToReadableDateTime } from '@/lib/datetime'
@@ -254,13 +254,7 @@ export const Factboxes = (): JSX.Element => {
               })()
             }}
           >
-            <SearchInput
-              className='p-4 w-full text-sm border-none focus:border-none'
-              type='text'
-              placeholder='Sök faktaruta'
-              name='factboxes'
-              ref={inputRef}
-            />
+            <Input placeholder='Sök faktaruta' ref={inputRef} name='factboxes' autoFocus />
           </form>
         </ViewHeader.Content>
         <ViewHeader.Action />
