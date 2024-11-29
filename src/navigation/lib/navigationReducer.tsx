@@ -7,6 +7,7 @@ import {
 export function navigationReducer(prevState: NavigationState, action: NavigationAction): NavigationState {
   switch (action.type) {
     case NavigationActionType.SET: {
+      console.log('NAVIGATION.SET')
       if (action.content === undefined) {
         throw new Error('Content is undefined')
       }
@@ -42,19 +43,9 @@ export function navigationReducer(prevState: NavigationState, action: Navigation
     }
 
     case NavigationActionType.ON_DOC_CREATED: {
-      const nextState = { ...prevState }
-      nextState.content.forEach((content) => {
-        if (content.viewId === action.viewId) {
-          const props = content.props || {}
-          content.props = {
-            ...props,
-            onDocumentCreated: action.callback
-          }
-        }
-      })
-
       return {
         ...prevState,
+        content: action.content || prevState.content,
         active: action.viewId
       }
     }
