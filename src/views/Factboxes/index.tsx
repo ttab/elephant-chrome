@@ -12,7 +12,6 @@ import { SearchInput } from '@/components/SearchInput'
 import { Badge, Button, Tooltip } from '@ttab/elephant-ui'
 import { FileInput, PlusIcon } from '@ttab/elephant-ui/icons'
 import { dateToReadableDateTime } from '@/lib/datetime'
-import { formatModified } from '@/lib/formatModified'
 
 const meta: ViewMetadata = {
   name: 'Factboxes',
