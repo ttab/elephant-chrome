@@ -7,7 +7,6 @@ import {
 export function navigationReducer(prevState: NavigationState, action: NavigationAction): NavigationState {
   switch (action.type) {
     case NavigationActionType.SET: {
-      console.log('NAVIGATION.SET')
       if (action.content === undefined) {
         throw new Error('Content is undefined')
       }
