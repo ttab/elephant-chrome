@@ -29,7 +29,6 @@ export const Row = ({ row, handleOpen, openDocuments }: {
             cell.column.columnDef.meta?.className
           )}
         >
-          {/* @ts-expect-error unknown type */}
           {flexRender(cell.column.columnDef.cell, cell.getContext())}
         </TableCell>
       ))}
