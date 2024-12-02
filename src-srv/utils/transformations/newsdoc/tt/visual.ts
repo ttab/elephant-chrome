@@ -1,6 +1,7 @@
 import { decode } from 'html-entities'
 import { Block } from '@ttab/elephant-api/newsdoc'
 import { type TBElement } from '@ttab/textbit'
+import { toString } from '../../lib/toString.js'
 
 export const transformVisual = (element: Block): TBElement => {
   const { id, data, links } = element
@@ -39,10 +40,6 @@ export const transformVisual = (element: Block): TBElement => {
 }
 
 export function revertVisual(element: TBElement): Block {
-  function toString(value: string | number | boolean | undefined): string {
-    return (value ?? '').toString()
-  }
-
   const { id, properties } = element
   return Block.create({
     id,

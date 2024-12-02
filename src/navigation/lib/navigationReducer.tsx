@@ -42,19 +42,9 @@ export function navigationReducer(prevState: NavigationState, action: Navigation
     }
 
     case NavigationActionType.ON_DOC_CREATED: {
-      const nextState = { ...prevState }
-      nextState.content.forEach((content) => {
-        if (content.viewId === action.viewId) {
-          const props = content.props || {}
-          content.props = {
-            ...props,
-            onDocumentCreated: action.callback
-          }
-        }
-      })
-
       return {
         ...prevState,
+        content: action.content || prevState.content,
         active: action.viewId
       }
     }

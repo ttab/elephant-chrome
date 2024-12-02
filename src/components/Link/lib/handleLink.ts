@@ -63,6 +63,20 @@ export function handleLink({
     content.splice(currentIndex + 1, Infinity, newContent)
   }
 
+  // Listen for when the change has been done and then add onDocumentCreated callback
+  // to the navigation state as we can't store functions in history state.
+  window.addEventListener('popstate', () => {
+    const currentIndex = content.findIndex((c) => c.viewId === viewId)
+    content[currentIndex].props = { ...content[currentIndex].props, onDocumentCreated }
+
+    dispatch({
+      viewId,
+      content,
+      type: NavigationActionType.ON_DOC_CREATED,
+      callback: onDocumentCreated
+    })
+  }, { once: true })
+
   // Push new history state
   history.pushState(`${viewItem.meta.path}${toQueryString(props)}`, {
     viewId,
@@ -72,17 +86,4 @@ export function handleLink({
   if (!onDocumentCreated) {
     return
   }
-
-  // Listen for when the change has been done and then add onDocumentCreated callback
-  // to the navigation state as we can't store functions in history state.
-  window.addEventListener('popstate', () => {
-    const currentIndex = content.findIndex((c) => c.viewId === viewId)
-    content[currentIndex].props = { ...content[currentIndex].props, onDocumentCreated }
-
-    dispatch({
-      viewId,
-      type: NavigationActionType.ON_DOC_CREATED,
-      callback: onDocumentCreated
-    })
-  }, { once: true })
 }
