@@ -18,22 +18,6 @@ import { useOpenDocuments } from '@/hooks/useOpenDocuments'
 import { cn } from '@ttab/elephant-ui/utils'
 import { useNavigationKeys } from '@/hooks/useNavigationKeys'
 
-// export const AssignmentRow = ({ index, onSelect, isFocused }: {
-//   index: number
-//   onSelect: () => void
-//   isFocused?: boolean
-// }): JSX.Element => {
-
-//   return (
-//     <div>
-//       <AssignmentRowContent
-//         index={index}
-//         onSelect={onSelect}
-//         isFocused={isFocused}
-//       />
-//     </div>
-//   )
-// }
 
 export const AssignmentRow = ({ index, onSelect, isFocused = false }: {
   index: number
