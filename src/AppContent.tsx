@@ -5,6 +5,7 @@ import { useIndexedDB } from './datastore/hooks/useIndexedDB'
 import { calculateViewWidths, minimumSpaceRequired } from '@/navigation/lib'
 import type { ContentState, NavigationState, ViewProps } from './types'
 import { ViewWrapper } from './components'
+import { Navigation } from './views/Wires/components/Navigation'
 
 export const AppContent = (): JSX.Element => {
   const { setActiveView } = useHistory()
@@ -34,6 +35,7 @@ export const AppContent = (): JSX.Element => {
         )
       })}
 
+      <Navigation visibleContent={content} />
       <Dialog open={!IDB.db}>
         <DialogContent>
           <DialogHeader>
@@ -66,9 +68,21 @@ function getVisibleContent(state: NavigationState, setActiveView: (viewId: strin
   }
 
   // Screen size too small for currently available views, remove overflow
+  const isWires = content.every((c) => c.name === 'Wires')
+  const newActiveId = content.find((c) => c.viewId === state.active)?.viewId || content[0].viewId
+
   do {
-    components.shift()
-    content.shift()
+    // Check if newActiveId is within content after shift
+    const shiftedContent = content.slice(1)
+    if (!isWires || shiftedContent.some((c) => c.viewId === newActiveId)) {
+      components.shift()
+      content.shift()
+    } else {
+      // newActiveId is not within content after shift
+      // Perform pop operation
+      components.pop()
+      content.pop()
+    }
     spaceRequired = minimumSpaceRequired(content, state.viewRegistry)
   } while (spaceRequired > 12 && components.length > 1)
 
