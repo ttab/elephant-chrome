@@ -93,8 +93,9 @@ export function parseStateless<T extends StatelessPayload>(payload: string): T {
     throw new Error(`Invalid stateless type: ${type}`)
   }
 
-  const schema = StatelessSchemaMap[type]
-  return schema.parse({ type, message: JSON.parse(message) }) as T
+  const schema = StatelessSchemaMap[type] as z.ZodSchema<T>
+  const parsedMessage = JSON.parse(message) as T
+  return schema.parse({ type, message: parsedMessage })
 }
 
 
