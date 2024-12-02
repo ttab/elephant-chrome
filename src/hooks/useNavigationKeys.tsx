@@ -40,17 +40,12 @@ export const useNavigationKeys = (
       return
     }
 
-    // If default was prevented already, don't act on it
-    if (event.defaultPrevented) {
-      return
+    if (preventDefault) {
+      event.preventDefault()
     }
 
     // If key is a navigation key
     if (keys.some((key) => event.key === key)) {
-      if (preventDefault) {
-        event.preventDefault()
-      }
-
       if (stopPropagation) {
         event.stopPropagation()
       }
