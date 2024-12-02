@@ -1,6 +1,7 @@
 import { Block } from '@ttab/elephant-api/newsdoc'
 import { type TBElement } from '@ttab/textbit'
 import { newsDocToSlate, slateToNewsDoc } from '../index.js'
+import { toString } from '../../lib/toString.js'
 
 export const transformFactbox = (element: Block): TBElement => {
   const { id, data, title, content, links } = element
@@ -42,10 +43,6 @@ interface Data {
 }
 
 export async function revertFactbox(element: TBElement): Promise<Block> {
-  function toString(value: string | number | boolean | undefined): string {
-    return (value ?? '').toString()
-  }
-
   const factboxTitle = element.children.find((child) => child.type === 'core/factbox/title')
   const title = (factboxTitle?.children as FactboxChild[] | undefined)?.[0]?.text ?? ''
 
