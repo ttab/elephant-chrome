@@ -21,7 +21,7 @@ export const GroupedRowsHeader = <TData, TValue>({ row, columns }: {
             </span>
           </div>
           <div className='flex items-center space-x-2 px-6'>
-            <span className='font-thin text-muted-foreground'>{groupingTitle}</span>
+            <span className='font-thin text-muted-foreground'>Antal</span>
             <span className='inline-flex items-center justify-center size-5 bg-background rounded-full ring-1 ring-gray-300'>
               {row.subRows.length}
             </span>

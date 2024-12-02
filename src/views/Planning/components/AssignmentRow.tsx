@@ -2,7 +2,7 @@ import { TimeDisplay } from '@/components/DataItem/TimeDisplay'
 import { AssignmentType } from '@/components/DataItem/AssignmentType'
 import { AssigneeAvatars } from '@/components/DataItem/AssigneeAvatars'
 import { DotDropdownMenu } from '@/components/ui/DotMenu'
-import { Delete, Edit, FileInput } from '@ttab/elephant-ui/icons'
+import { Delete, Edit, FileInput, Pen } from '@ttab/elephant-ui/icons'
 import { type MouseEvent, useMemo, useState, useCallback, useEffect, useRef } from 'react'
 import { SluglineButton } from '@/components/DataItem/Slugline'
 import { useYValue } from '@/hooks/useYValue'
@@ -18,35 +18,24 @@ import { useOpenDocuments } from '@/hooks/useOpenDocuments'
 import { cn } from '@ttab/elephant-ui/utils'
 import { useNavigationKeys } from '@/hooks/useNavigationKeys'
 
-export const AssignmentRow = ({ index, onSelect, isFocused }: {
-  index: number
-  onSelect: () => void
-  isFocused?: boolean
-}): JSX.Element => {
-  const assPath = `meta.core/assignment[${index}]`
-  const [inProgress] = useYValue(`${assPath}.__inProgress`)
+// export const AssignmentRow = ({ index, onSelect, isFocused }: {
+//   index: number
+//   onSelect: () => void
+//   isFocused?: boolean
+// }): JSX.Element => {
 
-  if (inProgress) {
-    return <></>
-  }
+//   return (
+//     <div>
+//       <AssignmentRowContent
+//         index={index}
+//         onSelect={onSelect}
+//         isFocused={isFocused}
+//       />
+//     </div>
+//   )
+// }
 
-  return (
-    <div onClick={(ev) => {
-      ev.preventDefault()
-      ev.stopPropagation()
-      onSelect()
-    }}
-    >
-      <AssignmentRowContent
-        index={index}
-        onSelect={onSelect}
-        isFocused={isFocused}
-      />
-    </div>
-  )
-}
-
-const AssignmentRowContent = ({ index, onSelect, isFocused = false }: {
+export const AssignmentRow = ({ index, onSelect, isFocused = false }: {
   index: number
   onSelect: () => void
   isFocused?: boolean
@@ -93,14 +82,18 @@ const AssignmentRowContent = ({ index, onSelect, isFocused = false }: {
 
   useNavigationKeys({
     elementRef: rowRef,
-    keys: ['Enter', 'Space'],
+    keys: ['Enter', ' '],
     onNavigation: (event) => {
       if (assignmentType === 'text' || assignmentType === 'flash') {
-        // FIXME: This opens the same (first) article all the time
-        onOpenArticleEvent(event)
+        if (event.key === 'Enter') {
+          onOpenArticleEvent(event)
+        } else if (event.key === ' ') {
+          onSelect()
+        }
       }
     }
   })
+
 
   const menuItems = [
     {
@@ -134,7 +127,6 @@ const AssignmentRowContent = ({ index, onSelect, isFocused = false }: {
   }
 
   const selected = articleId && openDocuments.includes(articleId)
-  console.log(articleId, selected, openDocuments)
   return (
     <div
       ref={rowRef}
@@ -143,6 +135,13 @@ const AssignmentRowContent = ({ index, onSelect, isFocused = false }: {
         'flex flex-col gap-2 text-sm px-6 pt-2.5 pb-4 hover:bg-muted focus:outline-table-selected',
         selected ? 'bg-table-selected focus:bg-table-selected' : ''
       )}
+      onClick={(event) => {
+        if (assignmentType === 'text' || assignmentType === 'flash') {
+          onOpenArticleEvent(event)
+        } else {
+          onSelect()
+        }
+      }}
     >
       <div className='flex flex-row gap-6 items-center justify-items-between justify-between'>
 
@@ -150,11 +149,6 @@ const AssignmentRowContent = ({ index, onSelect, isFocused = false }: {
           <Button
             variant='icon'
             className='p-0 pr-2'
-            onClick={<T extends HTMLElement>(event: MouseEvent<T>) => {
-              if (assignmentType === 'text' || assignmentType === 'flash') {
-                onOpenArticleEvent(event)
-              }
-            }}
           >
             <AssignmentType path={`meta.core/assignment[${index}].meta.core/assignment-type`} />
           </Button>
@@ -170,75 +164,94 @@ const AssignmentRowContent = ({ index, onSelect, isFocused = false }: {
             {assTime ? <TimeDisplay date={assTime} /> : ''}
           </div>
 
+          <Button
+            variant='ghost'
+            size='sm'
+            className='w-9 px-0 hover:bg-accent2'
+            onClick={(event) => {
+              event.preventDefault()
+              event.stopPropagation()
+              onSelect()
+            }}
+          >
+            <Pen size={18} strokeWidth={1.75} className='text-muted-foreground' />
+          </Button>
+
           {!inProgress && <DotDropdownMenu items={menuItems} />}
         </div>
       </div>
 
-      <div className='text-[15px] font-medium pl-10'>
+      <div className='text-[15px] font-medium'>
         <span className='leading-relaxed group-hover/assrow:underline'>{title}</span>
       </div>
 
-      {!!description && (
-        <div className='font-light pl-10'>
-          {description}
-        </div>
-      )}
+      {
+        !!description && (
+          <div className='font-light pl-10'>
+            {description}
+          </div>
+        )
+      }
 
       <div className='@3xl/view:hidden'>
         <SluglineButton path={`meta.core/assignment[${index}].meta.tt/slugline[0].value`} />
       </div>
 
-      {showVerifyDialog && (
-        <Prompt
-          title='Ta bort?'
-          description={`Vill du ta bort uppdraget${title ? ' ' + title : ''}?`}
-          secondaryLabel='Avbryt'
-          primaryLabel='Ta bort'
-          onPrimary={() => {
-            setShowVerifyDialog(false)
-            deleteByYPath(
-              provider?.document.getMap('ele'),
-              `meta.core/assignment[${index}]`
-            )
-          }}
-          onSecondary={() => {
-            setShowVerifyDialog(false)
-          }}
-        />
-      )}
+      {
+        showVerifyDialog && (
+          <Prompt
+            title='Ta bort?'
+            description={`Vill du ta bort uppdraget${title ? ' ' + title : ''}?`}
+            secondaryLabel='Avbryt'
+            primaryLabel='Ta bort'
+            onPrimary={() => {
+              setShowVerifyDialog(false)
+              deleteByYPath(
+                provider?.document.getMap('ele'),
+                `meta.core/assignment[${index}]`
+              )
+            }}
+            onSecondary={() => {
+              setShowVerifyDialog(false)
+            }}
+          />
+        )
+      }
 
-      {showCreateDialog && (
-        <Prompt
-          title='Skapa artikel?'
-          description={`Vill du skapa en artikel för uppdraget${title ? ' ' + title : ''}?`} // TODO: Display information that will be forwarded from the assignment
-          secondaryLabel='Avbryt'
-          primaryLabel='Skapa'
-          onPrimary={(event) => {
-            setShowCreateDialog(false)
-            if (!provider?.document) {
-              return
-            }
+      {
+        showCreateDialog && (
+          <Prompt
+            title='Skapa artikel?'
+            description={`Vill du skapa en artikel för uppdraget${title ? ' ' + title : ''}?`} // TODO: Display information that will be forwarded from the assignment
+            secondaryLabel='Avbryt'
+            primaryLabel='Skapa'
+            onPrimary={(event) => {
+              setShowCreateDialog(false)
+              if (!provider?.document) {
+                return
+              }
 
-            const id = crypto.randomUUID()
-            const onDocumentCreated = (): void => {
-              setTimeout(() => {
-                appendArticle({ document: provider?.document, id, index, slug: '' })
-              }, 0)
-            }
+              const id = crypto.randomUUID()
+              const onDocumentCreated = (): void => {
+                setTimeout(() => {
+                  appendArticle({ document: provider?.document, id, index, slug: '' })
+                }, 0)
+              }
 
-            const payload = createArticlePayload(provider?.document, index)
+              const payload = createArticlePayload(provider?.document, index)
 
-            openArticle(event,
-              { id, payload },
-              'blank',
-              { onDocumentCreated }
-            )
-          }}
-          onSecondary={() => {
-            setShowCreateDialog(false)
-          }}
-        />
-      )}
+              openArticle(event,
+                { id, payload },
+                'blank',
+                { onDocumentCreated }
+              )
+            }}
+            onSecondary={() => {
+              setShowCreateDialog(false)
+            }}
+          />
+        )
+      }
     </div>
   )
 }

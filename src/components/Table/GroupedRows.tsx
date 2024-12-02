@@ -9,6 +9,10 @@ export const GroupedRows = <TData, TValue>({ row, columns, handleOpen, openDocum
   handleOpen: (event: MouseEvent<HTMLTableRowElement> | KeyboardEvent, subRow: RowType<unknown>) => void
   openDocuments: string[]
 }): JSX.Element => {
+  if (!row.subRows.length) {
+    return <></>
+  }
+
   return (
     <React.Fragment key={row.id}>
       <GroupedRowsHeader row={row} columns={columns} />

@@ -1,5 +1,5 @@
 import { cn } from '@ttab/elephant-ui/utils'
-import { PropsWithChildren } from 'react'
+import type { PropsWithChildren } from 'react'
 
 export const LoadingText = ({ children, className }: {
   className?: string

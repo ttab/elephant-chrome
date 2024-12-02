@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import { toGroupedNewsDoc, fromGroupedNewsDoc } from '../src-srv/utils/transformations/groupedNewsDoc'
 import { toYjsNewsDoc, fromYjsNewsDoc } from '../src-srv/utils/transformations/yjsNewsDoc'
 
@@ -14,11 +15,10 @@ import { YBlock } from '@/shared/YBlock'
  * Array order is not guaranteed.
  * Sorts the JSON object recursively so that we can compare the objects
  */
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-function sortDocument(json: any): any {
+function sortDocument(json: unknown): unknown {
   if (Array.isArray(json)) {
     return json.map(sortDocument)
-      .sort((a: unknown, b: unknown) => {
+      .sort((a, b) => {
         if (typeof a === 'object' && typeof b === 'object') {
           return JSON.stringify(sortDocument(a)).localeCompare(JSON.stringify(sortDocument(b)))
         }
@@ -26,8 +26,8 @@ function sortDocument(json: any): any {
       })
   } else if (typeof json === 'object' && json !== null) {
     const sortedObject: Record<string, unknown> = {}
-    Object.keys(json as Record<string, unknown>).sort().forEach((key) => {
-      sortedObject[key] = sortDocument(json[key])
+    Object.keys(json).sort().forEach((key) => {
+      sortedObject[key] = sortDocument((json as Record<string, unknown>)[key])
     })
     return sortedObject
   }

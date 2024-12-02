@@ -43,9 +43,8 @@ export function planningListColumns({ sections = [], authors = [] }: {
         const status = row.getValue<string>('documentStatus')
         return <DocumentStatus status={status} />
       },
-      filterFn: (row, id, value) => (
+      filterFn: (row, id, value: string[]) =>
         value.includes(row.getValue(id))
-      )
     },
     {
       id: 'newsvalue',
@@ -69,9 +68,8 @@ export function planningListColumns({ sections = [], authors = [] }: {
         }
       },
 
-      filterFn: (row, id, value) => {
-        return value.includes(row.getValue(id))
-      }
+      filterFn: (row, id, value: string[]) =>
+        value.includes(row.getValue(id))
     },
     {
       id: 'title',
@@ -115,9 +113,8 @@ export function planningListColumns({ sections = [], authors = [] }: {
           </>
         )
       },
-      filterFn: (row, id, value) => {
-        return value.includes(row.getValue(id))
-      }
+      filterFn: (row, id, value: string[]) =>
+        value.includes(row.getValue(id))
     },
     {
       id: 'assignees',
@@ -135,11 +132,10 @@ export function planningListColumns({ sections = [], authors = [] }: {
         const assignees = row.getValue<string[]>('assignees') || []
         return <Assignees assignees={assignees} />
       },
-      filterFn: (row, id, value) => (
-        typeof value?.[0] === 'string'
+      filterFn: (row, id, value: string[]) =>
+        Array.isArray(value) && typeof value[0] === 'string'
           ? (row.getValue<string[]>(id) || []).includes(value[0])
           : false
-      )
     },
     {
       id: 'type',
@@ -163,9 +159,8 @@ export function planningListColumns({ sections = [], authors = [] }: {
 
         return <Type data={data} />
       },
-      filterFn: (row, id, value) => (
+      filterFn: (row, id, value: string[]) =>
         value.some((v: string) => row.getValue<string[] | undefined>(id)?.includes(v))
-      )
     },
     {
       id: 'action',

@@ -1,4 +1,4 @@
-import { Dispatch, PropsWithChildren, SetStateAction } from 'react'
+import type { Dispatch, PropsWithChildren, SetStateAction } from 'react'
 import { Tabs } from '@ttab/elephant-ui'
 import { cn } from '@ttab/elephant-ui/utils'
 import { cva } from 'class-variance-authority'

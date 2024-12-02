@@ -2,8 +2,7 @@ import {
   type MouseEvent,
   useEffect,
   useCallback,
-  useMemo,
-  useDeferredValue
+  useMemo
 } from 'react'
 import {
   type ColumnDef,
@@ -23,6 +22,8 @@ import { NewItems } from './NewItems'
 import { GroupedRows } from './GroupedRows'
 import { LoadingText } from '../LoadingText'
 import { Row } from './Row'
+import { useModal } from '../Modal/useModal'
+import { Editor } from '@/components/PlainEditor'
 
 interface TableProps<TData, TValue> {
   columns: Array<ColumnDef<TData, TValue>>
@@ -40,9 +41,11 @@ export const Table = <TData, TValue>({
   const { viewId: origin } = useView()
   const { table, loading } = useTable()
   const openDocuments = useOpenDocuments({ idOnly: true })
+  const { showModal, hideModal } = useModal()
 
-  const handleOpen = useCallback((event: MouseEvent<HTMLTableRowElement> | KeyboardEvent, subRow: RowType<unknown>): void => {
+  const handleOpen = useCallback((event: MouseEvent<HTMLTableRowElement> | KeyboardEvent, row: RowType<unknown>): void => {
     const viewType = type === 'Wires' ? 'Editor' : type
+
     const target = event.target as HTMLElement
     if (target && 'dataset' in target && !target.dataset.rowAction) {
       if (!onRowSelected) {
@@ -54,7 +57,7 @@ export const Table = <TData, TValue>({
         dispatch,
         viewItem: state.viewRegistry.get(viewType),
         // @ts-expect-error unknown type
-        props: { id: subRow.original._id },
+        props: { id: row.original._id },
         viewId: crypto.randomUUID(),
         origin,
         history
@@ -64,7 +67,7 @@ export const Table = <TData, TValue>({
 
 
   useNavigationKeys({
-    keys: ['ArrowUp', 'ArrowDown', 'Enter', 'Escape'],
+    keys: ['ArrowUp', 'ArrowDown', 'Enter', 'Escape', ' '],
     onNavigation: (event) => {
       const rows = table.getRowModel().rows
       if (!rows?.length) {
@@ -77,7 +80,14 @@ export const Table = <TData, TValue>({
         : rows
 
       if (event.key === 'Enter' && selectedRow) {
+        hideModal()
         handleOpen(event, selectedRow)
+        return
+      }
+
+      if (event.key === ' ' && type === 'Wires') {
+        // @ts-expect-error unknown type
+        showModal(<Editor id={selectedRow.original._id} />, 'sheet')
         return
       }
 
@@ -103,15 +113,11 @@ export const Table = <TData, TValue>({
     }
   }, [table, onRowSelected])
 
-  // Needed for the useMemo to refresh when new data is set in the table
-  // Defer to previous table and loading state until ready, reduces flickering
-  const deferredRows = useDeferredValue(table.getRowModel().rows)
-  const deferredLoading = useDeferredValue(loading)
-
+  const rows = table.getRowModel().rows
   const rowSelection = table.getState().rowSelection
 
   const TableBodyElement = useMemo(() => {
-    if (deferredLoading || !deferredRows?.length) {
+    if (loading || !rows?.length) {
       const isSearchTable = window.location.pathname.includes('/elephant/search')
       return (
         <TableRow>
@@ -120,7 +126,7 @@ export const Table = <TData, TValue>({
             className='h-24 text-center'
           >
             <LoadingText>
-              {deferredLoading
+              {loading
                 ? isSearchTable
                   ? ''
                   : 'Laddar...'
@@ -131,28 +137,30 @@ export const Table = <TData, TValue>({
       )
     }
 
-    return deferredRows.map((row, index) => (
+    return rows.map((row, index) => (
       table.getState().grouping.length)
       ? <GroupedRows<TData, TValue> key={index} row={row} columns={columns} handleOpen={handleOpen} openDocuments={openDocuments} />
       : <Row key={index} row={row} handleOpen={handleOpen} openDocuments={openDocuments} />
     )
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [deferredRows, columns, deferredLoading, handleOpen, table, rowSelection])
+  }, [rows, columns, loading, handleOpen, table, rowSelection])
 
   return (
     <>
       <Toolbar table={table} />
 
-      <NewItems.Root>
-        <NewItems.Table
-          header={`Dina nya skapade ${type === 'Planning'
-            ? 'planeringar'
-            : 'händelser'}`}
-          type={type as 'Planning' | 'Event'}
-        />
-      </NewItems.Root>
+      {(type === 'Planning' || type === 'Event') && (
+        <NewItems.Root>
+          <NewItems.Table
+            header={`Dina nya skapade ${['Planning', 'Event'].includes(type)
+              ? 'planeringar'
+              : 'händelser'}`}
+            type={type}
+          />
+        </NewItems.Root>
+      )}
 
-      {(type !== 'Search' || !deferredLoading) && (
+      {(type !== 'Search' || !loading) && (
         <_Table className='table-auto relative'>
           <TableBody>
             {TableBodyElement}
