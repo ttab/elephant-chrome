@@ -19,8 +19,9 @@ const meta: ViewMetadata = {
 }
 
 
-export const Error = (props: ViewProps & {
+export const Error = ({ title, error, message }: ViewProps & {
   title?: string
+  error?: Error
   message?: string
 }): JSX.Element => {
   return (
@@ -30,19 +31,24 @@ export const Error = (props: ViewProps & {
       </ViewHeader.Root>
 
       <View.Content className='max-w-[800px] pt-20'>
-        <h1 className='text-3xl font-bold mb-6'>{props?.title || 'Okänt fel'}</h1>
+        <h1 className='text-3xl font-bold mb-6'>{title || 'Okänt fel'}</h1>
+        {message && (
+          <p className='text-md'>
+            {message}
+          </p>
+        )}
 
-        {props?.message
-          ? (
-              <p className='text-md'>
-                {props.message}
-              </p>
-            )
-          : (
-              <p className='text-md'>
-                Ett okänt fel, eller ett fel som saknar felmeddelande har uppstått. Kontakta systemadministratören.
-              </p>
-            )}
+        {error && (
+          <pre className='text-sm bg-gray-100 p-4 rounded-lg mt-4'>
+            {error.message}
+          </pre>
+        )}
+
+        {!message && !error && (
+          <p className='text-md'>
+            Ett okänt fel, eller ett fel som saknar felmeddelande har uppstått. Kontakta systemadministratören.
+          </p>
+        )}
       </View.Content>
     </View.Root>
   )

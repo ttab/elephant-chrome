@@ -6,6 +6,8 @@ import { calculateViewWidths, minimumSpaceRequired } from '@/navigation/lib'
 import type { ContentState, NavigationState, ViewProps } from './types'
 import { ViewWrapper } from './components'
 import { Navigation } from './views/Wires/components/Navigation'
+import { FaroErrorBoundary } from '@grafana/faro-react'
+import { Error } from './views'
 
 export const AppContent = (): JSX.Element => {
   const { setActiveView } = useHistory()
@@ -30,7 +32,11 @@ export const AppContent = (): JSX.Element => {
         // FIXME: This whole thing must be memoized(?), or could we handle colSpan better further down the tree?
         return (
           <ViewWrapper key={item.viewId} viewId={item.viewId} name={item.name} colSpan={colSpan}>
-            <Component {...item.props} />
+            <FaroErrorBoundary
+              fallback={(error) => <Error error={error} />}
+            >
+              <Component {...item.props} />
+            </FaroErrorBoundary>
           </ViewWrapper>
         )
       })}
