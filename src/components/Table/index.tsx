@@ -87,7 +87,7 @@ export const Table = <TData, TValue>({
 
       if (event.key === ' ' && type === 'Wires') {
         // @ts-expect-error unknown type
-        showModal(<Editor id={selectedRow.original._id} />, 'sheet')
+        showModal(<Editor id={selectedRow.original._id} />, 'sheet', { id: selectedRow.original._id })
         return
       }
 
@@ -139,8 +139,25 @@ export const Table = <TData, TValue>({
 
     return rows.map((row, index) => (
       table.getState().grouping.length)
-      ? <GroupedRows<TData, TValue> key={index} row={row} columns={columns} handleOpen={handleOpen} openDocuments={openDocuments} />
-      : <Row key={index} row={row} handleOpen={handleOpen} openDocuments={openDocuments} />
+      ? (
+          <GroupedRows<TData, TValue>
+            key={index}
+            type={type}
+            row={row}
+            columns={columns}
+            handleOpen={handleOpen}
+            openDocuments={openDocuments}
+          />
+        )
+      : (
+          <Row
+            key={index}
+            type={type}
+            row={row}
+            handleOpen={handleOpen}
+            openDocuments={openDocuments}
+          />
+        )
     )
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [rows, columns, loading, handleOpen, table, rowSelection])

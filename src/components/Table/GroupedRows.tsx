@@ -3,8 +3,9 @@ import { type ColumnDef, type Row as RowType } from '@tanstack/react-table'
 import { GroupedRowsHeader } from './GroupedRowsHeader'
 import { Row } from './Row'
 
-export const GroupedRows = <TData, TValue>({ row, columns, handleOpen, openDocuments }: {
+export const GroupedRows = <TData, TValue>({ row, columns, handleOpen, openDocuments, type }: {
   row: RowType<unknown>
+  type: 'Planning' | 'Event' | 'Assignments' | 'Search' | 'Wires'
   columns: Array<ColumnDef<TData, TValue>>
   handleOpen: (event: MouseEvent<HTMLTableRowElement> | KeyboardEvent, subRow: RowType<unknown>) => void
   openDocuments: string[]
@@ -20,6 +21,7 @@ export const GroupedRows = <TData, TValue>({ row, columns, handleOpen, openDocum
       {row.subRows.map((subRow) => (
         <Row
           key={subRow.id}
+          type={type}
           row={subRow}
           handleOpen={handleOpen}
           openDocuments={openDocuments}

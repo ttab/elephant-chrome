@@ -3,6 +3,7 @@ import {
   type PropsWithChildren,
   type ReactNode
 } from 'react'
+import type { ModalData } from './ModalContext'
 import { ModalContext } from './ModalContext'
 import { useKeydownGlobal } from '@/hooks/useKeydownGlobal'
 import { ModalDialog } from './ModalDialog'
@@ -10,6 +11,7 @@ import { ModalSheet } from './ModalSheet'
 
 export const ModalProvider = ({ children }: PropsWithChildren): JSX.Element => {
   const [isVisible, setIsVisible] = useState(false)
+  const [modalData, setModalData] = useState<ModalData | undefined>(undefined)
   const [modalContent, setModalContent] = useState<ReactNode | null>(null)
   const [modalType, setModalType] = useState<string | undefined>(undefined)
 
@@ -19,9 +21,10 @@ export const ModalProvider = ({ children }: PropsWithChildren): JSX.Element => {
     }
   })
 
-  const showModal = (content: ReactNode, type: string = 'dialog'): void => {
+  const showModal = (content: ReactNode, type: string = 'dialog', data: ModalData | undefined): void => {
     setModalContent(content)
     setModalType(type)
+    setModalData(data)
     setIsVisible(true)
   }
 
@@ -31,8 +34,10 @@ export const ModalProvider = ({ children }: PropsWithChildren): JSX.Element => {
     setModalType(undefined)
   }
 
+  const currentModal = modalData
+
   return (
-    <ModalContext.Provider value={{ showModal, hideModal }}>
+    <ModalContext.Provider value={{ showModal, hideModal, currentModal }}>
       {children}
       { modalType === 'dialog' && (
         <ModalDialog isVisible={isVisible}>

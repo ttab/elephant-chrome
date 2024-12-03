@@ -1,7 +1,8 @@
+import { useModal } from '@/components/Modal/useModal'
 import { useNavigation } from '@/navigation/hooks/useNavigation'
 import { useEffect, useState } from 'react'
 
-type DocumentName = 'Planning' | 'Event' | 'Editor' | 'Factbox' | 'Flash'
+type DocumentName = 'Planning' | 'Event' | 'Editor' | 'Factbox' | 'Flash' | 'Modal'
 interface OpenDocument {
   id: string
   name: DocumentName
@@ -19,6 +20,8 @@ export function useOpenDocuments(params: { name?: string, idOnly?: boolean } = {
   const [documents, setDocuments] = useState<OpenDocument[]>([])
   const { idOnly, name } = params
 
+  const { currentModal } = useModal()
+
   useEffect(() => {
     const names = ['Planning', 'Event', 'Editor', 'Factbox', 'Flash']
     const filteredDocuments = state.content.filter((s) => {
@@ -31,8 +34,17 @@ export function useOpenDocuments(params: { name?: string, idOnly?: boolean } = {
       }
     })
 
-    setDocuments(filteredDocuments)
-  }, [name, state.content, state.active])
+    if (currentModal) {
+      setDocuments([...filteredDocuments, {
+        ...currentModal,
+        name: 'Modal',
+        active: true
+      }
+      ])
+    } else {
+      setDocuments(filteredDocuments)
+    }
+  }, [name, state.content, state.active, currentModal])
 
   return idOnly ? documents.map((item) => item.id) : documents
 }

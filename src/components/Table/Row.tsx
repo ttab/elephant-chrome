@@ -3,7 +3,8 @@ import { TableRow, TableCell } from '@ttab/elephant-ui'
 import { type Row as RowType, flexRender } from '@tanstack/react-table'
 import { cn } from '@ttab/elephant-ui/utils'
 
-export const Row = ({ row, handleOpen, openDocuments }: {
+export const Row = ({ row, handleOpen, openDocuments, type }: {
+  type: 'Planning' | 'Event' | 'Assignments' | 'Search' | 'Wires'
   row: RowType<unknown>
   handleOpen: (event: MouseEvent<HTMLTableRowElement>, subRow: RowType<unknown>) => void
   openDocuments: string[]
@@ -22,7 +23,8 @@ export const Row = ({ row, handleOpen, openDocuments }: {
         data-[state=selected]:bg-table-selected
       `}
       // @ts-expect-error unknown type
-      data-state={openDocuments.includes(row.original._id as string) && 'selected'}
+      data-state={((openDocuments.includes(row.original._id as string) && 'selected'))
+      || (type === 'Wires' && row.getIsSelected() && 'focused')}
       onClick={(event: MouseEvent<HTMLTableRowElement>) => handleOpen(event, row)}
       ref={(el) => {
         if (el && row.getIsSelected()) {
