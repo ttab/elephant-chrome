@@ -1,7 +1,7 @@
 import { PlusIcon } from '@ttab/elephant-ui/icons'
 import { AssignmentRow } from './AssignmentRow'
 import { appendAssignment } from '@/lib/createYItem'
-import { useCollaboration, useYValue } from '@/hooks'
+import { useCollaboration, useNavigationKeys, useYValue } from '@/hooks'
 import { Assignment } from './Assignment'
 import { type Block } from '@ttab/elephant-api/newsdoc'
 import { useMemo, useState } from 'react'
@@ -17,6 +17,7 @@ export const AssignmentTable = ({ asDialog = false }: {
   const [assignments] = useYValue<EleBlock[]>('meta.core/assignment')
   const [planningSlugLine] = useYValue<string | undefined>('meta.tt/slugline[0].value')
   const [selectedAssignment, setSelectedAssignment] = useState<number | undefined>(undefined)
+  const [focusedRowIndex, setFocusedRowIndex] = useState<number | undefined>()
 
   const newAssigment = useMemo(() => {
     const index = assignments?.findIndex((a) => a.__inProgress) ?? -1
@@ -38,6 +39,16 @@ export const AssignmentTable = ({ asDialog = false }: {
     return provider?.document.getMap('ele')
   }, [provider?.document])
 
+  useNavigationKeys({
+    keys: ['ArrowUp', 'ArrowDown'],
+    onNavigation: (event) => {
+      const idx = (focusedRowIndex === undefined)
+        ? (event.key === 'ArrowDown' ? 0 : existingAssigments.length - 1)
+        : (focusedRowIndex + (event.key === 'ArrowDown' ? 1 : -1) + existingAssigments.length) % existingAssigments.length
+      setFocusedRowIndex(idx)
+    }
+  })
+
   const variants = cva('',
     {
       variants: {
@@ -50,8 +61,7 @@ export const AssignmentTable = ({ asDialog = false }: {
 
   return (
     <>
-      {newAssigment === undefined && provider?.document
-      && (
+      {newAssigment === undefined && provider?.document && (
         <div className={cn('flex flex-start pt-2 text-primary pb-4',
           selectedAssignment != null ? 'opacity-50' : '')}
         >
@@ -91,8 +101,7 @@ export const AssignmentTable = ({ asDialog = false }: {
         </div>
       )}
 
-      {!!newAssigment
-      && (
+      {!!newAssigment && (
         <Assignment
           index={newAssigment.index}
           onAbort={() => {
@@ -105,8 +114,7 @@ export const AssignmentTable = ({ asDialog = false }: {
         />
       )}
 
-      {!!existingAssigments.length
-      && (
+      {!!existingAssigments.length && (
         <div className='border rounded-md'>
           {existingAssigments?.map((_, index: number) => (
             <div key={`${_.id}`} className='border-b last:border-0'>
@@ -123,6 +131,7 @@ export const AssignmentTable = ({ asDialog = false }: {
                 : (
                     <AssignmentRow
                       index={index}
+                      isFocused={index === focusedRowIndex}
                       onSelect={() => {
                         if (!newAssigment) {
                           setSelectedAssignment(index)
