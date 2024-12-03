@@ -40,17 +40,24 @@ export const useNavigationKeys = (
       return
     }
 
-    if (preventDefault) {
-      event.preventDefault()
-    }
-
     // If key is a navigation key
     if (keys.some((key) => event.key === key)) {
       if (stopPropagation) {
         event.stopPropagation()
       }
 
+      if (!event.defaultPrevented && preventDefault) {
+        event.preventDefault()
+      }
+
       onNavigation(event)
+      return
+    }
+
+    // When falling through we must hijack up and down to avoid scrolling adjacent
+    // views to the active view, if the active view does not catch up and down.
+    if (!event.defaultPrevented && ['ArrowUp', 'ArrowDown'].includes(event.key)) {
+      event.preventDefault()
     }
   }, [onNavigation, keys, preventDefault, stopPropagation, isActive, viewId, elementRef])
 

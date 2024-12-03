@@ -115,9 +115,21 @@ export const AssignmentRow = ({ index, onSelect, isFocused = false }: {
     <div
       ref={rowRef}
       tabIndex={0}
-      className={cn(
-        'flex flex-col gap-2 text-sm px-6 pt-2.5 pb-4 hover:bg-muted focus:outline-table-selected',
-        selected ? 'bg-table-selected focus:bg-table-selected' : ''
+      className={cn(`
+        flex
+        flex-col
+        gap-2
+        text-sm
+        px-6
+        pt-2.5
+        pb-4
+        ring-inset
+        hover:bg-muted
+        focus:outline-none
+        focus-visible:rounded-sm
+        focus-visible:ring-2
+        focus-visible:ring-table-selected
+        `, selected ? 'bg-table-selected focus-visible:outline-table-selected' : ''
       )}
       onClick={(event) => {
         if (assignmentType === 'text' || assignmentType === 'flash') {

@@ -15,11 +15,10 @@ export const Row = ({ row, handleOpen, openDocuments }: {
         items-center
         cursor-default
         scroll-mt-10
-        ml-[2px]
-        mr-[3px]
-        my-[1px]
-        focus:outline-table-selected
-        data-[state=selected]:rounded-sm
+        ring-inset
+        focus:outline-none
+        focus-visible:ring-2
+        focus-visible:ring-table-selected
         data-[state=selected]:bg-table-selected
       `}
       // @ts-expect-error unknown type
