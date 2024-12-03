@@ -144,7 +144,7 @@ function connectRouteHandler(app: Application, routePath: string, func: RouteHan
           statusMessage: 'Incorrect response from route handler. Expected payload or statusCode plus statusMessage.'
         })
       }
-    }).catch((ex) => {
+    }).catch((ex: Error) => {
       console.error(ex)
       res.statusCode = 500
       res.statusMessage = ex?.message || 'Unknown error'
@@ -217,14 +217,18 @@ function buildRoute(route: string, path: string): [string, Route] {
 }
 
 async function importRouteHandler(path: string): Promise<RouteHandlers> {
-  const handlers = await import(path)
+  const handlers: {
+    [key: string]: RouteHandlers | undefined
+  } = await import(path) as {
+    [key: string]: RouteHandlers | undefined
+  }
 
   return {
-    GET: handlers?.GET instanceof Function ? handlers.GET : undefined,
-    POST: handlers?.POST instanceof Function ? handlers.POST : undefined,
-    PUT: handlers?.GET instanceof Function ? handlers.PUT : undefined,
-    PATCH: handlers?.GET instanceof Function ? handlers.PATCH : undefined,
-    DELETE: handlers?.DELETE instanceof Function ? handlers.DELETE : undefined,
-    WEB_SOCKET: handlers?.WEB_SOCKET instanceof Function ? handlers.WEB_SOCKET : undefined
+    GET: typeof handlers.GET === 'function' ? handlers.GET : undefined,
+    POST: typeof handlers.POST === 'function' ? handlers.POST : undefined,
+    PUT: typeof handlers.PUT === 'function' ? handlers.PUT : undefined,
+    PATCH: typeof handlers.PATCH === 'function' ? handlers.PATCH : undefined,
+    DELETE: typeof handlers.DELETE === 'function' ? handlers.DELETE : undefined,
+    WEB_SOCKET: typeof handlers.WEB_SOCKET === 'function' ? handlers.WEB_SOCKET : undefined
   }
 }

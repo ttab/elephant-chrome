@@ -25,7 +25,10 @@ export const Submit = ({
     }
   }
 
-  const handleClick = (event: React.MouseEvent<HTMLButtonElement>, type: 'submit' | 'reset'): void => {
+  const handleClick = (
+    event: React.MouseEvent<HTMLButtonElement>,
+    type: 'submit' | 'reset'
+  ): void => {
     event.preventDefault()
     event.stopPropagation()
 
@@ -43,11 +46,15 @@ export const Submit = ({
       const props: FormProps &
         { onClick?: (event: React.MouseEvent<HTMLButtonElement>) => void } = {}
 
+      const childProps = child.props as { type: string, children: React.ReactElement }
+
       if (child.props && 'type' in child.props) {
-        if (child.props.type === 'submit') {
-          props.onClick = (event: React.MouseEvent<HTMLButtonElement>) => handleClick(event, 'submit')
-        } else if (child.props.type === 'reset') {
-          props.onClick = (event: React.MouseEvent<HTMLButtonElement>) => handleClick(event, 'reset')
+        if (childProps.type === 'submit') {
+          props.onClick = (event: React.MouseEvent<HTMLButtonElement>) =>
+            handleClick(event, 'submit')
+        } else if (childProps.type === 'reset') {
+          props.onClick = (event: React.MouseEvent<HTMLButtonElement>) =>
+            handleClick(event, 'reset')
         }
       }
 
@@ -62,8 +69,8 @@ export const Submit = ({
       }
 
       // Recursively apply to children
-      if (child.props?.children) {
-        props.children = React.Children.map(child.props.children as React.ReactElement, applyOnClickHandler)
+      if (childProps?.children) {
+        props.children = React.Children.map(childProps.children, applyOnClickHandler)
       }
 
       return React.cloneElement(child, props)
