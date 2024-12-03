@@ -23,7 +23,7 @@ import { GroupedRows } from './GroupedRows'
 import { LoadingText } from '../LoadingText'
 import { Row } from './Row'
 import { useModal } from '../Modal/useModal'
-import { Editor } from '@/components/PlainEditor'
+import { ModalContent } from '@/views/Wires/components'
 
 interface TableProps<TData, TValue> {
   columns: Array<ColumnDef<TData, TValue>>
@@ -86,8 +86,18 @@ export const Table = <TData, TValue>({
       }
 
       if (event.key === ' ' && type === 'Wires') {
-        // @ts-expect-error unknown type
-        showModal(<Editor id={selectedRow.original._id} />, 'sheet', { id: selectedRow.original._id })
+        const originalId = (selectedRow.original as { _id: string })._id
+
+        showModal(
+          <ModalContent
+            id={originalId}
+            handleClose={hideModal}
+            role={selectedRow.getValue<string>('role')}
+          />,
+          'sheet',
+          {
+            id: originalId
+          })
         return
       }
 

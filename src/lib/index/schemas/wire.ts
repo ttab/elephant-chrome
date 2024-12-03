@@ -19,6 +19,7 @@ const _WireSchema = z.object({
     'document.meta.tt_wire.data.firstCreated': z.array(z.string()),
     'document.meta.tt_wire.data.issued': z.array(z.string()),
     'document.meta.tt_wire.data.version': z.array(z.string()),
+    'document.meta.tt_wire.role': z.array(z.string()),
     'document.rel.provider.title': z.array(z.string()),
     'document.rel.provider.uri': z.array(z.string()),
     'document.rel.section.title': z.array(z.string()),
