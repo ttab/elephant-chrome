@@ -43,7 +43,7 @@
     "@tanstack/react-table": "^8.20.5",
     "@ttab/api-client": "^2.9.1",
     "@ttab/elephant-api": "^0.17.3",
-    "@ttab/elephant-ui": "^0.5.15",
+    "@ttab/elephant-ui": "^0.6.0",
     "@ttab/textbit": "^0.17.7",
     "@ttab/textbit-plugins": "^0.3.9",
     "class-variance-authority": "^0.7.1",
