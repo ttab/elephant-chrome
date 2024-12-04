@@ -4,16 +4,13 @@ import { searchIndex, type SearchIndexResponse } from './searchIndex'
 export interface WireSearchParams {
   page?: number
   size?: number
-  sort?: {
-    issued?: 'asc' | 'desc'
-  }
   source?: string[]
 }
 
 const search = async (endpoint: URL, accessToken: string, params?: WireSearchParams): Promise<SearchIndexResponse<Wire>> => {
   const sort: Array<Record<string, 'asc' | 'desc'>> = []
 
-  sort.push({ 'document.meta.tt_wire.data.issued': 'desc' })
+  sort.push({ created: 'desc' })
 
   const sourceQuery = {
     bool: {

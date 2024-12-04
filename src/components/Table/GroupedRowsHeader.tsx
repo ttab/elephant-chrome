@@ -8,17 +8,22 @@ export const GroupedRowsHeader = <TData, TValue>({ row, columns }: {
 }): JSX.Element => {
   const { table } = useTable()
   const groupingValues = table.getState().grouping
-  const groupingTitle = columns.find((column) => column.id === groupingValues[0])?.meta?.name
+  const groupingMeta = columns.find((column) => column.id === groupingValues[0])?.meta
 
   return (
     <TableRow className='sticky top-0 bg-muted'>
       <TableCell colSpan={columns.length} className='pl-6 px-2 py-1 border-b'>
         <div className='flex justify-between items-center flex-wrap'>
           <div className='flex items-center space-x-2'>
-            <span className='font-thin text-muted-foreground'>{groupingTitle}</span>
-            <span className='inline-flex items-center justify-center size-5 bg-background rounded-full ring-1 ring-gray-300'>
-              {row.groupingValue as string}
-            </span>
+            <span className='font-thin text-muted-foreground'>{groupingMeta?.name}</span>
+            {typeof groupingMeta?.display === 'function'
+              ? groupingMeta.display(row.groupingValue as string)
+
+              : (
+                  <span className='inline-flex items-center justify-center size-5 bg-background rounded-full ring-1 ring-gray-300'>
+                    {row.groupingValue as string}
+                  </span>
+                )}
           </div>
           <div className='flex items-center space-x-2 px-6'>
             <span className='font-thin text-muted-foreground'>Antal</span>
