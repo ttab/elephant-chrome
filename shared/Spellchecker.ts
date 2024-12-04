@@ -14,15 +14,16 @@ export class Spellchecker {
   }
 
   /**
-   * Spellcheck a setring of texts
+   * Spellcheck a string of texts
    *
    * @param {string[]} text - Array of strings to spellcheck
-   * @param {string} locale - Locale (language)
+   * @param {string} documentLanguage - Language of provided document
+   * @param {string[]} supportedLanguages - String array of languages supported for spellchecking
    * @param {string} accessToken - Access token
    *
    * @returns Promise<GetDocumentResponse>
    */
-  async check(text: string[], locale: string, accessToken: string): Promise<Array<Array<{
+  async check(text: string[], documentLanguage: string, supportedLanguages: string[], accessToken: string): Promise<Array<Array<{
     text: string
     suggestions: Array<{
       text: string
