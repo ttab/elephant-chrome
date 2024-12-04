@@ -19,11 +19,14 @@ export const SupportedLanguagesProvider = ({ children }: {
   const [languages, setLanguages] = useState<IDBLanguage[]>([])
   const IDB = useIndexedDB()
   const { server: { spellcheckUrl } } = useRegistry()
+
   const getOrRefreshCache = useCallback(async (): Promise<void> => {
     if (!session?.accessToken || !spellcheckUrl || !IDB.db) {
       return
     }
+
     const cachedLanguages: IDBLanguage[] | undefined = await IDB.get('languages')
+
     if (Array.isArray(cachedLanguages) && cachedLanguages.length) {
       setLanguages(cachedLanguages)
     } else {
@@ -46,6 +49,7 @@ export const SupportedLanguagesProvider = ({ children }: {
           && 'languages' in result
           && Array.isArray(result.languages)) {
           setLanguages(result.languages)
+
           result.languages.forEach((lang: IDBLanguage, index: number) => {
             void IDB.put('languages', {
               id: `supported_language_${index + 1}`,
