@@ -9,6 +9,11 @@ function shouldRowBeFocused(type: string, row: RowType<unknown>): boolean {
     const selection = window.getSelection()
     const selectedNode = selection ? selection.anchorNode : null
 
+    // Handle first row
+    if (selectedNode === null) {
+      return true
+    }
+
     return activeElement === selectedNode
   }
 
