@@ -2,7 +2,7 @@ import { createContext, useCallback, useEffect, useState } from 'react'
 import { useIndexedDB } from '../hooks/useIndexedDB'
 import { useSession } from 'next-auth/react'
 import { useRegistry } from '@/hooks/useRegistry'
-import { type IDBLanguage } from '../types'
+import { type IDBLanguage, type SupportedLanguage } from '../types'
 
 interface SupportedLanguagesProviderState {
   languages: IDBLanguage[]
@@ -48,12 +48,12 @@ export const SupportedLanguagesProvider = ({ children }: {
           && result !== null
           && 'languages' in result
           && Array.isArray(result.languages)) {
-          setLanguages(result.languages)
+          const codes: IDBLanguage[] = result.languages.map((lang: SupportedLanguage) => ({ id: lang.code }))
+          setLanguages(codes)
 
-          result.languages.forEach((lang: IDBLanguage, index: number) => {
+          result.languages.forEach((lang: SupportedLanguage) => {
             void IDB.put('languages', {
-              id: `supported_language_${index + 1}`,
-              code: lang.code
+              id: lang.code
             })
           })
         }
