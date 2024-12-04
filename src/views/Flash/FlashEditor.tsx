@@ -13,6 +13,7 @@ import { ContextMenu } from '@/components/Editor/ContextMenu'
 import { useSession } from 'next-auth/react'
 import { Validation } from '@/components/Validation'
 import type { FormProps } from '@/components/Form/Root'
+import { getValueByYPath } from '@/lib/yUtils'
 
 
 export const FlashEditor = ({ setTitle, onValidation, validateStateRef }: {
@@ -51,6 +52,7 @@ function EditorContent({ provider, user, setTitle }: {
 }): JSX.Element {
   const { data: session } = useSession()
   const { spellchecker, locale } = useRegistry()
+  const [documentLanguage] = getValueByYPath<string>(provider.document.getMap('ele'), 'root.language')
 
   const yjsEditor = useMemo(() => {
     if (!provider?.awareness) {

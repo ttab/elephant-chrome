@@ -23,6 +23,7 @@ import { Toolbar } from '@/components/Editor/Toolbar'
 import { Gutter } from '@/components/Editor/Gutter'
 import { DropMarker } from '@/components/Editor/DropMarker'
 import { ContextMenu } from '@/components/Editor/ContextMenu'
+import { getValueByYPath } from '@/lib/yUtils'
 
 const meta: ViewMetadata = {
   name: 'Factbox',
@@ -151,6 +152,8 @@ function EditorContent({ provider, user }: {
 }): JSX.Element {
   const { data: session } = useSession()
   const { spellchecker, locale } = useRegistry()
+
+  const [documentLanguage] = getValueByYPath<string>(provider.document.getMap('ele'), 'root.language')
 
   const yjsEditor = useMemo(() => {
     if (!provider?.awareness) {

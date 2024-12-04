@@ -11,6 +11,7 @@ import { Text } from '@ttab/textbit-plugins'
 import { useYValue } from '@/hooks/useYValue'
 import { useSession } from 'next-auth/react'
 import { ContextMenu } from '../Editor/ContextMenu'
+import { getValueByYPath } from '@/lib/yUtils'
 
 export const TextBox = ({ icon, placeholder, path, className, singleLine = false, autoFocus = false, onBlur, onFocus }: {
   path: string
@@ -25,6 +26,12 @@ export const TextBox = ({ icon, placeholder, path, className, singleLine = false
   const { provider, user } = useCollaboration()
   // FIXME: We need to check that the path exists. If not we need to create the missing Block
   const [content] = useYValue<Y.XmlText>(path, true)
+
+  if (!provider?.document) {
+    return <></>
+  }
+
+  const [documentLanguage] = getValueByYPath<string>(provider.document.getMap('ele'), 'root.language')
 
   if (content === undefined) {
     // Empty placeholder while waiting for data
@@ -61,6 +68,7 @@ export const TextBox = ({ icon, placeholder, path, className, singleLine = false
             singleLine={singleLine}
             user={user}
             icon={icon}
+            documentLanguage={documentLanguage}
           />
         </Textbit.Root>
       )}
@@ -68,12 +76,13 @@ export const TextBox = ({ icon, placeholder, path, className, singleLine = false
   )
 }
 
-const TextboxEditable = ({ provider, user, icon: Icon, content, singleLine }: {
+const TextboxEditable = ({ provider, user, icon: Icon, content, singleLine, documentLanguage }: {
   provider: HocuspocusProvider
   singleLine: boolean
   user: AwarenessUserData
   icon?: React.ReactNode
   content: Y.XmlText
+  documentLanguage: string | undefined
 }): JSX.Element | undefined => {
   const { data: session } = useSession()
   const { spellchecker, locale } = useRegistry()

@@ -36,6 +36,7 @@ import { Gutter } from '@/components/Editor/Gutter'
 import { DropMarker } from '@/components/Editor/DropMarker'
 import { useSession } from 'next-auth/react'
 import type { Block } from '@ttab/elephant-api/newsdoc'
+import { getValueByYPath } from '@/lib/yUtils'
 
 const meta: ViewMetadata = {
   name: 'Editor',
@@ -175,6 +176,8 @@ function EditorContent({ provider, user }: {
       return () => YjsEditor.disconnect(yjsEditor)
     }
   }, [yjsEditor])
+
+  const [documentLanguage] = getValueByYPath<string>(provider.document.getMap('ele'), 'root.language')
 
   return (
     <Textbit.Editable
