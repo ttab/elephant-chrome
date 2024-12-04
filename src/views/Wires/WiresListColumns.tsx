@@ -5,43 +5,59 @@ import { Title } from '@/components/Table/Items/Title'
 import { NewsvalueMap } from '@/defaults/newsvalueMap'
 import { Newsvalues } from '@/defaults/newsvalues'
 import { type Wire } from '@/lib/index/schemas/wire'
-import { UTCDate } from '@date-fns/utc'
 import { type ColumnDef } from '@tanstack/react-table'
 import { Pen, Shapes, SignalHigh } from '@ttab/elephant-ui/icons'
 import { type IDBSection } from 'src/datastore/types'
 
-export function wiresListColumns({ sections = [] }: {
+export function wiresListColumns({ sections = [], locale = 'sv-SE' }: {
   sections?: IDBSection[]
+  locale?: string
 }): Array<ColumnDef<Wire>> {
   return [
     {
-      id: 'issued',
+      id: 'created',
       enableGrouping: true,
       meta: {
         name: 'Tid',
         columnIcon: SignalHigh,
-        className: 'hidden'
+        className: 'hidden',
+        display: (value: string) => {
+          const [hour, day] = value.split(' ')
+          return (
+            <div className='flex gap-3'>
+              <span className='inline-flex items-center justify-center size-5 bg-background rounded-full ring-1 ring-gray-300'>
+                {hour}
+              </span>
+              <span>{day}</span>
+            </div>
+          )
+        }
       },
       accessorFn: (data) => {
-        const date = new UTCDate(data._source['document.meta.tt_wire.data.issued']?.[0])
-        return date.getHours()
+        const date = new Date(data._source.created[0])
+
+        if (date.toDateString() === new Date().toDateString()) {
+          return date.getHours()
+        } else {
+          return `${date.getHours()} ${date.toLocaleString(locale, { weekday: 'long', hourCycle: 'h23' })}`
+        }
       },
       cell: () => {
         return undefined
       }
     },
     {
-      id: 'issuedMinutes',
+      id: 'createdMinutes',
       meta: {
         name: 'Utgiven',
         columnIcon: SignalHigh,
         className: 'flex-px-3'
       },
       accessorFn: (data) => {
-        return data._source['document.meta.tt_wire.data.issued']?.[0]
+        return data._source.created[0]
       },
       cell: ({ row }) => {
-        const date = new Date(row.getValue('issuedMinutes'))
+        const date = new Date(row.getValue('createdMinutes'))
         const isPressRelease = row.original._source['document.meta.tt_wire.role']?.[0] === 'pressrelease'
 
         return <span className={`font-thin text-xs ${isPressRelease ? 'underline decoration-red-500' : ''}`}>{date.getMinutes().toString().padStart(2, '0')}</span>
