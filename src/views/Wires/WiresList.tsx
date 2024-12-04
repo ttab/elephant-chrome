@@ -29,7 +29,7 @@ export const WireList = (): JSX.Element => {
   const { table } = useTable()
 
   useEffect(() => {
-    table.setGrouping(['issued'])
+    table.setGrouping(['created'])
   }, [table])
 
   if (error) {
