@@ -97,14 +97,15 @@ function EditorWrapper(props: ViewProps & {
   return (
     <View.Root>
       <Textbit.Root
+        autoFocus={true}
         plugins={
-          [...plugins.map((initPlugin) => initPlugin()),
+          [
+            ...plugins.map((initPlugin) => initPlugin()),
             Factbox({
               onEditOriginal: (id: string) => {
                 openFactboxEditor(undefined, { id })
               }
-            }
-            )
+            })
           ]
         }
         placeholders='multiple'
