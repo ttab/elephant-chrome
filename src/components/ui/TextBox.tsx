@@ -1,7 +1,7 @@
 import { Textbit } from '@ttab/textbit'
 import { createEditor } from 'slate'
 import { cn } from '@ttab/elephant-ui/utils'
-import { useCollaboration, useRegistry } from '@/hooks'
+import { useCollaboration, useRegistry, useSupportedLanguages } from '@/hooks'
 import { useLayoutEffect, useMemo } from 'react'
 import { YjsEditor, withCursors, withYHistory, withYjs } from '@slate-yjs/core'
 import { type HocuspocusProvider } from '@hocuspocus/provider'
@@ -85,7 +85,8 @@ const TextboxEditable = ({ provider, user, icon: Icon, content, singleLine, docu
   documentLanguage: string | undefined
 }): JSX.Element | undefined => {
   const { data: session } = useSession()
-  const { spellchecker, locale } = useRegistry()
+  const { spellchecker } = useRegistry()
+  const supportedLanguages = useSupportedLanguages()
 
   const yjsEditor = useMemo(() => {
     if (!provider?.awareness) {
@@ -122,7 +123,10 @@ const TextboxEditable = ({ provider, user, icon: Icon, content, singleLine, docu
           <Textbit.Editable
             yjsEditor={yjsEditor}
             onSpellcheck={async (texts) => {
-              return await spellchecker?.check(texts, locale, session?.accessToken ?? '') ?? []
+              if (documentLanguage) {
+                return await spellchecker?.check(texts, documentLanguage, supportedLanguages, session?.accessToken ?? '') ?? []
+              }
+              return []
             }}
             className={cn(!singleLine && '!min-h-20',
               `p-1

@@ -1,4 +1,4 @@
-import { useQuery, useCollaboration, useYValue, useRegistry } from '@/hooks'
+import { useQuery, useCollaboration, useYValue, useRegistry, useSupportedLanguages } from '@/hooks'
 import { AwarenessDocument } from '@/components/AwarenessDocument'
 import { type ViewProps, type ViewMetadata } from '@/types/index'
 import { ViewHeader } from '@/components/View'
@@ -151,7 +151,8 @@ function EditorContent({ provider, user }: {
   user: AwarenessUserData
 }): JSX.Element {
   const { data: session } = useSession()
-  const { spellchecker, locale } = useRegistry()
+  const { spellchecker } = useRegistry()
+  const supportedLanguages = useSupportedLanguages()
 
   const [documentLanguage] = getValueByYPath<string>(provider.document.getMap('ele'), 'root.language')
 
@@ -195,7 +196,10 @@ function EditorContent({ provider, user }: {
       <Textbit.Editable
         yjsEditor={yjsEditor}
         onSpellcheck={async (texts) => {
-          return await spellchecker?.check(texts, locale, session?.accessToken ?? '') ?? []
+          if (documentLanguage) {
+            return await spellchecker?.check(texts, documentLanguage, supportedLanguages, session?.accessToken ?? '') ?? []
+          }
+          return []
         }}
         className='outline-none
           h-full
