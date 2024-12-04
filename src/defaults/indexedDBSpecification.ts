@@ -15,6 +15,7 @@ export const indexedDBSpecification = {
     'core/category',
     'core/organiser',
     'tt/wire-source',
-    '__meta'
+    '__meta',
+    'languages'
   ]
 }
