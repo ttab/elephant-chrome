@@ -3,16 +3,32 @@ import { TableRow, TableCell } from '@ttab/elephant-ui'
 import { type Row as RowType, flexRender } from '@tanstack/react-table'
 import { cn } from '@ttab/elephant-ui/utils'
 
+function shouldRowBeFocused(type: string, row: RowType<unknown>): boolean {
+  const isActiveElementSameAsSelection = (): boolean => {
+    const activeElement = document.activeElement
+    const selection = window.getSelection()
+    const selectedNode = selection ? selection.anchorNode : null
+
+    // Handle first row
+    if (selectedNode === null) {
+      return true
+    }
+
+    return activeElement === selectedNode
+  }
+
+  return type === 'Wires' && row.getIsSelected() && !isActiveElementSameAsSelection()
+}
+
 export const Row = ({ row, handleOpen, openDocuments, type }: {
   type: 'Planning' | 'Event' | 'Assignments' | 'Search' | 'Wires'
   row: RowType<unknown>
   handleOpen: (event: MouseEvent<HTMLTableRowElement>, subRow: RowType<unknown>) => void
   openDocuments: string[]
-}): JSX.Element => {
-  return (
-    <TableRow
-      tabIndex={0}
-      className={`flex
+}): JSX.Element => (
+  <TableRow
+    tabIndex={0}
+    className={`flex
         items-center
         cursor-default
         scroll-mt-10
@@ -22,27 +38,25 @@ export const Row = ({ row, handleOpen, openDocuments, type }: {
         focus-visible:ring-table-selected
         data-[state=selected]:bg-table-selected
       `}
-      // @ts-expect-error unknown type
-      data-state={((openDocuments.includes(row.original._id as string) && 'selected'))
-      || (type === 'Wires' && row.getIsSelected() && 'focused')}
-      onClick={(event: MouseEvent<HTMLTableRowElement>) => handleOpen(event, row)}
-      ref={(el) => {
-        if (el && row.getIsSelected()) {
-          el.focus()
-        }
-      }}
-    >
-      {row.getVisibleCells().map((cell) => (
-        <TableCell
-          key={cell.id}
-          className={cn(
-            'first:pl-2 last:pr-2 sm:first:pl-6 sm:last:pr-6',
-            cell.column.columnDef.meta?.className
-          )}
-        >
-          {flexRender(cell.column.columnDef.cell, cell.getContext())}
-        </TableCell>
-      ))}
-    </TableRow>
-  )
-}
+    data-state={((openDocuments.includes((row.original as { _id: string })?._id) && 'selected'))
+    || (shouldRowBeFocused(type, row) && 'focused')}
+    onClick={(event: MouseEvent<HTMLTableRowElement>) => handleOpen(event, row)}
+    ref={(el) => {
+      if (el && row.getIsSelected()) {
+        el.focus()
+      }
+    }}
+  >
+    {row.getVisibleCells().map((cell) => (
+      <TableCell
+        key={cell.id}
+        className={cn(
+          'first:pl-2 last:pr-2 sm:first:pl-6 sm:last:pr-6',
+          cell.column.columnDef.meta?.className
+        )}
+      >
+        {flexRender(cell.column.columnDef.cell, cell.getContext())}
+      </TableCell>
+    ))}
+  </TableRow>
+)

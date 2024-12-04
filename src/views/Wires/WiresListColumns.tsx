@@ -58,7 +58,9 @@ export function wiresListColumns({ sections = [], locale = 'sv-SE' }: {
       },
       cell: ({ row }) => {
         const date = new Date(row.getValue('createdMinutes'))
-        return <span className='font-thin text-xs'>{date.getMinutes().toString().padStart(2, '0')}</span>
+        const isPressRelease = row.original._source['document.meta.tt_wire.role']?.[0] === 'pressrelease'
+
+        return <span className={`font-thin text-xs ${isPressRelease ? 'underline decoration-red-500' : ''}`}>{date.getMinutes().toString().padStart(2, '0')}</span>
       }
     },
     {
@@ -99,6 +101,11 @@ export function wiresListColumns({ sections = [], locale = 'sv-SE' }: {
 
         return <Title title={title as string} className='text-xs' />
       }
+    },
+    {
+      id: 'role',
+      accessorFn: (data) => (data._source['document.meta.tt_wire.role'][0]),
+      cell: () => undefined
     },
     {
       id: 'section',
