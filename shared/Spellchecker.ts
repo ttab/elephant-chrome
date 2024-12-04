@@ -35,12 +35,22 @@ export class Spellchecker {
       return []
     }
 
-    if (!locale) {
-      console.warn('No locale, no spellchecking')
+    if (!documentLanguage) {
+      console.warn('No document language provided, no spellchecking')
       return []
     }
 
-    const language = locale.toLowerCase().replace('_', '-')
+    // For now, documents in swedish need to be explicitly set to sv-se in order to work
+    if (documentLanguage === 'sv') {
+      documentLanguage = 'sv-se'
+    }
+
+    const language = documentLanguage.toLowerCase().replace('_', '-')
+
+    if (!supportedLanguages.includes(documentLanguage)) {
+      console.warn(documentLanguage, 'not supported, no spellchecking')
+      return []
+    }
 
     try {
       const { response } = await this.#client.text({
