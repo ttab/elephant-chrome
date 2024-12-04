@@ -68,7 +68,7 @@ export const AssignmentTable = ({ asDialog = false }: {
           <div className={variants({ asDialog })}>
             <a
               href='#'
-              className={cn('flex flex-start items-center text-sm gap-2 p-2 -ml-2 rounded-sm',
+              className={cn('flex flex-start items-center text-sm gap-2 p-2 -ml-2 rounded-sm outline-none focus-visible:ring-table-selected focus-visible:ring-2',
                 selectedAssignment != null
                   ? 'hover:cursor-default opacity-50'
                   : 'hover:bg-muted')}

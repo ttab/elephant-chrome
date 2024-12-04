@@ -47,7 +47,6 @@ export const Newsvalue = ({ onValidation, validateStateRef }: FormProps): JSX.El
               setNewsvalue(option.value)
             }
           }}
-          hideInput
         >
 
           {selectedOptions?.[0] && SelectedIcon && (
