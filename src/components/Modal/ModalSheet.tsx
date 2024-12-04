@@ -3,19 +3,17 @@ import type { PropsWithChildren } from 'react'
 
 export const ModalSheet = ({ children, isVisible }: {
   isVisible: boolean
-} & PropsWithChildren): JSX.Element => {
-  return (
-    <Sheet open={isVisible}>
-      <SheetContent
-        side='bottom'
-        className='h-1/3 focus:outline-none pb-6'
-      >
-        <SheetTitle />
-        <SheetDescription />
-        <div className='flex flex-grow gap-4'>
-          {children}
-        </div>
-      </SheetContent>
-    </Sheet>
-  )
-}
+} & PropsWithChildren): JSX.Element => (
+  <Sheet open={isVisible}>
+    <SheetContent
+      side='bottom'
+      className='p-3 h-1/3 focus:outline-none pb-6 max-w-[1200px] mx-auto rounded-t rounded-lg'
+    >
+      <SheetTitle />
+      <SheetDescription />
+      <div className='flex flex-grow gap-4'>
+        {children}
+      </div>
+    </SheetContent>
+  </Sheet>
+)

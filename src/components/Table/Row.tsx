@@ -3,23 +3,6 @@ import { TableRow, TableCell } from '@ttab/elephant-ui'
 import { type Row as RowType, flexRender } from '@tanstack/react-table'
 import { cn } from '@ttab/elephant-ui/utils'
 
-function shouldRowBeFocused(type: string, row: RowType<unknown>): boolean {
-  const isActiveElementSameAsSelection = (): boolean => {
-    const activeElement = document.activeElement
-    const selection = window.getSelection()
-    const selectedNode = selection ? selection.anchorNode : null
-
-    // Handle first row
-    if (selectedNode === null) {
-      return true
-    }
-
-    return activeElement === selectedNode
-  }
-
-  return type === 'Wires' && row.getIsSelected() && !isActiveElementSameAsSelection()
-}
-
 export const Row = ({ row, handleOpen, openDocuments, type }: {
   type: 'Planning' | 'Event' | 'Assignments' | 'Search' | 'Wires'
   row: RowType<unknown>
@@ -39,7 +22,7 @@ export const Row = ({ row, handleOpen, openDocuments, type }: {
         data-[state=selected]:bg-table-selected
       `}
     data-state={((openDocuments.includes((row.original as { _id: string })?._id) && 'selected'))
-    || (shouldRowBeFocused(type, row) && 'focused')}
+    || (type === 'Wires' && row.getIsSelected() && 'focused')}
     onClick={(event: MouseEvent<HTMLTableRowElement>) => handleOpen(event, row)}
     ref={(el) => {
       if (el && row.getIsSelected()) {
