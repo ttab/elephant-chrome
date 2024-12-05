@@ -27,12 +27,10 @@ export class Snapshot implements Extension {
   }
 
   async onStoreDocument(payload: onStoreDocumentPayload): Promise<void> {
-    const { documentName, context } = payload
+    const { documentName, context } = payload as { documentName: string, context: { agent?: string, user: { sub: string } } }
 
-
-    // Ignore document-tracker and server actions on the document
-    // We dont need to snapshot the these
-    if (documentName !== 'document-tracker' && context.agent !== 'server') {
+    // Ignore document-tracker, server actions, and userTracker
+    if (documentName !== 'document-tracker' && context.agent !== 'server' && documentName !== context.user.sub) {
       // Clear previous debounce
       debounceMap.get(documentName)?.cancel()
 
