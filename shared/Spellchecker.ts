@@ -45,6 +45,11 @@ export class Spellchecker {
       documentLanguage = 'sv-se'
     }
 
+    // We default language: 'en' to be british english
+    if (documentLanguage === 'en') {
+      documentLanguage = 'en-gb'
+    }
+
     const language = documentLanguage.toLowerCase().replace('_', '-')
 
     if (!supportedLanguages.includes(documentLanguage)) {
