@@ -1,4 +1,4 @@
-import { useMemo, useEffect, useState } from 'react'
+import { useMemo, useEffect, useState, useRef } from 'react'
 import { AwarenessDocument, View, ViewHeader } from '@/components'
 import { Notes } from './components/Notes'
 import { PenBoxIcon } from '@ttab/elephant-ui/icons'
@@ -19,7 +19,8 @@ import {
   useCollaboration,
   useRegistry,
   useLink,
-  useYValue
+  useYValue,
+  useView
 } from '@/hooks'
 import { type ViewMetadata, type ViewProps } from '@/types'
 import { EditorHeader } from './EditorHeader'
@@ -148,6 +149,8 @@ function EditorContent({ provider, user }: {
 }): JSX.Element {
   const { data: session } = useSession()
   const { spellchecker, locale } = useRegistry()
+  const { isActive } = useView()
+  const ref = useRef<HTMLDivElement>(null)
 
   const yjsEditor = useMemo(() => {
     if (!provider?.awareness) {
@@ -168,6 +171,13 @@ function EditorContent({ provider, user }: {
     )
   }, [provider?.awareness, provider?.document, user])
 
+  useEffect(() => {
+    if (isActive && ref?.current?.dataset['state'] !== 'focused') {
+      setTimeout(() => {
+        ref?.current?.focus()
+      }, 0)
+    }
+  }, [isActive, ref])
 
   // Connect/disconnect from provider through editor only when editor changes
   useEffect(() => {
@@ -179,6 +189,7 @@ function EditorContent({ provider, user }: {
 
   return (
     <Textbit.Editable
+      ref={ref}
       yjsEditor={yjsEditor}
       onSpellcheck={async (texts) => {
         return await spellchecker?.check(texts, locale, session?.accessToken ?? '') ?? []
@@ -202,7 +213,6 @@ function EditorContent({ provider, user }: {
     </Textbit.Editable>
   )
 }
-
 
 function Footer(): JSX.Element {
   const { words, characters } = useTextbit()
