@@ -1,4 +1,4 @@
-import { useQuery, useCollaboration, useYValue, useRegistry } from '@/hooks'
+import { useQuery, useCollaboration, useYValue, useRegistry, useSupportedLanguages } from '@/hooks'
 import { AwarenessDocument } from '@/components/AwarenessDocument'
 import { type ViewProps, type ViewMetadata } from '@/types/index'
 import { ViewHeader } from '@/components/View'
@@ -23,6 +23,7 @@ import { Toolbar } from '@/components/Editor/Toolbar'
 import { Gutter } from '@/components/Editor/Gutter'
 import { DropMarker } from '@/components/Editor/DropMarker'
 import { ContextMenu } from '@/components/Editor/ContextMenu'
+import { getValueByYPath } from '@/lib/yUtils'
 
 const meta: ViewMetadata = {
   name: 'Factbox',
@@ -150,7 +151,10 @@ function EditorContent({ provider, user }: {
   user: AwarenessUserData
 }): JSX.Element {
   const { data: session } = useSession()
-  const { spellchecker, locale } = useRegistry()
+  const { spellchecker } = useRegistry()
+  const supportedLanguages = useSupportedLanguages()
+
+  const [documentLanguage] = getValueByYPath<string>(provider.document.getMap('ele'), 'root.language')
 
   const yjsEditor = useMemo(() => {
     if (!provider?.awareness) {
@@ -192,7 +196,13 @@ function EditorContent({ provider, user }: {
       <Textbit.Editable
         yjsEditor={yjsEditor}
         onSpellcheck={async (texts) => {
-          return await spellchecker?.check(texts, locale, session?.accessToken ?? '') ?? []
+          if (documentLanguage) {
+            const spellingResult = await spellchecker?.check(texts, documentLanguage, supportedLanguages, session?.accessToken ?? '')
+            if (spellingResult) {
+              return spellingResult
+            }
+          }
+          return []
         }}
         className='outline-none
           h-full
