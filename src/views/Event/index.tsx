@@ -115,7 +115,6 @@ const EventViewContent = (props: ViewProps & { documentId: string }): JSX.Elemen
           <ViewHeader.Content>
             <div className='flex w-full h-full items-center space-x-2'>
               <DocumentStatus status={documentStatus} setStatus={setDocumentStatus} />
-              <Newsvalue />
             </div>
           </ViewHeader.Content>
 
@@ -141,6 +140,7 @@ const EventViewContent = (props: ViewProps & { documentId: string }): JSX.Elemen
 
             <Form.Group icon={CalendarClock}>
               <EventTimeMenu />
+              <Newsvalue />
             </Form.Group>
 
             <Form.Group icon={Tags}>
