@@ -8,11 +8,10 @@ export const Row = ({ row, handleOpen, openDocuments, type }: {
   row: RowType<unknown>
   handleOpen: (event: MouseEvent<HTMLTableRowElement>, subRow: RowType<unknown>) => void
   openDocuments: string[]
-}): JSX.Element => {
-  return (
-    <TableRow
-      tabIndex={0}
-      className={`flex
+}): JSX.Element => (
+  <TableRow
+    tabIndex={0}
+    className={`flex
         items-center
         cursor-default
         scroll-mt-10
@@ -22,27 +21,25 @@ export const Row = ({ row, handleOpen, openDocuments, type }: {
         focus-visible:ring-table-selected
         data-[state=selected]:bg-table-selected
       `}
-      // @ts-expect-error unknown type
-      data-state={((openDocuments.includes(row.original._id as string) && 'selected'))
-      || (type === 'Wires' && row.getIsSelected() && 'focused')}
-      onClick={(event: MouseEvent<HTMLTableRowElement>) => handleOpen(event, row)}
-      ref={(el) => {
-        if (el && row.getIsSelected()) {
-          el.focus()
-        }
-      }}
-    >
-      {row.getVisibleCells().map((cell) => (
-        <TableCell
-          key={cell.id}
-          className={cn(
-            'first:pl-2 last:pr-2 sm:first:pl-6 sm:last:pr-6',
-            cell.column.columnDef.meta?.className
-          )}
-        >
-          {flexRender(cell.column.columnDef.cell, cell.getContext())}
-        </TableCell>
-      ))}
-    </TableRow>
-  )
-}
+    data-state={((openDocuments.includes((row.original as { _id: string })?._id) && 'selected'))
+    || (type === 'Wires' && row.getIsSelected() && 'focused')}
+    onClick={(event: MouseEvent<HTMLTableRowElement>) => handleOpen(event, row)}
+    ref={(el) => {
+      if (el && row.getIsSelected()) {
+        el.focus()
+      }
+    }}
+  >
+    {row.getVisibleCells().map((cell) => (
+      <TableCell
+        key={cell.id}
+        className={cn(
+          'first:pl-2 last:pr-2 sm:first:pl-6 sm:last:pr-6',
+          cell.column.columnDef.meta?.className
+        )}
+      >
+        {flexRender(cell.column.columnDef.cell, cell.getContext())}
+      </TableCell>
+    ))}
+  </TableRow>
+)

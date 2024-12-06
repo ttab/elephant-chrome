@@ -32,6 +32,7 @@ export const ModalProvider = ({ children }: PropsWithChildren): JSX.Element => {
     setIsVisible(false)
     setModalContent(null)
     setModalType(undefined)
+    setModalData(undefined)
   }
 
   const currentModal = modalData

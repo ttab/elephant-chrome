@@ -20,7 +20,8 @@ import {
   useRegistry,
   useLink,
   useYValue,
-  useView
+  useView,
+  useSupportedLanguages
 } from '@/hooks'
 import { type ViewMetadata, type ViewProps } from '@/types'
 import { EditorHeader } from './EditorHeader'
@@ -37,6 +38,7 @@ import { Gutter } from '@/components/Editor/Gutter'
 import { DropMarker } from '@/components/Editor/DropMarker'
 import { useSession } from 'next-auth/react'
 import type { Block } from '@ttab/elephant-api/newsdoc'
+import { getValueByYPath } from '@/lib/yUtils'
 
 const meta: ViewMetadata = {
   name: 'Editor',
@@ -148,9 +150,10 @@ function EditorContent({ provider, user }: {
   user: AwarenessUserData
 }): JSX.Element {
   const { data: session } = useSession()
-  const { spellchecker, locale } = useRegistry()
+  const { spellchecker } = useRegistry()
   const { isActive } = useView()
   const ref = useRef<HTMLDivElement>(null)
+  const supportedLanguages = useSupportedLanguages()
 
   const yjsEditor = useMemo(() => {
     if (!provider?.awareness) {
@@ -187,12 +190,20 @@ function EditorContent({ provider, user }: {
     }
   }, [yjsEditor])
 
+  const [documentLanguage] = getValueByYPath<string>(provider.document.getMap('ele'), 'root.language')
+
   return (
     <Textbit.Editable
       ref={ref}
       yjsEditor={yjsEditor}
       onSpellcheck={async (texts) => {
-        return await spellchecker?.check(texts, locale, session?.accessToken ?? '') ?? []
+        if (documentLanguage) {
+          const spellingResult = await spellchecker?.check(texts, documentLanguage, supportedLanguages, session?.accessToken ?? '')
+          if (spellingResult) {
+            return spellingResult
+          }
+        }
+        return []
       }}
       className='outline-none
         h-full

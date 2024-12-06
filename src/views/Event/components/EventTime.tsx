@@ -36,7 +36,7 @@ const DateTimeLabel = ({ fromDate, toDate, locale, timeZone }: { fromDate?: stri
   const from = dateToReadableDateTime(new Date(fromDate), locale, timeZone)
   const to = sameDay ? dateToReadableTime(new Date(toDate), locale, timeZone) : dateToReadableDateTime(new Date(toDate), locale, timeZone)
   return (
-    <div className='font-sans text-sm'>
+    <div className='font-normal text-sm'>
       {from}
       {!sameTime ? ` - ${to}` : ''}
     </div>
@@ -53,7 +53,7 @@ const DateLabel = ({ fromDate, toDate, locale, timeZone }: { fromDate?: string |
   const from = dateToReadableDay(fromDateObject, locale, timeZone)
   const to = dateToReadableDay(toDateObject, locale, timeZone)
   return (
-    <div className='font-sans text-sm'>
+    <div className='font-normal text-sm'>
       Heldag
       {sameDay
         ? ` ${from}`
@@ -232,13 +232,28 @@ export const EventTimeMenu = (): JSX.Element => {
   return (
     <Popover open={open} onOpenChange={handleOpenChange}>
       <PopoverTrigger asChild>
-        <div className='flex flex-row space-x-2 items-center align-middle cursor-pointer'>
+        <Button
+          variant='outline'
+          size='xs'
+          className='flex flex-row space-x-2 items-center align-middle cursor-pointer'
+          onKeyDown={(event) => {
+            if (event.key !== 'Escape') {
+              event?.stopPropagation()
+            }
+          }}
+        >
           {fullDay
             ? <DateLabel fromDate={eventData?.start} toDate={eventData?.end} locale={locale} timeZone={timeZone} />
             : <DateTimeLabel fromDate={eventData?.start} toDate={eventData?.end} locale={locale} timeZone={timeZone} />}
-        </div>
+        </Button>
       </PopoverTrigger>
-      <PopoverContent asChild align='center' side='bottom' sideOffset={-150}>
+      <PopoverContent
+        asChild
+        align='center'
+        side='bottom'
+        sideOffset={-150}
+        onEscapeKeyDown={(event) => event?.stopPropagation()}
+      >
         <div>
           <Calendar
             mode='range'
