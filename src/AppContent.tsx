@@ -43,7 +43,7 @@ export const AppContent = (): JSX.Element => {
 
       <Navigation visibleContent={content} />
       <Dialog open={!IDB.db}>
-        <DialogContent>
+        <DialogContent className='focus-visible:outline-none'>
           <DialogHeader>
             <DialogTitle>Du behöver ladda om fönstret</DialogTitle>
             <DialogDescription>
