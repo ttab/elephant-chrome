@@ -41,8 +41,18 @@ export const IndexedDBProvider = ({ children }: {
       setDb(target.result)
     }
 
-    openRequest.onerror = (event) => {
-      console.error('Failed to open IndexedDB:', event)
+    // openRequest.onerror = (event) => {
+    //  console.error('Failed to open IndexedDB:', event)
+    // }
+
+    openRequest.onerror = () => {
+      console.error('Failed to open database:', openRequest.error)
+
+      // Check for version mismatch
+      if (openRequest.error?.name === 'VersionError') {
+        console.warn('Version mismatch detected. Resetting database...')
+        void resetDatabase(specification.name)
+      }
     }
 
     openRequest.onblocked = (event) => {
@@ -138,5 +148,22 @@ async function clearObjects(db: IDBDatabase, storeName: string): Promise<void> {
 
     request.onsuccess = () => resolve()
     request.onerror = () => reject(request.error as Error)
+  })
+}
+
+// Reset database when installed version is higher than application wants
+async function resetDatabase(dbName: string) {
+  await new Promise<void>((resolve, reject) => {
+    const deleteRequest = indexedDB.deleteDatabase(dbName)
+
+    deleteRequest.onsuccess = () => {
+      console.log('Database reset successfully')
+      resolve()
+    }
+
+    deleteRequest.onerror = () => {
+      console.error('Failed to delete database:', deleteRequest.error)
+      reject(deleteRequest.error || new Error('Unknown error when reseting IndexedDB database'))
+    }
   })
 }
