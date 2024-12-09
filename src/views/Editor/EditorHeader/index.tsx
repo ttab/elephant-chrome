@@ -13,7 +13,7 @@ export const EditorHeader = (): JSX.Element => {
   }, [viewId])
 
   return (
-    <div id={viewId} className='flex flex-row items-center'>
+    <div className='flex flex-row items-center'>
       <Newsvalue />
       <MetaSheet container={containerRef.current} />
     </div>

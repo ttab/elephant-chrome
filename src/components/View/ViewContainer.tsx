@@ -73,6 +73,7 @@ export const ViewContainer = ({ children, colSpan: wantedColSpan }: {
   return useMemo(() => {
     return (
       <section
+        id={viewId}
         ref={sectionRef}
         className={cn(
           section({
@@ -86,5 +87,5 @@ export const ViewContainer = ({ children, colSpan: wantedColSpan }: {
         {children}
       </section>
     )
-  }, [children, isFocused, isHidden, isActive, colSpan])
+  }, [children, isFocused, isHidden, isActive, colSpan, viewId])
 }
