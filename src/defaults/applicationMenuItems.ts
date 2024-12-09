@@ -1,4 +1,4 @@
-import { Cable, BriefcaseBusiness, CalendarDaysIcon, CalendarPlus2, SearchIcon, ZapIcon, type LucideIcon } from '@ttab/elephant-ui/icons'
+import { Cable, BriefcaseBusiness, CalendarDaysIcon, CalendarPlus2, SearchIcon, ZapIcon, type LucideIcon, EarthIcon } from '@ttab/elephant-ui/icons'
 import type { ViewProps, View } from '../types'
 
 /**
@@ -37,10 +37,16 @@ export const applicationMenu: ApplicationMenu = {
           color: '#FF971E'
         },
         {
+          name: 'Approvals',
+          label: 'Dagen',
+          icon: EarthIcon,
+          color: '#5E9F5D'
+        },
+        {
           name: 'Events',
           label: 'Händelser',
           icon: CalendarPlus2,
-          color: '#5E9F5D'
+          color: '#D802FD'
         },
         {
           name: 'Assignments',
