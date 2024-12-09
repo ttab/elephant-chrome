@@ -96,6 +96,7 @@ function EditorWrapper(props: ViewProps & {
   const { provider, synced, user } = useCollaboration()
   const openFactboxEditor = useLink('Factbox')
   const [notes] = useYValue<Block[] | undefined>('meta.core/note')
+  const { words, characters } = useTextbit()
 
   return (
     <View.Root>
@@ -126,7 +127,7 @@ function EditorWrapper(props: ViewProps & {
           </ViewHeader.Action>
         </ViewHeader.Root>
 
-        <View.Content className='flex flex-col'>
+        <View.Content className='flex flex-col max-w-[1000px]'>
           {notes?.length && <div className='p-4'><Notes /></div>}
 
           <div className='flex-grow overflow-auto pr-12 max-w-screen-xl'>
@@ -136,9 +137,16 @@ function EditorWrapper(props: ViewProps & {
           </div>
         </View.Content>
 
-        <div className='h-14 basis-14'>
-          <Footer />
-        </div>
+        <View.Footer>
+          <div className='flex gap-2'>
+            <strong>Words:</strong>
+            <span>{words}</span>
+          </div>
+          <div className='flex gap-2'>
+            <strong>Characters:</strong>
+            <span>{characters}</span>
+          </div>
+        </View.Footer>
 
       </Textbit.Root>
     </View.Root>
@@ -222,23 +230,6 @@ function EditorContent({ provider, user }: {
       <Toolbar />
       <ContextMenu />
     </Textbit.Editable>
-  )
-}
-
-function Footer(): JSX.Element {
-  const { words, characters } = useTextbit()
-
-  return (
-    <footer className='flex line font-sans h-14 border-t text-sm p-3 pr-8 text-right gap-4 justify-end items-center'>
-      <div className='flex gap-2'>
-        <strong>Words:</strong>
-        <span>{words}</span>
-      </div>
-      <div className='flex gap-2'>
-        <strong>Characters:</strong>
-        <span>{characters}</span>
-      </div>
-    </footer>
   )
 }
 

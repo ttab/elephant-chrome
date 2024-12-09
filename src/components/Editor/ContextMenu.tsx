@@ -25,6 +25,7 @@ export const ContextMenu = ({ className }: { className?: string }): JSX.Element 
       dark:border-slate-800
       dark:divide-slate-800
       dark:shadow-none
+      z-50
       `, className)}
     >
       {!!spelling?.suggestions
