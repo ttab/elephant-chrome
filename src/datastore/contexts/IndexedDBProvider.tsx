@@ -41,10 +41,6 @@ export const IndexedDBProvider = ({ children }: {
       setDb(target.result)
     }
 
-    // openRequest.onerror = (event) => {
-    //  console.error('Failed to open IndexedDB:', event)
-    // }
-
     openRequest.onerror = () => {
       console.error('Failed to open database:', openRequest.error)
 
