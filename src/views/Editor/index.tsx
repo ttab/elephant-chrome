@@ -1,4 +1,4 @@
-import { useMemo, useEffect, useState } from 'react'
+import { useMemo, useEffect, useState, useRef } from 'react'
 import { AwarenessDocument, View, ViewHeader } from '@/components'
 import { Notes } from './components/Notes'
 import { PenBoxIcon } from '@ttab/elephant-ui/icons'
@@ -20,6 +20,7 @@ import {
   useRegistry,
   useLink,
   useYValue,
+  useView,
   useSupportedLanguages
 } from '@/hooks'
 import { type ViewMetadata, type ViewProps } from '@/types'
@@ -99,14 +100,15 @@ function EditorWrapper(props: ViewProps & {
   return (
     <View.Root>
       <Textbit.Root
+        autoFocus={true}
         plugins={
-          [...plugins.map((initPlugin) => initPlugin()),
+          [
+            ...plugins.map((initPlugin) => initPlugin()),
             Factbox({
               onEditOriginal: (id: string) => {
                 openFactboxEditor(undefined, { id })
               }
-            }
-            )
+            })
           ]
         }
         placeholders='multiple'
@@ -149,6 +151,8 @@ function EditorContent({ provider, user }: {
 }): JSX.Element {
   const { data: session } = useSession()
   const { spellchecker } = useRegistry()
+  const { isActive } = useView()
+  const ref = useRef<HTMLDivElement>(null)
   const supportedLanguages = useSupportedLanguages()
 
   const yjsEditor = useMemo(() => {
@@ -170,6 +174,14 @@ function EditorContent({ provider, user }: {
     )
   }, [provider?.awareness, provider?.document, user])
 
+  useEffect(() => {
+    if (isActive && ref?.current?.dataset['state'] !== 'focused') {
+      setTimeout(() => {
+        ref?.current?.focus()
+      }, 0)
+    }
+  }, [isActive, ref])
+
   // Connect/disconnect from provider through editor only when editor changes
   useEffect(() => {
     if (yjsEditor) {
@@ -182,6 +194,7 @@ function EditorContent({ provider, user }: {
 
   return (
     <Textbit.Editable
+      ref={ref}
       yjsEditor={yjsEditor}
       onSpellcheck={async (texts) => {
         if (documentLanguage) {
@@ -211,7 +224,6 @@ function EditorContent({ provider, user }: {
     </Textbit.Editable>
   )
 }
-
 
 function Footer(): JSX.Element {
   const { words, characters } = useTextbit()
