@@ -1,6 +1,7 @@
 import { type ReactNode } from 'react'
 import { Badge, Button } from '@ttab/elephant-ui'
 import { Search, X } from '@ttab/elephant-ui/icons'
+import type { ColumnFiltersState } from '@tanstack/react-table'
 import { type Table } from '@tanstack/react-table'
 import { type DefaultValueOption } from '@/types/index'
 
@@ -62,7 +63,7 @@ const SelectedButton = <TData, >({ id, value, table }: SelectedButtonProps<TData
 }
 
 export const SelectedFilters = <TData, >({ table }: { table: Table<TData> }): ReactNode => {
-  const { columnFilters, globalFilter } = table.getState()
+  const { columnFilters, globalFilter } = table.getState() as { columnFilters: ColumnFiltersState, globalFilter: string | null }
 
   const GlobalFilter = globalFilter
     ? (

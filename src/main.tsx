@@ -6,6 +6,7 @@ import { NavigationProvider } from '@/navigation/NavigationProvider'
 import { banner } from './lib/banner.ts'
 import { RepositoryEventsProvider } from './contexts/RepositoryEventsProvider.tsx'
 import { IndexedDBProvider } from './datastore/contexts/IndexedDBProvider.tsx'
+import { SupportedLanguagesProvider } from './datastore/contexts/SupportedLanguagesProvider.tsx'
 
 banner()
 
@@ -21,11 +22,13 @@ ReactDOM.createRoot(root).render(
       <HPWebSocketProvider>
         <SessionProvider refetchOnWindowFocus={false} basePath={`${import.meta.env.BASE_URL}/api/auth`} refetchInterval={150}>
           <RepositoryEventsProvider>
-            <ThemeProvider defaultTheme='light' storageKey='ele-ui-theme'>
-              <NavigationProvider>
-                <App />
-              </NavigationProvider>
-            </ThemeProvider>
+            <SupportedLanguagesProvider>
+              <ThemeProvider defaultTheme='light' storageKey='ele-ui-theme'>
+                <NavigationProvider>
+                  <App />
+                </NavigationProvider>
+              </ThemeProvider>
+            </SupportedLanguagesProvider>
           </RepositoryEventsProvider>
         </SessionProvider>
       </HPWebSocketProvider>

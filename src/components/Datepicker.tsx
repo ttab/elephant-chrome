@@ -57,18 +57,25 @@ export const DatePicker = ({ date, changeDate, setDate, forceYear = false }: {
   return (
     <Popover modal={true}>
       <PopoverTrigger asChild>
-
         <Button
           variant='outline'
           size='xs'
-          className='justify-center text-left font-normal text-sm whitespace-nowrap px-2 text-muted-foreground'
+          className='justify-center text-left font-normal text-sm whitespace-nowrap px-2'
+          onKeyDown={(event) => {
+            if (event.key !== 'Escape') {
+              event?.stopPropagation()
+            }
+          }}
         >
           <span className={cn(defaultDate({ forceYear }))}>{formattedDate}</span>
           <span className={cn(longDate({ forceYear }))}>{longFormattedDate}</span>
         </Button>
 
       </PopoverTrigger>
-      <PopoverContent className='w-auto p-0'>
+      <PopoverContent
+        className='w-auto p-0'
+        onEscapeKeyDown={(event) => event?.stopPropagation()}
+      >
         <Calendar
           mode='single'
           selected={date}
@@ -83,7 +90,6 @@ export const DatePicker = ({ date, changeDate, setDate, forceYear = false }: {
               setDate(format(selectedDate, 'yyyy-MM-dd'))
             }
           }}
-          // initialFocus
         />
       </PopoverContent>
     </Popover>

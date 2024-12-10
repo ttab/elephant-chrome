@@ -1,4 +1,4 @@
-import { Button } from '@ttab/elephant-ui'
+import { Badge, Button } from '@ttab/elephant-ui'
 import { useYValue } from '@/hooks/useYValue'
 
 export const SluglineButton = ({ path, value, setActive }: {
@@ -57,12 +57,13 @@ function StaticSluglineByValue({ value }: {
   }
 
   return (
-    <Button
-      className='text-muted-foreground h-7 px-2 font-normal text-sm whitespace-nowrap hover:bg-background hover:text-muted-foreground hover:cursor-default'
-      variant='outline'
-      type='button'
+    <Badge
+      size='sm'
+      variant='ghost'
+      className='bg-background rounded-md text-muted-foreground font-normal text-sm whitespace-nowrap'
+      data-row-action
     >
       {value || 'Slugg...'}
-    </Button>
+    </Badge>
   )
 }

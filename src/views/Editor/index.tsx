@@ -1,4 +1,4 @@
-import { useMemo, useEffect, useState } from 'react'
+import { useMemo, useEffect, useState, useRef } from 'react'
 import { AwarenessDocument, View, ViewHeader } from '@/components'
 import { Notes } from './components/Notes'
 import { PenBoxIcon } from '@ttab/elephant-ui/icons'
@@ -18,7 +18,10 @@ import {
   useQuery,
   useCollaboration,
   useRegistry,
-  useYValue
+  useLink,
+  useYValue,
+  useView,
+  useSupportedLanguages
 } from '@/hooks'
 import { type ViewMetadata, type ViewProps } from '@/types'
 import { EditorHeader } from './EditorHeader'
@@ -35,6 +38,7 @@ import { Gutter } from '@/components/Editor/Gutter'
 import { DropMarker } from '@/components/Editor/DropMarker'
 import { useSession } from 'next-auth/react'
 import type { Block } from '@ttab/elephant-api/newsdoc'
+import { getValueByYPath } from '@/lib/yUtils'
 
 const meta: ViewMetadata = {
   name: 'Editor',
@@ -88,13 +92,29 @@ const Editor = (props: ViewProps): JSX.Element => {
 function EditorWrapper(props: ViewProps & {
   documentId: string
 }): JSX.Element {
-  const [notes] = useYValue<Block[] | undefined>('meta.core/note')
-  const plugins = [Text, UnorderedList, OrderedList, Bold, Italic, Link, TTVisual, ImageSearchPlugin, Factbox, FactboxPlugin]
+  const plugins = [Text, UnorderedList, OrderedList, Bold, Italic, Link, TTVisual, ImageSearchPlugin, FactboxPlugin]
   const { provider, synced, user } = useCollaboration()
+  const openFactboxEditor = useLink('Factbox')
+  const [notes] = useYValue<Block[] | undefined>('meta.core/note')
+  const { words, characters } = useTextbit()
 
   return (
     <View.Root>
-      <Textbit.Root plugins={plugins.map((initPlugin) => initPlugin())} placeholders='multiple' className='h-screen max-h-screen flex flex-col'>
+      <Textbit.Root
+        autoFocus={true}
+        plugins={
+          [
+            ...plugins.map((initPlugin) => initPlugin()),
+            Factbox({
+              onEditOriginal: (id: string) => {
+                openFactboxEditor(undefined, { id })
+              }
+            })
+          ]
+        }
+        placeholders='multiple'
+        className='h-screen max-h-screen flex flex-col'
+      >
         <ViewHeader.Root>
           <ViewHeader.Title title='Editor' icon={PenBoxIcon} />
 
@@ -107,7 +127,7 @@ function EditorWrapper(props: ViewProps & {
           </ViewHeader.Action>
         </ViewHeader.Root>
 
-        <View.Content className='flex flex-col'>
+        <View.Content className='flex flex-col max-w-[1000px]'>
           {notes?.length && <div className='p-4'><Notes /></div>}
 
           <div className='flex-grow overflow-auto pr-12 max-w-screen-xl'>
@@ -117,9 +137,16 @@ function EditorWrapper(props: ViewProps & {
           </div>
         </View.Content>
 
-        <div className='h-14 basis-14'>
-          <Footer />
-        </div>
+        <View.Footer>
+          <div className='flex gap-2'>
+            <strong>Words:</strong>
+            <span>{words}</span>
+          </div>
+          <div className='flex gap-2'>
+            <strong>Characters:</strong>
+            <span>{characters}</span>
+          </div>
+        </View.Footer>
 
       </Textbit.Root>
     </View.Root>
@@ -131,7 +158,10 @@ function EditorContent({ provider, user }: {
   user: AwarenessUserData
 }): JSX.Element {
   const { data: session } = useSession()
-  const { spellchecker, locale } = useRegistry()
+  const { spellchecker } = useRegistry()
+  const { isActive } = useView()
+  const ref = useRef<HTMLDivElement>(null)
+  const supportedLanguages = useSupportedLanguages()
 
   const yjsEditor = useMemo(() => {
     if (!provider?.awareness) {
@@ -152,6 +182,13 @@ function EditorContent({ provider, user }: {
     )
   }, [provider?.awareness, provider?.document, user])
 
+  useEffect(() => {
+    if (isActive && ref?.current?.dataset['state'] !== 'focused') {
+      setTimeout(() => {
+        ref?.current?.focus()
+      }, 0)
+    }
+  }, [isActive, ref])
 
   // Connect/disconnect from provider through editor only when editor changes
   useEffect(() => {
@@ -161,11 +198,20 @@ function EditorContent({ provider, user }: {
     }
   }, [yjsEditor])
 
+  const [documentLanguage] = getValueByYPath<string>(provider.document.getMap('ele'), 'root.language')
+
   return (
     <Textbit.Editable
+      ref={ref}
       yjsEditor={yjsEditor}
       onSpellcheck={async (texts) => {
-        return await spellchecker?.check(texts, locale, session?.accessToken ?? '') ?? []
+        if (documentLanguage) {
+          const spellingResult = await spellchecker?.check(texts, documentLanguage, supportedLanguages, session?.accessToken ?? '')
+          if (spellingResult) {
+            return spellingResult
+          }
+        }
+        return []
       }}
       className='outline-none
         h-full
@@ -184,24 +230,6 @@ function EditorContent({ provider, user }: {
       <Toolbar />
       <ContextMenu />
     </Textbit.Editable>
-  )
-}
-
-
-function Footer(): JSX.Element {
-  const { words, characters } = useTextbit()
-
-  return (
-    <footer className='flex line font-sans h-14 border-t text-sm p-3 pr-8 text-right gap-4 justify-end items-center'>
-      <div className='flex gap-2'>
-        <strong>Words:</strong>
-        <span>{words}</span>
-      </div>
-      <div className='flex gap-2'>
-        <strong>Characters:</strong>
-        <span>{characters}</span>
-      </div>
-    </footer>
   )
 }
 

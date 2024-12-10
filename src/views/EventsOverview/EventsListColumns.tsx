@@ -46,9 +46,8 @@ export function eventTableColumns({ sections = [] }: {
           return <Newsvalue newsvalue={newsvalue} />
         }
       },
-      filterFn: (row, id, value) => (
+      filterFn: (row, id, value: string[]) =>
         value.includes(row.getValue(id))
-      )
     },
     {
       id: 'title',
@@ -90,9 +89,8 @@ export function eventTableColumns({ sections = [] }: {
           </>
         )
       },
-      filterFn: (row, id, value) => (
+      filterFn: (row, id, value: string[]) =>
         value.includes(row.getValue(id))
-      )
     },
     {
       id: 'planning_status',
@@ -112,9 +110,8 @@ export function eventTableColumns({ sections = [] }: {
         const _status = row.original._relatedPlannings?.[0]
         return <Status status={_status} />
       },
-      filterFn: (row, id, value) => (
+      filterFn: (row, id, value: string[]) =>
         value.includes(row.getValue(id))
-      )
     },
     // TODO: Use range filter
     {

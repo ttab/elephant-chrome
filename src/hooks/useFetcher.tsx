@@ -28,7 +28,6 @@ export const useFetcher = <T extends Source, R>(Fetcher: Fetcher<T, R>):
 ({ params, options }: {
   params: R
   options?: {
-    aggregate?: boolean
     withStatus?: boolean
     withPlannings?: boolean
   }
@@ -47,7 +46,6 @@ export const useFetcher = <T extends Source, R>(Fetcher: Fetcher<T, R>):
     async ({ params, options }: {
       params: R
       options?: {
-        aggregate?: boolean
         withStatus?: boolean
         withPlannings?: boolean
       }

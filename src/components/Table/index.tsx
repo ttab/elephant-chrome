@@ -2,12 +2,11 @@ import {
   type MouseEvent,
   useEffect,
   useCallback,
-  useMemo,
-  useRef
+  useMemo
 } from 'react'
 import {
   type ColumnDef,
-  type Row
+  type Row as RowType
 } from '@tanstack/react-table'
 
 import {
@@ -17,15 +16,14 @@ import {
   TableRow
 } from '@ttab/elephant-ui'
 import { Toolbar } from './Toolbar'
-import { useNavigation, useView, useTable, useHistory } from '@/hooks'
-import { isEditableTarget } from '@/lib/isEditableTarget'
+import { useNavigation, useView, useTable, useHistory, useNavigationKeys, useOpenDocuments } from '@/hooks'
 import { handleLink } from '@/components/Link/lib/handleLink'
 import { NewItems } from './NewItems'
 import { GroupedRows } from './GroupedRows'
-import { Rows } from './Rows'
 import { LoadingText } from '../LoadingText'
+import { Row } from './Row'
 import { useModal } from '../Modal/useModal'
-import { Editor } from '@/components/PlainEditor'
+import { ModalContent } from '@/views/Wires/components'
 
 interface TableProps<TData, TValue> {
   columns: Array<ColumnDef<TData, TValue>>
@@ -38,22 +36,15 @@ export const Table = <TData, TValue>({
   type,
   onRowSelected
 }: TableProps<TData, TValue>): JSX.Element => {
-  const { isActive: isActiveView } = useView()
   const { state, dispatch } = useNavigation()
   const history = useHistory()
   const { viewId: origin } = useView()
-
   const { table, loading } = useTable()
-
+  const openDocuments = useOpenDocuments({ idOnly: true })
   const { showModal, hideModal } = useModal()
 
-  const rowRefs = useRef<Map<string, HTMLTableRowElement>>(new Map())
-
-  const handleOpen = useCallback((event: MouseEvent<HTMLTableRowElement> | KeyboardEvent, row: Row<unknown>): void => {
+  const handleOpen = useCallback((event: MouseEvent<HTMLTableRowElement> | KeyboardEvent, row: RowType<unknown>): void => {
     const viewType = type === 'Wires' ? 'Editor' : type
-    setTimeout(() => {
-      row.toggleSelected(!row.getIsSelected())
-    }, 0)
 
     const target = event.target as HTMLElement
     if (target && 'dataset' in target && !target.dataset.rowAction) {
@@ -74,82 +65,61 @@ export const Table = <TData, TValue>({
     }
   }, [dispatch, state.viewRegistry, onRowSelected, origin, type, history])
 
-  const scrollToRow = useCallback((rowId: string) => {
-    rowRefs.current.get(rowId)?.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
-  }, [rowRefs])
 
-  // TODO: We should extend useNavigationKeys hook to accomodate this functionality
-  // TODO: We should then remove isEditableTarget as it is built into useNavigationKeys
-  const keyDownHandler = useCallback((evt: KeyboardEvent): void => {
-    if (!isActiveView || isEditableTarget(evt)) {
-      return
-    }
+  useNavigationKeys({
+    keys: ['ArrowUp', 'ArrowDown', 'Enter', 'Escape', ' '],
+    onNavigation: (event) => {
+      const rows = table.getRowModel().rows
+      if (!rows?.length) {
+        return
+      }
 
-    if (!table || !['ArrowDown', 'ArrowUp', 'Escape', 'Enter', ' '].includes(evt.key)) {
-      return
-    }
+      const selectedRow = table.getGroupedSelectedRowModel()?.flatRows?.[0]
+      const currentRows = table.getState().grouping.length
+        ? rows.flatMap((row) => [...row.subRows])
+        : rows
 
-    evt.preventDefault()
-    const rows = table.getRowModel().rows
-    if (!rows?.length) {
-      return
-    }
+      if (event.key === 'Enter' && selectedRow) {
+        hideModal()
+        handleOpen(event, selectedRow)
+        return
+      }
 
-    const selectedRows = table.getGroupedSelectedRowModel()
-    const selectedRow = selectedRows?.flatRows[0]
+      if (event.key === ' ' && type === 'Wires') {
+        const originalId = (selectedRow.original as { _id: string })._id
+        const source = (selectedRow.original as {
+          _source: {
+            'document.rel.source.uri': string[]
+          }
+        })._source['document.rel.source.uri'][0]
 
-    const currentRows = table.getState().grouping.length
-      ? rows.flatMap((row) => [...row.subRows])
-      : rows
+        showModal(
+          <ModalContent
+            id={originalId}
+            source={source}
+            handleClose={hideModal}
+            role={selectedRow.getValue<string>('role')}
+          />,
+          'sheet',
+          {
+            id: originalId
+          })
+        return
+      }
 
-    if (evt.key === 'Enter') {
-      if (!selectedRow) return
+      if (event.key === 'Escape') {
+        selectedRow?.toggleSelected(false)
+        return
+      }
 
-      hideModal()
-      handleOpen(evt, selectedRow)
-      return
-    }
+      // ArrowDown and ArrowUp
+      const idx = !selectedRow
+        ? (event.key === 'ArrowDown' ? 0 : currentRows.length - 1)
+        : (selectedRow.index + (event.key === 'ArrowDown' ? 1 : -1) + currentRows.length) % currentRows.length
 
-    if (evt.key === ' ' && type === 'Wires') {
-      // @ts-expect-error unknown type
-      showModal(<Editor id={selectedRow.original._id} />, 'sheet')
-      return
-    }
-
-    if (evt.key === 'Escape') {
-      selectedRow?.toggleSelected(false)
-      return
-    }
-
-    if ((evt.key === 'ArrowDown' || evt.key === 'ArrowUp') && !selectedRow) {
-      const idx = evt.key === 'ArrowDown' ? 0 : currentRows.length - 1
-
-      // Set selected row and scroll into view
       currentRows[idx].toggleSelected(true)
-      scrollToRow(currentRows[idx].id)
-      return
     }
-
-    if (evt.key === 'ArrowDown' || evt.key === 'ArrowUp') {
-      // Get next row
-      const nextIdx = selectedRow.index + (evt.key === 'ArrowDown' ? 1 : -1)
-      const idx = nextIdx < 0 ? currentRows.length - 1 : nextIdx >= currentRows.length ? 0 : nextIdx
-
-      // Set selected row and scroll into view
-      currentRows[idx].toggleSelected(true)
-      scrollToRow(currentRows[idx].id)
-    }
-  }, [table, isActiveView, handleOpen, scrollToRow])
-
-  useEffect(() => {
-    if (!onRowSelected) {
-      return
-    }
-
-    document.addEventListener('keydown', keyDownHandler)
-
-    return () => document.removeEventListener('keydown', keyDownHandler)
-  }, [keyDownHandler, onRowSelected])
+  })
 
   useEffect(() => {
     if (onRowSelected) {
@@ -185,8 +155,25 @@ export const Table = <TData, TValue>({
 
     return rows.map((row, index) => (
       table.getState().grouping.length)
-      ? <GroupedRows<TData, TValue> key={index} row={row} columns={columns} handleOpen={handleOpen} rowRefs={rowRefs} />
-      : <Rows key={index} row={row} handleOpen={handleOpen} rowRefs={rowRefs} />
+      ? (
+          <GroupedRows<TData, TValue>
+            key={index}
+            type={type}
+            row={row}
+            columns={columns}
+            handleOpen={handleOpen}
+            openDocuments={openDocuments}
+          />
+        )
+      : (
+          <Row
+            key={index}
+            type={type}
+            row={row}
+            handleOpen={handleOpen}
+            openDocuments={openDocuments}
+          />
+        )
     )
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [rows, columns, loading, handleOpen, table, rowSelection])
@@ -194,27 +181,25 @@ export const Table = <TData, TValue>({
   return (
     <>
       <Toolbar table={table} />
+
       {(type === 'Planning' || type === 'Event') && (
         <NewItems.Root>
           <NewItems.Table
-            header={`Dina nya skapade ${type === 'Planning'
+            header={`Dina nya skapade ${['Planning', 'Event'].includes(type)
               ? 'planeringar'
               : 'händelser'}`}
             type={type}
           />
         </NewItems.Root>
       )}
-      {type === 'Search' && loading
-        ? null
-        : (
-            <>
-              <_Table className='table-auto relative'>
-                <TableBody>
-                  {TableBodyElement}
-                </TableBody>
-              </_Table>
-            </>
-          )}
+
+      {(type !== 'Search' || !loading) && (
+        <_Table className='table-auto relative'>
+          <TableBody>
+            {TableBodyElement}
+          </TableBody>
+        </_Table>
+      )}
     </>
   )
 }

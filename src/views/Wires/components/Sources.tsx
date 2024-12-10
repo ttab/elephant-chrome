@@ -49,7 +49,6 @@ export const Sources = (): JSX.Element => {
   return (
     <ComboBox
       max={3}
-      hideInput
       size='xs'
       sortOrder='label'
       options={allSources}

@@ -1,4 +1,4 @@
-import { transformText, revertText } from './core/index.js'
+import { transformText, revertText, transformUnorderedList } from './core/index.js'
 import { transformVisual, revertVisual } from './tt/visual.js'
 import type { TBElement } from '@ttab/textbit'
 import type { Block } from '@ttab/elephant-api/newsdoc'
@@ -17,6 +17,8 @@ export function newsDocToSlate(content: Block[]): TBElement[] {
           return transformVisual(element)
         case 'core/factbox':
           return transformFactbox(element)
+        case 'core/unordered-list':
+          return transformUnorderedList(element)
         default:
           throw new Error(`Element not implemented: ${element.type}`)
       }

@@ -31,8 +31,12 @@ export const Editor = ({ id }: { id: string }): JSX.Element => {
 
   return (
     <div className='flex-grow overflow-auto max-w-screen-lg mx-auto'>
-      <Textbit.Root plugins={plugins.map((initPlugin) => initPlugin())} className='h-screen max-h-screen flex flex-col'>
-        <Textbit.Editable readOnly value={document.document?.content as TBElement[]} />
+      <Textbit.Root plugins={plugins.map((initPlugin) => initPlugin())}>
+        <Textbit.Editable
+          readOnly
+          value={document.document?.content as TBElement[]}
+          className='outline-none pb-6 max-h-[30vh] overflow-y-scroll dark:text-slate-100 px-2'
+        />
       </Textbit.Root>
     </div>
   )

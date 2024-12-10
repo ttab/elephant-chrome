@@ -14,15 +14,16 @@ export class Spellchecker {
   }
 
   /**
-   * Spellcheck a setring of texts
+   * Spellcheck a string of texts
    *
    * @param {string[]} text - Array of strings to spellcheck
-   * @param {string} locale - Locale (language)
+   * @param {string} documentLanguage - Language of provided document
+   * @param {string[]} supportedLanguages - String array of languages supported for spellchecking
    * @param {string} accessToken - Access token
    *
    * @returns Promise<GetDocumentResponse>
    */
-  async check(text: string[], locale: string, accessToken: string): Promise<Array<Array<{
+  async check(text: string[], documentLanguage: string, supportedLanguages: string[], accessToken: string): Promise<Array<Array<{
     text: string
     suggestions: Array<{
       text: string
@@ -34,12 +35,27 @@ export class Spellchecker {
       return []
     }
 
-    if (!locale) {
-      console.warn('No locale, no spellchecking')
+    if (!documentLanguage) {
+      console.warn('No document language provided, no spellchecking')
       return []
     }
 
-    const language = locale.toLowerCase().replace('_', '-')
+    // For now, documents in swedish need to be explicitly set to sv-se in order to work
+    if (documentLanguage === 'sv') {
+      documentLanguage = 'sv-se'
+    }
+
+    // We default language: 'en' to be british english
+    if (documentLanguage === 'en') {
+      documentLanguage = 'en-gb'
+    }
+
+    const language = documentLanguage.toLowerCase().replace('_', '-')
+
+    if (!supportedLanguages.includes(documentLanguage)) {
+      console.warn(documentLanguage, 'not supported, no spellchecking')
+      return []
+    }
 
     try {
       const { response } = await this.#client.text({

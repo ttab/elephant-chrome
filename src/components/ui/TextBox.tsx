@@ -1,7 +1,7 @@
 import { Textbit } from '@ttab/textbit'
 import { createEditor } from 'slate'
 import { cn } from '@ttab/elephant-ui/utils'
-import { useCollaboration, useRegistry } from '@/hooks'
+import { useCollaboration, useRegistry, useSupportedLanguages } from '@/hooks'
 import { useLayoutEffect, useMemo } from 'react'
 import { YjsEditor, withCursors, withYHistory, withYjs } from '@slate-yjs/core'
 import { type HocuspocusProvider } from '@hocuspocus/provider'
@@ -11,6 +11,7 @@ import { Text } from '@ttab/textbit-plugins'
 import { useYValue } from '@/hooks/useYValue'
 import { useSession } from 'next-auth/react'
 import { ContextMenu } from '../Editor/ContextMenu'
+import { getValueByYPath } from '@/lib/yUtils'
 
 export const TextBox = ({ icon, placeholder, path, className, singleLine = false, autoFocus = false, onBlur, onFocus }: {
   path: string
@@ -25,6 +26,12 @@ export const TextBox = ({ icon, placeholder, path, className, singleLine = false
   const { provider, user } = useCollaboration()
   // FIXME: We need to check that the path exists. If not we need to create the missing Block
   const [content] = useYValue<Y.XmlText>(path, true)
+
+  if (!provider?.document) {
+    return <></>
+  }
+
+  const [documentLanguage] = getValueByYPath<string>(provider.document.getMap('ele'), 'root.language')
 
   if (content === undefined) {
     // Empty placeholder while waiting for data
@@ -61,6 +68,7 @@ export const TextBox = ({ icon, placeholder, path, className, singleLine = false
             singleLine={singleLine}
             user={user}
             icon={icon}
+            documentLanguage={documentLanguage}
           />
         </Textbit.Root>
       )}
@@ -68,15 +76,17 @@ export const TextBox = ({ icon, placeholder, path, className, singleLine = false
   )
 }
 
-const TextboxEditable = ({ provider, user, icon: Icon, content, singleLine }: {
+const TextboxEditable = ({ provider, user, icon: Icon, content, singleLine, documentLanguage }: {
   provider: HocuspocusProvider
   singleLine: boolean
   user: AwarenessUserData
   icon?: React.ReactNode
   content: Y.XmlText
+  documentLanguage: string | undefined
 }): JSX.Element | undefined => {
   const { data: session } = useSession()
-  const { spellchecker, locale } = useRegistry()
+  const { spellchecker } = useRegistry()
+  const supportedLanguages = useSupportedLanguages()
 
   const yjsEditor = useMemo(() => {
     if (!provider?.awareness) {
@@ -113,7 +123,13 @@ const TextboxEditable = ({ provider, user, icon: Icon, content, singleLine }: {
           <Textbit.Editable
             yjsEditor={yjsEditor}
             onSpellcheck={async (texts) => {
-              return await spellchecker?.check(texts, locale, session?.accessToken ?? '') ?? []
+              if (documentLanguage) {
+                const spellingResult = await spellchecker?.check(texts, documentLanguage, supportedLanguages, session?.accessToken ?? '')
+                if (spellingResult) {
+                  return spellingResult
+                }
+              }
+              return []
             }}
             className={cn(!singleLine && '!min-h-20',
               `p-1

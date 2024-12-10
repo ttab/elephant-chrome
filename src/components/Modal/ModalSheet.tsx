@@ -1,20 +1,19 @@
-import { Sheet, SheetHeader, SheetContent, SheetDescription, SheetTitle } from '@ttab/elephant-ui'
+import { Sheet, SheetContent, SheetDescription, SheetTitle } from '@ttab/elephant-ui'
 import type { PropsWithChildren } from 'react'
 
 export const ModalSheet = ({ children, isVisible }: {
   isVisible: boolean
 } & PropsWithChildren): JSX.Element => (
-
   <Sheet open={isVisible}>
     <SheetContent
       side='bottom'
-      className='h-1/3 focus:outline-none'
+      className='p-3 h-1/3 focus:outline-none pb-6 max-w-[1200px] mx-auto rounded-t rounded-lg'
     >
-      <SheetHeader>
-        <SheetDescription />
-        <SheetTitle />
-      </SheetHeader>
-      {children}
+      <SheetTitle />
+      <SheetDescription />
+      <div className='flex flex-grow gap-4'>
+        {children}
+      </div>
     </SheetContent>
   </Sheet>
 )

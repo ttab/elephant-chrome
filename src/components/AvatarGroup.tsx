@@ -2,7 +2,7 @@ import { type PropsWithChildren } from 'react'
 import { type VariantProps, cva } from 'class-variance-authority'
 import { cn } from '@ttab/elephant-ui/utils'
 
-const avatarGroupVariants = cva('flex items-center', {
+const avatarGroupVariants = cva('flex items-center contain-layout', {
   variants: {
     size: {
       xs: '-space-x-3',

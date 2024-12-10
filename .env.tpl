@@ -30,3 +30,7 @@ PROTOCOL=http
 HOST=localhost
 PORT=5183
 BASE_URL=/elephant
+
+
+FARO_URL=
+FARO_NAME=

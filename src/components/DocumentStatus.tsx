@@ -26,7 +26,6 @@ export const DocumentStatus = ({ status, setStatus }: {
             void setStatus(option.value)
           }
         }}
-        hideInput
       >
         {SelectedIcon
           ? <SelectedIcon {...selectedOptions[0].iconProps} />

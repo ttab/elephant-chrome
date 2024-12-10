@@ -2,7 +2,6 @@ import * as Y from 'yjs'
 import { assignmentPlanningTemplate } from '../defaults/templates/assignmentPlanningTemplate'
 import { Block, type Document } from '@ttab/elephant-api/newsdoc'
 import { toYMap } from '../../src-srv/utils/transformations/lib/toYMap'
-import { get } from './yMapValueByPath'
 import { toGroupedNewsDoc, group } from '../../src-srv/utils/transformations/groupedNewsDoc'
 import { toYjsNewsDoc } from '../../src-srv/utils/transformations/yjsNewsDoc'
 
@@ -73,10 +72,14 @@ export function appendAssignment({ document, inProgress, slugLine }: {
   // Get existing assignments
   const yAssignments = meta.get('core/assignment') as Y.Array<unknown>
 
+  const yMeta = meta.get('core/planning-item') as Y.Array<Y.Map<unknown>>
+  const planningDate = (yMeta?.get(0)?.get('data') as Y.Map<unknown>)
+    ?.get('start_date') as string
+
   // Create new assignment from template
   const assignment = assignmentPlanningTemplate({
     assignmentType: 'text',
-    planningDate: get(meta, 'core/planning-item[0].data.start_date') as unknown as string,
+    planningDate,
     slugLine
   })
 

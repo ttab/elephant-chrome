@@ -11,7 +11,10 @@ export const SWRProvider = <T extends Source, R>({ index, children }: PropsWithC
   return (
     <SWRConfig
       value={{
-        fetcher: async (args) => await fetcher({
+        fetcher: async (args: [unknown, R, {
+          withPlanning: boolean
+          withStatus: boolean
+        }]) => await fetcher({
           params: args[1],
           options: args[2]
         }),

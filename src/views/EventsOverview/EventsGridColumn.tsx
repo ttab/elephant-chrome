@@ -28,7 +28,6 @@ export const EventsGridColumn = ({ date, items }: EventsGridColumnProps): JSX.El
   const [users, setUsers] = useState<UserDoc | undefined>()
   const sections = useSections()
 
-  // TODO: Temporary until we'll get it into useYObserver/useCollaboration
   useEffect(() => {
     const ymap = docTracker?.document.getMap('open-documents')
     setOpenDocuments(ymap)

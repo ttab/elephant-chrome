@@ -1,4 +1,4 @@
-import { useCollaboration, useRegistry } from '@/hooks'
+import { useCollaboration, useRegistry, useSupportedLanguages } from '@/hooks'
 import { Bold, Italic, Text, OrderedList, UnorderedList } from '@ttab/textbit-plugins'
 import Textbit, { type TBText } from '@ttab/textbit'
 import { type HocuspocusProvider } from '@hocuspocus/provider'
@@ -13,6 +13,7 @@ import { ContextMenu } from '@/components/Editor/ContextMenu'
 import { useSession } from 'next-auth/react'
 import { Validation } from '@/components/Validation'
 import type { FormProps } from '@/components/Form/Root'
+import { getValueByYPath } from '@/lib/yUtils'
 
 
 export const FlashEditor = ({ setTitle, onValidation, validateStateRef }: {
@@ -50,7 +51,9 @@ function EditorContent({ provider, user, setTitle }: {
   setTitle: (value: string | undefined) => void
 }): JSX.Element {
   const { data: session } = useSession()
-  const { spellchecker, locale } = useRegistry()
+  const { spellchecker } = useRegistry()
+  const supportedLanguages = useSupportedLanguages()
+  const [documentLanguage] = getValueByYPath<string>(provider.document.getMap('ele'), 'root.language')
 
   const yjsEditor = useMemo(() => {
     if (!provider?.awareness) {
@@ -84,7 +87,13 @@ function EditorContent({ provider, user, setTitle }: {
     <Textbit.Editable
       yjsEditor={yjsEditor}
       onSpellcheck={async (texts) => {
-        return await spellchecker?.check(texts, locale, session?.accessToken ?? '') ?? []
+        if (documentLanguage) {
+          const spellingResult = await spellchecker?.check(texts, documentLanguage, supportedLanguages, session?.accessToken ?? '')
+          if (spellingResult) {
+            return spellingResult
+          }
+        }
+        return []
       }}
       onChange={(value) => {
         // @ts-expect-error Textbit plugins needs to expose plugin types better

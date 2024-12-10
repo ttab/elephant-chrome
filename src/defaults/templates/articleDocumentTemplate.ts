@@ -87,6 +87,14 @@ export function articleDocumentTemplate(id: string, payload?: ArticlePayload): D
       })
     ],
     meta: [...(payload?.meta || [])],
-    links: [...(payload?.links || [])]
+    links: [
+      ...(payload?.links || []),
+      Block.create({
+        uri: 'tt://content-source/tt',
+        type: 'core/content-source',
+        title: 'TT',
+        rel: 'source'
+      })
+    ]
   })
 }

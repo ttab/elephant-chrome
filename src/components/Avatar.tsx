@@ -10,7 +10,7 @@ import {
 import { Collaboration } from '@/defaults'
 import { type Session } from 'next-auth'
 
-const avatarVariants = cva('',
+const avatarVariants = cva('cursor-default',
   {
     variants: {
       variant: {
