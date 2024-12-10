@@ -20,18 +20,16 @@ import {
 const FARO_URL = (import.meta.env.VITE_FARO_URL || '') as string
 const FARO_NAME = (import.meta.env.VITE_FARO_NAME || '') as string
 
-if (import.meta.env.PROD) {
-  initializeFaro({
-    url: FARO_URL,
-    app: {
-      name: FARO_NAME
-    },
-    instrumentations: [
-      ...getWebInstrumentations(),
-      new ReactIntegration()
-    ]
-  })
-}
+initializeFaro({
+  url: FARO_URL,
+  app: {
+    name: FARO_NAME
+  },
+  instrumentations: [
+    ...getWebInstrumentations(),
+    new ReactIntegration()
+  ]
+})
 
 export const App = (): JSX.Element => {
   const { data: session, status } = useSession()
