@@ -2,7 +2,6 @@ import express, { type NextFunction, type Request, type Response } from 'express
 import type { RequestHandler, Express } from 'express-serve-static-core'
 import expressWebsockets from 'express-ws'
 import cors from 'cors'
-import cookieParser from 'cookie-parser'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 
@@ -64,7 +63,6 @@ export async function runServer(): Promise<string> {
     origin: `${PROTOCOL}://${HOST}:${PORT}`
 
   }))
-  app.use(cookieParser())
   app.use(BASE_URL, express.json())
   app.use(authSession)
 
