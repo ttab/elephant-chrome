@@ -5,6 +5,7 @@ import { useRegistry } from '@/hooks/useRegistry'
 import { useSession } from 'next-auth/react'
 import { EarthIcon } from '@ttab/elephant-ui/icons'
 import { TimeSlot } from './TimeSlot'
+import { ClockIcon } from '@/components/ClockIcon'
 
 const meta: ViewMetadata = {
   name: 'Approvals',
@@ -34,7 +35,7 @@ export const Approvals = (): JSX.Element => {
       </ViewHeader.Root>
 
       <View.Content>
-        <div className='flex flex-row h-screen overflow-x-scroll snap-x snap-mandatory'>
+        <div className='flex flex-row h-full overflow-x-scroll snap-x snap-mandatory @7xl/view:grid @7xl/view:grid-cols-5 '>
           {Object.keys(Slots).map((slot) => {
             return (
               <TimeSlot
@@ -42,7 +43,29 @@ export const Approvals = (): JSX.Element => {
                 name={slot}
                 label={Slots[slot].label}
                 slots={Slots[slot].slots}
-              />
+              >
+
+                <div className='flex flex-col justify-stretch border bg-white rounded p-2 text-sm'>
+                  <div className='flex flex-row justify-between'>
+                    <div></div>
+                    <div className='flex flex-row gap-1 items-center'>
+                      <ClockIcon hour={9} size={14} className='opacity-50' />
+                      <time>21:34</time>
+                    </div>
+                  </div>
+
+                  <div>
+                    <div className='text-sm font-bold'>
+                      Utvecklingssamtal i skolan – då kommer advokaten och ställer till det
+                    </div>
+                    <div>lärarombud</div>
+                  </div>
+
+                  <div className='flex flex-row text-xs'>
+                    Inrikes
+                  </div>
+                </div>
+              </TimeSlot>
             )
           })}
         </div>
