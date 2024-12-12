@@ -5,6 +5,9 @@ import { EarthIcon } from '@ttab/elephant-ui/icons'
 import { TimeSlot } from './TimeSlot'
 import { ClockIcon } from '@/components/ClockIcon'
 import { useAssignments } from '@/hooks/index/useAssignments'
+import { parseISO, format } from 'date-fns'
+import { toZonedTime } from 'date-fns-tz'
+import { useRegistry } from '@/hooks/useRegistry'
 
 const meta: ViewMetadata = {
   name: 'Approvals',
@@ -23,6 +26,7 @@ const meta: ViewMetadata = {
 }
 
 export const Approvals = (): JSX.Element => {
+  const { timeZone } = useRegistry()
   const slots = Object.keys(Slots).map((key) => {
     return {
       key,
@@ -54,13 +58,23 @@ export const Approvals = (): JSX.Element => {
                 slots={slot.hours || []}
               >
                 {slot.items.map((assignment) => {
+                  const time = assignment.data.publish
+                    ? format(toZonedTime(parseISO(assignment.data.publish), timeZone), 'HH:mm')
+                    : undefined
+
                   return (
                     <div key={assignment.id} className='flex flex-col justify-stretch gap-2 border bg-white rounded p-2 text-xs'>
                       <div className='flex flex-row justify-between'>
                         <div>{assignment._newsvalue}</div>
                         <div className='flex flex-row gap-1 items-center'>
-                          <ClockIcon hour={9} size={14} className='opacity-50' />
-                          <time>21:34</time>
+                          <ClockIcon hour={(time) ? parseInt(time.slice(0, 2)) : undefined} size={14} className='opacity-50' />
+                          <time>
+                            {
+                              assignment.data.publish
+                                ? format(toZonedTime(parseISO(assignment.data.publish), timeZone), 'HH:mm')
+                                : ''
+                            }
+                          </time>
                         </div>
                       </div>
 

@@ -134,7 +134,16 @@ export const useAssignments = ({ date, type, slots }: {
       page = hits?.length === size ? page + 1 : 0
     } while (page)
 
-    // Return one slot with no spec if not slots are wanted
+    // Plannings can have multiple assignments stretching over a full day
+    // so we need to sort assignments
+    textAssignments.sort((a, b) => {
+      const at = a.data.publish ? parseISO(a.data.publish) : 0
+      const bt = b.data.publish ? parseISO(b.data.publish) : 0
+
+      return bt.valueOf() - at.valueOf()
+    })
+
+    // Return one slot with no key/label/hours if slots are not wanted
     if (!slots) {
       return [{
         items: textAssignments
@@ -159,7 +168,6 @@ export const useAssignments = ({ date, type, slots }: {
       }
 
       response.forEach((slot) => {
-        console.log(hour)
         if (!hour && !slot.hours.length) {
           slot.items.push(assignment)
         } else if (hour && slot.hours.includes(hour)) {
