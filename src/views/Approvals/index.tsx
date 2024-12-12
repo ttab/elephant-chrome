@@ -68,13 +68,7 @@ export const Approvals = (): JSX.Element => {
                         <div>{assignment._newsvalue}</div>
                         <div className='flex flex-row gap-1 items-center'>
                           <ClockIcon hour={(time) ? parseInt(time.slice(0, 2)) : undefined} size={14} className='opacity-50' />
-                          <time>
-                            {
-                              assignment.data.publish
-                                ? format(toZonedTime(parseISO(assignment.data.publish), timeZone), 'HH:mm')
-                                : ''
-                            }
-                          </time>
+                          <time>{time}</time>
                         </div>
                       </div>
 
@@ -82,7 +76,10 @@ export const Approvals = (): JSX.Element => {
                         <div className='font-bold'>
                           {assignment.title}
                         </div>
-                        <div>lärarombud</div>
+                      </div>
+
+                      <div>
+                        {assignment.meta.find((m) => m.type === 'tt/slugline')?.value || '-'}
                       </div>
 
                       <div className='flex flex-row'>
