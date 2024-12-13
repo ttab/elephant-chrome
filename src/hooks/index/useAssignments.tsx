@@ -111,12 +111,13 @@ export const useAssignments = ({ date, type, slots }: {
         const _section = links.find((l) => l.type === 'core/section')?.title
         const _newsvalue = meta?.find((assignmentMeta) => assignmentMeta.type === 'core/newsvalue')?.value
 
+        // Loop over all meta elements to find assignments
         meta?.forEach((assignmentMeta) => {
           if (assignmentMeta.type !== 'core/assignment') {
             return
           }
 
-          // If type is given, filter out anything but type
+          // If type is given, filter out anything but type (e.g. text, picture...)
           if (type && !assignmentMeta.meta.filter((m) => m.type === 'core/assignment-type' && m.value === type)?.length) {
             return
           }
@@ -150,32 +151,47 @@ export const useAssignments = ({ date, type, slots }: {
       }]
     }
 
-    // Initalize response slots
-    const response = slots.map((slot) => {
-      return {
-        ...slot,
-        items: [] as AssignmentInterface[]
+    return slotifyAssignments(timeZone, textAssignments, slots)
+  })
+}
+
+
+/**
+ * Split the assignments into the different time slots
+ */
+function slotifyAssignments(
+  timeZone: string,
+  assignments: AssignmentInterface[],
+  slots: {
+    key: string
+    label: string
+    hours: number[]
+  }[]
+): AssignmentResponseInterface[] {
+  const response = slots.map((slot) => {
+    return {
+      ...slot,
+      items: [] as AssignmentInterface[]
+    }
+  })
+
+  assignments.forEach((assignment) => {
+    let hour: number
+
+    if (assignment.data.publish) {
+      hour = getHours(toZonedTime(parseISO(assignment.data.publish), timeZone))
+    } else if (assignment.data.publish_slot) {
+      hour = parseInt(assignment.data.publish_slot)
+    }
+
+    response.forEach((slot) => {
+      if (!hour && !slot.hours.length) {
+        slot.items.push(assignment)
+      } else if (hour && slot.hours.includes(hour)) {
+        slot.items.push(assignment)
       }
     })
+  }, [])
 
-    // Put assignments in slots
-    textAssignments.forEach((assignment) => {
-      let hour: number
-      if (assignment.data.publish) {
-        hour = getHours(toZonedTime(parseISO(assignment.data.publish), timeZone))
-      } else if (assignment.data.publish_slot) {
-        hour = parseInt(assignment.data.publish_slot)
-      }
-
-      response.forEach((slot) => {
-        if (!hour && !slot.hours.length) {
-          slot.items.push(assignment)
-        } else if (hour && slot.hours.includes(hour)) {
-          slot.items.push(assignment)
-        }
-      })
-    }, [])
-
-    return response
-  })
+  return response
 }
