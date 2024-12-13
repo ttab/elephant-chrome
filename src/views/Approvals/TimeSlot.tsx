@@ -9,13 +9,13 @@ export const TimeSlot = ({ name, label, slots, children }: PropsWithChildren & {
 
   return (
     <div className={`
-      w-[96%]
+      w-[96vw]
       col-span-1
       flex-grow
       flex-shrink-0
-      @lg/view:w-1/2
-      @3xl/view:w-1/3
-      @5xl/view:w-[25%]
+      @lg/view:w-[49vw]
+      @3xl/view:w-[33.5vw]
+      @5xl/view:w-[24.75vw]
       @7xl/view:w-[auto]
       snap-center
       @lg/view:snap-start
