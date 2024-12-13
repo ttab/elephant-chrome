@@ -19,11 +19,13 @@ export const Column = ({ className, children }: {
       last:-border-s-0
       -mx-1
       px-2
-      first:ps-1
-      @lg/view:last:pe-0
+      @lg/view:last:pe-1
       @lg/view:last:me-0
       flex
       flex-col
+      bg-muted
+      rounded-sm
+      gap-1
       `, className)}
     >
       {children}

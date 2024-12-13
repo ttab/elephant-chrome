@@ -8,19 +8,13 @@ export const TimeSlot = ({ label, slots, children }: PropsWithChildren & {
 
   return (
     <>
-      <div className='w-full flex flex-col bg-white p-2'>
+      <div className='w-full flex flex-col p-2 pb-1'>
         <span className='text-sm'>{label}</span>
 
         <div className='flex flex-row gap-1 text-xs text-gray-400'>
           {(startTime) && <time dateTime={startTime}>{startTime}</time>}
           {(startTime || endTime) ? <span>-</span> : <span>&nbsp;</span>}
           {(endTime) && <time dateTime={endTime}>{endTime}</time>}
-        </div>
-      </div>
-
-      <div className='w-full flex-grow bg-muted'>
-        <div className='p-1 rounded-sm'>
-          {children}
         </div>
       </div>
     </>
