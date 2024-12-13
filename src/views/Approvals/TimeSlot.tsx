@@ -1,34 +1,13 @@
 import type { PropsWithChildren } from 'react'
 
-export const TimeSlot = ({ name, label, slots, children }: PropsWithChildren & {
-  name: string
+export const TimeSlot = ({ label, slots, children }: PropsWithChildren & {
   label: string
   slots: number[]
 }): JSX.Element => {
   const { startTime, endTime } = getTimeRange(slots)
 
   return (
-    <div className={`
-      w-[96vw]
-      col-span-1
-      flex-grow
-      flex-shrink-0
-      @lg/view:w-[49vw]
-      @3xl/view:w-[33.5vw]
-      @5xl/view:w-[24.75vw]
-      @7xl/view:w-[auto]
-      snap-center
-      @lg/view:snap-start
-      last:-border-s-0
-      -mx-1
-      px-2
-      first:ps-1
-      @lg/view:last:pe-0
-      @lg/view:last:me-0
-      flex
-      flex-col
-      `}
-    >
+    <>
       <div className='w-full flex flex-col bg-white p-2'>
         <span className='text-sm'>{label}</span>
 
@@ -44,8 +23,7 @@ export const TimeSlot = ({ name, label, slots, children }: PropsWithChildren & {
           {children}
         </div>
       </div>
-
-    </div>
+    </>
   )
 }
 
@@ -54,7 +32,7 @@ export const TimeSlot = ({ name, label, slots, children }: PropsWithChildren & {
  * Format time range into startTime and endTime
  *
  * FIXME: Time format should be locale specific
-*/
+ */
 function getTimeRange(hours: number[]): {
   startTime?: string
   endTime?: string

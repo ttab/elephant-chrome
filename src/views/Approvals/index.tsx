@@ -8,6 +8,7 @@ import { useAssignments } from '@/hooks/index/useAssignments'
 import { parseISO, format } from 'date-fns'
 import { toZonedTime } from 'date-fns-tz'
 import { useRegistry } from '@/hooks/useRegistry'
+import { Card } from '@/components/Card'
 
 const meta: ViewMetadata = {
   name: 'Approvals',
@@ -41,67 +42,55 @@ export const Approvals = (): JSX.Element => {
     slots
   })
 
-  // We manually setup grid fractions as tw grid-cols-N does not work as we want
-  const gridFractions = Array(slots.length).fill('1fr').join(' ')
-
   return (
     <View.Root>
       <ViewHeader.Root>
         <ViewHeader.Title title='Dagen' short='Dagen' iconColor='#5E9F5D' icon={EarthIcon} />
       </ViewHeader.Root>
 
-      <View.Content
-        autoScroll={false}
-        className='grid h-full w-full overflow-scroll snap-x snap-mandatory'
-        style={{ gridTemplateColumns: gridFractions }}
-      >
+      <View.Content variant='grid' columns={slots.length}>
         {data.map((slot) => {
           return (
-            <TimeSlot
-              key={slot.key}
-              name={slot.key || ''}
-              label={slot.label || ''}
-              slots={slot.hours || []}
-            >
-              {slot.items.map((assignment) => {
-                const time = assignment.data.publish
-                  ? format(toZonedTime(parseISO(assignment.data.publish), timeZone), 'HH:mm')
-                  : undefined
+            <View.Column key={slot.key}>
+              <TimeSlot
+                label={slot.label || ''}
+                slots={slot.hours || []}
+              >
+                {slot.items.map((assignment) => {
+                  const time = assignment.data.publish
+                    ? format(toZonedTime(parseISO(assignment.data.publish), timeZone), 'HH:mm')
+                    : undefined
 
-                return (
-                  <div key={assignment.id} tabIndex={0} className='flex flex-col justify-stretch gap-2 border bg-white rounded p-2 text-xs'>
-                    <div className='flex flex-row justify-between'>
-                      <div>{assignment._newsvalue}</div>
-                      <div className='flex flex-row gap-1 items-center'>
-                        <ClockIcon hour={(time) ? parseInt(time.slice(0, 2)) : undefined} size={14} className='opacity-50' />
-                        <time>{time}</time>
-                      </div>
-                    </div>
+                  return (
+                    <Card.Root key={assignment.id}>
+                      <Card.Header>
+                        <div>{assignment._newsvalue}</div>
+                        <div className='flex flex-row gap-1 items-center'>
+                          <ClockIcon hour={(time) ? parseInt(time.slice(0, 2)) : undefined} size={14} className='opacity-50' />
+                          <time>{time}</time>
+                        </div>
+                      </Card.Header>
 
-                    <div className='flex flex-col gap-1'>
-                      <div className='font-bold'>
-                        {assignment.title}
-                      </div>
-                    </div>
+                      <Card.Content>
+                        <Card.Title>{assignment.title}</Card.Title>
+                        <Card.Body>{assignment.meta.find((m) => m.type === 'tt/slugline')?.value || '-'}</Card.Body>
+                      </Card.Content>
 
-                    <div>
-                      {assignment.meta.find((m) => m.type === 'tt/slugline')?.value || '-'}
-                    </div>
+                      <Card.Footer>
+                        {assignment._section}
+                        &middot;
+                        Anders Andersson/TT
+                        &middot;
+                        1024 tkn
+                      </Card.Footer>
 
-                    <div className='flex flex-row'>
-                      {assignment._section}
-                      &middot;
-                      Anders Andersson/TT
-                      &middot;
-                      1024 tkn
-                    </div>
-                  </div>
-                )
-              })}
-            </TimeSlot>
+                    </Card.Root>
+                  )
+                })}
+              </TimeSlot>
+            </View.Column>
           )
         })}
-        {/* </div> */}
 
       </View.Content>
     </View.Root>
