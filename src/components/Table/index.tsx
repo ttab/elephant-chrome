@@ -80,7 +80,7 @@ export const Table = <TData, TValue>({
       handleLink({
         event,
         dispatch,
-        viewItem: state.viewRegistry.get('Editor'),
+        viewItem: state.viewRegistry.get(type),
         props: { id: (row.original as { _id: string })._id },
         viewId: crypto.randomUUID(),
         origin,
@@ -109,7 +109,7 @@ export const Table = <TData, TValue>({
       }
 
       if (event.key === ' ' && type === 'Wires') {
-        handlePreview(selectedRow)
+        handleOpen(event, selectedRow)
         return
       }
 
