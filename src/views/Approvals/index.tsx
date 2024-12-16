@@ -11,6 +11,7 @@ import { useRegistry } from '@/hooks/useRegistry'
 import { Card } from '@/components/Card'
 import { useNavigationKeys } from '@/hooks/useNavigationKeys'
 import { useState } from 'react'
+import { useLink } from '@/hooks/useLink'
 
 const meta: ViewMetadata = {
   name: 'Approvals',
@@ -30,6 +31,9 @@ const meta: ViewMetadata = {
 
 export const Approvals = (): JSX.Element => {
   const { timeZone } = useRegistry()
+  const openPlanning = useLink('Planning')
+  const openArticle = useLink('Editor')
+
   const slots = Object.keys(Slots).map((key) => {
     return {
       key,
@@ -97,6 +101,14 @@ export const Approvals = (): JSX.Element => {
                   <Card.Root
                     key={assignment.id}
                     isFocused={colN === focusedColumn && cardN === focusedCard}
+                    onSelect={(event) => {
+                      if (event instanceof KeyboardEvent && event.key == ' ') {
+                        openPlanning(event, { id: assignment._id })
+                      } else {
+                        const articleId = assignment.links.find((l) => l.type === 'core/article')?.uuid
+                        openArticle(event, { id: articleId })
+                      }
+                    }}
                   >
                     <Card.Header>
                       <div>{assignment._newsvalue}</div>
