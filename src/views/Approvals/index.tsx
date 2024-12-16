@@ -55,8 +55,20 @@ export const Approvals = (): JSX.Element => {
   const openPlannings = useOpenDocuments({ idOnly: true, name: 'Planning' })
 
   useNavigationKeys({
+    capture: true, // Use capture phase to grab this event before view navigation
+    stopPropagation: false, // Manually handle when this is needed
     keys: ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'],
     onNavigation: (event) => {
+      if (event.key === 'ArrowLeft' && !focusedColumn) {
+        // No column focused or already at leftmost column, let view navigation handle this
+        return
+      }
+
+      if (event.key === 'ArrowRight' && focusedColumn === slots.length - 1) {
+        // At rightmost column, let view navigation handle this
+        return
+      }
+
       if (event.key === 'ArrowLeft' || event.key === 'ArrowRight') {
         const n = (focusedColumn === undefined)
           ? (event.key === 'ArrowRight' ? 0 : slots.length - 1)
@@ -65,9 +77,12 @@ export const Approvals = (): JSX.Element => {
 
         if (focusedCard === undefined) {
           setFocusedCard(0)
-        } else if (focusedCard > data[n].items.length) {
+        } else if (focusedCard > data[n].items.length - 1) {
           setFocusedCard(Math.max(0, data[n].items.length - 1))
         }
+
+        // Don't let view navigation handle this
+        event.stopPropagation()
       } else {
         const n = focusedColumn || 0
         const l = data[n].items.length

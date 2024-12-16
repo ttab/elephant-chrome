@@ -14,6 +14,10 @@ export const Root = ({ className, isFocused = false, isSelected = false, onSelec
   useEffect(() => {
     if (ref?.current && isFocused) {
       ref.current.focus()
+
+      ref.current.scrollIntoView({
+        block: 'nearest'
+      })
     }
   })
 
