@@ -43,8 +43,33 @@ export const Table = <TData, TValue>({
   const openDocuments = useOpenDocuments({ idOnly: true })
   const { showModal, hideModal } = useModal()
 
+  const handlePreview = useCallback((row: RowType<unknown>): void => {
+    const originalId = (row.original as { _id: string })._id
+    const source = (row.original as {
+      _source: {
+        'document.rel.source.uri': string[]
+      }
+    })._source['document.rel.source.uri'][0]
+
+    showModal(
+      <ModalContent
+        id={originalId}
+        source={source}
+        handleClose={hideModal}
+        role={row.getValue<string>('role')}
+      />,
+      'sheet',
+      {
+        id: originalId
+      })
+  }, [hideModal, showModal])
+
+
   const handleOpen = useCallback((event: MouseEvent<HTMLTableRowElement> | KeyboardEvent, row: RowType<unknown>): void => {
-    const viewType = type === 'Wires' ? 'Editor' : type
+    if (type === 'Wires') {
+      handlePreview(row)
+      return
+    }
 
     const target = event.target as HTMLElement
     if (target && 'dataset' in target && !target.dataset.rowAction) {
@@ -55,16 +80,14 @@ export const Table = <TData, TValue>({
       handleLink({
         event,
         dispatch,
-        viewItem: state.viewRegistry.get(viewType),
-        // @ts-expect-error unknown type
-        props: { id: row.original._id },
+        viewItem: state.viewRegistry.get('Editor'),
+        props: { id: (row.original as { _id: string })._id },
         viewId: crypto.randomUUID(),
         origin,
         history
       })
     }
-  }, [dispatch, state.viewRegistry, onRowSelected, origin, type, history])
-
+  }, [dispatch, state.viewRegistry, onRowSelected, origin, type, history, handlePreview])
 
   useNavigationKeys({
     keys: ['ArrowUp', 'ArrowDown', 'Enter', 'Escape', ' '],
@@ -86,24 +109,7 @@ export const Table = <TData, TValue>({
       }
 
       if (event.key === ' ' && type === 'Wires') {
-        const originalId = (selectedRow.original as { _id: string })._id
-        const source = (selectedRow.original as {
-          _source: {
-            'document.rel.source.uri': string[]
-          }
-        })._source['document.rel.source.uri'][0]
-
-        showModal(
-          <ModalContent
-            id={originalId}
-            source={source}
-            handleClose={hideModal}
-            role={selectedRow.getValue<string>('role')}
-          />,
-          'sheet',
-          {
-            id: originalId
-          })
+        handlePreview(selectedRow)
         return
       }
 
