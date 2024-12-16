@@ -3,6 +3,7 @@ import { transformVisual, revertVisual } from './tt/visual.js'
 import type { TBElement } from '@ttab/textbit'
 import type { Block } from '@ttab/elephant-api/newsdoc'
 import { revertFactbox, transformFactbox } from './core/factbox.js'
+import { transformTable } from './core/table.js'
 
 /**
  * Convert a NewsDoc block array to slate TBElement array
@@ -19,6 +20,8 @@ export function newsDocToSlate(content: Block[]): TBElement[] {
           return transformFactbox(element)
         case 'core/unordered-list':
           return transformUnorderedList(element)
+        case 'core/table':
+          return transformTable(element)
         default:
           throw new Error(`Element not implemented: ${element.type}`)
       }
