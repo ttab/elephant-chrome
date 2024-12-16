@@ -63,15 +63,17 @@ export const Wires = (): JSX.Element => {
 
             <ViewHeader.Content>
               <Sources />
-              {!isFocused && isLast && (
-                <Controller />
-              )}
+              <div className='flex gap-2'>
+                {!isFocused && isLast && (
+                  <Controller />
+                )}
+                {!isFocused && (history.state?.contentState?.length ?? 0) > 1
+                && <ViewDialogClose onClick={() => handleClose(viewId, history)} Icon={Minus} />}
+              </div>
             </ViewHeader.Content>
 
             <div className='flex gap-2'>
               <ViewFocus viewId={viewId} />
-              {!isFocused && (history.state?.contentState?.length ?? 0) > 1
-              && <ViewDialogClose onClick={() => handleClose(viewId, history)} Icon={Minus} />}
             </div>
           </ViewHeader.Root>
 
