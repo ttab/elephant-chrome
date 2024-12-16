@@ -32,7 +32,7 @@
     "@auth/express": "^0.8.4",
     "@date-fns/utc": "^2.1.0",
     "@grafana/faro-react": "^1.12.2",
-    "@hocuspocus/extension-database": "^2.14.0",
+    "@hocuspocus/extension-database": "^2.15.0",
     "@hocuspocus/extension-logger": "^2.14.0",
     "@hocuspocus/extension-redis": "^2.14.0",
     "@hocuspocus/provider": "^2.15.0",
