@@ -1,6 +1,4 @@
-import type { PropsWithChildren } from 'react'
-
-export const TimeSlot = ({ label, slots, children }: PropsWithChildren & {
+export const TimeSlot = ({ label, slots }: {
   label: string
   slots: number[]
 }): JSX.Element => {
