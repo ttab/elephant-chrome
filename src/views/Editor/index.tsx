@@ -12,7 +12,7 @@ import { Textbit, useTextbit } from '@ttab/textbit'
 import { ImageSearchPlugin } from '../../plugins/ImageSearch'
 import { FactboxPlugin } from '../../plugins/Factboxes'
 
-import { Bold, Italic, Link, Text, OrderedList, UnorderedList, TTVisual, Factbox } from '@ttab/textbit-plugins'
+import { Bold, Italic, Link, Text, OrderedList, UnorderedList, TTVisual, Factbox, Table } from '@ttab/textbit-plugins'
 
 import {
   useQuery,
@@ -92,7 +92,7 @@ const Editor = (props: ViewProps): JSX.Element => {
 function EditorWrapper(props: ViewProps & {
   documentId: string
 }): JSX.Element {
-  const plugins = [Text, UnorderedList, OrderedList, Bold, Italic, Link, TTVisual, ImageSearchPlugin, FactboxPlugin]
+  const plugins = [Text, UnorderedList, OrderedList, Bold, Italic, Link, TTVisual, ImageSearchPlugin, FactboxPlugin, Table]
   const { provider, synced, user } = useCollaboration()
   const openFactboxEditor = useLink('Factbox')
   const [notes] = useYValue<Block[] | undefined>('meta.core/note')
