@@ -84,7 +84,8 @@ export const Table = <TData, TValue>({
         props: { id: (row.original as { _id: string })._id },
         viewId: crypto.randomUUID(),
         origin,
-        history
+        history,
+        keepFocus: (event as KeyboardEvent)?.key === ' '
       })
     }
   }, [dispatch, state.viewRegistry, onRowSelected, origin, type, history, handlePreview])
@@ -108,7 +109,7 @@ export const Table = <TData, TValue>({
         return
       }
 
-      if (event.key === ' ' && type === 'Wires') {
+      if (event.key === ' ') {
         handleOpen(event, selectedRow)
         return
       }

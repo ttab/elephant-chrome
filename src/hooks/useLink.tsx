@@ -12,7 +12,8 @@ export const useLink = (viewName: View) => {
     event: MouseEvent<Element> | KeyboardEvent | undefined,
     props: ViewProps,
     target?: Target,
-    callbacks?: Record<string, () => void>
+    callbacks?: Record<string, () => void>,
+    keepFocus?: boolean
   ): void => {
     handleLink({
       event,
@@ -23,7 +24,8 @@ export const useLink = (viewName: View) => {
       origin,
       target,
       onDocumentCreated: callbacks?.onDocumentCreated,
-      history
+      history,
+      keepFocus
     })
   }
 }
