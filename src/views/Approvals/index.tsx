@@ -12,6 +12,7 @@ import { Card } from '@/components/Card'
 import { useNavigationKeys } from '@/hooks/useNavigationKeys'
 import { useState } from 'react'
 import { useLink } from '@/hooks/useLink'
+import { useOpenDocuments } from '@/hooks/useOpenDocuments'
 
 const meta: ViewMetadata = {
   name: 'Approvals',
@@ -50,6 +51,8 @@ export const Approvals = (): JSX.Element => {
 
   const [focusedColumn, setFocusedColumn] = useState<number>()
   const [focusedCard, setFocusedCard] = useState<number>()
+  const openEditors = useOpenDocuments({ idOnly: true, name: 'Editor' })
+  const openPlannings = useOpenDocuments({ idOnly: true, name: 'Planning' })
 
   useNavigationKeys({
     keys: ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'],
@@ -93,19 +96,22 @@ export const Approvals = (): JSX.Element => {
               <TimeSlot label={slot.label || ''} slots={slot.hours || []} />
 
               {slot.items.map((assignment, cardN) => {
+                const articleId = assignment.links.find((l) => l.type === 'core/article')?.uuid
                 const time = assignment.data.publish
                   ? format(toZonedTime(parseISO(assignment.data.publish), timeZone), 'HH:mm')
                   : undefined
 
+                const isSelected = ((articleId && openEditors.includes(articleId)) || openPlannings.includes(assignment._id))
                 return (
                   <Card.Root
                     key={assignment.id}
+                    className={(!articleId) ? 'opacity-50' : 'hover:bg-muted'}
                     isFocused={colN === focusedColumn && cardN === focusedCard}
+                    isSelected={isSelected}
                     onSelect={(event) => {
                       if (event instanceof KeyboardEvent && event.key == ' ') {
                         openPlanning(event, { id: assignment._id })
-                      } else {
-                        const articleId = assignment.links.find((l) => l.type === 'core/article')?.uuid
+                      } else if (articleId) {
                         openArticle(event, { id: articleId })
                       }
                     }}
