@@ -27,6 +27,7 @@ export const Assignment = ({ index, onAbort, onClose }: {
     if (formRef.current) {
       formRef.current.addEventListener('keydown', (event) => {
         if (event.key === 'Escape') {
+          event.stopPropagation()
           if (onAbort) {
             onAbort()
           } else {
