@@ -53,13 +53,13 @@ export const timeSlotTypes: AssignmentValueOption[] = [
 export const timePickTypes: AssignmentValueOption[] = [
   {
     label: 'Välj tid',
-    value: 'endexcecution',
+    value: 'endexecution',
     icon: CalendarClockIcon,
     iconProps
   },
   {
     label: 'Välj tid',
-    value: 'start-end-excecution',
+    value: 'start-end-execution',
     icon: CalendarClockIcon,
     iconProps
   }

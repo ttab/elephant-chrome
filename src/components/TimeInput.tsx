@@ -1,18 +1,16 @@
-import { useRef, useState, type ChangeEventHandler } from 'react'
+import type { MouseEvent, KeyboardEvent, Dispatch, SetStateAction } from 'react'
+import { useState, type ChangeEventHandler } from 'react'
 import {
   Input
 } from '@ttab/elephant-ui'
 
-interface TimeInpuProps {
+export const TimeInput = ({ defaultTime, handleOnChange, handleOnSelect, setOpen, disabled = false }: {
   defaultTime: string
   handleOnChange: (time: string) => void
-  handleOnSelect: () => void
-  setOpen: React.Dispatch<React.SetStateAction<boolean>>
+  handleOnSelect: (event: MouseEvent<HTMLButtonElement> | KeyboardEvent) => void
+  setOpen: Dispatch<SetStateAction<boolean>>
   disabled?: boolean
-}
-
-export const TimeInput = ({ defaultTime, handleOnChange, handleOnSelect, setOpen, disabled = false }: TimeInpuProps): JSX.Element => {
-  const inputRef = useRef(null)
+}): JSX.Element => {
   const [timeValue, setTimeValue] = useState<string>(defaultTime)
 
   const handleTimeChange: ChangeEventHandler<HTMLInputElement> = (e) => {
@@ -24,7 +22,6 @@ export const TimeInput = ({ defaultTime, handleOnChange, handleOnSelect, setOpen
   return (
     <Input
       type='time'
-      ref={inputRef}
       value={!disabled ? timeValue : ''}
       onChange={handleTimeChange}
       placeholder='hh:mm ex 11:00'
@@ -32,11 +29,13 @@ export const TimeInput = ({ defaultTime, handleOnChange, handleOnSelect, setOpen
       disabled={disabled}
       onKeyDown={(e) => {
         if (e.key === 'Escape') {
+          e.preventDefault()
+          e.stopPropagation()
           setOpen(false)
         }
         if (e.key === 'Enter') {
           e.preventDefault()
-          handleOnSelect()
+          handleOnSelect(e)
           setOpen(false)
         }
       }}

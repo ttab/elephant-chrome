@@ -38,20 +38,29 @@ export const TimeDeliveryMenu = ({
         <Button
           size='sm'
           variant='ghost'
-          className='h-9 text-muted-foreground font-sans font-normal whitespace-nowrap p-0'
+          className='h-9 font-sans font-normal whitespace-nowrap p-0'
+          onKeyDown={(event) => {
+            if (event.key !== 'Escape') {
+              event?.stopPropagation()
+            }
+          }}
         >
           {children}
         </Button>
       </PopoverTrigger>
 
-      <PopoverContent className='p-0'>
+      <PopoverContent
+        className='p-0'
+        align='start'
+        onEscapeKeyDown={(event) => event?.stopPropagation()}
+      >
         <Command>
           <CommandInput placeholder='' />
           <CommandList>
             <CommandEmpty>Ingenting hittades</CommandEmpty>
             <div className='flex flex-col divide-y'>
               <CommandGroup>
-                <TimeSlotItems handleOnSelect={handleOnSelect} />
+                <TimeSlotItems handleOnSelect={handleOnSelect} handleParentOpenChange={handleOpenChange} />
               </CommandGroup>
               <CommandGroup>
                 <TimeSelectItem handleOnSelect={handleOnSelect} index={index} handleParentOpenChange={handleOpenChange} />
