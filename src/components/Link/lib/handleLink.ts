@@ -20,6 +20,7 @@ interface LinkClick {
   target?: Target
   onDocumentCreated?: () => void
   history: HistoryInterface
+  keepFocus?: boolean
 }
 
 export function handleLink({
@@ -27,11 +28,12 @@ export function handleLink({
   dispatch,
   viewItem,
   props,
-  viewId,
+  viewId: newViewId,
   origin,
   target,
   onDocumentCreated,
-  history
+  history,
+  keepFocus
 }: LinkClick): void {
   if (event?.ctrlKey || event?.metaKey) {
     return
@@ -41,10 +43,11 @@ export function handleLink({
 
   // Get current state from history
   const content: ContentState[] = [...history.state?.contentState || []]
+  const currentViewId = history.state?.viewId
 
   // Create next (wanted) content state (props can not be functions!)
   const newContent: ContentState = {
-    viewId,
+    viewId: newViewId,
     name: viewItem.meta.name,
     path: `${viewItem.meta.path}${toQueryString(props)}`,
     props
@@ -77,6 +80,7 @@ export function handleLink({
     })
   }, { once: true })
 
+  const viewId = keepFocus && currentViewId ? currentViewId : newViewId
   // Push new history state
   history.pushState(`${viewItem.meta.path}${toQueryString(props)}`, {
     viewId,
