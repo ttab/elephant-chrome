@@ -18,15 +18,11 @@ export const Title = ({ title, short: shortTitle, icon: Icon, iconColor, asDialo
   })
 
   return (
-    <div
-      className={viewVariants({ asDialog })}
-    >
-      {!!Icon
-      && <Icon size={18} strokeWidth={1.75} color={iconColor || '#222'} />}
+    <div className={viewVariants({ asDialog })}>
+      {!!Icon && <Icon size={18} strokeWidth={2.05} color={iconColor || '#222'} />}
 
-      {!!title
-      && (
-        <h2 className='font-bold cursor-pointer whitespace-nowrap'>
+      {!!title && (
+        <h2 className='font-bold cursor-pointer whitespace-nowrap opacity-90'>
           {typeof shortTitle !== 'string'
             ? <>{title}</>
             : (
