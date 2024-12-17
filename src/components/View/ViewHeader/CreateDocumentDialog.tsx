@@ -30,7 +30,7 @@ export const CreateDocumentDialog = ({ type, payload, createdDocumentIdRef, chil
   const Document = type && Views[type]
 
   return (
-    <Dialog open={!!document[0]}>
+    <Dialog open={!!document[0]} modal={true}>
       <DialogTrigger asChild>
         {React.isValidElement<{
           onClick?: (event: React.MouseEvent<HTMLElement>) => void
@@ -53,7 +53,9 @@ export const CreateDocumentDialog = ({ type, payload, createdDocumentIdRef, chil
       </DialogTrigger>
       <DialogDescription />
       <DialogTitle />
-      <DialogContent className='p-0 overflow-hidden'>
+      <DialogContent
+        className='p-0 overflow-hidden outline-none'
+      >
         {document !== null && Document
         && (
           <Document
