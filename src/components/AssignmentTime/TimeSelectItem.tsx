@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import {
   Command,
   CommandItem,
@@ -11,13 +11,13 @@ import { timePickTypes } from '../../defaults/assignmentTimeConstants'
 import { useYValue } from '@/hooks/useYValue'
 import { type AssignmentData } from './types'
 import { TimeInput } from '../TimeInput'
-interface TimeSelectItemProps extends React.PropsWithChildren {
+
+export const TimeSelectItem = ({ handleOnSelect, index, handleParentOpenChange }: {
   handleOnSelect: ({ value, selectValue }: { value: string, selectValue: string }) => void
   className?: string
   index: number
   handleParentOpenChange: (open: boolean) => void
-}
-export const TimeSelectItem = ({ handleOnSelect, index, handleParentOpenChange }: TimeSelectItemProps): JSX.Element => {
+}): JSX.Element => {
   const [open, setOpen] = useState(false)
   const [endTime, setEndTime] = useState('')
   const [data] = useYValue<AssignmentData>(`meta.core/assignment[${index}].data`)
@@ -34,52 +34,76 @@ export const TimeSelectItem = ({ handleOnSelect, index, handleParentOpenChange }
     }
   }, [data?.end])
 
-  const handleOpenChange = (isOpen: boolean): void => {
+  const handleOpenChange = useCallback((isOpen: boolean): void => {
     setOpen(isOpen)
-  }
+  }, [])
 
-  const handleTimeChange = (time: string): void => {
+  const handleTimeChange = useCallback((time: string): void => {
     setEndTime(time)
     setValid(/^([0-1]?[0-9]|2[0-4]):([0-5][0-9])(:[0-5][0-9])?$/.test(time))
-  }
+  }, [])
 
-  const handleOnTimeSelect = (): void => {
+  const handleOnTimeSelect = useCallback((): void => {
     if (valid) {
-      handleOnSelect({ value: timePickType.value, selectValue: endTime })
+      handleOnSelect({ value: timePickTypes[0].value, selectValue: endTime })
       setOpen(false)
       handleParentOpenChange(false)
     }
-  }
-  const timePickType = timePickTypes[0]
+  }, [valid, endTime, handleOnSelect, handleParentOpenChange])
 
+  const timePickType = timePickTypes[0]
   return (
     <CommandItem
       key={timePickTypes[0].label}
       value={timePickTypes[0].label}
+      onSelect={(item) => {
+        if (item === 'Välj tid') {
+          setOpen(!open)
+        } else {
+          handleParentOpenChange(false)
+        }
+      }}
     >
       <Popover open={open} onOpenChange={handleOpenChange}>
         <PopoverTrigger asChild>
-          <div className='flex flex-row space-x-2 items-center grow'>
+          <Button
+            variant='ghost'
+            className='flex flex-row space-x-2 items-center grow'
+            onKeyDown={(event) => {
+              if (event.key === 'Enter') {
+                event.preventDefault()
+                event.stopPropagation()
+                setOpen(!open)
+              }
+            }}
+          >
             {timePickType.icon && <timePickType.icon {...timePickType.iconProps} />}
-            <div>Välj tid</div>
-          </div>
+            Välj tid
+          </Button>
         </PopoverTrigger>
 
-        <PopoverContent className='p-0'>
+        <PopoverContent className='p-0' align='start' side='right'>
           <Command>
             <div className='py-2'>
               <div className='p-2'>
-                <TimeInput defaultTime={endTime} handleOnChange={handleTimeChange} handleOnSelect={handleOnTimeSelect} setOpen={setOpen} />
+                <TimeInput
+                  defaultTime={endTime}
+                  handleOnChange={handleTimeChange}
+                  handleOnSelect={handleOnTimeSelect}
+                  setOpen={setOpen}
+                />
               </div>
 
               <div className='flex items-center justify-end gap-4 px-2 pt-2'>
                 <Button
                   variant='ghost'
-                  onClick={(evt) => {
-                    evt.preventDefault()
-                    evt.stopPropagation()
-                    setOpen(false)
-                    handleParentOpenChange(false)
+                  onClick={() => setOpen(false)}
+                  onKeyDown={(evt) => {
+                    if (evt.key === 'Escape' || evt.key === 'Enter') {
+                      evt.preventDefault()
+                      evt.stopPropagation()
+                      setOpen(false)
+                    }
                   }}
                 >
                   Avbryt
@@ -88,6 +112,13 @@ export const TimeSelectItem = ({ handleOnSelect, index, handleParentOpenChange }
                 <Button
                   variant='outline'
                   onClick={(evt) => {
+                    evt.preventDefault()
+                    evt.stopPropagation()
+                    handleOnSelect({ value: timePickType.value, selectValue: endTime })
+                    setOpen(false)
+                    handleParentOpenChange(false)
+                  }}
+                  onKeyDown={(evt) => {
                     evt.preventDefault()
                     evt.stopPropagation()
                     handleOnSelect({ value: timePickType.value, selectValue: endTime })
