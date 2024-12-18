@@ -7,18 +7,20 @@ export const Prompt = ({ title, description, primaryLabel, secondaryLabel, onPri
   description: string
   primaryLabel: string
   secondaryLabel?: string
-  onPrimary: (event: MouseEvent<HTMLButtonElement>) => void
-  onSecondary?: (event: MouseEvent<HTMLButtonElement> | KeyboardEvent) => void
+  onPrimary: (event: MouseEvent<HTMLButtonElement> | React.KeyboardEvent<HTMLButtonElement> | KeyboardEvent) => void
+  onSecondary?: (event: MouseEvent<HTMLButtonElement> | React.KeyboardEvent<HTMLButtonElement> | KeyboardEvent) => void
 }): JSX.Element => {
   useKeydownGlobal((event) => {
     if (event.key === 'Escape' && secondaryLabel && onSecondary) {
-      onSecondary(event)
+      onSecondary(event as unknown as React.KeyboardEvent<HTMLButtonElement>)
     }
   })
 
   return (
     <Dialog open={true}>
-      <DialogContent>
+      <DialogContent
+        onOpenAutoFocus={(event) => event.preventDefault()}
+      >
         <DialogHeader>
           {!!title
           && <DialogTitle>{title}</DialogTitle>}
@@ -43,11 +45,16 @@ export const Prompt = ({ title, description, primaryLabel, secondaryLabel, onPri
             </Button>
           )}
 
-          <Button onClick={(event) => {
-            event.preventDefault()
-            event.stopPropagation()
-            onPrimary(event)
-          }}
+          <Button
+            autoFocus
+            onClick={(event: MouseEvent<HTMLButtonElement>) => {
+              onPrimary(event)
+            }}
+            onKeyDown={(event: React.KeyboardEvent<HTMLButtonElement>) => {
+              if (event.key === 'Enter') {
+                onPrimary(event)
+              }
+            }}
           >
             {primaryLabel}
           </Button>

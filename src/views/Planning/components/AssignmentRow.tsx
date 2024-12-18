@@ -221,7 +221,10 @@ export const AssignmentRow = ({ index, onSelect, isFocused = false }: {
             description={`Vill du skapa en artikel för uppdraget${title ? ' ' + title : ''}?`} // TODO: Display information that will be forwarded from the assignment
             secondaryLabel='Avbryt'
             primaryLabel='Skapa'
-            onPrimary={(event) => {
+            onPrimary={(event: MouseEvent<HTMLButtonElement> | React.KeyboardEvent<HTMLButtonElement> | KeyboardEvent) => {
+              event.preventDefault()
+              event.stopPropagation()
+
               setShowCreateDialog(false)
               if (!provider?.document) {
                 return
@@ -242,7 +245,10 @@ export const AssignmentRow = ({ index, onSelect, isFocused = false }: {
                 { onDocumentCreated }
               )
             }}
-            onSecondary={() => {
+            onSecondary={(event) => {
+              event.preventDefault()
+              event.stopPropagation()
+
               setShowCreateDialog(false)
             }}
           />
