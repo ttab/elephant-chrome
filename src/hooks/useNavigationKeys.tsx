@@ -9,11 +9,20 @@ interface useNavigationKeysOptions {
   stopPropagation?: boolean
   preventDefault?: boolean
   enabled?: boolean
+  capture?: boolean
   elementRef?: React.RefObject<HTMLElement>
 }
 
 export const useNavigationKeys = (
-  { onNavigation, keys, stopPropagation = true, preventDefault = true, enabled = true, elementRef }: useNavigationKeysOptions
+  {
+    onNavigation,
+    keys,
+    stopPropagation = true,
+    preventDefault = true,
+    enabled = true,
+    capture = false,
+    elementRef
+  }: useNavigationKeysOptions
 ): void => {
   const { viewId, isActive } = useView()
 
@@ -66,9 +75,9 @@ export const useNavigationKeys = (
       return
     }
 
-    document.addEventListener('keydown', handleKeyDown)
-    return () => document.removeEventListener('keydown', handleKeyDown)
-  }, [enabled, handleKeyDown])
+    document.addEventListener('keydown', handleKeyDown, { capture })
+    return () => document.removeEventListener('keydown', handleKeyDown, { capture })
+  }, [enabled, handleKeyDown, capture])
 }
 
 function isEditableElement(element: Element | null): element is HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement | HTMLElement {

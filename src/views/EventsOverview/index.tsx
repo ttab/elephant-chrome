@@ -57,7 +57,7 @@ export const Events = (): JSX.Element => {
 
             <div className='flex flex-col h-screen'>
               <ViewHeader.Root>
-                <ViewHeader.Title title='Händelser' short='Händelser' icon={CalendarPlus2} iconColor='#5E9F5D' />
+                <ViewHeader.Title title='Händelser' short='Händelser' icon={CalendarPlus2} iconColor='#D802FD' />
 
                 <ViewHeader.Content>
                   <Header tab={currentTab} type='Event' />

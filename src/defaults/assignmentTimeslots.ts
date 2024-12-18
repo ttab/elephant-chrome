@@ -6,19 +6,19 @@ export const timesSlots: Slots = {
     label: 'Heldag'
   },
   morning: {
-    slots: [5, 6, 7, 8, 9],
+    slots: [0, 1, 2, 3, 4, 5, 6],
     label: 'Morgon'
   },
   forenoon: {
-    slots: [10, 11, 12],
+    slots: [7, 8, 9, 10, 11, 12],
     label: 'Förmiddag'
   },
   afternoon: {
-    slots: [13, 14, 15, 16, 17],
+    slots: [13, 14, 15, 16, 17, 18],
     label: 'Eftermiddag'
   },
   evening: {
-    slots: [18, 19, 20, 21, 22, 23],
+    slots: [19, 20, 21, 22, 23],
     label: 'Kväll'
   }
 }
