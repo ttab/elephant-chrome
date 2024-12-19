@@ -3,7 +3,7 @@ import { transformVisual, revertVisual } from './tt/visual.js'
 import type { TBElement } from '@ttab/textbit'
 import type { Block } from '@ttab/elephant-api/newsdoc'
 import { revertFactbox, transformFactbox } from './core/factbox.js'
-import { transformTable } from './core/table.js'
+import { revertTable, transformTable } from './core/table.js'
 
 /**
  * Convert a NewsDoc block array to slate TBElement array
@@ -44,6 +44,8 @@ export async function slateToNewsDoc(elements: TBElement[]): Promise<Block[] | u
           return revertVisual(element)
         case 'core/factbox':
           return await revertFactbox(element)
+        case 'core/table':
+          return revertTable(element)
         default:
           throw new Error(`Element not implemented: ${element.type}`)
       }
