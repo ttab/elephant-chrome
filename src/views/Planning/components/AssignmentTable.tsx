@@ -4,11 +4,13 @@ import { appendAssignment } from '@/lib/createYItem'
 import { useCollaboration, useNavigationKeys, useYValue } from '@/hooks'
 import { Assignment } from './Assignment'
 import { type Block } from '@ttab/elephant-api/newsdoc'
+import type { MouseEvent, KeyboardEvent } from 'react'
 import { useMemo, useState } from 'react'
 import { deleteByYPath } from '@/lib/yUtils'
 import { cn } from '@ttab/elephant-ui/utils'
 import { type EleBlock } from '@/shared/types'
 import { cva } from 'class-variance-authority'
+import { Button } from '@ttab/elephant-ui'
 
 export const AssignmentTable = ({ asDialog = false }: {
   asDialog?: boolean
@@ -39,6 +41,22 @@ export const AssignmentTable = ({ asDialog = false }: {
     return provider?.document.getMap('ele')
   }, [provider?.document])
 
+  const handleNewAssignment = (event: MouseEvent<HTMLButtonElement> | KeyboardEvent<HTMLButtonElement>) => {
+    event.preventDefault()
+    event.stopPropagation()
+    if (selectedAssignment != null || !provider?.document) {
+      return
+    }
+
+    appendAssignment({
+      document: provider.document,
+      inProgress: true,
+      slugLine: (!slugLines?.includes(planningSlugLine || ''))
+        ? planningSlugLine
+        : undefined
+    })
+  }
+
   useNavigationKeys({
     keys: ['ArrowUp', 'ArrowDown'],
     onNavigation: (event) => {
@@ -66,37 +84,25 @@ export const AssignmentTable = ({ asDialog = false }: {
           selectedAssignment != null ? 'opacity-50' : '')}
         >
           <div className={variants({ asDialog })}>
-            <a
-              href='#'
-              className={cn('flex flex-start items-center text-sm gap-2 p-2 -ml-2 rounded-sm outline-none focus-visible:ring-table-selected focus-visible:ring-2',
-                selectedAssignment != null
-                  ? 'hover:cursor-default opacity-50'
-                  : 'hover:bg-muted')}
-              onClick={(evt) => {
-                evt.preventDefault()
-                if (selectedAssignment != null) {
-                  return
-                }
-
-                appendAssignment({
-                  document: provider.document,
-                  inProgress: true,
-                  slugLine: (!slugLines?.includes(planningSlugLine || ''))
-                    ? planningSlugLine
-                    : undefined
-                })
-              }}
+            <Button
+              variant='ghost'
+              onKeyDown={(event: KeyboardEvent<HTMLButtonElement>) => event.key === 'Enter'
+                && handleNewAssignment(event)}
+              onClick={(event: MouseEvent<HTMLButtonElement>) => handleNewAssignment(event)}
             >
-              <div className='bg-primary rounded-full w-5 h-5 relative'>
-                <PlusIcon
-                  size={15}
-                  strokeWidth={2.25}
-                  color='#FFFFFF'
-                  className='absolute inset-0 m-auto'
-                />
+
+              <div className='flex flex-row items-center gap-2'>
+                <div className='bg-primary rounded-full w-5 h-5 relative'>
+                  <PlusIcon
+                    size={15}
+                    strokeWidth={2.25}
+                    color='#FFFFFF'
+                    className='absolute inset-0 m-auto'
+                  />
+                </div>
+                Lägg till uppdrag
               </div>
-              Lägg till uppdrag
-            </a>
+            </Button>
           </div>
         </div>
       )}

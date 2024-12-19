@@ -4,12 +4,12 @@ import { MessageCircleMore, Tags } from '@ttab/elephant-ui/icons'
 import { AssignmentType } from '@/components/DataItem/AssignmentType'
 import { useYValue } from '@/hooks/useYValue'
 import { AssignmentTime } from '@/components/AssignmentTime'
-import { useKeydownGlobal } from '@/hooks/useKeydownGlobal'
 import { Assignees } from '@/components/Assignees'
 import { Title } from '@/components/Title'
 import { SluglineEditable } from '@/components/DataItem/SluglineEditable'
 import { Form } from '@/components/Form'
 import { type FormProps } from '@/components/Form/Root'
+import { useEffect, useRef } from 'react'
 
 export const Assignment = ({ index, onAbort, onClose }: {
   index: number
@@ -21,22 +21,29 @@ export const Assignment = ({ index, onAbort, onClose }: {
   const [inProgress] = useYValue<boolean>(`meta.core/assignment[${index}].__inProgress`)
   const [assignmentType] = useYValue<string | undefined>(`meta.core/assignment[${index}].meta.core/assignment-type[0].value`)
 
-  useKeydownGlobal((evt) => {
-    if (evt.key === 'Escape') {
-      if (onAbort) {
-        onAbort()
-      } else {
-        onClose()
-      }
+  const formRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    if (formRef.current) {
+      formRef.current.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape') {
+          event.stopPropagation()
+          if (onAbort) {
+            onAbort()
+          } else {
+            onClose()
+          }
+        }
+      })
     }
-  })
+  }, [onAbort, onClose])
 
   if (!assignment) {
     return <></>
   }
 
   return (
-    <div className='flex flex-col rounded-md border shadow-xl -mx-1 -my-1 z-10 bg-background'>
+    <div className='flex flex-col rounded-md border shadow-xl -mx-1 -my-1 z-10 bg-background' ref={formRef}>
       <Form.Root asDialog={true}>
         <Form.Content>
           <Form.Title>
