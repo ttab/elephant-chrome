@@ -9,7 +9,7 @@ export const useLink = (viewName: View) => {
   const { viewId: origin } = useView()
 
   return (
-    event: MouseEvent<Element> | KeyboardEvent | undefined,
+    event: MouseEvent<Element> | KeyboardEvent | React.KeyboardEvent<HTMLButtonElement> | undefined,
     props: ViewProps,
     target?: Target,
     callbacks?: Record<string, () => void>,
