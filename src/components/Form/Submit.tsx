@@ -26,7 +26,7 @@ export const Submit = ({
   }
 
   const handleClick = (
-    event: React.MouseEvent<HTMLButtonElement>,
+    event: React.MouseEvent<HTMLButtonElement> | React.KeyboardEvent<HTMLButtonElement>,
     type: 'submit' | 'reset'
   ): void => {
     event.preventDefault()
@@ -44,7 +44,9 @@ export const Submit = ({
   const applyOnClickHandler = (child: React.ReactNode): React.ReactNode => {
     if (React.isValidElement(child)) {
       const props: FormProps &
-        { onClick?: (event: React.MouseEvent<HTMLButtonElement>) => void } = {}
+        { onClick?: (event: React.MouseEvent<HTMLButtonElement>) => void
+          onKeyDown?: (event: React.KeyboardEvent<HTMLButtonElement>) => void
+        } = {}
 
       const childProps = child.props as { type: string, children: React.ReactElement }
 
@@ -52,9 +54,19 @@ export const Submit = ({
         if (childProps.type === 'submit') {
           props.onClick = (event: React.MouseEvent<HTMLButtonElement>) =>
             handleClick(event, 'submit')
+          props.onKeyDown = (event: React.KeyboardEvent<HTMLButtonElement>) => {
+            if (event.key === 'Enter') {
+              handleClick(event, 'submit')
+            }
+          }
         } else if (childProps.type === 'reset') {
           props.onClick = (event: React.MouseEvent<HTMLButtonElement>) =>
             handleClick(event, 'reset')
+          props.onKeyDown = (event: React.KeyboardEvent<HTMLButtonElement>) => {
+            if (event.key === 'Enter') {
+              handleClick(event, 'reset')
+            }
+          }
         }
       }
 
