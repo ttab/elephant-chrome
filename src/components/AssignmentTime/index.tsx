@@ -2,7 +2,6 @@ import { CalendarFoldIcon } from '@ttab/elephant-ui/icons'
 import { useYValue } from '@/hooks/useYValue'
 import { Block } from '@ttab/elephant-api/newsdoc'
 import { TimeDeliveryMenu } from './TimeDeliveryMenu'
-import { cn } from '@ttab/elephant-ui/utils'
 import { type AssignmentValueOption, type AssignmentData } from './types'
 import { ExecutionTimeMenu } from './ExecutionTimeMenu'
 import { timeSlotTypes, timePickTypes } from '../../defaults/assignmentTimeConstants'
@@ -34,7 +33,7 @@ export const AssignmentTime = ({ index }: {
     if (fullDay === 'true' && option.value === 'fullday') {
       selectedLabel = option.label
       return true
-    } else if (end && option.value === 'endexcecution') {
+    } else if (end && option.value === 'endexecution') {
       const aDate = new Date(end.toString())
       selectedLabel = aDate.toLocaleString('sv-SE', {
         hour: '2-digit',
@@ -84,7 +83,7 @@ export const AssignmentTime = ({ index }: {
         }).data)
         break
 
-      case 'endexcecution':
+      case 'endexecution':
         setData(Block.create({
           data: {
             end_date: data?.end_date,
@@ -128,19 +127,19 @@ export const AssignmentTime = ({ index }: {
   }
 
   return (
-    (assignmentType && assignmentType === 'picture')
+    (assignmentType && (assignmentType === 'picture' || assignmentType === 'video'))
       ? (<ExecutionTimeMenu handleOnSelect={onExecutionTimeSelect} index={index} startDate={startDate} />)
       : (
           <TimeDeliveryMenu
             handleOnSelect={handleOnSelect}
-            className='w-fit text-muted-foreground font-sans font-normal text-ellipsis px-2 h-7'
+            className='w-fit font-sans font-normal text-ellipsis px-2 h-7'
             selectedOption={selectedOption}
             index={index}
           >
             {selectedOption?.icon
               ? (
                   <div className='flex flex-row p-1'>
-                    <selectedOption.icon {...iconProps} className={cn('text-foreground', className)} />
+                    <selectedOption.icon {...iconProps} className={className} />
                     <div className='pl-1'>{selectedLabel}</div>
                   </div>
                 )

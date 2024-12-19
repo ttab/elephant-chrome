@@ -249,9 +249,6 @@ export const EventTimeMenu = (): JSX.Element => {
       </PopoverTrigger>
       <PopoverContent
         asChild
-        align='center'
-        side='bottom'
-        sideOffset={-150}
         onEscapeKeyDown={(event) => event?.stopPropagation()}
       >
         <div>
@@ -273,7 +270,7 @@ export const EventTimeMenu = (): JSX.Element => {
             <label htmlFor='wholeDaySwitch' className='text-sm self-center p-2'>Heldag</label>
           </div>
           <div className='flex justify-between border-2 rounded-md border-slate-100'>
-            <div className='px-3 py-2 text-sm text-gray-400'>
+            <div className='px-3 py-2 text-sm'>
               {startDateValue && dateToReadableDay(new Date(startDateValue), locale, timeZone)}
             </div>
             <div>
@@ -287,7 +284,7 @@ export const EventTimeMenu = (): JSX.Element => {
             </div>
           </div>
           <div className='flex justify-between border-2 rounded-md border-slate-100 mt-2'>
-            <div className='px-3 py-2 text-sm text-gray-400'>
+            <div className='px-3 py-2 text-sm'>
               {endDateValue && dateToReadableDay(new Date(endDateValue), locale, timeZone)}
             </div>
             <div>
