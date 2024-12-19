@@ -3,12 +3,12 @@ import type { TBElement } from '@ttab/textbit'
 import Textbit from '@ttab/textbit'
 import useSWR from 'swr'
 import { LoadingText } from './LoadingText'
-import { Bold, Italic, Link, Text, OrderedList, UnorderedList, TTVisual, Factbox } from '@ttab/textbit-plugins'
+import { Bold, Italic, Link, Text, OrderedList, UnorderedList, TTVisual, Factbox, Table } from '@ttab/textbit-plugins'
 
 const BASE_URL = import.meta.env.BASE_URL || ''
 
 
-const plugins = [Text, UnorderedList, OrderedList, Bold, Italic, Link, TTVisual, Factbox]
+const plugins = [Text, UnorderedList, OrderedList, Bold, Italic, Link, TTVisual, Factbox, Table]
 
 export const Editor = ({ id }: { id: string }): JSX.Element => {
   const fetcher = async (): Promise<EleDocumentResponse> => {
