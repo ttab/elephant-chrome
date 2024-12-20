@@ -22,6 +22,7 @@ const Root = (): JSX.Element => {
 }
 
 const ControllerContent = (): JSX.Element => {
+  // TODO: use useUser
   const { provider } = useCollaboration()
   const { replaceState, state } = useHistory()
   const addWire = useLink('Wires')

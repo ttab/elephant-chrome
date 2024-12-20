@@ -21,7 +21,7 @@ export function getValueByYPath<T>(yRoot: Y.Map<unknown> | undefined, path: YPat
 
   const yPath = Array.isArray(path) ? path : stringToYPath(path)
   if (!yPath.length) {
-    return [undefined, undefined]
+    return [yRoot.toJSON() as T, yRoot]
   }
 
   const lastIndex = yPath.length - 1

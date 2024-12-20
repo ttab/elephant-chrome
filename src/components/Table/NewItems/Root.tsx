@@ -1,5 +1,4 @@
 import { useSession } from 'next-auth/react'
-import { AwarenessDocument } from '../../AwarenessDocument'
 import { type PropsWithChildren } from 'react'
 
 export const Root = ({ children }: PropsWithChildren): JSX.Element | null => {
@@ -7,9 +6,9 @@ export const Root = ({ children }: PropsWithChildren): JSX.Element | null => {
 
   return data?.user.sub
     ? (
-        <AwarenessDocument documentId={data?.user.sub}>
+        <div>
           {children}
-        </AwarenessDocument>
+        </div>
       )
     : null
 }
