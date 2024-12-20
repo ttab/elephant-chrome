@@ -55,6 +55,7 @@ export const Table = <TData, TValue>({
       <ModalContent
         id={originalId}
         source={source}
+        textOnly
         handleClose={hideModal}
         role={row.getValue<string>('role')}
       />,

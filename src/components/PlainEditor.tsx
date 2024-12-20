@@ -10,7 +10,10 @@ const BASE_URL = import.meta.env.BASE_URL || ''
 
 const plugins = [Text, UnorderedList, OrderedList, Bold, Italic, Link, TTVisual, Factbox, Table]
 
-export const Editor = ({ id }: { id: string }): JSX.Element => {
+export const Editor = ({ id, textOnly = false }: {
+  id: string
+  textOnly?: boolean
+}): JSX.Element => {
   const fetcher = async (): Promise<EleDocumentResponse> => {
     const response = await fetch(`${BASE_URL}/api/documents/${id}`)
     if (!response.ok) {
@@ -34,10 +37,18 @@ export const Editor = ({ id }: { id: string }): JSX.Element => {
       <Textbit.Root plugins={plugins.map((initPlugin) => initPlugin())}>
         <Textbit.Editable
           readOnly
-          value={document.document?.content as TBElement[]}
+          value={filterText(document.document?.content as TBElement[], textOnly)}
           className='outline-none pb-6 max-h-[30vh] overflow-y-scroll dark:text-slate-100 px-2'
         />
       </Textbit.Root>
     </div>
   )
+}
+
+function filterText(content: TBElement[], textOnly: boolean): TBElement[] {
+  if (!textOnly) {
+    return content
+  }
+
+  return content.filter((c) => c.type !== 'tt/visual')
 }

@@ -1,7 +1,7 @@
 import { View, ViewHeader } from '@/components'
 import { type ViewMetadata } from '@/types'
 import { timesSlots as Slots } from '@/defaults/assignmentTimeslots'
-import { EarthIcon } from '@ttab/elephant-ui/icons'
+import { CalendarDays, EarthIcon, Edit } from '@ttab/elephant-ui/icons'
 import { TimeSlot } from './TimeSlot'
 import { ClockIcon } from '@/components/ClockIcon'
 import { useAssignments } from '@/hooks/index/useAssignments'
@@ -10,9 +10,13 @@ import { toZonedTime } from 'date-fns-tz'
 import { useRegistry } from '@/hooks/useRegistry'
 import { Card } from '@/components/Card'
 import { useNavigationKeys } from '@/hooks/useNavigationKeys'
+import type { MouseEvent } from 'react'
 import { useState } from 'react'
 import { useLink } from '@/hooks/useLink'
 import { useOpenDocuments } from '@/hooks/useOpenDocuments'
+import { useModal } from '@/components/Modal/useModal'
+import { ModalContent } from '../Wires/components'
+import { DotDropdownMenu } from '@/components/ui/DotMenu'
 
 const meta: ViewMetadata = {
   name: 'Approvals',
@@ -32,8 +36,8 @@ const meta: ViewMetadata = {
 
 export const Approvals = (): JSX.Element => {
   const { timeZone } = useRegistry()
-  const openPlanning = useLink('Planning')
   const openArticle = useLink('Editor')
+  const openPlanning = useLink('Planning')
 
   const slots = Object.keys(Slots).map((key) => {
     return {
@@ -53,6 +57,8 @@ export const Approvals = (): JSX.Element => {
   const [focusedCard, setFocusedCard] = useState<number>()
   const openEditors = useOpenDocuments({ idOnly: true, name: 'Editor' })
   const openPlannings = useOpenDocuments({ idOnly: true, name: 'Planning' })
+
+  const { showModal, hideModal } = useModal()
 
   useNavigationKeys({
     capture: true, // Use capture phase to grab this event before view navigation
@@ -117,6 +123,25 @@ export const Approvals = (): JSX.Element => {
                   : undefined
 
                 const isSelected = ((articleId && openEditors.includes(articleId)) || openPlannings.includes(assignment._id))
+
+                const menuItems = [{
+                  label: 'Öppna artikel',
+                  icon: Edit,
+                  item: () => {
+                  }
+                },
+                {
+                  label: 'Öppna planering',
+                  icon: CalendarDays,
+                  item: (event: MouseEvent<Element>) => {
+                    event.preventDefault()
+                    event.stopPropagation()
+
+                    openPlanning(event, { id: assignment._id })
+                  }
+                }]
+
+
                 return (
                   <Card.Root
                     key={assignment.id}
@@ -124,8 +149,13 @@ export const Approvals = (): JSX.Element => {
                     isFocused={colN === focusedColumn && cardN === focusedCard}
                     isSelected={isSelected}
                     onSelect={(event) => {
-                      if (event instanceof KeyboardEvent && event.key == ' ') {
-                        openPlanning(event, { id: assignment._id })
+                      if (event instanceof KeyboardEvent && event.key == ' ' && articleId) {
+                        showModal(
+                          <ModalContent
+                            id={articleId}
+                            handleClose={hideModal}
+                          />
+                          , 'sheet')
                       } else if (articleId) {
                         openArticle(event, { id: articleId })
                       }
@@ -145,11 +175,16 @@ export const Approvals = (): JSX.Element => {
                     </Card.Content>
 
                     <Card.Footer>
-                      {assignment._section}
-                      &middot;
-                      Anders Andersson/TT
-                      &middot;
-                      1024 tkn
+                      <div className='flex flex-grow justify-between align-middle'>
+                        <div className='content-center'>
+                          {assignment._section}
+                          &middot;
+                          Anders Andersson/TT
+                          &middot;
+                          1024 tkn
+                        </div>
+                        <DotDropdownMenu items={menuItems} />
+                      </div>
                     </Card.Footer>
 
                   </Card.Root>
