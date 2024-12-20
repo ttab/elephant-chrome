@@ -6,11 +6,11 @@ import { SectionBadge } from '../../DataItem/SectionBadge'
 import { type EleDocumentResponse } from '@/shared/types'
 import { Button, Table as _Table, TableBody, TableCell, TableRow } from '@ttab/elephant-ui'
 import { DocumentStatus } from '../Items/DocumentStatus'
-import { useYValue } from '@/hooks/useYValue'
 import { useLink } from '@/hooks/useLink'
 import { Check, CheckCheck } from '@ttab/elephant-ui/icons'
 import { useRepositoryEvents } from '@/hooks/useRepositoryEvents'
 import { useCallback } from 'react'
+import { useUser } from '@/hooks/useUserDoc'
 
 const BASE_URL = import.meta.env.BASE_URL || ''
 
@@ -31,7 +31,7 @@ export const Table = ({ type, header }: {
 }): JSX.Element | null => {
   const openEditingView = useLink(type)
 
-  const [newDocuments = [], setNewDocuments] = useYValue<NewItem[]>(type)
+  const [newDocuments = [], setNewDocuments] = useUser<NewItem[]>(type)
 
   const { data: documents, mutate, error } = useSWR<EleDocumentResponse[], Error>(
     newDocuments?.length ? newDocuments : null,
