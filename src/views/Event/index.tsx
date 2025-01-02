@@ -132,6 +132,7 @@ const EventViewContent = (props: ViewProps & { documentId: string }): JSX.Elemen
               <Title
                 autoFocus={props.asDialog}
                 placeholder='Händelserubrik'
+                countCharacters={true}
               />
 
             </Form.Title>
