@@ -107,7 +107,7 @@ export const useAssignments = ({ date, type, slots, statuses }: {
         })
       })
 
-      // Initialize a getStatus request
+      // Initialize a getStatus request for this result page
       const statusRequest = repository?.getStatuses({
         uuids,
         statuses,
@@ -121,23 +121,27 @@ export const useAssignments = ({ date, type, slots, statuses }: {
       page = hits?.length === size ? page + 1 : 0
     } while (page)
 
-    // Wait for status requests to finish and find status for each deliverable
-    // FIXME: This does not filter out 'usable' articles...
+    // Wait for all status requests to finish and find status for each deliverable
+    const filteredTextAssignments: AssignmentInterface[] = []
     const statusResponses = await Promise.all(deliverableStatusesRequests)
+
     statusResponses.forEach((statusResponse) => {
-      statusResponse?.items.forEach((statuses) => {
-        const status = Object.keys(statuses.heads).reduce((prevStatus, currStatus) => {
-          if (!prevStatus || statuses.heads[currStatus].version > statuses.heads[prevStatus].version) {
+      statusResponse?.items.forEach((itemStatuses) => {
+        const status = Object.keys(itemStatuses.heads).reduce((prevStatus, currStatus) => {
+          if (!prevStatus || itemStatuses.heads[currStatus].version > itemStatuses.heads[prevStatus].version) {
             return currStatus
           } else {
             return prevStatus
           }
-        }, '')
+        }, '') || 'draft' // Default to draft (empty status)
 
-        if (status) {
-          const t = textAssignments.find((t) => t.id)
+        if (statuses.includes(status)) {
+          const t = textAssignments.find((t) => t._deliverableId == itemStatuses.uuid)
           if (t) {
-            t._deliverableStatus = status
+            filteredTextAssignments.push({
+              ...t,
+              _deliverableStatus: status
+            })
           }
         }
       })
@@ -145,7 +149,7 @@ export const useAssignments = ({ date, type, slots, statuses }: {
 
     // Plannings can have multiple assignments stretching over a full day
     // so we need to sort assignments
-    textAssignments.sort((a, b) => {
+    filteredTextAssignments.sort((a, b) => {
       const at = a.data.publish ? parseISO(a.data.publish) : 0
       const bt = b.data.publish ? parseISO(b.data.publish) : 0
 
@@ -155,11 +159,11 @@ export const useAssignments = ({ date, type, slots, statuses }: {
     // Return one slot with no key/label/hours if slots are not wanted
     if (!slots) {
       return [{
-        items: textAssignments
+        items: filteredTextAssignments
       }]
     }
 
-    return slotifyAssignments(timeZone, textAssignments, slots)
+    return slotifyAssignments(timeZone, filteredTextAssignments, slots)
   })
 }
 
