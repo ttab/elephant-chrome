@@ -9,7 +9,7 @@ export const Root = ({ children, className, tab, onTabChange, asDialog = false }
   tab?: string
   onTabChange?: Dispatch<SetStateAction<string>>
 } & PropsWithChildren): JSX.Element => {
-  const variants = cva('flex flex-col', {
+  const variants = cva('', {
     variants: {
       asDialog: {
         true: '',
