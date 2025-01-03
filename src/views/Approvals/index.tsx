@@ -8,12 +8,15 @@ import { ClockIcon } from '@/components/ClockIcon'
 import { useAssignments } from '@/hooks/index/useAssignments'
 import { parseISO, format } from 'date-fns'
 import { toZonedTime } from 'date-fns-tz'
-import { useRegistry } from '@/hooks/useRegistry'
 import { Card } from '@/components/Card'
-import { useNavigationKeys } from '@/hooks/useNavigationKeys'
-import { useState } from 'react'
-import { useLink } from '@/hooks/useLink'
-import { useOpenDocuments } from '@/hooks/useOpenDocuments'
+import { useMemo, useState } from 'react'
+import {
+  useLink,
+  useQuery,
+  useRegistry,
+  useNavigationKeys,
+  useOpenDocuments
+} from '@/hooks'
 import { DocumentStatuses } from '@/defaults/documentStatuses'
 
 const meta: ViewMetadata = {
