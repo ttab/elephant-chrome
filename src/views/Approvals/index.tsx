@@ -165,7 +165,7 @@ export const Approvals = (): JSX.Element => {
                       <Card.Body className='truncate'>
                         {!assignees.length && '-'}
                         {assignees.length === 1 && assignees[0]}
-                        {assignees.length > 2 && `${assignees.join(',')}`}
+                        {assignees.length > 2 && `${assignees.join(', ')}`}
                       </Card.Body>
                     </Card.Content>
 
