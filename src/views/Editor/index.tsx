@@ -106,7 +106,7 @@ function EditorWrapper(props: ViewProps & {
           [
             ...plugins.map((initPlugin) => initPlugin()),
             Text({
-              countCharacters: true
+              countCharacters: ['heading-1']
             }),
             Factbox({
               onEditOriginal: (id: string) => {
