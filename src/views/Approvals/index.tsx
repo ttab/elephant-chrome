@@ -127,6 +127,7 @@ export const Approvals = (): JSX.Element => {
 
                 const isSelected = ((articleId && openEditors.includes(articleId)) || openPlannings.includes(assignment._id))
                 const status = statusLookup?.[assignment._deliverableStatus || 'draft']
+                const assignees = assignment.links.filter((m) => m.type === 'core/author' && m.title).map((l) => l.title)
 
                 return (
                   <Card.Root
@@ -155,14 +156,21 @@ export const Approvals = (): JSX.Element => {
                     </Card.Header>
 
                     <Card.Content>
-                      <Card.Title>{assignment.title}</Card.Title>
-                      <Card.Body>{assignment.meta.find((m) => m.type === 'tt/slugline')?.value || '-'}</Card.Body>
+                      <Card.Title>
+                        {assignment.title}
+                        <div className='text-xs font-normal opacity-60'>
+                          {assignment.meta.find((m) => m.type === 'tt/slugline')?.value || ' '}
+                        </div>
+                      </Card.Title>
+                      <Card.Body className='truncate'>
+                        {!assignees.length && '-'}
+                        {assignees.length === 1 && assignees[0]}
+                        {assignees.length > 2 && `${assignees.join(', ')}`}
+                      </Card.Body>
                     </Card.Content>
 
-                    <Card.Footer>
+                    <Card.Footer className='opacity-60'>
                       {assignment._section}
-                      &middot;
-                      Anders Andersson/TT
                       &middot;
                       1024 tkn
                     </Card.Footer>
