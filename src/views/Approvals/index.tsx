@@ -56,9 +56,17 @@ export const Approvals = (): JSX.Element => {
     return acc
   }, {} as Record<string, DefaultValueOption>)
 
+  const [query] = useQuery()
+
+  const { from } = useMemo(() =>
+    getDateTimeBoundariesUTC(typeof query.from === 'string'
+      ? new Date(`${query.from}T00:00:00.000Z`)
+      : new Date())
+  , [query.from])
+
   const { data = [] } = useAssignments({
     type: 'text',
-    date: new Date(),
+    date: from ? new Date(from) : new Date(),
     slots,
     statuses: ['draft', 'done', 'approved', 'withheld']
   })
