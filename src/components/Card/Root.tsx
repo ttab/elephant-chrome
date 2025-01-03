@@ -59,10 +59,11 @@ export const Root = ({ className, isFocused = false, isSelected = false, status,
         true: 'bg-table-selected focus-visible:outline-table-selected'
       },
       status: {
-        done: 'bg-[rgb(255,250,229)] border-[rgb(255,235,153)]',
-        approved: 'bg-[rgb(214,246,218)] border-[rgba(151,233,161,0.8)]',
-        withheld: 'bg-[rgb(189,244,248)] border-[rgb(120,232,241])',
-        usable: 'bg-[rgb(227,239,253)] border-[rgb(157,197,246)]'
+        draft: 'border-s-[6px]',
+        done: 'bg-[rgb(255,250,229)] border-[rgb(255,235,153)] border-s-[6px]',
+        approved: 'bg-[rgb(214,246,218)] border-[rgba(151,233,161,0.8)] border-s-[6px]',
+        withheld: 'bg-[rgb(189,244,248)] border-[rgb(120,232,241]) border-s-[6px]',
+        usable: 'bg-[rgb(227,239,253)] border-[rgb(157,197,246)] border-s-[6px]'
       },
       defaultVariants: {
         status: undefined // No default style for status
@@ -93,6 +94,6 @@ export const Root = ({ className, isFocused = false, isSelected = false, status,
 /*
  * Type guard for valid statuses that the Root card can handle
  */
-function isValidStatus(value?: string): value is 'done' | 'approved' | 'withheld' | 'usable' {
-  return ['done', 'approved', 'withheld', 'usable'].includes(value ?? '')
+function isValidStatus(value?: string): value is 'draft' | 'done' | 'approved' | 'withheld' | 'usable' {
+  return ['draft', 'done', 'approved', 'withheld', 'usable'].includes(value ?? '')
 }
