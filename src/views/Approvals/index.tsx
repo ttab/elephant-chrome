@@ -18,6 +18,8 @@ import {
   useOpenDocuments
 } from '@/hooks'
 import { DocumentStatuses } from '@/defaults/documentStatuses'
+import { Header } from '@/components/Header'
+import { getDateTimeBoundariesUTC } from '@/lib/datetime'
 
 const meta: ViewMetadata = {
   name: 'Approvals',
@@ -63,6 +65,7 @@ export const Approvals = (): JSX.Element => {
 
   const [focusedColumn, setFocusedColumn] = useState<number>()
   const [focusedCard, setFocusedCard] = useState<number>()
+  const [currentTab, setCurrentTab] = useState<string>('list')
   const openEditors = useOpenDocuments({ idOnly: true, name: 'Editor' })
   const openPlannings = useOpenDocuments({ idOnly: true, name: 'Planning' })
 
@@ -111,9 +114,12 @@ export const Approvals = (): JSX.Element => {
   })
 
   return (
-    <View.Root>
+    <View.Root tab={currentTab} onTabChange={setCurrentTab}>
       <ViewHeader.Root>
         <ViewHeader.Title title='Dagen' short='Dagen' iconColor='#5E9F5D' icon={EarthIcon} />
+        <ViewHeader.Content>
+          <Header tab={currentTab} type='Approvals' />
+        </ViewHeader.Content>
       </ViewHeader.Root>
 
       <View.Content variant='grid' columns={slots.length}>
