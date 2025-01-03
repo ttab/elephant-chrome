@@ -31,9 +31,11 @@ export const Header = ({ tab, assigneeUserName, type }: {
 
       {tab === 'grid' && <DateChanger type={type} />}
 
-      <Filter>
-        <Commands />
-      </Filter>
+      {type !== 'Approvals' && (
+        <Filter>
+          <Commands />
+        </Filter>
+      )}
       {type === 'Assignments' && <PersonalAssignmentsFilter assigneeUserName={assigneeUserName} />}
     </>
   )
