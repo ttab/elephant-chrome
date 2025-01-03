@@ -117,7 +117,6 @@ const PlanningViewContent = (props: ViewProps & { documentId: string }): JSX.Ele
               <Title
                 autoFocus={props.asDialog}
                 placeholder='Planeringstitel'
-                countCharacters={true}
               />
             </Form.Title>
             <Description role='public' />
