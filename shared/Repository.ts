@@ -2,6 +2,7 @@ import { TwirpFetchTransport } from '@protobuf-ts/twirp-transport'
 import { DocumentsClient } from '@ttab/elephant-api/repository'
 import type {
   GetDocumentResponse,
+  GetStatusOverviewResponse,
   UpdateRequest,
   UpdateResponse,
   ValidateRequest,
@@ -31,6 +32,28 @@ export class Repository {
         baseUrl: new URL('twirp', repoUrl).toString()
       })
     )
+  }
+
+  async getStatuses({ uuids, statuses, accessToken }: {
+    uuids: string[]
+    statuses: string[]
+    accessToken: string
+  }): Promise<GetStatusOverviewResponse | null> {
+    if (!uuids.length || uuids.filter(isValidUUID).length !== uuids.length) {
+      throw new Error('Invalid uuid format in input')
+    }
+
+    try {
+      const { response } = await this.#client.getStatusOverview({
+        statuses,
+        uuids,
+        getMeta: false
+      }, meta(accessToken))
+
+      return response
+    } catch (err: unknown) {
+      throw new Error(`Unable to fetch statuses: ${(err as Error)?.message || 'Unknown error'}`)
+    }
   }
 
   /**

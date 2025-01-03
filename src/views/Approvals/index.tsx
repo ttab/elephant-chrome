@@ -1,4 +1,5 @@
 import { View, ViewHeader } from '@/components'
+import type { DefaultValueOption } from '@/types'
 import { type ViewMetadata } from '@/types'
 import { timesSlots as Slots } from '@/defaults/assignmentTimeslots'
 import { EarthIcon } from '@ttab/elephant-ui/icons'
@@ -13,6 +14,7 @@ import { useNavigationKeys } from '@/hooks/useNavigationKeys'
 import { useState } from 'react'
 import { useLink } from '@/hooks/useLink'
 import { useOpenDocuments } from '@/hooks/useOpenDocuments'
+import { DocumentStatuses } from '@/defaults/documentStatuses'
 
 const meta: ViewMetadata = {
   name: 'Approvals',
@@ -43,10 +45,17 @@ export const Approvals = (): JSX.Element => {
     }
   })
 
+  // Prepare lookup table for status icons
+  const statusLookup = DocumentStatuses.reduce((acc, item) => {
+    acc[item.value] = item
+    return acc
+  }, {} as Record<string, DefaultValueOption>)
+
   const { data = [] } = useAssignments({
     type: 'text',
     date: new Date(),
-    slots
+    slots,
+    statuses: ['draft', 'done', 'approved', 'withheld']
   })
 
   const [focusedColumn, setFocusedColumn] = useState<number>()
@@ -117,10 +126,12 @@ export const Approvals = (): JSX.Element => {
                   : undefined
 
                 const isSelected = ((articleId && openEditors.includes(articleId)) || openPlannings.includes(assignment._id))
+                const status = statusLookup?.[assignment._deliverableStatus || 'draft']
+
                 return (
                   <Card.Root
                     key={assignment.id}
-                    className={(!articleId) ? 'opacity-50' : 'hover:bg-muted'}
+                    status={assignment._deliverableStatus || 'draft'}
                     isFocused={colN === focusedColumn && cardN === focusedCard}
                     isSelected={isSelected}
                     onSelect={(event) => {
@@ -132,7 +143,11 @@ export const Approvals = (): JSX.Element => {
                     }}
                   >
                     <Card.Header>
-                      <div>{assignment._newsvalue}</div>
+                      <div className='flex flex-row gap-2'>
+                        {status.icon && <status.icon {...status.iconProps} size={15} />}
+                        <span className='bg-secondary inline-block px-1 rounded'>{assignment._newsvalue}</span>
+                      </div>
+
                       <div className='flex flex-row gap-1 items-center'>
                         <ClockIcon hour={(time) ? parseInt(time.slice(0, 2)) : undefined} size={14} className='opacity-50' />
                         <time>{time}</time>
