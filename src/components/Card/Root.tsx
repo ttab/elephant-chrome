@@ -60,10 +60,10 @@ export const Root = ({ className, isFocused = false, isSelected = false, status,
       },
       status: {
         draft: 'border-s-[6px]',
-        done: 'bg-[rgb(255,250,229)] border-[rgb(255,235,153)] border-s-[6px]',
-        approved: 'bg-[rgb(214,246,218)] border-[rgba(151,233,161,0.8)] border-s-[6px]',
+        done: 'bg-[rgb(255,250,229)] border-[rgb(255,235,153)] border-s-[rgb(255,204,0)] border-s-[6px]',
+        approved: 'bg-[rgb(214,246,218)] border-[rgb(151,233,161)] border-s-[rgb(40,191,58)] border-s-[6px]',
         withheld: 'bg-[rgb(189,244,248)] border-[rgb(120,232,241]) border-s-[6px]',
-        usable: 'bg-[rgb(227,239,253)] border-[rgb(157,197,246)] border-s-[6px]'
+        usable: 'bg-[rgb(227,239,253)] border-[rgb(157,197,246)] border-s-[rgb(20,115,230)] border-s-[6px]'
       },
       defaultVariants: {
         status: undefined // No default style for status
