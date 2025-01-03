@@ -14,6 +14,7 @@ interface AssignmentInterface extends Block {
   _title: string
   _newsvalue?: string
   _section?: string
+  _statusData?: string
 }
 
 interface AssignmentResponseInterface {
@@ -26,6 +27,8 @@ interface AssignmentResponseInterface {
 /**
  * Fetch all assignments in specific date as Block[] extended with some planning level data.
  * Allows optional filtering by type and optional sorting into buckets.
+ *
+ * @todo Filter by section
  */
 export const useAssignments = ({ date, type, slots, statuses }: {
   date: Date | string
@@ -41,6 +44,16 @@ export const useAssignments = ({ date, type, slots, statuses }: {
   const { index, repository, timeZone } = useRegistry()
   const key = type ? `core/assignment/${type}` : 'core/assignment'
 
+  // We want to fetch all known statuses for deliverables and then
+  // filter them using the supplied "statuses" prop.
+  const knownStatuses = [
+    'done',
+    'approved',
+    'withheld',
+    'usable',
+    'canceled'
+  ]
+
   return useSWR(key, async (): Promise<AssignmentResponseInterface[]> => {
     if (!index || !session?.data?.accessToken) {
       return [{
@@ -50,7 +63,7 @@ export const useAssignments = ({ date, type, slots, statuses }: {
 
     const size = 100
     let page = 1
-    const textAssignments: AssignmentInterface[] = []
+    const assignments: AssignmentInterface[] = []
     const deliverableStatusesRequests: Promise<GetStatusOverviewResponse | null>[] = []
 
     do {
@@ -96,7 +109,7 @@ export const useAssignments = ({ date, type, slots, statuses }: {
             }
           }
 
-          textAssignments.push({
+          assignments.push({
             _id: hit.id,
             _deliverableId: _deliverableId || '',
             _title,
@@ -107,10 +120,10 @@ export const useAssignments = ({ date, type, slots, statuses }: {
         })
       })
 
-      // Initialize a getStatus request for this result page
+      // Initialize a getStatuses request for this result page
       const statusRequest = repository?.getStatuses({
         uuids,
-        statuses,
+        statuses: knownStatuses,
         accessToken: session.data.accessToken
       })
 
@@ -136,11 +149,12 @@ export const useAssignments = ({ date, type, slots, statuses }: {
         }, '') || 'draft' // Default to draft (empty status)
 
         if (statuses.includes(status)) {
-          const t = textAssignments.find((t) => t._deliverableId == itemStatuses.uuid)
+          const t = assignments.find((t) => t._deliverableId == itemStatuses.uuid)
           if (t) {
             filteredTextAssignments.push({
               ...t,
-              _deliverableStatus: status
+              _deliverableStatus: status,
+              _statusData: JSON.stringify(itemStatuses, (_, val) => { return typeof val === 'bigint' ? val.toString() : val as unknown }, 2)
             })
           }
         }
