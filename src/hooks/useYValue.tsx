@@ -2,6 +2,7 @@ import { isEqualDeep } from '@/lib/isEqualDeep'
 import { useRef, useSyncExternalStore } from 'react'
 import { getValueByYPath, setValueByYPath, stringToYPath } from '@/lib/yUtils'
 import { useCollaboration } from './useCollaboration'
+import type { HocuspocusProvider } from '@hocuspocus/provider'
 
 
 /**
@@ -18,11 +19,12 @@ import { useCollaboration } from './useCollaboration'
  *
  * @returns [<T>, (arg0: T) => void, YParent]
  */
-export function useYValue<T>(path: string, raw: boolean = false): [
+export function useYValue<T>(path: string, raw: boolean = false, externalProvider?: HocuspocusProvider): [
   T | undefined,
   (arg0: T) => void
 ] {
-  const { provider } = useCollaboration()
+  const { provider: defaultProvider } = useCollaboration()
+  const provider = externalProvider || defaultProvider
   const prevDataRef = useRef<T | undefined>(undefined)
   const yRoot = provider?.document.getMap('ele')
   const yPath = stringToYPath(path)

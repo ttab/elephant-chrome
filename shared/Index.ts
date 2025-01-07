@@ -20,7 +20,7 @@ interface IndexSearchOptions {
   loadDocument?: boolean
 }
 
-interface IndexSearchResult {
+export interface IndexSearchResult {
   ok: boolean
   errorCode?: number
   errorMessage?: string
