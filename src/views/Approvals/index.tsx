@@ -157,7 +157,7 @@ export const Approvals = (): JSX.Element => {
 
                     <Card.Content>
                       <Card.Title>
-                        {assignment.title}
+                        {assignment._deliverableDocument?.title || assignment.title}
                         <div className='text-xs font-normal opacity-60'>
                           {assignment.meta.find((m) => m.type === 'tt/slugline')?.value || ' '}
                         </div>

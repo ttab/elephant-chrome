@@ -2,15 +2,16 @@ import useSWR from 'swr'
 import { BoolQueryV1, QueryV1 } from '@ttab/elephant-api/index'
 import { useRegistry } from '../useRegistry'
 import { useSession } from 'next-auth/react'
-import type { Block } from '@ttab/elephant-api/newsdoc'
+import type { Block, Document } from '@ttab/elephant-api/newsdoc'
 import { parseISO, getHours } from 'date-fns'
 import { toZonedTime } from 'date-fns-tz'
-import type { GetStatusOverviewResponse } from '@ttab/elephant-api/repository'
+import type { BulkGetResponse, GetStatusOverviewResponse } from '@ttab/elephant-api/repository'
 
 interface AssignmentInterface extends Block {
   _id: string
   _deliverableId: string
   _deliverableStatus?: string
+  _deliverableDocument?: Document
   _title: string
   _newsvalue?: string
   _section?: string
@@ -65,6 +66,7 @@ export const useAssignments = ({ date, type, slots, statuses }: {
     let page = 1
     const assignments: AssignmentInterface[] = []
     const deliverableStatusesRequests: Promise<GetStatusOverviewResponse | null>[] = []
+    const deliverableDocumentsRequests: Promise<BulkGetResponse | null>[] = []
 
     do {
       const { ok, hits, errorMessage } = await index.query({
@@ -126,18 +128,26 @@ export const useAssignments = ({ date, type, slots, statuses }: {
         statuses: knownStatuses,
         accessToken: session.data.accessToken
       })
-
       if (statusRequest) {
         deliverableStatusesRequests.push(statusRequest)
+      }
+
+      // Initialize a getDocuments request for this result page
+      const documentsRequest = repository?.getDocuments({
+        uuids,
+        accessToken: session.data.accessToken
+      })
+      if (documentsRequest) {
+        deliverableDocumentsRequests.push(documentsRequest)
       }
 
       page = hits?.length === size ? page + 1 : 0
     } while (page)
 
-    // Wait for all status requests to finish and find status for each deliverable
     const filteredTextAssignments: AssignmentInterface[] = []
-    const statusResponses = await Promise.all(deliverableStatusesRequests)
 
+    // Wait for all status requests to finish and find status for each deliverable
+    const statusResponses = await Promise.all(deliverableStatusesRequests)
     statusResponses.forEach((statusResponse) => {
       statusResponse?.items.forEach((itemStatuses) => {
         const status = Object.keys(itemStatuses.heads).reduce((prevStatus, currStatus) => {
@@ -157,6 +167,20 @@ export const useAssignments = ({ date, type, slots, statuses }: {
               _statusData: JSON.stringify(itemStatuses, (_, val) => { return typeof val === 'bigint' ? val.toString() : val as unknown }, 2)
             })
           }
+        }
+      })
+    })
+
+    // Wait for all documents requests to finish and find document for each deliverable
+    const documentsResponses = await Promise.all(deliverableDocumentsRequests)
+    documentsResponses.forEach((documentsResponse) => {
+      documentsResponse?.items.forEach((item) => {
+        const matchingAssignment = filteredTextAssignments.find((fta) => {
+          return fta._deliverableId === item.document?.uuid
+        })
+
+        if (matchingAssignment) {
+          matchingAssignment._deliverableDocument = item.document
         }
       })
     })
