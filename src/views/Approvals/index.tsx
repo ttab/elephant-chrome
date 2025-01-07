@@ -73,7 +73,7 @@ export const Approvals = (): JSX.Element => {
 
   const [focusedColumn, setFocusedColumn] = useState<number>()
   const [focusedCard, setFocusedCard] = useState<number>()
-  const [currentTab, setCurrentTab] = useState<string>('list')
+  const [currentTab, setCurrentTab] = useState<string>('grid')
   const openEditors = useOpenDocuments({ idOnly: true, name: 'Editor' })
   const openPlannings = useOpenDocuments({ idOnly: true, name: 'Planning' })
 
