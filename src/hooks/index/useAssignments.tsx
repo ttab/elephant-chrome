@@ -42,7 +42,7 @@ export const useAssignments = ({ date, type, slots, statuses }: {
 }) => {
   const session = useSession()
   const { index, repository, timeZone } = useRegistry()
-  const key = type ? `core/assignment/${type}` : 'core/assignment'
+  const key = type ? `core/assignment/${type}/${date.toString()}` : 'core/assignment'
 
   // We want to fetch all known statuses for deliverables and then
   // filter them using the supplied "statuses" prop.

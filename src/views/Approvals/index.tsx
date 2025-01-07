@@ -8,13 +8,18 @@ import { ClockIcon } from '@/components/ClockIcon'
 import { useAssignments } from '@/hooks/index/useAssignments'
 import { parseISO, format } from 'date-fns'
 import { toZonedTime } from 'date-fns-tz'
-import { useRegistry } from '@/hooks/useRegistry'
 import { Card } from '@/components/Card'
-import { useNavigationKeys } from '@/hooks/useNavigationKeys'
-import { useState } from 'react'
-import { useLink } from '@/hooks/useLink'
-import { useOpenDocuments } from '@/hooks/useOpenDocuments'
+import { useMemo, useState } from 'react'
+import {
+  useLink,
+  useQuery,
+  useRegistry,
+  useNavigationKeys,
+  useOpenDocuments
+} from '@/hooks'
 import { DocumentStatuses } from '@/defaults/documentStatuses'
+import { Header } from '@/components/Header'
+import { getDateTimeBoundariesUTC } from '@/lib/datetime'
 
 const meta: ViewMetadata = {
   name: 'Approvals',
@@ -51,15 +56,24 @@ export const Approvals = (): JSX.Element => {
     return acc
   }, {} as Record<string, DefaultValueOption>)
 
+  const [query] = useQuery()
+
+  const { from } = useMemo(() =>
+    getDateTimeBoundariesUTC(typeof query.from === 'string'
+      ? new Date(`${query.from}T00:00:00.000Z`)
+      : new Date())
+  , [query.from])
+
   const { data = [] } = useAssignments({
     type: 'text',
-    date: new Date(),
+    date: from ? new Date(from) : new Date(),
     slots,
     statuses: ['draft', 'done', 'approved', 'withheld']
   })
 
   const [focusedColumn, setFocusedColumn] = useState<number>()
   const [focusedCard, setFocusedCard] = useState<number>()
+  const [currentTab, setCurrentTab] = useState<string>('grid')
   const openEditors = useOpenDocuments({ idOnly: true, name: 'Editor' })
   const openPlannings = useOpenDocuments({ idOnly: true, name: 'Planning' })
 
@@ -108,9 +122,12 @@ export const Approvals = (): JSX.Element => {
   })
 
   return (
-    <View.Root>
+    <View.Root tab={currentTab} onTabChange={setCurrentTab}>
       <ViewHeader.Root>
         <ViewHeader.Title title='Dagen' short='Dagen' iconColor='#5E9F5D' icon={EarthIcon} />
+        <ViewHeader.Content>
+          <Header tab={currentTab} type='Approvals' />
+        </ViewHeader.Content>
       </ViewHeader.Root>
 
       <View.Content variant='grid' columns={slots.length}>
