@@ -13,13 +13,14 @@ import { useSession } from 'next-auth/react'
 import { ContextMenu } from '../Editor/ContextMenu'
 import { getValueByYPath } from '@/lib/yUtils'
 
-export const TextBox = ({ icon, placeholder, path, className, singleLine = false, autoFocus = false, onBlur, onFocus }: {
+export const TextBox = ({ icon, placeholder, path, className, singleLine = false, countCharacters = false, autoFocus = false, onBlur, onFocus }: {
   path: string
   icon?: React.ReactNode
   placeholder?: string
   className?: string
   singleLine?: boolean
   autoFocus?: boolean
+  countCharacters?: boolean
   onBlur?: React.FocusEventHandler<HTMLDivElement>
   onFocus?: React.FocusEventHandler<HTMLDivElement>
 }): JSX.Element => {
@@ -57,6 +58,7 @@ export const TextBox = ({ icon, placeholder, path, className, singleLine = false
           placeholder={placeholder}
           plugins={[Text({
             singleLine,
+            countCharacters,
             inputStyle: true,
             styles: ['body']
           })]}

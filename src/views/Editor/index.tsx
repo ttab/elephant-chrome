@@ -92,7 +92,7 @@ const Editor = (props: ViewProps): JSX.Element => {
 function EditorWrapper(props: ViewProps & {
   documentId: string
 }): JSX.Element {
-  const plugins = [Text, UnorderedList, OrderedList, Bold, Italic, Link, TTVisual, ImageSearchPlugin, FactboxPlugin, Table]
+  const plugins = [UnorderedList, OrderedList, Bold, Italic, Link, TTVisual, ImageSearchPlugin, FactboxPlugin, Table]
   const { provider, synced, user } = useCollaboration()
   const openFactboxEditor = useLink('Factbox')
   const [notes] = useYValue<Block[] | undefined>('meta.core/note')
@@ -105,6 +105,9 @@ function EditorWrapper(props: ViewProps & {
         plugins={
           [
             ...plugins.map((initPlugin) => initPlugin()),
+            Text({
+              countCharacters: ['heading-1']
+            }),
             Factbox({
               onEditOriginal: (id: string) => {
                 openFactboxEditor(undefined, { id })

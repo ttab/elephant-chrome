@@ -1,4 +1,5 @@
 import { View, ViewHeader } from '@/components'
+import type { DefaultValueOption } from '@/types'
 import { type ViewMetadata } from '@/types'
 import { timesSlots as Slots } from '@/defaults/assignmentTimeslots'
 import { CalendarDays, EarthIcon, Edit } from '@ttab/elephant-ui/icons'
@@ -7,16 +8,22 @@ import { ClockIcon } from '@/components/ClockIcon'
 import { useAssignments } from '@/hooks/index/useAssignments'
 import { parseISO, format } from 'date-fns'
 import { toZonedTime } from 'date-fns-tz'
-import { useRegistry } from '@/hooks/useRegistry'
 import { Card } from '@/components/Card'
-import { useNavigationKeys } from '@/hooks/useNavigationKeys'
 import type { MouseEvent } from 'react'
-import { useState } from 'react'
-import { useLink } from '@/hooks/useLink'
-import { useOpenDocuments } from '@/hooks/useOpenDocuments'
 import { useModal } from '@/components/Modal/useModal'
 import { ModalContent } from '../Wires/components'
 import { DotDropdownMenu } from '@/components/ui/DotMenu'
+import { useMemo, useState } from 'react'
+import {
+  useLink,
+  useQuery,
+  useRegistry,
+  useNavigationKeys,
+  useOpenDocuments
+} from '@/hooks'
+import { DocumentStatuses } from '@/defaults/documentStatuses'
+import { Header } from '@/components/Header'
+import { getDateTimeBoundariesUTC } from '@/lib/datetime'
 
 const meta: ViewMetadata = {
   name: 'Approvals',
@@ -47,14 +54,30 @@ export const Approvals = (): JSX.Element => {
     }
   })
 
+  // Prepare lookup table for status icons
+  const statusLookup = DocumentStatuses.reduce((acc, item) => {
+    acc[item.value] = item
+    return acc
+  }, {} as Record<string, DefaultValueOption>)
+
+  const [query] = useQuery()
+
+  const { from } = useMemo(() =>
+    getDateTimeBoundariesUTC(typeof query.from === 'string'
+      ? new Date(`${query.from}T00:00:00.000Z`)
+      : new Date())
+  , [query.from])
+
   const { data = [] } = useAssignments({
     type: 'text',
-    date: new Date(),
-    slots
+    date: from ? new Date(from) : new Date(),
+    slots,
+    statuses: ['draft', 'done', 'approved', 'withheld']
   })
 
   const [focusedColumn, setFocusedColumn] = useState<number>()
   const [focusedCard, setFocusedCard] = useState<number>()
+  const [currentTab, setCurrentTab] = useState<string>('grid')
   const openEditors = useOpenDocuments({ idOnly: true, name: 'Editor' })
   const openPlannings = useOpenDocuments({ idOnly: true, name: 'Planning' })
 
@@ -105,9 +128,12 @@ export const Approvals = (): JSX.Element => {
   })
 
   return (
-    <View.Root>
+    <View.Root tab={currentTab} onTabChange={setCurrentTab}>
       <ViewHeader.Root>
         <ViewHeader.Title title='Dagen' short='Dagen' iconColor='#5E9F5D' icon={EarthIcon} />
+        <ViewHeader.Content>
+          <Header tab={currentTab} type='Approvals' />
+        </ViewHeader.Content>
       </ViewHeader.Root>
 
       <View.Content variant='grid' columns={slots.length}>
@@ -123,6 +149,9 @@ export const Approvals = (): JSX.Element => {
                   : undefined
 
                 const isSelected = ((articleId && openEditors.includes(articleId)) || openPlannings.includes(assignment._id))
+                const status = statusLookup?.[assignment._deliverableStatus || 'draft']
+                const assignees = assignment.links.filter((m) => m.type === 'core/author' && m.title).map((l) => l.title)
+
 
                 const menuItems = [{
                   label: 'Öppna artikel',
@@ -141,11 +170,10 @@ export const Approvals = (): JSX.Element => {
                   }
                 }]
 
-
                 return (
                   <Card.Root
                     key={assignment.id}
-                    className={(!articleId) ? 'opacity-50' : 'hover:bg-muted'}
+                    status={assignment._deliverableStatus || 'draft'}
                     isFocused={colN === focusedColumn && cardN === focusedCard}
                     isSelected={isSelected}
                     onSelect={(event) => {
@@ -162,7 +190,11 @@ export const Approvals = (): JSX.Element => {
                     }}
                   >
                     <Card.Header>
-                      <div>{assignment._newsvalue}</div>
+                      <div className='flex flex-row gap-2'>
+                        {status.icon && <status.icon {...status.iconProps} size={15} />}
+                        <span className='bg-secondary inline-block px-1 rounded'>{assignment._newsvalue}</span>
+                      </div>
+
                       <div className='flex flex-row gap-1 items-center'>
                         <ClockIcon hour={(time) ? parseInt(time.slice(0, 2)) : undefined} size={14} className='opacity-50' />
                         <time>{time}</time>
@@ -170,16 +202,23 @@ export const Approvals = (): JSX.Element => {
                     </Card.Header>
 
                     <Card.Content>
-                      <Card.Title>{assignment.title}</Card.Title>
-                      <Card.Body>{assignment.meta.find((m) => m.type === 'tt/slugline')?.value || '-'}</Card.Body>
+                      <Card.Title>
+                        {assignment.title}
+                        <div className='text-xs font-normal opacity-60'>
+                          {assignment.meta.find((m) => m.type === 'tt/slugline')?.value || ' '}
+                        </div>
+                      </Card.Title>
+                      <Card.Body className='truncate'>
+                        {!assignees.length && '-'}
+                        {assignees.length === 1 && assignees[0]}
+                        {assignees.length > 2 && `${assignees.join(', ')}`}
+                      </Card.Body>
                     </Card.Content>
 
-                    <Card.Footer>
+                    <Card.Footer className='opacity-60'>
                       <div className='flex flex-grow justify-between align-middle'>
                         <div className='content-center'>
                           {assignment._section}
-                          &middot;
-                          Anders Andersson/TT
                           &middot;
                           1024 tkn
                         </div>
