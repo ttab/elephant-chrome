@@ -26,6 +26,7 @@ export const Column = ({ className, children }: {
       bg-muted
       rounded-sm
       gap-1
+      truncate
       `, className)}
     >
       {children}

@@ -174,7 +174,7 @@ export const Approvals = (): JSX.Element => {
 
                     <Card.Content>
                       <Card.Title>
-                        {assignment.title}
+                        <div className='truncate'>{assignment.title}</div>
                         <div className='text-xs font-normal opacity-60'>
                           {assignment.meta.find((m) => m.type === 'tt/slugline')?.value || ' '}
                         </div>
