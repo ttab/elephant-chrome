@@ -62,7 +62,7 @@ export const Approvals = (): JSX.Element => {
     getDateTimeBoundariesUTC(typeof query.from === 'string'
       ? new Date(`${query.from}T00:00:00.000Z`)
       : new Date())
-    , [query.from])
+  , [query.from])
 
   const { data = [] } = useAssignments({
     type: 'text',
