@@ -9,7 +9,7 @@ import { useAssignments } from '@/hooks/index/useAssignments'
 import { parseISO, format } from 'date-fns'
 import { toZonedTime } from 'date-fns-tz'
 import { Card } from '@/components/Card'
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import {
   useLink,
   useQuery,
@@ -62,7 +62,7 @@ export const Approvals = (): JSX.Element => {
     getDateTimeBoundariesUTC(typeof query.from === 'string'
       ? new Date(`${query.from}T00:00:00.000Z`)
       : new Date())
-  , [query.from])
+    , [query.from])
 
   const { data = [] } = useAssignments({
     type: 'text',
@@ -73,6 +73,33 @@ export const Approvals = (): JSX.Element => {
 
   const [focusedColumn, setFocusedColumn] = useState<number>()
   const [focusedCard, setFocusedCard] = useState<number>()
+
+  // Focus on the first card in the current timeslot on load
+  useEffect(() => {
+    if (typeof focusedColumn !== 'undefined' || typeof focusedCard !== 'undefined') {
+      return
+    }
+
+    // Determine the column for the current timeslot
+    const currentSlot = ((currentHour: number) => {
+      return slots.find((slot) => slot.hours.includes(currentHour))
+    })(new Date().getHours())
+    const currentColumnIndex = slots.findIndex((slot) => slot.key === currentSlot?.key)
+
+    if (currentColumnIndex !== -1 && data[currentColumnIndex]?.items.length > 0) {
+      // Current column has cards, focus on first card
+      setFocusedColumn(currentColumnIndex)
+      setFocusedCard(0)
+    } else {
+      // As fallback, find first column with card and focus on first card
+      const firstNonEmptyColumnIndex = data.findIndex((column) => column.items.length > 0)
+      if (firstNonEmptyColumnIndex !== -1) {
+        setFocusedColumn(firstNonEmptyColumnIndex)
+        setFocusedCard(0)
+      }
+    }
+  }, [slots, data, focusedColumn, focusedCard])
+
   const [currentTab, setCurrentTab] = useState<string>('grid')
   const openEditors = useOpenDocuments({ idOnly: true, name: 'Editor' })
   const openPlannings = useOpenDocuments({ idOnly: true, name: 'Planning' })
