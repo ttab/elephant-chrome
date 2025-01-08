@@ -61,8 +61,8 @@ export const Approvals = (): JSX.Element => {
   const { from } = useMemo(() =>
     getDateTimeBoundariesUTC(typeof query.from === 'string'
       ? new Date(`${query.from}T00:00:00.000Z`)
-      : new Date())
-    , [query.from])
+      : new Date()
+    ), [query.from])
 
   const { data = [] } = useAssignments({
     type: 'text',
