@@ -77,7 +77,7 @@
     "@ttab/eslint-config-elephant": "^0.0.8",
     "@types/cors": "^2.8.17",
     "@types/express": "^4.17.21",
-    "@types/express-serve-static-core": "^4.19.3",
+    "@types/express-serve-static-core": "^5.0.4",
     "@types/express-ws": "^3.0.5",
     "@types/jest": "^29.5.14",
     "@types/jsdom": "^21.1.7",
