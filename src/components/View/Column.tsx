@@ -5,8 +5,7 @@ export const Column = ({ className, children }: {
   className?: string
 } & PropsWithChildren) => {
   return (
-    <div
-      className={cn(`
+    <div className={cn(`
       w-[96vw]
       col-span-1
       flex-grow
