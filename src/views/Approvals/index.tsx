@@ -62,7 +62,7 @@ export const Approvals = (): JSX.Element => {
     getDateTimeBoundariesUTC(typeof query.from === 'string'
       ? new Date(`${query.from}T00:00:00.000Z`)
       : new Date())
-  , [query.from])
+    , [query.from])
 
   const { data = [] } = useAssignments({
     type: 'text',
@@ -86,6 +86,8 @@ export const Approvals = (): JSX.Element => {
     })(new Date().getHours())
     const currentColumnIndex = slots.findIndex((slot) => slot.key === currentSlot?.key)
 
+    // FIXME: Focus is set but focus ring is not visible when clicking link
+    // in the main menu navigation sheet.
     if (currentColumnIndex !== -1 && data[currentColumnIndex]?.items.length > 0) {
       // Current column has cards, focus on first card
       setFocusedColumn(currentColumnIndex)
