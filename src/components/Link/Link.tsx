@@ -36,18 +36,16 @@ export const Link = forwardRef((props: LinkProps, ref: ForwardedRef<HTMLAnchorEl
         }
 
         // Our onClick handler
-        setTimeout(() => {
-          handleLink({
-            event,
-            dispatch,
-            viewItem,
-            props: { ...props.props },
-            viewId,
-            origin,
-            target: props.target,
-            history
-          })
-        }, 0)
+        handleLink({
+          event,
+          dispatch,
+          viewItem,
+          props: { ...props.props },
+          viewId,
+          origin,
+          target: props.target,
+          history
+        })
       }}
       ref={ref}
     >
