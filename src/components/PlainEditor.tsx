@@ -10,20 +10,24 @@ const BASE_URL = import.meta.env.BASE_URL || ''
 
 const plugins = [Text, UnorderedList, OrderedList, Bold, Italic, Link, TTVisual, Factbox, Table]
 
+const fetcher = async (url: string): Promise<TBElement[] | undefined> => {
+  const response = await fetch(url)
+  if (!response.ok) {
+    throw new Error('Network response was not ok')
+  }
+  const result = await response.json() as EleDocumentResponse
+  return result.document?.content
+}
+
 export const Editor = ({ id, textOnly = false }: {
   id: string
   textOnly?: boolean
 }): JSX.Element => {
-  const fetcher = async (): Promise<EleDocumentResponse> => {
-    const response = await fetch(`${BASE_URL}/api/documents/${id}`)
-    if (!response.ok) {
-      throw new Error('Network response was not ok')
-    }
-    const result = await response.json() as EleDocumentResponse
-    return result
-  }
-
-  const { data: document, error } = useSWR<EleDocumentResponse, Error>(id, fetcher)
+  const { data: content, error } = useSWR<TBElement[] | undefined, Error>(
+    `${BASE_URL}/api/documents/${id}`,
+    fetcher,
+    { revalidateOnFocus: false, revalidateOnReconnect: false }
+  )
 
   if (error) return <div>Failed to load</div>
   if (!document) return (
@@ -36,8 +40,9 @@ export const Editor = ({ id, textOnly = false }: {
     <div className='flex-grow overflow-auto max-w-screen-lg mx-auto'>
       <Textbit.Root plugins={plugins.map((initPlugin) => initPlugin())}>
         <Textbit.Editable
+          key={id}
           readOnly
-          value={filterText(document.document?.content as TBElement[], textOnly)}
+          value={filterText(content, textOnly)}
           className='outline-none pb-6 max-h-[30vh] overflow-y-scroll dark:text-slate-100 px-2'
         />
       </Textbit.Root>
@@ -45,10 +50,10 @@ export const Editor = ({ id, textOnly = false }: {
   )
 }
 
-function filterText(content: TBElement[], textOnly: boolean): TBElement[] {
+function filterText(content: TBElement[] | undefined, textOnly: boolean): TBElement[] | undefined {
   if (!textOnly) {
     return content
   }
 
-  return content.filter((c) => c.type !== 'tt/visual')
+  return content?.filter((c) => c.type !== 'tt/visual')
 }
