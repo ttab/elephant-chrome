@@ -1,5 +1,5 @@
 import { cn } from '@ttab/elephant-ui/utils'
-import type { PropsWithChildren } from 'react'
+import { type PropsWithChildren } from 'react'
 
 export const Column = ({ className, children }: {
   className?: string
@@ -11,9 +11,11 @@ export const Column = ({ className, children }: {
       flex-grow
       flex-shrink-0
       @lg/view:w-[49vw]
-      @3xl/view:w-[33.5vw]
-      @5xl/view:w-[24.75vw]
-      @7xl/view:w-[auto]
+      @xl/view:w-[49vw]
+      @2xl/view:w-[20vw]
+      @fhd/view:w-[20vw]
+      qhd:w-[auto]
+      uhd:w-[auto]
       snap-center
       @lg/view:snap-start
       last:-border-s-0
