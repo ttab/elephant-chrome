@@ -81,7 +81,7 @@ export const Root = ({ className, isFocused = false, isSelected = false, status,
         status: isValidStatus(status) ? status : undefined
       }), className)}
       onClick={(event) => {
-        if (onSelect && event.target === ref.current) {
+        if (onSelect) {
           onSelect(event)
         }
       }}
