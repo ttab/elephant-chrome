@@ -153,7 +153,7 @@ const menuItems = [
   {
     label: 'Redigera',
     icon: Edit,
-    item: <T extends HTMLElement>(event: MouseEvent<T>) => {
+    item: (event: MouseEvent<HTMLDivElement>) => {
       event.preventDefault()
       event.stopPropagation()
     }
@@ -161,7 +161,7 @@ const menuItems = [
   {
     label: 'Ta bort',
     icon: Delete,
-    item: <T extends HTMLElement>(event: MouseEvent<T>) => {
+    item: (event: MouseEvent<HTMLDivElement>) => {
       event.preventDefault()
       event.stopPropagation()
       confirm('Ta bort')

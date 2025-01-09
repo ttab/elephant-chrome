@@ -32,7 +32,7 @@ export const Root = ({ className, isFocused = false, isSelected = false, status,
     elementRef: ref,
     keys: ['Enter', ' '],
     onNavigation: (event) => {
-      if (onSelect) {
+      if (onSelect && event.target === ref.current) {
         onSelect(event)
       }
     }
@@ -81,7 +81,7 @@ export const Root = ({ className, isFocused = false, isSelected = false, status,
         status: isValidStatus(status) ? status : undefined
       }), className)}
       onClick={(event) => {
-        if (onSelect) {
+        if (onSelect && event.target === ref.current) {
           onSelect(event)
         }
       }}

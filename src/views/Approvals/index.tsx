@@ -1,15 +1,14 @@
-import { View, ViewHeader } from '@/components'
+import { Link, View, ViewHeader } from '@/components'
 import type { DefaultValueOption } from '@/types'
 import { type ViewMetadata } from '@/types'
 import { timesSlots as Slots } from '@/defaults/assignmentTimeslots'
-import { CalendarDays, EarthIcon, Edit } from '@ttab/elephant-ui/icons'
+import { CalendarDays, EarthIcon, FileInput } from '@ttab/elephant-ui/icons'
 import { TimeSlot } from './TimeSlot'
 import { ClockIcon } from '@/components/ClockIcon'
 import { useAssignments } from '@/hooks/index/useAssignments'
 import { parseISO, format } from 'date-fns'
 import { toZonedTime } from 'date-fns-tz'
 import { Card } from '@/components/Card'
-import type { MouseEvent } from 'react'
 import { useModal } from '@/components/Modal/useModal'
 import { ModalContent } from '../Wires/components'
 import { DotDropdownMenu } from '@/components/ui/DotMenu'
@@ -44,7 +43,6 @@ const meta: ViewMetadata = {
 export const Approvals = (): JSX.Element => {
   const { timeZone } = useRegistry()
   const openArticle = useLink('Editor')
-  const openPlanning = useLink('Planning')
 
   const slots = Object.keys(Slots).map((key) => {
     return {
@@ -84,7 +82,6 @@ export const Approvals = (): JSX.Element => {
   const { showModal, hideModal } = useModal()
 
   useNavigationKeys({
-    capture: true, // Use capture phase to grab this event before view navigation
     stopPropagation: false, // Manually handle when this is needed
     keys: ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'],
     onNavigation: (event) => {
@@ -155,19 +152,37 @@ export const Approvals = (): JSX.Element => {
 
                 const menuItems = [{
                   label: 'Öppna artikel',
-                  icon: Edit,
-                  item: () => {
-                  }
+                  icon: FileInput,
+                  item: (
+                    <Link to='Editor' props={{ id: articleId }}>
+                      <div className='flex flex-row justify-center items-center'>
+                        <div className='opacity-70 flex-none w-7'>
+                          <FileInput size={16} strokeWidth={1.75} />
+                        </div>
+
+                        <div className='grow'>
+                          Öppna artikel
+                        </div>
+                      </div>
+                    </Link>
+                  )
                 },
                 {
                   label: 'Öppna planering',
                   icon: CalendarDays,
-                  item: (event: MouseEvent<Element>) => {
-                    event.preventDefault()
-                    event.stopPropagation()
+                  item: (
+                    <Link to='Planning' props={{ id: assignment._id }}>
+                      <div className='flex flex-row justify-center items-center'>
+                        <div className='opacity-70 flex-none w-7'>
+                          <CalendarDays size={16} strokeWidth={1.75} />
+                        </div>
 
-                    openPlanning(event, { id: assignment._id })
-                  }
+                        <div className='grow'>
+                          Öppna planering
+                        </div>
+                      </div>
+                    </Link>
+                  )
                 }]
 
                 return (
@@ -208,21 +223,24 @@ export const Approvals = (): JSX.Element => {
                           {assignment.meta.find((m) => m.type === 'tt/slugline')?.value || ' '}
                         </div>
                       </Card.Title>
-                      <Card.Body className='truncate'>
-                        {!assignees.length && '-'}
-                        {assignees.length === 1 && assignees[0]}
-                        {assignees.length > 2 && `${assignees.join(', ')}`}
-                      </Card.Body>
                     </Card.Content>
 
-                    <Card.Footer className='opacity-60'>
-                      <div className='flex flex-grow justify-between align-middle'>
-                        <div className='content-center'>
-                          {assignment._section}
-                          &middot;
-                          1024 tkn
+                    <Card.Footer>
+                      <div className='flex flex-col w-full'>
+                        <div className='truncate'>
+                          {!assignees.length && '-'}
+                          {assignees.length === 1 && assignees[0]}
+                          {assignees.length > 2 && `${assignees.join(', ')}`}
                         </div>
-                        <DotDropdownMenu items={menuItems} />
+                        <div className='flex flex-grow justify-between align-middle'>
+                          <div className='content-center opacity-60'>
+                            {assignment._section}
+                            &middot;
+                            1024 tkn
+                          </div>
+                          <DotDropdownMenu items={menuItems} />
+                        </div>
+
                       </div>
                     </Card.Footer>
 
