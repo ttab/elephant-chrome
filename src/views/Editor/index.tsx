@@ -91,6 +91,7 @@ const Editor = (props: ViewProps): JSX.Element => {
 
 function EditorWrapper(props: ViewProps & {
   documentId: string
+  autoFocus?: boolean
 }): JSX.Element {
   const plugins = [UnorderedList, OrderedList, Bold, Italic, Link, TTVisual, ImageSearchPlugin, FactboxPlugin, Table]
   const { provider, synced, user } = useCollaboration()
@@ -101,7 +102,7 @@ function EditorWrapper(props: ViewProps & {
   return (
     <View.Root>
       <Textbit.Root
-        autoFocus={true}
+        autoFocus={props.autoFocus ?? true}
         plugins={
           [
             ...plugins.map((initPlugin) => initPlugin()),

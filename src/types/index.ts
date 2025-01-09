@@ -75,6 +75,7 @@ export interface ViewProps {
   source?: string
   className?: string
   payload?: ArticlePayload
+  autoFocus?: boolean
 }
 
 export type Theme = 'dark' | 'light' | 'system'
