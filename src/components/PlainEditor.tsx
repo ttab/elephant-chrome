@@ -30,11 +30,12 @@ export const Editor = ({ id, textOnly = false }: {
   )
 
   if (error) return <div>Failed to load</div>
-  if (!document) return (
+  if (!content) return (
     <LoadingText>
       Laddar...
     </LoadingText>
   )
+
 
   return (
     <div className='flex-grow overflow-auto max-w-screen-lg mx-auto'>
@@ -50,10 +51,10 @@ export const Editor = ({ id, textOnly = false }: {
   )
 }
 
-function filterText(content: TBElement[] | undefined, textOnly: boolean): TBElement[] | undefined {
+function filterText(content: TBElement[], textOnly: boolean): TBElement[] {
   if (!textOnly) {
     return content
   }
 
-  return content?.filter((c) => c.type !== 'tt/visual')
+  return content.filter((c) => c.type !== 'tt/visual')
 }
