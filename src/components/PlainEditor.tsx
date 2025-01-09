@@ -19,7 +19,10 @@ const fetcher = async (url: string): Promise<TBElement[] | undefined> => {
   return result.document?.content
 }
 
-export const Editor = ({ id }: { id: string }): JSX.Element => {
+export const Editor = ({ id, textOnly = false }: {
+  id: string
+  textOnly?: boolean
+}): JSX.Element => {
   const { data: content, error } = useSWR<TBElement[] | undefined, Error>(
     `${BASE_URL}/api/documents/${id}`,
     fetcher,
@@ -27,11 +30,12 @@ export const Editor = ({ id }: { id: string }): JSX.Element => {
   )
 
   if (error) return <div>Failed to load</div>
-  if (!document) return (
+  if (!content) return (
     <LoadingText>
       Laddar...
     </LoadingText>
   )
+
 
   return (
     <div className='flex-grow overflow-auto max-w-screen-lg mx-auto'>
@@ -39,10 +43,18 @@ export const Editor = ({ id }: { id: string }): JSX.Element => {
         <Textbit.Editable
           key={id}
           readOnly
-          value={content}
+          value={filterText(content, textOnly)}
           className='outline-none pb-6 max-h-[30vh] overflow-y-scroll dark:text-slate-100 px-2'
         />
       </Textbit.Root>
     </div>
   )
+}
+
+function filterText(content: TBElement[], textOnly: boolean): TBElement[] {
+  if (!textOnly) {
+    return content
+  }
+
+  return content.filter((c) => c.type !== 'tt/visual')
 }

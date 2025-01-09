@@ -55,6 +55,10 @@ export const NavigationProvider = ({ children }: PropsWithChildren): JSX.Element
   // Let the user navigate between open views using <- and ->
   useNavigationKeys({
     onNavigation: (event) => {
+      if (!event.altKey) {
+        return
+      }
+
       const content: ContentState[] = history.state?.contentState || []
       let idx = content.findIndex((obj) => obj.viewId === state.active)
 
