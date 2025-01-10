@@ -50,8 +50,11 @@ export const AssignmentRow = ({ index, onSelect, isFocused = false }: {
 
     if (articleId) {
       openArticle(event, {
-        id: articleId
-      })
+        id: articleId,
+        autoFocus: false
+      }, undefined,
+      undefined,
+      event instanceof KeyboardEvent && event.key === ' ')
     } else {
       setShowCreateDialog(true)
     }
@@ -69,10 +72,8 @@ export const AssignmentRow = ({ index, onSelect, isFocused = false }: {
     keys: ['Enter', ' '],
     onNavigation: (event) => {
       if (assignmentType === 'text' || assignmentType === 'flash') {
-        if (event.key === 'Enter') {
+        if (event.key === 'Enter' || event.key === ' ') {
           onOpenArticleEvent(event)
-        } else if (event.key === ' ') {
-          onSelect()
         }
       }
     }
