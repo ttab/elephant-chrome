@@ -82,7 +82,7 @@ export function eventTableColumns({ sections = [] }: {
       },
       accessorFn: (data) => data._source['document.rel.section.uuid']?.[0],
       cell: ({ row }) => {
-        const sectionTitle = row.getValue<string | undefined>('section')
+        const sectionTitle = row.original._source['document.rel.section.title']?.[0]
         return (
           <>
             {sectionTitle && <SectionBadge title={sectionTitle} color='bg-[#BD6E11]' />}
