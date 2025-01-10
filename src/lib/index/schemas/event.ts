@@ -25,6 +25,7 @@ const _EventsSchema = z.object({
     'document.rel.section.title': z.array(z.string()),
     'document.rel.section.type': z.array(z.string()),
     'document.rel.section.uri': z.array(z.string()),
+    'document.rel.section.uuid': z.array(z.string()),
     'document.rel.section.value': z.array(z.string()),
     'document.rel.subject.title': z.array(z.string()),
     'document.rel.subject.type': z.array(z.string()),
