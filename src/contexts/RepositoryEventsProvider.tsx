@@ -5,7 +5,6 @@ import { fetchEventSource } from '@microsoft/fetch-event-source'
 import { useIndexedDB } from '../datastore/hooks/useIndexedDB'
 import type { EventlogItem } from '@ttab/elephant-api/repository'
 
-
 interface RepositoryEventsProviderState {
   eventSource?: EventSource
   subscribe: (eventType: string[], callback: (data: EventlogItem) => void) => void
