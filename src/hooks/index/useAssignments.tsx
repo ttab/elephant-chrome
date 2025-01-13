@@ -182,9 +182,8 @@ export const useAssignments = ({ date, type, slots, statuses }: {
     return slotifyAssignments(timeZone, filteredTextAssignments, slots)
   })
 
-  // FIXME: We must also listen for 'core/planning-item+meta' to catch status changes
-  useRepositoryEvents('core/planning-item', (event) => {
-    if (event.event !== 'document') {
+  useRepositoryEvents(['core/planning-item', 'core/planning-item+meta'], (event) => {
+    if ((event.event !== 'document' && event.event !== 'status' && event.event !== 'delete_document')) {
       return
     }
 
@@ -193,9 +192,8 @@ export const useAssignments = ({ date, type, slots, statuses }: {
     }
 
     for (const slot of data) {
-      const assignment = slot.items.find((assignment) => assignment._id === event.uuid)
+      const assignment = slot.items.find((assignment) => (assignment._id === event.uuid || event.main_document === assignment._id))
       if (assignment) {
-        console.log('Event affects assignment', event, assignment)
         void mutate()
         return
       }

@@ -7,6 +7,7 @@ import { useIndexedDB } from '../datastore/hooks/useIndexedDB'
 export interface ElephantRepositoryEvent {
   event: string
   id: string
+  main_document: string
   language: string
   timestamp: string
   type: string
@@ -17,8 +18,8 @@ export interface ElephantRepositoryEvent {
 
 interface RepositoryEventsProviderState {
   eventSource?: EventSource
-  subscribe: (eventType: string, callback: (data: ElephantRepositoryEvent) => void) => void
-  unsubscribe: (eventType: string, callback: (data: ElephantRepositoryEvent) => void) => void
+  subscribe: (eventType: string[], callback: (data: ElephantRepositoryEvent) => void) => void
+  unsubscribe: (eventType: string[], callback: (data: ElephantRepositoryEvent) => void) => void
 }
 
 interface ElephantBroadcastMessage {
@@ -146,12 +147,16 @@ export const RepositoryEventsProvider = ({ children }: {
     void fetchEvents()
   }, [repositoryEventsUrl, data?.accessToken, subscribers, IDB, listeningForSSE])
 
-  const subscribe = useCallback((eventType: string, callback: (data: ElephantRepositoryEvent) => void) => {
-    subscribers.current[eventType] = [...(subscribers.current[eventType] || []), callback]
+  const subscribe = useCallback((eventTypes: string[], callback: (data: ElephantRepositoryEvent) => void) => {
+    for (const eventType of eventTypes) {
+      subscribers.current[eventType] = [...(subscribers.current[eventType] || []), callback]
+    }
   }, [subscribers])
 
-  const unsubscribe = useCallback((eventType: string, callback: (data: ElephantRepositoryEvent) => void) => {
-    subscribers.current[eventType] = (subscribers.current[eventType] || []).filter((cb) => cb !== callback)
+  const unsubscribe = useCallback((eventTypes: string[], callback: (data: ElephantRepositoryEvent) => void) => {
+    for (const eventType of eventTypes) {
+      subscribers.current[eventType] = (subscribers.current[eventType] || []).filter((cb) => cb !== callback)
+    }
   }, [subscribers])
 
   return (
