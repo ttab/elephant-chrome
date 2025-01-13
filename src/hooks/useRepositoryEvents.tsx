@@ -1,7 +1,8 @@
 import { useEffect, useContext } from 'react'
-import { type ElephantRepositoryEvent, RepositoryEventsProviderContext } from '../contexts/RepositoryEventsProvider'
+import { RepositoryEventsProviderContext } from '../contexts/RepositoryEventsProvider'
+import type { EventlogItem } from '@ttab/elephant-api/repository'
 
-export const useRepositoryEvents = (eventType: string | string[], callback: (data: ElephantRepositoryEvent) => void): void => {
+export const useRepositoryEvents = (eventType: string | string[], callback: (data: EventlogItem) => void): void => {
   const { subscribe, unsubscribe } = useContext(RepositoryEventsProviderContext)
   const eventTypesArray = (Array.isArray(eventType)) ? eventType : [eventType]
 

@@ -192,7 +192,7 @@ export const useAssignments = ({ date, type, slots, statuses }: {
     }
 
     for (const slot of data) {
-      const assignment = slot.items.find((assignment) => (assignment._id === event.uuid || event.main_document === assignment._id))
+      const assignment = slot.items.find((assignment) => (assignment._id === event.uuid || event.mainDocument === assignment._id))
       if (assignment) {
         void mutate()
         return
