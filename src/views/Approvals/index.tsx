@@ -66,7 +66,7 @@ export const Approvals = (): JSX.Element => {
       : new Date()
     ), [query.from])
 
-  const { data = [] } = useAssignments({
+  const data = useAssignments({
     type: 'text',
     date: from ? new Date(from) : new Date(),
     slots,

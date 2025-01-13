@@ -3,22 +3,13 @@ import { useRegistry } from '@/hooks'
 import { useSession } from 'next-auth/react'
 import { fetchEventSource } from '@microsoft/fetch-event-source'
 import { useIndexedDB } from '../datastore/hooks/useIndexedDB'
+import type { EventlogItem } from '@ttab/elephant-api/repository'
 
-export interface ElephantRepositoryEvent {
-  event: string
-  id: string
-  language: string
-  timestamp: string
-  type: string
-  updateUri: string
-  uuid: string
-  version: string
-}
 
 interface RepositoryEventsProviderState {
   eventSource?: EventSource
-  subscribe: (eventType: string, callback: (data: ElephantRepositoryEvent) => void) => void
-  unsubscribe: (eventType: string, callback: (data: ElephantRepositoryEvent) => void) => void
+  subscribe: (eventType: string[], callback: (data: EventlogItem) => void) => void
+  unsubscribe: (eventType: string[], callback: (data: EventlogItem) => void) => void
 }
 
 interface ElephantBroadcastMessage {
@@ -39,7 +30,7 @@ export const RepositoryEventsProvider = ({ children }: {
   const { server: { repositoryEventsUrl } } = useRegistry()
   const { data } = useSession()
   const isLeaderRef = useRef<boolean>(true)
-  const subscribers = useRef<Record<string, Array<(data: ElephantRepositoryEvent) => void>>>({})
+  const subscribers = useRef<Record<string, Array<(data: EventlogItem) => void>>>({})
   const IDB = useIndexedDB()
   const [listeningForSSE, setListeningForSSE] = useState<boolean>(false)
 
@@ -120,7 +111,7 @@ export const RepositoryEventsProvider = ({ children }: {
           openWhenHidden: true, // As we already have a session leader (one tab listens) we don't want to stop when hidden
           headers,
           onmessage(event) {
-            const msg: ElephantRepositoryEvent = event?.data ? JSON.parse(event?.data) : {}
+            const msg: EventlogItem = event?.data ? JSON.parse(event?.data) : {}
             const callbacks = subscribers.current[msg.type] || []
             void IDB.put('__meta', {
               id: 'repositoryEvents',
@@ -146,12 +137,16 @@ export const RepositoryEventsProvider = ({ children }: {
     void fetchEvents()
   }, [repositoryEventsUrl, data?.accessToken, subscribers, IDB, listeningForSSE])
 
-  const subscribe = useCallback((eventType: string, callback: (data: ElephantRepositoryEvent) => void) => {
-    subscribers.current[eventType] = [...(subscribers.current[eventType] || []), callback]
+  const subscribe = useCallback((eventTypes: string[], callback: (data: EventlogItem) => void) => {
+    for (const eventType of eventTypes) {
+      subscribers.current[eventType] = [...(subscribers.current[eventType] || []), callback]
+    }
   }, [subscribers])
 
-  const unsubscribe = useCallback((eventType: string, callback: (data: ElephantRepositoryEvent) => void) => {
-    subscribers.current[eventType] = (subscribers.current[eventType] || []).filter((cb) => cb !== callback)
+  const unsubscribe = useCallback((eventTypes: string[], callback: (data: EventlogItem) => void) => {
+    for (const eventType of eventTypes) {
+      subscribers.current[eventType] = (subscribers.current[eventType] || []).filter((cb) => cb !== callback)
+    }
   }, [subscribers])
 
   return (

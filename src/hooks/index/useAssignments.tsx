@@ -6,6 +6,7 @@ import type { Block, Document } from '@ttab/elephant-api/newsdoc'
 import { parseISO, getHours } from 'date-fns'
 import { toZonedTime } from 'date-fns-tz'
 import type { BulkGetResponse, GetStatusOverviewResponse } from '@ttab/elephant-api/repository'
+import { useRepositoryEvents } from '../useRepositoryEvents'
 
 interface AssignmentInterface extends Block {
   _id: string
@@ -24,6 +25,16 @@ interface AssignmentResponseInterface {
   hours?: number[]
   items: AssignmentInterface[]
 }
+
+// We want to fetch all known statuses for deliverables and then
+// filter them using the supplied "statuses" prop.
+const knownStatuses = [
+  'done',
+  'approved',
+  'withheld',
+  'usable',
+  'canceled'
+]
 
 /**
  * Fetch all assignments in specific date as Block[] extended with some planning level data.
@@ -45,17 +56,7 @@ export const useAssignments = ({ date, type, slots, statuses }: {
   const { index, repository, timeZone } = useRegistry()
   const key = type ? `core/assignment/${type}/${date.toString()}` : 'core/assignment'
 
-  // We want to fetch all known statuses for deliverables and then
-  // filter them using the supplied "statuses" prop.
-  const knownStatuses = [
-    'done',
-    'approved',
-    'withheld',
-    'usable',
-    'canceled'
-  ]
-
-  return useSWR(key, async (): Promise<AssignmentResponseInterface[]> => {
+  const { data, mutate } = useSWR(key, async (): Promise<AssignmentResponseInterface[]> => {
     if (!index || !session?.data?.accessToken) {
       return [{
         items: []
@@ -91,34 +92,11 @@ export const useAssignments = ({ date, type, slots, statuses }: {
         }
 
         // Extract planning level data
-        const { title: _title, meta, links } = hit.document
-        const _section = links.find((l) => l.type === 'core/section')?.title
-        const _newsvalue = meta?.find((assignmentMeta) => assignmentMeta.type === 'core/newsvalue')?.value
-
-        // Loop over all meta elements to find assignments
-        meta?.forEach((assignmentMeta) => {
-          if (!isValidAssignment(assignmentMeta, type)) {
-            return
+        getAssignments(hit.document, type).forEach((assignment) => {
+          if (assignment._deliverableId) {
+            uuids.push(assignment._deliverableId)
           }
-
-          // Collect all deliverable uuids
-          let _deliverableId
-          for (const l of assignmentMeta.links) {
-            if (l.rel === 'deliverable') {
-              _deliverableId = l.uuid
-              uuids.push(l.uuid)
-              break
-            }
-          }
-
-          assignments.push({
-            _id: hit.id,
-            _deliverableId: _deliverableId || '',
-            _title,
-            _newsvalue,
-            _section,
-            ...assignmentMeta
-          })
+          assignments.push(assignment)
         })
       })
 
@@ -203,6 +181,26 @@ export const useAssignments = ({ date, type, slots, statuses }: {
 
     return slotifyAssignments(timeZone, filteredTextAssignments, slots)
   })
+
+  useRepositoryEvents(['core/planning-item', 'core/planning-item+meta'], (event) => {
+    if ((event.event !== 'document' && event.event !== 'status' && event.event !== 'delete_document')) {
+      return
+    }
+
+    if (!Array.isArray(data)) {
+      return void mutate()
+    }
+
+    for (const slot of data) {
+      const assignment = slot.items.find((assignment) => (assignment._id === event.uuid || event.mainDocument === assignment._id))
+      if (assignment) {
+        void mutate()
+        return
+      }
+    }
+  })
+
+  return data || []
 }
 
 /**
@@ -266,6 +264,35 @@ function getQuery(date: Date | string) {
       })
     }
   })
+}
+
+/**
+ * Extract assignments of the give type from the planning document
+ */
+function getAssignments(document: Document, type?: string): AssignmentInterface[] {
+  const { meta, links } = document
+  const assignments: AssignmentInterface[] = []
+
+  // Loop over all meta elements to find assignments
+  meta?.forEach((assignmentMeta) => {
+    if (!isValidAssignment(assignmentMeta, type)) {
+      return
+    }
+
+    // Collect all deliverable uuids
+    const _deliverableId = assignmentMeta.links.find((l) => l.rel === 'deliverable')?.uuid
+
+    assignments.push({
+      _id: document.uuid,
+      _title: document.title,
+      _newsvalue: meta?.find((assignmentMeta) => assignmentMeta.type === 'core/newsvalue')?.value,
+      _section: links.find((l) => l.type === 'core/section')?.title,
+      _deliverableId: _deliverableId || '',
+      ...assignmentMeta
+    })
+  })
+
+  return assignments
 }
 
 
