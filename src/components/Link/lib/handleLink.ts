@@ -11,7 +11,7 @@ import type { HistoryInterface } from '@/navigation/hooks/useHistory'
 
 export type Target = 'self' | 'blank' | 'last'
 interface LinkClick {
-  event?: MouseEvent<Element> | KeyboardEvent
+  event?: MouseEvent<Element> | KeyboardEvent | React.KeyboardEvent<HTMLButtonElement> | undefined
   dispatch: React.Dispatch<NavigationAction>
   viewItem: ViewRegistryItem
   viewId: string
@@ -44,6 +44,7 @@ export function handleLink({
   // Get current state from history
   const content: ContentState[] = [...history.state?.contentState || []]
   const currentViewId = history.state?.viewId
+  const currentPath = history.state?.contentState.find((c) => c.viewId === currentViewId)
 
   // Create next (wanted) content state (props can not be functions!)
   const newContent: ContentState = {
@@ -66,6 +67,9 @@ export function handleLink({
     content.splice(currentIndex + 1, Infinity, newContent)
   }
 
+  const viewId = keepFocus && currentViewId ? currentViewId : newViewId
+  const path = keepFocus && currentPath ? currentPath.path : viewItem.meta.path
+
   // Listen for when the change has been done and then add onDocumentCreated callback
   // to the navigation state as we can't store functions in history state.
   window.addEventListener('popstate', () => {
@@ -80,9 +84,8 @@ export function handleLink({
     })
   }, { once: true })
 
-  const viewId = keepFocus && currentViewId ? currentViewId : newViewId
   // Push new history state
-  history.pushState(`${viewItem.meta.path}${toQueryString(props)}`, {
+  history.pushState(`${path}${toQueryString(props)}`, {
     viewId,
     contentState: content
   })

@@ -19,7 +19,7 @@ import { getValueByYPath } from '@/lib/yUtils'
 export const FlashEditor = ({ setTitle, onValidation, validateStateRef }: {
   setTitle: (value: string | undefined) => void
 } & FormProps): JSX.Element => {
-  const plugins = [Text, UnorderedList, OrderedList, Bold, Italic]
+  const plugins = [UnorderedList, OrderedList, Bold, Italic]
   const { provider, synced, user } = useCollaboration()
 
   return (
@@ -31,10 +31,12 @@ export const FlashEditor = ({ setTitle, onValidation, validateStateRef }: {
       validateStateRef={validateStateRef}
     >
       <Textbit.Root
-        plugins={plugins.map((initPlugin) => initPlugin())}
+        plugins={[
+          ...plugins.map((initPlugin) => initPlugin()),
+          Text({ countCharacters: ['heading-1', 'body'] })
+        ]}
         placeholders='multiple'
-        className='w-full h-full rounded-md border
-        '
+        className='w-full h-full rounded-md border'
       >
         {!!provider && synced
           ? <EditorContent provider={provider} user={user} setTitle={setTitle} />

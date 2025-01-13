@@ -1,4 +1,5 @@
-import React, { type MouseEvent } from 'react'
+import type { MouseEvent } from 'react'
+import React from 'react'
 import {
   type LucideIcon,
   MoreHorizontal,
@@ -10,23 +11,22 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuSub,
+  /* DropdownMenuSub,
   DropdownMenuSubContent,
-  DropdownMenuSubTrigger,
+  DropdownMenuSubTrigger, */
   DropdownMenuTrigger
 } from '@ttab/elephant-ui'
 
 interface DotDropdownMenuActionItem {
   label: string
   icon?: LucideIcon
-  item: DotDropdownMenuActionItem[] | (<T extends HTMLElement>(event: MouseEvent<T>) => void) | React.ReactNode
+  item: DotDropdownMenuActionItem[] | ((event: MouseEvent<HTMLDivElement>) => void) | React.ReactNode
 }
 
 /**
- * Simpler way to create a drop down menu. Supports multilevel. Items can be React node or callback or sub items.
+ * Simpler way to create a drop down menu. Supports multilevel. Items can be React node or callback.
  *
- * @todo Expand to also allow icon in conjunction with label
- *
+ * @todo Support multilevel
  * @example
  * <DotMenu trigger="vertical" items={[
  *   {
@@ -52,8 +52,6 @@ export const DotDropdownMenu = ({ trigger = 'horizontal', items }: {
   trigger?: 'horizontal' | 'vertical'
   items: DotDropdownMenuActionItem[]
 }): JSX.Element => {
-  const hasIcons = items.findIndex((item) => !!item.icon) !== -1
-
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
@@ -67,70 +65,36 @@ export const DotDropdownMenu = ({ trigger = 'horizontal', items }: {
 
       <DropdownMenuContent className='w-56'>
         {items.map((item) => {
-          return <DotDropdownMenuItem key={item.label} item={item} hasIcons={hasIcons} />
+          return (
+            <DropdownMenuItem
+              asChild
+              key={item.label}
+            >
+
+              {React.isValidElement(item.item)
+                ? item.item
+                : (
+                    <div
+                      className='flex flex-row justify-center items-center'
+                      onClick={(event) => {
+                        if (typeof item.item === 'function') {
+                          item.item(event)
+                        }
+                      }}
+                    >
+                      <div className='opacity-70 flex-none w-7'>
+                        {item.icon && <item.icon size={16} strokeWidth={1.75} />}
+                      </div>
+
+                      <div className='grow'>
+                        {item.label}
+                      </div>
+                    </div>
+                  )}
+            </DropdownMenuItem>
+          )
         })}
       </DropdownMenuContent>
     </DropdownMenu>
-  )
-}
-
-
-function DotDropdownMenuItem({ item, hasIcons }: {
-  item: DotDropdownMenuActionItem
-  hasIcons: boolean
-}): JSX.Element {
-  const { label, item: Item } = item
-
-  if (!Array.isArray(Item)) {
-    return (
-      <DropdownMenuItem onClick={<T extends HTMLElement>(evt: MouseEvent<T>) => {
-        if (typeof Item === 'function') {
-          evt.preventDefault()
-          Item(evt)
-        }
-      }}
-      >
-        <DotDropdownMenuItemContent item={item} hasIcons={hasIcons} />
-      </DropdownMenuItem>
-    )
-  }
-
-  const subMenuHasIcons = typeof Item.findIndex((item) => item.icon) === 'number'
-
-  return (
-    <DropdownMenuSub>
-      <DropdownMenuSubTrigger>{label}</DropdownMenuSubTrigger>
-      <DropdownMenuSubContent>
-        {Item.map((item) => {
-          return <DotDropdownMenuItem key={item.label} item={item} hasIcons={subMenuHasIcons} />
-        })}
-      </DropdownMenuSubContent>
-    </DropdownMenuSub>
-  )
-}
-
-
-function DotDropdownMenuItemContent({ item, hasIcons }: {
-  item: DotDropdownMenuActionItem
-  hasIcons: boolean
-}): JSX.Element {
-  const { label, icon: Icon, item: Item } = item
-
-  return (
-    <div className='flex flex-row justify-center items-center'>
-      {hasIcons
-      && (
-        <div className='opacity-70 flex-none w-7'>
-          {!!Icon
-          && <Icon size={16} strokeWidth={1.75} />}
-        </div>
-      )}
-
-      <div className='grow'>
-        {React.isValidElement(Item)
-          ? <>{Item}</>
-          : <>{label}</>}
-      </div>
-    </div>
   )
 }

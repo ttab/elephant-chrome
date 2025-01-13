@@ -303,6 +303,10 @@ export class CollaborationServer {
       return Y.encodeStateAsUpdate(yDoc)
     }
 
+    if (uuid.startsWith('core://user')) {
+      return null
+    }
+
     // Fetch from Redis if exists
     const state = await this.#redisCache.get(uuid).catch((ex) => {
       throw new Error('get cached document', { cause: ex })

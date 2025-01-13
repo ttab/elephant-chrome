@@ -50,8 +50,11 @@ export const AssignmentRow = ({ index, onSelect, isFocused = false }: {
 
     if (articleId) {
       openArticle(event, {
-        id: articleId
-      })
+        id: articleId,
+        autoFocus: false
+      }, undefined,
+      undefined,
+      event instanceof KeyboardEvent && event.key === ' ')
     } else {
       setShowCreateDialog(true)
     }
@@ -69,10 +72,8 @@ export const AssignmentRow = ({ index, onSelect, isFocused = false }: {
     keys: ['Enter', ' '],
     onNavigation: (event) => {
       if (assignmentType === 'text' || assignmentType === 'flash') {
-        if (event.key === 'Enter') {
+        if (event.key === 'Enter' || event.key === ' ') {
           onOpenArticleEvent(event)
-        } else if (event.key === ' ') {
-          onSelect()
         }
       }
     }
@@ -221,7 +222,10 @@ export const AssignmentRow = ({ index, onSelect, isFocused = false }: {
             description={`Vill du skapa en artikel för uppdraget${title ? ' ' + title : ''}?`} // TODO: Display information that will be forwarded from the assignment
             secondaryLabel='Avbryt'
             primaryLabel='Skapa'
-            onPrimary={(event) => {
+            onPrimary={(event: MouseEvent<HTMLButtonElement> | React.KeyboardEvent<HTMLButtonElement> | KeyboardEvent) => {
+              event.preventDefault()
+              event.stopPropagation()
+
               setShowCreateDialog(false)
               if (!provider?.document) {
                 return
@@ -242,7 +246,10 @@ export const AssignmentRow = ({ index, onSelect, isFocused = false }: {
                 { onDocumentCreated }
               )
             }}
-            onSecondary={() => {
+            onSecondary={(event) => {
+              event.preventDefault()
+              event.stopPropagation()
+
               setShowCreateDialog(false)
             }}
           />

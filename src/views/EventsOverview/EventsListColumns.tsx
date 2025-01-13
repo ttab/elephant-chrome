@@ -80,9 +80,9 @@ export function eventTableColumns({ sections = [] }: {
         columnIcon: Shapes,
         className: 'flex-none w-[115px] hidden @4xl/view:[display:revert]'
       },
-      accessorFn: (data) => data._source['document.rel.section.title']?.[0],
+      accessorFn: (data) => data._source['document.rel.section.uuid']?.[0],
       cell: ({ row }) => {
-        const sectionTitle = row.getValue<string | undefined>('section')
+        const sectionTitle = row.original._source['document.rel.section.title']?.[0]
         return (
           <>
             {sectionTitle && <SectionBadge title={sectionTitle} color='bg-[#BD6E11]' />}
@@ -153,7 +153,7 @@ const menuItems = [
   {
     label: 'Redigera',
     icon: Edit,
-    item: <T extends HTMLElement>(event: MouseEvent<T>) => {
+    item: (event: MouseEvent<HTMLDivElement>) => {
       event.preventDefault()
       event.stopPropagation()
     }
@@ -161,7 +161,7 @@ const menuItems = [
   {
     label: 'Ta bort',
     icon: Delete,
-    item: <T extends HTMLElement>(event: MouseEvent<T>) => {
+    item: (event: MouseEvent<HTMLDivElement>) => {
       event.preventDefault()
       event.stopPropagation()
       confirm('Ta bort')

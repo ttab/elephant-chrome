@@ -3,41 +3,58 @@ import type { TBElement } from '@ttab/textbit'
 import Textbit from '@ttab/textbit'
 import useSWR from 'swr'
 import { LoadingText } from './LoadingText'
-import { Bold, Italic, Link, Text, OrderedList, UnorderedList, TTVisual, Factbox } from '@ttab/textbit-plugins'
+import { Bold, Italic, Link, Text, OrderedList, UnorderedList, TTVisual, Factbox, Table } from '@ttab/textbit-plugins'
 
 const BASE_URL = import.meta.env.BASE_URL || ''
 
 
-const plugins = [Text, UnorderedList, OrderedList, Bold, Italic, Link, TTVisual, Factbox]
+const plugins = [Text, UnorderedList, OrderedList, Bold, Italic, Link, TTVisual, Factbox, Table]
 
-export const Editor = ({ id }: { id: string }): JSX.Element => {
-  const fetcher = async (): Promise<EleDocumentResponse> => {
-    const response = await fetch(`${BASE_URL}/api/documents/${id}`)
-    if (!response.ok) {
-      throw new Error('Network response was not ok')
-    }
-    const result = await response.json() as EleDocumentResponse
-    return result
+const fetcher = async (url: string): Promise<TBElement[] | undefined> => {
+  const response = await fetch(url)
+  if (!response.ok) {
+    throw new Error('Network response was not ok')
   }
+  const result = await response.json() as EleDocumentResponse
+  return result.document?.content
+}
 
-  const { data: document, error } = useSWR<EleDocumentResponse, Error>(id, fetcher)
+export const Editor = ({ id, textOnly = false }: {
+  id: string
+  textOnly?: boolean
+}): JSX.Element => {
+  const { data: content, error } = useSWR<TBElement[] | undefined, Error>(
+    `${BASE_URL}/api/documents/${id}`,
+    fetcher,
+    { revalidateOnFocus: false, revalidateOnReconnect: false }
+  )
 
   if (error) return <div>Failed to load</div>
-  if (!document) return (
+  if (!content) return (
     <LoadingText>
       Laddar...
     </LoadingText>
   )
 
+
   return (
     <div className='flex-grow overflow-auto max-w-screen-lg mx-auto'>
       <Textbit.Root plugins={plugins.map((initPlugin) => initPlugin())}>
         <Textbit.Editable
+          key={id}
           readOnly
-          value={document.document?.content as TBElement[]}
+          value={filterText(content, textOnly)}
           className='outline-none pb-6 max-h-[30vh] overflow-y-scroll dark:text-slate-100 px-2'
         />
       </Textbit.Root>
     </div>
   )
+}
+
+function filterText(content: TBElement[], textOnly: boolean): TBElement[] {
+  if (!textOnly) {
+    return content
+  }
+
+  return content.filter((c) => c.type !== 'tt/visual')
 }

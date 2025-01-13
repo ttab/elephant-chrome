@@ -16,20 +16,29 @@ import { signOut, useSession } from 'next-auth/react'
 import { applicationMenu, type ApplicationMenuItem, type MenuGroups } from '@/defaults/applicationMenuItems'
 import { useUser } from '@/hooks/useUserDoc'
 import { cn } from '@ttab/elephant-ui/utils'
+import { useRef } from 'react'
 
 const hasUserDoc = (obj: object | undefined) => obj && Object.keys(obj).length > 0
 
 export const Menu = (): JSX.Element => {
   const { data } = useSession()
+
+  const triggerRef = useRef<HTMLButtonElement>(null)
   const [user] = useUser<object>('')
 
   return (
     <Sheet>
-      <SheetTrigger className='rounded-md hover:bg-gray-100 hover:border w-9 h-9 flex items-center justify-center'>
+      <SheetTrigger ref={triggerRef} className='rounded-md hover:bg-gray-100 hover:border w-9 h-9 flex items-center justify-center'>
         <MenuIcon strokeWidth={2.25} size={18} />
       </SheetTrigger>
 
-      <SheetContent side='left' className='p-0 flex flex-col justify-between'>
+      <SheetContent
+        onCloseAutoFocus={(event) => {
+          event.preventDefault()
+        }}
+        side='left'
+        className='p-0 flex flex-col justify-between'
+      >
         <div>
           <SheetHeader>
             <SheetDescription />
