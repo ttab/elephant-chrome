@@ -3,6 +3,7 @@ import { DocumentsClient } from '@ttab/elephant-api/repository'
 import type {
   BulkGetResponse,
   GetDocumentResponse,
+  GetMetaResponse,
   GetStatusOverviewResponse,
   UpdateRequest,
   UpdateResponse,
@@ -116,6 +117,71 @@ export class Repository {
       }
 
       throw new Error(`Unable to fetch document: ${(err as Error)?.message || 'Unknown error'}`)
+    }
+  }
+
+  /**
+   * Retrieves the meta information for the given UUID.
+   *
+   * @param {Object} params - The parameters for retrieving meta information.
+   * @param {string} params.uuid - The UUID of the document.
+   * @param {string} params.accessToken - The access token.
+   * @returns {Promise<GetMetaResponse | null>} The meta information or null if not found.
+   * @throws {Error} If the UUID format is invalid or unable to fetch meta information.
+   */
+  async getMeta({ uuid, accessToken }: { uuid: string, accessToken: string }): Promise<GetMetaResponse | null> {
+    if (!isValidUUID(uuid)) {
+      throw new Error('Invalid uuid format')
+    }
+
+    try {
+      const { response } = await this.#client.getMeta({ uuid }, meta(accessToken))
+
+      return response
+    } catch (err: unknown) {
+      throw new Error(`Unable to fetch documents meta: ${(err as Error)?.message || 'Unknown error'}`)
+    }
+  }
+
+  /**
+   * Saves the meta information for the document.
+   *
+   * @param {Object} params - The parameters for saving meta information.
+   * @param {Object} params.status - The status information.
+   * @param {bigint} params.status.version - The version of the status.
+   * @param {string} params.status.name - The name of the status.
+   * @param {string} params.status.uuid - The UUID of the status.
+   * @param {string} params.accessToken - The access token.
+   * @returns {Promise<UpdateResponse>} The response from the update operation.
+   * @throws {Error} If unable to save meta information.
+   */
+  async saveMeta({ status, accessToken }: {
+    status: {
+      version: bigint
+      name: string
+      uuid: string
+    }
+    accessToken: string
+  }): Promise<UpdateResponse> {
+    try {
+      const { response } = await this.#client.update({
+        uuid: status.uuid,
+        status: [{
+          name: status.name,
+          version: status.version,
+          meta: {},
+          ifMatch: status.version
+        }],
+        meta: {},
+        ifMatch: status.version,
+        acl: [],
+        updateMetaDocument: false,
+        lockToken: ''
+      }, meta(accessToken))
+
+      return response
+    } catch (err: unknown) {
+      throw new Error(`Unable to save meta: ${(err as Error)?.message || 'Unknown error'}`)
     }
   }
 

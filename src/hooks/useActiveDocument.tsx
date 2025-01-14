@@ -1,7 +1,8 @@
-import { get } from '@/lib/repository/get'
 import { useNavigation } from '@/navigation/hooks/useNavigation'
 import { type Document } from '@ttab/elephant-api/newsdoc'
 import { useEffect, useState } from 'react'
+
+const BASE_URL = import.meta.env.BASE_URL || ''
 
 /**
  * Return a copy of the NewsDoc document of the currently active view if any.
@@ -34,4 +35,13 @@ export const useActiveDocument = ({ type }: {
   }, [type, state.content, state.active])
 
   return document
+}
+
+export const get = async (documentId: string): Promise<Document | null> => {
+  const response = await fetch(`${BASE_URL}/api/documents/${documentId}`)
+  if (!response.ok) {
+    return null
+  }
+
+  return (await response.json() as Record<string, unknown>)?.document as Document || null
 }

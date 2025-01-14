@@ -73,7 +73,7 @@ export const RegistryProvider = ({ children }: PropsWithChildren): JSX.Element =
       })
       setIsInitialized(true)
     }).catch((ex) => {
-      console.error(`Failed fetching server urls in RegistryProvider, ${ex.message}`, ex)
+      console.error(`Failed fetching server urls in RegistryProvider, ${(ex as Error).message}`, ex)
     })
   }, [])
 
