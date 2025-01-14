@@ -49,18 +49,20 @@ function handleClose(
   // If the active view is not removed we want the active view to stay active
   const preserveActiveId = state.active !== viewId
 
-  // If it is the last view being removed, simply go back one step in the history
-  if (indexToRemove === content.length - 1) {
-    history.go(-1)
-    return
-  }
-
   // Split views into before/after the view to remove
   const beforeRemoved = content.slice(0, indexToRemove)
   const afterRemoved = content.slice(indexToRemove + 1)
 
   // If it is the first view being removed, hide it and push new history item.
   // This way the user can navigate back to the previous state.
+  if (indexToRemove === 1) {
+    const view = beforeRemoved[0]
+    history.pushState(view.path, {
+      viewId: preserveActiveId ? viewId : view.viewId,
+      contentState: beforeRemoved
+    })
+    return
+  }
   if (indexToRemove === 0) {
     const view = afterRemoved[0]
     history.pushState(view.path, {
