@@ -7,21 +7,32 @@ import { PlusIcon } from '@ttab/elephant-ui/icons'
 import { type View } from '@/types/index'
 import { Commands } from '../Commands'
 import { PersonalAssignmentsFilter } from './PersonalAssignmentsFilter'
+import { useMemo } from 'react'
 
 export const Header = ({ tab, assigneeUserName, type }: {
   tab: string
   type: View
   assigneeUserName?: string | undefined
 }): JSX.Element => {
+  const showButton = useMemo(() => {
+    const viewTypes: View[] = ['Planning', 'Event']
+    if (viewTypes.includes(type)) {
+      return true
+    }
+    return false
+  }, [type])
+
   return (
     <>
-      <CreateDocumentDialog type={type}>
-        <Button size='sm' className='h-8 pr-4'>
-          <PlusIcon size={18} strokeWidth={1.75} />
-          {' '}
-          Ny
-        </Button>
-      </CreateDocumentDialog>
+      {showButton && (
+        <CreateDocumentDialog type={type}>
+          <Button size='sm' className='h-8 pr-4'>
+            <PlusIcon size={18} strokeWidth={1.75} />
+            {' '}
+            Ny
+          </Button>
+        </CreateDocumentDialog>
+      )}
 
       <div className='hidden sm:block'>
         <TabsGrid />
