@@ -92,12 +92,10 @@ export class Repository {
   /**
    * Get a document from the repository.
    *
-   * @todo Rename to getDocument()
-   *
    * @param options - { uuids: string[], accessToken: string }
    * @returns Promise<GetDocumentResponse>
    */
-  async getDoc({ uuid, accessToken }: { uuid: string, accessToken: string }): Promise<GetDocumentResponse | null> {
+  async getDocument({ uuid, accessToken }: { uuid: string, accessToken: string }): Promise<GetDocumentResponse | null> {
     if (!isValidUUID(uuid)) {
       throw new Error('Invalid uuid format')
     }

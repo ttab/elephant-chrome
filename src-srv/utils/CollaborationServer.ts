@@ -317,7 +317,7 @@ export class CollaborationServer {
     }
 
     // Fetch content
-    const newsDoc = await this.#repository.getDoc({
+    const newsDoc = await this.#repository.getDocument({
       uuid,
       accessToken: context.accessToken
     }).catch((ex) => {
