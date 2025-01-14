@@ -126,7 +126,7 @@ export class Repository {
    * @param accessToken string
    * @returns Promise<FinishedUnaryCall<UpdateRequest, UpdateResponse>
    */
-  async saveDoc(document: Document, accessToken: string, version: bigint): Promise<FinishedUnaryCall<UpdateRequest, UpdateResponse> | undefined> {
+  async saveDocument(document: Document, accessToken: string, version: bigint): Promise<FinishedUnaryCall<UpdateRequest, UpdateResponse> | undefined> {
     const payload: UpdateRequest = {
       document,
       meta: {},

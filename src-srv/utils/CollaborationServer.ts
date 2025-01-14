@@ -348,7 +348,7 @@ export class CollaborationServer {
 
     const { documentResponse, updatedHash } = await fromYjsNewsDoc(yDoc)
     if (!updatedHash) {
-      logger.debug('::: saveDoc: No changes in document')
+      logger.debug('::: saveDocument: No changes in document')
       return
     }
 
@@ -372,7 +372,7 @@ export class CollaborationServer {
       throw new Error(`Store document ${documentName} failed, no document in GetDocumentResponse parameter`)
     }
 
-    const result = await this.#repository.saveDoc(
+    const result = await this.#repository.saveDocument(
       document,
       accessToken,
       version
