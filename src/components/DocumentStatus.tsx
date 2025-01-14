@@ -22,7 +22,7 @@ export const DocumentStatus = ({ status, setStatus }: {
         variant='ghost'
         selectedOptions={selectedOptions}
         onSelect={(option) => {
-          if (status?.version) {
+          if (status?.version !== undefined) {
             void setStatus(option.value)
           }
         }}
