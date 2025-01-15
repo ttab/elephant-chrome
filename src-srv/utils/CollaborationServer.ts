@@ -292,10 +292,6 @@ export class CollaborationServer {
   async #fetchDocument({ documentName: uuid, document: yDoc, context }: fetchPayload): Promise<Uint8Array | null> {
     // Init tracking document. Must not be fetched from cache when starting up the server fresh.
     if (uuid === 'document-tracker') {
-      if (this.#openDocuments) {
-        return null
-      }
-
       this.#openDocuments = yDoc
 
       const documents = yDoc.getMap('open-documents')
@@ -416,7 +412,7 @@ export class CollaborationServer {
       return await Promise.resolve()
     }
 
-    const { sub: userId, sub_name: userName } = context.user as { sub: string, sub_name: string }
+    const userId = context.user.sub
     const trackedDocuments = this.#openDocuments.getMap('open-documents')
     const userList = trackedDocuments.get(documentName) as Y.Map<unknown>
 
@@ -426,7 +422,8 @@ export class CollaborationServer {
     if (!trackingUser) {
       trackingUser = new Y.Map()
       trackingUser.set('userId', userId)
-      trackingUser.set('userName', userName)
+      trackingUser.set('name', context.user.name)
+      trackingUser.set('userName', context.user.preferred_username)
       trackingUser.set('count', 1)
       trackingUser.set('socketId', socketId)
     } else {
