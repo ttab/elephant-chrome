@@ -8,7 +8,7 @@ import { toZonedTime } from 'date-fns-tz'
 import type { BulkGetResponse, GetStatusOverviewResponse } from '@ttab/elephant-api/repository'
 import { useRepositoryEvents } from '../useRepositoryEvents'
 
-interface AssignmentInterface extends Block {
+export interface AssignmentInterface extends Block {
   _id: string
   _deliverableId: string
   _deliverableStatus?: string
@@ -19,7 +19,7 @@ interface AssignmentInterface extends Block {
   _statusData?: string
 }
 
-interface AssignmentResponseInterface {
+export interface AssignmentResponseInterface {
   key?: string
   label?: string
   hours?: number[]

@@ -1,28 +1,16 @@
-import { Link, View, ViewHeader } from '@/components'
+import { View, ViewHeader } from '@/components'
 import type { DefaultValueOption } from '@/types'
 import { type ViewMetadata } from '@/types'
 import { timesSlots as Slots } from '@/defaults/assignmentTimeslots'
-import { CalendarDays, EarthIcon, FileInput } from '@ttab/elephant-ui/icons'
+import { EarthIcon } from '@ttab/elephant-ui/icons'
 import { TimeSlot } from './TimeSlot'
-import { ClockIcon } from '@/components/ClockIcon'
 import { useAssignments } from '@/hooks/index/useAssignments'
-import { parseISO, format } from 'date-fns'
-import { toZonedTime } from 'date-fns-tz'
-import { Card } from '@/components/Card'
-import { useModal } from '@/components/Modal/useModal'
-import { ModalContent } from '../Wires/components'
-import { DotDropdownMenu } from '@/components/ui/DotMenu'
 import { useEffect, useMemo, useState } from 'react'
-import {
-  useLink,
-  useQuery,
-  useRegistry,
-  useNavigationKeys,
-  useOpenDocuments
-} from '@/hooks'
+import { useQuery, useNavigationKeys, useOpenDocuments } from '@/hooks'
 import { DocumentStatuses } from '@/defaults/documentStatuses'
 import { Header } from '@/components/Header'
 import { getDateTimeBoundariesUTC } from '@/lib/datetime'
+import { ApprovalsCard } from './ApprovalsCard'
 
 const meta: ViewMetadata = {
   name: 'Approvals',
@@ -41,9 +29,6 @@ const meta: ViewMetadata = {
 }
 
 export const Approvals = (): JSX.Element => {
-  const { timeZone } = useRegistry()
-  const openArticle = useLink('Editor')
-
   const slots = Object.keys(Slots).map((key) => {
     return {
       key,
@@ -108,8 +93,6 @@ export const Approvals = (): JSX.Element => {
   const openEditors = useOpenDocuments({ idOnly: true, name: 'Editor' })
   const openPlannings = useOpenDocuments({ idOnly: true, name: 'Planning' })
 
-  const { showModal, hideModal } = useModal()
-
   useNavigationKeys({
     stopPropagation: false, // Manually handle when this is needed
     keys: ['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight'],
@@ -169,111 +152,14 @@ export const Approvals = (): JSX.Element => {
               <TimeSlot label={slot.label || ''} slots={slot.hours || []} />
 
               {slot.items.map((assignment, cardN) => {
-                const articleId = assignment.links.find((l) => l.type === 'core/article')?.uuid
-                const time = assignment.data.publish
-                  ? format(toZonedTime(parseISO(assignment.data.publish), timeZone), 'HH:mm')
-                  : undefined
-
-                const isSelected = ((articleId && openEditors.includes(articleId)) || openPlannings.includes(assignment._id))
-                const status = statusLookup?.[assignment._deliverableStatus || 'draft']
-                const assignees = assignment.links.filter((m) => m.type === 'core/author' && m.title).map((l) => l.title)
-
-
-                const menuItems = [{
-                  label: 'Öppna artikel',
-                  icon: FileInput,
-                  item: (
-                    <Link to='Editor' props={{ id: articleId }}>
-                      <div className='flex flex-row justify-center items-center'>
-                        <div className='opacity-70 flex-none w-7'>
-                          <FileInput size={16} strokeWidth={1.75} />
-                        </div>
-
-                        <div className='grow'>
-                          Öppna artikel
-                        </div>
-                      </div>
-                    </Link>
-                  )
-                },
-                {
-                  label: 'Öppna planering',
-                  icon: CalendarDays,
-                  item: (
-                    <Link to='Planning' props={{ id: assignment._id }}>
-                      <div className='flex flex-row justify-center items-center'>
-                        <div className='opacity-70 flex-none w-7'>
-                          <CalendarDays size={16} strokeWidth={1.75} />
-                        </div>
-
-                        <div className='grow'>
-                          Öppna planering
-                        </div>
-                      </div>
-                    </Link>
-                  )
-                }]
-
                 return (
-                  <Card.Root
+                  <ApprovalsCard
                     key={assignment.id}
-                    status={assignment._deliverableStatus || 'draft'}
+                    assignment={assignment}
+                    status={statusLookup?.[assignment._deliverableStatus || 'draft']}
                     isFocused={colN === focusedColumn && cardN === focusedCard}
-                    isSelected={isSelected}
-                    onSelect={(event) => {
-                      if (event instanceof KeyboardEvent && event.key == ' ' && articleId) {
-                        showModal(
-                          <ModalContent
-                            id={articleId}
-                            handleClose={hideModal}
-                          />
-                          , 'sheet')
-                      } else if (articleId) {
-                        openArticle(event, { id: articleId })
-                      }
-                    }}
-                  >
-                    <Card.Header>
-                      <div className='flex flex-row gap-2'>
-                        {status.icon && <status.icon {...status.iconProps} size={15} />}
-                        <span className='bg-secondary inline-block px-1 rounded'>{assignment._newsvalue}</span>
-                      </div>
-
-                      <div className='flex flex-row gap-1 items-center'>
-                        <ClockIcon hour={(time) ? parseInt(time.slice(0, 2)) : undefined} size={14} className='opacity-50' />
-                        <time>{time}</time>
-                      </div>
-                    </Card.Header>
-
-                    <Card.Content>
-                      <Card.Title>
-                        <div className='truncate'>{assignment._deliverableDocument?.title || assignment.title}</div>
-                        <div className='text-xs font-normal opacity-60'>
-                          {assignment.meta.find((m) => m.type === 'tt/slugline')?.value || ' '}
-                        </div>
-                      </Card.Title>
-                    </Card.Content>
-
-                    <Card.Footer>
-                      <div className='flex flex-col w-full'>
-                        <div className='truncate'>
-                          {!assignees.length && '-'}
-                          {assignees.length === 1 && assignees[0]}
-                          {assignees.length > 2 && `${assignees.join(', ')}`}
-                        </div>
-                        <div className='flex flex-grow justify-between align-middle'>
-                          <div className='content-center opacity-60'>
-                            {assignment._section}
-                            &middot;
-                            1024 tkn
-                          </div>
-                          <DotDropdownMenu items={menuItems} />
-                        </div>
-
-                      </div>
-                    </Card.Footer>
-
-                  </Card.Root>
+                    isSelected={((assignment._deliverableId && openEditors.includes(assignment._deliverableId)) || openPlannings.includes(assignment._id))}
+                  />
                 )
               })}
             </View.Column>

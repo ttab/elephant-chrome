@@ -412,7 +412,7 @@ export class CollaborationServer {
       return await Promise.resolve()
     }
 
-    const userId = context.user.sub
+    const userId = context.user.sub as string
     const trackedDocuments = this.#openDocuments.getMap('open-documents')
     const userList = trackedDocuments.get(documentName) as Y.Map<unknown>
 
@@ -422,8 +422,8 @@ export class CollaborationServer {
     if (!trackingUser) {
       trackingUser = new Y.Map()
       trackingUser.set('userId', userId)
-      trackingUser.set('name', context.user.name)
-      trackingUser.set('userName', context.user.preferred_username)
+      trackingUser.set('name', context.user.name as string)
+      trackingUser.set('userName', context.user.preferred_username as string)
       trackingUser.set('count', 1)
       trackingUser.set('socketId', socketId)
     } else {
