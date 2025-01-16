@@ -205,7 +205,7 @@ export const FlashViewContent = (props: ViewProps & {
 
             <FlashEditor setTitle={setTitle} />
 
-            <UserMessage author={author} selectedPlanning={selectedPlanning} asDialog={!!props?.asDialog} />
+            <UserMessage selectedPlanning={selectedPlanning} asDialog={!!props?.asDialog} />
 
           </Form.Content>
 
@@ -245,7 +245,7 @@ export const FlashViewContent = (props: ViewProps & {
               <Form.Footer>
                 <Form.Submit onSubmit={handleSubmit}>
                   <div className='flex justify-end'>
-                    <Button type='submit' disabled={!author}>Skicka flash</Button>
+                    <Button type='submit'>Skicka flash</Button>
                   </div>
                 </Form.Submit>
               </Form.Footer>
