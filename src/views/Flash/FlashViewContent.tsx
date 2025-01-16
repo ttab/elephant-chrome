@@ -153,31 +153,33 @@ export const FlashViewContent = (props: ViewProps & {
           <Form.Content>
             <Form.Group icon={GanttChartSquare}>
               <Awareness name='FlashPlanningItem' ref={planningAwareness}>
-                <ComboBox
-                  max={1}
-                  size='xs'
-                  className='min-w-0 max-w-46 truncate justify-start'
-                  selectedOptions={selectedPlanning ? [selectedPlanning] : []}
-                  placeholder='Välj planering'
-                  onOpenChange={(isOpen: boolean) => {
-                    if (planningAwareness?.current) {
-                      planningAwareness.current(isOpen)
-                    }
-                  }}
-                  fetch={fetchAsyncData}
-                  minSearchChars={2}
-                  onSelect={(option) => {
-                    if (option.value !== selectedPlanning?.value) {
-                      setSelectedPlanning({
-                        value: option.value,
-                        label: option.label
-                      })
-                    } else {
-                      setSelectedPlanning(undefined)
-                    }
-                  }}
-                >
-                </ComboBox>
+                <div>
+                  <ComboBox
+                    max={1}
+                    size='xs'
+                    className='min-w-0 w-full truncate justify-start max-w-48'
+                    selectedOptions={selectedPlanning ? [selectedPlanning] : []}
+                    placeholder='Välj planering'
+                    onOpenChange={(isOpen: boolean) => {
+                      if (planningAwareness?.current) {
+                        planningAwareness.current(isOpen)
+                      }
+                    }}
+                    fetch={fetchAsyncData}
+                    minSearchChars={2}
+                    onSelect={(option) => {
+                      if (option.value !== selectedPlanning?.value) {
+                        setSelectedPlanning({
+                          value: option.value,
+                          label: option.label
+                        })
+                      } else {
+                        setSelectedPlanning(undefined)
+                      }
+                    }}
+                  >
+                  </ComboBox>
+                </div>
               </Awareness>
 
               {!!selectedPlanning
