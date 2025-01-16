@@ -22,19 +22,13 @@ interface AssignmentResponseInterface {
  */
 function structureAssignments(
   timeZone: string,
-  assignments: AssignmentInterface[] | undefined,
+  assignments: AssignmentInterface[],
   slots?: {
     key: string
     label: string
     hours: number[]
   }[]
 ): AssignmentResponseInterface[] {
-  if (assignments === undefined) {
-    return [{
-      items: []
-    }]
-  }
-
   if (!slots) {
     return [{
       items: assignments

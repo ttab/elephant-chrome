@@ -22,6 +22,7 @@ const avatarVariants = cva('cursor-default',
         true: 'shadow-[-1px_1px_5px_-3px_rgba(0,0,0,0.4)] dark:shadow-none'
       },
       size: {
+        xxs: 'size-4 mr-1.5 font-semibold text-[9px]',
         xs: 'size-6 mr-1.5 font-normal text-xs',
         sm: 'size-7 font-normal text-xs',
         lg: 'size-9 font-semibold text-md',
@@ -31,7 +32,7 @@ const avatarVariants = cva('cursor-default',
     }
   })
 
-export type AvatarSize = 'xs' | 'sm' | 'lg' | 'xl' | 'default' | undefined | null
+export type AvatarSize = 'xxs' | 'xs' | 'sm' | 'lg' | 'xl' | 'default' | undefined | null
 
 export const Avatar = ({ user, value, variant = 'default', size = 'default', color = 'default', stacked = false, className }:
   React.HTMLAttributes<HTMLDivElement> &
@@ -52,7 +53,9 @@ export const Avatar = ({ user, value, variant = 'default', size = 'default', col
       <AvatarFallback
         className={cn(avatarVariants({ variant, className: compoundClassName }))}
       >
-        {getInitials(user?.name || value)}
+        {size !== 'xxs'
+          ? getInitials(user?.name || value)
+          : (user?.name || value)?.[0]}
       </AvatarFallback>
     </AvatarMain>
   )
