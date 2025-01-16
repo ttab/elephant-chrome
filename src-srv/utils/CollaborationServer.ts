@@ -290,12 +290,15 @@ export class CollaborationServer {
    * Fetch document from redis if already in cache, otherwise from repository
    */
   async #fetchDocument({ documentName: uuid, document: yDoc, context }: fetchPayload): Promise<Uint8Array | null> {
-    // Init tracking document. Must not be fetched from cache when starting up the server fresh.
-    if (uuid === 'document-tracker') {
+    if (uuid === 'document-tracker' && !this.#openDocuments) {
+      // Tracking document must be initialized fresh when starting fresh, so that
+      // we don't use stale information on which documents are open by whom.
       this.#openDocuments = yDoc
 
       const documents = yDoc.getMap('open-documents')
       yDoc.share.set('open-documents', yMapAsYEventAny(documents))
+
+      logger.info('Tracker document initialized in CollaborationServer')
       return Y.encodeStateAsUpdate(yDoc)
     }
 
@@ -310,6 +313,12 @@ export class CollaborationServer {
 
     if (state) {
       return state
+    }
+
+    if (uuid === 'document-tracker') {
+      // Tracker document must've been fetched from redis or created by now
+      logger.error('Tracker document not correctly initialized in CollaborationServer')
+      return null
     }
 
     // Fetch content
