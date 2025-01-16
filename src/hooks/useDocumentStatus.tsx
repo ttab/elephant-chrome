@@ -44,9 +44,11 @@ export const useDocumentStatus = (uuid?: string): [
         }
       }
 
+      // Get statuses for the current version and sort them by creation date
       const currentStatus = headsEntries
+        .filter((entry) => entry[1].version === version)
         .sort((a, b) =>
-          new Date(b[1].created).getTime() - new Date(a[1].created).getTime())[0][0]
+          new Date(b[1].created).getTime() - new Date(a[1].created).getTime())?.[0]?.[0] || 'draft'
 
       return {
         version,

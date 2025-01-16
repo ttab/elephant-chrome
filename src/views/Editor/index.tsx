@@ -123,7 +123,7 @@ function EditorWrapper(props: ViewProps & {
           <ViewHeader.Title title='Editor' icon={PenBoxIcon} />
 
           <ViewHeader.Content>
-            <EditorHeader />
+            <EditorHeader documentId={props.documentId} />
           </ViewHeader.Content>
 
           <ViewHeader.Action>

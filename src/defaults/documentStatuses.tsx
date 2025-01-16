@@ -9,25 +9,34 @@ import {
 
 export const DocumentStatuses: DefaultValueOption[] = [
   {
-    label: 'Publicerat',
+    label: 'Publicerad',
     value: 'usable',
     icon: CircleCheck,
     iconProps: {
-      fill: '#86B0F9',
       color: '#ffffff',
-      className: 'bg-[#86B0F9] rounded-full',
+      className: 'bg-usable fill-usable rounded-full',
       size: 18,
       strokeWidth: 1.75
     }
   },
   {
-    label: 'Färdig',
+    label: 'Tidsplanerad',
+    value: 'withheld',
+    icon: CircleCheck,
+    iconProps: {
+      color: '#ffffff',
+      className: 'bg-withheld fill-withheld rounded-full',
+      size: 18,
+      strokeWidth: 1.75
+    }
+  },
+  {
+    label: 'Klar',
     value: 'done',
     icon: CircleCheck,
     iconProps: {
-      fill: '#5E9F5D',
       color: '#ffffff',
-      className: 'bg-[#5E9F5D] rounded-full',
+      className: 'bg-done fill-done rounded-full',
       size: 18,
       strokeWidth: 1.75
     }
@@ -37,21 +46,19 @@ export const DocumentStatuses: DefaultValueOption[] = [
     value: 'approved',
     icon: BadgeCheck,
     iconProps: {
-      fill: '#5D7CA2',
       color: '#ffffff',
-      className: 'bg-[#5D7CA2] rounded-full',
+      className: 'bg-approved fill-approved rounded-full',
       size: 18,
       strokeWidth: 1.75
     }
   },
   {
     label: 'Inställd',
-    value: 'withheld',
+    value: 'cancelled',
     icon: CircleX,
     iconProps: {
-      fill: '#E12430',
       color: '#ffffff',
-      className: 'bg-[#E12430] rounded-full',
+      className: 'bg-cancelled fill-cancelled rounded-full',
       size: 18,
       strokeWidth: 1.75
     }
@@ -66,4 +73,4 @@ export const DocumentStatuses: DefaultValueOption[] = [
       strokeWidth: 1.75
     }
   }
-]
+] as const
