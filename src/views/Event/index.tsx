@@ -97,7 +97,7 @@ const EventViewContent = (props: ViewProps & { documentId: string }): JSX.Elemen
   return (
     <View.Root asDialog={props.asDialog} className={props.className}>
       <div className='grow-0'>
-        <ViewHeader.Root>
+        <ViewHeader.Root asDialog={props.asDialog}>
           {!props.asDialog
             ? <ViewHeader.Title title='Händelse' icon={CalendarPlus2} iconColor='#DAC9F2' />
             : <ViewHeader.Title title='Skapa ny händelse' icon={CalendarPlus2} iconColor='#DAC9F2' asDialog />}
