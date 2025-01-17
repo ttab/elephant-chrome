@@ -6,6 +6,9 @@ import type { AssignmentInterface } from './lib/assignments/fetch'
 import fetchAssignments from './lib/assignments/fetch'
 import structureAssignments from './lib/assignments/structure'
 import filterAssignments from './lib/assignments/filter'
+
+export { AssignmentInterface }
+
 /**
  * Fetch all assignments in specific date as Block[] extended with some planning level data.
  * Allows optional filtering by type and optional sorting into buckets.
@@ -34,7 +37,7 @@ export const useAssignments = ({ date, type, slots, statuses }: {
   }
 
   const filteredData = filterAssignments(data, statuses)
-  const structuredData = structureAssignments(timeZone, filteredData, slots)
+  const structuredData = structureAssignments(timeZone, filteredData || [], slots)
 
 
   useRepositoryEvents(['core/planning-item', 'core/planning-item+meta'], (event) => {
@@ -59,4 +62,3 @@ export const useAssignments = ({ date, type, slots, statuses }: {
 
   return structuredData
 }
-
