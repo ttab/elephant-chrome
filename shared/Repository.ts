@@ -76,7 +76,7 @@ export class Repository {
     accessToken: string
   }): Promise<BulkGetResponse | null> {
     if (!uuids.length || uuids.filter(isValidUUID).length !== uuids.length) {
-      throw new Error('Invalid uuid format in input')
+      return null
     }
 
     try {
@@ -166,12 +166,18 @@ export class Repository {
     try {
       const { response } = await this.#client.update({
         uuid: status.uuid,
-        status: [{
-          name: status.name,
-          version: status.version,
-          meta: {},
-          ifMatch: status.version
-        }],
+        status: status.name === 'draft'
+          ? [
+              { name: 'done', version: -1n, meta: {}, ifMatch: -1n },
+              { name: 'approved', version: -1n, meta: {}, ifMatch: -1n },
+              { name: 'usable', version: -1n, meta: {}, ifMatch: -1n }
+            ]
+          : [{
+              name: status.name,
+              version: status.version,
+              meta: {},
+              ifMatch: status.version
+            }],
         meta: {},
         ifMatch: status.version,
         acl: [],

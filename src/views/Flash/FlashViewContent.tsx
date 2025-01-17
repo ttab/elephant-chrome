@@ -144,7 +144,7 @@ export const FlashViewContent = (props: ViewProps & {
                 <ComboBox
                   max={1}
                   size='xs'
-                  className='min-w-0 max-w-46 truncate justify-start'
+                  className='min-w-0 w-full truncate justify-start max-w-48'
                   selectedOptions={selectedPlanning ? [selectedPlanning] : []}
                   placeholder='Välj planering'
                   onOpenChange={(isOpen: boolean) => {
