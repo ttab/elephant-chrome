@@ -48,7 +48,6 @@ export const Sources = (): JSX.Element => {
 
   return (
     <ComboBox
-      max={3}
       size='xs'
       sortOrder='label'
       options={allSources}
