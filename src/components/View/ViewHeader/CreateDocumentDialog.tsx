@@ -54,7 +54,7 @@ export const CreateDocumentDialog = ({ type, payload, createdDocumentIdRef, chil
       <DialogDescription />
       <DialogTitle />
       <DialogContent
-        className='p-0 overflow-hidden outline-none'
+        className='p-0 outline-none'
       >
         {document !== null && Document
         && (
