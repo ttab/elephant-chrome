@@ -58,7 +58,17 @@ export class Repository {
         getMeta: false
       }, meta(accessToken))
 
-      return response
+      // Filter out statuses holding negative version numbers,
+      // as it causes confusion in the UI (the Approvals view, in particular)
+      const filteredResponse = {
+        ...response,
+        items: response.items.filter((item) => {
+          const statuses = Object.values(item.heads)
+          return statuses.every((status) => status.version >= 0)
+        })
+      }
+
+      return filteredResponse
     } catch (err: unknown) {
       throw new Error(`Unable to fetch statuses: ${(err as Error)?.message || 'Unknown error'}`)
     }
