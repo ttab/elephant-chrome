@@ -1,16 +1,15 @@
 import {
   ViewHeader,
   Awareness,
-  Section
+  Section,
+  View
 } from '@/components'
 import type { DefaultValueOption, ViewProps } from '@/types'
 import { NewsvalueMap } from '@/defaults'
-import { Button, ComboBox, ScrollArea } from '@ttab/elephant-ui'
+import { Button, ComboBox } from '@ttab/elephant-ui'
 import { CircleXIcon, ZapIcon, Tags, GanttChartSquare } from '@ttab/elephant-ui/icons'
 import { useCollaboration, useYValue, useIndexUrl, useRegistry } from '@/hooks'
 import type * as Y from 'yjs'
-import { cva } from 'class-variance-authority'
-import { cn } from '@ttab/elephant-ui/utils'
 import { createStateless, StatelessType } from '@/shared/stateless'
 import { useSession } from 'next-auth/react'
 import { useEffect, useMemo, useRef, useState } from 'react'
@@ -46,7 +45,7 @@ export const FlashViewContent = (props: ViewProps & {
   const [author] = useYValue<EleBlock | undefined>('links.core/author[0]')
 
   const [newPlanningId, newPlanningYDoc] = useMemo(() => {
-    return createDocument(Templates.planning, true, {})
+    return createDocument(Templates.planning, true, { newsvalue: '6' })
   }, [])
 
   // New and empty planning document for when creating new flash and planning
@@ -112,15 +111,6 @@ export const FlashViewContent = (props: ViewProps & {
     return newOptions
   }
 
-  const viewVariants = cva('flex flex-col', {
-    variants: {
-      asCreateDialog: {
-        false: 'h-screen',
-        true: 'overflow-hidden'
-      }
-    }
-  })
-
   const handleSubmit = (): void => {
     if (!planningDocument && !newPlanningDocument) {
       return
@@ -129,26 +119,24 @@ export const FlashViewContent = (props: ViewProps & {
   }
 
   return (
-    <div className={cn(viewVariants({ asCreateDialog: !!props.asDialog, className: props?.className }))}>
-      <div className='grow-0'>
-        <ViewHeader.Root>
-          {!props.asDialog
-          && <ViewHeader.Title title='Flash' icon={ZapIcon} iconColor='#FF5150' />}
+    <View.Root asDialog={props.asDialog} className={props.className}>
+      <ViewHeader.Root>
+        {!props.asDialog
+        && <ViewHeader.Title title='Flash' icon={ZapIcon} iconColor='#FF5150' />}
 
-          <ViewHeader.Content>
-            <div className='flex w-full h-full items-center space-x-2 font-bold'>
-              <ViewHeader.Title title='Flash' icon={ZapIcon} iconColor='#FF3140' />
-            </div>
-          </ViewHeader.Content>
+        <ViewHeader.Content>
+          <div className='flex w-full h-full items-center space-x-2 font-bold'>
+            <ViewHeader.Title title='Skapa ny flash' icon={ZapIcon} iconColor='#FF3140' />
+          </div>
+        </ViewHeader.Content>
 
-          <ViewHeader.Action onDialogClose={props.onDialogClose}>
-            {!props.asDialog && !!props.documentId
-            && <ViewHeader.RemoteUsers documentId={props.documentId} />}
-          </ViewHeader.Action>
-        </ViewHeader.Root>
-      </div>
+        <ViewHeader.Action onDialogClose={props.onDialogClose}>
+          {!props.asDialog && !!props.documentId
+          && <ViewHeader.RemoteUsers documentId={props.documentId} />}
+        </ViewHeader.Action>
+      </ViewHeader.Root>
 
-      <ScrollArea className='grid @5xl:place-content-center'>
+      <View.Content>
         <Form.Root asDialog={props.asDialog}>
           <Form.Content>
             <Form.Group icon={GanttChartSquare}>
@@ -252,8 +240,8 @@ export const FlashViewContent = (props: ViewProps & {
             )
           }
         </Form.Root>
-      </ScrollArea>
-    </div>
+      </View.Content>
+    </View.Root>
   )
 }
 

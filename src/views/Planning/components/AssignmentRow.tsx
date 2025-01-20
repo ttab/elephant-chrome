@@ -31,6 +31,7 @@ export const AssignmentRow = ({ index, onSelect, isFocused = false }: {
   const base = `meta.core/assignment[${index}]`
   const [inProgress] = useYValue(`${base}.__inProgress`)
   const [articleId] = useYValue<string>(`${base}.links.core/article[0].uuid`)
+  const [flashId] = useYValue<string>(`${base}.links.core/flash[0].uuid`)
   const [assignmentType] = useYValue<string>(`${base}.meta.core/assignment-type[0].value`)
   const [title] = useYValue<string>(`${base}.title`)
   const [description] = useYValue<string>(`${base}.meta.core/description[0].data.text`)
@@ -48,9 +49,9 @@ export const AssignmentRow = ({ index, onSelect, isFocused = false }: {
     event.preventDefault()
     event.stopPropagation()
 
-    if (articleId) {
+    if (articleId || flashId) {
       openArticle(event, {
-        id: articleId,
+        id: articleId || flashId,
         autoFocus: false
       }, undefined,
       undefined,
@@ -58,7 +59,7 @@ export const AssignmentRow = ({ index, onSelect, isFocused = false }: {
     } else {
       setShowCreateDialog(true)
     }
-  }, [articleId, openArticle, setShowCreateDialog])
+  }, [articleId, flashId, openArticle, setShowCreateDialog])
 
   const rowRef = useRef<HTMLDivElement>(null)
   useEffect(() => {

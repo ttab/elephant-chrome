@@ -34,7 +34,7 @@ export function planningDocumentTemplate(documentId: string, payload?: TemplateP
       }),
       Block.create({
         type: 'core/newsvalue',
-        value: undefined
+        value: payload?.newsvalue || undefined
       }),
       Block.create({
         type: 'tt/slugline'

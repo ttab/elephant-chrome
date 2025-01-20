@@ -8,6 +8,7 @@ import { toYjsNewsDoc } from '../../src-srv/utils/transformations/yjsNewsDoc'
 export interface TemplatePayload {
   eventId?: string
   eventTitle?: string
+  newsvalue?: string
   createdDocumentIdRef?: React.MutableRefObject<string | undefined>
 }
 /**
