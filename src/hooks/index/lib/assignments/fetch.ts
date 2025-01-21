@@ -111,8 +111,14 @@ async function fetchAssignments({ index, repository, type, session, date }: {
   const statusResponses = await Promise.all(deliverableStatusesRequests)
   statusResponses.forEach((statusResponse) => {
     statusResponse?.items.forEach((itemStatuses) => {
-      const status = Object.keys(itemStatuses.heads).reduce((prevStatus, currStatus) => {
-        if (!prevStatus || itemStatuses.heads[currStatus].version > itemStatuses.heads[prevStatus].version) {
+      const status = Object.keys(itemStatuses.heads).length > 0 && Object.keys(itemStatuses.heads).reduce((prevStatus, currStatus) => {
+        if (!prevStatus) {
+          return currStatus
+        }
+        if ((itemStatuses.heads[currStatus].version < 0)) {
+          return 'draft'
+        }
+        if ((itemStatuses.heads[currStatus].version > 0 && itemStatuses.heads[currStatus].version > itemStatuses.heads[prevStatus].version)) {
           return currStatus
         } else {
           return prevStatus
