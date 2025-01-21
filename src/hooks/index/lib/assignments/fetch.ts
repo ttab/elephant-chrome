@@ -83,23 +83,26 @@ async function fetchAssignments({ index, repository, type, session, date }: {
       })
     })
 
-    // Initialize a getStatuses request for this result page
-    const statusRequest = repository?.getStatuses({
-      uuids,
-      statuses: knownStatuses,
-      accessToken: session.accessToken
-    })
-    if (statusRequest) {
-      deliverableStatusesRequests.push(statusRequest)
-    }
+    // If we found deliverable uuids we want to fetch statuses and actual deliverable documents
+    if (uuids.length > 0) {
+      // Initialize a getStatuses request for this result page
+      const statusRequest = repository?.getStatuses({
+        uuids,
+        statuses: knownStatuses,
+        accessToken: session.accessToken
+      })
+      if (statusRequest) {
+        deliverableStatusesRequests.push(statusRequest)
+      }
 
-    // Initialize a getDocuments request for this result page
-    const documentsRequest = repository?.getDocuments({
-      uuids,
-      accessToken: session.accessToken
-    })
-    if (documentsRequest) {
-      deliverableDocumentsRequests.push(documentsRequest)
+      // Initialize a getDocuments request for this result page
+      const documentsRequest = repository?.getDocuments({
+        uuids,
+        accessToken: session.accessToken
+      })
+      if (documentsRequest) {
+        deliverableDocumentsRequests.push(documentsRequest)
+      }
     }
 
     page = hits?.length === size ? page + 1 : 0
@@ -155,6 +158,7 @@ async function fetchAssignments({ index, repository, type, session, date }: {
 
   return filteredTextAssignments
 }
+
 
 /**
  * Check that the assignment is valid and matches the given type.
