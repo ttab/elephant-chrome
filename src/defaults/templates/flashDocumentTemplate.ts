@@ -28,6 +28,12 @@ export function flashDocumentTemplate(id: string, defaults: {
     uri: `core://flash/${id}`,
     language: 'sv-se',
     title,
+    meta: [
+      Block.create({
+        type: 'core/newsvalue',
+        value: '6'
+      })
+    ],
     content: [
       Block.create({
         type: 'core/text',

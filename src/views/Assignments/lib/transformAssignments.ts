@@ -12,7 +12,7 @@ export const transformAssignments = (result: SearchIndexResponse<LoadedDocumentI
   const assignments: (AssignmentMetaExtended[]) = []
 
   result.hits.forEach((hit: LoadedDocumentItem) => {
-    const { title: planningTitle, meta, links } = hit.document
+    const { title: planningTitle, meta, links = [] } = hit.document
     const assignmentMetas = meta?.filter((assignmentMeta: MetaValueType) => assignmentMeta.type === 'core/assignment') as AssignmentMetaExtended[]
     const section = links.find((l) => l.type === 'core/section') as LinkMeta
     const newsvalue: (TypeValue | undefined) = meta?.find((assignmentMeta) => assignmentMeta.type === 'core/newsvalue') as TypeValue
