@@ -6,6 +6,7 @@ import type { Block, Document } from '@ttab/elephant-api/newsdoc'
 import type { BulkGetResponse, GetStatusOverviewResponse } from '@ttab/elephant-api/repository'
 import type { Session } from 'next-auth'
 import { parseISO } from 'date-fns'
+import { getStatus } from './getStatus'
 
 export interface AssignmentInterface extends Block {
   _id: string
@@ -111,21 +112,7 @@ async function fetchAssignments({ index, repository, type, session, date }: {
   const statusResponses = await Promise.all(deliverableStatusesRequests)
   statusResponses.forEach((statusResponse) => {
     statusResponse?.items.forEach((itemStatuses) => {
-      const status = Object.keys(itemStatuses.heads).length > 0
-        ? Object.keys(itemStatuses.heads).reduce((prevStatus, currStatus) => {
-          if (!prevStatus) {
-            return currStatus
-          }
-          if ((itemStatuses.heads[currStatus].version < 0)) {
-            return 'draft'
-          }
-          if ((itemStatuses.heads[currStatus].version > 0 && itemStatuses.heads[currStatus].version > itemStatuses.heads[prevStatus].version)) {
-            return currStatus
-          } else {
-            return prevStatus
-          }
-        }, '')
-        : 'draft' // Default to draft (empty status)
+      const status = getStatus(itemStatuses)
 
       const t = assignments.find((t) => t._deliverableId == itemStatuses.uuid)
       if (t) {
