@@ -29,7 +29,7 @@ import { StatelessType, parseStateless } from '@/shared/stateless.js'
 
 import { fromGroupedNewsDoc, toGroupedNewsDoc } from './transformations/groupedNewsDoc.js'
 import { fromYjsNewsDoc, toYjsNewsDoc } from './transformations/yjsNewsDoc.js'
-import CollaborationServerErrorHandler from '../lib/errorHandler.js'
+import CollaborationServerErrorHandler, { withErrorHandler } from '../lib/errorHandler.js'
 import logger from '../lib/logger.js'
 import { type GetDocumentResponse } from '@ttab/elephant-api/repository'
 
@@ -78,6 +78,7 @@ export class CollaborationServer {
     this.#expressServer = expressServer
     this.#redisCache = redisCache
     this.#repository = repository
+    this.#errorHandler = new CollaborationServerErrorHandler()
 
     const {
       host: redisHost,
@@ -89,13 +90,14 @@ export class CollaborationServer {
 
     this.#quiet = process.env.LOG_LEVEL !== 'info' && process.env.LOG_LEVEL !== 'debug'
 
+
     this.#server = Server.configure({
       port: this.#port,
       timeout: 30000,
       debounce: 5000,
       maxDebounce: 30000,
       quiet: this.#quiet,
-      extensions: [
+      extensions: withErrorHandler([
         new Logger({
           log: (msg) => {
             logger.info(msg)
@@ -138,9 +140,8 @@ export class CollaborationServer {
             }
           }
         }),
-        // TODO: Handle Auth/token validation errors
         new Auth()
-      ],
+      ], this.#errorHandler),
 
       // Add user as having a tracked document open (or increase nr of times
       // user have it open)
@@ -172,8 +173,6 @@ export class CollaborationServer {
       }
     })
 
-    this.#errorHandler = new CollaborationServerErrorHandler(this.#server)
-
     this.#handlePaths = []
     this.#openForBusiness = false
   }
@@ -191,6 +190,9 @@ export class CollaborationServer {
       this.#errorHandler.warn('Collab server already open for business, closing, cleaning up and reinitializing')
       await this.close()
     }
+
+    // Apply the server to errorHandler
+    this.#errorHandler.setServer(this.#server)
 
     try {
       paths.forEach((path) => {
@@ -494,7 +496,6 @@ export class CollaborationServer {
       documents.delete(documentName)
     }
   }
-
 
   /**
    * Store document in redis cache
