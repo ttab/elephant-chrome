@@ -1,4 +1,4 @@
-import type { Hocuspocus } from '@hocuspocus/server'
+import type { Hocuspocus, Extension } from '@hocuspocus/server'
 import logger from './logger.js'
 import type pino from 'pino'
 import { RpcError } from '@protobuf-ts/runtime-rpc'
@@ -13,17 +13,21 @@ import { RpcError } from '@protobuf-ts/runtime-rpc'
  */
 
 class CollaborationServerErrorHandler {
-  readonly #server: Hocuspocus
+  #server?: Hocuspocus
 
-  constructor(server: Hocuspocus) {
+  constructor(server?: Hocuspocus) {
+    this.#server = server
+  }
+
+  setServer(server: Hocuspocus): void {
     this.#server = server
   }
 
   private handler(error: unknown, logFn: (err?: unknown) => void, context?: Record<string, unknown>): void {
     try {
       const rpcError = isRpcError(error)
-      if (rpcError) {
-        this.handleRpcError(rpcError, logFn, context)
+      if (rpcError && this.#server) {
+        this.handleRpcError(rpcError, logFn, this.#server, context)
       }
 
       // Log everything
@@ -41,11 +45,11 @@ class CollaborationServerErrorHandler {
    * @param {any} context - The context in which the error occurred.
    * @returns {string}
   */
-  private handleRpcError(error: RpcError, logFn: pino.LogFn, context?: Record<string, unknown>): void {
+  private handleRpcError(error: RpcError, logFn: pino.LogFn, server: Hocuspocus, context?: Record<string, unknown>): void {
     switch (error.code) {
       // Set a validation message in the document
       case 'invalid_argument':
-        this.handleRpcValidationError(error, logFn, context)
+        this.handleRpcValidationError(error, logFn, server, context)
         break
       case 'unauthenticated':
         // TODO: Reauth, not implemented
@@ -55,7 +59,7 @@ class CollaborationServerErrorHandler {
     }
   }
 
-  private handleRpcValidationError(error: RpcError, logFn: pino.LogFn, context?: Record<string, unknown>): void {
+  private handleRpcValidationError(error: RpcError, logFn: pino.LogFn, server: Hocuspocus, context?: Record<string, unknown>): void {
     const { id, ...rest } = context || {}
 
     if (typeof id !== 'string' || typeof rest.accessToken !== 'string') {
@@ -63,7 +67,7 @@ class CollaborationServerErrorHandler {
     }
 
     // Create a direct connection to the current document and set a validation message
-    this.#server.openDirectConnection(id, {
+    server.openDirectConnection(id, {
       ...rest,
       agent: 'server'
     })
@@ -132,4 +136,23 @@ function isRpcError(error: unknown): RpcError | false {
   }
 
   return false
+}
+
+
+export function withErrorHandler(extensions: Extension[], errorHandler: CollaborationServerErrorHandler | undefined): Extension[] {
+  return extensions.map((extension) => new Proxy(extension, {
+    get(target, prop, receiver) {
+      const original = Reflect.get(target, prop, receiver) as Extension
+      if (typeof original === 'function') {
+        return async (...args: unknown[]) => {
+          try {
+            return await (original as (...args: unknown[]) => unknown).apply(target, args)
+          } catch (ex) {
+            errorHandler?.error(ex)
+          }
+        }
+      }
+      return original
+    }
+  }))
 }

@@ -29,7 +29,7 @@ import { StatelessType, parseStateless } from '@/shared/stateless.js'
 
 import { fromGroupedNewsDoc, toGroupedNewsDoc } from './transformations/groupedNewsDoc.js'
 import { fromYjsNewsDoc, toYjsNewsDoc } from './transformations/yjsNewsDoc.js'
-import CollaborationServerErrorHandler from '../lib/errorHandler.js'
+import CollaborationServerErrorHandler, { withErrorHandler } from '../lib/errorHandler.js'
 import logger from '../lib/logger.js'
 import { type GetDocumentResponse } from '@ttab/elephant-api/repository'
 
@@ -78,6 +78,7 @@ export class CollaborationServer {
     this.#expressServer = expressServer
     this.#redisCache = redisCache
     this.#repository = repository
+    this.#errorHandler = new CollaborationServerErrorHandler()
 
     const {
       host: redisHost,
@@ -89,13 +90,14 @@ export class CollaborationServer {
 
     this.#quiet = process.env.LOG_LEVEL !== 'info' && process.env.LOG_LEVEL !== 'debug'
 
+
     this.#server = Server.configure({
       port: this.#port,
       timeout: 30000,
       debounce: 5000,
       maxDebounce: 30000,
       quiet: this.#quiet,
-      extensions: [
+      extensions: withErrorHandler([
         new Logger({
           log: (msg) => {
             logger.info(msg)
@@ -114,14 +116,14 @@ export class CollaborationServer {
         new Database({
           fetch: async (payload: fetchPayload) => {
             const document = await this.#fetchDocument(payload).catch((ex) => {
-              this.#errorHandler.error(ex)
+              this.#errorHandler?.error(ex)
             })
 
             return document || null
           },
           store: async (payload) => {
             await this.#storeDocument(payload).catch((ex) => {
-              this.#errorHandler.error(ex)
+              this.#errorHandler?.error(ex)
             })
           }
         }),
@@ -130,7 +132,7 @@ export class CollaborationServer {
           snapshot: (payload: onStoreDocumentPayload) => {
             return async () => {
               await this.#snapshotDocument(payload).catch((ex) => {
-                this.#errorHandler.error(ex, {
+                this.#errorHandler?.error(ex, {
                   id: payload.documentName,
                   accessToken: payload.context.accessToken
                 })
@@ -138,15 +140,14 @@ export class CollaborationServer {
             }
           }
         }),
-        // TODO: Handle Auth/token validation errors
         new Auth()
-      ],
+      ], this.#errorHandler),
 
       // Add user as having a tracked document open (or increase nr of times
       // user have it open)
       connected: async (payload) => {
         await this.#connected(payload).catch((ex) => {
-          this.#errorHandler.error(ex)
+          this.#errorHandler?.error(ex)
         })
       },
 
@@ -154,25 +155,23 @@ export class CollaborationServer {
       // user have it open)
       onDisconnect: async (payload) => {
         await this.#onDisconnect(payload).catch((ex) => {
-          this.#errorHandler.error(ex)
+          this.#errorHandler?.error(ex)
         })
       },
 
       // No users have this doc open, remove it from tracked documents
       afterUnloadDocument: async (payload) => {
         await this.#afterUnloadDocument(payload).catch((ex) => {
-          this.#errorHandler.error(ex)
+          this.#errorHandler?.error(ex)
         })
       },
 
       onStateless: async (payload) => {
         await this.#statelessHandler(payload).catch((ex) => {
-          this.#errorHandler.error(ex)
+          this.#errorHandler?.error(ex)
         })
       }
     })
-
-    this.#errorHandler = new CollaborationServerErrorHandler(this.#server)
 
     this.#handlePaths = []
     this.#openForBusiness = false
@@ -192,6 +191,9 @@ export class CollaborationServer {
       await this.close()
     }
 
+    // Apply the server to errorHandler
+    this.#errorHandler.setServer(this.#server)
+
     try {
       paths.forEach((path) => {
         this.#expressServer.ws(path, (websocket, request) => {
@@ -199,7 +201,7 @@ export class CollaborationServer {
         })
       })
     } catch (ex) {
-      this.#errorHandler.fatal(ex)
+      this.#errorHandler?.fatal(ex)
       return false
     }
 
@@ -494,7 +496,6 @@ export class CollaborationServer {
       documents.delete(documentName)
     }
   }
-
 
   /**
    * Store document in redis cache
