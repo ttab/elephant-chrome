@@ -66,9 +66,9 @@ export function dateToReadableDateTime(
 
   return new Intl.DateTimeFormat(locale, {
     timeZone,
-    timeStyle: 'short',
-    dateStyle: 'full',
-    ...(options?.includeYear && { year: 'numeric' })
+    ...(includeYear
+      ? { month: 'short', day: 'numeric', year: 'numeric' }
+      : { timeStyle: 'short', dateStyle: 'full' })
   }).format(date)
 }
 
