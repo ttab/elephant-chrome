@@ -28,6 +28,7 @@ export const Error = ({ title, error, message }: ViewProps & {
     <View.Root>
       <ViewHeader.Root>
         <ViewHeader.Title title='Ett fel har uppstått!' icon={MessageCircleWarning} />
+        <ViewHeader.Action />
       </ViewHeader.Root>
 
       <View.Content className='max-w-[800px] pt-20'>
