@@ -138,6 +138,7 @@ export const AssignmentTable = ({ asDialog = false }: {
                     <AssignmentRow
                       index={index}
                       isFocused={index === focusedRowIndex}
+                      asDialog={asDialog}
                       onSelect={() => {
                         if (!newAssigment) {
                           setSelectedAssignment(index)
