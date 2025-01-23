@@ -19,10 +19,11 @@ import { cn } from '@ttab/elephant-ui/utils'
 import { useNavigationKeys } from '@/hooks/useNavigationKeys'
 
 
-export const AssignmentRow = ({ index, onSelect, isFocused = false }: {
+export const AssignmentRow = ({ index, onSelect, isFocused = false, asDialog }: {
   index: number
   onSelect: () => void
   isFocused?: boolean
+  asDialog?: boolean
 }): JSX.Element => {
   const { provider } = useCollaboration()
   const openArticle = useLink('Editor')
@@ -57,7 +58,9 @@ export const AssignmentRow = ({ index, onSelect, isFocused = false }: {
       undefined,
       event instanceof KeyboardEvent && event.key === ' ')
     } else {
-      setShowCreateDialog(true)
+      if (!asDialog) {
+        setShowCreateDialog(true)
+      }
     }
   }, [articleId, flashId, openArticle, setShowCreateDialog])
 
@@ -102,7 +105,7 @@ export const AssignmentRow = ({ index, onSelect, isFocused = false }: {
     }
   ]
 
-  if (assignmentType === 'text' || assignmentType === 'flash') {
+  if ((assignmentType === 'text' || assignmentType === 'flash') && !asDialog) {
     menuItems.push({
       label: 'Öppna artikel',
       icon: FileInput,
