@@ -1,4 +1,4 @@
-import type { AssignmentInterface } from './fetch'
+import type { AssignmentInterface } from './types'
 
 /**
  * Filters assignments based on the provided statuses.
@@ -8,12 +8,10 @@ import type { AssignmentInterface } from './fetch'
  * @returns {AssignmentInterface[] | undefined} - The filtered list of assignments or undefined if no assignments are provided.
  * @todo Add more generic filtering options.
  */
-function filterAssignments(assignments: AssignmentInterface[] | undefined, statuses: string[]): AssignmentInterface[] | undefined {
+export function filterAssignments(assignments: AssignmentInterface[] | undefined, statuses: string[]): AssignmentInterface[] | undefined {
   if (!assignments) {
     return
   }
 
   return assignments.filter((assignment) => assignment?._deliverableStatus && statuses.includes(assignment?._deliverableStatus))
 }
-
-export default filterAssignments

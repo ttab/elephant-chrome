@@ -2,22 +2,13 @@ import { DocumentStatuses } from '@/defaults/documentStatuses'
 import type { Index } from '@/shared/Index'
 import type { Repository } from '@/shared/Repository'
 import { QueryV1, BoolQueryV1 } from '@ttab/elephant-api/index'
-import type { Block, Document } from '@ttab/elephant-api/newsdoc'
 import type { BulkGetResponse, GetStatusOverviewResponse } from '@ttab/elephant-api/repository'
 import type { Session } from 'next-auth'
 import { parseISO } from 'date-fns'
-import { getStatus } from './getStatus'
+import { getStatus } from '../getStatus'
+import { getAssignmentsFromDocument } from './getAssignmentsFromDocument'
+import type { AssignmentInterface } from './types'
 
-export interface AssignmentInterface extends Block {
-  _id: string
-  _deliverableId: string
-  _deliverableStatus?: string
-  _deliverableDocument?: Document
-  _title: string
-  _newsvalue?: string
-  _section?: string
-  _statusData?: string
-}
 
 // We want to fetch all known statuses for deliverables and then
 // filter them using the supplied "statuses" prop.
@@ -35,7 +26,7 @@ const knownStatuses = DocumentStatuses.map((status) => status.value)
  * @param {Date | string} params.date - The date to filter assignments by.
  * @returns {Promise<AssignmentInterface[] | undefined>} - The fetched assignments or undefined if index or session is not provided.
  */
-async function fetchAssignments({ index, repository, type, session, date }: {
+export async function fetchAssignments({ index, repository, type, session, date }: {
   index: Index | undefined
   repository: Repository | undefined
   type?: string
@@ -86,11 +77,11 @@ async function fetchAssignments({ index, repository, type, session, date }: {
       // Initialize a getStatuses request for this result page
       const [documentsRequest, statusesRequest] = getRelatedDocuments(repository, session.accessToken, uuids)
 
-      if (documentsRequest) {
+      if (documentsRequest instanceof Promise) {
         deliverableDocumentsRequests.push(documentsRequest)
       }
 
-      if (statusesRequest) {
+      if (statusesRequest instanceof Promise) {
         deliverableStatusesRequests.push(statusesRequest)
       }
     }
@@ -144,25 +135,7 @@ async function fetchAssignments({ index, repository, type, session, date }: {
 }
 
 
-/**
- * Check that the assignment is valid and matches the given type.
- *
- * @param assignmentMeta - The metadata of the assignment to check.
- * @param type - The type to filter assignments by (e.g. text, picture).
- * @returns - Returns true if the assignment is valid and matches the given type, otherwise false.
- */
-function isValidAssignment(assignmentMeta: Block, type: string | undefined): boolean {
-  if (assignmentMeta.type !== 'core/assignment') {
-    return false
-  }
 
-  // If type is given, filter out anything but type (e.g. text, picture...)
-  if (type && !assignmentMeta.meta.filter((m) => m.type === 'core/assignment-type' && m.value === type)?.length) {
-    return false
-  }
-
-  return true
-}
 
 
 /**
@@ -214,39 +187,6 @@ function constructQuery(date: Date | string): QueryV1 {
   })
 }
 
-/**
- * Extract assignments of the given type from the planning document
- *
- * @param document - The planning document to extract assignments from.
- * @param type - The type of assignments to extract.
- * @returns An array of assignments matching the given type.
- */
-function getAssignmentsFromDocument(document: Document, type?: string): AssignmentInterface[] {
-  const { meta, links } = document
-  const assignments: AssignmentInterface[] = []
-
-  // Loop over all meta elements to find assignments
-  meta?.forEach((assignmentMeta) => {
-    if (!isValidAssignment(assignmentMeta, type)) {
-      return
-    }
-
-    // Collect all deliverable uuids
-    const _deliverableId = assignmentMeta.links.find((l) => l.rel === 'deliverable')?.uuid
-
-    assignments.push({
-      _id: document.uuid,
-      _title: document.title,
-      _newsvalue: meta?.find((assignmentMeta) => assignmentMeta.type === 'core/newsvalue')?.value,
-      _section: links.find((l) => l.type === 'core/section')?.title,
-      _deliverableId: _deliverableId || '',
-      ...assignmentMeta
-    })
-  })
-
-  return assignments
-}
-
 
 /**
  * Fetch documents and status documents for the given uuids from the repository
@@ -274,5 +214,3 @@ function getRelatedDocuments(repository: Repository, accessToken: string, uuids:
 
   return [documentsRequest, statusesRequest]
 }
-
-export default fetchAssignments
