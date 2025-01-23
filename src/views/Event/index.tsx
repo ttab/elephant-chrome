@@ -139,7 +139,7 @@ const EventViewContent = (props: ViewProps & { documentId: string }): JSX.Elemen
             </Form.Group>
 
             <Form.Group icon={Tags}>
-              <Category />
+              <Category asDialog={props.asDialog} />
               <Story />
             </Form.Group>
 
