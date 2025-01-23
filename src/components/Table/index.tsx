@@ -193,7 +193,7 @@ export const Table = <TData, TValue>({
       {(type === 'Planning' || type === 'Event') && (
         <NewItems.Root>
           <NewItems.Table
-            header={`Dina nya skapade ${['Planning', 'Event'].includes(type)
+            header={`Dina nya skapade ${type === 'Planning'
               ? 'planeringar'
               : 'händelser'}`}
             type={type}

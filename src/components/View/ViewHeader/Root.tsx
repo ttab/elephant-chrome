@@ -20,7 +20,7 @@ export const Root = ({ children, className, asDialog }: {
         true: 'bg-background'
       },
       asDialog: {
-        true: 'bg-gray-50'
+        true: 'bg-gray-50 sticky top-0 z-10'
       }
     }
   })

@@ -4,16 +4,17 @@ import {
 import { Avatar, type AvatarSize } from '@/components'
 import { AvatarGroup } from '../AvatarGroup'
 
-export const AssigneeAvatars = ({ assignees, size = 'sm' }: {
+export const AssigneeAvatars = ({ assignees, size = 'sm', color = '' }: {
   assignees: string[]
   size?: string
+  color?: string
 }): JSX.Element => {
   return (
     <AvatarGroup size={size as AvatarSize}>
       {(assignees || []).slice(0, 3).map((assignee: string, index: number) => {
         return (
           <Tooltip key={index} content={assignee}>
-            <Avatar value={assignee} size={size as AvatarSize} stacked={index > 0} />
+            <Avatar value={assignee} size={size as AvatarSize} color={color} variant={color ? 'color' : undefined} stacked={index > 0} />
           </Tooltip>
         )
       })}

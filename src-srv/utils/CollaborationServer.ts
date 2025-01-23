@@ -29,7 +29,7 @@ import { StatelessType, parseStateless } from '@/shared/stateless.js'
 
 import { fromGroupedNewsDoc, toGroupedNewsDoc } from './transformations/groupedNewsDoc.js'
 import { fromYjsNewsDoc, toYjsNewsDoc } from './transformations/yjsNewsDoc.js'
-import CollaborationServerErrorHandler from '../lib/errorHandler.js'
+import CollaborationServerErrorHandler, { withErrorHandler } from '../lib/errorHandler.js'
 import logger from '../lib/logger.js'
 import { type GetDocumentResponse } from '@ttab/elephant-api/repository'
 
@@ -78,6 +78,7 @@ export class CollaborationServer {
     this.#expressServer = expressServer
     this.#redisCache = redisCache
     this.#repository = repository
+    this.#errorHandler = new CollaborationServerErrorHandler()
 
     const {
       host: redisHost,
@@ -89,13 +90,14 @@ export class CollaborationServer {
 
     this.#quiet = process.env.LOG_LEVEL !== 'info' && process.env.LOG_LEVEL !== 'debug'
 
+
     this.#server = Server.configure({
       port: this.#port,
       timeout: 30000,
       debounce: 5000,
       maxDebounce: 30000,
       quiet: this.#quiet,
-      extensions: [
+      extensions: withErrorHandler([
         new Logger({
           log: (msg) => {
             logger.info(msg)
@@ -138,9 +140,8 @@ export class CollaborationServer {
             }
           }
         }),
-        // TODO: Handle Auth/token validation errors
         new Auth()
-      ],
+      ], this.#errorHandler),
 
       // Add user as having a tracked document open (or increase nr of times
       // user have it open)
@@ -172,8 +173,6 @@ export class CollaborationServer {
       }
     })
 
-    this.#errorHandler = new CollaborationServerErrorHandler(this.#server)
-
     this.#handlePaths = []
     this.#openForBusiness = false
   }
@@ -191,6 +190,9 @@ export class CollaborationServer {
       this.#errorHandler.warn('Collab server already open for business, closing, cleaning up and reinitializing')
       await this.close()
     }
+
+    // Apply the server to errorHandler
+    this.#errorHandler.setServer(this.#server)
 
     try {
       paths.forEach((path) => {
@@ -290,16 +292,15 @@ export class CollaborationServer {
    * Fetch document from redis if already in cache, otherwise from repository
    */
   async #fetchDocument({ documentName: uuid, document: yDoc, context }: fetchPayload): Promise<Uint8Array | null> {
-    // Init tracking document. Must not be fetched from cache when starting up the server fresh.
-    if (uuid === 'document-tracker') {
-      if (this.#openDocuments) {
-        return null
-      }
-
+    if (uuid === 'document-tracker' && !this.#openDocuments) {
+      // Tracking document must be initialized fresh when starting fresh, so that
+      // we don't use stale information on which documents are open by whom.
       this.#openDocuments = yDoc
 
       const documents = yDoc.getMap('open-documents')
       yDoc.share.set('open-documents', yMapAsYEventAny(documents))
+
+      logger.info('Tracker document initialized in CollaborationServer')
       return Y.encodeStateAsUpdate(yDoc)
     }
 
@@ -316,8 +317,14 @@ export class CollaborationServer {
       return state
     }
 
+    if (uuid === 'document-tracker') {
+      // Tracker document must've been fetched from redis or created by now
+      logger.error('Tracker document not correctly initialized in CollaborationServer')
+      return null
+    }
+
     // Fetch content
-    const newsDoc = await this.#repository.getDoc({
+    const newsDoc = await this.#repository.getDocument({
       uuid,
       accessToken: context.accessToken
     }).catch((ex) => {
@@ -348,7 +355,7 @@ export class CollaborationServer {
 
     const { documentResponse, updatedHash } = await fromYjsNewsDoc(yDoc)
     if (!updatedHash) {
-      logger.debug('::: saveDoc: No changes in document')
+      logger.debug('::: saveDocument: No changes in document')
       return
     }
 
@@ -372,7 +379,7 @@ export class CollaborationServer {
       throw new Error(`Store document ${documentName} failed, no document in GetDocumentResponse parameter`)
     }
 
-    const result = await this.#repository.saveDoc(
+    const result = await this.#repository.saveDocument(
       document,
       accessToken,
       version
@@ -416,7 +423,7 @@ export class CollaborationServer {
       return await Promise.resolve()
     }
 
-    const { sub: userId, sub_name: userName } = context.user as { sub: string, sub_name: string }
+    const userId = context.user.sub as string
     const trackedDocuments = this.#openDocuments.getMap('open-documents')
     const userList = trackedDocuments.get(documentName) as Y.Map<unknown>
 
@@ -426,7 +433,8 @@ export class CollaborationServer {
     if (!trackingUser) {
       trackingUser = new Y.Map()
       trackingUser.set('userId', userId)
-      trackingUser.set('userName', userName)
+      trackingUser.set('name', context.user.name as string)
+      trackingUser.set('userName', context.user.preferred_username as string)
       trackingUser.set('count', 1)
       trackingUser.set('socketId', socketId)
     } else {
@@ -488,7 +496,6 @@ export class CollaborationServer {
       documents.delete(documentName)
     }
   }
-
 
   /**
    * Store document in redis cache

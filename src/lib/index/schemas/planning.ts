@@ -18,7 +18,7 @@ const _PlanningSchema = z.object({
     'document.meta.core_assignment.id': z.array(z.string()),
     'document.meta.core_assignment.meta.core_assignment_type.value': z.array(z.string()),
     'document.meta.core_assignment.meta.tt_slugline.value': z.array(z.string()),
-    'document.meta.core_assignment.rel.assignee.name': z.array(z.string()),
+    'document.meta.core_assignment.rel.assignee.title': z.array(z.string()),
     'document.meta.core_assignment.rel.assignee.role': z.array(z.string()),
     'document.meta.core_assignment.rel.assignee.type': z.array(z.string()),
     'document.meta.core_assignment.rel.assignee.uuid': z.array(z.string()),

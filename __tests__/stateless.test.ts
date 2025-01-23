@@ -26,7 +26,6 @@ describe('stateless', () => {
         user: {
           id: 'abce123',
           sub: '123abc',
-          image: 'https://example.com/image.jpg',
           name: 'Name Name',
           email: 'name@example.com'
         },

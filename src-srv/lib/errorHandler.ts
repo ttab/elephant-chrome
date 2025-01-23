@@ -1,4 +1,4 @@
-import type { Hocuspocus } from '@hocuspocus/server'
+import type { Hocuspocus, Extension } from '@hocuspocus/server'
 import logger from './logger.js'
 import type pino from 'pino'
 import { RpcError } from '@protobuf-ts/runtime-rpc'
@@ -13,16 +13,20 @@ import { RpcError } from '@protobuf-ts/runtime-rpc'
  */
 
 class CollaborationServerErrorHandler {
-  readonly #server: Hocuspocus
+  #server?: Hocuspocus
 
-  constructor(server: Hocuspocus) {
+  constructor(server?: Hocuspocus) {
+    this.#server = server
+  }
+
+  setServer(server: Hocuspocus): void {
     this.#server = server
   }
 
   private handler(error: unknown, logFn: (err?: unknown) => void, context?: Record<string, unknown>): void {
     try {
       const rpcError = isRpcError(error)
-      if (rpcError) {
+      if (rpcError && this.#server) {
         this.handleRpcError(rpcError, logFn, context)
       }
 
@@ -58,7 +62,7 @@ class CollaborationServerErrorHandler {
   private handleRpcValidationError(error: RpcError, logFn: pino.LogFn, context?: Record<string, unknown>): void {
     const { id, ...rest } = context || {}
 
-    if (typeof id !== 'string' || typeof rest.accessToken !== 'string') {
+    if (typeof id !== 'string' || typeof rest.accessToken !== 'string' || !this.#server) {
       throw new Error('Invalid context', { cause: error })
     }
 
@@ -132,4 +136,22 @@ function isRpcError(error: unknown): RpcError | false {
   }
 
   return false
+}
+
+export function withErrorHandler(extensions: Extension[], errorHandler: CollaborationServerErrorHandler | undefined): Extension[] {
+  return extensions.map((extension) => new Proxy(extension, {
+    get(target, prop, receiver) {
+      const original = Reflect.get(target, prop, receiver) as Extension
+      if (typeof original === 'function') {
+        return async (...args: unknown[]) => {
+          try {
+            return await (original as (...args: unknown[]) => unknown).apply(target, args)
+          } catch (ex) {
+            errorHandler?.error(ex)
+          }
+        }
+      }
+      return original
+    }
+  }))
 }

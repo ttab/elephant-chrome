@@ -1,5 +1,5 @@
 import { FacetedFilter } from '@/components/Commands/FacetedFilter'
-import { Calendar1Icon, CircleCheck, Pen, Shapes } from '@ttab/elephant-ui/icons'
+import { Calendar1, CircleCheck, Pen, Shapes } from '@ttab/elephant-ui/icons'
 import { documentTypeValueFormat } from '@/defaults/documentTypeFormats'
 import { Title } from '@/components/Table/Items/Title'
 import { isArticle, isEvent, isPlanning } from '@/lib/isType'
@@ -142,7 +142,7 @@ export function searchWideColumns({ locale, timeZone, sections }: {
       id: 'date',
       meta: {
         name: 'Datum',
-        columnIcon: Calendar1Icon,
+        columnIcon: Calendar1,
         className: 'flex-none w-[100px]'
       },
       accessorFn: (data: Planning | Event | AssignmentMetaExtended | Article) => {

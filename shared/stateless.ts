@@ -23,7 +23,6 @@ const inProgressMessageSchema = z.object({
     user: z.object({
       name: z.string(),
       email: z.string(),
-      image: z.string(),
       id: z.string(),
       sub: z.string()
     }),
