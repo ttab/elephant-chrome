@@ -4,7 +4,13 @@ import { cva } from 'class-variance-authority'
 import { type FormProps } from './Root'
 
 export const Title = ({ children, asDialog, onValidation }: FormProps): JSX.Element => {
-  const titleVariants = cva('w-full', {
+  const titleVariants = cva(`
+    w-full
+    [&_[role="textbox"]:has([data-slate-placeholder="true"])]:!ring-0
+    [&_[role="textbox"]:has([data-slate-placeholder="true"])]:border
+    [&_[role="textbox"]:has([data-slate-placeholder="true"])]:border-[#5D709F]
+    [&_[role="textbox"]:not(:has([data-slate-placeholder="true"]))]:ring-indigo-200
+`, {
     variants: {
       asDialog: {
         false: `pt-8
