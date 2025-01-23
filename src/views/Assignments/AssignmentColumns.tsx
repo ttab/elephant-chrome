@@ -114,14 +114,10 @@ export function assignmentColumns({ authors = [], locale, timeZone }: {
       accessorFn: ({ data }) => {
         const start = data?.start
         const end = data?.end
-        const hour = new Date(start).getHours()
-        const slotEntries = Object.entries(timesSlots)
-        const slotName: (string | undefined) = slotEntries.find(([_, s]): boolean => s.slots.includes(hour))?.[0]
-        const slot = slotName ? timesSlots[slotName].label : 'Heldag'
-        return [start, end, data?.full_day, slot]
+        return [start, end, data?.full_day]
       },
       cell: ({ row }) => {
-        const [start, end, fullday, slot] = row.getValue<string[]>('assignment_time') || undefined
+        const [start, end, fullday] = row.getValue<string[]>('assignment_time')
         const isFullday = fullday === 'true'
         const types: string[] = row.getValue<DefaultValueOption[]>('assignmentType')?.map((t) => t.value)
         const formattedStart = dateInTimestampOrShortMonthDayTimestamp(start, locale, timeZone)
@@ -138,7 +134,7 @@ export function assignmentColumns({ authors = [], locale, timeZone }: {
           } else {
             return (
               <Tooltip content={`Uppdragstid: ${formattedDatestring}`}>
-                <div>{slot}</div>
+                <div>{formattedDatestring}</div>
               </Tooltip>
             )
           }
@@ -150,18 +146,22 @@ export function assignmentColumns({ authors = [], locale, timeZone }: {
               <div>Heldag</div>
             </Tooltip>
           )
-        } else {
-          return (
-            <Tooltip content={`Uppdragstid: ${formattedDatestring}`}>
-              <div>{slot}</div>
-            </Tooltip>
-          )
         }
+        return (
+          <Tooltip content={`Uppdragstid: ${formattedDatestring}`}>
+            <div>{formattedDatestring}</div>
+          </Tooltip>
+        )
       },
       filterFn: (row, id, value: string[]) => {
         const val = row.getValue<string[]>(id) || undefined
-        if (val) {
-          return val.includes(timesSlots[value[0]]?.label)
+        const [start, _, fullDay] = val
+        const isFullDay = fullDay === 'true'
+        if (isFullDay) {
+          return isFullDay
+        }
+        if (start) {
+          return timesSlots[value[0]]?.slots.includes(new Date(start).getHours())
         }
         return false
       }
