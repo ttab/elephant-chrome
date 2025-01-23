@@ -14,6 +14,7 @@ export const ColumnFilter = (): ReactNode => {
       return column.columnDef.meta?.Filter
         ? (
             <CommandItem
+              className='flex gap-1 items-center'
               key={column.id}
               value={column.id}
               onSelect={() => {

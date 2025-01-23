@@ -6,16 +6,17 @@ import type { AssignmentInterface } from './lib/assignments/fetch'
 import fetchAssignments from './lib/assignments/fetch'
 import structureAssignments from './lib/assignments/structure'
 import filterAssignments from './lib/assignments/filter'
+import { useFilter } from '../useFilter'
 
 export { AssignmentInterface }
+
+const defaultStatuses = ['draft', 'done', 'approved', 'withheld']
 
 /**
  * Fetch all assignments in specific date as Block[] extended with some planning level data.
  * Allows optional filtering by type and optional sorting into buckets.
- *
- * @todo Filter by section
  */
-export const useAssignments = ({ date, type, slots, statuses }: {
+export const useAssignments = ({ date, type, slots }: {
   date: Date | string
   type?: string
   slots?: {
@@ -23,11 +24,12 @@ export const useAssignments = ({ date, type, slots, statuses }: {
     label: string
     hours: number[]
   }[]
-  statuses: string[] // Statuses wanted
 }) => {
   const { data: session } = useSession()
   const { index, repository, timeZone } = useRegistry()
   const key = type ? `core/assignment/${type}/${date.toString()}` : 'core/assignment'
+
+  const [filters] = useFilter(['status', 'section'])
 
   const { data, mutate, error } = useSWR<AssignmentInterface[] | undefined, Error>(key, (): Promise<AssignmentInterface[] | undefined> =>
     fetchAssignments({ index, repository, session, date }))
@@ -36,7 +38,12 @@ export const useAssignments = ({ date, type, slots, statuses }: {
     throw new Error('Assignment fetch failed:', { cause: error })
   }
 
-  const filteredData = filterAssignments(data, statuses)
+  const filtersWithDefaults = {
+    ...filters,
+    status: filters?.status?.length ? filters.status : defaultStatuses
+  }
+
+  const filteredData = filterAssignments(data, filtersWithDefaults)
   const structuredData = structureAssignments(timeZone, filteredData || [], slots)
 
 

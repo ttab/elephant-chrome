@@ -51,11 +51,11 @@ export const Approvals = (): JSX.Element => {
       : new Date()
     ), [query.from])
 
+
   const data = useAssignments({
     type: 'text',
     date: from ? new Date(from) : new Date(),
-    slots,
-    statuses: ['draft', 'done', 'approved', 'withheld']
+    slots
   })
 
   const [focusedColumn, setFocusedColumn] = useState<number>()
