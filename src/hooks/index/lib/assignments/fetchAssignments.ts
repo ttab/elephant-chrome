@@ -2,7 +2,7 @@ import { DocumentStatuses } from '@/defaults/documentStatuses'
 import type { Index } from '@/shared/Index'
 import type { Repository } from '@/shared/Repository'
 import { QueryV1, BoolQueryV1 } from '@ttab/elephant-api/index'
-import type { BulkGetResponse, GetStatusOverviewResponse } from '@ttab/elephant-api/repository'
+import type { BulkGetResponse, GetStatusOverviewResponse, StatusOverviewItem } from '@ttab/elephant-api/repository'
 import type { Session } from 'next-auth'
 import { parseISO } from 'date-fns'
 import { getStatus } from '../getStatus'
@@ -26,10 +26,11 @@ const knownStatuses = DocumentStatuses.map((status) => status.value)
  * @param {Date | string} params.date - The date to filter assignments by.
  * @returns {Promise<AssignmentInterface[] | undefined>} - The fetched assignments or undefined if index or session is not provided.
  */
-export async function fetchAssignments({ index, repository, type, session, date }: {
+export async function fetchAssignments({ index, repository, type, requireDeliverable = false, session, date }: {
   index: Index | undefined
   repository: Repository | undefined
   type?: string
+  requireDeliverable?: boolean
   session: Session | null
   date: Date | string
 }
@@ -63,7 +64,9 @@ export async function fetchAssignments({ index, repository, type, session, date 
     for (const { document } of hits) {
       if (document) {
         for (const assignment of getAssignmentsFromDocument(document, type)) {
-          assignments.push(assignment)
+          if (!requireDeliverable || assignment._deliverableId) {
+            assignments.push(assignment)
+          }
 
           if (assignment._deliverableId) {
             uuids.push(assignment._deliverableId)
@@ -92,22 +95,21 @@ export async function fetchAssignments({ index, repository, type, session, date 
 
   const filteredTextAssignments: AssignmentInterface[] = []
 
-  // Wait for all statuses requests to finish and find status for each deliverable
-  const statusResponses = await Promise.all(deliverableStatusesRequests)
-  statusResponses.forEach((statusResponse) => {
-    statusResponse?.items.forEach((itemStatuses) => {
-      const status = getStatus(itemStatuses)
+  // Wait for all statuses requests to finish and extract all status overviews
+  const statusOverviews = (await Promise.all(deliverableStatusesRequests)).reduce((prev, curr) => {
+    return [...prev || [], ...curr?.items || []]
+  }, [] as StatusOverviewItem[])
 
-      const t = assignments.find((t) => t._deliverableId == itemStatuses.uuid)
-      if (t) {
-        filteredTextAssignments.push({
-          ...t,
-          _deliverableStatus: status,
-          _statusData: JSON.stringify(itemStatuses, (_, val) => { return typeof val === 'bigint' ? val.toString() : val as unknown }, 2)
-        })
-      }
+  // Apply status to all assignments
+  assignments.forEach((assignment) => {
+    const statusOverview = statusOverviews.find((si) => si.uuid === assignment._deliverableId)
+    filteredTextAssignments.push({
+      ...assignment,
+      _deliverableStatus: getStatus(statusOverview),
+      _statusData: (statusOverview) ? JSON.stringify(statusOverview, (_, val) => { return typeof val === 'bigint' ? val.toString() : val as unknown }, 2) : undefined
     })
   })
+
 
   // Wait for all documents requests to finish and find document for each deliverable
   const documentsResponses = await Promise.all(deliverableDocumentsRequests)
@@ -122,6 +124,7 @@ export async function fetchAssignments({ index, repository, type, session, date 
       }
     })
   })
+
 
   // Sort assignments with fullday first, then in time order
   filteredTextAssignments.sort((a, b) => {
