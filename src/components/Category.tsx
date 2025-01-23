@@ -5,7 +5,7 @@ import { Block } from '@ttab/elephant-api/newsdoc'
 
 import { useRef } from 'react'
 
-export const Category = (): JSX.Element => {
+export const Category = ({ asDialog }: { asDialog?: boolean }): JSX.Element => {
   const allCategories = useCategories().map((_) => {
     return {
       value: _.id,
@@ -26,6 +26,7 @@ export const Category = (): JSX.Element => {
         max={3}
         sortOrder='label'
         size='xs'
+        modal={asDialog}
         options={allCategories}
         selectedOptions={selectedOptions}
         placeholder='Lägg till ämne'
