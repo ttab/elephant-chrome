@@ -54,8 +54,8 @@ const FactboxItem = ({ factbox, openFactbox, locale, timeZone }: FBItem): JSX.El
   const [title] = getFactboxRowValue(factbox, 'document.title')
   const [text] = getFactboxRowValue(factbox, 'document.content.core_text.data.text')
   const [modified] = getFactboxRowValue(factbox, 'modified')
-  const convertedDate = dateToReadableDateTime(new Date(modified), locale, timeZone, { includeYear: true })
-  const createdFormatted = dateToReadableDateTime(new Date(created), locale, timeZone)
+  const convertedDate = dateToReadableDateTime(new Date(modified), locale, timeZone, true)
+  const createdFormatted = dateToReadableDateTime(new Date(created), locale, timeZone, true)
   const factboxRef = useRef<HTMLDivElement>(null)
 
   return (

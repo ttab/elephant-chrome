@@ -127,7 +127,7 @@ export function planningListColumns({ sections = [], authors = [] }: {
         columnIcon: Users,
         className: 'flex-none w-[112px] hidden @5xl/view:[display:revert]'
       },
-      accessorFn: (data) => data._source['document.meta.core_assignment.rel.assignee.name'],
+      accessorFn: (data) => data._source['document.meta.core_assignment.rel.assignee.title'],
       cell: ({ row }) => {
         const assignees = row.getValue<string[]>('assignees') || []
         return <Assignees assignees={assignees} />
