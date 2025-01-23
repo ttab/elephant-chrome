@@ -30,8 +30,8 @@ export const Error = ({ title, error, message }: ViewProps & {
         <ViewHeader.Title title='Ett fel har uppstått!' icon={MessageCircleWarning} />
       </ViewHeader.Root>
 
-      <View.Content className='max-w-[800px] pt-20'>
-        <h1 className='text-3xl font-bold mb-6'>{title || 'Okänt fel'}</h1>
+      <View.Content className='max-w-[800px] p-6'>
+        <h1 className='text-3xl font-bold mb-6'>{title || error?.message || 'Okänt fel'}</h1>
         {message && (
           <p className='text-md'>
             {message}
@@ -39,9 +39,11 @@ export const Error = ({ title, error, message }: ViewProps & {
         )}
 
         {error && (
-          <pre className='text-sm bg-gray-100 p-4 rounded-lg mt-4'>
-            {error.message}
-          </pre>
+          <div className='text-sm bg-gray-100 p-4 rounded-lg mt-4'>
+            <pre className='whitespace-pre-wrap'>
+              {JSON.stringify(error.stack, null, 2)}
+            </pre>
+          </div>
         )}
 
         {!message && !error && (
