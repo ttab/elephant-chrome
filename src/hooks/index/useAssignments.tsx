@@ -2,10 +2,10 @@ import useSWR from 'swr'
 import { useRegistry } from '../useRegistry'
 import { useSession } from 'next-auth/react'
 import { useRepositoryEvents } from '../useRepositoryEvents'
-import type { AssignmentInterface } from './lib/assignments/fetch'
-import fetchAssignments from './lib/assignments/fetch'
-import structureAssignments from './lib/assignments/structure'
-import filterAssignments from './lib/assignments/filter'
+import type { AssignmentInterface } from './lib/assignments/types'
+import { fetchAssignments } from './lib/assignments/fetchAssignments'
+import { structureAssignments } from './lib/assignments/structureAssignments'
+import { filterAssignments } from './lib/assignments/filterAssignments'
 
 export { AssignmentInterface }
 
