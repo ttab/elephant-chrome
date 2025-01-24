@@ -12,14 +12,14 @@ const icons: Record<string, React.FC<LucideProps>> = {
 const TimeComponent = ({ time, type, tooltip }: { time: string, type: 'start' | 'fullday' | 'publish', tooltip?: string }): JSX.Element => {
   const Icon = useMemo(() => icons[type] || null, [type])
 
-  return (
-    <Tooltip content={tooltip}>
-      <div className='flex items-center gap-2 basis-8 text-muted-foreground'>
-        <div className='w-full text-black'>{time}</div>
-        {Icon && <Icon size={18} />}
-      </div>
-    </Tooltip>
+  const content = (
+    <div className='flex items-center gap-2 basis-8 text-muted-foreground'>
+      {Icon && <Icon size={18} />}
+      <div className='w-full text-black'>{time}</div>
+    </div>
   )
+
+  return tooltip ? <Tooltip content={tooltip}>{content}</Tooltip> : content
 }
 
 export const Time = memo(TimeComponent)
