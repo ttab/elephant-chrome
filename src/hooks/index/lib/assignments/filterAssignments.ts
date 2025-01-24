@@ -1,4 +1,4 @@
-import type { AssignmentInterface } from './fetch'
+import type { AssignmentInterface } from './types'
 
 /**
  * Filters assignments based on the provided statuses.
@@ -8,7 +8,7 @@ import type { AssignmentInterface } from './fetch'
  * @returns {AssignmentInterface[] | undefined} - The filtered list of assignments or undefined
  * @todo Add more generic filtering options.
  */
-function filterAssignments(assignments: AssignmentInterface[] | undefined, filters: Record<string, string[]>):
+export function filterAssignments(assignments: AssignmentInterface[] | undefined, filters: Record<string, string[]>):
   AssignmentInterface[] | undefined {
   if (!assignments) {
     return
@@ -19,5 +19,3 @@ function filterAssignments(assignments: AssignmentInterface[] | undefined, filte
     && (filters?.section?.length ? assignment?._section && filters?.section?.includes(assignment?._section) : true)
   )
 }
-
-export default filterAssignments

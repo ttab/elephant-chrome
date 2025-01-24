@@ -37,14 +37,19 @@ export const AssignmentRow = ({ index, onSelect, isFocused = false, asDialog }: 
   const [title] = useYValue<string>(`${base}.title`)
   const [description] = useYValue<string>(`${base}.meta.core/description[0].data.text`)
   const [publishTime] = useYValue<string>(`${base}.data.publish`)
+  const [startTime] = useYValue<string>(`${base}.data.start`)
   const [authors = []] = useYValue<Block[]>(`meta.core/assignment[${index}].links.core/author`)
 
   const [showVerifyDialog, setShowVerifyDialog] = useState<boolean>(false)
   const [showCreateDialog, setShowCreateDialog] = useState<boolean>(false)
 
   const assTime = useMemo(() => {
-    return publishTime ? new Date(publishTime) : undefined
-  }, [publishTime])
+    if (typeof assignmentType !== 'string') {
+      return undefined
+    }
+    const startTimeTypes = ['picture', 'picture/video', 'video']
+    return startTimeTypes.includes(assignmentType) && startTime ? new Date(startTime) : publishTime ? new Date(publishTime) : undefined
+  }, [publishTime, assignmentType, startTime])
 
   const onOpenArticleEvent = useCallback(<T extends HTMLElement>(event: MouseEvent<T> | KeyboardEvent) => {
     event.preventDefault()
@@ -62,7 +67,7 @@ export const AssignmentRow = ({ index, onSelect, isFocused = false, asDialog }: 
         setShowCreateDialog(true)
       }
     }
-  }, [articleId, flashId, openArticle, setShowCreateDialog])
+  }, [articleId, flashId, openArticle, setShowCreateDialog, asDialog])
 
   const rowRef = useRef<HTMLDivElement>(null)
   useEffect(() => {
