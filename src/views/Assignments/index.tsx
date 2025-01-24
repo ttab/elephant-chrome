@@ -69,7 +69,6 @@ export const Assignments = (): JSX.Element => {
           />
           <ViewHeader.Content>
             <Header
-              tab={currentTab}
               type='Assignments'
               assigneeUserName={assigneeUserName}
             />

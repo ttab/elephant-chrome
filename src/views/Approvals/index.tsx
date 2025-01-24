@@ -141,7 +141,7 @@ export const Approvals = (): JSX.Element => {
       <ViewHeader.Root>
         <ViewHeader.Title title='Dagen' short='Dagen' iconColor='#5E9F5D' icon={EarthIcon} />
         <ViewHeader.Content>
-          <Header tab={currentTab} type='Approvals' />
+          <Header type='Approvals' />
         </ViewHeader.Content>
       </ViewHeader.Root>
 

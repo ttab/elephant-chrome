@@ -60,7 +60,7 @@ export const Events = (): JSX.Element => {
                 <ViewHeader.Title title='Händelser' short='Händelser' icon={CalendarPlus2} iconColor='#D802FD' />
 
                 <ViewHeader.Content>
-                  <Header tab={currentTab} type='Event' />
+                  <Header type='Event' />
                 </ViewHeader.Content>
 
                 <ViewHeader.Action />
