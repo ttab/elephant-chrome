@@ -44,7 +44,11 @@ export const AssignmentRow = ({ index, onSelect, isFocused = false, asDialog }: 
   const [showCreateDialog, setShowCreateDialog] = useState<boolean>(false)
 
   const assTime = useMemo(() => {
-    return assignmentType === 'picture' && startTime ? new Date(startTime) : publishTime ? new Date(publishTime) : undefined
+    if (typeof assignmentType !== 'string') {
+      return undefined
+    }
+    const startTimeTypes = ['picture', 'picture/video', 'video']
+    return startTimeTypes.includes(assignmentType) && startTime ? new Date(startTime) : publishTime ? new Date(publishTime) : undefined
   }, [publishTime, assignmentType, startTime])
 
   const onOpenArticleEvent = useCallback(<T extends HTMLElement>(event: MouseEvent<T> | KeyboardEvent) => {
