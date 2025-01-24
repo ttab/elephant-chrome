@@ -112,13 +112,11 @@ export function assignmentColumns({ authors = [], locale, timeZone }: {
         className: 'flex-none w-[112px] hidden @5xl/view:[display:revert]'
       },
       accessorFn: ({ data }) => {
-        const start = data?.start
-        const end = data?.end
-        return [start, end, data?.full_day]
+        return [data?.start, data?.full_day, data?.publish_slot, data?.publish]
       },
       cell: ({ row }) => {
-        const [start, end, fullday] = row.getValue<string[]>('assignment_time')
-        const isFullday = fullday === 'true'
+        const [start, fullDay, publishSlot, publishTime] = row.getValue<string[]>('assignment_time')
+        const isFullday = fullDay === 'true'
         const types: string[] = row.getValue<DefaultValueOption[]>('assignmentType')?.map((t) => t.value)
         const formattedStart = dateInTimestampOrShortMonthDayTimestamp(start, locale, timeZone)
         const formattedEnd = dateInTimestampOrShortMonthDayTimestamp(end, locale, timeZone)
@@ -189,12 +187,13 @@ export function assignmentColumns({ authors = [], locale, timeZone }: {
         return <></>
       },
       filterFn: (row, id, value: string[]) => {
-        const val = row.getValue<Date>('publish_time') || undefined
-        if (val) {
-          return value.includes(row.getValue(id))
-        }
-
-        return false
+        const [startTime, _, __, publishTime] = row.getValue<string[]>(id) || undefined
+        const types = row.getValue<DefaultValueOption[]>('assignmentType')?.map((t) => t.value)
+        const hour = types.includes('picture') ? new Date(startTime).getHours() : new Date(publishTime).getHours()
+        return value.some((v) => {
+          const slots = timesSlots[v]?.slots || []
+          return slots.includes(hour)
+        })
       }
     },
     {
