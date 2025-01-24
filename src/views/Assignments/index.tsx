@@ -46,10 +46,11 @@ export const Assignments = (): JSX.Element => {
   const { data: session } = useSession()
 
   const assigneeUserName = useMemo(() => {
-    const userEmail = session?.user.email
+    const userEmail = session?.user.sub
     const author = authors.find((a: IDBAuthor) => a?.email === userEmail)
+
     return author?.name
-  }, [authors, session?.user?.email])
+  }, [authors, session?.user?.sub])
 
   return (
     <View.Root tab={currentTab} onTabChange={setCurrentTab}>

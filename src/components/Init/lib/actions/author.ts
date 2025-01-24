@@ -12,68 +12,104 @@ export async function initializeAuthor({ url, session, repository }: {
   repository: Repository
   session: Session
 }): Promise<true> {
-  const client = new Index(url.href)
+  try {
+    const client = new Index(url.href)
 
-  const authorDoc = await client.query({
-    accessToken: session.accessToken,
-    documentType: 'core/author',
-    query: QueryV1.create({
-      conditions: {
-        oneofKind: 'bool',
-        bool: BoolQueryV1.create({
-          should: [
-            {
-              conditions: {
-                oneofKind: 'term',
-                term: {
-                  field: 'document.meta.core_author.data.sub.keyword',
-                  value: session.user.sub
+    const authorDoc = await client.query({
+      accessToken: session.accessToken,
+      documentType: 'core/author',
+      loadDocument: true,
+      query: QueryV1.create({
+        conditions: {
+          oneofKind: 'bool',
+          bool: BoolQueryV1.create({
+            should: [
+              {
+                conditions: {
+                  oneofKind: 'term',
+                  term: {
+                    field: 'document.meta.core_author.data.sub.keyword',
+                    value: session.user.sub
+                  }
+                }
+              },
+              {
+                conditions: {
+                  oneofKind: 'term',
+                  term: {
+                    field: 'document.meta.core_contact_info.data.email.keyword',
+                    value: session.user.email
+                  }
                 }
               }
-            },
-            {
-              conditions: {
-                oneofKind: 'term',
-                term: {
-                  field: 'document.meta.core_contact_info.data.email.keyword',
-                  value: session.user.email
-                }
-              }
-            }
-          ]
-        })
-      }
+            ]
+          })
+        }
+      })
     })
-  })
 
-  const isValid = verifyAuthorDoc(authorDoc)
+    const envRole = url.href.includes('stage')
+      ? 'stage'
+      : 'prod'
 
-  if (isValid === false) {
-    const updatedDoc = appendSub(authorDoc.hits[0].document!, session)
-    await repository.saveDoc(updatedDoc, session.accessToken, 0n)
+    const isValid = verifyAuthorDoc(authorDoc, envRole)
+
+    if (isValid === false) {
+      const updatedDoc = appendSub(authorDoc.hits[0].document!, session, envRole)
+      const result = await repository.saveDocument(updatedDoc, session.accessToken, 0n)
+
+      if (result?.status.code !== 'OK') {
+        throw new Error('Failed to update author doc')
+      }
+
+      await repository.saveMeta({
+        status: {
+          version: result.response.version,
+          uuid: result.response.uuid,
+          name: 'usable'
+        },
+        accessToken: session.accessToken
+      })
+
+      return true
+    }
+
+    if (isValid === undefined) {
+      const newDocument = createAuthorDoc(session, envRole)
+      const result = await repository.saveDocument(newDocument, session.accessToken, 0n)
+
+      if (result?.status.code !== 'OK') {
+        throw new Error('Failed to create author doc')
+      }
+
+      await repository.saveMeta({
+        status: {
+          version: result.response.version,
+          uuid: result.response.uuid,
+          name: 'usable'
+        },
+        accessToken: session.accessToken
+      })
+
+      return true
+    }
+
     return true
+  } catch (error) {
+    throw new Error(`Failed to initialize author: ${(error as Error).message}`)
   }
-
-  if (isValid === undefined) {
-    const newDocument = createAuthorDoc(session)
-    await repository.saveDoc(newDocument, session.accessToken, 0n)
-
-    return true
-  }
-
-  return true
 }
 
-function verifyAuthorDoc(document: IndexSearchResult): boolean | undefined {
-  if (document.hits.length === 1) {
-    return !!document.hits[0].document?.links
-      .some((link) => link.type === 'tt/keycloak')
+function verifyAuthorDoc(document: IndexSearchResult, envRole: 'stage' | 'prod'): boolean | undefined {
+  if (document.hits?.[0]?.document) {
+    return document.hits[0].document?.links
+      .some((link) => link.type === 'tt/keycloak' && link.role === envRole)
   }
 
   return undefined
 }
 
-function appendSub(document: Document, session: Session) {
+function appendSub(document: Document, session: Session, role: 'stage' | 'prod') {
   if (!session.user?.sub) {
     throw new Error('No sub in session')
   }
@@ -82,23 +118,22 @@ function appendSub(document: Document, session: Session) {
     document.links = []
   }
 
-  const role = (import.meta.env.AUTH_KEYCLOAK_ISSUER as string || '')
-    .includes('stage')
-    ? 'stage'
-    : 'prod'
-
   document.links.push(Block.create({
     rel: 'same-as',
     type: 'tt/keycloak',
-    uri: `core://user/sub/${session.user.sub}`,
+    uri: `core://user/sub/${session.user.sub
+      .replace('core://user/', '')}`,
     role
   }))
 
   return document
 }
 
-function createAuthorDoc(session: Session) {
-  const decodedToken = decodeJwt(session.accessToken) as { given_name: string, family_name: string }
+function createAuthorDoc(session: Session, envRole: 'stage' | 'prod') {
+  const decodedToken = decodeJwt(session.accessToken) as {
+    given_name: string
+    family_name: string
+  }
 
   const uuid = crypto.randomUUID()
   const document = Document.create({
@@ -112,9 +147,15 @@ function createAuthorDoc(session: Session) {
         firstName: decodedToken.given_name,
         lastName: decodedToken.family_name
       }
+    }, {
+      type: 'core/contact-info',
+      data: {
+        email: session.user.email
+      },
+      role: 'office'
     }],
     language: 'sv-se'
   })
 
-  return appendSub(document, session)
+  return appendSub(document, session, envRole)
 }

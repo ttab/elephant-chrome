@@ -6,10 +6,11 @@ import { FaroErrorBoundary } from '@grafana/faro-react'
 import { Error as ErrorPage } from './views'
 
 export const App = (): JSX.Element => (
-  <FaroErrorBoundary
-    fallback={(error) => <ErrorPage error={error} />}
-  >
-    <Init>
+  <Init>
+
+    <FaroErrorBoundary
+      fallback={(error) => <ErrorPage error={error} />}
+    >
       <ModalProvider>
         <div className='relative flex h-screen flex-col'>
           <div className='grid grid-cols-12 h-screen'>
@@ -21,6 +22,6 @@ export const App = (): JSX.Element => (
           </div>
         </div>
       </ModalProvider>
-    </Init>
-  </FaroErrorBoundary>
+    </FaroErrorBoundary>
+  </Init>
 )

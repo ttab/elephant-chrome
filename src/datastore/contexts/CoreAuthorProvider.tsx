@@ -45,7 +45,9 @@ export const CoreAuthorProvider = ({ children }: {
           firstName: _?.['document.meta.core_author.data.firstName']?.[0].trim() || '',
           lastName: _?.['document.meta.core_author.data.lastName']?.[0].trim() || '',
           initials: _?.['document.meta.core_author.data.initials']?.[0].trim() || '',
-          email: _?.['document.meta.core_contact_info.data.email']?.[0].trim() || ''
+          email: _?.['document.meta.core_contact_info.data.email']?.[0].trim() || '',
+          sub: _?.['document.rel.same_as.uri']
+            ?.find((m: string) => m?.startsWith('core://user/sub'))?.trim() || ''
         }
       }
     )

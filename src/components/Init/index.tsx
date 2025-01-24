@@ -28,6 +28,29 @@ export const Init = ({ children }: PropsWithChildren): JSX.Element => {
     author: undefined
   })
 
+  if (status === 'loading') {
+    return (
+      <View.Root>
+        <View.Content>
+          <div className='flex items-center justify-center h-screen'>
+            <div className='flex-col w-1/3'>
+              <LoadingText>Hämtar session...</LoadingText>
+            </div>
+          </div>
+        </View.Content>
+      </View.Root>
+    )
+  }
+
+  if (status === 'unauthenticated' || !session || session.error) {
+    const callbackUrl = window.location.href.replace(window.location.origin, '')
+    return (
+      <div className='relative flex h-screen flex-col'>
+        <Login callbackUrl={callbackUrl} />
+      </div>
+    )
+  }
+
 
   if (isInitialized.faro === undefined) {
     setIsInitialized((prevState) => ({ ...prevState, faro: false }))
@@ -58,28 +81,6 @@ export const Init = ({ children }: PropsWithChildren): JSX.Element => {
     })
   }
 
-  if (status === 'loading' || Object.values(isInitialized).some((value: boolean) => !value)) {
-    return (
-      <View.Root>
-        <View.Content>
-          <div className='flex items-center justify-center h-screen'>
-            <div className='flex-col w-1/3'>
-              <LoadingText>Startar...</LoadingText>
-            </div>
-          </div>
-        </View.Content>
-      </View.Root>
-    )
-  }
-
-  if (status === 'unauthenticated' || !session || session.error) {
-    const callbackUrl = window.location.href.replace(window.location.origin, '')
-    return (
-      <div className='relative flex h-screen flex-col'>
-        <Login callbackUrl={callbackUrl} />
-      </div>
-    )
-  }
 
   return (
     <UserTrackerProvider>
