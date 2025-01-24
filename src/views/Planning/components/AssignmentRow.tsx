@@ -63,7 +63,7 @@ export const AssignmentRow = ({ index, onSelect, isFocused = false, asDialog }: 
         setShowCreateDialog(true)
       }
     }
-  }, [articleId, flashId, openArticle, setShowCreateDialog])
+  }, [articleId, flashId, openArticle, setShowCreateDialog, asDialog])
 
   const rowRef = useRef<HTMLDivElement>(null)
   useEffect(() => {
