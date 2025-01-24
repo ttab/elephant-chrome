@@ -9,7 +9,7 @@ const icons: Record<string, React.FC<LucideProps>> = {
   publish: AlarmClockCheck
 }
 
-const TimeComponent = ({ time, type, tooltip }: { time: string, type: string, tooltip?: string }): JSX.Element => {
+const TimeComponent = ({ time, type, tooltip }: { time: string, type: 'start' | 'fullday' | 'publish', tooltip?: string }): JSX.Element => {
   const Icon = useMemo(() => icons[type] || null, [type])
 
   return (
