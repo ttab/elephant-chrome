@@ -119,72 +119,34 @@ export function assignmentColumns({ authors = [], locale, timeZone }: {
         const isFullday = fullDay === 'true'
         const types: string[] = row.getValue<DefaultValueOption[]>('assignmentType')?.map((t) => t.value)
         const formattedStart = dateInTimestampOrShortMonthDayTimestamp(start, locale, timeZone)
-        const formattedEnd = dateInTimestampOrShortMonthDayTimestamp(end, locale, timeZone)
-        const formattedDatestring = `${formattedStart} - ${formattedEnd}`
+
+        /* Assignment type: text | video | graphic
+          Order of returned information for non-picture assignments:
+          1. publish_slot (Full day if true - otherwise daytime slot)
+          2. publish time short (ex 13:30)
+          3. start time short (ex 13:30)
+        */
 
         if (!types.includes('picture')) {
           if (isFullday) {
-            return (
-              <Tooltip content='Uppdragstid'>
-                <div>Heldag</div>
-              </Tooltip>
-            )
-          } else {
-            return (
-              <Tooltip content={`Uppdragstid: ${formattedDatestring}`}>
-                <div>{formattedDatestring}</div>
-              </Tooltip>
-            )
+            return <Time time='Heldag' type='fullday' />
           }
+          if (publishSlot) {
+            const slotFormatted = Object.entries(timesSlots).find((slot) => slot[1].slots.includes(+publishSlot))?.[1]?.label
+            return <div>{slotFormatted}</div>
+          }
+          if (publishTime) {
+            const formattedPublishTime = dateInTimestampOrShortMonthDayTimestamp(publishTime, locale, timeZone)
+            return <Time time={formattedPublishTime} type='publish' tooltip='Publiceringstid' />
+          }
+
+          // Default to display the start time of the assignment
+          return <Time time={formattedStart} type='start' tooltip='Uppdragets starttid' />
         }
-        /* Assignment type: picture */
-        if (isFullday) {
-          return (
-            <Tooltip content='Uppdragstid'>
-              <div>Heldag</div>
-            </Tooltip>
-          )
-        }
-        return (
-          <Tooltip content={`Uppdragstid: ${formattedDatestring}`}>
-            <div>{formattedDatestring}</div>
-          </Tooltip>
-        )
-      },
-      filterFn: (row, id, value: string[]) => {
-        const val = row.getValue<string[]>(id) || undefined
-        const [start, _, fullDay] = val
-        const isFullDay = fullDay === 'true'
-        if (isFullDay) {
-          return isFullDay
-        }
-        if (start) {
-          return timesSlots[value[0]]?.slots.includes(new Date(start).getHours())
-        }
-        return false
-      }
-    },
-    {
-      id: 'publish_time',
-      meta: {
-        options: slotLabels,
-        Filter: ({ column, setSearch }) => (
-          <FacetedFilter column={column} setSearch={setSearch} />
-        ),
-        name: 'Publiceringstid',
-        columnIcon: Clock9Icon,
-        className: 'flex-none w-[112px] hidden @5xl/view:[display:revert]'
-      },
-      accessorFn: ({ data }) => {
-        return [data?.publish]
-      },
-      cell: ({ row }) => {
-        const [publishValue] = row.getValue<Array<string | undefined>>('publish_time') || undefined
-        if (publishValue) {
-          const publishTime = dateInTimestampOrShortMonthDayTimestamp(publishValue, locale, timeZone)
-          return <Tooltip content='Publiceringstid'>{publishTime}</Tooltip>
-        }
-        return <></>
+        /* Assignment type: picture
+           • Always display the shortened start time (ex 13:30)
+        */
+        return <Time time={formattedStart} type='start' tooltip='Uppdragets starttid' />
       },
       filterFn: (row, id, value: string[]) => {
         const [startTime, _, __, publishTime] = row.getValue<string[]>(id) || undefined
