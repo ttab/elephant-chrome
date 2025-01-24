@@ -1,7 +1,7 @@
 
 import { NewsvalueMap } from '@/defaults/newsvalueMap'
 import { Newsvalue } from '@/components/Table/Items/Newsvalue'
-import { Briefcase, Clock3Icon, Clock9Icon, Crosshair, Navigation, SignalHigh, Users } from '@ttab/elephant-ui/icons'
+import { Briefcase, Clock3Icon, Crosshair, Navigation, SignalHigh, Users } from '@ttab/elephant-ui/icons'
 import { Newsvalues } from '@/defaults/newsvalues'
 import { FacetedFilter } from '@/components/Commands/FacetedFilter'
 import { AssignmentTypes } from '@/defaults/assignmentTypes'
@@ -10,7 +10,6 @@ import { getNestedFacetedUniqueValues } from '@/components/Filter/lib/getNestedF
 import { Assignees } from '@/components/Table/Items/Assignees'
 import { AssignmentTitles } from '@/components/Table/Items/AssignmentTitles'
 import { Actions } from '@/components/Table/Items/Actions'
-import { Tooltip } from '@ttab/elephant-ui'
 import { dateInTimestampOrShortMonthDayTimestamp } from '@/lib/datetime'
 import { type ColumnDef } from '@tanstack/react-table'
 import { type DefaultValueOption } from '@/types/index'
@@ -21,6 +20,7 @@ import {
   type AssigneeMeta
 } from './types'
 import { slotLabels, timesSlots } from '@/defaults/assignmentTimeslots'
+import { Time } from './Time'
 
 export function assignmentColumns({ authors = [], locale, timeZone }: {
   authors?: IDBAuthor[]
