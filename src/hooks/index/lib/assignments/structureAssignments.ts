@@ -1,6 +1,6 @@
 import { toZonedTime } from 'date-fns-tz'
 import { parseISO, getHours } from 'date-fns'
-import type { AssignmentInterface } from './fetch'
+import type { AssignmentInterface } from './types'
 
 interface AssignmentResponseInterface {
   key?: string
@@ -20,7 +20,7 @@ interface AssignmentResponseInterface {
  * @param {number[]} slots[].hours - The hours that define the time slot
  * @returns {AssignmentResponseInterface[]} - The structured assignments categorized into time slots
  */
-function structureAssignments(
+export function structureAssignments(
   timeZone: string,
   assignments: AssignmentInterface[],
   slots?: {
@@ -62,5 +62,3 @@ function structureAssignments(
 
   return response
 }
-
-export default structureAssignments

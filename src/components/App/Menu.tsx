@@ -18,11 +18,11 @@ import { useUser } from '@/hooks/useUserDoc'
 import { cn } from '@ttab/elephant-ui/utils'
 import { useRef } from 'react'
 
+const BASE_URL = import.meta.env.BASE_URL
 const hasUserDoc = (obj: object | undefined) => obj && Object.keys(obj).length > 0
 
 export const Menu = (): JSX.Element => {
   const { data } = useSession()
-
   const triggerRef = useRef<HTMLButtonElement>(null)
   const [user] = useUser<object>('')
 
@@ -89,7 +89,8 @@ export const Menu = (): JSX.Element => {
               variant='outline'
               onClick={(event) => {
                 event.preventDefault()
-                signOut()
+
+                signOut({ redirectTo: `${BASE_URL}/api/signout`, redirect: true })
                   .catch((error) => console.error(error))
                 localStorage.removeItem('trustGoogle')
               }}

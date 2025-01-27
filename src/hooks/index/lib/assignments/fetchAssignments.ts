@@ -2,22 +2,13 @@ import { DocumentStatuses } from '@/defaults/documentStatuses'
 import type { Index } from '@/shared/Index'
 import type { Repository } from '@/shared/Repository'
 import { QueryV1, BoolQueryV1 } from '@ttab/elephant-api/index'
-import type { Block, Document } from '@ttab/elephant-api/newsdoc'
-import type { BulkGetResponse, GetStatusOverviewResponse } from '@ttab/elephant-api/repository'
+import type { BulkGetResponse, GetStatusOverviewResponse, StatusOverviewItem } from '@ttab/elephant-api/repository'
 import type { Session } from 'next-auth'
 import { parseISO } from 'date-fns'
-import { getStatus } from './getStatus'
+import { getStatus } from '../getStatus'
+import { getAssignmentsFromDocument } from './getAssignmentsFromDocument'
+import type { AssignmentInterface } from './types'
 
-export interface AssignmentInterface extends Block {
-  _id: string
-  _deliverableId: string
-  _deliverableStatus?: string
-  _deliverableDocument?: Document
-  _title: string
-  _newsvalue?: string
-  _section?: string
-  _statusData?: string
-}
 
 // We want to fetch all known statuses for deliverables and then
 // filter them using the supplied "statuses" prop.
@@ -35,10 +26,11 @@ const knownStatuses = DocumentStatuses.map((status) => status.value)
  * @param {Date | string} params.date - The date to filter assignments by.
  * @returns {Promise<AssignmentInterface[] | undefined>} - The fetched assignments or undefined if index or session is not provided.
  */
-async function fetchAssignments({ index, repository, type, session, date }: {
+export async function fetchAssignments({ index, repository, type, requireDeliverable = false, session, date }: {
   index: Index | undefined
   repository: Repository | undefined
   type?: string
+  requireDeliverable?: boolean
   session: Session | null
   date: Date | string
 }
@@ -60,70 +52,64 @@ async function fetchAssignments({ index, repository, type, session, date }: {
       page,
       size,
       loadDocument: true,
-      query: getQuery(date)
+      query: constructQuery(date)
     })
 
     if (!ok) {
       throw new Error(errorMessage || 'Unknown error while searching for text assignments')
     }
 
-    // Collect all deliverable uuids for this page
+    // Collect all assignments and deliverable uuids for this result page
     const uuids: string[] = []
+    for (const { document } of hits) {
+      if (document) {
+        for (const assignment of getAssignmentsFromDocument(document, type)) {
+          if (!requireDeliverable || assignment._deliverableId) {
+            assignments.push(assignment)
+          }
 
-    hits.forEach((hit) => {
-      if (!hit.document) {
-        return
-      }
-
-      // Extract planning level data
-      getAssignments(hit.document, type).forEach((assignment) => {
-        if (assignment._deliverableId) {
-          uuids.push(assignment._deliverableId)
+          if (assignment._deliverableId) {
+            uuids.push(assignment._deliverableId)
+          }
         }
-        assignments.push(assignment)
-      })
-    })
-
-    // Initialize a getStatuses request for this result page
-    const statusRequest = repository?.getStatuses({
-      uuids,
-      statuses: knownStatuses,
-      accessToken: session.accessToken
-    })
-    if (statusRequest) {
-      deliverableStatusesRequests.push(statusRequest)
+      }
     }
 
-    // Initialize a getDocuments request for this result page
-    const documentsRequest = repository?.getDocuments({
-      uuids,
-      accessToken: session.accessToken
-    })
-    if (documentsRequest) {
-      deliverableDocumentsRequests.push(documentsRequest)
+    // If we found deliverable uuids we want to fetch statuses and the deliverable documents
+    if (uuids.length > 0 && repository) {
+      // Initialize a getStatuses request for this result page
+      const [documentsRequest, statusesRequest] = getRelatedDocuments(repository, session.accessToken, uuids)
+
+      if (documentsRequest instanceof Promise) {
+        deliverableDocumentsRequests.push(documentsRequest)
+      }
+
+      if (statusesRequest instanceof Promise) {
+        deliverableStatusesRequests.push(statusesRequest)
+      }
     }
 
     page = hits?.length === size ? page + 1 : 0
   } while (page)
 
+
   const filteredTextAssignments: AssignmentInterface[] = []
 
-  // Wait for all status requests to finish and find status for each deliverable
-  const statusResponses = await Promise.all(deliverableStatusesRequests)
-  statusResponses.forEach((statusResponse) => {
-    statusResponse?.items.forEach((itemStatuses) => {
-      const status = getStatus(itemStatuses)
+  // Wait for all statuses requests to finish and extract all status overviews
+  const statusOverviews = (await Promise.all(deliverableStatusesRequests)).reduce((prev, curr) => {
+    return [...prev || [], ...curr?.items || []]
+  }, [] as StatusOverviewItem[])
 
-      const t = assignments.find((t) => t._deliverableId == itemStatuses.uuid)
-      if (t) {
-        filteredTextAssignments.push({
-          ...t,
-          _deliverableStatus: status,
-          _statusData: JSON.stringify(itemStatuses, (_, val) => { return typeof val === 'bigint' ? val.toString() : val as unknown }, 2)
-        })
-      }
+  // Apply status to all assignments
+  assignments.forEach((assignment) => {
+    const statusOverview = statusOverviews.find((si) => si.uuid === assignment._deliverableId)
+    filteredTextAssignments.push({
+      ...assignment,
+      _deliverableStatus: getStatus(statusOverview),
+      _statusData: (statusOverview) ? JSON.stringify(statusOverview, (_, val) => { return typeof val === 'bigint' ? val.toString() : val as unknown }, 2) : undefined
     })
   })
+
 
   // Wait for all documents requests to finish and find document for each deliverable
   const documentsResponses = await Promise.all(deliverableDocumentsRequests)
@@ -139,8 +125,8 @@ async function fetchAssignments({ index, repository, type, session, date }: {
     })
   })
 
-  // Plannings can have multiple assignments stretching over a full day
-  // so we need to sort assignments
+
+  // Sort assignments with fullday first, then in time order
   filteredTextAssignments.sort((a, b) => {
     const at = a.data.publish ? parseISO(a.data.publish) : 0
     const bt = b.data.publish ? parseISO(b.data.publish) : 0
@@ -151,25 +137,8 @@ async function fetchAssignments({ index, repository, type, session, date }: {
   return filteredTextAssignments
 }
 
-/**
- * Check that the assignment is valid and matches the given type.
- *
- * @param assignmentMeta - The metadata of the assignment to check.
- * @param type - The type to filter assignments by (e.g. text, picture).
- * @returns - Returns true if the assignment is valid and matches the given type, otherwise false.
- */
-function isValidAssignment(assignmentMeta: Block, type: string | undefined): boolean {
-  if (assignmentMeta.type !== 'core/assignment') {
-    return false
-  }
 
-  // If type is given, filter out anything but type (e.g. text, picture...)
-  if (type && !assignmentMeta.meta.filter((m) => m.type === 'core/assignment-type' && m.value === type)?.length) {
-    return false
-  }
 
-  return true
-}
 
 
 /**
@@ -178,7 +147,7 @@ function isValidAssignment(assignmentMeta: Block, type: string | undefined): boo
  * @param date - The date to format for the query.
  * @returns The formatted query object.
  */
-function getQuery(date: Date | string): QueryV1 {
+function constructQuery(date: Date | string): QueryV1 {
   const today = new Date(date)
   today.setHours(0, 0, 0, 0)
 
@@ -221,37 +190,30 @@ function getQuery(date: Date | string): QueryV1 {
   })
 }
 
+
 /**
- * Extract assignments of the given type from the planning document
+ * Fetch documents and status documents for the given uuids from the repository
  *
- * @param document - The planning document to extract assignments from.
- * @param type - The type of assignments to extract.
- * @returns An array of assignments matching the given type.
+ * @param repository {Repository}
+ * @param accessToken {string}
+ * @param uuids {string[]}
+ *
+ * @returns [Promise<BulkGetResponse | null>, Promise<GetStatusOverviewResponse | null]
  */
-function getAssignments(document: Document, type?: string): AssignmentInterface[] {
-  const { meta, links } = document
-  const assignments: AssignmentInterface[] = []
-
-  // Loop over all meta elements to find assignments
-  meta?.forEach((assignmentMeta) => {
-    if (!isValidAssignment(assignmentMeta, type)) {
-      return
-    }
-
-    // Collect all deliverable uuids
-    const _deliverableId = assignmentMeta.links.find((l) => l.rel === 'deliverable')?.uuid
-
-    assignments.push({
-      _id: document.uuid,
-      _title: document.title,
-      _newsvalue: meta?.find((assignmentMeta) => assignmentMeta.type === 'core/newsvalue')?.value,
-      _section: links.find((l) => l.type === 'core/section')?.title,
-      _deliverableId: _deliverableId || '',
-      ...assignmentMeta
-    })
+function getRelatedDocuments(repository: Repository, accessToken: string, uuids: string[]): [Promise<BulkGetResponse | null>, Promise<GetStatusOverviewResponse | null>] {
+  // Initialize a getDocuments request for this result page
+  const documentsRequest = repository.getDocuments({
+    uuids,
+    accessToken
   })
 
-  return assignments
-}
+  // Initialize a getStatuses request for this result page
+  const statusesRequest = repository.getStatuses({
+    uuids,
+    statuses: knownStatuses,
+    accessToken
+  })
 
-export default fetchAssignments
+
+  return [documentsRequest, statusesRequest]
+}
