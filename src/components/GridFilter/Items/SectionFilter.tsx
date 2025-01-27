@@ -38,7 +38,7 @@ export const SectionFilter = ({ page, setPage, setSearch }: {
     return (
       <>
         {allSections.map((section) => {
-          const isSelected = sections?.has?.(section.label)
+          const isSelected = sections?.has?.(section.value)
 
           return (
             <CommandItem
@@ -46,9 +46,9 @@ export const SectionFilter = ({ page, setPage, setSearch }: {
               key={section.value}
               onSelect={() => {
                 if (isSelected) {
-                  sections.delete(section.label)
+                  sections.delete(section.value)
                 } else {
-                  sections.add(section.label)
+                  sections.add(section.value)
                 }
 
                 setFilter({ ...filter, section: Array.from(sections) })

@@ -13,6 +13,7 @@ import { toZonedTime } from 'date-fns-tz'
 import { ModalContent } from '../Wires/components'
 import { useActiveUsers } from '@/hooks/useActiveUsers'
 import { AssigneeAvatars } from '@/components/DataItem/AssigneeAvatars'
+import { useSections } from '@/hooks/useSections'
 
 
 export const ApprovalsCard = ({ assignment, isSelected, isFocused, status }: {
@@ -23,6 +24,7 @@ export const ApprovalsCard = ({ assignment, isSelected, isFocused, status }: {
 }) => {
   const { timeZone } = useRegistry()
   const { showModal, hideModal } = useModal()
+  const sections = useSections()
   const openArticle = useLink('Editor')
   const time = assignment.data.publish
     ? format(toZonedTime(parseISO(assignment.data.publish), timeZone), 'HH:mm')
@@ -118,7 +120,9 @@ export const ApprovalsCard = ({ assignment, isSelected, isFocused, status }: {
           </div>
           <div className='flex flex-grow justify-between align-middle'>
             <div className='content-center opacity-60'>
-              {assignment._section}
+              {sections
+                .find((section) => section.id === assignment._section)
+                ?.title}
               &middot;
               1024 tkn
             </div>
