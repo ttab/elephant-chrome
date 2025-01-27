@@ -156,7 +156,10 @@ export const AssignmentRow = ({ index, onSelect, isFocused = false, asDialog }: 
             variant='icon'
             className='p-0 pr-2'
           >
-            <AssignmentType path={`meta.core/assignment[${index}].meta.core/assignment-type`} />
+            <AssignmentType
+              path={`meta.core/assignment[${index}].meta.core/assignment-type`}
+              inProgress={!!articleId || !!flashId}
+            />
           </Button>
           <AssigneeAvatars assignees={authors.map((author) => author.title)} />
 
