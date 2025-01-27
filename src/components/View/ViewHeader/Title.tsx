@@ -9,7 +9,7 @@ export const Title = ({ title, short: shortTitle, icon: Icon, iconColor, asDialo
   iconColor?: string
   asDialog?: boolean
 } & PropsWithChildren): JSX.Element => {
-  const viewVariants = cva('flex flex-1 gap-2 items-center grow-0 h-14 cursor-pointer', {
+  const viewVariants = cva('flex flex-1 gap-2 items-center grow-0 h-14 cursor-default', {
     variants: {
       asDialog: {
         false: 'px-4'
@@ -22,7 +22,7 @@ export const Title = ({ title, short: shortTitle, icon: Icon, iconColor, asDialo
       {!!Icon && <Icon size={18} strokeWidth={2.05} color={iconColor || '#222'} />}
 
       {!!title && (
-        <h2 className='font-bold cursor-pointer whitespace-nowrap opacity-90'>
+        <h2 className='font-bold cursor-default whitespace-nowrap opacity-90'>
           {typeof shortTitle !== 'string'
             ? <>{title}</>
             : (
