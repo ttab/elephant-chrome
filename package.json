@@ -92,7 +92,7 @@
     "fake-indexeddb": "^6.0.0",
     "jest-environment-jsdom": "^29.7.0",
     "jsdom": "^26.0.0",
-    "tailwindcss": "^3.4.17",
+    "tailwindcss": "^4.0.0",
     "tsc-alias": "^1.8.10",
     "tsx": "^4.19.2",
     "typescript": "^5.7.3",
