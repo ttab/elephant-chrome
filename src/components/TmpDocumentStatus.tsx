@@ -90,6 +90,13 @@ function nextStatus(currentStatus: string | undefined): {
         label: 'Publicerad'
       }
     }
+
+    case 'withheld': {
+      return {
+        status: 'usable',
+        label: 'Publicera'
+      }
+    }
   }
 
   throw new Error(`Unknown status: ${currentStatus}`)
