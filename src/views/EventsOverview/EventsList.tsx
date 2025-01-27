@@ -18,7 +18,8 @@ export const EventsList = ({ from, to }: {
       start: from,
       end: to
     }
-  }, { withPlannings: true }])
+  }, { withPlannings: true, withStatus: true }])
+
   const columns = useMemo(() => eventTableColumns({ sections }), [sections])
   const { table } = useTable()
 

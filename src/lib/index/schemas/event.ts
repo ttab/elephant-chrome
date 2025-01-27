@@ -17,6 +17,7 @@ const _EventsSchema = z.object({
     'document.rel.copyrightholder.title': z.array(z.string()),
     'document.meta.core_event.data.registration': z.array(z.string()),
     'document.meta.core_newsvalue.value': z.array(z.string()),
+    'document.meta.status': z.array(z.string()),
     'document.rel.category.type': z.array(z.string()),
     'document.rel.category.title': z.array(z.string()),
     'document.rel.category.uri': z.array(z.string()),

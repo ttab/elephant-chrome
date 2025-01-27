@@ -1,4 +1,3 @@
-
 import { type ColumnDef } from '@tanstack/react-table'
 import { type Event } from '@/lib/index/schemas/event'
 import { Newsvalue } from '@/components/Table/Items/Newsvalue'
@@ -11,11 +10,13 @@ import {
   Navigation,
   NotebookPen,
   Edit,
-  Delete
+  Delete,
+  CircleCheck
 } from '@ttab/elephant-ui/icons'
 import { DotDropdownMenu } from '@/components/ui/DotMenu'
-import { Newsvalues, NewsvalueMap } from '@/defaults'
+import { DocumentStatuses, Newsvalues, NewsvalueMap } from '@/defaults'
 import { Time } from '@/components/Table/Items/Time'
+import { DocumentStatus } from '@/components/Table/Items/DocumentStatus'
 import { Title } from '@/components/Table/Items/Title'
 import { Status } from '@/components/Table/Items/Status'
 import { SectionBadge } from '@/components/DataItem/SectionBadge'
@@ -26,6 +27,28 @@ export function eventTableColumns({ sections = [] }: {
   sections?: IDBSection[]
 }): Array<ColumnDef<Event>> {
   return [
+    {
+      id: 'documentStatus',
+      meta: {
+        Filter: ({ column, setSearch }) => (
+          <FacetedFilter column={column} setSearch={setSearch} />
+        ),
+        options: DocumentStatuses,
+        name: 'Status',
+        columnIcon: CircleCheck,
+        className: 'flex-none'
+      },
+      accessorFn: (data) => {
+        console.log(JSON.stringify(data?._source, null, 2))
+        return data?._source['document.meta.status'][0]
+      },
+      cell: ({ row }) => {
+        const status = row.getValue<string>('documentStatus')
+        return <DocumentStatus status={status} />
+      },
+      filterFn: (row, id, value: string[]) =>
+        value.includes(row.getValue(id))
+    },
     {
       id: 'newsvalue',
       meta: {
