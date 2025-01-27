@@ -1,11 +1,10 @@
 import { DateChanger } from '@/components/Header/Datechanger'
-import { Filter as TableFilter } from '@/components'
+import { TableFilter } from '@/components'
 import { CreateDocumentDialog } from '@/components/View/ViewHeader/CreateDocumentDialog'
 import { TabsGrid } from '@/components/Header/LayoutSwitch'
 import { Button } from '@ttab/elephant-ui'
 import { PlusIcon } from '@ttab/elephant-ui/icons'
 import { type View } from '@/types/index'
-import { Commands } from '../Commands'
 import { PersonalAssignmentsFilter } from './PersonalAssignmentsFilter'
 import { useMemo } from 'react'
 import { GridFilter } from '../GridFilter'
@@ -41,9 +40,7 @@ export const Header = ({ assigneeUserName, type }: {
       </div>
 
       <DateChanger type={type} />
-      <Filter>
-        <Commands />
-      </Filter>
+      <Filter />
 
       {type === 'Assignments' && <PersonalAssignmentsFilter assigneeUserName={assigneeUserName} />}
     </>

@@ -5,9 +5,10 @@ import { CheckIcon, Shapes } from '@ttab/elephant-ui/icons'
 import { cn } from '@ttab/elephant-ui/utils'
 import type { Dispatch, SetStateAction } from 'react'
 
-export const SectionFilter = ({ page, setPage }: {
+export const SectionFilter = ({ page, setPage, setSearch }: {
   page: string
   setPage: Dispatch<SetStateAction<string>>
+  setSearch: Dispatch<SetStateAction<string | undefined>>
 }): JSX.Element | undefined => {
   const [filter, setFilter] = useFilter(['section'])
   const sections = new Set(filter.section)
@@ -21,11 +22,14 @@ export const SectionFilter = ({ page, setPage }: {
   if (!page) {
     return (
       <CommandItem
-        onSelect={() => setPage('section')}
+        onSelect={() => {
+          setPage('section')
+          setSearch('')
+        }}
         className='flex gap-1 items-center'
       >
         <Shapes size={18} strokeWidth={1.75} />
-        Section
+        Sektion
       </CommandItem>
     )
   }
@@ -41,7 +45,6 @@ export const SectionFilter = ({ page, setPage }: {
               className='flex gap-1 items-center'
               key={section.value}
               onSelect={() => {
-                console.log('onSelect')
                 if (isSelected) {
                   sections.delete(section.label)
                 } else {

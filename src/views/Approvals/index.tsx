@@ -11,6 +11,7 @@ import { DocumentStatuses } from '@/defaults/documentStatuses'
 import { Header } from '@/components/Header'
 import { getDateTimeBoundariesUTC } from '@/lib/datetime'
 import { ApprovalsCard } from './ApprovalsCard'
+import { Toolbar } from '@/components/GridFilter/Toolbar'
 
 const meta: ViewMetadata = {
   name: 'Approvals',
@@ -142,9 +143,11 @@ export const Approvals = (): JSX.Element => {
         <ViewHeader.Title title='Dagen' short='Dagen' iconColor='#5E9F5D' icon={EarthIcon} />
         <ViewHeader.Content>
           <Header type='Approvals' />
+
         </ViewHeader.Content>
       </ViewHeader.Root>
 
+      <Toolbar />
       <View.Content variant='grid' columns={slots.length}>
         {data.map((slot, colN) => {
           return (

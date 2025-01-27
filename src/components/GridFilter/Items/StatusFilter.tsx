@@ -5,9 +5,10 @@ import { CheckIcon, CircleCheck } from '@ttab/elephant-ui/icons'
 import { cn } from '@ttab/elephant-ui/utils'
 import type { Dispatch, SetStateAction } from 'react'
 
-export const StatusFilter = ({ page, setPage }: {
+export const StatusFilter = ({ page, setPage, setSearch }: {
   page: string
   setPage: Dispatch<SetStateAction<string>>
+  setSearch: Dispatch<SetStateAction<string | undefined>>
 }): JSX.Element | undefined => {
   const [filter, setFilter] = useFilter(['status'])
   const statuses = new Set(filter.status)
@@ -15,7 +16,10 @@ export const StatusFilter = ({ page, setPage }: {
   if (!page) {
     return (
       <CommandItem
-        onSelect={() => setPage('status')}
+        onSelect={() => {
+          setSearch('')
+          setPage('status')
+        }}
         className='flex gap-1 items-center'
       >
         <CircleCheck size={18} strokeWidth={1.75} />
@@ -35,7 +39,6 @@ export const StatusFilter = ({ page, setPage }: {
               className='flex gap-1 items-center'
               key={status.value}
               onSelect={() => {
-                console.log('onSelect')
                 if (isSelected) {
                   statuses.delete(status.value)
                 } else {

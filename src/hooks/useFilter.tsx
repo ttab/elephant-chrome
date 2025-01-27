@@ -15,8 +15,11 @@ export const useFilter = (keys: string[]): [Filter, (arg: Filter) => void] => {
   }, {} as Filter)
 
   const updateFilter = (newvalue: Filter) => {
-    // Remove empty keys
-    const cleanedValue = Object.fromEntries(Object.entries(newvalue).filter(([_, v]) => v.length > 0))
+  // Set empty keys to undefined
+    const cleanedValue = Object.fromEntries(
+      Object.entries(newvalue).map(([key, value]) => [key, value.length > 0 ? value : undefined])
+    )
+
     setQuery(cleanedValue)
   }
 

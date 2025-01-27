@@ -20,7 +20,7 @@ import { DocumentStatus } from '@/components/Table/Items/DocumentStatus'
 import { SectionBadge } from '@/components/DataItem/SectionBadge'
 import { type IDBAuthor, type IDBSection } from 'src/datastore/types'
 import { FacetedFilter } from '@/components/Commands/FacetedFilter'
-import { getNestedFacetedUniqueValues } from '@/components/Filter/lib/getNestedFacetedUniqueValues'
+import { getNestedFacetedUniqueValues } from '@/components/TableFilter/lib/getNestedFacetedUniqueValues'
 
 export function planningListColumns({ sections = [], authors = [] }: {
   sections?: IDBSection[]

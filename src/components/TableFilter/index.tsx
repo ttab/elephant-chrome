@@ -1,3 +1,4 @@
+import type { SetStateAction } from 'react'
 import { type Dispatch, useState, useMemo, type PropsWithChildren, useRef, useEffect } from 'react'
 import { ListFilter } from '@ttab/elephant-ui/icons'
 import {
@@ -9,7 +10,7 @@ import {
 import { DebouncedCommandInput } from '@/components/Commands/Menu/DebouncedCommandInput'
 import { useTable } from '@/hooks'
 
-export const Filter = ({ children }: PropsWithChildren): JSX.Element => {
+export const TableFilter = ({ children }: PropsWithChildren): JSX.Element => {
   const [open, setOpen] = useState(false)
 
   const { command, table } = useTable()
@@ -61,7 +62,6 @@ export const Filter = ({ children }: PropsWithChildren): JSX.Element => {
             }
           }}
         >
-
           <DebouncedCommandInput
             ref={inputRef}
             value={search}
@@ -71,7 +71,7 @@ export const Filter = ({ children }: PropsWithChildren): JSX.Element => {
                 table.setGlobalFilter(value)
               }
             }}
-            placeholder={page === 'textFilter' ? 'Sök' : 'Filter'}
+            placeholder={page === 'textFilter' ? 'Sök' : 'Filtrera'}
             className='h-9'
           />
           {children}
@@ -82,9 +82,9 @@ export const Filter = ({ children }: PropsWithChildren): JSX.Element => {
 }
 
 function handleOpenChange({ setOpen, setSearch, setPages }: {
-  setOpen: Dispatch<boolean>
-  setSearch: Dispatch<string | undefined>
-  setPages: Dispatch<string[]>
+  setOpen: Dispatch<SetStateAction<boolean>>
+  setSearch: Dispatch<SetStateAction<string | undefined>>
+  setPages: Dispatch<SetStateAction<string[]>>
 }): (open: boolean) => void {
   return (open: boolean) => {
     setSearch(undefined)
