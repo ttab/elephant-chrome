@@ -26,7 +26,7 @@ export const timesSlots: Slots = {
 export const slotLabels = [
   { value: 'fullday', label: 'Heldag' },
   { value: 'morning', label: 'Morgon' },
-  { value: 'afternoon', label: 'Eftermiddag' },
   { value: 'forenoon', label: 'Förmiddag' },
+  { value: 'afternoon', label: 'Eftermiddag' },
   { value: 'evening', label: 'Kväll' }
 ]

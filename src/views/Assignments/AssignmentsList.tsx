@@ -61,8 +61,10 @@ export const AssignmentsList = ({ startDate }: { startDate: string }): JSX.Eleme
     items.sort((a, b) => {
       if (a.newsvalue > b.newsvalue) return -1
       if (a.newsvalue < b.newsvalue) return 1
-      if (a.data.start < b.data.start) return -1
-      if (a.data.start > b.data.start) return 1
+      if (a.data.start && b.data.start) {
+        if (a.data.start < b.data.start) return -1
+        if (a.data.start > b.data.start) return 1
+      }
       return 0
     })
     setData(items)

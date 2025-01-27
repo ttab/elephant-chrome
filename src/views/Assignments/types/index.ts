@@ -1,3 +1,5 @@
+import type { AssignmentData } from '@/components/AssignmentTime/types'
+
 export type AssignmentMetaExtended = AssignmentMeta & {
   planningTitle: string
   newsvalue: string
@@ -31,16 +33,6 @@ interface AssignmentEventData {
   tentative: boolean
 }
 
-export interface AssignmentDateDetails {
-  end: string
-  end_date: string
-  full_day: 'true' | 'false'
-  public: 'true' | 'false'
-  publish: string
-  start: string
-  start_date: string
-}
-
 export interface TypeValue {
   type: string
   value: string
@@ -52,7 +44,7 @@ export interface TypeData {
 }
 
 export interface AssignmentMeta {
-  data: AssignmentDateDetails
+  data: AssignmentData
   id: string
   links: Array<AssigneeMeta | Status | LinkMeta>
   meta: TypeValue[]
