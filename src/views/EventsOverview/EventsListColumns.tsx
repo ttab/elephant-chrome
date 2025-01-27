@@ -38,10 +38,7 @@ export function eventTableColumns({ sections = [] }: {
         columnIcon: CircleCheck,
         className: 'flex-none'
       },
-      accessorFn: (data) => {
-        console.log(JSON.stringify(data?._source, null, 2))
-        return data?._source['document.meta.status'][0]
-      },
+      accessorFn: (data) => data?._source['document.meta.status'][0],
       cell: ({ row }) => {
         const status = row.getValue<string>('documentStatus')
         return <DocumentStatus status={status} />
