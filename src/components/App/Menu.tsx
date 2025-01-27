@@ -16,6 +16,8 @@ import { signOut, useSession } from 'next-auth/react'
 import { applicationMenu, type ApplicationMenuItem, type MenuGroups } from '@/defaults/applicationMenuItems'
 import { useRef } from 'react'
 
+const BASE_URL = import.meta.env.BASE_URL
+
 export const Menu = (): JSX.Element => {
   const { data } = useSession()
   const triggerRef = useRef<HTMLButtonElement>(null)
@@ -78,7 +80,8 @@ export const Menu = (): JSX.Element => {
               variant='outline'
               onClick={(event) => {
                 event.preventDefault()
-                signOut()
+
+                signOut({ redirectTo: `${BASE_URL}/api/signout`, redirect: true })
                   .catch((error) => console.error(error))
                 localStorage.removeItem('trustGoogle')
               }}
