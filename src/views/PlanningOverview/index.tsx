@@ -63,7 +63,7 @@ export const Plannings = (): JSX.Element => {
               iconColor='#FF971E'
             />
             <ViewHeader.Content>
-              <Header tab={currentTab} type='Planning' />
+              <Header type='Planning' />
             </ViewHeader.Content>
             <ViewHeader.Action />
           </ViewHeader.Root>

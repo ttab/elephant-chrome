@@ -26,7 +26,7 @@ export function getAssignmentsFromDocument(document: Document, type?: string): A
       _id: document.uuid,
       _title: document.title,
       _newsvalue: meta?.find((assignmentMeta) => assignmentMeta.type === 'core/newsvalue')?.value,
-      _section: links.find((l) => l.type === 'core/section')?.title,
+      _section: links.find((l) => l.type === 'core/section')?.uuid,
       _deliverableId: _deliverableId || '',
       ...assignmentMeta
     })

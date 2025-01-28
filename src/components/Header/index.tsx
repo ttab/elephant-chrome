@@ -1,16 +1,15 @@
 import { DateChanger } from '@/components/Header/Datechanger'
-import { Filter } from '@/components'
+import { TableFilter } from '@/components'
 import { CreateDocumentDialog } from '@/components/View/ViewHeader/CreateDocumentDialog'
 import { TabsGrid } from '@/components/Header/LayoutSwitch'
 import { Button } from '@ttab/elephant-ui'
 import { PlusIcon } from '@ttab/elephant-ui/icons'
 import { type View } from '@/types/index'
-import { Commands } from '../Commands'
 import { PersonalAssignmentsFilter } from './PersonalAssignmentsFilter'
 import { useMemo } from 'react'
+import { GridFilter } from '../GridFilter'
 
-export const Header = ({ tab, assigneeUserName, type }: {
-  tab: string
+export const Header = ({ assigneeUserName, type }: {
   type: View
   assigneeUserName?: string | undefined
 }): JSX.Element => {
@@ -21,6 +20,8 @@ export const Header = ({ tab, assigneeUserName, type }: {
     }
     return false
   }, [type])
+
+  const Filter = type === 'Approvals' ? GridFilter : TableFilter
 
   return (
     <>
@@ -38,15 +39,9 @@ export const Header = ({ tab, assigneeUserName, type }: {
         <TabsGrid />
       </div>
 
-      {tab === 'list' && <DateChanger type={type} />}
+      <DateChanger type={type} />
+      <Filter />
 
-      {tab === 'grid' && <DateChanger type={type} />}
-
-      {type !== 'Approvals' && (
-        <Filter>
-          <Commands />
-        </Filter>
-      )}
       {type === 'Assignments' && <PersonalAssignmentsFilter assigneeUserName={assigneeUserName} />}
     </>
   )

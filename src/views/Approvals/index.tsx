@@ -11,6 +11,7 @@ import { DocumentStatuses } from '@/defaults/documentStatuses'
 import { Header } from '@/components/Header'
 import { getDateTimeBoundariesUTC } from '@/lib/datetime'
 import { ApprovalsCard } from './ApprovalsCard'
+import { Toolbar } from '@/components/GridFilter/Toolbar'
 
 const meta: ViewMetadata = {
   name: 'Approvals',
@@ -51,11 +52,11 @@ export const Approvals = (): JSX.Element => {
       : new Date()
     ), [query.from])
 
+
   const data = useAssignments({
     type: 'text',
     date: from ? new Date(from) : new Date(),
-    slots,
-    statuses: ['draft', 'done', 'approved', 'withheld']
+    slots
   })
 
   const [focusedColumn, setFocusedColumn] = useState<number>()
@@ -141,10 +142,12 @@ export const Approvals = (): JSX.Element => {
       <ViewHeader.Root>
         <ViewHeader.Title title='Dagen' short='Dagen' iconColor='#5E9F5D' icon={EarthIcon} />
         <ViewHeader.Content>
-          <Header tab={currentTab} type='Approvals' />
+          <Header type='Approvals' />
+
         </ViewHeader.Content>
       </ViewHeader.Root>
 
+      <Toolbar />
       <View.Content variant='grid' columns={slots.length}>
         {data.map((slot, colN) => {
           return (
