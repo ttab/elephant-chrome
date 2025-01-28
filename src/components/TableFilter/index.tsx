@@ -1,5 +1,5 @@
 import type { SetStateAction } from 'react'
-import { type Dispatch, useState, useMemo, type PropsWithChildren, useRef, useEffect } from 'react'
+import { type Dispatch, useState, useMemo, useRef, useEffect } from 'react'
 import { ListFilter } from '@ttab/elephant-ui/icons'
 import {
   Button,
@@ -9,8 +9,9 @@ import {
 
 import { DebouncedCommandInput } from '@/components/Commands/Menu/DebouncedCommandInput'
 import { useTable } from '@/hooks'
+import { Commands } from '../Commands'
 
-export const TableFilter = ({ children }: PropsWithChildren): JSX.Element => {
+export const TableFilter = (): JSX.Element => {
   const [open, setOpen] = useState(false)
 
   const { command, table } = useTable()
@@ -74,7 +75,7 @@ export const TableFilter = ({ children }: PropsWithChildren): JSX.Element => {
             placeholder={page === 'textFilter' ? 'Sök' : 'Filtrera'}
             className='h-9'
           />
-          {children}
+          <Commands />
         </Command>
       </PopoverContent>
     </Popover>
