@@ -13,6 +13,8 @@ import { toZonedTime } from 'date-fns-tz'
 import { ModalContent } from '../Wires/components'
 import { useActiveUsers } from '@/hooks/useActiveUsers'
 import { AssigneeAvatars } from '@/components/DataItem/AssigneeAvatars'
+import { DoneMarkedBy } from './DoneMarkedBy'
+import type { StatusData } from 'src/datastore/types'
 import { useSections } from '@/hooks/useSections'
 
 
@@ -120,7 +122,7 @@ export const ApprovalsCard = ({ assignment, isSelected, isFocused, status }: {
       <Card.Footer>
         <div className='flex flex-col w-full'>
           <div className='truncate'>
-            {!assignees.length && '-'}
+            {!assignees.length && <DoneMarkedBy doneStatus={doneStatus} />}
             {assignees.length === 1 && assignees[0]}
             {assignees.length > 2 && `${assignees.join(', ')}`}
           </div>
