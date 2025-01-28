@@ -18,7 +18,9 @@ export const Assignment = ({ index, onAbort, onClose }: {
   className?: string
 } & FormProps): JSX.Element => {
   const [assignment] = useYValue<boolean>(`meta.core/assignment[${index}]`)
-  const [inProgress] = useYValue<boolean>(`meta.core/assignment[${index}].__inProgress`)
+  const [articleId] = useYValue<string>(`meta.core/assignment[${index}].links.core/article[0].uuid`)
+  const [flashId] = useYValue<string>(`meta.core/assignment[${index}].links.core/flash[0].uuid`)
+  const [assignmentInProgress] = useYValue<boolean>(`meta.core/assignment[${index}].__inProgress`)
   const [assignmentType] = useYValue<string | undefined>(`meta.core/assignment[${index}].meta.core/assignment-type[0].value`)
 
   const formRef = useRef<HTMLDivElement>(null)
@@ -78,7 +80,8 @@ export const Assignment = ({ index, onAbort, onClose }: {
           <Form.Group>
             <AssignmentType
               path={`meta.core/assignment[${index}].meta.core/assignment-type`}
-              editable={inProgress}
+              editable={assignmentInProgress}
+              inProgress={!!articleId || !!flashId}
             />
             <Assignees
               name='AssignmentAssignees'
@@ -92,7 +95,7 @@ export const Assignment = ({ index, onAbort, onClose }: {
         <Form.Footer>
           <Form.Submit onSubmit={onClose} onReset={onAbort}>
             <div className='flex gap-2 justify-end pt-4'>
-              {inProgress && !!onAbort
+              {assignmentInProgress && !!onAbort
               && (
                 <Button
                   type='reset'
@@ -106,7 +109,7 @@ export const Assignment = ({ index, onAbort, onClose }: {
                 variant='outline'
                 className='whitespace-nowrap'
               >
-                {inProgress ? 'Lägg till' : 'Stäng'}
+                {assignmentInProgress ? 'Lägg till' : 'Stäng'}
               </Button>
             </div>
 
