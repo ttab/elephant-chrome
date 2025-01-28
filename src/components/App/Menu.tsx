@@ -14,13 +14,17 @@ import { ThemeSwitcher } from './ThemeSwitcher'
 import { MenuItem } from './MenuItem'
 import { signOut, useSession } from 'next-auth/react'
 import { applicationMenu, type ApplicationMenuItem, type MenuGroups } from '@/defaults/applicationMenuItems'
+import { useUser } from '@/hooks/useUserDoc'
+import { cn } from '@ttab/elephant-ui/utils'
 import { useRef } from 'react'
 
 const BASE_URL = import.meta.env.BASE_URL
+const hasUserDoc = (obj: object | undefined) => obj && Object.keys(obj).length > 0
 
 export const Menu = (): JSX.Element => {
   const { data } = useSession()
   const triggerRef = useRef<HTMLButtonElement>(null)
+  const [user] = useUser<object>('')
 
   return (
     <Sheet>
@@ -66,7 +70,12 @@ export const Menu = (): JSX.Element => {
         </div>
 
         <div className='justify-self-end flex flex-col items-center justify-center rounded-md bg-gray-100 dark:bg-gray-800 mt-10 pb-6'>
-          <div className='border-4 border-background rounded-full -mt-7'>
+
+          <div className={cn({
+            'border-green-400': hasUserDoc(user),
+            'border-red-400': !hasUserDoc(user)
+          }, 'border-4 rounded-full -mt-7')}
+          >
             <Avatar user={data?.user} size='xl' variant='color' />
           </div>
 

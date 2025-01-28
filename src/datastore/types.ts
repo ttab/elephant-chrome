@@ -18,6 +18,7 @@ export interface IDBAuthor {
   lastName: string
   initials: string
   email: string
+  sub: string
 }
 
 /** Category structure in indexedDB objectStore */

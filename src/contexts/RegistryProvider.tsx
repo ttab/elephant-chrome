@@ -27,6 +27,7 @@ export interface RegistryProviderState {
     repositoryUrl: URL
     contentApiUrl: URL
     spellcheckUrl: URL
+    faroUrl: URL
   }
   repository?: Repository
   index?: Index
@@ -44,7 +45,8 @@ const initialState: RegistryProviderState = {
     repositoryEventsUrl: new URL('http://localhost'),
     repositoryUrl: new URL('http://localhost'),
     contentApiUrl: new URL('http://localhost'),
-    spellcheckUrl: new URL('http://localhost')
+    spellcheckUrl: new URL('http://localhost'),
+    faroUrl: new URL('http://localhost')
   },
   dispatch: () => { }
 }
@@ -72,8 +74,8 @@ export const RegistryProvider = ({ children }: PropsWithChildren): JSX.Element =
         spellchecker
       })
       setIsInitialized(true)
-    }).catch((ex) => {
-      console.error(`Failed fetching server urls in RegistryProvider, ${(ex as Error).message}`, ex)
+    }).catch((ex: Error) => {
+      console.error(`Failed fetching server urls in RegistryProvider, ${ex.message}`, ex)
     })
   }, [])
 
