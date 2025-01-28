@@ -124,7 +124,7 @@ export const ApprovalsCard = ({ assignment, isSelected, isFocused, status }: {
           <div className='truncate'>
             {!assignees.length && <DoneMarkedBy doneStatus={doneStatus} />}
             {assignees.length === 1 && assignees[0]}
-            {assignees.length > 2 && `${assignees.join(', ')}`}
+            {assignees.length > 1 && `${assignees.join(', ')}`}
           </div>
           <div className='flex flex-grow justify-between align-middle'>
             <div className='content-center opacity-60'>
