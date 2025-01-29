@@ -46,8 +46,11 @@ export const Assignments = (): JSX.Element => {
   const { data: session } = useSession()
 
   const assigneeUserName = useMemo(() => {
-    const userEmail = session?.user.sub
-    const author = authors.find((a: IDBAuthor) => a?.email === userEmail)
+    const userSub = session?.user?.sub
+    const subId = userSub?.slice(userSub?.lastIndexOf('/') + 1)
+    const author = authors?.find((a: IDBAuthor) => {
+      return a.sub.slice(a?.sub.lastIndexOf('/') + 1) === subId
+    })
 
     return author?.name
   }, [authors, session?.user?.sub])

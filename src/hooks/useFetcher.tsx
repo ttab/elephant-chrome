@@ -78,31 +78,31 @@ export const useFetcher = <T extends Source, R>(Fetcher: Fetcher<T, R>):
             throw new Error('Failed to fetch data', { cause: result })
           }
 
-          // Append statuses
-          if (options?.withStatus) {
-            const itemsWithStatus: T[] = withStatus(result)
-
-            allResults.push(...itemsWithStatus)
-
-          // Append plannings
-          } else if (options?.withPlannings) {
-            if (!sessionRef.current) {
-              throw new Error('Session is not available')
+          // Check if any of the with-modifiers are being passed, in those cases we
+          // append them to the result
+          if (options?.withPlannings || options?.withStatus) {
+            // Append statuses
+            if (options?.withStatus) {
+              const itemsWithStatus: T[] = withStatus(result)
+              result.hits = itemsWithStatus
             }
 
-            const itemsWithPlannings = await withPlannings({
-              result,
-              session: sessionRef.current,
-              params: params as PlanningSearchParams,
-              indexUrl
-            })
+            // Append plannings
+            if (options?.withPlannings) {
+              if (!sessionRef.current) {
+                throw new Error('Session is not available')
+              }
 
-            allResults.push(...itemsWithPlannings)
-
-          // return unalterated results
-          } else {
-            allResults.push(...result.hits)
+              const itemsWithPlannings = await withPlannings({
+                result,
+                session: sessionRef.current,
+                params: params as PlanningSearchParams,
+                indexUrl
+              })
+              result.hits = itemsWithPlannings
+            }
           }
+          allResults.push(...result.hits)
 
           if (result.hits.length < size || hasPagination(params)) {
             break
