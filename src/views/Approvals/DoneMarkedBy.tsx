@@ -10,12 +10,14 @@ export const DoneMarkedBy = ({ doneStatus }: {
 }) => {
   const authors = useAuthors()
   const { locale, timeZone } = useRegistry()
+
   if (!doneStatus?.creator) {
     return <></>
   }
+
   const creatorId = doneStatus.creator.slice(doneStatus.creator.lastIndexOf('/'))
   const matchedAuthor = authors.find((a) => {
-    return creatorId === a.sub.slice(a.sub.lastIndexOf('/'))
+    return creatorId === a?.sub?.slice(a?.sub?.lastIndexOf('/'))
   })?.name
 
   if (!matchedAuthor) {
