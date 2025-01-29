@@ -84,7 +84,7 @@ export const useFetcher = <T extends Source, R>(Fetcher: Fetcher<T, R>):
             // Append statuses
             if (options?.withStatus) {
               const itemsWithStatus: T[] = withStatus(result)
-              allResults.push(...itemsWithStatus)
+              result.hits = itemsWithStatus
             }
 
             // Append plannings
@@ -99,13 +99,10 @@ export const useFetcher = <T extends Source, R>(Fetcher: Fetcher<T, R>):
                 params: params as PlanningSearchParams,
                 indexUrl
               })
-              allResults.push(...itemsWithPlannings)
-
-            // return unalterated results
+              result.hits = itemsWithPlannings
             }
-          } else {
-            allResults.push(...result.hits)
           }
+          allResults.push(...result.hits)
 
           if (result.hits.length < size || hasPagination(params)) {
             break
