@@ -27,6 +27,8 @@ import { PlanningTable } from './components/PlanningTable'
 import { Error } from '../Error'
 import { Form } from '@/components/Form'
 import { EventTimeMenu } from './components/EventTime'
+import type { Block } from '@ttab/elephant-api/newsdoc'
+import { useMemo } from 'react'
 
 const meta: ViewMetadata = {
   name: 'Event',
@@ -93,6 +95,17 @@ const EventViewContent = (props: ViewProps & { documentId: string }): JSX.Elemen
 
 
   const [eventTitle] = useYValue<string | undefined>('root.title')
+  const [eventSection] = useYValue<Block | undefined>('links.core/section[0]')
+  const [newsvalue] = useYValue<Block | undefined>('meta.core/newsvalue[0]')
+  const [story] = useYValue<Block | undefined>('links.core/story[0]')
+
+  const templateValues = useMemo(() => ({
+    eventId: props.documentId,
+    eventTitle,
+    eventSection: eventSection?.title,
+    newsvalue: newsvalue?.value,
+    story: story?.title
+  }), [props.documentId, eventTitle, eventSection, newsvalue, story])
 
   return (
     <View.Root asDialog={props.asDialog} className={props.className}>
@@ -146,7 +159,7 @@ const EventViewContent = (props: ViewProps & { documentId: string }): JSX.Elemen
           </Form.Content>
 
           <Form.Table>
-            <PlanningTable eventId={props.documentId} eventTitle={eventTitle} />
+            <PlanningTable templateValues={templateValues} />
           </Form.Table>
 
           <Form.Footer>
