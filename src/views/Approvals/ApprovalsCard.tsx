@@ -13,6 +13,8 @@ import { toZonedTime } from 'date-fns-tz'
 import { ModalContent } from '../Wires/components'
 import { useActiveUsers } from '@/hooks/useActiveUsers'
 import { AssigneeAvatars } from '@/components/DataItem/AssigneeAvatars'
+import { DoneMarkedBy } from './DoneMarkedBy'
+import type { StatusData } from 'src/datastore/types'
 import { useSections } from '@/hooks/useSections'
 
 
@@ -33,6 +35,12 @@ export const ApprovalsCard = ({ assignment, isSelected, isFocused, status }: {
   const assignees = assignment.links.filter((m) => m.type === 'core/author' && m.title).map((l) => l.title)
   const activeUsers = useActiveUsers(articleId ? [articleId] : [])
   const activeUsersNames = activeUsers?.[assignment._deliverableId]?.map((u) => u.name) || []
+  const statusData: StatusData | null = JSON.parse(assignment?._statusData || 'null')
+  const entries = statusData ? Object.entries(statusData.heads) : []
+  const doneStatus = statusData
+    ? entries
+      ?.find((entry) => entry[0] === 'done')?.[1]
+    : undefined
 
   const menuItems = [{
     label: 'Öppna artikel',
@@ -114,9 +122,9 @@ export const ApprovalsCard = ({ assignment, isSelected, isFocused, status }: {
       <Card.Footer>
         <div className='flex flex-col w-full'>
           <div className='truncate'>
-            {!assignees.length && '-'}
+            {!assignees.length && <DoneMarkedBy doneStatus={doneStatus} />}
             {assignees.length === 1 && assignees[0]}
-            {assignees.length > 2 && `${assignees.join(', ')}`}
+            {assignees.length > 1 && `${assignees.join(', ')}`}
           </div>
           <div className='flex flex-grow justify-between align-middle'>
             <div className='content-center opacity-60'>
