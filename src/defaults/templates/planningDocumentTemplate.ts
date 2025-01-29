@@ -8,14 +8,36 @@ import { type TemplatePayload } from '../../lib/createYItem'
  * @returns Document
  */
 export function planningDocumentTemplate(documentId: string, payload?: TemplatePayload): Document {
-  const event = payload?.eventId
-    ? [Block.create({
-        uuid: payload?.eventId,
-        type: 'core/event',
-        title: payload?.eventTitle || 'Untitled',
-        rel: 'event'
-      })]
+  const event = payload?.templateValues?.eventId
+    ? [
+        Block.create({
+          uuid: payload?.templateValues?.eventId,
+          type: 'core/event',
+          title: payload?.templateValues?.eventTitle || 'Untitled',
+          rel: 'event'
+        })
+      ]
     : []
+
+  const links = payload?.templateValues?.eventSection
+    ? [
+        Block.create({
+          uuid: crypto.randomUUID(),
+          type: 'core/section',
+          rel: 'section',
+          title: payload?.templateValues?.eventSection
+        })
+      ]
+    : []
+
+  if (payload?.templateValues?.story) {
+    links.push(Block.create({
+      uuid: crypto.randomUUID(),
+      type: 'core/story',
+      rel: 'story',
+      title: payload?.templateValues?.story
+    }))
+  }
 
   return Document.create({
     uuid: documentId,
@@ -34,7 +56,7 @@ export function planningDocumentTemplate(documentId: string, payload?: TemplateP
       }),
       Block.create({
         type: 'core/newsvalue',
-        value: payload?.newsvalue || undefined
+        value: payload?.templateValues?.newsvalue || undefined
       }),
       Block.create({
         type: 'tt/slugline'
@@ -50,6 +72,7 @@ export function planningDocumentTemplate(documentId: string, payload?: TemplateP
         role: 'internal'
       })
     ],
-    links: [...event]
+    links,
+    ...event
   })
 }
