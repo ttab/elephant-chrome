@@ -1,22 +1,26 @@
 import { Document, Block } from '@ttab/elephant-api/newsdoc'
 import { currentDateInUTC } from '../../lib/datetime'
-import { type TemplatePayload } from '../../lib/createYItem'
+
+export interface PlanningDocumentPayload {
+  eventId?: string
+  eventTitle?: string
+  newsvalue?: string
+  createdDocumentIdRef?: React.MutableRefObject<string | undefined>
+}
 
 /**
  * Create a template structure for a planning document
  *
  * @returns Document
  */
-export function planningDocumentTemplate(documentId: string, payload?: TemplatePayload): Document {
-  const event = payload?.templateValues?.eventId
-    ? [
-        Block.create({
-          uuid: payload?.templateValues?.eventId,
-          type: 'core/event',
-          title: payload?.templateValues?.eventTitle || 'Untitled',
-          rel: 'event'
-        })
-      ]
+export function planningDocumentTemplate(documentId: string, payload?: PlanningDocumentPayload): Document {
+  const event = payload?.eventId
+    ? [Block.create({
+        uuid: payload?.eventId,
+        type: 'core/event',
+        title: payload?.eventTitle || 'Untitled',
+        rel: 'event'
+      })]
     : []
 
   const links = payload?.templateValues?.eventSection

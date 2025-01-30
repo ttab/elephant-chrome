@@ -72,7 +72,12 @@ const Editor = (props: ViewProps): JSX.Element => {
   }
 
   if (props.onDocumentCreated && !document) {
-    const [, doc] = createDocument<ArticlePayload>((id: string) => articleDocumentTemplate(id, props?.payload))
+    const [, doc] = createDocument<ArticlePayload>({
+      template: (id: string) => {
+        return articleDocumentTemplate(id, props?.payload)
+      },
+      documentId
+    })
     setDocument(doc)
 
     return <></>

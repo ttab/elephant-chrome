@@ -56,26 +56,10 @@ const search = async (endpoint: URL, accessToken: string, params?: PlanningSearc
   const textCriteria = !params?.where?.text
     ? undefined
     : {
-        bool: {
-          should: [
-            {
-              prefix: {
-                'document.title': {
-                  value: params.where.text,
-                  boost: 2,
-                  case_insensitive: true
-                }
-              }
-            },
-            {
-              prefix: {
-                'document.rel.section.title': {
-                  value: params.where.text,
-                  case_insensitive: true
-                }
-              }
-            }
-          ]
+        multi_match: {
+          query: params.where.text,
+          type: 'phrase_prefix',
+          fields: ['document.title', 'document.rel.section.title']
         }
       }
 

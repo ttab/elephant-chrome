@@ -47,7 +47,11 @@ export const FlashViewContent = (props: ViewProps & {
   const author = useActiveAuthor()
 
   const [newPlanningId, newPlanningYDoc] = useMemo(() => {
-    return createDocument(Templates.planning, true, { templateValues: { newsvalue: '6' } })
+    return createDocument({
+      template: Templates.planning,
+      inProgress: true,
+      payload: { newsvalue: '4' }
+    })
   }, [])
 
   // New and empty planning document for when creating new flash and planning
