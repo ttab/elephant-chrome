@@ -45,7 +45,7 @@ export const FlashViewContent = (props: ViewProps & {
   const [author] = useYValue<EleBlock | undefined>('links.core/author[0]')
 
   const [newPlanningId, newPlanningYDoc] = useMemo(() => {
-    return createDocument(Templates.planning, true, { newsvalue: '6' })
+    return createDocument(Templates.planning, true, { templateValues: { newsvalue: '6' } })
   }, [])
 
   // New and empty planning document for when creating new flash and planning
