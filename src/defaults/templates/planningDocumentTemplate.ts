@@ -4,7 +4,11 @@ import { currentDateInUTC } from '../../lib/datetime'
 export interface PlanningDocumentPayload {
   eventId?: string
   eventTitle?: string
+  eventSection?: string
   newsvalue?: string
+  story?: string
+  eventDate?: string
+  description?: string
   createdDocumentIdRef?: React.MutableRefObject<string | undefined>
 }
 
@@ -23,23 +27,23 @@ export function planningDocumentTemplate(documentId: string, payload?: PlanningD
       })]
     : []
 
-  const links = payload?.templateValues?.eventSection
+  const links = payload?.eventSection
     ? [
         Block.create({
           uuid: crypto.randomUUID(),
           type: 'core/section',
           rel: 'section',
-          title: payload?.templateValues?.eventSection
+          title: payload?.eventSection
         })
       ]
     : []
 
-  if (payload?.templateValues?.story) {
+  if (payload?.story) {
     links.push(Block.create({
       uuid: crypto.randomUUID(),
       type: 'core/story',
       rel: 'story',
-      title: payload?.templateValues?.story
+      title: payload?.story
     }))
   }
 
@@ -47,27 +51,28 @@ export function planningDocumentTemplate(documentId: string, payload?: PlanningD
     uuid: documentId,
     type: 'core/planning-item',
     uri: `core://newscoverage/${documentId}`,
+    ...(payload?.eventTitle && { title: payload.eventTitle }),
     language: 'sv-se',
     meta: [
       Block.create({
         type: 'core/planning-item',
         data: {
           public: 'true',
-          end_date: currentDateInUTC(),
+          end_date: payload?.eventDate || currentDateInUTC(),
           tentative: 'false',
-          start_date: currentDateInUTC()
+          start_date: payload?.eventDate || currentDateInUTC()
         }
       }),
       Block.create({
         type: 'core/newsvalue',
-        value: payload?.templateValues?.newsvalue || undefined
+        value: payload?.newsvalue || undefined
       }),
       Block.create({
         type: 'tt/slugline'
       }),
       Block.create({
         type: 'core/description',
-        data: { text: '' },
+        data: { text: payload?.description || '' },
         role: 'public'
       }),
       Block.create({
