@@ -6,9 +6,13 @@ import { toGroupedNewsDoc, group } from '../../src-srv/utils/transformations/gro
 import { toYjsNewsDoc } from '../../src-srv/utils/transformations/yjsNewsDoc'
 
 export interface TemplatePayload {
-  eventId?: string
-  eventTitle?: string
-  newsvalue?: string
+  templateValues: {
+    eventId?: string
+    eventTitle?: string
+    eventSection?: string
+    newsvalue?: string
+    story?: string
+  }
   createdDocumentIdRef?: React.MutableRefObject<string | undefined>
 }
 /**
