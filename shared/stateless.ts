@@ -17,6 +17,7 @@ export enum StatelessType {
 
 const inProgressMessageSchema = z.object({
   state: z.boolean(),
+  status: z.string().optional(),
   id: z.string(),
   context: z.object({
     accessToken: z.string(),

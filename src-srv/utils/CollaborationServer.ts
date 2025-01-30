@@ -268,7 +268,8 @@ export class CollaborationServer {
         await fromGroupedNewsDoc(documentResponse),
         updatedHash || originalHash,
         msg.message.context.accessToken,
-        msg.message.context
+        msg.message.context,
+        msg.message.status
       )
 
       // Create a tracker document that keeps track of the user history
@@ -373,7 +374,9 @@ export class CollaborationServer {
     documentResponse: GetDocumentResponse,
     updatedHash: number,
     accessToken: string,
-    context: unknown): Promise<void> {
+    context: unknown,
+    status?: string
+  ): Promise<void> {
     const { document, version } = documentResponse
     if (!document) {
       throw new Error(`Store document ${documentName} failed, no document in GetDocumentResponse parameter`)
@@ -382,7 +385,8 @@ export class CollaborationServer {
     const result = await this.#repository.saveDocument(
       document,
       accessToken,
-      version
+      version,
+      status
     )
 
     if (result?.status.code !== 'OK') {

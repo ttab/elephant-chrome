@@ -198,12 +198,20 @@ export class Repository {
    * @param accessToken string
    * @returns Promise<FinishedUnaryCall<UpdateRequest, UpdateResponse>
    */
-  async saveDocument(document: Document, accessToken: string, version: bigint): Promise<FinishedUnaryCall<UpdateRequest, UpdateResponse> | undefined> {
+  async saveDocument(document: Document, accessToken: string, version: bigint, status?: string): Promise<FinishedUnaryCall<UpdateRequest, UpdateResponse> | undefined> {
+    const newStatus = status
+      ? [{
+          name: status,
+          version, meta: {},
+          ifMatch: version
+        }]
+      : []
+
     const payload: UpdateRequest = {
       document,
       meta: {},
       ifMatch: version,
-      status: [],
+      status: newStatus,
       acl: [{ uri: 'core://unit/redaktionen', permissions: ['r', 'w'] }],
       uuid: document.uuid,
       lockToken: '',

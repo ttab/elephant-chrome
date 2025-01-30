@@ -271,6 +271,7 @@ function createFlash(
     provider.sendStateless(
       createStateless(StatelessType.IN_PROGRESS, {
         state: false,
+        status: 'done',
         id: documentId,
         context: {
           accessToken: session.accessToken,
