@@ -10,13 +10,12 @@ import * as Views from '@/views'
 import * as Templates from '@/defaults/templates'
 import { type View } from '@/types/index'
 import { type Document } from '@ttab/elephant-api/newsdoc'
-import { type TemplatePayload } from '@/lib/createYItem'
 
 export type Template = keyof typeof Templates
 
-export const CreateDocumentDialog = ({ type, payload, createdDocumentIdRef, children }: PropsWithChildren<{
+export const CreateDocumentDialog = <T,>({ type, payload, createdDocumentIdRef, children }: PropsWithChildren<{
   type: View
-  payload?: TemplatePayload
+  payload?: T
   createdDocumentIdRef?: React.MutableRefObject<string | undefined>
 }>): JSX.Element | null => {
   const [document, setDocument] = useState<[string | undefined, Y.Doc | undefined]>([undefined, undefined])
@@ -40,12 +39,12 @@ export const CreateDocumentDialog = ({ type, payload, createdDocumentIdRef, chil
             event.preventDefault()
             if (type) {
               setDocument(
-                createDocument(
-                  getTemplate(type),
-                  true,
-                  payload,
-                  createdDocumentIdRef
-                )
+                createDocument({
+                  template: getTemplate(type),
+                  inProgress: true,
+                  payload: payload,
+                  createdDocumentIdRef: createdDocumentIdRef
+                })
               )
             }
           }

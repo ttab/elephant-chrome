@@ -51,7 +51,10 @@ export const Factbox = (props: ViewProps & { document?: Y.Doc }): JSX.Element =>
   }
 
   if (props.onDocumentCreated && !document) {
-    const [, doc] = createDocument((id) => factboxDocumentTemplate(id), true)
+    const [, doc] = createDocument({
+      template: (id) => factboxDocumentTemplate(id),
+      inProgress: true
+    })
     setDocument(doc)
   }
 

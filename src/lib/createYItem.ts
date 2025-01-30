@@ -5,31 +5,32 @@ import { toYMap } from '../../src-srv/utils/transformations/lib/toYMap'
 import { toGroupedNewsDoc, group } from '../../src-srv/utils/transformations/groupedNewsDoc'
 import { toYjsNewsDoc } from '../../src-srv/utils/transformations/yjsNewsDoc'
 
-export interface TemplatePayload {
-  eventId?: string
-  eventTitle?: string
-  newsvalue?: string
-  createdDocumentIdRef?: React.MutableRefObject<string | undefined>
-}
 /**
 * General function to create a new document as Y.Doc from a template
 * @returns [string, Y.Doc]
 */
-export function createDocument<T>(
-  template: (
-    documentId: string,
-    payload?: T
-  ) => Document,
-  inProgress?: boolean,
-  payload?: T,
+interface CreateDocumentParams<T> {
+  template: (documentId: string, payload?: T) => Document
+  inProgress?: boolean
+  payload?: T
   createdDocumentIdRef?: React.MutableRefObject<string | undefined>
-): [string, Y.Doc] {
-  const documentId = crypto.randomUUID()
+  documentId?: string
+}
+
+export function createDocument<T>({
+  template,
+  inProgress,
+  payload,
+  createdDocumentIdRef,
+  documentId
+}: CreateDocumentParams<T>): [string, Y.Doc] {
+  // Use provided documentId or generate a new one
+  const docId = documentId || crypto.randomUUID()
 
   // Set generated documentId to ref so that it can be
   // accessed from creating component
   if (createdDocumentIdRef) {
-    createdDocumentIdRef.current = documentId
+    createdDocumentIdRef.current = docId
   }
 
   const yDoc = new Y.Doc()
@@ -39,7 +40,7 @@ export function createDocument<T>(
       version: 0n,
       isMetaDocument: false,
       mainDocument: '',
-      document: template(documentId, payload)
+      document: template(docId, payload)
     }),
     yDoc
   )
@@ -49,7 +50,7 @@ export function createDocument<T>(
     yRoot.set('__inProgress', true)
   }
 
-  return [documentId, yDoc]
+  return [docId, yDoc]
 }
 
 /**
@@ -112,6 +113,7 @@ export function appendArticle({ document, id, index, slug }: {
   index: number
   slug: string
 }): void {
+  console.log('Appending article with id: ', id)
   // Get meta yMap
   const meta = document.getMap('ele').get('meta') as Y.Map<unknown>
 

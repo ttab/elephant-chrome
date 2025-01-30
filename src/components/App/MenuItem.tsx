@@ -81,7 +81,10 @@ const DialogContent = ({ menuItem, onDialogClose }: {
   const DocumentView = name && Views[name]
 
   const document = useMemo(() => {
-    return createDocument(getTemplate(name), true, {})
+    return createDocument({
+      template: getTemplate(name),
+      inProgress: true
+    })
   }, [name])
 
 
@@ -124,9 +127,11 @@ const FlashDialogContent = ({ menuItem, onDialogClose }: {
     }
 
     return [
-      createDocument(
-        getTemplate(name), true, { ...flashDefaults }
-      )
+      createDocument({
+        template: getTemplate(name),
+        inProgress: true,
+        payload: { ...flashDefaults }
+      })
     ]
   }, [name, author])
 
