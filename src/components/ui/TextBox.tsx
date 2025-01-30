@@ -13,7 +13,18 @@ import { useSession } from 'next-auth/react'
 import { ContextMenu } from '../Editor/ContextMenu'
 import { getValueByYPath } from '@/lib/yUtils'
 
-export const TextBox = ({ icon, placeholder, path, className, singleLine = false, countCharacters = false, autoFocus = false, onBlur, onFocus }: {
+export const TextBox = ({
+  icon,
+  placeholder,
+  path,
+  className,
+  singleLine = false,
+  countCharacters = false,
+  autoFocus = false,
+  spellcheck = true,
+  onBlur,
+  onFocus
+}: {
   path: string
   icon?: React.ReactNode
   placeholder?: string
@@ -21,6 +32,7 @@ export const TextBox = ({ icon, placeholder, path, className, singleLine = false
   singleLine?: boolean
   autoFocus?: boolean
   countCharacters?: boolean
+  spellcheck?: boolean
   onBlur?: React.FocusEventHandler<HTMLDivElement>
   onFocus?: React.FocusEventHandler<HTMLDivElement>
 }): JSX.Element => {
@@ -71,6 +83,7 @@ export const TextBox = ({ icon, placeholder, path, className, singleLine = false
             user={user}
             icon={icon}
             documentLanguage={documentLanguage}
+            spellcheck={spellcheck}
           />
         </Textbit.Root>
       )}
@@ -78,13 +91,14 @@ export const TextBox = ({ icon, placeholder, path, className, singleLine = false
   )
 }
 
-const TextboxEditable = ({ provider, user, icon: Icon, content, singleLine, documentLanguage }: {
+const TextboxEditable = ({ provider, user, icon: Icon, content, singleLine, documentLanguage, spellcheck }: {
   provider: HocuspocusProvider
   singleLine: boolean
   user: AwarenessUserData
   icon?: React.ReactNode
   content: Y.XmlText
   documentLanguage: string | undefined
+  spellcheck?: boolean
 }): JSX.Element | undefined => {
   const { data: session } = useSession()
   const { spellchecker } = useRegistry()
@@ -125,7 +139,7 @@ const TextboxEditable = ({ provider, user, icon: Icon, content, singleLine, docu
           <Textbit.Editable
             yjsEditor={yjsEditor}
             onSpellcheck={async (texts) => {
-              if (documentLanguage) {
+              if (documentLanguage && spellcheck) {
                 const spellingResult = await spellchecker?.check(texts, documentLanguage, supportedLanguages, session?.accessToken ?? '')
                 if (spellingResult) {
                   return spellingResult
