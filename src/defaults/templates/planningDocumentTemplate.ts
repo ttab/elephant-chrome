@@ -4,7 +4,11 @@ import { currentDateInUTC } from '../../lib/datetime'
 export interface PlanningDocumentPayload {
   eventId?: string
   eventTitle?: string
+  eventSection?: string
   newsvalue?: string
+  story?: string
+  eventDate?: string
+  description?: string
   createdDocumentIdRef?: React.MutableRefObject<string | undefined>
 }
 
@@ -23,19 +27,40 @@ export function planningDocumentTemplate(documentId: string, payload?: PlanningD
       })]
     : []
 
+  const links = payload?.eventSection
+    ? [
+        Block.create({
+          uuid: crypto.randomUUID(),
+          type: 'core/section',
+          rel: 'section',
+          title: payload?.eventSection
+        })
+      ]
+    : []
+
+  if (payload?.story) {
+    links.push(Block.create({
+      uuid: crypto.randomUUID(),
+      type: 'core/story',
+      rel: 'story',
+      title: payload?.story
+    }))
+  }
+
   return Document.create({
     uuid: documentId,
     type: 'core/planning-item',
     uri: `core://newscoverage/${documentId}`,
+    ...(payload?.eventTitle && { title: payload.eventTitle }),
     language: 'sv-se',
     meta: [
       Block.create({
         type: 'core/planning-item',
         data: {
           public: 'true',
-          end_date: currentDateInUTC(),
+          end_date: payload?.eventDate || currentDateInUTC(),
           tentative: 'false',
-          start_date: currentDateInUTC()
+          start_date: payload?.eventDate || currentDateInUTC()
         }
       }),
       Block.create({
@@ -47,7 +72,7 @@ export function planningDocumentTemplate(documentId: string, payload?: PlanningD
       }),
       Block.create({
         type: 'core/description',
-        data: { text: '' },
+        data: { text: payload?.description || '' },
         role: 'public'
       }),
       Block.create({
@@ -56,6 +81,7 @@ export function planningDocumentTemplate(documentId: string, payload?: PlanningD
         role: 'internal'
       })
     ],
-    links: [...event]
+    links,
+    ...event
   })
 }

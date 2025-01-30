@@ -5,7 +5,8 @@ import {
   useCollaboration,
   useQuery,
   useYValue,
-  useDocumentStatus
+  useDocumentStatus,
+  useRegistry
 } from '@/hooks'
 import { useSession } from 'next-auth/react'
 import { View, ViewHeader } from '@/components/View'
@@ -27,6 +28,9 @@ import { PlanningTable } from './components/PlanningTable'
 import { Error } from '../Error'
 import { Form } from '@/components/Form'
 import { EventTimeMenu } from './components/EventTime'
+import type { Block } from '@ttab/elephant-api/newsdoc'
+import { useMemo } from 'react'
+import { convertToISOStringInTimeZone } from '@/lib/datetime'
 
 const meta: ViewMetadata = {
   name: 'Event',
@@ -47,7 +51,6 @@ const meta: ViewMetadata = {
 export const Event = (props: ViewProps & { document?: Y.Doc }): JSX.Element => {
   const [query] = useQuery()
   const documentId = props.id || query.id
-
 
   return (
     <>
@@ -71,6 +74,7 @@ const EventViewContent = (props: ViewProps & { documentId: string }): JSX.Elemen
   const { provider } = useCollaboration()
   const { data, status } = useSession()
   const [documentStatus, setDocumentStatus] = useDocumentStatus(props.documentId)
+  const { timeZone } = useRegistry()
 
   const handleSubmit = (): void => {
     if (props?.onDialogClose) {
@@ -91,8 +95,24 @@ const EventViewContent = (props: ViewProps & { documentId: string }): JSX.Elemen
     }
   }
 
-
+  // Grab values from event to be sent as default values for planning creation
   const [eventTitle] = useYValue<string | undefined>('root.title')
+  const [eventSection] = useYValue<Block | undefined>('links.core/section[0]')
+  const [newsvalue] = useYValue<Block | undefined>('meta.core/newsvalue[0]')
+  const [story] = useYValue<Block | undefined>('links.core/story[0]')
+  const [eventDate] = useYValue<string | undefined>('meta.core/event[0].data.start')
+  const [description] = useYValue<Block | undefined>('meta.core/description[0].data.text')
+  const eventDateFormatted = eventDate ? convertToISOStringInTimeZone(new Date(eventDate), timeZone).split(' ')[0] : undefined
+
+  const templateValues = useMemo(() => ({
+    eventId: props.documentId,
+    eventTitle,
+    eventSection: eventSection?.title,
+    newsvalue: newsvalue?.value,
+    story: story?.title,
+    eventDate: eventDateFormatted,
+    description
+  }), [props.documentId, eventTitle, eventSection, newsvalue, story, eventDateFormatted, description])
 
   return (
     <View.Root asDialog={props.asDialog} className={props.className}>
@@ -146,7 +166,7 @@ const EventViewContent = (props: ViewProps & { documentId: string }): JSX.Elemen
           </Form.Content>
 
           <Form.Table>
-            <PlanningTable eventId={props.documentId} eventTitle={eventTitle} />
+            <PlanningTable templateValues={templateValues} />
           </Form.Table>
 
           <Form.Footer>
