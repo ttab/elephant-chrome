@@ -8,10 +8,12 @@ import { type View } from '@/types/index'
 import { PersonalAssignmentsFilter } from './PersonalAssignmentsFilter'
 import { useMemo } from 'react'
 import { GridFilter } from '../GridFilter'
+import type { Facets } from '@/hooks/index/lib/assignments/filterAssignments'
 
-export const Header = ({ assigneeUserName, type }: {
+export const Header = ({ assigneeUserName, type, facets }: {
   type: View
   assigneeUserName?: string | undefined
+  facets?: Facets
 }): JSX.Element => {
   const showButton = useMemo(() => {
     const viewTypes: View[] = ['Planning', 'Event']
@@ -40,7 +42,7 @@ export const Header = ({ assigneeUserName, type }: {
       </div>
 
       <DateChanger type={type} />
-      <Filter />
+      <Filter facets={facets} />
 
       {type === 'Assignments' && <PersonalAssignmentsFilter assigneeUserName={assigneeUserName} />}
     </>

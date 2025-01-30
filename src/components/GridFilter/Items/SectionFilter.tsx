@@ -5,10 +5,11 @@ import { CheckIcon, Shapes } from '@ttab/elephant-ui/icons'
 import { cn } from '@ttab/elephant-ui/utils'
 import type { Dispatch, SetStateAction } from 'react'
 
-export const SectionFilter = ({ page, setPage, setSearch }: {
+export const SectionFilter = ({ page, setPage, setSearch, facets }: {
   page: string
   setPage: Dispatch<SetStateAction<string>>
   setSearch: Dispatch<SetStateAction<string | undefined>>
+  facets?: Map<string, number>
 }): JSX.Element | undefined => {
   const [filter, setFilter] = useFilter(['section'])
   const sections = new Set(filter.section)
@@ -65,6 +66,13 @@ export const SectionFilter = ({ page, setPage, setSearch }: {
                 <CheckIcon size={18} strokeWidth={1.75} />
               </div>
               <span>{section.label}</span>
+              <span className='ml-auto flex h-4 w-4 items-center justify-center font-mono text-xs'>
+                {facets?.get(section.value) && (
+                  <span className='ml-auto flex h-4 w-4 items-center justify-center font-mono text-xs'>
+                    {facets.get(section.value) || 0}
+                  </span>
+                )}
+              </span>
             </CommandItem>
           )
         })}
