@@ -4,8 +4,9 @@ import { getValueByYPath, toSlateYXmlText } from '@/lib/yUtils'
 import { YBlock } from '@/shared/YBlock'
 import { toYMap } from '../../../src-srv/utils/transformations/lib/toYMap'
 import * as Y from 'yjs'
+import type { IDBAuthor } from 'src/datastore/types'
 
-export function addFlashToPlanning(flashDoc: Y.Doc, planningDoc: Y.Doc, assignmentId: string, timeZone: string): string {
+export function addFlashToPlanning(flashDoc: Y.Doc, planningDoc: Y.Doc, assignmentId: string, timeZone: string, author: IDBAuthor): string {
   const flash = flashDoc.getMap('ele')
   const [flashId] = getValueByYPath<string>(flash, 'root.uuid')
   const [flashTitle] = getValueByYPath<string>(flash, 'root.title')
@@ -38,6 +39,8 @@ export function addFlashToPlanning(flashDoc: Y.Doc, planningDoc: Y.Doc, assignme
   const zuluISODate = `${new Date().toISOString().split('.')[0]}Z` // Remove ms, add Z back again
   const localISODateTime = convertToISOStringInTimeZone(dt, timeZone).slice(0, 10)
 
+
+  // Create assignment block
   const eleAssignment = YBlock.create({
     id: assignmentId,
     type: 'core/assignment',
@@ -63,11 +66,22 @@ export function addFlashToPlanning(flashDoc: Y.Doc, planningDoc: Y.Doc, assignme
         }
       }
     ],
-    links: [{
-      type: 'core/flash',
-      rel: 'deliverable',
-      uuid: flashId
-    }]
+    links: [
+      {
+        type: 'core/flash',
+        rel: 'deliverable',
+        uuid: flashId
+      },
+      ...(author
+        ? [{
+            type: 'core/author',
+            rel: 'assignee',
+            role: 'primary',
+            uuid: author.id,
+            title: author.name
+          }]
+        : [])
+    ]
   })
 
   const yAssignment = toYMap(eleAssignment[0] as unknown as Record<string, unknown>)
@@ -81,29 +95,6 @@ export function addFlashToPlanning(flashDoc: Y.Doc, planningDoc: Y.Doc, assignme
 
     newYAssignments.push([yAssignment])
     yMeta.set('core/assignment', newYAssignments)
-  }
-
-  // Add assignees from flash authors
-  const [links] = getValueByYPath<Y.Map<unknown>>(yAssignment, 'links', true)
-  const [flashAuthors] = getValueByYPath<Y.Array<Y.Map<unknown>>>(flash, 'links.core/author', true)
-
-  if (links && flashAuthors) {
-    const assignees = new Y.Array()
-    links.set('core/author', assignees)
-
-    flashAuthors.forEach((author) => {
-      const eleAssignee = YBlock.create({
-        type: 'core/author',
-        rel: 'assignee',
-        role: 'primary',
-        uuid: author.get('uuid') as string,
-        title: (author.get('title') as Y.XmlText).toJSON()
-      })
-
-      const assignee = toYMap(eleAssignee[0] as unknown as Record<string, unknown>)
-
-      assignees.push([assignee])
-    })
   }
 
   return getValueByYPath<string>(planning, 'root.uuid')?.[0] || ''

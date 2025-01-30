@@ -26,9 +26,11 @@ import { addFlashToPlanning } from './addFlashToPlanning'
 import { addAssignmentLinkToFlash } from './addAssignmentToFlash'
 import { type EleBlock } from '@/shared/types'
 import { getValueByYPath } from '@/lib/yUtils'
-import { Block } from '@ttab/elephant-api/newsdoc'
 import { UserMessage } from './UserMessage'
 import { Form } from '@/components/Form'
+import { useActiveAuthor } from '@/hooks/useActiveAuthor'
+import type { IDBAuthor } from 'src/datastore/types'
+import { type Document } from '@ttab/elephant-api/newsdoc'
 
 export const FlashViewContent = (props: ViewProps & {
   documentId: string
@@ -42,7 +44,7 @@ export const FlashViewContent = (props: ViewProps & {
   const [selectedPlanning, setSelectedPlanning] = useState<DefaultValueOption | undefined>(undefined)
   const [title, setTitle] = useYValue<string | undefined>('root.title', true)
   const [, setSection] = useYValue<EleBlock | undefined>('links.core/section[0]')
-  const [author] = useYValue<EleBlock | undefined>('links.core/author[0]')
+  const author = useActiveAuthor()
 
   const [newPlanningId, newPlanningYDoc] = useMemo(() => {
     return createDocument(Templates.planning, true, { newsvalue: '6' })
@@ -254,22 +256,14 @@ function createFlash(
   planningDocument: Y.Doc | undefined,
   newPlanningDocument: Y.Doc | undefined,
   timeZone: string,
-  author: EleBlock | undefined
+  author: Document | IDBAuthor | undefined | null
 ): void {
   if (provider && status === 'authenticated') {
     // First and foremost we persist the flash, it needs an assignment
     const assignmentId = crypto.randomUUID()
     addAssignmentLinkToFlash(provider.document, assignmentId)
 
-    if (author) {
-      Block.create({
-        type: 'core/author',
-        rel: 'author',
-        uuid: author.uuid,
-        title: author.title
-      })
-    }
-
+    // Create flash in repo
     provider.sendStateless(
       createStateless(StatelessType.IN_PROGRESS, {
         state: false,
@@ -290,9 +284,11 @@ function createFlash(
           // @ts-expect-error Typescript don't understand the safeguard above
           planningDocument ?? newPlanningDocument,
           assignmentId,
-          timeZone
+          timeZone,
+          author
         )
 
+        // Create or update planning in repo
         provider.sendStateless(
           createStateless(StatelessType.IN_PROGRESS, {
             state: false,
