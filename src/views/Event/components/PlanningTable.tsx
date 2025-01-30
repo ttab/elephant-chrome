@@ -72,7 +72,7 @@ export const PlanningTable = ({ templateValues, asDialog }: {
       <div className='flex flex-start pb-2'>
         <CreateDocumentDialog
           type='Planning'
-          payload={{ templateValues, createdDocumentIdRef }}
+          payload={{ ...templateValues, createdDocumentIdRef }}
           createdDocumentIdRef={createdDocumentIdRef}
         >
           <a
