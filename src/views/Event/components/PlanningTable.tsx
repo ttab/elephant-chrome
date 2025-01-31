@@ -102,7 +102,7 @@ export const PlanningTable = ({ eventId, eventTitle, asDialog }: {
       ))}
       {asDialog && (
         <NewItems.Root>
-          <NewItems.List type='Planning' createdIdRef={createdDocumentIdRef} />
+          <NewItems.List type='Planning' createdIdRef={createdDocumentIdRef} asDialog={asDialog} />
         </NewItems.Root>
       )}
     </div>
