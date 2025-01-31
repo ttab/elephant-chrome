@@ -5,10 +5,11 @@ import { CheckIcon, CircleCheck } from '@ttab/elephant-ui/icons'
 import { cn } from '@ttab/elephant-ui/utils'
 import type { Dispatch, SetStateAction } from 'react'
 
-export const StatusFilter = ({ page, setPage, setSearch }: {
+export const StatusFilter = ({ page, setPage, setSearch, facets }: {
   page: string
   setPage: Dispatch<SetStateAction<string>>
   setSearch: Dispatch<SetStateAction<string | undefined>>
+  facets?: Map<string, number>
 }): JSX.Element | undefined => {
   const [filter, setFilter] = useFilter(['status'])
   const statuses = new Set(filter.status)
@@ -62,6 +63,13 @@ export const StatusFilter = ({ page, setPage, setSearch }: {
                 <status.icon size={18} strokeWidth={1.75} />
               )}
               <span>{status.label}</span>
+              <span className='ml-auto flex h-4 w-4 items-center justify-center font-mono text-xs'>
+                {facets?.get(status.value) && (
+                  <span className='ml-auto flex h-4 w-4 items-center justify-center font-mono text-xs'>
+                    {facets.get(status.value) || 0}
+                  </span>
+                )}
+              </span>
             </CommandItem>
           )
         })}

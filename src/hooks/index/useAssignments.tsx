@@ -5,8 +5,10 @@ import { useRepositoryEvents } from '../useRepositoryEvents'
 import { useFilter } from '../useFilter'
 import type { AssignmentInterface } from './lib/assignments/types'
 import { fetchAssignments } from './lib/assignments/fetchAssignments'
+import type { AssignmentResponseInterface } from './lib/assignments/structureAssignments'
 import { structureAssignments } from './lib/assignments/structureAssignments'
-import { filterAssignments } from './lib/assignments/filterAssignments'
+import type { Facets } from './lib/assignments/filterAssignments'
+import { filterAssignments, getFacets } from './lib/assignments/filterAssignments'
 
 export { AssignmentInterface }
 
@@ -24,7 +26,7 @@ export const useAssignments = ({ date, type, slots }: {
     label: string
     hours: number[]
   }[]
-}) => {
+}): [AssignmentResponseInterface[], Facets] => {
   const { data: session } = useSession()
   const { index, repository, timeZone } = useRegistry()
   const key = type ? `core/assignment/${type}/${date.toString()}` : 'core/assignment'
@@ -45,6 +47,8 @@ export const useAssignments = ({ date, type, slots }: {
 
   const filteredData = filterAssignments(data, filtersWithDefaults)
   const structuredData = structureAssignments(timeZone, filteredData || [], slots)
+
+  const facets = getFacets(data)
 
 
   useRepositoryEvents(['core/planning-item', 'core/planning-item+meta'], (event) => {
@@ -67,5 +71,5 @@ export const useAssignments = ({ date, type, slots }: {
     }
   })
 
-  return structuredData
+  return [structuredData, facets]
 }
