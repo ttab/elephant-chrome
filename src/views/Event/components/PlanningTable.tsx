@@ -15,9 +15,14 @@ interface StatusResult {
   uuid: string | undefined
 }
 
-export const PlanningTable = ({ eventId, eventTitle, asDialog }: {
-  eventId: string
-  eventTitle?: string
+export const PlanningTable = ({ templateValues, asDialog }: {
+  templateValues: {
+    eventId: string
+    eventTitle?: string
+    eventSection?: string
+    newsvalue?: string
+    story?: string
+  }
 } & FormProps): JSX.Element => {
   const { data: session, status } = useSession()
   const openPlanning = useLink('Planning')
@@ -25,14 +30,14 @@ export const PlanningTable = ({ eventId, eventTitle, asDialog }: {
   const indexUrl = useIndexUrl()
 
   const { data, mutate, error } = useSWR<StatusResult[] | undefined, Error>([
-    `relatedPlanningItems/${eventId}`,
+    `relatedPlanningItems/${templateValues.eventId}`,
     status,
     indexUrl.href
   ], async (): Promise<StatusResult[] | undefined> => {
     if (status !== 'authenticated') {
       throw new Error('Not authenticated')
     }
-    const statusResults = await Events.relatedPlanningSearch(indexUrl, session.accessToken, [eventId], {
+    const statusResults = await Events.relatedPlanningSearch(indexUrl, session.accessToken, [templateValues.eventId], {
       size: 100
     })
 
@@ -67,7 +72,7 @@ export const PlanningTable = ({ eventId, eventTitle, asDialog }: {
       <div className='flex flex-start pb-2'>
         <CreateDocumentDialog
           type='Planning'
-          payload={{ eventId, eventTitle, createdDocumentIdRef }}
+          payload={{ ...templateValues, createdDocumentIdRef }}
           createdDocumentIdRef={createdDocumentIdRef}
         >
           <a

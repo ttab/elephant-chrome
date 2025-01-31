@@ -53,7 +53,7 @@ export const Approvals = (): JSX.Element => {
     ), [query.from])
 
 
-  const data = useAssignments({
+  const [data, facets] = useAssignments({
     type: 'text',
     date: from ? new Date(from) : new Date(),
     slots
@@ -142,7 +142,7 @@ export const Approvals = (): JSX.Element => {
       <ViewHeader.Root>
         <ViewHeader.Title title='Dagen' short='Dagen' iconColor='#5E9F5D' icon={EarthIcon} />
         <ViewHeader.Content>
-          <Header type='Approvals' />
+          <Header type='Approvals' facets={facets} />
 
         </ViewHeader.Content>
       </ViewHeader.Root>

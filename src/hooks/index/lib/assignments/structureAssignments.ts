@@ -2,7 +2,7 @@ import { toZonedTime } from 'date-fns-tz'
 import { parseISO, getHours } from 'date-fns'
 import type { AssignmentInterface } from './types'
 
-interface AssignmentResponseInterface {
+export interface AssignmentResponseInterface {
   key?: string
   label?: string
   hours?: number[]

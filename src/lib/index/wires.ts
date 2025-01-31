@@ -10,7 +10,7 @@ export interface WireSearchParams {
 const search = async (endpoint: URL, accessToken: string, params?: WireSearchParams): Promise<SearchIndexResponse<Wire>> => {
   const sort: Array<Record<string, 'asc' | 'desc'>> = []
 
-  sort.push({ created: 'desc' })
+  sort.push({ modified: 'desc' })
 
   const sourceQuery = {
     bool: {

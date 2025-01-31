@@ -15,7 +15,7 @@ export function wiresListColumns({ sections = [], locale = 'sv-SE' }: {
 }): Array<ColumnDef<Wire>> {
   return [
     {
-      id: 'created',
+      id: 'modified',
       enableGrouping: true,
       meta: {
         name: 'Tid',
@@ -34,7 +34,7 @@ export function wiresListColumns({ sections = [], locale = 'sv-SE' }: {
         }
       },
       accessorFn: (data) => {
-        const date = new Date(data._source.created[0])
+        const date = new Date(data._source.modified[0])
 
         if (date.toDateString() === new Date().toDateString()) {
           return date.getHours()
@@ -47,17 +47,17 @@ export function wiresListColumns({ sections = [], locale = 'sv-SE' }: {
       }
     },
     {
-      id: 'createdMinutes',
+      id: 'modifiedMinutes',
       meta: {
         name: 'Utgiven',
         columnIcon: SignalHigh,
         className: 'flex-px-3'
       },
       accessorFn: (data) => {
-        return data._source.created[0]
+        return data._source.modified[0]
       },
       cell: ({ row }) => {
-        const date = new Date(row.getValue('createdMinutes'))
+        const date = new Date(row.getValue('modifiedMinutes'))
         const isPressRelease = row.original._source['document.meta.tt_wire.role']?.[0] === 'pressrelease'
 
         return (

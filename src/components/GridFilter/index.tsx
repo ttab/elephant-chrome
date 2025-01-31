@@ -4,8 +4,9 @@ import type { Dispatch, SetStateAction } from 'react'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { DebouncedCommandInput } from '../Commands/Menu/DebouncedCommandInput'
 import { GridCommands } from './Commands'
+import type { Facets } from '@/hooks/index/lib/assignments/filterAssignments'
 
-export const GridFilter = (): JSX.Element => {
+export const GridFilter = ({ facets }: { facets?: Facets }): JSX.Element => {
   const [open, setOpen] = useState(false)
   const [page, setPage] = useState<string>('')
   const [search, setSearch] = useState<string | undefined>('')
@@ -67,7 +68,7 @@ export const GridFilter = (): JSX.Element => {
             placeholder={page === 'textFilter' ? 'Sök' : 'Filtrera'}
             className='h-9'
           />
-          <GridCommands page={page} setPage={setPage} setSearch={setSearch} />
+          <GridCommands page={page} setPage={setPage} setSearch={setSearch} facets={facets} />
         </Command>
       </PopoverContent>
     </Popover>
