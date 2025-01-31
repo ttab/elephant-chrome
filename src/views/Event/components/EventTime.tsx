@@ -311,7 +311,7 @@ export const EventTimeMenu = (): JSX.Element => {
             </Button>
             <Button
               variant='outline'
-              disabled={!fullDay && (!startTimeValid || !endTimeValid)}
+              disabled={!fullDay && (startDateValue && endDateValue ? startDateValue > endDateValue : false)}
               onClick={(evt) => {
                 evt.preventDefault()
                 evt.stopPropagation()
