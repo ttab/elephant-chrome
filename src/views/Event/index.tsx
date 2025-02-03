@@ -166,7 +166,7 @@ const EventViewContent = (props: ViewProps & { documentId: string }): JSX.Elemen
           </Form.Content>
 
           <Form.Table>
-            <PlanningTable templateValues={templateValues} />
+            <PlanningTable templateValues={templateValues} asDialog={props.asDialog} />
           </Form.Table>
 
           <Form.Footer>
