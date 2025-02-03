@@ -2,7 +2,15 @@ import { useYValue } from '@/hooks/useYValue'
 import { cn } from '@ttab/elephant-ui/utils'
 import type { Block } from '@ttab/elephant-api/newsdoc'
 
-import { Alert, AlertDescription, Button, ComboBox } from '@ttab/elephant-ui'
+import {
+  Alert,
+  AlertDescription,
+  Button,
+  Select,
+  SelectItem,
+  SelectContent,
+  SelectTrigger
+} from '@ttab/elephant-ui'
 import { MessageCircleMore, Text, X } from '@ttab/elephant-ui/icons'
 import { TextBox } from '@/components/ui'
 import type { DefaultValueOption } from '@/types/index'
@@ -34,25 +42,30 @@ const Note = ({ noteIndex, handleRemove }: {
     >
       <div className='flex flex-row w-full justify-between'>
         <AlertDescription className='flex space-x-2 items-center w-full'>
-          <ComboBox
-            max={1}
-            size='xs'
-            className={cn({
-              'bg-blue-50': role === 'public',
-              'bg-yellow-50': role === 'internal'
-            })}
-            options={roles}
-            selectedOptions={selectedOptions}
-            onSelect={(option) => {
-              setRole(option.value)
+          <Select
+            value={selectedOptions?.[0]?.value}
+            onValueChange={(option) => {
+              setRole(option)
             }}
           >
-            {selectedOptions?.[0] && SelectedIcon && (
-              <div className='flex'>
-                <SelectedIcon {...selectedOptions[0].iconProps} />
-              </div>
-            )}
-          </ComboBox>
+            <SelectTrigger
+              className={cn({
+                'bg-blue-50': role === 'public',
+                'bg-yellow-50': role === 'internal'
+              }, 'w-fit border-0')}
+            >
+              {selectedOptions?.[0] && SelectedIcon && (
+                <div className='flex pr-2'>
+                  <SelectedIcon {...selectedOptions[0].iconProps} />
+                </div>
+              )}
+            </SelectTrigger>
+            <SelectContent>
+              {roles.map((role) => (
+                <SelectItem value={role.value} key={role.value}>{role.label}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
           <TextBox
             key={role}
             path={`meta.core/note[${noteIndex}].data.text`}
