@@ -137,7 +137,7 @@ function EditorWrapper(props: ViewProps & {
         </ViewHeader.Root>
 
         <View.Content className='flex flex-col max-w-[1000px]'>
-          {notes?.length && <div className='p-4'><Notes /></div>}
+          {!!notes?.length && <div className='p-4'><Notes /></div>}
 
           <div className='flex-grow overflow-auto pr-12 max-w-screen-xl'>
             {!!provider && synced
