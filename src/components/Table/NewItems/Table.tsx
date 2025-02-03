@@ -11,6 +11,7 @@ import { Check, CheckCheck } from '@ttab/elephant-ui/icons'
 import { useRepositoryEvents } from '@/hooks/useRepositoryEvents'
 import { useCallback } from 'react'
 import { useUserTracker } from '@/hooks/useUserTracker'
+import type { NewItem } from './Root'
 
 const BASE_URL = import.meta.env.BASE_URL || ''
 
@@ -20,10 +21,6 @@ const eventTypes = {
 } as const
 
 export type EventType = keyof typeof eventTypes
-interface NewItem {
-  id: string
-  timestamp: number
-}
 
 export const Table = ({ type, header }: {
   type: EventType
