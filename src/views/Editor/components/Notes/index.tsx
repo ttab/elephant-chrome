@@ -54,8 +54,9 @@ const Note = ({ noteIndex, handleRemove }: {
             )}
           </ComboBox>
           <TextBox
+            key={role}
             path={`meta.core/note[${noteIndex}].data.text`}
-            placeholder='Add a note'
+            placeholder={`Lägg till ${role === 'public' ? 'redaktionell' : 'intern'} notering`}
             className='font-thin text-sm whitespace-pre-wrap break-words'
             singleLine={true}
           />
@@ -75,7 +76,6 @@ const Note = ({ noteIndex, handleRemove }: {
 
 export const Notes = (): JSX.Element | null => {
   const [notes, setNotes] = useYValue<Block[] | undefined>('meta.core/note')
-  console.log(notes)
 
   const handleRemove = (index: number) => () => {
     if (notes?.length) {
