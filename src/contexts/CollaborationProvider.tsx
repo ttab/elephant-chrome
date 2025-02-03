@@ -160,12 +160,11 @@ export const CollaborationProviderContext = ({ documentId, document, children }:
 
   return (
     <>
-      {!!provider
-        && (
-          <CollaborationContext.Provider value={{ ...state }}>
-            {children}
-          </CollaborationContext.Provider>
-        )}
+      {!!provider && (
+        <CollaborationContext.Provider value={{ ...state }}>
+          {children}
+        </CollaborationContext.Provider>
+      )}
     </>
   )
 }
