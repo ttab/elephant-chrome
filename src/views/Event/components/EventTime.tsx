@@ -12,6 +12,7 @@ import { useYValue } from '@/hooks/useYValue'
 import { useRegistry } from '@/hooks'
 import { dateToReadableDateTime, dateToReadableTime, dateToReadableDay, createDateWithTime } from '@/lib/datetime'
 import { TimeInput } from '@/components/TimeInput'
+import { TriangleAlert } from '@ttab/elephant-ui/icons'
 
 interface EventData {
   end: string
@@ -269,34 +270,43 @@ export const EventTimeMenu = (): JSX.Element => {
             />
             <label htmlFor='wholeDaySwitch' className='text-sm self-center p-2'>Heldag</label>
           </div>
-          <div className='flex justify-between border-2 rounded-md border-slate-100'>
-            <div className='px-3 py-2 text-sm'>
-              {startDateValue && dateToReadableDay(new Date(startDateValue), locale, timeZone)}
+          <div className={`${!fullDay && startDateValue && endDateValue && startDateValue > endDateValue ? 'border-2 rounded-md border-red-400 relative' : ''}`}>
+            {!fullDay && startDateValue && endDateValue && startDateValue > endDateValue && (
+              <div className='absolute -top-1 right-0 h-2 w-2 z-10'>
+                <TriangleAlert color='red' fill='#ffffff' size={15} strokeWidth={1.75} />
+              </div>
+            )}
+
+            <div className='flex justify-between border-2 rounded-md border-slate-100'>
+              <div className='px-3 py-2 text-sm'>
+                {startDateValue && dateToReadableDay(new Date(startDateValue), locale, timeZone)}
+              </div>
+              <div>
+                <TimeInput
+                  defaultTime={startTimeValue}
+                  handleOnChange={handleStartTimeChange}
+                  handleOnSelect={handleOnTimeSelect}
+                  setOpen={setOpen}
+                  disabled={fullDay}
+                />
+              </div>
             </div>
-            <div>
-              <TimeInput
-                defaultTime={startTimeValue}
-                handleOnChange={handleStartTimeChange}
-                handleOnSelect={handleOnTimeSelect}
-                setOpen={setOpen}
-                disabled={fullDay}
-              />
+            <div className='flex justify-between border-2 rounded-md border-slate-100 mt-2'>
+              <div className='px-3 py-2 text-sm'>
+                {endDateValue && dateToReadableDay(new Date(endDateValue), locale, timeZone)}
+              </div>
+              <div>
+                <TimeInput
+                  defaultTime={endTimeValue}
+                  handleOnChange={handleEndTimeChange}
+                  handleOnSelect={handleOnTimeSelect}
+                  setOpen={setOpen}
+                  disabled={fullDay}
+                />
+              </div>
             </div>
           </div>
-          <div className='flex justify-between border-2 rounded-md border-slate-100 mt-2'>
-            <div className='px-3 py-2 text-sm'>
-              {endDateValue && dateToReadableDay(new Date(endDateValue), locale, timeZone)}
-            </div>
-            <div>
-              <TimeInput
-                defaultTime={endTimeValue}
-                handleOnChange={handleEndTimeChange}
-                handleOnSelect={handleOnTimeSelect}
-                setOpen={setOpen}
-                disabled={fullDay}
-              />
-            </div>
-          </div>
+
 
           <div className='flex items-center justify-end gap-4 pt-2'>
             <Button
