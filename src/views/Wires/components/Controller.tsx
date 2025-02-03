@@ -3,22 +3,9 @@ import { useUserTracker } from '@/hooks/useUserTracker'
 import type { HistoryState } from '@/navigation/hooks/useHistory'
 import { Button } from '@ttab/elephant-ui'
 import { Plus } from '@ttab/elephant-ui/icons'
-import { useSession } from 'next-auth/react'
 import { useEffect } from 'react'
 
-const Root = (): JSX.Element => {
-  const { data } = useSession()
-
-  return data?.user.sub
-    ? (
-        <ControllerContent />
-      )
-    : (
-        <>children</>
-      )
-}
-
-const ControllerContent = (): JSX.Element => {
+export const Controller = (): JSX.Element => {
   const addWire = useLink('Wires')
   const { replaceState, state } = useHistory()
   const [wiresHistory, setWiresHistory] = useUserTracker<HistoryState>('Wires')
@@ -47,5 +34,3 @@ const ControllerContent = (): JSX.Element => {
     </div>
   )
 }
-
-export { Root as Controller }
