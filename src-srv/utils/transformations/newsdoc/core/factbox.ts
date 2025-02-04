@@ -42,7 +42,7 @@ interface Data {
   [key: string]: string
 }
 
-export async function revertFactbox(element: TBElement): Promise<Block> {
+export function revertFactbox(element: TBElement): Block {
   const factboxTitle = element.children.find((child) => child.type === 'core/factbox/title')
   const title = (factboxTitle?.children as FactboxChild[] | undefined)?.[0]?.text ?? ''
 
@@ -73,13 +73,11 @@ export async function revertFactbox(element: TBElement): Promise<Block> {
     title: toString(title),
     data,
     links: properties?.original_id
-      ? [
-          {
-            rel: 'source',
-            uuid: toString(properties?.original_id)
-          }
-        ]
+      ? [{
+          rel: 'source',
+          uuid: toString(properties?.original_id)
+        }]
       : [],
-    content: await slateToNewsDoc(factboxChildren as TBElement[])
+    content: slateToNewsDoc(factboxChildren as TBElement[])
   })
 }

@@ -52,19 +52,19 @@ describe('Transform planning GetDocumentResponse', () => {
     expect(planningJson).toMatchSnapshot()
   })
 
-  it('does not alter document when converted to grouped format and back', async () => {
-    const ungroupedPlanning = await fromGroupedNewsDoc(groupedPlanning)
+  it('does not alter document when converted to grouped format and back', () => {
+    const ungroupedPlanning = fromGroupedNewsDoc(groupedPlanning)
 
     expect(ungroupedPlanning.version).toBe(planning.version)
     expect(sortDocument(ungroupedPlanning.document)).toEqual(sortedDocument)
   })
 
-  it('does not alter document when converted to Y.Doc and back', async () => {
+  it('does not alter document when converted to Y.Doc and back', () => {
     const yDoc = new Y.Doc()
     toYjsNewsDoc(groupedPlanning, yDoc)
 
-    const { documentResponse } = await fromYjsNewsDoc(yDoc)
-    const ungroupedPlanning = await fromGroupedNewsDoc(documentResponse)
+    const { documentResponse } = fromYjsNewsDoc(yDoc)
+    const ungroupedPlanning = fromGroupedNewsDoc(documentResponse)
 
     expect(ungroupedPlanning.version).toBe(planning.version)
     expect(sortDocument(ungroupedPlanning.document)).toEqual(sortedDocument)
@@ -88,19 +88,19 @@ describe('Transform article GetDocumentResponse', () => {
     expect(articleJson).toMatchSnapshot()
   })
 
-  it('does not alter document when converted to grouped format and back', async () => {
-    const ungroupedPlanning = await fromGroupedNewsDoc(groupedArticle)
+  it('does not alter document when converted to grouped format and back', () => {
+    const ungroupedPlanning = fromGroupedNewsDoc(groupedArticle)
 
     expect(ungroupedPlanning.version).toBe(article.version)
     expect(sortDocument(ungroupedPlanning.document)).toEqual(sortDocument(article.document))
   })
 
-  it('does not alter document when converted to Y.Doc and back', async () => {
+  it('does not alter document when converted to Y.Doc and back', () => {
     const yDoc = new Y.Doc()
     toYjsNewsDoc(groupedArticle, yDoc)
 
-    const { documentResponse } = await fromYjsNewsDoc(yDoc)
-    const ungroupedArticle = await fromGroupedNewsDoc(documentResponse)
+    const { documentResponse } = fromYjsNewsDoc(yDoc)
+    const ungroupedArticle = fromGroupedNewsDoc(documentResponse)
 
     expect(ungroupedArticle.version).toBe(article.version)
     expect(sortDocument(ungroupedArticle.document)).toEqual(sortDocument(article.document))
@@ -143,10 +143,10 @@ describe('Description and slugline handling in planning', () => {
       expect(assignments[1].meta['tt/slugline'][0].value).toBe('')
     })
 
-    it('removes empty sluglines from assignments when reverting', async () => {
+    it('removes empty sluglines from assignments when reverting', () => {
       // Revert to newsDoc
-      const { documentResponse } = await fromYjsNewsDoc(yDoc)
-      const { document } = await fromGroupedNewsDoc(documentResponse)
+      const { documentResponse } = fromYjsNewsDoc(yDoc)
+      const { document } = fromGroupedNewsDoc(documentResponse)
 
       // Created and unused slugline on planning is removed
       const planningSlugline = document?.meta.filter((meta) => meta.type === 'tt/slugline')
@@ -185,10 +185,10 @@ describe('Description and slugline handling in planning', () => {
       expect(descriptions.map((d) => d.get('role'))).toEqual(['internal', 'public'])
     })
 
-    it('removes empty descriptions when reverting', async () => {
+    it('removes empty descriptions when reverting', () => {
       // Revert to newsDoc
-      const { documentResponse } = await fromYjsNewsDoc(yDoc)
-      const { document, version } = await fromGroupedNewsDoc(documentResponse)
+      const { documentResponse } = fromYjsNewsDoc(yDoc)
+      const { document, version } = fromGroupedNewsDoc(documentResponse)
 
       expect(version).toBe(planning.version)
       expect(document.meta.filter((meta) => meta.type === 'core/description').length).toBe(0)
@@ -229,10 +229,10 @@ describe('Description and slugline handling in planning', () => {
       expect(descriptions.map((d) => d.get('role'))).toEqual(['internal', 'public'])
     })
 
-    it('removes them when reverting', async () => {
+    it('removes them when reverting', () => {
       // Revert to newsDoc
-      const { documentResponse } = await fromYjsNewsDoc(yDoc)
-      const { document, version } = await fromGroupedNewsDoc(documentResponse)
+      const { documentResponse } = fromYjsNewsDoc(yDoc)
+      const { document, version } = fromGroupedNewsDoc(documentResponse)
 
       expect(version).toBe(planning.version)
       expect(document?.meta.filter((meta) => meta.type === 'core/description').length).toBe(1)
@@ -241,15 +241,15 @@ describe('Description and slugline handling in planning', () => {
   })
 
   describe('Transform and revert planning with factbox document', () => {
-    it('transforms and reverts the planning with factbox document correctly', async () => {
+    it('transforms and reverts the planning with factbox document correctly', () => {
       const yDoc = new Y.Doc()
       toYjsNewsDoc(
         toGroupedNewsDoc(articleFactbox),
         yDoc
       )
 
-      const { documentResponse } = await fromYjsNewsDoc(yDoc)
-      const { document, version } = await fromGroupedNewsDoc(documentResponse)
+      const { documentResponse } = fromYjsNewsDoc(yDoc)
+      const { document, version } = fromGroupedNewsDoc(documentResponse)
 
       if (!document || !articleFactbox.document) {
         throw new Error('no document')

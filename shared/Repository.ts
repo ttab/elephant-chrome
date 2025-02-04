@@ -229,10 +229,10 @@ export class Repository {
   * @returns Promise<FinishedUnaryCall<ValidateRequest, ValidateResponse>>
   */
   async validateDoc(ydoc: Y.Doc): Promise<FinishedUnaryCall<ValidateRequest, ValidateResponse>> {
-    const { documentResponse } = await fromYjsNewsDoc(ydoc)
+    const { documentResponse } = fromYjsNewsDoc(ydoc)
 
     return await this.#client.validate(
-      await fromGroupedNewsDoc(documentResponse)
+      fromGroupedNewsDoc(documentResponse)
     )
   }
 }
