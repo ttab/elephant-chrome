@@ -82,7 +82,7 @@ export const CollaborationProviderContext = ({ documentId, document, children }:
           <h1 className='text-lg font-bold shrink p-2'>Document source</h1>
 
           <div className='text-xs font-mono overflow-auto p-2 border bg-muted rounded-md'>
-            {JSON.stringify(provider.document.toJSON(), null, 2)}
+            {JSON.stringify(provider.document.getMap('ele').toJSON(), null, 2)}
           </div>
 
           <div className='shrink text-right p-2'>
