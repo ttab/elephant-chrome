@@ -3,6 +3,7 @@ import { Newsvalue } from '@/components/Newsvalue'
 import { useEffect, useRef } from 'react'
 import { MetaSheet } from '../components/MetaSheet'
 import { DocumentStatus } from '@/components/TmpDocumentStatus'
+import { AddNote } from '../components/Notes/AddNote'
 
 export const EditorHeader = ({ documentId }: { documentId: string }): JSX.Element => {
   const { viewId } = useView()
@@ -18,6 +19,7 @@ export const EditorHeader = ({ documentId }: { documentId: string }): JSX.Elemen
     <div className='flex flex-row gap-2 items-center'>
       <Newsvalue />
       <DocumentStatus status={documentStatus} setStatus={setDocumentStatus} />
+      <AddNote />
       <MetaSheet container={containerRef.current} />
     </div>
   )

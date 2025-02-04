@@ -45,7 +45,7 @@ export const UserTrackerProvider = ({ children }: PropsWithChildren): JSX.Elemen
 
     return new HocuspocusProvider({
       websocketProvider: webSocket,
-      name: data.user.sub,
+      name: data.user.sub.replace('core://user/', ''),
       token: data.accessToken,
       onConnect: () => {
         setConnected(true)

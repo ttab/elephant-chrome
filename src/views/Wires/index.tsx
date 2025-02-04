@@ -1,6 +1,6 @@
 import { View, ViewHeader } from '@/components/View'
 import { type ViewMetadata } from '@/types/index'
-import { Cable, Minus } from '@ttab/elephant-ui/icons'
+import { Cable, Minus, Save } from '@ttab/elephant-ui/icons'
 import { useMemo } from 'react'
 import { Sources } from './components'
 import { wiresListColumns } from './WiresListColumns'
@@ -14,9 +14,11 @@ import { SWRProvider } from '@/contexts/SWRProvider'
 import { Pagination } from '@/components/Table/Pagination'
 import { Controller } from './components/Controller'
 import { useView, useHistory, useSections } from '@/hooks'
-import type { HistoryInterface } from '@/navigation/hooks/useHistory'
+import type { HistoryInterface, HistoryState } from '@/navigation/hooks/useHistory'
 import { ViewDialogClose } from '@/components/View/ViewHeader/ViewDialogClose'
 import { ViewFocus } from '@/components/View/ViewHeader/ViewFocus'
+import { Button } from '@ttab/elephant-ui'
+import { useUserTracker } from '@/hooks/useUserTracker'
 
 const meta: ViewMetadata = {
   name: 'Wires',
@@ -40,6 +42,7 @@ export const Wires = (): JSX.Element => {
   const history = useHistory()
   const isLast = history.state?.contentState[history.state?.contentState.length - 1]?.viewId === viewId
   const isFirst = history.state?.contentState[0]?.viewId === viewId
+  const [, setWiresHistory] = useUserTracker<HistoryState>('Wires')
 
   const columns = useMemo(() => wiresListColumns({ sections }), [sections])
 
@@ -53,12 +56,25 @@ export const Wires = (): JSX.Element => {
 
           <ViewHeader.Root>
             {isFirst && (
-              <ViewHeader.Title
-                title='Telegram'
-                short='Telegram'
-                icon={Cable}
-                iconColor='#FF6347'
-              />
+              <>
+                <ViewHeader.Title
+                  title='Telegram'
+                  short='Telegram'
+                  icon={Cable}
+                  iconColor='#FF6347'
+                />
+
+                <Button
+                  variant='ghost'
+                  onClick={() => {
+                    if (history.state) {
+                      setWiresHistory(history.state)
+                    }
+                  }}
+                >
+                  <Save strokeWidth={1.75} size={18} />
+                </Button>
+              </>
             )}
 
             <ViewHeader.Content>

@@ -233,7 +233,9 @@ export class CollaborationServer {
 
     if (msg.type === StatelessType.IN_PROGRESS && !msg.message.state) {
       const userTrackerConnection = await this.#server.openDirectConnection(
-        msg.message.context.user.sub, { ...msg.message.context, agent: 'server' }
+        msg.message.context.user.sub
+          .replace('core://user/', ''),
+        { ...msg.message.context, agent: 'server' }
       ).catch((ex) => {
         throw new Error('acquire connection', { cause: ex })
       })
