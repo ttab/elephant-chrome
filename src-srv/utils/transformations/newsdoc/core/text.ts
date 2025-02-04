@@ -9,7 +9,7 @@ import { jsx } from 'slate-hyperscript'
  * Transform a text Block into Slate Element
  */
 export function transformText(element: Block): TBElement {
-  const rootElement = parse(`<p>${element?.data?.text || ''}</p>`)
+  const rootElement = parse(element?.data?.text || '')
   const value = deserializeNode(rootElement)
 
   return {
@@ -77,7 +77,7 @@ function serializeNode(node: Descendant): string {
   // NOTE: Add other/new supported inline elements here
   switch (node.type) {
     case 'core/link':
-      return `<a id="${node.id || ''}" href="${escapeHTML(encodeURI(properties.url as string || ''))}">${serializedChildren}</a>`
+      return `<a href="${escapeHTML(encodeURI(properties.url as string || ''))}" id="${node.id || ''}">${serializedChildren}</a>`
 
     default:
       return serializedChildren
@@ -113,8 +113,8 @@ function deserializeNode(el: HTMLElement, markAttributes: Record<string, boolean
     //   break
   }
 
-  const children = el.children
-    .map((node) => deserializeNode(node, nodeAttributes))
+  const children = el.childNodes
+    .map((node) => deserializeNode(node as HTMLElement, nodeAttributes))
     .filter((el) => !!el)
     .flat()
 
@@ -126,6 +126,7 @@ function deserializeNode(el: HTMLElement, markAttributes: Record<string, boolean
   switch (nodeName) {
     case 'a':
       return {
+        id: el.id,
         class: 'inline',
         type: 'core/link',
         properties: {
