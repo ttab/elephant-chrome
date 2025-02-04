@@ -260,12 +260,12 @@ export class CollaborationServer {
         documentResponse,
         updatedHash,
         originalHash
-      } = await fromYjsNewsDoc(connection.document)
+      } = fromYjsNewsDoc(connection.document)
 
       // We should always have a new hash but fallback to original
       await this.#storeDocumentInRepository(
         msg.message.id,
-        await fromGroupedNewsDoc(documentResponse),
+        fromGroupedNewsDoc(documentResponse),
         updatedHash || originalHash,
         msg.message.context.accessToken,
         msg.message.context,
@@ -354,7 +354,7 @@ export class CollaborationServer {
       return
     }
 
-    const { documentResponse, updatedHash } = await fromYjsNewsDoc(yDoc)
+    const { documentResponse, updatedHash } = fromYjsNewsDoc(yDoc)
     if (!updatedHash) {
       logger.debug('::: saveDocument: No changes in document')
       return
@@ -362,7 +362,7 @@ export class CollaborationServer {
 
     await this.#storeDocumentInRepository(
       documentName,
-      await fromGroupedNewsDoc(documentResponse),
+      fromGroupedNewsDoc(documentResponse),
       updatedHash,
       context.accessToken as string,
       context

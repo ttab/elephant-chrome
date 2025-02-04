@@ -47,11 +47,11 @@ export function toYjsNewsDoc(eleDoc: EleDocumentResponse, yDoc: Document | Y.Doc
 /**
  * Convert a yjs structure to a grouped YDocumentResponse
  */
-export async function fromYjsNewsDoc(yDoc: Y.Doc): Promise<{
+export function fromYjsNewsDoc(yDoc: Y.Doc): {
   documentResponse: EleDocumentResponse
   updatedHash: number | undefined
   originalHash: number
-}> {
+} {
   const yMap = yDoc.getMap('ele')
 
   const root = yMap.get('root') as Y.Map<unknown>
@@ -61,7 +61,7 @@ export async function fromYjsNewsDoc(yDoc: Y.Doc): Promise<{
   const links = (yMap.get('links') as Y.Map<unknown>).toJSON() || {}
 
   const yContent = yMap.get('content') as Y.XmlText
-  const content = yContent.toString() ? await yTextToSlateElement(yContent).children : []
+  const content = yContent.toString() ? yTextToSlateElement(yContent).children : []
 
   const responseDocument = {
     version: yDoc.getMap('version').get('version') as string,
