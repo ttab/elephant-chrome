@@ -23,9 +23,7 @@ export function parseTableBody(tablebody: string) {
         return {
           type: 'core/table/row/cell',
           class: 'text',
-          children: cell.textContent.trim().length > 0
-            ? [{ text: cell.textContent.trim() }]
-            : [{ text: '' }]
+          children: [{ text: cell.textContent.trim() }]
         }
       }
       )
