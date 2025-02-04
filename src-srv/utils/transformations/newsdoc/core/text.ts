@@ -1,124 +1,140 @@
-import { decode, encode } from 'html-entities'
 import { NodeType, parse, type HTMLElement } from 'node-html-parser'
 import { Block } from '@ttab/elephant-api/newsdoc'
-import type { Text } from 'slate'
-import {
-  type TBElement,
-  type TBText,
-  TextbitElement
-} from '@ttab/textbit'
+import { type Descendant, Text } from 'slate'
+import type { TBElement } from '@ttab/textbit'
+import escapeHTML from 'escape-html'
+import { jsx } from 'slate-hyperscript'
 
-
-const createDomDocument = async (): Promise<Document> => {
-  if (typeof window === 'undefined') {
-    const { JSDOM } = await import('jsdom')
-    const dom = new JSDOM()
-    return dom.window.document
-  }
-
-  return window.document
-}
-
-async function createAnchorElement(element: TBElement): Promise<string> {
-  const document = await createDomDocument()
-
-  const anchor = document.createElement('a')
-
-  if (typeof element.properties?.url === 'string') {
-    anchor.href = element.properties?.url
-  }
-
-  if (typeof element.id === 'string') {
-    anchor.id = element.id
-  }
-
-  const children = element.children as Text[]
-  if (typeof children[0].text === 'string') {
-    anchor.textContent = children[0].text
-  }
-
-  return anchor.outerHTML
-}
-
-function transformInlineElement(node: HTMLElement): TBElement {
-  switch (node.rawTagName) {
-    case 'a':
-      return {
-        type: 'core/link',
-        id: node.getAttribute('id'),
-        properties: {
-          url: node.getAttribute('href') ?? '',
-          title: node.getAttribute('href') ?? '',
-          target: '_blank'
-        },
-        children: [
-          { text: decode(node.text) }
-        ]
-      }
-    default:
-      throw new Error(`Inline element not implemented: ${node.rawTagName}`)
-  }
-}
-
-async function revertInlineElement(element: TBElement): Promise<string> {
-  switch (element.type) {
-    case 'core/link':
-      return await createAnchorElement(element)
-    default:
-      throw new Error(`Inline element not implemented: ${element.type}`)
-  }
-}
-
+/**
+ * Transform a text Block into Slate Element
+ */
 export function transformText(element: Block): TBElement {
-  const { id, data, role } = element
-  const root = parse(data?.text || '')
-  const nodes = root.childNodes as HTMLElement[]
-  const properties = role ? { properties: { role } } : {}
+  const rootElement = parse(`<p>${element?.data?.text || ''}</p>`)
+  const value = deserializeNode(rootElement)
 
   return {
-    id: id || crypto.randomUUID(), // Must have id, if id is missing positioning in drag'n drop does not work
-    class: 'text',
+    id: element.id || crypto.randomUUID(), // Must have id, if id is missing positioning in drag'n drop does not work
     type: 'core/text',
-    ...properties,
-    children: nodes.length
-      ? nodes.map((node): (TBElement | TBText) => {
-        if (node.nodeType === NodeType.ELEMENT_NODE) {
-          return {
-            class: 'inline',
-            ...transformInlineElement(node)
-          }
-        }
-        // Plain text
-        if (node.nodeType === NodeType.TEXT_NODE) {
-          return {
-            text: decode(node.text)
-          }
-        }
-        throw new Error('Unknown nodeType')
-      })
-      : [{ text: '' }]
+    properties: element.role ? { role: element.role } : {},
+    class: 'text',
+    children: (Array.isArray(value)) ? value : [value]
   }
 }
 
-export async function revertText(element: TBElement): Promise<Block> {
-  const { id, children } = element
+
+/**
+ * Transform a Slate Element into a text Block
+ */
+export function revertText(element: TBElement): Block {
+  const text = serializeNode(element)
 
   return Block.create({
-    id,
+    id: element.id,
     type: 'core/text',
     role: typeof element?.properties?.role === 'string' ? element.properties.role : '',
-    data: {
-      text: (await Promise.all(children.map(async (child: TBElement | Text) => {
-        if (TextbitElement.isInline(child)) {
-          return await revertInlineElement(child)
-        }
-
-        if (TextbitElement.isTextLeaf(child)) {
-          return encode(child.text)
-        }
-
-        throw new Error('Unknown child')
-      }))).join('')
-    }
+    data: { text }
   })
+}
+
+
+/**
+ * Recursively serialize a text node into HTML.
+ *
+ * @param node {Descendant}
+ * @returns Generated html string
+ */
+function serializeNode(node: Descendant): string {
+  // If this is a text element we must handle supported leafs (strong, etc)
+  if (Text.isText(node)) {
+    let string = escapeHTML(node.text)
+
+    const keys = Object.keys(node)
+
+    // Support both bold and strong but always create strong
+    if (keys.includes('core/bold') || keys.includes('core/strong')) {
+      string = `<strong>${string}</strong>`
+    }
+
+    // Support both italic and em but always create em
+    if (keys.includes('core/italic') || keys.includes('core/em')) {
+      string = `<em>${string}</em>`
+    }
+
+    // This is the correct way, we should not use <u>, see more on
+    // https://developer.mozilla.org/en-US/docs/Web/HTML/Element/u
+    if (keys.includes('core/underline')) {
+      string = `<span class="underline">${string}</span>`
+    }
+
+    return string
+  }
+
+  // This is a html element, serialize it's children first
+  const properties = typeof node?.properties === 'object' ? node?.properties : {}
+  const serializedChildren = Object.values(node.children || {}).map((node) => serializeNode(node)).join('')
+
+  // Then handle specific cases
+  // NOTE: Add other/new supported inline elements here
+  switch (node.type) {
+    case 'core/link':
+      return `<a id="${node.id || ''}" href="${escapeHTML(encodeURI(properties.url as string || ''))}">${serializedChildren}</a>`
+
+    default:
+      return serializedChildren
+  }
+}
+
+
+function deserializeNode(el: HTMLElement, markAttributes: Record<string, boolean> = {}): Descendant | Descendant[] {
+  if (el.nodeType === NodeType.TEXT_NODE) {
+    return jsx('text', markAttributes, el.textContent === '\n' ? '' : el.textContent)
+  }
+
+  const nodeName = el.rawTagName?.toLowerCase()
+  const nodeAttributes = { ...markAttributes }
+
+  // Handle supported decorations
+  switch (nodeName) {
+    case 'strong':
+      nodeAttributes['core/bold'] = true
+      break
+
+    case 'em':
+      nodeAttributes['core/italic'] = true
+      break
+
+    // NOTE: Add other/new supported decorations here
+
+    // FIXME: node-html-parser does not support style attribute of HTMLElement
+    // case 'span':
+    //   if (el.style.textDecoration === 'underline') {
+    //     nodeAttributes['core/underline'] = true
+    //   }
+    //   break
+  }
+
+  const children = el.children
+    .map((node) => deserializeNode(node, nodeAttributes))
+    .filter((el) => !!el)
+    .flat()
+
+  if (children.length === 0) {
+    children.push(jsx('text', nodeAttributes, ''))
+  }
+
+  // NOTE: Add other/new supported inline elements here
+  switch (nodeName) {
+    case 'a':
+      return {
+        class: 'inline',
+        type: 'core/link',
+        properties: {
+          url: decodeURI(el.getAttribute('href') || '')
+        },
+        children
+      }
+
+    default:
+      return children
+  }
 }

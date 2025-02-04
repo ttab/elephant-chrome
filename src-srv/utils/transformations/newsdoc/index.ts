@@ -38,7 +38,7 @@ export async function slateToNewsDoc(elements: TBElement[]): Promise<Block[] | u
     return await Promise.all(elements.map(async (element: TBElement): Promise<Block> => {
       switch (element.type) {
         case 'core/text':
-          return await revertText(element)
+          return revertText(element)
         case 'tt/visual':
         case 'core/image':
           return revertVisual(element)
