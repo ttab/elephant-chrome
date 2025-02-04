@@ -249,6 +249,9 @@ export const EventTimeMenu = (): JSX.Element => {
         </Button>
       </PopoverTrigger>
       <PopoverContent
+        side='right'
+        align='center'
+        sideOffset={-140} // Make the Popover content render above the trigger
         asChild
         onEscapeKeyDown={(event) => event?.stopPropagation()}
       >
