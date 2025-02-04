@@ -71,7 +71,8 @@ export const CollaborationProviderContext = ({ documentId, document, children }:
   // Developer tool to display current document source in a dialog
   const { showModal, hideModal } = useModal()
   useKeydownGlobal((evt) => {
-    if (evt.key === 'u' && evt.shiftKey && evt.metaKey) {
+    console.log('====>', evt.key)
+    if ((evt.key === 'u' || evt.key === 'U') && evt.shiftKey && (evt.metaKey || evt.ctrlKey)) {
       if (!provider?.document) {
         return
       }
