@@ -7,8 +7,25 @@ import { banner } from './lib/banner.ts'
 import { RepositoryEventsProvider } from './contexts/RepositoryEventsProvider.tsx'
 import { IndexedDBProvider } from './datastore/contexts/IndexedDBProvider.tsx'
 import { SupportedLanguagesProvider } from './datastore/contexts/SupportedLanguagesProvider.tsx'
+import { SharedWorkerProvider } from './contexts/SharedWorkerProvider.tsx'
 
 banner()
+
+// if ('SharedWorker' in window) {
+//   const worker = new SharedWorker('/shared-worker.js')
+//   worker.port.onmessage = (event) => {
+//     console.log('Event from SharedWorker:', event.data)
+//   }
+
+//   worker.port.postMessage('ping')
+//   worker.port.start()
+
+//   worker.onerror = (ev) => {
+//     console.log(ev)
+//   }
+// } else {
+//   console.error('SharedWorker is not supported in this browser')
+// }
 
 const root = document.getElementById('root')
 
@@ -21,15 +38,17 @@ ReactDOM.createRoot(root).render(
     <RegistryProvider>
       <HPWebSocketProvider>
         <SessionProvider refetchOnWindowFocus={false} basePath={`${import.meta.env.BASE_URL}/api/auth`} refetchInterval={150}>
-          <RepositoryEventsProvider>
-            <SupportedLanguagesProvider>
-              <ThemeProvider defaultTheme='light' storageKey='ele-ui-theme'>
-                <NavigationProvider>
-                  <App />
-                </NavigationProvider>
-              </ThemeProvider>
-            </SupportedLanguagesProvider>
-          </RepositoryEventsProvider>
+          <SharedWorkerProvider>
+            <RepositoryEventsProvider>
+              <SupportedLanguagesProvider>
+                <ThemeProvider defaultTheme='light' storageKey='ele-ui-theme'>
+                  <NavigationProvider>
+                    <App />
+                  </NavigationProvider>
+                </ThemeProvider>
+              </SupportedLanguagesProvider>
+            </RepositoryEventsProvider>
+          </SharedWorkerProvider>
         </SessionProvider>
       </HPWebSocketProvider>
     </RegistryProvider>

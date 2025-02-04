@@ -126,6 +126,8 @@ export async function runServer(): Promise<string> {
 
   const serverUrl = `${PROTOCOL}://${HOST}:${PORT}${BASE_URL || ''}`
 
+  app.use('/shared-worker.js', express.static(path.join(process.cwd(), 'public', 'shared-worker.js')))
+
   switch (NODE_ENV) {
     case 'development': {
       ViteExpress.listen(app as unknown as Express, PORT, () => {
