@@ -71,14 +71,13 @@ export const CollaborationProviderContext = ({ documentId, document, children }:
   // Developer tool to display current document source in a dialog
   const { showModal, hideModal } = useModal()
   useKeydownGlobal((evt) => {
-    console.log('====>', evt.key)
     if ((evt.key === 'u' || evt.key === 'U') && evt.shiftKey && (evt.metaKey || evt.ctrlKey)) {
       if (!provider?.document) {
         return
       }
 
       showModal(
-        <div className='whitespace-pre flex flex-col gap-2 h-full overflow-hidden p-2'>
+        <div className='whitespace-pre flex flex-col gap-2 h-full overflow-hidden max-h-[90vh] p-2'>
           <h1 className='text-lg font-bold shrink p-2'>Document source</h1>
 
           <div className='text-xs font-mono overflow-auto p-2 border bg-muted rounded-md'>
