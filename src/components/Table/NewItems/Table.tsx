@@ -10,7 +10,7 @@ import { useLink } from '@/hooks/useLink'
 import { Check, CheckCheck } from '@ttab/elephant-ui/icons'
 import { useRepositoryEvents } from '@/hooks/useRepositoryEvents'
 import { useCallback } from 'react'
-import { useUser } from '@/hooks/useUserDoc'
+import { useUserTracker } from '@/hooks/useUserTracker'
 import type { NewItem } from './Root'
 
 const BASE_URL = import.meta.env.BASE_URL || ''
@@ -28,7 +28,7 @@ export const Table = ({ type, header }: {
 }): JSX.Element | null => {
   const openEditingView = useLink(type)
 
-  const [newDocuments = [], setNewDocuments] = useUser<NewItem[]>(type)
+  const [newDocuments = [], setNewDocuments] = useUserTracker<NewItem[]>(type)
 
   const { data: documents, mutate, error } = useSWR<EleDocumentResponse[], Error>(
     newDocuments?.length ? newDocuments : null,

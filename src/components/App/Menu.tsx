@@ -14,7 +14,7 @@ import { ThemeSwitcher } from './ThemeSwitcher'
 import { MenuItem } from './MenuItem'
 import { signOut, useSession } from 'next-auth/react'
 import { applicationMenu, type ApplicationMenuItem, type MenuGroups } from '@/defaults/applicationMenuItems'
-import { useUser } from '@/hooks/useUserDoc'
+import { useUserTracker } from '@/hooks/useUserTracker'
 import { cn } from '@ttab/elephant-ui/utils'
 import { useRef } from 'react'
 
@@ -24,7 +24,7 @@ const hasUserDoc = (obj: object | undefined) => obj && Object.keys(obj).length >
 export const Menu = (): JSX.Element => {
   const { data } = useSession()
   const triggerRef = useRef<HTMLButtonElement>(null)
-  const [user] = useUser<object>('')
+  const [user] = useUserTracker<object>('')
 
   return (
     <Sheet>

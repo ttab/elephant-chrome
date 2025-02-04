@@ -1,5 +1,5 @@
 import { useLink } from '@/hooks/useLink'
-import { useUser } from '@/hooks/useUserDoc'
+import { useUserTracker } from '@/hooks/useUserTracker'
 import { type EleDocumentResponse } from '@/shared/types'
 import { type View } from '@/types/index'
 import { GanttChartSquare } from '@ttab/elephant-ui/icons'
@@ -14,7 +14,7 @@ export const List = ({ type, createdIdRef, asDialog }: {
   asDialog?: boolean
 }): JSX.Element | null => {
   const openPlanning = useLink('Planning')
-  const [newDocuments = []] = useUser<NewItem[]>(type)
+  const [newDocuments = []] = useUserTracker<NewItem[]>(type)
 
   const createdDocument = newDocuments.find(({ id }) => id === createdIdRef.current)
 
