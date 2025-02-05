@@ -12,8 +12,10 @@ export const Controller = (): JSX.Element => {
 
   useEffect(() => {
     // Load state from userTracker if it doesn't match the current state
-    if (wiresHistory && wiresHistory.contentState[0].viewId !== state?.contentState[0].viewId) {
-      replaceState(wiresHistory?.contentState[0].path, wiresHistory)
+    if (wiresHistory && wiresHistory.contentState
+      ?.every((contentState, index) =>
+        contentState.viewId !== state?.contentState?.[index]?.viewId)) {
+      replaceState(wiresHistory.contentState[0].path, wiresHistory)
     }
   }, [replaceState, state, wiresHistory, setWiresHistory])
 
