@@ -6,10 +6,11 @@ import React, {
   ReactNode
 } from 'react'
 import { useSession } from 'next-auth/react'
+import { useRegistry } from '../hooks'
 
 
 interface SharedWorkerMsg {
-  type: 'accessToken' | 'debug' | 'sse'
+  type: 'connect' | 'debug' | 'sse'
   payload?: unknown
 }
 
@@ -27,11 +28,14 @@ export const SharedWorkerContext = createContext<SharedWorkerContextType | undef
 
 
 export const SharedWorkerProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+  const { server: { repositoryEventsUrl } } = useRegistry()
   const { data } = useSession()
   const workerRef = useRef<SharedWorker | null>(null)
   const [listeners, setListeners] = useState<Record<string, Set<(event: SharedWorkerMsg) => void>>>({})
 
+  //
   // Initialize shared worker and listen for messages
+  //
   useEffect(() => {
     workerRef.current = new SharedWorker('/shared-worker.js')
     const worker = workerRef.current
@@ -61,18 +65,25 @@ export const SharedWorkerProvider: React.FC<{ children: ReactNode }> = ({ childr
     }
   }, [listeners])
 
+
+  //
   // Update access token so the shared worker can listen to events
+  //
   useEffect(() => {
-    if (!workerRef?.current) {
+    if (!workerRef?.current || !data?.accessToken || !repositoryEventsUrl) {
       return
     }
 
     const worker = workerRef.current
     worker.port.postMessage({
-      type: 'accessToken',
-      payload: data?.accessToken || ''
+      type: 'connect',
+      payload: {
+        url: repositoryEventsUrl.toString(),
+        accessToken: data?.accessToken || ''
+      }
     })
-  }, [data?.accessToken, workerRef?.current])
+  }, [data?.accessToken, repositoryEventsUrl, workerRef?.current])
+
 
   const subscribe = (eventType: string, callback: (event: SharedWorkerMsg) => void) => {
     setListeners(prev => {
