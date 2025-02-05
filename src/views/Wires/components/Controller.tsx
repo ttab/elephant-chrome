@@ -11,10 +11,8 @@ export const Controller = (): JSX.Element => {
   const [wiresHistory, setWiresHistory] = useUserTracker<HistoryState>('Wires')
 
   useEffect(() => {
-    // Load state from userTracker if it doesn't match the current state
-    if (wiresHistory && wiresHistory.contentState
-      ?.every((contentState, index) =>
-        contentState.viewId !== state?.contentState?.[index]?.viewId)) {
+    // Load state from userTracker we're not in a initial state
+    if (wiresHistory && loadState(state, wiresHistory)) {
       replaceState(wiresHistory.contentState[0].path, wiresHistory)
     }
   }, [replaceState, state, wiresHistory, setWiresHistory])
@@ -35,4 +33,12 @@ export const Controller = (): JSX.Element => {
       </Button>
     </div>
   )
+}
+
+function loadState(state: HistoryState | null, wiresHistory: HistoryState | undefined): boolean {
+  if (!wiresHistory?.contentState?.[0]) {
+    return false
+  }
+
+  return state?.contentState.length === 1 && !state.contentState[0].props?.source
 }
