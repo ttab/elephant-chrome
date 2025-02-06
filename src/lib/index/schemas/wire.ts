@@ -33,15 +33,18 @@ const _WireSchema = z.object({
     'document.rel.subject.uuid': z.array(z.string()),
     'document.title': z.array(z.string()),
     'document.uri': z.array(z.string()),
-    'document.url': z.array(z.string())
+    'document.url': z.array(z.string()),
+    'heads.done.creator': z.array(z.string()),
+    'heads.done.id': z.array(z.number()),
+    'heads.done.version': z.array(z.number()),
+    'heads.done.created': z.array(z.string()),
+    'heads.approved.creator': z.array(z.string()),
+    'heads.approved.id': z.array(z.number()),
+    'heads.approved.version': z.array(z.number()),
+    'heads.approved.created': z.array(z.string())
   }),
   fields: z.object({
-    'document.title': z.array(z.string()),
-    'document.rel.section.uuid': z.array(z.string()),
-    'heads.usable.creator': z.array(z.string()),
-    'heads.usable.id': z.array(z.number()),
-    'heads.usable.version': z.array(z.number()),
-    'heads.usable.created': z.array(z.string())
+    'document.title': z.array(z.string())
   }),
   sort: z.array(z.number())
 })

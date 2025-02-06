@@ -16,6 +16,7 @@ import { SWRProvider } from '@/contexts/SWRProvider'
 import { getDateTimeBoundariesUTC } from '@/lib/datetime'
 import { useQuery } from '@/hooks/useQuery'
 import { type EventSearchParams } from '@/lib/events/search'
+import { useOrganisers } from '@/hooks/useOrganisers'
 
 const meta: ViewMetadata = {
   name: 'Events',
@@ -43,7 +44,9 @@ export const Events = (): JSX.Element => {
       : new Date()),
   [query.from])
 
-  const columns = useMemo(() => eventTableColumns({ sections }), [sections])
+  const organisers = useOrganisers()
+
+  const columns = useMemo(() => eventTableColumns({ sections, organisers }), [sections, organisers])
 
   return (
     <View.Root>
