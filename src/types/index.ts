@@ -4,6 +4,8 @@ import { type RpcError } from '@protobuf-ts/runtime-rpc'
 import { type LucideIcon } from '@ttab/elephant-ui/icons'
 import { type ArticlePayload } from '@/defaults/templates/articleDocumentTemplate'
 
+export * from '../workers/types'
+
 export enum NavigationActionType {
   SET = 'set',
   FOCUS = 'focus',

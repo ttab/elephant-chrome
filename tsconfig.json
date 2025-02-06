@@ -85,7 +85,6 @@
     "src",
     "srv-src",
     "./shared/**/*",
-    "./public/**/*.js",
     "vite.config.ts",
     "tailwind.config.ts",
     "./eslint.config.mjs",

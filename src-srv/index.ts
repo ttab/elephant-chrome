@@ -126,7 +126,12 @@ export async function runServer(): Promise<string> {
 
   const serverUrl = `${PROTOCOL}://${HOST}:${PORT}${BASE_URL || ''}`
 
-  app.use('/shared-worker.js', express.static(path.join(process.cwd(), 'public', 'shared-worker.js')))
+  app.use('/workers/sharedSSEWorker.js', express.static(path.join(
+    process.cwd(),
+    'public',
+    'workers',
+    'sharedSSEWorker.js'
+  )))
 
   switch (NODE_ENV) {
     case 'development': {
