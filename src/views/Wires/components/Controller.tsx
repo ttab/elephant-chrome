@@ -40,5 +40,9 @@ function loadState(state: HistoryState | null, wiresHistory: HistoryState | unde
     return false
   }
 
+  if (wiresHistory?.contentState.length === 1 && !wiresHistory.contentState[0].props?.source) {
+    return false
+  }
+
   return state?.contentState.length === 1 && !state.contentState[0].props?.source
 }
