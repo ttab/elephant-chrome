@@ -116,7 +116,7 @@ export const Table = <TData, TValue>({
         return
       }
 
-      if (event.key === ' ') {
+      if (event.key === ' ' && selectedRow) {
         handleOpen(event, selectedRow)
         return
       }
@@ -127,7 +127,7 @@ export const Table = <TData, TValue>({
       }
 
       if (event.key === 'l') {
-        if (isRowTypeWire<TData, TValue>(type)) {
+        if (selectedRow && isRowTypeWire<TData, TValue>(type)) {
           const wireRow = selectedRow as RowType<Wire>
 
           setDocumentStatus({
@@ -140,7 +140,7 @@ export const Table = <TData, TValue>({
       }
 
       if (event.key === 's') {
-        if (isRowTypeWire<TData, TValue>(type)) {
+        if (selectedRow && isRowTypeWire<TData, TValue>(type)) {
           const wireRow = selectedRow as RowType<Wire>
 
           setDocumentStatus({
