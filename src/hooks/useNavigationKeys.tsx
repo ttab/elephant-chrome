@@ -1,7 +1,7 @@
 import { useEffect, useCallback } from 'react'
 import { useView } from './useView'
 
-type NavigationKey = 'ArrowLeft' | 'ArrowUp' | 'ArrowRight' | 'ArrowDown' | 'Enter' | 'Escape' | ' '
+type NavigationKey = 'ArrowLeft' | 'ArrowUp' | 'ArrowRight' | 'ArrowDown' | 'Enter' | 'Escape' | ' ' | 'l' | 's'
 
 interface useNavigationKeysOptions {
   onNavigation: (event: KeyboardEvent) => void
