@@ -56,6 +56,7 @@ export function handleLink({
 
   // If modifier is used, open furthest to the right, otherwise to the right of origin view
   const currentIndex = content.findIndex((c) => c.viewId === origin)
+  const originIndex = content.findIndex((c) => c.viewId === currentViewId)
 
   if (event?.shiftKey) {
     content.push(newContent)
@@ -64,7 +65,24 @@ export function handleLink({
   } else if (target === 'last') {
     content.push(newContent)
   } else {
-    content.splice(currentIndex + 1, Infinity, newContent)
+    if (originIndex > currentIndex) {
+      history.go(currentIndex - originIndex) // Go back x steps in history
+
+      const newContentState: ContentState[] = [
+        ...content.slice(currentIndex, currentIndex + 1),
+        newContent
+      ]
+
+      setTimeout(() => {
+        history.pushState(`${newContent.path}${newContent?.props ? toQueryString(newContent?.props) : ''}`, {
+          viewId: newViewId,
+          contentState: newContentState
+        })
+      }, 1)
+      return
+    } else {
+      content.splice(currentIndex + 1, Infinity, newContent)
+    }
   }
 
   const viewId = keepFocus && currentViewId ? currentViewId : newViewId
@@ -74,7 +92,9 @@ export function handleLink({
   // to the navigation state as we can't store functions in history state.
   window.addEventListener('popstate', () => {
     const currentIndex = content.findIndex((c) => c.viewId === viewId)
-    content[currentIndex].props = { ...content[currentIndex].props, onDocumentCreated }
+    if (content[currentIndex]?.props) {
+      content[currentIndex].props = { ...content[currentIndex].props, onDocumentCreated }
+    }
 
     dispatch({
       viewId,
