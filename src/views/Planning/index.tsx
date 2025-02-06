@@ -49,6 +49,7 @@ export const Planning = (props: ViewProps & { document?: Y.Doc }): JSX.Element =
   const [query] = useQuery()
   const documentId = props.id || query.id
 
+
   return (
     <>
       {typeof documentId === 'string'
@@ -101,7 +102,7 @@ const PlanningViewContent = (props: ViewProps & { documentId: string }): JSX.Ele
 
         <ViewHeader.Content>
           <div className='flex w-full h-full items-center space-x-2'>
-            {!props.asDialog && <DocumentStatus status={documentStatus} setStatus={setDocumentStatus} />}
+            {!props.asDialog && <DocumentStatus status={documentStatus} setStatus={setDocumentStatus} /> }
           </div>
         </ViewHeader.Content>
 

@@ -2,6 +2,7 @@ import { type ViewProps, type ViewMetadata } from '@/types'
 import { useState, useEffect } from 'react'
 import { Button, Checkbox } from '@ttab/elephant-ui'
 import { signIn } from 'next-auth/react'
+import { LoadingText } from '@/components/LoadingText'
 
 const meta: ViewMetadata = {
   name: 'Login',
@@ -77,7 +78,7 @@ const LoginAutomatic = ({ callbackUrl }: {
     signIn('keycloak', { callbackUrl: callbackUrl || import.meta.env.BASE_URL })
       .catch((error) => console.error(error))
   }, [callbackUrl])
-  return <p>Loading...</p>
+  return <LoadingText>Loggar in...</LoadingText>
 }
 
 export const Login = (props: ViewProps & {

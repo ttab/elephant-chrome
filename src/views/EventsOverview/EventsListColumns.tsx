@@ -1,4 +1,3 @@
-
 import { type ColumnDef } from '@tanstack/react-table'
 import { type Event } from '@/lib/index/schemas/event'
 import { Newsvalue } from '@/components/Table/Items/Newsvalue'
@@ -11,21 +10,45 @@ import {
   Navigation,
   NotebookPen,
   Edit,
-  Delete
+  Delete,
+  CircleCheck,
+  BookUser
 } from '@ttab/elephant-ui/icons'
 import { DotDropdownMenu } from '@/components/ui/DotMenu'
-import { Newsvalues, NewsvalueMap } from '@/defaults'
+import { DocumentStatuses, Newsvalues, NewsvalueMap } from '@/defaults'
 import { Time } from '@/components/Table/Items/Time'
+import { DocumentStatus } from '@/components/Table/Items/DocumentStatus'
 import { Title } from '@/components/Table/Items/Title'
 import { Status } from '@/components/Table/Items/Status'
 import { SectionBadge } from '@/components/DataItem/SectionBadge'
-import { type IDBSection } from 'src/datastore/types'
+import { type IDBOrganiser, type IDBSection } from 'src/datastore/types'
 import { FacetedFilter } from '@/components/Commands/FacetedFilter'
+import { Tooltip } from '@ttab/elephant-ui'
 
-export function eventTableColumns({ sections = [] }: {
+export function eventTableColumns({ sections = [], organisers = [] }: {
   sections?: IDBSection[]
+  organisers?: IDBOrganiser[]
 }): Array<ColumnDef<Event>> {
   return [
+    {
+      id: 'documentStatus',
+      meta: {
+        Filter: ({ column, setSearch }) => (
+          <FacetedFilter column={column} setSearch={setSearch} />
+        ),
+        options: DocumentStatuses,
+        name: 'Status',
+        columnIcon: CircleCheck,
+        className: 'flex-none'
+      },
+      accessorFn: (data) => data?._source['document.meta.status'][0],
+      cell: ({ row }) => {
+        const status = row.getValue<string>('documentStatus')
+        return <DocumentStatus status={status} />
+      },
+      filterFn: (row, id, value: string[]) =>
+        value.includes(row.getValue(id))
+    },
     {
       id: 'newsvalue',
       meta: {
@@ -62,6 +85,34 @@ export function eventTableColumns({ sections = [] }: {
         const title = row.getValue('title')
 
         return <Title title={title as string} slugline={slugline} />
+      }
+    },
+    {
+      id: 'organiser',
+      meta: {
+        options: organisers.map((o) => ({ label: o.title, value: o.title })),
+        Filter: ({ column, setSearch }) => (
+          <FacetedFilter column={column} setSearch={setSearch} />
+        ),
+        name: 'Organisatör',
+        columnIcon: BookUser,
+        className: 'flex-none hidden @4xl/view:[display:revert]'
+      },
+      accessorFn: (data) => data?._source['document.rel.organiser.title']?.[0],
+      cell: ({ row }) => {
+        const value: string = row.getValue('organiser') || ''
+
+        if (value) {
+          return (
+            <Tooltip content={`Organisatör: ${value}`}>
+              <div className='border-slate-200 rounded-md mr-2 p-1 truncate'>{value}</div>
+            </Tooltip>
+          )
+        }
+        return <></>
+      },
+      filterFn: (row, id, value: string[]) => {
+        return value.includes(row.getValue(id))
       }
     },
     {

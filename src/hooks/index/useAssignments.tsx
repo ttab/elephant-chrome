@@ -2,17 +2,23 @@ import useSWR from 'swr'
 import { useRegistry } from '../useRegistry'
 import { useSession } from 'next-auth/react'
 import { useRepositoryEvents } from '../useRepositoryEvents'
-import type { AssignmentInterface } from './lib/assignments/fetch'
-import fetchAssignments from './lib/assignments/fetch'
-import structureAssignments from './lib/assignments/structure'
-import filterAssignments from './lib/assignments/filter'
+import { useFilter } from '../useFilter'
+import type { AssignmentInterface } from './lib/assignments/types'
+import { fetchAssignments } from './lib/assignments/fetchAssignments'
+import type { AssignmentResponseInterface } from './lib/assignments/structureAssignments'
+import { structureAssignments } from './lib/assignments/structureAssignments'
+import type { Facets } from './lib/assignments/filterAssignments'
+import { filterAssignments, getFacets } from './lib/assignments/filterAssignments'
+
+export { AssignmentInterface }
+
+const defaultStatuses = ['draft', 'done', 'approved', 'withheld']
+
 /**
  * Fetch all assignments in specific date as Block[] extended with some planning level data.
  * Allows optional filtering by type and optional sorting into buckets.
- *
- * @todo Filter by section
  */
-export const useAssignments = ({ date, type, slots, statuses }: {
+export const useAssignments = ({ date, type, slots }: {
   date: Date | string
   type?: string
   slots?: {
@@ -20,11 +26,12 @@ export const useAssignments = ({ date, type, slots, statuses }: {
     label: string
     hours: number[]
   }[]
-  statuses: string[] // Statuses wanted
-}) => {
+}): [AssignmentResponseInterface[], Facets] => {
   const { data: session } = useSession()
   const { index, repository, timeZone } = useRegistry()
   const key = type ? `core/assignment/${type}/${date.toString()}` : 'core/assignment'
+
+  const [filters] = useFilter(['status', 'section'])
 
   const { data, mutate, error } = useSWR<AssignmentInterface[] | undefined, Error>(key, (): Promise<AssignmentInterface[] | undefined> =>
     fetchAssignments({ index, repository, session, date }))
@@ -33,8 +40,15 @@ export const useAssignments = ({ date, type, slots, statuses }: {
     throw new Error('Assignment fetch failed:', { cause: error })
   }
 
-  const filteredData = filterAssignments(data, statuses)
-  const structuredData = structureAssignments(timeZone, filteredData, slots)
+  const filtersWithDefaults = {
+    ...filters,
+    status: filters?.status?.length ? filters.status : defaultStatuses
+  }
+
+  const filteredData = filterAssignments(data, filtersWithDefaults)
+  const structuredData = structureAssignments(timeZone, filteredData || [], slots)
+
+  const facets = getFacets(data)
 
 
   useRepositoryEvents(['core/planning-item', 'core/planning-item+meta'], (event) => {
@@ -57,6 +71,5 @@ export const useAssignments = ({ date, type, slots, statuses }: {
     }
   })
 
-  return structuredData
+  return [structuredData, facets]
 }
-

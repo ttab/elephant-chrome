@@ -1,23 +1,19 @@
-import { type Dispatch, useState, useMemo, type PropsWithChildren, useRef, useEffect } from 'react'
+import { Popover, PopoverTrigger, Button, PopoverContent, Command } from '@ttab/elephant-ui'
 import { ListFilter } from '@ttab/elephant-ui/icons'
-import {
-  Button,
-  Command,
-  Popover, PopoverContent, PopoverTrigger
-} from '@ttab/elephant-ui'
+import type { Dispatch, SetStateAction } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
+import { DebouncedCommandInput } from '../Commands/Menu/DebouncedCommandInput'
+import { GridCommands } from './Commands'
+import type { Facets } from '@/hooks/index/lib/assignments/filterAssignments'
 
-import { DebouncedCommandInput } from '@/components/Commands/Menu/DebouncedCommandInput'
-import { useTable } from '@/hooks'
-
-export const Filter = ({ children }: PropsWithChildren): JSX.Element => {
+export const GridFilter = ({ facets }: { facets?: Facets }): JSX.Element => {
   const [open, setOpen] = useState(false)
-
-  const { command, table } = useTable()
-  const { setSearch, setPages, search, pages, page } = command
+  const [page, setPage] = useState<string>('')
+  const [search, setSearch] = useState<string | undefined>('')
 
   const onOpenChange = useMemo(
-    () => handleOpenChange({ setOpen, setSearch, setPages }),
-    [setOpen, setSearch, setPages])
+    () => handleOpenChange({ setOpen, setSearch, setPage }),
+    [setOpen, setSearch, setPage])
 
   const inputRef = useRef<HTMLInputElement>(null)
 
@@ -27,8 +23,9 @@ export const Filter = ({ children }: PropsWithChildren): JSX.Element => {
     }
   }, [page])
 
+
   return (
-    <Popover open={open} onOpenChange={onOpenChange}>
+    <Popover open={open} onOpenChange={onOpenChange} modal>
       <PopoverTrigger asChild>
         <Button
           variant='outline'
@@ -53,8 +50,8 @@ export const Filter = ({ children }: PropsWithChildren): JSX.Element => {
             if (e.key === 'ArrowLeft' || (e.key === 'Backspace' && !search)) {
               e.preventDefault()
               setSearch('')
-              if (pages.length > 0) {
-                setPages(pages.slice(0, -1))
+              if (page) {
+                setPage('')
               } else {
                 setOpen(false)
               }
@@ -67,28 +64,25 @@ export const Filter = ({ children }: PropsWithChildren): JSX.Element => {
             value={search}
             onChange={(value: string | undefined) => {
               setSearch(value)
-              if (page === 'textFilter') {
-                table.setGlobalFilter(value)
-              }
             }}
-            placeholder={page === 'textFilter' ? 'Sök' : 'Filter'}
+            placeholder={page === 'textFilter' ? 'Sök' : 'Filtrera'}
             className='h-9'
           />
-          {children}
+          <GridCommands page={page} setPage={setPage} setSearch={setSearch} facets={facets} />
         </Command>
       </PopoverContent>
     </Popover>
   )
 }
 
-function handleOpenChange({ setOpen, setSearch, setPages }: {
-  setOpen: Dispatch<boolean>
-  setSearch: Dispatch<string | undefined>
-  setPages: Dispatch<string[]>
+function handleOpenChange({ setOpen, setSearch, setPage }: {
+  setOpen: Dispatch<SetStateAction<boolean>>
+  setSearch: Dispatch<SetStateAction<string | undefined>>
+  setPage: Dispatch<SetStateAction<string>>
 }): (open: boolean) => void {
   return (open: boolean) => {
     setSearch(undefined)
-    setPages([])
+    setPage('')
     setOpen(open)
   }
 }

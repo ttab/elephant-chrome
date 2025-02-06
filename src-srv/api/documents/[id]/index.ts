@@ -30,7 +30,7 @@ export const GET: RouteHandler = async (req: Request, { cache, repository, res }
     if (state) {
       const yDoc = new Y.Doc()
       Y.applyUpdate(yDoc, state)
-      const { documentResponse } = await fromYjsNewsDoc(yDoc)
+      const { documentResponse } = fromYjsNewsDoc(yDoc)
 
       return {
         payload: documentResponse
@@ -38,7 +38,7 @@ export const GET: RouteHandler = async (req: Request, { cache, repository, res }
     }
 
     // Fetch content fron repository
-    const doc = await repository.getDoc({
+    const doc = await repository.getDocument({
       uuid,
       accessToken: session?.accessToken
     }).catch((ex) => {

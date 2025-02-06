@@ -30,16 +30,16 @@ export const Validation = ({ children, path, label, block, onValidation, validat
   }, [block, validateStateRef])
 
 
-  return synced && !isValid
-    ? (
-        <div className='w-full relative flex items-center'>
-          <div className='absolute -top-1 right-0 h-2 w-2 z-10'>
-            <TriangleAlert color='red' fill='#ffffff' size={15} strokeWidth={1.75} />
-          </div>
-          <div data-ele-validation={!!onValidation} className='flex flex-col w-full'>
-            {children}
-          </div>
+  return (
+    <div className='w-full relative flex items-center'>
+      {!isValid && synced && (
+        <div className='absolute -top-1 right-0 h-2 w-2 z-10'>
+          <TriangleAlert color='red' fill='#ffffff' size={15} strokeWidth={1.75} />
         </div>
-      )
-    : <div className='w-full flex items-center'>{children}</div>
+      )}
+      <div data-ele-validation={!!onValidation} className='flex flex-col w-full'>
+        {children}
+      </div>
+    </div>
+  )
 }

@@ -17,13 +17,13 @@ export enum StatelessType {
 
 const inProgressMessageSchema = z.object({
   state: z.boolean(),
+  status: z.string().optional(),
   id: z.string(),
   context: z.object({
     accessToken: z.string(),
     user: z.object({
       name: z.string(),
       email: z.string(),
-      image: z.string(),
       id: z.string(),
       sub: z.string()
     }),

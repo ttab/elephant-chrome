@@ -134,6 +134,11 @@ function connectRouteHandler(app: Application, routePath: string, func: RouteHan
       } else if (ApiResponse.isStatus(response)) {
         const { statusCode, statusMessage } = response
 
+        if (statusCode === 302) {
+          res.redirect(statusMessage)
+          return
+        }
+
         res.status(statusCode).json({
           statusCode,
           statusMessage

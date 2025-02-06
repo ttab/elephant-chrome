@@ -18,8 +18,7 @@ export function flashDocumentTemplate(id: string, defaults: {
 } = {}): Document {
   const {
     title = '',
-    section,
-    authors = []
+    section
   } = defaults
 
   const doc = Document.create({
@@ -52,16 +51,6 @@ export function flashDocumentTemplate(id: string, defaults: {
       rel: 'section',
       uuid: section.uuid,
       title: section.title
-    }))
-  }
-
-  for (const author of authors || []) {
-    doc.links.push(Block.create({
-      type: 'core/author',
-      rel: 'author',
-      role: 'primary',
-      uuid: author.uuid,
-      title: author.name
     }))
   }
 

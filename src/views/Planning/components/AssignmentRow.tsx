@@ -19,10 +19,11 @@ import { cn } from '@ttab/elephant-ui/utils'
 import { useNavigationKeys } from '@/hooks/useNavigationKeys'
 
 
-export const AssignmentRow = ({ index, onSelect, isFocused = false }: {
+export const AssignmentRow = ({ index, onSelect, isFocused = false, asDialog }: {
   index: number
   onSelect: () => void
   isFocused?: boolean
+  asDialog?: boolean
 }): JSX.Element => {
   const { provider } = useCollaboration()
   const openArticle = useLink('Editor')
@@ -31,34 +32,42 @@ export const AssignmentRow = ({ index, onSelect, isFocused = false }: {
   const base = `meta.core/assignment[${index}]`
   const [inProgress] = useYValue(`${base}.__inProgress`)
   const [articleId] = useYValue<string>(`${base}.links.core/article[0].uuid`)
+  const [flashId] = useYValue<string>(`${base}.links.core/flash[0].uuid`)
   const [assignmentType] = useYValue<string>(`${base}.meta.core/assignment-type[0].value`)
   const [title] = useYValue<string>(`${base}.title`)
   const [description] = useYValue<string>(`${base}.meta.core/description[0].data.text`)
   const [publishTime] = useYValue<string>(`${base}.data.publish`)
+  const [startTime] = useYValue<string>(`${base}.data.start`)
   const [authors = []] = useYValue<Block[]>(`meta.core/assignment[${index}].links.core/author`)
 
   const [showVerifyDialog, setShowVerifyDialog] = useState<boolean>(false)
   const [showCreateDialog, setShowCreateDialog] = useState<boolean>(false)
 
   const assTime = useMemo(() => {
-    return publishTime ? new Date(publishTime) : undefined
-  }, [publishTime])
+    if (typeof assignmentType !== 'string') {
+      return undefined
+    }
+    const startTimeTypes = ['picture', 'picture/video', 'video']
+    return startTimeTypes.includes(assignmentType) && startTime ? new Date(startTime) : publishTime ? new Date(publishTime) : undefined
+  }, [publishTime, assignmentType, startTime])
 
   const onOpenArticleEvent = useCallback(<T extends HTMLElement>(event: MouseEvent<T> | KeyboardEvent) => {
     event.preventDefault()
     event.stopPropagation()
 
-    if (articleId) {
+    if (articleId || flashId) {
       openArticle(event, {
-        id: articleId,
+        id: articleId || flashId,
         autoFocus: false
       }, undefined,
       undefined,
       event instanceof KeyboardEvent && event.key === ' ')
     } else {
-      setShowCreateDialog(true)
+      if (!asDialog) {
+        setShowCreateDialog(true)
+      }
     }
-  }, [articleId, openArticle, setShowCreateDialog])
+  }, [articleId, flashId, openArticle, setShowCreateDialog, asDialog])
 
   const rowRef = useRef<HTMLDivElement>(null)
   useEffect(() => {
@@ -101,7 +110,7 @@ export const AssignmentRow = ({ index, onSelect, isFocused = false }: {
     }
   ]
 
-  if (assignmentType === 'text' || assignmentType === 'flash') {
+  if ((assignmentType === 'text' || assignmentType === 'flash') && !asDialog) {
     menuItems.push({
       label: 'Öppna artikel',
       icon: FileInput,
@@ -147,7 +156,10 @@ export const AssignmentRow = ({ index, onSelect, isFocused = false }: {
             variant='icon'
             className='p-0 pr-2'
           >
-            <AssignmentType path={`meta.core/assignment[${index}].meta.core/assignment-type`} />
+            <AssignmentType
+              path={`meta.core/assignment[${index}].meta.core/assignment-type`}
+              inProgress={!!articleId || !!flashId}
+            />
           </Button>
           <AssigneeAvatars assignees={authors.map((author) => author.title)} />
 

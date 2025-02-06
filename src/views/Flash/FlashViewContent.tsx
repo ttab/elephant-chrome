@@ -1,16 +1,15 @@
 import {
   ViewHeader,
   Awareness,
-  Section
+  Section,
+  View
 } from '@/components'
 import type { DefaultValueOption, ViewProps } from '@/types'
 import { NewsvalueMap } from '@/defaults'
-import { Button, ComboBox, ScrollArea } from '@ttab/elephant-ui'
+import { Button, ComboBox } from '@ttab/elephant-ui'
 import { CircleXIcon, ZapIcon, Tags, GanttChartSquare } from '@ttab/elephant-ui/icons'
 import { useCollaboration, useYValue, useIndexUrl, useRegistry } from '@/hooks'
 import type * as Y from 'yjs'
-import { cva } from 'class-variance-authority'
-import { cn } from '@ttab/elephant-ui/utils'
 import { createStateless, StatelessType } from '@/shared/stateless'
 import { useSession } from 'next-auth/react'
 import { useEffect, useMemo, useRef, useState } from 'react'
@@ -27,9 +26,11 @@ import { addFlashToPlanning } from './addFlashToPlanning'
 import { addAssignmentLinkToFlash } from './addAssignmentToFlash'
 import { type EleBlock } from '@/shared/types'
 import { getValueByYPath } from '@/lib/yUtils'
-import { Block } from '@ttab/elephant-api/newsdoc'
 import { UserMessage } from './UserMessage'
 import { Form } from '@/components/Form'
+import { useActiveAuthor } from '@/hooks/useActiveAuthor'
+import type { IDBAuthor } from 'src/datastore/types'
+import { type Document } from '@ttab/elephant-api/newsdoc'
 
 export const FlashViewContent = (props: ViewProps & {
   documentId: string
@@ -43,10 +44,14 @@ export const FlashViewContent = (props: ViewProps & {
   const [selectedPlanning, setSelectedPlanning] = useState<DefaultValueOption | undefined>(undefined)
   const [title, setTitle] = useYValue<string | undefined>('root.title', true)
   const [, setSection] = useYValue<EleBlock | undefined>('links.core/section[0]')
-  const [author] = useYValue<EleBlock | undefined>('links.core/author[0]')
+  const author = useActiveAuthor()
 
   const [newPlanningId, newPlanningYDoc] = useMemo(() => {
-    return createDocument(Templates.planning, true, {})
+    return createDocument({
+      template: Templates.planning,
+      inProgress: true,
+      payload: { newsvalue: '4' }
+    })
   }, [])
 
   // New and empty planning document for when creating new flash and planning
@@ -112,15 +117,6 @@ export const FlashViewContent = (props: ViewProps & {
     return newOptions
   }
 
-  const viewVariants = cva('flex flex-col', {
-    variants: {
-      asCreateDialog: {
-        false: 'h-screen',
-        true: 'overflow-hidden'
-      }
-    }
-  })
-
   const handleSubmit = (): void => {
     if (!planningDocument && !newPlanningDocument) {
       return
@@ -129,26 +125,24 @@ export const FlashViewContent = (props: ViewProps & {
   }
 
   return (
-    <div className={cn(viewVariants({ asCreateDialog: !!props.asDialog, className: props?.className }))}>
-      <div className='grow-0'>
-        <ViewHeader.Root>
-          {!props.asDialog
-          && <ViewHeader.Title title='Flash' icon={ZapIcon} iconColor='#FF5150' />}
+    <View.Root asDialog={props.asDialog} className={props.className}>
+      <ViewHeader.Root>
+        {!props.asDialog
+        && <ViewHeader.Title title='Flash' icon={ZapIcon} iconColor='#FF5150' />}
 
-          <ViewHeader.Content>
-            <div className='flex w-full h-full items-center space-x-2 font-bold'>
-              <ViewHeader.Title title='Flash' icon={ZapIcon} iconColor='#FF3140' />
-            </div>
-          </ViewHeader.Content>
+        <ViewHeader.Content>
+          <div className='flex w-full h-full items-center space-x-2 font-bold'>
+            <ViewHeader.Title title='Skapa ny flash' icon={ZapIcon} iconColor='#FF3140' />
+          </div>
+        </ViewHeader.Content>
 
-          <ViewHeader.Action onDialogClose={props.onDialogClose}>
-            {!props.asDialog && !!props.documentId
-            && <ViewHeader.RemoteUsers documentId={props.documentId} />}
-          </ViewHeader.Action>
-        </ViewHeader.Root>
-      </div>
+        <ViewHeader.Action onDialogClose={props.onDialogClose}>
+          {!props.asDialog && !!props.documentId
+          && <ViewHeader.RemoteUsers documentId={props.documentId} />}
+        </ViewHeader.Action>
+      </ViewHeader.Root>
 
-      <ScrollArea className='grid @5xl:place-content-center'>
+      <View.Content>
         <Form.Root asDialog={props.asDialog}>
           <Form.Content>
             <Form.Group icon={GanttChartSquare}>
@@ -156,7 +150,7 @@ export const FlashViewContent = (props: ViewProps & {
                 <ComboBox
                   max={1}
                   size='xs'
-                  className='min-w-0 max-w-46 truncate justify-start'
+                  className='min-w-0 w-full truncate justify-start max-w-48'
                   selectedOptions={selectedPlanning ? [selectedPlanning] : []}
                   placeholder='Välj planering'
                   onOpenChange={(isOpen: boolean) => {
@@ -205,7 +199,7 @@ export const FlashViewContent = (props: ViewProps & {
 
             <FlashEditor setTitle={setTitle} />
 
-            <UserMessage author={author} selectedPlanning={selectedPlanning} asDialog={!!props?.asDialog} />
+            <UserMessage selectedPlanning={selectedPlanning} asDialog={!!props?.asDialog} />
 
           </Form.Content>
 
@@ -245,15 +239,15 @@ export const FlashViewContent = (props: ViewProps & {
               <Form.Footer>
                 <Form.Submit onSubmit={handleSubmit}>
                   <div className='flex justify-end'>
-                    <Button type='submit' disabled={!author}>Skicka flash</Button>
+                    <Button type='submit'>Skicka flash</Button>
                   </div>
                 </Form.Submit>
               </Form.Footer>
             )
           }
         </Form.Root>
-      </ScrollArea>
-    </div>
+      </View.Content>
+    </View.Root>
   )
 }
 
@@ -266,25 +260,18 @@ function createFlash(
   planningDocument: Y.Doc | undefined,
   newPlanningDocument: Y.Doc | undefined,
   timeZone: string,
-  author: EleBlock | undefined
+  author: Document | IDBAuthor | undefined | null
 ): void {
   if (provider && status === 'authenticated') {
     // First and foremost we persist the flash, it needs an assignment
     const assignmentId = crypto.randomUUID()
     addAssignmentLinkToFlash(provider.document, assignmentId)
 
-    if (author) {
-      Block.create({
-        type: 'core/author',
-        rel: 'author',
-        uuid: author.uuid,
-        title: author.title
-      })
-    }
-
+    // Create flash in repo
     provider.sendStateless(
       createStateless(StatelessType.IN_PROGRESS, {
         state: false,
+        status: 'done',
         id: documentId,
         context: {
           accessToken: session.accessToken,
@@ -302,9 +289,11 @@ function createFlash(
           // @ts-expect-error Typescript don't understand the safeguard above
           planningDocument ?? newPlanningDocument,
           assignmentId,
-          timeZone
+          timeZone,
+          author
         )
 
+        // Create or update planning in repo
         provider.sendStateless(
           createStateless(StatelessType.IN_PROGRESS, {
             state: false,

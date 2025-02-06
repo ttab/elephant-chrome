@@ -1,16 +1,15 @@
 
 import { NewsvalueMap } from '@/defaults/newsvalueMap'
 import { Newsvalue } from '@/components/Table/Items/Newsvalue'
-import { Briefcase, Clock3Icon, Clock9Icon, Crosshair, Navigation, SignalHigh, Users } from '@ttab/elephant-ui/icons'
+import { Briefcase, Clock3Icon, Crosshair, Navigation, SignalHigh, Users } from '@ttab/elephant-ui/icons'
 import { Newsvalues } from '@/defaults/newsvalues'
 import { FacetedFilter } from '@/components/Commands/FacetedFilter'
 import { AssignmentTypes } from '@/defaults/assignmentTypes'
 import { Type } from '@/components/Table/Items/Type'
-import { getNestedFacetedUniqueValues } from '@/components/Filter/lib/getNestedFacetedUniqueValues'
+import { getNestedFacetedUniqueValues } from '@/components/TableFilter/lib/getNestedFacetedUniqueValues'
 import { Assignees } from '@/components/Table/Items/Assignees'
 import { AssignmentTitles } from '@/components/Table/Items/AssignmentTitles'
 import { Actions } from '@/components/Table/Items/Actions'
-import { Tooltip } from '@ttab/elephant-ui'
 import { dateInTimestampOrShortMonthDayTimestamp } from '@/lib/datetime'
 import { type ColumnDef } from '@tanstack/react-table'
 import { type DefaultValueOption } from '@/types/index'
@@ -21,6 +20,7 @@ import {
   type AssigneeMeta
 } from './types'
 import { slotLabels, timesSlots } from '@/defaults/assignmentTimeslots'
+import { Time } from './Time'
 
 export function assignmentColumns({ authors = [], locale, timeZone }: {
   authors?: IDBAuthor[]
@@ -112,89 +112,50 @@ export function assignmentColumns({ authors = [], locale, timeZone }: {
         className: 'flex-none w-[112px] hidden @5xl/view:[display:revert]'
       },
       accessorFn: ({ data }) => {
-        const start = data?.start
-        const end = data?.end
-        const hour = new Date(start).getHours()
-        const slotEntries = Object.entries(timesSlots)
-        const slotName: (string | undefined) = slotEntries.find(([_, s]): boolean => s.slots.includes(hour))?.[0]
-        const slot = slotName ? timesSlots[slotName].label : 'Heldag'
-        return [start, end, data?.full_day, slot]
+        return [data?.start, data?.full_day, data?.publish_slot, data?.publish]
       },
       cell: ({ row }) => {
-        const [start, end, fullday, slot] = row.getValue<string[]>('assignment_time') || undefined
-        const isFullday = fullday === 'true'
+        const [start, fullDay, publishSlot, publishTime] = row.getValue<string[]>('assignment_time')
+        const isFullday = fullDay === 'true'
         const types: string[] = row.getValue<DefaultValueOption[]>('assignmentType')?.map((t) => t.value)
         const formattedStart = dateInTimestampOrShortMonthDayTimestamp(start, locale, timeZone)
-        const formattedEnd = dateInTimestampOrShortMonthDayTimestamp(end, locale, timeZone)
-        const formattedDatestring = `${formattedStart} - ${formattedEnd}`
+
+        /* Assignment type: text | video | graphic
+          Order of returned information for non-picture assignments:
+          1. publish_slot (Full day if true - otherwise daytime slot)
+          2. publish time short (ex 13:30)
+          3. start time short (ex 13:30)
+        */
 
         if (!types.includes('picture')) {
           if (isFullday) {
-            return (
-              <Tooltip content='Uppdragstid'>
-                <div>Heldag</div>
-              </Tooltip>
-            )
-          } else {
-            return (
-              <Tooltip content={`Uppdragstid: ${formattedDatestring}`}>
-                <div>{slot}</div>
-              </Tooltip>
-            )
+            return <Time time='Heldag' type='fullday' />
           }
-        }
-        /* Assignment type: picture */
-        if (isFullday) {
-          return (
-            <Tooltip content='Uppdragstid'>
-              <div>Heldag</div>
-            </Tooltip>
-          )
-        } else {
-          return (
-            <Tooltip content={`Uppdragstid: ${formattedDatestring}`}>
-              <div>{slot}</div>
-            </Tooltip>
-          )
-        }
-      },
-      filterFn: (row, id, value: string[]) => {
-        const val = row.getValue<string[]>(id) || undefined
-        if (val) {
-          return val.includes(timesSlots[value[0]]?.label)
-        }
-        return false
-      }
-    },
-    {
-      id: 'publish_time',
-      meta: {
-        options: slotLabels,
-        Filter: ({ column, setSearch }) => (
-          <FacetedFilter column={column} setSearch={setSearch} />
-        ),
-        name: 'Publiceringstid',
-        columnIcon: Clock9Icon,
-        className: 'flex-none w-[112px] hidden @5xl/view:[display:revert]'
-      },
-      accessorFn: ({ data }) => {
-        return [data?.publish]
-      },
-      cell: ({ row }) => {
-        const [publishValue] = row.getValue<Array<string | undefined>>('publish_time') || undefined
-        if (publishValue) {
-          const publishTime = dateInTimestampOrShortMonthDayTimestamp(publishValue, locale, timeZone)
-          return <Tooltip content='Publiceringstid'>{publishTime}</Tooltip>
-        }
-        return <></>
-      },
-      filterFn: (row, id, value: string[]) => {
-        const val = row.getValue<Date>('publish_time') || undefined
-        if (val) {
-          return value.includes(row.getValue(id))
-        }
+          if (publishSlot) {
+            const slotFormatted = Object.entries(timesSlots).find((slot) => slot[1].slots.includes(+publishSlot))?.[1]?.label
+            return <div>{slotFormatted}</div>
+          }
+          if (publishTime) {
+            const formattedPublishTime = dateInTimestampOrShortMonthDayTimestamp(publishTime, locale, timeZone)
+            return <Time time={formattedPublishTime} type='publish' tooltip='Publiceringstid' />
+          }
 
-        return false
+          // Default to display the start time of the assignment
+          return <Time time={formattedStart} type='start' tooltip='Uppdragets starttid' />
+        }
+        /* Assignment type: picture
+           • Always display the shortened start time (ex 13:30)
+        */
+        return <Time time={formattedStart} type='start' tooltip='Uppdragets starttid' />
+      },
+      filterFn: (row, id, value: string[]) => {
+        const [startTime, _, __, publishTime] = row.getValue<string[]>(id) || undefined
+        const types = row.getValue<DefaultValueOption[]>('assignmentType')?.map((t) => t.value)
+        const hour = types.includes('picture') ? new Date(startTime).getHours() : new Date(publishTime).getHours()
+        return value.some((v) => {
+          const slots = timesSlots[v]?.slots || []
+          return slots.includes(hour)
+        })
       }
     },
     {

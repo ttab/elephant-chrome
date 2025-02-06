@@ -1,17 +1,16 @@
 import { useState, useEffect } from 'react'
 import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
   Calendar,
   type CalendarTypes,
   Button,
-  Switch
+  Switch,
+  PopoverDrawer
 } from '@ttab/elephant-ui'
 import { useYValue } from '@/hooks/useYValue'
 import { useRegistry } from '@/hooks'
 import { dateToReadableDateTime, dateToReadableTime, dateToReadableDay, createDateWithTime } from '@/lib/datetime'
 import { TimeInput } from '@/components/TimeInput'
+import { TriangleAlert } from '@ttab/elephant-ui/icons'
 
 interface EventData {
   end: string
@@ -27,39 +26,42 @@ const isSameDate = (fromDate: string, toDate: string): boolean => {
   return f.getFullYear() === t.getFullYear() && f.getMonth() === t.getMonth() && f.getDate() === t.getDate()
 }
 
-const DateTimeLabel = ({ fromDate, toDate, locale, timeZone }: { fromDate?: string | undefined, toDate?: string | undefined, locale: string, timeZone: string }): JSX.Element => {
+const dateTimeLabel = ({
+  fromDate,
+  toDate,
+  locale,
+  timeZone
+}: {
+  fromDate?: string | undefined
+  toDate?: string | undefined
+  locale: string
+  timeZone: string
+}): string => {
   if (!fromDate || !toDate) {
-    return <></>
+    return ''
   }
+
   const sameDay = isSameDate(fromDate, toDate)
   const sameTime = fromDate === toDate
   const from = dateToReadableDateTime(new Date(fromDate), locale, timeZone)
-  const to = sameDay ? dateToReadableTime(new Date(toDate), locale, timeZone) : dateToReadableDateTime(new Date(toDate), locale, timeZone)
-  return (
-    <div className='font-normal text-sm'>
-      {from}
-      {!sameTime ? ` - ${to}` : ''}
-    </div>
-  )
+  const to = sameDay
+    ? dateToReadableTime(new Date(toDate), locale, timeZone)
+    : dateToReadableDateTime(new Date(toDate), locale, timeZone)
+
+  return sameTime && from ? from : `${from} - ${to}`
 }
 
-const DateLabel = ({ fromDate, toDate, locale, timeZone }: { fromDate?: string | undefined, toDate?: string | undefined, locale: string, timeZone: string }): JSX.Element => {
+
+const dateLabel = ({ fromDate, toDate, locale, timeZone }: { fromDate?: string | undefined, toDate?: string | undefined, locale: string, timeZone: string }): string => {
   if (!fromDate || !toDate) {
-    return <></>
+    return ''
   }
   const fromDateObject = new Date(fromDate)
   const toDateObject = new Date(toDate)
   const sameDay = isSameDate(fromDate, toDate)
   const from = dateToReadableDay(fromDateObject, locale, timeZone)
   const to = dateToReadableDay(toDateObject, locale, timeZone)
-  return (
-    <div className='font-normal text-sm'>
-      Heldag
-      {sameDay
-        ? ` ${from}`
-        : ` ${from} - ${to}`}
-    </div>
-  )
+  return `Heldag ${sameDay ? ` ${from}` : ` ${from} - ${to}`}`
 }
 
 const testValid = (time: string): boolean => {
@@ -211,10 +213,6 @@ export const EventTimeMenu = (): JSX.Element => {
     }
   }
 
-  const handleOpenChange = (isOpen: boolean): void => {
-    setOpen(isOpen)
-  }
-
   const handleCheckedChange = (checked: boolean): void => {
     setFullDay(checked)
   }
@@ -229,46 +227,47 @@ export const EventTimeMenu = (): JSX.Element => {
     }
   }
 
+  const triggerLabel = fullDay
+    ? dateLabel({
+      fromDate: eventData?.start,
+      toDate: eventData?.end,
+      timeZone,
+      locale
+    })
+    : dateTimeLabel({
+      fromDate: eventData?.start,
+      toDate: eventData?.end,
+      timeZone,
+      locale
+    })
+
   return (
-    <Popover open={open} onOpenChange={handleOpenChange}>
-      <PopoverTrigger asChild>
-        <Button
-          variant='outline'
-          size='xs'
-          className='flex flex-row space-x-2 items-center align-middle cursor-pointer'
-          onKeyDown={(event) => {
-            if (event.key !== 'Escape') {
-              event?.stopPropagation()
-            }
-          }}
-        >
-          {fullDay
-            ? <DateLabel fromDate={eventData?.start} toDate={eventData?.end} locale={locale} timeZone={timeZone} />
-            : <DateTimeLabel fromDate={eventData?.start} toDate={eventData?.end} locale={locale} timeZone={timeZone} />}
-        </Button>
-      </PopoverTrigger>
-      <PopoverContent
-        asChild
-        onEscapeKeyDown={(event) => event?.stopPropagation()}
-      >
-        <div>
-          <Calendar
-            mode='range'
-            required={false}
-            selected={selected}
-            weekStartsOn={1}
-            onSelect={handleOnSelectDay}
-            className='p-0'
+    <PopoverDrawer triggerLabel={triggerLabel} open={open} setOpen={setOpen} modal={true}>
+      <div className='p-2'>
+        <Calendar
+          mode='range'
+          required={false}
+          selected={selected}
+          weekStartsOn={1}
+          onSelect={handleOnSelectDay}
+          className='p-2'
+        />
+        <div className='flex pt-2 pb-2 '>
+          <Switch
+            id='wholeDaySwitch'
+            onCheckedChange={(checked) => handleCheckedChange(checked)}
+            checked={fullDay}
+            className='self-center'
           />
-          <div className='flex pt-2 pb-2 '>
-            <Switch
-              id='wholeDaySwitch'
-              onCheckedChange={(checked) => handleCheckedChange(checked)}
-              checked={fullDay}
-              className=' self-center'
-            />
-            <label htmlFor='wholeDaySwitch' className='text-sm self-center p-2'>Heldag</label>
-          </div>
+          <label htmlFor='wholeDaySwitch' className='text-sm self-center p-2'>Heldag</label>
+        </div>
+        <div className={`${!fullDay && startDateValue && endDateValue && startDateValue > endDateValue ? 'border-2 rounded-md border-red-400 relative' : ''}`}>
+          {!fullDay && startDateValue && endDateValue && startDateValue > endDateValue && (
+            <div className='absolute -top-1 right-0 h-2 w-2 z-10'>
+              <TriangleAlert color='red' fill='#ffffff' size={15} strokeWidth={1.75} />
+            </div>
+          )}
+
           <div className='flex justify-between border-2 rounded-md border-slate-100'>
             <div className='px-3 py-2 text-sm'>
               {startDateValue && dateToReadableDay(new Date(startDateValue), locale, timeZone)}
@@ -297,38 +296,38 @@ export const EventTimeMenu = (): JSX.Element => {
               />
             </div>
           </div>
-
-          <div className='flex items-center justify-end gap-4 pt-2'>
-            <Button
-              variant='ghost'
-              onClick={(evt) => {
-                evt.preventDefault()
-                evt.stopPropagation()
-                setOpen(false)
-              }}
-            >
-              Avbryt
-            </Button>
-            <Button
-              variant='outline'
-              disabled={!fullDay && (!startTimeValid || !endTimeValid)}
-              onClick={(evt) => {
-                evt.preventDefault()
-                evt.stopPropagation()
-
-                handleOnSelect({
-                  eventStart: startDateValue,
-                  eventEnd: endDateValue,
-                  fullDay
-                })
-                setOpen(false)
-              }}
-            >
-              Klar
-            </Button>
-          </div>
         </div>
-      </PopoverContent>
-    </Popover>
+
+        <div className='flex items-center justify-end gap-4 pt-2'>
+          <Button
+            variant='ghost'
+            onClick={(evt) => {
+              evt.preventDefault()
+              evt.stopPropagation()
+              setOpen(false)
+            }}
+          >
+            Avbryt
+          </Button>
+          <Button
+            variant='outline'
+            disabled={!fullDay && (startDateValue && endDateValue ? startDateValue > endDateValue : false)}
+            onClick={(evt) => {
+              evt.preventDefault()
+              evt.stopPropagation()
+
+              handleOnSelect({
+                eventStart: startDateValue,
+                eventEnd: endDateValue,
+                fullDay
+              })
+              setOpen(false)
+            }}
+          >
+            Klar
+          </Button>
+        </div>
+      </div>
+    </PopoverDrawer>
   )
 }

@@ -8,7 +8,8 @@ const AuthorSchema = z.object({
     'document.meta.core_author.data.initials': z.array(z.string()),
     'document.meta.core_contact_info.data.email': z.array(z.string()),
     'document.meta.core_contact_info.data.city': z.array(z.string()),
-    'document.meta.core_contact_info.data.country': z.array(z.string())
+    'document.meta.core_contact_info.data.country': z.array(z.string()),
+    'document.rel.same_as.uri': z.array(z.string())
   })
 })
 

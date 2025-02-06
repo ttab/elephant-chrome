@@ -1,58 +1,54 @@
 import { useSession } from 'next-auth/react'
 import useSWR, { mutate as globalMutate } from 'swr'
 import { useCallback } from 'react'
-import { Repository } from '@/lib/repository'
-import { useCollaboration, useRegistry, useYValue } from '@/hooks'
+import { useRegistry } from '@/hooks'
 
 export interface Status {
   name: string
   version: bigint
-  documentId: string
+  uuid: string
 }
 
-export const useDocumentStatus = (documentId?: string): [
+export const useDocumentStatus = (uuid?: string): [
   Status | undefined,
-  (newStatusName: string) => Promise<void>
+  (newStatusName: string | Status) => Promise<void>
 ] => {
-  const { server: { repositoryUrl } } = useRegistry()
+  const { repository } = useRegistry()
   const { data: session } = useSession()
 
-  const { synced } = useCollaboration()
-
-  const [inProgress] = useYValue<boolean>('root.__inProgress')
-
-
-  const doFetch = documentId && synced && !inProgress && session && repositoryUrl
+  const doFetch = uuid && session && repository
 
   const { data: documentStatus, mutate, error } = useSWR<Status | undefined, Error>(
-    doFetch ? [`status/${documentId}`] : null,
+    doFetch ? [`status/${uuid}`] : null,
     async () => {
       // Dont try to fetch if document is inProgress
-      if (!session || !repositoryUrl || !documentId) return undefined
+      if (!session || !repository || !uuid) return undefined
 
-      const result = await Repository.metaSearch({ session, documentId, repositoryUrl })
+      const result = await repository.getMeta({ uuid, accessToken: session.accessToken })
 
-      if (!result) return undefined
+      const version = result?.meta?.currentVersion || 0n
+      const heads = result?.meta?.heads
 
+      const headsEntries = heads && Object.entries(heads)
 
-      const version = result.meta?.currentVersion || 0n
-      const heads = result.meta?.heads
-
-      if (!heads) {
+      if (!headsEntries) {
         return {
           version,
           name: 'draft',
-          documentId
+          uuid
         }
       }
 
-      const headsEntries = Object.entries(heads || {})
-      const currentStatus = headsEntries.sort((a, b) => a[1].created > b[1].created ? -1 : 0)[0][0]
+      // Get statuses for the current version and sort them by creation date
+      const currentStatus = headsEntries
+        .filter((entry) => entry[1].version === version)
+        .sort((a, b) =>
+          new Date(b[1].created).getTime() - new Date(a[1].created).getTime())?.[0]?.[0] || 'draft'
 
       return {
         version,
         name: currentStatus,
-        documentId
+        uuid
       }
     }
   )
@@ -60,33 +56,45 @@ export const useDocumentStatus = (documentId?: string): [
   if (error) console.error('Unable to get documentStatus', error)
 
   const setDocumentStatus = useCallback(
-    async (newStatusName: string) => {
-      if (!session || !documentId || !documentStatus) return
+    async (newStatus: string | Status) => {
+      if (!session || !repository) return
 
-      const newStatus = {
-        ...documentStatus,
-        name: newStatusName,
-        version: documentStatus.version
+      let payload: Status | undefined
+
+      if (typeof newStatus !== 'string') {
+        payload = newStatus
       }
 
+      if (typeof newStatus === 'string' && documentStatus && uuid) {
+        payload = {
+          ...documentStatus,
+          uuid: uuid,
+          name: newStatus,
+          version: documentStatus?.version
+        }
+      }
+
+      if (!payload) {
+        throw new Error('Invalid status payload')
+      }
+
+
       // Optimistically update the SWR cache before performing the actual API call
-      await mutate(newStatus, false)
+      await mutate(payload, false)
 
       try {
-        await Repository.update({
-          session,
-          status: {
-            ...newStatus
-          }
+        await repository.saveMeta({
+          status: payload,
+          accessToken: session.accessToken
         })
 
         // Revalidate after the mutation completes
-        await globalMutate([`status/${documentId}`])
+        await globalMutate([`status/${uuid}`])
       } catch (error) {
         console.error('Failed to update status', error)
       }
     },
-    [session, documentId, documentStatus, mutate]
+    [session, uuid, documentStatus, mutate, repository]
   )
 
   return [documentStatus, setDocumentStatus]

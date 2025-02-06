@@ -16,7 +16,7 @@ import {
   TableRow
 } from '@ttab/elephant-ui'
 import { Toolbar } from './Toolbar'
-import { useNavigation, useView, useTable, useHistory, useNavigationKeys, useOpenDocuments } from '@/hooks'
+import { useNavigation, useView, useTable, useHistory, useNavigationKeys, useOpenDocuments, useDocumentStatus } from '@/hooks'
 import { handleLink } from '@/components/Link/lib/handleLink'
 import { NewItems } from './NewItems'
 import { GroupedRows } from './GroupedRows'
@@ -24,11 +24,16 @@ import { LoadingText } from '../LoadingText'
 import { Row } from './Row'
 import { useModal } from '../Modal/useModal'
 import { ModalContent } from '@/views/Wires/components'
+import type { Wire } from '@/lib/index/schemas/wire'
 
 interface TableProps<TData, TValue> {
   columns: Array<ColumnDef<TData, TValue>>
   type: 'Planning' | 'Event' | 'Assignments' | 'Search' | 'Wires'
   onRowSelected?: (row?: TData) => void
+}
+
+function isRowTypeWire<TData, TValue>(type: TableProps<TData, TValue>['type']): type is 'Wires' {
+  return type === 'Wires'
 }
 
 export const Table = <TData, TValue>({
@@ -42,6 +47,7 @@ export const Table = <TData, TValue>({
   const { table, loading } = useTable()
   const openDocuments = useOpenDocuments({ idOnly: true })
   const { showModal, hideModal } = useModal()
+  const [,setDocumentStatus] = useDocumentStatus()
 
   const handlePreview = useCallback((row: RowType<unknown>): void => {
     const originalId = (row.original as { _id: string })._id
@@ -92,7 +98,7 @@ export const Table = <TData, TValue>({
   }, [dispatch, state.viewRegistry, onRowSelected, origin, type, history, handlePreview])
 
   useNavigationKeys({
-    keys: ['ArrowUp', 'ArrowDown', 'Enter', 'Escape', ' '],
+    keys: ['ArrowUp', 'ArrowDown', 'Enter', 'Escape', ' ', 'l', 's'],
     onNavigation: (event) => {
       const rows = table.getRowModel().rows
       if (!rows?.length) {
@@ -110,13 +116,39 @@ export const Table = <TData, TValue>({
         return
       }
 
-      if (event.key === ' ') {
+      if (event.key === ' ' && selectedRow) {
         handleOpen(event, selectedRow)
         return
       }
 
       if (event.key === 'Escape') {
         selectedRow?.toggleSelected(false)
+        return
+      }
+
+      if (event.key === 'l') {
+        if (selectedRow && isRowTypeWire<TData, TValue>(type)) {
+          const wireRow = selectedRow as RowType<Wire>
+
+          setDocumentStatus({
+            name: 'approved',
+            uuid: wireRow.original._id,
+            version: BigInt(wireRow.original._source.current_version[0])
+          }).catch((error) => console.error(error))
+        }
+        return
+      }
+
+      if (event.key === 's') {
+        if (selectedRow && isRowTypeWire<TData, TValue>(type)) {
+          const wireRow = selectedRow as RowType<Wire>
+
+          setDocumentStatus({
+            name: 'done',
+            uuid: wireRow.original._id,
+            version: BigInt(wireRow.original._source.current_version[0])
+          }).catch((error) => console.error(error))
+        }
         return
       }
 
@@ -193,7 +225,7 @@ export const Table = <TData, TValue>({
       {(type === 'Planning' || type === 'Event') && (
         <NewItems.Root>
           <NewItems.Table
-            header={`Dina nya skapade ${['Planning', 'Event'].includes(type)
+            header={`Dina nya skapade ${type === 'Planning'
               ? 'planeringar'
               : 'händelser'}`}
             type={type}

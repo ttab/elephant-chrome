@@ -39,6 +39,7 @@ export const SluglineEditable = ({ path, documentStatus, onValidation, validateS
                   placeholder='Lägg till slugg'
                   singleLine={true}
                   className='h-6 font-normal text-sm whitespace-nowrap mb-1'
+                  spellcheck={false}
                 />
               </Validation>
             </Awareness>

@@ -1,76 +1,48 @@
-import { AwarenessDocument } from '@/components/AwarenessDocument'
 import { useHistory, useLink } from '@/hooks/index'
-import { useCollaboration } from '@/hooks/useCollaboration'
+import { useUserTracker } from '@/hooks/useUserTracker'
 import type { HistoryState } from '@/navigation/hooks/useHistory'
 import { Button } from '@ttab/elephant-ui'
 import { Plus } from '@ttab/elephant-ui/icons'
-import { useSession } from 'next-auth/react'
 import { useEffect } from 'react'
 
-const Root = (): JSX.Element => {
-  const { data } = useSession()
-
-  return data?.user.sub
-    ? (
-        <AwarenessDocument documentId={data.user.sub}>
-          <ControllerContent />
-        </AwarenessDocument>
-      )
-    : (
-        <>children</>
-      )
-}
-
-const ControllerContent = (): JSX.Element => {
-  const { provider } = useCollaboration()
-  const { replaceState, state } = useHistory()
+export const Controller = (): JSX.Element => {
   const addWire = useLink('Wires')
+  const { replaceState, state } = useHistory()
+  const [wiresHistory, setWiresHistory] = useUserTracker<HistoryState>('Wires')
 
   useEffect(() => {
-    // Initialize Wires
-    if (provider?.synced && isInit(state)) {
-      const ele = provider.document.getMap('ele')
-      const wiresHistory = (ele?.get('Wires') as HistoryState[])?.[0]
-
-      // When we have a contentState for Wires that we can use, load it.
-      if (wiresHistory && !isInit(wiresHistory)) {
-        replaceState(wiresHistory.contentState[0].path, wiresHistory)
-      } else {
-        // Otherwise, create a new Wires contentState.
-        const newPath = window.location.href
-        const newContentState = wiresHistory.contentState.map((s) => ({
-          ...s,
-          path: newPath,
-          props: { ...s.props, source: 'init' }
-        }))
-
-        replaceState(newPath, { ...wiresHistory, contentState: newContentState })
-      }
+    // Load state from userTracker we're not in a initial state
+    if (wiresHistory && loadState(state, wiresHistory)) {
+      replaceState(wiresHistory.contentState[0].path, wiresHistory)
     }
-  }, [provider, replaceState, state])
-
-  useEffect(() => {
-    if (state?.contentState.every((s) => s.name === 'Wires')) {
-      provider?.document.getMap('ele').set('Wires', [state])
-    }
-  }, [state, provider])
+  }, [replaceState, state, wiresHistory, setWiresHistory])
 
   return (
-    <Button
-      variant='ghost'
-      className='w-9 px-0'
-      onClick={(event) =>
-        addWire(event, {}, 'last')}
-    >
-      <Plus strokeWidth={1.75} size={18} />
-    </Button>
+    <div className='flex justify-between'>
+      <Button
+        variant='ghost'
+        className='w-9 px-0'
+        onClick={(event) => {
+          addWire(event, {}, 'last')
+          if (state) {
+            setWiresHistory(state)
+          }
+        }}
+      >
+        <Plus strokeWidth={1.75} size={18} />
+      </Button>
+    </div>
   )
 }
 
-export { Root as Controller }
+function loadState(state: HistoryState | null, wiresHistory: HistoryState | undefined): boolean {
+  if (!wiresHistory?.contentState?.[0]) {
+    return false
+  }
 
-function isInit(state: HistoryState | null): boolean {
-  if (!state) return true
+  if (wiresHistory?.contentState.length === 1 && !wiresHistory.contentState[0].props?.source) {
+    return false
+  }
 
-  return state.contentState.length === 1 && !state.contentState[0].props?.source
+  return state?.contentState.length === 1 && !state.contentState[0].props?.source
 }

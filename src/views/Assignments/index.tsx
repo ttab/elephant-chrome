@@ -46,10 +46,14 @@ export const Assignments = (): JSX.Element => {
   const { data: session } = useSession()
 
   const assigneeUserName = useMemo(() => {
-    const userEmail = session?.user.email
-    const author = authors.find((a: IDBAuthor) => a?.email === userEmail)
+    const userSub = session?.user?.sub
+    const subId = userSub?.slice(userSub?.lastIndexOf('/') + 1)
+    const author = authors?.find((a: IDBAuthor) => {
+      return a.sub.slice(a?.sub.lastIndexOf('/') + 1) === subId
+    })
+
     return author?.name
-  }, [authors, session?.user?.email])
+  }, [authors, session?.user?.sub])
 
   return (
     <View.Root tab={currentTab} onTabChange={setCurrentTab}>
@@ -69,7 +73,6 @@ export const Assignments = (): JSX.Element => {
           />
           <ViewHeader.Content>
             <Header
-              tab={currentTab}
               type='Assignments'
               assigneeUserName={assigneeUserName}
             />
