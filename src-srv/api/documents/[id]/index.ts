@@ -30,7 +30,7 @@ export const GET: RouteHandler = async (req: Request, { cache, repository, res }
     if (state) {
       const yDoc = new Y.Doc()
       Y.applyUpdate(yDoc, state)
-      const { documentResponse } = await fromYjsNewsDoc(yDoc)
+      const { documentResponse } = fromYjsNewsDoc(yDoc)
 
       return {
         payload: documentResponse

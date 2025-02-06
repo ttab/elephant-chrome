@@ -1,4 +1,3 @@
-import { decode } from 'html-entities'
 import { Block } from '@ttab/elephant-api/newsdoc'
 import { type TBElement } from '@ttab/textbit'
 import { toString } from '../../lib/toString.js'
@@ -29,11 +28,11 @@ export const transformVisual = (element: Block): TBElement => {
       },
       {
         type: 'tt/visual/text',
-        children: [{ text: decode(data.caption) ?? '' }]
+        children: [{ text: data.caption ?? '' }]
       },
       {
         type: 'tt/visual/byline',
-        children: [{ text: decode(links[0].data.credit) ?? '' }]
+        children: [{ text: links[0].data.credit ?? '' }]
       }
     ]
   }

@@ -102,7 +102,7 @@ export const article: GetDocumentResponse = {
         type: 'core/text',
         title: '',
         data: {
-          text: 'Omkring 10|000 liter mjölk läckte ut på vägbanan när en tankbil välte på en avfart från E6 i Falkenberg natten till onsdag, rapporterar <a href="https://www.example.com./newss/article" id="link-8f370161883287209b20750f478c18f1">Göteborgs-Posten</a>.'
+          text: 'Omkring 10|000 liter mjölk läckte ut på vägbanan när en tankbil välte på en avfart från E6 i Falkenberg natten till onsdag, rapporterar <a href="https://www.example.com./newss/article" id="8f370161883287209b20750f478c18f1">Göteborgs-Posten</a>.'
         },
         rel: '',
         role: 'preamble',

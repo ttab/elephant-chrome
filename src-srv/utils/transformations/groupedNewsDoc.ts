@@ -44,7 +44,7 @@ export const toGroupedNewsDoc = (payload: GetDocumentResponse): EleDocumentRespo
 /**
  *  Convert grouped YDocument format to the repository format NewsDoc
  */
-export const fromGroupedNewsDoc = async (payload: EleDocumentResponse): Promise<{ document: Document } & Omit<GetDocumentResponse, 'document'>> => {
+export const fromGroupedNewsDoc = (payload: EleDocumentResponse): { document: Document } & Omit<GetDocumentResponse, 'document'> => {
   const { document, version, isMetaDocument, mainDocument } = payload
 
   if (!document) {
@@ -53,8 +53,7 @@ export const fromGroupedNewsDoc = async (payload: EleDocumentResponse): Promise<
 
   const newsDocument = {
     ...document,
-    // FIXME: Why is this async, really? This forces this func to be async!
-    content: await slateToNewsDoc(document.content) || [],
+    content: slateToNewsDoc(document.content) || [],
     meta: ungroup(document.meta),
     links: ungroup(document.links)
   }

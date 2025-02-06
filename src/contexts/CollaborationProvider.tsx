@@ -12,6 +12,9 @@ import { Collaboration } from '@/defaults'
 import { HPWebSocketProviderContext } from '.'
 import type * as Y from 'yjs'
 import { createStateless, StatelessType } from '@/shared/stateless'
+import { useModal } from '@/components/Modal/useModal'
+import { useKeydownGlobal } from '@/hooks/useKeydownGlobal'
+import { Button } from '@ttab/elephant-ui'
 
 export interface AwarenessUserData {
   name: string
@@ -64,6 +67,30 @@ export const CollaborationProviderContext = ({ documentId, document, children }:
   const [synced, setSynced] = useState<boolean>(false)
   const [connected, setConnected] = useState<boolean>(false)
   const [provider, setProvider] = useState<HocuspocusProvider>()
+
+  // Developer tool to display current document source in a dialog
+  const { showModal, hideModal } = useModal()
+  useKeydownGlobal((evt) => {
+    if ((evt.key === 'u' || evt.key === 'U') && evt.shiftKey && (evt.metaKey || evt.ctrlKey)) {
+      if (!provider?.document) {
+        return
+      }
+
+      showModal(
+        <div className='whitespace-pre flex flex-col gap-2 h-full overflow-hidden max-h-[90vh] p-2'>
+          <h1 className='text-lg font-bold shrink p-2'>Document source</h1>
+
+          <div className='text-xs font-mono overflow-auto p-2 border bg-muted rounded-md'>
+            {JSON.stringify(provider.document.getMap('ele').toJSON(), null, 2)}
+          </div>
+
+          <div className='shrink text-right p-2'>
+            <Button onClick={hideModal}>Close</Button>
+          </div>
+        </div>
+      )
+    }
+  })
 
   if (status !== 'authenticated') {
     throw new Error('Collaboration is not allowed without a valid access_token')
@@ -133,8 +160,7 @@ export const CollaborationProviderContext = ({ documentId, document, children }:
 
   return (
     <>
-      {!!provider
-      && (
+      {!!provider && (
         <CollaborationContext.Provider value={{ ...state }}>
           {children}
         </CollaborationContext.Provider>

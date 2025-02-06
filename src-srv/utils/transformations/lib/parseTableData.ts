@@ -19,9 +19,7 @@ export function parseTableBody(tablebody: string) {
     return {
       type: 'core/table/row',
       class: 'block',
-      children: cells.filter((cell) => {
-        return cell.textContent.trim().length > 0
-      }).map((cell) => {
+      children: cells.map((cell) => {
         return {
           type: 'core/table/row/cell',
           class: 'text',
