@@ -68,13 +68,16 @@ export function handleLink({
     if (originIndex > currentIndex) {
       history.go(currentIndex - originIndex) // Go back x steps in history
 
+      console.log('content', content)
       const newContentState: ContentState[] = [
         ...content.slice(currentIndex, currentIndex + 1),
         newContent
       ]
 
+      console.log('new', newContentState)
+
       setTimeout(() => {
-        history.pushState(`${newContent.path}${newContent?.props ? toQueryString(newContent?.props) : ''}`, {
+        history.pushState(newContent.path, {
           viewId: newViewId,
           contentState: newContentState
         })
