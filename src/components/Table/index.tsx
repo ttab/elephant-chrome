@@ -36,6 +36,27 @@ function isRowTypeWire<TData, TValue>(type: TableProps<TData, TValue>['type']): 
   return type === 'Wires'
 }
 
+
+function getNextTableIndex(rows: Record<string, RowType<unknown>>, selectedRowIndex: number | undefined, direction: 'ArrowUp' | 'ArrowDown'): number | undefined {
+  const keys = Object.keys(rows)
+    .map(Number)
+    .filter((numKey) => !isNaN(numKey))
+
+  if (keys.length === 0) {
+    return undefined
+  }
+
+  let currentIndex = selectedRowIndex !== undefined ? keys.indexOf(selectedRowIndex) : -1
+
+  if (direction === 'ArrowDown') {
+    currentIndex = (currentIndex + 1) % keys.length
+  } else if (direction === 'ArrowUp') {
+    currentIndex = (currentIndex - 1 + keys.length) % keys.length
+  }
+
+  return keys[currentIndex]
+}
+
 export const Table = <TData, TValue>({
   columns,
   type,
@@ -100,15 +121,12 @@ export const Table = <TData, TValue>({
   useNavigationKeys({
     keys: ['ArrowUp', 'ArrowDown', 'Enter', 'Escape', ' ', 'l', 's'],
     onNavigation: (event) => {
-      const rows = table.getRowModel().rows
-      if (!rows?.length) {
+      const rows = table.getRowModel().rowsById
+      if (!Object.values(rows)?.length) {
         return
       }
 
       const selectedRow = table.getGroupedSelectedRowModel()?.flatRows?.[0]
-      const currentRows = table.getState().grouping.length
-        ? rows.flatMap((row) => [...row.subRows])
-        : rows
 
       if (event.key === 'Enter' && selectedRow) {
         hideModal()
@@ -152,12 +170,13 @@ export const Table = <TData, TValue>({
         return
       }
 
-      // ArrowDown and ArrowUp
-      const idx = !selectedRow
-        ? (event.key === 'ArrowDown' ? 0 : currentRows.length - 1)
-        : (selectedRow.index + (event.key === 'ArrowDown' ? 1 : -1) + currentRows.length) % currentRows.length
-
-      currentRows[idx].toggleSelected(true)
+      if (event.key === 'ArrowUp' || event.key === 'ArrowDown') {
+        const nextKey = getNextTableIndex(rows, selectedRow?.index, event.key)
+        if (nextKey !== undefined) {
+          rows[nextKey].toggleSelected(true)
+        }
+        return
+      }
     }
   })
 
