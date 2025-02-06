@@ -11,7 +11,8 @@ import {
   NotebookPen,
   Edit,
   Delete,
-  CircleCheck
+  CircleCheck,
+  BookUser
 } from '@ttab/elephant-ui/icons'
 import { DotDropdownMenu } from '@/components/ui/DotMenu'
 import { DocumentStatuses, Newsvalues, NewsvalueMap } from '@/defaults'
@@ -20,11 +21,13 @@ import { DocumentStatus } from '@/components/Table/Items/DocumentStatus'
 import { Title } from '@/components/Table/Items/Title'
 import { Status } from '@/components/Table/Items/Status'
 import { SectionBadge } from '@/components/DataItem/SectionBadge'
-import { type IDBSection } from 'src/datastore/types'
+import { type IDBOrganiser, type IDBSection } from 'src/datastore/types'
 import { FacetedFilter } from '@/components/Commands/FacetedFilter'
+import { Tooltip } from '@ttab/elephant-ui'
 
-export function eventTableColumns({ sections = [] }: {
+export function eventTableColumns({ sections = [], organisers = [] }: {
   sections?: IDBSection[]
+  organisers?: IDBOrganiser[]
 }): Array<ColumnDef<Event>> {
   return [
     {
@@ -82,6 +85,34 @@ export function eventTableColumns({ sections = [] }: {
         const title = row.getValue('title')
 
         return <Title title={title as string} slugline={slugline} />
+      }
+    },
+    {
+      id: 'organiser',
+      meta: {
+        options: organisers.map((o) => ({ label: o.title, value: o.title })),
+        Filter: ({ column, setSearch }) => (
+          <FacetedFilter column={column} setSearch={setSearch} />
+        ),
+        name: 'Organisatör',
+        columnIcon: BookUser,
+        className: 'flex-none hidden @4xl/view:[display:revert]'
+      },
+      accessorFn: (data) => data?._source['document.rel.organiser.title']?.[0],
+      cell: ({ row }) => {
+        const value: string = row.getValue('organiser') || ''
+
+        if (value) {
+          return (
+            <Tooltip content={`Organisatör: ${value}`}>
+              <div className='border-slate-200 rounded-md mr-2 p-1 truncate'>{value}</div>
+            </Tooltip>
+          )
+        }
+        return <></>
+      },
+      filterFn: (row, id, value: string[]) => {
+        return value.includes(row.getValue(id))
       }
     },
     {
