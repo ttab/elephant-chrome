@@ -17,6 +17,7 @@ import { applicationMenu, type ApplicationMenuItem, type MenuGroups } from '@/de
 import { useUserTracker } from '@/hooks/useUserTracker'
 import { cn } from '@ttab/elephant-ui/utils'
 import { useRef } from 'react'
+import { Latest } from '@/views/Latest'
 
 const BASE_URL = import.meta.env.BASE_URL
 const hasUserDoc = (obj: object | undefined) => obj && Object.keys(obj).length > 0
@@ -61,6 +62,26 @@ export const Menu = (): JSX.Element => {
               return (
                 <div key={group.name}>
                   {group.items.map((item: ApplicationMenuItem) => {
+                    if (item.target === 'sheet') {
+                      return (
+                        <Sheet key={item.name}>
+                          <SheetTrigger ref={triggerRef} className='rounded-md hover:bg-gray-100 h-9 px-3 w-full'>
+                            <div className='flex items-center gap-3'>
+                              <item.icon strokeWidth={2.25} size={18} color={item.color} />
+                              <div className='pl-2'>{item.label}</div>
+                            </div>
+                          </SheetTrigger>
+                          <SheetContent
+                            side='right'
+                            className='p-3 min-h-screen focus:outline-none pb-6 max-w-[1200px] mx-auto rounded-t rounded-lg'
+                          >
+                            <SheetTitle />
+                            <SheetDescription />
+                            <Latest />
+                          </SheetContent>
+                        </Sheet>
+                      )
+                    }
                     return <MenuItem key={item.name} menuItem={item} />
                   })}
                 </div>
