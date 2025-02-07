@@ -8,14 +8,19 @@ export interface SWConnectMessage {
   }
 }
 
-export interface SWVersionMessage {
-  type: 'version'
+export interface SWConnectedMessage {
+  type: 'connected'
   payload: number
 }
 
 export interface SWShutdownMessage {
   type: 'shutdown'
   payload: void
+}
+
+export interface SWReloadMessage {
+  type: 'reload'
+  payload: number
 }
 
 export interface SWDebugMessage {
@@ -29,10 +34,11 @@ export interface SWSSEMessage {
 }
 
 export type SWMessage = SWConnectMessage
-  | SWVersionMessage
+  | SWConnectedMessage
   | SWDebugMessage
   | SWSSEMessage
   | SWShutdownMessage
+  | SWReloadMessage
 
 export interface SWPostMessageEvent extends MessageEvent {
   data: SWMessage

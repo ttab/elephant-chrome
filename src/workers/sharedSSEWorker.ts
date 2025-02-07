@@ -1,12 +1,12 @@
-import type { SWPostMessageEvent, SWMessage } from './types'
+import type { SWPostMessageEvent, SWMessage, SWConnectMessage, SWReloadMessage } from './types'
 import { SharedSSEWorker } from '@/defaults/sharedResources'
 
 // Constants
 const SSE_TOPIC = 'firehose'
 
-const connections: MessagePort[] = []
-let eventSource: EventSource | undefined
-let accessToken: string | undefined
+const sharedConnections: MessagePort[] = []
+let sharedEventSource: EventSource | undefined
+let sharedAccessToken: string | undefined
 
 // TODO: Will be done with the refactor of IndexedDB access
 //
@@ -23,62 +23,91 @@ let accessToken: string | undefined
 //   timestamp: msg.timestamp
 // })
 
+
 // @ts-expect-error We don't have types for this
 self.onconnect = (initialEvent: MessageEvent) => {
   const port = initialEvent.ports[0]
-  connections.push(port)
+  sharedConnections.push(port)
 
   port.onmessage = (e: SWPostMessageEvent) => {
-    const { type, payload } = e.data
-    if (type === 'connect') {
-      if (payload.accessToken !== accessToken) {
-        broadcastDebugMessage(connections, 'Received SSE connect request with updated token')
+    switch (e.data.type) {
+      case 'connect':
+        onConnect(port, e.data)
+        break
 
-        // Close existing connection if we have one
-        if (accessToken && eventSource) {
-          disconnectSSE(eventSource, connections)
-        }
-
-        // Open a new connection if we received an accessToken
-        if (payload.accessToken) {
-          accessToken = payload.accessToken
-          eventSource = connectSSE(payload.url, accessToken, connections)
-        }
-      }
-
-      if (eventSource) {
-        port.postMessage({ type: 'debug', payload: 'SSE connected and listening for events' })
-        // broadcastDebugMessage(connections, 'SSE connected and listening for events')
-      }
-    } else if (type === 'shutdown' && eventSource) {
-      broadcastDebugMessage(connections, 'Shutting down sharedSSEWorker')
-      disconnectSSE(eventSource, connections)
-      eventSource = undefined
-      connections.forEach((port) => port.close())
-      connections.length = 0
-      self.close()
+      case 'reload':
+        onReloadRequest(e.data)
+        break
     }
   }
 
   port.start()
 
-  // @ts-expect-error We don't have types for this
-  port.onclose = () => {
-    const index = connections.indexOf(port)
-    if (index !== -1) connections.splice(index, 1)
-  }
+  // FIXME: This never fires and the connected clients just grow and grow and grow...
+  // port.onclose = () => {
+  //   const index = sharedConnections.indexOf(port)
+  //   if (index !== -1) {
+  //     sharedConnections.splice(index, 1)
+  //   }
+  // }
 
   port.postMessage({
-    type: 'version',
+    type: 'connected',
     payload: SharedSSEWorker.version
   })
+}
+
+/**
+ * Setup connection or reinitalize connection
+ */
+function onConnect(port: MessagePort, msg: SWConnectMessage) {
+  const { payload } = msg
+
+  if (payload.accessToken !== sharedAccessToken) {
+    broadcastDebugMessage('Received SSE connect request with updated token')
+
+    // Close existing connection if we have one
+    if (sharedAccessToken && sharedEventSource) {
+      disconnectSSE()
+    }
+
+    // Open a new connection if we received an accessToken
+    if (payload.accessToken) {
+      sharedAccessToken = payload.accessToken
+      sharedEventSource = connectSSE(payload.url, sharedAccessToken)
+    }
+  }
+
+  if (sharedEventSource) {
+    port.postMessage({ type: 'debug', payload: `SSE connected, ${sharedConnections.length} clients listening for events` })
+  }
+}
+
+
+/**
+ * Handle reload request
+ */
+function onReloadRequest(msg: SWReloadMessage) {
+  if (sharedEventSource) {
+    broadcastDebugMessage(`Shutting down sharedSSEWorker version ${SharedSSEWorker.version}`)
+    disconnectSSE()
+  }
+
+  // Tell all connected clients to reload the worker with the specified version
+  sharedConnections.forEach((port) => {
+    port.postMessage(msg)
+    port.close()
+  })
+
+  sharedConnections.length = 0
+  self.close()
 }
 
 
 /**
  * Set up Server-Sent Events (SSE) connection and listen to its events
  */
-function connectSSE(baseUrl: string, accessToken: string, connections: MessagePort[]): EventSource {
+function connectSSE(baseUrl: string, accessToken: string): EventSource {
   const url = new URL(baseUrl)
   url.searchParams.set('topic', SSE_TOPIC)
   url.searchParams.set('token', accessToken)
@@ -86,16 +115,15 @@ function connectSSE(baseUrl: string, accessToken: string, connections: MessagePo
   const eventSource = new EventSource(url)
 
   eventSource.onmessage = (event) => {
-    broadcastMessage(connections, {
+    broadcastMessage({
       type: 'sse',
       payload: JSON.parse(event.data as string)
     })
   }
 
-  eventSource.onerror = (error) => {
-    broadcastDebugMessage(connections, 'SSE Error, closing event listening')
-    console.error('SSE Error:', error)
-    eventSource.close()
+  eventSource.onerror = (_) => {
+    broadcastDebugMessage('Error listening for server sent events')
+    disconnectSSE()
   }
 
   return eventSource
@@ -105,26 +133,31 @@ function connectSSE(baseUrl: string, accessToken: string, connections: MessagePo
 /**
  * Close current EventSource connection
  */
-function disconnectSSE(eventSource: EventSource, connections: MessagePort[]) {
-  eventSource.close()
-  broadcastDebugMessage(connections, 'Stopped listening for Server Sent Events')
+function disconnectSSE() {
+  if (!sharedEventSource) {
+    return
+  }
+
+  broadcastDebugMessage('Shutting down listener for server sent events')
+  sharedEventSource.close()
+  sharedEventSource = undefined
 }
 
 
 /**
  * Broadcast to all connected tabs
  */
-function broadcastMessage(connections: MessagePort[], msg: SWMessage) {
-  connections.forEach((conn) => {
-    conn.postMessage(msg)
+function broadcastMessage(msg: SWMessage) {
+  sharedConnections.forEach((port) => {
+    port.postMessage(msg)
   })
 }
 
 /**
  * Broadcast to all connected tabs
  */
-function broadcastDebugMessage(connections: MessagePort[], msg: string) {
-  broadcastMessage(connections, {
+function broadcastDebugMessage(msg: string) {
+  broadcastMessage({
     type: 'debug',
     payload: msg
   })
