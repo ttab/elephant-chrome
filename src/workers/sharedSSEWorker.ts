@@ -1,14 +1,27 @@
 import type { SWPostMessageEvent, SWMessage } from './types'
+import { SharedSSEWorker } from '@/defaults/sharedResources'
 
 // Constants
-// ATTENTION: Shared worker version must match version in instantiation file
-const SHARED_WORKER_VERSION = 1
 const SSE_TOPIC = 'firehose'
 
 const connections: MessagePort[] = []
 let eventSource: EventSource | undefined
 let accessToken: string | undefined
 
+// TODO: Will be done with the refactor of IndexedDB access
+//
+// FIXME: Start reading event from last event read
+// const { lastEventId } = await IDB.get<{ lastEventId: string }>('__meta', 'repositoryEvents') || {}
+// if (lastEventId) {
+//   headers['Last-Event-ID'] = lastEventId
+// }
+//
+// FIXME: Store last read event
+// void IDB.put('__meta', {
+//   id: 'repositoryEvents',
+//   lastEventId: msg.id,
+//   timestamp: msg.timestamp
+// })
 
 // @ts-expect-error We don't have types for this
 self.onconnect = (initialEvent: MessageEvent) => {
@@ -57,7 +70,7 @@ self.onconnect = (initialEvent: MessageEvent) => {
 
   port.postMessage({
     type: 'version',
-    payload: SHARED_WORKER_VERSION
+    payload: SharedSSEWorker.version
   })
 }
 

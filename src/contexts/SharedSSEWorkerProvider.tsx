@@ -8,10 +8,9 @@ import { useSession } from 'next-auth/react'
 import { useRegistry } from '../hooks'
 import type { SWPostMessageEvent, SWMessage, SWDebugMessage, SWVersionMessage, SWSSEMessage } from '../types'
 import type { EventlogItem } from '@ttab/elephant-api/repository'
+import { SharedSSEWorker } from '@/defaults/sharedResources'
 
 // Constants
-// ATTENTION: Shared worker version must match version in the actual shared worker js file
-const SHARED_WORKER_VERSION = 1
 const WORKER_SCRIPT_URL = '/workers/sharedSSEWorker.js'
 
 interface SharedSSEWorkerContextType {
@@ -89,8 +88,8 @@ export const SharedSSEWorkerProvider = ({ children }: {
   const handleVersionCheck = (version: number) => {
     console.info(`Running sharedSSEWorker version ${version}`)
 
-    if (version !== SHARED_WORKER_VERSION) {
-      console.info(`Needs sharedSSEWorker version ${SHARED_WORKER_VERSION}, reloading`)
+    if (version !== SharedSSEWorker.version) {
+      console.info(`Needs sharedSSEWorker version ${SharedSSEWorker.version}, reloading`)
       shutdownWorker()
 
       setTimeout(() => {
