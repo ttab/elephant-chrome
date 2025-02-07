@@ -23,6 +23,8 @@ const _EventsSchema = z.object({
     'document.rel.category.uri': z.array(z.string()),
     'document.rel.category.uuid': z.array(z.string()),
     'document.rel.category.copyrightholder.title': z.array(z.string()),
+    'document.rel.organiser.title': z.array(z.string()),
+    'document.rel.organiser.type': z.array(z.string()),
     'document.rel.section.title': z.array(z.string()),
     'document.rel.section.type': z.array(z.string()),
     'document.rel.section.uri': z.array(z.string()),

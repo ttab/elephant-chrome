@@ -307,10 +307,6 @@ export class CollaborationServer {
       return Y.encodeStateAsUpdate(yDoc)
     }
 
-    if (uuid.startsWith('core://user')) {
-      return null
-    }
-
     // Fetch from Redis if exists
     const state = await this.#redisCache.get(uuid).catch((ex) => {
       throw new Error('get cached document', { cause: ex })
@@ -318,6 +314,11 @@ export class CollaborationServer {
 
     if (state) {
       return state
+    }
+
+    // UserTracker documents should not be fetched from repo, they only exists in redis
+    if ((context as { user: { sub: string } }).user.sub?.endsWith(uuid)) {
+      return null
     }
 
     if (uuid === 'document-tracker') {
@@ -329,7 +330,7 @@ export class CollaborationServer {
     // Fetch content
     const newsDoc = await this.#repository.getDocument({
       uuid,
-      accessToken: context.accessToken
+      accessToken: (context as { accessToken: string }).accessToken
     }).catch((ex) => {
       throw new Error('get document from repository', { cause: ex })
     })
@@ -356,6 +357,11 @@ export class CollaborationServer {
       return
     }
 
+    // Ignore userTracker documents
+    if ((context as { user: { sub: string } }).user.sub?.endsWith(documentName)) {
+      return
+    }
+
     const { documentResponse, updatedHash } = fromYjsNewsDoc(yDoc)
     if (!updatedHash) {
       logger.debug('::: saveDocument: No changes in document')
@@ -366,7 +372,7 @@ export class CollaborationServer {
       documentName,
       fromGroupedNewsDoc(documentResponse),
       updatedHash,
-      context.accessToken as string,
+      (context as { accessToken: string }).accessToken,
       context
     )
   }

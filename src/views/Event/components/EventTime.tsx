@@ -242,7 +242,7 @@ export const EventTimeMenu = (): JSX.Element => {
     })
 
   return (
-    <PopoverDrawer triggerLabel={triggerLabel} open={open} setOpen={setOpen} asChild>
+    <PopoverDrawer triggerLabel={triggerLabel} open={open} setOpen={setOpen} modal={true}>
       <div className='p-2'>
         <Calendar
           mode='range'

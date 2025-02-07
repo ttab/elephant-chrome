@@ -1,7 +1,7 @@
 import { useSession } from 'next-auth/react'
 import useSWR, { mutate as globalMutate } from 'swr'
 import { useCallback } from 'react'
-import { useCollaboration, useRegistry, useYValue } from '@/hooks'
+import { useRegistry } from '@/hooks'
 
 export interface Status {
   name: string
@@ -11,17 +11,12 @@ export interface Status {
 
 export const useDocumentStatus = (uuid?: string): [
   Status | undefined,
-  (newStatusName: string) => Promise<void>
+  (newStatusName: string | Status) => Promise<void>
 ] => {
   const { repository } = useRegistry()
   const { data: session } = useSession()
 
-  const { synced } = useCollaboration()
-
-  const [inProgress] = useYValue<boolean>('root.__inProgress')
-
-
-  const doFetch = uuid && synced && !inProgress && session && repository
+  const doFetch = uuid && session && repository
 
   const { data: documentStatus, mutate, error } = useSWR<Status | undefined, Error>(
     doFetch ? [`status/${uuid}`] : null,
@@ -61,21 +56,35 @@ export const useDocumentStatus = (uuid?: string): [
   if (error) console.error('Unable to get documentStatus', error)
 
   const setDocumentStatus = useCallback(
-    async (newStatusName: string) => {
-      if (!session || !uuid || !documentStatus || !repository) return
+    async (newStatus: string | Status) => {
+      if (!session || !repository) return
 
-      const newStatus = {
-        ...documentStatus,
-        name: newStatusName,
-        version: documentStatus.version
+      let payload: Status | undefined
+
+      if (typeof newStatus !== 'string') {
+        payload = newStatus
       }
 
+      if (typeof newStatus === 'string' && documentStatus && uuid) {
+        payload = {
+          ...documentStatus,
+          uuid: uuid,
+          name: newStatus,
+          version: documentStatus?.version
+        }
+      }
+
+      if (!payload) {
+        throw new Error('Invalid status payload')
+      }
+
+
       // Optimistically update the SWR cache before performing the actual API call
-      await mutate(newStatus, false)
+      await mutate(payload, false)
 
       try {
         await repository.saveMeta({
-          status: newStatus,
+          status: payload,
           accessToken: session.accessToken
         })
 

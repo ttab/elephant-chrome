@@ -16,7 +16,7 @@ import {
   TableRow
 } from '@ttab/elephant-ui'
 import { Toolbar } from './Toolbar'
-import { useNavigation, useView, useTable, useHistory, useNavigationKeys, useOpenDocuments } from '@/hooks'
+import { useNavigation, useView, useTable, useHistory, useNavigationKeys, useOpenDocuments, useDocumentStatus } from '@/hooks'
 import { handleLink } from '@/components/Link/lib/handleLink'
 import { NewItems } from './NewItems'
 import { GroupedRows } from './GroupedRows'
@@ -24,11 +24,37 @@ import { LoadingText } from '../LoadingText'
 import { Row } from './Row'
 import { useModal } from '../Modal/useModal'
 import { ModalContent } from '@/views/Wires/components'
+import type { Wire } from '@/lib/index/schemas/wire'
 
 interface TableProps<TData, TValue> {
   columns: Array<ColumnDef<TData, TValue>>
   type: 'Planning' | 'Event' | 'Assignments' | 'Search' | 'Wires'
   onRowSelected?: (row?: TData) => void
+}
+
+function isRowTypeWire<TData, TValue>(type: TableProps<TData, TValue>['type']): type is 'Wires' {
+  return type === 'Wires'
+}
+
+
+function getNextTableIndex(rows: Record<string, RowType<unknown>>, selectedRowIndex: number | undefined, direction: 'ArrowUp' | 'ArrowDown'): number | undefined {
+  const keys = Object.keys(rows)
+    .map(Number)
+    .filter((numKey) => !isNaN(numKey))
+
+  if (keys.length === 0) {
+    return undefined
+  }
+
+  let currentIndex = selectedRowIndex !== undefined ? keys.indexOf(selectedRowIndex) : -1
+
+  if (direction === 'ArrowDown') {
+    currentIndex = (currentIndex + 1) % keys.length
+  } else if (direction === 'ArrowUp') {
+    currentIndex = (currentIndex - 1 + keys.length) % keys.length
+  }
+
+  return keys[currentIndex]
 }
 
 export const Table = <TData, TValue>({
@@ -42,6 +68,7 @@ export const Table = <TData, TValue>({
   const { table, loading } = useTable()
   const openDocuments = useOpenDocuments({ idOnly: true })
   const { showModal, hideModal } = useModal()
+  const [,setDocumentStatus] = useDocumentStatus()
 
   const handlePreview = useCallback((row: RowType<unknown>): void => {
     const originalId = (row.original as { _id: string })._id
@@ -92,17 +119,14 @@ export const Table = <TData, TValue>({
   }, [dispatch, state.viewRegistry, onRowSelected, origin, type, history, handlePreview])
 
   useNavigationKeys({
-    keys: ['ArrowUp', 'ArrowDown', 'Enter', 'Escape', ' '],
+    keys: ['ArrowUp', 'ArrowDown', 'Enter', 'Escape', ' ', 'l', 's'],
     onNavigation: (event) => {
-      const rows = table.getRowModel().rows
-      if (!rows?.length) {
+      const rows = table.getRowModel().rowsById
+      if (!Object.values(rows)?.length) {
         return
       }
 
       const selectedRow = table.getGroupedSelectedRowModel()?.flatRows?.[0]
-      const currentRows = table.getState().grouping.length
-        ? rows.flatMap((row) => [...row.subRows])
-        : rows
 
       if (event.key === 'Enter' && selectedRow) {
         hideModal()
@@ -110,7 +134,7 @@ export const Table = <TData, TValue>({
         return
       }
 
-      if (event.key === ' ') {
+      if (event.key === ' ' && selectedRow) {
         handleOpen(event, selectedRow)
         return
       }
@@ -120,12 +144,39 @@ export const Table = <TData, TValue>({
         return
       }
 
-      // ArrowDown and ArrowUp
-      const idx = !selectedRow
-        ? (event.key === 'ArrowDown' ? 0 : currentRows.length - 1)
-        : (selectedRow.index + (event.key === 'ArrowDown' ? 1 : -1) + currentRows.length) % currentRows.length
+      if (event.key === 'l') {
+        if (selectedRow && isRowTypeWire<TData, TValue>(type)) {
+          const wireRow = selectedRow as RowType<Wire>
 
-      currentRows[idx].toggleSelected(true)
+          setDocumentStatus({
+            name: 'approved',
+            uuid: wireRow.original._id,
+            version: BigInt(wireRow.original._source.current_version[0])
+          }).catch((error) => console.error(error))
+        }
+        return
+      }
+
+      if (event.key === 's') {
+        if (selectedRow && isRowTypeWire<TData, TValue>(type)) {
+          const wireRow = selectedRow as RowType<Wire>
+
+          setDocumentStatus({
+            name: 'done',
+            uuid: wireRow.original._id,
+            version: BigInt(wireRow.original._source.current_version[0])
+          }).catch((error) => console.error(error))
+        }
+        return
+      }
+
+      if (event.key === 'ArrowUp' || event.key === 'ArrowDown') {
+        const nextKey = getNextTableIndex(rows, selectedRow?.index, event.key)
+        if (nextKey !== undefined) {
+          rows[nextKey].toggleSelected(true)
+        }
+        return
+      }
     }
   })
 

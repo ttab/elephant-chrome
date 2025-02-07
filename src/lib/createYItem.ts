@@ -113,7 +113,6 @@ export function appendArticle({ document, id, index, slug }: {
   index: number
   slug: string
 }): void {
-  console.log('Appending article with id: ', id)
   // Get meta yMap
   const meta = document.getMap('ele').get('meta') as Y.Map<unknown>
 

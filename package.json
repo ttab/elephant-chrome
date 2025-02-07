@@ -2,7 +2,7 @@
   "name": "elephant-chrome",
   "private": false,
   "license": "MIT",
-  "version": "0.8.1",
+  "version": "0.8.2",
   "type": "module",
   "scripts": {
     "debug": "concurrently npm:debug:vite npm:dev:client:css",
@@ -37,8 +37,8 @@
     "@grafana/faro-react": "^1.13.1",
     "@hocuspocus/extension-database": "^2.15.2",
     "@hocuspocus/extension-logger": "^2.15.2",
-    "@hocuspocus/extension-redis": "^2.15.1",
-    "@hocuspocus/provider": "^2.15.1",
+    "@hocuspocus/extension-redis": "^2.15.2",
+    "@hocuspocus/provider": "^2.15.2",
     "@hocuspocus/server": "^2.15.2",
     "@protobuf-ts/twirp-transport": "^2.9.4",
     "@slate-yjs/core": "^1.0.2",
@@ -46,7 +46,7 @@
     "@tanstack/react-table": "^8.20.6",
     "@ttab/api-client": "^2.9.1",
     "@ttab/elephant-api": "^0.17.7-1",
-    "@ttab/elephant-ui": "^0.7.0",
+    "@ttab/elephant-ui": "^0.8.0",
     "@ttab/textbit": "^0.20.0",
     "@ttab/textbit-plugins": "^0.4.4",
     "class-variance-authority": "^0.7.1",
@@ -67,7 +67,7 @@
     "slate": "^0.110.2",
     "slate-hyperscript": "^0.100.0",
     "slate-react": "^0.111.0",
-    "swr": "^2.3.0",
+    "swr": "^2.3.2",
     "vite-express": "^0.20.0",
     "yjs": "^13.6.21",
     "zod": "^3.24.1"
@@ -101,7 +101,7 @@
     "tsc-alias": "^1.8.10",
     "tsx": "^4.19.2",
     "typescript": "^5.7.3",
-    "vite": "^6.0.11",
+    "vite": "^6.1.0",
     "vite-plugin-static-copy": "^2.2.0",
     "vitest": "^3.0.4"
   }
