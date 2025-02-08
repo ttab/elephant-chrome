@@ -102,7 +102,7 @@ const Content = ({ documents, locale }: { documents: Document[], locale: string 
         return (
           <div
             key={uuid}
-            className='hover:bg-gray-100'
+            className={`hover:bg-gray-100 ${uuid ? 'cursor-pointer' : 'cursor-not-allowed'}`}
             onClick={() => {
               if (!uuid) {
                 return
