@@ -111,7 +111,7 @@ const Content = ({ documents, locale }: { documents: Document[], locale: string 
                 viewId: crypto.randomUUID(),
                 history,
                 origin: viewId,
-                target: 'self'
+                target: 'last'
               })
             }}
           >
