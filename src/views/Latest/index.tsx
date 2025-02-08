@@ -104,10 +104,14 @@ const Content = ({ documents, locale }: { documents: Document[], locale: string 
             key={uuid}
             className='hover:bg-gray-100'
             onClick={() => {
+              if (!uuid) {
+                return
+              }
+
               handleLink({
                 dispatch,
                 viewItem: state.viewRegistry.get('Editor'),
-                props: { id: itm.uuid },
+                props: { id: uuid },
                 viewId: crypto.randomUUID(),
                 history,
                 origin: viewId,
