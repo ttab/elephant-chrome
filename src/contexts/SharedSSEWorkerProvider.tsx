@@ -83,7 +83,6 @@ export const SharedSSEWorkerProvider = ({ children }: {
 
     switch (msg?.type) {
       case 'sse':
-        console.log(msg.payload)
         onServerSentEvent(msg)
         break
 
