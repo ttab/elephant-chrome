@@ -6,12 +6,19 @@ import React, {
 } from 'react'
 import { useSession } from 'next-auth/react'
 import { useRegistry } from '../hooks'
-import type { SWPostMessageEvent, SWSSEMessage } from '../types'
 import type { EventlogItem } from '@ttab/elephant-api/repository'
 import { SharedSSEWorker } from '@/defaults/sharedResources'
+import type {
+  SharedWorkerEvent,
+  SSEMessage,
+  ConnectedMessage,
+  UpgradeMessage
+} from 'src/workers/SharedWorker'
 
 // Constants
 const WORKER_SCRIPT_URL = '/workers/sharedSSEWorker.js'
+
+// Keep track of current version
 let currentVersion = SharedSSEWorker.version
 
 interface SharedSSEWorkerContextType {
@@ -32,7 +39,7 @@ export const SharedSSEWorkerProvider = ({ children }: {
   /**
    * Initializes the shared worker
    */
-  const initializeWorker = () => {
+  const loadWorker = () => {
     workerRef.current = new SharedWorker(WORKER_SCRIPT_URL)
     const worker = workerRef.current
 
@@ -44,7 +51,9 @@ export const SharedSSEWorkerProvider = ({ children }: {
   /**
    * Tell the worker to tell others to reload
    */
-  const reloadWorker = (version: number) => {
+  const upgradeWorker = (msg: UpgradeMessage) => {
+    const version = msg.payload.version
+
     if (workerRef.current) {
       console.info(`Reloading shared worker with new version ${version}`)
       workerRef.current.port.close()
@@ -52,40 +61,48 @@ export const SharedSSEWorkerProvider = ({ children }: {
     }
 
     currentVersion = version
-    const worker = initializeWorker()
 
-    worker.port.postMessage({
-      type: 'connect',
-      payload: {
-        url: repositoryEventsUrl.toString(),
-        accessToken: sessionRef.current?.accessToken || ''
-      }
-    })
+    setTimeout(() => {
+      const worker = loadWorker()
+      worker.port.postMessage({
+        type: 'connect',
+        payload: {
+          url: repositoryEventsUrl.toString(),
+          accessToken: sessionRef.current?.accessToken || '',
+          version: currentVersion
+        }
+      })
+    }, 500)
   }
 
   /**
    * Handles messages from the shared worker
    */
-  const onWorkerMessageEvent = (event: SWPostMessageEvent) => {
+  const onWorkerMessageEvent = (event: SharedWorkerEvent) => {
     const msg = event.data
 
-    switch (msg.type) {
+    switch (msg?.type) {
       case 'sse':
         console.log(msg.payload)
         onServerSentEvent(msg)
         break
 
       case 'connected':
-        onConnected(msg.payload)
+        onConnected(msg)
         break
 
-      case 'reload':
+      case 'notconnected':
+        onNotConnected()
+        break
+
+      case 'upgrade':
         setTimeout(() => {
-          reloadWorker(msg.payload)
+          upgradeWorker(msg)
         }, 500)
         break
 
       case 'debug':
+        console.debug(msg.payload.message, `(${msg.payload.clients})`)
         break
 
       default:
@@ -96,7 +113,7 @@ export const SharedSSEWorkerProvider = ({ children }: {
   /**
    * Notifies subscribers of incoming SSE messages
    */
-  const onServerSentEvent = (msg: SWSSEMessage) => {
+  const onServerSentEvent = (msg: SSEMessage) => {
     const { payload: sseEvent } = msg
     subscribers.current[sseEvent.type]?.forEach((callback) => {
       callback(sseEvent)
@@ -104,24 +121,44 @@ export const SharedSSEWorkerProvider = ({ children }: {
   }
 
   /**
-   * Handles worker version mismatches
+   * When already connected we need to check for version mismatches
    */
-  const onConnected = (version: number) => {
-    if (version === currentVersion) {
-      console.info(`Running sharedSSEWorker version ${version}`)
+  const onConnected = (msg: ConnectedMessage) => {
+    const version = msg.payload.version
+
+    if (currentVersion === version) {
+      console.debug(`Connected to shared worker v${msg.payload.version}`)
       return
     }
 
-    console.info(`SharedSSEWorker version mismatch, running v${version} but require v${SharedSSEWorker.version}`)
+    console.info(`Shared worker running v${version} but require v${SharedSSEWorker.version}`)
 
     if (workerRef.current) {
-      console.info('Telling shared worker to shutdown and tell clients to load new version')
-
       workerRef.current.port.postMessage({
-        type: 'reload',
-        payload: SharedSSEWorker.version
+        type: 'upgrade',
+        payload: {
+          version: SharedSSEWorker.version
+        }
       })
     }
+  }
+
+  /**
+   * When not connected we need to send connection information
+   */
+  const onNotConnected = () => {
+    if (!workerRef.current) {
+      return
+    }
+
+    workerRef.current.port.postMessage({
+      type: 'connect',
+      payload: {
+        version: currentVersion,
+        url: repositoryEventsUrl.toString(),
+        accessToken: sessionRef.current?.accessToken || ''
+      }
+    })
   }
 
   /**
@@ -145,7 +182,7 @@ export const SharedSSEWorkerProvider = ({ children }: {
    *  Worker Initialization and cleanup
    */
   useEffect(() => {
-    const worker = initializeWorker()
+    const worker = loadWorker()
 
     return () => {
       worker.port.removeEventListener('message', onWorkerMessageEvent)
@@ -154,16 +191,17 @@ export const SharedSSEWorkerProvider = ({ children }: {
   }, [])
 
   /**
-   * Send Access Token to Worker
+   * Send access token to shared worker when it changes
    */
   useEffect(() => {
-    if (!workerRef.current || !data?.accessToken || !repositoryEventsUrl) return
+    if (!workerRef.current || !data?.accessToken || !repositoryEventsUrl) {
+      return
+    }
 
     sessionRef.current = data
     workerRef.current.port.postMessage({
-      type: 'connect',
+      type: 'accessToken',
       payload: {
-        url: repositoryEventsUrl.toString(),
         accessToken: data?.accessToken || ''
       }
     })
