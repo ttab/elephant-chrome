@@ -21,5 +21,5 @@ export const IndexedDB = {
 }
 
 export const SharedSSEWorker = {
-  version: 1
+  version: 8
 }

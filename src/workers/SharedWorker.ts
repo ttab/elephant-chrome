@@ -1,4 +1,5 @@
 import type { EventlogItem } from '@ttab/elephant-api/repository'
+import { SharedSSEWorker } from '@/defaults/sharedResources'
 
 interface ISharedMessage<T, P> {
   type: T
@@ -11,16 +12,14 @@ export type ConnectMessage = ISharedMessage<'connect', {
   accessToken: string
   url: string
 }>
+export type DisconnectMessage = ISharedMessage<'disconnect', {}>
 
-export type AccessTokenMessage = ISharedMessage<'accessToken', {
-  accessToken: string
-}>
 
 // Messages to clients
 export type ConnectedMessage = ISharedMessage<'connected', {
   version: number
 }>
-export type NotConnectedMessage = ISharedMessage<'notconnected', {
+export type DisconnectedMessage = ISharedMessage<'disconnected', {
   version: number
 }>
 export type DebugMessage = ISharedMessage<'debug', {
@@ -29,18 +28,19 @@ export type DebugMessage = ISharedMessage<'debug', {
 }>
 export type SSEMessage = ISharedMessage<'sse', EventlogItem>
 
+
 // Messages in both directions
 export type UpgradeMessage = ISharedMessage<'upgrade', {
   version: number
 }>
 
 type SharedWorkerMessage = ConnectMessage
-  | UpgradeMessage
-  | AccessTokenMessage
+  | DisconnectMessage
   | ConnectedMessage
-  | NotConnectedMessage
+  | DisconnectedMessage
   | DebugMessage
   | SSEMessage
+  | UpgradeMessage
 
 export interface SharedWorkerEvent extends MessageEvent {
   data: SharedWorkerMessage
@@ -63,7 +63,6 @@ export interface SharedWorkerEvent extends MessageEvent {
 
 export class SharedWorker {
   static instance: SharedWorker
-  #version: number = 0
   #connections: MessagePort[] = []
   #eventSource?: EventSource
   #url?: URL
@@ -95,17 +94,21 @@ export class SharedWorker {
           break
 
         case 'connect':
-          this.#onConnect(e.data)
-          this.#broadcast({
-            type: 'connected',
-            payload: {
-              version: this.#version
-            }
-          })
+          if (!this.#onConnect(e.data)) {
+            this.#sendStatusMessage(port, 'disconnected')
+          } else {
+            this.#broadcast({
+              type: 'connected',
+              payload: {
+                version: SharedSSEWorker.version
+              }
+            })
+          }
           break
 
-        case 'accessToken':
-          this.#onAccessToken(e.data)
+        case 'disconnect':
+          this.#disconnectSSE()
+          this.#sendStatusMessage(port, 'disconnected')
           break
       }
     }
@@ -114,7 +117,7 @@ export class SharedWorker {
 
     this.#sendStatusMessage(
       port,
-      (this.#eventSource) ? 'connected' : 'notconnected'
+      (this.#eventSource) ? 'connected' : 'disconnected'
     )
   }
 
@@ -122,36 +125,27 @@ export class SharedWorker {
    * Handle connect request from client. This should only
    * come from the first client connecting.
    */
-  #onConnect(msg: ConnectMessage) {
-    if (this.#eventSource) {
-      return
+  #onConnect(msg: ConnectMessage): boolean {
+    const { url: baseUrl, accessToken } = msg.payload
+
+    // If we get a new accessToken, disconnect first
+    if (this.#eventSource && accessToken !== this.#accessToken) {
+      this.#disconnectSSE()
     }
 
-    const { url: baseUrl, accessToken, version } = msg.payload
+    if (!this.#eventSource && !accessToken) {
+      this.#broadcastDebug('No access token received')
+      return false
+    }
+
     const url = new URL(baseUrl)
     url.searchParams.set('topic', 'firehose')
     url.searchParams.set('token', accessToken)
+
     this.#url = url
-
-    this.#version = version
     this.#accessToken = accessToken
-    this.#connectSSE()
-  }
 
-  /**
-   * Handle new accessToken request from client
-   */
-  #onAccessToken(msg: AccessTokenMessage) {
-    const accessToken = msg.payload.accessToken
-
-    if (!accessToken || accessToken === this.#accessToken || !this.#url) {
-      return
-    }
-
-    this.#disconnectSSE()
-    this.#accessToken = accessToken
-    this.#url.searchParams.set('token', accessToken)
-    this.#connectSSE()
+    return this.#connectSSE()
   }
 
   /**
@@ -168,8 +162,11 @@ export class SharedWorker {
       }
     }, true)
 
-    self.close()
+    this.#connections.forEach((port) => {
+      port.close()
+    })
     this.#connections.length = 0
+    self.close()
   }
 
   /**
@@ -182,21 +179,17 @@ export class SharedWorker {
 
     this.#eventSource.close()
     this.#eventSource = undefined
-
-    this.#broadcastDebug('Disconnected from event source')
   }
 
   /**
    * Connect to the event source
    */
-  #connectSSE() {
+  #connectSSE(): boolean {
     if (!this.#url) {
-      return
+      return false
     }
 
     this.#eventSource = new EventSource(this.#url.toString())
-
-    this.#broadcastDebug('Connected to event source')
 
     this.#eventSource.onmessage = (event) => {
       this.#broadcast({
@@ -206,10 +199,10 @@ export class SharedWorker {
     }
 
     this.#eventSource.onerror = (_) => {
-      this.#broadcastDebug('Eventsource error caught')
-      this.#disconnectSSE()
-      this.#connectSSE()
+      this.#broadcastDebug('Eventsource error caught, ' + _.type)
     }
+
+    return true
   }
 
   /**
@@ -232,8 +225,6 @@ export class SharedWorker {
     })
   }
 
-
-
   /**
    * Broadcast a message to all connected clients
    */
@@ -252,11 +243,11 @@ export class SharedWorker {
   /**
    * Send status message to specific port
    */
-  #sendStatusMessage(port: MessagePort, type: 'connected' | 'notconnected' | 'upgrade') {
+  #sendStatusMessage(port: MessagePort, type: 'connected' | 'disconnected' | 'upgrade') {
     port.postMessage({
       type,
       payload: {
-        version: this.#version
+        version: SharedSSEWorker.version
       }
     })
   }
