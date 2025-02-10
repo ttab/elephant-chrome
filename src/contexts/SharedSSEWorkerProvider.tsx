@@ -50,24 +50,6 @@ export const SharedSSEWorkerProvider = ({ children }: {
   }
 
   /**
-   * Send connection information to shared worker
-   */
-  const connectWorker = (worker: SharedWorker) => {
-    if (!data?.accessToken) {
-      return
-    }
-
-    worker.port.postMessage({
-      type: 'connect',
-      payload: {
-        url: repositoryEventsUrl.toString(),
-        accessToken: data?.accessToken || '',
-        version: SharedSSEWorker.version
-      }
-    })
-  }
-
-  /**
    * Reset worker and mark it as disconnected to allow reload/upgrade
    */
   const resetWorker = (msg: UpgradeMessage) => {
@@ -91,7 +73,7 @@ export const SharedSSEWorkerProvider = ({ children }: {
    */
   const onWorkerMessageEvent = (event: SharedWorkerEvent) => {
     const msg = event.data
-
+    console.log(msg)
     switch (msg?.type) {
       case 'sse':
         onServerSentEvent(msg)
@@ -177,6 +159,7 @@ export const SharedSSEWorkerProvider = ({ children }: {
       worker.port.removeEventListener('message', onWorkerMessageEvent)
       worker.port.close()
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   /**
@@ -195,7 +178,14 @@ export const SharedSSEWorkerProvider = ({ children }: {
     }
 
     if (!connected && isOnline) {
-      connectWorker(workerRef.current)
+      workerRef.current.port.postMessage({
+        type: 'connect',
+        payload: {
+          url: repositoryEventsUrl.toString(),
+          accessToken: data?.accessToken || '',
+          version: SharedSSEWorker.version
+        }
+      })
     }
   }, [connected, data?.accessToken, repositoryEventsUrl, isOnline])
 
