@@ -12,7 +12,7 @@ export type ConnectMessage = ISharedMessage<'connect', {
   accessToken: string
   url: string
 }>
-export type DisconnectMessage = ISharedMessage<'disconnect', {}>
+export type DisconnectMessage = ISharedMessage<'disconnect', never>
 
 
 // Messages to clients
@@ -194,7 +194,7 @@ export class SharedWorker {
     this.#eventSource.onmessage = (event) => {
       this.#broadcast({
         type: 'sse',
-        payload: JSON.parse(event.data as string)
+        payload: JSON.parse(event.data as string) as EventlogItem
       })
     }
 
