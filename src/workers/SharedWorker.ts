@@ -115,6 +115,7 @@ export class SharedWorker {
 
     port.start()
 
+    // Tell client whether we are connected or not
     this.#sendStatusMessage(
       port,
       (this.#eventSource) ? 'connected' : 'disconnected'
@@ -122,8 +123,7 @@ export class SharedWorker {
   }
 
   /**
-   * Handle connect request from client. This should only
-   * come from the first client connecting.
+   * Handle connect request from client.
    */
   #onConnect(msg: ConnectMessage): boolean {
     const { url: baseUrl, accessToken } = msg.payload

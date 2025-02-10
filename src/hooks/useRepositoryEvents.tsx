@@ -6,7 +6,7 @@ export const useRepositoryEvents = (eventTypes: string | string[], callback: (ev
   const context = useContext(SharedSSEWorkerContext)
 
   if (!context) {
-    throw new Error('useSharedSSEWorker must be used within a SharedSSEWorkerProvider')
+    throw new Error('useRepositoryEvents must be used within a SharedSSEWorkerProvider')
   }
 
   const eventTypesArray = (Array.isArray(eventTypes)) ? eventTypes : [eventTypes]
