@@ -92,7 +92,7 @@ export const Menu = (): JSX.Element => {
                           </SheetTrigger>
                           <SheetContent
                             side='left'
-                            className='p-3 min-h-screen focus:outline-none pb-6 max-w-[1200px] mx-auto rounded-t rounded-lg'
+                            className='p-0 min-h-screen focus:outline-none pb-6 max-w-[1200px] mx-auto rounded-t rounded-lg'
                           >
                             <SheetDescription />
                             <SheetTitle className='flex flex-row gap-4 justify-between justify-items-center items-center h-14 px-4'>

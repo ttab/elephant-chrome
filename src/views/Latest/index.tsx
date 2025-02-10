@@ -68,7 +68,7 @@ export const Latest = () => {
 
 
   if (!documents.length) {
-    return <div className='min-h-screen'>Laddar...</div>
+    return <div className='min-h-screen text-center py-2'>Laddar...</div>
   }
 
   return <Content documents={documents} locale={locale} />
@@ -119,7 +119,7 @@ const Content = ({ documents, locale }: { documents: Document[], locale: string 
               })
             }}
           >
-            <div className='py-2 px-1 text-xs flex flex-col'>
+            <div className='py-2 px-3 text-xs flex flex-col'>
               <div className='font-bold'>{title}</div>
               <div className='flex gap-2 items-center w-full text-muted-foreground py-2'>
                 <div className='border border-slate-200 rounded px-1'>{itm.slugline}</div>
