@@ -29,6 +29,7 @@ export function toYjsNewsDoc(eleDoc: EleDocumentResponse, yDoc: Document | Y.Doc
   // Slate text to yjs
   const yContent = new Y.XmlText()
   yContent.applyDelta(
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     slateNodesToInsertDelta(content)
   )
   yMap.set('content', yContent)
