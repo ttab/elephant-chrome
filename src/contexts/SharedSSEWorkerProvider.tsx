@@ -73,7 +73,7 @@ export const SharedSSEWorkerProvider = ({ children }: {
    */
   const onWorkerMessageEvent = (event: SharedWorkerEvent) => {
     const msg = event.data
-    console.log(msg)
+
     switch (msg?.type) {
       case 'sse':
         onServerSentEvent(msg)
