@@ -15,6 +15,7 @@ import type {
   ConnectedMessage,
   UpgradeMessage
 } from 'src/workers/SharedWorker'
+import { useIsOnline } from '@/hooks'
 
 // Constants
 const WORKER_SCRIPT_URL = '/workers/sharedSSEWorker.js'
@@ -33,6 +34,7 @@ export const SharedSSEWorkerProvider = ({ children }: {
   const workerRef = useRef<SharedWorker | null>(null)
   const subscribers = useRef<Record<string, ((data: EventlogItem) => void)[]>>({})
   const [connected, setConnected] = useState<boolean>(false)
+  const isOnline = useIsOnline()
 
   /**
    * Loads the shared worker
@@ -175,19 +177,25 @@ export const SharedSSEWorkerProvider = ({ children }: {
     }
   }, [])
 
-
   /**
-   * Send access token to shared worker when it changes
+   * When not connected and browser is online, connect worker to event source
    */
   useEffect(() => {
-    if (!repositoryEventsUrl || !data?.accessToken) {
+    if (!workerRef.current || !repositoryEventsUrl || !data?.accessToken) {
       return
     }
 
-    if (!connected && workerRef.current) {
+    if (connected && !isOnline) {
+      workerRef.current.port.postMessage({
+        type: 'disconnect',
+        payload: {}
+      })
+    }
+
+    if (!connected && isOnline) {
       connectWorker(workerRef.current)
     }
-  }, [connected, data?.accessToken, repositoryEventsUrl])
+  }, [connected, data?.accessToken, repositoryEventsUrl, isOnline])
 
   return (
     <SharedSSEWorkerContext.Provider value={{ subscribe }}>
