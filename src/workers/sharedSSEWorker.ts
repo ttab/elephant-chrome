@@ -1,3 +1,4 @@
+/// <reference types="@types/sharedworker" />
 import { SharedWorker } from './SharedWorker'
 
 declare let self: SharedWorkerGlobalScope
