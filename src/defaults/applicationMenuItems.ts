@@ -61,6 +61,13 @@ export const applicationMenu: ApplicationMenu = {
           label: 'Telegram',
           icon: Cable,
           color: '#FF6347'
+        },
+        {
+          name: 'Latest',
+          label: 'Senast utgivet',
+          icon: UtilityPole,
+          color: '#996633',
+          target: 'sheet'
         }
       ]
     },
@@ -79,13 +86,6 @@ export const applicationMenu: ApplicationMenu = {
           label: 'Sök',
           icon: SearchIcon,
           color: '#F06F21'
-        },
-        {
-          name: 'Latest',
-          label: 'Senast utgivet',
-          icon: UtilityPole,
-          color: '#996633',
-          target: 'sheet'
         }
       ]
     }
