@@ -14,10 +14,10 @@ export const useIsOnline = (): boolean => {
     window.addEventListener('offline', onOffline)
     window.addEventListener('online', onOnline)
 
-    return (() => {
+    return () => {
       window.removeEventListener('offline', onOffline)
       window.removeEventListener('online', onOnline)
-    })
+    }
   }, [])
 
   return isOnline
