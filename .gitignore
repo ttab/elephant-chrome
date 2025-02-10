@@ -38,3 +38,7 @@ flake.lock
 tsconfig.node.tsbuildinfo
 tsconfig.tsbuildinfo
 .eslintcache
+
+
+# Generated assets
+public/workers/*
