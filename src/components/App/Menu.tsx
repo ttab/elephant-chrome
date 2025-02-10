@@ -91,7 +91,7 @@ export const Menu = (): JSX.Element => {
                             </div>
                           </SheetTrigger>
                           <SheetContent
-                            side='right'
+                            side='left'
                             className='p-3 min-h-screen focus:outline-none pb-6 max-w-[1200px] mx-auto rounded-t rounded-lg'
                           >
                             <SheetTitle />
