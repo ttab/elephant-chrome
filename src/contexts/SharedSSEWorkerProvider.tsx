@@ -79,6 +79,8 @@ export const SharedSSEWorkerProvider = ({ children }: {
       workerRef.current = null
     }
 
+    // Using magic number to allow connections to close, should not be
+    // needed in normal circumstances, but recommended.
     setTimeout(() => {
       loadWorker()
     }, 250)
