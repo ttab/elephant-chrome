@@ -17,7 +17,7 @@ import { applicationMenu, type ApplicationMenuItem, type MenuGroups } from '@/de
 import { useUserTracker } from '@/hooks/useUserTracker'
 import { cn } from '@ttab/elephant-ui/utils'
 import { useRef } from 'react'
-import { Latest } from '@/views/Latest'
+import { Latest as LatestComponent } from '@/views/Latest'
 
 const BASE_URL = import.meta.env.BASE_URL
 const hasUserDoc = (obj: object | undefined) => obj && Object.keys(obj).length > 0
@@ -26,6 +26,9 @@ export const Menu = (): JSX.Element => {
   const { data } = useSession()
   const triggerRef = useRef<HTMLButtonElement>(null)
   const [user] = useUserTracker<object>('')
+  const sheetComponents: Record<string, React.ComponentType> = {
+    Latest: LatestComponent
+  }
 
   return (
     <Sheet>
@@ -63,6 +66,8 @@ export const Menu = (): JSX.Element => {
                 <div key={group.name}>
                   {group.items.map((item: ApplicationMenuItem) => {
                     if (item.target === 'sheet') {
+                      const SheetItemComponent = sheetComponents[item.name]
+
                       return (
                         <Sheet key={item.name}>
                           <SheetTrigger ref={triggerRef} className='rounded-md hover:bg-gray-100 h-9 px-3 w-full'>
@@ -77,7 +82,7 @@ export const Menu = (): JSX.Element => {
                           >
                             <SheetTitle />
                             <SheetDescription />
-                            <Latest />
+                            {SheetItemComponent && <SheetItemComponent />}
                           </SheetContent>
                         </Sheet>
                       )
