@@ -1,16 +1,18 @@
-import { useEffect, useContext } from 'react'
-import { RepositoryEventsProviderContext } from '../contexts/RepositoryEventsProvider'
+import { useContext, useEffect } from 'react'
+import { SharedSSEWorkerContext } from '@/contexts/SharedSSEWorkerProvider'
 import type { EventlogItem } from '@ttab/elephant-api/repository'
 
-export const useRepositoryEvents = (eventType: string | string[], callback: (data: EventlogItem) => void): void => {
-  const { subscribe, unsubscribe } = useContext(RepositoryEventsProviderContext)
-  const eventTypesArray = (Array.isArray(eventType)) ? eventType : [eventType]
+export const useRepositoryEvents = (eventTypes: string | string[], callback: (event: EventlogItem) => void) => {
+  const context = useContext(SharedSSEWorkerContext)
+
+  if (!context) {
+    throw new Error('useRepositoryEvents must be used within a SharedSSEWorkerProvider')
+  }
+
+  const eventTypesArray = (Array.isArray(eventTypes)) ? eventTypes : [eventTypes]
 
   useEffect(() => {
-    subscribe(eventTypesArray, callback)
-
-    return () => {
-      unsubscribe(eventTypesArray, callback)
-    }
-  }, [eventType, callback, subscribe, unsubscribe])
+    const unsubscribe = context.subscribe(eventTypesArray, callback)
+    return () => unsubscribe()
+  }, [eventTypes, callback])
 }

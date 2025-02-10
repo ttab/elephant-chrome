@@ -5,7 +5,7 @@
  * If this is used much this could be further enhanced as migration scripts
  * for each version.
  */
-export const indexedDBSpecification = {
+export const IndexedDB = {
   name: 'elephant-db',
   version: 45,
   objectStores: [
@@ -18,4 +18,8 @@ export const indexedDBSpecification = {
     '__meta',
     'languages'
   ]
+}
+
+export const SharedSSEWorker = {
+  version: 1
 }

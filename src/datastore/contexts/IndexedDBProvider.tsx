@@ -5,7 +5,7 @@ import React, {
   useCallback
 } from 'react'
 
-import { indexedDBSpecification as specification } from '../../defaults/indexedDBSpecification'
+import { IndexedDB as specification } from '../../defaults/sharedResources'
 
 export interface IndexedDBContextType {
   db: IDBDatabase | null
