@@ -94,19 +94,22 @@ export const Menu = (): JSX.Element => {
                             side='left'
                             className='p-0 min-h-screen focus:outline-none pb-6 max-w-[1200px] mx-auto rounded-t rounded-lg'
                           >
-                            <SheetDescription />
-                            <SheetTitle className='flex flex-row gap-4 justify-between justify-items-center items-center h-14 px-4'>
-                              <SheetClose className='rounded-md hover:bg-gray-100 w-9 h-9 flex items-center justify-center'>
-                                <X strokeWidth={2.25} />
-                              </SheetClose>
-                              <SheetClose asChild>
-                                <div className='flex items-center gap-2'>
-                                  <div>{item.label}</div>
-                                  <item.icon strokeWidth={2.25} size={18} color={item.color} />
-                                </div>
-                              </SheetClose>
-                              <ThemeSwitcher />
-                            </SheetTitle>
+                            <SheetHeader>
+                              <SheetDescription />
+                              <SheetTitle className='flex flex-row gap-4 justify-between justify-items-center items-center h-14 px-4 border-b'>
+                                <SheetClose className='rounded-md hover:bg-gray-100 w-9 h-9 flex items-center justify-center'>
+                                  <X strokeWidth={2.25} />
+                                </SheetClose>
+                                <SheetClose asChild>
+                                  <div className='flex items-center gap-2'>
+                                    <div>{item.label}</div>
+                                    <item.icon strokeWidth={2.25} size={18} color={item.color} />
+                                  </div>
+                                </SheetClose>
+                                <ThemeSwitcher />
+                              </SheetTitle>
+                            </SheetHeader>
+
                             {SheetItemComponent && <SheetItemComponent />}
                           </SheetContent>
                         </Sheet>
