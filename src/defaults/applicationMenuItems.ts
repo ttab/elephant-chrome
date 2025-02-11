@@ -1,10 +1,12 @@
-import { Cable, BriefcaseBusiness, CalendarDaysIcon, CalendarPlus2, SearchIcon, ZapIcon, type LucideIcon, EarthIcon } from '@ttab/elephant-ui/icons'
+import { Cable, BriefcaseBusiness, CalendarDaysIcon, CalendarPlus2, SearchIcon, ZapIcon, type LucideIcon, EarthIcon, UtilityPole } from '@ttab/elephant-ui/icons'
 import type { ViewProps, View } from '../types'
 
 /**
  * Defines a menu item in the main application menu.
  *
  * If target is dialog it will open in a dialog, default is a default view.
+ *
+ * If target is sheet it will open in a Sheet
  *
  * The property inject suggests that if the users active view is of this type
  * we want this doucment injected into the view/dialog. This is useful when
@@ -20,7 +22,7 @@ export interface ApplicationMenuItem {
   name: View
   label: string
   icon: LucideIcon
-  target?: 'view' | 'dialog'
+  target?: 'view' | 'dialog' | 'sheet'
   color?: string
   props?: ViewProps
 }
@@ -59,6 +61,13 @@ export const applicationMenu: ApplicationMenu = {
           label: 'Telegram',
           icon: Cable,
           color: '#FF6347'
+        },
+        {
+          name: 'Latest',
+          label: 'Senast utgivet',
+          icon: UtilityPole,
+          color: '#996633',
+          target: 'sheet'
         }
       ]
     },

@@ -18,9 +18,10 @@ const defaultStatuses = ['draft', 'done', 'approved', 'withheld']
  * Fetch all assignments in specific date as Block[] extended with some planning level data.
  * Allows optional filtering by type and optional sorting into buckets.
  */
-export const useAssignments = ({ date, type, slots }: {
+export const useAssignments = ({ date, type, slots, status }: {
   date: Date | string
   type?: string
+  status?: string[]
   slots?: {
     key: string
     label: string
@@ -42,7 +43,7 @@ export const useAssignments = ({ date, type, slots }: {
 
   const filtersWithDefaults = {
     ...filters,
-    status: filters?.status?.length ? filters.status : defaultStatuses
+    status: status ? status : filters?.status?.length ? filters.status : defaultStatuses
   }
 
   const filteredData = filterAssignments(data, filtersWithDefaults)
