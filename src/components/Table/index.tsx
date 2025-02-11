@@ -24,7 +24,7 @@ import { LoadingText } from '../LoadingText'
 import { Row } from './Row'
 import { useModal } from '../Modal/useModal'
 import { ModalContent } from '@/views/Wires/components'
-import type { Wire } from '@/lib/index/schemas/wire'
+import type { Wire } from '@/hooks/index/lib/wires'
 
 interface TableProps<TData, TValue> {
   columns: Array<ColumnDef<TData, TValue>>
@@ -35,7 +35,6 @@ interface TableProps<TData, TValue> {
 function isRowTypeWire<TData, TValue>(type: TableProps<TData, TValue>['type']): type is 'Wires' {
   return type === 'Wires'
 }
-
 
 function getNextTableIndex(rows: Record<string, RowType<unknown>>, selectedRowIndex: number | undefined, direction: 'ArrowUp' | 'ArrowDown'): number | undefined {
   const keys = Object.keys(rows)
@@ -71,12 +70,12 @@ export const Table = <TData, TValue>({
   const [,setDocumentStatus] = useDocumentStatus()
 
   const handlePreview = useCallback((row: RowType<unknown>): void => {
-    const originalId = (row.original as { _id: string })._id
+    const originalId = (row.original as { id: string }).id
     const source = (row.original as {
-      _source: {
+      fields: {
         'document.rel.source.uri': string[]
       }
-    })._source['document.rel.source.uri'][0]
+    }).fields['document.rel.source.uri'][0]
 
     showModal(
       <ModalContent
@@ -150,8 +149,8 @@ export const Table = <TData, TValue>({
 
           setDocumentStatus({
             name: 'approved',
-            uuid: wireRow.original._id,
-            version: BigInt(wireRow.original._source.current_version[0])
+            uuid: wireRow.original.id,
+            version: BigInt(wireRow.original.fields.current_version.values?.[0])
           }).catch((error) => console.error(error))
         }
         return
@@ -163,8 +162,8 @@ export const Table = <TData, TValue>({
 
           setDocumentStatus({
             name: 'done',
-            uuid: wireRow.original._id,
-            version: BigInt(wireRow.original._source.current_version[0])
+            uuid: wireRow.original.id,
+            version: BigInt(wireRow.original.fields.current_version.values?.[0])
           }).catch((error) => console.error(error))
         }
         return

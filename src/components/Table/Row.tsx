@@ -2,7 +2,7 @@ import { type MouseEvent } from 'react'
 import { TableRow, TableCell } from '@ttab/elephant-ui'
 import { type Row as RowType, flexRender } from '@tanstack/react-table'
 import { cn } from '@ttab/elephant-ui/utils'
-import type { Wire } from '@/lib/index/schemas/wire'
+import type { Wire } from '@/hooks/index/lib/wires'
 
 type DocumentType = 'Planning' | 'Event' | 'Assignments' | 'Search' | 'Wires'
 export const Row = ({ row, handleOpen, openDocuments, type }: {
@@ -26,8 +26,10 @@ export const Row = ({ row, handleOpen, openDocuments, type }: {
         data-[state=selected]:bg-table-selected
         ${rowDecorators}
       `}
-      data-state={((openDocuments.includes((row.original as { _id: string })?._id) && 'selected'))
-      || (type === 'Wires' && row.getIsSelected() && 'focused')}
+      data-state={((openDocuments.includes(
+        ((row.original as { _id: string })?._id) || (row.original as { id: string })?.id)
+      && 'selected'))
+    || (type === 'Wires' && row.getIsSelected() && 'focused')}
       onClick={(event: MouseEvent<HTMLTableRowElement>) => handleOpen(event, row)}
       ref={(el) => {
         if (el && row.getIsSelected()) {
@@ -57,10 +59,10 @@ function getRowDecorators(type: DocumentType, row: RowType<unknown>): string {
 
   const wireRow = row as RowType<Wire>
 
-  const done = wireRow.original?._source?.['heads.done.version']?.[0] > -1
-    && wireRow.original?._source?.['heads.done.created']?.[0]
-  const approved = wireRow.original?._source?.['heads.approved.version']?.[0] > -1
-    && wireRow.original?._source?.['heads.approved.created']?.[0]
+  const done = Number(wireRow.original?.fields?.['heads.done.version']?.values?.[0]) > -1
+    && wireRow.original?.fields?.['heads.done.created']?.values?.[0]
+  const approved = Number(wireRow.original?.fields?.['heads.approved.version']?.values?.[0]) > -1
+    && wireRow.original?.fields?.['heads.approved.created']?.values?.[0]
 
 
   if (done || approved) {

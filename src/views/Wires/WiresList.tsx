@@ -3,8 +3,8 @@ import { useQuery, useSections, useTable, useWireSources } from '@/hooks'
 
 import { Table } from '@/components/Table'
 import { wiresListColumns } from './WiresListColumns'
-import useSWR from 'swr'
-import type { Wire } from '@/lib/index/schemas/wire'
+import { useWires } from '@/hooks/index/useWires'
+import type { Wire } from '@/hooks/index/lib/wires'
 
 export const WireList = (): JSX.Element => {
   const sections = useSections()
@@ -14,27 +14,31 @@ export const WireList = (): JSX.Element => {
     .filter((_) => source?.includes(_.title))
     .map((_) => _.uri)
 
-  const { error } = useSWR<Wire[], Error>(['Wires', { source: sourceUri, size: 47, page }])
   const columns = useMemo(() => wiresListColumns({ sections }), [sections])
+
+  useWires({
+    source: sourceUri,
+    page: typeof page === 'string'
+      ? parseInt(page)
+      : undefined
+  })
 
   const onRowSelected = useCallback((row?: Wire) => {
     if (row) {
-      console.info(`Selected planning item ${row._id}`)
+      console.info(`Selected planning item ${row.id}`)
     } else {
       console.info('Deselected row')
     }
     return row
   }, [])
 
-  const { table } = useTable()
+  const { table } = useTable<Wire>()
 
   useEffect(() => {
-    table.setGrouping(['modified'])
+    if (table) {
+      table.setGrouping(['modified'])
+    }
   }, [table])
-
-  if (error) {
-    return <pre>{error.message}</pre>
-  }
 
   return (
     <Table
