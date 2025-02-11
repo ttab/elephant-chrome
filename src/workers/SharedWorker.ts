@@ -11,6 +11,7 @@ export type ConnectMessage = ISharedMessage<'connect', {
   version: number
   accessToken: string
   url: string
+  lastEventId: string
 }>
 export type DisconnectMessage = ISharedMessage<'disconnect', never>
 
@@ -45,21 +46,6 @@ type SharedWorkerMessage = ConnectMessage
 export interface SharedWorkerEvent extends MessageEvent {
   data: SharedWorkerMessage
 }
-
-// TODO: Will be done with the refactor of IndexedDB access
-//
-// FIXME: Start reading event from last event read
-// const { lastEventId } = await IDB.get<{ lastEventId: string }>('__meta', 'repositoryEvents') || {}
-// if (lastEventId) {
-//   headers['Last-Event-ID'] = lastEventId
-// }
-//
-// FIXME: Store last read event
-// void IDB.put('__meta', {
-//   id: 'repositoryEvents',
-//   lastEventId: msg.id,
-//   timestamp: msg.timestamp
-// })
 
 export class SharedWorker {
   static instance: SharedWorker
@@ -126,7 +112,7 @@ export class SharedWorker {
    * Handle connect request from client.
    */
   #onConnect(msg: ConnectMessage): boolean {
-    const { url: baseUrl, accessToken } = msg.payload
+    const { url: baseUrl, accessToken, lastEventId } = msg.payload
 
     // If we get a new accessToken, disconnect first
     if (this.#eventSource && accessToken !== this.#accessToken) {
@@ -141,6 +127,12 @@ export class SharedWorker {
     const url = new URL(baseUrl)
     url.searchParams.set('topic', 'firehose')
     url.searchParams.set('token', accessToken)
+
+    if (lastEventId) {
+      // FIXME: This does not work... when it does remove debug broadcast
+      url.searchParams.set('lastEventId', lastEventId)
+      this.#broadcastDebug(`Starting from lastEventId ${lastEventId}: ${url.toString()}`)
+    }
 
     this.#url = url
     this.#accessToken = accessToken

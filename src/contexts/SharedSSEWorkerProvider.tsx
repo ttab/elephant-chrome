@@ -16,6 +16,7 @@ import type {
   UpgradeMessage
 } from 'src/workers/SharedWorker'
 import { useIsOnline } from '@/hooks'
+import { useIndexedDB } from '../datastore/hooks/useIndexedDB'
 
 // Constants
 const WORKER_SCRIPT_URL = '/workers/sharedSSEWorker.js'
@@ -35,6 +36,9 @@ export const SharedSSEWorkerProvider = ({ children }: {
   const subscribers = useRef<Record<string, ((data: EventlogItem) => void)[]>>({})
   const [connected, setConnected] = useState<boolean>(false)
   const isOnline = useIsOnline()
+  const { isConnected: idbIsConnected, get: getObject, put: pubObject } = useIndexedDB()
+  const [lastEventId, setLastEventId] = useState<string | null>(null)
+  const currentEventId = useRef<string | null>(null)
 
   /**
    * Loads the shared worker
@@ -105,6 +109,15 @@ export const SharedSSEWorkerProvider = ({ children }: {
    */
   const onServerSentEvent = (msg: SSEMessage) => {
     const { payload: sseEvent } = msg
+
+    currentEventId.current = sseEvent.id.toString()
+
+    void pubObject('__meta', {
+      id: 'repositoryEvents',
+      lastEventId: currentEventId.current,
+      timestamp: sseEvent.timestamp
+    })
+
     subscribers.current[sseEvent.type]?.forEach((callback) => {
       callback(sseEvent)
     })
@@ -150,6 +163,20 @@ export const SharedSSEWorkerProvider = ({ children }: {
   }, [])
 
   /**
+   * Get lastEventId from object store
+   */
+  useEffect(() => {
+    if (!idbIsConnected) {
+      return
+    }
+
+    void (async () => {
+      const { lastEventId } = await getObject<{ lastEventId: string }>('__meta', 'repositoryEvents') || {}
+      setLastEventId(lastEventId ?? '')
+    })()
+  }, [idbIsConnected, getObject])
+
+  /**
    *  Worker Initialization and cleanup
    */
   useEffect(() => {
@@ -166,7 +193,7 @@ export const SharedSSEWorkerProvider = ({ children }: {
    * When not connected and browser is online, connect worker to event source
    */
   useEffect(() => {
-    if (!workerRef.current || !repositoryEventsUrl || !data?.accessToken) {
+    if (!workerRef.current || !repositoryEventsUrl || !data?.accessToken || typeof lastEventId !== 'string') {
       return
     }
 
@@ -183,11 +210,13 @@ export const SharedSSEWorkerProvider = ({ children }: {
         payload: {
           url: repositoryEventsUrl.toString(),
           accessToken: data?.accessToken || '',
-          version: SharedSSEWorker.version
+          version: SharedSSEWorker.version,
+          // Use the updated current event id if exists, otherwise lastEventId
+          lastEventId: currentEventId.current || lastEventId || ''
         }
       })
     }
-  }, [connected, data?.accessToken, repositoryEventsUrl, isOnline])
+  }, [connected, data?.accessToken, repositoryEventsUrl, isOnline, lastEventId])
 
   return (
     <SharedSSEWorkerContext.Provider value={{ subscribe }}>
