@@ -1,10 +1,10 @@
 import { useContext } from 'react'
 import {
   IndexedDBContext,
-  type IndexedDBContextType
+  type IndexedDBContextInterface
 } from '../contexts/IndexedDBProvider'
 
-export const useIndexedDB = (): IndexedDBContextType => {
+export const useIndexedDB = (): IndexedDBContextInterface => {
   const context = useContext(IndexedDBContext)
 
   if (context === undefined) {

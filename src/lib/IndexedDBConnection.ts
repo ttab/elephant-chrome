@@ -1,36 +1,86 @@
+export interface IndexedDBSpecification {
+  name: string
+  migrations: Array<{
+    (db: IDBDatabase): void
+  }>
+}
 
 export class IndexedDBConnection {
   readonly #name: string = ''
-  readonly #version: number = 1
+  readonly #version: number = 0
+  readonly #specification: IndexedDBSpecification | null = null
   #db: IDBDatabase | null = null
   #onVersionChange: (() => void) | null = null
-  #onUpgradeNeeded: ((db: IDBDatabase, version: number) => void) | null = null
 
-  constructor(storeName: string, version: number) {
-    this.#name = storeName
-    this.#version = version
+  constructor(spec: IndexedDBSpecification) {
+    this.#name = spec.name
+    this.#version = spec.migrations.length + 1
+    this.#specification = spec
   }
 
+  /**
+   * Open the IndexedDB database without specifying a version to get current version.
+   * If the version is 1 it was created with this call.
+   */
+  #currentVersion(): Promise<number> {
+    return new Promise((resolve) => {
+      const request = indexedDB.open(this.#name)
+
+      request.onsuccess = () => {
+        const db = request.result
+        const version = db.version
+        db.close()
+
+        resolve(version)
+      }
+
+      request.onerror = () => {
+        throw new Error(request.error?.message || `Failed checking migration index of ${this.#name}, unrecoverable error`)
+      }
+    })
+  }
+
+  /**
+   * Run migrations
+   */
+  #migrate(db: IDBDatabase, fromMigration: number): void {
+    for (const migrate of (this.#specification?.migrations || []).slice(fromMigration)) {
+      migrate(db)
+    }
+  }
+
+  /**
+   * Delete database
+   */
+  async #deleteDatabase(): Promise<void> {
+    return new Promise((resolve, reject) => {
+      const request = indexedDB.deleteDatabase(this.#name)
+
+      request.onerror = () => {
+        reject(new Error(request.error?.message || `Failed deleting ${this.#name}, unrecoverable error`))
+      }
+
+      request.onsuccess = () => {
+        resolve()
+      }
+    })
+  }
+
+  /**
+   * Open the IndexedDB database and upgrade if necessary
+   */
   async open(): Promise<IDBDatabase | null> {
     if (this.#db) {
       console.warn(`IndexedDb ${this.#name} version ${this.#version} is already opened`)
       return this.#db
     }
 
-    // We need to know the current version to know from where we want to migrate.
-    // If we get version 1 we assume the database needs to be initalized.
-    // This means version 2 is the first real version!
-    const fromMigration = await this.#getVersion() - 1
-
+    const fromMigration = await this.#currentVersion() - 1
     const requestPromise = new Promise<IDBDatabase | null>((resolve) => {
-      const request = indexedDB.open(this.#name, this.#version + 1)
+      const request = indexedDB.open(this.#name, this.#version)
 
       request.onupgradeneeded = () => {
-        if (typeof this.#onUpgradeNeeded === 'function') {
-          this.#onUpgradeNeeded(request.result, fromMigration)
-        } else {
-          throw new Error(`No IndexedDB upgrade callback provideed to upgrade ${this.#name} to version ${this.#version}`)
-        }
+        this.#migrate(request.result, fromMigration)
       }
 
       request.onsuccess = () => {
@@ -39,6 +89,23 @@ export class IndexedDBConnection {
       }
 
       request.onerror = () => {
+        if (request.error?.name === 'VersionError') {
+          // The wanted version is lower than what exists in browser which only
+          // should happen when earlier migrations have been removed or tampered
+          // with. We try to recover by starting over. A wee bit messy.
+          console.warn(`Deleting IndexedDB ${this.#name} to restart from scratch`)
+
+          this.#deleteDatabase().then(() => {
+            console.warn(`Trying to reinitalize IndexedDB ${this.#name}`)
+            return this.open()
+          }).then((newDb) => {
+            resolve(newDb)
+          }).catch((error) => {
+            console.error(error)
+            throw new Error(`Failed to reinitalize IndexedDB ${this.#name}, unrecoverable error`)
+          })
+        }
+
         console.error(request.error?.message || `Failed opening ${this.#name} v${this.#version}`)
         resolve(null)
       }
@@ -62,6 +129,17 @@ export class IndexedDBConnection {
     return this.#db
   }
 
+  close(): void {
+    if (this.#db) {
+      this.#db.close()
+      this.#db = null
+    }
+  }
+
+  get connected(): boolean {
+    return !!this.#db
+  }
+
   get name(): string {
     return this.#name
   }
@@ -70,81 +148,64 @@ export class IndexedDBConnection {
     return this.#version
   }
 
-  set onUpgradeNeeded(cb: (db: IDBDatabase, currentVersion: number) => void) {
-    this.#onUpgradeNeeded = cb
-  }
-
   set onVersionChange(cb: () => void) {
     this.#onVersionChange = cb
   }
 
   /**
-   * Open IndexedDB database without specifying version to get be able to get current version.
+   * Put object in a specified object store
    */
-  #getVersion(): Promise<number> {
-    return new Promise((resolve) => {
-      const request = indexedDB.open(this.#name)
+  async putObject<T>(storeName: string, value: T, key?: IDBValidKey): Promise<void> {
+    if (!this.#db) {
+      return Promise.reject(new Error(`IndexedDB ${this.#name} is not open`))
+    }
 
-      request.onsuccess = () => {
-        const db = request.result
-        const version = db.version
-        db.close()
-        resolve(version)
-      }
+    const transaction = this.#db.transaction(storeName, 'readwrite')
+    const store = transaction.objectStore(storeName)
 
-      request.onerror = () => {
-        throw new Error(request.error?.message || `Failed checking version of ${this.#name}, unrecoverable error`)
-      }
+    await new Promise<void>((resolve, reject) => {
+      const request = store.put(value, key)
+
+      request.onsuccess = () => resolve()
+      request.onerror = () => reject(request.error as Error)
+    })
+  }
+
+  /*
+   * Get object/s from specified object store
+  */
+  async getObject<T>(storeName: string, key?: IDBValidKey): Promise<T | undefined> {
+    if (!this.#db) {
+      return Promise.reject(new Error(`IndexedDB ${this.#name} is not open`))
+    }
+
+    const transaction = this.#db.transaction(storeName, 'readonly')
+    const store = transaction.objectStore(storeName)
+
+    return await new Promise<T | undefined>((resolve, reject) => {
+      const request = key ? store.get(key) : store.getAll()
+
+      request.onsuccess = () => resolve(request.result as T)
+      request.onerror = () => reject(request.error as Error)
+    })
+  }
+
+  /*
+   * Clear an object store completely
+  */
+  async clearObjects(storeName: string): Promise<void> {
+    if (!this.#db) {
+      return Promise.reject(new Error(`IndexedDB ${this.#name} is not open`))
+    }
+
+    const transaction = this.#db.transaction(storeName, 'readwrite')
+    const store = transaction.objectStore(storeName)
+
+    await new Promise<void>((resolve, reject) => {
+      const request = store.clear()
+
+      request.onsuccess = () => resolve()
+      request.onerror = () => reject(request.error as Error)
     })
   }
 }
-
-
-// async function get(store: IDBObjectStore, key?: string): Promise<unknown[]> {
-//   return await new Promise((resolve, reject) => {
-//     const request = key ? store.get(key) : store.getAll()
-
-//     request.onsuccess = (event) => {
-//       resolve((event.target as IDBRequest<unknown[]>).result)
-//     }
-
-//     request.onerror = (event) => {
-//       reject((event.target as IDBRequest)?.error as Error)
-//     }
-//   })
-// }
-
-// async function put(store: IDBObjectStore, cacheKey: string, value: unknown): Promise<boolean> {
-//   return await new Promise((resolve) => {
-//     const request = store.put(value, cacheKey)
-
-//     request.onerror = () => {
-//       resolve(false)
-//     }
-
-//     request.onsuccess = () => {
-//       resolve(true)
-//     }
-//   })
-// }
-
-// async function clear(store: IDBObjectStore): Promise<boolean> {
-//   return await new Promise((resolve) => {
-//     const request = store.clear()
-
-//     request.onerror = () => {
-//       resolve(false)
-//     }
-
-//     request.onsuccess = () => {
-//       resolve(true)
-//     }
-//   })
-// }
-
-// export const IDB = {
-//   open,
-//   get,
-//   put,
-//   clear
-// }

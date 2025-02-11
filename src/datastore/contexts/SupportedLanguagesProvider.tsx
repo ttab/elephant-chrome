@@ -21,7 +21,7 @@ export const SupportedLanguagesProvider = ({ children }: {
   const { server: { spellcheckUrl } } = useRegistry()
 
   const getOrRefreshCache = useCallback(async (): Promise<void> => {
-    if (!session?.accessToken || !spellcheckUrl || !IDB.db) {
+    if (!session?.accessToken || !spellcheckUrl || !IDB.isConnected) {
       return
     }
 

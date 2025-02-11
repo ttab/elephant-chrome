@@ -7,7 +7,6 @@ import { banner } from './lib/banner.ts'
 import { IndexedDBProvider } from './datastore/contexts/IndexedDBProvider.tsx'
 import { SupportedLanguagesProvider } from './datastore/contexts/SupportedLanguagesProvider.tsx'
 import { SharedSSEWorkerProvider } from './contexts/SharedSSEWorkerProvider.tsx'
-import { IDBProvider } from './datastore/contexts/IDBProvider.tsx'
 
 banner()
 
@@ -18,23 +17,21 @@ if (!root) {
 }
 
 ReactDOM.createRoot(root).render(
-  <IDBProvider>
-    <IndexedDBProvider>
-      <RegistryProvider>
-        <HPWebSocketProvider>
-          <SessionProvider refetchOnWindowFocus={false} basePath={`${import.meta.env.BASE_URL}/api/auth`} refetchInterval={150}>
-            <SharedSSEWorkerProvider>
-              <SupportedLanguagesProvider>
-                <ThemeProvider defaultTheme='light' storageKey='ele-ui-theme'>
-                  <NavigationProvider>
-                    <App />
-                  </NavigationProvider>
-                </ThemeProvider>
-              </SupportedLanguagesProvider>
-            </SharedSSEWorkerProvider>
-          </SessionProvider>
-        </HPWebSocketProvider>
-      </RegistryProvider>
-    </IndexedDBProvider>
-  </IDBProvider>
+  <IndexedDBProvider>
+    <RegistryProvider>
+      <HPWebSocketProvider>
+        <SessionProvider refetchOnWindowFocus={false} basePath={`${import.meta.env.BASE_URL}/api/auth`} refetchInterval={150}>
+          <SharedSSEWorkerProvider>
+            <SupportedLanguagesProvider>
+              <ThemeProvider defaultTheme='light' storageKey='ele-ui-theme'>
+                <NavigationProvider>
+                  <App />
+                </NavigationProvider>
+              </ThemeProvider>
+            </SupportedLanguagesProvider>
+          </SharedSSEWorkerProvider>
+        </SessionProvider>
+      </HPWebSocketProvider>
+    </RegistryProvider>
+  </IndexedDBProvider>
 )
