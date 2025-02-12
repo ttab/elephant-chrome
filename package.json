@@ -67,7 +67,7 @@
     "redis": "^4.7.0",
     "slate": "^0.110.2",
     "slate-hyperscript": "^0.100.0",
-    "slate-react": "^0.111.0",
+    "slate-react": "^0.112.1",
     "swr": "^2.3.2",
     "vite-express": "^0.20.0",
     "yjs": "^13.6.21",
