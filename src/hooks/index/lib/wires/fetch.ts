@@ -5,6 +5,17 @@ import type { Session } from 'next-auth'
 import type { Wire } from '.'
 import { fields } from '.'
 
+/**
+ * Fetches wires from the index based on the provided parameters.
+ *
+ * @param {Object} params - The parameters for fetching wires.
+ * @param {Index | undefined} params.index - The index to query.
+ * @param {Repository | undefined} params.repository - The repository to query.
+ * @param {Session | null} params.session - The session containing the access token.
+ * @param {number} [params.page=1] - The page number to fetch.
+ * @param {string[]} [params.source] - The source array to construct the query from.
+ * @returns {Promise<Wire[] | undefined>} A promise that resolves to an array of wires or undefined.
+ */
 export async function fetch({ index, session, source, page = 1 }: {
   index: Index | undefined
   repository: Repository | undefined
@@ -36,10 +47,10 @@ export async function fetch({ index, session, source, page = 1 }: {
 }
 
 /**
- * Get query
+ * Constructs a query object from the given source array.
  *
- * @param date - The date to format for the query.
- * @returns The formatted query object.
+ * @param {string[] | undefined} source - The source array to construct the query from.
+ * @returns {QueryV1 | undefined} The constructed query object or undefined if the source is undefined.
  */
 function constructQuery(source: string[] | undefined): QueryV1 | undefined {
   if (!source || !source?.length) {
