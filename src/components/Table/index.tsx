@@ -73,9 +73,9 @@ export const Table = <TData, TValue>({
     const originalId = (row.original as { id: string }).id
     const source = (row.original as {
       fields: {
-        'document.rel.source.uri': string[]
+        'document.rel.source.uri': { values?: string[] }
       }
-    }).fields['document.rel.source.uri'][0]
+    }).fields['document.rel.source.uri'].values?.[0]
 
     showModal(
       <ModalContent
