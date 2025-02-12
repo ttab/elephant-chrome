@@ -1,10 +1,5 @@
 import type { IndexedDBSpecification } from '@/lib/IndexedDBConnection'
 
-
-export const SharedSSEWorker = {
-  version: 1
-}
-
 /**
  * IndexedDB Migration Specification.
  *
