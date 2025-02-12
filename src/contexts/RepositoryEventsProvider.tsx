@@ -6,7 +6,7 @@ import { useIndexedDB } from '../datastore/hooks/useIndexedDB'
 import type { EventlogItem } from '@ttab/elephant-api/repository'
 
 interface RPPBroadcastMessage {
-  type: 'lastEventId' | 'request' | 'sse'
+  type: 'request' | 'sse'
   payload: string | EventlogItem
 }
 
@@ -42,14 +42,14 @@ export const RepositoryEventsProvider = ({ children }: {
     broadcastChannel.current.onmessage = (event: MessageEvent<RPPBroadcastMessage>) => {
       const { type, payload } = event.data
 
-      if (type === 'lastEventId' && typeof payload === 'string') {
-        lastEventId.current = payload
-      } else if (isListening.current && type === 'request') {
+      if (isListening.current && type === 'request') {
         // Someone else is taking over
         controller.current?.abort()
         isListening.current = false
       } else if (!isListening.current && type === 'sse') {
         // Received sse from another tab/window, notify subscribers
+        lastEventId.current = (payload as EventlogItem).id.toString()
+
         if (subscribers.current[event.type]) {
           subscribers.current[event.type].forEach((callback) => {
             callback(payload as EventlogItem)
