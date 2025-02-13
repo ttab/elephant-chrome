@@ -1,11 +1,11 @@
-import { type TBElement } from '@ttab/textbit'
+import { type Element } from 'slate'
 import { Block } from '@ttab/elephant-api/newsdoc'
-import { parseTableBody, parseTableRows, type TableChild } from '../../lib/parseTableData.js'
+import { parseTableRows, revertTableRows, type TableRowElement } from './table-rows.js'
 
-export const transformTable = (element: Block): TBElement => {
+export const transformTable = (element: Block): Element => {
   const { id, data } = element
   const tableBody = data?.tbody || ''
-  const rows = parseTableBody(tableBody)
+  const rows = parseTableRows(tableBody)
 
   return {
     id: id || crypto.randomUUID(),
@@ -15,10 +15,10 @@ export const transformTable = (element: Block): TBElement => {
   }
 }
 
-export function revertTable(element: TBElement): Block {
+export function revertTable(element: Element): Block {
   const { id, children } = element
-  const tableChildren = children as TableChild[]
-  const htmlData = parseTableRows(tableChildren)
+  const tableChildren = children as TableRowElement[]
+  const htmlData = revertTableRows(tableChildren)
 
   return Block.create({
     id,
