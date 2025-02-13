@@ -49,6 +49,9 @@ export const Planning = (props: ViewProps & { document?: Y.Doc }): JSX.Element =
   const [query] = useQuery()
   const documentId = props.id || query.id
 
+  if (!documentId) {
+    return <></>
+  }
 
   return (
     <>
