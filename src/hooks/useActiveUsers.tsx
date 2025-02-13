@@ -28,7 +28,7 @@ export function useActiveUsers(documentIds: string[]): Record<string, ActiveUser
     setActiveUsers(
       getUsersforDocuments(yMap, documentIds)
     )
-  }, [context, documentIds])
+  }, [context])
 
   // Update users when user tracker document changes
   useEffect(() => {
@@ -54,7 +54,7 @@ function getUsersforDocuments(yMap: Y.Map<Y.Map<ActiveUser>>, documentIds: strin
   for (const id of documentIds) {
     const docUsers = yMap?.get(id)
     if (docUsers?.size) {
-      users[id] = Object.values(docUsers.toJSON()) as ActiveUser[]
+      users[id] = Object.values(docUsers.toJSON())
     }
   }
 

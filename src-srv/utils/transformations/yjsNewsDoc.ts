@@ -29,6 +29,7 @@ export function toYjsNewsDoc(eleDoc: EleDocumentResponse, yDoc: Document | Y.Doc
   // Slate text to yjs
   const yContent = new Y.XmlText()
   yContent.applyDelta(
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
     slateNodesToInsertDelta(content)
   )
   yMap.set('content', yContent)
@@ -55,7 +56,7 @@ export function fromYjsNewsDoc(yDoc: Y.Doc): {
   const yMap = yDoc.getMap('ele')
 
   const root = yMap.get('root') as Y.Map<unknown>
-  const { uuid, type, uri, url, title, language } = root.toJSON() as Record<string, string>
+  const { uuid, type, uri, url, title, language } = root.toJSON()
 
   const meta = (yMap.get('meta') as Y.Map<unknown>).toJSON() || {}
   const links = (yMap.get('links') as Y.Map<unknown>).toJSON() || {}
