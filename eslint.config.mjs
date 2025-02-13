@@ -10,8 +10,5 @@ export default [
         offsetTernaryExpressionsOffsetCallExpressions: false
       }]
     }
-  },
-  {
-    ignores: ['public/workers/**/*']
   }
 ]

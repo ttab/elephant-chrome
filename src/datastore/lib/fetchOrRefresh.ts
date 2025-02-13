@@ -1,4 +1,4 @@
-import { type IndexedDBContextType } from '../contexts/IndexedDBProvider'
+import { type IndexedDBContextInterface } from '../contexts/IndexedDBProvider'
 import { get } from '@/lib/index/get'
 
 /**
@@ -8,7 +8,7 @@ import { get } from '@/lib/index/get'
  * the index before returnin the objects.
  */
 export async function fetchOrRefresh<TObject, TIndexItem>(
-  IDB: IndexedDBContextType,
+  IDB: IndexedDBContextInterface,
   storeName: string,
   indexUrl: URL,
   accessToken: string,
