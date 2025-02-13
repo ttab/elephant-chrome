@@ -8,8 +8,8 @@ export function toSlateYXmlText(text: string): Y.XmlText {
   const slateText = newsDocToSlate(newsDocText || [])
 
   const yXmlText = new Y.XmlText()
-  const delta = slateNodesToInsertDelta(slateText)
-  yXmlText.applyDelta(delta)
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+  yXmlText.applyDelta(slateNodesToInsertDelta(slateText))
 
   return yXmlText
 }
