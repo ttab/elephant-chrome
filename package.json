@@ -19,7 +19,7 @@
     "start": "NODE_ENV=production node dist/src-srv/index.js",
     "start:local": "NODE_ENV=production node --env-file .env dist/src-srv/index.js",
     "lint": "eslint . --cache",
-    "tsc": "tsc --noEmit",
+    "tsc": "tsc --noEmit && tsc -p ./src-srv/tsconfig.json --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",

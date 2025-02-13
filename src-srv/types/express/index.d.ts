@@ -1,10 +1,9 @@
-import 'express'
+import type { Response as ExpressResponse } from 'express'
 import type { Session } from 'next-auth'
 
-declare module 'express' {
-  export interface Response {
-    locals: {
-      session: Session
-    }
+
+export interface Response extends ExpressResponse {
+  locals: {
+    session: Session
   }
 }
