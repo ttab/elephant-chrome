@@ -8,9 +8,6 @@ import { Commands } from '@/components/Commands'
 import { TableCommandMenu } from '@/components/Commands/TableCommand'
 import { TableProvider } from '@/contexts/TableProvider'
 import { WireList } from './WiresList'
-import { type Wire as WireType } from '@/lib/index/schemas/wire'
-import { type WireSearchParams, Wires as WiresIndex } from '@/lib/index'
-import { SWRProvider } from '@/contexts/SWRProvider'
 import { Pagination } from '@/components/Table/Pagination'
 import { Controller } from './components/Controller'
 import { useView, useHistory, useSections } from '@/hooks'
@@ -19,6 +16,7 @@ import { ViewDialogClose } from '@/components/View/ViewHeader/ViewDialogClose'
 import { ViewFocus } from '@/components/View/ViewHeader/ViewFocus'
 import { Button } from '@ttab/elephant-ui'
 import { useUserTracker } from '@/hooks/useUserTracker'
+import type { Wire } from '@/hooks/index/lib/wires'
 
 const meta: ViewMetadata = {
   name: 'Wires',
@@ -48,57 +46,55 @@ export const Wires = (): JSX.Element => {
 
   return (
     <View.Root>
-      <TableProvider<WireType> columns={columns}>
-        <SWRProvider<WireType, WireSearchParams> index={WiresIndex}>
-          <TableCommandMenu heading='Wires'>
-            <Commands />
-          </TableCommandMenu>
+      <TableProvider<Wire> columns={columns}>
+        <TableCommandMenu heading='Wires'>
+          <Commands />
+        </TableCommandMenu>
 
-          <ViewHeader.Root>
-            {isFirst && (
-              <>
-                <ViewHeader.Title
-                  title='Telegram'
-                  short='Telegram'
-                  icon={Cable}
-                  iconColor='#FF6347'
-                />
+        <ViewHeader.Root>
+          {isFirst && (
+            <>
+              <ViewHeader.Title
+                title='Telegram'
+                short='Telegram'
+                icon={Cable}
+                iconColor='#FF6347'
+              />
 
-                <Button
-                  variant='ghost'
-                  onClick={() => {
-                    if (history.state) {
-                      setWiresHistory(history.state)
-                    }
-                  }}
-                >
-                  <Save strokeWidth={1.75} size={18} />
-                </Button>
-              </>
-            )}
+              <Button
+                variant='ghost'
+                onClick={() => {
+                  if (history.state) {
+                    setWiresHistory(history.state)
+                  }
+                }}
+              >
+                <Save strokeWidth={1.75} size={18} />
+              </Button>
+            </>
+          )}
 
-            <ViewHeader.Content>
-              <Sources />
-              <div className='flex gap-2'>
-                {!isFocused && isLast && (
-                  <Controller />
-                )}
-                {!isFocused && (history.state?.contentState?.length ?? 0) > 1
-                && <ViewDialogClose onClick={() => handleClose(viewId, history)} Icon={Minus} />}
-              </div>
-            </ViewHeader.Content>
-
+          <ViewHeader.Content>
+            <Sources />
             <div className='flex gap-2'>
-              <ViewFocus viewId={viewId} />
+              {!isFocused && isLast && (
+                <Controller />
+              )}
+              {!isFocused && (history.state?.contentState?.length ?? 0) > 1
+              && <ViewDialogClose onClick={() => handleClose(viewId, history)} Icon={Minus} />}
             </div>
-          </ViewHeader.Root>
+          </ViewHeader.Content>
 
-          <View.Content>
-            <WireList />
-            <Pagination />
-          </View.Content>
+          <div className='flex gap-2'>
+            <ViewFocus viewId={viewId} />
+          </div>
+        </ViewHeader.Root>
 
-        </SWRProvider>
+        <View.Content>
+          <WireList />
+          <Pagination />
+        </View.Content>
+
       </TableProvider>
     </View.Root>
   )

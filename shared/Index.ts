@@ -16,6 +16,7 @@ interface IndexSearchOptions {
   fields?: string[]
   query?: QueryV1
   sort?: SortingV1[]
+  language?: string
   loadSource?: boolean
   loadDocument?: boolean
 }
@@ -42,14 +43,25 @@ export class Index {
     )
   }
 
-  async query({ accessToken, documentType, page = 1, size = 50, fields = [], query, sort, loadDocument = false, loadSource: source = false }: IndexSearchOptions): Promise<IndexSearchResult> {
+  async query({
+    accessToken,
+    documentType,
+    page = 1,
+    size = 50,
+    fields = [],
+    query,
+    sort,
+    loadDocument = false,
+    loadSource: source = false,
+    language = ''
+  }: IndexSearchOptions): Promise<IndexSearchResult> {
     const { from, pageSize } = pagination({ page, size })
 
     try {
       const { response } = await this.#client.query(
         {
           documentType,
-          language: 'sv-se',
+          language,
           from: BigInt(from),
           size: BigInt(pageSize),
           fields,
