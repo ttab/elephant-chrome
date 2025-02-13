@@ -5,9 +5,9 @@ import { X } from '@ttab/elephant-ui/icons'
 export const ClearFilter = (): JSX.Element | null => {
   const { table } = useTable()
 
-  const { columnFilters, globalFilter } = table.getState()
+  const state = table.getState()
 
-  return columnFilters.length || globalFilter
+  return state.columnFilters.length || state.globalFilter
     ? (
         <CommandItem
           onSelect={() => {
