@@ -1,18 +1,18 @@
 import React, { useMemo } from 'react'
 import { useHistory, useNavigation, useResize } from '@/hooks'
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@ttab/elephant-ui'
-import { useIndexedDB } from './datastore/hooks/useIndexedDB'
 import { calculateViewWidths, minimumSpaceRequired } from '@/navigation/lib'
 import type { ContentState, NavigationState, ViewProps } from './types'
 import { ViewWrapper } from './components'
 import { Navigation } from './views/Wires/components/Navigation'
 import { FaroErrorBoundary } from '@grafana/faro-react'
 import { Error } from './views'
+import { useIndexedDB } from './datastore/hooks/useIndexedDB'
 
 export const AppContent = (): JSX.Element => {
   const { setActiveView } = useHistory()
   const { state } = useNavigation()
-  const IDB = useIndexedDB()
+  const idb = useIndexedDB()
   useResize()
 
   const { components, content } = useMemo(() => {
@@ -42,7 +42,7 @@ export const AppContent = (): JSX.Element => {
       })}
 
       <Navigation visibleContent={content} />
-      <Dialog open={!IDB.db}>
+      <Dialog open={!idb?.isConnected}>
         <DialogContent className='focus-visible:outline-none'>
           <DialogHeader>
             <DialogTitle>Du behöver ladda om fönstret</DialogTitle>

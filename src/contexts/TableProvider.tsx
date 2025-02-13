@@ -18,7 +18,8 @@ import {
   useState,
   type Dispatch,
   type PropsWithChildren,
-  type SetStateAction
+  type SetStateAction,
+  useCallback
 } from 'react'
 
 export interface CommandArgs {
@@ -39,7 +40,7 @@ export interface TableProviderState<TData> {
 }
 
 const initialState = {
-  table: {},
+  table: {} as Table<unknown>,
   setData: () => {}
 } as unknown as TableProviderState<unknown>
 
@@ -50,7 +51,7 @@ export const TableProvider = <T,>({
   children,
   columns
 }: PropsWithChildren<{ columns: Array<ColumnDef<T, unknown>> }>): JSX.Element => {
-  const [data, setData] = useState<T[] | null>()
+  const [data, setData] = useState<T[] | null>(null)
 
   const [rowSelection, setRowSelection] = useState({})
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
@@ -84,11 +85,11 @@ export const TableProvider = <T,>({
     enableRowSelection: true,
     enableMultiRowSelection: false,
     enableSubRowSelection: true,
-    onRowSelectionChange: setRowSelection,
-    onGroupingChange: setGrouping,
-    onSortingChange: setSorting,
-    onColumnFiltersChange: setColumnFilters,
-    onColumnVisibilityChange: setColumnVisibility,
+    onRowSelectionChange: useCallback(setRowSelection, [setRowSelection]),
+    onGroupingChange: useCallback(setGrouping, [setGrouping]),
+    onSortingChange: useCallback(setSorting, [setSorting]),
+    onColumnFiltersChange: useCallback(setColumnFilters, [setColumnFilters]),
+    onColumnVisibilityChange: useCallback(setColumnVisibility, [setColumnVisibility]),
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
     getSortedRowModel: getSortedRowModel(),
@@ -102,9 +103,9 @@ export const TableProvider = <T,>({
     filters: columnFilters,
     selectedRow: rowSelection,
     setData,
-    loading: data === undefined,
+    loading: data == null,
     command
-  }), [table, data, command, columnFilters, rowSelection])
+  }), [table, columnFilters, rowSelection, command, data])
 
   return (
     <TableContext.Provider value={value}>

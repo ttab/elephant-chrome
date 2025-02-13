@@ -138,9 +138,6 @@ export async function fetchAssignments({ index, repository, type, requireDeliver
 }
 
 
-
-
-
 /**
  * Get query
  *

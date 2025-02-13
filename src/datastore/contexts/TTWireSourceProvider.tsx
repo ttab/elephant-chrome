@@ -27,7 +27,7 @@ export const TTWireSourceProvider = ({ children }: {
    * Get objects from objectStore, else from index and add replace objectStore objects
    */
   const getOrRefreshCache = useCallback(async (force: boolean = false): Promise<void> => {
-    if (!data?.accessToken || !indexUrl || !IDB.db) {
+    if (!data?.accessToken || !indexUrl || !IDB.isConnected) {
       return
     }
 
