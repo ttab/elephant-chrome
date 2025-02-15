@@ -62,9 +62,15 @@ export function appendAssignment({ document, inProgress, slugLine }: {
   document: Y.Doc
   inProgress?: boolean
   slugLine?: string
-}): void {
+}): number {
   // Get meta yMap
   const meta = document.getMap('ele').get('meta') as Y.Map<unknown>
+
+  // Get slugline from planning
+  const slugLineArray = meta?.get('tt/slugline') as Y.Array<unknown>
+  const slugLineYXml = slugLineArray?.get(0) as Y.Map<unknown>
+  const slugLineFromPlanning = (slugLineYXml?.get('value') as Y.XmlText)?.toString() as string || undefined
+
 
   // Check if 'core/assignment' exists
   if (!meta.has('core/assignment')) {
@@ -82,7 +88,7 @@ export function appendAssignment({ document, inProgress, slugLine }: {
   const assignment = assignmentPlanningTemplate({
     assignmentType: 'text',
     planningDate,
-    slugLine
+    slugLine: slugLine || slugLineFromPlanning
   })
 
   // Append __inProgress if needed
@@ -102,6 +108,8 @@ export function appendAssignment({ document, inProgress, slugLine }: {
 
   // Push to existing assignments
   yAssignments.push([yAssignment])
+
+  return yAssignments.length - 1
 }
 
 /**
@@ -111,7 +119,7 @@ export function appendArticle({ document, id, index, slug }: {
   document: Y.Doc
   id: string
   index: number
-  slug: string
+  slug?: string
 }): void {
   // Get meta yMap
   const meta = document.getMap('ele').get('meta') as Y.Map<unknown>

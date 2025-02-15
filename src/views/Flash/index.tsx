@@ -3,6 +3,7 @@ import { AwarenessDocument } from '@/components'
 import type { ViewMetadata, ViewProps } from '@/types'
 import { useQuery } from '@/hooks'
 import { FlashViewContent } from './FlashViewContent'
+import type { DialogViewCreate } from '@/components/DialogView'
 
 const meta: ViewMetadata = {
   name: 'Flash',
@@ -22,7 +23,7 @@ const meta: ViewMetadata = {
 
 export const Flash = (props: ViewProps & {
   document?: Y.Doc
-}): JSX.Element => {
+} & DialogViewCreate): JSX.Element => {
   const [query] = useQuery()
   const documentId = props.id || query.id
 

@@ -4,41 +4,88 @@ import {
   Section,
   View
 } from '@/components'
-import type { ViewProps } from '@/types'
+import type { DefaultValueOption, ViewProps } from '@/types'
 import { Button, ComboBox } from '@ttab/elephant-ui'
 import { CircleXIcon, ZapIcon, Tags, GanttChartSquare } from '@ttab/elephant-ui/icons'
 import { useCollaboration, useYValue, useRegistry } from '@/hooks'
 import { useSession } from 'next-auth/react'
-import { useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
+import { useCollaborationDocument } from '@/hooks/useCollaborationDocument'
+import { createDocument } from '@/lib/createYItem'
+import * as Templates from '@/defaults/templates'
 import { Prompt } from '@/components'
+import { type EleBlock } from '@/shared/types'
+import { getValueByYPath } from '@/lib/yUtils'
 import { UserMessage } from '@/components/UserMessage'
 import { Form } from '@/components/Form'
 import { useActiveAuthor } from '@/hooks/useActiveAuthor'
-import { fetch } from '@/components/DialogView/lib/fetch'
+import { fetch } from './lib/fetch'
 import type { PropsWithChildren } from 'react'
-import { FlashEditor } from './FlashEditor'
-import type { DialogViewCreate } from '@/components/DialogView'
-import { createFlash } from '@/components/DialogView/lib/createFlash'
+import type { HocuspocusProvider } from '@hocuspocus/provider'
+import type { Session } from 'next-auth'
+import type { IDBAuthor } from 'src/datastore/types'
+import type { Document } from '@ttab/elephant-api/newsdoc'
+import type * as Y from 'yjs'
 
-export const FlashViewContent = (props: ViewProps & {
+export const CreateDialogContent = (props: ViewProps & {
   documentId: string
-} & DialogViewCreate & PropsWithChildren): JSX.Element | undefined => {
-  const {
-    selectedPlanning,
-    setSelectedPlanning,
-    handleSubmit,
-    planningDocument,
-    planningId
-  } = props
-
+  handleCreate: (
+    documentId: string,
+    title: string | undefined,
+    provider: HocuspocusProvider,
+    status: string,
+    session: Session,
+    planningDocument: Y.Doc | undefined,
+    newPlanningDocument: Y.Doc | undefined,
+    timeZone: string,
+    author: Document | IDBAuthor | undefined | null
+  ) => void
+} & PropsWithChildren): JSX.Element | undefined => {
   const { provider } = useCollaboration()
   const { status, data: session } = useSession()
   const { timeZone } = useRegistry()
   const planningAwareness = useRef<(value: boolean) => void>(null)
+  const [showVerifyDialog, setShowVerifyDialog] = useState(false)
+  const [selectedPlanning, setSelectedPlanning] = useState<DefaultValueOption | undefined>(undefined)
   const [title, setTitle] = useYValue<string | undefined>('root.title', true)
+  const [, setSection] = useYValue<EleBlock | undefined>('links.core/section[0]')
   const author = useActiveAuthor()
   const { index } = useRegistry()
-  const [showVerifyDialog, setShowVerifyDialog] = useState(false)
+  const [newPlanningId, newPlanningYDoc] = useMemo(() => {
+    return createDocument({
+      template: Templates.planning,
+      inProgress: true,
+      payload: { newsvalue: '4' }
+    })
+  }, [])
+
+  // New and empty planning document for when creating new flash and planning
+  const { document: newPlanningDocument } = useCollaborationDocument({
+    documentId: newPlanningId,
+    initialDocument: newPlanningYDoc
+  })
+
+  // Existing planning document for when adding flash to existing
+  const { document: planningDocument } = useCollaborationDocument({
+    documentId: selectedPlanning?.value
+  })
+
+  useEffect(() => {
+    if (planningDocument) {
+      const [planningSection] = getValueByYPath<EleBlock>(planningDocument.getMap('ele'), 'links.core/section[0]')
+      if (planningSection) {
+        setSection(planningSection)
+      }
+    }
+  }, [planningDocument, setSection])
+
+
+  const handleSubmit = (): void => {
+    if (!planningDocument && !newPlanningDocument) {
+      return
+    }
+    setShowVerifyDialog(true)
+  }
 
   return (
     <View.Root asDialog={props.asDialog} className={props.className}>
@@ -79,15 +126,13 @@ export const FlashViewContent = (props: ViewProps & {
                   fetch={(query) => fetch(query, session, index)}
                   minSearchChars={2}
                   onSelect={(option) => {
-                    if (setSelectedPlanning) {
-                      if (option.value !== selectedPlanning?.value) {
-                        setSelectedPlanning({
-                          value: option.value,
-                          label: option.label
-                        })
-                      } else {
-                        setSelectedPlanning(undefined)
-                      }
+                    if (option.value !== selectedPlanning?.value) {
+                      setSelectedPlanning({
+                        value: option.value,
+                        label: option.label
+                      })
+                    } else {
+                      setSelectedPlanning(undefined)
                     }
                   }}
                 >
@@ -101,9 +146,7 @@ export const FlashViewContent = (props: ViewProps & {
                   className='text-muted-foreground flex h-7 w-7 p-0 data-[state=open]:bg-muted hover:bg-accent2'
                   onClick={(e) => {
                     e.preventDefault()
-                    if (setSelectedPlanning) {
-                      setSelectedPlanning(undefined)
-                    }
+                    setSelectedPlanning(undefined)
                   }}
                 >
                   <CircleXIcon size={18} strokeWidth={1.75} />
@@ -120,7 +163,7 @@ export const FlashViewContent = (props: ViewProps & {
             )}
 
 
-            <FlashEditor setTitle={setTitle} />
+            {props.children}
             <UserMessage selectedPlanning={selectedPlanning} asDialog={!!props?.asDialog} />
 
           </Form.Content>
@@ -145,26 +188,12 @@ export const FlashViewContent = (props: ViewProps & {
                     props.onDialogClose(props.documentId, title)
                   }
 
-                  createFlash(
-                    props.documentId,
-                    title,
-                    provider,
-                    status,
-                    session,
-                    planningDocument,
-                    planningId,
-                    timeZone,
-                    author
-                  )
+                  props.handleCreate(props.documentId, title, provider, status, session, planningDocument, newPlanningDocument, timeZone, author)
 
-                  if (setShowVerifyDialog) {
-                    setShowVerifyDialog(false)
-                  }
+                  setShowVerifyDialog(false)
                 }}
                 onSecondary={() => {
-                  if (setShowVerifyDialog) {
-                    setShowVerifyDialog(false)
-                  }
+                  setShowVerifyDialog(false)
                 }}
               />
             )

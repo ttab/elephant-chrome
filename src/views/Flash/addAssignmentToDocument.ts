@@ -3,11 +3,11 @@ import { getValueByYPath } from '@/lib/yUtils'
 import { toYMap } from '../../../src-srv/utils/transformations/lib/toYMap'
 import { YBlock } from '@/shared/YBlock'
 
-export function addAssignmentLinkToFlash(flashDoc: Y.Doc, assignmentId: string): void {
-  const flash = flashDoc.getMap('ele')
-  const [flashLinks] = getValueByYPath<Y.Map<Y.Array<unknown>>>(flash, 'links', true)
+export function addAssignmentLinkToDocument(document: Y.Doc, assignmentId: string): void {
+  const item = document.getMap('ele')
+  const [itemLinks] = getValueByYPath<Y.Map<Y.Array<unknown>>>(item, 'links', true)
 
-  if (!flashLinks) {
+  if (!itemLinks) {
     throw new Error('Flash document is missing links array, could not create flash')
   }
 
@@ -21,5 +21,5 @@ export function addAssignmentLinkToFlash(flashDoc: Y.Doc, assignmentId: string):
 
   const assignmentLinks = new Y.Array()
   assignmentLinks.push([assignmentLink])
-  flashLinks.set('core/assignment', assignmentLinks)
+  itemLinks.set('core/assignment', assignmentLinks)
 }

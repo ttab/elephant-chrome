@@ -2,61 +2,63 @@ import {
   ViewHeader,
   Awareness,
   Section,
-  View
+  View,
+  Newsvalue
 } from '@/components'
 import type { ViewProps } from '@/types'
 import { Button, ComboBox } from '@ttab/elephant-ui'
-import { CircleXIcon, ZapIcon, Tags, GanttChartSquare } from '@ttab/elephant-ui/icons'
-import { useCollaboration, useYValue, useRegistry } from '@/hooks'
+import { CircleXIcon, Tags, GanttChartSquare, Cable } from '@ttab/elephant-ui/icons'
+import { useCollaboration, useRegistry } from '@/hooks'
 import { useSession } from 'next-auth/react'
 import { useRef, useState } from 'react'
 import { Prompt } from '@/components'
 import { UserMessage } from '@/components/UserMessage'
 import { Form } from '@/components/Form'
-import { useActiveAuthor } from '@/hooks/useActiveAuthor'
 import { fetch } from '@/components/DialogView/lib/fetch'
 import type { PropsWithChildren } from 'react'
-import { FlashEditor } from './FlashEditor'
 import type { DialogViewCreate } from '@/components/DialogView'
-import { createFlash } from '@/components/DialogView/lib/createFlash'
+import { createArticle } from './lib/createArticle'
+import { SluglineEditable } from '@/components/DataItem/SluglineEditable'
+import type * as Y from 'yjs'
 
-export const FlashViewContent = (props: ViewProps & {
-  documentId: string
+export const WireViewContent = (props: ViewProps & {
+  document: Y.Doc
 } & DialogViewCreate & PropsWithChildren): JSX.Element | undefined => {
   const {
     selectedPlanning,
     setSelectedPlanning,
-    handleSubmit,
     planningDocument,
     planningId
   } = props
 
   const { provider } = useCollaboration()
   const { status, data: session } = useSession()
-  const { timeZone } = useRegistry()
-  const planningAwareness = useRef<(value: boolean) => void>(null)
-  const [title, setTitle] = useYValue<string | undefined>('root.title', true)
-  const author = useActiveAuthor()
-  const { index } = useRegistry()
   const [showVerifyDialog, setShowVerifyDialog] = useState(false)
+  const planningAwareness = useRef<(value: boolean) => void>(null)
+  const { index } = useRegistry()
+
+  const handleSubmit = (): void => {
+    if (!planningDocument) {
+      return
+    }
+    setShowVerifyDialog(true)
+  }
+
 
   return (
     <View.Root asDialog={props.asDialog} className={props.className}>
       <ViewHeader.Root>
-        {!props.asDialog
-        && <ViewHeader.Title title='Flash' icon={ZapIcon} iconColor='#FF5150' />}
-
         <ViewHeader.Content>
           {props.asDialog && (
             <div className='flex w-full h-full items-center space-x-2 font-bold'>
-              <ViewHeader.Title title='Skapa ny flash' icon={ZapIcon} iconColor='#FF3140' />
+              <ViewHeader.Title title='Skapa artikel från telegram' icon={Cable} iconColor='#FF6347' />
             </div>
           )}
         </ViewHeader.Content>
 
         <ViewHeader.Action onDialogClose={props.onDialogClose}>
-          {!props.asDialog && !!props.documentId
-          && <ViewHeader.RemoteUsers documentId={props.documentId} />}
+          {!props.asDialog && !!props.id
+          && <ViewHeader.RemoteUsers documentId={props.id} />}
         </ViewHeader.Action>
       </ViewHeader.Root>
 
@@ -116,11 +118,14 @@ export const FlashViewContent = (props: ViewProps & {
             && (
               <Form.Group icon={Tags}>
                 <Section />
+                <SluglineEditable
+                  path='meta.tt/slugline[0].value'
+                />
+                <Newsvalue />
               </Form.Group>
             )}
 
 
-            <FlashEditor setTitle={setTitle} />
             <UserMessage selectedPlanning={selectedPlanning} asDialog={!!props?.asDialog} />
 
           </Form.Content>
@@ -129,33 +134,32 @@ export const FlashViewContent = (props: ViewProps & {
             showVerifyDialog
             && (
               <Prompt
-                title='Skapa och skicka flash?'
+                title='Skapa artikel från telegram'
                 description={!selectedPlanning
-                  ? 'En ny planering med tillhörande uppdrag för denna flash kommer att skapas åt dig.'
-                  : `Denna flash kommer att läggas i ett nytt uppdrag i planeringen "${selectedPlanning.label}`}
+                  ? 'En ny planering med tillhörande uppdrag för denna artikel kommer att skapas åt dig.'
+                  : `Denna artikel kommer att läggas i ett nytt uppdrag i planeringen "${selectedPlanning.label}`}
                 secondaryLabel='Avbryt'
-                primaryLabel='Skicka'
+                primaryLabel='Skapa'
                 onPrimary={() => {
-                  if (!provider || !props.documentId || !provider || !session) {
+                  if (!provider || !props.id || !props.document || !provider || !session) {
                     console.error('Environment is not sane, flash cannot be created')
                     return
                   }
 
                   if (props?.onDialogClose) {
-                    props.onDialogClose(props.documentId, title)
+                    props.onDialogClose(props.id)
                   }
 
-                  createFlash(
-                    props.documentId,
-                    title,
+                  createArticle({
+                    documentId: props.id, // The article in this case
+                    document: props.document, // The article in this case
+                    title: '',
                     provider,
                     status,
                     session,
                     planningDocument,
-                    planningId,
-                    timeZone,
-                    author
-                  )
+                    planningId
+                  })
 
                   if (setShowVerifyDialog) {
                     setShowVerifyDialog(false)
@@ -173,7 +177,7 @@ export const FlashViewContent = (props: ViewProps & {
           <Form.Footer>
             <Form.Submit onSubmit={handleSubmit}>
               <div className='flex justify-end'>
-                <Button type='submit'>Skicka flash</Button>
+                <Button type='submit'>Skapa artikel från telegram</Button>
               </div>
             </Form.Submit>
           </Form.Footer>

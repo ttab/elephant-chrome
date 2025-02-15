@@ -23,8 +23,9 @@ import { GroupedRows } from './GroupedRows'
 import { LoadingText } from '../LoadingText'
 import { Row } from './Row'
 import { useModal } from '../Modal/useModal'
-import { ModalContent } from '@/views/Wires/components'
+import { PreviewSheet } from '@/views/Wires/components'
 import type { Wire } from '@/hooks/index/lib/wires'
+import { DialogView } from '../DialogView'
 
 interface TableProps<TData, TValue> {
   columns: Array<ColumnDef<TData, TValue>>
@@ -78,7 +79,7 @@ export const Table = <TData, TValue>({
     }).fields['document.rel.source.uri'].values?.[0]
 
     showModal(
-      <ModalContent
+      <PreviewSheet
         id={originalId}
         source={source}
         textOnly
@@ -118,7 +119,7 @@ export const Table = <TData, TValue>({
   }, [dispatch, state.viewRegistry, onRowSelected, origin, type, history, handlePreview])
 
   useNavigationKeys({
-    keys: ['ArrowUp', 'ArrowDown', 'Enter', 'Escape', ' ', 'l', 's'],
+    keys: ['ArrowUp', 'ArrowDown', 'Enter', 'Escape', ' ', 's', 'r', 'c'],
     onNavigation: (event) => {
       const rows = table.getRowModel().rowsById
       if (!Object.values(rows)?.length) {
@@ -143,7 +144,7 @@ export const Table = <TData, TValue>({
         return
       }
 
-      if (event.key === 'l') {
+      if (event.key === 'r') {
         if (selectedRow && isRowTypeWire<TData, TValue>(type)) {
           const wireRow = selectedRow as RowType<Wire>
 
@@ -167,6 +168,10 @@ export const Table = <TData, TValue>({
           }).catch((error) => console.error(error))
         }
         return
+      }
+
+      if (event.key === 'c') {
+        showModal(<DialogView view='Wire' onDialogClose={hideModal} />)
       }
 
       if (event.key === 'ArrowUp' || event.key === 'ArrowDown') {

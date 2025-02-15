@@ -5,8 +5,10 @@ import { FaroErrorBoundary } from '@grafana/faro-react'
 import { Error } from '@/views'
 import { useDocumentStatus } from '@/hooks/useDocumentStatus'
 import { useNavigationKeys } from '@/hooks/useNavigationKeys'
+import { useModal } from '@/components/Modal/useModal'
+import { DialogView } from '@/components/DialogView'
 
-export const ModalContent = ({ id, source, role, handleClose }: {
+export const PreviewSheet = ({ id, source, role, handleClose }: {
   id: string
   source?: string
   textOnly?: boolean
@@ -14,17 +16,25 @@ export const ModalContent = ({ id, source, role, handleClose }: {
   handleClose: () => void
 }): JSX.Element => {
   const [documentStatus, setDocumentStatus] = useDocumentStatus(id)
+  const { showModal, hideModal } = useModal()
 
   useNavigationKeys({
-    keys: ['s', 'l'],
+    keys: ['s', 'r', 'c'],
     onNavigation: (event) => {
-      if (event.key === 'l') {
+      event.stopPropagation()
+      if (event.key === 's') {
         setDocumentStatus('approved').catch((error) => console.error(error))
         return
       }
 
-      if (event.key === 's') {
+      if (event.key === 'r') {
         setDocumentStatus('done').catch((error) => console.error(error))
+        return
+      }
+
+      if (event.key === 'c') {
+        console.log('C pressed')
+        showModal(<DialogView view='Wire' onDialogClose={hideModal} />)
         return
       }
     }

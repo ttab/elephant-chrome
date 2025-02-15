@@ -6,17 +6,24 @@ import { toYMap } from '../../../src-srv/utils/transformations/lib/toYMap'
 import * as Y from 'yjs'
 import type { IDBAuthor } from 'src/datastore/types'
 
-export function addFlashToPlanning(flashDoc: Y.Doc, planningDoc: Y.Doc, assignmentId: string, timeZone: string, author: IDBAuthor): string {
-  const flash = flashDoc.getMap('ele')
-  const [flashId] = getValueByYPath<string>(flash, 'root.uuid')
-  const [flashTitle] = getValueByYPath<string>(flash, 'root.title')
-  const [flashSections] = getValueByYPath<Y.Array<unknown>>(flash, 'links.core/section', true)
+export function addDocumentToPlanning({ document, documentType, planningDocument, assignmentId, timeZone, author }: {
+  document: Y.Doc
+  documentType: 'text' | 'flash'
+  planningDocument: Y.Doc
+  assignmentId: string
+  timeZone: string
+  author: IDBAuthor | undefined
+}): string {
+  const item = document.getMap('ele')
+  const [id] = getValueByYPath<string>(item, 'root.uuid')
+  const [title] = getValueByYPath<string>(item, 'root.title')
+  const [sections] = getValueByYPath<Y.Array<unknown>>(item, 'links.core/section', true)
 
-  const planning = planningDoc.getMap('ele')
+  const planning = planningDocument.getMap('ele')
   const [planningTitle, planningRoot] = getValueByYPath<string>(planning, 'root.title')
 
 
-  if (!flashId || !flashTitle || (!planningTitle && !flashSections?.length)) {
+  if (!id || !title || (!planningTitle && !sections?.length)) {
     throw new Error('Id, title and section is missing on new flash')
   }
 
@@ -26,12 +33,12 @@ export function addFlashToPlanning(flashDoc: Y.Doc, planningDoc: Y.Doc, assignme
 
   // If no planning title exists this is a new planning
   if (!planningTitle) {
-    (planningRoot).set('title', toSlateYXmlText(flashTitle))
+    (planningRoot).set('title', toSlateYXmlText(title))
 
     // Transfer section to planning
     const [planningLinks] = getValueByYPath<Y.Map<Y.Array<unknown>>>(planning, 'links', true)
     // @ts-expect-error Typescript don't understand safeguard !flashSections?.length
-    planningLinks?.set('core/section', flashSections.clone())
+    planningLinks?.set('core/section', sections.clone())
   }
 
   // Create assignment (using given assignment id)
@@ -39,12 +46,11 @@ export function addFlashToPlanning(flashDoc: Y.Doc, planningDoc: Y.Doc, assignme
   const zuluISODate = `${new Date().toISOString().split('.')[0]}Z` // Remove ms, add Z back again
   const localISODateTime = convertToISOStringInTimeZone(dt, timeZone).slice(0, 10)
 
-
   // Create assignment block
   const eleAssignment = YBlock.create({
     id: assignmentId,
     type: 'core/assignment',
-    title: flashTitle,
+    title,
     data: {
       full_day: 'false',
       start_date: localISODateTime,
@@ -57,7 +63,7 @@ export function addFlashToPlanning(flashDoc: Y.Doc, planningDoc: Y.Doc, assignme
     meta: [
       {
         type: 'core/assignment-type',
-        value: 'flash'
+        value: documentType
       },
       {
         type: 'core/description',
@@ -68,9 +74,9 @@ export function addFlashToPlanning(flashDoc: Y.Doc, planningDoc: Y.Doc, assignme
     ],
     links: [
       {
-        type: 'core/flash',
+        type: `core/${documentType}`,
         rel: 'deliverable',
-        uuid: flashId
+        uuid: id
       },
       ...(author
         ? [{

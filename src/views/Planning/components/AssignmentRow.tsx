@@ -7,7 +7,7 @@ import { type MouseEvent, useMemo, useState, useCallback, useEffect, useRef } fr
 import { SluglineButton } from '@/components/DataItem/Slugline'
 import { useYValue } from '@/hooks/useYValue'
 import { useLink } from '@/hooks/useLink'
-import { Prompt } from './Prompt'
+import { Prompt } from '@/components'
 import { appendArticle } from '@/lib/createYItem'
 import { useCollaboration } from '@/hooks/useCollaboration'
 import { Button } from '@ttab/elephant-ui'
