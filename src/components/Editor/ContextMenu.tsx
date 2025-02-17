@@ -9,6 +9,10 @@ import { cn } from '@ttab/elephant-ui/utils'
 export const ContextMenu = ({ className }: { className?: string }): JSX.Element => {
   const { spelling } = useContextMenuHints()
 
+  if (!spelling?.suggestions) {
+    return <></>
+  }
+
   return (
     <TextbitContextMenu.Root className={cn(`
       group
@@ -28,24 +32,21 @@ export const ContextMenu = ({ className }: { className?: string }): JSX.Element 
       z-50
       `, className)}
     >
-      {!!spelling?.suggestions
-      && (
-        <ContextMenuGroup>
-          <>
-            {spelling.suggestions.length === 0
-            && <ContextMenuItem apply={() => { }}>Inga förslag</ContextMenuItem>}
-          </>
-          <>
-            {spelling.suggestions.map((suggestion) => (
-              <ContextMenuItem key={suggestion.text} apply={() => { spelling.apply(suggestion.text) }}>
-                {suggestion.text}
-                {!!suggestion.description
-                && <span className='em text-muted-foreground text-xs max-w-60 pt-1'>{suggestion.description}</span>}
-              </ContextMenuItem>
-            ))}
-          </>
-        </ContextMenuGroup>
-      )}
+      <ContextMenuGroup>
+        <>
+          {spelling.suggestions.length === 0
+          && <ContextMenuItem apply={() => { }}>Inga förslag</ContextMenuItem>}
+        </>
+        <>
+          {spelling.suggestions.map((suggestion) => (
+            <ContextMenuItem key={suggestion.text} apply={() => { spelling.apply(suggestion.text) }}>
+              {suggestion.text}
+              {!!suggestion.description
+              && <span className='em text-muted-foreground text-xs max-w-60 pt-1'>{suggestion.description}</span>}
+            </ContextMenuItem>
+          ))}
+        </>
+      </ContextMenuGroup>
     </TextbitContextMenu.Root>
   )
 }

@@ -215,7 +215,7 @@ function EditorContent({ provider, user }: {
       yjsEditor={yjsEditor}
       onSpellcheck={async (texts) => {
         if (documentLanguage) {
-          const spellingResult = await spellchecker?.check(texts, documentLanguage, supportedLanguages, session?.accessToken ?? '')
+          const spellingResult = await spellchecker?.check(texts.map(({ text }) => text), documentLanguage, supportedLanguages, session?.accessToken ?? '')
           if (spellingResult) {
             return spellingResult
           }
