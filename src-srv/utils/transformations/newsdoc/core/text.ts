@@ -85,7 +85,11 @@ function serializeNode(node: TBElement | TBText): string {
 }
 
 
-function deserializeNode(el: HTMLElement, markAttributes: Record<string, boolean> = {}): Array<TBElement | TBText> | TBElement {
+function deserializeNode(el: HTMLElement, markAttributes: Record<string, boolean> = {}): Array<TBElement | TBText> | TBElement | TBText {
+  if (el.nodeType === NodeType.TEXT_NODE) {
+    return jsx('text', markAttributes, el.textContent === '\n' ? '' : el.textContent) as unknown as TBText
+  }
+
   const nodeName = el.rawTagName?.toLowerCase()
   const nodeAttributes = { ...markAttributes }
 
@@ -111,11 +115,7 @@ function deserializeNode(el: HTMLElement, markAttributes: Record<string, boolean
 
   const children = el.childNodes
     .map((node) => {
-      if (node.nodeType === NodeType.TEXT_NODE) {
-        return jsx('text', markAttributes, el.textContent === '\n' ? '' : el.textContent) as unknown as TBText
-      } else {
-        return deserializeNode(node as HTMLElement, nodeAttributes)
-      }
+      return deserializeNode(node as HTMLElement, nodeAttributes)
     })
     .filter((el) => !!el)
     .flat()
