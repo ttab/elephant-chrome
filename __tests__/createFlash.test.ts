@@ -24,7 +24,7 @@ describe('createFlash', () => {
     return `uuid-${callCount}`
   })
 
-  // Create a reproducible date
+  // Create a reproducible date in UTC to be compatible with CI/CD and local
   const mockDate = new Date(Date.UTC(2025, 1, 17))
   vi.spyOn(global, 'Date').mockImplementation(() => mockDate)
 
@@ -39,7 +39,7 @@ describe('createFlash', () => {
     beforeAll(() => {
       const newPlanning = createDocument({
         template: Templates.planning,
-        // Flashes should have a default newsvalue,
+        // Flashplannings should have a default newsvalue,
         // set in FlashViewContent (now mocked)
         payload: {
           meta: {
@@ -74,8 +74,6 @@ describe('createFlash', () => {
           document: newPlanning[1],
           id: newPlanning[0]
         },
-        timeZone: 'Europe/Stockholm',
-        author: undefined,
         hasSelectedPlanning: false
       })
 
@@ -204,8 +202,6 @@ describe('createFlash', () => {
           document: existingPlanning[1],
           id: existingPlanning[0]
         },
-        timeZone: 'Europe/Stockholm',
-        author: undefined,
         hasSelectedPlanning: true
       })
 
@@ -276,7 +272,6 @@ describe('createFlash', () => {
         expect(flash.document.title).toEqual(ASSIGNMENT_TITLE)
 
         expect(flash.document.title).toEqual(assignmentTitle)
-        console.log(planning.document.title)
         expect(planning.document.title).toEqual(PLANNING_TITLE)
       })
     })

@@ -2,7 +2,6 @@ import { appendAssignment, appendDocumentToAssignment } from '@/lib/createYItem'
 import { createStateless, StatelessType } from '@/shared/stateless'
 import type { HocuspocusProvider } from '@hocuspocus/provider'
 import type { Session } from 'next-auth'
-import type { IDBAuthor } from 'src/datastore/types'
 import * as Y from 'yjs'
 import { getValueByYPath, toSlateYXmlText, toYStructure } from '@/lib/yUtils'
 import { createPayload } from '@/defaults/templates/lib/createPayload'
@@ -23,8 +22,6 @@ export function createFlash({
     id: string | undefined
     title?: string | undefined
   }
-  timeZone: string
-  author: IDBAuthor | undefined | null
   hasSelectedPlanning: boolean
 }): { flash: Y.Doc, planning: Y.Doc } | undefined {
   const flashEle = provider.document.getMap('ele')

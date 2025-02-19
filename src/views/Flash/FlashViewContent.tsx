@@ -13,7 +13,6 @@ import { useRef, useState } from 'react'
 import { FlashEditor } from './FlashEditor'
 import { UserMessage } from '@/components/UserMessage'
 import { Form } from '@/components/Form'
-import { useActiveAuthor } from '@/hooks/useActiveAuthor'
 import { fetch } from '@/lib/index/fetch-plannings-twirp'
 import { createFlash } from './lib/createFlash'
 import type * as Y from 'yjs'
@@ -22,24 +21,11 @@ import { CreatePrompt } from '@/components/CreatePrompt'
 export const FlashViewContent = (props: ViewProps): JSX.Element | undefined => {
   const { provider } = useCollaboration()
   const { status, data: session } = useSession()
-  const { timeZone } = useRegistry()
   const planningAwareness = useRef<(value: boolean) => void>(null)
   const [showVerifyDialog, setShowVerifyDialog] = useState(false)
   const [selectedPlanning, setSelectedPlanning] = useState<DefaultValueOption | undefined>(undefined)
   const [title, setTitle] = useYValue<string | undefined>('root.title', true)
-  // const [, setSection] = useYValue<EleBlock | undefined>('links.core/section[0]')
-  const author = useActiveAuthor({ full: false })
   const { index } = useRegistry()
-
-  /* useEffect(() => {
-    if (planningDocument) {
-      const [planningSection] = getValueByYPath<EleBlock>(planningDocument.getMap('ele'), 'links.core/section[0]')
-      if (planningSection) {
-        setSection(planningSection)
-      }
-    }
-  }, [planningDocument, setSection]) */
-
 
   const handleSubmit = (): void => {
     setShowVerifyDialog(true)
@@ -154,8 +140,6 @@ export const FlashViewContent = (props: ViewProps): JSX.Element | undefined => {
                       document: planning,
                       id: planningId
                     },
-                    timeZone,
-                    author,
                     hasSelectedPlanning: !!selectedPlanning
                   })
 

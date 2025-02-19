@@ -12,11 +12,11 @@ import { Block } from '@ttab/elephant-api/newsdoc'
 const session = { accessToken: 'abc123' } as Session
 
 
-const ASSIGNMENT_TITLE = 'Test article' // Used for assignment and article
-const PLANNING_TITLE = 'Test planning' // Used for planning
-const SLUGLINE = 'testline' // Used for planning, assignment and article
+const ASSIGNMENT_TITLE = 'Test article'
+const PLANNING_TITLE = 'Test planning'
+const SLUGLINE = 'testline'
 const SECTION = 'Inrikes'
-const NEWSVALUE = '4' // Used for planning, assignment and article
+const NEWSVALUE = '4'
 const WIRE = {
   id: 'b2208554-0c23-59ce-9895-418f6281930d',
   score: 0,
@@ -87,7 +87,7 @@ describe('createArticle', () => {
     const sendStateless = vi.fn()
 
 
-    // Create documents for tests, payload is the user for input
+    // Create documents for tests, payload is the user form input
     beforeAll(() => {
       const newPlanning = createDocument({
         template: Templates.planning
@@ -235,7 +235,7 @@ describe('createArticle', () => {
     const sendStateless = vi.fn()
 
 
-    // Create documents for tests, payload is the user for input
+    // Create documents for tests, payload is the user form input
     beforeAll(() => {
       const existingPlanning = createDocument({
         template: Templates.planning,
