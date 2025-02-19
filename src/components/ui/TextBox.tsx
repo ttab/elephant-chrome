@@ -139,7 +139,6 @@ const TextboxEditable = ({ provider, user, icon: Icon, content, singleLine, docu
           </div>
         )}
         <div className='flex-grow'>
-          {documentLanguage}
           <Textbit.Editable
             yjsEditor={yjsEditor}
             lang={documentLanguage}
