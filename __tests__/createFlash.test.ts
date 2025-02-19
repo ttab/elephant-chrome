@@ -25,7 +25,7 @@ describe('createFlash', () => {
   })
 
   // Create a reproducible date
-  const mockDate = new Date(2025, 1, 17) // January 1, 2023
+  const mockDate = new Date(Date.UTC(2025, 1, 17))
   vi.spyOn(global, 'Date').mockImplementation(() => mockDate)
 
   describe('New planning', () => {

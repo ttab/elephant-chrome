@@ -109,9 +109,9 @@ exports[`createFlash > Existing planning > Snapshots > should match planning sna
         "content": [],
         "contenttype": "",
         "data": {
-          "end_date": "2025-02-16",
+          "end_date": "2025-02-17",
           "public": "true",
-          "start_date": "2025-02-16",
+          "start_date": "2025-02-17",
           "tentative": "false",
         },
         "id": "",
@@ -150,11 +150,11 @@ exports[`createFlash > Existing planning > Snapshots > should match planning sna
         "content": [],
         "contenttype": "",
         "data": {
-          "end_date": "2025-02-16",
+          "end_date": "2025-02-17",
           "full_day": "false",
           "public": "true",
-          "start": "2025-02-16T23:00:00.000Z",
-          "start_date": "2025-02-16",
+          "start": "2025-02-17T00:00:00.000Z",
+          "start_date": "2025-02-17",
         },
         "id": "uuid-42",
         "links": [
@@ -330,9 +330,9 @@ exports[`createFlash > New planning > Snapshots > should match planning snapshot
         "content": [],
         "contenttype": "",
         "data": {
-          "end_date": "2025-02-16",
+          "end_date": "2025-02-17",
           "public": "true",
-          "start_date": "2025-02-16",
+          "start_date": "2025-02-17",
           "tentative": "false",
         },
         "id": "",
@@ -371,11 +371,11 @@ exports[`createFlash > New planning > Snapshots > should match planning snapshot
         "content": [],
         "contenttype": "",
         "data": {
-          "end_date": "2025-02-16",
+          "end_date": "2025-02-17",
           "full_day": "false",
           "public": "true",
-          "start": "2025-02-16T23:00:00.000Z",
-          "start_date": "2025-02-16",
+          "start": "2025-02-17T00:00:00.000Z",
+          "start_date": "2025-02-17",
         },
         "id": "uuid-16",
         "links": [

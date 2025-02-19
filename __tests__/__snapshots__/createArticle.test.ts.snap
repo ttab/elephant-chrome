@@ -224,9 +224,9 @@ exports[`createArticle > Existing planning > Snapshots > should match planning s
         "content": [],
         "contenttype": "",
         "data": {
-          "end_date": "2025-02-16",
+          "end_date": "2025-02-17",
           "public": "true",
-          "start_date": "2025-02-16",
+          "start_date": "2025-02-17",
           "tentative": "false",
         },
         "id": "",
@@ -283,11 +283,11 @@ exports[`createArticle > Existing planning > Snapshots > should match planning s
         "content": [],
         "contenttype": "",
         "data": {
-          "end_date": "2025-02-16",
+          "end_date": "2025-02-17",
           "full_day": "false",
           "public": "true",
-          "start": "2025-02-16T23:00:00.000Z",
-          "start_date": "2025-02-16",
+          "start": "2025-02-17T00:00:00.000Z",
+          "start_date": "2025-02-17",
         },
         "id": "uuid-56",
         "links": [
@@ -616,9 +616,9 @@ exports[`createArticle > New planning > Snapshots > should match planning snapsh
         "content": [],
         "contenttype": "",
         "data": {
-          "end_date": "2025-02-16",
+          "end_date": "2025-02-17",
           "public": "true",
-          "start_date": "2025-02-16",
+          "start_date": "2025-02-17",
           "tentative": "false",
         },
         "id": "",
@@ -675,11 +675,11 @@ exports[`createArticle > New planning > Snapshots > should match planning snapsh
         "content": [],
         "contenttype": "",
         "data": {
-          "end_date": "2025-02-16",
+          "end_date": "2025-02-17",
           "full_day": "false",
           "public": "true",
-          "start": "2025-02-16T23:00:00.000Z",
-          "start_date": "2025-02-16",
+          "start": "2025-02-17T00:00:00.000Z",
+          "start_date": "2025-02-17",
         },
         "id": "uuid-23",
         "links": [

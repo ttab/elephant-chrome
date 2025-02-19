@@ -76,8 +76,8 @@ describe('createArticle', () => {
     return `uuid-${callCount}`
   })
 
-  // Create a reproducible date
-  const mockDate = new Date(2025, 1, 17) // January 1, 2023
+  // Create a reproducible date in UTC to be compatible with CI/CD and local
+  const mockDate = new Date(Date.UTC(2025, 1, 17))
   vi.spyOn(global, 'Date').mockImplementation(() => mockDate)
 
   describe('New planning', () => {
