@@ -44,6 +44,7 @@ export const Menu = (): JSX.Element => {
       </SheetTrigger>
 
       <SheetContent
+        allowPropagationForKeys={['Escape', 'ArrowDown', 'ArrowUp']}
         onCloseAutoFocus={(event) => {
           event.preventDefault()
         }}
