@@ -10,7 +10,7 @@ import { revertTable, transformTable } from './core/table.js'
  */
 export function newsDocToSlate(content: Block[]): TBElement[] {
   if (content !== undefined && Array.isArray(content)) {
-    return content.map((element: Block) => {
+    return content.map((element: Block): TBElement => {
       switch (element.type) {
         case 'core/text':
           return transformText(element)
