@@ -1,5 +1,5 @@
 import { useCollaboration, useRegistry, useSupportedLanguages } from '@/hooks'
-import { Bold, Italic, Text, OrderedList, UnorderedList } from '@ttab/textbit-plugins'
+import { Bold, Italic, Text, OrderedList, UnorderedList, LocalizedQuotationMarks } from '@ttab/textbit-plugins'
 import Textbit, { type TBText } from '@ttab/textbit'
 import { type HocuspocusProvider } from '@hocuspocus/provider'
 import { type AwarenessUserData } from '@/contexts/CollaborationProvider'
@@ -19,7 +19,7 @@ import { getValueByYPath } from '@/lib/yUtils'
 export const FlashEditor = ({ setTitle, onValidation, validateStateRef }: {
   setTitle: (value: string | undefined) => void
 } & FormProps): JSX.Element => {
-  const plugins = [UnorderedList, OrderedList, Bold, Italic]
+  const plugins = [UnorderedList, OrderedList, Bold, Italic, LocalizedQuotationMarks]
   const { provider, synced, user } = useCollaboration()
 
   return (
@@ -88,6 +88,7 @@ function EditorContent({ provider, user, setTitle }: {
   return (
     <Textbit.Editable
       yjsEditor={yjsEditor}
+      lang={documentLanguage}
       onSpellcheck={async (texts) => {
         if (documentLanguage) {
           const spellingResult = await spellchecker?.check(texts.map(({ text }) => text), documentLanguage, supportedLanguages, session?.accessToken ?? '')
