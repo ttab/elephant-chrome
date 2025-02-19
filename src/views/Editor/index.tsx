@@ -1,45 +1,42 @@
-import { useMemo, useEffect, useState, useRef } from 'react'
+import { useEffect, useState, useRef } from 'react'
 import { AwarenessDocument, View, ViewHeader } from '@/components'
 import { Notes } from './components/Notes'
 import { PenBoxIcon } from '@ttab/elephant-ui/icons'
 
-import { createEditor } from 'slate'
-import { YjsEditor, withCursors, withYHistory, withYjs } from '@slate-yjs/core'
 import type * as Y from 'yjs'
 
 import { Textbit, useTextbit } from '@ttab/textbit'
-
+import { Bold, Italic, Link, Text, OrderedList, UnorderedList, TTVisual, Factbox, Table, LocalizedQuotationMarks } from '@ttab/textbit-plugins'
 import { ImageSearchPlugin } from '../../plugins/ImageSearch'
 import { FactboxPlugin } from '../../plugins/Factboxes'
-
-import { Bold, Italic, Link, Text, OrderedList, UnorderedList, TTVisual, Factbox, Table, LocalizedQuotationMarks } from '@ttab/textbit-plugins'
 
 import {
   useQuery,
   useCollaboration,
-  useRegistry,
   useLink,
   useYValue,
   useView,
-  useSupportedLanguages
+  useYjsEditor
 } from '@/hooks'
 import { type ViewMetadata, type ViewProps } from '@/types'
 import { EditorHeader } from './EditorHeader'
 import { type HocuspocusProvider } from '@hocuspocus/provider'
 import { type AwarenessUserData } from '@/contexts/CollaborationProvider'
-import { type YXmlText } from 'node_modules/yjs/dist/src/internals'
 import { articleDocumentTemplate, type ArticlePayload } from '@/defaults/templates/articleDocumentTemplate'
 import { createDocument } from '@/lib/createYItem'
 import { Error } from '../Error'
+
 import { ContentMenu } from '@/components/Editor/ContentMenu'
 import { Toolbar } from '@/components/Editor/Toolbar'
 import { ContextMenu } from '@/components/Editor/ContextMenu'
 import { Gutter } from '@/components/Editor/Gutter'
 import { DropMarker } from '@/components/Editor/DropMarker'
-import { useSession } from 'next-auth/react'
+
 import type { Block } from '@ttab/elephant-api/newsdoc'
 import { getValueByYPath } from '@/lib/yUtils'
+import { useOnSpellcheck } from '@/hooks/useOnSpellcheck'
 
+// Metadata definition
 const meta: ViewMetadata = {
   name: 'Editor',
   path: `${import.meta.env.BASE_URL || ''}/editor`,
@@ -56,12 +53,13 @@ const meta: ViewMetadata = {
   }
 }
 
+// Main Editor Component - Handles document initialization
 const Editor = (props: ViewProps): JSX.Element => {
   const [query] = useQuery()
   const [document, setDocument] = useState<Y.Doc | undefined>(undefined)
-
   const documentId = props.id || query.id
 
+  // Error handling for missing document
   if (!documentId || typeof documentId !== 'string') {
     return (
       <Error
@@ -71,6 +69,7 @@ const Editor = (props: ViewProps): JSX.Element => {
     )
   }
 
+  // Document creation if needed
   if (props.onDocumentCreated && !document) {
     const [, doc] = createDocument<ArticlePayload>({
       template: (id: string) => {
@@ -79,7 +78,6 @@ const Editor = (props: ViewProps): JSX.Element => {
       documentId
     })
     setDocument(doc)
-
     return <></>
   }
 
@@ -94,103 +92,130 @@ const Editor = (props: ViewProps): JSX.Element => {
   )
 }
 
+
+// Main editor wrapper after document initialization
 function EditorWrapper(props: ViewProps & {
   documentId: string
   autoFocus?: boolean
 }): JSX.Element {
-  const plugins = [UnorderedList, OrderedList, Bold, Italic, Link, TTVisual, ImageSearchPlugin, FactboxPlugin, Table, LocalizedQuotationMarks]
   const { provider, synced, user } = useCollaboration()
   const openFactboxEditor = useLink('Factbox')
   const [notes] = useYValue<Block[] | undefined>('meta.core/note')
-  const { words, characters } = useTextbit()
+
+  // Plugin configuration
+  const getConfiguredPlugins = () => {
+    const basePlugins = [
+      UnorderedList,
+      OrderedList,
+      Bold,
+      Italic,
+      Link,
+      TTVisual,
+      ImageSearchPlugin,
+      FactboxPlugin,
+      Table,
+      LocalizedQuotationMarks
+    ]
+
+    return [
+      ...basePlugins.map((initPlugin) => initPlugin()),
+      Text({
+        countCharacters: ['heading-1']
+      }),
+      Factbox({
+        onEditOriginal: (id: string) => {
+          openFactboxEditor(undefined, { id })
+        }
+      })
+    ]
+  }
 
   return (
     <View.Root>
       <Textbit.Root
         autoFocus={props.autoFocus ?? true}
-        plugins={
-          [
-            ...plugins.map((initPlugin) => initPlugin()),
-            Text({
-              countCharacters: ['heading-1']
-            }),
-            Factbox({
-              onEditOriginal: (id: string) => {
-                openFactboxEditor(undefined, { id })
-              }
-            })
-          ]
-        }
+        plugins={getConfiguredPlugins()}
         placeholders='multiple'
         className='h-screen max-h-screen flex flex-col'
       >
-        <ViewHeader.Root>
-          <ViewHeader.Title title='Editor' icon={PenBoxIcon} />
-
-          <ViewHeader.Content>
-            <EditorHeader documentId={props.documentId} />
-          </ViewHeader.Content>
-
-          <ViewHeader.Action>
-            {!!props.documentId && <ViewHeader.RemoteUsers documentId={props.documentId} />}
-          </ViewHeader.Action>
-        </ViewHeader.Root>
-
-        <View.Content className='flex flex-col max-w-[1000px]'>
-          {!!notes?.length && <div className='p-4'><Notes /></div>}
-
-          <div className='flex-grow overflow-auto pr-12 max-w-screen-xl'>
-            {!!provider && synced
-              ? <EditorContent provider={provider} user={user} />
-              : <></>}
-          </div>
-        </View.Content>
-
-        <View.Footer>
-          <div className='flex gap-2'>
-            <strong>Words:</strong>
-            <span>{words}</span>
-          </div>
-          <div className='flex gap-2'>
-            <strong>Characters:</strong>
-            <span>{characters}</span>
-          </div>
-        </View.Footer>
-
+        <EditorContainer
+          provider={provider}
+          synced={synced}
+          user={user}
+          documentId={props.documentId}
+          notes={notes}
+        />
       </Textbit.Root>
     </View.Root>
   )
 }
 
+
+// Container component that uses TextBit context
+function EditorContainer({
+  provider,
+  synced,
+  user,
+  documentId,
+  notes
+}: {
+  provider: HocuspocusProvider | undefined
+  synced: boolean
+  user: AwarenessUserData
+  documentId: string
+  notes: Block[] | undefined
+}): JSX.Element {
+  const { words, characters } = useTextbit()
+
+  return (
+    <>
+      <ViewHeader.Root>
+        <ViewHeader.Title title='Editor' icon={PenBoxIcon} />
+        <ViewHeader.Content>
+          <EditorHeader documentId={documentId} />
+        </ViewHeader.Content>
+        <ViewHeader.Action>
+          {!!documentId && <ViewHeader.RemoteUsers documentId={documentId} />}
+        </ViewHeader.Action>
+      </ViewHeader.Root>
+
+      <View.Content className='flex flex-col max-w-[1000px]'>
+        {!!notes?.length && <div className='p-4'><Notes /></div>}
+
+        <div className='flex-grow overflow-auto pr-12 max-w-screen-xl'>
+          {!!provider && synced
+            ? <EditorContent provider={provider} user={user} />
+            : <></>}
+        </div>
+      </View.Content>
+
+      <View.Footer>
+        <div className='flex gap-2'>
+          <strong>Words:</strong>
+          <span>{words}</span>
+        </div>
+        <div className='flex gap-2'>
+          <strong>Characters:</strong>
+          <span>{characters}</span>
+        </div>
+      </View.Footer>
+    </>
+  )
+}
+
+
 function EditorContent({ provider, user }: {
   provider: HocuspocusProvider
   user: AwarenessUserData
 }): JSX.Element {
-  const { data: session } = useSession()
-  const { spellchecker } = useRegistry()
   const { isActive } = useView()
   const ref = useRef<HTMLDivElement>(null)
-  const supportedLanguages = useSupportedLanguages()
+  const [documentLanguage] = getValueByYPath<string>(provider.document.getMap('ele'), 'root.language')
 
-  const yjsEditor = useMemo(() => {
-    if (!provider?.awareness) {
-      return
-    }
+  const yjsEditor = useYjsEditor(provider, user)
+  const onSpellcheck = useOnSpellcheck(documentLanguage)
 
-    const content = provider.document.getMap('ele').get('content') as YXmlText
-
-    return withYHistory(
-      withCursors(
-        withYjs(
-          createEditor(),
-          content
-        ),
-        provider.awareness,
-        { data: user as unknown as Record<string, unknown> }
-      )
-    )
-  }, [provider?.awareness, provider?.document, user])
-
+  // Handle focus on active state
   useEffect(() => {
     if (isActive && ref?.current?.dataset['state'] !== 'focused') {
       setTimeout(() => {
@@ -199,30 +224,12 @@ function EditorContent({ provider, user }: {
     }
   }, [isActive, ref])
 
-  // Connect/disconnect from provider through editor only when editor changes
-  useEffect(() => {
-    if (yjsEditor) {
-      YjsEditor.connect(yjsEditor)
-      return () => YjsEditor.disconnect(yjsEditor)
-    }
-  }, [yjsEditor])
-
-  const [documentLanguage] = getValueByYPath<string>(provider.document.getMap('ele'), 'root.language')
-
   return (
     <Textbit.Editable
       ref={ref}
       yjsEditor={yjsEditor}
       lang={documentLanguage}
-      onSpellcheck={async (texts) => {
-        if (documentLanguage) {
-          const spellingResult = await spellchecker?.check(texts.map(({ text }) => text), documentLanguage, supportedLanguages, session?.accessToken ?? '')
-          if (spellingResult) {
-            return spellingResult
-          }
-        }
-        return []
-      }}
+      onSpellcheck={onSpellcheck}
       className='outline-none
         h-full
         dark:text-slate-100
@@ -232,11 +239,9 @@ function EditorContent({ provider, user }: {
       '
     >
       <DropMarker />
-
       <Gutter>
         <ContentMenu />
       </Gutter>
-
       <Toolbar />
       <ContextMenu />
     </Textbit.Editable>
