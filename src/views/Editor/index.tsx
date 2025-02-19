@@ -28,7 +28,7 @@ import { EditorHeader } from './EditorHeader'
 import { type HocuspocusProvider } from '@hocuspocus/provider'
 import { type AwarenessUserData } from '@/contexts/CollaborationProvider'
 import { type YXmlText } from 'node_modules/yjs/dist/src/internals'
-import { articleDocumentTemplate, type ArticlePayload } from '@/defaults/templates/articleDocumentTemplate'
+import { articleDocumentTemplate } from '@/defaults/templates/articleDocumentTemplate'
 import { createDocument } from '@/lib/createYItem'
 import { Error } from '../Error'
 import { ContentMenu } from '@/components/Editor/ContentMenu'
@@ -72,7 +72,7 @@ const Editor = (props: ViewProps): JSX.Element => {
   }
 
   if (props.onDocumentCreated && !document) {
-    const [, doc] = createDocument<ArticlePayload>({
+    const [, doc] = createDocument({
       template: (id: string) => {
         return articleDocumentTemplate(id, props?.payload)
       },

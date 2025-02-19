@@ -3,6 +3,7 @@ import type { Index } from '@/shared/Index'
 import { QueryV1, BoolQueryV1, PrefixQueryV1 } from '@ttab/elephant-api/index'
 import type { Session } from 'next-auth'
 
+// TODO: Adapt and replace http query from index
 export const fetch = async (query: string, session: Session | null, index?: Index) => {
   if (!session?.accessToken || !index) {
     return []
@@ -51,7 +52,7 @@ export const fetch = async (query: string, session: Session | null, index?: Inde
   const newOptions = hits.map((planning) => {
     const id = planning.id
     const title = planning.fields['document.title']?.values?.[0]
-    const newsvalue = NewsvalueMap[planning.fields['document.meta.core_newsvalue.value']?.values?.[0]]
+    const newsvalue = NewsvalueMap[planning.fields['document.meta.core_newsvalue.value']?.values?.[0]] || {}
 
     const info = [
       planning.fields['document.meta.tt_slugline.value']?.values?.[0],

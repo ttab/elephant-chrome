@@ -2,7 +2,7 @@ import { type Block } from '@ttab/elephant-api/newsdoc'
 import type * as views from '@/views'
 import { type RpcError } from '@protobuf-ts/runtime-rpc'
 import { type LucideIcon } from '@ttab/elephant-ui/icons'
-import { type ArticlePayload } from '@/defaults/templates/articleDocumentTemplate'
+import type { TemplatePayload } from '@/defaults/templates'
 
 export enum NavigationActionType {
   SET = 'set',
@@ -74,7 +74,7 @@ export interface ViewProps {
   from?: string
   source?: string
   className?: string
-  payload?: ArticlePayload
+  payload?: TemplatePayload
   autoFocus?: boolean
 }
 

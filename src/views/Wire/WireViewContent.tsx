@@ -3,47 +3,39 @@ import {
   Awareness,
   Section,
   View,
-  Newsvalue
+  Newsvalue,
+  Title
 } from '@/components'
 import type { ViewProps } from '@/types'
-import { Button, ComboBox } from '@ttab/elephant-ui'
-import { CircleXIcon, Tags, GanttChartSquare, Cable } from '@ttab/elephant-ui/icons'
+import type { DefaultValueOption } from '@/types'
+import { Button, ComboBox, Input } from '@ttab/elephant-ui'
+import { CircleXIcon, Tags, GanttChartSquare, Cable, BriefcaseBusiness } from '@ttab/elephant-ui/icons'
 import { useCollaboration, useRegistry } from '@/hooks'
 import { useSession } from 'next-auth/react'
 import { useRef, useState } from 'react'
-import { Prompt } from '@/components'
 import { UserMessage } from '@/components/UserMessage'
 import { Form } from '@/components/Form'
-import { fetch } from '@/components/DialogView/lib/fetch'
-import type { PropsWithChildren } from 'react'
-import type { DialogViewCreate } from '@/components/DialogView'
+import { fetch } from '@/lib/index/fetch-plannings-twirp'
 import { createArticle } from './lib/createArticle'
 import { SluglineEditable } from '@/components/DataItem/SluglineEditable'
 import type * as Y from 'yjs'
+import { CreatePrompt } from '@/components/CreatePrompt'
+import type { Wire as WireType } from '@/hooks/index/lib/wires'
 
 export const WireViewContent = (props: ViewProps & {
-  document: Y.Doc
-} & DialogViewCreate & PropsWithChildren): JSX.Element | undefined => {
-  const {
-    selectedPlanning,
-    setSelectedPlanning,
-    planningDocument,
-    planningId
-  } = props
-
+  wire: WireType
+}): JSX.Element | undefined => {
   const { provider } = useCollaboration()
   const { status, data: session } = useSession()
   const [showVerifyDialog, setShowVerifyDialog] = useState(false)
+  const [selectedPlanning, setSelectedPlanning] = useState<DefaultValueOption | undefined>(undefined)
   const planningAwareness = useRef<(value: boolean) => void>(null)
+  const planningTitleRef = useRef<HTMLInputElement>(null)
   const { index } = useRegistry()
 
   const handleSubmit = (): void => {
-    if (!planningDocument) {
-      return
-    }
     setShowVerifyDialog(true)
   }
-
 
   return (
     <View.Root asDialog={props.asDialog} className={props.className}>
@@ -65,6 +57,15 @@ export const WireViewContent = (props: ViewProps & {
       <View.Content>
         <Form.Root asDialog={props.asDialog}>
           <Form.Content>
+            <Form.Group icon={Cable}>
+              <div className='w-full'>
+                <Input
+                  className='pl-0 pt-2 h-8 text-medium border-0'
+                  readOnly
+                  value={props.wire.fields['document.title'].values?.[0]}
+                />
+              </div>
+            </Form.Group>
             <Form.Group icon={GanttChartSquare}>
               <Awareness name='FlashPlanningItem' ref={planningAwareness}>
                 <ComboBox
@@ -98,18 +99,21 @@ export const WireViewContent = (props: ViewProps & {
 
               {!!selectedPlanning
               && (
-                <Button
-                  variant='ghost'
-                  className='text-muted-foreground flex h-7 w-7 p-0 data-[state=open]:bg-muted hover:bg-accent2'
-                  onClick={(e) => {
-                    e.preventDefault()
-                    if (setSelectedPlanning) {
-                      setSelectedPlanning(undefined)
-                    }
-                  }}
-                >
-                  <CircleXIcon size={18} strokeWidth={1.75} />
-                </Button>
+                <>
+                  <Button
+                    variant='ghost'
+                    asChild
+                    className='text-muted-foreground flex size-4 p-0 data-[state=open]:bg-muted hover:bg-accent2'
+                    onClick={(e) => {
+                      e.preventDefault()
+                      if (setSelectedPlanning) {
+                        setSelectedPlanning(undefined)
+                      }
+                    }}
+                  >
+                    <CircleXIcon size={18} strokeWidth={1.75} />
+                  </Button>
+                </>
               )}
             </Form.Group>
 
@@ -123,9 +127,27 @@ export const WireViewContent = (props: ViewProps & {
                 />
                 <Newsvalue />
               </Form.Group>
+
+
+            )}
+            {!selectedPlanning
+            && (
+              <Form.Group icon={GanttChartSquare}>
+                <>
+                  <Input
+                    className='pt-2 h-8 text-medium placeholder:text-[#5D709F] placeholder-shown:border-[#5D709F]'
+                    placeholder='Planeringstitel'
+                    ref={planningTitleRef}
+                  />
+                </>
+              </Form.Group>
             )}
 
-
+            <Form.Group icon={BriefcaseBusiness}>
+              <Title
+                placeholder='Uppdragstitel'
+              />
+            </Form.Group>
             <UserMessage selectedPlanning={selectedPlanning} asDialog={!!props?.asDialog} />
 
           </Form.Content>
@@ -133,16 +155,17 @@ export const WireViewContent = (props: ViewProps & {
           {
             showVerifyDialog
             && (
-              <Prompt
+              <CreatePrompt
                 title='Skapa artikel från telegram'
                 description={!selectedPlanning
                   ? 'En ny planering med tillhörande uppdrag för denna artikel kommer att skapas åt dig.'
                   : `Denna artikel kommer att läggas i ett nytt uppdrag i planeringen "${selectedPlanning.label}`}
                 secondaryLabel='Avbryt'
                 primaryLabel='Skapa'
-                onPrimary={() => {
-                  if (!provider || !props.id || !props.document || !provider || !session) {
-                    console.error('Environment is not sane, flash cannot be created')
+                selectedPlanning={selectedPlanning}
+                onPrimary={(planning: Y.Doc | undefined, planningId: string | undefined) => {
+                  if (!provider || !props.id || !session) {
+                    console.error('Environment is not sane, article cannot be created')
                     return
                   }
 
@@ -151,16 +174,17 @@ export const WireViewContent = (props: ViewProps & {
                   }
 
                   createArticle({
-                    documentId: props.id, // The article in this case
-                    document: props.document, // The article in this case
-                    title: '',
                     provider,
                     status,
                     session,
-                    planningDocument,
-                    planningId
+                    planning: {
+                      document: planning,
+                      id: planningId,
+                      title: planningTitleRef.current?.value
+                    },
+                    wire: props.wire,
+                    hasSelectedPlanning: !!selectedPlanning
                   })
-
                   if (setShowVerifyDialog) {
                     setShowVerifyDialog(false)
                   }

@@ -53,7 +53,8 @@ export const AssignmentTable = ({ asDialog = false }: {
       inProgress: true,
       slugLine: (!slugLines?.includes(planningSlugLine || ''))
         ? planningSlugLine
-        : undefined
+        : undefined,
+      type: 'text'
     })
   }
 

@@ -4,6 +4,7 @@ import { Block, type Document } from '@ttab/elephant-api/newsdoc'
 import { toYMap } from '../../src-srv/utils/transformations/lib/toYMap'
 import { toGroupedNewsDoc, group } from '../../src-srv/utils/transformations/groupedNewsDoc'
 import { toYjsNewsDoc } from '../../src-srv/utils/transformations/yjsNewsDoc'
+import type { Wire } from '@/hooks/index/lib/wires'
 
 /**
 * General function to create a new document as Y.Doc from a template
@@ -58,19 +59,27 @@ export function createDocument<T>({
 * and append it to the meta yMap
 * @returns void
 */
-export function appendAssignment({ document, inProgress, slugLine }: {
+export function appendAssignment({
+  document,
+  type,
+  inProgress,
+  slugLine,
+  title = 'Namnlöst uppdrag',
+  wire
+}: {
   document: Y.Doc
+  type: 'text' | 'flash'
   inProgress?: boolean
   slugLine?: string
+  title?: string
+  wire?: Wire
 }): number {
-  // Get meta yMap
   const meta = document.getMap('ele').get('meta') as Y.Map<unknown>
 
   // Get slugline from planning
   const slugLineArray = meta?.get('tt/slugline') as Y.Array<unknown>
   const slugLineYXml = slugLineArray?.get(0) as Y.Map<unknown>
   const slugLineFromPlanning = (slugLineYXml?.get('value') as Y.XmlText)?.toString() as string || undefined
-
 
   // Check if 'core/assignment' exists
   if (!meta.has('core/assignment')) {
@@ -86,9 +95,11 @@ export function appendAssignment({ document, inProgress, slugLine }: {
 
   // Create new assignment from template
   const assignment = assignmentPlanningTemplate({
-    assignmentType: 'text',
+    assignmentType: type,
     planningDate,
-    slugLine: slugLine || slugLineFromPlanning
+    slugLine: slugLine || slugLineFromPlanning,
+    title: title,
+    wire
   })
 
   // Append __inProgress if needed
@@ -115,11 +126,12 @@ export function appendAssignment({ document, inProgress, slugLine }: {
 /**
 * Specific function to create a new article in Y.Doc as Y.Map from a template
 */
-export function appendArticle({ document, id, index, slug }: {
+export function appendDocumentToAssignment({ document, id, index, slug, type }: {
   document: Y.Doc
   id: string
   index: number
   slug?: string
+  type: 'flash' | 'article'
 }): void {
   // Get meta yMap
   const meta = document.getMap('ele').get('meta') as Y.Map<unknown>
@@ -139,14 +151,14 @@ export function appendArticle({ document, id, index, slug }: {
 
   // Create new article from template
   const article = Block.create({
-    type: 'core/article',
+    type: `core/${type}`,
     uuid: id,
     rel: 'deliverable',
     title: slug
   })
 
   // Group article
-  const [groupedArticle] = group([article], 'type')['core/article']
+  const [groupedArticle] = group([article], 'type')[`core/${type}`]
 
   // Convert to YMap
   const yArticle = toYMap(

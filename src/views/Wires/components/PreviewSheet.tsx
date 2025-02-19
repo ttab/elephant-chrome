@@ -2,21 +2,23 @@ import { Badge, SheetClose, ToggleGroup, ToggleGroupItem } from '@ttab/elephant-
 import { Check, Save, X } from '@ttab/elephant-ui/icons'
 import { Editor } from '../../../components/PlainEditor'
 import { FaroErrorBoundary } from '@grafana/faro-react'
-import { Error } from '@/views'
+import { Error, Wire } from '@/views'
 import { useDocumentStatus } from '@/hooks/useDocumentStatus'
 import { useNavigationKeys } from '@/hooks/useNavigationKeys'
 import { useModal } from '@/components/Modal/useModal'
-import { DialogView } from '@/components/DialogView'
+import type { Wire as WireType } from '@/hooks/index/lib/wires'
 
-export const PreviewSheet = ({ id, source, role, handleClose }: {
+export const PreviewSheet = ({ id, wire, handleClose, textOnly = true }: {
   id: string
-  source?: string
+  wire?: WireType
   textOnly?: boolean
-  role?: string
   handleClose: () => void
 }): JSX.Element => {
   const [documentStatus, setDocumentStatus] = useDocumentStatus(id)
   const { showModal, hideModal } = useModal()
+
+  const source = wire?.fields['document.rel.source.uri'].values[0]
+  const role = wire?.fields['document.meta.tt_wire.role'].values[0]
 
   useNavigationKeys({
     keys: ['s', 'r', 'c'],
@@ -33,8 +35,7 @@ export const PreviewSheet = ({ id, source, role, handleClose }: {
       }
 
       if (event.key === 'c') {
-        console.log('C pressed')
-        showModal(<DialogView view='Wire' onDialogClose={hideModal} />)
+        showModal(<Wire onDialogClose={hideModal} asDialog wire={wire} />)
         return
       }
     }
@@ -114,7 +115,7 @@ export const PreviewSheet = ({ id, source, role, handleClose }: {
           </div>
         </div>
         <div className='flex-2 -mt-2'>
-          <Editor id={id} textOnly />
+          <Editor id={id} textOnly={textOnly} />
         </div>
       </div>
     </FaroErrorBoundary>

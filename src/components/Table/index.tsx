@@ -24,8 +24,8 @@ import { LoadingText } from '../LoadingText'
 import { Row } from './Row'
 import { useModal } from '../Modal/useModal'
 import { PreviewSheet } from '@/views/Wires/components'
-import type { Wire } from '@/hooks/index/lib/wires'
-import { DialogView } from '../DialogView'
+import type { Wire as WireType } from '@/hooks/index/lib/wires'
+import { Wire } from '@/views/Wire'
 
 interface TableProps<TData, TValue> {
   columns: Array<ColumnDef<TData, TValue>>
@@ -72,19 +72,13 @@ export const Table = <TData, TValue>({
 
   const handlePreview = useCallback((row: RowType<unknown>): void => {
     const originalId = (row.original as { id: string }).id
-    const source = (row.original as {
-      fields: {
-        'document.rel.source.uri': { values?: string[] }
-      }
-    }).fields['document.rel.source.uri'].values?.[0]
 
     showModal(
       <PreviewSheet
         id={originalId}
-        source={source}
+        wire={row.original as WireType}
         textOnly
         handleClose={hideModal}
-        role={row.getValue<string>('role')}
       />,
       'sheet',
       {
@@ -146,7 +140,7 @@ export const Table = <TData, TValue>({
 
       if (event.key === 'r') {
         if (selectedRow && isRowTypeWire<TData, TValue>(type)) {
-          const wireRow = selectedRow as RowType<Wire>
+          const wireRow = selectedRow as RowType<WireType>
 
           setDocumentStatus({
             name: 'approved',
@@ -159,7 +153,7 @@ export const Table = <TData, TValue>({
 
       if (event.key === 's') {
         if (selectedRow && isRowTypeWire<TData, TValue>(type)) {
-          const wireRow = selectedRow as RowType<Wire>
+          const wireRow = selectedRow as RowType<WireType>
 
           setDocumentStatus({
             name: 'done',
@@ -171,7 +165,11 @@ export const Table = <TData, TValue>({
       }
 
       if (event.key === 'c') {
-        showModal(<DialogView view='Wire' onDialogClose={hideModal} />)
+        if (selectedRow && isRowTypeWire<TData, TValue>(type)) {
+          const wireRow = selectedRow as RowType<WireType>
+
+          showModal(<Wire onDialogClose={hideModal} asDialog wire={wireRow.original} />)
+        }
       }
 
       if (event.key === 'ArrowUp' || event.key === 'ArrowDown') {

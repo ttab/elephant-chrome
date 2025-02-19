@@ -1,7 +1,11 @@
 import { AwarenessDocument } from '@/components'
 import type { ViewMetadata, ViewProps } from '@/types/index'
 import { WireViewContent } from './WireViewContent'
-import type { DialogViewCreate } from '@/components/DialogView'
+import * as Templates from '@/defaults/templates'
+import { createDocument } from '@/lib/createYItem'
+import { useMemo } from 'react'
+import { Block } from '@ttab/elephant-api/newsdoc'
+import type { Wire as WireType } from '@/hooks/index/lib/wires'
 
 const meta: ViewMetadata = {
   name: 'Wire',
@@ -19,13 +23,47 @@ const meta: ViewMetadata = {
   }
 }
 
-export const Wire = (props: ViewProps & DialogViewCreate): JSX.Element => {
+export const Wire = (props: ViewProps & {
+  wire?: WireType
+}): JSX.Element => {
+  // The article we're creating
+  const initialArticle = useMemo(() => {
+    return createDocument({
+      template: Templates.article,
+      inProgress: true,
+      payload: {
+        meta: {
+          'tt/slugline': [Block.create({ type: 'tt/slugline' })],
+          'core/newsvalue': [Block.create({ type: 'core/newsvalue' })]
+        },
+        links: {
+          'tt/wire': [Block.create({
+            type: 'tt/wire',
+            uuid: props.wire?.id,
+            title: props.wire?.fields['document.title'].values[0],
+            rel: 'source-document',
+            data: {
+              version: props.wire?.fields['current_version'].values[0]
+            }
+          })]
+        }
+      }
+    })
+  }, [props.wire])
+
   return (
     <>
-      {typeof props.planningId === 'string'
+      {typeof initialArticle[0] === 'string' && props.wire
         ? (
-            <AwarenessDocument documentId={props.planningId} document={props.planningDocument}>
-              <WireViewContent {...props} documentId={props.id} />
+            <AwarenessDocument documentId={initialArticle[0]} document={initialArticle[1]}>
+              <WireViewContent {...
+                {
+                  ...props,
+                  wire: props.wire,
+                  id: initialArticle[0]
+                }
+              }
+              />
             </AwarenessDocument>
           )
         : <></>}

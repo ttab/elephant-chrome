@@ -4,7 +4,7 @@ import {
 } from '@/defaults/applicationMenuItems'
 import { SheetClose } from '@ttab/elephant-ui'
 import { useModal } from '../Modal/useModal'
-import { DialogView } from '../DialogView'
+import { Flash } from '@/views/Flash'
 
 
 export const MenuItem = ({ menuItem }: {
@@ -45,7 +45,7 @@ export const MenuItemDialogOpener = ({ menuItem }: {
       className='w-full flex gap-3 items-center px-3 py-2 rounded-md hover:bg-gray-100 hover:cursor-pointer'
       onClick={() => {
         showModal(
-          <DialogView view={menuItem.name} onDialogClose={hideModal} />
+          <Flash onDialogClose={hideModal} asDialog />
         )
       }}
     >
