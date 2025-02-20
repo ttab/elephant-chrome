@@ -4,7 +4,7 @@ import {
 } from '@/defaults/applicationMenuItems'
 import { SheetClose } from '@ttab/elephant-ui'
 import { useModal } from '../Modal/useModal'
-import { Flash } from '@/views/Flash'
+import * as Views from '@/views'
 
 
 export const MenuItem = ({ menuItem }: {
@@ -39,13 +39,14 @@ export const MenuItemDialogOpener = ({ menuItem }: {
 }): JSX.Element => {
   const { showModal, hideModal } = useModal()
 
+  const ViewDialog = Views[menuItem.name]
   return (
     <SheetClose
       key={menuItem.name}
       className='w-full flex gap-3 items-center px-3 py-2 rounded-md hover:bg-gray-100 hover:cursor-pointer'
       onClick={() => {
         showModal(
-          <Flash onDialogClose={hideModal} asDialog />
+          <ViewDialog onDialogClose={hideModal} asDialog />
         )
       }}
     >

@@ -1,7 +1,7 @@
 import { useEffect, useCallback } from 'react'
 import { useView } from './useView'
 
-type NavigationKey = 'ArrowLeft' | 'ArrowUp' | 'ArrowRight' | 'ArrowDown' | 'Enter' | 'Escape' | ' ' | 's' | 'r' | 'c'
+type NavigationKey = 'alt+ArrowLeft' | 'ArrowLeft' | 'alt+ArrowRight' | 'ArrowRight' | 'ArrowUp' | 'ArrowDown' | 'Enter' | 'Escape' | ' ' | 's' | 'r' | 'c'
 
 interface useNavigationKeysOptions {
   onNavigation: (event: KeyboardEvent) => void
@@ -31,6 +31,14 @@ export const useNavigationKeys = (
       return
     }
 
+    const keyCombination = [
+      event.altKey ? 'alt+' : '',
+      event.ctrlKey ? 'ctrl+' : '',
+      event.shiftKey ? 'shift+' : '',
+      event.metaKey ? 'meta+' : '',
+      event.key
+    ].filter(Boolean).join('')
+
     const target = event.target as HTMLElement
 
     // If a ref is provided, only process events within that element
@@ -50,7 +58,7 @@ export const useNavigationKeys = (
     }
 
     // If key is a navigation key
-    if (keys.some((key) => event.key === key)) {
+    if (keys.some((key) => keyCombination === key)) {
       if (stopPropagation) {
         event.stopPropagation()
       }
