@@ -4,7 +4,7 @@ import { type ViewProps, type ViewMetadata } from '@/types/index'
 import { ViewHeader } from '@/components/View'
 import { BookTextIcon, InfoIcon } from '@ttab/elephant-ui/icons'
 import type * as Y from 'yjs'
-import { Bold, Italic, Text, OrderedList, UnorderedList } from '@ttab/textbit-plugins'
+import { Bold, Italic, Text, OrderedList, UnorderedList, LocalizedQuotationMarks } from '@ttab/textbit-plugins'
 import Textbit, { useTextbit } from '@ttab/textbit'
 import { type HocuspocusProvider } from '@hocuspocus/provider'
 import { type AwarenessUserData } from '@/contexts/CollaborationProvider'
@@ -72,7 +72,7 @@ export const Factbox = (props: ViewProps & { document?: Y.Doc }): JSX.Element =>
 }
 
 function Wrapper(props: ViewProps & { documentId: string }): JSX.Element {
-  const plugins = [Text, UnorderedList, OrderedList, Bold, Italic]
+  const plugins = [Text, UnorderedList, OrderedList, Bold, Italic, LocalizedQuotationMarks]
   const {
     provider,
     synced,
@@ -198,9 +198,10 @@ function EditorContent({ provider, user }: {
       />
       <Textbit.Editable
         yjsEditor={yjsEditor}
+        lang={documentLanguage}
         onSpellcheck={async (texts) => {
           if (documentLanguage) {
-            const spellingResult = await spellchecker?.check(texts, documentLanguage, supportedLanguages, session?.accessToken ?? '')
+            const spellingResult = await spellchecker?.check(texts.map(({ text }) => text), documentLanguage, supportedLanguages, session?.accessToken ?? '')
             if (spellingResult) {
               return spellingResult
             }

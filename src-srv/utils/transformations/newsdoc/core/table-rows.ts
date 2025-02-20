@@ -1,3 +1,4 @@
+import type { TBElement } from '@ttab/textbit'
 import { parse } from 'node-html-parser'
 import { Element, Node } from 'slate'
 
@@ -21,7 +22,7 @@ export function parseTableRows(tablebody: string) {
       type: 'core/table/row',
       class: 'block',
       children: cells.map((cell) => {
-        const element: Element = {
+        const element: TBElement = {
           type: 'core/table/row/cell',
           class: 'text',
           children: [{ text: cell.textContent.trim() }]
@@ -43,7 +44,7 @@ export function parseTableRows(tablebody: string) {
   })
 }
 
-export function revertTableRows(data: Element[]) {
+export function revertTableRows(data: TBElement[]) {
   return data.filter((d) => d.type === 'core/table/row')
     .map((d) => {
       const cells = d.children

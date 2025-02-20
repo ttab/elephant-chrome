@@ -1,7 +1,7 @@
 import { NodeType, parse, type HTMLElement } from 'node-html-parser'
 import { Block } from '@ttab/elephant-api/newsdoc'
-import { type Descendant, Text } from 'slate'
-import type { TBElement } from '@ttab/textbit'
+import { Text } from 'slate'
+import type { TBElement, TBText } from '@ttab/textbit'
 import escapeHTML from 'escape-html'
 import { jsx } from 'slate-hyperscript'
 
@@ -43,7 +43,7 @@ export function revertText(element: TBElement): Block {
  * @param node {Descendant}
  * @returns Generated html string
  */
-function serializeNode(node: Descendant): string {
+function serializeNode(node: TBElement | TBText): string {
   // If this is a text element we must handle supported leafs (strong, etc)
   if (Text.isText(node)) {
     let string = escapeHTML(node.text)
@@ -85,9 +85,9 @@ function serializeNode(node: Descendant): string {
 }
 
 
-function deserializeNode(el: HTMLElement, markAttributes: Record<string, boolean> = {}): Descendant | Descendant[] {
+function deserializeNode(el: HTMLElement, markAttributes: Record<string, boolean> = {}): Array<TBElement | TBText> | TBElement | TBText {
   if (el.nodeType === NodeType.TEXT_NODE) {
-    return jsx('text', markAttributes, el.textContent === '\n' ? '' : el.textContent)
+    return jsx('text', markAttributes, el.textContent === '\n' ? '' : el.textContent) as unknown as TBText
   }
 
   const nodeName = el.rawTagName?.toLowerCase()
@@ -114,12 +114,14 @@ function deserializeNode(el: HTMLElement, markAttributes: Record<string, boolean
   }
 
   const children = el.childNodes
-    .map((node) => deserializeNode(node as HTMLElement, nodeAttributes))
+    .map((node) => {
+      return deserializeNode(node as HTMLElement, nodeAttributes)
+    })
     .filter((el) => !!el)
     .flat()
 
   if (children.length === 0) {
-    children.push(jsx('text', nodeAttributes, ''))
+    children.push(jsx('text', nodeAttributes, '') as unknown as TBText)
   }
 
   // NOTE: Add other/new supported inline elements here
@@ -133,7 +135,7 @@ function deserializeNode(el: HTMLElement, markAttributes: Record<string, boolean
           url: decodeURI(el.getAttribute('href') || '')
         },
         children
-      }
+      } as TBElement
 
     default:
       return children

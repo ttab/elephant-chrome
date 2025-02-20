@@ -7,7 +7,7 @@ import { YjsEditor, withCursors, withYHistory, withYjs } from '@slate-yjs/core'
 import { type HocuspocusProvider } from '@hocuspocus/provider'
 import { type AwarenessUserData } from '@/contexts/CollaborationProvider'
 import type * as Y from 'yjs'
-import { Text } from '@ttab/textbit-plugins'
+import { LocalizedQuotationMarks, Text } from '@ttab/textbit-plugins'
 import { useYValue } from '@/hooks/useYValue'
 import { useSession } from 'next-auth/react'
 import { ContextMenu } from '../Editor/ContextMenu'
@@ -68,12 +68,15 @@ export const TextBox = ({
           onBlur={onBlur}
           onFocus={onFocus}
           placeholder={placeholder}
-          plugins={[Text({
-            singleLine,
-            countCharacters,
-            inputStyle: true,
-            styles: ['body']
-          })]}
+          plugins={[
+            LocalizedQuotationMarks(),
+            Text({
+              singleLine,
+              countCharacters,
+              inputStyle: true,
+              styles: ['body']
+            })
+          ]}
           className={cn('h-min-2 w-full', className)}
         >
           <TextboxEditable
@@ -138,9 +141,10 @@ const TextboxEditable = ({ provider, user, icon: Icon, content, singleLine, docu
         <div className='flex-grow'>
           <Textbit.Editable
             yjsEditor={yjsEditor}
+            lang={documentLanguage}
             onSpellcheck={async (texts) => {
               if (documentLanguage && spellcheck) {
-                const spellingResult = await spellchecker?.check(texts, documentLanguage, supportedLanguages, session?.accessToken ?? '')
+                const spellingResult = await spellchecker?.check(texts.map(({ text }) => text), documentLanguage, supportedLanguages, session?.accessToken ?? '')
                 if (spellingResult) {
                   return spellingResult
                 }

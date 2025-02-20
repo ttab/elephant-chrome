@@ -1,8 +1,8 @@
-import { type Element } from 'slate'
 import { Block } from '@ttab/elephant-api/newsdoc'
 import { parseTableRows, revertTableRows, type TableRowElement } from './table-rows.js'
+import type { TBElement } from '@ttab/textbit'
 
-export const transformTable = (element: Block): Element => {
+export const transformTable = (element: Block): TBElement => {
   const { id, data } = element
   const tableBody = data?.tbody || ''
   const rows = parseTableRows(tableBody)
@@ -12,10 +12,10 @@ export const transformTable = (element: Block): Element => {
     class: 'block',
     type: 'core/table',
     children: rows
-  }
+  } as TBElement
 }
 
-export function revertTable(element: Element): Block {
+export function revertTable(element: TBElement): Block {
   const { id, children } = element
   const tableChildren = children as TableRowElement[]
   const htmlData = revertTableRows(tableChildren)

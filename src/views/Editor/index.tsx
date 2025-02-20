@@ -12,7 +12,7 @@ import { Textbit, useTextbit } from '@ttab/textbit'
 import { ImageSearchPlugin } from '../../plugins/ImageSearch'
 import { FactboxPlugin } from '../../plugins/Factboxes'
 
-import { Bold, Italic, Link, Text, OrderedList, UnorderedList, TTVisual, Factbox, Table } from '@ttab/textbit-plugins'
+import { Bold, Italic, Link, Text, OrderedList, UnorderedList, TTVisual, Factbox, Table, LocalizedQuotationMarks } from '@ttab/textbit-plugins'
 
 import {
   useQuery,
@@ -98,7 +98,7 @@ function EditorWrapper(props: ViewProps & {
   documentId: string
   autoFocus?: boolean
 }): JSX.Element {
-  const plugins = [UnorderedList, OrderedList, Bold, Italic, Link, TTVisual, ImageSearchPlugin, FactboxPlugin, Table]
+  const plugins = [UnorderedList, OrderedList, Bold, Italic, Link, TTVisual, ImageSearchPlugin, FactboxPlugin, Table, LocalizedQuotationMarks]
   const { provider, synced, user } = useCollaboration()
   const openFactboxEditor = useLink('Factbox')
   const [notes] = useYValue<Block[] | undefined>('meta.core/note')
@@ -213,9 +213,10 @@ function EditorContent({ provider, user }: {
     <Textbit.Editable
       ref={ref}
       yjsEditor={yjsEditor}
+      lang={documentLanguage}
       onSpellcheck={async (texts) => {
         if (documentLanguage) {
-          const spellingResult = await spellchecker?.check(texts, documentLanguage, supportedLanguages, session?.accessToken ?? '')
+          const spellingResult = await spellchecker?.check(texts.map(({ text }) => text), documentLanguage, supportedLanguages, session?.accessToken ?? '')
           if (spellingResult) {
             return spellingResult
           }
