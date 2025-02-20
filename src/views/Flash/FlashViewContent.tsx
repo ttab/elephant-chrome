@@ -84,16 +84,18 @@ export const FlashViewContent = (props: ViewProps): JSX.Element | undefined => {
 
               {!!selectedPlanning
               && (
-                <Button
-                  variant='ghost'
-                  className='text-muted-foreground flex h-7 w-7 p-0 data-[state=open]:bg-muted hover:bg-accent2'
-                  onClick={(e) => {
-                    e.preventDefault()
-                    setSelectedPlanning(undefined)
-                  }}
-                >
-                  <CircleXIcon size={18} strokeWidth={1.75} />
-                </Button>
+                <>
+                  <Button
+                    variant='ghost'
+                    className='text-muted-foreground flex h-7 w-7 p-0 data-[state=open]:bg-muted hover:bg-accent2'
+                    onClick={(e) => {
+                      e.preventDefault()
+                      setSelectedPlanning(undefined)
+                    }}
+                  >
+                    <CircleXIcon size={18} strokeWidth={1.75} />
+                  </Button>
+                </>
               )}
             </Form.Group>
 
