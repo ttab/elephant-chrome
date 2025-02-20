@@ -6,13 +6,15 @@ import * as Y from 'yjs'
 import { getValueByYPath, toSlateYXmlText, toYStructure } from '@/lib/yUtils'
 import { createPayload } from '@/defaults/templates/lib/createPayload'
 import type { TemplatePayload } from '@/defaults/templates'
+import { convertToISOStringInTimeZone } from '@/lib/datetime'
 
 export function createFlash({
   provider,
   status,
   session,
   planning,
-  hasSelectedPlanning
+  hasSelectedPlanning,
+  timeZone
 }: {
   provider: HocuspocusProvider
   status: string
@@ -23,6 +25,7 @@ export function createFlash({
     title?: string | undefined
   }
   hasSelectedPlanning: boolean
+  timeZone: string
 }): { flash: Y.Doc, planning: Y.Doc } | undefined {
   const flashEle = provider.document.getMap('ele')
   const [documentId] = getValueByYPath<string>(flashEle, 'root.uuid')
@@ -46,8 +49,24 @@ export function createFlash({
 
         const [flashTitle] = getValueByYPath<string>(flashEle, 'root.title')
 
+        const dt = new Date()
+        const zuluISODate = `${new Date().toISOString().split('.')[0]}Z` // Remove ms, add Z back again
+        const localISODateTime = convertToISOStringInTimeZone(dt, timeZone).slice(0, 10)
+
         // Create assignment in planning
-        const assignmentIndex = appendAssignment({ document: planning.document, title: flashTitle, type: 'flash' })
+        const assignmentIndex = appendAssignment({
+          document: planning.document,
+          title: flashTitle,
+          type: 'flash',
+          assignmentData: {
+            full_day: 'false',
+            start_date: localISODateTime,
+            end_date: localISODateTime,
+            start: zuluISODate,
+            end: zuluISODate,
+            public: 'true'
+          }
+        })
 
         // Append flash to assignment in planning,
         appendDocumentToAssignment({ document: planning.document, id: documentId, index: assignmentIndex, type: 'flash' })

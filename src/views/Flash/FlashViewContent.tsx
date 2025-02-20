@@ -17,6 +17,7 @@ import { fetch } from '@/lib/index/fetch-plannings-twirp'
 import { createFlash } from './lib/createFlash'
 import type * as Y from 'yjs'
 import { CreatePrompt } from '@/components/CreatePrompt'
+import { Block } from '@ttab/elephant-api/newsdoc'
 
 export const FlashViewContent = (props: ViewProps): JSX.Element | undefined => {
   const { provider } = useCollaboration()
@@ -25,7 +26,7 @@ export const FlashViewContent = (props: ViewProps): JSX.Element | undefined => {
   const [showVerifyDialog, setShowVerifyDialog] = useState(false)
   const [selectedPlanning, setSelectedPlanning] = useState<DefaultValueOption | undefined>(undefined)
   const [title, setTitle] = useYValue<string | undefined>('root.title', true)
-  const { index } = useRegistry()
+  const { index, timeZone } = useRegistry()
 
   const handleSubmit = (): void => {
     setShowVerifyDialog(true)
@@ -121,7 +122,10 @@ export const FlashViewContent = (props: ViewProps): JSX.Element | undefined => {
                 secondaryLabel='Avbryt'
                 primaryLabel='Skicka'
                 selectedPlanning={selectedPlanning}
-                payload={{ newsvalue: '4' }}
+                payload={{ meta: {
+                  'core/newsvalue': [Block.create({ type: 'core/newsvalue', value: '4' })]
+                }
+                }}
                 onPrimary={(planning: Y.Doc | undefined, planningId: string | undefined) => {
                   if (!provider || !props.id || !provider || !session) {
                     console.error('Environment is not sane, flash cannot be created')
@@ -140,7 +144,8 @@ export const FlashViewContent = (props: ViewProps): JSX.Element | undefined => {
                       document: planning,
                       id: planningId
                     },
-                    hasSelectedPlanning: !!selectedPlanning
+                    hasSelectedPlanning: !!selectedPlanning,
+                    timeZone
                   })
 
                   setShowVerifyDialog(false)

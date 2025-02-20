@@ -65,7 +65,8 @@ export function appendAssignment({
   inProgress,
   slugLine,
   title = 'Namnlöst uppdrag',
-  wire
+  wire,
+  assignmentData
 }: {
   document: Y.Doc
   type: 'text' | 'flash'
@@ -73,6 +74,7 @@ export function appendAssignment({
   slugLine?: string
   title?: string
   wire?: Wire
+  assignmentData?: Block['data']
 }): number {
   const meta = document.getMap('ele').get('meta') as Y.Map<unknown>
 
@@ -99,7 +101,8 @@ export function appendAssignment({
     planningDate,
     slugLine: slugLine || slugLineFromPlanning,
     title: title,
-    wire
+    wire,
+    assignmentData
   })
 
   // Append __inProgress if needed

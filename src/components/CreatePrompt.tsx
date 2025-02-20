@@ -39,7 +39,7 @@ export const CreatePrompt = ({
   onSecondary?: (event: MouseEvent<HTMLButtonElement> | React.KeyboardEvent<HTMLButtonElement> | KeyboardEvent) => void
   selectedPlanning: DefaultValueOption | undefined
   planningTitle?: string
-  payload?: Record<string, string>
+  payload?: Templates.TemplatePayload
 } & PropsWithChildren): JSX.Element => {
   useKeydownGlobal((event) => {
     if (event.key === 'Escape' && secondaryLabel && onSecondary) {

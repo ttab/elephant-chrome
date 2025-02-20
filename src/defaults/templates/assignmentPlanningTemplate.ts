@@ -10,25 +10,16 @@ export function assignmentPlanningTemplate({
   planningDate,
   slugLine,
   title,
-  wire
+  wire,
+  assignmentData
 }: {
   assignmentType: string
   planningDate: string
   slugLine?: string
   title?: string
   wire?: Wire
+  assignmentData?: Block['data']
 }): Block {
-  /* TODO: When creating a flash, we need to set
-      data: {
-      full_day: 'false',
-      start_date: localISODateTime, // today
-      end_date: localISODateTime, // today
-      start: zuluISODate, // now
-      end: zuluISODate, // now
-      public: 'true',
-      publish: zuluISODate // is it needed, probably not?
-    }, */
-
   const startDate = new Date(`${planningDate}T00:00:00`)
 
   const wireContentSourceDocument: Block[] = [
@@ -50,12 +41,13 @@ export function assignmentPlanningTemplate({
     id: crypto.randomUUID(),
     type: 'core/assignment',
     title: title || undefined,
-    data: {
+    // Use provided assignmentData or default values
+    data: assignmentData || {
       full_day: 'false',
       end_date: planningDate,
       start_date: planningDate,
       start: startDate.toISOString(),
-      public: 'true'
+      public: 'false'
     },
     meta: [
       {
