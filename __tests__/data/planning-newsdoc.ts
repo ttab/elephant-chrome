@@ -54,24 +54,6 @@ export const planning: GetDocumentResponse = {
         meta: []
       },
       {
-        id: '',
-        uuid: '',
-        uri: '',
-        url: '',
-        type: 'tt/slugline',
-        title: '',
-        data: {},
-        rel: '',
-        role: '',
-        name: '',
-        value: 'lands-',
-        contenttype: '',
-        sensitivity: '',
-        links: [],
-        content: [],
-        meta: []
-      },
-      {
         id: '97464374-3d0c-44b9-9126-f5efadbd32a7',
         uuid: '',
         uri: '',

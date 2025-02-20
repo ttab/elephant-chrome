@@ -5,6 +5,27 @@ import { toGroupedNewsDoc } from '../src-srv/utils/transformations/groupedNewsDo
 import { toYjsNewsDoc } from '../src-srv/utils/transformations/yjsNewsDoc'
 
 describe('createPayload', () => {
+  // Append planning slugline, its how normal planning documents look,
+  // however it clashes with transform-document.test.ts tests
+  planning.document?.meta.push({
+    id: '',
+    uuid: '',
+    uri: '',
+    url: '',
+    type: 'tt/slugline',
+    title: '',
+    data: {},
+    rel: '',
+    role: '',
+    name: '',
+    value: 'lands-',
+    contenttype: '',
+    sensitivity: '',
+    links: [],
+    content: [],
+    meta: []
+  })
+
   let planningDocument: Y.Doc
   beforeEach(() => {
     planningDocument = new Y.Doc()

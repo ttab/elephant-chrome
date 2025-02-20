@@ -43,7 +43,7 @@ export const WireViewContent = (props: ViewProps & {
         <ViewHeader.Content>
           {props.asDialog && (
             <div className='flex w-full h-full items-center space-x-2 font-bold'>
-              <ViewHeader.Title title='Skapa artikel från telegram' icon={Cable} iconColor='#FF6347' />
+              <ViewHeader.Title title='Skapa artikel' icon={Cable} iconColor='#FF6347' />
             </div>
           )}
         </ViewHeader.Content>
@@ -209,7 +209,7 @@ export const WireViewContent = (props: ViewProps & {
           <Form.Footer>
             <Form.Submit onSubmit={handleSubmit}>
               <div className='flex justify-end'>
-                <Button type='submit'>Skapa artikel från telegram</Button>
+                <Button type='submit'>Skapa artikel</Button>
               </div>
             </Form.Submit>
           </Form.Footer>
