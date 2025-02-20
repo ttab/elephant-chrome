@@ -285,7 +285,7 @@ exports[`createArticle > Existing planning > Snapshots > should match planning s
         "data": {
           "end_date": "2025-02-17",
           "full_day": "false",
-          "public": "true",
+          "public": "false",
           "start": "2025-02-17T00:00:00.000Z",
           "start_date": "2025-02-17",
         },
@@ -677,7 +677,7 @@ exports[`createArticle > New planning > Snapshots > should match planning snapsh
         "data": {
           "end_date": "2025-02-17",
           "full_day": "false",
-          "public": "true",
+          "public": "false",
           "start": "2025-02-17T00:00:00.000Z",
           "start_date": "2025-02-17",
         },

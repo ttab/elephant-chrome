@@ -74,7 +74,8 @@ describe('createFlash', () => {
           document: newPlanning[1],
           id: newPlanning[0]
         },
-        hasSelectedPlanning: false
+        hasSelectedPlanning: false,
+        timeZone: 'Europe/Stockholm'
       })
 
       if (!result || !result.planning) {
@@ -202,7 +203,8 @@ describe('createFlash', () => {
           document: existingPlanning[1],
           id: existingPlanning[0]
         },
-        hasSelectedPlanning: true
+        hasSelectedPlanning: true,
+        timeZone: 'Europe/Stockholm'
       })
 
       if (!result || !result.planning) {
