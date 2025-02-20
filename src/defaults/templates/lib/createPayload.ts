@@ -1,7 +1,8 @@
+import { ungroup } from '../../../../src-srv/utils/transformations/groupedNewsDoc'
 import type { TemplatePayload } from '..'
 import type * as Y from 'yjs'
 
-export function createPayload(document: Y.Doc, index: number): TemplatePayload | undefined {
+export function createPayload(document: Y.Doc, index?: number): TemplatePayload | undefined {
   if (!document) return
 
   const ele = document.getMap('ele')
@@ -10,7 +11,7 @@ export function createPayload(document: Y.Doc, index: number): TemplatePayload |
   const links = ele.get('links') as Y.Map<Y.Array<unknown>>
 
   const assignments = meta.get('core/assignment')
-  const currentAssignment = assignments?.get(index) as Y.Map<Y.Map<unknown>>
+  const currentAssignment = typeof index === 'number' ? assignments?.get(index) as Y.Map<Y.Map<unknown>> : undefined
   const currentAssignmentMeta = currentAssignment?.get('meta') as Y.Map<unknown>
 
   const currentMeta = currentAssignmentMeta || meta
@@ -34,12 +35,12 @@ export function createPayload(document: Y.Doc, index: number): TemplatePayload |
   return {
     title,
     meta: {
-      'tt/slugline': slugline,
-      'core/newsvalue': newsvalue
+      'tt/slugline': ungroup({ 'tt:/slugline': slugline }),
+      'core/newsvalue': ungroup({ 'core/newsvalue': newsvalue })
     },
     links: {
-      'core/section': section,
-      'core/story': story
+      'core/section': ungroup({ 'core/section': section }),
+      'core/story': ungroup({ 'core/section': story })
     }
   }
 }

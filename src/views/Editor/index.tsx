@@ -57,11 +57,13 @@ const meta: ViewMetadata = {
 }
 
 const Editor = (props: ViewProps): JSX.Element => {
+  console.log('Editr init')
   const [query] = useQuery()
   const [document, setDocument] = useState<Y.Doc | undefined>(undefined)
 
   const documentId = props.id || query.id
 
+  console.log('Editor 2', !documentId || typeof documentId !== 'string')
   if (!documentId || typeof documentId !== 'string') {
     return (
       <Error
@@ -71,6 +73,7 @@ const Editor = (props: ViewProps): JSX.Element => {
     )
   }
 
+  console.log('Editor 3', props.onDocumentCreated && !document, props)
   if (props.onDocumentCreated && !document) {
     const [, doc] = createDocument({
       template: (id: string) => {
