@@ -1,4 +1,5 @@
 import { Tooltip } from '@ttab/elephant-ui'
+import { useMemo } from 'react'
 
 interface TitleProps {
   planningTitle: string
@@ -6,11 +7,11 @@ interface TitleProps {
 }
 
 export const AssignmentTitles = ({ planningTitle, assignmentTitle }: TitleProps): JSX.Element => {
-  return (
+  return useMemo(() => (
     <div className='gap-1 items-center flex'>
-      <div className='hidden sm:flex'>
+      <div className='sm:flex'>
         <Tooltip content={planningTitle}>
-          <div className='sm:hidden w-[200px] min-w-[200px] max-w-[200px] truncate space-x-2 items-center text-muted-foreground'>{planningTitle}</div>
+          <div className='w-[200px] min-w-[200px] max-w-[200px] truncate space-x-2 items-center text-muted-foreground'>{planningTitle}</div>
         </Tooltip>
       </div>
       <Tooltip content={planningTitle}>
@@ -18,5 +19,5 @@ export const AssignmentTitles = ({ planningTitle, assignmentTitle }: TitleProps)
       </Tooltip>
       <div className='space-x-2 items-center'>{assignmentTitle}</div>
     </div>
-  )
+  ), [planningTitle, assignmentTitle])
 }
