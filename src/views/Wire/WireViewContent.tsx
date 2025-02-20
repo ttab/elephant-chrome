@@ -60,7 +60,7 @@ export const WireViewContent = (props: ViewProps & {
             <Form.Group icon={Cable}>
               <div className='w-full'>
                 <Input
-                  className='pl-0 pt-2 h-8 text-medium border-0'
+                  className='pl-0 pt-2 h-8 text-medium border-0 truncate'
                   readOnly
                   value={props.wire.fields['document.title'].values?.[0]}
                 />
