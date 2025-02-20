@@ -18,7 +18,6 @@ export function useActiveUsers(documentIds: string[]): Record<string, ActiveUser
   const context = useContext(DocTrackerContext)
   const [openDocuments, setOpenDocuments] = useState<Y.Map<Y.Map<ActiveUser>> | undefined>()
   const [activeUsers, setActiveUsers] = useState<Record<string, ActiveUser[]>>({})
-  const [initialDocumentIds] = useState<string[]>(documentIds)
 
   // Initialize active users for provided document ids
   useEffect(() => {
@@ -27,9 +26,11 @@ export function useActiveUsers(documentIds: string[]): Record<string, ActiveUser
 
     setOpenDocuments(yMap)
     setActiveUsers(
-      getUsersforDocuments(yMap, initialDocumentIds)
+      getUsersforDocuments(yMap, documentIds)
     )
-  }, [context, initialDocumentIds])
+    // NOTE: Dependency array below should be left without the 'documentIds' dependency;
+    // will cause render loop otherwise.
+  }, [context])
 
   // Update users when user tracker document changes
   useEffect(() => {
@@ -37,10 +38,10 @@ export function useActiveUsers(documentIds: string[]): Record<string, ActiveUser
       const yMap = event.currentTarget as Y.Map<Y.Map<ActiveUser>>
 
       setActiveUsers(
-        getUsersforDocuments(yMap, initialDocumentIds)
+        getUsersforDocuments(yMap, documentIds)
       )
     })
-  }, [openDocuments, initialDocumentIds])
+  }, [openDocuments, documentIds])
 
   return activeUsers
 }
