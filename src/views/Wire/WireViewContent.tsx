@@ -148,7 +148,15 @@ export const WireViewContent = (props: ViewProps & {
                 placeholder='Uppdragstitel'
               />
             </Form.Group>
-            <UserMessage selectedPlanning={selectedPlanning} asDialog={!!props?.asDialog} />
+            <UserMessage asDialog={!!props?.asDialog}>
+              {!selectedPlanning
+                ? (
+                    <>Väljer du ingen planering kommer en ny planering med tillhörande uppdrag skapas åt dig.</>
+                  )
+                : (
+                    <>Denna artikel kommer läggas i ett nytt uppdrag i den valda planeringen</>
+                  )}
+            </UserMessage>
 
           </Form.Content>
 

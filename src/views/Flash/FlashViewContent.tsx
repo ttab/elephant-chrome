@@ -109,7 +109,15 @@ export const FlashViewContent = (props: ViewProps): JSX.Element | undefined => {
 
             <FlashEditor setTitle={setTitle} />
 
-            <UserMessage selectedPlanning={selectedPlanning} asDialog={!!props?.asDialog} />
+            <UserMessage asDialog={!!props?.asDialog}>
+              {!selectedPlanning
+                ? (
+                    <>Väljer du ingen planering kommer en ny planering med tillhörande uppdrag skapas åt dig.</>
+                  )
+                : (
+                    <>Denna flash kommer läggas i ett nytt uppdrag i den valda planeringen</>
+                  )}
+            </UserMessage>
 
           </Form.Content>
 
