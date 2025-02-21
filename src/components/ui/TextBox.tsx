@@ -1,17 +1,17 @@
 import { Textbit } from '@ttab/textbit'
 import { createEditor } from 'slate'
 import { cn } from '@ttab/elephant-ui/utils'
-import { useCollaboration, useRegistry, useSupportedLanguages } from '@/hooks'
+import { useCollaboration } from '@/hooks'
 import { useLayoutEffect, useMemo } from 'react'
 import { YjsEditor, withCursors, withYHistory, withYjs } from '@slate-yjs/core'
 import { type HocuspocusProvider } from '@hocuspocus/provider'
 import { type AwarenessUserData } from '@/contexts/CollaborationProvider'
 import type * as Y from 'yjs'
-import { Text } from '@ttab/textbit-plugins'
+import { LocalizedQuotationMarks, Text } from '@ttab/textbit-plugins'
 import { useYValue } from '@/hooks/useYValue'
-import { useSession } from 'next-auth/react'
 import { ContextMenu } from '../Editor/ContextMenu'
 import { getValueByYPath } from '@/lib/yUtils'
+import { useOnSpellcheck } from '@/hooks/useOnSpellcheck'
 
 export const TextBox = ({
   icon,
@@ -68,12 +68,15 @@ export const TextBox = ({
           onBlur={onBlur}
           onFocus={onFocus}
           placeholder={placeholder}
-          plugins={[Text({
-            singleLine,
-            countCharacters,
-            inputStyle: true,
-            styles: ['body']
-          })]}
+          plugins={[
+            LocalizedQuotationMarks(),
+            Text({
+              singleLine,
+              countCharacters,
+              inputStyle: true,
+              styles: ['body']
+            })
+          ]}
           className={cn('h-min-2 w-full', className)}
         >
           <TextboxEditable
@@ -100,9 +103,7 @@ const TextboxEditable = ({ provider, user, icon: Icon, content, singleLine, docu
   documentLanguage: string | undefined
   spellcheck?: boolean
 }): JSX.Element | undefined => {
-  const { data: session } = useSession()
-  const { spellchecker } = useRegistry()
-  const supportedLanguages = useSupportedLanguages()
+  const onSpellcheck = useOnSpellcheck(documentLanguage)
 
   const yjsEditor = useMemo(() => {
     if (!provider?.awareness) {
@@ -127,6 +128,7 @@ const TextboxEditable = ({ provider, user, icon: Icon, content, singleLine, docu
       return () => YjsEditor.disconnect(yjsEditor)
     }
   }, [yjsEditor])
+
   return (
     <div className='flex flex-col space-y-2'>
       <div className='flex space-x-2'>
@@ -138,15 +140,8 @@ const TextboxEditable = ({ provider, user, icon: Icon, content, singleLine, docu
         <div className='flex-grow'>
           <Textbit.Editable
             yjsEditor={yjsEditor}
-            onSpellcheck={async (texts) => {
-              if (documentLanguage && spellcheck) {
-                const spellingResult = await spellchecker?.check(texts, documentLanguage, supportedLanguages, session?.accessToken ?? '')
-                if (spellingResult) {
-                  return spellingResult
-                }
-              }
-              return []
-            }}
+            lang={documentLanguage}
+            onSpellcheck={spellcheck ? onSpellcheck : undefined}
             className={cn(!singleLine && '!min-h-20',
               `p-1
                py-1.5

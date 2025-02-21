@@ -28,7 +28,9 @@ export function useActiveUsers(documentIds: string[]): Record<string, ActiveUser
     setActiveUsers(
       getUsersforDocuments(yMap, documentIds)
     )
-  }, [context, documentIds])
+    // NOTE: Dependency array below should be left without the 'documentIds' dependency;
+    // will cause render loop otherwise.
+  }, [context])
 
   // Update users when user tracker document changes
   useEffect(() => {

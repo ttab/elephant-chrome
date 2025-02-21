@@ -1,17 +1,14 @@
-import { useQuery, useCollaboration, useYValue, useRegistry, useSupportedLanguages } from '@/hooks'
+import { useQuery, useCollaboration, useYValue, useYjsEditor } from '@/hooks'
 import { AwarenessDocument } from '@/components/AwarenessDocument'
 import { type ViewProps, type ViewMetadata } from '@/types/index'
 import { ViewHeader } from '@/components/View'
 import { BookTextIcon, InfoIcon } from '@ttab/elephant-ui/icons'
 import type * as Y from 'yjs'
-import { Bold, Italic, Text, OrderedList, UnorderedList } from '@ttab/textbit-plugins'
+import { Bold, Italic, Text, OrderedList, UnorderedList, LocalizedQuotationMarks } from '@ttab/textbit-plugins'
 import Textbit, { useTextbit } from '@ttab/textbit'
 import { type HocuspocusProvider } from '@hocuspocus/provider'
 import { type AwarenessUserData } from '@/contexts/CollaborationProvider'
-import { useEffect, useMemo, useState } from 'react'
-import { withCursors, withYHistory, withYjs, YjsEditor } from '@slate-yjs/core'
-import { createEditor } from 'slate'
-import { type YXmlText } from 'node_modules/yjs/dist/src/internals'
+import { useState } from 'react'
 import { TextBox } from '@/components/ui'
 import { Alert, AlertDescription, Button } from '@ttab/elephant-ui'
 import { createStateless, StatelessType } from '@/shared/stateless'
@@ -24,6 +21,7 @@ import { Gutter } from '@/components/Editor/Gutter'
 import { DropMarker } from '@/components/Editor/DropMarker'
 import { ContextMenu } from '@/components/Editor/ContextMenu'
 import { getValueByYPath } from '@/lib/yUtils'
+import { useOnSpellcheck } from '@/hooks/useOnSpellcheck'
 
 const meta: ViewMetadata = {
   name: 'Factbox',
@@ -72,7 +70,7 @@ export const Factbox = (props: ViewProps & { document?: Y.Doc }): JSX.Element =>
 }
 
 function Wrapper(props: ViewProps & { documentId: string }): JSX.Element {
-  const plugins = [Text, UnorderedList, OrderedList, Bold, Italic]
+  const plugins = [Text, UnorderedList, OrderedList, Bold, Italic, LocalizedQuotationMarks]
   const {
     provider,
     synced,
@@ -153,39 +151,9 @@ function EditorContent({ provider, user }: {
   provider: HocuspocusProvider
   user: AwarenessUserData
 }): JSX.Element {
-  const { data: session } = useSession()
-  const { spellchecker } = useRegistry()
-  const supportedLanguages = useSupportedLanguages()
-
   const [documentLanguage] = getValueByYPath<string>(provider.document.getMap('ele'), 'root.language')
-
-  const yjsEditor = useMemo(() => {
-    if (!provider?.awareness) {
-      return
-    }
-    const content = provider.document.getMap('ele').get('content') as YXmlText
-
-    if (!content) {
-      return
-    }
-    return withYHistory(
-      withCursors(
-        withYjs(
-          createEditor(),
-          content
-        ),
-        provider.awareness,
-        { data: user as unknown as Record<string, unknown> }
-      )
-    )
-  }, [provider, user])
-
-  useEffect(() => {
-    if (yjsEditor) {
-      YjsEditor.connect(yjsEditor)
-      return () => YjsEditor.disconnect(yjsEditor)
-    }
-  }, [yjsEditor])
+  const yjsEditor = useYjsEditor(provider, user)
+  const onSpellcheck = useOnSpellcheck(documentLanguage)
 
   return (
     <div className='w-full'>
@@ -198,15 +166,8 @@ function EditorContent({ provider, user }: {
       />
       <Textbit.Editable
         yjsEditor={yjsEditor}
-        onSpellcheck={async (texts) => {
-          if (documentLanguage) {
-            const spellingResult = await spellchecker?.check(texts, documentLanguage, supportedLanguages, session?.accessToken ?? '')
-            if (spellingResult) {
-              return spellingResult
-            }
-          }
-          return []
-        }}
+        lang={documentLanguage}
+        onSpellcheck={onSpellcheck}
         className='outline-none
           h-full
           dark:text-slate-100
