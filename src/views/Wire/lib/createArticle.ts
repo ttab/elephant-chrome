@@ -34,21 +34,23 @@ export function createArticle({
     try {
       if (planning.document && planning.id) {
         const [assignmentTitle] = getValueByYPath<string>(articleEle, 'root.title')
+        const [assignmentSlugline] = getValueByYPath<string>(articleEle, 'meta[tt/slugline][0].value')
 
         // Append assignment to planning, return index of added assignment
         const assignmentIndex = appendAssignment({
           document: planning.document,
           title: assignmentTitle,
           wire,
-          type: 'text'
+          type: 'text',
+          slugLine: assignmentSlugline
         })
 
         // Append information from planning to article or vice versa
         const payload = createPayload(
           hasSelectedPlanning
             ? planning.document
-            : provider.document,
-          assignmentIndex)
+            : provider.document
+        )
 
         if (payload) {
           appendPayload(
@@ -97,7 +99,6 @@ export function createArticle({
         throw new Error(`Failed adding article (${documentId}) to planning (${planning.id})`)
       }
     } catch (err) {
-      // We won't let errors interfere with the publishing of the flash.
       console.error(err)
     }
   }

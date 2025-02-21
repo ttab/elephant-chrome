@@ -198,13 +198,16 @@ describe('createArticle', () => {
         expect(planningSlugline).toHaveLength(1)
       })
 
-      it('should have the same slugline in both planning and article', () => {
+      it('should have the same slugline in planning, assignment and article', () => {
         const articleslugline = article.document.meta
           .filter((m: Block) => m.type === 'tt/slugline')
         const planningSlugline = planning.document.meta
           .filter((m: Block) => m.type === 'tt/slugline')
+        const assignmentSlugline = planning.document.meta
+          .filter((m: Block) => m.type === 'tt/slugline')
 
         expect(articleslugline[0].value).toEqual(SLUGLINE)
+        expect(assignmentSlugline[0].value).toEqual(SLUGLINE)
         expect(articleslugline).toEqual(planningSlugline)
       })
     })

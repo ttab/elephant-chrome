@@ -29,7 +29,7 @@ export const WireViewContent = (props: ViewProps & {
   const { status, data: session } = useSession()
   const [showVerifyDialog, setShowVerifyDialog] = useState(false)
   const [selectedPlanning, setSelectedPlanning] = useState<DefaultValueOption | undefined>(undefined)
-  const planningAwareness = useRef<(value: boolean) => void>(null)
+  const documentAwareness = useRef<(value: boolean) => void>(null)
   const planningTitleRef = useRef<HTMLInputElement>(null)
   const { index } = useRegistry()
 
@@ -67,7 +67,7 @@ export const WireViewContent = (props: ViewProps & {
               </div>
             </Form.Group>
             <Form.Group icon={GanttChartSquare}>
-              <Awareness name='FlashPlanningItem' ref={planningAwareness}>
+              <Awareness name='wirePlanningItem' ref={documentAwareness}>
                 <ComboBox
                   max={1}
                   size='xs'
@@ -75,8 +75,8 @@ export const WireViewContent = (props: ViewProps & {
                   selectedOptions={selectedPlanning ? [selectedPlanning] : []}
                   placeholder='Välj planering'
                   onOpenChange={(isOpen: boolean) => {
-                    if (planningAwareness?.current) {
-                      planningAwareness.current(isOpen)
+                    if (documentAwareness?.current) {
+                      documentAwareness.current(isOpen)
                     }
                   }}
                   fetch={(query) => fetch(query, session, index)}

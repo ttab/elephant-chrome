@@ -64,7 +64,7 @@ export function appendAssignment({
   type,
   inProgress,
   slugLine,
-  title = 'Namnlöst uppdrag',
+  title,
   wire,
   assignmentData
 }: {
