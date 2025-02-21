@@ -75,7 +75,7 @@ export const NavigationProvider = ({ children }: PropsWithChildren): JSX.Element
         contentState: content
       })
     },
-    keys: ['ArrowLeft', 'ArrowRight']
+    keys: ['alt+ArrowLeft', 'alt+ArrowRight']
   })
 
   return (

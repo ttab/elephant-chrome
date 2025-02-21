@@ -5,13 +5,6 @@ import {
 import { SheetClose } from '@ttab/elephant-ui'
 import { useModal } from '../Modal/useModal'
 import * as Views from '@/views'
-import type { Document } from '@ttab/elephant-api/newsdoc'
-import { useActiveAuthor } from '@/hooks/useActiveAuthor'
-import * as Templates from '@/defaults/templates'
-import { type View } from '@/types/index'
-import { useMemo } from 'react'
-import { createDocument } from '@/lib/createYItem'
-import type { IDBAuthor } from 'src/datastore/types'
 
 
 export const MenuItem = ({ menuItem }: {
@@ -46,19 +39,14 @@ export const MenuItemDialogOpener = ({ menuItem }: {
 }): JSX.Element => {
   const { showModal, hideModal } = useModal()
 
+  const ViewDialog = Views[menuItem.name]
   return (
     <SheetClose
       key={menuItem.name}
       className='w-full flex gap-3 items-center px-3 py-2 rounded-md hover:bg-gray-100 hover:cursor-pointer'
       onClick={() => {
         showModal(
-          <>
-            {
-              menuItem.name === 'Flash'
-                ? <FlashDialogContent menuItem={menuItem} onDialogClose={hideModal} />
-                : <DialogContent menuItem={menuItem} onDialogClose={hideModal} />
-            }
-          </>
+          <ViewDialog onDialogClose={hideModal} asDialog />
         )
       }}
     >
@@ -68,101 +56,4 @@ export const MenuItemDialogOpener = ({ menuItem }: {
       <div>{menuItem.label}</div>
     </SheetClose>
   )
-}
-
-/**
- * Generic component to render a document view in a dialog
- */
-const DialogContent = ({ menuItem, onDialogClose }: {
-  menuItem: ApplicationMenuItem
-  onDialogClose?: () => void
-}): JSX.Element => {
-  const { name } = menuItem
-  const DocumentView = name && Views[name]
-
-  const document = useMemo(() => {
-    return createDocument({
-      template: getTemplate(name),
-      inProgress: true
-    })
-  }, [name])
-
-
-  if (!document) {
-    return <></>
-  }
-
-  return (
-    <DocumentView
-      id={document[0]}
-      document={document[1]}
-      className='p-0 rounded-md'
-      asDialog={true}
-      onDialogClose={onDialogClose}
-    />
-  )
-}
-
-
-/**
- * Component to render a flash editor in a dialog, based on planning if in active view
- *
- * TODO: This should be refactored out of this generic MenuItem component
- */
-const FlashDialogContent = ({ menuItem, onDialogClose }: {
-  menuItem: ApplicationMenuItem
-  onDialogClose?: () => void
-}): JSX.Element => {
-  const { name } = menuItem
-  const DocumentView = name && Views[name]
-  const author = useActiveAuthor() as IDBAuthor
-
-  const [document] = useMemo(() => {
-    const flashDefaults: Record<string, unknown> = {
-      title: ''
-    }
-
-    if (author) {
-      flashDefaults.authors = [{ uuid: author.id, name: author.name }]
-    }
-
-    return [
-      createDocument({
-        template: getTemplate(name),
-        inProgress: true,
-        payload: { ...flashDefaults }
-      })
-    ]
-  }, [name, author])
-
-  if (!document) {
-    return <></>
-  }
-
-  return (
-    <DocumentView
-      id={document[0]}
-      document={document[1]}
-      className='p-0 rounded-md'
-      asDialog={true}
-      onDialogClose={onDialogClose}
-    />
-  )
-}
-
-
-function getTemplate(type: View): (id: string) => Document {
-  switch (type) {
-    case 'Planning':
-      return Templates.planning
-
-    case 'Flash':
-      return Templates.flash
-
-    case 'Event':
-      return Templates.event
-
-    default:
-      throw new Error(`No template for ${type}`)
-  }
 }

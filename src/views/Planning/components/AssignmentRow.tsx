@@ -4,16 +4,16 @@ import { AssigneeAvatars } from '@/components/DataItem/AssigneeAvatars'
 import { DotDropdownMenu } from '@/components/ui/DotMenu'
 import { Delete, Edit, FileInput, Pen } from '@ttab/elephant-ui/icons'
 import { type MouseEvent, useMemo, useState, useCallback, useEffect, useRef } from 'react'
+import { createPayload } from '@/defaults/templates/lib/createPayload'
 import { SluglineButton } from '@/components/DataItem/Slugline'
 import { useYValue } from '@/hooks/useYValue'
 import { useLink } from '@/hooks/useLink'
-import { Prompt } from './Prompt'
-import { appendArticle } from '@/lib/createYItem'
+import { Prompt } from '@/components'
+import { appendDocumentToAssignment } from '@/lib/createYItem'
 import { useCollaboration } from '@/hooks/useCollaboration'
 import { Button } from '@ttab/elephant-ui'
 import { type Block } from '@ttab/elephant-api/newsdoc'
 import { deleteByYPath } from '@/lib/yUtils'
-import { createArticlePayload } from '@/defaults/templates/articleDocumentTemplate'
 import { useOpenDocuments } from '@/hooks/useOpenDocuments'
 import { cn } from '@ttab/elephant-ui/utils'
 import { useNavigationKeys } from '@/hooks/useNavigationKeys'
@@ -246,11 +246,11 @@ export const AssignmentRow = ({ index, onSelect, isFocused = false, asDialog }: 
               const id = crypto.randomUUID()
               const onDocumentCreated = (): void => {
                 setTimeout(() => {
-                  appendArticle({ document: provider?.document, id, index, slug: '' })
+                  appendDocumentToAssignment({ document: provider?.document, id, index, slug: '', type: 'article' })
                 }, 0)
               }
 
-              const payload = createArticlePayload(provider?.document, index)
+              const payload = createPayload(provider?.document, index)
 
               openArticle(event,
                 { id, payload },

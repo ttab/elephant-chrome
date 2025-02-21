@@ -13,6 +13,11 @@ import { type Document } from '@ttab/elephant-api/newsdoc'
 
 export type Template = keyof typeof Templates
 
+
+/**
+ * @deprecated This component is deprecated and will be removed in future releases.
+ * showModal hook should be used instead for a unified way to open dialogs.
+ */
 export const CreateDocumentDialog = <T,>({ type, payload, createdDocumentIdRef, children }: PropsWithChildren<{
   type: View
   payload?: T

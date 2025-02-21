@@ -5,12 +5,13 @@ import type * as Y from 'yjs'
 import { useRegistry } from './useRegistry'
 
 interface UseHocusPocusDocumentProps {
-  documentId?: string
+  documentId: string
   initialDocument?: Y.Doc
 }
 
 interface UseHocusPocusDocumentResult {
   document: Y.Doc | undefined
+  documentId: string
   connected: boolean
   synced: boolean
 }
@@ -78,6 +79,7 @@ export const useCollaborationDocument = ({ documentId, initialDocument }: UseHoc
 
   return {
     document,
+    documentId: documentId,
     connected: !!provider?.isConnected || connected,
     synced
   }

@@ -2,7 +2,7 @@ import type { IndexSearchResult } from '@/shared/Index'
 import { Index } from '@/shared/Index'
 import type { Repository } from '@/shared/Repository'
 import { Document } from '@ttab/elephant-api/newsdoc'
-import { BoolQueryV1, QueryV1 } from '@ttab/elephant-api/index'
+import { BoolQueryV1, QueryV1, TermQueryV1 } from '@ttab/elephant-api/index'
 import { Block } from '@ttab/elephant-api/newsdoc'
 import type { Session } from 'next-auth'
 import { decodeJwt } from 'jose'
@@ -27,19 +27,19 @@ export async function initializeAuthor({ url, session, repository }: {
               {
                 conditions: {
                   oneofKind: 'term',
-                  term: {
+                  term: TermQueryV1.create({
                     field: 'document.meta.core_author.data.sub.keyword',
                     value: session.user.sub
-                  }
+                  })
                 }
               },
               {
                 conditions: {
                   oneofKind: 'term',
-                  term: {
+                  term: TermQueryV1.create({
                     field: 'document.meta.core_contact_info.data.email.keyword',
                     value: session.user.email
-                  }
+                  })
                 }
               }
             ]

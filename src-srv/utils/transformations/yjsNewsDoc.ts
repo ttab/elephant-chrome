@@ -31,6 +31,7 @@ export function toYjsNewsDoc(eleDoc: EleDocumentResponse, yDoc: Document | Y.Doc
   yContent.applyDelta(
     slateNodesToInsertDelta(content)
   )
+
   yMap.set('content', yContent)
 
   // Set version
@@ -61,7 +62,7 @@ export function fromYjsNewsDoc(yDoc: Y.Doc): {
   const links = (yMap.get('links') as Y.Map<unknown>).toJSON() || {}
 
   const yContent = yMap.get('content') as Y.XmlText
-  const content = yContent.toString() ? yTextToSlateElement(yContent).children : []
+  const content = yContent.length ? yTextToSlateElement(yContent).children : []
 
   const responseDocument = {
     version: yDoc.getMap('version').get('version') as string,

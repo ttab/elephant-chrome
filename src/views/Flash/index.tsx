@@ -1,8 +1,10 @@
 import type * as Y from 'yjs'
 import { AwarenessDocument } from '@/components'
 import type { ViewMetadata, ViewProps } from '@/types'
-import { useQuery } from '@/hooks'
 import { FlashViewContent } from './FlashViewContent'
+import { createDocument } from '@/lib/createYItem'
+import { useMemo } from 'react'
+import * as Templates from '@/defaults/templates'
 
 const meta: ViewMetadata = {
   name: 'Flash',
@@ -23,15 +25,25 @@ const meta: ViewMetadata = {
 export const Flash = (props: ViewProps & {
   document?: Y.Doc
 }): JSX.Element => {
-  const [query] = useQuery()
-  const documentId = props.id || query.id
+  const initialArticle = useMemo(() => {
+    return createDocument({
+      template: Templates.flash,
+      inProgress: true
+    })
+  }, [])
 
   return (
     <>
-      {typeof documentId === 'string'
+      {typeof initialArticle[0] === 'string'
         ? (
-            <AwarenessDocument documentId={documentId} document={props.document}>
-              <FlashViewContent {...props} documentId={documentId} />
+            <AwarenessDocument documentId={initialArticle[0]} document={initialArticle[1]}>
+              <FlashViewContent {...
+                {
+                  ...props,
+                  id: initialArticle[0]
+                }
+              }
+              />
             </AwarenessDocument>
           )
         : <></>}

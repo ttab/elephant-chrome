@@ -10,7 +10,7 @@ import type { DefaultValueOption } from '@/types/index'
 import { CalendarDays, FileInput } from '@ttab/elephant-ui/icons'
 import { parseISO, format } from 'date-fns'
 import { toZonedTime } from 'date-fns-tz'
-import { ModalContent } from '../Wires/components'
+import { PreviewSheet } from '../Wires/components'
 import { useActiveUsers } from '@/hooks/useActiveUsers'
 import { AssigneeAvatars } from '@/components/DataItem/AssigneeAvatars'
 import { DoneMarkedBy } from './DoneMarkedBy'
@@ -87,7 +87,7 @@ export const ApprovalsCard = ({ assignment, isSelected, isFocused, status }: {
       onSelect={(event) => {
         if (event instanceof KeyboardEvent && event.key == ' ' && articleId) {
           showModal(
-            <ModalContent
+            <PreviewSheet
               id={articleId}
               handleClose={hideModal}
             />

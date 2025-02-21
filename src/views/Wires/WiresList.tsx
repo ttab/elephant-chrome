@@ -11,7 +11,9 @@ export const WireList = (): JSX.Element => {
   const [{ source, page }] = useQuery()
 
   const sourceUri = useWireSources()
-    .filter((_) => source?.includes(_.title))
+    .filter((_) => Array.isArray(source)
+      ? source.includes(_.title)
+      : source === _.title)
     .map((_) => _.uri)
 
   const columns = useMemo(() => wiresListColumns({ sections }), [sections])
