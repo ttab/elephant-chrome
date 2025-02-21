@@ -63,18 +63,15 @@ function getRowDecorators(type: DocumentType, row: RowType<unknown>): string {
     && wireRow.original?.fields?.['heads.done.created']?.values?.[0]
   const approved = Number(wireRow.original?.fields?.['heads.approved.version']?.values?.[0]) > -1
     && wireRow.original?.fields?.['heads.approved.created']?.values?.[0]
+  const used = Number(wireRow.original?.fields?.['heads.used.version']?.values?.[0]) > -1
+    && wireRow.original?.fields?.['heads.used.created']?.values?.[0]
 
-
-  if (done || approved) {
+  if (done || approved || used) {
     return done && (!approved || new Date(done) > new Date(approved))
-      ? `bg-done-background
-      data-[state=selected]:bg-done
-      focus-visible:bg-done-background
-      data-[state=focused]:bg-done-border`
-      : `bg-approved-background
-      data-[state=selected]:bg-approved
-      focus-visible:bg-approved-background
-      data-[state=focused]:bg-approved-border`
+      ? `bg-done-background data-[state=selected]:bg-done focus-visible:bg-done-background data-[state=focused]:bg-done-border`
+      : approved && (!used || new Date(approved) > new Date(used))
+        ? `bg-approved-background data-[state=selected]:bg-approved focus-visible:bg-approved-background data-[state=focused]:bg-approved-border`
+        : `bg-usable-background data-[state=selected]:bg-usable focus-visible:bg-usable-background data-[state=focused]:bg-usable-border`
   }
 
   return ''
