@@ -1,6 +1,6 @@
 import type { Index } from '@/shared/Index'
 import type { Repository } from '@/shared/Repository'
-import { BoolQueryV1, QueryV1 } from '@ttab/elephant-api/index'
+import { BoolQueryV1, QueryV1, TermsQueryV1 } from '@ttab/elephant-api/index'
 import type { Session } from 'next-auth'
 import type { Wire } from '.'
 import { fields } from '.'
@@ -65,10 +65,10 @@ function constructQuery(source: string[] | undefined): QueryV1 | undefined {
           {
             conditions: {
               oneofKind: 'terms',
-              terms: {
+              terms: TermsQueryV1.create({
                 field: 'document.rel.source.uri',
                 values: source
-              }
+              })
             }
           }
         ]

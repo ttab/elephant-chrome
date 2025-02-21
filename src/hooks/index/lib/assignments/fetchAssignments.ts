@@ -1,7 +1,7 @@
 import { DocumentStatuses } from '@/defaults/documentStatuses'
 import type { Index } from '@/shared/Index'
 import type { Repository } from '@/shared/Repository'
-import { QueryV1, BoolQueryV1 } from '@ttab/elephant-api/index'
+import { QueryV1, BoolQueryV1, TermQueryV1 } from '@ttab/elephant-api/index'
 import type { BulkGetResponse, GetStatusOverviewResponse, StatusOverviewItem } from '@ttab/elephant-api/repository'
 import type { Session } from 'next-auth'
 import { parseISO } from 'date-fns'
@@ -166,19 +166,19 @@ function constructQuery(date: Date | string): QueryV1 {
           {
             conditions: {
               oneofKind: 'term',
-              term: {
+              term: TermQueryV1.create({
                 field: 'document.meta.core_assignment.data.start_date',
                 value: formattedDate
-              }
+              })
             }
           },
           {
             conditions: {
               oneofKind: 'term',
-              term: {
+              term: TermQueryV1.create({
                 field: 'document.meta.core_planning_item.data.start_date',
                 value: formattedDate
-              }
+              })
             }
           }
         ]

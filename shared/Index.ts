@@ -3,7 +3,8 @@ import {
   SearchV1Client,
   QueryV1,
   SortingV1,
-  type HitV1
+  type HitV1,
+  QueryRequestV1
 } from '@ttab/elephant-api/index'
 import { meta } from './meta'
 import { pagination } from '@/lib/pagination'
@@ -59,7 +60,7 @@ export class Index {
 
     try {
       const { response } = await this.#client.query(
-        {
+        QueryRequestV1.create({
           documentType,
           language,
           from: BigInt(from),
@@ -75,7 +76,7 @@ export class Index {
           source,
           searchAfter: [],
           loadDocument
-        },
+        }),
         meta(accessToken)
       )
 

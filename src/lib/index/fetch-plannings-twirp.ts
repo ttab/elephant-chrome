@@ -26,7 +26,8 @@ export const fetch = async (query: string, session: Session | null, index?: Inde
                 oneofKind: 'prefix',
                 prefix: PrefixQueryV1.create({
                   field: 'document.title',
-                  value: query
+                  value: query,
+                  caseInsensitive: true
                 })
               }
             },
@@ -35,7 +36,8 @@ export const fetch = async (query: string, session: Session | null, index?: Inde
                 oneofKind: 'prefix',
                 prefix: PrefixQueryV1.create({
                   field: 'document.rel.section.title',
-                  value: query
+                  value: query,
+                  caseInsensitive: true
                 })
               }
             }
