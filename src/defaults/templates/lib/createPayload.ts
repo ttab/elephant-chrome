@@ -44,4 +44,3 @@ export function createPayload(document: Y.Doc, index?: number): TemplatePayload 
     }
   }
 }
-
