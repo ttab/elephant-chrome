@@ -168,7 +168,21 @@ export const Table = <TData, TValue>({
         if (selectedRow && isRowTypeWire<TData, TValue>(type)) {
           const wireRow = selectedRow as RowType<WireType>
 
-          showModal(<Wire onDialogClose={hideModal} asDialog wire={wireRow.original} />)
+          const onDocumentCreated = () => {
+            setDocumentStatus({
+              name: 'used',
+              uuid: wireRow.original.id,
+              version: BigInt(wireRow.original.fields.current_version.values?.[0])
+            }).catch(console.error)
+          }
+          showModal(
+            <Wire
+              onDialogClose={hideModal}
+              asDialog
+              wire={wireRow.original}
+              onDocumentCreated={onDocumentCreated}
+            />
+          )
         }
       }
 

@@ -1,5 +1,5 @@
 import { Badge, SheetClose, ToggleGroup, ToggleGroupItem } from '@ttab/elephant-ui'
-import { Check, Save, X } from '@ttab/elephant-ui/icons'
+import { Check, FilePlus2, Save, X } from '@ttab/elephant-ui/icons'
 import { Editor } from '../../../components/PlainEditor'
 import { FaroErrorBoundary } from '@grafana/faro-react'
 import { Error, Wire } from '@/views'
@@ -66,45 +66,79 @@ export const PreviewSheet = ({ id, wire, handleClose, textOnly = true }: {
           </div>
 
           <div className='flex flex-row gap-2'>
-            <ToggleGroup
-              type='single'
-              size='xs'
-              value={documentStatus?.name}
-              onValueChange={(value) => {
-                if (!value && documentStatus) {
-                  setDocumentStatus({
-                    name: 'draft',
-                    version: documentStatus.version,
-                    uuid: documentStatus.uuid
-                  }).catch(console.error)
-                } else {
-                  setDocumentStatus(value).catch(console.error)
-                }
-              }}
-            >
-              <ToggleGroupItem
-                value='done'
-                aria-label='Toggle save'
-                className='border
+            {wire && (
+              <>
+                <ToggleGroup
+                  type='single'
+                  size='xs'
+                  disabled={documentStatus?.name === 'used'}
+                  value={documentStatus?.name}
+                  onValueChange={(value) => {
+                    if (!value && documentStatus) {
+                      setDocumentStatus({
+                        name: 'draft',
+                        version: documentStatus.version,
+                        uuid: documentStatus.uuid
+                      }).catch(console.error)
+                    } else {
+                      setDocumentStatus(value).catch(console.error)
+                    }
+                  }}
+                >
+                  <ToggleGroupItem
+                    value='done'
+                    aria-label='Toggle save'
+                    className='border
               !border-done-border
               data-[state="on"]:!bg-done
               data-[state="off"]:!bg-done-background
               data-[state="off"]:!text-muted-foreground'
-              >
-                <Save className='h-4 w-4' />
-              </ToggleGroupItem>
-              <ToggleGroupItem
-                value='approved'
-                aria-label='Toggle check'
-                className='border
+                  >
+                    <Save className='h-4 w-4' />
+                  </ToggleGroupItem>
+                  <ToggleGroupItem
+                    value='approved'
+                    aria-label='Toggle check'
+                    className='border
               !border-approved-border
               data-[state="on"]:!bg-approved
               data-[state="off"]:!bg-approved-background
               data-[state="off"]:!text-muted-foreground'
-              >
-                <Check className='h-4 w-4' />
-              </ToggleGroupItem>
-            </ToggleGroup>
+                  >
+                    <Check className='h-4 w-4' />
+                  </ToggleGroupItem>
+                  <ToggleGroupItem
+                    value='used'
+                    aria-label='Toggle add'
+                    className='border
+              !border-usable-border
+              data-[state="on"]:!bg-usable
+              data-[state="off"]:!bg-useable-background
+              data-[state="off"]:!text-muted-foreground'
+                    onClick={(event) => {
+                      event.preventDefault()
+                      const onDocumentCreated = () => {
+                        setDocumentStatus({
+                          name: 'used',
+                          uuid: wire.id,
+                          version: BigInt(wire.fields.current_version.values?.[0])
+                        }).catch(console.error)
+                      }
+                      showModal(
+                        <Wire
+                          onDialogClose={hideModal}
+                          asDialog
+                          wire={wire}
+                          onDocumentCreated={onDocumentCreated}
+                        />
+                      )
+                    }}
+                  >
+                    <FilePlus2 className='h-4 w-4' />
+                  </ToggleGroupItem>
+                </ToggleGroup>
+              </>
+            )}
 
             <SheetClose
               className='rounded-md hover:bg-gray-100 w-9 h-9 flex items-center justify-center outline-none'

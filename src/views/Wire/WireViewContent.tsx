@@ -196,6 +196,7 @@ export const WireViewContent = (props: ViewProps & {
                   if (setShowVerifyDialog) {
                     setShowVerifyDialog(false)
                   }
+                  props.onDocumentCreated?.()
                 }}
                 onSecondary={() => {
                   if (setShowVerifyDialog) {
