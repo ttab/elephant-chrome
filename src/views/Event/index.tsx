@@ -56,7 +56,7 @@ export const Event = (props: ViewProps & { document?: Y.Doc }): JSX.Element => {
       {typeof documentId === 'string'
         ? (
             <AwarenessDocument documentId={documentId} document={props.document}>
-              <EventViewContent {...props} documentId={documentId} document={props.document} />
+              <EventViewContent {...props} documentId={documentId} />
             </AwarenessDocument>
           )
         : (
@@ -69,7 +69,7 @@ export const Event = (props: ViewProps & { document?: Y.Doc }): JSX.Element => {
   )
 }
 
-const EventViewContent = (props: ViewProps & { documentId: string, document: Y.Doc | undefined }): JSX.Element | undefined => {
+const EventViewContent = (props: ViewProps & { documentId: string }): JSX.Element | undefined => {
   const { provider } = useCollaboration()
   const { data, status } = useSession()
   const [documentStatus, setDocumentStatus] = useDocumentStatus(props.documentId)
