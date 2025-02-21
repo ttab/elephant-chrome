@@ -1,5 +1,6 @@
 import { DateChanger } from '@/components/Header/Datechanger'
 import { TableFilter } from '@/components'
+import { CreateDocumentDialog } from '@/components/View/ViewHeader/CreateDocumentDialog'
 import { TabsGrid } from '@/components/Header/LayoutSwitch'
 import { Button } from '@ttab/elephant-ui'
 import { PlusIcon } from '@ttab/elephant-ui/icons'
@@ -8,10 +9,6 @@ import { PersonalAssignmentsFilter } from './PersonalAssignmentsFilter'
 import { useMemo } from 'react'
 import { GridFilter } from '../GridFilter'
 import type { Facets } from '@/hooks/index/lib/assignments/filterAssignments'
-import { useModal } from '../Modal/useModal'
-import * as Views from '@/views'
-import { createDocument } from '@/lib/createYItem'
-import { getTemplate } from '@/defaults/templates/lib/getTemplate'
 
 export const Header = ({ assigneeUserName, type, facets }: {
   type: View
@@ -26,35 +23,18 @@ export const Header = ({ assigneeUserName, type, facets }: {
     return false
   }, [type])
 
-  const { showModal, hideModal } = useModal()
-
   const Filter = type === 'Approvals' ? GridFilter : TableFilter
-  const ViewDialog = Views[type]
 
   return (
     <>
       {showButton && (
-        <Button
-          size='sm'
-          className='h-8 pr-4'
-          onClick={() => {
-            const initialPlanning = createDocument({
-              template: getTemplate(type),
-              inProgress: true
-            })
-            showModal(
-              <ViewDialog
-                onDialogClose={hideModal}
-                asDialog
-                id={initialPlanning[0]}
-                document={initialPlanning[1]}
-              />
-            )
-          }}
-        >
-          <PlusIcon size={18} strokeWidth={1.75} />
-          <span className='pl-0.5'>Ny</span>
-        </Button>
+        <CreateDocumentDialog type={type}>
+          <Button size='sm' className='h-8 pr-4'>
+            <PlusIcon size={18} strokeWidth={1.75} />
+            {' '}
+            Ny
+          </Button>
+        </CreateDocumentDialog>
       )}
 
       <div className='hidden sm:block'>
