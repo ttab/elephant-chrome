@@ -26,7 +26,8 @@ export const fetch = async (query: string, session: Session | null, index?: Inde
                 oneofKind: 'multiMatch',
                 multiMatch: MultiMatchQueryV1.create({
                   fields: ['document.title', 'document.rel.section.title'],
-                  query
+                  query,
+                  type: 'phrase_prefix'
                 })
               }
             }
