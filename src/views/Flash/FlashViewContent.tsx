@@ -128,7 +128,7 @@ export const FlashViewContent = (props: ViewProps): JSX.Element | undefined => {
                 title='Skapa och skicka flash?'
                 description={!selectedPlanning
                   ? 'En ny planering med tillhörande uppdrag för denna flash kommer att skapas åt dig.'
-                  : `Denna flash kommer att läggas i ett nytt uppdrag i planeringen "${selectedPlanning.label}`}
+                  : `Denna flash kommer att läggas i ett nytt uppdrag i planeringen "${selectedPlanning.label}"`}
                 secondaryLabel='Avbryt'
                 primaryLabel='Skicka'
                 selectedPlanning={selectedPlanning}

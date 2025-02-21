@@ -167,7 +167,7 @@ export const WireViewContent = (props: ViewProps & {
                 title='Skapa artikel från telegram'
                 description={!selectedPlanning
                   ? 'En ny planering med tillhörande uppdrag för denna artikel kommer att skapas åt dig.'
-                  : `Denna artikel kommer att läggas i ett nytt uppdrag i planeringen "${selectedPlanning.label}`}
+                  : `Denna artikel kommer att läggas i ett nytt uppdrag i planeringen "${selectedPlanning.label}"`}
                 secondaryLabel='Avbryt'
                 primaryLabel='Skapa'
                 selectedPlanning={selectedPlanning}
