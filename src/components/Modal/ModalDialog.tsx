@@ -7,7 +7,7 @@ export const ModalDialog = ({ children, isVisible }: {
   <Dialog modal={false} open={isVisible}>
     <DialogDescription />
     <DialogTitle />
-    <DialogContent className='p-0 w-[94vw]'>
+    <DialogContent className='p-0 w-[94vw] focus-visible:outline-none'>
       {children}
     </DialogContent>
   </Dialog>
