@@ -1,6 +1,6 @@
 import { NewsvalueMap } from '@/defaults/newsvalueMap'
 import type { Index } from '@/shared/Index'
-import { QueryV1, BoolQueryV1, PrefixQueryV1 } from '@ttab/elephant-api/index'
+import { QueryV1, BoolQueryV1, MultiMatchQueryV1 } from '@ttab/elephant-api/index'
 import type { Session } from 'next-auth'
 
 // TODO: Adapt and replace http query from index
@@ -23,21 +23,11 @@ export const fetch = async (query: string, session: Session | null, index?: Inde
           should: [
             {
               conditions: {
-                oneofKind: 'prefix',
-                prefix: PrefixQueryV1.create({
-                  field: 'document.title',
-                  value: query,
-                  caseInsensitive: true
-                })
-              }
-            },
-            {
-              conditions: {
-                oneofKind: 'prefix',
-                prefix: PrefixQueryV1.create({
-                  field: 'document.rel.section.title',
-                  value: query,
-                  caseInsensitive: true
+                oneofKind: 'multiMatch',
+                multiMatch: MultiMatchQueryV1.create({
+                  fields: ['document.title', 'document.rel.section.title'],
+                  query,
+                  type: 'phrase_prefix'
                 })
               }
             }

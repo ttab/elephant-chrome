@@ -3,6 +3,8 @@ import { TableRow, TableCell } from '@ttab/elephant-ui'
 import { type Row as RowType, flexRender } from '@tanstack/react-table'
 import { cn } from '@ttab/elephant-ui/utils'
 import type { Wire } from '@/hooks/index/lib/wires'
+import { useModal } from '../Modal/useModal'
+import { cva } from 'class-variance-authority'
 
 type DocumentType = 'Planning' | 'Event' | 'Assignments' | 'Search' | 'Wires'
 export const Row = ({ row, handleOpen, openDocuments, type }: {
@@ -11,21 +13,29 @@ export const Row = ({ row, handleOpen, openDocuments, type }: {
   handleOpen: (event: MouseEvent<HTMLTableRowElement>, subRow: RowType<unknown>) => void
   openDocuments: string[]
 }): JSX.Element => {
-  const rowDecorators = getRowDecorators(type, row)
+  const { currentModal } = useModal()
+
+  const variants = cva('',
+    {
+      variants: {
+        status: {
+          draft: 'border-s-[6px] bg-background data-[state=focused]:ring-2',
+          done: 'bg-done-background border-s-done border-s-[6px] data-[state=selected]:bg-done data-[state=focused]:bg-done-background data-[state=focused]:ring-2',
+          approved: 'bg-approved-background border-s-approved border-s-[6px] data-[state=selected]:bg-approved data-[state=focused]:bg-approved-background data-[state=focused]:ring-2',
+          used: 'bg-usable-background border-s-usable border-s-[6px] data-[state=selected]:bg-usable data-[state=focused]:bg-usable-background data-[state=focused]:ring-2'
+        }
+      }
+    })
+
   return (
     <TableRow
       tabIndex={0}
-      className={`flex
-        items-center
-        cursor-default
-        scroll-mt-10
-        ring-inset
-        focus:outline-none
-        focus-visible:ring-2
-        focus-visible:ring-table-selected
-        data-[state=selected]:bg-table-selected
-        ${rowDecorators}
-      `}
+      className={cn('flex cursor-default scroll-mt-10 ring-inset focus:outline-none focus-visible:ring-2 focus-visible:ring-table-selected data-[state=selected]:bg-table-selected',
+        type === 'Assignments' ? 'items-start' : 'items-center',
+        variants({
+          status: getRowStatus(type, row)
+        })
+      )}
       data-state={((openDocuments.includes(
         ((row.original as { _id: string })?._id) || (row.original as { id: string })?.id)
       && 'selected'))
@@ -34,6 +44,11 @@ export const Row = ({ row, handleOpen, openDocuments, type }: {
       ref={(el) => {
         if (el && row.getIsSelected()) {
           el.focus()
+
+          // When modal is active and a wire view, then change scroll behavior
+          if (currentModal?.id && type === 'Wires') {
+            el.scrollIntoView({ behavior: 'smooth', block: 'start' })
+          }
         }
       }}
     >
@@ -52,9 +67,9 @@ export const Row = ({ row, handleOpen, openDocuments, type }: {
   )
 }
 
-function getRowDecorators(type: DocumentType, row: RowType<unknown>): string {
+function getRowStatus(type: DocumentType, row: RowType<unknown>): 'draft' | 'done' | 'approved' | 'used' | null {
   if (type !== 'Wires') {
-    return ''
+    return null
   }
 
   const wireRow = row as RowType<Wire>
@@ -68,11 +83,11 @@ function getRowDecorators(type: DocumentType, row: RowType<unknown>): string {
 
   if (done || approved || used) {
     return done && (!approved || new Date(done) > new Date(approved))
-      ? `bg-done-background data-[state=selected]:bg-done focus-visible:bg-done-background data-[state=focused]:bg-done-border`
+      ? 'done'
       : approved && (!used || new Date(approved) > new Date(used))
-        ? `bg-approved-background data-[state=selected]:bg-approved focus-visible:bg-approved-background data-[state=focused]:bg-approved-border`
-        : `bg-usable-background data-[state=selected]:bg-usable focus-visible:bg-usable-background data-[state=focused]:bg-usable-border`
+        ? 'approved'
+        : 'used'
   }
 
-  return ''
+  return 'draft'
 }

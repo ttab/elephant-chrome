@@ -2,8 +2,9 @@ import { useHistory, useLink } from '@/hooks/index'
 import { useUserTracker } from '@/hooks/useUserTracker'
 import type { HistoryState } from '@/navigation/hooks/useHistory'
 import { Button } from '@ttab/elephant-ui'
-import { Plus } from '@ttab/elephant-ui/icons'
+import { Cable, Plus } from '@ttab/elephant-ui/icons'
 import { useEffect } from 'react'
+import { toast } from 'sonner'
 
 export const Controller = (): JSX.Element => {
   const addWire = useLink('Wires')
@@ -14,6 +15,25 @@ export const Controller = (): JSX.Element => {
     // Load state from userTracker we're not in a initial state
     if (wiresHistory && loadState(state, wiresHistory)) {
       replaceState(wiresHistory.contentState[0].path, wiresHistory)
+    }
+    if (wiresHistory && !compareStates(state, wiresHistory)) {
+      toast('Vill du spara ändringar i urvalet?', {
+        id: 'unsaved-changes',
+        duration: Infinity,
+        icon: <Cable className='pr-1' />,
+        action: {
+          label: 'Spara',
+          onClick: () => {
+            if (state) {
+              setWiresHistory(state)
+              toast.dismiss(('unsaved-changes'))
+            }
+          }
+        }
+
+      })
+    } else {
+      toast.dismiss(('unsaved-changes'))
     }
   }, [replaceState, state, wiresHistory, setWiresHistory])
 
@@ -46,3 +66,16 @@ function loadState(state: HistoryState | null, wiresHistory: HistoryState | unde
 
   return state?.contentState.length === 1 && !state.contentState[0].props?.source
 }
+
+function compareStates(state: HistoryState | null, wiresHistoryState: HistoryState | undefined): boolean {
+  if (!state?.contentState || !wiresHistoryState?.contentState) {
+    return false
+  }
+
+  if (state.contentState.length !== wiresHistoryState.contentState.length) {
+    return false
+  }
+
+  return state.contentState.every((item, index) => item.path === wiresHistoryState.contentState[index].path)
+}
+
