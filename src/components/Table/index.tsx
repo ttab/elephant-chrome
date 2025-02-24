@@ -213,13 +213,14 @@ export const Table = <TData, TValue>({
         </TableRow>
       )
     }
+    const isAssignmentsTable = window.location.pathname.includes('/elephant/assignments')
 
     return rows.map((row, index) => (
       table.getState().grouping.length)
       ? (
           <GroupedRows<TData, TValue>
             key={index}
-            type={type}
+            type={isAssignmentsTable ? 'Assignments' : type}
             row={row}
             columns={columns}
             handleOpen={handleOpen}
@@ -229,7 +230,7 @@ export const Table = <TData, TValue>({
       : (
           <Row
             key={index}
-            type={type}
+            type={isAssignmentsTable ? 'Assignments' : type}
             row={row}
             handleOpen={handleOpen}
             openDocuments={openDocuments}

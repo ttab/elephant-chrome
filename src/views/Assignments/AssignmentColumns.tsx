@@ -189,7 +189,7 @@ export function assignmentColumns({ authors = [], locale, timeZone }: {
       meta: {
         name: 'Action',
         columnIcon: Navigation,
-        className: 'flex-none'
+        className: 'flex-none p-0'
       },
       cell: ({ row }) => {
         const deliverableUuid = row.original?.links?.find((link) => link?.rel === 'deliverable')?.uuid || ''
