@@ -30,7 +30,8 @@ export const Row = ({ row, handleOpen, openDocuments, type }: {
   return (
     <TableRow
       tabIndex={0}
-      className={cn('flex items-center cursor-default scroll-mt-10 ring-inset focus:outline-none focus-visible:ring-2 focus-visible:ring-table-selected data-[state=selected]:bg-table-selected',
+      className={cn('flex cursor-default scroll-mt-10 ring-inset focus:outline-none focus-visible:ring-2 focus-visible:ring-table-selected data-[state=selected]:bg-table-selected',
+        type === 'Assignments' ? 'items-start' : 'items-center',
         variants({
           status: getRowStatus(type, row)
         })
