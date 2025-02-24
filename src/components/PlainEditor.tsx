@@ -38,16 +38,18 @@ export const Editor = ({ id, textOnly = false }: {
 
 
   return (
-    <div className='flex-grow overflow-auto max-w-screen-lg mx-auto'>
-      <Textbit.Root plugins={plugins.map((initPlugin) => initPlugin())}>
+    <div className='flex flex-col pb-6 overflow-y-auto max-w-screen-lg mx-auto'>
+      <Textbit.Root
+        plugins={plugins.map((initPlugin) => initPlugin())}
+      >
         <Textbit.Editable
           key={id}
           readOnly
           value={filterText(content, textOnly)}
-          className='outline-none pb-6 max-h-[30vh] overflow-y-scroll dark:text-slate-100 px-2'
         />
       </Textbit.Root>
     </div>
+
   )
 }
 

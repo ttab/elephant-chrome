@@ -4,24 +4,29 @@ import { ModalProvider } from './components/Modal/ModalProvider'
 import { Init } from './components/Init'
 import { FaroErrorBoundary } from '@grafana/faro-react'
 import { Error as ErrorPage } from './views'
+import { Toaster } from '@ttab/elephant-ui'
 
 export const App = (): JSX.Element => (
-  <Init>
+  <>
+    <Init>
 
-    <FaroErrorBoundary
-      fallback={(error) => <ErrorPage error={error} />}
-    >
-      <ModalProvider>
-        <div className='relative flex h-screen flex-col'>
-          <div className='grid grid-cols-12 h-screen'>
-            <AppContent />
-          </div>
+      <FaroErrorBoundary
+        fallback={(error) => <ErrorPage error={error} />}
+      >
+        <ModalProvider>
+          <div className='relative flex h-screen flex-col'>
+            <div className='grid grid-cols-12 h-screen'>
+              <AppContent />
+            </div>
 
-          <div className='absolute top-0 left-0'>
-            <AppHeader />
+            <div className='absolute top-0 left-0'>
+              <AppHeader />
+            </div>
           </div>
-        </div>
-      </ModalProvider>
-    </FaroErrorBoundary>
-  </Init>
+        </ModalProvider>
+      </FaroErrorBoundary>
+    </Init>
+
+    <Toaster position='bottom-center' visibleToasts={1} />
+  </>
 )

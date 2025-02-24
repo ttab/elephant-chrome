@@ -1,4 +1,4 @@
-import { Badge, SheetClose, ToggleGroup, ToggleGroupItem } from '@ttab/elephant-ui'
+import { Badge, SheetClose, ToggleGroup, ToggleGroupItem, Tooltip } from '@ttab/elephant-ui'
 import { Check, Save, X } from '@ttab/elephant-ui/icons'
 import { Editor } from '../../../components/PlainEditor'
 import { FaroErrorBoundary } from '@grafana/faro-react'
@@ -24,12 +24,12 @@ export const PreviewSheet = ({ id, wire, handleClose, textOnly = true }: {
     keys: ['s', 'r', 'c'],
     onNavigation: (event) => {
       event.stopPropagation()
-      if (event.key === 's') {
+      if (event.key === 'r') {
         setDocumentStatus('approved').catch((error) => console.error(error))
         return
       }
 
-      if (event.key === 'r') {
+      if (event.key === 's') {
         setDocumentStatus('done').catch((error) => console.error(error))
         return
       }
@@ -42,16 +42,12 @@ export const PreviewSheet = ({ id, wire, handleClose, textOnly = true }: {
   })
 
   return (
-    <FaroErrorBoundary
-      fallback={(error) => <Error error={error} />}
-    >
+    <FaroErrorBoundary fallback={(error) => <Error error={error} />}>
       <div className='w-full flex flex-col gap-4'>
         <div className='flex flex-row gap-6 justify-between items-center'>
           <div className='flex flex-row gap-2'>
             {source && (
-              <Badge
-                className='w-fit h-6 justify-center align-center'
-              >
+              <Badge className='w-fit h-6 justify-center align-center'>
                 {source.replace('wires://source/', '')}
               </Badge>
             )}
@@ -65,7 +61,7 @@ export const PreviewSheet = ({ id, wire, handleClose, textOnly = true }: {
             )}
           </div>
 
-          <div className='flex flex-row gap-2'>
+          <div className='flex flex-row gap-4'>
             <ToggleGroup
               type='single'
               size='xs'
@@ -82,39 +78,39 @@ export const PreviewSheet = ({ id, wire, handleClose, textOnly = true }: {
                 }
               }}
             >
-              <ToggleGroupItem
-                value='done'
-                aria-label='Toggle save'
-                className='border
-              !border-done-border
-              data-[state="on"]:!bg-done
-              data-[state="off"]:!bg-done-background
-              data-[state="off"]:!text-muted-foreground'
+              <Tooltip
+                content='Markera som sparad'
               >
-                <Save className='h-4 w-4' />
-              </ToggleGroupItem>
-              <ToggleGroupItem
-                value='approved'
-                aria-label='Toggle check'
-                className='border
-              !border-approved-border
-              data-[state="on"]:!bg-approved
-              data-[state="off"]:!bg-approved-background
-              data-[state="off"]:!text-muted-foreground'
+                <ToggleGroupItem
+                  value='done'
+                  aria-label='Toggle save'
+                  className='border !border-done-border data-[state="on"]:!bg-done data-[state="off"]:!bg-done-background data-[state="off"]:!text-muted-foreground hover:!border-done'
+                >
+                  <Save className='h-4 w-4' />
+                </ToggleGroupItem>
+              </Tooltip>
+              <Tooltip
+                content='Markera som läst'
               >
-                <Check className='h-4 w-4' />
-              </ToggleGroupItem>
+                <ToggleGroupItem
+                  value='approved'
+                  aria-label='Toggle check'
+                  className='border !border-approved-border data-[state="on"]:!bg-approved data-[state="off"]:!bg-approved-background data-[state="off"]:!text-muted-foreground hover:!border-approved'
+                >
+                  <Check className='h-4 w-4' />
+                </ToggleGroupItem>
+              </Tooltip>
             </ToggleGroup>
 
             <SheetClose
-              className='rounded-md hover:bg-gray-100 w-9 h-9 flex items-center justify-center outline-none'
+              className='rounded-md hover:bg-gray-100 w-8 h-8 flex items-center justify-center outline-none -mr-7'
               onClick={handleClose}
             >
               <X strokeWidth={1.75} size={18} />
             </SheetClose>
           </div>
         </div>
-        <div className='flex-2 -mt-2'>
+        <div className='flex flex-col h-full'>
           <Editor id={id} textOnly={textOnly} />
         </div>
       </div>
