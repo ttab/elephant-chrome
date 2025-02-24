@@ -24,12 +24,12 @@ export const PreviewSheet = ({ id, wire, handleClose, textOnly = true }: {
     keys: ['s', 'r', 'c'],
     onNavigation: (event) => {
       event.stopPropagation()
-      if (event.key === 's') {
+      if (event.key === 'r') {
         setDocumentStatus('approved').catch((error) => console.error(error))
         return
       }
 
-      if (event.key === 'r') {
+      if (event.key === 's') {
         setDocumentStatus('done').catch((error) => console.error(error))
         return
       }
