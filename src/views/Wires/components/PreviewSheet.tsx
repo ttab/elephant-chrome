@@ -61,7 +61,7 @@ export const PreviewSheet = ({ id, wire, handleClose, textOnly = true }: {
             )}
           </div>
 
-          <div className='flex flex-row gap-2'>
+          <div className='flex flex-row gap-4'>
             <ToggleGroup
               type='single'
               size='xs'
@@ -103,7 +103,7 @@ export const PreviewSheet = ({ id, wire, handleClose, textOnly = true }: {
             </ToggleGroup>
 
             <SheetClose
-              className='rounded-md hover:bg-gray-100 w-8 h-8 flex items-center justify-center outline-none pl-2'
+              className='rounded-md hover:bg-gray-100 w-8 h-8 flex items-center justify-center outline-none -mr-7'
               onClick={handleClose}
             >
               <X strokeWidth={1.75} size={18} />
