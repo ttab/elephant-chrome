@@ -11,11 +11,11 @@ export const ModalSheet = ({ children, isVisible }: {
       <SheetContent
         onPointerDownOutside={hideModal}
         side='bottom'
-        className='p-3 h-1/3 focus:outline-none pb-6 max-w-[1200px] mx-auto rounded-t rounded-lg'
+        className='p-3 h-1/2 max-w-[1000px] mx-auto rounded-t rounded-lg'
       >
         <SheetTitle />
         <SheetDescription />
-        <div className='flex flex-grow gap-4'>
+        <div className='h-full flex flex-grow gap-4 p-6 pb-12 pt-0'>
           {children}
         </div>
       </SheetContent>
