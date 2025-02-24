@@ -16,7 +16,7 @@ export const Row = ({ row, handleOpen, openDocuments, type }: {
     <TableRow
       tabIndex={0}
       className={`flex
-        items-center
+        ${type === 'Assignments' ? 'items-start' : 'items-center'}
         cursor-default
         scroll-mt-10
         ring-inset
