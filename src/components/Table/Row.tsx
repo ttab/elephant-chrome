@@ -3,6 +3,7 @@ import { TableRow, TableCell } from '@ttab/elephant-ui'
 import { type Row as RowType, flexRender } from '@tanstack/react-table'
 import { cn } from '@ttab/elephant-ui/utils'
 import type { Wire } from '@/hooks/index/lib/wires'
+import { useModal } from '../Modal/useModal'
 
 type DocumentType = 'Planning' | 'Event' | 'Assignments' | 'Search' | 'Wires'
 export const Row = ({ row, handleOpen, openDocuments, type }: {
@@ -12,6 +13,8 @@ export const Row = ({ row, handleOpen, openDocuments, type }: {
   openDocuments: string[]
 }): JSX.Element => {
   const rowDecorators = getRowDecorators(type, row)
+  const { currentModal } = useModal()
+
   return (
     <TableRow
       tabIndex={0}
@@ -34,6 +37,11 @@ export const Row = ({ row, handleOpen, openDocuments, type }: {
       ref={(el) => {
         if (el && row.getIsSelected()) {
           el.focus()
+
+          // When modal is active and a wire view, then change scroll behavior
+          if (currentModal?.id && type === 'Wires') {
+            el.scrollIntoView({ behavior: 'smooth', block: 'start' })
+          }
         }
       }}
     >
