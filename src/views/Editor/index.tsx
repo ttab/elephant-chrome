@@ -1,7 +1,6 @@
 import { useEffect, useState, useRef } from 'react'
-import { AwarenessDocument, View, ViewHeader } from '@/components'
+import { AwarenessDocument, View } from '@/components'
 import { Notes } from './components/Notes'
-import { PenBoxIcon } from '@ttab/elephant-ui/icons'
 
 import type * as Y from 'yjs'
 
@@ -16,7 +15,8 @@ import {
   useLink,
   useYValue,
   useView,
-  useYjsEditor
+  useYjsEditor,
+  useAwareness
 } from '@/hooks'
 import { type ViewMetadata, type ViewProps } from '@/types'
 import { EditorHeader } from './EditorHeader'
@@ -101,6 +101,7 @@ function EditorWrapper(props: ViewProps & {
   const { provider, synced, user } = useCollaboration()
   const openFactboxEditor = useLink('Factbox')
   const [notes] = useYValue<Block[] | undefined>('meta.core/note')
+  const [,setIsFocused] = useAwareness(props.documentId)
 
   // Plugin configuration
   const getConfiguredPlugins = () => {
@@ -134,6 +135,12 @@ function EditorWrapper(props: ViewProps & {
     <View.Root>
       <Textbit.Root
         autoFocus={props.autoFocus ?? true}
+        onBlur={() => {
+          setIsFocused(false)
+        }}
+        onFocus={() => {
+          setIsFocused(true)
+        }}
         plugins={getConfiguredPlugins()}
         placeholders='multiple'
         className='h-screen max-h-screen flex flex-col'
@@ -169,15 +176,7 @@ function EditorContainer({
 
   return (
     <>
-      <ViewHeader.Root>
-        <ViewHeader.Title title='Editor' icon={PenBoxIcon} />
-        <ViewHeader.Content>
-          <EditorHeader documentId={documentId} />
-        </ViewHeader.Content>
-        <ViewHeader.Action>
-          {!!documentId && <ViewHeader.RemoteUsers documentId={documentId} />}
-        </ViewHeader.Action>
-      </ViewHeader.Root>
+      <EditorHeader documentId={documentId} />
 
       <View.Content className='flex flex-col max-w-[1000px]'>
         {!!notes?.length && <div className='p-4'><Notes /></div>}

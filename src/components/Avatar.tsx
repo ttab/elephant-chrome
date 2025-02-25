@@ -43,7 +43,7 @@ export const Avatar = ({ user, value, variant = 'default', size = 'default', col
     stacked?: boolean
   }): JSX.Element => {
   const bg = Collaboration.colors[color]?.bg || ''
-  const border = Collaboration.colors[color]?.border || ''
+  const border = 'border-gray'
 
   const compoundClassName = cn(className, variant === 'color' && [bg, 'border', border])
 

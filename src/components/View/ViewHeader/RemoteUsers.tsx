@@ -30,6 +30,7 @@ export const RemoteUsers = ({ documentId }: PropsWithChildren & {
               value={user.data.name}
               variant='color'
               color={user.data.color}
+              size='xs'
             />
           )
         })}

@@ -11,7 +11,10 @@ const newNote = Block.create({
   role: 'internal'
 })
 
-export const AddNote = (): JSX.Element => {
+export const AddNote = ({ text = '', variant = 'ghost' }: {
+  text?: string
+  variant?: string
+}): JSX.Element => {
   const [notes, setNotes] = useYValue<Block[] | undefined>('meta.core/note')
 
   const handleClick = () => {
@@ -20,12 +23,15 @@ export const AddNote = (): JSX.Element => {
     } else
       setNotes([...notes, newNote])
   }
+
   return (
     <Button
-      variant='ghost'
+      variant={variant}
       onClick={handleClick}
+      className='flex flex-row gap-1 text-xs'
     >
       <MessageSquarePlus size={18} strokeWidth={1.75} />
+      {text && <span className='text-muted-foreground'>{text}</span>}
     </Button>
   )
 }
