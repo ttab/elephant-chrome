@@ -39,8 +39,12 @@ export const Editor = ({ id, textOnly = false }: {
 
   return (
     <div className='flex flex-col pb-6 overflow-y-auto max-w-screen-lg mx-auto'>
-      <Textbit.Root
-        plugins={plugins.map((initPlugin) => initPlugin())}
+      <Textbit.Root plugins={[...plugins.map((initPlugin) => initPlugin()), Text({
+        classNames: {
+          'heading-1': 'text-lg font-bold py-2',
+          'heading-2': 'text-md font-bold py-1'
+        }
+      })]}
       >
         <Textbit.Editable
           key={id}
