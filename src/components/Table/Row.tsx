@@ -5,6 +5,7 @@ import { cn } from '@ttab/elephant-ui/utils'
 import type { Wire } from '@/hooks/index/lib/wires'
 import { useModal } from '../Modal/useModal'
 import { cva } from 'class-variance-authority'
+import { useView } from '@/hooks/useView'
 
 type DocumentType = 'Planning' | 'Event' | 'Assignments' | 'Search' | 'Wires'
 export const Row = ({ row, handleOpen, openDocuments, type }: {
@@ -14,15 +15,16 @@ export const Row = ({ row, handleOpen, openDocuments, type }: {
   openDocuments: string[]
 }): JSX.Element => {
   const { currentModal } = useModal()
+  const { isActive } = useView()
 
   const variants = cva('',
     {
       variants: {
         status: {
-          draft: 'border-s-[6px] bg-background data-[state=focused]:ring-2',
+          draft: `border-s-[6px] bg-background ${isActive ? 'data-[state=focused]:ring-2' : ''}`,
           done: 'bg-done-background border-s-done border-s-[6px] data-[state=selected]:bg-done data-[state=focused]:bg-done-background data-[state=focused]:ring-2',
-          approved: 'bg-approved-background border-s-approved border-s-[6px] data-[state=selected]:bg-approved data-[state=focused]:bg-approved-background data-[state=focused]:ring-2',
-          used: 'bg-usable-background border-s-usable border-s-[6px] data-[state=selected]:bg-usable data-[state=focused]:bg-usable-background data-[state=focused]:ring-2'
+          approved: `bg-approved-background border-s-approved border-s-[6px] data-[state=selected]:bg-approved ${isActive ? 'data-[state=focused]:bg-approved-background data-[state=focused]:ring-2' : ''}`,
+          used: `bg-usable-background border-s-usable border-s-[6px] data-[state=selected]:bg-usable ${isActive ? 'data-[state=focused]:bg-usable-background data-[state=focused]:ring-2' : ''}`
         }
       }
     })
