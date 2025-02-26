@@ -82,6 +82,7 @@ export const TextBox = ({
           <TextboxEditable
             content={content}
             provider={provider}
+            path={path}
             singleLine={singleLine}
             user={user}
             icon={icon}
@@ -94,8 +95,9 @@ export const TextBox = ({
   )
 }
 
-const TextboxEditable = ({ provider, user, icon: Icon, content, singleLine, documentLanguage, spellcheck }: {
+const TextboxEditable = ({ provider, path, user, icon: Icon, content, singleLine, documentLanguage, spellcheck }: {
   provider: HocuspocusProvider
+  path: string
   singleLine: boolean
   user: AwarenessUserData
   icon?: React.ReactNode
@@ -112,15 +114,16 @@ const TextboxEditable = ({ provider, user, icon: Icon, content, singleLine, docu
 
     return withYHistory(
       withCursors(
-        withYjs(
-          createEditor(),
-          content
-        ),
+        withYjs(createEditor(), content),
         provider.awareness,
-        { data: user as unknown as Record<string, unknown> }
+        {
+          autoSend: false,
+          data: user as unknown as Record<string, unknown>,
+          cursorStateField: path
+        }
       )
     )
-  }, [provider?.awareness, user, content])
+  }, [provider?.awareness, user, path, content])
 
   useLayoutEffect(() => {
     if (yjsEditor) {
