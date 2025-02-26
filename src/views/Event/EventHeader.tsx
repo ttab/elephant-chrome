@@ -34,8 +34,12 @@ export const EventHeader = ({ documentId, asDialog }: {
           </div>
 
           <div className='flex flex-row gap-2 justify-end items-center'>
-            {!!documentId && <ViewHeader.RemoteUsers documentId={documentId} />}
-            <DocumentStatus status={documentStatus} setStatus={setDocumentStatus} />
+            {!!documentId && !asDialog && (
+              <>
+                <ViewHeader.RemoteUsers documentId={documentId} />
+                <DocumentStatus status={documentStatus} setStatus={setDocumentStatus} />
+              </>
+            )}
           </div>
         </div>
       </ViewHeader.Content>
