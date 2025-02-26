@@ -1,6 +1,6 @@
 import { View, ViewHeader } from '@/components/View'
 import { type ViewMetadata } from '@/types/index'
-import { Cable, Minus, Save } from '@ttab/elephant-ui/icons'
+import { Minus, Save } from '@ttab/elephant-ui/icons'
 import { useMemo } from 'react'
 import { Sources } from './components'
 import { wiresListColumns } from './WiresListColumns'

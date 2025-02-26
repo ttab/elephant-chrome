@@ -1,6 +1,5 @@
 import { useMemo, useState } from 'react'
 import { View, ViewHeader } from '@/components'
-import { BriefcaseBusinessIcon } from '@ttab/elephant-ui/icons'
 import { TabsContent } from '@ttab/elephant-ui'
 import { TableProvider } from '@/contexts/TableProvider'
 import { TableCommandMenu } from '@/components/Commands/TableCommand'

@@ -1,7 +1,6 @@
 import { useMemo, useState } from 'react'
 import { type ViewMetadata } from '@/types'
 import { View, ViewHeader } from '@/components'
-import { CalendarPlus2 } from '@ttab/elephant-ui/icons'
 import { Tabs, TabsContent } from '@ttab/elephant-ui'
 import { TableProvider } from '@/contexts/TableProvider'
 import { TableCommandMenu } from '@/components/Commands/TableCommand'

@@ -1,6 +1,5 @@
 import { useMemo, useState } from 'react'
 import { View, ViewHeader } from '@/components'
-import { SearchIcon } from '@ttab/elephant-ui/icons'
 import { SearchBar } from './SearchBar'
 import { TableCommandMenu } from '@/components/Commands/TableCommand'
 import { Commands } from '@/components/Commands'
