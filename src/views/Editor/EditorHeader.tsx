@@ -23,9 +23,9 @@ export const EditorHeader = ({ documentId }: { documentId: string }): JSX.Elemen
       <ViewHeader.Title name='Editor' title='Editor' icon={PenBoxIcon} />
 
       <ViewHeader.Content className='justify-start'>
-        <div className='max-w-[850px] mx-auto flex flex-row gap-2 justify-between items-center w-full'>
-          <div className='flex flex-row gap-1 justify-start items-center @6xl/view:-ml-20'>
-            <div className='hidden flex-row gap-2 justify-start items-center @xl/view:flex'>
+        <div className='max-w-[810px] mx-auto flex flex-row gap-2 justify-between items-center w-full'>
+          <div className='flex flex-row gap-1 justify-start items-center @7xl/view:-ml-20'>
+            <div className='hidden flex-row gap-2 justify-start items-center @lg/view:flex'>
               <Newsvalue />
               <AddNote />
             </div>
