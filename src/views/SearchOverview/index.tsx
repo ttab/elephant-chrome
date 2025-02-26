@@ -56,12 +56,7 @@ export const Search = (): JSX.Element => {
         </TableCommandMenu>
 
         <ViewHeader.Root>
-          <ViewHeader.Title
-            title='Sök'
-            short='Sök'
-            icon={SearchIcon}
-            iconColor='#F06F21'
-          />
+          <ViewHeader.Title name='Search' title='Sök' />
 
           <ViewHeader.Content>
             {!query

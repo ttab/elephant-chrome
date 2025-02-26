@@ -65,12 +65,7 @@ export const Assignments = (): JSX.Element => {
         </TableCommandMenu>
 
         <ViewHeader.Root>
-          <ViewHeader.Title
-            title='Uppdrag'
-            short='Uppdrag'
-            iconColor='#006bb3'
-            icon={BriefcaseBusinessIcon}
-          />
+          <ViewHeader.Title name='Assignments' title='Uppdrag' />
           <ViewHeader.Content>
             <Header
               type='Assignments'

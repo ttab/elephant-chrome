@@ -54,12 +54,7 @@ export const Wires = (): JSX.Element => {
         <ViewHeader.Root>
           {isFirst && (
             <>
-              <ViewHeader.Title
-                title='Telegram'
-                short='Telegram'
-                icon={Cable}
-                iconColor='#FF6347'
-              />
+              <ViewHeader.Title title='Telegram' name='Wires' />
 
               <Button
                 variant='ghost'

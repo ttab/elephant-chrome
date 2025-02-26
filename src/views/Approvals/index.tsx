@@ -140,7 +140,7 @@ export const Approvals = (): JSX.Element => {
   return (
     <View.Root tab={currentTab} onTabChange={setCurrentTab}>
       <ViewHeader.Root>
-        <ViewHeader.Title title='Dagen' short='Dagen' iconColor='#5E9F5D' icon={EarthIcon} />
+        <ViewHeader.Title name='Approvals' title='Dagen' />
         <ViewHeader.Content>
           <Header type='Approvals' facets={facets} />
 

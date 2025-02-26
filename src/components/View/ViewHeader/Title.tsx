@@ -19,7 +19,9 @@ export const Title = ({ name, title, short: shortTitle, iconColor, icon: Icon, a
     }
   })
 
-  const { icon: ViewIcon, color } = applicationMenu.groups.find((g) => g.name === 'views')?.items.find((i) => i.name === name) || {}
+  const { icon: ViewIcon, color } = applicationMenu.groups
+    .flatMap((g) => g.items)
+    .find((i) => i.name === name) || {}
 
   return (
     <div className={viewVariants({ asDialog })}>

@@ -60,7 +60,7 @@ export const Events = (): JSX.Element => {
 
             <div className='flex flex-col h-screen'>
               <ViewHeader.Root>
-                <ViewHeader.Title title='Händelser' short='Händelser' icon={CalendarPlus2} iconColor='#D802FD' />
+                <ViewHeader.Title name='Events' title='Händelser' short='Händelser' />
 
                 <ViewHeader.Content>
                   <Header type='Event' />
