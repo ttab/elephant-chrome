@@ -24,7 +24,7 @@ const avatarVariants = cva('cursor-default text-opacity-60',
       size: {
         xxs: 'size-4 mr-1.5 font-semibold text-[9px]',
         xs: 'size-6 mr-1.5 font-semibold text-[11px]',
-        sm: 'size-7 font-semibold text-xs',
+        sm: 'size-7 text-xs',
         lg: 'size-9 font-semibold text-md',
         xl: 'size-12 font-semibold text-md',
         default: 'size-8 font-semibold text-sm'
