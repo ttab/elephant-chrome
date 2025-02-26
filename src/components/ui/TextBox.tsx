@@ -73,8 +73,9 @@ export const TextBox = ({
             Text({
               singleLine,
               countCharacters,
-              inputStyle: true,
-              styles: ['body']
+              classNames: {
+                body: 'font-sans py-0'
+              }
             })
           ]}
           className={cn('h-min-2 w-full', className)}
