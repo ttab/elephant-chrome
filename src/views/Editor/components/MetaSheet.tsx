@@ -5,6 +5,7 @@ import {
   Sheet,
   SheetClose,
   SheetContent,
+  SheetDescription,
   SheetHeader,
   SheetTitle,
   SheetTrigger
@@ -26,6 +27,8 @@ export function MetaSheet({ container }: {
           ? <PanelRightOpen size={18} strokeWidth={1.75} />
           : <PanelRightClose size={18} strokeWidth={1.75} />}
       </SheetTrigger>
+
+      <SheetDescription />
 
       <SheetContent
         container={container}
