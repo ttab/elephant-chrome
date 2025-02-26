@@ -29,7 +29,7 @@ export const Title = ({ name, title, short: shortTitle, iconColor, icon: Icon, a
       {!!Icon && <Icon size={18} strokeWidth={2.05} color={iconColor || color || '#555'} />}
 
       {!!title && (
-        <h2 className='font-bold cursor-default whitespace-nowrap opacity-90'>
+        <h2 role='header-title' className='font-bold cursor-default whitespace-nowrap opacity-90'>
           {typeof shortTitle !== 'string'
             ? <>{title}</>
             : (
