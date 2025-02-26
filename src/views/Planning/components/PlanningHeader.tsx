@@ -4,9 +4,10 @@ import { DocumentStatus } from '@/components/TmpDocumentStatus'
 import { ViewHeader } from '@/components/View'
 import { GanttChartSquare } from '@ttab/elephant-ui/icons'
 
-export const PlanningHeader = ({ documentId, asDialog }: {
+export const PlanningHeader = ({ documentId, asDialog, onDialogClose }: {
   documentId: string
   asDialog: boolean
+  onDialogClose?: () => void
 }): JSX.Element => {
   const { viewId } = useView()
   const [documentStatus, setDocumentStatus] = useDocumentStatus(documentId)
@@ -19,9 +20,12 @@ export const PlanningHeader = ({ documentId, asDialog }: {
 
   return (
     <ViewHeader.Root asDialog={asDialog}>
-      {!asDialog
-        ? <ViewHeader.Title name='Plannings' title='Planering' icon={GanttChartSquare} />
-        : <ViewHeader.Title name='Plannings' title='Skapa ny planering' icon={GanttChartSquare} asDialog />}
+      <ViewHeader.Title
+        name='Plannings'
+        title={(!asDialog) ? 'Planering' : 'Skapa ny planering'}
+        icon={GanttChartSquare}
+        asDialog={asDialog}
+      />
 
       <ViewHeader.Content className='justify-start'>
         <div className='max-w-[780px] mx-auto flex flex-row gap-1 justify-between items-center w-full'>
@@ -38,7 +42,7 @@ export const PlanningHeader = ({ documentId, asDialog }: {
         </div>
       </ViewHeader.Content>
 
-      <ViewHeader.Action />
+      <ViewHeader.Action onDialogClose={onDialogClose} />
     </ViewHeader.Root>
   )
 }

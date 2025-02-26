@@ -132,7 +132,7 @@ const EventViewContent = (props: ViewProps & { documentId: string }): JSX.Elemen
 
   return (
     <View.Root asDialog={props.asDialog} className={props.className}>
-      <EventHeader asDialog={!!props.asDialog} documentId={props.documentId} />
+      <EventHeader asDialog={!!props.asDialog} onDialogClose={props.onDialogClose} documentId={props.documentId} />
 
       <View.Content className='max-w-[1000px] flex-auto'>
         <Form.Root asDialog={props.asDialog}>

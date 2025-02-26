@@ -111,7 +111,7 @@ const PlanningViewContent = (props: ViewProps & { documentId: string }): JSX.Ele
 
   return (
     <View.Root asDialog={props.asDialog} className={props?.className}>
-      <PlanningHeader documentId={props.documentId} asDialog={!!props.asDialog} />
+      <PlanningHeader documentId={props.documentId} asDialog={!!props.asDialog} onDialogClose={props.onDialogClose} />
 
       <View.Content className='max-w-[1000px]'>
         <Form.Root asDialog={props.asDialog}>

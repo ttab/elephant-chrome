@@ -3,22 +3,21 @@ import { useEffect, useRef } from 'react'
 import { DocumentStatus } from '@/components/TmpDocumentStatus'
 import { ViewHeader } from '@/components/View'
 
-export const EventHeader = ({ documentId, asDialog }: {
+export const EventHeader = ({ documentId, asDialog, onDialogClose }: {
   documentId: string
   asDialog: boolean
+  onDialogClose?: () => void
 }): JSX.Element => {
   const { viewId } = useView()
   const [documentStatus, setDocumentStatus] = useDocumentStatus(documentId)
-
   const containerRef = useRef<HTMLElement | null>(null)
 
   useEffect(() => {
     containerRef.current = (document.getElementById(viewId))
   }, [viewId])
 
-
   return (
-    <ViewHeader.Root>
+    <ViewHeader.Root asDialog={asDialog}>
       <ViewHeader.Title
         name='Events'
         title={(!asDialog) ? 'Händelse' : 'Skapa ny händelse'}
@@ -44,7 +43,7 @@ export const EventHeader = ({ documentId, asDialog }: {
         </div>
       </ViewHeader.Content>
 
-      <ViewHeader.Action />
+      <ViewHeader.Action onDialogClose={onDialogClose} />
     </ViewHeader.Root>
   )
 }
