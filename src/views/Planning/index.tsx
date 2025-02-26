@@ -149,7 +149,7 @@ const PlanningViewContent = (props: ViewProps & { documentId: string }): JSX.Ele
           </Form.Table>
 
           <Form.Footer>
-            <Form.Submit documentId={props.documentId} onSubmit={handleSubmit}>
+            <Form.Submit documentId={props.documentId} onSubmit={handleSubmit} onDocumentCreated={props.onDocumentCreated}>
               <div className='flex justify-end'>
                 <Button
                   type='submit'

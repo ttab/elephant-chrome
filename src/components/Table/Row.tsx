@@ -22,7 +22,7 @@ export const Row = ({ row, handleOpen, openDocuments, type }: {
           draft: 'border-s-[6px] bg-background data-[state=focused]:ring-2',
           done: 'bg-done-background border-s-done border-s-[6px] data-[state=selected]:bg-done data-[state=focused]:bg-done-background data-[state=focused]:ring-2',
           approved: 'bg-approved-background border-s-approved border-s-[6px] data-[state=selected]:bg-approved data-[state=focused]:bg-approved-background data-[state=focused]:ring-2',
-          usable: 'bg-usable-background border-s-usable border-s-[6px] data-[state=selected]:bg-usable data-[state=focused]:bg-usable-background data-[state=focused]:ring-2'
+          used: 'bg-usable-background border-s-usable border-s-[6px] data-[state=selected]:bg-usable data-[state=focused]:bg-usable-background data-[state=focused]:ring-2'
         }
       }
     })
@@ -67,7 +67,7 @@ export const Row = ({ row, handleOpen, openDocuments, type }: {
   )
 }
 
-function getRowStatus(type: DocumentType, row: RowType<unknown>): 'draft' | 'done' | 'approved' | 'usable' | null {
+function getRowStatus(type: DocumentType, row: RowType<unknown>): 'draft' | 'done' | 'approved' | 'used' | null {
   if (type !== 'Wires') {
     return null
   }
@@ -78,12 +78,15 @@ function getRowStatus(type: DocumentType, row: RowType<unknown>): 'draft' | 'don
     && wireRow.original?.fields?.['heads.done.created']?.values?.[0]
   const approved = Number(wireRow.original?.fields?.['heads.approved.version']?.values?.[0]) > -1
     && wireRow.original?.fields?.['heads.approved.created']?.values?.[0]
+  const used = Number(wireRow.original?.fields?.['heads.used.version']?.values?.[0]) > -1
+    && wireRow.original?.fields?.['heads.used.created']?.values?.[0]
 
-
-  if (done || approved) {
+  if (done || approved || used) {
     return done && (!approved || new Date(done) > new Date(approved))
       ? 'done'
-      : 'approved'
+      : approved && (!used || new Date(approved) > new Date(used))
+        ? 'approved'
+        : 'used'
   }
 
   return 'draft'

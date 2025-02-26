@@ -8,11 +8,13 @@ export const Submit = ({
   onValidation,
   setValidateForm,
   onSubmit,
+  onDocumentCreated,
   onReset
 }: FormProps & {
   documentId?: string
   onDialogClose?: (id: string, title: string) => void
   onSubmit?: () => void
+  onDocumentCreated?: () => void
   onReset?: () => void
 }): JSX.Element | null => {
   const handleValidate = (func: () => void): void => {
@@ -34,7 +36,12 @@ export const Submit = ({
 
     if (handleValidate) {
       if (type === 'submit' && onSubmit) {
-        handleValidate(onSubmit)
+        handleValidate(() => {
+          onSubmit()
+          if (onDocumentCreated) {
+            onDocumentCreated()
+          }
+        })
       } else if (type === 'reset' && onReset) {
         onReset()
       }
@@ -54,6 +61,7 @@ export const Submit = ({
         if (childProps.type === 'submit') {
           props.onClick = (event: React.MouseEvent<HTMLButtonElement>) =>
             handleClick(event, 'submit')
+
           props.onKeyDown = (event: React.KeyboardEvent<HTMLButtonElement>) => {
             if (event.key === 'Enter') {
               handleClick(event, 'submit')

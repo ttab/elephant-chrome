@@ -4,8 +4,6 @@ import { AwarenessDocument } from '@/components/AwarenessDocument'
 import {
   useCollaboration,
   useQuery,
-  useYValue,
-  useRegistry,
   useAwareness
 } from '@/hooks'
 import { useSession } from 'next-auth/react'
@@ -27,9 +25,7 @@ import { PlanningTable } from './components/PlanningTable'
 import { Error } from '../Error'
 import { Form } from '@/components/Form'
 import { EventTimeMenu } from './components/EventTime'
-import type { Block } from '@ttab/elephant-api/newsdoc'
-import { useEffect, useMemo } from 'react'
-import { convertToISOStringInTimeZone } from '@/lib/datetime'
+import { useEffect } from 'react'
 import { EventHeader } from './EventHeader'
 
 const meta: ViewMetadata = {
@@ -77,7 +73,6 @@ export const Event = (props: ViewProps & { document?: Y.Doc }): JSX.Element => {
 const EventViewContent = (props: ViewProps & { documentId: string }): JSX.Element | undefined => {
   const { provider, user } = useCollaboration()
   const { data, status } = useSession()
-  const { timeZone } = useRegistry()
   const [, setIsFocused] = useAwareness(props.documentId)
 
   useEffect(() => {
@@ -110,25 +105,6 @@ const EventViewContent = (props: ViewProps & { documentId: string }): JSX.Elemen
         }))
     }
   }
-
-  // Grab values from event to be sent as default values for planning creation
-  const [eventTitle] = useYValue<string | undefined>('root.title')
-  const [eventSection] = useYValue<Block | undefined>('links.core/section[0]')
-  const [newsvalue] = useYValue<Block | undefined>('meta.core/newsvalue[0]')
-  const [story] = useYValue<Block | undefined>('links.core/story[0]')
-  const [eventDate] = useYValue<string | undefined>('meta.core/event[0].data.start')
-  const [description] = useYValue<Block | undefined>('meta.core/description[0].data.text')
-  const eventDateFormatted = eventDate ? convertToISOStringInTimeZone(new Date(eventDate), timeZone).split(' ')[0] : undefined
-
-  const templateValues = useMemo(() => ({
-    eventId: props.documentId,
-    eventTitle,
-    eventSection: eventSection?.title,
-    newsvalue: newsvalue?.value,
-    story: story?.title,
-    eventDate: eventDateFormatted,
-    description
-  }), [props.documentId, eventTitle, eventSection, newsvalue, story, eventDateFormatted, description])
 
   return (
     <View.Root asDialog={props.asDialog} className={props.className}>
@@ -165,7 +141,7 @@ const EventViewContent = (props: ViewProps & { documentId: string }): JSX.Elemen
           </Form.Content>
 
           <Form.Table>
-            <PlanningTable templateValues={templateValues} asDialog={props.asDialog} />
+            <PlanningTable provider={provider} asDialog={props.asDialog} documentId={props.documentId} />
           </Form.Table>
 
           <Form.Footer>
