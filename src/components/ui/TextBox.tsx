@@ -117,7 +117,7 @@ const TextboxEditable = ({ provider, path, user, icon: Icon, content, singleLine
         withYjs(createEditor(), content),
         provider.awareness,
         {
-          autoSend: false,
+          autoSend: true,
           data: user as unknown as Record<string, unknown>,
           cursorStateField: path
         }
