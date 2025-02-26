@@ -67,7 +67,7 @@ export const Table = <TData, TValue>({
   const { viewId: origin } = useView()
   const { table, loading } = useTable()
   const openDocuments = useOpenDocuments({ idOnly: true })
-  const { showModal, hideModal } = useModal()
+  const { showModal, hideModal, currentModal } = useModal()
   const [,setDocumentStatus] = useDocumentStatus()
 
   const handlePreview = useCallback((row: RowType<unknown>): void => {
@@ -191,6 +191,12 @@ export const Table = <TData, TValue>({
         if (nextKey !== undefined) {
           rows[nextKey].toggleSelected(true)
         }
+
+        // Open next row if PreviewSheet is open
+        if (currentModal && nextKey) {
+          handleOpen(event, rows[nextKey])
+        }
+
         return
       }
     }
