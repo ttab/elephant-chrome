@@ -4,12 +4,13 @@ import { AwarenessDocument } from '@/components/AwarenessDocument'
 import {
   useCollaboration,
   useQuery,
-  useDocumentStatus
+  useDocumentStatus,
+  useYValue
 } from '@/hooks'
 import { useSession } from 'next-auth/react'
 import { View, ViewHeader } from '@/components/View'
 import { createStateless, StatelessType } from '@/shared/stateless'
-import { Button } from '@ttab/elephant-ui'
+import { Button, Calendar, Popover, PopoverContent, PopoverTrigger } from '@ttab/elephant-ui'
 import { Tags, CalendarClock, CalendarPlus2 } from '@ttab/elephant-ui/icons'
 import {
   Description,
@@ -20,12 +21,18 @@ import {
   Story,
   Registration,
   Category,
-  Organiser
+  Organiser,
+  Prompt
 } from '@/components'
 import { PlanningTable } from './components/PlanningTable'
 import { Error } from '../Error'
 import { Form } from '@/components/Form'
 import { EventTimeMenu } from './components/EventTime'
+import * as Templates from '@/defaults/templates'
+import { useMemo, useState } from 'react'
+import { addDays, format } from 'date-fns'
+import { createDocument } from '@/lib/createYItem'
+import { useCollaborationDocument } from '@/hooks/useCollaborationDocument'
 
 const meta: ViewMetadata = {
   name: 'Event',
@@ -73,6 +80,9 @@ const EventViewContent = (props: ViewProps & { documentId: string }): JSX.Elemen
   const { provider } = useCollaboration()
   const { data, status } = useSession()
   const [documentStatus, setDocumentStatus] = useDocumentStatus(props.documentId)
+  const [duplicateDate, setDuplicateDate] = useState<Date>(addDays(new Date(), 1))
+  const [showConfirm, setShowConfirm] = useState<boolean>(false)
+  const [eventTitle] = useYValue<string | undefined>('root.title')
 
   const handleSubmit = (): void => {
     if (props?.onDialogClose) {
@@ -93,6 +103,19 @@ const EventViewContent = (props: ViewProps & { documentId: string }): JSX.Elemen
     }
   }
 
+  const collaborationPayload = useMemo(() => {
+    if (showConfirm) {
+      const [documentId, initialDocument] = createDocument({
+        template: (id) => Templates.duplicate(id, provider?.document, { type: 'event', newDate: duplicateDate.toISOString() }),
+        inProgress: true
+      })
+      return { documentId, initialDocument }
+    }
+    return { documentId: '' }
+  }, [duplicateDate, provider?.document, showConfirm])
+
+  const { /* document: dupDoc,  */documentId: dupId } = useCollaborationDocument(collaborationPayload)
+
   return (
     <View.Root asDialog={props.asDialog} className={props.className}>
       <div className='grow-0'>
@@ -102,9 +125,71 @@ const EventViewContent = (props: ViewProps & { documentId: string }): JSX.Elemen
             : <ViewHeader.Title title='Skapa ny händelse' icon={CalendarPlus2} iconColor='#DAC9F2' asDialog />}
 
           <ViewHeader.Content>
-            <div className='flex w-full h-full items-center space-x-2'>
-              {!props.asDialog && <DocumentStatus status={documentStatus} setStatus={setDocumentStatus} />}
+            <div className='flex w-full h-full items-center space-x-2 gap-2'>
+              {!props.asDialog && (
+                <>
+                  <DocumentStatus status={documentStatus} setStatus={setDocumentStatus} />
+                  {!props.asDialog && (
+                    <Popover modal={true}>
+                      <PopoverTrigger asChild>
+                        <div className='flex w-fit'>
+                          <Button variant='outline' size='xs'>Kopiera</Button>
+                        </div>
+                      </PopoverTrigger>
+                      <PopoverContent onEscapeKeyDown={(event) => event?.stopPropagation()}>
+                        <Calendar
+                          mode='single'
+                          disabled={{ before: addDays(new Date(), 1) }}
+                          selected={duplicateDate}
+                          onSelect={(selectedDate) => {
+                            if (!selectedDate) {
+                              return
+                            }
+                            setDuplicateDate(selectedDate)
+                          }}
+                        />
+                        <div className='flex w-full justify-end'>
+                          <Button
+                            onClick={() => setShowConfirm(!showConfirm)}
+                          >
+                            Kopiera
+                          </Button>
+                        </div>
+                      </PopoverContent>
+                    </Popover>
+                  )}
+                </>
+              )}
             </div>
+
+            {showConfirm && (
+              <Prompt
+                title={eventTitle}
+                description={`Vill du kopiera händelsen till ${format(duplicateDate, 'dd/MM/yyyy')}?`}
+                secondaryLabel='Avbryt'
+                primaryLabel='Kopiera'
+                onPrimary={() => {
+                  setShowConfirm(false)
+                  if (provider && status === 'authenticated') {
+                    provider.sendStateless(
+                      createStateless(StatelessType.IN_PROGRESS, {
+                        state: false,
+                        id: dupId,
+                        context: {
+                          accessToken: data.accessToken,
+                          user: data.user,
+                          type: 'Event'
+                        }
+                      })
+                    )
+                  }
+                }}
+                onSecondary={() => {
+                  setShowConfirm(false)
+                }}
+              />
+
+            )}
           </ViewHeader.Content>
 
           <ViewHeader.Action onDialogClose={props.onDialogClose}>
