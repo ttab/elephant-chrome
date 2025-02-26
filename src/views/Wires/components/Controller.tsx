@@ -19,6 +19,7 @@ export const Controller = (): JSX.Element => {
     if (wiresHistory && !compareStates(state, wiresHistory)) {
       toast('Vill du spara ändringar i urvalet?', {
         id: 'unsaved-changes',
+        position: 'bottom-center',
         duration: Infinity,
         icon: <Cable className='pr-1' />,
         action: {

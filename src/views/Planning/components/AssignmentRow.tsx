@@ -27,6 +27,8 @@ export const AssignmentRow = ({ index, onSelect, isFocused = false, asDialog }: 
 }): JSX.Element => {
   const { provider } = useCollaboration()
   const openArticle = useLink('Editor')
+  const openFlash = useLink('Flash')
+
   const openDocuments = useOpenDocuments({ idOnly: true, name: 'Editor' })
 
   const base = `meta.core/assignment[${index}]`
@@ -43,21 +45,30 @@ export const AssignmentRow = ({ index, onSelect, isFocused = false, asDialog }: 
   const [showVerifyDialog, setShowVerifyDialog] = useState<boolean>(false)
   const [showCreateDialog, setShowCreateDialog] = useState<boolean>(false)
 
+  const documentId = articleId || flashId
+  const isDocument = assignmentType === 'flash' || assignmentType === 'text'
+  const documentLabel = assignmentType === 'text' ? 'artikel' : assignmentType
+  const openDocument = assignmentType === 'text' ? openArticle : openFlash
+
   const assTime = useMemo(() => {
     if (typeof assignmentType !== 'string') {
       return undefined
     }
     const startTimeTypes = ['picture', 'picture/video', 'video']
-    return startTimeTypes.includes(assignmentType) && startTime ? new Date(startTime) : publishTime ? new Date(publishTime) : undefined
+    return startTimeTypes.includes(assignmentType) && startTime
+      ? new Date(startTime)
+      : publishTime
+        ? new Date(publishTime)
+        : undefined
   }, [publishTime, assignmentType, startTime])
 
-  const onOpenArticleEvent = useCallback(<T extends HTMLElement>(event: MouseEvent<T> | KeyboardEvent) => {
+  const onOpenEvent = useCallback(<T extends HTMLElement>(event: MouseEvent<T> | KeyboardEvent) => {
     event.preventDefault()
     event.stopPropagation()
 
-    if (articleId || flashId) {
-      openArticle(event, {
-        id: articleId || flashId,
+    if (documentId) {
+      openDocument(event, {
+        id: documentId,
         autoFocus: false
       }, undefined,
       undefined,
@@ -67,7 +78,7 @@ export const AssignmentRow = ({ index, onSelect, isFocused = false, asDialog }: 
         setShowCreateDialog(true)
       }
     }
-  }, [articleId, flashId, openArticle, setShowCreateDialog, asDialog])
+  }, [documentId, openDocument, setShowCreateDialog, asDialog])
 
   const rowRef = useRef<HTMLDivElement>(null)
   useEffect(() => {
@@ -80,9 +91,9 @@ export const AssignmentRow = ({ index, onSelect, isFocused = false, asDialog }: 
     elementRef: rowRef,
     keys: ['Enter', ' '],
     onNavigation: (event) => {
-      if (assignmentType === 'text' || assignmentType === 'flash') {
+      if (isDocument) {
         if (event.key === 'Enter' || event.key === ' ') {
-          onOpenArticleEvent(event)
+          onOpenEvent(event)
         }
       }
     }
@@ -110,12 +121,12 @@ export const AssignmentRow = ({ index, onSelect, isFocused = false, asDialog }: 
     }
   ]
 
-  if ((assignmentType === 'text' || assignmentType === 'flash') && !asDialog) {
+  if ((isDocument) && !asDialog) {
     menuItems.push({
-      label: 'Öppna artikel',
+      label: 'Öppna',
       icon: FileInput,
       item: <T extends HTMLElement>(event: MouseEvent<T>) => {
-        onOpenArticleEvent(event)
+        onOpenEvent(event)
       }
     })
   }
@@ -142,8 +153,8 @@ export const AssignmentRow = ({ index, onSelect, isFocused = false, asDialog }: 
         `, selected ? 'bg-table-selected focus-visible:outline-table-selected' : ''
       )}
       onClick={(event) => {
-        if (assignmentType === 'text' || assignmentType === 'flash') {
-          onOpenArticleEvent(event)
+        if (isDocument) {
+          onOpenEvent(event)
         } else {
           onSelect()
         }
@@ -158,7 +169,7 @@ export const AssignmentRow = ({ index, onSelect, isFocused = false, asDialog }: 
           >
             <AssignmentType
               path={`meta.core/assignment[${index}].meta.core/assignment-type`}
-              inProgress={!!articleId || !!flashId}
+              inProgress={!!documentId}
             />
           </Button>
           <AssigneeAvatars assignees={authors.map((author) => author.title)} />
@@ -230,8 +241,8 @@ export const AssignmentRow = ({ index, onSelect, isFocused = false, asDialog }: 
       {
         showCreateDialog && (
           <Prompt
-            title='Skapa artikel?'
-            description={`Vill du skapa en artikel för uppdraget${title ? ' ' + title : ''}?`} // TODO: Display information that will be forwarded from the assignment
+            title={`Skapa ${documentLabel}?`}
+            description={`Vill du skapa en ${documentLabel} för uppdraget${title ? ' ' + title : ''}?`} // TODO: Display information that will be forwarded from the assignment
             secondaryLabel='Avbryt'
             primaryLabel='Skapa'
             onPrimary={(event: MouseEvent<HTMLButtonElement> | React.KeyboardEvent<HTMLButtonElement> | KeyboardEvent) => {
@@ -246,13 +257,21 @@ export const AssignmentRow = ({ index, onSelect, isFocused = false, asDialog }: 
               const id = crypto.randomUUID()
               const onDocumentCreated = (): void => {
                 setTimeout(() => {
-                  appendDocumentToAssignment({ document: provider?.document, id, index, slug: '', type: 'article' })
+                  appendDocumentToAssignment({
+                    document: provider?.document,
+                    id,
+                    index,
+                    slug: '',
+                    type: assignmentType === 'flash'
+                      ? 'flash'
+                      : 'article'
+                  })
                 }, 0)
               }
 
               const payload = createPayload(provider?.document, index)
 
-              openArticle(event,
+              openDocument(event,
                 { id, payload },
                 'blank',
                 { onDocumentCreated }

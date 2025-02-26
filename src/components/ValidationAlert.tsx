@@ -72,6 +72,12 @@ export const ValidationAlert = ({ validateStateRef }: {
 }
 
 function isBlockAndInvalid(entity: Entity, validateStateRef: ValidateStateRef): boolean {
+  // Remove validations that will be shown in the form validation
+  // I.e. title in flash editor
+  if (entity?.name && entity.name in validateStateRef.current) {
+    return true
+  }
+
   return (entity.refType === 'block'
     && validateStateRef.current?.[entity?.type]
     && !validateStateRef.current[entity.type].valid)
