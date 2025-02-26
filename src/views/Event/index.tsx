@@ -5,17 +5,16 @@ import {
   useCollaboration,
   useQuery,
   useYValue,
-  useDocumentStatus,
-  useRegistry
+  useRegistry,
+  useAwareness
 } from '@/hooks'
 import { useSession } from 'next-auth/react'
-import { View, ViewHeader } from '@/components/View'
+import { View } from '@/components/View'
 import { createStateless, StatelessType } from '@/shared/stateless'
 import { Button } from '@ttab/elephant-ui'
-import { Tags, CalendarClock, CalendarPlus2 } from '@ttab/elephant-ui/icons'
+import { Tags, CalendarClock } from '@ttab/elephant-ui/icons'
 import {
   Description,
-  DocumentStatus,
   Newsvalue,
   Title,
   Section,
@@ -29,8 +28,9 @@ import { Error } from '../Error'
 import { Form } from '@/components/Form'
 import { EventTimeMenu } from './components/EventTime'
 import type { Block } from '@ttab/elephant-api/newsdoc'
-import { useMemo } from 'react'
+import { useEffect, useMemo } from 'react'
 import { convertToISOStringInTimeZone } from '@/lib/datetime'
+import { EventHeader } from './EventHeader'
 
 const meta: ViewMetadata = {
   name: 'Event',
@@ -75,10 +75,22 @@ export const Event = (props: ViewProps & { document?: Y.Doc }): JSX.Element => {
 }
 
 const EventViewContent = (props: ViewProps & { documentId: string }): JSX.Element | undefined => {
-  const { provider } = useCollaboration()
+  const { provider, user } = useCollaboration()
   const { data, status } = useSession()
-  const [documentStatus, setDocumentStatus] = useDocumentStatus(props.documentId)
   const { timeZone } = useRegistry()
+  const [, setIsFocused] = useAwareness(props.documentId)
+
+  useEffect(() => {
+    provider?.setAwarenessField('data', user)
+    setIsFocused(true)
+
+    return () => {
+      setIsFocused(false)
+    }
+
+    // We only want to rerun when provider change
+    // eslint-disable-next-line
+  }, [provider])
 
   const handleSubmit = (): void => {
     if (props?.onDialogClose) {
@@ -120,26 +132,9 @@ const EventViewContent = (props: ViewProps & { documentId: string }): JSX.Elemen
 
   return (
     <View.Root asDialog={props.asDialog} className={props.className}>
-      <div className='grow-0'>
-        <ViewHeader.Root asDialog={props.asDialog}>
-          {!props.asDialog
-            ? <ViewHeader.Title title='Händelse' icon={CalendarPlus2} iconColor='#DAC9F2' />
-            : <ViewHeader.Title title='Skapa ny händelse' icon={CalendarPlus2} iconColor='#DAC9F2' asDialog />}
+      <EventHeader asDialog={!!props.asDialog} documentId={props.documentId} />
 
-          <ViewHeader.Content>
-            <div className='flex w-full h-full items-center space-x-2'>
-              {!props.asDialog && <DocumentStatus status={documentStatus} setStatus={setDocumentStatus} />}
-            </div>
-          </ViewHeader.Content>
-
-          <ViewHeader.Action onDialogClose={props.onDialogClose}>
-            {!props.asDialog && !!props.documentId
-            && <ViewHeader.RemoteUsers documentId={props.documentId} />}
-          </ViewHeader.Action>
-        </ViewHeader.Root>
-      </div>
-
-      <View.Content className='max-w-[1000px]'>
+      <View.Content className='max-w-[1000px] flex-auto'>
         <Form.Root asDialog={props.asDialog}>
           <Form.Content>
             <Form.Title>
