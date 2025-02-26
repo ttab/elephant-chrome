@@ -1,5 +1,4 @@
 import { useDocumentStatus, useView } from '@/hooks'
-import { Newsvalue } from '@/components/Newsvalue'
 import { useEffect, useRef } from 'react'
 import { DocumentStatus } from '@/components/TmpDocumentStatus'
 import { ViewHeader } from '@/components/View'
