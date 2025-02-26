@@ -9,7 +9,7 @@ export const ViewDialogClose = ({ onClick, Icon = XIcon }: {
   return (
     <Button
       variant='ghost'
-      className='w-9 px-0'
+      className='w-9 h-9 p-0 hover:bg-gray-200 dark:hover:bg-gray-100'
       onClick={onClick}
     >
       <Icon size={18} strokeWidth={1.75} />

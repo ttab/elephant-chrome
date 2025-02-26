@@ -2,7 +2,6 @@ import { View, ViewHeader } from '@/components'
 import type { DefaultValueOption } from '@/types'
 import { type ViewMetadata } from '@/types'
 import { timesSlots as Slots } from '@/defaults/assignmentTimeslots'
-import { EarthIcon } from '@ttab/elephant-ui/icons'
 import { TimeSlot } from './TimeSlot'
 import { useAssignments } from '@/hooks/index/useAssignments'
 import { useEffect, useMemo, useState } from 'react'
@@ -140,7 +139,7 @@ export const Approvals = (): JSX.Element => {
   return (
     <View.Root tab={currentTab} onTabChange={setCurrentTab}>
       <ViewHeader.Root>
-        <ViewHeader.Title title='Dagen' short='Dagen' iconColor='#5E9F5D' icon={EarthIcon} />
+        <ViewHeader.Title name='Approvals' title='Dagen' />
         <ViewHeader.Content>
           <Header type='Approvals' facets={facets} />
 

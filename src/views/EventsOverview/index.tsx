@@ -1,7 +1,6 @@
 import { useMemo, useState } from 'react'
 import { type ViewMetadata } from '@/types'
 import { View, ViewHeader } from '@/components'
-import { CalendarPlus2 } from '@ttab/elephant-ui/icons'
 import { Tabs, TabsContent } from '@ttab/elephant-ui'
 import { TableProvider } from '@/contexts/TableProvider'
 import { TableCommandMenu } from '@/components/Commands/TableCommand'
@@ -60,7 +59,7 @@ export const Events = (): JSX.Element => {
 
             <div className='flex flex-col h-screen'>
               <ViewHeader.Root>
-                <ViewHeader.Title title='Händelser' short='Händelser' icon={CalendarPlus2} iconColor='#D802FD' />
+                <ViewHeader.Title name='Events' title='Händelser' short='Händelser' />
 
                 <ViewHeader.Content>
                   <Header type='Event' />

@@ -1,7 +1,5 @@
 import {
   AwarenessDocument,
-  ViewHeader,
-  DocumentStatus,
   Newsvalue,
   Title,
   Description,
@@ -10,16 +8,15 @@ import {
   View
 } from '@/components'
 import { type ViewMetadata, type ViewProps } from '@/types'
-import { GanttChartSquare, Tags, Calendar } from '@ttab/elephant-ui/icons'
+import { Tags, Calendar } from '@ttab/elephant-ui/icons'
 import {
   useQuery,
   useDocumentStatus,
-  useCollaboration
+  useCollaboration,
+  useAwareness
 } from '@/hooks'
-import {
-  AssignmentTable,
-  PlanDate
-} from './components'
+import { PlanDate } from './components/PlanDate'
+import { AssignmentTable } from './components/AssignmentTable'
 
 import type * as Y from 'yjs'
 import { Error } from '../Error'
@@ -28,6 +25,8 @@ import { SluglineEditable } from '@/components/DataItem/SluglineEditable'
 import { Button } from '@ttab/elephant-ui'
 import { createStateless, StatelessType } from '@/shared/stateless'
 import { useSession } from 'next-auth/react'
+import { PlanningHeader } from './components/PlanningHeader'
+import { useEffect } from 'react'
 
 const meta: ViewMetadata = {
   name: 'Planning',
@@ -72,9 +71,23 @@ export const Planning = (props: ViewProps & { document?: Y.Doc }): JSX.Element =
 }
 
 const PlanningViewContent = (props: ViewProps & { documentId: string }): JSX.Element | undefined => {
-  const { provider } = useCollaboration()
+  const { provider, user } = useCollaboration()
   const { data, status } = useSession()
-  const [documentStatus, setDocumentStatus] = useDocumentStatus(props.documentId)
+  const [documentStatus] = useDocumentStatus(props.documentId)
+  const [,setIsFocused] = useAwareness(props.documentId)
+
+  useEffect(() => {
+    provider?.setAwarenessField('data', user)
+    setIsFocused(true)
+
+    return () => {
+      setIsFocused(false)
+    }
+
+    // We only want to rerun when provider change
+    // eslint-disable-next-line
+  }, [provider])
+
 
   const handleSubmit = (): void => {
     if (props.onDialogClose) {
@@ -98,21 +111,7 @@ const PlanningViewContent = (props: ViewProps & { documentId: string }): JSX.Ele
 
   return (
     <View.Root asDialog={props.asDialog} className={props?.className}>
-      <ViewHeader.Root asDialog={!!props.asDialog}>
-        {!props.asDialog
-          ? <ViewHeader.Title title='Planering' icon={GanttChartSquare} iconColor='#DAC9F2' />
-          : <ViewHeader.Title title='Skapa ny planering' icon={GanttChartSquare} iconColor='#DAC9F2' asDialog />}
-
-        <ViewHeader.Content>
-          <div className='flex w-full h-full items-center space-x-2'>
-            {!props.asDialog && <DocumentStatus status={documentStatus} setStatus={setDocumentStatus} /> }
-          </div>
-        </ViewHeader.Content>
-
-        <ViewHeader.Action onDialogClose={props.onDialogClose}>
-          {!props.asDialog && !!props.documentId && <ViewHeader.RemoteUsers documentId={props.documentId} />}
-        </ViewHeader.Action>
-      </ViewHeader.Root>
+      <PlanningHeader documentId={props.documentId} asDialog={!!props.asDialog} onDialogClose={props.onDialogClose} />
 
       <View.Content className='max-w-[1000px]'>
         <Form.Root asDialog={props.asDialog}>

@@ -10,7 +10,7 @@ import {
 import { Collaboration } from '@/defaults'
 import { type Session } from 'next-auth'
 
-const avatarVariants = cva('cursor-default',
+const avatarVariants = cva('cursor-default text-opacity-60',
   {
     variants: {
       variant: {
@@ -23,8 +23,8 @@ const avatarVariants = cva('cursor-default',
       },
       size: {
         xxs: 'size-4 mr-1.5 font-semibold text-[9px]',
-        xs: 'size-6 mr-1.5 font-normal text-xs',
-        sm: 'size-7 font-normal text-xs',
+        xs: 'size-6 mr-1.5 font-semibold text-[11px]',
+        sm: 'size-7 text-xs',
         lg: 'size-9 font-semibold text-md',
         xl: 'size-12 font-semibold text-md',
         default: 'size-8 font-semibold text-sm'
@@ -43,7 +43,7 @@ export const Avatar = ({ user, value, variant = 'default', size = 'default', col
     stacked?: boolean
   }): JSX.Element => {
   const bg = Collaboration.colors[color]?.bg || ''
-  const border = Collaboration.colors[color]?.border || ''
+  const border = 'border-gray'
 
   const compoundClassName = cn(className, variant === 'color' && [bg, 'border', border])
 

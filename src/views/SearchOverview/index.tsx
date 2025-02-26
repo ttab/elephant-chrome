@@ -1,6 +1,5 @@
 import { useMemo, useState } from 'react'
 import { View, ViewHeader } from '@/components'
-import { SearchIcon } from '@ttab/elephant-ui/icons'
 import { SearchBar } from './SearchBar'
 import { TableCommandMenu } from '@/components/Commands/TableCommand'
 import { Commands } from '@/components/Commands'
@@ -56,12 +55,7 @@ export const Search = (): JSX.Element => {
         </TableCommandMenu>
 
         <ViewHeader.Root>
-          <ViewHeader.Title
-            title='Sök'
-            short='Sök'
-            icon={SearchIcon}
-            iconColor='#F06F21'
-          />
+          <ViewHeader.Title name='Search' title='Sök' />
 
           <ViewHeader.Content>
             {!query
