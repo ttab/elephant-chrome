@@ -16,7 +16,7 @@ export const Action = ({ onDialogClose = undefined, children }: PropsWithChildre
   const closer = onDialogClose || (() => handleClose(viewId, state, history))
 
   return (
-    <div className='flex flex-row gap-2 items-center justify-end h-14'>
+    <div className='flex flex-row gap-1 items-center justify-end h-14'>
 
       {children}
 

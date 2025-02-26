@@ -1,11 +1,13 @@
 import { type LucideIcon } from '@ttab/elephant-ui/icons'
 import { cva } from 'class-variance-authority'
 import type { PropsWithChildren } from 'react'
+import { applicationMenu } from '@/defaults/applicationMenuItems'
 
-export const Title = ({ title, short: shortTitle, icon: Icon, iconColor, asDialog }: {
+export const Title = ({ name, title, short: shortTitle, iconColor, icon: Icon, asDialog }: {
+  name: string
   title: string
   short?: string
-  icon: LucideIcon
+  icon?: LucideIcon
   iconColor?: string
   asDialog?: boolean
 } & PropsWithChildren): JSX.Element => {
@@ -17,9 +19,12 @@ export const Title = ({ title, short: shortTitle, icon: Icon, iconColor, asDialo
     }
   })
 
+  const { icon: ViewIcon, color } = applicationMenu.groups.find((g) => g.name === 'views')?.items.find((i) => i.name === name) || {}
+
   return (
     <div className={viewVariants({ asDialog })}>
-      {!!Icon && <Icon size={18} strokeWidth={2.05} color={iconColor || '#222'} />}
+      {!Icon && !!ViewIcon && <ViewIcon size={18} strokeWidth={2.05} color={color || '#222'} />}
+      {!!Icon && <Icon size={18} strokeWidth={2.05} color={iconColor || color || '#555'} />}
 
       {!!title && (
         <h2 className='font-bold cursor-default whitespace-nowrap opacity-90'>

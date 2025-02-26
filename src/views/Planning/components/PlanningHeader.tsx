@@ -17,15 +17,14 @@ export const PlanningHeader = ({ documentId, asDialog }: {
     containerRef.current = (document.getElementById(viewId))
   }, [viewId])
 
-
   return (
     <ViewHeader.Root asDialog={asDialog}>
       {!asDialog
-        ? <ViewHeader.Title title='Planering' icon={GanttChartSquare} iconColor='#DAC9F2' />
-        : <ViewHeader.Title title='Skapa ny planering' icon={GanttChartSquare} iconColor='#DAC9F2' asDialog />}
+        ? <ViewHeader.Title name='Plannings' title='Planering' icon={GanttChartSquare} />
+        : <ViewHeader.Title name='Plannings' title='Skapa ny planering' icon={GanttChartSquare} asDialog />}
 
       <ViewHeader.Content className='justify-start'>
-        <div className='max-w-[780px] mx-auto flex flex-row gap-2 justify-between items-center w-full'>
+        <div className='max-w-[780px] mx-auto flex flex-row gap-1 justify-between items-center w-full'>
           <div className='flex flex-row gap-2 justify-start items-center @6xl/view:-ml-20'>
           </div>
 

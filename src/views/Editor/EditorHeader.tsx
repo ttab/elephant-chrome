@@ -20,11 +20,11 @@ export const EditorHeader = ({ documentId }: { documentId: string }): JSX.Elemen
 
   return (
     <ViewHeader.Root>
-      <ViewHeader.Title title='Editor' icon={PenBoxIcon} />
+      <ViewHeader.Title name='Editor' title='Editor' icon={PenBoxIcon} />
 
       <ViewHeader.Content className='justify-start'>
         <div className='max-w-[850px] mx-auto flex flex-row gap-2 justify-between items-center w-full'>
-          <div className='flex flex-row gap-2 justify-start items-center @6xl/view:-ml-20'>
+          <div className='flex flex-row gap-1 justify-start items-center @6xl/view:-ml-20'>
             <div className='hidden flex-row gap-2 justify-start items-center @xl/view:flex'>
               <Newsvalue />
               <AddNote />
@@ -34,12 +34,13 @@ export const EditorHeader = ({ documentId }: { documentId: string }): JSX.Elemen
           <div className='flex flex-row gap-2 justify-end items-center'>
             {!!documentId && <ViewHeader.RemoteUsers documentId={documentId} />}
             <DocumentStatus status={documentStatus} setStatus={setDocumentStatus} />
-            <MetaSheet container={containerRef.current} />
           </div>
         </div>
       </ViewHeader.Content>
 
-      <ViewHeader.Action />
+      <ViewHeader.Action>
+        <MetaSheet container={containerRef.current} />
+      </ViewHeader.Action>
     </ViewHeader.Root>
   )
 }
