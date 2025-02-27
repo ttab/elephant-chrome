@@ -106,15 +106,23 @@ const EventViewContent = (props: ViewProps & { documentId: string }): JSX.Elemen
   const collaborationPayload = useMemo(() => {
     if (showConfirm) {
       const [documentId, initialDocument] = createDocument({
-        template: (id) => Templates.duplicate(id, provider?.document, { type: 'event', newDate: duplicateDate.toISOString() }),
-        inProgress: true
+        template: Templates.duplicate,/* (id, provider?.document, { type: 'event', newDate: duplicateDate.toISOString() }) */
+        inProgress: true,
+        payload: {
+          newDate: duplicateDate.toISOString(),
+          document: provider?.document,
+          type: 'event'
+        }
       })
       return { documentId, initialDocument }
     }
     return { documentId: '' }
   }, [duplicateDate, provider?.document, showConfirm])
 
-  const { /* document: dupDoc,  */documentId: dupId } = useCollaborationDocument(collaborationPayload)
+  console.log(' :121 ~ collaborationPayload ~ collaborationPayload', collaborationPayload)
+  const { document: dupDoc, documentId: dupId } = useCollaborationDocument(collaborationPayload)
+  console.log(' :124 ~ dupDoc', dupDoc)
+  console.log(' :118 ~ dupId', dupId)
 
   return (
     <View.Root asDialog={props.asDialog} className={props.className}>

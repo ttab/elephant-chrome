@@ -1,6 +1,6 @@
 import { Document, type Document as DocumentType, Block } from '@ttab/elephant-api/newsdoc'
 import { getValueByYPath } from '@/lib/yUtils'
-import type { Doc } from 'yjs'
+// import type { Doc } from 'yjs'
 import type { EleBlockGroup, EleDocument } from '@/shared/types'
 
 /**
@@ -9,7 +9,9 @@ import type { EleBlockGroup, EleDocument } from '@/shared/types'
  * @returns Document
  */
 // FIXME: Get correct dateGranularity and datetime from Date Component
-export function duplicateTemplate(id: string, document: Doc | undefined, payload: { newDate: string, type: string }/* , document: Doc, type: string, newDate: string */): DocumentType {
+// export function duplicateTemplate(id: string, document: Doc | undefined, payload: { newDate: string, type: string }/* , document: Doc, type: string, newDate: string */): DocumentType {
+export function duplicateTemplate(id: string, payload: any): DocumentType {
+  console.log(' :14 ~ duplicateTemplate ~ payload', payload)
   function mergeDateWithTime(date1ISO: string, date2ISO: string) {
     if (!date1ISO || !date2ISO) {
       return ''
@@ -22,7 +24,7 @@ export function duplicateTemplate(id: string, document: Doc | undefined, payload
 
   const fields = ['root', 'meta', 'links', 'content']
   const doc: EleDocument = fields.reduce((_doc, field) => {
-    const [value] = getValueByYPath<EleBlockGroup>(document?.getMap('ele'), field)
+    const [value] = getValueByYPath<EleBlockGroup>(payload?.document?.getMap('ele'), field)
 
     if (!value) {
       return _doc
