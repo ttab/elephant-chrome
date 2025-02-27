@@ -3,8 +3,10 @@ import { AwarenessDocument } from '@/components'
 import type { ViewMetadata, ViewProps } from '@/types'
 import { FlashViewContent } from './FlashViewContent'
 import { createDocument } from '@/lib/createYItem'
-import { useMemo } from 'react'
+import { useState } from 'react'
 import * as Templates from '@/defaults/templates'
+import { useQuery } from '@/hooks/useQuery'
+import { Error } from '../Error'
 
 const meta: ViewMetadata = {
   name: 'Flash',
@@ -25,29 +27,45 @@ const meta: ViewMetadata = {
 export const Flash = (props: ViewProps & {
   document?: Y.Doc
 }): JSX.Element => {
-  const initialArticle = useMemo(() => {
-    return createDocument({
+  const [query] = useQuery()
+  const [document, setDocument] = useState<Y.Doc | undefined>(undefined)
+  const [documentId, setDocumentId] = useState<string | undefined>(props.id || query.id as string)
+
+  // Document creation if needed
+  if ((props.onDocumentCreated && !document) || !documentId) {
+    const [docId, doc] = createDocument({
       template: Templates.flash,
-      inProgress: true
+      documentId: props.id || undefined,
+      inProgress: props.asDialog
     })
-  }, [])
+    setDocument(doc)
+    setDocumentId(docId)
+  }
+
+  if (document && props.onDocumentCreated) {
+    props.onDocumentCreated()
+  }
+
+  // Error handling for missing document
+  if (!documentId || typeof documentId !== 'string') {
+    return (
+      <Error
+        title='Flashdokument saknas'
+        message='Inget flashdokument är angivet. Navigera tillbaka till översikten och försök igen.'
+      />
+    )
+  }
 
   return (
-    <>
-      {typeof initialArticle[0] === 'string'
-        ? (
-            <AwarenessDocument documentId={initialArticle[0]} document={initialArticle[1]}>
-              <FlashViewContent {...
-                {
-                  ...props,
-                  id: initialArticle[0]
-                }
-              }
-              />
-            </AwarenessDocument>
-          )
-        : <></>}
-    </>
+    <AwarenessDocument documentId={documentId} document={document}>
+      <FlashViewContent {...
+        {
+          ...props,
+          id: documentId
+        }
+      }
+      />
+    </AwarenessDocument>
   )
 }
 

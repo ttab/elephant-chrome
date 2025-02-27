@@ -14,7 +14,6 @@ export const AssignmentType = ({ path, editable = false, inProgress = false, cla
 }): JSX.Element => {
   const [assignmentType, setAssignmentType] = useYValue<Block[] | undefined>(path)
 
-
   const selectedOptions = AssignmentTypes.filter((type) => {
     const value = assignmentType?.map ? assignmentType.map((s) => s.value).sort().join('/') : ''
     return type.value === value

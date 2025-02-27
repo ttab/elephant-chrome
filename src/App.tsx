@@ -27,6 +27,6 @@ export const App = (): JSX.Element => (
       </FaroErrorBoundary>
     </Init>
 
-    <Toaster position='bottom-center' visibleToasts={1} />
+    <Toaster />
   </>
 )
