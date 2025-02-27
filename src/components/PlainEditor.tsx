@@ -38,7 +38,7 @@ export const Editor = ({ id, textOnly = false }: {
 
 
   return (
-    <div className='flex flex-col pb-6 overflow-y-auto max-w-screen-lg mx-auto'>
+    <div className='flex flex-col w-full pb-6 overflow-y-auto max-w-screen-lg mx-auto'>
       <Textbit.Root plugins={[...plugins.map((initPlugin) => initPlugin()), Text({
         classNames: {
           'heading-1': 'text-lg font-bold py-2',
