@@ -103,27 +103,6 @@ const EventViewContent = (props: ViewProps & { documentId: string }): JSX.Elemen
     }
   }
 
-  const collaborationPayload = useMemo(() => {
-    if (showConfirm) {
-      const [documentId, initialDocument] = createDocument({
-        template: Templates.duplicate,/* (id, provider?.document, { type: 'event', newDate: duplicateDate.toISOString() }) */
-        inProgress: true,
-        payload: {
-          newDate: duplicateDate.toISOString(),
-          document: provider?.document,
-          type: 'event'
-        }
-      })
-      return { documentId, initialDocument }
-    }
-    return { documentId: '' }
-  }, [duplicateDate, provider?.document, showConfirm])
-
-  console.log(' :121 ~ collaborationPayload ~ collaborationPayload', collaborationPayload)
-  const { document: dupDoc, documentId: dupId } = useCollaborationDocument(collaborationPayload)
-  console.log(' :124 ~ dupDoc', dupDoc)
-  console.log(' :118 ~ dupId', dupId)
-
   return (
     <View.Root asDialog={props.asDialog} className={props.className}>
       <div className='grow-0'>
@@ -172,13 +151,14 @@ const EventViewContent = (props: ViewProps & { documentId: string }): JSX.Elemen
 
             {showConfirm && (
               <Prompt
+                duplicateDate={duplicateDate}
+                provider={provider}
                 title={eventTitle}
                 description={`Vill du kopiera händelsen till ${format(duplicateDate, 'dd/MM/yyyy')}?`}
                 secondaryLabel='Avbryt'
                 primaryLabel='Kopiera'
-                onPrimary={() => {
-                  setShowConfirm(false)
-                  if (provider && status === 'authenticated') {
+                onPrimary={(dupDoc: Y.Doc | undefined, dupId: string | undefined) => {
+                  if (provider && status === 'authenticated' && dupId) {
                     provider.sendStateless(
                       createStateless(StatelessType.IN_PROGRESS, {
                         state: false,
@@ -191,6 +171,8 @@ const EventViewContent = (props: ViewProps & { documentId: string }): JSX.Elemen
                       })
                     )
                   }
+                  console.log(dupDoc, dupId)
+                  // setShowConfirm(false)
                 }}
                 onSecondary={() => {
                   setShowConfirm(false)
