@@ -63,7 +63,7 @@ export function wiresListColumns({ sections = [], locale = 'sv-SE' }: {
 
         return (
           <span
-            className={`font-thin text-xs ${isPressRelease ? 'underline decoration-red-500' : ''}`}
+            className={`font-thin text-xs ${isPressRelease ? 'underline decoration-muted-foreground' : ''}`}
           >
             {`${date.getHours()}.${date.getMinutes().toString().padStart(2, '0')}`}
           </span>
@@ -104,9 +104,15 @@ export function wiresListColumns({ sections = [], locale = 'sv-SE' }: {
       },
       accessorFn: (data) => (data.fields['document.title'].values[0]),
       cell: ({ row }) => {
+        const isPressRelease = row.original.fields['document.meta.tt_wire.role']?.values[0] === 'pressrelease'
         const title = row.getValue('title')
 
-        return <Title title={title as string} className='text-xs' />
+        return (
+          <Title
+            title={title as string}
+            className={`text-xs${isPressRelease ? ' text-muted-foreground' : ''}`}
+          />
+        )
       }
     },
     {

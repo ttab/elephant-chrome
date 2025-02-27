@@ -16,15 +16,18 @@ export const Row = ({ row, handleOpen, openDocuments, type }: {
 }): JSX.Element => {
   const { currentModal } = useModal()
   const { isActive } = useView()
+  const isPriority = (row.original as Wire).fields['document.meta.core_newsvalue.value']?.values[0] === '6'
+  const priorityClass = isPriority ? ' text-red-500' : ''
 
   const variants = cva('',
     {
       variants: {
         status: {
           draft: `border-s-[6px] bg-background ${isActive ? 'data-[state=focused]:ring-2' : ''}`,
-          done: 'bg-done-background border-s-done border-s-[6px] data-[state=selected]:bg-done data-[state=focused]:bg-done-background data-[state=focused]:ring-2',
-          approved: `bg-approved-background border-s-approved border-s-[6px] data-[state=selected]:bg-approved ${isActive ? 'data-[state=focused]:bg-approved-background data-[state=focused]:ring-2' : ''}`,
-          used: `bg-usable-background border-s-usable border-s-[6px] data-[state=selected]:bg-usable ${isActive ? 'data-[state=focused]:bg-usable-background data-[state=focused]:ring-2' : ''}`
+          done: `bg-done-background border-s-done border-s-[6px] data-[state=selected]:bg-done ${isActive ? 'data-[state=focused]:bg-done-background data-[state=focused]:ring-2' : ''}${priorityClass}`,
+          approved: `bg-approved-background border-s-approved border-s-[6px] data-[state=selected]:bg-approved ${isActive ? 'data-[state=focused]:bg-approved-background data-[state=focused]:ring-2' : ''}${priorityClass}`,
+          used: `bg-usable-background border-s-usable border-s-[6px] data-[state=selected]:bg-usable ${isActive ? 'data-[state=focused]:bg-usable-background data-[state=focused]:ring-2' : ''}${priorityClass}`,
+          priority: `border-s-[6px] border-s-red-500 bg-background ${isActive ? 'data-[state=focused]:ring-2' : ''}${priorityClass}`
         }
       }
     })
@@ -35,7 +38,7 @@ export const Row = ({ row, handleOpen, openDocuments, type }: {
       className={cn('flex cursor-default scroll-mt-10 ring-inset focus:outline-none focus-visible:ring-2 focus-visible:ring-table-selected data-[state=selected]:bg-table-selected',
         type === 'Assignments' ? 'items-start' : 'items-center',
         variants({
-          status: getRowStatus(type, row)
+          status: getRowStatus(type, row, isPriority)
         })
       )}
       data-state={((openDocuments.includes(
@@ -69,7 +72,8 @@ export const Row = ({ row, handleOpen, openDocuments, type }: {
   )
 }
 
-function getRowStatus(type: DocumentType, row: RowType<unknown>): 'draft' | 'done' | 'approved' | 'used' | null {
+function getRowStatus(type: DocumentType, row: RowType<unknown>, isPriority: boolean):
+  'draft' | 'done' | 'approved' | 'used' | 'priority' | null {
   if (type !== 'Wires') {
     return null
   }
@@ -91,5 +95,8 @@ function getRowStatus(type: DocumentType, row: RowType<unknown>): 'draft' | 'don
         : 'used'
   }
 
+  if (isPriority) {
+    return 'priority'
+  }
   return 'draft'
 }

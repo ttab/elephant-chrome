@@ -7,6 +7,8 @@ import { getValueByYPath, toSlateYXmlText, toYStructure } from '@/lib/yUtils'
 import { createPayload } from '@/defaults/templates/lib/createPayload'
 import type { TemplatePayload } from '@/defaults/templates'
 import { convertToISOStringInTimeZone } from '@/lib/datetime'
+import { toast } from 'sonner'
+import { ToastAction } from '../ToastAction'
 
 export function createFlash({
   provider,
@@ -14,7 +16,8 @@ export function createFlash({
   session,
   planning,
   hasSelectedPlanning,
-  timeZone
+  timeZone,
+  documentStatus
 }: {
   provider: HocuspocusProvider
   status: string
@@ -26,6 +29,8 @@ export function createFlash({
   }
   hasSelectedPlanning: boolean
   timeZone: string
+  documentStatus?: string
+
 }): { flash: Y.Doc, planning: Y.Doc } | undefined {
   const flashEle = provider.document.getMap('ele')
   const [documentId] = getValueByYPath<string>(flashEle, 'root.uuid')
@@ -37,7 +42,7 @@ export function createFlash({
         provider.sendStateless(
           createStateless(StatelessType.IN_PROGRESS, {
             state: false,
-            status: 'done',
+            status: documentStatus,
             id: documentId,
             context: {
               accessToken: session.accessToken,
@@ -99,6 +104,9 @@ export function createFlash({
           })
         )
 
+        toast.success(`Flash ${documentStatus ? 'skickad' : 'sparad'}`, {
+          action: <ToastAction planningId={planning.id} flashId={documentId} />
+        })
         return { flash: provider.document, planning: planning.document }
       } else {
         throw new Error(`Failed adding flash ${documentId} to a planning`)
