@@ -19,6 +19,7 @@ export const PreviewSheet = ({ id, wire, handleClose, textOnly = true }: {
 
   const source = wire?.fields['document.rel.source.uri'].values[0]
   const role = wire?.fields['document.meta.tt_wire.role'].values[0]
+  const newsvalue = wire?.fields['document.meta.core_newsvalue.value']?.values[0]
 
   useNavigationKeys({
     keys: ['s', 'r', 'c'],
@@ -53,10 +54,18 @@ export const PreviewSheet = ({ id, wire, handleClose, textOnly = true }: {
             )}
             {role === 'pressrelease' && (
               <Badge
+                className='w-fit h-6 justify-center align-center bg-gray-400'
+              >
+                Pressmeddelande
+              </Badge>
+            )}
+
+            {newsvalue === '6' && (
+              <Badge
                 variant='destructive'
                 className='w-fit h-6 justify-center align-center'
               >
-                Pressmeddelande
+                Flash
               </Badge>
             )}
           </div>
