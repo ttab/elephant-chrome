@@ -10,7 +10,7 @@ type AwarenessState = [
 ]
 
 
-export const useAwareness = (key: string, useField?: string): AwarenessState => {
+export const useAwareness = (key: string): AwarenessState => {
   const { provider, user } = useCollaboration()
   const [value, setValue] = useState<AwarenessStates>([])
 
@@ -28,7 +28,7 @@ export const useAwareness = (key: string, useField?: string): AwarenessState => 
         return JSON.stringify(prev) === JSON.stringify(remoteStates) ? prev : remoteStates
       })
     })
-  }, [key, useField, provider])
+  }, [key, provider])
 
   return [
     value,
