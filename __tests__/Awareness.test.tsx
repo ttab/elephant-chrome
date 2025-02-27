@@ -23,9 +23,9 @@ vi.spyOn(hooks, 'useAwareness').mockReturnValue([
   ], setIsFocusedMock])
 
 describe('Awareness component', () => {
-  it('renders children with proper className when visual is true', () => {
+  it('renders children with className "relative" when path is given', () => {
     render(
-      <Awareness name='test' visual={true}>
+      <Awareness name='test' path='root.fake.path'>
         <div data-testid='child'>Child Component</div>
       </Awareness>
     )
@@ -34,14 +34,12 @@ describe('Awareness component', () => {
     expect(childElement).toBeInTheDocument()
 
     const wrapperDiv = childElement.parentElement
-    expect(wrapperDiv).toHaveClass('rounded')
-    expect(wrapperDiv).toHaveClass('ring')
-    expect(wrapperDiv).toHaveClass('ring-cyan-400')
+    expect(wrapperDiv).toHaveClass('relative')
   })
 
-  it('renders children without ring className when visual is false', () => {
+  it('renders children without className "relative" when path is not given', () => {
     render(
-      <Awareness name='test' visual={false}>
+      <Awareness name='test'>
         <div data-testid='child'>Child Component</div>
       </Awareness>
     )
@@ -50,15 +48,14 @@ describe('Awareness component', () => {
     expect(childElement).toBeInTheDocument()
 
     const wrapperDiv = childElement.parentElement
-    expect(wrapperDiv).toHaveClass('rounded')
-    expect(wrapperDiv).not.toHaveClass('ring')
+    expect(wrapperDiv).not.toHaveClass('relative')
   })
 
   it('forwards setIsFocused function through ref', () => {
     const ref = createRef<() => void>()
 
     render(
-      <Awareness name='test' visual={true} ref={ref}>
+      <Awareness name='test' ref={ref}>
         <div data-testid='child'>Child Component</div>
       </Awareness>
     );

@@ -4,7 +4,6 @@ import React, {
   type PropsWithChildren
 } from 'react'
 import { useAwareness } from '@/hooks'
-import { Collaboration } from '@/defaults'
 import { cn } from '@ttab/elephant-ui/utils'
 
 
@@ -13,11 +12,12 @@ import { cn } from '@ttab/elephant-ui/utils'
  * as well as signal awareness to remote users. Children use the ref function
  * to signal awareness using true/false.
  *
- * If prop `visual` is false, the visual ring is suppressed
+ * Views (that represent a document) do not provide a path and gets no "awareness dots" rendered.
+ * Fields provide a path (inside a document) as they want "awareness dots" rendered.
  */
-export const Awareness = React.forwardRef(({ name, className, visual = true, children }: PropsWithChildren & {
+export const Awareness = React.forwardRef(({ name, path, className: externalClassName, children }: PropsWithChildren & {
   name: string
-  visual?: boolean
+  path?: string
   className?: string
 }, ref) => {
   const [states, setIsFocused] = useAwareness(name)
@@ -27,12 +27,36 @@ export const Awareness = React.forwardRef(({ name, className, visual = true, chi
     return setIsFocused
   })
 
-  // Currently we only show one user color as ring around remotely focused element
-  const color = Collaboration.colors[states[0]?.focus?.color || '']?.ring
-  const defaultClassName = cn('rounded', visual && !!color && ['ring', color])
+  const userColors = states
+    .filter((state) => {
+      return (path) ? path === state.focus?.path : true
+    })
+    .map((state) => state.focus?.color || 'rgb(121,121,121)')
+    .filter(Boolean)
+
+  const className = cn(
+    (path) ? 'relative' : undefined,
+    externalClassName
+  )
 
   return (
-    <div ref={awarenessRef} className={className || defaultClassName}>
+    <div ref={awarenessRef} className={className}>
+      {!!path && userColors.length > 0 && (
+        <div className='absolute -top-2 -right-2 flex -space-x-1 -space-y-1 mint-w-2 min-h-2'>
+          {userColors.map((backgroundColor, index) => (
+            <span
+              key={index}
+              className='w-3 h-3 rounded-full'
+              style={{
+                zIndex: userColors.length - index, marginLeft: index * -4,
+                backgroundColor,
+                boxShadow: '1px 1px 5px -3px rgba(0, 0, 0, 0.5)'
+              }}
+            />
+          ))}
+        </div>
+      )}
+
       {children}
     </div>
   )

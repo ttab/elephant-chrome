@@ -17,7 +17,7 @@ export const RemoteUsers = ({ documentId }: PropsWithChildren & {
               key={user.clientId}
               value={user.data?.name || ''}
               variant='color'
-              color={user.data?.color || 'gray'}
+              color={user.data?.color}
               size='sm'
             />
           )
