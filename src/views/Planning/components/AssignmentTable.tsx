@@ -6,7 +6,7 @@ import { Assignment } from './Assignment'
 import { type Block } from '@ttab/elephant-api/newsdoc'
 import type { MouseEvent, KeyboardEvent } from 'react'
 import { useMemo, useState } from 'react'
-import { deleteByYPath } from '@/lib/yUtils'
+import { deleteByYPath, getValueByYPath } from '@/lib/yUtils'
 import { cn } from '@ttab/elephant-ui/utils'
 import { type EleBlock } from '@/shared/types'
 import { cva } from 'class-variance-authority'
@@ -115,7 +115,17 @@ export const AssignmentTable = ({ asDialog = false }: {
             deleteByYPath(yRoot, `meta.core/assignment[${newAssigment.index}]`)
           }}
           onClose={() => {
-            deleteByYPath(yRoot, `meta.core/assignment[${newAssigment.index}].__inProgress`)
+            const currentAssigmentPath = `meta.core/assignment[${newAssigment.index}]`
+
+            // Since we're transfering the slugline to new text assignments, we need to clean up
+            const [assignmentType] = getValueByYPath(yRoot,
+              `${currentAssigmentPath}.meta.core/assignment-type[0].value`)
+
+            if (assignmentType !== 'text') {
+              deleteByYPath(yRoot, `${currentAssigmentPath}.meta.[tt/slugline]`)
+            }
+
+            deleteByYPath(yRoot, `${currentAssigmentPath}.__inProgress`)
           }}
           className='mb-6'
         />
