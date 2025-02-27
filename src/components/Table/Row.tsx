@@ -5,6 +5,7 @@ import { cn } from '@ttab/elephant-ui/utils'
 import type { Wire } from '@/hooks/index/lib/wires'
 import { useModal } from '../Modal/useModal'
 import { cva } from 'class-variance-authority'
+import { useView } from '@/hooks/useView'
 
 type DocumentType = 'Planning' | 'Event' | 'Assignments' | 'Search' | 'Wires'
 export const Row = ({ row, handleOpen, openDocuments, type }: {
@@ -14,6 +15,7 @@ export const Row = ({ row, handleOpen, openDocuments, type }: {
   openDocuments: string[]
 }): JSX.Element => {
   const { currentModal } = useModal()
+  const { isActive } = useView()
   const isPriority = (row.original as Wire).fields['document.meta.core_newsvalue.value']?.values[0] === '6'
   const priorityClass = isPriority ? ' text-red-500' : ''
 
@@ -21,11 +23,11 @@ export const Row = ({ row, handleOpen, openDocuments, type }: {
     {
       variants: {
         status: {
-          draft: `border-s-[6px] bg-background data-[state=focused]:ring-2`,
-          done: `bg-done-background border-s-done border-s-[6px] data-[state=selected]:bg-done data-[state=focused]:bg-done-background data-[state=focused]:ring-2${priorityClass}`,
-          approved: `bg-approved-background border-s-approved border-s-[6px] data-[state=selected]:bg-approved data-[state=focused]:bg-approved-background data-[state=focused]:ring-2${priorityClass}`,
-          used: `bg-usable-background border-s-usable border-s-[6px] data-[state=selected]:bg-usable data-[state=focused]:bg-usable-background data-[state=focused]:ring-2${priorityClass}`,
-          priority: `border-s-[6px] border-s-red-500 bg-background data-[state=focused]:ring-2${priorityClass}`
+          draft: `border-s-[6px] bg-background ${isActive ? 'data-[state=focused]:ring-2' : ''}`,
+          done: `bg-done-background border-s-done border-s-[6px] data-[state=selected]:bg-done ${isActive ? 'data-[state=focused]:bg-done-background data-[state=focused]:ring-2' : ''}${priorityClass}`,
+          approved: `bg-approved-background border-s-approved border-s-[6px] data-[state=selected]:bg-approved ${isActive ? 'data-[state=focused]:bg-approved-background data-[state=focused]:ring-2' : ''}${priorityClass}`,
+          used: `bg-usable-background border-s-usable border-s-[6px] data-[state=selected]:bg-usable ${isActive ? 'data-[state=focused]:bg-usable-background data-[state=focused]:ring-2' : ''}${priorityClass}`,
+          priority: `border-s-[6px] border-s-red-500 bg-background ${isActive ? 'data-[state=focused]:ring-2' : ''}${priorityClass}`
         }
       }
     })
