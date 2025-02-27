@@ -14,7 +14,7 @@ export const Row = ({ row, handleOpen, openDocuments, type }: {
   openDocuments: string[]
 }): JSX.Element => {
   const { currentModal } = useModal()
-  const isPriority = (row.original as Wire).fields['document.meta.core_newsvalue.value'].values[0] === '6'
+  const isPriority = (row.original as Wire).fields['document.meta.core_newsvalue.value']?.values[0] === '6'
   const priorityClass = isPriority ? ' text-red-500' : ''
 
   const variants = cva('',
@@ -94,7 +94,6 @@ function getRowStatus(type: DocumentType, row: RowType<unknown>, isPriority: boo
   }
 
   if (isPriority) {
-    console.log(row.original)
     return 'priority'
   }
   return 'draft'
