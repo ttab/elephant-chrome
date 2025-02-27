@@ -14,14 +14,12 @@ export const Section = ({ onValidation, validateStateRef }: FormProps): JSX.Elem
     }
   })
   const path = 'links.core/section[0]'
-
   const [section, setSection] = useYValue<Block | undefined>(path)
-
-  const setFocused = useRef<(value: boolean) => void>(null)
+  const setFocused = useRef<(value: boolean, path: string) => void>(() => { })
   const selectedOptions = (allSections || [])?.filter((s) => s.value === section?.uuid)
 
   return (
-    <Awareness name='Section' ref={setFocused}>
+    <Awareness ref={setFocused} path={path}>
       <Validation
         label='Sektion'
         path={path}
@@ -40,7 +38,7 @@ export const Section = ({ onValidation, validateStateRef }: FormProps): JSX.Elem
           validation={!!onValidation}
           onOpenChange={(isOpen: boolean) => {
             if (setFocused?.current) {
-              setFocused.current(isOpen)
+              setFocused.current(true, (isOpen) ? path : '')
             }
           }}
           onSelect={(option) => {

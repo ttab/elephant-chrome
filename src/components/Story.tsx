@@ -12,13 +12,13 @@ export const Story = (): JSX.Element => {
     }
   })
 
-  const [story, setStory] = useYValue<Block | undefined>('links.core/story[0]')
-
-  const setFocused = useRef<(value: boolean) => void>(null)
+  const path = 'links.core/story[0]'
+  const [story, setStory] = useYValue<Block | undefined>(path)
+  const setFocused = useRef<(value: boolean, path: string) => void>(() => { })
   const selectedOptions = (allStories || []).filter((s) => s.value === story?.uuid)
 
   return (
-    <Awareness name='Story' ref={setFocused}>
+    <Awareness ref={setFocused} path={path}>
       <ComboBox
         max={1}
         size='xs'
@@ -28,9 +28,7 @@ export const Story = (): JSX.Element => {
         selectedOptions={selectedOptions}
         placeholder={story?.title || 'Lägg till story'}
         onOpenChange={(isOpen: boolean) => {
-          if (setFocused?.current) {
-            setFocused.current(isOpen)
-          }
+          setFocused.current(true, isOpen ? path : '')
         }}
         onSelect={(option) => {
           setStory(story?.title === option.label

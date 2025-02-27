@@ -5,6 +5,7 @@ import React, {
 } from 'react'
 import { useAwareness } from '@/hooks'
 import { cn } from '@ttab/elephant-ui/utils'
+import { useDocumentId } from '@/hooks/useDocumentId'
 
 
 /**
@@ -15,12 +16,12 @@ import { cn } from '@ttab/elephant-ui/utils'
  * Views (that represent a document) do not provide a path and gets no "awareness dots" rendered.
  * Fields provide a path (inside a document) as they want "awareness dots" rendered.
  */
-export const Awareness = React.forwardRef(({ name, path, className: externalClassName, children }: PropsWithChildren & {
-  name: string
+export const Awareness = React.forwardRef(({ path, className: externalClassName, children }: PropsWithChildren & {
   path?: string
   className?: string
 }, ref) => {
-  const [states, setIsFocused] = useAwareness(name)
+  const documentId = useDocumentId()
+  const [states, setIsFocused] = useAwareness(documentId)
   const awarenessRef = useRef(null)
 
   useImperativeHandle(ref, () => {

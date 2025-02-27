@@ -10,8 +10,7 @@ import { YBlock } from '@/shared/YBlock'
 import type { EleBlock } from '@/shared/types'
 import { type FormProps } from './Form/Root'
 
-export const Assignees = ({ path, name, placeholder, asDialog }: {
-  name: string
+export const Assignees = ({ path, placeholder, asDialog }: {
   placeholder: string
   path: string
 } & FormProps): JSX.Element | undefined => {
@@ -28,11 +27,11 @@ export const Assignees = ({ path, name, placeholder, asDialog }: {
       label: a.title
     }
   }))
-  const setFocused = useRef<(value: boolean) => void>(null)
+  const setFocused = useRef<(value: boolean, path: string) => void>(() => { })
 
   return (
     <div className='flex gap-2 items-center'>
-      <Awareness name={name} ref={setFocused}>
+      <Awareness ref={setFocused} path={path}>
         <ComboBox
           variant='ghost'
           size='xs'
@@ -42,9 +41,7 @@ export const Assignees = ({ path, name, placeholder, asDialog }: {
           closeOnSelect={false}
           modal={asDialog}
           onOpenChange={(isOpen: boolean) => {
-            if (setFocused?.current) {
-              setFocused.current(isOpen)
-            }
+            setFocused.current(true, isOpen ? path : '')
           }}
           onSelect={(option) => {
             const selectedAssignee = selectedOptions.findIndex((sa) => sa.value === option.value)

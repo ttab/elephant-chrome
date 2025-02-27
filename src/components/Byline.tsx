@@ -6,10 +6,9 @@ import { useRef } from 'react'
 import { Validation } from './Validation'
 import { type ValidateState } from '../types'
 
-export const Byline = ({ onValidation, validateStateRef, name }: {
+export const Byline = ({ onValidation, validateStateRef }: {
   onValidation?: (block: string, label: string, value: string | undefined, reason: string) => boolean
   validateStateRef?: React.MutableRefObject<ValidateState>
-  name?: string
 }): JSX.Element => {
   const allAuthors = useAuthors().map((_) => {
     return {
@@ -19,15 +18,13 @@ export const Byline = ({ onValidation, validateStateRef, name }: {
   })
 
   const path = 'links.core/author'
-
   const [authors, setAuthors] = useYValue<Block[] | undefined>(path)
-
-  const setFocused = useRef<(value: boolean) => void>(null)
+  const setFocused = useRef<(value: boolean, path: string) => void>(() => { })
   const selectedOptions = allAuthors.filter((author) =>
     authors?.some((a) => a.uuid === author.value))
 
   return (
-    <Awareness name={name || 'Byline'} ref={setFocused} className='flex flex-col gap-2'>
+    <Awareness ref={setFocused} path={path} className='flex flex-col gap-2'>
       <Validation
         label='Byline'
         path={path}
@@ -42,9 +39,7 @@ export const Byline = ({ onValidation, validateStateRef, name }: {
           selectedOptions={selectedOptions}
           placeholder='Lägg till byline'
           onOpenChange={(isOpen: boolean) => {
-            if (setFocused?.current) {
-              setFocused.current(isOpen)
-            }
+            setFocused.current(true, (isOpen) ? path : '')
           }}
           onSelect={(option) => {
             if ((authors || [])?.some((a) => a.uuid === option.value)) {

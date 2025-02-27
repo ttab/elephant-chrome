@@ -84,7 +84,6 @@ export const Assignment = ({ index, onAbort, onClose }: {
               inProgress={!!articleId || !!flashId}
             />
             <Assignees
-              name='AssignmentAssignees'
               path={`meta.core/assignment[${index}].links.core/author`}
               placeholder='Lägg till uppdragstagare'
             />

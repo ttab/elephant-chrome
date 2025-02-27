@@ -13,15 +13,15 @@ export const Category = ({ asDialog }: { asDialog?: boolean }): JSX.Element => {
     }
   })
 
-  const [categories, setCategories] = useYValue<Block[] | undefined>('links.core/category')
-
-  const setFocused = useRef<(value: boolean) => void>(null)
+  const path = 'links.core/category'
+  const [categories, setCategories] = useYValue<Block[] | undefined>(path)
+  const setFocused = useRef<(value: boolean, start: string) => void>(() => { })
   const selectedOptions = allCategories.filter((category) =>
     categories?.some((cat) => cat.uuid === category.value)
   )
 
   return (
-    <Awareness name='Category' ref={setFocused}>
+    <Awareness ref={setFocused} path={path}>
       <ComboBox
         max={3}
         sortOrder='label'
@@ -32,7 +32,7 @@ export const Category = ({ asDialog }: { asDialog?: boolean }): JSX.Element => {
         placeholder='Lägg till ämne'
         onOpenChange={(isOpen: boolean) => {
           if (setFocused?.current) {
-            setFocused.current(isOpen)
+            setFocused.current(true, (isOpen) ? path : '')
           }
         }}
         onSelect={(option) => {
