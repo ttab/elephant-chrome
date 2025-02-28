@@ -166,11 +166,12 @@ export class Repository {
     try {
       const { response } = await this.#client.update({
         uuid: status.uuid,
+        // FIXME: This will be done properly when we implement the workflow api
         status: status.name === 'draft'
           ? [
-              { name: 'done', version: -1n, meta: {}, ifMatch: -1n },
-              { name: 'approved', version: -1n, meta: {}, ifMatch: -1n },
-              { name: 'usable', version: -1n, meta: {}, ifMatch: -1n }
+              { name: 'read', version: -1n, meta: {}, ifMatch: -1n },
+              { name: 'saved', version: -1n, meta: {}, ifMatch: -1n },
+              { name: 'used', version: -1n, meta: {}, ifMatch: -1n }
             ]
           : [{
               name: status.name,

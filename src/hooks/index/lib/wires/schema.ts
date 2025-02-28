@@ -13,10 +13,10 @@ export const fields = [
   'document.rel.section.uuid',
   'document.rel.section.title',
   'current_version',
-  'heads.approved.version',
-  'heads.approved.created',
-  'heads.done.version',
-  'heads.done.created',
+  'heads.saved.version',
+  'heads.saved.created',
+  'heads.read.version',
+  'heads.read.created',
   'heads.used.version',
   'heads.used.created'
 ]

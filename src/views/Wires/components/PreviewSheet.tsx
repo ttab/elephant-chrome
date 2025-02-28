@@ -20,18 +20,19 @@ export const PreviewSheet = ({ id, wire, handleClose, textOnly = true }: {
   const source = wire?.fields['document.rel.source.uri'].values[0]
   const role = wire?.fields['document.meta.tt_wire.role'].values[0]
   const newsvalue = wire?.fields['document.meta.core_newsvalue.value']?.values[0]
+  const currentVersion = BigInt(wire?.fields['current_version']?.values[0] || '')
 
   useNavigationKeys({
     keys: ['s', 'r', 'c'],
     onNavigation: (event) => {
       event.stopPropagation()
       if (event.key === 'r') {
-        setDocumentStatus('approved').catch((error) => console.error(error))
+        setDocumentStatus('read').catch((error) => console.error(error))
         return
       }
 
       if (event.key === 's') {
-        setDocumentStatus('done').catch((error) => console.error(error))
+        setDocumentStatus('saved').catch((error) => console.error(error))
         return
       }
 
@@ -77,7 +78,9 @@ export const PreviewSheet = ({ id, wire, handleClose, textOnly = true }: {
                   type='single'
                   size='xs'
                   disabled={documentStatus?.name === 'used'}
-                  value={documentStatus?.name}
+                  value={documentStatus?.version === currentVersion
+                    ? documentStatus?.name
+                    : undefined}
                   onValueChange={(value) => {
                     if (!value && documentStatus) {
                       setDocumentStatus({
@@ -95,7 +98,7 @@ export const PreviewSheet = ({ id, wire, handleClose, textOnly = true }: {
                     content='Markera som sparad'
                   >
                     <ToggleGroupItem
-                      value='done'
+                      value='saved'
                       aria-label='Toggle save'
                       className='border
               !border-done-border
@@ -111,8 +114,8 @@ export const PreviewSheet = ({ id, wire, handleClose, textOnly = true }: {
                     content='Markera som läst'
                   >
                     <ToggleGroupItem
-                      value='approved'
-                      aria-label='Toggle check'
+                      value='read'
+                      aria-label='Toggle read'
                       className='border
               !border-approved-border
               data-[state="on"]:!bg-approved
@@ -127,7 +130,7 @@ export const PreviewSheet = ({ id, wire, handleClose, textOnly = true }: {
                   >
                     <ToggleGroupItem
                       value='used'
-                      aria-label='Toggle add'
+                      aria-label='Toggle used'
                       className='border
               !border-usable-border
               data-[state="on"]:!bg-usable
