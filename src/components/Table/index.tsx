@@ -143,7 +143,7 @@ export const Table = <TData, TValue>({
           const wireRow = selectedRow as RowType<WireType>
 
           setDocumentStatus({
-            name: 'approved',
+            name: 'read',
             uuid: wireRow.original.id,
             version: BigInt(wireRow.original.fields.current_version.values?.[0])
           }).catch((error) => console.error(error))
@@ -156,7 +156,7 @@ export const Table = <TData, TValue>({
           const wireRow = selectedRow as RowType<WireType>
 
           setDocumentStatus({
-            name: 'done',
+            name: 'saved',
             uuid: wireRow.original.id,
             version: BigInt(wireRow.original.fields.current_version.values?.[0])
           }).catch((error) => console.error(error))
