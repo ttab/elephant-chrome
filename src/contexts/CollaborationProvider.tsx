@@ -28,6 +28,7 @@ export type AwarenessStates = Array<{
   data: AwarenessUserData
   focus?: {
     key: string
+    path?: string
     color: string
   }
 }>

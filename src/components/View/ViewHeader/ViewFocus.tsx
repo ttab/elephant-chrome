@@ -26,7 +26,7 @@ export const ViewFocus = ({ viewId }: { viewId: string }): JSX.Element => {
   return (
     <Button
       variant='ghost'
-      className='w-9 h-9 px-0'
+      className='w-9 h-9 px-0 hover:bg-gray-200 dark:hover:bg-gray-700'
       onClick={() => {
         dispatch({
           type: NavigationActionType.FOCUS,

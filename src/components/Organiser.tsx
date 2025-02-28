@@ -14,13 +14,13 @@ export const Organiser = ({ asDialog }: FormProps): JSX.Element => {
     }
   })
 
-  const [organiser, setOrganiser] = useYValue<Block | undefined>('links.core/organiser[0]')
-
-  const setFocused = useRef<(value: boolean) => void>(null)
+  const path = 'links.core/organiser[0]'
+  const [organiser, setOrganiser] = useYValue<Block | undefined>(path)
+  const setFocused = useRef<(value: boolean, path: string) => void>(() => { })
   const selectedOptions = (allOrganisers || []).filter((s) => s.value === organiser?.uuid)
 
   return (
-    <Awareness name='Organiser' ref={setFocused}>
+    <Awareness ref={setFocused} path={path}>
       <ComboBox
         max={1}
         size='xs'
@@ -29,9 +29,7 @@ export const Organiser = ({ asDialog }: FormProps): JSX.Element => {
         selectedOptions={selectedOptions}
         placeholder={organiser?.title || 'Lägg till organisatör'}
         onOpenChange={(isOpen: boolean) => {
-          if (setFocused?.current) {
-            setFocused.current(isOpen)
-          }
+          setFocused.current(true, (isOpen) ? path : '')
         }}
         onSelect={(option) => {
           setOrganiser(organiser?.title === option.label

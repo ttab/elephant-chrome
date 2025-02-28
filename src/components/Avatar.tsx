@@ -7,10 +7,9 @@ import {
   AvatarFallback,
   AvatarImage
 } from '@ttab/elephant-ui'
-import { Collaboration } from '@/defaults'
 import { type Session } from 'next-auth'
 
-const avatarVariants = cva('cursor-default',
+const avatarVariants = cva('cursor-default text-opacity-60',
   {
     variants: {
       variant: {
@@ -23,8 +22,8 @@ const avatarVariants = cva('cursor-default',
       },
       size: {
         xxs: 'size-4 mr-1.5 font-semibold text-[9px]',
-        xs: 'size-6 mr-1.5 font-normal text-xs',
-        sm: 'size-7 font-normal text-xs',
+        xs: 'size-6 mr-1.5 font-semibold text-[11px]',
+        sm: 'size-7 text-xs',
         lg: 'size-9 font-semibold text-md',
         xl: 'size-12 font-semibold text-md',
         default: 'size-8 font-semibold text-sm'
@@ -34,7 +33,7 @@ const avatarVariants = cva('cursor-default',
 
 export type AvatarSize = 'xxs' | 'xs' | 'sm' | 'lg' | 'xl' | 'default' | undefined | null
 
-export const Avatar = ({ user, value, variant = 'default', size = 'default', color = 'default', stacked = false, className }:
+export const Avatar = ({ user, value, variant = 'default', size = 'default', color, stacked = false, className }:
   React.HTMLAttributes<HTMLDivElement> &
   VariantProps<typeof avatarVariants> & {
     value?: string
@@ -42,16 +41,15 @@ export const Avatar = ({ user, value, variant = 'default', size = 'default', col
     color?: string
     stacked?: boolean
   }): JSX.Element => {
-  const bg = Collaboration.colors[color]?.bg || ''
-  const border = Collaboration.colors[color]?.border || ''
-
-  const compoundClassName = cn(className, variant === 'color' && [bg, 'border', border])
+  const style = color ? { backgroundColor: color } : {} // rgb(x, y, z)
+  const compoundClassName = cn(className, variant === 'color' && 'border border-gray')
 
   return (
     <AvatarMain className={cn(avatarVariants({ size, stacked }))}>
       <AvatarImage src={user?.image} />
       <AvatarFallback
         className={cn(avatarVariants({ variant, className: compoundClassName }))}
+        style={style}
       >
         {size !== 'xxs'
           ? getInitials(user?.name || value)

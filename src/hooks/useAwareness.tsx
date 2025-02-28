@@ -6,8 +6,9 @@ import {
 
 type AwarenessState = [
   AwarenessStates, // value
-  (value: boolean) => void // set value
+  (value: boolean, path?: string) => void // set value
 ]
+
 
 export const useAwareness = (key: string): AwarenessState => {
   const { provider, user } = useCollaboration()
@@ -17,26 +18,22 @@ export const useAwareness = (key: string): AwarenessState => {
     provider?.on('awarenessUpdate', ({ states }: { states: AwarenessStates }) => {
       const localClientId = provider?.configuration?.awareness?.clientID
 
-      const remoteStates = states
-        .filter(({ clientId, focus }) => {
-          if (!focus) {
-            return false
-          }
-          return focus?.key === key && clientId !== localClientId
-        })
+      const remoteStates = states.filter(({ clientId, focus }) => {
+        return (!focus)
+          ? false
+          : focus?.key === key && clientId !== localClientId
+      })
 
-      if (!remoteStates.length && value.length) {
-        setValue([])
-      } else if (remoteStates.length && !value.length) {
-        setValue(remoteStates)
-      }
+      setValue((prev) => {
+        return JSON.stringify(prev) === JSON.stringify(remoteStates) ? prev : remoteStates
+      })
     })
-  }, [key, value, provider])
+  }, [key, provider])
 
   return [
     value,
-    (newValue) => {
-      provider?.setAwarenessField('focus', newValue ? { key, color: user.color } : undefined)
+    (newValue, path = undefined) => {
+      provider?.setAwarenessField('focus', newValue ? { key, color: user.color, path } : undefined)
     }
   ]
 }

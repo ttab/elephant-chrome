@@ -1,6 +1,5 @@
 import { useMemo, useState } from 'react'
 import { View, ViewHeader } from '@/components'
-import { BriefcaseBusinessIcon } from '@ttab/elephant-ui/icons'
 import { TabsContent } from '@ttab/elephant-ui'
 import { TableProvider } from '@/contexts/TableProvider'
 import { TableCommandMenu } from '@/components/Commands/TableCommand'
@@ -65,12 +64,7 @@ export const Assignments = (): JSX.Element => {
         </TableCommandMenu>
 
         <ViewHeader.Root>
-          <ViewHeader.Title
-            title='Uppdrag'
-            short='Uppdrag'
-            iconColor='#006bb3'
-            icon={BriefcaseBusinessIcon}
-          />
+          <ViewHeader.Title name='Assignments' title='Uppdrag' />
           <ViewHeader.Content>
             <Header
               type='Assignments'

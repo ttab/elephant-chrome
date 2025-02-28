@@ -1,7 +1,6 @@
 import { useMemo, useState } from 'react'
 import { type ViewMetadata } from '@/types'
 import { ViewHeader, View } from '@/components'
-import { CalendarDaysIcon } from '@ttab/elephant-ui/icons'
 import { TabsContent } from '@ttab/elephant-ui'
 import { PlanningList } from './PlanningList'
 import { TableProvider } from '@/contexts/TableProvider'
@@ -56,12 +55,7 @@ export const Plannings = (): JSX.Element => {
           </TableCommandMenu>
 
           <ViewHeader.Root>
-            <ViewHeader.Title
-              title='Planeringar'
-              short='Planeringar'
-              icon={CalendarDaysIcon}
-              iconColor='#FF971E'
-            />
+            <ViewHeader.Title name='Plannings' title='Planeringar' />
             <ViewHeader.Content>
               <Header type='Planning' />
             </ViewHeader.Content>

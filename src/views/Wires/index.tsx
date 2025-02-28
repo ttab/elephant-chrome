@@ -1,6 +1,6 @@
 import { View, ViewHeader } from '@/components/View'
 import { type ViewMetadata } from '@/types/index'
-import { Cable, Minus, Save } from '@ttab/elephant-ui/icons'
+import { Minus, Save } from '@ttab/elephant-ui/icons'
 import { useMemo } from 'react'
 import { Sources } from './components'
 import { wiresListColumns } from './WiresListColumns'
@@ -54,12 +54,7 @@ export const Wires = (): JSX.Element => {
         <ViewHeader.Root>
           {isFirst && (
             <>
-              <ViewHeader.Title
-                title='Telegram'
-                short='Telegram'
-                icon={Cable}
-                iconColor='#FF6347'
-              />
+              <ViewHeader.Title title='Telegram' name='Wires' />
 
               <Button
                 variant='ghost'

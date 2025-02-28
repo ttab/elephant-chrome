@@ -7,9 +7,9 @@ import { Validation } from './Validation'
 import type { FormProps } from './Form/Root'
 
 export const Newsvalue = ({ onValidation, validateStateRef }: FormProps): JSX.Element => {
-  const [newsvalue, setNewsvalue] = useYValue<string | undefined>('meta.core/newsvalue[0].value')
-
-  const setFocused = useRef<(value: boolean) => void>(null)
+  const path = 'meta.core/newsvalue[0].value'
+  const [newsvalue, setNewsvalue] = useYValue<string | undefined>(path)
+  const setFocused = useRef<(value: boolean, path: string) => void>(() => { })
 
   const selectedOptions = Newsvalues.filter((type) => {
     return type.value === newsvalue
@@ -18,10 +18,10 @@ export const Newsvalue = ({ onValidation, validateStateRef }: FormProps): JSX.El
   const SelectedIcon = selectedOptions.length && selectedOptions[0].icon
 
   return (
-    <Awareness name='Newsvalue' ref={setFocused}>
+    <Awareness ref={setFocused} path={path}>
       <Validation
         label='Nyhetsvärde'
-        path='meta.core/newsvalue[0].value'
+        path={path}
         block='core/newsvalue[0]'
         onValidation={onValidation}
         validateStateRef={validateStateRef}
@@ -36,9 +36,7 @@ export const Newsvalue = ({ onValidation, validateStateRef }: FormProps): JSX.El
           placeholder='Lägg till nyhetsvärde'
           validation={!!onValidation}
           onOpenChange={(isOpen: boolean) => {
-            if (setFocused?.current) {
-              setFocused.current(isOpen)
-            }
+            setFocused.current(true, isOpen ? path : '')
           }}
           onSelect={(option) => {
             if (newsvalue === option.value) {
