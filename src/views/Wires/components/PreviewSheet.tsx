@@ -20,6 +20,7 @@ export const PreviewSheet = ({ id, wire, handleClose, textOnly = true }: {
   const source = wire?.fields['document.rel.source.uri'].values[0]
   const role = wire?.fields['document.meta.tt_wire.role'].values[0]
   const newsvalue = wire?.fields['document.meta.core_newsvalue.value']?.values[0]
+  const currentVersion = BigInt(wire?.fields['current_version']?.values[0] || '')
 
   useNavigationKeys({
     keys: ['s', 'r', 'c'],
@@ -77,7 +78,9 @@ export const PreviewSheet = ({ id, wire, handleClose, textOnly = true }: {
                   type='single'
                   size='xs'
                   disabled={documentStatus?.name === 'used'}
-                  value={documentStatus?.name}
+                  value={documentStatus?.version === currentVersion
+                    ? documentStatus?.name
+                    : undefined}
                   onValueChange={(value) => {
                     if (!value && documentStatus) {
                       setDocumentStatus({
