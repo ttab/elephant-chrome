@@ -95,7 +95,7 @@ export const PreviewSheet = ({ id, wire, handleClose, textOnly = true }: {
                     content='Markera som sparad'
                   >
                     <ToggleGroupItem
-                      value='done'
+                      value='saved'
                       aria-label='Toggle save'
                       className='border
               !border-done-border
@@ -111,8 +111,8 @@ export const PreviewSheet = ({ id, wire, handleClose, textOnly = true }: {
                     content='Markera som läst'
                   >
                     <ToggleGroupItem
-                      value='approved'
-                      aria-label='Toggle check'
+                      value='read'
+                      aria-label='Toggle read'
                       className='border
               !border-approved-border
               data-[state="on"]:!bg-approved
@@ -127,7 +127,7 @@ export const PreviewSheet = ({ id, wire, handleClose, textOnly = true }: {
                   >
                     <ToggleGroupItem
                       value='used'
-                      aria-label='Toggle add'
+                      aria-label='Toggle used'
                       className='border
               !border-usable-border
               data-[state="on"]:!bg-usable
