@@ -7,6 +7,8 @@ import { createPayload } from '@/defaults/templates/lib/createPayload'
 import { getValueByYPath, toSlateYXmlText, toYStructure } from '@/lib/yUtils'
 import type { Wire } from '@/hooks/index/lib/wires'
 import type { TemplatePayload } from '@/defaults/templates'
+import { toast } from 'sonner'
+import { ToastAction } from '../ToastAction'
 
 export function createArticle({
   provider,
@@ -90,6 +92,9 @@ export function createArticle({
           })
         )
 
+        toast.success(`Artikel skapad`, {
+          action: <ToastAction planningId={planning.id} wireId={documentId} />
+        })
         return { article: provider.document, planning: planning.document }
       } else {
         const ele = provider.document.getMap('ele')

@@ -49,8 +49,9 @@ export const TextboxRoot = ({
             Text({
               singleLine,
               countCharacters,
-              inputStyle: true,
-              styles: ['body']
+              classNames: {
+                body: 'font-sans py-0'
+              }
             })
           ]}
           className='h-min-2 w-full'

@@ -14,7 +14,7 @@ const sectionVariants = cva('overscroll-auto @5xl:w-[1024px] space-y-4', {
 })
 
 export const UserMessage = ({ asDialog, children }: { asDialog: boolean } & PropsWithChildren) => {
-  return (
+  return asDialog && (
     <section className={cn(sectionVariants({ asCreateDialog: asDialog }))}>
       <Alert className='bg-gray-50' variant='default'>
         <InfoIcon size={18} strokeWidth={1.75} className='text-muted-foreground' />

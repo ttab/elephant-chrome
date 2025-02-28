@@ -11,7 +11,7 @@ export const ModalSheet = ({ children, isVisible }: {
       <SheetContent
         onPointerDownOutside={hideModal}
         side='bottom'
-        className='p-3 h-1/2 max-w-[1000px] mx-auto rounded-t rounded-lg'
+        className='p-3 h-2/3 max-w-[1000px] mx-auto rounded-t rounded-lg'
       >
         <SheetTitle />
         <SheetDescription />
