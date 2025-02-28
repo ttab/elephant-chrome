@@ -99,7 +99,10 @@ function isUpdated(wire: Wire): boolean {
     parseInt(wire.fields['heads.used.version']?.values[0], 10)
   ]
 
-  return versions.some((version) => currentVersion > version)
+  return versions.some((version) => {
+    const parsedVersion = isNaN(version) || version < 0 ? NaN : version
+    return currentVersion > parsedVersion
+  })
 }
 
 function getDataState(openDocuments: string[], wire: Wire, type: DocumentType, row: RowType<unknown>): 'focused' | 'selected' | undefined {
