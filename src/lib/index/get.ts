@@ -5,6 +5,11 @@ export interface SearchParams {
   size?: number
 }
 
+
+/**
+ * @deprecated This function is deprecated and will be removed in future versions.
+ * TODO: use Twirp api and wrap in a hook #ELE-1171
+ */
 export const get = async <T>(endpoint: URL, accessToken: string, index: string, params?: SearchParams): Promise<SearchIndexResponse<T>> => {
   const query = {
     query: {

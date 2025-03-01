@@ -17,6 +17,11 @@ export interface EventSearchParams {
   }
 }
 
+
+/**
+ * @deprecated This function is deprecated and will be removed in future versions.
+ * TODO: use Twirp api and wrap in a hook
+ */
 export const search = async (endpoint: URL, accessToken: string, params?: EventSearchParams): Promise<SearchIndexResponse<Event>> => {
   if (params && (!params?.when || params?.when !== 'anytime')) {
     params.when = 'fixed'

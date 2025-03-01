@@ -15,6 +15,7 @@ import { Commands } from '@/components/Commands'
 import { SWRProvider } from '@/contexts/SWRProvider'
 import { getDateTimeBoundariesUTC } from '@/lib/datetime'
 import { useQuery } from '@/hooks/useQuery'
+import { loadFilters } from '@/lib/loadFilters'
 
 const meta: ViewMetadata = {
   name: 'Plannings',
@@ -44,11 +45,19 @@ export const Plannings = (): JSX.Element => {
   const sections = useSections()
   const authors = useAuthors()
 
-  const columns = useMemo(() => planningListColumns({ sections, authors }), [sections, authors])
+  const columns = useMemo(() =>
+    planningListColumns({ sections, authors }), [sections, authors])
+  const columnFilters = loadFilters<PlanningType>(query, columns)
 
   return (
     <View.Root tab={currentTab} onTabChange={setCurrentTab}>
-      <TableProvider<PlanningType> columns={columns}>
+      <TableProvider<PlanningType>
+        columns={columns}
+        initialState={{
+          grouping: ['newsvalue'],
+          columnFilters
+        }}
+      >
         <SWRProvider<PlanningType, PlanningSearchParams> index={PlanningsIndex}>
 
           <TableCommandMenu heading='Plannings'>

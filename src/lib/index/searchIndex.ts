@@ -29,6 +29,8 @@ export interface SearchIndexError {
 export type SearchIndexResponse<T> = SearchIndexError | SearchIndexResult<T>
 
 /**
+ * @deprecated This function is deprecated and will be removed in future versions.
+ * TODO: use Twirp api and wrap in a hook #ELE-1171
  * @param search - object
  * @param options - SearchIndexOptions
  * @param page - number Optional, defaults to 1

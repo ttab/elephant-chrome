@@ -1,3 +1,6 @@
+import type {
+  TableState,
+  Updater } from '@tanstack/react-table'
 import {
   getCoreRowModel,
   getFacetedRowModel,
@@ -21,6 +24,7 @@ import {
   type SetStateAction,
   useCallback
 } from 'react'
+import { useQuery } from '../hooks'
 
 export interface CommandArgs {
   pages: string[]
@@ -49,19 +53,25 @@ export const TableContext = createContext<TableProviderState<any>>(initialState)
 
 export const TableProvider = <T,>({
   children,
-  columns
-}: PropsWithChildren<{ columns: Array<ColumnDef<T, unknown>> }>): JSX.Element => {
+  columns,
+  initialState
+}: PropsWithChildren<{
+  columns: Array<ColumnDef<T, unknown>>
+  initialState?: Partial<TableState>
+}>): JSX.Element => {
   const [data, setData] = useState<T[] | null>(null)
 
   const [rowSelection, setRowSelection] = useState({})
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
-  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
+  const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>(initialState?.columnFilters || [])
   const [sorting, setSorting] = useState<SortingState>([])
 
   const [pages, setPages] = useState<string[]>([])
   const page = pages[pages.length - 1]
   const [search, setSearch] = useState<string | undefined>()
-  const [grouping, setGrouping] = useState<string[]>([])
+  const [grouping, setGrouping] = useState<string[]>(initialState?.grouping || [])
+
+  const [, setQuery] = useQuery()
 
   const command = useMemo(() => ({
     pages,
@@ -88,7 +98,14 @@ export const TableProvider = <T,>({
     onRowSelectionChange: useCallback(setRowSelection, [setRowSelection]),
     onGroupingChange: useCallback(setGrouping, [setGrouping]),
     onSortingChange: useCallback(setSorting, [setSorting]),
-    onColumnFiltersChange: useCallback(setColumnFilters, [setColumnFilters]),
+    onColumnFiltersChange: useCallback((updater: Updater<ColumnFiltersState>) => {
+      const query = (typeof updater === 'function' ? updater([]) : updater).reduce<Record<string, string | string[] | undefined>>((acc, { id, value }) => {
+        acc[id] = value as string | string[]
+        return acc
+      }, {})
+      setQuery(query)
+      setColumnFilters(updater)
+    }, [setColumnFilters, setQuery]),
     onColumnVisibilityChange: useCallback(setColumnVisibility, [setColumnVisibility]),
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),

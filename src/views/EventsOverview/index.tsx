@@ -17,6 +17,7 @@ import { getDateTimeBoundariesUTC } from '@/lib/datetime'
 import { useQuery } from '@/hooks/useQuery'
 import { type EventSearchParams } from '@/lib/events/search'
 import { useOrganisers } from '@/hooks/useOrganisers'
+import { loadFilters } from '@/lib/loadFilters'
 
 const meta: ViewMetadata = {
   name: 'Events',
@@ -46,11 +47,19 @@ export const Events = (): JSX.Element => {
 
   const organisers = useOrganisers()
 
-  const columns = useMemo(() => eventTableColumns({ sections, organisers }), [sections, organisers])
+  const columns = useMemo(() =>
+    eventTableColumns({ sections, organisers }), [sections, organisers])
+  const columnFilters = loadFilters<Event>(query, columns)
 
   return (
     <View.Root>
-      <TableProvider<Event> columns={columns}>
+      <TableProvider<Event>
+        columns={columns}
+        initialState={{
+          grouping: ['newsvalue'],
+          columnFilters
+        }}
+      >
         <SWRProvider<Event, EventSearchParams> index={EventsIndex}>
           <Tabs defaultValue={currentTab} className='flex-1' onValueChange={setCurrentTab}>
 

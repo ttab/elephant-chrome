@@ -16,6 +16,10 @@ export interface PlanningSearchParams {
   }
 }
 
+/**
+ * @deprecated This function is deprecated and will be removed in future versions.
+ * TODO: use Twirp api and wrap in a hook #ELE-1171
+ */
 const search = async (endpoint: URL, accessToken: string, params?: PlanningSearchParams): Promise<SearchIndexResponse<Planning>> => {
   if (params && (!params?.when || params?.when !== 'anytime')) {
     params.when = 'fixed'

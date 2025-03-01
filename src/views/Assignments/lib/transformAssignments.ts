@@ -22,7 +22,8 @@ export const transformAssignments = (result: SearchIndexResponse<LoadedDocumentI
         planningTitle,
         newsvalue: newsvalue?.value,
         _id: hit.id,
-        section: section?.title
+        section: section?.title,
+        sectionId: section?.uuid
       })
     })
   })

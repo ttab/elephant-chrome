@@ -256,7 +256,7 @@ export const Table = <TData, TValue>({
 
   return (
     <>
-      <Toolbar table={table} />
+      {type !== 'Wires' && <Toolbar table={table} />}
 
       {(type === 'Planning' || type === 'Event') && (
         <NewItems.Root>
