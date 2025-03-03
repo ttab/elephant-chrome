@@ -1,7 +1,7 @@
 
 import { NewsvalueMap } from '@/defaults/newsvalueMap'
 import { Newsvalue } from '@/components/Table/Items/Newsvalue'
-import { Briefcase, Clock3Icon, Crosshair, Navigation, SignalHigh, Users } from '@ttab/elephant-ui/icons'
+import { Briefcase, Clock3Icon, Crosshair, Navigation, SignalHigh, Users, Shapes } from '@ttab/elephant-ui/icons'
 import { Newsvalues } from '@/defaults/newsvalues'
 import { FacetedFilter } from '@/components/Commands/FacetedFilter'
 import { AssignmentTypes } from '@/defaults/assignmentTypes'
@@ -13,20 +13,22 @@ import { Actions } from '@/components/Table/Items/Actions'
 import { dateInTimestampOrShortMonthDayTimestamp } from '@/lib/datetime'
 import { type ColumnDef } from '@tanstack/react-table'
 import { type DefaultValueOption } from '@/types/index'
-import { type IDBAuthor } from 'src/datastore/types'
-import {
-  type MetaValueType,
-  type AssignmentMeta,
-  type AssigneeMeta
+import type { IDBSection, IDBAuthor } from 'src/datastore/types'
+import type {
+  AssignmentMetaExtended,
+  MetaValueType,
+  AssigneeMeta
 } from './types'
 import { slotLabels, timesSlots } from '@/defaults/assignmentTimeslots'
 import { Time } from './Time'
+import { SectionBadge } from '@/components/DataItem/SectionBadge'
 
-export function assignmentColumns({ authors = [], locale, timeZone }: {
+export function assignmentColumns({ authors = [], locale, timeZone, sections = [] }: {
   authors?: IDBAuthor[]
+  sections?: IDBSection[]
   locale: string
   timeZone: string
-}): Array<ColumnDef<AssignmentMeta & { planningTitle: string, newsvalue: string, _id: string }>> {
+}): Array<ColumnDef<AssignmentMetaExtended>> {
   return [
     {
       id: 'titles',
@@ -46,6 +48,36 @@ export function assignmentColumns({ authors = [], locale, timeZone }: {
         const { assignmentTitle, planningTitle } = data
         return <AssignmentTitles planningTitle={planningTitle} assignmentTitle={assignmentTitle} />
       }
+    },
+    {
+      id: 'section',
+      meta: {
+        options: sections.map((_) => {
+          return {
+            value: _.id,
+            label: _.title
+          }
+        }),
+        Filter: ({ column, setSearch }) => (
+          <FacetedFilter column={column} setSearch={setSearch} />
+        ),
+        name: 'Sektion',
+        columnIcon: Shapes,
+        className: 'flex-none w-[115px] hidden @4xl/view:[display:revert]'
+      },
+      accessorFn: (data) => {
+        return data.sectionId
+      },
+      cell: ({ row }) => {
+        const sectionTitle = row.original.section
+        return (
+          <>
+            {sectionTitle && <SectionBadge title={sectionTitle} color='bg-[#BD6E11]' />}
+          </>
+        )
+      },
+      filterFn: (row, id, value: string[]) =>
+        value.includes(row.getValue(id))
     },
     {
       id: 'newsvalue',

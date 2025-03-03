@@ -13,6 +13,10 @@ interface SearchArticlesParams {
   }
 }
 
+/**
+ * @deprecated This function is deprecated and will be removed in future versions.
+ * TODO: use Twirp api and wrap in a hook #ELE-1171
+ */
 const search = async (endpoint: URL, accessToken: string, params?: SearchArticlesParams): Promise<SearchIndexResponse<Article>> => {
   const sort: Array<Record<string, 'asc' | 'desc'>> = [{ 'heads.usable.created': 'desc' }]
 

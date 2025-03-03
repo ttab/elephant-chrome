@@ -53,7 +53,10 @@ const SelectedButton = <TData, >({ id, value, table }: SelectedButtonProps<TData
       variant='outline'
       size='sm'
       className='h-8 border-dashed'
-      onClick={() => table.resetColumnFilters()}
+      onClick={() =>
+        table.setColumnFilters(
+          table.getState().columnFilters
+            .filter((filter) => filter.id !== id))}
     >
       {FilterIcon && <FilterIcon size={18} strokeWidth={1.75} className='mr-2' />}
       <SelectedBadge id={id} value={value} options={options} />

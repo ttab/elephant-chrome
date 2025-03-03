@@ -5,6 +5,7 @@ export type AssignmentMetaExtended = AssignmentMeta & {
   newsvalue: string
   _id: string
   section: string
+  sectionId: string
 }
 
 export interface AssigneeMeta {

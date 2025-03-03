@@ -11,10 +11,12 @@ import { useAuthors } from '@/hooks/useAuthors'
 import { useRegistry } from '@/hooks/useRegistry'
 import { useSession } from 'next-auth/react'
 import { type ViewMetadata } from '@/types'
-import { type AssignmentMeta } from './types'
+import type { AssignmentMetaExtended } from './types'
 import { type IDBAuthor } from 'src/datastore/types'
 import { useQuery } from '@/hooks/useQuery'
 import { getDateTimeBoundariesUTC } from '@/lib/datetime'
+import { loadFilters } from '@/lib/loadFilters'
+import { useSections } from '@/hooks/useSections'
 
 const meta: ViewMetadata = {
   name: 'Assignments',
@@ -43,6 +45,7 @@ export const Assignments = (): JSX.Element => {
   const authors = useAuthors()
   const { locale, timeZone } = useRegistry()
   const { data: session } = useSession()
+  const sections = useSections()
 
   const assigneeUserName = useMemo(() => {
     const userSub = session?.user?.sub
@@ -54,10 +57,19 @@ export const Assignments = (): JSX.Element => {
     return author?.name
   }, [authors, session?.user?.sub])
 
+
+  const columns = useMemo(() =>
+    assignmentColumns({ authors, locale, timeZone, sections }), [authors, locale, timeZone, sections])
+  const columnFilters = loadFilters<AssignmentMetaExtended>(query, columns)
+
   return (
     <View.Root tab={currentTab} onTabChange={setCurrentTab}>
-      <TableProvider<AssignmentMeta & { planningTitle: string, newsvalue: string, _id: string }>
-        columns={assignmentColumns({ authors, locale, timeZone })}
+      <TableProvider<AssignmentMetaExtended>
+        columns={columns}
+        initialState={{
+          grouping: ['newsvalue'],
+          columnFilters
+        }}
       >
         <TableCommandMenu heading='Assignments'>
           <Commands />
@@ -76,7 +88,7 @@ export const Assignments = (): JSX.Element => {
 
         <View.Content>
           <TabsContent value='list' className='mt-0'>
-            <AssignmentsList startDate={from} />
+            <AssignmentsList startDate={from} columns={columns} />
           </TabsContent>
         </View.Content>
 

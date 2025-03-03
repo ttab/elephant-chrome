@@ -1,13 +1,14 @@
-import { useCallback, useEffect, useMemo } from 'react'
-import { useQuery, useSections, useTable, useWireSources } from '@/hooks'
+import { useCallback } from 'react'
+import { useQuery, useWireSources } from '@/hooks'
 
 import { Table } from '@/components/Table'
-import { wiresListColumns } from './WiresListColumns'
 import { useWires } from '@/hooks/index/useWires'
 import type { Wire } from '@/hooks/index/lib/wires'
+import type { ColumnDef } from '@tanstack/react-table'
 
-export const WireList = (): JSX.Element => {
-  const sections = useSections()
+export const WireList = ({ columns }: {
+  columns: ColumnDef<Wire, unknown>[]
+}): JSX.Element => {
   const [{ source, page }] = useQuery()
 
   const sourceUri = useWireSources()
@@ -15,8 +16,6 @@ export const WireList = (): JSX.Element => {
       ? source.includes(_.title)
       : source === _.title)
     .map((_) => _.uri)
-
-  const columns = useMemo(() => wiresListColumns({ sections }), [sections])
 
   useWires({
     source: sourceUri,
@@ -33,14 +32,6 @@ export const WireList = (): JSX.Element => {
     }
     return row
   }, [])
-
-  const { table } = useTable<Wire>()
-
-  useEffect(() => {
-    if (table) {
-      table.setGrouping(['modified'])
-    }
-  }, [table])
 
   return (
     <Table

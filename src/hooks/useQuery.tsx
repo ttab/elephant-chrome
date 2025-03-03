@@ -23,10 +23,7 @@ export const useQuery = (): [Record<string, string | string[] | undefined>, (par
   const { viewId } = useView()
 
   const parseQueryString = useCallback((): Record<string, string | string[] | undefined> => {
-    // Get search from history state instead of window.location.search
-    const historyPath = historyState?.contentState.find((cs) => cs.viewId === viewId)?.path
-
-    const searchParams = new URLSearchParams(historyPath?.replace(window.location.pathname, ''))
+    const searchParams = new URLSearchParams(window.location.search)
     const params: Record<string, string | string[] | undefined> = {}
 
     for (const [key, value] of searchParams.entries()) {
@@ -38,7 +35,7 @@ export const useQuery = (): [Record<string, string | string[] | undefined>, (par
     }
 
     return params
-  }, [historyState, viewId])
+  }, [])
 
   const [queryParams, setQueryParams] = useState<Record<string, string | string[] | undefined>>(parseQueryString)
 

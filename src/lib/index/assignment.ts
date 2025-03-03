@@ -10,6 +10,10 @@ interface Params {
   text?: string
 }
 
+/**
+ * @deprecated This function is deprecated and will be removed in future versions.
+ * TODO: use Twirp api and wrap in a hook #ELE-1171
+ */
 const search = async ({ endpoint, accessToken, start, page = 1, size = 100, text }: Params): Promise<SearchIndexResponse<LoadedDocumentItem>> => {
   const today = start ? new Date(start) : new Date()
   today.setHours(0, 0, 0, 0)
