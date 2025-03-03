@@ -78,7 +78,7 @@ export const Duplicate = ({ provider, title, session, status, type }: {
                     }
                   })
                 )
-                toast(`Händelsen ${title}! kopierades till ${format(duplicateDate, 'dd/MM/yyyy')}`, {
+                toast(`Händelsen ${title} kopierades till ${format(duplicateDate, 'dd/MM/yyyy')}`, {
                   action: {
                     label: 'Öppna',
                     onClick: () => {
