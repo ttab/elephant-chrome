@@ -56,7 +56,6 @@ export function duplicateTemplate(id: string, payload: { type: string, newDate: 
     }
 
     const value: Record<string, BlockType[]> = newsDocDocument[key]
-    console.log('value', value)
 
     const blocks = Object.keys(value).reduce((acc, subkey: string) => {
       (acc)[subkey] = (() => {
