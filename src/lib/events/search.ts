@@ -51,17 +51,9 @@ export const search = async (endpoint: URL, accessToken: string, params?: EventS
     : [
         {
           range: {
-            'document.meta.core_event.data.start': {
-              gte: start.toISOString(),
-              lte: subHours(end, 1)
-            }
-          }
-        },
-        {
-          range: {
             'document.meta.core_event.data.end': {
               gte: start.toISOString(),
-              lte: subHours(end, 1)
+              lte: subHours(end.toISOString(), 1)
             }
           }
         }
