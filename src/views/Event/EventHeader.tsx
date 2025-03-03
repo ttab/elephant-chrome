@@ -33,8 +33,8 @@ export const EventHeader = ({ documentId, asDialog, onDialogClose, provider, tit
       />
 
       <ViewHeader.Content className='justify-start'>
-        <div className='max-w-[850px] mx-auto flex flex-row gap-2 justify-between items-center w-full'>
-          <div className='flex flex-row gap-1 justify-start items-center @6xl/view:-ml-20'>
+        <div className='max-w-[850px] mx-auto flex flex-row gap-0 justify-between items-center w-full'>
+          <div className='flex flex-row gap-0 justify-start items-center @6xl/view:-ml-20'>
             <div className='hidden flex-row gap-2 justify-start items-center @xl/view:flex'>
               {/* No content as of now */}
             </div>
