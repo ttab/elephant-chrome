@@ -84,7 +84,7 @@ function Wrapper(props: ViewProps & { documentId: string }): JSX.Element {
     <>
       <Textbit.Root plugins={plugins.map((initPlugin) => initPlugin())} placeholders='multiple' className='h-screen max-h-screen flex flex-col'>
         <ViewHeader.Root>
-          <ViewHeader.Title title='Faktaruta' icon={BookTextIcon} />
+          <ViewHeader.Title name='Factbox' title='Faktaruta' icon={BookTextIcon} />
 
           <ViewHeader.Action>
             {!!props.documentId
