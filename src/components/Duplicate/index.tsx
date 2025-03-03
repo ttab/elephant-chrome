@@ -100,7 +100,7 @@ export const Duplicate = ({ provider, title, session, status, type }: {
                 })
               } catch (error) {
                 toast.error(`Något gick fel: ${JSON.stringify(error)}`)
-                console.log(error)
+                console.error(error)
               }
             }
             setShowConfirm(false)
