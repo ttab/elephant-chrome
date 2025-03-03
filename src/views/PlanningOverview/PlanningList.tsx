@@ -1,32 +1,23 @@
-import { useCallback, useEffect, useMemo } from 'react'
+import { useCallback } from 'react'
 import useSWR from 'swr'
-import { useSections, useTable } from '@/hooks'
 import {
   type Planning
 } from '@/lib/index'
 
 import { Table } from '@/components/Table'
-import { planningListColumns } from '@/views/PlanningOverview/PlanningListColumns'
+import type { ColumnDef } from '@tanstack/react-table'
 
-export const PlanningList = ({ from, to }: {
+export const PlanningList = ({ from, to, columns }: {
   from: string
   to: string
+  columns: ColumnDef<Planning>[]
 }): JSX.Element => {
-  const sections = useSections()
-
   const { error } = useSWR<Planning[], Error>(['Plannings', {
     where: {
       start: from,
       end: to
     }
   }, { withStatus: true }])
-  const columns = useMemo(() => planningListColumns({ sections }), [sections])
-
-  const { table } = useTable()
-
-  useEffect(() => {
-    table.setGrouping(['newsvalue'])
-  }, [table])
 
   const onRowSelected = useCallback((row?: Planning) => {
     if (row) {

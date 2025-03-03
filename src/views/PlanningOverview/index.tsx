@@ -79,7 +79,7 @@ export const Plannings = (): JSX.Element => {
 
           <View.Content>
             <TabsContent value='list' className='mt-0'>
-              <PlanningList from={from} to={to} />
+              <PlanningList from={from} to={to} columns={columns} />
             </TabsContent>
 
             <TabsContent value='grid'>

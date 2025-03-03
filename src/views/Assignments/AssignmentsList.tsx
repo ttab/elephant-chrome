@@ -1,23 +1,24 @@
-import { useEffect, useMemo } from 'react'
+import { useMemo } from 'react'
 import useSWR from 'swr'
-import { useAuthors, useIndexUrl, useTable, useRegistry } from '@/hooks'
+import { useIndexUrl, useTable } from '@/hooks'
 import { useSession } from 'next-auth/react'
 import { Assignments, type SearchIndexResponse } from '@/lib/index'
 import { Table } from '@/components/Table'
 import { convertToISOStringInUTC, getDateTimeBoundaries } from '@/lib/datetime'
-import { assignmentColumns } from './AssignmentColumns'
 import { transformAssignments } from './lib/transformAssignments'
 import {
   type LoadedDocumentItem,
   type AssignmentMetaExtended
 } from './types'
+import type { ColumnDef } from '@tanstack/react-table'
 
-export const AssignmentsList = ({ startDate }: { startDate: string }): JSX.Element => {
+export const AssignmentsList = ({ startDate, columns }: {
+  startDate: string
+  columns: Array<ColumnDef<AssignmentMetaExtended>>
+}): JSX.Element => {
   const { setData } = useTable<AssignmentMetaExtended>()
   const { data: session, status } = useSession()
-  const { locale, timeZone } = useRegistry()
   const indexUrl = useIndexUrl()
-  const authors = useAuthors()
   const { startTime, endTime } = getDateTimeBoundaries(new Date(startDate))
   const searchUrl = useMemo(() => {
     if (!indexUrl) {
@@ -48,7 +49,8 @@ export const AssignmentsList = ({ startDate }: { startDate: string }): JSX.Eleme
     const searchSize = 100
     const endpoint = new URL('/twirp/elephant.index.SearchV1/Query', indexUrl)
     while (true) {
-      const result: SearchIndexResponse<LoadedDocumentItem> = await Assignments.search({ endpoint, accessToken: session.accessToken, start: startTime, page, size: searchSize })
+      const result: SearchIndexResponse<LoadedDocumentItem> = await Assignments
+        .search({ endpoint, accessToken: session.accessToken, start: startTime, page, size: searchSize })
       if (result?.hits?.length > 0) {
         const assignments: AssignmentMetaExtended[] = transformAssignments(result)
         items.push(...assignments)
@@ -70,16 +72,10 @@ export const AssignmentsList = ({ startDate }: { startDate: string }): JSX.Eleme
     setData(items)
   })
 
-  const { table } = useTable()
-
-  useEffect(() => {
-    table.setGrouping(['newsvalue'])
-  }, [table])
-
   return (
     <Table
       type='Planning'
-      columns={assignmentColumns({ authors, locale, timeZone })}
+      columns={columns}
 
       onRowSelected={(row): void => {
         if (row) {

@@ -94,7 +94,7 @@ export const Assignments = (): JSX.Element => {
 
         <View.Content>
           <TabsContent value='list' className='mt-0'>
-            <AssignmentsList startDate={from} />
+            <AssignmentsList startDate={from} columns={columns} />
           </TabsContent>
         </View.Content>
 

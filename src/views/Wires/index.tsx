@@ -17,6 +17,7 @@ import { ViewFocus } from '@/components/View/ViewHeader/ViewFocus'
 import { Button } from '@ttab/elephant-ui'
 import { useUserTracker } from '@/hooks/useUserTracker'
 import type { Wire } from '@/hooks/index/lib/wires'
+import { GridFilter } from '@/components/GridFilter'
 
 const meta: ViewMetadata = {
   name: 'Wires',
@@ -46,7 +47,12 @@ export const Wires = (): JSX.Element => {
 
   return (
     <View.Root>
-      <TableProvider<Wire> columns={columns}>
+      <TableProvider<Wire>
+        columns={columns}
+        initialState={{
+          grouping: ['modified']
+        }}
+      >
         <TableCommandMenu heading='Wires'>
           <Commands />
         </TableCommandMenu>
@@ -76,6 +82,7 @@ export const Wires = (): JSX.Element => {
 
           <ViewHeader.Content>
             <Sources />
+            <GridFilter />
             <div className='flex gap-2'>
               {!isFocused && isLast && (
                 <Controller />
@@ -91,7 +98,7 @@ export const Wires = (): JSX.Element => {
         </ViewHeader.Root>
 
         <View.Content>
-          <WireList />
+          <WireList columns={columns} />
           <Pagination />
         </View.Content>
 
