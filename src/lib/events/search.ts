@@ -1,3 +1,4 @@
+import { subHours } from 'date-fns'
 import { type SearchIndexResponse, type Event } from '../index'
 import { searchIndex } from '../index'
 
@@ -49,14 +50,25 @@ export const search = async (endpoint: URL, accessToken: string, params?: EventS
 
   const timeRange = params?.when === 'anytime'
     ? undefined
-    : {
-        range: {
-          'document.meta.core_event.data.start': {
-            gte: start.toISOString(),
-            lte: end.toISOString()
+    : [
+        {
+          range: {
+            'document.meta.core_event.data.start': {
+              gte: start.toISOString(),
+              lte: subHours(end, 1)
+            }
+          }
+        },
+        {
+          range: {
+            'document.meta.core_event.data.end': {
+              gte: start.toISOString(),
+              lte: subHours(end, 1)
+            }
           }
         }
-      }
+      ]
+
 
   const textCriteria = !params?.where?.text
     ? undefined
