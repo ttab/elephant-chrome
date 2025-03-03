@@ -59,6 +59,7 @@ export const Duplicate = ({ provider, title, session, status, type }: {
           duplicateDate={duplicateDate}
           provider={provider}
           title={title || ''}
+          type={type}
           description={`Vill du kopiera ${type === 'event' ? 'händelsen' : ''} till ${format(duplicateDate, 'dd/MM/yyyy')}?`}
           secondaryLabel='Avbryt'
           primaryLabel='Kopiera'

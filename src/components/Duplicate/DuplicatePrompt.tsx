@@ -6,7 +6,17 @@ import { Button, Dialog, DialogContent, DialogDescription, DialogFooter, DialogH
 import { useMemo, type MouseEvent } from 'react'
 import * as Templates from '@/defaults/templates'
 
-export const DuplicatePrompt = ({ provider, duplicateDate, title, description, primaryLabel, secondaryLabel, onPrimary, onSecondary }: {
+export const DuplicatePrompt = ({
+  provider,
+  duplicateDate,
+  title,
+  description,
+  primaryLabel,
+  secondaryLabel,
+  onPrimary,
+  onSecondary,
+  type
+}: {
   title?: string
   description: string
   primaryLabel: string
@@ -15,6 +25,7 @@ export const DuplicatePrompt = ({ provider, duplicateDate, title, description, p
   onSecondary?: (event: MouseEvent<HTMLButtonElement> | React.KeyboardEvent<HTMLButtonElement> | KeyboardEvent) => void
   provider?: HocuspocusProvider
   duplicateDate: Date
+  type: string
 }): JSX.Element => {
   useKeydownGlobal((event) => {
     if (event.key === 'Escape' && secondaryLabel && onSecondary) {
@@ -31,13 +42,13 @@ export const DuplicatePrompt = ({ provider, duplicateDate, title, description, p
         payload: {
           newDate: duplicateDate.toISOString(),
           document: provider.document,
-          type: 'event'
+          type
         }
       })
       return { documentId, initialDocument }
     }
     return { documentId: '' }
-  }, [duplicateDate, provider])
+  }, [duplicateDate, provider, type])
 
   const { documentId: duplicateId } = useCollaborationDocument(collaborationPayload)
 
