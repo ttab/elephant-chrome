@@ -6,6 +6,10 @@ import { useState } from 'react'
 import { toast } from 'sonner'
 import type { HocuspocusProvider } from '@hocuspocus/provider'
 import type { Session } from 'next-auth'
+import { handleLink } from '../Link/lib/handleLink'
+import { useHistory, useNavigation, useView } from '@/hooks/index'
+
+type allowedTypes = 'Event'
 
 export const Duplicate = ({ provider, title, session, status, type }: {
   provider: HocuspocusProvider
@@ -16,6 +20,9 @@ export const Duplicate = ({ provider, title, session, status, type }: {
 }) => {
   const [duplicateDate, setDuplicateDate] = useState<Date>(addDays(new Date(), 1))
   const [showConfirm, setShowConfirm] = useState<boolean>(false)
+  const { state, dispatch } = useNavigation()
+  const history = useHistory()
+  const { viewId } = useView()
 
   return (
     <div className='flex-row gap-2 justify-start items-center'>
@@ -56,7 +63,7 @@ export const Duplicate = ({ provider, title, session, status, type }: {
           secondaryLabel='Avbryt'
           primaryLabel='Kopiera'
           onPrimary={(duplicateId: string | undefined) => {
-            console.log('provider', provider)
+            const capitalized: allowedTypes = type.slice(0, 1).toUpperCase().concat(type.slice(1)) as allowedTypes
             if (provider && status === 'authenticated' && duplicateId && session) {
               try {
                 console.log('sending', duplicateId)
@@ -67,11 +74,26 @@ export const Duplicate = ({ provider, title, session, status, type }: {
                     context: {
                       accessToken: session.accessToken,
                       user: session.user,
-                      type: type.slice(0, 1).toUpperCase().concat(type.slice(1))
+                      type: capitalized
                     }
                   })
                 )
-                toast.success('Kopieringen lyckades!')
+                toast('Kopiering lyckades!', {
+                  action: {
+                    label: 'Öppna',
+                    onClick: () => {
+                      handleLink({
+                        dispatch,
+                        viewItem: state.viewRegistry.get(capitalized),
+                        props: { id: duplicateId },
+                        viewId: crypto.randomUUID(),
+                        history,
+                        origin: viewId,
+                        target: 'last'
+                      })
+                    }
+                  }
+                })
               } catch (error) {
                 toast.error(`Något gick fel: ${JSON.stringify(error)}`)
                 console.log(error)
