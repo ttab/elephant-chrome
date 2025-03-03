@@ -66,7 +66,6 @@ export const Duplicate = ({ provider, title, session, status, type }: {
             const capitalized: allowedTypes = type.slice(0, 1).toUpperCase().concat(type.slice(1)) as allowedTypes
             if (provider && status === 'authenticated' && duplicateId && session) {
               try {
-                console.log('sending', duplicateId)
                 provider.sendStateless(
                   createStateless(StatelessType.IN_PROGRESS, {
                     state: false,
