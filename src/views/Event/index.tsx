@@ -28,7 +28,6 @@ import { Form } from '@/components/Form'
 import { EventTimeMenu } from './components/EventTime'
 import { useEffect } from 'react'
 import { EventHeader } from './EventHeader'
-import { Duplicate } from '@/components/Duplicate'
 
 const meta: ViewMetadata = {
   name: 'Event',
@@ -111,19 +110,17 @@ const EventViewContent = (props: ViewProps & { documentId: string }): JSX.Elemen
 
   return (
     <View.Root asDialog={props.asDialog} className={props.className}>
-      <EventHeader asDialog={!!props.asDialog} onDialogClose={props.onDialogClose} documentId={props.documentId} />
+      <EventHeader
+        asDialog={!!props.asDialog}
+        onDialogClose={props.onDialogClose}
+        documentId={props.documentId}
+        title={eventTitle}
+        provider={provider}
+        session={data}
+        type='event'
+        status={status}
+      />
       <View.Content className='max-w-[1000px] flex-auto'>
-
-        {!props?.asDialog && provider && (
-          <Duplicate
-            title={eventTitle}
-            provider={provider}
-            session={data}
-            status={status}
-            type='event'
-          />
-        )}
-
         <Form.Root asDialog={props.asDialog}>
           <Form.Content>
             <Form.Title>

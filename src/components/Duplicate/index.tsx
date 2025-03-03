@@ -8,6 +8,7 @@ import type { HocuspocusProvider } from '@hocuspocus/provider'
 import type { Session } from 'next-auth'
 import { handleLink } from '../Link/lib/handleLink'
 import { useHistory, useNavigation, useView } from '@/hooks/index'
+import { CopyPlus } from '@ttab/elephant-ui/icons'
 
 type allowedTypes = 'Event'
 
@@ -26,11 +27,14 @@ export const Duplicate = ({ provider, title, session, status, type }: {
 
   return (
     <div className='flex-row gap-2 justify-start items-center'>
-      <Popover modal={true}>
-        <PopoverTrigger asChild>
-          <div className='flex w-fit px-10 pt-2'>
-            <Button variant='outline' size='xs'>Kopiera</Button>
-          </div>
+      <Popover>
+        <PopoverTrigger title='Kopiera'>
+          <Button
+            variant='ghost'
+            className='w-9 h-9 px-0 hover:bg-gray-200 dark:hover:bg-gray-700'
+          >
+            <CopyPlus size={20} strokeWidth={1.75} />
+          </Button>
         </PopoverTrigger>
         <PopoverContent onEscapeKeyDown={(event) => event?.stopPropagation()}>
           <Calendar

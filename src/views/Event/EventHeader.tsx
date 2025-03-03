@@ -2,11 +2,19 @@ import { useDocumentStatus, useView } from '@/hooks'
 import { useEffect, useRef } from 'react'
 import { DocumentStatus } from '@/components/TmpDocumentStatus'
 import { ViewHeader } from '@/components/View'
+import { Duplicate } from '@/components/Duplicate'
+import type { Session } from 'next-auth'
+import type { HocuspocusProvider } from '@hocuspocus/provider'
 
-export const EventHeader = ({ documentId, asDialog, onDialogClose }: {
+export const EventHeader = ({ documentId, asDialog, onDialogClose, provider, title, status, session, type }: {
   documentId: string
   asDialog: boolean
   onDialogClose?: () => void
+  title: string | undefined
+  session: Session | null
+  provider: HocuspocusProvider | undefined
+  type: 'event'
+  status: 'authenticated' | 'loading' | 'unauthenticated'
 }): JSX.Element => {
   const { viewId } = useView()
   const [documentStatus, setDocumentStatus] = useDocumentStatus(documentId)
@@ -38,6 +46,15 @@ export const EventHeader = ({ documentId, asDialog, onDialogClose }: {
                 <ViewHeader.RemoteUsers documentId={documentId} />
                 <DocumentStatus status={documentStatus} setStatus={setDocumentStatus} />
               </>
+            )}
+            {!asDialog && provider && (
+              <Duplicate
+                title={title}
+                provider={provider}
+                session={session}
+                status={status}
+                type={type}
+              />
             )}
           </div>
         </div>
