@@ -115,7 +115,7 @@ const DropdownStatus = ({ status, setStatus, children }: {
   const options = DocumentStatuses.filter((type) => !ignore.includes(type.value))
 
   return (
-    <Awareness name='DocumentStatus' ref={setFocused}>
+    <Awareness path='DocumentStatus' ref={setFocused}>
       <ComboBox
         max={1}
         className={cn(variants({

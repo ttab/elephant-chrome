@@ -26,7 +26,7 @@ export const SluglineEditable = ({ path, documentStatus, onValidation, validateS
     >
       {documentStatus !== 'usable'
         ? (
-            <Awareness name={`PlanSlugline-${path}`} ref={setFocused}>
+            <Awareness path={path} ref={setFocused}>
               <Validation
                 label='Slugline'
                 block='tt/slugline'

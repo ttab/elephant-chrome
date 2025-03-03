@@ -38,11 +38,11 @@ export const FlashViewContent = (props: ViewProps): JSX.Element | undefined => {
     <View.Root asDialog={props.asDialog} className={props.className}>
       <ViewHeader.Root>
         {!props.asDialog
-        && <ViewHeader.Title title='Flash' icon={ZapIcon} iconColor='#FF5150' />}
+        && <ViewHeader.Title name='Flash' title='Flash' icon={ZapIcon} iconColor='#FF5150' />}
 
         <ViewHeader.Content>
           <div className='flex w-full h-full items-center space-x-2 font-bold'>
-            {props.asDialog && <ViewHeader.Title title='Skapa ny flash' icon={ZapIcon} iconColor='#FF3140' />}
+            {props.asDialog && <ViewHeader.Title name='Flash' title='Skapa ny flash' icon={ZapIcon} iconColor='#FF3140' />}
           </div>
         </ViewHeader.Content>
 
@@ -57,7 +57,7 @@ export const FlashViewContent = (props: ViewProps): JSX.Element | undefined => {
           <Form.Content>
             {props.asDialog && (
               <Form.Group icon={GanttChartSquare}>
-                <Awareness name='FlashPlanningItem' ref={planningAwareness}>
+                <Awareness path='FlashPlanningItem' ref={planningAwareness}>
                   <ComboBox
                     max={1}
                     size='xs'

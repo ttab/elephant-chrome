@@ -43,7 +43,7 @@ export const WireViewContent = (props: ViewProps & {
         <ViewHeader.Content>
           {props.asDialog && (
             <div className='flex w-full h-full items-center space-x-2 font-bold'>
-              <ViewHeader.Title title='Skapa artikel' icon={Cable} iconColor='#FF6347' />
+              <ViewHeader.Title name='Wires' title='Skapa artikel' icon={Cable} iconColor='#FF6347' />
             </div>
           )}
         </ViewHeader.Content>
@@ -67,7 +67,7 @@ export const WireViewContent = (props: ViewProps & {
               </div>
             </Form.Group>
             <Form.Group icon={GanttChartSquare}>
-              <Awareness name='wirePlanningItem' ref={documentAwareness}>
+              <Awareness path='wirePlanningItem' ref={documentAwareness}>
                 <ComboBox
                   max={1}
                   size='xs'
