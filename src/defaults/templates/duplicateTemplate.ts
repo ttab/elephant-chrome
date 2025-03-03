@@ -23,7 +23,7 @@ export function duplicateTemplate(id: string, payload: { type: string, newDate: 
       return ''
     }
 
-    const [_, time] = date1ISO.split('T')
+    const [, time] = date1ISO.split('T')
     const [date] = date2ISO.split('T')
     return `${date}T${time}`
   }
