@@ -34,9 +34,11 @@ export const TextBox = ({ icon: Icon, path, ...props }: {
   return (
     <Awareness path={path} ref={setFocused} className='w-full'>
       <div className='w-full flex flex-row gap-2'>
-        <div className='pt-1.5'>
-          {Icon}
-        </div>
+        {Icon && (
+          <div className='pt-1.5'>
+            {Icon}
+          </div>
+        )}
 
         <TextboxRoot {...props} path={path} onBlur={handleOnBlur} onFocus={handleOnFocus} />
       </div>
