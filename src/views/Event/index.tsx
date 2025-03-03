@@ -4,7 +4,8 @@ import { AwarenessDocument } from '@/components/AwarenessDocument'
 import {
   useCollaboration,
   useQuery,
-  useAwareness
+  useAwareness,
+  useYValue
 } from '@/hooks'
 import { useSession } from 'next-auth/react'
 import { View } from '@/components/View'
@@ -74,6 +75,7 @@ const EventViewContent = (props: ViewProps & { documentId: string }): JSX.Elemen
   const { provider, user } = useCollaboration()
   const { data, status } = useSession()
   const [, setIsFocused] = useAwareness(props.documentId)
+  const [eventTitle] = useYValue<string | undefined>('root.title')
 
   useEffect(() => {
     provider?.setAwarenessField('data', user)
