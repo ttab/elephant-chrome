@@ -1,4 +1,5 @@
 import { type Dispatch } from 'react'
+import * as Y from 'yjs'
 import { NavigationProvider } from '@/navigation/NavigationProvider'
 
 import { useNavigation } from '@/hooks'
@@ -13,6 +14,7 @@ import { type Mock, vi } from 'vitest'
 import { IndexedDBProvider } from '../src/datastore/contexts/IndexedDBProvider'
 import indexeddb from 'fake-indexeddb'
 import { ModalProvider } from '@/components/Modal/ModalProvider'
+import { UserTrackerContext } from '@/contexts/UserTrackerProvider'
 
 globalThis.indexedDB = indexeddb
 
@@ -29,7 +31,11 @@ const mockDispatch = vi.fn() as Dispatch<NavigationActionType>
   dispatch: mockDispatch
 })
 
-const provider = true as unknown as HocuspocusProvider
+const provider = {
+  synced: true,
+  document: new Y.Doc()
+} as unknown as HocuspocusProvider
+
 
 describe('Use NavigationProvider', () => {
   it('should render view from registry', async () => {
@@ -37,9 +43,11 @@ describe('Use NavigationProvider', () => {
       <ModalProvider>
         <IndexedDBProvider>
           <NavigationProvider>
-            <DocTrackerContext.Provider value={{ synced: true, connected: true, provider }}>
-              <AppContent />
-            </DocTrackerContext.Provider>
+            <UserTrackerContext.Provider value={{ provider, synced: provider.synced, connected: true }}>
+              <DocTrackerContext.Provider value={{ synced: true, connected: true, provider }}>
+                <AppContent />
+              </DocTrackerContext.Provider>
+            </UserTrackerContext.Provider>
           </NavigationProvider>
         </IndexedDBProvider>
       </ModalProvider>

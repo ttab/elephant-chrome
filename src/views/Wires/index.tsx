@@ -48,6 +48,7 @@ export const Wires = (): JSX.Element => {
   return (
     <View.Root>
       <TableProvider<Wire>
+        type={meta.name}
         columns={columns}
         initialState={{
           grouping: ['modified']

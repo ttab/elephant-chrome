@@ -48,7 +48,10 @@ export const Search = (): JSX.Element => {
 
   return (
     <View.Root>
-      <TableProvider<Planning | Event | AssignmentMetaExtended | Article> columns={columns}>
+      <TableProvider<Planning | Event | AssignmentMetaExtended | Article>
+        type={meta.name}
+        columns={columns}
+      >
 
         <TableCommandMenu heading='Search'>
           <Commands />

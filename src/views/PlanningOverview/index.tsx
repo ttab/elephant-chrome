@@ -13,8 +13,11 @@ import { useAuthors } from '@/hooks/useAuthors'
 import { Commands } from '@/components/Commands'
 import { SWRProvider } from '@/contexts/SWRProvider'
 import { getDateTimeBoundariesUTC } from '@/lib/datetime'
+import type { QueryParams } from '@/hooks/useQuery'
 import { useQuery } from '@/hooks/useQuery'
 import { loadFilters } from '@/lib/loadFilters'
+import { useUserTracker } from '@/hooks/useUserTracker'
+import { LoadingText } from '@/components/LoadingText'
 
 const meta: ViewMetadata = {
   name: 'Plannings',
@@ -43,47 +46,55 @@ export const Plannings = (): JSX.Element => {
   const [currentTab, setCurrentTab] = useState<string>('list')
   const sections = useSections()
   const authors = useAuthors()
+  const [savedFilters,, synced] = useUserTracker<QueryParams | undefined>(`filters.${meta.name}`)
 
   const columns = useMemo(() =>
     planningListColumns({ sections, authors }), [sections, authors])
-  const columnFilters = loadFilters<PlanningType>(query, columns)
+  const columnFilters = loadFilters<PlanningType>(query, columns, savedFilters)
 
-  return (
-    <View.Root tab={currentTab} onTabChange={setCurrentTab}>
-      <TableProvider<PlanningType>
-        columns={columns}
-        initialState={{
-          grouping: ['newsvalue'],
-          columnFilters
-        }}
-      >
-        <SWRProvider<PlanningType, PlanningSearchParams> index={PlanningsIndex}>
+  return synced
+    ? (
+        <View.Root tab={currentTab} onTabChange={setCurrentTab}>
+          <TableProvider<PlanningType>
+            columns={columns}
+            type={meta.name}
+            initialState={{
+              grouping: ['newsvalue'],
+              columnFilters
+            }}
+          >
+            <SWRProvider<PlanningType, PlanningSearchParams> index={PlanningsIndex}>
 
-          <TableCommandMenu heading='Plannings'>
-            <Commands />
-          </TableCommandMenu>
+              <TableCommandMenu heading='Plannings'>
+                <Commands />
+              </TableCommandMenu>
 
-          <ViewHeader.Root>
-            <ViewHeader.Title name='Plannings' title='Planeringar' />
-            <ViewHeader.Content>
-              <Header type='Planning' />
-            </ViewHeader.Content>
-            <ViewHeader.Action />
-          </ViewHeader.Root>
+              <ViewHeader.Root>
+                <ViewHeader.Title name='Plannings' title='Planeringar' />
+                <ViewHeader.Content>
+                  <Header type='Planning' />
+                </ViewHeader.Content>
+                <ViewHeader.Action />
+              </ViewHeader.Root>
 
-          <View.Content>
-            <TabsContent value='list' className='mt-0'>
-              <PlanningList from={from} to={to} columns={columns} />
-            </TabsContent>
+              <View.Content>
+                <TabsContent value='list' className='mt-0'>
+                  <PlanningList from={from} to={to} columns={columns} />
+                </TabsContent>
 
-            <TabsContent value='grid'>
-            </TabsContent>
-          </View.Content>
+                <TabsContent value='grid'>
+                </TabsContent>
+              </View.Content>
 
-        </SWRProvider>
-      </TableProvider>
-    </View.Root>
-  )
+            </SWRProvider>
+          </TableProvider>
+        </View.Root>
+      )
+    : (
+        <LoadingText>
+          Laddar filter...
+        </LoadingText>
+      )
 }
 
 Plannings.meta = meta

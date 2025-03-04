@@ -76,7 +76,6 @@ export const AssignmentsList = ({ startDate, columns }: {
     <Table
       type='Planning'
       columns={columns}
-
       onRowSelected={(row): void => {
         if (row) {
           console.info(`Selected assignment item ${row.id}`)
