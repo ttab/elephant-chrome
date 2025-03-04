@@ -25,6 +25,8 @@ import {
   useCallback
 } from 'react'
 import { useQuery } from '../hooks'
+import { updateFilter } from '@/lib/loadFilters'
+import type { View } from '../types'
 
 export interface CommandArgs {
   pages: string[]
@@ -39,6 +41,7 @@ export interface TableProviderState<TData> {
   setData: Dispatch<TData[]>
   loading: boolean
   command: CommandArgs
+  type: View
   filters: ColumnFiltersState
   selectedRow: Record<string, boolean>
 }
@@ -54,9 +57,11 @@ export const TableContext = createContext<TableProviderState<any>>(initialState)
 export const TableProvider = <T,>({
   children,
   columns,
+  type,
   initialState
 }: PropsWithChildren<{
   columns: Array<ColumnDef<T, unknown>>
+  type: View
   initialState?: Partial<TableState>
 }>): JSX.Element => {
   const [data, setData] = useState<T[] | null>(null)
@@ -99,13 +104,11 @@ export const TableProvider = <T,>({
     onGroupingChange: useCallback(setGrouping, [setGrouping]),
     onSortingChange: useCallback(setSorting, [setSorting]),
     onColumnFiltersChange: useCallback((updater: Updater<ColumnFiltersState>) => {
-      const query = (typeof updater === 'function' ? updater([]) : updater).reduce<Record<string, string | string[] | undefined>>((acc, { id, value }) => {
-        acc[id] = value as string | string[]
-        return acc
-      }, {})
-      setQuery(query)
+      setQuery(updateFilter(updater, columnFilters))
+
+      // Set filter in table
       setColumnFilters(updater)
-    }, [setColumnFilters, setQuery]),
+    }, [setColumnFilters, setQuery, columnFilters]),
     onColumnVisibilityChange: useCallback(setColumnVisibility, [setColumnVisibility]),
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
@@ -121,8 +124,9 @@ export const TableProvider = <T,>({
     selectedRow: rowSelection,
     setData,
     loading: data == null,
+    type,
     command
-  }), [table, columnFilters, rowSelection, command, data])
+  }), [table, columnFilters, rowSelection, command, data, type])
 
   return (
     <TableContext.Provider value={value}>

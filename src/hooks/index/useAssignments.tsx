@@ -32,10 +32,12 @@ export const useAssignments = ({ date, type, slots, status }: {
   const { index, repository, timeZone } = useRegistry()
   const key = type ? `core/assignment/${type}/${date.toString()}` : 'core/assignment'
 
-  const [filters] = useFilter(['status', 'section'])
+  const [filters,,synced] = useFilter(['status', 'section'])
 
-  const { data, mutate, error } = useSWR<AssignmentInterface[] | undefined, Error>(key, (): Promise<AssignmentInterface[] | undefined> =>
-    fetchAssignments({ index, repository, session, date }))
+  const { data, mutate, error } = useSWR<AssignmentInterface[] | undefined, Error>(
+    synced ? key : null,
+    (): Promise<AssignmentInterface[] | undefined> => fetchAssignments({ index, repository, session, date })
+  )
 
   if (error) {
     throw new Error('Assignment fetch failed:', { cause: error })

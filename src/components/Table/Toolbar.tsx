@@ -1,20 +1,23 @@
-import { X } from '@ttab/elephant-ui/icons'
-import { type Table } from '@tanstack/react-table'
+import { Save, X } from '@ttab/elephant-ui/icons'
 
 import { Button, ToggleGroup, ToggleGroupItem } from '@ttab/elephant-ui'
 import { SelectedFilters } from './SelectedFilters'
 import { useSections } from '@/hooks/useSections'
+import { DotDropdownMenu } from '../ui/DotMenu'
+import { useUserTracker } from '@/hooks/useUserTracker'
+import { columnFilterToQuery } from '@/lib/loadFilters'
+import { useTable } from '@/hooks/useTable'
 
-export const Toolbar = <TData,>({
-  table
-}: {
-  table: Table<TData>
-}): JSX.Element => {
+export const Toolbar = <TData,>(): JSX.Element => {
+  const { table, type } = useTable<TData>()
   const isFiltered = table.getState().columnFilters.length > 0
     || !!table.getState().globalFilter
 
   const allSections = useSections()
   const column = table.getColumn('section')
+  const [, setFilters] = useUserTracker(`filters.${type}`)
+
+  const columnFilterValue = column?.getFilterValue()
 
   return (
     <div className='flex items-center justify-between py-1 pr-2.5'>
@@ -37,9 +40,11 @@ export const Toolbar = <TData,>({
       <ToggleGroup
         type='single'
         size='xs'
-        value={column?.getFilterValue() as string | undefined}
+        value={Array.isArray(columnFilterValue) && columnFilterValue.length === 1
+          ? columnFilterValue[0] as string
+          : undefined}
         onValueChange={(value) => {
-          column?.setFilterValue(value.length ? value : undefined)
+          column?.setFilterValue(value ? [value] : undefined)
         }}
         className='px-1'
       >
@@ -54,6 +59,19 @@ export const Toolbar = <TData,>({
           </ToggleGroupItem>
         ))}
       </ToggleGroup>
+      <DotDropdownMenu
+        trigger='vertical'
+        items={[
+          {
+            label: 'Spara filter',
+            icon: Save,
+            item: () => {
+              const columnFilters = table.getState().columnFilters
+              setFilters(columnFilterToQuery(columnFilters))
+            }
+          }
+        ]}
+      />
     </div>
   )
 }

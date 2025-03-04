@@ -24,14 +24,14 @@ interface DotDropdownMenuActionItem {
 }
 
 /**
- * Simpler way to create a drop down menu. Supports multilevel. Items can be React node or callback.
+ * Simpler way to create a drop down menu. Items can be React node or callback.
  *
  * @todo Support multilevel
  * @example
  * <DotMenu trigger="vertical" items={[
  *   {
  *     label: '"Close all",
- *     () => { ... }
+ *     item: () => { ... }
  *   },
  *   {
  *     label: 'Open',

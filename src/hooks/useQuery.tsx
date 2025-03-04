@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react'
 import { useHistory } from '@/navigation/hooks/useHistory'
 import { useView } from './useView'
 
+export type QueryParams = Record<string, string | string[] | undefined>
 /**
  * Custom hook to manage URL query parameters.
  *
@@ -14,7 +15,7 @@ import { useView } from './useView'
  * - To remove a parameter, pass an object with the parameter name and `undefined` as the value.
  * - To reset all parameters, pass an empty object.
  */
-export const useQuery = (): [Record<string, string | string[] | undefined>, (params: Record<string, string | string[] | undefined>) => void] => {
+export const useQuery = (): [QueryParams, (params: QueryParams) => void] => {
   const {
     state: historyState,
     replaceState
@@ -22,7 +23,7 @@ export const useQuery = (): [Record<string, string | string[] | undefined>, (par
 
   const { viewId } = useView()
 
-  const parseQueryString = useCallback((): Record<string, string | string[] | undefined> => {
+  const parseQueryString = useCallback((): QueryParams => {
     const searchParams = new URLSearchParams(window.location.search)
     const params: Record<string, string | string[] | undefined> = {}
 
@@ -37,7 +38,7 @@ export const useQuery = (): [Record<string, string | string[] | undefined>, (par
     return params
   }, [])
 
-  const [queryParams, setQueryParams] = useState<Record<string, string | string[] | undefined>>(parseQueryString)
+  const [queryParams, setQueryParams] = useState<QueryParams>(parseQueryString)
 
   // Update queryParams state when historyState changes
   useEffect(() => {
@@ -47,7 +48,7 @@ export const useQuery = (): [Record<string, string | string[] | undefined>, (par
   }, [historyState, viewId, parseQueryString])
 
 
-  const setQueryString = useCallback((params: Record<string, string | string[] | undefined>): void => {
+  const setQueryString = useCallback((params: QueryParams): void => {
     if (!historyState?.contentState || historyState.viewId !== viewId) {
       return
     }

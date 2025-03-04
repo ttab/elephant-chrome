@@ -1,13 +1,16 @@
-import { X } from '@ttab/elephant-ui/icons'
+import { Save, X } from '@ttab/elephant-ui/icons'
 
 import { Button, ToggleGroup, ToggleGroupItem } from '@ttab/elephant-ui'
 import { SelectedFilters } from './SelectedFilters'
 import { useFilter } from '@/hooks/useFilter'
 import { useSections } from '@/hooks/useSections'
+import { DotDropdownMenu } from '../ui/DotMenu'
+import { useUserTracker } from '@/hooks/useUserTracker'
 
 export const Toolbar = (): JSX.Element => {
   const [filters, setFilters] = useFilter(['status', 'section'])
   const isFiltered = Object.values(filters).some((value) => value.length)
+  const [, setUserFilters] = useUserTracker(`filters.Approvals`)
 
   const [filter, setFilter] = useFilter(['section'])
   const allSections = useSections()
@@ -30,11 +33,13 @@ export const Toolbar = (): JSX.Element => {
         )}
       </div>
       <ToggleGroup
-        type='multiple'
+        type='single'
         size='xs'
-        value={filter.section || []}
+        value={Array.isArray(filter.section) && filter.section.length === 1
+          ? filter.section[0]
+          : undefined}
         onValueChange={(value) => {
-          setFilter({ ...filter, section: value })
+          setFilter({ ...filter, section: [value] })
         }}
         className='px-1'
       >
@@ -49,6 +54,18 @@ export const Toolbar = (): JSX.Element => {
           </ToggleGroupItem>
         ))}
       </ToggleGroup>
+      <DotDropdownMenu
+        trigger='vertical'
+        items={[
+          {
+            label: 'Spara filter',
+            icon: Save,
+            item: () => {
+              setUserFilters(filters)
+            }
+          }
+        ]}
+      />
     </div>
   )
 }

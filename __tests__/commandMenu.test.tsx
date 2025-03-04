@@ -11,7 +11,10 @@ describe('CommandMenu', () => {
   it('should render CommandMenu component', async () => {
     render(
       <NavigationProvider>
-        <TableProvider<Planning> columns={planningListColumns({})}>
+        <TableProvider<Planning>
+          type='Plannings'
+          columns={planningListColumns({})}
+        >
           <CommandMenu onKeyDown={() => { }} onChange={() => { }}>
             <p>test</p>
           </CommandMenu>

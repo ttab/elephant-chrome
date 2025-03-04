@@ -1,15 +1,24 @@
+import type { QueryParams } from './useQuery'
 import { useQuery } from './useQuery'
+import { useUserTracker } from './useUserTracker'
 
 interface Filter {
   [key: string]: string[]
 }
 
-export const useFilter = (keys: string[]): [Filter, (arg: Filter) => void] => {
+export const useFilter = (keys: string[]): [Filter, (arg: Filter) => void, boolean] => {
   // Get filter from query
   const [query, setQuery] = useQuery()
+  // Only used in approvals right now
+  const [savedFilters,, synced] = useUserTracker<QueryParams | undefined>(`filters.Approvals`)
+  const filtersWithPrecedence = Object.keys(query || {}).length > 0
+    ? query
+    : savedFilters || {}
+
   const filter: Filter = keys.reduce((acc, key) => {
-    if (query[key]) {
-      acc[key] = Array.isArray(query[key]) ? query[key] : [query[key]]
+    if (filtersWithPrecedence[key]) {
+      const value = filtersWithPrecedence[key]
+      acc[key] = Array.isArray(value) ? value.filter((v): v is string => v !== undefined) : [value].filter((v): v is string => v !== undefined)
     }
     return acc
   }, {} as Filter)
@@ -23,5 +32,5 @@ export const useFilter = (keys: string[]): [Filter, (arg: Filter) => void] => {
     setQuery(cleanedValue)
   }
 
-  return [filter, updateFilter]
+  return [filter, updateFilter, synced]
 }
