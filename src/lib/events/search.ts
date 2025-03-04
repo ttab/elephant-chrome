@@ -51,6 +51,14 @@ export const search = async (endpoint: URL, accessToken: string, params?: EventS
     : [
         {
           range: {
+            'document.meta.core_event.data.start': {
+              gte: subHours(start.toISOString(), 1),
+              lte: subHours(end.toISOString(), 1)
+            }
+          }
+        },
+        {
+          range: {
             'document.meta.core_event.data.end': {
               gte: subHours(start.toISOString(), 1),
               lte: subHours(end.toISOString(), 1)
@@ -89,6 +97,7 @@ export const search = async (endpoint: URL, accessToken: string, params?: EventS
   const query = {
     query: {
       bool: {
+        should: [],
         must: []
       }
     },
@@ -107,7 +116,7 @@ export const search = async (endpoint: URL, accessToken: string, params?: EventS
 
   if (timeRange) {
     // @ts-expect-error We don't have types for opensearch queries
-    query.query.bool.must.push(...timeRange)
+    query.query.bool.should.push(...timeRange)
   }
 
   return await searchIndex(
