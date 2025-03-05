@@ -59,6 +59,7 @@ export const DuplicatePrompt = ({
 
     if (provider) {
       const newsdoc = fromGroupedNewsDoc(fromYjsNewsDoc(provider.document).documentResponse)
+      const originalUuid = newsdoc.document.uuid
       newsdoc.document.uuid = documentId
       newsdoc.document.uri = `core://${type}/${documentId}`
       const eventBlock = newsdoc.document.meta.find((block) => block.type === 'core/event')
@@ -76,10 +77,23 @@ export const DuplicatePrompt = ({
         newsdoc.document.meta = newsdoc.document.meta.filter((block) => block.type !== 'core/event')
         newsdoc.document.meta.push(newEventBlock)
 
-        newsdoc.document.meta.push(Block.create({
-          type: 'core/copy-group',
-          uuid: crypto.randomUUID()
-        }))
+        const copyGroup = newsdoc.document.meta.find((block) => block.type === 'core/copy-group')
+
+        // Use original document uuid as identifier for copy-groups...
+        if (!copyGroup) {
+          newsdoc.document.meta.push(Block.create({
+            type: 'core/copy-group',
+            uuid: originalUuid
+          }))
+          // ...or preserve already existing id if exists
+        } else {
+          const copyID = copyGroup.uuid
+          newsdoc.document.meta = newsdoc.document.meta.filter((block) => block.type !== 'core/copy-group')
+          newsdoc.document.meta.push(Block.create({
+            type: 'core/copy-group',
+            uuid: copyID
+          }))
+        }
       }
 
       newsdoc.version = 0n // Should the new version be 0? Or inherit old version number?
