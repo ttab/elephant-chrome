@@ -86,13 +86,6 @@ export const DuplicatePrompt = ({
             uuid: originalUuid
           }))
           // ...or preserve already existing id if exists
-        } else {
-          const copyID = copyGroup.uuid
-          newsdoc.document.meta = newsdoc.document.meta.filter((block) => block.type !== 'core/copy-group')
-          newsdoc.document.meta.push(Block.create({
-            type: 'core/copy-group',
-            uuid: copyID
-          }))
         }
       }
 
