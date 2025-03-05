@@ -35,9 +35,9 @@ export const Toolbar = <TData,>({
         )}
       </div>
       <ToggleGroup
-        type='multiple'
+        type='single'
         size='xs'
-        value={column?.getFilterValue() as string[] | undefined || []}
+        value={column?.getFilterValue() as string | undefined}
         onValueChange={(value) => {
           column?.setFilterValue(value.length ? value : undefined)
         }}

@@ -43,7 +43,7 @@ export const WireViewContent = (props: ViewProps & {
         <ViewHeader.Content>
           {props.asDialog && (
             <div className='flex w-full h-full items-center space-x-2 font-bold'>
-              <ViewHeader.Title title='Skapa artikel' icon={Cable} iconColor='#FF6347' />
+              <ViewHeader.Title name='Wires' title='Skapa artikel' icon={Cable} iconColor='#FF6347' />
             </div>
           )}
         </ViewHeader.Content>
@@ -58,16 +58,16 @@ export const WireViewContent = (props: ViewProps & {
         <Form.Root asDialog={props.asDialog}>
           <Form.Content>
             <Form.Group icon={Cable}>
-              <div className='w-full'>
+              <>
                 <Input
                   className='pl-0 pt-2 h-8 text-medium border-0 truncate'
                   readOnly
                   value={props.wire.fields['document.title'].values?.[0]}
                 />
-              </div>
+              </>
             </Form.Group>
             <Form.Group icon={GanttChartSquare}>
-              <Awareness name='wirePlanningItem' ref={documentAwareness}>
+              <Awareness path='wirePlanningItem' ref={documentAwareness}>
                 <ComboBox
                   max={1}
                   size='xs'
@@ -135,7 +135,7 @@ export const WireViewContent = (props: ViewProps & {
               <Form.Group icon={GanttChartSquare}>
                 <>
                   <Input
-                    className='pt-2 h-8 text-medium placeholder:text-[#5D709F] placeholder-shown:border-[#5D709F]'
+                    className='pt-2 h-7 text-medium placeholder:text-[#5D709F] placeholder-shown:border-[#5D709F]'
                     placeholder='Planeringstitel'
                     ref={planningTitleRef}
                   />

@@ -25,7 +25,7 @@ vi.spyOn(hooks, 'useAwareness').mockReturnValue([
 describe('Awareness component', () => {
   it('renders children with className "relative" when path is given', () => {
     render(
-      <Awareness name='test' path='root.fake.path'>
+      <Awareness path='root.fake.path'>
         <div data-testid='child'>Child Component</div>
       </Awareness>
     )
@@ -39,7 +39,7 @@ describe('Awareness component', () => {
 
   it('renders children without className "relative" when path is not given', () => {
     render(
-      <Awareness name='test'>
+      <Awareness>
         <div data-testid='child'>Child Component</div>
       </Awareness>
     )
@@ -55,7 +55,7 @@ describe('Awareness component', () => {
     const ref = createRef<() => void>()
 
     render(
-      <Awareness name='test' ref={ref}>
+      <Awareness path='test' ref={ref}>
         <div data-testid='child'>Child Component</div>
       </Awareness>
     );
