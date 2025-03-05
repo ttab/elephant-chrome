@@ -46,7 +46,7 @@ export const Duplicate = ({ provider, title, session, status, type }: {
               if (!selectedDate) {
                 return
               }
-              setDuplicateDate(selectedDate)
+              setDuplicateDate(new Date(format(selectedDate, 'yyyy-MM-dd')))
             }}
           />
           <div className='flex w-full justify-end'>

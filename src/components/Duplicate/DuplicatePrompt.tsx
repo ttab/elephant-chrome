@@ -1,10 +1,20 @@
 import { useCollaborationDocument } from '@/hooks/useCollaborationDocument'
 import { useKeydownGlobal } from '@/hooks/useKeydownGlobal'
-import { createDocument } from '@/lib/createYItem'
 import type { HocuspocusProvider } from '@hocuspocus/provider'
-import { Button, Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@ttab/elephant-ui'
+import {
+  Button,
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle
+} from '@ttab/elephant-ui'
 import { useMemo, type MouseEvent } from 'react'
-import * as Templates from '@/defaults/templates'
+import { fromYjsNewsDoc, toYjsNewsDoc } from '../../../src-srv/utils/transformations/yjsNewsDoc'
+import { fromGroupedNewsDoc, toGroupedNewsDoc } from '../../../src-srv/utils/transformations/groupedNewsDoc'
+import { Block } from '@ttab/elephant-api/newsdoc'
+import * as Y from 'yjs'
 
 export const DuplicatePrompt = ({
   provider,
@@ -33,22 +43,56 @@ export const DuplicatePrompt = ({
     }
   })
 
+  function mergeDateWithTime(date1ISO: string | undefined, date2ISO: string | undefined) {
+    if (!date1ISO || !date2ISO) {
+      return ''
+    }
+
+    const [, originalTime] = date1ISO.split('T')
+    const [newDate] = date2ISO.split('T')
+    return `${newDate}T${originalTime}`
+  }
 
   const collaborationPayload = useMemo(() => {
+    const documentId = crypto.randomUUID()
+    const yDoc = new Y.Doc()
+
     if (provider) {
-      const [documentId, initialDocument] = createDocument({
-        template: Templates.duplicate,
-        inProgress: true,
-        payload: {
-          newDate: duplicateDate.toISOString(),
-          document: provider.document,
-          type
-        }
-      })
-      return { documentId, initialDocument }
+      const newsdoc = fromGroupedNewsDoc(fromYjsNewsDoc(provider.document).documentResponse)
+      newsdoc.document.uuid = documentId
+      newsdoc.document.uri = `core://${type}/${documentId}`
+      const eventBlock = newsdoc.document.meta.find((block) => block.type === 'core/event')
+
+      if (eventBlock) {
+        const newEventBlock = Block.create({
+          type: 'core/event',
+          data: {
+            ...eventBlock.data,
+            start: mergeDateWithTime(eventBlock?.data?.start, duplicateDate.toISOString()),
+            end: mergeDateWithTime(eventBlock?.data?.end, duplicateDate.toISOString())
+          }
+        })
+
+        newsdoc.document.meta = newsdoc.document.meta.filter((block) => block.type !== 'core/event')
+        newsdoc.document.meta.push(newEventBlock)
+
+        newsdoc.document.meta.push(Block.create({
+          type: 'core/copy-group',
+          uuid: crypto.randomUUID()
+        }))
+      }
+
+      newsdoc.version = 0n // Should the new version be 0? Or inherit old version number?
+
+      toYjsNewsDoc(
+        toGroupedNewsDoc(newsdoc),
+        yDoc
+      )
+      return { documentId, initialDocument: yDoc }
     }
-    return { documentId: '' }
-  }, [duplicateDate, provider, type])
+
+    throw new Error('no provider')
+  }, [provider, type, duplicateDate])
 
   const { documentId: duplicateId } = useCollaborationDocument(collaborationPayload)
 
