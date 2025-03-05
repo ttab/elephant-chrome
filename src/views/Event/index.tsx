@@ -28,6 +28,7 @@ import { Form } from '@/components/Form'
 import { EventTimeMenu } from './components/EventTime'
 import { useEffect } from 'react'
 import { EventHeader } from './EventHeader'
+import { DuplicatesTable } from './components/DuplicatesTable'
 
 const meta: ViewMetadata = {
   name: 'Event',
@@ -152,6 +153,7 @@ const EventViewContent = (props: ViewProps & { documentId: string }): JSX.Elemen
 
           <Form.Table>
             <PlanningTable provider={provider} asDialog={props.asDialog} documentId={props.documentId} />
+            <DuplicatesTable documentId={props.documentId} />
           </Form.Table>
 
           <Form.Footer>
