@@ -65,6 +65,10 @@ export const DuplicatesTable = ({ documentId }: {
     return <pre>{error.message}</pre>
   }
 
+  if (!data?.length) {
+    return <></>
+  }
+
   return (
     <div className='pl-6 border-t'>
       <div className='text-sm font-bold pt-2'>Duplicerade händelser</div>
