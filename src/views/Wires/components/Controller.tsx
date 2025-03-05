@@ -16,7 +16,9 @@ export const Controller = (): JSX.Element => {
     if (wiresHistory && loadState(state, wiresHistory)) {
       replaceState(wiresHistory.contentState[0].path, wiresHistory)
     }
-    if (wiresHistory && !compareStates(state, wiresHistory)) {
+
+    // When wiresHistory and state are different and we're not in an initial state, show toast
+    if (wiresHistory && !compareStates(state, wiresHistory) && !loadState(state, wiresHistory)) {
       toast('Vill du spara ändringar i urvalet?', {
         id: 'unsaved-changes',
         position: 'bottom-center',

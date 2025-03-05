@@ -66,7 +66,11 @@ export const Wires = (): JSX.Element => {
                 variant='ghost'
                 onClick={() => {
                   if (history.state) {
-                    setWiresHistory(history.state)
+                    // When persisting a WireHistory set first view as active
+                    setWiresHistory({
+                      ...history.state,
+                      viewId: history.state.contentState[0].viewId
+                    })
                   }
                 }}
               >
@@ -83,7 +87,12 @@ export const Wires = (): JSX.Element => {
                 <Controller />
               )}
               {!isFocused && (history.state?.contentState?.length ?? 0) > 1
-              && <ViewDialogClose onClick={() => handleClose(viewId, history)} Icon={Minus} />}
+              && (
+                <ViewDialogClose
+                  onClick={() => handleClose(viewId, history)}
+                  Icon={Minus}
+                />
+              )}
             </div>
           </ViewHeader.Content>
 
