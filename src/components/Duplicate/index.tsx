@@ -20,20 +20,16 @@ export const Duplicate = ({ provider, title, session, status, type }: {
 }) => {
   const [duplicateDate, setDuplicateDate] = useState<Date>(addDays(new Date(), 1))
   const [showConfirm, setShowConfirm] = useState<boolean>(false)
-  const { state, dispatch } = useNavigation()
-  const history = useHistory()
-  const { viewId } = useView()
 
   return (
     <div className='flex-row gap-2 justify-start items-center'>
       <Popover>
         <PopoverTrigger title='Kopiera'>
-          <Button
-            variant='ghost'
-            className='w-9 h-9 px-0 hover:bg-gray-200 dark:hover:bg-gray-700'
+          <div
+            className='flex items-center justify-center w-9 h-9 px-0 hover:bg-gray-200 dark:hover:bg-gray-700'
           >
             <CopyPlus size={20} strokeWidth={1.75} />
-          </Button>
+          </div>
         </PopoverTrigger>
         <PopoverContent onEscapeKeyDown={(event) => event?.stopPropagation()}>
           <Calendar
