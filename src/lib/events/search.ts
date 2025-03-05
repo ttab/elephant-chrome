@@ -1,3 +1,4 @@
+import { subHours } from 'date-fns'
 import { type SearchIndexResponse, type Event } from '../index'
 import { searchIndex } from '../index'
 
@@ -43,20 +44,29 @@ export const search = async (endpoint: URL, accessToken: string, params?: EventS
     sort.push({ 'document.meta.core_newsvalue.value': 'desc' })
   }
 
-  if (params?.when === 'anytime') {
-    sort.push({ 'document.meta.core_event.data.start': 'desc' })
-  }
+  sort.push({ 'document.meta.core_event.data.start': 'asc' })
 
   const timeRange = params?.when === 'anytime'
     ? undefined
-    : {
-        range: {
-          'document.meta.core_event.data.start': {
-            gte: start.toISOString(),
-            lte: end.toISOString()
+    : [
+        {
+          range: {
+            'document.meta.core_event.data.start': {
+              gte: subHours(start.toISOString(), 1),
+              lte: subHours(end.toISOString(), 1)
+            }
+          }
+        },
+        {
+          range: {
+            'document.meta.core_event.data.end': {
+              gte: subHours(start.toISOString(), 1),
+              lte: subHours(end.toISOString(), 1)
+            }
           }
         }
-      }
+      ]
+
 
   const textCriteria = !params?.where?.text
     ? undefined
@@ -87,14 +97,8 @@ export const search = async (endpoint: URL, accessToken: string, params?: EventS
   const query = {
     query: {
       bool: {
-        must: [],
-        must_not: params?.when !== 'anytime'
-          ? [{
-              term: {
-                'document.meta.core_event.data.end': 'now+1d/d'
-              }
-            }]
-          : []
+        should: [],
+        must: []
       }
     },
     _source: true,
@@ -112,7 +116,7 @@ export const search = async (endpoint: URL, accessToken: string, params?: EventS
 
   if (timeRange) {
     // @ts-expect-error We don't have types for opensearch queries
-    query.query.bool.must.push(timeRange)
+    query.query.bool.should.push(...timeRange)
   }
 
   return await searchIndex(
