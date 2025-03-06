@@ -33,7 +33,7 @@ export const DateChanger = ({ type }: {
     <div className='flex items-center'>
       <Link
         to={linkTarget}
-        props={{ from: decrementDate(currentDate, steps).toISOString().split('T')[0] }}
+        props={{ ...query, from: decrementDate(currentDate, steps).toISOString().split('T')[0] }}
         target='self'
       >
         <ChevronLeft
