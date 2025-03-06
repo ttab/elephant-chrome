@@ -10,7 +10,7 @@ interface LinkProps {
   to: View
   props?: ViewProps
   onClick?: (event: MouseEvent<HTMLAnchorElement>) => void
-  target?: 'self'
+  target?: 'self' | 'last'
   className?: string
 }
 
