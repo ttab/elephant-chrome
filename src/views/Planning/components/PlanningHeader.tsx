@@ -1,6 +1,6 @@
 import { useDocumentStatus, useView } from '@/hooks'
 import { useEffect, useRef } from 'react'
-import { DocumentStatus } from '@/components/TmpDocumentStatus'
+import { DocumentStatus } from '@/components/DocumentStatus'
 import { ViewHeader } from '@/components/View'
 import { GanttChartSquare } from '@ttab/elephant-ui/icons'
 
@@ -36,7 +36,7 @@ export const PlanningHeader = ({ documentId, asDialog, onDialogClose }: {
             {!!documentId && <ViewHeader.RemoteUsers documentId={documentId} />}
 
             {!asDialog && (
-              <DocumentStatus status={documentStatus} setStatus={setDocumentStatus} />
+              <DocumentStatus type='core/planning-item' status={documentStatus} setStatus={setDocumentStatus} />
             )}
           </div>
         </div>

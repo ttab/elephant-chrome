@@ -12,6 +12,7 @@ import { getUserTimeZone } from '@/lib/getUserTimeZone'
 import { Repository } from '@/shared/Repository'
 import { Spellchecker } from '@/shared/Spellchecker'
 import { Index } from '@/shared/Index'
+import { Workflow } from '@/shared/Workflow'
 
 const DEFAULT_LOCALE = 'en-BR'
 const DEFAULT_TIMEZONE = 'Europe/Stockholm'
@@ -30,6 +31,7 @@ export interface RegistryProviderState {
     faroUrl: URL
   }
   repository?: Repository
+  workflow?: Workflow
   index?: Index
   spellchecker?: Spellchecker
   dispatch: React.Dispatch<Partial<RegistryProviderState>>
@@ -64,11 +66,13 @@ export const RegistryProvider = ({ children }: PropsWithChildren): JSX.Element =
   useEffect(() => {
     getServerUrls().then((server) => {
       const repository = new Repository(server.repositoryUrl.href)
+      const workflow = new Workflow(server.repositoryUrl.href)
       const index = new Index(server.indexUrl.href)
       const spellchecker = new Spellchecker(server.spellcheckUrl.href)
 
       dispatch({
         server,
+        workflow,
         repository,
         index,
         spellchecker
@@ -91,7 +95,7 @@ export const RegistryProvider = ({ children }: PropsWithChildren): JSX.Element =
  * Registry context reducer
  */
 const reducer = (state: RegistryProviderState, action: Partial<RegistryProviderState>): RegistryProviderState => {
-  const { locale, timeZone, server, repository, index, spellchecker } = action
+  const { locale, timeZone, server, repository, workflow, index, spellchecker } = action
   const partialState: Partial<RegistryProviderState> = {}
 
   if (typeof locale === 'string') {
@@ -104,6 +108,10 @@ const reducer = (state: RegistryProviderState, action: Partial<RegistryProviderS
 
   if (typeof repository === 'object') {
     partialState.repository = repository
+  }
+
+  if (typeof workflow === 'object') {
+    partialState.workflow = workflow
   }
 
   if (typeof index === 'object') {

@@ -10,6 +10,7 @@ import {
 export const DocumentStatuses: DefaultValueOption[] = [
   {
     label: 'Publicerad',
+    actionLabel: 'Publicera',
     value: 'usable',
     icon: CircleCheck,
     iconProps: {
@@ -21,6 +22,7 @@ export const DocumentStatuses: DefaultValueOption[] = [
   },
   {
     label: 'Tidsplanerad',
+    actionLabel: 'Tidsplanera',
     value: 'withheld',
     icon: CircleCheck,
     iconProps: {
@@ -32,6 +34,7 @@ export const DocumentStatuses: DefaultValueOption[] = [
   },
   {
     label: 'Klar',
+    actionLabel: 'Klar!',
     value: 'done',
     icon: CircleCheck,
     iconProps: {
@@ -43,6 +46,7 @@ export const DocumentStatuses: DefaultValueOption[] = [
   },
   {
     label: 'Godkänd',
+    actionLabel: 'Godkänn',
     value: 'approved',
     icon: BadgeCheck,
     iconProps: {
@@ -54,6 +58,7 @@ export const DocumentStatuses: DefaultValueOption[] = [
   },
   {
     label: 'Inställd',
+    actionLabel: 'Ställ in',
     value: 'cancelled',
     icon: CircleX,
     iconProps: {
@@ -65,6 +70,7 @@ export const DocumentStatuses: DefaultValueOption[] = [
   },
   {
     label: 'Utkast',
+    actionLabel: 'Utkast!',
     value: 'draft',
     icon: CircleDot,
     iconProps: {
