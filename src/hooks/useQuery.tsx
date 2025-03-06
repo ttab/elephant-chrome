@@ -20,10 +20,16 @@ export const useQuery = (): [Record<string, string | string[] | undefined>, (par
     replaceState
   } = useHistory()
 
-  const { viewId } = useView()
+  const { viewId, isActive } = useView()
 
   const parseQueryString = useCallback((): Record<string, string | string[] | undefined> => {
-    const searchParams = new URLSearchParams(window.location.search)
+    // window.location.search will only return the query parameters of the active view
+    // for others non-active use it's contentState.path from historyState
+    const historyPath = historyState?.contentState.find((cs) => cs.viewId === viewId)?.path
+
+    const searchParams = new URLSearchParams(isActive
+      ? window.location.search
+      : historyPath?.replace(window.location.pathname, ''))
     const params: Record<string, string | string[] | undefined> = {}
 
     for (const [key, value] of searchParams.entries()) {
@@ -35,7 +41,7 @@ export const useQuery = (): [Record<string, string | string[] | undefined>, (par
     }
 
     return params
-  }, [])
+  }, [historyState, viewId, isActive])
 
   const [queryParams, setQueryParams] = useState<Record<string, string | string[] | undefined>>(parseQueryString)
 
@@ -45,7 +51,6 @@ export const useQuery = (): [Record<string, string | string[] | undefined>, (par
       setQueryParams(parseQueryString())
     }
   }, [historyState, viewId, parseQueryString])
-
 
   const setQueryString = useCallback((params: Record<string, string | string[] | undefined>): void => {
     if (!historyState?.contentState || historyState.viewId !== viewId) {
