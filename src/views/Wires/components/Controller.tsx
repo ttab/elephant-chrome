@@ -28,7 +28,11 @@ export const Controller = (): JSX.Element => {
           label: 'Spara',
           onClick: () => {
             if (state) {
-              setWiresHistory(state)
+              // When persisting a WireHistory set first view as active
+              setWiresHistory({
+                ...state,
+                viewId: state.contentState[0].viewId
+              })
               toast.dismiss(('unsaved-changes'))
             }
           }
