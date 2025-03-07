@@ -1,7 +1,7 @@
 import ReactDOM from 'react-dom/client'
 import { App } from './App.tsx'
 import { ThemeProvider, RegistryProvider, HPWebSocketProvider } from '@/contexts'
-import { SessionProvider } from 'next-auth/react'
+import { SessionProvider } from './contexts/SessionProvider'
 import { NavigationProvider } from '@/navigation/NavigationProvider'
 import { banner } from './lib/banner.ts'
 import { IndexedDBProvider } from './datastore/contexts/IndexedDBProvider.tsx'
@@ -20,7 +20,7 @@ ReactDOM.createRoot(root).render(
   <IndexedDBProvider>
     <RegistryProvider>
       <HPWebSocketProvider>
-        <SessionProvider refetchOnWindowFocus={false} basePath={`${import.meta.env.BASE_URL}/api/auth`} refetchInterval={150}>
+        <SessionProvider>
           <RepositoryEventsProvider>
             <SupportedLanguagesProvider>
               <ThemeProvider defaultTheme='light' storageKey='ele-ui-theme'>

@@ -1,8 +1,5 @@
 import type { PropsWithChildren } from 'react'
 import { useState } from 'react'
-import { Login } from '../../views'
-import { LoadingText } from '../LoadingText'
-import { View } from '../View'
 import { useSession } from 'next-auth/react'
 import { CoreAuthorProvider } from '../../datastore/contexts/CoreAuthorProvider'
 import { CoreCategoryProvider } from '../../datastore/contexts/CoreCategoryProvider'
@@ -21,36 +18,13 @@ interface InitState {
 }
 
 export const Init = ({ children }: PropsWithChildren): JSX.Element => {
-  const { data: session, status } = useSession()
+  const { data: session } = useSession()
+
   const { repository, server: { faroUrl, indexUrl } } = useRegistry()
   const [isInitialized, setIsInitialized] = useState<InitState>({
     faro: undefined,
     author: undefined
   })
-
-  if (status === 'loading') {
-    return (
-      <View.Root>
-        <View.Content>
-          <div className='flex items-center justify-center h-screen'>
-            <div className='flex-col w-1/3'>
-              <LoadingText>Hämtar session...</LoadingText>
-            </div>
-          </div>
-        </View.Content>
-      </View.Root>
-    )
-  }
-
-  if (status === 'unauthenticated' || !session || session.error) {
-    const callbackUrl = window.location.href.replace(window.location.origin, '')
-    return (
-      <div className='relative flex h-screen flex-col'>
-        <Login callbackUrl={callbackUrl} />
-      </div>
-    )
-  }
-
 
   if (isInitialized.faro === undefined) {
     setIsInitialized((prevState) => ({ ...prevState, faro: false }))
