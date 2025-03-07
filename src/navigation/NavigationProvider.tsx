@@ -2,7 +2,8 @@ import {
   useReducer,
   useLayoutEffect,
   type PropsWithChildren,
-  useEffect
+  useEffect,
+  useMemo
 } from 'react'
 import type { ContentState } from '@/types'
 import { NavigationActionType } from '@/types'
@@ -14,10 +15,16 @@ import {
 } from '@/navigation/lib'
 import { NavigationContext } from './NavigationContext'
 import type { HistoryEvent } from './hooks/useHistory'
+import type { QueryParams } from '@/hooks/useQuery'
 
-const initialState = initializeNavigationState()
 
-export const NavigationProvider = ({ children }: PropsWithChildren): JSX.Element => {
+export const NavigationProvider = ({ children, filters }: PropsWithChildren & {
+  filters?: Record<string, QueryParams>
+}): JSX.Element => {
+  const initialState = useMemo(() => initializeNavigationState(filters),
+    // Only on first render
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [])
   const [state, dispatch] = useReducer(navigationReducer, initialState)
   const history = useHistory()
 

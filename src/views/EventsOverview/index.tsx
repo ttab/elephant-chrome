@@ -45,7 +45,6 @@ export const Events = (): JSX.Element => {
   [query.from])
 
   const organisers = useOrganisers()
-
   const columns = useMemo(() =>
     eventTableColumns({ sections, organisers }), [sections, organisers])
   const columnFilters = loadFilters<Event>(query, columns)
@@ -53,6 +52,7 @@ export const Events = (): JSX.Element => {
   return (
     <View.Root>
       <TableProvider<Event>
+        type={meta.name}
         columns={columns}
         initialState={{
           grouping: ['newsvalue'],

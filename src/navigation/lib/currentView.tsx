@@ -1,5 +1,7 @@
-export const currentView = (): { name: string, props: Record<string, string> } => {
-  let name = ''
+import type { View } from '@/types/index'
+
+export const currentView = (): { name: View, props: Record<string, string> } => {
+  let name: View | undefined
 
   if (window.location.pathname !== import.meta.env.BASE_URL
     && window.location.pathname !== import.meta.env.BASE_URL + '/') {

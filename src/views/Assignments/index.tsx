@@ -57,7 +57,6 @@ export const Assignments = (): JSX.Element => {
     return author?.name
   }, [authors, session?.user?.sub])
 
-
   const columns = useMemo(() =>
     assignmentColumns({ authors, locale, timeZone, sections }), [authors, locale, timeZone, sections])
   const columnFilters = loadFilters<AssignmentMetaExtended>(query, columns)
@@ -65,6 +64,7 @@ export const Assignments = (): JSX.Element => {
   return (
     <View.Root tab={currentTab} onTabChange={setCurrentTab}>
       <TableProvider<AssignmentMetaExtended>
+        type={meta.name}
         columns={columns}
         initialState={{
           grouping: ['newsvalue'],
@@ -76,10 +76,10 @@ export const Assignments = (): JSX.Element => {
         </TableCommandMenu>
 
         <ViewHeader.Root>
-          <ViewHeader.Title name='Assignments' title='Uppdrag' />
+          <ViewHeader.Title name={meta.name} title='Uppdrag' />
           <ViewHeader.Content>
             <Header
-              type='Assignments'
+              type={meta.name}
               assigneeUserName={assigneeUserName}
             />
           </ViewHeader.Content>

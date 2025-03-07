@@ -20,6 +20,10 @@ export function toQueryString(obj: ToQueryStringProps): string {
       if (isScalar(value)) {
         scalarObj[key] = String(value)
       }
+
+      if (Array.isArray(value)) {
+        scalarObj[key] = value.join(',')
+      }
     }
   }
 
