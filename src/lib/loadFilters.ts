@@ -7,21 +7,14 @@ import type { ColumnDef, ColumnFiltersState, Updater } from '@tanstack/react-tab
  * @template T - The type of the column data.
  * @param query - The query parameters from the URL or other sources.
  * @param columns - The definitions of the columns to filter.
- * @param savedFilters - The previously saved filters.
  * @returns The state of the column filters.
  */
 export function loadFilters<T>(
   query: QueryParams | undefined,
-  columns: ColumnDef<T>[],
-  savedFilters: QueryParams | undefined
+  columns: ColumnDef<T>[]
 ): ColumnFiltersState {
-  // Query filters take precedence over saved filters
-  const filtersWithPrecedence = Object.keys(query || {}).length > 0
-    ? query
-    : savedFilters || {}
-
   // Get all query parameters that match the column ids
-  const filters = Object.entries(filtersWithPrecedence || {}).filter(([key]) =>
+  const filters = Object.entries(query || {}).filter(([key]) =>
     columns.some((column) => column.id === key)
   )
 
