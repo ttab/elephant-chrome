@@ -28,6 +28,7 @@ export const useDocumentStatus = (uuid?: string): [
       if (!result) {
         return undefined
       }
+
       const version = result?.meta?.currentVersion || 0n
       const heads = result?.meta?.heads
 

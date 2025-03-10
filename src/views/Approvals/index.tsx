@@ -151,7 +151,6 @@ export const Approvals = (): JSX.Element => {
                   <ApprovalsCard
                     key={assignment.id}
                     assignment={assignment}
-                    // status={statusLookup?.[assignment._deliverableStatus || 'draft']}
                     status={StatusSpecifications[assignment._deliverableStatus || 'draft']}
                     isFocused={colN === focusedColumn && cardN === focusedCard}
                     isSelected={((assignment._deliverableId && openEditors.includes(assignment._deliverableId)) || openPlannings.includes(assignment._id))}
