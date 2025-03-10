@@ -1,19 +1,25 @@
 import { useRegistry } from '../useRegistry'
 import { useSession } from 'next-auth/react'
 import { useEffect, useState } from 'react'
-import { DocumentStatuses } from '@/defaults/documentStatuses'
-import type { DocumentWorkflow } from '@ttab/elephant-api/repository'
-import type { DefaultValueOption } from '@/types'
+import {
+  type WorkflowSpecification,
+  type StatusSpecification,
+  StatusSpecifications,
+  WorkflowSpecifications
+} from '@/defaults/workflowSpecification'
 
-interface WorkflowSpecification {
-  workflow: DocumentWorkflow | null
-  statuses: DefaultValueOption[]
+interface DocumentWorkflow {
+  workflow: WorkflowSpecification
+  statuses: Record<string, StatusSpecification>
 }
 
-export const useWorkflow = (type: string): WorkflowSpecification | null => {
+export const useWorkflow = (type: string): DocumentWorkflow => {
   const { data: session } = useSession()
   const { workflow: client } = useRegistry()
-  const [workflow, setWorkflow] = useState<WorkflowSpecification | null>(null)
+  const [workflow, setWorkflow] = useState<DocumentWorkflow>({
+    statuses: {},
+    workflow: {}
+  })
 
   useEffect(() => {
     if (!client || !session?.accessToken) {
@@ -24,13 +30,24 @@ export const useWorkflow = (type: string): WorkflowSpecification | null => {
       type,
       accessToken: session.accessToken || ''
     }).then((wf) => {
+      // Filter out all status specifications based on statuses allowed for this type
+      // Draft is always included here as it is not specified in the backend.
+      const statuses = (wf?.statuses || []).reduce((acc, status) => {
+        if (StatusSpecifications[status.name]) {
+          acc[status.name] = StatusSpecifications[status.name]
+        }
+
+        return acc
+      }, { draft: StatusSpecifications['draft'] } as Record<string, StatusSpecification>)
+
       setWorkflow({
-        workflow: wf?.workflow || null,
-        statuses: DocumentStatuses.filter((status) => wf?.statuses.find((s) => s.name === status.value))
+        workflow: WorkflowSpecifications[type] || null,
+        statuses
       })
     }).catch((err: Error) => {
       console.error(err.message || 'Failed getting workflow specification')
     })
   }, [client, session?.accessToken, type])
+
   return workflow
 }

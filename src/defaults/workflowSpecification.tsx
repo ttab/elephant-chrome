@@ -1,59 +1,67 @@
-import { type DefaultValueOption } from '@/types'
 import {
   CircleCheck,
   CircleDot,
   CircleX,
-  BadgeCheck
+  BadgeCheck,
+  type LucideIcon
 } from '@ttab/elephant-ui/icons'
 
-interface WorkflowSpecificationAction {
+export interface WorkflowItem {
   title: string
   description: string
+}
+
+export interface WorkflowTransition extends WorkflowItem {
   verify?: boolean
+  default?: boolean
+}
+export interface WorkflowState extends WorkflowItem {
+  transitions: Record<string, WorkflowTransition>
 }
 
-interface WorkflowSpecificationState extends WorkflowSpecificationAction {
-  transitions: Record<string, WorkflowSpecificationAction>
+export type WorkflowSpecification = Record<string, WorkflowState>
+
+export interface StatusSpecification {
+  icon: LucideIcon
+  className: string
 }
 
-type WorkflowSpecificationType = Record<string, Record<string, WorkflowSpecificationState>>
-
-
-export const StatusSpecification = {
+export const StatusSpecifications = {
   draft: {
     icon: CircleDot,
-    className: 'text-muted-foreground'
+    className: ''
   },
   done: {
     icon: CircleCheck,
-    className: 'bg-done fill-done rounded-full'
+    className: 'bg-done text-white fill-done rounded-full'
   },
   approved: {
     icon: BadgeCheck,
-    className: 'bg-approved fill-approved rounded-full'
+    className: 'bg-approved text-white fill-approved rounded-full'
   },
   withheld: {
     icon: CircleCheck,
-    className: 'bg-withheld fill-withheld rounded-full'
+    className: 'bg-withheld text-white fill-withheld rounded-full'
   },
   usable: {
     icon: CircleCheck,
-    className: 'bg-usable fill-usable rounded-full'
+    className: 'bg-usable text-white fill-usable rounded-full'
   },
   cancelled: {
     icon: CircleX,
-    className: 'bg-cancelled fill-cancelled rounded-full'
+    className: 'bg-cancelled text-white fill-cancelled rounded-full'
   }
-} as const
+} as Record<string, StatusSpecification>
 
 
-export const WorkflowSpecification: WorkflowSpecificationType = {
+export const WorkflowSpecifications: Record<string, WorkflowSpecification> = {
   'core/planning-item': {
     draft: {
       title: 'Utkast',
       description: 'Du jobbar på ett utkast av denna planering',
       transitions: {
         done: {
+          default: true,
           title: 'Klarmarkera',
           description: 'Markera planeringen som klar'
         },
@@ -70,9 +78,10 @@ export const WorkflowSpecification: WorkflowSpecificationType = {
     },
     done: {
       title: 'Klar',
-      description: 'Planeringen väntar på godkännande',
+      description: 'Planeringen är klar och väntar på godkännande',
       transitions: {
         approved: {
+          default: true,
           title: 'Godkänn',
           description: 'Godkänn planeringen för intern användning'
         },
@@ -89,9 +98,10 @@ export const WorkflowSpecification: WorkflowSpecificationType = {
     },
     approved: {
       title: 'Intern',
-      description: 'Planeringen internt publicerad och går att publicera externt',
+      description: 'Planeringen är internt publicerad och går att publicera externt',
       transitions: {
         usable: {
+          default: true,
           verify: true,
           title: 'Publicera',
           description: 'Publicera planeringen externt synlig'
@@ -107,6 +117,7 @@ export const WorkflowSpecification: WorkflowSpecificationType = {
       description: 'Planeringen är publicerad',
       transitions: {
         draft: {
+          default: true,
           title: 'Gör om till utkast',
           description: 'Gör om planeringen till ett utkast igen'
         },
