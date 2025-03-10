@@ -127,5 +127,78 @@ export const WorkflowSpecifications: Record<string, WorkflowSpecification> = {
         }
       }
     }
+  },
+  'core/article': {
+    draft: {
+      title: 'Utkast',
+      description: 'Du jobbar på ett utkast av artikeln',
+      transitions: {
+        done: {
+          default: true,
+          title: 'Klarmarkera',
+          description: 'Markera artikeln som klar'
+        },
+        approved: {
+          title: 'Godkänn',
+          description: 'Godkänn artikeln för publicering'
+        },
+        usable: {
+          verify: true,
+          title: 'Publicera',
+          description: 'Publicera artikeln'
+        }
+      }
+    },
+    done: {
+      title: 'Klar',
+      description: 'Artikeln är klar och väntar på godkännande',
+      transitions: {
+        approved: {
+          default: true,
+          title: 'Godkänn',
+          description: 'Godkänn artikeln för publicering'
+        },
+        usable: {
+          verify: true,
+          title: 'Publicera',
+          description: 'Publicera artiklen direkt'
+        },
+        draft: {
+          title: 'Till utkast',
+          description: 'Gör om artikeln till ett utkast igen'
+        }
+      }
+    },
+    approved: {
+      title: 'Godkänd',
+      description: 'Artikeln är godkänd att publicera',
+      transitions: {
+        usable: {
+          default: true,
+          verify: true,
+          title: 'Publicera',
+          description: 'Publicera artiklen'
+        },
+        draft: {
+          title: 'Till utkast',
+          description: 'Gör om artikeln till ett utkast igen'
+        }
+      }
+    },
+    usable: {
+      title: 'Publicerad',
+      description: 'Artikeln är publicerad',
+      transitions: {
+        draft: {
+          default: true,
+          title: 'Ny version',
+          description: 'Fortsätt jobba på en ny version av artikeln'
+        },
+        cancelled: {
+          title: 'Dra tillbaka',
+          description: 'Avbryt publiceringen och arkivera artikeln'
+        }
+      }
+    }
   }
 }

@@ -2,7 +2,7 @@ import { useDocumentStatus, useView } from '@/hooks'
 import { Newsvalue } from '@/components/Newsvalue'
 import { useEffect, useRef } from 'react'
 import { MetaSheet } from './components/MetaSheet'
-import { DocumentStatus } from '@/components/TmpDocumentStatus'
+import { DocumentStatus } from '@/components/DocumentStatus'
 import { AddNote } from './components/Notes/AddNote'
 import { ViewHeader } from '@/components/View'
 import { PenBoxIcon } from '@ttab/elephant-ui/icons'
@@ -33,7 +33,7 @@ export const EditorHeader = ({ documentId }: { documentId: string }): JSX.Elemen
 
           <div className='flex flex-row gap-2 justify-end items-center'>
             {!!documentId && <ViewHeader.RemoteUsers documentId={documentId} />}
-            <DocumentStatus status={documentStatus} setStatus={setDocumentStatus} />
+            <DocumentStatus type='core/article' status={documentStatus} setStatus={setDocumentStatus} />
           </div>
         </div>
       </ViewHeader.Content>
