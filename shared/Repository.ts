@@ -11,7 +11,7 @@ import type {
   ValidateResponse
 } from '@ttab/elephant-api/repository'
 import type { Document } from '@ttab/elephant-api/newsdoc'
-import { type FinishedUnaryCall } from '@protobuf-ts/runtime-rpc'
+import type { RpcError, FinishedUnaryCall } from '@protobuf-ts/runtime-rpc'
 import type * as Y from 'yjs'
 import { isValidUUID } from '../src-srv/utils/isValidUUID.js'
 import { fromYjsNewsDoc } from '../src-srv/utils/transformations/yjsNewsDoc.js'
@@ -138,7 +138,11 @@ export class Repository {
       const { response } = await this.#client.getMeta({ uuid }, meta(accessToken))
 
       return response
-    } catch (err: unknown) {
+    } catch (err) {
+      if ((err as RpcError).code === 'not_found') {
+        return null
+      }
+
       throw new Error(`Unable to fetch documents meta: ${(err as Error)?.message || 'Unknown error'}`)
     }
   }
