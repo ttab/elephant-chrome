@@ -43,7 +43,7 @@ export const DocumentStatus = ({ type, status: currentStatus, setStatus }: {
 
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button size='sm' variant='outline' className='flex items-center h-8 px-3'>
+            <Button size='sm' variant='outline' className='flex items-center h-8 px-3' title={workflow[currentStatusName]?.description}>
               <div className='pe-2'>
                 <CurrentIcon
                   size={18}
