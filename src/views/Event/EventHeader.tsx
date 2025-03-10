@@ -33,10 +33,12 @@ export const EventHeader = ({ documentId, asDialog, onDialogClose }: {
           </div>
 
           <div className='flex flex-row gap-2 justify-end items-center'>
+            {!asDialog && (
+              <DocumentStatus type='core/event' status={documentStatus} setStatus={setDocumentStatus} />
+            )}
             {!!documentId && !asDialog && (
               <>
                 <ViewHeader.RemoteUsers documentId={documentId} />
-                <DocumentStatus type='core/event' status={documentStatus} setStatus={setDocumentStatus} />
               </>
             )}
           </div>

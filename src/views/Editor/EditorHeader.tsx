@@ -32,8 +32,12 @@ export const EditorHeader = ({ documentId }: { documentId: string }): JSX.Elemen
           </div>
 
           <div className='flex flex-row gap-2 justify-end items-center'>
-            {!!documentId && <ViewHeader.RemoteUsers documentId={documentId} />}
-            <DocumentStatus type='core/article' status={documentStatus} setStatus={setDocumentStatus} />
+            {!!documentId && (
+              <>
+                <DocumentStatus type='core/article' status={documentStatus} setStatus={setDocumentStatus} />
+                <ViewHeader.RemoteUsers documentId={documentId} />
+              </>
+            )}
           </div>
         </div>
       </ViewHeader.Content>
