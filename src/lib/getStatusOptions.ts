@@ -4,7 +4,7 @@ import type { DefaultValueOption } from '../types'
 /**
  * Create an array of options based on configured statuses for a specific document type.
  */
-export function getOptions(type: string) {
+export function getStatusOptions(type: string) {
   const workflow = WorkflowSpecifications[type]
   if (!workflow) {
     return []
