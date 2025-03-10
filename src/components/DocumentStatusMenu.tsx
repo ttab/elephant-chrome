@@ -7,7 +7,7 @@ import type { StatusSpecification, WorkflowTransition } from '@/defaults/workflo
 import { Prompt } from './Prompt'
 import type { Status } from '@/hooks/useDocumentStatus'
 
-export const DocumentStatus = ({ type, status: currentStatus, setStatus }: {
+export const DocumentStatusMenu = ({ type, status: currentStatus, setStatus }: {
   type: string
   status?: Status
   setStatus: (status: string) => Promise<void>
@@ -51,7 +51,7 @@ export const DocumentStatus = ({ type, status: currentStatus, setStatus }: {
                   className={currentStatusDef?.className}
                 />
               </div>
-              <div className='pe-1 border-l'>
+              <div className='pe-1'>
                 {workflow[currentStatusName]?.title}
               </div>
               <div className='ps-1'>

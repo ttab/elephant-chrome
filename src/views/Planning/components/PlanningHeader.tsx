@@ -1,6 +1,6 @@
 import { useDocumentStatus, useView } from '@/hooks'
 import { useEffect, useRef } from 'react'
-import { DocumentStatus } from '@/components/DocumentStatus'
+import { DocumentStatusMenu } from '@/components/DocumentStatusMenu'
 import { ViewHeader } from '@/components/View'
 import { GanttChartSquare } from '@ttab/elephant-ui/icons'
 
@@ -34,7 +34,7 @@ export const PlanningHeader = ({ documentId, asDialog, onDialogClose }: {
 
           <div className='flex flex-row gap-2 justify-end items-center'>
             {!asDialog && (
-              <DocumentStatus type='core/planning-item' status={documentStatus} setStatus={setDocumentStatus} />
+              <DocumentStatusMenu type='core/planning-item' status={documentStatus} setStatus={setDocumentStatus} />
             )}
 
             {!!documentId && <ViewHeader.RemoteUsers documentId={documentId} />}
