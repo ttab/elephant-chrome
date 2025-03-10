@@ -113,9 +113,9 @@ const StatusHeader = ({ icon: Icon, className, title, description }: {
     <div className='w-4 grow-0 shrink-0 pt-0.5'>
       {!!Icon && (
         <Icon
-          size={22}
+          size={24}
           strokeWidth={1.75}
-          className={cn(className, '-mt-0.5')}
+          className={cn(className, '-mt-1')}
         />
       )}
     </div>
@@ -157,9 +157,9 @@ const StatusOptions = ({ transitions, statuses, onSelect }: {
             <div className='w-4 grow-0 shrink-0 pt-0.5'>
               {!!statusDef.icon && (
                 <statusDef.icon
-                  size={22}
+                  size={21}
                   strokeWidth={1.75}
-                  className={cn(statusDef.className, '-mt-1')}
+                  className={cn(statusDef.className, '-mt-0.5')}
                 />
               )}
             </div>
