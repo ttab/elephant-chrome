@@ -1,4 +1,3 @@
-import { DocumentStatuses } from '@/defaults/documentStatuses'
 import type { Index } from '@/shared/Index'
 import type { Repository } from '@/shared/Repository'
 import { QueryV1, BoolQueryV1, TermQueryV1 } from '@ttab/elephant-api/index'
@@ -8,11 +7,12 @@ import { parseISO } from 'date-fns'
 import { getStatus } from '../getStatus'
 import { getAssignmentsFromDocument } from './getAssignmentsFromDocument'
 import type { AssignmentInterface } from './types'
+import { StatusSpecifications } from '@/defaults/workflowSpecification'
 
 
 // We want to fetch all known statuses for deliverables and then
 // filter them using the supplied "statuses" prop.
-const knownStatuses = DocumentStatuses.map((status) => status.value)
+const knownStatuses = Object.keys(StatusSpecifications)
 
 /**
  * Fetches assignments from the index and augments them with deliverable statuses

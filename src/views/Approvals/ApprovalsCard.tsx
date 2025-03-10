@@ -6,7 +6,6 @@ import { DotDropdownMenu } from '@/components/ui/DotMenu'
 import type { AssignmentInterface } from '@/hooks/index/useAssignments'
 import { useLink } from '@/hooks/useLink'
 import { useRegistry } from '@/hooks/useRegistry'
-import type { DefaultValueOption } from '@/types/index'
 import { CalendarDays, FileInput } from '@ttab/elephant-ui/icons'
 import { parseISO, format } from 'date-fns'
 import { toZonedTime } from 'date-fns-tz'
@@ -16,11 +15,12 @@ import { AssigneeAvatars } from '@/components/DataItem/AssigneeAvatars'
 import { DoneMarkedBy } from './DoneMarkedBy'
 import type { StatusData } from 'src/datastore/types'
 import { useSections } from '@/hooks/useSections'
+import type { StatusSpecification } from '@/defaults/workflowSpecification'
 
 
 export const ApprovalsCard = ({ assignment, isSelected, isFocused, status }: {
   assignment: AssignmentInterface
-  status: DefaultValueOption
+  status: StatusSpecification
   isSelected: boolean
   isFocused: boolean
 }) => {
@@ -99,7 +99,7 @@ export const ApprovalsCard = ({ assignment, isSelected, isFocused, status }: {
     >
       <Card.Header>
         <div className='flex flex-row gap-2 items-center'>
-          {status.icon && <status.icon {...status.iconProps} size={15} />}
+          {status.icon && <status.icon size={15} strokeWidth={1.75} className={status.className} />}
           <span className='bg-secondary inline-block px-1 rounded'>{assignment._newsvalue}</span>
           {!!activeUsersNames.length && (
             <AssigneeAvatars assignees={activeUsersNames} size='xxs' color='default' />

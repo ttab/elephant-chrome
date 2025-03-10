@@ -44,7 +44,7 @@ export function eventTableColumns({ sections = [], organisers = [] }: {
       accessorFn: (data) => data?._source['document.meta.status'][0],
       cell: ({ row }) => {
         const status = row.getValue<string>('documentStatus')
-        return <DocumentStatus status={status} />
+        return <DocumentStatus type='core/event' status={status} />
       },
       filterFn: (row, id, value: string[]) =>
         value.includes(row.getValue(id))
