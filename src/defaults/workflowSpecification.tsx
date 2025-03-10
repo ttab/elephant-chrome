@@ -91,7 +91,7 @@ export const WorkflowSpecifications: Record<string, WorkflowSpecification> = {
           description: 'Publicera planeringen externt synlig'
         },
         draft: {
-          title: 'Gör om till utkast',
+          title: 'Till utkast',
           description: 'Gör om planeringen till ett utkast igen'
         }
       }
@@ -107,7 +107,7 @@ export const WorkflowSpecifications: Record<string, WorkflowSpecification> = {
           description: 'Publicera planeringen externt synlig'
         },
         draft: {
-          title: 'Gör om till utkast',
+          title: 'Till utkast',
           description: 'Gör om planeringen till ett utkast igen'
         }
       }
@@ -118,7 +118,7 @@ export const WorkflowSpecifications: Record<string, WorkflowSpecification> = {
       transitions: {
         draft: {
           default: true,
-          title: 'Gör om till utkast',
+          title: 'Till utkast',
           description: 'Gör om planeringen till ett utkast igen'
         },
         cancelled: {

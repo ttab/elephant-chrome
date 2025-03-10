@@ -18,12 +18,9 @@ export const Prompt = ({ title, description, primaryLabel, secondaryLabel, onPri
 
   return (
     <Dialog open={true}>
-      <DialogContent
-        onOpenAutoFocus={(event) => event.preventDefault()}
-      >
+      <DialogContent onOpenAutoFocus={(event) => event.preventDefault()}>
         <DialogHeader>
-          {!!title
-          && <DialogTitle>{title}</DialogTitle>}
+          {!!title && <DialogTitle>{title}</DialogTitle>}
         </DialogHeader>
 
         <DialogDescription>
@@ -31,8 +28,7 @@ export const Prompt = ({ title, description, primaryLabel, secondaryLabel, onPri
         </DialogDescription>
 
         <DialogFooter className='flex flex-col gap-2 pt-4'>
-          {!!onSecondary && !!secondaryLabel
-          && (
+          {!!onSecondary && !!secondaryLabel && (
             <Button
               variant='secondary'
               onClick={(event) => {
