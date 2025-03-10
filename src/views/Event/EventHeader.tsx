@@ -1,6 +1,6 @@
 import { useDocumentStatus, useView } from '@/hooks'
 import { useEffect, useRef } from 'react'
-import { DocumentStatus } from '@/components/TmpDocumentStatus'
+import { DocumentStatus } from '@/components/DocumentStatus'
 import { ViewHeader } from '@/components/View'
 
 export const EventHeader = ({ documentId, asDialog, onDialogClose }: {
@@ -36,7 +36,7 @@ export const EventHeader = ({ documentId, asDialog, onDialogClose }: {
             {!!documentId && !asDialog && (
               <>
                 <ViewHeader.RemoteUsers documentId={documentId} />
-                <DocumentStatus status={documentStatus} setStatus={setDocumentStatus} />
+                <DocumentStatus type='core/event' status={documentStatus} setStatus={setDocumentStatus} />
               </>
             )}
           </div>

@@ -55,6 +55,79 @@ export const StatusSpecifications = {
 
 
 export const WorkflowSpecifications: Record<string, WorkflowSpecification> = {
+  'core/event': {
+    draft: {
+      title: 'Utkast',
+      description: 'Du jobbar på ett utkast av denna händelse',
+      transitions: {
+        done: {
+          default: true,
+          title: 'Klarmarkera',
+          description: 'Markera händelsen som klar'
+        },
+        approved: {
+          title: 'Godkänn',
+          description: 'Godkänn händelsen för intern användning'
+        },
+        usable: {
+          verify: true,
+          title: 'Publicera',
+          description: 'Publicera händelsen externt'
+        }
+      }
+    },
+    done: {
+      title: 'Klar',
+      description: 'Händelsen är klar och väntar på godkännande',
+      transitions: {
+        approved: {
+          default: true,
+          title: 'Godkänn',
+          description: 'Godkänn händelsen för intern användning'
+        },
+        usable: {
+          verify: true,
+          title: 'Publicera',
+          description: 'Publicera händelsen externt'
+        },
+        draft: {
+          title: 'Till utkast',
+          description: 'Gör om händelsen till ett utkast igen'
+        }
+      }
+    },
+    approved: {
+      title: 'Intern',
+      description: 'Händelsen är internt publicerad och går att publicera externt',
+      transitions: {
+        usable: {
+          default: true,
+          verify: true,
+          title: 'Publicera',
+          description: 'Publicera händelsen externt synlig'
+        },
+        draft: {
+          title: 'Till utkast',
+          description: 'Gör om händelsen till ett utkast igen'
+        }
+      }
+    },
+    usable: {
+      title: 'Publicerad',
+      description: 'Händelsen är publicerad externt',
+      transitions: {
+        draft: {
+          default: true,
+          title: 'Till utkast',
+          description: 'Gör om händelsen till ett utkast igen'
+        },
+        cancelled: {
+          title: 'Dra tillbaka',
+          description: 'Avbryt publiceringen och arkivera händelsen'
+        }
+      }
+    }
+  },
   'core/planning-item': {
     draft: {
       title: 'Utkast',
