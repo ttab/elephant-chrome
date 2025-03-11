@@ -262,7 +262,7 @@ export const Table = <TData, TValue>({
 
   return (
     <>
-      {type !== 'Wires' && <Toolbar />}
+      {type !== 'Wires' && <Toolbar columns={columns} />}
 
       {(type === 'Planning' || type === 'Event') && (
         <NewItems.Root>

@@ -25,7 +25,7 @@ interface InitState {
 
 export const Init = ({ children }: PropsWithChildren): JSX.Element => {
   const { data: session } = useSession()
-  const [filters, , synced] = useUserTracker<Record<string, QueryParams> | undefined>(`filters`)
+  const [,, synced] = useUserTracker<Record<string, QueryParams> | undefined>(`filters`)
 
   const { repository, server: { faroUrl, indexUrl } } = useRegistry()
   const [isInitialized, setIsInitialized] = useState<InitState>({
@@ -103,7 +103,7 @@ export const Init = ({ children }: PropsWithChildren): JSX.Element => {
             <CoreCategoryProvider>
               <CoreOrganiserProvider>
                 <TTWireSourceProvider>
-                  <NavigationProvider filters={filters}>
+                  <NavigationProvider>
                     {children}
                   </NavigationProvider>
                 </TTWireSourceProvider>

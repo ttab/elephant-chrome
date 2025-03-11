@@ -10,10 +10,6 @@ interface SelectedBase {
   value: unknown
 }
 
-interface SelectedButtonProps<TData> extends SelectedBase {
-  table: Table<TData>
-}
-
 const SelectedBadge = ({ value, options }: SelectedBase & {
   options: DefaultValueOption[] | undefined
 }): ReactNode => {
@@ -26,7 +22,7 @@ const SelectedBadge = ({ value, options }: SelectedBase & {
         >
           {value.length}
           {' '}
-          selected
+          valda
         </Badge>
       )
     } else {
@@ -34,7 +30,7 @@ const SelectedBadge = ({ value, options }: SelectedBase & {
         <div key={index}>
           <Badge
             variant='secondary'
-            className='rounded-sm px-1 font-normal mr-1'
+            className='rounded-sm px-1 font-normal mr-1 truncate whitespace-nowrap'
           >
             {typeof v === 'string' ? options?.find((option) => option.value === v)?.label || v : ''}
           </Badge>
@@ -44,7 +40,9 @@ const SelectedBadge = ({ value, options }: SelectedBase & {
   }
 }
 
-const SelectedButton = <TData, >({ id, value, table }: SelectedButtonProps<TData>): React.ReactNode => {
+const SelectedButton = <TData, >({ id, value, table }: SelectedBase & {
+  table: Table<TData>
+}): React.ReactNode => {
   const FilterIcon = table.getColumn(id)?.columnDef.meta?.columnIcon
   const options = table.getColumn(id)?.columnDef.meta?.options
 
@@ -65,8 +63,13 @@ const SelectedButton = <TData, >({ id, value, table }: SelectedButtonProps<TData
   )
 }
 
-export const SelectedFilters = <TData, >({ table }: { table: Table<TData> }): ReactNode => {
-  const { columnFilters, globalFilter } = table.getState() as { columnFilters: ColumnFiltersState, globalFilter: string | null }
+export const SelectedFilters = <TData, >({ table }: {
+  table: Table<TData>
+}): ReactNode => {
+  const { columnFilters, globalFilter } = table.getState() as {
+    columnFilters: ColumnFiltersState
+    globalFilter: string | null
+  }
 
   const GlobalFilter = globalFilter
     ? (
@@ -87,5 +90,7 @@ export const SelectedFilters = <TData, >({ table }: { table: Table<TData> }): Re
   const ColumnFilters = columnFilters.map((filter, index) => (
     <SelectedButton key={index} id={filter.id} value={filter.value} table={table} />
   ))
-  return [...ColumnFilters, GlobalFilter].filter((x) => x)
+  return (
+    [ColumnFilters, GlobalFilter].filter((x) => x)
+  )
 }

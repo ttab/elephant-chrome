@@ -9,9 +9,9 @@ import type { ColumnDef, ColumnFiltersState, Updater } from '@tanstack/react-tab
  * @param columns - The definitions of the columns to filter.
  * @returns The state of the column filters.
  */
-export function loadFilters<T>(
+export function loadFilters<TData>(
   query: QueryParams | undefined,
-  columns: ColumnDef<T>[]
+  columns: ColumnDef<TData>[]
 ): ColumnFiltersState {
   // Get all query parameters that match the column ids
   const filters = Object.entries(query || {}).filter(([key]) =>
