@@ -1,13 +1,18 @@
-import { DocumentStatuses } from '@/defaults/documentStatuses'
+import { StatusSpecifications, WorkflowSpecifications } from '@/defaults/workflowSpecification'
 import { Tooltip } from '@ttab/elephant-ui'
 
-export const DocumentStatus = ({ status }: { status: string }): JSX.Element => {
-  const documentStatus = DocumentStatuses.find((type) => type.value === status || type.value === 'draft')
+export const DocumentStatus = ({ type, status }: {
+  type: string
+  status: string
+}): JSX.Element => {
+  const docStatus = StatusSpecifications[status]
+  const label = WorkflowSpecifications[type]?.[status]?.title || null
+
   return (
-    <Tooltip content={documentStatus?.label || ''}>
+    <Tooltip content={label}>
       <div className='flex items-center'>
-        {documentStatus?.icon
-          ? <documentStatus.icon {...documentStatus.iconProps} />
+        {docStatus?.icon
+          ? <docStatus.icon strokeWidth={1.75} className={docStatus.className} />
           : null}
       </div>
     </Tooltip>

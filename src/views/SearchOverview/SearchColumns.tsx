@@ -42,8 +42,10 @@ export function searchWideColumns({ locale, timeZone, sections }: {
       },
       cell: ({ row }) => {
         const status = row.getValue<string>('documentStatus')
+        const type = row.getValue<string>('itemType')
+
         if (status) {
-          return <DocumentStatus status={status} />
+          return <DocumentStatus type={type} status={status} />
         }
         return <></>
       },

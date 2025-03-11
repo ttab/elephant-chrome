@@ -124,10 +124,18 @@ export const Table = ({ type, header }: {
               <TableCell className='flex-none first:pl-2 last:pr-2 sm:first:pl-6 sm:last:pr-6'>
                 {newsvalue && <Newsvalue newsvalue={newsvalue} />}
               </TableCell>
+
               {type === 'Planning' && (
                 <>
                   <TableCell className='flex-none first:pl-2 last:pr-2 sm:first:pl-6 sm:last:pr-6'>
-                    <DocumentStatus status='draft' />
+                    <DocumentStatus type='core/planning-item' status='draft' />
+                  </TableCell>
+                </>
+              )}
+              {type === 'Event' && (
+                <>
+                  <TableCell className='flex-none first:pl-2 last:pr-2 sm:first:pl-6 sm:last:pr-6'>
+                    <DocumentStatus type='core/event' status='draft' />
                   </TableCell>
                 </>
               )}

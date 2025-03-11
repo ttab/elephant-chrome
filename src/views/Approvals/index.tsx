@@ -1,16 +1,15 @@
 import { View, ViewHeader } from '@/components'
-import type { DefaultValueOption } from '@/types'
 import { type ViewMetadata } from '@/types'
 import { timesSlots as Slots } from '@/defaults/assignmentTimeslots'
 import { TimeSlot } from './TimeSlot'
 import { useAssignments } from '@/hooks/index/useAssignments'
 import { useEffect, useMemo, useState } from 'react'
 import { useQuery, useNavigationKeys, useOpenDocuments } from '@/hooks'
-import { DocumentStatuses } from '@/defaults/documentStatuses'
 import { Header } from '@/components/Header'
 import { getDateTimeBoundariesUTC } from '@/lib/datetime'
 import { ApprovalsCard } from './ApprovalsCard'
 import { Toolbar } from '@/components/GridFilter/Toolbar'
+import { StatusSpecifications } from '@/defaults/workflowSpecification'
 
 const meta: ViewMetadata = {
   name: 'Approvals',
@@ -36,12 +35,6 @@ export const Approvals = (): JSX.Element => {
       hours: Slots[key].slots
     }
   })
-
-  // Prepare lookup table for status icons
-  const statusLookup = DocumentStatuses.reduce((acc, item) => {
-    acc[item.value] = item
-    return acc
-  }, {} as Record<string, DefaultValueOption>)
 
   const [query] = useQuery()
 
@@ -158,7 +151,7 @@ export const Approvals = (): JSX.Element => {
                   <ApprovalsCard
                     key={assignment.id}
                     assignment={assignment}
-                    status={statusLookup?.[assignment._deliverableStatus || 'draft']}
+                    status={StatusSpecifications[assignment._deliverableStatus || 'draft']}
                     isFocused={colN === focusedColumn && cardN === focusedCard}
                     isSelected={((assignment._deliverableId && openEditors.includes(assignment._deliverableId)) || openPlannings.includes(assignment._id))}
                   />

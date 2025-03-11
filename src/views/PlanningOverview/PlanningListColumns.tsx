@@ -41,7 +41,7 @@ export function planningListColumns({ sections = [], authors = [] }: {
       accessorFn: (data) => data?._source['document.meta.status'][0],
       cell: ({ row }) => {
         const status = row.getValue<string>('documentStatus')
-        return <DocumentStatus status={status} />
+        return <DocumentStatus type='core/planning-item' status={status} />
       },
       filterFn: (row, id, value: string[]) =>
         value.includes(row.getValue(id))
