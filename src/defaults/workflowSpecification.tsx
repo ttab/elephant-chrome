@@ -26,7 +26,7 @@ export interface StatusSpecification {
   className: string
 }
 
-export const StatusSpecifications = {
+export const StatusSpecifications: Record<string, StatusSpecification> = {
   draft: {
     icon: CircleDot,
     className: ''
@@ -51,7 +51,7 @@ export const StatusSpecifications = {
     icon: CircleX,
     className: 'bg-cancelled text-white fill-cancelled rounded-full'
   }
-} as Record<string, StatusSpecification>
+}
 
 
 export const WorkflowSpecifications: Record<string, WorkflowSpecification> = {
