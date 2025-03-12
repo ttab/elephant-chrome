@@ -11,7 +11,7 @@ export const GroupedRowsHeader = <TData, TValue>({ row, columns }: {
   const groupingMeta = columns.find((column) => column.id === groupingValues[0])?.meta
 
   return (
-    <TableRow className='sticky top-0 bg-muted'>
+    <TableRow className='sticky top-10 bg-muted'>
       <TableCell colSpan={columns.length} className='pl-6 px-2 py-1 border-b'>
         <div className='flex justify-between items-center flex-wrap'>
           <div className='flex items-center space-x-2'>

@@ -19,7 +19,7 @@ export const handleDocumentEvent = async ({
   event: EventlogItem
   session: Session | null
   repository: Repository | undefined
-  source: string[] | undefined
+  source: string | string[] | undefined
   data: Wire[] | undefined
   mutate: (data?: Wire[] | Promise<Wire[]>, shouldRevalidate?: boolean) => Promise<Wire[] | undefined>
   timeoutRef: React.MutableRefObject<NodeJS.Timeout | null>
@@ -29,7 +29,7 @@ export const handleDocumentEvent = async ({
       const result = await repository.getDocument({ uuid: event.uuid, accessToken: session?.accessToken })
       const documentSource = result?.document?.links.find((link) => link.rel === 'source')?.uri
 
-      if (documentSource && source.includes(documentSource)) {
+      if (documentSource && (Array.isArray(source) ? source : [source]).includes(documentSource)) {
         const updateData = [
           {
             id: result?.document?.uuid || '',

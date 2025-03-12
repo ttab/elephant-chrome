@@ -15,7 +15,7 @@ export type QueryParams = Record<string, string | string[] | undefined>
  * - To remove a parameter, pass an object with the parameter name and `undefined` as the value.
  * - To reset all parameters, pass an empty object.
  */
-export const useQuery = (): [QueryParams, (params: QueryParams) => void] => {
+export const useQuery = (keys?: string[]): [QueryParams, (params: QueryParams) => void] => {
   const {
     state: historyState,
     replaceState
@@ -41,8 +41,23 @@ export const useQuery = (): [QueryParams, (params: QueryParams) => void] => {
       }
     }
 
-    return params
-  }, [historyState, viewId, isActive])
+    if (!keys?.length) {
+      return params
+    }
+
+
+    const onlyKeys: { [key: string]: string[] } = {}
+    for (const [key, value] of Object.entries(params)) {
+      if (keys.includes(key)) {
+        onlyKeys[key] = Array.isArray(value)
+          ? value.filter((v): v is string => v !== undefined)
+          : [value].filter((v): v is string => v !== undefined)
+      }
+    }
+    return onlyKeys
+  // We dont need to recreate when keys change
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [historyState, viewId, isActive, keys?.length])
 
   const [queryParams, setQueryParams] = useState<QueryParams>(parseQueryString)
 

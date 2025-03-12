@@ -8,7 +8,7 @@ import { useQuery, useNavigationKeys, useOpenDocuments } from '@/hooks'
 import { Header } from '@/components/Header'
 import { getDateTimeBoundariesUTC } from '@/lib/datetime'
 import { ApprovalsCard } from './ApprovalsCard'
-import { Toolbar } from '@/components/GridFilter/Toolbar'
+import { Toolbar } from './Commands/Toolbar.tsx'
 import { StatusSpecifications } from '@/defaults/workflowSpecification'
 
 const meta: ViewMetadata = {
@@ -134,12 +134,12 @@ export const Approvals = (): JSX.Element => {
       <ViewHeader.Root>
         <ViewHeader.Title name='Approvals' title='Dagen' />
         <ViewHeader.Content>
-          <Header type='Approvals' facets={facets} />
+          <Header type='Approvals' />
 
         </ViewHeader.Content>
       </ViewHeader.Root>
 
-      <Toolbar />
+      <Toolbar facets={facets} />
       <View.Content variant='grid' columns={slots.length}>
         {data.map((slot, colN) => {
           return (

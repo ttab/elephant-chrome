@@ -1,17 +1,14 @@
+import type { FilterProps } from '@/components/Filter'
 import { DocumentStatuses } from '@/defaults/documentStatuses'
-import { useFilter } from '@/hooks/useFilter'
+import { useQuery } from '@/hooks/useQuery'
 import { CommandItem } from '@ttab/elephant-ui'
 import { CheckIcon, CircleCheck } from '@ttab/elephant-ui/icons'
 import { cn } from '@ttab/elephant-ui/utils'
-import type { Dispatch, SetStateAction } from 'react'
 
-export const StatusFilter = ({ page, setPage, setSearch, facets }: {
-  page: string
-  setPage: Dispatch<SetStateAction<string>>
-  setSearch: Dispatch<SetStateAction<string | undefined>>
+export const StatusFilter = ({ page, pages, setPages, setSearch, facets }: {
   facets?: Map<string, number>
-}): JSX.Element | undefined => {
-  const [filter, setFilter] = useFilter(['status'])
+} & FilterProps): JSX.Element | undefined => {
+  const [filter, setFilter] = useQuery(['status'])
   const statuses = new Set(filter.status)
 
   if (!page) {
@@ -19,7 +16,7 @@ export const StatusFilter = ({ page, setPage, setSearch, facets }: {
       <CommandItem
         onSelect={() => {
           setSearch('')
-          setPage('status')
+          setPages([...pages, 'status'])
         }}
         className='flex gap-1 items-center'
       >

@@ -1,27 +1,31 @@
 import { Save, UserCog, X } from '@ttab/elephant-ui/icons'
-
 import { Button, ToggleGroup, ToggleGroupItem } from '@ttab/elephant-ui'
-import { SelectedFilters } from './SelectedFilters'
-import type { Filter } from '@/hooks/useFilter'
-import { useFilter } from '@/hooks/useFilter'
+import { SelectedFilters } from '@/components/Filter/SelectedFilters'
 import { useSections } from '@/hooks/useSections'
-import { DotDropdownMenu } from '../ui/DotMenu'
+import { DotDropdownMenu } from '@/components/ui/DotMenu'
 import { useUserTracker } from '@/hooks/useUserTracker'
 import { toast } from 'sonner'
-import type { QueryParams } from '@/hooks/useQuery'
+import { useQuery, type QueryParams } from '@/hooks/useQuery'
+import { Filter } from '@/components/Filter'
+import type { Facets } from '@/hooks/index/lib/assignments/filterAssignments'
+import { GridCommands } from './Commands'
+import { useState } from 'react'
 
-export const Toolbar = (): JSX.Element => {
-  const [filters, setFilters] = useFilter(['status', 'section'])
-  const isFiltered = Object.values(filters).some((value) => value.length)
+export const Toolbar = ({ facets }: { facets: Facets }): JSX.Element => {
+  const [filters, setFilters] = useQuery(['status', 'section'])
+  const isFiltered = Object.values(filters).some((value) => value?.length)
   const [userFilters, setUserFilters] = useUserTracker<QueryParams | undefined>(`filters.Approvals`)
 
-  const isUserFilter = (savedUserFilter: QueryParams | undefined, currentFilter: Filter): boolean => {
+
+  const [pages, setPages] = useState<string[]>([])
+  const [search, setSearch] = useState<string | undefined>('')
+
+  const isUserFilter = (savedUserFilter: QueryParams | undefined, currentFilter: QueryParams): boolean => {
     if (savedUserFilter === undefined) {
       return false
     }
     return JSON.stringify(savedUserFilter, Object.keys(savedUserFilter).sort()) === JSON.stringify(currentFilter, Object.keys(currentFilter).sort())
   }
-  const [filter, setFilter] = useFilter(['section'])
   const allSections = useSections()
 
   const handleResetFilters = () => {
@@ -39,23 +43,28 @@ export const Toolbar = (): JSX.Element => {
       return 'user'
     }
 
-    return Array.isArray(filter.section) && filter.section.length === 1
-      ? filter.section[0]
+    return Array.isArray(filters.section) && filters.section.length === 1
+      ? filters.section[0]
       : undefined
   }
 
   const handleToggleValueChange = (value: string | undefined) => {
     if (value === 'user') {
-      setFilter(userFilters as Filter || {})
+      setFilters(userFilters || {})
       return
     }
 
     // TODO remove ''
-    setFilter({ ...filter, section: [value || ''] })
+    setFilters({ ...filters, section: [value || ''] })
   }
 
+  const page = pages[pages.length - 1]
+
   return (
-    <div className='flex flex-wrap flex-grow items-center space-x-2 border-b py-1 pr-2.5'>
+    <div className='flex flex-wrap flex-grow items-center space-x-2 px-4 border-b py-1 pr-2.5'>
+      <Filter page={page} pages={pages} setPages={setPages} search={search} setSearch={setSearch}>
+        <GridCommands page={page} pages={pages} setPages={setPages} search={search} setSearch={setSearch} facets={facets} />
+      </Filter>
       <SelectedFilters />
       {isFiltered && (
         <Button
@@ -122,7 +131,9 @@ export const Toolbar = (): JSX.Element => {
                 label: 'Personligt filter',
                 icon: UserCog,
                 item: () => {
-                  setFilter(userFilters as Filter)
+                  if (userFilters) {
+                    setFilters(userFilters)
+                  }
                 }
               },
               {

@@ -1,17 +1,14 @@
-import { useFilter } from '@/hooks/useFilter'
+import type { FilterProps } from '@/components/Filter'
+import { useQuery } from '@/hooks/useQuery'
 import { useSections } from '@/hooks/useSections'
 import { CommandItem } from '@ttab/elephant-ui'
 import { CheckIcon, Shapes } from '@ttab/elephant-ui/icons'
 import { cn } from '@ttab/elephant-ui/utils'
-import type { Dispatch, SetStateAction } from 'react'
 
-export const SectionFilter = ({ page, setPage, setSearch, facets }: {
-  page: string
-  setPage: Dispatch<SetStateAction<string>>
-  setSearch: Dispatch<SetStateAction<string | undefined>>
+export const SectionFilter = ({ page, pages, setPages, setSearch, facets }: {
   facets?: Map<string, number>
-}): JSX.Element | undefined => {
-  const [filter, setFilter] = useFilter(['section'])
+} & FilterProps): JSX.Element | undefined => {
+  const [filter, setFilter] = useQuery(['section'])
   const sections = new Set(filter.section)
   const allSections = useSections().map((_) => {
     return {
@@ -24,7 +21,7 @@ export const SectionFilter = ({ page, setPage, setSearch, facets }: {
     return (
       <CommandItem
         onSelect={() => {
-          setPage('section')
+          setPages([...pages, 'section'])
           setSearch('')
         }}
         className='flex gap-1 items-center'
