@@ -5,7 +5,7 @@ import { Table } from '@/components/Table'
 import { useWires } from '@/hooks/index/useWires'
 import type { Wire } from '@/hooks/index/lib/wires'
 import type { ColumnDef } from '@tanstack/react-table'
-import { Toolbar } from './components/Toolbar'
+import { Toolbar } from './Toolbar'
 
 export const WireList = ({ columns }: {
   columns: ColumnDef<Wire, unknown>[]

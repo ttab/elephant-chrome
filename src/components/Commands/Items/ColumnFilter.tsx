@@ -32,7 +32,7 @@ export const ColumnFilter = (): ReactNode => {
     }).filter((x) => x)
   }
 
-  if (page === 'textFilter') {
+  if (page === 'query') {
     return <></>
   }
 
@@ -44,4 +44,3 @@ export const ColumnFilter = (): ReactNode => {
 
   return null
 }
-

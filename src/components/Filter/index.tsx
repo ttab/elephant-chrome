@@ -4,6 +4,7 @@ import type { Dispatch, PropsWithChildren, SetStateAction } from 'react'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { DebouncedCommandInput } from '@/components/Commands/Menu/DebouncedCommandInput'
 import { useQuery } from '@/hooks/useQuery'
+import type { Updater } from '@tanstack/react-table'
 
 export interface FilterProps {
   page: string
@@ -11,9 +12,10 @@ export interface FilterProps {
   setPages: Dispatch<SetStateAction<string[]>>
   search: string | undefined
   setSearch: Dispatch<SetStateAction<string | undefined>>
+  setGlobalTextFilter?: (updater: Updater<unknown>) => void
 }
 
-export const Filter = ({ page, pages, setPages, search, setSearch, children }:
+export const Filter = ({ page, pages, setPages, search, setSearch, children, setGlobalTextFilter }:
   PropsWithChildren & FilterProps): JSX.Element => {
   const [open, setOpen] = useState(false)
   const [filter, setFilter] = useQuery(['query'])
@@ -69,7 +71,13 @@ export const Filter = ({ page, pages, setPages, search, setSearch, children }:
             ref={inputRef}
             value={page === 'query' ? filter?.query?.[0] : search}
             onChange={(value: string | undefined) => {
-              setFilter({ query: [value || ''] })
+              if (value) {
+                if (setGlobalTextFilter) {
+                  setGlobalTextFilter(value)
+                } else {
+                  setFilter({ query: [value] })
+                }
+              }
             }}
             placeholder={page === 'query' ? 'Fritext' : 'Filtrera'}
             className='h-9'

@@ -8,7 +8,7 @@ import { useQuery, useNavigationKeys, useOpenDocuments } from '@/hooks'
 import { Header } from '@/components/Header'
 import { getDateTimeBoundariesUTC } from '@/lib/datetime'
 import { ApprovalsCard } from './ApprovalsCard'
-import { Toolbar } from './Commands/Toolbar.tsx'
+import { Toolbar } from './Toolbar.tsx'
 import { StatusSpecifications } from '@/defaults/workflowSpecification'
 
 const meta: ViewMetadata = {

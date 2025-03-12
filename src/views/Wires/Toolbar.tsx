@@ -3,7 +3,7 @@ import { SelectedFilters } from '@/components/Filter/SelectedFilters'
 import { DotDropdownMenu } from '@/components/ui/DotMenu'
 import type { FilterProps } from '@/components/Filter'
 import { Filter } from '@/components/Filter'
-import { Commands } from '../Commands'
+import { Commands } from './Commands'
 import { useState } from 'react'
 
 export const Toolbar = (): JSX.Element => {

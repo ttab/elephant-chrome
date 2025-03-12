@@ -73,6 +73,7 @@ export const Toolbar = <TData,>({ columns }: {
         setPages={command.setPages}
         search={command.search}
         setSearch={command.setSearch}
+        setGlobalTextFilter={table.setGlobalFilter}
       >
         <Commands />
       </Filter>

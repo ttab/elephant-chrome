@@ -8,7 +8,7 @@ import { toast } from 'sonner'
 import { useQuery, type QueryParams } from '@/hooks/useQuery'
 import { Filter } from '@/components/Filter'
 import type { Facets } from '@/hooks/index/lib/assignments/filterAssignments'
-import { GridCommands } from './Commands'
+import { Commands } from './Commands'
 import { useState } from 'react'
 
 export const Toolbar = ({ facets }: { facets: Facets }): JSX.Element => {
@@ -55,7 +55,7 @@ export const Toolbar = ({ facets }: { facets: Facets }): JSX.Element => {
     }
 
     // TODO remove ''
-    setFilters({ ...filters, section: [value || ''] })
+    setFilters({ ...filters, section: value ? [value] : undefined })
   }
 
   const page = pages[pages.length - 1]
@@ -63,7 +63,14 @@ export const Toolbar = ({ facets }: { facets: Facets }): JSX.Element => {
   return (
     <div className='flex flex-wrap flex-grow items-center space-x-2 px-4 border-b py-1 pr-2.5'>
       <Filter page={page} pages={pages} setPages={setPages} search={search} setSearch={setSearch}>
-        <GridCommands page={page} pages={pages} setPages={setPages} search={search} setSearch={setSearch} facets={facets} />
+        <Commands
+          page={page}
+          pages={pages}
+          setPages={setPages}
+          search={search}
+          setSearch={setSearch}
+          facets={facets}
+        />
       </Filter>
       <SelectedFilters />
       {isFiltered && (

@@ -11,7 +11,7 @@ export const TableCommandMenu = ({ children, heading }: PropsWithChildren & { he
   const handleChange = (value: string | undefined, args: CommandArgs): void => {
     const { setSearch, page } = args
     setSearch(value)
-    if (page === 'textFilter') {
+    if (page === 'query') {
       table.setGlobalFilter(value)
     }
   }

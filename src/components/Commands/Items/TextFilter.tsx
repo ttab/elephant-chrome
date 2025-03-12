@@ -12,14 +12,14 @@ export const TextFilter = (): JSX.Element | null => {
     ? (
         <CommandItem
           onSelect={() => {
-            setPages([...pages, 'textFilter'])
+            setPages([...pages, 'query'])
             if (typeof globalFilter === 'string') {
               setSearch(globalFilter)
             }
           }}
         >
           <Search size={18} strokeWidth={1.75} className='mr-2' />
-          Text
+          Fritext
         </CommandItem>
       )
     : null
