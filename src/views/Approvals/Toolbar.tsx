@@ -54,7 +54,6 @@ export const Toolbar = ({ facets }: { facets: Facets }): JSX.Element => {
       return
     }
 
-    // TODO remove ''
     setFilters({ ...filters, section: value ? [value] : undefined })
   }
 
@@ -131,7 +130,7 @@ export const Toolbar = ({ facets }: { facets: Facets }): JSX.Element => {
               ...allSections.map((section) => ({
                 label: section.title,
                 item: () => {
-                  // column?.setFilterValue([section.id])
+                  handleToggleValueChange(section.id)
                 }
               })),
               {

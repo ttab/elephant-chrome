@@ -40,7 +40,6 @@ export const Filter = ({ page, pages, setPages, search, setSearch, children, set
           size='xs'
           role='combobox'
           aria-expanded={open}
-          className='hidden sm:flex'
         >
           <ListFilter
             size={18}
