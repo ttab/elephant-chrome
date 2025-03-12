@@ -1,15 +1,20 @@
 import { useQuery } from './useQuery'
 
-interface Filter {
+export interface Filter {
   [key: string]: string[]
 }
-
+/*
+ * @deprecated use useQuery instead
+*/
 export const useFilter = (keys: string[]): [Filter, (arg: Filter) => void] => {
   // Get filter from query
   const [query, setQuery] = useQuery()
+  // Only used in approvals right now
+
   const filter: Filter = keys.reduce((acc, key) => {
     if (query[key]) {
-      acc[key] = Array.isArray(query[key]) ? query[key] : [query[key]]
+      const value = query[key]
+      acc[key] = Array.isArray(value) ? value.filter((v): v is string => v !== undefined) : [value].filter((v): v is string => v !== undefined)
     }
     return acc
   }, {} as Filter)

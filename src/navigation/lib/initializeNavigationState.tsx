@@ -3,39 +3,54 @@ import * as views from '@/views'
 import { currentView } from '@/navigation/lib'
 import { type HistoryState } from '../hooks/useHistory'
 
-const registeredComponents = new Map() as Map<string, ViewRegistryItem>
+const registeredComponents = new Map<string, ViewRegistryItem>()
 
-export function initializeNavigationState(): NavigationState {
-  Object.keys(views).forEach((name) => {
-    registeredComponents.set(name, {
-      component: views[name as View],
-      meta: views[name as View].meta
-    })
+Object.keys(views).forEach((name) => {
+  registeredComponents.set(name, {
+    component: views[name as View],
+    meta: views[name as View].meta
   })
+})
 
+// Ensure the Error view is always registered
+if (!registeredComponents.has('Error')) {
+  throw new Error('Error view must be registered')
+}
+
+const viewRegistry = {
+  get: (name: View) => {
+    return registeredComponents.get(name) ?? registeredComponents.get('Error') as ViewRegistryItem
+  },
+  set: () => {
+    throw new Error('"Set" is not implemented')
+  }
+}
+
+/**
+ * Initializes the navigation state based on the current view and URL.
+ *
+ * @returns {NavigationState} The initialized navigation state.
+ */
+export function initializeNavigationState(): NavigationState {
   const { name, props } = currentView()
-  if (!history?.state?.contentState?.length) {
+  const { pathname, href } = window.location
+
+  if (!(history?.state as HistoryState)?.contentState?.length) {
     const viewId = crypto.randomUUID()
-    history.pushState({
+    const contentState = [{
       viewId,
-      contentState: [{
-        viewId,
-        name,
-        props,
-        path: window.location.pathname
-      }]
-    }, '', window.location.href)
+      name,
+      props,
+      path: pathname
+    }]
+
+    history.replaceState({ viewId, contentState }, '', href)
 
     return {
       viewRegistry,
       focus: null,
       active: viewId,
-      content: [{
-        viewId,
-        name: name as View,
-        props,
-        path: window.location.pathname
-      }]
+      content: contentState
     }
   } else {
     const { viewId, contentState } = window.history.state as HistoryState
@@ -45,23 +60,5 @@ export function initializeNavigationState(): NavigationState {
       active: viewId,
       content: contentState
     }
-  }
-}
-
-
-const viewRegistry = {
-  get: (name: View) => {
-    const registryItem = registeredComponents.get(name)
-
-    if (registryItem === undefined) {
-      // We must always have an Error view registered!
-      return registeredComponents.get('Error') as unknown as ViewRegistryItem
-    }
-
-    return registryItem
-  },
-
-  set: () => {
-    throw new Error('"Set" is not implemented')
   }
 }

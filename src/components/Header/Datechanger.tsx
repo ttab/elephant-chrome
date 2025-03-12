@@ -21,6 +21,7 @@ export const DateChanger = ({ type }: {
 
   const validViews: View[] = ['Plannings', 'Events', 'Assignments', 'Approvals']
   const linkTarget = validViews.find((view) => view.startsWith(type))
+  const [query] = useQuery()
 
   if (!linkTarget) {
     throw new Error('Invalid view')
@@ -32,7 +33,7 @@ export const DateChanger = ({ type }: {
     <div className='flex items-center'>
       <Link
         to={linkTarget}
-        props={{ from: decrementDate(currentDate, steps).toISOString().split('T')[0] }}
+        props={{ ...query, from: decrementDate(currentDate, steps).toISOString().split('T')[0] }}
         target='self'
       >
         <ChevronLeft
@@ -45,7 +46,7 @@ export const DateChanger = ({ type }: {
 
       <Link
         to={linkTarget}
-        props={{ from: incrementDate(currentDate, steps).toISOString().split('T')[0] }}
+        props={{ ...query, from: incrementDate(currentDate, steps).toISOString().split('T')[0] }}
         target='self'
       >
         <ChevronRight

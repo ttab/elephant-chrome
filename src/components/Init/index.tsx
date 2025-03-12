@@ -1,8 +1,5 @@
 import type { PropsWithChildren } from 'react'
-import { useState } from 'react'
-import { Login } from '../../views'
-import { LoadingText } from '../LoadingText'
-import { View } from '../View'
+import { useEffect, useState } from 'react'
 import { useSession } from 'next-auth/react'
 import { CoreAuthorProvider } from '../../datastore/contexts/CoreAuthorProvider'
 import { CoreCategoryProvider } from '../../datastore/contexts/CoreCategoryProvider'
@@ -10,31 +7,87 @@ import { CoreOrganiserProvider } from '../../datastore/contexts/CoreOrganiserPro
 import { CoreSectionProvider } from '../../datastore/contexts/CoreSectionProvider'
 import { CoreStoryProvider } from '../../datastore/contexts/CoreStoryProvider'
 import { TTWireSourceProvider } from '../../datastore/contexts/TTWireSourceProvider'
-import { DocTrackerProvider, UserTrackerProvider } from '../../contexts'
+import { DocTrackerProvider } from '../../contexts'
 import { useRegistry } from '@/hooks/useRegistry'
 import { initializeAuthor } from './lib/actions/author'
 import { initializeFaro } from './lib/actions/faro'
+import type { QueryParams } from '@/hooks/useQuery'
+import { useUserTracker } from '@/hooks/useUserTracker'
+import { LoadingText } from '../LoadingText'
+import { NavigationProvider } from '@/navigation/NavigationProvider'
+import { View } from '../View'
 
 interface InitState {
   faro: boolean | undefined
   author: boolean | undefined
+  userTracker: boolean | undefined
 }
 
 export const Init = ({ children }: PropsWithChildren): JSX.Element => {
-  const { data: session, status } = useSession()
+  const { data: session } = useSession()
+  const [,, synced] = useUserTracker<Record<string, QueryParams> | undefined>(`filters`)
+
   const { repository, server: { faroUrl, indexUrl } } = useRegistry()
   const [isInitialized, setIsInitialized] = useState<InitState>({
     faro: undefined,
-    author: undefined
+    author: undefined,
+    userTracker: undefined
   })
 
-  if (status === 'loading') {
+  useEffect(() => {
+    if (synced && isInitialized.userTracker === undefined) {
+      setIsInitialized((prevState) => ({ ...prevState, userTracker: true }))
+    }
+  }, [synced, isInitialized.userTracker])
+
+  useEffect(() => {
+    if (isInitialized.faro === undefined) {
+      setIsInitialized((prevState) => ({ ...prevState, faro: false }))
+
+      initializeFaro({
+        url: faroUrl
+      }).catch((error) => {
+        console.error('Failed to initialize faro', error)
+      }).finally(() => {
+        setIsInitialized((prevState) => ({ ...prevState, faro: true }))
+      })
+    }
+  }, [isInitialized.faro, faroUrl])
+
+  useEffect(() => {
+    if (isInitialized.author === undefined && indexUrl && session && repository) {
+      setIsInitialized((prevState) => ({ ...prevState, author: false }))
+      initializeAuthor({
+        url: indexUrl,
+        repository,
+        session
+      }).catch((error) => {
+        console.error('Failed to initialize author', error)
+      }).finally(() => {
+        setIsInitialized((prevState) => ({ ...prevState, author: true }))
+      })
+    }
+  }, [isInitialized.author, indexUrl, session, repository])
+
+  if (Object.values(isInitialized).some((value) => value !== true)) {
     return (
       <View.Root>
         <View.Content>
           <div className='flex items-center justify-center h-screen'>
-            <div className='flex-col w-1/3'>
-              <LoadingText>Hämtar session...</LoadingText>
+            <div className='flex flex-col w-1/3'>
+              <LoadingText>Hämtar användardata...</LoadingText>
+
+              <div className='flex flex-col items-center justify-center gap-2 mt-4'>
+                {Object.entries(isInitialized).map(([key, value]) => {
+                  return (
+                    <span key={key}>
+                      {key}
+                      {' '}
+                      {value ? '✔️' : '...'}
+                    </span>
+                  )
+                })}
+              </div>
             </div>
           </div>
         </View.Content>
@@ -42,63 +95,23 @@ export const Init = ({ children }: PropsWithChildren): JSX.Element => {
     )
   }
 
-  if (status === 'unauthenticated' || !session || session.error) {
-    const callbackUrl = window.location.href.replace(window.location.origin, '')
-    return (
-      <div className='relative flex h-screen flex-col'>
-        <Login callbackUrl={callbackUrl} />
-      </div>
-    )
-  }
-
-
-  if (isInitialized.faro === undefined) {
-    setIsInitialized((prevState) => ({ ...prevState, faro: false }))
-
-    initializeFaro({
-      url: faroUrl
-
-    }).catch((error) => {
-      throw new Error('Failed to initialize faro', { cause: error })
-    }).finally(() => {
-      setIsInitialized((prevState) => ({ ...prevState, faro: true }))
-    })
-  }
-
-  if (isInitialized.author === undefined
-    && indexUrl
-    && session
-    && repository) {
-    setIsInitialized((prevState) => ({ ...prevState, author: false }))
-    initializeAuthor({
-      url: indexUrl,
-      repository,
-      session
-    }).catch((error) => {
-      throw new Error('Failed to initialize author', { cause: error })
-    }).finally(() => {
-      setIsInitialized((prevState) => ({ ...prevState, author: true }))
-    })
-  }
-
-
   return (
-    <UserTrackerProvider>
-      <DocTrackerProvider>
-        <CoreSectionProvider>
-          <CoreAuthorProvider>
-            <CoreStoryProvider>
-              <CoreCategoryProvider>
-                <CoreOrganiserProvider>
-                  <TTWireSourceProvider>
+    <DocTrackerProvider>
+      <CoreSectionProvider>
+        <CoreAuthorProvider>
+          <CoreStoryProvider>
+            <CoreCategoryProvider>
+              <CoreOrganiserProvider>
+                <TTWireSourceProvider>
+                  <NavigationProvider>
                     {children}
-                  </TTWireSourceProvider>
-                </CoreOrganiserProvider>
-              </CoreCategoryProvider>
-            </CoreStoryProvider>
-          </CoreAuthorProvider>
-        </CoreSectionProvider>
-      </DocTrackerProvider>
-    </UserTrackerProvider>
+                  </NavigationProvider>
+                </TTWireSourceProvider>
+              </CoreOrganiserProvider>
+            </CoreCategoryProvider>
+          </CoreStoryProvider>
+        </CoreAuthorProvider>
+      </CoreSectionProvider>
+    </DocTrackerProvider>
   )
 }

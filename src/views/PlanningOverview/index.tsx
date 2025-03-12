@@ -52,6 +52,7 @@ export const Plannings = (): JSX.Element => {
     <View.Root tab={currentTab} onTabChange={setCurrentTab}>
       <TableProvider<PlanningType>
         columns={columns}
+        type={meta.name}
         initialState={{
           grouping: ['newsvalue'],
           columnFilters

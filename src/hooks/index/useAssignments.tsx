@@ -34,8 +34,10 @@ export const useAssignments = ({ date, type, slots, status }: {
 
   const [filters] = useFilter(['status', 'section'])
 
-  const { data, mutate, error } = useSWR<AssignmentInterface[] | undefined, Error>(key, (): Promise<AssignmentInterface[] | undefined> =>
-    fetchAssignments({ index, repository, session, date }))
+  const { data, mutate, error } = useSWR<AssignmentInterface[] | undefined, Error>(
+    key,
+    (): Promise<AssignmentInterface[] | undefined> => fetchAssignments({ index, repository, session, date })
+  )
 
   if (error) {
     throw new Error('Assignment fetch failed:', { cause: error })

@@ -17,7 +17,8 @@ import type { HistoryEvent } from './hooks/useHistory'
 
 const initialState = initializeNavigationState()
 
-export const NavigationProvider = ({ children }: PropsWithChildren): JSX.Element => {
+export const NavigationProvider = ({ children }: PropsWithChildren & {
+}): JSX.Element => {
   const [state, dispatch] = useReducer(navigationReducer, initialState)
   const history = useHistory()
 
