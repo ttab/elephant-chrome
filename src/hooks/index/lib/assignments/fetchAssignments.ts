@@ -26,10 +26,10 @@ const knownStatuses = Object.keys(StatusSpecifications)
  * @param {Date | string} params.date - The date to filter assignments by.
  * @returns {Promise<AssignmentInterface[] | undefined>} - The fetched assignments or undefined if index or session is not provided.
  */
-export async function fetchAssignments({ index, repository, type, requireDeliverable = false, session, date }: {
+export async function fetchAssignments({ index, repository, type, requireDeliverable, session, date }: {
   index: Index | undefined
   repository: Repository | undefined
-  type?: string
+  type?: string | string[]
   requireDeliverable?: boolean
   session: Session | null
   date: Date | string

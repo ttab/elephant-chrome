@@ -79,6 +79,10 @@ export const ApprovalsCard = ({ assignment, isSelected, isFocused, status }: {
     )
   }]
 
+  const title = (assignment._deliverableDocument?.content
+    .find((content) => content.type === 'core/text' && content.role === 'heading-1')?.data.text)
+  || assignment.title
+
   return (
     <Card.Root
       status={assignment._deliverableStatus || 'draft'}
@@ -114,7 +118,7 @@ export const ApprovalsCard = ({ assignment, isSelected, isFocused, status }: {
 
       <Card.Content>
         <Card.Title>
-          <div className='truncate'>{assignment._deliverableDocument?.title || assignment.title}</div>
+          <div className='truncate'>{title}</div>
           <div className='text-xs font-normal opacity-60'>
             {assignment.meta.find((m) => m.type === 'tt/slugline')?.value || ' '}
           </div>

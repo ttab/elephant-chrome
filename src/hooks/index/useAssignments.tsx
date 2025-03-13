@@ -18,9 +18,10 @@ const defaultStatuses = ['draft', 'done', 'approved', 'withheld']
  * Fetch all assignments in specific date as Block[] extended with some planning level data.
  * Allows optional filtering by type and optional sorting into buckets.
  */
-export const useAssignments = ({ date, type, slots, status }: {
+export const useAssignments = ({ date, type, slots, status, requireDeliverable = false }: {
   date: Date | string
-  type?: string
+  type?: string | string[]
+  requireDeliverable?: boolean
   status?: string[]
   slots?: {
     key: string
@@ -30,13 +31,13 @@ export const useAssignments = ({ date, type, slots, status }: {
 }): [AssignmentResponseInterface[], Facets] => {
   const { data: session } = useSession()
   const { index, repository, timeZone } = useRegistry()
-  const key = type ? `core/assignment/${type}/${date.toString()}` : 'core/assignment'
+  const key = type ? `core/assignment/${type.toString()}/${date.toString()}` : 'core/assignment'
 
   const [filters] = useQuery(['status', 'section'])
 
   const { data, mutate, error } = useSWR<AssignmentInterface[] | undefined, Error>(
     key,
-    (): Promise<AssignmentInterface[] | undefined> => fetchAssignments({ index, repository, session, date })
+    (): Promise<AssignmentInterface[] | undefined> => fetchAssignments({ index, repository, session, date, requireDeliverable, type })
   )
 
   if (error) {

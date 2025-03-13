@@ -9,7 +9,7 @@ import { isValidAssignment } from './isValidAssignment'
  * @param type - The type of assignments to extract.
  * @returns An array of assignments matching the given type.
  */
-export function getAssignmentsFromDocument(document: Document, type?: string): AssignmentInterface[] {
+export function getAssignmentsFromDocument(document: Document, type?: string | string[]): AssignmentInterface[] {
   const { meta, links } = document
   const assignments: AssignmentInterface[] = []
 
