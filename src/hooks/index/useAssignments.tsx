@@ -49,7 +49,6 @@ export const useAssignments = ({ date, type, slots, status, requireDeliverable =
     status: status ? status : filters?.status?.length ? filters.status : defaultStatuses
   }
 
-  console.log('Length', data?.length)
   const filteredData = filterAssignments(data, filtersWithDefaults)
   const structuredData = structureAssignments(timeZone, filteredData || [], slots)
 
