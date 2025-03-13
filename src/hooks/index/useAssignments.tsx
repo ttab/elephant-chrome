@@ -2,13 +2,13 @@ import useSWR from 'swr'
 import { useRegistry } from '../useRegistry'
 import { useSession } from 'next-auth/react'
 import { useRepositoryEvents } from '../useRepositoryEvents'
-import { useFilter } from '../useFilter'
 import type { AssignmentInterface } from './lib/assignments/types'
 import { fetchAssignments } from './lib/assignments/fetchAssignments'
 import type { AssignmentResponseInterface } from './lib/assignments/structureAssignments'
 import { structureAssignments } from './lib/assignments/structureAssignments'
 import type { Facets } from './lib/assignments/filterAssignments'
 import { filterAssignments, getFacets } from './lib/assignments/filterAssignments'
+import { useQuery } from '../useQuery'
 
 export { AssignmentInterface }
 
@@ -32,7 +32,7 @@ export const useAssignments = ({ date, type, slots, status }: {
   const { index, repository, timeZone } = useRegistry()
   const key = type ? `core/assignment/${type}/${date.toString()}` : 'core/assignment'
 
-  const [filters] = useFilter(['status', 'section'])
+  const [filters] = useQuery(['status', 'section'])
 
   const { data, mutate, error } = useSWR<AssignmentInterface[] | undefined, Error>(
     key,

@@ -104,7 +104,7 @@ export const CommandMenu = ({ children, onKeyDown, onChange }: CommandMenuProps)
 function getPlaceholder(pages: string[], page: string): string {
   if (pages.length === 0) return 'Type a command or search'
 
-  if (page === 'textFilter') return 'Filter by text'
+  if (page === 'query') return 'Filter by text'
 
   return 'Filter'
 }

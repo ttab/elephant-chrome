@@ -1,24 +1,20 @@
 import { useCallback } from 'react'
-import { useQuery, useWireSources } from '@/hooks'
+import { useQuery } from '@/hooks'
 
 import { Table } from '@/components/Table'
 import { useWires } from '@/hooks/index/useWires'
 import type { Wire } from '@/hooks/index/lib/wires'
 import type { ColumnDef } from '@tanstack/react-table'
+import { Toolbar } from './Toolbar'
 
 export const WireList = ({ columns }: {
   columns: ColumnDef<Wire, unknown>[]
 }): JSX.Element => {
-  const [{ source, page }] = useQuery()
-
-  const sourceUri = useWireSources()
-    .filter((_) => Array.isArray(source)
-      ? source.includes(_.title)
-      : source === _.title)
-    .map((_) => _.uri)
+  const [{ page }] = useQuery()
+  const [filter] = useQuery(['section', 'source', 'query', 'newsvalue'])
 
   useWires({
-    source: sourceUri,
+    filter: filter,
     page: typeof page === 'string'
       ? parseInt(page)
       : undefined
@@ -34,10 +30,13 @@ export const WireList = ({ columns }: {
   }, [])
 
   return (
-    <Table
-      type='Wires'
-      columns={columns}
-      onRowSelected={onRowSelected}
-    />
+    <>
+      <Toolbar />
+      <Table
+        type='Wires'
+        columns={columns}
+        onRowSelected={onRowSelected}
+      />
+    </>
   )
 }

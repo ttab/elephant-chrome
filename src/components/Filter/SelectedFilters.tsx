@@ -1,10 +1,12 @@
 import { type ReactNode } from 'react'
 import { Badge, Button } from '@ttab/elephant-ui'
-import { CircleCheck, Shapes, X } from '@ttab/elephant-ui/icons'
+import { Binoculars, CircleCheck, CircleHelp, Shapes, SignalHigh, SquareCode, X } from '@ttab/elephant-ui/icons'
 import { type DefaultValueOption } from '@/types/index'
-import { useFilter } from '@/hooks/useFilter'
-import { DocumentStatuses } from '@/defaults/documentStatuses'
 import { useSections } from '@/hooks/useSections'
+import { useWireSources } from '@/hooks/useWireSources'
+import { Newsvalues } from '@/defaults/newsvalues'
+import { DocumentStatuses } from '@/defaults/documentStatuses'
+import { useQuery } from '@/hooks/useQuery'
 
 interface SelectedBase {
   value: unknown
@@ -42,11 +44,18 @@ const SelectedBadge = ({ value, options }: SelectedBase & {
   }
 }
 
-const SelectedButton = ({ type, value }: { value: string[], type: string }): JSX.Element => {
-  const [filters, setFilters] = useFilter(['section', 'status'])
+const SelectedButton = ({ type, value }: { value: string | string[] | undefined, type: string }): JSX.Element => {
+  const [filters, setFilters] = useQuery(['section', 'status', 'source'])
   const sections = useSections().map((_) => {
     return {
       value: _.id,
+      label: _.title
+    }
+  })
+
+  const sources = useWireSources().map((_) => {
+    return {
+      value: _.uri,
       label: _.title
     }
   })
@@ -59,16 +68,33 @@ const SelectedButton = ({ type, value }: { value: string[], type: string }): JSX
           Icon: Shapes
         }
       }
+      case 'source': {
+        return {
+          options: sources as DefaultValueOption[],
+          Icon: SquareCode
+        }
+      }
+      case 'newsvalue': {
+        return {
+          options: Newsvalues,
+          Icon: SignalHigh
+        }
+      }
+      case 'query': {
+        return {
+          Icon: Binoculars
+        }
+      }
       case 'status': {
         return {
-          options: DocumentStatuses,
-          Icon: CircleCheck
+          Icon: CircleCheck,
+          options: DocumentStatuses
         }
       }
       default: {
         return {
           options: [],
-          Icon: Shapes
+          Icon: CircleHelp
 
         }
       }
@@ -83,7 +109,7 @@ const SelectedButton = ({ type, value }: { value: string[], type: string }): JSX
       size='sm'
       className='h-8 border-dashed'
       onClick={() => {
-        setFilters({ ...filters, [type]: [] })
+        setFilters({ ...filters, [type]: undefined })
       }}
     >
       <Icon size={18} strokeWidth={1.75} className='mr-2' />
@@ -94,7 +120,7 @@ const SelectedButton = ({ type, value }: { value: string[], type: string }): JSX
 }
 
 export const SelectedFilters = (): JSX.Element[] | undefined => {
-  const [filters] = useFilter(['section', 'status'])
+  const [filters] = useQuery(['section', 'source', 'newsvalue', 'query', 'status'])
 
   return Object.keys(filters).map((key, index) => (
     <SelectedButton key={index} type={key} value={filters[key]} />

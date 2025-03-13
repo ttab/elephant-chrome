@@ -6,9 +6,10 @@ import { useTable } from '../useTable'
 import { useEffect, useMemo, useRef } from 'react'
 import type { Wire } from './lib/wires'
 import { useRepositoryEvents } from '../useRepositoryEvents'
+import type { QueryParams } from '../useQuery'
 
-export const useWires = ({ source, page }: {
-  source?: string[]
+export const useWires = ({ filter, page }: {
+  filter?: QueryParams
   page?: number
 }): [Wire[] | undefined] => {
   const { data: session } = useSession()
@@ -18,13 +19,14 @@ export const useWires = ({ source, page }: {
   const retriesRef = useRef(0)
 
   // Create a key for the SWR cache, if it changes we do a refetch
-  const key = useMemo(() => source
-    ? `tt/wire/${source.toString()}${page ? `/${page}` : ''}`
-    : 'tt/wire', [source, page])
+  const key = useMemo(() => filter
+    // TODO make better key
+    ? `tt/wire/${JSON.stringify(filter)}${page ? `/${page}` : ''}`
+    : 'tt/wire', [filter, page])
 
   const fetcher = useMemo(() => (): Promise<Wire[] | undefined> =>
-    fetch({ index, repository, session, source, page }),
-  [index, repository, session, source, page])
+    fetch({ index, repository, session, filter, page }),
+  [index, repository, session, filter, page])
 
   const { data, mutate, error } = useSWR<Wire[] | undefined, Error>(key, fetcher)
 
@@ -60,7 +62,7 @@ export const useWires = ({ source, page }: {
         event,
         session,
         repository,
-        source,
+        source: filter?.source,
         data,
         mutate,
         timeoutRef

@@ -2,7 +2,6 @@ import { View, ViewHeader } from '@/components/View'
 import { type ViewMetadata } from '@/types/index'
 import { Minus, Save } from '@ttab/elephant-ui/icons'
 import { useMemo } from 'react'
-import { Sources } from './components'
 import { wiresListColumns } from './WiresListColumns'
 import { Commands } from '@/components/Commands'
 import { TableCommandMenu } from '@/components/Commands/TableCommand'
@@ -80,7 +79,6 @@ export const Wires = (): JSX.Element => {
           )}
 
           <ViewHeader.Content>
-            <Sources />
             <div className='flex gap-2'>
               {!isFocused && isLast && (
                 <Controller />

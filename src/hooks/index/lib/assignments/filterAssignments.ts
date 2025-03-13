@@ -14,7 +14,7 @@ export interface Facets {
  * @returns {AssignmentInterface[] | undefined} - The filtered list of assignments or undefined
  * @todo Add more generic filtering options.
  */
-export function filterAssignments(assignments: AssignmentInterface[] | undefined, filters: Record<string, string[]>):
+export function filterAssignments(assignments: AssignmentInterface[] | undefined, filters: Record<string, string | string[]>):
   AssignmentInterface[] | undefined {
   if (!assignments) {
     return

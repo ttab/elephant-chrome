@@ -10,11 +10,13 @@ import type { ColumnDef, ColumnFiltersState } from '@tanstack/react-table'
 import type { QueryParams } from '@/hooks/useQuery'
 import { useMemo } from 'react'
 import { toast } from 'sonner'
+import { Filter } from '@/components/Filter'
+import { Commands } from '@/components/Commands'
 
 export const Toolbar = <TData,>({ columns }: {
   columns: ColumnDef<TData>[]
 }): JSX.Element => {
-  const { table, type } = useTable<TData>()
+  const { table, type, command } = useTable<TData>()
   const { columnFilters, globalFilter } = table.getState() as {
     columnFilters: ColumnFiltersState
     globalFilter: string
@@ -64,7 +66,17 @@ export const Toolbar = <TData,>({ columns }: {
   }
 
   return (
-    <div className='flex flex-wrap flex-grow items-center space-x-2 border-b py-1 pr-2.5'>
+    <div className='flex flex-wrap flex-grow items-center space-x-2 border-b px-4 py-1 pr-2.5 sticky top-0 bg-white z-10'>
+      <Filter
+        page={command.page}
+        pages={command.pages}
+        setPages={command.setPages}
+        search={command.search}
+        setSearch={command.setSearch}
+        setGlobalTextFilter={table.setGlobalFilter}
+      >
+        <Commands />
+      </Filter>
       <SelectedFilters table={table} />
       {isFiltered && (
         <Button

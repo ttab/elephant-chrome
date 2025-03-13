@@ -1,9 +1,10 @@
 import type { Index } from '@/shared/Index'
 import type { Repository } from '@/shared/Repository'
-import { BoolQueryV1, QueryV1, TermsQueryV1 } from '@ttab/elephant-api/index'
+import { BoolQueryV1, MultiMatchQueryV1, QueryV1, TermsQueryV1 } from '@ttab/elephant-api/index'
 import type { Session } from 'next-auth'
 import type { Wire } from '.'
 import { fields } from '.'
+import type { QueryParams } from '@/hooks/useQuery'
 
 /**
  * Fetches wires from the index based on the provided parameters.
@@ -16,12 +17,12 @@ import { fields } from '.'
  * @param {string[]} [params.source] - The source array to construct the query from.
  * @returns {Promise<Wire[] | undefined>} A promise that resolves to an array of wires or undefined.
  */
-export async function fetch({ index, session, source, page = 1 }: {
+export async function fetch({ index, session, filter, page = 1 }: {
   index: Index | undefined
   repository: Repository | undefined
   session: Session | null
   page?: number
-  source?: string[]
+  filter?: QueryParams
 }): Promise<Wire[] | undefined> {
   if (!index || !session?.accessToken) {
     return undefined
@@ -36,7 +37,7 @@ export async function fetch({ index, session, source, page = 1 }: {
     size,
     sort: [{ field: 'modified', desc: true }],
     fields,
-    query: constructQuery(source)
+    query: constructQuery(filter)
   })
 
   if (!ok) {
@@ -47,32 +48,68 @@ export async function fetch({ index, session, source, page = 1 }: {
 }
 
 /**
- * Constructs a query object from the given source array.
+ * Constructs a query object based on the provided filter parameters.
  *
- * @param {string[] | undefined} source - The source array to construct the query from.
- * @returns {QueryV1 | undefined} The constructed query object or undefined if the source is undefined.
+ * @param {QueryParams | undefined} filter - The filter parameters to construct the query.
+ * @returns {QueryV1 | undefined} - The constructed query object or undefined if no filter is provided.
  */
-function constructQuery(source: string[] | undefined): QueryV1 | undefined {
-  if (!source || !source?.length) {
+function constructQuery(filter: QueryParams | undefined): QueryV1 | undefined {
+  if (!filter) {
     return
   }
 
-  return QueryV1.create({
+  const query = QueryV1.create({
     conditions: {
       oneofKind: 'bool',
       bool: BoolQueryV1.create({
-        must: [
-          {
-            conditions: {
-              oneofKind: 'terms',
-              terms: TermsQueryV1.create({
-                field: 'document.rel.source.uri',
-                values: source
-              })
-            }
-          }
-        ]
+        must: []
       })
     }
   })
+
+  if (query.conditions.oneofKind !== 'bool') {
+    return
+  }
+
+  const boolConditions = query.conditions.bool
+
+  const addCondition = (field: string, values: string | string[]) => {
+    boolConditions.must.push({
+      conditions: {
+        oneofKind: 'terms',
+        terms: TermsQueryV1.create({
+          field,
+          values: typeof values === 'string' ? [values] : values
+        })
+      }
+    })
+  }
+
+  if (filter.section) {
+    addCondition('document.rel.section.uuid', filter.section)
+  }
+
+  if (filter.source) {
+    addCondition('document.rel.source.uri', filter.source)
+  }
+
+  if (filter.newsvalue) {
+    addCondition('document.meta.core_newsvalue.value', filter.newsvalue)
+  }
+
+  if (filter.query) {
+    boolConditions.must.push(
+      {
+        conditions: {
+          oneofKind: 'multiMatch',
+          multiMatch: MultiMatchQueryV1.create({
+            fields: ['document.title', 'document.rel.section.title'],
+            query: filter.query[0],
+            type: 'phrase_prefix'
+          })
+        }
+      })
+  }
+
+  return query
 }
