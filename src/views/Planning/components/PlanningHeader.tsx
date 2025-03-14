@@ -3,6 +3,7 @@ import { useEffect, useRef } from 'react'
 import { DocumentStatusMenu } from '@/components/DocumentStatusMenu'
 import { ViewHeader } from '@/components/View'
 import { GanttChartSquare } from '@ttab/elephant-ui/icons'
+import { MetaSheet } from '@/views/Editor/components/MetaSheet'
 
 export const PlanningHeader = ({ documentId, asDialog, onDialogClose }: {
   documentId: string
@@ -42,7 +43,9 @@ export const PlanningHeader = ({ documentId, asDialog, onDialogClose }: {
         </div>
       </ViewHeader.Content>
 
-      <ViewHeader.Action onDialogClose={onDialogClose} />
+      <ViewHeader.Action onDialogClose={onDialogClose}>
+        <MetaSheet container={containerRef.current} documentId={documentId} />
+      </ViewHeader.Action>
     </ViewHeader.Root>
   )
 }

@@ -43,7 +43,7 @@ export const EditorHeader = ({ documentId }: { documentId: string }): JSX.Elemen
       </ViewHeader.Content>
 
       <ViewHeader.Action>
-        <MetaSheet container={containerRef.current} />
+        <MetaSheet container={containerRef.current} documentId={documentId} />
       </ViewHeader.Action>
     </ViewHeader.Root>
   )

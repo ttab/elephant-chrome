@@ -5,6 +5,7 @@ import { ViewHeader } from '@/components/View'
 import { Duplicate } from '@/components/Duplicate'
 import type { Session } from 'next-auth'
 import type { HocuspocusProvider } from '@hocuspocus/provider'
+import { MetaSheet } from '../Editor/components/MetaSheet'
 
 export const EventHeader = ({ documentId, asDialog, onDialogClose, provider, title, status, session, type }: {
   documentId: string
@@ -62,7 +63,9 @@ export const EventHeader = ({ documentId, asDialog, onDialogClose, provider, tit
         </div>
       </ViewHeader.Content>
 
-      <ViewHeader.Action onDialogClose={onDialogClose} />
+      <ViewHeader.Action onDialogClose={onDialogClose}>
+        <MetaSheet container={containerRef.current} documentId={documentId} />
+      </ViewHeader.Action>
     </ViewHeader.Root>
   )
 }
