@@ -23,7 +23,7 @@ export const Version = ({ documentId, hideDetails = false }: { documentId: strin
   const BASE_URL = import.meta.env.BASE_URL || ''
   const [lastUpdated, setLastUpdated] = useState('')
 
-  const { data: versionHistory } = useSWR(`version/${documentId}`, async (): Promise<Array<DocumentVersion & { title?: string }>> => {
+  const { data: versionHistory, error } = useSWR(`version/${documentId}`, async (): Promise<Array<DocumentVersion & { title?: string }>> => {
     if (!session?.accessToken || !repository) {
       return []
     }
@@ -90,6 +90,10 @@ export const Version = ({ documentId, hideDetails = false }: { documentId: strin
     })
     return result?.versions
   })
+
+  if (error) {
+    console.error('Error fetching version history', error)
+  }
 
   const [selectedVersion, setVersion] = useState<SelectedVersion>()
   const { showModal, hideModal } = useModal()
