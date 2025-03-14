@@ -12,7 +12,7 @@ declare module '@tanstack/react-table' {
     name: string
     columnIcon: LucideIcon
     options?: DefaultValueOption[]
-    className: string
+    className?: string
     display?: (value: string) => JSX.Element
   }
 }

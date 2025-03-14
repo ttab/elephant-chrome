@@ -12,6 +12,7 @@ import { useMemo } from 'react'
 import { toast } from 'sonner'
 import { Filter } from '@/components/Filter'
 import { Commands } from '@/components/Commands'
+import { Sort } from '../Sort'
 
 export const Toolbar = <TData,>({ columns }: {
   columns: ColumnDef<TData>[]
@@ -77,6 +78,7 @@ export const Toolbar = <TData,>({ columns }: {
       >
         <Commands />
       </Filter>
+      <Sort />
       <SelectedFilters table={table} />
       {isFiltered && (
         <Button

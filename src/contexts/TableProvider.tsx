@@ -67,7 +67,7 @@ export const TableProvider = <T,>({
   const [data, setData] = useState<T[] | null>(null)
 
   const [rowSelection, setRowSelection] = useState({})
-  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({})
+  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({ startTime: false, modified: false })
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>(initialState?.columnFilters || [])
   const [sorting, setSorting] = useState<SortingState>([])
 
@@ -87,6 +87,7 @@ export const TableProvider = <T,>({
   }), [pages, page, search])
 
   const table = useReactTable({
+    groupedColumnMode: false,
     data: data || [],
     columns,
     manualPagination: true,
@@ -100,12 +101,13 @@ export const TableProvider = <T,>({
     enableRowSelection: true,
     enableMultiRowSelection: false,
     enableSubRowSelection: true,
+    enableSorting: true,
     onRowSelectionChange: useCallback(setRowSelection, [setRowSelection]),
     onGroupingChange: useCallback(setGrouping, [setGrouping]),
     onSortingChange: useCallback(setSorting, [setSorting]),
     onColumnFiltersChange: useCallback((updater: Updater<ColumnFiltersState>) => {
+      // Update query
       setQuery(updateFilter(updater, columnFilters))
-
       // Set filter in table
       setColumnFilters(updater)
     }, [setColumnFilters, setQuery, columnFilters]),
@@ -121,12 +123,14 @@ export const TableProvider = <T,>({
   const value = useMemo(() => ({
     table,
     filters: columnFilters,
+    sorting: sorting,
     selectedRow: rowSelection,
     setData,
     loading: data == null,
     type,
-    command
-  }), [table, columnFilters, rowSelection, command, data, type])
+    command,
+    grouping
+  }), [table, columnFilters, rowSelection, command, data, type, sorting, grouping])
 
   return (
     <TableContext.Provider value={value}>
