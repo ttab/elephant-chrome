@@ -158,7 +158,6 @@ export function assignmentColumns({ authors = [], locale, timeZone, sections = [
       },
       cell: ({ row }) => {
         const [start, fullDay, publishSlot, publishTime] = row.getValue<string[]>('assignment_time')
-        const times = row.getValue<string[]>('assignment_time')
         const isFullday = fullDay === 'true'
         const types: string[] = row.getValue<DefaultValueOption[]>('assignmentType')?.map((t) => t.value)
         const formattedStart = dateInTimestampOrShortMonthDayTimestamp(start, locale, timeZone)
@@ -180,16 +179,16 @@ export function assignmentColumns({ authors = [], locale, timeZone, sections = [
           }
           if (publishTime) {
             const formattedPublishTime = dateInTimestampOrShortMonthDayTimestamp(publishTime, locale, timeZone)
-            return <Time time={formattedPublishTime} type='publish' tooltip={JSON.stringify(times)} />
+            return <Time time={formattedPublishTime} type='publish' tooltip='Publiceringstid' />
           }
 
           // Default to display the start time of the assignment
-          return <Time time={formattedStart} type='start' tooltip={JSON.stringify(times)} />
+          return <Time time={formattedStart} type='start' tooltip='Uppdragets starttid' />
         }
         /* Assignment type: picture
            • Always display the shortened start time (ex 13:30)
         */
-        return <Time time={formattedStart} type='start' tooltip={JSON.stringify(times)} />
+        return <Time time={formattedStart} type='start' tooltip='Uppdragets starttid' />
       },
       enableSorting: false,
       enableGrouping: false
