@@ -20,17 +20,18 @@ export const WireRow = ({ row, handleOpen, openDocuments, type }: {
   const wire = row.original as Wire
   const wireRow = row as RowType<Wire>
 
-  const isFlash = wire.fields['document.meta.core_newsvalue.value']?.values[0] === '6'
-  const flashClass = isFlash ? ' text-red-500' : ''
+  const isFlash = !!wire.fields?.['heads.flash.version']?.values?.[0]
+    || wire.fields['document.meta.core_newsvalue.value']?.values[0] === '6'
+  const flashClass = isFlash ? 'text-red-500' : ''
+  const flashClassDraft = isFlash ? 'bg-background border-s-[6px] border-s-red-500 text-red-500' : ''
 
   const variants = cva('', {
     variants: {
       status: {
-        draft: `border-s-[6px] bg-background`,
+        draft: `border-s-[6px] bg-background${flashClassDraft}`,
         read: getStatusClass('done', wire, flashClass),
         saved: getStatusClass('approved', wire, flashClass),
-        used: getStatusClass('usable', wire, flashClass),
-        flash: `bg-background border-s-[6px] border-s-red-500 ${flashClass}`
+        used: getStatusClass('usable', wire, flashClass)
       }
     }
   })
@@ -40,7 +41,7 @@ export const WireRow = ({ row, handleOpen, openDocuments, type }: {
       tabIndex={0}
       className={cn(
         'flex cursor-default scroll-mt-10 ring-inset focus:outline-none focus-visible:ring-2 focus-visible:ring-table-selected data-[state=selected]:bg-table-selected',
-        variants({ status: getWireStatus(type, wire, isFlash) })
+        variants({ status: getWireStatus(type, wire) })
       )}
       data-state={getDataState(openDocuments, wire, type, wireRow)}
       onClick={(event: MouseEvent<HTMLTableRowElement>) => handleOpen(event, row)}
@@ -67,7 +68,7 @@ function getStatusClass(status: 'done' | 'approved' | 'usable', wire: Wire, flas
   return `${base} ${flashClass}`
 }
 
-function getWireStatus(type: DocumentType, wire: Wire, isFlash: boolean): 'draft' | 'read' | 'saved' | 'used' | 'flash' | null {
+function getWireStatus(type: DocumentType, wire: Wire): 'draft' | 'read' | 'saved' | 'used' | null {
   if (type !== 'Wires') {
     return null
   }
@@ -87,9 +88,6 @@ function getWireStatus(type: DocumentType, wire: Wire, isFlash: boolean): 'draft
         : 'used'
   }
 
-  if (isFlash) {
-    return 'flash'
-  }
   return 'draft'
 }
 
