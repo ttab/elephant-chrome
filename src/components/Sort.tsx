@@ -91,6 +91,8 @@ export const Sort = <TData,>() => {
           <Select
             value={grouping[0]}
             onValueChange={(option) => {
+              setQuickSort('')
+
               if (option === 'none') {
                 table.setGrouping([])
                 return
@@ -114,6 +116,8 @@ export const Sort = <TData,>() => {
             <Select
               value={sorting[0]?.id || 'none'}
               onValueChange={(option) => {
+                setQuickSort('')
+
                 if (option === 'none') {
                   table.setSorting([])
                   return
