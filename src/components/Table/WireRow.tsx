@@ -28,7 +28,7 @@ export const WireRow = ({ row, handleOpen, openDocuments, type }: {
   const variants = cva('', {
     variants: {
       status: {
-        draft: `border-s-[6px] bg-background${flashClassDraft}`,
+        draft: `border-s-[6px] bg-background ${flashClassDraft}`,
         read: getStatusClass('done', wire, flashClass),
         saved: getStatusClass('approved', wire, flashClass),
         used: getStatusClass('usable', wire, flashClass)
