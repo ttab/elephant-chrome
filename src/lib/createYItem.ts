@@ -5,6 +5,7 @@ import { toYMap } from '../../src-srv/utils/transformations/lib/toYMap'
 import { toGroupedNewsDoc, group } from '../../src-srv/utils/transformations/groupedNewsDoc'
 import { toYjsNewsDoc } from '../../src-srv/utils/transformations/yjsNewsDoc'
 import type { Wire } from '@/hooks/index/lib/wires'
+import type { IDBAuthor } from 'src/datastore/types'
 
 /**
 * General function to create a new document as Y.Doc from a template
@@ -60,6 +61,7 @@ export function createDocument<T>({
 * @returns void
 */
 export function appendAssignment({
+  assignee,
   document,
   type,
   inProgress,
@@ -69,6 +71,7 @@ export function appendAssignment({
   assignmentData
 }: {
   document: Y.Doc
+  assignee?: IDBAuthor | null | undefined
   type: 'text' | 'flash'
   inProgress?: boolean
   slugLine?: string
@@ -97,6 +100,7 @@ export function appendAssignment({
 
   // Create new assignment from template
   const assignment = assignmentPlanningTemplate({
+    assignee,
     assignmentType: type,
     planningDate,
     slugLine: slugLine || slugLineFromPlanning,
