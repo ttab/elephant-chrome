@@ -18,7 +18,9 @@ export const fields = [
   'heads.read.version',
   'heads.read.created',
   'heads.used.version',
-  'heads.used.created'
+  'heads.used.created',
+  'heads.flash.version',
+  'heads.flash.created'
 ]
 
 /**
