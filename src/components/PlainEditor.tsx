@@ -23,9 +23,11 @@ const fetcher = async (url: string): Promise<TBElement[] | EleDocument | undefin
   return result.document?.content
 }
 
-export const Editor = ({ id, textOnly = false }: {
+export const Editor = ({ id, previewVersion, textOnly = false, versionHistory }: {
   id: string
   textOnly?: boolean
+  previewVersion?: bigint | undefined
+  versionHistory?: DocumentVersion[]
 }): JSX.Element => {
   const { data: content, error } = useSWR<TBElement[] | EleDocument | undefined, Error>(
     `${BASE_URL}/api/documents/${id}${previewVersion ? `?version=${previewVersion}` : ''}`,
@@ -34,6 +36,7 @@ export const Editor = ({ id, textOnly = false }: {
   )
 
   if (error) return <div>Failed to load</div>
+
   if (!content) return (
     <LoadingText>
       Laddar...
@@ -53,6 +56,9 @@ export const Editor = ({ id, textOnly = false }: {
 
   return (
     <div className='flex flex-col w-full pb-6 overflow-y-auto max-w-screen-lg mx-auto'>
+      {versionHistory && previewVersion && (
+        <PreversionViewInfo previewVersion={previewVersion} versionHistory={versionHistory} />
+      )}
       <Textbit.Root plugins={[...plugins.map((initPlugin) => initPlugin()), Text({
         classNames: {
           'heading-1': 'text-lg font-bold py-2',
