@@ -72,7 +72,13 @@ export function assignmentColumns({ authors = [], locale, timeZone, sections = [
         ),
         name: 'Sektion',
         columnIcon: Shapes,
-        className: 'flex-none w-[115px] hidden @4xl/view:[display:revert]'
+        className: 'flex-none w-[115px] hidden @4xl/view:[display:revert]',
+        display: (value: string) => (
+          <span>
+            {sections
+              .find((section) => section.id === value)?.title}
+          </span>
+        )
       },
       accessorFn: (data) => {
         return data.sectionId
