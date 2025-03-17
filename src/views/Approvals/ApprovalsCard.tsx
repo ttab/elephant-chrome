@@ -6,7 +6,7 @@ import { DotDropdownMenu } from '@/components/ui/DotMenu'
 import type { AssignmentInterface } from '@/hooks/index/useAssignments'
 import { useLink } from '@/hooks/useLink'
 import { useRegistry } from '@/hooks/useRegistry'
-import { CalendarDays, FileInput } from '@ttab/elephant-ui/icons'
+import { CalendarDays, FileInput, Zap } from '@ttab/elephant-ui/icons'
 import { parseISO, format } from 'date-fns'
 import { toZonedTime } from 'date-fns-tz'
 import { PreviewSheet } from '../Wires/components'
@@ -28,13 +28,15 @@ export const ApprovalsCard = ({ assignment, isSelected, isFocused, status }: {
   const { showModal, hideModal } = useModal()
   const sections = useSections()
   const openArticle = useLink('Editor')
+  const openFlash = useLink('Flash')
   const time = assignment.data.publish
     ? format(toZonedTime(parseISO(assignment.data.publish), timeZone), 'HH:mm')
     : undefined
-  const articleId = assignment._deliverableId
+  const documentId = assignment._deliverableId
   const assignees = assignment.links.filter((m) => m.type === 'core/author' && m.title).map((l) => l.title)
-  const activeUsers = useActiveUsers(articleId ? [articleId] : [])
+  const activeUsers = useActiveUsers(documentId ? [documentId] : [])
   const activeUsersNames = activeUsers?.[assignment._deliverableId]?.map((u) => u.name) || []
+  Object.keys(activeUsers).length && console.log('activeUsers', activeUsers)
   const statusData = assignment?._statusData
     ? JSON.parse(assignment._statusData) as StatusData
     : null
@@ -44,18 +46,22 @@ export const ApprovalsCard = ({ assignment, isSelected, isFocused, status }: {
       ?.find((entry) => entry[0] === 'done')?.[1]
     : undefined
 
+  const menuItemDocumentLabel = assignment._deliverableType === 'core/flash' ? 'flash' : 'artikel'
   const menuItems = [{
-    label: 'Öppna artikel',
+    label: `Öppna ${menuItemDocumentLabel}`,
     icon: FileInput,
     item: (
-      <Link to='Editor' props={{ id: articleId }}>
+      <Link
+        to={assignment._deliverableType === 'core/flash' ? 'Flash' : 'Editor'}
+        props={{ id: documentId }}
+      >
         <div className='flex flex-row justify-center items-center'>
           <div className='opacity-70 flex-none w-7'>
             <FileInput size={16} strokeWidth={1.75} />
           </div>
 
           <div className='grow'>
-            Öppna artikel
+            {`Öppna ${menuItemDocumentLabel}`}
           </div>
         </div>
       </Link>
@@ -89,24 +95,32 @@ export const ApprovalsCard = ({ assignment, isSelected, isFocused, status }: {
       isFocused={isFocused}
       isSelected={isSelected}
       onSelect={(event) => {
-        if (event instanceof KeyboardEvent && event.key == ' ' && articleId) {
+        if (event instanceof KeyboardEvent && event.key == ' ' && documentId) {
           showModal(
             <PreviewSheet
-              id={articleId}
+              id={documentId}
               handleClose={hideModal}
             />
             , 'sheet')
-        } else if (articleId) {
-          openArticle(event, { id: articleId })
+        } else if (documentId) {
+          if (assignment._deliverableType === 'core/flash') {
+            openFlash(event, { id: documentId })
+          } else {
+            openArticle(event, { id: documentId })
+          }
         }
       }}
     >
       <Card.Header>
         <div className='flex flex-row gap-2 items-center'>
           {status.icon && <status.icon size={15} strokeWidth={1.75} className={status.className} />}
-          <span className='bg-secondary inline-block px-1 rounded'>{assignment._newsvalue}</span>
+          <span className='bg-secondary inline-block px-1 rounded'>
+            {assignment._deliverableType === 'core/flash'
+              ? <Zap strokeWidth={1.75} size={14} className='text-red-500' />
+              : assignment._newsvalue}
+          </span>
           {!!activeUsersNames.length && (
-            <AssigneeAvatars assignees={activeUsersNames} size='xxs' color='default' />
+            <AssigneeAvatars assignees={activeUsersNames} size='xxs' color='#89cff0' />
           )}
         </div>
 

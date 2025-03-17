@@ -20,7 +20,9 @@ export function getAssignmentsFromDocument(document: Document, type?: string | s
     }
 
     // Collect all deliverable uuids
-    const _deliverableId = assignmentMeta.links.find((l) => l.rel === 'deliverable')?.uuid
+    const deliverable = assignmentMeta.links.find((l) => l.rel === 'deliverable')
+    const _deliverableId = deliverable?.uuid
+    const _deliverableType = deliverable?.type
 
     assignments.push({
       _id: document.uuid,
@@ -28,6 +30,7 @@ export function getAssignmentsFromDocument(document: Document, type?: string | s
       _newsvalue: meta?.find((assignmentMeta) => assignmentMeta.type === 'core/newsvalue')?.value,
       _section: links.find((l) => l.type === 'core/section')?.uuid,
       _deliverableId: _deliverableId || '',
+      _deliverableType: _deliverableType || '',
       ...assignmentMeta
     })
   })
