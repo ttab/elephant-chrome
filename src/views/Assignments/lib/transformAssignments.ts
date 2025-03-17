@@ -17,13 +17,15 @@ export const transformAssignments = (result: SearchIndexResponse<LoadedDocumentI
     const section = links.find((l) => l.type === 'core/section') as LinkMeta
     const newsvalue: (TypeValue | undefined) = meta?.find((assignmentMeta) => assignmentMeta.type === 'core/newsvalue') as TypeValue
     assignmentMetas?.forEach((assignmentMeta: AssignmentMeta) => {
+      const deliverableId = assignmentMeta.links?.find((l) => l.rel === 'deliverable')?.uuid
       assignments.push({
         ...assignmentMeta,
         planningTitle,
         newsvalue: newsvalue?.value,
         _id: hit.id,
         section: section?.title,
-        sectionId: section?.uuid
+        sectionId: section?.uuid,
+        deliverableId
       })
     })
   })
