@@ -1,5 +1,5 @@
 import { AssignmentTypes } from '@/defaults'
-import { Button, ComboBox } from '@ttab/elephant-ui'
+import { Button, Select, SelectContent, SelectItem, SelectTrigger } from '@ttab/elephant-ui'
 import { cn } from '@ttab/elephant-ui/utils'
 import { Block } from '@ttab/elephant-api/newsdoc'
 import { useYValue } from '@/hooks/useYValue'
@@ -21,7 +21,7 @@ export const AssignmentType = ({ path, editable = false, readOnly = false, class
 
   const { className: defaultClassName = '', ...iconProps } = selectedOptions[0]?.iconProps || {}
 
-  const SelectedIcon = getIcon(selectedOptions, editable)
+  const SelectedIcon = getIcon(selectedOptions, editable, readOnly)
 
   if (readOnly) {
     return (
@@ -42,15 +42,10 @@ export const AssignmentType = ({ path, editable = false, readOnly = false, class
   }
 
   return (
-    <ComboBox
-      max={1}
-      sortOrder='label'
-      className='w-fit px-2'
-      options={AssignmentTypes}
-      variant='ghost'
-      selectedOptions={selectedOptions}
-      onSelect={(option) => {
-        if (option.value === 'picture/video') {
+    <Select
+      value={selectedOptions[0]?.value}
+      onValueChange={(value) => {
+        if (value === 'picture/video') {
           setAssignmentType([Block.create({
             type: 'core/assignment-type',
             value: 'picture'
@@ -62,27 +57,43 @@ export const AssignmentType = ({ path, editable = false, readOnly = false, class
         } else {
           setAssignmentType([Block.create({
             type: 'core/assignment-type',
-            value: option.value
+            value: value
           })])
         }
       }}
     >
-      {SelectedIcon
-        ? (
-            <SelectedIcon
-              {...iconProps}
-              className={cn(defaultClassName, className, editable ? 'text-foreground' : 'text-primary')}
-            />
-          )
-        : selectedOptions[0]?.label}
-    </ComboBox>
+      <SelectTrigger className='w-fit px-2 border-0'>
+        {SelectedIcon
+          ? (
+              <SelectedIcon
+                {...iconProps}
+                className={cn(defaultClassName, className, editable ? 'text-foreground' : 'text-primary')}
+              />
+            )
+          : selectedOptions[0]?.label}
+      </SelectTrigger>
+      <SelectContent>
+        {AssignmentTypes.map((option) => (
+          <SelectItem value={option.value} key={option.value}>
+            <div className='flex flex-row gap-2'>
+              {option.icon && <option.icon {...option.iconProps} />}
+              {option.label}
+            </div>
+          </SelectItem>
+        ))}
+      </SelectContent>
+    </Select>
   )
 }
 
-function getIcon(selectedOptions: DefaultValueOption[], editable: boolean) {
+function getIcon(selectedOptions: DefaultValueOption[], editable: boolean, readOnly = false) {
   if (selectedOptions[0].value !== 'text') {
     return selectedOptions[0]?.icon
   }
 
-  return editable ? FilePlus2 : FilePen
+  if (readOnly) {
+    return editable ? FilePlus2 : FilePen
+  }
+
+  return selectedOptions[0]?.icon
 }
