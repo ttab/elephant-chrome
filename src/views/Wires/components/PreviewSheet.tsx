@@ -7,11 +7,16 @@ import { useDocumentStatus } from '@/hooks/useDocumentStatus'
 import { useNavigationKeys } from '@/hooks/useNavigationKeys'
 import { useModal } from '@/components/Modal/useModal'
 import type { Wire as WireType } from '@/hooks/index/lib/wires'
+import type { DocumentVersion } from '@ttab/elephant-api/repository'
+import { MetaSheet } from '@/views/Editor/components/MetaSheet'
+import { useEffect, useRef } from 'react'
 
-export const PreviewSheet = ({ id, wire, handleClose, textOnly = true }: {
+export const PreviewSheet = ({ id, wire, handleClose, textOnly = true, previewVersion, versionHistory }: {
   id: string
   wire?: WireType
   textOnly?: boolean
+  previewVersion?: bigint
+  versionHistory?: DocumentVersion[]
   handleClose: () => void
 }): JSX.Element => {
   const [documentStatus, setDocumentStatus] = useDocumentStatus(id)
@@ -21,6 +26,12 @@ export const PreviewSheet = ({ id, wire, handleClose, textOnly = true }: {
   const role = wire?.fields['document.meta.tt_wire.role'].values[0]
   const newsvalue = wire?.fields['document.meta.core_newsvalue.value']?.values[0]
   const currentVersion = BigInt(wire?.fields['current_version']?.values[0] || '')
+
+  const containerRef = useRef<HTMLElement | null>(null)
+
+  useEffect(() => {
+    containerRef.current = (document.getElementById(id))
+  }, [id])
 
   useNavigationKeys({
     keys: ['s', 'r', 'c'],
@@ -161,6 +172,7 @@ export const PreviewSheet = ({ id, wire, handleClose, textOnly = true }: {
                 </ToggleGroup>
               </>
             )}
+            <MetaSheet container={containerRef.current} documentId={id} />
             <SheetClose
               className='rounded-md hover:bg-gray-100 w-8 h-8 flex items-center justify-center outline-none -mr-7'
               onClick={handleClose}
@@ -170,7 +182,7 @@ export const PreviewSheet = ({ id, wire, handleClose, textOnly = true }: {
           </div>
         </div>
         <div className='flex flex-col h-full'>
-          <Editor id={id} textOnly={textOnly} />
+          <Editor id={id} textOnly={textOnly} previewVersion={previewVersion} versionHistory={versionHistory} />
         </div>
       </div>
     </FaroErrorBoundary>

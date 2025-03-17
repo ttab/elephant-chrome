@@ -1,4 +1,4 @@
-import { useQuery, useCollaboration, useYValue, useYjsEditor } from '@/hooks'
+import { useQuery, useCollaboration, useYValue, useYjsEditor, useView } from '@/hooks'
 import { AwarenessDocument } from '@/components/AwarenessDocument'
 import { type ViewProps, type ViewMetadata } from '@/types/index'
 import { ViewHeader } from '@/components/View'
@@ -8,7 +8,7 @@ import { Bold, Italic, Text, OrderedList, UnorderedList, LocalizedQuotationMarks
 import Textbit, { useTextbit } from '@ttab/textbit'
 import { type HocuspocusProvider } from '@hocuspocus/provider'
 import { type AwarenessUserData } from '@/contexts/CollaborationProvider'
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { TextBox } from '@/components/ui'
 import { Alert, AlertDescription, Button } from '@ttab/elephant-ui'
 import { createStateless, StatelessType } from '@/shared/stateless'
@@ -22,6 +22,7 @@ import { DropMarker } from '@/components/Editor/DropMarker'
 import { ContextMenu } from '@/components/Editor/ContextMenu'
 import { getValueByYPath } from '@/lib/yUtils'
 import { useOnSpellcheck } from '@/hooks/useOnSpellcheck'
+import { MetaSheet } from '../Editor/components/MetaSheet'
 
 const meta: ViewMetadata = {
   name: 'Factbox',
@@ -79,6 +80,13 @@ function Wrapper(props: ViewProps & { documentId: string }): JSX.Element {
   const { data: session, status } = useSession()
   const [isSaved, setSaved] = useState(false)
   const [inProgress] = useYValue('root.__inProgress')
+  const { viewId } = useView()
+
+  const containerRef = useRef<HTMLElement | null>(null)
+
+  useEffect(() => {
+    containerRef.current = (document?.getElementById(viewId))
+  }, [viewId])
 
   return (
     <>
@@ -89,6 +97,7 @@ function Wrapper(props: ViewProps & { documentId: string }): JSX.Element {
           <ViewHeader.Action>
             {!!props.documentId
             && <ViewHeader.RemoteUsers documentId={props.documentId} />}
+            <MetaSheet container={containerRef.current} documentId={props.documentId} />
           </ViewHeader.Action>
 
         </ViewHeader.Root>
