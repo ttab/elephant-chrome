@@ -42,6 +42,7 @@ export function assignmentPlanningTemplate({
   const author: Block[] = [
     assignee
       ? Block.create({
+        uuid: assignee.id,
         type: 'core/author',
         title: assignee.name,
         rel: 'assignee',
