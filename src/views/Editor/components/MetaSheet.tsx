@@ -13,9 +13,11 @@ import {
 import { PanelRightClose, PanelRightOpen } from '@ttab/elephant-ui/icons'
 import { useState } from 'react'
 import { AddNote } from './Notes/AddNote'
+import { Version } from '@/components/Version'
 
-export function MetaSheet({ container }: {
+export function MetaSheet({ container, documentId }: {
   container: HTMLElement | null
+  documentId: string
 }): JSX.Element {
   const [contentSource] = useYValue<string | undefined>('links.core/content-source[0].uri')
   const [isOpen, setIsOpen] = useState(false)
@@ -32,7 +34,7 @@ export function MetaSheet({ container }: {
 
       <SheetContent
         container={container}
-        className='w-100vw h-100vh p-0 flex flex-col justify-between'
+        className='w-100vw h-100vh z-50 p-0 flex flex-col justify-between'
         defaultClose={false}
       >
         <div>
@@ -48,6 +50,9 @@ export function MetaSheet({ container }: {
           </SheetHeader>
 
           <div className='flex flex-col gap-6 px-5 py-4 border-t'>
+
+            <label className='text-xs text-muted-foreground -mb-3'>Versioner</label>
+            <Version documentId={documentId} />
 
             <label className='text-xs text-muted-foreground -mb-3'>Egenskaper</label>
             <div className='flex flex-row gap-3'>
