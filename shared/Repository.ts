@@ -8,7 +8,8 @@ import type {
   UpdateRequest,
   UpdateResponse,
   ValidateRequest,
-  ValidateResponse
+  ValidateResponse,
+  GetHistoryResponse
 } from '@ttab/elephant-api/repository'
 import type { Document } from '@ttab/elephant-api/newsdoc'
 import type { RpcError, FinishedUnaryCall } from '@protobuf-ts/runtime-rpc'
@@ -96,7 +97,7 @@ export class Repository {
    * @param options - { uuids: string[], accessToken: string }
    * @returns Promise<GetDocumentResponse>
    */
-  async getDocument({ uuid, accessToken }: { uuid: string, accessToken: string }): Promise<GetDocumentResponse | null> {
+  async getDocument({ uuid, accessToken, version }: { uuid: string, accessToken: string, version?: number }): Promise<GetDocumentResponse | null> {
     if (!isValidUUID(uuid)) {
       throw new Error('Invalid uuid format')
     }
@@ -104,7 +105,7 @@ export class Repository {
     try {
       const { response } = await this.#client.get({
         uuid,
-        version: 0n,
+        version: version ? BigInt(version) : 0n,
         status: '',
         lock: false,
         metaDocument: 1
@@ -144,6 +145,32 @@ export class Repository {
       }
 
       throw new Error(`Unable to fetch documents meta: ${(err as Error)?.message || 'Unknown error'}`)
+    }
+  }
+
+  /**
+   * Lists the document version history.
+   *
+   * @param {Object} params - The parameters for retrieving meta information.
+   * @param {string} params.uuid - The UUID of the document.
+   * @param {bigint} params.before - Which version number we should start fetching history from.
+   * @param {string} params.accessToken - The access token.
+   * @param {boolean} params.loadStatuses - Loads any statuses set on the document versions.
+   * @returns {Promise<GetHistoryResponse | null>} The document history or null if not found.
+   * @throws {Error} If the UUID format is invalid or unable to fetch the history.
+   */
+  async getHistory({ uuid, accessToken }: { uuid: string, accessToken: string }): Promise<GetHistoryResponse | null> {
+    if (!isValidUUID(uuid)) {
+      throw new Error('Invalid uuid format')
+    }
+
+    try {
+      const { response } = await this.#client.getHistory({ uuid, before: 0n, loadStatuses: true }, meta(accessToken))
+
+      return response
+    } catch (err) {
+      console.log(' :172 ~ Repository ~ getHistory ~ err', err)
+      throw new Error(`Unable to fetch document history: ${(err as Error)?.message || 'Unknown error'}`)
     }
   }
 
