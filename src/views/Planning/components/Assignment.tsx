@@ -80,7 +80,7 @@ export const Assignment = ({ index, onAbort, onClose }: {
           <Form.Group>
             <AssignmentType
               path={`meta.core/assignment[${index}].meta.core/assignment-type`}
-              editable={!articleId || !flashId}
+              editable={!articleId && !flashId}
             />
             <Assignees
               path={`meta.core/assignment[${index}].links.core/author`}

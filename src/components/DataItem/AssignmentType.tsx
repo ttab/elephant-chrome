@@ -43,6 +43,7 @@ export const AssignmentType = ({ path, editable = false, readOnly = false, class
 
   return (
     <Select
+      disabled={!editable}
       value={selectedOptions[0]?.value}
       onValueChange={(value) => {
         if (value === 'picture/video') {
