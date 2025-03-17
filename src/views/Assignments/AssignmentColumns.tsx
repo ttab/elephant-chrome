@@ -35,10 +35,33 @@ export function assignmentColumns({ authors = [], locale, timeZone, sections = [
       meta: {
         name: 'Starttid',
         columnIcon: Clock3Icon,
-        className: ''
+        className: '',
+        display: (value: string) => {
+          const [hour, day] = value.split(' ')
+          if (hour === 'undefined') {
+            return <span>Heldag</span>
+          }
+          return (
+            <div className='flex gap-3'>
+              <span className='inline-flex items-center justify-center size-5 bg-background rounded-full ring-1 ring-gray-300'>
+                {hour}
+              </span>
+              <span>{day}</span>
+            </div>
+          )
+        }
       },
       accessorFn: ({ data }) => {
-        return data.full_day ? undefined : data?.start || undefined
+        const date = data.full_day === 'true' ? undefined : data?.start ? new Date(data.start) : undefined
+        if (!date) {
+          return undefined
+        }
+
+        if (date.toDateString() === new Date().toDateString()) {
+          return data ? date?.getHours() : undefined
+        } else {
+          return `${date.getHours()} ${date.toLocaleString(locale, { weekday: 'long', hourCycle: 'h23' })}`
+        }
       },
       enableGrouping: true,
       enableSorting: true
@@ -212,13 +235,12 @@ export function assignmentColumns({ authors = [], locale, timeZone, sections = [
         display: (value: string | string[]) => {
           const items = AssignmentTypes
             .filter((type) => value.includes(type.value))
+            .map((item) => item.label)
           return (
             <div className='flex flex-row gap-2'>
-              {items.map((item) => (
-                <span key={item.value}>
-                  {item.label}
-                </span>
-              ))}
+              <span>
+                {items.join('/')}
+              </span>
             </div>
           )
         }

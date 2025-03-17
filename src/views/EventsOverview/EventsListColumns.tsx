@@ -39,6 +39,10 @@ export function eventTableColumns({ sections = [], organisers = [], locale = 'sv
         className: 'hidden',
         display: (value: string) => {
           const [hour, day] = value.split(' ')
+          if (hour === 'undefined') {
+            return <span>Heldag</span>
+          }
+
           return (
             <div className='flex gap-3'>
               <span className='inline-flex items-center justify-center size-5 bg-background rounded-full ring-1 ring-gray-300'>
@@ -51,6 +55,13 @@ export function eventTableColumns({ sections = [], organisers = [], locale = 'sv
       },
       accessorFn: (data) => {
         const startTime = new Date(data._source['document.meta.core_event.data.start'][0])
+        const endTime = new Date(data._source['document.meta.core_event.data.end'][0])
+        const isFullDay = (endTime.getTime() - startTime.getTime()) / (1000 * 60 * 60) > 12
+
+        if (isFullDay) {
+          return undefined
+        }
+
         if (startTime.toDateString() === new Date().toDateString()) {
           return startTime.getHours()
         } else {

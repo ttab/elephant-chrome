@@ -32,7 +32,7 @@ export const Sort = <TData,>() => {
       return
     }
     table.setGrouping([value])
-    table.setSorting([{ id: value, desc: value !== 'time' }])
+    table.setSorting([{ id: value, desc: value !== 'startTime' }])
     setQuickSort(value)
   }
 

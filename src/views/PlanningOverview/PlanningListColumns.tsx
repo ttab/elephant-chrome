@@ -165,13 +165,12 @@ export function planningListColumns({ sections = [], authors = [] }: {
         display: (value: string | string[]) => {
           const items = AssignmentTypes
             .filter((type) => value.includes(type.value))
+            .map((item) => item.label)
           return (
             <div className='flex flex-row gap-2'>
-              {items.map((item) => (
-                <span key={item.value}>
-                  {item.label}
-                </span>
-              ))}
+              <span>
+                {items.join('/')}
+              </span>
             </div>
           )
         }
