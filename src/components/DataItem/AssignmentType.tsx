@@ -1,16 +1,16 @@
 import { AssignmentTypes } from '@/defaults'
-import { ComboBox } from '@ttab/elephant-ui'
+import { Button, ComboBox } from '@ttab/elephant-ui'
 import { cn } from '@ttab/elephant-ui/utils'
 import { Block } from '@ttab/elephant-api/newsdoc'
 import { useYValue } from '@/hooks/useYValue'
 import { FilePen, FilePlus2 } from '@ttab/elephant-ui/icons'
 import type { DefaultValueOption } from '@/types/index'
 
-export const AssignmentType = ({ path, editable = false, inProgress = false, className }: {
+export const AssignmentType = ({ path, editable = false, readOnly = false, className }: {
   path: string
-  inProgress: boolean
   className?: string
   editable?: boolean
+  readOnly?: boolean
 }): JSX.Element => {
   const [assignmentType, setAssignmentType] = useYValue<Block[] | undefined>(path)
 
@@ -21,20 +21,23 @@ export const AssignmentType = ({ path, editable = false, inProgress = false, cla
 
   const { className: defaultClassName = '', ...iconProps } = selectedOptions[0]?.iconProps || {}
 
-  const SelectedIcon = getIcon(selectedOptions, inProgress)
+  const SelectedIcon = getIcon(selectedOptions, editable)
 
-  if (!editable) {
+  if (readOnly) {
     return (
-      <>
+      <Button
+        variant='icon'
+        className='w-fit px-2'
+      >
         {SelectedIcon
           ? (
               <SelectedIcon
                 {...selectedOptions[0].iconProps}
-                className={cn(defaultClassName, className, inProgress ? 'text-primary' : 'text-foreground')}
+                className={cn(defaultClassName, className, editable ? 'text-foreground' : 'text-primary')}
               />
             )
           : selectedOptions[0]?.label}
-      </>
+      </Button>
     )
   }
 
@@ -68,7 +71,7 @@ export const AssignmentType = ({ path, editable = false, inProgress = false, cla
         ? (
             <SelectedIcon
               {...iconProps}
-              className={cn(defaultClassName, className, inProgress ? 'text-primary' : 'text-foreground')}
+              className={cn(defaultClassName, className, editable ? 'text-foreground' : 'text-primary')}
             />
           )
         : selectedOptions[0]?.label}
@@ -76,10 +79,10 @@ export const AssignmentType = ({ path, editable = false, inProgress = false, cla
   )
 }
 
-function getIcon(selectedOptions: DefaultValueOption[], inProgress: boolean) {
+function getIcon(selectedOptions: DefaultValueOption[], editable: boolean) {
   if (selectedOptions[0].value !== 'text') {
     return selectedOptions[0]?.icon
   }
 
-  return inProgress ? FilePen : FilePlus2
+  return editable ? FilePlus2 : FilePen
 }
