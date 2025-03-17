@@ -31,23 +31,55 @@ export function assignmentColumns({ authors = [], locale, timeZone, sections = [
 }): Array<ColumnDef<AssignmentMetaExtended>> {
   return [
     {
-      id: 'titles',
+      id: 'startTime',
       meta: {
-        name: 'Titlar',
+        name: 'Starttid',
+        columnIcon: Clock3Icon,
+        className: '',
+        display: (value: string) => {
+          const [hour, day] = value.split(' ')
+          if (hour === 'undefined') {
+            return <span>Heldag</span>
+          }
+          return (
+            <div className='flex gap-3'>
+              <span className='inline-flex items-center justify-center size-5 bg-background rounded-full ring-1 ring-gray-300'>
+                {hour}
+              </span>
+              <span>{day}</span>
+            </div>
+          )
+        }
+      },
+      accessorFn: ({ data }) => {
+        const date = data.full_day === 'true' ? undefined : data?.start ? new Date(data.start) : undefined
+        if (!date) {
+          return undefined
+        }
+
+        if (date.toDateString() === new Date().toDateString()) {
+          return data ? date?.getHours() : undefined
+        } else {
+          return `${date.getHours()} ${date.toLocaleString(locale, { weekday: 'long', hourCycle: 'h23' })}`
+        }
+      },
+      enableGrouping: true,
+      enableSorting: true
+    },
+    {
+      id: 'title',
+      meta: {
+        name: 'Titel',
         columnIcon: Briefcase,
         className: 'flex-1'
       },
-      accessorFn: ({ planningTitle, title: assignmentTitle }) => {
-        return {
-          planningTitle,
-          assignmentTitle
-        }
-      },
+      accessorFn: ({ title }) => title,
       cell: ({ row }) => {
-        const data: { planningTitle: string, assignmentTitle: string } = row.getValue('titles') || {}
-        const { assignmentTitle, planningTitle } = data
-        return <AssignmentTitles planningTitle={planningTitle} assignmentTitle={assignmentTitle} />
-      }
+        const assignmentTitle = row.getValue('title')
+        const planningTitle = row.original?.planningTitle
+        return <AssignmentTitles planningTitle={planningTitle} assignmentTitle={assignmentTitle as string} />
+      },
+      enableGrouping: false
     },
     {
       id: 'section',
@@ -63,7 +95,13 @@ export function assignmentColumns({ authors = [], locale, timeZone, sections = [
         ),
         name: 'Sektion',
         columnIcon: Shapes,
-        className: 'flex-none w-[115px] hidden @4xl/view:[display:revert]'
+        className: 'flex-none w-[115px] hidden @4xl/view:[display:revert]',
+        display: (value: string) => (
+          <span>
+            {sections
+              .find((section) => section.id === value)?.title}
+          </span>
+        )
       },
       accessorFn: (data) => {
         return data.sectionId
@@ -130,7 +168,8 @@ export function assignmentColumns({ authors = [], locale, timeZone, sections = [
             ? assignees.includes(value[0])
             : false
         )
-      }
+      },
+      enableGrouping: false
     },
     {
       id: 'assignment_time',
@@ -180,15 +219,8 @@ export function assignmentColumns({ authors = [], locale, timeZone, sections = [
         */
         return <Time time={formattedStart} type='start' tooltip='Uppdragets starttid' />
       },
-      filterFn: (row, id, value: string[]) => {
-        const [startTime, _, __, publishTime] = row.getValue<string[]>(id) || undefined
-        const types = row.getValue<DefaultValueOption[]>('assignmentType')?.map((t) => t.value)
-        const hour = types.includes('picture') ? new Date(startTime).getHours() : new Date(publishTime).getHours()
-        return value.some((v) => {
-          const slots = timesSlots[v]?.slots || []
-          return slots.includes(hour)
-        })
-      }
+      enableSorting: false,
+      enableGrouping: false
     },
     {
       id: 'assignmentType',
@@ -199,22 +231,36 @@ export function assignmentColumns({ authors = [], locale, timeZone, sections = [
         options: AssignmentTypes,
         name: 'Typ',
         columnIcon: Crosshair,
-        className: 'box-content w-8 sm:w-8 pr-1 sm:pr-4'
+        className: 'box-content w-8 sm:w-8 pr-1 sm:pr-4',
+        display: (value: string | string[]) => {
+          const items = AssignmentTypes
+            .filter((type) => value.includes(type.value))
+            .map((item) => item.label)
+          return (
+            <div className='flex flex-row gap-2'>
+              <span>
+                {items.join('/')}
+              </span>
+            </div>
+          )
+        }
       },
       accessorFn: ({ meta }) => {
-        const assignmentTypes = meta?.filter((metaType: MetaValueType) => metaType.type === 'core/assignment-type')
-        return assignmentTypes?.map((type) => AssignmentTypes.find((aType) => aType.value === type?.value))
+        return meta?.filter((metaType: MetaValueType) => metaType.type === 'core/assignment-type')
+          .map((type) => type.value)
       },
       cell: ({ row }) => {
-        const values: DefaultValueOption[] = row.getValue('assignmentType')
-        return <Type data={values} />
-      },
-      filterFn: (row, id, value: string[]) => {
-        const types = row.getValue<Array<{ value: string }> | undefined>(id)?.map((type) => type.value)
-        return (
-          value.some((v: string) => types?.includes(v))
+        const data = AssignmentTypes.filter(
+          (assignmentType) => (row.getValue<string[]>('assignmentType') || []).includes(assignmentType.value)
         )
-      }
+        if (data.length === 0) {
+          return null
+        }
+
+        return <Type data={data} />
+      },
+      filterFn: (row, id, value: string[]) =>
+        value.some((v: string) => row.getValue<string[] | undefined>(id)?.includes(v))
     },
     {
       id: 'action',
