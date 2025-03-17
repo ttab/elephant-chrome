@@ -25,11 +25,53 @@ import { type IDBOrganiser, type IDBSection } from 'src/datastore/types'
 import { FacetedFilter } from '@/components/Commands/FacetedFilter'
 import { Tooltip } from '@ttab/elephant-ui'
 
-export function eventTableColumns({ sections = [], organisers = [] }: {
+export function eventTableColumns({ sections = [], organisers = [], locale = 'sv-SE' }: {
   sections?: IDBSection[]
   organisers?: IDBOrganiser[]
+  locale?: string
 }): Array<ColumnDef<Event>> {
   return [
+    {
+      id: 'startTime',
+      meta: {
+        name: 'Starttid',
+        columnIcon: SignalHigh,
+        className: 'hidden',
+        display: (value: string) => {
+          const [hour, day] = value.split(' ')
+          if (hour === 'undefined') {
+            return <span>Heldag</span>
+          }
+
+          return (
+            <div className='flex gap-3'>
+              <span className='inline-flex items-center justify-center size-5 bg-background rounded-full ring-1 ring-gray-300'>
+                {hour}
+              </span>
+              <span>{day}</span>
+            </div>
+          )
+        }
+      },
+      accessorFn: (data) => {
+        const startTime = new Date(data._source['document.meta.core_event.data.start'][0])
+        const endTime = new Date(data._source['document.meta.core_event.data.end'][0])
+        const isFullDay = (endTime.getTime() - startTime.getTime()) / (1000 * 60 * 60) > 12
+
+        if (isFullDay) {
+          return undefined
+        }
+
+        if (startTime.toDateString() === new Date().toDateString()) {
+          return startTime.getHours()
+        } else {
+          return `${startTime.getHours()} ${startTime.toLocaleString(locale, { weekday: 'long', hourCycle: 'h23' })}`
+        }
+      },
+      cell: () => {
+        return undefined
+      }
+    },
     {
       id: 'documentStatus',
       meta: {
@@ -39,7 +81,13 @@ export function eventTableColumns({ sections = [], organisers = [] }: {
         options: DocumentStatuses,
         name: 'Status',
         columnIcon: CircleCheck,
-        className: 'flex-none'
+        className: 'flex-none',
+        display: (value: string) => (
+          <span>
+            {DocumentStatuses
+              .find((status) => status.value === value)?.label}
+          </span>
+        )
       },
       accessorFn: (data) => data?._source['document.meta.status'][0],
       cell: ({ row }) => {
@@ -75,9 +123,15 @@ export function eventTableColumns({ sections = [], organisers = [] }: {
     {
       id: 'title',
       meta: {
-        name: 'Slugg',
+        name: 'Titel',
         columnIcon: Pen,
-        className: 'flex-1 w-[200px]'
+        className: 'flex-1 w-[200px]',
+        display: (value: string) => (
+          <span>
+            {sections
+              .find((section) => section.id === value)?.title}
+          </span>
+        )
       },
       accessorFn: (data) => data._source['document.title'][0],
       cell: ({ row }) => {
@@ -85,18 +139,24 @@ export function eventTableColumns({ sections = [], organisers = [] }: {
         const title = row.getValue('title')
 
         return <Title title={title as string} slugline={slugline} />
-      }
+      },
+      enableGrouping: false
     },
     {
       id: 'organiser',
       meta: {
-        options: organisers.map((o) => ({ label: o.title, value: o.title })),
-        Filter: ({ column, setSearch }) => (
-          <FacetedFilter column={column} setSearch={setSearch} />
-        ),
         name: 'Organisatör',
         columnIcon: BookUser,
-        className: 'flex-none hidden @4xl/view:[display:revert]'
+        className: 'flex-none hidden @4xl/view:[display:revert]',
+        options: organisers.map((o) => ({ label: o.title, value: o.title })),
+        display: (value: string) => (
+          <span>
+            {value === 'undefined' ? 'saknas' : value}
+          </span>
+        ),
+        Filter: ({ column, setSearch }) => (
+          <FacetedFilter column={column} setSearch={setSearch} />
+        )
       },
       accessorFn: (data) => data?._source['document.rel.organiser.title']?.[0],
       cell: ({ row }) => {
@@ -124,12 +184,18 @@ export function eventTableColumns({ sections = [], organisers = [] }: {
             label: _.title
           }
         }),
-        Filter: ({ column, setSearch }) => (
-          <FacetedFilter column={column} setSearch={setSearch} />
-        ),
         name: 'Sektion',
         columnIcon: Shapes,
-        className: 'flex-none w-[115px] hidden @4xl/view:[display:revert]'
+        className: 'flex-none w-[115px] hidden @4xl/view:[display:revert]',
+        display: (value: string) => (
+          <span>
+            {sections
+              .find((section) => section.id === value)?.title}
+          </span>
+        ),
+        Filter: ({ column, setSearch }) => (
+          <FacetedFilter column={column} setSearch={setSearch} />
+        )
       },
       accessorFn: (data) => data._source['document.rel.section.uuid']?.[0],
       cell: ({ row }) => {
@@ -152,7 +218,13 @@ export function eventTableColumns({ sections = [], organisers = [] }: {
         options: [{ label: 'Planerad', value: 'planned' }, { label: 'Ej planerad', value: 'unplanned' }],
         name: 'Planeringsstatus',
         columnIcon: NotebookPen,
-        className: 'flex-none w-[112px] hidden @5xl/view:[display:revert]'
+        className: 'flex-none w-[112px] hidden @5xl/view:[display:revert]',
+        display: (value: string) => (
+          <span>
+            {value === 'planned' ? 'Planerad' : 'Ej planerad'}
+          </span>
+        )
+
       },
       accessorFn: (data) => Array.isArray(data?._relatedPlannings)
         ? 'planned'
@@ -168,12 +240,12 @@ export function eventTableColumns({ sections = [], organisers = [] }: {
     {
       id: 'event_time',
       meta: {
-        Filter: ({ column, setSearch }) => (
-          <FacetedFilter column={column} setSearch={setSearch} />
-        ),
         name: 'Tid',
         columnIcon: Clock3Icon,
-        className: 'flex-none w-[112px] hidden @5xl/view:[display:revert]'
+        className: 'flex-none w-[112px] hidden @5xl/view:[display:revert]',
+        Filter: ({ column, setSearch }) => (
+          <FacetedFilter column={column} setSearch={setSearch} />
+        )
       },
       accessorFn: (data) => {
         const startTime = new Date(data._source['document.meta.core_event.data.start'][0])
@@ -184,7 +256,8 @@ export function eventTableColumns({ sections = [], organisers = [] }: {
         const startTime = row.getValue<Date[]>('event_time')[0] || undefined
         const endTime = row.getValue<Date[]>('event_time')[1] || undefined
         return <Time startTime={startTime} endTime={endTime} />
-      }
+      },
+      enableGrouping: false
     },
     {
       id: 'action',

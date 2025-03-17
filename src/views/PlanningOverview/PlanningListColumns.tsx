@@ -36,7 +36,13 @@ export function planningListColumns({ sections = [], authors = [] }: {
         options: DocumentStatuses,
         name: 'Status',
         columnIcon: CircleCheck,
-        className: 'flex-none'
+        className: 'flex-none',
+        display: (value: string) => (
+          <span>
+            {DocumentStatuses
+              .find((status) => status.value === value)?.label}
+          </span>
+        )
       },
       accessorFn: (data) => data?._source['document.meta.status'][0],
       cell: ({ row }) => {
@@ -74,7 +80,7 @@ export function planningListColumns({ sections = [], authors = [] }: {
     {
       id: 'title',
       meta: {
-        name: 'Slugg',
+        name: 'Titel',
         columnIcon: Pen,
         className: 'flex-1 w-[200px]'
       },
@@ -84,7 +90,8 @@ export function planningListColumns({ sections = [], authors = [] }: {
         const title = row.getValue('title')
 
         return <Title title={title as string} slugline={slugline} />
-      }
+      },
+      enableGrouping: false
     },
     {
       id: 'section',
@@ -100,7 +107,13 @@ export function planningListColumns({ sections = [], authors = [] }: {
         ),
         name: 'Sektion',
         columnIcon: Shapes,
-        className: 'flex-none w-[115px] hidden @4xl/view:[display:revert]'
+        className: 'flex-none w-[115px] hidden @4xl/view:[display:revert]',
+        display: (value: string) => (
+          <span>
+            {sections
+              .find((section) => section.id === value)?.title}
+          </span>
+        )
       },
       accessorFn: (data) => {
         return data._source['document.rel.section.uuid']?.[0]
@@ -135,7 +148,9 @@ export function planningListColumns({ sections = [], authors = [] }: {
       filterFn: (row, id, value: string[]) =>
         Array.isArray(value) && typeof value[0] === 'string'
           ? (row.getValue<string[]>(id) || []).includes(value[0])
-          : false
+          : false,
+      sortingFn: 'alphanumeric',
+      enableGrouping: false
     },
     {
       id: 'type',
@@ -146,7 +161,19 @@ export function planningListColumns({ sections = [], authors = [] }: {
         options: AssignmentTypes,
         name: 'Typ',
         columnIcon: Crosshair,
-        className: 'flex-none w-[120px] hidden @6xl/view:[display:revert]'
+        className: 'flex-none w-[120px] hidden @6xl/view:[display:revert]',
+        display: (value: string | string[]) => {
+          const items = AssignmentTypes
+            .filter((type) => value.includes(type.value))
+            .map((item) => item.label)
+          return (
+            <div className='flex flex-row gap-2'>
+              <span>
+                {items.join('/')}
+              </span>
+            </div>
+          )
+        }
       },
       accessorFn: (data) => data._source['document.meta.core_assignment.meta.core_assignment_type.value'],
       cell: ({ row }) => {

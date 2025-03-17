@@ -21,7 +21,6 @@ export function wiresListColumns({ sections = [], locale = 'sv-SE' }: {
       meta: {
         name: 'Tid',
         columnIcon: SignalHigh,
-        className: 'hidden',
         display: (value: string) => {
           const [hour, day] = value.split(' ')
           return (
