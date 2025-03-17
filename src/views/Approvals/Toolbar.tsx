@@ -9,7 +9,7 @@ import { useQuery, type QueryParams } from '@/hooks/useQuery'
 import { Filter } from '@/components/Filter'
 import type { Facets } from '@/hooks/index/lib/assignments/filterAssignments'
 import { Commands } from './Commands'
-import { useState } from 'react'
+import { useCallback, useState } from 'react'
 
 export const Toolbar = ({ facets }: { facets: Facets }): JSX.Element => {
   const [filters, setFilters] = useQuery(['status', 'section'])
@@ -38,22 +38,30 @@ export const Toolbar = ({ facets }: { facets: Facets }): JSX.Element => {
     toast.success('Ditt filter har sparats')
   }
 
-  const handleToggleGroupValue = () => {
+  const handleToggleGroupValue = useCallback(() => {
     if (isUserFilter(userFilters, filters)) {
       return 'user'
     }
 
     return Array.isArray(filters.section) && filters.section.length === 1
       ? filters.section[0]
-      : undefined
-  }
+      : ''
+  }, [filters, userFilters])
 
   const handleToggleValueChange = (value: string | undefined) => {
+    // Set userFilter
     if (value === 'user') {
       setFilters(userFilters || {})
       return
     }
 
+    // If current filter is userFilter, reset all filters
+    if (value === '' && isUserFilter(userFilters, filters)) {
+      setFilters({})
+      return
+    }
+
+    // Toggle section filter
     setFilters({ ...filters, section: value ? [value] : undefined })
   }
 

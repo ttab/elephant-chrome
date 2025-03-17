@@ -20,11 +20,19 @@ export const BaseSelected = ({ options, filterPage, facets }: {
         onSelect={() => {
           if (isSelected) {
             selected.delete(option.value)
+            setFilter({
+              ...filter,
+              [filterPage]: selected.size === 0
+                ? undefined
+                : Array.from(selected)
+            })
           } else {
             selected.add(option.value)
+            setFilter({
+              ...filter,
+              [filterPage]: Array.from(selected)
+            })
           }
-
-          setFilter({ ...filter, [filterPage]: Array.from(selected) })
         }}
       >
         <div

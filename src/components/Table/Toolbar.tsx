@@ -8,7 +8,7 @@ import { columnFilterToQuery, loadFilters } from '@/lib/loadFilters'
 import { useTable } from '@/hooks/useTable'
 import type { ColumnDef, ColumnFiltersState } from '@tanstack/react-table'
 import type { QueryParams } from '@/hooks/useQuery'
-import { useMemo } from 'react'
+import { useCallback, useMemo } from 'react'
 import { toast } from 'sonner'
 import { Filter } from '@/components/Filter'
 import { Commands } from '@/components/Commands'
@@ -47,21 +47,28 @@ export const Toolbar = <TData,>({ columns }: {
     toast.success('Ditt filter har sparats')
   }
 
-  const handleToggleGroupValue = () => {
+  const handleToggleGroupValue = useCallback(() => {
     if (isUserFilter(savedUserFilter, columnFilters)) {
       return 'user'
     }
 
     return Array.isArray(columnFilterValue) && columnFilterValue.length === 1
       ? columnFilterValue[0] as string
-      : undefined
-  }
+      : ''
+  }, [columnFilterValue, savedUserFilter, columnFilters])
 
   const handleToggleValueChange = (value: string | undefined) => {
     if (value === 'user') {
       table.setColumnFilters(savedUserFilter)
       return
     }
+
+    // If current filter is userFilter, reset all filters
+    if (value === '' && isUserFilter(savedUserFilter, table.getState().columnFilters)) {
+      table.resetColumnFilters()
+      return
+    }
+
     column?.setFilterValue(value ? [value] : undefined)
   }
 
