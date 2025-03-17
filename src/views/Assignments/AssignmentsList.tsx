@@ -11,6 +11,7 @@ import {
   type AssignmentMetaExtended
 } from './types'
 import type { ColumnDef } from '@tanstack/react-table'
+import { Error as ErrorView } from '../Error'
 
 export const AssignmentsList = ({ startDate, columns }: {
   startDate: string
@@ -33,7 +34,7 @@ export const AssignmentsList = ({ startDate, columns }: {
     return searchUrl
   }, [startTime, endTime, indexUrl])
 
-  useSWR(searchUrl?.href, async (): Promise<void> => {
+  const { error } = useSWR<unknown, Error>(searchUrl?.href, async (): Promise<void> => {
     if (status !== 'authenticated' || !searchUrl) {
       return
     }
@@ -71,6 +72,10 @@ export const AssignmentsList = ({ startDate, columns }: {
     })
     setData(items)
   })
+
+  if (error) {
+    <ErrorView message={error.message} />
+  }
 
   return (
     <Table

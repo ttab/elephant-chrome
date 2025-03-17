@@ -207,7 +207,7 @@ export function assignmentColumns({ authors = [], locale, timeZone, sections = [
       },
       cell: ({ row }) => {
         const values: DefaultValueOption[] = row.getValue('assignmentType')
-        return <Type data={values} />
+        return <Type data={values} deliverableId={row.original.deliverableId} />
       },
       filterFn: (row, id, value: string[]) => {
         const types = row.getValue<Array<{ value: string }> | undefined>(id)?.map((type) => type.value)
