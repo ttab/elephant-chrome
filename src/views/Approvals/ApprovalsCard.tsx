@@ -36,7 +36,7 @@ export const ApprovalsCard = ({ assignment, isSelected, isFocused, status }: {
   const assignees = assignment.links.filter((m) => m.type === 'core/author' && m.title).map((l) => l.title)
   const activeUsers = useActiveUsers(documentId ? [documentId] : [])
   const activeUsersNames = activeUsers?.[assignment._deliverableId]?.map((u) => u.name) || []
-  Object.keys(activeUsers).length && console.log('activeUsers', activeUsers)
+
   const statusData = assignment?._statusData
     ? JSON.parse(assignment._statusData) as StatusData
     : null
