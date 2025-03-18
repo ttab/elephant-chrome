@@ -1,4 +1,4 @@
-import { Button, DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@ttab/elephant-ui'
+import { Button, Calendar, DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger, Label } from '@ttab/elephant-ui'
 import { Check, ChevronDown, type LucideIcon } from 'lucide-react'
 import { useRef, useState, useEffect } from 'react'
 import { useWorkflow } from '@/hooks/index/useWorkflow'
@@ -6,6 +6,8 @@ import { cn } from '@ttab/elephant-ui/utils'
 import type { StatusSpecification, WorkflowTransition } from '@/defaults/workflowSpecification'
 import { Prompt } from './Prompt'
 import type { Status } from '@/hooks/useDocumentStatus'
+import { TimeInput } from './TimeInput'
+import { useRegistry } from '../hooks'
 
 export const DocumentStatusMenu = ({ type, status: currentStatus, setStatus }: {
   type: string
@@ -84,19 +86,23 @@ export const DocumentStatusMenu = ({ type, status: currentStatus, setStatus }: {
       </div>
 
       {prompt && (
-        <Prompt
-          title={prompt.title}
-          description={prompt.description}
-          primaryLabel={prompt.title}
-          secondaryLabel='Avbryt'
-          onPrimary={() => {
-            showPrompt(undefined)
-            void setStatus(prompt.status)
-          }}
-          onSecondary={() => {
-            showPrompt(undefined)
-          }}
-        />
+        <>
+          {prompt.status === 'withheld' && (
+            <SchedulePrompt
+              prompt={prompt}
+              showPrompt={showPrompt}
+              setStatus={setStatus}
+            />
+          )}
+
+          {prompt.status !== 'withheld' && (
+            <DefaultPrompt
+              prompt={prompt}
+              showPrompt={showPrompt}
+              setStatus={setStatus}
+            />
+          )}
+        </>
       )}
     </>
   )
@@ -175,4 +181,106 @@ const StatusOptions = ({ transitions, statuses, onSelect }: {
       })}
   </div>
 )
+
+const DefaultPrompt = ({ prompt, setStatus, showPrompt }: {
+  prompt: {
+    status: string
+  } & WorkflowTransition
+  setStatus: (status: string) => Promise<void>
+  showPrompt: React.Dispatch<React.SetStateAction<({
+    status: string
+  } & WorkflowTransition) | undefined>>
+}) => {
+  return (
+    <Prompt
+      title={prompt.title}
+      description={prompt.description}
+      primaryLabel={prompt.title}
+      secondaryLabel='Avbryt'
+      onPrimary={() => {
+        showPrompt(undefined)
+        void setStatus(prompt.status)
+      }}
+      onSecondary={() => {
+        showPrompt(undefined)
+      }}
+    />
+  )
+}
+
+const SchedulePrompt = ({ prompt, setStatus, showPrompt }: {
+  prompt: {
+    status: string
+  } & WorkflowTransition
+  setStatus: (status: string) => Promise<void>
+  showPrompt: React.Dispatch<React.SetStateAction<({
+    status: string
+  } & WorkflowTransition) | undefined>>
+}) => {
+  const now = new Date()
+  const { locale, timeZone } = useRegistry()
+
+  // FIXME: Should default to what is in the assignment (as props)
+  const [date, setDate] = useState(now)
+  const [time, setTime] = useState((now).toLocaleString(locale, {
+    hour: '2-digit',
+    minute: '2-digit'
+  }))
+
+  return (
+    <Prompt
+      title={prompt.title}
+      primaryLabel={prompt.title}
+      secondaryLabel='Avbryt'
+      onPrimary={() => {
+        showPrompt(undefined)
+        void setStatus(prompt.status)
+      }}
+      onSecondary={() => {
+        showPrompt(undefined)
+      }}
+    >
+      <div className='flex flex-col items-start gap-6'>
+        {prompt.description}
+
+        <div className='flex flex-row justify-items-start items-stretch gap-6 flex-wrap pt-2'>
+          <div className='flex flex-col gap-2'>
+            <Label htmlFor='ScheduledTime'>Ange tid</Label>
+
+            <TimeInput
+              id='ScheduledTime'
+              defaultTime={time}
+              handleOnChange={(value) => {
+                console.log(value)
+              }}
+              handleOnSelect={() => { }}
+              setOpen={() => { }}
+              className='border w-auto'
+            />
+          </div>
+
+          <div className='flex flex-col gap-2'>
+            <Label htmlFor='ScheduledDate'>Ange datum</Label>
+
+            <Calendar
+              id='ScheduledDate'
+              mode='single'
+              required={true}
+              className='border rounded w-auto'
+              autoFocus
+              selected={date}
+              weekStartsOn={1}
+              onSelect={(value) => {
+                console.log(value)
+              }}
+              disabled={(dt) => {
+                return dt < new Date()
+              }}
+            />
+          </div>
+        </div>
+      </div>
+    </Prompt>
+  )
+}
 
