@@ -11,7 +11,6 @@ import { getCreatorBySub } from './getCreatorBySub'
 import { DocumentStatuses } from '@/defaults/documentStatuses'
 import type { GetHistoryResponse } from '@ttab/elephant-api/repository'
 import type { DocumentVersion } from '@ttab/elephant-api/repository'
-import type { EleDocumentResponse } from '@/shared/types'
 import { Error } from '@/views/Error'
 
 type Status = { name: string, created: string, creator: string }
@@ -26,7 +25,6 @@ export const Version = ({ documentId, hideDetails = false }: { documentId: strin
   const { repository } = useRegistry()
   const { data: session } = useSession()
   const authors = useAuthors()
-  const BASE_URL = import.meta.env.BASE_URL || ''
   const STATUS_KEYS = useMemo(() => ['usable', 'read', 'saved', 'used'], [])
   const [lastUpdated, setLastUpdated] = useState('')
 
@@ -56,42 +54,6 @@ export const Version = ({ documentId, hideDetails = false }: { documentId: strin
       }
       return statuskeys.some((key) => STATUS_KEYS.includes(key))
     })
-
-    const fetchDoc = async (v: DocumentVersion) => {
-      // Used to fetch the previous document version in order to get hold of the title,
-      // that can be displayed in the list of previous versions.
-      const response = await fetch(`${BASE_URL}/api/documents/${documentId}?version=${v.version}`)
-      return await response.json()
-    }
-
-    result.versions = await Promise.all(result.versions.map(async (version) => {
-      const versionDoc = await fetchDoc(version) as EleDocumentResponse
-
-      if (versionDoc) {
-        const doc = versionDoc?.document
-        let docTitle = ''
-        let headingTitle = ''
-
-        if (doc?.title) {
-          docTitle = doc.title
-        }
-
-        if (doc?.content.length) {
-          // If we're dealing with an article or a wire, the title can be found
-          // in the heading-1 role, in case the document title is empty
-          const heading = doc?.content?.find((c) => c?.properties?.role === 'heading-1')?.children[0]
-          if (heading && 'text' in heading) {
-            headingTitle = heading?.text
-          }
-        }
-
-        return {
-          ...version,
-          title: docTitle || headingTitle
-        }
-      }
-      return version
-    }))
 
     const getLastReadOrSaved = (version: DocumentVersion) => {
       if (version?.creator.includes('elephant-wires')) {
@@ -230,10 +192,7 @@ export const Version = ({ documentId, hideDetails = false }: { documentId: strin
             )}
           </SelectTrigger>
           {!hideDetails && selectedVersion?.createdBy && (
-            <>
-              <div className='font-bold truncate max-w-1/2 text-sm pt-2'>{`${selectedVersion?.title}`}</div>
-              <div className='text-sm italic'>{`Skapad av ${selectedVersion?.createdBy}`}</div>
-            </>
+            <div className='text-sm italic'>{`Skapad av ${selectedVersion?.createdBy}`}</div>
           )}
         </div>
         <SelectContent>
