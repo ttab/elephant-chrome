@@ -27,7 +27,7 @@ export const Version = ({ documentId, hideDetails = false }: { documentId: strin
   const { data: session } = useSession()
   const authors = useAuthors()
   const BASE_URL = import.meta.env.BASE_URL || ''
-  const STATUS_KEYS = ['usable', 'read', 'saved', 'used']
+  const STATUS_KEYS = useMemo(() => ['usable', 'read', 'saved', 'used'], [])
   const [lastUpdated, setLastUpdated] = useState('')
 
   const { data: versionHistory, error } = useSWR(`version/${documentId}`, async (): Promise<Array<DocumentVersion & { title?: string }>> => {
