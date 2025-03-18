@@ -16,6 +16,7 @@ import { Database } from '@hocuspocus/extension-database'
 
 import type { RedisCache } from './RedisCache.js'
 import type { Repository } from '@/shared/Repository.js'
+import type { User } from '@/shared/User.js'
 
 import {
   type Application
@@ -29,7 +30,7 @@ import { StatelessType, parseStateless } from '@/shared/stateless.js'
 
 import { fromGroupedNewsDoc, toGroupedNewsDoc } from './transformations/groupedNewsDoc.js'
 import { fromYjsNewsDoc, toYjsNewsDoc } from './transformations/yjsNewsDoc.js'
-import CollaborationServerErrorHandler, { withErrorHandler } from '../lib/errorHandler.js'
+import CollaborationServerErrorHandler, { getErrorContext, withErrorHandler } from '../lib/errorHandler.js'
 import logger from '../lib/logger.js'
 import { type GetDocumentResponse } from '@ttab/elephant-api/repository'
 
@@ -39,6 +40,7 @@ interface CollaborationServerOptions {
   redisUrl: string
   redisCache: RedisCache
   repository: Repository
+  user: User
   expressServer: Application
   quiet?: boolean
 }
@@ -72,13 +74,13 @@ export class CollaborationServer {
    * a Hocuspocus server and it's extensions. Call listen() to
    * open collaboration server for business.
    */
-  constructor({ port, redisUrl, redisCache, repository, expressServer, quiet = false }: CollaborationServerOptions) {
+  constructor({ port, redisUrl, redisCache, repository, expressServer, user, quiet = false }: CollaborationServerOptions) {
     this.#quiet = quiet
     this.#port = port
     this.#expressServer = expressServer
     this.#redisCache = redisCache
     this.#repository = repository
-    this.#errorHandler = new CollaborationServerErrorHandler()
+    this.#errorHandler = new CollaborationServerErrorHandler(user)
 
     const {
       host: redisHost,
@@ -116,14 +118,16 @@ export class CollaborationServer {
         new Database({
           fetch: async (payload: fetchPayload) => {
             const document = await this.#fetchDocument(payload).catch((ex) => {
-              this.#errorHandler.error(ex)
+              const ctx = getErrorContext(payload)
+              this.#errorHandler.error(ex, ctx)
             })
 
             return document || null
           },
-          store: async (payload) => {
+          store: async (payload: storePayload) => {
             await this.#storeDocument(payload).catch((ex) => {
-              this.#errorHandler.error(ex)
+              const ctx = getErrorContext(payload)
+              this.#errorHandler.error(ex, ctx)
             })
           }
         }),
@@ -132,9 +136,12 @@ export class CollaborationServer {
           snapshot: (payload: onStoreDocumentPayload) => {
             return async () => {
               await this.#snapshotDocument(payload).catch((ex) => {
+                const ctx = getErrorContext(payload)
+
                 this.#errorHandler.error(ex, {
                   id: payload.documentName,
-                  accessToken: payload.context.accessToken
+                  accessToken: payload.context.accessToken,
+                  ...ctx
                 })
               })
             }
@@ -145,30 +152,33 @@ export class CollaborationServer {
 
       // Add user as having a tracked document open (or increase nr of times
       // user have it open)
-      connected: async (payload) => {
+      connected: async (payload: connectedPayload) => {
         await this.#connected(payload).catch((ex) => {
-          this.#errorHandler.error(ex)
+          const ctx = getErrorContext(payload)
+          this.#errorHandler.error(ex, ctx)
         })
       },
 
       // Remove user from having a tracked doc open (or decrease the nr of times
       // user have it open)
-      onDisconnect: async (payload) => {
+      onDisconnect: async (payload: onDisconnectPayload) => {
         await this.#onDisconnect(payload).catch((ex) => {
-          this.#errorHandler.error(ex)
+          const ctx = getErrorContext(payload)
+          this.#errorHandler.error(ex, ctx)
         })
       },
 
       // No users have this doc open, remove it from tracked documents
-      afterUnloadDocument: async (payload) => {
+      afterUnloadDocument: async (payload: afterUnloadDocumentPayload) => {
         await this.#afterUnloadDocument(payload).catch((ex) => {
           this.#errorHandler.error(ex)
         })
       },
 
-      onStateless: async (payload) => {
+      onStateless: async (payload: onStatelessPayload) => {
         await this.#statelessHandler(payload).catch((ex) => {
-          this.#errorHandler.error(ex)
+          const ctx = getErrorContext(payload)
+          this.#errorHandler.error(ex, ctx)
         })
       }
     })
@@ -514,7 +524,7 @@ export class CollaborationServer {
    */
   async #storeDocument({ documentName, state }: storePayload): Promise<void> {
     await this.#redisCache.store(documentName, state).catch((ex) => {
-      this.#errorHandler.error(ex)
+      throw new Error('store documents state in redis', { cause: ex })
     })
   }
 
