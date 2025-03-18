@@ -4,7 +4,8 @@ import { useRegistry } from '@/hooks/useRegistry'
 import { useState } from 'react'
 import { Calendar, Label } from '@ttab/elephant-ui'
 import { TimeInput } from '../TimeInput'
-
+import { toZonedTime } from 'date-fns-tz'
+import { format } from 'date-fns'
 
 export const PromptSchedule = ({ prompt, setStatus, showPrompt }: {
   prompt: {
@@ -15,15 +16,15 @@ export const PromptSchedule = ({ prompt, setStatus, showPrompt }: {
     status: string
   } & WorkflowTransition) | undefined>>
 }) => {
-  const now = new Date()
-  const { locale, timeZone } = useRegistry()
+  const { timeZone } = useRegistry()
 
   // FIXME: Should default to what is in the assignment (as props)
-  const [date, setDate] = useState(now)
-  const [time, setTime] = useState((now).toLocaleString(locale, {
-    hour: '2-digit',
-    minute: '2-digit'
-  }))
+  const initialTime = new Date()
+  const todaysDate = Number(initialTime.toLocaleDateString().replaceAll('-', ''))
+
+  const [date, setDate] = useState(initialTime)
+  const [time, setTime] = useState((initialTime))
+
 
   return (
     <Prompt
@@ -52,9 +53,15 @@ export const PromptSchedule = ({ prompt, setStatus, showPrompt }: {
 
             <TimeInput
               id='ScheduledTime'
-              defaultTime={time}
+              defaultTime={format(toZonedTime(time, timeZone), 'HH:mm')}
               handleOnChange={(value) => {
-                console.log(value)
+                if (value) {
+                  const [hour, mins] = value.split(':').map(Number)
+                  const t = new Date(time)
+                  t.setHours(hour)
+                  t.setMinutes(mins)
+                  setTime(t)
+                }
               }}
               handleOnSelect={() => { }}
               setOpen={() => { }}
@@ -73,11 +80,18 @@ export const PromptSchedule = ({ prompt, setStatus, showPrompt }: {
               autoFocus
               selected={date}
               weekStartsOn={1}
-              onSelect={(value) => {
-                console.log(value)
+              timeZone={timeZone}
+              onSelect={(dt) => {
+                setDate(dt)
+                const t = new Date(dt)
+                t.setHours(time.getHours())
+                t.setMinutes(time.getMinutes())
+                t.setSeconds(time.getSeconds())
+                setDate(dt)
+                setTime(t)
               }}
               disabled={(dt) => {
-                return dt <= new Date()
+                return Number(dt.toLocaleDateString().replaceAll('-', '')) < todaysDate
               }}
             />
           </div>
