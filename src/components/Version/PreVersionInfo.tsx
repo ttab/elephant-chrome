@@ -3,9 +3,9 @@ import { getCreatorBySub } from './getCreatorBySub'
 import { format } from 'date-fns'
 import type { DocumentVersion } from '@ttab/elephant-api/repository'
 
-export const PreversionViewInfo = ({ previewVersion, versionHistory }: { previewVersion: bigint | undefined, versionHistory: DocumentVersion[] | undefined }) => {
+export const PreVersionInfo = ({ preVersion, versionHistory }: { preVersion: bigint | undefined, versionHistory: DocumentVersion[] | undefined }) => {
   const authors = useAuthors()
-  const currentVersion = versionHistory?.find((v) => v?.version === previewVersion)
+  const currentVersion = versionHistory?.find((v) => v?.version === preVersion)
   const createdBy = getCreatorBySub({ authors, creator: currentVersion?.creator })?.name || '???'
 
   return currentVersion && (

@@ -3,9 +3,9 @@ import Textbit, { type TBElement } from '@ttab/textbit'
 import useSWR from 'swr'
 import { LoadingText } from './LoadingText'
 import { Bold, Italic, Link, Text, OrderedList, UnorderedList, TTVisual, Factbox, Table } from '@ttab/textbit-plugins'
-import { PreversionView } from './Version/PreversionView'
+import { PreVersion } from './Version/PreVersion'
 import type { DocumentVersion } from '@ttab/elephant-api/repository'
-import { PreversionViewInfo } from './Version/PreversionViewInfo'
+import { PreVersionInfo } from './Version/PreVersionInfo'
 const BASE_URL = import.meta.env.BASE_URL || ''
 
 const plugins = [Text, UnorderedList, OrderedList, Bold, Italic, Link, TTVisual, Factbox, Table]
@@ -23,14 +23,14 @@ const fetcher = async (url: string): Promise<TBElement[] | EleDocument | undefin
   return result.document?.content
 }
 
-export const Editor = ({ id, previewVersion, textOnly = false, versionHistory }: {
+export const Editor = ({ id, preVersion, textOnly = false, versionHistory }: {
   id: string
   textOnly?: boolean
-  previewVersion?: bigint | undefined
+  preVersion?: bigint | undefined
   versionHistory?: DocumentVersion[]
 }): JSX.Element => {
   const { data: content, error } = useSWR<TBElement[] | EleDocument | undefined, Error>(
-    `${BASE_URL}/api/documents/${id}${previewVersion ? `?version=${previewVersion}` : ''}`,
+    `${BASE_URL}/api/documents/${id}${preVersion ? `?version=${preVersion}` : ''}`,
     fetcher,
     { revalidateOnFocus: false, revalidateOnReconnect: false }
   )
@@ -46,9 +46,9 @@ export const Editor = ({ id, previewVersion, textOnly = false, versionHistory }:
   if ('title' in content) {
     // Preversion-preview: render non-article types of documents, such as Planning or Event
     return (
-      <PreversionView
+      <PreVersion
         content={content}
-        previewVersion={previewVersion}
+        preVersion={preVersion}
         versionHistory={versionHistory}
       />
     )
@@ -56,8 +56,8 @@ export const Editor = ({ id, previewVersion, textOnly = false, versionHistory }:
 
   return (
     <div className='flex flex-col w-full pb-6 overflow-y-auto max-w-screen-lg mx-auto'>
-      {versionHistory && previewVersion && (
-        <PreversionViewInfo previewVersion={previewVersion} versionHistory={versionHistory} />
+      {versionHistory && preVersion && (
+        <PreVersionInfo preVersion={preVersion} versionHistory={versionHistory} />
       )}
       <Textbit.Root plugins={[...plugins.map((initPlugin) => initPlugin()), Text({
         classNames: {

@@ -11,11 +11,11 @@ import type { DocumentVersion } from '@ttab/elephant-api/repository'
 import { MetaSheet } from '@/views/Editor/components/MetaSheet'
 import { useEffect, useRef } from 'react'
 
-export const PreviewSheet = ({ id, wire, handleClose, textOnly = true, previewVersion, versionHistory }: {
+export const PreviewSheet = ({ id, wire, handleClose, textOnly = true, preVersion, versionHistory }: {
   id: string
   wire?: WireType
   textOnly?: boolean
-  previewVersion?: bigint
+  preVersion?: bigint
   versionHistory?: DocumentVersion[]
   handleClose: () => void
 }): JSX.Element => {
@@ -182,7 +182,7 @@ export const PreviewSheet = ({ id, wire, handleClose, textOnly = true, previewVe
           </div>
         </div>
         <div className='flex flex-col h-full'>
-          <Editor id={id} textOnly={textOnly} previewVersion={previewVersion} versionHistory={versionHistory} />
+          <Editor id={id} textOnly={textOnly} preVersion={preVersion} versionHistory={versionHistory} />
         </div>
       </div>
     </FaroErrorBoundary>

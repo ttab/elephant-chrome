@@ -207,7 +207,7 @@ export const Version = ({ documentId, hideDetails = false }: { documentId: strin
           showModal(
             <PreviewSheet
               id={documentId}
-              previewVersion={BigInt(version as number)}
+              preVersion={BigInt(version as number)}
               versionHistory={versionHistory}
               textOnly
               handleClose={hideModal}

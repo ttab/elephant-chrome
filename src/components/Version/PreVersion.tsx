@@ -7,15 +7,15 @@ import { TimeDisplay } from '../DataItem/TimeDisplay'
 import type { DocumentVersion } from '@ttab/elephant-api/repository'
 import type { EleBlock, EleDocument } from '@/shared/types'
 import type { AssignmentMeta } from '@/views/Assignments/types'
-import { PreversionViewInfo } from './PreversionViewInfo'
+import { PreVersionInfo } from './PreVersionInfo'
 
-export const PreversionView = ({
+export const PreVersion = ({
   content,
-  previewVersion,
+  preVersion,
   versionHistory
 }: {
   content: EleDocument
-  previewVersion: bigint | undefined
+  preVersion: bigint | undefined
   versionHistory?: DocumentVersion[]
 }) => {
   const { locale, timeZone } = useRegistry()
@@ -74,7 +74,7 @@ export const PreversionView = ({
   return (
     <div className='flex justify-center overflow-y-auto select-none'>
       <div className='w-3/4'>
-        <PreversionViewInfo previewVersion={previewVersion} versionHistory={versionHistory} />
+        <PreVersionInfo preVersion={preVersion} versionHistory={versionHistory} />
         <div className='font-sans font-bold text-xl pb-2 text-muted-foreground'>{content.title}</div>
         {descriptions?.length > 0 && descriptions?.map((d: { text: string, role: string }) => (
           <div key={d.role} className='flex pb-2'>
