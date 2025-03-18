@@ -1,8 +1,8 @@
 import { TwirpFetchTransport } from '@protobuf-ts/twirp-transport'
-import { MessagesClient } from '@ttab/elephant-api/user'
-import { meta } from './meta'
-import type { TokenService } from './TokenService'
 import type { RpcError } from '@protobuf-ts/runtime-rpc'
+import { MessagesClient } from '@ttab/elephant-api/user'
+import type { TokenService } from './TokenService.js'
+import { meta } from './meta.js'
 
 export class User {
   readonly #tokenService: TokenService
