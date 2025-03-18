@@ -26,6 +26,7 @@ export const Version = ({ documentId, hideDetails = false }: { documentId: strin
   const { data: session } = useSession()
   const authors = useAuthors()
   const BASE_URL = import.meta.env.BASE_URL || ''
+  const STATUS_KEYS = ['usable', 'read', 'saved', 'used']
   const [lastUpdated, setLastUpdated] = useState('')
 
   const { data: versionHistory, error } = useSWR(`version/${documentId}`, async (): Promise<Array<DocumentVersion & { title?: string }>> => {
@@ -52,7 +53,7 @@ export const Version = ({ documentId, hideDetails = false }: { documentId: strin
       if (!statuskeys.length) {
         return v
       }
-      return statuskeys.some((key) => ['usable', 'read', 'saved', 'used'].includes(key))
+      return statuskeys.some((key) => STATUS_KEYS.includes(key))
     })
 
     const fetchDoc = async (v: DocumentVersion) => {
@@ -163,7 +164,7 @@ export const Version = ({ documentId, hideDetails = false }: { documentId: strin
       }
 
       for (const key in version?.statuses) {
-        if (['usable', 'read', 'saved', 'used'].includes(key)) {
+        if (STATUS_KEYS.includes(key)) {
           const item = version.statuses[key]?.items[0]
           const name = statuses.find((s) => s.value === key)?.label || ''
 
