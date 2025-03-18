@@ -147,10 +147,6 @@ export class Repository {
     }
   }
 
-  async setStatus({ status, accessToken }) {
-    
-  }
-
   /**
    * Saves the meta information for the document.
    *

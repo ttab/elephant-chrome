@@ -3,15 +3,19 @@ import { ChevronDown } from 'lucide-react'
 import { useRef, useState, useEffect } from 'react'
 import { useWorkflow } from '@/hooks/index/useWorkflow'
 import type { WorkflowTransition } from '@/defaults/workflowSpecification'
-import { Prompt } from '../Prompt'
 import type { Status } from '@/hooks/useDocumentStatus'
 import { StatusOptions } from './StatusMenuOptions'
 import { StatusMenuHeader } from './StatusMenuHeader'
+import { PromptDefault } from './PromptDefault'
+import { PromptSchedule } from './PromptSchedule'
 
 export const StatusMenu = ({ type, status: currentStatus, setStatus }: {
   type: string
   status?: Status
-  setStatus: (status: string) => Promise<void>
+  setStatus: (
+    status: string,
+    data?: Record<string, unknown>
+  ) => void
 }) => {
   const containerRef = useRef<HTMLDivElement>(null)
   const [dropdownWidth, setDropdownWidth] = useState<number>(0)
@@ -85,19 +89,23 @@ export const StatusMenu = ({ type, status: currentStatus, setStatus }: {
       </div>
 
       {prompt && (
-        <Prompt
-          title={prompt.title}
-          description={prompt.description}
-          primaryLabel={prompt.title}
-          secondaryLabel='Avbryt'
-          onPrimary={() => {
-            showPrompt(undefined)
-            void setStatus(prompt.status)
-          }}
-          onSecondary={() => {
-            showPrompt(undefined)
-          }}
-        />
+        <>
+          {prompt.status === 'withheld' && (
+            <PromptSchedule
+              prompt={prompt}
+              showPrompt={showPrompt}
+              setStatus={setStatus}
+            />
+          )}
+
+          {prompt.status !== 'withheld' && (
+            <PromptDefault
+              prompt={prompt}
+              showPrompt={showPrompt}
+              setStatus={setStatus}
+            />
+          )}
+        </>
       )}
     </>
   )
