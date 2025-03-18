@@ -17,7 +17,6 @@ type Status = { name: string, created: string, creator: string }
 
 export type SelectedVersion = Pick<DocumentVersion, 'created' | 'version' | 'creator'> & {
   createdBy?: string
-  title?: string
   lastStatus?: Status
 }
 
@@ -28,7 +27,7 @@ export const Version = ({ documentId, hideDetails = false }: { documentId: strin
   const STATUS_KEYS = useMemo(() => ['usable', 'read', 'saved', 'used'], [])
   const [lastUpdated, setLastUpdated] = useState('')
 
-  const { data: versionHistory, error } = useSWR(`version/${documentId}`, async (): Promise<Array<DocumentVersion & { title?: string }>> => {
+  const { data: versionHistory, error } = useSWR(`version/${documentId}`, async (): Promise<Array<DocumentVersion>> => {
     if (!session?.accessToken || !repository) {
       return []
     }
@@ -168,8 +167,8 @@ export const Version = ({ documentId, hideDetails = false }: { documentId: strin
       <Select
         value={`${selectedVersion?.version}`}
         onValueChange={(option) => {
-          const { version, created, creator, title } = JSON.parse(option)
-          setVersion({ version, created, creator, createdBy: createdBy(`${creator}`), title })
+          const { version, created, creator } = JSON.parse(option)
+          setVersion({ version, created, creator, createdBy: createdBy(`${creator}`) })
           showModal(
             <PreviewSheet
               id={documentId}
