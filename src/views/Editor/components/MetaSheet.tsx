@@ -51,9 +51,6 @@ export function MetaSheet({ container, documentId }: {
 
           <div className='flex flex-col gap-6 px-5 py-4 border-t'>
 
-            <label className='text-xs text-muted-foreground -mb-3'>Versioner</label>
-            <Version documentId={documentId} />
-
             <label className='text-xs text-muted-foreground -mb-3'>Egenskaper</label>
             <div className='flex flex-row gap-3'>
               <Newsvalue />
@@ -73,6 +70,9 @@ export function MetaSheet({ container, documentId }: {
             <div className='flex flex-row gap-3'>
               <AddNote text='Lägg till intern notering' variant='outline' />
             </div>
+
+            <label className='text-xs text-muted-foreground -mb-3'>Versioner</label>
+            <Version documentId={documentId} />
 
           </div>
         </div>
