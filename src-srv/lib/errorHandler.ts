@@ -7,7 +7,9 @@ import type { User } from '@/shared/User.js'
 
 /**
  * @property #server - An instance of Hocuspocus server. Need to be able to set a validation message in the document.
+ * @property {User} #user - The user API instance used to push messages to the client.
  * @method constructor
+ * @param {User} user - The user API instance used to push messages to the client.
  * @method handler - Handles the error
  * @method handleRpcError - differentiated handling for RPC errors based on their code.
  * @method handleRpcValidationError - Handles validation errors and sets a validation message in the document.
@@ -48,7 +50,6 @@ class CollaborationServerErrorHandler {
    * Offer differentiated handling RPC errors based on their code.
    *
    * @param {RpcError} error - The RPC error to handle.
-   * @param {pino.pino.LogFn} logFn - The log function to use for logging.
    * @param {any} context - The context in which the error occurred.
    * @returns {string}
   */
@@ -184,7 +185,8 @@ export function getErrorContext(
 ): ErrorContext {
   let userSub
   if ('context' in payload) {
-    userSub = payload.context?.user?.sub
+    const context = payload.context as { user?: { sub?: string } }
+    userSub = context?.user?.sub
   } else if (isOnStatelessPayload(payload)) {
     try {
       const msg = parseStateless(payload.payload)
@@ -192,7 +194,7 @@ export function getErrorContext(
         userSub = msg.message.context.user.sub
       }
     } catch (_err) {
-      // Ignore errors, sub remains null if not found
+      // Ignore errors, userSub remains undefined if not found
     }
   }
 

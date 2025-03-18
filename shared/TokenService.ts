@@ -55,7 +55,7 @@ export class TokenService {
       throw new Error(`Token request failed with status ${response.statusText}`)
     }
 
-    const data = await response.json()
+    const data = await response.json() as { access_token: string, expires_in: number }
 
     return {
       accessToken: data.access_token,
