@@ -15,7 +15,7 @@ export const Header = ({ assigneeUserName, type }: {
   assigneeUserName?: string | undefined
 }): JSX.Element => {
   const showButton = useMemo(() => {
-    const viewTypes: View[] = ['Planning', 'Event']
+    const viewTypes: View[] = ['Planning', 'Event', 'Factbox']
     if (viewTypes.includes(type)) {
       return true
     }
