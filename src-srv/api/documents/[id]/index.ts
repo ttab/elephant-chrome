@@ -11,7 +11,7 @@ import logger from '../../../lib/logger.js'
  */
 export const GET: RouteHandler = async (req: Request, { cache, repository, res }) => {
   const uuid = req.params.id
-  const version = +(req.query.version || '0')
+  const version = Number(req.query.version || '0')
 
   const { session } = res.locals
 
