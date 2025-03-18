@@ -185,7 +185,7 @@ export const Version = ({ documentId, hideDetails = false }: { documentId: strin
         </SelectItem>
       )
     })
-  }, [documentId, versionHistory, createdBy])
+  }, [documentId, versionHistory, createdBy, STATUS_KEYS])
 
   if (!versionHistory?.length) {
     return <></>
