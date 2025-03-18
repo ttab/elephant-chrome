@@ -12,6 +12,7 @@ import { DocumentStatuses } from '@/defaults/documentStatuses'
 import type { GetHistoryResponse } from '@ttab/elephant-api/repository'
 import type { DocumentVersion } from '@ttab/elephant-api/repository'
 import type { EleDocumentResponse } from '@/shared/types'
+import { Error } from '@/views/Error'
 
 type Status = { name: string, created: string, creator: string }
 
@@ -120,10 +121,6 @@ export const Version = ({ documentId, hideDetails = false }: { documentId: strin
     return result?.versions
   })
 
-  if (error) {
-    console.error('Error fetching version history', error)
-  }
-
   const [selectedVersion, setVersion] = useState<SelectedVersion>()
   const { showModal, hideModal } = useModal()
 
@@ -195,7 +192,13 @@ export const Version = ({ documentId, hideDetails = false }: { documentId: strin
   }
 
   if (error) {
-    return <></>
+    console.error('Error fetching version history', error)
+    return (
+      <Error
+        title='Fel'
+        message='Det uppstod ett fel när dokumenthistoriken hämtades.'
+      />
+    )
   }
 
   return (
