@@ -181,7 +181,6 @@ export const Version = ({ documentId, hideDetails = false }: { documentId: strin
           value={JSON.stringify(v, (_, value) => typeof value === 'bigint' ? Number(value) : value)}
         >
           <div className='flex items-center gap-2'>
-            <span className='hidden sm:block font-bold'>{`${v?.title}`}</span>
             {usable?.created && <span>{`${formatDateAndTime(usable.created)}`}</span>}
             <span>{`${usable?.name} av ${usable?.creator || '???'}`}</span>
           </div>
