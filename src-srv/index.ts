@@ -8,6 +8,8 @@ import { fileURLToPath } from 'node:url'
 import { connectRouteHandlers, mapRoutes } from './routes.js'
 import ViteExpress from 'vite-express'
 import { Repository } from '@/shared/Repository.js'
+import { User } from '@/shared/User.js'
+import { TokenService } from '@/shared/TokenService.js'
 import {
   RedisCache,
   CollaborationServer
@@ -31,6 +33,10 @@ const PORT = process.env.PORT ? parseInt(process.env.PORT) : 5183
 const REPOSITORY_URL = process.env.REPOSITORY_URL || ''
 const REDIS_URL = process.env.REDIS_URL || ''
 const BASE_URL = process.env.BASE_URL || ''
+const USER_URL = process.env.USER_URL || ''
+const AUTH_KEYCLOAK_ISSUER = process.env.AUTH_KEYCLOAK_ISSUER || ''
+const ELEPHANT_CHROME_CLIENT_ID = process.env.ELEPHANT_CHROME_CLIENT_ID || ''
+const ELEPHANT_CHROME_CLIENT_SECRET = process.env.ELEPHANT_CHROME_CLIENT_SECRET || ''
 
 /**
  * Run the server
@@ -52,6 +58,14 @@ export async function runServer(): Promise<string> {
   })
 
   const repository = new Repository(REPOSITORY_URL)
+
+  const userTokenService = new TokenService(
+    `${AUTH_KEYCLOAK_ISSUER}/protocol/openid-connect/token`,
+    ELEPHANT_CHROME_CLIENT_ID,
+    ELEPHANT_CHROME_CLIENT_SECRET,
+    'user'
+  )
+  const user = new User(USER_URL, userTokenService)
 
   app.set('trust proxy', true)
   app.use(`${BASE_URL}/api/auth/*`, ExpressAuth(authConfig) as RequestHandler)
@@ -82,7 +96,8 @@ export async function runServer(): Promise<string> {
     redisUrl: REDIS_URL,
     redisCache: cache,
     repository,
-    expressServer: app
+    expressServer: app,
+    user
   })
 
   await collaborationServer.listen([`${BASE_URL}/:document`]).catch((ex) => {

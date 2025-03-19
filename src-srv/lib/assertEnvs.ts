@@ -5,7 +5,10 @@ function assertEnvs(): void {
     'AUTH_KEYCLOAK_ID',
     'AUTH_TRUST_HOST',
     'AUTH_SECRET',
+    'ELEPHANT_CHROME_CLIENT_ID',
+    'ELEPHANT_CHROME_CLIENT_SECRET',
     'REPOSITORY_URL',
+    'USER_URL',
     'REDIS_URL',
     'INDEX_URL',
     'WS_URL',
@@ -14,7 +17,6 @@ function assertEnvs(): void {
     'HOST',
     'PORT',
     'BASE_URL'
-
   ]
 
   envs.forEach((env) => {

@@ -1,19 +1,12 @@
 import { TwirpFetchTransport } from '@protobuf-ts/twirp-transport'
 import { WorkflowsClient } from '@ttab/elephant-api/repository'
-import type { DocumentWorkflow, WorkflowStatus } from '@ttab/elephant-api/repository'
+import type { WorkflowStatus } from '@ttab/elephant-api/repository'
 import { meta } from './meta.js'
-
-export interface WorkflowAndStatuses {
-  workflow: DocumentWorkflow | null
-  statuses: WorkflowStatus[]
-}
 
 export class Workflow {
   readonly #client: WorkflowsClient
-  #workflows: Record<string, {
-    workflow: DocumentWorkflow | null
-    statuses: WorkflowStatus[]
-  }>
+
+  #workflows: Record<string, WorkflowStatus[]>
 
   constructor(repoUrl: string) {
     this.#client = new WorkflowsClient(
@@ -26,49 +19,19 @@ export class Workflow {
   }
 
   /**
-   * Get a workflow specification, either both workflow and statuses or only statuses if no workflow is defined.
+   * Get a workflow specification, or in reality, the allowed statues for a specific document type.
    */
-  async getWorkflow({ type, accessToken }: {
+  async getStatuses({ type, accessToken }: {
     type: string
     accessToken: string
-  }): Promise<WorkflowAndStatuses | null> {
+  }): Promise<WorkflowStatus[] | null> {
     if (this.#workflows[type]) {
       return this.#workflows[type]
     }
 
-    const [workflow, statuses] = await Promise.all([
-      this.#fetchWorkflow({ type, accessToken }),
-      this.#fetchStatuses({ type, accessToken })
-    ])
-
-    this.#workflows[type] = {
-      workflow,
-      statuses
-    }
+    this.#workflows[type] = await this.#fetchStatuses({ type, accessToken })
 
     return this.#workflows[type]
-  }
-
-  /**
-   * Get a workflow specification from the repository.
-   */
-  async #fetchWorkflow({ type, accessToken }: {
-    type: string
-    accessToken: string
-  }): Promise<DocumentWorkflow | null> {
-    try {
-      const { response } = await this.#client.getWorkflow({
-        type
-      }, meta(accessToken))
-
-      return response.workflow || null
-    } catch (err: unknown) {
-      if (['not_found', 'internal'].includes((err as { code: string })?.code)) {
-        return null
-      }
-
-      throw new Error(`Unable to fetch workflow for ${type}: ${(err as Error)?.message || 'Unknown error'}`)
-    }
   }
 
   /**
