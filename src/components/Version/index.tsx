@@ -12,6 +12,7 @@ import { DocumentStatuses } from '@/defaults/documentStatuses'
 import type { GetHistoryResponse } from '@ttab/elephant-api/repository'
 import type { DocumentVersion } from '@ttab/elephant-api/repository'
 import { Error } from '@/views/Error'
+import { STATUS_KEYS } from './statuskeys'
 
 type Status = { name: string, created: string, creator: string }
 
@@ -24,7 +25,6 @@ export const Version = ({ documentId, hideDetails = false }: { documentId: strin
   const { repository } = useRegistry()
   const { data: session } = useSession()
   const authors = useAuthors()
-  const STATUS_KEYS = useMemo(() => ['usable', 'read', 'saved', 'used'], [])
   const [lastUpdated, setLastUpdated] = useState('')
 
   const { data: versionHistory, error } = useSWR(`version/${documentId}`, async (): Promise<Array<DocumentVersion>> => {
@@ -146,7 +146,7 @@ export const Version = ({ documentId, hideDetails = false }: { documentId: strin
         </SelectItem>
       )
     })
-  }, [documentId, versionHistory, createdBy, STATUS_KEYS])
+  }, [documentId, versionHistory, createdBy])
 
   if (!versionHistory?.length) {
     return <></>
