@@ -11,6 +11,7 @@ import { cn } from '@ttab/elephant-ui/utils'
 import { type EleBlock } from '@/shared/types'
 import { cva } from 'class-variance-authority'
 import { Button } from '@ttab/elephant-ui'
+import { useActiveAuthor } from '@/hooks/useActiveAuthor'
 
 export const AssignmentTable = ({ asDialog = false }: {
   asDialog?: boolean
@@ -20,6 +21,7 @@ export const AssignmentTable = ({ asDialog = false }: {
   const [planningSlugLine] = useYValue<string | undefined>('meta.tt/slugline[0].value')
   const [selectedAssignment, setSelectedAssignment] = useState<number | undefined>(undefined)
   const [focusedRowIndex, setFocusedRowIndex] = useState<number | undefined>()
+  const author = useActiveAuthor({ full: false })
 
   const newAssigment = useMemo(() => {
     const index = assignments?.findIndex((a) => a.__inProgress) ?? -1
@@ -51,6 +53,7 @@ export const AssignmentTable = ({ asDialog = false }: {
     appendAssignment({
       document: provider.document,
       inProgress: true,
+      assignee: author,
       slugLine: (!slugLines?.includes(planningSlugLine || ''))
         ? planningSlugLine
         : undefined,

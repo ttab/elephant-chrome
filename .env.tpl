@@ -5,9 +5,14 @@ AUTH_KEYCLOAK_SECRET=...
 AUTH_KEYCLOAK_ISSUER=https://...
 AUTH_KEYCLOAK_IDP_HINT=saml
 AUTH_POST_LOGOUT_URI=http://localhost:5173/elephant
+ELEPHANT_CHROME_CLIENT_ID=elephant-chrome
+ELEPHANT_CHROME_CLIENT_SECRET=...
 
 # Repository
 REPOSITORY_URL=https://...
+
+# User API
+USER_URL=http://localhost:1180
 
 # Redis cache and pub/sub
 # rediss://user:pass@host:port for TLS

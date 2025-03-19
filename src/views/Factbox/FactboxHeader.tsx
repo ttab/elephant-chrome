@@ -3,6 +3,7 @@ import { useEffect, useRef } from 'react'
 import { DocumentStatusMenu } from '@/components/DocumentStatusMenu'
 import { ViewHeader } from '@/components/View'
 import { BookTextIcon } from '@ttab/elephant-ui/icons'
+import { MetaSheet } from '../Editor/components/MetaSheet'
 
 export const FactboxHeader = ({ documentId, asDialog, onDialogClose }: {
   documentId: string
@@ -36,6 +37,7 @@ export const FactboxHeader = ({ documentId, asDialog, onDialogClose }: {
               <DocumentStatusMenu type='core/planning-item' status={documentStatus} setStatus={setDocumentStatus} />
             )}
 
+            <MetaSheet container={containerRef.current} documentId={documentId} />
             {!!documentId && <ViewHeader.RemoteUsers documentId={documentId} />}
           </div>
         </div>

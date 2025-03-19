@@ -257,7 +257,7 @@ export function assignmentColumns({ authors = [], locale, timeZone, sections = [
           return null
         }
 
-        return <Type data={data} />
+        return <Type data={data} deliverableId={row.original.deliverableId} />
       },
       filterFn: (row, id, value: string[]) =>
         value.some((v: string) => row.getValue<string[] | undefined>(id)?.includes(v))

@@ -1,5 +1,6 @@
 import type { Wire } from '@/hooks/index/lib/wires'
 import { Block } from '@ttab/elephant-api/newsdoc'
+import type { IDBAuthor } from 'src/datastore/types'
 
 /**
  * Create a template structure for an assigment
@@ -11,7 +12,8 @@ export function assignmentPlanningTemplate({
   slugLine,
   title,
   wire,
-  assignmentData
+  assignmentData,
+  assignee
 }: {
   assignmentType: string
   planningDate: string
@@ -19,6 +21,7 @@ export function assignmentPlanningTemplate({
   title?: string
   wire?: Wire
   assignmentData?: Block['data']
+  assignee: IDBAuthor | null | undefined
 }): Block {
   const startDate = new Date(`${planningDate}T00:00:00`)
 
@@ -32,6 +35,18 @@ export function assignmentPlanningTemplate({
         data: {
           version: wire.fields['current_version'].values[0]
         }
+      })
+      : undefined
+  ].filter((x): x is Block => x !== undefined)
+
+  const author: Block[] = [
+    assignee
+      ? Block.create({
+        uuid: assignee.id,
+        type: 'core/author',
+        title: assignee.name,
+        rel: 'assignee',
+        role: 'primary'
       })
       : undefined
   ].filter((x): x is Block => x !== undefined)
@@ -67,7 +82,8 @@ export function assignmentPlanningTemplate({
       }
     ],
     links: [
-      ...wireContentSourceDocument
+      ...wireContentSourceDocument,
+      ...author
     ]
   })
 }
