@@ -1,5 +1,6 @@
 import { Title } from '@/components/Table/Items/Title'
 import type { Factbox } from '@/hooks/index/lib/factboxes'
+import { dateToReadableDateTime } from '@/lib/datetime'
 import type { ColumnDef, Row } from '@tanstack/react-table'
 import { Boxes } from '@ttab/elephant-ui/icons'
 
@@ -11,7 +12,7 @@ interface FactboxData {
   version: string
 }
 
-export function factboxColumns(): Array<ColumnDef<Factbox>> {
+export function factboxColumns({ locale, timeZone }: { locale: string, timeZone: string }): Array<ColumnDef<Factbox>> {
   const handleDragStart = (event: React.DragEvent<HTMLDivElement>, row: Row<Factbox>) => {
     const factboxData: FactboxData = {
       title: row.getValue<string>('title'),
@@ -64,7 +65,7 @@ export function factboxColumns(): Array<ColumnDef<Factbox>> {
           <div
             draggable='true'
             onDragStart={(event) => handleDragStart(event, row)}
-            className='max-w-4xl truncate space-x-2 justify-start items-center'
+            className='max-w-4xl font-thin truncate space-x-2 justify-start items-center'
           >
             {row.getValue<string>('description')}
           </div>
@@ -80,11 +81,15 @@ export function factboxColumns(): Array<ColumnDef<Factbox>> {
       },
       accessorFn: (data) => data.fields.modified.values[0],
       cell: ({ row }) => {
-        const readableDate = new Date(row.getValue<string>('edited')).toLocaleDateString('sv-SE')
+        const edited = row.getValue<string>('edited')
+        const readableDateTime = edited ? dateToReadableDateTime(new Date(edited), locale, timeZone, true) : '-'
         return (
           <div className='truncate space-x-2 justify-start items-center'>
+            <span className='font-thin text-xs text-muted-foreground'>
+              Ändrad
+            </span>
             <span className='font-thin text-sm'>
-              {readableDate}
+              {readableDateTime}
             </span>
           </div>
         )

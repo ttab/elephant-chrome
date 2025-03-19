@@ -9,6 +9,7 @@ import { Commands } from '@/components/Commands'
 import { factboxColumns } from './FactboxColumns'
 import type { Factbox } from '@/hooks/index/lib/factboxes'
 import { FactboxList } from './FactboxList'
+import { useRegistry } from '@/hooks/useRegistry'
 
 const meta: ViewMetadata = {
   name: 'Factboxes',
@@ -28,10 +29,10 @@ const meta: ViewMetadata = {
 
 export const Factboxes = (): JSX.Element => {
   const [currentTab, setCurrentTab] = useState<string>('list')
+  const { locale, timeZone } = useRegistry()
 
   const columns = useMemo(() =>
-    factboxColumns(), [])
-  // const columnFilters = loadFilters<PlanningType>(query, columns)
+    factboxColumns({ locale, timeZone }), [locale, timeZone])
 
   return (
     <View.Root tab={currentTab} onTabChange={setCurrentTab}>
