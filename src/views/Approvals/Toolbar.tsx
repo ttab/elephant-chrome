@@ -65,7 +65,7 @@ export const Toolbar = ({ facets }: { facets: Facets }): JSX.Element => {
     setFilters({ ...filters, section: value ? [value] : undefined })
   }
 
-  const page = pages[pages.length - 1]
+  const page = pages[pages.length - 1] || ''
 
   return (
     <div className='flex flex-wrap flex-grow items-center space-x-2 px-4 border-b py-1 pr-2.5'>
