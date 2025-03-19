@@ -117,6 +117,7 @@ export const Version = ({ documentId, hideDetails = false }: { documentId: strin
           value: 'used'
         }
       ]
+
       if (!Object.keys(version?.statuses)?.length) {
         return { ...status, creator: createdBy(version.creator), created: version.created }
       }
@@ -137,7 +138,7 @@ export const Version = ({ documentId, hideDetails = false }: { documentId: strin
       return (
         <SelectItem
           key={`${usable?.created}-${v.version}`}
-          value={JSON.stringify(v, (_, value) => typeof value === 'bigint' ? Number(value) : value)}
+          value={v.version.toString()}
         >
           <div className='flex items-center gap-2'>
             {usable?.created && <span>{`${formatDateAndTime(usable.created)}`}</span>}
@@ -167,12 +168,11 @@ export const Version = ({ documentId, hideDetails = false }: { documentId: strin
       <Select
         value={`${selectedVersion?.version}`}
         onValueChange={(option) => {
-          const { version, created, creator } = JSON.parse(option)
-          setVersion({ version, created, creator, createdBy: createdBy(`${creator}`) })
+          const current = versionHistory?.find((v) => v.version === BigInt(option))
           showModal(
             <PreviewSheet
               id={documentId}
-              preVersion={BigInt(version as number)}
+              preVersion={current?.version && BigInt(current?.version)}
               versionHistory={versionHistory}
               textOnly
               handleClose={hideModal}
