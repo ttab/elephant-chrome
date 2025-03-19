@@ -166,9 +166,9 @@ export const Version = ({ documentId, hideDetails = false }: { documentId: strin
   return (
     <>
       <Select
-        value={`${selectedVersion?.version}`}
         onValueChange={(option) => {
           const current = versionHistory?.find((v) => v.version === BigInt(option))
+          setVersion(current)
           showModal(
             <PreviewSheet
               id={documentId}
