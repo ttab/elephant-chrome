@@ -28,20 +28,15 @@ export const useFactboxes = ({ filter, page }: {
   const { data, error } = useSWR<Factbox[] | undefined, Error>(key, fetcher)
 
   if (error) {
-    throw new Error('Wires fetch failed:', { cause: error })
+    throw new Error('Factboxes fetch failed:', { cause: error })
   }
 
   // We need to wait after initial render to set the data
   useEffect(() => {
     if (data && setData) {
-      console.log('Setting data', data)
       setData(data)
     }
   }, [data, setData])
-
-  if (error) {
-    throw new Error('Factboxes fetch failed:', { cause: error })
-  }
 
   return [data]
 }

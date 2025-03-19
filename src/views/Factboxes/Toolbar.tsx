@@ -1,6 +1,4 @@
-import { Save } from '@ttab/elephant-ui/icons'
 import { Command } from '@ttab/elephant-ui'
-import { DotDropdownMenu } from '@/components/ui/DotMenu'
 import { DebouncedCommandInput } from '@/components/Commands/Menu/DebouncedCommandInput'
 import { useQuery } from '@/hooks/useQuery'
 
@@ -27,18 +25,6 @@ export const Toolbar = (): JSX.Element => {
           />
         </Command>
       </div>
-      <DotDropdownMenu
-        trigger='vertical'
-        items={[
-          {
-            label: 'Spara filter',
-            icon: Save,
-            item: () => {
-              console.log('save wire search')
-            }
-          }
-        ]}
-      />
     </div>
   )
 }
