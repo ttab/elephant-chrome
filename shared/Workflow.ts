@@ -3,15 +3,10 @@ import { WorkflowsClient } from '@ttab/elephant-api/repository'
 import type { WorkflowStatus } from '@ttab/elephant-api/repository'
 import { meta } from './meta.js'
 
-export interface WorkflowAndStatuses {
-  statuses: WorkflowStatus[]
-}
-
 export class Workflow {
   readonly #client: WorkflowsClient
-  #workflows: Record<string, {
-    statuses: WorkflowStatus[]
-  }>
+
+  #workflows: Record<string, WorkflowStatus[]>
 
   constructor(repoUrl: string) {
     this.#client = new WorkflowsClient(
@@ -26,22 +21,15 @@ export class Workflow {
   /**
    * Get a workflow specification, or in reality, the allowed statues for a specific document type.
    */
-  async getWorkflow({ type, accessToken }: {
+  async getStatuses({ type, accessToken }: {
     type: string
     accessToken: string
-  }): Promise<WorkflowAndStatuses | null> {
+  }): Promise<WorkflowStatus[] | null> {
     if (this.#workflows[type]) {
       return this.#workflows[type]
     }
 
-    const [statuses] = await Promise.all([
-      // this.#fetchWorkflow({ type, accessToken }),
-      this.#fetchStatuses({ type, accessToken })
-    ])
-
-    this.#workflows[type] = {
-      statuses
-    }
+    this.#workflows[type] = await this.#fetchStatuses({ type, accessToken })
 
     return this.#workflows[type]
   }

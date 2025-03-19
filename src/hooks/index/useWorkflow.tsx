@@ -26,15 +26,15 @@ export const useWorkflow = (type: string): DocumentWorkflow => {
       return
     }
 
-    client.getWorkflow({
+    client.getStatuses({
       type,
       accessToken: session.accessToken || ''
-    }).then((wf) => {
+    }).then((wfStatuses) => {
       // Filter out all status specifications based on statuses allowed for this type
       // Draft is always included here as it is not specified in the backend.
-      const statuses = (wf?.statuses || []).reduce((acc, status) => {
-        if (StatusSpecifications[status.name]) {
-          acc[status.name] = StatusSpecifications[status.name]
+      const statuses = (wfStatuses || []).reduce((acc, wfStatus) => {
+        if (StatusSpecifications[wfStatus.name]) {
+          acc[wfStatus.name] = StatusSpecifications[wfStatus.name]
         }
 
         return acc
