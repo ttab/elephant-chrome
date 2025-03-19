@@ -12,7 +12,8 @@ export const TimeInput = ({
   setOpen,
   id,
   disabled = false,
-  className = 'border-none'
+  className = 'border-none',
+  autoFocus
 }: {
   defaultTime: string
   id?: string
@@ -21,6 +22,7 @@ export const TimeInput = ({
   setOpen: Dispatch<SetStateAction<boolean>>
   disabled?: boolean
   className?: string
+  autoFocus?: boolean
 }): JSX.Element => {
   const [timeValue, setTimeValue] = useState<string>(defaultTime)
 
@@ -39,6 +41,7 @@ export const TimeInput = ({
       placeholder='hh:mm ex 11:00'
       className={cn('h-8 text-sm', className)}
       disabled={disabled}
+      autoFocus={autoFocus}
       onKeyDown={(e) => {
         if (e.key === 'Escape') {
           e.preventDefault()

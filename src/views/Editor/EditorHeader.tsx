@@ -1,12 +1,13 @@
 import { useDocumentStatus, useView } from '@/hooks'
 import { Newsvalue } from '@/components/Newsvalue'
-import { useCallback, useEffect, useRef } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { MetaSheet } from './components/MetaSheet'
 import { StatusMenu } from '@/components/DocumentStatus/StatusMenu'
 import { AddNote } from './components/Notes/AddNote'
 import { ViewHeader } from '@/components/View'
 import { PenBoxIcon } from '@ttab/elephant-ui/icons'
 import { usePlanningAssigmentDeliverable } from '@/hooks/usePlanningAssigmentDeliverable'
+import { getValueByYPath, setValueByYPath } from '@/lib/yUtils'
 
 
 export const EditorHeader = ({ documentId }: { documentId: string }): JSX.Element => {
@@ -14,20 +15,37 @@ export const EditorHeader = ({ documentId }: { documentId: string }): JSX.Elemen
   const assignment = usePlanningAssigmentDeliverable(documentId)
   const [documentStatus, setDocumentStatus] = useDocumentStatus(documentId)
   const containerRef = useRef<HTMLElement | null>(null)
+  const [publishTime, setPublishTime] = useState<Date | null>(null)
 
   useEffect(() => {
     containerRef.current = (document.getElementById(viewId))
   }, [viewId])
 
-
+  useEffect(() => {
+    if (assignment?.assignment) {
+      const [publish] = getValueByYPath<string>(assignment.assignment, 'data.publish')
+      if (publish) {
+        setPublishTime(new Date(publish))
+      }
+    }
+  }, [assignment])
 
   // Callback to handle setStatus (withheld etc)
   const setArticleStatus = useCallback((newStatus: string, data?: Record<string, unknown>) => {
-    if (assignment) {
-      // FIXME: Notify user that something is wrong
-      alert('No planning or no article assignment links. Failed setting status!')
+    if (!assignment) {
+      // FIXME: Notify user that something is wrong in a nicer way
+      alert('No planning or no article assignment links. Article not scheduled!')
       return
     }
+
+    if (!(data?.time instanceof Date)) {
+      // FIXME: Notify user that something is wrong in a nicer way
+      alert('Faulty scheduled publish time set. Article not scheduled!')
+      return
+    }
+
+    // FIXME: This is not correct
+    setValueByYPath(assignment.assignment, 'data.publish', data.time.toISOString())
 
     if (typeof data?.foo === 'string') {
       void setDocumentStatus(newStatus)
@@ -51,8 +69,16 @@ export const EditorHeader = ({ documentId }: { documentId: string }): JSX.Elemen
           <div className='flex flex-row gap-2 justify-end items-center'>
             {!!documentId && (
               <>
-                <StatusMenu type='core/article' status={documentStatus} setStatus={setArticleStatus} />
                 <ViewHeader.RemoteUsers documentId={documentId} />
+
+                {!!assignment && (
+                  <StatusMenu
+                    type='core/article'
+                    status={documentStatus}
+                    publishTime={publishTime || undefined}
+                    setStatus={setArticleStatus}
+                  />
+                )}
               </>
             )}
           </div>

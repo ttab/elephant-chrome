@@ -2,12 +2,14 @@ import type { WorkflowTransition } from '@/defaults/workflowSpecification'
 import { Prompt } from '../Prompt'
 import { useRegistry } from '@/hooks/useRegistry'
 import { useState } from 'react'
-import { Calendar, Label } from '@ttab/elephant-ui'
+import { Label } from '@ttab/elephant-ui'
 import { TimeInput } from '../TimeInput'
 import { toZonedTime } from 'date-fns-tz'
 import { format } from 'date-fns'
+import { CalendarIcon } from '@ttab/elephant-ui/icons'
 
-export const PromptSchedule = ({ prompt, setStatus, showPrompt }: {
+export const PromptSchedule = ({ publishTime, prompt, setStatus, showPrompt }: {
+  publishTime?: Date
   prompt: {
     status: string
   } & WorkflowTransition
@@ -17,14 +19,11 @@ export const PromptSchedule = ({ prompt, setStatus, showPrompt }: {
   } & WorkflowTransition) | undefined>>
 }) => {
   const { timeZone } = useRegistry()
+  const initialTime = publishTime ? new Date(publishTime) : new Date()
+  // const todaysDate = Number(initialTime.toLocaleDateString().replaceAll('-', ''))
 
-  // FIXME: Should default to what is in the assignment (as props)
-  const initialTime = new Date()
-  const todaysDate = Number(initialTime.toLocaleDateString().replaceAll('-', ''))
-
-  const [date, setDate] = useState(initialTime)
+  // const [date, setDate] = useState(initialTime)
   const [time, setTime] = useState((initialTime))
-
 
   return (
     <Prompt
@@ -36,7 +35,7 @@ export const PromptSchedule = ({ prompt, setStatus, showPrompt }: {
         void setStatus(
           prompt.status,
           {
-            time: new Date()
+            time: time
           }
         )
       }}
@@ -53,6 +52,7 @@ export const PromptSchedule = ({ prompt, setStatus, showPrompt }: {
 
             <TimeInput
               id='ScheduledTime'
+              autoFocus={true}
               defaultTime={format(toZonedTime(time, timeZone), 'HH:mm')}
               handleOnChange={(value) => {
                 if (value) {
@@ -70,6 +70,13 @@ export const PromptSchedule = ({ prompt, setStatus, showPrompt }: {
           </div>
 
           <div className='flex flex-col gap-2'>
+            <Label htmlFor='ScheduledTime'>Datum i planeringen</Label>
+            <span className='border py-2 px-3 h-8 text-sm rounded flex flex-row gap-4 items-center justify-between bg-muted'>
+              {format(toZonedTime(time, timeZone), 'yyyy-MM-dd')}
+              <CalendarIcon size={14} strokeWidth={1.75} />
+            </span>
+          </div>
+          {/* <div className='flex flex-col gap-2'>
             <Label htmlFor='ScheduledDate'>Ange datum</Label>
 
             <Calendar
@@ -94,7 +101,7 @@ export const PromptSchedule = ({ prompt, setStatus, showPrompt }: {
                 return Number(dt.toLocaleDateString().replaceAll('-', '')) < todaysDate
               }}
             />
-          </div>
+          </div> */}
         </div>
       </div>
     </Prompt>

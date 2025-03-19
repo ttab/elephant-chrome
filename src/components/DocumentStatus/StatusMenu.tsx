@@ -9,9 +9,10 @@ import { StatusMenuHeader } from './StatusMenuHeader'
 import { PromptDefault } from './PromptDefault'
 import { PromptSchedule } from './PromptSchedule'
 
-export const StatusMenu = ({ type, status: currentStatus, setStatus }: {
+export const StatusMenu = ({ type, status: currentStatus, publishTime, setStatus }: {
   type: string
   status?: Status
+  publishTime?: Date
   setStatus: (
     status: string,
     data?: Record<string, unknown>
@@ -95,6 +96,7 @@ export const StatusMenu = ({ type, status: currentStatus, setStatus }: {
               prompt={prompt}
               showPrompt={showPrompt}
               setStatus={setStatus}
+              publishTime={publishTime}
             />
           )}
 
