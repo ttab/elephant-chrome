@@ -65,7 +65,7 @@ export function factboxColumns({ locale, timeZone }: { locale: string, timeZone:
           <div
             draggable='true'
             onDragStart={(event) => handleDragStart(event, row)}
-            className='max-w-4xl font-thin truncate space-x-2 justify-start items-center'
+            className='max-w-4xl font-thin text-sm text-muted-foreground truncate space-x-2 justify-start items-center'
           >
             {row.getValue<string>('description')}
           </div>
