@@ -34,7 +34,7 @@ export const PlanningHeader = ({ documentId, asDialog, onDialogClose }: {
 
           <div className='flex flex-row gap-2 justify-end items-center'>
             {!asDialog && (
-              <StatusMenu type='core/planning-item' status={documentStatus} setStatus={setDocumentStatus} />
+              <StatusMenu type='core/planning-item' status={documentStatus} setStatus={(status) => { void setDocumentStatus(status) }} />
             )}
 
             {!!documentId && <ViewHeader.RemoteUsers documentId={documentId} />}

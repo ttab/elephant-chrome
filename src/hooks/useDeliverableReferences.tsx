@@ -1,17 +1,16 @@
 import { getValueByYPath } from '@/lib/yUtils'
-import { useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import type * as Y from 'yjs'
 import { useCollaborationDocument } from './useCollaborationDocument'
 import { useYValue } from './useYValue'
 import type { EleBlock } from '@/shared/types'
 import { usePlanningIdFromAssignmentId } from './index/usePlanningIdFromAssignmentId'
 
-interface DeliverablePlanningAssignment {
+interface DeliverableReferences {
   planningUuid: string
   assignmentUuid: string
   yRoot: Y.Map<unknown>
-  assignment: Y.Map<unknown>
-  index: number
+  assignmentIndex: () => number
 }
 
 /**
@@ -19,14 +18,13 @@ interface DeliverablePlanningAssignment {
  * the actual planning y document with information on which assignment in that planning document
  * is referencing the deliverable.
  */
-export const usePlanningAssigmentDeliverable = (deliverableId: string): DeliverablePlanningAssignment | null => {
+export const useDeliverableReferences = (deliverableId: string): DeliverableReferences | null => {
   const [assignmentUuid, setAssignmentUuid] = useState('')
-  const [deliverable, setDeliverable] = useState<DeliverablePlanningAssignment | null>(null)
-
   const planningUuid = usePlanningIdFromAssignmentId(assignmentUuid)
   const [articleAssignmentLinks] = useYValue<EleBlock[]>('links.core/assignment')
   const planningDoc = useCollaborationDocument({ documentId: planningUuid })
 
+  // Find the assignment uuid in the current collaborative document (i.e. article or flash)
   // FIXME: It seems articleAssignmentLinks are sometimes/always empty on articles created in Elephant
   useEffect(() => {
     if (!articleAssignmentLinks?.length) {
@@ -49,33 +47,22 @@ export const usePlanningAssigmentDeliverable = (deliverableId: string): Delivera
   }, [planningDoc])
 
 
-  useEffect(() => {
-    if (!yRoot) {
-      return
-    }
+  // Expose helper callback function to retrieve the assignment index from the planning document
+  const assignmentIndex = useCallback(() => {
+    if (yRoot) {
+      const [assignments] = getValueByYPath<EleBlock[]>(yRoot, 'meta.core/assignment')
 
-    const [assignments] = getValueByYPath<Y.Array<Y.Map<unknown>>>(yRoot, 'meta.core/assignment', true)
-
-    if (!assignments?.length) {
-      return
-    }
-
-    for (let i = 0; i < assignments.length; i++) {
-      const [linkedArticleId] = getValueByYPath<string>(yRoot, `meta.core/assignment[${i}].links.core/article[0].uuid`)
-
-      if (linkedArticleId === deliverableId) {
-        setDeliverable({
-          planningUuid,
-          assignmentUuid,
-          yRoot,
-          assignment: assignments.get(i),
-          index: i
-        })
-
-        break
+      for (let i = 0; i < (assignments?.length || 0); i++) {
+        if (assignments?.[i].links?.['core/article']?.[0].uuid === deliverableId) {
+          return i
+        }
       }
     }
-  }, [yRoot, planningUuid, assignmentUuid, deliverableId])
 
-  return deliverable
+    return -1
+  }, [yRoot, deliverableId])
+
+  return !yRoot
+    ? null
+    : { planningUuid, assignmentUuid, yRoot, assignmentIndex }
 }

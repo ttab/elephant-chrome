@@ -42,7 +42,7 @@ export const EventHeader = ({ documentId, asDialog, onDialogClose, provider, tit
 
           <div className='flex flex-row gap-2 justify-end items-center'>
             {!asDialog && (
-              <StatusMenu type='core/event' status={documentStatus} setStatus={setDocumentStatus} />
+              <StatusMenu type='core/event' status={documentStatus} setStatus={(status) => { void setDocumentStatus(status) }} />
             )}
             {!!documentId && !asDialog && (
               <>

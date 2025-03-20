@@ -6,13 +6,14 @@ import { StatusMenu } from '@/components/DocumentStatus/StatusMenu'
 import { AddNote } from './components/Notes/AddNote'
 import { ViewHeader } from '@/components/View'
 import { PenBoxIcon } from '@ttab/elephant-ui/icons'
-import { usePlanningAssigmentDeliverable } from '@/hooks/usePlanningAssigmentDeliverable'
+import { useDeliverableReferences } from '@/hooks/useDeliverableReferences'
 import { getValueByYPath, setValueByYPath } from '@/lib/yUtils'
+import type { EleBlock } from '@/shared/types'
 
 
 export const EditorHeader = ({ documentId }: { documentId: string }): JSX.Element => {
   const { viewId } = useView()
-  const assignment = usePlanningAssigmentDeliverable(documentId)
+  const assignment = useDeliverableReferences(documentId)
   const [documentStatus, setDocumentStatus] = useDocumentStatus(documentId)
   const containerRef = useRef<HTMLElement | null>(null)
   const [publishTime, setPublishTime] = useState<Date | null>(null)
@@ -21,14 +22,16 @@ export const EditorHeader = ({ documentId }: { documentId: string }): JSX.Elemen
     containerRef.current = (document.getElementById(viewId))
   }, [viewId])
 
+
   useEffect(() => {
-    if (assignment?.assignment) {
-      const [publish] = getValueByYPath<string>(assignment.assignment, 'data.publish')
-      if (publish) {
-        setPublishTime(new Date(publish))
+    if (assignment) {
+      const [ass] = getValueByYPath<EleBlock>(assignment.yRoot, `meta.core/assignment[${assignment.assignmentIndex()}]`)
+      if (ass?.id === assignment.assignmentUuid) {
+        setPublishTime(new Date(ass.data.publish))
       }
     }
   }, [assignment])
+
 
   // Callback to handle setStatus (withheld etc)
   const setArticleStatus = useCallback((newStatus: string, data?: Record<string, unknown>) => {
@@ -44,12 +47,8 @@ export const EditorHeader = ({ documentId }: { documentId: string }): JSX.Elemen
       return
     }
 
-    // FIXME: This is not correct
-    setValueByYPath(assignment.assignment, 'data.publish', data.time.toISOString())
-
-    if (typeof data?.foo === 'string') {
-      void setDocumentStatus(newStatus)
-    }
+    setValueByYPath(assignment.yRoot, `meta.core/assignment[${assignment.assignmentIndex()}].data.publish`, data.time.toISOString())
+    void setDocumentStatus(newStatus)
   }, [assignment, setDocumentStatus])
 
 
