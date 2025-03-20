@@ -1,21 +1,55 @@
 import { useDocumentStatus, useView } from '@/hooks'
 import { Newsvalue } from '@/components/Newsvalue'
-import { useEffect, useRef } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { MetaSheet } from './components/MetaSheet'
-import { DocumentStatusMenu } from '@/components/DocumentStatusMenu'
+import { StatusMenu } from '@/components/DocumentStatus/StatusMenu'
 import { AddNote } from './components/Notes/AddNote'
 import { ViewHeader } from '@/components/View'
 import { PenBoxIcon } from '@ttab/elephant-ui/icons'
+import { useDeliverablePlanning } from '@/hooks/useDeliverablePlanning'
+import { getValueByYPath, setValueByYPath } from '@/lib/yUtils'
+import type { EleBlock } from '@/shared/types'
+
 
 export const EditorHeader = ({ documentId }: { documentId: string }): JSX.Element => {
   const { viewId } = useView()
+  const deliverablePlanning = useDeliverablePlanning(documentId)
   const [documentStatus, setDocumentStatus] = useDocumentStatus(documentId)
-
   const containerRef = useRef<HTMLElement | null>(null)
+  const [publishTime, setPublishTime] = useState<Date | null>(null)
 
   useEffect(() => {
     containerRef.current = (document.getElementById(viewId))
   }, [viewId])
+
+
+  useEffect(() => {
+    if (deliverablePlanning) {
+      const [ass] = getValueByYPath<EleBlock>(deliverablePlanning.yRoot, `meta.core/assignment[${deliverablePlanning.assignmentIndex()}]`)
+      if (ass?.id === deliverablePlanning.assignmentUuid) {
+        setPublishTime(new Date(ass.data.publish))
+      }
+    }
+  }, [deliverablePlanning])
+
+
+  // Callback to handle setStatus (withheld etc)
+  const setArticleStatus = useCallback((newStatus: string, data?: Record<string, unknown>) => {
+    if (!deliverablePlanning) {
+      // FIXME: Notify user that something is wrong in a nicer way
+      alert('No planning or no article assignment links. Article not scheduled!')
+      return
+    }
+
+    if (!(data?.time instanceof Date)) {
+      // FIXME: Notify user that something is wrong in a nicer way
+      alert('Faulty scheduled publish time set. Article not scheduled!')
+      return
+    }
+
+    setValueByYPath(deliverablePlanning.yRoot, `meta.core/assignment[${deliverablePlanning.assignmentIndex()}].data.publish`, data.time.toISOString())
+    void setDocumentStatus(newStatus)
+  }, [deliverablePlanning, setDocumentStatus])
 
 
   return (
@@ -34,8 +68,16 @@ export const EditorHeader = ({ documentId }: { documentId: string }): JSX.Elemen
           <div className='flex flex-row gap-2 justify-end items-center'>
             {!!documentId && (
               <>
-                <DocumentStatusMenu type='core/article' status={documentStatus} setStatus={setDocumentStatus} />
                 <ViewHeader.RemoteUsers documentId={documentId} />
+
+                {!!deliverablePlanning && (
+                  <StatusMenu
+                    type='core/article'
+                    status={documentStatus}
+                    publishTime={publishTime || undefined}
+                    setStatus={setArticleStatus}
+                  />
+                )}
               </>
             )}
           </div>
