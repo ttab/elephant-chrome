@@ -33,9 +33,10 @@ export const Type = ({ data, deliverableId, className }: {
         return item.icon && (
           <Button
             key={index}
+            size='xs'
             variant='icon'
             onClick={(event) => handleLink(event, item)}
-            className={cn('p-0 h-7', deliverableId ? 'cursor-pointer' : 'cursor-not-allowed', className)}
+            className={cn('p-0', deliverableId ? 'cursor-pointer' : 'cursor-not-allowed', className)}
           >
             <Tooltip content={item.label}>
               <item.icon size={18} strokeWidth={1.75} className='mr-2 text-muted-foreground' />
