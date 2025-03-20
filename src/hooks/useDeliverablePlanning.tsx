@@ -18,7 +18,7 @@ interface DeliverableReferences {
  * the actual planning y document with information on which assignment in that planning document
  * is referencing the deliverable.
  */
-export const useDeliverableReferences = (deliverableId: string): DeliverableReferences | null => {
+export const useDeliverablePlanning = (deliverableId: string): DeliverableReferences | null => {
   const [assignmentUuid, setAssignmentUuid] = useState('')
   const planningUuid = usePlanningIdFromAssignmentId(assignmentUuid)
   const [articleAssignmentLinks] = useYValue<EleBlock[]>('links.core/assignment')

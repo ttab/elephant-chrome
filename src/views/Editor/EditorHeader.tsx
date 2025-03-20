@@ -6,14 +6,14 @@ import { StatusMenu } from '@/components/DocumentStatus/StatusMenu'
 import { AddNote } from './components/Notes/AddNote'
 import { ViewHeader } from '@/components/View'
 import { PenBoxIcon } from '@ttab/elephant-ui/icons'
-import { useDeliverableReferences } from '@/hooks/useDeliverableReferences'
+import { useDeliverablePlanning } from '@/hooks/useDeliverablePlanning'
 import { getValueByYPath, setValueByYPath } from '@/lib/yUtils'
 import type { EleBlock } from '@/shared/types'
 
 
 export const EditorHeader = ({ documentId }: { documentId: string }): JSX.Element => {
   const { viewId } = useView()
-  const assignment = useDeliverableReferences(documentId)
+  const deliverablePlanning = useDeliverablePlanning(documentId)
   const [documentStatus, setDocumentStatus] = useDocumentStatus(documentId)
   const containerRef = useRef<HTMLElement | null>(null)
   const [publishTime, setPublishTime] = useState<Date | null>(null)
@@ -24,18 +24,18 @@ export const EditorHeader = ({ documentId }: { documentId: string }): JSX.Elemen
 
 
   useEffect(() => {
-    if (assignment) {
-      const [ass] = getValueByYPath<EleBlock>(assignment.yRoot, `meta.core/assignment[${assignment.assignmentIndex()}]`)
-      if (ass?.id === assignment.assignmentUuid) {
+    if (deliverablePlanning) {
+      const [ass] = getValueByYPath<EleBlock>(deliverablePlanning.yRoot, `meta.core/assignment[${deliverablePlanning.assignmentIndex()}]`)
+      if (ass?.id === deliverablePlanning.assignmentUuid) {
         setPublishTime(new Date(ass.data.publish))
       }
     }
-  }, [assignment])
+  }, [deliverablePlanning])
 
 
   // Callback to handle setStatus (withheld etc)
   const setArticleStatus = useCallback((newStatus: string, data?: Record<string, unknown>) => {
-    if (!assignment) {
+    if (!deliverablePlanning) {
       // FIXME: Notify user that something is wrong in a nicer way
       alert('No planning or no article assignment links. Article not scheduled!')
       return
@@ -47,9 +47,9 @@ export const EditorHeader = ({ documentId }: { documentId: string }): JSX.Elemen
       return
     }
 
-    setValueByYPath(assignment.yRoot, `meta.core/assignment[${assignment.assignmentIndex()}].data.publish`, data.time.toISOString())
+    setValueByYPath(deliverablePlanning.yRoot, `meta.core/assignment[${deliverablePlanning.assignmentIndex()}].data.publish`, data.time.toISOString())
     void setDocumentStatus(newStatus)
-  }, [assignment, setDocumentStatus])
+  }, [deliverablePlanning, setDocumentStatus])
 
 
   return (
@@ -70,7 +70,7 @@ export const EditorHeader = ({ documentId }: { documentId: string }): JSX.Elemen
               <>
                 <ViewHeader.RemoteUsers documentId={documentId} />
 
-                {!!assignment && (
+                {!!deliverablePlanning && (
                   <StatusMenu
                     type='core/article'
                     status={documentStatus}
