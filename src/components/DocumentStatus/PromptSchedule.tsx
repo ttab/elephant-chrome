@@ -20,9 +20,6 @@ export const PromptSchedule = ({ publishTime, prompt, setStatus, showPrompt }: {
 }) => {
   const { timeZone } = useRegistry()
   const initialTime = publishTime ? new Date(publishTime) : new Date()
-  // const todaysDate = Number(initialTime.toLocaleDateString().replaceAll('-', ''))
-
-  // const [date, setDate] = useState(initialTime)
   const [time, setTime] = useState((initialTime))
 
   return (
@@ -76,32 +73,6 @@ export const PromptSchedule = ({ publishTime, prompt, setStatus, showPrompt }: {
               <CalendarIcon size={14} strokeWidth={1.75} />
             </span>
           </div>
-          {/* <div className='flex flex-col gap-2'>
-            <Label htmlFor='ScheduledDate'>Ange datum</Label>
-
-            <Calendar
-              id='ScheduledDate'
-              mode='single'
-              required={true}
-              className='border rounded w-auto'
-              autoFocus
-              selected={date}
-              weekStartsOn={1}
-              timeZone={timeZone}
-              onSelect={(dt) => {
-                setDate(dt)
-                const t = new Date(dt)
-                t.setHours(time.getHours())
-                t.setMinutes(time.getMinutes())
-                t.setSeconds(time.getSeconds())
-                setDate(dt)
-                setTime(t)
-              }}
-              disabled={(dt) => {
-                return Number(dt.toLocaleDateString().replaceAll('-', '')) < todaysDate
-              }}
-            />
-          </div> */}
         </div>
       </div>
     </Prompt>
