@@ -8,6 +8,8 @@ export function getTemplate(type: View): (id: string, payload?: Templates.Templa
       return Templates.planning
     case 'Event':
       return Templates.event
+    case 'Factbox':
+      return Templates.factbox
     default:
       throw new Error(`No template for ${type}`)
   }

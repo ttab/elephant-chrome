@@ -8,7 +8,7 @@ import { type View } from '@/types/index'
 
 export const DateChanger = ({ type }: {
   type: View
-}): JSX.Element => {
+}): JSX.Element | undefined => {
   const [{ from, to }] = useQuery()
 
   const currentDate = useMemo(() => {
@@ -23,11 +23,11 @@ export const DateChanger = ({ type }: {
   const linkTarget = validViews.find((view) => view.startsWith(type))
   const [query] = useQuery()
 
-  if (!linkTarget) {
-    throw new Error('Invalid view')
-  }
+  const changeDate = useLink(linkTarget || type)
 
-  const changeDate = useLink(linkTarget)
+  if (!linkTarget) {
+    return
+  }
 
   return (
     <div className='flex items-center'>

@@ -1,4 +1,4 @@
-import { Cable, BriefcaseBusiness, CalendarDaysIcon, CalendarPlus2, SearchIcon, ZapIcon, type LucideIcon, EarthIcon, UtilityPole } from '@ttab/elephant-ui/icons'
+import { Cable, BriefcaseBusiness, CalendarDaysIcon, CalendarPlus2, SearchIcon, ZapIcon, type LucideIcon, EarthIcon, UtilityPole, Boxes } from '@ttab/elephant-ui/icons'
 import type { ViewProps, View } from '../types'
 
 /**
@@ -68,6 +68,12 @@ export const applicationMenu: ApplicationMenu = {
           icon: UtilityPole,
           color: '#996633',
           target: 'sheet'
+        },
+        {
+          name: 'Factboxes',
+          label: 'Faktarutor',
+          icon: Boxes,
+          color: '#99c5c4'
         }
       ]
     },

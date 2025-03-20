@@ -8,7 +8,7 @@ import { useModal } from '../Modal/useModal'
 import { cva } from 'class-variance-authority'
 import type { ModalData } from '../Modal/ModalContext'
 
-type DocumentType = 'Planning' | 'Event' | 'Assignments' | 'Search' | 'Wires'
+type DocumentType = 'Planning' | 'Event' | 'Assignments' | 'Search' | 'Wires' | 'Factbox'
 
 export const WireRow = ({ row, handleOpen, openDocuments, type }: {
   type: DocumentType
