@@ -5,7 +5,7 @@ import { toast } from 'sonner'
 import type { Message } from '@ttab/elephant-api/user'
 import type { User } from '@/shared/User'
 
-export const UserMessagesSender = ({ children }: React.PropsWithChildren) => {
+export const UserMessagesReceiver = ({ children }: React.PropsWithChildren) => {
   const { user } = useRegistry()
   const { data } = useSession()
 
@@ -18,7 +18,9 @@ export const UserMessagesSender = ({ children }: React.PropsWithChildren) => {
     }
 
     void pollMessages(data.accessToken, user)
-      .catch((ex) => console.error(ex))
+      .catch((ex) => {
+        console.error('Unable to poll messages', ex)
+      })
   }, [data?.accessToken, user])
 
   return (
@@ -30,9 +32,9 @@ export const UserMessagesSender = ({ children }: React.PropsWithChildren) => {
 
 async function pollMessages(accessToken: string, user: User) {
   let lastId = -1
-  do {
+  while (true) {
     lastId = await execPolling(accessToken, user, lastId)
-  } while (lastId !== -500)
+  }
 }
 
 
@@ -46,9 +48,8 @@ async function execPolling(accessToken: string, user: User, lastId: number): Pro
 
     return Number(res.lastId)
   } catch (ex) {
-    console.error('Unable to poll messages', ex)
     toast.error('Misslyckades att ansluta till meddelandetjänsten, vänligen ladda om fönstret.')
-    return -500
+    throw ex
   }
 }
 

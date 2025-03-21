@@ -7,7 +7,7 @@ import { IndexedDBProvider } from './datastore/contexts/IndexedDBProvider.tsx'
 import { SupportedLanguagesProvider } from './datastore/contexts/SupportedLanguagesProvider.tsx'
 import { RepositoryEventsProvider } from './contexts/RepositoryEventsProvider.tsx'
 import { Init } from './components/Init/index.tsx'
-import { UserMessagesSender } from './components/UserMessagesSender.tsx'
+import { UserMessagesReceiver } from './components/UserMessagesReceiver.tsx'
 
 banner()
 
@@ -27,9 +27,9 @@ ReactDOM.createRoot(root).render(
               <ThemeProvider defaultTheme='light' storageKey='ele-ui-theme'>
                 <UserTrackerProvider>
                   <Init>
-                    <UserMessagesSender>
+                    <UserMessagesReceiver>
                       <App />
-                    </UserMessagesSender>
+                    </UserMessagesReceiver>
                   </Init>
                 </UserTrackerProvider>
               </ThemeProvider>
