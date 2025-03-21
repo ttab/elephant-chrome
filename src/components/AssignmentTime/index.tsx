@@ -35,18 +35,22 @@ export const AssignmentTime = ({ index }: {
       return true
     } else if (end && option.value === 'endexecution') {
       const aDate = new Date(end.toString())
+
       selectedLabel = aDate.toLocaleString('sv-SE', {
         hour: '2-digit',
         minute: '2-digit'
       })
+
       return true
     } else if (publishSlot) {
       const ts = getTimeSlot(publishSlot)
+
       if (ts && ts.value === option.value) {
         selectedLabel = option.label
         return true
       }
     }
+
     return false
   })
 

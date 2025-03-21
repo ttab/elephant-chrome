@@ -45,6 +45,7 @@ export const TimeSelectItem = ({ handleOnSelect, index, handleParentOpenChange }
   }, [valid, endTime, handleOnSelect, handleParentOpenChange])
 
   const timePickType = timePickTypes[0]
+
   return (
     <CommandItem
       key={timePickTypes[0].label}
