@@ -35,18 +35,22 @@ export const AssignmentTime = ({ index }: {
       return true
     } else if (end && option.value === 'endexecution') {
       const aDate = new Date(end.toString())
+
       selectedLabel = aDate.toLocaleString('sv-SE', {
         hour: '2-digit',
         minute: '2-digit'
       })
+
       return true
     } else if (publishSlot) {
       const ts = getTimeSlot(publishSlot)
+
       if (ts && ts.value === option.value) {
         selectedLabel = option.label
         return true
       }
     }
+
     return false
   })
 
@@ -62,7 +66,7 @@ export const AssignmentTime = ({ index }: {
             start_date: data?.start_date,
             start: getMidnightISOString(endDate),
             public: data?.public,
-            publish: data?.publish
+            ...(data?.publish && { publish: data.publish })
           }
         }).data)
         break
@@ -76,7 +80,7 @@ export const AssignmentTime = ({ index }: {
             full_day: 'false',
             start_date: data?.start_date,
             public: data?.public,
-            publish: data?.publish,
+            ...(data?.publish && { publish: data.publish }),
             publish_slot: (getMedianSlot(timeSlotTypes, value)) + '',
             start: getMidnightISOString(endDate)
           }
@@ -92,7 +96,7 @@ export const AssignmentTime = ({ index }: {
             end: new Date(`${endDate}T${selectValue}`).toISOString(),
             start: getMidnightISOString(endDate),
             public: data?.public,
-            publish: data?.publish
+            ...(data?.publish && { publish: data.publish })
           }
         }).data)
         break
@@ -111,7 +115,7 @@ export const AssignmentTime = ({ index }: {
         end: executionEnd,
         start: executionStart,
         public: data?.public,
-        publish: data?.publish
+        ...(data?.publish && { publish: data.publish })
       }
     })
 
