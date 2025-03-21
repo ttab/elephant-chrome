@@ -7,6 +7,7 @@ interface ServerUrls {
   repositoryUrl: URL
   contentApiUrl: URL
   spellcheckUrl: URL
+  userUrl: URL
   faroUrl: URL
 }
 
@@ -24,6 +25,7 @@ export async function getServerUrls(): Promise<ServerUrls> {
       webSocketUrl,
       contentApiUrl,
       spellcheckUrl,
+      userUrl,
       faroUrl
     } = await response.json() as ServerUrls
 
@@ -33,6 +35,7 @@ export async function getServerUrls(): Promise<ServerUrls> {
       || typeof webSocketUrl !== 'string' || webSocketUrl === ''
       || typeof contentApiUrl !== 'string' || contentApiUrl === ''
       || typeof spellcheckUrl !== 'string' || spellcheckUrl === ''
+      || typeof userUrl !== 'string' || userUrl === ''
       || typeof faroUrl !== 'string' || faroUrl === ''
     ) {
       throw new Error('One or several server urls are empty')
@@ -46,6 +49,7 @@ export async function getServerUrls(): Promise<ServerUrls> {
       repositoryUrl: new URL(repositoryUrl),
       contentApiUrl: new URL(contentApiUrl),
       spellcheckUrl: new URL(spellcheckUrl),
+      userUrl: new URL(userUrl),
       faroUrl: new URL(faroUrl)
     }
   } catch (ex) {

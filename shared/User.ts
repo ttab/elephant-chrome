@@ -1,14 +1,15 @@
 import { TwirpFetchTransport } from '@protobuf-ts/twirp-transport'
 import type { RpcError } from '@protobuf-ts/runtime-rpc'
+import type { PollMessagesResponse } from '@ttab/elephant-api/user'
 import { MessagesClient } from '@ttab/elephant-api/user'
 import type { TokenService } from './TokenService.js'
 import { meta } from './meta.js'
 
 export class User {
-  readonly #tokenService: TokenService
+  readonly #tokenService?: TokenService
   readonly #client: MessagesClient
 
-  constructor(userUrl: string, tokenService: TokenService) {
+  constructor(userUrl: string, tokenService?: TokenService) {
     this.#tokenService = tokenService
     this.#client = new MessagesClient(
       new TwirpFetchTransport({
@@ -36,6 +37,10 @@ export class User {
   ): Promise<void> {
     if (!recipient) {
       throw new Error('Recipient required')
+    }
+
+    if (!this.#tokenService) {
+      throw new Error('Token service is required to push messages')
     }
 
     try {
@@ -71,6 +76,33 @@ export class User {
       }, meta(accessToken))
     } catch (err: unknown) {
       throw new Error('Unable to push message', { cause: err })
+    }
+  }
+
+  /**
+   * Poll (system) messages for an user
+   *
+   * @param {string} afterId - The message id after which to poll for new messages,
+   *                           set to -1 for the initial request.
+   * @param {string} accessToken - The user's access token (recipient)
+   *
+   * @returns {Promise<void>}
+   */
+  async pollMessages(
+    afterId: number, accessToken: string
+  ): Promise<PollMessagesResponse> {
+    if (!accessToken) {
+      throw new Error('Access token required')
+    }
+
+    try {
+      const { response } = await this.#client.pollMessages({
+        afterId: BigInt(afterId)
+      }, meta(accessToken))
+
+      return response
+    } catch (err: unknown) {
+      throw new Error('Unable to poll messages', { cause: err })
     }
   }
 }
