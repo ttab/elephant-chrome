@@ -2,9 +2,6 @@ import { useState, useEffect, useCallback } from 'react'
 import {
   Command,
   CommandItem,
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
   Button
 } from '@ttab/elephant-ui'
 import { timePickTypes } from '../../defaults/assignmentTimeConstants'
@@ -34,10 +31,6 @@ export const TimeSelectItem = ({ handleOnSelect, index, handleParentOpenChange }
     }
   }, [data?.end])
 
-  const handleOpenChange = useCallback((isOpen: boolean): void => {
-    setOpen(isOpen)
-  }, [])
-
   const handleTimeChange = useCallback((time: string): void => {
     setEndTime(time)
     setValid(/^([0-1]?[0-9]|2[0-4]):([0-5][0-9])(:[0-5][0-9])?$/.test(time))
@@ -64,76 +57,59 @@ export const TimeSelectItem = ({ handleOnSelect, index, handleParentOpenChange }
         }
       }}
     >
-      <Popover open={open} onOpenChange={handleOpenChange}>
-        <PopoverTrigger asChild>
-          <Button
-            variant='ghost'
-            className='flex flex-row space-x-2 items-center grow'
-            onKeyDown={(event) => {
-              if (event.key === 'Enter') {
-                event.preventDefault()
-                event.stopPropagation()
-                setOpen(!open)
-              }
-            }}
-          >
-            {timePickType.icon && <timePickType.icon {...timePickType.iconProps} />}
-            Välj tid
-          </Button>
-        </PopoverTrigger>
+      <Command>
+        <div className='flex flex-col py-2'>
+          <>
+            <TimeInput
+              defaultTime={endTime}
+              handleOnChange={handleTimeChange}
+              handleOnSelect={handleOnTimeSelect}
+              setOpen={setOpen}
+            />
+          </>
 
-        <PopoverContent className='p-0' align='start' side='right'>
-          <Command>
-            <div className='py-2'>
-              <div className='p-2'>
-                <TimeInput
-                  defaultTime={endTime}
-                  handleOnChange={handleTimeChange}
-                  handleOnSelect={handleOnTimeSelect}
-                  setOpen={setOpen}
-                />
-              </div>
+          <div className='flex items-center gap-2 px-2'>
+            <Button
+              variant='ghost'
+              onClick={() => {
+                setOpen(false)
+                handleParentOpenChange(false)
+              }}
+              onKeyDown={(evt) => {
+                if (evt.key === 'Escape' || evt.key === 'Enter') {
+                  evt.preventDefault()
+                  evt.stopPropagation()
+                  setOpen(false)
+                  handleParentOpenChange(false)
+                }
+              }}
+            >
+              Avbryt
+            </Button>
 
-              <div className='flex items-center justify-end gap-4 px-2 pt-2'>
-                <Button
-                  variant='ghost'
-                  onClick={() => setOpen(false)}
-                  onKeyDown={(evt) => {
-                    if (evt.key === 'Escape' || evt.key === 'Enter') {
-                      evt.preventDefault()
-                      evt.stopPropagation()
-                      setOpen(false)
-                    }
-                  }}
-                >
-                  Avbryt
-                </Button>
-
-                <Button
-                  variant='outline'
-                  onClick={(evt) => {
-                    evt.preventDefault()
-                    evt.stopPropagation()
-                    handleOnSelect({ value: timePickType.value, selectValue: endTime })
-                    setOpen(false)
-                    handleParentOpenChange(false)
-                  }}
-                  onKeyDown={(evt) => {
-                    evt.preventDefault()
-                    evt.stopPropagation()
-                    handleOnSelect({ value: timePickType.value, selectValue: endTime })
-                    setOpen(false)
-                    handleParentOpenChange(false)
-                  }}
-                  disabled={!valid}
-                >
-                  Klar
-                </Button>
-              </div>
-            </div>
-          </Command>
-        </PopoverContent>
-      </Popover>
+            <Button
+              variant='outline'
+              onClick={(evt) => {
+                evt.preventDefault()
+                evt.stopPropagation()
+                handleOnSelect({ value: timePickType.value, selectValue: endTime })
+                setOpen(false)
+                handleParentOpenChange(false)
+              }}
+              onKeyDown={(evt) => {
+                evt.preventDefault()
+                evt.stopPropagation()
+                handleOnSelect({ value: timePickType.value, selectValue: endTime })
+                setOpen(false)
+                handleParentOpenChange(false)
+              }}
+              disabled={!valid}
+            >
+              Klar
+            </Button>
+          </div>
+        </div>
+      </Command>
     </CommandItem>
   )
 }
