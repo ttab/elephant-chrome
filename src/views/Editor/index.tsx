@@ -101,7 +101,7 @@ function EditorWrapper(props: ViewProps & {
   const { provider, synced, user } = useCollaboration()
   const openFactboxEditor = useLink('Factbox')
   const [notes] = useYValue<Block[] | undefined>('meta.core/note')
-  const [,setIsFocused] = useAwareness(props.documentId)
+  const [, setIsFocused] = useAwareness(props.documentId)
 
   // Plugin configuration
   const getConfiguredPlugins = () => {

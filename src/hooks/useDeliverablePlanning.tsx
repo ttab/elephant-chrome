@@ -1,5 +1,5 @@
 import { getValueByYPath } from '@/lib/yUtils'
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import type * as Y from 'yjs'
 import { useCollaborationDocument } from './useCollaborationDocument'
 import { useYValue } from './useYValue'
@@ -23,6 +23,7 @@ export const useDeliverablePlanning = (deliverableId: string): DeliverableRefere
   const planningUuid = usePlanningIdFromAssignmentId(assignmentUuid)
   const [articleAssignmentLinks] = useYValue<EleBlock[]>('links.core/assignment')
   const planningDoc = useCollaborationDocument({ documentId: planningUuid })
+  const [yRoot, setYRoot] = useState<Y.Map<unknown> | undefined>()
 
   // Find the assignment uuid in the current collaborative document (i.e. article or flash)
   // FIXME: It seems articleAssignmentLinks are sometimes/always empty on articles created in Elephant
@@ -33,19 +34,18 @@ export const useDeliverablePlanning = (deliverableId: string): DeliverableRefere
 
     for (const assignment of articleAssignmentLinks) {
       if (assignment.type === 'core/assignment') {
-        setAssignmentUuid(assignment.uuid)
+        setAssignmentUuid((prev) => (prev !== assignment.uuid ? assignment.uuid : prev))
         break
       }
     }
   }, [articleAssignmentLinks])
 
-
-  const yRoot = useMemo(() => {
-    return planningDoc?.document && planningDoc.synced
-      ? planningDoc.document.getMap('ele')
-      : null
+  useEffect(() => {
+    if (planningDoc?.document) {
+      const ele = planningDoc.document.getMap('ele')
+      setYRoot((prev) => (prev !== ele) ? ele : prev)
+    }
   }, [planningDoc])
-
 
   // Expose helper callback function to retrieve the assignment index from the planning document
   const assignmentIndex = useCallback(() => {

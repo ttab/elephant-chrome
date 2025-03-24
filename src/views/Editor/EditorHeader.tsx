@@ -16,7 +16,7 @@ export const EditorHeader = ({ documentId }: { documentId: string }): JSX.Elemen
   const deliverablePlanning = useDeliverablePlanning(documentId)
   const [documentStatus, setDocumentStatus] = useDocumentStatus(documentId)
   const containerRef = useRef<HTMLElement | null>(null)
-  const [publishTime, setPublishTime] = useState<Date | null>(null)
+  const [publishTime, setPublishTime] = useState<string | null>(null)
 
   useEffect(() => {
     containerRef.current = (document.getElementById(viewId))
@@ -27,7 +27,7 @@ export const EditorHeader = ({ documentId }: { documentId: string }): JSX.Elemen
     if (deliverablePlanning) {
       const [ass] = getValueByYPath<EleBlock>(deliverablePlanning.yRoot, `meta.core/assignment[${deliverablePlanning.assignmentIndex()}]`)
       if (ass?.id === deliverablePlanning.assignmentUuid) {
-        setPublishTime(new Date(ass.data.publish))
+        setPublishTime((prev) => (ass.data.publish !== prev) ? ass.data.publish : prev)
       }
     }
   }, [deliverablePlanning])
@@ -74,7 +74,7 @@ export const EditorHeader = ({ documentId }: { documentId: string }): JSX.Elemen
                   <StatusMenu
                     type='core/article'
                     status={documentStatus}
-                    publishTime={publishTime || undefined}
+                    publishTime={publishTime ? new Date(publishTime) : undefined}
                     setStatus={setArticleStatus}
                   />
                 )}
