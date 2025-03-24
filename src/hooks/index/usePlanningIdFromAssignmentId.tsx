@@ -8,7 +8,7 @@ import { QueryV1, TermQueryV1 } from '@ttab/elephant-api/index'
  * or flash document and need to find out which planning document it is related to as article
  * or flash document only have a reference to the assignment in the planning.
  */
-export const usePlanningIdFromAssignmentId = (assignmentId: string): string => {
+export const useDeliverablePlanningId = (assignmentId: string): string => {
   const { data: session } = useSession()
   const { index } = useRegistry()
   const [planningId, setPlanningId] = useState('')
@@ -24,7 +24,7 @@ export const usePlanningIdFromAssignmentId = (assignmentId: string): string => {
           conditions: {
             oneofKind: 'term',
             term: TermQueryV1.create({
-              field: 'document.meta.core_assignment.id',
+              field: 'document.meta.core_assignment.rel.deliverable.uuid',
               value: assignmentId
             })
           }

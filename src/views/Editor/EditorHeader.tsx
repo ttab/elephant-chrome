@@ -25,8 +25,10 @@ export const EditorHeader = ({ documentId }: { documentId: string }): JSX.Elemen
 
   useEffect(() => {
     if (deliverablePlanning) {
-      const [ass] = getValueByYPath<EleBlock>(deliverablePlanning.yRoot, `meta.core/assignment[${deliverablePlanning.assignmentIndex()}]`)
-      if (ass?.id === deliverablePlanning.assignmentUuid) {
+      const { index } = deliverablePlanning.getAssignment()
+      const [ass] = getValueByYPath<EleBlock>(deliverablePlanning.yRoot, `meta.core/assignment[${index}]`)
+
+      if (ass) {
         setPublishTime((prev) => (ass.data.publish !== prev) ? ass.data.publish : prev)
       }
     }
@@ -47,10 +49,12 @@ export const EditorHeader = ({ documentId }: { documentId: string }): JSX.Elemen
       return
     }
 
-    setValueByYPath(deliverablePlanning.yRoot, `meta.core/assignment[${deliverablePlanning.assignmentIndex()}].data.publish`, data.time.toISOString())
-    void setDocumentStatus(newStatus)
+    const { index } = deliverablePlanning.getAssignment()
+    if (index > -1) {
+      setValueByYPath(deliverablePlanning.yRoot, `meta.core/assignment[${index}].data.publish`, data.time.toISOString())
+      void setDocumentStatus(newStatus)
+    }
   }, [deliverablePlanning, setDocumentStatus])
-
 
   return (
     <ViewHeader.Root>
@@ -70,14 +74,16 @@ export const EditorHeader = ({ documentId }: { documentId: string }): JSX.Elemen
               <>
                 <ViewHeader.RemoteUsers documentId={documentId} />
 
-                {!!deliverablePlanning && (
-                  <StatusMenu
-                    type='core/article'
-                    status={documentStatus}
-                    publishTime={publishTime ? new Date(publishTime) : undefined}
-                    setStatus={setArticleStatus}
-                  />
-                )}
+                <div className='border bg-pink'>
+                  {!!deliverablePlanning && (
+                    <StatusMenu
+                      type='core/article'
+                      status={documentStatus}
+                      publishTime={publishTime ? new Date(publishTime) : undefined}
+                      setStatus={setArticleStatus}
+                    />
+                  )}
+                </div>
               </>
             )}
           </div>

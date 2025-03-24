@@ -34,7 +34,7 @@ export const useDocumentStatus = (uuid?: string): [
 
       const headsEntries = heads && Object.entries(heads)
 
-      if (!headsEntries) {
+      if (!headsEntries?.length) {
         return {
           version,
           name: 'draft',
