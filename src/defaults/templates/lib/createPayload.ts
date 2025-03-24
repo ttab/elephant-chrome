@@ -18,6 +18,7 @@ export function createPayload(document: Y.Doc, index?: number): TemplatePayload 
 
   // Get data from assignment, if available otherwise get it from root meta
   const slugline = (currentMeta.get('tt/slugline') as Y.Array<unknown>)?.toJSON() || []
+  const description = (currentMeta.get('core/description') as Y.Array<unknown>)?.toJSON() || []
 
   // Could be either YXMlText or string, convert to string
   const rootTitle = (currentAssignmentMeta || root)
@@ -36,7 +37,8 @@ export function createPayload(document: Y.Doc, index?: number): TemplatePayload 
     title,
     meta: {
       'tt/slugline': ungroup({ 'tt:/slugline': slugline }),
-      'core/newsvalue': ungroup({ 'core/newsvalue': newsvalue })
+      'core/newsvalue': ungroup({ 'core/newsvalue': newsvalue }),
+      'core/description': ungroup({ 'core/description': description })
     },
     links: {
       'core/section': ungroup({ 'core/section': section }),
