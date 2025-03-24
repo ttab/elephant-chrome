@@ -13,6 +13,7 @@ import { Repository } from '@/shared/Repository'
 import { Spellchecker } from '@/shared/Spellchecker'
 import { Index } from '@/shared/Index'
 import { Workflow } from '@/shared/Workflow'
+import { User } from '@/shared/User'
 
 const DEFAULT_LOCALE = 'en-BR'
 const DEFAULT_TIMEZONE = 'Europe/Stockholm'
@@ -28,12 +29,14 @@ export interface RegistryProviderState {
     repositoryUrl: URL
     contentApiUrl: URL
     spellcheckUrl: URL
+    userUrl: URL
     faroUrl: URL
   }
   repository?: Repository
   workflow?: Workflow
   index?: Index
   spellchecker?: Spellchecker
+  user?: User
   dispatch: React.Dispatch<Partial<RegistryProviderState>>
 }
 
@@ -48,6 +51,7 @@ const initialState: RegistryProviderState = {
     repositoryUrl: new URL('http://localhost'),
     contentApiUrl: new URL('http://localhost'),
     spellcheckUrl: new URL('http://localhost'),
+    userUrl: new URL('http://localhost'),
     faroUrl: new URL('http://localhost')
   },
   dispatch: () => { }
@@ -58,7 +62,7 @@ const initialState: RegistryProviderState = {
 export const RegistryContext = createContext(initialState)
 
 
-/** Registry contenxt provider component */
+/** Registry context provider component */
 export const RegistryProvider = ({ children }: PropsWithChildren): JSX.Element => {
   const [state, dispatch] = useReducer(reducer, initialState)
   const [isInitialized, setIsInitialized] = useState<boolean>(false)
@@ -69,13 +73,15 @@ export const RegistryProvider = ({ children }: PropsWithChildren): JSX.Element =
       const workflow = new Workflow(server.repositoryUrl.href)
       const index = new Index(server.indexUrl.href)
       const spellchecker = new Spellchecker(server.spellcheckUrl.href)
+      const user = new User(server.userUrl.href)
 
       dispatch({
         server,
         workflow,
         repository,
         index,
-        spellchecker
+        spellchecker,
+        user
       })
       setIsInitialized(true)
     }).catch((ex: Error) => {
@@ -95,7 +101,7 @@ export const RegistryProvider = ({ children }: PropsWithChildren): JSX.Element =
  * Registry context reducer
  */
 const reducer = (state: RegistryProviderState, action: Partial<RegistryProviderState>): RegistryProviderState => {
-  const { locale, timeZone, server, repository, workflow, index, spellchecker } = action
+  const { locale, timeZone, server, repository, workflow, index, spellchecker, user } = action
   const partialState: Partial<RegistryProviderState> = {}
 
   if (typeof locale === 'string') {
@@ -120,6 +126,10 @@ const reducer = (state: RegistryProviderState, action: Partial<RegistryProviderS
 
   if (typeof spellchecker === 'object') {
     partialState.spellchecker = spellchecker
+  }
+
+  if (typeof user === 'object') {
+    partialState.user = user
   }
 
   if (typeof server === 'object') {
