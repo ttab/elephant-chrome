@@ -87,18 +87,20 @@ export const AssignmentTime = ({ index }: {
         }).data)
         break
 
-      case 'endexecution':
+      case 'endexecution': {
+        const endValue = new Date(`${endDate}T${selectValue}`).toISOString()
         setData(Block.create({
           data: {
             end_date: data?.end_date,
             full_day: 'false',
             start_date: data?.start_date,
-            end: new Date(`${endDate}T${selectValue}`).toISOString(),
-            start: getMidnightISOString(endDate),
+            end: endValue,
+            start: assignmentType === 'text' ? endValue : getMidnightISOString(endDate),
             public: data?.public,
-            ...(data?.publish && { publish: data.publish })
+            ...(assignmentType === 'text' ? { publish: endValue } : data?.publish && { publish: data.publish })
           }
         }).data)
+      }
         break
       default:
         break
