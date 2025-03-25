@@ -11,6 +11,7 @@ import logger from '../../../lib/logger.js'
  */
 export const GET: RouteHandler = async (req: Request, { cache, repository, res }) => {
   const uuid = req.params.id
+  const version = Number(req.query.version || '0')
 
   const { session } = res.locals
 
@@ -40,7 +41,8 @@ export const GET: RouteHandler = async (req: Request, { cache, repository, res }
     // Fetch content fron repository
     const doc = await repository.getDocument({
       uuid,
-      accessToken: session?.accessToken
+      accessToken: session?.accessToken,
+      version
     }).catch((ex) => {
       throw new Error('get document from repository', { cause: ex })
     })
@@ -52,11 +54,11 @@ export const GET: RouteHandler = async (req: Request, { cache, repository, res }
       }
     }
 
-    const { document, version } = toGroupedNewsDoc(doc)
+    const { document, version: docVersion } = toGroupedNewsDoc(doc)
 
     return {
       payload: {
-        version,
+        version: docVersion,
         document
       }
     }

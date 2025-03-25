@@ -171,15 +171,11 @@ export const AssignmentRow = ({ index, onSelect, isFocused = false, asDialog }: 
       <div className='flex flex-row gap-6 items-center justify-items-between justify-between'>
 
         <div className='flex grow gap-2 items-center'>
-          <Button
-            variant='icon'
-            className='p-0 pr-2'
-          >
-            <AssignmentType
-              path={`meta.core/assignment[${index}].meta.core/assignment-type`}
-              inProgress={!!documentId}
-            />
-          </Button>
+          <AssignmentType
+            path={`meta.core/assignment[${index}].meta.core/assignment-type`}
+            editable={!documentId}
+            readOnly
+          />
           <AssigneeAvatars assignees={authors.map((author) => author.title)} />
 
           <div className='hidden items-center @3xl/view:flex'>

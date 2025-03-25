@@ -17,6 +17,8 @@ const PLANNING_TITLE = 'Test planning'
 const SLUGLINE = 'testline'
 const SECTION = 'Inrikes'
 const NEWSVALUE = '4'
+const DESCRIPTION = 'Existing public description'
+
 const WIRE = {
   id: 'b2208554-0c23-59ce-9895-418f6281930d',
   score: 0,
@@ -247,7 +249,8 @@ describe('createArticle', () => {
           title: PLANNING_TITLE,
           meta: {
             'core/newsvalue': [Block.create({ type: 'core/newsvalue', value: NEWSVALUE })],
-            'tt/slugline': [Block.create({ type: 'tt/slugline', value: SLUGLINE })]
+            'tt/slugline': [Block.create({ type: 'tt/slugline', value: SLUGLINE })],
+            'core/description': [Block.create({ type: 'core/description', role: 'public', data: { text: DESCRIPTION } })]
           },
           links: {
             'core/section': [Block.create({

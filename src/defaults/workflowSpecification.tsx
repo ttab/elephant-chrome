@@ -307,5 +307,29 @@ export const WorkflowSpecifications: Record<string, WorkflowSpecification> = {
         }
       }
     }
+  },
+  'core/factbox': {
+    draft: {
+      title: 'Utkast',
+      description: 'Du jobbar på ett utkast av faktarutan',
+      transitions: {
+        usable: {
+          verify: true,
+          title: 'Publicera',
+          description: 'Publicera faktarutan för användning'
+        }
+      }
+    },
+    usable: {
+      title: 'Användbar',
+      description: 'Fakturan är användbar',
+      transitions: {
+        cancelled: {
+          verify: true,
+          title: 'Arkivera',
+          description: 'Dra tillbaka och arkivera den här faktarutan'
+        }
+      }
+    }
   }
 }

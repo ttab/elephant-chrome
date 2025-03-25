@@ -29,7 +29,7 @@ import { Wire } from '@/views/Wire'
 
 interface TableProps<TData, TValue> {
   columns: Array<ColumnDef<TData, TValue>>
-  type: 'Planning' | 'Event' | 'Assignments' | 'Search' | 'Wires'
+  type: 'Planning' | 'Event' | 'Assignments' | 'Search' | 'Wires' | 'Factbox'
   onRowSelected?: (row?: TData) => void
 }
 
@@ -99,11 +99,13 @@ export const Table = <TData, TValue>({
         return
       }
 
+      const originalRow = row.original as { _id: string | undefined, id: string }
+      const id = originalRow._id ?? originalRow.id
       handleLink({
         event,
         dispatch,
         viewItem: state.viewRegistry.get(type),
-        props: { id: (row.original as { _id: string })._id },
+        props: { id },
         viewId: crypto.randomUUID(),
         origin,
         history,
@@ -262,7 +264,7 @@ export const Table = <TData, TValue>({
 
   return (
     <>
-      {type !== 'Wires' && <Toolbar columns={columns} />}
+      {(type !== 'Wires' && type !== 'Factbox') && <Toolbar columns={columns} />}
 
       {(type === 'Planning' || type === 'Event') && (
         <NewItems.Root>

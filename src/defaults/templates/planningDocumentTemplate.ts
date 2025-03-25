@@ -8,6 +8,8 @@ import type { TemplatePayload } from '.'
  * @returns Document
  */
 export function planningDocumentTemplate(documentId: string, payload?: TemplatePayload): Document {
+  const existingPublicDescription = payload?.meta?.['core/description']?.find((desc) => desc.role === 'public')
+
   return Document.create({
     uuid: documentId,
     type: 'core/planning-item',
@@ -35,7 +37,7 @@ export function planningDocumentTemplate(documentId: string, payload?: TemplateP
         type: 'tt/slugline'
       })],
 
-      Block.create({
+      existingPublicDescription || Block.create({
         type: 'core/description',
         // FIXME: Send description from event to planning
         data: { text: '' },

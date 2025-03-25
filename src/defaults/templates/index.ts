@@ -13,6 +13,7 @@ export interface TemplatePayload {
     'tt/slugline'?: Block[]
     'core/newsvalue'?: Block[]
     'core/planning-item'?: Block[]
+    'core/description'?: Block[]
   }
   links?: {
     'core/section'?: Block[]

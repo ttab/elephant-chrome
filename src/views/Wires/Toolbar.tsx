@@ -10,7 +10,7 @@ export const Toolbar = (): JSX.Element => {
   const [pages, setPages] = useState<string[]>([])
   const [search, setSearch] = useState<string | undefined>('')
 
-  const page = pages[pages.length - 1]
+  const page = pages[pages.length - 1] || ''
 
   const props: FilterProps = {
     page,

@@ -6,9 +6,10 @@ import { Button, Tooltip } from '@ttab/elephant-ui'
 import { useCallback, useMemo } from 'react'
 import { cn } from '@ttab/elephant-ui/utils'
 
-export const Type = ({ data, deliverableId }: {
+export const Type = ({ data, deliverableId, className }: {
   data: DefaultValueOption[]
   deliverableId?: AssignmentMetaExtended['deliverableId']
+  className?: string
 }): JSX.Element => {
   const openArticle = useLink('Editor')
   const openFlash = useLink('Flash')
@@ -32,9 +33,10 @@ export const Type = ({ data, deliverableId }: {
         return item.icon && (
           <Button
             key={index}
+            size='xs'
             variant='icon'
             onClick={(event) => handleLink(event, item)}
-            className={cn('p-0 items-start', deliverableId ? 'cursor-pointer' : 'cursor-not-allowed')}
+            className={cn('p-0', deliverableId ? 'cursor-pointer' : 'cursor-not-allowed', className)}
           >
             <Tooltip content={item.label}>
               <item.icon size={18} strokeWidth={1.75} className='mr-2 text-muted-foreground' />
@@ -43,5 +45,5 @@ export const Type = ({ data, deliverableId }: {
         )
       })}
     </div>
-  ), [data, deliverableId, handleLink])
+  ), [data, deliverableId, handleLink, className])
 }
