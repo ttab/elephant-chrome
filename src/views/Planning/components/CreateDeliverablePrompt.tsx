@@ -1,21 +1,20 @@
 import { type MouseEvent } from 'react'
-import { createPayload } from '@/defaults/templates/lib/createPayload'
 import { Prompt } from '@/components'
-import { createDocument } from '@/lib/createYItem'
 import { useCollaboration } from '@/hooks/useCollaboration'
-import { articleDocumentTemplate } from '@/defaults/templates/articleDocumentTemplate'
+import {
+  article as articleTpl,
+  flash as flashTpl,
+  type TemplatePayload
+} from '@/defaults/templates/'
 import { useSession } from 'next-auth/react'
-import { fromYjsNewsDoc } from '@/shared/transformations/yjsNewsDoc'
-import { fromGroupedNewsDoc } from '@/shared/transformations/groupedNewsDoc'
 import { useRegistry } from '@/hooks/useRegistry'
 
 /**
- * Document creation dialog, responsible for creating articles and flashes in the repository.
- *
- * TODO: Display information that will be forwarded from the assignment
+ * Deliverable document creation dialog, responsible for creating articles and flashes in the repository.
  */
-export function CreateDeliverablePrompt({ index, onClose, title, documentLabel }: {
-  index: number
+export function CreateDeliverablePrompt({ deliverableType, payload, onClose, title, documentLabel }: {
+  deliverableType: string
+  payload: TemplatePayload
   title: string
   documentLabel: string
   onClose: (
@@ -32,18 +31,12 @@ export function CreateDeliverablePrompt({ index, onClose, title, documentLabel }
   }
 
   const onCreateDocument = async () => {
-    // Create the document
-    const payload = createPayload(provider.document, index)
-    const [id, doc] = createDocument({
-      template: (id: string) => {
-        return articleDocumentTemplate(id, payload)
-      }
-    })
-
-    // Save document to repository
-    const { documentResponse } = fromYjsNewsDoc(doc)
-    const { document } = fromGroupedNewsDoc(documentResponse)
-    await repository.saveDocument(document, session.accessToken, BigInt(-1))
+    const id = crypto.randomUUID()
+    await repository.saveDocument(
+      (deliverableType === 'flash') ? flashTpl(id, payload) : articleTpl(id, payload),
+      session.accessToken,
+      BigInt(-1)
+    )
 
     return id
   }

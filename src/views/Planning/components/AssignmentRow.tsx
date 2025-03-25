@@ -10,13 +10,15 @@ import { useLink } from '@/hooks/useLink'
 import { Prompt } from '@/components'
 import { useCollaboration } from '@/hooks/useCollaboration'
 import { Button } from '@ttab/elephant-ui'
-import { type Block } from '@ttab/elephant-api/newsdoc'
+import type { Block } from '@ttab/elephant-api/newsdoc'
 import { deleteByYPath } from '@/lib/yUtils'
 import { useOpenDocuments } from '@/hooks/useOpenDocuments'
 import { cn } from '@ttab/elephant-ui/utils'
 import { useNavigationKeys } from '@/hooks/useNavigationKeys'
 import { CreateDeliverablePrompt } from './CreateDeliverablePrompt'
 import { appendDocumentToAssignment } from '@/lib/createYItem'
+import { createPayload } from '@/defaults/templates/lib/createPayload'
+import type { TemplatePayload } from '@/defaults/templates'
 
 
 export const AssignmentRow = ({ index, onSelect, isFocused = false, asDialog }: {
@@ -44,7 +46,7 @@ export const AssignmentRow = ({ index, onSelect, isFocused = false, asDialog }: 
   const [slugline] = useYValue<string>(`${base}.meta.tt/slugline[0].value`)
 
   const [showVerifyDialog, setShowVerifyDialog] = useState<boolean>(false)
-  const [showCreateDialog, setShowCreateDialog] = useState<boolean>(false)
+  const [showCreateDialogPayload, setShowCreateDialogPayload] = useState<TemplatePayload | null>(null)
 
   const documentId = articleId || flashId
   const isDocument = assignmentType === 'flash' || assignmentType === 'text'
@@ -63,6 +65,7 @@ export const AssignmentRow = ({ index, onSelect, isFocused = false, asDialog }: 
         : undefined
   }, [publishTime, assignmentType, startTime])
 
+  // Open a deliverable (e.g. article or flash) callback helper.
   const onOpenEvent = useCallback(<T extends HTMLElement>(event: MouseEvent<T> | KeyboardEvent) => {
     event.preventDefault()
     event.stopPropagation()
@@ -78,11 +81,12 @@ export const AssignmentRow = ({ index, onSelect, isFocused = false, asDialog }: 
         undefined,
         event instanceof KeyboardEvent && event.key === ' ')
     } else {
-      if (!asDialog) {
-        setShowCreateDialog(true)
+      if (!asDialog && provider?.document) {
+        // Show create dialog with payload based on current assignment
+        setShowCreateDialogPayload(createPayload(provider.document, index) || null)
       }
     }
-  }, [documentId, openDocument, setShowCreateDialog, asDialog])
+  }, [documentId, provider?.document, index, openDocument, setShowCreateDialogPayload, asDialog])
 
   const rowRef = useRef<HTMLDivElement>(null)
   useEffect(() => {
@@ -240,7 +244,7 @@ export const AssignmentRow = ({ index, onSelect, isFocused = false, asDialog }: 
         />
       )}
 
-      {showCreateDialog && !slugline && (
+      {showCreateDialogPayload && !slugline && assignmentType !== 'flash' && (
         <Prompt
           title='Slugg saknas'
           description='Vänligen lägg till en slugg på uppdraget. Därefter kan du skapa en text.'
@@ -248,14 +252,15 @@ export const AssignmentRow = ({ index, onSelect, isFocused = false, asDialog }: 
           onPrimary={(event) => {
             event.preventDefault()
             event.stopPropagation()
-            setShowCreateDialog(false)
+            setShowCreateDialogPayload(null)
           }}
         />
       )}
 
-      {showCreateDialog && slugline && (
+      {showCreateDialogPayload && (slugline || assignmentType === 'flash') && (
         <CreateDeliverablePrompt
-          index={index}
+          payload={showCreateDialogPayload}
+          deliverableType={assignmentType || 'article'}
           title={title || ''}
           documentLabel={documentLabel || ''}
           onClose={(event, id) => {
@@ -275,7 +280,7 @@ export const AssignmentRow = ({ index, onSelect, isFocused = false, asDialog }: 
               openDocument(event, { id }, 'blank')
             }
 
-            setShowCreateDialog(false)
+            setShowCreateDialogPayload(null)
           }}
         />
       )}

@@ -20,7 +20,7 @@ export function createPayload(document: Y.Doc, index?: number): TemplatePayload 
   const slugline = (currentMeta.get('tt/slugline') as Y.Array<unknown>)?.toJSON() || []
 
   // Could be either YXMlText or string, convert to string
-  const rootTitle = (currentAssignmentMeta || root)
+  const rootTitle = (currentAssignment || root)
     ?.get('title')
   const title = typeof rootTitle === 'object'
     ? (rootTitle as Y.XmlText).toJSON()
