@@ -14,8 +14,9 @@ import type { Document } from '@ttab/elephant-api/newsdoc'
 import type { RpcError, FinishedUnaryCall } from '@protobuf-ts/runtime-rpc'
 import type * as Y from 'yjs'
 import { isValidUUID } from '../src-srv/utils/isValidUUID.js'
-import { fromYjsNewsDoc } from '../src-srv/utils/transformations/yjsNewsDoc.js'
-import { fromGroupedNewsDoc } from '../src-srv/utils/transformations/groupedNewsDoc.js'
+import { fromYjsNewsDoc } from '@/shared/transformations/yjsNewsDoc.js'
+import { fromGroupedNewsDoc } from '@/shared/transformations/groupedNewsDoc.js'
+
 import { meta } from './meta.js'
 
 export interface Session {

@@ -4,9 +4,9 @@ import { type Document } from '@hocuspocus/server'
 import type {
   EleDocumentResponse
 } from '@/shared/types/index.js'
-import { toYMap } from './lib/toYMap.js'
+import { toYMap } from './toYMap'
 import { slateNodesToInsertDelta, yTextToSlateElement } from '@slate-yjs/core'
-import createHash from '@/shared/createHash.js'
+import createHash from '../createHash.js'
 import { type TBElement } from '@ttab/textbit'
 
 

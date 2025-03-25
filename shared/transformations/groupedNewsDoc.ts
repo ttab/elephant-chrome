@@ -7,7 +7,7 @@ import type {
   EleBlockGroup
 } from '@/shared/types/index.js'
 
-import { newsDocToSlate, slateToNewsDoc } from './newsdoc/index.js'
+import { newsDocToSlate, slateToNewsDoc } from './newsdoc/index'
 
 
 /**

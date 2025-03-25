@@ -11,8 +11,8 @@ import {
   DialogTitle
 } from '@ttab/elephant-ui'
 import { useMemo, type MouseEvent } from 'react'
-import { fromYjsNewsDoc, toYjsNewsDoc } from '../../../src-srv/utils/transformations/yjsNewsDoc'
-import { fromGroupedNewsDoc, toGroupedNewsDoc } from '../../../src-srv/utils/transformations/groupedNewsDoc'
+import { fromYjsNewsDoc, toYjsNewsDoc } from '@/shared/transformations/yjsNewsDoc'
+import { fromGroupedNewsDoc, toGroupedNewsDoc } from '@/shared/transformations/groupedNewsDoc'
 import { Block } from '@ttab/elephant-api/newsdoc'
 import * as Y from 'yjs'
 
@@ -109,8 +109,7 @@ export const DuplicatePrompt = ({
         onOpenAutoFocus={(event) => event.preventDefault()}
       >
         <DialogHeader>
-          {!!title
-          && <DialogTitle>{title}</DialogTitle>}
+          {!!title && <DialogTitle>{title}</DialogTitle>}
         </DialogHeader>
 
         <DialogDescription>
@@ -118,8 +117,7 @@ export const DuplicatePrompt = ({
         </DialogDescription>
 
         <DialogFooter className='flex flex-col gap-2 pt-4'>
-          {!!onSecondary && !!secondaryLabel
-          && (
+          {!!onSecondary && !!secondaryLabel && (
             <Button
               variant='secondary'
               onClick={(event) => {

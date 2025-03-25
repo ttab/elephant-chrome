@@ -1,8 +1,8 @@
 import * as Y from 'yjs'
 import { createPayload } from '@/defaults/templates/lib/createPayload'
 import { planning } from './data/planning-newsdoc'
-import { toGroupedNewsDoc } from '../src-srv/utils/transformations/groupedNewsDoc'
-import { toYjsNewsDoc } from '../src-srv/utils/transformations/yjsNewsDoc'
+import { toGroupedNewsDoc } from '@/shared/transformations/groupedNewsDoc'
+import { toYjsNewsDoc } from '@/shared/transformations/yjsNewsDoc'
 
 describe('createPayload', () => {
   // Append planning slugline, its how normal planning documents look,

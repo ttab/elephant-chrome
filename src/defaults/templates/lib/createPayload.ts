@@ -1,4 +1,4 @@
-import { ungroup } from '../../../../src-srv/utils/transformations/groupedNewsDoc'
+import { ungroup } from '@/shared/transformations/groupedNewsDoc'
 import type { TemplatePayload } from '..'
 import type * as Y from 'yjs'
 

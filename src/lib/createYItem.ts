@@ -1,9 +1,9 @@
 import * as Y from 'yjs'
 import { assignmentPlanningTemplate } from '../defaults/templates/assignmentPlanningTemplate'
 import { Block, type Document } from '@ttab/elephant-api/newsdoc'
-import { toYMap } from '../../src-srv/utils/transformations/lib/toYMap'
-import { toGroupedNewsDoc, group } from '../../src-srv/utils/transformations/groupedNewsDoc'
-import { toYjsNewsDoc } from '../../src-srv/utils/transformations/yjsNewsDoc'
+import { toYMap } from '@/shared/transformations/lib/toYMap'
+import { toGroupedNewsDoc, group } from '@/shared/transformations/groupedNewsDoc'
+import { toYjsNewsDoc } from '@/shared/transformations/yjsNewsDoc'
 import type { Wire } from '@/hooks/index/lib/wires'
 import type { IDBAuthor } from 'src/datastore/types'
 

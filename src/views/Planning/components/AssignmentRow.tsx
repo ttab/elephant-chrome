@@ -4,12 +4,10 @@ import { AssigneeAvatars } from '@/components/DataItem/AssigneeAvatars'
 import { DotDropdownMenu } from '@/components/ui/DotMenu'
 import { Delete, Edit, FileInput, Pen } from '@ttab/elephant-ui/icons'
 import { type MouseEvent, useMemo, useState, useCallback, useEffect, useRef } from 'react'
-import { createPayload } from '@/defaults/templates/lib/createPayload'
 import { SluglineButton } from '@/components/DataItem/Slugline'
 import { useYValue } from '@/hooks/useYValue'
 import { useLink } from '@/hooks/useLink'
 import { Prompt } from '@/components'
-import { appendDocumentToAssignment } from '@/lib/createYItem'
 import { useCollaboration } from '@/hooks/useCollaboration'
 import { Button } from '@ttab/elephant-ui'
 import { type Block } from '@ttab/elephant-api/newsdoc'
@@ -17,6 +15,8 @@ import { deleteByYPath } from '@/lib/yUtils'
 import { useOpenDocuments } from '@/hooks/useOpenDocuments'
 import { cn } from '@ttab/elephant-ui/utils'
 import { useNavigationKeys } from '@/hooks/useNavigationKeys'
+import { CreateDeliverablePrompt } from './CreateDeliverablePrompt'
+import { appendDocumentToAssignment } from '@/lib/createYItem'
 
 
 export const AssignmentRow = ({ index, onSelect, isFocused = false, asDialog }: {
@@ -41,6 +41,7 @@ export const AssignmentRow = ({ index, onSelect, isFocused = false, asDialog }: 
   const [publishTime] = useYValue<string>(`${base}.data.publish`)
   const [startTime] = useYValue<string>(`${base}.data.start`)
   const [authors = []] = useYValue<Block[]>(`meta.core/assignment[${index}].links.core/author`)
+  const [slugline] = useYValue<string>(`${base}.meta.tt/slugline[0].value`)
 
   const [showVerifyDialog, setShowVerifyDialog] = useState<boolean>(false)
   const [showCreateDialog, setShowCreateDialog] = useState<boolean>(false)
@@ -67,12 +68,15 @@ export const AssignmentRow = ({ index, onSelect, isFocused = false, asDialog }: 
     event.stopPropagation()
 
     if (documentId) {
-      openDocument(event, {
-        id: documentId,
-        autoFocus: false
-      }, undefined,
-      undefined,
-      event instanceof KeyboardEvent && event.key === ' ')
+      openDocument(
+        event,
+        {
+          id: documentId,
+          autoFocus: false
+        },
+        undefined,
+        undefined,
+        event instanceof KeyboardEvent && event.key === ' ')
     } else {
       if (!asDialog) {
         setShowCreateDialog(true)
@@ -217,75 +221,64 @@ export const AssignmentRow = ({ index, onSelect, isFocused = false, asDialog }: 
         <SluglineButton path={`meta.core/assignment[${index}].meta.tt/slugline[0].value`} />
       </div>
 
-      {
-        showVerifyDialog && (
-          <Prompt
-            title='Ta bort?'
-            description={`Vill du ta bort uppdraget${title ? ' ' + title : ''}?`}
-            secondaryLabel='Avbryt'
-            primaryLabel='Ta bort'
-            onPrimary={() => {
-              setShowVerifyDialog(false)
-              deleteByYPath(
-                provider?.document.getMap('ele'),
-                `meta.core/assignment[${index}]`
-              )
-            }}
-            onSecondary={() => {
-              setShowVerifyDialog(false)
-            }}
-          />
-        )
-      }
+      {showVerifyDialog && (
+        <Prompt
+          title='Ta bort?'
+          description={`Vill du ta bort uppdraget${title ? ' ' + title : ''}?`}
+          secondaryLabel='Avbryt'
+          primaryLabel='Ta bort'
+          onPrimary={() => {
+            setShowVerifyDialog(false)
+            deleteByYPath(
+              provider?.document.getMap('ele'),
+              `meta.core/assignment[${index}]`
+            )
+          }}
+          onSecondary={() => {
+            setShowVerifyDialog(false)
+          }}
+        />
+      )}
 
-      {
-        showCreateDialog && (
-          <Prompt
-            title={`Skapa ${documentLabel}?`}
-            description={`Vill du skapa en ${documentLabel} för uppdraget${title ? ' ' + title : ''}?`} // TODO: Display information that will be forwarded from the assignment
-            secondaryLabel='Avbryt'
-            primaryLabel='Skapa'
-            onPrimary={(event: MouseEvent<HTMLButtonElement> | React.KeyboardEvent<HTMLButtonElement> | KeyboardEvent) => {
-              event.preventDefault()
-              event.stopPropagation()
+      {showCreateDialog && !slugline && (
+        <Prompt
+          title='Slugg saknas'
+          description='Vänligen lägg till en slugg på uppdraget. Därefter kan du skapa en text.'
+          primaryLabel='Ok'
+          onPrimary={(event) => {
+            event.preventDefault()
+            event.stopPropagation()
+            setShowCreateDialog(false)
+          }}
+        />
+      )}
 
-              setShowCreateDialog(false)
-              if (!provider?.document) {
-                return
-              }
+      {showCreateDialog && slugline && (
+        <CreateDeliverablePrompt
+          index={index}
+          title={title || ''}
+          documentLabel={documentLabel || ''}
+          onClose={(event, id) => {
+            event.preventDefault()
+            event.stopPropagation()
 
-              const id = crypto.randomUUID()
-              const onDocumentCreated = (): void => {
-                setTimeout(() => {
-                  appendDocumentToAssignment({
-                    document: provider?.document,
-                    id,
-                    index,
-                    slug: '',
-                    type: assignmentType === 'flash'
-                      ? 'flash'
-                      : 'article'
-                  })
-                }, 0)
-              }
+            if (id && provider?.document) {
+              // Add document id to correct assignment
+              appendDocumentToAssignment({
+                document: provider.document,
+                id,
+                index,
+                slug: '',
+                type: assignmentType === 'flash' ? 'flash' : 'article'
+              })
+              const openDocument = assignmentType === 'text' ? openArticle : openFlash
+              openDocument(event, { id }, 'blank')
+            }
 
-              const payload = createPayload(provider?.document, index)
-
-              openDocument(event,
-                { id, payload },
-                'blank',
-                { onDocumentCreated }
-              )
-            }}
-            onSecondary={(event) => {
-              event.preventDefault()
-              event.stopPropagation()
-
-              setShowCreateDialog(false)
-            }}
-          />
-        )
-      }
+            setShowCreateDialog(false)
+          }}
+        />
+      )}
     </div>
   )
 }

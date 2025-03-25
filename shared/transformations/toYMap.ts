@@ -1,6 +1,6 @@
 import * as Y from 'yjs'
 import { toSlateYXmlText } from './toSlateYXmlText.js'
-import { isTextEntry } from '../../../../shared/transformations/isTextEntry.js'
+import { isTextEntry } from './isTextEntry.js'
 
 /**
  * Transform any object to a Y representation
