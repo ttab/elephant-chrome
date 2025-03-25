@@ -102,7 +102,7 @@
     "tsc-alias": "^1.8.11",
     "tsx": "^4.19.3",
     "typescript": "^5.8.2",
-    "vite": "^6.2.2",
+    "vite": "^6.2.3",
     "vite-plugin-static-copy": "^2.3.0",
     "vitest": "^3.0.4"
   }
