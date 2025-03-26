@@ -35,6 +35,7 @@ SPELLCHECK_URL=https:// ...
 PROTOCOL=http
 HOST=localhost
 PORT=5183
+PROFILE_PORT=1081
 BASE_URL=/elephant
 
 
