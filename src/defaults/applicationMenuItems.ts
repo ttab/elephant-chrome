@@ -1,4 +1,4 @@
-import { Cable, BriefcaseBusiness, CalendarDaysIcon, CalendarPlus2, SearchIcon, ZapIcon, type LucideIcon, EarthIcon, UtilityPole, Boxes } from '@ttab/elephant-ui/icons'
+import { Cable, BriefcaseBusiness, CalendarDaysIcon, CalendarPlus2, SearchIcon, ZapIcon, type LucideIcon, EarthIcon, UtilityPole, Boxes, Printer } from '@ttab/elephant-ui/icons'
 import type { ViewProps, View } from '../types'
 
 /**
@@ -74,6 +74,12 @@ export const applicationMenu: ApplicationMenu = {
           label: 'Faktarutor',
           icon: Boxes,
           color: '#99c5c4'
+        },
+        {
+          name: 'Print',
+          label: 'Print',
+          icon: Printer,
+          color: '#006bb3'
         }
       ]
     },
