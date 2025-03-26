@@ -23,6 +23,8 @@ import { pinoHttp } from 'pino-http'
 import assertEnvs from './lib/assertEnvs.js'
 import { authSession } from './utils/authSession.js'
 
+import Pyroscope from '@pyroscope/nodejs'
+
 /*
  * Read and normalize all environment variables
 */
@@ -30,6 +32,7 @@ const NODE_ENV = process.env.NODE_ENV === 'production' ? 'production' : 'develop
 const PROTOCOL = process.env.VITE_PROTOCOL || 'https'
 const HOST = process.env.HOST || '127.0.0.1'
 const PORT = process.env.PORT ? parseInt(process.env.PORT) : 5183
+const PROFILE_PORT = process.env.PROFILE_PORT ? parseInt(process.env.PROFILE_PORT) : 1081
 const REPOSITORY_URL = process.env.REPOSITORY_URL || ''
 const REDIS_URL = process.env.REDIS_URL || ''
 const BASE_URL = process.env.BASE_URL || ''
@@ -167,6 +170,34 @@ export async function runServer(): Promise<string> {
 
 runServer().then((url) => {
   logger.info(`Serving API on ${url}/api`)
+}).catch((ex) => {
+  console.error(ex)
+  process.exit(1)
+})
+
+/**
+ * Run the profile server
+ */
+async function runProfileServer(): Promise<string> {
+  const serverUrl = `${PROTOCOL}://${HOST}:${PROFILE_PORT}`
+
+  Pyroscope.init()
+
+  const app = express()
+
+  app.use(Pyroscope.expressMiddleware())
+
+  return new Promise((resolve, reject) => {
+    const server = app.listen(PROFILE_PORT)
+
+    server.once('listening', () => resolve(serverUrl))
+    server.once('error', reject)
+  })
+}
+
+
+runProfileServer().then((url) => {
+  logger.info(`Serving Profile API on ${url}/debug/pprof/*`)
 }).catch((ex) => {
   console.error(ex)
   process.exit(1)
