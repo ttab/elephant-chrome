@@ -2,8 +2,10 @@ import { ungroup } from '@/shared/transformations/groupedNewsDoc'
 import type { TemplatePayload } from '..'
 import type * as Y from 'yjs'
 
-export function createPayload(document: Y.Doc, index?: number): TemplatePayload | undefined {
-  if (!document) return
+export function createPayload(document: Y.Doc, index?: number, payloadType: string = ''): TemplatePayload | undefined {
+  if (!document) {
+    return
+  }
 
   const ele = document.getMap('ele')
   const root = ele.get('root') as Y.Map<unknown>
@@ -33,16 +35,22 @@ export function createPayload(document: Y.Doc, index?: number): TemplatePayload 
 
   const section = links.get('core/section')?.toJSON() || []
 
-  return {
+  const tplPayload = {
     title,
     meta: {
       'tt/slugline': ungroup({ 'tt:/slugline': slugline }),
-      'core/newsvalue': ungroup({ 'core/newsvalue': newsvalue }),
-      'core/description': ungroup({ 'core/description': description })
+      'core/newsvalue': ungroup({ 'core/newsvalue': newsvalue })
     },
     links: {
       'core/section': ungroup({ 'core/section': section }),
       'core/story': ungroup({ 'core/section': story })
     }
+  } as TemplatePayload
+
+  // Do not add descriptions to flash or text documents
+  if (!['text', 'flash'].includes(payloadType) && tplPayload.meta) {
+    tplPayload.meta['core/description'] = ungroup({ 'core/description': description })
   }
+
+  return tplPayload
 }

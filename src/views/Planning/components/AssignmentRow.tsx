@@ -18,7 +18,6 @@ import { useNavigationKeys } from '@/hooks/useNavigationKeys'
 import { CreateDeliverablePrompt } from './CreateDeliverablePrompt'
 import { appendDocumentToAssignment } from '@/lib/createYItem'
 import { createPayload } from '@/defaults/templates/lib/createPayload'
-import type { TemplatePayload } from '@/defaults/templates'
 
 
 export const AssignmentRow = ({ index, onSelect, isFocused = false, asDialog }: {
@@ -46,7 +45,7 @@ export const AssignmentRow = ({ index, onSelect, isFocused = false, asDialog }: 
   const [slugline] = useYValue<string>(`${base}.meta.tt/slugline[0].value`)
 
   const [showVerifyDialog, setShowVerifyDialog] = useState<boolean>(false)
-  const [showCreateDialogPayload, setShowCreateDialogPayload] = useState<TemplatePayload | null>(null)
+  const [showCreateDialogPayload, setShowCreateDialogPayload] = useState<boolean>(false)
 
   const documentId = articleId || flashId
   const isDocument = assignmentType === 'flash' || assignmentType === 'text'
@@ -82,11 +81,10 @@ export const AssignmentRow = ({ index, onSelect, isFocused = false, asDialog }: 
         event instanceof KeyboardEvent && event.key === ' ')
     } else {
       if (!asDialog && provider?.document) {
-        // Show create dialog with payload based on current assignment
-        setShowCreateDialogPayload(createPayload(provider.document, index) || null)
+        setShowCreateDialogPayload(true)
       }
     }
-  }, [documentId, provider?.document, index, openDocument, setShowCreateDialogPayload, asDialog])
+  }, [documentId, provider?.document, openDocument, asDialog])
 
   const rowRef = useRef<HTMLDivElement>(null)
   useEffect(() => {
@@ -248,14 +246,14 @@ export const AssignmentRow = ({ index, onSelect, isFocused = false, asDialog }: 
           onPrimary={(event) => {
             event.preventDefault()
             event.stopPropagation()
-            setShowCreateDialogPayload(null)
+            setShowCreateDialogPayload(false)
           }}
         />
       )}
 
-      {showCreateDialogPayload && (slugline || assignmentType === 'flash') && (
+      {showCreateDialogPayload && provider?.document && (slugline || assignmentType === 'flash') && (
         <CreateDeliverablePrompt
-          payload={showCreateDialogPayload}
+          payload={createPayload(provider.document, index, assignmentType) || {}}
           deliverableType={assignmentType || 'article'}
           title={title || ''}
           documentLabel={documentLabel || ''}
@@ -272,11 +270,11 @@ export const AssignmentRow = ({ index, onSelect, isFocused = false, asDialog }: 
                 slug: '',
                 type: assignmentType === 'flash' ? 'flash' : 'article'
               })
-              const openDocument = assignmentType === 'text' ? openArticle : openFlash
+              const openDocument = assignmentType === 'flash' ? openFlash : openArticle
               openDocument(event, { id }, 'blank')
             }
 
-            setShowCreateDialogPayload(null)
+            setShowCreateDialogPayload(false)
           }}
         />
       )}
