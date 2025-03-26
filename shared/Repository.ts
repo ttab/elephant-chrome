@@ -169,7 +169,6 @@ export class Repository {
 
       return response
     } catch (err) {
-      console.log(' :172 ~ Repository ~ getHistory ~ err', err)
       throw new Error(`Unable to fetch document history: ${(err as Error)?.message || 'Unknown error'}`)
     }
   }
