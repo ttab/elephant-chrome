@@ -78,16 +78,15 @@ export function createFlash({
 
         // Update planning with flash details
         const payload = createPayload(
-          hasSelectedPlanning
-            ? planning.document
-            : provider.document,
-          assignmentIndex)
+          hasSelectedPlanning ? planning.document : provider.document,
+          assignmentIndex,
+          'flash'
+        )
 
         if (payload) {
-          appendPayload(hasSelectedPlanning
-            ? provider.document
-            : planning.document,
-          { ...payload, title: flashTitle }
+          appendPayload(
+            hasSelectedPlanning ? provider.document : planning.document,
+            { ...payload, title: flashTitle }
           )
         }
 
@@ -112,7 +111,7 @@ export function createFlash({
         throw new Error(`Failed adding flash ${documentId} to a planning`)
       }
     } catch (err) {
-    // We won't let errors interfere with the publishing of the flash.
+      // We won't let errors interfere with the publishing of the flash.
       console.error(err)
     }
     // TODO: User message/sonner
