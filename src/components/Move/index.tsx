@@ -189,14 +189,16 @@ export const Move = (props: ViewProps & {
                       toast.error('Uppdraget kunde inte flyttas')
                       return
                     }
+                    const [selectedPlanningDate] = getValueByYPath<string>(planning.getMap('ele'), 'meta.core/planning-item[0].data.start_date')
+                    const newDateString = selectedPlanning ? selectedPlanningDate : planningDateString
                     const payload = {
                       ...originalAssignment,
                       data: {
                         ...originalAssignment.data,
-                        start_date: planningDateString,
-                        end_date: planningDateString,
-                        start: originalAssignment.data.start
-                          ? originalAssignment.data.start.replace(/\d{4}-d{2}-d{2}/, planningDateString || currentDateInUTC())
+                        start_date: newDateString,
+                        end_date: newDateString,
+                        start: originalAssignment.data.start && newDateString
+                          ? originalAssignment.data.start.replace(/\d{4}-d{2}-d{2}/, newDateString)
                           : ''
                       }
                     }
