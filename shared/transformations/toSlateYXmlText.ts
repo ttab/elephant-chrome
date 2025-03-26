@@ -1,6 +1,6 @@
 import * as Y from 'yjs'
-import { textToNewsDoc } from './textToNewsdoc'
-import { newsDocToSlate } from './newsdoc/index'
+import { textToNewsDoc } from './textToNewsdoc.js'
+import { newsDocToSlate } from './newsdoc/index.js'
 import { slateNodesToInsertDelta } from '@slate-yjs/core'
 
 export function toSlateYXmlText(text: string): Y.XmlText {
