@@ -1,4 +1,5 @@
 import { parseStateless, type StatelessAuth, StatelessType } from '@/shared/stateless.js'
+import type { User } from '@auth/express'
 import {
   type onStatelessPayload,
   type Extension,
@@ -28,8 +29,10 @@ export class Auth implements Extension {
 
     if (statelessMessage.type === StatelessType.AUTH) {
       if (await validateAccessToken(statelessMessage.message.accessToken)) {
-        connection.context.accessToken = statelessMessage.message.accessToken
-        connection.context.user = { ...decodeJwt(statelessMessage.message.accessToken) }
+        (connection.context as { accessToken: string })
+          .accessToken = statelessMessage.message.accessToken;
+        (connection.context as { user: User })
+          .user = { ...decodeJwt(statelessMessage.message.accessToken) }
       } else {
         throw new Error('Could not authenticate: Invalid new accessToken')
       }

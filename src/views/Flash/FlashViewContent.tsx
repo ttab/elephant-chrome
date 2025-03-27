@@ -20,7 +20,7 @@ import type * as Y from 'yjs'
 import { CreatePrompt } from '@/components/CreatePrompt'
 import { Block } from '@ttab/elephant-api/newsdoc'
 
-export const FlashViewContent = (props: ViewProps): JSX.Element | undefined => {
+export const FlashViewContent = (props: ViewProps): JSX.Element => {
   const { provider } = useCollaboration()
   const { status, data: session } = useSession()
   const planningAwareness = useRef<(value: boolean) => void>(null)

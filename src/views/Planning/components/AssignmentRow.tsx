@@ -2,7 +2,7 @@ import { TimeDisplay } from '@/components/DataItem/TimeDisplay'
 import { AssignmentType } from '@/components/DataItem/AssignmentType'
 import { AssigneeAvatars } from '@/components/DataItem/AssigneeAvatars'
 import { DotDropdownMenu } from '@/components/ui/DotMenu'
-import { Delete, Edit, FileInput, Pen } from '@ttab/elephant-ui/icons'
+import { Delete, Edit, FileInput, MoveRight, Pen } from '@ttab/elephant-ui/icons'
 import { type MouseEvent, useMemo, useState, useCallback, useEffect, useRef } from 'react'
 import { SluglineButton } from '@/components/DataItem/Slugline'
 import { useYValue } from '@/hooks/useYValue'
@@ -11,14 +11,16 @@ import { Prompt } from '@/components'
 import { useCollaboration } from '@/hooks/useCollaboration'
 import { Button } from '@ttab/elephant-ui'
 import type { Block } from '@ttab/elephant-api/newsdoc'
-import { deleteByYPath } from '@/lib/yUtils'
+import { deleteByYPath, getValueByYPath } from '@/lib/yUtils'
 import { useOpenDocuments } from '@/hooks/useOpenDocuments'
 import { cn } from '@ttab/elephant-ui/utils'
 import { useNavigationKeys } from '@/hooks/useNavigationKeys'
 import { CreateDeliverablePrompt } from './CreateDeliverablePrompt'
 import { appendDocumentToAssignment } from '@/lib/createYItem'
 import { createPayload } from '@/defaults/templates/lib/createPayload'
-
+import { Move } from '@/components/Move/'
+import { useModal } from '@/components/Modal/useModal'
+import type * as Y from 'yjs'
 
 export const AssignmentRow = ({ index, onSelect, isFocused = false, asDialog }: {
   index: number
@@ -33,10 +35,12 @@ export const AssignmentRow = ({ index, onSelect, isFocused = false, asDialog }: 
   const openDocuments = useOpenDocuments({ idOnly: true, name: 'Editor' })
 
   const base = `meta.core/assignment[${index}]`
+  const [assignment] = useYValue<Y.Map<unknown> | undefined>(base, true)
   const [inProgress] = useYValue(`${base}.__inProgress`)
   const [articleId] = useYValue<string>(`${base}.links.core/article[0].uuid`)
   const [flashId] = useYValue<string>(`${base}.links.core/flash[0].uuid`)
   const [assignmentType] = useYValue<string>(`${base}.meta.core/assignment-type[0].value`)
+  const [assignmentId] = useYValue<string>(`${base}.id`)
   const [title] = useYValue<string>(`${base}.title`)
   const [description] = useYValue<string>(`${base}.meta.core/description[0].data.text`)
   const [publishTime] = useYValue<string>(`${base}.data.publish`)
@@ -46,11 +50,14 @@ export const AssignmentRow = ({ index, onSelect, isFocused = false, asDialog }: 
 
   const [showVerifyDialog, setShowVerifyDialog] = useState<boolean>(false)
   const [showCreateDialogPayload, setShowCreateDialogPayload] = useState<boolean>(false)
+  const yRoot = provider?.document.getMap('ele')
+  const [planningId] = getValueByYPath<string | undefined>(yRoot, 'root.uuid')
 
   const documentId = articleId || flashId
   const isDocument = assignmentType === 'flash' || assignmentType === 'text'
   const documentLabel = assignmentType === 'text' ? 'artikel' : assignmentType
   const openDocument = assignmentType === 'text' ? openArticle : openFlash
+  const { showModal, hideModal } = useModal()
 
   const assTime = useMemo(() => {
     if (typeof assignmentType !== 'string') {
@@ -111,7 +118,6 @@ export const AssignmentRow = ({ index, onSelect, isFocused = false, asDialog }: 
       label: 'Redigera',
       icon: Edit,
       item: <T extends HTMLElement>(event: MouseEvent<T>) => {
-        event.preventDefault()
         event.stopPropagation()
         onSelect()
       }
@@ -120,9 +126,28 @@ export const AssignmentRow = ({ index, onSelect, isFocused = false, asDialog }: 
       label: 'Ta bort',
       icon: Delete,
       item: <T extends HTMLElement>(event: MouseEvent<T>) => {
-        event.preventDefault()
         event.stopPropagation()
         setShowVerifyDialog(true)
+      }
+    },
+    {
+      label: 'Flytta',
+      icon: MoveRight,
+      item: <T extends HTMLElement>(event: MouseEvent<T>) => {
+        event.stopPropagation()
+        showModal(
+          <Move
+            asDialog
+            onDialogClose={hideModal}
+            original={{
+              document: provider?.document,
+              assignmentId,
+              assignmentTitle: title,
+              assignment,
+              planningId
+            }}
+          />
+        )
       }
     }
   ]

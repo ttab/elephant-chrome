@@ -72,7 +72,7 @@ export function appendAssignment({
 }: {
   document: Y.Doc
   assignee?: IDBAuthor | null | undefined
-  type: 'text' | 'flash'
+  type: 'text' | 'flash' | 'graphic' | 'picture' | 'video' | 'picture/video'
   inProgress?: boolean
   slugLine?: string
   title?: string
