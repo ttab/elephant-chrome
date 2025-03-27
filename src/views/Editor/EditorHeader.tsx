@@ -43,15 +43,16 @@ export const EditorHeader = ({ documentId }: { documentId: string }): JSX.Elemen
       return
     }
 
-    if (!(data?.time instanceof Date)) {
-      // FIXME: Notify user that something is wrong in a nicer way
-      alert('Faulty scheduled publish time set. Article not scheduled!')
-      return
-    }
-
     const { index } = deliverablePlanning.getAssignment()
     if (index > -1) {
-      setValueByYPath(deliverablePlanning.yRoot, `meta.core/assignment[${index}].data.publish`, data.time.toISOString())
+      if (newStatus === 'withheld') {
+        if (!(data?.time instanceof Date)) {
+          // FIXME: Notify user that something is wrong in a nicer way
+          alert('Faulty scheduled publish time set. Article not scheduled!')
+          return
+        }
+        setValueByYPath(deliverablePlanning.yRoot, `meta.core/assignment[${index}].data.publish`, data.time.toISOString())
+      }
       void setDocumentStatus(newStatus)
     }
   }, [deliverablePlanning, setDocumentStatus])
