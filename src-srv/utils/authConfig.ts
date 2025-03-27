@@ -43,7 +43,12 @@ async function refreshAccessToken(token: JWTPayload): Promise<JWTPayload> {
       throw new Error('refresh token grant request', { cause: ex })
     })
 
-    const refreshedTokens = await response.json()
+    const refreshedTokens = await response.json() as {
+      access_token: string
+      expires_in: number
+      refresh_token?: string
+    }
+
 
     if (!response.ok) {
       throw new Error(
@@ -54,7 +59,7 @@ async function refreshAccessToken(token: JWTPayload): Promise<JWTPayload> {
     return {
       ...token,
       accessToken: refreshedTokens.access_token,
-      accessTokenExpires: Date.now() + 150 * 1000,
+      accessTokenExpires: Date.now() + refreshedTokens.expires_in * 1000,
       refreshToken: refreshedTokens.refresh_token ?? token.refreshToken
     }
   } catch (_ex) {
@@ -84,15 +89,15 @@ export const authConfig: AuthConfig = {
         }
         return {
           accessToken: account.access_token,
-          accessTokenExpires: Date.now() + 150 * 1000,
+          accessTokenExpires: Date.now() + (account.expires_in || 300) * 1000,
           refreshToken: account.refresh_token,
           user
         }
       }
 
       // The user is already logged in, check if the access token is expired
-      const accessTokenExpires = token.accessTokenExpires as number
-      if (Date.now() < accessTokenExpires) {
+      // We want to refresh with 150 seconds left
+      if (Date.now() < (token.accessTokenExpires as number - 150 * 1000)) {
         return token
       }
 
