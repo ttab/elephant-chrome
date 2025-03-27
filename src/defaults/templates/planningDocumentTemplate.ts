@@ -17,7 +17,7 @@ export function planningDocumentTemplate(documentId: string, payload?: TemplateP
     ...(payload?.title && { title: payload.title }),
     language: 'sv-se',
     meta: [
-      Block.create({
+      ...payload?.meta?.['core/planning-item'] || [Block.create({
         type: 'core/planning-item',
         data: {
           public: 'true',
@@ -27,7 +27,7 @@ export function planningDocumentTemplate(documentId: string, payload?: TemplateP
           // FIXME: Send end and start date from event to planning
           start_date: currentDateInUTC()
         }
-      }),
+      })],
 
       ...payload?.meta?.['core/newsvalue'] || [Block.create({
         type: 'core/newsvalue'

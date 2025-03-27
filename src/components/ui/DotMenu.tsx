@@ -21,6 +21,7 @@ interface DotDropdownMenuActionItem {
   label: string
   icon?: LucideIcon
   item: DotDropdownMenuActionItem[] | ((event: MouseEvent<HTMLDivElement>) => void) | React.ReactNode
+  disabled?: boolean
 }
 
 /**
@@ -30,6 +31,7 @@ interface DotDropdownMenuActionItem {
  * @example
  * <DotMenu trigger="vertical" items={[
  *   {
+ *     disabled: true,
  *     label: '"Close all",
  *     item: () => { ... }
  *   },
@@ -67,6 +69,7 @@ export const DotDropdownMenu = ({ trigger = 'horizontal', items }: {
         {items.map((item) => {
           return (
             <DropdownMenuItem
+              disabled={item.disabled}
               asChild
               key={item.label}
             >
