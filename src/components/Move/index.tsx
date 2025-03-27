@@ -101,9 +101,9 @@ export const Move = (props: ViewProps & {
         ...originalAssignment,
         data: {
           ...originalAssignment.data,
-          start_date: newDateString,
-          end_date: newDateString,
-          start: (newDateString && originalAssignment.data.start?.replace(/\d{4}-\d{2}-\d{2}/, newDateString)) || ''
+          start_date: newDateString || originalAssignment.data.start_date,
+          end_date: newDateString || originalAssignment.data.end_date,
+          start: (newDateString && originalAssignment.data.start?.replace(/\d{4}-\d{2}-\d{2}/, newDateString)) || originalAssignment.data.start
         }
       }
 
