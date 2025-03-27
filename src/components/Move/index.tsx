@@ -33,13 +33,29 @@ export const Move = (props: ViewProps & {
   const [showVerifyDialog, setShowVerifyDialog] = useState(false)
   const [planningDateString, setPlanningDateString] = useState<string | undefined>()
 
-  const date = planningDateString ? parseDate(planningDateString) || new Date() : new Date()
-
   const { data: session } = useSession()
   const { index } = useRegistry()
 
+
+  const date = useMemo(() =>
+    planningDateString ? parseDate(planningDateString) || new Date() : new Date(),
+  [planningDateString])
+
+  const handleSelectPlanning = (option: DefaultValueOption): void => {
+    if (option.value !== selectedPlanning?.value) {
+      setSelectedPlanning({ value: option.value, label: option.label })
+    } else {
+      setSelectedPlanning(undefined)
+    }
+  }
+
   const handleSubmit = (): void => {
     setShowVerifyDialog(true)
+  }
+
+  const handleClearPlanning = (e: React.MouseEvent): void => {
+    e.preventDefault()
+    setSelectedPlanning(undefined)
   }
 
   const payload = useMemo(() => {
@@ -47,6 +63,74 @@ export const Move = (props: ViewProps & {
       return createPayload(props.original.document)
     }
   }, [props.original.document])
+
+  const handleMoveAssignment = (planning: Y.Doc | undefined): void => {
+    if (!props.original?.document || !planning) {
+      console.error('Missing required data for moving assignment', {
+        hasDocument: !!props.original?.document,
+        hasPlanning: !!planning
+      })
+      return
+    }
+
+    try {
+      // Get original assignment
+      const yRootOriginal = props.original.document.getMap('ele')
+      const originalAssignmentArray = getValueByYPath<Block[] | undefined>(yRootOriginal, 'meta.core/assignment')?.[0] || []
+      const originalAssignmentIndex = originalAssignmentArray.findIndex(
+        (assignment: Block) => assignment.id === props.original.assignmentId
+      )
+
+      if (originalAssignmentIndex < 0) {
+        toast.error('Uppdraget kunde inte flyttas')
+        return
+      }
+
+      const originalAssignment = getValueByYPath<Block>(yRootOriginal, `meta.core/assignment[${originalAssignmentIndex}]`)?.[0]
+      if (!originalAssignment) {
+        toast.error('Uppdraget kunde inte flyttas')
+        return
+      }
+
+      // Prepare new planning for assignment
+      const newEle = planning.getMap('ele')
+      const selectedPlanningDate = getValueByYPath<string>(newEle, 'meta.core/planning-item[0].data.start_date')?.[0]
+      const newDateString = selectedPlanning ? selectedPlanningDate : planningDateString
+
+      const updatedAssignment = {
+        ...originalAssignment,
+        data: {
+          ...originalAssignment.data,
+          start_date: newDateString,
+          end_date: newDateString,
+          start: (newDateString && originalAssignment.data.start?.replace(/\d{4}-\d{2}-\d{2}/, newDateString)) || ''
+        }
+      }
+
+      const newAssignmentArray = getValueByYPath<Block[] | undefined>(newEle, 'meta.core/assignment')?.[0] || []
+      const newAssignmentIndex = newAssignmentArray.length
+
+      if (!setValueByYPath(newEle, `meta.core/assignment[${newAssignmentIndex}]`, toYStructure(updatedAssignment))) {
+        toast.error('Uppdraget kunde inte flyttas')
+        return
+      }
+
+
+      // Remove from old planning
+      deleteByYPath(yRootOriginal, `meta.core/assignment[${originalAssignmentIndex}]`)
+
+      const newPlanningUUID = getValueByYPath<string>(newEle, 'root.uuid')?.[0]
+      toast.success('Uppdraget har flyttats', {
+        action: <ToastAction planningId={newPlanningUUID} />
+      })
+
+      setShowVerifyDialog(false)
+      props.onDialogClose?.()
+    } catch (error) {
+      console.error('Error moving assignment', error)
+      toast.error('Uppdraget kunde inte flyttas')
+    }
+  }
 
   return (
     <View.Root asDialog={props.asDialog} className={props.className}>
@@ -89,18 +173,7 @@ export const Move = (props: ViewProps & {
                     data.filter((item) => item.value !== props.original.planningId)
                   )}
                 minSearchChars={2}
-                onSelect={(option) => {
-                  if (setSelectedPlanning) {
-                    if (option.value !== selectedPlanning?.value) {
-                      setSelectedPlanning({
-                        value: option.value,
-                        label: option.label
-                      })
-                    } else {
-                      setSelectedPlanning(undefined)
-                    }
-                  }
-                }}
+                onSelect={handleSelectPlanning}
               >
               </ComboBox>
 
@@ -111,12 +184,7 @@ export const Move = (props: ViewProps & {
                     variant='ghost'
                     asChild
                     className='text-muted-foreground flex size-4 p-0 data-[state=open]:bg-muted hover:bg-accent2'
-                    onClick={(e) => {
-                      e.preventDefault()
-                      if (setSelectedPlanning) {
-                        setSelectedPlanning(undefined)
-                      }
-                    }}
+                    onClick={handleClearPlanning}
                   >
                     <CircleXIcon size={18} strokeWidth={1.75} />
                   </Button>
@@ -163,74 +231,7 @@ export const Move = (props: ViewProps & {
                     ]
                   }
                 }}
-                onPrimary={(planning: Y.Doc | undefined) => {
-                  try {
-                  // We need original planning and a new planning to move the assignment
-                    if (!props.original || !props.original.document || !planning) {
-                      console.error('Original planning or new planning is missing', !!props.original?.document, !!planning)
-                      return
-                    }
-
-                    // Get original assignment
-                    const yRootOriginal = props.original.document.getMap('ele')
-                    const [originalAssignmentArray] = getValueByYPath<Block[] | undefined>(yRootOriginal, 'meta.core/assignment')
-                    const originalAssignmentIndex = (originalAssignmentArray || []).findIndex(
-                      (assignment: Block) => assignment.id === props.original.assignmentId
-                    )
-
-                    if (originalAssignmentIndex < 0) {
-                      toast.error('Uppdraget kunde inte flyttas')
-                      return
-                    }
-
-                    const [originalAssignment] = getValueByYPath<Block>(yRootOriginal, `meta.core/assignment[${originalAssignmentIndex}]`)
-
-                    if (!originalAssignment) {
-                      toast.error('Uppdraget kunde inte flyttas')
-                      return
-                    }
-                    const [selectedPlanningDate] = getValueByYPath<string>(planning.getMap('ele'), 'meta.core/planning-item[0].data.start_date')
-                    const newDateString = selectedPlanning ? selectedPlanningDate : planningDateString
-                    const payload = {
-                      ...originalAssignment,
-                      data: {
-                        ...originalAssignment.data,
-                        start_date: newDateString,
-                        end_date: newDateString,
-                        start: originalAssignment.data.start && newDateString
-                          ? originalAssignment.data.start.replace(/\d{4}-d{2}-d{2}/, newDateString)
-                          : ''
-                      }
-                    }
-
-                    // Prepare new planning for assignment
-                    const newEle = planning.getMap('ele')
-                    const [newAssignmentArray] = getValueByYPath<Block[] | undefined>(newEle, 'meta.core/assignment')
-                    const newAssignmentIndex = (newAssignmentArray?.length || 0)
-
-                    const success = setValueByYPath(newEle, `meta.core/assignment[${newAssignmentIndex}]`, toYStructure(payload))
-
-                    if (!success) {
-                      toast.error('Uppdraget kunde inte flyttas')
-                      return
-                    }
-
-                    // Remove from old planning
-                    deleteByYPath(yRootOriginal, `meta.core/assignment[${originalAssignmentIndex}]`)
-
-                    const [newPlanningUUID] = getValueByYPath<string>(newEle, 'root.uuid')
-                    toast.success('Uppdraget har flyttats', {
-                      action: <ToastAction planningId={newPlanningUUID} />
-                    })
-                    setShowVerifyDialog(false)
-                    if (props.onDialogClose) {
-                      props.onDialogClose()
-                    }
-                  } catch (error) {
-                    console.error('Error moving assignment', error)
-                    toast.error('Uppdraget kunde inte flyttas')
-                  }
-                }}
+                onPrimary={handleMoveAssignment}
                 onSecondary={(event) => {
                   event.preventDefault()
                   event.stopPropagation()

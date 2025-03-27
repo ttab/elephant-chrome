@@ -43,37 +43,67 @@ export const MovePrompt = ({
   // If we have a selected planning, use that to create a collaboration document
   // Otherwise, create a new planning document
   const collaborationPayload = useMemo(() => {
-    if (!selectedPlanning?.value) {
-      const [documentId, initialDocument] = createDocument({
-        template: Templates.planning,
-        inProgress: true,
-        payload: { ...payload, title: `${payload?.title} - (flyttad)` }
-      })
-      return { documentId, initialDocument }
-    } else {
-      return { documentId: selectedPlanning?.value }
+    if (selectedPlanning?.value) {
+      return { documentId: selectedPlanning.value }
     }
+
+    const [documentId, initialDocument] = createDocument({
+      template: Templates.planning,
+      inProgress: true,
+      payload: { ...payload, title: `${payload?.title} - (flyttad)` }
+    })
+
+    return { documentId, initialDocument }
   }, [selectedPlanning, payload])
 
   const { document: planning, documentId: planningId, provider } = useCollaborationDocument(collaborationPayload)
 
+  const handlePrimaryClick = (event: MouseEvent<HTMLButtonElement>) => {
+    if (status !== 'authenticated' || !session || !provider?.synced) {
+      toast.error('Uppdraget kunde inte flyttas. Du är inte inloggad.')
+      return
+    }
+
+    if (!planning) {
+      toast.error('Uppdraget kunde inte flyttas. Var god försök igen.')
+      onSecondary?.(event)
+      return
+    }
+
+    onPrimary(planning)
+
+    if (!selectedPlanning && provider?.synced && session) {
+      provider.sendStateless(
+        createStateless(StatelessType.IN_PROGRESS, {
+          state: false,
+          id: planningId,
+          context: {
+            accessToken: session.accessToken,
+            user: session.user,
+            type: 'Planning'
+          }
+        })
+      )
+    }
+  }
+
+  const handlePrimaryKeyDown = (event: React.KeyboardEvent<HTMLButtonElement>) => {
+    if (event.key === 'Enter') {
+      onPrimary(planning)
+    }
+  }
+
   return (
     <Dialog open={true}>
-      <DialogContent
-        onOpenAutoFocus={(event) => event.preventDefault()}
-      >
+      <DialogContent onOpenAutoFocus={(event) => event.preventDefault()}>
         <DialogHeader>
-          {!!title
-          && <DialogTitle>{title}</DialogTitle>}
+          {title && <DialogTitle>{title}</DialogTitle>}
         </DialogHeader>
 
-        <DialogDescription>
-          {description}
-        </DialogDescription>
+        <DialogDescription>{description}</DialogDescription>
 
         <DialogFooter className='flex flex-col gap-2 pt-4'>
-          {!!onSecondary && !!secondaryLabel
-          && (
+          {onSecondary && secondaryLabel && (
             <Button
               variant='secondary'
               onClick={(event) => {
@@ -86,42 +116,7 @@ export const MovePrompt = ({
             </Button>
           )}
 
-          <Button
-            autoFocus
-            onClick={(event) => {
-              if (status !== 'authenticated' && !session && !provider?.synced) {
-                toast.error('Uppdraget kunde inte flyttas. Du är inte inloggad.')
-              }
-
-              if (!planning) {
-                toast.error('Uppdraget kunde inte flyttas. Var god försök igen.')
-                if (onSecondary) {
-                  onSecondary(event)
-                }
-                return
-              }
-              onPrimary(planning)
-
-              // remove inProgress flag
-              if (!selectedPlanning && provider?.synced && session) {
-                provider.sendStateless(
-                  createStateless(StatelessType.IN_PROGRESS, {
-                    state: false,
-                    id: planningId,
-                    context: {
-                      accessToken: session.accessToken,
-                      user: session.user,
-                      type: 'Planning'
-                    }
-                  }))
-              }
-            }}
-            onKeyDown={(event: React.KeyboardEvent<HTMLButtonElement>) => {
-              if (event.key === 'Enter') {
-                onPrimary(planning)
-              }
-            }}
-          >
+          <Button autoFocus onClick={handlePrimaryClick} onKeyDown={handlePrimaryKeyDown}>
             {primaryLabel}
           </Button>
         </DialogFooter>
