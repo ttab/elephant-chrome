@@ -219,6 +219,11 @@ export const WorkflowSpecifications: Record<string, WorkflowSpecification> = {
           verify: true,
           title: 'Publicera',
           description: 'Publicera artikeln'
+        },
+        withheld: {
+          verify: true,
+          title: 'Schemalägg publicering',
+          description: 'Ange datum och tid för publicering'
         }
       }
     },
@@ -236,6 +241,11 @@ export const WorkflowSpecifications: Record<string, WorkflowSpecification> = {
           title: 'Publicera',
           description: 'Publicera artiklen direkt'
         },
+        withheld: {
+          verify: true,
+          title: 'Schemalägg publicering',
+          description: 'Ange datum och tid för publicering'
+        },
         draft: {
           title: 'Till utkast',
           description: 'Gör om artikeln till ett utkast igen'
@@ -252,6 +262,11 @@ export const WorkflowSpecifications: Record<string, WorkflowSpecification> = {
           title: 'Publicera',
           description: 'Publicera artiklen'
         },
+        withheld: {
+          verify: true,
+          title: 'Schemalägg publicering',
+          description: 'Ange datum och tid för publicering'
+        },
         draft: {
           title: 'Till utkast',
           description: 'Gör om artikeln till ett utkast igen'
@@ -264,12 +279,55 @@ export const WorkflowSpecifications: Record<string, WorkflowSpecification> = {
       transitions: {
         draft: {
           default: true,
+          verify: true,
           title: 'Ny version',
           description: 'Fortsätt jobba på en ny version av artikeln'
         },
         cancelled: {
+          verify: true,
           title: 'Dra tillbaka',
           description: 'Avbryt publiceringen och arkivera artikeln'
+        }
+      }
+    },
+    withheld: {
+      title: 'Schemalagd',
+      description: 'Artikeln är schemalagd för automatisk publicering',
+      transitions: {
+        draft: {
+          default: true,
+          verify: true,
+          title: 'Till utkast',
+          description: 'Avbryt schemalagd publicering och gör om till utkast igen'
+        },
+        cancelled: {
+          verify: true,
+          title: 'Dra tillbaka',
+          description: 'Avbryt schemalagd publicering och arkivera artikeln'
+        }
+      }
+    }
+  },
+  'core/factbox': {
+    draft: {
+      title: 'Utkast',
+      description: 'Du jobbar på ett utkast av faktarutan',
+      transitions: {
+        usable: {
+          verify: true,
+          title: 'Publicera',
+          description: 'Publicera faktarutan för användning'
+        }
+      }
+    },
+    usable: {
+      title: 'Användbar',
+      description: 'Fakturan är användbar',
+      transitions: {
+        cancelled: {
+          verify: true,
+          title: 'Arkivera',
+          description: 'Dra tillbaka och arkivera den här faktarutan'
         }
       }
     }

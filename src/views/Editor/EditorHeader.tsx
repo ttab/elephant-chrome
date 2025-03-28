@@ -1,22 +1,58 @@
 import { useDocumentStatus, useView } from '@/hooks'
 import { Newsvalue } from '@/components/Newsvalue'
-import { useEffect, useRef } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { MetaSheet } from './components/MetaSheet'
-import { DocumentStatusMenu } from '@/components/DocumentStatusMenu'
+import { StatusMenu } from '@/components/DocumentStatus/StatusMenu'
 import { AddNote } from './components/Notes/AddNote'
 import { ViewHeader } from '@/components/View'
 import { PenBoxIcon } from '@ttab/elephant-ui/icons'
+import { useDeliverablePlanning } from '@/hooks/useDeliverablePlanning'
+import { getValueByYPath, setValueByYPath } from '@/lib/yUtils'
+import type { EleBlock } from '@/shared/types'
+import { toast } from 'sonner'
 
 export const EditorHeader = ({ documentId }: { documentId: string }): JSX.Element => {
   const { viewId } = useView()
+  const deliverablePlanning = useDeliverablePlanning(documentId)
   const [documentStatus, setDocumentStatus] = useDocumentStatus(documentId)
-
   const containerRef = useRef<HTMLElement | null>(null)
+  const [publishTime, setPublishTime] = useState<string | null>(null)
 
   useEffect(() => {
     containerRef.current = (document.getElementById(viewId))
   }, [viewId])
 
+
+  useEffect(() => {
+    if (deliverablePlanning) {
+      const { index } = deliverablePlanning.getAssignment()
+      const [ass] = getValueByYPath<EleBlock>(deliverablePlanning.yRoot, `meta.core/assignment[${index}]`)
+
+      if (ass) {
+        setPublishTime((prev) => (ass.data.publish !== prev) ? ass.data.publish : prev)
+      }
+    }
+  }, [deliverablePlanning])
+
+  // Callback to handle setStatus (withheld etc)
+  const setArticleStatus = useCallback((newStatus: string, data?: Record<string, unknown>) => {
+    if (!deliverablePlanning) {
+      toast.error('No planning or no article assignment links. Article not scheduled!')
+      return
+    }
+
+    const { index } = deliverablePlanning.getAssignment()
+    if (index > -1) {
+      if (newStatus === 'withheld') {
+        if (!(data?.time instanceof Date)) {
+          toast.error('Faulty scheduled publish time set. Article not scheduled!')
+          return
+        }
+        setValueByYPath(deliverablePlanning.yRoot, `meta.core/assignment[${index}].data.publish`, data.time.toISOString())
+      }
+      void setDocumentStatus(newStatus)
+    }
+  }, [deliverablePlanning, setDocumentStatus])
 
   return (
     <ViewHeader.Root>
@@ -34,8 +70,16 @@ export const EditorHeader = ({ documentId }: { documentId: string }): JSX.Elemen
           <div className='flex flex-row gap-2 justify-end items-center'>
             {!!documentId && (
               <>
-                <DocumentStatusMenu type='core/article' status={documentStatus} setStatus={setDocumentStatus} />
                 <ViewHeader.RemoteUsers documentId={documentId} />
+
+                {!!deliverablePlanning && (
+                  <StatusMenu
+                    type='core/article'
+                    status={documentStatus}
+                    publishTime={publishTime ? new Date(publishTime) : undefined}
+                    setStatus={setArticleStatus}
+                  />
+                )}
               </>
             )}
           </div>

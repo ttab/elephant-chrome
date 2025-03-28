@@ -1,8 +1,8 @@
 import type { Request } from 'express'
 import type { RouteHandler } from '../../../routes.js'
 import { isValidUUID } from '../../../utils/isValidUUID.js'
-import { toGroupedNewsDoc } from '../../../utils/transformations/groupedNewsDoc.js'
-import { fromYjsNewsDoc } from '../../../utils/transformations/yjsNewsDoc.js'
+import { toGroupedNewsDoc } from '@/shared/transformations/groupedNewsDoc.js'
+import { fromYjsNewsDoc } from '@/shared/transformations/yjsNewsDoc.js'
 import * as Y from 'yjs'
 import logger from '../../../lib/logger.js'
 

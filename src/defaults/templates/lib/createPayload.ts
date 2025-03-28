@@ -1,9 +1,11 @@
-import { ungroup } from '../../../../src-srv/utils/transformations/groupedNewsDoc'
+import { ungroup } from '@/shared/transformations/groupedNewsDoc'
 import type { TemplatePayload } from '..'
 import type * as Y from 'yjs'
 
-export function createPayload(document: Y.Doc, index?: number): TemplatePayload | undefined {
-  if (!document) return
+export function createPayload(document: Y.Doc, index?: number, payloadType: string = ''): TemplatePayload | undefined {
+  if (!document) {
+    return
+  }
 
   const ele = document.getMap('ele')
   const root = ele.get('root') as Y.Map<unknown>
@@ -21,7 +23,7 @@ export function createPayload(document: Y.Doc, index?: number): TemplatePayload 
   const description = (currentMeta.get('core/description') as Y.Array<unknown>)?.toJSON() || []
 
   // Could be either YXMlText or string, convert to string
-  const rootTitle = (currentAssignmentMeta || root)
+  const rootTitle = (currentAssignment || root)
     ?.get('title')
   const title = typeof rootTitle === 'object'
     ? (rootTitle as Y.XmlText).toJSON()
@@ -33,16 +35,22 @@ export function createPayload(document: Y.Doc, index?: number): TemplatePayload 
 
   const section = links.get('core/section')?.toJSON() || []
 
-  return {
+  const tplPayload: TemplatePayload = {
     title,
     meta: {
       'tt/slugline': ungroup({ 'tt:/slugline': slugline }),
-      'core/newsvalue': ungroup({ 'core/newsvalue': newsvalue }),
-      'core/description': ungroup({ 'core/description': description })
+      'core/newsvalue': ungroup({ 'core/newsvalue': newsvalue })
     },
     links: {
       'core/section': ungroup({ 'core/section': section }),
       'core/story': ungroup({ 'core/section': story })
     }
   }
+
+  // Do not add descriptions to flash or text documents
+  if (!['text', 'flash'].includes(payloadType) && tplPayload.meta) {
+    tplPayload.meta['core/description'] = ungroup({ 'core/description': description })
+  }
+
+  return tplPayload
 }

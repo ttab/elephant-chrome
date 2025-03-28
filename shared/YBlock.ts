@@ -1,6 +1,6 @@
 import { Block } from '@ttab/elephant-api/newsdoc'
 import { type PartialMessage } from '@protobuf-ts/runtime'
-import { group } from '../src-srv/utils/transformations/groupedNewsDoc'
+import { group } from './transformations/groupedNewsDoc'
 
 export const YBlock = {
   create: (value: PartialMessage<Block>) => {

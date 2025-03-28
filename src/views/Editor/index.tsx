@@ -1,8 +1,6 @@
-import { useEffect, useState, useRef } from 'react'
+import { useEffect, useRef } from 'react'
 import { AwarenessDocument, View } from '@/components'
 import { Notes } from './components/Notes'
-
-import type * as Y from 'yjs'
 
 import { Textbit, useTextbit } from '@ttab/textbit'
 import { Bold, Italic, Link, Text, OrderedList, UnorderedList, TTVisual, Factbox, Table, LocalizedQuotationMarks } from '@ttab/textbit-plugins'
@@ -22,8 +20,6 @@ import { type ViewMetadata, type ViewProps } from '@/types'
 import { EditorHeader } from './EditorHeader'
 import { type HocuspocusProvider } from '@hocuspocus/provider'
 import { type AwarenessUserData } from '@/contexts/CollaborationProvider'
-import { articleDocumentTemplate } from '@/defaults/templates/articleDocumentTemplate'
-import { createDocument } from '@/lib/createYItem'
 import { Error } from '../Error'
 
 import { ContentMenu } from '@/components/Editor/ContentMenu'
@@ -56,7 +52,6 @@ const meta: ViewMetadata = {
 // Main Editor Component - Handles document initialization
 const Editor = (props: ViewProps): JSX.Element => {
   const [query] = useQuery()
-  const [document, setDocument] = useState<Y.Doc | undefined>(undefined)
   const documentId = props.id || query.id
 
   // Error handling for missing document
@@ -69,24 +64,8 @@ const Editor = (props: ViewProps): JSX.Element => {
     )
   }
 
-  // Document creation if needed
-  if (props.onDocumentCreated && !document) {
-    const [, doc] = createDocument({
-      template: (id: string) => {
-        return articleDocumentTemplate(id, props?.payload)
-      },
-      documentId
-    })
-    setDocument(doc)
-    return <></>
-  }
-
-  if (document && props.onDocumentCreated) {
-    props.onDocumentCreated()
-  }
-
   return (
-    <AwarenessDocument documentId={documentId} document={document} className='h-full'>
+    <AwarenessDocument documentId={documentId} className='h-full'>
       <EditorWrapper documentId={documentId} {...props} />
     </AwarenessDocument>
   )
@@ -101,7 +80,7 @@ function EditorWrapper(props: ViewProps & {
   const { provider, synced, user } = useCollaboration()
   const openFactboxEditor = useLink('Factbox')
   const [notes] = useYValue<Block[] | undefined>('meta.core/note')
-  const [,setIsFocused] = useAwareness(props.documentId)
+  const [, setIsFocused] = useAwareness(props.documentId)
 
   // Plugin configuration
   const getConfiguredPlugins = () => {

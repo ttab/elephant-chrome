@@ -1,15 +1,26 @@
+import type { PropsWithChildren } from 'react'
 import { useKeydownGlobal } from '@/hooks/useKeydownGlobal'
 import { Button, Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@ttab/elephant-ui'
 import type { MouseEvent } from 'react'
 
-export const Prompt = ({ title, description, primaryLabel, secondaryLabel, onPrimary, onSecondary }: {
+interface PromptProps extends PropsWithChildren {
   title?: string
-  description: string
+  description?: string
   primaryLabel: string
   secondaryLabel?: string
   onPrimary: (event: MouseEvent<HTMLButtonElement> | React.KeyboardEvent<HTMLButtonElement> | KeyboardEvent) => void
   onSecondary?: (event: MouseEvent<HTMLButtonElement> | React.KeyboardEvent<HTMLButtonElement> | KeyboardEvent) => void
-}): JSX.Element => {
+}
+
+export const Prompt = ({
+  title,
+  description,
+  children,
+  primaryLabel,
+  secondaryLabel,
+  onPrimary,
+  onSecondary
+}: PromptProps): JSX.Element => {
   useKeydownGlobal((event) => {
     if (event.key === 'Escape' && secondaryLabel && onSecondary) {
       onSecondary(event as unknown as React.KeyboardEvent<HTMLButtonElement>)
@@ -24,8 +35,10 @@ export const Prompt = ({ title, description, primaryLabel, secondaryLabel, onPri
         </DialogHeader>
 
         <DialogDescription>
-          {description}
+          {!!description && description}
         </DialogDescription>
+
+        {!!children && <>{children}</>}
 
         <DialogFooter className='flex flex-col gap-2 pt-4'>
           {!!onSecondary && !!secondaryLabel && (

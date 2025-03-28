@@ -7,10 +7,10 @@ import {
 import type { DefaultValueOption, ViewProps } from '@/types'
 import { Button, ComboBox } from '@ttab/elephant-ui'
 import { CircleXIcon, ZapIcon, Tags, GanttChartSquare } from '@ttab/elephant-ui/icons'
-import { useCollaboration, useYValue, useRegistry } from '@/hooks'
+import { useCollaboration, useYValue, useRegistry, useDocumentStatus } from '@/hooks'
 import { useSession } from 'next-auth/react'
 import type { Dispatch, SetStateAction } from 'react'
-import { useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { FlashEditor } from './FlashEditor'
 import { UserMessage } from '@/components/UserMessage'
 import { Form } from '@/components/Form'
@@ -19,6 +19,11 @@ import { createFlash } from './lib/createFlash'
 import type * as Y from 'yjs'
 import { CreatePrompt } from '@/components/CreatePrompt'
 import { Block } from '@ttab/elephant-api/newsdoc'
+import { StatusMenu } from '@/components/DocumentStatus/StatusMenu'
+import { useDeliverablePlanning } from '@/hooks/useDeliverablePlanning'
+import { getValueByYPath, setValueByYPath } from '@/lib/yUtils'
+import type { EleBlock } from '@/shared/types'
+import { toast } from 'sonner'
 
 export const FlashViewContent = (props: ViewProps): JSX.Element => {
   const { provider } = useCollaboration()
@@ -30,6 +35,42 @@ export const FlashViewContent = (props: ViewProps): JSX.Element => {
   const [title, setTitle] = useYValue<string | undefined>('root.title', true)
   const { index, timeZone } = useRegistry()
 
+  const [documentId] = useYValue<string>('root.uuid')
+  const [documentStatus, setDocumentStatus] = useDocumentStatus(documentId)
+  const deliverablePlanning = useDeliverablePlanning(documentId || '')
+  const [publishTime, setPublishTime] = useState<string | null>(null)
+
+  useEffect(() => {
+    if (deliverablePlanning) {
+      const { index } = deliverablePlanning.getAssignment()
+      const [ass] = getValueByYPath<EleBlock>(deliverablePlanning.yRoot, `meta.core/assignment[${index}]`)
+
+      if (ass) {
+        setPublishTime((prev) => (ass.data.publish !== prev) ? ass.data.publish : prev)
+      }
+    }
+  }, [deliverablePlanning])
+
+  // Callback to handle setStatus (withheld etc)
+  const setFlashStatus = useCallback((newStatus: string, data?: Record<string, unknown>) => {
+    if (!deliverablePlanning) {
+      toast.error('No planning or no article assignment links. Article not scheduled!')
+      return
+    }
+
+    const { index } = deliverablePlanning.getAssignment('core/flash')
+    if (index > -1) {
+      if (newStatus === 'withheld') {
+        if (!(data?.time instanceof Date)) {
+          toast.error('Faulty scheduled publish time set. Article not scheduled!')
+          return
+        }
+        setValueByYPath(deliverablePlanning.yRoot, `meta.core/assignment[${index}].data.publish`, data.time.toISOString())
+      }
+      void setDocumentStatus(newStatus)
+    }
+  }, [deliverablePlanning, setDocumentStatus])
+
   const handleSubmit = (setCreatePrompt: Dispatch<SetStateAction<boolean>>): void => {
     setCreatePrompt(true)
   }
@@ -37,19 +78,29 @@ export const FlashViewContent = (props: ViewProps): JSX.Element => {
   return (
     <View.Root asDialog={props.asDialog} className={props.className}>
       <ViewHeader.Root>
-        {!props.asDialog
-        && <ViewHeader.Title name='Flash' title='Flash' icon={ZapIcon} iconColor='#FF5150' />}
+        {!props.asDialog && (
+          <ViewHeader.Title name='Flash' title='Flash' icon={ZapIcon} iconColor='#FF5150' />
+        )}
 
         <ViewHeader.Content>
           <div className='flex w-full h-full items-center space-x-2 font-bold'>
-            {props.asDialog && <ViewHeader.Title name='Flash' title='Skapa ny flash' icon={ZapIcon} iconColor='#FF3140' />}
+            {props.asDialog && (
+              <ViewHeader.Title name='Flash' title='Skapa ny flash' icon={ZapIcon} iconColor='#FF3140' />
+            )}
           </div>
+
+          {!props.asDialog && !!props.id && <ViewHeader.RemoteUsers documentId={props.id} />}
+          {!!deliverablePlanning && (
+            <StatusMenu
+              type='core/article'
+              status={documentStatus}
+              publishTime={publishTime ? new Date(publishTime) : undefined}
+              setStatus={setFlashStatus}
+            />
+          )}
         </ViewHeader.Content>
 
-        <ViewHeader.Action onDialogClose={props.onDialogClose}>
-          {!props.asDialog && !!props.id
-          && <ViewHeader.RemoteUsers documentId={props.id} />}
-        </ViewHeader.Action>
+        <ViewHeader.Action onDialogClose={props.onDialogClose} />
       </ViewHeader.Root>
 
       <View.Content>
@@ -85,8 +136,7 @@ export const FlashViewContent = (props: ViewProps): JSX.Element => {
                   </ComboBox>
                 </Awareness>
 
-                {!!selectedPlanning
-                && (
+                {!!selectedPlanning && (
                   <>
                     <Button
                       variant='ghost'
@@ -104,8 +154,7 @@ export const FlashViewContent = (props: ViewProps): JSX.Element => {
             )}
 
 
-            {!selectedPlanning && props.asDialog
-            && (
+            {!selectedPlanning && props.asDialog && (
               <Form.Group icon={Tags}>
                 <Section />
               </Form.Group>
@@ -115,12 +164,8 @@ export const FlashViewContent = (props: ViewProps): JSX.Element => {
 
             <UserMessage asDialog={!!props?.asDialog}>
               {!selectedPlanning
-                ? (
-                    <>Väljer du ingen planering kommer en ny planering med tillhörande uppdrag skapas åt dig.</>
-                  )
-                : (
-                    <>Denna flash kommer läggas i ett nytt uppdrag i den valda planeringen</>
-                  )}
+                ? (<>Väljer du ingen planering kommer en ny planering med tillhörande uppdrag skapas åt dig.</>)
+                : (<>Denna flash kommer läggas i ett nytt uppdrag i den valda planeringen</>)}
             </UserMessage>
 
           </Form.Content>
@@ -136,9 +181,10 @@ export const FlashViewContent = (props: ViewProps): JSX.Element => {
                 secondaryLabel='Avbryt'
                 primaryLabel='Skicka'
                 selectedPlanning={selectedPlanning}
-                payload={{ meta: {
-                  'core/newsvalue': [Block.create({ type: 'core/newsvalue', value: '4' })]
-                }
+                payload={{
+                  meta: {
+                    'core/newsvalue': [Block.create({ type: 'core/newsvalue', value: '4' })]
+                  }
                 }}
                 onPrimary={(planning: Y.Doc | undefined, planningId: string | undefined) => {
                   if (!provider || !props.id || !provider || !session) {
@@ -183,9 +229,10 @@ export const FlashViewContent = (props: ViewProps): JSX.Element => {
                 secondaryLabel='Avbryt'
                 primaryLabel='Spara'
                 selectedPlanning={selectedPlanning}
-                payload={{ meta: {
-                  'core/newsvalue': [Block.create({ type: 'core/newsvalue', value: '4' })]
-                }
+                payload={{
+                  meta: {
+                    'core/newsvalue': [Block.create({ type: 'core/newsvalue', value: '4' })]
+                  }
                 }}
                 onPrimary={(planning: Y.Doc | undefined, planningId: string | undefined) => {
                   if (!provider || !props.id || !provider || !session) {

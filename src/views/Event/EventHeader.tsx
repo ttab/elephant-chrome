@@ -1,6 +1,6 @@
 import { useDocumentStatus, useView } from '@/hooks'
 import { useEffect, useRef } from 'react'
-import { DocumentStatusMenu } from '@/components/DocumentStatusMenu'
+import { StatusMenu } from '@/components/DocumentStatus/StatusMenu'
 import { ViewHeader } from '@/components/View'
 import { Duplicate } from '@/components/Duplicate'
 import type { Session } from 'next-auth'
@@ -43,7 +43,7 @@ export const EventHeader = ({ documentId, asDialog, onDialogClose, provider, tit
 
           <div className='flex flex-row gap-2 justify-end items-center'>
             {!asDialog && (
-              <DocumentStatusMenu type='core/event' status={documentStatus} setStatus={setDocumentStatus} />
+              <StatusMenu type='core/event' status={documentStatus} setStatus={(status) => { void setDocumentStatus(status) }} />
             )}
             {!!documentId && !asDialog && (
               <>

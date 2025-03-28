@@ -1,6 +1,6 @@
 import { useDocumentStatus, useView } from '@/hooks'
 import { useEffect, useRef } from 'react'
-import { DocumentStatusMenu } from '@/components/DocumentStatusMenu'
+import { StatusMenu } from '@/components/DocumentStatus/StatusMenu'
 import { ViewHeader } from '@/components/View'
 import { BookTextIcon } from '@ttab/elephant-ui/icons'
 import { MetaSheet } from '../Editor/components/MetaSheet'
@@ -12,7 +12,6 @@ export const FactboxHeader = ({ documentId, asDialog, onDialogClose }: {
 }): JSX.Element => {
   const { viewId } = useView()
   const [documentStatus, setDocumentStatus] = useDocumentStatus(documentId)
-
   const containerRef = useRef<HTMLElement | null>(null)
 
   useEffect(() => {
@@ -34,7 +33,13 @@ export const FactboxHeader = ({ documentId, asDialog, onDialogClose }: {
 
           <div className='flex flex-row gap-2 justify-end items-center'>
             {!asDialog && (
-              <DocumentStatusMenu type='core/planning-item' status={documentStatus} setStatus={setDocumentStatus} />
+              <StatusMenu
+                type='core/factbox'
+                status={documentStatus}
+                setStatus={(status) => {
+                  void setDocumentStatus(status)
+                }}
+              />
             )}
 
             <MetaSheet container={containerRef.current} documentId={documentId} />
