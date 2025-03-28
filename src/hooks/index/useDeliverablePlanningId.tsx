@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { useSession } from 'next-auth/react'
 import { useRegistry } from '../useRegistry'
 import { QueryV1, TermQueryV1 } from '@ttab/elephant-api/index'
+import { toast } from 'sonner'
 
 /**
  * Hook that fetches an assignments planning id. Especially useful when you have an article
@@ -47,7 +48,9 @@ export const useDeliverablePlanningId = (assignmentId: string): string => {
           setPlanningId(hits[0].id)
         }
       } catch (err) {
-        console.error((err as Error).message || 'An error occurred')
+        const errorMessage = (err as Error).message || 'An error occurred while searching for text assignments'
+        console.error(errorMessage)
+        toast.error(errorMessage)
       }
     }
 
