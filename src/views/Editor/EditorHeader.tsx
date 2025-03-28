@@ -9,7 +9,7 @@ import { PenBoxIcon } from '@ttab/elephant-ui/icons'
 import { useDeliverablePlanning } from '@/hooks/useDeliverablePlanning'
 import { getValueByYPath, setValueByYPath } from '@/lib/yUtils'
 import type { EleBlock } from '@/shared/types'
-
+import { toast } from 'sonner'
 
 export const EditorHeader = ({ documentId }: { documentId: string }): JSX.Element => {
   const { viewId } = useView()
@@ -34,12 +34,10 @@ export const EditorHeader = ({ documentId }: { documentId: string }): JSX.Elemen
     }
   }, [deliverablePlanning])
 
-
   // Callback to handle setStatus (withheld etc)
   const setArticleStatus = useCallback((newStatus: string, data?: Record<string, unknown>) => {
     if (!deliverablePlanning) {
-      // FIXME: Notify user that something is wrong in a nicer way
-      alert('No planning or no article assignment links. Article not scheduled!')
+      toast.error('No planning or no article assignment links. Article not scheduled!')
       return
     }
 
@@ -47,8 +45,7 @@ export const EditorHeader = ({ documentId }: { documentId: string }): JSX.Elemen
     if (index > -1) {
       if (newStatus === 'withheld') {
         if (!(data?.time instanceof Date)) {
-          // FIXME: Notify user that something is wrong in a nicer way
-          alert('Faulty scheduled publish time set. Article not scheduled!')
+          toast.error('Faulty scheduled publish time set. Article not scheduled!')
           return
         }
         setValueByYPath(deliverablePlanning.yRoot, `meta.core/assignment[${index}].data.publish`, data.time.toISOString())

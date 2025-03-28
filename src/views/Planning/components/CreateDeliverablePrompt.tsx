@@ -8,6 +8,7 @@ import {
 } from '@/defaults/templates/'
 import { useSession } from 'next-auth/react'
 import { useRegistry } from '@/hooks/useRegistry'
+import { toast } from 'sonner'
 
 /**
  * Deliverable document creation dialog, responsible for creating articles and flashes in the repository.
@@ -54,7 +55,7 @@ export function CreateDeliverablePrompt({ deliverableType, payload, onClose, tit
           })
           .catch((ex) => {
             console.error((ex as Error).message)
-            alert(`Misslyckades att skapa text: ${(ex as Error).message}`)
+            toast.error(`Misslyckades att skapa text: ${(ex as Error).message}`)
           })
       }}
       onSecondary={(event) => {

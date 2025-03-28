@@ -23,6 +23,7 @@ import { StatusMenu } from '@/components/DocumentStatus/StatusMenu'
 import { useDeliverablePlanning } from '@/hooks/useDeliverablePlanning'
 import { getValueByYPath, setValueByYPath } from '@/lib/yUtils'
 import type { EleBlock } from '@/shared/types'
+import { toast } from 'sonner'
 
 export const FlashViewContent = (props: ViewProps): JSX.Element => {
   const { provider } = useCollaboration()
@@ -53,8 +54,7 @@ export const FlashViewContent = (props: ViewProps): JSX.Element => {
   // Callback to handle setStatus (withheld etc)
   const setFlashStatus = useCallback((newStatus: string, data?: Record<string, unknown>) => {
     if (!deliverablePlanning) {
-      // FIXME: Notify user that something is wrong in a nicer way
-      alert('No planning or no article assignment links. Article not scheduled!')
+      toast.error('No planning or no article assignment links. Article not scheduled!')
       return
     }
 
@@ -62,8 +62,7 @@ export const FlashViewContent = (props: ViewProps): JSX.Element => {
     if (index > -1) {
       if (newStatus === 'withheld') {
         if (!(data?.time instanceof Date)) {
-          // FIXME: Notify user that something is wrong in a nicer way
-          alert('Faulty scheduled publish time set. Article not scheduled!')
+          toast.error('Faulty scheduled publish time set. Article not scheduled!')
           return
         }
         setValueByYPath(deliverablePlanning.yRoot, `meta.core/assignment[${index}].data.publish`, data.time.toISOString())
