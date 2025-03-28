@@ -36,8 +36,9 @@ export const Prompt = ({
 
         <DialogDescription>
           {!!description && description}
-          {children}
         </DialogDescription>
+
+        {!!children && <>{children}</>}
 
         <DialogFooter className='flex flex-col gap-2 pt-4'>
           {!!onSecondary && !!secondaryLabel && (
