@@ -1,5 +1,5 @@
 import * as Y from 'yjs'
-import { toSlateYXmlText } from './toSlateYXmlText.js'
+import { toSlateYXmlText } from './lib/toSlateYXmlText.js'
 import { isTextEntry } from './isTextEntry.js'
 
 /**
