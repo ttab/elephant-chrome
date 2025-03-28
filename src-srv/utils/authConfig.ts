@@ -41,18 +41,16 @@ async function refreshAccessToken(token: JWT): Promise<JWT> {
       body: params
     })
 
-    const refreshedTokens = await response.json() as {
-      access_token: string
-      expires_in: number
-      refresh_token?: string
-    }
-
-
     if (!response.ok) {
-      throw new Error(
-        `refresh request error response: ${response.statusText}`,
-        { cause: refreshedTokens })
+      throw new Error(`refresh request error response: ${response.statusText}`)
     }
+
+    const refreshedTokens = await response.json() as unknown
+
+    if (!isRefreshedTokens(refreshedTokens)) {
+      throw new Error('refresh request error response: invalid token response')
+    }
+
 
     return {
       ...token,
@@ -107,4 +105,11 @@ export const authConfig: AuthConfig = {
   pages: {
     signIn: `${process.env.BASE_URL}/login`
   }
+}
+
+function isRefreshedTokens(value: unknown): value is JWT & { expires_in: number } {
+  return typeof value === 'object' && value !== null
+    && 'access_token' in value && typeof value.access_token === 'string'
+    && 'expires_in' in value && typeof value.expires_in === 'number'
+    && 'refresh_token' in value && typeof value.refresh_token === 'string'
 }
