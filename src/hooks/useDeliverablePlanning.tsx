@@ -8,7 +8,7 @@ import { useDeliverablePlanningId } from './index/usePlanningIdFromAssignmentId'
 interface DeliverableReferences {
   planningUuid: string
   yRoot: Y.Map<unknown>
-  getAssignment: () => { id: string | undefined, index: number }
+  getAssignment: (deliverableType?: string) => { id: string | undefined, index: number }
 }
 
 /**
@@ -29,12 +29,12 @@ export const useDeliverablePlanning = (deliverableId: string): DeliverableRefere
   }, [planningDoc])
 
   // Expose helper callback function to retrieve the assignment index from the planning document
-  const getAssignment = useCallback(() => {
+  const getAssignment = useCallback((deliverableType = 'core/article') => {
     if (yRoot) {
       const [assignments] = getValueByYPath<EleBlock[]>(yRoot, 'meta.core/assignment')
 
       for (let i = 0; i < (assignments?.length || 0); i++) {
-        if (assignments?.[i].links?.['core/article']?.[0].uuid === deliverableId) {
+        if (assignments?.[i].links?.[deliverableType]?.[0].uuid === deliverableId) {
           return {
             id: assignments[i].id,
             index: i

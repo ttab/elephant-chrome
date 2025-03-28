@@ -58,7 +58,7 @@ export const FlashViewContent = (props: ViewProps): JSX.Element => {
       return
     }
 
-    const { index } = deliverablePlanning.getAssignment()
+    const { index } = deliverablePlanning.getAssignment('core/flash')
     if (index > -1) {
       if (newStatus === 'withheld') {
         if (!(data?.time instanceof Date)) {
