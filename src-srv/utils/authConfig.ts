@@ -1,6 +1,7 @@
 import { type AuthConfig } from '@auth/core'
-import { decodeJwt, type JWTPayload } from 'jose'
+import { decodeJwt } from 'jose'
 import Keycloak from '@auth/express/providers/keycloak'
+import type { JWT } from '@auth/core/jwt'
 
 const scopes = [
   'openid',
@@ -11,7 +12,6 @@ const scopes = [
   'doc_write',
   'doc_delete',
   'eventlog_read',
-  'search',
   'user'
 ]
 
@@ -21,7 +21,7 @@ if (process.env.AUTH_KEYCLOAK_IDP_HINT) {
   authorizationUrl.searchParams.set('kc_idp_hint', process.env.AUTH_KEYCLOAK_IDP_HINT)
 }
 
-async function refreshAccessToken(token: JWTPayload): Promise<JWTPayload> {
+async function refreshAccessToken(token: JWT): Promise<JWT> {
   try {
     const url = `${process.env.AUTH_KEYCLOAK_ISSUER}/protocol/openid-connect/token`
 
@@ -39,8 +39,6 @@ async function refreshAccessToken(token: JWTPayload): Promise<JWTPayload> {
         Accept: 'application/json'
       },
       body: params
-    }).catch((ex) => {
-      throw new Error('refresh token grant request', { cause: ex })
     })
 
     const refreshedTokens = await response.json() as {
@@ -97,12 +95,13 @@ export const authConfig: AuthConfig = {
 
       // The user is already logged in, check if the access token is expired
       // We want to refresh with 150 seconds left
-      if (Date.now() < (token.accessTokenExpires as number - 150 * 1000)) {
-        return token
+      const accessTokenExpires = (Number(token.accessTokenExpires) || 0) - 150 * 1000
+      const remaining = accessTokenExpires - Date.now()
+      if (remaining < 0) {
+        return await refreshAccessToken(token)
       }
 
-      // Access token is expired, refresh it
-      return await refreshAccessToken(token)
+      return token
     }
   },
   pages: {
