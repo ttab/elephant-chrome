@@ -72,16 +72,14 @@ export const EditorHeader = ({ documentId }: { documentId: string }): JSX.Elemen
               <>
                 <ViewHeader.RemoteUsers documentId={documentId} />
 
-                <div className='border bg-pink'>
-                  {!!deliverablePlanning && (
-                    <StatusMenu
-                      type='core/article'
-                      status={documentStatus}
-                      publishTime={publishTime ? new Date(publishTime) : undefined}
-                      setStatus={setArticleStatus}
-                    />
-                  )}
-                </div>
+                {!!deliverablePlanning && (
+                  <StatusMenu
+                    type='core/article'
+                    status={documentStatus}
+                    publishTime={publishTime ? new Date(publishTime) : undefined}
+                    setStatus={setArticleStatus}
+                  />
+                )}
               </>
             )}
           </div>
