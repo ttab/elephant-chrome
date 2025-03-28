@@ -279,7 +279,7 @@ export const AssignmentRow = ({ index, onSelect, isFocused = false, asDialog }: 
       {showCreateDialogPayload && provider?.document && (slugline || assignmentType === 'flash') && (
         <CreateDeliverablePrompt
           payload={createPayload(provider.document, index, assignmentType) || {}}
-          deliverableType={assignmentType || 'article'}
+          deliverableType={assignmentType === 'flash' ? 'flash' : 'article'}
           title={title || ''}
           documentLabel={documentLabel || ''}
           onClose={(event, id) => {

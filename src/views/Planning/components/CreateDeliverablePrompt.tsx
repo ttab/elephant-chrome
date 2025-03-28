@@ -14,7 +14,7 @@ import { toast } from 'sonner'
  * Deliverable document creation dialog, responsible for creating articles and flashes in the repository.
  */
 export function CreateDeliverablePrompt({ deliverableType, payload, onClose, title, documentLabel }: {
-  deliverableType: string
+  deliverableType: 'article' | 'flash'
   payload: TemplatePayload
   title: string
   documentLabel: string
