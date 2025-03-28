@@ -52,7 +52,6 @@ const meta: ViewMetadata = {
 // Main Editor Component - Handles document initialization
 const Editor = (props: ViewProps): JSX.Element => {
   const [query] = useQuery()
-  // const [document, setDocument] = useState<Y.Doc | undefined>(undefined)
   const documentId = props.id || query.id
 
   // Error handling for missing document

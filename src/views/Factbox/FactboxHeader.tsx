@@ -40,8 +40,6 @@ export const FactboxHeader = ({ documentId, asDialog, onDialogClose }: {
                   void setDocumentStatus(status)
                 }}
               />
-              // <DocumentStatusMenu type='core/planning-item' status={documentStatus} setStatus={setDocumentStatus} />
-
             )}
 
             <MetaSheet container={containerRef.current} documentId={documentId} />
