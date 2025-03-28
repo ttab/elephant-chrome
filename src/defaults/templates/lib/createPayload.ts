@@ -35,7 +35,7 @@ export function createPayload(document: Y.Doc, index?: number, payloadType: stri
 
   const section = links.get('core/section')?.toJSON() || []
 
-  const tplPayload = {
+  const tplPayload: TemplatePayload = {
     title,
     meta: {
       'tt/slugline': ungroup({ 'tt:/slugline': slugline }),
@@ -45,7 +45,7 @@ export function createPayload(document: Y.Doc, index?: number, payloadType: stri
       'core/section': ungroup({ 'core/section': section }),
       'core/story': ungroup({ 'core/section': story })
     }
-  } as TemplatePayload
+  }
 
   // Do not add descriptions to flash or text documents
   if (!['text', 'flash'].includes(payloadType) && tplPayload.meta) {
