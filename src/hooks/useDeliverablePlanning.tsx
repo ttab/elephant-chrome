@@ -23,8 +23,7 @@ export const useDeliverablePlanning = (deliverableId: string): DeliverableRefere
 
   useEffect(() => {
     if (planningDoc?.document) {
-      const ele = planningDoc.document.getMap('ele')
-      setYRoot((prev) => (prev !== ele) ? ele : prev)
+      setYRoot(planningDoc.document.getMap('ele'))
     }
   }, [planningDoc])
 
