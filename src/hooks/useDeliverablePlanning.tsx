@@ -3,7 +3,7 @@ import { useCallback, useEffect, useState } from 'react'
 import type * as Y from 'yjs'
 import { useCollaborationDocument } from './useCollaborationDocument'
 import type { EleBlock } from '@/shared/types'
-import { useDeliverablePlanningId } from './index/usePlanningIdFromAssignmentId'
+import { useDeliverablePlanningId } from './index/useDeliverablePlanningId'
 
 interface DeliverableReferences {
   planningUuid: string
