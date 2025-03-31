@@ -40,7 +40,7 @@ export const WireRow = ({ row, handleOpen, openDocuments, type }: {
     <TableRow
       tabIndex={0}
       className={cn(
-        'flex cursor-default snap-start scroll-mt-[70px] ring-inset focus:outline-none focus-visible:ring-2 focus-visible:ring-table-selected data-[state=selected]:bg-table-selected',
+        'flex cursor-default scroll-mt-[70px] ring-inset focus:outline-none focus-visible:ring-2 focus-visible:ring-table-selected data-[state=selected]:bg-table-selected',
         variants({ status: getWireStatus(type, wire) })
       )}
       data-state={getDataState(openDocuments, wire, type, wireRow)}
