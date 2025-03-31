@@ -17,10 +17,25 @@ export const UserMessagesReceiver = ({ children }: React.PropsWithChildren) => {
       return
     }
 
-    void pollMessages(data.accessToken, user)
+    let isActive = true
+
+    const startPolling = async () => {
+      let lastId = -1
+
+      while (isActive) {
+        lastId = await execPolling(data.accessToken, user, lastId)
+      }
+    }
+
+    void startPolling()
       .catch((ex) => {
         console.error('Unable to poll messages', ex)
       })
+
+
+    return () => {
+      isActive = false
+    }
   }, [data?.accessToken, user])
 
   return (
@@ -29,14 +44,6 @@ export const UserMessagesReceiver = ({ children }: React.PropsWithChildren) => {
     </>
   )
 }
-
-async function pollMessages(accessToken: string, user: User) {
-  let lastId = -1
-  while (true) {
-    lastId = await execPolling(accessToken, user, lastId)
-  }
-}
-
 
 async function execPolling(accessToken: string, user: User, lastId: number): Promise<number> {
   try {
