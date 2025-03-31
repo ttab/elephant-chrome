@@ -12,7 +12,7 @@ export const Controller = (): JSX.Element => {
   const [wiresHistory, setWiresHistory] = useUserTracker<HistoryState>('Wires')
 
   useEffect(() => {
-    // Load state from userTracker we're not in a initial state
+    // Load state from userTracker if we're in a load state
     if (wiresHistory && loadState(state, wiresHistory)) {
       replaceState(wiresHistory.contentState[0].path, wiresHistory)
     }
@@ -50,9 +50,11 @@ export const Controller = (): JSX.Element => {
         variant='ghost'
         className='w-9 px-0'
         onClick={(event) => {
-          addWire(event, {}, 'last')
-          if (state) {
+          if (state && state.contentState.length < 10) {
+            addWire(event, {}, 'last')
             setWiresHistory(state)
+          } else {
+            toast.error('Du kan max ha 10 telegram-vyer')
           }
         }}
       >
