@@ -200,7 +200,7 @@ export const RepositoryEventsProvider = ({ children }: {
           setTimeout(() => {
             isRetryScheduled = false
             retryListenForEvents()
-          }, 30000)
+          }, 20000)
         }
       })
     }
