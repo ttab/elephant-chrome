@@ -21,6 +21,7 @@ import { createPayload } from '@/defaults/templates/lib/createPayload'
 import { Move } from '@/components/Move/'
 import { useModal } from '@/components/Modal/useModal'
 import type * as Y from 'yjs'
+import { toast } from 'sonner'
 
 export const AssignmentRow = ({ index, onSelect, isFocused = false, asDialog }: {
   index: number
@@ -250,8 +251,10 @@ export const AssignmentRow = ({ index, onSelect, isFocused = false, asDialog }: 
           description={`Vill du ta bort uppdraget${title ? ' ' + title : ''}?`}
           secondaryLabel='Avbryt'
           primaryLabel='Ta bort'
-          onPrimary={() => {
+          onPrimary={(e) => {
+            e.stopPropagation()
             setShowVerifyDialog(false)
+            toast.success('Uppdrag borttaget')
             deleteByYPath(
               provider?.document.getMap('ele'),
               `meta.core/assignment[${index}]`
