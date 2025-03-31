@@ -16,6 +16,7 @@ interface RepositoryEventsProviderState {
 }
 
 class RetriableError extends Error { }
+class AuthenticationError extends Error { }
 
 export const RepositoryEventsContext = createContext<RepositoryEventsProviderState>({
   subscribe: () => { return () => {} }
@@ -33,6 +34,11 @@ export const RepositoryEventsProvider = ({ children }: {
   const controller = useRef<AbortController | null>(null)
   const lastEventId = useRef<string | null>(null)
   const broadcastChannel = useRef<BroadcastChannel | null>(null)
+  const tokenRef = useRef(data?.accessToken)
+
+  useEffect(() => {
+    tokenRef.current = data?.accessToken
+  }, [data?.accessToken])
 
   /**
    * Listen for and handle broadcasted messages
@@ -80,38 +86,44 @@ export const RepositoryEventsProvider = ({ children }: {
 
     controller.current = new AbortController()
 
-    listen(
-      url,
-      controller.current,
-      (event) => {
-        const id = event.id.toString()
-        lastEventId.current = id
+    try {
+      await listen(
+        url,
+        controller.current,
+        (event) => {
+          const id = event.id.toString()
+          lastEventId.current = id
 
-        void IDB.put('__meta', {
-          id: 'repositoryEvents',
-          lastEventId: lastEventId.current,
-          timestamp: event.timestamp
-        })
-
-        // Notify subscribers in this browser tab/window
-        if (subscribers.current[event.type]) {
-          subscribers.current[event.type].forEach((callback) => {
-            callback(event)
+          void IDB.put('__meta', {
+            id: 'repositoryEvents',
+            lastEventId: lastEventId.current,
+            timestamp: event.timestamp
           })
-        }
 
-        // Notify other tabs
-        broadcastChannel.current?.postMessage({
-          type: 'sse',
-          payload: event
-        })
-      },
-      {
-        topic: 'firehose',
-        accessToken: accessToken,
-        lastEventId: lastEventId.current
+          // Notify subscribers in this browser tab/window
+          if (subscribers.current[event.type]) {
+            subscribers.current[event.type].forEach((callback) => {
+              callback(event)
+            })
+          }
+
+          // Notify other tabs
+          broadcastChannel.current?.postMessage({
+            type: 'sse',
+            payload: event
+          })
+        },
+        {
+          topic: 'firehose',
+          accessToken: accessToken,
+          lastEventId: lastEventId.current
+        }
+      )
+    } catch (ex) {
+      if (ex instanceof AuthenticationError) {
+        throw ex
       }
-    )
+    }
   }, [IDB])
 
 
@@ -165,7 +177,7 @@ export const RepositoryEventsProvider = ({ children }: {
    * When window receives focus we take over listening
    */
   useEffect(() => {
-    if (isListening.current || !hasFocus || !data?.accessToken || !repositoryEventsUrl) {
+    if (isListening.current || !hasFocus || !tokenRef.current || !repositoryEventsUrl) {
       return
     }
 
@@ -176,10 +188,25 @@ export const RepositoryEventsProvider = ({ children }: {
 
     isListening.current = true
 
-    setTimeout(() => {
-      void listenForEvents(repositoryEventsUrl, data.accessToken)
-    }, 0)
-  }, [hasFocus, listenForEvents, repositoryEventsUrl, data?.accessToken])
+    let isRetryScheduled = false
+
+    const retryListenForEvents = () => {
+      const accessToken = tokenRef.current || ''
+      void listenForEvents(repositoryEventsUrl, accessToken).catch((ex) => {
+        if (ex instanceof AuthenticationError && !isRetryScheduled) {
+          console.info('Retrying listening for events in 20 seconds...')
+
+          isRetryScheduled = true
+          setTimeout(() => {
+            isRetryScheduled = false
+            retryListenForEvents()
+          }, 20000)
+        }
+      })
+    }
+
+    retryListenForEvents()
+  }, [hasFocus, listenForEvents, repositoryEventsUrl])
 
 
   return (
@@ -190,7 +217,7 @@ export const RepositoryEventsProvider = ({ children }: {
 }
 
 
-function listen(
+async function listen(
   baseUrl: URL,
   controller: AbortController,
   onEvent: (event: EventlogItem) => void,
@@ -210,21 +237,53 @@ function listen(
 
   console.info(`Listening for events after id ${options.lastEventId}...`)
 
-  void fetchEventSource(url.toString(), {
-    headers,
-    signal: controller.signal,
-    onmessage(event) {
-      const msg: EventlogItem = event?.data ? JSON.parse(event?.data) : {}
-      onEvent(msg)
-    },
-    onclose() {
+  try {
+    await fetchEventSource(url.toString(), {
+      headers,
+      signal: controller.signal,
+      onopen(response) {
+        if (response.status === 401) {
+          throw new AuthenticationError('Unauthorized')
+        }
+
+        return Promise.resolve()
+      },
+      onmessage(event) {
+        const msg = parseEventlogItem(event?.data)
+        onEvent(msg)
+      },
+      onclose() {
       // If connection is unexpectedly closed by server, retry
-      throw new RetriableError()
-    },
-    onerror(err) {
-      if (!(err instanceof RetriableError)) {
-        controller.abort()
+        throw new RetriableError()
+      },
+      onerror(err) {
+        if (err instanceof AuthenticationError) {
+          throw err
+        }
+        if (!(err instanceof RetriableError)) {
+          controller.abort()
+        }
       }
+    })
+  } catch (ex) {
+    if (ex instanceof AuthenticationError) {
+      throw ex
     }
-  })
+  }
 }
+
+function parseEventlogItem(data: string): EventlogItem {
+  try {
+    const parsed = JSON.parse(data) as EventlogItem
+    if (parsed && typeof parsed.id === 'string'
+      && typeof parsed.timestamp === 'string'
+      && typeof parsed.type === 'string') {
+      return parsed
+    }
+  } catch (error) {
+    console.error('JSON parsing error:', error)
+    throw new Error('Invalid EventlogItem format')
+  }
+  throw new Error('Invalid EventlogItem format')
+}
+
