@@ -50,9 +50,9 @@ export const RepositoryEventsProvider = ({ children }: {
         // Received sse from another tab/window, notify subscribers
         lastEventId.current = (payload as EventlogItem).id.toString()
 
-        if (subscribers.current[event.type]) {
-          subscribers.current[event.type].forEach((callback) => {
-            callback(payload as EventlogItem)
+        if (typeof payload !== 'string' && payload.type && subscribers.current[payload.type]) {
+          subscribers.current[payload.type].forEach((callback) => {
+            callback(payload)
           })
         }
       }
