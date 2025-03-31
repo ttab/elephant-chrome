@@ -56,7 +56,8 @@ export const Events = (): JSX.Element => {
         columns={columns}
         initialState={{
           grouping: ['newsvalue'],
-          columnFilters
+          columnFilters,
+          globalFilter: query.query
         }}
       >
         <SWRProvider<Event, EventSearchParams> index={EventsIndex}>

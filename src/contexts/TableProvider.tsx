@@ -1,4 +1,5 @@
 import type {
+  GlobalFilterTableState,
   TableState,
   Updater } from '@tanstack/react-table'
 import {
@@ -75,6 +76,8 @@ export const TableProvider = <T,>({
   const page = pages[pages.length - 1]
   const [search, setSearch] = useState<string | undefined>()
   const [grouping, setGrouping] = useState<string[]>(initialState?.grouping || [])
+  // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+  const [globalFilter, setGlobalFilter] = useState<GlobalFilterTableState['globalFilter']>(initialState?.globalFilter)
 
   const [, setQuery] = useQuery()
 
@@ -96,7 +99,8 @@ export const TableProvider = <T,>({
       columnVisibility,
       rowSelection,
       columnFilters,
-      grouping
+      grouping,
+      globalFilter: globalFilter as string
     },
     enableRowSelection: true,
     enableMultiRowSelection: false,
@@ -105,6 +109,13 @@ export const TableProvider = <T,>({
     onRowSelectionChange: useCallback(setRowSelection, [setRowSelection]),
     onGroupingChange: useCallback(setGrouping, [setGrouping]),
     onSortingChange: useCallback(setSorting, [setSorting]),
+    onGlobalFilterChange: (updater: Updater<GlobalFilterTableState>) => {
+      setQuery({ query: typeof updater === 'string'
+        ? updater
+        : undefined
+      })
+      setGlobalFilter(updater)
+    },
     onColumnFiltersChange: useCallback((updater: Updater<ColumnFiltersState>) => {
       // Update query
       setQuery(updateFilter(updater, columnFilters))

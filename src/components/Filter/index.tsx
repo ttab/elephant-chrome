@@ -26,6 +26,16 @@ export const Filter = ({ page, pages, setPages, search, setSearch, children, set
 
   const inputRef = useRef<HTMLInputElement>(null)
 
+  const handleInputChange = (value: string | undefined) => {
+    if (value) {
+      if (setGlobalTextFilter) {
+        setGlobalTextFilter(value)
+      } else {
+        setFilter({ query: [value] })
+      }
+    }
+  }
+
   useEffect(() => {
     if (inputRef.current) {
       inputRef.current.focus()
@@ -51,10 +61,13 @@ export const Filter = ({ page, pages, setPages, search, setSearch, children, set
       <PopoverContent className='w-[200px] p-0' align='start'>
         <Command
           onKeyDown={(e) => {
+            if (e.key === 'Enter' && page === 'query') {
+              handleInputChange(inputRef.current?.value)
+            }
             if (e.key === 'Escape') {
               setOpen(false)
             }
-            if (e.key === 'ArrowLeft' || (e.key === 'Backspace' && !search)) {
+            if (e.key === 'ArrowLeft' || (e.key === 'Backspace' && !inputRef.current?.value)) {
               e.preventDefault()
               setSearch('')
               if (pages.length > 0) {
@@ -69,16 +82,8 @@ export const Filter = ({ page, pages, setPages, search, setSearch, children, set
           <DebouncedCommandInput
             ref={inputRef}
             value={page === 'query' ? filter?.query?.[0] : search}
-            onChange={(value: string | undefined) => {
-              if (value) {
-                if (setGlobalTextFilter) {
-                  setGlobalTextFilter(value)
-                } else {
-                  setFilter({ query: [value] })
-                }
-              }
-            }}
-            placeholder={page === 'query' ? 'Fritext' : 'Filtrera'}
+            onChange={(value) => page === 'query' && handleInputChange(value)}
+            placeholder={page === 'query' ? 'Fritext' : 'Sök alternativ'}
             className='h-9'
           />
           {children}
@@ -94,7 +99,7 @@ function handleOpenChange({ setOpen, setSearch, setPages }: {
   setPages: Dispatch<SetStateAction<string[]>>
 }): (open: boolean) => void {
   return (open: boolean) => {
-    setSearch(undefined)
+    setSearch('')
     setPages([''])
     setOpen(open)
   }
