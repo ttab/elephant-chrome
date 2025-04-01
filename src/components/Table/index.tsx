@@ -37,7 +37,10 @@ function isRowTypeWire<TData, TValue>(type: TableProps<TData, TValue>['type']): 
   return type === 'Wires'
 }
 
-function getNextTableIndex(rows: Record<string, RowType<unknown>>, selectedRowIndex: number | undefined, direction: 'ArrowUp' | 'ArrowDown'): number | undefined {
+function getNextTableIndex(
+  rows: Record<string, RowType<unknown>>,
+  selectedRowIndex: number | undefined,
+  direction: 'ArrowUp' | 'ArrowDown'): number | undefined {
   const keys = Object.keys(rows)
     .map(Number)
     .filter((numKey) => !isNaN(numKey))
@@ -49,9 +52,17 @@ function getNextTableIndex(rows: Record<string, RowType<unknown>>, selectedRowIn
   let currentIndex = selectedRowIndex !== undefined ? keys.indexOf(selectedRowIndex) : -1
 
   if (direction === 'ArrowDown') {
-    currentIndex = (currentIndex + 1) % keys.length
+    if (currentIndex < keys.length - 1) {
+      currentIndex += 1
+    } else {
+      return undefined
+    }
   } else if (direction === 'ArrowUp') {
-    currentIndex = (currentIndex - 1 + keys.length) % keys.length
+    if (currentIndex > 0) {
+      currentIndex -= 1
+    } else {
+      return undefined
+    }
   }
 
   return keys[currentIndex]
