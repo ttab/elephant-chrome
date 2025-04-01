@@ -68,7 +68,8 @@ export const Assignments = (): JSX.Element => {
         columns={columns}
         initialState={{
           grouping: ['newsvalue'],
-          columnFilters
+          columnFilters,
+          globalFilter: query.query
         }}
       >
         <TableCommandMenu heading='Assignments'>

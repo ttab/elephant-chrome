@@ -11,6 +11,7 @@ export const TextFilter = (): JSX.Element | null => {
   return !page
     ? (
         <CommandItem
+          className='flex gap-1 items-center'
           onSelect={() => {
             setPages([...pages, 'query'])
             if (typeof globalFilter === 'string') {
