@@ -1,7 +1,7 @@
 import { useSession } from 'next-auth/react'
 import useSWR, { mutate as globalMutate } from 'swr'
 import { useCallback } from 'react'
-import { useRegistry } from '@/hooks'
+import { useCollaboration, useRegistry } from '@/hooks'
 
 export interface Status {
   name: string
@@ -15,6 +15,7 @@ export const useDocumentStatus = (uuid?: string): [
 ] => {
   const { repository } = useRegistry()
   const { data: session } = useSession()
+  const { provider } = useCollaboration()
 
   const doFetch = uuid && session && repository
 
@@ -31,10 +32,9 @@ export const useDocumentStatus = (uuid?: string): [
 
       const version = result?.meta?.currentVersion || 0n
       const heads = result?.meta?.heads
+      const headsEntries = heads ? Object.entries(heads) : []
 
-      const headsEntries = heads && Object.entries(heads)
-
-      if (!headsEntries?.length) {
+      if (!headsEntries.length) {
         return {
           version,
           name: 'draft',
@@ -44,9 +44,8 @@ export const useDocumentStatus = (uuid?: string): [
 
       // Get statuses for the current version and sort them by creation date
       const currentStatus = headsEntries
-        .filter((entry) => entry[1].version === version)
-        .sort((a, b) =>
-          new Date(b[1].created).getTime() - new Date(a[1].created).getTime())?.[0]?.[0] || 'draft'
+        .filter(([_, data]) => data.version === version)
+        .sort((a, b) => new Date(b[1].created).getTime() - new Date(a[1].created).getTime())?.[0]?.[0] || 'draft'
 
       return {
         version,
@@ -60,27 +59,19 @@ export const useDocumentStatus = (uuid?: string): [
 
   const setDocumentStatus = useCallback(
     async (newStatus: string | Status) => {
-      if (!session || !repository) return
-
-      let payload: Status | undefined
-
-      if (typeof newStatus !== 'string') {
-        payload = newStatus
+      if (!session || !repository || !uuid || !provider?.document) {
+        return
       }
 
-      if (typeof newStatus === 'string' && documentStatus && uuid) {
-        payload = {
-          ...documentStatus,
-          uuid: uuid,
-          name: newStatus,
-          version: documentStatus?.version
-        }
+      // Ensure we always work with the latest status
+      const currentStatus = documentStatus || (await globalMutate([`status/${uuid}`], undefined, false))
+      if (!currentStatus) {
+        throw new Error('Cannot update status: No current status available')
       }
 
-      if (!payload) {
-        throw new Error('Invalid status payload')
-      }
-
+      const payload: Status = typeof newStatus === 'string'
+        ? { ...currentStatus, name: newStatus }
+        : newStatus
 
       // Optimistically update the SWR cache before performing the actual API call
       await mutate(payload, false)
@@ -88,6 +79,7 @@ export const useDocumentStatus = (uuid?: string): [
       try {
         await repository.saveMeta({
           status: payload,
+          currentStatus,
           accessToken: session.accessToken
         })
 
@@ -95,9 +87,11 @@ export const useDocumentStatus = (uuid?: string): [
         await globalMutate([`status/${uuid}`])
       } catch (error) {
         console.error('Failed to update status', error)
+        // Rollback the optimistic update if the ststus update fails
+        await mutate(currentStatus, false)
       }
     },
-    [session, uuid, documentStatus, mutate, repository]
+    [session, uuid, documentStatus, mutate, repository, provider?.document]
   )
 
   return [documentStatus, setDocumentStatus]

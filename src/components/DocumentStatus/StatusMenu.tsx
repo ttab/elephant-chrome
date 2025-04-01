@@ -3,7 +3,7 @@ import { ChevronDown } from 'lucide-react'
 import { useRef, useState, useEffect } from 'react'
 import { useWorkflow } from '@/hooks/index/useWorkflow'
 import type { WorkflowTransition } from '@/defaults/workflowSpecification'
-import type { Status } from '@/hooks/useDocumentStatus'
+import type { Status } from '@/hooks/useWorkflowStatus'
 import { StatusOptions } from './StatusMenuOptions'
 import { StatusMenuHeader } from './StatusMenuHeader'
 import { PromptDefault } from './PromptDefault'
@@ -97,6 +97,7 @@ export const StatusMenu = ({ type, status: currentStatus, publishTime, setStatus
               showPrompt={showPrompt}
               setStatus={setStatus}
               publishTime={publishTime}
+              requireCause={!!currentStatus.checkpoint}
             />
           )}
 
@@ -105,6 +106,7 @@ export const StatusMenu = ({ type, status: currentStatus, publishTime, setStatus
               prompt={prompt}
               showPrompt={showPrompt}
               setStatus={setStatus}
+              requireCause={prompt.status === 'usable' && !!currentStatus.checkpoint}
             />
           )}
         </>

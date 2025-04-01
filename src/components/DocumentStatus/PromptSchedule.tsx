@@ -2,13 +2,13 @@ import type { WorkflowTransition } from '@/defaults/workflowSpecification'
 import { Prompt } from '../Prompt'
 import { useRegistry } from '@/hooks/useRegistry'
 import { useState } from 'react'
-import { Label } from '@ttab/elephant-ui'
+import { ComboBox, Label, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@ttab/elephant-ui'
 import { TimeInput } from '../TimeInput'
 import { toZonedTime } from 'date-fns-tz'
 import { format } from 'date-fns'
 import { CalendarIcon } from '@ttab/elephant-ui/icons'
 
-export const PromptSchedule = ({ publishTime, prompt, setStatus, showPrompt }: {
+export const PromptSchedule = ({ publishTime, prompt, setStatus, showPrompt, requireCause = false }: {
   publishTime?: Date
   prompt: {
     status: string
@@ -17,10 +17,12 @@ export const PromptSchedule = ({ publishTime, prompt, setStatus, showPrompt }: {
   showPrompt: React.Dispatch<React.SetStateAction<({
     status: string
   } & WorkflowTransition) | undefined>>
+  requireCause?: boolean
 }) => {
   const { timeZone } = useRegistry()
   const initialTime = publishTime ? new Date(publishTime) : new Date()
   const [time, setTime] = useState((initialTime))
+  const [cause, setCause] = useState<string | undefined>()
 
   return (
     <Prompt
@@ -32,7 +34,8 @@ export const PromptSchedule = ({ publishTime, prompt, setStatus, showPrompt }: {
         void setStatus(
           prompt.status,
           {
-            time: time
+            time,
+            cause
           }
         )
       }}
@@ -44,6 +47,7 @@ export const PromptSchedule = ({ publishTime, prompt, setStatus, showPrompt }: {
         {prompt.description}
 
         <div className='flex flex-row justify-items-start items-stretch gap-6 flex-wrap pt-2'>
+
           <div className='flex flex-col gap-2'>
             <Label htmlFor='ScheduledTime'>Ange tid</Label>
 
@@ -73,6 +77,24 @@ export const PromptSchedule = ({ publishTime, prompt, setStatus, showPrompt }: {
               <CalendarIcon size={14} strokeWidth={1.75} />
             </span>
           </div>
+
+          {requireCause && (
+            <div className='flex flex-col gap-2'>
+              <Label htmlFor='ScheduledTime'>Anledning</Label>
+              <Select defaultValue='UV' onValueChange={setCause}>
+                <SelectTrigger>
+                  <SelectValue placeholder='Välj anledning...' />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value='UV'>UV</SelectItem>
+                  <SelectItem value='KORR'>KORR</SelectItem>
+                  <SelectItem value='RÄ'>RÄ</SelectItem>
+                  <SelectItem value='OMS'>OMS</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          )}
+
         </div>
       </div>
     </Prompt>

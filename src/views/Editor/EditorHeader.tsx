@@ -1,4 +1,4 @@
-import { useDocumentStatus, useView } from '@/hooks'
+import { useWorkflowStatus, useView } from '@/hooks'
 import { Newsvalue } from '@/components/Newsvalue'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { MetaSheet } from './components/MetaSheet'
@@ -14,7 +14,7 @@ import { toast } from 'sonner'
 export const EditorHeader = ({ documentId }: { documentId: string }): JSX.Element => {
   const { viewId } = useView()
   const deliverablePlanning = useDeliverablePlanning(documentId)
-  const [documentStatus, setDocumentStatus] = useDocumentStatus(documentId)
+  const [documentStatus, setDocumentStatus] = useWorkflowStatus(documentId)
   const containerRef = useRef<HTMLElement | null>(null)
   const [publishTime, setPublishTime] = useState<string | null>(null)
 
