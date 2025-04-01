@@ -10,6 +10,7 @@ interface PromptProps extends PropsWithChildren {
   secondaryLabel?: string
   onPrimary: (event: MouseEvent<HTMLButtonElement> | React.KeyboardEvent<HTMLButtonElement> | KeyboardEvent) => void
   onSecondary?: (event: MouseEvent<HTMLButtonElement> | React.KeyboardEvent<HTMLButtonElement> | KeyboardEvent) => void
+  disablePrimary?: boolean
 }
 
 export const Prompt = ({
@@ -19,7 +20,8 @@ export const Prompt = ({
   primaryLabel,
   secondaryLabel,
   onPrimary,
-  onSecondary
+  onSecondary,
+  disablePrimary = false
 }: PromptProps): JSX.Element => {
   useKeydownGlobal((event) => {
     if (event.key === 'Escape' && secondaryLabel && onSecondary) {
@@ -55,6 +57,7 @@ export const Prompt = ({
           )}
 
           <Button
+            disabled={disablePrimary}
             autoFocus
             onClick={(event: MouseEvent<HTMLButtonElement>) => {
               onPrimary(event)

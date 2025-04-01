@@ -16,7 +16,15 @@ import {
   TableRow
 } from '@ttab/elephant-ui'
 import { Toolbar } from './Toolbar'
-import { useNavigation, useView, useTable, useHistory, useNavigationKeys, useOpenDocuments, useDocumentStatus } from '@/hooks'
+import {
+  useNavigation,
+  useView,
+  useTable,
+  useHistory,
+  useNavigationKeys,
+  useOpenDocuments,
+  useWorkflowStatus
+} from '@/hooks'
 import { handleLink } from '@/components/Link/lib/handleLink'
 import { NewItems } from './NewItems'
 import { GroupedRows } from './GroupedRows'
@@ -68,7 +76,7 @@ export const Table = <TData, TValue>({
   const { table, loading } = useTable()
   const openDocuments = useOpenDocuments({ idOnly: true })
   const { showModal, hideModal, currentModal } = useModal()
-  const [,setDocumentStatus] = useDocumentStatus()
+  const [, setDocumentStatus] = useWorkflowStatus()
 
   const handlePreview = useCallback((row: RowType<unknown>): void => {
     const originalId = (row.original as { id: string }).id
@@ -144,11 +152,11 @@ export const Table = <TData, TValue>({
         if (selectedRow && isRowTypeWire<TData, TValue>(type)) {
           const wireRow = selectedRow as RowType<WireType>
 
-          setDocumentStatus({
+          void setDocumentStatus({
             name: 'read',
             uuid: wireRow.original.id,
             version: BigInt(wireRow.original.fields.current_version.values?.[0])
-          }).catch((error) => console.error(error))
+          })
         }
         return
       }
@@ -157,11 +165,11 @@ export const Table = <TData, TValue>({
         if (selectedRow && isRowTypeWire<TData, TValue>(type)) {
           const wireRow = selectedRow as RowType<WireType>
 
-          setDocumentStatus({
+          void setDocumentStatus({
             name: 'saved',
             uuid: wireRow.original.id,
             version: BigInt(wireRow.original.fields.current_version.values?.[0])
-          }).catch((error) => console.error(error))
+          })
         }
         return
       }
@@ -171,11 +179,11 @@ export const Table = <TData, TValue>({
           const wireRow = selectedRow as RowType<WireType>
 
           const onDocumentCreated = () => {
-            setDocumentStatus({
+            void setDocumentStatus({
               name: 'used',
               uuid: wireRow.original.id,
               version: BigInt(wireRow.original.fields.current_version.values?.[0])
-            }).catch(console.error)
+            })
           }
           showModal(
             <Wire

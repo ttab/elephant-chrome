@@ -10,12 +10,12 @@ export interface Status {
   uuid: string
   version: bigint
   name: string
-  checkpoint: string | null
+  checkpoint?: string
 }
 
 export const useWorkflowStatus = (uuid?: string): [
   Status | undefined,
-  (newStatusName: string | Status) => Promise<void>
+  (newStatusName: string | Status, cause?: string) => Promise<void>
 ] => {
   const { repository } = useRegistry()
   const { data: session } = useSession()
@@ -38,7 +38,7 @@ export const useWorkflowStatus = (uuid?: string): [
           uuid,
           version: meta.currentVersion || 1n,
           name: meta.workflowState || 'draft',
-          checkpoint: meta.workflowCheckpoint // meta.workflowCheckpoint?.length ? meta.workflowCheckpoint : null
+          checkpoint: meta.workflowCheckpoint
         }
       }
     }

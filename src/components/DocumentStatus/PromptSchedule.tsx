@@ -2,7 +2,7 @@ import type { WorkflowTransition } from '@/defaults/workflowSpecification'
 import { Prompt } from '../Prompt'
 import { useRegistry } from '@/hooks/useRegistry'
 import { useState } from 'react'
-import { ComboBox, Label, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@ttab/elephant-ui'
+import { Label, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@ttab/elephant-ui'
 import { TimeInput } from '../TimeInput'
 import { toZonedTime } from 'date-fns-tz'
 import { format } from 'date-fns'
@@ -42,6 +42,7 @@ export const PromptSchedule = ({ publishTime, prompt, setStatus, showPrompt, req
       onSecondary={() => {
         showPrompt(undefined)
       }}
+      disablePrimary={requireCause && !cause}
     >
       <div className='flex flex-col items-start gap-6'>
         {prompt.description}
@@ -81,7 +82,7 @@ export const PromptSchedule = ({ publishTime, prompt, setStatus, showPrompt, req
           {requireCause && (
             <div className='flex flex-col gap-2'>
               <Label htmlFor='ScheduledTime'>Anledning</Label>
-              <Select defaultValue='UV' onValueChange={setCause}>
+              <Select onValueChange={setCause}>
                 <SelectTrigger>
                   <SelectValue placeholder='Välj anledning...' />
                 </SelectTrigger>
