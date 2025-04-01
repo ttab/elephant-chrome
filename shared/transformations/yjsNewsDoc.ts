@@ -9,7 +9,7 @@ import { toYMap } from './toYMap.js'
 import { slateNodesToInsertDelta, yTextToSlateElement } from '@slate-yjs/core'
 import createHash from '../createHash.js'
 import { type TBElement } from '@ttab/textbit'
-import { flattenYMap } from './lib/flattenYMap.js'
+import { transformYXmlTextNodes } from './lib/transformYXmlTextNodes.js'
 
 /**
  * Convert a grouped YDocumentResponse a yjs structure and add it to the provided Y.Doc
@@ -59,7 +59,7 @@ export function fromYjsNewsDoc(yDoc: Y.Doc): {
   const root = yMap.get('root') as Y.Map<unknown>
   const { uuid, type, uri, url, title, language } = root.toJSON() as Record<string, string>
 
-  const meta = flattenYMap(yMap.get('meta') as Y.Map<unknown>) as Record<string, EleBlock[]>
+  const meta = transformYXmlTextNodes(yMap.get('meta') as Y.Map<unknown>) as Record<string, EleBlock[]>
 
   const links = (yMap.get('links') as Y.Map<unknown>).toJSON() || {}
 
