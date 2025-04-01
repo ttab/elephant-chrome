@@ -2,13 +2,14 @@ import * as Y from 'yjs'
 import { type Document } from '@hocuspocus/server'
 
 import type {
+  EleBlock,
   EleDocumentResponse
 } from '@/shared/types/index.js'
 import { toYMap } from './toYMap.js'
 import { slateNodesToInsertDelta, yTextToSlateElement } from '@slate-yjs/core'
 import createHash from '../createHash.js'
 import { type TBElement } from '@ttab/textbit'
-
+import { transformYXmlTextNodes } from './lib/transformYXmlTextNodes.js'
 
 /**
  * Convert a grouped YDocumentResponse a yjs structure and add it to the provided Y.Doc
@@ -58,7 +59,8 @@ export function fromYjsNewsDoc(yDoc: Y.Doc): {
   const root = yMap.get('root') as Y.Map<unknown>
   const { uuid, type, uri, url, title, language } = root.toJSON() as Record<string, string>
 
-  const meta = (yMap.get('meta') as Y.Map<unknown>).toJSON() || {}
+  const meta = transformYXmlTextNodes(yMap.get('meta') as Y.Map<unknown>) as Record<string, EleBlock[]>
+
   const links = (yMap.get('links') as Y.Map<unknown>).toJSON() || {}
 
   const yContent = yMap.get('content') as Y.XmlText
