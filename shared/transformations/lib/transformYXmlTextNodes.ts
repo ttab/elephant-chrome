@@ -13,7 +13,7 @@ export function transformYXmlTextNodes(ymap: Y.Map<unknown>): Result {
       result[key] = transformYXmlTextNodes(value)
     } else if (value instanceof Y.Array) {
       result[key] = value.toArray()
-        .map((item) => item instanceof Y.Map ? transformYXmlTextNodes(item) : item)
+        .map((item): unknown => item instanceof Y.Map ? transformYXmlTextNodes(item) : item)
     } else if (value instanceof Y.XmlText) {
       // If the value consist of several Y.XmlText nodes, we need to join each of them
       // together by newlines, in order to persist the newlines to the repository.
