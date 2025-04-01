@@ -56,7 +56,7 @@ export const EditorHeader = ({ documentId }: { documentId: string }): JSX.Elemen
 
   return (
     <ViewHeader.Root>
-      <ViewHeader.Title name='Editor' title='Editor' icon={PenBoxIcon} />
+      <ViewHeader.Title name='Editor' title='Artikel' icon={PenBoxIcon} />
 
       <ViewHeader.Content className='justify-start'>
         <div className='max-w-[810px] mx-auto flex flex-row gap-2 justify-between items-center w-full'>
