@@ -1,7 +1,7 @@
 import type { WorkflowTransition } from '@/defaults/workflowSpecification'
 import { Prompt } from '../Prompt'
 import { useState } from 'react'
-import { Label, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@ttab/elephant-ui'
+import { PromptCauseField } from './PromptCauseField'
 
 export const PromptDefault = ({ prompt, setStatus, showPrompt, requireCause = false }: {
   prompt: {
@@ -32,18 +32,7 @@ export const PromptDefault = ({ prompt, setStatus, showPrompt, requireCause = fa
     >
       {requireCause && (
         <div className='flex flex-col gap-2'>
-          <Label htmlFor='StatusCause'>Anledning</Label>
-          <Select onValueChange={setCause} name='StatusCause'>
-            <SelectTrigger>
-              <SelectValue placeholder='Välj anledning...' />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value='UV'>UV</SelectItem>
-              <SelectItem value='KORR'>KORR</SelectItem>
-              <SelectItem value='RÄ'>RÄ</SelectItem>
-              <SelectItem value='OMS'>OMS</SelectItem>
-            </SelectContent>
-          </Select>
+          <PromptCauseField onValueChange={setCause} />
         </div>
       )}
     </Prompt>

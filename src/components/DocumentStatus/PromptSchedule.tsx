@@ -2,11 +2,12 @@ import type { WorkflowTransition } from '@/defaults/workflowSpecification'
 import { Prompt } from '../Prompt'
 import { useRegistry } from '@/hooks/useRegistry'
 import { useState } from 'react'
-import { Label, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@ttab/elephant-ui'
+import { Label } from '@ttab/elephant-ui'
 import { TimeInput } from '../TimeInput'
 import { toZonedTime } from 'date-fns-tz'
 import { format } from 'date-fns'
 import { CalendarIcon } from '@ttab/elephant-ui/icons'
+import { PromptCauseField } from './PromptCauseField'
 
 export const PromptSchedule = ({ publishTime, prompt, setStatus, showPrompt, requireCause = false }: {
   publishTime?: Date
@@ -81,18 +82,7 @@ export const PromptSchedule = ({ publishTime, prompt, setStatus, showPrompt, req
 
           {requireCause && (
             <div className='flex flex-col gap-2'>
-              <Label htmlFor='ScheduledTime'>Anledning</Label>
-              <Select onValueChange={setCause}>
-                <SelectTrigger>
-                  <SelectValue placeholder='Välj anledning...' />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value='UV'>UV</SelectItem>
-                  <SelectItem value='KORR'>KORR</SelectItem>
-                  <SelectItem value='RÄ'>RÄ</SelectItem>
-                  <SelectItem value='OMS'>OMS</SelectItem>
-                </SelectContent>
-              </Select>
+              <PromptCauseField onValueChange={setCause} />
             </div>
           )}
 
