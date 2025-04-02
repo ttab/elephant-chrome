@@ -62,7 +62,7 @@ export const useWorkflowStatus = (uuid?: string): [
       }
 
       // Ensure we always work with the latest status
-      const currentStatus = documentStatus || (await globalMutate([`status/${uuid}`], undefined, false))
+      const currentStatus = documentStatus || await globalMutate([`status/${uuid}`], undefined, false)
       if (!currentStatus) {
         toast.error('Ett fel har uppstått och aktuell status kunde inte ändras!')
         return
