@@ -71,7 +71,7 @@ export const useWorkflowStatus = (uuid?: string): [
 
       // Change status of document in repository
       try {
-        if (newStatus === 'draft' && ['usable', 'withheld', 'unpublished'].includes(currentStatus.name)) {
+        if (newStatus === 'draft' && ['usable', 'unpublished'].includes(currentStatus.name)) {
           const { documentResponse } = fromYjsNewsDoc(provider.document)
           const { document } = fromGroupedNewsDoc(documentResponse)
           await repository.saveDocument(document, session.accessToken, payload.version, undefined)
