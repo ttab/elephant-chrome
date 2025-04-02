@@ -54,7 +54,7 @@ export const FlashViewContent = (props: ViewProps): JSX.Element => {
   // Callback to set correct withheld time to the assignment
   const onBeforeStatusChange = useCallback((newStatus: string, data?: Record<string, unknown>) => {
     if (!deliverablePlanning) {
-      toast.error('No planning or no article assignment link exists. Article not scheduled!')
+      toast.error('Kunde inte ändra status på flash! Det gick inte att hitta en kopplad planering.')
       return false
     }
 
@@ -64,12 +64,12 @@ export const FlashViewContent = (props: ViewProps): JSX.Element => {
 
     const { index } = deliverablePlanning.getAssignment()
     if (index < 0) {
-      toast.error('No planning or no article assignment link exists. Article not scheduled!')
+      toast.error('Kunde inte schemalägga flash! Det gick inte att hitta ett kopplat uppdrag i planeringen.')
       return false
     }
 
     if (!(data?.time instanceof Date)) {
-      toast.error('Faulty scheduled publish time set. Article not scheduled!')
+      toast.error('Kunde inte schemalägga flash! Tid eller datum är felaktigt angivet.')
       return false
     }
 

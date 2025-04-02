@@ -36,7 +36,7 @@ export const EditorHeader = ({ documentId }: { documentId: string }): JSX.Elemen
   // Callback to set correct withheld time to the assignment
   const onBeforeStatusChange = useCallback((newStatus: string, data?: Record<string, unknown>) => {
     if (!deliverablePlanning) {
-      toast.error('No planning or no article assignment link exists. Article not scheduled!')
+      toast.error('Kunde inte ändra status på artikel! Det gick inte att hitta en kopplad planering.')
       return false
     }
 
@@ -46,12 +46,12 @@ export const EditorHeader = ({ documentId }: { documentId: string }): JSX.Elemen
 
     const { index } = deliverablePlanning.getAssignment()
     if (index < 0) {
-      toast.error('No planning or no article assignment link exists. Article not scheduled!')
+      toast.error('Kunde inte schemalägga artikel! Det gick inte att hitta ett kopplat uppdrag i planeringen.')
       return false
     }
 
     if (!(data?.time instanceof Date)) {
-      toast.error('Faulty scheduled publish time set. Article not scheduled!')
+      toast.error('Kunde inte schemalägga artikel! Tid eller datum är felaktigt angivet.')
       return false
     }
 
