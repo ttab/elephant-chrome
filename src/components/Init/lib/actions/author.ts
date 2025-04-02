@@ -71,8 +71,6 @@ export async function initializeAuthor({ url, session, repository }: {
       ? appendSub(authorDoc.hits[0].document!, session, envRole)
       : createAuthorDoc(session, envRole, 'sv-se')
 
-    console.log('Document: ', JSON.stringify(document, null, 2))
-
     const result = await repository.saveDocument(document, session.accessToken, 0n, 'usable')
     if (result?.status.code !== 'OK') {
       toast.error(`Kunde inte ${isValid === false ? 'uppdatera' : 'skapa'} författardokument`)
