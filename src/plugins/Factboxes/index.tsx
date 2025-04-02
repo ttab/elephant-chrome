@@ -15,7 +15,7 @@ export const FactboxPlugin: Plugin.InitFunction = () => {
     actions: [
       {
         name: 'core/factbox/search',
-        title: 'Sök faktaruta',
+        title: 'Faktarutor',
         tool: () => <TextSearchIcon style={{ width: '1em', height: '1em' }} />,
         handler: () => {
           openFactboxes(undefined, {})

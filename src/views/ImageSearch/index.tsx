@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
-import { ViewHeader } from '@/components'
+import { View, ViewHeader } from '@/components'
 import { type ViewMetadata } from '@/types'
-import { LoaderIcon, ListEndIcon } from '@ttab/elephant-ui/icons'
+import { Loader, ListEnd, Image } from '@ttab/elephant-ui/icons'
 import useSWRInfinite from 'swr/infinite'
 import InfiniteScroll from './InfiniteScroll'
 import { Thumbnail } from './Thumbnail'
@@ -68,29 +68,36 @@ const ImageSearchContent = (): JSX.Element => {
   )
 
   return (
-    <div className='h-screen max-h-screen flex flex-col relative'>
+    <View.Root>
       <ViewHeader.Root>
+        <ViewHeader.Title
+          name='ImageSearch'
+          title='Bilder'
+          icon={Image}
+        />
         <ViewHeader.Content>
           <ImageSearchInput setQueryString={setQueryString} />
         </ViewHeader.Content>
         <ViewHeader.Action />
       </ViewHeader.Root>
 
-      <ImageSearchResult total={0}>
-        <InfiniteScroll
-          swr={swr}
-          loadingIndicator={<LoaderIcon size='50%' color='#9ca3af' strokeWidth='1' />}
-          endingIndicator={<ListEndIcon size='50%' color='#9ca3af' strokeWidth='1' />}
-          isReachingEnd={(swr) =>
-            swr.data?.[0].hits.length === 0 || (swr.data?.[swr.data?.length - 1]?.hits.length ?? 0) < SIZE}
-        >
-          {(data) =>
-            data.hits.map((hit) => (
-              <Thumbnail key={hit.uri} hit={hit} />
-            ))}
-        </InfiniteScroll>
-      </ImageSearchResult>
-    </div>
+      <View.Content>
+        <ImageSearchResult total={0}>
+          <InfiniteScroll
+            swr={swr}
+            loadingIndicator={<Loader size='32' color='#9ca3af' strokeWidth='2' />}
+            endingIndicator={<ListEnd size='32' color='#9ca3af' strokeWidth='2' />}
+            isReachingEnd={(swr) =>
+              swr.data?.[0].hits.length === 0 || (swr.data?.[swr.data?.length - 1]?.hits.length ?? 0) < SIZE}
+          >
+            {(data) =>
+              data.hits.map((hit) => (
+                <Thumbnail key={hit.uri} hit={hit} />
+              ))}
+          </InfiniteScroll>
+        </ImageSearchResult>
+      </View.Content>
+    </View.Root>
   )
 }
 

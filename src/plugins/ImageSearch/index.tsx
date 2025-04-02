@@ -16,7 +16,7 @@ export const ImageSearchPlugin: Plugin.InitFunction = () => {
     actions: [
       {
         name: 'tt/visual/search',
-        title: 'Image search',
+        title: 'Bilder',
         tool: () => <ScanSearch style={{ width: '1em', height: '1em' }} />,
         handler: () => {
           openImageSearch(undefined, {})
