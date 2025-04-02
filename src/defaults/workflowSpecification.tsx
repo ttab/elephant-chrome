@@ -239,7 +239,7 @@ export const WorkflowSpecifications: Record<string, WorkflowSpecification> = {
         usable: {
           verify: true,
           title: 'Publicera',
-          description: 'Publicera artiklen direkt'
+          description: 'Publicera artikeln direkt'
         },
         withheld: {
           verify: true,
@@ -260,7 +260,7 @@ export const WorkflowSpecifications: Record<string, WorkflowSpecification> = {
           default: true,
           verify: true,
           title: 'Publicera',
-          description: 'Publicera artiklen'
+          description: 'Publicera artikeln'
         },
         withheld: {
           verify: true,
@@ -294,8 +294,13 @@ export const WorkflowSpecifications: Record<string, WorkflowSpecification> = {
       title: 'Schemalagd',
       description: 'Artikeln är schemalagd för automatisk publicering',
       transitions: {
-        draft: {
+        usable: {
           default: true,
+          verify: true,
+          title: 'Publicera direkt',
+          description: 'Publicera artikeln direkt'
+        },
+        draft: {
           verify: true,
           title: 'Till utkast',
           description: 'Avbryt schemalagd publicering och gör om till utkast igen'
