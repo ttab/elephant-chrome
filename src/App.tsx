@@ -3,7 +3,6 @@ import { AppContent } from './AppContent'
 import { ModalProvider } from './components/Modal/ModalProvider'
 import { FaroErrorBoundary } from '@grafana/faro-react'
 import { Error as ErrorPage } from './views'
-import { Toaster } from '@ttab/elephant-ui'
 
 export const App = (): JSX.Element => (
   <>
@@ -22,7 +21,5 @@ export const App = (): JSX.Element => (
         </div>
       </ModalProvider>
     </FaroErrorBoundary>
-
-    <Toaster />
   </>
 )
