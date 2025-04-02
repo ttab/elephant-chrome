@@ -26,10 +26,11 @@ export interface Session {
   expires_in: number
   refresh_token: string
 }
-interface Status {
+export interface Status {
   name: string
   version: bigint
   uuid: string
+  checkpoint?: string
 }
 
 export class Repository {

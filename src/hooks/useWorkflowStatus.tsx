@@ -5,13 +5,7 @@ import { useCollaboration, useRegistry } from '@/hooks'
 import { toast } from 'sonner'
 import { fromYjsNewsDoc } from '@/shared/transformations/yjsNewsDoc'
 import { fromGroupedNewsDoc } from '@/shared/transformations/groupedNewsDoc'
-
-export interface Status {
-  uuid: string
-  version: bigint
-  name: string
-  checkpoint?: string
-}
+import type { Status } from '@/shared/Repository'
 
 export const useWorkflowStatus = (uuid?: string): [
   Status | undefined,
