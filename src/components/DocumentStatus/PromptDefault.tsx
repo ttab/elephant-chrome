@@ -32,8 +32,8 @@ export const PromptDefault = ({ prompt, setStatus, showPrompt, requireCause = fa
     >
       {requireCause && (
         <div className='flex flex-col gap-2'>
-          <Label htmlFor='ScheduledTime'>Anledning</Label>
-          <Select onValueChange={setCause}>
+          <Label htmlFor='StatusCause'>Anledning</Label>
+          <Select onValueChange={setCause} name='StatusCause'>
             <SelectTrigger>
               <SelectValue placeholder='Välj anledning...' />
             </SelectTrigger>
