@@ -204,10 +204,10 @@ export class Repository {
         status: [{
           name: status.name,
           version: status.version,
-          meta: {}, // Add cause
+          meta: cause ? { cause } : {},
           ifMatch: status.version
         }],
-        meta: (cause) ? { cause } : {},
+        meta: {},
         ifMatch: status.version,
         acl: [],
         updateMetaDocument: false,
@@ -228,19 +228,18 @@ export class Repository {
    * @returns Promise<FinishedUnaryCall<UpdateRequest, UpdateResponse>
    */
   async saveDocument(document: Document, accessToken: string, version: bigint, status?: string, cause?: string): Promise<FinishedUnaryCall<UpdateRequest, UpdateResponse> | undefined> {
-    const newStatus = status
-      ? [{
-          name: status,
-          version, meta: {},
-          ifMatch: version
-        }]
-      : []
-
     const payload: UpdateRequest = {
       document,
-      meta: (cause) ? { cause } : {},
+      meta: {},
       ifMatch: version,
-      status: newStatus,
+      status: status
+        ? [{
+            name: status,
+            version,
+            meta: cause ? { cause } : {},
+            ifMatch: version
+          }]
+        : [],
       acl: [{ uri: 'core://unit/redaktionen', permissions: ['r', 'w'] }],
       uuid: document.uuid,
       lockToken: '',
