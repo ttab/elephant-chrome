@@ -147,16 +147,23 @@ export const ApprovalsCard = ({ assignment, isSelected, isFocused, status }: {
             {assignees.length > 1 && `${assignees.join(', ')}`}
           </div>
           <div className='flex flex-grow justify-between align-middle'>
-            <div className='content-center opacity-60'>
+            <div className='flex flex-row content-center opacity-60'>
               {sections
                 .find((section) => section.id === assignment._section)
                 ?.title}
-              &middot;
-              1024 tkn
+
+              {assignment._metricsData?.charCount
+              && (
+                <span>
+                  &middot;
+                  {assignment._metricsData?.charCount}
+                  {' '}
+                  tkn
+                </span>
+              )}
             </div>
             <DotDropdownMenu items={menuItems} />
           </div>
-
         </div>
       </Card.Footer>
 

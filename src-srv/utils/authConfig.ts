@@ -1,7 +1,7 @@
 import { type AuthConfig } from '@auth/core'
 import { decodeJwt } from 'jose'
 import Keycloak from '@auth/express/providers/keycloak'
-import type { JWT } from '@auth/core/jwt'
+import { type JWT } from '@auth/core/jwt'
 
 const scopes = [
   'openid',
@@ -12,6 +12,7 @@ const scopes = [
   'doc_write',
   'doc_delete',
   'eventlog_read',
+  'metrics_read',
   'user'
 ]
 

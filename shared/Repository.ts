@@ -1,5 +1,5 @@
 import { TwirpFetchTransport } from '@protobuf-ts/twirp-transport'
-import { DocumentsClient } from '@ttab/elephant-api/repository'
+import { DocumentsClient, MetricsClient } from '@ttab/elephant-api/repository'
 import type {
   BulkGetResponse,
   GetDocumentResponse,
@@ -9,7 +9,8 @@ import type {
   UpdateResponse,
   ValidateRequest,
   ValidateResponse,
-  GetHistoryResponse
+  GetHistoryResponse,
+  GetMetricsResponse
 } from '@ttab/elephant-api/repository'
 import type { Document } from '@ttab/elephant-api/newsdoc'
 import type { RpcError, FinishedUnaryCall } from '@protobuf-ts/runtime-rpc'
@@ -29,9 +30,16 @@ export interface Session {
 
 export class Repository {
   readonly #client: DocumentsClient
+  readonly #metricsClient: MetricsClient
 
   constructor(repoUrl: string) {
     this.#client = new DocumentsClient(
+      new TwirpFetchTransport({
+        baseUrl: new URL('twirp', repoUrl).toString()
+      })
+    )
+
+    this.#metricsClient = new MetricsClient(
       new TwirpFetchTransport({
         baseUrl: new URL('twirp', repoUrl).toString()
       })
@@ -253,6 +261,23 @@ export class Repository {
     return await this.#client.update(
       payload, meta(accessToken)
     )
+  }
+
+  async getMetrics(uuids: string[], kinds: string[], accessToken: string): Promise<GetMetricsResponse> {
+    if (!uuids.length || uuids.filter(isValidUUID).length !== uuids.length) {
+      throw new Error('Invalid uuid format in input')
+    }
+
+    try {
+      const { response } = await this.#metricsClient.getMetrics({
+        uuids,
+        kinds
+      }, meta(accessToken))
+
+      return response
+    } catch (err: unknown) {
+      throw new Error(`Unable to fetch metrics: ${(err as Error)?.message || 'Unknown error'}`)
+    }
   }
 
   /**

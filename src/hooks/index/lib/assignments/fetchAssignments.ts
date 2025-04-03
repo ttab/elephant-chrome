@@ -1,7 +1,7 @@
 import type { Index } from '@/shared/Index'
 import type { Repository } from '@/shared/Repository'
 import { QueryV1, BoolQueryV1, TermQueryV1 } from '@ttab/elephant-api/index'
-import type { BulkGetResponse, GetStatusOverviewResponse, StatusOverviewItem } from '@ttab/elephant-api/repository'
+import type { BulkGetResponse, GetMetricsResponse, GetStatusOverviewResponse, StatusOverviewItem } from '@ttab/elephant-api/repository'
 import type { Session } from 'next-auth'
 import { parseISO } from 'date-fns'
 import { getStatus } from '../getStatus'
@@ -26,11 +26,12 @@ const knownStatuses = Object.keys(StatusSpecifications)
  * @param {Date | string} params.date - The date to filter assignments by.
  * @returns {Promise<AssignmentInterface[] | undefined>} - The fetched assignments or undefined if index or session is not provided.
  */
-export async function fetchAssignments({ index, repository, type, requireDeliverable, session, date }: {
+export async function fetchAssignments({ index, repository, type, requireDeliverable, requireMetrics, session, date }: {
   index: Index | undefined
   repository: Repository | undefined
   type?: string | string[]
   requireDeliverable?: boolean
+  requireMetrics?: string[] | null
   session: Session | null
   date: Date | string
 }
@@ -44,6 +45,7 @@ export async function fetchAssignments({ index, repository, type, requireDeliver
   const assignments: AssignmentInterface[] = []
   const deliverableStatusesRequests: Promise<GetStatusOverviewResponse | null>[] = []
   const deliverableDocumentsRequests: Promise<BulkGetResponse | null>[] = []
+  const metricsDocumentsRequests: Promise<GetMetricsResponse | null>[] = []
 
   do {
     const { ok, hits, errorMessage } = await index.query({
@@ -89,6 +91,15 @@ export async function fetchAssignments({ index, repository, type, requireDeliver
       }
     }
 
+
+    // if metrics are required, fetch them
+    if (requireMetrics?.length && uuids.length > 0 && repository) {
+      const metricsRequest = repository.getMetrics(uuids, requireMetrics, session.accessToken)
+      if (metricsRequest instanceof Promise) {
+        metricsDocumentsRequests.push(metricsRequest)
+      }
+    }
+
     page = hits?.length === size ? page + 1 : 0
   } while (page)
 
@@ -100,13 +111,27 @@ export async function fetchAssignments({ index, repository, type, requireDeliver
     return [...prev || [], ...curr?.items || []]
   }, [] as StatusOverviewItem[])
 
+  const metricsOverviews = await Promise.all(metricsDocumentsRequests)
+
   // Apply status to all assignments
   assignments.forEach((assignment) => {
     const statusOverview = statusOverviews.find((si) => si.uuid === assignment._deliverableId)
+    if (!metricsOverviews[0]) {
+      throw new Error('No metrics overview found')
+    }
+
+    const charCount = metricsOverviews[0].documents[assignment._deliverableId]?.metrics.find((metric) => metric.kind === 'charcount')?.value.toString() || undefined
+
     filteredTextAssignments.push({
       ...assignment,
       _deliverableStatus: getStatus(statusOverview),
-      _statusData: (statusOverview) ? JSON.stringify(statusOverview, (_, val) => { return typeof val === 'bigint' ? val.toString() : val as unknown }, 2) : undefined
+      _statusData: statusOverview
+        ? JSON.stringify(statusOverview, (_, val) => (
+          typeof val === 'bigint' ? val.toString() : val as unknown), 2)
+        : undefined,
+      _metricsData: {
+        charCount
+      }
     })
   })
 
