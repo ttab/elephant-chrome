@@ -31,6 +31,7 @@ import { DropMarker } from '@/components/Editor/DropMarker'
 import type { Block } from '@ttab/elephant-api/newsdoc'
 import { getValueByYPath } from '@/lib/yUtils'
 import { useOnSpellcheck } from '@/hooks/useOnSpellcheck'
+import { contentMenuLabels } from '@/defaults/contentMenuLabels'
 
 // Metadata definition
 const meta: ViewMetadata = {
@@ -98,7 +99,8 @@ function EditorWrapper(props: ViewProps & {
     return [
       ...basePlugins.map((initPlugin) => initPlugin()),
       Text({
-        countCharacters: ['heading-1']
+        countCharacters: ['heading-1'],
+        ...contentMenuLabels
       }),
       Factbox({
         onEditOriginal: (id: string) => {
