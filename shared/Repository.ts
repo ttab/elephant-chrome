@@ -219,7 +219,9 @@ export class Repository {
         ifMatch: status.version,
         acl: [],
         updateMetaDocument: false,
-        lockToken: ''
+        lockToken: '',
+        ifWorkflowState: '',
+        ifStatusHeads: {}
       }, meta(accessToken))
 
       return response
@@ -251,7 +253,9 @@ export class Repository {
       acl: [{ uri: 'core://unit/redaktionen', permissions: ['r', 'w'] }],
       uuid: document.uuid,
       lockToken: '',
-      updateMetaDocument: false
+      updateMetaDocument: false,
+      ifWorkflowState: '',
+      ifStatusHeads: {}
     }
 
     return await this.#client.update(

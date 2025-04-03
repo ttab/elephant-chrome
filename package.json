@@ -46,7 +46,7 @@
     "@tailwindcss/container-queries": "^0.1.1",
     "@tanstack/react-table": "^8.21.2",
     "@ttab/api-client": "^2.9.1",
-    "@ttab/elephant-api": "^0.17.15",
+    "@ttab/elephant-api": "^0.17.17",
     "@ttab/elephant-ui": "^0.9.3",
     "@ttab/textbit": "^0.21.3",
     "@ttab/textbit-plugins": "^0.5.2",
