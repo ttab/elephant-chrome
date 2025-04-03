@@ -1,4 +1,4 @@
-import { useDocumentStatus, useView } from '@/hooks'
+import { useView } from '@/hooks'
 import { useEffect, useRef } from 'react'
 import { StatusMenu } from '@/components/DocumentStatus/StatusMenu'
 import { ViewHeader } from '@/components/View'
@@ -11,8 +11,6 @@ export const PlanningHeader = ({ documentId, asDialog, onDialogClose }: {
   onDialogClose?: () => void
 }): JSX.Element => {
   const { viewId } = useView()
-  const [documentStatus, setDocumentStatus] = useDocumentStatus(documentId)
-
   const containerRef = useRef<HTMLElement | null>(null)
 
   useEffect(() => {
@@ -35,7 +33,7 @@ export const PlanningHeader = ({ documentId, asDialog, onDialogClose }: {
 
           <div className='flex flex-row gap-2 justify-end items-center'>
             {!asDialog && (
-              <StatusMenu type='core/planning-item' status={documentStatus} setStatus={(status) => { void setDocumentStatus(status) }} />
+              <StatusMenu documentId={documentId} type='core/planning-item' />
             )}
 
             {!!documentId && <ViewHeader.RemoteUsers documentId={documentId} />}

@@ -27,6 +27,12 @@ export interface Session {
   expires_in: number
   refresh_token: string
 }
+export interface Status {
+  name: string
+  version: bigint
+  uuid: string
+  checkpoint?: string
+}
 
 export class Repository {
   readonly #client: DocumentsClient
@@ -191,22 +197,21 @@ export class Repository {
    * @param {string} params.status.name - The name of the status.
    * @param {string} params.status.uuid - The UUID of the status.
    * @param {string} params.accessToken - The access token.
+   * @param {string} params.currentStatus - The status information.
    * @returns {Promise<UpdateResponse>} The response from the update operation.
    * @throws {Error} If unable to save meta information.
    */
-  async saveMeta({ status, accessToken }: {
-    status: {
-      version: bigint
-      name: string
-      uuid: string
-    }
+  async saveMeta({ status, accessToken, cause, isWorkflow = false }: {
+    status: Status
+    currentStatus?: Status
     accessToken: string
+    cause?: string
+    isWorkflow?: boolean
   }): Promise<UpdateResponse> {
     try {
       const { response } = await this.#client.update({
         uuid: status.uuid,
-        // FIXME: This will be done properly when we implement the workflow api
-        status: status.name === 'draft'
+        status: (status.name === 'draft' && !isWorkflow)
           ? [
               { name: 'read', version: -1n, meta: {}, ifMatch: -1n },
               { name: 'saved', version: -1n, meta: {}, ifMatch: -1n },
@@ -215,14 +220,16 @@ export class Repository {
           : [{
               name: status.name,
               version: status.version,
-              meta: {},
+              meta: cause ? { cause } : {},
               ifMatch: status.version
             }],
         meta: {},
         ifMatch: status.version,
         acl: [],
         updateMetaDocument: false,
-        lockToken: ''
+        lockToken: '',
+        ifWorkflowState: '',
+        ifStatusHeads: {}
       }, meta(accessToken))
 
       return response
@@ -238,24 +245,25 @@ export class Repository {
    * @param accessToken string
    * @returns Promise<FinishedUnaryCall<UpdateRequest, UpdateResponse>
    */
-  async saveDocument(document: Document, accessToken: string, version: bigint, status?: string): Promise<FinishedUnaryCall<UpdateRequest, UpdateResponse> | undefined> {
-    const newStatus = status
-      ? [{
-          name: status,
-          version, meta: {},
-          ifMatch: version
-        }]
-      : []
-
+  async saveDocument(document: Document, accessToken: string, version: bigint, status?: string, cause?: string): Promise<FinishedUnaryCall<UpdateRequest, UpdateResponse> | undefined> {
     const payload: UpdateRequest = {
       document,
       meta: {},
       ifMatch: version,
-      status: newStatus,
+      status: status
+        ? [{
+            name: status,
+            version,
+            meta: cause ? { cause } : {},
+            ifMatch: version
+          }]
+        : [],
       acl: [{ uri: 'core://unit/redaktionen', permissions: ['r', 'w'] }],
       uuid: document.uuid,
       lockToken: '',
-      updateMetaDocument: false
+      updateMetaDocument: false,
+      ifWorkflowState: '',
+      ifStatusHeads: {}
     }
 
     return await this.#client.update(

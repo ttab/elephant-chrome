@@ -7,7 +7,7 @@ import {
 import type { DefaultValueOption, ViewProps } from '@/types'
 import { Button, ComboBox } from '@ttab/elephant-ui'
 import { CircleXIcon, ZapIcon, Tags, GanttChartSquare } from '@ttab/elephant-ui/icons'
-import { useCollaboration, useYValue, useRegistry, useDocumentStatus } from '@/hooks'
+import { useCollaboration, useYValue, useRegistry } from '@/hooks'
 import { useSession } from 'next-auth/react'
 import type { Dispatch, SetStateAction } from 'react'
 import { useCallback, useEffect, useRef, useState } from 'react'
@@ -36,7 +36,6 @@ export const FlashViewContent = (props: ViewProps): JSX.Element => {
   const { index, timeZone } = useRegistry()
 
   const [documentId] = useYValue<string>('root.uuid')
-  const [documentStatus, setDocumentStatus] = useDocumentStatus(documentId)
   const deliverablePlanning = useDeliverablePlanning(documentId || '')
   const [publishTime, setPublishTime] = useState<string | null>(null)
 
@@ -51,25 +50,33 @@ export const FlashViewContent = (props: ViewProps): JSX.Element => {
     }
   }, [deliverablePlanning])
 
-  // Callback to handle setStatus (withheld etc)
-  const setFlashStatus = useCallback((newStatus: string, data?: Record<string, unknown>) => {
+
+  // Callback to set correct withheld time to the assignment
+  const onBeforeStatusChange = useCallback((newStatus: string, data?: Record<string, unknown>) => {
     if (!deliverablePlanning) {
-      toast.error('No planning or no article assignment links. Article not scheduled!')
-      return
+      toast.error('Kunde inte ändra status på flash! Det gick inte att hitta en kopplad planering.')
+      return false
     }
 
-    const { index } = deliverablePlanning.getAssignment('core/flash')
-    if (index > -1) {
-      if (newStatus === 'withheld') {
-        if (!(data?.time instanceof Date)) {
-          toast.error('Faulty scheduled publish time set. Article not scheduled!')
-          return
-        }
-        setValueByYPath(deliverablePlanning.yRoot, `meta.core/assignment[${index}].data.publish`, data.time.toISOString())
-      }
-      void setDocumentStatus(newStatus)
+    if (newStatus !== 'withheld') {
+      return true
     }
-  }, [deliverablePlanning, setDocumentStatus])
+
+    const { index } = deliverablePlanning.getAssignment()
+    if (index < 0) {
+      toast.error('Kunde inte schemalägga flash! Det gick inte att hitta ett kopplat uppdrag i planeringen.')
+      return false
+    }
+
+    if (!(data?.time instanceof Date)) {
+      toast.error('Kunde inte schemalägga flash! Tid eller datum är felaktigt angivet.')
+      return false
+    }
+
+    setValueByYPath(deliverablePlanning.yRoot, `meta.core/assignment[${index}].data.publish`, data.time.toISOString())
+    return true
+  }, [deliverablePlanning])
+
 
   const handleSubmit = (setCreatePrompt: Dispatch<SetStateAction<boolean>>): void => {
     setCreatePrompt(true)
@@ -90,12 +97,12 @@ export const FlashViewContent = (props: ViewProps): JSX.Element => {
           </div>
 
           {!props.asDialog && !!props.id && <ViewHeader.RemoteUsers documentId={props.id} />}
-          {!!deliverablePlanning && (
+          {!!deliverablePlanning && documentId && (
             <StatusMenu
+              documentId={documentId}
               type='core/article'
-              status={documentStatus}
               publishTime={publishTime ? new Date(publishTime) : undefined}
-              setStatus={setFlashStatus}
+              onBeforeStatusChange={onBeforeStatusChange}
             />
           )}
         </ViewHeader.Content>
