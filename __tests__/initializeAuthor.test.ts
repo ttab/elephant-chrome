@@ -116,7 +116,7 @@ describe('initializeAuthor', () => {
       })
     ).rejects.toThrow('Failed to initialize author: Failed to create author doc')
 
-    expect(toast.error).toHaveBeenCalledWith('Kunde inte skapa författardokument')
+    expect(toast.error).toHaveBeenCalledWith('Kunde inte skapa författardokument: Failed to create author doc')
   })
 
   it('should throw an error if multiple author documents are found', async () => {

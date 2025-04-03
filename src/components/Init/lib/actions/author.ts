@@ -23,9 +23,11 @@ export async function initializeAuthor({ url, session, repository }: {
   repository: Repository
   session: Session
 }): Promise<true> {
+  let operation: 'create' | 'update' = 'create'
+
   try {
     const client = new Index(url.href)
-    const envRole = url.href.includes('stage') ? 'stage' : 'prod'
+    const envRole = url.href.includes('.stage.') ? 'stage' : 'prod'
 
     const authorDoc = await client.query({
       accessToken: session.accessToken,
@@ -68,21 +70,19 @@ export async function initializeAuthor({ url, session, repository }: {
 
     // Create a new author document if it doesn't exist or is invalid
     const document = isValid === false
-      ? appendSub(authorDoc.hits[0].document!, session, envRole)
+      ? (operation = 'update', appendSub(authorDoc.hits[0].document!, session, envRole))
       : createAuthorDoc(session, envRole, 'sv-se')
 
     const result = await repository.saveDocument(document, session.accessToken, 0n, 'usable')
     if (result?.status.code !== 'OK') {
-      toast.error(`Kunde inte ${isValid === false ? 'uppdatera' : 'skapa'} författardokument`)
-      throw new Error(`Failed to ${isValid === false ? 'update' : 'create'} author doc`)
+      throw new Error(`Failed to ${operation} author doc`)
     }
 
-    toast.success(`Författardokument ${isValid === false ? 'är uppdaterat' : 'är skapat'}`)
-
+    toast.success(`Författardokument ${operation === 'update' ? 'är uppdaterat' : 'är skapat'}`)
     return true
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred'
-    toast.error(`Kunde inte skapa författardokument`)
+    toast.error(`Kunde inte ${operation === 'update' ? 'uppdatera' : 'skapa'} författardokument: ${errorMessage}`)
     throw new Error(`Failed to initialize author: ${errorMessage}`)
   }
 }
