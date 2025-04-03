@@ -7,7 +7,7 @@ import { fromYjsNewsDoc } from '@/shared/transformations/yjsNewsDoc'
 import { fromGroupedNewsDoc } from '@/shared/transformations/groupedNewsDoc'
 import type { Status } from '@/shared/Repository'
 
-export const useWorkflowStatus = (uuid?: string): [
+export const useWorkflowStatus = (uuid?: string, isWorkflow: boolean = false): [
   Status | undefined,
   (newStatusName: string | Status, cause?: string) => Promise<void>
 ] => {
@@ -27,13 +27,36 @@ export const useWorkflowStatus = (uuid?: string): [
       }
 
       const { meta } = await repository.getMeta({ uuid, accessToken: session.accessToken }) || {}
-      if (meta) {
+      if (!meta) {
+        return
+      }
+
+      if (!isWorkflow) {
+        const version = meta.currentVersion || 0n
+        const headsEntries = meta.heads && Object.entries(meta.heads)
+        if (!headsEntries?.length) {
+          return {
+            uuid,
+            version,
+            name: 'draft'
+          }
+        }
+
         return {
           uuid,
-          version: meta.currentVersion || 1n,
-          name: meta.workflowState || 'draft',
-          checkpoint: meta.workflowCheckpoint
+          version,
+          name: headsEntries
+            .filter((entry) => entry[1].version === version)
+            .sort((a, b) =>
+              new Date(b[1].created).getTime() - new Date(a[1].created).getTime())?.[0]?.[0] || 'draft'
         }
+      }
+
+      return {
+        uuid,
+        version: meta.currentVersion || 0n,
+        name: meta.workflowState || 'draft',
+        checkpoint: meta.workflowCheckpoint
       }
     }
   )
@@ -50,34 +73,43 @@ export const useWorkflowStatus = (uuid?: string): [
    */
   const setDocumentStatus = useCallback(
     async (newStatus: string | Status, cause?: string) => {
-      if (!session || !repository || !uuid || !provider?.document) {
-        toast.error('Ett fel har uppstått och aktuell status kunde inte ändras!')
+      if (!session || !repository) {
+        toast.error('Ett fel har uppstått, aktuell status kunde inte ändras! Ladda om webbläsaren och försök igen.')
         return
       }
 
-      // Ensure we always work with the latest status
+      // Work with the latest status if possible
       const currentStatus = documentStatus || await globalMutate([`status/${uuid}`], undefined, false)
-      if (!currentStatus) {
-        toast.error('Ett fel har uppstått och aktuell status kunde inte ändras!')
-        return
+
+      let payload: Status | undefined
+      if (typeof newStatus !== 'string') {
+        payload = newStatus
+      } else if (typeof newStatus === 'string' && documentStatus && uuid) {
+        payload = {
+          ...documentStatus,
+          uuid: uuid,
+          name: newStatus,
+          version: documentStatus?.version
+        }
       }
 
-      const payload: Status = (typeof newStatus === 'string')
-        ? { ...currentStatus, name: newStatus }
-        : newStatus
+      if (!payload) {
+        toast.error('Ett fel uppstod och status kunde inte ändras!')
+        return
+      }
 
       // Optimistically update the SWR cache before performing the actual API call
       await mutate(payload, false)
 
       // Change status of document in repository
       try {
-        if (newStatus === 'draft' && ['usable', 'unpublished'].includes(currentStatus.name)) {
+        if (provider?.document && currentStatus && newStatus === 'draft' && ['usable', 'unpublished'].includes(currentStatus?.name)) {
           const { documentResponse } = fromYjsNewsDoc(provider.document)
           const { document } = fromGroupedNewsDoc(documentResponse)
           await repository.saveDocument(document, session.accessToken, payload.version, undefined)
         } else {
           // If there is a previous checkpoint (published/scheduled/unpublished version) we require a cause to publish a new version
-          if (currentStatus.checkpoint
+          if (currentStatus?.checkpoint
             && ['usable', 'withheld', 'unpublished'].includes(payload.name)
             && typeof cause !== 'string'
           ) {
@@ -92,9 +124,10 @@ export const useWorkflowStatus = (uuid?: string): [
 
           await repository.saveMeta({
             status: payload,
-            currentStatus,
+            currentStatus: isWorkflow ? currentStatus : undefined,
             accessToken: session.accessToken,
-            cause
+            cause,
+            isWorkflow
           })
         }
 
@@ -107,7 +140,7 @@ export const useWorkflowStatus = (uuid?: string): [
         await mutate(currentStatus, false)
       }
     },
-    [session, uuid, documentStatus, mutate, repository, provider?.document]
+    [session, uuid, documentStatus, mutate, repository, provider?.document, isWorkflow]
   )
 
   return [documentStatus, setDocumentStatus]

@@ -18,7 +18,7 @@ export const StatusMenu = ({ documentId, type, publishTime, onBeforeStatusChange
     data?: Record<string, unknown>
   ) => boolean
 }) => {
-  const [documentStatus, setDocumentStatus] = useWorkflowStatus(documentId)
+  const [documentStatus, setDocumentStatus] = useWorkflowStatus(documentId, type === 'core/article')
   const containerRef = useRef<HTMLDivElement>(null)
   const [dropdownWidth, setDropdownWidth] = useState<number>(0)
   const { statuses, workflow } = useWorkflow(type)

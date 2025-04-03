@@ -193,21 +193,28 @@ export class Repository {
    * @returns {Promise<UpdateResponse>} The response from the update operation.
    * @throws {Error} If unable to save meta information.
    */
-  async saveMeta({ status, accessToken, cause }: {
+  async saveMeta({ status, accessToken, cause, isWorkflow = false }: {
     status: Status
     currentStatus?: Status
     accessToken: string
     cause?: string
+    isWorkflow?: boolean
   }): Promise<UpdateResponse> {
     try {
       const { response } = await this.#client.update({
         uuid: status.uuid,
-        status: [{
-          name: status.name,
-          version: status.version,
-          meta: cause ? { cause } : {},
-          ifMatch: status.version
-        }],
+        status: (status.name === 'draft' && !isWorkflow)
+          ? [
+              { name: 'read', version: -1n, meta: {}, ifMatch: -1n },
+              { name: 'saved', version: -1n, meta: {}, ifMatch: -1n },
+              { name: 'used', version: -1n, meta: {}, ifMatch: -1n }
+            ]
+          : [{
+              name: status.name,
+              version: status.version,
+              meta: cause ? { cause } : {},
+              ifMatch: status.version
+            }],
         meta: {},
         ifMatch: status.version,
         acl: [],
