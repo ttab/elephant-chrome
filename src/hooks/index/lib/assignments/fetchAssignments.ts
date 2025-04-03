@@ -116,11 +116,8 @@ export async function fetchAssignments({ index, repository, type, requireDeliver
   // Apply status to all assignments
   assignments.forEach((assignment) => {
     const statusOverview = statusOverviews.find((si) => si.uuid === assignment._deliverableId)
-    if (!metricsOverviews[0]) {
-      throw new Error('No metrics overview found')
-    }
-
-    const charCount = metricsOverviews[0].documents[assignment._deliverableId]?.metrics.find((metric) => metric.kind === 'charcount')?.value.toString() || undefined
+    const charCount = metricsOverviews?.[0]?.documents[assignment._deliverableId]?.metrics
+      .find((metric) => metric.kind === 'charcount')?.value.toString() || undefined
 
     filteredTextAssignments.push({
       ...assignment,
