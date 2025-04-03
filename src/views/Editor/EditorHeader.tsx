@@ -1,4 +1,4 @@
-import { useDocumentStatus, useView } from '@/hooks'
+import { useView } from '@/hooks'
 import { Newsvalue } from '@/components/Newsvalue'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { MetaSheet } from './components/MetaSheet'
@@ -14,7 +14,6 @@ import { toast } from 'sonner'
 export const EditorHeader = ({ documentId }: { documentId: string }): JSX.Element => {
   const { viewId } = useView()
   const deliverablePlanning = useDeliverablePlanning(documentId)
-  const [documentStatus, setDocumentStatus] = useDocumentStatus(documentId)
   const containerRef = useRef<HTMLElement | null>(null)
   const [publishTime, setPublishTime] = useState<string | null>(null)
 
@@ -34,25 +33,31 @@ export const EditorHeader = ({ documentId }: { documentId: string }): JSX.Elemen
     }
   }, [deliverablePlanning])
 
-  // Callback to handle setStatus (withheld etc)
-  const setArticleStatus = useCallback((newStatus: string, data?: Record<string, unknown>) => {
+  // Callback to set correct withheld time to the assignment
+  const onBeforeStatusChange = useCallback((newStatus: string, data?: Record<string, unknown>) => {
     if (!deliverablePlanning) {
-      toast.error('No planning or no article assignment links. Article not scheduled!')
-      return
+      toast.error('Kunde inte ändra status på artikel! Det gick inte att hitta en kopplad planering.')
+      return false
+    }
+
+    if (newStatus !== 'withheld') {
+      return true
     }
 
     const { index } = deliverablePlanning.getAssignment()
-    if (index > -1) {
-      if (newStatus === 'withheld') {
-        if (!(data?.time instanceof Date)) {
-          toast.error('Faulty scheduled publish time set. Article not scheduled!')
-          return
-        }
-        setValueByYPath(deliverablePlanning.yRoot, `meta.core/assignment[${index}].data.publish`, data.time.toISOString())
-      }
-      void setDocumentStatus(newStatus)
+    if (index < 0) {
+      toast.error('Kunde inte schemalägga artikel! Det gick inte att hitta ett kopplat uppdrag i planeringen.')
+      return false
     }
-  }, [deliverablePlanning, setDocumentStatus])
+
+    if (!(data?.time instanceof Date)) {
+      toast.error('Kunde inte schemalägga artikel! Tid eller datum är felaktigt angivet.')
+      return false
+    }
+
+    setValueByYPath(deliverablePlanning.yRoot, `meta.core/assignment[${index}].data.publish`, data.time.toISOString())
+    return true
+  }, [deliverablePlanning])
 
   return (
     <ViewHeader.Root>
@@ -74,10 +79,10 @@ export const EditorHeader = ({ documentId }: { documentId: string }): JSX.Elemen
 
                 {!!deliverablePlanning && (
                   <StatusMenu
+                    documentId={documentId}
                     type='core/article'
-                    status={documentStatus}
                     publishTime={publishTime ? new Date(publishTime) : undefined}
-                    setStatus={setArticleStatus}
+                    onBeforeStatusChange={onBeforeStatusChange}
                   />
                 )}
               </>

@@ -1,4 +1,4 @@
-import { useDocumentStatus, useView } from '@/hooks'
+import { useView } from '@/hooks'
 import { useEffect, useRef } from 'react'
 import { StatusMenu } from '@/components/DocumentStatus/StatusMenu'
 import { ViewHeader } from '@/components/View'
@@ -18,7 +18,6 @@ export const EventHeader = ({ documentId, asDialog, onDialogClose, provider, tit
   status: 'authenticated' | 'loading' | 'unauthenticated'
 }): JSX.Element => {
   const { viewId } = useView()
-  const [documentStatus, setDocumentStatus] = useDocumentStatus(documentId)
   const containerRef = useRef<HTMLElement | null>(null)
 
   useEffect(() => {
@@ -43,8 +42,9 @@ export const EventHeader = ({ documentId, asDialog, onDialogClose, provider, tit
 
           <div className='flex flex-row gap-2 justify-end items-center'>
             {!asDialog && (
-              <StatusMenu type='core/event' status={documentStatus} setStatus={(status) => { void setDocumentStatus(status) }} />
+              <StatusMenu documentId={documentId} type='core/event' />
             )}
+
             {!!documentId && !asDialog && (
               <>
                 <ViewHeader.RemoteUsers documentId={documentId} />

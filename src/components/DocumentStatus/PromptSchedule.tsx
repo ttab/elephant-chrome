@@ -7,8 +7,9 @@ import { TimeInput } from '../TimeInput'
 import { toZonedTime } from 'date-fns-tz'
 import { format } from 'date-fns'
 import { CalendarIcon } from '@ttab/elephant-ui/icons'
+import { PromptCauseField } from './PromptCauseField'
 
-export const PromptSchedule = ({ publishTime, prompt, setStatus, showPrompt }: {
+export const PromptSchedule = ({ publishTime, prompt, setStatus, showPrompt, requireCause = false }: {
   publishTime?: Date
   prompt: {
     status: string
@@ -17,10 +18,12 @@ export const PromptSchedule = ({ publishTime, prompt, setStatus, showPrompt }: {
   showPrompt: React.Dispatch<React.SetStateAction<({
     status: string
   } & WorkflowTransition) | undefined>>
+  requireCause?: boolean
 }) => {
   const { timeZone } = useRegistry()
   const initialTime = publishTime ? new Date(publishTime) : new Date()
   const [time, setTime] = useState((initialTime))
+  const [cause, setCause] = useState<string | undefined>()
 
   return (
     <Prompt
@@ -32,18 +35,21 @@ export const PromptSchedule = ({ publishTime, prompt, setStatus, showPrompt }: {
         void setStatus(
           prompt.status,
           {
-            time: time
+            time,
+            cause
           }
         )
       }}
       onSecondary={() => {
         showPrompt(undefined)
       }}
+      disablePrimary={requireCause && !cause}
     >
       <div className='flex flex-col items-start gap-6'>
         {prompt.description}
 
         <div className='flex flex-row justify-items-start items-stretch gap-6 flex-wrap pt-2'>
+
           <div className='flex flex-col gap-2'>
             <Label htmlFor='ScheduledTime'>Ange tid</Label>
 
@@ -73,6 +79,13 @@ export const PromptSchedule = ({ publishTime, prompt, setStatus, showPrompt }: {
               <CalendarIcon size={14} strokeWidth={1.75} />
             </span>
           </div>
+
+          {requireCause && (
+            <div className='flex flex-col gap-2'>
+              <PromptCauseField onValueChange={setCause} />
+            </div>
+          )}
+
         </div>
       </div>
     </Prompt>

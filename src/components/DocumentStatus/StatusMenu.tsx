@@ -1,23 +1,24 @@
 import { Button, DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from '@ttab/elephant-ui'
 import { ChevronDown } from 'lucide-react'
-import { useRef, useState, useEffect } from 'react'
+import { useRef, useState, useEffect, useCallback } from 'react'
 import { useWorkflow } from '@/hooks/index/useWorkflow'
 import type { WorkflowTransition } from '@/defaults/workflowSpecification'
-import type { Status } from '@/hooks/useDocumentStatus'
+import { useWorkflowStatus } from '@/hooks/useWorkflowStatus'
 import { StatusOptions } from './StatusMenuOptions'
 import { StatusMenuHeader } from './StatusMenuHeader'
 import { PromptDefault } from './PromptDefault'
 import { PromptSchedule } from './PromptSchedule'
 
-export const StatusMenu = ({ type, status: currentStatus, publishTime, setStatus }: {
+export const StatusMenu = ({ documentId, type, publishTime, onBeforeStatusChange = () => true }: {
+  documentId: string
   type: string
-  status?: Status
   publishTime?: Date
-  setStatus: (
+  onBeforeStatusChange?: (
     status: string,
     data?: Record<string, unknown>
-  ) => void
+  ) => boolean
 }) => {
+  const [documentStatus, setDocumentStatus] = useWorkflowStatus(documentId, type === 'core/article')
   const containerRef = useRef<HTMLDivElement>(null)
   const [dropdownWidth, setDropdownWidth] = useState<number>(0)
   const { statuses, workflow } = useWorkflow(type)
@@ -29,11 +30,24 @@ export const StatusMenu = ({ type, status: currentStatus, publishTime, setStatus
     }
   }, [])
 
-  if (!currentStatus || !Object.keys(statuses).length) {
+  // Callback function to set status. Will first call onBeforeStatusChange() if
+  // provided by props, then proceed to change the status if allowed.
+  const setStatus = useCallback((newStatus: string, data?: Record<string, unknown>) => {
+    if (!onBeforeStatusChange(newStatus, data)) {
+      return
+    }
+
+    void setDocumentStatus(
+      newStatus,
+      (typeof data?.cause === 'string') ? data.cause : undefined
+    )
+  }, [onBeforeStatusChange, setDocumentStatus])
+
+  if (!documentStatus || !Object.keys(statuses).length) {
     return null
   }
 
-  const currentStatusName = currentStatus.name
+  const currentStatusName = documentStatus.name
   const currentStatusDef = statuses[currentStatusName]
   const transitions = workflow[currentStatusName]?.transitions || {}
 
@@ -97,6 +111,7 @@ export const StatusMenu = ({ type, status: currentStatus, publishTime, setStatus
               showPrompt={showPrompt}
               setStatus={setStatus}
               publishTime={publishTime}
+              requireCause={!!documentStatus.checkpoint}
             />
           )}
 
@@ -105,6 +120,7 @@ export const StatusMenu = ({ type, status: currentStatus, publishTime, setStatus
               prompt={prompt}
               showPrompt={showPrompt}
               setStatus={setStatus}
+              requireCause={prompt.status === 'usable' && !!documentStatus.checkpoint}
             />
           )}
         </>
