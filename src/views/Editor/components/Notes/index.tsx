@@ -14,12 +14,16 @@ import {
 import { MessageCircleMore, Text, X } from '@ttab/elephant-ui/icons'
 import { TextBox } from '@/components/ui'
 import type { DefaultValueOption } from '@/types/index'
+import { useState } from 'react'
+import { Prompt } from '@/components/Prompt'
 
 const Note = ({ noteIndex, handleRemove }: {
   noteIndex: number
   handleRemove: () => void
 }): JSX.Element => {
   const [role, setRole] = useYValue<string>(`meta.core/note[${noteIndex}].role`)
+  const [showVerifyRemove, setShowVerifyDialog] = useState(false)
+  const [showVerifyChange, setShowVerifyChange] = useState(false)
 
   const iconProps = {
     strokeWidth: 1.75,
@@ -28,8 +32,8 @@ const Note = ({ noteIndex, handleRemove }: {
 
 
   const roles: DefaultValueOption[] = [
-    { value: 'public', label: 'Redaktionell notering', icon: Text, iconProps },
-    { value: 'internal', label: 'Intern notering', icon: MessageCircleMore, iconProps }
+    { value: 'public', label: 'Info till kund', icon: Text, iconProps },
+    { value: 'internal', label: 'Intern info', icon: MessageCircleMore, iconProps }
   ]
 
   const selectedOptions = roles.filter((r) => r.value === role)
@@ -44,8 +48,8 @@ const Note = ({ noteIndex, handleRemove }: {
         <AlertDescription className='flex space-x-2 items-center w-full'>
           <Select
             value={selectedOptions?.[0]?.value}
-            onValueChange={(option) => {
-              setRole(option)
+            onValueChange={() => {
+              setShowVerifyChange(true)
             }}
           >
             <SelectTrigger
@@ -77,12 +81,40 @@ const Note = ({ noteIndex, handleRemove }: {
         <div>
           <Button
             variant='icon'
-            onClick={handleRemove}
+            onClick={() => { setShowVerifyDialog(true) }}
           >
             <X strokeWidth={1.75} size={18} className='ml-auto' />
           </Button>
         </div>
       </div>
+
+
+      {showVerifyRemove && (
+        <Prompt
+          title='Ta bort?'
+          description='Är du säker på att du vill ta bort info?'
+          secondaryLabel='Avbryt'
+          primaryLabel='Ta bort'
+          onPrimary={() => {
+            setShowVerifyDialog(false)
+            handleRemove()
+          }}
+        />
+      )}
+
+
+      {showVerifyChange && (
+        <Prompt
+          title='Ändra typ?'
+          description='Är du säker på att du vill ändra typ av info?'
+          secondaryLabel='Avbryt'
+          primaryLabel='Ändra typ'
+          onPrimary={() => {
+            setShowVerifyChange(false)
+            setRole(role === 'public' ? 'internal' : 'public')
+          }}
+        />
+      )}
     </Alert>
   )
 }
@@ -98,7 +130,7 @@ export const Notes = (): JSX.Element | null => {
 
   return Array.isArray(notes) && notes.length > 0
     ? (
-        <div className='flex flex-col gap-2'>
+        <div className='flex flex-col gap-2 sticky'>
           {notes.map((_, index) => (
             <Note
               key={index}
