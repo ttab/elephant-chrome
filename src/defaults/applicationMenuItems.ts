@@ -76,7 +76,7 @@ export const applicationMenu: ApplicationMenu = {
           color: '#99c5c4'
         },
         {
-          name: 'Print',
+          name: 'PrintArticles',
           label: 'Print',
           icon: Printer,
           color: '#006bb3'
