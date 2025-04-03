@@ -34,6 +34,7 @@ import { useModal } from '../Modal/useModal'
 import { PreviewSheet } from '@/views/Wires/components'
 import type { Wire as WireType } from '@/hooks/index/lib/wires'
 import { Wire } from '@/views/Wire'
+import { getWireStatus } from './lib/getWireStatus'
 
 interface TableProps<TData, TValue> {
   columns: Array<ColumnDef<TData, TValue>>
@@ -151,9 +152,13 @@ export const Table = <TData, TValue>({
       if (event.key === 'r') {
         if (selectedRow && isRowTypeWire<TData, TValue>(type)) {
           const wireRow = selectedRow as RowType<WireType>
+          const currentStatus = getWireStatus(type, wireRow.original)
+          if (currentStatus === 'used') {
+            return
+          }
 
           void setDocumentStatus({
-            name: 'read',
+            name: currentStatus === 'read' ? 'draft' : 'read',
             uuid: wireRow.original.id,
             version: BigInt(wireRow.original.fields.current_version.values?.[0])
           })
@@ -164,9 +169,13 @@ export const Table = <TData, TValue>({
       if (event.key === 's') {
         if (selectedRow && isRowTypeWire<TData, TValue>(type)) {
           const wireRow = selectedRow as RowType<WireType>
+          const currentStatus = getWireStatus(type, wireRow.original)
+          if (currentStatus === 'used') {
+            return
+          }
 
           void setDocumentStatus({
-            name: 'saved',
+            name: currentStatus === 'saved' ? 'draft' : 'saved',
             uuid: wireRow.original.id,
             version: BigInt(wireRow.original.fields.current_version.values?.[0])
           })

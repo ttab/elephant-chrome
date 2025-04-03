@@ -132,7 +132,7 @@ export const useWorkflowStatus = (uuid?: string, isWorkflow: boolean = false): [
         }
 
         // Revalidate after the mutation completes
-        await globalMutate([`status/${uuid}`])
+        await globalMutate([`status/${uuid || payload.uuid}`])
       } catch (error) {
         console.error('Failed to update status', error)
         toast.error('Ett fel uppstod och aktuell status kunde inte ändras!')

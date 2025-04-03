@@ -7,6 +7,7 @@ import type { Wire } from '@/hooks/index/lib/wires'
 import { useModal } from '../Modal/useModal'
 import { cva } from 'class-variance-authority'
 import type { ModalData } from '../Modal/ModalContext'
+import { getWireStatus } from './lib/getWireStatus'
 
 type DocumentType = 'Planning' | 'Event' | 'Assignments' | 'Search' | 'Wires' | 'Factbox'
 
@@ -29,8 +30,8 @@ export const WireRow = ({ row, handleOpen, openDocuments, type }: {
     variants: {
       status: {
         draft: `border-s-[6px] bg-background ${flashClassDraft}`,
-        read: getStatusClass('done', wire, flashClass),
-        saved: getStatusClass('approved', wire, flashClass),
+        read: getStatusClass('approved', wire, flashClass),
+        saved: getStatusClass('done', wire, flashClass),
         used: getStatusClass('usable', wire, flashClass)
       }
     }
@@ -66,29 +67,6 @@ function getStatusClass(status: 'done' | 'approved' | 'usable', wire: Wire, flas
   const isWireUpdated = isUpdated(wire)
   const base = `${!isWireUpdated ? `bg-${status}-background` : ''} border-s-${status} border-s-[6px]`
   return `${base} ${flashClass}`
-}
-
-function getWireStatus(type: DocumentType, wire: Wire): 'draft' | 'read' | 'saved' | 'used' | null {
-  if (type !== 'Wires') {
-    return null
-  }
-
-  const read = Number(wire.fields?.['heads.read.version']?.values?.[0]) > -1
-    && wire.fields?.['heads.read.created']?.values?.[0]
-  const saved = Number(wire.fields?.['heads.saved.version']?.values?.[0]) > -1
-    && wire.fields?.['heads.saved.created']?.values?.[0]
-  const used = Number(wire.fields?.['heads.used.version']?.values?.[0]) > -1
-    && wire.fields?.['heads.used.created']?.values?.[0]
-
-  if (saved || read || used) {
-    return saved && (!read || new Date(saved) > new Date(read))
-      ? 'read'
-      : read && (!used || new Date(read) > new Date(used))
-        ? 'saved'
-        : 'used'
-  }
-
-  return 'draft'
 }
 
 function isUpdated(wire: Wire): boolean {
