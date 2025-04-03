@@ -2,11 +2,9 @@
 import { Title } from '@/components/Table/Items/Title'
 import { type ColumnDef } from '@tanstack/react-table'
 import { Pen, SignalHigh } from '@ttab/elephant-ui/icons'
-import { type IDBSection } from 'src/datastore/types'
 import type { PrintArticle } from '@/hooks/index/lib/printArticles'
 
-export function printArticlesListColumns({ sections = [], locale = 'sv-SE' }: {
-  sections?: IDBSection[]
+export function printArticlesListColumns({ locale = 'sv-SE' }: {
   locale?: string
 }): Array<ColumnDef<PrintArticle>> {
   return [
@@ -54,10 +52,10 @@ export function printArticlesListColumns({ sections = [], locale = 'sv-SE' }: {
         return (
           <Title
             title={title as string}
-            className={`text-base}`}
+            className='text-base'
           />
         )
       }
-    },
+    }
   ]
 }
