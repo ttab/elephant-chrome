@@ -229,7 +229,7 @@ export const FlashViewContent = (props: ViewProps): JSX.Element => {
             savePrompt
             && (
               <CreatePrompt
-                title='Skapa flash?'
+                title='Spara flash?'
                 description={!selectedPlanning
                   ? 'En ny planering med tillhörande uppdrag för denna flash kommer att skapas åt dig.'
                   : `Denna flash kommer att läggas i ett nytt uppdrag i planeringen "${selectedPlanning.label}"`}
@@ -275,16 +275,12 @@ export const FlashViewContent = (props: ViewProps): JSX.Element => {
           {
             props.asDialog && (
               <Form.Footer>
-                <Form.Submit onSubmit={() => handleSubmit(setSendPrompt)}>
+                <Form.Submit
+                  onSubmit={() => handleSubmit(setSendPrompt)}
+                  onSecondarySubmit={() => handleSubmit(setSavePrompt)}
+                >
                   <div className='flex justify-end gap-4'>
-                    <Button
-                      variant='secondary'
-                      onClick={() => {
-                        handleSubmit(setSavePrompt)
-                      }}
-                    >
-                      Spara flash
-                    </Button>
+                    <Button variant='secondary' type='button'>Spara flash</Button>
                     <Button type='submit'>Skicka flash</Button>
                   </div>
                 </Form.Submit>
