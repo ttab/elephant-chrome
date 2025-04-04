@@ -117,7 +117,7 @@ const Note = ({ noteIndex, handleRemove }: {
             setRole(role === 'public' ? 'internal' : 'public')
           }}
           onSecondary={() => {
-            setShowVerifyDialog(false)
+            setShowVerifyChange(false)
           }}
         />
       )}
