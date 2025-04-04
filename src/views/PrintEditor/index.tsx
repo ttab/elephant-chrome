@@ -16,7 +16,7 @@ import {
   Label,
   ScrollArea
 } from '@ttab/elephant-ui'
-import { Eye, X, CircleCheckBig, CircleAlert, ChevronDown, RefreshCw, ChevronRight } from '@ttab/elephant-ui/icons'
+import { Eye, X, CircleCheckBig, TriangleAlert, ChevronDown, RefreshCw, ChevronRight } from '@ttab/elephant-ui/icons'
 
 import type * as Y from 'yjs'
 
@@ -140,14 +140,10 @@ function LayoutBox({
         <div className='flex items-center gap-2'>
           {valid
             ? (
-                <div className='bg-white border border-2 border-approved rounded-full p-1'>
-                  <CircleCheckBig strokeWidth={1.75} size={16} color='green' />
-                </div>
+                <CircleCheckBig strokeWidth={1.75} size={18} color='green' />
               )
             : (
-                <div className='bg-white border border-2 border-cancelled rounded-full p-1'>
-                  <CircleAlert strokeWidth={1.75} size={16} color='red' />
-                </div>
+                <TriangleAlert strokeWidth={1.75} size={18} color='red' />
               )}
           <Button
             variant='ghost'
@@ -184,8 +180,8 @@ function LayoutBox({
       </div>
       <div className='col-span-6 row-span-1'>
         <Popover>
-          <PopoverTrigger>
-            <div className='border rounded-md p-2 flex gap-1 items-center justify-center w-full'>
+          <PopoverTrigger className='w-full'>
+            <div className='border rounded-md p-2 flex gap-1 items-center justify-between w-full'>
               Topp-3sp
               <ChevronDown strokeWidth={1.75} size={18} />
             </div>
@@ -206,8 +202,8 @@ function LayoutBox({
       </div>
       <div className='col-span-6 row-span-1'>
         <Popover>
-          <PopoverTrigger>
-            <div className='border rounded-md p-2 flex gap-1 items-center justify-center w-full'>
+          <PopoverTrigger className='w-full'>
+            <div className='border rounded-md p-2 flex gap-1 items-center justify-between w-full'>
               2
               <ChevronDown strokeWidth={1.75} size={18} />
             </div>
