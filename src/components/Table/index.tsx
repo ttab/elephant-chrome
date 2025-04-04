@@ -19,7 +19,6 @@ import { Toolbar } from './Toolbar'
 import { useNavigation, useView, useTable, useHistory, useNavigationKeys, useOpenDocuments, useDocumentStatus } from '@/hooks'
 import { handleLink } from '@/components/Link/lib/handleLink'
 import { NewItems } from './NewItems'
-import { GroupedRows } from './GroupedRows'
 import { LoadingText } from '../LoadingText'
 import { Row } from './Row'
 import { useModal } from '../Modal/useModal'
@@ -240,7 +239,7 @@ export const Table = <TData, TValue>({
       rows.map((row, index) => (
         <Row
           key={index}
-          type="PrintArticles"
+          type='PrintArticles'
           row={row}
           handleOpen={handleOpen}
           openDocuments={openDocuments}
