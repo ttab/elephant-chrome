@@ -156,9 +156,8 @@ function EditorContainer({
   return (
     <>
       <EditorHeader documentId={documentId} />
-
+      {!!notes?.length && <div className='p-4'><Notes /></div>}
       <View.Content className='flex flex-col max-w-[1000px]'>
-        {!!notes?.length && <div className='p-4'><Notes /></div>}
 
         <div className='flex-grow overflow-auto pr-12 max-w-screen-xl'>
           {!!provider && synced
