@@ -149,6 +149,15 @@ function LayoutBox({
                   <CircleAlert strokeWidth={1.75} size={16} color='red' />
                 </div>
               )}
+          <Button
+            variant='ghost'
+            className='p-2'
+            onClick={() => setShowPreview(true)}
+          >
+            <Eye strokeWidth={1.75} size={18} />
+          </Button>
+        </div>
+        <div className='flex items-center gap-2'>
           <Input
             value={id}
             type='checkbox'
@@ -162,15 +171,6 @@ function LayoutBox({
               }
             }}
           />
-        </div>
-        <div className='flex items-center'>
-          <Button
-            variant='ghost'
-            className='p-2'
-            onClick={() => setShowPreview(true)}
-          >
-            <Eye strokeWidth={1.75} size={18} />
-          </Button>
           <Button
             variant='ghost'
             className='p-2'
