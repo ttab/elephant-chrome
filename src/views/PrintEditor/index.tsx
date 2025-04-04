@@ -16,7 +16,7 @@ import {
   Label,
   ScrollArea,
 } from "@ttab/elephant-ui";
-import { Eye, X, CircleCheckBig, CircleAlert } from "@ttab/elephant-ui/icons";
+import { Eye, X, CircleCheckBig, CircleAlert, ChevronDown, RefreshCw } from "@ttab/elephant-ui/icons";
 
 import type * as Y from "yjs";
 
@@ -135,16 +135,29 @@ function LayoutBox({
   return (
     <div className="border min-h-32 p-2 grid grid-cols-12 gap-2">
       <header className="col-span-12 row-span-1 flex items-center justify-between">
-        <input type="checkbox" className="w-4 h-4"
-          checked={bulkSelected.includes(id)}
-          onChange={(e) => {
-            if (e.target.checked) {
-              setBulkSelected([...bulkSelected, id]);
-            } else {
-              setBulkSelected(bulkSelected.filter((id) => id !== id));
-            }
-          }}
-        />
+        <div className="flex items-center gap-2">
+          {getRandomBit() === 1 ? (
+            <div className="bg-green-500 rounded-full p-2">
+              <CircleCheckBig strokeWidth={1.75} size={18} color="white" />
+            </div>
+          ) : (
+            <div className="bg-red-500 rounded-full p-2">
+              <CircleAlert strokeWidth={1.75} size={18} color="white" />
+            </div>
+          )}
+          <input
+            type="checkbox"
+            className="w-4 h-4"
+            checked={bulkSelected.includes(id)}
+            onChange={(e) => {
+              if (e.target.checked) {
+                setBulkSelected([...bulkSelected, id]);
+              } else {
+                setBulkSelected(bulkSelected.filter((id) => id !== id));
+              }
+            }}
+          />
+        </div>
         <div className="flex items-center gap-2">
           <Button
             variant="ghost"
@@ -156,25 +169,15 @@ function LayoutBox({
           <X strokeWidth={1.75} size={18} />
         </div>
       </header>
-      <div className="col-span-9 row-span-1">
+      <div className="col-span-12 row-span-1">
         <Input type="text" placeholder="Namn" />
       </div>
-      <div className="col-span-3 row-span-1 flex items-center justify-end gap-1">
-        {getRandomBit() === 1 ? (
-          <div className="bg-green-500 rounded-full p-2">
-            <CircleCheckBig strokeWidth={1.75} size={18} color="white" />
-          </div>
-        ) : (
-          <div className="bg-red-500 rounded-full p-2">
-            <CircleAlert strokeWidth={1.75} size={18} color="white" />
-          </div>
-        )}
-      </div>
-      <div className="col-span-9 row-span-1">
+      <div className="col-span-6 row-span-1">
         <Popover>
           <PopoverTrigger>
-            <div className="border rounded-md p-2 flex items-center justify-center w-full">
+            <div className="border rounded-md p-2 flex gap-1 items-center justify-center w-full">
               Topp-3sp
+              <ChevronDown strokeWidth={1.75} size={18} />
             </div>
           </PopoverTrigger>
           <PopoverContent>
@@ -191,8 +194,27 @@ function LayoutBox({
           </PopoverContent>
         </Popover>
       </div>
-      <div className="col-span-3 row-span-1">
-        <Input type="number" placeholder="10" />
+      <div className="col-span-6 row-span-1">
+        <Popover>
+          <PopoverTrigger>
+            <div className="border rounded-md p-2 flex gap-1 items-center justify-center w-full">
+              2
+              <ChevronDown strokeWidth={1.75} size={18} />
+            </div>
+          </PopoverTrigger>
+          <PopoverContent>
+            <Command>
+              <CommandInput placeholder="Sök" />
+              <CommandList className="bg-white">
+                {layouts.map((layout) => (
+                  <CommandItem key={layout.value} className="bg-white">
+                    {layout.name}
+                  </CommandItem>
+                ))}
+              </CommandList>
+            </Command>
+          </PopoverContent>
+        </Popover>
       </div>
       <div className="col-span-12 row-span-1 flex flex-col gap-2">
         <h4 className="text-sm font-bold">Tillägg</h4>
@@ -367,22 +389,42 @@ function EditorContainer({
             <header className="flex flex-row gap-2 items-center justify-between mb-2">
               <h2 className="text-base font-bold">Layouter</h2>
               {bulkSelected.length > 0 ? (
-                <Button className="p-2">
+                <Button title="När layouter har valts, visa alternativ för att skapa en kopia av texten med de valda layouterna och ta bort dem från nuvarande artikel. Öppna kopian direkt till höger" className="p-2">
                   Flytta till kopia
                 </Button>
               ) : (
-                <Button variant="outline" className="p-2">
+                <Button title="Skapa en ny layout" variant="outline" className="p-2">
                   Ny layout
                 </Button>
               )}
             </header>
             <ScrollArea className="h-[calc(100vh-10rem)]">
               <div className="flex flex-col gap-2">
-                <LayoutBox bulkSelected={bulkSelected} setBulkSelected={setBulkSelected} setShowPreview={setShowPreview} />
-                <LayoutBox bulkSelected={bulkSelected} setBulkSelected={setBulkSelected} setShowPreview={setShowPreview} />
-                <LayoutBox bulkSelected={bulkSelected} setBulkSelected={setBulkSelected} setShowPreview={setShowPreview} />
-                <LayoutBox bulkSelected={bulkSelected} setBulkSelected={setBulkSelected} setShowPreview={setShowPreview} />
-                <LayoutBox bulkSelected={bulkSelected} setBulkSelected={setBulkSelected} setShowPreview={setShowPreview} />
+                <LayoutBox
+                  bulkSelected={bulkSelected}
+                  setBulkSelected={setBulkSelected}
+                  setShowPreview={setShowPreview}
+                />
+                <LayoutBox
+                  bulkSelected={bulkSelected}
+                  setBulkSelected={setBulkSelected}
+                  setShowPreview={setShowPreview}
+                />
+                <LayoutBox
+                  bulkSelected={bulkSelected}
+                  setBulkSelected={setBulkSelected}
+                  setShowPreview={setShowPreview}
+                />
+                <LayoutBox
+                  bulkSelected={bulkSelected}
+                  setBulkSelected={setBulkSelected}
+                  setShowPreview={setShowPreview}
+                />
+                <LayoutBox
+                  bulkSelected={bulkSelected}
+                  setBulkSelected={setBulkSelected}
+                  setShowPreview={setShowPreview}
+                />
               </div>
             </ScrollArea>
           </aside>
@@ -406,7 +448,10 @@ function EditorContainer({
             <header className="flex flex-row gap-2 items-center justify-between">
               <h2 className="text-lg font-bold">Förhandsgranska</h2>
               <div className="flex flex-row gap-2 items-center justify-end">
-                <Button variant="outline" className="p-2">Uppdatera</Button>
+                <Button variant="outline" className="p-2 flex gap-2 items-center">
+                  <RefreshCw strokeWidth={1.75} size={18} />
+                  Uppdatera
+                </Button>
                 <Button variant="outline" onClick={() => setShowPreview(false)}>
                   <X strokeWidth={1.75} size={18} />
                 </Button>

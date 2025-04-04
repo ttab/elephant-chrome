@@ -52,7 +52,7 @@ export function printArticlesListColumns({ locale = 'sv-SE' }: {
         return (
           <Title
             title={title as string}
-            className='text-base'
+            className='text-sm'
           />
         )
       }

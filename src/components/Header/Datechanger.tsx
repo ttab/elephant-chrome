@@ -19,7 +19,7 @@ export const DateChanger = ({ type }: {
 
   const steps = to ? 7 : 1
 
-  const validViews: View[] = ['Plannings', 'Events', 'Assignments', 'Approvals']
+  const validViews: View[] = ['Plannings', 'Events', 'Assignments', 'Approvals', 'PrintArticles']
   const linkTarget = validViews.find((view) => view.startsWith(type))
   const [query] = useQuery()
 

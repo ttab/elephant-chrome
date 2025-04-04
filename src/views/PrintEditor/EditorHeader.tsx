@@ -5,7 +5,7 @@ import { MetaSheet } from "./components/MetaSheet";
 import { DocumentStatusMenu } from "@/components/DocumentStatusMenu";
 import { AddNote } from "./components/Notes/AddNote";
 import { ViewHeader } from "@/components/View";
-import { Eye, PenBoxIcon } from "@ttab/elephant-ui/icons";
+import { RefreshCw, PenBoxIcon } from "@ttab/elephant-ui/icons";
 import { Button } from "@ttab/elephant-ui";
 
 export const EditorHeader = ({
@@ -31,7 +31,7 @@ export const EditorHeader = ({
       />
 
       <ViewHeader.Content className="justify-start">
-        <div className="max-w-[810px] mx-auto flex flex-row gap-2 justify-between items-center w-full">
+        <div className="max-w-[1040px] mx-auto flex flex-row gap-2 justify-between items-center w-full">
           <div className="flex flex-row gap-1 justify-start items-center @7xl/view:-ml-20">
             <div className="hidden flex-row gap-2 justify-start items-center @lg/view:flex">
               <Newsvalue />
@@ -40,7 +40,12 @@ export const EditorHeader = ({
           </div>
 
           <div className="flex flex-row gap-2 justify-end items-center">
-            <Button variant="outline" className="p-2">
+            <Button
+              title="Rendera om alla layouter."
+              variant="outline"
+              className="p-2 flex gap-2 items-center"
+            >
+              <RefreshCw strokeWidth={1.75} size={18} />
               Uppdatera
             </Button>
             <DocumentStatusMenu

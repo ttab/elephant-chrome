@@ -6,7 +6,7 @@ export const Toolbar = (): JSX.Element => {
   const [filter, setFilter] = useQuery(['query'])
 
   return (
-    <div className='flex items-center justify-between py-1 px-4 border-b sticky top-0 bg-white z-10'>
+    <div className='flex items-center justify-between py-1 px-4 border-b sticky top-0 bg-whitez-10'>
       <div className='flex flex-1 items-center space-x-2'>
         <Command
           className='[&_[cmdk-input-wrapper]]:border-none'
