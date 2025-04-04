@@ -22,8 +22,7 @@ import { FactboxHeader } from './FactboxHeader'
 import { Error } from '@/views/Error'
 import { useEffect, useRef } from 'react'
 import { cn } from '@ttab/elephant-ui/utils'
-
-const plugins = [Text, UnorderedList, OrderedList, Bold, Italic, LocalizedQuotationMarks]
+import { contentMenuLabels } from '@/defaults/contentMenuLabels'
 
 const meta: ViewMetadata = {
   name: 'Factbox',
@@ -83,6 +82,14 @@ const FactboxWrapper = (props: ViewProps & { documentId: string }): JSX.Element 
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [provider])
 
+  const getPlugins = () => {
+    const basePlugins = [UnorderedList, OrderedList, Bold, Italic, LocalizedQuotationMarks]
+    return [
+      ...basePlugins.map((initPlugin) => initPlugin()),
+      Text({ ...contentMenuLabels })
+    ]
+  }
+
 
   return (
     <View.Root asDialog={props?.asDialog} className={props?.className}>
@@ -94,7 +101,7 @@ const FactboxWrapper = (props: ViewProps & { documentId: string }): JSX.Element 
         onFocus={() => {
           setIsFocused(true)
         }}
-        plugins={plugins.map((initPlugin) => initPlugin())}
+        plugins={getPlugins()}
         placeholders='multiple'
         className={cn('h-screen max-h-screen flex flex-col',
           props.asDialog

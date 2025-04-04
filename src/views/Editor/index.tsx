@@ -3,7 +3,7 @@ import { AwarenessDocument, View } from '@/components'
 import { Notes } from './components/Notes'
 
 import { Textbit, useTextbit } from '@ttab/textbit'
-import { Bold, Italic, Link, Text, OrderedList, UnorderedList, TTVisual, Factbox, Table, LocalizedQuotationMarks } from '@ttab/textbit-plugins'
+import { Bold, Italic, Link, Text, TTVisual, Factbox, Table, LocalizedQuotationMarks } from '@ttab/textbit-plugins'
 import { ImageSearchPlugin } from '../../plugins/ImageSearch'
 import { FactboxPlugin } from '../../plugins/Factboxes'
 
@@ -31,6 +31,7 @@ import { DropMarker } from '@/components/Editor/DropMarker'
 import type { Block } from '@ttab/elephant-api/newsdoc'
 import { getValueByYPath } from '@/lib/yUtils'
 import { useOnSpellcheck } from '@/hooks/useOnSpellcheck'
+import { contentMenuLabels } from '@/defaults/contentMenuLabels'
 
 // Metadata definition
 const meta: ViewMetadata = {
@@ -85,8 +86,6 @@ function EditorWrapper(props: ViewProps & {
   // Plugin configuration
   const getConfiguredPlugins = () => {
     const basePlugins = [
-      UnorderedList,
-      OrderedList,
       Bold,
       Italic,
       Link,
@@ -100,7 +99,8 @@ function EditorWrapper(props: ViewProps & {
     return [
       ...basePlugins.map((initPlugin) => initPlugin()),
       Text({
-        countCharacters: ['heading-1']
+        countCharacters: ['heading-1'],
+        ...contentMenuLabels
       }),
       Factbox({
         onEditOriginal: (id: string) => {
