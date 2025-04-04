@@ -28,6 +28,7 @@ export const Error = ({ title, error, message }: ViewProps & {
     <View.Root>
       <ViewHeader.Root>
         <ViewHeader.Title name='Error' title='Ett fel har uppstått!' icon={MessageCircleWarning} />
+        <ViewHeader.Content />
         <ViewHeader.Action />
       </ViewHeader.Root>
 
