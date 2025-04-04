@@ -147,7 +147,7 @@ export const ApprovalsCard = ({ assignment, isSelected, isFocused, status }: {
             {assignees.length > 1 && `${assignees.join(', ')}`}
           </div>
           <div className='flex flex-grow justify-between align-middle'>
-            <div className='flex flex-row content-center opacity-60'>
+            <div className='flex flex-row content-center opacity-60 gap-1'>
               {sections
                 .find((section) => section.id === assignment._section)
                 ?.title}
@@ -155,7 +155,9 @@ export const ApprovalsCard = ({ assignment, isSelected, isFocused, status }: {
               {assignment._metricsData?.charCount
               && (
                 <span>
-                  &middot;
+                  <span className='pr-1'>
+                    &middot;
+                  </span>
                   {assignment._metricsData?.charCount}
                   {' '}
                   tkn

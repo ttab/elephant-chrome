@@ -1,7 +1,8 @@
 import type { Index } from '@/shared/Index'
 import type { Repository } from '@/shared/Repository'
 import { QueryV1, BoolQueryV1, TermQueryV1 } from '@ttab/elephant-api/index'
-import type { BulkGetResponse, GetMetricsResponse, GetStatusOverviewResponse, StatusOverviewItem } from '@ttab/elephant-api/repository'
+import type { DocumentMetrics, StatusOverviewItem } from '@ttab/elephant-api/repository'
+import { type BulkGetResponse, type GetMetricsResponse, type GetStatusOverviewResponse } from '@ttab/elephant-api/repository'
 import type { Session } from 'next-auth'
 import { parseISO } from 'date-fns'
 import { getStatus } from '../getStatus'
@@ -107,16 +108,21 @@ export async function fetchAssignments({ index, repository, type, requireDeliver
   const filteredTextAssignments: AssignmentInterface[] = []
 
   // Wait for all statuses requests to finish and extract all status overviews
-  const statusOverviews = (await Promise.all(deliverableStatusesRequests)).reduce((prev, curr) => {
-    return [...prev || [], ...curr?.items || []]
-  }, [] as StatusOverviewItem[])
+  const statusOverviews = (await Promise.all(deliverableStatusesRequests))
+    .reduce<StatusOverviewItem[]>((prev, curr) => {
+      return [...prev || [], ...curr?.items || []]
+    }, [])
 
-  const metricsOverviews = await Promise.all(metricsDocumentsRequests)
+
+  const metricsOverviews = (await Promise.all(metricsDocumentsRequests))
+    .reduce<Record<string, DocumentMetrics>>((prev, curr) => {
+      return { ...prev, ...curr?.documents }
+    }, {})
 
   // Apply status to all assignments
   assignments.forEach((assignment) => {
     const statusOverview = statusOverviews.find((si) => si.uuid === assignment._deliverableId)
-    const charCount = metricsOverviews?.[0]?.documents[assignment._deliverableId]?.metrics
+    const charCount = metricsOverviews[assignment._deliverableId]?.metrics
       .find((metric) => metric.kind === 'charcount')?.value.toString() || undefined
 
     filteredTextAssignments.push({
