@@ -1,6 +1,6 @@
-import { useEffect, useState, useRef } from "react";
-import { AwarenessDocument, View } from "@/components";
-import { Notes } from "./components/Notes";
+import { useEffect, useState, useRef } from 'react'
+import { AwarenessDocument, View } from '@/components'
+import { Notes } from './components/Notes'
 import {
   Sheet,
   SheetContent,
@@ -14,13 +14,13 @@ import {
   CommandList,
   CommandItem,
   Label,
-  ScrollArea,
-} from "@ttab/elephant-ui";
-import { Eye, X, CircleCheckBig, CircleAlert, ChevronDown, RefreshCw } from "@ttab/elephant-ui/icons";
+  ScrollArea
+} from '@ttab/elephant-ui'
+import { Eye, X, CircleCheckBig, CircleAlert, ChevronDown, RefreshCw } from '@ttab/elephant-ui/icons'
 
-import type * as Y from "yjs";
+import type * as Y from 'yjs'
 
-import { Textbit, useTextbit } from "@ttab/textbit";
+import { Textbit, useTextbit } from '@ttab/textbit'
 import {
   Bold,
   Italic,
@@ -31,10 +31,10 @@ import {
   TTVisual,
   Factbox,
   Table,
-  LocalizedQuotationMarks,
-} from "@ttab/textbit-plugins";
-import { ImageSearchPlugin } from "../../plugins/ImageSearch";
-import { FactboxPlugin } from "../../plugins/Factboxes";
+  LocalizedQuotationMarks
+} from '@ttab/textbit-plugins'
+import { ImageSearchPlugin } from '../../plugins/ImageSearch'
+import { FactboxPlugin } from '../../plugins/Factboxes'
 
 import {
   useQuery,
@@ -43,125 +43,127 @@ import {
   useYValue,
   useView,
   useYjsEditor,
-  useAwareness,
-} from "@/hooks";
-import { type ViewMetadata, type ViewProps } from "@/types";
-import { EditorHeader } from "./EditorHeader";
-import { type HocuspocusProvider } from "@hocuspocus/provider";
-import { type AwarenessUserData } from "@/contexts/CollaborationProvider";
-import { articleDocumentTemplate } from "@/defaults/templates/articleDocumentTemplate";
-import { createDocument } from "@/lib/createYItem";
-import { Error } from "../Error";
+  useAwareness
+} from '@/hooks'
+import { type ViewMetadata, type ViewProps } from '@/types'
+import { EditorHeader } from './EditorHeader'
+import { type HocuspocusProvider } from '@hocuspocus/provider'
+import { type AwarenessUserData } from '@/contexts/CollaborationProvider'
+import { articleDocumentTemplate } from '@/defaults/templates/articleDocumentTemplate'
+import { createDocument } from '@/lib/createYItem'
+import { Error } from '../Error'
 
-import { ContentMenu } from "@/components/Editor/ContentMenu";
-import { Toolbar } from "@/components/Editor/Toolbar";
-import { ContextMenu } from "@/components/Editor/ContextMenu";
-import { Gutter } from "@/components/Editor/Gutter";
-import { DropMarker } from "@/components/Editor/DropMarker";
+import { ContentMenu } from '@/components/Editor/ContentMenu'
+import { Toolbar } from '@/components/Editor/Toolbar'
+import { ContextMenu } from '@/components/Editor/ContextMenu'
+import { Gutter } from '@/components/Editor/Gutter'
+import { DropMarker } from '@/components/Editor/DropMarker'
 
-import type { Block } from "@ttab/elephant-api/newsdoc";
-import { getValueByYPath } from "@/lib/yUtils";
-import { useOnSpellcheck } from "@/hooks/useOnSpellcheck";
+import type { Block } from '@ttab/elephant-api/newsdoc'
+import { getValueByYPath } from '@/lib/yUtils'
+import { useOnSpellcheck } from '@/hooks/useOnSpellcheck'
 
 // Metadata definition
 const meta: ViewMetadata = {
-  name: "PrintEditor",
-  path: `${import.meta.env.BASE_URL || ""}/print`,
+  name: 'PrintEditor',
+  path: `${import.meta.env.BASE_URL || ''}/print`,
   widths: {
     sm: 12,
     md: 12,
     lg: 6,
     xl: 6,
-    "2xl": 6,
+    '2xl': 6,
     hd: 6,
     fhd: 6,
     qhd: 3,
-    uhd: 2,
-  },
-};
+    uhd: 2
+  }
+}
 
 function LayoutBox({
   bulkSelected,
   setBulkSelected,
-  setShowPreview,
+  setShowPreview
 }: {
-  bulkSelected: string[];
-  setBulkSelected: (bulkSelected: string[]) => void;
-  setShowPreview: (show: boolean) => void;
+  bulkSelected: string[]
+  setBulkSelected: (bulkSelected: string[]) => void
+  setShowPreview: (show: boolean) => void
 }) {
   const layouts = [
     {
-      name: "Topp-3sp",
-      value: "topp-3sp",
+      name: 'Topp-3sp',
+      value: 'topp-3sp'
     },
     {
-      name: "Topp-4sp",
-      value: "topp-4sp",
+      name: 'Topp-4sp',
+      value: 'topp-4sp'
     },
     {
-      name: "Topp-5sp",
-      value: "topp-5sp",
+      name: 'Topp-5sp',
+      value: 'topp-5sp'
     },
     {
-      name: "Topp-6sp",
-      value: "topp-6sp",
+      name: 'Topp-6sp',
+      value: 'topp-6sp'
     },
     {
-      name: "Topp-7sp",
-      value: "topp-7sp",
+      name: 'Topp-7sp',
+      value: 'topp-7sp'
     },
     {
-      name: "Topp-8sp",
-      value: "topp-8sp",
+      name: 'Topp-8sp',
+      value: 'topp-8sp'
     },
     {
-      name: "Topp-9sp",
-      value: "topp-9sp",
+      name: 'Topp-9sp',
+      value: 'topp-9sp'
     },
     {
-      name: "Topp-10sp",
-      value: "topp-10sp",
+      name: 'Topp-10sp',
+      value: 'topp-10sp'
     },
     {
-      name: "Topp-11sp",
-      value: "topp-11sp",
-    },
-  ];
+      name: 'Topp-11sp',
+      value: 'topp-11sp'
+    }
+  ]
   function getRandomBit() {
-    return Math.random() < 0.5 ? 0 : 1;
+    return Math.random() < 0.5 ? 0 : 1
   }
-  const id = "123";
+  const id = '123'
 
   return (
-    <div className="border min-h-32 p-2 grid grid-cols-12 gap-2">
-      <header className="col-span-12 row-span-1 flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          {getRandomBit() === 1 ? (
-            <div className="bg-green-500 rounded-full p-2">
-              <CircleCheckBig strokeWidth={1.75} size={18} color="white" />
-            </div>
-          ) : (
-            <div className="bg-red-500 rounded-full p-2">
-              <CircleAlert strokeWidth={1.75} size={18} color="white" />
-            </div>
-          )}
+    <div className='border min-h-32 p-2 grid grid-cols-12 gap-2'>
+      <header className='col-span-12 row-span-1 flex items-center justify-between'>
+        <div className='flex items-center gap-2'>
+          {getRandomBit() === 1
+            ? (
+                <div className='bg-green-500 rounded-full p-2'>
+                  <CircleCheckBig strokeWidth={1.75} size={18} color='white' />
+                </div>
+              )
+            : (
+                <div className='bg-red-500 rounded-full p-2'>
+                  <CircleAlert strokeWidth={1.75} size={18} color='white' />
+                </div>
+              )}
           <input
-            type="checkbox"
-            className="w-4 h-4"
+            type='checkbox'
+            className='w-4 h-4'
             checked={bulkSelected.includes(id)}
             onChange={(e) => {
               if (e.target.checked) {
-                setBulkSelected([...bulkSelected, id]);
+                setBulkSelected([...bulkSelected, id])
               } else {
-                setBulkSelected(bulkSelected.filter((id) => id !== id));
+                setBulkSelected(bulkSelected.filter((id) => id !== id))
               }
             }}
           />
         </div>
-        <div className="flex items-center gap-2">
+        <div className='flex items-center gap-2'>
           <Button
-            variant="ghost"
-            className="p-2"
+            variant='ghost'
+            className='p-2'
             onClick={() => setShowPreview(true)}
           >
             <Eye strokeWidth={1.75} size={18} />
@@ -169,23 +171,23 @@ function LayoutBox({
           <X strokeWidth={1.75} size={18} />
         </div>
       </header>
-      <div className="col-span-12 row-span-1">
-        <Input type="text" placeholder="Namn" />
+      <div className='col-span-12 row-span-1'>
+        <Input type='text' placeholder='Namn' />
       </div>
-      <div className="col-span-6 row-span-1">
+      <div className='col-span-6 row-span-1'>
         <Popover>
           <PopoverTrigger>
-            <div className="border rounded-md p-2 flex gap-1 items-center justify-center w-full">
+            <div className='border rounded-md p-2 flex gap-1 items-center justify-center w-full'>
               Topp-3sp
               <ChevronDown strokeWidth={1.75} size={18} />
             </div>
           </PopoverTrigger>
           <PopoverContent>
             <Command>
-              <CommandInput placeholder="Sök" />
-              <CommandList className="bg-white">
+              <CommandInput placeholder='Sök' />
+              <CommandList className='bg-white'>
                 {layouts.map((layout) => (
-                  <CommandItem key={layout.value} className="bg-white">
+                  <CommandItem key={layout.value} className='bg-white'>
                     {layout.name}
                   </CommandItem>
                 ))}
@@ -194,20 +196,20 @@ function LayoutBox({
           </PopoverContent>
         </Popover>
       </div>
-      <div className="col-span-6 row-span-1">
+      <div className='col-span-6 row-span-1'>
         <Popover>
           <PopoverTrigger>
-            <div className="border rounded-md p-2 flex gap-1 items-center justify-center w-full">
+            <div className='border rounded-md p-2 flex gap-1 items-center justify-center w-full'>
               2
               <ChevronDown strokeWidth={1.75} size={18} />
             </div>
           </PopoverTrigger>
           <PopoverContent>
             <Command>
-              <CommandInput placeholder="Sök" />
-              <CommandList className="bg-white">
+              <CommandInput placeholder='Sök' />
+              <CommandList className='bg-white'>
                 {layouts.map((layout) => (
-                  <CommandItem key={layout.value} className="bg-white">
+                  <CommandItem key={layout.value} className='bg-white'>
                     {layout.name}
                   </CommandItem>
                 ))}
@@ -216,79 +218,79 @@ function LayoutBox({
           </PopoverContent>
         </Popover>
       </div>
-      <div className="col-span-12 row-span-1 flex flex-col gap-2">
-        <h4 className="text-sm font-bold">Tillägg</h4>
-        <Label className="flex items-center gap-2">
-          <Input type="checkbox" className="w-4 h-4" />
+      <div className='col-span-12 row-span-1 flex flex-col gap-2'>
+        <h4 className='text-sm font-bold'>Tillägg</h4>
+        <Label className='flex items-center gap-2'>
+          <Input type='checkbox' className='w-4 h-4' />
           Faktaruta
         </Label>
-        <Label className="flex items-center gap-2">
-          <Input type="checkbox" className="w-4 h-4" />
+        <Label className='flex items-center gap-2'>
+          <Input type='checkbox' className='w-4 h-4' />
           Porträttbild 2
         </Label>
-        <Label className="flex items-center gap-2">
-          <Input type="checkbox" className="w-4 h-4" />
+        <Label className='flex items-center gap-2'>
+          <Input type='checkbox' className='w-4 h-4' />
           Extrabild trespaltare
         </Label>
       </div>
     </div>
-  );
+  )
 }
 
 // Main Editor Component - Handles document initialization
 const PrintEditor = (props: ViewProps): JSX.Element => {
-  const [query] = useQuery();
-  const [document, setDocument] = useState<Y.Doc | undefined>(undefined);
-  const documentId = props.id || query.id;
+  const [query] = useQuery()
+  const [document, setDocument] = useState<Y.Doc | undefined>(undefined)
+  const documentId = props.id || query.id
 
   // Error handling for missing document
-  if (!documentId || typeof documentId !== "string") {
+  if (!documentId || typeof documentId !== 'string') {
     return (
       <Error
-        title="Artikeldokument saknas"
-        message="Inget artikeldokument är angivet. Navigera tillbaka till översikten och försök igen."
+        title='Artikeldokument saknas'
+        message='Inget artikeldokument är angivet. Navigera tillbaka till översikten och försök igen.'
       />
-    );
+    )
   }
 
   // Document creation if needed
   if (props.onDocumentCreated && !document) {
     const [, doc] = createDocument({
       template: (id: string) => {
-        return articleDocumentTemplate(id, props?.payload);
+        return articleDocumentTemplate(id, props?.payload)
       },
-      documentId,
-    });
-    setDocument(doc);
-    return <></>;
+      documentId
+    })
+    setDocument(doc)
+    return <></>
   }
 
   if (document && props.onDocumentCreated) {
-    props.onDocumentCreated();
+    props.onDocumentCreated()
   }
 
   return (
     <AwarenessDocument
       documentId={documentId}
       document={document}
-      className="h-full"
+      className='h-full'
     >
       <EditorWrapper documentId={documentId} {...props} />
     </AwarenessDocument>
-  );
-};
+  )
+}
 
 // Main editor wrapper after document initialization
 function EditorWrapper(
   props: ViewProps & {
-    documentId: string;
-    autoFocus?: boolean;
+    documentId: string
+    autoFocus?: boolean
   }
 ): JSX.Element {
-  const { provider, synced, user } = useCollaboration();
-  const openFactboxEditor = useLink("Factbox");
-  const [notes] = useYValue<Block[] | undefined>("meta.core/note");
-  const [, setIsFocused] = useAwareness(props.documentId);
+  const { provider, synced, user } = useCollaboration()
+  const openFactboxEditor = useLink('Factbox')
+  const [notes] = useYValue<Block[] | undefined>('meta.core/note')
+  const [, setIsFocused] = useAwareness(props.documentId)
 
   // Plugin configuration
   const getConfiguredPlugins = () => {
@@ -302,35 +304,35 @@ function EditorWrapper(
       ImageSearchPlugin,
       FactboxPlugin,
       Table,
-      LocalizedQuotationMarks,
-    ];
+      LocalizedQuotationMarks
+    ]
 
     return [
       ...basePlugins.map((initPlugin) => initPlugin()),
       Text({
-        countCharacters: ["heading-1"],
+        countCharacters: ['heading-1']
       }),
       Factbox({
         onEditOriginal: (id: string) => {
-          openFactboxEditor(undefined, { id });
-        },
-      }),
-    ];
-  };
+          openFactboxEditor(undefined, { id })
+        }
+      })
+    ]
+  }
 
   return (
     <View.Root>
       <Textbit.Root
         autoFocus={props.autoFocus ?? true}
         onBlur={() => {
-          setIsFocused(false);
+          setIsFocused(false)
         }}
         onFocus={() => {
-          setIsFocused(true);
+          setIsFocused(true)
         }}
         plugins={getConfiguredPlugins()}
-        placeholders="multiple"
-        className="h-screen max-h-screen flex flex-col"
+        placeholders='multiple'
+        className='h-screen max-h-screen flex flex-col'
       >
         <EditorContainer
           provider={provider}
@@ -341,7 +343,7 @@ function EditorWrapper(
         />
       </Textbit.Root>
     </View.Root>
-  );
+  )
 }
 
 // Container component that uses TextBit context
@@ -350,56 +352,60 @@ function EditorContainer({
   synced,
   user,
   documentId,
-  notes,
+  notes
 }: {
-  provider: HocuspocusProvider | undefined;
-  synced: boolean;
-  user: AwarenessUserData;
-  documentId: string;
-  notes: Block[] | undefined;
+  provider: HocuspocusProvider | undefined
+  synced: boolean
+  user: AwarenessUserData
+  documentId: string
+  notes: Block[] | undefined
 }): JSX.Element {
-  const { words, characters } = useTextbit();
-  const [showPreview, setShowPreview] = useState(false);
-  const [bulkSelected, setBulkSelected] = useState<string>([]);
+  const { words, characters } = useTextbit()
+  const [showPreview, setShowPreview] = useState(false)
+  const [bulkSelected, setBulkSelected] = useState<string[]>([])
 
   return (
     <>
       <EditorHeader documentId={documentId} />
 
-      <View.Content className="flex flex-col max-w-[1200px]">
-        <section className="grid grid-cols-12">
-          <div className="col-span-8">
-            <ScrollArea className="h-[calc(100vh-6rem)]">
+      <View.Content className='flex flex-col max-w-[1200px]'>
+        <section className='grid grid-cols-12'>
+          <div className='col-span-8'>
+            <ScrollArea className='h-[calc(100vh-6rem)]'>
               {!!notes?.length && (
-                <div className="p-4">
+                <div className='p-4'>
                   <Notes />
                 </div>
               )}
 
-              <div className="flex-grow overflow-auto pr-12 max-w-screen-xl">
-                {!!provider && synced ? (
-                  <EditorContent provider={provider} user={user} />
-                ) : (
-                  <></>
-                )}
+              <div className='flex-grow overflow-auto pr-12 max-w-screen-xl'>
+                {!!provider && synced
+                  ? (
+                      <EditorContent provider={provider} user={user} />
+                    )
+                  : (
+                      <></>
+                    )}
               </div>
             </ScrollArea>
           </div>
-          <aside className="col-span-4 sticky top-16 p-4">
-            <header className="flex flex-row gap-2 items-center justify-between mb-2">
-              <h2 className="text-base font-bold">Layouter</h2>
-              {bulkSelected.length > 0 ? (
-                <Button title="När layouter har valts, visa alternativ för att skapa en kopia av texten med de valda layouterna och ta bort dem från nuvarande artikel. Öppna kopian direkt till höger" className="p-2">
-                  Flytta till kopia
-                </Button>
-              ) : (
-                <Button title="Skapa en ny layout" variant="outline" className="p-2">
-                  Ny layout
-                </Button>
-              )}
+          <aside className='col-span-4 sticky top-16 p-4'>
+            <header className='flex flex-row gap-2 items-center justify-between mb-2'>
+              <h2 className='text-base font-bold'>Layouter</h2>
+              {bulkSelected.length > 0
+                ? (
+                    <Button title='När layouter har valts, visa alternativ för att skapa en kopia av texten med de valda layouterna och ta bort dem från nuvarande artikel. Öppna kopian direkt till höger' className='p-2'>
+                      Flytta till kopia
+                    </Button>
+                  )
+                : (
+                    <Button title='Skapa en ny layout' variant='outline' className='p-2'>
+                      Ny layout
+                    </Button>
+                  )}
             </header>
-            <ScrollArea className="h-[calc(100vh-10rem)]">
-              <div className="flex flex-col gap-2">
+            <ScrollArea className='h-[calc(100vh-10rem)]'>
+              <div className='flex flex-col gap-2'>
                 <LayoutBox
                   bulkSelected={bulkSelected}
                   setBulkSelected={setBulkSelected}
@@ -432,70 +438,70 @@ function EditorContainer({
       </View.Content>
 
       <View.Footer>
-        <div className="flex gap-2">
+        <div className='flex gap-2'>
           <strong>Words:</strong>
           <span>{words}</span>
         </div>
-        <div className="flex gap-2">
+        <div className='flex gap-2'>
           <strong>Characters:</strong>
           <span>{characters}</span>
         </div>
       </View.Footer>
 
       <Sheet open={showPreview} onOpenChange={setShowPreview}>
-        <SheetContent side="bottom" className="w-[66vw] mx-auto h-full">
-          <div className="p-2 flex flex-col gap-2">
-            <header className="flex flex-row gap-2 items-center justify-between">
-              <h2 className="text-lg font-bold">Förhandsgranska</h2>
-              <div className="flex flex-row gap-2 items-center justify-end">
-                <Button variant="outline" className="p-2 flex gap-2 items-center">
+        <SheetContent side='bottom' className='w-[66vw] mx-auto h-full'>
+          <div className='p-2 flex flex-col gap-2'>
+            <header className='flex flex-row gap-2 items-center justify-between'>
+              <h2 className='text-lg font-bold'>Förhandsgranska</h2>
+              <div className='flex flex-row gap-2 items-center justify-end'>
+                <Button variant='outline' className='p-2 flex gap-2 items-center'>
                   <RefreshCw strokeWidth={1.75} size={18} />
                   Uppdatera
                 </Button>
-                <Button variant="outline" onClick={() => setShowPreview(false)}>
+                <Button variant='outline' onClick={() => setShowPreview(false)}>
                   <X strokeWidth={1.75} size={18} />
                 </Button>
               </div>
             </header>
-            <ScrollArea className="h-full mx-auto">
+            <ScrollArea className='h-full mx-auto'>
               <img
-                src="https://ttnewsagency-resources.s3.eu-west-1.amazonaws.com/slask/image.png"
-                alt="Förhandsgranska"
-                className="w-auto h-full"
+                src='https://ttnewsagency-resources.s3.eu-west-1.amazonaws.com/slask/image.png'
+                alt='Förhandsgranska'
+                className='w-auto h-full'
               />
             </ScrollArea>
           </div>
         </SheetContent>
       </Sheet>
     </>
-  );
+  )
 }
 
 function EditorContent({
   provider,
-  user,
+  user
 }: {
-  provider: HocuspocusProvider;
-  user: AwarenessUserData;
+  provider: HocuspocusProvider
+  user: AwarenessUserData
 }): JSX.Element {
-  const { isActive } = useView();
-  const ref = useRef<HTMLDivElement>(null);
+  const { isActive } = useView()
+  const ref = useRef<HTMLDivElement>(null)
   const [documentLanguage] = getValueByYPath<string>(
-    provider.document.getMap("ele"),
-    "root.language"
-  );
+    provider.document.getMap('ele'),
+    'root.language'
+  )
 
-  const yjsEditor = useYjsEditor(provider, user);
-  const onSpellcheck = useOnSpellcheck(documentLanguage);
+  const yjsEditor = useYjsEditor(provider, user)
+  const onSpellcheck = useOnSpellcheck(documentLanguage)
 
   // Handle focus on active state
   useEffect(() => {
-    if (isActive && ref?.current?.dataset["state"] !== "focused") {
+    if (isActive && ref?.current?.dataset['state'] !== 'focused') {
       setTimeout(() => {
-        ref?.current?.focus();
-      }, 0);
+        ref?.current?.focus()
+      }, 0)
     }
-  }, [isActive, ref]);
+  }, [isActive, ref])
 
   return (
     <Textbit.Editable
@@ -503,13 +509,7 @@ function EditorContent({
       yjsEditor={yjsEditor}
       lang={documentLanguage}
       onSpellcheck={onSpellcheck}
-      className="outline-none
-        h-full
-        dark:text-slate-100
-        [&_[data-spelling-error]]:border-b-2
-        [&_[data-spelling-error]]:border-dotted
-        [&_[data-spelling-error]]:border-red-500
-      "
+      className='outline-none h-full dark:text-slate-100 [&_[data-spelling-error]]:border-b-2 [&_[data-spelling-error]]:border-dotted [&_[data-spelling-error]]:border-red-500'
     >
       <DropMarker />
       <Gutter>
@@ -518,9 +518,9 @@ function EditorContent({
       <Toolbar />
       <ContextMenu />
     </Textbit.Editable>
-  );
+  )
 }
 
-PrintEditor.meta = meta;
+PrintEditor.meta = meta
 
-export { PrintEditor };
+export { PrintEditor }
