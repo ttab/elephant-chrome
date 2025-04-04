@@ -18,7 +18,7 @@ import {
   PopoverTrigger,
   PopoverContent
 } from '@ttab/elephant-ui'
-import { CirclePlus } from '@ttab/elephant-ui/icons'
+import { Plus } from '@ttab/elephant-ui/icons'
 const meta: ViewMetadata = {
   name: 'PrintArticles',
   path: `${import.meta.env.BASE_URL}/print`,
@@ -48,13 +48,11 @@ export const PrintArticles = (): JSX.Element => {
       <ViewHeader.Root className='flex flex-row gap-2 items-center justify-between'>
         <div className='flex flex-row gap-4 items-center justify-start'>
           <ViewHeader.Title title='Print' name='PrintArticles' />
-          <DateChanger type='PrintArticles' />
-        </div>
-        <div className='flex flex-row gap-2 items-center justify-end'>
           <Popover>
             <PopoverTrigger>
-              <Button title='Skapa ny...' variant='outline'>
-                <CirclePlus strokeWidth={1.75} size={18} />
+              <Button title='Skapa ny...' size='sm' className='gap-1'>
+                <Plus strokeWidth={1.75} size={18} />
+                Ny
               </Button>
             </PopoverTrigger>
             <PopoverContent className='flex flex-col gap-2'>
@@ -70,6 +68,7 @@ export const PrintArticles = (): JSX.Element => {
               </Button>
             </PopoverContent>
           </Popover>
+          <DateChanger type='PrintArticles' />
         </div>
       </ViewHeader.Root>
       <TableProvider<PrintArticle>
