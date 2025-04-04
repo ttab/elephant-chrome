@@ -99,6 +99,9 @@ const Note = ({ noteIndex, handleRemove }: {
             setShowVerifyDialog(false)
             handleRemove()
           }}
+          onSecondary={() => {
+            setShowVerifyDialog(false)
+          }}
         />
       )}
 
@@ -112,6 +115,9 @@ const Note = ({ noteIndex, handleRemove }: {
           onPrimary={() => {
             setShowVerifyChange(false)
             setRole(role === 'public' ? 'internal' : 'public')
+          }}
+          onSecondary={() => {
+            setShowVerifyDialog(false)
           }}
         />
       )}
