@@ -85,24 +85,24 @@ export const handleStatusEvent = ({
   timeoutRef
 }: {
   event: EventlogItem
-  data: Wire[] | undefined
-  mutate: (data?: Wire[] | Promise<Wire[]>, shouldRevalidate?: boolean) => Promise<Wire[] | undefined>
+  data: PrintArticle[] | undefined
+  mutate: (data?: PrintArticle[] | Promise<PrintArticle[]>, shouldRevalidate?: boolean) => Promise<PrintArticle[] | undefined>
   timeoutRef: React.MutableRefObject<NodeJS.Timeout | null>
 }) => {
   let found = false
-  const updatedData = data?.map((wire) => {
-    if (wire.id === event.uuid) {
+  const updatedData = data?.map((printArticle) => {
+    if (printArticle.id === event.uuid) {
       found = true
       return {
-        ...wire,
+        ...printArticle,
         fields: {
-          ...wire.fields,
+          ...printArticle.fields,
           [`heads.${event.status}.version`]: { values: [event.version.toString()] },
           [`heads.${event.status}.created`]: { values: [new Date().toISOString()] }
         }
       }
     }
-    return wire
+    return printArticle
   })
 
   // If status event is found in current data, update it optimistically, start timeout to revalidate

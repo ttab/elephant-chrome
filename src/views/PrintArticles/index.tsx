@@ -5,7 +5,6 @@ import { useMemo, useState } from 'react'
 import { printArticlesListColumns } from './PrintArticlesListColumns'
 import { TableProvider } from '@/contexts/TableProvider'
 import { PrintArticleList } from './PrintArticlesList'
-import { useSections } from '@/hooks'
 import type { PrintArticle } from '@/hooks/index/lib/printArticles'
 import {
   Button,
@@ -37,11 +36,10 @@ const meta: ViewMetadata = {
 }
 
 export const PrintArticles = (): JSX.Element => {
-  const sections = useSections()
 
   const columns = useMemo(
-    () => printArticlesListColumns({ sections }),
-    [sections]
+    () => printArticlesListColumns({ locale: 'sv' }),
+    []
   )
 
   const [openCreateFlow, setOpenCreateFlow] = useState(false)
