@@ -21,12 +21,6 @@ import { fromGroupedNewsDoc } from '@/shared/transformations/groupedNewsDoc.js'
 
 import { meta } from './meta.js'
 
-export interface Session {
-  access_token: string
-  token_type: 'Bearer'
-  expires_in: number
-  refresh_token: string
-}
 export interface Status {
   name: string
   version: bigint

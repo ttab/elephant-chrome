@@ -55,7 +55,7 @@ export async function fetchOrRefresh<TObject, TIndexItem>(
  * transformer to transform each item from indexed datastructure to
  * simplified object structure which is later stored in object store.
  */
-export async function fetchFromIndex<TObject, TIndexItem>(
+async function fetchFromIndex<TObject, TIndexItem>(
   indexUrl: URL,
   accessToken: string,
   documentType: string,

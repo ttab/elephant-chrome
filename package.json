@@ -76,6 +76,7 @@
     "zod": "^3.24.2"
   },
   "devDependencies": {
+    "@auth/core": "^0.38.0",
     "@protobuf-ts/runtime-rpc": "^2.9.6",
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.3.0",

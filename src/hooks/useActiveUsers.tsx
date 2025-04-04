@@ -2,7 +2,7 @@ import { useContext, useEffect, useState } from 'react'
 import { DocTrackerContext } from '@/contexts/DocTrackerProvider'
 import type * as Y from 'yjs'
 
-export interface ActiveUser {
+interface ActiveUser {
   userId: string
   userName: string
   name: string
@@ -30,6 +30,7 @@ export function useActiveUsers(documentIds: string[]): Record<string, ActiveUser
     )
     // NOTE: Dependency array below should be left without the 'documentIds' dependency;
     // will cause render loop otherwise.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [context])
 
   // Update users when user tracker document changes

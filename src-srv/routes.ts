@@ -52,7 +52,7 @@ interface RouteHandlers {
 
 type RouteMap = Record<string, Route>
 
-export const ApiResponse: ApiResponseInterface = {
+const ApiResponse: ApiResponseInterface = {
   isStatus: (value): value is RouteStatusResponse => {
     return value !== null && typeof value === 'object' && ('statusCode' in value && 'statusMessage' in value)
   },
