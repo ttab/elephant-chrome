@@ -48,6 +48,7 @@ export const Approvals = (): JSX.Element => {
   const [data, facets] = useAssignments({
     type: ['flash', 'text'],
     requireDeliverable: true,
+    requireMetrics: ['charcount'],
     date: from ? new Date(from) : new Date(),
     slots
   })
