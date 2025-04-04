@@ -1,6 +1,6 @@
 import { Tooltip } from '@ttab/elephant-ui'
 import { AlarmClockCheck, Clock1, Clock9 } from '@ttab/elephant-ui/icons'
-import type { LucideProps } from 'lucide-react'
+import type { LucideProps } from '@ttab/elephant-ui/icons'
 import { memo, useMemo } from 'react'
 
 const icons: Record<string, React.FC<LucideProps>> = {
