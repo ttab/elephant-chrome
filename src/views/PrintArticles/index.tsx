@@ -36,7 +36,6 @@ const meta: ViewMetadata = {
 }
 
 export const PrintArticles = (): JSX.Element => {
-
   const columns = useMemo(
     () => printArticlesListColumns({ locale: 'sv' }),
     []
