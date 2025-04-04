@@ -1,12 +1,12 @@
 import { View, ViewHeader } from '@/components/View'
 import { type ViewMetadata } from '@/types/index'
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
 import { printArticlesListColumns } from './PrintArticlesListColumns'
 import { TableProvider } from '@/contexts/TableProvider'
 import { PrintArticleList } from './PrintArticlesList'
 import { useSections } from '@/hooks'
 import type { PrintArticle } from '@/hooks/index/lib/printArticles'
-import { Button } from '@ttab/elephant-ui'
+import { Button, Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from '@ttab/elephant-ui'
 
 const meta: ViewMetadata = {
   name: 'PrintArticles',
@@ -29,13 +29,15 @@ export const PrintArticles = (): JSX.Element => {
 
   const columns = useMemo(() => printArticlesListColumns({ sections }), [sections])
 
+  const [openCreateFlow, setOpenCreateFlow] = useState(false)
+
   return (
     <View.Root>
       <ViewHeader.Root className="flex flex-row gap-2 items-center justify-between">
         <ViewHeader.Title title='Print' name='PrintArticles' />
         <div className="flex flex-row gap-2 items-center justify-end">
           <Button variant="outline">Skapa artikel</Button>
-          <Button variant="outline">Skapa flöde</Button>
+          <Button variant="outline" onClick={() => setOpenCreateFlow(true)}>Skapa flöde</Button>
         </div>
       </ViewHeader.Root>
       <TableProvider<PrintArticle>
@@ -47,6 +49,18 @@ export const PrintArticles = (): JSX.Element => {
           <PrintArticleList columns={columns} />
         </View.Content>
       </TableProvider>
+      
+      <Dialog open={openCreateFlow}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Skapa flöde</DialogTitle>
+            <DialogDescription>Lista över flöden</DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setOpenCreateFlow(false)}>Avbryt</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </View.Root>
   )
 }
