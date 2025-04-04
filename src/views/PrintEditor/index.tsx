@@ -16,7 +16,7 @@ import {
   Label,
   ScrollArea
 } from '@ttab/elephant-ui'
-import { Eye, X, CircleCheckBig, CircleAlert, ChevronDown, RefreshCw } from '@ttab/elephant-ui/icons'
+import { Eye, X, CircleCheckBig, CircleAlert, ChevronDown, RefreshCw, ChevronRight } from '@ttab/elephant-ui/icons'
 
 import type * as Y from 'yjs'
 
@@ -430,8 +430,12 @@ function EditorContainer({
               <h2 className='text-base font-bold'>Layouter</h2>
               {bulkSelected.length > 0
                 ? (
-                    <Button title='När layouter har valts, visa alternativ för att skapa en kopia av texten med de valda layouterna och ta bort dem från nuvarande artikel. Öppna kopian direkt till höger' className='p-2'>
+                    <Button title='När layouter har valts, visa alternativ för att skapa en kopia av texten med de valda layouterna och ta bort dem från nuvarande artikel. Öppna kopian direkt till höger' className='p-2 flex gap-2 items-center'>
                       Flytta till kopia
+                      <span className='text-sm font-bold'>
+                        {`(${bulkSelected.length} st)`}
+                      </span>
+                      <ChevronRight strokeWidth={1.75} size={18} />
                     </Button>
                   )
                 : (

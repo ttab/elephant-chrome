@@ -74,12 +74,6 @@ export const applicationMenu: ApplicationMenu = {
           label: 'Faktarutor',
           icon: Boxes,
           color: '#99c5c4'
-        },
-        {
-          name: 'PrintArticles',
-          label: 'Print',
-          icon: Library,
-          color: '#006bb3'
         }
       ]
     },
@@ -98,6 +92,17 @@ export const applicationMenu: ApplicationMenu = {
           label: 'Sök',
           icon: SearchIcon,
           color: '#F06F21'
+        }
+      ]
+    },
+    {
+      name: 'Print',
+      items: [
+        {
+          name: 'PrintArticles',
+          label: 'Print',
+          icon: Library,
+          color: '#006bb3'
         }
       ]
     }
