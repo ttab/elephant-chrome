@@ -1,4 +1,4 @@
-import { Cable, BriefcaseBusiness, CalendarDaysIcon, CalendarPlus2, SearchIcon, ZapIcon, type LucideIcon, EarthIcon, UtilityPole, Boxes, Printer } from '@ttab/elephant-ui/icons'
+import { Cable, BriefcaseBusiness, CalendarDaysIcon, CalendarPlus2, SearchIcon, ZapIcon, type LucideIcon, EarthIcon, UtilityPole, Boxes, Printer, Library, Library } from '@ttab/elephant-ui/icons'
 import type { ViewProps, View } from '../types'
 
 /**
@@ -78,7 +78,7 @@ export const applicationMenu: ApplicationMenu = {
         {
           name: 'PrintArticles',
           label: 'Print',
-          icon: Printer,
+          icon: Library,
           color: '#006bb3'
         }
       ]

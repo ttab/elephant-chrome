@@ -6,6 +6,7 @@ import { TableProvider } from '@/contexts/TableProvider'
 import { PrintArticleList } from './PrintArticlesList'
 import { useSections } from '@/hooks'
 import type { PrintArticle } from '@/hooks/index/lib/printArticles'
+import { Button } from '@ttab/elephant-ui'
 
 const meta: ViewMetadata = {
   name: 'PrintArticles',
@@ -30,8 +31,12 @@ export const PrintArticles = (): JSX.Element => {
 
   return (
     <View.Root>
-      <ViewHeader.Root>
+      <ViewHeader.Root className="flex flex-row gap-2 items-center justify-between">
         <ViewHeader.Title title='Print' name='PrintArticles' />
+        <div className="flex flex-row gap-2 items-center justify-end">
+          <Button variant="outline">Skapa artikel</Button>
+          <Button variant="outline">Skapa flöde</Button>
+        </div>
       </ViewHeader.Root>
       <TableProvider<PrintArticle>
         type={meta.name}
