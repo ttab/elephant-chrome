@@ -9,13 +9,13 @@ import { toast } from 'sonner'
  * or flash document and need to find out which planning document it is related to as article
  * or flash document only have a reference to the assignment in the planning.
  */
-export const useDeliverablePlanningId = (assignmentId: string): string => {
+export const useDeliverablePlanningId = (deliverableId: string): string => {
   const { data: session } = useSession()
   const { index } = useRegistry()
   const [planningId, setPlanningId] = useState('')
 
   useEffect(() => {
-    if (!assignmentId || !session?.accessToken || !index) {
+    if (!deliverableId || !session?.accessToken || !index) {
       return
     }
 
@@ -26,7 +26,7 @@ export const useDeliverablePlanningId = (assignmentId: string): string => {
             oneofKind: 'term',
             term: TermQueryV1.create({
               field: 'document.meta.core_assignment.rel.deliverable.uuid',
-              value: assignmentId
+              value: deliverableId
             })
           }
         })
@@ -55,7 +55,7 @@ export const useDeliverablePlanningId = (assignmentId: string): string => {
     }
 
     void fetchData()
-  }, [assignmentId, session?.accessToken, index])
+  }, [deliverableId, session?.accessToken, index])
 
   return planningId
 }

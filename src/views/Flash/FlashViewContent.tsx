@@ -1,16 +1,15 @@
 import {
-  ViewHeader,
   Awareness,
   Section,
   View
 } from '@/components'
 import type { DefaultValueOption, ViewProps } from '@/types'
 import { Button, ComboBox } from '@ttab/elephant-ui'
-import { CircleXIcon, ZapIcon, Tags, GanttChartSquare } from '@ttab/elephant-ui/icons'
+import { CircleXIcon, Tags, GanttChartSquare } from '@ttab/elephant-ui/icons'
 import { useCollaboration, useYValue, useRegistry } from '@/hooks'
 import { useSession } from 'next-auth/react'
 import type { Dispatch, SetStateAction } from 'react'
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useRef, useState } from 'react'
 import { FlashEditor } from './FlashEditor'
 import { UserMessage } from '@/components/UserMessage'
 import { Form } from '@/components/Form'
@@ -19,13 +18,9 @@ import { createFlash } from './lib/createFlash'
 import type * as Y from 'yjs'
 import { CreatePrompt } from '@/components/CreatePrompt'
 import { Block } from '@ttab/elephant-api/newsdoc'
-import { StatusMenu } from '@/components/DocumentStatus/StatusMenu'
-import { useDeliverablePlanning } from '@/hooks/useDeliverablePlanning'
-import { getValueByYPath, setValueByYPath } from '@/lib/yUtils'
-import type { EleBlock } from '@/shared/types'
-import { toast } from 'sonner'
+import { FlashHeader } from './FlashHeader'
 
-export const FlashViewContent = (props: ViewProps): JSX.Element => {
+export function FlashViewContent(props: ViewProps): JSX.Element {
   const { provider } = useCollaboration()
   const { status, data: session } = useSession()
   const planningAwareness = useRef<(value: boolean) => void>(null)
@@ -36,47 +31,6 @@ export const FlashViewContent = (props: ViewProps): JSX.Element => {
   const { index, timeZone } = useRegistry()
 
   const [documentId] = useYValue<string>('root.uuid')
-  const deliverablePlanning = useDeliverablePlanning(documentId || '')
-  const [publishTime, setPublishTime] = useState<string | null>(null)
-
-  useEffect(() => {
-    if (deliverablePlanning) {
-      const { index } = deliverablePlanning.getAssignment()
-      const [ass] = getValueByYPath<EleBlock>(deliverablePlanning.yRoot, `meta.core/assignment[${index}]`)
-
-      if (ass) {
-        setPublishTime((prev) => (ass.data.publish !== prev) ? ass.data.publish : prev)
-      }
-    }
-  }, [deliverablePlanning])
-
-
-  // Callback to set correct withheld time to the assignment
-  const onBeforeStatusChange = useCallback((newStatus: string, data?: Record<string, unknown>) => {
-    if (!deliverablePlanning) {
-      toast.error('Kunde inte ändra status på flash! Det gick inte att hitta en kopplad planering.')
-      return false
-    }
-
-    if (newStatus !== 'withheld') {
-      return true
-    }
-
-    const { index } = deliverablePlanning.getAssignment()
-    if (index < 0) {
-      toast.error('Kunde inte schemalägga flash! Det gick inte att hitta ett kopplat uppdrag i planeringen.')
-      return false
-    }
-
-    if (!(data?.time instanceof Date)) {
-      toast.error('Kunde inte schemalägga flash! Tid eller datum är felaktigt angivet.')
-      return false
-    }
-
-    setValueByYPath(deliverablePlanning.yRoot, `meta.core/assignment[${index}].data.publish`, data.time.toISOString())
-    return true
-  }, [deliverablePlanning])
-
 
   const handleSubmit = (setCreatePrompt: Dispatch<SetStateAction<boolean>>): void => {
     setCreatePrompt(true)
@@ -84,32 +38,7 @@ export const FlashViewContent = (props: ViewProps): JSX.Element => {
 
   return (
     <View.Root asDialog={props.asDialog} className={props.className}>
-      <ViewHeader.Root>
-        {!props.asDialog && (
-          <ViewHeader.Title name='Flash' title='Flash' icon={ZapIcon} iconColor='#FF5150' />
-        )}
-
-        <ViewHeader.Content>
-          <div className='flex w-full h-full items-center space-x-2 font-bold'>
-            {props.asDialog && (
-              <ViewHeader.Title name='Flash' title='Skapa ny flash' icon={ZapIcon} iconColor='#FF3140' />
-            )}
-          </div>
-
-          {!props.asDialog && !!props.id && <ViewHeader.RemoteUsers documentId={props.id} />}
-          {!!deliverablePlanning && documentId && (
-            <StatusMenu
-              documentId={documentId}
-              type='core/article'
-              publishTime={publishTime ? new Date(publishTime) : undefined}
-              onBeforeStatusChange={onBeforeStatusChange}
-            />
-          )}
-        </ViewHeader.Content>
-
-        <ViewHeader.Action onDialogClose={props.onDialogClose} />
-      </ViewHeader.Root>
-
+      <FlashHeader id={documentId} asDialog={props.asDialog} />
       <View.Content>
         <Form.Root asDialog={props.asDialog}>
           <Form.Content>

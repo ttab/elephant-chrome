@@ -38,12 +38,18 @@ export const useCollaborationDocument = ({ documentId, initialDocument }: UseHoc
   //
   // Do not preserve the websocket when provider is closed.
   const webSocket = useMemo(() => {
+    // If we don't have a documentId, we will never authenticate the webSocket.
+    // And it will eventually error out with a 401.
+    if (!documentId) {
+      return
+    }
+
     return (!webSocketUrl)
       ? undefined
       : new HocuspocusProviderWebsocket({
         url: webSocketUrl.toString()
       })
-  }, [webSocketUrl])
+  }, [webSocketUrl, documentId])
 
   useEffect(() => {
     if (state.synced && !state.document) {
@@ -63,6 +69,7 @@ export const useCollaborationDocument = ({ documentId, initialDocument }: UseHoc
       return
     }
 
+    console.log('documentId 2:', documentId)
     const provider = new HocuspocusProvider({
       websocketProvider: webSocket,
       name: documentId,
