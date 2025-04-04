@@ -83,11 +83,17 @@ const meta: ViewMetadata = {
 function LayoutBox({
   bulkSelected,
   setBulkSelected,
-  setShowPreview
+  setShowPreview,
+  valid,
+  id,
+  name
 }: {
   bulkSelected: string[]
   setBulkSelected: (bulkSelected: string[]) => void
   setShowPreview: (show: boolean) => void
+  valid: boolean
+  id: number
+  name: string
 }) {
   const layouts = [
     {
@@ -127,40 +133,37 @@ function LayoutBox({
       value: 'topp-11sp'
     }
   ]
-  function getRandomBit() {
-    return Math.random() < 0.5 ? 0 : 1
-  }
-  const id = '123'
 
   return (
     <div className='border min-h-32 p-2 grid grid-cols-12 gap-2'>
       <header className='col-span-12 row-span-1 flex items-center justify-between'>
         <div className='flex items-center gap-2'>
-          {getRandomBit() === 1
+          {valid
             ? (
-                <div className='bg-green-500 rounded-full p-2'>
-                  <CircleCheckBig strokeWidth={1.75} size={18} color='white' />
+                <div className='bg-white border border-2 border-approved rounded-full p-1'>
+                  <CircleCheckBig strokeWidth={1.75} size={16} color='green' />
                 </div>
               )
             : (
-                <div className='bg-red-500 rounded-full p-2'>
-                  <CircleAlert strokeWidth={1.75} size={18} color='white' />
+                <div className='bg-white border border-2 border-cancelled rounded-full p-1'>
+                  <CircleAlert strokeWidth={1.75} size={16} color='red' />
                 </div>
               )}
-          <input
+          <Input
+            value={id}
             type='checkbox'
             className='w-4 h-4'
-            checked={bulkSelected.includes(id)}
+            checked={bulkSelected.includes(id.toString())}
             onChange={(e) => {
               if (e.target.checked) {
-                setBulkSelected([...bulkSelected, id])
+                setBulkSelected([...bulkSelected, id.toString()])
               } else {
-                setBulkSelected(bulkSelected.filter((id) => id !== id))
+                setBulkSelected(bulkSelected.filter((_id) => _id !== id.toString()))
               }
             }}
           />
         </div>
-        <div className='flex items-center gap-2'>
+        <div className='flex items-center'>
           <Button
             variant='ghost'
             className='p-2'
@@ -168,11 +171,16 @@ function LayoutBox({
           >
             <Eye strokeWidth={1.75} size={18} />
           </Button>
-          <X strokeWidth={1.75} size={18} />
+          <Button
+            variant='ghost'
+            className='p-2'
+          >
+            <X strokeWidth={1.75} size={18} />
+          </Button>
         </div>
       </header>
       <div className='col-span-12 row-span-1'>
-        <Input type='text' placeholder='Namn' />
+        <Input type='text' placeholder='Namn' defaultValue={name} />
       </div>
       <div className='col-span-6 row-span-1'>
         <Popover>
@@ -364,6 +372,34 @@ function EditorContainer({
   const [showPreview, setShowPreview] = useState(false)
   const [bulkSelected, setBulkSelected] = useState<string[]>([])
 
+  const layouts = [
+    {
+      name: 'Ett',
+      valid: true,
+      id: 1
+    },
+    {
+      name: 'Två',
+      valid: true,
+      id: 2
+    },
+    {
+      name: 'Tre',
+      valid: true,
+      id: 3
+    },
+    {
+      name: 'Fyra',
+      valid: false,
+      id: 4
+    },
+    {
+      name: 'Fem',
+      valid: false,
+      id: 5
+    }
+  ]
+
   return (
     <>
       <EditorHeader documentId={documentId} />
@@ -406,31 +442,17 @@ function EditorContainer({
             </header>
             <ScrollArea className='h-[calc(100vh-10rem)]'>
               <div className='flex flex-col gap-2'>
-                <LayoutBox
-                  bulkSelected={bulkSelected}
-                  setBulkSelected={setBulkSelected}
-                  setShowPreview={setShowPreview}
-                />
-                <LayoutBox
-                  bulkSelected={bulkSelected}
-                  setBulkSelected={setBulkSelected}
-                  setShowPreview={setShowPreview}
-                />
-                <LayoutBox
-                  bulkSelected={bulkSelected}
-                  setBulkSelected={setBulkSelected}
-                  setShowPreview={setShowPreview}
-                />
-                <LayoutBox
-                  bulkSelected={bulkSelected}
-                  setBulkSelected={setBulkSelected}
-                  setShowPreview={setShowPreview}
-                />
-                <LayoutBox
-                  bulkSelected={bulkSelected}
-                  setBulkSelected={setBulkSelected}
-                  setShowPreview={setShowPreview}
-                />
+                {layouts.map((layout) => (
+                  <LayoutBox
+                    key={layout.id}
+                    bulkSelected={bulkSelected}
+                    setBulkSelected={setBulkSelected}
+                    setShowPreview={setShowPreview}
+                    valid={layout.valid}
+                    id={layout.id}
+                    name={layout.name}
+                  />
+                ))}
               </div>
             </ScrollArea>
           </aside>
