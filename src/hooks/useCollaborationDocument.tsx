@@ -69,7 +69,6 @@ export const useCollaborationDocument = ({ documentId, initialDocument }: UseHoc
       return
     }
 
-    console.log('documentId 2:', documentId)
     const provider = new HocuspocusProvider({
       websocketProvider: webSocket,
       name: documentId,
