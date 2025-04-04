@@ -29,7 +29,7 @@ import { Wire } from '@/views/Wire'
 
 interface TableProps<TData, TValue> {
   columns: Array<ColumnDef<TData, TValue>>
-  type: 'Planning' | 'Event' | 'Assignments' | 'Search' | 'Wires' | 'Factbox' | 'PrintEditor'
+  type: 'Planning' | 'Event' | 'Assignments' | 'Search' | 'Wires' | 'Factbox' | 'PrintArticles'
   onRowSelected?: (row?: TData) => void
 }
 
@@ -264,7 +264,7 @@ export const Table = <TData, TValue>({
 
   return (
     <>
-      {(type !== 'Wires' && type !== 'Factbox' && type !== 'PrintEditor') && <Toolbar columns={columns} />}
+      {(type !== 'Wires' && type !== 'Factbox' && type !== 'PrintArticles') && <Toolbar columns={columns} />}
 
       {(type === 'Planning' || type === 'Event') && (
         <NewItems.Root>

@@ -2,7 +2,7 @@
 // src/hooks/index/eventHandlers.ts
 import type { EventlogItem } from '@ttab/elephant-api/repository'
 import type { Repository } from '@/shared/Repository'
-import type { Wire } from '.'
+import type { PrintArticle } from '@/hooks/index/lib/printArticles'
 import type { Session } from 'next-auth'
 
 const TIMEOUT = 5000
@@ -20,8 +20,8 @@ export const handleDocumentEvent = async ({
   session: Session | null
   repository: Repository | undefined
   source: string | string[] | undefined
-  data: Wire[] | undefined
-  mutate: (data?: Wire[] | Promise<Wire[]>, shouldRevalidate?: boolean) => Promise<Wire[] | undefined>
+  data: PrintArticle[] | undefined
+  mutate: (data?: PrintArticle[] | Promise<PrintArticle[]>, shouldRevalidate?: boolean) => Promise<PrintArticle[] | undefined>
   timeoutRef: React.MutableRefObject<NodeJS.Timeout | null>
 }) => {
   if (session?.accessToken && repository && source && data) {
