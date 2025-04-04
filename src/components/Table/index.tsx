@@ -25,6 +25,7 @@ import { useModal } from '../Modal/useModal'
 import { PreviewSheet } from '@/views/Wires/components'
 import type { Wire as WireType } from '@/hooks/index/lib/wires'
 import { Wire } from '@/views/Wire'
+import { GroupedRows } from './GroupedRows'
 
 interface TableProps<TData, TValue> {
   columns: Array<ColumnDef<TData, TValue>>
@@ -234,17 +235,29 @@ export const Table = <TData, TValue>({
         </TableRow>
       )
     }
+    const isAssignmentsTable = window.location.pathname.includes('/elephant/assignments')
 
-    return (
-      rows.map((row, index) => (
-        <Row
-          key={index}
-          type='PrintArticles'
-          row={row}
-          handleOpen={handleOpen}
-          openDocuments={openDocuments}
-        />
-      ))
+    return rows.map((row, index) => (
+      table.getState().grouping.length)
+      ? (
+          <GroupedRows<TData, TValue>
+            key={index}
+            type={isAssignmentsTable ? 'Assignments' : type}
+            row={row}
+            columns={columns}
+            handleOpen={handleOpen}
+            openDocuments={openDocuments}
+          />
+        )
+      : (
+          <Row
+            key={index}
+            type={isAssignmentsTable ? 'Assignments' : type}
+            row={row}
+            handleOpen={handleOpen}
+            openDocuments={openDocuments}
+          />
+        )
     )
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [rows, columns, loading, handleOpen, table, rowSelection])
