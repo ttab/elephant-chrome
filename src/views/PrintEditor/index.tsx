@@ -16,7 +16,7 @@ import {
   Label,
   ScrollArea
 } from '@ttab/elephant-ui'
-import { Eye, X, CircleCheckBig, TriangleAlert, ChevronDown, RefreshCw, ChevronRight } from '@ttab/elephant-ui/icons'
+import { Eye, X, CircleCheckBig, TriangleAlert, ChevronDown, RefreshCw, ChevronRight, Plus } from '@ttab/elephant-ui/icons'
 
 import type * as Y from 'yjs'
 
@@ -135,7 +135,7 @@ function LayoutBox({
   ]
 
   return (
-    <div className='border min-h-32 p-2 grid grid-cols-12 gap-2'>
+    <div className='border min-h-32 p-2 grid grid-cols-12 gap-2 rounded pt-0'>
       <header className='col-span-12 row-span-1 flex items-center justify-between'>
         <div className='flex items-center gap-2'>
           {valid
@@ -435,7 +435,8 @@ function EditorContainer({
                     </Button>
                   )
                 : (
-                    <Button title='Skapa en ny layout' variant='outline' className='p-2'>
+                    <Button title='Skapa en ny layout' variant='outline' className='p-2 flex gap-2 items-center'>
+                      <Plus strokeWidth={1.75} size={18} />
                       Ny layout
                     </Button>
                   )}

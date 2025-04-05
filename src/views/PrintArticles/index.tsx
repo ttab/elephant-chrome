@@ -52,7 +52,7 @@ export const PrintArticles = (): JSX.Element => {
             <PopoverTrigger>
               <Button title='Skapa ny...' size='sm' className='gap-1'>
                 <Plus strokeWidth={1.75} size={18} />
-                Ny
+                Nytt
               </Button>
             </PopoverTrigger>
             <PopoverContent className='flex flex-col gap-2'>
