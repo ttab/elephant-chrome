@@ -16,7 +16,7 @@ import {
   Label,
   ScrollArea
 } from '@ttab/elephant-ui'
-import { Eye, X, CircleCheckBig, TriangleAlert, ChevronDown, RefreshCw, ChevronRight, Plus } from '@ttab/elephant-ui/icons'
+import { Eye, X, CircleCheckBig, TriangleAlert, ChevronDown, RefreshCw, ChevronRight, Plus, ChevronLeft } from '@ttab/elephant-ui/icons'
 
 import type * as Y from 'yjs'
 
@@ -135,7 +135,7 @@ function LayoutBox({
   ]
 
   return (
-    <div className='border min-h-32 p-2 grid grid-cols-12 gap-2 rounded pt-0'>
+    <div className='border min-h-32 p-2 grid grid-cols-12 gap-2 rounded p  t-0'>
       <header className='col-span-12 row-span-1 flex items-center justify-between'>
         <div className='flex items-center gap-2'>
           {valid
@@ -370,12 +370,12 @@ function EditorContainer({
 
   const layouts = [
     {
-      name: 'Ett',
+      name: 'DN',
       valid: true,
       id: 1
     },
     {
-      name: 'Två',
+      name: 'Expressen',
       valid: true,
       id: 2
     },
@@ -475,6 +475,14 @@ function EditorContainer({
         <SheetContent side='bottom' className='w-[66vw] mx-auto h-full'>
           <div className='p-2 flex flex-col gap-2'>
             <header className='flex flex-row gap-2 items-center justify-between'>
+              <div className='flex flex-row gap-2 items-center'>
+                <Button variant='outline' className='p-2 flex gap-2 items-center'>
+                  <ChevronLeft strokeWidth={1.75} size={18} />
+                </Button>
+                <Button variant='outline' className='p-2 flex gap-2 items-center'>
+                  <ChevronRight strokeWidth={1.75} size={18} />
+                </Button>
+              </div>
               <h2 className='text-lg font-bold'>Förhandsgranska</h2>
               <div className='flex flex-row gap-2 items-center justify-end'>
                 <Button variant='outline' className='p-2 flex gap-2 items-center'>
