@@ -1,7 +1,7 @@
 import { useSession } from 'next-auth/react'
 import useSWR from 'swr'
 import { useRegistry } from '../useRegistry'
-import { fetch, handlers } from './lib/printArticles'
+import { fetch } from './lib/printArticles'
 import { useTable } from '../useTable'
 import { useEffect, useMemo, useRef } from 'react'
 import type { PrintArticle } from './lib/printArticles'
@@ -55,30 +55,6 @@ export const usePrintArticles = ({ filter, page }: {
     if (event.event !== 'document' && event.event !== 'status' && event.event !== 'delete_document') {
       return
     }
-
-    // Optimistic update and eventually revalidation of new documents
-    if (event.event === 'document') {
-      void handlers.handleDocumentEvent({
-        event,
-        session,
-        repository,
-        source: filter?.source,
-        data,
-        mutate,
-        timeoutRef
-      })
-    }
-
-    // Optimistic update and eventually revalidation of statuses
-    if (event.event === 'status') {
-      void handlers.handleStatusEvent({
-        event,
-        data,
-        mutate,
-        timeoutRef
-      })
-    }
   })
-
   return [data]
 }

@@ -42,7 +42,7 @@ export const EditorHeader = ({
               className='p-2 flex gap-2 items-center'
             >
               <RefreshCw strokeWidth={1.75} size={18} />
-              Uppdatera
+              Uppdatera alla
             </Button>
             <DocumentStatusMenu
               type='core/article'
