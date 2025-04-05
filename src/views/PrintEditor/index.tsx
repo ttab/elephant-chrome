@@ -403,7 +403,7 @@ function EditorContainer({
       <View.Content className='flex flex-col max-w-[1200px]'>
         <section className='grid grid-cols-12'>
           <div className='col-span-8'>
-            <ScrollArea className='h-[calc(100vh-6rem)]'>
+            <ScrollArea className='h-[calc(100vh-7rem)]'>
               {!!notes?.length && (
                 <div className='p-4'>
                   <Notes />
@@ -440,7 +440,7 @@ function EditorContainer({
                     </Button>
                   )}
             </header>
-            <ScrollArea className='h-[calc(100vh-10rem)]'>
+            <ScrollArea className='h-[calc(100vh-12rem)]'>
               <div className='flex flex-col gap-2'>
                 {layouts.map((layout) => (
                   <LayoutBox
