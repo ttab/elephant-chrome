@@ -12,6 +12,7 @@ import { AssignmentTitles } from '@/components/Table/Items/AssignmentTitles'
 import { Actions } from '@/components/Table/Items/Actions'
 import { dateInTimestampOrShortMonthDayTimestamp } from '@/lib/datetime'
 import { type ColumnDef } from '@tanstack/react-table'
+import type { LocaleData } from '@/types/index'
 import { type DefaultValueOption } from '@/types/index'
 import type { IDBSection, IDBAuthor } from 'src/datastore/types'
 import type {
@@ -26,7 +27,7 @@ import { SectionBadge } from '@/components/DataItem/SectionBadge'
 export function assignmentColumns({ authors = [], locale, timeZone, sections = [] }: {
   authors?: IDBAuthor[]
   sections?: IDBSection[]
-  locale: string
+  locale: LocaleData
   timeZone: string
 }): Array<ColumnDef<AssignmentMetaExtended>> {
   return [
@@ -60,7 +61,7 @@ export function assignmentColumns({ authors = [], locale, timeZone, sections = [
         if (date.toDateString() === new Date().toDateString()) {
           return data ? date?.getHours() : undefined
         } else {
-          return `${date.getHours()} ${date.toLocaleString(locale, { weekday: 'long', hourCycle: 'h23' })}`
+          return `${date.getHours()} ${date.toLocaleString(locale.code.full, { weekday: 'long', hourCycle: 'h23' })}`
         }
       },
       enableGrouping: true,
@@ -189,7 +190,7 @@ export function assignmentColumns({ authors = [], locale, timeZone, sections = [
         const [start, fullDay, publishSlot, publishTime] = row.getValue<string[]>('assignment_time')
         const isFullday = fullDay === 'true'
         const types: string[] = row.getValue<DefaultValueOption[]>('assignmentType')?.map((t) => t.value)
-        const formattedStart = dateInTimestampOrShortMonthDayTimestamp(start, locale, timeZone)
+        const formattedStart = dateInTimestampOrShortMonthDayTimestamp(start, locale.code.full, timeZone)
 
         /* Assignment type: text | video | graphic
           Order of returned information for non-picture assignments:
@@ -207,7 +208,7 @@ export function assignmentColumns({ authors = [], locale, timeZone, sections = [
             return <div>{slotFormatted}</div>
           }
           if (publishTime) {
-            const formattedPublishTime = dateInTimestampOrShortMonthDayTimestamp(publishTime, locale, timeZone)
+            const formattedPublishTime = dateInTimestampOrShortMonthDayTimestamp(publishTime, locale.code.full, timeZone)
             return <Time time={formattedPublishTime} type='publish' tooltip='Publiceringstid' />
           }
 

@@ -7,13 +7,13 @@ export const Time = ({ startTime, endTime }: { startTime?: Date | undefined, end
     if (!startTime || !endTime) {
       return <></>
     }
-    const formattedStartTime = new Intl.DateTimeFormat(locale, {
+    const formattedStartTime = new Intl.DateTimeFormat(locale.code.full, {
       hour: 'numeric',
       minute: 'numeric',
       timeZone
     }).format(startTime)
 
-    const formattedEndTime = new Intl.DateTimeFormat(locale, {
+    const formattedEndTime = new Intl.DateTimeFormat(locale.code.full, {
       hour: 'numeric',
       minute: 'numeric',
       timeZone

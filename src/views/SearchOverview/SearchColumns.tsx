@@ -15,9 +15,10 @@ import { type Planning } from '@/lib/index/schemas/planning'
 import { type Article } from '@/lib/index'
 import { type Event } from '@/lib/index'
 import { type AssignmentMetaExtended } from '../Assignments/types'
+import type { LocaleData } from '@/types'
 
 export function searchWideColumns({ locale, timeZone, sections }: {
-  locale: string
+  locale: LocaleData
   timeZone: string
   sections: IDBSection[]
 }): Array<ColumnDef<Planning | Event | AssignmentMetaExtended | Article>> {
@@ -166,7 +167,7 @@ export function searchWideColumns({ locale, timeZone, sections }: {
         const dateValue: string = row.getValue('date')
         if (dateValue) {
           const d = new Date(dateValue)
-          const day = dateToReadableShort(d, locale, timeZone)
+          const day = dateToReadableShort(d, locale.code.full, timeZone)
           return <div>{day}</div>
         }
         return <></>

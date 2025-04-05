@@ -47,14 +47,14 @@ export const Description = ({ descriptions }: { descriptions: Array<{ text: stri
 }
 
 export const Dates = ({ planningDate, eventDate }: { planningDate?: AssignmentData, eventDate?: AssignmentData }) => {
-  const { locale, timeZone }: { locale: string, timeZone: string } = useRegistry()
+  const { locale, timeZone } = useRegistry()
 
   function formatDate(dateString?: string) {
     if (!dateString || typeof dateString !== 'string') {
       return ''
     }
 
-    return new Intl.DateTimeFormat(locale, {
+    return new Intl.DateTimeFormat(locale.code.full, {
       weekday: 'short',
       month: 'short',
       day: 'numeric',

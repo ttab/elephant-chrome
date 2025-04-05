@@ -160,8 +160,8 @@ export const ExecutionTimeMenu = ({ handleOnSelect, index, startDate }: Executio
           {timePickType.icon && <timePickType.icon {...timePickType.iconProps} />}
           {
             hasEndTime
-              ? <FromToDateTimeLabel fromDate={startDateValue} toDate={endDateValue} locale={locale} timeZone={timeZone} />
-              : <FromDateTimeLabel fromDate={startDateValue} locale={locale} timeZone={timeZone} />
+              ? <FromToDateTimeLabel fromDate={startDateValue} toDate={endDateValue} locale={locale.code.full} timeZone={timeZone} />
+              : <FromDateTimeLabel fromDate={startDateValue} locale={locale.code.full} timeZone={timeZone} />
           }
         </div>
       </PopoverTrigger>
@@ -177,7 +177,7 @@ export const ExecutionTimeMenu = ({ handleOnSelect, index, startDate }: Executio
           />
           <div className='flex justify-between border-2 rounded-md border-slate-100'>
             <div className='px-3 py-2 text-sm'>
-              {startDateValue && dateToReadableDateTime(new Date(startDateValue), locale, timeZone)}
+              {startDateValue && dateToReadableDateTime(new Date(startDateValue), locale.code.full, timeZone)}
             </div>
             <div>
               <TimeInput
@@ -195,7 +195,7 @@ export const ExecutionTimeMenu = ({ handleOnSelect, index, startDate }: Executio
             </div>
             <div className='flex justify-between border-2 rounded-md border-slate-100'>
               <div className='px-3 py-2 text-sm'>
-                {(hasEndTime && endDateValue) && dateToReadableDateTime(new Date(endDateValue), locale, timeZone)}
+                {(hasEndTime && endDateValue) && dateToReadableDateTime(new Date(endDateValue), locale.code.full, timeZone)}
               </div>
               <div>
                 <TimeInput

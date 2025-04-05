@@ -7,20 +7,20 @@ import React, {
 } from 'react'
 
 import { getServerUrls } from '@/lib/getServerUrls'
-import { getUserLocale } from 'get-user-locale'
 import { getUserTimeZone } from '@/lib/getUserTimeZone'
 import { Repository } from '@/shared/Repository'
 import { Spellchecker } from '@/shared/Spellchecker'
 import { Index } from '@/shared/Index'
 import { Workflow } from '@/shared/Workflow'
 import { User } from '@/shared/User'
+import { defaultLocale, getLocaleData } from '@/shared/getLocaleData'
+import type { LocaleData } from '@/types'
 
-const DEFAULT_LOCALE = 'en-BR'
 const DEFAULT_TIMEZONE = 'Europe/Stockholm'
 
 /** Registry registry provider state interface */
 export interface RegistryProviderState {
-  locale: string
+  locale: LocaleData
   timeZone: string
   server: {
     webSocketUrl: URL
@@ -42,7 +42,7 @@ export interface RegistryProviderState {
 
 /** Registry registry provider state */
 const initialState: RegistryProviderState = {
-  locale: getUserLocale() || DEFAULT_LOCALE,
+  locale: defaultLocale,
   timeZone: getUserTimeZone() || DEFAULT_TIMEZONE,
   server: {
     webSocketUrl: new URL('http://localhost'),
@@ -68,25 +68,37 @@ export const RegistryProvider = ({ children }: PropsWithChildren): JSX.Element =
   const [isInitialized, setIsInitialized] = useState<boolean>(false)
 
   useEffect(() => {
-    getServerUrls().then((server) => {
-      const repository = new Repository(server.repositoryUrl.href)
-      const workflow = new Workflow(server.repositoryUrl.href)
-      const index = new Index(server.indexUrl.href)
-      const spellchecker = new Spellchecker(server.spellcheckUrl.href)
-      const user = new User(server.userUrl.href)
+    const initialize = async () => {
+      try {
+        const server = await getServerUrls()
+        const locale = await getLocaleData()
 
-      dispatch({
-        server,
-        workflow,
-        repository,
-        index,
-        spellchecker,
-        user
-      })
-      setIsInitialized(true)
-    }).catch((ex: Error) => {
-      console.error(`Failed fetching server urls in RegistryProvider, ${ex.message}`, ex)
-    })
+        const repository = new Repository(server.repositoryUrl.href)
+        const workflow = new Workflow(server.repositoryUrl.href)
+        const index = new Index(server.indexUrl.href)
+        const spellchecker = new Spellchecker(server.spellcheckUrl.href)
+        const user = new User(server.userUrl.href)
+
+        dispatch({
+          server,
+          locale,
+          workflow,
+          repository,
+          index,
+          spellchecker,
+          user
+        })
+        setIsInitialized(true)
+      } catch (ex) {
+        if (ex instanceof Error) {
+          console.error(`Failed initializing RegistryProvider, ${ex.message}`, ex)
+        } else {
+          console.error('Failed initializing RegistryProvider: Unknown error')
+        }
+      }
+    }
+
+    void initialize()
   }, [])
 
   return (
@@ -104,7 +116,7 @@ const reducer = (state: RegistryProviderState, action: Partial<RegistryProviderS
   const { locale, timeZone, server, repository, workflow, index, spellchecker, user } = action
   const partialState: Partial<RegistryProviderState> = {}
 
-  if (typeof locale === 'string') {
+  if (typeof locale === 'object') {
     partialState.locale = locale
   }
 
