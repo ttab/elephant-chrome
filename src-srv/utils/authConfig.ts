@@ -1,5 +1,4 @@
 import { type AuthConfig } from '@auth/core'
-import { decodeJwt } from 'jose'
 import Keycloak from '@auth/express/providers/keycloak'
 import { type JWT } from '@auth/core/jwt'
 
@@ -82,7 +81,7 @@ export const authConfig: AuthConfig = {
       if (account && user) {
         if (account.access_token) {
           // @ts-expect-error sub exists
-          user.sub = decodeJwt(account.access_token).sub
+          user.sub = account.providerAccountId
         }
         return {
           accessToken: account.access_token,

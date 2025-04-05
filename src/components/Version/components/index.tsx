@@ -14,7 +14,7 @@ const iconProps = {
   className: 'text-muted-foreground mr-4'
 }
 
-export const DisabledButton = ({ children }: PropsWithChildren) => {
+const DisabledButton = ({ children }: PropsWithChildren) => {
   return (
     <Button variant='outline' disabled className='text-sm border'>
       {children}

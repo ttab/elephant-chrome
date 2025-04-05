@@ -11,7 +11,7 @@ import { useSession } from 'next-auth/react'
 import { HPWebSocketProviderContext } from '.'
 import { createStateless, StatelessType } from '@/shared/stateless'
 
-export interface UserTrackerProviderState {
+interface UserTrackerProviderState {
   provider?: HocuspocusProvider
   connected: boolean
   synced: boolean

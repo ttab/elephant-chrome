@@ -27,12 +27,12 @@ const schemaShape = fields.reduce((acc, field) => {
 /**
  * Zod schema for factboxes.
  */
-export const schema = z.object(schemaShape)
+const _schema = z.object(schemaShape)
 
 /**
  * Type inferred from the factboxesSchema.
  */
-export type FactboxFields = z.infer<typeof schema>
+type FactboxFields = z.infer<typeof _schema>
 
 /**
  * Interface extending HitV1 with a fields property of type WireSchema.

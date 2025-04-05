@@ -4,8 +4,8 @@ import { isTextEntry } from '@/shared/transformations/isTextEntry'
 import type { TBElement } from '@ttab/textbit'
 import { slateNodesToInsertDelta } from '@slate-yjs/core'
 
-export type YParent = Y.Array<unknown> | Y.Map<unknown> | undefined
-export type YPath = Array<string | number>
+type YParent = Y.Array<unknown> | Y.Map<unknown> | undefined
+type YPath = Array<string | number>
 
 /**
  * Returns an array with two elements: the value and the parent map or array.

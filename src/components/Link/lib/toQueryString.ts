@@ -1,6 +1,6 @@
 import { type ViewProps } from '@/types'
 
-export type ToQueryStringProps = Record<string, string> | Omit<ViewProps, 'id'> | undefined
+type ToQueryStringProps = Record<string, string> | Omit<ViewProps, 'id'> | undefined
 
 function isScalar(value: unknown): boolean {
   return ['string', 'number', 'boolean'].includes(typeof value)

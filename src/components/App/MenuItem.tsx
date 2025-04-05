@@ -18,7 +18,7 @@ export const MenuItem = ({ menuItem }: {
   )
 }
 
-export const MenuItemViewOpener = ({ menuItem }: {
+const MenuItemViewOpener = ({ menuItem }: {
   menuItem: ApplicationMenuItem
 }): JSX.Element => (
   <SheetClose asChild key={menuItem.name}>
@@ -31,7 +31,7 @@ export const MenuItemViewOpener = ({ menuItem }: {
   </SheetClose>
 )
 
-export const MenuItemDialogOpener = ({ menuItem }: {
+const MenuItemDialogOpener = ({ menuItem }: {
   menuItem: ApplicationMenuItem
 }): JSX.Element => {
   const { showModal, hideModal } = useModal()

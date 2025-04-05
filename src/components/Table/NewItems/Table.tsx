@@ -20,7 +20,7 @@ const eventTypes = {
   Planning: 'core/planning-item'
 } as const
 
-export type EventType = keyof typeof eventTypes
+type EventType = keyof typeof eventTypes
 
 export const Table = ({ type, header }: {
   type: EventType

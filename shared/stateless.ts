@@ -65,9 +65,8 @@ const StatelessAuthSchema = z.object({
 })
 
 export type StatelessAuth = z.infer<typeof StatelessAuthSchema>
-export type StatelessMessage = z.infer<typeof StatelessMessageSchema>
-export type StatelessInProgress = z.infer<typeof StatelessInProgressSchema>
-export type StatelessError = z.infer<typeof StatelessErrorSchema>
+type StatelessMessage = z.infer<typeof StatelessMessageSchema>
+type StatelessInProgress = z.infer<typeof StatelessInProgressSchema>
 
 type inProgressMessage = z.infer<typeof inProgressMessageSchema>
 type authMessage = z.infer<typeof authMessageSchema>

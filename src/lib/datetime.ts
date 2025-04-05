@@ -127,7 +127,7 @@ export function getDateTimeBoundariesUTC(localDate: Date): { from: string, to: s
 * @param locale
 * @returns boolean
 */
-export function is12HourcycleFromLocale(locale: string): boolean {
+function is12HourcycleFromLocale(locale: string): boolean {
   try {
     const formatter = new Intl.DateTimeFormat(locale, { hour: 'numeric', hourCycle: 'h12' })
     const sampleDate = new Date(2000, 0, 1, 13, 0, 0) // 1:00 PM

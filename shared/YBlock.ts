@@ -1,9 +1,8 @@
 import { Block } from '@ttab/elephant-api/newsdoc'
-import { type PartialMessage } from '@protobuf-ts/runtime'
 import { group } from './transformations/groupedNewsDoc'
 
 export const YBlock = {
-  create: (value: PartialMessage<Block>) => {
+  create: (value: Partial<Block>) => {
     const clone = structuredClone(value)
     if (!clone.type) {
       clone.type = '__tempKey'
