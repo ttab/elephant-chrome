@@ -50,8 +50,8 @@ export const PrintArticles = (): JSX.Element => {
           <ViewHeader.Title title='Print' name='PrintArticles' />
           <Popover>
             <PopoverTrigger>
-              <Button title='Skapa ny...' size='sm' className='gap-1'>
-                <Plus strokeWidth={1.75} size={18} />
+              <Button title='Skapa ny...' size='sm' className='gap-1 px-2 py-0'>
+                <Plus strokeWidth={1.75} size={16} />
                 Nytt
               </Button>
             </PopoverTrigger>

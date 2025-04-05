@@ -39,9 +39,10 @@ export const EditorHeader = ({
             <Button
               title='Rendera om alla layouter.'
               variant='outline'
-              className='p-2 flex gap-2 items-center'
+              size='sm'
+              className='px-2 py-0 flex gap-2 items-center'
             >
-              <RefreshCw strokeWidth={1.75} size={18} />
+              <RefreshCw strokeWidth={1.75} size={16} />
               Uppdatera alla
             </Button>
             <DocumentStatusMenu
