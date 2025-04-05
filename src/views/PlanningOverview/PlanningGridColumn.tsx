@@ -43,7 +43,7 @@ export const PlanningGridColumn = ({ date, items }: PlanningGridColumnProps): JS
 
   const { locale, timeZone } = useRegistry()
 
-  const [weekday, day] = new Intl.DateTimeFormat(locale, {
+  const [weekday, day] = new Intl.DateTimeFormat(locale.code.full, {
     weekday: 'short',
     day: 'numeric',
     timeZone

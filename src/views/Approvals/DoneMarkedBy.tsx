@@ -24,7 +24,7 @@ export const DoneMarkedBy = ({ doneStatus }: {
     return <></>
   }
 
-  const created = dateToReadableDateTime(new Date(doneStatus.created), locale, timeZone)
+  const created = dateToReadableDateTime(new Date(doneStatus.created), locale.code.full, timeZone)
 
   return (
     <div className='flex flex-col items-start justify-start'>
