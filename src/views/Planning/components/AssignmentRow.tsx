@@ -41,6 +41,7 @@ export const AssignmentRow = ({ index, onSelect, isFocused = false, asDialog }: 
   const [inProgress] = useYValue(`${base}.__inProgress`)
   const [articleId] = useYValue<string>(`${base}.links.core/article[0].uuid`)
   const [flashId] = useYValue<string>(`${base}.links.core/flash[0].uuid`)
+  const [editorialInfoId] = useYValue<string>(`${base}.links.core/editorial-info[0].uuid`)
   const [assignmentType] = useYValue<string>(`${base}.meta.core/assignment-type[0].value`)
   const [assignmentId] = useYValue<string>(`${base}.id`)
   const [title] = useYValue<string>(`${base}.title`)
@@ -55,7 +56,7 @@ export const AssignmentRow = ({ index, onSelect, isFocused = false, asDialog }: 
   const yRoot = provider?.document.getMap('ele')
   const [planningId] = getValueByYPath<string | undefined>(yRoot, 'root.uuid')
 
-  const documentId = articleId || flashId
+  const documentId = articleId || flashId || editorialInfoId
   const isDocument = assignmentType === 'flash' || assignmentType === 'text' || assignmentType === 'editorial-info'
   const documentLabel = assignmentType
     ? AssignmentTypes.find((a) => a.value === assignmentType)?.label?.toLowerCase()
