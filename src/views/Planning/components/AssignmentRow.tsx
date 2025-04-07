@@ -21,6 +21,9 @@ import { createPayload } from '@/defaults/templates/lib/createPayload'
 import { Move } from '@/components/Move/'
 import { useModal } from '@/components/Modal/useModal'
 import type * as Y from 'yjs'
+import { useRegistry } from '@/hooks/useRegistry'
+import { useSession } from 'next-auth/react'
+import useSWRImmutable from 'swr/immutable'
 
 export const AssignmentRow = ({ index, onSelect, isFocused = false, asDialog }: {
   index: number
@@ -33,11 +36,20 @@ export const AssignmentRow = ({ index, onSelect, isFocused = false, asDialog }: 
   const openFlash = useLink('Flash')
 
   const openDocuments = useOpenDocuments({ idOnly: true, name: 'Editor' })
+  const { repository } = useRegistry()
+  const { data: session } = useSession()
 
   const base = `meta.core/assignment[${index}]`
   const [assignment] = useYValue<Y.Map<unknown> | undefined>(base, true)
   const [inProgress] = useYValue(`${base}.__inProgress`)
   const [articleId] = useYValue<string>(`${base}.links.core/article[0].uuid`)
+
+  const { data: articleStatus } = useSWRImmutable(['articlestatus', articleId], async () => {
+    if (articleId && session?.accessToken) {
+      return await repository?.getMeta({ uuid: articleId, accessToken: session.accessToken })
+    }
+  })
+
   const [flashId] = useYValue<string>(`${base}.links.core/flash[0].uuid`)
   const [assignmentType] = useYValue<string>(`${base}.meta.core/assignment-type[0].value`)
   const [assignmentId] = useYValue<string>(`${base}.id`)
@@ -157,7 +169,12 @@ export const AssignmentRow = ({ index, onSelect, isFocused = false, asDialog }: 
       label: 'Öppna',
       icon: FileInput,
       item: <T extends HTMLElement>(event: MouseEvent<T>) => {
-        onOpenEvent(event)
+        if (articleStatus?.meta?.workflowState === 'usable') {
+          const openDocument = assignmentType === 'flash' ? openFlash : openArticle
+          openDocument(event, { id: articleId }, 'last', undefined, undefined, { version: articleStatus?.meta.heads['usable'].version })
+        } else {
+          onOpenEvent(event)
+        }
       }
     })
   }
@@ -185,7 +202,12 @@ export const AssignmentRow = ({ index, onSelect, isFocused = false, asDialog }: 
       )}
       onClick={(event) => {
         if (isDocument) {
-          onOpenEvent(event)
+          if (articleStatus?.meta?.workflowState === 'usable') {
+            const openDocument = assignmentType === 'flash' ? openFlash : openArticle
+            openDocument(event, { id: articleId }, 'last', undefined, undefined, { version: articleStatus?.meta.heads['usable'].version })
+          } else {
+            onOpenEvent(event)
+          }
         } else {
           onSelect()
         }
