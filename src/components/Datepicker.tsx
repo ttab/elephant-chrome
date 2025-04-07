@@ -79,6 +79,7 @@ export const DatePicker = ({ date, changeDate, setDate, forceYear = false }: {
       >
         <Calendar
           mode='single'
+          locale={locale.module}
           selected={date}
           onSelect={(selectedDate) => {
             if (!selectedDate) return
