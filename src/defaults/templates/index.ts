@@ -6,6 +6,7 @@ export { factboxDocumentTemplate as factbox } from './factboxDocumentTemplate'
 export { assignmentPlanningTemplate as assignment } from './assignmentPlanningTemplate'
 export { planningDocumentTemplate as planning } from './planningDocumentTemplate'
 export { eventDocumentTemplate as event } from './eventDocumentTemplate'
+export { editorialInfoDocumentTemplate as editorialInfo } from './editorialInfoDocumentTemplate'
 
 export interface TemplatePayload {
   title?: string
@@ -19,6 +20,6 @@ export interface TemplatePayload {
     'core/section'?: Block[]
     'core/story'?: Block[]
     'tt/wire'?: Block[]
-    'core/event'?: Block[] // FIXME: Is this correct?
+    'core/event'?: Block[]
   }
 }

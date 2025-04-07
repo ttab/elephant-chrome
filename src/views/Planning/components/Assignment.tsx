@@ -67,7 +67,7 @@ export const Assignment = ({ index, onAbort, onClose }: {
             )}
           />
 
-          {assignmentType === 'text'
+          {(assignmentType === 'text' || assignmentType === 'editorial-info')
           && (
             <Form.Group icon={Tags}>
               <SluglineEditable

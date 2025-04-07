@@ -21,6 +21,8 @@ import { createPayload } from '@/defaults/templates/lib/createPayload'
 import { Move } from '@/components/Move/'
 import { useModal } from '@/components/Modal/useModal'
 import type * as Y from 'yjs'
+import { getDeliverableType } from '@/defaults/templates/lib/getDeliverableType'
+import { AssignmentTypes } from '@/defaults/assignmentTypes'
 
 export const AssignmentRow = ({ index, onSelect, isFocused = false, asDialog }: {
   index: number
@@ -54,9 +56,12 @@ export const AssignmentRow = ({ index, onSelect, isFocused = false, asDialog }: 
   const [planningId] = getValueByYPath<string | undefined>(yRoot, 'root.uuid')
 
   const documentId = articleId || flashId
-  const isDocument = assignmentType === 'flash' || assignmentType === 'text'
-  const documentLabel = assignmentType === 'text' ? 'artikel' : assignmentType
-  const openDocument = assignmentType === 'text' ? openArticle : openFlash
+  const isDocument = assignmentType === 'flash' || assignmentType === 'text' || assignmentType === 'editorial-info'
+  const documentLabel = assignmentType
+    ? AssignmentTypes.find((a) => a.value === assignmentType)?.label?.toLowerCase()
+    : 'okänt'
+
+  const openDocument = assignmentType === 'flash' ? openFlash : openArticle
   const { showModal, hideModal } = useModal()
 
   const assTime = useMemo(() => {
@@ -71,7 +76,7 @@ export const AssignmentRow = ({ index, onSelect, isFocused = false, asDialog }: 
         : undefined
   }, [publishTime, assignmentType, startTime])
 
-  // Open a deliverable (e.g. article or flash) callback helper.
+  // Open a deliverable (e.g. article, flash, editorial-info) callback helper.
   const onOpenEvent = useCallback(<T extends HTMLElement>(event: MouseEvent<T> | KeyboardEvent) => {
     event.preventDefault()
     event.stopPropagation()
@@ -119,6 +124,7 @@ export const AssignmentRow = ({ index, onSelect, isFocused = false, asDialog }: 
       icon: Edit,
       item: <T extends HTMLElement>(event: MouseEvent<T>) => {
         event.stopPropagation()
+        event.preventDefault()
         onSelect()
       }
     },
@@ -127,6 +133,7 @@ export const AssignmentRow = ({ index, onSelect, isFocused = false, asDialog }: 
       icon: Delete,
       item: <T extends HTMLElement>(event: MouseEvent<T>) => {
         event.stopPropagation()
+        event.preventDefault()
         setShowVerifyDialog(true)
       }
     },
@@ -135,6 +142,7 @@ export const AssignmentRow = ({ index, onSelect, isFocused = false, asDialog }: 
       icon: MoveRight,
       item: <T extends HTMLElement>(event: MouseEvent<T>) => {
         event.stopPropagation()
+        event.preventDefault()
         showModal(
           <Move
             asDialog
@@ -279,7 +287,7 @@ export const AssignmentRow = ({ index, onSelect, isFocused = false, asDialog }: 
       {showCreateDialogPayload && provider?.document && (slugline || assignmentType === 'flash') && (
         <CreateDeliverablePrompt
           payload={createPayload(provider.document, index, assignmentType) || {}}
-          deliverableType={assignmentType === 'flash' ? 'flash' : 'article'}
+          deliverableType={getDeliverableType(assignmentType)}
           title={title || ''}
           documentLabel={documentLabel || ''}
           onClose={(event, id) => {
@@ -293,7 +301,7 @@ export const AssignmentRow = ({ index, onSelect, isFocused = false, asDialog }: 
                 id,
                 index,
                 slug: '',
-                type: assignmentType === 'flash' ? 'flash' : 'article'
+                type: getDeliverableType(assignmentType)
               })
               const openDocument = assignmentType === 'flash' ? openFlash : openArticle
               openDocument(event, { id }, 'blank')

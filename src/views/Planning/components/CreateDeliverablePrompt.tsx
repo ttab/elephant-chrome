@@ -2,19 +2,18 @@ import { type MouseEvent } from 'react'
 import { Prompt } from '@/components'
 import { useCollaboration } from '@/hooks/useCollaboration'
 import {
-  article as articleTpl,
-  flash as flashTpl,
   type TemplatePayload
 } from '@/defaults/templates/'
 import { useSession } from 'next-auth/react'
 import { useRegistry } from '@/hooks/useRegistry'
 import { toast } from 'sonner'
+import { getTemplateFromDeliverable } from '@/defaults/templates/lib/getTemplateFromDeliverable'
 
 /**
  * Deliverable document creation dialog, responsible for creating articles and flashes in the repository.
  */
 export function CreateDeliverablePrompt({ deliverableType, payload, onClose, title, documentLabel }: {
-  deliverableType: 'article' | 'flash'
+  deliverableType: 'article' | 'flash' | 'editorial-info'
   payload: TemplatePayload
   title: string
   documentLabel: string
@@ -33,8 +32,9 @@ export function CreateDeliverablePrompt({ deliverableType, payload, onClose, tit
 
   const onCreateDocument = async () => {
     const id = crypto.randomUUID()
+    const template = getTemplateFromDeliverable(deliverableType)
     await repository.saveDocument(
-      (deliverableType === 'flash') ? flashTpl(id, payload) : articleTpl(id, payload),
+      template(id, payload),
       session.accessToken,
       BigInt(-1)
     )
