@@ -57,25 +57,26 @@ export const EditorHeader = ({ documentId }: { documentId: string }): JSX.Elemen
 
     setValueByYPath(deliverablePlanning.yRoot, `meta.core/assignment[${index}].data.publish`, data.time.toISOString())
     return true
-  }, [deliverablePlanning])
+  }, [deliverablePlanning, dispatch, documentId, history, state.viewRegistry, viewId, workflowStatus])
 
   return (
     <ViewHeader.Root>
-      <ViewHeader.Title name='Editor' title='Artikel' icon={PenBoxIcon} />
+      <ViewHeader.Title name='Editor' title='Artikel' icon={readOnly ? PenOff : PenBoxIcon} />
 
       <ViewHeader.Content className='justify-start'>
         <div className='max-w-[810px] mx-auto flex flex-row gap-2 justify-between items-center w-full'>
           <div className='flex flex-row gap-1 justify-start items-center @7xl/view:-ml-20'>
             <div className='hidden flex-row gap-2 justify-start items-center @lg/view:flex'>
-              <Newsvalue />
-              <AddNote />
+              {!readOnly && <Newsvalue />}
+              {!readOnly && <AddNote />}
+              {readOnly && <Eye size={18} strokeWidth={2.05} color='#555' />}
             </div>
           </div>
 
           <div className='flex flex-row gap-2 justify-end items-center'>
             {!!documentId && (
               <>
-                <ViewHeader.RemoteUsers documentId={documentId} />
+                {!readOnly && <ViewHeader.RemoteUsers documentId={documentId} />}
 
                 {!!deliverablePlanning && (
                   <StatusMenu
