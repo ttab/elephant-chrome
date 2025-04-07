@@ -188,6 +188,36 @@ export function dateInTimestampOrShortMonthDayTimestamp(date: string, locale: st
   }
 }
 
+export function dateInTimestampOrShortMonthDayYear(
+  date: string,
+  locale: string,
+  timeZone: string
+): string {
+  if (!date) {
+    return '??'
+  }
+
+  const inputDate = new Date(date)
+  const today = new Date()
+
+  const isToday = inputDate.getDate() === today.getDate()
+    && inputDate.getMonth() === today.getMonth()
+    && inputDate.getFullYear() === today.getFullYear()
+
+  if (isToday) {
+    return 'idag'
+  } else {
+    const dateFormatter = new Intl.DateTimeFormat(locale, {
+      day: 'numeric',
+      month: 'short',
+      year: inputDate.getFullYear() !== today.getFullYear() ? 'numeric' : undefined,
+      timeZone
+    })
+    return dateFormatter.format(inputDate)
+  }
+}
+
+
 export function dateToReadableDay(date: Date, locale: string, timeZone: string): string {
   return new Intl.DateTimeFormat(locale, {
     timeZone,

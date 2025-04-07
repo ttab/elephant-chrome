@@ -1,7 +1,7 @@
 import { useRegistry } from '@/hooks/useRegistry'
 import { fetch } from '@/lib/index/fetch-plannings-twirp'
 import type { DefaultValueOption } from '@ttab/elephant-ui'
-import { Button, ComboBox, Input } from '@ttab/elephant-ui'
+import { Button, Checkbox, ComboBox, Input, Label } from '@ttab/elephant-ui'
 import { ArrowRightLeft, BriefcaseBusiness, Calendar, CircleXIcon, GanttChartSquare } from '@ttab/elephant-ui/icons'
 import { useSession } from 'next-auth/react'
 import { useMemo, useState } from 'react'
@@ -32,9 +32,10 @@ export const Move = (props: ViewProps & {
   const [selectedPlanning, setSelectedPlanning] = useState<DefaultValueOption | undefined>(undefined)
   const [showVerifyDialog, setShowVerifyDialog] = useState(false)
   const [planningDateString, setPlanningDateString] = useState<string | undefined>()
+  const [searchOlder, setSearchOlder] = useState(false)
 
   const { data: session } = useSession()
-  const { index } = useRegistry()
+  const { index, locale, timeZone } = useRegistry()
 
 
   const date = useMemo(() =>
@@ -168,7 +169,7 @@ export const Move = (props: ViewProps & {
                 className='min-w-0 w-full truncate justify-start max-w-48'
                 selectedOptions={selectedPlanning ? [selectedPlanning] : []}
                 placeholder='Välj planering'
-                fetch={(query) => fetch(query, session, index)
+                fetch={(query) => fetch(query, session, index, locale, timeZone, searchOlder)
                   .then((data) =>
                     data.filter((item) => item.value !== props.original.planningId)
                   )}
@@ -190,6 +191,12 @@ export const Move = (props: ViewProps & {
                   </Button>
                 </>
               )}
+              <Checkbox
+                id='SearchOlder'
+                defaultChecked={searchOlder}
+                onCheckedChange={(checked: boolean) => { setSearchOlder(checked) }}
+              />
+              <Label htmlFor='SearchOlder' className='text-muted-foreground'>Även äldre</Label>
             </Form.Group>
             <UserMessage asDialog={!!props?.asDialog}>
               {!selectedPlanning
