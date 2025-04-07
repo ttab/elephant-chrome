@@ -28,12 +28,13 @@ const meta: ViewMetadata = {
 
 type DocumentExtended = Document & { publish?: string, slugline?: string, section?: string }
 
-export const Latest = () => {
+export const Latest = ({ setOpen }: { setOpen?: (open: boolean) => void }) => {
   const [data] = useAssignments({
     type: 'text',
     date: new Date(),
     status: ['usable']
   })
+
   const { locale } = useRegistry()
 
   const sections = useSections().map((_) => {
@@ -71,10 +72,12 @@ export const Latest = () => {
     return <div className='min-h-screen text-center py-2'>Laddar...</div>
   }
 
-  return <Content documents={documents} locale={locale} />
+  return (
+    <Content documents={documents} locale={locale} setOpen={setOpen} />
+  )
 }
 
-const Content = ({ documents, locale }: { documents: Document[], locale: LocaleData }): JSX.Element => {
+const Content = ({ documents, locale, setOpen }: { documents: Document[], locale: LocaleData, setOpen?: (open: boolean) => void }): JSX.Element => {
   const { state, dispatch } = useNavigation()
   const history = useHistory()
   const { viewId } = useView()
@@ -114,6 +117,10 @@ const Content = ({ documents, locale }: { documents: Document[], locale: LocaleD
                 origin: viewId,
                 target: 'last'
               })
+
+              if (setOpen) {
+                setOpen(false)
+              }
             }}
           >
             <div className='py-2 px-3 text-xs flex flex-col'>

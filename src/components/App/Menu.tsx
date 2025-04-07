@@ -16,11 +16,15 @@ import { signOut, useSession } from 'next-auth/react'
 import { applicationMenu, type ApplicationMenuItem, type MenuGroups } from '@/defaults/applicationMenuItems'
 import { useUserTracker } from '@/hooks/useUserTracker'
 import { cn } from '@ttab/elephant-ui/utils'
-import { useRef, useState } from 'react'
+import { useCallback, useRef, useState } from 'react'
 import { Latest as LatestComponent } from '@/views/Latest'
 
 const BASE_URL = import.meta.env.BASE_URL
 const hasUserDoc = (obj: object | undefined) => obj && Object.keys(obj).length > 0
+
+interface SheetComponentProps {
+  setOpen: (open: boolean) => void
+}
 
 export const Menu = (): JSX.Element => {
   const { data } = useSession()
@@ -28,9 +32,13 @@ export const Menu = (): JSX.Element => {
   const [user] = useUserTracker<object>('')
   const [mainOpen, setMainMenuOpen] = useState<boolean>(false)
 
-  const sheetComponents: Record<string, React.ComponentType> = {
+  const sheetComponents: Record<string, React.ComponentType<SheetComponentProps>> = {
     Latest: LatestComponent
   }
+
+  const setOpen = useCallback((open: boolean) => {
+    setMainMenuOpen(open)
+  }, [])
 
   return (
     <Sheet
@@ -111,7 +119,7 @@ export const Menu = (): JSX.Element => {
                               </SheetTitle>
                             </SheetHeader>
 
-                            {SheetItemComponent && <SheetItemComponent />}
+                            {SheetItemComponent && <SheetItemComponent setOpen={setOpen} />}
                           </SheetContent>
                         </Sheet>
                       )
