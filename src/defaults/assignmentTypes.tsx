@@ -29,7 +29,7 @@ export const AssignmentTypes: DefaultValueOption[] = [
     iconProps
   },
   {
-    label: 'Tillred',
+    label: 'Till red',
     value: 'editorial-info',
     icon: FileWarning,
     iconProps
