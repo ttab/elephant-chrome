@@ -1,26 +1,29 @@
-import { useView } from '@/hooks'
+import { useHistory, useNavigation, useView, useWorkflowStatus } from '@/hooks'
 import { Newsvalue } from '@/components/Newsvalue'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { MetaSheet } from './components/MetaSheet'
 import { StatusMenu } from '@/components/DocumentStatus/StatusMenu'
 import { AddNote } from './components/Notes/AddNote'
 import { ViewHeader } from '@/components/View'
-import { PenBoxIcon } from '@ttab/elephant-ui/icons'
+import { PenBoxIcon, Eye, PenOff } from '@ttab/elephant-ui/icons'
 import { useDeliverablePlanning } from '@/hooks/useDeliverablePlanning'
 import { getValueByYPath, setValueByYPath } from '@/lib/yUtils'
 import type { EleBlock } from '@/shared/types'
 import { toast } from 'sonner'
+import { handleLink } from '@/components/Link/lib/handleLink'
 
-export const EditorHeader = ({ documentId }: { documentId: string }): JSX.Element => {
+export const EditorHeader = ({ documentId, readOnly }: { documentId: string, readOnly?: boolean }): JSX.Element => {
   const { viewId } = useView()
+  const { state, dispatch } = useNavigation()
+  const history = useHistory()
   const deliverablePlanning = useDeliverablePlanning(documentId)
   const containerRef = useRef<HTMLElement | null>(null)
   const [publishTime, setPublishTime] = useState<string | null>(null)
+  const [workflowStatus] = useWorkflowStatus(documentId, true)
 
   useEffect(() => {
     containerRef.current = (document.getElementById(viewId))
   }, [viewId])
-
 
   useEffect(() => {
     if (deliverablePlanning) {
@@ -38,6 +41,33 @@ export const EditorHeader = ({ documentId }: { documentId: string }): JSX.Elemen
     if (!deliverablePlanning) {
       toast.error('Kunde inte ändra status på artikel! Det gick inte att hitta en kopplad planering.')
       return false
+    }
+
+    if (newStatus === 'usable') {
+      handleLink({
+        dispatch,
+        viewItem: state.viewRegistry.get('Editor'),
+        props: { id: documentId },
+        viewId: crypto.randomUUID(),
+        history,
+        origin: viewId,
+        target: 'self',
+        readOnly: {
+          version: workflowStatus?.version
+        }
+      })
+    }
+
+    if (newStatus === 'draft') {
+      handleLink({
+        dispatch,
+        viewItem: state.viewRegistry.get('Editor'),
+        props: { id: documentId },
+        viewId: crypto.randomUUID(),
+        history,
+        origin: viewId,
+        target: 'self'
+      })
     }
 
     if (newStatus !== 'withheld') {
