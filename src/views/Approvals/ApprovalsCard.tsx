@@ -29,6 +29,7 @@ export const ApprovalsCard = ({ assignment, isSelected, isFocused, status }: {
   const sections = useSections()
   const openArticle = useLink('Editor')
   const openFlash = useLink('Flash')
+  const openType = (assignmentType: string) => assignmentType === 'core/flash' ? openFlash : openArticle
   const time = assignment.data.publish
     ? format(toZonedTime(parseISO(assignment.data.publish), timeZone), 'HH:mm')
     : undefined
@@ -103,10 +104,12 @@ export const ApprovalsCard = ({ assignment, isSelected, isFocused, status }: {
             />
             , 'sheet')
         } else if (documentId) {
-          if (assignment._deliverableType === 'core/flash') {
-            openFlash(event, { id: documentId })
+          const openDocument = openType(assignment._deliverableType as string)
+          if (assignment._deliverableStatus === 'usable') {
+            const lastUsableVersion = statusData?.heads.usable?.version
+            openDocument(event, { id: documentId }, 'last', undefined, undefined, { version: lastUsableVersion as bigint })
           } else {
-            openArticle(event, { id: documentId })
+            openDocument(event, { id: documentId })
           }
         }
       }}
