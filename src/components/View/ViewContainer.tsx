@@ -12,7 +12,7 @@ import { cva } from 'class-variance-authority'
 const section = cva('@container/view first:border-l-0', {
   variants: {
     isActive: {
-      true: 'shadow-3xl rounded-t-2xl overflow-hidden is-active ml-[1px] first:ml-[0] dark:bg-secondary dark:shadow-none',
+      true: 'shadow-3xl rounded-t-2xl overflow-x-hidden is-active ml-[1px] first:ml-[0] dark:bg-secondary dark:shadow-none',
       false: 'opacity-90 border-l [.is-active+&]:border-0 [.is-active+&]:ml-[1px]'
     },
     isFocused: {
