@@ -7,11 +7,11 @@ import { Description, Assignments, Category, Dates, Slugline, Section, Story, Ne
 
 export const PreVersion = ({
   content,
-  preVersion,
+  version,
   versionHistory
 }: {
   content: EleDocument
-  preVersion: bigint | undefined
+  version: bigint | undefined
   versionHistory?: DocumentVersion[]
 }) => {
   const getDescriptions = useCallback((block: EleDocument | EleBlock) => {
@@ -46,7 +46,7 @@ export const PreVersion = ({
   return (
     <div className='flex justify-center overflow-y-auto select-none'>
       <div className='w-3/4'>
-        <PreVersionInfo preVersion={preVersion} versionHistory={versionHistory} />
+        <PreVersionInfo version={version} versionHistory={versionHistory} />
         <div className='font-sans font-bold text-xl pb-2 text-muted-foreground'>{content.title}</div>
         <Description descriptions={descriptions} />
         <Slugline slugline={slugline} />

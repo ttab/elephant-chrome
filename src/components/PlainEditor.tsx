@@ -23,14 +23,14 @@ const fetcher = async (url: string): Promise<TBElement[] | EleDocument | undefin
   return result.document?.content
 }
 
-export const Editor = ({ id, preVersion, textOnly = false, versionHistory }: {
+export const Editor = ({ id, version, textOnly = false, versionHistory }: {
   id: string
   textOnly?: boolean
-  preVersion?: bigint | undefined
+  version?: bigint | undefined
   versionHistory?: DocumentVersion[]
 }): JSX.Element => {
   const { data: content, error } = useSWR<TBElement[] | EleDocument | undefined, Error>(
-    `${BASE_URL}/api/documents/${id}${preVersion ? `?version=${preVersion}` : ''}`,
+    `${BASE_URL}/api/documents/${id}${version ? `?version=${version}` : ''}`,
     fetcher,
     { revalidateOnFocus: false, revalidateOnReconnect: false }
   )
@@ -48,16 +48,16 @@ export const Editor = ({ id, preVersion, textOnly = false, versionHistory }: {
     return (
       <PreVersion
         content={content}
-        preVersion={preVersion}
+        version={version}
         versionHistory={versionHistory}
       />
     )
   }
 
   return (
-    <div className='flex flex-col w-full pb-6 overflow-y-auto max-w-screen-lg mx-auto'>
-      {versionHistory && preVersion && (
-        <PreVersionInfo preVersion={preVersion} versionHistory={versionHistory} />
+    <div className='flex flex-col w-full pb-6 overflow-y-auto overflow-x-hidden max-w-screen-lg mx-auto'>
+      {versionHistory && version && (
+        <PreVersionInfo version={version} versionHistory={versionHistory} />
       )}
       <Textbit.Root plugins={[...plugins.map((initPlugin) => initPlugin()), Text({
         classNames: {
