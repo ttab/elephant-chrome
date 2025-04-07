@@ -8,8 +8,6 @@ import type { DocumentVersion } from '@ttab/elephant-api/repository'
 import { PreVersionInfo } from './Version/PreVersionInfo'
 const BASE_URL = import.meta.env.BASE_URL || ''
 
-const plugins = [Text, UnorderedList, OrderedList, Bold, Italic, Link, TTVisual, Factbox, Table]
-
 const fetcher = async (url: string): Promise<TBElement[] | EleDocument | undefined> => {
   const response = await fetch(url)
   if (!response.ok) {
@@ -29,6 +27,22 @@ export const Editor = ({ id, version, textOnly = false, versionHistory }: {
   version?: bigint | undefined
   versionHistory?: DocumentVersion[]
 }): JSX.Element => {
+  const getPlugins = () => {
+    const basePlugins = [Text, UnorderedList, OrderedList, Bold, Italic, Link, Factbox, Table]
+    return [
+      ...basePlugins.map((initPlugin) => initPlugin()),
+      Text({
+        classNames: {
+          'heading-1': 'text-lg font-bold py-2',
+          'heading-2': 'text-md font-bold py-1'
+        }
+      }),
+      TTVisual({
+        removable: false
+      })
+    ]
+  }
+
   const { data: content, error } = useSWR<TBElement[] | EleDocument | undefined, Error>(
     `${BASE_URL}/api/documents/${id}${version ? `?version=${version}` : ''}`,
     fetcher,
@@ -59,13 +73,7 @@ export const Editor = ({ id, version, textOnly = false, versionHistory }: {
       {versionHistory && version && (
         <PreVersionInfo version={version} versionHistory={versionHistory} />
       )}
-      <Textbit.Root plugins={[...plugins.map((initPlugin) => initPlugin()), Text({
-        classNames: {
-          'heading-1': 'text-lg font-bold py-2',
-          'heading-2': 'text-md font-bold py-1'
-        }
-      })]}
-      >
+      <Textbit.Root plugins={getPlugins()}>
         <Textbit.Editable
           key={id}
           readOnly
