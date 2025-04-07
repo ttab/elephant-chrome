@@ -49,13 +49,17 @@ export const Editor = ({ id, version, textOnly = false, versionHistory }: {
     { revalidateOnFocus: false, revalidateOnReconnect: false }
   )
 
-  if (error) return <div>Failed to load</div>
+  if (error) {
+    return <div>Failed to load</div>
+  }
 
-  if (!content) return (
-    <LoadingText>
-      Laddar...
-    </LoadingText>
-  )
+  if (!content) {
+    return (
+      <LoadingText>
+        Laddar...
+      </LoadingText>
+    )
+  }
 
   if ('title' in content) {
     // Preversion-preview: render non-article types of documents, such as Planning or Event
