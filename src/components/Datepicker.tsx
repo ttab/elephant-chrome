@@ -21,14 +21,14 @@ export const DatePicker = ({ date, changeDate, setDate, forceYear = false }: {
 }): JSX.Element => {
   const { locale, timeZone } = useRegistry()
 
-  const formattedDate = new Intl.DateTimeFormat(locale, {
+  const formattedDate = new Intl.DateTimeFormat(locale.code.full, {
     weekday: 'short',
     month: 'short',
     day: 'numeric',
     timeZone
   }).format(date)
 
-  const longFormattedDate = new Intl.DateTimeFormat(locale, {
+  const longFormattedDate = new Intl.DateTimeFormat(locale.code.full, {
     weekday: 'short',
     month: 'short',
     day: 'numeric',

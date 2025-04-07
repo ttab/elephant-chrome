@@ -1,12 +1,12 @@
 import { useAssignments } from '@/hooks/index/useAssignments'
 import { useSections } from '@/hooks/useSections'
+import type { LocaleData } from '@/types/index'
 import { type ViewMetadata } from '@/types/index'
 import { type Document } from '@ttab/elephant-api/newsdoc'
 import { Separator } from '@ttab/elephant-ui'
 import { useMemo } from 'react'
 import { format } from 'date-fns'
 import { useRegistry } from '@/hooks/useRegistry'
-import * as locales from 'date-fns/locale'
 import { handleLink } from '@/components/Link/lib/handleLink'
 import { useHistory, useNavigation, useView } from '@/hooks/index'
 
@@ -74,21 +74,18 @@ export const Latest = () => {
   return <Content documents={documents} locale={locale} />
 }
 
-const Content = ({ documents, locale }: { documents: Document[], locale: string }): JSX.Element => {
+const Content = ({ documents, locale }: { documents: Document[], locale: LocaleData }): JSX.Element => {
   const { state, dispatch } = useNavigation()
   const history = useHistory()
   const { viewId } = useView()
 
-  function getLocalizedDate(date: Date, localeCode: string): string | undefined {
-    const [code] = localeCode.split('-')
-    const _locale = locales[code.toLocaleLowerCase() as keyof typeof locales]
-
-    if (!_locale) {
-      console.warn(`Locale ${localeCode} not supported.`)
+  function getLocalizedDate(date: Date, locale: LocaleData): string | undefined {
+    if (!locale.module) {
+      console.warn(`Locale ${locale.code.full} not supported.`)
       return format(date, 'dd MMM yyyy – HH.mm')
     }
 
-    return format(date, 'dd MMM yyyy – HH.mm', { locale: _locale })
+    return format(date, 'dd MMM yyyy – HH.mm', { locale: locale.module })
   }
 
   return (

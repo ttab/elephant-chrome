@@ -24,11 +24,12 @@ import { SectionBadge } from '@/components/DataItem/SectionBadge'
 import { type IDBOrganiser, type IDBSection } from 'src/datastore/types'
 import { FacetedFilter } from '@/components/Commands/FacetedFilter'
 import { Tooltip } from '@ttab/elephant-ui'
+import type { LocaleData } from '@/types/index'
 
-export function eventTableColumns({ sections = [], organisers = [], locale = 'sv-SE' }: {
+export function eventTableColumns({ sections = [], organisers = [], locale }: {
   sections?: IDBSection[]
   organisers?: IDBOrganiser[]
-  locale?: string
+  locale: LocaleData
 }): Array<ColumnDef<Event>> {
   return [
     {
@@ -65,7 +66,7 @@ export function eventTableColumns({ sections = [], organisers = [], locale = 'sv
         if (startTime.toDateString() === new Date().toDateString()) {
           return startTime.getHours()
         } else {
-          return `${startTime.getHours()} ${startTime.toLocaleString(locale, { weekday: 'long', hourCycle: 'h23' })}`
+          return `${startTime.getHours()} ${startTime.toLocaleString(locale.code.full, { weekday: 'long', hourCycle: 'h23' })}`
         }
       },
       cell: () => {

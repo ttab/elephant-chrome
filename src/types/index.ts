@@ -2,6 +2,7 @@ import { type Block } from '@ttab/elephant-api/newsdoc'
 import type * as views from '@/views'
 import { type LucideIcon } from '@ttab/elephant-ui/icons'
 import type { TemplatePayload } from '@/defaults/templates'
+import type { Locale } from 'date-fns'
 
 export enum NavigationActionType {
   SET = 'set',
@@ -116,3 +117,13 @@ export type ValidateState = Record<string, {
   valid: boolean
   reason: string
 }>
+
+export type LocaleData = {
+  module: Locale
+  code: {
+    short: string
+    long: string
+    full: string
+  }
+}
+
