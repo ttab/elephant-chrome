@@ -9,6 +9,7 @@ import { format } from 'date-fns'
 import { useRegistry } from '@/hooks/useRegistry'
 import { handleLink } from '@/components/Link/lib/handleLink'
 import { useHistory, useNavigation, useView } from '@/hooks/index'
+import type { StatusData } from 'src/datastore/types'
 
 const meta: ViewMetadata = {
   name: 'Latest',
@@ -26,7 +27,7 @@ const meta: ViewMetadata = {
   }
 }
 
-type DocumentExtended = Document & { publish?: string, slugline?: string, section?: string }
+type DocumentExtended = Document & { publish?: string, slugline?: string, section?: string, lastUsableVersion?: bigint }
 
 export const Latest = ({ setOpen }: { setOpen?: (open: boolean) => void }) => {
   const [data] = useAssignments({
@@ -48,18 +49,36 @@ export const Latest = ({ setOpen }: { setOpen?: (open: boolean) => void }) => {
     if (!data[0]?.items?.length) {
       return []
     }
+
     return data[0].items.reduce((docs: DocumentExtended[], curr) => {
       if (!curr._deliverableDocument) {
         return docs
       }
 
-      const doc: Document & { publish?: string, slugline?: string, section?: string } = curr._deliverableDocument
+      const doc: DocumentExtended = curr._deliverableDocument
+
       if (curr?.data?.publish) {
         doc.publish = curr.data.publish
       }
+
       if (curr?._section) {
         doc.section = sections.find((s) => s.value === curr._section)?.label
       }
+
+      const lastUsableVersion = () => {
+        if (!curr._statusData) {
+          return
+        }
+
+        const parsedData = JSON.parse(curr._statusData) as StatusData
+        const lastUsableVersion = parsedData?.heads.usable?.version
+        return lastUsableVersion
+      }
+
+      if (lastUsableVersion()) {
+        doc.lastUsableVersion = lastUsableVersion()
+      }
+
       doc.slugline = curr._deliverableDocument.meta.find((m) => m.type === 'tt/slugline')?.value
 
       docs.push(doc)
@@ -98,7 +117,8 @@ const Content = ({ documents, locale, setOpen }: { documents: Document[], locale
           return <></>
         }
 
-        const { title, uuid } = itm
+        const { title, uuid, lastUsableVersion } = itm
+
         return (
           <div
             key={uuid}
@@ -115,7 +135,10 @@ const Content = ({ documents, locale, setOpen }: { documents: Document[], locale
                 viewId: crypto.randomUUID(),
                 history,
                 origin: viewId,
-                target: 'last'
+                target: 'last',
+                readOnly: {
+                  version: lastUsableVersion
+                }
               })
 
               if (setOpen) {
