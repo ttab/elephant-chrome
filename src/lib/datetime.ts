@@ -205,7 +205,7 @@ export function dateInTimestampOrShortMonthDayYear(
     && inputDate.getFullYear() === today.getFullYear()
 
   if (isToday) {
-    return 'idag'
+    return 'i dag'
   } else {
     const dateFormatter = new Intl.DateTimeFormat(locale, {
       day: 'numeric',
