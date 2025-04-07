@@ -232,13 +232,13 @@ export const EventTimeMenu = (): JSX.Element => {
       fromDate: eventData?.start,
       toDate: eventData?.end,
       timeZone,
-      locale
+      locale: locale.code.full
     })
     : dateTimeLabel({
       fromDate: eventData?.start,
       toDate: eventData?.end,
       timeZone,
-      locale
+      locale: locale.code.full
     })
 
   return (
@@ -270,7 +270,7 @@ export const EventTimeMenu = (): JSX.Element => {
 
           <div className='flex justify-between border-2 rounded-md border-slate-100'>
             <div className='px-3 py-2 text-sm'>
-              {startDateValue && dateToReadableDay(new Date(startDateValue), locale, timeZone)}
+              {startDateValue && dateToReadableDay(new Date(startDateValue), locale.code.full, timeZone)}
             </div>
             <div>
               <TimeInput
@@ -284,7 +284,7 @@ export const EventTimeMenu = (): JSX.Element => {
           </div>
           <div className='flex justify-between border-2 rounded-md border-slate-100 mt-2'>
             <div className='px-3 py-2 text-sm'>
-              {endDateValue && dateToReadableDay(new Date(endDateValue), locale, timeZone)}
+              {endDateValue && dateToReadableDay(new Date(endDateValue), locale.code.full, timeZone)}
             </div>
             <div>
               <TimeInput

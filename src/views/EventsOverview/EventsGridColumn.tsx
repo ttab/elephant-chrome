@@ -42,7 +42,7 @@ export const EventsGridColumn = ({ date, items }: EventsGridColumnProps): JSX.El
 
   const { locale, timeZone } = useRegistry()
 
-  const [weekday, day] = new Intl.DateTimeFormat(locale, {
+  const [weekday, day] = new Intl.DateTimeFormat(locale.code.full, {
     weekday: 'short',
     day: 'numeric',
     timeZone
