@@ -2,7 +2,9 @@ import { useRef } from 'react'
 import { Preview } from '../Preview'
 import { type ttninjs } from '@ttab/api-client'
 import { Dialog, DialogContent, DialogTrigger } from '@ttab/elephant-ui'
-import { findRenditionByUsageAndVariant, type renditions } from '../lib/find-rendition'
+import { findRenditionByUsageAndVariant } from '../lib/find-rendition'
+import type { renditions } from '../lib/find-rendition'
+
 
 export const Thumbnail = ({ hit }: {
   hit: ttninjs

@@ -6,7 +6,7 @@ import {
   type LucideIcon
 } from '@ttab/elephant-ui/icons'
 
-export interface WorkflowItem {
+interface WorkflowItem {
   title: string
   description: string
 }
@@ -15,7 +15,7 @@ export interface WorkflowTransition extends WorkflowItem {
   verify?: boolean
   default?: boolean
 }
-export interface WorkflowState extends WorkflowItem {
+interface WorkflowState extends WorkflowItem {
   transitions: Record<string, WorkflowTransition>
 }
 

@@ -1,10 +1,9 @@
 import { searchIndex, type SearchIndexResponse } from './searchIndex'
 
-export interface SearchParams {
+interface SearchParams {
   page?: number
   size?: number
 }
-
 
 /**
  * @deprecated This function is deprecated and will be removed in future versions.

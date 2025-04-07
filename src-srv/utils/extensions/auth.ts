@@ -5,12 +5,13 @@ import {
   type Extension,
   type onAuthenticatePayload
 } from '@hocuspocus/server'
-import { type JWTPayload, decodeJwt } from 'jose'
+import { decodeJwt } from 'jose'
+import { type JWT } from '@auth/core/jwt'
 
 export class Auth implements Extension {
   async onAuthenticate({ token: accessToken }: onAuthenticatePayload): Promise<{
     accessToken: string
-    user: JWTPayload
+    user: JWT
   }> {
     const isValidAccessToken = await validateAccessToken(accessToken)
 

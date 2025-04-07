@@ -1,6 +1,5 @@
 import { type Block } from '@ttab/elephant-api/newsdoc'
 import type * as views from '@/views'
-import { type RpcError } from '@protobuf-ts/runtime-rpc'
 import { type LucideIcon } from '@ttab/elephant-ui/icons'
 import type { TemplatePayload } from '@/defaults/templates'
 import type { Locale } from 'date-fns'
@@ -110,8 +109,6 @@ export interface DefaultValueOption {
   info?: string
 }
 
-
-export type ElephantValidationMessage = Pick<RpcError, 'code' | 'methodName' | 'serviceName' | 'meta'>
 
 export type ValidateStateRef = React.MutableRefObject<ValidateState>
 

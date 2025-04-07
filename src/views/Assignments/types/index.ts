@@ -18,7 +18,7 @@ export interface AssigneeMeta {
   uuid: string
 }
 
-export interface Status {
+interface Status {
   rel: string
   type: string
   uuid: string
@@ -40,7 +40,7 @@ export interface TypeValue {
   value: string
 }
 
-export interface TypeData {
+interface TypeData {
   type: string
   data: AssignmentEventData
 }
