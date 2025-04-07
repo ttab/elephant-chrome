@@ -13,7 +13,8 @@ export const useLink = (viewName: View) => {
     props: ViewProps,
     target?: Target,
     callbacks?: Record<string, () => void>,
-    keepFocus?: boolean
+    keepFocus?: boolean,
+    readOnly?: { version: bigint }
   ): void => {
     handleLink({
       event,
@@ -25,7 +26,8 @@ export const useLink = (viewName: View) => {
       target,
       onDocumentCreated: callbacks?.onDocumentCreated,
       history,
-      keepFocus
+      keepFocus,
+      ...(readOnly && { readOnly })
     })
   }
 }

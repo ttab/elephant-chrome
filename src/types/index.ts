@@ -64,6 +64,9 @@ export interface ContentState {
   name: View
   path: string
   props?: ViewProps
+  readOnly?: {
+    version?: bigint
+  }
 }
 
 export interface ViewProps {
