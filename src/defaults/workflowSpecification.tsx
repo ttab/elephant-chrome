@@ -336,5 +336,78 @@ export const WorkflowSpecifications: Record<string, WorkflowSpecification> = {
         }
       }
     }
+  },
+  'core/editorial-info': {
+    draft: {
+      title: 'Utkast',
+      description: 'Du jobbar på ett utkast av detta till red',
+      transitions: {
+        done: {
+          default: true,
+          title: 'Klarmarkera',
+          description: 'Markera till red som klar'
+        },
+        approved: {
+          title: 'Godkänn',
+          description: 'Godkänn till red för intern användning'
+        },
+        usable: {
+          verify: true,
+          title: 'Publicera',
+          description: 'Publicera till red externt synlig'
+        }
+      }
+    },
+    done: {
+      title: 'Klar',
+      description: 'Till red är klar och väntar på godkännande',
+      transitions: {
+        approved: {
+          default: true,
+          title: 'Godkänn',
+          description: 'Godkänn till red för intern användning'
+        },
+        usable: {
+          verify: true,
+          title: 'Publicera',
+          description: 'Publicera till red externt synlig'
+        },
+        draft: {
+          title: 'Till utkast',
+          description: 'Gör om till red till ett utkast igen'
+        }
+      }
+    },
+    approved: {
+      title: 'Intern',
+      description: 'Till red är internt publicerad och går att publicera externt',
+      transitions: {
+        usable: {
+          default: true,
+          verify: true,
+          title: 'Publicera',
+          description: 'Publicera till red externt synlig'
+        },
+        draft: {
+          title: 'Till utkast',
+          description: 'Gör om till red till ett utkast igen'
+        }
+      }
+    },
+    usable: {
+      title: 'Publicerad',
+      description: 'Till red är publicerad',
+      transitions: {
+        draft: {
+          default: true,
+          title: 'Till utkast',
+          description: 'Gör om till red till ett utkast igen'
+        },
+        cancelled: {
+          title: 'Dra tillbaka',
+          description: 'Avbryt publiceringen och arkivera till red'
+        }
+      }
+    }
   }
 }
