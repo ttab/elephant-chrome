@@ -28,7 +28,7 @@ export const Editor = ({ id, version, textOnly = false, versionHistory }: {
   versionHistory?: DocumentVersion[]
 }): JSX.Element => {
   const getPlugins = () => {
-    const basePlugins = [Text, UnorderedList, OrderedList, Bold, Italic, Link, Factbox, Table]
+    const basePlugins = [Text, UnorderedList, OrderedList, Bold, Italic, Link, Table]
     return [
       ...basePlugins.map((initPlugin) => initPlugin()),
       Text({
@@ -38,6 +38,9 @@ export const Editor = ({ id, version, textOnly = false, versionHistory }: {
         }
       }),
       TTVisual({
+        removable: false
+      }),
+      Factbox({
         removable: false
       })
     ]
