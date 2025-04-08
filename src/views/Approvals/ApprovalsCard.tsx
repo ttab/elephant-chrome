@@ -16,6 +16,7 @@ import { DoneMarkedBy } from './DoneMarkedBy'
 import type { StatusData } from 'src/datastore/types'
 import { useSections } from '@/hooks/useSections'
 import type { StatusSpecification } from '@/defaults/workflowSpecification'
+import { decodeString } from '@/lib/decodeString'
 
 
 export const ApprovalsCard = ({ assignment, isSelected, isFocused, status }: {
@@ -86,9 +87,11 @@ export const ApprovalsCard = ({ assignment, isSelected, isFocused, status }: {
     )
   }]
 
-  const title = (assignment._deliverableDocument?.content
+  const _title = (assignment._deliverableDocument?.content
     .find((content) => content.type === 'core/text' && content.role === 'heading-1')?.data.text)
   || assignment.title
+
+  const title = decodeString(_title)
 
   return (
     <Card.Root
