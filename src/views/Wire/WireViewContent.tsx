@@ -8,7 +8,7 @@ import {
 } from '@/components'
 import type { ViewProps } from '@/types'
 import type { DefaultValueOption } from '@/types'
-import { Button, ComboBox, Input } from '@ttab/elephant-ui'
+import { Button, Checkbox, ComboBox, Input, Label } from '@ttab/elephant-ui'
 import { CircleXIcon, Tags, GanttChartSquare, Cable, BriefcaseBusiness } from '@ttab/elephant-ui/icons'
 import { useCollaboration, useRegistry } from '@/hooks'
 import { useSession } from 'next-auth/react'
@@ -28,10 +28,11 @@ export const WireViewContent = (props: ViewProps & {
   const { provider } = useCollaboration()
   const { status, data: session } = useSession()
   const [showVerifyDialog, setShowVerifyDialog] = useState(false)
+  const [searchOlder, setSearchOlder] = useState(false)
   const [selectedPlanning, setSelectedPlanning] = useState<DefaultValueOption | undefined>(undefined)
   const documentAwareness = useRef<(value: boolean) => void>(null)
   const planningTitleRef = useRef<HTMLInputElement>(null)
-  const { index } = useRegistry()
+  const { index, locale, timeZone } = useRegistry()
 
   const handleSubmit = (): void => {
     setShowVerifyDialog(true)
@@ -71,6 +72,7 @@ export const WireViewContent = (props: ViewProps & {
                 <ComboBox
                   max={1}
                   size='xs'
+                  modal={props.asDialog}
                   className='min-w-0 w-full truncate justify-start max-w-48'
                   selectedOptions={selectedPlanning ? [selectedPlanning] : []}
                   placeholder='Välj planering'
@@ -79,7 +81,7 @@ export const WireViewContent = (props: ViewProps & {
                       documentAwareness.current(isOpen)
                     }
                   }}
-                  fetch={(query) => fetch(query, session, index)}
+                  fetch={(query) => fetch(query, session, index, locale, timeZone, searchOlder)}
                   minSearchChars={2}
                   onSelect={(option) => {
                     if (setSelectedPlanning) {
@@ -115,6 +117,12 @@ export const WireViewContent = (props: ViewProps & {
                   </Button>
                 </>
               )}
+              <Checkbox
+                id='SearchOlder'
+                defaultChecked={searchOlder}
+                onCheckedChange={(checked: boolean) => { setSearchOlder(checked) }}
+              />
+              <Label htmlFor='SearchOlder' className='text-muted-foreground'>Visa äldre</Label>
             </Form.Group>
 
 
