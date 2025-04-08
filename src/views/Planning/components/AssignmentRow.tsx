@@ -2,7 +2,7 @@ import { TimeDisplay } from '@/components/DataItem/TimeDisplay'
 import { AssignmentType } from '@/components/DataItem/AssignmentType'
 import { AssigneeAvatars } from '@/components/DataItem/AssigneeAvatars'
 import { DotDropdownMenu } from '@/components/ui/DotMenu'
-import { Delete, Edit, Eye, FileInput, type LucideIcon, MoveRight, Pen } from '@ttab/elephant-ui/icons'
+import { Delete, Edit, FileInput, MoveRight, Pen } from '@ttab/elephant-ui/icons'
 import { type MouseEvent, useMemo, useState, useCallback, useEffect, useRef } from 'react'
 import { SluglineButton } from '@/components/DataItem/Slugline'
 import { useYValue } from '@/hooks/useYValue'
@@ -26,7 +26,6 @@ import { useSession } from 'next-auth/react'
 import useSWRImmutable from 'swr/immutable'
 import { getDeliverableType } from '@/defaults/templates/lib/getDeliverableType'
 import { AssignmentTypes } from '@/defaults/assignmentTypes'
-import type { GetMetaResponse } from '@ttab/elephant-api/repository'
 
 export const AssignmentRow = ({ index, onSelect, isFocused = false, asDialog }: {
   index: number
@@ -132,87 +131,62 @@ export const AssignmentRow = ({ index, onSelect, isFocused = false, asDialog }: 
   })
 
 
-  const setMenuItems = (articleStatus: GetMetaResponse | null | undefined):
-  Array<{
-    label: string
-    icon: LucideIcon
-    item: <T extends HTMLElement>(event: MouseEvent<T>) => void
-  }> => {
-    if (!articleStatus) {
-      return []
+  const menuItems = [
+    {
+      label: 'Redigera',
+      icon: Edit,
+      item: <T extends HTMLElement>(event: MouseEvent<T>) => {
+        event.stopPropagation()
+        event.preventDefault()
+        onSelect()
+      }
+    },
+    {
+      label: 'Ta bort',
+      icon: Delete,
+      item: <T extends HTMLElement>(event: MouseEvent<T>) => {
+        event.stopPropagation()
+        event.preventDefault()
+        setShowVerifyDialog(true)
+      }
+    },
+    {
+      label: 'Flytta',
+      icon: MoveRight,
+      item: <T extends HTMLElement>(event: MouseEvent<T>) => {
+        event.stopPropagation()
+        event.preventDefault()
+        showModal(
+          <Move
+            asDialog
+            onDialogClose={hideModal}
+            original={{
+              document: provider?.document,
+              assignmentId,
+              assignmentTitle: title,
+              assignment,
+              planningId
+            }}
+          />
+        )
+      }
     }
+  ]
 
-    const menuItems = []
-
-    const baseItems = [
-      {
-        label: 'Redigera',
-        icon: Edit,
-        item: <T extends HTMLElement>(event: MouseEvent<T>) => {
-          event.stopPropagation()
-          event.preventDefault()
-          onSelect()
-        }
-      },
-      {
-        label: 'Ta bort',
-        icon: Delete,
-
-        item: <T extends HTMLElement>(event: MouseEvent<T>) => {
-          event.stopPropagation()
-          event.preventDefault()
-          setShowVerifyDialog(true)
-        }
-      },
-      {
-        label: 'Flytta',
-        icon: MoveRight,
-        item: <T extends HTMLElement>(event: MouseEvent<T>) => {
-          event.stopPropagation()
-          event.preventDefault()
-          showModal(
-            <Move
-              asDialog
-              onDialogClose={hideModal}
-              original={{
-                document: provider?.document,
-                assignmentId,
-                assignmentTitle: title,
-                assignment,
-                planningId
-              }}
-            />
-          )
+  if ((isDocument) && !asDialog) {
+    menuItems.push({
+      label: 'Öppna',
+      icon: FileInput,
+      item: <T extends HTMLElement>(event: MouseEvent<T>) => {
+        if (articleStatus?.meta?.workflowState === 'usable') {
+          const openDocument = assignmentType === 'flash' ? openFlash : openArticle
+          openDocument(event, { id: articleId }, 'last', undefined, undefined, { version: articleStatus?.meta.heads['usable'].version })
+        } else {
+          onOpenEvent(event)
         }
       }
-    ]
-
-    if (articleStatus?.meta?.workflowState !== 'usable') {
-      menuItems.push(...baseItems)
-    }
-
-    if ((isDocument) && !asDialog) {
-      const isUsable = articleStatus?.meta?.workflowState === 'usable'
-      menuItems.push({
-        label: 'Öppna',
-        icon: isUsable ? Eye : FileInput,
-        item: <T extends HTMLElement>(event: MouseEvent<T>) => {
-          if (isUsable) {
-            if (articleStatus?.meta) {
-              const openDocument = assignmentType === 'flash' ? openFlash : openArticle
-              openDocument(event, { id: articleId }, 'last', undefined, undefined, { version: articleStatus?.meta.heads['usable'].version })
-            }
-          } else {
-            onOpenEvent(event)
-          }
-        }
-      })
-    }
-
-    return menuItems
+    })
   }
-
-  const menuItems = setMenuItems(articleStatus || {})
 
   const selected = articleId && openDocuments.includes(articleId)
   return (
