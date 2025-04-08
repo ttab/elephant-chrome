@@ -147,19 +147,16 @@ export class OpenDocuments implements Extension {
 
           for (let n = count.length - 1; n >= 0; n--) {
             if (lostInstances.includes(count.get(n))) {
-              console.log(`Removing index ${n}`)
               count.delete(n)
             }
           }
 
           if (!count.length) {
-            console.log(`No more instances, removing user ${yUser.get('id') as string}`)
             yUsers.delete(yUser.get('id') as string)
           }
         })
 
         if (!yUsers.size) {
-          console.log(`No more users on doc, removing doc ${yDocEntry.get('id') as string}`)
           yOpenDocuments.delete(yDocEntry.get('id') as string)
         }
       })
