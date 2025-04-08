@@ -24,15 +24,18 @@ interface EleOnDisconnectPayload extends onDisconnectPayload {
   context: EleContext
 }
 
-type CollaborationSnapshot = Record<string, {
-  id: string
-  users: Record<string, {
+type CollaborationSnapshot = {
+  documents: Record<string, {
     id: string
-    userName: string
-    name: string
-    count: number
+    users: Record<string, {
+      id: string
+      userName: string
+      name: string
+      count: string[]
+    }>
   }>
-}>
+  instances: Record<string, number>
+}
 
 /**
  * OpenDocuments extension for Hocuspocus
@@ -42,10 +45,13 @@ type CollaborationSnapshot = Record<string, {
  */
 export class OpenDocuments implements Extension {
   readonly #name = 'document-tracker'
+  readonly #ttl = 120
   readonly #doc: Y.Doc
   readonly #redisCache: RedisCache
+  readonly #instanceId: string
 
   constructor({ redisCache }: { redisCache: RedisCache }) {
+    this.#instanceId = crypto.randomUUID()
     this.#redisCache = redisCache
     this.#doc = new Y.Doc()
   }
@@ -68,6 +74,96 @@ export class OpenDocuments implements Extension {
         )
       )
     }
+
+    // Periodically update the instance last seen timestamp
+    this.#updateInstanceLastSeen()
+    const lastSeen = () => this.#updateInstanceLastSeen()
+    setInterval(lastSeen.bind(this), this.#getInterval(25, 35))
+
+    // Periodically check that all instances are connected and clean up if not.
+    const cleanup = () => this.#cleanupIfNecessary()
+    setInterval(cleanup.bind(this), this.#getInterval(100, 140))
+  }
+
+  /**
+   * Utility function to get a randomized jitter interval in milliseconds
+   * based on min and max number of seconds for intervals. Used to prevent
+   * thundering herd problems and reduce risk of instances running cleanup
+   * simultaneously.
+   */
+  #getInterval(min: number, max: number) {
+    const minCeiled = Math.ceil(min)
+    const maxFloored = Math.floor(max)
+    return Math.floor(Math.random() * (maxFloored - minCeiled + 1) + minCeiled) * 1000
+  }
+
+  /**
+   * Update the shared instances map with a fresh timestamp for this instance id.
+   */
+  #updateInstanceLastSeen() {
+    const yInstances = this.#doc.getMap('instances')
+    yInstances.set(this.#instanceId, Date.now())
+  }
+
+  /**
+   * Check that all instances have been seen lately. If it it was last
+   * seen more than this.#ttl seconds ago we clean out the instance and
+   * remove all open document count references related to that instance.
+   */
+  #cleanupIfNecessary() {
+    const lostInstances: string[] = []
+
+    this.#doc.transact(() => {
+      const now = Date.now()
+      const yInstances = this.#doc.getMap<number>('instances')
+
+      yInstances.forEach((timestamp, instanceId) => {
+        if (instanceId === this.#instanceId) {
+          return
+        }
+
+        const seconds = Math.floor((now - timestamp) / 1000)
+        if (seconds >= this.#ttl) {
+          logger.warn(`Instance <${instanceId}> last seen ${seconds} secs ago. Removing all references!`)
+          lostInstances.push(instanceId)
+          yInstances.delete(instanceId)
+        }
+      })
+    })
+
+    if (!lostInstances.length) {
+      return
+    }
+
+    // Cleanup all open document references
+    this.#doc.transact(() => {
+      const yOpenDocuments = this.#doc.getMap<Y.Map<unknown>>('open-documents')
+
+      yOpenDocuments.forEach((yDocEntry) => {
+        const yUsers = yDocEntry.get('users') as Y.Map<Y.Map<unknown>>
+
+        yUsers.forEach((yUser) => {
+          const count = yUser.get('count') as Y.Array<string>
+
+          for (let n = count.length - 1; n >= 0; n--) {
+            if (lostInstances.includes(count.get(n))) {
+              console.log(`Removing index ${n}`)
+              count.delete(n)
+            }
+          }
+
+          if (!count.length) {
+            console.log(`No more instances, removing user ${yUser.get('id') as string}`)
+            yUsers.delete(yUser.get('id') as string)
+          }
+        })
+
+        if (!yUsers.size) {
+          console.log(`No more users on doc, removing doc ${yDocEntry.get('id') as string}`)
+          yOpenDocuments.delete(yDocEntry.get('id') as string)
+        }
+      })
+    })
   }
 
   /**
@@ -122,8 +218,11 @@ export class OpenDocuments implements Extension {
             this.#getUserYMap(userId, userName, name)
           )
         } else {
-          // User already connected to document, increase connection count
-          yUser.set('count', yUser.get('count') ?? 0 + 1)
+          // User already connected to document, increase connection count,
+          // by adding the instance id to the count array. Each instance can
+          // appear multiple times and increase the count accordingly.
+          const count = yUser.get('count') as Y.Array<string>
+          count.push([this.#instanceId])
         }
 
         // Increase total document connection count
@@ -136,11 +235,14 @@ export class OpenDocuments implements Extension {
    * Create initial user Y.Map.
    */
   #getUserYMap(id: string, username: string, name: string): Y.Map<unknown> {
+    const count = new Y.Array()
+    count.push([this.#instanceId])
+
     const yUser = new Y.Map()
     yUser.set('id', id)
     yUser.set('username', username)
     yUser.set('name', name)
-    yUser.set('count', 1)
+    yUser.set('count', count)
 
     return yUser
   }
@@ -158,19 +260,25 @@ export class OpenDocuments implements Extension {
     const yDocEntry = yOpenDocuments.get(documentName) as Y.Map<unknown>
 
     if (!yDocEntry?.size) {
-      logger.warn(`Client <${userId}> disconnected from <${documentName}> but there was no document entry in open-documents`)
+      logger.warn(`Client <${userId}> on instance <${this.#instanceId}> disconnected from <${documentName}> but there was no document entry in open-documents`)
       return
     }
 
     this.#doc.transact(() => {
       const yUsers = yDocEntry.get('users') as Y.Map<unknown>
       const yUser = yUsers.get(userId) as Y.Map<unknown>
-      const count = yUser.get('count') as number
+      const count = yUser.get('count') as Y.Array<string>
 
-      if (count <= 1) {
+      if (count.length <= 1) {
         yUsers.delete(userId)
       } else {
-        yUser.set('count', count - 1)
+        // Find first occurrence of current instance
+        const n = count.toJSON().findIndex((v) => v === this.#instanceId)
+        if (n !== -1) {
+          count.delete(n)
+        } else {
+          logger.warn(`Client <${userId}> on instance <${this.#instanceId}> disconnected from <${documentName}> but there was no instance entry in count`)
+        }
       }
       yDocEntry.set('count', yDocEntry.get('count') ?? 0 - 1)
     })
@@ -194,6 +302,11 @@ export class OpenDocuments implements Extension {
    */
   getSnapshot(): CollaborationSnapshot {
     const yOpenDocuments = this.#doc.getMap('open-documents')
-    return yOpenDocuments.toJSON()
+    const yInstances = this.#doc.getMap('instances')
+
+    return {
+      documents: yOpenDocuments.toJSON(),
+      instances: yInstances.toJSON()
+    }
   }
 }
