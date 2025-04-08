@@ -1,4 +1,4 @@
-import { useHistory, useNavigation, useView, useWorkflowStatus } from '@/hooks'
+import { useHistory, useNavigation, useView, useWorkflowStatus, useYValue } from '@/hooks'
 import { Newsvalue } from '@/components/Newsvalue'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { MetaSheet } from './components/MetaSheet'
@@ -20,6 +20,8 @@ export const EditorHeader = ({ documentId, readOnly }: { documentId: string, rea
   const containerRef = useRef<HTMLElement | null>(null)
   const [publishTime, setPublishTime] = useState<string | null>(null)
   const [workflowStatus] = useWorkflowStatus(documentId, true)
+  const [documentType] = useYValue<string>('root.type')
+
 
   useEffect(() => {
     containerRef.current = (document.getElementById(viewId))
@@ -89,17 +91,19 @@ export const EditorHeader = ({ documentId, readOnly }: { documentId: string, rea
     return true
   }, [deliverablePlanning, dispatch, documentId, history, state.viewRegistry, viewId, workflowStatus])
 
+  const title = documentType === 'core/editorial-info' ? 'Till red' : 'Artikel'
   return (
     <ViewHeader.Root>
-      <ViewHeader.Title name='Editor' title='Artikel' icon={readOnly ? PenOff : PenBoxIcon} />
+      <ViewHeader.Title name='Editor' title={title} icon={readOnly ? PenOff : PenBoxIcon} />
 
       <ViewHeader.Content className='justify-start'>
         <div className='max-w-[810px] mx-auto flex flex-row gap-2 justify-between items-center w-full'>
           <div className='flex flex-row gap-1 justify-start items-center @7xl/view:-ml-20'>
             <div className='hidden flex-row gap-2 justify-start items-center @lg/view:flex'>
-              {!readOnly && <Newsvalue />}
               {!readOnly && <AddNote />}
               {readOnly && <Eye size={18} strokeWidth={2.05} color='#555' />}
+              {!readOnly && documentType !== 'core/editorial-info' && <Newsvalue />}
+              <AddNote />
             </div>
           </div>
 
@@ -111,7 +115,7 @@ export const EditorHeader = ({ documentId, readOnly }: { documentId: string, rea
                 {!!deliverablePlanning && (
                   <StatusMenu
                     documentId={documentId}
-                    type='core/article'
+                    type={documentType || 'core/article'}
                     publishTime={publishTime ? new Date(publishTime) : undefined}
                     onBeforeStatusChange={onBeforeStatusChange}
                   />

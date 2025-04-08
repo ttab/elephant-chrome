@@ -8,7 +8,7 @@ import { useMemo } from 'react'
 import { useModal } from '../Modal/useModal'
 import * as Views from '@/views'
 import { createDocument } from '@/lib/createYItem'
-import { getTemplate } from '@/defaults/templates/lib/getTemplate'
+import { getTemplateFromView } from '@/defaults/templates/lib/getTemplateFromView'
 
 export const Header = ({ assigneeUserName, type }: {
   type: View
@@ -34,7 +34,7 @@ export const Header = ({ assigneeUserName, type }: {
           className='h-8 pr-4'
           onClick={() => {
             const initialDocument = createDocument({
-              template: getTemplate(type),
+              template: getTemplateFromView(type),
               inProgress: true
             })
             showModal(

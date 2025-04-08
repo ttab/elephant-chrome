@@ -24,6 +24,8 @@ import type * as Y from 'yjs'
 import { useRegistry } from '@/hooks/useRegistry'
 import { useSession } from 'next-auth/react'
 import useSWRImmutable from 'swr/immutable'
+import { getDeliverableType } from '@/defaults/templates/lib/getDeliverableType'
+import { AssignmentTypes } from '@/defaults/assignmentTypes'
 
 export const AssignmentRow = ({ index, onSelect, isFocused = false, asDialog }: {
   index: number
@@ -51,6 +53,7 @@ export const AssignmentRow = ({ index, onSelect, isFocused = false, asDialog }: 
   })
 
   const [flashId] = useYValue<string>(`${base}.links.core/flash[0].uuid`)
+  const [editorialInfoId] = useYValue<string>(`${base}.links.core/editorial-info[0].uuid`)
   const [assignmentType] = useYValue<string>(`${base}.meta.core/assignment-type[0].value`)
   const [assignmentId] = useYValue<string>(`${base}.id`)
   const [title] = useYValue<string>(`${base}.title`)
@@ -65,10 +68,13 @@ export const AssignmentRow = ({ index, onSelect, isFocused = false, asDialog }: 
   const yRoot = provider?.document.getMap('ele')
   const [planningId] = getValueByYPath<string | undefined>(yRoot, 'root.uuid')
 
-  const documentId = articleId || flashId
-  const isDocument = assignmentType === 'flash' || assignmentType === 'text'
-  const documentLabel = assignmentType === 'text' ? 'artikel' : assignmentType
-  const openDocument = assignmentType === 'text' ? openArticle : openFlash
+  const documentId = articleId || flashId || editorialInfoId
+  const isDocument = assignmentType === 'flash' || assignmentType === 'text' || assignmentType === 'editorial-info'
+  const documentLabel = assignmentType
+    ? AssignmentTypes.find((a) => a.value === assignmentType)?.label?.toLowerCase()
+    : 'okänt'
+
+  const openDocument = assignmentType === 'flash' ? openFlash : openArticle
   const { showModal, hideModal } = useModal()
 
   const assTime = useMemo(() => {
@@ -83,7 +89,7 @@ export const AssignmentRow = ({ index, onSelect, isFocused = false, asDialog }: 
         : undefined
   }, [publishTime, assignmentType, startTime])
 
-  // Open a deliverable (e.g. article or flash) callback helper.
+  // Open a deliverable (e.g. article, flash, editorial-info) callback helper.
   const onOpenEvent = useCallback(<T extends HTMLElement>(event: MouseEvent<T> | KeyboardEvent) => {
     event.preventDefault()
     event.stopPropagation()
@@ -131,6 +137,7 @@ export const AssignmentRow = ({ index, onSelect, isFocused = false, asDialog }: 
       icon: Edit,
       item: <T extends HTMLElement>(event: MouseEvent<T>) => {
         event.stopPropagation()
+        event.preventDefault()
         onSelect()
       }
     },
@@ -139,6 +146,7 @@ export const AssignmentRow = ({ index, onSelect, isFocused = false, asDialog }: 
       icon: Delete,
       item: <T extends HTMLElement>(event: MouseEvent<T>) => {
         event.stopPropagation()
+        event.preventDefault()
         setShowVerifyDialog(true)
       }
     },
@@ -147,6 +155,7 @@ export const AssignmentRow = ({ index, onSelect, isFocused = false, asDialog }: 
       icon: MoveRight,
       item: <T extends HTMLElement>(event: MouseEvent<T>) => {
         event.stopPropagation()
+        event.preventDefault()
         showModal(
           <Move
             asDialog
@@ -301,7 +310,7 @@ export const AssignmentRow = ({ index, onSelect, isFocused = false, asDialog }: 
       {showCreateDialogPayload && provider?.document && (slugline || assignmentType === 'flash') && (
         <CreateDeliverablePrompt
           payload={createPayload(provider.document, index, assignmentType) || {}}
-          deliverableType={assignmentType === 'flash' ? 'flash' : 'article'}
+          deliverableType={getDeliverableType(assignmentType)}
           title={title || ''}
           documentLabel={documentLabel || ''}
           onClose={(event, id) => {
@@ -315,7 +324,7 @@ export const AssignmentRow = ({ index, onSelect, isFocused = false, asDialog }: 
                 id,
                 index,
                 slug: '',
-                type: assignmentType === 'flash' ? 'flash' : 'article'
+                type: getDeliverableType(assignmentType)
               })
               const openDocument = assignmentType === 'flash' ? openFlash : openArticle
               openDocument(event, { id }, 'blank')
