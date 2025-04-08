@@ -122,7 +122,7 @@ export class OpenDocuments implements Extension {
             this.#getUserYMap(userId, userName, name)
           )
         } else {
-          // User already connected, increase user document connection count
+          // User already connected to document, increase connection count
           yUser.set('count', yUser.get('count') ?? 0 + 1)
         }
 
