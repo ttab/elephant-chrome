@@ -2,7 +2,7 @@ import { TimeDisplay } from '@/components/DataItem/TimeDisplay'
 import { AssignmentType } from '@/components/DataItem/AssignmentType'
 import { AssigneeAvatars } from '@/components/DataItem/AssigneeAvatars'
 import { DotDropdownMenu } from '@/components/ui/DotMenu'
-import { Delete, Edit, FileInput, MoveRight, Pen } from '@ttab/elephant-ui/icons'
+import { Delete, Edit, Eye, FileInput, MoveRight, Pen } from '@ttab/elephant-ui/icons'
 import { type MouseEvent, useMemo, useState, useCallback, useEffect, useRef } from 'react'
 import { SluglineButton } from '@/components/DataItem/Slugline'
 import { useYValue } from '@/hooks/useYValue'
@@ -130,11 +130,13 @@ export const AssignmentRow = ({ index, onSelect, isFocused = false, asDialog }: 
     }
   })
 
+  const isUsable = articleStatus?.meta?.workflowState === 'usable'
 
   const menuItems = [
     {
       label: 'Redigera',
       icon: Edit,
+      disabled: isUsable,
       item: <T extends HTMLElement>(event: MouseEvent<T>) => {
         event.stopPropagation()
         event.preventDefault()
@@ -143,6 +145,7 @@ export const AssignmentRow = ({ index, onSelect, isFocused = false, asDialog }: 
     },
     {
       label: 'Ta bort',
+      disabled: isUsable,
       icon: Delete,
       item: <T extends HTMLElement>(event: MouseEvent<T>) => {
         event.stopPropagation()
@@ -152,6 +155,7 @@ export const AssignmentRow = ({ index, onSelect, isFocused = false, asDialog }: 
     },
     {
       label: 'Flytta',
+      disabled: isUsable,
       icon: MoveRight,
       item: <T extends HTMLElement>(event: MouseEvent<T>) => {
         event.stopPropagation()
@@ -176,7 +180,8 @@ export const AssignmentRow = ({ index, onSelect, isFocused = false, asDialog }: 
   if ((isDocument) && !asDialog) {
     menuItems.push({
       label: 'Öppna',
-      icon: FileInput,
+      disabled: false,
+      icon: isUsable ? Eye : FileInput,
       item: <T extends HTMLElement>(event: MouseEvent<T>) => {
         if (articleStatus?.meta?.workflowState === 'usable') {
           const openDocument = assignmentType === 'flash' ? openFlash : openArticle
