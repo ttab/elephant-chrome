@@ -2,10 +2,7 @@ import {
   Server,
   type Hocuspocus,
   type fetchPayload,
-  type connectedPayload,
   type storePayload,
-  type afterUnloadDocumentPayload,
-  type onDisconnectPayload,
   type onStoreDocumentPayload,
   type onStatelessPayload
 } from '@hocuspocus/server'
@@ -22,10 +19,10 @@ import {
   type Application
 } from 'express-ws'
 
-
 import * as Y from 'yjs'
 import { Snapshot } from './extensions/snapshot.js'
 import { Auth } from './extensions/auth.js'
+import { OpenDocuments } from './extensions/OpenDocuments.js'
 import { StatelessType, parseStateless } from '@/shared/stateless.js'
 
 import { fromGroupedNewsDoc, toGroupedNewsDoc } from '@/shared/transformations/groupedNewsDoc.js'
@@ -45,18 +42,6 @@ interface CollaborationServerOptions {
   quiet?: boolean
 }
 
-interface CollaborationSnapshotUser {
-  userId: string
-  userName: string
-  count: number
-  socketId: string
-}
-
-type CollaborationSnapshot = Array<{
-  uuid: string
-  users: CollaborationSnapshotUser[]
-}>
-
 export class CollaborationServer {
   readonly #port: number
   readonly #quiet: boolean
@@ -65,9 +50,9 @@ export class CollaborationServer {
   readonly #repository: Repository
   readonly #redisCache: RedisCache
   readonly #errorHandler: CollaborationServerErrorHandler
+  readonly #openDocuments: OpenDocuments
   #handlePaths: string[]
   #openForBusiness: boolean
-  #openDocuments?: Y.Doc
 
   /**
    * Collaboration server constructor. Creates and initializes
@@ -81,6 +66,7 @@ export class CollaborationServer {
     this.#redisCache = redisCache
     this.#repository = repository
     this.#errorHandler = new CollaborationServerErrorHandler(user)
+    this.#openDocuments = new OpenDocuments({ redisCache })
 
     const {
       host: redisHost,
@@ -91,7 +77,6 @@ export class CollaborationServer {
     } = new URL(redisUrl)
 
     this.#quiet = process.env.LOG_LEVEL !== 'info' && process.env.LOG_LEVEL !== 'debug'
-
 
     this.#server = Server.configure({
       port: this.#port,
@@ -115,6 +100,7 @@ export class CollaborationServer {
             tls: redisProtocol === 'rediss:'
           }
         }),
+        this.#openDocuments,
         new Database({
           fetch: async (payload: fetchPayload) => {
             const document = await this.#fetchDocument(payload).catch((ex) => {
@@ -149,31 +135,6 @@ export class CollaborationServer {
         }),
         new Auth()
       ], this.#errorHandler),
-
-      // Add user as having a tracked document open (or increase nr of times
-      // user have it open)
-      connected: async (payload: connectedPayload) => {
-        await this.#connected(payload).catch((ex) => {
-          const ctx = getErrorContext(payload)
-          this.#errorHandler.error(ex, ctx)
-        })
-      },
-
-      // Remove user from having a tracked doc open (or decrease the nr of times
-      // user have it open)
-      onDisconnect: async (payload: onDisconnectPayload) => {
-        await this.#onDisconnect(payload).catch((ex) => {
-          const ctx = getErrorContext(payload)
-          this.#errorHandler.error(ex, ctx)
-        })
-      },
-
-      // No users have this doc open, remove it from tracked documents
-      afterUnloadDocument: async (payload: afterUnloadDocumentPayload) => {
-        await this.#afterUnloadDocument(payload).catch((ex) => {
-          this.#errorHandler.error(ex)
-        })
-      },
 
       onStateless: async (payload: onStatelessPayload) => {
         await this.#statelessHandler(payload).catch((ex) => {
@@ -305,18 +266,6 @@ export class CollaborationServer {
    * Fetch document from redis if already in cache, otherwise from repository
    */
   async #fetchDocument({ documentName: uuid, document: yDoc, context }: fetchPayload): Promise<Uint8Array | null> {
-    if (uuid === 'document-tracker' && !this.#openDocuments) {
-      // Tracking document must be initialized fresh when starting fresh, so that
-      // we don't use stale information on which documents are open by whom.
-      this.#openDocuments = yDoc
-
-      const documents = yDoc.getMap('open-documents')
-      yDoc.share.set('open-documents', yMapAsYEventAny(documents))
-
-      logger.info('Tracker document initialized in CollaborationServer')
-      return Y.encodeStateAsUpdate(yDoc)
-    }
-
     // Fetch from Redis if exists
     const state = await this.#redisCache.get(uuid).catch((ex) => {
       throw new Error('get cached document', { cause: ex })
@@ -326,15 +275,10 @@ export class CollaborationServer {
       return state
     }
 
-    // UserTracker documents should not be fetched from repo, they only exists in redis
-    if ((context as { user: { sub: string } }).user.sub?.endsWith(uuid)) {
-      return null
-    }
-
-    if (uuid === 'document-tracker') {
-      // Tracker document must've been fetched from redis or created by now
-      logger.error('Tracker document not correctly initialized in CollaborationServer')
-      return null
+    // If the request is the document tracker document and we don't have a state,
+    // then something must have severely gone wrong. Bail out.
+    if (this.#openDocuments.isTrackerDocument(uuid)) {
+      throw new Error('OpenDocuments state not available, must have failed initalization!')
     }
 
     // Fetch content
@@ -359,6 +303,11 @@ export class CollaborationServer {
   }
 
   async #snapshotDocument({ documentName, document: yDoc, context }: onStoreDocumentPayload): Promise<void> {
+    // Ignore tracker document
+    if (this.#openDocuments.isTrackerDocument(documentName)) {
+      return
+    }
+
     // Ignore __inProgress documents
     if ((yDoc.getMap('ele')
       .get('root') as Y.Map<unknown>)
@@ -435,91 +384,6 @@ export class CollaborationServer {
   }
 
   /**
-   * Called for every provider that connects to track a specific document.
-   *
-   * Action: Add user that opened the document to the correct document in the document
-   * tracker document. Or increase the number of times the user have this document open.
-   */
-  async #connected({ documentName, context, socketId }: connectedPayload): Promise<void> {
-    if (!this.#openDocuments || documentName === 'document-tracker') {
-      return await Promise.resolve()
-    }
-
-    const userId = context.user.sub as string
-    const trackedDocuments = this.#openDocuments.getMap('open-documents')
-    const userList = trackedDocuments.get(documentName) as Y.Map<unknown>
-
-    let trackingUser: Y.Map<unknown> = userList?.get(userId) as Y.Map<unknown> || null
-    const trackingUserExisted = !!trackingUser
-
-    if (!trackingUser) {
-      trackingUser = new Y.Map()
-      trackingUser.set('userId', userId)
-      trackingUser.set('name', context.user.name as string)
-      trackingUser.set('userName', context.user.preferred_username as string)
-      trackingUser.set('count', 1)
-      trackingUser.set('socketId', socketId)
-    } else {
-      const count = trackingUser.get('count') as number
-      trackingUser.set('count', count + 1)
-    }
-
-    if (!userList) {
-      const newUserList: Y.Map<unknown> = new Y.Map()
-      newUserList.set(userId, trackingUser)
-      trackedDocuments.set(documentName, newUserList)
-    } else if (!trackingUserExisted) {
-      userList.set(userId, trackingUser)
-    }
-  }
-
-  /*
-   * Called for every provider that diconnects for tracking a specific document.
-   *
-   * Action: Save the document if changes has been made
-   * Action: Remove the user (or decrease count) from a tracked document userlist
-   */
-  async #onDisconnect({ documentName, context }: onDisconnectPayload): Promise<void> {
-    if (!this.#openDocuments || documentName === 'document-tracker') {
-      return await Promise.resolve()
-    }
-
-    const { sub: userId } = context.user as { sub: string, sub_name: string }
-    const documents = this.#openDocuments.getMap('open-documents')
-    const documentUsersList = documents.get(documentName) as Y.Map<unknown>
-
-    if (documentUsersList) {
-      const user = documentUsersList.get(userId) as Y.Map<unknown>
-      const count = user?.get('count') as number || 0
-
-      if (count > 1) {
-        user.set('count', count - 1)
-      } else {
-        documentUsersList.delete(userId)
-      }
-    }
-  }
-
-
-  /**
-   * Called when no one have the document open anylonger.
-   *
-   * Action: Remove this document from tracked documents so that the tracker document does not grow indefinitely
-   */
-  async #afterUnloadDocument({ documentName }: afterUnloadDocumentPayload): Promise<void> {
-    if (!this.#openDocuments || documentName === 'document-tracker') {
-      return await Promise.resolve()
-    }
-
-    const documents = this.#openDocuments.getMap('open-documents')
-    const documentUsersList = documents.get(documentName) as Y.Map<unknown>
-
-    if (documentUsersList && !documentUsersList.size) {
-      documents.delete(documentName)
-    }
-  }
-
-  /**
    * Store document in redis cache
    */
   async #storeDocument({ documentName, state }: storePayload): Promise<void> {
@@ -545,38 +409,7 @@ export class CollaborationServer {
   /**
    * Snapshot of open documents and by who
    */
-  getSnapshot(): CollaborationSnapshot {
-    if (!this.#openDocuments) {
-      return []
-    }
-
-    const documents: CollaborationSnapshot = [{
-      uuid: 'tracker-document',
-      users: []
-    }]
-
-    const yDocMap: Y.Map<Y.Map<Y.Map<string>>> = this.#openDocuments.getMap('open-documents')
-    yDocMap.forEach((yUsersMap, uuid) => {
-      const users: CollaborationSnapshotUser[] = []
-      yUsersMap.forEach((yUser) => {
-        users.push(yUser.toJSON() as CollaborationSnapshotUser)
-      })
-
-      documents.push({
-        uuid,
-        users
-      })
-    })
-
-    return documents
+  getSnapshot() {
+    return this.#openDocuments.getSnapshot()
   }
-}
-
-/*
- * Convenience function to cast types without eslint-disables everywhere
-*/
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-function yMapAsYEventAny(yMap: Y.Map<unknown>): Y.AbstractType<Y.YEvent<any>> {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  return yMap as unknown as Y.AbstractType<Y.YEvent<any>>
 }
