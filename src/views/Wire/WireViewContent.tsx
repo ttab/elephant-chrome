@@ -72,6 +72,7 @@ export const WireViewContent = (props: ViewProps & {
                 <ComboBox
                   max={1}
                   size='xs'
+                  modal={props.asDialog}
                   className='min-w-0 w-full truncate justify-start max-w-48'
                   selectedOptions={selectedPlanning ? [selectedPlanning] : []}
                   placeholder='Välj planering'
@@ -121,7 +122,7 @@ export const WireViewContent = (props: ViewProps & {
                 defaultChecked={searchOlder}
                 onCheckedChange={(checked: boolean) => { setSearchOlder(checked) }}
               />
-              <Label htmlFor='SearchOlder' className='text-muted-foreground'>Även äldre</Label>
+              <Label htmlFor='SearchOlder' className='text-muted-foreground'>Visa äldre</Label>
             </Form.Group>
 
 

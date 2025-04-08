@@ -169,6 +169,7 @@ export const Move = (props: ViewProps & {
                 className='min-w-0 w-full truncate justify-start max-w-48'
                 selectedOptions={selectedPlanning ? [selectedPlanning] : []}
                 placeholder='Välj planering'
+                modal={props.asDialog}
                 fetch={(query) => fetch(query, session, index, locale, timeZone, searchOlder)
                   .then((data) =>
                     data.filter((item) => item.value !== props.original.planningId)
@@ -196,7 +197,7 @@ export const Move = (props: ViewProps & {
                 defaultChecked={searchOlder}
                 onCheckedChange={(checked: boolean) => { setSearchOlder(checked) }}
               />
-              <Label htmlFor='SearchOlder' className='text-muted-foreground'>Även äldre</Label>
+              <Label htmlFor='SearchOlder' className='text-muted-foreground'>Visa äldre</Label>
             </Form.Group>
             <UserMessage asDialog={!!props?.asDialog}>
               {!selectedPlanning
