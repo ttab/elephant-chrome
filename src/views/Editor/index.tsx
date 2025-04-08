@@ -6,6 +6,7 @@ import { Textbit, useTextbit } from '@ttab/textbit'
 import { Bold, Italic, Link, Text, TTVisual, Factbox, Table, LocalizedQuotationMarks } from '@ttab/textbit-plugins'
 import { ImageSearchPlugin } from '../../plugins/ImageSearch'
 import { FactboxPlugin } from '../../plugins/Factboxes'
+import { Editor as PlainEditor } from '@/components/PlainEditor'
 
 import {
   useQuery,
@@ -14,9 +15,11 @@ import {
   useYValue,
   useView,
   useYjsEditor,
-  useAwareness
+  useAwareness,
+  useHistory,
+  useWorkflowStatus
 } from '@/hooks'
-import { type ViewMetadata, type ViewProps } from '@/types'
+import type { ContentState, ViewMetadata, ViewProps } from '@/types'
 import { EditorHeader } from './EditorHeader'
 import { type HocuspocusProvider } from '@hocuspocus/provider'
 import { type AwarenessUserData } from '@/contexts/CollaborationProvider'
@@ -32,6 +35,8 @@ import type { Block } from '@ttab/elephant-api/newsdoc'
 import { getValueByYPath } from '@/lib/yUtils'
 import { useOnSpellcheck } from '@/hooks/useOnSpellcheck'
 import { contentMenuLabels } from '@/defaults/contentMenuLabels'
+import type { HistoryInterface } from '@/navigation/hooks/useHistory'
+import useSWR from 'swr'
 
 // Metadata definition
 const meta: ViewMetadata = {
@@ -53,6 +58,31 @@ const meta: ViewMetadata = {
 // Main Editor Component - Handles document initialization
 const Editor = (props: ViewProps): JSX.Element => {
   const [query] = useQuery()
+  const history = useHistory()
+  const { viewId } = useView()
+  const [workflowStatus] = useWorkflowStatus(props.id as string, true)
+
+  const { data: isReadOnly } = useSWR([`editor_status/${props.id}`], () => {
+    const isReadOnly = (history: HistoryInterface): bigint | string | undefined | boolean => {
+      const viewState = history.state?.contentState?.find((state: ContentState) => state?.viewId === viewId)
+
+      if (!viewState?.readOnly) {
+        return false
+      }
+
+      if (viewState?.readOnly) {
+        if (viewState?.readOnly.version === 0n) {
+          return workflowStatus?.version
+        }
+
+        return viewState.readOnly.version as bigint
+      }
+    }
+
+    return isReadOnly(history) || 0n
+  })
+
+
   const documentId = props.id || query.id
 
   // Error handling for missing document
@@ -62,6 +92,19 @@ const Editor = (props: ViewProps): JSX.Element => {
         title='Artikeldokument saknas'
         message='Inget artikeldokument är angivet. Navigera tillbaka till översikten och försök igen.'
       />
+    )
+  }
+
+  if (isReadOnly) {
+    const bigIntVersion = isReadOnly === 'latest' ? 0n : BigInt(isReadOnly)
+
+    return (
+      <div className='overflow-x-hidden'>
+        <EditorHeader documentId={documentId} readOnly />
+        <View.Content className='flex flex-col max-w-[1000px] px-4 h-full overflow-x-hidden'>
+          <PlainEditor id={documentId} version={bigIntVersion} />
+        </View.Content>
+      </div>
     )
   }
 

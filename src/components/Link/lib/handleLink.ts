@@ -21,6 +21,9 @@ interface LinkClick {
   onDocumentCreated?: () => void
   history: HistoryInterface
   keepFocus?: boolean
+  readOnly?: {
+    version?: bigint
+  }
 }
 
 export function handleLink({
@@ -33,7 +36,8 @@ export function handleLink({
   target,
   onDocumentCreated,
   history,
-  keepFocus
+  keepFocus,
+  readOnly
 }: LinkClick): void {
   if (event?.ctrlKey || event?.metaKey) {
     return
@@ -51,7 +55,12 @@ export function handleLink({
     viewId: newViewId,
     name: viewItem.meta.name,
     path: `${viewItem.meta.path}${toQueryString(props)}`,
-    props
+    props,
+    ...(readOnly && {
+      readOnly: {
+        version: readOnly?.version
+      }
+    })
   }
 
   // If modifier is used, open furthest to the right, otherwise to the right of origin view

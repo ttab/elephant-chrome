@@ -2,7 +2,7 @@ import { TimeDisplay } from '@/components/DataItem/TimeDisplay'
 import { AssignmentType } from '@/components/DataItem/AssignmentType'
 import { AssigneeAvatars } from '@/components/DataItem/AssigneeAvatars'
 import { DotDropdownMenu } from '@/components/ui/DotMenu'
-import { Delete, Edit, FileInput, MoveRight, Pen } from '@ttab/elephant-ui/icons'
+import { Delete, Edit, Eye, FileInput, MoveRight, Pen } from '@ttab/elephant-ui/icons'
 import { type MouseEvent, useMemo, useState, useCallback, useEffect, useRef } from 'react'
 import { SluglineButton } from '@/components/DataItem/Slugline'
 import { useYValue } from '@/hooks/useYValue'
@@ -21,6 +21,9 @@ import { createPayload } from '@/defaults/templates/lib/createPayload'
 import { Move } from '@/components/Move/'
 import { useModal } from '@/components/Modal/useModal'
 import type * as Y from 'yjs'
+import { useRegistry } from '@/hooks/useRegistry'
+import { useSession } from 'next-auth/react'
+import useSWRImmutable from 'swr/immutable'
 import { getDeliverableType } from '@/defaults/templates/lib/getDeliverableType'
 import { AssignmentTypes } from '@/defaults/assignmentTypes'
 
@@ -35,11 +38,20 @@ export const AssignmentRow = ({ index, onSelect, isFocused = false, asDialog }: 
   const openFlash = useLink('Flash')
 
   const openDocuments = useOpenDocuments({ idOnly: true, name: 'Editor' })
+  const { repository } = useRegistry()
+  const { data: session } = useSession()
 
   const base = `meta.core/assignment[${index}]`
   const [assignment] = useYValue<Y.Map<unknown> | undefined>(base, true)
   const [inProgress] = useYValue(`${base}.__inProgress`)
   const [articleId] = useYValue<string>(`${base}.links.core/article[0].uuid`)
+
+  const { data: articleStatus } = useSWRImmutable(['articlestatus', articleId], async () => {
+    if (articleId && session?.accessToken) {
+      return await repository?.getMeta({ uuid: articleId, accessToken: session.accessToken })
+    }
+  })
+
   const [flashId] = useYValue<string>(`${base}.links.core/flash[0].uuid`)
   const [editorialInfoId] = useYValue<string>(`${base}.links.core/editorial-info[0].uuid`)
   const [assignmentType] = useYValue<string>(`${base}.meta.core/assignment-type[0].value`)
@@ -118,11 +130,13 @@ export const AssignmentRow = ({ index, onSelect, isFocused = false, asDialog }: 
     }
   })
 
+  const isUsable = articleStatus?.meta?.workflowState === 'usable'
 
   const menuItems = [
     {
       label: 'Redigera',
       icon: Edit,
+      disabled: isUsable,
       item: <T extends HTMLElement>(event: MouseEvent<T>) => {
         event.stopPropagation()
         event.preventDefault()
@@ -131,6 +145,7 @@ export const AssignmentRow = ({ index, onSelect, isFocused = false, asDialog }: 
     },
     {
       label: 'Ta bort',
+      disabled: isUsable,
       icon: Delete,
       item: <T extends HTMLElement>(event: MouseEvent<T>) => {
         event.stopPropagation()
@@ -140,6 +155,7 @@ export const AssignmentRow = ({ index, onSelect, isFocused = false, asDialog }: 
     },
     {
       label: 'Flytta',
+      disabled: isUsable,
       icon: MoveRight,
       item: <T extends HTMLElement>(event: MouseEvent<T>) => {
         event.stopPropagation()
@@ -164,9 +180,15 @@ export const AssignmentRow = ({ index, onSelect, isFocused = false, asDialog }: 
   if ((isDocument) && !asDialog) {
     menuItems.push({
       label: 'Öppna',
-      icon: FileInput,
+      disabled: false,
+      icon: isUsable ? Eye : FileInput,
       item: <T extends HTMLElement>(event: MouseEvent<T>) => {
-        onOpenEvent(event)
+        if (articleStatus?.meta?.workflowState === 'usable') {
+          const openDocument = assignmentType === 'flash' ? openFlash : openArticle
+          openDocument(event, { id: articleId }, 'last', undefined, undefined, { version: articleStatus?.meta.heads['usable'].version })
+        } else {
+          onOpenEvent(event)
+        }
       }
     })
   }
@@ -194,7 +216,12 @@ export const AssignmentRow = ({ index, onSelect, isFocused = false, asDialog }: 
       )}
       onClick={(event) => {
         if (isDocument) {
-          onOpenEvent(event)
+          if (articleStatus?.meta?.workflowState === 'usable') {
+            const openDocument = assignmentType === 'flash' ? openFlash : openArticle
+            openDocument(event, { id: articleId }, 'last', undefined, undefined, { version: articleStatus?.meta.heads['usable'].version })
+          } else {
+            onOpenEvent(event)
+          }
         } else {
           onSelect()
         }

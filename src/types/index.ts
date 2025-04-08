@@ -64,6 +64,9 @@ export interface ContentState {
   name: View
   path: string
   props?: ViewProps
+  readOnly?: {
+    version?: bigint
+  }
 }
 
 export interface ViewProps {
@@ -76,6 +79,7 @@ export interface ViewProps {
   className?: string
   payload?: TemplatePayload
   autoFocus?: boolean
+  setOpen?: (open?: boolean) => boolean
 }
 
 export type Theme = 'dark' | 'light' | 'system'

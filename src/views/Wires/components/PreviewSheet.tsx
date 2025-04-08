@@ -11,11 +11,11 @@ import { MetaSheet } from '@/views/Editor/components/MetaSheet'
 import { useEffect, useRef } from 'react'
 import { useWorkflowStatus } from '@/hooks/useWorkflowStatus'
 
-export const PreviewSheet = ({ id, wire, handleClose, textOnly = true, preVersion, versionHistory }: {
+export const PreviewSheet = ({ id, wire, handleClose, textOnly = true, version, versionHistory }: {
   id: string
   wire?: WireType
   textOnly?: boolean
-  preVersion?: bigint
+  version?: bigint
   versionHistory?: DocumentVersion[]
   handleClose: () => void
 }): JSX.Element => {
@@ -182,7 +182,7 @@ export const PreviewSheet = ({ id, wire, handleClose, textOnly = true, preVersio
           </div>
         </div>
         <div className='flex flex-col h-full'>
-          <Editor id={id} textOnly={textOnly} preVersion={preVersion} versionHistory={versionHistory} />
+          <Editor id={id} textOnly={textOnly} version={version} versionHistory={versionHistory} />
         </div>
       </div>
     </FaroErrorBoundary>

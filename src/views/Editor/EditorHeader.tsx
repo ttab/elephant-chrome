@@ -1,28 +1,31 @@
-import { useView, useYValue } from '@/hooks'
+import { useHistory, useNavigation, useView, useWorkflowStatus, useYValue } from '@/hooks'
 import { Newsvalue } from '@/components/Newsvalue'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { MetaSheet } from './components/MetaSheet'
 import { StatusMenu } from '@/components/DocumentStatus/StatusMenu'
 import { AddNote } from './components/Notes/AddNote'
 import { ViewHeader } from '@/components/View'
-import { PenBoxIcon } from '@ttab/elephant-ui/icons'
+import { PenBoxIcon, Eye, PenOff } from '@ttab/elephant-ui/icons'
 import { useDeliverablePlanning } from '@/hooks/useDeliverablePlanning'
 import { getValueByYPath, setValueByYPath } from '@/lib/yUtils'
 import type { EleBlock } from '@/shared/types'
 import { toast } from 'sonner'
+import { handleLink } from '@/components/Link/lib/handleLink'
 
-export const EditorHeader = ({ documentId }: { documentId: string }): JSX.Element => {
+export const EditorHeader = ({ documentId, readOnly }: { documentId: string, readOnly?: boolean }): JSX.Element => {
   const { viewId } = useView()
+  const { state, dispatch } = useNavigation()
+  const history = useHistory()
   const deliverablePlanning = useDeliverablePlanning(documentId)
   const containerRef = useRef<HTMLElement | null>(null)
   const [publishTime, setPublishTime] = useState<string | null>(null)
+  const [workflowStatus] = useWorkflowStatus(documentId, true)
   const [documentType] = useYValue<string>('root.type')
 
 
   useEffect(() => {
     containerRef.current = (document.getElementById(viewId))
   }, [viewId])
-
 
   useEffect(() => {
     if (deliverablePlanning) {
@@ -42,6 +45,33 @@ export const EditorHeader = ({ documentId }: { documentId: string }): JSX.Elemen
       return false
     }
 
+    if (newStatus === 'usable') {
+      handleLink({
+        dispatch,
+        viewItem: state.viewRegistry.get('Editor'),
+        props: { id: documentId },
+        viewId: crypto.randomUUID(),
+        history,
+        origin: viewId,
+        target: 'self',
+        readOnly: {
+          version: workflowStatus?.version
+        }
+      })
+    }
+
+    if (newStatus === 'draft') {
+      handleLink({
+        dispatch,
+        viewItem: state.viewRegistry.get('Editor'),
+        props: { id: documentId },
+        viewId: crypto.randomUUID(),
+        history,
+        origin: viewId,
+        target: 'self'
+      })
+    }
+
     if (newStatus !== 'withheld') {
       return true
     }
@@ -59,18 +89,20 @@ export const EditorHeader = ({ documentId }: { documentId: string }): JSX.Elemen
 
     setValueByYPath(deliverablePlanning.yRoot, `meta.core/assignment[${index}].data.publish`, data.time.toISOString())
     return true
-  }, [deliverablePlanning])
+  }, [deliverablePlanning, dispatch, documentId, history, state.viewRegistry, viewId, workflowStatus])
 
   const title = documentType === 'core/editorial-info' ? 'Till red' : 'Artikel'
   return (
     <ViewHeader.Root>
-      <ViewHeader.Title name='Editor' title={title} icon={PenBoxIcon} />
+      <ViewHeader.Title name='Editor' title={title} icon={readOnly ? PenOff : PenBoxIcon} />
 
       <ViewHeader.Content className='justify-start'>
         <div className='max-w-[810px] mx-auto flex flex-row gap-2 justify-between items-center w-full'>
           <div className='flex flex-row gap-1 justify-start items-center @7xl/view:-ml-20'>
             <div className='hidden flex-row gap-2 justify-start items-center @lg/view:flex'>
-              {documentType !== 'core/editorial-info' && <Newsvalue />}
+              {!readOnly && <AddNote />}
+              {readOnly && <Eye size={18} strokeWidth={2.05} color='#555' />}
+              {!readOnly && documentType !== 'core/editorial-info' && <Newsvalue />}
               <AddNote />
             </div>
           </div>
@@ -78,7 +110,7 @@ export const EditorHeader = ({ documentId }: { documentId: string }): JSX.Elemen
           <div className='flex flex-row gap-2 justify-end items-center'>
             {!!documentId && (
               <>
-                <ViewHeader.RemoteUsers documentId={documentId} />
+                {!readOnly && <ViewHeader.RemoteUsers documentId={documentId} />}
 
                 {!!deliverablePlanning && (
                   <StatusMenu
