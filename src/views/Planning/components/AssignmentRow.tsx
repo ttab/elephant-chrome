@@ -136,7 +136,6 @@ export const AssignmentRow = ({ index, onSelect, isFocused = false, asDialog }: 
     {
       label: 'Redigera',
       icon: Edit,
-      disabled: isUsable,
       item: <T extends HTMLElement>(event: MouseEvent<T>) => {
         event.stopPropagation()
         event.preventDefault()
