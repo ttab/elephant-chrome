@@ -170,7 +170,9 @@ export const Move = (props: ViewProps & {
                 selectedOptions={selectedPlanning ? [selectedPlanning] : []}
                 placeholder='Välj planering'
                 modal={props.asDialog}
-                fetch={(query) => fetch(query, session, index, locale, timeZone, searchOlder)
+                fetch={(query) => fetch(query, session, index, locale, timeZone, {
+                  searchOlder
+                })
                   .then((data) =>
                     data.filter((item) => item.value !== props.original.planningId)
                   )}
@@ -192,12 +194,14 @@ export const Move = (props: ViewProps & {
                   </Button>
                 </>
               )}
-              <Checkbox
-                id='SearchOlder'
-                defaultChecked={searchOlder}
-                onCheckedChange={(checked: boolean) => { setSearchOlder(checked) }}
-              />
-              <Label htmlFor='SearchOlder' className='text-muted-foreground'>Visa äldre</Label>
+              <>
+                <Checkbox
+                  id='SearchOlder'
+                  defaultChecked={searchOlder}
+                  onCheckedChange={(checked: boolean) => { setSearchOlder(checked) }}
+                />
+                <Label htmlFor='SearchOlder' className='text-muted-foreground'>Visa äldre</Label>
+              </>
             </Form.Group>
             <UserMessage asDialog={!!props?.asDialog}>
               {!selectedPlanning

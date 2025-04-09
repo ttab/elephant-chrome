@@ -55,6 +55,11 @@ export function createArticle({
         )
 
         if (payload) {
+          // if article is created from planning, remove description
+          if (provider.document) {
+            delete payload.meta?.['core/description']
+          }
+
           appendPayload(
             hasSelectedPlanning
               ? provider.document

@@ -1,4 +1,4 @@
-import { useRef } from 'react'
+import { useMemo, useRef } from 'react'
 import { Awareness } from '@/components'
 import { TextBox } from '../ui'
 import { useYValue } from '@/hooks/useYValue'
@@ -6,14 +6,31 @@ import type * as Y from 'yjs'
 import { Validation } from '../Validation'
 import { SluglineButton } from './Slugline'
 import { type FormProps } from '../Form/Root'
+import type { Block } from '@ttab/elephant-api/newsdoc'
 
-export const SluglineEditable = ({ path, documentStatus, onValidation, validateStateRef }: {
+export const SluglineEditable = ({ path, documentStatus, onValidation, validateStateRef, compareValues, disabled }: {
+  disabled?: boolean
   path: string
+  compareValues?: string[]
   documentStatus?: string
   onValidation?: (label: string, block: string, value: string | undefined, reason: string) => boolean
 } & FormProps): JSX.Element => {
   const setFocused = useRef<(value: boolean) => void>(null)
-  const [slugLine] = useYValue<Y.XmlText | undefined>(path)
+  const [slugLine] = useYValue<Y.XmlText>(path)
+  const [assignments] = useYValue<Block[]>('meta.core/assignment')
+
+  // Get all current sluglines from assignments for validation purposes
+  // or use provided compareValues
+  const slugLines = useMemo(() => {
+    if (compareValues?.length) {
+      return compareValues
+    }
+
+    return (assignments || []).reduce<string[]>((acc, item) => {
+      const slugline = (item.meta as unknown as Record<string, Block[]>)?.['tt/slugline']?.[0]?.value
+      return (slugline) ? [...acc, slugline] : acc
+    }, [])
+  }, [assignments, compareValues])
 
   if (typeof slugLine === 'undefined') {
     return <></>
@@ -32,9 +49,11 @@ export const SluglineEditable = ({ path, documentStatus, onValidation, validateS
                 block='tt/slugline'
                 path={path}
                 onValidation={onValidation}
+                compareValues={slugLines}
                 validateStateRef={validateStateRef}
               >
                 <TextBox
+                  disabled={disabled}
                   path={path}
                   placeholder='Lägg till slugg'
                   singleLine={true}

@@ -6,6 +6,7 @@ import { useYValue } from '@/hooks/useYValue'
 import { TextboxEditable } from './TextboxEditable'
 
 export const TextboxRoot = ({
+  disabled,
   placeholder,
   path,
   singleLine = false,
@@ -15,6 +16,7 @@ export const TextboxRoot = ({
   onBlur,
   onFocus
 }: {
+  disabled?: boolean
   path: string
   placeholder?: string
   singleLine?: boolean
@@ -57,6 +59,7 @@ export const TextboxRoot = ({
           className='h-min-2 w-full'
         >
           <TextboxEditable
+            disabled={disabled}
             content={content}
             provider={provider}
             path={path}
