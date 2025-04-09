@@ -20,8 +20,8 @@ import {
 } from 'express-ws'
 
 import * as Y from 'yjs'
-import { Snapshot } from './extensions/snapshot.js'
-import { Auth } from './extensions/auth.js'
+import { Snapshot } from './extensions/Snapshot.js'
+import { Auth } from './extensions/Auth.js'
 import { OpenDocuments } from './extensions/OpenDocuments.js'
 import { StatelessType, parseStateless } from '@/shared/stateless.js'
 
