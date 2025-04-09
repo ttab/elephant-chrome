@@ -33,7 +33,7 @@
   "dependencies": {
     "@auth/express": "^0.9.0",
     "@date-fns/utc": "^2.1.0",
-    "@grafana/faro-react": "^1.14.3",
+    "@grafana/faro-react": "^1.15.0",
     "@hocuspocus/extension-database": "^2.15.2",
     "@hocuspocus/extension-logger": "^2.15.2",
     "@hocuspocus/extension-redis": "^2.15.2",
