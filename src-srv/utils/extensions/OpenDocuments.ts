@@ -223,7 +223,7 @@ export class OpenDocuments implements Extension {
         }
 
         // Increase total document connection count
-        yDocEntry.set('count', yDocEntry.get('count') ?? 0 + 1)
+        yDocEntry.set('count', (yDocEntry.get('count') as number ?? 0) + 1)
       }
     })
   }
@@ -277,7 +277,7 @@ export class OpenDocuments implements Extension {
           logger.warn(`Client <${userId}> on instance <${this.#instanceId}> disconnected from <${documentName}> but there was no instance entry in count`)
         }
       }
-      yDocEntry.set('count', yDocEntry.get('count') ?? 0 - 1)
+      yDocEntry.set('count', (yDocEntry.get('count') as number ?? 0) - 1)
     })
   }
 
