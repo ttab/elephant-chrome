@@ -1,23 +1,26 @@
 import { useCollaboration, useYValue } from '@/hooks'
 import { TriangleAlert } from '@ttab/elephant-ui/icons'
 import { useEffect, useMemo } from 'react'
+import type { OnValidation } from './Form/Root'
 import { type FormProps } from './Form/Root'
 
-export const Validation = ({ children, path, label, block, onValidation, validateStateRef }: {
+export const Validation = ({ children, path, label, block, compareValues, onValidation, validateStateRef }: {
   path: string
   label: string
   block: string
-  onValidation?: (block: string, label: string, value: string | undefined, reason: string) => boolean
+  compareValues?: string[]
+  onValidation?: (args: OnValidation) => boolean
 } & FormProps): JSX.Element | null => {
   const [value] = useYValue<string | undefined>(path)
   const { synced } = useCollaboration()
 
   const isValid = useMemo(() => {
     return onValidation
-      ? onValidation(block, label, value, 'cannot be empty')
+      ? onValidation({ block, label, value, compareValues, reason: 'cannot be empty' })
       : true
-  }, [value, onValidation, label, block])
+  }, [value, onValidation, label, block, compareValues])
 
+  // Remove validation state from the ref when the component unmounts
   useEffect(() => {
     return () => {
       if (validateStateRef?.current[block]) {
@@ -43,3 +46,4 @@ export const Validation = ({ children, path, label, block, onValidation, validat
     </div>
   )
 }
+

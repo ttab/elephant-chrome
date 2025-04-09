@@ -13,7 +13,10 @@ export const fetch = async (
   index?: Index,
   locale?: LocaleData,
   timeZone?: string,
-  searchOlder: boolean = false
+  options?: {
+    searchOlder?: boolean // should we search older than today?
+    sluglines?: boolean // should we fetch all sluglines?
+  }
 ) => {
   if (!session?.accessToken || !index) {
     return []
@@ -21,22 +24,30 @@ export const fetch = async (
 
   const todayMidnightUTC = new UTCDate(new UTCDate().setHours(0, 0, 0, 0)).toISOString()
 
+  const fields = [
+    'document.title',
+    'document.meta.core_newsvalue.value',
+    'document.meta.tt_slugline.value',
+    'document.rel.section.title',
+    'document.meta.core_planning_item.data.start_date'
+  ]
+
+
+  // Append to query so we'll have all sluglines available in result
+  if (options?.sluglines) {
+    fields.push('document.meta.core_assignment.meta.tt_slugline.value')
+  }
+
   const { ok, hits, errorMessage } = await index.query({
     accessToken: session.accessToken,
     documentType: 'core/planning-item',
     page: 1,
     size: 100,
     sort: [
-      { field: 'document.meta.core_planning_item.data.start_date', desc: searchOlder },
+      { field: 'document.meta.core_planning_item.data.start_date', desc: !!options?.searchOlder },
       { field: 'modified', desc: true }
     ],
-    fields: [
-      'document.title',
-      'document.meta.core_newsvalue.value',
-      'document.meta.tt_slugline.value',
-      'document.rel.section.title',
-      'document.meta.core_planning_item.data.start_date'
-    ],
+    fields,
     query: QueryV1.create({
       conditions: {
         oneofKind: 'bool',
@@ -52,7 +63,7 @@ export const fetch = async (
                 })
               }
             },
-            ...(searchOlder
+            ...(options?.searchOlder
               ? []
               : [{
                   conditions: {
@@ -79,13 +90,18 @@ export const fetch = async (
     const id = planning.id
     const title = planning.fields['document.title']?.values?.[0]
     const newsvalue = NewsvalueMap[planning.fields['document.meta.core_newsvalue.value']?.values?.[0]] || {}
+    const slugline = planning.fields['document.meta.tt_slugline.value']?.values?.[0]
 
-    const date = planning.fields['document.meta.core_planning_item.data.start_date']?.values?.[0]
-    const dateString = locale && timeZone ? dateInTimestampOrShortMonthDayYear(date, locale.code.full, timeZone) : ''
     const info = [
-      planning.fields['document.meta.tt_slugline.value']?.values?.[0],
+      slugline,
       planning.fields['document.rel.section.title']?.values?.[0],
-      dateString
+      locale && timeZone
+        ? dateInTimestampOrShortMonthDayYear(
+          planning.fields['document.meta.core_planning_item.data.start_date']?.values?.[0],
+          locale.code.full,
+          timeZone
+        )
+        : ''
     ].filter((v) => v).join(', ')
 
     return {
@@ -93,7 +109,11 @@ export const fetch = async (
       label: title,
       info: info ? ` - ${info}` : '',
       icon: newsvalue.icon,
-      iconProps: newsvalue.iconProps
+      iconProps: newsvalue.iconProps,
+      payload: {
+        slugline,
+        sluglines: planning.fields['document.meta.core_assignment.meta.tt_slugline.value']?.values
+      }
     }
   })
 

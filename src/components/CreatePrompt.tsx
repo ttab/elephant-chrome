@@ -1,4 +1,6 @@
 import { useKeydownGlobal } from '@/hooks/useKeydownGlobal'
+import type {
+  DefaultValueOption } from '@ttab/elephant-ui'
 import {
   Button,
   Dialog,
@@ -9,7 +11,6 @@ import {
   DialogTitle
 } from '@ttab/elephant-ui'
 import { useMemo, type MouseEvent, type PropsWithChildren } from 'react'
-import type { DefaultValueOption } from '../types'
 import { useCollaborationDocument } from '@/hooks/useCollaborationDocument'
 import { createDocument } from '@/lib/createYItem'
 import * as Templates from '@/defaults/templates'

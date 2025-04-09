@@ -5,9 +5,10 @@ import { Block } from '@ttab/elephant-api/newsdoc'
 import { useRef } from 'react'
 import { Validation } from './Validation'
 import { type ValidateState } from '../types'
+import type { OnValidation } from './Form/Root'
 
 export const Byline = ({ onValidation, validateStateRef }: {
-  onValidation?: (block: string, label: string, value: string | undefined, reason: string) => boolean
+  onValidation?: (args: OnValidation) => boolean
   validateStateRef?: React.MutableRefObject<ValidateState>
 }): JSX.Element => {
   const allAuthors = useAuthors().map((_) => {
