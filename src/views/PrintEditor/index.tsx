@@ -2,8 +2,6 @@ import { useEffect, useState, useRef } from 'react'
 import { AwarenessDocument, View } from '@/components'
 import { Notes } from './components/Notes'
 import {
-  Sheet,
-  SheetContent,
   Button,
   Input,
   Popover,
@@ -16,7 +14,7 @@ import {
   Label,
   ScrollArea
 } from '@ttab/elephant-ui'
-import { Eye, X, CircleCheckBig, TriangleAlert, ChevronDown, RefreshCw, ChevronRight, Plus, ChevronLeft } from '@ttab/elephant-ui/icons'
+import { Eye, X, CircleCheckBig, TriangleAlert, ChevronDown, ChevronRight, Plus } from '@ttab/elephant-ui/icons'
 
 import type * as Y from 'yjs'
 
@@ -83,18 +81,17 @@ const meta: ViewMetadata = {
 function LayoutBox({
   bulkSelected,
   setBulkSelected,
-  setShowPreview,
   valid,
   id,
   name
 }: {
   bulkSelected: string[]
   setBulkSelected: (bulkSelected: string[]) => void
-  setShowPreview: (show: boolean) => void
   valid: boolean
   id: number
   name: string
 }) {
+  const openPreview = useLink('PrintPreview')
   const layouts = [
     {
       name: 'Topp-3sp',
@@ -135,7 +132,7 @@ function LayoutBox({
   ]
 
   return (
-    <div className='border min-h-32 p-2 grid grid-cols-12 gap-2 rounded p  t-0'>
+    <div className='border min-h-32 p-2 pt-0 grid grid-cols-12 gap-2 rounded'>
       <header className='col-span-12 row-span-1 flex items-center justify-between'>
         <div className='flex items-center gap-2'>
           {valid
@@ -147,26 +144,32 @@ function LayoutBox({
               )}
           <Button
             variant='ghost'
-            className='p-2'
-            onClick={() => setShowPreview(true)}
+            className='px-2 py-0'
+            size='sm'
+            onClick={() => openPreview(undefined, { id: id.toString() })}
           >
-            <Eye strokeWidth={1.75} size={18} />
+            <Eye strokeWidth={1.75} size={16} />
           </Button>
         </div>
         <div className='flex items-center gap-2'>
-          <Input
-            value={id}
-            type='checkbox'
-            className='w-4 h-4'
-            checked={bulkSelected.includes(id.toString())}
-            onChange={(e) => {
-              if (e.target.checked) {
-                setBulkSelected([...bulkSelected, id.toString()])
-              } else {
-                setBulkSelected(bulkSelected.filter((_id) => _id !== id.toString()))
-              }
-            }}
-          />
+          <Label className='group/check flex items-center gap-4'>
+            <span className='transition-opacity ease-in-out delay-500 opacity-0 group-hover/check:opacity-100'>
+              {bulkSelected.includes(id.toString()) ? '' : 'Välj'}
+            </span>
+            <Input
+              value={id}
+              type='checkbox'
+              className='w-4 h-4'
+              checked={bulkSelected.includes(id.toString())}
+              onChange={(e) => {
+                if (e.target.checked) {
+                  setBulkSelected([...bulkSelected, id.toString()])
+                } else {
+                  setBulkSelected(bulkSelected.filter((_id) => _id !== id.toString()))
+                }
+              }}
+            />
+          </Label>
           <Button
             variant='ghost'
             className='p-2'
@@ -181,7 +184,7 @@ function LayoutBox({
       <div className='col-span-6 row-span-1'>
         <Popover>
           <PopoverTrigger className='w-full'>
-            <div className='border rounded-md p-2 flex gap-1 items-center justify-between w-full'>
+            <div className='text-sm border rounded-md p-2 flex gap-1 items-center justify-between w-full'>
               Topp-3sp
               <ChevronDown strokeWidth={1.75} size={18} />
             </div>
@@ -189,7 +192,7 @@ function LayoutBox({
           <PopoverContent>
             <Command>
               <CommandInput placeholder='Sök' />
-              <CommandList className='bg-white'>
+              <CommandList className='text-sm bg-white'>
                 {layouts.map((layout) => (
                   <CommandItem key={layout.value} className='bg-white'>
                     {layout.name}
@@ -203,7 +206,7 @@ function LayoutBox({
       <div className='col-span-6 row-span-1'>
         <Popover>
           <PopoverTrigger className='w-full'>
-            <div className='border rounded-md p-2 flex gap-1 items-center justify-between w-full'>
+            <div className='text-sm border rounded-md p-2 flex gap-1 items-center justify-between w-full'>
               2
               <ChevronDown strokeWidth={1.75} size={18} />
             </div>
@@ -211,7 +214,7 @@ function LayoutBox({
           <PopoverContent>
             <Command>
               <CommandInput placeholder='Sök' />
-              <CommandList className='bg-white'>
+              <CommandList className='text-sm bg-white'>
                 {layouts.map((layout) => (
                   <CommandItem key={layout.value} className='bg-white'>
                     {layout.name}
@@ -365,7 +368,6 @@ function EditorContainer({
   notes: Block[] | undefined
 }): JSX.Element {
   const { words, characters } = useTextbit()
-  const [showPreview, setShowPreview] = useState(false)
   const [bulkSelected, setBulkSelected] = useState<string[]>([])
 
   const layouts = [
@@ -448,7 +450,6 @@ function EditorContainer({
                     key={layout.id}
                     bulkSelected={bulkSelected}
                     setBulkSelected={setBulkSelected}
-                    setShowPreview={setShowPreview}
                     valid={layout.valid}
                     id={layout.id}
                     name={layout.name}
@@ -470,40 +471,6 @@ function EditorContainer({
           <span>{characters}</span>
         </div>
       </View.Footer>
-
-      <Sheet open={showPreview} onOpenChange={setShowPreview}>
-        <SheetContent side='bottom' className='w-[66vw] mx-auto h-full'>
-          <div className='p-2 flex flex-col gap-2'>
-            <header className='flex flex-row gap-2 items-center justify-between'>
-              <div className='flex flex-row gap-2 items-center'>
-                <Button variant='outline' className='p-2 flex gap-2 items-center'>
-                  <ChevronLeft strokeWidth={1.75} size={18} />
-                </Button>
-                <Button variant='outline' className='p-2 flex gap-2 items-center'>
-                  <ChevronRight strokeWidth={1.75} size={18} />
-                </Button>
-              </div>
-              <h2 className='text-lg font-bold'>Förhandsgranska</h2>
-              <div className='flex flex-row gap-2 items-center justify-end'>
-                <Button variant='outline' className='p-2 flex gap-2 items-center'>
-                  <RefreshCw strokeWidth={1.75} size={18} />
-                  Uppdatera
-                </Button>
-                <Button variant='outline' onClick={() => setShowPreview(false)}>
-                  <X strokeWidth={1.75} size={18} />
-                </Button>
-              </div>
-            </header>
-            <ScrollArea className='h-full mx-auto'>
-              <img
-                src='https://ttnewsagency-resources.s3.eu-west-1.amazonaws.com/slask/image.png'
-                alt='Förhandsgranska'
-                className='w-auto h-full'
-              />
-            </ScrollArea>
-          </div>
-        </SheetContent>
-      </Sheet>
     </>
   )
 }

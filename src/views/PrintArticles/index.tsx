@@ -42,7 +42,7 @@ export const PrintArticles = (): JSX.Element => {
   )
 
   const [openCreateFlow, setOpenCreateFlow] = useState(false)
-
+  const [openCreateArticle, setOpenCreateArticle] = useState(false)
   return (
     <View.Root>
       <ViewHeader.Root className='flex flex-row gap-2 items-center justify-between'>
@@ -56,7 +56,11 @@ export const PrintArticles = (): JSX.Element => {
               </Button>
             </PopoverTrigger>
             <PopoverContent className='flex flex-col gap-2'>
-              <Button title='Skapa en text i ett flöde' variant='outline'>
+              <Button
+                title='Skapa en text i ett flöde'
+                variant='outline'
+                onClick={() => setOpenCreateArticle(true)}
+              >
                 Ny artikel
               </Button>
               <Button
@@ -81,6 +85,19 @@ export const PrintArticles = (): JSX.Element => {
         </View.Content>
       </TableProvider>
 
+      <Dialog open={openCreateArticle}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Skapa artikel</DialogTitle>
+            <DialogDescription>Skapa en ny artikel</DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <Button variant='outline' onClick={() => setOpenCreateArticle(false)}>
+              Avbryt
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
       <Dialog open={openCreateFlow}>
         <DialogContent>
           <DialogHeader>
