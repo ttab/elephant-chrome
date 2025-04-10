@@ -17,12 +17,14 @@ interface TimeMenuProps extends React.PropsWithChildren {
   handleOnSelect: ({ value, selectValue }: { value: string, selectValue: string }) => void
   className?: string
   index: number
+  assignmentType?: string
 }
 
 export const TimeDeliveryMenu = ({
   children,
   handleOnSelect,
-  index
+  index,
+  assignmentType
 }: TimeMenuProps): React.JSX.Element => {
   const [open, setOpen] = useState(false)
 
@@ -58,7 +60,7 @@ export const TimeDeliveryMenu = ({
             <CommandEmpty>Ingenting hittades</CommandEmpty>
             <div className='flex flex-col divide-y'>
               <CommandGroup>
-                <TimeSlotItems handleOnSelect={handleOnSelect} handleParentOpenChange={handleOpenChange} />
+                <TimeSlotItems handleOnSelect={handleOnSelect} handleParentOpenChange={handleOpenChange} assignmentType={assignmentType} />
               </CommandGroup>
               <CommandGroup>
                 <TimeSelectItem handleOnSelect={handleOnSelect} index={index} handleParentOpenChange={handleOpenChange} />

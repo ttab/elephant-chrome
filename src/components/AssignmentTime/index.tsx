@@ -143,6 +143,7 @@ export const AssignmentTime = ({ index }: {
             handleOnSelect={handleOnSelect}
             className='w-fit font-sans font-normal text-ellipsis px-2 h-7'
             index={index}
+            assignmentType={assignmentType}
           >
             {selectedOption?.icon
               ? (
