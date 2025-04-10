@@ -34,7 +34,7 @@ export const useAssignments = ({ date, type, slots, status, requireDeliverable =
   const key = type ? `core/assignment/${type.toString()}/${date.toString()}` : 'core/assignment'
 
   const [filters] = useQuery(['status', 'section'])
-
+  console.log('date', date)
   const { data, mutate, error } = useSWR<AssignmentInterface[] | undefined, Error>(
     key,
     (): Promise<AssignmentInterface[] | undefined> => fetchAssignments({ index, repository, session, date, requireDeliverable, type })

@@ -57,7 +57,7 @@ export class Index {
     language = ''
   }: IndexSearchOptions): Promise<IndexSearchResult> {
     const { from, pageSize } = pagination({ page, size })
-
+    console.log('index query', documentType, query, from, pageSize, fields, sort, loadDocument, source, language)
     try {
       const { response } = await this.#client.query(
         QueryRequestV1.create({
@@ -82,7 +82,7 @@ export class Index {
 
       const total = Number(response?.hits?.total?.value) || 0
       const hits = response?.hits?.hits?.length || 0n
-
+      console.log('response', documentType, response)
       return {
         ok: true,
         total,

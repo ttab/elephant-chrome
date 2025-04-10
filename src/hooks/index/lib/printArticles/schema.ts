@@ -5,22 +5,10 @@ import type { FieldValuesV1, HitV1 } from '@ttab/elephant-api/index'
  * List of fields used in the schema.
  */
 export const fields = [
-  'document.rel.source.uri',
-  'modified',
-  'document.meta.core_newsvalue.value',
   'document.title',
-  'document.meta.tt_wire.role',
-  'document.rel.section.uuid',
-  'document.rel.section.title',
-  'current_version',
-  'heads.saved.version',
-  'heads.saved.created',
-  'heads.read.version',
-  'heads.read.created',
-  'heads.used.version',
-  'heads.used.created',
-  'heads.flash.version',
-  'heads.flash.created'
+  'document.meta.tt_print_article.title',
+  'document.rel.flow.*',
+  'document.meta.tt_print_article.data.date'
 ]
 
 /**

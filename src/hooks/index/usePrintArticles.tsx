@@ -21,8 +21,8 @@ export const usePrintArticles = ({ filter, page }: {
   // Create a key for the SWR cache, if it changes we do a refetch
   const key = useMemo(() => filter
     // TODO make better key
-    ? `core/article/${JSON.stringify(filter)}${page ? `/${page}` : ''}`
-    : 'core/article', [filter, page])
+    ? `tt/print-article/${JSON.stringify(filter)}${page ? `/${page}` : ''}`
+    : 'tt/print-article', [filter, page])
 
   const fetcher = useMemo(() => (): Promise<PrintArticle[] | undefined> =>
     fetch({ index, repository, session, filter, page }),
@@ -51,7 +51,7 @@ export const usePrintArticles = ({ filter, page }: {
     throw new Error('Wires fetch failed:', { cause: error })
   }
 
-  useRepositoryEvents(['core/article', 'core/article+meta'], (event) => {
+  useRepositoryEvents(['tt/print-article', 'tt/print-article+meta'], (event) => {
     if (event.event !== 'document' && event.event !== 'status' && event.event !== 'delete_document') {
       return
     }

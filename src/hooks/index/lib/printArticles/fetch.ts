@@ -1,6 +1,6 @@
 import type { Index } from '@/shared/Index'
 import type { Repository } from '@/shared/Repository'
-import { BoolQueryV1, MultiMatchQueryV1, QueryV1, TermsQueryV1 } from '@ttab/elephant-api/index'
+import { BoolQueryV1, MultiMatchQueryV1, QueryV1, TermQueryV1, TermsQueryV1 } from '@ttab/elephant-api/index'
 import type { Session } from 'next-auth'
 import type { PrintArticle } from '.'
 import { fields } from '.'
@@ -29,15 +29,18 @@ export async function fetch({ index, session, filter, page = 1 }: {
   }
 
   const size = 10
-
   const { ok, hits, errorMessage } = await index.query({
     accessToken: session.accessToken,
-    documentType: 'core/article',
-    page,
-    size,
-    sort: [{ field: 'modified', desc: true }],
+    documentType: 'tt/print-article',
+    // sort: [{ field: 'modified', desc: true }],
     fields,
-    query: constructQuery(filter)
+    query: QueryV1.create({
+      conditions: {
+        oneofKind: 'matchAll',
+        matchAll: {}
+      }
+    }),
+    // query:  constructQuery(filter)
   })
 
   if (!ok) {
@@ -53,62 +56,70 @@ export async function fetch({ index, session, filter, page = 1 }: {
  * @returns {QueryV1 | undefined} - The constructed query object or undefined if no filter is provided.
  */
 function constructQuery(filter: QueryParams | undefined): QueryV1 | undefined {
-  if (!filter) {
-    return
-  }
+  // if (!filter) {
+  //   return
+  // }
 
   const query = QueryV1.create({
     conditions: {
       oneofKind: 'bool',
       bool: BoolQueryV1.create({
-        must: []
+        should: [{
+          conditions: {
+            oneofKind: 'term',
+            term: TermQueryV1.create({
+              field: 'document.meta.tt_print_article.data.date',
+              value: "2025-04-10"
+            })
+          }
+        }]
       })
     }
   })
 
-  if (query.conditions.oneofKind !== 'bool') {
-    return
-  }
+  // if (query.conditions.oneofKind !== 'bool') {
+  //   return
+  // }
 
-  const boolConditions = query.conditions.bool
+  // const boolConditions = query.conditions.bool
 
-  const addCondition = (field: string, values: string | string[]) => {
-    boolConditions.must.push({
-      conditions: {
-        oneofKind: 'terms',
-        terms: TermsQueryV1.create({
-          field,
-          values: typeof values === 'string' ? [values] : values
-        })
-      }
-    })
-  }
+  // const addCondition = (field: string, values: string | string[]) => {
+  //   boolConditions.must.push({
+  //     conditions: {
+  //       oneofKind: 'terms',
+  //       terms: TermsQueryV1.create({
+  //         field,
+  //         values: typeof values === 'string' ? [values] : values
+  //       })
+  //     }
+  //   })
+  // }
 
-  if (filter.section) {
-    addCondition('document.rel.section.uuid', filter.section)
-  }
+  // if (filter.section) {
+  //   addCondition('document.rel.section.uuid', filter.section)
+  // }
 
-  if (filter.source) {
-    addCondition('document.rel.source.uri', filter.source)
-  }
+  // if (filter.source) {
+  //   addCondition('document.rel.source.uri', filter.source)
+  // }
 
-  if (filter.newsvalue) {
-    addCondition('document.meta.core_newsvalue.value', filter.newsvalue)
-  }
+  // if (filter.newsvalue) {
+  //   addCondition('document.meta.core_newsvalue.value', filter.newsvalue)
+  // }
 
-  if (filter.query) {
-    boolConditions.must.push(
-      {
-        conditions: {
-          oneofKind: 'multiMatch',
-          multiMatch: MultiMatchQueryV1.create({
-            fields: ['document.title', 'document.rel.section.title'],
-            query: filter.query[0],
-            type: 'phrase_prefix'
-          })
-        }
-      })
-  }
-
+  // if (filter.query) {
+  //   boolConditions.must.push(
+  //     {
+  //       conditions: {
+  //         oneofKind: 'multiMatch',
+  //         multiMatch: MultiMatchQueryV1.create({
+  //           fields: ['document.title', 'document.rel.section.title'],
+  //           query: filter.query[0],
+  //           type: 'phrase_prefix'
+  //         })
+  //       }
+  //     })
+  // }
+  
   return query
 }
