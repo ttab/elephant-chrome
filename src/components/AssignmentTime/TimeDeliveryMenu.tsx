@@ -11,13 +11,11 @@ import {
   PopoverTrigger
 } from '@ttab/elephant-ui'
 
-import { type AssignmentValueOption } from './types'
 import { TimeSlotItems } from './TimeSlotItems'
 import { TimeSelectItem } from './TimeSelectItem'
 interface TimeMenuProps extends React.PropsWithChildren {
   handleOnSelect: ({ value, selectValue }: { value: string, selectValue: string }) => void
   className?: string
-  selectedOption?: AssignmentValueOption
   index: number
 }
 

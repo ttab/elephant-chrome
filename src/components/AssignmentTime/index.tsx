@@ -139,7 +139,6 @@ export const AssignmentTime = ({ index }: {
           <TimeDeliveryMenu
             handleOnSelect={handleOnSelect}
             className='w-fit font-sans font-normal text-ellipsis px-2 h-7'
-            selectedOption={selectedOption}
             index={index}
           >
             {selectedOption?.icon
