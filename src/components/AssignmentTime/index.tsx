@@ -73,18 +73,21 @@ export const AssignmentTime = ({ index }: {
       case 'morning':
       case 'forenoon':
       case 'afternoon':
-      case 'evening':
+      case 'evening': {
         setData(Block.create({
           data: {
             end_date: data?.end_date,
             full_day: 'false',
             start_date: data?.start_date,
             public: data?.public,
-            ...(data?.publish && { publish: data.publish }),
             publish_slot: (getMedianSlot(timeSlotTypes, value)) + '',
             start: getMidnightISOString(endDate)
           }
         }).data)
+        if (data?.publish) {
+          delete data?.publish
+        }
+      }
         break
 
       case 'endexecution': {
