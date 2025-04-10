@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, type MouseEvent } from 'react'
 import {
   Command,
   CommandItem,
@@ -46,6 +46,14 @@ export const TimeSelectItem = ({ handleOnSelect, index, handleParentOpenChange }
 
   const timePickType = timePickTypes[0]
 
+  const handleConfirm = (evt: MouseEvent<HTMLButtonElement> | React.KeyboardEvent): void => {
+    evt.preventDefault()
+    evt.stopPropagation()
+    handleOnSelect({ value: timePickType.value, selectValue: endTime })
+    setOpen(false)
+    handleParentOpenChange(false)
+  }
+
   return (
     <CommandItem
       key={timePickTypes[0].label}
@@ -90,20 +98,8 @@ export const TimeSelectItem = ({ handleOnSelect, index, handleParentOpenChange }
 
             <Button
               variant='outline'
-              onClick={(evt) => {
-                evt.preventDefault()
-                evt.stopPropagation()
-                handleOnSelect({ value: timePickType.value, selectValue: endTime })
-                setOpen(false)
-                handleParentOpenChange(false)
-              }}
-              onKeyDown={(evt) => {
-                evt.preventDefault()
-                evt.stopPropagation()
-                handleOnSelect({ value: timePickType.value, selectValue: endTime })
-                setOpen(false)
-                handleParentOpenChange(false)
-              }}
+              onClick={handleConfirm}
+              onKeyDown={handleConfirm}
               disabled={!valid}
             >
               Klar
