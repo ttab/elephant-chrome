@@ -369,6 +369,7 @@ function EditorContainer({
 }): JSX.Element {
   const { words, characters } = useTextbit()
   const [bulkSelected, setBulkSelected] = useState<string[]>([])
+  const openPrintEditor = useLink('PrintEditor')
 
   const layouts = [
     {
@@ -428,7 +429,14 @@ function EditorContainer({
               <h2 className='text-base font-bold'>Layouter</h2>
               {bulkSelected.length > 0
                 ? (
-                    <Button title='När layouter har valts, visa alternativ för att skapa en kopia av texten med de valda layouterna och ta bort dem från nuvarande artikel. Öppna kopian direkt till höger' className='p-2 flex gap-2 items-center'>
+                    <Button
+                      title='När layouter har valts, visa alternativ för att skapa en kopia av texten med de valda layouterna och ta bort dem från nuvarande artikel. Öppna kopian direkt till höger'
+                      className='p-2 flex gap-2 items-center'
+                      onClick={() => {
+                        openPrintEditor(undefined, { id: documentId })
+                        setBulkSelected([])
+                      }}
+                    >
                       Flytta till kopia
                       <span className='text-sm font-bold'>
                         {`(${bulkSelected.length} st)`}
