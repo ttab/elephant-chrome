@@ -146,9 +146,7 @@ export const AssignmentRow = ({ index, onSelect, isFocused = false, asDialog }: 
       label: 'Ta bort',
       disabled: isUsable,
       icon: Delete,
-      item: <T extends HTMLElement>(event: MouseEvent<T>) => {
-        event.stopPropagation()
-        event.preventDefault()
+      item: () => {
         setShowVerifyDialog(true)
       }
     },
@@ -285,7 +283,9 @@ export const AssignmentRow = ({ index, onSelect, isFocused = false, asDialog }: 
           description={`Vill du ta bort uppdraget${title ? ' ' + title : ''}?`}
           secondaryLabel='Avbryt'
           primaryLabel='Ta bort'
-          onPrimary={() => {
+          onPrimary={(event) => {
+            event.preventDefault()
+            event.stopPropagation()
             setShowVerifyDialog(false)
             deleteByYPath(
               provider?.document.getMap('ele'),
