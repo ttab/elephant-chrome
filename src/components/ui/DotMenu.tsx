@@ -11,9 +11,6 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  /* DropdownMenuSub,
-  DropdownMenuSubContent,
-  DropdownMenuSubTrigger, */
   DropdownMenuTrigger
 } from '@ttab/elephant-ui'
 
@@ -27,7 +24,6 @@ interface DotDropdownMenuActionItem {
 /**
  * Simpler way to create a drop down menu. Items can be React node or callback.
  *
- * @todo Support multilevel
  * @example
  * <DotMenu trigger="vertical" items={[
  *   {
@@ -70,8 +66,14 @@ export const DotDropdownMenu = ({ trigger = 'horizontal', items }: {
           return (
             <DropdownMenuItem
               disabled={item.disabled}
-              asChild
               key={item.label}
+              onClick={(event) => {
+                event.stopPropagation()
+                event.preventDefault()
+                if (typeof item.item === 'function') {
+                  item.item(event)
+                }
+              }}
             >
 
               {React.isValidElement(item.item)
@@ -79,11 +81,6 @@ export const DotDropdownMenu = ({ trigger = 'horizontal', items }: {
                 : (
                     <div
                       className='flex flex-row justify-center items-center'
-                      onClick={(event) => {
-                        if (typeof item.item === 'function') {
-                          item.item(event)
-                        }
-                      }}
                     >
                       <div className='opacity-70 flex-none w-7'>
                         {item.icon && <item.icon size={16} strokeWidth={1.75} />}
