@@ -15,7 +15,7 @@ export const TimeSlotItems = ({ handleOnSelect, handleParentOpenChange, assignme
       return slotTypes
     }
 
-    const noFullday = ['text', 'flash']
+    const noFullday = ['text', 'flash', 'editorial-info']
     return slotTypes.filter((slotType: AssignmentValueOption) => {
       if (noFullday.includes(assignmentType) && slotType.value === 'fullday') {
         return false
