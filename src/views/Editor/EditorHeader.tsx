@@ -12,7 +12,7 @@ import type { EleBlock } from '@/shared/types'
 import { toast } from 'sonner'
 import { handleLink } from '@/components/Link/lib/handleLink'
 
-export const EditorHeader = ({ documentId, readOnly }: { documentId: string, readOnly?: boolean }): JSX.Element => {
+export const EditorHeader = ({ documentId, readOnly, readOnlyVersion }: { documentId: string, readOnly?: boolean, readOnlyVersion?: bigint }): JSX.Element => {
   const { viewId } = useView()
   const { state, dispatch } = useNavigation()
   const history = useHistory()
@@ -137,7 +137,7 @@ export const EditorHeader = ({ documentId, readOnly }: { documentId: string, rea
       </ViewHeader.Content>
 
       <ViewHeader.Action>
-        <MetaSheet container={containerRef.current} documentId={documentId} />
+        <MetaSheet container={containerRef.current} documentId={documentId} readOnly={readOnly} readOnlyVersion={readOnlyVersion} />
       </ViewHeader.Action>
     </ViewHeader.Root>
   )
