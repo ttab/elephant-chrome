@@ -22,7 +22,6 @@ export const EditorHeader = ({ documentId, readOnly }: { documentId: string, rea
   const [workflowStatus] = useWorkflowStatus(documentId, true)
   const [documentType] = useYValue<string>('root.type')
 
-
   useEffect(() => {
     containerRef.current = (document.getElementById(viewId))
   }, [viewId])
@@ -72,11 +71,23 @@ export const EditorHeader = ({ documentId, readOnly }: { documentId: string, rea
       })
     }
 
+    const { index } = deliverablePlanning.getAssignment()
+    // If assignment publish time is in the past, set it to current time
+    const base = `meta.core/assignment[${index}]`
+    const [assignmentType] = getValueByYPath<string | undefined>(deliverablePlanning.yRoot, `${base}.meta.core/assignment-type[0].value`)
+
+    if (assignmentType && ['text', 'flash'].includes(assignmentType)) {
+      const now = new Date().toISOString()
+      const [existingPublishTime] = getValueByYPath<string | undefined>(deliverablePlanning.yRoot, `${base}.data.publish`)
+      if (existingPublishTime && (now > existingPublishTime)) {
+        setValueByYPath(deliverablePlanning.yRoot, `meta.core/assignment[${index}].data.publish`, now)
+      }
+    }
+
     if (newStatus !== 'withheld') {
       return true
     }
 
-    const { index } = deliverablePlanning.getAssignment()
     if (index < 0) {
       toast.error('Kunde inte schemalägga artikel! Det gick inte att hitta ett kopplat uppdrag i planeringen.')
       return false
@@ -87,7 +98,7 @@ export const EditorHeader = ({ documentId, readOnly }: { documentId: string, rea
       return false
     }
 
-    setValueByYPath(deliverablePlanning.yRoot, `meta.core/assignment[${index}].data.publish`, data.time.toISOString())
+    setValueByYPath(deliverablePlanning.yRoot, `${base}.data.publish`, data.time.toISOString())
     return true
   }, [deliverablePlanning, dispatch, documentId, history, state.viewRegistry, viewId, workflowStatus])
 

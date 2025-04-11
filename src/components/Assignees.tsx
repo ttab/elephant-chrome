@@ -64,7 +64,7 @@ export const Assignees = ({ path, placeholder, asDialog }: {
         </ComboBox>
       </Awareness>
 
-      <div className='opacity-80 cursor-default'>
+      <div className='cursor-default'>
         <AssigneeAvatars
           assignees={selectedOptions.map((author) => author.label)}
           size='xs'
