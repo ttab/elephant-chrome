@@ -114,7 +114,6 @@ export const EditorHeader = ({ documentId, readOnly }: { documentId: string, rea
               {!readOnly && <AddNote />}
               {readOnly && <Eye size={18} strokeWidth={2.05} color='#555' />}
               {!readOnly && documentType !== 'core/editorial-info' && <Newsvalue />}
-              <AddNote />
             </div>
           </div>
 
