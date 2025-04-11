@@ -41,7 +41,7 @@ export const GET: RouteHandler = async (req: Request, { cache, repository, res }
     // Fetch content fron repository
     const doc = await repository.getDocument({
       uuid,
-      accessToken: session?.accessToken,
+      accessToken: (session as { accessToken: string })?.accessToken,
       version
     }).catch((ex) => {
       throw new Error('get document from repository', { cause: ex })

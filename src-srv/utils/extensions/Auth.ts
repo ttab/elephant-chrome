@@ -10,6 +10,7 @@ import { type JWT } from '@auth/core/jwt'
 
 export class Auth implements Extension {
   async onAuthenticate({ token: accessToken }: onAuthenticatePayload): Promise<{
+    agent: string
     accessToken: string
     user: JWT
   }> {
@@ -17,6 +18,7 @@ export class Auth implements Extension {
 
     if (isValidAccessToken) {
       return {
+        agent: 'user',
         accessToken,
         user: { ...decodeJwt(accessToken) }
       }

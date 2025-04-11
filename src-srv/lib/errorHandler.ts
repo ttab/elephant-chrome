@@ -1,4 +1,13 @@
-import type { Hocuspocus, Extension, fetchPayload, storePayload, onStoreDocumentPayload, connectedPayload, onDisconnectPayload, onStatelessPayload } from '@hocuspocus/server'
+import type {
+  Hocuspocus,
+  Extension,
+  fetchPayload,
+  storePayload,
+  onStoreDocumentPayload,
+  connectedPayload,
+  onDisconnectPayload,
+  onStatelessPayload
+} from '@hocuspocus/server'
 import logger from './logger.js'
 import { RpcError } from '@protobuf-ts/runtime-rpc'
 import { isValidUUID } from '../utils/isValidUUID.js'

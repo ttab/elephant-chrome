@@ -20,6 +20,7 @@ const inProgressMessageSchema = z.object({
   status: z.string().optional(),
   id: z.string(),
   context: z.object({
+    agent: z.string(),
     accessToken: z.string(),
     user: z.object({
       name: z.string(),
