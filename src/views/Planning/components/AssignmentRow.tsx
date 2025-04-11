@@ -26,6 +26,7 @@ import { useSession } from 'next-auth/react'
 import useSWRImmutable from 'swr/immutable'
 import { getDeliverableType } from '@/defaults/templates/lib/getDeliverableType'
 import { AssignmentTypes } from '@/defaults/assignmentTypes'
+import { useSnapshot } from '@/hooks/useSnapshot'
 
 export const AssignmentRow = ({ index, onSelect, isFocused = false, asDialog }: {
   index: number
@@ -40,6 +41,7 @@ export const AssignmentRow = ({ index, onSelect, isFocused = false, asDialog }: 
   const openDocuments = useOpenDocuments({ idOnly: true, name: 'Editor' })
   const { repository } = useRegistry()
   const { data: session } = useSession()
+  const snapshot = useSnapshot()
 
   const base = `meta.core/assignment[${index}]`
   const [assignment] = useYValue<Y.Map<unknown> | undefined>(base, true)
@@ -184,7 +186,14 @@ export const AssignmentRow = ({ index, onSelect, isFocused = false, asDialog }: 
       item: <T extends HTMLElement>(event: MouseEvent<T>) => {
         if (articleStatus?.meta?.workflowState === 'usable') {
           const openDocument = assignmentType === 'flash' ? openFlash : openArticle
-          openDocument(event, { id: articleId }, 'last', undefined, undefined, { version: articleStatus?.meta.heads['usable'].version })
+          openDocument(event, {
+            id: articleId },
+          'last',
+          undefined,
+          undefined,
+          {
+            version: articleStatus?.meta.heads['usable'].version
+          })
         } else {
           onOpenEvent(event)
         }
@@ -330,8 +339,13 @@ export const AssignmentRow = ({ index, onSelect, isFocused = false, asDialog }: 
                 slug: '',
                 type: getDeliverableType(assignmentType)
               })
-              const openDocument = assignmentType === 'flash' ? openFlash : openArticle
-              openDocument(event, { id }, 'blank')
+
+              if (planningId) {
+                void snapshot(planningId).then(() => {
+                  const openDocument = assignmentType === 'flash' ? openFlash : openArticle
+                  openDocument(event, { id }, 'blank')
+                })
+              }
             }
 
             setShowCreateDialogPayload(false)
