@@ -5,7 +5,7 @@ import { MetaSheet } from './components/MetaSheet'
 import { StatusMenu } from '@/components/DocumentStatus/StatusMenu'
 import { AddNote } from './components/Notes/AddNote'
 import { ViewHeader } from '@/components/View'
-import { PenBoxIcon, Eye, PenOff } from '@ttab/elephant-ui/icons'
+import { PenBoxIcon, PenOff } from '@ttab/elephant-ui/icons'
 import { useDeliverablePlanning } from '@/hooks/useDeliverablePlanning'
 import { getValueByYPath, setValueByYPath } from '@/lib/yUtils'
 import type { EleBlock } from '@/shared/types'
@@ -112,7 +112,6 @@ export const EditorHeader = ({ documentId, readOnly, readOnlyVersion }: { docume
           <div className='flex flex-row gap-1 justify-start items-center @7xl/view:-ml-20'>
             <div className='hidden flex-row gap-2 justify-start items-center @lg/view:flex'>
               {!readOnly && <AddNote />}
-              {readOnly && <Eye size={18} strokeWidth={2.05} color='#555' />}
               {!readOnly && documentType !== 'core/editorial-info' && <Newsvalue />}
             </div>
           </div>
