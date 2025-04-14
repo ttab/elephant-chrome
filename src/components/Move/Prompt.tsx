@@ -78,6 +78,7 @@ export const MovePrompt = ({
           state: false,
           id: planningId,
           context: {
+            agent: 'server',
             accessToken: session.accessToken,
             user: session.user,
             type: 'Planning'

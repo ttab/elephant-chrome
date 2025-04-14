@@ -45,6 +45,7 @@ export function createFlash({
             status: documentStatus,
             id: documentId,
             context: {
+              agent: 'server',
               accessToken: session.accessToken,
               user: session.user,
               type: 'Flash'
@@ -96,6 +97,7 @@ export function createFlash({
             state: false,
             id: planning.id,
             context: {
+              agent: 'user',
               accessToken: session.accessToken,
               user: session.user,
               type: 'Planning'
