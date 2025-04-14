@@ -59,11 +59,10 @@ export class OpenDocuments implements Extension {
   }
 
   /**
-   * Fetch update state from redis if it already exists. Otherwise
-   * create a new state and store it in redis.
+   * Setup interval for last seen timestamps of instances and cleanup. Open a direct
+   * connection to HocusPocus server.
    */
   async onConfigure({ instance }: onConfigurePayload): Promise<void> {
-    // Get existing state from redis cache
     this.#server = instance
 
     // Initialize connection with the server
