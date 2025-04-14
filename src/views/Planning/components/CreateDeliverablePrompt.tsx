@@ -1,4 +1,3 @@
-import { type MouseEvent } from 'react'
 import { Prompt } from '@/components'
 import { useCollaboration } from '@/hooks/useCollaboration'
 import {
@@ -18,7 +17,6 @@ export function CreateDeliverablePrompt({ deliverableType, payload, onClose, tit
   title: string
   documentLabel: string
   onClose: (
-    event: MouseEvent<HTMLButtonElement> | React.KeyboardEvent<HTMLButtonElement> | KeyboardEvent,
     id?: string
   ) => void
 }): JSX.Element {
@@ -48,18 +46,18 @@ export function CreateDeliverablePrompt({ deliverableType, payload, onClose, tit
       description={`Vill du skapa en ${documentLabel} för uppdraget${title ? ' ' + title : ''}?`}
       secondaryLabel='Avbryt'
       primaryLabel='Skapa'
-      onPrimary={(event: MouseEvent<HTMLButtonElement> | React.KeyboardEvent<HTMLButtonElement> | KeyboardEvent) => {
+      onPrimary={() => {
         onCreateDocument()
           .then((id) => {
-            onClose(event, id)
+            onClose(id)
           })
           .catch((ex) => {
             console.error((ex as Error).message)
             toast.error(`Misslyckades att skapa text: ${(ex as Error).message}`)
           })
       }}
-      onSecondary={(event) => {
-        onClose(event)
+      onSecondary={() => {
+        onClose()
       }}
     />
   )

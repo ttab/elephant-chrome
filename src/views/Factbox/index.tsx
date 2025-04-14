@@ -150,6 +150,7 @@ const FactboxContainer = ({
           state: false,
           id: documentId,
           context: {
+            agent: 'server',
             accessToken: session.accessToken,
             user: session.user,
             type: 'Factbox'

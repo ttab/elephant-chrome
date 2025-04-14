@@ -1,6 +1,7 @@
 import { TimeDisplay } from '@/components/DataItem/TimeDisplay'
 import { AssignmentType } from '@/components/DataItem/AssignmentType'
 import { AssigneeAvatars } from '@/components/DataItem/AssigneeAvatars'
+import type { DotDropdownMenuActionItem } from '@/components/ui/DotMenu'
 import { DotDropdownMenu } from '@/components/ui/DotMenu'
 import { Delete, Edit, Eye, FileInput, MoveRight, Pen } from '@ttab/elephant-ui/icons'
 import { type MouseEvent, useMemo, useState, useCallback, useEffect, useRef } from 'react'
@@ -134,7 +135,7 @@ export const AssignmentRow = ({ index, onSelect, isFocused = false, asDialog }: 
 
   const isUsable = articleStatus?.meta?.workflowState === 'usable'
 
-  const menuItems = [
+  const menuItems: DotDropdownMenuActionItem[] = [
     {
       label: 'Redigera',
       icon: Edit,
@@ -148,9 +149,7 @@ export const AssignmentRow = ({ index, onSelect, isFocused = false, asDialog }: 
       label: 'Ta bort',
       disabled: isUsable,
       icon: Delete,
-      item: <T extends HTMLElement>(event: MouseEvent<T>) => {
-        event.stopPropagation()
-        event.preventDefault()
+      item: () => {
         setShowVerifyDialog(true)
       }
     },
@@ -158,9 +157,7 @@ export const AssignmentRow = ({ index, onSelect, isFocused = false, asDialog }: 
       label: 'Flytta',
       disabled: isUsable,
       icon: MoveRight,
-      item: <T extends HTMLElement>(event: MouseEvent<T>) => {
-        event.stopPropagation()
-        event.preventDefault()
+      item: () => {
         showModal(
           <Move
             asDialog
@@ -294,7 +291,8 @@ export const AssignmentRow = ({ index, onSelect, isFocused = false, asDialog }: 
           description={`Vill du ta bort uppdraget${title ? ' ' + title : ''}?`}
           secondaryLabel='Avbryt'
           primaryLabel='Ta bort'
-          onPrimary={() => {
+          onPrimary={(event) => {
+            event.stopPropagation()
             setShowVerifyDialog(false)
             deleteByYPath(
               provider?.document.getMap('ele'),
@@ -326,10 +324,7 @@ export const AssignmentRow = ({ index, onSelect, isFocused = false, asDialog }: 
           deliverableType={getDeliverableType(assignmentType)}
           title={title || ''}
           documentLabel={documentLabel || ''}
-          onClose={(event, id) => {
-            event.preventDefault()
-            event.stopPropagation()
-
+          onClose={(id) => {
             if (id && provider?.document) {
               // Add document id to correct assignment
               appendDocumentToAssignment({
@@ -343,7 +338,7 @@ export const AssignmentRow = ({ index, onSelect, isFocused = false, asDialog }: 
               if (planningId) {
                 void snapshot(planningId).then(() => {
                   const openDocument = assignmentType === 'flash' ? openFlash : openArticle
-                  openDocument(event, { id }, 'blank')
+                  openDocument(undefined, { id }, 'blank')
                 })
               }
             }

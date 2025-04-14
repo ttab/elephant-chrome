@@ -71,6 +71,7 @@ export const Duplicate = ({ provider, title, session, status, type }: {
                     state: false,
                     id: duplicateId,
                     context: {
+                      agent: 'server',
                       accessToken: session.accessToken,
                       user: session.user,
                       type: capitalized

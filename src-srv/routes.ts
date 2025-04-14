@@ -29,7 +29,7 @@ interface RouteContentResponse {
   statusCode?: number
 }
 
-interface RouteStatusResponse {
+export interface RouteStatusResponse {
   statusCode: number
   statusMessage: string
 }
