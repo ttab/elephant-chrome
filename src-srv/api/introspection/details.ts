@@ -4,7 +4,7 @@ import type { RouteHandler } from '../../routes.js'
 export const GET: RouteHandler = (_, { collaborationServer }) => {
   try {
     return Promise.resolve({
-      payload: collaborationServer.getSnapshot()
+      payload: Promise.resolve(collaborationServer.getSnapshot())
     })
   } catch (_ex) {
     return Promise.resolve({

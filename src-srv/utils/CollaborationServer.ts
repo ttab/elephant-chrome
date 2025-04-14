@@ -66,7 +66,7 @@ export class CollaborationServer {
     this.#redisCache = redisCache
     this.#repository = repository
     this.#errorHandler = new CollaborationServerErrorHandler(user)
-    this.#openDocuments = new OpenDocuments({ redisCache })
+    this.#openDocuments = new OpenDocuments()
 
     const {
       host: redisHost,
@@ -266,6 +266,12 @@ export class CollaborationServer {
    * Fetch document from redis if already in cache, otherwise from repository
    */
   async #fetchDocument({ documentName: uuid, document: yDoc, context }: fetchPayload): Promise<Uint8Array | null> {
+    // If the request is the document tracker document
+    if (this.#openDocuments.isTrackerDocument(uuid)) {
+      const ydoc = this.#openDocuments.getDocument()
+      return Y.encodeStateAsUpdate(ydoc)
+    }
+
     // Fetch from Redis if exists
     const state = await this.#redisCache.get(uuid).catch((ex) => {
       throw new Error('get cached document', { cause: ex })
@@ -275,11 +281,11 @@ export class CollaborationServer {
       return state
     }
 
-    // If the request is the document tracker document and we don't have a state,
-    // then something must have severely gone wrong. Bail out.
-    if (this.#openDocuments.isTrackerDocument(uuid)) {
-      throw new Error('OpenDocuments state not available, must have failed initalization!')
-    }
+    // ,
+    //     // then something must have severely gone wrong. Bail out.
+    //     if (this.#openDocuments.isTrackerDocument(uuid)) {
+    //       throw new Error('OpenDocuments state not available, must have failed initalization!')
+    //     }
 
     // Fetch content
     const newsDoc = await this.#repository.getDocument({
