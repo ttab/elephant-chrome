@@ -5,6 +5,7 @@ import { useMemo, useState } from 'react'
 import { printArticlesListColumns } from './PrintArticlesListColumns'
 import { TableProvider } from '@/contexts/TableProvider'
 import { PrintArticleList } from './PrintArticlesList'
+import { fetch } from '@/hooks/index/lib/printFlows'
 import type { PrintArticle } from '@/hooks/index/lib/printArticles'
 import {
   Button,
@@ -19,6 +20,7 @@ import {
   PopoverContent
 } from '@ttab/elephant-ui'
 import { Plus } from '@ttab/elephant-ui/icons'
+import { PrintFlows } from './PrintFlows'
 const meta: ViewMetadata = {
   name: 'PrintArticles',
   path: `${import.meta.env.BASE_URL}/print`,
@@ -38,9 +40,8 @@ const meta: ViewMetadata = {
 export const PrintArticles = (): JSX.Element => {
   const columns = useMemo(
     () => printArticlesListColumns({ locale: 'sv' }),
-    []
+    [printArticlesListColumns]
   )
-
   const [openCreateFlow, setOpenCreateFlow] = useState(false)
   const [openCreateArticle, setOpenCreateArticle] = useState(false)
   return (
@@ -104,6 +105,7 @@ export const PrintArticles = (): JSX.Element => {
             <DialogTitle>Skapa flöde</DialogTitle>
             <DialogDescription>Lista över flöden</DialogDescription>
           </DialogHeader>
+          <PrintFlows columns={columns} />
           <DialogFooter>
             <Button variant='outline' onClick={() => setOpenCreateFlow(false)}>
               Avbryt
