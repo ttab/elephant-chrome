@@ -104,7 +104,7 @@ export const PrintArticles = (): JSX.Element => {
             <DialogTitle>Skapa flöde</DialogTitle>
             <DialogDescription>Lista över flöden</DialogDescription>
           </DialogHeader>
-          <PrintFlows columns={columns} />
+          <PrintFlows />
           <DialogFooter>
             <Button variant='outline' onClick={() => setOpenCreateFlow(false)}>
               Avbryt
