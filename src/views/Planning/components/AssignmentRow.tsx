@@ -27,7 +27,7 @@ import { useSession } from 'next-auth/react'
 import useSWRImmutable from 'swr/immutable'
 import { getDeliverableType } from '@/defaults/templates/lib/getDeliverableType'
 import { AssignmentTypes } from '@/defaults/assignmentTypes'
-import { useSnapshot } from '@/hooks/useSnapshot'
+import { snapshot } from '@/lib/snapshot'
 
 export const AssignmentRow = ({ index, onSelect, isFocused = false, asDialog }: {
   index: number
@@ -42,7 +42,6 @@ export const AssignmentRow = ({ index, onSelect, isFocused = false, asDialog }: 
   const openDocuments = useOpenDocuments({ idOnly: true, name: 'Editor' })
   const { repository } = useRegistry()
   const { data: session } = useSession()
-  const snapshot = useSnapshot()
 
   const base = `meta.core/assignment[${index}]`
   const [assignment] = useYValue<Y.Map<unknown> | undefined>(base, true)
