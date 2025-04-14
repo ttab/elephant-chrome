@@ -5,7 +5,6 @@ import { useMemo, useState } from 'react'
 import { printArticlesListColumns } from './PrintArticlesListColumns'
 import { TableProvider } from '@/contexts/TableProvider'
 import { PrintArticleList } from './PrintArticlesList'
-import { fetch } from '@/hooks/index/lib/printFlows'
 import type { PrintArticle } from '@/hooks/index/lib/printArticles'
 import {
   Button,

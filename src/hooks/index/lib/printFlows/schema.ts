@@ -5,9 +5,9 @@ import type { FieldValuesV1, HitV1 } from '@ttab/elephant-api/index'
  * List of fields used in the schema.
  */
 export const fields = [
-  "document.title",
-  "document.content.tt_print_content.name",
-  "document.content.tt_print_content.title"
+  'document.title',
+  'document.content.tt_print_content.name',
+  'document.content.tt_print_content.title'
 ]
 
 /**

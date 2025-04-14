@@ -17,25 +17,24 @@ import type { QueryParams } from '@/hooks/useQuery'
  * @param {string[]} [params.source] - The source array to construct the query from.
  * @returns {Promise<Wire[] | undefined>} A promise that resolves to an array of wires or undefined.
  */
-export async function fetch({ index, session, filter }: {
+export async function fetch({ index, session }: {
   index: Index | undefined
   repository: Repository | undefined
   session: Session | null
   page?: number
   filter?: QueryParams
 }): Promise<PrintFlow[] | undefined> {
-  if (!session?.accessToken) {
+  if (!session?.accessToken || !index) {
     return undefined
   }
   const { ok, hits, errorMessage } = await index.query({
     accessToken: session.accessToken,
     documentType: 'tt/print-flow',
     fields,
-    query: constructQuery(filter)
+    query: constructQuery()
   })
 
   if (!ok) {
-    console.error('fetch tt/print-flow error', errorMessage)
     throw new Error(errorMessage || 'Unknown error while searching for text assignments')
   }
   return hits
@@ -47,7 +46,7 @@ export async function fetch({ index, session, filter }: {
  * @param {QueryParams | undefined} filter - The filter parameters to construct the query.
  * @returns {QueryV1 | undefined} - The constructed query object or undefined if no filter is provided.
  */
-function constructQuery(filter: QueryParams | undefined): QueryV1 | undefined {
+function constructQuery(): QueryV1 | undefined {
   const query = QueryV1.create({
     conditions: {
       oneofKind: 'matchAll',
