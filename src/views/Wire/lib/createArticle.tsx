@@ -77,6 +77,7 @@ export function createArticle({
             state: false,
             id: planning.id,
             context: {
+              agent: 'server',
               accessToken: session.accessToken,
               user: session.user,
               type: 'Planning'
@@ -90,6 +91,7 @@ export function createArticle({
             state: false,
             id: documentId,
             context: {
+              agent: 'server',
               accessToken: session.accessToken,
               user: session.user,
               type: 'Article'

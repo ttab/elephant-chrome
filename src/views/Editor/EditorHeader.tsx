@@ -5,14 +5,14 @@ import { MetaSheet } from './components/MetaSheet'
 import { StatusMenu } from '@/components/DocumentStatus/StatusMenu'
 import { AddNote } from './components/Notes/AddNote'
 import { ViewHeader } from '@/components/View'
-import { PenBoxIcon, Eye, PenOff } from '@ttab/elephant-ui/icons'
+import { PenBoxIcon, PenOff } from '@ttab/elephant-ui/icons'
 import { useDeliverablePlanning } from '@/hooks/useDeliverablePlanning'
 import { getValueByYPath, setValueByYPath } from '@/lib/yUtils'
 import type { EleBlock } from '@/shared/types'
 import { toast } from 'sonner'
 import { handleLink } from '@/components/Link/lib/handleLink'
 
-export const EditorHeader = ({ documentId, readOnly }: { documentId: string, readOnly?: boolean }): JSX.Element => {
+export const EditorHeader = ({ documentId, readOnly, readOnlyVersion }: { documentId: string, readOnly?: boolean, readOnlyVersion?: bigint }): JSX.Element => {
   const { viewId } = useView()
   const { state, dispatch } = useNavigation()
   const history = useHistory()
@@ -112,9 +112,7 @@ export const EditorHeader = ({ documentId, readOnly }: { documentId: string, rea
           <div className='flex flex-row gap-1 justify-start items-center @7xl/view:-ml-20'>
             <div className='hidden flex-row gap-2 justify-start items-center @lg/view:flex'>
               {!readOnly && <AddNote />}
-              {readOnly && <Eye size={18} strokeWidth={2.05} color='#555' />}
               {!readOnly && documentType !== 'core/editorial-info' && <Newsvalue />}
-              <AddNote />
             </div>
           </div>
 
@@ -138,7 +136,7 @@ export const EditorHeader = ({ documentId, readOnly }: { documentId: string, rea
       </ViewHeader.Content>
 
       <ViewHeader.Action>
-        <MetaSheet container={containerRef.current} documentId={documentId} />
+        <MetaSheet container={containerRef.current} documentId={documentId} readOnly={readOnly} readOnlyVersion={readOnlyVersion} />
       </ViewHeader.Action>
     </ViewHeader.Root>
   )

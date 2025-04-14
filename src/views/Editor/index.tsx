@@ -100,7 +100,7 @@ const Editor = (props: ViewProps): JSX.Element => {
 
     return (
       <div className='overflow-x-hidden'>
-        <EditorHeader documentId={documentId} readOnly />
+        <EditorHeader documentId={documentId} readOnly readOnlyVersion={bigIntVersion} />
         <View.Content className='flex flex-col max-w-[1000px] px-4 h-full overflow-x-hidden'>
           <PlainEditor id={documentId} version={bigIntVersion} />
         </View.Content>

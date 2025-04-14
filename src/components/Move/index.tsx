@@ -244,9 +244,7 @@ export const Move = (props: ViewProps & {
                   }
                 }}
                 onPrimary={handleMoveAssignment}
-                onSecondary={(event) => {
-                  event.preventDefault()
-                  event.stopPropagation()
+                onSecondary={() => {
                   setShowVerifyDialog(false)
                 }}
                 primaryLabel='Flytta'
@@ -257,8 +255,10 @@ export const Move = (props: ViewProps & {
           <Form.Footer>
             <Form.Submit
               onSubmit={handleSubmit}
+              onReset={() => setShowVerifyDialog(false)}
             >
-              <div className='flex justify-end'>
+              <div className='flex gap-2 justify-end'>
+                <Button type='reset'>Avbryt</Button>
                 <Button type='submit'>Flytta uppdrag</Button>
               </div>
             </Form.Submit>

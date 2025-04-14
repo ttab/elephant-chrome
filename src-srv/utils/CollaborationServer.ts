@@ -29,7 +29,11 @@ import { fromGroupedNewsDoc, toGroupedNewsDoc } from '@/shared/transformations/g
 import { fromYjsNewsDoc, toYjsNewsDoc } from '@/shared/transformations/yjsNewsDoc.js'
 import CollaborationServerErrorHandler, { getErrorContext, withErrorHandler } from '../lib/errorHandler.js'
 import logger from '../lib/logger.js'
+import type { UpdateRequest, UpdateResponse } from '@ttab/elephant-api/repository'
 import { type GetDocumentResponse } from '@ttab/elephant-api/repository'
+import type { FinishedUnaryCall } from '@protobuf-ts/runtime-rpc'
+import type { Context } from '../lib/assertContext.js'
+import { assertContext } from '../lib/assertContext.js'
 
 interface CollaborationServerOptions {
   name: string
@@ -46,7 +50,7 @@ export class CollaborationServer {
   readonly #port: number
   readonly #quiet: boolean
   readonly #expressServer: Application
-  readonly #server: Hocuspocus
+  readonly server: Hocuspocus
   readonly #repository: Repository
   readonly #redisCache: RedisCache
   readonly #errorHandler: CollaborationServerErrorHandler
@@ -78,7 +82,7 @@ export class CollaborationServer {
 
     this.#quiet = process.env.LOG_LEVEL !== 'info' && process.env.LOG_LEVEL !== 'debug'
 
-    this.#server = Server.configure({
+    this.server = Server.configure({
       port: this.#port,
       timeout: 30000,
       debounce: 5000,
@@ -119,14 +123,18 @@ export class CollaborationServer {
         }),
         new Snapshot({
           debounce: 120000,
-          snapshot: (payload: onStoreDocumentPayload) => {
+          snapshot: ({ context, ...rest }: onStoreDocumentPayload) => {
             return async () => {
-              await this.#snapshotDocument(payload).catch((ex) => {
-                const ctx = getErrorContext(payload)
+              if (!assertContext(context)) {
+                throw new Error('Invalid context provided')
+              }
+
+              await this.snapshotDocument({ context, ...rest }).catch((ex) => {
+                const ctx = getErrorContext({ context, ...rest })
 
                 this.#errorHandler.error(ex, {
-                  id: payload.documentName,
-                  accessToken: payload.context.accessToken,
+                  id: rest.documentName,
+                  accessToken: context.accessToken,
                   ...ctx
                 })
               })
@@ -153,7 +161,7 @@ export class CollaborationServer {
    * Start listening for websocket connections on all specified paths
    */
   async listen(paths: string[]): Promise<boolean> {
-    if (!this.#server || !this.#expressServer) {
+    if (!this.server || !this.#expressServer) {
       return false
     }
 
@@ -163,12 +171,12 @@ export class CollaborationServer {
     }
 
     // Apply the server to errorHandler
-    this.#errorHandler.setServer(this.#server)
+    this.#errorHandler.setServer(this.server)
 
     try {
       paths.forEach((path) => {
         this.#expressServer.ws(path, (websocket, request) => {
-          this.#server.handleConnection(websocket, request)
+          this.server.handleConnection(websocket, request)
         })
       })
     } catch (ex) {
@@ -185,12 +193,12 @@ export class CollaborationServer {
    * This allows the server to reinitialize itself.
    */
   async close(): Promise<void> {
-    if (!this.#server || !this.#openForBusiness) {
+    if (!this.server || !this.#openForBusiness) {
       return
     }
 
     try {
-      await this.#server.destroy()
+      await this.server.destroy()
     } catch (ex) {
       this.#errorHandler.error(ex)
     } finally {
@@ -203,7 +211,7 @@ export class CollaborationServer {
     const msg = parseStateless(payload.payload)
 
     if (msg.type === StatelessType.IN_PROGRESS && !msg.message.state) {
-      const userTrackerConnection = await this.#server.openDirectConnection(
+      const userTrackerConnection = await this.server.openDirectConnection(
         msg.message.context.user.sub
           .replace('core://user/', ''),
         { ...msg.message.context, agent: 'server' }
@@ -211,7 +219,7 @@ export class CollaborationServer {
         throw new Error('acquire connection', { cause: ex })
       })
 
-      const connection = await this.#server.openDirectConnection(
+      const connection = await this.server.openDirectConnection(
         msg.message.id, { ...msg.message.context, agent: 'server' }
       ).catch((ex) => {
         throw new Error('acquire connection', { cause: ex })
@@ -266,6 +274,10 @@ export class CollaborationServer {
    * Fetch document from redis if already in cache, otherwise from repository
    */
   async #fetchDocument({ documentName: uuid, document: yDoc, context }: fetchPayload): Promise<Uint8Array | null> {
+    if (!assertContext(context)) {
+      throw new Error('Invalid context provided')
+    }
+
     // If the request is the document tracker document
     if (this.#openDocuments.isTrackerDocument(uuid)) {
       const ydoc = this.#openDocuments.getDocument()
@@ -284,7 +296,7 @@ export class CollaborationServer {
     // Fetch content
     const newsDoc = await this.#repository.getDocument({
       uuid,
-      accessToken: (context as { accessToken: string }).accessToken
+      accessToken: context.accessToken
     }).catch((ex) => {
       throw new Error('get document from repository', { cause: ex })
     })
@@ -302,36 +314,35 @@ export class CollaborationServer {
     return Y.encodeStateAsUpdate(yDoc)
   }
 
-  async #snapshotDocument({ documentName, document: yDoc, context }: onStoreDocumentPayload): Promise<void> {
-    // Ignore tracker document
-    if (this.#openDocuments.isTrackerDocument(documentName)) {
-      return
-    }
-
+  async snapshotDocument({ documentName, document: yDoc, context }: {
+    documentName: string
+    document: Y.Doc
+    context: Context
+  }): Promise<FinishedUnaryCall<UpdateRequest, UpdateResponse> | null> {
     // Ignore __inProgress documents
     if ((yDoc.getMap('ele')
       .get('root') as Y.Map<unknown>)
       .get('__inProgress') as boolean) {
       logger.debug('::: Snapshot document: Document is in progress, not saving')
-      return
+      return null
     }
 
     // Ignore userTracker documents
-    if ((context as { user: { sub: string } }).user.sub?.endsWith(documentName)) {
-      return
+    if (context.user.sub?.endsWith(documentName)) {
+      return null
     }
 
     const { documentResponse, updatedHash } = fromYjsNewsDoc(yDoc)
     if (!updatedHash) {
       logger.debug('::: saveDocument: No changes in document')
-      return
+      return null
     }
 
-    await this.#storeDocumentInRepository(
+    return await this.#storeDocumentInRepository(
       documentName,
       fromGroupedNewsDoc(documentResponse),
       updatedHash,
-      (context as { accessToken: string }).accessToken,
+      context.accessToken,
       context
     )
   }
@@ -341,9 +352,9 @@ export class CollaborationServer {
     documentResponse: GetDocumentResponse,
     updatedHash: number,
     accessToken: string,
-    context: unknown,
+    context: Context,
     status?: string
-  ): Promise<void> {
+  ): Promise<FinishedUnaryCall<UpdateRequest, UpdateResponse>> {
     const { document, version } = documentResponse
     if (!document) {
       throw new Error(`Store document ${documentName} failed, no document in GetDocumentResponse parameter`)
@@ -363,8 +374,8 @@ export class CollaborationServer {
       throw new Error('Save snapshot document to repository failed', { cause: result })
     }
 
-    const connection = await this.#server.openDirectConnection(documentName, {
-      ...context as Record<string, unknown> || {},
+    const connection = await this.server.openDirectConnection(documentName, {
+      ...context || {},
       agent: 'server'
     }).catch((ex) => {
       throw new Error('Open hocuspocus connection failed', { cause: ex })
@@ -381,6 +392,7 @@ export class CollaborationServer {
     })
 
     logger.debug(`::: Document saved to repository: ${document.uuid}, version: ${result.response.version} 'new hash:' ${updatedHash}`)
+    return result
   }
 
   /**
@@ -396,14 +408,14 @@ export class CollaborationServer {
    * Number of HocusPocus provider connections (not number of websocket connections)
    */
   getConnectionsCount(): number {
-    return this.#server ? this.#server.getConnectionsCount() : 0
+    return this.server ? this.server.getConnectionsCount() : 0
   }
 
   /**
    * Number of open documents
    */
   getDocumentsCount(): number {
-    return this.#server ? this.#server.getDocumentsCount() : 0
+    return this.server ? this.server.getDocumentsCount() : 0
   }
 
   /**
