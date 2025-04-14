@@ -14,6 +14,7 @@ import {
   CircleCheck,
   BookUser
 } from '@ttab/elephant-ui/icons'
+import type { DotDropdownMenuActionItem } from '@/components/ui/DotMenu'
 import { DotDropdownMenu } from '@/components/ui/DotMenu'
 import { DocumentStatuses, Newsvalues, NewsvalueMap } from '@/defaults'
 import { Time } from '@/components/Table/Items/Time'
@@ -274,7 +275,7 @@ export function eventTableColumns({ sections = [], organisers = [], locale }: {
   ]
 }
 
-const menuItems = [
+const menuItems: DotDropdownMenuActionItem[] = [
   {
     label: 'Redigera',
     icon: Edit,
