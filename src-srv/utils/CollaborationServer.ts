@@ -281,12 +281,6 @@ export class CollaborationServer {
       return state
     }
 
-    // ,
-    //     // then something must have severely gone wrong. Bail out.
-    //     if (this.#openDocuments.isTrackerDocument(uuid)) {
-    //       throw new Error('OpenDocuments state not available, must have failed initalization!')
-    //     }
-
     // Fetch content
     const newsDoc = await this.#repository.getDocument({
       uuid,
