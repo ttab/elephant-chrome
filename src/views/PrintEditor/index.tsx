@@ -173,6 +173,10 @@ function LayoutBox({
           <Button
             variant='ghost'
             className='p-2'
+            onClick={(e) => {
+              e.preventDefault()
+              window.alert('Ej implementerat ännu')
+            }}
           >
             <X strokeWidth={1.75} size={18} />
           </Button>
@@ -271,7 +275,6 @@ const PrintEditor = (props: ViewProps): JSX.Element => {
     setDocument(doc)
     return <></>
   }
-
   if (document && props.onDocumentCreated) {
     props.onDocumentCreated()
   }
@@ -445,7 +448,15 @@ function EditorContainer({
                     </Button>
                   )
                 : (
-                    <Button title='Skapa en ny layout' variant='outline' className='p-2 flex gap-2 items-center'>
+                    <Button
+                      title='Skapa en ny layout'
+                      variant='outline'
+                      className='p-2 flex gap-2 items-center'
+                      onClick={(e) => {
+                        e.preventDefault()
+                        window.alert('Ej implementerat ännu')
+                      }}
+                    >
                       <Plus strokeWidth={1.75} size={18} />
                       Ny layout
                     </Button>
@@ -508,7 +519,6 @@ function EditorContent({
       }, 0)
     }
   }, [isActive, ref])
-
   return (
     <Textbit.Editable
       ref={ref}

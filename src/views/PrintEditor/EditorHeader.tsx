@@ -1,5 +1,4 @@
 import { useDocumentStatus, useView } from '@/hooks'
-import { Newsvalue } from '@/components/Newsvalue'
 import { useEffect, useRef } from 'react'
 import { MetaSheet } from './components/MetaSheet'
 import { DocumentStatusMenu } from '@/components/DocumentStatusMenu'
@@ -31,7 +30,7 @@ export const EditorHeader = ({
           <div className='max-w-[1040px] mx-auto flex flex-row gap-2 justify-between items-center w-full'>
             <div className='flex flex-row gap-1 justify-start items-center @7xl/view:-ml-20'>
               <div className='hidden flex-row gap-2 justify-start items-center @lg/view:flex'>
-                <Newsvalue />
+                <input type='text' placeholder='Printartikelnamn' className='px-2 py-1' />
                 <AddNote />
               </div>
             </div>
@@ -57,6 +56,10 @@ export const EditorHeader = ({
           variant='outline'
           size='sm'
           className='px-2 py-0 flex gap-2 items-center'
+          onClick={(e) => {
+            e.preventDefault()
+            window.alert('Ej implementerat ännu')
+          }}
         >
           <RefreshCw strokeWidth={1.75} size={16} />
           Uppdatera alla

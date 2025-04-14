@@ -59,7 +59,10 @@ export const PrintArticles = (): JSX.Element => {
               <Button
                 title='Skapa en text i ett flöde'
                 variant='outline'
-                onClick={() => setOpenCreateArticle(true)}
+                onClick={(e) => {
+                  e.preventDefault()
+                  window.alert('Ej implementerat ännu')
+                }}
               >
                 Ny artikel
               </Button>
