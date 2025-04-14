@@ -1,4 +1,4 @@
-import { useMemo, type MouseEvent } from 'react'
+import { useMemo } from 'react'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, Button } from '@ttab/elephant-ui'
 import { createDocument } from '@/lib/createYItem'
 import type { DefaultValueOption } from '@ttab/elephant-ui'
@@ -27,7 +27,7 @@ export const MovePrompt = ({
     planning: Y.Doc | undefined,
     provider?: HocuspocusProvider
   ) => void
-  onSecondary?: (event: MouseEvent<HTMLButtonElement> | React.KeyboardEvent<HTMLButtonElement> | KeyboardEvent) => void
+  onSecondary?: () => void
   primaryLabel?: string
   secondaryLabel?: string
   selectedPlanning?: DefaultValueOption | undefined
@@ -36,7 +36,7 @@ export const MovePrompt = ({
   const { data: session, status } = useSession()
   useKeydownGlobal((event) => {
     if (event.key === 'Escape' && secondaryLabel && onSecondary) {
-      onSecondary(event as unknown as React.KeyboardEvent<HTMLButtonElement>)
+      onSecondary()
     }
   })
 
@@ -58,7 +58,7 @@ export const MovePrompt = ({
 
   const { document: planning, documentId: planningId, provider } = useCollaborationDocument(collaborationPayload)
 
-  const handlePrimaryClick = (event: MouseEvent<HTMLButtonElement>) => {
+  const handlePrimaryClick = () => {
     if (status !== 'authenticated' || !session || !provider?.synced) {
       toast.error('Uppdraget kunde inte flyttas. Du är inte inloggad.')
       return
@@ -66,7 +66,7 @@ export const MovePrompt = ({
 
     if (!planning) {
       toast.error('Uppdraget kunde inte flyttas. Var god försök igen.')
-      onSecondary?.(event)
+      onSecondary?.()
       return
     }
 
@@ -95,7 +95,14 @@ export const MovePrompt = ({
 
   return (
     <Dialog open={true}>
-      <DialogContent onOpenAutoFocus={(event) => event.preventDefault()}>
+      <DialogContent
+        onOpenAutoFocus={(event) => event.preventDefault()}
+        onPointerDownOutside={() => {
+          if (onSecondary) {
+            onSecondary()
+          }
+        }}
+      >
         <DialogHeader>
           {title && <DialogTitle>{title}</DialogTitle>}
         </DialogHeader>
@@ -109,7 +116,7 @@ export const MovePrompt = ({
               onClick={(event) => {
                 event.preventDefault()
                 event.stopPropagation()
-                onSecondary(event)
+                onSecondary()
               }}
             >
               {secondaryLabel}

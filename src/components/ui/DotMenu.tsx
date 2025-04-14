@@ -1,5 +1,5 @@
-import type { MouseEvent } from 'react'
 import React from 'react'
+import type { MouseEvent } from 'react'
 import {
   type LucideIcon,
   MoreHorizontal,
@@ -14,7 +14,7 @@ import {
   DropdownMenuTrigger
 } from '@ttab/elephant-ui'
 
-interface DotDropdownMenuActionItem {
+export interface DotDropdownMenuActionItem {
   label: string
   icon?: LucideIcon
   item: DotDropdownMenuActionItem[] | ((event: MouseEvent<HTMLDivElement>) => void) | React.ReactNode
@@ -69,7 +69,6 @@ export const DotDropdownMenu = ({ trigger = 'horizontal', items }: {
               key={item.label}
               onClick={(event) => {
                 event.stopPropagation()
-                event.preventDefault()
                 if (typeof item.item === 'function') {
                   item.item(event)
                 }
