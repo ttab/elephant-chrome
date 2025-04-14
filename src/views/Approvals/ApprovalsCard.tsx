@@ -1,6 +1,6 @@
 import { Card } from '@/components/Card'
 import { ClockIcon } from '@/components/ClockIcon'
-import { Link } from '@/components/index'
+import { Avatar, Link } from '@/components/index'
 import { useModal } from '@/components/Modal/useModal'
 import { DotDropdownMenu } from '@/components/ui/DotMenu'
 import type { AssignmentInterface } from '@/hooks/index/useAssignments'
@@ -17,7 +17,9 @@ import type { StatusData } from 'src/datastore/types'
 import { useSections } from '@/hooks/useSections'
 import type { StatusSpecification } from '@/defaults/workflowSpecification'
 import { decodeString } from '@/lib/decodeString'
-
+import { useYValue } from '@/hooks/useYValue'
+import { AvatarGroup } from '@/components/AvatarGroup'
+import { Tooltip } from '@ttab/elephant-ui'
 
 export const ApprovalsCard = ({ assignment, isSelected, isFocused, status }: {
   assignment: AssignmentInterface
@@ -30,6 +32,8 @@ export const ApprovalsCard = ({ assignment, isSelected, isFocused, status }: {
   const sections = useSections()
   const openArticle = useLink('Editor')
   const openFlash = useLink('Flash')
+  const [users] = useYValue<Record<string, { id: string, name: string, username: string }>>(`${assignment._deliverableId}.users`, false, undefined, 'open-documents')
+
   const openType = (assignmentType: string) => assignmentType === 'core/flash' ? openFlash : openArticle
   const time = assignment.data.publish
     ? format(toZonedTime(parseISO(assignment.data.publish), timeZone), 'HH:mm')
@@ -88,8 +92,7 @@ export const ApprovalsCard = ({ assignment, isSelected, isFocused, status }: {
   }]
 
   const _title = (assignment._deliverableDocument?.content
-    .find((content) => content.type === 'core/text' && content.role === 'heading-1')?.data.text)
-  || assignment.title
+    .find((content) => content.type === 'core/text' && content.role === 'heading-1')?.data.text) || assignment.title
 
   const title = decodeString(_title)
 
@@ -128,6 +131,17 @@ export const ApprovalsCard = ({ assignment, isSelected, isFocused, status }: {
           {!!activeUsersNames.length && (
             <AssigneeAvatars assignees={activeUsersNames} size='xxs' color='#89cff0' />
           )}
+          {users && (
+            <AvatarGroup size='xxs'>
+              {Object.values(users).map((user) => {
+                return (
+                  <Tooltip key={user.id} content={user.name}>
+                    <Avatar value={user.name} size='xxs' className='bg-primary text-white dark:text-black border-none' />
+                  </Tooltip>
+                )
+              })}
+            </AvatarGroup>
+          )}
         </div>
 
         <div className='flex flex-row gap-1 items-center'>
@@ -158,8 +172,7 @@ export const ApprovalsCard = ({ assignment, isSelected, isFocused, status }: {
                 .find((section) => section.id === assignment._section)
                 ?.title}
 
-              {assignment._metricsData?.charCount
-              && (
+              {assignment._metricsData?.charCount && (
                 <span>
                   <span className='pr-1'>
                     &middot;

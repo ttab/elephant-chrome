@@ -1,11 +1,11 @@
 import type { RouteHandler } from '../../routes.js'
 
 
-export const GET: RouteHandler = (_, { collaborationServer }) => {
+export const GET: RouteHandler = async (_, { collaborationServer }) => {
   try {
-    return Promise.resolve({
-      payload: collaborationServer.getSnapshot()
-    })
+    return {
+      payload: await collaborationServer.getSnapshot()
+    }
   } catch (_ex) {
     return Promise.resolve({
       statusCode: 500,
