@@ -7,15 +7,15 @@ import { fields } from '.'
 import type { QueryParams } from '@/hooks/useQuery'
 
 /**
- * Fetches wires from the index based on the provided parameters.
+ * Fetches print flows from the index based on the provided parameters.
  *
- * @param {Object} params - The parameters for fetching wires.
+ * @param {Object} params - The parameters for fetching print flows.
  * @param {Index | undefined} params.index - The index to query.
  * @param {Repository | undefined} params.repository - The repository to query.
  * @param {Session | null} params.session - The session containing the access token.
  * @param {number} [params.page=1] - The page number to fetch.
  * @param {string[]} [params.source] - The source array to construct the query from.
- * @returns {Promise<Wire[] | undefined>} A promise that resolves to an array of wires or undefined.
+ * @returns {Promise<PrintFlow[] | undefined>} A promise that resolves to an array of print flows or undefined.
  */
 export async function fetch({ index, session }: {
   index: Index | undefined

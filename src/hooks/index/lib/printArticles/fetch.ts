@@ -8,15 +8,15 @@ import type { QueryParams } from '@/hooks/useQuery'
 import { format } from 'date-fns'
 
 /**
- * Fetches wires from the index based on the provided parameters.
+ * Fetches print articles from the index based on the provided parameters.
  *
- * @param {Object} params - The parameters for fetching wires.
+ * @param {Object} params - The parameters for fetching print articles.
  * @param {Index | undefined} params.index - The index to query.
  * @param {Repository | undefined} params.repository - The repository to query.
  * @param {Session | null} params.session - The session containing the access token.
  * @param {number} [params.page=1] - The page number to fetch.
  * @param {string[]} [params.source] - The source array to construct the query from.
- * @returns {Promise<Wire[] | undefined>} A promise that resolves to an array of wires or undefined.
+ * @returns {Promise<PrintArticle[] | undefined>} A promise that resolves to an array of print articles or undefined.
  */
 export async function fetch({ index, session, filter }: {
   index: Index | undefined
