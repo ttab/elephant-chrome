@@ -27,18 +27,18 @@ import {
 } from '@/hooks'
 import { handleLink } from '@/components/Link/lib/handleLink'
 import { NewItems } from './NewItems'
-import { GroupedRows } from './GroupedRows'
 import { LoadingText } from '../LoadingText'
 import { Row } from './Row'
 import { useModal } from '../Modal/useModal'
 import { PreviewSheet } from '@/views/Wires/components'
 import type { Wire as WireType } from '@/hooks/index/lib/wires'
 import { Wire } from '@/views/Wire'
+import { GroupedRows } from './GroupedRows'
 import { getWireStatus } from './lib/getWireStatus'
 
 interface TableProps<TData, TValue> {
   columns: Array<ColumnDef<TData, TValue>>
-  type: 'Planning' | 'Event' | 'Assignments' | 'Search' | 'Wires' | 'Factbox'
+  type: 'Planning' | 'Event' | 'Assignments' | 'Search' | 'Wires' | 'Factbox' | 'PrintArticles' | 'PrintEditor'
   onRowSelected?: (row?: TData) => void
 }
 
@@ -292,7 +292,7 @@ export const Table = <TData, TValue>({
 
   return (
     <>
-      {(type !== 'Wires' && type !== 'Factbox') && <Toolbar columns={columns} />}
+      {(type !== 'Wires' && type !== 'Factbox' && type !== 'PrintEditor') && <Toolbar columns={columns} />}
 
       {(type === 'Planning' || type === 'Event') && (
         <NewItems.Root>
