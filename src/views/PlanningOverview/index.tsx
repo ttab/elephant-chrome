@@ -39,6 +39,7 @@ export const Plannings = (): JSX.Element => {
       ? new Date(`${query.from}T00:00:00.000Z`)
       : new Date())
   , [query.from])
+
   const [currentTab, setCurrentTab] = useState<string>('list')
   const sections = useSections()
   const authors = useAuthors()

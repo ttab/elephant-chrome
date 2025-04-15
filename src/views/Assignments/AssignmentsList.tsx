@@ -21,7 +21,6 @@ export const AssignmentsList = ({ startDate, columns }: {
   const { data: session, status } = useSession()
   const indexUrl = useIndexUrl()
   const { startTime, endTime } = getDateTimeBoundaries(new Date(startDate))
-
   const searchUrl = useMemo(() => {
     if (!indexUrl) {
       return
