@@ -43,7 +43,7 @@ export const useFetchPrintFlows = (
         return Promise.reject(ex)
       }
 
-      return Promise.reject(new Error('Fetcing PrintFlow: An unknown error occurred'))
+      return Promise.reject(new Error('Fetching PrintFlow: An unknown error occurred'))
     }
   })
 }
