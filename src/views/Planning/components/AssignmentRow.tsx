@@ -1,23 +1,33 @@
 import { TimeDisplay } from '@/components/DataItem/TimeDisplay'
 import { AssignmentType } from '@/components/DataItem/AssignmentType'
 import { AssigneeAvatars } from '@/components/DataItem/AssigneeAvatars'
+import type { DotDropdownMenuActionItem } from '@/components/ui/DotMenu'
 import { DotDropdownMenu } from '@/components/ui/DotMenu'
-import { Delete, Edit, FileInput, Pen } from '@ttab/elephant-ui/icons'
+import { Delete, Edit, Eye, FileInput, MoveRight, Pen } from '@ttab/elephant-ui/icons'
 import { type MouseEvent, useMemo, useState, useCallback, useEffect, useRef } from 'react'
-import { createPayload } from '@/defaults/templates/lib/createPayload'
 import { SluglineButton } from '@/components/DataItem/Slugline'
 import { useYValue } from '@/hooks/useYValue'
 import { useLink } from '@/hooks/useLink'
 import { Prompt } from '@/components'
-import { appendDocumentToAssignment } from '@/lib/createYItem'
 import { useCollaboration } from '@/hooks/useCollaboration'
 import { Button } from '@ttab/elephant-ui'
-import { type Block } from '@ttab/elephant-api/newsdoc'
-import { deleteByYPath } from '@/lib/yUtils'
+import type { Block } from '@ttab/elephant-api/newsdoc'
+import { deleteByYPath, getValueByYPath } from '@/lib/yUtils'
 import { useOpenDocuments } from '@/hooks/useOpenDocuments'
 import { cn } from '@ttab/elephant-ui/utils'
 import { useNavigationKeys } from '@/hooks/useNavigationKeys'
-
+import { CreateDeliverablePrompt } from './CreateDeliverablePrompt'
+import { appendDocumentToAssignment } from '@/lib/createYItem'
+import { createPayload } from '@/defaults/templates/lib/createPayload'
+import { Move } from '@/components/Move/'
+import { useModal } from '@/components/Modal/useModal'
+import type * as Y from 'yjs'
+import { useRegistry } from '@/hooks/useRegistry'
+import { useSession } from 'next-auth/react'
+import useSWRImmutable from 'swr/immutable'
+import { getDeliverableType } from '@/defaults/templates/lib/getDeliverableType'
+import { AssignmentTypes } from '@/defaults/assignmentTypes'
+import { snapshot } from '@/lib/snapshot'
 
 export const AssignmentRow = ({ index, onSelect, isFocused = false, asDialog }: {
   index: number
@@ -30,25 +40,44 @@ export const AssignmentRow = ({ index, onSelect, isFocused = false, asDialog }: 
   const openFlash = useLink('Flash')
 
   const openDocuments = useOpenDocuments({ idOnly: true, name: 'Editor' })
+  const { repository } = useRegistry()
+  const { data: session } = useSession()
 
   const base = `meta.core/assignment[${index}]`
+  const [assignment] = useYValue<Y.Map<unknown> | undefined>(base, true)
   const [inProgress] = useYValue(`${base}.__inProgress`)
   const [articleId] = useYValue<string>(`${base}.links.core/article[0].uuid`)
+
+  const { data: articleStatus } = useSWRImmutable(['articlestatus', articleId], async () => {
+    if (articleId && session?.accessToken) {
+      return await repository?.getMeta({ uuid: articleId, accessToken: session.accessToken })
+    }
+  })
+
   const [flashId] = useYValue<string>(`${base}.links.core/flash[0].uuid`)
+  const [editorialInfoId] = useYValue<string>(`${base}.links.core/editorial-info[0].uuid`)
   const [assignmentType] = useYValue<string>(`${base}.meta.core/assignment-type[0].value`)
+  const [assignmentId] = useYValue<string>(`${base}.id`)
   const [title] = useYValue<string>(`${base}.title`)
   const [description] = useYValue<string>(`${base}.meta.core/description[0].data.text`)
   const [publishTime] = useYValue<string>(`${base}.data.publish`)
   const [startTime] = useYValue<string>(`${base}.data.start`)
   const [authors = []] = useYValue<Block[]>(`meta.core/assignment[${index}].links.core/author`)
+  const [slugline] = useYValue<string>(`${base}.meta.tt/slugline[0].value`)
 
   const [showVerifyDialog, setShowVerifyDialog] = useState<boolean>(false)
-  const [showCreateDialog, setShowCreateDialog] = useState<boolean>(false)
+  const [showCreateDialogPayload, setShowCreateDialogPayload] = useState<boolean>(false)
+  const yRoot = provider?.document.getMap('ele')
+  const [planningId] = getValueByYPath<string | undefined>(yRoot, 'root.uuid')
 
-  const documentId = articleId || flashId
-  const isDocument = assignmentType === 'flash' || assignmentType === 'text'
-  const documentLabel = assignmentType === 'text' ? 'artikel' : assignmentType
-  const openDocument = assignmentType === 'text' ? openArticle : openFlash
+  const documentId = articleId || flashId || editorialInfoId
+  const isDocument = assignmentType === 'flash' || assignmentType === 'text' || assignmentType === 'editorial-info'
+  const documentLabel = assignmentType
+    ? AssignmentTypes.find((a) => a.value === assignmentType)?.label?.toLowerCase()
+    : 'okänt'
+
+  const openDocument = assignmentType === 'flash' ? openFlash : openArticle
+  const { showModal, hideModal } = useModal()
 
   const assTime = useMemo(() => {
     if (typeof assignmentType !== 'string') {
@@ -62,23 +91,27 @@ export const AssignmentRow = ({ index, onSelect, isFocused = false, asDialog }: 
         : undefined
   }, [publishTime, assignmentType, startTime])
 
+  // Open a deliverable (e.g. article, flash, editorial-info) callback helper.
   const onOpenEvent = useCallback(<T extends HTMLElement>(event: MouseEvent<T> | KeyboardEvent) => {
     event.preventDefault()
     event.stopPropagation()
 
     if (documentId) {
-      openDocument(event, {
-        id: documentId,
-        autoFocus: false
-      }, undefined,
-      undefined,
-      event instanceof KeyboardEvent && event.key === ' ')
+      openDocument(
+        event,
+        {
+          id: documentId,
+          autoFocus: false
+        },
+        undefined,
+        undefined,
+        event instanceof KeyboardEvent && event.key === ' ')
     } else {
-      if (!asDialog) {
-        setShowCreateDialog(true)
+      if (!asDialog && provider?.document) {
+        setShowCreateDialogPayload(true)
       }
     }
-  }, [documentId, openDocument, setShowCreateDialog, asDialog])
+  }, [documentId, provider?.document, openDocument, asDialog])
 
   const rowRef = useRef<HTMLDivElement>(null)
   useEffect(() => {
@@ -99,24 +132,44 @@ export const AssignmentRow = ({ index, onSelect, isFocused = false, asDialog }: 
     }
   })
 
+  const isUsable = articleStatus?.meta?.workflowState === 'usable'
 
-  const menuItems = [
+  const menuItems: DotDropdownMenuActionItem[] = [
     {
       label: 'Redigera',
       icon: Edit,
       item: <T extends HTMLElement>(event: MouseEvent<T>) => {
-        event.preventDefault()
         event.stopPropagation()
+        event.preventDefault()
         onSelect()
       }
     },
     {
       label: 'Ta bort',
+      disabled: isUsable,
       icon: Delete,
-      item: <T extends HTMLElement>(event: MouseEvent<T>) => {
-        event.preventDefault()
-        event.stopPropagation()
+      item: () => {
         setShowVerifyDialog(true)
+      }
+    },
+    {
+      label: 'Flytta',
+      disabled: isUsable,
+      icon: MoveRight,
+      item: () => {
+        showModal(
+          <Move
+            asDialog
+            onDialogClose={hideModal}
+            original={{
+              document: provider?.document,
+              assignmentId,
+              assignmentTitle: title,
+              assignment,
+              planningId
+            }}
+          />
+        )
       }
     }
   ]
@@ -124,9 +177,22 @@ export const AssignmentRow = ({ index, onSelect, isFocused = false, asDialog }: 
   if ((isDocument) && !asDialog) {
     menuItems.push({
       label: 'Öppna',
-      icon: FileInput,
+      disabled: false,
+      icon: isUsable ? Eye : FileInput,
       item: <T extends HTMLElement>(event: MouseEvent<T>) => {
-        onOpenEvent(event)
+        if (articleStatus?.meta?.workflowState === 'usable') {
+          const openDocument = assignmentType === 'flash' ? openFlash : openArticle
+          openDocument(event, {
+            id: articleId },
+          'last',
+          undefined,
+          undefined,
+          {
+            version: articleStatus?.meta.heads['usable'].version
+          })
+        } else {
+          onOpenEvent(event)
+        }
       }
     })
   }
@@ -154,7 +220,12 @@ export const AssignmentRow = ({ index, onSelect, isFocused = false, asDialog }: 
       )}
       onClick={(event) => {
         if (isDocument) {
-          onOpenEvent(event)
+          if (articleStatus?.meta?.workflowState === 'usable') {
+            const openDocument = assignmentType === 'flash' ? openFlash : openArticle
+            openDocument(event, { id: articleId }, 'last', undefined, undefined, { version: articleStatus?.meta.heads['usable'].version })
+          } else {
+            onOpenEvent(event)
+          }
         } else {
           onSelect()
         }
@@ -213,75 +284,68 @@ export const AssignmentRow = ({ index, onSelect, isFocused = false, asDialog }: 
         <SluglineButton path={`meta.core/assignment[${index}].meta.tt/slugline[0].value`} />
       </div>
 
-      {
-        showVerifyDialog && (
-          <Prompt
-            title='Ta bort?'
-            description={`Vill du ta bort uppdraget${title ? ' ' + title : ''}?`}
-            secondaryLabel='Avbryt'
-            primaryLabel='Ta bort'
-            onPrimary={() => {
-              setShowVerifyDialog(false)
-              deleteByYPath(
-                provider?.document.getMap('ele'),
-                `meta.core/assignment[${index}]`
-              )
-            }}
-            onSecondary={() => {
-              setShowVerifyDialog(false)
-            }}
-          />
-        )
-      }
+      {showVerifyDialog && (
+        <Prompt
+          title='Ta bort?'
+          description={`Vill du ta bort uppdraget${title ? ' ' + title : ''}?`}
+          secondaryLabel='Avbryt'
+          primaryLabel='Ta bort'
+          onPrimary={(event) => {
+            event.stopPropagation()
+            setShowVerifyDialog(false)
+            deleteByYPath(
+              provider?.document.getMap('ele'),
+              `meta.core/assignment[${index}]`
+            )
+          }}
+          onSecondary={() => {
+            setShowVerifyDialog(false)
+          }}
+        />
+      )}
 
-      {
-        showCreateDialog && (
-          <Prompt
-            title={`Skapa ${documentLabel}?`}
-            description={`Vill du skapa en ${documentLabel} för uppdraget${title ? ' ' + title : ''}?`} // TODO: Display information that will be forwarded from the assignment
-            secondaryLabel='Avbryt'
-            primaryLabel='Skapa'
-            onPrimary={(event: MouseEvent<HTMLButtonElement> | React.KeyboardEvent<HTMLButtonElement> | KeyboardEvent) => {
-              event.preventDefault()
-              event.stopPropagation()
+      {showCreateDialogPayload && !slugline && assignmentType !== 'flash' && (
+        <Prompt
+          title='Slugg saknas'
+          description='Vänligen lägg till en slugg på uppdraget. Därefter kan du skapa en text.'
+          primaryLabel='Ok'
+          onPrimary={(event) => {
+            event.preventDefault()
+            event.stopPropagation()
+            setShowCreateDialogPayload(false)
+          }}
+        />
+      )}
 
-              setShowCreateDialog(false)
-              if (!provider?.document) {
-                return
+      {showCreateDialogPayload && provider?.document && (slugline || assignmentType === 'flash') && (
+        <CreateDeliverablePrompt
+          payload={createPayload(provider.document, index, assignmentType) || {}}
+          deliverableType={getDeliverableType(assignmentType)}
+          title={title || ''}
+          documentLabel={documentLabel || ''}
+          onClose={(id) => {
+            if (id && provider?.document) {
+              // Add document id to correct assignment
+              appendDocumentToAssignment({
+                document: provider.document,
+                id,
+                index,
+                slug: '',
+                type: getDeliverableType(assignmentType)
+              })
+
+              if (planningId) {
+                void snapshot(planningId).then(() => {
+                  const openDocument = assignmentType === 'flash' ? openFlash : openArticle
+                  openDocument(undefined, { id }, 'blank')
+                })
               }
+            }
 
-              const id = crypto.randomUUID()
-              const onDocumentCreated = (): void => {
-                setTimeout(() => {
-                  appendDocumentToAssignment({
-                    document: provider?.document,
-                    id,
-                    index,
-                    slug: '',
-                    type: assignmentType === 'flash'
-                      ? 'flash'
-                      : 'article'
-                  })
-                }, 0)
-              }
-
-              const payload = createPayload(provider?.document, index)
-
-              openDocument(event,
-                { id, payload },
-                'blank',
-                { onDocumentCreated }
-              )
-            }}
-            onSecondary={(event) => {
-              event.preventDefault()
-              event.stopPropagation()
-
-              setShowCreateDialog(false)
-            }}
-          />
-        )
-      }
+            setShowCreateDialogPayload(false)
+          }}
+        />
+      )}
     </div>
   )
 }

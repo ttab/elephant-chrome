@@ -101,6 +101,7 @@ const EventViewContent = (props: ViewProps & { documentId: string }): JSX.Elemen
           state: false,
           id: props.documentId,
           context: {
+            agent: 'server',
             accessToken: data.accessToken,
             user: data.user,
             type: 'Event'

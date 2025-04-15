@@ -1,5 +1,5 @@
 import { TwirpFetchTransport } from '@protobuf-ts/twirp-transport'
-import { DocumentsClient } from '@ttab/elephant-api/repository'
+import { DocumentsClient, MetricsClient } from '@ttab/elephant-api/repository'
 import type {
   BulkGetResponse,
   GetDocumentResponse,
@@ -9,28 +9,37 @@ import type {
   UpdateResponse,
   ValidateRequest,
   ValidateResponse,
-  GetHistoryResponse
+  GetHistoryResponse,
+  GetMetricsResponse
 } from '@ttab/elephant-api/repository'
 import type { Document } from '@ttab/elephant-api/newsdoc'
 import type { RpcError, FinishedUnaryCall } from '@protobuf-ts/runtime-rpc'
 import type * as Y from 'yjs'
 import { isValidUUID } from '../src-srv/utils/isValidUUID.js'
-import { fromYjsNewsDoc } from '../src-srv/utils/transformations/yjsNewsDoc.js'
-import { fromGroupedNewsDoc } from '../src-srv/utils/transformations/groupedNewsDoc.js'
+import { fromYjsNewsDoc } from '@/shared/transformations/yjsNewsDoc.js'
+import { fromGroupedNewsDoc } from '@/shared/transformations/groupedNewsDoc.js'
+
 import { meta } from './meta.js'
 
-export interface Session {
-  access_token: string
-  token_type: 'Bearer'
-  expires_in: number
-  refresh_token: string
+export interface Status {
+  name: string
+  version: bigint
+  uuid: string
+  checkpoint?: string
 }
 
 export class Repository {
   readonly #client: DocumentsClient
+  readonly #metricsClient: MetricsClient
 
   constructor(repoUrl: string) {
     this.#client = new DocumentsClient(
+      new TwirpFetchTransport({
+        baseUrl: new URL('twirp', repoUrl).toString()
+      })
+    )
+
+    this.#metricsClient = new MetricsClient(
       new TwirpFetchTransport({
         baseUrl: new URL('twirp', repoUrl).toString()
       })
@@ -182,22 +191,21 @@ export class Repository {
    * @param {string} params.status.name - The name of the status.
    * @param {string} params.status.uuid - The UUID of the status.
    * @param {string} params.accessToken - The access token.
+   * @param {string} params.currentStatus - The status information.
    * @returns {Promise<UpdateResponse>} The response from the update operation.
    * @throws {Error} If unable to save meta information.
    */
-  async saveMeta({ status, accessToken }: {
-    status: {
-      version: bigint
-      name: string
-      uuid: string
-    }
+  async saveMeta({ status, accessToken, cause, isWorkflow = false }: {
+    status: Status
+    currentStatus?: Status
     accessToken: string
+    cause?: string
+    isWorkflow?: boolean
   }): Promise<UpdateResponse> {
     try {
       const { response } = await this.#client.update({
         uuid: status.uuid,
-        // FIXME: This will be done properly when we implement the workflow api
-        status: status.name === 'draft'
+        status: (status.name === 'draft' && !isWorkflow)
           ? [
               { name: 'read', version: -1n, meta: {}, ifMatch: -1n },
               { name: 'saved', version: -1n, meta: {}, ifMatch: -1n },
@@ -206,14 +214,18 @@ export class Repository {
           : [{
               name: status.name,
               version: status.version,
-              meta: {},
+              meta: cause ? { cause } : {},
               ifMatch: status.version
             }],
         meta: {},
         ifMatch: status.version,
         acl: [],
         updateMetaDocument: false,
-        lockToken: ''
+        lockToken: '',
+        ifWorkflowState: '',
+        ifStatusHeads: {},
+        attachObjects: {},
+        detachObjects: []
       }, meta(accessToken))
 
       return response
@@ -229,29 +241,49 @@ export class Repository {
    * @param accessToken string
    * @returns Promise<FinishedUnaryCall<UpdateRequest, UpdateResponse>
    */
-  async saveDocument(document: Document, accessToken: string, version: bigint, status?: string): Promise<FinishedUnaryCall<UpdateRequest, UpdateResponse> | undefined> {
-    const newStatus = status
-      ? [{
-          name: status,
-          version, meta: {},
-          ifMatch: version
-        }]
-      : []
-
+  async saveDocument(document: Document, accessToken: string, version: bigint, status?: string, cause?: string): Promise<FinishedUnaryCall<UpdateRequest, UpdateResponse> | undefined> {
     const payload: UpdateRequest = {
       document,
       meta: {},
       ifMatch: version,
-      status: newStatus,
+      status: status
+        ? [{
+            name: status,
+            version,
+            meta: cause ? { cause } : {},
+            ifMatch: version
+          }]
+        : [],
       acl: [{ uri: 'core://unit/redaktionen', permissions: ['r', 'w'] }],
       uuid: document.uuid,
       lockToken: '',
-      updateMetaDocument: false
+      updateMetaDocument: false,
+      ifWorkflowState: '',
+      ifStatusHeads: {},
+      attachObjects: {},
+      detachObjects: []
     }
 
     return await this.#client.update(
       payload, meta(accessToken)
     )
+  }
+
+  async getMetrics(uuids: string[], kinds: string[], accessToken: string): Promise<GetMetricsResponse> {
+    if (!uuids.length || uuids.filter(isValidUUID).length !== uuids.length) {
+      throw new Error('Invalid uuid format in input')
+    }
+
+    try {
+      const { response } = await this.#metricsClient.getMetrics({
+        uuids,
+        kinds
+      }, meta(accessToken))
+
+      return response
+    } catch (err: unknown) {
+      throw new Error(`Unable to fetch metrics: ${(err as Error)?.message || 'Unknown error'}`)
+    }
   }
 
   /**

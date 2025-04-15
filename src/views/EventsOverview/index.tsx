@@ -17,6 +17,7 @@ import { useQuery } from '@/hooks/useQuery'
 import { type EventSearchParams } from '@/lib/events/search'
 import { useOrganisers } from '@/hooks/useOrganisers'
 import { loadFilters } from '@/lib/loadFilters'
+import { useRegistry } from '@/hooks/useRegistry'
 
 const meta: ViewMetadata = {
   name: 'Events',
@@ -45,8 +46,9 @@ export const Events = (): JSX.Element => {
   [query.from])
 
   const organisers = useOrganisers()
+  const { locale } = useRegistry()
   const columns = useMemo(() =>
-    eventTableColumns({ sections, organisers }), [sections, organisers])
+    eventTableColumns({ sections, organisers, locale }), [sections, organisers, locale])
   const columnFilters = loadFilters<Event>(query, columns)
 
   return (
@@ -56,7 +58,8 @@ export const Events = (): JSX.Element => {
         columns={columns}
         initialState={{
           grouping: ['newsvalue'],
-          columnFilters
+          columnFilters,
+          globalFilter: query.query
         }}
       >
         <SWRProvider<Event, EventSearchParams> index={EventsIndex}>

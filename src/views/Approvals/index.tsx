@@ -1,4 +1,4 @@
-import { View, ViewHeader } from '@/components'
+import { AwarenessDocument, View, ViewHeader } from '@/components'
 import { type ViewMetadata } from '@/types'
 import { timesSlots as Slots } from '@/defaults/assignmentTimeslots'
 import { TimeSlot } from './TimeSlot'
@@ -28,6 +28,14 @@ const meta: ViewMetadata = {
 }
 
 export const Approvals = (): JSX.Element => {
+  return (
+    <AwarenessDocument documentId='document-tracker'>
+      <ApprovalsView />
+    </AwarenessDocument>
+  )
+}
+
+export const ApprovalsView = (): JSX.Element => {
   const slots = Object.keys(Slots).map((key) => {
     return {
       key,
@@ -35,7 +43,6 @@ export const Approvals = (): JSX.Element => {
       hours: Slots[key].slots
     }
   })
-
   const [query] = useQuery()
 
   const { from } = useMemo(() =>
@@ -48,6 +55,7 @@ export const Approvals = (): JSX.Element => {
   const [data, facets] = useAssignments({
     type: ['flash', 'text'],
     requireDeliverable: true,
+    requireMetrics: ['charcount'],
     date: from ? new Date(from) : new Date(),
     slots
   })

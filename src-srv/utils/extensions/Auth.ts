@@ -1,20 +1,24 @@
 import { parseStateless, type StatelessAuth, StatelessType } from '@/shared/stateless.js'
+import type { User } from '@auth/express'
 import {
   type onStatelessPayload,
   type Extension,
   type onAuthenticatePayload
 } from '@hocuspocus/server'
-import { type JWTPayload, decodeJwt } from 'jose'
+import { decodeJwt } from 'jose'
+import { type JWT } from '@auth/core/jwt'
 
 export class Auth implements Extension {
   async onAuthenticate({ token: accessToken }: onAuthenticatePayload): Promise<{
+    agent: string
     accessToken: string
-    user: JWTPayload
+    user: JWT
   }> {
     const isValidAccessToken = await validateAccessToken(accessToken)
 
     if (isValidAccessToken) {
       return {
+        agent: 'user',
         accessToken,
         user: { ...decodeJwt(accessToken) }
       }
@@ -28,8 +32,10 @@ export class Auth implements Extension {
 
     if (statelessMessage.type === StatelessType.AUTH) {
       if (await validateAccessToken(statelessMessage.message.accessToken)) {
-        connection.context.accessToken = statelessMessage.message.accessToken
-        connection.context.user = { ...decodeJwt(statelessMessage.message.accessToken) }
+        (connection.context as { accessToken: string })
+          .accessToken = statelessMessage.message.accessToken;
+        (connection.context as { user: User })
+          .user = { ...decodeJwt(statelessMessage.message.accessToken) }
       } else {
         throw new Error('Could not authenticate: Invalid new accessToken')
       }

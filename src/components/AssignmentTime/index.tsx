@@ -1,4 +1,4 @@
-import { CalendarFoldIcon } from '@ttab/elephant-ui/icons'
+import { Clock5 } from '@ttab/elephant-ui/icons'
 import { useYValue } from '@/hooks/useYValue'
 import { Block } from '@ttab/elephant-api/newsdoc'
 import { TimeDeliveryMenu } from './TimeDeliveryMenu'
@@ -73,18 +73,21 @@ export const AssignmentTime = ({ index }: {
       case 'morning':
       case 'forenoon':
       case 'afternoon':
-      case 'evening':
+      case 'evening': {
         setData(Block.create({
           data: {
             end_date: data?.end_date,
             full_day: 'false',
             start_date: data?.start_date,
             public: data?.public,
-            ...(data?.publish && { publish: data.publish }),
             publish_slot: (getMedianSlot(timeSlotTypes, value)) + '',
             start: getMidnightISOString(endDate)
           }
         }).data)
+        if (data?.publish) {
+          delete data?.publish
+        }
+      }
         break
 
       case 'endexecution': {
@@ -139,8 +142,8 @@ export const AssignmentTime = ({ index }: {
           <TimeDeliveryMenu
             handleOnSelect={handleOnSelect}
             className='w-fit font-sans font-normal text-ellipsis px-2 h-7'
-            selectedOption={selectedOption}
             index={index}
+            assignmentType={assignmentType}
           >
             {selectedOption?.icon
               ? (
@@ -149,7 +152,7 @@ export const AssignmentTime = ({ index }: {
                     <div className='pl-1'>{selectedLabel}</div>
                   </div>
                 )
-              : <CalendarFoldIcon size={18} strokeWidth={1.75} className='text-muted-foreground' />}
+              : <Clock5 size={18} strokeWidth={1.75} className='text-muted-foreground' />}
           </TimeDeliveryMenu>
         )
   )

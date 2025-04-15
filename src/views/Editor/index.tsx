@@ -1,13 +1,12 @@
-import { useEffect, useState, useRef } from 'react'
+import { useEffect, useRef } from 'react'
 import { AwarenessDocument, View } from '@/components'
 import { Notes } from './components/Notes'
 
-import type * as Y from 'yjs'
-
 import { Textbit, useTextbit } from '@ttab/textbit'
-import { Bold, Italic, Link, Text, OrderedList, UnorderedList, TTVisual, Factbox, Table, LocalizedQuotationMarks } from '@ttab/textbit-plugins'
+import { Bold, Italic, Link, Text, TTVisual, Factbox, Table, LocalizedQuotationMarks } from '@ttab/textbit-plugins'
 import { ImageSearchPlugin } from '../../plugins/ImageSearch'
 import { FactboxPlugin } from '../../plugins/Factboxes'
+import { Editor as PlainEditor } from '@/components/PlainEditor'
 
 import {
   useQuery,
@@ -16,14 +15,14 @@ import {
   useYValue,
   useView,
   useYjsEditor,
-  useAwareness
+  useAwareness,
+  useHistory,
+  useWorkflowStatus
 } from '@/hooks'
-import { type ViewMetadata, type ViewProps } from '@/types'
+import type { ContentState, ViewMetadata, ViewProps } from '@/types'
 import { EditorHeader } from './EditorHeader'
 import { type HocuspocusProvider } from '@hocuspocus/provider'
 import { type AwarenessUserData } from '@/contexts/CollaborationProvider'
-import { articleDocumentTemplate } from '@/defaults/templates/articleDocumentTemplate'
-import { createDocument } from '@/lib/createYItem'
 import { Error } from '../Error'
 
 import { ContentMenu } from '@/components/Editor/ContentMenu'
@@ -35,6 +34,9 @@ import { DropMarker } from '@/components/Editor/DropMarker'
 import type { Block } from '@ttab/elephant-api/newsdoc'
 import { getValueByYPath } from '@/lib/yUtils'
 import { useOnSpellcheck } from '@/hooks/useOnSpellcheck'
+import { contentMenuLabels } from '@/defaults/contentMenuLabels'
+import type { HistoryInterface } from '@/navigation/hooks/useHistory'
+import useSWR from 'swr'
 
 // Metadata definition
 const meta: ViewMetadata = {
@@ -56,7 +58,31 @@ const meta: ViewMetadata = {
 // Main Editor Component - Handles document initialization
 const Editor = (props: ViewProps): JSX.Element => {
   const [query] = useQuery()
-  const [document, setDocument] = useState<Y.Doc | undefined>(undefined)
+  const history = useHistory()
+  const { viewId } = useView()
+  const [workflowStatus] = useWorkflowStatus(props.id as string, true)
+
+  const { data: isReadOnly } = useSWR([`editor_status/${props.id}`], () => {
+    const isReadOnly = (history: HistoryInterface): bigint | string | undefined | boolean => {
+      const viewState = history.state?.contentState?.find((state: ContentState) => state?.viewId === viewId)
+
+      if (!viewState?.readOnly) {
+        return false
+      }
+
+      if (viewState?.readOnly) {
+        if (viewState?.readOnly.version === 0n) {
+          return workflowStatus?.version
+        }
+
+        return viewState.readOnly.version as bigint
+      }
+    }
+
+    return isReadOnly(history) || 0n
+  })
+
+
   const documentId = props.id || query.id
 
   // Error handling for missing document
@@ -69,24 +95,21 @@ const Editor = (props: ViewProps): JSX.Element => {
     )
   }
 
-  // Document creation if needed
-  if (props.onDocumentCreated && !document) {
-    const [, doc] = createDocument({
-      template: (id: string) => {
-        return articleDocumentTemplate(id, props?.payload)
-      },
-      documentId
-    })
-    setDocument(doc)
-    return <></>
-  }
+  if (isReadOnly) {
+    const bigIntVersion = isReadOnly === 'latest' ? 0n : BigInt(isReadOnly)
 
-  if (document && props.onDocumentCreated) {
-    props.onDocumentCreated()
+    return (
+      <div className='overflow-x-hidden'>
+        <EditorHeader documentId={documentId} readOnly readOnlyVersion={bigIntVersion} />
+        <View.Content className='flex flex-col max-w-[1000px] px-4 h-full overflow-x-hidden'>
+          <PlainEditor id={documentId} version={bigIntVersion} />
+        </View.Content>
+      </div>
+    )
   }
 
   return (
-    <AwarenessDocument documentId={documentId} document={document} className='h-full'>
+    <AwarenessDocument documentId={documentId} className='h-full'>
       <EditorWrapper documentId={documentId} {...props} />
     </AwarenessDocument>
   )
@@ -101,13 +124,11 @@ function EditorWrapper(props: ViewProps & {
   const { provider, synced, user } = useCollaboration()
   const openFactboxEditor = useLink('Factbox')
   const [notes] = useYValue<Block[] | undefined>('meta.core/note')
-  const [,setIsFocused] = useAwareness(props.documentId)
+  const [, setIsFocused] = useAwareness(props.documentId)
 
   // Plugin configuration
   const getConfiguredPlugins = () => {
     const basePlugins = [
-      UnorderedList,
-      OrderedList,
       Bold,
       Italic,
       Link,
@@ -121,7 +142,8 @@ function EditorWrapper(props: ViewProps & {
     return [
       ...basePlugins.map((initPlugin) => initPlugin()),
       Text({
-        countCharacters: ['heading-1']
+        countCharacters: ['heading-1'],
+        ...contentMenuLabels
       }),
       Factbox({
         onEditOriginal: (id: string) => {
@@ -177,9 +199,8 @@ function EditorContainer({
   return (
     <>
       <EditorHeader documentId={documentId} />
-
+      {!!notes?.length && <div className='p-4'><Notes /></div>}
       <View.Content className='flex flex-col max-w-[1000px]'>
-        {!!notes?.length && <div className='p-4'><Notes /></div>}
 
         <div className='flex-grow overflow-auto pr-12 max-w-screen-xl'>
           {!!provider && synced

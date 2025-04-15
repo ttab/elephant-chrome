@@ -8,7 +8,7 @@ import { SupportedLanguagesProvider } from './datastore/contexts/SupportedLangua
 import { RepositoryEventsProvider } from './contexts/RepositoryEventsProvider.tsx'
 import { Init } from './components/Init/index.tsx'
 import { UserMessagesReceiver } from './components/UserMessagesReceiver.tsx'
-
+import { Toaster } from '@ttab/elephant-ui'
 banner()
 
 const root = document.getElementById('root')
@@ -18,25 +18,29 @@ if (!root) {
 }
 
 ReactDOM.createRoot(root).render(
-  <IndexedDBProvider>
-    <RegistryProvider>
-      <HPWebSocketProvider>
-        <SessionProvider>
-          <RepositoryEventsProvider>
-            <SupportedLanguagesProvider>
-              <ThemeProvider defaultTheme='light' storageKey='ele-ui-theme'>
-                <UserTrackerProvider>
-                  <Init>
-                    <UserMessagesReceiver>
-                      <App />
-                    </UserMessagesReceiver>
-                  </Init>
-                </UserTrackerProvider>
-              </ThemeProvider>
-            </SupportedLanguagesProvider>
-          </RepositoryEventsProvider>
-        </SessionProvider>
-      </HPWebSocketProvider>
-    </RegistryProvider>
-  </IndexedDBProvider>
+  <>
+    <IndexedDBProvider>
+      <RegistryProvider>
+        <HPWebSocketProvider>
+          <SessionProvider>
+            <RepositoryEventsProvider>
+              <SupportedLanguagesProvider>
+                <ThemeProvider defaultTheme='light' storageKey='ele-ui-theme'>
+                  <UserTrackerProvider>
+                    <Init>
+                      <UserMessagesReceiver>
+                        <App />
+                      </UserMessagesReceiver>
+                    </Init>
+                  </UserTrackerProvider>
+                </ThemeProvider>
+              </SupportedLanguagesProvider>
+            </RepositoryEventsProvider>
+          </SessionProvider>
+        </HPWebSocketProvider>
+      </RegistryProvider>
+    </IndexedDBProvider>
+
+    <Toaster />
+  </>
 )

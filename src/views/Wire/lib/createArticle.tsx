@@ -55,6 +55,11 @@ export function createArticle({
         )
 
         if (payload) {
+          // if article is created from planning, remove description
+          if (provider.document) {
+            delete payload.meta?.['core/description']
+          }
+
           appendPayload(
             hasSelectedPlanning
               ? provider.document
@@ -72,6 +77,7 @@ export function createArticle({
             state: false,
             id: planning.id,
             context: {
+              agent: 'server',
               accessToken: session.accessToken,
               user: session.user,
               type: 'Planning'
@@ -85,6 +91,7 @@ export function createArticle({
             state: false,
             id: documentId,
             context: {
+              agent: 'server',
               accessToken: session.accessToken,
               user: session.user,
               type: 'Article'

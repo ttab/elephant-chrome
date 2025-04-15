@@ -55,7 +55,8 @@ export const Plannings = (): JSX.Element => {
         type={meta.name}
         initialState={{
           grouping: ['newsvalue'],
-          columnFilters
+          columnFilters,
+          globalFilter: query.query
         }}
       >
         <SWRProvider<PlanningType, PlanningSearchParams> index={PlanningsIndex}>

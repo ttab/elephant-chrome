@@ -3,23 +3,23 @@ import { Check, FilePlus2, Save, X } from '@ttab/elephant-ui/icons'
 import { Editor } from '../../../components/PlainEditor'
 import { FaroErrorBoundary } from '@grafana/faro-react'
 import { Error, Wire } from '@/views'
-import { useDocumentStatus } from '@/hooks/useDocumentStatus'
 import { useNavigationKeys } from '@/hooks/useNavigationKeys'
 import { useModal } from '@/components/Modal/useModal'
 import type { Wire as WireType } from '@/hooks/index/lib/wires'
 import type { DocumentVersion } from '@ttab/elephant-api/repository'
 import { MetaSheet } from '@/views/Editor/components/MetaSheet'
 import { useEffect, useRef } from 'react'
+import { useWorkflowStatus } from '@/hooks/useWorkflowStatus'
 
-export const PreviewSheet = ({ id, wire, handleClose, textOnly = true, preVersion, versionHistory }: {
+export const PreviewSheet = ({ id, wire, handleClose, textOnly = true, version, versionHistory }: {
   id: string
   wire?: WireType
   textOnly?: boolean
-  preVersion?: bigint
+  version?: bigint
   versionHistory?: DocumentVersion[]
   handleClose: () => void
 }): JSX.Element => {
-  const [documentStatus, setDocumentStatus] = useDocumentStatus(id)
+  const [documentStatus, setDocumentStatus] = useWorkflowStatus(id)
   const { showModal, hideModal } = useModal()
 
   const source = wire?.fields['document.rel.source.uri'].values[0]
@@ -38,12 +38,12 @@ export const PreviewSheet = ({ id, wire, handleClose, textOnly = true, preVersio
     onNavigation: (event) => {
       event.stopPropagation()
       if (event.key === 'r') {
-        setDocumentStatus('read').catch((error) => console.error(error))
+        void setDocumentStatus('read')
         return
       }
 
       if (event.key === 's') {
-        setDocumentStatus('saved').catch((error) => console.error(error))
+        void setDocumentStatus('saved')
         return
       }
 
@@ -94,13 +94,13 @@ export const PreviewSheet = ({ id, wire, handleClose, textOnly = true, preVersio
                     : undefined}
                   onValueChange={(value) => {
                     if (!value && documentStatus) {
-                      setDocumentStatus({
+                      void setDocumentStatus({
                         name: 'draft',
                         version: documentStatus.version,
                         uuid: documentStatus.uuid
-                      }).catch(console.error)
+                      })
                     } else {
-                      setDocumentStatus(value).catch(console.error)
+                      void setDocumentStatus(value)
                     }
                   }}
                 >
@@ -182,7 +182,7 @@ export const PreviewSheet = ({ id, wire, handleClose, textOnly = true, preVersio
           </div>
         </div>
         <div className='flex flex-col h-full'>
-          <Editor id={id} textOnly={textOnly} preVersion={preVersion} versionHistory={versionHistory} />
+          <Editor id={id} textOnly={textOnly} version={version} versionHistory={versionHistory} />
         </div>
       </div>
     </FaroErrorBoundary>

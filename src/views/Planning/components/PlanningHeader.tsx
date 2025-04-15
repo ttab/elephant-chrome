@@ -1,6 +1,6 @@
-import { useDocumentStatus, useView } from '@/hooks'
+import { useView } from '@/hooks'
 import { useEffect, useRef } from 'react'
-import { DocumentStatusMenu } from '@/components/DocumentStatusMenu'
+import { StatusMenu } from '@/components/DocumentStatus/StatusMenu'
 import { ViewHeader } from '@/components/View'
 import { GanttChartSquare } from '@ttab/elephant-ui/icons'
 import { MetaSheet } from '@/views/Editor/components/MetaSheet'
@@ -11,8 +11,6 @@ export const PlanningHeader = ({ documentId, asDialog, onDialogClose }: {
   onDialogClose?: () => void
 }): JSX.Element => {
   const { viewId } = useView()
-  const [documentStatus, setDocumentStatus] = useDocumentStatus(documentId)
-
   const containerRef = useRef<HTMLElement | null>(null)
 
   useEffect(() => {
@@ -35,7 +33,7 @@ export const PlanningHeader = ({ documentId, asDialog, onDialogClose }: {
 
           <div className='flex flex-row gap-2 justify-end items-center'>
             {!asDialog && (
-              <DocumentStatusMenu type='core/planning-item' status={documentStatus} setStatus={setDocumentStatus} />
+              <StatusMenu documentId={documentId} type='core/planning-item' />
             )}
 
             {!!documentId && <ViewHeader.RemoteUsers documentId={documentId} />}

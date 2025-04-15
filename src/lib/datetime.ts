@@ -127,7 +127,7 @@ export function getDateTimeBoundariesUTC(localDate: Date): { from: string, to: s
 * @param locale
 * @returns boolean
 */
-export function is12HourcycleFromLocale(locale: string): boolean {
+function is12HourcycleFromLocale(locale: string): boolean {
   try {
     const formatter = new Intl.DateTimeFormat(locale, { hour: 'numeric', hourCycle: 'h12' })
     const sampleDate = new Date(2000, 0, 1, 13, 0, 0) // 1:00 PM
@@ -188,6 +188,36 @@ export function dateInTimestampOrShortMonthDayTimestamp(date: string, locale: st
   }
 }
 
+export function dateInTimestampOrShortMonthDayYear(
+  date: string,
+  locale: string,
+  timeZone: string
+): string {
+  if (!date) {
+    return '??'
+  }
+
+  const inputDate = new Date(date)
+  const today = new Date()
+
+  const isToday = inputDate.getDate() === today.getDate()
+    && inputDate.getMonth() === today.getMonth()
+    && inputDate.getFullYear() === today.getFullYear()
+
+  if (isToday) {
+    return 'i dag'
+  } else {
+    const dateFormatter = new Intl.DateTimeFormat(locale, {
+      day: 'numeric',
+      month: 'short',
+      year: inputDate.getFullYear() !== today.getFullYear() ? 'numeric' : undefined,
+      timeZone
+    })
+    return dateFormatter.format(inputDate)
+  }
+}
+
+
 export function dateToReadableDay(date: Date, locale: string, timeZone: string): string {
   return new Intl.DateTimeFormat(locale, {
     timeZone,
@@ -235,4 +265,24 @@ export function dateToReadableShort(date: Date, locale: string, timeZone: string
 
   // Return formatted date string
   return `${dayMonth} ${year}`.trim()
+}
+
+/**
+ * Parses a date string in the format 'YYYY-MM-DD' and returns a Date object.
+ *
+ * @param value - The date string to parse. Expected format is 'YYYY-MM-DD'.
+ * @returns A Date object if the input is valid, or undefined if the input is empty or invalid.
+ */
+export function parseDate(value: string): Date | undefined {
+  if (!value) {
+    return
+  }
+
+  const parts: string[] = value.split('-')
+
+  return new Date(
+    parseInt(parts[0], 10),
+    parseInt(parts[1], 10) - 1,
+    parseInt(parts[2], 10)
+  )
 }

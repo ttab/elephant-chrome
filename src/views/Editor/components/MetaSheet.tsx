@@ -15,10 +15,13 @@ import { PanelRightClose, PanelRightOpen } from '@ttab/elephant-ui/icons'
 import { useState } from 'react'
 import { AddNote } from './Notes/AddNote'
 import { Version } from '@/components/Version'
+import { ReadOnly } from './ReadOnly'
 
-export function MetaSheet({ container, documentId }: {
+export function MetaSheet({ container, documentId, readOnly, readOnlyVersion }: {
   container: HTMLElement | null
   documentId: string
+  readOnly?: boolean
+  readOnlyVersion?: bigint
 }): JSX.Element {
   const [contentSource] = useYValue<string | undefined>('links.core/content-source[0].uri')
   const [isOpen, setIsOpen] = useState(false)
@@ -49,37 +52,40 @@ export function MetaSheet({ container, documentId }: {
               </span>
             </SheetTitle>
           </SheetHeader>
+          {readOnly
+            ? <ReadOnly documentId={documentId} version={readOnlyVersion} />
+            : (
+                <div className='flex flex-col gap-6 px-5 py-4 border-t'>
 
-          <div className='flex flex-col gap-6 px-5 py-4 border-t'>
+                  <Label htmlFor='properties' className='text-xs text-muted-foreground -mb-3'>Egenskaper</Label>
+                  <div className='flex flex-row gap-3' id='properties'>
+                    <Newsvalue />
+                    <SluglineButton path='meta.tt/slugline[0].value' />
+                  </div>
 
-            <Label htmlFor='properties' className='text-xs text-muted-foreground -mb-3'>Egenskaper</Label>
-            <div className='flex flex-row gap-3' id='properties'>
-              <Newsvalue />
-              <SluglineButton path='meta.tt/slugline[0].value' />
-            </div>
+                  <Label htmlFor='tags' className='text-xs text-muted-foreground -mb-3'>Etiketter</Label>
+                  <div className='flex flex-row gap-3' id='tags'>
+                    <Story />
+                    <Section />
+                  </div>
 
-            <Label htmlFor='tags' className='text-xs text-muted-foreground -mb-3'>Etiketter</Label>
-            <div className='flex flex-row gap-3' id='tags'>
-              <Story />
-              <Section />
-            </div>
+                  <Label htmlFor='byline' className='text-xs text-muted-foreground -mb-3'>Byline</Label>
+                  <div id='byline'>
+                    <Byline />
+                  </div>
 
-            <Label htmlFor='byline' className='text-xs text-muted-foreground -mb-3'>Byline</Label>
-            <div id='byline'>
-              <Byline />
-            </div>
+                  <Label htmlFor='actions' className='text-xs text-muted-foreground -mb-3'>Åtgärder</Label>
+                  <div className='flex flex-row gap-3' id='actions'>
+                    <AddNote text='Lägg till intern notering' variant='outline' />
+                  </div>
 
-            <Label htmlFor='actions' className='text-xs text-muted-foreground -mb-3'>Åtgärder</Label>
-            <div className='flex flex-row gap-3' id='actions'>
-              <AddNote text='Lägg till intern notering' variant='outline' />
-            </div>
+                  <Label htmlFor='version' className='text-xs text-muted-foreground -mb-3'>Versioner</Label>
+                  <div id='version'>
+                    <Version documentId={documentId} />
+                  </div>
 
-            <Label htmlFor='version' className='text-xs text-muted-foreground -mb-3'>Versioner</Label>
-            <div id='version'>
-              <Version documentId={documentId} />
-            </div>
-
-          </div>
+                </div>
+              )}
         </div>
 
         <div className='flex flex-col gap-6 px-5 py-4 border-t'>

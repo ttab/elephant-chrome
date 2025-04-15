@@ -16,7 +16,7 @@ import { STATUS_KEYS } from './statuskeys'
 
 type Status = { name: string, created: string, creator: string }
 
-export type SelectedVersion = Pick<DocumentVersion, 'created' | 'version' | 'creator'> & {
+type SelectedVersion = Pick<DocumentVersion, 'created' | 'version' | 'creator'> & {
   createdBy?: string
   lastStatus?: Status
 }
@@ -27,7 +27,7 @@ export const Version = ({ documentId, hideDetails = false }: { documentId: strin
   const authors = useAuthors()
   const [lastUpdated, setLastUpdated] = useState('')
 
-  const { data: versionHistory, error } = useSWR(`version/${documentId}`, async (): Promise<Array<DocumentVersion>> => {
+  const { data: versionHistory, error } = useSWR<DocumentVersion[], Error>(`version/${documentId}`, async (): Promise<Array<DocumentVersion>> => {
     if (!session?.accessToken || !repository) {
       return []
     }
@@ -172,7 +172,7 @@ export const Version = ({ documentId, hideDetails = false }: { documentId: strin
           showModal(
             <PreviewSheet
               id={documentId}
-              preVersion={current?.version && BigInt(current?.version)}
+              version={current?.version && BigInt(current?.version)}
               versionHistory={versionHistory}
               textOnly
               handleClose={hideModal}

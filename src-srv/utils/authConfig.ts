@@ -1,6 +1,6 @@
 import { type AuthConfig } from '@auth/core'
-import { decodeJwt, type JWTPayload } from 'jose'
 import Keycloak from '@auth/express/providers/keycloak'
+import { type JWT } from '@auth/core/jwt'
 
 const scopes = [
   'openid',
@@ -11,7 +11,7 @@ const scopes = [
   'doc_write',
   'doc_delete',
   'eventlog_read',
-  'search',
+  'metrics_read',
   'user'
 ]
 
@@ -21,7 +21,7 @@ if (process.env.AUTH_KEYCLOAK_IDP_HINT) {
   authorizationUrl.searchParams.set('kc_idp_hint', process.env.AUTH_KEYCLOAK_IDP_HINT)
 }
 
-async function refreshAccessToken(token: JWTPayload): Promise<JWTPayload> {
+async function refreshAccessToken(token: JWT): Promise<JWT> {
   try {
     const url = `${process.env.AUTH_KEYCLOAK_ISSUER}/protocol/openid-connect/token`
 
@@ -39,22 +39,23 @@ async function refreshAccessToken(token: JWTPayload): Promise<JWTPayload> {
         Accept: 'application/json'
       },
       body: params
-    }).catch((ex) => {
-      throw new Error('refresh token grant request', { cause: ex })
     })
 
-    const refreshedTokens = await response.json()
-
     if (!response.ok) {
-      throw new Error(
-        `refresh request error response: ${response.statusText}`,
-        { cause: refreshedTokens })
+      throw new Error(`refresh request error response: ${response.statusText}`)
     }
+
+    const refreshedTokens = await response.json() as unknown
+
+    if (!isRefreshedTokens(refreshedTokens)) {
+      throw new Error('refresh request error response: invalid token response')
+    }
+
 
     return {
       ...token,
       accessToken: refreshedTokens.access_token,
-      accessTokenExpires: Date.now() + 150 * 1000,
+      accessTokenExpires: Date.now() + refreshedTokens.expires_in * 1000,
       refreshToken: refreshedTokens.refresh_token ?? token.refreshToken
     }
   } catch (_ex) {
@@ -80,27 +81,35 @@ export const authConfig: AuthConfig = {
       if (account && user) {
         if (account.access_token) {
           // @ts-expect-error sub exists
-          user.sub = decodeJwt(account.access_token).sub
+          user.sub = account.providerAccountId
         }
         return {
           accessToken: account.access_token,
-          accessTokenExpires: Date.now() + 150 * 1000,
+          accessTokenExpires: Date.now() + (account.expires_in || 300) * 1000,
           refreshToken: account.refresh_token,
           user
         }
       }
 
       // The user is already logged in, check if the access token is expired
-      const accessTokenExpires = token.accessTokenExpires as number
-      if (Date.now() < accessTokenExpires) {
-        return token
+      // We want to refresh with 150 seconds left
+      const accessTokenExpires = (Number(token.accessTokenExpires) || 0) - 150 * 1000
+      const remaining = accessTokenExpires - Date.now()
+      if (remaining < 0) {
+        return await refreshAccessToken(token)
       }
 
-      // Access token is expired, refresh it
-      return await refreshAccessToken(token)
+      return token
     }
   },
   pages: {
     signIn: `${process.env.BASE_URL}/login`
   }
+}
+
+function isRefreshedTokens(value: unknown): value is JWT & { expires_in: number } {
+  return typeof value === 'object' && value !== null
+    && 'access_token' in value && typeof value.access_token === 'string'
+    && 'expires_in' in value && typeof value.expires_in === 'number'
+    && 'refresh_token' in value && typeof value.refresh_token === 'string'
 }

@@ -124,7 +124,7 @@ export const AssignmentTable = ({ asDialog = false }: {
             const [assignmentType] = getValueByYPath(yRoot,
               `${currentAssigmentPath}.meta.core/assignment-type[0].value`)
 
-            if (assignmentType !== 'text') {
+            if (assignmentType !== 'text' && assignmentType !== 'editorial-info') {
               deleteByYPath(yRoot, `${currentAssigmentPath}.meta.[tt/slugline]`)
             }
 

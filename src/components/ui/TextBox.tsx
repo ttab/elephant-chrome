@@ -3,6 +3,7 @@ import { Awareness } from '../Awareness'
 import { TextboxRoot } from './Textbox/TextboxRoot'
 
 export const TextBox = ({ icon: Icon, path, ...props }: {
+  disabled?: boolean
   path: string
   icon?: React.ReactNode
   placeholder?: string

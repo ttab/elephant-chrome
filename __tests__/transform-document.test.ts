@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
-import { toGroupedNewsDoc, fromGroupedNewsDoc } from '../src-srv/utils/transformations/groupedNewsDoc'
-import { toYjsNewsDoc, fromYjsNewsDoc } from '../src-srv/utils/transformations/yjsNewsDoc'
+import { toGroupedNewsDoc, fromGroupedNewsDoc } from '@/shared/transformations/groupedNewsDoc'
+import { toYjsNewsDoc, fromYjsNewsDoc } from '@/shared/transformations/yjsNewsDoc'
 
 import * as Y from 'yjs'
 

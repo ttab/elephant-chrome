@@ -1,14 +1,15 @@
 import { useAssignments } from '@/hooks/index/useAssignments'
 import { useSections } from '@/hooks/useSections'
+import type { LocaleData } from '@/types/index'
 import { type ViewMetadata } from '@/types/index'
 import { type Document } from '@ttab/elephant-api/newsdoc'
 import { Separator } from '@ttab/elephant-ui'
 import { useMemo } from 'react'
 import { format } from 'date-fns'
 import { useRegistry } from '@/hooks/useRegistry'
-import * as locales from 'date-fns/locale'
 import { handleLink } from '@/components/Link/lib/handleLink'
 import { useHistory, useNavigation, useView } from '@/hooks/index'
+import type { StatusData } from 'src/datastore/types'
 
 const meta: ViewMetadata = {
   name: 'Latest',
@@ -26,14 +27,15 @@ const meta: ViewMetadata = {
   }
 }
 
-type DocumentExtended = Document & { publish?: string, slugline?: string, section?: string }
+type DocumentExtended = Document & { publish?: string, slugline?: string, section?: string, lastUsableVersion?: bigint }
 
-export const Latest = () => {
+export const Latest = ({ setOpen }: { setOpen?: (open: boolean) => void }) => {
   const [data] = useAssignments({
     type: 'text',
     date: new Date(),
     status: ['usable']
   })
+
   const { locale } = useRegistry()
 
   const sections = useSections().map((_) => {
@@ -47,18 +49,36 @@ export const Latest = () => {
     if (!data[0]?.items?.length) {
       return []
     }
+
     return data[0].items.reduce((docs: DocumentExtended[], curr) => {
       if (!curr._deliverableDocument) {
         return docs
       }
 
-      const doc: Document & { publish?: string, slugline?: string, section?: string } = curr._deliverableDocument
+      const doc: DocumentExtended = curr._deliverableDocument
+
       if (curr?.data?.publish) {
         doc.publish = curr.data.publish
       }
+
       if (curr?._section) {
         doc.section = sections.find((s) => s.value === curr._section)?.label
       }
+
+      const lastUsableVersion = () => {
+        if (!curr._statusData) {
+          return
+        }
+
+        const parsedData = JSON.parse(curr._statusData) as StatusData
+        const lastUsableVersion = parsedData?.heads.usable?.version
+        return lastUsableVersion
+      }
+
+      if (lastUsableVersion()) {
+        doc.lastUsableVersion = lastUsableVersion()
+      }
+
       doc.slugline = curr._deliverableDocument.meta.find((m) => m.type === 'tt/slugline')?.value
 
       docs.push(doc)
@@ -71,24 +91,23 @@ export const Latest = () => {
     return <div className='min-h-screen text-center py-2'>Laddar...</div>
   }
 
-  return <Content documents={documents} locale={locale} />
+  return (
+    <Content documents={documents} locale={locale} setOpen={setOpen} />
+  )
 }
 
-const Content = ({ documents, locale }: { documents: Document[], locale: string }): JSX.Element => {
+const Content = ({ documents, locale, setOpen }: { documents: Document[], locale: LocaleData, setOpen?: (open: boolean) => void }): JSX.Element => {
   const { state, dispatch } = useNavigation()
   const history = useHistory()
   const { viewId } = useView()
 
-  function getLocalizedDate(date: Date, localeCode: string): string | undefined {
-    const [code] = localeCode.split('-')
-    const _locale = locales[code.toLocaleLowerCase() as keyof typeof locales]
-
-    if (!_locale) {
-      console.warn(`Locale ${localeCode} not supported.`)
+  function getLocalizedDate(date: Date, locale: LocaleData): string | undefined {
+    if (!locale.module) {
+      console.warn(`Locale ${locale.code.full} not supported.`)
       return format(date, 'dd MMM yyyy – HH.mm')
     }
 
-    return format(date, 'dd MMM yyyy – HH.mm', { locale: _locale })
+    return format(date, 'dd MMM yyyy – HH.mm', { locale: locale.module })
   }
 
   return (
@@ -98,7 +117,8 @@ const Content = ({ documents, locale }: { documents: Document[], locale: string 
           return <></>
         }
 
-        const { title, uuid } = itm
+        const { title, uuid, lastUsableVersion } = itm
+
         return (
           <div
             key={uuid}
@@ -115,8 +135,15 @@ const Content = ({ documents, locale }: { documents: Document[], locale: string 
                 viewId: crypto.randomUUID(),
                 history,
                 origin: viewId,
-                target: 'last'
+                target: 'last',
+                readOnly: {
+                  version: lastUsableVersion
+                }
               })
+
+              if (setOpen) {
+                setOpen(false)
+              }
             }}
           >
             <div className='py-2 px-3 text-xs flex flex-col'>

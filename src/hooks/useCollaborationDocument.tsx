@@ -14,15 +14,20 @@ interface UseHocusPocusDocumentResult {
   documentId: string
   connected: boolean
   synced: boolean
+  loading: boolean
+  provider?: HocuspocusProvider
 }
 
 export const useCollaborationDocument = ({ documentId, initialDocument }: UseHocusPocusDocumentProps): UseHocusPocusDocumentResult => {
   const { data: sessionData, status } = useSession()
   const { server: { webSocketUrl } } = useRegistry()
-  const [synced, setSynced] = useState<boolean>(false)
-  const [connected, setConnected] = useState<boolean>(false)
-  const [document, setDocument] = useState<Y.Doc | undefined>(initialDocument)
-  const [provider, setProvider] = useState<HocuspocusProvider>()
+  const [state, setState] = useState({
+    synced: false,
+    connected: false,
+    document: initialDocument,
+    provider: undefined as HocuspocusProvider | undefined,
+    loading: true
+  })
 
   // This hook is most often used to edit documents, that might be
   // open in another view, in a dialog.
@@ -30,57 +35,91 @@ export const useCollaborationDocument = ({ documentId, initialDocument }: UseHoc
   // Use a new HP websocket for every document here so we can use
   // this extra editing without stopping yjs syncing to the already
   // open collaboration documents.
+  //
+  // Do not preserve the websocket when provider is closed.
   const webSocket = useMemo(() => {
-    return (!webSocketUrl) ? undefined : new HocuspocusProviderWebsocket({ url: webSocketUrl.toString() })
-  }, [webSocketUrl])
+    // If we don't have a documentId, we will never authenticate the webSocket.
+    // And it will eventually error out with a 401.
+    if (!documentId) {
+      return
+    }
+
+    return (!webSocketUrl)
+      ? undefined
+      : new HocuspocusProviderWebsocket({
+        url: webSocketUrl.toString()
+      })
+  }, [webSocketUrl, documentId])
 
   useEffect(() => {
-    if (synced && !document) {
-      setDocument(provider?.document)
+    if (state.synced && !state.document) {
+      setState((prevState) => ({ ...prevState, document: state.provider?.document, loading: false }))
     }
-  }, [synced, document, provider?.document])
+  }, [state.synced, state.document, state.provider?.document])
 
   useEffect(() => {
     if (!documentId || !webSocket || status !== 'authenticated') {
-      setDocument(undefined)
-      setSynced(false)
-      setConnected(false)
+      setState({
+        synced: false,
+        connected: false,
+        document: undefined,
+        provider: undefined,
+        loading: false
+      })
       return
     }
 
     const provider = new HocuspocusProvider({
       websocketProvider: webSocket,
       name: documentId,
-      document,
+      document: state.document,
       token: sessionData?.accessToken,
-
+      preserveConnection: false,
       onConnect: () => {
-        setConnected(true)
+        setState((prevState) => ({ ...prevState, connected: true }))
       },
       onSynced: () => {
-        setSynced(true)
-        setDocument(provider.document)
+        setState((prevState) => ({
+          ...prevState,
+          synced: true,
+          document: provider.document,
+          loading: false
+        }))
       },
       onDisconnect: () => {
-        setSynced(false)
+        setState((prevState) => ({ ...prevState, synced: false }))
+        provider.destroy()
       },
       onClose: () => {
-        setConnected(false)
+        setState((prevState) => ({ ...prevState, connected: false }))
+        void provider.connect()
       }
     })
 
-    setProvider(provider)
+    setState((prevState) => ({ ...prevState, provider }))
 
     return () => {
       provider.destroy()
-      setProvider(undefined)
+      webSocket.destroy()
+      setState((prevState) => ({
+        ...prevState,
+        synced: false,
+        connected: false,
+        document: undefined,
+        provider: undefined,
+        loading: false
+      }))
     }
-  }, [documentId, document, initialDocument, webSocket, sessionData?.accessToken, status])
+  // We don't want to recreate the provider when accessToken is refreshed
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [documentId, webSocket, status])
 
-  return {
-    document,
-    documentId: documentId,
-    connected: !!provider?.isConnected || connected,
-    synced
-  }
+  return useMemo(() => ({
+    document: state.document,
+    documentId,
+    connected: state.provider?.isConnected || state.connected,
+    synced: state.synced,
+    provider: state.provider,
+    loading: !state.document
+  }), [state.document, documentId, state.connected, state.synced, state.provider])
 }

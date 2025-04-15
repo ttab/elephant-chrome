@@ -20,6 +20,7 @@ const inProgressMessageSchema = z.object({
   status: z.string().optional(),
   id: z.string(),
   context: z.object({
+    agent: z.string(),
     accessToken: z.string(),
     user: z.object({
       name: z.string(),
@@ -65,9 +66,8 @@ const StatelessAuthSchema = z.object({
 })
 
 export type StatelessAuth = z.infer<typeof StatelessAuthSchema>
-export type StatelessMessage = z.infer<typeof StatelessMessageSchema>
-export type StatelessInProgress = z.infer<typeof StatelessInProgressSchema>
-export type StatelessError = z.infer<typeof StatelessErrorSchema>
+type StatelessMessage = z.infer<typeof StatelessMessageSchema>
+type StatelessInProgress = z.infer<typeof StatelessInProgressSchema>
 
 type inProgressMessage = z.infer<typeof inProgressMessageSchema>
 type authMessage = z.infer<typeof authMessageSchema>

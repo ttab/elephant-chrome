@@ -3,9 +3,18 @@ import { ValidationAlert } from '../ValidationAlert'
 import { type ValidateState } from '@/types/index'
 import { cn } from '@ttab/elephant-ui/utils'
 
+
+export interface OnValidation {
+  block: string
+  label: string
+  value?: string
+  compareValues?: string[]
+  reason: string
+}
+
 export interface FormProps extends PropsWithChildren {
   asDialog?: boolean
-  onValidation?: (block: string, label: string, value: string | undefined, reason: string) => boolean
+  onValidation?: (args: OnValidation) => boolean
   setValidateForm?: Dispatch<SetStateAction<boolean>>
   validateStateRef?: React.MutableRefObject<ValidateState>
   children?: React.ReactNode
@@ -32,14 +41,16 @@ export const Root = ({ children, asDialog = false, className }: PropsWithChildre
     [&_[role="textbox"]]:leading-tight
     [&_[role="textbox"]]:tracking-right`
 
-  const handleValidation = (block: string, label: string, value: string | undefined, reason: string): boolean => {
+  const handleValidation = ({ block, label, value, compareValues, reason }: OnValidation): boolean => {
+    const isValid = [!!value, isUnique(value, compareValues)].every(Boolean)
+
     validateStateRef.current = {
       ...validateStateRef.current,
-      [block]: { label, valid: !!value, reason }
+      [block]: { label, valid: isValid, reason }
     }
 
     if (validateForm) {
-      return !!value
+      return !!isValid
     }
 
     return true
@@ -62,4 +73,13 @@ export const Root = ({ children, asDialog = false, className }: PropsWithChildre
       </div>
     </>
   )
+}
+
+function isUnique(value?: string, compareValues?: string[]) {
+  if (compareValues?.length) {
+    return compareValues.filter((v) => v === value).length <= 1
+  }
+
+  // if no compareValues are provided, we assume the value is unique and valid
+  return true
 }

@@ -6,7 +6,7 @@ import {
   type LucideIcon
 } from '@ttab/elephant-ui/icons'
 
-export interface WorkflowItem {
+interface WorkflowItem {
   title: string
   description: string
 }
@@ -15,7 +15,7 @@ export interface WorkflowTransition extends WorkflowItem {
   verify?: boolean
   default?: boolean
 }
-export interface WorkflowState extends WorkflowItem {
+interface WorkflowState extends WorkflowItem {
   transitions: Record<string, WorkflowTransition>
 }
 
@@ -219,6 +219,11 @@ export const WorkflowSpecifications: Record<string, WorkflowSpecification> = {
           verify: true,
           title: 'Publicera',
           description: 'Publicera artikeln'
+        },
+        withheld: {
+          verify: true,
+          title: 'Schemalägg publicering',
+          description: 'Ange datum och tid för publicering'
         }
       }
     },
@@ -234,7 +239,12 @@ export const WorkflowSpecifications: Record<string, WorkflowSpecification> = {
         usable: {
           verify: true,
           title: 'Publicera',
-          description: 'Publicera artiklen direkt'
+          description: 'Publicera artikeln direkt'
+        },
+        withheld: {
+          verify: true,
+          title: 'Schemalägg publicering',
+          description: 'Ange datum och tid för publicering'
         },
         draft: {
           title: 'Till utkast',
@@ -250,7 +260,12 @@ export const WorkflowSpecifications: Record<string, WorkflowSpecification> = {
           default: true,
           verify: true,
           title: 'Publicera',
-          description: 'Publicera artiklen'
+          description: 'Publicera artikeln'
+        },
+        withheld: {
+          verify: true,
+          title: 'Schemalägg publicering',
+          description: 'Ange datum och tid för publicering'
         },
         draft: {
           title: 'Till utkast',
@@ -264,12 +279,133 @@ export const WorkflowSpecifications: Record<string, WorkflowSpecification> = {
       transitions: {
         draft: {
           default: true,
+          verify: true,
           title: 'Ny version',
           description: 'Fortsätt jobba på en ny version av artikeln'
         },
         cancelled: {
+          verify: true,
           title: 'Dra tillbaka',
           description: 'Avbryt publiceringen och arkivera artikeln'
+        }
+      }
+    },
+    withheld: {
+      title: 'Schemalagd',
+      description: 'Artikeln är schemalagd för automatisk publicering',
+      transitions: {
+        usable: {
+          default: true,
+          verify: true,
+          title: 'Publicera direkt',
+          description: 'Publicera artikeln direkt'
+        },
+        draft: {
+          verify: true,
+          title: 'Till utkast',
+          description: 'Avbryt schemalagd publicering och gör om till utkast igen'
+        },
+        cancelled: {
+          verify: true,
+          title: 'Dra tillbaka',
+          description: 'Avbryt schemalagd publicering och arkivera artikeln'
+        }
+      }
+    }
+  },
+  'core/factbox': {
+    draft: {
+      title: 'Utkast',
+      description: 'Du jobbar på ett utkast av faktarutan',
+      transitions: {
+        usable: {
+          verify: true,
+          title: 'Publicera',
+          description: 'Publicera faktarutan för användning'
+        }
+      }
+    },
+    usable: {
+      title: 'Användbar',
+      description: 'Fakturan är användbar',
+      transitions: {
+        cancelled: {
+          verify: true,
+          title: 'Arkivera',
+          description: 'Dra tillbaka och arkivera den här faktarutan'
+        }
+      }
+    }
+  },
+  'core/editorial-info': {
+    draft: {
+      title: 'Utkast',
+      description: 'Du jobbar på ett utkast av detta till red',
+      transitions: {
+        done: {
+          default: true,
+          title: 'Klarmarkera',
+          description: 'Markera till red som klar'
+        },
+        approved: {
+          title: 'Godkänn',
+          description: 'Godkänn till red för intern användning'
+        },
+        usable: {
+          verify: true,
+          title: 'Publicera',
+          description: 'Publicera till red externt synlig'
+        }
+      }
+    },
+    done: {
+      title: 'Klar',
+      description: 'Till red är klar och väntar på godkännande',
+      transitions: {
+        approved: {
+          default: true,
+          title: 'Godkänn',
+          description: 'Godkänn till red för intern användning'
+        },
+        usable: {
+          verify: true,
+          title: 'Publicera',
+          description: 'Publicera till red externt synlig'
+        },
+        draft: {
+          title: 'Till utkast',
+          description: 'Gör om till red till ett utkast igen'
+        }
+      }
+    },
+    approved: {
+      title: 'Intern',
+      description: 'Till red är internt publicerad och går att publicera externt',
+      transitions: {
+        usable: {
+          default: true,
+          verify: true,
+          title: 'Publicera',
+          description: 'Publicera till red externt synlig'
+        },
+        draft: {
+          title: 'Till utkast',
+          description: 'Gör om till red till ett utkast igen'
+        }
+      }
+    },
+    usable: {
+      title: 'Publicerad',
+      description: 'Till red är publicerad',
+      transitions: {
+        draft: {
+          default: true,
+          title: 'Till utkast',
+          description: 'Gör om till red till ett utkast igen'
+        },
+        cancelled: {
+          title: 'Dra tillbaka',
+          description: 'Avbryt publiceringen och arkivera till red'
         }
       }
     }

@@ -1,7 +1,5 @@
 import { pino } from 'pino'
 
-export type Logger = pino.Logger
-
 const errorWithCauseSerializer = (err: unknown): unknown => {
   if (err instanceof Error) {
     return {

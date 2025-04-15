@@ -1,12 +1,11 @@
 import {
-  ViewHeader,
   Awareness,
   Section,
   View
 } from '@/components'
 import type { DefaultValueOption, ViewProps } from '@/types'
 import { Button, ComboBox } from '@ttab/elephant-ui'
-import { CircleXIcon, ZapIcon, Tags, GanttChartSquare } from '@ttab/elephant-ui/icons'
+import { CircleXIcon, Tags, GanttChartSquare } from '@ttab/elephant-ui/icons'
 import { useCollaboration, useYValue, useRegistry } from '@/hooks'
 import { useSession } from 'next-auth/react'
 import type { Dispatch, SetStateAction } from 'react'
@@ -19,8 +18,9 @@ import { createFlash } from './lib/createFlash'
 import type * as Y from 'yjs'
 import { CreatePrompt } from '@/components/CreatePrompt'
 import { Block } from '@ttab/elephant-api/newsdoc'
+import { FlashHeader } from './FlashHeader'
 
-export const FlashViewContent = (props: ViewProps): JSX.Element | undefined => {
+export const FlashViewContent = (props: ViewProps): JSX.Element => {
   const { provider } = useCollaboration()
   const { status, data: session } = useSession()
   const planningAwareness = useRef<(value: boolean) => void>(null)
@@ -30,28 +30,15 @@ export const FlashViewContent = (props: ViewProps): JSX.Element | undefined => {
   const [title, setTitle] = useYValue<string | undefined>('root.title', true)
   const { index, timeZone } = useRegistry()
 
+  const [documentId] = useYValue<string>('root.uuid')
+
   const handleSubmit = (setCreatePrompt: Dispatch<SetStateAction<boolean>>): void => {
     setCreatePrompt(true)
   }
 
   return (
     <View.Root asDialog={props.asDialog} className={props.className}>
-      <ViewHeader.Root>
-        {!props.asDialog
-        && <ViewHeader.Title name='Flash' title='Flash' icon={ZapIcon} iconColor='#FF5150' />}
-
-        <ViewHeader.Content>
-          <div className='flex w-full h-full items-center space-x-2 font-bold'>
-            {props.asDialog && <ViewHeader.Title name='Flash' title='Skapa ny flash' icon={ZapIcon} iconColor='#FF3140' />}
-          </div>
-        </ViewHeader.Content>
-
-        <ViewHeader.Action onDialogClose={props.onDialogClose}>
-          {!props.asDialog && !!props.id
-          && <ViewHeader.RemoteUsers documentId={props.id} />}
-        </ViewHeader.Action>
-      </ViewHeader.Root>
-
+      <FlashHeader id={documentId} asDialog={props.asDialog} />
       <View.Content>
         <Form.Root asDialog={props.asDialog}>
           <Form.Content>
@@ -85,8 +72,7 @@ export const FlashViewContent = (props: ViewProps): JSX.Element | undefined => {
                   </ComboBox>
                 </Awareness>
 
-                {!!selectedPlanning
-                && (
+                {!!selectedPlanning && (
                   <>
                     <Button
                       variant='ghost'
@@ -104,8 +90,7 @@ export const FlashViewContent = (props: ViewProps): JSX.Element | undefined => {
             )}
 
 
-            {!selectedPlanning && props.asDialog
-            && (
+            {!selectedPlanning && props.asDialog && (
               <Form.Group icon={Tags}>
                 <Section />
               </Form.Group>
@@ -115,12 +100,8 @@ export const FlashViewContent = (props: ViewProps): JSX.Element | undefined => {
 
             <UserMessage asDialog={!!props?.asDialog}>
               {!selectedPlanning
-                ? (
-                    <>Väljer du ingen planering kommer en ny planering med tillhörande uppdrag skapas åt dig.</>
-                  )
-                : (
-                    <>Denna flash kommer läggas i ett nytt uppdrag i den valda planeringen</>
-                  )}
+                ? (<>Väljer du ingen planering kommer en ny planering med tillhörande uppdrag skapas åt dig.</>)
+                : (<>Denna flash kommer läggas i ett nytt uppdrag i den valda planeringen</>)}
             </UserMessage>
 
           </Form.Content>
@@ -136,9 +117,10 @@ export const FlashViewContent = (props: ViewProps): JSX.Element | undefined => {
                 secondaryLabel='Avbryt'
                 primaryLabel='Skicka'
                 selectedPlanning={selectedPlanning}
-                payload={{ meta: {
-                  'core/newsvalue': [Block.create({ type: 'core/newsvalue', value: '4' })]
-                }
+                payload={{
+                  meta: {
+                    'core/newsvalue': [Block.create({ type: 'core/newsvalue', value: '4' })]
+                  }
                 }}
                 onPrimary={(planning: Y.Doc | undefined, planningId: string | undefined) => {
                   if (!provider || !props.id || !provider || !session) {
@@ -176,16 +158,17 @@ export const FlashViewContent = (props: ViewProps): JSX.Element | undefined => {
             savePrompt
             && (
               <CreatePrompt
-                title='Skapa flash?'
+                title='Spara flash?'
                 description={!selectedPlanning
                   ? 'En ny planering med tillhörande uppdrag för denna flash kommer att skapas åt dig.'
                   : `Denna flash kommer att läggas i ett nytt uppdrag i planeringen "${selectedPlanning.label}"`}
                 secondaryLabel='Avbryt'
                 primaryLabel='Spara'
                 selectedPlanning={selectedPlanning}
-                payload={{ meta: {
-                  'core/newsvalue': [Block.create({ type: 'core/newsvalue', value: '4' })]
-                }
+                payload={{
+                  meta: {
+                    'core/newsvalue': [Block.create({ type: 'core/newsvalue', value: '4' })]
+                  }
                 }}
                 onPrimary={(planning: Y.Doc | undefined, planningId: string | undefined) => {
                   if (!provider || !props.id || !provider || !session) {
@@ -221,16 +204,12 @@ export const FlashViewContent = (props: ViewProps): JSX.Element | undefined => {
           {
             props.asDialog && (
               <Form.Footer>
-                <Form.Submit onSubmit={() => handleSubmit(setSendPrompt)}>
+                <Form.Submit
+                  onSubmit={() => handleSubmit(setSendPrompt)}
+                  onSecondarySubmit={() => handleSubmit(setSavePrompt)}
+                >
                   <div className='flex justify-end gap-4'>
-                    <Button
-                      variant='secondary'
-                      onClick={() => {
-                        handleSubmit(setSavePrompt)
-                      }}
-                    >
-                      Spara flash
-                    </Button>
+                    <Button variant='secondary' type='button'>Spara flash</Button>
                     <Button type='submit'>Skicka flash</Button>
                   </div>
                 </Form.Submit>

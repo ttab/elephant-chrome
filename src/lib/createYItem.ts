@@ -1,11 +1,12 @@
 import * as Y from 'yjs'
 import { assignmentPlanningTemplate } from '../defaults/templates/assignmentPlanningTemplate'
 import { Block, type Document } from '@ttab/elephant-api/newsdoc'
-import { toYMap } from '../../src-srv/utils/transformations/lib/toYMap'
-import { toGroupedNewsDoc, group } from '../../src-srv/utils/transformations/groupedNewsDoc'
-import { toYjsNewsDoc } from '../../src-srv/utils/transformations/yjsNewsDoc'
+import { toYMap } from '@/shared/transformations/toYMap'
+import { toGroupedNewsDoc, group } from '@/shared/transformations/groupedNewsDoc'
+import { toYjsNewsDoc } from '@/shared/transformations/yjsNewsDoc'
 import type { Wire } from '@/hooks/index/lib/wires'
 import type { IDBAuthor } from 'src/datastore/types'
+import type { DeliverableType } from '@/defaults/templates/lib/getDeliverableType'
 
 /**
 * General function to create a new document as Y.Doc from a template
@@ -72,7 +73,7 @@ export function appendAssignment({
 }: {
   document: Y.Doc
   assignee?: IDBAuthor | null | undefined
-  type: 'text' | 'flash'
+  type: 'text' | 'flash' | 'graphic' | 'picture' | 'video' | 'picture/video'
   inProgress?: boolean
   slugLine?: string
   title?: string
@@ -138,7 +139,7 @@ export function appendDocumentToAssignment({ document, id, index, slug, type }: 
   id: string
   index: number
   slug?: string
-  type: 'flash' | 'article'
+  type: DeliverableType
 }): void {
   // Get meta yMap
   const meta = document.getMap('ele').get('meta') as Y.Map<unknown>
@@ -149,29 +150,29 @@ export function appendDocumentToAssignment({ document, id, index, slug, type }: 
     .get(index) as Y.Map<unknown>)
     .get('links') as Y.Map<unknown>
 
-  // Check if 'core/article' exists
-  if (!assignmentLinks.has('core/article')) {
-    assignmentLinks.set('core/article', new Y.Array())
+  // Check if deliverableType exists
+  if (!assignmentLinks.has(`core/${type}`)) {
+    assignmentLinks.set(`core/${type}`, new Y.Array())
   }
   // Get existing articles
-  const yArticles = assignmentLinks.get('core/article') as Y.Array<unknown>
+  const yDeliverables = assignmentLinks.get(`core/${type}`) as Y.Array<unknown>
 
-  // Create new article from template
-  const article = Block.create({
+  // Create new deliverable from template
+  const deliverable = Block.create({
     type: `core/${type}`,
     uuid: id,
     rel: 'deliverable',
     title: slug
   })
 
-  // Group article
-  const [groupedArticle] = group([article], 'type')[`core/${type}`]
+  // Group deliverable
+  const [groupedDeliverable] = group([deliverable], 'type')[`core/${type}`]
 
   // Convert to YMap
-  const yArticle = toYMap(
-    groupedArticle as unknown as Record<string, unknown>,
+  const yDeliverable = toYMap(
+    groupedDeliverable as unknown as Record<string, unknown>,
     new Y.Map()
   )
   // Push to existing articles
-  yArticles.push([yArticle])
+  yDeliverables.push([yDeliverable])
 }

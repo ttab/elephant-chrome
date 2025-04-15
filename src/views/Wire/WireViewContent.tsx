@@ -7,10 +7,10 @@ import {
   Title
 } from '@/components'
 import type { ViewProps } from '@/types'
-import type { DefaultValueOption } from '@/types'
-import { Button, ComboBox, Input } from '@ttab/elephant-ui'
-import { CircleXIcon, Tags, GanttChartSquare, Cable, BriefcaseBusiness } from '@ttab/elephant-ui/icons'
-import { useCollaboration, useRegistry } from '@/hooks'
+import type { DefaultValueOption } from '@ttab/elephant-ui'
+import { Button, Checkbox, ComboBox, Input, Label } from '@ttab/elephant-ui'
+import { CircleXIcon, Tags, GanttChartSquare, Cable, BriefcaseBusiness, Tag } from '@ttab/elephant-ui/icons'
+import { useCollaboration, useRegistry, useYValue } from '@/hooks'
 import { useSession } from 'next-auth/react'
 import { useRef, useState } from 'react'
 import { UserMessage } from '@/components/UserMessage'
@@ -21,6 +21,7 @@ import { SluglineEditable } from '@/components/DataItem/SluglineEditable'
 import type * as Y from 'yjs'
 import { CreatePrompt } from '@/components/CreatePrompt'
 import type { Wire as WireType } from '@/hooks/index/lib/wires'
+import { toSlateYXmlText } from '@/lib/yUtils'
 
 export const WireViewContent = (props: ViewProps & {
   wire: WireType
@@ -28,10 +29,13 @@ export const WireViewContent = (props: ViewProps & {
   const { provider } = useCollaboration()
   const { status, data: session } = useSession()
   const [showVerifyDialog, setShowVerifyDialog] = useState(false)
-  const [selectedPlanning, setSelectedPlanning] = useState<DefaultValueOption | undefined>(undefined)
+  const [searchOlder, setSearchOlder] = useState(false)
+  const [selectedPlanning, setSelectedPlanning] = useState<DefaultValueOption & { payload: { slugline?: string, sluglines?: string[] } } | undefined>(undefined)
   const documentAwareness = useRef<(value: boolean) => void>(null)
   const planningTitleRef = useRef<HTMLInputElement>(null)
-  const { index } = useRegistry()
+  const { index, locale, timeZone } = useRegistry()
+
+  const [slugline, setSlugline] = useYValue<Y.XmlText>('meta.tt/slugline[0].value')
 
   const handleSubmit = (): void => {
     setShowVerifyDialog(true)
@@ -71,6 +75,7 @@ export const WireViewContent = (props: ViewProps & {
                 <ComboBox
                   max={1}
                   size='xs'
+                  modal={props.asDialog}
                   className='min-w-0 w-full truncate justify-start max-w-48'
                   selectedOptions={selectedPlanning ? [selectedPlanning] : []}
                   placeholder='Välj planering'
@@ -79,15 +84,27 @@ export const WireViewContent = (props: ViewProps & {
                       documentAwareness.current(isOpen)
                     }
                   }}
-                  fetch={(query) => fetch(query, session, index)}
+                  fetch={(query) => fetch(query, session, index, locale, timeZone, {
+                    searchOlder,
+                    sluglines: true
+                  })}
                   minSearchChars={2}
                   onSelect={(option) => {
                     if (setSelectedPlanning) {
+                      const slugline = (option.payload as { slugline: string | undefined }).slugline
+                      const sluglines = (option.payload as { sluglines: string[] | undefined }).sluglines
+
                       if (option.value !== selectedPlanning?.value) {
                         setSelectedPlanning({
                           value: option.value,
-                          label: option.label
+                          label: option.label,
+                          payload: {
+                            slugline,
+                            sluglines
+                          }
                         })
+
+                        setSlugline(toSlateYXmlText(slugline || ''))
                       } else {
                         setSelectedPlanning(undefined)
                       }
@@ -115,6 +132,14 @@ export const WireViewContent = (props: ViewProps & {
                   </Button>
                 </>
               )}
+              <>
+                <Checkbox
+                  id='SearchOlder'
+                  defaultChecked={searchOlder}
+                  onCheckedChange={(checked: boolean) => { setSearchOlder(checked) }}
+                />
+                <Label htmlFor='SearchOlder' className='text-muted-foreground'>Visa äldre</Label>
+              </>
             </Form.Group>
 
 
@@ -147,6 +172,23 @@ export const WireViewContent = (props: ViewProps & {
               <Title
                 placeholder='Uppdragstitel'
               />
+            </Form.Group>
+            <Form.Group icon={Tag}>
+              {slugline && selectedPlanning && (
+                <SluglineEditable
+                  key={selectedPlanning?.value}
+                  compareValues={[
+                    ...(selectedPlanning?.payload?.sluglines || []),
+                    slugline.toString()
+                  ]}
+                  path='meta.tt/slugline[0].value'
+                />
+              )}
+              {(!selectedPlanning) && (
+                <SluglineEditable
+                  path='meta.tt/slugline[0].value'
+                />
+              )}
             </Form.Group>
             <UserMessage asDialog={!!props?.asDialog}>
               {!selectedPlanning

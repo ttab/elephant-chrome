@@ -10,4 +10,7 @@ export interface AssignmentInterface extends Block {
   _newsvalue?: string
   _section?: string
   _statusData?: string
+  _metricsData?: {
+    charCount?: string
+  }
 }

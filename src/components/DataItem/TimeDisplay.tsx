@@ -7,7 +7,7 @@ export const TimeDisplay = ({ date, className }: { date: Date, className?: strin
 
   return (
     <span className={cn('font-medium text-sm', className)}>
-      {dateToReadableTime(date, locale, timeZone) || '-'}
+      {dateToReadableTime(date, locale.code.full, timeZone) || '-'}
     </span>
   )
 }

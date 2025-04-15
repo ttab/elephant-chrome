@@ -11,7 +11,7 @@ import { type ViewMetadata, type ViewProps } from '@/types'
 import { Tags, Calendar } from '@ttab/elephant-ui/icons'
 import {
   useQuery,
-  useDocumentStatus,
+  useWorkflowStatus,
   useCollaboration,
   useAwareness
 } from '@/hooks'
@@ -73,8 +73,8 @@ export const Planning = (props: ViewProps & { document?: Y.Doc }): JSX.Element =
 const PlanningViewContent = (props: ViewProps & { documentId: string }): JSX.Element | undefined => {
   const { provider, user } = useCollaboration()
   const { data, status } = useSession()
-  const [documentStatus] = useDocumentStatus(props.documentId)
-  const [,setIsFocused] = useAwareness(props.documentId)
+  const [documentStatus] = useWorkflowStatus(props.documentId)
+  const [, setIsFocused] = useAwareness(props.documentId)
 
   useEffect(() => {
     provider?.setAwarenessField('data', user)
@@ -100,6 +100,7 @@ const PlanningViewContent = (props: ViewProps & { documentId: string }): JSX.Ele
           state: false,
           id: props.documentId,
           context: {
+            agent: 'server',
             accessToken: data.accessToken,
             user: data.user,
             type: 'Planning'

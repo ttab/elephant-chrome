@@ -22,6 +22,7 @@ describe('stateless', () => {
       state: false,
       id: 'abce123',
       context: {
+        agent: 'server',
         accessToken: 'secrettoken',
         user: {
           id: 'abce123',

@@ -4,7 +4,6 @@ import { getValueByYPath, setValueByYPath, stringToYPath } from '@/lib/yUtils'
 import { useCollaboration } from './useCollaboration'
 import type { HocuspocusProvider } from '@hocuspocus/provider'
 
-
 /**
  * Observe a value in a an exact path. If the observed value is a Y.XmlText all changes beneath
  * that value are observed, but the value returned is returned as string.
@@ -19,14 +18,14 @@ import type { HocuspocusProvider } from '@hocuspocus/provider'
  *
  * @returns [<T>, (arg0: T) => void, YParent]
  */
-export function useYValue<T>(path: string, raw: boolean = false, externalProvider?: HocuspocusProvider): [
+export function useYValue<T>(path: string, raw: boolean = false, externalProvider?: HocuspocusProvider, rootMap?: string): [
   T | undefined,
   (arg0: T) => void
 ] {
   const { provider: defaultProvider } = useCollaboration()
   const provider = externalProvider || defaultProvider
   const prevDataRef = useRef<T | undefined>(undefined)
-  const yRoot = provider?.document.getMap('ele')
+  const yRoot = provider?.document.getMap(rootMap ?? 'ele')
   const yPath = stringToYPath(path)
 
   const data = useSyncExternalStore(

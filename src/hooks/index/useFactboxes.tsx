@@ -17,13 +17,12 @@ export const useFactboxes = ({ filter, page }: {
 
   // Create a key for the SWR cache, if it changes we do a refetch
   const key = useMemo(() => filter
-    // TODO make better key
-    ? `tt/factbox/${JSON.stringify(filter)}${page ? `/${page}` : ''}`
-    : 'tt/factbox', [filter, page])
+    ? `core/factbox/${JSON.stringify(filter)}${page ? `/${page}` : ''}`
+    : 'core/factbox', [filter, page])
 
-  const fetcher = useMemo(() => (): Promise<Factbox[] | undefined> =>
-    fetch({ index, repository, session, filter, page }),
-  [index, repository, session, filter, page])
+  const fetcher = useMemo(() => (): Promise<Factbox[] | undefined> => {
+    return fetch({ index, repository, session, filter, page })
+  }, [index, repository, session, filter, page])
 
   const { data, error } = useSWR<Factbox[] | undefined, Error>(key, fetcher)
 

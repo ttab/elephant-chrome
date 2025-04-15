@@ -1,8 +1,8 @@
 import { type Block } from '@ttab/elephant-api/newsdoc'
 import type * as views from '@/views'
-import { type RpcError } from '@protobuf-ts/runtime-rpc'
 import { type LucideIcon } from '@ttab/elephant-ui/icons'
 import type { TemplatePayload } from '@/defaults/templates'
+import type { Locale } from 'date-fns'
 
 export enum NavigationActionType {
   SET = 'set',
@@ -64,6 +64,9 @@ export interface ContentState {
   name: View
   path: string
   props?: ViewProps
+  readOnly?: {
+    version?: bigint
+  }
 }
 
 export interface ViewProps {
@@ -76,6 +79,7 @@ export interface ViewProps {
   className?: string
   payload?: TemplatePayload
   autoFocus?: boolean
+  setOpen?: (open?: boolean) => boolean
 }
 
 export type Theme = 'dark' | 'light' | 'system'
@@ -110,8 +114,6 @@ export interface DefaultValueOption {
 }
 
 
-export type ElephantValidationMessage = Pick<RpcError, 'code' | 'methodName' | 'serviceName' | 'meta'>
-
 export type ValidateStateRef = React.MutableRefObject<ValidateState>
 
 export type ValidateState = Record<string, {
@@ -119,3 +121,13 @@ export type ValidateState = Record<string, {
   valid: boolean
   reason: string
 }>
+
+export type LocaleData = {
+  module: Locale
+  code: {
+    short: string
+    long: string
+    full: string
+  }
+}
+

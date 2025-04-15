@@ -1,3 +1,4 @@
+import type { ButtonHTMLAttributes } from 'react'
 import React from 'react'
 import { type FormProps } from './Root'
 
@@ -8,12 +9,14 @@ export const Submit = ({
   onValidation,
   setValidateForm,
   onSubmit,
+  onSecondarySubmit,
   onDocumentCreated,
   onReset
 }: FormProps & {
   documentId?: string
   onDialogClose?: (id: string, title: string) => void
   onSubmit?: () => void
+  onSecondarySubmit?: () => void
   onDocumentCreated?: () => void
   onReset?: () => void
 }): JSX.Element | null => {
@@ -29,21 +32,43 @@ export const Submit = ({
 
   const handleClick = (
     event: React.MouseEvent<HTMLButtonElement> | React.KeyboardEvent<HTMLButtonElement>,
-    type: 'submit' | 'reset'
+    type: ButtonHTMLAttributes<HTMLButtonElement>['type']
   ): void => {
     event.preventDefault()
     event.stopPropagation()
 
     if (handleValidate) {
-      if (type === 'submit' && onSubmit) {
-        handleValidate(() => {
-          onSubmit()
-          if (onDocumentCreated) {
-            onDocumentCreated()
+      switch (type) {
+        case 'submit':
+          if (onSubmit) {
+            handleValidate(() => {
+              onSubmit()
+              if (onDocumentCreated) {
+                onDocumentCreated()
+              }
+            })
           }
-        })
-      } else if (type === 'reset' && onReset) {
-        onReset()
+          break
+
+        case 'button':
+          if (onSecondarySubmit) {
+            handleValidate(() => {
+              onSecondarySubmit()
+              if (onDocumentCreated) {
+                onDocumentCreated()
+              }
+            })
+          }
+          break
+
+        case 'reset':
+          if (onReset) {
+            onReset()
+          }
+          break
+
+        default:
+          break
       }
     }
   }
@@ -58,23 +83,39 @@ export const Submit = ({
       const childProps = child.props as { type: string, children: React.ReactElement }
 
       if (child.props && 'type' in child.props) {
-        if (childProps.type === 'submit') {
-          props.onClick = (event: React.MouseEvent<HTMLButtonElement>) =>
-            handleClick(event, 'submit')
-
-          props.onKeyDown = (event: React.KeyboardEvent<HTMLButtonElement>) => {
-            if (event.key === 'Enter') {
+        switch (childProps.type) {
+          case 'submit':
+            props.onClick = (event: React.MouseEvent<HTMLButtonElement>) =>
               handleClick(event, 'submit')
+
+            props.onKeyDown = (event: React.KeyboardEvent<HTMLButtonElement>) => {
+              if (event.key === 'Enter') {
+                handleClick(event, 'submit')
+              }
             }
-          }
-        } else if (childProps.type === 'reset') {
-          props.onClick = (event: React.MouseEvent<HTMLButtonElement>) =>
-            handleClick(event, 'reset')
-          props.onKeyDown = (event: React.KeyboardEvent<HTMLButtonElement>) => {
-            if (event.key === 'Enter') {
+            break
+
+          case 'reset':
+            props.onClick = (event: React.MouseEvent<HTMLButtonElement>) =>
               handleClick(event, 'reset')
+
+            props.onKeyDown = (event: React.KeyboardEvent<HTMLButtonElement>) => {
+              if (event.key === 'Enter') {
+                handleClick(event, 'reset')
+              }
             }
-          }
+            break
+
+          case 'button':
+            props.onClick = (event: React.MouseEvent<HTMLButtonElement>) =>
+              handleClick(event, 'button')
+
+            props.onKeyDown = (event: React.KeyboardEvent<HTMLButtonElement>) => {
+              if (event.key === 'Enter') {
+                handleClick(event, 'button')
+              }
+            }
+            break
         }
       }
 

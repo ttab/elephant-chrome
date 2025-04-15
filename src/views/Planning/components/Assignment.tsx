@@ -67,10 +67,11 @@ export const Assignment = ({ index, onAbort, onClose }: {
             )}
           />
 
-          {assignmentType === 'text'
+          {(assignmentType === 'text' || assignmentType === 'editorial-info')
           && (
             <Form.Group icon={Tags}>
               <SluglineEditable
+                disabled={!!articleId || !!flashId}
                 path={`meta.core/assignment[${index}].meta.tt/slugline[0].value`}
               />
             </Form.Group>

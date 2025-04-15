@@ -1,9 +1,9 @@
-import { useDocumentStatus, useView } from '@/hooks'
+import { useView } from '@/hooks'
 import { useEffect, useRef } from 'react'
 import { MetaSheet } from './components/MetaSheet'
-import { DocumentStatusMenu } from '@/components/DocumentStatusMenu'
 import { AddNote } from './components/Notes/AddNote'
 import { ViewHeader } from '@/components/View'
+import { StatusMenu } from '@/components/DocumentStatus/StatusMenu'
 import { RefreshCw, PenBoxIcon } from '@ttab/elephant-ui/icons'
 import { Button } from '@ttab/elephant-ui'
 
@@ -13,13 +13,12 @@ export const EditorHeader = ({
   documentId: string
 }): JSX.Element => {
   const { viewId } = useView()
-  const [documentStatus, setDocumentStatus] = useDocumentStatus(documentId)
-
   const containerRef = useRef<HTMLElement | null>(null)
 
   useEffect(() => {
     containerRef.current = document.getElementById(viewId)
   }, [viewId])
+
 
   return (
     <ViewHeader.Root className='grid grid-cols-3'>
@@ -36,14 +35,13 @@ export const EditorHeader = ({
             </div>
 
             <div className='flex flex-row gap-2 justify-end items-center'>
-              <DocumentStatusMenu
-                type='core/article'
-                status={documentStatus}
-                setStatus={setDocumentStatus}
-              />
               {!!documentId && (
                 <>
                   <ViewHeader.RemoteUsers documentId={documentId} />
+                  <StatusMenu
+                    documentId={documentId}
+                    type='core/article'
+                  />
                 </>
               )}
             </div>
