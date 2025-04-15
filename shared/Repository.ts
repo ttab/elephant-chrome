@@ -223,7 +223,9 @@ export class Repository {
         updateMetaDocument: false,
         lockToken: '',
         ifWorkflowState: '',
-        ifStatusHeads: {}
+        ifStatusHeads: {},
+        attachObjects: {},
+        detachObjects: []
       }, meta(accessToken))
 
       return response
@@ -257,7 +259,9 @@ export class Repository {
       lockToken: '',
       updateMetaDocument: false,
       ifWorkflowState: '',
-      ifStatusHeads: {}
+      ifStatusHeads: {},
+      attachObjects: {},
+      detachObjects: []
     }
 
     return await this.#client.update(
