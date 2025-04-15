@@ -58,7 +58,7 @@ export const EditorHeader = ({
           className='px-2 py-0 flex gap-2 items-center'
           onClick={(e) => {
             e.preventDefault()
-            window.alert('Ej implementerat ännu')
+            window.alert('Ej implementerat')
           }}
         >
           <RefreshCw strokeWidth={1.75} size={16} />

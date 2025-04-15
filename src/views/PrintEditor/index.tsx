@@ -175,7 +175,7 @@ function LayoutBox({
             className='p-2'
             onClick={(e) => {
               e.preventDefault()
-              window.alert('Ej implementerat ännu')
+              window.alert('Ej implementerat')
             }}
           >
             <X strokeWidth={1.75} size={18} />
@@ -454,7 +454,7 @@ function EditorContainer({
                       className='p-2 flex gap-2 items-center'
                       onClick={(e) => {
                         e.preventDefault()
-                        window.alert('Ej implementerat ännu')
+                        window.alert('Ej implementerat')
                       }}
                     >
                       <Plus strokeWidth={1.75} size={18} />

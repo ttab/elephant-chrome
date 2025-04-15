@@ -61,7 +61,7 @@ export const PrintArticles = (): JSX.Element => {
                 variant='outline'
                 onClick={(e) => {
                   e.preventDefault()
-                  window.alert('Ej implementerat ännu')
+                  window.alert('Ej implementerat')
                 }}
               >
                 Ny artikel
@@ -104,8 +104,7 @@ export const PrintArticles = (): JSX.Element => {
       <Dialog open={openCreateFlow}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Skapa flöde</DialogTitle>
-            <DialogDescription>Lista över flöden</DialogDescription>
+            <DialogTitle>Lista över flöden</DialogTitle>
           </DialogHeader>
           <PrintFlows />
           <DialogFooter>
