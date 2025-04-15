@@ -12,7 +12,8 @@ const scopes = [
   'doc_delete',
   'eventlog_read',
   'metrics_read',
-  'user'
+  'user',
+  'baboon'
 ]
 
 const authorizationUrl = new URL(`${process.env.AUTH_KEYCLOAK_ISSUER}/protocol/openid-connect/auth`)
