@@ -64,13 +64,11 @@ export interface ContentState {
   name: View
   path: string
   props?: ViewProps
-  readOnly?: {
-    version?: bigint
-  }
 }
 
 export interface ViewProps {
   id?: string | null
+  version?: number
   asDialog?: boolean
   onDialogClose?: (id?: string, title?: string) => void
   onDocumentCreated?: () => void
