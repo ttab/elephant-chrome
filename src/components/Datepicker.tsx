@@ -13,11 +13,12 @@ import { cva } from 'class-variance-authority'
 import { format } from 'date-fns'
 import { type ViewProps } from '../types'
 
-export const DatePicker = ({ date, changeDate, setDate, forceYear = false }: {
+export const DatePicker = ({ date, changeDate, setDate, forceYear = false, disabled = false }: {
   date: Date
   changeDate?: (event: MouseEvent<Element> | KeyboardEvent | undefined, props: ViewProps, target?: 'self') => void
   setDate?: ((arg: string) => void)
   forceYear?: boolean
+  disabled?: boolean
 }): JSX.Element => {
   const { locale, timeZone } = useRegistry()
 
@@ -78,6 +79,7 @@ export const DatePicker = ({ date, changeDate, setDate, forceYear = false }: {
         allowPropagationForKeys={['Escape', 'ArrowDown', 'ArrowUp']}
       >
         <Calendar
+          disabled={disabled}
           mode='single'
           locale={locale.module}
           selected={date}
