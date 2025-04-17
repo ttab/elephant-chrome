@@ -183,7 +183,7 @@ export const AssignmentRow = ({ index, onSelect, isFocused = false, asDialog }: 
       icon: isUsable ? Eye : FileInput,
       item: <T extends HTMLElement>(event: MouseEvent<T>) => {
         const useable = articleStatus?.meta?.workflowState === 'usable'
-        const version = articleStatus?.meta?.heads['usable'].version
+        const version = articleStatus?.meta?.heads['usable']?.version
 
         onOpenEvent(event, useable && version ? { version } : undefined)
       }
