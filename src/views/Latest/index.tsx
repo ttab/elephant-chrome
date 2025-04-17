@@ -131,14 +131,10 @@ const Content = ({ documents, locale, setOpen }: { documents: Document[], locale
               handleLink({
                 dispatch,
                 viewItem: state.viewRegistry.get('Editor'),
-                props: { id: uuid },
+                props: { id: uuid, version: lastUsableVersion?.toString() },
                 viewId: crypto.randomUUID(),
                 history,
-                origin: viewId,
-                target: 'last',
-                readOnly: {
-                  version: lastUsableVersion
-                }
+                origin: viewId
               })
 
               if (setOpen) {
