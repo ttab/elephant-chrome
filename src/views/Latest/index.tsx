@@ -134,7 +134,8 @@ const Content = ({ documents, locale, setOpen }: { documents: Document[], locale
                 props: { id: uuid, version: lastUsableVersion?.toString() },
                 viewId: crypto.randomUUID(),
                 history,
-                origin: viewId
+                origin: viewId,
+                target: 'last'
               })
 
               if (setOpen) {
