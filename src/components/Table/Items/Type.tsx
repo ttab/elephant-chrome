@@ -15,15 +15,9 @@ export const Type = ({ data, deliverableId, className }: {
   const openFlash = useLink('Flash')
 
   const handleLink = useCallback((event: MouseEvent, item: DefaultValueOption) => {
-    event.stopPropagation()
+    const openDocument = item.value === 'flash' ? openFlash : openArticle
     if (deliverableId) {
-      if (item.value === 'text') {
-        openArticle(event, { id: deliverableId })
-      }
-
-      if (item.value === 'flash') {
-        openFlash(event, { id: deliverableId })
-      }
+      openDocument(event, { id: deliverableId })
     }
   }, [deliverableId, openArticle, openFlash])
 
