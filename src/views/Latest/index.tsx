@@ -97,7 +97,11 @@ export const Latest = ({ setOpen }: { setOpen?: (open: boolean) => void }) => {
   )
 }
 
-const Content = ({ documents, locale, setOpen }: { documents: Document[], locale: LocaleData, setOpen?: (open: boolean) => void }): JSX.Element => {
+const Content = ({ documents, locale }: {
+  documents: Document[]
+  locale: LocaleData
+  setOpen?: (open: boolean) => void
+}): JSX.Element => {
   const { state, dispatch } = useNavigation()
   const history = useHistory()
   const { viewId } = useView()
@@ -138,10 +142,6 @@ const Content = ({ documents, locale, setOpen }: { documents: Document[], locale
                 origin: viewId,
                 target: 'last'
               })
-
-              if (setOpen) {
-                setOpen(false)
-              }
             }}
           >
             <div className='py-2 px-3 text-xs flex flex-col'>
