@@ -1,4 +1,4 @@
-import { Calendar1, Pen, Shapes } from '@ttab/elephant-ui/icons'
+import { Calendar1, Clock3Icon, Pen, Shapes } from '@ttab/elephant-ui/icons'
 import { dateToReadableShort } from '@/lib/datetime'
 import { planningListColumns } from '../PlanningOverview/PlanningListColumns'
 import { eventTableColumns } from '../EventsOverview/EventsListColumns'
@@ -14,9 +14,10 @@ import type { Article, Event } from '@/lib/index'
 import type { AssignmentMetaExtended } from '../Assignments/types'
 import type { LocaleData } from '@/types'
 import type { Dispatch, SetStateAction } from 'react'
+import { slotLabels } from '@/defaults/assignmentTimeslots'
 
-export type ColumnType<T> = Array<ColumnDef<T>>
 type RowType<T> = { row: Row<T> }
+export type ColumnType<T> = Array<ColumnDef<T>>
 export type SearchColumnType = ColumnType<Planning> | ColumnType<Event> | ColumnType<AssignmentMetaExtended> | ColumnType<Article>
 
 export function searchColumns({ locale, timeZone, sections, type, authors, organisers }: {
@@ -28,18 +29,88 @@ export function searchColumns({ locale, timeZone, sections, type, authors, organ
   type: 'plannings' | 'events' | 'assignments' | 'articles'
 }): SearchColumnType {
   if (type === 'plannings') {
-    return [...planningListColumns({ sections, authors })]
+    const columns = planningListColumns({ sections, authors })
+    const last = columns.pop() as ColumnDef<Planning>
+    return [
+      ...columns,
+      {
+        id: 'start_date',
+        meta: {
+          name: 'Datum',
+          columnIcon: Calendar1,
+          className: 'flex-none w-[100px]'
+        },
+        accessorFn: (data: Planning) => {
+          const startTime = new Date(data?._source['document.meta.core_planning_item.data.start_date']?.[0])
+          if (!startTime) {
+            return ''
+          }
+          return startTime
+        },
+        cell: ({ row }: RowType<Planning>) => {
+          const dateValue: string = row.getValue('start_date')
+          if (dateValue) {
+            const day = dateToReadableShort(new Date(dateValue), locale.code.full, timeZone)
+            return <div>{day}</div>
+          }
+          return <></>
+        }
+      },
+      last
+    ]
   }
 
   if (type === 'events') {
+    const columns = eventTableColumns({ locale, sections, organisers })
+    const last = columns.pop() as ColumnDef<Event>
+
     return [
-      ...eventTableColumns({ locale, sections, organisers })
+      ...columns,
+      {
+        id: 'start_date',
+        meta: {
+          name: 'Datum',
+          columnIcon: Calendar1,
+          className: 'flex-none w-[100px]'
+        },
+        accessorFn: (data: Event) => {
+          const startTime = new Date(data?._source['document.meta.core_event.data.start']?.[0])
+          return startTime
+        },
+        cell: ({ row }: RowType<Event>) => {
+          const dateValue: string = row.getValue('start_date')
+          if (dateValue) {
+            const day = dateToReadableShort(new Date(dateValue), locale.code.full, timeZone)
+            return <div>{day}</div>
+          }
+          return <></>
+        }
+      },
+      last
     ]
   }
 
   if (type === 'assignments') {
+    const columns = assignmentColumns({ authors, locale, timeZone, sections })
+    const last = columns.pop() as ColumnDef<AssignmentMetaExtended>
     return [
-      ...assignmentColumns({ authors, locale, timeZone, sections })
+      ...columns,
+      {
+        id: 'startDate',
+        meta: {
+          options: slotLabels,
+          name: 'Uppdragstid',
+          columnIcon: Clock3Icon,
+          className: 'flex-none w-[112px] hidden @5xl/view:[display:revert]'
+        },
+        accessorFn: ({ data }: AssignmentMetaExtended) => [data?.start],
+        cell: ({ row }: RowType<AssignmentMetaExtended>) => {
+          const [start] = row.getValue<string[]>('assignment_time')
+          const day = dateToReadableShort(new Date(start), locale.code.full, timeZone)
+          return <div>{day}</div>
+        }
+      },
+      last
     ]
   }
 
