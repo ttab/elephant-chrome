@@ -30,9 +30,10 @@ const meta: ViewMetadata = {
 type DocumentExtended = Document & { publish?: string, slugline?: string, section?: string, lastUsableVersion?: bigint }
 
 export const Latest = ({ setOpen }: { setOpen?: (open: boolean) => void }) => {
+  const date = useMemo(() => new Date(), [])
   const [data] = useAssignments({
     type: 'text',
-    date: new Date(),
+    date,
     status: ['usable']
   })
 
