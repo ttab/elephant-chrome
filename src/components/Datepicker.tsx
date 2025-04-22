@@ -14,12 +14,13 @@ import { format } from 'date-fns'
 import { type ViewProps } from '../types'
 import type { QueryParams } from '@/hooks/useQuery'
 
-export const DatePicker = ({ date, changeDate, setDate, forceYear = false, keepQuery }: {
+export const DatePicker = ({ date, changeDate, setDate, forceYear = false, keepQuery, disabled = false }: {
   date: Date
   changeDate?: (event: MouseEvent<Element> | KeyboardEvent | undefined, props: ViewProps, target?: 'self') => void
   setDate?: ((arg: string) => void)
   forceYear?: boolean
   keepQuery?: QueryParams
+  disabled?: boolean
 }): JSX.Element => {
   const { locale, timeZone } = useRegistry()
 
@@ -80,6 +81,7 @@ export const DatePicker = ({ date, changeDate, setDate, forceYear = false, keepQ
         allowPropagationForKeys={['Escape', 'ArrowDown', 'ArrowUp']}
       >
         <Calendar
+          disabled={disabled}
           mode='single'
           locale={locale.module}
           selected={date}
