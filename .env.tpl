@@ -31,6 +31,9 @@ CONTENT_API_URL=https:// ...
 # Spelling backend
 SPELLCHECK_URL=https:// ...
 
+# Baboon print backend
+BABOON_URL=https:// ...
+
 # Server configuration
 PROTOCOL=http
 HOST=localhost
