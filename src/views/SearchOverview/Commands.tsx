@@ -1,6 +1,7 @@
 import { CommandList } from '@ttab/elephant-ui'
 import { ClearFilter } from '@/components/Filter/ClearFilter'
 import { OptionsFilter } from '@/components/Filter/common/OptionsFilter'
+import { BookUser, Calendar, Crosshair, Shapes, SignalHigh, Tag, Users } from '@ttab/elephant-ui/icons'
 import { useCategories, useOrganisers, useSections, useQuery, useAuthors, useLink } from '@/hooks'
 import { Newsvalues } from '@/defaults/newsvalues'
 import { AssignmentTypes } from '@/defaults/assignmentTypes'
@@ -105,7 +106,7 @@ export const Commands = (props: FilterProps & { type: SearchType }): JSX.Element
         />
       )}
       <div className='flex gap-1 w-full items-center px-2 my-1'>
-        <CalendarPlus size={18} strokeWidth={1.75} />
+        <Calendar size={18} strokeWidth={1.75} />
         <div className='text-xs'>Från</div>
         <DatePicker date={currentDate} changeDate={changeDate} keepQuery={filters} />
       </div>
