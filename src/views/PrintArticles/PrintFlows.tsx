@@ -1,11 +1,20 @@
-import { usePrintFlows } from '@/hooks/index/usePrintFlows'
+import { useFetchPrintFlows } from '@/components/CreatePrintArticle/hooks/useFetchPrintFlows'
+import { useRegistry } from '@/hooks/useRegistry'
 import { Button } from '@ttab/elephant-ui'
+import { useSession } from 'next-auth/react'
 
 export const PrintFlows = (): JSX.Element => {
-  const [printFlows] = usePrintFlows({})
+  const { data: session } = useSession()
+  const { server: { indexUrl } } = useRegistry()
+  const { data, error } = useFetchPrintFlows(indexUrl, session)
+
+  if (error) {
+    console.error('Could not fetch PrintFlows:', error)
+  }
+
   return (
     <>
-      {printFlows?.map((flow) => {
+      {data?.hits?.map((flow) => {
         return (
           <div key={flow.id}>
             <h1 className='text-xl font-bold'>{flow?.fields?.['document.title']?.values?.[0] ?? ''}</h1>
