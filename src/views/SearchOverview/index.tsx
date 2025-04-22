@@ -12,6 +12,8 @@ import { type ViewMetadata } from '@/types'
 import { type Planning, type Event, type Article } from '@/lib/index'
 import { type AssignmentMetaExtended } from '../Assignments/types'
 import { useQuery } from '@/hooks/useQuery'
+import { useOrganisers } from '@/hooks/useOrganisers'
+import { useAuthors } from '@/hooks/useAuthors'
 
 const meta: ViewMetadata = {
   name: 'Search',
@@ -37,6 +39,8 @@ export const Search = (): JSX.Element => {
   const [searchType, setSearchType] = useState<SearchType>(startingSearchType)
   const { locale, timeZone } = useRegistry()
   const sections = useSections()
+  const organisers = useOrganisers()
+  const authors = useAuthors()
 
 
   const columns = useMemo(() => {

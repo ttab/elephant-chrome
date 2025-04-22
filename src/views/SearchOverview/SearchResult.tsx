@@ -4,10 +4,15 @@ import { Table } from '@/components/Table'
 import { searchColumns } from './SearchColumns'
 import { useRegistry } from '@/hooks/useRegistry'
 import { useSections } from '@/hooks/useSections'
-import { type Article, type Event, type Planning } from '@/lib/index'
-import { type AssignmentMetaExtended } from '../Assignments/types'
 import { LoadingText } from '@/components/LoadingText'
 import { Toolbar } from './Toolbar'
+import { useOrganisers } from '@/hooks/useOrganisers'
+import { useAuthors } from '@/hooks/useAuthors'
+import type { Article, Event, Planning } from '@/lib/index'
+import type { AssignmentMetaExtended } from '../Assignments/types'
+import type { SearchType } from './SearchDropdown'
+import type { ColumnDef } from '@tanstack/react-table'
+import type { Types } from './search'
 
 export const SearchResult = ({ from, to, isLoading, searchType, page }: {
   from: string
@@ -17,6 +22,9 @@ export const SearchResult = ({ from, to, isLoading, searchType, page }: {
   page: number
 }): JSX.Element => {
   const sections = useSections()
+  const organisers = useOrganisers()
+  const authors = useAuthors()
+
   const { locale, timeZone } = useRegistry()
   const { error } = useSWR<unknown, Error>(['Search', searchType, page, from, to, { withStatus: true }])
 
