@@ -1,29 +1,20 @@
-import { Command } from '@ttab/elephant-ui'
-import { DebouncedCommandInput } from '@/components/Commands/Menu/DebouncedCommandInput'
-import { useQuery } from '@/hooks/useQuery'
+import { Button } from '@ttab/elephant-ui'
+import { ListFilter } from '@ttab/elephant-ui/icons'
 
 export const Toolbar = (): JSX.Element => {
-  const [filter, setFilter] = useQuery(['query'])
-
   return (
     <div className='flex items-center justify-between py-1 px-4 border-b sticky top-0 bg-whitez-10'>
       <div className='flex flex-1 items-center space-x-2'>
-        <Command
-          className='[&_[cmdk-input-wrapper]]:border-none'
+        <Button
+          variant='ghost'
+          size='sm'
+          className='px-2 py-0 flex gap-2 items-center'
+          onClick={() => {
+            window.alert('Ej implementerat')
+          }}
         >
-          <DebouncedCommandInput
-            value={filter.query?.[0]}
-            onChange={(value: string | undefined) => {
-              if (value) {
-                setFilter({ query: [value] })
-              } else {
-                setFilter({})
-              }
-            }}
-            placeholder='Fritextsökning'
-            className='h-9'
-          />
-        </Command>
+          <ListFilter strokeWidth={1.75} size={18} />
+        </Button>
       </div>
     </div>
   )
