@@ -11,11 +11,12 @@ import {
 import { type AssignmentMetaExtended } from '../Assignments/types'
 import { useQuery } from '@/hooks/useQuery'
 import { Input } from '@ttab/elephant-ui'
+import type { SearchType } from './SearchDropdown'
 
-export const SearchBar = ({ setLoading, setTotalHits, pool, page, width }: {
+export const SearchBar = ({ setLoading, setTotalHits, searchType, page, width }: {
   setLoading: React.Dispatch<SetStateAction<boolean>>
   setTotalHits: React.Dispatch<SetStateAction<number>>
-  pool: string
+  searchType: SearchType
   page: number
   width?: string
 }): JSX.Element => {
@@ -37,18 +38,18 @@ export const SearchBar = ({ setLoading, setTotalHits, pool, page, width }: {
       page,
       setLoading,
       setTotalHits,
-      pool,
+      searchType,
       accessToken,
       indexUrl,
       setData,
       status
     })
-  }, [page, indexUrl, accessToken, query.query, pool, status, setLoading, setData, setTotalHits])
+  }, [page, indexUrl, accessToken, query, searchType, status, setLoading, setData, setTotalHits])
 
   useEffect(() => {
     formRef?.current?.reset()
     inputRef?.current?.focus()
-  }, [pool])
+  }, [searchType])
 
 
   return (
@@ -58,13 +59,14 @@ export const SearchBar = ({ setLoading, setTotalHits, pool, page, width }: {
       onSubmit={(e): void => {
         e.preventDefault()
         const text = inputRef?.current?.value
-        setQueryString({ type: pool, query: text })
+        setQueryString({ type: searchType, query: text })
+
         search({
           text,
           page,
           setLoading,
           setTotalHits,
-          pool,
+          searchType,
           accessToken,
           indexUrl,
           setData,

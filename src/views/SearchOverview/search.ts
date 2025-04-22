@@ -17,7 +17,7 @@ interface Props {
   setTotalHits: React.Dispatch<SetStateAction<number>>
   page: number
   text: string | undefined
-  pool: string
+  searchType: string
   accessToken: string | undefined
   indexUrl: URL
   setData: Dispatch<Array<Planning | Event | AssignmentMetaExtended | Article>>
@@ -47,32 +47,35 @@ export const search = ({
   page,
   setLoading,
   setTotalHits,
-  pool,
+  searchType,
   accessToken,
   indexUrl,
   setData,
-  status
+  status,
+  query
 }: Props): void => {
   void (async () => {
-    if (!accessToken || status !== 'authenticated' || (!text || text?.length < 1)) {
+    if (!accessToken || status !== 'authenticated'/*  || (!text || text?.length < 1) */) {
       return
     }
+
     const params: Params = {
       when: 'anytime',
       page,
       size: 100,
+      query,
       where: {
-        text
+        text: text || ''
       }
     } as const
 
     try {
       const allData: DataType<Types> = []
       setLoading(true)
-      const isPlanningOrEventSearch = pool === 'plannings' || pool === 'events'
+      const isPlanningOrEventSearch = searchType === 'plannings' || searchType === 'events'
 
       if (isPlanningOrEventSearch) {
-        if (pool === 'events') {
+        if (searchType === 'events') {
           /* in Plannings view we use the sort.start parameter to sort by assignment time,
           which should not be done in Search view. However, the same parameter in Events
           view can also be used in Search view to get correct sorting */
@@ -80,11 +83,12 @@ export const search = ({
             start: 'desc'
           }
         }
-        const result = pool === 'plannings'
+
+        const result = searchType === 'plannings'
           ? await Plannings.search(indexUrl, accessToken, params)
           : await Events.search(indexUrl, accessToken, params)
         if (result.ok) {
-          if (pool === 'plannings') {
+          if (searchType === 'plannings') {
             const planningsWithstatus = withStatus<Planning | Event>(result)
             setTotalHits(planningsWithstatus.length)
             allData.push(...planningsWithstatus)
@@ -94,14 +98,16 @@ export const search = ({
           }
         }
       }
-      if (pool === 'assignments') {
+
+      if (searchType === 'assignments') {
         const endpoint = new URL('/twirp/elephant.index.SearchV1/Query', indexUrl)
-        const result = await Assignments.search({ endpoint, accessToken, text, page })
+        const result = await Assignments.search({ endpoint, accessToken, text, page, paramsQuery: query })
         const assignments: AssignmentMetaExtended[] = transformAssignments(result)
         setTotalHits(assignments.length)
         allData.push(...assignments)
       }
-      if (pool === 'articles') {
+
+      if (searchType === 'articles') {
         const result = await Articles.search(indexUrl, accessToken, params)
         if (result.ok) {
           setTotalHits(result.total)

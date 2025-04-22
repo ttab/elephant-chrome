@@ -1,23 +1,26 @@
 import useSWR from 'swr'
 import { useCallback, useMemo } from 'react'
 import { Table } from '@/components/Table'
-import { searchWideColumns } from './SearchColumns'
+import { searchColumns } from './SearchColumns'
 import { useRegistry } from '@/hooks/useRegistry'
 import { useSections } from '@/hooks/useSections'
 import { type Article, type Event, type Planning } from '@/lib/index'
 import { type AssignmentMetaExtended } from '../Assignments/types'
 import { LoadingText } from '@/components/LoadingText'
 
-export const SearchResult = ({ from, to, isLoading, pool, page }: {
+export const SearchResult = ({ from, to, isLoading, searchType, page }: {
   from: string
   to: string
   isLoading: boolean
-  pool: string
+  searchType: SearchType
   page: number
 }): JSX.Element => {
   const sections = useSections()
-  const { error } = useSWR<unknown, Error>(['Search', pool, page, from, to, { withStatus: true }])
   const { locale, timeZone } = useRegistry()
+  const { error } = useSWR<unknown, Error>(['Search', searchType, page, from, to, { withStatus: true }])
+
+  const getType = (searchType: SearchType) => searchType === 'events' ? 'Event' : searchType === 'articles' ? 'Editor' : 'Planning'
+
   const onRowSelected = useCallback((row?: Planning | Event | AssignmentMetaExtended | Article) => {
     if (row) {
       console.info(`Selected planning item ${row._id}`)
@@ -27,7 +30,9 @@ export const SearchResult = ({ from, to, isLoading, pool, page }: {
     return row
   }, [])
 
-  const columns = useMemo(() => searchWideColumns({ locale, timeZone, sections }), [locale, timeZone, sections])
+  const columns = useMemo(() => {
+    return searchColumns({ locale, timeZone, sections, authors, organisers, type: searchType })
+  }, [locale, timeZone, authors, sections, organisers, searchType])
 
   if (error) {
     return <pre>{error.message}</pre>
@@ -40,11 +45,15 @@ export const SearchResult = ({ from, to, isLoading, pool, page }: {
             <LoadingText>Laddar...</LoadingText>
           )
         : (
-            <Table
-              type='Planning'
-              columns={columns}
-              onRowSelected={onRowSelected}
-            />
+            <>
+              <Toolbar type={searchType} />
+              <Table
+                type='Search'
+                searchType={getType(searchType)}
+                columns={columns as Array<ColumnDef<Types, unknown>>}
+                onRowSelected={onRowSelected}
+              />
+            </>
           )}
     </>
   )
