@@ -129,3 +129,14 @@ export type LocaleData = {
   }
 }
 
+export interface QueryType {
+  query: {
+    bool: {
+      should: unknown[]
+      must: unknown[]
+    }
+  }
+  _source?: boolean
+  fields?: string[]
+  sort?: Array<Record<string, 'asc' | 'desc'>>
+}

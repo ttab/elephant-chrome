@@ -9,11 +9,12 @@ import { SearchDropdown, searchTypes as validSearchTypes, type SearchType } from
 import { Pagination } from '../../components/Table/Pagination'
 import { searchColumns } from './SearchColumns'
 import { type ViewMetadata } from '@/types'
-import { type Planning, type Event, type Article } from '@/lib/index'
-import { type AssignmentMetaExtended } from '../Assignments/types'
 import { useQuery } from '@/hooks/useQuery'
 import { useOrganisers } from '@/hooks/useOrganisers'
 import { useAuthors } from '@/hooks/useAuthors'
+import type { Types } from './search'
+import { Toolbar } from './Toolbar'
+import type { ColumnDef } from '@tanstack/react-table'
 
 const meta: ViewMetadata = {
   name: 'Search',
@@ -54,11 +55,14 @@ export const Search = (): JSX.Element => {
     return <></>
   }
 
+
+  const { type, ...params } = query
+
   return (
     <View.Root>
-      <TableProvider<Planning | Event | AssignmentMetaExtended | Article>
+      <TableProvider<Types>
         type={meta.name}
-        columns={columns}
+        columns={columns as Array<ColumnDef<Types, unknown>>}
       >
         <ViewHeader.Root>
           <ViewHeader.Title name='Search' title='Sök' />
