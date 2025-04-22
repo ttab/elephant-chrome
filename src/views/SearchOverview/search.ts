@@ -58,7 +58,7 @@ export const search = ({
   query
 }: Props): void => {
   void (async () => {
-    if (!accessToken || status !== 'authenticated'/*  || (!text || text?.length < 1) */) {
+    if (!accessToken || status !== 'authenticated') {
       return
     }
 
