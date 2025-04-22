@@ -56,9 +56,13 @@ export function eventTableColumns({ sections = [], organisers = [], locale }: {
         }
       },
       accessorFn: (data) => {
-        const startTime = new Date(data._source['document.meta.core_event.data.start'][0])
-        const endTime = new Date(data._source['document.meta.core_event.data.end'][0])
+        const startTime = new Date(data?._source['document.meta.core_event.data.start']?.[0])
+        const endTime = new Date(data?._source['document.meta.core_event.data.end']?.[0])
         const isFullDay = (endTime.getTime() - startTime.getTime()) / (1000 * 60 * 60) > 12
+
+        if (!startTime || !endTime) {
+          return <></>
+        }
 
         if (isFullDay) {
           return undefined
@@ -91,9 +95,13 @@ export function eventTableColumns({ sections = [], organisers = [], locale }: {
           </span>
         )
       },
-      accessorFn: (data) => data?._source['document.meta.status'][0],
+      accessorFn: (data) => data?._source['document.meta.status']?.[0],
       cell: ({ row }) => {
         const status = row.getValue<string>('documentStatus')
+        if (!status) {
+          return <></>
+        }
+
         return <DocumentStatus type='core/event' status={status} />
       },
       filterFn: (row, id, value: string[]) =>
@@ -162,7 +170,7 @@ export function eventTableColumns({ sections = [], organisers = [], locale }: {
       },
       accessorFn: (data) => data?._source['document.rel.organiser.title']?.[0],
       cell: ({ row }) => {
-        const value: string = row.getValue('organiser') || ''
+        const value: string = row?.getValue('organiser') || ''
 
         if (value) {
           return (
@@ -250,13 +258,17 @@ export function eventTableColumns({ sections = [], organisers = [], locale }: {
         )
       },
       accessorFn: (data) => {
-        const startTime = new Date(data._source['document.meta.core_event.data.start'][0])
-        const endTime = new Date(data._source['document.meta.core_event.data.end'][0])
+        const startTime = data._source['document.meta.core_event.data.start']?.[0]
+        const endTime = data._source['document.meta.core_event.data.end']?.[0]
         return [startTime, endTime]
       },
       cell: ({ row }) => {
-        const startTime = row.getValue<Date[]>('event_time')[0] || undefined
-        const endTime = row.getValue<Date[]>('event_time')[1] || undefined
+        const [startTime, endTime] = row.getValue<Date[]>('event_time')
+
+        if (!startTime || !endTime) {
+          return <></>
+        }
+
         return <Time startTime={startTime} endTime={endTime} />
       },
       enableGrouping: false

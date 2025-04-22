@@ -64,7 +64,7 @@ export const Search = (): JSX.Element => {
           <ViewHeader.Title name='Search' title='Sök' />
 
           <ViewHeader.Content>
-            {!query
+            {!Object.keys(params).length
               ? null
               : (
                   <>
@@ -76,7 +76,7 @@ export const Search = (): JSX.Element => {
         </ViewHeader.Root>
 
         <View.Content>
-          {!query
+          {!Object.keys(params).length
             ? (
                 <div className='w-3/4 h-fit mt-10 bg-slate-200 flex justify-self-center p-6'>
                   <div className='flex flex-col gap-2 w-full items-center'>
