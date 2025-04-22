@@ -1,13 +1,13 @@
 import { CommandList } from '@ttab/elephant-ui'
 import { ClearFilter } from '@/components/Filter/ClearFilter'
 import { OptionsFilter } from '@/components/Filter/common/OptionsFilter'
-import { BookUser, CalendarPlus, Crosshair, Shapes, SignalHigh, Tag, Users } from '@ttab/elephant-ui/icons'
-import { useCategories, useOrganisers, useSections, useQuery, useAuthors } from '@/hooks'
-import { DateChanger } from '@/components/Header/Datechanger'
+import { useCategories, useOrganisers, useSections, useQuery, useAuthors, useLink } from '@/hooks'
 import { Newsvalues } from '@/defaults/newsvalues'
 import { AssignmentTypes } from '@/defaults/assignmentTypes'
 import type { FilterProps } from '@/components/Filter'
 import type { SearchType } from './SearchDropdown'
+import { DatePicker } from '@/components/Datepicker'
+import { useMemo } from 'react'
 
 export const Commands = (props: FilterProps & { type: SearchType }): JSX.Element => {
   if (props.page === undefined || props.pages === undefined || props.setPages === undefined || props.setSearch === undefined) {
@@ -16,8 +16,17 @@ export const Commands = (props: FilterProps & { type: SearchType }): JSX.Element
 
   const { type } = props
 
-  const [filters, setFilters] = useQuery(['section', 'organiser', 'category', 'from', 'author', 'aType'])
+  const [filters, setFilters] = useQuery(['section', 'organiser', 'category', 'from', 'author', 'aType', 'newsvalue'])
   const hasFilter = Object.values(filters).some((value) => value?.length)
+
+  const { from } = filters
+  const currentDate = useMemo(() => {
+    return typeof from === 'string'
+      ? new Date(from)
+      : new Date()
+  }, [from])
+
+  const changeDate = useLink('Search')
 
   const handleClear = () => {
     setFilters({})
@@ -98,7 +107,7 @@ export const Commands = (props: FilterProps & { type: SearchType }): JSX.Element
       <div className='flex gap-1 w-full items-center px-2 my-1'>
         <CalendarPlus size={18} strokeWidth={1.75} />
         <div className='text-xs'>Från</div>
-        <DateChanger type='Search' keepQuery />
+        <DatePicker date={currentDate} changeDate={changeDate} keepQuery={filters} />
       </div>
       <ClearFilter
         hasFilter={hasFilter}
