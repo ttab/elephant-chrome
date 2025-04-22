@@ -15,6 +15,7 @@ import { Workflow } from '@/shared/Workflow'
 import { User } from '@/shared/User'
 import { defaultLocale, getLocaleData } from '@/shared/getLocaleData'
 import type { LocaleData } from '@/types'
+import { Baboon } from '@/shared/Baboon'
 
 const DEFAULT_TIMEZONE = 'Europe/Stockholm'
 
@@ -31,12 +32,14 @@ export interface RegistryProviderState {
     spellcheckUrl: URL
     userUrl: URL
     faroUrl: URL
+    baboonUrl: URL
   }
   repository?: Repository
   workflow?: Workflow
   index?: Index
   spellchecker?: Spellchecker
   user?: User
+  baboon?: Baboon
   dispatch: React.Dispatch<Partial<RegistryProviderState>>
 }
 
@@ -52,7 +55,8 @@ const initialState: RegistryProviderState = {
     contentApiUrl: new URL('http://localhost'),
     spellcheckUrl: new URL('http://localhost'),
     userUrl: new URL('http://localhost'),
-    faroUrl: new URL('http://localhost')
+    faroUrl: new URL('http://localhost'),
+    baboonUrl: new URL('http://localhost')
   },
   dispatch: () => { }
 }
@@ -78,6 +82,7 @@ export const RegistryProvider = ({ children }: PropsWithChildren): JSX.Element =
         const index = new Index(server.indexUrl.href)
         const spellchecker = new Spellchecker(server.spellcheckUrl.href)
         const user = new User(server.userUrl.href)
+        const baboon = new Baboon(server.baboonUrl.href)
 
         dispatch({
           server,
@@ -86,7 +91,8 @@ export const RegistryProvider = ({ children }: PropsWithChildren): JSX.Element =
           repository,
           index,
           spellchecker,
-          user
+          user,
+          baboon
         })
         setIsInitialized(true)
       } catch (ex) {
@@ -113,7 +119,7 @@ export const RegistryProvider = ({ children }: PropsWithChildren): JSX.Element =
  * Registry context reducer
  */
 const reducer = (state: RegistryProviderState, action: Partial<RegistryProviderState>): RegistryProviderState => {
-  const { locale, timeZone, server, repository, workflow, index, spellchecker, user } = action
+  const { locale, timeZone, server, repository, workflow, index, spellchecker, user, baboon } = action
   const partialState: Partial<RegistryProviderState> = {}
 
   if (typeof locale === 'object') {
@@ -146,6 +152,10 @@ const reducer = (state: RegistryProviderState, action: Partial<RegistryProviderS
 
   if (typeof server === 'object') {
     partialState.server = server
+  }
+
+  if (typeof baboon === 'object') {
+    partialState.baboon = baboon
   }
 
   return {

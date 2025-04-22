@@ -3,7 +3,7 @@ import { AssignmentType } from '@/components/DataItem/AssignmentType'
 import { AssigneeAvatars } from '@/components/DataItem/AssigneeAvatars'
 import type { DotDropdownMenuActionItem } from '@/components/ui/DotMenu'
 import { DotDropdownMenu } from '@/components/ui/DotMenu'
-import { Delete, Edit, Eye, FileInput, MoveRight, Pen } from '@ttab/elephant-ui/icons'
+import { Delete, Edit, Eye, FileInput, Library, MoveRight, Pen } from '@ttab/elephant-ui/icons'
 import { type MouseEvent, useMemo, useState, useCallback, useEffect, useRef } from 'react'
 import { SluglineButton } from '@/components/DataItem/Slugline'
 import { useYValue } from '@/hooks/useYValue'
@@ -27,6 +27,7 @@ import { useSession } from 'next-auth/react'
 import useSWRImmutable from 'swr/immutable'
 import { getDeliverableType } from '@/defaults/templates/lib/getDeliverableType'
 import { AssignmentTypes } from '@/defaults/assignmentTypes'
+import { CreatePrintArticle } from '@/components/CreatePrintArticle'
 import { snapshot } from '@/lib/snapshot'
 
 export const AssignmentRow = ({ index, onSelect, isFocused = false, asDialog }: {
@@ -138,6 +139,17 @@ export const AssignmentRow = ({ index, onSelect, isFocused = false, asDialog }: 
 
   const menuItems: DotDropdownMenuActionItem[] = [
     {
+      label: 'Öppna',
+      disabled: !isDocument,
+      icon: isUsable ? Eye : FileInput,
+      item: <T extends HTMLElement>(event: MouseEvent<T>) => {
+        const usable = articleStatus?.meta?.workflowState === 'usable'
+        const version = articleStatus?.meta?.heads['usable']?.version
+
+        onOpenEvent(event, usable && version ? { version } : undefined)
+      }
+    },
+    {
       label: 'Redigera',
       icon: Edit,
       item: <T extends HTMLElement>(event: MouseEvent<T>) => {
@@ -173,23 +185,22 @@ export const AssignmentRow = ({ index, onSelect, isFocused = false, asDialog }: 
           />
         )
       }
+    },
+    {
+      label: 'Skapa printartikel',
+      disabled: !isDocument,
+      icon: Library,
+      item: () => {
+        showModal(
+          <CreatePrintArticle
+            asDialog
+            onDialogClose={hideModal}
+            id={documentId}
+          />
+        )
+      }
     }
   ]
-
-  if ((isDocument) && !asDialog) {
-    menuItems.push({
-      label: 'Öppna',
-      disabled: false,
-      icon: isUsable ? Eye : FileInput,
-      item: <T extends HTMLElement>(event: MouseEvent<T>) => {
-        const usable = articleStatus?.meta?.workflowState === 'usable'
-        const version = articleStatus?.meta?.heads['usable']?.version
-
-        onOpenEvent(event, usable && version ? { version } : undefined)
-      }
-    })
-  }
-
   const selected = articleId && openDocuments.includes(articleId)
   return (
     <div
