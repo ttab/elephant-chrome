@@ -11,7 +11,7 @@ export const AssignmentTitles = ({ planningTitle, assignmentTitle }: TitleProps)
     <>
       <div className='w-fit'>
         <Tooltip content={planningTitle}>
-          <div className='@2xl/view:max-w-[200px] @4xl/view:max-w-[400px] truncate space-x-2 items-center text-muted-foreground'>{planningTitle}</div>
+          <div className='@2xl/view:max-w-[200px] @4xl/view:max-w-[400px] space-x-2 items-center text-muted-foreground'>{planningTitle}</div>
         </Tooltip>
       </div>
       <div>{assignmentTitle}</div>
