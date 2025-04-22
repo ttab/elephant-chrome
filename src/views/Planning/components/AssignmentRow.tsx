@@ -93,7 +93,8 @@ export const AssignmentRow = ({ index, onSelect, isFocused = false, asDialog }: 
   }, [publishTime, assignmentType, startTime])
 
   // Open a deliverable (e.g. article, flash, editorial-info) callback helper.
-  const onOpenEvent = useCallback(<T extends HTMLElement>(event: MouseEvent<T> | KeyboardEvent) => {
+  // For readOnly pass version object
+  const onOpenEvent = useCallback(<T extends HTMLElement>(event: MouseEvent<T> | KeyboardEvent, readOnly?: { version: bigint }) => {
     event.preventDefault()
     event.stopPropagation()
 
@@ -106,7 +107,8 @@ export const AssignmentRow = ({ index, onSelect, isFocused = false, asDialog }: 
         },
         undefined,
         undefined,
-        event instanceof KeyboardEvent && event.key === ' ')
+        event instanceof KeyboardEvent && event.key === ' ',
+        readOnly ? readOnly : undefined)
     } else {
       if (!asDialog && provider?.document) {
         setShowCreateDialogPayload(true)
@@ -141,19 +143,10 @@ export const AssignmentRow = ({ index, onSelect, isFocused = false, asDialog }: 
       disabled: !isDocument,
       icon: isUsable ? Eye : FileInput,
       item: <T extends HTMLElement>(event: MouseEvent<T>) => {
-        if (articleStatus?.meta?.workflowState === 'usable') {
-          const openDocument = assignmentType === 'flash' ? openFlash : openArticle
-          openDocument(event, {
-            id: articleId },
-          'last',
-          undefined,
-          undefined,
-          {
-            version: articleStatus?.meta.heads['usable'].version
-          })
-        } else {
-          onOpenEvent(event)
-        }
+        const usable = articleStatus?.meta?.workflowState === 'usable'
+        const version = articleStatus?.meta?.heads['usable']?.version
+
+        onOpenEvent(event, usable && version ? { version } : undefined)
       }
     },
     {
@@ -231,12 +224,10 @@ export const AssignmentRow = ({ index, onSelect, isFocused = false, asDialog }: 
       )}
       onClick={(event) => {
         if (isDocument) {
-          if (articleStatus?.meta?.workflowState === 'usable') {
-            const openDocument = assignmentType === 'flash' ? openFlash : openArticle
-            openDocument(event, { id: articleId }, 'last', undefined, undefined, { version: articleStatus?.meta.heads['usable'].version })
-          } else {
-            onOpenEvent(event)
-          }
+          const isUsable = articleStatus?.meta?.workflowState === 'usable'
+          const version = articleStatus?.meta?.heads?.['usable']?.version
+
+          onOpenEvent(event, isUsable && version ? { version } : undefined)
         } else {
           onSelect()
         }

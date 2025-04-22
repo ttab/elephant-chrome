@@ -16,10 +16,9 @@ import {
   useView,
   useYjsEditor,
   useAwareness,
-  useHistory,
   useWorkflowStatus
 } from '@/hooks'
-import type { ContentState, ViewMetadata, ViewProps } from '@/types'
+import type { ViewMetadata, ViewProps } from '@/types'
 import { EditorHeader } from './EditorHeader'
 import { type HocuspocusProvider } from '@hocuspocus/provider'
 import { type AwarenessUserData } from '@/contexts/CollaborationProvider'
@@ -35,8 +34,6 @@ import type { Block } from '@ttab/elephant-api/newsdoc'
 import { getValueByYPath } from '@/lib/yUtils'
 import { useOnSpellcheck } from '@/hooks/useOnSpellcheck'
 import { contentMenuLabels } from '@/defaults/contentMenuLabels'
-import type { HistoryInterface } from '@/navigation/hooks/useHistory'
-import useSWR from 'swr'
 
 // Metadata definition
 const meta: ViewMetadata = {
@@ -58,32 +55,8 @@ const meta: ViewMetadata = {
 // Main Editor Component - Handles document initialization
 const Editor = (props: ViewProps): JSX.Element => {
   const [query] = useQuery()
-  const history = useHistory()
-  const { viewId } = useView()
-  const [workflowStatus] = useWorkflowStatus(props.id as string, true)
-
-  const { data: isReadOnly } = useSWR([`editor_status/${props.id}`], () => {
-    const isReadOnly = (history: HistoryInterface): bigint | string | undefined | boolean => {
-      const viewState = history.state?.contentState?.find((state: ContentState) => state?.viewId === viewId)
-
-      if (!viewState?.readOnly) {
-        return false
-      }
-
-      if (viewState?.readOnly) {
-        if (viewState?.readOnly.version === 0n) {
-          return workflowStatus?.version
-        }
-
-        return viewState.readOnly.version as bigint
-      }
-    }
-
-    return isReadOnly(history) || 0n
-  })
-
-
-  const documentId = props.id || query.id
+  const documentId = props.id || query.id as string
+  const [workflowStatus] = useWorkflowStatus(documentId, true)
 
   // Error handling for missing document
   if (!documentId || typeof documentId !== 'string') {
@@ -95,8 +68,9 @@ const Editor = (props: ViewProps): JSX.Element => {
     )
   }
 
-  if (isReadOnly) {
-    const bigIntVersion = isReadOnly === 'latest' ? 0n : BigInt(isReadOnly)
+  // If published or specific version has be specified
+  if (workflowStatus?.name === 'usable' || props.version) {
+    const bigIntVersion = !props.version ? 0n : BigInt(props.version)
 
     return (
       <div className='overflow-x-hidden'>
@@ -114,7 +88,6 @@ const Editor = (props: ViewProps): JSX.Element => {
     </AwarenessDocument>
   )
 }
-
 
 // Main editor wrapper after document initialization
 function EditorWrapper(props: ViewProps & {
