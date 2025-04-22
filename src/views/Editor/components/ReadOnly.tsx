@@ -30,11 +30,14 @@ const InfoBlock = ({ labelId, text, children }: { labelId: string, text: string,
 
 
 export const ReadOnly = ({ documentId, version }: { documentId: string, version: bigint | undefined }) => {
-  const fetcher = async (url: string): Promise<FetcherResult> => {
+  const fetcher = async (params: string[]): Promise<FetcherResult> => {
+    const [url] = params
     const response = await fetch(url)
+
     if (!response.ok) {
       throw new Error('Network response was not ok')
     }
+
     const result = await response.json() as EleDocumentResponse
 
     if (result.document?.content.length === 0 && result?.document?.meta && result?.document?.links) {
@@ -45,7 +48,7 @@ export const ReadOnly = ({ documentId, version }: { documentId: string, version:
   }
 
   const { data, error } = useSWR<FetcherResult, Error>(
-    `${BASE_URL}/api/documents/${documentId}${version ? `?version=${version}` : ''}`,
+    [`${BASE_URL}/api/documents/${documentId}${version ? `?version=${version}` : ''}`, documentId],
     fetcher,
     { revalidateOnFocus: false, revalidateOnReconnect: false }
   )
