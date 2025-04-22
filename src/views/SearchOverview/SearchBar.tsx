@@ -33,6 +33,14 @@ export const SearchBar = ({ setLoading, setTotalHits, searchType, page, width }:
       ? query.query
       : inputRef?.current?.value
 
+    // A search should initiate when user changes search type, hence
+    // conducting a search if the user only flips between types without entering a query text or
+    // selecting a filter makes for unnecessary api calls.
+    const params = Object.keys(query)
+    if (!params.length || (params.length === 1 && params[0] === 'type')) {
+      return
+    }
+
     search({
       text,
       page,
@@ -42,7 +50,8 @@ export const SearchBar = ({ setLoading, setTotalHits, searchType, page, width }:
       accessToken,
       indexUrl,
       setData,
-      status
+      status,
+      query
     })
   }, [page, indexUrl, accessToken, query, searchType, status, setLoading, setData, setTotalHits])
 
@@ -70,7 +79,8 @@ export const SearchBar = ({ setLoading, setTotalHits, searchType, page, width }:
           accessToken,
           indexUrl,
           setData,
-          status
+          status,
+          query
         })
       }}
     >

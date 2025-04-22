@@ -9,8 +9,12 @@ import {
   type Planning,
   type Event
 } from '@/lib/index'
-import { type AssignmentMetaExtended } from '../Assignments/types'
-import { type Dispatch, type SetStateAction } from 'react'
+import type { AssignmentMetaExtended } from '../Assignments/types'
+import type { Dispatch, SetStateAction } from 'react'
+import type { QueryParams } from '@/hooks/useQuery'
+
+export type DataType<T> = T[]
+export type Types = Planning | Event | AssignmentMetaExtended | Article
 
 interface Props {
   setLoading: React.Dispatch<SetStateAction<boolean>>
@@ -20,17 +24,16 @@ interface Props {
   searchType: string
   accessToken: string | undefined
   indexUrl: URL
-  setData: Dispatch<Array<Planning | Event | AssignmentMetaExtended | Article>>
+  setData: Dispatch<Array<Types>>
   status: string
+  query: QueryParams
 }
-
-type DataType<T> = T[]
-type Types = Planning | Event | AssignmentMetaExtended | Article
 
 interface Params {
   page?: number
   size?: number
   when?: 'anytime' | 'fixed'
+  query?: QueryParams
   where: {
     start?: string | Date
     end?: string | Date
