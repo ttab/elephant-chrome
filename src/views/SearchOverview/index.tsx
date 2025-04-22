@@ -1,8 +1,6 @@
-import { useMemo, useState } from 'react'
+import { useCallback, useMemo, useState } from 'react'
 import { View, ViewHeader } from '@/components'
 import { SearchBar } from './SearchBar'
-import { TableCommandMenu } from '@/components/Commands/TableCommand'
-import { Commands } from '@/components/Commands'
 import { TableProvider } from '@/contexts/TableProvider'
 import { SearchResult } from './SearchResult'
 import { useRegistry } from '@/hooks/useRegistry'
@@ -58,11 +56,6 @@ export const Search = (): JSX.Element => {
         type={meta.name}
         columns={columns}
       >
-
-        <TableCommandMenu heading='Search'>
-          <Commands />
-        </TableCommandMenu>
-
         <ViewHeader.Root>
           <ViewHeader.Title name='Search' title='Sök' />
 

@@ -7,6 +7,7 @@ import { useSections } from '@/hooks/useSections'
 import { type Article, type Event, type Planning } from '@/lib/index'
 import { type AssignmentMetaExtended } from '../Assignments/types'
 import { LoadingText } from '@/components/LoadingText'
+import { Toolbar } from './Toolbar'
 
 export const SearchResult = ({ from, to, isLoading, searchType, page }: {
   from: string
