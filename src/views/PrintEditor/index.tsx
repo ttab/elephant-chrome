@@ -14,7 +14,7 @@ import {
   Label,
   ScrollArea
 } from '@ttab/elephant-ui'
-import { Eye, X, CircleCheckBig, TriangleAlert, ChevronDown, ChevronRight, Plus } from '@ttab/elephant-ui/icons'
+import { Eye, X, CircleCheckBig, TriangleAlert, ChevronDown, ChevronRight } from '@ttab/elephant-ui/icons'
 
 import type * as Y from 'yjs'
 
@@ -447,20 +447,7 @@ function EditorContainer({
                       <ChevronRight strokeWidth={1.75} size={18} />
                     </Button>
                   )
-                : (
-                    <Button
-                      title='Skapa en ny layout'
-                      variant='outline'
-                      className='p-2 flex gap-2 items-center'
-                      onClick={(e) => {
-                        e.preventDefault()
-                        window.alert('Ej implementerat')
-                      }}
-                    >
-                      <Plus strokeWidth={1.75} size={18} />
-                      Ny layout
-                    </Button>
-                  )}
+                : null}
             </header>
             <ScrollArea className='h-[calc(100vh-12rem)]'>
               <div className='flex flex-col gap-2'>

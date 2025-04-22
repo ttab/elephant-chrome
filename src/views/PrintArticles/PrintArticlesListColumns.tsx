@@ -40,6 +40,24 @@ export function printArticlesListColumns({ locale = 'sv-SE' }: {
       }
     },
     {
+      id: 'articleTitle',
+      meta: {
+        name: 'Artikel',
+        columnIcon: Pen,
+        className: 'flex-1 w-[200px]'
+      },
+      accessorFn: (data) => (data.fields['document.meta.tt_print_article.title'].values[0]),
+      cell: ({ row }) => {
+        const title = row.getValue('articleTitle')
+        return (
+          <Title
+            title={title as string}
+            className='text-sm'
+          />
+        )
+      }
+    },
+    {
       id: 'title',
       meta: {
         name: 'Slugg',
