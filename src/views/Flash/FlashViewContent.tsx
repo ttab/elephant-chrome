@@ -38,7 +38,7 @@ export const FlashViewContent = (props: ViewProps): JSX.Element => {
 
   return (
     <View.Root asDialog={props.asDialog} className={props.className}>
-      <FlashHeader id={documentId} asDialog={props.asDialog} />
+      <FlashHeader id={documentId} asDialog={props.asDialog} onDialogClose={props.onDialogClose} />
       <View.Content>
         <Form.Root asDialog={props.asDialog}>
           <Form.Content>
