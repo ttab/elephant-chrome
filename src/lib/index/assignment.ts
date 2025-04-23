@@ -1,5 +1,7 @@
 import { type LoadedDocumentItem } from '@/views/Assignments/types'
 import { searchIndex, type SearchIndexResponse } from './searchIndex'
+import type { QueryParams } from '@/hooks/useQuery'
+import type { QueryType } from '@/types/index'
 
 interface Params {
   endpoint: URL
@@ -8,13 +10,14 @@ interface Params {
   page?: number
   size?: number
   text?: string
+  paramsQuery?: QueryParams
 }
 
 /**
  * @deprecated This function is deprecated and will be removed in future versions.
  * TODO: use Twirp api and wrap in a hook #ELE-1171
  */
-const search = async ({ endpoint, accessToken, start, page = 1, size = 100, text }: Params): Promise<SearchIndexResponse<LoadedDocumentItem>> => {
+const search = async ({ endpoint, accessToken, start, page = 1, size = 100, text, paramsQuery = {} }: Params): Promise<SearchIndexResponse<LoadedDocumentItem>> => {
   const today = start ? new Date(start) : new Date()
   today.setHours(0, 0, 0, 0)
 
@@ -30,6 +33,26 @@ const search = async ({ endpoint, accessToken, start, page = 1, size = 100, text
 
   const sort: Array<Record<string, string>> = []
 
+  const makeMatchQuery = (param: string | string[], field: string) => {
+    if (Array.isArray(param)) {
+      const arr = () => param?.map((value) => ({
+        match: {
+          field,
+          value
+        }
+      }))
+
+      return arr()
+    } else {
+      return {
+        match: {
+          field,
+          value: param
+        }
+      }
+    }
+  }
+
   if (text) {
     sort.push(
       { field: 'document.meta.core_newsvalue.value' },
@@ -37,43 +60,89 @@ const search = async ({ endpoint, accessToken, start, page = 1, size = 100, text
     )
   }
 
-  const dateQuery = {
-    bool: {
-      must: [
-        {
-          term: {
-            field: 'document.meta.core_assignment.data.start_date',
-            value: todayFormatted
+  const dateQuery: QueryType = {
+    query: {
+      bool: {
+        must: [
+          {
+            term: {
+              field: 'document.meta.core_assignment.data.start_date',
+              value: todayFormatted
+            }
+          },
+          {
+            term: {
+              field: 'document.meta.core_planning_item.data.start_date',
+              value: todayFormatted
+            }
           }
-        },
-        {
-          term: {
-            field: 'document.meta.core_planning_item.data.start_date',
-            value: todayFormatted
-          }
-        }
-      ]
+        ],
+        should: []
+      }
     }
   }
 
-  const matchTextQuery = {
-    bool: {
-      must: [
-        {
-          match: {
-            field: 'document.meta.core_assignment.title',
-            value: text
-          }
-        }
-      ]
+  const matchTextQuery: QueryType = {
+    query: {
+      bool: {
+        must: [],
+        should: []
+      }
     }
   }
 
   const query = {
     document_type: 'core/planning-item',
-    query: text ? matchTextQuery : dateQuery,
+    query: text || Object.keys(paramsQuery).length ? matchTextQuery.query : dateQuery.query,
     load_document: true,
     sort
+  }
+
+  if (text) {
+    query.query.bool.must.push(makeMatchQuery(text, 'document.meta.core_assignment.title'))
+  }
+
+  if (Object.keys(paramsQuery).length > 0) {
+    if (paramsQuery?.from) {
+      query.query.bool.must.push({
+        range: {
+          field: 'document.meta.core_assignment.data.start_date',
+          gte: paramsQuery?.from as string
+        }
+      })
+    }
+
+    if (paramsQuery?.author) {
+      if (Array.isArray(paramsQuery?.author)) {
+        query.query.bool.should.push(makeMatchQuery(paramsQuery?.author, 'document.meta.core_assignment.rel.assignee.uuid'))
+      } else {
+        query.query.bool.must.push(makeMatchQuery(paramsQuery?.author, 'document.meta.core_assignment.rel.assignee.uuid'))
+      }
+    }
+
+    if (paramsQuery?.section) {
+      if (Array.isArray(paramsQuery?.section)) {
+        query.query.bool.should.push(makeMatchQuery(paramsQuery?.section, 'document.rel.section.uuid'))
+      } else {
+        query.query.bool.must.push(makeMatchQuery(paramsQuery?.section, 'document.rel.section.uuid'))
+      }
+    }
+
+    if (paramsQuery?.newsvalue) {
+      if (Array.isArray(paramsQuery.newsvalue)) {
+        query.query.bool.should.push(makeMatchQuery(paramsQuery.newsvalue, 'document.meta.core_newsvalue.value'))
+      } else {
+        query.query.bool.must.push(makeMatchQuery(paramsQuery.newsvalue, 'document.meta.core_newsvalue.value'))
+      }
+    }
+
+    if (paramsQuery?.aType) {
+      if (Array.isArray(paramsQuery.aType)) {
+        query.query.bool.should.push(makeMatchQuery(paramsQuery?.aType, 'document.meta.core_assignment.meta.core_assignment_type.value'))
+      } else {
+        query.query.bool.must.push(makeMatchQuery(paramsQuery?.aType, 'document.meta.core_assignment.meta.core_assignment_type.value'))
+      }
+    }
   }
 
   return await searchIndex(

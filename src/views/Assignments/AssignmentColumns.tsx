@@ -190,6 +190,10 @@ export function assignmentColumns({ authors = [], locale, timeZone, sections = [
         const [start, fullDay, publishSlot, publishTime] = row.getValue<string[]>('assignment_time')
         const isFullday = fullDay === 'true'
         const types: string[] = row.getValue<DefaultValueOption[]>('assignmentType')?.map((t) => t.value)
+        if (!types || types?.every((t) => !t)) {
+          return <></>
+        }
+
         const formattedStart = dateInTimestampOrShortMonthDayTimestamp(start, locale.code.full, timeZone)
 
         /* Assignment type: text | video | graphic
@@ -199,7 +203,7 @@ export function assignmentColumns({ authors = [], locale, timeZone, sections = [
           3. start time short (ex 13:30)
         */
 
-        if (!types.includes('picture')) {
+        if (!types?.includes('picture')) {
           if (isFullday) {
             return <Time time='Heldag' type='fullday' />
           }

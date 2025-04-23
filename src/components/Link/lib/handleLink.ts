@@ -22,7 +22,7 @@ interface LinkClick {
   history: HistoryInterface
   keepFocus?: boolean
   readOnly?: {
-    version?: bigint
+    version?: bigint | undefined
   }
 }
 
