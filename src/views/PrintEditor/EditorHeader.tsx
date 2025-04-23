@@ -7,6 +7,25 @@ import { StatusMenu } from '@/components/DocumentStatus/StatusMenu'
 import { RefreshCw, PenBoxIcon } from '@ttab/elephant-ui/icons'
 import { Button } from '@ttab/elephant-ui'
 
+/**
+ * EditorHeader component.
+ *
+ * This component represents the header section of the Print Editor. It includes
+ * the title, input for the print article name, and controls for adding notes and
+ * managing document status.
+ *
+ * @param {Object} props - The properties object.
+ * @param {string} props.documentId - The unique identifier for the document.
+ *
+ * @returns {JSX.Element} The rendered EditorHeader component.
+ *
+ * @remarks
+ * The component uses the `useView` hook to get the current view ID and manages
+ * a reference to the container element. It also includes a button to refresh
+ * layouts and displays remote users and document status if a document ID is provided.
+ */
+
+
 export const EditorHeader = ({
   documentId
 }: {

@@ -3,6 +3,21 @@ import { useRegistry } from '@/hooks/useRegistry'
 import { Button } from '@ttab/elephant-ui'
 import { useSession } from 'next-auth/react'
 
+/**
+ * PrintFlows component.
+ *
+ * This component fetches and displays a list of print flows. It uses the `useFetchPrintFlows` hook
+ * to retrieve the data from the server and displays each flow with its title and content names.
+ * A button is provided for each flow, but its functionality is not yet implemented.
+ *
+ * @returns {JSX.Element} The rendered PrintFlows component.
+ *
+ * @remarks
+ * The component handles errors by logging them to the console. It requires a valid session
+ * and registry to fetch the print flows data.
+ */
+
+
 export const PrintFlows = (): JSX.Element => {
   const { data: session } = useSession()
   const { server: { indexUrl } } = useRegistry()

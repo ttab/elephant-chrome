@@ -3,18 +3,9 @@ import { AwarenessDocument, View } from '@/components'
 import { Notes } from './components/Notes'
 import {
   Button,
-  Input,
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-  Command,
-  CommandInput,
-  CommandList,
-  CommandItem,
-  Label,
   ScrollArea
 } from '@ttab/elephant-ui'
-import { Eye, X, CircleCheckBig, TriangleAlert, ChevronDown, ChevronRight } from '@ttab/elephant-ui/icons'
+import { ChevronRight } from '@ttab/elephant-ui/icons'
 
 import type * as Y from 'yjs'
 
@@ -45,6 +36,7 @@ import {
 } from '@/hooks'
 import { type ViewMetadata, type ViewProps } from '@/types'
 import { EditorHeader } from './EditorHeader'
+import { LayoutBox } from './LayoutBox'
 import { type HocuspocusProvider } from '@hocuspocus/provider'
 import { type AwarenessUserData } from '@/contexts/CollaborationProvider'
 import { articleDocumentTemplate } from '@/defaults/templates/articleDocumentTemplate'
@@ -78,175 +70,29 @@ const meta: ViewMetadata = {
   }
 }
 
-function LayoutBox({
-  bulkSelected,
-  setBulkSelected,
-  valid,
-  id,
-  name
-}: {
-  bulkSelected: string[]
-  setBulkSelected: (bulkSelected: string[]) => void
-  valid: boolean
-  id: number
-  name: string
-}) {
-  const openPreview = useLink('PrintPreview')
-  const layouts = [
-    {
-      name: 'Topp-3sp',
-      value: 'topp-3sp'
-    },
-    {
-      name: 'Topp-4sp',
-      value: 'topp-4sp'
-    },
-    {
-      name: 'Topp-5sp',
-      value: 'topp-5sp'
-    },
-    {
-      name: 'Topp-6sp',
-      value: 'topp-6sp'
-    },
-    {
-      name: 'Topp-7sp',
-      value: 'topp-7sp'
-    },
-    {
-      name: 'Topp-8sp',
-      value: 'topp-8sp'
-    },
-    {
-      name: 'Topp-9sp',
-      value: 'topp-9sp'
-    },
-    {
-      name: 'Topp-10sp',
-      value: 'topp-10sp'
-    },
-    {
-      name: 'Topp-11sp',
-      value: 'topp-11sp'
-    }
-  ]
 
-  return (
-    <div className='border min-h-32 p-2 pt-0 grid grid-cols-12 gap-2 rounded'>
-      <header className='col-span-12 row-span-1 flex items-center justify-between'>
-        <div className='flex items-center gap-2'>
-          {valid
-            ? (
-                <CircleCheckBig strokeWidth={1.75} size={18} color='green' />
-              )
-            : (
-                <TriangleAlert strokeWidth={1.75} size={18} color='red' />
-              )}
-          <Button
-            variant='ghost'
-            className='px-2 py-0'
-            size='sm'
-            onClick={() => openPreview(undefined, { id: id.toString() })}
-          >
-            <Eye strokeWidth={1.75} size={16} />
-          </Button>
-        </div>
-        <div className='flex items-center gap-2'>
-          <Label className='group/check flex items-center gap-4'>
-            <span className='transition-opacity ease-in-out delay-500 opacity-0 group-hover/check:opacity-100'>
-              {bulkSelected.includes(id.toString()) ? '' : 'Välj'}
-            </span>
-            <Input
-              value={id}
-              type='checkbox'
-              className='w-4 h-4'
-              checked={bulkSelected.includes(id.toString())}
-              onChange={(e) => {
-                if (e.target.checked) {
-                  setBulkSelected([...bulkSelected, id.toString()])
-                } else {
-                  setBulkSelected(bulkSelected.filter((_id) => _id !== id.toString()))
-                }
-              }}
-            />
-          </Label>
-          <Button
-            variant='ghost'
-            className='p-2'
-            onClick={(e) => {
-              e.preventDefault()
-              window.alert('Ej implementerat')
-            }}
-          >
-            <X strokeWidth={1.75} size={18} />
-          </Button>
-        </div>
-      </header>
-      <div className='col-span-12 row-span-1'>
-        <Input type='text' placeholder='Namn' defaultValue={name} />
-      </div>
-      <div className='col-span-6 row-span-1'>
-        <Popover>
-          <PopoverTrigger className='w-full'>
-            <div className='text-sm border rounded-md p-2 flex gap-1 items-center justify-between w-full'>
-              Topp-3sp
-              <ChevronDown strokeWidth={1.75} size={18} />
-            </div>
-          </PopoverTrigger>
-          <PopoverContent>
-            <Command>
-              <CommandInput placeholder='Sök' />
-              <CommandList className='text-sm bg-white'>
-                {layouts.map((layout) => (
-                  <CommandItem key={layout.value} className='bg-white'>
-                    {layout.name}
-                  </CommandItem>
-                ))}
-              </CommandList>
-            </Command>
-          </PopoverContent>
-        </Popover>
-      </div>
-      <div className='col-span-6 row-span-1'>
-        <Popover>
-          <PopoverTrigger className='w-full'>
-            <div className='text-sm border rounded-md p-2 flex gap-1 items-center justify-between w-full'>
-              2
-              <ChevronDown strokeWidth={1.75} size={18} />
-            </div>
-          </PopoverTrigger>
-          <PopoverContent>
-            <Command>
-              <CommandInput placeholder='Sök' />
-              <CommandList className='text-sm bg-white'>
-                {layouts.map((layout) => (
-                  <CommandItem key={layout.value} className='bg-white'>
-                    {layout.name}
-                  </CommandItem>
-                ))}
-              </CommandList>
-            </Command>
-          </PopoverContent>
-        </Popover>
-      </div>
-      <div className='col-span-12 row-span-1 flex flex-col gap-2'>
-        <h4 className='text-sm font-bold'>Tillägg</h4>
-        <Label className='flex items-center gap-2'>
-          <Input type='checkbox' className='w-4 h-4' />
-          Faktaruta
-        </Label>
-        <Label className='flex items-center gap-2'>
-          <Input type='checkbox' className='w-4 h-4' />
-          Porträttbild 2
-        </Label>
-        <Label className='flex items-center gap-2'>
-          <Input type='checkbox' className='w-4 h-4' />
-          Extrabild trespaltare
-        </Label>
-      </div>
-    </div>
-  )
-}
+/**
+ * Main Editor Component - Handles document initialization
+ *
+ * This component is responsible for initializing the document for the Print Editor.
+ * It checks for the presence of a document ID and handles the creation of a new document
+ * if necessary. If the document ID is missing or invalid, it displays an error message.
+ *
+ * @param {ViewProps} props - The properties object containing view-related data.
+ * @returns {JSX.Element} The rendered PrintEditor component or an error message if the document ID is missing.
+ */
+
+/**
+ * Main editor wrapper after document initialization
+ *
+ * This function wraps the main editor functionality after the document has been initialized.
+ * It receives the document ID and additional properties to manage the editor's behavior.
+ *
+ * @param {ViewProps & { documentId: string, autoFocus?: boolean }} props - The properties object containing view-related data and document ID.
+ * @returns {JSX.Element} The rendered EditorWrapper component.
+ */
+
+
 
 // Main Editor Component - Handles document initialization
 const PrintEditor = (props: ViewProps): JSX.Element => {

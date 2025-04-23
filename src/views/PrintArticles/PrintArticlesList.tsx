@@ -6,6 +6,23 @@ import { Table } from '@/components/Table'
 import type { PrintArticle } from '@/hooks/index/lib/printArticles'
 import type { ColumnDef } from '@tanstack/react-table'
 
+/**
+ * PrintArticleList component.
+ *
+ * This component renders a list of print articles using a table. It utilizes the
+ * `usePrintArticles` hook to fetch and manage the state of print articles based on
+ * the provided filter query. The component also includes a toolbar for additional
+ * actions and a callback function to handle row selection in the table.
+ *
+ * @param {Object} props - The component props.
+ * @param {ColumnDef<PrintArticle, unknown>[]} props.columns - The column definitions for the table.
+ * @returns {JSX.Element} The rendered PrintArticleList component.
+ *
+ * @remarks
+ * The component uses the `useQuery` hook to extract filter parameters from the query string.
+ * It also defines a `onRowSelected` callback to log the selected or deselected row information.
+ */
+
 export const PrintArticleList = ({ columns }: {
   columns: ColumnDef<PrintArticle, unknown>[]
 }): JSX.Element => {

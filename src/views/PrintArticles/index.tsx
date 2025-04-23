@@ -16,6 +16,15 @@ import {
 } from '@ttab/elephant-ui'
 import { PrintFlows } from './PrintFlows'
 import { PrintArticlesHeader } from './PrintArticlesHeader'
+
+/**
+ * Metadata for the PrintArticles view.
+ *
+ * This object defines the name, path, and responsive widths for the PrintArticles view.
+ * It is used to configure the layout and routing of the view within the application.
+ *
+ * @type {ViewMetadata}
+ */
 const meta: ViewMetadata = {
   name: 'PrintArticles',
   path: `${import.meta.env.BASE_URL}/print`,
@@ -32,6 +41,16 @@ const meta: ViewMetadata = {
   }
 }
 
+/**
+ * PrintArticles component.
+ *
+ * This component renders the Print Articles view, which includes a header, a table of print articles,
+ * and dialogs for creating new articles and flows. It uses the TableProvider context to manage the
+ * state and columns of the table.
+ *
+ * @returns {JSX.Element} The rendered PrintArticles component.
+ */
+
 export const PrintArticles = (): JSX.Element => {
   const columns = useMemo(
     () => printArticlesListColumns({ locale: 'sv' }),
@@ -39,6 +58,7 @@ export const PrintArticles = (): JSX.Element => {
   )
   const [openCreateFlow, setOpenCreateFlow] = useState(false)
   const [openCreateArticle, setOpenCreateArticle] = useState(false)
+
   return (
     <View.Root>
       <PrintArticlesHeader setOpenCreateArticle={setOpenCreateArticle} setOpenCreateFlow={setOpenCreateFlow} />

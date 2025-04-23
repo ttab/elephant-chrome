@@ -4,6 +4,21 @@ import { type ColumnDef } from '@tanstack/react-table'
 import { Pen, SignalHigh } from '@ttab/elephant-ui/icons'
 import type { PrintArticle } from '@/hooks/index/lib/printArticles'
 
+
+/**
+ * Generates column definitions for the Print Articles list.
+ *
+ * This function returns an array of column definitions used to render the
+ * Print Articles table. Each column definition includes metadata such as
+ * the column name, icon, and display logic.
+ *
+ * @param {Object} options - Options for generating the column definitions.
+ * @param {string} [options.locale='sv-SE'] - The locale used for formatting dates.
+ * @returns {Array<ColumnDef<PrintArticle>>} An array of column definitions for the Print Articles table.
+ */
+
+
+
 export function printArticlesListColumns({ locale = 'sv-SE' }: {
   locale?: string
 }): Array<ColumnDef<PrintArticle>> {
