@@ -3,10 +3,26 @@ import useSWR from 'swr'
 import { useRegistry } from '../useRegistry'
 import { fetch } from './lib/printArticles'
 import { useTable } from '../useTable'
-import { useEffect, useMemo, useRef } from 'react'
+import { useEffect, useMemo } from 'react'
 import type { PrintArticle } from './lib/printArticles'
 import { useRepositoryEvents } from '../useRepositoryEvents'
 import type { QueryParams } from '../useQuery'
+
+/**
+ * Custom hook to fetch print articles using SWR.
+ *
+ * @param {Object} params - The parameters for fetching print articles.
+ * @param {QueryParams} [params.filter] - Optional filter parameters for querying print articles.
+ * @param {number} [params.page] - Optional page number for pagination.
+ * @returns {[PrintArticle[] | undefined]} - An array containing the fetched print articles or undefined.
+ *
+ * @throws {Error} If fetching print articles fails.
+ *
+ * @remarks
+ * This hook uses SWR for data fetching and caching. It also handles retries on fetch failure
+ * and updates the data using the `useTable` hook. Additionally, it listens for repository events
+ * to react to changes in print articles.
+ */
 
 export const usePrintArticles = ({ filter, page }: {
   filter?: QueryParams
@@ -15,8 +31,6 @@ export const usePrintArticles = ({ filter, page }: {
   const { data: session } = useSession()
   const { index, repository } = useRegistry()
   const { setData } = useTable<PrintArticle>()
-  const timeoutRef = useRef<NodeJS.Timeout | null>(null)
-  const retriesRef = useRef(0)
 
   // Create a key for the SWR cache, if it changes we do a refetch
   const key = useMemo(() => filter
@@ -28,7 +42,7 @@ export const usePrintArticles = ({ filter, page }: {
     fetch({ index, repository, session, filter, page }),
   [index, repository, session, filter, page])
 
-  const { data, mutate, error } = useSWR<PrintArticle[] | undefined, Error>(key, fetcher)
+  const { data, error } = useSWR<PrintArticle[] | undefined, Error>(key, fetcher)
 
   if (error) {
     throw new Error('PrintArticles fetch failed:', { cause: error })
@@ -40,16 +54,6 @@ export const usePrintArticles = ({ filter, page }: {
       setData(data)
     }
   }, [data, setData])
-
-  if (error) {
-    if (retriesRef.current < 5) {
-      retriesRef.current += 1
-      timeoutRef.current = setTimeout(() => {
-        void mutate()
-      }, 1000)
-    }
-    throw new Error('Wires fetch failed:', { cause: error })
-  }
 
   useRepositoryEvents(['tt/print-article', 'tt/print-article+meta'], (event) => {
     if (event.event !== 'document' && event.event !== 'status' && event.event !== 'delete_document') {

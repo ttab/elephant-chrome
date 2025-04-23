@@ -1,5 +1,4 @@
-import { View, ViewHeader } from '@/components/View'
-import { DateChanger } from '@/components/Header/Datechanger'
+import { View } from '@/components/View'
 import { type ViewMetadata } from '@/types/index'
 import { useMemo, useState } from 'react'
 import { printArticlesListColumns } from './PrintArticlesListColumns'
@@ -13,13 +12,10 @@ import {
   DialogHeader,
   DialogTitle,
   DialogDescription,
-  DialogFooter,
-  Popover,
-  PopoverTrigger,
-  PopoverContent
+  DialogFooter
 } from '@ttab/elephant-ui'
-import { Plus } from '@ttab/elephant-ui/icons'
 import { PrintFlows } from './PrintFlows'
+import { PrintArticlesHeader } from './PrintArticlesHeader'
 const meta: ViewMetadata = {
   name: 'PrintArticles',
   path: `${import.meta.env.BASE_URL}/print`,
@@ -45,39 +41,7 @@ export const PrintArticles = (): JSX.Element => {
   const [openCreateArticle, setOpenCreateArticle] = useState(false)
   return (
     <View.Root>
-      <ViewHeader.Root className='flex flex-row gap-2 items-center justify-between'>
-        <div className='flex flex-row gap-4 items-center justify-start'>
-          <ViewHeader.Title title='Print' name='PrintArticles' />
-          <Popover>
-            <PopoverTrigger>
-              <Button title='Skapa ny...' size='sm' className='gap-1 px-2 py-0'>
-                <Plus strokeWidth={1.75} size={16} />
-                Nytt
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className='flex flex-col gap-2'>
-              <Button
-                title='Skapa en text i ett flöde'
-                variant='outline'
-                onClick={(e) => {
-                  e.preventDefault()
-                  window.alert('Ej implementerat')
-                }}
-              >
-                Ny artikel
-              </Button>
-              <Button
-                title='Öppna dialogruta för att välja ett flöde. Artiklarna för flödet kommer sedan att skapas av backend enligt definitionen i flödet.'
-                variant='outline'
-                onClick={() => setOpenCreateFlow(true)}
-              >
-                Nytt flöde
-              </Button>
-            </PopoverContent>
-          </Popover>
-          <DateChanger type='PrintArticles' />
-        </div>
-      </ViewHeader.Root>
+      <PrintArticlesHeader setOpenCreateArticle={setOpenCreateArticle} setOpenCreateFlow={setOpenCreateFlow} />
       <TableProvider<PrintArticle>
         type={meta.name}
         columns={columns}
