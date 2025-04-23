@@ -4,7 +4,7 @@ import type { LocaleData } from '@/types/index'
 import { type ViewMetadata } from '@/types/index'
 import { type Document } from '@ttab/elephant-api/newsdoc'
 import { Separator } from '@ttab/elephant-ui'
-import { useMemo } from 'react'
+import { useMemo, useRef } from 'react'
 import { format } from 'date-fns'
 import { useRegistry } from '@/hooks/useRegistry'
 import { handleLink } from '@/components/Link/lib/handleLink'
@@ -30,9 +30,10 @@ const meta: ViewMetadata = {
 type DocumentExtended = Document & { publish?: string, slugline?: string, section?: string, lastUsableVersion?: bigint }
 
 export const Latest = ({ setOpen }: { setOpen?: (open: boolean) => void }) => {
+  const date = useMemo(() => new Date(), [])
   const [data] = useAssignments({
     type: 'text',
-    date: new Date(),
+    date,
     status: ['usable']
   })
 
@@ -96,10 +97,16 @@ export const Latest = ({ setOpen }: { setOpen?: (open: boolean) => void }) => {
   )
 }
 
-const Content = ({ documents, locale, setOpen }: { documents: Document[], locale: LocaleData, setOpen?: (open: boolean) => void }): JSX.Element => {
+const Content = ({ documents, locale }: {
+  documents: Document[]
+  locale: LocaleData
+  setOpen?: (open: boolean) => void
+}): JSX.Element => {
   const { state, dispatch } = useNavigation()
   const history = useHistory()
   const { viewId } = useView()
+
+  const origin = useRef(history.state?.viewId)
 
   function getLocalizedDate(date: Date, locale: LocaleData): string | undefined {
     if (!locale.module) {
@@ -134,13 +141,8 @@ const Content = ({ documents, locale, setOpen }: { documents: Document[], locale
                 props: { id: uuid, version: lastUsableVersion?.toString() },
                 viewId: crypto.randomUUID(),
                 history,
-                origin: viewId,
-                target: 'last'
+                origin: origin.current || viewId
               })
-
-              if (setOpen) {
-                setOpen(false)
-              }
             }}
           >
             <div className='py-2 px-3 text-xs flex flex-col'>

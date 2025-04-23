@@ -73,12 +73,12 @@ const Editor = (props: ViewProps): JSX.Element => {
     const bigIntVersion = !props.version ? 0n : BigInt(props.version)
 
     return (
-      <div className='overflow-x-hidden'>
+      <View.Root>
         <EditorHeader documentId={documentId} readOnly readOnlyVersion={bigIntVersion} />
-        <View.Content className='flex flex-col max-w-[1000px] px-4 h-full overflow-x-hidden'>
+        <View.Content className='flex flex-col max-w-[1000px] px-4 h-full'>
           <PlainEditor id={documentId} version={bigIntVersion} />
         </View.Content>
-      </div>
+      </View.Root>
     )
   }
 
