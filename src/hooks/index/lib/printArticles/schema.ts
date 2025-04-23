@@ -20,17 +20,17 @@ const schemaShape = fields.reduce((acc, field) => {
 }, {} as Record<string, z.ZodType<FieldValuesV1>>)
 
 /**
- * Zod schema for wires.
+ * Zod schema for print articles.
  */
 export const schema = z.object(schemaShape)
 
 /**
- * Type inferred from the wiresSchema.
+ * Type inferred from the print articles schema.
  */
 export type PrintArticleFields = z.infer<typeof schema>
 
 /**
- * Interface extending HitV1 with a fields property of type WireSchema.
+ * Interface extending HitV1 with a fields property of type PrintArticleFields.
  */
 export interface PrintArticle extends HitV1 {
   fields: PrintArticleFields

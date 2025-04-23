@@ -18,6 +18,7 @@ import { format } from 'date-fns'
  * @param {string[]} [params.source] - The source array to construct the query from.
  * @returns {Promise<PrintArticle[] | undefined>} A promise that resolves to an array of print articles or undefined.
  */
+
 export async function fetch({ index, session, filter }: {
   index: Index | undefined
   repository: Repository | undefined
@@ -37,7 +38,7 @@ export async function fetch({ index, session, filter }: {
   })
 
   if (!ok) {
-    throw new Error(errorMessage || 'Unknown error while searching for text assignments')
+    throw new Error(errorMessage || 'Unknown error while searching for print articles')
   }
   return hits
 }
@@ -48,6 +49,7 @@ export async function fetch({ index, session, filter }: {
  * @param {QueryParams | undefined} filter - The filter parameters to construct the query.
  * @returns {QueryV1 | undefined} - The constructed query object or undefined if no filter is provided.
  */
+
 function constructQuery(filter: QueryParams | undefined): QueryV1 | undefined {
   const from = filter?.from ? filter?.from[0] : format(new Date(), 'yyyy-MM-dd')
   const query = QueryV1.create({
