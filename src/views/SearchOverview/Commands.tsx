@@ -111,7 +111,6 @@ export const Commands = (props: FilterProps & { type: SearchType }): JSX.Element
           setDate={(d: string) => {
             setFilters({ ...filters, from: d })
           }}
-          keepQuery={filters}
         />
       </div>
       <ClearFilter

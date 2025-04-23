@@ -12,14 +12,12 @@ import { useRegistry } from '@/hooks'
 import { cva } from 'class-variance-authority'
 import { format } from 'date-fns'
 import { type ViewProps } from '../types'
-import type { QueryParams } from '@/hooks/useQuery'
 
-export const DatePicker = ({ date, changeDate, setDate, forceYear = false, keepQuery, disabled = false }: {
+export const DatePicker = ({ date, changeDate, setDate, forceYear = false, disabled = false }: {
   date: Date
   changeDate?: (event: MouseEvent<Element> | KeyboardEvent | undefined, props: ViewProps, target?: 'self') => void
   setDate?: ((arg: string) => void)
   forceYear?: boolean
-  keepQuery?: QueryParams
   disabled?: boolean
 }): JSX.Element => {
   const { locale, timeZone } = useRegistry()
@@ -89,7 +87,7 @@ export const DatePicker = ({ date, changeDate, setDate, forceYear = false, keepQ
             if (!selectedDate) return
 
             if (changeDate) {
-              changeDate(undefined, { ...(keepQuery && { ...keepQuery }), from: format(selectedDate, 'yyyy-MM-dd') }, 'self')
+              changeDate(undefined, { from: format(selectedDate, 'yyyy-MM-dd') }, 'self')
             }
 
             if (setDate) {
