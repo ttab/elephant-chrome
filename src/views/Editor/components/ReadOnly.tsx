@@ -1,5 +1,6 @@
 import useSWR from 'swr'
 import { Label } from '@ttab/elephant-ui'
+import { toast } from 'sonner'
 import type { EleBlockGroup, EleDocumentResponse } from '@/shared/types'
 import type { ReactNode } from 'react'
 
@@ -30,14 +31,19 @@ const InfoBlock = ({ labelId, text, children }: { labelId: string, text: string,
 
 
 export const ReadOnly = ({ documentId, version }: { documentId: string, version: bigint | undefined }) => {
-  const fetcher = async (url: string): Promise<FetcherResult> => {
+  const fetcher = async (params: string[]): Promise<FetcherResult> => {
+    const [url] = params
     const response = await fetch(url)
+
     if (!response.ok) {
-      throw new Error('Network response was not ok')
+      console.error(`Fetch metadata error for ${documentId}:`, error)
+      toast.error('Ett fel uppstod vid hämtning av metadata')
+      throw new Error('Readonly: Network response was not ok')
     }
+
     const result = await response.json() as EleDocumentResponse
 
-    if (result.document?.content.length === 0 && result?.document?.meta && result?.document?.links) {
+    if (result?.document?.content.length === 0 && result?.document?.meta && result?.document?.links) {
       return result?.document
     }
 
@@ -45,13 +51,13 @@ export const ReadOnly = ({ documentId, version }: { documentId: string, version:
   }
 
   const { data, error } = useSWR<FetcherResult, Error>(
-    `${BASE_URL}/api/documents/${documentId}${version ? `?version=${version}` : ''}`,
+    [`${BASE_URL}/api/documents/${documentId}${version ? `?version=${version}` : ''}`, documentId],
     fetcher,
     { revalidateOnFocus: false, revalidateOnReconnect: false }
   )
 
   if (error) {
-    return <div>Fel!</div>
+    return <div></div>
   }
 
   const newsvalue = data?.meta?.['core/newsvalue']?.[0]?.value
