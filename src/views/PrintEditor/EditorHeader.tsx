@@ -1,7 +1,5 @@
 import { useView } from '@/hooks'
 import { useEffect, useRef } from 'react'
-import { MetaSheet } from './components/MetaSheet'
-import { AddNote } from './components/Notes/AddNote'
 import { ViewHeader } from '@/components/View'
 import { StatusMenu } from '@/components/DocumentStatus/StatusMenu'
 import { RefreshCw, PenBoxIcon } from '@ttab/elephant-ui/icons'
@@ -49,7 +47,6 @@ export const EditorHeader = ({
             <div className='flex flex-row gap-1 justify-start items-center @7xl/view:-ml-20'>
               <div className='hidden flex-row gap-2 justify-start items-center @lg/view:flex'>
                 <input type='text' placeholder='Printartikelnamn' className='px-2 py-1' />
-                <AddNote />
               </div>
             </div>
 
@@ -82,7 +79,6 @@ export const EditorHeader = ({
           Uppdatera alla
         </Button>
         <ViewHeader.Action>
-          <MetaSheet container={containerRef.current} documentId={documentId} />
         </ViewHeader.Action>
       </section>
     </ViewHeader.Root>

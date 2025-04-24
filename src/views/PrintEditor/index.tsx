@@ -1,6 +1,5 @@
 import { useEffect, useState, useRef } from 'react'
 import { AwarenessDocument, View } from '@/components'
-import { Notes } from './components/Notes'
 import {
   Button,
   ScrollArea
@@ -31,7 +30,6 @@ import {
   useQuery,
   useCollaboration,
   useLink,
-  useYValue,
   useView,
   useYjsEditor,
   useAwareness
@@ -147,7 +145,6 @@ function EditorWrapper(
 ): JSX.Element {
   const { provider, synced, user } = useCollaboration()
   const openFactboxEditor = useLink('Factbox')
-  const [notes] = useYValue<Block[] | undefined>('meta.core/note')
   const [, setIsFocused] = useAwareness(props.documentId)
 
   // Plugin configuration
@@ -197,7 +194,6 @@ function EditorWrapper(
           synced={synced}
           user={user}
           documentId={props.documentId}
-          notes={notes}
         />
       </Textbit.Root>
     </View.Root>
@@ -209,14 +205,12 @@ function EditorContainer({
   provider,
   synced,
   user,
-  documentId,
-  notes
+  documentId
 }: {
   provider: HocuspocusProvider | undefined
   synced: boolean
   user: AwarenessUserData
   documentId: string
-  notes: Block[] | undefined
 }): JSX.Element {
   const { words, characters } = useTextbit()
   const [bulkSelected, setBulkSelected] = useState<string[]>([])
@@ -263,12 +257,6 @@ function EditorContainer({
         <section className='grid grid-cols-12'>
           <div className='col-span-8'>
             <ScrollArea className='h-[calc(100vh-7rem)]'>
-              {!!notes?.length && (
-                <div className='p-4'>
-                  <Notes />
-                </div>
-              )}
-
               <div className='flex-grow overflow-auto pr-12 max-w-screen-xl'>
                 {!!provider && synced
                   ? (
