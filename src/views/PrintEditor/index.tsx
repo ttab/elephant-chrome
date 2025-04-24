@@ -6,6 +6,8 @@ import {
   ScrollArea
 } from '@ttab/elephant-ui'
 import { ChevronRight } from '@ttab/elephant-ui/icons'
+import { useSession } from 'next-auth/react'
+import { Repository } from '@/shared/Repository'
 
 import type * as Y from 'yjs'
 
@@ -93,6 +95,7 @@ const meta: ViewMetadata = {
  */
 
 
+const REPOSITORY_URL = process.env.REPOSITORY_URL || ''
 
 // Main Editor Component - Handles document initialization
 const PrintEditor = (props: ViewProps): JSX.Element => {
@@ -124,7 +127,6 @@ const PrintEditor = (props: ViewProps): JSX.Element => {
   if (document && props.onDocumentCreated) {
     props.onDocumentCreated()
   }
-
   return (
     <AwarenessDocument
       documentId={documentId}
@@ -220,33 +222,38 @@ function EditorContainer({
   const [bulkSelected, setBulkSelected] = useState<string[]>([])
   const openPrintEditor = useLink('PrintEditor')
 
-  const layouts = [
-    {
-      name: 'DN',
-      valid: true,
-      id: 1
-    },
-    {
-      name: 'Expressen',
-      valid: true,
-      id: 2
-    },
-    {
-      name: 'Tre',
-      valid: true,
-      id: 3
-    },
-    {
-      name: 'Fyra',
-      valid: false,
-      id: 4
-    },
-    {
-      name: 'Fem',
-      valid: false,
-      id: 5
-    }
-  ]
+  const { data: session } = useSession()
+  const repository = new Repository(REPOSITORY_URL)
+  const [layouts, setLayouts] = useState<Block[]>([])
+  const fetchDocument = async () => {
+    // Fetch content fron repository
+    await repository.getDocument({
+      uuid: documentId,
+      accessToken: (session as { accessToken: string })?.accessToken
+    })
+      .then((doc) => {
+        const layoutsData = doc?.document?.meta?.find((m) => m.type === 'tt/print-article')?.meta?.filter((m) => m.type === 'tt/article-layout') || []
+        setLayouts(layoutsData)
+        if (!doc) {
+          return {
+            statusCode: 404,
+            statusMessage: 'Not found'
+          }
+        }
+      })
+      .catch((ex) => {
+        console.log('get document from repository', { cause: ex })
+        return {
+          statusCode: 404,
+          statusMessage: 'Not found'
+        }
+      })
+  }
+  useEffect(() => {
+    fetchDocument().catch((ex) => {
+      console.log('get document from repository', { cause: ex })
+    })
+  }, [documentId])
 
   return (
     <>
@@ -302,9 +309,7 @@ function EditorContainer({
                     key={layout.id}
                     bulkSelected={bulkSelected}
                     setBulkSelected={setBulkSelected}
-                    valid={layout.valid}
-                    id={layout.id}
-                    name={layout.name}
+                    layout={layout}
                   />
                 ))}
               </div>

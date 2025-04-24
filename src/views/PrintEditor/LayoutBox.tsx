@@ -1,7 +1,7 @@
 import { useLink } from '@/hooks/useLink'
 import { Button, Label, Popover, PopoverContent, PopoverTrigger, Input, Command, CommandInput, CommandList, CommandItem } from '@ttab/elephant-ui'
 import { CircleCheckBig, TriangleAlert, X, Eye, ChevronDown } from '@ttab/elephant-ui/icons'
-
+import type { Block } from '@ttab/elephant-api/newsdoc'
 /**
  * LayoutBox component.
  *
@@ -26,56 +26,24 @@ import { CircleCheckBig, TriangleAlert, X, Eye, ChevronDown } from '@ttab/elepha
 export function LayoutBox({
   bulkSelected,
   setBulkSelected,
-  valid,
-  id,
-  name
+  layout
 }: {
   bulkSelected: string[]
   setBulkSelected: (bulkSelected: string[]) => void
-  valid: boolean
-  id: number
-  name: string
+  layout: Block
 }) {
   const openPreview = useLink('PrintPreview')
   const layouts = [
     {
-      name: 'Topp-3sp',
-      value: 'topp-3sp'
-    },
-    {
-      name: 'Topp-4sp',
-      value: 'topp-4sp'
-    },
-    {
-      name: 'Topp-5sp',
-      value: 'topp-5sp'
-    },
-    {
-      name: 'Topp-6sp',
-      value: 'topp-6sp'
-    },
-    {
-      name: 'Topp-7sp',
-      value: 'topp-7sp'
-    },
-    {
-      name: 'Topp-8sp',
-      value: 'topp-8sp'
-    },
-    {
-      name: 'Topp-9sp',
-      value: 'topp-9sp'
-    },
-    {
-      name: 'Topp-10sp',
-      value: 'topp-10sp'
-    },
-    {
-      name: 'Topp-11sp',
-      value: 'topp-11sp'
+      name: 'Ej implementerat',
+      value: 'ej-implementerat'
     }
   ]
-
+  const valid = true
+  const id = layout.id
+  const name = layout.links?.find((l) => l.rel === 'layout')?.name
+  const additionals = layout?.meta[0]?.content
+  const position = layout?.data?.position || 'error'
   return (
     <div className='border min-h-32 p-2 pt-0 grid grid-cols-12 gap-2 rounded'>
       <header className='col-span-12 row-span-1 flex items-center justify-between'>
@@ -134,7 +102,7 @@ export function LayoutBox({
         <Popover>
           <PopoverTrigger className='w-full'>
             <div className='text-sm border rounded-md p-2 flex gap-1 items-center justify-between w-full'>
-              Topp-3sp
+              {position}
               <ChevronDown strokeWidth={1.75} size={18} />
             </div>
           </PopoverTrigger>
@@ -176,18 +144,16 @@ export function LayoutBox({
       </div>
       <div className='col-span-12 row-span-1 flex flex-col gap-2'>
         <h4 className='text-sm font-bold'>Tillägg</h4>
-        <Label className='flex items-center gap-2'>
-          <Input type='checkbox' className='w-4 h-4' />
-          Faktaruta
-        </Label>
-        <Label className='flex items-center gap-2'>
-          <Input type='checkbox' className='w-4 h-4' />
-          Porträttbild 2
-        </Label>
-        <Label className='flex items-center gap-2'>
-          <Input type='checkbox' className='w-4 h-4' />
-          Extrabild trespaltare
-        </Label>
+        {additionals?.map((additional) => (
+          <Label key={additional.id} className='flex items-center gap-2'>
+            <Input
+              type='checkbox'
+              className='w-4 h-4'
+              defaultChecked={additional.value === 'true'}
+            />
+            {additional.name}
+          </Label>
+        ))}
       </div>
     </div>
   )
