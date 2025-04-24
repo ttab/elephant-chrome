@@ -39,12 +39,20 @@ export const transformVisual = (element: Block): TBElement => {
 }
 
 export function revertVisual(element: TBElement): Block {
-  const { id, properties } = element
+  const { id, properties, children } = element
+  const textNode = children?.find((c) => c.type === 'tt/visual/text')
+  let text = ''
+  if (textNode && 'children' in textNode && textNode?.children && Array.isArray(textNode.children)) {
+    const [child] = textNode?.children ?? { text: '' }
+    if ('text' in child) {
+      text = child?.text
+    }
+  }
   return Block.create({
     id,
     type: 'tt/visual',
     data: {
-      caption: toString(properties?.text)
+      caption: toString(text)
     },
     links: [
       {
