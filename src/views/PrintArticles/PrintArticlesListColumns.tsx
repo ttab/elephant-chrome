@@ -2,7 +2,7 @@
 import { Title } from '@/components/Table/Items/Title'
 import { type ColumnDef } from '@tanstack/react-table'
 import { Pen, SignalHigh } from '@ttab/elephant-ui/icons'
-import type { PrintArticle } from '@/hooks/index/lib/printArticles'
+import type { PrintArticle } from '@/hooks/baboon/lib/printArticles'
 
 
 /**

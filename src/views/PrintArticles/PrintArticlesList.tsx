@@ -1,9 +1,9 @@
 import { useCallback } from 'react'
 import { useQuery } from '@/hooks'
-import { usePrintArticles } from '@/hooks/index/usePrintArticles'
+import { usePrintArticles } from '@/hooks/baboon/usePrintArticles'
 import { Toolbar } from './Toolbar'
 import { Table } from '@/components/Table'
-import type { PrintArticle } from '@/hooks/index/lib/printArticles'
+import type { PrintArticle } from '@/hooks/baboon/lib/printArticles'
 import type { ColumnDef } from '@tanstack/react-table'
 
 /**

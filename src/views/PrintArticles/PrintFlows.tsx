@@ -1,4 +1,4 @@
-import { useFetchPrintFlows } from '@/components/CreatePrintArticle/hooks/useFetchPrintFlows'
+import { useFetchPrintFlows } from '@/hooks/baboon/useFetchPrintFlows'
 import { useRegistry } from '@/hooks/useRegistry'
 import { Button } from '@ttab/elephant-ui'
 import { useSession } from 'next-auth/react'

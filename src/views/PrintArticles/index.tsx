@@ -4,7 +4,7 @@ import { useMemo, useState } from 'react'
 import { printArticlesListColumns } from './PrintArticlesListColumns'
 import { TableProvider } from '@/contexts/TableProvider'
 import { PrintArticleList } from './PrintArticlesList'
-import type { PrintArticle } from '@/hooks/index/lib/printArticles'
+import type { PrintArticle } from '@/hooks/baboon/lib/printArticles'
 import {
   Button,
   Dialog,
