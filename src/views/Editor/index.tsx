@@ -121,7 +121,8 @@ function EditorWrapper(props: ViewProps & {
       Factbox({
         onEditOriginal: (id: string) => {
           openFactboxEditor(undefined, { id })
-        }
+        },
+        removable: true
       })
     ]
   }
