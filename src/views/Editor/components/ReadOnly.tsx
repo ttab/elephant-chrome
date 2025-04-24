@@ -1,5 +1,6 @@
 import useSWR from 'swr'
 import { Label } from '@ttab/elephant-ui'
+import { toast } from 'sonner'
 import type { EleBlockGroup, EleDocumentResponse } from '@/shared/types'
 import type { ReactNode } from 'react'
 
@@ -35,12 +36,14 @@ export const ReadOnly = ({ documentId, version }: { documentId: string, version:
     const response = await fetch(url)
 
     if (!response.ok) {
-      throw new Error('Network response was not ok')
+      console.error(`Fetch metadata error for ${documentId}:`, error)
+      toast.error('Ett fel uppstod vid hämtning av metadata')
+      throw new Error('Readonly: Network response was not ok')
     }
 
     const result = await response.json() as EleDocumentResponse
 
-    if (result.document?.content.length === 0 && result?.document?.meta && result?.document?.links) {
+    if (result?.document?.content.length === 0 && result?.document?.meta && result?.document?.links) {
       return result?.document
     }
 
@@ -54,7 +57,7 @@ export const ReadOnly = ({ documentId, version }: { documentId: string, version:
   )
 
   if (error) {
-    return <div>Fel!</div>
+    return <div></div>
   }
 
   const newsvalue = data?.meta?.['core/newsvalue']?.[0]?.value
