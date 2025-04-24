@@ -1,10 +1,13 @@
+import type { QueryParams } from '@/hooks/useQuery'
 import { type Planning } from './schemas'
 import { searchIndex, type SearchIndexResponse } from './searchIndex'
+import { makeMatchQuery } from '../makeMatchQuery'
 
 export interface PlanningSearchParams {
   page?: number
   size?: number
   when?: 'anytime' | 'fixed'
+  query?: QueryParams
   where?: {
     start?: string | Date
     end?: string | Date
@@ -14,6 +17,18 @@ export interface PlanningSearchParams {
     start?: 'asc' | 'desc'
     end?: 'asc' | 'desc'
   }
+}
+
+interface QueryType {
+  query: {
+    bool: {
+      should: unknown[]
+      must: unknown[]
+    }
+  }
+  _source: boolean
+  fields: string[]
+  sort: Array<Record<string, 'asc' | 'desc'>>
 }
 
 /**
@@ -63,14 +78,20 @@ const search = async (endpoint: URL, accessToken: string, params?: PlanningSearc
         multi_match: {
           query: params.where.text,
           type: 'phrase_prefix',
-          fields: ['document.title', 'document.rel.section.title']
+          fields: [
+            'document.title',
+            'document.meta.core_assignment.title',
+            'document.meta.core_description.data.text',
+            'document.meta.tt_slugline.value'
+          ]
         }
       }
 
-  const query = {
+  const query: QueryType = {
     query: {
       bool: {
-        must: []
+        must: [],
+        should: []
       }
     },
     _source: true,
@@ -81,13 +102,39 @@ const search = async (endpoint: URL, accessToken: string, params?: PlanningSearc
     sort
   }
 
-  if (textCriteria) {
-    // @ts-expect-error We don't have types for opensearch queries
-    query.query.bool.must.push(textCriteria)
+  if (params?.when === 'anytime') {
+    if (textCriteria) {
+      query.query.bool.must.push(textCriteria)
+    }
+
+    if (params?.query?.from) {
+      query.query.bool.must.push({
+        range: {
+          'document.meta.core_planning_item.data.start_date': {
+            gte: new Date(params?.query?.from as string).toISOString()
+          }
+        }
+      })
+    }
+
+    if (params?.query?.author) {
+      query.query.bool.must.push(makeMatchQuery(params.query.author, 'document.meta.core_assignment.rel.assignee.uuid'))
+    }
+
+    if (params?.query?.newsvalue) {
+      query.query.bool.must.push(makeMatchQuery(params?.query?.newsvalue, 'document.meta.core_newsvalue.value'))
+    }
+
+    if (params?.query?.section) {
+      query.query.bool.must.push(makeMatchQuery(params?.query?.section, 'document.rel.section.uuid'))
+    }
+
+    if (params?.query?.aType) {
+      query.query.bool.must.push(makeMatchQuery(params?.query?.aType, 'document.meta.core_assignment.meta.core_assignment_type.value'))
+    }
   }
 
   if (timeRange) {
-    // @ts-expect-error We don't have types for opensearch queries
     query.query.bool.must.push(timeRange)
   }
 

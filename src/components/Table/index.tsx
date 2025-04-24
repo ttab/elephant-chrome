@@ -35,6 +35,7 @@ import type { Wire as WireType } from '@/hooks/index/lib/wires'
 import { Wire } from '@/views/Wire'
 import { GroupedRows } from './GroupedRows'
 import { getWireStatus } from './lib/getWireStatus'
+import { type View } from '@/types/index'
 
 interface TableProps<TData, TValue> {
   columns: Array<ColumnDef<TData, TValue>>
@@ -80,8 +81,9 @@ function getNextTableIndex(
 export const Table = <TData, TValue>({
   columns,
   type,
-  onRowSelected
-}: TableProps<TData, TValue>): JSX.Element => {
+  onRowSelected,
+  searchType
+}: TableProps<TData, TValue> & { searchType?: View }): JSX.Element => {
   const { state, dispatch } = useNavigation()
   const history = useHistory()
   const { viewId: origin } = useView()
@@ -119,20 +121,34 @@ export const Table = <TData, TValue>({
         return
       }
 
-      const originalRow = row.original as { _id: string | undefined, id: string }
+      const originalRow = row.original as { _id: string | undefined, id: string, fields?: Record<string, string[]> }
       const id = originalRow._id ?? originalRow.id
+
+      const articleClick = type === 'Search' && searchType === 'Editor'
+
+      let usableVersion
+
+      if (articleClick) {
+        usableVersion = !articleClick ? undefined : originalRow?.fields?.['heads.usable.version']?.[0] as bigint | undefined
+      }
+
       handleLink({
         event,
         dispatch,
-        viewItem: state.viewRegistry.get(type),
+        viewItem: state.viewRegistry.get(!searchType ? type : searchType),
         props: { id },
         viewId: crypto.randomUUID(),
         origin,
         history,
-        keepFocus: (event as KeyboardEvent)?.key === ' '
+        keepFocus: (event as KeyboardEvent)?.key === ' ',
+        ...((articleClick && usableVersion) && {
+          readOnly: {
+            version: BigInt(usableVersion)
+          }
+        })
       })
     }
-  }, [dispatch, state.viewRegistry, onRowSelected, origin, type, history, handlePreview])
+  }, [dispatch, state.viewRegistry, onRowSelected, origin, type, history, handlePreview, searchType])
 
   useNavigationKeys({
     keys: ['ArrowUp', 'ArrowDown', 'Enter', 'Escape', ' ', 's', 'r', 'c'],
@@ -292,7 +308,9 @@ export const Table = <TData, TValue>({
 
   return (
     <>
-      {(type !== 'Wires' && type !== 'Factbox' && type !== 'PrintEditor') && <Toolbar columns={columns} />}
+      {!['Wires', 'Factbox', 'Search', 'PrintEditor'].includes(type) && (
+        <Toolbar columns={columns} />
+      )}
 
       {(type === 'Planning' || type === 'Event') && (
         <NewItems.Root>

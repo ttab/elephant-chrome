@@ -249,9 +249,15 @@ export function createDateWithTime(date: Date, time: string): Date {
  * @param timeZone timeZone
  * @returns Date format example: 16 feb 2024 (empty year if current year)
  */
-export function dateToReadableShort(date: Date, locale: string, timeZone: string): string {
+export function dateToReadableShort(_date: Date, locale: string, timeZone: string): string {
   const now = new Date()
   // Format day and short month name
+  if (!_date) {
+    return ''
+  }
+
+  const date = typeof _date === 'object' ? _date : new Date(_date)
+
   const dayMonth = new Intl.DateTimeFormat(locale, {
     day: '2-digit',
     month: 'short',
