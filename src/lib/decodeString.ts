@@ -3,6 +3,12 @@ export function decodeString(text: string) {
     return ''
   }
 
+  try {
+    text = decodeURIComponent(text)
+  } catch (e) {
+    console.error('Failed to decode URI component:', e)
+  }
+
   const doc = new DOMParser().parseFromString(text, 'text/html')
-  return doc.documentElement.textContent
+  return doc.documentElement.textContent || ''
 }

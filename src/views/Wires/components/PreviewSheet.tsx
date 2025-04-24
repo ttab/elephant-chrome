@@ -10,6 +10,7 @@ import type { DocumentVersion } from '@ttab/elephant-api/repository'
 import { MetaSheet } from '@/views/Editor/components/MetaSheet'
 import { useEffect, useRef } from 'react'
 import { useWorkflowStatus } from '@/hooks/useWorkflowStatus'
+import { decodeString } from '@/lib/decodeString'
 
 export const PreviewSheet = ({ id, wire, handleClose, textOnly = true, version, versionHistory }: {
   id: string
@@ -22,10 +23,16 @@ export const PreviewSheet = ({ id, wire, handleClose, textOnly = true, version, 
   const [documentStatus, setDocumentStatus] = useWorkflowStatus(id)
   const { showModal, hideModal } = useModal()
 
-  const source = wire?.fields['document.rel.source.uri'].values[0]
+  const source = wire?.fields['document.rel.source.uri']?.values[0]
+    ?.replace('wires://source/', '')
+
+  const provider = wire?.fields['document.rel.provider.uri']?.values[0]
+    ?.replace('wires://provider/', '')
+
   const role = wire?.fields['document.meta.tt_wire.role'].values[0]
   const newsvalue = wire?.fields['document.meta.core_newsvalue.value']?.values[0]
   const currentVersion = BigInt(wire?.fields['current_version']?.values[0] || '')
+
 
   const containerRef = useRef<HTMLElement | null>(null)
 
@@ -61,7 +68,12 @@ export const PreviewSheet = ({ id, wire, handleClose, textOnly = true, version, 
           <div className='flex flex-row gap-2'>
             {source && (
               <Badge className='w-fit h-6 justify-center align-center'>
-                {source.replace('wires://source/', '')}
+                {source}
+              </Badge>
+            )}
+            {provider && provider !== source && provider.toLocaleLowerCase() !== source && (
+              <Badge className='w-fit h-6 justify-center align-center'>
+                {decodeString(provider)}
               </Badge>
             )}
             {role === 'pressrelease' && (
