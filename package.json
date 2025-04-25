@@ -73,7 +73,7 @@
     "sonner": "^2.0.3",
     "swr": "^2.3.3",
     "vite-express": "^0.20.0",
-    "yjs": "^13.6.24",
+    "yjs": "^13.6.26",
     "zod": "^3.24.3"
   },
   "devDependencies": {
