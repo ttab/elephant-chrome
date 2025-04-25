@@ -62,6 +62,10 @@ export async function initializeAuthor({ url, session, repository }: {
       })
     })
 
+    if (!authorDoc.ok) {
+      throw new Error(`Failed to fetch author document: ${authorDoc.errorMessage}`)
+    }
+
     const isValid = verifyAuthorDoc(authorDoc, envRole, session)
     if (isValid) {
       console.info('Author document exist and is valid')
