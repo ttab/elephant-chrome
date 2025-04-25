@@ -5,7 +5,6 @@ import { fetch } from './lib/printArticles'
 import { useTable } from '../useTable'
 import { useEffect, useMemo } from 'react'
 import type { PrintArticle } from './lib/printArticles'
-import { useRepositoryEvents } from '../useRepositoryEvents'
 import type { QueryParams } from '../useQuery'
 
 /**
@@ -55,10 +54,5 @@ export const usePrintArticles = ({ filter, page }: {
     }
   }, [data, setData])
 
-  useRepositoryEvents(['tt/print-article', 'tt/print-article+meta'], (event) => {
-    if (event.event !== 'document' && event.event !== 'status' && event.event !== 'delete_document') {
-      return
-    }
-  })
   return [data]
 }

@@ -1,7 +1,7 @@
 
 import { Title } from '@/components/Table/Items/Title'
 import { type ColumnDef } from '@tanstack/react-table'
-import { Pen, SignalHigh } from '@ttab/elephant-ui/icons'
+import { Pen } from '@ttab/elephant-ui/icons'
 import type { PrintArticle } from '@/hooks/baboon/lib/printArticles'
 
 
@@ -26,21 +26,6 @@ export function printArticlesListColumns({ locale = 'sv-SE' }: {
     {
       id: 'modified',
       enableGrouping: false,
-      meta: {
-        name: 'Tidz',
-        columnIcon: SignalHigh,
-        display: (value: string) => {
-          const [hour, day] = value.split(' ')
-          return (
-            <div className='flex gap-3'>
-              <span className='inline-flex items-center justify-center size-5 bg-background rounded-full ring-1 ring-gray-300'>
-                {hour}
-              </span>
-              <span>{day}</span>
-            </div>
-          )
-        }
-      },
       accessorFn: (data) => {
         const date = new Date(data.fields.modified.values[0])
 

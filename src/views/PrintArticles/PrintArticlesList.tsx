@@ -26,7 +26,7 @@ import type { ColumnDef } from '@tanstack/react-table'
 export const PrintArticleList = ({ columns }: {
   columns: ColumnDef<PrintArticle, unknown>[]
 }): JSX.Element => {
-  const [filter] = useQuery(['from', 'source', 'query', 'newsvalue'])
+  const [filter] = useQuery(['from'])
 
   usePrintArticles({
     filter: filter

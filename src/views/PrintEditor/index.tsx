@@ -69,7 +69,7 @@ const meta: ViewMetadata = {
 }
 
 /**
- * Main Editor Component - Handles document initialization
+ * PrintEditor Component - Handles document initialization
  *
  * This component is responsible for initializing the document for the Print Editor.
  * It checks for the presence of a document ID and handles the creation of a new document
@@ -79,17 +79,6 @@ const meta: ViewMetadata = {
  * @returns The rendered PrintEditor component or an error message if the document ID is missing.
  */
 
-/**
- * Main editor wrapper after document initialization
- *
- * This function wraps the main editor functionality after the document has been initialized.
- * It receives the document ID and additional properties to manage the editor's behavior.
- *
- * @param props - The properties object containing view-related data and document ID.
- * @returns The rendered EditorWrapper component.
- */
-
-// Main Editor Component - Handles document initialization
 const PrintEditor = (props: ViewProps): JSX.Element => {
   const [query] = useQuery()
   const [document, setDocument] = useState<Y.Doc | undefined>(undefined)

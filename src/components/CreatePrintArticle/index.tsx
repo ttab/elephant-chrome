@@ -10,7 +10,7 @@ import { useState } from 'react'
 import { LoadingText } from '../LoadingText'
 import { DatePicker } from '../Datepicker'
 import { parseDate } from '@/lib/datetime'
-import { useFetchPrintFlows } from '../../hooks/baboon/useFetchPrintFlows'
+import { useFetchPrintFlows } from '@/hooks/baboon/useFetchPrintFlows'
 
 const fallbackDate = new Date()
 

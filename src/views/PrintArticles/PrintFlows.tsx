@@ -2,6 +2,7 @@ import { useFetchPrintFlows } from '@/hooks/baboon/useFetchPrintFlows'
 import { useRegistry } from '@/hooks/useRegistry'
 import { Button } from '@ttab/elephant-ui'
 import { useSession } from 'next-auth/react'
+import { toast } from 'sonner'
 
 /**
  * PrintFlows component.
@@ -24,6 +25,7 @@ export const PrintFlows = (): JSX.Element => {
   const { data, error } = useFetchPrintFlows(indexUrl, session)
 
   if (error) {
+    toast.error('Kunde inte hämta printflöden')
     console.error('Could not fetch PrintFlows:', error)
   }
 
