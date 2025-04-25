@@ -30,7 +30,7 @@ export const Version = ({ documentId, hideDetails = false, textOnly = true }: { 
   const authors = useAuthors()
   const [lastUpdated, setLastUpdated] = useState('')
 
-  const { data: versionHistory, error } = useSWR<DocumentVersion[], Error>(`version/${documentId}`, async (): Promise<Array<DocumentVersion & { title?: string }>> => {
+  const { data: versionHistory, error } = useSWR<DocumentVersion[], Error>(`version/${documentId}`, async (): Promise<Array<DocumentVersion & { title?: string, slugline?: string }>> => {
     if (!session?.accessToken || !repository) {
       return []
     }
@@ -76,6 +76,8 @@ export const Version = ({ documentId, hideDetails = false, textOnly = true }: { 
           docTitle = doc.title
         }
 
+        const slugline = doc?.meta?.['tt/slugline']?.[0]?.value ?? ''
+
         if (doc?.content.length) {
           // If we're dealing with an article or a wire, the title can be found
           // in the heading-1 role, in case the document title is empty
@@ -87,7 +89,8 @@ export const Version = ({ documentId, hideDetails = false, textOnly = true }: { 
 
         return {
           ...version,
-          title: docTitle || headingTitle
+          title: docTitle || headingTitle,
+          slugline
         }
       }
       return version
@@ -173,7 +176,7 @@ export const Version = ({ documentId, hideDetails = false, textOnly = true }: { 
       return status
     }
 
-    return versionHistory?.map((v: DocumentVersion & { title?: string }) => {
+    return versionHistory?.map((v: DocumentVersion & { title?: string, slugline?: string }) => {
       const usable = getUsable(v)
       return (
         <SelectItem
@@ -182,9 +185,12 @@ export const Version = ({ documentId, hideDetails = false, textOnly = true }: { 
         >
           <div className='flex flex-col gap-2'>
             <span className='hidden sm:block font-bold'>{`${v?.title}`}</span>
-            <div>
-              {usable?.created && <div>{`${formatDateAndTime(usable.created)}`}</div>}
-              <div>{`${usable?.name} av ${usable?.creator || '???'}`}</div>
+            <div className='m-0'>
+              <span className='text-muted-foreground'>{`${v?.slugline}`}</span>
+              <div className='flex items-center gap-2'>
+                {usable?.created && <span>{`${formatDateAndTime(usable.created)}`}</span>}
+                <span>{`${usable?.name} av ${usable?.creator || '???'}`}</span>
+              </div>
             </div>
           </div>
         </SelectItem>
