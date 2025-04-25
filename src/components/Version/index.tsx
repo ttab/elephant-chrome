@@ -9,16 +9,19 @@ import { format } from 'date-fns'
 import { useAuthors } from '@/hooks/useAuthors'
 import { getCreatorBySub } from './getCreatorBySub'
 import { DocumentStatuses } from '@/defaults/documentStatuses'
-import type { GetHistoryResponse } from '@ttab/elephant-api/repository'
-import type { DocumentVersion } from '@ttab/elephant-api/repository'
 import { Error } from '@/views/Error'
 import { STATUS_KEYS } from './statuskeys'
+import type { GetHistoryResponse } from '@ttab/elephant-api/repository'
+import type { DocumentVersion } from '@ttab/elephant-api/repository'
+import type { EleDocumentResponse } from '@/shared/types'
+const BASE_URL = import.meta.env.BASE_URL || ''
 
 type Status = { name: string, created: string, creator: string }
 
 type SelectedVersion = Pick<DocumentVersion, 'created' | 'version' | 'creator'> & {
   createdBy?: string
   lastStatus?: Status
+  title?: string
 }
 
 export const Version = ({ documentId, hideDetails = false }: { documentId: string, hideDetails?: boolean }) => {
@@ -27,7 +30,7 @@ export const Version = ({ documentId, hideDetails = false }: { documentId: strin
   const authors = useAuthors()
   const [lastUpdated, setLastUpdated] = useState('')
 
-  const { data: versionHistory, error } = useSWR<DocumentVersion[], Error>(`version/${documentId}`, async (): Promise<Array<DocumentVersion>> => {
+  const { data: versionHistory, error } = useSWR<DocumentVersion[], Error>(`version/${documentId}`, async (): Promise<Array<DocumentVersion & { title?: string }>> => {
     if (!session?.accessToken || !repository) {
       return []
     }
@@ -53,6 +56,42 @@ export const Version = ({ documentId, hideDetails = false }: { documentId: strin
       }
       return statuskeys.some((key) => STATUS_KEYS.includes(key))
     })
+
+    const fetchDoc = async (v: DocumentVersion) => {
+      // Used to fetch the previous document version in order to get hold of the title,
+      // that can be displayed in the list of previous versions.
+      const response = await fetch(`${BASE_URL}/api/documents/${documentId}?version=${v.version}`)
+      return await response.json()
+    }
+
+    result.versions = await Promise.all(result.versions.map(async (version) => {
+      const versionDoc = await fetchDoc(version) as EleDocumentResponse
+
+      if (versionDoc) {
+        const doc = versionDoc?.document
+        let docTitle = ''
+        let headingTitle = ''
+
+        if (doc?.title) {
+          docTitle = doc.title
+        }
+
+        if (doc?.content.length) {
+          // If we're dealing with an article or a wire, the title can be found
+          // in the heading-1 role, in case the document title is empty
+          const heading = doc?.content?.find((c) => c?.properties?.role === 'heading-1')?.children[0]
+          if (heading && 'text' in heading) {
+            headingTitle = heading?.text
+          }
+        }
+
+        return {
+          ...version,
+          title: docTitle || headingTitle
+        }
+      }
+      return version
+    }))
 
     const getLastReadOrSaved = (version: DocumentVersion) => {
       if (version?.creator.includes('elephant-wires')) {
@@ -133,21 +172,24 @@ export const Version = ({ documentId, hideDetails = false }: { documentId: strin
       return status
     }
 
-    return versionHistory?.map((v) => {
+    return versionHistory?.map((v: DocumentVersion & { title?: string }) => {
       const usable = getUsable(v)
       return (
         <SelectItem
           key={`${usable?.created}-${v.version}`}
           value={v.version.toString()}
         >
-          <div className='flex items-center gap-2'>
-            {usable?.created && <span>{`${formatDateAndTime(usable.created)}`}</span>}
-            <span>{`${usable?.name} av ${usable?.creator || '???'}`}</span>
+          <div className='flex flex-col gap-2'>
+            <span className='hidden sm:block font-bold'>{`${v?.title}`}</span>
+            <div>
+              {usable?.created && <div>{`${formatDateAndTime(usable.created)}`}</div>}
+              <div>{`${usable?.name} av ${usable?.creator || '???'}`}</div>
+            </div>
           </div>
         </SelectItem>
       )
     })
-  }, [documentId, versionHistory, createdBy])
+  }, [documentId, versionHistory, createdBy, formatDateAndTime])
 
   if (!versionHistory?.length) {
     return <></>

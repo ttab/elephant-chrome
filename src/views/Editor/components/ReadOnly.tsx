@@ -1,11 +1,15 @@
 import useSWR from 'swr'
 import { Label } from '@ttab/elephant-ui'
+import { Version } from '@/components/Version'
 import { toast } from 'sonner'
 import type { EleBlockGroup, EleDocumentResponse } from '@/shared/types'
 import type { ReactNode } from 'react'
 
 const BASE_URL = import.meta.env.BASE_URL || ''
-type FetcherResult = { meta: EleBlockGroup | undefined, links: EleBlockGroup | undefined } | undefined
+type FetcherResult = {
+  meta: EleBlockGroup | undefined
+  links: EleBlockGroup | undefined
+} | undefined
 
 const ValueBlock = ({ label, value }: { label: string, value: string | number | undefined }) => {
   if (!value) {
