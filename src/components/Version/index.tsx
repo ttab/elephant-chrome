@@ -5,7 +5,6 @@ import useSWR from 'swr'
 import { useSession } from 'next-auth/react'
 import { useModal } from '../Modal/useModal'
 import { PreviewSheet } from '@/views/Wires/components'
-import { format } from 'date-fns'
 import { useAuthors } from '@/hooks/useAuthors'
 import { getCreatorBySub } from './getCreatorBySub'
 import { DocumentStatuses } from '@/defaults/documentStatuses'
@@ -14,6 +13,7 @@ import { STATUS_KEYS } from './statuskeys'
 import type { GetHistoryResponse } from '@ttab/elephant-api/repository'
 import type { DocumentVersion } from '@ttab/elephant-api/repository'
 import type { EleDocumentResponse } from '@/shared/types'
+import { dateToReadableDateTime } from '@/lib/datetime'
 const BASE_URL = import.meta.env.BASE_URL || ''
 
 type Status = { name: string, created: string, creator: string }
@@ -25,7 +25,7 @@ type SelectedVersion = Pick<DocumentVersion, 'created' | 'version' | 'creator'> 
 }
 
 export const Version = ({ documentId, hideDetails = false }: { documentId: string, hideDetails?: boolean }) => {
-  const { repository } = useRegistry()
+  const { repository, locale, timeZone } = useRegistry()
   const { data: session } = useSession()
   const authors = useAuthors()
   const [lastUpdated, setLastUpdated] = useState('')
@@ -126,12 +126,13 @@ export const Version = ({ documentId, hideDetails = false }: { documentId: strin
 
   const createdBy = useCallback((creator: string) => getCreatorBySub({ authors, creator })?.name || '???', [authors])
 
-  const formatDateAndTime = (date: string) => {
+  const formatDateAndTime = useCallback((date: string) => {
     if (date) {
-      return format(date, 'yyyy-MM-dd HH:mm')
+      const sameYear = new Date(date).getFullYear() === new Date().getFullYear()
+      return dateToReadableDateTime(new Date(date), locale.code.full, timeZone, !sameYear)
     }
     return ''
-  }
+  }, [locale.code.full, timeZone])
 
   const VersionStack = useMemo(() => {
     if (!documentId) {
