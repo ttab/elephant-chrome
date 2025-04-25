@@ -84,6 +84,9 @@ export const ReadOnly = ({ documentId, version }: { documentId: string, version:
         <ValueBlock label='Kategori' value={category} />
         <ValueBlock label='Story' value={story} />
       </InfoBlock>
+      <InfoBlock text='Version' labelId=''>
+        <Version documentId={documentId} textOnly={false} />
+      </InfoBlock>
       <InfoBlock text='Extra information' labelId=''>
         <ValueBlock label='Källa' value={contentSource} />
       </InfoBlock>

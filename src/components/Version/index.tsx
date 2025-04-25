@@ -24,7 +24,7 @@ type SelectedVersion = Pick<DocumentVersion, 'created' | 'version' | 'creator'> 
   title?: string
 }
 
-export const Version = ({ documentId, hideDetails = false }: { documentId: string, hideDetails?: boolean }) => {
+export const Version = ({ documentId, hideDetails = false, textOnly = true }: { documentId: string, hideDetails?: boolean, textOnly?: boolean }) => {
   const { repository, locale, timeZone } = useRegistry()
   const { data: session } = useSession()
   const authors = useAuthors()
@@ -217,7 +217,7 @@ export const Version = ({ documentId, hideDetails = false }: { documentId: strin
               id={documentId}
               version={current?.version && BigInt(current?.version)}
               versionHistory={versionHistory}
-              textOnly
+              textOnly={textOnly}
               handleClose={hideModal}
             />,
             'sheet',
