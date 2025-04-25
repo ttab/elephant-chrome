@@ -1,6 +1,6 @@
 import type { Wire } from '@/hooks/index/lib/wires'
 
-type DocumentType = 'Planning' | 'Event' | 'Assignments' | 'Search' | 'Wires' | 'Factbox'
+type DocumentType = 'Planning' | 'Event' | 'Assignments' | 'Search' | 'Wires' | 'Factbox' | 'PrintArticles' | 'PrintEditor'
 export function getWireStatus(type: DocumentType, wire: Wire): 'draft' | 'read' | 'saved' | 'used' | null {
   if (type !== 'Wires') {
     return null
