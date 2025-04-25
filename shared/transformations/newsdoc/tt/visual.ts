@@ -49,8 +49,8 @@ export function revertVisual(element: TBElement): Block {
     if (node && 'children' in node && Array.isArray(node?.children)) {
       const [child] = node.children
 
-      if (child && 'text' in child) {
-        text = child?.text
+      if (child && 'text' in child && child?.text) {
+        text = child.text
       }
     }
     return text
