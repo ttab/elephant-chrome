@@ -81,7 +81,7 @@ export function MetaSheet({ container, documentId, readOnly, readOnlyVersion }: 
 
                   <Label htmlFor='version' className='text-xs text-muted-foreground -mb-3'>Versioner</Label>
                   <div id='version'>
-                    <Version documentId={documentId} />
+                    <Version documentId={documentId} textOnly={false} />
                   </div>
 
                 </div>
