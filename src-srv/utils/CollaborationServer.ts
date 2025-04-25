@@ -274,14 +274,14 @@ export class CollaborationServer {
    * Fetch document from redis if already in cache, otherwise from repository
    */
   async #fetchDocument({ documentName: uuid, document: yDoc, context }: fetchPayload): Promise<Uint8Array | null> {
-    if (!assertContext(context)) {
-      throw new Error('Invalid context provided')
-    }
-
     // If the request is the document tracker document
     if (this.#openDocuments.isTrackerDocument(uuid)) {
       const ydoc = this.#openDocuments.getDocument()
       return Y.encodeStateAsUpdate(ydoc)
+    }
+
+    if (!assertContext(context)) {
+      throw new Error('Invalid context provided')
     }
 
     // Fetch from Redis if exists
