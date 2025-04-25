@@ -9,10 +9,10 @@ import { DateChanger } from '@/components/Header/Datechanger'
  * This component renders the header for the Print Articles view. It includes
  * a title, buttons for creating new articles and flows, and a date changer.
  *
- * @param {Object} props - The component props.
- * @param {Function} props.setOpenCreateFlow - Function to set the state for opening the create flow dialog.
- * @param {Function} props.setOpenCreateArticle - Function to set the state for opening the create article dialog.
- * @returns {JSX.Element} The rendered component.
+ * @param props - The component props.
+ * @param props.setOpenCreateFlow - Function to set the state for opening the create flow dialog.
+ * @param props.setOpenCreateArticle - Function to set the state for opening the create article dialog.
+ * @returns The rendered component.
  */
 
 

@@ -10,7 +10,7 @@ import { useSession } from 'next-auth/react'
  * to retrieve the data from the server and displays each flow with its title and content names.
  * A button is provided for each flow, but its functionality is not yet implemented.
  *
- * @returns {JSX.Element} The rendered PrintFlows component.
+ * @returns The rendered PrintFlows component.
  *
  * @remarks
  * The component handles errors by logging them to the console. It requires a valid session

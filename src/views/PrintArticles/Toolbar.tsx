@@ -8,7 +8,7 @@ import { ListFilter } from '@ttab/elephant-ui/icons'
  * when clicked. The button is styled with a ghost variant and includes an icon
  * for filtering lists.
  *
- * @returns {JSX.Element} The rendered Toolbar component.
+ * @returns The rendered Toolbar component.
  *
  * @remarks
  * The component is designed to be sticky at the top of the page and includes

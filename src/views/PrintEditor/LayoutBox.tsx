@@ -1,7 +1,7 @@
 import { useLink } from '@/hooks/useLink'
 import { Button, Label, Popover, PopoverContent, PopoverTrigger, Input, Command, CommandInput, CommandList, CommandItem } from '@ttab/elephant-ui'
 import { CircleCheckBig, TriangleAlert, X, Eye, ChevronDown } from '@ttab/elephant-ui/icons'
-import type { Block } from '@ttab/elephant-api/newsdoc'
+
 /**
  * LayoutBox component.
  *
@@ -9,14 +9,14 @@ import type { Block } from '@ttab/elephant-api/newsdoc'
  * and manage different layout configurations for their document. The component provides
  * options to preview the layout and manage bulk selections.
  *
- * @param {Object} props - The properties object.
- * @param {string[]} props.bulkSelected - An array of selected layout IDs for bulk operations.
- * @param {Function} props.setBulkSelected - A function to update the bulk selected layouts.
- * @param {boolean} props.valid - A flag indicating if the layout is valid for selection.
- * @param {number} props.id - The unique identifier for the layout.
- * @param {string} props.name - The name of the layout.
+ * @param props - The properties object.
+ * @param props.bulkSelected - An array of selected layout IDs for bulk operations.
+ * @param props.setBulkSelected - A function to update the bulk selected layouts.
+ * @param props.valid - A flag indicating if the layout is valid for selection.
+ * @param props.id - The unique identifier for the layout.
+ * @param props.name - The name of the layout.
  *
- * @returns {JSX.Element} The rendered LayoutBox component.
+ * @returns The rendered LayoutBox component.
  *
  * @remarks
  * The component uses the `useLink` hook to open a preview of the layout. It also includes
@@ -26,11 +26,21 @@ import type { Block } from '@ttab/elephant-api/newsdoc'
 export function LayoutBox({
   bulkSelected,
   setBulkSelected,
-  layout
+  id,
+  name,
+  additionals,
+  position
 }: {
-  bulkSelected: string[]
-  setBulkSelected: (bulkSelected: string[]) => void
-  layout: Block
+  bulkSelected: Array<string>
+  setBulkSelected: React.Dispatch<React.SetStateAction<Array<string>>>
+  id: string
+  name: string
+  additionals: Array<{
+    id: string
+    name: string
+    value: string
+  }>
+  position: string
 }) {
   const openPreview = useLink('PrintPreview')
   const layouts = [
@@ -40,10 +50,7 @@ export function LayoutBox({
     }
   ]
   const valid = true
-  const id = layout.id
-  const name = layout.links?.find((l) => l.rel === 'layout')?.name
-  const additionals = layout?.meta[0]?.content
-  const position = layout?.data?.position || 'error'
+
   return (
     <div className='border min-h-32 p-2 pt-0 grid grid-cols-12 gap-2 rounded'>
       <header className='col-span-12 row-span-1 flex items-center justify-between'>

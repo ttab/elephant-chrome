@@ -14,9 +14,9 @@ import type { ColumnDef } from '@tanstack/react-table'
  * the provided filter query. The component also includes a toolbar for additional
  * actions and a callback function to handle row selection in the table.
  *
- * @param {Object} props - The component props.
- * @param {ColumnDef<PrintArticle, unknown>[]} props.columns - The column definitions for the table.
- * @returns {JSX.Element} The rendered PrintArticleList component.
+ * @param props - The component props.
+ * @param props.columns - The column definitions for the table.
+ * @returns The rendered PrintArticleList component.
  *
  * @remarks
  * The component uses the `useQuery` hook to extract filter parameters from the query string.

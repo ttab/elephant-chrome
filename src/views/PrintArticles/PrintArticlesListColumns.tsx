@@ -12,9 +12,9 @@ import type { PrintArticle } from '@/hooks/baboon/lib/printArticles'
  * Print Articles table. Each column definition includes metadata such as
  * the column name, icon, and display logic.
  *
- * @param {Object} options - Options for generating the column definitions.
- * @param {string} [options.locale='sv-SE'] - The locale used for formatting dates.
- * @returns {Array<ColumnDef<PrintArticle>>} An array of column definitions for the Print Articles table.
+ * @param options - Options for generating the column definitions.
+ * @param options.locale - The locale used for formatting dates.
+ * @returns An array of column definitions for the Print Articles table.
  */
 
 

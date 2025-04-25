@@ -5,8 +5,7 @@ import {
   ScrollArea
 } from '@ttab/elephant-ui'
 import { ChevronRight } from '@ttab/elephant-ui/icons'
-import { useSession } from 'next-auth/react'
-import { Repository } from '@/shared/Repository'
+import { useLayouts } from '@/hooks/baboon/useLayouts'
 
 import type * as Y from 'yjs'
 
@@ -49,7 +48,6 @@ import { ContextMenu } from '@/components/Editor/ContextMenu'
 import { Gutter } from '@/components/Editor/Gutter'
 import { DropMarker } from '@/components/Editor/DropMarker'
 
-import type { Block } from '@ttab/elephant-api/newsdoc'
 import { getValueByYPath } from '@/lib/yUtils'
 import { useOnSpellcheck } from '@/hooks/useOnSpellcheck'
 
@@ -70,7 +68,6 @@ const meta: ViewMetadata = {
   }
 }
 
-
 /**
  * Main Editor Component - Handles document initialization
  *
@@ -78,8 +75,8 @@ const meta: ViewMetadata = {
  * It checks for the presence of a document ID and handles the creation of a new document
  * if necessary. If the document ID is missing or invalid, it displays an error message.
  *
- * @param {ViewProps} props - The properties object containing view-related data.
- * @returns {JSX.Element} The rendered PrintEditor component or an error message if the document ID is missing.
+ * @param props - The properties object containing view-related data.
+ * @returns The rendered PrintEditor component or an error message if the document ID is missing.
  */
 
 /**
@@ -88,12 +85,9 @@ const meta: ViewMetadata = {
  * This function wraps the main editor functionality after the document has been initialized.
  * It receives the document ID and additional properties to manage the editor's behavior.
  *
- * @param {ViewProps & { documentId: string, autoFocus?: boolean }} props - The properties object containing view-related data and document ID.
- * @returns {JSX.Element} The rendered EditorWrapper component.
+ * @param props - The properties object containing view-related data and document ID.
+ * @returns The rendered EditorWrapper component.
  */
-
-
-const REPOSITORY_URL = process.env.REPOSITORY_URL || ''
 
 // Main Editor Component - Handles document initialization
 const PrintEditor = (props: ViewProps): JSX.Element => {
@@ -200,6 +194,23 @@ function EditorWrapper(
   )
 }
 
+type Layout = {
+  id: string | undefined
+  links: {
+    rel: string
+    name: string
+    href: string
+  }[]
+  meta: {
+    content: string
+    type: string
+  }[]
+  data: {
+    position: string
+  }
+  type: string
+}
+
 // Container component that uses TextBit context
 function EditorContainer({
   provider,
@@ -215,40 +226,7 @@ function EditorContainer({
   const { words, characters } = useTextbit()
   const [bulkSelected, setBulkSelected] = useState<string[]>([])
   const openPrintEditor = useLink('PrintEditor')
-
-  const { data: session } = useSession()
-  const repository = new Repository(REPOSITORY_URL)
-  const [layouts, setLayouts] = useState<Block[]>([])
-  const fetchDocument = async () => {
-    // Fetch content fron repository
-    await repository.getDocument({
-      uuid: documentId,
-      accessToken: (session as { accessToken: string })?.accessToken
-    })
-      .then((doc) => {
-        const layoutsData = doc?.document?.meta?.find((m) => m.type === 'tt/print-article')?.meta?.filter((m) => m.type === 'tt/article-layout') || []
-        setLayouts(layoutsData)
-        if (!doc) {
-          return {
-            statusCode: 404,
-            statusMessage: 'Not found'
-          }
-        }
-      })
-      .catch((ex) => {
-        console.log('get document from repository', { cause: ex })
-        return {
-          statusCode: 404,
-          statusMessage: 'Not found'
-        }
-      })
-  }
-  useEffect(() => {
-    fetchDocument().catch((ex) => {
-      console.log('get document from repository', { cause: ex })
-    })
-  }, [documentId])
-
+  const { data: layouts } = useLayouts(documentId)
   return (
     <>
       <EditorHeader documentId={documentId} />
@@ -292,14 +270,26 @@ function EditorContainer({
             </header>
             <ScrollArea className='h-[calc(100vh-12rem)]'>
               <div className='flex flex-col gap-2'>
-                {layouts.map((layout) => (
-                  <LayoutBox
-                    key={layout.id}
-                    bulkSelected={bulkSelected}
-                    setBulkSelected={setBulkSelected}
-                    layout={layout}
-                  />
-                ))}
+                {Array.isArray(layouts) && layouts.map((layout: Layout) => {
+                  if (!layout) {
+                    return null
+                  }
+                  const id = layout.id
+                  const name = layout.links?.find((l: { rel: string }) => l.rel === 'layout')?.name
+                  const additionals = layout?.meta[0]?.content
+                  const position = layout?.data?.position || 'error'
+                  return (
+                    <LayoutBox
+                      key={id}
+                      id={id || ''}
+                      name={name || ''}
+                      additionals={Array.isArray(additionals) ? additionals : []}
+                      position={position}
+                      bulkSelected={bulkSelected}
+                      setBulkSelected={setBulkSelected}
+                    />
+                  )
+                })}
               </div>
             </ScrollArea>
           </aside>

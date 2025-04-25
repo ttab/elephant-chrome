@@ -11,12 +11,12 @@ import type { QueryParams } from '../useQuery'
 /**
  * Custom hook to fetch print articles using SWR.
  *
- * @param {Object} params - The parameters for fetching print articles.
- * @param {QueryParams} [params.filter] - Optional filter parameters for querying print articles.
- * @param {number} [params.page] - Optional page number for pagination.
- * @returns {[PrintArticle[] | undefined]} - An array containing the fetched print articles or undefined.
+ * @param params - The parameters for fetching print articles.
+ * @param params.filter - Optional filter parameters for querying print articles.
+ * @param params.page - Optional page number for pagination.
+ * @returns - An array containing the fetched print articles or undefined.
  *
- * @throws {Error} If fetching print articles fails.
+ * @throws If fetching print articles fails.
  *
  * @remarks
  * This hook uses SWR for data fetching and caching. It also handles retries on fetch failure
