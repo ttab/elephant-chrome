@@ -183,7 +183,7 @@ export const Version = ({ documentId, hideDetails = false, textOnly = true }: { 
           key={`${usable?.created}-${v.version}`}
           value={v.version.toString()}
         >
-          <div className='flex flex-col gap-2'>
+          <div className='flex flex-col gap-1'>
             <span className='hidden sm:block font-bold'>{`${v?.title}`}</span>
             <div className='m-0'>
               <span className='text-muted-foreground'>{`${v?.slugline}`}</span>
@@ -213,7 +213,7 @@ export const Version = ({ documentId, hideDetails = false, textOnly = true }: { 
   }
 
   return (
-    <>
+    <div className='flex flex-col gap-2 rounded -mt-2'>
       <Select
         onValueChange={(option) => {
           const current = versionHistory?.find((v) => v.version === BigInt(option))
@@ -232,21 +232,22 @@ export const Version = ({ documentId, hideDetails = false, textOnly = true }: { 
             })
         }}
       >
-        <div className='border rounded p-1'>
-          {lastUpdated && <div className='text-sm italic pb-2'>{`Senast uppdaterad: ${formatDateAndTime(lastUpdated)}`}</div>}
-          <SelectTrigger className='py-0 px-1 h-6 w-full'>
-            {selectedVersion && (
-              <div className='w-full'>{`${formatDateAndTime(selectedVersion.created)}`}</div>
-            )}
-          </SelectTrigger>
-          {!hideDetails && selectedVersion?.createdBy && (
-            <div className='text-sm italic'>{`Skapad av ${selectedVersion?.createdBy}`}</div>
+        <SelectTrigger className='w-full py-1'>
+          {selectedVersion && (
+            <>{`${formatDateAndTime(selectedVersion.created)}`}</>
           )}
-        </div>
+        </SelectTrigger>
+
         <SelectContent>
           {VersionStack}
         </SelectContent>
       </Select>
-    </>
+
+      {lastUpdated && <div className='text-sm text-muted-foreground pl-0.5'>{`Senast uppdaterad: ${formatDateAndTime(lastUpdated)}`}</div>}
+
+      {!hideDetails && selectedVersion?.createdBy && (
+        <div className='text-sm text-muted-foreground pl-0.5'>{`Skapad av ${selectedVersion?.createdBy}`}</div>
+      )}
+    </div>
   )
 }
