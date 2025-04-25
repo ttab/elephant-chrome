@@ -10,8 +10,6 @@ import { CalendarDays, FileInput, Zap } from '@ttab/elephant-ui/icons'
 import { parseISO, format } from 'date-fns'
 import { toZonedTime } from 'date-fns-tz'
 import { PreviewSheet } from '../Wires/components'
-import { useActiveUsers } from '@/hooks/useActiveUsers'
-import { AssigneeAvatars } from '@/components/DataItem/AssigneeAvatars'
 import { DoneMarkedBy } from './DoneMarkedBy'
 import type { StatusData } from 'src/datastore/types'
 import { useSections } from '@/hooks/useSections'
@@ -40,8 +38,6 @@ export const ApprovalsCard = ({ assignment, isSelected, isFocused, status }: {
     : undefined
   const documentId = assignment._deliverableId
   const assignees = assignment.links.filter((m) => m.type === 'core/author' && m.title).map((l) => l.title)
-  const activeUsers = useActiveUsers(documentId ? [documentId] : [])
-  const activeUsersNames = activeUsers?.[assignment._deliverableId]?.map((u) => u.name) || []
 
   const statusData = assignment?._statusData
     ? JSON.parse(assignment._statusData) as StatusData
@@ -128,9 +124,6 @@ export const ApprovalsCard = ({ assignment, isSelected, isFocused, status }: {
               ? <Zap strokeWidth={1.75} size={14} className='text-red-500' />
               : assignment._newsvalue}
           </span>
-          {!!activeUsersNames.length && (
-            <AssigneeAvatars assignees={activeUsersNames} size='xxs' color='#89cff0' />
-          )}
           {users && (
             <AvatarGroup size='xxs'>
               {Object.values(users).map((user) => {
