@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react'
 import { Button, Checkbox } from '@ttab/elephant-ui'
 import { signIn } from 'next-auth/react'
 import { LoadingText } from '@/components/LoadingText'
+import { useIndexedDB } from '../../../src/datastore/hooks/useIndexedDB'
 
 const meta: ViewMetadata = {
   name: 'Login',
@@ -27,12 +28,16 @@ const LoginForm = ({ callbackUrl }: {
   callbackUrl?: string
 }): JSX.Element => {
   const [trustGoogle, setTrustGoogle] = useState<boolean | 'indeterminate'>(trustGoogleLocalStorage())
+  const IDB = useIndexedDB()
 
   return (
     <div className='flex flex-row flex-auto justify-center'>
       <div className='self-center flex flex-col gap-4'>
         <Button
           onClick={() => {
+            (async () => {
+              await IDB.remove()
+            })().catch((err) => console.error(err))
             signIn('keycloak', { callbackUrl: callbackUrl || import.meta.env.BASE_URL })
               .catch((error) => console.error(error))
           }}
