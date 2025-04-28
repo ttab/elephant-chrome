@@ -93,6 +93,8 @@ export const Table = <TData, TValue>({
   const [, setDocumentStatus] = useWorkflowStatus()
 
   const handlePreview = useCallback((row: RowType<unknown>): void => {
+    row.toggleSelected(true)
+
     const originalId = (row.original as { id: string }).id
 
     showModal(
