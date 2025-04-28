@@ -174,12 +174,12 @@ export const WireViewContent = (props: ViewProps & {
               />
             </Form.Group>
             <Form.Group icon={Tag}>
-              {slugline && selectedPlanning && (
+              {selectedPlanning && (
                 <SluglineEditable
                   key={selectedPlanning?.value}
                   compareValues={[
                     ...(selectedPlanning?.payload?.sluglines || []),
-                    slugline.toString()
+                    slugline?.toString()
                   ]}
                   path='meta.tt/slugline[0].value'
                 />
