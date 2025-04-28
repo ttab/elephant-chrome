@@ -37,9 +37,10 @@ export const PlanningTable = ({ provider, documentId, asDialog }: {
     status,
     indexUrl.href
   ], async (): Promise<StatusResult[] | undefined> => {
-    if (status !== 'authenticated') {
+    if (status !== 'authenticated' || !session?.accessToken) {
       throw new Error('Not authenticated')
     }
+
     const statusResults = await Events.relatedPlanningSearch(indexUrl, session.accessToken, [documentId], {
       size: 100
     })
@@ -51,7 +52,7 @@ export const PlanningTable = ({ provider, documentId, asDialog }: {
   })
 
   useRepositoryEvents('core/planning-item', (event) => {
-    if (createdDocumentIdRef.current === event.uuid && event.type === 'document') {
+    if (createdDocumentIdRef.current === event.uuid && event.type === 'core/planning-item') {
       void (async () => {
         try {
           await mutate()
@@ -84,6 +85,7 @@ export const PlanningTable = ({ provider, documentId, asDialog }: {
             const initialDocument = createDocument({
               template: Templates.planning,
               inProgress: true,
+              createdDocumentIdRef,
               payload: {
                 ...payload || {},
                 links: {
