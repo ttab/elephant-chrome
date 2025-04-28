@@ -319,16 +319,16 @@ export class CollaborationServer {
     document: Y.Doc
     context: Context
   }): Promise<FinishedUnaryCall<UpdateRequest, UpdateResponse> | null> {
+    // Ignore userTracker documents
+    if (context.user.sub?.endsWith(documentName)) {
+      return null
+    }
+
     // Ignore __inProgress documents
     if ((yDoc.getMap('ele')
       .get('root') as Y.Map<unknown>)
       .get('__inProgress') as boolean) {
       logger.debug('::: Snapshot document: Document is in progress, not saving')
-      return null
-    }
-
-    // Ignore userTracker documents
-    if (context.user.sub?.endsWith(documentName)) {
       return null
     }
 
