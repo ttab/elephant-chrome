@@ -4,7 +4,7 @@ import {
   View
 } from '@/components'
 import type { DefaultValueOption, ViewProps } from '@/types'
-import { Button, ComboBox } from '@ttab/elephant-ui'
+import { Button, Checkbox, ComboBox, Label } from '@ttab/elephant-ui'
 import { CircleXIcon, Tags, GanttChartSquare } from '@ttab/elephant-ui/icons'
 import { useCollaboration, useYValue, useRegistry } from '@/hooks'
 import { useSession } from 'next-auth/react'
@@ -28,7 +28,8 @@ export const FlashViewContent = (props: ViewProps): JSX.Element => {
   const [savePrompt, setSavePrompt] = useState(false)
   const [selectedPlanning, setSelectedPlanning] = useState<DefaultValueOption | undefined>(undefined)
   const [title, setTitle] = useYValue<string | undefined>('root.title', true)
-  const { index, timeZone } = useRegistry()
+  const { index, locale, timeZone } = useRegistry()
+  const [searchOlder, setSearchOlder] = useState(false)
 
   const [documentId] = useYValue<string>('root.uuid')
 
@@ -56,7 +57,7 @@ export const FlashViewContent = (props: ViewProps): JSX.Element => {
                         planningAwareness.current(isOpen)
                       }
                     }}
-                    fetch={(query) => fetch(query, session, index)}
+                    fetch={(query) => fetch(query, session, index, locale, timeZone, { searchOlder })}
                     minSearchChars={2}
                     onSelect={(option) => {
                       if (option.value !== selectedPlanning?.value) {
@@ -86,6 +87,14 @@ export const FlashViewContent = (props: ViewProps): JSX.Element => {
                     </Button>
                   </>
                 )}
+                <>
+                  <Checkbox
+                    id='SearchOlder'
+                    defaultChecked={searchOlder}
+                    onCheckedChange={(checked: boolean) => { setSearchOlder(checked) }}
+                  />
+                  <Label htmlFor='SearchOlder' className='text-muted-foreground'>Visa äldre</Label>
+                </>
               </Form.Group>
             )}
 
