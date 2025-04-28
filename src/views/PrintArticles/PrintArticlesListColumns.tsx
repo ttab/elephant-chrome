@@ -16,9 +16,6 @@ import type { PrintArticle } from '@/hooks/baboon/lib/printArticles'
  * @param options.locale - The locale used for formatting dates.
  * @returns An array of column definitions for the Print Articles table.
  */
-
-
-
 export function printArticlesListColumns({ locale = 'sv-SE' }: {
   locale?: string
 }): Array<ColumnDef<PrintArticle>> {
