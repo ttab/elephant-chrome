@@ -23,9 +23,11 @@ import { Button } from '@ttab/elephant-ui'
  */
 
 export const EditorHeader = ({
-  documentId
+  documentId,
+  name
 }: {
   documentId: string
+  name?: string
 }): JSX.Element => {
   const { viewId } = useView()
   const containerRef = useRef<HTMLElement | null>(null)
@@ -44,7 +46,7 @@ export const EditorHeader = ({
           <div className='max-w-[1040px] mx-auto flex flex-row gap-2 justify-between items-center w-full'>
             <div className='flex flex-row gap-1 justify-start items-center @7xl/view:-ml-20'>
               <div className='hidden flex-row gap-2 justify-start items-center @lg/view:flex'>
-                <input type='text' placeholder='Printartikelnamn' className='px-2 py-1' />
+                <input type='text' placeholder='Printartikelnamn' className='px-2 py-1' defaultValue={name} />
               </div>
             </div>
 

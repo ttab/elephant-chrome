@@ -28,6 +28,7 @@ export function LayoutBox({
   setBulkSelected,
   id,
   name,
+  layoutName,
   additionals,
   position
 }: {
@@ -35,6 +36,7 @@ export function LayoutBox({
   setBulkSelected: React.Dispatch<React.SetStateAction<Array<string>>>
   id: string
   name: string
+  layoutName: string
   additionals: Array<{
     id: string
     name: string
@@ -109,7 +111,7 @@ export function LayoutBox({
         <Popover>
           <PopoverTrigger className='w-full'>
             <div className='text-sm border rounded-md p-2 flex gap-1 items-center justify-between w-full'>
-              {position}
+              {layoutName}
               <ChevronDown strokeWidth={1.75} size={18} />
             </div>
           </PopoverTrigger>
@@ -128,26 +130,7 @@ export function LayoutBox({
         </Popover>
       </div>
       <div className='col-span-6 row-span-1'>
-        <Popover>
-          <PopoverTrigger className='w-full'>
-            <div className='text-sm border rounded-md p-2 flex gap-1 items-center justify-between w-full'>
-              2
-              <ChevronDown strokeWidth={1.75} size={18} />
-            </div>
-          </PopoverTrigger>
-          <PopoverContent>
-            <Command>
-              <CommandInput placeholder='Sök' />
-              <CommandList className='text-sm bg-white'>
-                {layouts.map((layout) => (
-                  <CommandItem key={layout.value} className='bg-white'>
-                    {layout.name}
-                  </CommandItem>
-                ))}
-              </CommandList>
-            </Command>
-          </PopoverContent>
-        </Popover>
+        <Input type='text' placeholder='Position' defaultValue={position} />
       </div>
       <div className='col-span-12 row-span-1 flex flex-col gap-2'>
         <h4 className='text-sm font-bold'>Tillägg</h4>

@@ -185,6 +185,7 @@ function EditorWrapper(
 
 type Layout = {
   id: string | undefined
+  name: string
   links: {
     rel: string
     name: string
@@ -215,10 +216,12 @@ function EditorContainer({
   const { words, characters } = useTextbit()
   const [bulkSelected, setBulkSelected] = useState<string[]>([])
   const openPrintEditor = useLink('PrintEditor')
-  const { data: layouts } = useLayouts(documentId)
+  const { data: doc } = useLayouts(documentId)
+  const layouts = doc?.layouts
+  const name = doc?.document?.document?.meta.filter((m: { type: string }) => m.type === 'tt/print-article')[0]?.name
   return (
     <>
-      <EditorHeader documentId={documentId} />
+      <EditorHeader documentId={documentId} name={name} />
 
       <View.Content className='flex flex-col max-w-[1200px]'>
         <section className='grid grid-cols-12'>
@@ -266,12 +269,14 @@ function EditorContainer({
                   const id = layout.id
                   const name = layout.links?.find((l: { rel: string }) => l.rel === 'layout')?.name
                   const additionals = layout?.meta[0]?.content
+                  const layoutName = layout?.name
                   const position = layout?.data?.position || 'error'
                   return (
                     <LayoutBox
                       key={id}
                       id={id || ''}
                       name={name || ''}
+                      layoutName={layoutName || ''}
                       additionals={Array.isArray(additionals) ? additionals : []}
                       position={position}
                       bulkSelected={bulkSelected}

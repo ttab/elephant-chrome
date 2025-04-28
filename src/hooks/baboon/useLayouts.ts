@@ -52,7 +52,7 @@ export const useLayouts = (
             }
           }
           const layouts = doc.document?.meta?.find((m) => m.type === 'tt/print-article')?.meta?.filter((m) => m.type === 'tt/article-layout') || []
-          return layouts
+          return { layouts, document: doc }
         })
         .catch(() => {
           return {
