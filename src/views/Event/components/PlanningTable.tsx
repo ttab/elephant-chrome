@@ -91,7 +91,7 @@ export const PlanningTable = ({ provider, documentId, asDialog }: {
                   'core/event': [Block.create({
                     type: 'core/event',
                     uuid: documentId,
-                    title: payload?.title || 'Untitled',
+                    title: payload?.title || 'Ny händelse',
                     rel: 'event'
                   })]
                 }
