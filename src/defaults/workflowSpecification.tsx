@@ -425,8 +425,8 @@ export const WorkflowSpecifications: Record<string, WorkflowSpecification> = {
           description: 'Markera printartikeln som klar'
         },
         needs_proofreading: {
-          title: 'Korrläs',
-          description: 'Korrläs printartikeln'
+          title: 'Begär korrläsning',
+          description: 'Behöver korrläsning av printartikeln'
         }
       }
     },
@@ -440,8 +440,8 @@ export const WorkflowSpecifications: Record<string, WorkflowSpecification> = {
           description: 'Godkänn printartikeln'
         },
         needs_proofreading: {
-          title: 'Korrläs',
-          description: 'Korrläs printartikeln'
+          title: 'Begär korrläsning',
+          description: 'Behöver korrläsning av printartikeln'
         },
         usable: {
           verify: true,
@@ -451,18 +451,12 @@ export const WorkflowSpecifications: Record<string, WorkflowSpecification> = {
       }
     },
     needs_proofreading: {
-      title: 'Korrläst',
-      description: 'Printartikeln är korrläst',
+      title: 'Korrläs',
+      description: 'Printartikeln behöver korrläsning',
       transitions: {
-        draft: {
-          default: true,
-          title: 'Till utkast',
-          description: 'Gör om printartikeln till ett utkast igen'
-        },
-        usable: {
-          verify: true,
-          title: 'Exportera',
-          description: 'Exportera printartikeln'
+        done: {
+          title: 'Klarmarkera',
+          description: 'Markera printartikeln som klar'
         }
       }
     },
