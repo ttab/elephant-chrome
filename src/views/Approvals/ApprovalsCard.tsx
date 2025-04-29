@@ -14,7 +14,6 @@ import { DoneMarkedBy } from './DoneMarkedBy'
 import type { StatusData } from 'src/datastore/types'
 import { useSections } from '@/hooks/useSections'
 import type { StatusSpecification } from '@/defaults/workflowSpecification'
-import { decodeString } from '@/lib/decodeString'
 import { useYValue } from '@/hooks/useYValue'
 import { AvatarGroup } from '@/components/AvatarGroup'
 import { Tooltip } from '@ttab/elephant-ui'
@@ -87,10 +86,7 @@ export const ApprovalsCard = ({ assignment, isSelected, isFocused, status }: {
     )
   }]
 
-  const _title = (assignment._deliverableDocument?.content
-    .find((content) => content.type === 'core/text' && content.role === 'heading-1')?.data.text) || assignment.title
-
-  const title = decodeString(_title)
+  const title = assignment._deliverableDocument?.title
 
   return (
     <Card.Root
