@@ -56,7 +56,7 @@ export const EditorHeader = ({
                   <ViewHeader.RemoteUsers documentId={documentId} />
                   <StatusMenu
                     documentId={documentId}
-                    type='core/article'
+                    type='tt/print-article'
                   />
                 </>
               )}

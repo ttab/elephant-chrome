@@ -50,6 +50,10 @@ export const StatusSpecifications: Record<string, StatusSpecification> = {
   cancelled: {
     icon: CircleX,
     className: 'bg-cancelled text-white fill-cancelled rounded-full'
+  },
+  needs_proofreading: {
+    icon: CircleCheck,
+    className: 'bg-done text-white fill-done rounded-full'
   }
 }
 
@@ -408,6 +412,75 @@ export const WorkflowSpecifications: Record<string, WorkflowSpecification> = {
           description: 'Avbryt publiceringen och arkivera till red'
         }
       }
+    }
+  },
+  'tt/print-article': {
+    draft: {
+      title: 'Utkast',
+      description: 'Du jobbar på ett utkast av printartikeln',
+      transitions: {
+        done: {
+          default: true,
+          title: 'Klarmarkera',
+          description: 'Markera printartikeln som klar'
+        },
+        needs_proofreading: {
+          title: 'Korrläs',
+          description: 'Korrläs printartikeln'
+        }
+      }
+    },
+    done: {
+      title: 'Klar',
+      description: 'Printartikeln är klar och väntar på godkännande',
+      transitions: {
+        approved: {
+          default: true,
+          title: 'Godkänn',
+          description: 'Godkänn printartikeln'
+        },
+        needs_proofreading: {
+          title: 'Korrläs',
+          description: 'Korrläs printartikeln'
+        },
+        usable: {
+          verify: true,
+          title: 'Exportera',
+          description: 'Exportera printartikeln'
+        }
+      }
+    },
+    needs_proofreading: {
+      title: 'Korrläst',
+      description: 'Printartikeln är korrläst',
+      transitions: {
+        draft: {
+          default: true,
+          title: 'Till utkast',
+          description: 'Gör om printartikeln till ett utkast igen'
+        },
+        usable: {
+          verify: true,
+          title: 'Exportera',
+          description: 'Exportera printartikeln'
+        }
+      }
+    },
+    usable: {
+      title: 'Exporterad',
+      description: 'Printartikeln är exporterad',
+      transitions: {
+        cancelled: {
+          verify: true,
+          title: 'Dra tillbaka',
+          description: 'Avbryt export och arkivera printartikeln'
+        }
+      }
+    },
+    cancelled: {
+      title: 'Arkiverad',
+      description: 'Printartikeln är arkiverad',
+      transitions: {}
     }
   }
 }
