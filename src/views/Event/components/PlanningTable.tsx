@@ -55,10 +55,12 @@ export const PlanningTable = ({ provider, documentId, asDialog }: {
   })
 
   useRepositoryEvents('core/planning-item', (event) => {
-    if (createdDocumentIdRef.current === event.uuid && event.type === 'core/planning-item') {
+    if (createdDocumentIdRef.current === event.uuid && event.type === 'core/planning-item' && event.event === 'document') {
       void (async () => {
         try {
-          await mutate()
+          if (Array.isArray(data) && newItem?.title) {
+            await mutate([...data, { title: newItem?.title, uuid: newItem?.uuid }], { revalidate: false })
+          }
         } catch (error) {
           console.warn('Failed to update planning table', error)
         }
