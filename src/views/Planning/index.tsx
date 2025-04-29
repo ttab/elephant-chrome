@@ -13,7 +13,8 @@ import {
   useQuery,
   useWorkflowStatus,
   useCollaboration,
-  useAwareness
+  useAwareness,
+  useYValue
 } from '@/hooks'
 import { PlanDate } from './components/PlanDate'
 import { AssignmentTable } from './components/AssignmentTable'
@@ -73,11 +74,12 @@ export const Planning = (props: ViewProps & { document?: Y.Doc, setNewItem?: Set
   )
 }
 
-const PlanningViewContent = (props: ViewProps & { documentId: string }): JSX.Element | undefined => {
+const PlanningViewContent = (props: ViewProps & { documentId: string, setNewItem?: Setter }): JSX.Element | undefined => {
   const { provider, user } = useCollaboration()
   const { data, status } = useSession()
   const [documentStatus] = useWorkflowStatus(props.documentId)
   const [, setIsFocused] = useAwareness(props.documentId)
+  const [newTitle] = useYValue('root.title')
 
   useEffect(() => {
     provider?.setAwarenessField('data', user)
