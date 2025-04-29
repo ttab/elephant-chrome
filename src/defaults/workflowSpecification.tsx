@@ -419,14 +419,14 @@ export const WorkflowSpecifications: Record<string, WorkflowSpecification> = {
       title: 'Utkast',
       description: 'Du jobbar på ett utkast av printartikeln',
       transitions: {
-        done: {
-          default: true,
-          title: 'Klarmarkera',
-          description: 'Markera printartikeln som klar'
-        },
         needs_proofreading: {
+          default: true,
           title: 'Begär korrläsning',
           description: 'Behöver korrläsning av printartikeln'
+        },
+        done: {
+          title: 'Klarmarkera',
+          description: 'Markera printartikeln som klar'
         }
       }
     },

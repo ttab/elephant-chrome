@@ -215,10 +215,27 @@ function EditorContainer({
 }): JSX.Element {
   const { words, characters } = useTextbit()
   const [bulkSelected, setBulkSelected] = useState<string[]>([])
+  const [layouts, setLayouts] = useState<Layout[]>([])
   const openPrintEditor = useLink('PrintEditor')
   const { data: doc } = useLayouts(documentId)
-  const layouts = doc?.layouts
+  useEffect(() => {
+    if (doc) {
+      setLayouts(doc.layouts)
+    }
+  }, [doc])
   const name = doc?.document?.document?.meta.filter((m: { type: string }) => m.type === 'tt/print-article')[0]?.name
+  
+  const updateLayout = (_layout: Layout) => {
+    const updatedLayouts = layouts.map((layout) => {
+      if (layout.id === _layout.id) {
+        return _layout
+      }
+      return layout
+    })
+    setLayouts(updatedLayouts)
+    console.log('new layout', _layout)
+  }
+  console.log('doc', doc)
   return (
     <>
       <EditorHeader documentId={documentId} name={name} />
@@ -266,21 +283,13 @@ function EditorContainer({
                   if (!layout) {
                     return null
                   }
-                  const id = layout.id
-                  const name = layout.links?.find((l: { rel: string }) => l.rel === 'layout')?.name
-                  const additionals = layout?.meta[0]?.content
-                  const layoutName = layout?.name
-                  const position = layout?.data?.position || 'error'
                   return (
                     <LayoutBox
-                      key={id}
-                      id={id || ''}
-                      name={name || ''}
-                      layoutName={layoutName || ''}
-                      additionals={Array.isArray(additionals) ? additionals : []}
-                      position={position}
+                      key={layout.id}
                       bulkSelected={bulkSelected}
                       setBulkSelected={setBulkSelected}
+                      layout={layout}
+                      updateLayout={updateLayout}
                     />
                   )
                 })}

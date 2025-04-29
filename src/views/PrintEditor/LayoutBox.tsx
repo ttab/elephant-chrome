@@ -23,26 +23,34 @@ import { CircleCheckBig, TriangleAlert, X, Eye, ChevronDown } from '@ttab/elepha
  * a list of predefined layouts that can be selected and managed.
  */
 
+type Layout = {
+  id: string | undefined
+  name: string
+  links: {
+    rel: string
+    name: string
+    href: string
+  }[]
+  meta: {
+    content: string
+    type: string
+  }[]
+  data: {
+    position: string
+  }
+  type: string
+}
+
 export function LayoutBox({
   bulkSelected,
   setBulkSelected,
-  id,
-  name,
-  layoutName,
-  additionals,
-  position
+  layout,
+  updateLayout
 }: {
   bulkSelected: Array<string>
   setBulkSelected: React.Dispatch<React.SetStateAction<Array<string>>>
-  id: string
-  name: string
-  layoutName: string
-  additionals: Array<{
-    id: string
-    name: string
-    value: string
-  }>
-  position: string
+  layout: Layout
+  updateLayout: (layout: Layout) => void
 }) {
   const openPreview = useLink('PrintPreview')
   const layouts = [
@@ -52,6 +60,12 @@ export function LayoutBox({
     }
   ]
   const valid = true
+
+  const id = layout.id
+  const name = layout.links?.find((l: { rel: string }) => l.rel === 'layout')?.name
+  const additionals = layout?.meta[0]?.content
+  const layoutName = layout?.name
+  const position = layout?.data?.position || 'error'
 
   return (
     <div className='border min-h-32 p-2 pt-0 grid grid-cols-12 gap-2 rounded'>
@@ -105,7 +119,14 @@ export function LayoutBox({
         </div>
       </header>
       <div className='col-span-12 row-span-1'>
-        <Input type='text' placeholder='Namn' defaultValue={name} />
+        <Input type='text' placeholder='Namn' value={name}
+          onChange={(e) => {
+            const updatedLayout = Object.assign({}, layout, {
+              name: e.target.value
+            })
+            updateLayout(updatedLayout)
+          }}
+        />
       </div>
       <div className='col-span-6 row-span-1'>
         <Popover>
@@ -130,7 +151,14 @@ export function LayoutBox({
         </Popover>
       </div>
       <div className='col-span-6 row-span-1'>
-        <Input type='text' placeholder='Position' defaultValue={position} />
+        <Input type='text' placeholder='Position' value={position}
+          onChange={(e) => {
+            const updatedLayout = Object.assign({}, layout, {
+              data: { position: e.target.value }
+            })
+            updateLayout(updatedLayout)
+          }}
+        />
       </div>
       <div className='col-span-12 row-span-1 flex flex-col gap-2'>
         <h4 className='text-sm font-bold'>Tillägg</h4>
@@ -139,7 +167,22 @@ export function LayoutBox({
             <Input
               type='checkbox'
               className='w-4 h-4'
-              defaultChecked={additional.value === 'true'}
+              checked={additional.value === 'true'}
+              onChange={(e) => {
+                const updatedAdditionals = additionals.map((_additional) => {
+                  if (_additional.name === additional.name) {
+                    return { ..._additional, value: e.target.checked?.toString() }
+                  }
+                  return _additional
+                })
+                const updatedLayout = Object.assign({}, layout, {
+                  meta: [
+                    { type: 'tt/print-article', content: updatedAdditionals }
+                  ]
+                })
+
+                updateLayout(updatedLayout)
+              }}
             />
             {additional.name}
           </Label>
