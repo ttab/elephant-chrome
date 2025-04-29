@@ -26,7 +26,10 @@ import { Button } from '@ttab/elephant-ui'
 import { createStateless, StatelessType } from '@/shared/stateless'
 import { useSession } from 'next-auth/react'
 import { PlanningHeader } from './components/PlanningHeader'
-import { useEffect } from 'react'
+import React, { type SetStateAction, useEffect } from 'react'
+import type { NewItem } from '../Event/components/PlanningTable'
+
+type Setter = React.Dispatch<SetStateAction<NewItem>>
 
 const meta: ViewMetadata = {
   name: 'Planning',
@@ -44,7 +47,7 @@ const meta: ViewMetadata = {
   }
 }
 
-export const Planning = (props: ViewProps & { document?: Y.Doc }): JSX.Element => {
+export const Planning = (props: ViewProps & { document?: Y.Doc, setNewItem?: Setter }): JSX.Element => {
   const [query] = useQuery()
   const documentId = props.id || query.id
 
@@ -57,7 +60,7 @@ export const Planning = (props: ViewProps & { document?: Y.Doc }): JSX.Element =
       {typeof documentId === 'string'
         ? (
             <AwarenessDocument documentId={documentId} document={props.document}>
-              <PlanningViewContent {...props} documentId={documentId} />
+              <PlanningViewContent {...props} documentId={documentId} setNewItem={props?.setNewItem} />
             </AwarenessDocument>
           )
         : (
@@ -107,6 +110,9 @@ const PlanningViewContent = (props: ViewProps & { documentId: string }): JSX.Ele
           }
         })
       )
+    }
+    if (props?.setNewItem) {
+      props.setNewItem({ uuid: props.documentId, title: newTitle as string })
     }
   }
 

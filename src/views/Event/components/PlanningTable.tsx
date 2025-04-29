@@ -4,7 +4,7 @@ import { useRepositoryEvents } from '@/hooks/useRepositoryEvents'
 import { Events } from '@/lib/events'
 import { GanttChartSquare, PlusIcon } from '@ttab/elephant-ui/icons'
 import { useSession } from 'next-auth/react'
-import { useRef } from 'react'
+import { useRef, useState } from 'react'
 import { NewItems } from '@/components/Table/NewItems'
 import useSWR from 'swr'
 import type { FormProps } from '@/components/Form/Root'
@@ -22,6 +22,8 @@ interface StatusResult {
   uuid: string | undefined
 }
 
+export type NewItem = { title: string, uuid: string } | undefined
+
 export const PlanningTable = ({ provider, documentId, asDialog }: {
   documentId: string
   provider?: HocuspocusProvider
@@ -31,6 +33,7 @@ export const PlanningTable = ({ provider, documentId, asDialog }: {
   const createdDocumentIdRef = useRef<string | undefined>()
   const indexUrl = useIndexUrl()
   const { showModal, hideModal } = useModal()
+  const [newItem, setNewItem] = useState<NewItem>()
 
   const { data, mutate, error } = useSWR<StatusResult[] | undefined, Error>([
     `relatedPlanningItems/${documentId}`,
@@ -104,6 +107,7 @@ export const PlanningTable = ({ provider, documentId, asDialog }: {
               <Planning
                 onDialogClose={hideModal}
                 asDialog
+                setNewItem={setNewItem}
                 id={initialDocument[0]}
                 document={initialDocument[1]}
               />
