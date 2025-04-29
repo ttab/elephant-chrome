@@ -235,25 +235,31 @@ export const WireViewContent = (props: ViewProps & {
                     wire: props.wire,
                     hasSelectedPlanning: !!selectedPlanning
                   })
-                  if (setShowVerifyDialog) {
-                    setShowVerifyDialog(false)
-                  }
+                  setShowVerifyDialog(false)
                   props.onDocumentCreated?.()
                 }}
                 onSecondary={() => {
-                  if (setShowVerifyDialog) {
-                    setShowVerifyDialog(false)
-                  }
+                  setShowVerifyDialog(false)
                 }}
               />
             )
           }
 
-          <Form.Footer>
+          <Form.Footer className='flex justify-between'>
+            <>
+              <Button
+                variant='secondary'
+                autoFocus
+                onClick={() => {
+                  props.onDialogClose?.()
+                  props.onDocumentCreated?.()
+                }}
+              >
+                Markera som använd
+              </Button>
+            </>
             <Form.Submit onSubmit={handleSubmit}>
-              <div className='flex justify-end'>
-                <Button type='submit'>Skapa artikel</Button>
-              </div>
+              <Button type='submit'>Skapa artikel</Button>
             </Form.Submit>
           </Form.Footer>
         </Form.Root>
