@@ -183,6 +183,7 @@ function constructQuery(
   timeZone: string
 ): QueryV1 {
   const { from, to } = getUTCDateRange(date, timeZone)
+  // CAVEAT: This is in reality a local date but with zero time and a faulty Z in it.
   const formattedDate = format(date, 'yyyy-MM-dd\'T00:00:000Z\'')
 
   if (dateType === 'publish') {
