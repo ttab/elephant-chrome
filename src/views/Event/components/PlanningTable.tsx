@@ -4,7 +4,7 @@ import { useRepositoryEvents } from '@/hooks/useRepositoryEvents'
 import { Events } from '@/lib/events'
 import { GanttChartSquare, PlusIcon } from '@ttab/elephant-ui/icons'
 import { useSession } from 'next-auth/react'
-import { useRef } from 'react'
+import { useRef, useState } from 'react'
 import { NewItems } from '@/components/Table/NewItems'
 import useSWR from 'swr'
 import type { FormProps } from '@/components/Form/Root'
@@ -22,6 +22,8 @@ interface StatusResult {
   uuid: string | undefined
 }
 
+export type NewItem = { title: string, uuid: string } | undefined
+
 export const PlanningTable = ({ provider, documentId, asDialog }: {
   documentId: string
   provider?: HocuspocusProvider
@@ -31,15 +33,17 @@ export const PlanningTable = ({ provider, documentId, asDialog }: {
   const createdDocumentIdRef = useRef<string | undefined>()
   const indexUrl = useIndexUrl()
   const { showModal, hideModal } = useModal()
+  const [newItem, setNewItem] = useState<NewItem>()
 
   const { data, mutate, error } = useSWR<StatusResult[] | undefined, Error>([
     `relatedPlanningItems/${documentId}`,
     status,
     indexUrl.href
   ], async (): Promise<StatusResult[] | undefined> => {
-    if (status !== 'authenticated') {
+    if (status !== 'authenticated' || !session?.accessToken) {
       throw new Error('Not authenticated')
     }
+
     const statusResults = await Events.relatedPlanningSearch(indexUrl, session.accessToken, [documentId], {
       size: 100
     })
@@ -51,10 +55,12 @@ export const PlanningTable = ({ provider, documentId, asDialog }: {
   })
 
   useRepositoryEvents('core/planning-item', (event) => {
-    if (createdDocumentIdRef.current === event.uuid && event.type === 'document') {
+    if (createdDocumentIdRef.current === event.uuid && event.type === 'core/planning-item' && event.event === 'document') {
       void (async () => {
         try {
-          await mutate()
+          if (Array.isArray(data) && newItem?.title) {
+            await mutate([...data, { title: newItem?.title, uuid: newItem?.uuid }], { revalidate: false })
+          }
         } catch (error) {
           console.warn('Failed to update planning table', error)
         }
@@ -84,6 +90,7 @@ export const PlanningTable = ({ provider, documentId, asDialog }: {
             const initialDocument = createDocument({
               template: Templates.planning,
               inProgress: true,
+              createdDocumentIdRef,
               payload: {
                 ...payload || {},
                 links: {
@@ -102,6 +109,7 @@ export const PlanningTable = ({ provider, documentId, asDialog }: {
               <Planning
                 onDialogClose={hideModal}
                 asDialog
+                setNewItem={setNewItem}
                 id={initialDocument[0]}
                 document={initialDocument[1]}
               />
