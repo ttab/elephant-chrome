@@ -1,6 +1,6 @@
 import type { Index } from '@/shared/Index'
 import type { Repository } from '@/shared/Repository'
-import { QueryV1, BoolQueryV1, TermQueryV1 } from '@ttab/elephant-api/index'
+import { QueryV1, BoolQueryV1, TermQueryV1, RangeQueryV1 } from '@ttab/elephant-api/index'
 import type { DocumentMetrics, StatusOverviewItem } from '@ttab/elephant-api/repository'
 import { type BulkGetResponse, type GetMetricsResponse, type GetStatusOverviewResponse } from '@ttab/elephant-api/repository'
 import type { Session } from 'next-auth'
@@ -9,6 +9,8 @@ import { getStatus } from '../getStatus'
 import { getAssignmentsFromDocument } from './getAssignmentsFromDocument'
 import type { AssignmentInterface } from './types'
 import { StatusSpecifications } from '@/defaults/workflowSpecification'
+import { getUTCDateRange } from '@/lib/datetime'
+import { format } from 'date-fns'
 
 
 // We want to fetch all known statuses for deliverables and then
@@ -27,14 +29,16 @@ const knownStatuses = Object.keys(StatusSpecifications)
  * @param {Date | string} params.date - The date to filter assignments by.
  * @returns {Promise<AssignmentInterface[] | undefined>} - The fetched assignments or undefined if index or session is not provided.
  */
-export async function fetchAssignments({ index, repository, type, requireDeliverable, requireMetrics, session, date }: {
+export async function fetchAssignments({ index, repository, type, requireDeliverable, requireMetrics, session, date, timeZone, dateType = 'start-date' }: {
   index: Index | undefined
   repository: Repository | undefined
   type?: string | string[]
   requireDeliverable?: boolean
   requireMetrics?: string[] | null
   session: Session | null
-  date: Date | string
+  date: Date
+  timeZone: string
+  dateType?: 'start-date' | 'publish'
 }
 ): Promise<AssignmentInterface[] | undefined> {
   if (!index || !session?.accessToken) {
@@ -49,13 +53,16 @@ export async function fetchAssignments({ index, repository, type, requireDeliver
   const metricsDocumentsRequests: Promise<GetMetricsResponse | null>[] = []
 
   do {
+    const query = constructQuery(date, dateType, timeZone)
+    console.log(JSON.stringify(query, null, 2))
+
     const { ok, hits, errorMessage } = await index.query({
       accessToken: session.accessToken,
       documentType: 'core/planning-item',
       page,
       size,
       loadDocument: true,
-      query: constructQuery(date)
+      query
     })
 
     if (!ok) {
@@ -153,7 +160,6 @@ export async function fetchAssignments({ index, repository, type, requireDeliver
     })
   })
 
-
   // Sort assignments with fullday first, then in time order
   filteredTextAssignments.sort((a, b) => {
     const at = a.data.publish ? parseISO(a.data.publish) : 0
@@ -169,22 +175,29 @@ export async function fetchAssignments({ index, repository, type, requireDeliver
 /**
  * Get query
  *
- * @param date - The date to format for the query.
+ * @param date - The local date to format for the query.
  * @returns The formatted query object.
  */
-function constructQuery(date: Date | string): QueryV1 {
-  const today = new Date(date)
-  today.setHours(0, 0, 0, 0)
+function constructQuery(
+  date: Date,
+  dateType: 'start-date' | 'publish',
+  timeZone: string
+): QueryV1 {
+  const { from, to } = getUTCDateRange(date, timeZone)
+  const formattedDate = format(date, 'yyyy-MM-dd\'T00:00:000Z\'')
 
-  const year = new Intl.DateTimeFormat('en', { year: 'numeric' }).format(today)
-  const month = new Intl.DateTimeFormat('en', { month: '2-digit' }).format(today)
-  const day = new Intl.DateTimeFormat('en', { day: '2-digit' }).format(today)
-
-  const hour = new Intl.DateTimeFormat('en', { hour: '2-digit', hourCycle: 'h23' }).format(today).padStart(2, '0')
-  const minute = new Intl.DateTimeFormat('en', { minute: '2-digit' }).format(today).padStart(2, '0')
-  const second = new Intl.DateTimeFormat('en', { second: '2-digit' }).format(today).padStart(2, '0')
-
-  const formattedDate = `${year}-${month}-${day}T${hour}:${minute}:${second}Z`
+  if (dateType === 'publish') {
+    return QueryV1.create({
+      conditions: {
+        oneofKind: 'range',
+        range: RangeQueryV1.create({
+          field: 'document.meta.core_assignment.data.publish',
+          gte: `${from}`,
+          lte: `${to}`
+        })
+      }
+    })
+  }
 
   return QueryV1.create({
     conditions: {

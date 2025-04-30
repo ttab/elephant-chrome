@@ -1,5 +1,6 @@
 import { UTCDate } from '@date-fns/utc'
 import { startOfDay, endOfDay } from 'date-fns'
+import { fromZonedTime, format, toZonedTime } from 'date-fns-tz'
 
 /**
  * Format a local date/time to ISO format but in the UTC timezone.
@@ -112,6 +113,9 @@ export function getDateTimeBoundaries(localDate: Date): { startTime: Date, endTi
   }
 }
 
+/**
+ * @deprecated - use getUTCDateRange(date: Date, timeZone: string)
+ */
 export function getDateTimeBoundariesUTC(localDate: Date): { from: string, to: string } {
   const startTime = startOfDay(new UTCDate(localDate))
   const endTime = endOfDay(new UTCDate(localDate))
@@ -143,8 +147,9 @@ function is12HourcycleFromLocale(locale: string): boolean {
 }
 
 /**
-* Get current date in UTC timezone.
-**/
+ * Get current date in UTC timezone.
+ * @deprecated - use newLocalDate('UTC', 'date')
+ **/
 export function currentDateInUTC(): string {
   const dateString = new Date().toISOString()
   return dateString.split('T')[0]
@@ -291,4 +296,55 @@ export function parseDate(value: string): Date | undefined {
     parseInt(parts[1], 10) - 1,
     parseInt(parts[2], 10)
   )
+}
+
+/**
+ * Retrieve from and to times in UTC for a given date in the
+ * specified timezone. Treats the date as not having a timezone.
+ *
+ * @param date Current date in local timezone
+ * @param timeZone Timezone string as supported by date-fns
+ * @returns { from: string, to: string}
+ */
+export function getUTCDateRange(date: Date, timeZone: string): {
+  from: string
+  to: string
+} {
+  const localStart = startOfDay(date)
+  const localEnd = endOfDay(date)
+
+  const utcStart = fromZonedTime(localStart, timeZone)
+  const utcEnd = fromZonedTime(localEnd, timeZone)
+
+  const from = utcStart.toISOString()
+  const to = utcEnd.toISOString()
+
+  return { from, to }
+}
+
+/**
+ * Retrieve the local date in specified timezone. This function should
+ * normally be used instead of "new Date()" to retrieve a date object
+ * in the systems (the elephants) configured timezone. This ensures
+ * users in other timezones also get a date in the "home timezone".
+ *
+ * Specify a string format to get it as string in iso format.
+ *
+ * @param timeZone Timezone supported by date-fns
+ * @param as Optional string format specifier
+ * @returns Date | string
+ */
+export function newLocalDate(timeZone: string, as?: 'datetime' | 'date') {
+  const date = toZonedTime(new Date(), timeZone)
+
+  switch (as) {
+    case 'datetime':
+      return format(date, 'yyyy-MM-dd\'T\'HH:mm:ss')
+
+    case 'date':
+      return format(date, 'yyyy-MM-dd')
+
+    default:
+      return date
+  }
 }
