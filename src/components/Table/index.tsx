@@ -32,10 +32,12 @@ import { LoadingText } from '../LoadingText'
 import { Row } from './Row'
 import { useModal } from '../Modal/useModal'
 import { PreviewSheet } from '@/views/Wires/components'
-import type { Wire as WireType } from '@/hooks/index/lib/wires'
+import type { Wire as WireType } from '@/hooks/index/useDocuments/schemas/wires'
 import { Wire } from '@/views/Wire'
 import { getWireStatus } from './lib/getWireStatus'
 import { type View } from '@/types/index'
+import type { Article } from '@/hooks/index/useDocuments/schemas/article'
+import type { Planning } from '@/hooks/index/useDocuments/schemas/planning'
 
 interface TableProps<TData, TValue> {
   columns: Array<ColumnDef<TData, TValue>>
@@ -309,7 +311,7 @@ export const Table = <TData, TValue>({
   return (
     <>
       {!['Wires', 'Factbox', 'Search'].includes(type) && (
-        <Toolbar columns={columns} />
+        <Toolbar columns={columns as ColumnDef<Planning | Event | Article>[]} />
       )}
 
       {(type === 'Planning' || type === 'Event') && (

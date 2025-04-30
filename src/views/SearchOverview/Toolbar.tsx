@@ -2,11 +2,11 @@ import { Filter } from '@/components/Filter'
 import { Commands } from './Commands'
 import { useState } from 'react'
 import type { FilterProps } from '@/components/Filter'
-import type { SearchType } from './SearchDropdown'
 import { SelectedFilters } from '@/components/Filter/SelectedFilters'
 import { Sort } from '@/components/Sort'
+import type { SearchKeys } from '@/hooks/index/useDocuments/queries/views/search'
 
-export const Toolbar = ({ type }: { type: SearchType }): JSX.Element => {
+export const Toolbar = ({ type }: { type: SearchKeys }): JSX.Element => {
   const [pages, setPages] = useState<string[]>([])
   const [search, setSearch] = useState<string | undefined>('')
 

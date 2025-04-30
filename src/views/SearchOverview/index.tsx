@@ -5,16 +5,16 @@ import { TableProvider } from '@/contexts/TableProvider'
 import { SearchResult } from './SearchResult'
 import { useRegistry } from '@/hooks/useRegistry'
 import { useSections } from '@/hooks/useSections'
-import { SearchDropdown, searchTypes as validSearchTypes, type SearchType } from './SearchDropdown'
+import { SearchDropdown, searchTypes as validSearchTypes } from './SearchDropdown'
 import { Pagination } from '../../components/Table/Pagination'
-import { searchColumns } from './SearchColumns'
 import { type ViewMetadata } from '@/types'
 import { useQuery } from '@/hooks/useQuery'
 import { useOrganisers } from '@/hooks/useOrganisers'
 import { useAuthors } from '@/hooks/useAuthors'
-import type { Types } from './search'
 import { Toolbar } from './Toolbar'
 import type { ColumnDef } from '@tanstack/react-table'
+import { createSearchColumns } from './lib/createSearchColumns'
+import type { SearchKeys } from '@/hooks/index/useDocuments/queries/views/search'
 
 const meta: ViewMetadata = {
   name: 'Search',
@@ -36,8 +36,8 @@ export const Search = (): JSX.Element => {
   const [isLoading, setLoading] = useState<boolean>(false)
   const [total, setTotalHits] = useState<number>(0)
   const [query] = useQuery()
-  const startingSearchType: SearchType = query.type as SearchType || 'plannings'
-  const [searchType, setSearchType] = useState<SearchType>(startingSearchType)
+  const startingSearchType: SearchKeys = query.type as SearchKeys || 'plannings'
+  const [searchType, setSearchType] = useState<SearchKeys>(startingSearchType)
   const { locale, timeZone } = useRegistry()
   const sections = useSections()
   const organisers = useOrganisers()
@@ -45,9 +45,15 @@ export const Search = (): JSX.Element => {
 
 
   const columns = useMemo(() => {
-    return searchColumns({ locale, timeZone, sections, authors, organisers, type: searchType })
-  }, [locale, timeZone, authors, sections, organisers, searchType])
-
+    return createSearchColumns({
+      searchType,
+      sections,
+      authors,
+      locale,
+      timeZone,
+      organisers
+    })
+  }, [locale, timeZone, authors, sections, searchType, organisers])
 
   const handleSetTotalHits = useCallback(() => (num: number) => setTotalHits(num), [])
 
@@ -60,9 +66,13 @@ export const Search = (): JSX.Element => {
 
   return (
     <View.Root>
-      <TableProvider<Types>
+      {/* TODO: Generics */}
+      <TableProvider
         type={meta.name}
-        columns={columns as Array<ColumnDef<Types, unknown>>}
+        columns={columns as Array<ColumnDef<unknown, unknown>>}
+        initialState={{
+          grouping: ['date']
+        }}
       >
         <ViewHeader.Root>
           <ViewHeader.Title name='Search' title='Sök' />
@@ -82,7 +92,7 @@ export const Search = (): JSX.Element => {
         <View.Content>
           {!Object.keys(params).length
             ? (
-                <div className='w-3/4 h-fit mt-10 bg-slate-200 flex justify-self-center p-6'>
+                <div className='w-3/4 h-fit mt-10 bg-slate-200 p-6 m-auto'>
                   <div className='flex flex-col gap-2 w-full items-center'>
                     <SearchBar width='w-full' setTotalHits={handleSetTotalHits} setLoading={setLoading} searchType={searchType} page={0} />
                     <div className='flex gap-2 w-full justify-center'>
@@ -94,7 +104,7 @@ export const Search = (): JSX.Element => {
               )
             : (
                 <>
-                  <SearchResult from='' to='' isLoading={isLoading} searchType={searchType} page={Number(query?.page)} />
+                  <SearchResult isLoading={isLoading} searchType={searchType} page={Number(query?.page)} />
                   {total > 0
                     ? (
                         <div className='flex justify-center w-full'>

@@ -2,10 +2,12 @@ import { useCallback } from 'react'
 import { useQuery } from '@/hooks'
 
 import { Table } from '@/components/Table'
-import { useWires } from '@/hooks/index/useWires'
-import type { Wire } from '@/hooks/index/lib/wires'
+import { fields, type Wire } from '@/hooks/index/useDocuments/schemas/wires'
 import type { ColumnDef } from '@tanstack/react-table'
 import { Toolbar } from './Toolbar'
+import { useDocuments } from '@/hooks/index/useDocuments'
+import { constructQuery } from '@/hooks/index/useDocuments/queries/views/wires'
+import { SortingV1 } from '@ttab/elephant-api/index'
 
 export const WireList = ({ columns }: {
   columns: ColumnDef<Wire, unknown>[]
@@ -13,11 +15,17 @@ export const WireList = ({ columns }: {
   const [{ page }] = useQuery()
   const [filter] = useQuery(['section', 'source', 'query', 'newsvalue'])
 
-  useWires({
-    filter: filter,
+  useDocuments({
+    documentType: 'tt/wire',
+    size: 40,
+    query: constructQuery(filter),
     page: typeof page === 'string'
       ? parseInt(page)
-      : undefined
+      : undefined,
+    fields,
+    sort: [
+      SortingV1.create({ field: 'modified', desc: true })
+    ]
   })
 
   const onRowSelected = useCallback((row?: Wire) => {

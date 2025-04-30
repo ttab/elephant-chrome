@@ -1,47 +1,57 @@
-import useSWR from 'swr'
 import { useCallback, useMemo } from 'react'
 import { Table } from '@/components/Table'
-import { searchColumns } from './SearchColumns'
 import { useRegistry } from '@/hooks/useRegistry'
 import { useSections } from '@/hooks/useSections'
 import { LoadingText } from '@/components/LoadingText'
 import { Toolbar } from './Toolbar'
 import { useOrganisers } from '@/hooks/useOrganisers'
 import { useAuthors } from '@/hooks/useAuthors'
-import type { Article, Event, Planning } from '@/lib/index'
-import type { AssignmentMetaExtended } from '../Assignments/types'
-import type { SearchType } from './SearchDropdown'
+import type { Event } from '@/hooks/index/useDocuments/schemas/event'
+import type { Planning } from '@/hooks/index/useDocuments/schemas/planning'
+import type { Article } from '@/hooks/index/useDocuments/schemas/article'
+import { useDocuments } from '@/hooks/index/useDocuments'
+import { createSearchColumns } from './lib/createSearchColumns'
+import type { SearchKeys } from '@/hooks/index/useDocuments/queries/views/search'
+import search from '@/hooks/index/useDocuments/queries/views/search'
+import { useQuery } from '@/hooks/useQuery'
 import type { ColumnDef } from '@tanstack/react-table'
-import type { Types } from './search'
 
-export const SearchResult = ({ from, to, isLoading, searchType, page }: {
-  from: string
-  to: string
+export const SearchResult = ({ searchType }: {
   isLoading: boolean
-  searchType: SearchType
+  searchType: SearchKeys
   page: number
 }): JSX.Element => {
   const sections = useSections()
   const organisers = useOrganisers()
   const authors = useAuthors()
+  const [filter] = useQuery()
 
   const { locale, timeZone } = useRegistry()
-  const { error } = useSWR<unknown, Error>(['Search', searchType, page, from, to, { withStatus: true }])
+  const getType = (searchType: SearchKeys) => searchType === 'events' ? 'Event' : searchType === 'articles' ? 'Editor' : 'Planning'
 
-  const getType = (searchType: SearchType) => searchType === 'events' ? 'Event' : searchType === 'articles' ? 'Editor' : 'Planning'
-
-  const onRowSelected = useCallback((row?: Planning | Event | AssignmentMetaExtended | Article) => {
+  const onRowSelected = useCallback((row?: Planning | Event) => {
     if (row) {
-      console.info(`Selected planning item ${row._id}`)
+      console.info(`Selected planning item ${row.id}`)
     } else {
       console.info('Deselected row')
     }
     return row
   }, [])
 
+  const searchParams = search[searchType].params(filter)
+
+  const { error, isLoading } = useDocuments(searchParams)
+
   const columns = useMemo(() => {
-    return searchColumns({ locale, timeZone, sections, authors, organisers, type: searchType })
-  }, [locale, timeZone, authors, sections, organisers, searchType])
+    return createSearchColumns({
+      searchType,
+      sections,
+      authors,
+      locale,
+      timeZone,
+      organisers
+    })
+  }, [locale, timeZone, authors, sections, searchType, organisers])
 
   if (error) {
     return <pre>{error.message}</pre>
@@ -59,7 +69,7 @@ export const SearchResult = ({ from, to, isLoading, searchType, page }: {
               <Table
                 type='Search'
                 searchType={getType(searchType)}
-                columns={columns as Array<ColumnDef<Types, unknown>>}
+                columns={columns as ColumnDef<Planning | Event | Article>[]}
                 onRowSelected={onRowSelected}
               />
             </>

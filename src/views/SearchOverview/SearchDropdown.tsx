@@ -2,24 +2,22 @@ import { type SetStateAction, useMemo } from 'react'
 import { ComboBox, type DefaultValueOption } from '@ttab/elephant-ui'
 import { useQuery } from '@/hooks/useQuery'
 import { useTable } from '@/hooks/useTable'
-
-export type SearchType = 'plannings' | 'events' | 'assignments' | 'articles'
+import type { SearchKeys } from '@/hooks/index/useDocuments/queries/views/search'
 
 interface SearchTypeItem {
-  value: SearchType
+  value: SearchKeys
   label: string
 }
 
 type SearchTypes = Array<SearchTypeItem>
 interface DropdownProps {
   searchType: 'plannings' | 'events' | 'assignments' | 'articles'
-  setSearchType: React.Dispatch<SetStateAction<SearchType>>
+  setSearchType: React.Dispatch<SetStateAction<SearchKeys>>
 }
 
 export const searchTypes: SearchTypes = [
   { value: 'plannings', label: 'Planeringar' },
   { value: 'events', label: 'Händelser' },
-  { value: 'assignments', label: 'Uppdrag' },
   { value: 'articles', label: 'Artiklar' }
 ]
 
@@ -36,7 +34,7 @@ export const SearchDropdown = ({ searchType, setSearchType }: DropdownProps) => 
       options={searchTypes}
       onSelect={(e: DefaultValueOption) => {
         setData([])
-        setSearchType(e.value as SearchType)
+        setSearchType(e.value as SearchKeys)
         setQueryString({ type: e.value })
       }}
     />

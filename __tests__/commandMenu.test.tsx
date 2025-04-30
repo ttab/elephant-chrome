@@ -4,7 +4,7 @@ import { render, screen } from '../setupTests'
 import { CommandMenu } from '@/components/Commands/Menu'
 import userEvent from '@testing-library/user-event'
 import { planningListColumns } from '@/views/PlanningOverview/PlanningListColumns'
-import { type Planning } from '@/lib/index'
+import { type Planning } from '@/hooks/index/useDocuments/schemas/planning'
 import type { HistoryState } from '@/navigation/hooks/useHistory'
 
 describe('CommandMenu', () => {

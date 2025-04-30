@@ -15,7 +15,7 @@ import { ViewDialogClose } from '@/components/View/ViewHeader/ViewDialogClose'
 import { ViewFocus } from '@/components/View/ViewHeader/ViewFocus'
 import { Button } from '@ttab/elephant-ui'
 import { useUserTracker } from '@/hooks/useUserTracker'
-import type { Wire } from '@/hooks/index/lib/wires'
+import type { Wire } from '@/hooks/index/useDocuments/schemas/wires'
 
 const meta: ViewMetadata = {
   name: 'Wires',

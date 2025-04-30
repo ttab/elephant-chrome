@@ -8,7 +8,7 @@ import { Newsvalues } from '@/defaults/newsvalues'
 import { type ColumnDef } from '@tanstack/react-table'
 import { Pen, Shapes, SignalHigh } from '@ttab/elephant-ui/icons'
 import { type IDBSection } from 'src/datastore/types'
-import type { Wire } from '@/hooks/index/lib/wires'
+import type { Wire } from '@/hooks/index/useDocuments/schemas/wires'
 
 export function wiresListColumns({ sections = [], locale = 'sv-SE' }: {
   sections?: IDBSection[]
