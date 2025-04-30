@@ -59,6 +59,7 @@ export const FlashViewContent = (props: ViewProps): JSX.Element => {
                     }}
                     fetch={(query) => fetch(query, session, index, locale, timeZone, { searchOlder })}
                     minSearchChars={2}
+                    modal={props.asDialog}
                     onSelect={(option) => {
                       if (option.value !== selectedPlanning?.value) {
                         setSelectedPlanning({
