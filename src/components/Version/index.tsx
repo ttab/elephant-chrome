@@ -5,29 +5,32 @@ import useSWR from 'swr'
 import { useSession } from 'next-auth/react'
 import { useModal } from '../Modal/useModal'
 import { PreviewSheet } from '@/views/Wires/components'
-import { format } from 'date-fns'
 import { useAuthors } from '@/hooks/useAuthors'
 import { getCreatorBySub } from './getCreatorBySub'
 import { DocumentStatuses } from '@/defaults/documentStatuses'
-import type { GetHistoryResponse } from '@ttab/elephant-api/repository'
-import type { DocumentVersion } from '@ttab/elephant-api/repository'
 import { Error } from '@/views/Error'
 import { STATUS_KEYS } from './statuskeys'
+import type { GetHistoryResponse } from '@ttab/elephant-api/repository'
+import type { DocumentVersion } from '@ttab/elephant-api/repository'
+import type { EleDocumentResponse } from '@/shared/types'
+import { dateToReadableDateTime } from '@/lib/datetime'
+const BASE_URL = import.meta.env.BASE_URL || ''
 
 type Status = { name: string, created: string, creator: string }
 
 type SelectedVersion = Pick<DocumentVersion, 'created' | 'version' | 'creator'> & {
   createdBy?: string
   lastStatus?: Status
+  title?: string
 }
 
-export const Version = ({ documentId, hideDetails = false }: { documentId: string, hideDetails?: boolean }) => {
-  const { repository } = useRegistry()
+export const Version = ({ documentId, hideDetails = false, textOnly = true }: { documentId: string, hideDetails?: boolean, textOnly?: boolean }) => {
+  const { repository, locale, timeZone } = useRegistry()
   const { data: session } = useSession()
   const authors = useAuthors()
   const [lastUpdated, setLastUpdated] = useState('')
 
-  const { data: versionHistory, error } = useSWR<DocumentVersion[], Error>(`version/${documentId}`, async (): Promise<Array<DocumentVersion>> => {
+  const { data: versionHistory, error } = useSWR<DocumentVersion[], Error>(`version/${documentId}`, async (): Promise<Array<DocumentVersion & { title?: string, slugline?: string }>> => {
     if (!session?.accessToken || !repository) {
       return []
     }
@@ -53,6 +56,45 @@ export const Version = ({ documentId, hideDetails = false }: { documentId: strin
       }
       return statuskeys.some((key) => STATUS_KEYS.includes(key))
     })
+
+    const fetchDoc = async (v: DocumentVersion) => {
+      // Used to fetch the previous document version in order to get hold of the title,
+      // that can be displayed in the list of previous versions.
+      const response = await fetch(`${BASE_URL}/api/documents/${documentId}?version=${v.version}`)
+      return await response.json()
+    }
+
+    result.versions = await Promise.all(result.versions.map(async (version) => {
+      const versionDoc = await fetchDoc(version) as EleDocumentResponse
+
+      if (versionDoc) {
+        const doc = versionDoc?.document
+        let docTitle = ''
+        let headingTitle = ''
+
+        if (doc?.title) {
+          docTitle = doc.title
+        }
+
+        const slugline = doc?.meta?.['tt/slugline']?.[0]?.value ?? ''
+
+        if (doc?.content.length) {
+          // If we're dealing with an article or a wire, the title can be found
+          // in the heading-1 role, in case the document title is empty
+          const heading = doc?.content?.find((c) => c?.properties?.role === 'heading-1')?.children[0]
+          if (heading && 'text' in heading) {
+            headingTitle = heading?.text
+          }
+        }
+
+        return {
+          ...version,
+          title: docTitle || headingTitle,
+          slugline
+        }
+      }
+      return version
+    }))
 
     const getLastReadOrSaved = (version: DocumentVersion) => {
       if (version?.creator.includes('elephant-wires')) {
@@ -87,12 +129,13 @@ export const Version = ({ documentId, hideDetails = false }: { documentId: strin
 
   const createdBy = useCallback((creator: string) => getCreatorBySub({ authors, creator })?.name || '???', [authors])
 
-  const formatDateAndTime = (date: string) => {
+  const formatDateAndTime = useCallback((date: string) => {
     if (date) {
-      return format(date, 'yyyy-MM-dd HH:mm')
+      const sameYear = new Date(date).getFullYear() === new Date().getFullYear()
+      return dateToReadableDateTime(new Date(date), locale.code.full, timeZone, !sameYear)
     }
     return ''
-  }
+  }, [locale.code.full, timeZone])
 
   const VersionStack = useMemo(() => {
     if (!documentId) {
@@ -133,21 +176,27 @@ export const Version = ({ documentId, hideDetails = false }: { documentId: strin
       return status
     }
 
-    return versionHistory?.map((v) => {
+    return versionHistory?.map((v: DocumentVersion & { title?: string, slugline?: string }) => {
       const usable = getUsable(v)
       return (
         <SelectItem
           key={`${usable?.created}-${v.version}`}
           value={v.version.toString()}
         >
-          <div className='flex items-center gap-2'>
-            {usable?.created && <span>{`${formatDateAndTime(usable.created)}`}</span>}
-            <span>{`${usable?.name} av ${usable?.creator || '???'}`}</span>
+          <div className='flex flex-col gap-1'>
+            <span className='hidden sm:block font-bold'>{`${v?.title}`}</span>
+            <div className='m-0'>
+              <span className='text-muted-foreground'>{`${v?.slugline}`}</span>
+              <div className='flex items-center gap-2'>
+                {usable?.created && <span>{`${formatDateAndTime(usable.created)}`}</span>}
+                <span>{`${usable?.name} av ${usable?.creator || '???'}`}</span>
+              </div>
+            </div>
           </div>
         </SelectItem>
       )
     })
-  }, [documentId, versionHistory, createdBy])
+  }, [documentId, versionHistory, createdBy, formatDateAndTime])
 
   if (!versionHistory?.length) {
     return <></>
@@ -164,7 +213,7 @@ export const Version = ({ documentId, hideDetails = false }: { documentId: strin
   }
 
   return (
-    <>
+    <div className='flex flex-col gap-2 rounded -mt-2'>
       <Select
         onValueChange={(option) => {
           const current = versionHistory?.find((v) => v.version === BigInt(option))
@@ -174,7 +223,7 @@ export const Version = ({ documentId, hideDetails = false }: { documentId: strin
               id={documentId}
               version={current?.version && BigInt(current?.version)}
               versionHistory={versionHistory}
-              textOnly
+              textOnly={textOnly}
               handleClose={hideModal}
             />,
             'sheet',
@@ -183,21 +232,22 @@ export const Version = ({ documentId, hideDetails = false }: { documentId: strin
             })
         }}
       >
-        <div className='border rounded p-1'>
-          {lastUpdated && <div className='text-sm italic pb-2'>{`Senast uppdaterad: ${formatDateAndTime(lastUpdated)}`}</div>}
-          <SelectTrigger className='py-0 px-1 h-6 w-full'>
-            {selectedVersion && (
-              <div className='w-full'>{`${formatDateAndTime(selectedVersion.created)}`}</div>
-            )}
-          </SelectTrigger>
-          {!hideDetails && selectedVersion?.createdBy && (
-            <div className='text-sm italic'>{`Skapad av ${selectedVersion?.createdBy}`}</div>
+        <SelectTrigger className='w-full py-1'>
+          {selectedVersion && (
+            <>{`${formatDateAndTime(selectedVersion.created)}`}</>
           )}
-        </div>
+        </SelectTrigger>
+
         <SelectContent>
           {VersionStack}
         </SelectContent>
       </Select>
-    </>
+
+      {lastUpdated && <div className='text-sm text-muted-foreground pl-0.5'>{`Senast uppdaterad: ${formatDateAndTime(lastUpdated)}`}</div>}
+
+      {!hideDetails && selectedVersion?.createdBy && (
+        <div className='text-sm text-muted-foreground pl-0.5'>{`Skapad av ${selectedVersion?.createdBy}`}</div>
+      )}
+    </div>
   )
 }

@@ -274,14 +274,14 @@ export class CollaborationServer {
    * Fetch document from redis if already in cache, otherwise from repository
    */
   async #fetchDocument({ documentName: uuid, document: yDoc, context }: fetchPayload): Promise<Uint8Array | null> {
-    if (!assertContext(context)) {
-      throw new Error('Invalid context provided')
-    }
-
     // If the request is the document tracker document
     if (this.#openDocuments.isTrackerDocument(uuid)) {
       const ydoc = this.#openDocuments.getDocument()
       return Y.encodeStateAsUpdate(ydoc)
+    }
+
+    if (!assertContext(context)) {
+      throw new Error('Invalid context provided')
     }
 
     // Fetch from Redis if exists
@@ -319,16 +319,16 @@ export class CollaborationServer {
     document: Y.Doc
     context: Context
   }): Promise<FinishedUnaryCall<UpdateRequest, UpdateResponse> | null> {
+    // Ignore userTracker documents
+    if (context.user.sub?.endsWith(documentName)) {
+      return null
+    }
+
     // Ignore __inProgress documents
     if ((yDoc.getMap('ele')
       .get('root') as Y.Map<unknown>)
       .get('__inProgress') as boolean) {
       logger.debug('::: Snapshot document: Document is in progress, not saving')
-      return null
-    }
-
-    // Ignore userTracker documents
-    if (context.user.sub?.endsWith(documentName)) {
       return null
     }
 

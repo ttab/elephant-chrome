@@ -185,11 +185,11 @@ function EditorContainer({
 
       <View.Footer>
         <div className='flex gap-2'>
-          <strong>Words:</strong>
+          <strong>Ord:</strong>
           <span>{words}</span>
         </div>
         <div className='flex gap-2'>
-          <strong>Characters:</strong>
+          <strong>Tecken:</strong>
           <span>{characters}</span>
         </div>
       </View.Footer>

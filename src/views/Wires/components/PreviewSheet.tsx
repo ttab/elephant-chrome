@@ -103,7 +103,7 @@ export const PreviewSheet = ({ id, wire, handleClose, textOnly = true, version, 
                   disabled={documentStatus?.name === 'used'}
                   value={documentStatus?.version === currentVersion
                     ? documentStatus?.name
-                    : undefined}
+                    : ''}
                   onValueChange={(value) => {
                     if (!value && documentStatus) {
                       void setDocumentStatus({

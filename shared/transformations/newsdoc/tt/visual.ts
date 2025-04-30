@@ -1,6 +1,7 @@
 import { Block } from '@ttab/elephant-api/newsdoc'
-import { type TBElement } from '@ttab/textbit'
 import { toString } from '../../lib/toString.js'
+import type { TBElement } from '@ttab/textbit'
+import type { Descendant } from 'slate'
 
 export const transformVisual = (element: Block): TBElement => {
   const { id, data, links } = element
@@ -39,17 +40,35 @@ export const transformVisual = (element: Block): TBElement => {
 }
 
 export function revertVisual(element: TBElement): Block {
-  const { id, properties } = element
+  const { id, properties, children } = element
+  const textNode = children?.find((c) => c.type === 'tt/visual/text')
+  const bylineNode = children?.find((c) => c.type === 'tt/visual/byline')
+
+  function getText(node: Descendant | undefined) {
+    let text = ''
+    if (node && 'children' in node && Array.isArray(node?.children)) {
+      const [child] = node.children
+
+      if (child && 'text' in child && child?.text) {
+        text = child.text
+      }
+    }
+    return text
+  }
+
+  const captionText = getText(textNode)
+  const bylineText = getText(bylineNode)
+
   return Block.create({
     id,
     type: 'tt/visual',
     data: {
-      caption: toString(properties?.text)
+      caption: toString(captionText)
     },
     links: [
       {
         data: {
-          credit: toString(properties?.credit),
+          credit: toString(bylineText),
           height: toString(properties?.height),
           width: toString(properties?.width)
         },

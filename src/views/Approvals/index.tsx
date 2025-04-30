@@ -144,8 +144,8 @@ export const ApprovalsView = (): JSX.Element => {
         <ViewHeader.Title name='Approvals' title='Dagen' />
         <ViewHeader.Content>
           <Header type='Approvals' />
-
         </ViewHeader.Content>
+        <ViewHeader.Action />
       </ViewHeader.Root>
 
       <Toolbar facets={facets} />

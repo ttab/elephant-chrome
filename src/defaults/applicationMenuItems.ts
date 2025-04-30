@@ -1,4 +1,4 @@
-import { Cable, BriefcaseBusiness, CalendarDaysIcon, CalendarPlus2, SearchIcon, ZapIcon, type LucideIcon, EarthIcon, UtilityPole, Boxes } from '@ttab/elephant-ui/icons'
+import { Cable, BriefcaseBusiness, CalendarDaysIcon, CalendarPlus2, SearchIcon, ZapIcon, type LucideIcon, EarthIcon, UtilityPole, Boxes, Library } from '@ttab/elephant-ui/icons'
 import type { ViewProps, View } from '../types'
 
 /**
@@ -92,6 +92,17 @@ export const applicationMenu: ApplicationMenu = {
           label: 'Sök',
           icon: SearchIcon,
           color: '#F06F21'
+        }
+      ]
+    },
+    {
+      name: 'Print',
+      items: [
+        {
+          name: 'PrintArticles',
+          label: 'Print',
+          icon: Library,
+          color: '#006bb3'
         }
       ]
     }

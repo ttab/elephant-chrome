@@ -373,7 +373,7 @@ export const articleFactbox: GetDocumentResponse = {
         sensitivity: ''
       }
     ],
-    title: 'Lorem ipsum title',
+    title: 'Lorem ipsum dolor sit amet 1',
     type: 'core/article',
     uri: 'core://article/00048df7-6142-47ed-a1b7-1f9700d6cefb',
     url: '',

@@ -9,7 +9,7 @@ export const article: GetDocumentResponse = {
     type: 'core/article',
     uri: 'core://article/5a848227-902b-425b-843e-0dd2cd67894b',
     url: '',
-    title: 'mjölkolycka',
+    title: '10|000 liter mjölk läckte vid E6',
     content: [
       {
         id: 'NzUsMjQ2LDIwOCwxNTE',

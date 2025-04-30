@@ -50,6 +50,7 @@ describe('initializeAuthor', () => {
 
   it('should return true if the author document is valid', async () => {
     setupMocks({
+      ok: true,
       hits: [{ document: { links: [{ type: 'tt/keycloak', role: 'prod' }] } }]
     })
 
@@ -65,7 +66,7 @@ describe('initializeAuthor', () => {
   })
 
   it('should create a new author document if none exists', async () => {
-    setupMocks({ hits: [] }, { status: { code: 'OK' } })
+    setupMocks({ ok: true, hits: [] }, { status: { code: 'OK' } })
 
     const result = await initializeAuthor({
       url: mockUrl,
@@ -81,7 +82,7 @@ describe('initializeAuthor', () => {
 
   it('should update an existing author document when isValid === false', async () => {
     const mockDocument = { links: [{ type: 'tt/keycloak', role: 'stage' }] }
-    setupMocks({ hits: [{ document: mockDocument }] }, { status: { code: 'OK' } })
+    setupMocks({ ok: true, hits: [{ document: mockDocument }] }, { status: { code: 'OK' } })
 
     const result = await initializeAuthor({
       url: mockUrl,
@@ -106,7 +107,7 @@ describe('initializeAuthor', () => {
   })
 
   it('should throw an error if saving the document fails', async () => {
-    setupMocks({ hits: [] }, { status: { code: 'ERROR' } })
+    setupMocks({ ok: true, hits: [] }, { status: { code: 'ERROR' } })
 
     await expect(
       initializeAuthor({
@@ -120,7 +121,7 @@ describe('initializeAuthor', () => {
   })
 
   it('should throw an error if multiple author documents are found', async () => {
-    setupMocks({ hits: [{}, {}] })
+    setupMocks({ ok: true, hits: [{}, {}] })
 
     await expect(
       initializeAuthor({
@@ -131,5 +132,20 @@ describe('initializeAuthor', () => {
     ).rejects.toThrow('More than one author document found')
 
     expect(toast.error).toHaveBeenCalledWith('Flera författardokument hittades, kontakta support')
+  })
+
+
+  it('should throw an error when query for authordocs fails', async () => {
+    setupMocks({ ok: false, hits: [{}, {}] })
+
+    await expect(
+      initializeAuthor({
+        url: mockUrl,
+        session: mockSession,
+        repository: mockRepository
+      })
+    ).rejects.toThrow('Failed to initialize author: Failed to fetch author document: undefined')
+
+    expect(toast.error).toHaveBeenCalledWith('Kunde inte skapa författardokument: Failed to fetch author document: undefined')
   })
 })

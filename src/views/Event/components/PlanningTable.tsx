@@ -1,7 +1,7 @@
 import { useLink } from '@/hooks/useLink'
 import { useRepositoryEvents } from '@/hooks/useRepositoryEvents'
 import { GanttChartSquare, PlusIcon } from '@ttab/elephant-ui/icons'
-import { useRef } from 'react'
+import { useRef, useState } from 'react'
 import { NewItems } from '@/components/Table/NewItems'
 import type { FormProps } from '@/components/Form/Root'
 import { Button } from '@ttab/elephant-ui'
@@ -15,6 +15,8 @@ import { Block } from '@ttab/elephant-api/newsdoc'
 import { useDocuments } from '@/hooks/index/useDocuments'
 import { QueryV1, BoolQueryV1, TermsQueryV1 } from '@ttab/elephant-api/index'
 
+export type NewItem = { title: string, uuid: string } | undefined
+
 export const PlanningTable = ({ provider, documentId, asDialog }: {
   documentId: string
   provider?: HocuspocusProvider
@@ -22,6 +24,7 @@ export const PlanningTable = ({ provider, documentId, asDialog }: {
   const openPlanning = useLink('Planning')
   const createdDocumentIdRef = useRef<string | undefined>()
   const { showModal, hideModal } = useModal()
+  const [newItem, setNewItem] = useState<NewItem>()
 
   const { data, mutate, error } = useDocuments({
     documentType: 'core/planning-item',
@@ -46,10 +49,22 @@ export const PlanningTable = ({ provider, documentId, asDialog }: {
   })
 
   useRepositoryEvents('core/planning-item', (event) => {
-    if (createdDocumentIdRef.current === event.uuid && event.type === 'document') {
+    if (createdDocumentIdRef.current === event.uuid && event.type === 'core/planning-item' && event.event === 'document') {
       void (async () => {
         try {
-          await mutate()
+          if (Array.isArray(data) && newItem?.title) {
+            await mutate([...data, {
+              source: {},
+              score: 1,
+              sort: [''],
+              fields: {
+                'document.title': {
+                  values: [newItem?.title]
+                }
+              },
+              id: newItem?.uuid
+            }], { revalidate: false })
+          }
         } catch (error) {
           console.warn('Failed to update planning table', error)
         }
@@ -79,6 +94,7 @@ export const PlanningTable = ({ provider, documentId, asDialog }: {
             const initialDocument = createDocument({
               template: Templates.planning,
               inProgress: true,
+              createdDocumentIdRef,
               payload: {
                 ...payload || {},
                 links: {
@@ -86,7 +102,7 @@ export const PlanningTable = ({ provider, documentId, asDialog }: {
                   'core/event': [Block.create({
                     type: 'core/event',
                     uuid: documentId,
-                    title: 'Untitled',
+                    title: payload?.title || 'Titel saknas',
                     rel: 'event'
                   })]
                 }
@@ -97,6 +113,7 @@ export const PlanningTable = ({ provider, documentId, asDialog }: {
               <Planning
                 onDialogClose={hideModal}
                 asDialog
+                setNewItem={setNewItem}
                 id={initialDocument[0]}
                 document={initialDocument[1]}
               />

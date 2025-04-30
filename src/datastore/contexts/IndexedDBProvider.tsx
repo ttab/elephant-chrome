@@ -7,13 +7,15 @@ export interface IndexedDBContextInterface {
   put: <T>(storeName: string, value: T, key?: IDBValidKey) => Promise<void>
   get: <T>(storeName: string, key?: IDBValidKey) => Promise<T | undefined>
   clear: (storeName: string) => Promise<void>
+  remove: () => Promise<void>
 }
 
 export const IndexedDBContext = createContext<IndexedDBContextInterface>({
   isConnected: false,
   put: async () => { return Promise.reject(new Error('IndexedDB not ready')) },
   get: async () => { return Promise.reject(new Error('IndexedDB not ready')) },
-  clear: async () => { return Promise.reject(new Error('IndexedDB not ready')) }
+  clear: async () => { return Promise.reject(new Error('IndexedDB not ready')) },
+  remove: async () => { return Promise.reject(new Error('IndexedDB not ready')) }
 })
 
 export function IndexedDBProvider({ children }: { children: React.ReactNode }) {
@@ -51,8 +53,12 @@ export function IndexedDBProvider({ children }: { children: React.ReactNode }) {
     await idb.clearObjects(storeName)
   }, [idb])
 
+  const remove = useCallback(async (): Promise<void> => {
+    await idb.deleteDatabase()
+  }, [idb])
+
   return (
-    <IndexedDBContext.Provider value={{ isConnected, put, get, clear }}>
+    <IndexedDBContext.Provider value={{ isConnected, put, get, clear, remove }}>
       {children}
     </IndexedDBContext.Provider>
   )
