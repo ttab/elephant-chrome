@@ -54,7 +54,6 @@ export async function fetchAssignments({ index, repository, type, requireDeliver
 
   do {
     const query = constructQuery(date, dateType, timeZone)
-    console.log(JSON.stringify(query, null, 2))
 
     const { ok, hits, errorMessage } = await index.query({
       accessToken: session.accessToken,

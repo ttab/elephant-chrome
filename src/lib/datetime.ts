@@ -328,16 +328,25 @@ export function getUTCDateRange(date: Date, timeZone: string): {
  * in the systems (the elephants) configured timezone. This ensures
  * users in other timezones also get a date in the "home timezone".
  *
+ * If given a specific local date string it will treat it as midnight that day.
+ *
  * Specify a string format to get it as string in iso format.
  *
  * @param timeZone Timezone supported by date-fns
  * @param as Optional string format specifier
  * @returns Date | string
  */
-export function newLocalDate(timeZone: string, as?: 'datetime' | 'date') {
-  const date = toZonedTime(new Date(), timeZone)
+export function newLocalDate(timeZone: string, options?: {
+  as?: 'datetime' | 'date'
+  date?: string // In yyyy-MM-dd format
+}) {
+  const inputDate = options?.date
+    ? fromZonedTime(`${options.date}T00:00:00`, timeZone)
+    : new Date()
 
-  switch (as) {
+  const date = toZonedTime(inputDate, timeZone)
+
+  switch (options?.as) {
     case 'datetime':
       return format(date, 'yyyy-MM-dd\'T\'HH:mm:ss')
 

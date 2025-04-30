@@ -49,8 +49,8 @@ export const ApprovalsView = (): JSX.Element => {
 
   const date = useMemo(() => {
     return (typeof query.from === 'string')
-      ? query.from
-      : newLocalDate(timeZone) // Current date in elephant timeZone!
+      ? newLocalDate(timeZone, { date: query.from }) as Date
+      : newLocalDate(timeZone) as Date
   }, [query.from, timeZone])
 
   const [data, facets] = useAssignments({
