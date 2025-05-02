@@ -15,9 +15,9 @@ import type { SearchKeys } from '@/hooks/index/useDocuments/queries/views/search
 import search from '@/hooks/index/useDocuments/queries/views/search'
 import { useQuery } from '@/hooks/useQuery'
 import type { ColumnDef } from '@tanstack/react-table'
+import { toast } from 'sonner'
 
-export const SearchResult = ({ searchType }: {
-  isLoading: boolean
+export const SearchResult = ({ searchType, page }: {
   searchType: SearchKeys
   page: number
 }): JSX.Element => {
@@ -42,6 +42,7 @@ export const SearchResult = ({ searchType }: {
 
   const { error, isLoading } = useDocuments<Planning | Event | Article, PlanningFields | EventFields | ArticleFields>({
     ...searchParams,
+    page,
     options: {
       setTableData: true
     }
@@ -59,7 +60,8 @@ export const SearchResult = ({ searchType }: {
   }, [locale, timeZone, authors, sections, searchType, organisers])
 
   if (error) {
-    return <pre>{error.message}</pre>
+    console.error('Error fetching search result items:', error)
+    toast.error('Kunde inte hämta sökresultat')
   }
 
   return (

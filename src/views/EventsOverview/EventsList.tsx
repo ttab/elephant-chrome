@@ -1,5 +1,6 @@
 import { useCallback, useMemo } from 'react'
 import { useOrganisers, useQuery, useRegistry, useSections } from '@/hooks'
+import type { EventFields } from '@/hooks/index/useDocuments/schemas/event'
 import { type Event, fields } from '@/hooks/index/useDocuments/schemas/event'
 import { constructQuery } from '@/hooks/index/useDocuments/queries/views/events'
 import { eventTableColumns } from '@/views/EventsOverview/EventsListColumns'
@@ -10,6 +11,7 @@ import { SortingV1 } from '@ttab/elephant-api/index'
 import { getDateTimeBoundaries } from '@/lib/datetime'
 import { parseISO } from 'date-fns'
 import { toZonedTime } from 'date-fns-tz'
+import { toast } from 'sonner'
 
 export const EventsList = (): JSX.Element => {
   const sections = useSections()
@@ -23,9 +25,8 @@ export const EventsList = (): JSX.Element => {
     return getDateTimeBoundaries(utcDate)
   }, [query.from])
 
-  useDocuments({
+  const { error } = useDocuments<Event, EventFields>({
     documentType: 'core/event',
-    size: 100, // TODO: use pagination
     query: constructQuery({ from: from.toISOString(), to: to.toISOString() }),
     fields,
     sort: [
@@ -52,10 +53,10 @@ export const EventsList = (): JSX.Element => {
     return row
   }, [])
 
-
-  /* if (error) {
-    return <pre>{error.message}</pre>
-  } */
+  if (error) {
+    console.error('Error fetching event items:', error)
+    toast.error('Kunde inte hämta händelser')
+  }
 
   return (
     <Table

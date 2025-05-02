@@ -25,7 +25,6 @@ export const PlanningList = ({ columns }: {
 
   const { error } = useDocuments<Planning, PlanningFields>({
     documentType: 'core/planning-item',
-    size: 100, // TODO: use pagination
     query: constructQuery({ from, to }),
     fields,
     sort: [

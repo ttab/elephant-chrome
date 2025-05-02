@@ -50,7 +50,7 @@ export class Index {
     accessToken,
     documentType,
     page = 1,
-    size = 150,
+    size = 50,
     fields,
     query,
     sort,

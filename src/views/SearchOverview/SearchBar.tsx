@@ -1,12 +1,10 @@
-import { type SetStateAction, useRef } from 'react'
+import { useRef } from 'react'
 
 import { useQuery } from '@/hooks/useQuery'
 import { Input } from '@ttab/elephant-ui'
 import type { SearchKeys } from '@/hooks/index/useDocuments/queries/views/search'
 
 export const SearchBar = ({ searchType, width }: {
-  setLoading: React.Dispatch<SetStateAction<boolean>>
-  setTotalHits: React.Dispatch<SetStateAction<number>>
   searchType: SearchKeys
   page: number
   width?: string

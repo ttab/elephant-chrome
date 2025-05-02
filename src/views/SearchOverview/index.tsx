@@ -15,6 +15,9 @@ import { Toolbar } from './Toolbar'
 import type { ColumnDef } from '@tanstack/react-table'
 import { createSearchColumns } from './lib/createSearchColumns'
 import type { SearchKeys } from '@/hooks/index/useDocuments/queries/views/search'
+import type { Planning } from '@/hooks/index/useDocuments/schemas/planning'
+import type { Event } from '@/hooks/index/useDocuments/schemas/event'
+import type { Article } from '@/hooks/index/useDocuments/schemas/article'
 
 const meta: ViewMetadata = {
   name: 'Search',
@@ -33,8 +36,6 @@ const meta: ViewMetadata = {
 }
 
 export const Search = (): JSX.Element => {
-  const [isLoading, setLoading] = useState<boolean>(false)
-  const [total, setTotalHits] = useState<number>(0)
   const [query] = useQuery()
   const startingSearchType: SearchKeys = query.type as SearchKeys || 'plannings'
   const [searchType, setSearchType] = useState<SearchKeys>(startingSearchType)
@@ -55,8 +56,6 @@ export const Search = (): JSX.Element => {
     })
   }, [locale, timeZone, authors, sections, searchType, organisers])
 
-  const handleSetTotalHits = useCallback(() => (num: number) => setTotalHits(num), [])
-
   if (!validSearchTypes.map((p) => p.value).includes(searchType)) {
     return <></>
   }
@@ -66,9 +65,9 @@ export const Search = (): JSX.Element => {
 
   return (
     <View.Root>
-      <TableProvider
+      <TableProvider<Planning | Event | Article>
         type={meta.name}
-        columns={columns as Array<ColumnDef<unknown, unknown>>}
+        columns={columns as Array<ColumnDef<Planning | Event | Article, unknown>>}
         initialState={{
           grouping: ['date']
         }}
@@ -81,7 +80,7 @@ export const Search = (): JSX.Element => {
               ? null
               : (
                   <>
-                    <SearchBar setTotalHits={handleSetTotalHits} setLoading={setLoading} searchType={searchType} page={Number(query.page)} />
+                    <SearchBar searchType={searchType} page={Number(query.page)} />
                     <SearchDropdown searchType={searchType} setSearchType={setSearchType} />
                   </>
                 )}
@@ -93,7 +92,7 @@ export const Search = (): JSX.Element => {
             ? (
                 <div className='w-3/4 h-fit mt-10 bg-slate-200 p-6 m-auto'>
                   <div className='flex flex-col gap-2 w-full items-center'>
-                    <SearchBar width='w-full' setTotalHits={handleSetTotalHits} setLoading={setLoading} searchType={searchType} page={0} />
+                    <SearchBar width='w-full' searchType={searchType} page={0} />
                     <div className='flex gap-2 w-full justify-center'>
                       <SearchDropdown searchType={searchType} setSearchType={setSearchType} />
                       <Toolbar type={searchType} />
@@ -103,14 +102,10 @@ export const Search = (): JSX.Element => {
               )
             : (
                 <>
-                  <SearchResult isLoading={isLoading} searchType={searchType} page={Number(query?.page)} />
-                  {total > 0
-                    ? (
-                        <div className='flex justify-center w-full'>
-                          <Pagination total={total} />
-                        </div>
-                      )
-                    : null}
+                  <SearchResult searchType={searchType} page={Number(query?.page || 1)} />
+                  <div className='flex justify-center w-full'>
+                    <Pagination />
+                  </div>
                 </>
               )}
         </View.Content>

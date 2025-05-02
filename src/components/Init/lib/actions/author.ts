@@ -7,6 +7,7 @@ import { Block } from '@ttab/elephant-api/newsdoc'
 import type { Session } from 'next-auth'
 import { decodeJwt } from 'jose'
 import { toast } from 'sonner'
+import { fields } from '@/hooks/index/useDocuments/schemas/author'
 import type { Author, AuthorFields } from '@/hooks/index/useDocuments/schemas/author'
 
 /**
@@ -30,11 +31,11 @@ export async function initializeAuthor({ url, session, repository }: {
     const client = new Index(url.href)
     const envRole = url.href.includes('.stage.') ? 'stage' : 'prod'
 
-    // TODO: Add fields
     const authorDoc = await client.query<Author, AuthorFields>({
       accessToken: session.accessToken,
       documentType: 'core/author',
       loadDocument: true,
+      fields,
       query: QueryV1.create({
         conditions: {
           oneofKind: 'bool',

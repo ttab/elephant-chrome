@@ -39,4 +39,7 @@ export interface Author extends HitV1 {
   fields: AuthorFields
 }
 
-export const fields = _fields as unknown as AuthorFields[]
+/**
+ * Export fields and cast it as AuthorFields
+ */
+export const fields = _fields as unknown as AuthorFields

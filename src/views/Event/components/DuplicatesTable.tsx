@@ -4,14 +4,17 @@ import { useRepositoryEvents } from '@/hooks/useRepositoryEvents'
 import { useRef } from 'react'
 import { Link } from '@/components/index'
 import { useDocuments } from '@/hooks/index/useDocuments'
+import type { HitV1 } from '@ttab/elephant-api/index'
 import { BoolQueryV1, QueryV1, SortingV1, TermsQueryV1 } from '@ttab/elephant-api/index'
+
+type DuplicateFields = ['document.title']
 
 export const DuplicatesTable = ({ documentId }: {
   documentId: string
 } & FormProps): JSX.Element => {
   const createdDocumentIdRef = useRef<string | undefined>()
 
-  const { data, mutate, error, isLoading } = useDocuments({
+  const { data, mutate, error, isLoading } = useDocuments<HitV1, DuplicateFields>({
     documentType: 'core/event',
     fields: ['document.title'],
     query: QueryV1.create({

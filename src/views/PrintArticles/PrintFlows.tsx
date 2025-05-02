@@ -1,6 +1,7 @@
 import { useDocuments } from '@/hooks/index/useDocuments'
 import type { PrintFlow, PrintFlowFields } from '@/hooks/index/useDocuments/schemas/printFlow'
 import { Button } from '@ttab/elephant-ui'
+import { fields } from '@/hooks/index/useDocuments/schemas/printFlow'
 import { toast } from 'sonner'
 
 /**
@@ -21,11 +22,7 @@ import { toast } from 'sonner'
 export const PrintFlows = (): JSX.Element => {
   const { data, error } = useDocuments<PrintFlow, PrintFlowFields>({
     documentType: 'tt/print-flow',
-    fields: [
-      'document.title',
-      'document.content.tt_print_content.name',
-      'document.content.tt_print_content.title'
-    ] as unknown as PrintFlowFields
+    fields
   })
 
   if (error) {
