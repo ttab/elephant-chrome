@@ -104,7 +104,7 @@ export function appendAssignment({
     assignee,
     assignmentType: type,
     planningDate,
-    slugLine: slugLine || slugLineFromPlanning,
+    slugLine: type !== 'flash' ? slugLine || slugLineFromPlanning : undefined,
     title: title,
     wire,
     assignmentData
