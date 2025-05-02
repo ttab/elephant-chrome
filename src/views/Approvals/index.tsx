@@ -4,9 +4,9 @@ import { timesSlots as Slots } from '@/defaults/assignmentTimeslots'
 import { TimeSlot } from './TimeSlot'
 import { useAssignments } from '@/hooks/index/useAssignments'
 import { useEffect, useMemo, useState } from 'react'
-import { useQuery, useNavigationKeys, useOpenDocuments } from '@/hooks'
+import { useQuery, useNavigationKeys, useOpenDocuments, useRegistry } from '@/hooks'
 import { Header } from '@/components/Header'
-import { getDateTimeBoundariesUTC } from '@/lib/datetime'
+import { newLocalDate } from '@/lib/datetime'
 import { ApprovalsCard } from './ApprovalsCard'
 import { Toolbar } from './Toolbar.tsx'
 import { StatusSpecifications } from '@/defaults/workflowSpecification'
@@ -36,6 +36,8 @@ export const Approvals = (): JSX.Element => {
 }
 
 export const ApprovalsView = (): JSX.Element => {
+  const { timeZone } = useRegistry()
+
   const slots = Object.keys(Slots).map((key) => {
     return {
       key,
@@ -45,18 +47,18 @@ export const ApprovalsView = (): JSX.Element => {
   })
   const [query] = useQuery()
 
-  const { from } = useMemo(() =>
-    getDateTimeBoundariesUTC(typeof query.from === 'string'
-      ? new Date(`${query.from}T00:00:00.000Z`)
-      : new Date()
-    ), [query.from])
-
+  const date = useMemo(() => {
+    return (typeof query.from === 'string')
+      ? newLocalDate(timeZone, { date: query.from })
+      : newLocalDate(timeZone)
+  }, [query.from, timeZone])
 
   const [data, facets] = useAssignments({
     type: ['flash', 'text'],
     requireDeliverable: true,
     requireMetrics: ['charcount'],
-    date: from ? new Date(from) : new Date(),
+    date,
+    dateType: 'publish',
     slots
   })
 
