@@ -336,10 +336,37 @@ export function getUTCDateRange(date: Date, timeZone: string): {
  * @param as Optional string format specifier
  * @returns Date | string
  */
-export function newLocalDate(timeZone: string, options?: {
-  as?: 'datetime' | 'date'
-  date?: string // In yyyy-MM-dd format
-}) {
+export function newLocalDate(
+  timeZone: string,
+  options: {
+    as: 'datetime'
+    date?: string
+  }
+): string
+
+export function newLocalDate(
+  timeZone: string,
+  options: {
+    as: 'date'
+    date?: string
+  }
+): Date
+
+export function newLocalDate(
+  timeZone: string,
+  options?: {
+    as?: 'datetime' | 'date'
+    date?: string
+  }
+): Date
+
+export function newLocalDate(
+  timeZone: string,
+  options?: {
+    as?: 'datetime' | 'date'
+    date?: string // In yyyy-MM-dd format
+  }
+) {
   const inputDate = options?.date
     ? fromZonedTime(`${options.date}T00:00:00`, timeZone)
     : new Date()

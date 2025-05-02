@@ -49,8 +49,8 @@ export const ApprovalsView = (): JSX.Element => {
 
   const date = useMemo(() => {
     return (typeof query.from === 'string')
-      ? newLocalDate(timeZone, { date: query.from }) as Date
-      : newLocalDate(timeZone) as Date
+      ? newLocalDate(timeZone, { date: query.from })
+      : newLocalDate(timeZone)
   }, [query.from, timeZone])
 
   const [data, facets] = useAssignments({
