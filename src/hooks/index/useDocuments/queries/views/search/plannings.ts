@@ -1,5 +1,5 @@
 import type { QueryParams } from '@/hooks/useQuery'
-import { QueryV1, BoolQueryV1, TermsQueryV1, MultiMatchQueryV1, SortingV1 } from '@ttab/elephant-api/index'
+import { QueryV1, BoolQueryV1, TermsQueryV1, MultiMatchQueryV1, SortingV1, RangeQueryV1 } from '@ttab/elephant-api/index'
 import { fields } from '../../../schemas/planning'
 
 /**
@@ -52,6 +52,10 @@ function constructQuery(filter: QueryParams | undefined): QueryV1 | undefined {
     addCondition('document.meta.core_newsvalue.value', filter.newsvalue)
   }
 
+  if (filter.author) {
+    addCondition('document.meta.core_assignment.rel.assignee.uuid', filter.author)
+  }
+
   if (filter.query) {
     boolConditions.must.push(
       {
@@ -71,6 +75,19 @@ function constructQuery(filter: QueryParams | undefined): QueryV1 | undefined {
       })
   }
 
+  if (filter.from) {
+    boolConditions.must.push({
+      conditions: {
+        oneofKind: 'range',
+        range: RangeQueryV1.create({
+          field: 'document.meta.core_planning_item.data.start_date',
+          gte: filter.from as string
+        })
+      }
+    })
+  }
+
+
   return query
 }
 
@@ -80,8 +97,8 @@ const params = (filter: QueryParams) => ({
   documentType: 'core/planning-item',
   fields,
   sort: [
-    SortingV1.create({ field: 'document.meta.core_newsvalue.value', desc: true }),
-    SortingV1.create({ field: 'document.meta.core_planning_item.data.start_date', desc: true })
+    SortingV1.create({ field: 'document.meta.core_planning_item.data.start_date', desc: filter.from ? false : true }),
+    SortingV1.create({ field: 'document.meta.core_newsvalue.value', desc: true })
   ],
   query: constructQuery(filter)
 })

@@ -22,11 +22,11 @@ export const Toolbar = ({ type }: { type: SearchKeys }): JSX.Element => {
 
   return (
     <div className='flex items-center justify-between py-1 px-4 border-b sticky top-0 bg-white z-10'>
-      <Sort />
       <div className='flex flex-1 items-center space-x-2'>
         <Filter {...props}>
           <Commands {...props} type={type} />
         </Filter>
+        <Sort />
         <SelectedFilters />
       </div>
     </div>
