@@ -1,14 +1,13 @@
 import { useIndexUrl } from '@/hooks/useIndexUrl'
-import { useLink } from '@/hooks/useLink'
 import { useRepositoryEvents } from '@/hooks/useRepositoryEvents'
 import { Events } from '@/lib/events'
 import { GanttChartSquare, PlusIcon } from '@ttab/elephant-ui/icons'
 import { useSession } from 'next-auth/react'
-import { useRef, useState } from 'react'
+import { useRef, useState, useEffect } from 'react'
 import { NewItems } from '@/components/Table/NewItems'
 import useSWR from 'swr'
 import type { FormProps } from '@/components/Form/Root'
-import { Button } from '@ttab/elephant-ui'
+import { Button, Dialog, DialogContent, DialogDescription, DialogTitle, DialogTrigger, Separator } from '@ttab/elephant-ui'
 import { createDocument } from '@/lib/createYItem'
 import { Planning } from '@/views/Planning'
 import { useModal } from '@/components/Modal/useModal'
@@ -16,6 +15,8 @@ import * as Templates from '@/defaults/templates'
 import type { HocuspocusProvider } from '@hocuspocus/provider'
 import { createPayload } from '@/defaults/templates/lib/createPayload'
 import { Block } from '@ttab/elephant-api/newsdoc'
+import type { Doc } from 'yjs'
+import { Link } from '@/components/index'
 
 interface StatusResult {
   title: string
@@ -29,11 +30,19 @@ export const PlanningTable = ({ provider, documentId, asDialog }: {
   provider?: HocuspocusProvider
 } & FormProps): JSX.Element => {
   const { data: session, status } = useSession()
-  const openPlanning = useLink('Planning')
   const createdDocumentIdRef = useRef<string | undefined>()
   const indexUrl = useIndexUrl()
-  const { showModal, hideModal } = useModal()
+  const { hideModal } = useModal()
   const [newItem, setNewItem] = useState<NewItem>()
+  const [initialDocument, setInitialDocument] = useState<Doc>()
+  const [initialId, setInitialDocId] = useState<string>()
+  const [nestedDialogOpen, setNestedOpen] = useState<boolean>(false)
+
+  useEffect(() => {
+    return () => {
+      setNestedOpen(false)
+    }
+  }, [])
 
   const { data, mutate, error } = useSWR<StatusResult[] | undefined, Error>([
     `relatedPlanningItems/${documentId}`,
@@ -77,75 +86,93 @@ export const PlanningTable = ({ provider, documentId, asDialog }: {
   }
 
   return (
-    <div className='pl-6'>
-      <div className='flex flex-start pt-2 text-primary pb-4'>
-        <Button
-          variant='ghost'
-          className='flex flex-start items-center text-sm gap-2 p-2 -ml-2 rounded-sm hover:bg-gray-100'
-          onClick={() => {
-            const payload = provider?.document
-              ? createPayload(provider.document)
-              : undefined
-
-            const initialDocument = createDocument({
-              template: Templates.planning,
-              inProgress: true,
-              createdDocumentIdRef,
-              payload: {
-                ...payload || {},
-                links: {
-                  ...payload?.links,
-                  'core/event': [Block.create({
-                    type: 'core/event',
-                    uuid: documentId,
-                    title: payload?.title || 'Titel saknas',
-                    rel: 'event'
-                  })]
-                }
-              }
-            })
-
-            showModal(
-              <Planning
-                onDialogClose={hideModal}
-                asDialog
-                setNewItem={setNewItem}
-                id={initialDocument[0]}
-                document={initialDocument[1]}
-              />
-            )
-          }}
-        >
-          <div className='bg-primary rounded-full w-5 h-5 relative'>
-            <PlusIcon
-              size={15}
-              strokeWidth={2.25}
-              color='#FFFFFF'
-              className='absolute inset-0 m-auto'
-            />
-          </div>
-          Lägg till planering
-        </Button>
-      </div>
-      {data?.map((planning) => (
-        <div key={planning.uuid}>
-          <a
-            href='#'
+    <div className='flex flex-col items-start'>
+      <Dialog open={nestedDialogOpen}>
+        <DialogTrigger asChild>
+          <Button
+            variant='ghost'
             className='flex flex-start items-center text-sm gap-2 p-2 -ml-2 rounded-sm hover:bg-gray-100'
-            onClick={(evt) => {
-              openPlanning(evt, { id: planning.uuid })
+            onClick={(e) => {
+              setNestedOpen(true)
+              e.stopPropagation()
+              const payload = provider?.document
+                ? createPayload(provider.document)
+                : undefined
+
+              const [docId, initialDocument] = createDocument({
+                template: Templates.planning,
+                inProgress: true,
+                createdDocumentIdRef,
+                payload: {
+                  ...payload || {},
+                  links: {
+                    ...payload?.links,
+                    'core/event': [Block.create({
+                      type: 'core/event',
+                      uuid: documentId,
+                      title: payload?.title || 'Titel saknas',
+                      rel: 'event'
+                    })]
+                  }
+                }
+              })
+
+              setInitialDocument(initialDocument)
+              setInitialDocId(docId)
             }}
           >
-            <GanttChartSquare strokeWidth={1.75} size={18} className='text-muted-foreground' />
-            {planning.title}
-          </a>
-        </div>
-      ))}
-      {asDialog && (
-        <NewItems.Root>
-          <NewItems.List type='Planning' createdIdRef={createdDocumentIdRef} asDialog={asDialog} />
-        </NewItems.Root>
-      )}
+            <div className='bg-primary rounded-full w-5 h-5 relative'>
+              <PlusIcon
+                size={15}
+                strokeWidth={2.25}
+                color='#FFFFFF'
+                className='absolute inset-0 m-auto'
+              />
+            </div>
+            Lägg till planering
+          </Button>
+        </DialogTrigger>
+        <DialogContent>
+          <DialogDescription />
+          <DialogTitle />
+          <Planning
+            onDialogClose={() => setNestedOpen(!nestedDialogOpen)}
+            asDialog
+            setNewItem={setNewItem}
+            id={initialId}
+            document={initialDocument}
+          />
+        </DialogContent>
+      </Dialog>
+      <div className='pl-6'>
+        {data?.length > 0 && (
+          <>
+            <Separator />
+            <div className='text-muted-foreground py-2'>Planeringar</div>
+            {data?.map((planning) => (
+              <Link key={planning.uuid} to='Planning' props={{ id: planning.uuid }} target='last'>
+                <div
+                  className='text-sm flex items-center gap-2 hover:bg-gray-100'
+                  onClick={() => {
+                    setNestedOpen(false)
+                    if (asDialog) {
+                      hideModal()
+                    }
+                  }}
+                >
+                  <GanttChartSquare strokeWidth={1.75} size={18} className='text-muted-foreground' />
+                  {planning.title}
+                </div>
+              </Link>
+            ))}
+          </>
+        )}
+        {asDialog && (
+          <NewItems.Root>
+            <NewItems.List type='Planning' createdIdRef={createdDocumentIdRef} asDialog={asDialog} />
+          </NewItems.Root>
+        )}
+      </div>
     </div>
   )
 }
