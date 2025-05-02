@@ -45,7 +45,7 @@ export const Thumbnail = ({ hit }: {
 
               const image = {
                 byline: hit.byline,
-                text: hit.headline,
+                text: hit.description_text,
                 href: preview.href,
                 width: hires.width,
                 height: hires.height
