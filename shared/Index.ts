@@ -8,24 +8,23 @@ import {
 } from '@ttab/elephant-api/index'
 import { meta } from './meta'
 import { pagination } from '@/lib/pagination'
+import type { useDocumentsFetchOptions } from '@/hooks/index/useDocuments'
 
-interface IndexSearchOptions {
+interface IndexSearchOptions<F> {
   accessToken: string
   documentType: string
   page?: number
   size?: number
-  fields?: string[]
+  fields?: F
   query?: QueryV1
   sort?: SortingV1[]
   language?: string
   loadSource?: boolean
   loadDocument?: boolean
-  options?: {
-    allPages?: boolean
-  }
+  options?: useDocumentsFetchOptions
 }
 
-export interface IndexSearchResult {
+export interface IndexSearchResult<T extends HitV1> {
   ok: boolean
   errorCode?: number
   errorMessage?: string
@@ -33,7 +32,7 @@ export interface IndexSearchResult {
   page: number
   pageSize: number
   pages: number
-  hits: HitV1[]
+  hits: T[]
 }
 
 export class Index {
@@ -47,30 +46,30 @@ export class Index {
     )
   }
 
-  async query({
+  async query<T extends HitV1, F>({
     accessToken,
     documentType,
     page = 1,
     size = 150,
-    fields = [],
+    fields,
     query,
     sort,
     loadDocument = false,
     loadSource: source = false,
     language = '',
     options
-  }: IndexSearchOptions & { allPages?: boolean }): Promise<IndexSearchResult> {
+  }: IndexSearchOptions<F>): Promise<IndexSearchResult<T>> {
     const { pageSize } = pagination({ page, size })
 
     try {
-      const fetchPage = async (currentPage: number): Promise<IndexSearchResult> => {
+      const fetchPage = async (currentPage: number): Promise<IndexSearchResult<T>> => {
         const { response } = await this.#client.query(
           QueryRequestV1.create({
             documentType,
             language,
             from: BigInt((currentPage - 1) * size),
             size: BigInt(pageSize),
-            fields,
+            fields: (fields as unknown as string[]) || [],
             sort: sort || [SortingV1.create({ field: 'created', desc: true })],
             query: query || QueryV1.create({
               conditions: {
@@ -94,11 +93,11 @@ export class Index {
           page: currentPage,
           pages: Math.ceil(total / pageSize),
           pageSize,
-          hits
+          hits: hits as unknown as T[]
         }
       }
 
-      if (options?.allPages) {
+      if (options?.aggregatePages) {
         let currentPage = 1
         let allHits: HitV1[] = []
         let total = 0
@@ -122,7 +121,7 @@ export class Index {
           page: 1,
           pages,
           pageSize,
-          hits: allHits
+          hits: allHits as unknown as T[]
         }
       }
 

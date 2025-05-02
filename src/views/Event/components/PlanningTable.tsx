@@ -14,8 +14,10 @@ import { createPayload } from '@/defaults/templates/lib/createPayload'
 import { Block } from '@ttab/elephant-api/newsdoc'
 import { useDocuments } from '@/hooks/index/useDocuments'
 import { QueryV1, BoolQueryV1, TermsQueryV1 } from '@ttab/elephant-api/index'
+import type { Planning as PlanningType } from '@/hooks/index/useDocuments/schemas/planning'
 
 export type NewItem = { title: string, uuid: string } | undefined
+type PlanningTableFields = ['document.title', 'document.rel.event.uuid']
 
 export const PlanningTable = ({ provider, documentId, asDialog }: {
   documentId: string
@@ -26,7 +28,7 @@ export const PlanningTable = ({ provider, documentId, asDialog }: {
   const { showModal, hideModal } = useModal()
   const [newItem, setNewItem] = useState<NewItem>()
 
-  const { data, mutate, error } = useDocuments({
+  const { data, mutate, error } = useDocuments<PlanningType, PlanningTableFields>({
     documentType: 'core/planning-item',
     fields: ['document.title', 'document.rel.event.uuid'],
     query: QueryV1.create({
@@ -60,10 +62,13 @@ export const PlanningTable = ({ provider, documentId, asDialog }: {
               fields: {
                 'document.title': {
                   values: [newItem?.title]
+                },
+                'document.rel.event.uuid': {
+                  values: [documentId]
                 }
               },
               id: newItem?.uuid
-            }], { revalidate: false })
+            } as PlanningType], { revalidate: false })
           }
         } catch (error) {
           console.warn('Failed to update planning table', error)

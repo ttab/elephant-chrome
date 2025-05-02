@@ -2,7 +2,8 @@ import { useCallback } from 'react'
 import { useQuery } from '@/hooks'
 
 import { Table } from '@/components/Table'
-import { fields, type Wire } from '@/hooks/index/useDocuments/schemas/wires'
+import type { WireFields } from '@/hooks/index/useDocuments/schemas/wire'
+import { fields, type Wire } from '@/hooks/index/useDocuments/schemas/wire'
 import type { ColumnDef } from '@tanstack/react-table'
 import { Toolbar } from './Toolbar'
 import { useDocuments } from '@/hooks/index/useDocuments'
@@ -15,7 +16,7 @@ export const WireList = ({ columns }: {
   const [{ page }] = useQuery()
   const [filter] = useQuery(['section', 'source', 'query', 'newsvalue'])
 
-  useDocuments({
+  useDocuments<Wire, WireFields>({
     documentType: 'tt/wire',
     size: 40,
     query: constructQuery(filter),
@@ -25,7 +26,10 @@ export const WireList = ({ columns }: {
     fields,
     sort: [
       SortingV1.create({ field: 'modified', desc: true })
-    ]
+    ],
+    options: {
+      setTableData: true
+    }
   })
 
   const onRowSelected = useCallback((row?: Wire) => {

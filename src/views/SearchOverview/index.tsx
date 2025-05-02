@@ -66,7 +66,6 @@ export const Search = (): JSX.Element => {
 
   return (
     <View.Root>
-      {/* TODO: Generics */}
       <TableProvider
         type={meta.name}
         columns={columns as Array<ColumnDef<unknown, unknown>>}

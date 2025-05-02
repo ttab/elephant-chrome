@@ -4,7 +4,7 @@ import type { FieldValuesV1, HitV1 } from '@ttab/elephant-api/index'
 /**
  * List of fields used in the schema.
  */
-export const fields = [
+export const _fields = [
   'document.title',
   'document.meta.status',
   'document.meta.core_newsvalue.value',
@@ -20,31 +20,40 @@ export const fields = [
   'heads.done.created',
   'heads.approved.created',
   'heads.withheld.created'
-]
+] as const
 
 /**
  * Create a schema based on fields array.
  */
-type FieldKeys = typeof fields[number] // Union type of all field strings
-
-const schemaShape = fields.reduce((acc, field) => {
+const schemaShape = _fields.reduce((acc, field) => {
   acc[field] = z.any()
   return acc
-}, {} as Record<FieldKeys, z.ZodType<FieldValuesV1>>)
+}, {} as Record<(typeof _fields)[number], z.ZodType<FieldValuesV1>>)
 
 /**
- * Zod schema for wires.
+ * Zod schema for articles.
  */
 const _schema = z.object(schemaShape)
 
 /**
- * Type inferred from the articlesSchema.
+ * Type inferred from fields
  */
-type ArticleFields = z.infer<typeof _schema>
+export type ArticleFields = Array<keyof typeof _fields>
+
+/**
+ * Type inferred from the articleSchema.
+ */
+type ArticleFieldsObject = z.infer<typeof _schema>
 
 /**
  * Interface extending HitV1 with a fields property of type articlesSchema.
  */
 export interface Article extends HitV1 {
-  fields: ArticleFields
+  fields: ArticleFieldsObject
 }
+
+
+/**
+ * Export fields and cast it as articleFields
+ */
+export const fields = _fields as unknown as ArticleFields

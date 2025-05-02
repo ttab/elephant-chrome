@@ -33,9 +33,10 @@ export const EventsList = (): JSX.Element => {
       SortingV1.create({ field: 'document.meta.core_event.data.start', desc: false })
     ],
     options: {
+      aggregatePages: true,
+      setTableData: true,
       withStatus: true,
-      withPlannings: true,
-      allPages: true
+      withPlannings: true
     }
 
   })

@@ -23,7 +23,10 @@ export const FactboxList = ({ columns }: {
     sort: [{ field: 'modified', desc: true }],
     page: typeof page === 'string'
       ? parseInt(page)
-      : undefined
+      : undefined,
+    options: {
+      setTableData: true
+    }
   })
 
   const onRowSelected = useCallback((row?: Factbox) => {

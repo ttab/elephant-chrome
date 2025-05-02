@@ -1,7 +1,6 @@
-import { useFetchPrintFlows } from '@/hooks/baboon/useFetchPrintFlows'
-import { useRegistry } from '@/hooks/useRegistry'
+import { useDocuments } from '@/hooks/index/useDocuments'
+import type { PrintFlow, PrintFlowFields } from '@/hooks/index/useDocuments/schemas/printFlow'
 import { Button } from '@ttab/elephant-ui'
-import { useSession } from 'next-auth/react'
 import { toast } from 'sonner'
 
 /**
@@ -20,9 +19,14 @@ import { toast } from 'sonner'
 
 
 export const PrintFlows = (): JSX.Element => {
-  const { data: session } = useSession()
-  const { server: { indexUrl } } = useRegistry()
-  const { data, error } = useFetchPrintFlows(indexUrl, session)
+  const { data, error } = useDocuments<PrintFlow, PrintFlowFields>({
+    documentType: 'tt/print-flow',
+    fields: [
+      'document.title',
+      'document.content.tt_print_content.name',
+      'document.content.tt_print_content.title'
+    ] as unknown as PrintFlowFields
+  })
 
   if (error) {
     toast.error('Kunde inte hämta printflöden')
@@ -31,7 +35,7 @@ export const PrintFlows = (): JSX.Element => {
 
   return (
     <>
-      {data?.hits?.map((flow) => {
+      {data?.map((flow) => {
         return (
           <div key={flow.id}>
             <h1 className='text-xl font-bold'>{flow?.fields?.['document.title']?.values?.[0] ?? ''}</h1>

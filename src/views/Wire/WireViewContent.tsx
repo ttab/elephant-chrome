@@ -20,7 +20,7 @@ import { createArticle } from './lib/createArticle'
 import { SluglineEditable } from '@/components/DataItem/SluglineEditable'
 import type * as Y from 'yjs'
 import { CreatePrompt } from '@/components/CreatePrompt'
-import type { Wire as WireType } from '@/hooks/index/useDocuments/schemas/wires'
+import type { Wire as WireType } from '@/hooks/index/useDocuments/schemas/wire'
 import { toSlateYXmlText } from '@/lib/yUtils'
 
 export const WireViewContent = (props: ViewProps & {

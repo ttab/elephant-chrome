@@ -4,16 +4,18 @@ import { fetch } from '@/hooks/index/useDocuments/lib/fetch'
 import type { Index } from '@/shared/Index'
 import { QueryV1, BoolQueryV1, TermsQueryV1 } from '@ttab/elephant-api/index'
 
-export async function withPlannings({ hits, session, index }: {
-  hits: HitV1[]
+type withPlanningsFields = ['document.rel.event.uuid']
+
+export async function withPlannings<T extends HitV1>({ hits, session, index }: {
+  hits: T[]
   session: Session | null
   index?: Index
-}): Promise<HitV1[]> {
+}): Promise<T[]> {
   if (!session || !index) return hits
 
-  const eventIDs: string[] = hits?.map((hit) => hit?.id)
+  const eventIDs: string[] = hits.map((hit) => hit.id)
 
-  const plannings = await fetch({
+  const plannings = await fetch<HitV1, withPlanningsFields>({
     documentType: 'core/planning-item',
     index,
     session,
@@ -30,23 +32,19 @@ export async function withPlannings({ hits, session, index }: {
                 values: eventIDs
               })
             }
-          }
-          ]
+          }]
         })
       }
     })
   })
 
+  const hasPlannings = plannings.map((hit) => hit.fields['document.rel.event.uuid']?.values[0] || '')
 
-  const hasPlannings = plannings?.map((hit) => hit.fields['document.rel.event.uuid']?.values[0])
   return hits.map((hit) => {
-    const relatedItemIndex = hasPlannings?.findIndex((item) => item === hit.id)
-    if (relatedItemIndex && relatedItemIndex !== -1 && hasPlannings?.length) {
-      return {
-        ...hit,
-        _relatedPlannings: hasPlannings[relatedItemIndex]
-      }
+    const relatedItemIndex = hasPlannings.findIndex((item) => item === hit.id)
+    return {
+      ...hit,
+      _relatedPlannings: relatedItemIndex !== -1 ? hasPlannings[relatedItemIndex] : ''
     }
-    return hit
   })
 }

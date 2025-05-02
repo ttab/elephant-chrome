@@ -1,7 +1,7 @@
 import type { HitV1 } from '@ttab/elephant-api/index'
 
-export function withStatus(hits: HitV1[]): HitV1[] {
-  return hits?.map((item: HitV1) => {
+export function withStatus<T extends HitV1>(hits: T[]): T[] {
+  return hits?.map((item: T) => {
     const status = getCurrentDocumentStatus(item)
     return {
       ...item,

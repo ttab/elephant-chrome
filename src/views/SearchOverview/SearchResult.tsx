@@ -6,9 +6,9 @@ import { LoadingText } from '@/components/LoadingText'
 import { Toolbar } from './Toolbar'
 import { useOrganisers } from '@/hooks/useOrganisers'
 import { useAuthors } from '@/hooks/useAuthors'
-import type { Event } from '@/hooks/index/useDocuments/schemas/event'
-import type { Planning } from '@/hooks/index/useDocuments/schemas/planning'
-import type { Article } from '@/hooks/index/useDocuments/schemas/article'
+import type { Event, EventFields } from '@/hooks/index/useDocuments/schemas/event'
+import type { Planning, PlanningFields } from '@/hooks/index/useDocuments/schemas/planning'
+import type { Article, ArticleFields } from '@/hooks/index/useDocuments/schemas/article'
 import { useDocuments } from '@/hooks/index/useDocuments'
 import { createSearchColumns } from './lib/createSearchColumns'
 import type { SearchKeys } from '@/hooks/index/useDocuments/queries/views/search'
@@ -40,7 +40,12 @@ export const SearchResult = ({ searchType }: {
 
   const searchParams = search[searchType].params(filter)
 
-  const { error, isLoading } = useDocuments(searchParams)
+  const { error, isLoading } = useDocuments<Planning | Event | Article, PlanningFields | EventFields | ArticleFields>({
+    ...searchParams,
+    options: {
+      setTableData: true
+    }
+  })
 
   const columns = useMemo(() => {
     return createSearchColumns({

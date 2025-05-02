@@ -5,7 +5,7 @@ import { useCallback, useMemo } from 'react'
 import { Table } from '@/components/Table'
 import { useDocuments } from '@/hooks/index/useDocuments'
 import type { ColumnDef } from '@tanstack/react-table'
-import type { Planning } from '@/hooks/index/useDocuments/schemas/planning'
+import type { Planning, PlanningFields } from '@/hooks/index/useDocuments/schemas/planning'
 import { fields } from '@/hooks/index/useDocuments/schemas/planning'
 import { SortingV1 } from '@ttab/elephant-api/index'
 import { constructQuery } from '@/hooks/index/useDocuments/queries/views/plannings'
@@ -23,7 +23,7 @@ export const PlanningList = ({ columns }: {
       : new Date())
   , [query.from])
 
-  const { error } = useDocuments({
+  const { error } = useDocuments<Planning, PlanningFields>({
     documentType: 'core/planning-item',
     size: 100, // TODO: use pagination
     query: constructQuery({ from, to }),
@@ -33,8 +33,9 @@ export const PlanningList = ({ columns }: {
       SortingV1.create({ field: 'document.meta.core_newsvalue.value', desc: true })
     ],
     options: {
-      allPages: true,
-      withStatus: true
+      aggregatePages: true,
+      withStatus: true,
+      setTableData: true
     }
   })
 

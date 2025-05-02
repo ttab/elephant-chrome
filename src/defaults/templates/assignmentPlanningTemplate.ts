@@ -1,4 +1,4 @@
-import type { Wire } from '@/hooks/index/useDocuments/schemas/wires'
+import type { Wire } from '@/hooks/index/useDocuments/schemas/wire'
 import { Block } from '@ttab/elephant-api/newsdoc'
 import type { IDBAuthor } from 'src/datastore/types'
 

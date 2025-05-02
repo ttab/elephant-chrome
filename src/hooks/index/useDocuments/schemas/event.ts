@@ -2,16 +2,9 @@ import { z } from 'zod'
 import type { FieldValuesV1, HitV1 } from '@ttab/elephant-api/index'
 
 /**
- * List of filters accepted by the event schema.
- */
-export const filters = [
-  { from: 'document.meta.core_event.data.start', type: 'range' }
-]
-
-/**
  * List of fields used in the schema.
  */
-export const fields = [
+export const _fields = [
   'document.title',
   'document.meta.status',
   'document.meta.core_event.data.start',
@@ -25,30 +18,40 @@ export const fields = [
   'heads.done.created',
   'heads.approved.created',
   'heads.withheld.created'
-]
+] as const
 
 /**
  * Create a schema based on fields array.
  */
-const schemaShape = fields.reduce((acc, field) => {
+const schemaShape = _fields.reduce((acc, field) => {
   acc[field] = z.any()
   return acc
-}, {} as Record<string, z.ZodType<FieldValuesV1>>)
+}, {} as Record<(typeof _fields)[number], z.ZodType<FieldValuesV1>>)
 
 /**
- * Zod schema for wires.
+ * Zod schema for events.
  */
 const _schema = z.object(schemaShape)
 
 /**
- * Type inferred from the wiresSchema.
+ * Type inferred from the eventSchema.
  */
-type EventFields = z.infer<typeof _schema>
+type EventFieldsObject = z.infer<typeof _schema>
 
 /**
- * Interface extending HitV1 with a fields property of type WireSchema.
+ * Type inferred from fields
+ */
+export type EventFields = Array<keyof typeof _fields>
+
+/**
+ * Interface extending HitV1 with a fields property of type EventFields.
  */
 export interface Event extends HitV1 {
-  fields: EventFields
+  fields: EventFieldsObject
   _relatedPlannings: string
 }
+
+/**
+ * Export fields and cast it as PlanningFields
+ */
+export const fields = _fields as unknown as EventFields

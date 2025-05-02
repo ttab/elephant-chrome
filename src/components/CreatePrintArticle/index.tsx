@@ -10,18 +10,30 @@ import { useState } from 'react'
 import { LoadingText } from '../LoadingText'
 import { DatePicker } from '../Datepicker'
 import { parseDate } from '@/lib/datetime'
-import { useFetchPrintFlows } from '@/hooks/baboon/useFetchPrintFlows'
+import { useDocuments } from '@/hooks/index/useDocuments'
+import type { PrintFlow, PrintFlowFields } from '@/hooks/index/useDocuments/schemas/printFlow'
 
 const fallbackDate = new Date()
+
 
 export const CreatePrintArticle = ({ id, asDialog, onDialogClose, className }: ViewProps) => {
   const [printFlow, setPrintFlow] = useState<string>()
   const [articleName, setArticleName] = useState<string>()
   const [dateString, setDateString] = useState<string>()
-  const { server: { indexUrl }, baboon } = useRegistry()
+  const { baboon } = useRegistry()
   const { data: session } = useSession()
 
-  const { data, error } = useFetchPrintFlows(indexUrl, session)
+  const fields = [
+    'document.title',
+    'document.content.tt_print_content.name',
+    'document.content.tt_print_content.title'
+  ] as unknown as PrintFlowFields
+
+  const { data, error } = useDocuments<PrintFlow, PrintFlowFields>({
+    documentType: 'tt/print-flow',
+    fields
+  })
+
 
   if (error) {
     console.error('Could not fetch PrintFlows:', error)
@@ -30,13 +42,13 @@ export const CreatePrintArticle = ({ id, asDialog, onDialogClose, className }: V
 
   const date = dateString ? parseDate(dateString) || fallbackDate : fallbackDate
 
-  const allPrintFlows = data?.hits.map((hit) => ({
+  const allPrintFlows = data?.map((hit) => ({
     value: hit.id,
     label: hit.fields['document.title'].values[0]
   })) || []
 
-  const allArticleNames = data?.hits
-    .find((hit) => hit.id === printFlow)
+  const allArticleNames = data
+    ?.find((hit) => hit.id === printFlow)
     ?.fields['document.content.tt_print_content.name'].values || []
 
   const selectedPrintFlow = allPrintFlows?.find((flow) => flow.value === printFlow)
@@ -93,7 +105,7 @@ export const CreatePrintArticle = ({ id, asDialog, onDialogClose, className }: V
       </ViewHeader.Root>
 
       <View.Content>
-        {data?.hits.length
+        {data?.length
           ? (
               <Form.Root asDialog={asDialog}>
                 <Form.Content>
