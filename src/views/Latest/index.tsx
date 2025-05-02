@@ -34,6 +34,7 @@ export const Latest = ({ setOpen }: { setOpen?: (open: boolean) => void }) => {
   const [data] = useAssignments({
     type: 'text',
     date,
+    dateType: 'publish',
     status: ['usable']
   })
 
