@@ -1,48 +1,41 @@
-import { useIndexUrl } from '@/hooks/useIndexUrl'
-import { Events } from '@/lib/events'
 import { CalendarPlus2 } from '@ttab/elephant-ui/icons'
-import { useSession } from 'next-auth/react'
-import useSWR from 'swr'
 import type { FormProps } from '@/components/Form/Root'
-import { format } from 'date-fns'
 import { useRepositoryEvents } from '@/hooks/useRepositoryEvents'
 import { useRef } from 'react'
 import { Link } from '@/components/index'
+import { useDocuments } from '@/hooks/index/useDocuments'
+import type { HitV1 } from '@ttab/elephant-api/index'
+import { BoolQueryV1, QueryV1, SortingV1, TermsQueryV1 } from '@ttab/elephant-api/index'
 
-interface DuplicatesResult {
-  title: string | undefined
-  uuid: string | undefined
-  start: string | undefined
-}
+type DuplicateFields = ['document.title']
 
 export const DuplicatesTable = ({ documentId }: {
   documentId: string
 } & FormProps): JSX.Element => {
-  const { data: session, status } = useSession()
-  const indexUrl = useIndexUrl()
   const createdDocumentIdRef = useRef<string | undefined>()
 
-  const { data, mutate, error } = useSWR<DuplicatesResult[] | undefined, Error>([
-    `duplicates/${documentId}`,
-    status,
-    indexUrl.href
-  ], async (): Promise<DuplicatesResult[] | undefined> => {
-    if (status !== 'authenticated') {
-      throw new Error('Not authenticated')
-    }
-
-    const statusResults = await Events.listDuplicates(indexUrl, session.accessToken, documentId)
-
-    return statusResults.hits.map((hit) => {
-      const [start] = hit._source['document.meta.core_event.data.start']
-      const [title] = hit._source['document.title']
-
-      return {
-        title,
-        uuid: hit._id,
-        start: format(new Date(start), 'yyyy-MM-dd')
+  const { data, mutate, error, isLoading } = useDocuments<HitV1, DuplicateFields>({
+    documentType: 'core/event',
+    fields: ['document.title'],
+    query: QueryV1.create({
+      conditions: {
+        oneofKind: 'bool',
+        bool: BoolQueryV1.create({
+          must: [{
+            conditions: {
+              oneofKind: 'terms',
+              terms: TermsQueryV1.create({
+                field: 'document.meta.core_copy_group.uuid',
+                values: [documentId]
+              })
+            }
+          }]
+        })
       }
-    })
+    }),
+    sort: [
+      SortingV1.create({ field: 'modified', desc: true })
+    ]
   })
 
   useRepositoryEvents('core/event', (event) => {
@@ -57,7 +50,7 @@ export const DuplicatesTable = ({ documentId }: {
     }
   })
 
-  if (!data) {
+  if (isLoading) {
     return <>Loading...</>
   }
 
@@ -72,12 +65,12 @@ export const DuplicatesTable = ({ documentId }: {
   return (
     <div className='pl-6 border-t'>
       <div className='text-sm font-bold pt-2'>Duplicerade händelser</div>
-      {data?.map((duplicate: DuplicatesResult) => (
-        <div key={duplicate.uuid} className='pt-2'>
-          <Link to='Event' props={{ id: duplicate.uuid }} target='last'>
+      {data?.map((duplicate) => (
+        <div key={duplicate.id} className='pt-2'>
+          <Link to='Event' props={{ id: duplicate.id }} target='last'>
             <div className='flex items-center gap-2'>
               <CalendarPlus2 strokeWidth={1.75} size={18} className='text-muted-foreground' />
-              <div className='text-sm'>{duplicate.title}</div>
+              <div className='text-sm'>{duplicate.fields['document.title']?.values[0]}</div>
             </div>
           </Link>
         </div>

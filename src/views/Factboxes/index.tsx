@@ -7,7 +7,7 @@ import { TableCommandMenu } from '@/components/Commands/TableCommand'
 import { Header } from '@/components/Header'
 import { Commands } from '@/components/Commands'
 import { factboxColumns } from './FactboxColumns'
-import type { Factbox } from '@/hooks/index/lib/factboxes'
+import type { Factbox } from '@/hooks/index/useDocuments/schemas/factbox'
 import { FactboxList } from './FactboxList'
 import { useRegistry } from '@/hooks/useRegistry'
 
