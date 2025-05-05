@@ -4,7 +4,7 @@ import { Block, type Document } from '@ttab/elephant-api/newsdoc'
 import { toYMap } from '@/shared/transformations/toYMap'
 import { toGroupedNewsDoc, group } from '@/shared/transformations/groupedNewsDoc'
 import { toYjsNewsDoc } from '@/shared/transformations/yjsNewsDoc'
-import type { Wire } from '@/hooks/index/lib/wires'
+import type { Wire } from '@/hooks/index/useDocuments/schemas/wire'
 import type { IDBAuthor } from 'src/datastore/types'
 import type { DeliverableType } from '@/defaults/templates/lib/getDeliverableType'
 
@@ -104,7 +104,7 @@ export function appendAssignment({
     assignee,
     assignmentType: type,
     planningDate,
-    slugLine: slugLine || slugLineFromPlanning,
+    slugLine: type !== 'flash' ? slugLine || slugLineFromPlanning : undefined,
     title: title,
     wire,
     assignmentData

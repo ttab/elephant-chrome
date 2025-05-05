@@ -23,6 +23,11 @@ const WIRE = {
   id: 'b2208554-0c23-59ce-9895-418f6281930d',
   score: 0,
   fields: {
+    'document.rel.provider.uri': {
+      values: [
+        'wires://provider/efes'
+      ]
+    },
     'document.title': {
       values: [
         'Líbano intensifica llamados para "presionar" a Israel para que se retire del sur del país'
@@ -62,7 +67,15 @@ const WIRE = {
       values: [
         '3'
       ]
-    }
+    },
+    'heads.saved.version': { values: ['1'] },
+    'heads.saved.created': { values: ['2023-01-01T00:00:00Z'] },
+    'heads.read.version': { values: ['1'] },
+    'heads.read.created': { values: ['2023-01-01T00:00:00Z'] },
+    'heads.flash.version': { values: ['1'] },
+    'heads.flash.created': { values: ['2023-01-01T00:00:00Z'] },
+    'heads.used.version': { values: ['1'] },
+    'heads.used.created': { values: ['2023-01-01T00:00:00Z'] }
   },
   source: {},
   sort: [
@@ -244,7 +257,6 @@ describe('createArticle', () => {
     beforeAll(() => {
       const existingPlanning = createDocument({
         template: Templates.planning,
-        // TODO: WIRE: Harmonize payloads with article template SHOULD take Block
         payload: {
           title: PLANNING_TITLE,
           meta: {

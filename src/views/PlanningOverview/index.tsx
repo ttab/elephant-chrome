@@ -7,14 +7,12 @@ import { TableProvider } from '@/contexts/TableProvider'
 import { TableCommandMenu } from '@/components/Commands/TableCommand'
 import { Header } from '@/components/Header'
 import { planningListColumns } from './PlanningListColumns'
-import { type PlanningSearchParams, type Planning as PlanningType, Plannings as PlanningsIndex } from '@/lib/index'
 import { useSections } from '@/hooks/useSections'
 import { useAuthors } from '@/hooks/useAuthors'
 import { Commands } from '@/components/Commands'
-import { SWRProvider } from '@/contexts/SWRProvider'
-import { getDateTimeBoundariesUTC } from '@/lib/datetime'
 import { useQuery } from '@/hooks/useQuery'
 import { loadFilters } from '@/lib/loadFilters'
+import type { Planning } from '@/hooks/index/useDocuments/schemas/planning'
 
 const meta: ViewMetadata = {
   name: 'Plannings',
@@ -34,11 +32,6 @@ const meta: ViewMetadata = {
 
 export const Plannings = (): JSX.Element => {
   const [query] = useQuery()
-  const { from, to } = useMemo(() =>
-    getDateTimeBoundariesUTC(typeof query.from === 'string'
-      ? new Date(`${query.from}T00:00:00.000Z`)
-      : new Date())
-  , [query.from])
 
   const [currentTab, setCurrentTab] = useState<string>('list')
   const sections = useSections()
@@ -46,11 +39,11 @@ export const Plannings = (): JSX.Element => {
 
   const columns = useMemo(() =>
     planningListColumns({ sections, authors }), [sections, authors])
-  const columnFilters = loadFilters<PlanningType>(query, columns)
+  const columnFilters = loadFilters<Planning>(query, columns)
 
   return (
     <View.Root tab={currentTab} onTabChange={setCurrentTab}>
-      <TableProvider<PlanningType>
+      <TableProvider<Planning>
         columns={columns}
         type={meta.name}
         initialState={{
@@ -59,30 +52,26 @@ export const Plannings = (): JSX.Element => {
           globalFilter: query.query
         }}
       >
-        <SWRProvider<PlanningType, PlanningSearchParams> index={PlanningsIndex}>
+        <TableCommandMenu heading='Plannings'>
+          <Commands />
+        </TableCommandMenu>
 
-          <TableCommandMenu heading='Plannings'>
-            <Commands />
-          </TableCommandMenu>
+        <ViewHeader.Root>
+          <ViewHeader.Title name='Plannings' title='Planeringar' />
+          <ViewHeader.Content>
+            <Header type='Planning' />
+          </ViewHeader.Content>
+          <ViewHeader.Action />
+        </ViewHeader.Root>
 
-          <ViewHeader.Root>
-            <ViewHeader.Title name='Plannings' title='Planeringar' />
-            <ViewHeader.Content>
-              <Header type='Planning' />
-            </ViewHeader.Content>
-            <ViewHeader.Action />
-          </ViewHeader.Root>
+        <View.Content>
+          <TabsContent value='list' className='mt-0'>
+            <PlanningList columns={columns} />
+          </TabsContent>
 
-          <View.Content>
-            <TabsContent value='list' className='mt-0'>
-              <PlanningList from={from} to={to} columns={columns} />
-            </TabsContent>
-
-            <TabsContent value='grid'>
-            </TabsContent>
-          </View.Content>
-
-        </SWRProvider>
+          <TabsContent value='grid'>
+          </TabsContent>
+        </View.Content>
       </TableProvider>
     </View.Root>
   )

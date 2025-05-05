@@ -14,7 +14,7 @@ export const fields = [
   'document.uri',
   'document.url',
   'text'
-]
+] as const
 
 /**
  * Create a schema based on fields array.
@@ -22,7 +22,7 @@ export const fields = [
 const schemaShape = fields.reduce((acc, field) => {
   acc[field] = z.any()
   return acc
-}, {} as Record<string, z.ZodType<FieldValuesV1>>)
+}, {} as Record<(typeof fields)[number], z.ZodType<FieldValuesV1>>)
 
 /**
  * Zod schema for factboxes.
@@ -35,7 +35,7 @@ const _schema = z.object(schemaShape)
 type FactboxFields = z.infer<typeof _schema>
 
 /**
- * Interface extending HitV1 with a fields property of type WireSchema.
+ * Interface extending HitV1 with a fields property of type FactboxSchema.
  */
 export interface Factbox extends HitV1 {
   fields: FactboxFields

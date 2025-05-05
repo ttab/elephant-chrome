@@ -68,7 +68,7 @@ export const TableProvider = <T,>({
   const [data, setData] = useState<T[] | null>(null)
 
   const [rowSelection, setRowSelection] = useState({})
-  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({ startTime: false, modified: false })
+  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({ startTime: false, modified: false, date: false })
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>(initialState?.columnFilters || [])
   const [sorting, setSorting] = useState<SortingState>([])
 

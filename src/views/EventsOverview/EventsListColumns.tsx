@@ -1,5 +1,5 @@
 import { type ColumnDef } from '@tanstack/react-table'
-import { type Event } from '@/lib/index/schemas/event'
+import { type Event } from '@/hooks/index/useDocuments/schemas/event'
 import { Newsvalue } from '@/components/Table/Items/Newsvalue'
 import { type MouseEvent } from 'react'
 import {
@@ -56,26 +56,22 @@ export function eventTableColumns({ sections = [], organisers = [], locale }: {
         }
       },
       accessorFn: (data) => {
-        const startTime = new Date(data?._source['document.meta.core_event.data.start']?.[0])
-        const endTime = new Date(data?._source['document.meta.core_event.data.end']?.[0])
-        const isFullDay = (endTime.getTime() - startTime.getTime()) / (1000 * 60 * 60) > 12
+        const startTime = data?.fields['document.meta.core_event.data.start']?.values?.[0]
+        const endTime = data?.fields['document.meta.core_event.data.end']?.values?.[0]
 
         if (!startTime || !endTime) {
-          return <></>
+          return 'N/A'
         }
+
+        const start = new Date(startTime)
+        const end = new Date(endTime)
+        const isFullDay = (end.getTime() - start.getTime()) / (1000 * 60 * 60) > 12
 
         if (isFullDay) {
-          return undefined
+          return 'Heldag'
         }
 
-        if (startTime.toDateString() === new Date().toDateString()) {
-          return startTime.getHours()
-        } else {
-          return `${startTime.getHours()} ${startTime.toLocaleString(locale.code.full, { weekday: 'long', hourCycle: 'h23' })}`
-        }
-      },
-      cell: () => {
-        return undefined
+        return `${start.getHours()} ${start.toLocaleString(locale.code.full, { weekday: 'long', hourCycle: 'h23' })}`
       }
     },
     {
@@ -90,22 +86,16 @@ export function eventTableColumns({ sections = [], organisers = [], locale }: {
         className: 'flex-none',
         display: (value: string) => (
           <span>
-            {DocumentStatuses
-              .find((status) => status.value === value)?.label}
+            {DocumentStatuses.find((status) => status.value === value)?.label}
           </span>
         )
       },
-      accessorFn: (data) => data?._source['document.meta.status']?.[0],
+      accessorFn: (data) => data?.fields['document.meta.status']?.values?.[0] || 'Unknown',
       cell: ({ row }) => {
         const status = row.getValue<string>('documentStatus')
-        if (!status) {
-          return <></>
-        }
-
-        return <DocumentStatus type='core/event' status={status} />
+        return status ? <DocumentStatus type='core/event' status={status} /> : <></>
       },
-      filterFn: (row, id, value: string[]) =>
-        value.includes(row.getValue(id))
+      filterFn: (row, id, value: string[]) => value.includes(row.getValue(id))
     },
     {
       id: 'newsvalue',
@@ -118,17 +108,13 @@ export function eventTableColumns({ sections = [], organisers = [], locale }: {
         columnIcon: SignalHigh,
         className: 'flex-none hidden @3xl/view:[display:revert]'
       },
-      accessorFn: (data) => data._source['document.meta.core_newsvalue.value']?.[0],
+      accessorFn: (data) => data?.fields['document.meta.core_newsvalue.value']?.values?.[0] || 'N/A',
       cell: ({ row }) => {
         const value: string = row.getValue('newsvalue') || ''
         const newsvalue = NewsvalueMap[value]
-
-        if (newsvalue) {
-          return <Newsvalue newsvalue={newsvalue} />
-        }
+        return newsvalue ? <Newsvalue newsvalue={newsvalue} /> : <></>
       },
-      filterFn: (row, id, value: string[]) =>
-        value.includes(row.getValue(id))
+      filterFn: (row, id, value: string[]) => value.includes(row.getValue(id))
     },
     {
       id: 'title',
@@ -143,9 +129,9 @@ export function eventTableColumns({ sections = [], organisers = [], locale }: {
           </span>
         )
       },
-      accessorFn: (data) => data._source['document.title'][0],
+      accessorFn: (data) => data.fields['document.title']?.values[0],
       cell: ({ row }) => {
-        const slugline = row.original._source['document.meta.tt_slugline.value']?.[0]
+        const slugline = row.original.fields['document.meta.tt_slugline.value']?.values[0]
         const title = row.getValue('title')
 
         return <Title title={title as string} slugline={slugline} />
@@ -168,7 +154,7 @@ export function eventTableColumns({ sections = [], organisers = [], locale }: {
           <FacetedFilter column={column} setSearch={setSearch} />
         )
       },
-      accessorFn: (data) => data?._source['document.rel.organiser.title']?.[0],
+      accessorFn: (data) => data?.fields['document.rel.organiser.title']?.values[0],
       cell: ({ row }) => {
         const value: string = row?.getValue('organiser') || ''
 
@@ -207,9 +193,9 @@ export function eventTableColumns({ sections = [], organisers = [], locale }: {
           <FacetedFilter column={column} setSearch={setSearch} />
         )
       },
-      accessorFn: (data) => data._source['document.rel.section.uuid']?.[0],
+      accessorFn: (data) => data.fields['document.rel.section.uuid']?.values[0],
       cell: ({ row }) => {
-        const sectionTitle = row.original._source['document.rel.section.title']?.[0]
+        const sectionTitle = row.original.fields['document.rel.section.title']?.values[0]
         return (
           <>
             {sectionTitle && <SectionBadge title={sectionTitle} color='bg-[#BD6E11]' />}
@@ -258,8 +244,8 @@ export function eventTableColumns({ sections = [], organisers = [], locale }: {
         )
       },
       accessorFn: (data) => {
-        const startTime = data._source['document.meta.core_event.data.start']?.[0]
-        const endTime = data._source['document.meta.core_event.data.end']?.[0]
+        const startTime = data.fields['document.meta.core_event.data.start']?.values[0]
+        const endTime = data.fields['document.meta.core_event.data.end']?.values[0]
         return [startTime, endTime]
       },
       cell: ({ row }) => {
@@ -280,6 +266,7 @@ export function eventTableColumns({ sections = [], organisers = [], locale }: {
         columnIcon: Navigation,
         className: 'flex-none'
       },
+      accessorFn: (data) => data,
       cell: () => {
         return <DotDropdownMenu items={menuItems} />
       }

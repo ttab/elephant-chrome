@@ -1,8 +1,7 @@
-
 // src/hooks/index/eventHandlers.ts
 import type { EventlogItem } from '@ttab/elephant-api/repository'
 import type { Repository } from '@/shared/Repository'
-import type { Wire } from '.'
+import type { Wire } from '@/hooks/index/useDocuments/schemas/wire'
 import type { Session } from 'next-auth'
 
 const TIMEOUT = 5000
@@ -28,9 +27,10 @@ export const handleDocumentEvent = async ({
     try {
       const result = await repository.getDocument({ uuid: event.uuid, accessToken: session?.accessToken })
       const documentSource = result?.document?.links.find((link) => link.rel === 'source')?.uri
+      const providerSource = result?.document?.links.find((link) => link.rel === 'provider')?.uri
 
       if (documentSource && (Array.isArray(source) ? source : [source]).includes(documentSource)) {
-        const updateData = [
+        const updateData: Wire[] = [
           {
             id: result?.document?.uuid || '',
             source: {},
@@ -39,6 +39,7 @@ export const handleDocumentEvent = async ({
             fields: {
               current_version: { values: [result?.version.toString()] },
               'document.rel.source.uri': { values: [documentSource] },
+              'document.rel.provider.uri': { values: [providerSource || ''] },
               modified: { values: [new Date().toISOString()] },
               'document.meta.core_newsvalue.value': {
                 values: [result?.document?.meta?.find((meta) => meta.type === 'core/newsvalue')?.value || '']
@@ -52,7 +53,16 @@ export const handleDocumentEvent = async ({
               },
               'document.rel.section.title': {
                 values: [result?.document?.links?.find((link) => link.rel === 'section')?.title || '']
-              }
+              },
+              'heads.saved.version': { values: [result?.version.toString()] },
+              'heads.saved.created': { values: [''] },
+              'heads.read.version': { values: [''] },
+              'heads.read.created': { values: [''] },
+              'heads.used.version': { values: [''] },
+              'heads.used.created': { values: [''] },
+              'heads.flash.version': { values: [''] },
+              'heads.flash.created': { values: [''] }
+
             }
           },
           ...data

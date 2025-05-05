@@ -1,11 +1,7 @@
-import { useIndexUrl } from '@/hooks/useIndexUrl'
 import { useRepositoryEvents } from '@/hooks/useRepositoryEvents'
-import { Events } from '@/lib/events'
 import { GanttChartSquare, PlusIcon } from '@ttab/elephant-ui/icons'
-import { useSession } from 'next-auth/react'
 import { useRef, useState, useEffect } from 'react'
 import { NewItems } from '@/components/Table/NewItems'
-import useSWR from 'swr'
 import type { FormProps } from '@/components/Form/Root'
 import { Button, Dialog, DialogContent, DialogDescription, DialogTitle, DialogTrigger, Separator } from '@ttab/elephant-ui'
 import { createDocument } from '@/lib/createYItem'
@@ -15,23 +11,20 @@ import * as Templates from '@/defaults/templates'
 import type { HocuspocusProvider } from '@hocuspocus/provider'
 import { createPayload } from '@/defaults/templates/lib/createPayload'
 import { Block } from '@ttab/elephant-api/newsdoc'
-import type { Doc } from 'yjs'
+import { useDocuments } from '@/hooks/index/useDocuments'
+import { QueryV1, BoolQueryV1, TermsQueryV1 } from '@ttab/elephant-api/index'
 import { Link } from '@/components/index'
-
-interface StatusResult {
-  title: string
-  uuid: string | undefined
-}
+import type { Planning as PlanningType } from '@/hooks/index/useDocuments/schemas/planning'
+import type { Doc } from 'yjs'
 
 export type NewItem = { title: string, uuid: string } | undefined
+type PlanningTableFields = ['document.title', 'document.rel.event.uuid']
 
 export const PlanningTable = ({ provider, documentId, asDialog }: {
   documentId: string
   provider?: HocuspocusProvider
 } & FormProps): JSX.Element => {
-  const { data: session, status } = useSession()
   const createdDocumentIdRef = useRef<string | undefined>()
-  const indexUrl = useIndexUrl()
   const { hideModal } = useModal()
   const [newItem, setNewItem] = useState<NewItem>()
   const [initialDocument, setInitialDocument] = useState<Doc>()
@@ -44,23 +37,26 @@ export const PlanningTable = ({ provider, documentId, asDialog }: {
     }
   }, [])
 
-  const { data, mutate, error } = useSWR<StatusResult[] | undefined, Error>([
-    `relatedPlanningItems/${documentId}`,
-    status,
-    indexUrl.href
-  ], async (): Promise<StatusResult[] | undefined> => {
-    if (status !== 'authenticated' || !session?.accessToken) {
-      throw new Error('Not authenticated')
-    }
-
-    const statusResults = await Events.relatedPlanningSearch(indexUrl, session.accessToken, [documentId], {
-      size: 100
+  const { data, mutate, error } = useDocuments<PlanningType, PlanningTableFields>({
+    documentType: 'core/planning-item',
+    fields: ['document.title', 'document.rel.event.uuid'],
+    query: QueryV1.create({
+      conditions: {
+        oneofKind: 'bool',
+        bool: BoolQueryV1.create({
+          must: [{
+            conditions: {
+              oneofKind: 'terms',
+              terms: TermsQueryV1.create({
+                field: 'document.rel.event.uuid',
+                values: [documentId]
+              })
+            }
+          }
+          ]
+        })
+      }
     })
-
-    return statusResults.hits.map((hit) => ({
-      title: hit._source['document.title'][0],
-      uuid: hit._id
-    }))
   })
 
   useRepositoryEvents('core/planning-item', (event) => {
@@ -68,7 +64,20 @@ export const PlanningTable = ({ provider, documentId, asDialog }: {
       void (async () => {
         try {
           if (Array.isArray(data) && newItem?.title) {
-            await mutate([...data, { title: newItem?.title, uuid: newItem?.uuid }], { revalidate: false })
+            await mutate([...data, {
+              source: {},
+              score: 1,
+              sort: [''],
+              fields: {
+                'document.title': {
+                  values: [newItem?.title]
+                },
+                'document.rel.event.uuid': {
+                  values: [documentId]
+                }
+              },
+              id: newItem?.uuid
+            } as PlanningType], { revalidate: false })
           }
         } catch (error) {
           console.warn('Failed to update planning table', error)
@@ -150,7 +159,7 @@ export const PlanningTable = ({ provider, documentId, asDialog }: {
             <Separator />
             <div className='text-muted-foreground py-2'>Planeringar</div>
             {data?.map((planning) => (
-              <Link key={planning.uuid} to='Planning' props={{ id: planning.uuid }} target='last'>
+              <Link key={planning.id} to='Planning' props={{ id: planning.id }} target='last'>
                 <div
                   className='text-sm flex items-center gap-2 hover:bg-gray-100'
                   onClick={() => {
@@ -161,7 +170,7 @@ export const PlanningTable = ({ provider, documentId, asDialog }: {
                   }}
                 >
                   <GanttChartSquare strokeWidth={1.75} size={18} className='text-muted-foreground' />
-                  {planning.title}
+                  {planning.fields['document.title']?.values[0]}
                 </div>
               </Link>
             ))}
