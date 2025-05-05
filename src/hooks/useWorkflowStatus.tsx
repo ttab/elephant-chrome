@@ -1,11 +1,10 @@
 import { useSession } from 'next-auth/react'
 import useSWR, { mutate as globalMutate } from 'swr'
 import { useCallback } from 'react'
-import { useCollaboration, useRegistry } from '@/hooks'
+import { useRegistry } from '@/hooks'
 import { toast } from 'sonner'
-import { fromYjsNewsDoc } from '@/shared/transformations/yjsNewsDoc'
-import { fromGroupedNewsDoc } from '@/shared/transformations/groupedNewsDoc'
 import type { Status } from '@/shared/Repository'
+import { snapshot } from '@/lib/snapshot'
 
 export const useWorkflowStatus = (uuid?: string, isWorkflow: boolean = false): [
   Status | undefined,
@@ -13,7 +12,6 @@ export const useWorkflowStatus = (uuid?: string, isWorkflow: boolean = false): [
 ] => {
   const { repository } = useRegistry()
   const { data: session } = useSession()
-  const { provider } = useCollaboration()
 
   /**
    * SWR callback that fetches current workflow status
@@ -81,15 +79,30 @@ export const useWorkflowStatus = (uuid?: string, isWorkflow: boolean = false): [
       // Work with the latest status if possible
       const currentStatus = documentStatus || await globalMutate([`status/${uuid}`], undefined, false)
 
+      // Snapshot document to make sure we have the latest version, get the new version from the response
+      const snapshotResponse = uuid && await snapshot(uuid, true)
+
+      const newVersion = snapshotResponse && 'version' in snapshotResponse && typeof snapshotResponse.version === 'string'
+        ? BigInt(snapshotResponse.version)
+        : documentStatus?.version
+
+      if (!newVersion) {
+        toast.error('Ett fel har uppstått, aktuell status kunde inte ändras!')
+        return
+      }
+
       let payload: Status | undefined
       if (typeof newStatus !== 'string') {
-        payload = newStatus
+        payload = {
+          ...newStatus,
+          version: newVersion
+        }
       } else if (typeof newStatus === 'string' && documentStatus && uuid) {
         payload = {
           ...documentStatus,
-          uuid: uuid,
+          uuid,
           name: newStatus,
-          version: documentStatus?.version
+          version: newVersion
         }
       }
 
@@ -103,33 +116,27 @@ export const useWorkflowStatus = (uuid?: string, isWorkflow: boolean = false): [
 
       // Change status of document in repository
       try {
-        if (provider?.document && currentStatus && newStatus === 'draft' && ['usable', 'unpublished'].includes(currentStatus?.name)) {
-          const { documentResponse } = fromYjsNewsDoc(provider.document)
-          const { document } = fromGroupedNewsDoc(documentResponse)
-          await repository.saveDocument(document, session.accessToken, payload.version, undefined)
-        } else {
-          // If there is a previous checkpoint (published/scheduled/unpublished version) we require a cause to publish a new version
-          if (currentStatus?.checkpoint
-            && ['usable', 'withheld', 'unpublished'].includes(payload.name)
-            && typeof cause !== 'string'
-          ) {
-            toast.error('En anledning måste ges för att skapa en ny version. Aktuell status kunde inte ändras!')
-            return
-          }
-
-          // Unpublishing a document is done by setting version to -1
-          if (newStatus === 'unpublished') {
-            payload.version = -1n
-          }
-
-          await repository.saveMeta({
-            status: payload,
-            currentStatus: isWorkflow ? currentStatus : undefined,
-            accessToken: session.accessToken,
-            cause,
-            isWorkflow
-          })
+        // If there is a previous checkpoint (published/scheduled/unpublished version) we require a cause to publish a new version
+        if (currentStatus?.checkpoint
+          && ['usable', 'withheld', 'unpublished'].includes(payload.name)
+          && typeof cause !== 'string'
+        ) {
+          toast.error('En anledning måste ges för att skapa en ny version. Aktuell status kunde inte ändras!')
+          return
         }
+
+        // Unpublishing a document is done by setting version to -1
+        if (newStatus === 'unpublished') {
+          payload.version = -1n
+        }
+
+        await repository.saveMeta({
+          status: payload,
+          currentStatus: isWorkflow ? currentStatus : undefined,
+          accessToken: session.accessToken,
+          cause,
+          isWorkflow
+        })
 
         // Revalidate after the mutation completes
         await globalMutate([`status/${uuid || payload.uuid}`])
@@ -140,7 +147,7 @@ export const useWorkflowStatus = (uuid?: string, isWorkflow: boolean = false): [
         await mutate(currentStatus, false)
       }
     },
-    [session, uuid, documentStatus, mutate, repository, provider?.document, isWorkflow]
+    [session, uuid, documentStatus, mutate, repository, isWorkflow]
   )
 
   return [documentStatus, setDocumentStatus]
