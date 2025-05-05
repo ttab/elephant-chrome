@@ -62,49 +62,24 @@ export const WorkflowSpecifications: Record<string, WorkflowSpecification> = {
       transitions: {
         done: {
           default: true,
-          title: 'Klarmarkera',
-          description: 'Markera händelsen som klar'
-        },
-        approved: {
-          title: 'Godkänn',
-          description: 'Godkänn händelsen för intern användning'
+          title: 'Publicera internt',
+          description: 'Publicera händelsen internt hos TT'
         },
         usable: {
           verify: true,
-          title: 'Publicera',
+          title: 'Publicera externt',
           description: 'Publicera händelsen externt'
         }
       }
     },
     done: {
-      title: 'Klar',
-      description: 'Händelsen är klar och väntar på godkännande',
+      title: 'Intern',
+      description: 'Händelsen är publicerad internt hos TT',
       transitions: {
-        approved: {
-          default: true,
-          title: 'Godkänn',
-          description: 'Godkänn händelsen för intern användning'
-        },
         usable: {
           verify: true,
           title: 'Publicera',
           description: 'Publicera händelsen externt'
-        },
-        draft: {
-          title: 'Till utkast',
-          description: 'Gör om händelsen till ett utkast igen'
-        }
-      }
-    },
-    approved: {
-      title: 'Intern',
-      description: 'Händelsen är internt publicerad och går att publicera externt',
-      transitions: {
-        usable: {
-          default: true,
-          verify: true,
-          title: 'Publicera',
-          description: 'Publicera händelsen externt synlig'
         },
         draft: {
           title: 'Till utkast',
