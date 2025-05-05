@@ -15,7 +15,6 @@ export const transformFactbox = (element: Block): TBElement => {
       text: data?.text,
       original_updated: data?.original_updated,
       original_version: data?.original_version,
-      locally_changed: data?.locally_changed,
       original_id: links[0]?.uuid
     },
     children: [
@@ -62,9 +61,6 @@ export function revertFactbox(element: TBElement): Block {
   }
   if (properties?.original_version) {
     data.original_version = toString(properties?.original_version)
-  }
-  if (properties?.locally_changed) {
-    data.locally_changed = toString(properties?.locally_changed)
   }
 
   return Block.create({
