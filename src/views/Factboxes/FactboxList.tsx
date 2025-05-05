@@ -3,7 +3,7 @@ import { useQuery } from '@/hooks'
 
 import { Table } from '@/components/Table'
 import type { ColumnDef } from '@tanstack/react-table'
-import type { Factbox } from '@/hooks/index/useDocuments/schemas/factbox'
+import type { Factbox, FactboxFields } from '@/hooks/index/useDocuments/schemas/factbox'
 import { Toolbar } from './Toolbar'
 import { useDocuments } from '@/hooks/index/useDocuments'
 import { constructQuery } from '@/hooks/index/useDocuments/queries/views/factboxes'
@@ -16,7 +16,7 @@ export const FactboxList = ({ columns }: {
   const [{ page }] = useQuery()
   const [filter] = useQuery(['query'])
 
-  useDocuments({
+  useDocuments<Factbox, FactboxFields>({
     documentType: 'core/factbox',
     fields,
     query: constructQuery(filter),
@@ -25,6 +25,7 @@ export const FactboxList = ({ columns }: {
       ? parseInt(page)
       : undefined,
     options: {
+      subscribe: true,
       setTableData: true
     }
   })

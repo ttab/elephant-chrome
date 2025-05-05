@@ -1,4 +1,7 @@
 import { TwirpFetchTransport } from '@protobuf-ts/twirp-transport'
+import type {
+  SubscriptionReference
+} from '@ttab/elephant-api/index'
 import {
   SearchV1Client,
   QueryV1,
@@ -22,6 +25,7 @@ interface IndexSearchOptions<F> {
   loadSource?: boolean
   loadDocument?: boolean
   options?: useDocumentsFetchOptions
+  subscribe?: boolean
 }
 
 export interface IndexSearchResult<T extends HitV1> {
@@ -33,6 +37,7 @@ export interface IndexSearchResult<T extends HitV1> {
   pageSize: number
   pages: number
   hits: T[]
+  subscriptions?: SubscriptionReference[]
 }
 
 export class Index {
@@ -79,7 +84,8 @@ export class Index {
             }),
             source,
             searchAfter: [],
-            loadDocument
+            loadDocument,
+            subscribe: options?.subscribe || false
           }),
           meta(accessToken)
         )
@@ -93,7 +99,8 @@ export class Index {
           page: currentPage,
           pages: Math.ceil(total / pageSize),
           pageSize,
-          hits: hits as unknown as T[]
+          hits: hits as T[],
+          ...(response.subscription ? { subscriptions: [response.subscription] } : {})
         }
       }
 
@@ -102,6 +109,7 @@ export class Index {
         let allHits: HitV1[] = []
         let total = 0
         let pages = 0
+        let subscriptions: SubscriptionReference[] = []
 
         while (true) {
           const result = await fetchPage(currentPage)
@@ -110,6 +118,7 @@ export class Index {
           allHits = allHits.concat(result.hits)
           total = result.total
           pages = result.pages
+          subscriptions = subscriptions.concat(result.subscriptions || [])
 
           if (currentPage >= pages) break
           currentPage++
@@ -121,7 +130,8 @@ export class Index {
           page: 1,
           pages,
           pageSize,
-          hits: allHits as unknown as T[]
+          hits: allHits as unknown as T[],
+          ...(subscriptions.length > 0 ? { subscriptions } : {})
         }
       }
 
@@ -138,5 +148,20 @@ export class Index {
         hits: []
       }
     }
+  }
+
+  async pollSubscription({ subscriptions, accessToken, maxWaitMs = 0n, batchDelayMs = 0n }: {
+    subscriptions: SubscriptionReference[]
+    accessToken: string
+    maxWaitMs?: bigint
+    batchDelayMs?: bigint
+  }) {
+    const { response } = await this.#client.pollSubscription({
+      subscriptions,
+      maxWaitMs,
+      batchDelayMs
+    }, meta(accessToken))
+
+    return response
   }
 }

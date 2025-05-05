@@ -7,7 +7,7 @@ import { toast } from 'sonner'
 /**
  * PrintFlows component.
  *
- * This component fetches and displays a list of print flows. It uses the `useFetchPrintFlows` hook
+ * This component fetches and displays a list of print flows. It uses the `useDocuments` hook
  * to retrieve the data from the server and displays each flow with its title and content names.
  * A button is provided for each flow, but its functionality is not yet implemented.
  *
