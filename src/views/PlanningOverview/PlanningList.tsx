@@ -34,7 +34,8 @@ export const PlanningList = ({ columns }: {
     options: {
       aggregatePages: true,
       withStatus: true,
-      setTableData: true
+      setTableData: true,
+      subscribe: true
     }
   })
 

@@ -37,7 +37,8 @@ export const EventsList = (): JSX.Element => {
       aggregatePages: true,
       setTableData: true,
       withStatus: true,
-      withPlannings: true
+      withPlannings: true,
+      subscribe: true
     }
 
   })

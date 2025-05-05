@@ -35,7 +35,10 @@ export const DuplicatesTable = ({ documentId }: {
     }),
     sort: [
       SortingV1.create({ field: 'modified', desc: true })
-    ]
+    ],
+    options: {
+      subscribe: true
+    }
   })
 
   useRepositoryEvents('core/event', (event) => {
