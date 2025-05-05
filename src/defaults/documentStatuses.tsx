@@ -75,7 +75,7 @@ export const DocumentStatuses: DefaultValueOption[] = [
   }
 ] as const
 
-export const EventStatuses: DefaultValueOption[] = [
+export const PlanningEventStatuses: DefaultValueOption[] = [
   {
     label: 'Publicerad',
     value: 'usable',

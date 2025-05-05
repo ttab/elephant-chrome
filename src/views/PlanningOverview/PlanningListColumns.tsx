@@ -15,7 +15,7 @@ import {
   Navigation,
   CircleCheck
 } from '@ttab/elephant-ui/icons'
-import { Newsvalues, NewsvalueMap, AssignmentTypes, DocumentStatuses } from '@/defaults'
+import { Newsvalues, NewsvalueMap, AssignmentTypes, PlanningEventStatuses } from '@/defaults'
 import { DocumentStatus } from '@/components/Table/Items/DocumentStatus'
 import { SectionBadge } from '@/components/DataItem/SectionBadge'
 import { type IDBAuthor, type IDBSection } from 'src/datastore/types'
@@ -33,14 +33,13 @@ export function planningListColumns({ sections = [], authors = [] }: {
         Filter: ({ column, setSearch }) => (
           <FacetedFilter column={column} setSearch={setSearch} />
         ),
-        options: DocumentStatuses,
+        options: PlanningEventStatuses,
         name: 'Status',
         columnIcon: CircleCheck,
         className: 'flex-none',
         display: (value: string) => (
           <span>
-            {DocumentStatuses
-              .find((status) => status.value === value)?.label}
+            {PlanningEventStatuses.find((status) => status.value === value)?.label}
           </span>
         )
       },
