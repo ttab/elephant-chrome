@@ -70,7 +70,9 @@ const Editor = (props: ViewProps): JSX.Element => {
 
   // If published or specific version has be specified
   if (workflowStatus?.name === 'usable' || props.version) {
-    const bigIntVersion = !props.version ? 0n : BigInt(props.version)
+    const bigIntVersion = workflowStatus?.name === 'usable'
+      ? workflowStatus?.version
+      : BigInt(props.version ?? 0)
 
     return (
       <View.Root>

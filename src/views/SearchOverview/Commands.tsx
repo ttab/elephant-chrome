@@ -6,11 +6,12 @@ import { useCategories, useOrganisers, useSections, useQuery, useAuthors } from 
 import { Newsvalues } from '@/defaults/newsvalues'
 import { AssignmentTypes } from '@/defaults/assignmentTypes'
 import type { FilterProps } from '@/components/Filter'
-import type { SearchType } from './SearchDropdown'
 import { DatePicker } from '@/components/Datepicker'
 import { useMemo } from 'react'
+import type { SearchKeys } from '@/hooks/index/useDocuments/queries/views/search'
+import { parseDate } from '@/lib/datetime'
 
-export const Commands = (props: FilterProps & { type: SearchType }): JSX.Element => {
+export const Commands = (props: FilterProps & { type: SearchKeys }): JSX.Element => {
   if (props.page === undefined || props.pages === undefined || props.setPages === undefined || props.setSearch === undefined) {
     throw new Error('No props passed to Command component')
   }
@@ -22,9 +23,11 @@ export const Commands = (props: FilterProps & { type: SearchType }): JSX.Element
 
   const { from } = filters
   const currentDate = useMemo(() => {
-    return typeof from === 'string'
-      ? new Date(from)
-      : new Date()
+    return Array.isArray(from)
+      ? parseDate(from[0]) || new Date()
+      : typeof from === 'string'
+        ? parseDate(from) || new Date()
+        : new Date()
   }, [from])
 
   const handleClear = () => {

@@ -1,5 +1,4 @@
 import '@testing-library/jest-dom'
-import planning from './__tests__/data/planning-index.json'
 
 import { randomUUID } from 'node:crypto'
 import { TextEncoder, TextDecoder } from 'util'
@@ -17,9 +16,20 @@ global.TextDecoder = TextDecoder
 
 function mockUrl(url: string): unknown {
   switch (url) {
-    case '/core_planning_item/_search':
-      return planning
+    case '/elephant/api/urls':
+      return {
+        indexUrl: 'https://example.com/index',
+        webSocketUrl: 'https://example.com/websocket',
+        repositoryEventsUrl: 'https://example.com/repository-events',
+        repositoryUrl: 'https://example.com/repository',
+        contentApiUrl: 'https://example.com/content-api',
+        spellcheckUrl: 'https://example.com/index',
+        userUrl: 'https://example.com/user',
+        faroUrl: 'https://example.com/faro',
+        baboonUrl: 'https://example.com/baboon'
+      }
 
+    case '/elephant/api/auth/session':
     case '/api/auth/session':
       return {
         user: {
@@ -87,7 +97,8 @@ vi.mock('next-auth/react', async () => {
   const originalModule = await vi.importActual('next-auth/react')
   const mockSession = {
     expires: new Date(Date.now() + 2 * 86400).toISOString(),
-    user: { name: 'Testy Test' }
+    user: { name: 'Testy Test' },
+    accessToken: 'abc123'
   }
   return {
     __esModule: true,
