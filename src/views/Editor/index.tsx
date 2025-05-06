@@ -4,8 +4,8 @@ import { Notes } from './components/Notes'
 
 import { Textbit, useTextbit } from '@ttab/textbit'
 import { Bold, Italic, Link, Text, TTVisual, Factbox, Table, LocalizedQuotationMarks } from '@ttab/textbit-plugins'
-import { ImageSearchPlugin } from '../../plugins/ImageSearch'
-import { FactboxPlugin } from '../../plugins/Factboxes'
+import { ImageSearchPlugin } from '../../components/Editor/plugins/ImageSearch'
+import { FactboxPlugin } from '../../components/Editor/plugins/Factboxes'
 import { Editor as PlainEditor } from '@/components/PlainEditor'
 
 import {
