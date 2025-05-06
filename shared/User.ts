@@ -4,6 +4,7 @@ import type { PollMessagesResponse } from '@ttab/elephant-api/user'
 import { MessagesClient } from '@ttab/elephant-api/user'
 import type { TokenService } from './TokenService.js'
 import { meta } from './meta.js'
+import { AbortError } from './types/errors.js'
 
 export class User {
   readonly #tokenService?: TokenService
@@ -89,7 +90,7 @@ export class User {
    * @returns {Promise<void>}
    */
   async pollMessages(
-    afterId: number, accessToken: string
+    afterId: number, accessToken: string, abortSignal?: AbortSignal
   ): Promise<PollMessagesResponse> {
     if (!accessToken) {
       throw new Error('Access token required')
@@ -98,10 +99,17 @@ export class User {
     try {
       const { response } = await this.#client.pollMessages({
         afterId: BigInt(afterId)
-      }, meta(accessToken))
+      }, {
+        ...meta(accessToken),
+        abort: abortSignal
+      })
 
       return response
     } catch (err: unknown) {
+      if (abortSignal?.aborted) {
+        throw new AbortError()
+      }
+
       throw new Error('Unable to poll messages', { cause: err })
     }
   }
