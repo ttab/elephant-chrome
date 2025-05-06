@@ -4,10 +4,12 @@ import { useSession } from 'next-auth/react'
 import { toast } from 'sonner'
 import type { Message } from '@ttab/elephant-api/user'
 import type { User } from '@/shared/User'
+import { AbortError } from '@/shared/types/errors'
 
 export const UserMessagesReceiver = ({ children }: React.PropsWithChildren) => {
   const { user } = useRegistry()
   const { data } = useSession()
+
 
   /**
    * Start polling messages on first load
@@ -18,23 +20,33 @@ export const UserMessagesReceiver = ({ children }: React.PropsWithChildren) => {
     }
 
     let isActive = true
+    const abortController = new AbortController()
 
     const startPolling = async () => {
       let lastId = -1
 
       while (isActive) {
-        lastId = await execPolling(data.accessToken, user, lastId)
+        lastId = await execPolling(data.accessToken, user, lastId, abortController)
       }
     }
 
-    void startPolling()
-      .catch((ex) => {
-        console.error('Unable to poll messages', ex)
-      })
+    const handleBeforeUnload = () => {
+      abortController.abort()
+    }
 
+    window.addEventListener('beforeunload', handleBeforeUnload)
+
+    void startPolling().catch((ex) => {
+      if (ex instanceof AbortError) {
+        return
+      }
+      console.error('Unable to poll messages', ex)
+    })
 
     return () => {
       isActive = false
+      abortController.abort()
+      window.removeEventListener('beforeunload', handleBeforeUnload)
     }
   }, [data?.accessToken, user])
 
@@ -45,9 +57,9 @@ export const UserMessagesReceiver = ({ children }: React.PropsWithChildren) => {
   )
 }
 
-async function execPolling(accessToken: string, user: User, lastId: number): Promise<number> {
+async function execPolling(accessToken: string, user: User, lastId: number, abortController: AbortController): Promise<number> {
   try {
-    const res = await user.pollMessages(lastId, accessToken)
+    const res = await user.pollMessages(lastId, accessToken, abortController.signal)
 
     res.messages.forEach((msg) => {
       displayMessageToast(msg)
@@ -55,6 +67,9 @@ async function execPolling(accessToken: string, user: User, lastId: number): Pro
 
     return Number(res.lastId)
   } catch (ex) {
+    if (ex instanceof AbortError) {
+      throw ex
+    }
     toast.error('Misslyckades att ansluta till meddelandetjänsten, vänligen ladda om fönstret.')
     throw ex
   }
