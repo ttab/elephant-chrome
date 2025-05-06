@@ -74,3 +74,60 @@ export const DocumentStatuses: DefaultValueOption[] = [
     }
   }
 ] as const
+
+export const PlanningEventStatuses: DefaultValueOption[] = [
+  {
+    label: 'Publicerad',
+    value: 'usable',
+    icon: CircleCheck,
+    iconProps: {
+      color: '#ffffff',
+      className: 'bg-usable fill-usable rounded-full',
+      size: 18,
+      strokeWidth: 1.75
+    }
+  },
+  {
+    label: 'Tidsplanerad',
+    value: 'withheld',
+    icon: CircleCheck,
+    iconProps: {
+      color: '#ffffff',
+      className: 'bg-withheld fill-withheld rounded-full',
+      size: 18,
+      strokeWidth: 1.75
+    }
+  },
+  {
+    label: 'Intern',
+    value: 'done',
+    icon: CircleCheck,
+    iconProps: {
+      color: '#ffffff',
+      className: 'bg-done fill-done rounded-full',
+      size: 18,
+      strokeWidth: 1.75
+    }
+  },
+  {
+    label: 'Inställd',
+    value: 'cancelled',
+    icon: CircleX,
+    iconProps: {
+      color: '#ffffff',
+      className: 'bg-cancelled fill-cancelled rounded-full',
+      size: 18,
+      strokeWidth: 1.75
+    }
+  },
+  {
+    label: 'Utkast',
+    value: 'draft',
+    icon: CircleDot,
+    iconProps: {
+      className: 'text-muted-foreground',
+      size: 18,
+      strokeWidth: 1.75
+    }
+  }
+] as const
