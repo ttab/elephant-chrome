@@ -57,7 +57,10 @@ export function constructQuery(filter: QueryParams | undefined): QueryV1 | undef
         conditions: {
           oneofKind: 'multiMatch',
           multiMatch: MultiMatchQueryV1.create({
-            fields: ['document.title', 'document.rel.section.title'],
+            fields: [
+              'document.title',
+              'document.content.core_text.data.text'
+            ],
             query: filter.query.toString(),
             type: 'phrase_prefix'
           })
