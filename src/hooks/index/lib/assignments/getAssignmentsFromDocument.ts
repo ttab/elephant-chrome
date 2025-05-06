@@ -25,6 +25,8 @@ export function getAssignmentsFromDocument(document: Document, type?: string | s
     const _deliverableType = deliverable?.type
 
     assignments.push({
+      _planningId: document.uuid,
+      _planningTitle: document.title,
       _id: document.uuid,
       _title: document.title,
       _newsvalue: meta?.find((assignmentMeta) => assignmentMeta.type === 'core/newsvalue')?.value,
