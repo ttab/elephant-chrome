@@ -85,7 +85,7 @@ export class Index {
             source,
             searchAfter: [],
             loadDocument,
-            subscribe: options?.subscribe || false
+            subscribe: currentPage === 1 ? options?.subscribe : false
           }),
           meta(accessToken)
         )
@@ -150,17 +150,28 @@ export class Index {
     }
   }
 
-  async pollSubscription({ subscriptions, accessToken, maxWaitMs = 0n, batchDelayMs = 0n }: {
+  async pollSubscription({
+    subscriptions,
+    accessToken,
+    maxWaitMs = 10000n,
+    batchDelayMs = 200n,
+    abortSignal
+  }: {
     subscriptions: SubscriptionReference[]
     accessToken: string
     maxWaitMs?: bigint
     batchDelayMs?: bigint
+    abortSignal?: AbortSignal
   }) {
     const { response } = await this.#client.pollSubscription({
       subscriptions,
       maxWaitMs,
       batchDelayMs
-    }, meta(accessToken))
+    }, {
+      ...meta(accessToken),
+      abort: abortSignal
+    }
+    )
 
     return response
   }

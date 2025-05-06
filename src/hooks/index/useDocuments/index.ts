@@ -1,5 +1,5 @@
 import { useSession } from 'next-auth/react'
-import type { SWRResponse } from 'swr'
+import type { KeyedMutator, SWRResponse } from 'swr'
 import useSWR from 'swr'
 import { useRegistry } from '@/hooks/useRegistry'
 import { fetch } from './lib/fetch'
@@ -8,6 +8,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import type { SubscriptionReference } from '@ttab/elephant-api/index'
 import { type HitV1, type PollSubscriptionResponse, type QueryV1, type SortingV1 } from '@ttab/elephant-api/index'
 import { toast } from 'sonner'
+import type { Index } from '@/shared/Index'
 
 /**
  * Options for augmenting or performing the fetch in the `useDocuments` hook.
@@ -25,6 +26,8 @@ export interface useDocumentsFetchOptions {
   setTableData?: boolean
   subscribe?: boolean
 }
+
+class AbortError extends Error {}
 
 /**
  * Custom hook to fetch and manage documents with optional subscription-based updates.
@@ -91,52 +94,88 @@ export const useDocuments = <T extends HitV1, F>({ documentType, query, size, pa
     }
   }, [data, setData, options?.setTableData])
 
-  // Start polling for updates if subscribe is enabled
-  const isPollingRef = useRef(false)
+  // subscribe to changes using long polling
+  const isPolling = useRef(false)
   useEffect(() => {
-    if (!options?.subscribe || !session?.accessToken || !subscriptions?.length || !index) {
+    if (!options?.subscribe || !session?.accessToken || !subscriptions?.length || !index || isPolling.current) {
       return
     }
+    isPolling.current = true
 
-    const pollSubscriptions = async (subscriptions: SubscriptionReference[]) => {
-      if (isPollingRef.current) {
-        return
-      }
+    const abortController = new AbortController()
 
-      isPollingRef.current = true
-      try {
-        const response: PollSubscriptionResponse = await index.pollSubscription({
-          subscriptions,
-          accessToken: session?.accessToken
-        })
+    const startPolling = async () => {
+      let lastSubscriptions = subscriptions
+      while (isPolling.current) {
+        try {
+          lastSubscriptions = await pollSubscriptions({
+            index,
+            accessToken: session.accessToken,
+            subscriptions: lastSubscriptions,
+            mutate,
+            abortController
+          })
+        } catch (error) {
+          if (error instanceof AbortError) {
+            break
+          }
 
-        const newSubscriptions = response.result
-          .map((result) => result.subscription)
-          .filter((subscription): subscription is SubscriptionReference => !!subscription)
-
-        subscriptions = newSubscriptions.length ? newSubscriptions : subscriptions
-
-        if (newSubscriptions.length > 0) {
-          void mutate()
-          return
+          console.error('Polling error:', error)
+          toast.error('Polling failed. Retrying...')
         }
-
-        isPollingRef.current = false
-        void pollSubscriptions(subscriptions)
-      } catch (error) {
-        console.error('Could not poll for updates:', error)
-        toast.error('Automatisk uppdatering av vyn misslyckades')
-        isPollingRef.current = false
       }
     }
 
-    // Initiate polling, use subscriptions from initial fetch
-    void pollSubscriptions(subscriptions)
+    void startPolling()
+      .catch((ex) => {
+        console.error('Unable to start polling', ex)
+      })
 
     return () => {
-      isPollingRef.current = false
+      // Call the abortController which causes a AbortError and breaks the loop, restart.
+      abortController.abort()
+      isPolling.current = false
     }
-  }, [options?.subscribe, session?.accessToken, index, subscriptions, mutate])
+  }, [index, options?.subscribe, session?.accessToken, subscriptions, mutate])
 
   return { data, error, mutate, isValidating, isLoading }
+}
+
+async function pollSubscriptions<T>({
+  index,
+  accessToken,
+  subscriptions,
+  mutate,
+  abortController
+}: {
+  index: Index
+  accessToken: string
+  subscriptions: SubscriptionReference[]
+  mutate: KeyedMutator<T[]>
+  abortController?: AbortController
+}): Promise<SubscriptionReference[]> {
+  try {
+    const response: PollSubscriptionResponse = await index.pollSubscription({
+      subscriptions,
+      accessToken,
+      abortSignal: abortController?.signal
+    })
+
+    const newSubscriptions = response.result
+      .map((result) => result.subscription)
+      .filter((subscription): subscription is SubscriptionReference => !!subscription)
+
+    if (newSubscriptions.length > 0) {
+      await mutate()
+      return newSubscriptions
+    }
+
+    return subscriptions
+  } catch (error) {
+    if (abortController?.signal.aborted) {
+      throw new AbortError()
+    }
+    toast.error('Failed to update view automatically.')
+    throw error
+  }
 }
