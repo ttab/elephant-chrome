@@ -4,6 +4,8 @@ import type { TBElement } from '@ttab/textbit'
 import type { Block } from '@ttab/elephant-api/newsdoc'
 import { revertFactbox, transformFactbox } from './core/factbox.js'
 import { revertTable, transformTable } from './core/table.js'
+import { revertTvListing, transformTvListing } from './tt/tvListing.js'
+import { revertPrintArticle, transformPrintArticle } from './tt/printArticle.js'
 
 /**
  * Convert a NewsDoc block array to slate TBElement array
@@ -22,6 +24,10 @@ export function newsDocToSlate(content: Block[]): TBElement[] {
           return transformUnorderedList(element)
         case 'core/table':
           return transformTable(element)
+        case 'tt/tv-listing':
+          return transformTvListing(element)
+        case 'tt/print-article':
+          return transformPrintArticle(element)
         default:
           throw new Error(`Element not implemented: ${element.type}`)
       }
@@ -46,13 +52,14 @@ export function slateToNewsDoc(elements: TBElement[]): Block[] | undefined {
       case 'tt/visual':
       case 'core/image':
         return revertVisual(element)
-
       case 'core/factbox':
         return revertFactbox(element)
-
       case 'core/table':
         return revertTable(element)
-
+      case 'tt/tv-listing':
+        return revertTvListing(element)
+      case 'tt/print-article':
+        return revertPrintArticle(element)
       default:
         throw new Error(`Element not implemented: ${element.type}`)
     }
