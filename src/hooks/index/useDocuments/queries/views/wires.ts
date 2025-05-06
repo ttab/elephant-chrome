@@ -59,7 +59,13 @@ export function constructQuery(filter: QueryParams | undefined): QueryV1 | undef
           multiMatch: MultiMatchQueryV1.create({
             fields: [
               'document.title',
-              'document.content.core_text.data.text'
+              'document.content.core_text.data.text',
+              'document.content.core_table.data.tbody',
+              'document.content.core_table.data.thead',
+              'document.content.core_table.data.tfoot',
+              'document.content.core_table.data.caption',
+              'document.content.core_ordered_list.content.core_text.data.text',
+              'document.content.core_unordered_list.content.core_text.data.text'
             ],
             query: filter.query.toString(),
             type: 'phrase_prefix'
