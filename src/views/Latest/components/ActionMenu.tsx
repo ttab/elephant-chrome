@@ -1,7 +1,4 @@
-import {
-  type LucideIcon,
-  Pen, CalendarDaysIcon, MoreHorizontal
-} from '@ttab/elephant-ui/icons'
+import { Pen, CalendarDaysIcon, MoreHorizontal } from '@ttab/elephant-ui/icons'
 
 import {
   Button,
@@ -29,23 +26,12 @@ export const ActionMenu = ({ actions }: {
           onClickCapture={(e) => e.preventDefault()}
         >
           <MoreHorizontal size={18} strokeWidth={1.75} />
-          <span className='sr-only'>Open</span>
         </Button>
       </DropdownMenuTrigger>
 
       <DropdownMenuContent className='w-56'>
         {actions.map(({ to, id, title }) => {
-          let Icon: LucideIcon
-
-          switch (to) {
-            case 'Planning':
-              Icon = CalendarDaysIcon
-              break
-
-            case 'Editor':
-              Icon = Pen
-              break
-          }
+          const Icon = (to === 'Planning') ? CalendarDaysIcon : Pen
 
           return (
             <DropdownMenuItem key={id}>
