@@ -57,6 +57,8 @@ export const StatusMenu = ({ documentId, type, publishTime, onBeforeStatusChange
 
   const CurrentIcon = currentStatusDef.icon
 
+  const promptCauseStatuses = ['draft', 'usable']
+
   return (
     <>
       <div className='flex items-center' ref={containerRef}>
@@ -120,7 +122,7 @@ export const StatusMenu = ({ documentId, type, publishTime, onBeforeStatusChange
               prompt={prompt}
               showPrompt={showPrompt}
               setStatus={setStatus}
-              requireCause={prompt.status === 'usable' && !!documentStatus.checkpoint}
+              requireCause={promptCauseStatuses.includes(prompt.status) && !!documentStatus.checkpoint}
             />
           )}
         </>
