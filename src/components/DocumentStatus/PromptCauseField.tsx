@@ -12,10 +12,10 @@ export const PromptCauseField = ({ onValueChange, cause }: {
           <SelectValue placeholder='Välj anledning...' />
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value='UV'>UV</SelectItem>
-          <SelectItem value='KORR'>KORR</SelectItem>
-          <SelectItem value='RÄ'>RÄ</SelectItem>
-          <SelectItem value='OMS'>OMS</SelectItem>
+          <SelectItem value='development'>UV</SelectItem>
+          <SelectItem value='correction'>KORR</SelectItem>
+          <SelectItem value='fix'>RÄ</SelectItem>
+          <SelectItem value='retransmission'>OMS</SelectItem>
         </SelectContent>
       </Select>
     </>
