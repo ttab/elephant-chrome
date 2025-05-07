@@ -103,12 +103,12 @@ export const AssignmentRow = ({ index, onSelect, isFocused = false, asDialog }: 
         event,
         {
           id: documentId,
-          autoFocus: false
+          autoFocus: false,
+          version: readOnly?.version.toString()
         },
         undefined,
         undefined,
-        event instanceof KeyboardEvent && event.key === ' ',
-        readOnly ? readOnly : undefined)
+        event instanceof KeyboardEvent && event.key === ' ')
     } else {
       if (!asDialog && provider?.document) {
         setShowCreateDialogPayload(true)
