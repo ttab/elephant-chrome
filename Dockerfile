@@ -1,4 +1,4 @@
-FROM node:22.14.0-slim AS build
+FROM node:24.0.0-slim AS build
 
 ARG npm_authtoken
 
@@ -17,7 +17,7 @@ RUN rm -fr node_modules && \
   npm ci --include prod && \
   rm -f .npmrc
 
-FROM node:22.14.0-slim
+FROM node:24.0.0-slim
 
 RUN apt-get update && apt-get upgrade -y && apt-get clean
 
