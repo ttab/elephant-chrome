@@ -28,7 +28,14 @@ export const transformFactbox = (element: Block): TBElement => {
           }
         ]
       },
-      ...newsDocToSlate(content)
+      {
+        id: crypto.randomUUID(),
+        class: 'text',
+        type: 'core/factbox/body',
+        children: [
+          ...newsDocToSlate(content)
+        ]
+      }
     ]
   }
 }
@@ -45,7 +52,7 @@ export function revertFactbox(element: TBElement): Block {
   const factboxTitle = element.children.find((child) => child.type === 'core/factbox/title')
   const title = (factboxTitle?.children as FactboxChild[] | undefined)?.[0]?.text ?? ''
 
-  const factboxChildren = element.children.filter((child) => child.type !== 'core/factbox/title')
+  const factboxBody = element.children.find((child) => child.type === 'core/factbox/body')
 
   const { id, properties } = element
 
@@ -74,6 +81,8 @@ export function revertFactbox(element: TBElement): Block {
           uuid: toString(properties?.original_id)
         }]
       : [],
-    content: slateToNewsDoc(factboxChildren as TBElement[])
+    content: factboxBody
+      ? slateToNewsDoc(factboxBody?.children as TBElement[])
+      : []
   })
 }
