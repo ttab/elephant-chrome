@@ -28,13 +28,13 @@ export function printArticlesListColumns(): Array<ColumnDef<PrintArticle>> {
         display: (value: string) => (
           <span>
             {DocumentStatuses
-              .find((status) => status.value === value)?.label}
+              .find((status) => status.value === value)?.label || 'draft'}
           </span>
         )
       },
       accessorFn: (data) => (data.fields['workflow_state'].values[0]),
       cell: ({ row }) => {
-        const status = row.original.fields['workflow_state']?.values[0] || 'saknar status' // row?.getValue('workflowState')
+        const status = row.original.fields['workflow_state']?.values[0] || 'draft' // row?.getValue('workflowState')
         return <DocumentStatus type='tt/print-article' status={status as string} />
       }
     },
