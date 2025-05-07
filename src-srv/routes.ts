@@ -5,6 +5,7 @@ import type { Application, WebsocketRequestHandler } from 'express-ws'
 import type { Repository } from '@/shared/Repository.js'
 import type { CollaborationServer } from './utils/CollaborationServer.js'
 import type { RedisCache } from './utils/RedisCache.js'
+import logger from './lib/logger.js'
 
 /* Route types */
 interface Route {
@@ -150,7 +151,7 @@ function connectRouteHandler(app: Application, routePath: string, func: RouteHan
         })
       }
     }).catch((ex: Error) => {
-      console.error(ex)
+      logger.error(ex, 'RouteHandler error')
       res.statusCode = 500
       res.statusMessage = ex?.message || 'Unknown error'
       res.send('')
@@ -180,7 +181,7 @@ function connectRouteHandler(app: Application, routePath: string, func: RouteHan
 // FIXME: WebSocket handlers need some more thought
 function connectWebsocketHandler(app: Application, routePath: string, func: WebsocketRequestHandler, _: RouteInitContext): Application {
   // FIXME: Implement support for context sharing with websocket handlers, context is ignored for now
-  console.warn('Websocket route handlers don\'t have access to context')
+  logger.warn('Websocket route handlers don\'t have access to context')
 
   app.ws(routePath, func)
   return app

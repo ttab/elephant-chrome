@@ -76,7 +76,7 @@ export const GET: RouteHandler = async (req: Request, { collaborationServer, cac
           // Resolve the promise after snapshotDocument completes
           resolve()
         }).catch((ex: Error) => {
-          logger.error('Snapshot Error:', ex instanceof Error ? ex.message : ex)
+          logger.error(ex, 'Snapshot Error:')
           reject(ex) // Reject the promise on error
         })
 
