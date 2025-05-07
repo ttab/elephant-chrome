@@ -241,7 +241,7 @@ function constructQuery(
 function getRelatedDocuments(repository: Repository, accessToken: string, uuids: string[]): [Promise<BulkGetResponse | null>, Promise<GetStatusOverviewResponse | null>] {
   // Initialize a getDocuments request for this result page
   const documentsRequest = repository.getDocuments({
-    uuids,
+    documents: uuids.map((uuid) => ({ uuid })),
     accessToken
   })
 
