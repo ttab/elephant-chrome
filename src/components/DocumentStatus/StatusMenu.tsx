@@ -120,7 +120,7 @@ export const StatusMenu = ({ documentId, type, publishTime, onBeforeStatusChange
               prompt={prompt}
               showPrompt={showPrompt}
               setStatus={setStatus}
-              currentCause={documentStatus?.cause}
+              currentCause={documentStatus?.cause as string}
               requireCause={prompt.status === 'draft' && !!documentStatus.checkpoint}
             />
           )}
