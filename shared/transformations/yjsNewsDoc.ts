@@ -67,7 +67,8 @@ export function fromYjsNewsDoc(yDoc: Y.Doc): {
   const content = yContent.length ? yTextToSlateElement(yContent).children : []
 
   const makeTitle = (): string => {
-    if (type === 'core/article') {
+    const types = ['core/article', 'core/editorial-info', 'core/flash']
+    if (types.includes(type)) {
       const heading = (content as TBElement[])?.find((c: TBElement) => {
         if ('properties' in c) {
           return c?.properties?.role === 'heading-1'
