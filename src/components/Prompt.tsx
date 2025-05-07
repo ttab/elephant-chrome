@@ -11,6 +11,7 @@ interface PromptProps extends PropsWithChildren {
   onPrimary: (event: MouseEvent<HTMLButtonElement> | React.KeyboardEvent<HTMLButtonElement> | KeyboardEvent) => void
   onSecondary?: () => void
   disablePrimary?: boolean
+  currentCause?: { cause: string | undefined, setCause: (value: string) => void }
 }
 
 export const Prompt = ({
@@ -21,7 +22,8 @@ export const Prompt = ({
   secondaryLabel,
   onPrimary,
   onSecondary,
-  disablePrimary = false
+  disablePrimary = false,
+  currentCause
 }: PromptProps): JSX.Element => {
   useKeydownGlobal((event) => {
     if (event.key === 'Escape' && secondaryLabel && onSecondary) {

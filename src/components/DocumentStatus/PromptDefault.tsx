@@ -3,7 +3,7 @@ import { Prompt } from '../Prompt'
 import { useState } from 'react'
 import { PromptCauseField } from './PromptCauseField'
 
-export const PromptDefault = ({ prompt, setStatus, showPrompt, requireCause = false }: {
+export const PromptDefault = ({ prompt, setStatus, showPrompt, requireCause = false, currentCause }: {
   prompt: {
     status: string
   } & WorkflowTransition
@@ -12,14 +12,16 @@ export const PromptDefault = ({ prompt, setStatus, showPrompt, requireCause = fa
     status: string
   } & WorkflowTransition) | undefined>>
   requireCause?: boolean
+  currentCause?: string | undefined
 }) => {
-  const [cause, setCause] = useState<string | undefined>()
+  const [cause, setCause] = useState<string | undefined>(currentCause)
 
   return (
     <Prompt
       title={prompt.title}
       description={prompt.description}
       primaryLabel={prompt.title}
+      currentCause={{ cause: currentCause, setCause }}
       secondaryLabel='Avbryt'
       onPrimary={() => {
         showPrompt(undefined)
@@ -30,7 +32,7 @@ export const PromptDefault = ({ prompt, setStatus, showPrompt, requireCause = fa
       }}
       disablePrimary={requireCause && !cause}
     >
-      {requireCause && (
+      {requireCause && !currentCause && (
         <div className='flex flex-col gap-2'>
           <PromptCauseField onValueChange={setCause} />
         </div>

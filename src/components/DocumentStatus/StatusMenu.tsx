@@ -123,6 +123,7 @@ export const StatusMenu = ({ documentId, type, publishTime, onBeforeStatusChange
               showPrompt={showPrompt}
               setStatus={setStatus}
               requireCause={promptCauseStatuses.includes(prompt.status) && !!documentStatus.checkpoint}
+              currentCause={documentStatus?.cause}
             />
           )}
         </>
