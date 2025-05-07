@@ -7,6 +7,7 @@ import { CoreOrganiserProvider } from '../../datastore/contexts/CoreOrganiserPro
 import { CoreSectionProvider } from '../../datastore/contexts/CoreSectionProvider'
 import { CoreStoryProvider } from '../../datastore/contexts/CoreStoryProvider'
 import { TTWireSourceProvider } from '../../datastore/contexts/TTWireSourceProvider'
+import { TTEditorialInfoTypeProvider } from '../../datastore/contexts/TTEditorialInfoTypeProvider'
 import { DocTrackerProvider } from '../../contexts'
 import { useRegistry } from '@/hooks/useRegistry'
 import { initializeAuthor } from './lib/actions/author'
@@ -25,7 +26,7 @@ interface InitState {
 
 export const Init = ({ children }: PropsWithChildren): JSX.Element => {
   const { data: session } = useSession()
-  const [,, synced] = useUserTracker<Record<string, QueryParams> | undefined>(`filters`)
+  const [, , synced] = useUserTracker<Record<string, QueryParams> | undefined>(`filters`)
 
   const { repository, server: { faroUrl, indexUrl } } = useRegistry()
   const [isInitialized, setIsInitialized] = useState<InitState>({
@@ -103,9 +104,11 @@ export const Init = ({ children }: PropsWithChildren): JSX.Element => {
             <CoreCategoryProvider>
               <CoreOrganiserProvider>
                 <TTWireSourceProvider>
-                  <NavigationProvider>
-                    {children}
-                  </NavigationProvider>
+                  <TTEditorialInfoTypeProvider>
+                    <NavigationProvider>
+                      {children}
+                    </NavigationProvider>
+                  </TTEditorialInfoTypeProvider>
                 </TTWireSourceProvider>
               </CoreOrganiserProvider>
             </CoreCategoryProvider>
