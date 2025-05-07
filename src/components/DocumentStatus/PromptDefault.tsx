@@ -31,16 +31,11 @@ export const PromptDefault = ({ prompt, setStatus, showPrompt, requireCause = fa
       }}
       disablePrimary={requireCause && !cause}
     >
-      {cause && (
+      {(cause || requireCause) && (
         <PromptCauseField
           onValueChange={setCause}
           cause={prompt.status !== 'draft' ? cause : ''}
         />
-      )}
-      {requireCause && !cause && (
-        <div className='flex flex-col gap-2'>
-          <PromptCauseField onValueChange={setCause} />
-        </div>
       )}
     </Prompt>
   )
