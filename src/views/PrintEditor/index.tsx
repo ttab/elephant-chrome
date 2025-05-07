@@ -24,6 +24,7 @@ import {
 } from '@ttab/textbit-plugins'
 import { ImageSearchPlugin } from '../../plugins/ImageSearch'
 import { FactboxPlugin } from '../../plugins/Factboxes'
+import { toast } from 'sonner'
 
 import {
   useQuery,
@@ -31,7 +32,9 @@ import {
   useLink,
   useView,
   useYjsEditor,
-  useAwareness
+  useAwareness,
+  useRegistry,
+  useWorkflowStatus
 } from '@/hooks'
 import { type ViewMetadata, type ViewProps } from '@/types'
 import { EditorHeader } from './EditorHeader'
@@ -50,6 +53,7 @@ import { DropMarker } from '@/components/Editor/DropMarker'
 
 import { getValueByYPath } from '@/lib/yUtils'
 import { useOnSpellcheck } from '@/hooks/useOnSpellcheck'
+import { useSession } from 'next-auth/react'
 
 // Metadata definition
 const meta: ViewMetadata = {
@@ -83,7 +87,6 @@ const PrintEditor = (props: ViewProps): JSX.Element => {
   const [query] = useQuery()
   const [document, setDocument] = useState<Y.Doc | undefined>(undefined)
   const documentId = props.id || query.id
-
   // Error handling for missing document
   if (!documentId || typeof documentId !== 'string') {
     return (
@@ -216,16 +219,31 @@ function EditorContainer({
   const { words, characters } = useTextbit()
   const [bulkSelected, setBulkSelected] = useState<string[]>([])
   const [layouts, setLayouts] = useState<Layout[]>([])
+  const [cleanLayouts, setCleanLayouts] = useState<Layout[]>()
+
+  const [isDirty, setIsDirty] = useState(undefined)
   const openPrintEditor = useLink('PrintEditor')
   const { data: doc } = useLayouts(documentId)
+  const { data: session } = useSession()
+  const { repository } = useRegistry()
+  const [workflowStatus] = useWorkflowStatus(documentId, true)
   useEffect(() => {
     if (doc) {
       setLayouts(doc.layouts)
     }
   }, [doc])
+  useEffect(() => {
+    if (layouts && !isDirty) {
+      setCleanLayouts(layouts)
+    }
+  }, [layouts])
   const name = doc?.document?.document?.meta.filter((m: { type: string }) => m.type === 'tt/print-article')[0]?.name
-  
+
   const updateLayout = (_layout: Layout) => {
+    const box = document.getElementById(_layout.id)
+    if (box) {
+      box.scrollIntoView({ behavior: 'smooth', block: 'center' })
+    }
     const updatedLayouts = layouts.map((layout) => {
       if (layout.id === _layout.id) {
         return _layout
@@ -233,9 +251,47 @@ function EditorContainer({
       return layout
     })
     setLayouts(updatedLayouts)
-    console.log('new layout', _layout)
+    setIsDirty(_layout.id)
   }
-  console.log('doc', doc)
+  const deleteLayout = async (_layout: Layout) => {
+    const updatedLayouts = layouts.filter((layout) => layout.id !== _layout.id)
+    setLayouts(updatedLayouts)
+    await saveUpdates(updatedLayouts)
+  }
+  const saveUpdates = async (updatedLayouts: Layout[] | undefined) => {
+    console.log('save updated layouts', doc?.document?.document?.meta?.find((m: { type: string }) => m.type === 'tt/print-article')?.meta, layouts)
+    const _meta = doc?.document?.document?.meta?.map((m: { type: string }) => {
+      console.log('layouts', layouts)
+      console.log('m', m)
+      if (m.type === 'tt/print-article') {
+        return Object.assign({}, m, {
+          meta: updatedLayouts || layouts
+        })
+      }
+      return m
+    })
+    console.log('_meta', _meta)
+    const _document = Object.assign({}, doc?.document?.document, {
+      meta: _meta
+    })
+    const _updatedDocument = Object.assign({}, doc, {
+      document: _document,
+      uuid: doc.document?.document?.uuid
+    })
+    console.log('updated document', _updatedDocument)
+    if (!repository || !session) {
+      throw new Error('Repository or session not found')
+    }
+    const result = await repository.saveDocument(_document, session.accessToken, 0n, workflowStatus?.name || 'draft')
+    if (result?.status.code !== 'OK') {
+      throw new Error(`Failed to save print article`)
+    }
+    setIsDirty(undefined)
+    setLayouts(updatedLayouts || layouts)
+
+    toast.success(`Layouter är sparad`)
+  }
+
   return (
     <>
       <EditorHeader documentId={documentId} name={name} />
@@ -257,7 +313,11 @@ function EditorContainer({
           </div>
           <aside className='col-span-4 sticky top-16 p-4'>
             <header className='flex flex-row gap-2 items-center justify-between mb-2'>
-              <h2 className='text-base font-bold'>Layouter</h2>
+              <h2 className='text-base font-bold'>
+                Layouter (
+                {layouts.length}
+                )
+              </h2>
               {bulkSelected.length > 0
                 ? (
                     <Button
@@ -290,6 +350,12 @@ function EditorContainer({
                       setBulkSelected={setBulkSelected}
                       layout={layout}
                       updateLayout={updateLayout}
+                      isDirty={isDirty}
+                      setIsDirty={setIsDirty}
+                      setLayouts={setLayouts}
+                      cleanLayouts={cleanLayouts}
+                      saveUpdates={saveUpdates}
+                      deleteLayout={deleteLayout}
                     />
                   )
                 })}

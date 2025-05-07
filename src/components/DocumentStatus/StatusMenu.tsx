@@ -18,7 +18,7 @@ export const StatusMenu = ({ documentId, type, publishTime, onBeforeStatusChange
     data?: Record<string, unknown>
   ) => boolean
 }) => {
-  const [documentStatus, setDocumentStatus] = useWorkflowStatus(documentId, type === 'core/article')
+  const [documentStatus, setDocumentStatus] = useWorkflowStatus(documentId, (type === 'core/article' || type === 'tt/print-article'))
   const containerRef = useRef<HTMLDivElement>(null)
   const [dropdownWidth, setDropdownWidth] = useState<number>(0)
   const { statuses, workflow } = useWorkflow(type)
@@ -51,9 +51,9 @@ export const StatusMenu = ({ documentId, type, publishTime, onBeforeStatusChange
   const currentStatusDef = statuses[currentStatusName]
   const transitions = workflow[currentStatusName]?.transitions || {}
 
-  if (!Object.keys(transitions).length) {
-    return null
-  }
+  // if (!Object.keys(transitions).length) {
+  //   return null
+  // }
 
   const CurrentIcon = currentStatusDef.icon
 

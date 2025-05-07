@@ -203,6 +203,7 @@ export class Repository {
     isWorkflow?: boolean
   }): Promise<UpdateResponse> {
     try {
+      console.log('saveMeta', status, cause, isWorkflow)
       const { response } = await this.#client.update({
         uuid: status.uuid,
         status: (status.name === 'draft' && !isWorkflow)
@@ -263,7 +264,7 @@ export class Repository {
       attachObjects: {},
       detachObjects: []
     }
-
+    console.log('save this', accessToken, payload)
     return await this.#client.update(
       payload, meta(accessToken)
     )

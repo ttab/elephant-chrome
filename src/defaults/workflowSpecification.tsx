@@ -51,6 +51,10 @@ export const StatusSpecifications: Record<string, StatusSpecification> = {
     icon: CircleX,
     className: 'bg-cancelled text-white fill-cancelled rounded-full'
   },
+  print_done: {
+    icon: BadgeCheck,
+    className: 'bg-approved text-white fill-approved rounded-full'
+  },
   needs_proofreading: {
     icon: CircleCheck,
     className: 'bg-done text-white fill-done rounded-full'
@@ -424,24 +428,9 @@ export const WorkflowSpecifications: Record<string, WorkflowSpecification> = {
           title: 'Begär korrläsning',
           description: 'Behöver korrläsning av printartikeln'
         },
-        done: {
+        print_done: {
           title: 'Klarmarkera',
           description: 'Markera printartikeln som klar'
-        }
-      }
-    },
-    done: {
-      title: 'Klar',
-      description: 'Printartikeln är klar och väntar på godkännande',
-      transitions: {
-        approved: {
-          default: true,
-          title: 'Godkänn',
-          description: 'Godkänn printartikeln'
-        },
-        needs_proofreading: {
-          title: 'Begär korrläsning',
-          description: 'Behöver korrläsning av printartikeln'
         },
         usable: {
           verify: true,
@@ -451,12 +440,45 @@ export const WorkflowSpecifications: Record<string, WorkflowSpecification> = {
       }
     },
     needs_proofreading: {
-      title: 'Korrläs',
+      title: 'Klar för korr',
       description: 'Printartikeln behöver korrläsning',
       transitions: {
-        done: {
+        print_done: {
           title: 'Klarmarkera',
           description: 'Markera printartikeln som klar'
+        },
+        usable: {
+          verify: true,
+          title: 'Exportera',
+          description: 'Exportera printartikeln'
+        },
+        draft: {
+          title: 'Till utkast',
+          description: 'Gör om printartikeln till ett utkast igen'
+        }
+      }
+    },
+    print_done: {
+      title: 'Klar',
+      description: 'Printartikeln är klar och väntar på godkännande',
+      transitions: {
+        approved: {
+          default: true,
+          title: 'Godkänn',
+          description: 'Godkänn printartikeln'
+        },
+        usable: {
+          verify: true,
+          title: 'Exportera',
+          description: 'Exportera printartikeln'
+        },
+        needs_proofreading: {
+          title: 'Begär korrläsning',
+          description: 'Behöver korrläsning av printartikeln'
+        },
+        draft: {
+          title: 'Till utkast',
+          description: 'Gör om printartikeln till ett utkast igen'
         }
       }
     },
@@ -472,9 +494,14 @@ export const WorkflowSpecifications: Record<string, WorkflowSpecification> = {
       }
     },
     cancelled: {
-      title: 'Arkiverad',
-      description: 'Printartikeln är arkiverad',
-      transitions: {}
+      title: 'Inställd',
+      description: 'Printartikeln är inställd',
+      transitions: {
+        draft: {
+          title: 'Till utkast',
+          description: 'Gör om printartikeln till ett utkast igen'
+        }
+      }
     }
   }
 }

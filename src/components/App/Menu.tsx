@@ -68,8 +68,7 @@ export const Menu = (): JSX.Element => {
               </SheetClose>
               <SheetClose asChild>
                 <Link to='Plannings' className='leading-9 px-3 rounded-md'>
-                  Elefanten
-                  <span className='text-2xl pl-2'>🐘</span>
+                  <img src='/elephant/dist/elephant-logo-blueberry.svg' alt='Elefant' className='w-full h-6' />
                 </Link>
               </SheetClose>
               <ThemeSwitcher />

@@ -1,9 +1,11 @@
 import { useView } from '@/hooks'
-import { useEffect, useRef } from 'react'
+import { useCallback, useEffect, useRef } from 'react'
+import { useSWRConfig } from 'swr'
 import { ViewHeader } from '@/components/View'
 import { StatusMenu } from '@/components/DocumentStatus/StatusMenu'
 import { RefreshCw, PenBoxIcon } from '@ttab/elephant-ui/icons'
 import { Button } from '@ttab/elephant-ui'
+
 /**
  * EditorHeader component.
  *
@@ -31,11 +33,18 @@ export const EditorHeader = ({
 }): JSX.Element => {
   const { viewId } = useView()
   const containerRef = useRef<HTMLElement | null>(null)
-
+  const { mutate } = useSWRConfig()
   useEffect(() => {
     containerRef.current = document.getElementById(viewId)
   }, [viewId])
 
+  const onBeforeStatusChange = useCallback((newStatus: string, data?: Record<string, unknown>) => {
+    console.log('onBeforeStatusChange', newStatus, data)
+    setTimeout(() => {
+      mutate('tt/print-articles')
+    }, 1000)
+    return true
+  }, [])
 
   return (
     <ViewHeader.Root className='grid grid-cols-3'>
@@ -57,6 +66,8 @@ export const EditorHeader = ({
                   <StatusMenu
                     documentId={documentId}
                     type='tt/print-article'
+                    // publishTime={publishTime ? new Date(publishTime) : undefined}
+                    onBeforeStatusChange={onBeforeStatusChange}
                   />
                 </>
               )}
