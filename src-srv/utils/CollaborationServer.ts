@@ -314,11 +314,17 @@ export class CollaborationServer {
     return Y.encodeStateAsUpdate(yDoc)
   }
 
-  async snapshotDocument({ documentName, document: yDoc, context }: {
+  async snapshotDocument({ documentName, document: yDoc, context, force = false }: {
     documentName: string
     document: Y.Doc
     context: Context
+    force?: boolean
   }): Promise<FinishedUnaryCall<UpdateRequest, UpdateResponse> | null> {
+    // Ignore userTracker documents
+    if (context.user.sub?.endsWith(documentName)) {
+      return null
+    }
+
     // Ignore __inProgress documents
     if ((yDoc.getMap('ele')
       .get('root') as Y.Map<unknown>)
@@ -327,21 +333,21 @@ export class CollaborationServer {
       return null
     }
 
-    // Ignore userTracker documents
-    if (context.user.sub?.endsWith(documentName)) {
-      return null
-    }
+    const { documentResponse, updatedHash, originalHash } = fromYjsNewsDoc(yDoc)
 
-    const { documentResponse, updatedHash } = fromYjsNewsDoc(yDoc)
-    if (!updatedHash) {
+    // If no updatedHash there is no changes in the document, abort snapshot
+    // Unless force is set to true
+    if (!updatedHash && !force) {
       logger.debug('::: saveDocument: No changes in document')
       return null
     }
 
+    const hash = updatedHash || originalHash
+
     return await this.#storeDocumentInRepository(
       documentName,
       fromGroupedNewsDoc(documentResponse),
-      updatedHash,
+      hash,
       context.accessToken,
       context
     )

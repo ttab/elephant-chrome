@@ -66,6 +66,25 @@ export function fromYjsNewsDoc(yDoc: Y.Doc): {
   const yContent = yMap.get('content') as Y.XmlText
   const content = yContent.length ? yTextToSlateElement(yContent).children : []
 
+  const makeTitle = (): string => {
+    if (type === 'core/article') {
+      const heading = (content as TBElement[])?.find((c: TBElement) => {
+        if ('properties' in c) {
+          return c?.properties?.role === 'heading-1'
+        }
+        return false
+      })
+      const child = heading?.children?.[0]
+      if (child && 'text' in child) {
+        const newHeading = child ? child?.text : undefined
+        return newHeading || title
+      }
+    }
+    return title
+  }
+
+  const _title = makeTitle()
+
   const responseDocument = {
     version: yDoc.getMap('version').get('version') as string,
     isMetaDocument: false,
@@ -75,7 +94,7 @@ export function fromYjsNewsDoc(yDoc: Y.Doc): {
       type,
       uri,
       url,
-      title,
+      title: _title,
       content: content as TBElement[],
       meta,
       links,

@@ -31,7 +31,7 @@ import { LoadingText } from '../LoadingText'
 import { Row } from './Row'
 import { useModal } from '../Modal/useModal'
 import { PreviewSheet } from '@/views/Wires/components'
-import type { Wire as WireType } from '@/hooks/index/lib/wires'
+import type { Wire as WireType } from '@/hooks/index/useDocuments/schemas/wire'
 import { Wire } from '@/views/Wire'
 import { GroupedRows } from './GroupedRows'
 import { getWireStatus } from './lib/getWireStatus'
@@ -93,6 +93,8 @@ export const Table = <TData, TValue>({
   const [, setDocumentStatus] = useWorkflowStatus()
 
   const handlePreview = useCallback((row: RowType<unknown>): void => {
+    row.toggleSelected(true)
+
     const originalId = (row.original as { id: string }).id
 
     showModal(
@@ -105,7 +107,9 @@ export const Table = <TData, TValue>({
       'sheet',
       {
         id: originalId
-      })
+      },
+      'right'
+    )
   }, [hideModal, showModal])
 
 
@@ -151,7 +155,7 @@ export const Table = <TData, TValue>({
   }, [dispatch, state.viewRegistry, onRowSelected, origin, type, history, handlePreview, searchType])
 
   useNavigationKeys({
-    keys: ['ArrowUp', 'ArrowDown', 'Enter', 'Escape', ' ', 's', 'r', 'c'],
+    keys: ['ArrowUp', 'ArrowDown', 'Enter', 'Escape', ' ', 's', 'r', 'c', 'u'],
     onNavigation: (event) => {
       const rows = table.getRowModel().rowsById
       if (!Object.values(rows)?.length) {
@@ -186,6 +190,20 @@ export const Table = <TData, TValue>({
 
           void setDocumentStatus({
             name: currentStatus === 'read' ? 'draft' : 'read',
+            uuid: wireRow.original.id,
+            version: BigInt(wireRow.original.fields.current_version.values?.[0])
+          })
+        }
+        return
+      }
+
+      if (event.key === 'u') {
+        if (selectedRow && isRowTypeWire<TData, TValue>(type)) {
+          const wireRow = selectedRow as RowType<WireType>
+          const currentStatus = getWireStatus(type, wireRow.original)
+
+          void setDocumentStatus({
+            name: currentStatus === 'used' ? 'draft' : 'used',
             uuid: wireRow.original.id,
             version: BigInt(wireRow.original.fields.current_version.values?.[0])
           })

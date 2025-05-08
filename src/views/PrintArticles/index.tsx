@@ -53,8 +53,9 @@ const meta: ViewMetadata = {
 export const PrintArticles = (): JSX.Element => {
   const columns = useMemo(
     () => printArticlesListColumns({ locale: 'sv' }),
-    [printArticlesListColumns]
+    []
   )
+
   const [openCreateFlow, setOpenCreateFlow] = useState(false)
   const [openCreateArticle, setOpenCreateArticle] = useState(false)
 

@@ -1,4 +1,7 @@
 import { TwirpFetchTransport } from '@protobuf-ts/twirp-transport'
+import type {
+  SubscriptionReference
+} from '@ttab/elephant-api/index'
 import {
   SearchV1Client,
   QueryV1,
@@ -8,21 +11,24 @@ import {
 } from '@ttab/elephant-api/index'
 import { meta } from './meta'
 import { pagination } from '@/lib/pagination'
+import type { useDocumentsFetchOptions } from '@/hooks/index/useDocuments'
 
-interface IndexSearchOptions {
+interface IndexSearchOptions<F> {
   accessToken: string
   documentType: string
   page?: number
   size?: number
-  fields?: string[]
+  fields?: F
   query?: QueryV1
   sort?: SortingV1[]
   language?: string
   loadSource?: boolean
   loadDocument?: boolean
+  options?: useDocumentsFetchOptions
+  subscribe?: boolean
 }
 
-export interface IndexSearchResult {
+export interface IndexSearchResult<T extends HitV1> {
   ok: boolean
   errorCode?: number
   errorMessage?: string
@@ -30,7 +36,8 @@ export interface IndexSearchResult {
   page: number
   pageSize: number
   pages: number
-  hits: HitV1[]
+  hits: T[]
+  subscriptions?: SubscriptionReference[]
 }
 
 export class Index {
@@ -44,53 +51,91 @@ export class Index {
     )
   }
 
-  async query({
+  async query<T extends HitV1, F>({
     accessToken,
     documentType,
     page = 1,
     size = 50,
-    fields = [],
+    fields,
     query,
     sort,
     loadDocument = false,
     loadSource: source = false,
-    language = ''
-  }: IndexSearchOptions): Promise<IndexSearchResult> {
-    const { from, pageSize } = pagination({ page, size })
+    language = '',
+    options
+  }: IndexSearchOptions<F>): Promise<IndexSearchResult<T>> {
+    const { pageSize } = pagination({ page, size })
 
     try {
-      const { response } = await this.#client.query(
-        QueryRequestV1.create({
-          documentType,
-          language,
-          from: BigInt(from),
-          size: BigInt(pageSize),
-          fields,
-          sort: sort || [SortingV1.create({ field: 'created', desc: true })],
-          query: query || QueryV1.create({
-            conditions: {
-              oneofKind: 'matchAll',
-              matchAll: {}
-            }
+      const fetchPage = async (currentPage: number): Promise<IndexSearchResult<T>> => {
+        const { response } = await this.#client.query(
+          QueryRequestV1.create({
+            documentType,
+            language,
+            from: BigInt((currentPage - 1) * size),
+            size: BigInt(pageSize),
+            fields: (fields as unknown as string[]) || [],
+            sort: sort || [SortingV1.create({ field: 'created', desc: true })],
+            query: query || QueryV1.create({
+              conditions: {
+                oneofKind: 'matchAll',
+                matchAll: {}
+              }
+            }),
+            source,
+            searchAfter: [],
+            loadDocument,
+            subscribe: currentPage === 1 ? options?.subscribe : false
           }),
-          source,
-          searchAfter: [],
-          loadDocument
-        }),
-        meta(accessToken)
-      )
+          meta(accessToken)
+        )
 
-      const total = Number(response?.hits?.total?.value) || 0
-      const hits = response?.hits?.hits?.length || 0n
+        const total = Number(response?.hits?.total?.value) || 0
+        const hits = response?.hits?.hits || []
 
-      return {
-        ok: true,
-        total,
-        page,
-        pages: (hits > 0 && total > 0) ? Math.ceil(total / pageSize) : 0,
-        pageSize,
-        hits: response.hits?.hits || []
+        return {
+          ok: true,
+          total,
+          page: currentPage,
+          pages: Math.ceil(total / pageSize),
+          pageSize,
+          hits: hits as T[],
+          ...(response.subscription ? { subscriptions: [response.subscription] } : {})
+        }
       }
+
+      if (options?.aggregatePages) {
+        let currentPage = 1
+        let allHits: HitV1[] = []
+        let total = 0
+        let pages = 0
+        let subscriptions: SubscriptionReference[] = []
+
+        while (true) {
+          const result = await fetchPage(currentPage)
+          if (!result.ok || result.hits.length === 0) break
+
+          allHits = allHits.concat(result.hits)
+          total = result.total
+          pages = result.pages
+          subscriptions = subscriptions.concat(result.subscriptions || [])
+
+          if (currentPage >= pages) break
+          currentPage++
+        }
+
+        return {
+          ok: true,
+          total,
+          page: 1,
+          pages,
+          pageSize,
+          hits: allHits as unknown as T[],
+          ...(subscriptions.length > 0 ? { subscriptions } : {})
+        }
+      }
+
+      return await fetchPage(page)
     } catch (err: unknown) {
       return {
         ok: false,
@@ -103,5 +148,31 @@ export class Index {
         hits: []
       }
     }
+  }
+
+  async pollSubscription({
+    subscriptions,
+    accessToken,
+    maxWaitMs = 10000n,
+    batchDelayMs = 200n,
+    abortSignal
+  }: {
+    subscriptions: SubscriptionReference[]
+    accessToken: string
+    maxWaitMs?: bigint
+    batchDelayMs?: bigint
+    abortSignal?: AbortSignal
+  }) {
+    const { response } = await this.#client.pollSubscription({
+      subscriptions,
+      maxWaitMs,
+      batchDelayMs
+    }, {
+      ...meta(accessToken),
+      abort: abortSignal
+    }
+    )
+
+    return response
   }
 }

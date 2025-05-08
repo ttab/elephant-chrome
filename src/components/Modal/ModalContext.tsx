@@ -6,7 +6,7 @@ export interface ModalData {
 
 type modalType = 'dialog' | 'sheet'
 export interface ModalContextType {
-  showModal: (content: ReactNode, type?: modalType, data?: ModalData) => void
+  showModal: (content: ReactNode, type?: modalType, data?: ModalData, side?: string) => void
   hideModal: () => void
   currentModal: ModalData | undefined
 }

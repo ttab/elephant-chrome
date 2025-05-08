@@ -7,6 +7,8 @@ import { Block } from '@ttab/elephant-api/newsdoc'
 import type { Session } from 'next-auth'
 import { decodeJwt } from 'jose'
 import { toast } from 'sonner'
+import { fields } from '@/hooks/index/useDocuments/schemas/author'
+import type { Author, AuthorFields } from '@/hooks/index/useDocuments/schemas/author'
 
 /**
  * Initializes the author by verifying or creating an author document in the repository.
@@ -29,10 +31,11 @@ export async function initializeAuthor({ url, session, repository }: {
     const client = new Index(url.href)
     const envRole = url.href.includes('.stage.') ? 'stage' : 'prod'
 
-    const authorDoc = await client.query({
+    const authorDoc = await client.query<Author, AuthorFields>({
       accessToken: session.accessToken,
       documentType: 'core/author',
       loadDocument: true,
+      fields,
       query: QueryV1.create({
         conditions: {
           oneofKind: 'bool',
@@ -100,7 +103,7 @@ export async function initializeAuthor({ url, session, repository }: {
  * @returns True if a matching author document is found, false if none match, or undefined if no documents exist.
  * @throws If more than one author document is found.
  */
-function verifyAuthorDoc(document: IndexSearchResult, envRole: 'stage' | 'prod', session: Session): boolean | undefined {
+function verifyAuthorDoc(document: IndexSearchResult<Author>, envRole: 'stage' | 'prod', session: Session): boolean | undefined {
   if (document.hits?.length > 1) {
     toast.error('Flera författardokument hittades, kontakta support')
     throw new Error(`More than one author document found for sub: ${session.user.sub} email: ${session.user.email}`)

@@ -20,7 +20,7 @@ import { createArticle } from './lib/createArticle'
 import { SluglineEditable } from '@/components/DataItem/SluglineEditable'
 import type * as Y from 'yjs'
 import { CreatePrompt } from '@/components/CreatePrompt'
-import type { Wire as WireType } from '@/hooks/index/lib/wires'
+import type { Wire as WireType } from '@/hooks/index/useDocuments/schemas/wire'
 import { toSlateYXmlText } from '@/lib/yUtils'
 
 export const WireViewContent = (props: ViewProps & {
@@ -174,12 +174,12 @@ export const WireViewContent = (props: ViewProps & {
               />
             </Form.Group>
             <Form.Group icon={Tag}>
-              {slugline && selectedPlanning && (
+              {selectedPlanning && (
                 <SluglineEditable
                   key={selectedPlanning?.value}
                   compareValues={[
                     ...(selectedPlanning?.payload?.sluglines || []),
-                    slugline.toString()
+                    slugline?.toString()
                   ]}
                   path='meta.tt/slugline[0].value'
                 />
@@ -235,25 +235,31 @@ export const WireViewContent = (props: ViewProps & {
                     wire: props.wire,
                     hasSelectedPlanning: !!selectedPlanning
                   })
-                  if (setShowVerifyDialog) {
-                    setShowVerifyDialog(false)
-                  }
+                  setShowVerifyDialog(false)
                   props.onDocumentCreated?.()
                 }}
                 onSecondary={() => {
-                  if (setShowVerifyDialog) {
-                    setShowVerifyDialog(false)
-                  }
+                  setShowVerifyDialog(false)
                 }}
               />
             )
           }
 
-          <Form.Footer>
+          <Form.Footer className='flex justify-between'>
+            <>
+              <Button
+                variant='secondary'
+                autoFocus
+                onClick={() => {
+                  props.onDialogClose?.()
+                  props.onDocumentCreated?.()
+                }}
+              >
+                Markera som använd
+              </Button>
+            </>
             <Form.Submit onSubmit={handleSubmit}>
-              <div className='flex justify-end'>
-                <Button type='submit'>Skapa artikel</Button>
-              </div>
+              <Button type='submit'>Skapa artikel</Button>
             </Form.Submit>
           </Form.Footer>
         </Form.Root>

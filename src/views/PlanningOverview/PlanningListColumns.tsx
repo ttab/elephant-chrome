@@ -1,6 +1,6 @@
 
 import { type ColumnDef } from '@tanstack/react-table'
-import { type Planning } from '@/lib/index/schemas/planning'
+import { type Planning } from '@/hooks/index/useDocuments/schemas/planning'
 import { Newsvalue } from '@/components/Table/Items/Newsvalue'
 import { Title } from '@/components/Table/Items/Title'
 import { Assignees } from '@/components/Table/Items/Assignees'
@@ -15,7 +15,7 @@ import {
   Navigation,
   CircleCheck
 } from '@ttab/elephant-ui/icons'
-import { Newsvalues, NewsvalueMap, AssignmentTypes, DocumentStatuses } from '@/defaults'
+import { Newsvalues, NewsvalueMap, AssignmentTypes, PlanningEventStatuses } from '@/defaults'
 import { DocumentStatus } from '@/components/Table/Items/DocumentStatus'
 import { SectionBadge } from '@/components/DataItem/SectionBadge'
 import { type IDBAuthor, type IDBSection } from 'src/datastore/types'
@@ -33,28 +33,29 @@ export function planningListColumns({ sections = [], authors = [] }: {
         Filter: ({ column, setSearch }) => (
           <FacetedFilter column={column} setSearch={setSearch} />
         ),
-        options: DocumentStatuses,
+        options: PlanningEventStatuses,
         name: 'Status',
         columnIcon: CircleCheck,
         className: 'flex-none',
         display: (value: string) => (
           <span>
-            {DocumentStatuses
-              .find((status) => status.value === value)?.label}
+            {PlanningEventStatuses.find((status) => status.value === value)?.label}
           </span>
         )
       },
-      accessorFn: (data) => data?._source['document.meta.status'][0],
+      accessorFn: (data) => data?.fields['document.meta.status']?.values[0],
       cell: ({ row }) => {
         const status = row.getValue<string>('documentStatus')
         return <DocumentStatus type='core/planning-item' status={status} />
       },
       filterFn: (row, id, value: string[]) =>
-        value.includes(row.getValue(id))
+        value.includes(row.getValue(id)),
+      enableColumnFilter: true
     },
     {
       id: 'newsvalue',
       enableGrouping: true,
+      enableSorting: true,
       meta: {
         Filter: ({ column, setSearch }) => (
           <FacetedFilter column={column} setSearch={setSearch} />
@@ -64,7 +65,7 @@ export function planningListColumns({ sections = [], authors = [] }: {
         columnIcon: SignalHigh,
         className: 'flex-none hidden @3xl/view:[display:revert]'
       },
-      accessorFn: (data) => data._source['document.meta.core_newsvalue.value']?.[0],
+      accessorFn: (data) => data.fields['document.meta.core_newsvalue.value']?.values[0],
       cell: ({ row }) => {
         const value: string = row.getValue('newsvalue') || ''
         const newsvalue = NewsvalueMap[value]
@@ -73,9 +74,9 @@ export function planningListColumns({ sections = [], authors = [] }: {
           return <Newsvalue newsvalue={newsvalue} />
         }
       },
-
       filterFn: (row, id, value: string[]) =>
-        value.includes(row.getValue(id))
+        value.includes(row.getValue(id)),
+      enableColumnFilter: true
     },
     {
       id: 'title',
@@ -84,9 +85,9 @@ export function planningListColumns({ sections = [], authors = [] }: {
         columnIcon: Pen,
         className: 'flex-1 w-[200px]'
       },
-      accessorFn: (data) => data._source['document.title'][0],
+      accessorFn: (data) => data.fields['document.title']?.values[0],
       cell: ({ row }) => {
-        const slugline = row.original._source['document.meta.tt_slugline.value']?.[0]
+        const slugline = row.original.fields['document.meta.tt_slugline.value']?.values[0]
         const title = row.getValue('title')
 
         return <Title title={title as string} slugline={slugline} />
@@ -116,10 +117,10 @@ export function planningListColumns({ sections = [], authors = [] }: {
         )
       },
       accessorFn: (data) => {
-        return data._source['document.rel.section.uuid']?.[0]
+        return data.fields['document.rel.section.uuid']?.values[0]
       },
       cell: ({ row }) => {
-        const sectionTitle = row.original._source['document.rel.section.title']?.[0]
+        const sectionTitle = row.original.fields['document.rel.section.title']?.values[0]
         return (
           <>
             {sectionTitle && <SectionBadge title={sectionTitle} color='bg-[#BD6E11]' />}
@@ -140,7 +141,7 @@ export function planningListColumns({ sections = [], authors = [] }: {
         columnIcon: Users,
         className: 'flex-none w-[112px] hidden @5xl/view:[display:revert]'
       },
-      accessorFn: (data) => data._source['document.meta.core_assignment.rel.assignee.title'],
+      accessorFn: (data) => data.fields['document.meta.core_assignment.rel.assignee.title']?.values,
       cell: ({ row }) => {
         const assignees = row.getValue<string[]>('assignees') || []
         return <Assignees assignees={assignees} />
@@ -175,7 +176,7 @@ export function planningListColumns({ sections = [], authors = [] }: {
           )
         }
       },
-      accessorFn: (data) => data._source['document.meta.core_assignment.meta.core_assignment_type.value'],
+      accessorFn: (data) => data.fields['document.meta.core_assignment.meta.core_assignment_type.value']?.values,
       cell: ({ row }) => {
         const data = AssignmentTypes.filter(
           (assignmentType) => (row.getValue<string[]>('type') || []).includes(assignmentType.value)
@@ -197,11 +198,12 @@ export function planningListColumns({ sections = [], authors = [] }: {
         className: 'flex-none'
       },
       cell: ({ row }) => {
-        const deliverableUuids = row.original._source['document.meta.core_assignment.rel.deliverable.uuid'] || []
-        const planningId = row.original._id
+        const deliverableUuids = row.original.fields['document.meta.core_assignment.rel.deliverable.uuid']?.values || []
+        const planningId = row.original.id
 
         return <Actions deliverableUuids={deliverableUuids} planningId={planningId} />
-      }
+      },
+      enableColumnFilter: false
     }
   ]
 }

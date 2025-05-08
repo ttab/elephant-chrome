@@ -42,6 +42,9 @@ export const Controller = (): JSX.Element => {
     } else {
       toast.dismiss(('unsaved-changes'))
     }
+    return () => {
+      toast.dismiss(('unsaved-changes'))
+    }
   }, [replaceState, state, wiresHistory, setWiresHistory])
 
   return (

@@ -208,4 +208,19 @@ export class IndexedDBConnection {
       request.onerror = () => reject(request.error as Error)
     })
   }
+
+  async deleteDatabase(): Promise<void> {
+    if (!this.#db) {
+      return Promise.reject(new Error(`IndexedDB ${this.#name} is not open`))
+    }
+
+    await new Promise<void>((resolve, reject) => {
+      this.#deleteDatabase().then(() => {
+        resolve()
+      }).catch((err) => {
+        console.error('Failed deleting DB', err)
+        reject(new Error('Failed deleting DB'))
+      })
+    })
+  }
 }

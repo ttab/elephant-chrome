@@ -1,27 +1,30 @@
 import logger from '../../../lib/logger.js'
 import type { Request } from 'express'
-import type { RouteHandler, RouteStatusResponse } from '../../../routes.js'
+import type { RouteContentResponse, RouteHandler, RouteStatusResponse } from '../../../routes.js'
+import type { Context } from '../../../lib/assertContext.js'
 import { assertContext } from '../../../lib/assertContext.js'
 
 export const GET: RouteHandler = async (req: Request, { collaborationServer, cache, res }) => {
   const uuid = req.params.id
-  const locals = res.locals as Record<string, unknown> | undefined
-  const session = locals?.session as { accessToken?: string, user?: unknown } | undefined
+  const force = req.query.force
 
-  if (!session) {
+  const locals = res.locals as Record<string, unknown> | undefined
+  const session = locals?.session as { accessToken?: string, user?: Context['user'] } | undefined
+
+  if (!session?.accessToken || !session?.user) {
     return {
       statusCode: 401,
       statusMessage: 'Unauthorized: Session not found, can not snapshot document'
     }
   }
 
-  const context: unknown = {
+  const context: Context = {
     accessToken: session.accessToken,
     user: session.user,
     agent: 'server'
   }
 
-  let snapshotResponse: RouteStatusResponse = {
+  let snapshotResponse: RouteContentResponse | RouteStatusResponse = {
     statusCode: 500,
     statusMessage: 'Unknown error'
   }
@@ -49,7 +52,8 @@ export const GET: RouteHandler = async (req: Request, { collaborationServer, cac
         collaborationServer.snapshotDocument({
           documentName: uuid,
           document,
-          context
+          context,
+          force: !!force
         }).then((response) => {
           if (!response) {
             snapshotResponse = {
@@ -59,7 +63,11 @@ export const GET: RouteHandler = async (req: Request, { collaborationServer, cac
           } else if (response.status.code === 'OK') {
             snapshotResponse = {
               statusCode: 200,
-              statusMessage: 'Snapshot taken'
+              payload: {
+                uuid: response.response.uuid,
+                version: response.response.version.toString()
+              }
+
             }
           } else {
             logger.error(`Error while taking snapshot: ${response.status.code}`)

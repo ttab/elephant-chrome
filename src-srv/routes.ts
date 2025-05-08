@@ -24,7 +24,7 @@ interface RouteContext extends RouteInitContext {
   res: Response
 }
 
-interface RouteContentResponse {
+export interface RouteContentResponse {
   payload: unknown
   statusCode?: number
 }

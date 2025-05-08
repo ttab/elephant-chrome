@@ -8,13 +8,9 @@ import { EventsList } from './EventsList'
 import { Header } from '@/components/Header'
 import { Commands } from '@/components/Commands'
 import { eventTableColumns } from './EventsListColumns'
-import { type Event } from '@/lib/index'
-import { Events as EventsIndex } from '@/lib/events'
+import { type Event } from '@/hooks/index/useDocuments/schemas/event'
 import { useSections } from '@/hooks/useSections'
-import { SWRProvider } from '@/contexts/SWRProvider'
-import { getDateTimeBoundariesUTC } from '@/lib/datetime'
 import { useQuery } from '@/hooks/useQuery'
-import { type EventSearchParams } from '@/lib/events/search'
 import { useOrganisers } from '@/hooks/useOrganisers'
 import { loadFilters } from '@/lib/loadFilters'
 import { useRegistry } from '@/hooks/useRegistry'
@@ -39,11 +35,6 @@ export const Events = (): JSX.Element => {
   const [currentTab, setCurrentTab] = useState<string>('list')
   const sections = useSections()
   const [query] = useQuery()
-  const { from, to } = useMemo(() =>
-    getDateTimeBoundariesUTC(typeof query.from === 'string'
-      ? new Date(`${query.from}T00:00:00.000Z`)
-      : new Date()),
-  [query.from])
 
   const organisers = useOrganisers()
   const { locale } = useRegistry()
@@ -62,36 +53,34 @@ export const Events = (): JSX.Element => {
           globalFilter: query.query
         }}
       >
-        <SWRProvider<Event, EventSearchParams> index={EventsIndex}>
-          <Tabs defaultValue={currentTab} className='flex-1' onValueChange={setCurrentTab}>
+        <Tabs defaultValue={currentTab} className='flex-1' onValueChange={setCurrentTab}>
 
-            <TableCommandMenu heading='Events'>
-              <Commands />
-            </TableCommandMenu>
+          <TableCommandMenu heading='Events'>
+            <Commands />
+          </TableCommandMenu>
 
-            <div className='flex flex-col h-screen'>
-              <ViewHeader.Root>
-                <ViewHeader.Title name='Events' title='Händelser' short='Händelser' />
+          <div className='flex flex-col h-screen'>
+            <ViewHeader.Root>
+              <ViewHeader.Title name='Events' title='Händelser' short='Händelser' />
 
-                <ViewHeader.Content>
-                  <Header type='Event' />
-                </ViewHeader.Content>
+              <ViewHeader.Content>
+                <Header type='Event' />
+              </ViewHeader.Content>
 
-                <ViewHeader.Action />
-              </ViewHeader.Root>
+              <ViewHeader.Action />
+            </ViewHeader.Root>
 
-              <View.Content>
-                <TabsContent value='list' className='mt-0'>
-                  <EventsList from={from} to={to} />
-                </TabsContent>
+            <View.Content>
+              <TabsContent value='list' className='mt-0'>
+                <EventsList />
+              </TabsContent>
 
-                <TabsContent value='grid'>
-                </TabsContent>
-              </View.Content>
-            </div>
+              <TabsContent value='grid'>
+              </TabsContent>
+            </View.Content>
+          </div>
 
-          </Tabs>
-        </SWRProvider>
+        </Tabs>
       </TableProvider>
     </View.Root>
   )

@@ -15,6 +15,9 @@ import { IndexedDBProvider } from '../src/datastore/contexts/IndexedDBProvider'
 import indexeddb from 'fake-indexeddb'
 import { ModalProvider } from '@/components/Modal/ModalProvider'
 import { UserTrackerContext } from '@/contexts/UserTrackerProvider'
+import type { RegistryProviderState } from '@/contexts/RegistryProvider'
+import { RegistryContext } from '@/contexts/RegistryProvider'
+import { sv } from 'date-fns/locale'
 
 globalThis.indexedDB = indexeddb
 
@@ -36,20 +39,49 @@ const provider = {
   document: new Y.Doc()
 } as unknown as HocuspocusProvider
 
+const registry = {
+  locale: {
+    code: {
+      full: 'sv-SE',
+      short: 'sv',
+      long: 'sv'
+    },
+    module: sv
+  },
+  timeZone: 'Europe/Stockholm',
+  server: {},
+  dispatch: {},
+  index: {
+    query: vi.fn().mockReturnValue({
+      ok: true,
+      hits: []
+    })
+  }
+} as unknown as RegistryProviderState
+
+vi.mock('next-auth/react', () => ({
+  useSession: vi.fn(() => ({
+    data: { user: { name: 'Test User', email: 'test@example.com' } },
+    status: 'authenticated'
+  }))
+}))
+
 
 describe('Use NavigationProvider', () => {
   it('should render view from registry', async () => {
     render(
       <ModalProvider>
-        <IndexedDBProvider>
-          <NavigationProvider>
-            <UserTrackerContext.Provider value={{ provider, synced: provider.synced, connected: true }}>
-              <DocTrackerContext.Provider value={{ synced: true, connected: true, provider }}>
-                <AppContent />
-              </DocTrackerContext.Provider>
-            </UserTrackerContext.Provider>
-          </NavigationProvider>
-        </IndexedDBProvider>
+        <RegistryContext.Provider value={registry}>
+          <IndexedDBProvider>
+            <NavigationProvider>
+              <UserTrackerContext.Provider value={{ provider, synced: provider.synced, connected: true }}>
+                <DocTrackerContext.Provider value={{ synced: true, connected: true, provider }}>
+                  <AppContent />
+                </DocTrackerContext.Provider>
+              </UserTrackerContext.Provider>
+            </NavigationProvider>
+          </IndexedDBProvider>
+        </RegistryContext.Provider>
       </ModalProvider>
     )
 
