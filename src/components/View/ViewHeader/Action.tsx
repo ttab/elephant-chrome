@@ -4,6 +4,7 @@ import { ViewDialogClose } from './ViewDialogClose'
 import { type HistoryInterface } from '@/navigation/hooks/useHistory'
 import { useHistory, useNavigation, useView } from '@/hooks'
 import type { NavigationState } from '@/types'
+import { snapshot } from '@/lib/snapshot'
 
 
 export const Action = ({ onDialogClose = undefined, children }: PropsWithChildren & {
@@ -13,7 +14,14 @@ export const Action = ({ onDialogClose = undefined, children }: PropsWithChildre
   const { state } = useNavigation()
   const history = useHistory()
 
-  const closer = onDialogClose || (() => handleClose(viewId, state, history))
+  const closer = onDialogClose || (() => {
+    const currentState = history.state?.contentState.find((obj) => obj.viewId === viewId)
+
+    if (currentState?.name === 'Editor' && currentState?.props?.id && !currentState.props.version) {
+      void snapshot(currentState.props.id)
+    }
+    handleClose(viewId, state, history)
+  })
 
   return (
     <div className='flex flex-row gap-1 items-center justify-end h-14'>
