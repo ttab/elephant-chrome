@@ -107,7 +107,7 @@ export const EditorHeader = ({ documentId, readOnly, readOnlyVersion }: { docume
 
   const title = documentType === 'core/editorial-info' ? 'Till red' : 'Artikel'
 
-  const isReadOnlyAndUpdated = workflowStatus?.name !== 'usable' && readOnly
+  const isReadOnlyAndUpdated = workflowStatus && workflowStatus?.name !== 'usable' && readOnly
 
   return (
     <ViewHeader.Root>
