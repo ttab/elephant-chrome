@@ -29,6 +29,7 @@ import { getDeliverableType } from '@/defaults/templates/lib/getDeliverableType'
 import { AssignmentTypes } from '@/defaults/assignmentTypes'
 import { CreatePrintArticle } from '@/components/CreatePrintArticle'
 import { snapshot } from '@/lib/snapshot'
+import { AssignmentVisibility } from '@/components/DataItem/AssignmentVisibility'
 
 export const AssignmentRow = ({ index, onSelect, isFocused = false, asDialog }: {
   index: number
@@ -237,7 +238,7 @@ export const AssignmentRow = ({ index, onSelect, isFocused = false, asDialog }: 
 
         <div className='flex grow gap-2 items-center'>
           <AssignmentType
-            path={`meta.core/assignment[${index}].meta.core/assignment-type`}
+            path={`meta.core/assignment[${index}]`}
             editable={!documentId}
             readOnly
           />
@@ -270,8 +271,9 @@ export const AssignmentRow = ({ index, onSelect, isFocused = false, asDialog }: 
         </div>
       </div>
 
-      <div className='text-[15px] font-medium'>
+      <div className='flex flex-row text-[15px] font-medium justify-between'>
         <span className='leading-relaxed group-hover/assrow:underline'>{title}</span>
+        <AssignmentVisibility path={`meta.core/assignment[${index}].data.public`} editable={false} disabled={false} />
       </div>
 
       {
@@ -282,7 +284,7 @@ export const AssignmentRow = ({ index, onSelect, isFocused = false, asDialog }: 
         )
       }
 
-      <div className='@3xl/view:hidden'>
+      <div className='flex flex-row @3xl/view:hidden'>
         <SluglineButton path={`meta.core/assignment[${index}].meta.tt/slugline[0].value`} />
       </div>
 
