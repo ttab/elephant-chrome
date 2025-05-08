@@ -23,7 +23,8 @@ import {
   useHistory,
   useNavigationKeys,
   useOpenDocuments,
-  useWorkflowStatus
+  useWorkflowStatus,
+  useQuery
 } from '@/hooks'
 import { handleLink } from '@/components/Link/lib/handleLink'
 import { NewItems } from './NewItems'
@@ -91,6 +92,7 @@ export const Table = <TData, TValue>({
   const openDocuments = useOpenDocuments({ idOnly: true })
   const { showModal, hideModal, currentModal } = useModal()
   const [, setDocumentStatus] = useWorkflowStatus()
+  const [filter] = useQuery(['from'])
 
   const handlePreview = useCallback((row: RowType<unknown>): void => {
     row.toggleSelected(true)
@@ -136,11 +138,16 @@ export const Table = <TData, TValue>({
         usableVersion = !articleClick ? undefined : originalRow?.fields?.['heads.usable.version']?.[0] as bigint | undefined
       }
 
+      const printEditorClick = type === 'PrintEditor'
+
       handleLink({
         event,
         dispatch,
         viewItem: state.viewRegistry.get(!searchType ? type : searchType),
-        props: { id },
+        props: {
+          id,
+          ...(printEditorClick && filter?.from?.[0] && { from: filter?.from[0] })
+        },
         viewId: crypto.randomUUID(),
         origin,
         history,
@@ -152,7 +159,7 @@ export const Table = <TData, TValue>({
         })
       })
     }
-  }, [dispatch, state.viewRegistry, onRowSelected, origin, type, history, handlePreview, searchType])
+  }, [dispatch, state.viewRegistry, onRowSelected, origin, type, history, handlePreview, searchType, filter?.from])
 
   useNavigationKeys({
     keys: ['ArrowUp', 'ArrowDown', 'Enter', 'Escape', ' ', 's', 'r', 'c', 'u'],
