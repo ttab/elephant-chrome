@@ -77,7 +77,7 @@ export function LayoutBox({
   const name = layout.links?.find((l: { rel: string }) => l.rel === 'layout')?.name
   const additionals = layout?.meta[0]?.content
   const layoutName = layout?.name
-  const position = layout?.data?.position || 'error'
+  const position = layout?.data?.position || ''
 
   return (
     <div id={layout.id} className='border min-h-32 p-2 pt-0 grid grid-cols-12 gap-2 rounded'>

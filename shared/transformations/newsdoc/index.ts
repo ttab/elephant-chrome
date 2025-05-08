@@ -21,10 +21,6 @@ export function newsDocToSlate(content: Block[]): TBElement[] {
           return transformUnorderedList(element)
         case 'core/table':
           return transformTable(element)
-        case 'tt/print-text':
-          return transformTable(element)
-        case 'tt/tv-listing':
-          return transformTable(element)
         default:
           throw new Error(`Element not implemented: ${element.type}`)
       }
