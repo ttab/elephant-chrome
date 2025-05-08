@@ -78,7 +78,7 @@ const Editor = (props: ViewProps): JSX.Element => {
       <View.Root>
         <EditorHeader documentId={documentId} readOnly readOnlyVersion={bigIntVersion} />
         <View.Content className='flex flex-col max-w-[1000px] px-4 h-full'>
-          <PlainEditor id={documentId} version={bigIntVersion} />
+          <PlainEditor key={props.version} id={documentId} version={bigIntVersion} />
         </View.Content>
       </View.Root>
     )

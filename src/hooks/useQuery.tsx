@@ -28,7 +28,7 @@ export const useQuery = (keys?: string[]): [QueryParams, (params: QueryParams) =
     // for others non-active use it's contentState.path from historyState
     const historyPath = historyState?.contentState.find((cs) => cs.viewId === viewId)?.path
 
-    const searchParams = new URLSearchParams(isActive
+    const searchParams = new URLSearchParams(isActive || !historyPath
       ? window.location.search
       : historyPath?.replace(window.location.pathname, ''))
     const params: Record<string, string | string[] | undefined> = {}
