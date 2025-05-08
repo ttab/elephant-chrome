@@ -34,7 +34,6 @@ export const usePrintArticles = ({ filter, page, id }: {
   const { setData } = useTable<PrintArticle>()
   const [query] = useQuery()
   const [workflowStatus] = useWorkflowStatus(id as string, true)
-  console.log('workflowStatus', workflowStatus, query.id, filter)
   // Create a key for the SWR cache, if it changes we do a refetch
   const key = filter
     ? `tt/print-article/${JSON.stringify(filter)}${page ? `/${page}` : ''}`

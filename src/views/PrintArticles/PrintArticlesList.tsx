@@ -28,7 +28,6 @@ export const PrintArticleList = ({ columns }: {
 }): JSX.Element => {
   const [filter] = useQuery(['from'])
   const [query] = useQuery()
-  console.log('query', query)
   usePrintArticles({
     filter,
     id: query.id as string

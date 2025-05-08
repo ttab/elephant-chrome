@@ -39,7 +39,6 @@ export const EditorHeader = ({
   }, [viewId])
 
   const onBeforeStatusChange = useCallback((newStatus: string, data?: Record<string, unknown>) => {
-    console.log('onBeforeStatusChange', newStatus, data)
     setTimeout(() => {
       mutate('tt/print-articles')
     }, 1000)
