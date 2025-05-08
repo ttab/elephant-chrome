@@ -26,6 +26,7 @@ export interface Status {
   version: bigint
   uuid: string
   checkpoint?: string
+  cause?: string
 }
 
 export class Repository {

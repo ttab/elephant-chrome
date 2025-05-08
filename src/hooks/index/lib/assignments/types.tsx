@@ -1,6 +1,8 @@
 import type { Block, Document } from '@ttab/elephant-api/newsdoc'
 
 export interface AssignmentInterface extends Block {
+  _planningId: string
+  _planningTitle: string
   _id: string
   _deliverableId: string
   _deliverableStatus?: string

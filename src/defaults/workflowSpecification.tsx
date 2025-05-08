@@ -88,10 +88,6 @@ export const WorkflowSpecifications: Record<string, WorkflowSpecification> = {
           verify: true,
           title: 'Publicera',
           description: 'Publicera händelsen externt'
-        },
-        draft: {
-          title: 'Till utkast',
-          description: 'Gör om händelsen till ett utkast igen'
         }
       }
     },
@@ -99,11 +95,6 @@ export const WorkflowSpecifications: Record<string, WorkflowSpecification> = {
       title: 'Publicerad',
       description: 'Händelsen är publicerad externt',
       transitions: {
-        draft: {
-          default: true,
-          title: 'Till utkast',
-          description: 'Gör om händelsen till ett utkast igen'
-        },
         cancelled: {
           title: 'Dra tillbaka',
           description: 'Avbryt publiceringen och arkivera händelsen'
@@ -136,10 +127,6 @@ export const WorkflowSpecifications: Record<string, WorkflowSpecification> = {
           verify: true,
           title: 'Publicera',
           description: 'Publicera planeringen externt synlig'
-        },
-        draft: {
-          title: 'Till utkast',
-          description: 'Gör om planeringen till ett utkast igen'
         }
       }
     },
@@ -147,11 +134,6 @@ export const WorkflowSpecifications: Record<string, WorkflowSpecification> = {
       title: 'Publicerad',
       description: 'Planeringen är publicerad',
       transitions: {
-        draft: {
-          default: true,
-          title: 'Till utkast',
-          description: 'Gör om planeringen till ett utkast igen'
-        },
         cancelled: {
           title: 'Dra tillbaka',
           description: 'Avbryt publiceringen och arkivera planeringen'

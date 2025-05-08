@@ -3,6 +3,7 @@ import { useKeydownGlobal } from '@/hooks/useKeydownGlobal'
 import { Button, Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@ttab/elephant-ui'
 import type { MouseEvent } from 'react'
 
+
 interface PromptProps extends PropsWithChildren {
   title?: string
   description?: string
@@ -11,6 +12,7 @@ interface PromptProps extends PropsWithChildren {
   onPrimary: (event: MouseEvent<HTMLButtonElement> | React.KeyboardEvent<HTMLButtonElement> | KeyboardEvent) => void
   onSecondary?: () => void
   disablePrimary?: boolean
+  currentCause?: { cause: string | undefined, setCause: (value: string) => void }
 }
 
 export const Prompt = ({

@@ -4,7 +4,7 @@ import { useRef, useState, useEffect, useCallback } from 'react'
 import { useWorkflow } from '@/hooks/index/useWorkflow'
 import type { WorkflowTransition } from '@/defaults/workflowSpecification'
 import { useWorkflowStatus } from '@/hooks/useWorkflowStatus'
-import { StatusOptions } from './StatusMenuOptions'
+import { StatusOptions } from './StatusOptions'
 import { StatusMenuHeader } from './StatusMenuHeader'
 import { PromptDefault } from './PromptDefault'
 import { PromptSchedule } from './PromptSchedule'
@@ -120,7 +120,8 @@ export const StatusMenu = ({ documentId, type, publishTime, onBeforeStatusChange
               prompt={prompt}
               showPrompt={showPrompt}
               setStatus={setStatus}
-              requireCause={prompt.status === 'usable' && !!documentStatus.checkpoint}
+              currentCause={documentStatus?.cause as string}
+              requireCause={prompt.status === 'draft' && !!documentStatus.checkpoint}
             />
           )}
         </>

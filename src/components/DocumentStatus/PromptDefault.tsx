@@ -3,7 +3,7 @@ import { Prompt } from '../Prompt'
 import { useState } from 'react'
 import { PromptCauseField } from './PromptCauseField'
 
-export const PromptDefault = ({ prompt, setStatus, showPrompt, requireCause = false }: {
+export const PromptDefault = ({ prompt, setStatus, showPrompt, requireCause = false, currentCause }: {
   prompt: {
     status: string
   } & WorkflowTransition
@@ -12,8 +12,9 @@ export const PromptDefault = ({ prompt, setStatus, showPrompt, requireCause = fa
     status: string
   } & WorkflowTransition) | undefined>>
   requireCause?: boolean
+  currentCause?: string
 }) => {
-  const [cause, setCause] = useState<string | undefined>()
+  const [cause, setCause] = useState<string | undefined>(currentCause)
 
   return (
     <Prompt
@@ -30,10 +31,11 @@ export const PromptDefault = ({ prompt, setStatus, showPrompt, requireCause = fa
       }}
       disablePrimary={requireCause && !cause}
     >
-      {requireCause && (
-        <div className='flex flex-col gap-2'>
-          <PromptCauseField onValueChange={setCause} />
-        </div>
+      {(cause || requireCause) && (
+        <PromptCauseField
+          onValueChange={setCause}
+          cause={prompt.status !== 'draft' ? cause : ''}
+        />
       )}
     </Prompt>
   )
