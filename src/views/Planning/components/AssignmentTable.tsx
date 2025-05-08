@@ -140,26 +140,26 @@ export const AssignmentTable = ({ asDialog = false }: {
             <div key={`${_.id}`} className='border-b last:border-0'>
               {selectedAssignment === index
                 ? (
-                  <Assignment
-                    index={index}
-                    onClose={() => {
-                      setSelectedAssignment(undefined)
-                    }}
-                    className='-my-[1px] -mx-[5px]'
-                  />
-                )
+                    <Assignment
+                      index={index}
+                      onClose={() => {
+                        setSelectedAssignment(undefined)
+                      }}
+                      className='-my-[1px] -mx-[5px]'
+                    />
+                  )
                 : (
-                  <AssignmentRow
-                    index={index}
-                    isFocused={index === focusedRowIndex}
-                    asDialog={asDialog}
-                    onSelect={() => {
-                      if (!newAssigment) {
-                        setSelectedAssignment(index)
-                      }
-                    }}
-                  />
-                )}
+                    <AssignmentRow
+                      index={index}
+                      isFocused={index === focusedRowIndex}
+                      asDialog={asDialog}
+                      onSelect={() => {
+                        if (!newAssigment) {
+                          setSelectedAssignment(index)
+                        }
+                      }}
+                    />
+                  )}
             </div>
           ))}
         </div>

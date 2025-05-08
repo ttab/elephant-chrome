@@ -54,7 +54,7 @@ export const WireViewContent = (props: ViewProps & {
 
         <ViewHeader.Action onDialogClose={props.onDialogClose}>
           {!props.asDialog && !!props.id
-            && <ViewHeader.RemoteUsers documentId={props.id} />}
+          && <ViewHeader.RemoteUsers documentId={props.id} />}
         </ViewHeader.Action>
       </ViewHeader.Root>
 
@@ -115,23 +115,23 @@ export const WireViewContent = (props: ViewProps & {
               </Awareness>
 
               {!!selectedPlanning
-                && (
-                  <>
-                    <Button
-                      variant='ghost'
-                      asChild
-                      className='text-muted-foreground flex size-4 p-0 data-[state=open]:bg-muted hover:bg-accent2'
-                      onClick={(e) => {
-                        e.preventDefault()
-                        if (setSelectedPlanning) {
-                          setSelectedPlanning(undefined)
-                        }
-                      }}
-                    >
-                      <CircleXIcon size={18} strokeWidth={1.75} />
-                    </Button>
-                  </>
-                )}
+              && (
+                <>
+                  <Button
+                    variant='ghost'
+                    asChild
+                    className='text-muted-foreground flex size-4 p-0 data-[state=open]:bg-muted hover:bg-accent2'
+                    onClick={(e) => {
+                      e.preventDefault()
+                      if (setSelectedPlanning) {
+                        setSelectedPlanning(undefined)
+                      }
+                    }}
+                  >
+                    <CircleXIcon size={18} strokeWidth={1.75} />
+                  </Button>
+                </>
+              )}
               <>
                 <Checkbox
                   id='SearchOlder'
@@ -144,29 +144,29 @@ export const WireViewContent = (props: ViewProps & {
 
 
             {!selectedPlanning
-              && (
-                <Form.Group icon={Tags}>
-                  <Section />
-                  <SluglineEditable
-                    path='meta.tt/slugline[0].value'
-                  />
-                  <Newsvalue />
-                </Form.Group>
+            && (
+              <Form.Group icon={Tags}>
+                <Section />
+                <SluglineEditable
+                  path='meta.tt/slugline[0].value'
+                />
+                <Newsvalue />
+              </Form.Group>
 
 
-              )}
+            )}
             {!selectedPlanning
-              && (
-                <Form.Group icon={GanttChartSquare}>
-                  <>
-                    <Input
-                      className='pt-2 h-7 text-medium placeholder:text-[#5D709F] placeholder-shown:border-[#5D709F]'
-                      placeholder='Planeringstitel'
-                      ref={planningTitleRef}
-                    />
-                  </>
-                </Form.Group>
-              )}
+            && (
+              <Form.Group icon={GanttChartSquare}>
+                <>
+                  <Input
+                    className='pt-2 h-7 text-medium placeholder:text-[#5D709F] placeholder-shown:border-[#5D709F]'
+                    placeholder='Planeringstitel'
+                    ref={planningTitleRef}
+                  />
+                </>
+              </Form.Group>
+            )}
 
             <Form.Group icon={BriefcaseBusiness}>
               <Title
@@ -193,11 +193,11 @@ export const WireViewContent = (props: ViewProps & {
             <UserMessage asDialog={!!props?.asDialog}>
               {!selectedPlanning
                 ? (
-                  <>Väljer du ingen planering kommer en ny planering med tillhörande uppdrag skapas åt dig.</>
-                )
+                    <>Väljer du ingen planering kommer en ny planering med tillhörande uppdrag skapas åt dig.</>
+                  )
                 : (
-                  <>Denna artikel kommer läggas i ett nytt uppdrag i den valda planeringen</>
-                )}
+                    <>Denna artikel kommer läggas i ett nytt uppdrag i den valda planeringen</>
+                  )}
             </UserMessage>
 
           </Form.Content>

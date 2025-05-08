@@ -52,16 +52,16 @@ const Factbox = (props: ViewProps & { document?: Y.Doc }): JSX.Element => {
     <>
       {typeof documentId === 'string'
         ? (
-          <AwarenessDocument documentId={documentId} document={props.document}>
-            <FactboxWrapper {...props} documentId={documentId} />
-          </AwarenessDocument>
-        )
+            <AwarenessDocument documentId={documentId} document={props.document}>
+              <FactboxWrapper {...props} documentId={documentId} />
+            </AwarenessDocument>
+          )
         : (
-          <Error
-            title='Faktarutedokument saknas'
-            message='Inget faktarutedokument är angivet. Navigera tillbaka till översikten och försök igen.'
-          />
-        )}
+            <Error
+              title='Faktarutedokument saknas'
+              message='Inget faktarutedokument är angivet. Navigera tillbaka till översikten och försök igen.'
+            />
+          )}
     </>
   )
 }
@@ -179,24 +179,24 @@ const FactboxContainer = ({
       <View.Footer>
         {asDialog
           ? (
-            <Button
-              onClick={handleSubmit}
-            >
-              Skapa faktaruta
-            </Button>
-          )
+              <Button
+                onClick={handleSubmit}
+              >
+                Skapa faktaruta
+              </Button>
+            )
           : (
-            <>
-              <div className='flex gap-2'>
-                <strong>Ord:</strong>
-                <span>{words}</span>
-              </div>
-              <div className='flex gap-2'>
-                <strong>Tecken:</strong>
-                <span>{characters}</span>
-              </div>
-            </>
-          )}
+              <>
+                <div className='flex gap-2'>
+                  <strong>Ord:</strong>
+                  <span>{words}</span>
+                </div>
+                <div className='flex gap-2'>
+                  <strong>Tecken:</strong>
+                  <span>{characters}</span>
+                </div>
+              </>
+            )}
       </View.Footer>
     </>
   )

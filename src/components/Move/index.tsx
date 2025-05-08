@@ -40,7 +40,7 @@ export const Move = (props: ViewProps & {
 
   const date = useMemo(() =>
     planningDateString ? parseDate(planningDateString) || new Date() : new Date(),
-    [planningDateString])
+  [planningDateString])
 
   const handleSelectPlanning = (option: DefaultValueOption): void => {
     if (option.value !== selectedPlanning?.value) {
@@ -146,7 +146,7 @@ export const Move = (props: ViewProps & {
 
         <ViewHeader.Action onDialogClose={props.onDialogClose}>
           {!props.asDialog && !!props.id
-            && <ViewHeader.RemoteUsers documentId={props.id} />}
+          && <ViewHeader.RemoteUsers documentId={props.id} />}
         </ViewHeader.Action>
       </ViewHeader.Root>
 
@@ -182,18 +182,18 @@ export const Move = (props: ViewProps & {
               </ComboBox>
 
               {!!selectedPlanning
-                && (
-                  <>
-                    <Button
-                      variant='ghost'
-                      asChild
-                      className='text-muted-foreground flex size-4 p-0 data-[state=open]:bg-muted hover:bg-accent2'
-                      onClick={handleClearPlanning}
-                    >
-                      <CircleXIcon size={18} strokeWidth={1.75} />
-                    </Button>
-                  </>
-                )}
+              && (
+                <>
+                  <Button
+                    variant='ghost'
+                    asChild
+                    className='text-muted-foreground flex size-4 p-0 data-[state=open]:bg-muted hover:bg-accent2'
+                    onClick={handleClearPlanning}
+                  >
+                    <CircleXIcon size={18} strokeWidth={1.75} />
+                  </Button>
+                </>
+              )}
               <>
                 <Checkbox
                   id='SearchOlder'
@@ -206,16 +206,16 @@ export const Move = (props: ViewProps & {
             <UserMessage asDialog={!!props?.asDialog}>
               {!selectedPlanning
                 ? (
-                  <div className='flex flex-col gap-4'>
-                    Väljer du ingen planering kommer en ny planering med detta uppdrag att skapas åt dig på valt datum.
-                    <Form.Group icon={Calendar}>
-                      <DatePicker date={date} setDate={(value) => setPlanningDateString(value)} />
-                    </Form.Group>
-                  </div>
-                )
+                    <div className='flex flex-col gap-4'>
+                      Väljer du ingen planering kommer en ny planering med detta uppdrag att skapas åt dig på valt datum.
+                      <Form.Group icon={Calendar}>
+                        <DatePicker date={date} setDate={(value) => setPlanningDateString(value)} />
+                      </Form.Group>
+                    </div>
+                  )
                 : (
-                  <>Detta uppdrag kommer läggas i den valda planeringen</>
-                )}
+                    <>Detta uppdrag kommer läggas i den valda planeringen</>
+                  )}
             </UserMessage>
           </Form.Content>
 
