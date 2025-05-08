@@ -1,5 +1,5 @@
 import * as Y from 'yjs'
-import { isNumber, isRecord, isYArray, isYContainer, isYMap, isYXmlText } from './isType'
+import { isNumber, isRecord, isYArray, isYContainer, isYMap, isYXmlText } from '../src/lib/isType'
 import { isTextEntry } from '@/shared/transformations/isTextEntry'
 import type { TBElement } from '@ttab/textbit'
 import { slateNodesToInsertDelta } from '@slate-yjs/core'

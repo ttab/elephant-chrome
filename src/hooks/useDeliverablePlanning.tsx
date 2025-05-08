@@ -1,4 +1,4 @@
-import { getValueByYPath } from '@/lib/yUtils'
+import { getValueByYPath } from '@/shared/yUtils'
 import { useCallback, useEffect, useState } from 'react'
 import type * as Y from 'yjs'
 import { useCollaborationDocument } from './useCollaborationDocument'

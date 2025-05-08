@@ -6,7 +6,7 @@ import { Assignment } from './Assignment'
 import { type Block } from '@ttab/elephant-api/newsdoc'
 import type { MouseEvent, KeyboardEvent } from 'react'
 import { useMemo, useState } from 'react'
-import { deleteByYPath, getValueByYPath } from '@/lib/yUtils'
+import { deleteByYPath, getValueByYPath } from '@/shared/yUtils'
 import { cn } from '@ttab/elephant-ui/utils'
 import { type EleBlock } from '@/shared/types'
 import { cva } from 'class-variance-authority'
@@ -140,26 +140,26 @@ export const AssignmentTable = ({ asDialog = false }: {
             <div key={`${_.id}`} className='border-b last:border-0'>
               {selectedAssignment === index
                 ? (
-                    <Assignment
-                      index={index}
-                      onClose={() => {
-                        setSelectedAssignment(undefined)
-                      }}
-                      className='-my-[1px] -mx-[5px]'
-                    />
-                  )
+                  <Assignment
+                    index={index}
+                    onClose={() => {
+                      setSelectedAssignment(undefined)
+                    }}
+                    className='-my-[1px] -mx-[5px]'
+                  />
+                )
                 : (
-                    <AssignmentRow
-                      index={index}
-                      isFocused={index === focusedRowIndex}
-                      asDialog={asDialog}
-                      onSelect={() => {
-                        if (!newAssigment) {
-                          setSelectedAssignment(index)
-                        }
-                      }}
-                    />
-                  )}
+                  <AssignmentRow
+                    index={index}
+                    isFocused={index === focusedRowIndex}
+                    asDialog={asDialog}
+                    onSelect={() => {
+                      if (!newAssigment) {
+                        setSelectedAssignment(index)
+                      }
+                    }}
+                  />
+                )}
             </div>
           ))}
         </div>

@@ -9,14 +9,14 @@ import { StatusMenuHeader } from './StatusMenuHeader'
 import { PromptDefault } from './PromptDefault'
 import { PromptSchedule } from './PromptSchedule'
 
-export const StatusMenu = ({ documentId, type, publishTime, onBeforeStatusChange = () => true }: {
+export const StatusMenu = ({ documentId, type, publishTime, onBeforeStatusChange }: {
   documentId: string
   type: string
   publishTime?: Date
   onBeforeStatusChange?: (
     status: string,
     data?: Record<string, unknown>
-  ) => boolean
+  ) => Promise<boolean>
 }) => {
   const [documentStatus, setDocumentStatus] = useWorkflowStatus(documentId, type === 'core/article')
   const containerRef = useRef<HTMLDivElement>(null)
@@ -32,12 +32,14 @@ export const StatusMenu = ({ documentId, type, publishTime, onBeforeStatusChange
 
   // Callback function to set status. Will first call onBeforeStatusChange() if
   // provided by props, then proceed to change the status if allowed.
-  const setStatus = useCallback((newStatus: string, data?: Record<string, unknown>) => {
-    if (!onBeforeStatusChange(newStatus, data)) {
-      return
+  const setStatus = useCallback(async (newStatus: string, data?: Record<string, unknown>) => {
+    if (onBeforeStatusChange) {
+      if (await onBeforeStatusChange(newStatus, data) !== true) {
+        return
+      }
     }
 
-    void setDocumentStatus(
+    await setDocumentStatus(
       newStatus,
       (typeof data?.cause === 'string') ? data.cause : undefined
     )
@@ -109,7 +111,7 @@ export const StatusMenu = ({ documentId, type, publishTime, onBeforeStatusChange
             <PromptSchedule
               prompt={prompt}
               showPrompt={showPrompt}
-              setStatus={setStatus}
+              setStatus={(...args) => void setStatus(...args)}
               publishTime={publishTime}
               requireCause={!!documentStatus.checkpoint}
             />
@@ -119,7 +121,7 @@ export const StatusMenu = ({ documentId, type, publishTime, onBeforeStatusChange
             <PromptDefault
               prompt={prompt}
               showPrompt={showPrompt}
-              setStatus={setStatus}
+              setStatus={(...args) => void setStatus(...args)}
               requireCause={prompt.status === 'usable' && !!documentStatus.checkpoint}
             />
           )}

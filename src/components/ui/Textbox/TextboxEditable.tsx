@@ -8,7 +8,7 @@ import { type AwarenessUserData } from '@/contexts/CollaborationProvider'
 import type * as Y from 'yjs'
 import { ContextMenu } from '../../Editor/ContextMenu'
 import { useOnSpellcheck } from '@/hooks/useOnSpellcheck'
-import { getValueByYPath } from '@/lib/yUtils'
+import { getValueByYPath } from '@/shared/yUtils'
 
 export const TextboxEditable = ({ provider, path, user, content, singleLine, spellcheck, disabled = false }: {
   disabled?: boolean

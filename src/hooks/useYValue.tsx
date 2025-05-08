@@ -1,6 +1,6 @@
 import { isEqualDeep } from '@/lib/isEqualDeep'
 import { useRef, useSyncExternalStore } from 'react'
-import { getValueByYPath, setValueByYPath, stringToYPath } from '@/lib/yUtils'
+import { getValueByYPath, setValueByYPath, stringToYPath } from '@/shared/yUtils'
 import { useCollaboration } from './useCollaboration'
 import type { HocuspocusProvider } from '@hocuspocus/provider'
 

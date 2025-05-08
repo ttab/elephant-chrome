@@ -1,7 +1,7 @@
 import { StatusMenu } from '@/components/DocumentStatus/StatusMenu'
 import { ViewHeader } from '@/components/View'
 import { useDeliverablePlanning } from '@/hooks/useDeliverablePlanning'
-import { getValueByYPath, setValueByYPath } from '@/lib/yUtils'
+import { getValueByYPath, setValueByYPath } from '@/shared/yUtils'
 import type { EleBlock } from '@/shared/types'
 import type { ViewProps } from '@/types/index'
 import { ZapIcon } from '@ttab/elephant-ui/icons'

@@ -2,9 +2,16 @@ import { toast } from 'sonner'
 
 const BASE_URL = import.meta.env.BASE_URL
 
-type SnapshotResponse = Promise<{ statusCode: number, statusMessage: string } | { version: string, uuid: string } | undefined>
+type SnapshotResponse = {
+  statusCode: number
+  statusMessage: string
+} | {
+  version: string
+  uuid: string
+  statusMessage: undefined
+} | undefined
 
-export async function snapshot(uuid: string, force?: true): SnapshotResponse {
+export async function snapshot(uuid: string, force?: true): Promise<SnapshotResponse> {
   if (!uuid) {
     throw new Error('UUID is required')
   }
@@ -12,23 +19,21 @@ export async function snapshot(uuid: string, force?: true): SnapshotResponse {
   try {
     const url = `${BASE_URL}/api/snapshot/${uuid}${force === true ? '?force=true' : ''}`
     const response = await fetch(url)
-
-    if (response.status === 404) {
-      return
-    }
+    const data = await response.json() as SnapshotResponse
 
     if (!response.ok) {
-      throw new Error(`Error fetching snapshot: ${response.statusText}`)
+      throw new Error((data && typeof data?.statusMessage === 'string')
+        ? data.statusMessage
+        : response.statusText)
     }
 
-
-    const data = await response.json() as SnapshotResponse
     return data
   } catch (ex) {
     if (ex instanceof Error) {
       console.error('Failed to save snapshot:', ex.message)
+      toast.error(`Lyckades inte spara kopia! ${ex.message}`)
+    } else {
+      toast.error(`Lyckades inte spara kopia!`)
     }
-
-    toast.error('Lyckades inte spara kopia')
   }
 }

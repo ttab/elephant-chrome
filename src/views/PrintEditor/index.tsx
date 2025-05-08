@@ -48,7 +48,7 @@ import { ContextMenu } from '@/components/Editor/ContextMenu'
 import { Gutter } from '@/components/Editor/Gutter'
 import { DropMarker } from '@/components/Editor/DropMarker'
 
-import { getValueByYPath } from '@/lib/yUtils'
+import { getValueByYPath } from '@/shared/yUtils'
 import { useOnSpellcheck } from '@/hooks/useOnSpellcheck'
 
 // Metadata definition
@@ -227,11 +227,11 @@ function EditorContainer({
               <div className='flex-grow overflow-auto pr-12 max-w-screen-xl'>
                 {!!provider && synced
                   ? (
-                      <EditorContent provider={provider} user={user} />
-                    )
+                    <EditorContent provider={provider} user={user} />
+                  )
                   : (
-                      <></>
-                    )}
+                    <></>
+                  )}
               </div>
             </ScrollArea>
           </div>
@@ -240,21 +240,21 @@ function EditorContainer({
               <h2 className='text-base font-bold'>Layouter</h2>
               {bulkSelected.length > 0
                 ? (
-                    <Button
-                      title='När layouter har valts, visa alternativ för att skapa en kopia av texten med de valda layouterna och ta bort dem från nuvarande artikel. Öppna kopian direkt till höger'
-                      className='p-2 flex gap-2 items-center'
-                      onClick={() => {
-                        openPrintEditor(undefined, { id: documentId })
-                        setBulkSelected([])
-                      }}
-                    >
-                      Flytta till kopia
-                      <span className='text-sm font-bold'>
-                        {`(${bulkSelected.length} st)`}
-                      </span>
-                      <ChevronRight strokeWidth={1.75} size={18} />
-                    </Button>
-                  )
+                  <Button
+                    title='När layouter har valts, visa alternativ för att skapa en kopia av texten med de valda layouterna och ta bort dem från nuvarande artikel. Öppna kopian direkt till höger'
+                    className='p-2 flex gap-2 items-center'
+                    onClick={() => {
+                      openPrintEditor(undefined, { id: documentId })
+                      setBulkSelected([])
+                    }}
+                  >
+                    Flytta till kopia
+                    <span className='text-sm font-bold'>
+                      {`(${bulkSelected.length} st)`}
+                    </span>
+                    <ChevronRight strokeWidth={1.75} size={18} />
+                  </Button>
+                )
                 : null}
             </header>
             <ScrollArea className='h-[calc(100vh-12rem)]'>
