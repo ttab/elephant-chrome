@@ -229,7 +229,7 @@ function EditorContainer({
   const [workflowStatus] = useWorkflowStatus(documentId, true)
   useEffect(() => {
     if (doc) {
-      setLayouts(doc.layouts)
+      setLayouts(doc.layouts as Layout[])
     }
   }, [doc])
   useEffect(() => {
@@ -261,8 +261,6 @@ function EditorContainer({
   const saveUpdates = async (updatedLayouts: Layout[] | undefined) => {
     console.log('save updated layouts', doc?.document?.document?.meta?.find((m: { type: string }) => m.type === 'tt/print-article')?.meta, layouts)
     const _meta = doc?.document?.document?.meta?.map((m: { type: string }) => {
-      console.log('layouts', layouts)
-      console.log('m', m)
       if (m.type === 'tt/print-article') {
         return Object.assign({}, m, {
           meta: updatedLayouts || layouts
@@ -270,15 +268,9 @@ function EditorContainer({
       }
       return m
     })
-    console.log('_meta', _meta)
     const _document = Object.assign({}, doc?.document?.document, {
       meta: _meta
     })
-    const _updatedDocument = Object.assign({}, doc, {
-      document: _document,
-      uuid: doc.document?.document?.uuid
-    })
-    console.log('updated document', _updatedDocument)
     if (!repository || !session) {
       throw new Error('Repository or session not found')
     }
