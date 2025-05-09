@@ -17,8 +17,8 @@ export type QueryParams = Record<string, string | string[] | undefined>
  * - To reset all parameters, pass an empty object.
  */
 
-type AllParamsType = { name: string, params: unknown, viewId: string }
-export const useQuery = (keys?: string[], allParams?: boolean): [QueryParams, (params: QueryParams) => void, allViews?: Array<AllParamsType>] => {
+type AllParamsType = { name: string, params: QueryParams, viewId: string }
+export const useQuery = (keys?: string[], allParams?: boolean): [QueryParams, (params: QueryParams) => void, allQueries?: Array<AllParamsType>] => {
   const {
     state: historyState,
     replaceState
@@ -128,7 +128,7 @@ export const useQuery = (keys?: string[], allParams?: boolean): [QueryParams, (p
       return false
     }).map((q) => ({
       name: q.name,
-      params: q.props,
+      params: q.props as QueryParams,
       viewId: q.viewId
     }))
 
