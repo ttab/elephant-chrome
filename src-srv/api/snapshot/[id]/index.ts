@@ -39,9 +39,12 @@ export const GET: RouteHandler = async (req: Request, { collaborationServer, cac
     // Check if document exists in cache
     const state = await cache.get(uuid)
     if (!state) {
+      const notFoundMessage = `Document not found in cache: ${uuid}`
+      logger.warn(notFoundMessage)
+
       return {
-        statusCode: 404,
-        statusMessage: 'Document not found'
+        statusCode: 200,
+        statusMessage: notFoundMessage
       }
     }
   } catch (ex) {
@@ -78,6 +81,8 @@ export const GET: RouteHandler = async (req: Request, { collaborationServer, cac
     })
   })
 
+  await connection.disconnect()
+
   return snapshotResponse
 }
 
@@ -88,7 +93,10 @@ async function createSnapshot(collaborationServer: CollaborationServer, payload:
   context: Context
   force?: boolean
 }): Promise<Response> {
-  const response = await collaborationServer.snapshotDocument(payload)
+  const response = await collaborationServer.snapshotDocument({
+    ...payload,
+    transacting: true
+  })
 
   if (!response) {
     return {
