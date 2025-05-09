@@ -1,5 +1,5 @@
 import type { QueryParams } from '@/hooks/useQuery'
-import { QueryV1, BoolQueryV1, TermsQueryV1, MultiMatchQueryV1, SortingV1 } from '@ttab/elephant-api/index'
+import { QueryV1, BoolQueryV1, TermsQueryV1, MultiMatchQueryV1, SortingV1, RangeQueryV1 } from '@ttab/elephant-api/index'
 import { fields } from '../../../schemas/event'
 
 /**
@@ -79,6 +79,17 @@ export function constructQuery(filter: QueryParams | undefined): QueryV1 | undef
       })
   }
 
+  if (filter?.from) {
+    boolConditions.must.push({
+      conditions: {
+        oneofKind: 'range',
+        range: RangeQueryV1.create({
+          field: 'document.meta.core_event.data.start',
+          gte: filter.from.toString()
+        })
+      }
+    })
+  }
 
   // No other filters than type and query, and query is empty, do a matchAll
   if (Object.keys(filter).every((key) => {
@@ -110,7 +121,7 @@ const params = (filter: QueryParams) => ({
   documentType: 'core/event',
   fields,
   sort: [
-    SortingV1.create({ field: 'document.meta.core_event.data.start', desc: true }),
+    SortingV1.create({ field: 'document.meta.core_event.data.start', desc: !filter.from }),
     SortingV1.create({ field: 'document.meta.core_newsvalue.value', desc: true })
   ],
   query: constructQuery(filter)
