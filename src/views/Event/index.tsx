@@ -29,6 +29,7 @@ import { EventTimeMenu } from './components/EventTime'
 import { useEffect } from 'react'
 import { EventHeader } from './EventHeader'
 import { DuplicatesTable } from './components/DuplicatesTable'
+import { Cancel } from './components/Cancel'
 
 const meta: ViewMetadata = {
   name: 'Event',
@@ -77,6 +78,7 @@ const EventViewContent = (props: ViewProps & { documentId: string }): JSX.Elemen
   const { data, status } = useSession()
   const [, setIsFocused] = useAwareness(props.documentId)
   const [eventTitle] = useYValue<string | undefined>('root.title')
+  const [cancelled, setCancelled] = useYValue<boolean | undefined>('meta.core/event[0].data.cancelled')
 
   useEffect(() => {
     provider?.setAwarenessField('data', user)
@@ -149,6 +151,9 @@ const EventViewContent = (props: ViewProps & { documentId: string }): JSX.Elemen
               <Category asDialog={props.asDialog} />
               <Story />
             </Form.Group>
+            {!props.asDialog && (
+              <Cancel cancelled={cancelled} setCancelled={setCancelled} />
+            )}
 
           </Form.Content>
 
