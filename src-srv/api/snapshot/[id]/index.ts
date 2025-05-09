@@ -3,6 +3,10 @@ import type { Request } from 'express'
 import type { RouteContentResponse, RouteHandler, RouteStatusResponse } from '../../../routes.js'
 import type { Context } from '../../../lib/assertContext.js'
 import { assertContext } from '../../../lib/assertContext.js'
+import type { CollaborationServer } from '../../../utils/CollaborationServer.js'
+import type * as Y from 'yjs'
+
+type Response = RouteContentResponse | RouteStatusResponse
 
 export const GET: RouteHandler = async (req: Request, { collaborationServer, cache, res }) => {
   const uuid = req.params.id
@@ -24,76 +28,100 @@ export const GET: RouteHandler = async (req: Request, { collaborationServer, cac
     agent: 'server'
   }
 
-  let snapshotResponse: RouteContentResponse | RouteStatusResponse = {
-    statusCode: 500,
-    statusMessage: 'Unknown error'
+  if (!assertContext(context)) {
+    return {
+      statusCode: 500,
+      statusMessage: 'Invalid context provided'
+    }
   }
-
 
   try {
     // Check if document exists in cache
     const state = await cache.get(uuid)
     if (!state) {
+      const notFoundMessage = `Document not found in cache: ${uuid}`
+      logger.warn(notFoundMessage)
+
       return {
-        statusCode: 404,
-        statusMessage: 'Document not found'
+        statusCode: 200,
+        statusMessage: notFoundMessage
       }
     }
-
-
-    const connection = await collaborationServer.server.openDirectConnection(uuid, context)
-
-    await new Promise<void>((resolve, reject) => {
-      connection.transact((document) => {
-        if (!assertContext(context)) {
-          throw new Error('Invalid context provided')
-        }
-
-        collaborationServer.snapshotDocument({
-          documentName: uuid,
-          document,
-          context,
-          force: !!force
-        }).then((response) => {
-          if (!response) {
-            snapshotResponse = {
-              statusCode: 200,
-              statusMessage: 'Snapshot not deemed necessary'
-            }
-          } else if (response.status.code === 'OK') {
-            snapshotResponse = {
-              statusCode: 200,
-              payload: {
-                uuid: response.response.uuid,
-                version: response.response.version.toString()
-              }
-
-            }
-          } else {
-            logger.error(`Error while taking snapshot: ${response.status.code}`)
-          }
-
-          // Resolve the promise after snapshotDocument completes
-          resolve()
-        }).catch((ex: Error) => {
-          logger.error(ex, 'Snapshot Error:')
-          reject(ex) // Reject the promise on error
-        })
-
-        return undefined
-      })
-        .catch((ex: Error) => {
-          logger.error('Error during transaction', ex)
-          reject(ex)
-        })
-    })
   } catch (ex) {
-    logger.error('Error while taking snapshot', { error: ex })
+    const exMessage = ex instanceof Error ? ex.message : JSON.stringify(ex)
+    const cacheErrorMessage = `Error while getting cached document to snapshot: ${exMessage}`
+    logger.error(cacheErrorMessage)
+
     return {
       statusCode: 500,
-      statusMessage: 'Internal server error'
+      statusMessage: cacheErrorMessage
     }
   }
 
+  const connection = await collaborationServer.server.openDirectConnection(uuid, context)
+
+  const snapshotResponse = await new Promise<Response>((resolve) => {
+    void connection.transact((document) => {
+      createSnapshot(collaborationServer, {
+        documentName: uuid,
+        document,
+        context,
+        force: !!force
+      })
+        .then(resolve)
+        .catch((ex: Error) => {
+          const snapshotResponse = {
+            statusCode: 500,
+            statusMessage: `Error during snapshot transaction: ${ex.message || 'unknown reason'}`
+          }
+
+          logger.error(snapshotResponse.statusMessage, ex)
+          resolve(snapshotResponse)
+        })
+    })
+  })
+
+  await connection.disconnect()
+
   return snapshotResponse
+}
+
+
+async function createSnapshot(collaborationServer: CollaborationServer, payload: {
+  documentName: string
+  document: Y.Doc
+  context: Context
+  force?: boolean
+}): Promise<Response> {
+  // FIXME: We should probably expose collaborationServer.#storeDocumentInRepository and call directly
+  // FIXME: So we don't need to pass on transacting etc.
+  const response = await collaborationServer.snapshotDocument({
+    ...payload,
+    transacting: true
+  })
+
+  if (!response) {
+    return {
+      statusCode: 200,
+      statusMessage: 'Snapshot not necessary'
+    }
+  }
+
+  if (response.status.code !== 'OK') {
+    const statusMessage = `Error while taking snapshot: ${response.status.code}`
+    logger.error(statusMessage)
+
+    return {
+      statusCode: 500,
+      statusMessage
+    }
+  }
+
+  return {
+    statusCode: 200,
+    payload: {
+      uuid: response.response.uuid,
+      version: response.response.version.toString()
+    }
+  }
 }

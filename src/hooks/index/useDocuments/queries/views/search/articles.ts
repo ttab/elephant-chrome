@@ -94,6 +94,39 @@ function constructQuery(filter: QueryParams | undefined): QueryV1 | undefined {
       })
   }
 
+  if (filter?.from) {
+    boolConditions.must.push({
+      conditions: {
+        oneofKind: 'range',
+        range: RangeQueryV1.create({
+          field: 'heads.usable.created',
+          gte: filter.from.toString()
+        })
+      }
+    })
+  }
+
+  // No other filters than type and query, and query is empty, do a matchAll
+  if (Object.keys(filter).every((key) => {
+    if (key === 'type') {
+      return true
+    }
+
+    if (key === 'query') {
+      return !filter.query
+    }
+
+    return false
+  })
+  ) {
+    return QueryV1.create({
+      conditions: {
+        oneofKind: 'matchAll',
+        matchAll: {}
+      }
+    })
+  }
+
   return query
 }
 
@@ -104,7 +137,7 @@ const params = (filter: QueryParams) => ({
   fields,
   query: constructQuery(filter),
   sort: [
-    SortingV1.create({ field: 'heads.usable.created', desc: true })
+    SortingV1.create({ field: 'heads.usable.created', desc: !filter.from })
   ]
 })
 

@@ -3,7 +3,7 @@ import { createStateless, StatelessType } from '@/shared/stateless'
 import type { HocuspocusProvider } from '@hocuspocus/provider'
 import type { Session } from 'next-auth'
 import * as Y from 'yjs'
-import { getValueByYPath, toSlateYXmlText, toYStructure } from '@/lib/yUtils'
+import { getValueByYPath, toSlateYXmlText, toYStructure } from '@/shared/yUtils'
 import { createPayload } from '@/defaults/templates/lib/createPayload'
 import type { TemplatePayload } from '@/defaults/templates'
 import { convertToISOStringInTimeZone } from '@/lib/datetime'
@@ -70,7 +70,7 @@ export function createFlash({
             end_date: localISODateTime,
             start: zuluISODate,
             end: zuluISODate,
-            public: 'true',
+            public: 'false', // flashes should be private
             publish: new Date().toISOString()
           }
         })

@@ -12,7 +12,8 @@ export const AssignmentType = ({ path, editable = false, readOnly = false, class
   editable?: boolean
   readOnly?: boolean
 }): JSX.Element => {
-  const [assignmentType, setAssignmentType] = useYValue<Block[] | undefined>(path)
+  const [assignmentType, setAssignmentType] = useYValue<Block[]>(path + '.meta.core/assignment-type')
+  const [, setAssignmentVisibility] = useYValue<string>(path + 'data.public')
 
   const selectedOptions = AssignmentTypes.filter((type) => {
     const value = assignmentType?.map ? assignmentType.map((s) => s.value).sort().join('/') : ''
@@ -46,20 +47,32 @@ export const AssignmentType = ({ path, editable = false, readOnly = false, class
       disabled={!editable}
       value={selectedOptions[0]?.value}
       onValueChange={(value) => {
-        if (value === 'picture/video') {
-          setAssignmentType([Block.create({
-            type: 'core/assignment-type',
-            value: 'picture'
-          }),
-          Block.create({
-            type: 'core/assignment-type',
-            value: 'video'
-          })])
-        } else {
-          setAssignmentType([Block.create({
-            type: 'core/assignment-type',
-            value: value
-          })])
+        switch (value) {
+          case 'picture/video':
+            setAssignmentType([Block.create({
+              type: 'core/assignment-type',
+              value: 'picture'
+            }),
+            Block.create({
+              type: 'core/assignment-type',
+              value: 'video'
+            })
+            ])
+            break
+          case 'flash':
+            setAssignmentType([Block.create({
+              type: 'core/assignment-type',
+              value: value
+            })])
+            setAssignmentVisibility('false')
+            break
+
+
+          default:
+            setAssignmentType([Block.create({
+              type: 'core/assignment-type',
+              value: value
+            })])
         }
       }}
     >

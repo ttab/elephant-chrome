@@ -21,7 +21,7 @@ import { SluglineEditable } from '@/components/DataItem/SluglineEditable'
 import type * as Y from 'yjs'
 import { CreatePrompt } from '@/components/CreatePrompt'
 import type { Wire as WireType } from '@/hooks/index/useDocuments/schemas/wire'
-import { toSlateYXmlText } from '@/lib/yUtils'
+import { toSlateYXmlText } from '@/shared/yUtils'
 
 export const WireViewContent = (props: ViewProps & {
   wire: WireType

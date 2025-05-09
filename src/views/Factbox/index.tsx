@@ -15,7 +15,7 @@ import { Toolbar } from '@/components/Editor/Toolbar'
 import { Gutter } from '@/components/Editor/Gutter'
 import { DropMarker } from '@/components/Editor/DropMarker'
 import { ContextMenu } from '@/components/Editor/ContextMenu'
-import { getValueByYPath } from '@/lib/yUtils'
+import { getValueByYPath } from '@/shared/yUtils'
 import { useOnSpellcheck } from '@/hooks/useOnSpellcheck'
 import { View } from '@/components'
 import { FactboxHeader } from './FactboxHeader'
@@ -68,7 +68,7 @@ const Factbox = (props: ViewProps & { document?: Y.Doc }): JSX.Element => {
 
 const FactboxWrapper = (props: ViewProps & { documentId: string }): JSX.Element => {
   const { provider, synced, user } = useCollaboration()
-  const [,setIsFocused] = useAwareness(props.documentId)
+  const [, setIsFocused] = useAwareness(props.documentId)
 
   useEffect(() => {
     provider?.setAwarenessField('data', user)
@@ -79,7 +79,7 @@ const FactboxWrapper = (props: ViewProps & { documentId: string }): JSX.Element 
     }
 
     // We only want to rerun when provider change
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [provider])
 
   const getPlugins = () => {

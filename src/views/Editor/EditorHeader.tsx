@@ -1,4 +1,4 @@
-import { useHistory, useNavigation, useView, useWorkflowStatus, useYValue } from '@/hooks'
+import { useHistory, useLink, useNavigation, useView, useWorkflowStatus, useYValue } from '@/hooks'
 import { Newsvalue } from '@/components/Newsvalue'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { MetaSheet } from './components/MetaSheet'
@@ -6,44 +6,47 @@ import { StatusMenu } from '@/components/DocumentStatus/StatusMenu'
 import { AddNote } from './components/Notes/AddNote'
 import { ViewHeader } from '@/components/View'
 import { PenBoxIcon, PenOff } from '@ttab/elephant-ui/icons'
-import { useDeliverablePlanning } from '@/hooks/useDeliverablePlanning'
-import { getValueByYPath, setValueByYPath } from '@/lib/yUtils'
-import type { EleBlock } from '@/shared/types'
 import { toast } from 'sonner'
 import { handleLink } from '@/components/Link/lib/handleLink'
+import { useDeliverablePlanningId } from '@/hooks/index/useDeliverablePlanningId'
+import { Button } from '@ttab/elephant-ui'
+import { updateAssignmentPublishTime } from '@/lib/index/updateAssignmentPublishTime'
 
 export const EditorHeader = ({ documentId, readOnly, readOnlyVersion }: { documentId: string, readOnly?: boolean, readOnlyVersion?: bigint }): JSX.Element => {
   const { viewId } = useView()
   const { state, dispatch } = useNavigation()
   const history = useHistory()
-  const deliverablePlanning = useDeliverablePlanning(documentId)
+  const planningId = useDeliverablePlanningId(documentId)
   const containerRef = useRef<HTMLElement | null>(null)
-  const [publishTime, setPublishTime] = useState<string | null>(null)
+  const [publishTime] = useState<string | null>(null)
   const [workflowStatus] = useWorkflowStatus(documentId, true)
   const [documentType] = useYValue<string>('root.type')
+
+  const openLatestVersion = useLink('Editor')
 
   useEffect(() => {
     containerRef.current = (document.getElementById(viewId))
   }, [viewId])
 
-  useEffect(() => {
-    if (deliverablePlanning) {
-      const { index } = deliverablePlanning.getAssignment()
-      const [ass] = getValueByYPath<EleBlock>(deliverablePlanning.yRoot, `meta.core/assignment[${index}]`)
+  // FIXME: We must have a way to retrieve the publish time defined in the planning.
+  // FIXME: When yjs opening of related planning have been fixed this should be readded/remade.
+  // This code relies on having the planning assignment publish time available to be able
+  // set the correct suggested publish time when scheduling an article for publish.
+  // Without this code it will always suggest "now()".
+  //
+  // useEffect(() => {
+  //   if (deliverablePlanning) {
+  //     const { index } = deliverablePlanning.getAssignment()
+  //     const [ass] = getValueByYPath<EleBlock>(deliverablePlanning.yRoot, `meta.core/assignment[${index}]`)
 
-      if (ass) {
-        setPublishTime((prev) => (ass.data.publish !== prev) ? ass.data.publish : prev)
-      }
-    }
-  }, [deliverablePlanning])
+  //     if (ass) {
+  //       setPublishTime((prev) => (ass.data.publish !== prev) ? ass.data.publish : prev)
+  //     }
+  //   }
+  // }, [deliverablePlanning])
 
   // Callback to set correct withheld time to the assignment
-  const onBeforeStatusChange = useCallback((newStatus: string, data?: Record<string, unknown>) => {
-    if (!deliverablePlanning) {
-      toast.error('Kunde inte ändra status på artikel! Det gick inte att hitta en kopplad planering.')
-      return false
-    }
-
+  const onBeforeStatusChange = useCallback(async (newStatus: string, data?: Record<string, unknown>) => {
     if (newStatus === 'usable') {
       handleLink({
         dispatch,
@@ -71,38 +74,25 @@ export const EditorHeader = ({ documentId, readOnly, readOnlyVersion }: { docume
       })
     }
 
-    const { index } = deliverablePlanning.getAssignment()
-    // If assignment publish time is in the past, set it to current time
-    const base = `meta.core/assignment[${index}]`
-    const [assignmentType] = getValueByYPath<string | undefined>(deliverablePlanning.yRoot, `${base}.meta.core/assignment-type[0].value`)
-
-    if (assignmentType && ['text', 'flash'].includes(assignmentType)) {
-      const now = new Date().toISOString()
-      const [existingPublishTime] = getValueByYPath<string | undefined>(deliverablePlanning.yRoot, `${base}.data.publish`)
-      if (existingPublishTime && (now > existingPublishTime)) {
-        setValueByYPath(deliverablePlanning.yRoot, `meta.core/assignment[${index}].data.publish`, now)
-      }
-    }
-
-    if (newStatus !== 'withheld') {
-      return true
-    }
-
-    if (index < 0) {
-      toast.error('Kunde inte schemalägga artikel! Det gick inte att hitta ett kopplat uppdrag i planeringen.')
-      return false
-    }
-
-    if (!(data?.time instanceof Date)) {
+    // We require a valid publish time if scheduling
+    if (newStatus === 'withheld' && !(data?.time instanceof Date)) {
       toast.error('Kunde inte schemalägga artikel! Tid eller datum är felaktigt angivet.')
       return false
     }
 
-    setValueByYPath(deliverablePlanning.yRoot, `${base}.data.publish`, data.time.toISOString())
+    const newPublishTime = ((data?.time instanceof Date))
+      ? data.time
+      : new Date()
+
+    await updateAssignmentPublishTime(documentId, planningId, newStatus, newPublishTime)
+
     return true
-  }, [deliverablePlanning, dispatch, documentId, history, state.viewRegistry, viewId, workflowStatus])
+  }, [planningId, dispatch, documentId, history, state.viewRegistry, viewId, workflowStatus])
 
   const title = documentType === 'core/editorial-info' ? 'Till red' : 'Artikel'
+
+  const isReadOnlyAndUpdated = workflowStatus && workflowStatus?.name !== 'usable' && readOnly
+
   return (
     <ViewHeader.Root>
       <ViewHeader.Title name='Editor' title={title} icon={readOnly ? PenOff : PenBoxIcon} />
@@ -121,7 +111,22 @@ export const EditorHeader = ({ documentId, readOnly, readOnlyVersion }: { docume
               <>
                 {!readOnly && <ViewHeader.RemoteUsers documentId={documentId} />}
 
-                {!!deliverablePlanning && (
+                {isReadOnlyAndUpdated && (
+                  <Button
+                    variant='secondary'
+                    onClick={(event) => {
+                      openLatestVersion(
+                        event,
+                        { id: documentId },
+                        'self'
+                      )
+                    }}
+                  >
+                    Gå till senaste versionen
+                  </Button>
+                )}
+
+                {!!planningId && !isReadOnlyAndUpdated && (
                   <StatusMenu
                     documentId={documentId}
                     type={documentType || 'core/article'}
