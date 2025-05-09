@@ -152,8 +152,8 @@ export const PATCH: RouteHandler = async (req: Request, { collaborationServer, r
     if (status === 'withheld') {
       // When scheduling we always set it to incoming time
       setValueByYPath(yRoot, `${base}.data.publish`, publishTime)
-    } else if (assignmentType && ['text', 'flash'].includes(assignmentType)) {
-      // If assignment type is text or flash and the current publish time is less
+    } else if (assignmentType && ['text', 'flash', 'editorial-info'].includes(assignmentType)) {
+      // If assignment type is text, flash or editorial info and the current publish time is less
       // than the new publish time we need to bump the publish time.
       const [currPublishTime] = getValueByYPath<string | undefined>(yRoot, `${base}.data.publish`)
 
