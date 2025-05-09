@@ -64,7 +64,9 @@ export function assignmentPlanningTemplate({
       end_date: planningDate,
       start_date: planningDate,
       start: startDate.toISOString(),
-      public: 'false',
+      public: assignmentType === 'flash'
+        ? 'false'
+        : 'true',
       ...(isTextOrFlash && { publish: new Date().toISOString() })
     },
     meta: [
