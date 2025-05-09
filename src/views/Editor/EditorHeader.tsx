@@ -12,8 +12,6 @@ import { useDeliverablePlanningId } from '@/hooks/index/useDeliverablePlanningId
 import { Button } from '@ttab/elephant-ui'
 import { updateAssignmentPublishTime } from '@/lib/index/updateAssignmentPublishTime'
 
-const BASE_URL = import.meta.env.BASE_URL || ''
-
 export const EditorHeader = ({ documentId, readOnly, readOnlyVersion }: { documentId: string, readOnly?: boolean, readOnlyVersion?: bigint }): JSX.Element => {
   const { viewId } = useView()
   const { state, dispatch } = useNavigation()
