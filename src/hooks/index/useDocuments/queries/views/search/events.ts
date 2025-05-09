@@ -56,6 +56,10 @@ export function constructQuery(filter: QueryParams | undefined): QueryV1 | undef
     addCondition('document.rel.organiser.uuid', filter.organiser)
   }
 
+  if (filter.category) {
+    addCondition('document.rel.category.uuid', filter.category)
+  }
+
   if (filter.query) {
     boolConditions.must.push(
       {
