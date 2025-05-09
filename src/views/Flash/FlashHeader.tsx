@@ -5,8 +5,8 @@ import { ZapIcon } from '@ttab/elephant-ui/icons'
 import { useState, useCallback } from 'react'
 import { toast } from 'sonner'
 import { useDeliverablePlanningId } from '@/hooks/index/useDeliverablePlanningId'
+import { updateAssignmentPublishTime } from '@/lib/index/updateAssignmentPublishTime'
 
-const BASE_URL = import.meta.env.BASE_URL || ''
 
 export const FlashHeader = (props: ViewProps) => {
   return (
@@ -65,41 +65,17 @@ const StatusMenuHeader = (props: ViewProps) => {
     }
 
     // We require a valid publish time if scheduling
-    if (newStatus === 'withheld' && !(data?.time instanceof Date)) {
+    if (!(data?.time instanceof Date)) {
       toast.error('Kunde inte schemalägga artikel! Tid eller datum är felaktigt angivet.')
       return false
     }
 
+    const newPublishTime = ((data?.time instanceof Date))
+      ? data.time
+      : new Date()
 
-    try {
-      const newPublishTime = ((data?.time instanceof Date))
-        ? data.time.toISOString()
-        : new Date().toISOString()
-
-      const response = await fetch(`${BASE_URL}/api/documents/${planningId}`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          assignment: {
-            deliverableId: props.id,
-            type: 'core/article',
-            status: newStatus,
-            publishTime: newPublishTime
-          }
-        })
-      })
-
-      if (!response.ok) {
-        console.log('Failed backend call to set assignment publish time', response.status, response.statusText)
-        toast.error('Det gick inte att ändra artikelns status. Uppdragets publiceringstid kunde inte ändras i den kopplade planeringen.')
-        return false
-      }
-    } catch (ex) {
-      console.error('Failed backend call to set publish time when changing status', (ex as Error).message)
-      toast.error('Det gick inte att ändra artikelns status. Uppdragets publiceringstid kunde inte ändras i den kopplade planeringen.')
-      return false
+    if (props.id) {
+      await updateAssignmentPublishTime(props.id, planningId, newStatus, newPublishTime)
     }
 
     return true

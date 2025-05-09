@@ -10,6 +10,7 @@ import { toast } from 'sonner'
 import { handleLink } from '@/components/Link/lib/handleLink'
 import { useDeliverablePlanningId } from '@/hooks/index/useDeliverablePlanningId'
 import { Button } from '@ttab/elephant-ui'
+import { updateAssignmentPublishTime } from '@/lib/index/updateAssignmentPublishTime'
 
 const BASE_URL = import.meta.env.BASE_URL || ''
 
@@ -81,36 +82,11 @@ export const EditorHeader = ({ documentId, readOnly, readOnlyVersion }: { docume
       return false
     }
 
-    try {
-      const newPublishTime = ((data?.time instanceof Date))
-        ? data.time.toISOString()
-        : new Date().toISOString()
+    const newPublishTime = ((data?.time instanceof Date))
+      ? data.time
+      : new Date()
 
-      const response = await fetch(`${BASE_URL}/api/documents/${planningId}`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          assignment: {
-            deliverableId: documentId,
-            type: 'core/article',
-            status: newStatus,
-            publishTime: newPublishTime
-          }
-        })
-      })
-
-      if (!response.ok) {
-        console.log('Failed backend call to set assignment publish time', response.status, response.statusText)
-        toast.error('Det gick inte att ändra artikelns status. Uppdragets publiceringstid kunde inte ändras i den kopplade planeringen.')
-        return false
-      }
-    } catch (ex) {
-      console.error('Failed backend call to set publish time when changing status', (ex as Error).message)
-      toast.error('Det gick inte att ändra artikelns status. Uppdragets publiceringstid kunde inte ändras i den kopplade planeringen.')
-      return false
-    }
+    await updateAssignmentPublishTime(documentId, planningId, newStatus, newPublishTime)
 
     return true
   }, [planningId, dispatch, documentId, history, state.viewRegistry, viewId, workflowStatus])
