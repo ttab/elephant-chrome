@@ -14,6 +14,11 @@ export const EditorialInfoTypes = (): JSX.Element => {
 
   const editorialInfoTypes = useEditorialInfoTypes()
   const onValueChange = (value: string) => {
+    if (value === 'empty') {
+      setType(undefined)
+      return
+    }
+
     const editorialInfoBlock = Block.create({
       uuid: value,
       type: 'tt/editorial-info-type',
@@ -25,12 +30,12 @@ export const EditorialInfoTypes = (): JSX.Element => {
   }
 
   return (
-    <Select onValueChange={onValueChange} name='EditorialInfoType' defaultValue={type?.uuid}>
+    <Select onValueChange={onValueChange} name='EditorialInfoType' defaultValue={type?.uuid || 'empty'}>
       <SelectTrigger>
-        <SelectValue placeholder='Välj PM-typ...' />
+        <SelectValue />
       </SelectTrigger>
       <SelectContent>
-        {editorialInfoTypes?.map((item) =>
+        {[{ id: 'empty', title: 'Ingen typ' }, ...editorialInfoTypes]?.map((item) =>
           <SelectItem key={item.id} value={item.id}>{item.title}</SelectItem>
         )}
       </SelectContent>
