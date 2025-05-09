@@ -133,7 +133,11 @@ export function eventTableColumns({ sections = [], organisers = [], locale }: {
       cell: ({ row }) => {
         const slugline = row.original.fields['document.meta.tt_slugline.value']?.values[0]
         const title = row.getValue('title')
-
+        const cancelled = row.original.fields['document.meta.core_event.data.cancelled']?.values[0]
+        if (cancelled) {
+          const isCancelled = cancelled === 'true'
+          return <Title title={title as string} slugline={slugline} cancelled={isCancelled} />
+        }
         return <Title title={title as string} slugline={slugline} />
       },
       enableGrouping: false
