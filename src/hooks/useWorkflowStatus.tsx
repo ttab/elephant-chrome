@@ -25,13 +25,14 @@ export const useWorkflowStatus = (uuid?: string, isWorkflow: boolean = false): [
       }
 
       const { meta } = await repository.getMeta({ uuid, accessToken: session.accessToken }) || {}
+
       if (!meta) {
         return
       }
 
+      const headsEntries = meta.heads && Object.entries(meta.heads)
       if (!isWorkflow) {
         const version = meta.currentVersion || 0n
-        const headsEntries = meta.heads && Object.entries(meta.heads)
         if (!headsEntries?.length) {
           return {
             uuid,
@@ -50,11 +51,16 @@ export const useWorkflowStatus = (uuid?: string, isWorkflow: boolean = false): [
         }
       }
 
+      const cause = headsEntries
+        .sort((a, b) =>
+          new Date(b[1].created).getTime() - new Date(a[1].created).getTime())?.[0]?.[1]?.meta?.cause
+
       return {
         uuid,
         version: meta.currentVersion || 0n,
         name: meta.workflowState || 'draft',
-        checkpoint: meta.workflowCheckpoint
+        checkpoint: meta.workflowCheckpoint,
+        cause
       }
     }
   )

@@ -1,17 +1,19 @@
-import { useAssignments } from '@/hooks/index/useAssignments'
-import { useSections } from '@/hooks/useSections'
+import { useDocuments } from '@/hooks/index/useDocuments'
 import type { LocaleData } from '@/types/index'
 import { type ViewMetadata } from '@/types/index'
-import { type Document } from '@ttab/elephant-api/newsdoc'
 import { Badge } from '@ttab/elephant-ui'
-import { useMemo, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { format } from 'date-fns'
 import { useRegistry } from '@/hooks/useRegistry'
 import { handleLink } from '@/components/Link/lib/handleLink'
 import { useHistory, useNavigation, useView } from '@/hooks/index'
-import type { StatusData } from 'src/datastore/types'
 import { cn } from '@ttab/elephant-ui/utils'
 import { ActionMenu } from './components/ActionMenu'
+import type { HitV1 } from '@ttab/elephant-api/index'
+import { QueryV1, SortingV1 } from '@ttab/elephant-api/index'
+import { useSession } from 'next-auth/react'
+import { toast } from 'sonner'
+import { useDeliverablePlanningId } from '@/hooks/index/useDeliverablePlanningId'
 
 const meta: ViewMetadata = {
   name: 'Latest',
@@ -29,90 +31,86 @@ const meta: ViewMetadata = {
   }
 }
 
-type DocumentExtended = Document & {
-  planningId: string
-  planningTitle: string
-  publish?: string
-  slugline?: string
-  section?: string
-  lastUsableVersion?: bigint
-}
-
 export const Latest = ({ setOpen }: { setOpen?: (open: boolean) => void }) => {
-  const date = useMemo(() => new Date(), [])
-  const [data] = useAssignments({
-    type: 'text',
-    date,
-    dateType: 'publish',
-    status: ['usable']
+  const { repository } = useRegistry()
+  const { data: session } = useSession()
+  const [versionedData, setVersionedData] = useState<HitV1[]>([])
+
+  const { data } = useDocuments({
+    documentType: 'core/article',
+    fields: [
+      'document.title',
+      'heads.usable.created',
+      'heads.usable.version',
+      'document.meta.tt_slugline.value',
+      'document.rel.section.title'
+    ],
+    query: QueryV1.create({
+      conditions: {
+        oneofKind: 'exists',
+        exists: 'heads.usable.created'
+      }
+    }),
+    sort: [
+      SortingV1.create({ field: 'heads.usable.created', desc: true })
+    ]
   })
+
+  // Append search result with the title of the usable version
+  useEffect(() => {
+    if (!data || !session?.accessToken) return
+
+    const fetchDocuments = async () => {
+      try {
+        const repositoryDocuments = await repository?.getDocuments({
+          documents: data.map(({ id, fields }: HitV1) => ({
+            uuid: id,
+            version: fields['heads.usable.version']?.values[0]
+              ? BigInt(fields['heads.usable.version'].values[0])
+              : undefined
+          })),
+          accessToken: session.accessToken
+        })
+
+        setVersionedData(
+          data.map((item) => {
+            const repoDoc = repositoryDocuments?.items.find(
+              (doc) => doc.document?.uuid === item.id
+            )
+
+            return {
+              ...item,
+              fields: {
+                ...item.fields,
+                'document.title': {
+                  values: [repoDoc?.document?.title || item.fields['document.title']?.values[0]]
+                }
+              }
+            }
+          })
+        )
+      } catch (error) {
+        console.error(error)
+        toast.error('Kunde inte hämta dokument')
+      }
+    }
+
+    void fetchDocuments()
+  }, [data, repository, session?.accessToken])
 
   const { locale } = useRegistry()
 
-  const sections = useSections().map((_) => {
-    return {
-      value: _.id,
-      label: _.title
-    }
-  })
-
-  const documents: DocumentExtended[] = useMemo(() => {
-    if (!data[0]?.items?.length) {
-      return []
-    }
-
-    return data[0].items.reduce((docs: DocumentExtended[], curr) => {
-      if (!curr._deliverableDocument) {
-        return docs
-      }
-
-      const doc: DocumentExtended = {
-        planningId: curr._planningId,
-        planningTitle: curr._planningTitle,
-        ...curr._deliverableDocument
-      }
-
-      if (curr?.data?.publish) {
-        doc.publish = curr.data.publish
-      }
-
-      if (curr?._section) {
-        doc.section = sections.find((s) => s.value === curr._section)?.label
-      }
-
-      const lastUsableVersion = () => {
-        if (!curr._statusData) {
-          return
-        }
-
-        const parsedData = JSON.parse(curr._statusData) as StatusData
-        const lastUsableVersion = parsedData?.heads.usable?.version
-        return lastUsableVersion
-      }
-
-      if (lastUsableVersion()) {
-        doc.lastUsableVersion = lastUsableVersion()
-      }
-
-      doc.slugline = curr._deliverableDocument.meta.find((m) => m.type === 'tt/slugline')?.value
-
-      docs.push(doc)
-      return docs
-    }, [])
-  }, [data, sections])
-
-
-  if (!documents.length) {
+  if (!versionedData?.length) {
     return <div className='min-h-screen text-center py-2'>Laddar...</div>
   }
 
   return (
-    <Content documents={documents} locale={locale} setOpen={setOpen} />
+    <Content documents={versionedData} locale={locale} setOpen={setOpen} />
   )
 }
 
 const Content = ({ documents, locale }: {
-  documents: DocumentExtended[]
+  documents: HitV1[]
   locale: LocaleData
   setOpen?: (open: boolean) => void
 }): JSX.Element => {
@@ -133,12 +131,17 @@ const Content = ({ documents, locale }: {
 
   return (
     <div className='min-h-screen max-h-screen overflow-y-auto divide-y'>
-      {documents.map((itm: DocumentExtended) => {
-        if (!itm) {
+      {documents.map((item: HitV1) => {
+        if (!item) {
           return <></>
         }
 
-        const { title, uuid: id, lastUsableVersion } = itm
+        const id = item.id
+        const title = item.fields['document.title']?.values[0]
+        const lastUsableVersion = item.fields['heads.usable.version']?.values[0]
+        const publish = item.fields['heads.usable.created']?.values[0]
+        const slugline = item.fields['document.meta.tt_slugline.value']?.values[0]
+        const section = item.fields['document.rel.section.title']?.values[0]
 
         return (
           <div
@@ -166,7 +169,7 @@ const Content = ({ documents, locale }: {
                 <div className='font-medium'>{title}</div>
 
                 <div className='text-xs text-muted-foreground'>
-                  {itm?.publish && <div>{`${getLocalizedDate(new Date(itm.publish), locale)}`}</div>}
+                  {publish && <div>{`${getLocalizedDate(new Date(publish), locale)}`}</div>}
                 </div>
 
                 <div className='flex gap-2 items-center w-full text-muted-foreground  -ml-1'>
@@ -176,32 +179,16 @@ const Content = ({ documents, locale }: {
                     className='bg-background rounded-md text-muted-foreground font-normal text-sm whitespace-nowrap'
                     data-row-action
                   >
-                    {itm.slugline}
+                    {slugline}
                   </Badge>
 
                   <div>
-                    {itm.section}
+                    {section}
                   </div>
                 </div>
               </div>
             </div>
-
-            <div className='shrink p-'>
-              <ActionMenu
-                actions={[
-                  {
-                    to: 'Editor',
-                    id,
-                    title
-                  },
-                  {
-                    to: 'Planning',
-                    id: itm.planningId,
-                    title: itm.planningTitle
-                  }
-                ]}
-              />
-            </div>
+            <Menu articleId={id} />
           </div>
         )
       }
@@ -210,5 +197,28 @@ const Content = ({ documents, locale }: {
   )
 }
 
+
+const Menu = ({ articleId }: { articleId: string }): JSX.Element => {
+  const planningId = useDeliverablePlanningId(articleId)
+  return (
+    <div className='shrink p-'>
+      <ActionMenu
+        actions={[
+          {
+            to: 'Editor',
+            id: articleId,
+            title: 'Öppna artikel'
+          },
+
+          {
+            to: 'Planning',
+            id: planningId,
+            title: 'Öppna planering'
+          }
+        ]}
+      />
+    </div>
+  )
+}
 
 Latest.meta = meta

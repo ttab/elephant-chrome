@@ -56,8 +56,7 @@ export const useAssignments = ({ date, type, dateType = 'start-date', slots, sta
 
   const facets = getFacets(data)
 
-
-  useRepositoryEvents(['core/planning-item', 'core/planning-item+meta'], (event) => {
+  useRepositoryEvents(['core/planning-item', 'core/planning-item+meta', 'core/article', 'core/article+meta'], (event) => {
     if ((event.event !== 'document' && event.event !== 'status' && event.event !== 'delete_document')) {
       return
     }
@@ -69,7 +68,7 @@ export const useAssignments = ({ date, type, dateType = 'start-date', slots, sta
     for (const slot of structuredData) {
       const assignment = slot.items
         .find((assignment) =>
-          (assignment._id === event.uuid || event.mainDocument === assignment._id))
+          (assignment._id === event.uuid || event.mainDocument === assignment._id || assignment._deliverableId === event.uuid))
       if (assignment) {
         void mutate()
         return

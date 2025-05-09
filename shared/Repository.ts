@@ -26,6 +26,7 @@ export interface Status {
   version: bigint
   uuid: string
   checkpoint?: string
+  cause?: string
 }
 
 export class Repository {
@@ -81,17 +82,18 @@ export class Repository {
    * @param options - { uuids: string[], accessToken: string }
    * @returns Promise<BulkGetResponse | null>
    */
-  async getDocuments({ uuids, accessToken }: {
-    uuids: string[]
+  async getDocuments({ documents, accessToken }: {
+    documents: { uuid: string, version?: bigint }[]
     accessToken: string
   }): Promise<BulkGetResponse | null> {
-    if (!uuids.length || uuids.filter(isValidUUID).length !== uuids.length) {
+    if (!documents.length || !documents.filter((document) => isValidUUID(document.uuid)).length) {
       return null
     }
 
     try {
       const { response } = await this.#client.bulkGet({
-        documents: uuids.map((uuid) => { return { uuid, version: BigInt(0) } })
+        documents: documents.map((document) =>
+          ({ uuid: document.uuid, version: document.version || 0n }))
       }, meta(accessToken))
 
       return response

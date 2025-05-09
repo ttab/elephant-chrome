@@ -10,6 +10,7 @@ import { SluglineEditable } from '@/components/DataItem/SluglineEditable'
 import { Form } from '@/components/Form'
 import { type FormProps } from '@/components/Form/Root'
 import { useEffect, useRef } from 'react'
+import { AssignmentVisibility } from '@/components/DataItem/AssignmentVisibility'
 
 export const Assignment = ({ index, onAbort, onClose }: {
   index: number
@@ -20,8 +21,11 @@ export const Assignment = ({ index, onAbort, onClose }: {
   const [assignment] = useYValue<boolean>(`meta.core/assignment[${index}]`)
   const [articleId] = useYValue<string>(`meta.core/assignment[${index}].links.core/article[0].uuid`)
   const [flashId] = useYValue<string>(`meta.core/assignment[${index}].links.core/flash[0].uuid`)
+  const [editorialInfoId] = useYValue<string>(`meta.core/assignment[${index}].links.core/editorial-info[0].uuid`)
   const [assignmentInProgress] = useYValue<boolean>(`meta.core/assignment[${index}].__inProgress`)
   const [assignmentType] = useYValue<string | undefined>(`meta.core/assignment[${index}].meta.core/assignment-type[0].value`)
+
+  const documentId = articleId || flashId || editorialInfoId
 
   const formRef = useRef<HTMLDivElement>(null)
 
@@ -71,7 +75,7 @@ export const Assignment = ({ index, onAbort, onClose }: {
           && (
             <Form.Group icon={Tags}>
               <SluglineEditable
-                disabled={!!articleId || !!flashId}
+                disabled={!!documentId}
                 path={`meta.core/assignment[${index}].meta.tt/slugline[0].value`}
               />
             </Form.Group>
@@ -80,7 +84,7 @@ export const Assignment = ({ index, onAbort, onClose }: {
 
           <Form.Group>
             <AssignmentType
-              path={`meta.core/assignment[${index}].meta.core/assignment-type`}
+              path={`meta.core/assignment[${index}]`}
               editable={!articleId && !flashId}
             />
             <Assignees
@@ -88,6 +92,12 @@ export const Assignment = ({ index, onAbort, onClose }: {
               placeholder='Lägg till uppdragstagare'
             />
             <AssignmentTime index={index} />
+            <AssignmentVisibility
+              path={`meta.core/assignment[${index}].data.public`}
+              disabled={!!documentId}
+              editable
+              className='ml-auto'
+            />
           </Form.Group>
 
         </Form.Content>

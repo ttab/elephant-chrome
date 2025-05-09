@@ -1,4 +1,4 @@
-import { useHistory, useNavigation, useView, useWorkflowStatus, useYValue } from '@/hooks'
+import { useHistory, useLink, useNavigation, useView, useWorkflowStatus, useYValue } from '@/hooks'
 import { Newsvalue } from '@/components/Newsvalue'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { MetaSheet } from './components/MetaSheet'
@@ -11,6 +11,7 @@ import { handleLink } from '@/components/Link/lib/handleLink'
 import { useDeliverablePlanningId } from '@/hooks/index/useDeliverablePlanningId'
 
 const BASE_URL = import.meta.env.BASE_URL || ''
+import { Button } from '@ttab/elephant-ui'
 
 export const EditorHeader = ({ documentId, readOnly, readOnlyVersion }: { documentId: string, readOnly?: boolean, readOnlyVersion?: bigint }): JSX.Element => {
   const { viewId } = useView()
@@ -21,6 +22,8 @@ export const EditorHeader = ({ documentId, readOnly, readOnlyVersion }: { docume
   const [publishTime] = useState<string | null>(null)
   const [workflowStatus] = useWorkflowStatus(documentId, true)
   const [documentType] = useYValue<string>('root.type')
+
+  const openLatestVersion = useLink('Editor')
 
   useEffect(() => {
     containerRef.current = (document.getElementById(viewId))
@@ -113,6 +116,9 @@ export const EditorHeader = ({ documentId, readOnly, readOnlyVersion }: { docume
   }, [planningId, dispatch, documentId, history, state.viewRegistry, viewId, workflowStatus])
 
   const title = documentType === 'core/editorial-info' ? 'Till red' : 'Artikel'
+
+  const isReadOnlyAndUpdated = workflowStatus && workflowStatus?.name !== 'usable' && readOnly
+
   return (
     <ViewHeader.Root>
       <ViewHeader.Title name='Editor' title={title} icon={readOnly ? PenOff : PenBoxIcon} />
@@ -131,7 +137,22 @@ export const EditorHeader = ({ documentId, readOnly, readOnlyVersion }: { docume
               <>
                 {!readOnly && <ViewHeader.RemoteUsers documentId={documentId} />}
 
-                {!!planningId && (
+                {isReadOnlyAndUpdated && (
+                  <Button
+                    variant='secondary'
+                    onClick={(event) => {
+                      openLatestVersion(
+                        event,
+                        { id: documentId },
+                        'self'
+                      )
+                    }}
+                  >
+                    Gå till senaste versionen
+                  </Button>
+                )}
+
+                {!!planningId && !isReadOnlyAndUpdated && (
                   <StatusMenu
                     documentId={documentId}
                     type={documentType || 'core/article'}

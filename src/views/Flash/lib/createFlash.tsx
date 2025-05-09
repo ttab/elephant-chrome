@@ -70,7 +70,7 @@ export function createFlash({
             end_date: localISODateTime,
             start: zuluISODate,
             end: zuluISODate,
-            public: 'true',
+            public: 'false', // flashes should be private
             publish: new Date().toISOString()
           }
         })

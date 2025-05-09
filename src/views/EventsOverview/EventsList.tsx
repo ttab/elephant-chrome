@@ -8,26 +8,24 @@ import { eventTableColumns } from '@/views/EventsOverview/EventsListColumns'
 import { Table } from '@/components/Table'
 import { useDocuments } from '@/hooks/index/useDocuments'
 import { SortingV1 } from '@ttab/elephant-api/index'
-import { getDateTimeBoundaries } from '@/lib/datetime'
-import { parseISO } from 'date-fns'
-import { toZonedTime } from 'date-fns-tz'
 import { toast } from 'sonner'
+import { getDateTimeBoundariesUTC } from '@/lib/datetime'
 
 export const EventsList = (): JSX.Element => {
   const sections = useSections()
   const organisers = useOrganisers()
   const { locale } = useRegistry()
 
-  const [query] = useQuery(['from', 'to'])
-  const { startTime: from, endTime: to } = useMemo(() => {
-    const date = typeof query.from === 'string' ? parseISO(query.from) : Date.now()
-    const utcDate = toZonedTime(date, 'Europe/Stockholm')
-    return getDateTimeBoundaries(utcDate)
-  }, [query.from])
+  const [query] = useQuery()
+  const { from, to } = useMemo(() =>
+    getDateTimeBoundariesUTC(typeof query.from === 'string'
+      ? new Date(`${query.from}T00:00:00.000Z`)
+      : new Date())
+  , [query.from])
 
   const { error } = useDocuments<Event, EventFields>({
     documentType: 'core/event',
-    query: constructQuery({ from: from.toISOString(), to: to.toISOString() }),
+    query: constructQuery({ from, to }),
     fields,
     sort: [
       SortingV1.create({ field: 'document.meta.core_newsvalue.value', desc: true }),
