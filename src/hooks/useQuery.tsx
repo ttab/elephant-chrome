@@ -9,13 +9,16 @@ export type QueryParams = Record<string, string | string[] | undefined>
  * @returns {Array} A tuple containing:
  *  - queryParams: An object representing the current query parameters.
  *  - setQueryString: A function to update the query parameters.
+ *  - optional: allQueries: The parameters of all current views
  *
  * The setQueryString function can be used to add, update, or remove query parameters.
  * - To add or update a parameter, pass an object with the parameter name and value.
  * - To remove a parameter, pass an object with the parameter name and `undefined` as the value.
  * - To reset all parameters, pass an empty object.
  */
-export const useQuery = (keys?: string[]): [QueryParams, (params: QueryParams) => void] => {
+
+type AllParamsType = { name: string, params: unknown, viewId: string }
+export const useQuery = (keys?: string[], allParams?: boolean): [QueryParams, (params: QueryParams) => void, allViews?: Array<AllParamsType>] => {
   const {
     state: historyState,
     replaceState
@@ -116,5 +119,20 @@ export const useQuery = (keys?: string[]): [QueryParams, (params: QueryParams) =
     setQueryParams(parseQueryString())
   }, [historyState, replaceState, viewId, parseQueryString])
 
+  if (allParams && keys?.length) {
+    const allQueries = historyState?.contentState.filter((c) => {
+      const props = c.props ? Object.keys(c.props) : {}
+      if (Array.isArray(props) && props?.length > 0) {
+        return props?.some((p: string) => keys.includes(p))
+      }
+      return false
+    }).map((q) => ({
+      name: q.name,
+      params: q.props,
+      viewId: q.viewId
+    }))
+
+    return [queryParams, setQueryString, allQueries]
+  }
   return [queryParams, setQueryString]
 }
