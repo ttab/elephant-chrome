@@ -1,45 +1,36 @@
-import { StatusSpecifications } from '@/defaults/workflowSpecification'
 import { useYValue } from '@/hooks/useYValue'
-import {
-  Select,
-  SelectTrigger,
-  SelectContent,
-  SelectItem,
-  Tooltip
-} from '@ttab/elephant-ui'
+import { Tooltip, Select, SelectTrigger, SelectContent, SelectItem } from '@ttab/elephant-ui'
+import { Building, Globe } from '@ttab/elephant-ui/icons'
 import { cn } from '@ttab/elephant-ui/utils'
-import { useCallback } from 'react'
+import { useCallback, useMemo } from 'react'
 
-export const AssignmentVisibility = ({ path, editable, disabled, className }: {
+export const AssignmentVisibility = ({ path, editable, disabled, className = '' }: {
   path: string
   editable: boolean
   disabled: boolean
   className?: string
 }): JSX.Element => {
-  const [visibilityStatus] = useYValue<string>(path)
-  const [, setAssignmentVisibility] = useYValue<string>(path)
+  const [visibilityStatus, setAssignmentVisibility] = useYValue<string>(path)
 
   const onValueChange = useCallback(
     (value: string) => setAssignmentVisibility(value),
     [setAssignmentVisibility]
   )
 
-  const renderIcon = useCallback(
-    (statusKey: 'usable' | 'done') => {
-      const status = StatusSpecifications[statusKey]
-      const IconComponent = status?.icon
-      return IconComponent
-        ? <IconComponent strokeWidth={1.75} className={status.className} />
-        : null
-    },
-    []
+  const tooltipContent = useMemo(
+    () => (visibilityStatus === 'true' ? 'Publikt' : 'Internt'),
+    [visibilityStatus]
   )
+
+  const renderIcon = (status: string) => status === 'true'
+    ? <Globe size={18} strokeWidth={1.75} className='text-muted-foreground' />
+    : <Building size={18} strokeWidth={1.75} className='text-muted-foreground' />
 
   if (!editable && visibilityStatus) {
     return (
       <div className={cn('flex items-center', className)}>
-        <Tooltip content={visibilityStatus === 'true' ? 'Publikt' : 'Internt'}>
-          {renderIcon(visibilityStatus === 'true' ? 'usable' : 'done')}
+        <Tooltip content={tooltipContent}>
+          {renderIcon(visibilityStatus)}
         </Tooltip>
       </div>
     )
@@ -53,19 +44,17 @@ export const AssignmentVisibility = ({ path, editable, disabled, className }: {
         defaultValue={visibilityStatus || 'false'}
         disabled={disabled}
       >
-        <SelectTrigger>
-          {renderIcon(visibilityStatus === 'true' ? 'usable' : 'done')}
-        </SelectTrigger>
+        <SelectTrigger>{renderIcon(visibilityStatus || 'false')}</SelectTrigger>
         <SelectContent>
           <SelectItem key='true' value='true'>
             <span className='flex flex-row gap-2'>
-              {renderIcon('usable')}
-              Publikt
+              <Building size={18} strokeWidth={1.75} />
+              Publik
             </span>
           </SelectItem>
           <SelectItem key='false' value='false'>
             <span className='flex flex-row gap-2'>
-              {renderIcon('done')}
+              <Globe size={18} strokeWidth={1.75} />
               Internt
             </span>
           </SelectItem>
