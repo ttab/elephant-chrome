@@ -314,11 +314,12 @@ export class CollaborationServer {
     return Y.encodeStateAsUpdate(yDoc)
   }
 
-  async snapshotDocument({ documentName, document: yDoc, context, force = false }: {
+  async snapshotDocument({ documentName, document: yDoc, context, force = false, transacting = false }: {
     documentName: string
     document: Y.Doc
     context: Context
     force?: boolean
+    transacting?: boolean
   }): Promise<FinishedUnaryCall<UpdateRequest, UpdateResponse> | null> {
     // Ignore userTracker documents
     if (context.user.sub?.endsWith(documentName)) {
@@ -349,7 +350,9 @@ export class CollaborationServer {
       fromGroupedNewsDoc(documentResponse),
       hash,
       context.accessToken,
-      context
+      context,
+      undefined,
+      transacting ? yDoc : undefined
     )
   }
 
@@ -359,7 +362,8 @@ export class CollaborationServer {
     updatedHash: number,
     accessToken: string,
     context: Context,
-    status?: string
+    status?: string,
+    transactingDoc?: Y.Doc
   ): Promise<FinishedUnaryCall<UpdateRequest, UpdateResponse>> {
     const { document, version } = documentResponse
     if (!document) {
@@ -380,6 +384,25 @@ export class CollaborationServer {
       throw new Error('Save snapshot document to repository failed', { cause: result })
     }
 
+    // Local function to update document version
+    const updateDocument = (yDoc: Y.Doc, version: string, updatedHash: number) => {
+      const versionMap = yDoc.getMap('version')
+      const hashMap = yDoc.getMap('hash')
+
+      versionMap.set('version', version)
+      hashMap.set('hash', updatedHash)
+    }
+
+    // If we have a Y.Doc in an existing transaction in an existing direct
+    // connection we can just make the changes we need and call it quits.
+    if (transactingDoc) {
+      updateDocument(transactingDoc, result?.response.version.toString(), updatedHash)
+      logger.debug(`::: Document saved to repository: ${document.uuid}, version: ${result.response.version} 'new hash:' ${updatedHash}`)
+      return result
+    }
+
+    // When we don't have a transactingDoc we need to open a new direct
+    // connnection and start a transaction to get the Y.Doc to change.
     const connection = await this.server.openDirectConnection(documentName, {
       ...context || {},
       agent: 'server'
@@ -388,14 +411,12 @@ export class CollaborationServer {
     })
 
     await connection.transact((doc) => {
-      const versionMap = doc.getMap('version')
-      const hashMap = doc.getMap('hash')
-
-      versionMap.set('version', result?.response.version.toString())
-      hashMap.set('hash', updatedHash)
+      updateDocument(doc, result?.response.version.toString(), updatedHash)
     }).catch((ex) => {
       throw new Error('Update document with new hash and version failed', { cause: ex })
     })
+
+    await connection.disconnect()
 
     logger.debug(`::: Document saved to repository: ${document.uuid}, version: ${result.response.version} 'new hash:' ${updatedHash}`)
     return result
