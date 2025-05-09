@@ -9,9 +9,9 @@ import { PenBoxIcon, PenOff } from '@ttab/elephant-ui/icons'
 import { toast } from 'sonner'
 import { handleLink } from '@/components/Link/lib/handleLink'
 import { useDeliverablePlanningId } from '@/hooks/index/useDeliverablePlanningId'
+import { Button } from '@ttab/elephant-ui'
 
 const BASE_URL = import.meta.env.BASE_URL || ''
-import { Button } from '@ttab/elephant-ui'
 
 export const EditorHeader = ({ documentId, readOnly, readOnlyVersion }: { documentId: string, readOnly?: boolean, readOnlyVersion?: bigint }): JSX.Element => {
   const { viewId } = useView()
