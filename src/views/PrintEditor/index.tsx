@@ -37,7 +37,7 @@ import {
   useWorkflowStatus
 } from '@/hooks'
 import { type ViewMetadata, type ViewProps } from '@/types'
-import { EditorHeader } from './EditorHeader'
+import { EditorHeader } from './PrintEditorHeader'
 import { LayoutBox } from './LayoutBox'
 import { type HocuspocusProvider } from '@hocuspocus/provider'
 import { type AwarenessUserData } from '@/contexts/CollaborationProvider'
@@ -274,7 +274,7 @@ function EditorContainer({
     if (!repository || !session) {
       throw new Error('Repository or session not found')
     }
-    const result = await repository.saveDocument(_document, session.accessToken, 0n, workflowStatus?.name || 'draft')
+    const result = await repository.saveDocument(_document as Document, session.accessToken, 0n, workflowStatus?.name || 'draft')
     if (result?.status.code !== 'OK') {
       throw new Error(`Failed to save print article`)
     }
@@ -343,10 +343,10 @@ function EditorContainer({
                       layout={layout}
                       updateLayout={updateLayout}
                       isDirty={isDirty}
-                      setIsDirty={setIsDirty}
-                      setLayouts={setLayouts}
-                      cleanLayouts={cleanLayouts}
-                      saveUpdates={saveUpdates}
+                      setIsDirty={() => setIsDirty(undefined)}
+                      setLayouts={(newLayouts: Layout[] | ((prevState: Layout[]) => Layout[])) => setLayouts(newLayouts)}
+                      cleanLayouts={cleanLayouts || []}
+                      saveUpdates={() => saveUpdates(layouts || [])}
                       deleteLayout={deleteLayout}
                     />
                   )

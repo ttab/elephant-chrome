@@ -5,8 +5,6 @@ import { fetch } from './lib/printArticles'
 import { useTable } from '../useTable'
 import { useEffect } from 'react'
 import type { PrintArticle } from './lib/printArticles'
-import { useQuery } from '../useQuery'
-import type { QueryParams } from '../useQuery'
 import { useWorkflowStatus } from '../useWorkflowStatus'
 /**
  * Custom hook to fetch print articles using SWR.
@@ -32,7 +30,6 @@ export const usePrintArticles = ({ filter, page, id }: {
   const { data: session } = useSession()
   const { index, repository } = useRegistry()
   const { setData } = useTable<PrintArticle>()
-  const [query] = useQuery()
   const [workflowStatus] = useWorkflowStatus(id as string, true)
   // Create a key for the SWR cache, if it changes we do a refetch
   const key = filter

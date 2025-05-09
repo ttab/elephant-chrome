@@ -34,8 +34,8 @@ export function printArticlesListColumns(): Array<ColumnDef<PrintArticle>> {
       },
       accessorFn: (data) => (data.fields['workflow_state'].values[0]),
       cell: ({ row }) => {
-        const status = row.original.fields['workflow_state']?.values[0] || 'draft' // row?.getValue('workflowState')
-        return <DocumentStatus type='tt/print-article' status={status as string} />
+        const status = row.original.fields['workflow_state']?.values[0] || 'draft'
+        return <DocumentStatus type='tt/print-article' status={status} />
       }
     },
     {

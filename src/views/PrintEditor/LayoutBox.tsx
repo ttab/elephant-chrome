@@ -145,7 +145,7 @@ export function LayoutBox({
                 >
                   Avbryt
                 </Button>
-                <Button className='p-2' size='sm' onClick={() => saveUpdates()}>Spara</Button>
+                <Button className='p-2' size='sm' onClick={async () => await saveUpdates()}>Spara</Button>
               </>
             )}
       </header>
