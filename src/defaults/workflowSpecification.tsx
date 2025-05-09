@@ -69,6 +69,11 @@ export const WorkflowSpecifications: Record<string, WorkflowSpecification> = {
           verify: true,
           title: 'Publicera externt',
           description: 'Publicera händelsen externt'
+        },
+        cancelled: {
+          verify: true,
+          title: 'Markera som inställd',
+          description: 'Markera händelsen som inställd'
         }
       }
     },
@@ -80,6 +85,11 @@ export const WorkflowSpecifications: Record<string, WorkflowSpecification> = {
           verify: true,
           title: 'Publicera',
           description: 'Publicera händelsen externt'
+        },
+        cancelled: {
+          verify: true,
+          title: 'Dra tillbaka',
+          description: 'Markera händelsen som inställd'
         }
       }
     },
@@ -89,7 +99,23 @@ export const WorkflowSpecifications: Record<string, WorkflowSpecification> = {
       transitions: {
         cancelled: {
           title: 'Dra tillbaka',
-          description: 'Avbryt publiceringen och arkivera händelsen'
+          description: 'Avbryt och markera händelsen som inställd'
+        }
+      }
+    },
+    cancelled: {
+      title: 'Inställd',
+      description: 'Händelsen har ställts in',
+      transitions: {
+        done: {
+          default: true,
+          title: 'Publicera internt',
+          description: 'Publicera händelsen internt hos TT'
+        },
+        usable: {
+          verify: true,
+          title: 'Publicera externt',
+          description: 'Publicera händelsen externt'
         }
       }
     }
@@ -119,6 +145,10 @@ export const WorkflowSpecifications: Record<string, WorkflowSpecification> = {
           verify: true,
           title: 'Publicera',
           description: 'Publicera planeringen externt synlig'
+        },
+        cancelled: {
+          title: 'Dra tillbaka',
+          description: 'Avbryt publiceringen och arkivera planeringen'
         }
       }
     },
@@ -131,6 +161,11 @@ export const WorkflowSpecifications: Record<string, WorkflowSpecification> = {
           description: 'Avbryt publiceringen och arkivera planeringen'
         }
       }
+    },
+    cancelled: {
+      title: 'Inställd',
+      description: 'Planeringen är inställd. Lägg till ytterligare innehåll för att fortsätta med en ny version.',
+      transitions: {}
     }
   },
   'core/article': {
