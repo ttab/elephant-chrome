@@ -93,6 +93,8 @@ async function createSnapshot(collaborationServer: CollaborationServer, payload:
   context: Context
   force?: boolean
 }): Promise<Response> {
+  // FIXME: We should probably expose collaborationServer.#storeDocumentInRepository and call directly
+  // FIXME: So we don't need to pass on transacting etc.
   const response = await collaborationServer.snapshotDocument({
     ...payload,
     transacting: true
