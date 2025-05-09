@@ -52,6 +52,10 @@ export function constructQuery(filter: QueryParams | undefined): QueryV1 | undef
     addCondition('document.meta.core_newsvalue.value', filter.newsvalue)
   }
 
+  if (filter.organiser) {
+    addCondition('document.rel.organiser.uuid', filter.organiser)
+  }
+
   if (filter.query) {
     boolConditions.must.push(
       {
@@ -71,6 +75,28 @@ export function constructQuery(filter: QueryParams | undefined): QueryV1 | undef
       })
   }
 
+
+  // No other filters than type and query, and query is empty, do a matchAll
+  if (Object.keys(filter).every((key) => {
+    if (key === 'type') {
+      return true
+    }
+
+    if (key === 'query') {
+      return !filter.query
+    }
+
+    return false
+  })
+  ) {
+    return QueryV1.create({
+      conditions: {
+        oneofKind: 'matchAll',
+        matchAll: {}
+      }
+    })
+  }
+
   return query
 }
 
@@ -80,8 +106,8 @@ const params = (filter: QueryParams) => ({
   documentType: 'core/event',
   fields,
   sort: [
-    SortingV1.create({ field: 'document.meta.core_newsvalue.value', desc: true }),
-    SortingV1.create({ field: 'document.meta.core_event.data.start', desc: true })
+    SortingV1.create({ field: 'document.meta.core_event.data.start', desc: true }),
+    SortingV1.create({ field: 'document.meta.core_newsvalue.value', desc: true })
   ],
   query: constructQuery(filter)
 })

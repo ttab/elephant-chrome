@@ -70,7 +70,7 @@ export const Commands = (props: FilterProps & { type: SearchKeys }): JSX.Element
         filterPage='newsvalue'
         Icon={SignalHigh}
       />
-      {type !== 'articles' && (
+      {type !== 'articles' && type !== 'events' && (
         <OptionsFilter
           {...props}
           options={AssignmentTypes}
