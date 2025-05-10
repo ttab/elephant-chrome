@@ -9,6 +9,7 @@ export const _fields = [
   'document.meta.status',
   'document.meta.core_event.data.start',
   'document.meta.core_event.data.end',
+  'document.meta.core_event.data.cancelled',
   'document.meta.core_newsvalue.value',
   'document.meta.tt_slugline.value',
   'document.rel.organiser.title',
@@ -17,7 +18,8 @@ export const _fields = [
   'heads.usable.created',
   'heads.done.created',
   'heads.approved.created',
-  'heads.withheld.created'
+  'heads.withheld.created',
+  'heads.cancelled.created'
 ] as const
 
 /**
