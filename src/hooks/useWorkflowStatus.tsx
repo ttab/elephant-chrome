@@ -5,6 +5,7 @@ import { useRegistry } from '@/hooks'
 import { toast } from 'sonner'
 import type { Status } from '@/shared/Repository'
 import { snapshot } from '@/lib/snapshot'
+import { getStatusFromMeta } from '@/lib/getStatusFromMeta'
 
 export const useWorkflowStatus = (uuid?: string, isWorkflow: boolean = false): [
   Status | undefined,
@@ -21,7 +22,7 @@ export const useWorkflowStatus = (uuid?: string, isWorkflow: boolean = false): [
     async () => {
       // Dont try to fetch if document is inProgress
       if (!session || !repository || !uuid) {
-        return undefined
+        return
       }
 
       const { meta } = await repository.getMeta({ uuid, accessToken: session.accessToken }) || {}
@@ -30,37 +31,9 @@ export const useWorkflowStatus = (uuid?: string, isWorkflow: boolean = false): [
         return
       }
 
-      const headsEntries = meta.heads && Object.entries(meta.heads)
-      if (!isWorkflow) {
-        const version = meta.currentVersion || 0n
-        if (!headsEntries?.length) {
-          return {
-            uuid,
-            version,
-            name: 'draft'
-          }
-        }
-
-        return {
-          uuid,
-          version,
-          name: headsEntries
-            .filter((entry) => entry[1].version === version)
-            .sort((a, b) =>
-              new Date(b[1].created).getTime() - new Date(a[1].created).getTime())?.[0]?.[0] || 'draft'
-        }
-      }
-
-      const cause = headsEntries
-        .sort((a, b) =>
-          new Date(b[1].created).getTime() - new Date(a[1].created).getTime())?.[0]?.[1]?.meta?.cause
-
       return {
         uuid,
-        version: meta.currentVersion || 0n,
-        name: meta.workflowState || 'draft',
-        checkpoint: meta.workflowCheckpoint,
-        cause
+        ...getStatusFromMeta(meta)
       }
     }
   )
@@ -158,3 +131,5 @@ export const useWorkflowStatus = (uuid?: string, isWorkflow: boolean = false): [
 
   return [documentStatus, setDocumentStatus]
 }
+
+
