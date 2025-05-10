@@ -72,8 +72,8 @@ export const WorkflowSpecifications: Record<string, WorkflowSpecification> = {
         },
         cancelled: {
           verify: true,
-          title: 'Markera som inställd',
-          description: 'Markera händelsen som inställd'
+          title: 'Avbryt',
+          description: 'Avbryt, gå inte vidare med händelsen'
         }
       }
     },
@@ -86,10 +86,10 @@ export const WorkflowSpecifications: Record<string, WorkflowSpecification> = {
           title: 'Publicera',
           description: 'Publicera händelsen externt'
         },
-        cancelled: {
+        unpublished: {
           verify: true,
-          title: 'Dra tillbaka',
-          description: 'Markera händelsen som inställd'
+          title: 'Avpublicera',
+          description: 'Avpublicera händelsen'
         }
       }
     },
@@ -97,18 +97,19 @@ export const WorkflowSpecifications: Record<string, WorkflowSpecification> = {
       title: 'Publicerad',
       description: 'Händelsen är publicerad externt',
       transitions: {
-        cancelled: {
-          title: 'Dra tillbaka',
-          description: 'Avbryt och markera händelsen som inställd'
+        unpublished: {
+          verify: true,
+          title: 'Avpublicera',
+          description: 'Avpublicera händelsen externt'
         }
       }
     },
     cancelled: {
-      title: 'Inställd',
-      description: 'Händelsen har ställts in',
+      title: 'Avbruten',
+      description: 'Händelsen har avbrutits. Lägg till innehåll för att fortsätta med en ny version.',
       transitions: {
         done: {
-          default: true,
+          verify: true,
           title: 'Publicera internt',
           description: 'Publicera händelsen internt hos TT'
         },
@@ -134,6 +135,11 @@ export const WorkflowSpecifications: Record<string, WorkflowSpecification> = {
           verify: true,
           title: 'Publicera externt',
           description: 'Publicera planeringen externt'
+        },
+        cancelled: {
+          verify: true,
+          title: 'Avbryt',
+          description: 'Avbryt, gå inte vidare med planeringen'
         }
       }
     },
@@ -146,9 +152,10 @@ export const WorkflowSpecifications: Record<string, WorkflowSpecification> = {
           title: 'Publicera',
           description: 'Publicera planeringen externt synlig'
         },
-        cancelled: {
-          title: 'Dra tillbaka',
-          description: 'Avbryt publiceringen och arkivera planeringen'
+        unpublished: {
+          verify: true,
+          title: 'Avpublicera',
+          description: 'Avpublicera planeringen'
         }
       }
     },
@@ -156,16 +163,28 @@ export const WorkflowSpecifications: Record<string, WorkflowSpecification> = {
       title: 'Publicerad',
       description: 'Planeringen är publicerad',
       transitions: {
-        cancelled: {
-          title: 'Dra tillbaka',
-          description: 'Avbryt publiceringen och arkivera planeringen'
+        unpublished: {
+          verify: true,
+          title: 'Avpublicera',
+          description: 'Avpublicera planeringen externt'
         }
       }
     },
     cancelled: {
-      title: 'Inställd',
-      description: 'Planeringen är inställd. Lägg till ytterligare innehåll för att fortsätta med en ny version.',
-      transitions: {}
+      title: 'Avbruten',
+      description: 'Planeringen har avbrutits. Lägg till innehåll för att fortsätta med en ny version.',
+      transitions: {
+        done: {
+          verify: true,
+          title: 'Publicera internt',
+          description: 'Publicera planeringen internt hos TT'
+        },
+        usable: {
+          verify: true,
+          title: 'Publicera externt',
+          description: 'Publicera planeringen externt'
+        }
+      }
     }
   },
   'core/article': {
@@ -191,6 +210,11 @@ export const WorkflowSpecifications: Record<string, WorkflowSpecification> = {
           verify: true,
           title: 'Schemalägg publicering',
           description: 'Ange datum och tid för publicering'
+        },
+        cancelled: {
+          verify: true,
+          title: 'Avbryt',
+          description: 'Avbryt och gå inte vidare med artikeln'
         }
       }
     },
@@ -249,11 +273,6 @@ export const WorkflowSpecifications: Record<string, WorkflowSpecification> = {
           verify: true,
           title: 'Ny version',
           description: 'Fortsätt jobba på en ny version av artikeln'
-        },
-        cancelled: {
-          verify: true,
-          title: 'Dra tillbaka',
-          description: 'Avbryt publiceringen och arkivera artikeln'
         }
       }
     },
@@ -271,11 +290,6 @@ export const WorkflowSpecifications: Record<string, WorkflowSpecification> = {
           verify: true,
           title: 'Till utkast',
           description: 'Avbryt schemalagd publicering och gör om till utkast igen'
-        },
-        cancelled: {
-          verify: true,
-          title: 'Dra tillbaka',
-          description: 'Avbryt schemalagd publicering och arkivera artikeln'
         }
       }
     }
