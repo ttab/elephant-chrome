@@ -69,7 +69,6 @@ export function assignmentColumns({ authors = [], locale, timeZone, sections = [
           return `${startDate.getHours()} ${startDate.toLocaleString(locale.code.full, { weekday: 'long', hourCycle: 'h23' })}`
         }
       },
-      sortingFn: 'basic',
       enableGrouping: true,
       enableSorting: true
     },

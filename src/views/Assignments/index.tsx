@@ -71,6 +71,9 @@ export const Assignments = (): JSX.Element => {
         initialState={{
           grouping: ['startTime'],
           columnFilters,
+          sorting: [
+            { id: 'startTime', desc: false }
+          ],
           globalFilter: query.query
         }}
       >
