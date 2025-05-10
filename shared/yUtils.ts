@@ -124,7 +124,10 @@ function setArrayValue(array: Y.Array<unknown>, index: number, value: unknown): 
       array.delete(index)
     }
 
-    array.insert(index, [value])
+    // If no value is provided, we don't need to insert anything and it acts a a delete transaction
+    if (value) {
+      array.insert(index, [value])
+    }
   })
 }
 
