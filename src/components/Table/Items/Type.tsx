@@ -1,14 +1,13 @@
 import type { MouseEvent } from 'react'
 import { useLink } from '@/hooks/useLink'
 import { type DefaultValueOption } from '@/types'
-import type { AssignmentMetaExtended } from '@/views/Assignments/types'
 import { Button, Tooltip } from '@ttab/elephant-ui'
 import { useCallback, useMemo } from 'react'
 import { cn } from '@ttab/elephant-ui/utils'
 
 export const Type = ({ data, deliverableId, className }: {
   data: DefaultValueOption[]
-  deliverableId?: AssignmentMetaExtended['deliverableId']
+  deliverableId?: string
   className?: string
 }): JSX.Element => {
   const openArticle = useLink('Editor')
