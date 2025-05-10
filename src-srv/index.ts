@@ -171,7 +171,7 @@ export async function runServer(): Promise<string> {
 runServer().then((url) => {
   logger.info(`Serving API on ${url}/api`)
 }).catch((ex) => {
-  console.error(ex)
+  logger.error(ex)
   process.exit(1)
 })
 
@@ -199,7 +199,7 @@ async function runProfileServer(): Promise<string> {
 runProfileServer().then((url) => {
   logger.info(`Serving Profile API on ${url}/debug/pprof/*`)
 }).catch((ex) => {
-  console.error(ex)
+  logger.error(ex)
   process.exit(1)
 })
 

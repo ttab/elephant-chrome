@@ -4,6 +4,7 @@ import { Version } from '@/components/Version'
 import { toast } from 'sonner'
 import type { EleBlockGroup, EleDocumentResponse } from '@/shared/types'
 import type { ReactNode } from 'react'
+import { useEditorialInfoTypes } from '@/hooks/useEditorialInfoType'
 
 const BASE_URL = import.meta.env.BASE_URL || ''
 type FetcherResult = {
@@ -35,6 +36,7 @@ const InfoBlock = ({ labelId, text, children }: { labelId: string, text: string,
 
 
 export const ReadOnly = ({ documentId, version }: { documentId: string, version: bigint | undefined }) => {
+  const editorialInfoTypes = useEditorialInfoTypes()
   const fetcher = async (params: string[]): Promise<FetcherResult> => {
     const [url] = params
     const response = await fetch(url)
@@ -72,6 +74,10 @@ export const ReadOnly = ({ documentId, version }: { documentId: string, version:
   const author = data?.links?.['core/author']?.[0]?.title
   const contentSource = data?.links?.['core/content-source']?.[0]?.title
 
+  const editorialInfoTypeId = data?.links?.['core/editorial-info-type']?.[0]?.uuid
+  const editorialInfoTypeTitle = editorialInfoTypes.find((type) => type.id === editorialInfoTypeId)?.title
+
+
   return (
     <div className='flex flex-col gap-6 px-5 py-4 border-t'>
       <InfoBlock text='Egenskaper' labelId='properties'>
@@ -89,6 +95,7 @@ export const ReadOnly = ({ documentId, version }: { documentId: string, version:
       </InfoBlock>
       <InfoBlock text='Extra information' labelId=''>
         <ValueBlock label='Källa' value={contentSource} />
+        <ValueBlock label='Redaktionell info, typ' value={editorialInfoTypeTitle} />
       </InfoBlock>
     </div>
   )

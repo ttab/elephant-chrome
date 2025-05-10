@@ -14,7 +14,7 @@ const TimeComponent = ({ time, type, tooltip }: { time: string, type: 'start' | 
 
   const content = (
     <div className='flex items-center gap-2 basis-8 text-muted-foreground'>
-      {Icon && <Icon size={18} />}
+      {Icon && <Icon size={18} className='hidden @5xl/view:[display:revert]' />}
       <div className='w-full text-black'>{time}</div>
     </div>
   )

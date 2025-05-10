@@ -16,6 +16,7 @@ import { useState } from 'react'
 import { AddNote } from './Notes/AddNote'
 import { Version } from '@/components/Version'
 import { ReadOnly } from './ReadOnly'
+import { EditorialInfoTypes } from '@/components/EditorialInfoTypes'
 
 export function MetaSheet({ container, documentId, readOnly, readOnlyVersion }: {
   container: HTMLElement | null
@@ -24,6 +25,7 @@ export function MetaSheet({ container, documentId, readOnly, readOnlyVersion }: 
   readOnlyVersion?: bigint
 }): JSX.Element {
   const [contentSource] = useYValue<string | undefined>('links.core/content-source[0].uri')
+  const [documentType] = useYValue<string | undefined>('root.type')
   const [isOpen, setIsOpen] = useState(false)
 
   return (
@@ -84,6 +86,14 @@ export function MetaSheet({ container, documentId, readOnly, readOnlyVersion }: 
                     <Version documentId={documentId} textOnly={false} />
                   </div>
 
+                  {documentType === 'core/editorial-info' && (
+                    <>
+                      <Label htmlFor='editorial-info-type'>Redaktionell info, typ</Label>
+                      <div id='editorial-info-type'>
+                        <EditorialInfoTypes />
+                      </div>
+                    </>
+                  )}
                 </div>
               )}
         </div>

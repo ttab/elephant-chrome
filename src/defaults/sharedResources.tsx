@@ -19,6 +19,7 @@ export const IndexedDBDefinition: IndexedDBSpecification = {
       db.createObjectStore('core/category', { keyPath: 'id' })
       db.createObjectStore('core/organiser', { keyPath: 'id' })
       db.createObjectStore('tt/wire-source', { keyPath: 'id' })
+      db.createObjectStore('tt/editorial-info-type', { keyPath: 'id' })
     }
   ]
 }
