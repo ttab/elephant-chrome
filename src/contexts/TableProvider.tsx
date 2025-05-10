@@ -1,7 +1,8 @@
 import type {
   GlobalFilterTableState,
   TableState,
-  Updater } from '@tanstack/react-table'
+  Updater
+} from '@tanstack/react-table'
 import {
   getCoreRowModel,
   getFacetedRowModel,
@@ -49,7 +50,7 @@ export interface TableProviderState<TData> {
 
 const initialState = {
   table: {} as Table<unknown>,
-  setData: () => {}
+  setData: () => { }
 } as unknown as TableProviderState<unknown>
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -70,7 +71,7 @@ export const TableProvider = <T,>({
   const [rowSelection, setRowSelection] = useState({})
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({ startTime: false, modified: false, date: false })
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>(initialState?.columnFilters || [])
-  const [sorting, setSorting] = useState<SortingState>([])
+  const [sorting, setSorting] = useState<SortingState>(initialState?.sorting || [])
 
   const [pages, setPages] = useState<string[]>([])
   const page = pages[pages.length - 1]
@@ -110,9 +111,10 @@ export const TableProvider = <T,>({
     onGroupingChange: useCallback(setGrouping, [setGrouping]),
     onSortingChange: useCallback(setSorting, [setSorting]),
     onGlobalFilterChange: (updater: Updater<GlobalFilterTableState>) => {
-      setQuery({ query: typeof updater === 'string'
-        ? updater
-        : undefined
+      setQuery({
+        query: typeof updater === 'string'
+          ? updater
+          : undefined
       })
       setGlobalFilter(updater)
     },

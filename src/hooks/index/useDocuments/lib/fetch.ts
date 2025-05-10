@@ -5,6 +5,8 @@ import { withStatus } from './withStatus'
 import { withPlannings } from './withPlannings'
 import type { useDocumentsFetchOptions } from '../'
 import type { Dispatch, SetStateAction } from 'react'
+import { asAssignments } from './asAssignments'
+import type { Assignment } from '../schemas/assignments'
 
 export async function fetch<T extends HitV1, F>({
   index,
@@ -54,6 +56,11 @@ export async function fetch<T extends HitV1, F>({
 
   let result = hits
 
+  // Format planning result as assingments
+  if (options?.asAssignments && query) {
+    // FIXME: Could this be better
+    return asAssignments(result as unknown as Assignment[], query) as unknown as T[]
+  }
   // Append and format statuses
   if (options?.withStatus) {
     result = withStatus<T>(result)
@@ -63,6 +70,7 @@ export async function fetch<T extends HitV1, F>({
   if (options?.withPlannings) {
     result = await withPlannings<T>({ hits: result, session, index })
   }
+
 
   return result
 }

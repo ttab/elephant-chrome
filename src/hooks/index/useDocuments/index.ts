@@ -23,11 +23,12 @@ export interface useDocumentsFetchOptions {
   aggregatePages?: boolean
   withStatus?: boolean
   withPlannings?: boolean
+  asAssignments?: boolean
   setTableData?: boolean
   subscribe?: boolean
 }
 
-class AbortError extends Error {}
+class AbortError extends Error { }
 
 /**
  * Custom hook to fetch and manage documents with optional subscription-based updates.
