@@ -92,18 +92,19 @@ export const useWorkflowStatus = (uuid?: string, isWorkflow: boolean = false): [
         ? BigInt(snapshotResponse.version)
         : documentStatus?.version
 
-      if (!newVersion) {
-        toast.error('Ett fel har uppstått, aktuell status kunde inte ändras!')
-        return
-      }
-
       let payload: Status | undefined
       if (typeof newStatus !== 'string') {
         payload = {
           ...newStatus,
-          version: newVersion
+          version: newVersion || newStatus.version
         }
       } else if (typeof newStatus === 'string' && documentStatus && uuid) {
+        if (!newVersion) {
+          console.error('Unable to get current version to update status')
+          toast.error('Ett fel har uppstått, aktuell status kunde inte ändras!')
+          return
+        }
+
         payload = {
           ...documentStatus,
           uuid,
