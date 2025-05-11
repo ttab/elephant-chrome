@@ -244,7 +244,7 @@ export function assignmentColumns({ authors = [], locale, timeZone, sections = [
             deliverableId={row.original
               .fields['document.meta.core_assignment.rel.deliverable.uuid']
               .values[0]}
-            className='items-start'
+            className='items-start hidden @5xl/view:[display:revert]'
           />
         )
       },
