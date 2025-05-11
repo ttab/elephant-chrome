@@ -72,7 +72,8 @@ export const Assignments = (): JSX.Element => {
           grouping: ['startTime'],
           columnFilters,
           sorting: [
-            { id: 'startTime', desc: false }
+            { id: 'startTime', desc: false },
+            { id: 'assignment_time', desc: false }
           ],
           globalFilter: query.query
         }}

@@ -31,7 +31,7 @@ export function assignmentColumns({ authors = [], locale, timeZone, sections = [
     {
       id: 'startTime',
       meta: {
-        name: 'Starttid',
+        name: 'Uppdragstid',
         columnIcon: Clock3Icon,
         className: '',
         display: (value: string) => {
@@ -69,8 +69,9 @@ export function assignmentColumns({ authors = [], locale, timeZone, sections = [
           return `${startDate.getHours()} ${startDate.toLocaleString(locale.code.full, { weekday: 'long', hourCycle: 'h23' })}`
         }
       },
+      sortingFn: 'basic',
       enableGrouping: true,
-      enableSorting: true
+      enableSorting: false
     },
     {
       id: 'title',
@@ -199,7 +200,9 @@ export function assignmentColumns({ authors = [], locale, timeZone, sections = [
         }
         return <Time time={formattedStart} type='start' tooltip='Uppdragets starttid' />
       },
-      enableSorting: false,
+
+      sortingFn: 'basic',
+      enableSorting: true,
       enableGrouping: false
     },
     {

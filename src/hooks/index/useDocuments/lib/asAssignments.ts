@@ -160,12 +160,12 @@ function sortAssignments(arr: Assignment[]): Assignment[] {
   }
 
   return arr.sort((a, b) => {
-    const aNewsValue = Number(a.fields['document.meta.core_newsvalue.value']?.values?.[0])
-    const bNewsValue = Number(b.fields['document.meta.core_newsvalue.value']?.values?.[0])
-    if (aNewsValue !== bNewsValue) return bNewsValue - aNewsValue
-
     const aStart = new Date(assureISOString(a)).getTime()
     const bStart = new Date(assureISOString(b)).getTime()
-    return aStart - bStart
+    if (aStart !== bStart) return aStart - bStart
+
+    const aNewsValue = Number(a.fields['document.meta.core_newsvalue.value']?.values?.[0])
+    const bNewsValue = Number(b.fields['document.meta.core_newsvalue.value']?.values?.[0])
+    return bNewsValue - aNewsValue
   })
 }
