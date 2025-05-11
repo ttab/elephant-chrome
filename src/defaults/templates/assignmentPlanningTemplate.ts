@@ -51,8 +51,6 @@ export function assignmentPlanningTemplate({
       : undefined
   ].filter((x): x is Block => x !== undefined)
 
-  const isTextOrFlash = ['text', 'flash'].includes(assignmentType)
-
   // Plain dates, are getting set with UI
   return Block.create({
     id: crypto.randomUUID(),
@@ -66,8 +64,7 @@ export function assignmentPlanningTemplate({
       start: startDate.toISOString(),
       public: assignmentType === 'flash'
         ? 'false'
-        : 'true',
-      ...(isTextOrFlash && { publish: new Date().toISOString() })
+        : 'true'
     },
     meta: [
       {

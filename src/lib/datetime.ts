@@ -375,7 +375,7 @@ export function newLocalDate(
 
   switch (options?.as) {
     case 'datetime':
-      return format(date, 'yyyy-MM-dd\'T\'HH:mm:ss')
+      return format(date, 'yyyy-MM-dd\'T\'HH:mm:ss.SSS\'Z\'')
 
     case 'date':
       return format(date, 'yyyy-MM-dd')
