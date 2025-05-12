@@ -18,18 +18,64 @@ describe('getStatusInfo', () => {
     })
   })
 
-  it('returns cancelled when version is -1', () => {
+  it('returns unpublished when last status is usable and it´s version is -1', () => {
     const meta = {
-      currentVersion: BigInt(-1),
+      currentVersion: BigInt(3),
+      heads: {
+        approved: {
+          version: BigInt(3),
+          creator: 'core://user/abc',
+          created: '2025-05-09T10:00:00Z',
+          meta: { cause: 'correction' }
+        },
+        usable: {
+          version: BigInt(-1),
+          creator: 'core://user/abc',
+          created: '2025-05-09T12:00:00Z',
+          meta: { cause: 'fixed' }
+        }
+      },
       creatorUri: 'core://user/abc',
       updaterUri: 'core://user/abc'
     } as unknown as Partial<Meta> as Meta
 
     expect(getStatusFromMeta(meta)).toEqual({
-      name: 'cancelled',
-      version: BigInt(-1),
+      name: 'unpublished',
+      version: BigInt(3),
       creator: 'core://user/abc',
-      cause: undefined
+      cause: 'fixed'
+    })
+  })
+
+    it('uses workflowState when exists', () => {
+    const meta = {
+      currentVersion: BigInt(3),
+      heads: {
+        approved: {
+          version: BigInt(3),
+          creator: 'core://user/abc',
+          created: '2025-05-09T10:00:00Z',
+          meta: { cause: 'correction' }
+        },
+        usable: {
+          version: BigInt(-1),
+          creator: 'core://user/abc',
+          created: '2025-05-09T12:00:00Z',
+          meta: { cause: 'fixed' }
+        }
+      },
+      creatorUri: 'core://user/abc',
+      updaterUri: 'core://user/abc',
+      workflowState: 'invalid-state-for-test',
+      workflowCheckpoint: 'invalid-checkpoint-for-test'
+    } as unknown as Partial<Meta> as Meta
+
+    expect(getStatusFromMeta(meta)).toEqual({
+      name: 'invalid-state-for-test',
+      version: BigInt(3),
+      creator: 'core://user/abc',
+      cause: 'fixed',
+      checkpoint: 'invalid-checkpoint-for-test'
     })
   })
 

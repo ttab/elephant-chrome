@@ -13,6 +13,7 @@ export type Meta = {
   creatorUri: string
   updaterUri: string
   workflowCheckpoint?: string
+  workflowState?: string
 }
 
 /**
@@ -28,14 +29,7 @@ export function getStatusFromMeta(meta: Meta): {
   const heads = meta.heads
   const version = meta.currentVersion
 
-  if (version === -1n) {
-    return {
-      name: 'cancelled',
-      version,
-      creator: meta.updaterUri
-    }
-  }
-
+  // If there are no heads it's always implicitly a 'draft'
   if (!heads || Object.keys(heads).length === 0) {
     return {
       name: 'draft',
@@ -45,21 +39,18 @@ export function getStatusFromMeta(meta: Meta): {
   }
 
   const latest = Object.entries(heads)
-    .filter(([key, entry]) => key !== 'currentStatus' && entry.version !== -1n)
     .sort((a, b) => new Date(b[1].created).getTime() - new Date(a[1].created).getTime())[0]
-
-  if (!latest) {
-    return {
-      name: 'draft',
-      version,
-      creator: meta.creatorUri
-    }
-  }
 
   const [name, entry] = latest
 
+  // Use workflow state if it exists, otherwise the latest entry.
+  // If latest entry is 'usable' and that version is -1 it is unpublished
   return {
-    name,
+    name: meta.workflowState || (
+      (name === 'usable' && entry.version === -1n)
+        ? 'unpublished'
+        : name
+    ),
     version,
     creator: entry.creator,
     cause: entry.meta?.cause,
