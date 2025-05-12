@@ -28,8 +28,8 @@ export const PersonalAssignmentsFilter = ({ assigneeUserName }: PAFProps): JSX.E
         })
       }}
     >
-      <User size={18} strokeWidth={1.75} className='shrink-0 mr-2' />
-      <div className='text-sm'>Mina uppdrag</div>
+      <User size={18} strokeWidth={1.75} className='shrink-0 sm:mr-2' />
+      <div className='text-sm hidden @3xl/view:[display:revert]'>Mina uppdrag</div>
     </Button>
   )
 }

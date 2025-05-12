@@ -156,20 +156,18 @@ export function currentDateInUTC(): string {
 }
 
 /**
-* Get date 24-hour timestamp date (16:10) if today's date,
+* Get date 24-hour timestamp date (16:10) if same as compareDate, date,
 * otherwise in shortened version of month and day (20 feb 16:10).
 **/
-export function dateInTimestampOrShortMonthDayTimestamp(date: string, locale: string, timeZone: string): string {
+export function dateInTimestampOrShortMonthDayTimestamp(date: string, locale: string, timeZone: string, compareDate: Date): string {
   if (!date) {
     return '??'
   }
 
   const inputDate = new Date(date)
-  const today = new Date()
-
-  const isToday = inputDate.getDate() === today.getDate()
-    && inputDate.getMonth() === today.getMonth()
-    && inputDate.getFullYear() === today.getFullYear()
+  const isCurrentDate = inputDate.getDate() === compareDate.getDate()
+    && inputDate.getMonth() === compareDate.getMonth()
+    && inputDate.getFullYear() === compareDate.getFullYear()
 
   const timeFormatter = new Intl.DateTimeFormat(locale, {
     hour: '2-digit',
@@ -178,7 +176,7 @@ export function dateInTimestampOrShortMonthDayTimestamp(date: string, locale: st
     timeZone
   })
 
-  if (isToday) {
+  if (isCurrentDate) {
     return timeFormatter.format(inputDate)
   } else {
     const dateFormatter = new Intl.DateTimeFormat(locale, {

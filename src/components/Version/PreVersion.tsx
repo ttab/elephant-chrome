@@ -1,7 +1,6 @@
 import { PreVersionInfo } from './PreVersionInfo'
 import type { DocumentVersion } from '@ttab/elephant-api/repository'
 import type { EleBlock, EleDocument } from '@/shared/types'
-import type { AssignmentMeta } from '@/views/Assignments/types'
 import { useCallback } from 'react'
 import { Description, Assignments, Category, Dates, Slugline, Section, Story, Newsvalue } from './components'
 
@@ -26,7 +25,7 @@ export const PreVersion = ({
     return []
   }, [])
 
-  const getSlugline = useCallback((block: EleBlock | AssignmentMeta): string => {
+  const getSlugline = useCallback((block: EleBlock): string => {
     if (block) {
       return 'value' in block ? block?.value : ''
     }

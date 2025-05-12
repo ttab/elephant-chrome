@@ -84,7 +84,7 @@ export class Index {
             }),
             source,
             searchAfter: [],
-            loadDocument,
+            loadDocument: loadDocument || options?.asAssignments,
             subscribe: currentPage === 1 ? options?.subscribe : false
           }),
           meta(accessToken)

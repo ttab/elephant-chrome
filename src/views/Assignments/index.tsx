@@ -11,12 +11,12 @@ import { useAuthors } from '@/hooks/useAuthors'
 import { useRegistry } from '@/hooks/useRegistry'
 import { useSession } from 'next-auth/react'
 import { type ViewMetadata } from '@/types'
-import type { AssignmentMetaExtended } from './types'
 import { type IDBAuthor } from 'src/datastore/types'
 import { useQuery } from '@/hooks/useQuery'
-import { getDateTimeBoundariesUTC } from '@/lib/datetime'
+import { newLocalDate } from '@/lib/datetime'
 import { loadFilters } from '@/lib/loadFilters'
 import { useSections } from '@/hooks/useSections'
+import type { Assignment } from '@/hooks/index/useDocuments/schemas/assignments'
 
 const meta: ViewMetadata = {
   name: 'Assignments',
@@ -36,11 +36,6 @@ const meta: ViewMetadata = {
 
 export const Assignments = (): JSX.Element => {
   const [query] = useQuery()
-  const { from } = useMemo(() =>
-    getDateTimeBoundariesUTC(typeof query.from === 'string'
-      ? new Date(`${query.from}T00:00:00.000Z`)
-      : new Date()),
-  [query.from])
   const [currentTab, setCurrentTab] = useState<string>('list')
   const authors = useAuthors()
   const { locale, timeZone } = useRegistry()
@@ -57,18 +52,29 @@ export const Assignments = (): JSX.Element => {
     return author?.name
   }, [authors, session?.user?.sub])
 
+  const date = useMemo(() => {
+    return (typeof query.from === 'string')
+      ? newLocalDate(timeZone, { date: query.from })
+      : newLocalDate(timeZone)
+  }, [query.from, timeZone])
+
+
   const columns = useMemo(() =>
-    assignmentColumns({ authors, locale, timeZone, sections }), [authors, locale, timeZone, sections])
-  const columnFilters = loadFilters<AssignmentMetaExtended>(query, columns)
+    assignmentColumns({ authors, locale, timeZone, sections, currentDate: date }), [authors, locale, timeZone, sections, date])
+  const columnFilters = loadFilters<Assignment>(query, columns)
 
   return (
     <View.Root tab={currentTab} onTabChange={setCurrentTab}>
-      <TableProvider<AssignmentMetaExtended>
+      <TableProvider<Assignment>
         type={meta.name}
         columns={columns}
         initialState={{
-          grouping: ['newsvalue'],
+          grouping: ['startTime'],
           columnFilters,
+          sorting: [
+            { id: 'startTime', desc: false },
+            { id: 'assignment_time', desc: false }
+          ],
           globalFilter: query.query
         }}
       >
@@ -89,7 +95,7 @@ export const Assignments = (): JSX.Element => {
 
         <View.Content>
           <TabsContent value='list' className='mt-0'>
-            <AssignmentsList startDate={from} columns={columns} />
+            <AssignmentsList date={date} columns={columns} />
           </TabsContent>
         </View.Content>
 
