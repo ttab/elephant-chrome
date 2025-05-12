@@ -47,7 +47,7 @@ describe('getStatusInfo', () => {
     })
   })
 
-    it('uses workflowState when exists', () => {
+  it('uses workflowState when exists', () => {
     const meta = {
       currentVersion: BigInt(3),
       heads: {
