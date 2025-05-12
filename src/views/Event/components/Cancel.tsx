@@ -1,28 +1,19 @@
-import { Label, Switch } from '@ttab/elephant-ui'
-import { CheckCircle, CircleX } from '@ttab/elephant-ui/icons'
+import { Checkbox, Label } from '@ttab/elephant-ui'
 import { useMemo } from 'react'
 
 export const Cancel = ({ cancelled, setCancelled }: { cancelled: boolean | undefined, setCancelled: (arg: boolean) => void }) => {
-  const CancelledMarker = cancelled ? CircleX : CheckCircle
-
   return useMemo(() => (
-    <div className='flex items-center gap-2'>
-      <Switch
-        id='cancelSwitch'
+    <div className='flex items-center gap-2 relative'>
+      <span className='my-0 mr-4 invisible'>x</span>
+      <Checkbox
+        id='cancelled'
+        className='ml-2'
+        defaultChecked={cancelled}
         onCheckedChange={() => {
           setCancelled(!cancelled)
         }}
-        checked={(!cancelled)}
-        className=''
       />
-      <CancelledMarker
-        size={20}
-        color='#ffffff'
-        strokeWidth={1.75}
-        fill={!cancelled ? '#008000' : '#ff0000'}
-        className={`rounded-full bg-[${!cancelled ? '#008000' : '#ff0000'}]`}
-      />
-      <Label htmlFor='cancelSwitch'>{!cancelled ? 'Markera som inställd' : 'Händelsen är markerad som inställd'}</Label>
+      <Label htmlFor='cancelled'>Markera som inställd</Label>
     </div>
-  ), [CancelledMarker, cancelled, setCancelled])
+  ), [cancelled, setCancelled])
 }
