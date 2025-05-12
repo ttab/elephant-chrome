@@ -9,10 +9,9 @@ export const Cancel = ({ cancelled, setCancelled }: { cancelled: boolean | undef
       <Checkbox
         id='cancelled'
         className='ml-2'
-        defaultChecked={cancelled}
-        checked={cancelled}
-        onCheckedChange={() => {
-          setCancelled(!cancelled)
+        checked={isCancelled}
+        onCheckedChange={(checked: boolean) => {
+          setCancelled(checked)
         }}
       />
       <Label htmlFor='cancelled'>Markera som inställd</Label>
