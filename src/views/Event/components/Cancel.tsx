@@ -14,7 +14,7 @@ export const Cancel = ({ cancelled, setCancelled }: { cancelled: boolean | undef
           setCancelled(checked)
         }}
       />
-      <Label htmlFor='cancelled'>Markera som inställd</Label>
+      <Label htmlFor='cancelled'>{!isCancelled ? 'Markera som inställd' : 'Evenemanget är markerat som inställt!'}</Label>
     </div>
   ), [cancelled, setCancelled])
 }
