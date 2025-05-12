@@ -1,11 +1,20 @@
 import { DatePicker } from '@/components/Datepicker'
-import { useYValue } from '@/hooks'
-import { parseDate } from '@/lib/datetime'
+import { useRegistry, useYValue } from '@/hooks'
+import { newLocalDate, parseDate } from '@/lib/datetime'
 
 export const PlanDate = (): JSX.Element => {
-  const [dateString, setDateString] = useYValue<string>('meta.core/planning-item[0].data.start_date')
+  const { timeZone } = useRegistry()
 
-  const date = dateString ? parseDate(dateString) || new Date() : new Date()
+  const [startString, setStartString] = useYValue<string>('meta.core/planning-item[0].data.start_date')
+  const [, setEndString] = useYValue<string>('meta.core/planning-item[0].data.end_date')
+
+  const setDateString = (date: string) => {
+    setStartString(date)
+    setEndString(date)
+  }
+
+  const newDate = newLocalDate(timeZone)
+  const date = startString ? parseDate(startString) || newDate : newDate
 
   return (
     <div>
