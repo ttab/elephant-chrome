@@ -9,7 +9,7 @@ export const Cancel = ({ cancelled, setCancelled }: { cancelled: boolean | undef
       <Checkbox
         id='cancelled'
         className='ml-2'
-        checked={isCancelled}
+        checked={!!isCancelled}
         onCheckedChange={(checked: boolean) => {
           setCancelled(checked)
         }}
