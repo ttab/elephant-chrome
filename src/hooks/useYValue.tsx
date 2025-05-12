@@ -1,6 +1,6 @@
 import { isEqualDeep } from '@/lib/isEqualDeep'
 import { useRef, useSyncExternalStore } from 'react'
-import { getValueByYPath, setValueByYPath, stringToYPath } from '@/lib/yUtils'
+import { getValueByYPath, setValueByYPath, stringToYPath } from '@/shared/yUtils'
 import { useCollaboration } from './useCollaboration'
 import type { HocuspocusProvider } from '@hocuspocus/provider'
 
@@ -10,7 +10,7 @@ import type { HocuspocusProvider } from '@hocuspocus/provider'
  *
  * This function also detects, recovers and continue to observe when a whole structure gets replaced.
  *
- * Specifying option row=true will return raw value and not setup an observer. This is
+ * Specifying option raw=true will return raw value and not setup an observer. This is
  * especially useful when you want to retrieve a raw Y.XmlText to hand over to Textbit or
  * if you want to have a structure that you want to manipulate, like adding elements to a Y.Map/Y.Array.
  *

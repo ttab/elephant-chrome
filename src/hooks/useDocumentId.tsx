@@ -1,4 +1,4 @@
-import { getValueByYPath } from '@/lib/yUtils'
+import { getValueByYPath } from '@/shared/yUtils'
 import { useCollaboration } from './useCollaboration'
 
 export const useDocumentId = (): string => {

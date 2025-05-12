@@ -31,7 +31,7 @@ import { Gutter } from '@/components/Editor/Gutter'
 import { DropMarker } from '@/components/Editor/DropMarker'
 
 import type { Block } from '@ttab/elephant-api/newsdoc'
-import { getValueByYPath } from '@/lib/yUtils'
+import { getValueByYPath } from '@/shared/yUtils'
 import { useOnSpellcheck } from '@/hooks/useOnSpellcheck'
 import { contentMenuLabels } from '@/defaults/contentMenuLabels'
 

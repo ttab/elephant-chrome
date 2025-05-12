@@ -1,6 +1,6 @@
 import * as Y from 'yjs'
-import { isNumber, isRecord, isYArray, isYContainer, isYMap, isYXmlText } from './isType'
-import { isTextEntry } from '@/shared/transformations/isTextEntry'
+import { isNumber, isRecord, isYArray, isYContainer, isYMap, isYXmlText } from '../src/lib/isType.js'
+import { isTextEntry } from './transformations/isTextEntry.js'
 import type { TBElement } from '@ttab/textbit'
 import { slateNodesToInsertDelta } from '@slate-yjs/core'
 
@@ -124,7 +124,10 @@ function setArrayValue(array: Y.Array<unknown>, index: number, value: unknown): 
       array.delete(index)
     }
 
-    array.insert(index, [value])
+    // If no value is provided, we don't need to insert anything and it acts a a delete transaction
+    if (value) {
+      array.insert(index, [value])
+    }
   })
 }
 

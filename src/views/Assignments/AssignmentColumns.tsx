@@ -13,7 +13,6 @@ import { Actions } from '@/components/Table/Items/Actions'
 import { dateInTimestampOrShortMonthDayTimestamp } from '@/lib/datetime'
 import { type ColumnDef } from '@tanstack/react-table'
 import type { LocaleData } from '@/types/index'
-import { type DefaultValueOption } from '@/types/index'
 import type { IDBSection, IDBAuthor } from 'src/datastore/types'
 import type {
   AssignmentMetaExtended,
@@ -127,7 +126,7 @@ export function assignmentColumns({ authors = [], locale, timeZone, sections = [
         options: Newsvalues,
         name: 'Nyhetsvärde',
         columnIcon: SignalHigh,
-        className: 'box-content w-4 sm:w-8 pr-1 sm:pr-4'
+        className: 'box-content w-4 sm:w-8 pr-1 sm:pr-4 hidden sm:[display:revert]'
       },
       accessorFn: ({ newsvalue }) => {
         return newsvalue
@@ -181,7 +180,7 @@ export function assignmentColumns({ authors = [], locale, timeZone, sections = [
         ),
         name: 'Uppdragstid',
         columnIcon: Clock3Icon,
-        className: 'flex-none w-[112px] hidden @5xl/view:[display:revert]'
+        className: 'flex-none @5xl/view:w-[112px] w-[50px]'
       },
       accessorFn: ({ data }) => {
         return [data?.start, data?.full_day, data?.publish_slot, data?.publish]
@@ -189,7 +188,8 @@ export function assignmentColumns({ authors = [], locale, timeZone, sections = [
       cell: ({ row }) => {
         const [start, fullDay, publishSlot, publishTime] = row.getValue<string[]>('assignment_time')
         const isFullday = fullDay === 'true'
-        const types: string[] = row.getValue<DefaultValueOption[]>('assignmentType')?.map((t) => t.value)
+        const types = row.getValue<Array<string | undefined>>('assignmentType')?.map((t: string | undefined) => t)
+
         if (!types || types?.every((t) => !t)) {
           return <></>
         }

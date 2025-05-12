@@ -56,6 +56,10 @@ function constructQuery(filter: QueryParams | undefined): QueryV1 | undefined {
     addCondition('document.meta.core_assignment.rel.assignee.uuid', filter.author)
   }
 
+  if (filter.aType) {
+    addCondition('document.meta.core_assignment.meta.core_assignment_type.value', filter.aType)
+  }
+
   if (filter.query) {
     boolConditions.must.push(
       {
@@ -87,6 +91,27 @@ function constructQuery(filter: QueryParams | undefined): QueryV1 | undefined {
     })
   }
 
+  // No other filters than type and query, and query is empty, do a matchAll
+  if (Object.keys(filter).every((key) => {
+    if (key === 'type') {
+      return true
+    }
+
+    if (key === 'query') {
+      return !filter.query
+    }
+
+    return false
+  })
+  ) {
+    return QueryV1.create({
+      conditions: {
+        oneofKind: 'matchAll',
+        matchAll: {}
+      }
+    })
+  }
+
 
   return query
 }
@@ -97,7 +122,7 @@ const params = (filter: QueryParams) => ({
   documentType: 'core/planning-item',
   fields,
   sort: [
-    SortingV1.create({ field: 'document.meta.core_planning_item.data.start_date', desc: filter.from ? false : true }),
+    SortingV1.create({ field: 'document.meta.core_planning_item.data.start_date', desc: !filter.from }),
     SortingV1.create({ field: 'document.meta.core_newsvalue.value', desc: true })
   ],
   query: constructQuery(filter)

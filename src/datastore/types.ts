@@ -1,8 +1,16 @@
-/** Story structure in indexedDB objectStore  */
+/** Section structure in indexedDB objectStore  */
 export interface IDBSection {
   id: string
   title: string
 }
+
+/** Section structure in indexedDB objectStore  */
+export interface IDBEditorialInfoType {
+  id: string
+  title: string
+}
+
+/** Story structure in indexedDB objectStore  */
 export interface IDBStory {
   id: string
   title: string

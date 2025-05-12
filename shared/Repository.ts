@@ -92,8 +92,9 @@ export class Repository {
 
     try {
       const { response } = await this.#client.bulkGet({
-        documents: documents.map((document) =>
-          ({ uuid: document.uuid, version: document.version || 0n }))
+        documents: documents.filter((doc) => doc?.version !== -1n).map((document) => {
+          return ({ uuid: document.uuid, version: document.version || 0n })
+        })
       }, meta(accessToken))
 
       return response
