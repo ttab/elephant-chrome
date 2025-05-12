@@ -13,10 +13,8 @@ import { parseDate } from '@/lib/datetime'
 import { useDocuments } from '@/hooks/index/useDocuments'
 import { fields } from '@/hooks/index/useDocuments/schemas/printFlow'
 import type { PrintFlow, PrintFlowFields } from '@/hooks/index/useDocuments/schemas/printFlow'
-import { useQuery } from '@/hooks/useQuery'
 
 const fallbackDate = new Date()
-
 
 export const CreatePrintArticle = ({ id, asDialog, onDialogClose, className }: ViewProps) => {
   const [printFlow, setPrintFlow] = useState<string>()

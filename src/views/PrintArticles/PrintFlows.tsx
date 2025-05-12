@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react'
 import { useDocuments } from '@/hooks/index/useDocuments'
 import { useRegistry } from '@/hooks/useRegistry'
 import type { PrintFlow, PrintFlowFields } from '@/hooks/index/useDocuments/schemas/printFlow'
@@ -12,7 +13,6 @@ import { Form } from '@/components/Form'
 import { DatePicker } from '@/components/Datepicker'
 import { LoadingText } from '@/components/LoadingText'
 import { parseDate } from '@/lib/datetime'
-import { useState } from 'react'
 import { useSession } from 'next-auth/react'
 import { useQuery } from '@/hooks/useQuery'
 import { format } from 'date-fns'
@@ -43,29 +43,35 @@ export const PrintFlows = ({ asDialog, onDialogClose, className, action }: ViewP
     toast.error('Kunde inte hämta printflöden')
     console.error('Could not fetch PrintFlows:', error)
   }
+  const [articleName, setArticleName] = useState<string>()
   const [filter] = useQuery(['from'])
   console.log('--> filter', filter)
   const [printFlow, setPrintFlow] = useState<string>()
   const [dateString, setDateString] = useState<string>()
   const { baboon } = useRegistry()
   const { data: session } = useSession()
-
+  useEffect(() => {
+    console.log('dateString', dateString)
+  }, [dateString])
   const date = !filter?.from ? fallbackDate : parseDate(filter?.from?.[0] || '')
-console.log('date', date)
   const allPrintFlows = data?.map((hit) => ({
     value: hit.id,
     label: hit.fields['document.title'].values[0]
   })) || []
 
+  const allArticleNames = data
+    ?.find((hit) => hit.id === printFlow)
+    ?.fields['document.content.tt_print_content.name'].values || []
+
+
   const selectedPrintFlow = allPrintFlows?.find((flow) => flow.value === printFlow)
 
   const isSubmitDisabled = !printFlow || !date
 
-  const handleCreateArticle = async () => {
+  const handleCreateArticle = () => {
     console.log('handleCreateArticle', session?.accessToken)
   }
   const handleCreateFlow = async () => {
-
     if (!session?.accessToken) {
       toast.error('Ingen access token hittades')
       return
@@ -78,9 +84,10 @@ console.log('date', date)
 
     try {
       const response = await baboon.createFlow({
-        template_uuid: 'b8572737-1854-4e6e-b811-2edd46fe37f6',
-        flow_uuid: printFlow,
+        flowUuid: printFlow,
+        // templateUuid: 'b8572737-1854-4e6e-b811-2edd46fe37f6',
         date: format(new Date(date), 'yyyy-MM-dd'),
+        articles: []
       }, session.accessToken)
 
       if (response?.status.code === 'OK') {
@@ -132,6 +139,28 @@ console.log('date', date)
                       </SelectContent>
                     </Select>
                   </Form.Group>
+                  {action === 'createArticle' && (
+                    <Form.Group icon={Tag}>
+                      <Select
+                        disabled={!printFlow}
+                        value={articleName}
+                        onValueChange={(option) => {
+                          setArticleName(option)
+                        }}
+                      >
+                        <SelectTrigger>
+                          {articleName || 'Välj namn'}
+                        </SelectTrigger>
+                        <SelectContent>
+                          {allArticleNames.map((type) => (
+                            <SelectItem value={type} key={type}>
+                              {type}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </Form.Group>
+                  )}
                   <Form.Group icon={Calendar}>
                     <DatePicker date={date} setDate={(newDate) => setDateString(newDate)} disabled={!printFlow} />
                   </Form.Group>
@@ -176,7 +205,7 @@ console.log('date', date)
               </Form.Root>
             )
           : <LoadingText>Laddar printflöden..</LoadingText>}
-    </View.Content>
+      </View.Content>
     </View.Root>
   )
 }

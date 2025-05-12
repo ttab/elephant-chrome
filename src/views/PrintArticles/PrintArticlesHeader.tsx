@@ -2,7 +2,6 @@ import { ViewHeader } from '@/components/View'
 import { Button, Popover, PopoverContent, PopoverTrigger } from '@ttab/elephant-ui'
 import { Plus } from '@ttab/elephant-ui/icons'
 import { DateChanger } from '@/components/Header/Datechanger'
-import { CreatePrintArticle } from '@/components/CreatePrintArticle'
 import { useModal } from '@/components/Modal/useModal'
 import { PrintFlows } from './PrintFlows'
 
@@ -18,8 +17,7 @@ import { PrintFlows } from './PrintFlows'
  * @returns The rendered component.
  */
 
-
-export const PrintArticlesHeader = ({ setOpenCreateFlow }: { setOpenCreateFlow: (open: boolean) => void }): JSX.Element => {
+export const PrintArticlesHeader = (): JSX.Element => {
   const { showModal, hideModal } = useModal()
   return (
     <ViewHeader.Root className='flex flex-row gap-2 items-center justify-between'>

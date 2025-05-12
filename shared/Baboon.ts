@@ -23,6 +23,7 @@ export class Baboon {
       toast.error('Kunde inte skapa printartikel')
     }
   }
+
   async createFlow(payload: CreateFlowRequest, accessToken: string) {
     try {
       return this.#client.createFlow(payload, meta(accessToken))
