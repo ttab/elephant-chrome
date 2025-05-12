@@ -238,7 +238,8 @@ function EditorContainer({
     }
   }, [layouts])
   const name = doc?.document?.document?.meta.filter((m: { type: string }) => m.type === 'tt/print-article')[0]?.name
-
+  const flowName = doc?.document?.document?.links.filter((m: { type: string }) => m.type === 'tt/print-flow')[0]?.title
+  console.log('flowName', flowName)
   const updateLayout = (_layout: Layout) => {
     const box = document.getElementById(_layout.id)
     if (box) {
@@ -286,7 +287,7 @@ function EditorContainer({
 
   return (
     <>
-      <EditorHeader documentId={documentId} name={name} />
+      <EditorHeader documentId={documentId} flowName={flowName} name={name} />
 
       <View.Content className='flex flex-col max-w-[1200px]'>
         <section className='grid grid-cols-12'>

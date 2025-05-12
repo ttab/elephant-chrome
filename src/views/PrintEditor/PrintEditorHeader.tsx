@@ -26,10 +26,12 @@ import { Button } from '@ttab/elephant-ui'
 
 export const EditorHeader = ({
   documentId,
-  name
+  name,
+  flowName
 }: {
   documentId: string
   name?: string
+  flowName?: string
 }): JSX.Element => {
   const { viewId } = useView()
   const containerRef = useRef<HTMLElement | null>(null)
@@ -50,7 +52,7 @@ export const EditorHeader = ({
   return (
     <ViewHeader.Root className='grid grid-cols-3'>
       <section className='col-span-2 flex flex-row gap-2 justify-between items-center w-full'>
-        <ViewHeader.Title name='TV-bilagor' title='TV-bilagor' icon={PenBoxIcon} />
+        <ViewHeader.Title name={flowName || ''} title={flowName || ''} icon={PenBoxIcon} />
 
         <ViewHeader.Content className='justify-start w-full'>
           <div className='max-w-[1040px] mx-auto flex flex-row gap-2 justify-between items-center w-full'>

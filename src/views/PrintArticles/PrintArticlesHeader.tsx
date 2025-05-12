@@ -2,6 +2,9 @@ import { ViewHeader } from '@/components/View'
 import { Button, Popover, PopoverContent, PopoverTrigger } from '@ttab/elephant-ui'
 import { Plus } from '@ttab/elephant-ui/icons'
 import { DateChanger } from '@/components/Header/Datechanger'
+import { CreatePrintArticle } from '@/components/CreatePrintArticle'
+import { useModal } from '@/components/Modal/useModal'
+import { PrintFlows } from './PrintFlows'
 
 /**
  * PrintArticlesHeader component.
@@ -16,7 +19,8 @@ import { DateChanger } from '@/components/Header/Datechanger'
  */
 
 
-export const PrintArticlesHeader = ({ setOpenCreateFlow, setOpenCreateArticle }: { setOpenCreateFlow: (open: boolean) => void, setOpenCreateArticle: (open: boolean) => void }): JSX.Element => {
+export const PrintArticlesHeader = ({ setOpenCreateFlow }: { setOpenCreateFlow: (open: boolean) => void }): JSX.Element => {
+  const { showModal, hideModal } = useModal()
   return (
     <ViewHeader.Root className='flex flex-row gap-2 items-center justify-between'>
       <div className='flex flex-row gap-4 items-center justify-start'>
@@ -32,14 +36,22 @@ export const PrintArticlesHeader = ({ setOpenCreateFlow, setOpenCreateArticle }:
             <Button
               title='Skapa en text i ett flöde'
               variant='outline'
-              onClick={() => setOpenCreateArticle(true)}
+              onClick={() => {
+                showModal(
+                  <PrintFlows asDialog onDialogClose={hideModal} action='createArticle' />
+                )
+              }}
             >
               Ny artikel
             </Button>
             <Button
               title='Öppna dialogruta för att välja ett flöde. Artiklarna för flödet kommer sedan att skapas av backend enligt definitionen i flödet.'
               variant='outline'
-              onClick={() => setOpenCreateFlow(true)}
+              onClick={() => {
+                showModal(
+                  <PrintFlows asDialog onDialogClose={hideModal} action='createFlow' />
+                )
+              }}
             >
               Nytt flöde
             </Button>

@@ -11,7 +11,6 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogDescription,
   DialogFooter
 } from '@ttab/elephant-ui'
 import { PrintFlows } from './PrintFlows'
@@ -55,13 +54,11 @@ export const PrintArticles = (): JSX.Element => {
     () => printArticlesListColumns({ locale: 'sv' }),
     []
   )
-
   const [openCreateFlow, setOpenCreateFlow] = useState(false)
-  const [openCreateArticle, setOpenCreateArticle] = useState(false)
 
   return (
     <View.Root>
-      <PrintArticlesHeader setOpenCreateArticle={setOpenCreateArticle} setOpenCreateFlow={setOpenCreateFlow} />
+      <PrintArticlesHeader setOpenCreateFlow={setOpenCreateFlow} />
       <TableProvider<PrintArticle>
         type={meta.name}
         columns={columns}
@@ -71,20 +68,6 @@ export const PrintArticles = (): JSX.Element => {
           <PrintArticleList columns={columns} />
         </View.Content>
       </TableProvider>
-
-      <Dialog open={openCreateArticle}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Skapa artikel</DialogTitle>
-            <DialogDescription>Skapa en ny artikel</DialogDescription>
-          </DialogHeader>
-          <DialogFooter>
-            <Button variant='outline' onClick={() => setOpenCreateArticle(false)}>
-              Avbryt
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
       <Dialog open={openCreateFlow}>
         <DialogContent>
           <DialogHeader>
