@@ -68,8 +68,37 @@ export const PrintFlows = ({ asDialog, onDialogClose, className, action }: ViewP
 
   const isSubmitDisabled = !printFlow || !date
 
-  const handleCreateArticle = () => {
+  const handleCreateArticle = async () => {
     console.log('handleCreateArticle', session?.accessToken)
+    if (!session?.accessToken) {
+      toast.error('Ingen access token hittades')
+      return
+    }
+
+    if (!baboon || isSubmitDisabled) {
+      toast.error('Något gick fel när printartikel skulle skapas')
+      return
+    }
+
+    try {
+      const response = await baboon.createPrintArticle({
+        sourceUuid: '5ba0a16b-9955-4dd8-8068-4605f934f06d',
+        flowUuid: printFlow,
+        date: format(new Date(date), 'yyyy-MM-dd'),
+        article: articleName || ''
+      }, session.accessToken)
+
+      if (response?.status.code === 'OK') {
+        toast.success('Printartikel skapad')
+
+        if (onDialogClose) {
+          onDialogClose()
+        }
+      }
+    } catch (ex) {
+      console.error('Error creating print article:', ex)
+      toast.error('Något gick fel när printartikel skulle skapas')
+    }
   }
   const handleCreateFlow = async () => {
     if (!session?.accessToken) {
