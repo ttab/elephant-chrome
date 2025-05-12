@@ -9,6 +9,7 @@ export const Cancel = ({ cancelled, setCancelled }: { cancelled: boolean | undef
         id='cancelled'
         className='ml-2'
         defaultChecked={cancelled}
+        checked={cancelled}
         onCheckedChange={() => {
           setCancelled(!cancelled)
         }}
