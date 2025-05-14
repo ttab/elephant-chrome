@@ -10,6 +10,8 @@ import { slateNodesToInsertDelta, yTextToSlateElement } from '@slate-yjs/core'
 import createHash from '../createHash.js'
 import { type TBElement } from '@ttab/textbit'
 import { transformYXmlTextNodes } from './lib/transformYXmlTextNodes.js'
+import { type Descendant, Text } from 'slate'
+import { TextbitElement } from '@ttab/textbit'
 
 /**
  * Convert a grouped YDocumentResponse a yjs structure and add it to the provided Y.Doc
@@ -63,12 +65,14 @@ export function fromYjsNewsDoc(yDoc: Y.Doc): {
 
   const links = (yMap.get('links') as Y.Map<unknown>).toJSON() || {}
 
+  const isTextDocument = ['core/article', 'core/editorial-info', 'core/flash'].includes(type)
   const yContent = yMap.get('content') as Y.XmlText
-  const content = yContent.length ? yTextToSlateElement(yContent).children : []
+  const content = yContent.length
+    ? removeConsecutiveEmptyTextNodes(yTextToSlateElement(yContent).children)
+    : []
 
   const makeTitle = (): string => {
-    const types = ['core/article', 'core/editorial-info', 'core/flash']
-    if (types.includes(type)) {
+    if (isTextDocument) {
       const heading = (content as TBElement[])?.find((c: TBElement) => {
         if ('properties' in c) {
           return c?.properties?.role === 'heading-1'
@@ -112,4 +116,36 @@ export function fromYjsNewsDoc(yDoc: Y.Doc): {
     updatedHash: (currentHash !== originalHash) ? currentHash : undefined,
     originalHash
   }
+}
+
+
+/**
+ * Remove consecutive empty text elements.
+ * Allows empty paragraphs, but not two empty paragraphs in a row.
+ */
+export function removeConsecutiveEmptyTextNodes(nodes: Descendant[]): Descendant[] {
+  const result: Descendant[] = []
+  let lastWasEmptyText = false
+
+  for (const node of nodes) {
+    if (
+      TextbitElement.isText(node)
+      && (!node.properties?.role || node.properties.role === '')
+      && node.children.every((child) => {
+        return Text.isText(child) && child.text === ''
+      })
+    ) {
+      if (lastWasEmptyText) {
+        continue
+      }
+
+      lastWasEmptyText = true
+    } else {
+      lastWasEmptyText = false
+    }
+
+    result.push(node)
+  }
+
+  return result
 }
