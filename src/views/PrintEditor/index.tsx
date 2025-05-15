@@ -206,22 +206,22 @@ function EditorContainer({
 
   const [isDirty, setIsDirty] = useState<string | undefined>(undefined)
   const openPrintEditor = useLink('PrintEditor')
-  const { data: doc } = useLayouts(documentId)
+  const { data: doc } = useLayouts(documentId) as { data: { layouts: Block[], document: Document } }
   const { data: session } = useSession()
   const { repository } = useRegistry()
   const [workflowStatus] = useWorkflowStatus(documentId, true)
   useEffect(() => {
     if (doc) {
-      setLayouts(doc.layouts as Block[])
+      setLayouts(doc.layouts)
     }
   }, [doc])
   useEffect(() => {
     if (layouts && !isDirty) {
       setCleanLayouts(layouts)
     }
-  }, [layouts])
-  const name = doc?.document?.document?.meta.filter((m: { type: string }) => m.type === 'tt/print-article')[0]?.name
-  const flowName = doc?.document?.document?.links.filter((m: { type: string }) => m.type === 'tt/print-flow')[0]?.title
+  }, [layouts, isDirty])
+  const name: string = doc?.document?.meta.filter((m: { type: string }) => m.type === 'tt/print-article')[0]?.name || ''
+  const flowName: string = doc?.document?.links.filter((m: { type: string }) => m.type === 'tt/print-flow')[0]?.title || ''
   const updateLayout = (_layout: Block) => {
     const box = document.getElementById(_layout.id)
     if (box) {
@@ -242,7 +242,7 @@ function EditorContainer({
     saveUpdates(updatedLayouts)
   }
   const saveUpdates = (updatedLayouts: Block[] | undefined) => {
-    const _meta = doc?.document?.document?.meta?.map((m: { type: string }) => {
+    const _meta: Block[] = doc?.document?.meta?.map((m) => {
       if (m.type === 'tt/print-article') {
         return Object.assign({}, m, {
           meta: updatedLayouts || layouts
@@ -250,20 +250,30 @@ function EditorContainer({
       }
       return m
     })
-    const _document = Object.assign({}, doc?.document?.document, {
+    const _document: Document = Object.assign({}, doc?.document, {
       meta: _meta
     })
     if (!repository || !session) {
-      return <Error title='Repository or session not found' message='Layouter sparades inte' />
+      return (
+        <Error
+          title='Repository or session not found'
+          message='Layouter sparades inte'
+        />
+      )
     }
     (async () => {
-      const result = await repository.saveDocument(_document as Document, session.accessToken, 0n, workflowStatus?.name || 'draft')
+      const result = await repository.saveDocument(_document, session.accessToken, 0n, workflowStatus?.name || 'draft')
       if (result?.status?.code !== 'OK') {
-        return <Error title='Failed to save print article' message='Layouter sparades inte' />
+        return (
+          <Error
+            title='Failed to save print article'
+            message='Layouter sparades inte'
+          />
+        )
       }
       setIsDirty(undefined)
       setLayouts(updatedLayouts || layouts)
-      toast.success(`Layouter är sparad`)
+      toast.success('Layouter är sparad')
     })().catch((error) => {
       console.error(error)
       toast.error('Layouter sparades inte')

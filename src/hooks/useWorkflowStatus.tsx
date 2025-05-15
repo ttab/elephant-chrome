@@ -131,5 +131,3 @@ export const useWorkflowStatus = (uuid?: string, isWorkflow: boolean = false): [
 
   return [documentStatus, setDocumentStatus]
 }
-
-

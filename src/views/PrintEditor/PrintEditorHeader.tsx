@@ -1,6 +1,5 @@
 import { useView } from '@/hooks'
-import { useCallback, useEffect, useRef } from 'react'
-import { useSWRConfig } from 'swr'
+import { useEffect, useRef } from 'react'
 import { ViewHeader } from '@/components/View'
 import { StatusMenu } from '@/components/DocumentStatus/StatusMenu'
 import { RefreshCw, PenBoxIcon } from '@ttab/elephant-ui/icons'
@@ -35,15 +34,9 @@ export const EditorHeader = ({
 }): JSX.Element => {
   const { viewId } = useView()
   const containerRef = useRef<HTMLElement | null>(null)
-  const { mutate } = useSWRConfig()
   useEffect(() => {
     containerRef.current = document.getElementById(viewId)
   }, [viewId])
-
-  const onBeforeStatusChange = useCallback(async () => {
-    await mutate('tt/print-articles')
-    return true
-  }, [])
 
   return (
     <ViewHeader.Root className='grid grid-cols-3'>
@@ -70,7 +63,6 @@ export const EditorHeader = ({
                   <StatusMenu
                     documentId={documentId}
                     type='tt/print-article'
-                    onBeforeStatusChange={onBeforeStatusChange}
                   />
                 </>
               )}

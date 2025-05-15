@@ -1,7 +1,8 @@
 import { useSession } from 'next-auth/react'
 import useSWR from 'swr'
-import type { SWRResponse } from 'swr'
 import { useRegistry } from '@/hooks/useRegistry'
+import type { SWRResponse } from 'swr'
+import type { GetDocumentResponse } from '@ttab/elephant-api/repository'
 
 /**
  * Custom hook to fetch layouts associated with a specific document.
@@ -44,7 +45,7 @@ export const useLayouts = (
         uuid: documentId,
         accessToken: (session as { accessToken: string })?.accessToken
       })
-        .then((doc) => {
+        .then((doc: GetDocumentResponse | null) => {
           if (!doc) {
             return {
               statusCode: 404,
@@ -52,7 +53,7 @@ export const useLayouts = (
             }
           }
           const layouts = doc.document?.meta?.find((m) => m.type === 'tt/print-article')?.meta?.filter((m) => m.type === 'tt/article-layout') || []
-          return { layouts, document: doc }
+          return { layouts, document: doc.document }
         })
         .catch(() => {
           return {
