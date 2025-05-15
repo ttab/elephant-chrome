@@ -5,7 +5,7 @@ import { useRegistry } from '@/hooks/useRegistry'
 import { fetch } from './lib/fetch'
 import { useTable } from '@/hooks/useTable'
 import { useEffect, useMemo, useRef, useState } from 'react'
-import type { SubscriptionReference } from '@ttab/elephant-api/index'
+import type { SubscriptionItem, SubscriptionReference } from '@ttab/elephant-api/index'
 import { type HitV1, type PollSubscriptionResponse, type QueryV1, type SortingV1 } from '@ttab/elephant-api/index'
 import { toast } from 'sonner'
 import type { Index } from '@/shared/Index'
@@ -111,6 +111,7 @@ export const useDocuments = <T extends HitV1, F>({ documentType, query, size, pa
         try {
           lastSubscriptions = await pollSubscriptions({
             index,
+            data,
             accessToken: session.accessToken,
             subscriptions: lastSubscriptions,
             mutate,
@@ -122,7 +123,10 @@ export const useDocuments = <T extends HitV1, F>({ documentType, query, size, pa
           }
 
           console.error('Polling error:', error)
-          toast.error('Polling failed. Retrying...')
+          toast.error('Misslyckades att automatiskt uppdatera listan. Försöker igen om 30 sekunder.')
+
+          // Wait before next retry if failed
+          await new Promise((resolve) => setTimeout(resolve, 30000))
         }
       }
     }
@@ -137,19 +141,21 @@ export const useDocuments = <T extends HitV1, F>({ documentType, query, size, pa
       abortController.abort()
       isPolling.current = false
     }
-  }, [index, options?.subscribe, session?.accessToken, subscriptions, mutate])
+  }, [index, options?.subscribe, session?.accessToken, subscriptions, mutate, data])
 
   return { data, error, mutate, isValidating, isLoading }
 }
 
-async function pollSubscriptions<T>({
+async function pollSubscriptions<T extends HitV1>({
   index,
   accessToken,
   subscriptions,
+  data = [],
   mutate,
   abortController
 }: {
   index: Index
+  data?: T[]
   accessToken: string
   subscriptions: SubscriptionReference[]
   mutate: KeyedMutator<T[]>
@@ -162,21 +168,56 @@ async function pollSubscriptions<T>({
       abortSignal: abortController?.signal
     })
 
-    const newSubscriptions = response.result
-      .map((result) => result.subscription)
-      .filter((subscription): subscription is SubscriptionReference => !!subscription)
+    // Collect new subscriptions and matched items
+    const newSubscriptions: SubscriptionReference[] = []
+    const matchedItems: SubscriptionItem[] = []
 
-    if (newSubscriptions.length > 0) {
-      await mutate()
-      return newSubscriptions
+    response.result.forEach((group) => {
+      if (group.subscription) {
+        const groupMatchedItems = group.items.filter((item) => item.match)
+        if (groupMatchedItems.length) {
+          newSubscriptions.push(group.subscription)
+          matchedItems.push(...groupMatchedItems)
+        }
+      }
+    })
+
+    // Check for changes in subscriptions, if not restart with old subscriptions
+    if (!newSubscriptions.length) {
+      return subscriptions
     }
 
-    return subscriptions
+    const dataIds = new Set(data.flatMap((obj) => obj?.id ? [obj.id] : []))
+    // Check if any matched item is missing in data
+    const missingMatch = matchedItems.some((item) => !dataIds.has(item.id))
+
+    // if there are missing matches, we need to refetch the data
+    if (missingMatch) {
+      await mutate()
+    } else {
+      // Build a map of matched items by id for quick lookup
+      const matchedMap = new Map<string, SubscriptionItem>(
+        matchedItems.map((item) => [item.id, item])
+      )
+      // create a new array with updated fields and do a optimistic update
+      const updatedData = data.map((obj) =>
+        matchedMap.has(obj.id)
+          ? {
+              ...obj,
+              fields: { ...obj.fields, ...matchedMap.get(obj.id)?.fields }
+            }
+          : obj
+      )
+
+      console.log('soft mutate', newSubscriptions.map((s) => s.cursor))
+      await mutate(updatedData, false)
+    }
+
+    return newSubscriptions
   } catch (error) {
     if (abortController?.signal.aborted) {
       throw new AbortError()
     }
-    toast.error('Failed to update view automatically.')
     throw error
   }
 }
