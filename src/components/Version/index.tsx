@@ -158,6 +158,10 @@ export const Version = ({ documentId, hideDetails = false, textOnly = true }: { 
         {
           label: 'Använd',
           value: 'used'
+        },
+        {
+          label: 'Avpublicerad',
+          value: 'unpublished'
         }
       ]
 
