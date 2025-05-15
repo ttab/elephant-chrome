@@ -209,7 +209,6 @@ async function pollSubscriptions<T extends HitV1>({
           : obj
       )
 
-      console.log('soft mutate', newSubscriptions.map((s) => s.cursor))
       await mutate(updatedData, false)
     }
 
