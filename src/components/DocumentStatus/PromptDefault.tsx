@@ -1,6 +1,6 @@
 import type { WorkflowTransition } from '@/defaults/workflowSpecification'
 import { Prompt } from '../Prompt'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { PromptCauseField } from './PromptCauseField'
 
 export const PromptDefault = ({ prompt, setStatus, showPrompt, requireCause = false, currentCause }: {
@@ -15,6 +15,12 @@ export const PromptDefault = ({ prompt, setStatus, showPrompt, requireCause = fa
   currentCause?: string
 }) => {
   const [cause, setCause] = useState<string | undefined>(currentCause)
+
+  useEffect(() => {
+    if (prompt.status === 'draft') {
+      setCause('')
+    }
+  }, [prompt.status])
 
   return (
     <Prompt
