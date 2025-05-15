@@ -164,30 +164,34 @@ export function dateInTimestampOrShortMonthDayTimestamp(date: string, locale: st
     return '??'
   }
 
-  const inputDate = new Date(date)
-  const isCurrentDate = inputDate.getDate() === compareDate.getDate()
-    && inputDate.getMonth() === compareDate.getMonth()
-    && inputDate.getFullYear() === compareDate.getFullYear()
+  try {
+    const inputDate = new Date(date)
+    const isCurrentDate = inputDate.getDate() === compareDate.getDate()
+      && inputDate.getMonth() === compareDate.getMonth()
+      && inputDate.getFullYear() === compareDate.getFullYear()
 
-  const timeFormatter = new Intl.DateTimeFormat(locale, {
-    hour: '2-digit',
-    minute: '2-digit',
-    hour12: false,
-    timeZone
-  })
-
-  if (isCurrentDate) {
-    return timeFormatter.format(inputDate)
-  } else {
-    const dateFormatter = new Intl.DateTimeFormat(locale, {
-      day: 'numeric',
-      month: 'short',
+    const timeFormatter = new Intl.DateTimeFormat(locale, {
       hour: '2-digit',
       minute: '2-digit',
       hour12: false,
       timeZone
     })
-    return dateFormatter.format(inputDate)
+
+    if (isCurrentDate) {
+      return timeFormatter.format(inputDate)
+    } else {
+      const dateFormatter = new Intl.DateTimeFormat(locale, {
+        day: 'numeric',
+        month: 'short',
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: false,
+        timeZone
+      })
+      return dateFormatter.format(inputDate)
+    }
+  } catch {
+    return '??'
   }
 }
 
