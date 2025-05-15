@@ -3,7 +3,7 @@ import { toast } from 'sonner'
 const BASE_URL = import.meta.env.BASE_URL || ''
 
 export async function updateAssignmentPublishTime(
-  deliverableId: string, planningId: string, newStatus: string, newPublishTime: Date
+  deliverableId: string, planningId: string, newStatus: string, newTime: Date
 ) {
   try {
     const response = await fetch(`${BASE_URL}/api/documents/${planningId}`, {
@@ -16,7 +16,7 @@ export async function updateAssignmentPublishTime(
           deliverableId,
           type: 'core/article',
           status: newStatus,
-          publishTime: newPublishTime?.toISOString()
+          time: newTime?.toISOString()
         }
       })
     })
