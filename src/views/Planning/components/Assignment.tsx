@@ -12,7 +12,7 @@ import { type FormProps } from '@/components/Form/Root'
 import { useEffect, useRef } from 'react'
 import { AssignmentVisibility } from '@/components/DataItem/AssignmentVisibility'
 
-export const Assignment = ({ index, onAbort, onClose }: {
+export const Assignment = ({ index, onAbort, onClose, onChange }: {
   index: number
   onClose: () => void
   onAbort?: () => void
@@ -50,7 +50,7 @@ export const Assignment = ({ index, onAbort, onClose }: {
 
   return (
     <div className='flex flex-col rounded-md border shadow-xl -mx-1 -my-1 z-10 bg-background' ref={formRef}>
-      <Form.Root asDialog={true}>
+      <Form.Root asDialog={true} onChange={onChange}>
         <Form.Content>
           <Form.Title>
             <Title

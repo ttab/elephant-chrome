@@ -31,11 +31,12 @@ import { CreatePrintArticle } from '@/components/CreatePrintArticle'
 import { snapshot } from '@/lib/snapshot'
 import { AssignmentVisibility } from '@/components/DataItem/AssignmentVisibility'
 
-export const AssignmentRow = ({ index, onSelect, isFocused = false, asDialog }: {
+export const AssignmentRow = ({ index, onSelect, isFocused = false, asDialog, onChange }: {
   index: number
   onSelect: () => void
   isFocused?: boolean
   asDialog?: boolean
+  onChange?: (arg: boolean) => void
 }): JSX.Element => {
   const { provider } = useCollaboration()
   const openArticle = useLink('Editor')
@@ -175,6 +176,7 @@ export const AssignmentRow = ({ index, onSelect, isFocused = false, asDialog }: 
         showModal(
           <Move
             asDialog
+            onChange={onChange}
             onDialogClose={hideModal}
             original={{
               document: provider?.document,
@@ -301,6 +303,8 @@ export const AssignmentRow = ({ index, onSelect, isFocused = false, asDialog }: 
               provider?.document.getMap('ele'),
               `meta.core/assignment[${index}]`
             )
+
+            onChange?.(true)
           }}
           onSecondary={() => {
             setShowVerifyDialog(false)

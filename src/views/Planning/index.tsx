@@ -27,7 +27,7 @@ import { Button } from '@ttab/elephant-ui'
 import { createStateless, StatelessType } from '@/shared/stateless'
 import { useSession } from 'next-auth/react'
 import { PlanningHeader } from './components/PlanningHeader'
-import React, { type SetStateAction, useEffect } from 'react'
+import React, { type SetStateAction, useCallback, useEffect } from 'react'
 import type { NewItem } from '../Event/components/PlanningTable'
 
 type Setter = React.Dispatch<SetStateAction<NewItem>>
@@ -80,6 +80,7 @@ const PlanningViewContent = (props: ViewProps & { documentId: string, setNewItem
   const [documentStatus] = useWorkflowStatus(props.documentId)
   const [, setIsFocused] = useAwareness(props.documentId)
   const [newTitle] = useYValue('root.title')
+  const [isChanged] = useYValue<boolean>('root.changed')
 
   useEffect(() => {
     provider?.setAwarenessField('data', user)
@@ -91,6 +92,17 @@ const PlanningViewContent = (props: ViewProps & { documentId: string, setNewItem
 
     // We only want to rerun when provider change
     // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [provider])
+
+  // TODO: useYValue doesn't provider a stable setter, this cause rerenders down the tree
+  const handleChange = useCallback((value: boolean): void => {
+    const root = provider?.document.getMap('ele').get('root') as Y.Map<unknown>
+    const changed = root.get('changed') as boolean
+
+
+    if (changed !== value) {
+      root.set('changed', value)
+    }
   }, [provider])
 
 
@@ -120,10 +132,15 @@ const PlanningViewContent = (props: ViewProps & { documentId: string, setNewItem
 
   return (
     <View.Root asDialog={props.asDialog} className={props?.className}>
-      <PlanningHeader documentId={props.documentId} asDialog={!!props.asDialog} onDialogClose={props.onDialogClose} />
+      <PlanningHeader
+        documentId={props.documentId}
+        asDialog={!!props.asDialog}
+        onDialogClose={props.onDialogClose}
+        isChanged={isChanged}
+      />
 
       <View.Content className='max-w-[1000px]'>
-        <Form.Root asDialog={props.asDialog}>
+        <Form.Root asDialog={props.asDialog} onChange={handleChange}>
           <Form.Content>
             <Form.Title>
               <Title
@@ -154,7 +171,7 @@ const PlanningViewContent = (props: ViewProps & { documentId: string, setNewItem
           </Form.Content>
 
           <Form.Table>
-            <AssignmentTable asDialog={props.asDialog} />
+            <AssignmentTable asDialog={props.asDialog} onChange={handleChange} />
           </Form.Table>
 
           <Form.Footer>

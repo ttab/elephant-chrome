@@ -5,10 +5,11 @@ import { ViewHeader } from '@/components/View'
 import { GanttChartSquare } from '@ttab/elephant-ui/icons'
 import { MetaSheet } from '@/views/Editor/components/MetaSheet'
 
-export const PlanningHeader = ({ documentId, asDialog, onDialogClose }: {
+export const PlanningHeader = ({ documentId, asDialog, onDialogClose, isChanged }: {
   documentId: string
   asDialog: boolean
   onDialogClose?: () => void
+  isChanged?: boolean
 }): JSX.Element => {
   const { viewId } = useView()
   const containerRef = useRef<HTMLElement | null>(null)
@@ -33,7 +34,11 @@ export const PlanningHeader = ({ documentId, asDialog, onDialogClose }: {
 
           <div className='flex flex-row gap-2 justify-end items-center'>
             {!asDialog && (
-              <StatusMenu documentId={documentId} type='core/planning-item' />
+              <StatusMenu
+                documentId={documentId}
+                type='core/planning-item'
+                isChanged={isChanged}
+              />
             )}
 
             {!!documentId && <ViewHeader.RemoteUsers documentId={documentId} />}

@@ -13,8 +13,9 @@ import { cva } from 'class-variance-authority'
 import { Button } from '@ttab/elephant-ui'
 import { useActiveAuthor } from '@/hooks/useActiveAuthor'
 
-export const AssignmentTable = ({ asDialog = false }: {
+export const AssignmentTable = ({ asDialog = false, onChange }: {
   asDialog?: boolean
+  onChange?: (arg: boolean) => void
 }): JSX.Element => {
   const { provider } = useCollaboration()
   const [assignments] = useYValue<EleBlock[]>('meta.core/assignment')
@@ -129,6 +130,9 @@ export const AssignmentTable = ({ asDialog = false }: {
             }
 
             deleteByYPath(yRoot, `${currentAssigmentPath}.__inProgress`)
+
+            // Set document as changed once we abort the new assignment
+            onChange?.(true)
           }}
           className='mb-6'
         />
@@ -141,6 +145,7 @@ export const AssignmentTable = ({ asDialog = false }: {
               {selectedAssignment === index
                 ? (
                     <Assignment
+                      onChange={onChange}
                       index={index}
                       onClose={() => {
                         setSelectedAssignment(undefined)
@@ -153,6 +158,7 @@ export const AssignmentTable = ({ asDialog = false }: {
                       index={index}
                       isFocused={index === focusedRowIndex}
                       asDialog={asDialog}
+                      onChange={onChange}
                       onSelect={() => {
                         if (!newAssigment) {
                           setSelectedAssignment(index)

@@ -1,4 +1,4 @@
-import React, { type Dispatch, type SetStateAction, useRef, useState, type PropsWithChildren } from 'react'
+import React, { type Dispatch, type SetStateAction, useRef, useState, type PropsWithChildren, useCallback, useMemo } from 'react'
 import { ValidationAlert } from '../ValidationAlert'
 import { type ValidateState } from '@/types/index'
 import { cn } from '@ttab/elephant-ui/utils'
@@ -17,15 +17,18 @@ export interface FormProps extends PropsWithChildren {
   onValidation?: (args: OnValidation) => boolean
   setValidateForm?: Dispatch<SetStateAction<boolean>>
   validateStateRef?: React.MutableRefObject<ValidateState>
+  onChange?: (arg: boolean) => void
   children?: React.ReactNode
 }
 
-export const Root = ({ children, asDialog = false, className }: PropsWithChildren & {
+export const Root = ({ children, asDialog = false, onChange, className }: PropsWithChildren & {
   asDialog?: boolean
+  onChange?: (arg: boolean) => void
   className?: string
 }): JSX.Element => {
   const validateStateRef = useRef<ValidateState>({})
   const [validateForm, setValidateForm] = useState<boolean>(!asDialog)
+
   const formRootStyle = `
     w-full
     flex
@@ -41,20 +44,35 @@ export const Root = ({ children, asDialog = false, className }: PropsWithChildre
     [&_[role="textbox"]]:leading-tight
     [&_[role="textbox"]]:tracking-right`
 
-  const handleValidation = ({ block, label, value, compareValues, reason }: OnValidation): boolean => {
-    const isValid = [!!value, isUnique(value, compareValues)].every(Boolean)
+  const handleValidation = useCallback(
+    ({ block, label, value, compareValues, reason }: OnValidation): boolean => {
+      const isValid = [!!value, isUnique(value, compareValues)].every(Boolean)
 
-    validateStateRef.current = {
-      ...validateStateRef.current,
-      [block]: { label, valid: isValid, reason }
-    }
+      validateStateRef.current = {
+        ...validateStateRef.current,
+        [block]: { label, valid: isValid, reason }
+      }
 
-    if (validateForm) {
-      return !!isValid
-    }
+      if (validateForm) {
+        return !!isValid
+      }
 
-    return true
-  }
+      return true
+    },
+    [validateForm]
+  )
+
+
+  const props = useMemo(
+    () => ({
+      asDialog,
+      onValidation: handleValidation,
+      setValidateForm,
+      onChange,
+      validateStateRef
+    }),
+    [asDialog, handleValidation, onChange, validateStateRef]
+  )
 
   return (
     <>
@@ -62,12 +80,7 @@ export const Root = ({ children, asDialog = false, className }: PropsWithChildre
       <div className={cn(formRootStyle, className)}>
         {React.Children.map(children, (child: React.ReactNode): React.ReactNode =>
           React.isValidElement<FormProps>(child)
-            ? React.cloneElement(child, {
-              asDialog,
-              onValidation: handleValidation,
-              setValidateForm,
-              validateStateRef
-            })
+            ? React.cloneElement(child, props)
             : child
         )}
       </div>

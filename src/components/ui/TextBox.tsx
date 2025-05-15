@@ -2,7 +2,7 @@ import React, { useCallback, useRef } from 'react'
 import { Awareness } from '../Awareness'
 import { TextboxRoot } from './Textbox/TextboxRoot'
 
-export const TextBox = ({ icon: Icon, path, ...props }: {
+export const TextBox = ({ icon: Icon, path, onChange, ...props }: {
   disabled?: boolean
   path: string
   icon?: React.ReactNode
@@ -14,6 +14,7 @@ export const TextBox = ({ icon: Icon, path, ...props }: {
   spellcheck?: boolean
   onBlur?: React.FocusEventHandler<HTMLDivElement>
   onFocus?: React.FocusEventHandler<HTMLDivElement>
+  onChange?: (arg: boolean) => void
 }): JSX.Element => {
   const setFocused = useRef<(value: boolean, key: string) => void>(() => { })
   const { onFocus, onBlur } = props
@@ -41,7 +42,7 @@ export const TextBox = ({ icon: Icon, path, ...props }: {
           </div>
         )}
 
-        <TextboxRoot {...props} path={path} onBlur={handleOnBlur} onFocus={handleOnFocus} />
+        <TextboxRoot {...props} path={path} onBlur={handleOnBlur} onFocus={handleOnFocus} onChange={onChange} />
       </div>
     </Awareness>
   )

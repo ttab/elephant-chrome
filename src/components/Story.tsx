@@ -3,8 +3,9 @@ import { useStories, useYValue } from '@/hooks'
 import { Block } from '@ttab/elephant-api/newsdoc'
 import { ComboBox } from '@ttab/elephant-ui'
 import { useRef } from 'react'
+import type { FormProps } from './Form/Root'
 
-export const Story = (): JSX.Element => {
+export const Story = ({ onChange }: FormProps): JSX.Element => {
   const allStories = useStories().map((_) => {
     return {
       value: _.id,
@@ -31,6 +32,7 @@ export const Story = (): JSX.Element => {
           setFocused.current(true, isOpen ? path : '')
         }}
         onSelect={(option) => {
+          onChange?.(true)
           setStory(story?.title === option.label
             ? undefined
             : Block.create({

@@ -5,13 +5,14 @@ import { Block } from '@ttab/elephant-api/newsdoc'
 import { useYValue } from '@/hooks/useYValue'
 import { FilePen, FilePlus2 } from '@ttab/elephant-ui/icons'
 import type { DefaultValueOption } from '@/types/index'
+import type { FormProps } from '../Form/Root'
 
-export const AssignmentType = ({ path, editable = false, readOnly = false, className }: {
+export const AssignmentType = ({ path, editable = false, readOnly = false, className, onChange }: {
   path: string
   className?: string
   editable?: boolean
   readOnly?: boolean
-}): JSX.Element => {
+} & FormProps): JSX.Element => {
   const [assignmentType, setAssignmentType] = useYValue<Block[]>(path + '.meta.core/assignment-type')
   const [, setAssignmentVisibility] = useYValue<string>(path + 'data.public')
 
@@ -47,6 +48,8 @@ export const AssignmentType = ({ path, editable = false, readOnly = false, class
       disabled={!editable}
       value={selectedOptions[0]?.value}
       onValueChange={(value) => {
+        onChange?.(true)
+
         switch (value) {
           case 'picture/video':
             setAssignmentType([Block.create({

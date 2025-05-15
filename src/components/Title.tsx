@@ -1,14 +1,24 @@
-import { TextBox } from '@/components/ui'
+import React from 'react'
+import type { FormProps } from './Form/Root'
+import { TextBox } from './ui'
 import { Validation } from './Validation'
-import { type FormProps } from './Form/Root'
 
-export const Title = ({ autoFocus, placeholder, path, className, onValidation, validateStateRef, countCharacters }: FormProps & {
+export const Title = React.memo(({
+  autoFocus,
+  placeholder,
+  path,
+  className,
+  onValidation,
+  validateStateRef,
+  countCharacters,
+  onChange
+}: {
   autoFocus?: boolean
   placeholder: string
   path?: string
   className?: string
   countCharacters?: boolean
-}): JSX.Element => (
+} & FormProps): JSX.Element => (
   <Validation
     label='Titel'
     path={path || 'root.title'}
@@ -23,6 +33,10 @@ export const Title = ({ autoFocus, placeholder, path, className, onValidation, v
       autoFocus={!!autoFocus}
       singleLine={true}
       countCharacters={countCharacters}
+      onChange={onChange}
     />
   </Validation>
 )
+)
+
+Title.displayName = 'Title'

@@ -1,5 +1,5 @@
 import { isEqualDeep } from '@/lib/isEqualDeep'
-import { useRef, useSyncExternalStore } from 'react'
+import { useCallback, useRef, useSyncExternalStore } from 'react'
 import { getValueByYPath, setValueByYPath, stringToYPath } from '@/shared/yUtils'
 import { useCollaboration } from './useCollaboration'
 import type { HocuspocusProvider } from '@hocuspocus/provider'
@@ -53,9 +53,9 @@ export function useYValue<T>(path: string, raw: boolean = false, externalProvide
   )
 
   // Setter function to update the value at the path
-  const setData = (newValue: T): void => {
+  const setData = useCallback((newValue: T): void => {
     setValueByYPath(yRoot, yPath, newValue)
-  }
+  }, [yRoot, yPath])
 
   return [
     data as T,
