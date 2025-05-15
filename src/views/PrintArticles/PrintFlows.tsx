@@ -191,7 +191,7 @@ export const PrintFlows = ({ asDialog, onDialogClose, className, action }: ViewP
                     </Form.Group>
                   )}
                   <Form.Group icon={Calendar}>
-                    <DatePicker date={date} setDate={(newDate) => setDateString(newDate)} disabled={!printFlow} />
+                    <DatePicker date={date || new Date()} setDate={(newDate) => setDateString(newDate)} disabled={!printFlow} />
                   </Form.Group>
                 </Form.Content>
                 <p className='text-sm text-gray-500'>

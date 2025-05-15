@@ -51,14 +51,14 @@ const meta: ViewMetadata = {
 
 export const PrintArticles = (): JSX.Element => {
   const columns = useMemo(
-    () => printArticlesListColumns({ locale: 'sv' }),
+    () => printArticlesListColumns(),
     []
   )
   const [openCreateFlow, setOpenCreateFlow] = useState(false)
 
   return (
     <View.Root>
-      <PrintArticlesHeader setOpenCreateFlow={setOpenCreateFlow} />
+      <PrintArticlesHeader />
       <TableProvider<PrintArticle>
         type={meta.name}
         columns={columns}
@@ -73,7 +73,7 @@ export const PrintArticles = (): JSX.Element => {
           <DialogHeader>
             <DialogTitle>Lista över flöden</DialogTitle>
           </DialogHeader>
-          <PrintFlows />
+          <PrintFlows action='createFlow' />
           <DialogFooter>
             <Button variant='outline' onClick={() => setOpenCreateFlow(false)}>
               Avbryt

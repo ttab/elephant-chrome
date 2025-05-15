@@ -75,10 +75,10 @@ export function LayoutBox({
 
   const id = layout.id
   const name = layout.links?.find((l: { rel: string }) => l.rel === 'layout')?.name
-  const additionals = layout?.meta[0]?.content
+  const additionals = typeof layout?.meta[0]?.content === 'string' ? JSON.parse(layout.meta[0].content) : layout?.meta[0]?.content
   const layoutName = layout?.name
   const position = layout?.data?.position || ''
-
+  console.log('additionals', additionals, typeof additionals)
   return (
     <div id={layout.id} className='border min-h-32 p-2 pt-0 grid grid-cols-12 gap-2 rounded'>
       <header className={`col-span-12 row-span-1 gap-2 flex items-center ${isDirty === layout.id ? 'mt-2 justify-end' : 'justify-between'} `}>
@@ -145,7 +145,7 @@ export function LayoutBox({
                 >
                   Avbryt
                 </Button>
-                <Button className='p-2' size='sm' onClick={saveUpdates}>Spara</Button>
+                <Button className='p-2' size='sm' onClick={() => saveUpdates(undefined)}>Spara</Button>
               </>
             )}
       </header>
@@ -207,14 +207,14 @@ export function LayoutBox({
         {additionals?.length > 0 && (
           <>
             <h4 className='text-sm font-bold'>Tillägg</h4>
-            {additionals?.map((additional) => (
+            {additionals?.map((additional: { id: string, name: string, value: string }) => (
               <Label key={additional.id} className='flex items-center gap-2'>
                 <Input
                   type='checkbox'
                   className='w-4 h-4'
                   checked={additional.value === 'true'}
                   onChange={(e) => {
-                    const updatedAdditionals = additionals.map((_additional) => {
+                    const updatedAdditionals = additionals.map((_additional: { id: string, name: string, value: string }) => {
                       if (_additional.name === additional.name) {
                         return { ..._additional, value: e.target.checked?.toString() }
                       }

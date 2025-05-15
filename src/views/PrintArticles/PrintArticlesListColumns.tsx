@@ -48,7 +48,7 @@ export function printArticlesListColumns(): Array<ColumnDef<PrintArticle>> {
       accessorFn: (data) => (data.fields['document.rel.flow.title'].values[0]),
       cell: ({ row }) => {
         const flow = row.getValue('printFlow')
-        return <span>{flow}</span>
+        return <span>{flow as string}</span>
       }
     },
     {

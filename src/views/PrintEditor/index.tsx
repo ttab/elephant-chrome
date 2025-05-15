@@ -54,6 +54,7 @@ import { DropMarker } from '@/components/Editor/DropMarker'
 import { getValueByYPath } from '@/shared/yUtils'
 import { useOnSpellcheck } from '@/hooks/useOnSpellcheck'
 import { useSession } from 'next-auth/react'
+import type { Document } from '@ttab/elephant-api/newsdoc'
 
 // Metadata definition
 const meta: ViewMetadata = {
@@ -221,7 +222,7 @@ function EditorContainer({
   const [layouts, setLayouts] = useState<Layout[]>([])
   const [cleanLayouts, setCleanLayouts] = useState<Layout[]>()
 
-  const [isDirty, setIsDirty] = useState(undefined)
+  const [isDirty, setIsDirty] = useState<string | undefined>(undefined)
   const openPrintEditor = useLink('PrintEditor')
   const { data: doc } = useLayouts(documentId)
   const { data: session } = useSession()
@@ -239,9 +240,8 @@ function EditorContainer({
   }, [layouts])
   const name = doc?.document?.document?.meta.filter((m: { type: string }) => m.type === 'tt/print-article')[0]?.name
   const flowName = doc?.document?.document?.links.filter((m: { type: string }) => m.type === 'tt/print-flow')[0]?.title
-  console.log('flowName', flowName)
   const updateLayout = (_layout: Layout) => {
-    const box = document.getElementById(_layout.id)
+    const box = document.getElementById(_layout.id as string)
     if (box) {
       box.scrollIntoView({ behavior: 'smooth', block: 'center' })
     }
@@ -272,12 +272,12 @@ function EditorContainer({
       meta: _meta
     })
     if (!repository || !session) {
-      throw new Error('Repository or session not found')
+      return <Error title='Repository or session not found' message='Layouter sparades inte' />
     }
     (async () => {
       const result = await repository.saveDocument(_document as Document, session.accessToken, 0n, workflowStatus?.name || 'draft')
-      if (result?.status.code !== 'OK') {
-        throw new Error('Failed to save print article')
+      if (result?.status?.code !== 'OK') {
+        return <Error title='Failed to save print article' message='Layouter sparades inte' />
       }
       setIsDirty(undefined)
       setLayouts(updatedLayouts || layouts)

@@ -4,8 +4,9 @@ import { useRegistry } from '../useRegistry'
 import { fetch } from './lib/printArticles'
 import { useTable } from '../useTable'
 import { useEffect } from 'react'
-import type { PrintArticle } from './lib/printArticles'
 import { useWorkflowStatus } from '../useWorkflowStatus'
+import type { PrintArticle } from './lib/printArticles'
+import type { QueryParams } from '../useQuery'
 /**
  * Custom hook to fetch print articles using SWR.
  *
