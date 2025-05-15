@@ -186,6 +186,7 @@ export const StatusMenu = ({ documentId, type, publishTime, onBeforeStatusChange
               setStatus={(...args) => void setStatus(...args)}
               currentCause={documentStatus?.cause as string}
               requireCause={prompt.status === 'draft' && !!documentStatus.checkpoint}
+              unPublishDocument={unPublishDocument}
             />
           )}
         </>
