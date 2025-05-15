@@ -61,7 +61,7 @@ export function LayoutBox({
   setIsDirty: (id: string | undefined) => void
   setLayouts: React.Dispatch<React.SetStateAction<Layout[]>>
   cleanLayouts: Layout[]
-  saveUpdates: () => void
+  saveUpdates: (updatedLayouts: Layout[] | undefined) => void
   deleteLayout: (layout: Layout) => void
 }) {
   const openPreview = useLink('PrintPreview')

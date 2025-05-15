@@ -254,13 +254,12 @@ function EditorContainer({
     setLayouts(updatedLayouts)
     setIsDirty(_layout.id)
   }
-  const deleteLayout = async (_layout: Layout) => {
+  const deleteLayout = (_layout: Layout) => {
     const updatedLayouts = layouts.filter((layout) => layout.id !== _layout.id)
     setLayouts(updatedLayouts)
-    await saveUpdates(updatedLayouts)
+    saveUpdates(updatedLayouts)
   }
-  const saveUpdates = async (updatedLayouts: Layout[] | undefined) => {
-    console.log('save updated layouts', doc?.document?.document?.meta?.find((m: { type: string }) => m.type === 'tt/print-article')?.meta, layouts)
+  const saveUpdates = (updatedLayouts: Layout[] | undefined) => {
     const _meta = doc?.document?.document?.meta?.map((m: { type: string }) => {
       if (m.type === 'tt/print-article') {
         return Object.assign({}, m, {
@@ -275,14 +274,18 @@ function EditorContainer({
     if (!repository || !session) {
       throw new Error('Repository or session not found')
     }
-    const result = await repository.saveDocument(_document as Document, session.accessToken, 0n, workflowStatus?.name || 'draft')
-    if (result?.status.code !== 'OK') {
-      throw new Error(`Failed to save print article`)
-    }
-    setIsDirty(undefined)
-    setLayouts(updatedLayouts || layouts)
-
-    toast.success(`Layouter är sparad`)
+    (async () => {
+      const result = await repository.saveDocument(_document as Document, session.accessToken, 0n, workflowStatus?.name || 'draft')
+      if (result?.status.code !== 'OK') {
+        throw new Error('Failed to save print article')
+      }
+      setIsDirty(undefined)
+      setLayouts(updatedLayouts || layouts)
+      toast.success(`Layouter är sparad`)
+    })().catch((error) => {
+      console.error(error)
+      toast.error('Layouter sparades inte')
+    })
   }
 
   return (
@@ -348,7 +351,7 @@ function EditorContainer({
                       setLayouts={(newLayouts: Layout[] | ((prevState: Layout[]) => Layout[])) => setLayouts(newLayouts)}
                       cleanLayouts={cleanLayouts || []}
                       saveUpdates={() => saveUpdates(layouts || [])}
-                      deleteLayout={deleteLayout}
+                      deleteLayout={() => deleteLayout(layout)}
                     />
                   )
                 })}
