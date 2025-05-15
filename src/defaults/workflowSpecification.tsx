@@ -345,7 +345,7 @@ export const WorkflowSpecifications: Record<string, WorkflowSpecification> = {
     },
     usable: {
       title: 'Användbar',
-      description: 'Fakturan är användbar',
+      description: 'Faktarutan är användbar',
       transitions: {
         cancelled: {
           verify: true,
