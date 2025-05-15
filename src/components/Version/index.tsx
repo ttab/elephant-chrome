@@ -17,7 +17,7 @@ const BASE_URL = import.meta.env.BASE_URL || ''
 
 type Status = { name: string, created: string, creator: string }
 
-type SelectedVersion = Pick<DocumentVersion, 'created' | 'version' | 'creator'> & {
+type SelectedVersion = Pick<DocumentStatus, 'created' | 'version' | 'creator'> & {
   createdBy?: string
   lastStatus?: Status
   title?: string
@@ -29,7 +29,7 @@ export const Version = ({ documentId, hideDetails = false, textOnly = true }: { 
   const authors = useAuthors()
   const [lastUpdated, setLastUpdated] = useState('')
 
-  const { data: versionHistory, error } = useSWR<DocumentVersion[], Error>(`version/${documentId}`, async (): Promise<Array<DocumentVersion & { title?: string, slugline?: string }>> => {
+  const { data: versionStatusHistory, error } = useSWR<DocumentStatus[], Error>(`version/${documentId}`, async (): Promise<Array<DocumentStatus & { title?: string, slugline?: string }>> => {
     if (!session?.accessToken || !repository) {
       return []
     }
@@ -43,11 +43,10 @@ export const Version = ({ documentId, hideDetails = false, textOnly = true }: { 
     if (!result?.statuses.length) {
       return []
     }
-
     // Setting time for when last version was created
     setLastUpdated(result.statuses[0].created)
 
-    const fetchDoc = async (v: DocumentVersion) => {
+    const fetchDoc = async (v: DocumentStatus) => {
       // Used to fetch the previous document version in order to get hold of the title,
       // that can be displayed in the list of previous versions.
       const response = await fetch(`${BASE_URL}/api/documents/${documentId}?version=${v.version}`)
