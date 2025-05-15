@@ -9,6 +9,12 @@ import { PromptDefault } from './PromptDefault'
 import { PromptSchedule } from './PromptSchedule'
 import { StatusMenuOption } from './StatusMenuOption'
 import { StatusButton } from './StatusButton'
+import { useSession } from 'next-auth/react'
+import { useRegistry } from '@/hooks/useRegistry'
+import { toast } from 'sonner'
+import { handleLink } from '../Link/lib/handleLink'
+import { useHistory, useNavigation, useView } from '@/hooks/index'
+import type { View } from '@/types/index'
 
 export const StatusMenu = ({ documentId, type, publishTime, onBeforeStatusChange, isChanged }: {
   documentId: string
@@ -20,11 +26,16 @@ export const StatusMenu = ({ documentId, type, publishTime, onBeforeStatusChange
   ) => Promise<boolean>
   isChanged?: boolean
 }) => {
-  const [documentStatus, setDocumentStatus] = useWorkflowStatus(documentId, type === 'core/article')
+  const [documentStatus, setDocumentStatus] = useWorkflowStatus(documentId, true)
   const containerRef = useRef<HTMLDivElement>(null)
   const [dropdownWidth, setDropdownWidth] = useState<number>(0)
   const { statuses, workflow } = useWorkflow(type)
   const [prompt, showPrompt] = useState<{ status: string } & WorkflowTransition | undefined>()
+  const { data: session } = useSession()
+  const { repository } = useRegistry()
+  const { state, dispatch } = useNavigation()
+  const history = useHistory()
+  const { viewId } = useView()
 
   useEffect(() => {
     if (containerRef.current) {
@@ -46,6 +57,50 @@ export const StatusMenu = ({ documentId, type, publishTime, onBeforeStatusChange
       (typeof data?.cause === 'string') ? data.cause : undefined
     )
   }, [onBeforeStatusChange, setDocumentStatus])
+
+  const unPublishDocument = (newStatus?: string) => {
+    if (!repository || !session?.accessToken || newStatus !== 'unpublished') {
+      return
+    }
+
+    // Unpublishing a document is done by setting version: -1, status name to 'usable'
+    const status = {
+      uuid: documentId,
+      name: 'usable',
+      version: -1n
+    }
+
+    try {
+      (async () => {
+        await repository?.saveMeta({
+          status,
+          accessToken: session?.accessToken || '',
+          cause: documentStatus?.cause,
+          isWorkflow: type === 'core/article' || type === 'core/planning-item' || type === 'core/event',
+          currentStatus: documentStatus
+        })
+
+        const viewType: Record<string, View> = {
+          'core/article': 'Editor',
+          'core/planning-item': 'Planning',
+          'core/event': 'Event'
+        }
+
+        handleLink({
+          dispatch,
+          viewItem: state.viewRegistry.get(viewType[type]),
+          props: { id: documentId },
+          viewId: crypto.randomUUID(),
+          history,
+          origin: viewId,
+          target: 'self'
+        })
+      })().catch((err) => console.error(err))
+    } catch (error) {
+      toast.error('Det gick inte att avpublicera dokumentet')
+      console.error('error while unpublishing document:', error)
+    }
+  }
 
   if (!documentStatus || !Object.keys(statuses).length) {
     return null
