@@ -110,7 +110,7 @@ export const StatusMenu = ({ documentId, type, publishTime, onBeforeStatusChange
   const currentStatusDef = statuses[currentStatusName] || StatusSpecifications[currentStatusName]
   const transitions = workflow[currentStatusName]?.transitions || {}
 
-  if (!Object.keys(transitions).length) {
+  if (!Object.keys(transitions).length && currentStatusName !== 'unpublished') {
     return null
   }
 
