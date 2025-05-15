@@ -1,5 +1,4 @@
-import { Button, DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from '@ttab/elephant-ui'
-import { ChevronDown } from '@ttab/elephant-ui/icons'
+import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from '@ttab/elephant-ui'
 import { useRef, useState, useEffect, useCallback } from 'react'
 import { useWorkflow } from '@/hooks/index/useWorkflow'
 import type { WorkflowTransition } from '@/defaults/workflowSpecification'
@@ -8,8 +7,10 @@ import { StatusOptions } from './StatusOptions'
 import { StatusMenuHeader } from './StatusMenuHeader'
 import { PromptDefault } from './PromptDefault'
 import { PromptSchedule } from './PromptSchedule'
+import { StatusMenuOption } from './StatusMenuOption'
+import { StatusButton } from './StatusButton'
 
-export const StatusMenu = ({ documentId, type, publishTime, onBeforeStatusChange }: {
+export const StatusMenu = ({ documentId, type, publishTime, onBeforeStatusChange, isChanged }: {
   documentId: string
   type: string
   publishTime?: Date
@@ -17,6 +18,7 @@ export const StatusMenu = ({ documentId, type, publishTime, onBeforeStatusChange
     status: string,
     data?: Record<string, unknown>
   ) => Promise<boolean>
+  isChanged?: boolean
 }) => {
   const [documentStatus, setDocumentStatus] = useWorkflowStatus(documentId, type === 'core/article')
   const containerRef = useRef<HTMLDivElement>(null)
@@ -57,29 +59,20 @@ export const StatusMenu = ({ documentId, type, publishTime, onBeforeStatusChange
     return null
   }
 
-  const CurrentIcon = currentStatusDef.icon
-
   return (
     <>
       <div className='flex items-center' ref={containerRef}>
 
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button size='sm' variant='outline' className='flex items-center h-8 px-3' title={workflow[currentStatusName]?.description}>
-              <div className='pe-2'>
-                <CurrentIcon
-                  size={18}
-                  strokeWidth={1.75}
-                  className={currentStatusDef?.className}
-                />
-              </div>
-              <div className='pe-1'>
-                {workflow[currentStatusName]?.title}
-              </div>
-              <div className='ps-1'>
-                <ChevronDown size={16} />
-              </div>
-            </Button>
+            <StatusButton
+              documentStatus={documentStatus}
+              workflow={workflow}
+              currentStatusName={currentStatusName}
+              currentStatusDef={currentStatusDef}
+              asSave={!!(isChanged && documentStatus.name !== 'draft')}
+
+            />
           </DropdownMenuTrigger>
 
           <DropdownMenuContent
@@ -94,12 +87,26 @@ export const StatusMenu = ({ documentId, type, publishTime, onBeforeStatusChange
               title={workflow[currentStatusName]?.title}
               description={workflow[currentStatusName]?.description}
             />
-
             <StatusOptions
               transitions={transitions}
               statuses={statuses}
               onSelect={showPrompt}
-            />
+            >
+              {isChanged && documentStatus.name !== 'draft' && (
+                <StatusMenuOption
+                  key='save'
+                  status={documentStatus.name}
+                  state={{
+                    verify: true,
+                    title: `Spara ändringar - ${workflow[currentStatusName]?.title}`,
+                    description: 'Spara ändringar'
+                  }}
+                  onSelect={showPrompt}
+                  statusDef={currentStatusDef}
+                />
+
+              )}
+            </StatusOptions>
 
           </DropdownMenuContent>
         </DropdownMenu>
@@ -131,4 +138,3 @@ export const StatusMenu = ({ documentId, type, publishTime, onBeforeStatusChange
     </>
   )
 }
-

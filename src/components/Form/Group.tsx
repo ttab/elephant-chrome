@@ -2,7 +2,7 @@ import React from 'react'
 import { type LucideIcon } from '@ttab/elephant-ui/icons'
 import { type FormProps } from './Root'
 
-export const Group = ({ children, icon: Icon, asDialog, onValidation, validateStateRef }: FormProps & {
+export const Group = ({ children, icon: Icon, asDialog, onValidation, validateStateRef, onChange }: FormProps & {
   icon?: LucideIcon
 }): JSX.Element => (
 
@@ -29,6 +29,7 @@ export const Group = ({ children, icon: Icon, asDialog, onValidation, validateSt
           ? React.cloneElement(child, {
             asDialog,
             onValidation,
+            onChange,
             validateStateRef
           })
           : child

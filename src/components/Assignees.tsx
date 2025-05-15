@@ -10,7 +10,7 @@ import { YBlock } from '@/shared/YBlock'
 import type { EleBlock } from '@/shared/types'
 import { type FormProps } from './Form/Root'
 
-export const Assignees = ({ path, placeholder, asDialog }: {
+export const Assignees = ({ path, placeholder, asDialog, onChange }: {
   placeholder: string
   path: string
 } & FormProps): JSX.Element | undefined => {
@@ -44,6 +44,8 @@ export const Assignees = ({ path, placeholder, asDialog }: {
             setFocused.current(true, isOpen ? path : '')
           }}
           onSelect={(option) => {
+            onChange?.(true)
+
             const selectedAssignee = selectedOptions.findIndex((sa) => sa.value === option.value)
 
             if (selectedAssignee > -1) {

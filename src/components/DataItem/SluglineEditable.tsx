@@ -7,13 +7,14 @@ import { Validation } from '../Validation'
 import { SluglineButton } from './Slugline'
 import { type FormProps } from '../Form/Root'
 import type { Block } from '@ttab/elephant-api/newsdoc'
+import type { TBElement } from '@ttab/textbit'
 
-export const SluglineEditable = ({ path, documentStatus, onValidation, validateStateRef, compareValues, disabled }: {
+export const SluglineEditable = ({ path, documentStatus, onValidation, validateStateRef, compareValues, disabled, onChange }: {
   disabled?: boolean
   path: string
   compareValues?: string[]
   documentStatus?: string
-  onValidation?: (label: string, block: string, value: string | undefined, reason: string) => boolean
+  onChange?: (value: TBElement[]) => void
 } & FormProps): JSX.Element => {
   const setFocused = useRef<(value: boolean) => void>(null)
   const [slugLine] = useYValue<Y.XmlText>(path)
@@ -59,6 +60,7 @@ export const SluglineEditable = ({ path, documentStatus, onValidation, validateS
                   singleLine={true}
                   className='h-6 font-normal text-sm whitespace-nowrap mb-1'
                   spellcheck={false}
+                  onChange={onChange}
                 />
               </Validation>
             </Awareness>

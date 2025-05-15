@@ -1,7 +1,7 @@
 import { useSession } from 'next-auth/react'
 import useSWR, { mutate as globalMutate } from 'swr'
 import { useCallback } from 'react'
-import { useRegistry } from '@/hooks'
+import { useRegistry, useYValue } from '@/hooks'
 import { toast } from 'sonner'
 import type { Status } from '@/shared/Repository'
 import { snapshot } from '@/lib/snapshot'
@@ -13,6 +13,7 @@ export const useWorkflowStatus = (uuid?: string, isWorkflow: boolean = false): [
 ] => {
   const { repository } = useRegistry()
   const { data: session } = useSession()
+  const [, setChanged] = useYValue('root.changed')
 
   /**
    * SWR callback that fetches current workflow status
@@ -117,6 +118,9 @@ export const useWorkflowStatus = (uuid?: string, isWorkflow: boolean = false): [
           isWorkflow
         })
 
+        // Reset unsaved changes state
+        setChanged(undefined)
+
         // Revalidate after the mutation completes
         await globalMutate([`status/${uuid || payload.uuid}`])
       } catch (error) {
@@ -126,10 +130,8 @@ export const useWorkflowStatus = (uuid?: string, isWorkflow: boolean = false): [
         await mutate(currentStatus, false)
       }
     },
-    [session, uuid, documentStatus, mutate, repository, isWorkflow]
+    [session, uuid, documentStatus, mutate, repository, isWorkflow, setChanged]
   )
 
   return [documentStatus, setDocumentStatus]
 }
-
-

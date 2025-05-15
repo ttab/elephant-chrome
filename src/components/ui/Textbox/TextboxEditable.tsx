@@ -10,7 +10,7 @@ import { ContextMenu } from '../../Editor/ContextMenu'
 import { useOnSpellcheck } from '@/hooks/useOnSpellcheck'
 import { getValueByYPath } from '@/shared/yUtils'
 
-export const TextboxEditable = ({ provider, path, user, content, singleLine, spellcheck, disabled = false }: {
+export const TextboxEditable = ({ provider, path, user, content, singleLine, spellcheck, disabled = false, onChange }: {
   disabled?: boolean
   provider: HocuspocusProvider
   path: string
@@ -18,6 +18,7 @@ export const TextboxEditable = ({ provider, path, user, content, singleLine, spe
   user: AwarenessUserData
   content: Y.XmlText
   spellcheck?: boolean
+  onChange?: (arg: boolean) => void
 }): JSX.Element | undefined => {
   const [documentLanguage] = getValueByYPath<string>(provider.document.getMap('ele'), 'root.language')
   const onSpellcheck = useOnSpellcheck(documentLanguage)
@@ -49,6 +50,11 @@ export const TextboxEditable = ({ provider, path, user, content, singleLine, spe
 
   return (
     <Textbit.Editable
+      onChange={() => {
+        if (provider.hasUnsyncedChanges) {
+          onChange?.(true)
+        }
+      }}
       readOnly={disabled}
       yjsEditor={yjsEditor}
       lang={documentLanguage}

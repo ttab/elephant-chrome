@@ -6,7 +6,8 @@ import { useRef } from 'react'
 import { Validation } from './Validation'
 import { type FormProps } from './Form/Root'
 
-export const Section = ({ onValidation, validateStateRef }: FormProps): JSX.Element => {
+export const Section = ({ onValidation, validateStateRef, onChange }:
+FormProps): JSX.Element => {
   const allSections = useSections().map((_) => {
     return {
       value: _.id,
@@ -42,6 +43,8 @@ export const Section = ({ onValidation, validateStateRef }: FormProps): JSX.Elem
             }
           }}
           onSelect={(option) => {
+            onChange?.(true)
+
             if (section?.title === option.label) {
               setSection(undefined)
             } else {

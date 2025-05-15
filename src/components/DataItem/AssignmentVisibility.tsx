@@ -3,18 +3,21 @@ import { Tooltip, Select, SelectTrigger, SelectContent, SelectItem } from '@ttab
 import { Building, Globe } from '@ttab/elephant-ui/icons'
 import { cn } from '@ttab/elephant-ui/utils'
 import { useCallback, useMemo } from 'react'
+import type { FormProps } from '../Form/Root'
 
-export const AssignmentVisibility = ({ path, editable, disabled, className = '' }: {
+export const AssignmentVisibility = ({ path, editable, disabled, className = '', onChange }: {
   path: string
   editable: boolean
   disabled: boolean
   className?: string
-}): JSX.Element => {
+} & FormProps): JSX.Element => {
   const [visibilityStatus, setAssignmentVisibility] = useYValue<string>(path)
 
   const onValueChange = useCallback(
-    (value: string) => setAssignmentVisibility(value),
-    [setAssignmentVisibility]
+    (value: string) => {
+      setAssignmentVisibility(value)
+      onChange?.(true)
+    }, [setAssignmentVisibility, onChange]
   )
 
   const tooltipContent = useMemo(

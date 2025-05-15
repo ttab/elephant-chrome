@@ -6,7 +6,8 @@ import { Awareness } from '@/components'
 import { Validation } from './Validation'
 import type { FormProps } from './Form/Root'
 
-export const Newsvalue = ({ onValidation, validateStateRef }: FormProps): JSX.Element => {
+export const Newsvalue = ({ onValidation, validateStateRef, onChange }:
+FormProps): JSX.Element => {
   const path = 'meta.core/newsvalue[0].value'
   const [newsvalue, setNewsvalue] = useYValue<string | undefined>(path)
   const setFocused = useRef<(value: boolean, path: string) => void>(() => { })
@@ -39,6 +40,8 @@ export const Newsvalue = ({ onValidation, validateStateRef }: FormProps): JSX.El
             setFocused.current(true, isOpen ? path : '')
           }}
           onSelect={(option) => {
+            onChange?.(true)
+
             if (newsvalue === option.value) {
               setNewsvalue(undefined)
             } else {

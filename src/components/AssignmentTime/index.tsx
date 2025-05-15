@@ -5,6 +5,7 @@ import { TimeDeliveryMenu } from './TimeDeliveryMenu'
 import { type AssignmentValueOption, type AssignmentData } from './types'
 import { ExecutionTimeMenu } from './ExecutionTimeMenu'
 import { timeSlotTypes, timePickTypes } from '../../defaults/assignmentTimeConstants'
+import type { FormProps } from '../Form/Root'
 
 const getTimeSlot = (timeSlot: string): AssignmentValueOption | undefined => {
   return timeSlotTypes.find((type) => type.slots?.includes(timeSlot))
@@ -21,9 +22,9 @@ const getMidnightISOString = (endDate: string | undefined): string => {
   return endDateIsoString
 }
 
-export const AssignmentTime = ({ index }: {
+export const AssignmentTime = ({ index, onChange }: {
   index: number
-}): JSX.Element => {
+} & FormProps): JSX.Element => {
   const [assignmentType] = useYValue<string>(`meta.core/assignment[${index}].meta.core/assignment-type[0].value`)
   const [data, setData] = useYValue<AssignmentData>(`meta.core/assignment[${index}].data`)
   const { full_day: fullDay, end, publish_slot: publishSlot, end_date: endDate, start_date: startDate } = data || {}
@@ -59,6 +60,8 @@ export const AssignmentTime = ({ index }: {
   const handleOnSelect = ({ value, selectValue }: { value: string, selectValue: string }): void => {
     switch (value) {
       case 'fullday':
+        onChange?.(true)
+
         setData(Block.create({
           data: {
             end_date: data?.end_date,
@@ -74,6 +77,8 @@ export const AssignmentTime = ({ index }: {
       case 'forenoon':
       case 'afternoon':
       case 'evening': {
+        onChange?.(true)
+
         setData(Block.create({
           data: {
             end_date: data?.end_date,
@@ -92,6 +97,9 @@ export const AssignmentTime = ({ index }: {
 
       case 'endexecution': {
         const endValue = new Date(`${endDate}T${selectValue}`).toISOString()
+
+        onChange?.(true)
+
         setData(Block.create({
           data: {
             end_date: data?.end_date,
