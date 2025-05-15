@@ -1,7 +1,7 @@
 import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from '@ttab/elephant-ui'
 import { useRef, useState, useEffect, useCallback } from 'react'
 import { useWorkflow } from '@/hooks/index/useWorkflow'
-import type { WorkflowTransition } from '@/defaults/workflowSpecification'
+import { StatusSpecifications, type WorkflowTransition } from '@/defaults/workflowSpecification'
 import { useWorkflowStatus } from '@/hooks/useWorkflowStatus'
 import { StatusOptions } from './StatusOptions'
 import { StatusMenuHeader } from './StatusMenuHeader'
@@ -107,7 +107,7 @@ export const StatusMenu = ({ documentId, type, publishTime, onBeforeStatusChange
   }
 
   const currentStatusName = documentStatus.name
-  const currentStatusDef = statuses[currentStatusName]
+  const currentStatusDef = statuses[currentStatusName] || StatusSpecifications[currentStatusName]
   const transitions = workflow[currentStatusName]?.transitions || {}
 
   if (!Object.keys(transitions).length) {
@@ -137,8 +137,8 @@ export const StatusMenu = ({ documentId, type, publishTime, onBeforeStatusChange
             style={{ minWidth: `${dropdownWidth}px` }}
           >
             <StatusMenuHeader
-              icon={currentStatusDef?.icon}
-              className={currentStatusDef?.className}
+              icon={currentStatusDef?.icon || StatusSpecifications[currentStatusName]?.icon}
+              className={currentStatusDef?.className || StatusSpecifications[currentStatusName]?.className}
               title={workflow[currentStatusName]?.title}
               description={workflow[currentStatusName]?.description}
             />
