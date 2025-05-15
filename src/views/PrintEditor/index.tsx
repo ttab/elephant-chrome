@@ -54,7 +54,7 @@ import { DropMarker } from '@/components/Editor/DropMarker'
 import { getValueByYPath } from '@/shared/yUtils'
 import { useOnSpellcheck } from '@/hooks/useOnSpellcheck'
 import { useSession } from 'next-auth/react'
-import type { Document } from '@ttab/elephant-api/newsdoc'
+import type { Block, Document } from '@ttab/elephant-api/newsdoc'
 
 // Metadata definition
 const meta: ViewMetadata = {
@@ -187,24 +187,6 @@ function EditorWrapper(
   )
 }
 
-type Layout = {
-  id: string | undefined
-  name: string
-  links: {
-    rel: string
-    name: string
-    href: string
-  }[]
-  meta: {
-    content: string
-    type: string
-  }[]
-  data: {
-    position: string
-  }
-  type: string
-}
-
 // Container component that uses TextBit context
 function EditorContainer({
   provider,
@@ -219,8 +201,8 @@ function EditorContainer({
 }): JSX.Element {
   const { words, characters } = useTextbit()
   const [bulkSelected, setBulkSelected] = useState<string[]>([])
-  const [layouts, setLayouts] = useState<Layout[]>([])
-  const [cleanLayouts, setCleanLayouts] = useState<Layout[]>()
+  const [layouts, setLayouts] = useState<Block[]>([])
+  const [cleanLayouts, setCleanLayouts] = useState<Block[]>()
 
   const [isDirty, setIsDirty] = useState<string | undefined>(undefined)
   const openPrintEditor = useLink('PrintEditor')
@@ -230,7 +212,7 @@ function EditorContainer({
   const [workflowStatus] = useWorkflowStatus(documentId, true)
   useEffect(() => {
     if (doc) {
-      setLayouts(doc.layouts as Layout[])
+      setLayouts(doc.layouts as Block[])
     }
   }, [doc])
   useEffect(() => {
@@ -240,8 +222,8 @@ function EditorContainer({
   }, [layouts])
   const name = doc?.document?.document?.meta.filter((m: { type: string }) => m.type === 'tt/print-article')[0]?.name
   const flowName = doc?.document?.document?.links.filter((m: { type: string }) => m.type === 'tt/print-flow')[0]?.title
-  const updateLayout = (_layout: Layout) => {
-    const box = document.getElementById(_layout.id as string)
+  const updateLayout = (_layout: Block) => {
+    const box = document.getElementById(_layout.id)
     if (box) {
       box.scrollIntoView({ behavior: 'smooth', block: 'center' })
     }
@@ -254,12 +236,12 @@ function EditorContainer({
     setLayouts(updatedLayouts)
     setIsDirty(_layout.id)
   }
-  const deleteLayout = (_layout: Layout) => {
+  const deleteLayout = (_layout: Block) => {
     const updatedLayouts = layouts.filter((layout) => layout.id !== _layout.id)
     setLayouts(updatedLayouts)
     saveUpdates(updatedLayouts)
   }
-  const saveUpdates = (updatedLayouts: Layout[] | undefined) => {
+  const saveUpdates = (updatedLayouts: Block[] | undefined) => {
     const _meta = doc?.document?.document?.meta?.map((m: { type: string }) => {
       if (m.type === 'tt/print-article') {
         return Object.assign({}, m, {
@@ -335,7 +317,7 @@ function EditorContainer({
             </header>
             <ScrollArea className='h-[calc(100vh-12rem)]'>
               <div className='flex flex-col gap-2'>
-                {Array.isArray(layouts) && layouts.map((layout: Layout) => {
+                {Array.isArray(layouts) && layouts.map((layout: Block) => {
                   if (!layout) {
                     return null
                   }
@@ -348,7 +330,7 @@ function EditorContainer({
                       updateLayout={updateLayout}
                       isDirty={isDirty}
                       setIsDirty={() => setIsDirty(undefined)}
-                      setLayouts={(newLayouts: Layout[] | ((prevState: Layout[]) => Layout[])) => setLayouts(newLayouts)}
+                      setLayouts={(newLayouts: Block[] | ((prevState: Block[]) => Block[])) => setLayouts(newLayouts)}
                       cleanLayouts={cleanLayouts || []}
                       saveUpdates={() => saveUpdates(layouts || [])}
                       deleteLayout={() => deleteLayout(layout)}

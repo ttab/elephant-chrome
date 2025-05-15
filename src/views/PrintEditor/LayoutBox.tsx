@@ -1,4 +1,5 @@
 import { useLink } from '@/hooks/useLink'
+import type { Block } from '@ttab/elephant-api/newsdoc'
 import { Button, Label, Popover, PopoverContent, PopoverTrigger, Input, Command, CommandInput, CommandList, CommandItem } from '@ttab/elephant-ui'
 import { CircleCheckBig, TriangleAlert, X, Eye, ChevronDown } from '@ttab/elephant-ui/icons'
 
@@ -23,24 +24,6 @@ import { CircleCheckBig, TriangleAlert, X, Eye, ChevronDown } from '@ttab/elepha
  * a list of predefined layouts that can be selected and managed.
  */
 
-type Layout = {
-  id: string | undefined
-  name: string
-  links: {
-    rel: string
-    name: string
-    href: string
-  }[]
-  meta: {
-    content: string
-    type: string
-  }[]
-  data: {
-    position: string
-  }
-  type: string
-}
-
 export function LayoutBox({
   bulkSelected,
   setBulkSelected,
@@ -55,14 +38,14 @@ export function LayoutBox({
 }: {
   bulkSelected: Array<string>
   setBulkSelected: React.Dispatch<React.SetStateAction<Array<string>>>
-  layout: Layout
-  updateLayout: (layout: Layout) => void
+  layout: Block
+  updateLayout: (layout: Block) => void
   isDirty: string | undefined
   setIsDirty: (id: string | undefined) => void
-  setLayouts: React.Dispatch<React.SetStateAction<Layout[]>>
-  cleanLayouts: Layout[]
-  saveUpdates: (updatedLayouts: Layout[] | undefined) => void
-  deleteLayout: (layout: Layout) => void
+  setLayouts: React.Dispatch<React.SetStateAction<Block[]>>
+  cleanLayouts: Block[]
+  saveUpdates: (updatedLayouts: Block[] | undefined) => void
+  deleteLayout: (layout: Block) => void
 }) {
   const openPreview = useLink('PrintPreview')
   const layouts = [
@@ -75,10 +58,10 @@ export function LayoutBox({
 
   const id = layout.id
   const name = layout.links?.find((l: { rel: string }) => l.rel === 'layout')?.name
-  const additionals = typeof layout?.meta[0]?.content === 'string' ? JSON.parse(layout.meta[0].content) : layout?.meta[0]?.content
+  const additionals = layout?.meta[0]?.content
   const layoutName = layout?.name
   const position = layout?.data?.position || ''
-  console.log('additionals', additionals, typeof additionals)
+
   return (
     <div id={layout.id} className='border min-h-32 p-2 pt-0 grid grid-cols-12 gap-2 rounded'>
       <header className={`col-span-12 row-span-1 gap-2 flex items-center ${isDirty === layout.id ? 'mt-2 justify-end' : 'justify-between'} `}>
@@ -229,7 +212,6 @@ export function LayoutBox({
                     const updatedLayout = Object.assign({}, layout, {
                       meta: _meta
                     })
-                    console.log('updatedLayout', updatedLayout)
                     updateLayout(updatedLayout)
                   }}
                 />

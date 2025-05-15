@@ -102,14 +102,13 @@ export const PrintFlows = ({ asDialog, onDialogClose, className, action }: ViewP
     }
 
     if (!baboon || isSubmitDisabled) {
-      toast.error('Något gick fel när printartikel skulle skapas')
+      toast.error('Något gick fel när printflöde skulle skapas')
       return
     }
 
     try {
       const response = await baboon.createFlow({
         flowUuid: printFlow,
-        // templateUuid: 'b8572737-1854-4e6e-b811-2edd46fe37f6',
         date: format(new Date(date), 'yyyy-MM-dd'),
         articles: []
       }, session.accessToken)
