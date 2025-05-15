@@ -2,6 +2,7 @@ import {
   CircleCheck,
   CircleDot,
   CircleX,
+  CircleArrowLeft,
   BadgeCheck,
   type LucideIcon
 } from '@ttab/elephant-ui/icons'
@@ -50,6 +51,10 @@ export const StatusSpecifications: Record<string, StatusSpecification> = {
   cancelled: {
     icon: CircleX,
     className: 'bg-cancelled text-white fill-cancelled rounded-full'
+  },
+  unpublished: {
+    icon: CircleArrowLeft,
+    className: 'bg-unpublished text-white fill-unpublished rounded-full'
   }
 }
 
@@ -185,6 +190,11 @@ export const WorkflowSpecifications: Record<string, WorkflowSpecification> = {
           description: 'Publicera planeringen externt'
         }
       }
+    },
+    unpublished: {
+      title: 'Avpublicerad',
+      description: 'Planeringen har avpublicerats',
+      transitions: {}
     }
   },
   'core/article': {
@@ -240,6 +250,11 @@ export const WorkflowSpecifications: Record<string, WorkflowSpecification> = {
         draft: {
           title: 'Till utkast',
           description: 'Gör om artikeln till ett utkast igen'
+        },
+        unpublished: {
+          verify: true,
+          title: 'Avpublicera',
+          description: 'Avbryt och arkivera artikeln'
         }
       }
     },
@@ -261,6 +276,11 @@ export const WorkflowSpecifications: Record<string, WorkflowSpecification> = {
         draft: {
           title: 'Till utkast',
           description: 'Gör om artikeln till ett utkast igen'
+        },
+        unpublished: {
+          verify: true,
+          title: 'Avpublicera',
+          description: 'Avbryt och arkivera artikeln'
         }
       }
     },
@@ -273,6 +293,11 @@ export const WorkflowSpecifications: Record<string, WorkflowSpecification> = {
           verify: true,
           title: 'Ny version',
           description: 'Fortsätt jobba på en ny version av artikeln'
+        },
+        unpublished: {
+          verify: true,
+          title: 'Avpublicera',
+          description: 'Avbryt publiceringen och arkivera artikeln'
         }
       }
     },
@@ -290,6 +315,18 @@ export const WorkflowSpecifications: Record<string, WorkflowSpecification> = {
           verify: true,
           title: 'Till utkast',
           description: 'Avbryt schemalagd publicering och gör om till utkast igen'
+        }
+      }
+    },
+    unpublished: {
+      title: 'Avpublicerad',
+      description: 'Artikeln har avpublicerats',
+      transitions: {
+        draft: {
+          default: true,
+          verify: true,
+          title: 'Ny version',
+          description: 'Fortsätt jobba på en ny version av artikeln'
         }
       }
     }
