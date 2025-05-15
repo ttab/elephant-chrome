@@ -1,4 +1,4 @@
-import { useQuery, useView } from '@/hooks'
+import { useView } from '@/hooks'
 import { useCallback, useEffect, useRef } from 'react'
 import { useSWRConfig } from 'swr'
 import { ViewHeader } from '@/components/View'
@@ -35,10 +35,6 @@ export const EditorHeader = ({
 }): JSX.Element => {
   const { viewId } = useView()
   const containerRef = useRef<HTMLElement | null>(null)
-  const [filter] = useQuery(['from'], true)
-  const [query] = useQuery()
-  console.log('filter', filter)
-  console.log('query', query)
   const { mutate } = useSWRConfig()
   useEffect(() => {
     containerRef.current = document.getElementById(viewId)

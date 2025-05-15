@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { useDocuments } from '@/hooks/index/useDocuments'
 import { useRegistry } from '@/hooks/useRegistry'
 import type { PrintFlow, PrintFlowFields } from '@/hooks/index/useDocuments/schemas/printFlow'
@@ -45,14 +45,10 @@ export const PrintFlows = ({ asDialog, onDialogClose, className, action }: ViewP
   }
   const [articleName, setArticleName] = useState<string>()
   const [filter] = useQuery(['from'])
-  console.log('--> filter', filter)
   const [printFlow, setPrintFlow] = useState<string>()
-  const [dateString, setDateString] = useState<string>()
+  const [, setDateString] = useState<string>()
   const { baboon } = useRegistry()
   const { data: session } = useSession()
-  useEffect(() => {
-    console.log('dateString', dateString)
-  }, [dateString])
   const date = !filter?.from ? fallbackDate : parseDate(filter?.from?.[0] || '')
   const allPrintFlows = data?.map((hit) => ({
     value: hit.id,
@@ -69,7 +65,6 @@ export const PrintFlows = ({ asDialog, onDialogClose, className, action }: ViewP
   const isSubmitDisabled = !printFlow || !date
 
   const handleCreateArticle = async () => {
-    console.log('handleCreateArticle', session?.accessToken)
     if (!session?.accessToken) {
       toast.error('Ingen access token hittades')
       return

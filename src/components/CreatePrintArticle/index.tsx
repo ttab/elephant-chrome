@@ -22,12 +22,12 @@ export const CreatePrintArticle = ({ id, asDialog, onDialogClose, className }: V
   const [dateString, setDateString] = useState<string>()
   const { baboon } = useRegistry()
   const { data: session } = useSession()
+
   const { data, error } = useDocuments<PrintFlow, PrintFlowFields>({
     documentType: 'tt/print-flow',
     fields
   })
 
-  console.log('dateString', dateString)
   if (error) {
     console.error('Could not fetch PrintFlows:', error)
     toast.error('Något gick fel när flöden skulle hämtas')

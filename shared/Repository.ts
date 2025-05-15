@@ -266,6 +266,7 @@ export class Repository {
       attachObjects: {},
       detachObjects: []
     }
+
     return await this.#client.update(
       payload, meta(accessToken)
     )

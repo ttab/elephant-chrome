@@ -53,9 +53,9 @@ export const StatusMenu = ({ documentId, type, publishTime, onBeforeStatusChange
   const currentStatusDef = statuses[currentStatusName]
   const transitions = workflow[currentStatusName]?.transitions || {}
 
-  // if (!Object.keys(transitions).length) {
-  //   return null
-  // }
+  if (!Object.keys(transitions).length) {
+    return null
+  }
 
   const CurrentIcon = currentStatusDef.icon
 
