@@ -26,7 +26,7 @@ import { PlanningTable } from './components/PlanningTable'
 import { Error } from '../Error'
 import { Form } from '@/components/Form'
 import { EventTimeMenu } from './components/EventTime'
-import { useEffect } from 'react'
+import { useCallback, useEffect } from 'react'
 import { EventHeader } from './EventHeader'
 import { DuplicatesTable } from './components/DuplicatesTable'
 import { Cancel } from './components/Cancel'
@@ -79,6 +79,7 @@ const EventViewContent = (props: ViewProps & { documentId: string }): JSX.Elemen
   const [, setIsFocused] = useAwareness(props.documentId)
   const [eventTitle] = useYValue<string | undefined>('root.title')
   const [cancelled, setCancelled] = useYValue<boolean | undefined>('meta.core/event[0].data.cancelled')
+  const [isChanged] = useYValue<boolean>('root.changed')
 
   useEffect(() => {
     provider?.setAwarenessField('data', user)
@@ -90,6 +91,16 @@ const EventViewContent = (props: ViewProps & { documentId: string }): JSX.Elemen
 
     // We only want to rerun when provider change
     // eslint-disable-next-line
+  }, [provider])
+
+  const handleChange = useCallback((value: boolean): void => {
+    const root = provider?.document.getMap('ele').get('root') as Y.Map<unknown>
+    const changed = root.get('changed') as boolean
+
+
+    if (changed !== value) {
+      root.set('changed', value)
+    }
   }, [provider])
 
   const handleSubmit = (): void => {
@@ -123,9 +134,10 @@ const EventViewContent = (props: ViewProps & { documentId: string }): JSX.Elemen
         session={data}
         type='event'
         status={status}
+        isChanged={isChanged}
       />
       <View.Content className='max-w-[1000px] flex-auto'>
-        <Form.Root asDialog={props.asDialog}>
+        <Form.Root asDialog={props.asDialog} onChange={handleChange}>
           <Form.Content>
             <Form.Title>
               <Title
@@ -148,7 +160,7 @@ const EventViewContent = (props: ViewProps & { documentId: string }): JSX.Elemen
             </Form.Group>
 
             <Form.Group icon={Tags}>
-              <Category asDialog={props.asDialog} />
+              <Category />
               <Story />
             </Form.Group>
             {!props.asDialog && (
