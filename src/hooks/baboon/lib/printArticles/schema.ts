@@ -6,6 +6,8 @@ import type { FieldValuesV1, HitV1 } from '@ttab/elephant-api/index'
  */
 const _fields = [
   'document.title',
+  'document.content.core_text.data.text',
+  'document.content.core_text.role',
   'document.meta.tt_print_article.title',
   'document.rel.flow.*',
   'document.meta.tt_print_article.data.date',

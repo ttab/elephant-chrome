@@ -30,7 +30,6 @@ export const PrintArticleList = ({ columns }: {
 }): JSX.Element => {
   const [filter] = useQuery(['from', 'printFlow', 'workflowState'])
   const [{ page }] = useQuery()
-  console.log('query', filter, constructQuery(filter))
   useDocuments<PrintArticle, PrintArticleFields>({
     documentType: 'tt/print-article',
     query: constructQuery(filter),

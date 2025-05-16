@@ -38,7 +38,6 @@ export function constructQuery(filter: QueryParams | undefined): QueryV1 | undef
       }
     })
   }
-  console.log('cq filter', filter)
   if (filter.from) {
     addCondition('document.meta.tt_print_article.data.date', filter.from[0])
   }
