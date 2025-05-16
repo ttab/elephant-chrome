@@ -184,10 +184,15 @@ export const StatusMenu = ({ documentId, type, publishTime, onBeforeStatusChange
               prompt={prompt}
               showPrompt={showPrompt}
               setStatus={(...args) => void setStatus(...args)}
-              currentCause={documentStatus?.cause as string
-              || (isChanged && prompt.status === 'usable' && 'development')
-              || undefined}
-              requireCause={prompt.status === 'draft' && !!documentStatus.checkpoint}
+              currentCause={
+                documentStatus?.cause !== undefined
+                  ? documentStatus.cause
+                  : (isChanged && prompt.status === 'usable')
+                      ? ''
+                      : undefined
+              }
+              requireCause={(!isChanged && prompt.status !== 'usable')
+              || (prompt.status === 'draft' && !!documentStatus.checkpoint)}
               unPublishDocument={unPublishDocument}
             />
           )}
