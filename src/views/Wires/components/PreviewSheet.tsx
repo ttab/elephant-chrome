@@ -6,18 +6,18 @@ import { Error, Wire } from '@/views'
 import { useNavigationKeys } from '@/hooks/useNavigationKeys'
 import { useModal } from '@/components/Modal/useModal'
 import type { Wire as WireType } from '@/hooks/index/useDocuments/schemas/wire'
-import type { DocumentVersion } from '@ttab/elephant-api/repository'
+import type { Status as DocumentStatuses } from '@ttab/elephant-api/repository'
 import { MetaSheet } from '@/views/Editor/components/MetaSheet'
 import { useEffect, useRef } from 'react'
 import { useWorkflowStatus } from '@/hooks/useWorkflowStatus'
 import { decodeString } from '@/lib/decodeString'
 
-export const PreviewSheet = ({ id, wire, handleClose, textOnly = true, version, versionHistory }: {
+export const PreviewSheet = ({ id, wire, handleClose, textOnly = true, version, versionStatusHistory }: {
   id: string
   wire?: WireType
   textOnly?: boolean
   version?: bigint
-  versionHistory?: DocumentVersion[]
+  versionStatusHistory?: DocumentStatuses[]
   handleClose: () => void
 }): JSX.Element => {
   const [documentStatus, setDocumentStatus] = useWorkflowStatus(id)
@@ -194,7 +194,7 @@ export const PreviewSheet = ({ id, wire, handleClose, textOnly = true, version, 
           </div>
         </div>
         <div className='flex flex-col h-full'>
-          <Editor id={id} textOnly={textOnly} version={version} versionHistory={versionHistory} />
+          <Editor id={id} textOnly={textOnly} version={version} versionStatusHistory={versionStatusHistory} />
         </div>
       </div>
     </FaroErrorBoundary>
