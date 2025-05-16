@@ -15,7 +15,10 @@ export class User {
     this.#client = new MessagesClient(
       new TwirpFetchTransport({
         baseUrl: new URL('twirp', userUrl).toString(),
-        sendJson: true
+        sendJson: true,
+        jsonOptions: {
+          ignoreUnknownFields: true
+        }
       })
     )
   }

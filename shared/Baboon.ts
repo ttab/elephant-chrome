@@ -11,7 +11,10 @@ export class Baboon {
     this.#client = new PrintClient(
       new TwirpFetchTransport({
         baseUrl: new URL('twirp', baboonUrl).toString(),
-        sendJson: true
+        sendJson: true,
+        jsonOptions: {
+          ignoreUnknownFields: true
+        }
       })
     )
   }
