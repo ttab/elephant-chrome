@@ -75,7 +75,13 @@ export class Index {
             from: BigInt((currentPage - 1) * size),
             size: BigInt(pageSize),
             fields: (fields as unknown as string[]) || [],
-            sort: sort || [SortingV1.create({ field: 'created', desc: true })],
+            sort: sort
+              ? [
+                  ...sort,
+                  // Add extra last sorting for stable results
+                  SortingV1.create({ field: 'document.title.sort', desc: false })
+                ]
+              : [SortingV1.create({ field: 'created', desc: true })],
             query: query || QueryV1.create({
               conditions: {
                 oneofKind: 'matchAll',
