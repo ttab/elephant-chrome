@@ -70,8 +70,8 @@ export const WorkflowSpecifications: Record<string, WorkflowSpecification> = {
       transitions: {
         done: {
           default: true,
-          title: 'Publicera internt',
-          description: 'Publicera händelsen internt hos TT'
+          title: 'Använd internt',
+          description: 'Gör händelsen internt synlig'
         },
         usable: {
           verify: true,
@@ -82,7 +82,7 @@ export const WorkflowSpecifications: Record<string, WorkflowSpecification> = {
     },
     done: {
       title: 'Intern',
-      description: 'Händelsen är publicerad internt hos TT',
+      description: 'Händelsen är internt synlig',
       transitions: {
         usable: {
           verify: true,
@@ -115,8 +115,8 @@ export const WorkflowSpecifications: Record<string, WorkflowSpecification> = {
       transitions: {
         done: {
           default: true,
-          title: 'Publicera internt',
-          description: 'Publicera planeringen internt hos TT'
+          title: 'Använd internt',
+          description: 'Gör planeringen internt synlig'
         },
         usable: {
           verify: true,
@@ -127,12 +127,12 @@ export const WorkflowSpecifications: Record<string, WorkflowSpecification> = {
     },
     done: {
       title: 'Intern',
-      description: 'Planeringen är publicerad internt hos TT',
+      description: 'Planeringen är internt synlig',
       transitions: {
         usable: {
           verify: true,
           title: 'Publicera',
-          description: 'Publicera planeringen externt synlig'
+          description: 'Publicera planeringen externt'
         },
         unpublished: {
           verify: true,
@@ -461,7 +461,7 @@ export const WorkflowSpecifications: Record<string, WorkflowSpecification> = {
     },
     cancelled: {
       title: 'Inställd',
-      description: 'Printartikeln är inställd',
+      description: 'Printartikeln är avpublicerad',
       transitions: {
         draft: {
           title: 'Till utkast',
