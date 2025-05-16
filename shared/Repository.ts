@@ -198,7 +198,7 @@ export class Repository {
    * @returns {Promise<UpdateResponse>} The response from the update operation.
    * @throws {Error} If unable to save meta information.
    */
-  async saveMeta({ status, accessToken, cause, isWorkflow = false }: {
+  async saveMeta({ status, accessToken, cause, isWorkflow = false, currentStatus }: {
     status: Status
     currentStatus?: Status
     accessToken: string
@@ -221,7 +221,7 @@ export class Repository {
               ifMatch: status.version
             }],
         meta: {},
-        ifMatch: status.version,
+        ifMatch: status.version < 0 ? currentStatus?.version ? currentStatus.version : status.version : status.version,
         acl: [],
         updateMetaDocument: false,
         lockToken: '',

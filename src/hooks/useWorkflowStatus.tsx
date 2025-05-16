@@ -106,11 +106,6 @@ export const useWorkflowStatus = (uuid?: string, isWorkflow: boolean = false): [
           return
         }
 
-        // Unpublishing a document is done by setting version to -1
-        if (newStatus === 'unpublished') {
-          payload.version = -1n
-        }
-
         await repository.saveMeta({
           status: payload,
           currentStatus: isWorkflow ? currentStatus : undefined,
