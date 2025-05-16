@@ -7,7 +7,17 @@ import type { Session } from 'next-auth'
 import type { HocuspocusProvider } from '@hocuspocus/provider'
 import { MetaSheet } from '../Editor/components/MetaSheet'
 
-export const EventHeader = ({ documentId, asDialog, onDialogClose, provider, title, status, session, type }: {
+export const EventHeader = ({
+  documentId,
+  asDialog,
+  onDialogClose,
+  provider,
+  title,
+  status,
+  session,
+  type,
+  isChanged
+}: {
   documentId: string
   asDialog: boolean
   onDialogClose?: () => void
@@ -16,6 +26,7 @@ export const EventHeader = ({ documentId, asDialog, onDialogClose, provider, tit
   provider: HocuspocusProvider | undefined
   type: 'event'
   status: 'authenticated' | 'loading' | 'unauthenticated'
+  isChanged?: boolean
 }): JSX.Element => {
   const { viewId } = useView()
   const containerRef = useRef<HTMLElement | null>(null)
@@ -42,7 +53,11 @@ export const EventHeader = ({ documentId, asDialog, onDialogClose, provider, tit
 
           <div className='flex flex-row gap-2 justify-end items-center'>
             {!asDialog && (
-              <StatusMenu documentId={documentId} type='core/event' />
+              <StatusMenu
+                documentId={documentId}
+                type='core/event'
+                isChanged={isChanged}
+              />
             )}
 
             {!!documentId && !asDialog && (

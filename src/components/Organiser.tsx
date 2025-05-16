@@ -2,11 +2,10 @@ import { Awareness } from '@/components'
 import { ComboBox } from '@ttab/elephant-ui'
 import { useOrganisers, useYValue } from '@/hooks'
 import { Block } from '@ttab/elephant-api/newsdoc'
-
 import { useRef } from 'react'
 import { type FormProps } from './Form/Root'
 
-export const Organiser = ({ asDialog }: FormProps): JSX.Element => {
+export const Organiser = ({ asDialog, onChange }: FormProps): JSX.Element => {
   const allOrganisers = useOrganisers().map((_) => {
     return {
       value: _.id,
@@ -32,6 +31,7 @@ export const Organiser = ({ asDialog }: FormProps): JSX.Element => {
           setFocused.current(true, (isOpen) ? path : '')
         }}
         onSelect={(option) => {
+          onChange?.(true)
           setOrganiser(organiser?.title === option.label
             ? undefined
             : Block.create({
