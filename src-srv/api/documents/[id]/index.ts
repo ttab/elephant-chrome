@@ -10,6 +10,7 @@ import type { Context } from '../../../lib/assertContext.js'
 import { assertContext } from '../../../lib/assertContext.js'
 import { getValueByYPath, setValueByYPath } from '../../../../shared/yUtils.js'
 import type { EleBlock } from '@/shared/types/index.js'
+import { createSnapshot } from '../../../utils/createSnapshot.js'
 
 type Response = RouteContentResponse | RouteStatusResponse
 
@@ -143,8 +144,9 @@ export const PATCH: RouteHandler = async (req: Request, { collaborationServer, r
 
   const connection = await collaborationServer.server.openDirectConnection(id, context)
 
-  await connection.transact((doc) => {
-    const yRoot = doc.getMap('ele')
+  // Make the change to the document in one transaction
+  await connection.transact((document) => {
+    const yRoot = document.getMap('ele')
     const { index } = getAssignment(yRoot, deliverableId, deliverableType) || {}
 
     const base = `meta.core/assignment[${index}]`
@@ -167,6 +169,28 @@ export const PATCH: RouteHandler = async (req: Request, { collaborationServer, r
       statusCode: 200,
       payload: {}
     }
+  })
+
+  // Then we snapshot the document to the repository
+  await new Promise<Response>((resolve) => {
+    void connection.transact((document) => {
+      createSnapshot(collaborationServer, {
+        documentName: id,
+        document,
+        context,
+        force: true
+      })
+        .then(resolve)
+        .catch((ex: Error) => {
+          const snapshotResponse = {
+            statusCode: 500,
+            statusMessage: `Error during snapshot transaction: ${ex.message || 'unknown reason'}`
+          }
+
+          logger.error(snapshotResponse.statusMessage, ex)
+          resolve(snapshotResponse)
+        })
+    })
   })
 
   await connection.disconnect()

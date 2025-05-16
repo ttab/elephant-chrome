@@ -10,7 +10,7 @@ import { toast } from 'sonner'
 import { handleLink } from '@/components/Link/lib/handleLink'
 import { useDeliverablePlanningId } from '@/hooks/index/useDeliverablePlanningId'
 import { Button } from '@ttab/elephant-ui'
-import { updateAssignmentPublishTime } from '@/lib/index/updateAssignmentPublishTime'
+import { updateAssignmentTime } from '@/lib/index/updateAssignmentPublishTime'
 
 export const EditorHeader = ({ documentId, readOnly, readOnlyVersion }: { documentId: string, readOnly?: boolean, readOnlyVersion?: bigint }): JSX.Element => {
   const { viewId } = useView()
@@ -86,7 +86,7 @@ export const EditorHeader = ({ documentId, readOnly, readOnlyVersion }: { docume
         ? data.time
         : new Date()
 
-      await updateAssignmentPublishTime(documentId, planningId, newStatus, newTime)
+      await updateAssignmentTime(documentId, planningId, newStatus, newTime)
     }
 
     return true

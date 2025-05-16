@@ -2,7 +2,7 @@ import { toast } from 'sonner'
 
 const BASE_URL = import.meta.env.BASE_URL || ''
 
-export async function updateAssignmentPublishTime(
+export async function updateAssignmentTime(
   deliverableId: string, planningId: string, newStatus: string, newTime: Date
 ) {
   try {
