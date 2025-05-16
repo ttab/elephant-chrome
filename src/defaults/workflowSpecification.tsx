@@ -303,7 +303,7 @@ export const WorkflowSpecifications: Record<string, WorkflowSpecification> = {
       title: 'Användbar',
       description: 'Faktarutan är användbar',
       transitions: {
-        cancelled: {
+        unpublished: {
           verify: true,
           title: 'Arkivera',
           description: 'Dra tillbaka och arkivera den här faktarutan'
@@ -377,7 +377,7 @@ export const WorkflowSpecifications: Record<string, WorkflowSpecification> = {
           title: 'Till utkast',
           description: 'Gör om till red till ett utkast igen'
         },
-        cancelled: {
+        unpublished: {
           title: 'Dra tillbaka',
           description: 'Avbryt publiceringen och arkivera till red'
         }
@@ -452,14 +452,14 @@ export const WorkflowSpecifications: Record<string, WorkflowSpecification> = {
       title: 'Exporterad',
       description: 'Printartikeln är exporterad',
       transitions: {
-        cancelled: {
+        unpublished: {
           verify: true,
           title: 'Dra tillbaka',
           description: 'Avbryt export och arkivera printartikeln'
         }
       }
     },
-    cancelled: {
+    unpublished: {
       title: 'Inställd',
       description: 'Printartikeln är avpublicerad',
       transitions: {
