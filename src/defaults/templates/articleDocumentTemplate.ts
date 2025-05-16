@@ -9,9 +9,14 @@ import type { TemplatePayload } from '.'
  * @returns {Document} - The generated document template.
  */
 export function articleDocumentTemplate(id: string, payload?: TemplatePayload): Document {
-  // no descriptions or stories in articles, remove those
+  // no descriptions in articles, remove those
   delete payload?.meta?.['core/description']
-  delete payload?.links?.['core/story']
+
+  // Special handling for core/story: for plannings, the core/story.rel is 'story',
+  // while for articles it's 'subject'
+  if (payload?.links?.['core/story']?.[0]) {
+    payload.links['core/story'][0].rel = 'subject'
+  }
 
   return Document.create({
     uuid: id,
