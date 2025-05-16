@@ -39,7 +39,6 @@ export const useWorkflow = (type: string): DocumentWorkflow => {
 
         return acc
       }, { draft: StatusSpecifications['draft'] } as Record<string, StatusSpecification>)
-
       setWorkflow({
         workflow: WorkflowSpecifications[type] || null,
         statuses

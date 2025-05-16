@@ -11,7 +11,6 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogDescription,
   DialogFooter
 } from '@ttab/elephant-ui'
 import { PrintFlows } from './PrintFlows'
@@ -52,16 +51,14 @@ const meta: ViewMetadata = {
 
 export const PrintArticles = (): JSX.Element => {
   const columns = useMemo(
-    () => printArticlesListColumns({ locale: 'sv' }),
+    () => printArticlesListColumns(),
     []
   )
-
   const [openCreateFlow, setOpenCreateFlow] = useState(false)
-  const [openCreateArticle, setOpenCreateArticle] = useState(false)
 
   return (
     <View.Root>
-      <PrintArticlesHeader setOpenCreateArticle={setOpenCreateArticle} setOpenCreateFlow={setOpenCreateFlow} />
+      <PrintArticlesHeader />
       <TableProvider<PrintArticle>
         type={meta.name}
         columns={columns}
@@ -71,26 +68,12 @@ export const PrintArticles = (): JSX.Element => {
           <PrintArticleList columns={columns} />
         </View.Content>
       </TableProvider>
-
-      <Dialog open={openCreateArticle}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Skapa artikel</DialogTitle>
-            <DialogDescription>Skapa en ny artikel</DialogDescription>
-          </DialogHeader>
-          <DialogFooter>
-            <Button variant='outline' onClick={() => setOpenCreateArticle(false)}>
-              Avbryt
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
       <Dialog open={openCreateFlow}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>Lista över flöden</DialogTitle>
           </DialogHeader>
-          <PrintFlows />
+          <PrintFlows action='createFlow' />
           <DialogFooter>
             <Button variant='outline' onClick={() => setOpenCreateFlow(false)}>
               Avbryt

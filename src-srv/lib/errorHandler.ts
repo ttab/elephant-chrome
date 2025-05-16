@@ -230,7 +230,9 @@ export function getErrorContext(
 }
 
 // Type guard function for onStatelessPayload
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-function isOnStatelessPayload(payload: any): payload is onStatelessPayload {
-  return 'payload' in payload && typeof payload.payload === 'string'
+function isOnStatelessPayload(payload: unknown): payload is onStatelessPayload {
+  return payload !== null
+    && typeof payload === 'object'
+    && 'payload' in payload
+    && typeof payload.payload === 'string'
 }

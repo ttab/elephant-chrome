@@ -1,9 +1,9 @@
 import type { WorkflowTransition } from '@/defaults/workflowSpecification'
 import { Prompt } from '../Prompt'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { PromptCauseField } from './PromptCauseField'
 
-export const PromptDefault = ({ prompt, setStatus, showPrompt, requireCause = false, currentCause }: {
+export const PromptDefault = ({ prompt, setStatus, showPrompt, requireCause = false, currentCause, unPublishDocument }: {
   prompt: {
     status: string
   } & WorkflowTransition
@@ -13,8 +13,15 @@ export const PromptDefault = ({ prompt, setStatus, showPrompt, requireCause = fa
   } & WorkflowTransition) | undefined>>
   requireCause?: boolean
   currentCause?: string
+  unPublishDocument?: (name: string) => void
 }) => {
   const [cause, setCause] = useState<string | undefined>(currentCause)
+
+  useEffect(() => {
+    if (prompt.status === 'draft') {
+      setCause('')
+    }
+  }, [prompt.status])
 
   return (
     <Prompt
@@ -24,7 +31,12 @@ export const PromptDefault = ({ prompt, setStatus, showPrompt, requireCause = fa
       secondaryLabel='Avbryt'
       onPrimary={() => {
         showPrompt(undefined)
-        void setStatus(prompt.status, { cause })
+
+        if (prompt.status === 'unpublished' && unPublishDocument) {
+          void unPublishDocument('unpublished')
+        } else {
+          void setStatus(prompt.status, { cause })
+        }
       }}
       onSecondary={() => {
         showPrompt(undefined)

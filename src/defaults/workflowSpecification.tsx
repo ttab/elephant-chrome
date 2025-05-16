@@ -1,7 +1,7 @@
 import {
   CircleCheck,
   CircleDot,
-  CircleX,
+  CircleArrowLeft,
   BadgeCheck,
   type LucideIcon
 } from '@ttab/elephant-ui/icons'
@@ -47,9 +47,17 @@ export const StatusSpecifications: Record<string, StatusSpecification> = {
     icon: CircleCheck,
     className: 'bg-usable text-white fill-usable rounded-full'
   },
-  cancelled: {
-    icon: CircleX,
-    className: 'bg-cancelled text-white fill-cancelled rounded-full'
+  unpublished: {
+    icon: CircleArrowLeft,
+    className: 'bg-unpublished text-white fill-unpublished rounded-full'
+  },
+  print_done: {
+    icon: BadgeCheck,
+    className: 'bg-approved text-white fill-approved rounded-full'
+  },
+  needs_proofreading: {
+    icon: CircleCheck,
+    className: 'bg-done text-white fill-done rounded-full'
   }
 }
 
@@ -62,24 +70,19 @@ export const WorkflowSpecifications: Record<string, WorkflowSpecification> = {
       transitions: {
         done: {
           default: true,
-          title: 'Publicera internt',
-          description: 'Publicera händelsen internt hos TT'
+          title: 'Använd internt',
+          description: 'Gör händelsen internt synlig'
         },
         usable: {
           verify: true,
           title: 'Publicera externt',
           description: 'Publicera händelsen externt'
-        },
-        cancelled: {
-          verify: true,
-          title: 'Avbryt',
-          description: 'Avbryt, gå inte vidare med händelsen'
         }
       }
     },
     done: {
       title: 'Intern',
-      description: 'Händelsen är publicerad internt hos TT',
+      description: 'Händelsen är internt synlig',
       transitions: {
         usable: {
           verify: true,
@@ -103,22 +106,6 @@ export const WorkflowSpecifications: Record<string, WorkflowSpecification> = {
           description: 'Avpublicera händelsen externt'
         }
       }
-    },
-    cancelled: {
-      title: 'Avbruten',
-      description: 'Händelsen har avbrutits. Lägg till innehåll för att fortsätta med en ny version.',
-      transitions: {
-        done: {
-          verify: true,
-          title: 'Publicera internt',
-          description: 'Publicera händelsen internt hos TT'
-        },
-        usable: {
-          verify: true,
-          title: 'Publicera externt',
-          description: 'Publicera händelsen externt'
-        }
-      }
     }
   },
   'core/planning-item': {
@@ -128,29 +115,24 @@ export const WorkflowSpecifications: Record<string, WorkflowSpecification> = {
       transitions: {
         done: {
           default: true,
-          title: 'Publicera internt',
-          description: 'Publicera planeringen internt hos TT'
+          title: 'Använd internt',
+          description: 'Gör planeringen internt synlig'
         },
         usable: {
           verify: true,
           title: 'Publicera externt',
           description: 'Publicera planeringen externt'
-        },
-        cancelled: {
-          verify: true,
-          title: 'Avbryt',
-          description: 'Avbryt, gå inte vidare med planeringen'
         }
       }
     },
     done: {
       title: 'Intern',
-      description: 'Planeringen är publicerad internt hos TT',
+      description: 'Planeringen är internt synlig',
       transitions: {
         usable: {
           verify: true,
           title: 'Publicera',
-          description: 'Publicera planeringen externt synlig'
+          description: 'Publicera planeringen externt'
         },
         unpublished: {
           verify: true,
@@ -170,21 +152,10 @@ export const WorkflowSpecifications: Record<string, WorkflowSpecification> = {
         }
       }
     },
-    cancelled: {
-      title: 'Avbruten',
-      description: 'Planeringen har avbrutits. Lägg till innehåll för att fortsätta med en ny version.',
-      transitions: {
-        done: {
-          verify: true,
-          title: 'Publicera internt',
-          description: 'Publicera planeringen internt hos TT'
-        },
-        usable: {
-          verify: true,
-          title: 'Publicera externt',
-          description: 'Publicera planeringen externt'
-        }
-      }
+    unpublished: {
+      title: 'Avpublicerad',
+      description: 'Planeringen har avpublicerats',
+      transitions: {}
     }
   },
   'core/article': {
@@ -210,11 +181,6 @@ export const WorkflowSpecifications: Record<string, WorkflowSpecification> = {
           verify: true,
           title: 'Schemalägg publicering',
           description: 'Ange datum och tid för publicering'
-        },
-        cancelled: {
-          verify: true,
-          title: 'Avbryt',
-          description: 'Avbryt och gå inte vidare med artikeln'
         }
       }
     },
@@ -240,6 +206,11 @@ export const WorkflowSpecifications: Record<string, WorkflowSpecification> = {
         draft: {
           title: 'Till utkast',
           description: 'Gör om artikeln till ett utkast igen'
+        },
+        unpublished: {
+          verify: true,
+          title: 'Avpublicera',
+          description: 'Avbryt och arkivera artikeln'
         }
       }
     },
@@ -261,6 +232,11 @@ export const WorkflowSpecifications: Record<string, WorkflowSpecification> = {
         draft: {
           title: 'Till utkast',
           description: 'Gör om artikeln till ett utkast igen'
+        },
+        unpublished: {
+          verify: true,
+          title: 'Avpublicera',
+          description: 'Avbryt och arkivera artikeln'
         }
       }
     },
@@ -273,6 +249,11 @@ export const WorkflowSpecifications: Record<string, WorkflowSpecification> = {
           verify: true,
           title: 'Ny version',
           description: 'Fortsätt jobba på en ny version av artikeln'
+        },
+        unpublished: {
+          verify: true,
+          title: 'Avpublicera',
+          description: 'Avbryt publiceringen och arkivera artikeln'
         }
       }
     },
@@ -292,6 +273,18 @@ export const WorkflowSpecifications: Record<string, WorkflowSpecification> = {
           description: 'Avbryt schemalagd publicering och gör om till utkast igen'
         }
       }
+    },
+    unpublished: {
+      title: 'Avpublicerad',
+      description: 'Artikeln har avpublicerats',
+      transitions: {
+        draft: {
+          default: true,
+          verify: true,
+          title: 'Ny version',
+          description: 'Fortsätt jobba på en ny version av artikeln'
+        }
+      }
     }
   },
   'core/factbox': {
@@ -308,9 +301,9 @@ export const WorkflowSpecifications: Record<string, WorkflowSpecification> = {
     },
     usable: {
       title: 'Användbar',
-      description: 'Fakturan är användbar',
+      description: 'Faktarutan är användbar',
       transitions: {
-        cancelled: {
+        unpublished: {
           verify: true,
           title: 'Arkivera',
           description: 'Dra tillbaka och arkivera den här faktarutan'
@@ -384,9 +377,95 @@ export const WorkflowSpecifications: Record<string, WorkflowSpecification> = {
           title: 'Till utkast',
           description: 'Gör om till red till ett utkast igen'
         },
-        cancelled: {
+        unpublished: {
           title: 'Dra tillbaka',
           description: 'Avbryt publiceringen och arkivera till red'
+        }
+      }
+    }
+  },
+  'tt/print-article': {
+    draft: {
+      title: 'Utkast',
+      description: 'Du jobbar på ett utkast av printartikeln',
+      transitions: {
+        needs_proofreading: {
+          default: true,
+          title: 'Begär korrläsning',
+          description: 'Behöver korrläsning av printartikeln'
+        },
+        print_done: {
+          title: 'Klarmarkera',
+          description: 'Markera printartikeln som klar'
+        },
+        usable: {
+          verify: true,
+          title: 'Exportera',
+          description: 'Exportera printartikeln'
+        }
+      }
+    },
+    needs_proofreading: {
+      title: 'Klar för korr',
+      description: 'Printartikeln behöver korrläsning',
+      transitions: {
+        print_done: {
+          title: 'Klarmarkera',
+          description: 'Markera printartikeln som klar'
+        },
+        usable: {
+          verify: true,
+          title: 'Exportera',
+          description: 'Exportera printartikeln'
+        },
+        draft: {
+          title: 'Till utkast',
+          description: 'Gör om printartikeln till ett utkast igen'
+        }
+      }
+    },
+    print_done: {
+      title: 'Klar',
+      description: 'Printartikeln är klar och väntar på godkännande',
+      transitions: {
+        approved: {
+          default: true,
+          title: 'Godkänn',
+          description: 'Godkänn printartikeln'
+        },
+        usable: {
+          verify: true,
+          title: 'Exportera',
+          description: 'Exportera printartikeln'
+        },
+        needs_proofreading: {
+          title: 'Begär korrläsning',
+          description: 'Behöver korrläsning av printartikeln'
+        },
+        draft: {
+          title: 'Till utkast',
+          description: 'Gör om printartikeln till ett utkast igen'
+        }
+      }
+    },
+    usable: {
+      title: 'Exporterad',
+      description: 'Printartikeln är exporterad',
+      transitions: {
+        unpublished: {
+          verify: true,
+          title: 'Dra tillbaka',
+          description: 'Avbryt export och arkivera printartikeln'
+        }
+      }
+    },
+    unpublished: {
+      title: 'Inställd',
+      description: 'Printartikeln är avpublicerad',
+      transitions: {
+        draft: {
+          title: 'Till utkast',
+          description: 'Gör om printartikeln till ett utkast igen'
         }
       }
     }

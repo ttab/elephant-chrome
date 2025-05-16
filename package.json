@@ -2,7 +2,7 @@
   "name": "elephant-chrome",
   "private": false,
   "license": "MIT",
-  "version": "0.19.1",
+  "version": "0.20.4",
   "type": "module",
   "scripts": {
     "debug": "concurrently npm:debug:vite npm:dev:client:css",
@@ -28,12 +28,14 @@
   "overrides": {
     "vite": {
       "rollup": "npm:@rollup/wasm-node"
-    }
+    },
+    "@grafana/faro-web-sdk": "$@grafana/faro-react",
+    "@grafana/faro-core": "$@grafana/faro-react"
   },
   "dependencies": {
     "@auth/express": "^0.9.0",
     "@date-fns/utc": "^2.1.0",
-    "@grafana/faro-react": "^1.17.0",
+    "@grafana/faro-react": "1.14.1",
     "@hocuspocus/extension-database": "^2.15.2",
     "@hocuspocus/extension-logger": "^2.15.2",
     "@hocuspocus/extension-redis": "^2.15.2",
@@ -48,7 +50,7 @@
     "@ttab/api-client": "^2.9.1",
     "@ttab/elephant-api": "^0.17.19",
     "@ttab/elephant-tt-api": "^0.1.1",
-    "@ttab/elephant-ui": "^0.9.6",
+    "@ttab/elephant-ui": "^0.9.7",
     "@ttab/textbit": "^0.21.6",
     "@ttab/textbit-plugins": "^0.6.2",
     "class-variance-authority": "^0.7.1",

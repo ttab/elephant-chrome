@@ -16,7 +16,6 @@ import type { PrintFlow, PrintFlowFields } from '@/hooks/index/useDocuments/sche
 
 const fallbackDate = new Date()
 
-
 export const CreatePrintArticle = ({ id, asDialog, onDialogClose, className }: ViewProps) => {
   const [printFlow, setPrintFlow] = useState<string>()
   const [articleName, setArticleName] = useState<string>()
@@ -28,7 +27,6 @@ export const CreatePrintArticle = ({ id, asDialog, onDialogClose, className }: V
     documentType: 'tt/print-flow',
     fields
   })
-
 
   if (error) {
     console.error('Could not fetch PrintFlows:', error)

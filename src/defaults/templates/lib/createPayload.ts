@@ -43,7 +43,7 @@ export function createPayload(document: Y.Doc, index?: number, payloadType: stri
     },
     links: {
       'core/section': ungroup({ 'core/section': section }),
-      'core/story': ungroup({ 'core/section': story })
+      'core/story': ungroup({ 'core/story': story })
     }
   }
 

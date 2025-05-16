@@ -1,5 +1,5 @@
 import { TwirpFetchTransport } from '@protobuf-ts/twirp-transport'
-import type { CopyArticleToFlowRequest } from '@ttab/elephant-tt-api/baboon'
+import type { CopyArticleToFlowRequest, CreateFlowRequest } from '@ttab/elephant-tt-api/baboon'
 import { PrintClient } from '@ttab/elephant-tt-api/baboon'
 import { meta } from './meta'
 import { toast } from 'sonner'
@@ -10,7 +10,11 @@ export class Baboon {
   constructor(baboonUrl: string) {
     this.#client = new PrintClient(
       new TwirpFetchTransport({
-        baseUrl: new URL('twirp', baboonUrl).toString()
+        baseUrl: new URL('twirp', baboonUrl).toString(),
+        sendJson: true,
+        jsonOptions: {
+          ignoreUnknownFields: true
+        }
       })
     )
   }
@@ -21,6 +25,15 @@ export class Baboon {
     } catch (ex) {
       console.error('Error creating print article:', ex)
       toast.error('Kunde inte skapa printartikel')
+    }
+  }
+
+  async createFlow(payload: CreateFlowRequest, accessToken: string) {
+    try {
+      return this.#client.createFlow(payload, meta(accessToken))
+    } catch (ex) {
+      console.error('Error creating print article:', ex)
+      toast.error('Kunde inte skapa printflöde')
     }
   }
 }

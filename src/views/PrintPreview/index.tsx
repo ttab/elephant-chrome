@@ -4,6 +4,7 @@ import {
 } from '@ttab/elephant-ui'
 import { type ViewMetadata } from '@/types'
 import { PreviewHeader } from './PreviewHeader'
+import { useEffect, useState } from 'react'
 
 /**
  * PrintPreview component.
@@ -39,6 +40,16 @@ const meta: ViewMetadata = {
 
 // Main Editor Component - Handles document initialization
 const PrintPreview = (): JSX.Element => {
+  const [height, setHeight] = useState(0)
+  useEffect(() => {
+    setHeight(window.innerHeight - 70)
+    window.addEventListener('resize', () => {
+      setHeight(window.innerHeight - 70)
+    })
+    return () => {
+      window.removeEventListener('resize', () => {})
+    }
+  }, [])
   return (
     <>
       <PreviewHeader />
@@ -46,7 +57,7 @@ const PrintPreview = (): JSX.Element => {
       <View.Content className='flex flex-col max-w-[1200px]'>
         <div className='p-2 flex flex-col gap-2'>
           <ScrollArea className='h-full mx-auto w-full'>
-            <iframe src='https://ttnewsagency-resources.s3.eu-west-1.amazonaws.com/slask/preview.pdf' height='980' width='100%' />
+            <iframe src='https://ttnewsagency-resources.s3.eu-west-1.amazonaws.com/slask/preview.pdf' height={height} width='100%' />
           </ScrollArea>
         </div>
       </View.Content>

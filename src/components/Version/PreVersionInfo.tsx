@@ -1,11 +1,11 @@
 import { useAuthors } from '@/hooks/useAuthors'
 import { getCreatorBySub } from './getCreatorBySub'
 import { format } from 'date-fns'
-import type { DocumentVersion } from '@ttab/elephant-api/repository'
+import type { Status as DocumentStatuses } from '@ttab/elephant-api/repository'
 
-export const PreVersionInfo = ({ version, versionHistory }: { version: bigint | undefined, versionHistory: DocumentVersion[] | undefined }) => {
+export const PreVersionInfo = ({ version, versionStatusHistory }: { version: bigint | undefined, versionStatusHistory: DocumentStatuses[] | undefined }) => {
   const authors = useAuthors()
-  const currentVersion = versionHistory?.find((v) => v?.version === version)
+  const currentVersion = versionStatusHistory?.find((v) => v?.version === version)
   const createdBy = getCreatorBySub({ authors, creator: currentVersion?.creator })?.name || '???'
 
   return currentVersion && (
