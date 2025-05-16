@@ -36,13 +36,15 @@ export class Repository {
   constructor(repoUrl: string) {
     this.#client = new DocumentsClient(
       new TwirpFetchTransport({
-        baseUrl: new URL('twirp', repoUrl).toString()
+        baseUrl: new URL('twirp', repoUrl).toString(),
+        sendJson: true
       })
     )
 
     this.#metricsClient = new MetricsClient(
       new TwirpFetchTransport({
-        baseUrl: new URL('twirp', repoUrl).toString()
+        baseUrl: new URL('twirp', repoUrl).toString(),
+        sendJson: true
       })
     )
   }

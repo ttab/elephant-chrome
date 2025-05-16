@@ -61,11 +61,11 @@ export const Version = ({ documentId, hideDetails = false, textOnly = true }: { 
       // Used to fetch the previous document version in order to get hold of the title,
       // that can be displayed in the list of previous versions.
       const response = await fetch(`${BASE_URL}/api/documents/${documentId}?version=${v.version}`)
-      return await response.json()
+      return await response.json() as EleDocumentResponse
     }
 
     result.versions = await Promise.all(result.versions.map(async (version) => {
-      const versionDoc = await fetchDoc(version) as EleDocumentResponse
+      const versionDoc = await fetchDoc(version)
 
       if (versionDoc) {
         const doc = versionDoc?.document

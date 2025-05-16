@@ -1,3 +1,4 @@
+import type { Session } from '@auth/express'
 import { getSession } from '@auth/express'
 import { type NextFunction, type Response, type Request } from 'express'
 import { authConfig } from './authConfig.js'
@@ -22,7 +23,8 @@ export async function assertAuthenticatedUser(
   res: Response,
   next: NextFunction
 ): Promise<void> {
-  const session = res.locals.session ?? (await getSession(req, authConfig))
+  const session: Session | null = res.locals.session as Session | null
+    ?? (await getSession(req, authConfig))
 
   if (isUnprotectedRoute(req)) {
     next()

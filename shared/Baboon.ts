@@ -10,7 +10,8 @@ export class Baboon {
   constructor(baboonUrl: string) {
     this.#client = new PrintClient(
       new TwirpFetchTransport({
-        baseUrl: new URL('twirp', baboonUrl).toString()
+        baseUrl: new URL('twirp', baboonUrl).toString(),
+        sendJson: true
       })
     )
   }

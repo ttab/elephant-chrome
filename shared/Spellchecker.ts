@@ -8,7 +8,8 @@ export class Spellchecker {
   constructor(repoUrl: string) {
     this.#client = new CheckClient(
       new TwirpFetchTransport({
-        baseUrl: new URL('twirp', repoUrl).toString()
+        baseUrl: new URL('twirp', repoUrl).toString(),
+        sendJson: true
       })
     )
   }
