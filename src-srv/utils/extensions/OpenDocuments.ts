@@ -9,6 +9,7 @@ import type {
   onDisconnectPayload
 } from '@hocuspocus/server'
 import logger from '../../lib/logger.js'
+import { getInterval } from '../../../shared/getInterval.js'
 
 interface EleContext {
   user: {
@@ -72,22 +73,10 @@ export class OpenDocuments implements Extension {
 
     // Periodically update the instance last seen timestamp
     this.#updateInstanceLastSeen()
-    setInterval(() => void this.#updateInstanceLastSeen(), this.#getInterval(25, 35))
+    setInterval(() => void this.#updateInstanceLastSeen(), getInterval(25, 35))
 
     // Periodically check that all instances are connected and clean up if not.
-    setInterval(() => void this.#cleanupIfNecessary(), this.#getInterval(100, 140))
-  }
-
-  /**
-   * Utility function to get a randomized jitter interval in milliseconds
-   * based on min and max number of seconds for intervals. Used to reduce
-   * thundering herd problems and reduce risk of instances running cleanup
-   * simultaneously.
-   */
-  #getInterval(min: number, max: number) {
-    const minCeiled = Math.ceil(min)
-    const maxFloored = Math.floor(max)
-    return Math.floor(Math.random() * (maxFloored - minCeiled + 1) + minCeiled) * 1000
+    setInterval(() => void this.#cleanupIfNecessary(), getInterval(100, 140))
   }
 
   /**
