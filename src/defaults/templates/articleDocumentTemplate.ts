@@ -12,6 +12,12 @@ export function articleDocumentTemplate(id: string, payload?: TemplatePayload): 
   // no descriptions in articles, remove those
   delete payload?.meta?.['core/description']
 
+  // Special handling for core/story: for plannings, the core/story.rel is 'story',
+  // while for articles it's 'subject'
+  if (payload?.links?.['core/story']?.[0]) {
+    payload.links['core/story'][0].rel = 'subject'
+  }
+
   return Document.create({
     uuid: id,
     type: 'core/article',

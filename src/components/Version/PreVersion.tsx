@@ -1,5 +1,5 @@
 import { PreVersionInfo } from './PreVersionInfo'
-import type { DocumentVersion } from '@ttab/elephant-api/repository'
+import type { Status as DocumentStatuses } from '@ttab/elephant-api/repository'
 import type { EleBlock, EleDocument } from '@/shared/types'
 import { useCallback } from 'react'
 import { Description, Assignments, Category, Dates, Slugline, Section, Story, Newsvalue } from './components'
@@ -7,11 +7,11 @@ import { Description, Assignments, Category, Dates, Slugline, Section, Story, Ne
 export const PreVersion = ({
   content,
   version,
-  versionHistory
+  versionStatusHistory
 }: {
   content: EleDocument
   version: bigint | undefined
-  versionHistory?: DocumentVersion[]
+  versionStatusHistory?: DocumentStatuses[]
 }) => {
   const getDescriptions = useCallback((block: EleDocument | EleBlock) => {
     if (!block) {
@@ -45,7 +45,7 @@ export const PreVersion = ({
   return (
     <div className='flex justify-center overflow-y-auto select-none'>
       <div className='w-3/4'>
-        <PreVersionInfo version={version} versionHistory={versionHistory} />
+        <PreVersionInfo version={version} versionStatusHistory={versionStatusHistory} />
         <div className='font-sans font-bold text-xl pb-2 text-muted-foreground'>{content.title}</div>
         <Description descriptions={descriptions} />
         <Slugline slugline={slugline} />

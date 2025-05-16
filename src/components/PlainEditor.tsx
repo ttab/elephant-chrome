@@ -4,7 +4,7 @@ import useSWR from 'swr'
 import { LoadingText } from './LoadingText'
 import { Bold, Italic, Link, Text, OrderedList, UnorderedList, TTVisual, Factbox, Table } from '@ttab/textbit-plugins'
 import { PreVersion } from './Version/PreVersion'
-import type { DocumentVersion } from '@ttab/elephant-api/repository'
+import type { Status as DocumentStatuses } from '@ttab/elephant-api/repository'
 import { PreVersionInfo } from './Version/PreVersionInfo'
 const BASE_URL = import.meta.env.BASE_URL || ''
 
@@ -21,11 +21,11 @@ const fetcher = async (url: string): Promise<TBElement[] | EleDocument | undefin
   return result.document?.content
 }
 
-export const Editor = ({ id, version, textOnly = false, versionHistory }: {
+export const Editor = ({ id, version, textOnly = false, versionStatusHistory }: {
   id: string
   textOnly?: boolean
   version?: bigint | undefined
-  versionHistory?: DocumentVersion[]
+  versionStatusHistory?: DocumentStatuses[]
 }): JSX.Element => {
   const getPlugins = () => {
     const basePlugins = [Text, UnorderedList, OrderedList, Bold, Italic, Link, Table]
@@ -70,15 +70,15 @@ export const Editor = ({ id, version, textOnly = false, versionHistory }: {
       <PreVersion
         content={content}
         version={version}
-        versionHistory={versionHistory}
+        versionStatusHistory={versionStatusHistory}
       />
     )
   }
 
   return (
     <div className='flex flex-col w-full pb-6 overflow-y-auto overflow-x-hidden max-w-screen-lg mx-auto'>
-      {versionHistory && version && (
-        <PreVersionInfo version={version} versionHistory={versionHistory} />
+      {versionStatusHistory && version && (
+        <PreVersionInfo version={version} versionStatusHistory={versionStatusHistory} />
       )}
       <Textbit.Root plugins={getPlugins()}>
         <Textbit.Editable
