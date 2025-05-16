@@ -15,6 +15,7 @@ export function newsDocToSlate(content: Block[]): TBElement[] {
     return content.map((element: Block): TBElement => {
       switch (element.type) {
         case 'core/text':
+        case 'tt/print-text':
           return transformText(element)
         case 'tt/visual':
           return transformVisual(element)
