@@ -5,7 +5,7 @@ import { CircleCheck, Pen } from '@ttab/elephant-ui/icons'
 import type { PrintArticle } from '@/hooks/baboon/lib/printArticles'
 import { DocumentStatuses } from '@/defaults/documentStatuses'
 import { DocumentStatus } from '@/components/Table/Items/DocumentStatus'
-
+import { FacetedFilter } from '@/components/Commands/FacetedFilter'
 /**
  * Generates column definitions for the Print Articles list.
  *
@@ -20,7 +20,12 @@ export function printArticlesListColumns(): Array<ColumnDef<PrintArticle>> {
   return [
     {
       id: 'workflowState',
+      enableGrouping: false,
+      enableColumnFilter: true,
       meta: {
+        Filter: ({ column, setSearch }) => (
+          <FacetedFilter column={column} setSearch={setSearch} />
+        ),
         options: DocumentStatuses,
         name: 'Status',
         columnIcon: CircleCheck,
@@ -36,11 +41,19 @@ export function printArticlesListColumns(): Array<ColumnDef<PrintArticle>> {
       cell: ({ row }) => {
         const status = row.original.fields['workflow_state']?.values[0] || 'draft'
         return <DocumentStatus type='tt/print-article' status={status} />
-      }
+      },
+      filterFn: (row, id, value: string[]) =>
+        value.includes(row.getValue(id))
     },
     {
       id: 'printFlow',
+      enableGrouping: true,
+      enableSorting: true,
       meta: {
+        Filter: ({ column, setSearch }) => (
+          <FacetedFilter column={column} setSearch={setSearch} />
+        ),
+        // options: PrintFlows,
         name: 'Flöde',
         columnIcon: Pen,
         className: 'flex-1 w-[200px]'
@@ -53,6 +66,7 @@ export function printArticlesListColumns(): Array<ColumnDef<PrintArticle>> {
     },
     {
       id: 'articleTitle',
+      enableGrouping: false,
       meta: {
         name: 'Artikel',
         columnIcon: Pen,

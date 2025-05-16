@@ -16,6 +16,7 @@ import { parseDate } from '@/lib/datetime'
 import { useSession } from 'next-auth/react'
 import { useQuery } from '@/hooks/useQuery'
 import { format } from 'date-fns'
+import { useLink } from '@/hooks/useLink'
 
 /**
  * PrintFlows component.
@@ -63,6 +64,7 @@ export const PrintFlows = ({ asDialog, onDialogClose, className, action }: ViewP
   const selectedPrintFlow = allPrintFlows?.find((flow) => flow.value === printFlow)
 
   const isSubmitDisabled = !printFlow || !date
+  const changeDate = useLink('PrintArticles')
 
   const handleCreateArticle = async () => {
     if (!session?.accessToken) {
@@ -184,7 +186,12 @@ export const PrintFlows = ({ asDialog, onDialogClose, className, action }: ViewP
                     </Form.Group>
                   )}
                   <Form.Group icon={Calendar}>
-                    <DatePicker date={date || new Date()} setDate={(newDate) => setDateString(newDate)} disabled={!printFlow} />
+                    <DatePicker
+                      date={(date || new Date())}
+                      setDate={(newDate) => setDateString(newDate)}
+                      changeDate={changeDate}
+                      disabled={!printFlow}
+                    />
                   </Form.Group>
                 </Form.Content>
                 <p className='text-sm text-gray-500'>
