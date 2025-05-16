@@ -9,6 +9,8 @@ import type { SubscriptionItem, SubscriptionReference } from '@ttab/elephant-api
 import { type HitV1, type PollSubscriptionResponse, type QueryV1, type SortingV1 } from '@ttab/elephant-api/index'
 import { toast } from 'sonner'
 import type { Index } from '@/shared/Index'
+import { getInterval } from '@/shared/getInterval'
+import type { Session } from 'next-auth'
 
 /**
  * Options for augmenting or performing the fetch in the `useDocuments` hook.
@@ -60,12 +62,16 @@ export const useDocuments = <T extends HitV1, F>({ documentType, query, size, pa
   const { index } = useRegistry()
   const { setData } = useTable<T>()
   const [subscriptions, setSubscriptions] = useState<SubscriptionReference[]>()
+  const subscriptionsRef = useRef<SubscriptionReference[] | undefined>(subscriptions)
+  const mutateRef = useRef<KeyedMutator<T[]> | null>(null)
+  const dataRef = useRef<T[] | undefined>(undefined)
 
-  // Create a key for the SWR cache, if it changes we do a refetch
+  // Memoize SWR key
   const key = useMemo(() => query
     ? `${documentType}/${JSON.stringify(query)}${page ? `/${page}` : ''}`
     : documentType, [query, page, documentType])
 
+  // Memoize fetcher
   const fetcher = useMemo(() => (): Promise<T[]> =>
     fetch<T, F>({
       index,
@@ -83,65 +89,90 @@ export const useDocuments = <T extends HitV1, F>({ documentType, query, size, pa
 
   const { data, error, mutate, isLoading, isValidating } = useSWR<T[], Error>(key, fetcher)
 
+  // Keep refs up to date for polling
+  useEffect(() => {
+    subscriptionsRef.current = subscriptions
+    mutateRef.current = mutate
+    dataRef.current = data
+  }, [subscriptions, mutate, data])
+
   if (error) {
     console.error('Document fetch failed:', error)
     toast.error('Misslyckades hämta dokument.')
   }
 
-  // We need to wait after initial render to set the data
+  // Set table data after fetch
   useEffect(() => {
     if (data && setData && options?.setTableData) {
       setData(data)
     }
   }, [data, setData, options?.setTableData])
 
-  // subscribe to changes using long polling
   const isPolling = useRef(false)
+
+  const startPolling = async (
+    index: Index,
+    session: Session,
+    abortController: AbortController
+  ) => {
+    while (isPolling.current) {
+      // console.log('[Polling] Poll iteration', subscriptionsRef.current?.[0]?.cursor)
+      try {
+        subscriptionsRef.current = await pollSubscriptions({
+          index,
+          data: dataRef.current,
+          accessToken: session.accessToken,
+          subscriptions: subscriptionsRef.current ?? [],
+          mutate: mutateRef.current!,
+          abortController
+        })
+        // console.log('[Polling] pollSubscriptions resolved', { subscriptions: subscriptionsRef.current })
+      } catch (error) {
+        if (error instanceof AbortError) {
+          // console.log('[Polling] Aborted by AbortController')
+          break
+        }
+        // console.error('[Polling] Polling error:', error)
+        const interval = getInterval(20, 30)
+        toast.error(`Misslyckades att automatiskt uppdatera listan. Försöker igen om ${interval / 1000} sekunder.`)
+        // Wait before next retry if failed
+        // console.log(`[Polling] Waiting ${interval}ms before retry`)
+        await new Promise((resolve) => setTimeout(resolve, interval))
+      }
+    }
+    // console.log('[Polling] Exiting polling loop')
+  }
+
   useEffect(() => {
-    if (!options?.subscribe || !session?.accessToken || !subscriptions?.length || !index || isPolling.current) {
+    // Only start polling if all conditions are met
+    if (
+      !options?.subscribe
+      || !session?.accessToken
+      || !subscriptionsRef.current
+      || !subscriptionsRef.current.length
+      || !index
+      || isPolling.current
+    ) {
+      // console.log('[Polling] Skipping start: unmet conditions')
       return
     }
     isPolling.current = true
+    // console.log('[Polling] Starting polling loop')
 
     const abortController = new AbortController()
 
-    const startPolling = async () => {
-      let lastSubscriptions = subscriptions
-      while (isPolling.current) {
-        try {
-          lastSubscriptions = await pollSubscriptions({
-            index,
-            data,
-            accessToken: session.accessToken,
-            subscriptions: lastSubscriptions,
-            mutate,
-            abortController
-          })
-        } catch (error) {
-          if (error instanceof AbortError) {
-            break
-          }
-
-          console.error('Polling error:', error)
-          toast.error('Misslyckades att automatiskt uppdatera listan. Försöker igen om 30 sekunder.')
-
-          // Wait before next retry if failed
-          await new Promise((resolve) => setTimeout(resolve, 30000))
-        }
-      }
-    }
-
-    void startPolling()
+    void startPolling(index, session, abortController)
       .catch((ex) => {
-        console.error('Unable to start polling', ex)
+        console.error('[Polling] Unable to start polling', ex)
       })
 
     return () => {
-      // Call the abortController which causes a AbortError and breaks the loop, restart.
+      // console.log('[Polling] Cleanup: aborting and stopping polling')
       abortController.abort()
       isPolling.current = false
     }
-  }, [index, options?.subscribe, session?.accessToken, subscriptions, mutate, data])
+    // Only restart polling if these change
+  }, [index, options?.subscribe, session, subscriptions])
 
   return { data, error, mutate, isValidating, isLoading }
 }
@@ -175,8 +206,8 @@ async function pollSubscriptions<T extends HitV1>({
     response.result.forEach((group) => {
       if (group.subscription) {
         const groupMatchedItems = group.items.filter((item) => item.match)
+        newSubscriptions.push(group.subscription)
         if (groupMatchedItems.length) {
-          newSubscriptions.push(group.subscription)
           matchedItems.push(...groupMatchedItems)
         }
       }
