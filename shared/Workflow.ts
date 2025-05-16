@@ -11,7 +11,8 @@ export class Workflow {
   constructor(repoUrl: string) {
     this.#client = new WorkflowsClient(
       new TwirpFetchTransport({
-        baseUrl: new URL('twirp', repoUrl).toString()
+        baseUrl: new URL('twirp', repoUrl).toString(),
+        sendJson: true
       })
     )
 

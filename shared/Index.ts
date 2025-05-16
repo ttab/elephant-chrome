@@ -46,7 +46,8 @@ export class Index {
   constructor(indexUrl: string) {
     this.#client = new SearchV1Client(
       new TwirpFetchTransport({
-        baseUrl: new URL('twirp', indexUrl).toString()
+        baseUrl: new URL('twirp', indexUrl).toString(),
+        sendJson: true
       })
     )
   }

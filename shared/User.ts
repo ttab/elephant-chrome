@@ -14,7 +14,8 @@ export class User {
     this.#tokenService = tokenService
     this.#client = new MessagesClient(
       new TwirpFetchTransport({
-        baseUrl: new URL('twirp', userUrl).toString()
+        baseUrl: new URL('twirp', userUrl).toString(),
+        sendJson: true
       })
     )
   }
