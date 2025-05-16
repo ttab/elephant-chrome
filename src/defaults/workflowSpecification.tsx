@@ -1,7 +1,6 @@
 import {
   CircleCheck,
   CircleDot,
-  CircleX,
   CircleArrowLeft,
   BadgeCheck,
   type LucideIcon
@@ -48,10 +47,6 @@ export const StatusSpecifications: Record<string, StatusSpecification> = {
     icon: CircleCheck,
     className: 'bg-usable text-white fill-usable rounded-full'
   },
-  cancelled: {
-    icon: CircleX,
-    className: 'bg-cancelled text-white fill-cancelled rounded-full'
-  },
   unpublished: {
     icon: CircleArrowLeft,
     className: 'bg-unpublished text-white fill-unpublished rounded-full'
@@ -82,11 +77,6 @@ export const WorkflowSpecifications: Record<string, WorkflowSpecification> = {
           verify: true,
           title: 'Publicera externt',
           description: 'Publicera händelsen externt'
-        },
-        cancelled: {
-          verify: true,
-          title: 'Avbryt',
-          description: 'Avbryt, gå inte vidare med händelsen'
         }
       }
     },
@@ -116,22 +106,6 @@ export const WorkflowSpecifications: Record<string, WorkflowSpecification> = {
           description: 'Avpublicera händelsen externt'
         }
       }
-    },
-    cancelled: {
-      title: 'Avbruten',
-      description: 'Händelsen har avbrutits. Lägg till innehåll för att fortsätta med en ny version.',
-      transitions: {
-        done: {
-          verify: true,
-          title: 'Publicera internt',
-          description: 'Publicera händelsen internt hos TT'
-        },
-        usable: {
-          verify: true,
-          title: 'Publicera externt',
-          description: 'Publicera händelsen externt'
-        }
-      }
     }
   },
   'core/planning-item': {
@@ -148,11 +122,6 @@ export const WorkflowSpecifications: Record<string, WorkflowSpecification> = {
           verify: true,
           title: 'Publicera externt',
           description: 'Publicera planeringen externt'
-        },
-        cancelled: {
-          verify: true,
-          title: 'Avbryt',
-          description: 'Avbryt, gå inte vidare med planeringen'
         }
       }
     },
@@ -180,22 +149,6 @@ export const WorkflowSpecifications: Record<string, WorkflowSpecification> = {
           verify: true,
           title: 'Avpublicera',
           description: 'Avpublicera planeringen externt'
-        }
-      }
-    },
-    cancelled: {
-      title: 'Avbruten',
-      description: 'Planeringen har avbrutits. Lägg till innehåll för att fortsätta med en ny version.',
-      transitions: {
-        done: {
-          verify: true,
-          title: 'Publicera internt',
-          description: 'Publicera planeringen internt hos TT'
-        },
-        usable: {
-          verify: true,
-          title: 'Publicera externt',
-          description: 'Publicera planeringen externt'
         }
       }
     },
@@ -228,11 +181,6 @@ export const WorkflowSpecifications: Record<string, WorkflowSpecification> = {
           verify: true,
           title: 'Schemalägg publicering',
           description: 'Ange datum och tid för publicering'
-        },
-        cancelled: {
-          verify: true,
-          title: 'Avbryt',
-          description: 'Avbryt och gå inte vidare med artikeln'
         }
       }
     },
