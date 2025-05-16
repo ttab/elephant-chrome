@@ -8,7 +8,8 @@ export const fields = [
   'document.title',
   'document.meta.tt_print_article.title',
   'document.rel.flow.*',
-  'document.meta.tt_print_article.data.date'
+  'document.meta.tt_print_article.data.date',
+  'workflow_state'
 ]
 
 /**

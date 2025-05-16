@@ -1,9 +1,10 @@
 
 import { Title } from '@/components/Table/Items/Title'
 import { type ColumnDef } from '@tanstack/react-table'
-import { Pen } from '@ttab/elephant-ui/icons'
+import { CircleCheck, Pen } from '@ttab/elephant-ui/icons'
 import type { PrintArticle } from '@/hooks/baboon/lib/printArticles'
-
+import { DocumentStatuses } from '@/defaults/documentStatuses'
+import { DocumentStatus } from '@/components/Table/Items/DocumentStatus'
 
 /**
  * Generates column definitions for the Print Articles list.
@@ -12,28 +13,42 @@ import type { PrintArticle } from '@/hooks/baboon/lib/printArticles'
  * Print Articles table. Each column definition includes metadata such as
  * the column name, icon, and display logic.
  *
- * @param options - Options for generating the column definitions.
- * @param options.locale - The locale used for formatting dates.
  * @returns An array of column definitions for the Print Articles table.
  */
-export function printArticlesListColumns({ locale = 'sv-SE' }: {
-  locale?: string
-}): Array<ColumnDef<PrintArticle>> {
+
+export function printArticlesListColumns(): Array<ColumnDef<PrintArticle>> {
   return [
     {
-      id: 'modified',
-      enableGrouping: false,
-      accessorFn: (data) => {
-        const date = new Date(data.fields.modified.values[0])
-
-        if (date.toDateString() === new Date().toDateString()) {
-          return date.getHours()
-        } else {
-          return `${date.getHours()} ${date.toLocaleString(locale, { weekday: 'long', hourCycle: 'h23' })}`
-        }
+      id: 'workflowState',
+      meta: {
+        options: DocumentStatuses,
+        name: 'Status',
+        columnIcon: CircleCheck,
+        className: 'flex-none w-16',
+        display: (value: string) => (
+          <span>
+            {DocumentStatuses
+              .find((status) => status.value === value)?.label || 'draft'}
+          </span>
+        )
       },
-      cell: () => {
-        return undefined
+      accessorFn: (data) => (data.fields['workflow_state'].values[0]),
+      cell: ({ row }) => {
+        const status = row.original.fields['workflow_state']?.values[0] || 'draft'
+        return <DocumentStatus type='tt/print-article' status={status} />
+      }
+    },
+    {
+      id: 'printFlow',
+      meta: {
+        name: 'Flöde',
+        columnIcon: Pen,
+        className: 'flex-1 w-[200px]'
+      },
+      accessorFn: (data) => (data.fields['document.rel.flow.title'].values[0]),
+      cell: ({ row }) => {
+        const flow = row.getValue('printFlow')
+        return <span>{flow as string}</span>
       }
     },
     {
@@ -46,24 +61,6 @@ export function printArticlesListColumns({ locale = 'sv-SE' }: {
       accessorFn: (data) => (data.fields['document.meta.tt_print_article.title'].values[0]),
       cell: ({ row }) => {
         const title = row.getValue('articleTitle')
-        return (
-          <Title
-            title={title as string}
-            className='text-sm'
-          />
-        )
-      }
-    },
-    {
-      id: 'title',
-      meta: {
-        name: 'Slugg',
-        columnIcon: Pen,
-        className: 'flex-1 w-[200px]'
-      },
-      accessorFn: (data) => (data.fields['document.title'].values[0]),
-      cell: ({ row }) => {
-        const title = row.getValue('title')
         return (
           <Title
             title={title as string}
