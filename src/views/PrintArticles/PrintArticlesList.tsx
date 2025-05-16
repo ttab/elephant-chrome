@@ -27,9 +27,10 @@ export const PrintArticleList = ({ columns }: {
   columns: ColumnDef<PrintArticle, unknown>[]
 }): JSX.Element => {
   const [filter] = useQuery(['from'])
-
+  const [query] = useQuery()
   usePrintArticles({
-    filter: filter
+    filter,
+    id: query.id as string
   })
 
   const onRowSelected = useCallback((row?: PrintArticle) => {

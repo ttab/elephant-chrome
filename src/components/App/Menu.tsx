@@ -8,7 +8,7 @@ import {
   SheetTitle,
   SheetTrigger
 } from '@ttab/elephant-ui'
-import { Avatar, Link } from '@/components'
+import { Avatar, Link, Logo } from '@/components'
 import { Menu as MenuIcon, X } from '@ttab/elephant-ui/icons'
 import { ThemeSwitcher } from './ThemeSwitcher'
 import { MenuItem } from './MenuItem'
@@ -68,8 +68,7 @@ export const Menu = (): JSX.Element => {
               </SheetClose>
               <SheetClose asChild>
                 <Link to='Plannings' className='leading-9 px-3 rounded-md'>
-                  Elefanten
-                  <span className='text-2xl pl-2'>🐘</span>
+                  <Logo className='w-full h-6' />
                 </Link>
               </SheetClose>
               <ThemeSwitcher />

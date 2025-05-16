@@ -95,6 +95,7 @@ export const EditorHeader = ({ documentId, readOnly, readOnlyVersion }: { docume
   const title = documentType === 'core/editorial-info' ? 'Till red' : 'Artikel'
 
   const isReadOnlyAndUpdated = workflowStatus && workflowStatus?.name !== 'usable' && readOnly
+  const isUnpublished = workflowStatus?.name === 'unpublished'
 
   return (
     <ViewHeader.Root>
@@ -114,7 +115,7 @@ export const EditorHeader = ({ documentId, readOnly, readOnlyVersion }: { docume
               <>
                 {!readOnly && <ViewHeader.RemoteUsers documentId={documentId} />}
 
-                {isReadOnlyAndUpdated && (
+                {isReadOnlyAndUpdated && !isUnpublished && (
                   <Button
                     variant='secondary'
                     onClick={(event) => {
@@ -129,7 +130,7 @@ export const EditorHeader = ({ documentId, readOnly, readOnlyVersion }: { docume
                   </Button>
                 )}
 
-                {!!planningId && !isReadOnlyAndUpdated && (
+                {!!planningId && (!isReadOnlyAndUpdated || isUnpublished) && (
                   <StatusMenu
                     documentId={documentId}
                     type={documentType || 'core/article'}
