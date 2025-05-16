@@ -1,4 +1,4 @@
-import { useQuery, useCollaboration, useYjsEditor, useAwareness, useView } from '@/hooks'
+import { useQuery, useCollaboration, useYjsEditor, useAwareness, useView, useYValue } from '@/hooks'
 import { AwarenessDocument } from '@/components/AwarenessDocument'
 import { type ViewProps, type ViewMetadata } from '@/types/index'
 import type * as Y from 'yjs'
@@ -20,7 +20,7 @@ import { useOnSpellcheck } from '@/hooks/useOnSpellcheck'
 import { View } from '@/components'
 import { FactboxHeader } from './FactboxHeader'
 import { Error } from '@/views/Error'
-import { useEffect, useRef } from 'react'
+import { useCallback, useEffect, useRef } from 'react'
 import { cn } from '@ttab/elephant-ui/utils'
 import { contentMenuLabels } from '@/defaults/contentMenuLabels'
 
@@ -94,6 +94,7 @@ const FactboxWrapper = (props: ViewProps & { documentId: string }): JSX.Element 
   return (
     <View.Root asDialog={props?.asDialog} className={props?.className}>
       <Textbit.Root
+        debounce={0}
         autoFocus={props.autoFocus ?? true}
         onBlur={() => {
           setIsFocused(false)
@@ -138,6 +139,19 @@ const FactboxContainer = ({
 } & ViewProps): JSX.Element => {
   const { words, characters } = useTextbit()
   const { data: session, status } = useSession()
+  const [isChanged] = useYValue<boolean>('root.changed')
+
+  // TODO: useYValue doesn't provider a stable setter, this cause rerenders down the tree
+  const handleChange = useCallback((value: boolean): void => {
+    const root = provider?.document.getMap('ele').get('root') as Y.Map<unknown>
+    const changed = root.get('changed') as boolean
+
+
+    if (changed !== value) {
+      root.set('changed', value)
+    }
+  }, [provider])
+
 
   const handleSubmit = (): void => {
     if (onDialogClose) {
@@ -166,12 +180,13 @@ const FactboxContainer = ({
         documentId={documentId}
         asDialog={!!asDialog}
         onDialogClose={onDialogClose}
+        isChanged={isChanged}
       />
 
       <View.Content className='flex flex-col max-w-[1000px]'>
         <div className='flex-grow overflow-auto pr-12 max-w-screen-xl'>
           {!!provider && synced
-            ? <FactboxContent provider={provider} user={user} />
+            ? <FactboxContent provider={provider} user={user} onChange={handleChange} />
             : <></>}
         </div>
       </View.Content>
@@ -202,9 +217,10 @@ const FactboxContainer = ({
   )
 }
 
-const FactboxContent = ({ provider, user }: {
+const FactboxContent = ({ provider, user, onChange }: {
   provider: HocuspocusProvider
   user: AwarenessUserData
+  onChange?: (value: boolean) => void
 }): JSX.Element => {
   const { isActive } = useView()
   const ref = useRef<HTMLDivElement>(null)
@@ -230,6 +246,7 @@ const FactboxContent = ({ provider, user }: {
         className='font-bold text-lg basis-auto'
         autoFocus={true}
         singleLine={true}
+        onChange={onChange}
       />
 
       <Textbit.Editable
@@ -243,6 +260,11 @@ const FactboxContent = ({ provider, user }: {
           [&_[data-spelling-error]]:border-dotted
           [&_[data-spelling-error]]:border-red-500
         '
+        onChange={() => {
+          if (provider.hasUnsyncedChanges) {
+            onChange?.(true)
+          }
+        }}
       >
         <DropMarker />
         <Gutter>
