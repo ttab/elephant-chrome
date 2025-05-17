@@ -161,6 +161,12 @@ export const useDocuments = <T extends HitV1, F>({ documentType, query, size, pa
 
     const abortController = new AbortController()
 
+    const handleBeforeUnload = () => {
+      abortController.abort()
+    }
+
+    window.addEventListener('beforeunload', handleBeforeUnload)
+
     void startPolling(index, session, abortController)
       .catch((ex) => {
         console.error('[Polling] Unable to start polling', ex)
@@ -170,6 +176,7 @@ export const useDocuments = <T extends HitV1, F>({ documentType, query, size, pa
       // console.log('[Polling] Cleanup: aborting and stopping polling')
       abortController.abort()
       isPolling.current = false
+      window.removeEventListener('beforeunload', handleBeforeUnload)
     }
     // Only restart polling if these change
   }, [index, options?.subscribe, session, subscriptions])
