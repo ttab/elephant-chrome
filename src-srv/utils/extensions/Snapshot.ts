@@ -4,6 +4,8 @@ import {
   type onDisconnectPayload
 } from '@hocuspocus/server'
 import { type DebouncedFunc, debounce } from 'lodash-es'
+import { assertContext } from '../../lib/assertContext.js'
+import { isValidUUID } from '../isValidUUID.js'
 
 interface DefaultConfiguration {
   debounce: number
@@ -27,9 +29,17 @@ export class Snapshot implements Extension {
   }
 
   async onStoreDocument(payload: onStoreDocumentPayload): Promise<void> {
-    const { documentName, context } = payload as { documentName: string, context: { agent?: string, user: { sub: string } } }
+    const { documentName, context } = payload as { documentName: string, context: unknown }
+
+    if (!assertContext(context)) {
+      throw new Error('Invalid context provided')
+    }
+
     // Ignore document-tracker, server actions, and userTracker
-    if (documentName !== 'document-tracker' && context.agent !== 'server' && documentName !== context.user.sub) {
+    if (documentName !== 'document-tracker'
+      && context.agent !== 'server'
+      && documentName !== context.user.sub
+      && isValidUUID(documentName)) {
       // Clear previous debounce
       debounceMap.get(documentName)?.cancel()
 
@@ -46,12 +56,16 @@ export class Snapshot implements Extension {
   }
 
   async onDisconnect(payload: onDisconnectPayload): Promise<void> {
-    const debouncedFn = debounceMap.get(payload.documentName)
+    try {
+      const debouncedFn = debounceMap.get(payload.documentName)
 
-    // If the document has a debounceFn it's dirty, check if there are no other clients
-    if (debouncedFn && payload.clientsCount === 0) {
+      // If the document has a debounceFn it's dirty, check if there are no other clients
+      if (debouncedFn && payload.clientsCount === 0) {
       // Flush (immidiately call the function)
-      await debouncedFn.flush()
+        await debouncedFn.flush()
+      }
+    } catch (ex) {
+      throw new Error(`Error onDisconnect snapshot: ${ex instanceof Error ? ex.message : String(ex)}`)
     }
   }
 }
