@@ -100,7 +100,7 @@ export function createArticle({
         )
 
         toast.success(`Artikel skapad`, {
-          action: <ToastAction planningId={planning.id} wireId={documentId} />
+          action: <ToastAction planningId={planning.id} wireId={documentId} target='last' />
         })
         return { article: provider.document, planning: planning.document }
       } else {
@@ -112,6 +112,7 @@ export function createArticle({
       }
     } catch (err) {
       console.error(err)
+      toast.error('Något gick fel när artikeln skulle skapas')
     }
   }
   return undefined
