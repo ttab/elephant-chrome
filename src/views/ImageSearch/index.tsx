@@ -10,6 +10,7 @@ import { SWRConfig } from 'swr'
 import { createFetcher } from './lib/fetcher'
 import { useRegistry } from '@/hooks/useRegistry'
 import { type ttninjs } from '@ttab/api-client'
+import { useSession } from 'next-auth/react'
 
 const meta: ViewMetadata = {
   name: 'ImageSearch',
@@ -42,13 +43,10 @@ const ImageSearchResult = ({ children }: {
 
 export const ImageSearch = (): JSX.Element => {
   const { server: { contentApiUrl } } = useRegistry()
-
-  if (!contentApiUrl) {
-    return <></>
-  }
+  const { data: session } = useSession()
 
   return (
-    <SWRConfig value={{ fetcher: createFetcher(contentApiUrl) }}>
+    <SWRConfig value={{ fetcher: createFetcher(contentApiUrl, session) }}>
       <ImageSearchContent />
     </SWRConfig>
   )

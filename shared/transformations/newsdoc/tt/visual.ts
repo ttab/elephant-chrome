@@ -3,17 +3,26 @@ import { toString } from '../../lib/toString.js'
 import type { TBElement } from '@ttab/textbit'
 import type { Descendant } from 'slate'
 
+// Construed way of making it work in both environments
+const BASE_URL: string
+  = typeof import.meta !== 'undefined'
+    && typeof ((import.meta as unknown as { env?: { BASE_URL?: string } }).env) !== 'undefined'
+    && typeof ((import.meta as unknown as { env: { BASE_URL?: string } }).env.BASE_URL) === 'string'
+    ? (import.meta as unknown as { env: { BASE_URL: string } }).env.BASE_URL
+    : typeof process !== 'undefined' && process.env && typeof process.env.BASE_URL === 'string'
+      ? process.env.BASE_URL
+      : ''
+
 export const transformVisual = (element: Block): TBElement => {
   const { id, data, links } = element
+
   return {
     id: id || crypto.randomUUID(), // Must have id, if id is missing positioning in drag'n drop does not work
     class: 'block',
     type: 'tt/visual',
     properties: {
-      // FIXME: This is a hack to get a viewable image,
-      // we need authentication to view non-watermarked images
-      href: links[0]?.url
-        ?.replace('_NormalPreview.jpg', '_WatermarkPreview.jpg'),
+      href: links[0]?.url,
+      proxy: `${BASE_URL}/api/images/${links[0]?.url.split('/').pop()}`,
       rel: links[0].rel,
       uri: links[0].uri,
       type: links[0].type,
@@ -75,8 +84,7 @@ export function revertVisual(element: TBElement): Block {
         rel: toString(properties?.rel),
         type: toString(properties?.type),
         uri: toString(properties?.uri),
-        // FIXME: This is a hack to revert the viewable image
-        url: toString(properties?.href).replace('_WatermarkPreview.jpg', '_NormalPreview.jpg')
+        url: toString(properties?.href)
       }
     ]
   })
