@@ -12,7 +12,8 @@ import { Button, Checkbox, ComboBox, Input, Label } from '@ttab/elephant-ui'
 import { CircleXIcon, Tags, GanttChartSquare, Cable, BriefcaseBusiness, Tag } from '@ttab/elephant-ui/icons'
 import { useCollaboration, useRegistry, useYValue } from '@/hooks'
 import { useSession } from 'next-auth/react'
-import { useRef, useState } from 'react'
+import type { PropsWithChildren } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { UserMessage } from '@/components/UserMessage'
 import { Form } from '@/components/Form'
 import { fetch } from '@/lib/index/fetch-plannings-twirp'
@@ -22,6 +23,7 @@ import type * as Y from 'yjs'
 import { CreatePrompt } from '@/components/CreatePrompt'
 import type { Wire as WireType } from '@/hooks/index/useDocuments/schemas/wire'
 import { toSlateYXmlText } from '@/shared/yUtils'
+import type { FormProps } from '@/components/Form/Root'
 
 export const WireViewContent = (props: ViewProps & {
   wire: WireType
@@ -60,6 +62,7 @@ export const WireViewContent = (props: ViewProps & {
 
       <View.Content>
         <Form.Root asDialog={props.asDialog}>
+          {!!selectedPlanning && <ValidateNow />}
           <Form.Content>
             <Form.Group icon={Cable}>
               <>
@@ -258,7 +261,9 @@ export const WireViewContent = (props: ViewProps & {
                 Markera som använd
               </Button>
             </>
-            <Form.Submit onSubmit={handleSubmit}>
+            <Form.Submit
+              onSubmit={handleSubmit}
+            >
               <Button type='submit'>Skapa artikel</Button>
             </Form.Submit>
           </Form.Footer>
@@ -268,3 +273,13 @@ export const WireViewContent = (props: ViewProps & {
   )
 }
 
+const ValidateNow = ({ setValidateForm }: FormProps & PropsWithChildren): null => {
+  useEffect(() => {
+    if (setValidateForm) {
+      console.log('Validate now effect')
+      setValidateForm(true)
+    }
+  }, [setValidateForm])
+
+  return null
+}
