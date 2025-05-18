@@ -43,12 +43,20 @@ export function structureAssignments(
   })
 
   assignments.forEach((assignment) => {
+    const status = assignment._deliverableStatus
+    const { publish, start, publish_slot } = assignment.data
     let hour: number
 
-    if (assignment.data.publish) {
-      hour = getHours(toZonedTime(parseISO(assignment.data.publish), timeZone))
-    } else if (assignment.data.publish_slot) {
-      hour = parseInt(assignment.data.publish_slot)
+    if (status === 'withheld' && publish) {
+      // When scheduled we want it in that particular hour.
+      hour = getHours(toZonedTime(parseISO(publish), timeZone))
+    } else if (publish_slot) {
+      // FIXME: It seems publish_slot is wrong here event though it is correct in repo!
+      // If assigned a publish slot, then we use that. Publish slot is already an hour.
+      hour = parseInt(publish_slot)
+    } else {
+      // In all other cases we rely on the start time.
+      hour = getHours(toZonedTime(parseISO(start), timeZone))
     }
 
     response.forEach((slot) => {
