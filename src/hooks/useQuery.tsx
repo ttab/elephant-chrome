@@ -29,11 +29,18 @@ export const useQuery = (keys?: string[], allParams?: boolean): [QueryParams, (p
   const parseQueryString = useCallback((): Record<string, string | string[] | undefined> => {
     // window.location.search will only return the query parameters of the active view
     // for others non-active use it's contentState.path from historyState
-    const historyPath = historyState?.contentState.find((cs) => cs.viewId === viewId)?.path
+    const currentHistory = historyState?.contentState.find((cs) => cs.viewId === viewId)
+    const currentPath = currentHistory?.path ?? ''
 
-    const searchParams = new URLSearchParams(isActive || !historyPath
-      ? window.location.search
-      : historyPath?.replace(window.location.pathname, ''))
+    const searchParams = new URLSearchParams(
+      isActive || !currentPath
+        ? window.location.search
+        : (() => {
+            const idx = currentPath.indexOf('?')
+            return idx !== -1 ? currentPath.substring(idx) : ''
+          })()
+    )
+
     const params: Record<string, string | string[] | undefined> = {}
 
     for (const [key, value] of searchParams.entries()) {
