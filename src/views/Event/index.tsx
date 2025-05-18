@@ -92,7 +92,9 @@ const EventViewContent = (props: ViewProps & { documentId: string }): JSX.Elemen
     // eslint-disable-next-line
   }, [provider])
 
-  const handleSubmit = (): void => {
+  const handleSubmit = ({ documentStatus }: {
+    documentStatus: 'usable' | 'done' | undefined
+  }): void => {
     if (props?.onDialogClose) {
       props.onDialogClose()
     }
@@ -101,6 +103,7 @@ const EventViewContent = (props: ViewProps & { documentId: string }): JSX.Elemen
       provider.sendStateless(
         createStateless(StatelessType.IN_PROGRESS, {
           state: false,
+          status: documentStatus,
           id: props.documentId,
           context: {
             agent: 'server',
@@ -163,11 +166,22 @@ const EventViewContent = (props: ViewProps & { documentId: string }): JSX.Elemen
           </Form.Table>
 
           <Form.Footer>
-            <Form.Submit onSubmit={handleSubmit}>
-
-              <div className='flex justify-end px-6 py-4'>
+            <Form.Submit
+              onSubmit={() => handleSubmit({ documentStatus: 'usable' })}
+              onSecondarySubmit={() => handleSubmit({ documentStatus: 'done' })}
+              onTertiarySubmit={() => handleSubmit({ documentStatus: undefined })}
+            >
+              <div className='flex justify-between px-6 py-4'>
+                <div className='flex gap-2'>
+                  <Button type='button' variant='secondary' role='tertiary'>
+                    Spara
+                  </Button>
+                  <Button type='button' variant='secondary' role='secondary'>
+                    Intern
+                  </Button>
+                </div>
                 <Button type='submit'>
-                  Skapa händelse
+                  Publicera
                 </Button>
               </div>
             </Form.Submit>

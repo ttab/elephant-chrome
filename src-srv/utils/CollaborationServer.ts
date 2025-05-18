@@ -207,6 +207,9 @@ export class CollaborationServer {
     }
   }
 
+  /* Handles the removal of `__inProgress` flag and stores the document in the repository
+  * Subsequently adds the transaction to the userTracker document
+  * */
   async #statelessHandler(payload: onStatelessPayload): Promise<void> {
     const msg = parseStateless(payload.payload)
 
