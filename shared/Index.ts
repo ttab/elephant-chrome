@@ -93,6 +93,7 @@ export class Index {
               }
             }),
             source,
+            shared: true,
             searchAfter: [],
             loadDocument: loadDocument || options?.asAssignments,
             subscribe: currentPage === 1 ? options?.subscribe : false
