@@ -27,7 +27,7 @@ export const createFetcher = (url: URL, session: Session | null) =>
     const client = apiClient(session.accessToken, url)
     return await client.content.search('image', {
       sort: 'default:desc',
-      agr: [51988, 72360],
+      agr: [51988],
       q: queryString,
       s: SIZE,
       fr: (index) * SIZE
