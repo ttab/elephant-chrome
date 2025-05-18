@@ -35,6 +35,8 @@ export const UserMessagesReceiver = ({ children }: React.PropsWithChildren) => {
     }
 
     window.addEventListener('beforeunload', handleBeforeUnload)
+    // Safari specifc: https://bugs.webkit.org/show_bug.cgi?id=219102
+    window.addEventListener('unload', handleBeforeUnload)
 
     void startPolling().catch((ex) => {
       if (ex instanceof AbortError) {
@@ -47,6 +49,7 @@ export const UserMessagesReceiver = ({ children }: React.PropsWithChildren) => {
       isActive = false
       abortController.abort()
       window.removeEventListener('beforeunload', handleBeforeUnload)
+      window.removeEventListener('unload', handleBeforeUnload)
     }
   }, [data?.accessToken, user])
 

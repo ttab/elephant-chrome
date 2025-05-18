@@ -166,6 +166,8 @@ export const useDocuments = <T extends HitV1, F>({ documentType, query, size, pa
     }
 
     window.addEventListener('beforeunload', handleBeforeUnload)
+    // Safari specifc: https://bugs.webkit.org/show_bug.cgi?id=219102
+    window.addEventListener('unload', handleBeforeUnload)
 
     void startPolling(index, session, abortController)
       .catch((ex) => {
@@ -177,6 +179,7 @@ export const useDocuments = <T extends HitV1, F>({ documentType, query, size, pa
       abortController.abort()
       isPolling.current = false
       window.removeEventListener('beforeunload', handleBeforeUnload)
+      window.removeEventListener('unload', handleBeforeUnload)
     }
     // Only restart polling if these change
   }, [index, options?.subscribe, session, subscriptions])
