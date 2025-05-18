@@ -1,6 +1,7 @@
 import type { ButtonHTMLAttributes } from 'react'
 import React from 'react'
 import { type FormProps } from './Root'
+import { toast } from 'sonner'
 
 
 export const Submit = ({
@@ -10,6 +11,7 @@ export const Submit = ({
   setValidateForm,
   onSubmit,
   onSecondarySubmit,
+  onTertiarySubmit,
   onDocumentCreated,
   onReset
 }: FormProps & {
@@ -17,6 +19,7 @@ export const Submit = ({
   onDialogClose?: (id: string, title: string) => void
   onSubmit?: () => void
   onSecondarySubmit?: () => void
+  onTertiarySubmit?: () => void
   onDocumentCreated?: () => void
   onReset?: () => void
 }): JSX.Element | null => {
@@ -32,7 +35,8 @@ export const Submit = ({
 
   const handleClick = (
     event: React.MouseEvent<HTMLButtonElement> | React.KeyboardEvent<HTMLButtonElement>,
-    type: ButtonHTMLAttributes<HTMLButtonElement>['type']
+    type: ButtonHTMLAttributes<HTMLButtonElement>['type'],
+    role: 'primary' | 'secondary' | 'tertiary'
   ): void => {
     event.preventDefault()
     event.stopPropagation()
@@ -51,7 +55,7 @@ export const Submit = ({
           break
 
         case 'button':
-          if (onSecondarySubmit) {
+          if (onSecondarySubmit && role === 'secondary') {
             handleValidate(() => {
               onSecondarySubmit()
               if (onDocumentCreated) {
@@ -59,7 +63,17 @@ export const Submit = ({
               }
             })
           }
+
+          if (onTertiarySubmit && role === 'tertiary') {
+            handleValidate(() => {
+              onTertiarySubmit()
+              if (onDocumentCreated) {
+                onDocumentCreated()
+              }
+            })
+          }
           break
+
 
         case 'reset':
           if (onReset) {
@@ -80,39 +94,45 @@ export const Submit = ({
           onKeyDown?: (event: React.KeyboardEvent<HTMLButtonElement>) => void
         } = {}
 
-      const childProps = child.props as { type: string, children: React.ReactElement }
+      const childProps = child.props as { type: string, children: React.ReactElement, role: 'primary' | 'secondary' | 'tertiary' }
+
 
       if (child.props && 'type' in child.props) {
+        if (childProps.type === 'button' && !childProps.role) {
+          console.error('Button without role, please add a role to the button')
+          toast.error('Kunde inte skicka data')
+        }
+
         switch (childProps.type) {
           case 'submit':
             props.onClick = (event: React.MouseEvent<HTMLButtonElement>) =>
-              handleClick(event, 'submit')
+              handleClick(event, 'submit', childProps.role)
 
             props.onKeyDown = (event: React.KeyboardEvent<HTMLButtonElement>) => {
               if (event.key === 'Enter') {
-                handleClick(event, 'submit')
+                handleClick(event, 'submit', childProps.role)
               }
             }
             break
 
           case 'reset':
             props.onClick = (event: React.MouseEvent<HTMLButtonElement>) =>
-              handleClick(event, 'reset')
+              handleClick(event, 'reset', childProps.role)
 
             props.onKeyDown = (event: React.KeyboardEvent<HTMLButtonElement>) => {
               if (event.key === 'Enter') {
-                handleClick(event, 'reset')
+                handleClick(event, 'reset', childProps.role)
               }
             }
             break
 
           case 'button':
             props.onClick = (event: React.MouseEvent<HTMLButtonElement>) =>
-              handleClick(event, 'button')
+              handleClick(event, 'button', childProps.role)
 
             props.onKeyDown = (event: React.KeyboardEvent<HTMLButtonElement>) => {
               if (event.key === 'Enter') {
-                handleClick(event, 'button')
+                handleClick(event, 'button', childProps.role)
               }
             }
             break
