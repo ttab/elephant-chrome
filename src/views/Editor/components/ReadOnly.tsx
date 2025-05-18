@@ -72,7 +72,7 @@ export const ReadOnly = ({ documentId, version }: { documentId: string, version:
   const category = data?.links?.['core/category']?.[0]?.title
   const story = data?.links?.['core/story']?.[0]?.title
   const author = data?.links?.['core/author']?.[0]?.title
-  const contentSource = data?.links?.['core/content-source']?.[0]?.title
+  const contentSource = data?.links?.['core/content-source']
 
   const editorialInfoTypeId = data?.links?.['core/editorial-info-type']?.[0]?.uuid
   const editorialInfoTypeTitle = editorialInfoTypes.find((type) => type.id === editorialInfoTypeId)?.title
@@ -94,7 +94,7 @@ export const ReadOnly = ({ documentId, version }: { documentId: string, version:
         <Version documentId={documentId} textOnly={false} />
       </InfoBlock>
       <InfoBlock text='Extra information' labelId=''>
-        <ValueBlock label='Källa' value={contentSource} />
+        <ValueBlock label='Källa' value={(contentSource || []).map((cs) => cs.title).join('-')} />
         <ValueBlock label='Redaktionell info, typ' value={editorialInfoTypeTitle} />
       </InfoBlock>
     </div>
