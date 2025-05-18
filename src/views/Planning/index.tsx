@@ -106,7 +106,9 @@ const PlanningViewContent = (props: ViewProps & { documentId: string, setNewItem
   }, [provider])
 
 
-  const handleSubmit = (): void => {
+  const handleSubmit = ({ documentStatus }: {
+    documentStatus: 'usable' | 'done' | undefined
+  }): void => {
     if (props.onDialogClose) {
       props.onDialogClose(props.documentId, 'title')
     }
@@ -115,6 +117,7 @@ const PlanningViewContent = (props: ViewProps & { documentId: string, setNewItem
       provider.sendStateless(
         createStateless(StatelessType.IN_PROGRESS, {
           state: false,
+          status: documentStatus,
           id: props.documentId,
           context: {
             agent: 'server',
@@ -175,12 +178,22 @@ const PlanningViewContent = (props: ViewProps & { documentId: string, setNewItem
           </Form.Table>
 
           <Form.Footer>
-            <Form.Submit documentId={props.documentId} onSubmit={handleSubmit} onDocumentCreated={props.onDocumentCreated}>
-              <div className='flex justify-end'>
-                <Button
-                  type='submit'
-                >
-                  Skapa planering
+            <Form.Submit
+              onSubmit={() => handleSubmit({ documentStatus: 'usable' })}
+              onSecondarySubmit={() => handleSubmit({ documentStatus: 'done' })}
+              onTertiarySubmit={() => handleSubmit({ documentStatus: undefined })}
+            >
+              <div className='flex justify-between px-6 py-4'>
+                <div className='flex gap-2'>
+                  <Button type='button' variant='secondary' role='tertiary'>
+                    Utkast
+                  </Button>
+                  <Button type='button' variant='secondary' role='secondary'>
+                    Intern
+                  </Button>
+                </div>
+                <Button type='submit'>
+                  Publicera
                 </Button>
               </div>
             </Form.Submit>
