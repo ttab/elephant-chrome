@@ -165,7 +165,7 @@ const EventViewContent = (props: ViewProps & { documentId: string }): JSX.Elemen
           <Form.Footer>
             <Form.Submit onSubmit={handleSubmit}>
 
-              <div className='flex justify-end px-6 py-4'>
+              <div className='flex justify-end'>
                 <Button type='submit'>
                   Skapa händelse
                 </Button>
