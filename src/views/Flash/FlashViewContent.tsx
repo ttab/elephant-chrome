@@ -215,10 +215,10 @@ export const FlashViewContent = (props: ViewProps): JSX.Element => {
                 >
                   <div className='flex justify-between'>
                     <div className='flex gap-2'>
-                      <Button variant='secondary' type='button' role='secondary'>Spara flash</Button>
-                      <Button variant='secondary' type='button' role='tertiary'>Godkänn flash</Button>
+                      <Button variant='secondary' type='button' role='secondary'>Utkast</Button>
+                      <Button variant='secondary' type='button' role='tertiary'>Godkänn</Button>
                     </div>
-                    <Button type='submit' role='primary'>Skicka flash</Button>
+                    <Button type='submit' role='primary'>Publicera</Button>
                   </div>
                 </Form.Submit>
               </Form.Footer>
