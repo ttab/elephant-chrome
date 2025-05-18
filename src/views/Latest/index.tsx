@@ -2,7 +2,7 @@ import { useDocuments } from '@/hooks/index/useDocuments'
 import type { LocaleData } from '@/types/index'
 import { type ViewMetadata } from '@/types/index'
 import { Badge } from '@ttab/elephant-ui'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { format } from 'date-fns'
 import { useRegistry } from '@/hooks/useRegistry'
 import { handleLink } from '@/components/Link/lib/handleLink'
@@ -10,7 +10,7 @@ import { useHistory, useNavigation, useView } from '@/hooks/index'
 import { cn } from '@ttab/elephant-ui/utils'
 import { ActionMenu } from '@/components/ActionMenu'
 import type { HitV1 } from '@ttab/elephant-api/index'
-import { QueryV1, SortingV1 } from '@ttab/elephant-api/index'
+import { QueryV1, RangeQueryV1, SortingV1 } from '@ttab/elephant-api/index'
 import { useSession } from 'next-auth/react'
 import { toast } from 'sonner'
 import { useDeliverablePlanningId } from '@/hooks/index/useDeliverablePlanningId'
@@ -36,10 +36,11 @@ export const Latest = ({ setOpen }: { setOpen?: (open: boolean) => void }) => {
   const { data: session } = useSession()
   const [versionedData, setVersionedData] = useState<HitV1[]>([])
 
-  const { data } = useDocuments({
+  const { data: dataArticles } = useDocuments({
     documentType: 'core/article',
     fields: [
       'document.title',
+      'document.uri',
       'heads.usable.created',
       'heads.usable.version',
       'document.meta.tt_slugline.value',
@@ -47,14 +48,78 @@ export const Latest = ({ setOpen }: { setOpen?: (open: boolean) => void }) => {
     ],
     query: QueryV1.create({
       conditions: {
-        oneofKind: 'exists',
-        exists: 'heads.usable.created'
+        oneofKind: 'range',
+        range: RangeQueryV1.create({
+          field: 'heads.usable.created',
+          gte: 'now-24h'
+        })
       }
     }),
     sort: [
       SortingV1.create({ field: 'heads.usable.created', desc: true })
     ]
   })
+
+  const { data: dataFlashes } = useDocuments({
+    documentType: 'core/flash',
+    fields: [
+      'document.title',
+      'document.uri',
+      'heads.usable.created',
+      'heads.usable.version',
+      'document.rel.section.title'
+    ],
+    query: QueryV1.create({
+      conditions: {
+        oneofKind: 'range',
+        range: RangeQueryV1.create({
+          field: 'heads.usable.created',
+          gte: 'now-24h'
+        })
+      }
+    }),
+    sort: [
+      SortingV1.create({ field: 'heads.usable.created', desc: true })
+    ]
+  })
+
+  const { data: dataEditorialInfo } = useDocuments({
+    documentType: 'core/editorial-info',
+    fields: [
+      'document.title',
+      'document.uri',
+      'heads.usable.created',
+      'heads.usable.version',
+      'document.meta.tt_slugline.value',
+      'document.rel.section.title'
+    ],
+    query: QueryV1.create({
+      conditions: {
+        oneofKind: 'range',
+        range: RangeQueryV1.create({
+          field: 'heads.usable.created',
+          gte: 'now-24h'
+        })
+      }
+    }),
+    sort: [
+      SortingV1.create({ field: 'heads.usable.created', desc: true })
+    ]
+  })
+
+  const data = useMemo(
+    () =>
+      [
+        ...(dataArticles ?? []),
+        ...(dataFlashes ?? []),
+        ...(dataEditorialInfo ?? [])
+      ].sort((a, b) => {
+        const aCreated = a.fields['heads.usable.created']?.values?.[0]
+        const bCreated = b.fields['heads.usable.created']?.values?.[0]
+        return (bCreated ?? '').localeCompare(aCreated ?? '')
+      }),
+    [dataArticles, dataFlashes, dataEditorialInfo]
+  )
 
   // Append search result with the title of the usable version
   useEffect(() => {
@@ -142,6 +207,7 @@ const Content = ({ documents, locale }: {
         const publish = item.fields['heads.usable.created']?.values[0]
         const slugline = item.fields['document.meta.tt_slugline.value']?.values[0]
         const section = item.fields['document.rel.section.title']?.values[0]
+        const uri = item.fields['document.uri']?.values[0]
 
         return (
           <div
@@ -179,7 +245,7 @@ const Content = ({ documents, locale }: {
                     className='bg-background rounded-md text-muted-foreground font-normal text-sm whitespace-nowrap'
                     data-row-action
                   >
-                    {slugline}
+                    {uri.startsWith('core://flash') ? 'TT-FLASH' : slugline}
                   </Badge>
 
                   <div>
