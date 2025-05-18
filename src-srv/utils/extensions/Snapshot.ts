@@ -6,6 +6,7 @@ import {
 import { type DebouncedFunc, debounce } from 'lodash-es'
 import { assertContext } from '../../lib/assertContext.js'
 import { isValidUUID } from '../isValidUUID.js'
+import logger from '../../lib/logger.js'
 
 interface DefaultConfiguration {
   debounce: number
@@ -65,7 +66,7 @@ export class Snapshot implements Extension {
         await debouncedFn.flush()
       }
     } catch (ex) {
-      throw new Error(`Error onDisconnect snapshot: ${ex instanceof Error ? ex.message : String(ex)}`)
+      logger.error(ex, 'Error onSnapshot onDisconnect')
     }
   }
 }
