@@ -186,7 +186,7 @@ const PlanningViewContent = (props: ViewProps & { documentId: string, setNewItem
               <div className='flex justify-between px-6 py-4'>
                 <div className='flex gap-2'>
                   <Button type='button' variant='secondary' role='tertiary'>
-                    Spara
+                    Utkast
                   </Button>
                   <Button type='button' variant='secondary' role='secondary'>
                     Intern
