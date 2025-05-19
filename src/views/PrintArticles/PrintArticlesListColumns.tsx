@@ -70,7 +70,7 @@ export function printArticlesListColumns(): Array<ColumnDef<PrintArticle>> {
       meta: {
         name: 'Artikel',
         columnIcon: Pen,
-        className: 'flex-1 w-[200px]'
+        className: 'flex-1 w-8'
       },
       accessorFn: (data) => (data.fields['document.meta.tt_print_article.title'].values[0]),
       cell: ({ row }) => {

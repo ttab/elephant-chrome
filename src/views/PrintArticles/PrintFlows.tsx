@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { useDocuments } from '@/hooks/index/useDocuments'
 import { useRegistry } from '@/hooks/useRegistry'
 import type { PrintFlow, PrintFlowFields } from '@/hooks/index/useDocuments/schemas/printFlow'
@@ -8,15 +8,13 @@ import { toast } from 'sonner'
 import { ViewHeader } from '@/components/View/ViewHeader'
 import { View } from '@/components/View'
 import type { ViewProps } from '@/types/index'
-import { Library, Tag, Calendar } from '@ttab/elephant-ui/icons'
+import { Library, Tag } from '@ttab/elephant-ui/icons'
 import { Form } from '@/components/Form'
-import { DatePicker } from '@/components/Datepicker'
 import { LoadingText } from '@/components/LoadingText'
 import { parseDate } from '@/lib/datetime'
 import { useSession } from 'next-auth/react'
 import { useQuery } from '@/hooks/useQuery'
 import { format } from 'date-fns'
-import { useLink } from '@/hooks/useLink'
 
 /**
  * PrintFlows component.
@@ -47,7 +45,6 @@ export const PrintFlows = ({ asDialog, onDialogClose, className, action }: ViewP
   const [articleName, setArticleName] = useState<string>()
   const [filter] = useQuery(['from'])
   const [printFlow, setPrintFlow] = useState<string>()
-  const [, setDateString] = useState<string>()
   const { baboon } = useRegistry()
   const { data: session } = useSession()
   const date = !filter?.from ? fallbackDate : parseDate(filter?.from?.[0] || '')
@@ -55,16 +52,12 @@ export const PrintFlows = ({ asDialog, onDialogClose, className, action }: ViewP
     value: hit.id,
     label: hit.fields['document.title'].values[0]
   })) || []
-
-  const allArticleNames = data
-    ?.find((hit) => hit.id === printFlow)
-    ?.fields['document.content.tt_print_content.name'].values || []
+  const allArticleNames = useMemo(() => data?.flatMap((hit) => hit.fields['document.content.tt_print_content.name'].values) || [], [allPrintFlows])
 
 
   const selectedPrintFlow = allPrintFlows?.find((flow) => flow.value === printFlow)
 
   const isSubmitDisabled = !printFlow || !date
-  const changeDate = useLink('PrintArticles')
 
   const handleCreateArticle = async () => {
     if (!session?.accessToken) {
@@ -175,7 +168,7 @@ export const PrintFlows = ({ asDialog, onDialogClose, className, action }: ViewP
                         <SelectTrigger>
                           {articleName || 'Välj namn'}
                         </SelectTrigger>
-                        <SelectContent>
+                        <SelectContent className='max-h-[300px] overflow-y-auto'>
                           {allArticleNames.map((type) => (
                             <SelectItem value={type} key={type}>
                               {type}
@@ -185,14 +178,6 @@ export const PrintFlows = ({ asDialog, onDialogClose, className, action }: ViewP
                       </Select>
                     </Form.Group>
                   )}
-                  <Form.Group icon={Calendar}>
-                    <DatePicker
-                      date={(date || new Date())}
-                      setDate={(newDate) => setDateString(newDate)}
-                      changeDate={changeDate}
-                      disabled={!printFlow}
-                    />
-                  </Form.Group>
                 </Form.Content>
                 <p className='text-sm text-gray-500'>
                   {action === 'createArticle'

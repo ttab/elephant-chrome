@@ -4,7 +4,6 @@ import { Plus } from '@ttab/elephant-ui/icons'
 import { DateChanger } from '@/components/Header/Datechanger'
 import { useModal } from '@/components/Modal/useModal'
 import { PrintFlows } from './PrintFlows'
-
 /**
  * PrintArticlesHeader component.
  *

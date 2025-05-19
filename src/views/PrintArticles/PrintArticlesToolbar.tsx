@@ -1,7 +1,10 @@
 import { Filter, type FilterProps } from '@/components/Filter'
-import { SelectedFilters } from '@/components/Filter/SelectedFilters'
+import { SelectedFilters } from './SelectedFilters'
 import { Commands } from './Commands'
 import { useState } from 'react'
+import { DotDropdownMenu } from '@/components/ui/DotMenu'
+import { Save } from '@ttab/elephant-ui/icons'
+import { Button } from '@ttab/elephant-ui'
 
 /**
  * Toolbar component.
@@ -37,6 +40,28 @@ export const Toolbar = (): JSX.Element => {
           <Commands {...props} />
         </Filter>
         <SelectedFilters />
+      </div>
+      <div className='flex justify-end'>
+        <DotDropdownMenu
+          trigger='vertical'
+          items={[
+            {
+              label: 'Spara personligt filter',
+              icon: Save,
+              item: (
+                <Button
+                  size='sm'
+                  variant='ghost'
+                  onClick={() => {
+                    window.alert('Spara personligt filter')
+                  }}
+                >
+                  Spara personligt filter
+                </Button>
+              )
+            }
+          ]}
+        />
       </div>
     </div>
   )

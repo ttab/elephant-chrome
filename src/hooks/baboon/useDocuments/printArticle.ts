@@ -1,6 +1,6 @@
 import type { QueryParams } from '@/hooks/useQuery'
 import { QueryV1, BoolQueryV1, TermsQueryV1 } from '@ttab/elephant-api/index'
-
+import { format } from 'date-fns'
 /**
  * Constructs a query object based on the provided filter parameters.
  *
@@ -38,9 +38,8 @@ export function constructQuery(filter: QueryParams | undefined): QueryV1 | undef
       }
     })
   }
-  if (filter.from) {
-    addCondition('document.meta.tt_print_article.data.date', filter.from[0])
-  }
+
+  addCondition('document.meta.tt_print_article.data.date', filter.from?.[0] || format(new Date(), 'yyyy-MM-dd'))
 
   if (filter.printFlow) {
     addCondition('document.rel.flow.uuid', filter.printFlow)

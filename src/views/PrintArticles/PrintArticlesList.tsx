@@ -1,6 +1,6 @@
 import { useCallback } from 'react'
 import { useQuery } from '@/hooks'
-import { Toolbar } from './Toolbar'
+import { Toolbar } from './PrintArticlesToolbar'
 import { Table } from '@/components/Table'
 import type { PrintArticle } from '@/hooks/baboon/lib/printArticles'
 import type { ColumnDef } from '@tanstack/react-table'
@@ -30,9 +30,11 @@ export const PrintArticleList = ({ columns }: {
 }): JSX.Element => {
   const [filter] = useQuery(['from', 'printFlow', 'workflowState'])
   const [{ page }] = useQuery()
+
   useDocuments<PrintArticle, PrintArticleFields>({
     documentType: 'tt/print-article',
     query: constructQuery(filter),
+    size: 1000,
     page: typeof page === 'string'
       ? parseInt(page)
       : undefined,
