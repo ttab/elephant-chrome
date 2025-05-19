@@ -257,6 +257,9 @@ export class CollaborationServer {
         msg.message.status
       )
 
+      // Disconnect document connection
+      await connection.disconnect()
+
       // Create a tracker document that keeps track of the user history
       userTrackerConnection.transact((doc) => {
         const documents = doc.getMap('ele')
@@ -271,6 +274,9 @@ export class CollaborationServer {
       }).catch((ex) => {
         throw new Error('error', { cause: ex })
       })
+
+      // Disconnect userTracker connection
+      await userTrackerConnection.disconnect()
     }
   }
 
