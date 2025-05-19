@@ -8,7 +8,6 @@ function apiClient(token: string, host: URL): Api {
   return client
 }
 
-
 export const createFetcher = (url: URL, session: Session | null) =>
   async ([queryString, index, SIZE]: [queryString: string, index: number, SIZE: number]): Promise<{
     hits: ttninjs[]
@@ -26,5 +25,11 @@ export const createFetcher = (url: URL, session: Session | null) =>
       throw new Error('ImageSearch Error: No session for user')
     }
     const client = apiClient(session.accessToken, url)
-    return await client.content.search('image', { q: queryString, s: SIZE, fr: (index) * SIZE })
+    return await client.content.search('image', {
+      sort: 'default:desc',
+      agr: [51988],
+      q: queryString,
+      s: SIZE,
+      fr: (index) * SIZE
+    })
   }
