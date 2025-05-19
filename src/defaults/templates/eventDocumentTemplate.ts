@@ -19,7 +19,7 @@ export function eventDocumentTemplate(id: string): Document {
           end: new Date().toISOString(),
           start: new Date().toISOString(),
           registration: '',
-          dateGranularity: 'time'
+          dateGranularity: 'datetime'
         }
       }),
       Block.create({
