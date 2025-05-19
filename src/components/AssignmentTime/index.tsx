@@ -111,7 +111,7 @@ export const AssignmentTime = ({ index, onChange }: {
             full_day: 'false',
             start_date: data?.start_date,
             end: endValue,
-            start: assignmentType === 'text' ? endValue : getMidnightISOString(endDate),
+            start: assignmentType && ['text', 'flash', 'editorial-info'].includes(assignmentType) ? endValue : getMidnightISOString(endDate),
             public: data?.public,
             ...(data?.publish && { publish: data.publish })
           }
