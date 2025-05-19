@@ -5,7 +5,7 @@ import { ZapIcon } from '@ttab/elephant-ui/icons'
 import { useState, useCallback } from 'react'
 import { toast } from 'sonner'
 import { useDeliverablePlanningId } from '@/hooks/index/useDeliverablePlanningId'
-import { updateAssignmentPublishTime } from '@/lib/index/updateAssignmentPublishTime'
+import { updateAssignmentTime } from '@/lib/index/updateAssignmentPublishTime'
 
 
 export const FlashHeader = (props: ViewProps) => {
@@ -75,7 +75,7 @@ const StatusMenuHeader = (props: ViewProps) => {
       : new Date()
 
     if (props.id) {
-      await updateAssignmentPublishTime(props.id, planningId, newStatus, newPublishTime)
+      await updateAssignmentTime(props.id, planningId, newStatus, newPublishTime)
     }
 
     return true

@@ -10,7 +10,7 @@ import { toast } from 'sonner'
 import { handleLink } from '@/components/Link/lib/handleLink'
 import { useDeliverablePlanningId } from '@/hooks/index/useDeliverablePlanningId'
 import { Button } from '@ttab/elephant-ui'
-import { updateAssignmentPublishTime } from '@/lib/index/updateAssignmentPublishTime'
+import { updateAssignmentTime } from '@/lib/index/updateAssignmentPublishTime'
 
 export const EditorHeader = ({ documentId, readOnly, readOnlyVersion }: { documentId: string, readOnly?: boolean, readOnlyVersion?: bigint }): JSX.Element => {
   const { viewId } = useView()
@@ -74,17 +74,20 @@ export const EditorHeader = ({ documentId, readOnly, readOnlyVersion }: { docume
       })
     }
 
-    // We require a valid publish time if scheduling
-    if (newStatus === 'withheld' && !(data?.time instanceof Date)) {
-      toast.error('Kunde inte schemalägga artikel! Tid eller datum är felaktigt angivet.')
-      return false
+    // When we set withheld or draft we must change related dates (publish and start respecively)
+    if (['withheld', 'draft'].includes(newStatus)) {
+      // We require a valid publish time if scheduling
+      if (newStatus === 'withheld' && !(data?.time instanceof Date)) {
+        toast.error('Kunde inte schemalägga artikel! Tid eller datum är felaktigt angivet.')
+        return false
+      }
+
+      const newTime = ((data?.time instanceof Date))
+        ? data.time
+        : new Date()
+
+      await updateAssignmentTime(documentId, planningId, newStatus, newTime)
     }
-
-    const newPublishTime = ((data?.time instanceof Date))
-      ? data.time
-      : new Date()
-
-    await updateAssignmentPublishTime(documentId, planningId, newStatus, newPublishTime)
 
     return true
   }, [planningId, dispatch, documentId, history, state.viewRegistry, viewId, workflowStatus])

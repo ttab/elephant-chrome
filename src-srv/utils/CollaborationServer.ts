@@ -34,6 +34,7 @@ import { type GetDocumentResponse } from '@ttab/elephant-api/repository'
 import type { FinishedUnaryCall } from '@protobuf-ts/runtime-rpc'
 import type { Context } from '../lib/assertContext.js'
 import { assertContext } from '../lib/assertContext.js'
+import { isValidUUID } from './isValidUUID.js'
 
 interface CollaborationServerOptions {
   name: string
@@ -207,6 +208,9 @@ export class CollaborationServer {
     }
   }
 
+  /* Handles the removal of `__inProgress` flag and stores the document in the repository
+  * Subsequently adds the transaction to the userTracker document
+  * */
   async #statelessHandler(payload: onStatelessPayload): Promise<void> {
     const msg = parseStateless(payload.payload)
 
@@ -293,6 +297,12 @@ export class CollaborationServer {
       return state
     }
 
+    // If not a valid uuid, we're not going to be able to get any from the repository
+    // Most likely a userTracker document
+    if (!isValidUUID(uuid)) {
+      return null
+    }
+
     // Fetch content
     const newsDoc = await this.#repository.getDocument({
       uuid,
@@ -321,8 +331,8 @@ export class CollaborationServer {
     force?: boolean
     transacting?: boolean
   }): Promise<FinishedUnaryCall<UpdateRequest, UpdateResponse> | null> {
-    // Ignore userTracker documents
-    if (context.user.sub?.endsWith(documentName)) {
+    // Ignore userTracker documents and invalid uuids, most likely same as the first
+    if (context.user.sub?.endsWith(documentName) || !isValidUUID(documentName)) {
       return null
     }
 
@@ -378,9 +388,6 @@ export class CollaborationServer {
     )
 
     if (result?.status.code !== 'OK') {
-      // TODO: what does an error response look like? Is it parsed? A full twirp
-      // error response looks like this:
-      // https://twitchtv.github.io/twirp/docs/errors.html#metadata
       throw new Error('Save snapshot document to repository failed', { cause: result })
     }
 

@@ -1,8 +1,7 @@
-import { useDocuments } from '@/hooks/index/useDocuments'
 import type { LocaleData } from '@/types/index'
 import { type ViewMetadata } from '@/types/index'
 import { Badge } from '@ttab/elephant-ui'
-import { useEffect, useRef, useState } from 'react'
+import { useRef } from 'react'
 import { format } from 'date-fns'
 import { useRegistry } from '@/hooks/useRegistry'
 import { handleLink } from '@/components/Link/lib/handleLink'
@@ -10,10 +9,8 @@ import { useHistory, useNavigation, useView } from '@/hooks/index'
 import { cn } from '@ttab/elephant-ui/utils'
 import { ActionMenu } from '@/components/ActionMenu'
 import type { HitV1 } from '@ttab/elephant-api/index'
-import { QueryV1, SortingV1 } from '@ttab/elephant-api/index'
-import { useSession } from 'next-auth/react'
-import { toast } from 'sonner'
 import { useDeliverablePlanningId } from '@/hooks/index/useDeliverablePlanningId'
+import { useLatest } from './hooks/useLatest'
 
 const meta: ViewMetadata = {
   name: 'Latest',
@@ -32,80 +29,15 @@ const meta: ViewMetadata = {
 }
 
 export const Latest = ({ setOpen }: { setOpen?: (open: boolean) => void }) => {
-  const { repository } = useRegistry()
-  const { data: session } = useSession()
-  const [versionedData, setVersionedData] = useState<HitV1[]>([])
-
-  const { data } = useDocuments({
-    documentType: 'core/article',
-    fields: [
-      'document.title',
-      'heads.usable.created',
-      'heads.usable.version',
-      'document.meta.tt_slugline.value',
-      'document.rel.section.title'
-    ],
-    query: QueryV1.create({
-      conditions: {
-        oneofKind: 'exists',
-        exists: 'heads.usable.created'
-      }
-    }),
-    sort: [
-      SortingV1.create({ field: 'heads.usable.created', desc: true })
-    ]
-  })
-
-  // Append search result with the title of the usable version
-  useEffect(() => {
-    if (!data || !session?.accessToken) return
-
-    const fetchDocuments = async () => {
-      try {
-        const repositoryDocuments = await repository?.getDocuments({
-          documents: data.map(({ id, fields }: HitV1) => ({
-            uuid: id,
-            version: fields['heads.usable.version']?.values[0]
-              ? BigInt(fields['heads.usable.version'].values[0])
-              : undefined
-          })),
-          accessToken: session.accessToken
-        })
-
-        setVersionedData(
-          data.map((item) => {
-            const repoDoc = repositoryDocuments?.items.find(
-              (doc) => doc.document?.uuid === item.id
-            )
-
-            return {
-              ...item,
-              fields: {
-                ...item.fields,
-                'document.title': {
-                  values: [repoDoc?.document?.title || item.fields['document.title']?.values[0]]
-                }
-              }
-            }
-          })
-        )
-      } catch (error) {
-        console.error(error)
-        toast.error('Kunde inte hämta dokument')
-      }
-    }
-
-    void fetchDocuments()
-  }, [data, repository, session?.accessToken])
-
   const { locale } = useRegistry()
+  const data = useLatest()
 
-  if (!versionedData?.length) {
+  if (!data?.length) {
     return <div className='min-h-screen text-center py-2'>Laddar...</div>
   }
 
   return (
-    <Content documents={versionedData} locale={locale} setOpen={setOpen} />
+    <Content documents={data} locale={locale} setOpen={setOpen} />
   )
 }
 
@@ -142,6 +74,7 @@ const Content = ({ documents, locale }: {
         const publish = item.fields['heads.usable.created']?.values[0]
         const slugline = item.fields['document.meta.tt_slugline.value']?.values[0]
         const section = item.fields['document.rel.section.title']?.values[0]
+        const uri = item.fields['document.uri']?.values[0]
 
         return (
           <div
@@ -179,7 +112,7 @@ const Content = ({ documents, locale }: {
                     className='bg-background rounded-md text-muted-foreground font-normal text-sm whitespace-nowrap'
                     data-row-action
                   >
-                    {slugline}
+                    {uri.startsWith('core://flash') ? 'TT-FLASH' : slugline}
                   </Badge>
 
                   <div>
@@ -196,7 +129,6 @@ const Content = ({ documents, locale }: {
     </div>
   )
 }
-
 
 const Menu = ({ articleId }: { articleId: string }): JSX.Element => {
   const planningId = useDeliverablePlanningId(articleId)

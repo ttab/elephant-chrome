@@ -70,6 +70,7 @@ export const useDocuments = <T extends HitV1, F>({ documentType, query, size, pa
     ? `${documentType}/${JSON.stringify(query)}${page ? `/${page}` : ''}`
     : documentType, [query, page, documentType])
 
+  // Memoize fetcher
   const fetcher = useMemo(() => (): Promise<T[]> =>
     fetch<T, F>({
       index,
@@ -166,7 +167,7 @@ export const useDocuments = <T extends HitV1, F>({ documentType, query, size, pa
 
     void startPolling(index, session, abortController)
       .catch((ex) => {
-        console.error('Unable to start polling', ex)
+        console.error('[Polling] Unable to start polling', ex)
       })
 
     return () => {

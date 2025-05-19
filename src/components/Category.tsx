@@ -2,10 +2,10 @@ import { Awareness } from '@/components'
 import { ComboBox } from '@ttab/elephant-ui'
 import { useCategories, useYValue } from '@/hooks'
 import { Block } from '@ttab/elephant-api/newsdoc'
-
 import { useRef } from 'react'
+import type { ViewProps } from '../types'
 
-export const Category = ({ asDialog }: { asDialog?: boolean }): JSX.Element => {
+export const Category = ({ asDialog }: ViewProps): JSX.Element => {
   const allCategories = useCategories().map((_) => {
     return {
       value: _.id,
