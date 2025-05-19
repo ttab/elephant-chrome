@@ -26,6 +26,10 @@ const testValid = (time: string): boolean => {
   return (/^([0-1]?[0-9]|2[0-4]):([0-5][0-9])(:[0-5][0-9])?$/.test(time))
 }
 
+/**
+ *
+ * Used for displaying and changing times in picture and video assignment types
+ */
 export const ExecutionTimeMenu = ({ handleOnSelect, index, startDate }: ExecutionTimeItemsProps): JSX.Element => {
   const [open, setOpen] = useState(false)
   const [data] = useYValue<AssignmentData>(`meta.core/assignment[${index}].data`)
