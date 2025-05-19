@@ -135,6 +135,11 @@ function connectRouteHandler(app: Application, routePath: string, func: RouteHan
       } else if (ApiResponse.isStatus(response)) {
         const { statusCode, statusMessage } = response
 
+        // Accepted - used with proxy streaming
+        if (statusCode === 202) {
+          return
+        }
+
         if (statusCode === 302) {
           res.redirect(statusMessage)
           return
