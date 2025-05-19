@@ -46,7 +46,7 @@ export const PlanningHeader = ({ documentId, asDialog, onDialogClose, isChanged 
         </div>
       </ViewHeader.Content>
 
-      <ViewHeader.Action onDialogClose={onDialogClose}>
+      <ViewHeader.Action onDialogClose={onDialogClose} asDialog={asDialog}>
         {!asDialog && <MetaSheet container={containerRef.current} documentId={documentId} />}
       </ViewHeader.Action>
     </ViewHeader.Root>

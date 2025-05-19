@@ -7,8 +7,9 @@ import type { NavigationState } from '@/types'
 import { snapshot } from '@/lib/snapshot'
 
 
-export const Action = ({ onDialogClose = undefined, children }: PropsWithChildren & {
+export const Action = ({ onDialogClose = undefined, children, asDialog }: PropsWithChildren & {
   onDialogClose?: () => void
+  asDialog?: boolean
 }): JSX.Element => {
   const { viewId, isFocused } = useView()
   const { state } = useNavigation()
@@ -33,7 +34,7 @@ export const Action = ({ onDialogClose = undefined, children }: PropsWithChildre
       )}
 
       {((onDialogClose || state.content.length > 1) && !isFocused) && (
-        <ViewDialogClose onClick={closer} />
+        <ViewDialogClose onClick={closer} asDialog={asDialog} />
       )}
     </div>
   )

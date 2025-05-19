@@ -6,9 +6,10 @@ import type { LucideIcon } from '@ttab/elephant-ui/icons'
 import { XIcon } from '@ttab/elephant-ui/icons'
 import { useState } from 'react'
 
-export const ViewDialogClose = ({ onClick, Icon = XIcon }: {
+export const ViewDialogClose = ({ onClick, Icon = XIcon, asDialog }: {
   Icon?: LucideIcon
   onClick: () => void
+  asDialog?: boolean
 }): JSX.Element => {
   const [showVerifyDialog, setShowVerifyDialog] = useState(false)
   const [isChanged] = useYValue<boolean>('root.changed')
@@ -17,10 +18,12 @@ export const ViewDialogClose = ({ onClick, Icon = XIcon }: {
     keys: ['Escape'],
     onNavigation: (event) => {
       event.stopPropagation()
-      if (isChanged) {
-        setShowVerifyDialog(true)
-      } else {
-        onClick()
+      if (asDialog) {
+        if (isChanged) {
+          setShowVerifyDialog(true)
+        } else {
+          onClick()
+        }
       }
     }
   })
