@@ -1,5 +1,6 @@
 type Slots = Record<string, { slots: number[], label: string }>
 
+// FIXME: These constants should be merged with ./assignmentTimeConstants.tsx
 export const timesSlots: Slots = {
   morning: {
     slots: [0, 1, 2, 3, 4, 5, 6],

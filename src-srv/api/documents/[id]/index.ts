@@ -10,6 +10,7 @@ import type { Context } from '../../../lib/assertContext.js'
 import { assertContext } from '../../../lib/assertContext.js'
 import { getValueByYPath, setValueByYPath } from '../../../../shared/yUtils.js'
 import type { EleBlock } from '@/shared/types/index.js'
+import { createSnapshot } from '../../../utils/createSnapshot.js'
 
 type Response = RouteContentResponse | RouteStatusResponse
 
@@ -83,7 +84,8 @@ export const GET: RouteHandler = async (req: Request, { cache, repository, res }
 /**
  * Patch method, make partial updates to a document.
  * Supported edits:
- * - Set publish time.
+ * - Set publish time for withheld.
+ * - Set start time for draft
  */
 export const PATCH: RouteHandler = async (req: Request, { collaborationServer, res }) => {
   const locals = res.locals as Record<string, unknown> | undefined
@@ -102,7 +104,7 @@ export const PATCH: RouteHandler = async (req: Request, { collaborationServer, r
       deliverableId: string
       type: string
       status: string
-      publishTime: string
+      time: string
     }
   }
 
@@ -111,10 +113,10 @@ export const PATCH: RouteHandler = async (req: Request, { collaborationServer, r
     deliverableId,
     type: deliverableType,
     status,
-    publishTime
+    time
   } = assignment || {}
 
-  if (!id || !assignment || !deliverableId || !deliverableType || !status || !publishTime) {
+  if (!id || !assignment || !deliverableId || !deliverableType || !status || !time) {
     return {
       statusCode: 400,
       statusMessage: 'Invalid input to document PATCH method'
@@ -142,31 +144,53 @@ export const PATCH: RouteHandler = async (req: Request, { collaborationServer, r
 
   const connection = await collaborationServer.server.openDirectConnection(id, context)
 
-  await connection.transact((doc) => {
-    const yRoot = doc.getMap('ele')
+  // Make the change to the document in one transaction
+  await connection.transact((document) => {
+    const yRoot = document.getMap('ele')
     const { index } = getAssignment(yRoot, deliverableId, deliverableType) || {}
 
     const base = `meta.core/assignment[${index}]`
     const [assignmentType] = getValueByYPath<string | undefined>(yRoot, `${base}.meta.core/assignment-type[0].value`)
 
     if (status === 'withheld') {
-      // When scheduling we always set it to incoming time
-      setValueByYPath(yRoot, `${base}.data.publish`, publishTime)
+      // When scheduling we always set the publishTime to the given time
+      setValueByYPath(yRoot, `${base}.data.publish`, time)
     } else if (assignmentType && ['text', 'flash', 'editorial-info'].includes(assignmentType)) {
-      // If assignment type is text, flash or editorial info and the current publish time is less
-      // than the new publish time we need to bump the publish time.
-      const [currPublishTime] = getValueByYPath<string | undefined>(yRoot, `${base}.data.publish`)
+      // If assignment type is text, flash or editorial info and the current start time is less
+      // than the given time we bump the start time.
+      const [currStartTime] = getValueByYPath<string | undefined>(yRoot, `${base}.data.start`)
 
-      if (!currPublishTime || (new Date(publishTime) > new Date(currPublishTime))) {
-        setValueByYPath(yRoot, `meta.core/assignment[${index}].data.publish`, publishTime)
+      if (!currStartTime || (new Date(time) > new Date(currStartTime))) {
+        setValueByYPath(yRoot, `${base}.data.start`, time)
       }
     }
 
     response = {
       statusCode: 200,
-      payload: {
-      }
+      payload: {}
     }
+  })
+
+  // Then we snapshot the document to the repository
+  await new Promise<Response>((resolve) => {
+    void connection.transact((document) => {
+      createSnapshot(collaborationServer, {
+        documentName: id,
+        document,
+        context,
+        force: true
+      })
+        .then(resolve)
+        .catch((ex: Error) => {
+          const snapshotResponse = {
+            statusCode: 500,
+            statusMessage: `Error during snapshot transaction: ${ex.message || 'unknown reason'}`
+          }
+
+          logger.error(snapshotResponse.statusMessage, ex)
+          resolve(snapshotResponse)
+        })
+    })
   })
 
   await connection.disconnect()
