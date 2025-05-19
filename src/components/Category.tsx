@@ -3,9 +3,9 @@ import { ComboBox } from '@ttab/elephant-ui'
 import { useCategories, useYValue } from '@/hooks'
 import { Block } from '@ttab/elephant-api/newsdoc'
 import { useRef } from 'react'
-import type { ViewProps } from '../types'
+import type { FormProps } from './Form/Root'
 
-export const Category = ({ asDialog }: ViewProps): JSX.Element => {
+export const Category = ({ asDialog, onChange }: FormProps): JSX.Element => {
   const allCategories = useCategories().map((_) => {
     return {
       value: _.id,
@@ -36,6 +36,7 @@ export const Category = ({ asDialog }: ViewProps): JSX.Element => {
           }
         }}
         onSelect={(option) => {
+          onChange?.(true)
           if ((categories || [])?.some((c) => c.uuid === option.value)) {
             setCategories(categories?.filter((c: Block) => {
               return c.uuid !== option.value

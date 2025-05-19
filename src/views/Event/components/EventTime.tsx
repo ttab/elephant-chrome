@@ -11,6 +11,7 @@ import { useRegistry } from '@/hooks'
 import { dateToReadableDateTime, dateToReadableTime, dateToReadableDay, createDateWithTime } from '@/lib/datetime'
 import { TimeInput } from '@/components/TimeInput'
 import { TriangleAlert } from '@ttab/elephant-ui/icons'
+import type { FormProps } from '@/components/Form/Root'
 
 interface EventData {
   end: string
@@ -80,7 +81,7 @@ const dateMidnight = (date: Date): Date => {
   )
 }
 
-export const EventTimeMenu = (): JSX.Element => {
+export const EventTimeMenu = ({ onChange }: FormProps): JSX.Element => {
   const [open, setOpen] = useState(false)
   const [eventData, setEventData] = useYValue<EventData>('meta.core/event[0].data')
   const [selected, setSelected] = useState<CalendarTypes.DateRange | undefined>({ from: dateMidnight(new Date()) })
@@ -144,6 +145,8 @@ export const EventTimeMenu = (): JSX.Element => {
     }
     let startDate = eventStart
     let endDate = eventEnd
+
+    onChange?.(true)
     if (fullDay) {
       const start = new Date(eventStart)
       const startMidnight = dateMidnight(start)
