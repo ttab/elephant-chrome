@@ -10,6 +10,7 @@ import { convertToISOStringInTimeZone } from '@/lib/datetime'
 import { toast } from 'sonner'
 import { ToastAction } from '../ToastAction'
 
+export type CreateFlashDocumentStatus = 'usable' | 'done' | undefined
 export function createFlash({
   provider,
   status,
@@ -29,7 +30,7 @@ export function createFlash({
   }
   hasSelectedPlanning: boolean
   timeZone: string
-  documentStatus?: string
+  documentStatus: CreateFlashDocumentStatus
 
 }): { flash: Y.Doc, planning: Y.Doc } | undefined {
   const flashEle = provider.document.getMap('ele')
@@ -106,18 +107,39 @@ export function createFlash({
           })
         )
 
-        toast.success(`Flash ${documentStatus ? 'skickad' : 'sparad'}`, {
+        const getLabel = (documentStatus: CreateFlashDocumentStatus): string => {
+          switch (documentStatus) {
+            case 'usable': {
+              return 'Flash skickad'
+            }
+            case 'done': {
+              return 'Flash godkänd'
+            }
+            default: {
+              return 'Flash sparad'
+            }
+          }
+        }
+
+        toast.success(getLabel(documentStatus), {
           action: <ToastAction planningId={planning.id} flashId={documentId} />
         })
         return { flash: provider.document, planning: planning.document }
       } else {
-        throw new Error(`Failed adding flash ${documentId} to a planning`)
+        console.error(`Failed adding flash ${documentId} to a planning`)
+        toast.error('Kunde inte lägga flashen till en planering', {
+          action: <ToastAction flashId={documentId} />
+        })
+        return
       }
     } catch (err) {
       // We won't let errors interfere with the publishing of the flash.
       console.error(err)
     }
-    // TODO: User message/sonner
+
+    toast.error('Kunde inte lägga flashen till en planering', {
+      action: <ToastAction flashId={documentId} />
+    })
     return undefined
   }
 }

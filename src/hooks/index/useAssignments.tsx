@@ -20,7 +20,7 @@ const defaultStatuses = ['draft', 'done', 'approved', 'withheld']
  */
 export const useAssignments = ({ date, type, dateType = 'start-date', slots, status, requireDeliverable = false, requireMetrics = null }: {
   date: Date
-  dateType?: 'start-date' | 'publish'
+  dateType?: 'start-date' | 'combined-date'
   type?: string | string[]
   requireDeliverable?: boolean
   requireMetrics?: string[] | null

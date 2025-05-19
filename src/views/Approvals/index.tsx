@@ -58,7 +58,7 @@ export const ApprovalsView = (): JSX.Element => {
     requireDeliverable: true,
     requireMetrics: ['charcount'],
     date,
-    dateType: 'publish',
+    dateType: 'combined-date',
     slots
   })
 

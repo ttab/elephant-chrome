@@ -8,6 +8,7 @@ const iconProps = {
   className: 'text-muted-foreground'
 }
 
+// FIXME: These constants should be merged with ./assignmentTimeslots.ts
 export const timeSlotTypes: AssignmentValueOption[] = [
   {
     label: 'Heldag',
@@ -21,31 +22,31 @@ export const timeSlotTypes: AssignmentValueOption[] = [
     value: 'morning',
     icon: Clock5Icon,
     iconProps,
-    slots: ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'],
-    median: '7'
+    slots: ['0', '1', '2', '3', '4', '5', '6'],
+    median: '5'
   },
   {
     label: 'Förmiddag',
     value: 'forenoon',
     icon: Clock10Icon,
     iconProps,
-    slots: ['10', '11', '12', '13'],
-    median: '11'
+    slots: ['7', '8', '9', '10', '11', '12'],
+    median: '10'
   },
   {
     label: 'Eftermiddag',
     value: 'afternoon',
     icon: Clock2Icon,
     iconProps,
-    slots: ['14', '15', '16', '17'],
-    median: '15'
+    slots: ['13', '14', '15', '16', '17', '18'],
+    median: '16'
   },
   {
     label: 'Kväll',
     value: 'evening',
     icon: Clock6Icon,
     iconProps,
-    slots: ['18', '19', '20', '21', '22', '23'],
+    slots: ['19', '20', '21', '22', '23'],
     median: '21'
   }
 ]

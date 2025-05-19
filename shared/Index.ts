@@ -47,7 +47,10 @@ export class Index {
     this.#client = new SearchV1Client(
       new TwirpFetchTransport({
         baseUrl: new URL('twirp', indexUrl).toString(),
-        sendJson: true
+        sendJson: true,
+        jsonOptions: {
+          ignoreUnknownFields: true
+        }
       })
     )
   }
@@ -90,6 +93,7 @@ export class Index {
               }
             }),
             source,
+            shared: true,
             searchAfter: [],
             loadDocument: loadDocument || options?.asAssignments,
             subscribe: currentPage === 1 ? options?.subscribe : false

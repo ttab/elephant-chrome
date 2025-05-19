@@ -9,7 +9,10 @@ export class Spellchecker {
     this.#client = new CheckClient(
       new TwirpFetchTransport({
         baseUrl: new URL('twirp', repoUrl).toString(),
-        sendJson: true
+        sendJson: true,
+        jsonOptions: {
+          ignoreUnknownFields: true
+        }
       })
     )
   }
