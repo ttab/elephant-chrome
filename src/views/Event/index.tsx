@@ -78,7 +78,7 @@ const EventViewContent = (props: ViewProps & { documentId: string }): JSX.Elemen
   const { data, status } = useSession()
   const [, setIsFocused] = useAwareness(props.documentId)
   const [eventTitle] = useYValue<string | undefined>('root.title')
-  const [cancelled, setCancelled] = useYValue<boolean | undefined>('meta.core/event[0].data.cancelled')
+  const [cancelled, setCancelled] = useYValue<string | undefined>('meta.core/event[0].data.cancelled')
   const [isChanged] = useYValue<boolean>('root.changed')
 
   useEffect(() => {

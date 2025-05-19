@@ -20,6 +20,10 @@ interface TimeMenuProps extends React.PropsWithChildren {
   assignmentType?: string
 }
 
+/**
+ *
+ * Used for displaying and setting times in text, flash, editorial-info assignment types
+ */
 export const TimeDeliveryMenu = ({
   children,
   handleOnSelect,

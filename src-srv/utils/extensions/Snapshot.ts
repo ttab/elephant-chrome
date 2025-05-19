@@ -31,29 +31,28 @@ export class Snapshot implements Extension {
 
   async onStoreDocument(payload: onStoreDocumentPayload): Promise<void> {
     const { documentName, context } = payload as { documentName: string, context: unknown }
+    // Ignore document-tracker, server actions, and userTracker
+
+    if (isExcluded(documentName, context) || !isValidUUID(documentName)) {
+      return
+    }
 
     if (!assertContext(context)) {
       throw new Error('Invalid context provided')
     }
 
-    // Ignore document-tracker, server actions, and userTracker
-    if (documentName !== 'document-tracker'
-      && context.agent !== 'server'
-      && documentName !== context.user.sub
-      && isValidUUID(documentName)) {
-      // Clear previous debounce
-      debounceMap.get(documentName)?.cancel()
+    // Clear previous debounce
+    debounceMap.get(documentName)?.cancel()
 
-      // Create debounce
-      const fn = this.configuration.snapshot(payload)
-      const debouncedFn = debounce(fn, this.configuration.debounce)
+    // Create debounce
+    const fn = this.configuration.snapshot(payload)
+    const debouncedFn = debounce(fn, this.configuration.debounce)
 
-      // Set new debounce
-      debounceMap.set(documentName, debouncedFn)
+    // Set new debounce
+    debounceMap.set(documentName, debouncedFn)
 
-      // Call the debounced function
-      await debouncedFn()
-    }
+    // Call the debounced function
+    await debouncedFn()
   }
 
   async onDisconnect(payload: onDisconnectPayload): Promise<void> {
@@ -69,4 +68,30 @@ export class Snapshot implements Extension {
       logger.error(ex, 'Error onSnapshot onDisconnect')
     }
   }
+}
+
+function isExcluded(documentName: string, context: unknown): boolean {
+  if (documentName === 'document-tracker') {
+    return true
+  }
+  if (
+    typeof context === 'object'
+    && context !== null
+    && 'agent' in context
+    && (context as { agent: unknown }).agent === 'server'
+  ) {
+    return true
+  }
+  if (
+    typeof context === 'object'
+    && context !== null
+    && 'user' in context
+    && typeof (context as { user: unknown }).user === 'object'
+    && (context as { user: { sub?: string } }).user !== null
+    && 'sub' in (context as { user: { sub?: string } }).user
+    && documentName === (context as { user: { sub?: string } }).user.sub
+  ) {
+    return true
+  }
+  return false
 }

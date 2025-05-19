@@ -66,7 +66,6 @@ export const useDocuments = <T extends HitV1, F>({ documentType, query, size, pa
   const mutateRef = useRef<KeyedMutator<T[]> | null>(null)
   const dataRef = useRef<T[] | undefined>(undefined)
 
-  // Memoize SWR key
   const key = useMemo(() => query
     ? `${documentType}/${JSON.stringify(query)}${page ? `/${page}` : ''}`
     : documentType, [query, page, documentType])
@@ -116,7 +115,6 @@ export const useDocuments = <T extends HitV1, F>({ documentType, query, size, pa
     abortController: AbortController
   ) => {
     while (isPolling.current) {
-      // console.log('[Polling] Poll iteration', subscriptionsRef.current?.[0]?.cursor)
       try {
         subscriptionsRef.current = await pollSubscriptions({
           index,
@@ -126,21 +124,18 @@ export const useDocuments = <T extends HitV1, F>({ documentType, query, size, pa
           mutate: mutateRef.current!,
           abortController
         })
-        // console.log('[Polling] pollSubscriptions resolved', { subscriptions: subscriptionsRef.current })
       } catch (error) {
         if (error instanceof AbortError) {
-          // console.log('[Polling] Aborted by AbortController')
           break
         }
-        // console.error('[Polling] Polling error:', error)
         const interval = getInterval(20, 30)
+
+        console.error('Polling error:', error)
         toast.error(`Misslyckades att automatiskt uppdatera listan. Försöker igen om ${interval / 1000} sekunder.`)
         // Wait before next retry if failed
-        // console.log(`[Polling] Waiting ${interval}ms before retry`)
         await new Promise((resolve) => setTimeout(resolve, interval))
       }
     }
-    // console.log('[Polling] Exiting polling loop')
   }
 
   useEffect(() => {
@@ -153,13 +148,22 @@ export const useDocuments = <T extends HitV1, F>({ documentType, query, size, pa
       || !index
       || isPolling.current
     ) {
-      // console.log('[Polling] Skipping start: unmet conditions')
       return
     }
     isPolling.current = true
-    // console.log('[Polling] Starting polling loop')
 
     const abortController = new AbortController()
+
+    const handleBeforeUnload = () => {
+      abortController.abort()
+    }
+
+    // Safari/iOS specific: https://bugs.webkit.org/show_bug.cgi?id=219102
+    if (/iP(ad|hone|od)|Macintosh/.test(navigator.userAgent) && 'ontouchend' in document) {
+      window.addEventListener('unload', handleBeforeUnload)
+    } else {
+      window.addEventListener('beforeunload', handleBeforeUnload)
+    }
 
     void startPolling(index, session, abortController)
       .catch((ex) => {
@@ -167,9 +171,13 @@ export const useDocuments = <T extends HitV1, F>({ documentType, query, size, pa
       })
 
     return () => {
-      // console.log('[Polling] Cleanup: aborting and stopping polling')
       abortController.abort()
       isPolling.current = false
+      if (/iP(ad|hone|od)|Macintosh/.test(navigator.userAgent) && 'ontouchend' in document) {
+        window.removeEventListener('unload', handleBeforeUnload)
+      } else {
+        window.removeEventListener('beforeunload', handleBeforeUnload)
+      }
     }
     // Only restart polling if these change
   }, [index, options?.subscribe, session, subscriptions])

@@ -3,8 +3,8 @@ import { Checkbox, Label } from '@ttab/elephant-ui'
 import { useMemo } from 'react'
 
 export const Cancel = ({ cancelled, setCancelled, onChange }: {
-  cancelled: boolean | undefined
-  setCancelled: (arg: boolean) => void
+  cancelled: string | undefined
+  setCancelled: (arg: string) => void
 } & FormProps) => {
   const isCancelled = typeof cancelled === 'string' ? cancelled === 'true' ? true : false : cancelled
   return useMemo(() => (
@@ -16,7 +16,11 @@ export const Cancel = ({ cancelled, setCancelled, onChange }: {
         checked={!!isCancelled}
         onCheckedChange={(checked: boolean) => {
           onChange?.(true)
-          setCancelled(checked)
+          if (checked) {
+            setCancelled('true')
+          } else {
+            setCancelled('false')
+          }
         }}
       />
       <Label htmlFor='cancelled'>{!isCancelled ? 'Markera som inställd' : 'Evenemanget är markerat som inställt!'}</Label>

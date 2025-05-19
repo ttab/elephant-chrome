@@ -6,14 +6,19 @@ import { findRenditionByUsageAndVariant } from '../lib/find-rendition'
 import type { renditions } from '../lib/find-rendition'
 
 
+const BASE_URL = import.meta.env.BASE_URL || ''
+
 export const Thumbnail = ({ hit }: {
   hit: ttninjs
 }): JSX.Element => {
   const imageRef = useRef<HTMLImageElement>(null)
   const renditions = hit.renditions as renditions
   const thumbnail = findRenditionByUsageAndVariant(renditions, 'Thumbnail', 'Normal')
-  const preview = findRenditionByUsageAndVariant(renditions, 'Preview', 'Watermark')
+  const preview = findRenditionByUsageAndVariant(renditions, 'Preview', 'Normal')
   const hires = findRenditionByUsageAndVariant(renditions, 'Hires', 'Normal')
+
+  const id = new URL(preview.href).pathname.split('/').filter(Boolean).pop()
+  const proxyUrl = `${BASE_URL}/api/images/${id}`
 
   return (
     <Dialog modal={false}>
@@ -47,6 +52,7 @@ export const Thumbnail = ({ hit }: {
                 byline: hit.byline,
                 text: hit.description_text,
                 href: preview.href,
+                proxy: proxyUrl,
                 width: hires.width,
                 height: hires.height
               }
