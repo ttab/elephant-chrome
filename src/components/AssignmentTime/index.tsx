@@ -108,7 +108,7 @@ export const AssignmentTime = ({ index, onChange }: {
             end: endValue,
             start: assignmentType === 'text' ? endValue : getMidnightISOString(endDate),
             public: data?.public,
-            ...(assignmentType === 'text' ? { publish: endValue } : data?.publish && { publish: data.publish })
+            ...(data?.publish && { publish: data.publish })
           }
         }).data)
       }
