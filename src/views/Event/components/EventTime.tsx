@@ -93,7 +93,7 @@ export const EventTimeMenu = ({ onChange }: FormProps): JSX.Element => {
   const [mounted, setMounted] = useState(false)
   const [startTimeValid, setStartTimeValid] = useState(false)
   const [endTimeValid, setEndTimeValid] = useState(false)
-  const [fullDay, setFullDay] = useState(true)
+  const [fullDay, setFullDay] = useState(false)
 
   useEffect(() => {
     if (!mounted && eventData) {

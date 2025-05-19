@@ -38,7 +38,7 @@ export async function fetchAssignments({ index, repository, type, requireDeliver
   session: Session | null
   date: Date
   timeZone: string
-  dateType?: 'start-date' | 'publish'
+  dateType?: 'start-date' | 'combined-date'
 }
 ): Promise<AssignmentInterface[] | undefined> {
   if (!index || !session?.accessToken) {
@@ -179,21 +179,40 @@ export async function fetchAssignments({ index, repository, type, requireDeliver
  */
 function constructQuery(
   date: Date,
-  dateType: 'start-date' | 'publish',
+  dateType: 'start-date' | 'combined-date',
   timeZone: string
 ): QueryV1 {
   const { from, to } = getUTCDateRange(date, timeZone)
   // CAVEAT: This is in reality a local date but with zero time and a misleading Z in it.
   const formattedDate = format(date, 'yyyy-MM-dd\'T00:00:00:000Z\'')
 
-  if (dateType === 'publish') {
+  if (dateType === 'combined-date') {
     return QueryV1.create({
       conditions: {
-        oneofKind: 'range',
-        range: RangeQueryV1.create({
-          field: 'document.meta.core_assignment.data.publish',
-          gte: `${from}`,
-          lte: `${to}`
+        oneofKind: 'bool',
+        bool: BoolQueryV1.create({
+          should: [
+            {
+              conditions: {
+                oneofKind: 'range',
+                range: RangeQueryV1.create({
+                  field: 'document.meta.core_assignment.data.start',
+                  gte: `${from}`,
+                  lte: `${to}`
+                })
+              }
+            },
+            {
+              conditions: {
+                oneofKind: 'range',
+                range: RangeQueryV1.create({
+                  field: 'document.meta.core_assignment.data.publish',
+                  gte: `${from}`,
+                  lte: `${to}`
+                })
+              }
+            }
+          ]
         })
       }
     })

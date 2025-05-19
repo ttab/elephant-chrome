@@ -17,6 +17,7 @@ import { AddNote } from './Notes/AddNote'
 import { Version } from '@/components/Version'
 import { ReadOnly } from './ReadOnly'
 import { EditorialInfoTypes } from '@/components/EditorialInfoTypes'
+import { ContentSource } from '@/components/ContentSource'
 
 export function MetaSheet({ container, documentId, readOnly, readOnlyVersion }: {
   container: HTMLElement | null
@@ -24,7 +25,6 @@ export function MetaSheet({ container, documentId, readOnly, readOnlyVersion }: 
   readOnly?: boolean
   readOnlyVersion?: bigint
 }): JSX.Element {
-  const [contentSource] = useYValue<string | undefined>('links.core/content-source[0].uri')
   const [documentType] = useYValue<string | undefined>('root.type')
   const [isOpen, setIsOpen] = useState(false)
 
@@ -86,6 +86,11 @@ export function MetaSheet({ container, documentId, readOnly, readOnlyVersion }: 
                     <Version documentId={documentId} textOnly={false} />
                   </div>
 
+                  <Label htmlFor='content-source'>Källor andra än TT</Label>
+                  <div id='content-source'>
+                    <ContentSource />
+                  </div>
+
                   {documentType === 'core/editorial-info' && (
                     <>
                       <Label htmlFor='editorial-info-type'>Redaktionell info, typ</Label>
@@ -96,11 +101,6 @@ export function MetaSheet({ container, documentId, readOnly, readOnlyVersion }: 
                   )}
                 </div>
               )}
-        </div>
-
-        <div className='flex flex-col gap-6 px-5 py-4 border-t'>
-          <Label htmlFor='' className='text-xs text-muted-foreground -mb-3'>Extra information</Label>
-          <span className='font-thin text-muted-foreground text-xs'>{contentSource}</span>
         </div>
       </SheetContent>
     </Sheet>

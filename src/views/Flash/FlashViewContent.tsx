@@ -14,6 +14,7 @@ import { FlashEditor } from './FlashEditor'
 import { UserMessage } from '@/components/UserMessage'
 import { Form } from '@/components/Form'
 import { fetch } from '@/lib/index/fetch-plannings-twirp'
+import type { CreateFlashDocumentStatus } from './lib/createFlash'
 import { createFlash } from './lib/createFlash'
 import type * as Y from 'yjs'
 import { CreatePrompt } from '@/components/CreatePrompt'
@@ -26,6 +27,7 @@ export const FlashViewContent = (props: ViewProps): JSX.Element => {
   const planningAwareness = useRef<(value: boolean) => void>(null)
   const [sendPrompt, setSendPrompt] = useState(false)
   const [savePrompt, setSavePrompt] = useState(false)
+  const [donePrompt, setDonePrompt] = useState(false)
   const [selectedPlanning, setSelectedPlanning] = useState<DefaultValueOption | undefined>(undefined)
   const [title, setTitle] = useYValue<string | undefined>('root.title', true)
   const { index, locale, timeZone } = useRegistry()
@@ -36,6 +38,45 @@ export const FlashViewContent = (props: ViewProps): JSX.Element => {
   const handleSubmit = (setCreatePrompt: Dispatch<SetStateAction<boolean>>): void => {
     setCreatePrompt(true)
   }
+
+  const promptConfig = [
+    {
+      visible: sendPrompt,
+      key: 'send',
+      title: 'Skapa och skicka flash?',
+      description: !selectedPlanning
+        ? 'En ny planering med tillhörande uppdrag för denna flash kommer att skapas åt dig.'
+        : `Denna flash kommer att läggas i ett nytt uppdrag i planeringen "${selectedPlanning.label}"`,
+      secondaryLabel: 'Avbryt',
+      primaryLabel: 'Skicka',
+      documentStatus: 'usable' as CreateFlashDocumentStatus,
+      setPrompt: setSendPrompt
+    },
+    {
+      visible: donePrompt,
+      key: 'done',
+      title: 'Skapa och godkänn flash?',
+      description: !selectedPlanning
+        ? 'En ny planering med tillhörande uppdrag för denna flash kommer att skapas åt dig.'
+        : `Denna flash kommer att läggas i ett nytt uppdrag i planeringen "${selectedPlanning.label}". Med status godkänd.`,
+      secondaryLabel: 'Avbryt',
+      primaryLabel: 'Godkänn',
+      documentStatus: 'done' as CreateFlashDocumentStatus,
+      setPrompt: setDonePrompt
+    },
+    {
+      visible: savePrompt,
+      key: 'save',
+      title: 'Spara flash?',
+      description: !selectedPlanning
+        ? 'En ny planering med tillhörande uppdrag för denna flash kommer att skapas åt dig.'
+        : `Denna flash kommer att läggas i ett nytt uppdrag i planeringen "${selectedPlanning.label}"`,
+      secondaryLabel: 'Avbryt',
+      primaryLabel: 'Spara',
+      documentStatus: undefined,
+      setPrompt: setSavePrompt
+    }
+  ]
 
   return (
     <View.Root asDialog={props.asDialog} className={props.className}>
@@ -117,97 +158,50 @@ export const FlashViewContent = (props: ViewProps): JSX.Element => {
           </Form.Content>
 
           {
-            sendPrompt
-            && (
-              <CreatePrompt
-                title='Skapa och skicka flash?'
-                description={!selectedPlanning
-                  ? 'En ny planering med tillhörande uppdrag för denna flash kommer att skapas åt dig.'
-                  : `Denna flash kommer att läggas i ett nytt uppdrag i planeringen "${selectedPlanning.label}"`}
-                secondaryLabel='Avbryt'
-                primaryLabel='Skicka'
-                selectedPlanning={selectedPlanning}
-                payload={{
-                  meta: {
-                    'core/newsvalue': [Block.create({ type: 'core/newsvalue', value: '4' })]
-                  }
-                }}
-                onPrimary={(planning: Y.Doc | undefined, planningId: string | undefined) => {
-                  if (!provider || !props.id || !provider || !session) {
-                    console.error('Environment is not sane, flash cannot be created')
-                    return
-                  }
+            promptConfig.map((config) =>
+              config.visible && (
+                <CreatePrompt
+                  key={config.key}
+                  title={config.title}
+                  description={config.description}
+                  secondaryLabel={config.secondaryLabel}
+                  primaryLabel={config.primaryLabel}
+                  selectedPlanning={selectedPlanning}
+                  payload={{
+                    meta: {
+                      'core/newsvalue': [Block.create({ type: 'core/newsvalue', value: '5' })]
+                    }
+                  }}
+                  onPrimary={(planning: Y.Doc | undefined, planningId: string | undefined) => {
+                    if (!provider || !props.id || !session) {
+                      console.error('Environment is not sane, flash cannot be created')
+                      return
+                    }
 
-                  if (props?.onDialogClose) {
-                    props.onDialogClose(props.id, title)
-                  }
+                    if (props?.onDialogClose) {
+                      props.onDialogClose(props.id, title)
+                    }
 
-                  createFlash({
-                    provider,
-                    status,
-                    session,
-                    planning: {
-                      document: planning,
-                      id: planningId
-                    },
-                    hasSelectedPlanning: !!selectedPlanning,
-                    timeZone,
-                    documentStatus: 'done'
-                  })
+                    createFlash({
+                      provider,
+                      status,
+                      session,
+                      planning: {
+                        document: planning,
+                        id: planningId
+                      },
+                      hasSelectedPlanning: !!selectedPlanning,
+                      timeZone,
+                      documentStatus: config.documentStatus
+                    })
 
-                  setSendPrompt(false)
-                }}
-                onSecondary={() => {
-                  setSendPrompt(false)
-                }}
-              />
-            )
-          }
-
-          {
-            savePrompt
-            && (
-              <CreatePrompt
-                title='Spara flash?'
-                description={!selectedPlanning
-                  ? 'En ny planering med tillhörande uppdrag för denna flash kommer att skapas åt dig.'
-                  : `Denna flash kommer att läggas i ett nytt uppdrag i planeringen "${selectedPlanning.label}"`}
-                secondaryLabel='Avbryt'
-                primaryLabel='Spara'
-                selectedPlanning={selectedPlanning}
-                payload={{
-                  meta: {
-                    'core/newsvalue': [Block.create({ type: 'core/newsvalue', value: '4' })]
-                  }
-                }}
-                onPrimary={(planning: Y.Doc | undefined, planningId: string | undefined) => {
-                  if (!provider || !props.id || !provider || !session) {
-                    console.error('Environment is not sane, flash cannot be created')
-                    return
-                  }
-
-                  if (props?.onDialogClose) {
-                    props.onDialogClose(props.id, title)
-                  }
-
-                  createFlash({
-                    provider,
-                    status,
-                    session,
-                    planning: {
-                      document: planning,
-                      id: planningId
-                    },
-                    hasSelectedPlanning: !!selectedPlanning,
-                    timeZone
-                  })
-
-                  setSavePrompt(false)
-                }}
-                onSecondary={() => {
-                  setSavePrompt(false)
-                }}
-              />
+                    config.setPrompt(false)
+                  }}
+                  onSecondary={() => {
+                    config.setPrompt(false)
+                  }}
+                />
+              )
             )
           }
 
@@ -217,10 +211,14 @@ export const FlashViewContent = (props: ViewProps): JSX.Element => {
                 <Form.Submit
                   onSubmit={() => handleSubmit(setSendPrompt)}
                   onSecondarySubmit={() => handleSubmit(setSavePrompt)}
+                  onTertiarySubmit={() => handleSubmit(setDonePrompt)}
                 >
-                  <div className='flex justify-end gap-4'>
-                    <Button variant='secondary' type='button'>Spara flash</Button>
-                    <Button type='submit'>Skicka flash</Button>
+                  <div className='flex justify-between'>
+                    <div className='flex gap-2'>
+                      <Button variant='secondary' type='button' role='secondary'>Utkast</Button>
+                      <Button variant='secondary' type='button' role='tertiary'>Godkänn</Button>
+                    </div>
+                    <Button type='submit' role='primary'>Publicera</Button>
                   </div>
                 </Form.Submit>
               </Form.Footer>

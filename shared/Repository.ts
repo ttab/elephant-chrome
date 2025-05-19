@@ -37,14 +37,20 @@ export class Repository {
     this.#client = new DocumentsClient(
       new TwirpFetchTransport({
         baseUrl: new URL('twirp', repoUrl).toString(),
-        sendJson: true
+        sendJson: true,
+        jsonOptions: {
+          ignoreUnknownFields: true
+        }
       })
     )
 
     this.#metricsClient = new MetricsClient(
       new TwirpFetchTransport({
         baseUrl: new URL('twirp', repoUrl).toString(),
-        sendJson: true
+        sendJson: true,
+        jsonOptions: {
+          ignoreUnknownFields: true
+        }
       })
     )
   }

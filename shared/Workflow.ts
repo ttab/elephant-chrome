@@ -12,7 +12,10 @@ export class Workflow {
     this.#client = new WorkflowsClient(
       new TwirpFetchTransport({
         baseUrl: new URL('twirp', repoUrl).toString(),
-        sendJson: true
+        sendJson: true,
+        jsonOptions: {
+          ignoreUnknownFields: true
+        }
       })
     )
 
