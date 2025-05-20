@@ -49,7 +49,7 @@ export const GET: RouteHandler = async (req: Request, { cache, repository, res }
           payload: {
             from: 'cache',
             version: documentResponse.version.toString(),
-            document: fromGroupedNewsDoc(documentResponse)
+            document: fromGroupedNewsDoc(documentResponse).document
           }
         }
       }
@@ -59,7 +59,7 @@ export const GET: RouteHandler = async (req: Request, { cache, repository, res }
         payload: {
           from: 'cache',
           version: documentResponse.version.toString(),
-          document: documentResponse
+          document: documentResponse.document
         }
       }
     }
