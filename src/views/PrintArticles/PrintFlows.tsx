@@ -134,7 +134,7 @@ export const PrintFlows = ({ asDialog, onDialogClose, className, action }: ViewP
             </div>
           )}
         </ViewHeader.Content>
-        <ViewHeader.Action onDialogClose={onDialogClose}>
+        <ViewHeader.Action onDialogClose={onDialogClose} asDialog={asDialog}>
         </ViewHeader.Action>
       </ViewHeader.Root>
       <View.Content className='p-4'>

@@ -54,7 +54,7 @@ export const WireViewContent = (props: ViewProps & {
           )}
         </ViewHeader.Content>
 
-        <ViewHeader.Action onDialogClose={props.onDialogClose}>
+        <ViewHeader.Action onDialogClose={props.onDialogClose} asDialog={props.asDialog}>
           {!props.asDialog && !!props.id
           && <ViewHeader.RemoteUsers documentId={props.id} />}
         </ViewHeader.Action>

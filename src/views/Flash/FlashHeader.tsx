@@ -26,7 +26,7 @@ export const FlashHeader = (props: ViewProps) => {
         {!props.asDialog && !!props.id && <StatusMenuHeader id={props.id} />}
       </ViewHeader.Content>
 
-      <ViewHeader.Action onDialogClose={props.onDialogClose} />
+      <ViewHeader.Action onDialogClose={props.onDialogClose} asDialog={props.asDialog} />
     </ViewHeader.Root>
   )
 }
