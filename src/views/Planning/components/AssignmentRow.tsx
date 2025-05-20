@@ -65,6 +65,7 @@ export const AssignmentRow = ({ index, onSelect, isFocused = false, asDialog, on
   const [description] = useYValue<string>(`${base}.meta.core/description[0].data.text`)
   const [publishTime] = useYValue<string>(`${base}.data.publish`)
   const [startTime] = useYValue<string>(`${base}.data.start`)
+  const [endTime] = useYValue<string>(`${base}.data.end`)
   const [authors = []] = useYValue<Block[]>(`meta.core/assignment[${index}].links.core/author`)
   const [slugline] = useYValue<string>(`${base}.meta.tt/slugline[0].value`)
 
@@ -86,13 +87,40 @@ export const AssignmentRow = ({ index, onSelect, isFocused = false, asDialog, on
     if (typeof assignmentType !== 'string') {
       return undefined
     }
-    const startTimeTypes = ['picture', 'picture/video', 'video']
-    return startTimeTypes.includes(assignmentType) && startTime
-      ? new Date(startTime)
-      : publishTime
-        ? new Date(publishTime)
-        : undefined
-  }, [publishTime, assignmentType, startTime])
+
+    if (publishTime) {
+      return {
+        time: [new Date(publishTime)],
+        tooltip: 'Publiceringstid'
+      }
+    }
+
+    if (endTime && startTime && endTime !== startTime) {
+      return {
+        time: [new Date(startTime), new Date(endTime)],
+        tooltip: 'Start- och sluttid'
+      }
+    }
+
+    if (startTime) {
+      return {
+        time: [new Date(startTime)],
+        tooltip: 'Starttid'
+      }
+    }
+  }, [publishTime, assignmentType, startTime, endTime])
+
+  const TimeIcon = useMemo(() => {
+    const timeIcons: Record<string, React.FC<LucideProps>> = {
+      start: Clock1,
+      publish: AlarmClockCheck,
+      'start-end': Watch
+    }
+
+    const type = publishTime ? 'publish' : endTime && startTime && endTime !== startTime ? 'start-end' : 'start'
+
+    return timeIcons[type] || <></>
+  }, [publishTime, endTime, startTime])
 
   // Open a deliverable (e.g. article, flash, editorial-info) callback helper.
   // For readOnly pass version object
