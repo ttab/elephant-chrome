@@ -53,24 +53,32 @@ export class User {
       const payload: Record<string, string> = {}
 
       if (error instanceof Error) {
-        payload['err_name'] = error.name
-        payload['err_message'] = error.message
+        payload['err_name'] = error.name || ''
+        payload['err_message'] = error.message || ''
         payload['err_stack'] = error.stack || ''
       }
 
       if (rpcError) {
         type = 'rpc_error'
-        payload['rpc_code'] = rpcError.code
+        payload['rpc_code'] = rpcError.code || ''
         payload['rpc_meta'] = rpcError.meta ? JSON.stringify(rpcError.meta) : ''
         payload['rpc_methodName'] = rpcError.methodName || ''
         payload['rpc_serviceName'] = rpcError.serviceName || ''
       }
 
       if (context.docName) {
-        payload['documentName'] = context.docName as string
+        payload['documentName'] = typeof context.docName === 'string' ? context.docName : ''
       }
 
       const accessToken = await this.#tokenService.getAccessToken()
+
+      console.log('pushMessage:', {
+        recipient,
+        type,
+        docUuid: typeof context.docUuid === 'string' ? context.docUuid : '',
+        docType: typeof context.docType === 'string' ? context.docType : '',
+        payload
+      })
 
       await this.#client.pushMessage({
         recipient,
