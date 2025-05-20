@@ -1,7 +1,28 @@
+import { type SetStateAction, useEffect, useState } from 'react'
+import { useDocuments } from '@/hooks/index/useDocuments'
+import { constructQuery, fields } from '@/hooks/baboon/useDocuments/layoutNames'
 import { useLink } from '@/hooks/useLink'
 import type { Block } from '@ttab/elephant-api/newsdoc'
 import { Button, Label, Popover, PopoverContent, PopoverTrigger, Input, Command, CommandInput, CommandList, CommandItem } from '@ttab/elephant-ui'
 import { CircleCheckBig, TriangleAlert, X, Eye, ChevronDown } from '@ttab/elephant-ui/icons'
+
+interface Additional {
+  id: string
+  name: string
+  value: string
+}
+interface LayoutBoxProps {
+  bulkSelected: string[]
+  setBulkSelected: React.Dispatch<React.SetStateAction<string[]>>
+  layout: Block
+  updateLayout: (layout: Block) => void
+  isDirty: string | undefined
+  setIsDirty: (id: string | undefined) => void
+  setLayouts: React.Dispatch<React.SetStateAction<Block[]>>
+  cleanLayouts: SetStateAction<Block[]>
+  saveUpdates: (updatedLayouts: Block[] | undefined) => void
+  deleteLayout: (layout: Block) => void
+}
 
 /**
  * LayoutBox component.
@@ -35,32 +56,35 @@ export function LayoutBox({
   cleanLayouts,
   saveUpdates,
   deleteLayout
-}: {
-  bulkSelected: Array<string>
-  setBulkSelected: React.Dispatch<React.SetStateAction<Array<string>>>
-  layout: Block
-  updateLayout: (layout: Block) => void
-  isDirty: string | undefined
-  setIsDirty: (id: string | undefined) => void
-  setLayouts: React.Dispatch<React.SetStateAction<Block[]>>
-  cleanLayouts: Block[]
-  saveUpdates: (updatedLayouts: Block[] | undefined) => void
-  deleteLayout: (layout: Block) => void
-}) {
+}: LayoutBoxProps) {
   const openPreview = useLink('PrintPreview')
-  const layouts = [
-    {
-      name: 'Ej implementerat',
-      value: 'ej-implementerat'
-    }
-  ]
+
+  const [layouts, setLayoutNames] = useState<string[]>([])
   const valid = true
 
   const id = layout.id
-  const name = layout.links?.find((l: { rel: string }) => l.rel === 'layout')?.name
+  const name = layout.links?.find((l) => l.rel === 'layout')?.name
   const additionals = layout?.meta[0]?.content
   const layoutName = layout?.name
   const position = layout?.data?.position || ''
+
+  const layoutId = layout?.links[0]?.uuid
+  const { data: layoutNamesData } = useDocuments({
+    documentType: 'tt/print-layout',
+    query: constructQuery(layoutId || ''),
+    size: 100,
+    fields,
+    options: {
+      setTableData: false,
+      subscribe: false
+    }
+  })
+  useEffect(() => {
+    if (layoutNamesData) {
+      const layoutNames = layoutNamesData?.[0]?.fields?.['document.content.tt_print_slot.name']?.values
+      setLayoutNames(layoutNames)
+    }
+  }, [layoutNamesData])
 
   return (
     <div id={layout.id} className='border min-h-32 p-2 pt-0 grid grid-cols-12 gap-2 rounded'>
@@ -163,9 +187,9 @@ export function LayoutBox({
             <Command>
               <CommandInput placeholder='Sök' />
               <CommandList className='text-sm bg-white'>
-                {layouts.map((layout) => (
-                  <CommandItem key={layout.value} className='bg-white'>
-                    {layout.name}
+                {layouts?.map((layout) => (
+                  <CommandItem key={layout} className='bg-white'>
+                    {layout}
                   </CommandItem>
                 ))}
               </CommandList>
@@ -190,14 +214,14 @@ export function LayoutBox({
         {additionals?.length > 0 && (
           <>
             <h4 className='text-sm font-bold'>Tillägg</h4>
-            {additionals?.map((additional: { id: string, name: string, value: string }) => (
+            {additionals?.map((additional: Additional) => (
               <Label key={additional.id} className='flex items-center gap-2'>
                 <Input
                   type='checkbox'
                   className='w-4 h-4'
                   checked={additional.value === 'true'}
                   onChange={(e) => {
-                    const updatedAdditionals = additionals.map((_additional: { id: string, name: string, value: string }) => {
+                    const updatedAdditionals = additionals.map((_additional) => {
                       if (_additional.name === additional.name) {
                         return { ..._additional, value: e.target.checked?.toString() }
                       }

@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react'
+import { useState } from 'react'
 import { useDocuments } from '@/hooks/index/useDocuments'
 import { useRegistry } from '@/hooks/useRegistry'
 import type { PrintFlow, PrintFlowFields } from '@/hooks/index/useDocuments/schemas/printFlow'
@@ -52,8 +52,10 @@ export const PrintFlows = ({ asDialog, onDialogClose, className, action }: ViewP
     value: hit.id,
     label: hit.fields['document.title'].values[0]
   })) || []
-  const allArticleNames = useMemo(() => data?.flatMap((hit) => hit.fields['document.content.tt_print_content.name'].values) || [], [allPrintFlows])
 
+  const allArticleNames = data
+    ?.find((hit) => hit.id === printFlow)
+    ?.fields['document.content.tt_print_content.name'].values || []
 
   const selectedPrintFlow = allPrintFlows?.find((flow) => flow.value === printFlow)
 

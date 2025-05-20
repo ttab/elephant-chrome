@@ -53,7 +53,7 @@ export const Toolbar = (): JSX.Element => {
                   size='sm'
                   variant='ghost'
                   onClick={() => {
-                    window.alert('Spara personligt filter')
+                    window.alert('Ej implementerat')
                   }}
                 >
                   Spara personligt filter
