@@ -30,6 +30,7 @@ export const Commands = (props: FilterProps): JSX.Element => {
     setFilters({})
   }
 
+  // TODO: don't hardcode this
   const optionsStatuses = [
     {
       value: 'draft',
