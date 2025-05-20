@@ -183,7 +183,7 @@ const PlanningViewContent = (props: ViewProps & { documentId: string, setNewItem
               onSecondarySubmit={() => handleSubmit({ documentStatus: 'done' })}
               onTertiarySubmit={() => handleSubmit({ documentStatus: undefined })}
             >
-              <div className='flex justify-between px-6 py-4'>
+              <div className='flex justify-between'>
                 <div className='flex gap-2'>
                   <Button type='button' variant='secondary' role='tertiary'>
                     Utkast

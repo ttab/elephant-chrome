@@ -32,9 +32,9 @@ export const Prompt = ({
   })
 
   return (
-    <Dialog open={true}>
+    <Dialog open={true} modal={true}>
       <DialogContent
-        onOpenAutoFocus={(event) => event.preventDefault()}
+        className='z-50'
         onPointerDownOutside={() => {
           if (onSecondary) {
             onSecondary()

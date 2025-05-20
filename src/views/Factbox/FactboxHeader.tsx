@@ -40,7 +40,7 @@ export const FactboxHeader = ({ documentId, asDialog, onDialogClose }: {
           </div>
         </div>
       </ViewHeader.Content>
-      <ViewHeader.Action onDialogClose={onDialogClose} />
+      <ViewHeader.Action onDialogClose={onDialogClose} asDialog={asDialog} />
 
     </ViewHeader.Root>
   )
