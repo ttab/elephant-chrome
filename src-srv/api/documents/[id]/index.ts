@@ -1,7 +1,7 @@
 import type { Request } from 'express'
 import type { RouteContentResponse, RouteHandler, RouteStatusResponse } from '../../../routes.js'
 import { isValidUUID } from '../../../utils/isValidUUID.js'
-import { toGroupedNewsDoc } from '@/shared/transformations/groupedNewsDoc.js'
+import { fromGroupedNewsDoc, toGroupedNewsDoc } from '@/shared/transformations/groupedNewsDoc.js'
 import { fromYjsNewsDoc } from '@/shared/transformations/yjsNewsDoc.js'
 import * as Y from 'yjs'
 import logger from '../../../lib/logger.js'
@@ -20,6 +20,7 @@ type Response = RouteContentResponse | RouteStatusResponse
 export const GET: RouteHandler = async (req: Request, { cache, repository, res }) => {
   const uuid = req.params.id
   const version = Number(req.query.version || '0')
+  const type = req.query.type
 
   const { session } = res.locals
 
@@ -36,13 +37,30 @@ export const GET: RouteHandler = async (req: Request, { cache, repository, res }
       throw new Error('get cached document', { cause: ex })
     })
 
+    // Check for collaborative/cached document first
     if (state) {
       const yDoc = new Y.Doc()
       Y.applyUpdate(yDoc, state)
       const { documentResponse } = fromYjsNewsDoc(yDoc)
 
+      // Return newsdoc from cache
+      if (type === 'newsdoc') {
+        return {
+          payload: {
+            from: 'cache',
+            version: documentResponse.version.toString(),
+            document: fromGroupedNewsDoc(documentResponse)
+          }
+        }
+      }
+
+      // Return grouped newsdoc from cache
       return {
-        payload: documentResponse
+        payload: {
+          from: 'cache',
+          version: documentResponse.version.toString(),
+          document: documentResponse
+        }
       }
     }
 
@@ -62,12 +80,25 @@ export const GET: RouteHandler = async (req: Request, { cache, repository, res }
       }
     }
 
-    const { document, version: docVersion } = toGroupedNewsDoc(doc)
+    const documentResponse = toGroupedNewsDoc(doc)
 
+    // Return newsdoc from repository
+    if (type === 'newsdoc') {
+      return {
+        payload: {
+          from: 'repository',
+          version: documentResponse.version.toString(),
+          document: fromGroupedNewsDoc(documentResponse).document
+        }
+      }
+    }
+
+    // Return grouped newsdoc from repository
     return {
       payload: {
-        version: docVersion,
-        document
+        from: 'repository',
+        version: documentResponse.version.toString(),
+        document: documentResponse.document
       }
     }
   } catch (ex) {
