@@ -29,7 +29,9 @@ export const Flash = (props: ViewProps & {
 }): JSX.Element => {
   const [query] = useQuery()
   const [document, setDocument] = useState<Y.Doc | undefined>(undefined)
-  const [documentId, setDocumentId] = useState<string | undefined>(props.id || query.id as string)
+
+  // We must not read query.id if we are in a dialog or we pick up other documents ids
+  const [documentId, setDocumentId] = useState<string | undefined>(props.id || props.asDialog ? undefined : query.id as string)
 
   // Document creation if needed
   if ((props.onDocumentCreated && !document) || !documentId) {
