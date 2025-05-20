@@ -90,6 +90,13 @@ export const AssignmentRow = ({ index, onSelect, isFocused = false, asDialog, on
       return undefined
     }
 
+    if (['picture', 'video'].includes(assignmentType) && startTime) {
+      return {
+        time: [new Date(startTime)],
+        tooltip: 'Starttid'
+      }
+    }
+
     if (publishSlot) {
       const slotName = timeSlotTypes.find((slot) => slot.slots?.includes(publishSlot))?.label
       return {
