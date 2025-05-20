@@ -12,7 +12,7 @@ export const AssignmentTimeDisplay = ({ date, className, icon }: { date: Time, c
 
   return (
     <div className='flex flex-col'>
-      <div className={cn('font-medium text-sm w-fit select-none flex gap-1', className)}>
+      <div className={cn('font-medium text-sm w-fit select-none flex gap-1 items-center', className)}>
         {date.time.map((timestamp, index) => (
           <span key={date.time.join('') + date.tooltip + index}>
             {dateToReadableTime(timestamp, locale.code.full, timeZone)}
