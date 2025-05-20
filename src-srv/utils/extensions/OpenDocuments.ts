@@ -162,7 +162,7 @@ export class OpenDocuments implements Extension {
 
     const { sub: userId, preferred_username: userName, name } = context.user || {}
 
-    if (!userId || !userName || name) {
+    if (!userId || !userName || !name) {
       logger.warn({ documentName, context }, 'User information is missing for OpenDocuments.connected')
       throw new Error('User information is missing for OpenDocuments.connected')
     }
