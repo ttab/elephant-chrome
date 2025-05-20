@@ -10,6 +10,14 @@ import type { TemplatePayload } from '.'
 export function planningDocumentTemplate(documentId: string, payload?: TemplatePayload): Document {
   const existingPublicDescription = payload?.meta?.['core/description']?.find((desc) => desc.role === 'public')
 
+  const makeDate = () => {
+    if (payload?.meta?.['core/event']) {
+      const event = payload?.meta?.['core/event'][0]
+      return event.data.start.split('T')[0]
+    }
+    return currentDateInUTC()
+  }
+
   return Document.create({
     uuid: documentId,
     type: 'core/planning-item',
@@ -22,10 +30,10 @@ export function planningDocumentTemplate(documentId: string, payload?: TemplateP
         data: {
           public: 'true',
           // FIXME: Send end and start date from event to planning
-          end_date: currentDateInUTC(),
+          end_date: makeDate(),
           tentative: 'false',
           // FIXME: Send end and start date from event to planning
-          start_date: currentDateInUTC()
+          start_date: makeDate()
         }
       })],
 
