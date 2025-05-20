@@ -75,8 +75,8 @@ export class User {
       await this.#client.pushMessage({
         recipient,
         type,
-        docUuid: context.docUuid as string,
-        docType: context.docType as string,
+        docUuid: typeof context.docUuid === 'string' ? context.docUuid : '',
+        docType: typeof context.docType === 'string' ? context.docType : '',
         payload
       }, meta(accessToken))
     } catch (err: unknown) {
