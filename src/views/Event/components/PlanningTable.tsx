@@ -141,7 +141,7 @@ export const PlanningTable = ({ provider, documentId, asDialog }: {
             Lägg till planering
           </Button>
         </DialogTrigger>
-        <DialogContent>
+        <DialogContent className='gap-0 p-0'>
           <DialogDescription />
           <DialogTitle />
           <Planning

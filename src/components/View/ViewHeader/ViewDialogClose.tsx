@@ -15,9 +15,9 @@ export const ViewDialogClose = ({ onClick, Icon = XIcon, asDialog }: {
   const [isChanged] = useYValue<boolean>('root.changed')
 
   useNavigationKeys({
+    stopPropagation: true,
     keys: ['Escape'],
-    onNavigation: (event) => {
-      event.stopPropagation()
+    onNavigation: () => {
       if (asDialog) {
         if (isChanged) {
           setShowVerifyDialog(true)
