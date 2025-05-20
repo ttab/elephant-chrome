@@ -203,6 +203,7 @@ function EditorContainer({
   const [bulkSelected, setBulkSelected] = useState<string[]>([])
   const [layouts, setLayouts] = useState<Block[]>([])
   const [cleanLayouts, setCleanLayouts] = useState<Block[]>()
+
   const [isDirty, setIsDirty] = useState<string | undefined>(undefined)
   const openPrintEditor = useLink('PrintEditor')
   const { data: doc } = useLayouts(documentId) as { data: { layouts: Block[], document: Document } }
@@ -278,6 +279,7 @@ function EditorContainer({
       toast.error('Layouter sparades inte')
     })
   }
+
   return (
     <>
       <EditorHeader documentId={documentId} flowName={flowName} name={name} />
