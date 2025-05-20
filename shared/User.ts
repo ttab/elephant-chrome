@@ -72,14 +72,6 @@ export class User {
 
       const accessToken = await this.#tokenService.getAccessToken()
 
-      console.log('pushMessage:', {
-        recipient,
-        type,
-        docUuid: typeof context.docUuid === 'string' ? context.docUuid : '',
-        docType: typeof context.docType === 'string' ? context.docType : '',
-        payload
-      })
-
       await this.#client.pushMessage({
         recipient,
         type,
