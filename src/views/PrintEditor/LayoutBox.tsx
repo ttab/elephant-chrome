@@ -85,7 +85,6 @@ export function LayoutBox({
       setLayoutNames(layoutNames)
     }
   }, [layoutNamesData])
-
   return (
     <div id={layout.id} className='border min-h-32 p-2 pt-0 grid grid-cols-12 gap-2 rounded'>
       <header className={`col-span-12 row-span-1 gap-2 flex items-center ${isDirty === layout.id ? 'mt-2 justify-end' : 'justify-between'} `}>
@@ -187,9 +186,18 @@ export function LayoutBox({
             <Command>
               <CommandInput placeholder='Sök' />
               <CommandList className='text-sm bg-white'>
-                {layouts?.map((layout) => (
-                  <CommandItem key={layout} className='bg-white'>
-                    {layout}
+                {layouts?.map((_layout) => (
+                  <CommandItem
+                    key={_layout}
+                    className='bg-white'
+                    onSelect={(name) => {
+                      const updatedLayout = Object.assign({}, layout, {
+                        name
+                      })
+                      updateLayout(updatedLayout)
+                    }}
+                  >
+                    {_layout}
                   </CommandItem>
                 ))}
               </CommandList>
@@ -203,8 +211,18 @@ export function LayoutBox({
           placeholder='Position'
           value={position}
           onChange={(e) => {
+            const _data = Object.assign({}, layout.data, {
+              position: e.target.value
+            })
+            const _links = layout.links.map((link) => {
+              if (link.rel === 'layout') {
+                return { ...link, name: e.target.value }
+              }
+              return link
+            })
             const updatedLayout = Object.assign({}, layout, {
-              data: { position: e.target.value }
+              links: _links,
+              data: _data
             })
             updateLayout(updatedLayout)
           }}

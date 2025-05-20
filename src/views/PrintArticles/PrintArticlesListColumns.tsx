@@ -84,10 +84,24 @@ export function printArticlesListColumns(): Array<ColumnDef<PrintArticle>> {
       }
     },
     {
-      id: 'title',
+      id: 'document.title',
       enableGrouping: false,
       meta: {
         name: 'Titel',
+        columnIcon: Pen,
+        className: 'flex-1'
+      },
+      accessorFn: (data) => (data.fields['document.title'].values[0]),
+      cell: ({ row }) => {
+        const title = row.getValue('document.title')
+        return <span>{title as string}</span>
+      }
+    },
+    {
+      id: 'headline',
+      enableGrouping: false,
+      meta: {
+        name: 'Rubrik',
         columnIcon: Pen,
         className: 'flex-1'
       },
@@ -103,7 +117,7 @@ export function printArticlesListColumns(): Array<ColumnDef<PrintArticle>> {
         return _title || ''
       },
       cell: ({ row }) => {
-        const title = row.getValue('title')
+        const title = row.getValue('headline')
         return <span>{title as string}</span>
       }
     }
