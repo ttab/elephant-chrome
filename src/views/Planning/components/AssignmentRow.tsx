@@ -30,6 +30,7 @@ import { AssignmentTypes } from '@/defaults/assignmentTypes'
 import { CreatePrintArticle } from '@/components/CreatePrintArticle'
 import { snapshot } from '@/lib/snapshot'
 import { AssignmentVisibility } from '@/components/DataItem/AssignmentVisibility'
+import { timeSlotTypes } from '@/defaults/assignmentTimeConstants'
 
 export const AssignmentRow = ({ index, onSelect, isFocused = false, asDialog, onChange }: {
   index: number
@@ -66,6 +67,7 @@ export const AssignmentRow = ({ index, onSelect, isFocused = false, asDialog, on
   const [publishTime] = useYValue<string>(`${base}.data.publish`)
   const [startTime] = useYValue<string>(`${base}.data.start`)
   const [endTime] = useYValue<string>(`${base}.data.end`)
+  const [publishSlot] = useYValue<string>(`${base}.data.publish_slot`)
   const [authors = []] = useYValue<Block[]>(`meta.core/assignment[${index}].links.core/author`)
   const [slugline] = useYValue<string>(`${base}.meta.tt/slugline[0].value`)
 
@@ -83,9 +85,24 @@ export const AssignmentRow = ({ index, onSelect, isFocused = false, asDialog, on
   const openDocument = assignmentType === 'flash' ? openFlash : openArticle
   const { showModal, hideModal } = useModal()
 
-  const assTime = useMemo(() => {
+  const assignmentTime = useMemo(() => {
     if (typeof assignmentType !== 'string') {
       return undefined
+    }
+
+    if (['picture', 'video'].includes(assignmentType) && startTime) {
+      return {
+        time: [new Date(startTime)],
+        tooltip: 'Starttid'
+      }
+    }
+
+    if (publishSlot) {
+      const slotName = timeSlotTypes.find((slot) => slot.slots?.includes(publishSlot))?.label
+      return {
+        time: [slotName],
+        tooltip: 'Publiceringsfönster'
+      }
     }
 
     if (publishTime) {
@@ -108,7 +125,7 @@ export const AssignmentRow = ({ index, onSelect, isFocused = false, asDialog, on
         tooltip: 'Starttid'
       }
     }
-  }, [publishTime, assignmentType, startTime, endTime])
+  }, [publishTime, assignmentType, startTime, endTime, publishSlot])
 
   const TimeIcon = useMemo(() => {
     const timeIcons: Record<string, React.FC<LucideProps>> = {
@@ -281,7 +298,7 @@ export const AssignmentRow = ({ index, onSelect, isFocused = false, asDialog, on
 
         <div className='flex grow items-center justify-end gap-1.5'>
           <div className='whitespace-nowrap flex items-center gap-1'>
-            {assTime && <AssignmentTimeDisplay date={assTime} icon={TimeIcon} />}
+            {assignmentTime && <AssignmentTimeDisplay date={assignmentTime} icon={TimeIcon} />}
           </div>
 
           <Button
