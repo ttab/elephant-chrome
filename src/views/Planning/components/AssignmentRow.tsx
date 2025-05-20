@@ -1,9 +1,9 @@
-import { TimeDisplay } from '@/components/DataItem/TimeDisplay'
+import { AssignmentTimeDisplay } from '@/components/DataItem/AssignmentTimeDisplay'
 import { AssignmentType } from '@/components/DataItem/AssignmentType'
 import { AssigneeAvatars } from '@/components/DataItem/AssigneeAvatars'
 import type { DotDropdownMenuActionItem } from '@/components/ui/DotMenu'
 import { DotDropdownMenu } from '@/components/ui/DotMenu'
-import { Delete, Edit, Eye, FileInput, Library, MoveRight, Pen } from '@ttab/elephant-ui/icons'
+import { AlarmClockCheck, Clock1, Delete, Edit, Eye, FileInput, Library, type LucideProps, MoveRight, Pen, Watch } from '@ttab/elephant-ui/icons'
 import { type MouseEvent, useMemo, useState, useCallback, useEffect, useRef } from 'react'
 import { SluglineButton } from '@/components/DataItem/Slugline'
 import { useYValue } from '@/hooks/useYValue'
@@ -280,8 +280,8 @@ export const AssignmentRow = ({ index, onSelect, isFocused = false, asDialog, on
         </div>
 
         <div className='flex grow items-center justify-end gap-1.5'>
-          <div className='min-w-[64px] whitespace-nowrap'>
-            {assTime ? <TimeDisplay date={assTime} /> : ''}
+          <div className='whitespace-nowrap flex items-center gap-1'>
+            {assTime && <AssignmentTimeDisplay date={assTime} icon={TimeIcon} />}
           </div>
 
           <Button
