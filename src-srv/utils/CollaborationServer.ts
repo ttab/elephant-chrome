@@ -291,7 +291,8 @@ export class CollaborationServer {
     }
 
     if (!assertContext(context)) {
-      throw new Error('Invalid context provided')
+      logger.warn({ context, documentName: uuid }, 'Invalid context provided')
+      throw new Error('#fetchDocument - Invalid context provided')
     }
 
     // Fetch from Redis if exists

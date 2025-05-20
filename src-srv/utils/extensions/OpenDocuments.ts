@@ -160,7 +160,12 @@ export class OpenDocuments implements Extension {
   async connected({ documentName, context }: EleConnectedPayload) {
     if (this.isTrackerDocument(documentName)) return
 
-    const { sub: userId, preferred_username: userName, name } = context.user
+    const { sub: userId, preferred_username: userName, name } = context.user || {}
+
+    if (!userId || !userName || name) {
+      logger.warn({ documentName, context }, 'User information is missing for OpenDocuments.connected')
+      throw new Error('User information is missing for OpenDocuments.connected')
+    }
 
     await this.#connection?.transact((doc) => {
       const yOpenDocuments = doc.getMap('open-documents')
@@ -215,7 +220,13 @@ export class OpenDocuments implements Extension {
   async onDisconnect({ documentName, context }: EleOnDisconnectPayload) {
     if (this.isTrackerDocument(documentName)) return
 
-    const { sub: userId } = context.user
+    const { sub: userId } = context.user || {}
+
+    if (!userId) {
+      logger.warn({ documentName, context }, 'User information is missing for OpenDocuments.onDisconnect')
+      throw new Error('User information is missing for OpenDocuments.onDisconnect')
+    }
+
     await this.#connection?.transact((doc) => {
       const yOpenDocuments = doc.getMap('open-documents')
       const yDocEntry = yOpenDocuments.get(documentName) as Y.Map<unknown>
