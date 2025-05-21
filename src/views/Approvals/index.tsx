@@ -157,7 +157,20 @@ export const ApprovalsView = (): JSX.Element => {
             <View.Column key={slot.key}>
               <TimeSlot label={slot.label || ''} slots={slot.hours || []} />
 
-              {slot.items.map((assignment, cardN) => {
+              {slot.items.sort((a, b) => {
+                return (
+                  (a.data.publish && !b.data.publish)
+                    ? -1
+                    : (!a.data.publish && b.data.publish)
+                        ? 1
+                        : (a.data.publish && b.data.publish && a.data.publish !== b.data.publish)
+                            ? (a.data.publish < b.data.publish ? -1 : 1)
+                            : (a.data.publish && !b.data.start)
+                                ? -1
+                                : (a.data.start && b.data.start)
+                                    ? (a.data.start < b.data.start ? -1 : 1)
+                                    : (a.data.start && !b.data.start) ? -1 : 1)
+              }).map((assignment, cardN) => {
                 return (
                   <ApprovalsCard
                     key={assignment.id}
