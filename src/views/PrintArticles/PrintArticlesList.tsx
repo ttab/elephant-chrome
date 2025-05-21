@@ -1,10 +1,12 @@
 import { useCallback } from 'react'
 import { useQuery } from '@/hooks'
-import { usePrintArticles } from '@/hooks/baboon/usePrintArticles'
-import { Toolbar } from './Toolbar'
+import { Toolbar } from './PrintArticlesToolbar'
 import { Table } from '@/components/Table'
 import type { PrintArticle } from '@/hooks/baboon/lib/printArticles'
 import type { ColumnDef } from '@tanstack/react-table'
+import { useDocuments } from '@/hooks/index/useDocuments'
+import { constructQuery } from '@/hooks/baboon/useDocuments/printArticle'
+import { fields, type PrintArticleFields } from '@/hooks/baboon/lib/printArticles/schema'
 
 /**
  * PrintArticleList component.
@@ -26,11 +28,17 @@ import type { ColumnDef } from '@tanstack/react-table'
 export const PrintArticleList = ({ columns }: {
   columns: ColumnDef<PrintArticle, unknown>[]
 }): JSX.Element => {
-  const [filter] = useQuery(['from'])
-  const [query] = useQuery()
-  usePrintArticles({
-    filter,
-    id: query.id as string
+  const [filter] = useQuery(['from', 'printFlow', 'workflowState'])
+
+  useDocuments<PrintArticle, PrintArticleFields>({
+    documentType: 'tt/print-article',
+    query: constructQuery(filter),
+    size: 1000,
+    fields,
+    options: {
+      setTableData: true,
+      subscribe: true
+    }
   })
 
   const onRowSelected = useCallback((row?: PrintArticle) => {

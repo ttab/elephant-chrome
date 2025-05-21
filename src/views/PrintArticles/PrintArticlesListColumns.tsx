@@ -5,7 +5,7 @@ import { CircleCheck, Pen } from '@ttab/elephant-ui/icons'
 import type { PrintArticle } from '@/hooks/baboon/lib/printArticles'
 import { DocumentStatuses } from '@/defaults/documentStatuses'
 import { DocumentStatus } from '@/components/Table/Items/DocumentStatus'
-
+import { FacetedFilter } from '@/components/Commands/FacetedFilter'
 /**
  * Generates column definitions for the Print Articles list.
  *
@@ -20,7 +20,12 @@ export function printArticlesListColumns(): Array<ColumnDef<PrintArticle>> {
   return [
     {
       id: 'workflowState',
+      enableGrouping: false,
+      enableColumnFilter: true,
       meta: {
+        Filter: ({ column, setSearch }) => (
+          <FacetedFilter column={column} setSearch={setSearch} />
+        ),
         options: DocumentStatuses,
         name: 'Status',
         columnIcon: CircleCheck,
@@ -36,11 +41,19 @@ export function printArticlesListColumns(): Array<ColumnDef<PrintArticle>> {
       cell: ({ row }) => {
         const status = row.original.fields['workflow_state']?.values[0] || 'draft'
         return <DocumentStatus type='tt/print-article' status={status} />
-      }
+      },
+      filterFn: (row, id, value: string[]) =>
+        value.includes(row.getValue(id))
     },
     {
       id: 'printFlow',
+      enableGrouping: true,
+      enableSorting: true,
       meta: {
+        Filter: ({ column, setSearch }) => (
+          <FacetedFilter column={column} setSearch={setSearch} />
+        ),
+        // options: PrintFlows,
         name: 'Flöde',
         columnIcon: Pen,
         className: 'flex-1 w-[200px]'
@@ -53,10 +66,11 @@ export function printArticlesListColumns(): Array<ColumnDef<PrintArticle>> {
     },
     {
       id: 'articleTitle',
+      enableGrouping: false,
       meta: {
         name: 'Artikel',
         columnIcon: Pen,
-        className: 'flex-1 w-[200px]'
+        className: 'flex-1 w-8'
       },
       accessorFn: (data) => (data.fields['document.meta.tt_print_article.title'].values[0]),
       cell: ({ row }) => {
@@ -67,6 +81,44 @@ export function printArticlesListColumns(): Array<ColumnDef<PrintArticle>> {
             className='text-sm'
           />
         )
+      }
+    },
+    {
+      id: 'document.title',
+      enableGrouping: false,
+      meta: {
+        name: 'Titel',
+        columnIcon: Pen,
+        className: 'flex-1'
+      },
+      accessorFn: (data) => (data.fields['document.title'].values[0]),
+      cell: ({ row }) => {
+        const title = row.getValue('document.title')
+        return <span>{title as string}</span>
+      }
+    },
+    {
+      id: 'headline',
+      enableGrouping: false,
+      meta: {
+        name: 'Rubrik',
+        columnIcon: Pen,
+        className: 'flex-1'
+      },
+      accessorFn: (data) => {
+        const _texts = data.fields['document.content.core_text.data.text'].values
+        const _roles = data.fields['document.content.core_text.role'].values
+        let _title = ''
+        _roles.forEach((role, index) => {
+          if (role === 'heading-1') {
+            _title = _texts[index]
+          }
+        })
+        return _title || ''
+      },
+      cell: ({ row }) => {
+        const title = row.getValue('headline')
+        return <span>{title as string}</span>
       }
     }
   ]

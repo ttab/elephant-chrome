@@ -3,7 +3,8 @@ import {
   CircleDot,
   CircleArrowLeft,
   BadgeCheck,
-  type LucideIcon
+  type LucideIcon,
+  CircleX
 } from '@ttab/elephant-ui/icons'
 
 interface WorkflowItem {
@@ -58,6 +59,10 @@ export const StatusSpecifications: Record<string, StatusSpecification> = {
   needs_proofreading: {
     icon: CircleCheck,
     className: 'bg-done text-white fill-done rounded-full'
+  },
+  cancelled: {
+    icon: CircleX,
+    className: 'bg-cancelled text-white fill-cancelled rounded-full'
   }
 }
 
@@ -452,14 +457,14 @@ export const WorkflowSpecifications: Record<string, WorkflowSpecification> = {
       title: 'Exporterad',
       description: 'Printartikeln är exporterad',
       transitions: {
-        unpublished: {
+        cancelled: {
           verify: true,
           title: 'Dra tillbaka',
           description: 'Avbryt export och arkivera printartikeln'
         }
       }
     },
-    unpublished: {
+    cancelled: {
       title: 'Inställd',
       description: 'Printartikeln är avpublicerad',
       transitions: {
