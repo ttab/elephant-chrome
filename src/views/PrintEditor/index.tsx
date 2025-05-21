@@ -1,48 +1,26 @@
-import { useEffect, useState, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { AwarenessDocument, View } from '@/components'
-import {
-  Button,
-  ScrollArea
-} from '@ttab/elephant-ui'
-import { ChevronRight } from '@ttab/elephant-ui/icons'
-import { useLayouts } from '@/hooks/baboon/useLayouts'
-
-import type * as Y from 'yjs'
 
 import { Textbit, useTextbit } from '@ttab/textbit'
-import {
-  Bold,
-  Italic,
-  Link,
-  Text,
-  OrderedList,
-  UnorderedList,
-  TTVisual,
-  Factbox,
-  Table,
-  LocalizedQuotationMarks
-} from '@ttab/textbit-plugins'
+import { Bold, Italic, Link, Text, TTVisual, Factbox, Table, LocalizedQuotationMarks } from '@ttab/textbit-plugins'
 import { ImageSearchPlugin } from '../../plugins/ImageSearch'
 import { FactboxPlugin } from '../../plugins/Factboxes'
-import { toast } from 'sonner'
 
 import {
   useQuery,
   useCollaboration,
   useLink,
+  useYValue,
   useView,
   useYjsEditor,
   useAwareness,
-  useRegistry,
-  useWorkflowStatus
+  useWorkflowStatus,
+  useRegistry
 } from '@/hooks'
-import { type ViewMetadata, type ViewProps } from '@/types'
+import type { ViewMetadata, ViewProps } from '@/types'
 import { EditorHeader } from './PrintEditorHeader'
-import { LayoutBox } from './LayoutBox'
 import { type HocuspocusProvider } from '@hocuspocus/provider'
 import { type AwarenessUserData } from '@/contexts/CollaborationProvider'
-import { articleDocumentTemplate } from '@/defaults/templates/articleDocumentTemplate'
-import { createDocument } from '@/lib/createYItem'
 import { Error } from '../Error'
 
 import { ContentMenu } from '@/components/Editor/ContentMenu'
@@ -51,15 +29,21 @@ import { ContextMenu } from '@/components/Editor/ContextMenu'
 import { Gutter } from '@/components/Editor/Gutter'
 import { DropMarker } from '@/components/Editor/DropMarker'
 
+import { type Block, type Document } from '@ttab/elephant-api/newsdoc'
 import { getValueByYPath } from '@/shared/yUtils'
 import { useOnSpellcheck } from '@/hooks/useOnSpellcheck'
+import { contentMenuLabels } from '@/defaults/contentMenuLabels'
+import { toast } from 'sonner'
+import { useLayouts } from '@/hooks/baboon/useLayouts'
 import { useSession } from 'next-auth/react'
-import type { Block, Document } from '@ttab/elephant-api/newsdoc'
+import { Button, ScrollArea } from '@ttab/elephant-ui'
+import { LayoutBox } from './LayoutBox'
+import { ChevronRight } from '@ttab/elephant-ui/icons'
 
 // Metadata definition
 const meta: ViewMetadata = {
   name: 'PrintEditor',
-  path: `${import.meta.env.BASE_URL || ''}/print`,
+  path: `${import.meta.env.BASE_URL || ''}/print-editor`,
   widths: {
     sm: 12,
     md: 12,
@@ -73,21 +57,11 @@ const meta: ViewMetadata = {
   }
 }
 
-/**
- * PrintEditor Component - Handles document initialization
- *
- * This component is responsible for initializing the document for the Print Editor.
- * It checks for the presence of a document ID and handles the creation of a new document
- * if necessary. If the document ID is missing or invalid, it displays an error message.
- *
- * @param props - The properties object containing view-related data.
- * @returns The rendered PrintEditor component or an error message if the document ID is missing.
- */
-
+// Main Editor Component - Handles document initialization
 const PrintEditor = (props: ViewProps): JSX.Element => {
   const [query] = useQuery()
-  const [document, setDocument] = useState<Y.Doc | undefined>(undefined)
-  const documentId = props.id || query.id
+  const documentId = props.id || query.id as string
+
   // Error handling for missing document
   if (!documentId || typeof documentId !== 'string') {
     return (
@@ -98,47 +72,26 @@ const PrintEditor = (props: ViewProps): JSX.Element => {
     )
   }
 
-  // Document creation if needed
-  if (props.onDocumentCreated && !document) {
-    const [, doc] = createDocument({
-      template: (id: string) => {
-        return articleDocumentTemplate(id, props?.payload)
-      },
-      documentId
-    })
-    setDocument(doc)
-    return <></>
-  }
-  if (document && props.onDocumentCreated) {
-    props.onDocumentCreated()
-  }
   return (
-    <AwarenessDocument
-      documentId={documentId}
-      document={document}
-      className='h-full'
-    >
+    <AwarenessDocument documentId={documentId} className='h-full'>
       <EditorWrapper documentId={documentId} {...props} />
     </AwarenessDocument>
   )
 }
 
 // Main editor wrapper after document initialization
-function EditorWrapper(
-  props: ViewProps & {
-    documentId: string
-    autoFocus?: boolean
-  }
-): JSX.Element {
+function EditorWrapper(props: ViewProps & {
+  documentId: string
+  autoFocus?: boolean
+}): JSX.Element {
   const { provider, synced, user } = useCollaboration()
   const openFactboxEditor = useLink('Factbox')
+  const [notes] = useYValue<Block[] | undefined>('meta.core/note')
   const [, setIsFocused] = useAwareness(props.documentId)
 
   // Plugin configuration
   const getConfiguredPlugins = () => {
     const basePlugins = [
-      UnorderedList,
-      OrderedList,
       Bold,
       Italic,
       Link,
@@ -152,12 +105,14 @@ function EditorWrapper(
     return [
       ...basePlugins.map((initPlugin) => initPlugin()),
       Text({
-        countCharacters: ['heading-1']
+        countCharacters: ['heading-1'],
+        ...contentMenuLabels
       }),
       Factbox({
         onEditOriginal: (id: string) => {
           openFactboxEditor(undefined, { id })
-        }
+        },
+        removable: true
       })
     ]
   }
@@ -181,11 +136,13 @@ function EditorWrapper(
           synced={synced}
           user={user}
           documentId={props.documentId}
+          notes={notes}
         />
       </Textbit.Root>
     </View.Root>
   )
 }
+
 
 // Container component that uses TextBit context
 function EditorContainer({
@@ -198,6 +155,7 @@ function EditorContainer({
   synced: boolean
   user: AwarenessUserData
   documentId: string
+  notes: Block[] | undefined
 }): JSX.Element {
   const { words, characters } = useTextbit()
   const [bulkSelected, setBulkSelected] = useState<string[]>([])
@@ -279,12 +237,10 @@ function EditorContainer({
       toast.error('Layouter sparades inte')
     })
   }
-
   return (
     <>
-      <EditorHeader documentId={documentId} flowName={flowName} name={name} />
-
-      <View.Content className='flex flex-col max-w-[1200px]'>
+      <EditorHeader documentId={documentId} name={name} flowName={flowName} />
+      <View.Content className='flex flex-col max-w-[1000px]'>
         <section className='grid grid-cols-12'>
           <div className='col-span-8'>
             <ScrollArea className='h-[calc(100vh-7rem)]'>
@@ -336,6 +292,7 @@ function EditorContainer({
                       key={layout.id}
                       bulkSelected={bulkSelected}
                       setBulkSelected={setBulkSelected}
+                      documentId={documentId}
                       layout={layout}
                       updateLayout={updateLayout}
                       isDirty={isDirty}
@@ -355,11 +312,11 @@ function EditorContainer({
 
       <View.Footer>
         <div className='flex gap-2'>
-          <strong>Words:</strong>
+          <strong>Ord:</strong>
           <span>{words}</span>
         </div>
         <div className='flex gap-2'>
-          <strong>Characters:</strong>
+          <strong>Tecken:</strong>
           <span>{characters}</span>
         </div>
       </View.Footer>
@@ -367,19 +324,14 @@ function EditorContainer({
   )
 }
 
-function EditorContent({
-  provider,
-  user
-}: {
+
+function EditorContent({ provider, user }: {
   provider: HocuspocusProvider
   user: AwarenessUserData
 }): JSX.Element {
   const { isActive } = useView()
   const ref = useRef<HTMLDivElement>(null)
-  const [documentLanguage] = getValueByYPath<string>(
-    provider.document.getMap('ele'),
-    'root.language'
-  )
+  const [documentLanguage] = getValueByYPath<string>(provider.document.getMap('ele'), 'root.language')
 
   const yjsEditor = useYjsEditor(provider, user)
   const onSpellcheck = useOnSpellcheck(documentLanguage)
@@ -392,13 +344,20 @@ function EditorContent({
       }, 0)
     }
   }, [isActive, ref])
+
   return (
     <Textbit.Editable
       ref={ref}
       yjsEditor={yjsEditor}
       lang={documentLanguage}
       onSpellcheck={onSpellcheck}
-      className='outline-none h-full dark:text-slate-100 [&_[data-spelling-error]]:border-b-2 [&_[data-spelling-error]]:border-dotted [&_[data-spelling-error]]:border-red-500'
+      className='outline-none
+        h-full
+        dark:text-slate-100
+        [&_[data-spelling-error]]:border-b-2
+        [&_[data-spelling-error]]:border-dotted
+        [&_[data-spelling-error]]:border-red-500
+      '
     >
       <DropMarker />
       <Gutter>
