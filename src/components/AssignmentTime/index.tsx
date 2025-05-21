@@ -57,6 +57,11 @@ export const AssignmentTime = ({ index, onChange }: {
 
   const { className = '', ...iconProps } = selectedOption?.iconProps || {}
 
+  /**
+   *
+   * Used for setting times in text, flash, editorial-info, graphic assignment types
+   */
+
   const handleOnSelect = ({ value, selectValue }: { value: string, selectValue: string }): void => {
     switch (value) {
       case 'fullday':
@@ -106,9 +111,9 @@ export const AssignmentTime = ({ index, onChange }: {
             full_day: 'false',
             start_date: data?.start_date,
             end: endValue,
-            start: assignmentType === 'text' ? endValue : getMidnightISOString(endDate),
+            start: assignmentType && ['text', 'flash', 'editorial-info'].includes(assignmentType) ? endValue : getMidnightISOString(endDate),
             public: data?.public,
-            ...(assignmentType === 'text' ? { publish: endValue } : data?.publish && { publish: data.publish })
+            ...(data?.publish && { publish: data.publish })
           }
         }).data)
       }
@@ -117,6 +122,11 @@ export const AssignmentTime = ({ index, onChange }: {
         break
     }
   }
+
+  /**
+   *
+   * Used for setting time in picture or video assignments
+   */
 
   const onExecutionTimeSelect = (
     { executionStart, executionEnd }: { executionStart: string | undefined, executionEnd: string | undefined }): void => {

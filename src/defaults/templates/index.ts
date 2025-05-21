@@ -15,6 +15,7 @@ export interface TemplatePayload {
     'core/newsvalue'?: Block[]
     'core/planning-item'?: Block[]
     'core/description'?: Block[]
+    'core/event'?: Block[]
   }
   links?: {
     'core/section'?: Block[]

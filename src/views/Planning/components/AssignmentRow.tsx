@@ -1,9 +1,9 @@
-import { TimeDisplay } from '@/components/DataItem/TimeDisplay'
+import { AssignmentTimeDisplay } from '@/components/DataItem/AssignmentTimeDisplay'
 import { AssignmentType } from '@/components/DataItem/AssignmentType'
 import { AssigneeAvatars } from '@/components/DataItem/AssigneeAvatars'
 import type { DotDropdownMenuActionItem } from '@/components/ui/DotMenu'
 import { DotDropdownMenu } from '@/components/ui/DotMenu'
-import { Delete, Edit, Eye, FileInput, Library, MoveRight, Pen } from '@ttab/elephant-ui/icons'
+import { AlarmClockCheck, Clock1, Delete, Edit, Eye, FileInput, Library, type LucideProps, MoveRight, Pen, Watch } from '@ttab/elephant-ui/icons'
 import { type MouseEvent, useMemo, useState, useCallback, useEffect, useRef } from 'react'
 import { SluglineButton } from '@/components/DataItem/Slugline'
 import { useYValue } from '@/hooks/useYValue'
@@ -30,6 +30,7 @@ import { AssignmentTypes } from '@/defaults/assignmentTypes'
 import { CreatePrintArticle } from '@/components/CreatePrintArticle'
 import { snapshot } from '@/lib/snapshot'
 import { AssignmentVisibility } from '@/components/DataItem/AssignmentVisibility'
+import { timeSlotTypes } from '@/defaults/assignmentTimeConstants'
 
 export const AssignmentRow = ({ index, onSelect, isFocused = false, asDialog, onChange }: {
   index: number
@@ -65,6 +66,8 @@ export const AssignmentRow = ({ index, onSelect, isFocused = false, asDialog, on
   const [description] = useYValue<string>(`${base}.meta.core/description[0].data.text`)
   const [publishTime] = useYValue<string>(`${base}.data.publish`)
   const [startTime] = useYValue<string>(`${base}.data.start`)
+  const [endTime] = useYValue<string>(`${base}.data.end`)
+  const [publishSlot] = useYValue<string>(`${base}.data.publish_slot`)
   const [authors = []] = useYValue<Block[]>(`meta.core/assignment[${index}].links.core/author`)
   const [slugline] = useYValue<string>(`${base}.meta.tt/slugline[0].value`)
 
@@ -82,17 +85,59 @@ export const AssignmentRow = ({ index, onSelect, isFocused = false, asDialog, on
   const openDocument = assignmentType === 'flash' ? openFlash : openArticle
   const { showModal, hideModal } = useModal()
 
-  const assTime = useMemo(() => {
+  const assignmentTime = useMemo(() => {
     if (typeof assignmentType !== 'string') {
       return undefined
     }
-    const startTimeTypes = ['picture', 'picture/video', 'video']
-    return startTimeTypes.includes(assignmentType) && startTime
-      ? new Date(startTime)
-      : publishTime
-        ? new Date(publishTime)
-        : undefined
-  }, [publishTime, assignmentType, startTime])
+
+    if (['picture', 'video'].includes(assignmentType) && startTime) {
+      return {
+        time: [new Date(startTime)],
+        tooltip: 'Starttid'
+      }
+    }
+
+    if (publishSlot) {
+      const slotName = timeSlotTypes.find((slot) => slot.slots?.includes(publishSlot))?.label
+      return {
+        time: [slotName],
+        tooltip: 'Publiceringsfönster'
+      }
+    }
+
+    if (publishTime) {
+      return {
+        time: [new Date(publishTime)],
+        tooltip: 'Publiceringstid'
+      }
+    }
+
+    if (endTime && startTime && endTime !== startTime) {
+      return {
+        time: [new Date(startTime), new Date(endTime)],
+        tooltip: 'Start- och sluttid'
+      }
+    }
+
+    if (startTime) {
+      return {
+        time: [new Date(startTime)],
+        tooltip: 'Starttid'
+      }
+    }
+  }, [publishTime, assignmentType, startTime, endTime, publishSlot])
+
+  const TimeIcon = useMemo(() => {
+    const timeIcons: Record<string, React.FC<LucideProps>> = {
+      start: Clock1,
+      publish: AlarmClockCheck,
+      'start-end': Watch
+    }
+
+    const type = publishTime ? 'publish' : endTime && startTime && endTime !== startTime ? 'start-end' : 'start'
+
+    return timeIcons[type] || <></>
+  }, [publishTime, endTime, startTime])
 
   // Open a deliverable (e.g. article, flash, editorial-info) callback helper.
   // For readOnly pass version object
@@ -252,8 +297,8 @@ export const AssignmentRow = ({ index, onSelect, isFocused = false, asDialog, on
         </div>
 
         <div className='flex grow items-center justify-end gap-1.5'>
-          <div className='min-w-[64px] whitespace-nowrap'>
-            {assTime ? <TimeDisplay date={assTime} /> : ''}
+          <div className='whitespace-nowrap flex items-center gap-1'>
+            {assignmentTime && <AssignmentTimeDisplay date={assignmentTime} icon={TimeIcon} />}
           </div>
 
           <Button

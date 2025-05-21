@@ -9,6 +9,7 @@ import type {
   onDisconnectPayload
 } from '@hocuspocus/server'
 import logger from '../../lib/logger.js'
+import { getInterval } from '../../../shared/getInterval.js'
 
 interface EleContext {
   user: {
@@ -72,22 +73,10 @@ export class OpenDocuments implements Extension {
 
     // Periodically update the instance last seen timestamp
     this.#updateInstanceLastSeen()
-    setInterval(() => void this.#updateInstanceLastSeen(), this.#getInterval(25, 35))
+    setInterval(() => void this.#updateInstanceLastSeen(), getInterval(25, 35))
 
     // Periodically check that all instances are connected and clean up if not.
-    setInterval(() => void this.#cleanupIfNecessary(), this.#getInterval(100, 140))
-  }
-
-  /**
-   * Utility function to get a randomized jitter interval in milliseconds
-   * based on min and max number of seconds for intervals. Used to reduce
-   * thundering herd problems and reduce risk of instances running cleanup
-   * simultaneously.
-   */
-  #getInterval(min: number, max: number) {
-    const minCeiled = Math.ceil(min)
-    const maxFloored = Math.floor(max)
-    return Math.floor(Math.random() * (maxFloored - minCeiled + 1) + minCeiled) * 1000
+    setInterval(() => void this.#cleanupIfNecessary(), getInterval(100, 140))
   }
 
   /**
@@ -171,7 +160,12 @@ export class OpenDocuments implements Extension {
   async connected({ documentName, context }: EleConnectedPayload) {
     if (this.isTrackerDocument(documentName)) return
 
-    const { sub: userId, preferred_username: userName, name } = context.user
+    const { sub: userId, preferred_username: userName, name } = context.user || {}
+
+    if (!userId || !userName || !name) {
+      logger.warn({ documentName, context }, 'User information is missing for OpenDocuments.connected')
+      throw new Error('User information is missing for OpenDocuments.connected')
+    }
 
     await this.#connection?.transact((doc) => {
       const yOpenDocuments = doc.getMap('open-documents')
@@ -226,7 +220,13 @@ export class OpenDocuments implements Extension {
   async onDisconnect({ documentName, context }: EleOnDisconnectPayload) {
     if (this.isTrackerDocument(documentName)) return
 
-    const { sub: userId } = context.user
+    const { sub: userId } = context.user || {}
+
+    if (!userId) {
+      logger.warn({ documentName, context }, 'User information is missing for OpenDocuments.onDisconnect')
+      throw new Error('User information is missing for OpenDocuments.onDisconnect')
+    }
+
     await this.#connection?.transact((doc) => {
       const yOpenDocuments = doc.getMap('open-documents')
       const yDocEntry = yOpenDocuments.get(documentName) as Y.Map<unknown>

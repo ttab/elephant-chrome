@@ -169,7 +169,6 @@ describe('getStatusInfo', () => {
   })
 
 
-
   it('returns most recently created status for current version with cause', () => {
     const meta = {
       currentVersion: BigInt(14),

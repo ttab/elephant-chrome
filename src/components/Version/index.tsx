@@ -7,18 +7,17 @@ import { useModal } from '../Modal/useModal'
 import { PreviewSheet } from '@/views/Wires/components'
 import { useAuthors } from '@/hooks/useAuthors'
 import { getCreatorBySub } from './getCreatorBySub'
-import { DocumentStatuses } from '@/defaults/documentStatuses'
 import { Error } from '@/views/Error'
-import { STATUS_KEYS } from './statuskeys'
-import type { GetHistoryResponse } from '@ttab/elephant-api/repository'
-import type { DocumentVersion } from '@ttab/elephant-api/repository'
+import type { GetStatusHistoryReponse } from '@ttab/elephant-api/repository'
+import type { Status as DocumentStatus } from '@ttab/elephant-api/repository'
 import type { EleDocumentResponse } from '@/shared/types'
 import { dateToReadableDateTime } from '@/lib/datetime'
+import { CAUSE_KEYS } from './causekeys'
 const BASE_URL = import.meta.env.BASE_URL || ''
 
 type Status = { name: string, created: string, creator: string }
 
-type SelectedVersion = Pick<DocumentVersion, 'created' | 'version' | 'creator'> & {
+type SelectedVersion = Pick<DocumentStatus, 'created' | 'version' | 'creator'> & {
   createdBy?: string
   lastStatus?: Status
   title?: string
@@ -30,42 +29,32 @@ export const Version = ({ documentId, hideDetails = false, textOnly = true }: { 
   const authors = useAuthors()
   const [lastUpdated, setLastUpdated] = useState('')
 
-  const { data: versionHistory, error } = useSWR<DocumentVersion[], Error>(`version/${documentId}`, async (): Promise<Array<DocumentVersion & { title?: string, slugline?: string }>> => {
+  const { data: versionStatusHistory, error } = useSWR<DocumentStatus[], Error>(`version/${documentId}`, async (): Promise<Array<DocumentStatus & { title?: string, slugline?: string }>> => {
     if (!session?.accessToken || !repository) {
       return []
     }
 
-    const result: GetHistoryResponse | null = await repository.getHistory({ accessToken: session.accessToken, uuid: documentId })
+    const result: GetStatusHistoryReponse | null = await repository.getStatusHistory({ accessToken: session.accessToken, uuid: documentId })
 
     if (result === null) {
       return []
     }
 
-    if (!result?.versions.length) {
+    if (!result?.statuses.length) {
       return []
     }
-
     // Setting time for when last version was created
-    setLastUpdated(result.versions[0].created)
+    setLastUpdated(result.statuses[0].created)
 
-    // We're only interested in versions with set statuses
-    result.versions = result.versions.filter((v) => {
-      const statuskeys = Object.keys(v.statuses)
-      if (!statuskeys.length) {
-        return v
-      }
-      return statuskeys.some((key) => STATUS_KEYS.includes(key))
-    })
-
-    const fetchDoc = async (v: DocumentVersion) => {
+    const fetchDoc = async (v: DocumentStatus) => {
       // Used to fetch the previous document version in order to get hold of the title,
       // that can be displayed in the list of previous versions.
       const response = await fetch(`${BASE_URL}/api/documents/${documentId}?version=${v.version}`)
-      return await response.json()
+      return await response.json() as EleDocumentResponse
     }
 
-    result.versions = await Promise.all(result.versions.map(async (version) => {
-      const versionDoc = await fetchDoc(version) as EleDocumentResponse
+    result.statuses = await Promise.all(result.statuses.map(async (version) => {
+      const versionDoc = await fetchDoc(version)
 
       if (versionDoc) {
         const doc = versionDoc?.document
@@ -96,32 +85,19 @@ export const Version = ({ documentId, hideDetails = false, textOnly = true }: { 
       return version
     }))
 
-    const getLastReadOrSaved = (version: DocumentVersion) => {
-      if (version?.creator.includes('elephant-wires')) {
-        return Object.entries(version.statuses).map((s) => {
-          const [name, data] = s
-          const lastCreated = data.items.sort((a, b) => a.created > b.created ? -1 : 1)[0]
-          const creator = lastCreated.creator
-          const created = lastCreated.created
-          return { name, created, creator }
-        })?.sort((a, b) => a.created > b.created ? -1 : 1)[0]
-      }
-    }
-
     // Set last version as starting point
-    const lastStatus = getLastReadOrSaved(result?.versions[0])
-
+    const lastStatus = { ...result?.statuses[0], name: 'usable' }
     const createdBy = getCreatorBySub({
       authors,
-      creator: lastStatus?.creator || result?.versions[0]?.creator
+      creator: lastStatus?.creator || result?.statuses[0]?.creator
     })?.name || '???'
 
     setVersion({
-      ...result?.versions[0],
+      ...result?.statuses[0],
       createdBy,
       lastStatus
     })
-    return result?.versions
+    return result?.statuses
   })
 
   const [selectedVersion, setVersion] = useState<SelectedVersion>()
@@ -142,42 +118,21 @@ export const Version = ({ documentId, hideDetails = false, textOnly = true }: { 
       return <></>
     }
 
-    const getUsable = (version: DocumentVersion): Status | undefined => {
-      let status: Status = { name: '', created: '', creator: '' }
+    const getUsable = (v: DocumentStatus): Status | undefined => {
+      const status: Status = { name: '', created: v.created, creator: createdBy(v.creator) }
 
-      const statuses = [
-        ...DocumentStatuses,
-        {
-          label: 'Läst',
-          value: 'read'
-        },
-        {
-          label: 'Sparad',
-          value: 'saved'
-        },
-        {
-          label: 'Använd',
-          value: 'used'
-        }
-      ]
-
-      if (!Object.keys(version?.statuses)?.length) {
-        return { ...status, creator: createdBy(version.creator), created: version.created }
-      }
-
-      for (const key in version?.statuses) {
-        if (STATUS_KEYS.includes(key)) {
-          const item = version.statuses[key]?.items[0]
-          const name = statuses.find((s) => s.value === key)?.label || ''
-
-          status = { name, created: version.created, creator: createdBy(item.creator) || createdBy(version.creator) }
+      if (v.meta && 'cause' in v.meta) {
+        if ((CAUSE_KEYS as Record<string, string>)[v?.meta?.cause]) {
+          status.name = (CAUSE_KEYS as Record<string, string>)[v?.meta?.cause]
         }
       }
+
       return status
     }
 
-    return versionHistory?.map((v: DocumentVersion & { title?: string, slugline?: string }) => {
+    return versionStatusHistory?.map((v: DocumentStatus & { title?: string, slugline?: string }) => {
       const usable = getUsable(v)
+
       return (
         <SelectItem
           key={`${usable?.created}-${v.version}`}
@@ -196,9 +151,9 @@ export const Version = ({ documentId, hideDetails = false, textOnly = true }: { 
         </SelectItem>
       )
     })
-  }, [documentId, versionHistory, createdBy, formatDateAndTime])
+  }, [documentId, versionStatusHistory, createdBy, formatDateAndTime])
 
-  if (!versionHistory?.length) {
+  if (!versionStatusHistory?.length) {
     return <></>
   }
 
@@ -216,13 +171,13 @@ export const Version = ({ documentId, hideDetails = false, textOnly = true }: { 
     <div className='flex flex-col gap-2 rounded -mt-2'>
       <Select
         onValueChange={(option) => {
-          const current = versionHistory?.find((v) => v.version === BigInt(option))
+          const current = versionStatusHistory?.find((v) => v.version === BigInt(option))
           setVersion(current)
           showModal(
             <PreviewSheet
               id={documentId}
               version={current?.version && BigInt(current?.version)}
-              versionHistory={versionHistory}
+              versionStatusHistory={versionStatusHistory}
               textOnly={textOnly}
               handleClose={hideModal}
             />,

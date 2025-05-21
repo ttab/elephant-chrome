@@ -34,16 +34,18 @@ export function createPayload(document: Y.Doc, index?: number, payloadType: stri
   const newsvalue = meta.get('core/newsvalue')?.toJSON() || []
 
   const section = links.get('core/section')?.toJSON() || []
+  const event = meta.get('core/event')?.toJSON() || []
 
   const tplPayload: TemplatePayload = {
     title,
     meta: {
       'tt/slugline': ungroup({ 'tt:/slugline': slugline }),
-      'core/newsvalue': ungroup({ 'core/newsvalue': newsvalue })
+      'core/newsvalue': ungroup({ 'core/newsvalue': newsvalue }),
+      'core/event': ungroup({ 'core/event': event })
     },
     links: {
       'core/section': ungroup({ 'core/section': section }),
-      'core/story': ungroup({ 'core/section': story })
+      'core/story': ungroup({ 'core/story': story })
     }
   }
 

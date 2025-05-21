@@ -26,7 +26,7 @@ import { PlanningTable } from './components/PlanningTable'
 import { Error } from '../Error'
 import { Form } from '@/components/Form'
 import { EventTimeMenu } from './components/EventTime'
-import { useEffect } from 'react'
+import { useCallback, useEffect } from 'react'
 import { EventHeader } from './EventHeader'
 import { DuplicatesTable } from './components/DuplicatesTable'
 import { Cancel } from './components/Cancel'
@@ -78,7 +78,8 @@ const EventViewContent = (props: ViewProps & { documentId: string }): JSX.Elemen
   const { data, status } = useSession()
   const [, setIsFocused] = useAwareness(props.documentId)
   const [eventTitle] = useYValue<string | undefined>('root.title')
-  const [cancelled, setCancelled] = useYValue<boolean | undefined>('meta.core/event[0].data.cancelled')
+  const [cancelled, setCancelled] = useYValue<string | undefined>('meta.core/event[0].data.cancelled')
+  const [isChanged] = useYValue<boolean>('root.changed')
 
   useEffect(() => {
     provider?.setAwarenessField('data', user)
@@ -92,7 +93,19 @@ const EventViewContent = (props: ViewProps & { documentId: string }): JSX.Elemen
     // eslint-disable-next-line
   }, [provider])
 
-  const handleSubmit = (): void => {
+  const handleChange = useCallback((value: boolean): void => {
+    const root = provider?.document.getMap('ele').get('root') as Y.Map<unknown>
+    const changed = root.get('changed') as boolean
+
+
+    if (changed !== value) {
+      root.set('changed', value)
+    }
+  }, [provider])
+
+  const handleSubmit = ({ documentStatus }: {
+    documentStatus: 'usable' | 'done' | undefined
+  }): void => {
     if (props?.onDialogClose) {
       props.onDialogClose()
     }
@@ -101,6 +114,7 @@ const EventViewContent = (props: ViewProps & { documentId: string }): JSX.Elemen
       provider.sendStateless(
         createStateless(StatelessType.IN_PROGRESS, {
           state: false,
+          status: documentStatus,
           id: props.documentId,
           context: {
             agent: 'server',
@@ -123,9 +137,10 @@ const EventViewContent = (props: ViewProps & { documentId: string }): JSX.Elemen
         session={data}
         type='event'
         status={status}
+        isChanged={isChanged}
       />
       <View.Content className='max-w-[1000px] flex-auto'>
-        <Form.Root asDialog={props.asDialog}>
+        <Form.Root asDialog={props.asDialog} onChange={handleChange}>
           <Form.Content>
             <Form.Title>
               <Title
@@ -148,7 +163,7 @@ const EventViewContent = (props: ViewProps & { documentId: string }): JSX.Elemen
             </Form.Group>
 
             <Form.Group icon={Tags}>
-              <Category asDialog={props.asDialog} />
+              <Category />
               <Story />
             </Form.Group>
             {!props.asDialog && (
@@ -163,11 +178,22 @@ const EventViewContent = (props: ViewProps & { documentId: string }): JSX.Elemen
           </Form.Table>
 
           <Form.Footer>
-            <Form.Submit onSubmit={handleSubmit}>
-
-              <div className='flex justify-end px-6 py-4'>
+            <Form.Submit
+              onSubmit={() => handleSubmit({ documentStatus: 'usable' })}
+              onSecondarySubmit={() => handleSubmit({ documentStatus: 'done' })}
+              onTertiarySubmit={() => handleSubmit({ documentStatus: undefined })}
+            >
+              <div className='flex justify-between'>
+                <div className='flex gap-2'>
+                  <Button type='button' variant='secondary' role='tertiary'>
+                    Utkast
+                  </Button>
+                  <Button type='button' variant='secondary' role='secondary'>
+                    Intern
+                  </Button>
+                </div>
                 <Button type='submit'>
-                  Skapa händelse
+                  Publicera
                 </Button>
               </div>
             </Form.Submit>

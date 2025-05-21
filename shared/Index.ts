@@ -46,7 +46,11 @@ export class Index {
   constructor(indexUrl: string) {
     this.#client = new SearchV1Client(
       new TwirpFetchTransport({
-        baseUrl: new URL('twirp', indexUrl).toString()
+        baseUrl: new URL('twirp', indexUrl).toString(),
+        sendJson: true,
+        jsonOptions: {
+          ignoreUnknownFields: true
+        }
       })
     )
   }
@@ -75,7 +79,13 @@ export class Index {
             from: BigInt((currentPage - 1) * size),
             size: BigInt(pageSize),
             fields: (fields as unknown as string[]) || [],
-            sort: sort || [SortingV1.create({ field: 'created', desc: true })],
+            sort: sort
+              ? [
+                  ...sort,
+                  // Add extra last sorting for stable results
+                  SortingV1.create({ field: 'document.title.sort', desc: false })
+                ]
+              : [SortingV1.create({ field: 'created', desc: true })],
             query: query || QueryV1.create({
               conditions: {
                 oneofKind: 'matchAll',
@@ -83,6 +93,7 @@ export class Index {
               }
             }),
             source,
+            shared: true,
             searchAfter: [],
             loadDocument: loadDocument || options?.asAssignments,
             subscribe: currentPage === 1 ? options?.subscribe : false

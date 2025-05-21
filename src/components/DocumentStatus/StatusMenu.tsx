@@ -1,7 +1,7 @@
 import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from '@ttab/elephant-ui'
 import { useRef, useState, useEffect, useCallback } from 'react'
 import { useWorkflow } from '@/hooks/index/useWorkflow'
-import type { WorkflowTransition } from '@/defaults/workflowSpecification'
+import { StatusSpecifications, type WorkflowTransition } from '@/defaults/workflowSpecification'
 import { useWorkflowStatus } from '@/hooks/useWorkflowStatus'
 import { StatusOptions } from './StatusOptions'
 import { StatusMenuHeader } from './StatusMenuHeader'
@@ -9,6 +9,12 @@ import { PromptDefault } from './PromptDefault'
 import { PromptSchedule } from './PromptSchedule'
 import { StatusMenuOption } from './StatusMenuOption'
 import { StatusButton } from './StatusButton'
+import { useSession } from 'next-auth/react'
+import { useRegistry } from '@/hooks/useRegistry'
+import { toast } from 'sonner'
+import { handleLink } from '../Link/lib/handleLink'
+import { useHistory, useNavigation, useView } from '@/hooks/index'
+import type { View } from '@/types/index'
 
 export const StatusMenu = ({ documentId, type, publishTime, onBeforeStatusChange, isChanged }: {
   documentId: string
@@ -20,11 +26,16 @@ export const StatusMenu = ({ documentId, type, publishTime, onBeforeStatusChange
   ) => Promise<boolean>
   isChanged?: boolean
 }) => {
-  const [documentStatus, setDocumentStatus] = useWorkflowStatus(documentId, (type === 'core/article' || type === 'tt/print-article'))
+  const [documentStatus, setDocumentStatus] = useWorkflowStatus(documentId, true)
   const containerRef = useRef<HTMLDivElement>(null)
   const [dropdownWidth, setDropdownWidth] = useState<number>(0)
   const { statuses, workflow } = useWorkflow(type)
   const [prompt, showPrompt] = useState<{ status: string } & WorkflowTransition | undefined>()
+  const { data: session } = useSession()
+  const { repository } = useRegistry()
+  const { state, dispatch } = useNavigation()
+  const history = useHistory()
+  const { viewId } = useView()
 
   useEffect(() => {
     if (containerRef.current) {
@@ -47,15 +58,59 @@ export const StatusMenu = ({ documentId, type, publishTime, onBeforeStatusChange
     )
   }, [onBeforeStatusChange, setDocumentStatus])
 
+  const unPublishDocument = (newStatus?: string) => {
+    if (!repository || !session?.accessToken || newStatus !== 'unpublished') {
+      return
+    }
+
+    // Unpublishing a document is done by setting version: -1, status name to 'usable'
+    const status = {
+      uuid: documentId,
+      name: 'usable',
+      version: -1n
+    }
+
+    try {
+      (async () => {
+        await repository?.saveMeta({
+          status,
+          accessToken: session?.accessToken || '',
+          cause: documentStatus?.cause,
+          isWorkflow: type === 'core/article' || type === 'core/planning-item' || type === 'core/event',
+          currentStatus: documentStatus
+        })
+
+        const viewType: Record<string, View> = {
+          'core/article': 'Editor',
+          'core/planning-item': 'Planning',
+          'core/event': 'Event'
+        }
+
+        handleLink({
+          dispatch,
+          viewItem: state.viewRegistry.get(viewType[type]),
+          props: { id: documentId },
+          viewId: crypto.randomUUID(),
+          history,
+          origin: viewId,
+          target: 'self'
+        })
+      })().catch((err) => console.error(err))
+    } catch (error) {
+      toast.error('Det gick inte att avpublicera dokumentet')
+      console.error('error while unpublishing document:', error)
+    }
+  }
+
   if (!documentStatus || !Object.keys(statuses).length) {
     return null
   }
 
   const currentStatusName = documentStatus.name
-  const currentStatusDef = statuses[currentStatusName]
+  const currentStatusDef = statuses[currentStatusName] || StatusSpecifications[currentStatusName]
   const transitions = workflow[currentStatusName]?.transitions || {}
 
-  if (!Object.keys(transitions).length) {
+  if (!Object.keys(transitions).length && currentStatusName !== 'unpublished') {
     return null
   }
 
@@ -82,8 +137,8 @@ export const StatusMenu = ({ documentId, type, publishTime, onBeforeStatusChange
             style={{ minWidth: `${dropdownWidth}px` }}
           >
             <StatusMenuHeader
-              icon={currentStatusDef?.icon}
-              className={currentStatusDef?.className}
+              icon={currentStatusDef?.icon || StatusSpecifications[currentStatusName]?.icon}
+              className={currentStatusDef?.className || StatusSpecifications[currentStatusName]?.className}
               title={workflow[currentStatusName]?.title}
               description={workflow[currentStatusName]?.description}
             />
@@ -129,10 +184,16 @@ export const StatusMenu = ({ documentId, type, publishTime, onBeforeStatusChange
               prompt={prompt}
               showPrompt={showPrompt}
               setStatus={(...args) => void setStatus(...args)}
-              currentCause={documentStatus?.cause as string
-              || (isChanged && prompt.status === 'usable' && 'development')
-              || undefined}
-              requireCause={prompt.status === 'draft' && !!documentStatus.checkpoint}
+              currentCause={
+                documentStatus?.cause !== undefined
+                  ? documentStatus.cause
+                  : (isChanged && prompt.status === 'usable')
+                      ? ''
+                      : undefined
+              }
+              requireCause={(!isChanged && prompt.status !== 'usable')
+              || (prompt.status === 'draft' && !!documentStatus.checkpoint)}
+              unPublishDocument={unPublishDocument}
             />
           )}
         </>

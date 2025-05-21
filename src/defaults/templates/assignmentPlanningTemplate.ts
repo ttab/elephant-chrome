@@ -23,7 +23,16 @@ export function assignmentPlanningTemplate({
   assignmentData?: Block['data']
   assignee: IDBAuthor | null | undefined
 }): Block {
-  const startDate = new Date(`${planningDate}T00:00:00`)
+  const startDateAndTime = (type: string): string => {
+    const isTextFlashOrEditorialInfo = ['text', 'flash', 'editorial-info'].includes(type)
+
+    if (isTextFlashOrEditorialInfo) {
+      const currentTime = new Date().toISOString().split('T')[1]
+      return new Date(`${planningDate}T${currentTime}`).toISOString()
+    } else {
+      return new Date(`${planningDate}T00:00:00`).toISOString()
+    }
+  }
 
   const wireContentSourceDocument: Block[] = [
     wire
@@ -61,7 +70,7 @@ export function assignmentPlanningTemplate({
       full_day: 'false',
       end_date: planningDate,
       start_date: planningDate,
-      start: startDate.toISOString(),
+      start: startDateAndTime(assignmentType),
       public: assignmentType === 'flash'
         ? 'false'
         : 'true'

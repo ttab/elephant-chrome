@@ -5,10 +5,11 @@ import { ViewHeader } from '@/components/View'
 import { BookTextIcon } from '@ttab/elephant-ui/icons'
 import { MetaSheet } from '../Editor/components/MetaSheet'
 
-export const FactboxHeader = ({ documentId, asDialog, onDialogClose }: {
+export const FactboxHeader = ({ documentId, asDialog, onDialogClose, isChanged }: {
   documentId: string
   asDialog: boolean
   onDialogClose?: () => void
+  isChanged?: boolean
 }): JSX.Element => {
   const { viewId } = useView()
   const containerRef = useRef<HTMLElement | null>(null)
@@ -32,7 +33,11 @@ export const FactboxHeader = ({ documentId, asDialog, onDialogClose }: {
 
           <div className='flex flex-row gap-2 justify-end items-center'>
             {!asDialog && (
-              <StatusMenu documentId={documentId} type='core/factbox' />
+              <StatusMenu
+                documentId={documentId}
+                type='core/factbox'
+                isChanged={isChanged}
+              />
             )}
 
             <MetaSheet container={containerRef.current} documentId={documentId} />
@@ -40,7 +45,7 @@ export const FactboxHeader = ({ documentId, asDialog, onDialogClose }: {
           </div>
         </div>
       </ViewHeader.Content>
-      <ViewHeader.Action onDialogClose={onDialogClose} />
+      <ViewHeader.Action onDialogClose={onDialogClose} asDialog={asDialog} />
 
     </ViewHeader.Root>
   )

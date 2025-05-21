@@ -2,7 +2,6 @@ import { type DefaultValueOption } from '@/types'
 import {
   CircleCheck,
   CircleDot,
-  CircleX,
   BadgeCheck
 } from '@ttab/elephant-ui/icons'
 
@@ -53,17 +52,6 @@ export const DocumentStatuses: DefaultValueOption[] = [
     }
   },
   {
-    label: 'Inställd',
-    value: 'cancelled',
-    icon: CircleX,
-    iconProps: {
-      color: '#ffffff',
-      className: 'bg-cancelled fill-cancelled rounded-full',
-      size: 18,
-      strokeWidth: 1.75
-    }
-  },
-  {
     label: 'Utkast',
     value: 'draft',
     icon: CircleDot,
@@ -105,17 +93,6 @@ export const PlanningEventStatuses: DefaultValueOption[] = [
     iconProps: {
       color: '#ffffff',
       className: 'bg-done fill-done rounded-full',
-      size: 18,
-      strokeWidth: 1.75
-    }
-  },
-  {
-    label: 'Inställd',
-    value: 'cancelled',
-    icon: CircleX,
-    iconProps: {
-      color: '#ffffff',
-      className: 'bg-cancelled fill-cancelled rounded-full',
       size: 18,
       strokeWidth: 1.75
     }

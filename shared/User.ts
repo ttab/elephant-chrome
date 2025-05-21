@@ -14,7 +14,11 @@ export class User {
     this.#tokenService = tokenService
     this.#client = new MessagesClient(
       new TwirpFetchTransport({
-        baseUrl: new URL('twirp', userUrl).toString()
+        baseUrl: new URL('twirp', userUrl).toString(),
+        sendJson: true,
+        jsonOptions: {
+          ignoreUnknownFields: true
+        }
       })
     )
   }
@@ -49,21 +53,21 @@ export class User {
       const payload: Record<string, string> = {}
 
       if (error instanceof Error) {
-        payload['err_name'] = error.name
-        payload['err_message'] = error.message
+        payload['err_name'] = error.name || ''
+        payload['err_message'] = error.message || ''
         payload['err_stack'] = error.stack || ''
       }
 
       if (rpcError) {
         type = 'rpc_error'
-        payload['rpc_code'] = rpcError.code
+        payload['rpc_code'] = rpcError.code || ''
         payload['rpc_meta'] = rpcError.meta ? JSON.stringify(rpcError.meta) : ''
         payload['rpc_methodName'] = rpcError.methodName || ''
         payload['rpc_serviceName'] = rpcError.serviceName || ''
       }
 
       if (context.docName) {
-        payload['documentName'] = context.docName as string
+        payload['documentName'] = typeof context.docName === 'string' ? context.docName : ''
       }
 
       const accessToken = await this.#tokenService.getAccessToken()
@@ -71,8 +75,8 @@ export class User {
       await this.#client.pushMessage({
         recipient,
         type,
-        docUuid: context.docUuid as string,
-        docType: context.docType as string,
+        docUuid: typeof context.docUuid === 'string' ? context.docUuid : '',
+        docType: typeof context.docType === 'string' ? context.docType : '',
         payload
       }, meta(accessToken))
     } catch (err: unknown) {

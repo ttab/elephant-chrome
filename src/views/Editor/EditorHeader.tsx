@@ -10,7 +10,7 @@ import { toast } from 'sonner'
 import { handleLink } from '@/components/Link/lib/handleLink'
 import { useDeliverablePlanningId } from '@/hooks/index/useDeliverablePlanningId'
 import { Button } from '@ttab/elephant-ui'
-import { updateAssignmentPublishTime } from '@/lib/index/updateAssignmentPublishTime'
+import { updateAssignmentTime } from '@/lib/index/updateAssignmentPublishTime'
 
 export const EditorHeader = ({ documentId, readOnly, readOnlyVersion }: { documentId: string, readOnly?: boolean, readOnlyVersion?: bigint }): JSX.Element => {
   const { viewId } = useView()
@@ -74,17 +74,20 @@ export const EditorHeader = ({ documentId, readOnly, readOnlyVersion }: { docume
       })
     }
 
-    // We require a valid publish time if scheduling
-    if (newStatus === 'withheld' && !(data?.time instanceof Date)) {
-      toast.error('Kunde inte schemalägga artikel! Tid eller datum är felaktigt angivet.')
-      return false
+    // When we set withheld or draft we must change related dates (publish and start respecively)
+    if (['withheld', 'draft'].includes(newStatus)) {
+      // We require a valid publish time if scheduling
+      if (newStatus === 'withheld' && !(data?.time instanceof Date)) {
+        toast.error('Kunde inte schemalägga artikel! Tid eller datum är felaktigt angivet.')
+        return false
+      }
+
+      const newTime = ((data?.time instanceof Date))
+        ? data.time
+        : new Date()
+
+      await updateAssignmentTime(documentId, planningId, newStatus, newTime)
     }
-
-    const newPublishTime = ((data?.time instanceof Date))
-      ? data.time
-      : new Date()
-
-    await updateAssignmentPublishTime(documentId, planningId, newStatus, newPublishTime)
 
     return true
   }, [planningId, dispatch, documentId, history, state.viewRegistry, viewId, workflowStatus])
@@ -92,6 +95,7 @@ export const EditorHeader = ({ documentId, readOnly, readOnlyVersion }: { docume
   const title = documentType === 'core/editorial-info' ? 'Till red' : 'Artikel'
 
   const isReadOnlyAndUpdated = workflowStatus && workflowStatus?.name !== 'usable' && readOnly
+  const isUnpublished = workflowStatus?.name === 'unpublished'
 
   return (
     <ViewHeader.Root>
@@ -111,7 +115,7 @@ export const EditorHeader = ({ documentId, readOnly, readOnlyVersion }: { docume
               <>
                 {!readOnly && <ViewHeader.RemoteUsers documentId={documentId} />}
 
-                {isReadOnlyAndUpdated && (
+                {isReadOnlyAndUpdated && !isUnpublished && (
                   <Button
                     variant='secondary'
                     onClick={(event) => {
@@ -126,7 +130,7 @@ export const EditorHeader = ({ documentId, readOnly, readOnlyVersion }: { docume
                   </Button>
                 )}
 
-                {!!planningId && !isReadOnlyAndUpdated && (
+                {!!planningId && (!isReadOnlyAndUpdated || isUnpublished) && (
                   <StatusMenu
                     documentId={documentId}
                     type={documentType || 'core/article'}

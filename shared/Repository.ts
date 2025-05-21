@@ -9,7 +9,7 @@ import type {
   UpdateResponse,
   ValidateRequest,
   ValidateResponse,
-  GetHistoryResponse,
+  GetStatusHistoryReponse,
   GetMetricsResponse
 } from '@ttab/elephant-api/repository'
 import type { Document } from '@ttab/elephant-api/newsdoc'
@@ -36,13 +36,21 @@ export class Repository {
   constructor(repoUrl: string) {
     this.#client = new DocumentsClient(
       new TwirpFetchTransport({
-        baseUrl: new URL('twirp', repoUrl).toString()
+        baseUrl: new URL('twirp', repoUrl).toString(),
+        sendJson: true,
+        jsonOptions: {
+          ignoreUnknownFields: true
+        }
       })
     )
 
     this.#metricsClient = new MetricsClient(
       new TwirpFetchTransport({
-        baseUrl: new URL('twirp', repoUrl).toString()
+        baseUrl: new URL('twirp', repoUrl).toString(),
+        sendJson: true,
+        jsonOptions: {
+          ignoreUnknownFields: true
+        }
       })
     )
   }
@@ -171,13 +179,13 @@ export class Repository {
    * @returns {Promise<GetHistoryResponse | null>} The document history or null if not found.
    * @throws {Error} If the UUID format is invalid or unable to fetch the history.
    */
-  async getHistory({ uuid, accessToken }: { uuid: string, accessToken: string }): Promise<GetHistoryResponse | null> {
+  async getStatusHistory({ uuid, accessToken }: { uuid: string, accessToken: string }): Promise<GetStatusHistoryReponse | null> {
     if (!isValidUUID(uuid)) {
       throw new Error('Invalid uuid format')
     }
 
     try {
-      const { response } = await this.#client.getHistory({ uuid, before: 0n, loadStatuses: true }, meta(accessToken))
+      const { response } = await this.#client.getStatusHistory({ uuid, name: 'usable', before: 0n }, meta(accessToken))
 
       return response
     } catch (err) {
@@ -198,7 +206,7 @@ export class Repository {
    * @returns {Promise<UpdateResponse>} The response from the update operation.
    * @throws {Error} If unable to save meta information.
    */
-  async saveMeta({ status, accessToken, cause, isWorkflow = false }: {
+  async saveMeta({ status, accessToken, cause, isWorkflow = false, currentStatus }: {
     status: Status
     currentStatus?: Status
     accessToken: string
@@ -221,7 +229,7 @@ export class Repository {
               ifMatch: status.version
             }],
         meta: {},
-        ifMatch: status.version,
+        ifMatch: status.version < 0 ? currentStatus?.version ? currentStatus.version : status.version : status.version,
         acl: [],
         updateMetaDocument: false,
         lockToken: '',

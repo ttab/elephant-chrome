@@ -56,7 +56,8 @@ describe('createFlash', () => {
       session,
       planning: { document: planning[1], id: planning[0] },
       hasSelectedPlanning: isExistingPlanning,
-      timeZone: 'Europe/Stockholm'
+      timeZone: 'Europe/Stockholm',
+      documentStatus: undefined
     })
 
     if (!result || !result.planning || !result.flash) {

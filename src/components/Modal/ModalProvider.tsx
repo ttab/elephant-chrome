@@ -5,7 +5,6 @@ import {
 } from 'react'
 import type { ModalData } from './ModalContext'
 import { ModalContext } from './ModalContext'
-import { useKeydownGlobal } from '@/hooks/useKeydownGlobal'
 import { ModalDialog } from './ModalDialog'
 import { ModalSheet } from './ModalSheet'
 
@@ -15,12 +14,6 @@ export const ModalProvider = ({ children }: PropsWithChildren): JSX.Element => {
   const [modalData, setModalData] = useState<ModalData | undefined>(undefined)
   const [modalContent, setModalContent] = useState<ReactNode | null>(null)
   const [modalType, setModalType] = useState<string | undefined>(undefined)
-
-  useKeydownGlobal((evt) => {
-    if (evt.key === 'Escape') {
-      hideModal()
-    }
-  })
 
   const showModal = (content: ReactNode, type: string = 'dialog', data: ModalData | undefined, side: string = 'bottom'): void => {
     setModalContent(content)

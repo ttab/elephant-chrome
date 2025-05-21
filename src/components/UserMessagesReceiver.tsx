@@ -34,7 +34,12 @@ export const UserMessagesReceiver = ({ children }: React.PropsWithChildren) => {
       abortController.abort()
     }
 
-    window.addEventListener('beforeunload', handleBeforeUnload)
+    // Safari/iOS specific: https://bugs.webkit.org/show_bug.cgi?id=219102
+    if (/iP(ad|hone|od)|Macintosh/.test(navigator.userAgent) && 'ontouchend' in document) {
+      window.addEventListener('unload', handleBeforeUnload)
+    } else {
+      window.addEventListener('beforeunload', handleBeforeUnload)
+    }
 
     void startPolling().catch((ex) => {
       if (ex instanceof AbortError) {
@@ -46,7 +51,11 @@ export const UserMessagesReceiver = ({ children }: React.PropsWithChildren) => {
     return () => {
       isActive = false
       abortController.abort()
-      window.removeEventListener('beforeunload', handleBeforeUnload)
+      if (/iP(ad|hone|od)|Macintosh/.test(navigator.userAgent) && 'ontouchend' in document) {
+        window.removeEventListener('unload', handleBeforeUnload)
+      } else {
+        window.removeEventListener('beforeunload', handleBeforeUnload)
+      }
     }
   }, [data?.accessToken, user])
 
