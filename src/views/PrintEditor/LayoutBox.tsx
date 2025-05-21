@@ -5,7 +5,10 @@ import { useLink } from '@/hooks/useLink'
 import type { Block } from '@ttab/elephant-api/newsdoc'
 import { Button, Label, Popover, PopoverContent, PopoverTrigger, Input, Command, CommandInput, CommandList, CommandItem } from '@ttab/elephant-ui'
 import { CircleCheckBig, TriangleAlert, X, Eye, ChevronDown } from '@ttab/elephant-ui/icons'
-
+import { toast } from 'sonner'
+import { useRegistry } from '@/hooks/useRegistry'
+import { useSession } from 'next-auth/react'
+import { useCallback } from 'react'
 interface Additional {
   id: string
   name: string
@@ -14,6 +17,7 @@ interface Additional {
 interface LayoutBoxProps {
   bulkSelected: string[]
   setBulkSelected: React.Dispatch<React.SetStateAction<string[]>>
+  documentId: string
   layout: Block
   updateLayout: (layout: Block) => void
   isDirty: string | undefined
@@ -48,6 +52,7 @@ interface LayoutBoxProps {
 export function LayoutBox({
   bulkSelected,
   setBulkSelected,
+  documentId,
   layout,
   updateLayout,
   isDirty,
@@ -67,7 +72,8 @@ export function LayoutBox({
   const additionals = layout?.meta[0]?.content
   const layoutName = layout?.name
   const position = layout?.data?.position || ''
-
+  const { baboon } = useRegistry()
+  const { data: session } = useSession()
   const layoutId = layout?.links[0]?.uuid
   const { data: layoutNamesData } = useDocuments({
     documentType: 'tt/print-layout',
@@ -85,6 +91,35 @@ export function LayoutBox({
       setLayoutNames(layoutNames)
     }
   }, [layoutNamesData])
+
+  const handleRenderArticle = useCallback(async () => {
+    if (!session?.accessToken) {
+      toast.error('Ingen access token hittades')
+      return
+    }
+    if (!baboon) {
+      toast.error('Något gick fel när printartikel skulle renderas')
+      return
+    }
+    try {
+      const response = await baboon.renderArticle({
+        articleUuid: documentId,
+        layoutId: layout?.id,
+        renderPdf: true,
+        renderPng: false,
+        pngScale: 300n
+      }, session.accessToken)
+      console.log('response', response?.response?.pdfUrl)
+      if (response?.status.code === 'OK') {
+        toast.success('Printartikel skapad')
+        openPreview(undefined, { id: response?.response?.pdfUrl })
+      }
+    } catch (ex) {
+      console.error('Error rendering article:', ex)
+      toast.error('Något gick fel när printartikel skulle renderas 2')
+    }
+  }, [documentId, layoutId, layout.id, session?.accessToken, baboon])
+
   return (
     <div id={layout.id} className='border min-h-32 p-2 pt-0 grid grid-cols-12 gap-2 rounded'>
       <header className={`col-span-12 row-span-1 gap-2 flex items-center ${isDirty === layout.id ? 'mt-2 justify-end' : 'justify-between'} `}>
@@ -99,7 +134,10 @@ export function LayoutBox({
                     variant='ghost'
                     className='px-2 py-0'
                     size='sm'
-                    onClick={() => openPreview(undefined, { id: id?.toString() })}
+                    onClick={async () => {
+                      openPreview(undefined, { })
+                      await handleRenderArticle()
+                    }}
                   >
                     <Eye strokeWidth={1.75} size={16} />
                   </Button>

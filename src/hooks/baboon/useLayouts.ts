@@ -30,7 +30,6 @@ export const useLayouts = (
 ): SWRResponse => {
   const { data: session } = useSession()
   const { repository } = useRegistry()
-
   return useSWR(documentId, async () => {
     if (!session) {
       return Promise.reject(new Error('Fetching PrintFlow: Session is missing'))

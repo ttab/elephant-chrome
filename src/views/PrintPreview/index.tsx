@@ -2,10 +2,10 @@ import { View } from '@/components'
 import {
   ScrollArea
 } from '@ttab/elephant-ui'
-import { type ViewMetadata } from '@/types'
+import { type ViewProps, type ViewMetadata } from '@/types'
 import { PreviewHeader } from './PreviewHeader'
 import { useEffect, useState } from 'react'
-
+import { Wrench } from '@ttab/elephant-ui/icons'
 /**
  * PrintPreview component.
  *
@@ -39,7 +39,7 @@ const meta: ViewMetadata = {
 }
 
 // Main Editor Component - Handles document initialization
-const PrintPreview = (): JSX.Element => {
+const PrintPreview = (props: ViewProps): JSX.Element => {
   const [height, setHeight] = useState(0)
   useEffect(() => {
     setHeight(window.innerHeight - 70)
@@ -50,19 +50,25 @@ const PrintPreview = (): JSX.Element => {
       window.removeEventListener('resize', () => {})
     }
   }, [])
-  return (
-    <>
-      <PreviewHeader />
+  return !props?.id
+    ? (
+        <main className='flex flex-col items-center justify-center h-full'>
+          <Wrench className='animate-spin' strokeWidth={1.75} size={64} />
+        </main>
+      )
+    : (
+        <>
+          <PreviewHeader />
 
-      <View.Content className='flex flex-col max-w-[1200px]'>
-        <div className='p-2 flex flex-col gap-2'>
-          <ScrollArea className='h-full mx-auto w-full'>
-            <iframe src='https://ttnewsagency-resources.s3.eu-west-1.amazonaws.com/slask/preview.pdf' height={height} width='100%' />
-          </ScrollArea>
-        </div>
-      </View.Content>
-    </>
-  )
+          <View.Content className='flex flex-col max-w-[1200px]'>
+            <div className='p-2 flex flex-col gap-2'>
+              <ScrollArea className='h-full mx-auto w-full'>
+                <iframe src={props?.id || ''} height={height} width='100%' />
+              </ScrollArea>
+            </div>
+          </View.Content>
+        </>
+      )
 }
 
 PrintPreview.meta = meta
