@@ -29,15 +29,11 @@ export const PrintArticleList = ({ columns }: {
   columns: ColumnDef<PrintArticle, unknown>[]
 }): JSX.Element => {
   const [filter] = useQuery(['from', 'printFlow', 'workflowState'])
-  const [{ page }] = useQuery()
 
   useDocuments<PrintArticle, PrintArticleFields>({
     documentType: 'tt/print-article',
     query: constructQuery(filter),
     size: 1000,
-    page: typeof page === 'string'
-      ? parseInt(page)
-      : undefined,
     fields,
     options: {
       setTableData: true,

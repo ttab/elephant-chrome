@@ -233,7 +233,7 @@ export function LayoutBox({
           <>
             <h4 className='text-sm font-bold'>Tillägg</h4>
             {additionals?.map((additional: Additional) => (
-              <Label key={additional.id} className='flex items-center gap-2'>
+              <Label key={additional.name} className='flex items-center gap-2'>
                 <Input
                   type='checkbox'
                   className='w-4 h-4'
