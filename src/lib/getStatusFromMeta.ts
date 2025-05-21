@@ -19,7 +19,7 @@ export type Meta = {
 /**
  * Parse meta heads information to retrieve the current status of a document.
  */
-export function getStatusFromMeta(meta: Meta): {
+export function getStatusFromMeta(meta: Meta, isWorkflow: boolean): {
   name: string
   version: bigint
   creator: string
@@ -43,14 +43,22 @@ export function getStatusFromMeta(meta: Meta): {
 
   const [name, entry] = latest
 
-  // Use workflow state if it exists, otherwise the latest entry.
-  // If latest entry is 'usable' and that version is -1 it is unpublished
+  // If document type is a deliverable, core/article, core/flash, core/editorial-info or
+  // core/print-article it's considered a workflow and should use the workflow state.
+  //
+  // Documents with other types is not a workflow and should use the workflow checkpoint instead.
+  // core/planning-item, core/event
+  // Unpublished documents are now a valid workflow state and workflow checkpoint and we don't
+  // need to check for them specifically.
+  let flow
+  if (isWorkflow) {
+    flow = meta.workflowState
+  } else {
+    flow = meta.workflowCheckpoint || meta.workflowState
+  }
+
   return {
-    name: meta.workflowState || (
-      (name === 'usable' && entry.version === -1n)
-        ? 'unpublished'
-        : name
-    ),
+    name: flow || name,
     version,
     creator: entry.creator,
     cause: entry.meta?.cause,
