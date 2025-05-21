@@ -2,6 +2,7 @@ import { type DefaultValueOption } from '@/types'
 import {
   CircleCheck,
   CircleDot,
+  CircleX,
   BadgeCheck
 } from '@ttab/elephant-ui/icons'
 
