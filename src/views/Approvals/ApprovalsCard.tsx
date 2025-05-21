@@ -34,7 +34,10 @@ export const ApprovalsCard = ({ assignment, isSelected, isFocused, status }: {
   const openType = (assignmentType: string) => assignmentType === 'core/flash' ? openFlash : openArticle
   const time = assignment.data.publish
     ? format(toZonedTime(parseISO(assignment.data.publish), timeZone), 'HH:mm')
-    : undefined
+    : assignment.data.start
+      ? format(toZonedTime(parseISO(assignment.data.start), timeZone), 'HH:mm')
+      : undefined
+
   const documentId = assignment._deliverableId
   const assignees = assignment.links.filter((m) => m.type === 'core/author' && m.title).map((l) => l.title)
 
