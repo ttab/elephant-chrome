@@ -3,7 +3,6 @@ import {
   type Hocuspocus,
   type fetchPayload,
   type storePayload,
-  type onStoreDocumentPayload,
   type onStatelessPayload
 } from '@hocuspocus/server'
 
@@ -123,24 +122,7 @@ export class CollaborationServer {
           }
         }),
         new Snapshot({
-          debounce: 120000,
-          snapshot: ({ context, ...rest }: onStoreDocumentPayload) => {
-            return async () => {
-              if (!assertContext(context)) {
-                throw new Error('Invalid context provided')
-              }
-
-              await this.snapshotDocument({ context, ...rest }).catch((ex) => {
-                const ctx = getErrorContext({ context, ...rest })
-
-                this.#errorHandler.error(ex, {
-                  id: rest.documentName,
-                  accessToken: context.accessToken,
-                  ...ctx
-                })
-              })
-            }
-          }
+          debounce: 120000
         }),
         new Auth()
       ], this.#errorHandler),

@@ -4,35 +4,30 @@ import {
   type onDisconnectPayload
 } from '@hocuspocus/server'
 import { type DebouncedFunc, debounce } from 'lodash-es'
+import type { Context } from '../../lib/assertContext.js'
 import { assertContext } from '../../lib/assertContext.js'
 import { isValidUUID } from '../isValidUUID.js'
 import logger from '../../lib/logger.js'
 
-interface DefaultConfiguration {
+const BASE_URL = process.env.BASE_URL || ''
+
+interface Configuration {
   debounce: number
 }
 
-interface Configuration extends DefaultConfiguration {
-  snapshot: (payload: onStoreDocumentPayload) => () => Promise<void>
-}
-
-const debounceMap = new Map<string, DebouncedFunc<() => Promise<void>>>()
+const debounceMap = new Map<string, DebouncedFunc<() => Promise<SnapshotResponse>>>()
 
 export class Snapshot implements Extension {
   configuration: Configuration
 
   constructor(configuration: Configuration) {
-    const defaultConfig: DefaultConfiguration = {
-      debounce: 60000
-    }
-
-    this.configuration = { ...defaultConfig, ...configuration }
+    this.configuration = configuration
   }
 
   async onStoreDocument(payload: onStoreDocumentPayload): Promise<void> {
     const { documentName, context } = payload as { documentName: string, context: unknown }
-    // Ignore document-tracker, server actions, and userTracker
 
+    // Ignore document-tracker, server actions, and userTracker
     if (isExcluded(documentName, context) || !isValidUUID(documentName)) {
       return
     }
@@ -45,7 +40,7 @@ export class Snapshot implements Extension {
     debounceMap.get(documentName)?.cancel()
 
     // Create debounce
-    const fn = this.configuration.snapshot(payload)
+    const fn = () => snapshot(documentName, context)
     const debouncedFn = debounce(fn, this.configuration.debounce)
 
     // Set new debounce
@@ -94,4 +89,42 @@ function isExcluded(documentName: string, context: unknown): boolean {
     return true
   }
   return false
+}
+
+type SnapshotResponse = {
+  statusCode: number
+  statusMessage: string
+} | {
+  version: string
+  uuid: string
+  statusMessage: undefined
+} | undefined
+
+export async function snapshot(uuid: string, context: Context): Promise<SnapshotResponse> {
+  if (!uuid) {
+    throw new Error('UUID is required')
+  }
+
+  try {
+    const base = `${process.env.PROTOCOL || 'http'}://${process.env.HOST || 'localhost'}${process.env.PORT ? `:${process.env.PORT}` : ''}`
+    const url = new URL(`${BASE_URL}/api/snapshot/${uuid}`, base)
+
+    const response = await fetch(url, {
+      headers: {
+        Authorization: `Bearer ${context.accessToken}`,
+        ...(context.user && { 'X-User': JSON.stringify(context.user) })
+      }
+    })
+    const data = await response.json() as SnapshotResponse
+
+    if (!response.ok) {
+      throw new Error((data && typeof data?.statusMessage === 'string')
+        ? data.statusMessage
+        : response.statusText)
+    }
+
+    return data
+  } catch (ex) {
+    throw new Error('Failed to save snapshot: ' + (ex instanceof Error ? ex.message : JSON.stringify(ex)))
+  }
 }
