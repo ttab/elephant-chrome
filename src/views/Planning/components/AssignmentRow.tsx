@@ -274,8 +274,8 @@ export const AssignmentRow = ({ index, onSelect, isFocused = false, asDialog, on
       onClick={(event) => {
         if (isDocument) {
           const isUsable = articleStatus?.meta?.workflowState === 'usable'
+            || (assignmentType === 'flash' && articleStatus?.meta?.heads?.['usable']?.version === articleStatus?.meta?.currentVersion)
           const version = articleStatus?.meta?.heads?.['usable']?.version
-
           onOpenEvent(event, isUsable && version ? { version } : undefined)
         } else {
           onSelect()
