@@ -51,14 +51,15 @@ export const AssignmentRow = ({ index, onSelect, isFocused = false, asDialog, on
   const [assignment] = useYValue<Y.Map<unknown> | undefined>(base, true)
   const [inProgress] = useYValue(`${base}.__inProgress`)
   const [articleId] = useYValue<string>(`${base}.links.core/article[0].uuid`)
+  const [flashId] = useYValue<string>(`${base}.links.core/flash[0].uuid`)
 
-  const { data: articleStatus } = useSWRImmutable(['articlestatus', articleId], async () => {
-    if (articleId && session?.accessToken) {
-      return await repository?.getMeta({ uuid: articleId, accessToken: session.accessToken })
+  const { data: articleStatus } = useSWRImmutable(['articlestatus', articleId, flashId], async () => {
+    const id = articleId || flashId
+    if ((id) && session?.accessToken) {
+      return await repository?.getMeta({ uuid: id, accessToken: session.accessToken })
     }
   })
 
-  const [flashId] = useYValue<string>(`${base}.links.core/flash[0].uuid`)
   const [editorialInfoId] = useYValue<string>(`${base}.links.core/editorial-info[0].uuid`)
   const [assignmentType] = useYValue<string>(`${base}.meta.core/assignment-type[0].value`)
   const [assignmentId] = useYValue<string>(`${base}.id`)
