@@ -49,7 +49,7 @@ export const Thumbnail = ({ hit }: {
               e.dataTransfer.clearData()
 
               const image = {
-                byline: hit.byline,
+                byline: hit.byline ?? '',
                 text: hit.description_text,
                 href: preview.href,
                 proxy: proxyUrl,
