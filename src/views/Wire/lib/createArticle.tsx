@@ -86,18 +86,10 @@ export function createArticle({
         )
 
         // Create article in repo
-        provider.sendStateless(
-          createStateless(StatelessType.IN_PROGRESS, {
-            state: false,
-            id: documentId,
-            context: {
-              agent: 'server',
-              accessToken: session.accessToken,
-              user: session.user,
-              type: 'Article'
-            }
-          })
-        )
+        const root = provider.document.getMap('root')
+        if (root && root.get('__inProgress')) {
+          root.delete('__inProgress')
+        }
 
         toast.success(`Artikel skapad`, {
           action: <ToastAction planningId={planning.id} wireId={documentId} target='last' />

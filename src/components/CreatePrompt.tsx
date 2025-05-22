@@ -1,6 +1,7 @@
 import { useKeydownGlobal } from '@/hooks/useKeydownGlobal'
 import type {
-  DefaultValueOption } from '@ttab/elephant-ui'
+  DefaultValueOption
+} from '@ttab/elephant-ui'
 import {
   Button,
   Dialog,
@@ -64,7 +65,7 @@ export const CreatePrompt = ({
     }
   }, [selectedPlanning, payload])
 
-  const { document: planning, documentId: planningId } = useCollaborationDocument(collaborationPayload)
+  const { document: planning, documentId: planningId, synced } = useCollaborationDocument(collaborationPayload)
 
   return (
     <Dialog open={true}>
@@ -72,8 +73,7 @@ export const CreatePrompt = ({
         onOpenAutoFocus={(event) => event.preventDefault()}
       >
         <DialogHeader>
-          {!!title
-          && <DialogTitle>{title}</DialogTitle>}
+          {!!title && <DialogTitle>{title}</DialogTitle>}
         </DialogHeader>
 
         <DialogDescription>
@@ -82,8 +82,7 @@ export const CreatePrompt = ({
 
         {children}
         <DialogFooter className='flex flex-col gap-2 pt-4'>
-          {!!onSecondary && !!secondaryLabel
-          && (
+          {!!onSecondary && !!secondaryLabel && (
             <Button
               variant='secondary'
               onClick={(event) => {
@@ -97,6 +96,7 @@ export const CreatePrompt = ({
           )}
 
           <Button
+            disabled={!synced}
             autoFocus
             onClick={() => {
               onPrimary(planning, planningId, planningTitle, !!selectedPlanning?.value)
