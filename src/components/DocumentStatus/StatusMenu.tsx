@@ -26,14 +26,15 @@ export const StatusMenu = ({ documentId, type, publishTime, onBeforeStatusChange
   ) => Promise<boolean>
   isChanged?: boolean
 }) => {
-  const isWorkflow = [
+  // Should read the workflow status to get correct status
+  const shouldUseWorkflowStatus = [
     'core/article',
     'core/flash',
-    'core/event-editorial-info',
+    'core/editorial-info',
     'core/print-article'
   ].includes(type)
 
-  const [documentStatus, setDocumentStatus] = useWorkflowStatus(documentId, isWorkflow)
+  const [documentStatus, setDocumentStatus] = useWorkflowStatus(documentId, shouldUseWorkflowStatus)
   const containerRef = useRef<HTMLDivElement>(null)
   const [dropdownWidth, setDropdownWidth] = useState<number>(0)
   const { statuses, workflow } = useWorkflow(type)
@@ -193,12 +194,13 @@ export const StatusMenu = ({ documentId, type, publishTime, onBeforeStatusChange
               currentCause={
                 documentStatus?.cause !== undefined
                   ? documentStatus.cause
-                  : (isChanged && prompt.status === 'usable')
-                      ? ''
-                      : undefined
+                  : (isChanged && prompt.status === 'usable') ? '' : undefined
               }
-              requireCause={(!isChanged && prompt.status !== 'usable')
-              || (prompt.status === 'draft' && !!documentStatus.checkpoint)}
+              requireCause={!!documentStatus.checkpoint && [
+                'core/article',
+                'core/flash',
+                'core/editorial-info'
+              ].includes(type)}
               unPublishDocument={unPublishDocument}
             />
           )}
