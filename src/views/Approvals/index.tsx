@@ -10,6 +10,7 @@ import { newLocalDate } from '@/lib/datetime'
 import { ApprovalsCard } from './ApprovalsCard'
 import { Toolbar } from './Toolbar.tsx'
 import { StatusSpecifications } from '@/defaults/workflowSpecification'
+import { sortAssignments } from './lib/sortAssignments.ts'
 
 const meta: ViewMetadata = {
   name: 'Approvals',
@@ -157,7 +158,7 @@ export const ApprovalsView = (): JSX.Element => {
             <View.Column key={slot.key}>
               <TimeSlot label={slot.label || ''} slots={slot.hours || []} />
 
-              {slot.items.map((assignment, cardN) => {
+              {slot.items.sort(sortAssignments).map((assignment, cardN) => {
                 return (
                   <ApprovalsCard
                     key={assignment.id}
