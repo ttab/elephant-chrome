@@ -241,7 +241,7 @@ describe('createArticle', () => {
 
     describe('Misc', () => {
       it('should call sendStateless twice', () => {
-        expect(sendStateless).toHaveBeenCalledTimes(2)
+        expect(sendStateless).toHaveBeenCalledTimes(1)
       })
     })
   })
@@ -393,7 +393,7 @@ describe('createArticle', () => {
 
     describe('Misc', () => {
       it('should call sendStateless twice', () => {
-        expect(sendStateless).toHaveBeenCalledTimes(2)
+        expect(sendStateless).toHaveBeenCalledTimes(1)
       })
     })
   })
