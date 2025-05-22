@@ -121,15 +121,12 @@ export function LayoutBox({
   }, [documentId, layoutId, layout.id, session?.accessToken, baboon])
 
   return (
-    <div id={layout.id} className='border min-h-32 p-2 pt-0 grid grid-cols-12 gap-2 rounded'>
+    <div id={layout.id} className='border min-h-32 p-2 pt-0 grid grid-cols-12 gap-2 rounded bg-approved-background border-approved-border border-s-approved border-s-[6px]'>
       <header className={`col-span-12 row-span-1 gap-2 flex items-center ${isDirty === layout.id ? 'mt-2 justify-end' : 'justify-between'} `}>
         {isDirty !== layout.id
           ? (
               <>
                 <div className='flex items-center gap-2'>
-                  {valid
-                    ? <CircleCheckBig strokeWidth={1.75} size={18} color='green' />
-                    : <TriangleAlert strokeWidth={1.75} size={18} color='red' />}
                   <Button
                     variant='ghost'
                     className='px-2 py-0'
@@ -214,7 +211,7 @@ export function LayoutBox({
       </div>
       <div className='col-span-6 row-span-1'>
         <Popover>
-          <PopoverTrigger className='w-full'>
+          <PopoverTrigger className='bg-white w-full'>
             <div className='text-sm border rounded-md p-2 flex gap-1 items-center justify-between w-full'>
               {layoutName}
               <ChevronDown strokeWidth={1.75} size={18} />

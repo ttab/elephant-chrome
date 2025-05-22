@@ -5,7 +5,7 @@ import {
 import { type ViewProps, type ViewMetadata } from '@/types'
 import { PreviewHeader } from './PreviewHeader'
 import { useEffect, useState } from 'react'
-import { Wrench } from '@ttab/elephant-ui/icons'
+import { Settings } from '@ttab/elephant-ui/icons'
 /**
  * PrintPreview component.
  *
@@ -50,15 +50,27 @@ const PrintPreview = (props: ViewProps): JSX.Element => {
       window.removeEventListener('resize', () => {})
     }
   }, [])
-  return !props?.id
+  return <>
+
+          <PreviewHeader />
+  {!props?.id
     ? (
         <main className='flex flex-col items-center justify-center h-full'>
-          <Wrench className='animate-spin' strokeWidth={1.75} size={64} />
+          <section className='flex flex-row items-center justify-center gap-0'>
+            <div className="animate-spin">
+              <Settings className='animate-pulse text-[#006bb3]' strokeWidth={1.75} size={24} />
+            </div>
+            <div className="animate-spin mt-4">
+              <Settings className='animate-pulse text-[#006bb3]' strokeWidth={1.75} size={24} />
+            </div>
+            <div className="animate-spin">
+              <Settings className='animate-pulse text-[#006bb3]' strokeWidth={1.75} size={24} />
+            </div>
+          </section>
         </main>
       )
     : (
         <>
-          <PreviewHeader />
 
           <View.Content className='flex flex-col max-w-[1200px]'>
             <div className='p-2 flex flex-col gap-2'>
@@ -69,6 +81,8 @@ const PrintPreview = (props: ViewProps): JSX.Element => {
           </View.Content>
         </>
       )
+  }
+  </>
 }
 
 PrintPreview.meta = meta

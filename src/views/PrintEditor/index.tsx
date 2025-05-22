@@ -36,10 +36,10 @@ import { contentMenuLabels } from '@/defaults/contentMenuLabels'
 import { toast } from 'sonner'
 import { useLayouts } from '@/hooks/baboon/useLayouts'
 import { useSession } from 'next-auth/react'
-import { Button, ScrollArea } from '@ttab/elephant-ui'
+import { Button, Popover, PopoverTrigger, PopoverContent, ScrollArea } from '@ttab/elephant-ui'
 import { LayoutBox } from './LayoutBox'
-import { ChevronRight } from '@ttab/elephant-ui/icons'
-
+import { ChevronRight, RefreshCw, EllipsisVertical } from '@ttab/elephant-ui/icons'
+import { DotDropdownMenu } from '@/components/ui/DotMenu'
 // Metadata definition
 const meta: ViewMetadata = {
   name: 'PrintEditor',
@@ -279,7 +279,31 @@ function EditorContainer({
                       <ChevronRight strokeWidth={1.75} size={18} />
                     </Button>
                   )
-                : null}
+                : (
+                  <DotDropdownMenu
+                    trigger='vertical'
+                    items={[
+                    {
+                      label: 'Uppdatera alla',
+                      icon: RefreshCw,
+                      item: (
+                        <Button
+                          variant='ghost'
+                          size='sm'
+                          className='flex gap-2 items-center'
+                          onClick={(e) => {
+                            e.preventDefault()
+                            window.alert('Ej implementerat')
+                          }}
+                        >
+                          <RefreshCw strokeWidth={1.75} size={16} />
+                          Uppdatera alla
+                        </Button>
+                      )
+                    }
+                  ]}
+                />
+              )}
             </header>
             <ScrollArea className='h-[calc(100vh-12rem)]'>
               <div className='flex flex-col gap-2'>
