@@ -1,7 +1,7 @@
 import { StatusMenu } from '@/components/DocumentStatus/StatusMenu'
 import { ViewHeader } from '@/components/View'
 import type { ViewProps } from '@/types/index'
-import { ZapIcon } from '@ttab/elephant-ui/icons'
+import { ZapIcon, ZapOff } from '@ttab/elephant-ui/icons'
 import { useState, useCallback } from 'react'
 import { toast } from 'sonner'
 import { useDeliverablePlanningId } from '@/hooks/index/useDeliverablePlanningId'
@@ -12,7 +12,7 @@ export const FlashHeader = (props: ViewProps & { readOnly?: boolean }) => {
   return (
     <ViewHeader.Root>
       {!props.asDialog && (
-        <ViewHeader.Title name='Flash' title='Flash' icon={ZapIcon} iconColor='#FF5150' />
+        <ViewHeader.Title name='Flash' title='Flash' icon={!props?.readOnly ? ZapIcon : ZapOff} iconColor='#FF5150' />
       )}
 
       <ViewHeader.Content>
