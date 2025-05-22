@@ -159,8 +159,8 @@ export const StatusMenu = ({ documentId, type, publishTime, onBeforeStatusChange
                   status={documentStatus.name}
                   state={{
                     verify: true,
-                    title: `Spara ändringar - ${workflow[currentStatusName]?.title}`,
-                    description: 'Spara ändringar'
+                    title: `Uppdatera ändringar - ${workflow[currentStatusName]?.title}`,
+                    description: 'Uppdatera med ändringar'
                   }}
                   onSelect={showPrompt}
                   statusDef={currentStatusDef}
