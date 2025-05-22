@@ -121,7 +121,6 @@ export const StatusMenu = ({ documentId, type, publishTime, onBeforeStatusChange
     return null
   }
 
-  console.log(!!documentStatus.checkpoint, documentStatus)
   return (
     <>
       <div className='flex items-center' ref={containerRef}>
