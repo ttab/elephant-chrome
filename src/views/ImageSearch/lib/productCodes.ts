@@ -1,0 +1,23 @@
+export const productCodes = [
+  'FOAP',
+  'FOFRI',
+  'FOHLMB',
+  'FONTB',
+  'FOSVD',
+  'FOTT',
+  'FORBA0',
+  'FOEKOTT',
+  'FOINRTT',
+  'FOKULTT',
+  'FOKUNTT',
+  'FOPOLTT',
+  'FOSPTTT',
+  'FOSPTSPC',
+  'GRINRP',
+  'GRINRW',
+  'GRKULP',
+  'GRKULW',
+  'GRUTRP',
+  'GRUTRW',
+  'GRSPTP'
+]
