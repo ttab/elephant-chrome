@@ -26,7 +26,14 @@ export const StatusMenu = ({ documentId, type, publishTime, onBeforeStatusChange
   ) => Promise<boolean>
   isChanged?: boolean
 }) => {
-  const [documentStatus, setDocumentStatus] = useWorkflowStatus(documentId, true)
+  const isWorkflow = [
+    'core/article',
+    'core/flash',
+    'core/event-editorial-info',
+    'core/print-article'
+  ].includes(type)
+
+  const [documentStatus, setDocumentStatus] = useWorkflowStatus(documentId, isWorkflow)
   const containerRef = useRef<HTMLDivElement>(null)
   const [dropdownWidth, setDropdownWidth] = useState<number>(0)
   const { statuses, workflow } = useWorkflow(type)
@@ -85,7 +92,6 @@ export const StatusMenu = ({ documentId, type, publishTime, onBeforeStatusChange
           'core/planning-item': 'Planning',
           'core/event': 'Event'
         }
-
         handleLink({
           dispatch,
           viewItem: state.viewRegistry.get(viewType[type]),
