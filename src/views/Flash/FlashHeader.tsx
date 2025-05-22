@@ -8,7 +8,7 @@ import { useDeliverablePlanningId } from '@/hooks/index/useDeliverablePlanningId
 import { updateAssignmentTime } from '@/lib/index/updateAssignmentPublishTime'
 
 
-export const FlashHeader = (props: ViewProps) => {
+export const FlashHeader = (props: ViewProps & { readOnly?: boolean }) => {
   return (
     <ViewHeader.Root>
       {!props.asDialog && (
