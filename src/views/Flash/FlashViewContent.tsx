@@ -16,9 +16,7 @@ import { Form } from '@/components/Form'
 import { fetch } from '@/lib/index/fetch-plannings-twirp'
 import type { CreateFlashDocumentStatus } from './lib/createFlash'
 import { createFlash } from './lib/createFlash'
-import type * as Y from 'yjs'
 import { CreatePrompt } from '@/components/CreatePrompt'
-import { Block } from '@ttab/elephant-api/newsdoc'
 import { FlashHeader } from './FlashHeader'
 
 export const FlashViewContent = (props: ViewProps): JSX.Element => {
@@ -32,7 +30,12 @@ export const FlashViewContent = (props: ViewProps): JSX.Element => {
   const [title, setTitle] = useYValue<string | undefined>('root.title', true)
   const { index, locale, timeZone } = useRegistry()
   const [searchOlder, setSearchOlder] = useState(false)
-
+  const [section, setSection] = useState<{
+    type: string
+    rel: string
+    uuid: string
+    title: string
+  } | undefined>(undefined)
   const [documentId] = useYValue<string>('root.uuid')
 
   const handleSubmit = (setCreatePrompt: Dispatch<SetStateAction<boolean>>): void => {
@@ -55,12 +58,12 @@ export const FlashViewContent = (props: ViewProps): JSX.Element => {
     {
       visible: donePrompt,
       key: 'done',
-      title: 'Skapa och godkänn flash?',
+      title: 'Skapa och klarmarkera flash?',
       description: !selectedPlanning
         ? 'En ny planering med tillhörande uppdrag för denna flash kommer att skapas åt dig.'
         : `Denna flash kommer att läggas i ett nytt uppdrag i planeringen "${selectedPlanning.label}". Med status godkänd.`,
       secondaryLabel: 'Avbryt',
-      primaryLabel: 'Godkänn',
+      primaryLabel: 'Klarmarkera',
       documentStatus: 'done' as CreateFlashDocumentStatus,
       setPrompt: setDonePrompt
     },
@@ -143,7 +146,7 @@ export const FlashViewContent = (props: ViewProps): JSX.Element => {
 
             {!selectedPlanning && props.asDialog && (
               <Form.Group icon={Tags}>
-                <Section />
+                <Section onSelect={setSection} />
               </Form.Group>
             )}
 
@@ -166,13 +169,7 @@ export const FlashViewContent = (props: ViewProps): JSX.Element => {
                   description={config.description}
                   secondaryLabel={config.secondaryLabel}
                   primaryLabel={config.primaryLabel}
-                  selectedPlanning={selectedPlanning}
-                  payload={{
-                    meta: {
-                      'core/newsvalue': [Block.create({ type: 'core/newsvalue', value: '5' })]
-                    }
-                  }}
-                  onPrimary={(planning: Y.Doc | undefined, planningId: string | undefined) => {
+                  onPrimary={() => {
                     if (!provider || !props.id || !session) {
                       console.error('Environment is not sane, flash cannot be created')
                       return
@@ -183,19 +180,20 @@ export const FlashViewContent = (props: ViewProps): JSX.Element => {
                     }
 
                     createFlash({
-                      provider,
+                      flashProvider: provider,
                       status,
                       session,
-                      planning: {
-                        document: planning,
-                        id: planningId
-                      },
-                      hasSelectedPlanning: !!selectedPlanning,
+                      planningId: selectedPlanning?.value,
                       timeZone,
-                      documentStatus: config.documentStatus
+                      documentStatus: config.documentStatus,
+                      section: (!selectedPlanning?.value) ? section || undefined : undefined
                     })
-
-                    config.setPrompt(false)
+                      .then(() => {
+                        config.setPrompt(false)
+                      })
+                      .catch((ex: unknown) => {
+                        console.log(ex)
+                      })
                   }}
                   onSecondary={() => {
                     config.setPrompt(false)
@@ -216,7 +214,7 @@ export const FlashViewContent = (props: ViewProps): JSX.Element => {
                   <div className='flex justify-between'>
                     <div className='flex gap-2'>
                       <Button variant='secondary' type='button' role='secondary'>Utkast</Button>
-                      <Button variant='secondary' type='button' role='tertiary'>Godkänn</Button>
+                      <Button variant='secondary' type='button' role='tertiary'>Klarmarkera</Button>
                     </div>
                     <Button type='submit' role='primary'>Publicera</Button>
                   </div>
