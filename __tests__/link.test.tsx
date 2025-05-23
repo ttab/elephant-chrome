@@ -4,7 +4,7 @@ import userEvent from '@testing-library/user-event'
 import { render, screen } from '../setupTests'
 import { Link } from '@/components'
 import type { HistoryState } from '@/navigation/hooks/useHistory'
-const BASE_URL = import.meta.env.BASE_URL
+const BASE_URL = process.env.BASE_URL
 
 describe('Link', () => {
   it('should render Link component', async () => {

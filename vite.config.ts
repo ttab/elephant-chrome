@@ -1,14 +1,15 @@
 /// <reference types="vitest" />
 import path from 'path'
-import { defineConfig } from 'vite'
+import { defineConfig, loadEnv } from 'vite'
 import react from '@vitejs/plugin-react'
 import { viteStaticCopy } from 'vite-plugin-static-copy'
 
-export default defineConfig(() => {
+export default defineConfig(({ mode }) => {
+  const env = loadEnv(mode, process.cwd(), '')
+
   return {
     port: 5173,
-    base: process.env.BASE_URL,
-
+    base: env.BASE_URL,
     plugins: [
       react(),
       viteStaticCopy({
