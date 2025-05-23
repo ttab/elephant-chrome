@@ -1,16 +1,17 @@
 import type { Request } from 'express'
 import type { RouteContentResponse, RouteHandler, RouteStatusResponse } from '../../routes.js'
-import { toGroupedNewsDoc } from '@/shared/transformations/groupedNewsDoc.js'
-import { toYjsNewsDoc } from '@/shared/transformations/yjsNewsDoc.js'
 import logger from '../../lib/logger.js'
 import { Block } from '@ttab/elephant-api/newsdoc'
-import * as Templates from '@/shared/templates/index.js'
+import { appendAssignment } from '../../../src/lib/createYItem.js'
 
 import type { Context } from '../../lib/assertContext.js'
 import { assertContext } from '../../lib/assertContext.js'
-import { getValueByYPath, setValueByYPath } from '../../../shared/yUtils.js'
+import { getValueByYPath } from '../../../shared/yUtils.js'
 import type { EleBlock } from '@/shared/types/index.js'
 import { createSnapshot } from '../../utils/createSnapshot.js'
+import { planningDocumentTemplate } from '../../../shared/templates/planningDocumentTemplate.js'
+import { toYjsNewsDoc } from '@/shared/transformations/yjsNewsDoc.js'
+import { toGroupedNewsDoc } from '@/shared/transformations/groupedNewsDoc.js'
 
 type Response = RouteContentResponse | RouteStatusResponse
 
@@ -70,32 +71,46 @@ export const POST: RouteHandler = async (req: Request, { collaborationServer, re
   const documentId = planningId || crypto.randomUUID()
   const connection = await collaborationServer.server.openDirectConnection(documentId, context)
 
+  // Use planningDocumentTemplate to create a base
+  const templateDocument = planningDocumentTemplate(documentId, {
+    meta: {
+      'core/newsvalue': [Block.create({ type: 'core/newsvalue', value: '5' })]
+    }
+  })
+
   // Make the change to the planning document in one transaction
   await connection.transact((document) => {
     if (!planningId) {
-      // We had no planningId, we need to create the whole document
-      // How do we merge it...?
-      const newDoc = toYjsNewsDoc(
+      toYjsNewsDoc(
         toGroupedNewsDoc({
           version: 0n,
           isMetaDocument: false,
           mainDocument: '',
-          document: Templates.planning(documentId,
-            {
-              meta: {
-                'core/newsvalue': [Block.create({ type: 'core/newsvalue', value: String(priority) })]
-              }
-            })
+          document: templateDocument
         }),
         document
       )
-    }
 
-    const yRoot = document.getMap('ele')
+      appendAssignment({
+        document: document,
+        type,
+        // slugLine needed for wire
+        title,
+        assignmentData: {
+          publish: publishTime,
+          public: publicVisibility ? 'true' : 'false',
+          start: localDate,
+          start_date: localDate
+        }
+      })
 
-    response = {
-      statusCode: 200,
-      payload: {}
+      console.log('doc', JSON.stringify(document.toJSON(), null, 2))
+      console.log('planningId', documentId)
+
+      response = {
+        statusCode: 200,
+        payload: {}
+      }
     }
   })
 
