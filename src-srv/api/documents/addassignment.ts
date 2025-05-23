@@ -15,7 +15,7 @@ import type { Wire } from '../../../src/hooks/index/useDocuments/schemas/wire.js
 type Response = RouteContentResponse | RouteStatusResponse
 
 /**
- * Patch method, make partial updates to a planning item.
+ * Add assignment to an existing planning or a newly craeted one.
  */
 export const POST: RouteHandler = async (req: Request, { collaborationServer, res }) => {
   const locals = res.locals as Record<string, unknown> | undefined
