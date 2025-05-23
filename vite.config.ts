@@ -7,7 +7,7 @@ import { viteStaticCopy } from 'vite-plugin-static-copy'
 export default defineConfig(() => {
   return {
     port: 5173,
-    base: '/elephant',
+    base: process.env.BASE_URL,
 
     plugins: [
       react(),
