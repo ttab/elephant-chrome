@@ -16,9 +16,7 @@ import { Form } from '@/components/Form'
 import { fetch } from '@/lib/index/fetch-plannings-twirp'
 import type { CreateFlashDocumentStatus } from './lib/createFlash'
 import { createFlash } from './lib/createFlash'
-import type * as Y from 'yjs'
 import { CreatePrompt } from '@/components/CreatePrompt'
-import { Block } from '@ttab/elephant-api/newsdoc'
 import { FlashHeader } from './FlashHeader'
 
 export const FlashViewContent = (props: ViewProps): JSX.Element => {
@@ -166,13 +164,7 @@ export const FlashViewContent = (props: ViewProps): JSX.Element => {
                   description={config.description}
                   secondaryLabel={config.secondaryLabel}
                   primaryLabel={config.primaryLabel}
-                  selectedPlanning={selectedPlanning}
-                  payload={{
-                    meta: {
-                      'core/newsvalue': [Block.create({ type: 'core/newsvalue', value: '5' })]
-                    }
-                  }}
-                  onPrimary={(planning: Y.Doc | undefined, planningId: string | undefined) => {
+                  onPrimary={() => {
                     if (!provider || !props.id || !session) {
                       console.error('Environment is not sane, flash cannot be created')
                       return
@@ -183,19 +175,21 @@ export const FlashViewContent = (props: ViewProps): JSX.Element => {
                     }
 
                     createFlash({
-                      provider,
+                      flashProvider: provider,
                       status,
                       session,
-                      planning: {
-                        document: planning,
-                        id: planningId
-                      },
-                      hasSelectedPlanning: !!selectedPlanning,
+                      planningId: selectedPlanning?.value,
                       timeZone,
                       documentStatus: config.documentStatus
                     })
-
-                    config.setPrompt(false)
+                      .then(() => {
+                        // FIXME: Enable when debugged done
+                        console.warn('DECOMMENT THIS LINE BEFORE BEING DONE')
+                        // config.setPrompt(false)
+                      })
+                      .catch((ex: unknown) => {
+                        console.log(ex)
+                      })
                   }}
                   onSecondary={() => {
                     config.setPrompt(false)

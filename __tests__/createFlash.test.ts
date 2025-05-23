@@ -51,7 +51,7 @@ describe('createFlash', () => {
     const provider = { document: flash[1], sendStateless } as unknown as HocuspocusProvider
 
     const result = createFlash({
-      provider,
+      flashProvider: provider,
       status: 'authenticated',
       session,
       planning: { document: planning[1], id: planning[0] },

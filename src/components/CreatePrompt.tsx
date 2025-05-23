@@ -1,7 +1,4 @@
 import { useKeydownGlobal } from '@/hooks/useKeydownGlobal'
-import type {
-  DefaultValueOption
-} from '@ttab/elephant-ui'
 import {
   Button,
   Dialog,
@@ -11,11 +8,7 @@ import {
   DialogHeader,
   DialogTitle
 } from '@ttab/elephant-ui'
-import { useMemo, type MouseEvent, type PropsWithChildren } from 'react'
-import { useCollaborationDocument } from '@/hooks/useCollaborationDocument'
-import { createDocument } from '@/lib/createYItem'
-import * as Templates from '@/defaults/templates'
-import type * as Y from 'yjs'
+import { type MouseEvent, type PropsWithChildren } from 'react'
 
 export const CreatePrompt = ({
   title,
@@ -24,48 +17,21 @@ export const CreatePrompt = ({
   secondaryLabel,
   onPrimary,
   onSecondary,
-  selectedPlanning,
-  planningTitle,
-  children,
-  payload
+  children
 }: {
   title?: string
   description: string
   primaryLabel: string
   secondaryLabel?: string
-  onPrimary: (
-    planning: Y.Doc | undefined,
-    planningId: string | undefined,
-    planningTitle: string | undefined,
-    hasSelectedPlanning: boolean) => void
+  onPrimary: () => void
   onSecondary?: (event: MouseEvent<HTMLButtonElement> | React.KeyboardEvent<HTMLButtonElement> | KeyboardEvent) => void
-  selectedPlanning: DefaultValueOption | undefined
   planningTitle?: string
-  payload?: Templates.TemplatePayload
 } & PropsWithChildren): JSX.Element => {
   useKeydownGlobal((event) => {
     if (event.key === 'Escape' && secondaryLabel && onSecondary) {
       onSecondary(event as unknown as React.KeyboardEvent<HTMLButtonElement>)
     }
   })
-
-
-  // If we have a selected planning, use that to create a collaboration document
-  // Otherwise, create a new planning document
-  const collaborationPayload = useMemo(() => {
-    if (!selectedPlanning?.value) {
-      const [documentId, initialDocument] = createDocument({
-        template: Templates.planning,
-        inProgress: true,
-        payload
-      })
-      return { documentId, initialDocument }
-    } else {
-      return { documentId: selectedPlanning?.value }
-    }
-  }, [selectedPlanning, payload])
-
-  const { document: planning, documentId: planningId, synced } = useCollaborationDocument(collaborationPayload)
 
   return (
     <Dialog open={true}>
@@ -96,14 +62,11 @@ export const CreatePrompt = ({
           )}
 
           <Button
-            disabled={!synced}
             autoFocus
-            onClick={() => {
-              onPrimary(planning, planningId, planningTitle, !!selectedPlanning?.value)
-            }}
+            onClick={onPrimary}
             onKeyDown={(event: React.KeyboardEvent<HTMLButtonElement>) => {
               if (event.key === 'Enter') {
-                onPrimary(planning, planningId, planningTitle, !!selectedPlanning?.value)
+                onPrimary()
               }
             }}
           >
