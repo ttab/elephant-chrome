@@ -183,9 +183,7 @@ export const FlashViewContent = (props: ViewProps): JSX.Element => {
                       documentStatus: config.documentStatus
                     })
                       .then(() => {
-                        // FIXME: Enable when debugged done
-                        console.warn('DECOMMENT THIS LINE BEFORE BEING DONE')
-                        // config.setPrompt(false)
+                        config.setPrompt(false)
                       })
                       .catch((ex: unknown) => {
                         console.log(ex)

@@ -2,14 +2,12 @@ import type { Request } from 'express'
 import type { RouteContentResponse, RouteHandler, RouteStatusResponse } from '../../routes.js'
 import logger from '../../lib/logger.js'
 import { Block } from '@ttab/elephant-api/newsdoc'
-import { appendAssignment } from '../../../src/lib/createYItem.js'
-
+import { appendAssignment, appendDocumentToAssignment } from '../../../src/lib/createYItem.js'
 import type { Context } from '../../lib/assertContext.js'
 import { assertContext } from '../../lib/assertContext.js'
-import { getValueByYPath } from '../../../shared/yUtils.js'
-import type { EleBlock } from '@/shared/types/index.js'
 import { createSnapshot } from '../../utils/createSnapshot.js'
-import { planningDocumentTemplate } from '../../../shared/templates/planningDocumentTemplate.js'
+import { planningDocumentTemplate } from '../../../src/defaults/templates/planningDocumentTemplate.js'
+import { getDeliverableType } from '../../../src/defaults/templates/lib/getDeliverableType.js'
 import { toYjsNewsDoc } from '@/shared/transformations/yjsNewsDoc.js'
 import { toGroupedNewsDoc } from '@/shared/transformations/groupedNewsDoc.js'
 
@@ -67,49 +65,65 @@ export const POST: RouteHandler = async (req: Request, { collaborationServer, re
     statusMessage: ''
   }
 
-  // Either request the document for the existing planning id or use a new id to spawn a new Y.Doc
+  // Either request the document for the existing planning id
+  // or use a new id to spawn a new Y.Doc.
   const documentId = planningId || crypto.randomUUID()
   const connection = await collaborationServer.server.openDirectConnection(documentId, context)
 
-  // Use planningDocumentTemplate to create a base
-  const templateDocument = planningDocumentTemplate(documentId, {
-    meta: {
-      'core/newsvalue': [Block.create({ type: 'core/newsvalue', value: '5' })]
-    }
-  })
-
-  // Make the change to the planning document in one transaction
   await connection.transact((document) => {
     if (!planningId) {
+      // If we have no planningId we create a new planning item using
+      // planningDocumentTemplate as a basis and apply it to the cocument.
       toYjsNewsDoc(
         toGroupedNewsDoc({
           version: 0n,
           isMetaDocument: false,
           mainDocument: '',
-          document: templateDocument
+          document: planningDocumentTemplate(documentId, {
+            meta: {
+              'core/newsvalue': [Block.create({
+                type: 'core/newsvalue',
+                value: String(priority)
+              })]
+            }
+          })
         }),
         document
       )
+    }
 
-      appendAssignment({
-        document: document,
-        type,
-        // slugLine needed for wire
-        title,
-        assignmentData: {
-          publish: publishTime,
-          public: publicVisibility ? 'true' : 'false',
-          start: localDate,
-          start_date: localDate
-        }
-      })
+    // Add the assignemnt to the planning item
+    const index = appendAssignment({
+      document,
+      type,
+      // slugLine needed for wire
+      title,
+      assignmentData: {
+        publish: publishTime,
+        public: publicVisibility ? 'true' : 'false',
+        start: isoDateTime,
+        end: isoDateTime,
+        start_date: localDate,
+        end_date: localDate
+      }
+    })
 
-      console.log('doc', JSON.stringify(document.toJSON(), null, 2))
-      console.log('planningId', documentId)
+    // Append the deliverable to the assignment
+    appendDocumentToAssignment({
+      document,
+      id: deliverableId,
+      index,
+      slug: '',
+      type: getDeliverableType(type)
+    })
 
-      response = {
-        statusCode: 200,
-        payload: {}
+    console.log('doc', JSON.stringify(document.toJSON(), null, 2))
+    console.log('planningId', documentId)
+
+    response = {
+      statusCode: 200,
+      payload: {
+        planningId: documentId
       }
     }
   })
@@ -139,20 +153,4 @@ export const POST: RouteHandler = async (req: Request, { collaborationServer, re
   await connection.disconnect()
 
   return response
-}
-
-
-function getAssignment(yRoot: Y.Map<unknown>, deliverableId: string, deliverableType: string) {
-  const [assignments] = getValueByYPath<EleBlock[]>(yRoot, 'meta.core/assignment')
-
-  for (let i = 0; i < (assignments?.length || 0); i++) {
-    if (assignments?.[i].links?.[deliverableType]?.[0].uuid === deliverableId) {
-      return {
-        assignmentId: assignments[i].id,
-        index: i
-      }
-    }
-  }
-
-  return undefined
 }
