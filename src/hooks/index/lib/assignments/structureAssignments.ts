@@ -68,7 +68,6 @@ export function structureAssignments(
     }
 
     if (!assigned) {
-      console.log('not assigned', assignment._deliverableDocument?.title, assignment.data)
       response[0].items.push(assignment)
     }
   })
