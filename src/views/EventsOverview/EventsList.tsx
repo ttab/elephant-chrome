@@ -9,19 +9,21 @@ import { Table } from '@/components/Table'
 import { useDocuments } from '@/hooks/index/useDocuments'
 import { SortingV1 } from '@ttab/elephant-api/index'
 import { toast } from 'sonner'
-import { getDateTimeBoundariesUTC } from '@/lib/datetime'
+import { getUTCDateRange } from '@/lib/datetime'
 
 export const EventsList = (): JSX.Element => {
   const sections = useSections()
   const organisers = useOrganisers()
-  const { locale } = useRegistry()
+  const { locale, timeZone } = useRegistry()
 
   const [query] = useQuery()
-  const { from, to } = useMemo(() =>
-    getDateTimeBoundariesUTC(typeof query.from === 'string'
-      ? new Date(`${query.from}T00:00:00.000Z`)
-      : new Date())
-  , [query.from])
+  const [from, to] = useMemo(() => {
+    // new Date(`${query.from}T00:00:00.000Z`)
+    const zoned = getUTCDateRange(query?.from ? new Date(query?.from as string) : new Date(), timeZone)
+    const fromZoned = zoned.from
+    const toZoned = zoned.to
+    return [fromZoned, toZoned]
+  }, [query, timeZone])
 
   const { error } = useDocuments<Event, EventFields>({
     documentType: 'core/event',
