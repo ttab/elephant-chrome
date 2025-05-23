@@ -14,7 +14,8 @@ export async function createFlash({
   session,
   planningId,
   timeZone,
-  documentStatus
+  documentStatus,
+  section
 }: {
   flashProvider: HocuspocusProvider
   status: string
@@ -22,6 +23,10 @@ export async function createFlash({
   planningId?: string
   timeZone: string
   documentStatus: CreateFlashDocumentStatus
+  section?: {
+    uuid: string
+    title: string
+  }
 
 }): Promise<void> {
   const flashEle = flashProvider.document.getMap('ele')
@@ -66,7 +71,8 @@ export async function createFlash({
     publicVisibility: false,
     localDate,
     isoDateTime,
-    publishTime
+    publishTime,
+    section
   })
 
   const getLabel = (documentStatus: CreateFlashDocumentStatus): string => {

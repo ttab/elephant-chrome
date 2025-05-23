@@ -30,7 +30,12 @@ export const FlashViewContent = (props: ViewProps): JSX.Element => {
   const [title, setTitle] = useYValue<string | undefined>('root.title', true)
   const { index, locale, timeZone } = useRegistry()
   const [searchOlder, setSearchOlder] = useState(false)
-
+  const [section, setSection] = useState<{
+    type: string
+    rel: string
+    uuid: string
+    title: string
+  } | undefined>(undefined)
   const [documentId] = useYValue<string>('root.uuid')
 
   const handleSubmit = (setCreatePrompt: Dispatch<SetStateAction<boolean>>): void => {
@@ -141,7 +146,7 @@ export const FlashViewContent = (props: ViewProps): JSX.Element => {
 
             {!selectedPlanning && props.asDialog && (
               <Form.Group icon={Tags}>
-                <Section />
+                <Section onSelect={setSection} />
               </Form.Group>
             )}
 
@@ -180,7 +185,8 @@ export const FlashViewContent = (props: ViewProps): JSX.Element => {
                       session,
                       planningId: selectedPlanning?.value,
                       timeZone,
-                      documentStatus: config.documentStatus
+                      documentStatus: config.documentStatus,
+                      section: (!selectedPlanning?.value) ? section || undefined : undefined
                     })
                       .then(() => {
                         config.setPrompt(false)

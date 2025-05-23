@@ -16,6 +16,10 @@ export async function addAssignmentWithDeliverable(payload: {
   localDate: string
   isoDateTime: string
   publishTime: string
+  section?: {
+    uuid: string
+    title: string
+  }
 }): Promise<string | undefined> {
   try {
     const response = await fetch(`${BASE_URL}/api/documents/addassignment/`, {

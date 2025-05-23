@@ -28,7 +28,18 @@ export const POST: RouteHandler = async (req: Request, { collaborationServer, re
   }
 
   // Validate incoming data
-  const { planningId, type, deliverableId, title, priority, publicVisibility, localDate, isoDateTime, publishTime } = req.body as {
+  const {
+    planningId,
+    type,
+    deliverableId,
+    title,
+    priority,
+    publicVisibility,
+    localDate,
+    isoDateTime,
+    publishTime,
+    section
+  } = req.body as {
     planningId?: string
     type: 'flash' | 'text'
     deliverableId: string
@@ -38,9 +49,20 @@ export const POST: RouteHandler = async (req: Request, { collaborationServer, re
     localDate: string
     isoDateTime: string
     publishTime: string
+    section?: {
+      uuid: string
+      title: string
+    }
   }
 
   if (!type || !deliverableId || !title || !priority || !localDate || !isoDateTime || !publishTime) {
+    return {
+      statusCode: 400,
+      statusMessage: 'Invalid input to document addassignment endpoint'
+    }
+  }
+
+  if (!planningId && !section) {
     return {
       statusCode: 400,
       statusMessage: 'Invalid input to document addassignment endpoint'
@@ -71,7 +93,7 @@ export const POST: RouteHandler = async (req: Request, { collaborationServer, re
   const connection = await collaborationServer.server.openDirectConnection(documentId, context)
 
   await connection.transact((document) => {
-    if (!planningId) {
+    if (!planningId && section) {
       // If we have no planningId we create a new planning item using
       // planningDocumentTemplate as a basis and apply it to the cocument.
       toYjsNewsDoc(
@@ -80,6 +102,15 @@ export const POST: RouteHandler = async (req: Request, { collaborationServer, re
           isMetaDocument: false,
           mainDocument: '',
           document: planningDocumentTemplate(documentId, {
+            title,
+            links: {
+              'core/section': [Block.create({
+                type: 'core/section',
+                rel: 'section',
+                uuid: section.uuid,
+                title: section.title
+              })]
+            },
             meta: {
               'core/newsvalue': [Block.create({
                 type: 'core/newsvalue',
@@ -90,6 +121,9 @@ export const POST: RouteHandler = async (req: Request, { collaborationServer, re
         }),
         document
       )
+
+      // const yRoot = document.getMap('ele')
+      // yRoot.set('title', toSlateYXmlText(title))
     }
 
     // Add the assignemnt to the planning item
@@ -116,9 +150,6 @@ export const POST: RouteHandler = async (req: Request, { collaborationServer, re
       slug: '',
       type: getDeliverableType(type)
     })
-
-    console.log('doc', JSON.stringify(document.toJSON(), null, 2))
-    console.log('planningId', documentId)
 
     response = {
       statusCode: 200,
