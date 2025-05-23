@@ -45,28 +45,55 @@ export function structureAssignments(
   assignments.forEach((assignment) => {
     const status = assignment._deliverableStatus
     const { publish, start, publish_slot } = assignment.data
-    let hour: number
+    let hour: number | undefined
 
     if (status === 'withheld' && publish) {
-      // When scheduled we want it in that particular hour.
+      // When scheduled, we want it in that particular hour.
       hour = getHours(toZonedTime(parseISO(publish), timeZone))
     } else if (publish_slot) {
-      // FIXME: It seems publish_slot is wrong here event though it is correct in repo!
       // If assigned a publish slot, then we use that. Publish slot is already an hour.
       hour = parseInt(publish_slot)
-    } else {
+    } else if (start) {
       // In all other cases we rely on the start time.
       hour = getHours(toZonedTime(parseISO(start), timeZone))
     }
 
-    response.forEach((slot) => {
-      if (!hour && !slot.hours.length) {
+    let assigned = false
+    for (const slot of response) {
+      if (Number.isInteger(hour) && slot.hours.includes(hour as number)) {
         slot.items.push(assignment)
-      } else if (hour && slot.hours.includes(hour)) {
-        slot.items.push(assignment)
+        assigned = true
+        break
       }
+    }
+
+    if (!assigned) {
+      console.log('not assigned', assignment._deliverableDocument?.title, assignment.data)
+      response[0].items.push(assignment)
+    }
+  })
+
+  response.forEach((slot) => {
+    slot.items.sort((a, b) => {
+      const aHasSlot = !!a.data.publish_slot
+      const bHasSlot = !!b.data.publish_slot
+      if (aHasSlot && !bHasSlot) return -1
+      if (!aHasSlot && bHasSlot) return 1
+
+      const aWithheld = a._deliverableStatus === 'withheld' && a.data.publish
+      const bWithheld = b._deliverableStatus === 'withheld' && b.data.publish
+      if (aWithheld && bWithheld) {
+        return a.data.publish.localeCompare(b.data.publish)
+      }
+      if (aWithheld) return -1
+      if (bWithheld) return 1
+
+      if (a.data.start && b.data.start) {
+        return a.data.start.localeCompare(b.data.start)
+      }
+      return 0
     })
-  }, [])
+  })
 
   return response
 }
