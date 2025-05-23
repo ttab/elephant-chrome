@@ -68,6 +68,7 @@ export interface ContentState {
 
 export interface ViewProps {
   id?: string | null
+  planningId?: string | null
   version?: string
   asDialog?: boolean
   onDialogClose?: (id?: string, title?: string) => void

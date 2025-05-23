@@ -94,6 +94,7 @@ const Editor = (props: ViewProps): JSX.Element => {
 // Main editor wrapper after document initialization
 function EditorWrapper(props: ViewProps & {
   documentId: string
+  planningId?: string | null
   autoFocus?: boolean
 }): JSX.Element {
   const { provider, synced, user } = useCollaboration()
@@ -147,6 +148,7 @@ function EditorWrapper(props: ViewProps & {
           provider={provider}
           synced={synced}
           user={user}
+          planningId={props.planningId}
           documentId={props.documentId}
           notes={notes}
         />
@@ -162,19 +164,21 @@ function EditorContainer({
   synced,
   user,
   documentId,
+  planningId,
   notes
 }: {
   provider: HocuspocusProvider | undefined
   synced: boolean
   user: AwarenessUserData
   documentId: string
+  planningId?: string | null
   notes: Block[] | undefined
 }): JSX.Element {
   const { words, characters } = useTextbit()
 
   return (
     <>
-      <EditorHeader documentId={documentId} />
+      <EditorHeader documentId={documentId} planningId={planningId} />
       {!!notes?.length && <div className='p-4'><Notes /></div>}
       <View.Content className='flex flex-col max-w-[1000px]'>
 
