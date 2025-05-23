@@ -34,7 +34,7 @@ const ImageSearchResult = ({ children }: {
 }): JSX.Element => {
   return (
     <div className='h-screen max-h-screen flex flex-col p-2 overflow-auto'>
-      <div className='relative h-full grid grid-cols-2 md:grid-cols-3 gap-1'>
+      <div className='relative grid grid-cols-2 md:grid-cols-3 gap-1'>
         {children}
       </div>
     </div>

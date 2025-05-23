@@ -60,7 +60,8 @@ const InfiniteScroll = <T,>(props: Props<T>): React.ReactElement<Props<T>> => {
         : children}
       <div className='flex relative bg-gray-200 min-h-[144px] place-content-center place-items-center'>
         <div ref={ref} className={`absolute top-[${offset}]`}></div>
-        {ending ? endingIndicator : loadingIndicator}
+        {(swr.isLoading || swr.isValidating) && loadingIndicator}
+        {ending && endingIndicator}
       </div>
     </>
   )
