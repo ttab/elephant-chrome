@@ -11,9 +11,14 @@ type SnapshotResponse = {
   statusMessage: undefined
 } | undefined
 
-export async function snapshot(uuid: string, force?: true): Promise<SnapshotResponse> {
+export async function snapshot(uuid: string, force?: true, delay: number = 0): Promise<SnapshotResponse> {
   if (!uuid) {
     throw new Error('UUID is required')
+  }
+
+
+  if (delay > 0) {
+    await new Promise((resolve) => setTimeout(resolve, delay))
   }
 
   try {
