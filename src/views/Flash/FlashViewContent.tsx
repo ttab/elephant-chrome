@@ -29,7 +29,7 @@ export const FlashViewContent = (props: ViewProps): JSX.Element => {
   const [savePrompt, setSavePrompt] = useState(false)
   const [donePrompt, setDonePrompt] = useState(false)
   const [selectedPlanning, setSelectedPlanning] = useState<DefaultValueOption | undefined>(undefined)
-  const [title, setTitle] = useYValue<string | undefined>('root.title', true)
+  const [title, setTitle] = useYValue<string | undefined>('root.title')
   const { index, locale, timeZone } = useRegistry()
   const [searchOlder, setSearchOlder] = useState(false)
 
