@@ -14,9 +14,11 @@ global.TextEncoder = TextEncoder
 // @ts-expect-error unknown
 global.TextDecoder = TextDecoder
 
+const BASE_URL = import.meta.env.BASE_URL
+
 function mockUrl(url: string): unknown {
   switch (url) {
-    case '/elephant/api/urls':
+    case `${BASE_URL}/api/urls`:
       return {
         indexUrl: 'https://example.com/index',
         webSocketUrl: 'https://example.com/websocket',
@@ -29,7 +31,7 @@ function mockUrl(url: string): unknown {
         baboonUrl: 'https://example.com/baboon'
       }
 
-    case '/elephant/api/auth/session':
+    case `${BASE_URL}/api/auth/session`:
     case '/api/auth/session':
       return {
         user: {
