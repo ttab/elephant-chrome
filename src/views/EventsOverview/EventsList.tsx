@@ -17,13 +17,8 @@ export const EventsList = (): JSX.Element => {
   const { locale, timeZone } = useRegistry()
 
   const [query] = useQuery()
-  const [from, to] = useMemo(() => {
-    // new Date(`${query.from}T00:00:00.000Z`)
-    const zoned = getUTCDateRange(query?.from ? new Date(query?.from as string) : new Date(), timeZone)
-    const fromZoned = zoned.from
-    const toZoned = zoned.to
-    return [fromZoned, toZoned]
-  }, [query, timeZone])
+  const { from, to } = useMemo(() =>
+    getUTCDateRange(query?.from ? new Date(query?.from as string) : new Date(), timeZone), [query, timeZone])
 
   const { error } = useDocuments<Event, EventFields>({
     documentType: 'core/event',
