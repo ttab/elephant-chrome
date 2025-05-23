@@ -10,6 +10,7 @@ import { planningDocumentTemplate } from '../../../src/defaults/templates/planni
 import { getDeliverableType } from '../../../src/defaults/templates/lib/getDeliverableType.js'
 import { toYjsNewsDoc } from '@/shared/transformations/yjsNewsDoc.js'
 import { toGroupedNewsDoc } from '@/shared/transformations/groupedNewsDoc.js'
+import type { Wire } from '../../../src/hooks/index/useDocuments/schemas/wire.js'
 
 type Response = RouteContentResponse | RouteStatusResponse
 
@@ -30,21 +31,26 @@ export const POST: RouteHandler = async (req: Request, { collaborationServer, re
   // Validate incoming data
   const {
     planningId,
+    planningTitle,
     type,
     deliverableId,
     title,
+    slugline,
     priority,
     publicVisibility,
     localDate,
     isoDateTime,
     publishTime,
-    section
+    section,
+    wire
   } = req.body as {
     planningId?: string
+    planningTitle?: string
     type: 'flash' | 'text'
     deliverableId: string
     title: string
-    priority: number
+    slugline?: string
+    priority?: number
     publicVisibility: boolean
     localDate: string
     isoDateTime: string
@@ -53,16 +59,17 @@ export const POST: RouteHandler = async (req: Request, { collaborationServer, re
       uuid: string
       title: string
     }
+    wire?: Wire
   }
 
-  if (!type || !deliverableId || !title || !priority || !localDate || !isoDateTime) {
+  if (!type || !deliverableId || !title || !localDate || !isoDateTime) {
     return {
       statusCode: 400,
       statusMessage: 'Invalid input to document addassignment endpoint'
     }
   }
 
-  if (!planningId && !section) {
+  if (!planningId && (!section || !priority)) {
     return {
       statusCode: 400,
       statusMessage: 'Invalid input to document addassignment endpoint'
@@ -102,7 +109,7 @@ export const POST: RouteHandler = async (req: Request, { collaborationServer, re
           isMetaDocument: false,
           mainDocument: '',
           document: planningDocumentTemplate(documentId, {
-            title,
+            title: planningTitle || title,
             links: {
               'core/section': [Block.create({
                 type: 'core/section',
@@ -115,15 +122,20 @@ export const POST: RouteHandler = async (req: Request, { collaborationServer, re
               'core/newsvalue': [Block.create({
                 type: 'core/newsvalue',
                 value: String(priority)
-              })]
+              })],
+              ...(slugline
+                ? {
+                    'tt/slugline': [Block.create({
+                      type: 'tt/slugline',
+                      value: slugline
+                    })]
+                  }
+                : {})
             }
           })
         }),
         document
       )
-
-      // const yRoot = document.getMap('ele')
-      // yRoot.set('title', toSlateYXmlText(title))
     }
 
     // Add the assignment to the planning item
@@ -142,7 +154,8 @@ export const POST: RouteHandler = async (req: Request, { collaborationServer, re
     const index = appendAssignment({
       document,
       type,
-      // slugLine needed for wire
+      wire,
+      slugLine: slugline,
       title,
       assignmentData
     })

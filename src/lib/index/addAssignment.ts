@@ -1,3 +1,4 @@
+import type { Wire } from '@/hooks/index/useDocuments/schemas/wire'
 import { toast } from 'sonner'
 
 const BASE_URL = import.meta.env.BASE_URL || ''
@@ -8,10 +9,12 @@ const BASE_URL = import.meta.env.BASE_URL || ''
  */
 export async function addAssignmentWithDeliverable(payload: {
   planningId?: string
+  planningTitle?: string
   type: 'flash' | 'text'
   deliverableId: string
   title: string
-  priority: number
+  slugline?: string
+  priority?: number
   publicVisibility: boolean
   localDate: string
   isoDateTime: string
@@ -20,6 +23,7 @@ export async function addAssignmentWithDeliverable(payload: {
     uuid: string
     title: string
   }
+  wire?: Wire
 }): Promise<string | undefined> {
   try {
     const response = await fetch(`${BASE_URL}/api/documents/addassignment/`, {
