@@ -60,7 +60,6 @@ export async function createFlash({
   const dt = new Date()
   const isoDateTime = `${new Date().toISOString().split('.')[0]}Z` // Remove ms, add Z back again
   const localDate = convertToISOStringInTimeZone(dt, timeZone).slice(0, 10)
-  const publishTime = new Date().toISOString()
 
   const updatedPlanningId = await addAssignmentWithDeliverable({
     planningId,
@@ -71,7 +70,6 @@ export async function createFlash({
     publicVisibility: false,
     localDate,
     isoDateTime,
-    publishTime,
     section
   })
 

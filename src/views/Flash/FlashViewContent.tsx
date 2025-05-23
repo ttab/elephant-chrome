@@ -58,12 +58,12 @@ export const FlashViewContent = (props: ViewProps): JSX.Element => {
     {
       visible: donePrompt,
       key: 'done',
-      title: 'Skapa och godkänn flash?',
+      title: 'Skapa och klarmarkera flash?',
       description: !selectedPlanning
         ? 'En ny planering med tillhörande uppdrag för denna flash kommer att skapas åt dig.'
         : `Denna flash kommer att läggas i ett nytt uppdrag i planeringen "${selectedPlanning.label}". Med status godkänd.`,
       secondaryLabel: 'Avbryt',
-      primaryLabel: 'Godkänn',
+      primaryLabel: 'Klarmarkera',
       documentStatus: 'done' as CreateFlashDocumentStatus,
       setPrompt: setDonePrompt
     },
@@ -214,7 +214,7 @@ export const FlashViewContent = (props: ViewProps): JSX.Element => {
                   <div className='flex justify-between'>
                     <div className='flex gap-2'>
                       <Button variant='secondary' type='button' role='secondary'>Utkast</Button>
-                      <Button variant='secondary' type='button' role='tertiary'>Godkänn</Button>
+                      <Button variant='secondary' type='button' role='tertiary'>Klarmarkera</Button>
                     </div>
                     <Button type='submit' role='primary'>Publicera</Button>
                   </div>

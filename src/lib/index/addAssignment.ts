@@ -15,7 +15,7 @@ export async function addAssignmentWithDeliverable(payload: {
   publicVisibility: boolean
   localDate: string
   isoDateTime: string
-  publishTime: string
+  publishTime?: string
   section?: {
     uuid: string
     title: string

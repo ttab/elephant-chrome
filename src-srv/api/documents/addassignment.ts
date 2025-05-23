@@ -48,14 +48,14 @@ export const POST: RouteHandler = async (req: Request, { collaborationServer, re
     publicVisibility: boolean
     localDate: string
     isoDateTime: string
-    publishTime: string
+    publishTime?: string
     section?: {
       uuid: string
       title: string
     }
   }
 
-  if (!type || !deliverableId || !title || !priority || !localDate || !isoDateTime || !publishTime) {
+  if (!type || !deliverableId || !title || !priority || !localDate || !isoDateTime) {
     return {
       statusCode: 400,
       statusMessage: 'Invalid input to document addassignment endpoint'
@@ -126,20 +126,25 @@ export const POST: RouteHandler = async (req: Request, { collaborationServer, re
       // yRoot.set('title', toSlateYXmlText(title))
     }
 
-    // Add the assignemnt to the planning item
+    // Add the assignment to the planning item
+    const assignmentData: Block['data'] = {
+      public: publicVisibility ? 'true' : 'false',
+      start: isoDateTime,
+      end: isoDateTime,
+      start_date: localDate,
+      end_date: localDate
+    }
+
+    if (publishTime) {
+      assignmentData.publish = publishTime
+    }
+
     const index = appendAssignment({
       document,
       type,
       // slugLine needed for wire
       title,
-      assignmentData: {
-        publish: publishTime,
-        public: publicVisibility ? 'true' : 'false',
-        start: isoDateTime,
-        end: isoDateTime,
-        start_date: localDate,
-        end_date: localDate
-      }
+      assignmentData
     })
 
     // Append the deliverable to the assignment
