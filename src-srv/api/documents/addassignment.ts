@@ -72,17 +72,15 @@ export const POST: RouteHandler = async (req: Request, { collaborationServer, re
 
   // Make the change to the planning document in one transaction
   await connection.transact((document) => {
-    const yRoot = document.getMap('ele')
-
     if (!planningId) {
       // We had no planningId, we need to create the whole document
-      toYjsNewsDoc(
+      // How do we merge it...?
+      const newDoc = toYjsNewsDoc(
         toGroupedNewsDoc({
           version: 0n,
           isMetaDocument: false,
           mainDocument: '',
-          document: Templates.planning(
-            documentId,
+          document: Templates.planning(documentId,
             {
               meta: {
                 'core/newsvalue': [Block.create({ type: 'core/newsvalue', value: String(priority) })]
@@ -91,10 +89,9 @@ export const POST: RouteHandler = async (req: Request, { collaborationServer, re
         }),
         document
       )
-    } else {
-      // We had a planningId, we can create the assignment and add it.
-
     }
+
+    const yRoot = document.getMap('ele')
 
     response = {
       statusCode: 200,
