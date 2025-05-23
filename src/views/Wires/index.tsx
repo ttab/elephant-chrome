@@ -112,9 +112,10 @@ function handleClose(
   viewId?: string,
   history?: HistoryInterface): void {
   if (viewId && history) {
+    const BASE_URL = import.meta.env.BASE_URL
     const newContentState = (history.state?.contentState.filter((obj) => obj.viewId !== viewId) || [])
     // TODO: Get new url
-    history.replaceState('/elephant/wires', { viewId: viewId || '', contentState: newContentState })
+    history.replaceState(`${BASE_URL}/wires`, { viewId: viewId || '', contentState: newContentState })
   }
 }
 Wires.meta = meta
