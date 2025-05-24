@@ -3,7 +3,7 @@ import { AppContent } from './AppContent'
 import { ModalProvider } from './components/Modal/ModalProvider'
 import { FaroErrorBoundary } from '@grafana/faro-react'
 import { Error as ErrorPage } from './views'
-const isDevelopment = import.meta.env.MODE === 'development'
+const isStage = import.meta.env.VITE_ENV === 'stage'
 
 export const App = (): JSX.Element => (
   <>
@@ -13,7 +13,7 @@ export const App = (): JSX.Element => (
       <ModalProvider>
         <div className='relative flex h-screen flex-col'>
           <div style={{
-            background: isDevelopment ? 'red' : 'darkblue',
+            background: isStage ? 'red' : 'darkblue',
             color: '#f5f5f5',
             width: '100vw',
             fontSize: '8px',
@@ -23,7 +23,7 @@ export const App = (): JSX.Element => (
             top: 0
           }}
           >
-            {isDevelopment ? 'STAGE' : 'PRODUKTION'}
+            {isStage ? 'STAGE' : 'PRODUKTION'}
           </div>
 
           <div className='grid grid-cols-12 h-screen'>
