@@ -3,7 +3,7 @@ import { AppContent } from './AppContent'
 import { ModalProvider } from './components/Modal/ModalProvider'
 import { FaroErrorBoundary } from '@grafana/faro-react'
 import { Error as ErrorPage } from './views'
-const isStage = import.meta.env.VITE_ENV === 'stage'
+const isProd = import.meta.env.VITE_ENV !== 'stage'
 
 export const App = (): JSX.Element => (
   <>
@@ -12,7 +12,7 @@ export const App = (): JSX.Element => (
     >
       <ModalProvider>
         <div className='relative flex h-screen flex-col'>
-          {isStage && (
+          {!isProd && (
             <div style={{
               background: 'red',
               color: '#f5f5f5',
