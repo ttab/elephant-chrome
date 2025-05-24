@@ -37,6 +37,7 @@ export const FlashViewContent = (props: ViewProps): JSX.Element => {
     title: string
   } | undefined>(undefined)
   const [documentId] = useYValue<string>('root.uuid')
+  const readOnly = Number(props?.version) > 0 && !props.asDialog
 
   const handleSubmit = (setCreatePrompt: Dispatch<SetStateAction<boolean>>): void => {
     setCreatePrompt(true)
@@ -83,7 +84,7 @@ export const FlashViewContent = (props: ViewProps): JSX.Element => {
 
   return (
     <View.Root asDialog={props.asDialog} className={props.className}>
-      <FlashHeader id={documentId} asDialog={props.asDialog} onDialogClose={props.onDialogClose} />
+      <FlashHeader id={documentId} asDialog={props.asDialog} onDialogClose={props.onDialogClose} readOnly={readOnly} />
       <View.Content>
         <Form.Root asDialog={props.asDialog}>
           <Form.Content>
@@ -150,7 +151,7 @@ export const FlashViewContent = (props: ViewProps): JSX.Element => {
               </Form.Group>
             )}
 
-            <FlashEditor setTitle={setTitle} />
+            <FlashEditor setTitle={setTitle} readOnly={readOnly} />
 
             <UserMessage asDialog={!!props?.asDialog}>
               {!selectedPlanning
