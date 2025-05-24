@@ -110,7 +110,7 @@ export function assignmentColumns({ authors = [], locale, timeZone, sections = [
           </span>
         )
       },
-      accessorFn: (data) => data.fields['document.rel.section.title']?.values[0],
+      accessorFn: (data) => data.fields['document.rel.section.uuid']?.values[0],
       cell: ({ row }) => {
         const sectionTitle = row.getValue<string>('section')
         return (
