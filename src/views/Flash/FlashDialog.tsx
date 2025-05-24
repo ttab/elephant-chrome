@@ -10,7 +10,7 @@ import { useCollaboration, useYValue, useRegistry } from '@/hooks'
 import { useSession } from 'next-auth/react'
 import type { Dispatch, SetStateAction } from 'react'
 import { useRef, useState } from 'react'
-import { FlashEditor } from './FlashEditor'
+import { FlashEditor } from './FlashDialogEditor'
 import { UserMessage } from '@/components/UserMessage'
 import { Form } from '@/components/Form'
 import { fetch } from '@/lib/index/fetch-plannings-twirp'
@@ -19,7 +19,7 @@ import { createFlash } from './lib/createFlash'
 import { CreatePrompt } from '@/components/CreatePrompt'
 import { FlashHeader } from './FlashHeader'
 
-export const FlashViewContent = (props: ViewProps): JSX.Element => {
+export const FlashDialog = (props: ViewProps): JSX.Element => {
   const { provider } = useCollaboration()
   const { status, data: session } = useSession()
   const planningAwareness = useRef<(value: boolean) => void>(null)
@@ -80,6 +80,10 @@ export const FlashViewContent = (props: ViewProps): JSX.Element => {
       setPrompt: setSavePrompt
     }
   ]
+
+  if (!provider?.synced) {
+    return <></>
+  }
 
   return (
     <View.Root asDialog={props.asDialog} className={props.className}>
@@ -150,13 +154,13 @@ export const FlashViewContent = (props: ViewProps): JSX.Element => {
               </Form.Group>
             )}
 
-            <FlashEditor setTitle={setTitle} />
-
             <UserMessage asDialog={!!props?.asDialog}>
               {!selectedPlanning
                 ? (<>Väljer du ingen planering kommer en ny planering med tillhörande uppdrag skapas åt dig.</>)
                 : (<>Denna flash kommer läggas i ett nytt uppdrag i den valda planeringen</>)}
             </UserMessage>
+
+            <FlashEditor setTitle={setTitle} />
 
           </Form.Content>
 
