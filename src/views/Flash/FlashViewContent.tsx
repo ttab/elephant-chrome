@@ -115,10 +115,8 @@ export const FlashViewContent = (props: ViewProps): JSX.Element => {
                           label: option.label
                         })
 
-
                         const sectionPayload = option.payload as { section: string | undefined }
                         const sectionTitle = allSections.find((s) => s.id === sectionPayload?.section)?.title
-
 
                         if (sectionTitle && sectionPayload?.section) {
                           setYSection(Block.create({
@@ -206,7 +204,7 @@ export const FlashViewContent = (props: ViewProps): JSX.Element => {
                       planningId: selectedPlanning?.value,
                       timeZone,
                       documentStatus: config.documentStatus,
-                      section
+                      section: (!selectedPlanning?.value) ? section || undefined : undefined
                     })
                       .then(() => {
                         config.setPrompt(false)
