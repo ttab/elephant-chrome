@@ -5,7 +5,7 @@ import {
 import { type ViewProps, type ViewMetadata } from '@/types'
 import { PreviewHeader } from './PreviewHeader'
 import { useEffect, useState } from 'react'
-import { Settings } from '@ttab/elephant-ui/icons'
+import { Frown, Settings } from '@ttab/elephant-ui/icons'
 /**
  * PrintPreview component.
  *
@@ -50,39 +50,51 @@ const PrintPreview = (props: ViewProps): JSX.Element => {
       window.removeEventListener('resize', () => {})
     }
   }, [])
-  return <>
-
-          <PreviewHeader />
-  {!props?.id
-    ? (
+  if (props?.id === 'error') {
+    return (
+      <>
+        <PreviewHeader />
         <main className='flex flex-col items-center justify-center h-full'>
-          <section className='flex flex-row items-center justify-center gap-0'>
-            <div className="animate-spin">
-              <Settings className='animate-pulse text-[#006bb3]' strokeWidth={1.75} size={24} />
-            </div>
-            <div className="animate-spin mt-4">
-              <Settings className='animate-pulse text-[#006bb3]' strokeWidth={1.75} size={24} />
-            </div>
-            <div className="animate-spin">
-              <Settings className='animate-pulse text-[#006bb3]' strokeWidth={1.75} size={24} />
-            </div>
+          <section className='flex flex-row items-center justify-center gap-4 text-red-500'>
+            <Frown strokeWidth={1.75} size={24} color='red' />
+            <p className='text-red-500'>Fel vid renderingen av artikeln</p>
           </section>
         </main>
-      )
-    : (
-        <>
-
-          <View.Content className='flex flex-col max-w-[1200px]'>
-            <div className='p-2 flex flex-col gap-2'>
-              <ScrollArea className='h-full mx-auto w-full'>
-                <iframe src={props?.id || ''} height={height} width='100%' />
-              </ScrollArea>
-            </div>
-          </View.Content>
-        </>
-      )
+      </>
+    )
   }
-  </>
+  return (
+    <>
+      <PreviewHeader />
+      {!props?.id
+        ? (
+            <main className='flex flex-col items-center justify-center h-full'>
+              <section className='flex flex-row items-center justify-center gap-0'>
+                <div className='animate-spin'>
+                  <Settings className='animate-pulse text-[#006bb3]' strokeWidth={1.75} size={24} />
+                </div>
+                <div className='animate-spin mt-4'>
+                  <Settings className='animate-pulse text-[#006bb3]' strokeWidth={1.75} size={24} />
+                </div>
+                <div className='animate-spin'>
+                  <Settings className='animate-pulse text-[#006bb3]' strokeWidth={1.75} size={24} />
+                </div>
+              </section>
+            </main>
+          )
+        : (
+            <>
+              <View.Content className='flex flex-col max-w-[1200px]'>
+                <div className='p-2 flex flex-col gap-2'>
+                  <ScrollArea className='h-full mx-auto w-full'>
+                    <iframe src={props?.id || ''} height={height} width='100%' />
+                  </ScrollArea>
+                </div>
+              </View.Content>
+            </>
+          )}
+    </>
+  )
 }
 
 PrintPreview.meta = meta

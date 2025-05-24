@@ -2,8 +2,7 @@ import { useView } from '@/hooks'
 import { useEffect, useRef } from 'react'
 import { ViewHeader } from '@/components/View'
 import { StatusMenu } from '@/components/DocumentStatus/StatusMenu'
-import { RefreshCw, PenBoxIcon } from '@ttab/elephant-ui/icons'
-import { Button } from '@ttab/elephant-ui'
+import { PenBoxIcon } from '@ttab/elephant-ui/icons'
 
 /**
  * EditorHeader component.

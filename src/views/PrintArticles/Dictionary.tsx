@@ -1,7 +1,7 @@
-import { View, ViewHeader } from "@/components/View"
-import { ViewProps } from "@/types/index"
-import { BookA } from "@ttab/elephant-ui/icons"
-import { cn } from "@ttab/elephant-ui/utils"
+import { View, ViewHeader } from '@/components/View'
+import { type ViewProps } from '@/types/index'
+import { BookA } from '@ttab/elephant-ui/icons'
+import { cn } from '@ttab/elephant-ui/utils'
 
 const Dictionary = ({ asDialog, onDialogClose, className }: ViewProps): JSX.Element => {
   return (

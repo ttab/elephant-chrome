@@ -4,11 +4,11 @@ import { constructQuery, fields } from '@/hooks/baboon/useDocuments/layoutNames'
 import { useLink } from '@/hooks/useLink'
 import type { Block } from '@ttab/elephant-api/newsdoc'
 import { Button, Label, Popover, PopoverContent, PopoverTrigger, Input, Command, CommandInput, CommandList, CommandItem } from '@ttab/elephant-ui'
-import { CircleCheckBig, TriangleAlert, X, Eye, ChevronDown } from '@ttab/elephant-ui/icons'
+import { X, Eye, ChevronDown } from '@ttab/elephant-ui/icons'
 import { toast } from 'sonner'
 import { useRegistry } from '@/hooks/useRegistry'
 import { useSession } from 'next-auth/react'
-import { useCallback } from 'react'
+
 interface Additional {
   id: string
   name: string
@@ -65,7 +65,6 @@ export function LayoutBox({
   const openPreview = useLink('PrintPreview')
 
   const [layouts, setLayoutNames] = useState<string[]>([])
-  const valid = true
 
   const id = layout.id
   const name = layout.links?.find((l) => l.rel === 'layout')?.name
@@ -92,7 +91,7 @@ export function LayoutBox({
     }
   }, [layoutNamesData])
 
-  const handleRenderArticle = useCallback(async () => {
+  const handleRenderArticle = async () => {
     if (!session?.accessToken) {
       toast.error('Ingen access token hittades')
       return
@@ -114,14 +113,15 @@ export function LayoutBox({
         toast.success('Printartikel skapad')
         openPreview(undefined, { id: response?.response?.pdfUrl })
       }
-    } catch (ex) {
+    } catch (ex: unknown) {
       console.error('Error rendering article:', ex)
-      toast.error('Något gick fel när printartikel skulle renderas 2')
+      openPreview(undefined, { id: 'error' })
+      toast.error(`Något gick fel när printartikel skulle renderas: ${ex instanceof Error ? ex.message : 'Okänt fel'}`)
     }
-  }, [documentId, layoutId, layout.id, session?.accessToken, baboon])
+  }
 
   return (
-    <div id={layout.id} className='border min-h-32 p-2 pt-0 grid grid-cols-12 gap-2 rounded bg-approved-background border-approved-border border-s-approved border-s-[6px]'>
+    <div id={layout.id} className='border min-h-32 p-2 pt-0 grid grid-cols-12 rounded bg-approved-background border-approved-border border-s-approved border-s-[6px]'>
       <header className={`col-span-12 row-span-1 gap-2 flex items-center ${isDirty === layout.id ? 'mt-2 justify-end' : 'justify-between'} `}>
         {isDirty !== layout.id
           ? (
@@ -129,7 +129,7 @@ export function LayoutBox({
                 <div className='flex items-center gap-2'>
                   <Button
                     variant='ghost'
-                    className='px-2 py-0'
+                    className='group/render px-2 py-0 flex gap-2 justify-start hover:bg-approved-background/50'
                     size='sm'
                     onClick={async () => {
                       openPreview(undefined, { })
@@ -137,6 +137,9 @@ export function LayoutBox({
                     }}
                   >
                     <Eye strokeWidth={1.75} size={16} />
+                    <Label className='cursor-pointer transition-opacity ease-in-out delay-500 opacity-0 group-hover/render:opacity-100'>
+                      Förhandsgranska
+                    </Label>
                   </Button>
                 </div>
                 <div className='flex items-center gap-2'>
@@ -190,7 +193,7 @@ export function LayoutBox({
               </>
             )}
       </header>
-      <div className='col-span-12 row-span-1'>
+      <div className='col-span-12 row-span-1 mb-1'>
         <Input
           type='text'
           placeholder='Namn'
@@ -209,7 +212,7 @@ export function LayoutBox({
           }}
         />
       </div>
-      <div className='col-span-6 row-span-1'>
+      <div className='col-span-6 row-span-1 mr-1'>
         <Popover>
           <PopoverTrigger className='bg-white w-full'>
             <div className='text-sm border rounded-md p-2 flex gap-1 items-center justify-between w-full'>
@@ -263,7 +266,7 @@ export function LayoutBox({
           }}
         />
       </div>
-      <div className='col-span-12 row-span-1 flex flex-col gap-2'>
+      <div className='col-span-12 row-span-1 flex flex-col gap-2 mt-1'>
         {additionals?.length > 0 && (
           <>
             <h4 className='text-sm font-bold'>Tillägg</h4>

@@ -36,9 +36,9 @@ import { contentMenuLabels } from '@/defaults/contentMenuLabels'
 import { toast } from 'sonner'
 import { useLayouts } from '@/hooks/baboon/useLayouts'
 import { useSession } from 'next-auth/react'
-import { Button, Popover, PopoverTrigger, PopoverContent, ScrollArea } from '@ttab/elephant-ui'
+import { Button, ScrollArea } from '@ttab/elephant-ui'
 import { LayoutBox } from './LayoutBox'
-import { ChevronRight, RefreshCw, EllipsisVertical } from '@ttab/elephant-ui/icons'
+import { ChevronRight, RefreshCw } from '@ttab/elephant-ui/icons'
 import { DotDropdownMenu } from '@/components/ui/DotMenu'
 // Metadata definition
 const meta: ViewMetadata = {
@@ -47,13 +47,13 @@ const meta: ViewMetadata = {
   widths: {
     sm: 12,
     md: 12,
-    lg: 6,
-    xl: 6,
-    '2xl': 6,
-    hd: 6,
-    fhd: 6,
-    qhd: 3,
-    uhd: 2
+    lg: 4,
+    xl: 4,
+    '2xl': 4,
+    hd: 4,
+    fhd: 4,
+    qhd: 4,
+    uhd: 4
   }
 }
 
@@ -280,30 +280,30 @@ function EditorContainer({
                     </Button>
                   )
                 : (
-                  <DotDropdownMenu
-                    trigger='vertical'
-                    items={[
-                    {
-                      label: 'Uppdatera alla',
-                      icon: RefreshCw,
-                      item: (
-                        <Button
-                          variant='ghost'
-                          size='sm'
-                          className='flex gap-2 items-center'
-                          onClick={(e) => {
-                            e.preventDefault()
-                            window.alert('Ej implementerat')
-                          }}
-                        >
-                          <RefreshCw strokeWidth={1.75} size={16} />
-                          Uppdatera alla
-                        </Button>
-                      )
-                    }
-                  ]}
-                />
-              )}
+                    <DotDropdownMenu
+                      trigger='vertical'
+                      items={[
+                        {
+                          label: 'Uppdatera alla',
+                          icon: RefreshCw,
+                          item: (
+                            <Button
+                              variant='ghost'
+                              size='sm'
+                              className='flex gap-2 items-center'
+                              onClick={(e) => {
+                                e.preventDefault()
+                                window.alert('Ej implementerat')
+                              }}
+                            >
+                              <RefreshCw strokeWidth={1.75} size={16} />
+                              Uppdatera alla
+                            </Button>
+                          )
+                        }
+                      ]}
+                    />
+                  )}
             </header>
             <ScrollArea className='h-[calc(100vh-12rem)]'>
               <div className='flex flex-col gap-2'>
