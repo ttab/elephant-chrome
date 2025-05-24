@@ -101,11 +101,11 @@ type SnapshotResponse = {
 } | undefined
 
 export async function snapshot(uuid: string, context: Context): Promise<SnapshotResponse> {
-  if (!uuid) {
-    throw new Error('UUID is required')
-  }
-
   try {
+    if (!uuid) {
+      throw new Error('UUID is required')
+    }
+
     const base = `${process.env.PROTOCOL || 'http'}://${process.env.HOST || 'localhost'}${process.env.PORT ? `:${process.env.PORT}` : ''}`
     const url = new URL(`${BASE_URL}/api/snapshot/${uuid}`, base)
 
@@ -126,5 +126,17 @@ export async function snapshot(uuid: string, context: Context): Promise<Snapshot
     return data
   } catch (ex) {
     logger.error(ex, 'Failed to save snapshot')
+
+    if (ex instanceof Error && ex.message) {
+      return {
+        statusCode: 500,
+        statusMessage: `Failed to save snapshot ${ex.message}`
+      }
+    } else {
+      return {
+        statusCode: 500,
+        statusMessage: 'Failed to save snapshot: Unknown error'
+      }
+    }
   }
 }
