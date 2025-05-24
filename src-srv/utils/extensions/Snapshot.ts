@@ -125,6 +125,6 @@ export async function snapshot(uuid: string, context: Context): Promise<Snapshot
 
     return data
   } catch (ex) {
-    throw new Error('Failed to save snapshot: ' + (ex instanceof Error ? ex.message : JSON.stringify(ex)))
+    logger.error(ex, 'Failed to save snapshot')
   }
 }
