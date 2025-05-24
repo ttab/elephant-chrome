@@ -29,6 +29,7 @@ export const fetch = async (
     'document.meta.core_newsvalue.value',
     'document.meta.tt_slugline.value',
     'document.rel.section.title',
+    'document.rel.section.uuid',
     'document.meta.core_planning_item.data.start_date'
   ]
 
@@ -112,7 +113,8 @@ export const fetch = async (
       iconProps: newsvalue.iconProps,
       payload: {
         slugline,
-        sluglines: planning.fields['document.meta.core_assignment.meta.tt_slugline.value']?.values
+        sluglines: planning.fields['document.meta.core_assignment.meta.tt_slugline.value']?.values,
+        section: planning.fields['document.rel.section.uuid']?.values?.[0]
       }
     }
   })
