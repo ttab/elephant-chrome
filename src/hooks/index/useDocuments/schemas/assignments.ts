@@ -15,7 +15,6 @@ const _fields = [
   'document.rel.section.title',
   'document.meta.core_assignment.title',
   'document.meta.core_assignment.id',
-  'document.meta.core_assignment.rel.assignee.title',
   'document.meta.core_assignment.rel.assignee.uuid',
   'document.meta.core_assignment.meta.core_assignment_type.value',
   'document.meta.core_assignment.rel.deliverable.uuid',
