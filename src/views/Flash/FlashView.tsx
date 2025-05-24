@@ -143,7 +143,7 @@ function EditorContent({ provider, user }: {
         [&_[data-spelling-error]]:border-b-2
         [&_[data-spelling-error]]:border-dotted
         [&_[data-spelling-error]]:border-red-500
-        p-6
+        px-[56px]
       '
     >
       <Gutter />
