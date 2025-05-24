@@ -6,7 +6,7 @@ import {
 import type { DefaultValueOption, ViewProps } from '@/types'
 import { Button, Checkbox, ComboBox, Label } from '@ttab/elephant-ui'
 import { CircleXIcon, Tags, GanttChartSquare } from '@ttab/elephant-ui/icons'
-import { useCollaboration, useYValue, useRegistry } from '@/hooks'
+import { useCollaboration, useYValue, useRegistry, useSections } from '@/hooks'
 import { useSession } from 'next-auth/react'
 import type { Dispatch, SetStateAction } from 'react'
 import { useRef, useState } from 'react'
@@ -18,6 +18,8 @@ import type { CreateFlashDocumentStatus } from './lib/createFlash'
 import { createFlash } from './lib/createFlash'
 import { CreatePrompt } from '@/components/CreatePrompt'
 import { FlashHeader } from './FlashHeader'
+import { toast } from 'sonner'
+import { Block } from '@ttab/elephant-api/newsdoc'
 
 export const FlashViewContent = (props: ViewProps): JSX.Element => {
   const { provider } = useCollaboration()
@@ -37,6 +39,8 @@ export const FlashViewContent = (props: ViewProps): JSX.Element => {
     title: string
   } | undefined>(undefined)
   const [documentId] = useYValue<string>('root.uuid')
+  const allSections = useSections()
+  const [, setYSection] = useYValue<Block | undefined>('links.core/section[0]')
 
   const handleSubmit = (setCreatePrompt: Dispatch<SetStateAction<boolean>>): void => {
     setCreatePrompt(true)
@@ -110,6 +114,22 @@ export const FlashViewContent = (props: ViewProps): JSX.Element => {
                           value: option.value,
                           label: option.label
                         })
+
+
+                        const sectionPayload = option.payload as { section: string | undefined }
+                        const sectionTitle = allSections.find((s) => s.id === sectionPayload?.section)?.title
+
+
+                        if (sectionTitle && sectionPayload?.section) {
+                          setYSection(Block.create({
+                            type: 'core/section',
+                            rel: 'section',
+                            title: sectionTitle,
+                            uuid: sectionPayload.section
+                          }))
+                        } else {
+                          toast.error('Kunde inte hitta sektionen för planeringen')
+                        }
                       } else {
                         setSelectedPlanning(undefined)
                       }
@@ -186,7 +206,7 @@ export const FlashViewContent = (props: ViewProps): JSX.Element => {
                       planningId: selectedPlanning?.value,
                       timeZone,
                       documentStatus: config.documentStatus,
-                      section: (!selectedPlanning?.value) ? section || undefined : undefined
+                      section
                     })
                       .then(() => {
                         config.setPrompt(false)
