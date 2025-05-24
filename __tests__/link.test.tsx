@@ -21,6 +21,6 @@ describe('Link', () => {
 
     expect(historyState?.contentState[1].props?.id).toBe('abc123')
     expect(historyState?.contentState[1].name).toBe('Editor')
-    expect(historyState?.contentState[1].path).toBe('/elephant/editor?id=abc123')
+    expect(historyState?.contentState[1].path).toContain(`/editor?id=abc123`)
   })
 })

@@ -256,13 +256,15 @@ export class Repository {
     const payload: UpdateRequest = {
       document,
       meta: {},
-      ifMatch: version,
+      // No optimistic lock
+      ifMatch: 0n,
       status: status
         ? [{
             name: status,
             version,
             meta: cause ? { cause } : {},
-            ifMatch: version
+            // No optimistic lock
+            ifMatch: 0n
           }]
         : [],
       acl: [{ uri: 'core://unit/redaktionen', permissions: ['r', 'w'] }],

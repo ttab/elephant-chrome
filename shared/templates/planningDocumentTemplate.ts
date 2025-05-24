@@ -1,6 +1,6 @@
 import { Document, Block } from '@ttab/elephant-api/newsdoc'
-import { currentDateInUTC } from '../../lib/datetime'
-import type { TemplatePayload } from '.'
+import { currentDateInUTC } from '../tmp/datetime.js'
+import type { TemplatePayload } from './index.js'
 
 /**
  * Create a template structure for a planning document
@@ -13,8 +13,7 @@ export function planningDocumentTemplate(documentId: string, payload?: TemplateP
   const makeDate = () => {
     if (payload?.meta?.['core/event']) {
       const event = payload?.meta?.['core/event'][0]
-      const targetDate = event.data?.end || event.data?.start
-      return targetDate.split('T')[0]
+      return event.data.start.split('T')[0]
     }
     return currentDateInUTC()
   }

@@ -34,7 +34,7 @@ export const useWorkflowStatus = (uuid?: string, isWorkflow: boolean = false): [
 
       return {
         uuid,
-        ...getStatusFromMeta(meta)
+        ...getStatusFromMeta(meta, isWorkflow)
       }
     }
   )

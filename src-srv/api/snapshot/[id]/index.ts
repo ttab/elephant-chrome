@@ -4,6 +4,7 @@ import type { RouteContentResponse, RouteHandler, RouteStatusResponse } from '..
 import type { Context } from '../../../lib/assertContext.js'
 import { assertContext } from '../../../lib/assertContext.js'
 import { createSnapshot } from '../../../utils/createSnapshot.js'
+import type { Session } from 'next-auth'
 
 type Response = RouteContentResponse | RouteStatusResponse
 
@@ -11,10 +12,26 @@ export const GET: RouteHandler = async (req: Request, { collaborationServer, cac
   const uuid = req.params.id
   const force = req.query.force
 
+  // Get accessToken from request headers or session
   const locals = res.locals as Record<string, unknown> | undefined
   const session = locals?.session as { accessToken?: string, user?: Context['user'] } | undefined
+  let accessToken = session?.accessToken
+  if (!accessToken) {
+    const authHeader = req.headers['authorization'] || req.headers['Authorization']
+    if (typeof authHeader === 'string' && authHeader.startsWith('Bearer ')) {
+      accessToken = authHeader.slice(7)
+    }
+  }
 
-  if (!session?.accessToken || !session?.user) {
+  let user = session?.user
+  if (!user) {
+    const userHeader = req.headers['x-user'] || req.headers['X-User']
+    if (typeof userHeader === 'string') {
+      user = JSON.parse(userHeader) as Session['user']
+    }
+  }
+
+  if (!accessToken || !user) {
     return {
       statusCode: 401,
       statusMessage: 'Unauthorized: Session not found, can not snapshot document'
@@ -22,8 +39,8 @@ export const GET: RouteHandler = async (req: Request, { collaborationServer, cac
   }
 
   const context: Context = {
-    accessToken: session.accessToken,
-    user: session.user,
+    accessToken,
+    user,
     agent: 'server'
   }
 

@@ -36,7 +36,12 @@ export const WireViewContent = (props: ViewProps & {
   const documentAwareness = useRef<(value: boolean) => void>(null)
   const planningTitleRef = useRef<HTMLInputElement>(null)
   const { index, locale, timeZone } = useRegistry()
-
+  const [section, setSection] = useState<{
+    type: string
+    rel: string
+    uuid: string
+    title: string
+  } | undefined>(undefined)
   const [slugline, setSlugline] = useYValue<Y.XmlText>('meta.tt/slugline[0].value')
 
   const handleSubmit = (): void => {
@@ -55,8 +60,7 @@ export const WireViewContent = (props: ViewProps & {
         </ViewHeader.Content>
 
         <ViewHeader.Action onDialogClose={props.onDialogClose} asDialog={props.asDialog}>
-          {!props.asDialog && !!props.id
-          && <ViewHeader.RemoteUsers documentId={props.id} />}
+          {!props.asDialog && !!props.id && <ViewHeader.RemoteUsers documentId={props.id} />}
         </ViewHeader.Action>
       </ViewHeader.Root>
 
@@ -73,6 +77,7 @@ export const WireViewContent = (props: ViewProps & {
                 />
               </>
             </Form.Group>
+
             <Form.Group icon={GanttChartSquare}>
               <Awareness path='wirePlanningItem' ref={documentAwareness}>
                 <ComboBox
@@ -117,8 +122,7 @@ export const WireViewContent = (props: ViewProps & {
                 </ComboBox>
               </Awareness>
 
-              {!!selectedPlanning
-              && (
+              {!!selectedPlanning && (
                 <>
                   <Button
                     variant='ghost'
@@ -146,10 +150,9 @@ export const WireViewContent = (props: ViewProps & {
             </Form.Group>
 
 
-            {!selectedPlanning
-            && (
+            {!selectedPlanning && (
               <Form.Group icon={Tags}>
-                <Section />
+                <Section onSelect={setSection} />
                 <SluglineEditable
                   path='meta.tt/slugline[0].value'
                 />
@@ -158,8 +161,7 @@ export const WireViewContent = (props: ViewProps & {
 
 
             )}
-            {!selectedPlanning
-            && (
+            {!selectedPlanning && (
               <Form.Group icon={GanttChartSquare}>
                 <>
                   <Input
@@ -176,6 +178,7 @@ export const WireViewContent = (props: ViewProps & {
                 placeholder='Uppdragstitel'
               />
             </Form.Group>
+
             <Form.Group icon={Tag}>
               {selectedPlanning && (
                 <SluglineEditable
@@ -187,20 +190,18 @@ export const WireViewContent = (props: ViewProps & {
                   path='meta.tt/slugline[0].value'
                 />
               )}
+
               {(!selectedPlanning) && (
                 <SluglineEditable
                   path='meta.tt/slugline[0].value'
                 />
               )}
             </Form.Group>
+
             <UserMessage asDialog={!!props?.asDialog}>
               {!selectedPlanning
-                ? (
-                    <>Väljer du ingen planering kommer en ny planering med tillhörande uppdrag skapas åt dig.</>
-                  )
-                : (
-                    <>Denna artikel kommer läggas i ett nytt uppdrag i den valda planeringen</>
-                  )}
+                ? (<>Väljer du ingen planering kommer en ny planering med tillhörande uppdrag skapas åt dig.</>)
+                : (<>Denna artikel kommer läggas i ett nytt uppdrag i den valda planeringen</>)}
             </UserMessage>
 
           </Form.Content>
@@ -215,8 +216,7 @@ export const WireViewContent = (props: ViewProps & {
                   : `Denna artikel kommer att läggas i ett nytt uppdrag i planeringen "${selectedPlanning.label}"`}
                 secondaryLabel='Avbryt'
                 primaryLabel='Skapa'
-                selectedPlanning={selectedPlanning}
-                onPrimary={(planning: Y.Doc | undefined, planningId: string | undefined) => {
+                onPrimary={() => {
                   if (!provider || !props.id || !session) {
                     console.error('Environment is not sane, article cannot be created')
                     return
@@ -230,16 +230,19 @@ export const WireViewContent = (props: ViewProps & {
                     provider,
                     status,
                     session,
-                    planning: {
-                      document: planning,
-                      id: planningId,
-                      title: planningTitleRef.current?.value
-                    },
+                    planningId: selectedPlanning?.value,
+                    planningTitle: planningTitleRef.current?.value,
                     wire: props.wire,
-                    hasSelectedPlanning: !!selectedPlanning
+                    section: (!selectedPlanning?.value) ? section || undefined : undefined,
+                    timeZone
                   })
-                  setShowVerifyDialog(false)
-                  props.onDocumentCreated?.()
+                    .then(() => {
+                      setShowVerifyDialog(false)
+                      props.onDocumentCreated?.()
+                    })
+                    .catch((ex: unknown) => {
+                      console.log(ex)
+                    })
                 }}
                 onSecondary={() => {
                   setShowVerifyDialog(false)

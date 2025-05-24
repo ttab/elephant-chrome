@@ -6,8 +6,17 @@ import { useRef } from 'react'
 import { Validation } from './Validation'
 import { type FormProps } from './Form/Root'
 
-export const Section = ({ onValidation, validateStateRef, onChange }:
-FormProps): JSX.Element => {
+interface SectionProps {
+  onSelect?: (selectedOption: {
+    type: string
+    rel: string
+    uuid: string
+    title: string
+  }) => void
+}
+
+export const Section = ({ onValidation, validateStateRef, onChange, onSelect }:
+  FormProps & SectionProps): JSX.Element => {
   const allSections = useSections().map((_) => {
     return {
       value: _.id,
@@ -43,17 +52,23 @@ FormProps): JSX.Element => {
             }
           }}
           onSelect={(option) => {
+            const value = {
+              type: 'core/section',
+              rel: 'section',
+              uuid: option.value,
+              title: option.label
+            }
+
             onChange?.(true)
+
+            if (onSelect) {
+              onSelect(value)
+            }
 
             if (section?.title === option.label) {
               setSection(undefined)
             } else {
-              setSection(Block.create({
-                type: 'core/section',
-                rel: 'section',
-                uuid: option.value,
-                title: option.label
-              }))
+              setSection(Block.create(value))
             }
           }}
         />

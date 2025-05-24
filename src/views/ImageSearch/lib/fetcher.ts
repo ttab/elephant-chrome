@@ -2,6 +2,7 @@ import { type ttninjs, type facet } from '@ttab/api-client'
 import { Api } from '@ttab/api-client'
 import type { Session } from 'next-auth'
 import { toast } from 'sonner'
+import { productCodes } from './productCodes'
 
 function apiClient(token: string, host: URL): Api {
   const client = new Api({ host: host.origin, token, timeout: 6000 })
@@ -27,7 +28,7 @@ export const createFetcher = (url: URL, session: Session | null) =>
     const client = apiClient(session.accessToken, url)
     return await client.content.search('image', {
       sort: 'default:desc',
-      agr: [51988],
+      p: productCodes,
       q: queryString,
       s: SIZE,
       fr: (index) * SIZE

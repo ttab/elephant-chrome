@@ -26,7 +26,15 @@ export const StatusMenu = ({ documentId, type, publishTime, onBeforeStatusChange
   ) => Promise<boolean>
   isChanged?: boolean
 }) => {
-  const [documentStatus, setDocumentStatus] = useWorkflowStatus(documentId, true)
+  // Should read the workflow status to get correct status
+  const shouldUseWorkflowStatus = [
+    'core/article',
+    'core/flash',
+    'core/editorial-info',
+    'core/print-article'
+  ].includes(type)
+
+  const [documentStatus, setDocumentStatus] = useWorkflowStatus(documentId, shouldUseWorkflowStatus)
   const containerRef = useRef<HTMLDivElement>(null)
   const [dropdownWidth, setDropdownWidth] = useState<number>(0)
   const { statuses, workflow } = useWorkflow(type)
@@ -85,7 +93,6 @@ export const StatusMenu = ({ documentId, type, publishTime, onBeforeStatusChange
           'core/planning-item': 'Planning',
           'core/event': 'Event'
         }
-
         handleLink({
           dispatch,
           viewItem: state.viewRegistry.get(viewType[type]),
@@ -153,8 +160,8 @@ export const StatusMenu = ({ documentId, type, publishTime, onBeforeStatusChange
                   status={documentStatus.name}
                   state={{
                     verify: true,
-                    title: `Spara ändringar - ${workflow[currentStatusName]?.title}`,
-                    description: 'Spara ändringar'
+                    title: `Uppdatera ändringar - ${workflow[currentStatusName]?.title}`,
+                    description: 'Uppdatera med ändringar'
                   }}
                   onSelect={showPrompt}
                   statusDef={currentStatusDef}
@@ -187,12 +194,13 @@ export const StatusMenu = ({ documentId, type, publishTime, onBeforeStatusChange
               currentCause={
                 documentStatus?.cause !== undefined
                   ? documentStatus.cause
-                  : (isChanged && prompt.status === 'usable')
-                      ? ''
-                      : undefined
+                  : (isChanged && prompt.status === 'usable') ? '' : undefined
               }
-              requireCause={(!isChanged && prompt.status !== 'usable')
-              || (prompt.status === 'draft' && !!documentStatus.checkpoint)}
+              requireCause={!!documentStatus.checkpoint && [
+                'core/article',
+                'core/flash',
+                'core/editorial-info'
+              ].includes(type)}
               unPublishDocument={unPublishDocument}
             />
           )}

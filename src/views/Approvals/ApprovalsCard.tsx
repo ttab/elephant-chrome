@@ -17,6 +17,8 @@ import type { StatusSpecification } from '@/defaults/workflowSpecification'
 import { useYValue } from '@/hooks/useYValue'
 import { AvatarGroup } from '@/components/AvatarGroup'
 import { Tooltip } from '@ttab/elephant-ui'
+import { timesSlots } from '@/defaults/assignmentTimeslots'
+import { useMemo } from 'react'
 
 export const ApprovalsCard = ({ assignment, isSelected, isFocused, status }: {
   assignment: AssignmentInterface
@@ -32,9 +34,9 @@ export const ApprovalsCard = ({ assignment, isSelected, isFocused, status }: {
   const [users] = useYValue<Record<string, { id: string, name: string, username: string }>>(`${assignment._deliverableId}.users`, false, undefined, 'open-documents')
 
   const openType = (assignmentType: string) => assignmentType === 'core/flash' ? openFlash : openArticle
-  const time = assignment.data.publish
-    ? format(toZonedTime(parseISO(assignment.data.publish), timeZone), 'HH:mm')
-    : undefined
+  const time = useMemo(() =>
+    getAssignmentTime(assignment, timeZone), [assignment, timeZone])
+
   const documentId = assignment._deliverableId
   const assignees = assignment.links.filter((m) => m.type === 'core/author' && m.title).map((l) => l.title)
 
@@ -179,4 +181,27 @@ export const ApprovalsCard = ({ assignment, isSelected, isFocused, status }: {
 
     </Card.Root>
   )
+}
+
+
+function getAssignmentTime(assignment: AssignmentInterface, timeZone: string) {
+  if (assignment.data.publish && assignment._deliverableStatus === 'withheld') {
+    return format(toZonedTime(parseISO(assignment.data.publish), timeZone), 'HH:mm')
+  }
+  if (assignment.data.publish_slot) {
+    return getTimeslotLabel(parseInt(assignment.data.publish_slot))
+  }
+  if (assignment.data.start) {
+    return format(toZonedTime(parseISO(assignment.data.start), timeZone), 'HH:mm')
+  }
+  return undefined
+}
+
+export function getTimeslotLabel(hour: number): string | undefined {
+  for (const key in timesSlots) {
+    if (timesSlots[key].slots.includes(hour)) {
+      return timesSlots[key].label
+    }
+  }
+  return undefined
 }
