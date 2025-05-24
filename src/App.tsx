@@ -12,19 +12,21 @@ export const App = (): JSX.Element => (
     >
       <ModalProvider>
         <div className='relative flex h-screen flex-col'>
-          <div style={{
-            background: isStage ? 'red' : 'darkblue',
-            color: '#f5f5f5',
-            width: '100vw',
-            fontSize: '8px',
-            display: 'flex',
-            justifyContent: 'center',
-            position: 'sticky',
-            top: 0
-          }}
-          >
-            {isStage ? 'STAGE' : 'PRODUKTION'}
-          </div>
+          {isStage && (
+            <div style={{
+              background: 'red',
+              color: '#f5f5f5',
+              width: '100vw',
+              fontSize: '8px',
+              display: 'flex',
+              justifyContent: 'center',
+              position: 'sticky',
+              top: 0
+            }}
+            >
+              STAGE
+            </div>
+          )}
 
           <div className='grid grid-cols-12 h-screen'>
             <AppContent />
