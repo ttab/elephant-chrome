@@ -3,18 +3,16 @@ import { Button } from '@ttab/elephant-ui'
 import { User } from '@ttab/elephant-ui/icons'
 
 
-interface PAFProps {
-  assigneeUserName: string | undefined
-}
-
-export const PersonalAssignmentsFilter = ({ assigneeUserName }: PAFProps): JSX.Element => {
+export const PersonalAssignmentsFilter = ({ assigneeId }: {
+  assigneeId?: string | undefined
+}): JSX.Element => {
   const { table } = useTable()
 
   return (
     <Button
       variant='outline'
-      disabled={!assigneeUserName}
-      className={`${!assigneeUserName ? 'opacity-50' : ''}`}
+      disabled={!assigneeId}
+      className={`${!assigneeId ? 'opacity-50' : ''}`}
       onClick={() => {
         table.setColumnFilters((prev) => {
           const isColumnFiltered = prev.find((column) => column.id === 'assignees')
@@ -22,7 +20,7 @@ export const PersonalAssignmentsFilter = ({ assigneeUserName }: PAFProps): JSX.E
             return prev.filter((column) => column.id !== 'assignees')
           }
           if (!isColumnFiltered) {
-            return prev.concat([{ id: 'assignees', value: [assigneeUserName] }])
+            return prev.concat([{ id: 'assignees', value: [assigneeId] }])
           }
           return prev
         })

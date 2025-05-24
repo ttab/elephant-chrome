@@ -11,7 +11,6 @@ export const _fields = [
   'document.meta.tt_slugline.value',
   'document.rel.section.uuid',
   'document.rel.section.title',
-  'document.meta.core_assignment.rel.assignee.title',
   'document.meta.core_assignment.meta.core_assignment_type.value',
   'document.meta.core_assignment.rel.deliverable.uuid',
   'document.meta.core_planning_item.data.start_date',

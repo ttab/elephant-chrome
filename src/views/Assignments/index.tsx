@@ -42,14 +42,14 @@ export const Assignments = (): JSX.Element => {
   const { data: session } = useSession()
   const sections = useSections()
 
-  const assigneeUserName = useMemo(() => {
+  const assigneeId = useMemo(() => {
     const userSub = session?.user?.sub
     const subId = userSub?.slice(userSub?.lastIndexOf('/') + 1)
     const author = authors?.find((a: IDBAuthor) => {
       return a.sub.slice(a?.sub.lastIndexOf('/') + 1) === subId
     })
 
-    return author?.name
+    return author?.id
   }, [authors, session?.user?.sub])
 
   const date = useMemo(() => {
@@ -87,7 +87,7 @@ export const Assignments = (): JSX.Element => {
           <ViewHeader.Content>
             <Header
               type={meta.name}
-              assigneeUserName={assigneeUserName}
+              assigneeId={assigneeId}
             />
           </ViewHeader.Content>
           <ViewHeader.Action />
