@@ -112,7 +112,7 @@ export function assignmentColumns({ authors = [], locale, timeZone, sections = [
       },
       accessorFn: (data) => data.fields['document.rel.section.uuid']?.values[0],
       cell: ({ row }) => {
-        const sectionTitle = row.getValue<string>('section')
+        const sectionTitle = row.original.fields['document.rel.section.title']?.values[0]
         return (
           <>
             {sectionTitle && <SectionBadge title={sectionTitle} color='bg-[#BD6E11]' />}
