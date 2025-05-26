@@ -35,10 +35,10 @@ export function asAssignments(data: Assignment[], query: QueryV1): Assignment[] 
             'document.meta.core_assignment.title': {
               values: [currentAssignmentMeta.title]
             },
-            'document.meta.core_assignment.rel.assignee.title': {
+            'document.meta.core_assignment.rel.assignee.uuid': {
               values: currentAssignmentMeta.links
                 .filter((link) => link.type === 'core/author' && link.rel === 'assignee')
-                .map((link) => link.title)
+                .map((link) => link.uuid)
             },
             'document.meta.core_assignment.meta.core_assignment_type.value': {
               values: currentAssignmentMeta.meta

@@ -42,8 +42,7 @@ export const Thumbnail = ({ hit }: {
 
               clone.style.width = `${el.offsetWidth}px`
               clone.style.height = `${el.offsetHeight}px`
-
-              document.body.appendChild(clone)
+              clone.style.background = `url('${thumbnail.href}')`
 
               el.style.opacity = '0.5'
               e.dataTransfer.clearData()
@@ -63,6 +62,7 @@ export const Thumbnail = ({ hit }: {
                 (e.clientX - left) * 0.2,
                 (e.clientY - top) * 0.2
               )
+              document.body.appendChild(clone)
             }}
             onDragEndCapture={() => {
               const el = imageRef.current

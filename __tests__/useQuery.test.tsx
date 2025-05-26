@@ -1,6 +1,7 @@
 import { renderHook, act } from '@testing-library/react'
 import { useQuery } from '@/hooks'
 import { vi } from 'vitest'
+const BASE_URL = import.meta.env.BASE_URL
 
 describe('useQuery hook', () => {
   let replaceStateMock: ReturnType<typeof vi.spyOn>
@@ -16,7 +17,7 @@ describe('useQuery hook', () => {
           value: {
             search: search ? `?${search}` : '',
             href: 'https://example.com/',
-            pathname: '/elephant/plannings'
+            pathname: `${BASE_URL}/plannings`
           }
         })
       }

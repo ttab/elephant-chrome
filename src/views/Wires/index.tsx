@@ -16,6 +16,7 @@ import { ViewFocus } from '@/components/View/ViewHeader/ViewFocus'
 import { Button } from '@ttab/elephant-ui'
 import { useUserTracker } from '@/hooks/useUserTracker'
 import type { Wire } from '@/hooks/index/useDocuments/schemas/wire'
+const BASE_URL = import.meta.env.BASE_URL
 
 const meta: ViewMetadata = {
   name: 'Wires',
@@ -113,8 +114,7 @@ function handleClose(
   history?: HistoryInterface): void {
   if (viewId && history) {
     const newContentState = (history.state?.contentState.filter((obj) => obj.viewId !== viewId) || [])
-    // TODO: Get new url
-    history.replaceState('/elephant/wires', { viewId: viewId || '', contentState: newContentState })
+    history.replaceState(`${BASE_URL}/wires`, { viewId: viewId || '', contentState: newContentState })
   }
 }
 Wires.meta = meta

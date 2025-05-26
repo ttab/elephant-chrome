@@ -12,7 +12,12 @@ import { useDeliverablePlanningId } from '@/hooks/index/useDeliverablePlanningId
 import { Button } from '@ttab/elephant-ui'
 import { updateAssignmentTime } from '@/lib/index/updateAssignmentPublishTime'
 
-export const EditorHeader = ({ documentId, readOnly, readOnlyVersion }: { documentId: string, readOnly?: boolean, readOnlyVersion?: bigint }): JSX.Element => {
+export const EditorHeader = ({ documentId, readOnly, readOnlyVersion, planningId: propPlanningId }: {
+  documentId: string
+  planningId?: string | null
+  readOnly?: boolean
+  readOnlyVersion?: bigint
+}): JSX.Element => {
   const { viewId } = useView()
   const { state, dispatch } = useNavigation()
   const history = useHistory()
@@ -130,7 +135,7 @@ export const EditorHeader = ({ documentId, readOnly, readOnlyVersion }: { docume
                   </Button>
                 )}
 
-                {!!planningId && (!isReadOnlyAndUpdated || isUnpublished) && (
+                {!!(propPlanningId || planningId) && (!isReadOnlyAndUpdated || isUnpublished) && (
                   <StatusMenu
                     documentId={documentId}
                     type={documentType || 'core/article'}

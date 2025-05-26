@@ -36,6 +36,7 @@ import { Wire } from '@/views/Wire'
 import { GroupedRows } from './GroupedRows'
 import { getWireStatus } from './lib/getWireStatus'
 import { type View } from '@/types/index'
+const BASE_URL = import.meta.env.BASE_URL
 
 interface TableProps<TData, TValue> {
   columns: Array<ColumnDef<TData, TValue>>
@@ -279,7 +280,7 @@ export const Table = <TData, TValue>({
 
   const TableBodyElement = useMemo(() => {
     if (loading || !rows?.length) {
-      const isSearchTable = window.location.pathname.includes('/elephant/search')
+      const isSearchTable = window.location.pathname.includes(`${BASE_URL}/search`)
       return (
         <TableRow>
           <TableCell
@@ -297,7 +298,7 @@ export const Table = <TData, TValue>({
         </TableRow>
       )
     }
-    const isAssignmentsTable = window.location.pathname.includes('/elephant/assignments')
+    const isAssignmentsTable = window.location.pathname.includes(`${BASE_URL}/assignments`)
 
     return rows.map((row, index) => (
       table.getState().grouping.length)

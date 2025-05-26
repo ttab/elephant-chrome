@@ -8,7 +8,6 @@ export default defineConfig(() => {
   return {
     port: 5173,
     base: '/elephant',
-
     plugins: [
       react(),
       viteStaticCopy({

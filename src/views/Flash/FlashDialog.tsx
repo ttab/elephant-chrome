@@ -10,18 +10,16 @@ import { useCollaboration, useYValue, useRegistry } from '@/hooks'
 import { useSession } from 'next-auth/react'
 import type { Dispatch, SetStateAction } from 'react'
 import { useRef, useState } from 'react'
-import { FlashEditor } from './FlashEditor'
+import { FlashEditor } from './FlashDialogEditor'
 import { UserMessage } from '@/components/UserMessage'
 import { Form } from '@/components/Form'
 import { fetch } from '@/lib/index/fetch-plannings-twirp'
 import type { CreateFlashDocumentStatus } from './lib/createFlash'
 import { createFlash } from './lib/createFlash'
-import type * as Y from 'yjs'
 import { CreatePrompt } from '@/components/CreatePrompt'
-import { Block } from '@ttab/elephant-api/newsdoc'
 import { FlashHeader } from './FlashHeader'
 
-export const FlashViewContent = (props: ViewProps): JSX.Element => {
+export const FlashDialog = (props: ViewProps): JSX.Element => {
   const { provider } = useCollaboration()
   const { status, data: session } = useSession()
   const planningAwareness = useRef<(value: boolean) => void>(null)
@@ -29,10 +27,15 @@ export const FlashViewContent = (props: ViewProps): JSX.Element => {
   const [savePrompt, setSavePrompt] = useState(false)
   const [donePrompt, setDonePrompt] = useState(false)
   const [selectedPlanning, setSelectedPlanning] = useState<DefaultValueOption | undefined>(undefined)
-  const [title, setTitle] = useYValue<string | undefined>('root.title', true)
+  const [title, setTitle] = useYValue<string | undefined>('root.title')
   const { index, locale, timeZone } = useRegistry()
   const [searchOlder, setSearchOlder] = useState(false)
-
+  const [section, setSection] = useState<{
+    type: string
+    rel: string
+    uuid: string
+    title: string
+  } | undefined>(undefined)
   const [documentId] = useYValue<string>('root.uuid')
   const readOnly = Number(props?.version) > 0 && !props.asDialog
 
@@ -56,12 +59,12 @@ export const FlashViewContent = (props: ViewProps): JSX.Element => {
     {
       visible: donePrompt,
       key: 'done',
-      title: 'Skapa och godkänn flash?',
+      title: 'Skapa och klarmarkera flash?',
       description: !selectedPlanning
         ? 'En ny planering med tillhörande uppdrag för denna flash kommer att skapas åt dig.'
         : `Denna flash kommer att läggas i ett nytt uppdrag i planeringen "${selectedPlanning.label}". Med status godkänd.`,
       secondaryLabel: 'Avbryt',
-      primaryLabel: 'Godkänn',
+      primaryLabel: 'Klarmarkera',
       documentStatus: 'done' as CreateFlashDocumentStatus,
       setPrompt: setDonePrompt
     },
@@ -78,6 +81,10 @@ export const FlashViewContent = (props: ViewProps): JSX.Element => {
       setPrompt: setSavePrompt
     }
   ]
+
+  if (!provider?.synced) {
+    return <></>
+  }
 
   return (
     <View.Root asDialog={props.asDialog} className={props.className}>
@@ -144,17 +151,17 @@ export const FlashViewContent = (props: ViewProps): JSX.Element => {
 
             {!selectedPlanning && props.asDialog && (
               <Form.Group icon={Tags}>
-                <Section />
+                <Section onSelect={setSection} />
               </Form.Group>
             )}
-
-            <FlashEditor setTitle={setTitle} readOnly={readOnly} />
 
             <UserMessage asDialog={!!props?.asDialog}>
               {!selectedPlanning
                 ? (<>Väljer du ingen planering kommer en ny planering med tillhörande uppdrag skapas åt dig.</>)
                 : (<>Denna flash kommer läggas i ett nytt uppdrag i den valda planeringen</>)}
             </UserMessage>
+
+            <FlashEditor setTitle={setTitle} />
 
           </Form.Content>
 
@@ -167,13 +174,7 @@ export const FlashViewContent = (props: ViewProps): JSX.Element => {
                   description={config.description}
                   secondaryLabel={config.secondaryLabel}
                   primaryLabel={config.primaryLabel}
-                  selectedPlanning={selectedPlanning}
-                  payload={{
-                    meta: {
-                      'core/newsvalue': [Block.create({ type: 'core/newsvalue', value: '5' })]
-                    }
-                  }}
-                  onPrimary={(planning: Y.Doc | undefined, planningId: string | undefined) => {
+                  onPrimary={() => {
                     if (!provider || !props.id || !session) {
                       console.error('Environment is not sane, flash cannot be created')
                       return
@@ -184,19 +185,20 @@ export const FlashViewContent = (props: ViewProps): JSX.Element => {
                     }
 
                     createFlash({
-                      provider,
+                      flashProvider: provider,
                       status,
                       session,
-                      planning: {
-                        document: planning,
-                        id: planningId
-                      },
-                      hasSelectedPlanning: !!selectedPlanning,
+                      planningId: selectedPlanning?.value,
                       timeZone,
-                      documentStatus: config.documentStatus
+                      documentStatus: config.documentStatus,
+                      section: (!selectedPlanning?.value) ? section || undefined : undefined
                     })
-
-                    config.setPrompt(false)
+                      .then(() => {
+                        config.setPrompt(false)
+                      })
+                      .catch((ex: unknown) => {
+                        console.log(ex)
+                      })
                   }}
                   onSecondary={() => {
                     config.setPrompt(false)
@@ -217,7 +219,7 @@ export const FlashViewContent = (props: ViewProps): JSX.Element => {
                   <div className='flex justify-between'>
                     <div className='flex gap-2'>
                       <Button variant='secondary' type='button' role='secondary'>Utkast</Button>
-                      <Button variant='secondary' type='button' role='tertiary'>Godkänn</Button>
+                      <Button variant='secondary' type='button' role='tertiary'>Klarmarkera</Button>
                     </div>
                     <Button type='submit' role='primary'>Publicera</Button>
                   </div>

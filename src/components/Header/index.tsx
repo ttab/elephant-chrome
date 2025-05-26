@@ -10,9 +10,9 @@ import * as Views from '@/views'
 import { createDocument } from '@/lib/createYItem'
 import { getTemplateFromView } from '@/defaults/templates/lib/getTemplateFromView'
 
-export const Header = ({ assigneeUserName, type }: {
+export const Header = ({ assigneeId, type }: {
   type: View
-  assigneeUserName?: string | undefined
+  assigneeId?: string | undefined
 }): JSX.Element => {
   const showButton = useMemo(() => {
     const viewTypes: View[] = ['Planning', 'Event', 'Factbox']
@@ -58,7 +58,8 @@ export const Header = ({ assigneeUserName, type }: {
 
       <DateChanger type={type} />
 
-      {type === 'Assignments' && <PersonalAssignmentsFilter assigneeUserName={assigneeUserName} />}
+      {type === 'Assignments'
+      && <PersonalAssignmentsFilter assigneeId={assigneeId} />}
     </>
   )
 }

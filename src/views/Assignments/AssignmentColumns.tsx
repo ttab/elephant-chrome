@@ -106,13 +106,14 @@ export function assignmentColumns({ authors = [], locale, timeZone, sections = [
         display: (value: string) => (
           <span>
             {sections
-              .find((section) => section.id === value)?.title}
+              .find((section) => section.id === value)?.id}
           </span>
         )
       },
-      accessorFn: (data) => data.fields['document.rel.section.title']?.values[0],
+      accessorFn: (data) => data.fields['document.rel.section.uuid']?.values[0],
       cell: ({ row }) => {
-        const sectionTitle = row.getValue<string>('section')
+        const sectionTitle = sections
+          .find((section) => section.id === row.getValue('section'))?.title
         return (
           <>
             {sectionTitle && <SectionBadge title={sectionTitle} color='bg-[#BD6E11]' />}
@@ -148,7 +149,7 @@ export function assignmentColumns({ authors = [], locale, timeZone, sections = [
     {
       id: 'assignees',
       meta: {
-        options: authors.map((a) => ({ value: a.name, label: a.name })),
+        options: authors.map((a) => ({ value: a.id, label: a.name })),
         Filter: ({ column, setSearch }) => (
           <FacetedFilter column={column} setSearch={setSearch} facetFn={() => getNestedFacetedUniqueValues(column)} />
         ),
@@ -156,18 +157,17 @@ export function assignmentColumns({ authors = [], locale, timeZone, sections = [
         columnIcon: Users,
         className: 'flex-none w-[112px] hidden @5xl/view:[display:revert]'
       },
-      accessorFn: (data) => data.fields['document.meta.core_assignment.rel.assignee.title']?.values,
+      accessorFn: (data) => data.fields['document.meta.core_assignment.rel.assignee.uuid']?.values,
       cell: ({ row }) => {
-        const assignees = row.getValue<string[]>('assignees') || []
+        const assignees = (row.getValue<string[]>('assignees') || []).map((assigneeId) => {
+          return authors.find((author) => author.id === assigneeId)?.name || ''
+        })
+
         return <Assignees assignees={assignees} />
       },
       filterFn: (row, id, value: string[]) => {
         const assignees = row.getValue<string[]>(id) || []
-        return (
-          typeof value[0] === 'string'
-            ? assignees.includes(value[0])
-            : false
-        )
+        return value.some((v) => assignees.includes(v))
       },
       enableGrouping: false
     },
