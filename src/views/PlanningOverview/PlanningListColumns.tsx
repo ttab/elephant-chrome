@@ -149,6 +149,7 @@ export function planningListColumns({ sections = [], authors = [] }: {
 
         return <Assignees assignees={assignees} />
       },
+      sortingFn: 'alphanumeric',
       filterFn: (row, id, value: string[]) => {
         const assignees = row.getValue<string[]>(id) || []
         return value.some((v) => assignees.includes(v))
