@@ -29,7 +29,7 @@ export const SearchResult = ({ searchType, page }: {
   const { locale, timeZone } = useRegistry()
   const getType = (searchType: SearchKeys) => searchType === 'events' ? 'Event' : searchType === 'articles' ? 'Editor' : 'Planning'
 
-  const onRowSelected = useCallback((row?: Planning | Event) => {
+  const onRowSelected = useCallback((row?: Planning | Event | Article) => {
     if (row) {
       console.info(`Selected planning item ${row.id}`)
     } else {
