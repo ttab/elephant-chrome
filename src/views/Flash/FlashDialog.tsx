@@ -197,7 +197,7 @@ export const FlashDialog = (props: ViewProps): JSX.Element => {
                         config.setPrompt(false)
                       })
                       .catch((ex: unknown) => {
-                        console.log(ex)
+                        console.error(ex)
                       })
                   }}
                   onSecondary={() => {
