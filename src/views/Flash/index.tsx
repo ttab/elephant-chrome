@@ -28,7 +28,6 @@ const meta: ViewMetadata = {
 export const Flash = (props: ViewProps & {
   document?: Y.Doc
 }): JSX.Element => {
-  console.log(' :31 ~ props', props)
   const [query] = useQuery()
   const [document, setDocument] = useState<Y.Doc | undefined>(undefined)
 
