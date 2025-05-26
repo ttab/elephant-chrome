@@ -1,8 +1,10 @@
 import { SearchInput } from '@/components/SearchInput'
 import React, { useState, useRef, type Dispatch, type SetStateAction } from 'react'
+import type { MediaTypes } from '..'
 
-export const ImageSearchInput = ({ setQueryString }: {
+export const ImageSearchInput = ({ setQueryString, setMediaType }: {
   setQueryString: Dispatch<SetStateAction<string>>
+  setMediaType: Dispatch<SetStateAction<MediaTypes>>
 }): JSX.Element => {
   const [query, setQuery] = useState('')
 
