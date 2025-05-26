@@ -15,7 +15,7 @@ const _fields = [
   'document.rel.section.title',
   'document.meta.core_assignment.title',
   'document.meta.core_assignment.id',
-  'document.meta.core_assignment.rel.assignee.title',
+  'document.meta.core_assignment.rel.assignee.uuid',
   'document.meta.core_assignment.meta.core_assignment_type.value',
   'document.meta.core_assignment.rel.deliverable.uuid',
   'document.meta.core_assignment.data.start_date',
@@ -23,7 +23,6 @@ const _fields = [
   'document.meta.core_assignment.data.start',
   'document.meta.core_assignment.data.end',
   'document.meta.core_assignment.data.full_day',
-  /* 'document.meta.core_assignment.data.publish', dont think we need this */
   'document.meta.core_assignment.data.publish_slot',
   'document.meta.core_assignment.data.public',
   'document.meta.core_planning_item.data.start_date',
