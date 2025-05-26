@@ -90,7 +90,12 @@ export function eventTableColumns({ sections = [], organisers = [], locale }: {
           </span>
         )
       },
-      accessorFn: (data) => data?.fields['document.meta.status']?.values?.[0] || 'Unknown',
+      accessorFn: (data) => {
+        if (data?.fields['heads.usable.version']?.values[0] === '-1') {
+          return 'unpublished'
+        }
+        return data?.fields['document.meta.status']?.values?.[0] || 'Unknown'
+      },
       cell: ({ row }) => {
         const status = row.getValue<string>('documentStatus')
         return status ? <DocumentStatus type='core/event' status={status} /> : <></>
