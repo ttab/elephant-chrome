@@ -138,7 +138,7 @@ export function planningListColumns({ sections = [], authors = [] }: {
     {
       id: 'assignees',
       meta: {
-        options: authors.map((_) => ({ value: _.name, label: _.name })),
+        options: authors.map((a) => ({ value: a.id, label: a.name })),
         Filter: ({ column, setSearch }) => (
           <FacetedFilter column={column} setSearch={setSearch} facetFn={() => getNestedFacetedUniqueValues(column)} />
         ),
@@ -146,16 +146,19 @@ export function planningListColumns({ sections = [], authors = [] }: {
         columnIcon: Users,
         className: 'flex-none w-[112px] hidden @5xl/view:[display:revert]'
       },
-      accessorFn: (data) => data.fields['document.meta.core_assignment.rel.assignee.title']?.values,
+      accessorFn: (data) => data.fields['document.meta.core_assignment.rel.assignee.uuid']?.values,
       cell: ({ row }) => {
-        const assignees = row.getValue<string[]>('assignees') || []
+        const assignees = (row.getValue<string[]>('assignees') || []).map((assigneeId) => {
+          return authors.find((author) => author.id === assigneeId)?.name || ''
+        })
+
         return <Assignees assignees={assignees} />
       },
-      filterFn: (row, id, value: string[]) =>
-        Array.isArray(value) && typeof value[0] === 'string'
-          ? (row.getValue<string[]>(id) || []).includes(value[0])
-          : false,
       sortingFn: 'alphanumeric',
+      filterFn: (row, id, value: string[]) => {
+        const assignees = row.getValue<string[]>(id) || []
+        return value.some((v) => assignees.includes(v))
+      },
       enableGrouping: false
     },
     {
