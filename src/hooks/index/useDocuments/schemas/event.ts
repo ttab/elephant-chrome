@@ -16,6 +16,7 @@ export const _fields = [
   'document.rel.section.uuid',
   'document.rel.section.title',
   'heads.usable.created',
+  'heads.usable.version',
   'heads.done.created',
   'heads.approved.created',
   'heads.withheld.created',
