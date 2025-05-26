@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { type Dispatch, type SetStateAction, useState } from 'react'
 import { View, ViewHeader } from '@/components'
 import { type ViewMetadata } from '@/types'
 import { Loader, ListEnd, Image } from '@ttab/elephant-ui/icons'
@@ -49,8 +49,8 @@ export const ImageSearch = (): JSX.Element => {
   const [mediaType, setMediaType] = useState<MediaTypes>('image')
 
   return (
-    <SWRConfig value={{ fetcher: createFetcher(contentApiUrl, session) }}>
-      <ImageSearchContent />
+    <SWRConfig value={{ fetcher: createFetcher(contentApiUrl, session, mediaType) }}>
+      <ImageSearchContent setMediaType={setMediaType} mediaType={mediaType} />
     </SWRConfig>
   )
 }
@@ -67,7 +67,7 @@ const ImageSearchContent = ({
 
   const swr = useSWRInfinite<{ hits: ttninjs[] }, Error>(
     (index) => {
-      return [queryString, index, SIZE]
+      return [queryString, index, SIZE, mediaType]
     },
     {
       revalidateFirstPage: false
