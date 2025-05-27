@@ -128,7 +128,8 @@ export class Repository {
         version: version ? BigInt(version) : 0n,
         status: '',
         lock: false,
-        metaDocument: 1
+        metaDocument: 1,
+        metaDocumentVersion: 0n
       }, meta(accessToken))
 
       return response

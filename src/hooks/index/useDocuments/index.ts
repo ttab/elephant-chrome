@@ -67,7 +67,7 @@ export const useDocuments = <T extends HitV1, F>({ documentType, query, size, pa
   const dataRef = useRef<T[] | undefined>(undefined)
 
   const key = useMemo(() => query
-    ? `${documentType}/${JSON.stringify(query)}${page ? `/${page}` : ''}`
+    ? `${documentType}/${JSON.stringify(query, (_, v: unknown) => typeof v === 'bigint' ? v.toString() : v)}${page ? `/${page}` : ''}`
     : documentType, [query, page, documentType])
 
   // Memoize fetcher

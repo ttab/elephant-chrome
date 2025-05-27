@@ -5,12 +5,12 @@ import type { DocumentMetrics, StatusOverviewItem } from '@ttab/elephant-api/rep
 import { type BulkGetResponse, type GetMetricsResponse, type GetStatusOverviewResponse } from '@ttab/elephant-api/repository'
 import type { Session } from 'next-auth'
 import { parseISO } from 'date-fns'
-import { getStatus } from '../getStatus'
 import { getAssignmentsFromDocument } from './getAssignmentsFromDocument'
 import type { AssignmentInterface } from './types'
 import { StatusSpecifications } from '@/defaults/workflowSpecification'
 import { getUTCDateRange } from '@/lib/datetime'
 import { format } from 'date-fns'
+import { getStatusFromMeta } from '@/lib/getStatusFromMeta'
 
 
 // We want to fetch all known statuses for deliverables and then
@@ -133,7 +133,7 @@ export async function fetchAssignments({ index, repository, type, requireDeliver
 
     filteredTextAssignments.push({
       ...assignment,
-      _deliverableStatus: getStatus(statusOverview),
+      _deliverableStatus: statusOverview ? getStatusFromMeta(statusOverview, true)?.name || 'draft' : 'draft',
       _statusData: statusOverview
         ? JSON.stringify(statusOverview, (_, val) => (
           typeof val === 'bigint' ? val.toString() : val as unknown), 2)
