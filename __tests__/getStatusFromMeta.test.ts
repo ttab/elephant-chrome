@@ -1,4 +1,5 @@
-import { getStatusFromMeta, type Meta } from '@/lib/getStatusFromMeta'
+import type { DocumentMeta } from '@ttab/elephant-api/repository'
+import { getStatusFromMeta } from '@/lib/getStatusFromMeta'
 import { describe, it, expect } from 'vitest'
 
 
@@ -8,7 +9,7 @@ describe('getStatusInfo', () => {
       currentVersion: BigInt(0),
       creatorUri: 'core://user/abc',
       updaterUri: 'core://user/abc'
-    } as unknown as Partial<Meta> as Meta
+    } as unknown as Partial<DocumentMeta> as DocumentMeta
 
     const expected = {
       name: 'draft',
@@ -43,7 +44,7 @@ describe('getStatusInfo', () => {
       updaterUri: 'core://user/abc',
       workflowState: 'unpublished',
       workflowCheckpoint: 'unpublished'
-    } as unknown as Partial<Meta> as Meta
+    } as unknown as Partial<DocumentMeta> as DocumentMeta
 
     const expected = {
       name: 'unpublished',
@@ -78,7 +79,7 @@ describe('getStatusInfo', () => {
       creatorUri: 'core://user/abc',
       updaterUri: 'core://user/abc',
       workflowState: 'invalid-state-for-test'
-    } as unknown as Partial<Meta> as Meta
+    } as unknown as Partial<DocumentMeta> as DocumentMeta
 
     const expected = {
       name: 'invalid-state-for-test',
@@ -113,7 +114,7 @@ describe('getStatusInfo', () => {
       updaterUri: 'core://user/abc',
       workflowState: 'invalid-state-for-test',
       workflowCheckpoint: 'invalid-checkpoint-for-test'
-    } as unknown as Partial<Meta> as Meta
+    } as unknown as Partial<DocumentMeta> as DocumentMeta
 
     const baseExpected = {
       name: 'invalid-state-for-test',
@@ -156,7 +157,7 @@ describe('getStatusInfo', () => {
       },
       creatorUri: 'core://user/abc',
       updaterUri: 'core://user/abc'
-    } as unknown as Partial<Meta> as Meta
+    } as unknown as Partial<DocumentMeta> as DocumentMeta
 
     const expected = {
       name: 'done',
@@ -182,7 +183,7 @@ describe('getStatusInfo', () => {
       },
       creatorUri: 'core://user/abc',
       updaterUri: 'core://user/abc'
-    } as unknown as Partial<Meta> as Meta
+    } as unknown as Partial<DocumentMeta> as DocumentMeta
 
     const expected = {
       name: 'done',
@@ -224,7 +225,7 @@ describe('getStatusInfo', () => {
       },
       creatorUri: 'core://user/e475867c-9b16-4a24-9855-54dafe4b1be5',
       updaterUri: 'core://user/e475867c-9b16-4a24-9855-54dafe4b1be5'
-    }
+    } as unknown as DocumentMeta
 
     const expected = {
       name: 'done',
@@ -267,7 +268,7 @@ describe('getStatusInfo', () => {
       },
       creatorUri: 'core://user/e475867c-9b16-4a24-9855-54dafe4b1be5',
       updaterUri: 'core://user/e475867c-9b16-4a24-9855-54dafe4b1be5'
-    }
+    } as unknown as DocumentMeta
 
     const expected = {
       name: 'done',
