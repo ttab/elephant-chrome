@@ -18,7 +18,8 @@ export const Thumbnail = ({ hit }: {
   const hires = findRenditionByUsageAndVariant(renditions, 'Hires', 'Normal')
 
   const id = new URL(preview.href).pathname.split('/').filter(Boolean).pop()
-  const proxyUrl = `${BASE_URL}/api/images/${id}`
+  const mediaType = hit.type === 'graphic' ? 'graphics' : 'images'
+  const proxyUrl = `${BASE_URL}/api/${mediaType}/${id}`
 
   return (
     <Dialog modal={false}>

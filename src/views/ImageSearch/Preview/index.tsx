@@ -13,7 +13,9 @@ export const Preview = ({ ttninjs }: {
     toast.error('Kan inte visa bild, ogiltigt id')
   }
 
-  const url = `${BASE_URL}/api/images/${id}_NormalPreview.jpg`
+  const mediaType = ttninjs.type === 'graphic' ? 'graphics' : 'images'
+
+  const url = `${BASE_URL}/api/${mediaType}/${id}_NormalPreview.jpg`
 
   return (
     <div className='flex flex-col'>
