@@ -1,6 +1,7 @@
 export const productCodes = [
   'FOAP',
   'FOFRI',
+  'FOHAND',
   'FOHLMB',
   'FONTB',
   'FOSVD',
