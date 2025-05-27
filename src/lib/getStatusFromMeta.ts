@@ -1,23 +1,5 @@
 import type { StatusOverviewItem, DocumentMeta } from '@ttab/elephant-api/repository'
 
-// type HeadEntry = {
-//   version: bigint
-//   created: string
-//   creator: string
-//   meta?: {
-//     cause?: string
-//   }
-// }
-
-// export type Meta = {
-//   currentVersion: bigint
-//   heads?: Record<string, HeadEntry>
-//   creatorUri: string
-//   updaterUri: string
-//   workflowCheckpoint?: string
-//   workflowState?: string
-// }
-
 interface Status {
   name: string
   version: bigint
