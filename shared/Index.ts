@@ -177,7 +177,8 @@ export class Index {
     const { response } = await this.#client.pollSubscription({
       subscriptions,
       maxWaitMs,
-      batchDelayMs
+      batchDelayMs,
+      notifyOnly: false
     }, {
       ...meta(accessToken),
       abort: abortSignal
