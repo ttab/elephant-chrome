@@ -17,6 +17,7 @@ const _fields = [
   'document.meta.core_planning_item.data.start_date',
   'document.rel.event.uuid',
   'heads.usable.created',
+  'heads.usable.version',
   'heads.done.created',
   'heads.approved.created',
   'heads.withheld.created'
