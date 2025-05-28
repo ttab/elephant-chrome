@@ -6,11 +6,11 @@ import {
 import type { DefaultValueOption, ViewProps } from '@/types'
 import { Button, Checkbox, ComboBox, Label } from '@ttab/elephant-ui'
 import { CircleXIcon, Tags, GanttChartSquare } from '@ttab/elephant-ui/icons'
-import { useCollaboration, useYValue, useRegistry } from '@/hooks'
+import { useCollaboration, useYValue, useRegistry, useSections } from '@/hooks'
 import { useSession } from 'next-auth/react'
 import type { Dispatch, SetStateAction } from 'react'
 import { useRef, useState } from 'react'
-import { FlashEditor } from './FlashEditor'
+import { FlashEditor } from './FlashDialogEditor'
 import { UserMessage } from '@/components/UserMessage'
 import { Form } from '@/components/Form'
 import { fetch } from '@/lib/index/fetch-plannings-twirp'
@@ -18,8 +18,10 @@ import type { CreateFlashDocumentStatus } from './lib/createFlash'
 import { createFlash } from './lib/createFlash'
 import { CreatePrompt } from '@/components/CreatePrompt'
 import { FlashHeader } from './FlashHeader'
+import { Block } from '@ttab/elephant-api/newsdoc'
+import { toast } from 'sonner'
 
-export const FlashViewContent = (props: ViewProps): JSX.Element => {
+export const FlashDialog = (props: ViewProps): JSX.Element => {
   const { provider } = useCollaboration()
   const { status, data: session } = useSession()
   const planningAwareness = useRef<(value: boolean) => void>(null)
@@ -37,6 +39,8 @@ export const FlashViewContent = (props: ViewProps): JSX.Element => {
     title: string
   } | undefined>(undefined)
   const [documentId] = useYValue<string>('root.uuid')
+  const allSections = useSections()
+  const [, setYSection] = useYValue<Block | undefined>('links.core/section[0]')
 
   const handleSubmit = (setCreatePrompt: Dispatch<SetStateAction<boolean>>): void => {
     setCreatePrompt(true)
@@ -61,7 +65,7 @@ export const FlashViewContent = (props: ViewProps): JSX.Element => {
       title: 'Skapa och klarmarkera flash?',
       description: !selectedPlanning
         ? 'En ny planering med tillhörande uppdrag för denna flash kommer att skapas åt dig.'
-        : `Denna flash kommer att läggas i ett nytt uppdrag i planeringen "${selectedPlanning.label}". Med status godkänd.`,
+        : `Denna flash kommer att läggas i ett nytt uppdrag i planeringen "${selectedPlanning.label}". Med status klar.`,
       secondaryLabel: 'Avbryt',
       primaryLabel: 'Klarmarkera',
       documentStatus: 'done' as CreateFlashDocumentStatus,
@@ -80,6 +84,10 @@ export const FlashViewContent = (props: ViewProps): JSX.Element => {
       setPrompt: setSavePrompt
     }
   ]
+
+  if (!provider?.synced) {
+    return <></>
+  }
 
   return (
     <View.Root asDialog={props.asDialog} className={props.className}>
@@ -110,6 +118,21 @@ export const FlashViewContent = (props: ViewProps): JSX.Element => {
                           value: option.value,
                           label: option.label
                         })
+
+                        const sectionPayload = option.payload as { section: string | undefined }
+                        const sectionTitle = allSections
+                          .find((s) => s.id === sectionPayload?.section)?.title
+
+                        if (sectionTitle && sectionPayload?.section) {
+                          setYSection(Block.create({
+                            type: 'core/section',
+                            rel: 'section',
+                            title: sectionTitle,
+                            uuid: sectionPayload.section
+                          }))
+                        } else {
+                          toast.error('Kunde inte hitta sektionen för planeringen')
+                        }
                       } else {
                         setSelectedPlanning(undefined)
                       }
@@ -150,13 +173,13 @@ export const FlashViewContent = (props: ViewProps): JSX.Element => {
               </Form.Group>
             )}
 
-            <FlashEditor setTitle={setTitle} />
-
             <UserMessage asDialog={!!props?.asDialog}>
               {!selectedPlanning
                 ? (<>Väljer du ingen planering kommer en ny planering med tillhörande uppdrag skapas åt dig.</>)
                 : (<>Denna flash kommer läggas i ett nytt uppdrag i den valda planeringen</>)}
             </UserMessage>
+
+            <FlashEditor setTitle={setTitle} />
 
           </Form.Content>
 

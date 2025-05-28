@@ -1,12 +1,13 @@
 import type * as Y from 'yjs'
 import { AwarenessDocument } from '@/components'
 import type { ViewMetadata, ViewProps } from '@/types'
-import { FlashViewContent } from './FlashViewContent'
+import { FlashDialog } from './FlashDialog'
 import { createDocument } from '@/lib/createYItem'
 import { useState } from 'react'
 import * as Templates from '@/defaults/templates'
 import { useQuery } from '@/hooks/useQuery'
 import { Error } from '../Error'
+import { FlashView } from './FlashView'
 
 const meta: ViewMetadata = {
   name: 'Flash',
@@ -31,21 +32,18 @@ export const Flash = (props: ViewProps & {
   const [document, setDocument] = useState<Y.Doc | undefined>(undefined)
 
   // We must not read query.id if we are in a dialog or we pick up other documents ids
-  const [documentId, setDocumentId] = useState<string | undefined>(props.id || props.asDialog ? undefined : query.id as string)
+  const [documentId, setDocumentId] = useState<string | undefined>(props.id || (props.asDialog ? undefined : query.id as string))
 
-  // Document creation if needed
-  if ((props.onDocumentCreated && !document) || !documentId) {
+  // Create docment if in a dialog
+  if (props.asDialog && !documentId) {
     const [docId, doc] = createDocument({
       template: Templates.flash,
       documentId: props.id || undefined,
       inProgress: props.asDialog
     })
+
     setDocument(doc)
     setDocumentId(docId)
-  }
-
-  if (document && props.onDocumentCreated) {
-    props.onDocumentCreated()
   }
 
   // Error handling for missing document
@@ -59,15 +57,19 @@ export const Flash = (props: ViewProps & {
   }
 
   return (
-    <AwarenessDocument documentId={documentId} document={document}>
-      <FlashViewContent {...
-        {
-          ...props,
-          id: documentId
-        }
-      }
-      />
-    </AwarenessDocument>
+    <>
+      {props.asDialog
+        ? (
+            <AwarenessDocument documentId={documentId} document={document}>
+              <FlashDialog {...{ ...props, id: documentId }} />
+            </AwarenessDocument>
+          )
+        : (
+            <AwarenessDocument documentId={documentId}>
+              <FlashView {...{ ...props, id: documentId }} />
+            </AwarenessDocument>
+          )}
+    </>
   )
 }
 

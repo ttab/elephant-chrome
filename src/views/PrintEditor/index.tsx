@@ -163,7 +163,6 @@ function EditorContainer({
   if (!layouts) {
     return <p>no layouts</p>
   }
-  console.log('layouts', layouts)
   return (
     <>
       <EditorHeader documentId={documentId} name={name} flowName={flowName} />

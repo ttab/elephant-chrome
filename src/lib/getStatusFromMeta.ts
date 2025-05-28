@@ -1,42 +1,32 @@
-type HeadEntry = {
-  version: bigint
-  created: string
-  creator: string
-  meta?: {
-    cause?: string
-  }
-}
+import type { StatusOverviewItem, DocumentMeta } from '@ttab/elephant-api/repository'
 
-export type Meta = {
-  currentVersion: bigint
-  heads?: Record<string, HeadEntry>
-  creatorUri: string
-  updaterUri: string
-  workflowCheckpoint?: string
-  workflowState?: string
-}
-
-/**
- * Parse meta heads information to retrieve the current status of a document.
- */
-export function getStatusFromMeta(meta: Meta, isWorkflow: boolean): {
+interface Status {
   name: string
   version: bigint
   creator: string
   cause?: string
   checkpoint?: string
-} {
+}
+
+/**
+ * Parse meta heads information to retrieve the current status of a document.
+ */
+export function getStatusFromMeta(meta: DocumentMeta, isWorkflow: boolean): Status
+export function getStatusFromMeta(meta: StatusOverviewItem, isWorkflow: boolean): Status
+export function getStatusFromMeta(meta: DocumentMeta | StatusOverviewItem, isWorkflow: boolean): Status {
+  const isMeta = isMetaData(meta)
   const heads = meta.heads
-  const version = meta.currentVersion
+  const version = isMeta ? meta.currentVersion : meta.version
 
   // If there are no heads it's always implicitly a 'draft'
   if (!heads || Object.keys(heads).length === 0) {
     return {
       name: 'draft',
       version,
-      creator: meta.creatorUri
+      creator: isMeta ? meta.creatorUri : ''
     }
   }
+
 
   const latest = Object.entries(heads)
     .sort((a, b) => new Date(b[1].created).getTime() - new Date(a[1].created).getTime())[0]
@@ -64,4 +54,9 @@ export function getStatusFromMeta(meta: Meta, isWorkflow: boolean): {
     cause: entry.meta?.cause,
     checkpoint: meta.workflowCheckpoint
   }
+}
+
+
+function isMetaData(value: unknown): value is DocumentMeta {
+  return !!value && typeof value === 'object' && 'currentVersion' in value
 }
