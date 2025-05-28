@@ -1,7 +1,7 @@
 import { useRef } from 'react'
 import { Preview } from '../Preview'
 import { type ttninjs } from '@ttab/api-client'
-import { Dialog, DialogContent, DialogTrigger } from '@ttab/elephant-ui'
+import { Dialog, DialogContent, DialogDescription, DialogTrigger } from '@ttab/elephant-ui'
 import { findRenditionByUsageAndVariant } from '../lib/find-rendition'
 import type { renditions } from '../lib/find-rendition'
 
@@ -18,7 +18,8 @@ export const Thumbnail = ({ hit }: {
   const hires = findRenditionByUsageAndVariant(renditions, 'Hires', 'Normal')
 
   const id = new URL(preview.href).pathname.split('/').filter(Boolean).pop()
-  const proxyUrl = `${BASE_URL}/api/images/${id}`
+  const mediaType = hit.type === 'graphic' ? 'graphics' : 'images'
+  const proxyUrl = `${BASE_URL}/api/${mediaType}/${id}`
 
   return (
     <Dialog modal={false}>
@@ -73,7 +74,10 @@ export const Thumbnail = ({ hit }: {
           />
         </div>
       </DialogTrigger>
-      <DialogContent><Preview ttninjs={hit} /></DialogContent>
+      <DialogContent>
+        <DialogDescription />
+        <Preview ttninjs={hit} />
+      </DialogContent>
     </Dialog>
   )
 }
