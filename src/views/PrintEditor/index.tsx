@@ -56,6 +56,7 @@ import { getValueByYPath } from '@/shared/yUtils'
 import { useOnSpellcheck } from '@/hooks/useOnSpellcheck'
 import { useSession } from 'next-auth/react'
 import type { Block, Document } from '@ttab/elephant-api/newsdoc'
+import { contentMenuLabels } from '@/defaults/contentMenuLabels'
 
 // Metadata definition
 const meta: ViewMetadata = {
@@ -138,8 +139,6 @@ function EditorWrapper(
   // Plugin configuration
   const getConfiguredPlugins = () => {
     const basePlugins = [
-      UnorderedList,
-      OrderedList,
       Bold,
       Italic,
       Link,
@@ -154,13 +153,17 @@ function EditorWrapper(
     return [
       ...basePlugins.map((initPlugin) => initPlugin()),
       Text({
-        countCharacters: ['heading-1']
+        countCharacters: ['heading-1'],
+        ...contentMenuLabels
       }),
       Factbox({
         onEditOriginal: (id: string) => {
           openFactboxEditor(undefined, { id })
-        }
-      })
+        },
+        ...contentMenuLabels
+      }),
+      UnorderedList({ title: contentMenuLabels['unorderedLabel'] }),
+      OrderedList({ title: contentMenuLabels['orderedLabel'] })
     ]
   }
 
