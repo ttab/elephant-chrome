@@ -163,7 +163,7 @@ function EditorContainer({
   if (!layouts) {
     return <p>no layouts</p>
   }
-
+  console.log('layouts', layouts)
   return (
     <>
       <EditorHeader documentId={documentId} name={name} flowName={flowName} />
@@ -242,6 +242,7 @@ function EditorContainer({
                     <LayoutBox
                       key={layout.id}
                       documentId={documentId}
+                      layoutIdForRender={layout.id}
                       layoutId={layout.links['_'][0].uuid}
                       index={index}
                     />

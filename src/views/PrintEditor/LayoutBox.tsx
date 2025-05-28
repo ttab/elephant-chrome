@@ -13,10 +13,12 @@ import { Position } from './components/Position'
 
 export function LayoutBox({
   documentId,
+  layoutIdForRender,
   layoutId,
   index
 }: {
   documentId: string
+  layoutIdForRender: string
   layoutId: string
   index: number
 }) {
@@ -45,7 +47,7 @@ export function LayoutBox({
     try {
       const response = await baboon.renderArticle({
         articleUuid: documentId,
-        layoutId: layoutId,
+        layoutId: layoutIdForRender,
         renderPdf: true,
         renderPng: false,
         pngScale: 300n
@@ -90,6 +92,7 @@ export function LayoutBox({
               className='w-4 h-4'
               checked={false}
               onChange={() => {
+                window.alert('Ej implementerat')
                 console.log('Checkbox clicked', layoutId)
               }}
             />
@@ -98,6 +101,7 @@ export function LayoutBox({
             variant='ghost'
             className='p-2'
             onClick={(e) => {
+              window.alert('Ej implementerat')
               console.log('Remove layout', layoutId, e)
             }}
           >
