@@ -8,7 +8,7 @@ export const GET: RouteHandler = async (req, { res }) => {
   const query = req.query
   const locals = res.locals as Record<string, unknown> | undefined
   const session = locals?.session as { accessToken?: string, user?: Context['user'] } | undefined
-  const url = new URL(`https://${GRAPHIC_BASE_URL}/${params}`)
+  const url = new URL(`${GRAPHIC_BASE_URL}/${params}`)
 
   return await mediaHelper({ url, query, session, res })
 }

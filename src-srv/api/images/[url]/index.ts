@@ -5,7 +5,7 @@ import type { RouteHandler } from '../../../routes.js'
 export const GET: RouteHandler = async (req, { res }) => {
   const IMAGE_BASE_URL = process.env.IMAGE_BASE_URL
   const params = req.params.url
-  const url = new URL(`https://${IMAGE_BASE_URL}/${params}`)
+  const url = new URL(`${IMAGE_BASE_URL}/${params}`)
   const query = req.query
   const locals = res.locals as Record<string, unknown> | undefined
   const session = locals?.session as { accessToken?: string, user?: Context['user'] } | undefined
