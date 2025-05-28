@@ -13,9 +13,7 @@ import {
   useYValue,
   useView,
   useYjsEditor,
-  useAwareness,
-  useWorkflowStatus,
-  useRegistry
+  useAwareness
 } from '@/hooks'
 import type { ViewMetadata, ViewProps } from '@/types'
 import { EditorHeader } from './PrintEditorHeader'
@@ -29,18 +27,16 @@ import { ContextMenu } from '@/components/Editor/ContextMenu'
 import { Gutter } from '@/components/Editor/Gutter'
 import { DropMarker } from '@/components/Editor/DropMarker'
 
-import { type Block, type Document } from '@ttab/elephant-api/newsdoc'
+import { type Block } from '@ttab/elephant-api/newsdoc'
 import { getValueByYPath } from '@/shared/yUtils'
 import { useOnSpellcheck } from '@/hooks/useOnSpellcheck'
 import { contentMenuLabels } from '@/defaults/contentMenuLabels'
-import { toast } from 'sonner'
-import { useLayouts } from '@/hooks/baboon/useLayouts'
-import { useSession } from 'next-auth/react'
 import { Button, ScrollArea } from '@ttab/elephant-ui'
 import { LayoutBox } from './LayoutBox'
 import { ChevronRight, RefreshCw } from '@ttab/elephant-ui/icons'
 import { DotDropdownMenu } from '@/components/ui/DotMenu'
-// Metadata definition
+import type { EleBlock } from '@/shared/types'
+
 const meta: ViewMetadata = {
   name: 'PrintEditor',
   path: `${import.meta.env.BASE_URL || ''}/print-editor`,
@@ -159,84 +155,15 @@ function EditorContainer({
 }): JSX.Element {
   const { words, characters } = useTextbit()
   const [bulkSelected, setBulkSelected] = useState<string[]>([])
-  const [layouts, setLayouts] = useState<Block[]>([])
-  const [cleanLayouts, setCleanLayouts] = useState<Block[]>()
+  const [layouts] = useYValue<EleBlock[]>('meta.tt/print-article[0].meta.tt/article-layout')
+  const [name] = useYValue<string>('meta.tt/print-article[0].name')
+  const [flowName] = useYValue<string>('links.tt/print-flow[0].title')
 
-  const [isDirty, setIsDirty] = useState<string | undefined>(undefined)
   const openPrintEditor = useLink('PrintEditor')
-  const { data: doc } = useLayouts(documentId) as { data: { layouts: Block[], document: Document } }
-  const { data: session } = useSession()
-  const { repository } = useRegistry()
-  const [workflowStatus] = useWorkflowStatus(documentId, true)
-  useEffect(() => {
-    if (doc) {
-      setLayouts(doc.layouts)
-    }
-  }, [doc])
-  useEffect(() => {
-    if (layouts && !isDirty) {
-      setCleanLayouts(layouts)
-    }
-  }, [layouts, isDirty])
-  const name: string = doc?.document?.meta.filter((m: { type: string }) => m.type === 'tt/print-article')[0]?.name || ''
-  const flowName: string = doc?.document?.links.filter((m: { type: string }) => m.type === 'tt/print-flow')[0]?.title || ''
-  const updateLayout = (_layout: Block) => {
-    const box = document.getElementById(_layout.id)
-    if (box) {
-      box.scrollIntoView({ behavior: 'smooth', block: 'center' })
-    }
-    const updatedLayouts = layouts.map((layout) => {
-      if (layout.id === _layout.id) {
-        return _layout
-      }
-      return layout
-    })
-    setLayouts(updatedLayouts)
-    setIsDirty(_layout.id)
+  if (!layouts) {
+    return <p>no layouts</p>
   }
-  const deleteLayout = (_layout: Block) => {
-    const updatedLayouts = layouts.filter((layout) => layout.id !== _layout.id)
-    setLayouts(updatedLayouts)
-    saveUpdates(updatedLayouts)
-  }
-  const saveUpdates = (updatedLayouts: Block[] | undefined) => {
-    const _meta: Block[] = doc?.document?.meta?.map((m) => {
-      if (m.type === 'tt/print-article') {
-        return Object.assign({}, m, {
-          meta: updatedLayouts || layouts
-        })
-      }
-      return m
-    })
-    const _document: Document = Object.assign({}, doc?.document, {
-      meta: _meta
-    })
-    if (!repository || !session) {
-      return (
-        <Error
-          title='Repository or session not found'
-          message='Layouter sparades inte'
-        />
-      )
-    }
-    (async () => {
-      const result = await repository.saveDocument(_document, session.accessToken, 0n, workflowStatus?.name || 'draft')
-      if (result?.status?.code !== 'OK') {
-        return (
-          <Error
-            title='Failed to save print article'
-            message='Layouter sparades inte'
-          />
-        )
-      }
-      setIsDirty(undefined)
-      setLayouts(updatedLayouts || layouts)
-      toast.success('Layouter är sparad')
-    })().catch((error) => {
-      console.error(error)
-      toast.error('Layouter sparades inte')
-    })
-  }
+
   return (
     <>
       <EditorHeader documentId={documentId} name={name} flowName={flowName} />
@@ -307,24 +234,16 @@ function EditorContainer({
             </header>
             <ScrollArea className='h-[calc(100vh-12rem)]'>
               <div className='flex flex-col gap-2'>
-                {Array.isArray(layouts) && layouts.map((layout: Block) => {
-                  if (!layout) {
+                {Array.isArray(layouts) && layouts.map((layout, index) => {
+                  if (!layout.links?.['_']?.[0]?.uuid) {
                     return null
                   }
                   return (
                     <LayoutBox
                       key={layout.id}
-                      bulkSelected={bulkSelected}
-                      setBulkSelected={setBulkSelected}
                       documentId={documentId}
-                      layout={layout}
-                      updateLayout={updateLayout}
-                      isDirty={isDirty}
-                      setIsDirty={() => setIsDirty(undefined)}
-                      setLayouts={(newLayouts: Block[] | ((prevState: Block[]) => Block[])) => setLayouts(newLayouts)}
-                      cleanLayouts={cleanLayouts || []}
-                      saveUpdates={() => saveUpdates(layouts || [])}
-                      deleteLayout={() => deleteLayout(layout)}
+                      layoutId={layout.links['_'][0].uuid}
+                      index={index}
                     />
                   )
                 })}
