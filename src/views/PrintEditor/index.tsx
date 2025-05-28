@@ -20,7 +20,8 @@ import {
   TTVisual,
   Factbox,
   Table,
-  LocalizedQuotationMarks
+  LocalizedQuotationMarks,
+  TVListing
 } from '@ttab/textbit-plugins'
 import { ImageSearchPlugin } from '../../plugins/ImageSearch'
 import { FactboxPlugin } from '../../plugins/Factboxes'
@@ -146,7 +147,8 @@ function EditorWrapper(
       ImageSearchPlugin,
       FactboxPlugin,
       Table,
-      LocalizedQuotationMarks
+      LocalizedQuotationMarks,
+      TVListing
     ]
 
     return [
