@@ -76,7 +76,8 @@ export const PrintFlows = ({ asDialog, onDialogClose, className, action }: ViewP
       const response = await baboon.createFlow({
         flowUuid: printFlow,
         date: format(new Date(date), 'yyyy-MM-dd'),
-        articles: [articleName || '']
+        articles: [articleName || ''],
+        templateUuid: ''
       }, session.accessToken)
 
       if (response?.status.code === 'OK') {
@@ -106,7 +107,8 @@ export const PrintFlows = ({ asDialog, onDialogClose, className, action }: ViewP
       const response = await baboon.createFlow({
         flowUuid: printFlow,
         date: format(new Date(date), 'yyyy-MM-dd'),
-        articles: []
+        articles: [],
+        templateUuid: ''
       }, session.accessToken)
 
       if (response?.status.code === 'OK') {
