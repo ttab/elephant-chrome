@@ -2,7 +2,17 @@ import { useEffect, useRef, useState } from 'react'
 import { AwarenessDocument, View } from '@/components'
 
 import { Textbit, useTextbit } from '@ttab/textbit'
-import { Bold, Italic, Link, Text, TTVisual, Factbox, Table, LocalizedQuotationMarks } from '@ttab/textbit-plugins'
+import {
+  Bold,
+  Italic,
+  Link,
+  Text,
+  TTVisual,
+  Factbox,
+  Table,
+  LocalizedQuotationMarks,
+  TVListing
+} from '@ttab/textbit-plugins'
 import { ImageSearchPlugin } from '../../plugins/ImageSearch'
 import { FactboxPlugin } from '../../plugins/Factboxes'
 
@@ -95,7 +105,8 @@ function EditorWrapper(props: ViewProps & {
       ImageSearchPlugin,
       FactboxPlugin,
       Table,
-      LocalizedQuotationMarks
+      LocalizedQuotationMarks,
+      TVListing
     ]
 
     return [
@@ -108,7 +119,8 @@ function EditorWrapper(props: ViewProps & {
         onEditOriginal: (id: string) => {
           openFactboxEditor(undefined, { id })
         },
-        removable: true
+        removable: true,
+        ...contentMenuLabels
       })
     ]
   }
