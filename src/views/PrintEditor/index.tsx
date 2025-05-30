@@ -33,7 +33,7 @@ import { useOnSpellcheck } from '@/hooks/useOnSpellcheck'
 import { contentMenuLabels } from '@/defaults/contentMenuLabels'
 import { Button, ScrollArea } from '@ttab/elephant-ui'
 import { LayoutBox } from './LayoutBox'
-import { ChevronRight, RefreshCw } from '@ttab/elephant-ui/icons'
+import { ChevronRight, Copy, RefreshCw } from '@ttab/elephant-ui/icons'
 import { DotDropdownMenu } from '@/components/ui/DotMenu'
 import type { EleBlock } from '@/shared/types'
 
@@ -205,35 +205,20 @@ function EditorContainer({
                       <ChevronRight strokeWidth={1.75} size={18} />
                     </Button>
                   )
-                : (
-                    <DotDropdownMenu
-                      trigger='vertical'
-                      items={[
-                        {
-                          label: 'Uppdatera alla',
-                          icon: RefreshCw,
-                          item: (
-                            <Button
-                              variant='ghost'
-                              size='sm'
-                              className='flex gap-2 items-center'
-                              onClick={(e) => {
-                                e.preventDefault()
-                                window.alert('Ej implementerat')
-                              }}
-                            >
-                              <RefreshCw strokeWidth={1.75} size={16} />
-                              Uppdatera alla
-                            </Button>
-                          )
-                        }
-                      ]}
-                    />
-                  )}
+                : <div className='flex items-center'>
+                    <Button variant='ghost' size='sm' onClick={() => console.log('Uppdatera alla')}>
+                      <RefreshCw strokeWidth={1.75} size={18} />
+                    </Button>
+                    <Button variant='ghost' size='sm' onClick={() => console.log('Kopiera')}>
+                      <Copy strokeWidth={1.75} size={18} />
+                    </Button>
+                  </div>
+                }
             </header>
             <ScrollArea className='h-[calc(100vh-12rem)]'>
               <div className='flex flex-col gap-2'>
                 {Array.isArray(layouts) && layouts.map((layout, index) => {
+                  console.log('layout', layout.data)
                   if (!layout.links?.['_']?.[0]?.uuid) {
                     return null
                   }
@@ -244,6 +229,7 @@ function EditorContainer({
                       layoutIdForRender={layout.id}
                       layoutId={layout.links['_'][0].uuid}
                       index={index}
+                      rendersCorrectly={layout.data?.status === 'true' ? true : false}
                     />
                   )
                 })}
