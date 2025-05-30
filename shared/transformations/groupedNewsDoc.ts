@@ -82,8 +82,12 @@ export function group(objects: Block[], groupKey: keyof Block): EleBlockGroup {
   const groupedObjects: EleBlockGroup = {}
 
   objects.forEach((object) => {
-    const key = object[groupKey] as string | undefined
-    if (!key) return
+    let key = object[groupKey] as string | undefined
+
+    // Fallback to underscore if no groupKey is found
+    if (!key) {
+      key = '_'
+    }
 
     if (!groupedObjects[key]) {
       groupedObjects[key] = []

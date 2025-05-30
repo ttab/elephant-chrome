@@ -1,9 +1,10 @@
 import { ViewHeader } from '@/components/View'
 import { Button, Popover, PopoverContent, PopoverTrigger } from '@ttab/elephant-ui'
-import { Plus } from '@ttab/elephant-ui/icons'
+import { BookA, Plus } from '@ttab/elephant-ui/icons'
 import { DateChanger } from '@/components/Header/Datechanger'
 import { useModal } from '@/components/Modal/useModal'
 import { PrintFlows } from './PrintFlows'
+import Dictionary from './Dictionary'
 /**
  * PrintArticlesHeader component.
  *
@@ -56,6 +57,18 @@ export const PrintArticlesHeader = (): JSX.Element => {
         </Popover>
         <DateChanger type='PrintArticles' />
       </div>
+      <Button
+        title='Skapa en text i ett flöde'
+        variant='outline'
+        size='sm'
+        onClick={() => {
+          showModal(
+            <Dictionary asDialog onDialogClose={hideModal} className='w-full' />
+          )
+        }}
+      >
+        <BookA strokeWidth={1.75} size={18} />
+      </Button>
     </ViewHeader.Root>
   )
 }
