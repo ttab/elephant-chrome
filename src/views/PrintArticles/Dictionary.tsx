@@ -65,6 +65,10 @@ const Dictionary = ({ asDialog, onDialogClose, className }: ViewProps): JSX.Elem
 
   useEffect(() => {
     handleListHyphenations()
+      .catch((ex) => {
+        console.error('Error listing hyphenations:', ex)
+        toast.error('Kunde inte lista hyphenations')
+      })
   }, [])
 
   return (

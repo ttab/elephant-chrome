@@ -95,14 +95,11 @@ function DuplicateArticle({
   const { data: session } = useSession()
   const [,,allParams] = useQuery(['from'], true)
   const date = allParams?.filter((item) => item.name === 'PrintArticles')?.[0]?.params?.from || ''
-  console.log('flowUuid', flowUuid)
-  console.log('name', name)
-  console.log('date', date)
-  console.log('documentId', documentId)
+
   const handleCopyArticle = async () => {
     if (!baboon || !session?.accessToken) {
       console.error(`Missing prerequisites: ${!baboon ? 'baboon-client' : 'accessToken'} is missing`)
-      toast.error('Något gick fel när printartikel skulle renderas')
+      toast.error('Något gick fel när printartikel skulle dupliceras')
       return
     }
     try {
@@ -117,7 +114,8 @@ function DuplicateArticle({
       }
     } catch (ex: unknown) {
       console.error('Error creating print article:', ex)
-      toast.error(`Något gick fel när printartikel skulle skapas: ${ex instanceof Error ? ex.message : 'Okänt fel'}`)
+      toast.error('Något gick fel när printartikel skulle dupliceras')
+      onDialogClose()
     }
   }
   return (
@@ -136,7 +134,7 @@ function DuplicateArticle({
       </ViewHeader.Root>
 
       <View.Content className='w-full p-4 flex items-center justify-center gap-2'>
-        <Button onClick={handleCopyArticle}>Fortsätt</Button>
+        <Button onClick={() => { handleCopyArticle().catch(console.error) }}>Fortsätt</Button>
         <Button variant='outline' onClick={onDialogClose}>Avbryt</Button>
       </View.Content>
     </View.Root>
