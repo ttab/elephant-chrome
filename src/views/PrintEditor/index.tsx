@@ -1,13 +1,5 @@
-import { useEffect, useState, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { AwarenessDocument, View } from '@/components'
-import {
-  Button,
-  ScrollArea
-} from '@ttab/elephant-ui'
-import { ChevronRight } from '@ttab/elephant-ui/icons'
-import { useLayouts } from '@/hooks/baboon/useLayouts'
-
-import type * as Y from 'yjs'
 
 import { Textbit, useTextbit } from '@ttab/textbit'
 import {
@@ -15,35 +7,27 @@ import {
   Italic,
   Link,
   Text,
-  OrderedList,
-  UnorderedList,
   TTVisual,
-  Factbox,
   Table,
   LocalizedQuotationMarks,
   TVListing
 } from '@ttab/textbit-plugins'
 import { ImageSearchPlugin } from '../../plugins/ImageSearch'
 import { FactboxPlugin } from '../../plugins/Factboxes'
-import { toast } from 'sonner'
 
 import {
   useQuery,
   useCollaboration,
   useLink,
+  useYValue,
   useView,
   useYjsEditor,
-  useAwareness,
-  useRegistry,
-  useWorkflowStatus
+  useAwareness
 } from '@/hooks'
-import { type ViewMetadata, type ViewProps } from '@/types'
+import type { ViewMetadata, ViewProps } from '@/types'
 import { EditorHeader } from './PrintEditorHeader'
-import { LayoutBox } from './LayoutBox'
 import { type HocuspocusProvider } from '@hocuspocus/provider'
 import { type AwarenessUserData } from '@/contexts/CollaborationProvider'
-import { articleDocumentTemplate } from '@/defaults/templates/articleDocumentTemplate'
-import { createDocument } from '@/lib/createYItem'
 import { Error } from '../Error'
 
 import { ContentMenu } from '@/components/Editor/ContentMenu'
@@ -52,44 +36,37 @@ import { ContextMenu } from '@/components/Editor/ContextMenu'
 import { Gutter } from '@/components/Editor/Gutter'
 import { DropMarker } from '@/components/Editor/DropMarker'
 
+import { type Block } from '@ttab/elephant-api/newsdoc'
 import { getValueByYPath } from '@/shared/yUtils'
 import { useOnSpellcheck } from '@/hooks/useOnSpellcheck'
-import { useSession } from 'next-auth/react'
-import type { Block, Document } from '@ttab/elephant-api/newsdoc'
 import { contentMenuLabels } from '@/defaults/contentMenuLabels'
+import { Button, ScrollArea } from '@ttab/elephant-ui'
+import { LayoutBox } from './LayoutBox'
+import { ChevronRight, RefreshCw } from '@ttab/elephant-ui/icons'
+import { DotDropdownMenu } from '@/components/ui/DotMenu'
+import type { EleBlock } from '@/shared/types'
 
-// Metadata definition
 const meta: ViewMetadata = {
   name: 'PrintEditor',
-  path: `${import.meta.env.BASE_URL || ''}/print`,
+  path: `${import.meta.env.BASE_URL || ''}/print-editor`,
   widths: {
     sm: 12,
     md: 12,
-    lg: 6,
-    xl: 6,
-    '2xl': 6,
-    hd: 6,
-    fhd: 6,
-    qhd: 3,
-    uhd: 2
+    lg: 4,
+    xl: 4,
+    '2xl': 4,
+    hd: 4,
+    fhd: 4,
+    qhd: 4,
+    uhd: 4
   }
 }
 
-/**
- * PrintEditor Component - Handles document initialization
- *
- * This component is responsible for initializing the document for the Print Editor.
- * It checks for the presence of a document ID and handles the creation of a new document
- * if necessary. If the document ID is missing or invalid, it displays an error message.
- *
- * @param props - The properties object containing view-related data.
- * @returns The rendered PrintEditor component or an error message if the document ID is missing.
- */
-
+// Main Editor Component - Handles document initialization
 const PrintEditor = (props: ViewProps): JSX.Element => {
   const [query] = useQuery()
-  const [document, setDocument] = useState<Y.Doc | undefined>(undefined)
-  const documentId = props.id || query.id
+  const documentId = props.id || query.id as string
+
   // Error handling for missing document
   if (!documentId || typeof documentId !== 'string') {
     return (
@@ -100,40 +77,20 @@ const PrintEditor = (props: ViewProps): JSX.Element => {
     )
   }
 
-  // Document creation if needed
-  if (props.onDocumentCreated && !document) {
-    const [, doc] = createDocument({
-      template: (id: string) => {
-        return articleDocumentTemplate(id, props?.payload)
-      },
-      documentId
-    })
-    setDocument(doc)
-    return <></>
-  }
-  if (document && props.onDocumentCreated) {
-    props.onDocumentCreated()
-  }
   return (
-    <AwarenessDocument
-      documentId={documentId}
-      document={document}
-      className='h-full'
-    >
+    <AwarenessDocument documentId={documentId} className='h-full'>
       <EditorWrapper documentId={documentId} {...props} />
     </AwarenessDocument>
   )
 }
 
 // Main editor wrapper after document initialization
-function EditorWrapper(
-  props: ViewProps & {
-    documentId: string
-    autoFocus?: boolean
-  }
-): JSX.Element {
+function EditorWrapper(props: ViewProps & {
+  documentId: string
+  autoFocus?: boolean
+}): JSX.Element {
   const { provider, synced, user } = useCollaboration()
-  const openFactboxEditor = useLink('Factbox')
+  const [notes] = useYValue<Block[] | undefined>('meta.core/note')
   const [, setIsFocused] = useAwareness(props.documentId)
 
   // Plugin configuration
@@ -155,15 +112,7 @@ function EditorWrapper(
       Text({
         countCharacters: ['heading-1'],
         ...contentMenuLabels
-      }),
-      Factbox({
-        onEditOriginal: (id: string) => {
-          openFactboxEditor(undefined, { id })
-        },
-        ...contentMenuLabels
-      }),
-      UnorderedList({ title: contentMenuLabels['unorderedLabel'] }),
-      OrderedList({ title: contentMenuLabels['orderedLabel'] })
+      })
     ]
   }
 
@@ -186,11 +135,13 @@ function EditorWrapper(
           synced={synced}
           user={user}
           documentId={props.documentId}
+          notes={notes}
         />
       </Textbit.Root>
     </View.Root>
   )
 }
+
 
 // Container component that uses TextBit context
 function EditorContainer({
@@ -203,93 +154,22 @@ function EditorContainer({
   synced: boolean
   user: AwarenessUserData
   documentId: string
+  notes: Block[] | undefined
 }): JSX.Element {
   const { words, characters } = useTextbit()
   const [bulkSelected, setBulkSelected] = useState<string[]>([])
-  const [layouts, setLayouts] = useState<Block[]>([])
-  const [cleanLayouts, setCleanLayouts] = useState<Block[]>()
+  const [layouts] = useYValue<EleBlock[]>('meta.tt/print-article[0].meta.tt/article-layout')
+  const [name] = useYValue<string>('meta.tt/print-article[0].name')
+  const [flowName] = useYValue<string>('links.tt/print-flow[0].title')
 
-  const [isDirty, setIsDirty] = useState<string | undefined>(undefined)
   const openPrintEditor = useLink('PrintEditor')
-  const { data: doc } = useLayouts(documentId) as { data: { layouts: Block[], document: Document } }
-  const { data: session } = useSession()
-  const { repository } = useRegistry()
-  const [workflowStatus] = useWorkflowStatus(documentId, true)
-  useEffect(() => {
-    if (doc) {
-      setLayouts(doc.layouts)
-    }
-  }, [doc])
-  useEffect(() => {
-    if (layouts && !isDirty) {
-      setCleanLayouts(layouts)
-    }
-  }, [layouts, isDirty])
-  const name: string = doc?.document?.meta.filter((m: { type: string }) => m.type === 'tt/print-article')[0]?.name || ''
-  const flowName: string = doc?.document?.links.filter((m: { type: string }) => m.type === 'tt/print-flow')[0]?.title || ''
-  const updateLayout = (_layout: Block) => {
-    const box = document.getElementById(_layout.id)
-    if (box) {
-      box.scrollIntoView({ behavior: 'smooth', block: 'center' })
-    }
-    const updatedLayouts = layouts.map((layout) => {
-      if (layout.id === _layout.id) {
-        return _layout
-      }
-      return layout
-    })
-    setLayouts(updatedLayouts)
-    setIsDirty(_layout.id)
+  if (!layouts) {
+    return <p>no layouts</p>
   }
-  const deleteLayout = (_layout: Block) => {
-    const updatedLayouts = layouts.filter((layout) => layout.id !== _layout.id)
-    setLayouts(updatedLayouts)
-    saveUpdates(updatedLayouts)
-  }
-  const saveUpdates = (updatedLayouts: Block[] | undefined) => {
-    const _meta: Block[] = doc?.document?.meta?.map((m) => {
-      if (m.type === 'tt/print-article') {
-        return Object.assign({}, m, {
-          meta: updatedLayouts || layouts
-        })
-      }
-      return m
-    })
-    const _document: Document = Object.assign({}, doc?.document, {
-      meta: _meta
-    })
-    if (!repository || !session) {
-      return (
-        <Error
-          title='Repository or session not found'
-          message='Layouter sparades inte'
-        />
-      )
-    }
-    (async () => {
-      const result = await repository.saveDocument(_document, session.accessToken, 0n, workflowStatus?.name || 'draft')
-      if (result?.status?.code !== 'OK') {
-        return (
-          <Error
-            title='Failed to save print article'
-            message='Layouter sparades inte'
-          />
-        )
-      }
-      setIsDirty(undefined)
-      setLayouts(updatedLayouts || layouts)
-      toast.success('Layouter är sparad')
-    })().catch((error) => {
-      console.error(error)
-      toast.error('Layouter sparades inte')
-    })
-  }
-
   return (
     <>
-      <EditorHeader documentId={documentId} flowName={flowName} name={name} />
-
-      <View.Content className='flex flex-col max-w-[1200px]'>
+      <EditorHeader documentId={documentId} name={name} flowName={flowName} />
+      <View.Content className='flex flex-col max-w-[1000px]'>
         <section className='grid grid-cols-12'>
           <div className='col-span-8'>
             <ScrollArea className='h-[calc(100vh-7rem)]'>
@@ -328,27 +208,45 @@ function EditorContainer({
                       <ChevronRight strokeWidth={1.75} size={18} />
                     </Button>
                   )
-                : null}
+                : (
+                    <DotDropdownMenu
+                      trigger='vertical'
+                      items={[
+                        {
+                          label: 'Uppdatera alla',
+                          icon: RefreshCw,
+                          item: (
+                            <Button
+                              variant='ghost'
+                              size='sm'
+                              className='flex gap-2 items-center'
+                              onClick={(e) => {
+                                e.preventDefault()
+                                window.alert('Ej implementerat')
+                              }}
+                            >
+                              <RefreshCw strokeWidth={1.75} size={16} />
+                              Uppdatera alla
+                            </Button>
+                          )
+                        }
+                      ]}
+                    />
+                  )}
             </header>
             <ScrollArea className='h-[calc(100vh-12rem)]'>
               <div className='flex flex-col gap-2'>
-                {Array.isArray(layouts) && layouts.map((layout: Block) => {
-                  if (!layout) {
+                {Array.isArray(layouts) && layouts.map((layout, index) => {
+                  if (!layout.links?.['_']?.[0]?.uuid) {
                     return null
                   }
                   return (
                     <LayoutBox
                       key={layout.id}
-                      bulkSelected={bulkSelected}
-                      setBulkSelected={setBulkSelected}
-                      layout={layout}
-                      updateLayout={updateLayout}
-                      isDirty={isDirty}
-                      setIsDirty={() => setIsDirty(undefined)}
-                      setLayouts={(newLayouts: Block[] | ((prevState: Block[]) => Block[])) => setLayouts(newLayouts)}
-                      cleanLayouts={cleanLayouts || []}
-                      saveUpdates={() => saveUpdates(layouts || [])}
-                      deleteLayout={() => deleteLayout(layout)}
+                      documentId={documentId}
+                      layoutIdForRender={layout.id}
+                      layoutId={layout.links['_'][0].uuid}
+                      index={index}
                     />
                   )
                 })}
@@ -360,11 +258,11 @@ function EditorContainer({
 
       <View.Footer>
         <div className='flex gap-2'>
-          <strong>Words:</strong>
+          <strong>Ord:</strong>
           <span>{words}</span>
         </div>
         <div className='flex gap-2'>
-          <strong>Characters:</strong>
+          <strong>Tecken:</strong>
           <span>{characters}</span>
         </div>
       </View.Footer>
@@ -372,19 +270,14 @@ function EditorContainer({
   )
 }
 
-function EditorContent({
-  provider,
-  user
-}: {
+
+function EditorContent({ provider, user }: {
   provider: HocuspocusProvider
   user: AwarenessUserData
 }): JSX.Element {
   const { isActive } = useView()
   const ref = useRef<HTMLDivElement>(null)
-  const [documentLanguage] = getValueByYPath<string>(
-    provider.document.getMap('ele'),
-    'root.language'
-  )
+  const [documentLanguage] = getValueByYPath<string>(provider.document.getMap('ele'), 'root.language')
 
   const yjsEditor = useYjsEditor(provider, user)
   const onSpellcheck = useOnSpellcheck(documentLanguage)
@@ -397,13 +290,20 @@ function EditorContent({
       }, 0)
     }
   }, [isActive, ref])
+
   return (
     <Textbit.Editable
       ref={ref}
       yjsEditor={yjsEditor}
       lang={documentLanguage}
       onSpellcheck={onSpellcheck}
-      className='outline-none h-full dark:text-slate-100 [&_[data-spelling-error]]:border-b-2 [&_[data-spelling-error]]:border-dotted [&_[data-spelling-error]]:border-red-500'
+      className='outline-none
+        h-full
+        dark:text-slate-100
+        [&_[data-spelling-error]]:border-b-2
+        [&_[data-spelling-error]]:border-dotted
+        [&_[data-spelling-error]]:border-red-500
+      '
     >
       <DropMarker />
       <Gutter>

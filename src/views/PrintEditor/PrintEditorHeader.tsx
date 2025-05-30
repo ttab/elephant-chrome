@@ -2,8 +2,7 @@ import { useView } from '@/hooks'
 import { useEffect, useRef } from 'react'
 import { ViewHeader } from '@/components/View'
 import { StatusMenu } from '@/components/DocumentStatus/StatusMenu'
-import { RefreshCw, PenBoxIcon } from '@ttab/elephant-ui/icons'
-import { Button } from '@ttab/elephant-ui'
+import { PenBoxIcon } from '@ttab/elephant-ui/icons'
 
 /**
  * EditorHeader component.
@@ -39,7 +38,7 @@ export const EditorHeader = ({
   }, [viewId])
 
   return (
-    <ViewHeader.Root className='grid grid-cols-3'>
+    <ViewHeader.Root className='grid grid-cols-2'>
       <section className='col-span-2 flex flex-row gap-2 justify-between items-center w-full'>
         <ViewHeader.Title name={flowName || ''} title={flowName || ''} icon={PenBoxIcon} />
 
@@ -69,21 +68,6 @@ export const EditorHeader = ({
             </div>
           </div>
         </ViewHeader.Content>
-      </section>
-      <section className='col-span-1 flex items-center justify-between flex-row gap-2 w-full'>
-        <Button
-          title='Rendera om alla layouter.'
-          variant='outline'
-          size='sm'
-          className='px-2 py-0 flex gap-2 items-center'
-          onClick={(e) => {
-            e.preventDefault()
-            window.alert('Ej implementerat')
-          }}
-        >
-          <RefreshCw strokeWidth={1.75} size={16} />
-          Uppdatera alla
-        </Button>
         <ViewHeader.Action>
         </ViewHeader.Action>
       </section>
