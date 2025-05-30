@@ -54,7 +54,7 @@ export const ApprovalsView = (): JSX.Element => {
   }, [query.from, timeZone])
 
   const [data, facets] = useAssignments({
-    type: ['flash', 'text'],
+    type: ['flash', 'text', 'editorial-info'],
     requireDeliverable: true,
     requireMetrics: ['charcount'],
     date,
