@@ -1,25 +1,32 @@
 import type { Request } from 'express'
-import type { RouteContentResponse, RouteHandler, RouteStatusResponse } from '../../routes.js'
-import logger from '../../lib/logger.js'
+import type { RouteContentResponse, RouteHandler, RouteStatusResponse } from '../../../routes.js'
+import logger from '../../../lib/logger.js'
 import { Block } from '@ttab/elephant-api/newsdoc'
-import { appendAssignment, appendDocumentToAssignment } from '../../lib/createYItem.js'
-import type { Context } from '../../lib/assertContext.js'
-import { assertContext } from '../../lib/assertContext.js'
-import { createSnapshot } from '../../utils/createSnapshot.js'
-import { planningDocumentTemplate } from '../../../shared/templates/planningDocumentTemplate.js'
-import { getDeliverableType } from '../../../src/defaults/templates/lib/getDeliverableType.js'
+import { appendAssignment, appendDocumentToAssignment } from '../../../lib/createYItem.js'
+import type { Context } from '../../../lib/assertContext.js'
+import { assertContext } from '../../../lib/assertContext.js'
+import { createSnapshot } from '../../../utils/createSnapshot.js'
+import { planningDocumentTemplate } from '../../../../shared/templates/planningDocumentTemplate.js'
+import { getDeliverableType } from '../../../../src/defaults/templates/lib/getDeliverableType.js'
 import { toYjsNewsDoc } from '@/shared/transformations/yjsNewsDoc.js'
 import { toGroupedNewsDoc } from '@/shared/transformations/groupedNewsDoc.js'
-import type { Wire } from '../../../src/hooks/index/useDocuments/schemas/wire.js'
+import type { Wire } from '../../../../src/hooks/index/useDocuments/schemas/wire.js'
+import { getContext } from '../../../lib/getContext.js'
 
 type Response = RouteContentResponse | RouteStatusResponse
 
 /**
- * Add assignment to an existing planning or a newly craeted one.
+ * Add assignment to an existing planning or a newly created one.
  */
 export const POST: RouteHandler = async (req: Request, { collaborationServer, res }) => {
+  const planningId = req.params.id
   const locals = res.locals as Record<string, unknown> | undefined
   const session = locals?.session as { accessToken?: string, user?: Context['user'] } | undefined
+
+  const context = getContext(session as unknown)
+  if (!assertContext(context)) {
+    return context
+  }
 
   if (!session?.accessToken || !session?.user) {
     return {
@@ -30,7 +37,6 @@ export const POST: RouteHandler = async (req: Request, { collaborationServer, re
 
   // Validate incoming data
   const {
-    planningId,
     planningTitle,
     type,
     deliverableId,
@@ -76,19 +82,6 @@ export const POST: RouteHandler = async (req: Request, { collaborationServer, re
     }
   }
 
-  const context: Context = {
-    accessToken: session.accessToken,
-    user: session.user,
-    agent: 'server'
-  }
-
-  if (!assertContext(context)) {
-    return {
-      statusCode: 500,
-      statusMessage: 'Invalid context provided'
-    }
-  }
-
   let response: Response = {
     statusCode: 500,
     statusMessage: ''
@@ -125,11 +118,11 @@ export const POST: RouteHandler = async (req: Request, { collaborationServer, re
               })],
               ...(slugline
                 ? {
-                    'tt/slugline': [Block.create({
-                      type: 'tt/slugline',
-                      value: slugline
-                    })]
-                  }
+                  'tt/slugline': [Block.create({
+                    type: 'tt/slugline',
+                    value: slugline
+                  })]
+                }
                 : {})
             }
           })
