@@ -113,7 +113,8 @@ export const fetch = async (
       payload: {
         slugline,
         sluglines: planning.fields['document.meta.core_assignment.meta.tt_slugline.value']?.values,
-        section: planning.fields['document.rel.section.uuid']?.values?.[0]
+        section: planning.fields['document.rel.section.uuid']?.values?.[0],
+        startDate: planning.fields['document.meta.core_planning_item.data.start_date']?.values?.[0]
       }
     }
   })
