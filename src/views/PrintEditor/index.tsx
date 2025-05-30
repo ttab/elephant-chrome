@@ -8,6 +8,7 @@ import {
   Link,
   Text,
   TTVisual,
+  Factbox,
   Table,
   LocalizedQuotationMarks,
   TVListing
@@ -90,6 +91,7 @@ function EditorWrapper(props: ViewProps & {
   autoFocus?: boolean
 }): JSX.Element {
   const { provider, synced, user } = useCollaboration()
+  const openFactboxEditor = useLink('Factbox')
   const [notes] = useYValue<Block[] | undefined>('meta.core/note')
   const [, setIsFocused] = useAwareness(props.documentId)
 
@@ -111,6 +113,12 @@ function EditorWrapper(props: ViewProps & {
       ...basePlugins.map((initPlugin) => initPlugin()),
       Text({
         countCharacters: ['heading-1'],
+        ...contentMenuLabels
+      }),
+      Factbox({
+        onEditOriginal: (id: string) => {
+          openFactboxEditor(undefined, { id })
+        },
         ...contentMenuLabels
       })
     ]
