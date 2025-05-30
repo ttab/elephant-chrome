@@ -10,17 +10,20 @@ import { Layouts } from './components/Layouts'
 import { LoadingText } from '@/components/LoadingText'
 import { Additionals } from './components/Additionals'
 import { Position } from './components/Position'
+import { snapshot } from '@/lib/snapshot'
 
 export function LayoutBox({
   documentId,
   layoutIdForRender,
   layoutId,
-  index
+  index,
+  rendersCorrectly
 }: {
   documentId: string
   layoutIdForRender: string
   layoutId: string
   index: number
+  rendersCorrectly: boolean
 }) {
   const { baboon } = useRegistry()
   const { data: session } = useSession()
@@ -45,6 +48,7 @@ export function LayoutBox({
       return
     }
     try {
+      await snapshot(documentId)
       const response = await baboon.renderArticle({
         articleUuid: documentId,
         layoutId: layoutIdForRender,
@@ -53,7 +57,6 @@ export function LayoutBox({
         pngScale: 300n
       }, session.accessToken)
       if (response?.status.code === 'OK') {
-        toast.success('Printartikel skapad')
         openPreview(undefined, { id: response?.response?.pdfUrl })
       }
     } catch (ex: unknown) {
@@ -63,7 +66,7 @@ export function LayoutBox({
   }
 
   return (
-    <div id={layoutId} className='border min-h-32 p-2 pt-0 grid grid-cols-12 rounded bg-approved-background border-approved-border border-s-approved border-s-[6px]'>
+    <div id={layoutId} className={`border min-h-32 p-2 pt-0 grid grid-cols-12 rounded ${rendersCorrectly ? 'bg-approved-background border-approved-border border-s-approved border-s-[6px]' : 'bg-red-100 border-red-200 border-s-red-500 border-s-[6px]'}`}>
       <header className='col-span-12 row-span-1 gap-2 flex items-center justify-between'>
         <div className='flex items-center gap-2'>
           <Button
@@ -82,21 +85,6 @@ export function LayoutBox({
           </Button>
         </div>
         <div className='flex items-center gap-2'>
-          <Label className='group/check flex items-center gap-4'>
-            <span className='transition-opacity ease-in-out delay-500 opacity-0 group-hover/check:opacity-100'>
-              Välj
-            </span>
-            <Input
-              value={layoutId}
-              type='checkbox'
-              className='w-4 h-4'
-              checked={false}
-              onChange={() => {
-                window.alert('Ej implementerat')
-                console.log('Checkbox clicked', layoutId)
-              }}
-            />
-          </Label>
           <Button
             variant='ghost'
             className='p-2'

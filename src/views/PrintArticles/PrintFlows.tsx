@@ -120,7 +120,7 @@ export const PrintFlows = ({ asDialog, onDialogClose, className, action }: ViewP
       }
     } catch (ex) {
       console.error('Error creating print flow:', ex)
-      toast.error('Något gick fel när printflöde skulle skapas')
+      toast.error(ex instanceof Error ? ex.message : 'Något gick fel när printflöde skulle skapas')
     }
   }
   return (
