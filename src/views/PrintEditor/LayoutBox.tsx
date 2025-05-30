@@ -10,6 +10,7 @@ import { Layouts } from './components/Layouts'
 import { LoadingText } from '@/components/LoadingText'
 import { Additionals } from './components/Additionals'
 import { Position } from './components/Position'
+import { snapshot } from '@/lib/snapshot'
 
 export function LayoutBox({
   documentId,
@@ -47,6 +48,7 @@ export function LayoutBox({
       return
     }
     try {
+      await snapshot(documentId)
       const response = await baboon.renderArticle({
         articleUuid: documentId,
         layoutId: layoutIdForRender,
