@@ -119,6 +119,7 @@ function EditorWrapper(props: ViewProps & {
         onEditOriginal: (id: string) => {
           openFactboxEditor(undefined, { id })
         },
+        removable: true,
         ...contentMenuLabels
       })
     ]
