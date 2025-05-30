@@ -1,6 +1,6 @@
 import { assertContext, type Context } from './assertContext.js'
 
-export const getContext = (session: unknown, agent: 'server' | {} & string = 'server'): Context | {
+export const getContextFromValidSession = (session: unknown, agent: 'server' | {} & string = 'server'): Context | {
   statusCode: number
   statusMessage: string
 } => {

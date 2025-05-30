@@ -11,7 +11,7 @@ import { getDeliverableType } from '../../../../src/defaults/templates/lib/getDe
 import { toYjsNewsDoc } from '@/shared/transformations/yjsNewsDoc.js'
 import { toGroupedNewsDoc } from '@/shared/transformations/groupedNewsDoc.js'
 import type { Wire } from '../../../../src/hooks/index/useDocuments/schemas/wire.js'
-import { getContext } from '../../../lib/getContext.js'
+import { getContextFromValidSession } from '../../../lib/getContextFromValidSession.js'
 
 type Response = RouteContentResponse | RouteStatusResponse
 
@@ -23,16 +23,9 @@ export const POST: RouteHandler = async (req: Request, { collaborationServer, re
   const locals = res.locals as Record<string, unknown> | undefined
   const session = locals?.session as { accessToken?: string, user?: Context['user'] } | undefined
 
-  const context = getContext(session as unknown)
+  const context = getContextFromValidSession(session as unknown)
   if (!assertContext(context)) {
     return context
-  }
-
-  if (!session?.accessToken || !session?.user) {
-    return {
-      statusCode: 401,
-      statusMessage: 'Unauthorized: Session not found, can not snapshot document'
-    }
   }
 
   // Validate incoming data
@@ -118,11 +111,11 @@ export const POST: RouteHandler = async (req: Request, { collaborationServer, re
               })],
               ...(slugline
                 ? {
-                  'tt/slugline': [Block.create({
-                    type: 'tt/slugline',
-                    value: slugline
-                  })]
-                }
+                    'tt/slugline': [Block.create({
+                      type: 'tt/slugline',
+                      value: slugline
+                    })]
+                  }
                 : {})
             }
           })

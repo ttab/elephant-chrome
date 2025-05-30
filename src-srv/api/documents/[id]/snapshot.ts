@@ -5,6 +5,7 @@ import type { Context } from '../../../lib/assertContext.js'
 import { assertContext } from '../../../lib/assertContext.js'
 import { createSnapshot } from '../../../utils/createSnapshot.js'
 import type { Session } from 'next-auth'
+import { getContextFromValidSession } from '../../../lib/getContextFromValidSession.js'
 
 type Response = RouteContentResponse | RouteStatusResponse
 
@@ -31,24 +32,9 @@ export const GET: RouteHandler = async (req: Request, { collaborationServer, cac
     }
   }
 
-  if (!accessToken || !user) {
-    return {
-      statusCode: 401,
-      statusMessage: 'Unauthorized: Session not found, can not snapshot document'
-    }
-  }
-
-  const context: Context = {
-    accessToken,
-    user,
-    agent: 'server'
-  }
-
+  const context = getContextFromValidSession(session as unknown)
   if (!assertContext(context)) {
-    return {
-      statusCode: 500,
-      statusMessage: 'Invalid context provided'
-    }
+    return context
   }
 
   try {
