@@ -6,7 +6,7 @@ import { useRegistry } from '@/hooks/useRegistry'
 import { useSession } from 'next-auth/react'
 import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
-import { Hypenation } from '@ttab/elephant-tt-api/baboon'
+import { type Hypenation } from '@ttab/elephant-tt-api/baboon'
 import { Button, Label } from '@ttab/elephant-ui'
 
 const HypenationItem = ({ isNew, word, hypenated }: { isNew: boolean, word: string, hypenated: string }) => {
@@ -14,7 +14,9 @@ const HypenationItem = ({ isNew, word, hypenated }: { isNew: boolean, word: stri
   return !editMode && !isNew
     ? (
         <li className='w-full flex justify-between items-center'>
-          {word} / {hypenated}
+          {word}
+          <span className='text-gray-500'>/</span>
+          {hypenated}
           <Button variant='ghost' size='sm' onClick={() => setEditMode(true)}>
             <Pencil strokeWidth={1.75} size={18} />
           </Button>
@@ -25,7 +27,7 @@ const HypenationItem = ({ isNew, word, hypenated }: { isNew: boolean, word: stri
           <Label>
             Ord
             <input type='text' value={word} className='border border-gray-300 rounded-md p-2' />
-          </Label> 
+          </Label>
           <Label>
             Sammansättning
             <input type='text' value={hypenated} className='border border-gray-300 rounded-md p-2' />
@@ -34,12 +36,12 @@ const HypenationItem = ({ isNew, word, hypenated }: { isNew: boolean, word: stri
           <Button variant='ghost' size='sm' onClick={() => setEditMode(false)}>
             Avbryt
           </Button>
-      </div>
-    )
+        </div>
+      )
 }
 
 const Dictionary = ({ asDialog, onDialogClose, className }: ViewProps): JSX.Element => {
-  const { baboon } = useRegistry()  
+  const { baboon } = useRegistry()
   const { data: session } = useSession()
   const [hyphenations, setHyphenations] = useState<Hypenation[]>([])
   const [isNew, setIsNew] = useState(false)
@@ -55,7 +57,7 @@ const Dictionary = ({ asDialog, onDialogClose, className }: ViewProps): JSX.Elem
     }
     const hyphenations = await baboon?.listHypenations({
       language: 'sv',
-      page: 0n,
+      page: 0n
     }, session?.accessToken)
     setHyphenations(hyphenations?.response?.items || [])
     console.log(hyphenations)
@@ -78,9 +80,10 @@ const Dictionary = ({ asDialog, onDialogClose, className }: ViewProps): JSX.Elem
             <Button
               onClick={() => setIsNew(!isNew)}
               size='sm'
-              className='mb-4 flex items-center gap-2' 
+              className='mb-4 flex items-center gap-2'
             >
-              <Plus strokeWidth={1.75} size={18} /> Ny sammansättning
+              <Plus strokeWidth={1.75} size={18} />
+              Ny sammansättning
             </Button>
           </div>
         </ViewHeader.Content>
@@ -89,8 +92,8 @@ const Dictionary = ({ asDialog, onDialogClose, className }: ViewProps): JSX.Elem
       </ViewHeader.Root>
       <View.Content className='p-4 w-full'>
         <div className='flex flex-col gap-2'>
-          <ul className="flex flex-col gap-2">
-            {isNew && <HypenationItem isNew={isNew} word={''} hypenated={''} />}
+          <ul className='flex flex-col gap-2'>
+            {isNew && <HypenationItem isNew={isNew} word='' hypenated='' />}
             {hyphenations.map((hyphenation) => (
               <HypenationItem key={hyphenation.word} isNew={false} word={hyphenation.word} hypenated={hyphenation.hypenated} />
             ))}

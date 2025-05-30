@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { AwarenessDocument, View } from '@/components'
+import { AwarenessDocument, View, ViewHeader } from '@/components'
 
 import { Textbit, useTextbit } from '@ttab/textbit'
 import { Bold, Italic, Link, Text, TTVisual, Factbox, Table, LocalizedQuotationMarks } from '@ttab/textbit-plugins'
@@ -13,7 +13,8 @@ import {
   useYValue,
   useView,
   useYjsEditor,
-  useAwareness
+  useAwareness,
+  useRegistry
 } from '@/hooks'
 import type { ViewMetadata, ViewProps } from '@/types'
 import { EditorHeader } from './PrintEditorHeader'
@@ -33,9 +34,11 @@ import { useOnSpellcheck } from '@/hooks/useOnSpellcheck'
 import { contentMenuLabels } from '@/defaults/contentMenuLabels'
 import { Button, ScrollArea } from '@ttab/elephant-ui'
 import { LayoutBox } from './LayoutBox'
-import { ChevronRight, Copy, RefreshCw } from '@ttab/elephant-ui/icons'
-import { DotDropdownMenu } from '@/components/ui/DotMenu'
+import { ChevronRight, Copy, Library, RefreshCw } from '@ttab/elephant-ui/icons'
 import type { EleBlock } from '@/shared/types'
+import { toast } from 'sonner'
+import { useSession } from 'next-auth/react'
+import { useModal } from '@/components/Modal/useModal'
 
 const meta: ViewMetadata = {
   name: 'PrintEditor',
@@ -72,6 +75,71 @@ const PrintEditor = (props: ViewProps): JSX.Element => {
     <AwarenessDocument documentId={documentId} className='h-full'>
       <EditorWrapper documentId={documentId} {...props} />
     </AwarenessDocument>
+  )
+}
+
+function DuplicateArticle({
+  asDialog,
+  onDialogClose,
+  documentId,
+  flowUuid,
+  name
+}: {
+  asDialog: boolean
+  onDialogClose: () => void | undefined | null
+  documentId: string
+  flowUuid: string
+  name: string
+}): JSX.Element {
+  const { baboon } = useRegistry()
+  const { data: session } = useSession()
+  const [,,allParams] = useQuery(['from'], true)
+  const date = allParams?.filter((item) => item.name === 'PrintArticles')?.[0]?.params?.from || ''
+  console.log('flowUuid', flowUuid)
+  console.log('name', name)
+  console.log('date', date)
+  console.log('documentId', documentId)
+  const handleCopyArticle = async () => {
+    if (!baboon || !session?.accessToken) {
+      console.error(`Missing prerequisites: ${!baboon ? 'baboon-client' : 'accessToken'} is missing`)
+      toast.error('Något gick fel när printartikel skulle renderas')
+      return
+    }
+    try {
+      const response = await baboon.createPrintArticle({
+        sourceUuid: documentId,
+        flowUuid: flowUuid || '',
+        date: date as string,
+        article: name || ''
+      }, session.accessToken)
+      if (response?.status.code === 'OK') {
+        onDialogClose()
+      }
+    } catch (ex: unknown) {
+      console.error('Error creating print article:', ex)
+      toast.error(`Något gick fel när printartikel skulle skapas: ${ex instanceof Error ? ex.message : 'Okänt fel'}`)
+    }
+  }
+  return (
+    <View.Root asDialog={true} className='flex flex-col'>
+      <ViewHeader.Root>
+        <ViewHeader.Content>
+          {asDialog && (
+            <div className='flex w-full h-full items-center space-x-2 font-bold'>
+              <ViewHeader.Title name='printheader' title='Duplicera artikel' icon={Library} iconColor='#006bb3' />
+            </div>
+          )}
+        </ViewHeader.Content>
+
+        <ViewHeader.Action onDialogClose={onDialogClose}>
+        </ViewHeader.Action>
+      </ViewHeader.Root>
+
+      <View.Content className='w-full p-4 flex items-center justify-center gap-2'>
+        <Button onClick={handleCopyArticle}>Fortsätt</Button>
+        <Button variant='outline' onClick={onDialogClose}>Avbryt</Button>
+      </View.Content>
+    </View.Root>
   )
 }
 
@@ -158,11 +226,15 @@ function EditorContainer({
   const [layouts] = useYValue<EleBlock[]>('meta.tt/print-article[0].meta.tt/article-layout')
   const [name] = useYValue<string>('meta.tt/print-article[0].name')
   const [flowName] = useYValue<string>('links.tt/print-flow[0].title')
+  const [flowUuid] = useYValue<string>('links.tt/print-flow[0].uuid')
+
+  const { showModal, hideModal } = useModal()
 
   const openPrintEditor = useLink('PrintEditor')
   if (!layouts) {
     return <p>no layouts</p>
   }
+
   return (
     <>
       <EditorHeader documentId={documentId} name={name} flowName={flowName} />
@@ -205,20 +277,28 @@ function EditorContainer({
                       <ChevronRight strokeWidth={1.75} size={18} />
                     </Button>
                   )
-                : <div className='flex items-center'>
-                    <Button variant='ghost' size='sm' onClick={() => console.log('Uppdatera alla')}>
-                      <RefreshCw strokeWidth={1.75} size={18} />
-                    </Button>
-                    <Button variant='ghost' size='sm' onClick={() => console.log('Kopiera')}>
-                      <Copy strokeWidth={1.75} size={18} />
-                    </Button>
-                  </div>
-                }
+                : (
+                    <div className='flex items-center'>
+                      <Button variant='ghost' size='sm' onClick={() => window.alert('Ej implementerat')}>
+                        <RefreshCw strokeWidth={1.75} size={18} />
+                      </Button>
+                      <Button
+                        variant='ghost'
+                        size='sm'
+                        onClick={() => {
+                          showModal(
+                            <DuplicateArticle asDialog onDialogClose={hideModal} documentId={documentId} flowUuid={flowUuid || ''} name={name || ''} />
+                          )
+                        }}
+                      >
+                        <Copy strokeWidth={1.75} size={18} />
+                      </Button>
+                    </div>
+                  )}
             </header>
             <ScrollArea className='h-[calc(100vh-12rem)]'>
               <div className='flex flex-col gap-2'>
                 {Array.isArray(layouts) && layouts.map((layout, index) => {
-                  console.log('layout', layout.data)
                   if (!layout.links?.['_']?.[0]?.uuid) {
                     return null
                   }
