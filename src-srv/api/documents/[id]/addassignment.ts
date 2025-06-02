@@ -109,11 +109,11 @@ export const POST: RouteHandler = async (req: Request, { collaborationServer, re
               })],
               ...(slugline
                 ? {
-                  'tt/slugline': [Block.create({
-                    type: 'tt/slugline',
-                    value: slugline
-                  })]
-                }
+                    'tt/slugline': [Block.create({
+                      type: 'tt/slugline',
+                      value: slugline
+                    })]
+                  }
                 : {})
             }
           })
