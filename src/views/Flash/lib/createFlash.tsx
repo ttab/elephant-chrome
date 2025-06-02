@@ -15,7 +15,8 @@ export async function createFlash({
   planningId,
   timeZone,
   documentStatus,
-  section
+  section,
+  startDate
 }: {
   flashProvider: HocuspocusProvider
   status: string
@@ -27,7 +28,7 @@ export async function createFlash({
     uuid: string
     title: string
   }
-
+  startDate?: string
 }): Promise<void> {
   const flashEle = flashProvider.document.getMap('ele')
   const [documentId] = getValueByYPath<string>(flashEle, 'root.uuid')
@@ -58,8 +59,20 @@ export async function createFlash({
   // Create and collect all base data for the assignment
   const [flashTitle] = getValueByYPath<string>(flashEle, 'root.title')
   const dt = new Date()
-  const isoDateTime = `${new Date().toISOString().split('.')[0]}Z` // Remove ms, add Z back again
-  const localDate = convertToISOStringInTimeZone(dt, timeZone).slice(0, 10)
+  let localDate: string
+  let isoDateTime: string
+
+  if (startDate) {
+    // Use provided start date
+    const date = startDate.split('T')[0]
+    localDate = date
+    const currentTime = new Date().toISOString().split('T')[1].split('.')[0] + 'Z'
+    isoDateTime = `${date}T${currentTime}`
+  } else {
+    // create new date
+    isoDateTime = `${new Date().toISOString().split('.')[0]}Z`
+    localDate = convertToISOStringInTimeZone(dt, timeZone).slice(0, 10)
+  }
 
   const updatedPlanningId = await addAssignmentWithDeliverable({
     planningId,
