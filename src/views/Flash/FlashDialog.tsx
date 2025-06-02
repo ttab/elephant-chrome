@@ -28,7 +28,7 @@ export const FlashDialog = (props: ViewProps): JSX.Element => {
   const [sendPrompt, setSendPrompt] = useState(false)
   const [savePrompt, setSavePrompt] = useState(false)
   const [donePrompt, setDonePrompt] = useState(false)
-  const [selectedPlanning, setSelectedPlanning] = useState<DefaultValueOption | undefined>(undefined)
+  const [selectedPlanning, setSelectedPlanning] = useState<Omit<DefaultValueOption, 'payload'> & { payload: unknown } | undefined>(undefined)
   const [title, setTitle] = useYValue<string | undefined>('root.title')
   const { index, locale, timeZone } = useRegistry()
   const [searchOlder, setSearchOlder] = useState(false)
@@ -116,7 +116,8 @@ export const FlashDialog = (props: ViewProps): JSX.Element => {
                       if (option.value !== selectedPlanning?.value) {
                         setSelectedPlanning({
                           value: option.value,
-                          label: option.label
+                          label: option.label,
+                          payload: option.payload
                         })
 
                         const sectionPayload = option.payload as { section: string | undefined }
@@ -202,6 +203,10 @@ export const FlashDialog = (props: ViewProps): JSX.Element => {
                       props.onDialogClose(props.id, title)
                     }
 
+                    const { startDate } = (selectedPlanning?.payload ?? {}) as {
+                      startDate?: string
+                    }
+
                     createFlash({
                       flashProvider: provider,
                       status,
@@ -209,6 +214,7 @@ export const FlashDialog = (props: ViewProps): JSX.Element => {
                       planningId: selectedPlanning?.value,
                       timeZone,
                       documentStatus: config.documentStatus,
+                      startDate,
                       section: (!selectedPlanning?.value) ? section || undefined : undefined
                     })
                       .then(() => {
