@@ -26,7 +26,7 @@ export async function addAssignmentWithDeliverable(payload: {
   wire?: Wire
 }): Promise<string | undefined> {
   try {
-    const response = await fetch(`${BASE_URL}/api/documents/addassignment/`, {
+    const response = await fetch(`${BASE_URL}/api/documents/${payload.planningId}/addassignment/`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
