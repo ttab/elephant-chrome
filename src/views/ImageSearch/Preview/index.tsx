@@ -1,4 +1,5 @@
 import { type ttninjs } from '@ttab/api-client'
+import { DialogDescription, DialogTitle } from '@ttab/elephant-ui'
 import { toast } from 'sonner'
 
 const BASE_URL = import.meta.env.BASE_URL || ''
@@ -13,17 +14,19 @@ export const Preview = ({ ttninjs }: {
     toast.error('Kan inte visa bild, ogiltigt id')
   }
 
-  const url = `${BASE_URL}/api/images/${id}_NormalPreview.jpg`
+  const mediaType = ttninjs.type === 'graphic' ? 'graphics' : 'images'
+
+  const url = `${BASE_URL}/api/${mediaType}/${id}_NormalPreview.jpg`
 
   return (
     <div className='flex flex-col'>
-      <div>
-        <h3>{ttninjs.headline}</h3>
-      </div>
+      <DialogTitle className='pb-2'>{ttninjs.headline}</DialogTitle>
       <img
         src={url}
       />
-      <div className='overflow-auto max-h-56'>{ttninjs.description_text}</div>
+      <DialogDescription className='overflow-auto max-h-56 pt-2 text-foreground'>
+        {ttninjs.description_text}
+      </DialogDescription>
     </div>
   )
 }

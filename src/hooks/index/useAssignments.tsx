@@ -56,7 +56,12 @@ export const useAssignments = ({ date, type, dateType = 'start-date', slots, sta
 
   const facets = getFacets(data)
 
-  useRepositoryEvents(['core/planning-item', 'core/planning-item+meta', 'core/article', 'core/article+meta'], (event) => {
+  useRepositoryEvents([
+    'core/planning-item', 'core/planning-item+meta',
+    'core/article', 'core/article+meta',
+    'core/editorial-info', 'core/editorial-info+meta',
+    'core/flash', 'core/flash+meta'
+  ], (event) => {
     if ((event.event !== 'document' && event.event !== 'status' && event.event !== 'delete_document')) {
       return
     }

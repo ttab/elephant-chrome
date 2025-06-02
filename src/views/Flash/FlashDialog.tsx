@@ -6,7 +6,7 @@ import {
 import type { DefaultValueOption, ViewProps } from '@/types'
 import { Button, Checkbox, ComboBox, Label } from '@ttab/elephant-ui'
 import { CircleXIcon, Tags, GanttChartSquare } from '@ttab/elephant-ui/icons'
-import { useCollaboration, useYValue, useRegistry } from '@/hooks'
+import { useCollaboration, useYValue, useRegistry, useSections } from '@/hooks'
 import { useSession } from 'next-auth/react'
 import type { Dispatch, SetStateAction } from 'react'
 import { useRef, useState } from 'react'
@@ -18,6 +18,8 @@ import type { CreateFlashDocumentStatus } from './lib/createFlash'
 import { createFlash } from './lib/createFlash'
 import { CreatePrompt } from '@/components/CreatePrompt'
 import { FlashHeader } from './FlashHeader'
+import { Block } from '@ttab/elephant-api/newsdoc'
+import { toast } from 'sonner'
 
 export const FlashDialog = (props: ViewProps): JSX.Element => {
   const { provider } = useCollaboration()
@@ -26,7 +28,7 @@ export const FlashDialog = (props: ViewProps): JSX.Element => {
   const [sendPrompt, setSendPrompt] = useState(false)
   const [savePrompt, setSavePrompt] = useState(false)
   const [donePrompt, setDonePrompt] = useState(false)
-  const [selectedPlanning, setSelectedPlanning] = useState<DefaultValueOption | undefined>(undefined)
+  const [selectedPlanning, setSelectedPlanning] = useState<Omit<DefaultValueOption, 'payload'> & { payload: unknown } | undefined>(undefined)
   const [title, setTitle] = useYValue<string | undefined>('root.title')
   const { index, locale, timeZone } = useRegistry()
   const [searchOlder, setSearchOlder] = useState(false)
@@ -37,6 +39,8 @@ export const FlashDialog = (props: ViewProps): JSX.Element => {
     title: string
   } | undefined>(undefined)
   const [documentId] = useYValue<string>('root.uuid')
+  const allSections = useSections()
+  const [, setYSection] = useYValue<Block | undefined>('links.core/section[0]')
 
   const handleSubmit = (setCreatePrompt: Dispatch<SetStateAction<boolean>>): void => {
     setCreatePrompt(true)
@@ -61,7 +65,7 @@ export const FlashDialog = (props: ViewProps): JSX.Element => {
       title: 'Skapa och klarmarkera flash?',
       description: !selectedPlanning
         ? 'En ny planering med tillhörande uppdrag för denna flash kommer att skapas åt dig.'
-        : `Denna flash kommer att läggas i ett nytt uppdrag i planeringen "${selectedPlanning.label}". Med status godkänd.`,
+        : `Denna flash kommer att läggas i ett nytt uppdrag i planeringen "${selectedPlanning.label}". Med status klar.`,
       secondaryLabel: 'Avbryt',
       primaryLabel: 'Klarmarkera',
       documentStatus: 'done' as CreateFlashDocumentStatus,
@@ -112,8 +116,24 @@ export const FlashDialog = (props: ViewProps): JSX.Element => {
                       if (option.value !== selectedPlanning?.value) {
                         setSelectedPlanning({
                           value: option.value,
-                          label: option.label
+                          label: option.label,
+                          payload: option.payload
                         })
+
+                        const sectionPayload = option.payload as { section: string | undefined }
+                        const sectionTitle = allSections
+                          .find((s) => s.id === sectionPayload?.section)?.title
+
+                        if (sectionTitle && sectionPayload?.section) {
+                          setYSection(Block.create({
+                            type: 'core/section',
+                            rel: 'section',
+                            title: sectionTitle,
+                            uuid: sectionPayload.section
+                          }))
+                        } else {
+                          toast.error('Kunde inte hitta sektionen för planeringen')
+                        }
                       } else {
                         setSelectedPlanning(undefined)
                       }
@@ -183,6 +203,10 @@ export const FlashDialog = (props: ViewProps): JSX.Element => {
                       props.onDialogClose(props.id, title)
                     }
 
+                    const { startDate } = (selectedPlanning?.payload ?? {}) as {
+                      startDate?: string
+                    }
+
                     createFlash({
                       flashProvider: provider,
                       status,
@@ -190,6 +214,7 @@ export const FlashDialog = (props: ViewProps): JSX.Element => {
                       planningId: selectedPlanning?.value,
                       timeZone,
                       documentStatus: config.documentStatus,
+                      startDate,
                       section: (!selectedPlanning?.value) ? section || undefined : undefined
                     })
                       .then(() => {
