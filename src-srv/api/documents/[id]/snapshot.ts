@@ -32,7 +32,7 @@ export const GET: RouteHandler = async (req: Request, { collaborationServer, cac
     }
   }
 
-  const context = getContextFromValidSession(session as unknown)
+  const context = getContextFromValidSession(session)
   if (!assertContext(context)) {
     return context
   }
