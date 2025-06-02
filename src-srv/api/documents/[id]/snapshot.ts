@@ -1,11 +1,9 @@
 import logger from '../../../lib/logger.js'
 import type { Request } from 'express'
 import type { RouteContentResponse, RouteHandler, RouteStatusResponse } from '../../../routes.js'
-import type { Context } from '../../../lib/assertContext.js'
-import { assertContext } from '../../../lib/assertContext.js'
 import { createSnapshot } from '../../../utils/createSnapshot.js'
 import type { Session } from 'next-auth'
-import { getContextFromValidSession } from '../../../lib/getContextFromValidSession.js'
+import { getContextFromValidSession, isContext, type Context } from '../../../lib/context.js'
 
 type Response = RouteContentResponse | RouteStatusResponse
 
@@ -33,7 +31,7 @@ export const GET: RouteHandler = async (req: Request, { collaborationServer, cac
   }
 
   const context = getContextFromValidSession(session)
-  if (!assertContext(context)) {
+  if (!isContext(context)) {
     return context
   }
 

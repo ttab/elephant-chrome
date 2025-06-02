@@ -1,4 +1,4 @@
-import type { Context } from '../../../lib/assertContext.js'
+import type { Context } from '../../../lib/context.js'
 import type { RouteHandler } from '../../../routes.js'
 import { pipeline } from 'stream/promises'
 

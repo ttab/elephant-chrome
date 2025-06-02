@@ -3,8 +3,7 @@ import type { RouteHandler } from '../../../routes.js'
 import { isValidUUID } from '../../../utils/isValidUUID.js'
 import { toGroupedNewsDoc } from '@/shared/transformations/groupedNewsDoc.js'
 import logger from '../../../lib/logger.js'
-import { getContextFromValidSession } from '../../../lib/getContextFromValidSession.js'
-import { assertContext } from '../../../lib/assertContext.js'
+import { getContextFromValidSession, isContext } from '../../../lib/context.js'
 import { toYjsNewsDoc } from '@/shared/transformations/yjsNewsDoc.js'
 import * as Y from 'yjs'
 
@@ -22,7 +21,7 @@ export const POST: RouteHandler = async (req: Request, { collaborationServer, ca
   const { session } = res.locals
 
   const context = getContextFromValidSession(session)
-  if (!assertContext(context)) {
+  if (!isContext(context)) {
     return context
   }
 

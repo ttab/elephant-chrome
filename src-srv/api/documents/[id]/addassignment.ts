@@ -3,15 +3,13 @@ import type { RouteContentResponse, RouteHandler, RouteStatusResponse } from '..
 import logger from '../../../lib/logger.js'
 import { Block } from '@ttab/elephant-api/newsdoc'
 import { appendAssignment, appendDocumentToAssignment } from '../../../lib/createYItem.js'
-import type { Context } from '../../../lib/assertContext.js'
-import { assertContext } from '../../../lib/assertContext.js'
 import { createSnapshot } from '../../../utils/createSnapshot.js'
 import { planningDocumentTemplate } from '../../../../shared/templates/planningDocumentTemplate.js'
 import { getDeliverableType } from '../../../../src/defaults/templates/lib/getDeliverableType.js'
 import { toYjsNewsDoc } from '@/shared/transformations/yjsNewsDoc.js'
 import { toGroupedNewsDoc } from '@/shared/transformations/groupedNewsDoc.js'
 import type { Wire } from '../../../../src/hooks/index/useDocuments/schemas/wire.js'
-import { getContextFromValidSession } from '../../../lib/getContextFromValidSession.js'
+import { getContextFromValidSession, isContext, type Context } from '../../../lib/context.js'
 
 type Response = RouteContentResponse | RouteStatusResponse
 
@@ -24,7 +22,7 @@ export const POST: RouteHandler = async (req: Request, { collaborationServer, re
   const session = locals?.session as { accessToken?: string, user?: Context['user'] } | undefined
 
   const context = getContextFromValidSession(session)
-  if (!assertContext(context)) {
+  if (!isContext(context)) {
     return context
   }
 
@@ -111,11 +109,11 @@ export const POST: RouteHandler = async (req: Request, { collaborationServer, re
               })],
               ...(slugline
                 ? {
-                    'tt/slugline': [Block.create({
-                      type: 'tt/slugline',
-                      value: slugline
-                    })]
-                  }
+                  'tt/slugline': [Block.create({
+                    type: 'tt/slugline',
+                    value: slugline
+                  })]
+                }
                 : {})
             }
           })
