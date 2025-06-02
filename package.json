@@ -3,7 +3,6 @@
   "private": false,
   "license": "MIT",
   "version": "1.0.11",
-  "version": "1.0.11",
   "type": "module",
   "scripts": {
     "debug": "concurrently npm:debug:vite npm:dev:client:css",
