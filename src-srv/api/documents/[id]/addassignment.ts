@@ -23,7 +23,7 @@ export const POST: RouteHandler = async (req: Request, { collaborationServer, re
   const locals = res.locals as Record<string, unknown> | undefined
   const session = locals?.session as { accessToken?: string, user?: Context['user'] } | undefined
 
-  const context = getContextFromValidSession(session as unknown)
+  const context = getContextFromValidSession(session)
   if (!assertContext(context)) {
     return context
   }

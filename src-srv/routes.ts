@@ -91,7 +91,7 @@ export function connectRouteHandlers(app: Application, routes: RouteMap, context
   sortedRoutes.forEach(([basePath, route]) => {
     const routePath = path.join(BASE_URL, '/api', basePath)
     const { GET, POST, PUT, PATCH, DELETE, WEB_SOCKET } = route.handlers || {}
-    console.log(routePath)
+
     if (GET) {
       connectRouteHandler(app, routePath, GET, context)
     }
