@@ -3,17 +3,25 @@ import type { FormProps } from '@/components/Form/Root'
 import { useRegistry, useYValue } from '@/hooks'
 import { newLocalDate, parseDate } from '@/lib/datetime'
 
-export const PlanDate = ({ onChange }: FormProps): JSX.Element => {
+type PlanDateProps = FormProps & (
+  | { onValueChange: (newValue: string) => void, onChange?: never }
+  | { onChange?: (arg: boolean) => void, onValueChange?: never }
+)
+
+export const PlanDate = ({ onChange, onValueChange }: PlanDateProps): JSX.Element => {
   const { timeZone } = useRegistry()
 
   const [startString, setStartString] = useYValue<string>('meta.core/planning-item[0].data.start_date')
   const [, setEndString] = useYValue<string>('meta.core/planning-item[0].data.end_date')
 
   const setDateString = (date: string) => {
-    onChange?.(true)
-
-    setStartString(date)
-    setEndString(date)
+    if (onValueChange) {
+      onValueChange(date)
+    } else {
+      onChange?.(true)
+      setStartString(date)
+      setEndString(date)
+    }
   }
 
   const newDate = newLocalDate(timeZone)
