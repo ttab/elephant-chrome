@@ -45,6 +45,7 @@ const Additional = ({ additional, index, onChange }: {
 }) => (
   <Label key={additional.name} className='flex items-center gap-2'>
     <Checkbox
+      className='bg-white'
       checked={additional.value === 'true'}
       onCheckedChange={() =>
         onChange(index)}

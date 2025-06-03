@@ -106,10 +106,10 @@ export function printArticlesListColumns(): Array<ColumnDef<PrintArticle>> {
         className: 'flex-1'
       },
       accessorFn: (data) => {
-        const _texts = data.fields['document.content.core_text.data.text'].values
-        const _roles = data.fields['document.content.core_text.role'].values
+        const _texts = data?.fields['document.content.core_text.data.text']?.values
+        const _roles = data?.fields['document.content.core_text.role']?.values
         let _title = ''
-        _roles.forEach((role, index) => {
+        _roles?.forEach((role, index) => {
           if (role === 'heading-1') {
             _title = _texts[index]
           }
@@ -117,7 +117,7 @@ export function printArticlesListColumns(): Array<ColumnDef<PrintArticle>> {
         return _title || ''
       },
       cell: ({ row }) => {
-        const title = row.getValue('headline')
+        const title = row?.getValue('headline')
         return <span>{title as string}</span>
       }
     }

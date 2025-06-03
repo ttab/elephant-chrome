@@ -6,6 +6,7 @@ import { type ViewProps, type ViewMetadata } from '@/types'
 import { PreviewHeader } from './PreviewHeader'
 import { useEffect, useState } from 'react'
 import { Frown, Settings } from '@ttab/elephant-ui/icons'
+
 /**
  * PrintPreview component.
  *
@@ -31,8 +32,8 @@ const meta: ViewMetadata = {
     lg: 6,
     xl: 6,
     '2xl': 6,
-    hd: 6,
-    fhd: 6,
+    hd: 5,
+    fhd: 5,
     qhd: 3,
     uhd: 2
   }
@@ -66,7 +67,7 @@ const PrintPreview = (props: ViewProps): JSX.Element => {
   return (
     <>
       <PreviewHeader />
-      {!props?.id
+      {!props?.source
         ? (
             <main className='flex flex-col items-center justify-center h-full'>
               <section className='flex flex-row items-center justify-center gap-0'>
@@ -87,7 +88,7 @@ const PrintPreview = (props: ViewProps): JSX.Element => {
               <View.Content className='flex flex-col max-w-[1200px]'>
                 <div className='p-2 flex flex-col gap-2'>
                   <ScrollArea className='h-full mx-auto w-full'>
-                    <iframe src={props?.id || ''} height={height} width='100%' />
+                    <iframe src={props?.source || ''} height={height} width='100%' />
                   </ScrollArea>
                 </div>
               </View.Content>
