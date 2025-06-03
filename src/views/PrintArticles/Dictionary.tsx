@@ -1,6 +1,6 @@
 import { View, ViewHeader } from '@/components/View'
 import { type ViewProps } from '@/types/index'
-import { BookA, Pencil, Plus } from '@ttab/elephant-ui/icons'
+import { BookA, Pencil, Plus, Trash } from '@ttab/elephant-ui/icons'
 import { cn } from '@ttab/elephant-ui/utils'
 import { useRegistry } from '@/hooks/useRegistry'
 import { useSession } from 'next-auth/react'
@@ -9,35 +9,88 @@ import { toast } from 'sonner'
 import { type Hypenation } from '@ttab/elephant-tt-api/baboon'
 import { Button, Label } from '@ttab/elephant-ui'
 
-const HypenationItem = ({ isNew, word, hypenated }: { isNew: boolean, word: string, hypenated: string }) => {
+const HypenationItem = ({ isNew, setIsNew, word, hypenated, handleListHyphenations }: { isNew: boolean, setIsNew: (isNew: boolean) => void, word: string, hypenated: string, handleListHyphenations: () => void }) => {
+  const [_word, setWord] = useState(word)
+  const [_hypenated, setHypenated] = useState(hypenated)
+  const { baboon } = useRegistry()
+  const { data: session } = useSession()
   const [editMode, setEditMode] = useState(isNew ? true : false)
-  return !editMode && !isNew
-    ? (
-        <li className='w-full flex justify-between items-center'>
-          {word}
-          <span className='text-gray-500'>/</span>
-          {hypenated}
-          <Button variant='ghost' size='sm' onClick={() => setEditMode(true)}>
-            <Pencil strokeWidth={1.75} size={18} />
-          </Button>
-        </li>
-      )
-    : (
-        <div className='flex items-end justify-between gap-2'>
-          <Label>
-            Ord
-            <input type='text' value={word} className='border border-gray-300 rounded-md p-2' />
-          </Label>
-          <Label>
-            Sammansättning
-            <input type='text' value={hypenated} className='border border-gray-300 rounded-md p-2' />
-          </Label>
-          <Button size='sm' onClick={() => console.log('Spara')}>Spara</Button>
-          <Button variant='ghost' size='sm' onClick={() => setEditMode(false)}>
-            Avbryt
-          </Button>
-        </div>
-      )
+  return (
+    <div className='grid grid-cols-3 gap-2'>
+      <input
+        disabled={!editMode && !isNew}
+        type='text'
+        value={_word}
+        onChange={(e) => setWord(e.target.value)}
+        className='col-span-1 border border-gray-300 rounded-md p-2'
+      />
+      <input
+        disabled={!editMode}
+        type='text'
+        value={_hypenated}
+        onChange={(e) => setHypenated(e.target.value)}
+        className='col-span-1 border border-gray-300 rounded-md p-2'
+      />
+      {editMode
+        ? (
+            <div className='col-span-1 flex items-end justify-end gap-2'>
+              <Button
+                size='sm'
+                onClick={() => {
+                  (async () => {
+                    await baboon?.setHypenation({
+                      language: 'sv',
+                      word: _word,
+                      hypenated: _hypenated,
+                      ignore: false
+                    }, session?.accessToken || '')
+                    handleListHyphenations()
+                    setEditMode(false)
+                    setIsNew(false)
+                  })().catch(console.error)
+                }}
+              >
+                Spara
+              </Button>
+              <Button
+                variant='ghost'
+                size='sm'
+                onClick={() => {
+                  setEditMode(false)
+                  setIsNew(false)
+                }}
+              >
+                Avbryt
+              </Button>
+              {!isNew && (
+                <Button
+                  className='bg-red-500 hover:bg-red-400'
+                  variant='ghost'
+                  size='sm'
+                  onClick={() => {
+                    (async () => {
+                      await baboon?.removeHypenation({
+                        language: 'sv',
+                        word: _word
+                      }, session?.accessToken || '')
+                      handleListHyphenations()
+                    })().catch(console.error)
+                  }}
+                >
+                  <Trash strokeWidth={1.75} size={18} className='text-white' />
+                </Button>
+              )}
+            </div>
+          )
+        : (
+            <div className='col-span-1 flex items-end justify-end gap-2'>
+              <Button variant='ghost' size='sm' onClick={() => setEditMode(true)}>
+                <Pencil strokeWidth={1.75} size={18} />
+              </Button>
+            </div>
+          )}
+    </div>
+  )
 }
 
 const Dictionary = ({ asDialog, onDialogClose, className }: ViewProps): JSX.Element => {
@@ -87,7 +140,7 @@ const Dictionary = ({ asDialog, onDialogClose, className }: ViewProps): JSX.Elem
               className='mb-4 flex items-center gap-2'
             >
               <Plus strokeWidth={1.75} size={18} />
-              Ny sammansättning
+              Ny
             </Button>
           </div>
         </ViewHeader.Content>
@@ -96,10 +149,20 @@ const Dictionary = ({ asDialog, onDialogClose, className }: ViewProps): JSX.Elem
       </ViewHeader.Root>
       <View.Content className='p-4 w-full'>
         <div className='flex flex-col gap-2'>
+          <div className='grid grid-cols-3 gap-2'>
+            <h3 className='col-span-1'>
+              Ord
+            </h3>
+            <h3 className='col-span-1'>
+              Sammansättning
+            </h3>
+            <Label className='col-span-1'>
+            </Label>
+          </div>
           <ul className='flex flex-col gap-2'>
-            {isNew && <HypenationItem isNew={isNew} word='' hypenated='' />}
+            {isNew && <HypenationItem isNew={isNew} setIsNew={setIsNew} word='' hypenated='' handleListHyphenations={() => { void handleListHyphenations() }} />}
             {hyphenations.map((hyphenation) => (
-              <HypenationItem key={hyphenation.word} isNew={false} word={hyphenation.word} hypenated={hyphenation.hypenated} />
+              <HypenationItem key={hyphenation.word} isNew={false} setIsNew={setIsNew} word={hyphenation.word} hypenated={hyphenation.hypenated} handleListHyphenations={() => { void handleListHyphenations() }} />
             ))}
           </ul>
         </div>

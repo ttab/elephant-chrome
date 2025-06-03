@@ -44,7 +44,7 @@ import { useOnSpellcheck } from '@/hooks/useOnSpellcheck'
 import { contentMenuLabels } from '@/defaults/contentMenuLabels'
 import { Button, ScrollArea } from '@ttab/elephant-ui'
 import { LayoutBox } from './LayoutBox'
-import { Copy, ScanEye, Settings } from '@ttab/elephant-ui/icons'
+import { Copy, ScanEye, Settings, TriangleAlert } from '@ttab/elephant-ui/icons'
 import type { EleBlock } from '@/shared/types'
 import { toast } from 'sonner'
 import { useSession } from 'next-auth/react'
@@ -223,6 +223,7 @@ function EditorContainer({
           renderPng: false,
           pngScale: 300n
         }, session.accessToken)
+        console.log('response', response?.response)
         if (response?.status.code === 'OK') {
           const _checkedLayout = {
             ..._layout,
@@ -286,10 +287,14 @@ function EditorContainer({
                   <Copy strokeWidth={1.75} size={18} />
                 </Button>
               </div>
-              <h2 className='text-base font-bold'>
-                Layouter (
-                {layouts.length}
-                )
+              <h2 className={`text-base font-bold flex items-center gap-2 ${layouts.some((layout) => layout.data?.status === 'false') ? 'text-red-500' : ''}`}>
+                {layouts.some((layout) => layout.data?.status === 'false') && <TriangleAlert size={18} strokeWidth={1.75} />}
+                Layouter
+                <span className='text-sm'>
+                  (
+                  {layouts.length}
+                  )
+                </span>
               </h2>
             </header>
             {promptIsOpen && (

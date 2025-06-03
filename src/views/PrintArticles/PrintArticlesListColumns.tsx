@@ -46,6 +46,20 @@ export function printArticlesListColumns(): Array<ColumnDef<PrintArticle>> {
         value.includes(row.getValue(id))
     },
     {
+      id: 'document.title',
+      enableGrouping: false,
+      meta: {
+        name: 'Titel',
+        columnIcon: Pen,
+        className: 'flex-1'
+      },
+      accessorFn: (data) => (data.fields['document.title'].values[0]),
+      cell: ({ row }) => {
+        const title = row.getValue('document.title')
+        return <span>{title as string}</span>
+      }
+    },
+    {
       id: 'printFlow',
       enableGrouping: true,
       enableSorting: true,
@@ -62,39 +76,6 @@ export function printArticlesListColumns(): Array<ColumnDef<PrintArticle>> {
       cell: ({ row }) => {
         const flow = row.getValue('printFlow')
         return <span>{flow as string}</span>
-      }
-    },
-    {
-      id: 'articleTitle',
-      enableGrouping: false,
-      meta: {
-        name: 'Artikel',
-        columnIcon: Pen,
-        className: 'flex-1 w-8'
-      },
-      accessorFn: (data) => (data.fields['document.meta.tt_print_article.title'].values[0]),
-      cell: ({ row }) => {
-        const title = row.getValue('articleTitle')
-        return (
-          <Title
-            title={title as string}
-            className='text-sm'
-          />
-        )
-      }
-    },
-    {
-      id: 'document.title',
-      enableGrouping: false,
-      meta: {
-        name: 'Titel',
-        columnIcon: Pen,
-        className: 'flex-1'
-      },
-      accessorFn: (data) => (data.fields['document.title'].values[0]),
-      cell: ({ row }) => {
-        const title = row.getValue('document.title')
-        return <span>{title as string}</span>
       }
     },
     {
@@ -119,6 +100,29 @@ export function printArticlesListColumns(): Array<ColumnDef<PrintArticle>> {
       cell: ({ row }) => {
         const title = row?.getValue('headline')
         return <span>{title as string}</span>
+      }
+    },
+    {
+      id: 'articleTitle',
+      enableGrouping: false,
+      meta: {
+        name: 'Artikel',
+        columnIcon: Pen,
+        className: 'flex-1 w-8'
+      },
+      accessorFn: (data) => {
+        console.log('data', data)
+        return data.fields['document.content.tt_tv-listings']?.values[0] || ''
+      },
+      cell: ({ row }) => {
+        console.log('row', row)
+        const title = 'TV-program' // row.getValue('articleTitle')
+        return (
+          <Title
+            title={title as string}
+            className='text-sm'
+          />
+        )
       }
     }
   ]
