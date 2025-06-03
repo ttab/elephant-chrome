@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { AwarenessDocument, View, ViewHeader } from '@/components'
+import { AwarenessDocument, View } from '@/components'
 
 import { Textbit, useTextbit } from '@ttab/textbit'
 import {
@@ -44,11 +44,12 @@ import { useOnSpellcheck } from '@/hooks/useOnSpellcheck'
 import { contentMenuLabels } from '@/defaults/contentMenuLabels'
 import { Button, ScrollArea } from '@ttab/elephant-ui'
 import { LayoutBox } from './LayoutBox'
-import { ChevronRight, Copy, Library, RefreshCw } from '@ttab/elephant-ui/icons'
+import { Copy, ScanEye, Settings } from '@ttab/elephant-ui/icons'
 import type { EleBlock } from '@/shared/types'
 import { toast } from 'sonner'
 import { useSession } from 'next-auth/react'
-import { useModal } from '@/components/Modal/useModal'
+import { Prompt } from '@/components/Prompt'
+import { snapshot } from '@/lib/snapshot'
 
 const meta: ViewMetadata = {
   name: 'PrintEditor',
@@ -85,69 +86,6 @@ const PrintEditor = (props: ViewProps): JSX.Element => {
     <AwarenessDocument documentId={documentId} className='h-full'>
       <EditorWrapper documentId={documentId} {...props} />
     </AwarenessDocument>
-  )
-}
-
-function DuplicateArticle({
-  asDialog,
-  onDialogClose,
-  documentId,
-  flowUuid,
-  name
-}: {
-  asDialog: boolean
-  onDialogClose: () => void | undefined | null
-  documentId: string
-  flowUuid: string
-  name: string
-}): JSX.Element {
-  const { baboon } = useRegistry()
-  const { data: session } = useSession()
-  const [,,allParams] = useQuery(['from'], true)
-  const date = allParams?.filter((item) => item.name === 'PrintArticles')?.[0]?.params?.from || ''
-
-  const handleCopyArticle = async () => {
-    if (!baboon || !session?.accessToken) {
-      console.error(`Missing prerequisites: ${!baboon ? 'baboon-client' : 'accessToken'} is missing`)
-      toast.error('Något gick fel när printartikel skulle dupliceras')
-      return
-    }
-    try {
-      const response = await baboon.createPrintArticle({
-        sourceUuid: documentId,
-        flowUuid: flowUuid || '',
-        date: date as string,
-        article: name || ''
-      }, session.accessToken)
-      if (response?.status.code === 'OK') {
-        onDialogClose()
-      }
-    } catch (ex: unknown) {
-      console.error('Error creating print article:', ex)
-      toast.error('Något gick fel när printartikel skulle dupliceras')
-      onDialogClose()
-    }
-  }
-  return (
-    <View.Root asDialog={true} className='flex flex-col'>
-      <ViewHeader.Root>
-        <ViewHeader.Content>
-          {asDialog && (
-            <div className='flex w-full h-full items-center space-x-2 font-bold'>
-              <ViewHeader.Title name='printheader' title='Duplicera artikel' icon={Library} iconColor='#006bb3' />
-            </div>
-          )}
-        </ViewHeader.Content>
-
-        <ViewHeader.Action onDialogClose={onDialogClose}>
-        </ViewHeader.Action>
-      </ViewHeader.Root>
-
-      <View.Content className='w-full p-4 flex items-center justify-center gap-2'>
-        <Button onClick={() => { handleCopyArticle().catch(console.error) }}>Fortsätt</Button>
-        <Button variant='outline' onClick={onDialogClose}>Avbryt</Button>
-      </View.Content>
-    </View.Root>
   )
 }
 
@@ -231,18 +169,87 @@ function EditorContainer({
   documentId: string
   notes: Block[] | undefined
 }): JSX.Element {
+  const [promptIsOpen, setPromptIsOpen] = useState(false)
+  const [isChecking, setIsChecking] = useState(false)
   const { words, characters } = useTextbit()
-  const [bulkSelected, setBulkSelected] = useState<string[]>([])
-  const [layouts] = useYValue<EleBlock[]>('meta.tt/print-article[0].meta.tt/article-layout')
+  const [layouts, setLayouts] = useYValue<EleBlock[]>('meta.tt/print-article[0].meta.tt/article-layout')
   const [name] = useYValue<string>('meta.tt/print-article[0].name')
   const [flowName] = useYValue<string>('links.tt/print-flow[0].title')
   const [flowUuid] = useYValue<string>('links.tt/print-flow[0].uuid')
+  const { baboon } = useRegistry()
+  const { data: session } = useSession()
+  const [,,allParams] = useQuery(['from'], true)
+  const date = allParams?.filter((item) => item.name === 'PrintArticles')?.[0]?.params?.from || ''
 
-  const { showModal, hideModal } = useModal()
-
-  const openPrintEditor = useLink('PrintEditor')
   if (!layouts) {
     return <p>no layouts</p>
+  }
+  const handleCopyArticle = async () => {
+    if (!baboon || !session?.accessToken) {
+      console.error(`Missing prerequisites: ${!baboon ? 'baboon-client' : 'accessToken'} is missing`)
+      toast.error('Något gick fel när printartikel skulle dupliceras')
+      return
+    }
+    try {
+      const response = await baboon.createPrintArticle({
+        sourceUuid: documentId,
+        flowUuid: flowUuid || '',
+        date: date as string,
+        article: name || ''
+      }, session.accessToken)
+      if (response?.status.code === 'OK') {
+        setPromptIsOpen(false)
+      }
+    } catch (ex: unknown) {
+      console.error('Error creating print article:', ex)
+      toast.error('Något gick fel när printartikel skulle dupliceras')
+      setPromptIsOpen(false)
+    }
+  }
+  async function processArray(arr: EleBlock[]) {
+    if (!baboon || !session?.accessToken) {
+      console.error(`Missing prerequisites: ${!baboon ? 'baboon-client' : 'accessToken'} is missing`)
+      toast.error('Något gick fel när printartikel skulle renderas')
+      return
+    }
+    await snapshot(documentId)
+    const results: EleBlock[] = []
+    for (const _layout of arr) {
+      try {
+        const response = await baboon.renderArticle({
+          articleUuid: documentId,
+          layoutId: _layout.id,
+          renderPdf: true,
+          renderPng: false,
+          pngScale: 300n
+        }, session.accessToken)
+        if (response?.status.code === 'OK') {
+          const _checkedLayout = {
+            ..._layout,
+            data: {
+              ..._layout?.data,
+              status: response?.response?.overflows?.length ? 'false' : 'true'
+            }
+          }
+          if (response?.response?.overflows?.length) {
+            const _toastText = response?.response?.overflows?.map((overflow) => overflow.frame).join('\n')
+            toast.error(`${response?.response?.overflows?.length} fel uppstod när printartikel skulle renderas: ${_toastText}`)
+          }
+          results.push(_checkedLayout)
+        }
+      } catch (ex: unknown) {
+        console.error('Error rendering article:', ex)
+        toast.error('Något gick fel när printartikel skulle renderas')
+      }
+    }
+
+    return results
+  }
+  const statusChecker = async () => {
+    setIsChecking(true)
+    const newLayouts = await processArray(layouts)
+    setLayouts(newLayouts || [])
+    setIsChecking(false)
   }
 
   return (
@@ -265,66 +272,84 @@ function EditorContainer({
           </div>
           <aside className='col-span-4 sticky top-16 p-4'>
             <header className='flex flex-row gap-2 items-center justify-between mb-2'>
+              <div className='flex items-center'>
+                <Button variant='ghost' size='sm' onClick={() => { void statusChecker() }}>
+                  <ScanEye strokeWidth={1.75} size={18} />
+                </Button>
+                <Button
+                  variant='ghost'
+                  size='sm'
+                  onClick={() => {
+                    setPromptIsOpen(true)
+                  }}
+                >
+                  <Copy strokeWidth={1.75} size={18} />
+                </Button>
+              </div>
               <h2 className='text-base font-bold'>
                 Layouter (
                 {layouts.length}
                 )
               </h2>
-              {bulkSelected.length > 0
-                ? (
-                    <Button
-                      title='När layouter har valts, visa alternativ för att skapa en kopia av texten med de valda layouterna och ta bort dem från nuvarande artikel. Öppna kopian direkt till höger'
-                      className='p-2 flex gap-2 items-center'
-                      onClick={() => {
-                        openPrintEditor(undefined, { id: documentId })
-                        setBulkSelected([])
-                      }}
-                    >
-                      Flytta till kopia
-                      <span className='text-sm font-bold'>
-                        {`(${bulkSelected.length} st)`}
-                      </span>
-                      <ChevronRight strokeWidth={1.75} size={18} />
-                    </Button>
-                  )
-                : (
-                    <div className='flex items-center'>
-                      <Button variant='ghost' size='sm' onClick={() => window.alert('Ej implementerat')}>
-                        <RefreshCw strokeWidth={1.75} size={18} />
-                      </Button>
-                      <Button
-                        variant='ghost'
-                        size='sm'
-                        onClick={() => {
-                          showModal(
-                            <DuplicateArticle asDialog onDialogClose={hideModal} documentId={documentId} flowUuid={flowUuid || ''} name={name || ''} />
-                          )
-                        }}
-                      >
-                        <Copy strokeWidth={1.75} size={18} />
-                      </Button>
-                    </div>
-                  )}
             </header>
-            <ScrollArea className='h-[calc(100vh-12rem)]'>
-              <div className='flex flex-col gap-2'>
-                {Array.isArray(layouts) && layouts.map((layout, index) => {
-                  if (!layout.links?.['_']?.[0]?.uuid) {
-                    return null
-                  }
-                  return (
-                    <LayoutBox
-                      key={layout.id}
-                      documentId={documentId}
-                      layoutIdForRender={layout.id}
-                      layoutId={layout.links['_'][0].uuid}
-                      index={index}
-                      rendersCorrectly={layout.data?.status === 'true' ? true : false}
-                    />
-                  )
-                })}
-              </div>
-            </ScrollArea>
+            {promptIsOpen && (
+              <Prompt
+                title='Duplicera artikel'
+                description='Är du säker på att du vill duplicera denna artikel?'
+                primaryLabel='Duplicera'
+                secondaryLabel='Avbryt'
+                onPrimary={() => {
+                  void handleCopyArticle().catch(console.error)
+                  setPromptIsOpen(false)
+                }}
+                onSecondary={() => {
+                  setPromptIsOpen(false)
+                }}
+              />
+            )}
+            {isChecking
+              ? (
+                  <main className='flex flex-col items-center justify-center mt-8 gap-4'>
+                    <p className='flex gap-1'>
+                      <span>Kontrollerar layouter</span>
+                    </p>
+                    <section className='flex flex-row items-center justify-center gap-0'>
+                      <div className='animate-spin'>
+                        <Settings className='animate-pulse text-[#006bb3]' strokeWidth={1.75} size={24} />
+                      </div>
+                      <div className='animate-spin mt-4'>
+                        <Settings className='animate-pulse text-[#006bb3]' strokeWidth={1.75} size={24} />
+                      </div>
+                      <div className='animate-spin'>
+                        <Settings className='animate-pulse text-[#006bb3]' strokeWidth={1.75} size={24} />
+                      </div>
+                    </section>
+                  </main>
+                )
+              : (
+                  <ScrollArea className='h-[calc(100vh-12rem)]'>
+                    <div className='flex flex-col gap-2'>
+                      {Array.isArray(layouts) && layouts.map((layout, index) => {
+                        if (!layout.links?.['_']?.[0]?.uuid) {
+                          return null
+                        }
+                        return (
+                          <LayoutBox
+                            key={layout.id}
+                            documentId={documentId}
+                            layoutIdForRender={layout.id}
+                            layoutId={layout.links['_'][0].uuid}
+                            index={index}
+                            deleteLayout={(layoutId) => {
+                              const newLayouts = layouts.filter((_layout) => _layout.links['_'][0].uuid !== layoutId)
+                              setLayouts(newLayouts)
+                            }}
+                          />
+                        )
+                      })}
+                    </div>
+                  </ScrollArea>
+                )}
           </aside>
         </section>
       </View.Content>

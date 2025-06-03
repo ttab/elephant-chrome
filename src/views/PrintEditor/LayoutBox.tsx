@@ -10,28 +10,31 @@ import { Layouts } from './components/Layouts'
 import { LoadingText } from '@/components/LoadingText'
 import { Additionals } from './components/Additionals'
 import { Position } from './components/Position'
+import { Prompt } from '@/components/Prompt'
 import { snapshot } from '@/lib/snapshot'
+import { useState } from 'react'
 
 export function LayoutBox({
   documentId,
   layoutIdForRender,
   layoutId,
   index,
-  rendersCorrectly
+  deleteLayout
 }: {
   documentId: string
   layoutIdForRender: string
   layoutId: string
   index: number
-  rendersCorrectly: boolean
+  deleteLayout: (layoutId: string) => void
 }) {
   const { baboon } = useRegistry()
   const { data: session } = useSession()
   const openPreview = useLink('PrintPreview')
-
+  const [promptIsOpen, setPromptIsOpen] = useState(false)
   const base = `meta.tt/print-article[0].meta.tt/article-layout[${index}]`
   const [linkTitle] = useYValue<string>(`${base}.links.[_][0].title`)
   const [articleLayout] = useYValue<Block | undefined>(base)
+  const [status, setStatus] = useYValue<string>(`${base}.data.status`)
 
   if (!articleLayout) {
     return (
@@ -57,7 +60,14 @@ export function LayoutBox({
         pngScale: 300n
       }, session.accessToken)
       if (response?.status.code === 'OK') {
-        openPreview(undefined, { id: response?.response?.pdfUrl })
+        openPreview(undefined, { source: response?.response?.pdfUrl })
+        if (response?.response?.overflows?.length) {
+          const _toastText = response?.response?.overflows?.map((overflow) => overflow.frame).join('\n')
+          toast.error(`${response?.response?.overflows?.length} fel uppstod när printartikel skulle renderas: ${_toastText}`)
+          setStatus('false')
+        } else {
+          setStatus('true')
+        }
       }
     } catch (ex: unknown) {
       openPreview(undefined, { id: 'error' })
@@ -65,9 +75,34 @@ export function LayoutBox({
     }
   }
 
+  const getBgColor = () => {
+    if (status === 'true') {
+      return 'bg-approved-background border-approved-border border-s-approved border-s-[6px]'
+    } else if (status === 'false') {
+      return 'bg-red-100 border-red-200 border-s-red-500 border-s-[6px]'
+    } else {
+      return 'border-gray-100 border-s-gray-200 border-s-[6px]'
+    }
+  }
+
   return (
-    <div id={layoutId} className={`border min-h-32 p-2 pt-0 grid grid-cols-12 rounded ${rendersCorrectly ? 'bg-approved-background border-approved-border border-s-approved border-s-[6px]' : 'bg-red-100 border-red-200 border-s-red-500 border-s-[6px]'}`}>
+    <div id={layoutId} className={`border min-h-32 p-2 pt-0 grid grid-cols-12 rounded ${getBgColor()}`}>
       <header className='col-span-12 row-span-1 gap-2 flex items-center justify-between'>
+        {promptIsOpen && (
+          <Prompt
+            title='Radera layouten'
+            description='Är du säker på att du vill radera denna layout?'
+            primaryLabel='Radera'
+            secondaryLabel='Avbryt'
+            onPrimary={() => {
+              deleteLayout(layoutId)
+              setPromptIsOpen(false)
+            }}
+            onSecondary={() => {
+              setPromptIsOpen(false)
+            }}
+          />
+        )}
         <div className='flex items-center gap-2'>
           <Button
             variant='ghost'
@@ -88,9 +123,8 @@ export function LayoutBox({
           <Button
             variant='ghost'
             className='p-2'
-            onClick={(e) => {
-              window.alert('Ej implementerat')
-              console.log('Remove layout', layoutId, e)
+            onClick={() => {
+              setPromptIsOpen(true)
             }}
           >
             <X strokeWidth={1.75} size={18} />
