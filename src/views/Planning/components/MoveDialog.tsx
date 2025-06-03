@@ -10,16 +10,20 @@ import { getValueByYPath, setValueByYPath } from '@/shared/yUtils'
 import type { Block } from '@ttab/elephant-api/newsdoc'
 import { format, toZonedTime } from 'date-fns-tz'
 import { type TimeDef, useAssignmentTime } from '@/hooks/useAssignmentTime'
+import { snapshot } from '@/lib/snapshot'
+import { toast } from 'sonner'
 
 export const MoveDialog = ({ onClose, newDate }: {
   onClose: () => void
   newDate: string // YYYY-MM-DD in local time
 }) => {
   const { provider } = useCollaboration()
+  const [id] = useYValue<string>('root.uuid', false, provider)
   const [assignments] = useYValue<EleBlock[]>('meta.core/assignment', false, provider)
   const [, setStartString] = useYValue<string>('meta.core/planning-item[0].data.start_date')
   const [, setEndString] = useYValue<string>('meta.core/planning-item[0].data.end_date')
 
+  console.log('ID:', id)
   // Record of assignment ids and times to change
   const assignmentTimes = useRef<Record<string, TimeDef | undefined>>({})
 
@@ -65,6 +69,7 @@ export const MoveDialog = ({ onClose, newDate }: {
           </Button>
 
           <Button
+            disabled={!id}
             autoFocus
             onClick={() => {
               for (const aid in assignmentTimes.current) {
@@ -109,7 +114,14 @@ export const MoveDialog = ({ onClose, newDate }: {
                   setValueByYPath(yRoot, `${base}.data.end`, zuluTime(asgn.newTime[1]))
                 }
 
-                onClose()
+                if (id) {
+                  snapshot(id).then(() => {
+                    onClose()
+                  }).catch((err) => {
+                    console.error(err)
+                    toast.error('Planeringen har ändrats lokalt men gick inte att spara.')
+                  })
+                }
               }
             }}
           >
