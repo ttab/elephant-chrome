@@ -234,8 +234,6 @@ function EditorContainer({
           if (response?.response?.overflows?.length) {
             const _toastText = response?.response?.overflows?.map((overflow) => overflow.frame).join('\n')
             toast.error(`${response?.response?.overflows?.length} fel uppstod när printartikel skulle renderas: ${_toastText}`)
-          } else {
-            toast.success('Layouten är fungerar')
           }
           results.push(_checkedLayout)
         }
