@@ -59,7 +59,6 @@ export function LayoutBox({
         renderPng: false,
         pngScale: 300n
       }, session.accessToken)
-      console.log('render response', response?.response)
       if (response?.status.code === 'OK') {
         openPreview(undefined, { source: response?.response?.pdfUrl })
         if (response?.response?.overflows?.length) {

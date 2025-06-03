@@ -44,11 +44,12 @@ import { useOnSpellcheck } from '@/hooks/useOnSpellcheck'
 import { contentMenuLabels } from '@/defaults/contentMenuLabels'
 import { Button, ScrollArea } from '@ttab/elephant-ui'
 import { LayoutBox } from './LayoutBox'
-import { Copy, ScanEye } from '@ttab/elephant-ui/icons'
+import { Copy, ScanEye, Settings } from '@ttab/elephant-ui/icons'
 import type { EleBlock } from '@/shared/types'
 import { toast } from 'sonner'
 import { useSession } from 'next-auth/react'
 import { Prompt } from '@/components/Prompt'
+import { snapshot } from '@/lib/snapshot'
 
 const meta: ViewMetadata = {
   name: 'PrintEditor',
@@ -169,6 +170,8 @@ function EditorContainer({
   notes: Block[] | undefined
 }): JSX.Element {
   const [promptIsOpen, setPromptIsOpen] = useState(false)
+  const [isChecking, setIsChecking] = useState(false)
+  const [checkingCounter, setCheckingCounter] = useState(1)
   const { words, characters } = useTextbit()
   const [layouts, setLayouts] = useYValue<EleBlock[]>('meta.tt/print-article[0].meta.tt/article-layout')
   const [name] = useYValue<string>('meta.tt/print-article[0].name')
@@ -204,6 +207,54 @@ function EditorContainer({
       setPromptIsOpen(false)
     }
   }
+  async function processArray(arr: EleBlock[]) {
+    if (!baboon || !session?.accessToken) {
+      console.error(`Missing prerequisites: ${!baboon ? 'baboon-client' : 'accessToken'} is missing`)
+      toast.error('Något gick fel när printartikel skulle renderas')
+      return
+    }
+    await snapshot(documentId)
+    const results: EleBlock[] = []
+    for (const _layout of arr) {
+      try {
+        const response = await baboon.renderArticle({
+          articleUuid: documentId,
+          layoutId: _layout.id,
+          renderPdf: true,
+          renderPng: false,
+          pngScale: 300n
+        }, session.accessToken)
+        if (response?.status.code === 'OK') {
+          const _checkedLayout = {
+            ..._layout,
+            data: {
+              ..._layout?.data,
+              status: response?.response?.overflows?.length ? 'false' : 'true'
+            }
+          }
+          if (response?.response?.overflows?.length) {
+            const _toastText = response?.response?.overflows?.map((overflow) => overflow.frame).join('\n')
+            toast.error(`${response?.response?.overflows?.length} fel uppstod när printartikel skulle renderas: ${_toastText}`)
+          } else {
+            toast.success('Layouten är fungerar')
+          }
+          results.push(_checkedLayout)
+        }
+      } catch (ex: unknown) {
+        console.error('Error rendering article:', ex)
+        toast.error('Något gick fel när printartikel skulle renderas')
+      }
+      setCheckingCounter(checkingCounter + 1)
+    }
+
+    return results
+  }
+  const statusChecker = async () => {
+    setIsChecking(true)
+    const newLayouts = await processArray(layouts)
+    setLayouts(newLayouts || [])
+    setIsChecking(false)
+  }
 
   return (
     <>
@@ -226,7 +277,7 @@ function EditorContainer({
           <aside className='col-span-4 sticky top-16 p-4'>
             <header className='flex flex-row gap-2 items-center justify-between mb-2'>
               <div className='flex items-center'>
-                <Button variant='ghost' size='sm' onClick={() => window.alert('Ej implementerat')}>
+                <Button variant='ghost' size='sm' onClick={() => { void statusChecker() }}>
                   <ScanEye strokeWidth={1.75} size={18} />
                 </Button>
                 <Button
@@ -260,28 +311,53 @@ function EditorContainer({
                 }}
               />
             )}
-            <ScrollArea className='h-[calc(100vh-12rem)]'>
-              <div className='flex flex-col gap-2'>
-                {Array.isArray(layouts) && layouts.map((layout, index) => {
-                  if (!layout.links?.['_']?.[0]?.uuid) {
-                    return null
-                  }
-                  return (
-                    <LayoutBox
-                      key={layout.id}
-                      documentId={documentId}
-                      layoutIdForRender={layout.id}
-                      layoutId={layout.links['_'][0].uuid}
-                      index={index}
-                      deleteLayout={(layoutId) => {
-                        const newLayouts = layouts.filter((_layout) => _layout.links['_'][0].uuid !== layoutId)
-                        setLayouts(newLayouts)
-                      }}
-                    />
-                  )
-                })}
-              </div>
-            </ScrollArea>
+            {isChecking
+              ? (
+                  <main className='flex flex-col items-center justify-center mt-8 gap-4'>
+                    <p className='flex gap-1'>
+                      <span>Kontrollerar</span>
+                      <span>{checkingCounter}</span>
+                      <span>av</span>
+                      <span>{layouts.length}</span>
+                      <span>layouter</span>
+                    </p>
+                    <section className='flex flex-row items-center justify-center gap-0'>
+                      <div className='animate-spin'>
+                        <Settings className='animate-pulse text-[#006bb3]' strokeWidth={1.75} size={24} />
+                      </div>
+                      <div className='animate-spin mt-4'>
+                        <Settings className='animate-pulse text-[#006bb3]' strokeWidth={1.75} size={24} />
+                      </div>
+                      <div className='animate-spin'>
+                        <Settings className='animate-pulse text-[#006bb3]' strokeWidth={1.75} size={24} />
+                      </div>
+                    </section>
+                  </main>
+                )
+              : (
+                  <ScrollArea className='h-[calc(100vh-12rem)]'>
+                    <div className='flex flex-col gap-2'>
+                      {Array.isArray(layouts) && layouts.map((layout, index) => {
+                        if (!layout.links?.['_']?.[0]?.uuid) {
+                          return null
+                        }
+                        return (
+                          <LayoutBox
+                            key={layout.id}
+                            documentId={documentId}
+                            layoutIdForRender={layout.id}
+                            layoutId={layout.links['_'][0].uuid}
+                            index={index}
+                            deleteLayout={(layoutId) => {
+                              const newLayouts = layouts.filter((_layout) => _layout.links['_'][0].uuid !== layoutId)
+                              setLayouts(newLayouts)
+                            }}
+                          />
+                        )
+                      })}
+                    </div>
+                  </ScrollArea>
+                )}
           </aside>
         </section>
       </View.Content>
