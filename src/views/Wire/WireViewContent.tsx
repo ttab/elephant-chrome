@@ -32,7 +32,7 @@ export const WireViewContent = (props: ViewProps & {
   const { status, data: session } = useSession()
   const [showVerifyDialog, setShowVerifyDialog] = useState(false)
   const [searchOlder, setSearchOlder] = useState(false)
-  const [selectedPlanning, setSelectedPlanning] = useState<DefaultValueOption & { payload: { slugline?: string, sluglines?: string[] } } | undefined>(undefined)
+  const [selectedPlanning, setSelectedPlanning] = useState<DefaultValueOption & { payload: { slugline?: string, sluglines?: string[], newsvalue?: string } } | undefined>(undefined)
   const documentAwareness = useRef<(value: boolean) => void>(null)
   const planningTitleRef = useRef<HTMLInputElement>(null)
   const { index, locale, timeZone } = useRegistry()
@@ -43,6 +43,7 @@ export const WireViewContent = (props: ViewProps & {
     title: string
   } | undefined>(undefined)
   const [slugline, setSlugline] = useYValue<Y.XmlText>('meta.tt/slugline[0].value')
+  const [_newsvalue, setNewsValue] = useYValue<string>('meta.core/newsvalue[0].value')
 
   const handleSubmit = (): void => {
     setShowVerifyDialog(true)
@@ -101,6 +102,7 @@ export const WireViewContent = (props: ViewProps & {
                     if (setSelectedPlanning) {
                       const slugline = (option.payload as { slugline: string | undefined }).slugline
                       const sluglines = (option.payload as { sluglines: string[] | undefined }).sluglines
+                      const newsvalue = (option.payload as { newsvalue: string | undefined }).newsvalue
 
                       if (option.value !== selectedPlanning?.value) {
                         setSelectedPlanning({
@@ -108,11 +110,15 @@ export const WireViewContent = (props: ViewProps & {
                           label: option.label,
                           payload: {
                             slugline,
-                            sluglines
+                            sluglines,
+                            newsvalue
                           }
                         })
 
                         setSlugline(toSlateYXmlText(slugline || ''))
+                        if (newsvalue) {
+                          setNewsValue(newsvalue)
+                        }
                       } else {
                         setSelectedPlanning(undefined)
                       }
@@ -179,8 +185,8 @@ export const WireViewContent = (props: ViewProps & {
               />
             </Form.Group>
 
-            <Form.Group icon={Tag}>
-              {selectedPlanning && (
+            {selectedPlanning && (
+              <Form.Group icon={Tag}>
                 <SluglineEditable
                   key={selectedPlanning?.value}
                   compareValues={[
@@ -189,14 +195,17 @@ export const WireViewContent = (props: ViewProps & {
                   ]}
                   path='meta.tt/slugline[0].value'
                 />
-              )}
+                <Newsvalue />
+              </Form.Group>
+            )}
 
-              {(!selectedPlanning) && (
+            {(!selectedPlanning) && (
+              <Form.Group icon={Tag}>
                 <SluglineEditable
                   path='meta.tt/slugline[0].value'
                 />
-              )}
-            </Form.Group>
+              </Form.Group>
+            )}
 
             <UserMessage asDialog={!!props?.asDialog}>
               {!selectedPlanning
@@ -226,6 +235,7 @@ export const WireViewContent = (props: ViewProps & {
                     props.onDialogClose(props.id)
                   }
 
+                  console.log(selectedPlanning)
                   createArticle({
                     provider,
                     status,
@@ -279,7 +289,6 @@ export const WireViewContent = (props: ViewProps & {
 const ValidateNow = ({ setValidateForm }: FormProps & PropsWithChildren): null => {
   useEffect(() => {
     if (setValidateForm) {
-      console.log('Validate now effect')
       setValidateForm(true)
     }
   }, [setValidateForm])
