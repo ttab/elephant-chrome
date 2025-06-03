@@ -18,12 +18,11 @@ export const MoveDialog = ({ onClose, newDate }: {
   newDate: string // YYYY-MM-DD in local time
 }) => {
   const { provider } = useCollaboration()
-  const [id] = useYValue<string>('root.uuid', false, provider)
-  const [assignments] = useYValue<EleBlock[]>('meta.core/assignment', false, provider)
+  const [id] = useYValue<string>('root.uuid')
+  const [assignments] = useYValue<EleBlock[]>('meta.core/assignment', false)
   const [, setStartString] = useYValue<string>('meta.core/planning-item[0].data.start_date')
   const [, setEndString] = useYValue<string>('meta.core/planning-item[0].data.end_date')
 
-  console.log('ID:', id)
   // Record of assignment ids and times to change
   const assignmentTimes = useRef<Record<string, TimeDef | undefined>>({})
 
@@ -138,10 +137,9 @@ function Assignment({ index, newDate, onChangeSelected }: {
   newDate: string
   onChangeSelected: (id: string, value?: TimeDef) => void
 }) {
-  const { provider } = useCollaboration()
   const base = `meta.core/assignment[${index}]`
-  const [id] = useYValue<string>(`${base}.id`, false, provider)
-  const [title] = useYValue<string>(`${base}.title`, false, provider)
+  const [id] = useYValue<string>(`${base}.id`, false)
+  const [title] = useYValue<string>(`${base}.title`, false)
   const assignmentTime = useAssignmentTime(index, newDate)
 
   useEffect(() => {
