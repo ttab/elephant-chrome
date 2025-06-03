@@ -5,7 +5,7 @@ import type { EleBlock } from '@/shared/types'
 import { Button, Checkbox, Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, Label, Tooltip } from '@ttab/elephant-ui'
 import { dateToReadableDateTime } from '@/lib/datetime'
 import { useEffect, useRef } from 'react'
-import { dateToReadableTime } from '@/shared/tmp/datetime'
+import { dateToReadableDate, dateToReadableTime } from '@/shared/tmp/datetime'
 import { getValueByYPath, setValueByYPath } from '@/shared/yUtils'
 import type { Block } from '@ttab/elephant-api/newsdoc'
 import { format, toZonedTime } from 'date-fns-tz'
@@ -203,10 +203,12 @@ function AssignmentTime({ assignmentTime }: { assignmentTime: TimeDef }) {
       return (
         <span className={original ? 'text-muted-foreground' : ''}>
           <span className='whitespace-nowrap'>
-            {dateToReadableDateTime(times[0], locale.code.full, timeZone)}
+            {dateToReadableDate(times[0], locale.code.full, timeZone)}
           </span>
-          -
+          {' '}
           <span className='whitespace-nowrap'>
+            {dateToReadableTime(times[0], locale.code.full, timeZone)}
+            -
             {dateToReadableTime(times[1], locale.code.full, timeZone)}
           </span>
         </span>
@@ -217,14 +219,14 @@ function AssignmentTime({ assignmentTime }: { assignmentTime: TimeDef }) {
   }
 
   return (
-    <div className='flex flex-row items-center gap-2'>
+    <div className='flex flex-row items-start gap-2'>
       {!!assignmentTime.icon && <assignmentTime.icon size={18} />}
 
       {renderTimeRange(assignmentTime.time, true)}
 
       {assignmentTime.newTime && (
         <>
-          <span className='text-muted-foreground px-1 text-xs font-bold'>→</span>
+          <span className='text-muted-foreground px-1 pt-[2px] text-xs font-bold'>→</span>
           {renderTimeRange(assignmentTime.newTime)}
         </>
       )}
