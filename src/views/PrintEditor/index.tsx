@@ -171,7 +171,6 @@ function EditorContainer({
 }): JSX.Element {
   const [promptIsOpen, setPromptIsOpen] = useState(false)
   const [isChecking, setIsChecking] = useState(false)
-  const [checkingCounter, setCheckingCounter] = useState(1)
   const { words, characters } = useTextbit()
   const [layouts, setLayouts] = useYValue<EleBlock[]>('meta.tt/print-article[0].meta.tt/article-layout')
   const [name] = useYValue<string>('meta.tt/print-article[0].name')
@@ -244,7 +243,6 @@ function EditorContainer({
         console.error('Error rendering article:', ex)
         toast.error('Något gick fel när printartikel skulle renderas')
       }
-      setCheckingCounter(checkingCounter + 1)
     }
 
     return results
@@ -315,11 +313,7 @@ function EditorContainer({
               ? (
                   <main className='flex flex-col items-center justify-center mt-8 gap-4'>
                     <p className='flex gap-1'>
-                      <span>Kontrollerar</span>
-                      <span>{checkingCounter}</span>
-                      <span>av</span>
-                      <span>{layouts.length}</span>
-                      <span>layouter</span>
+                      <span>Kontrollerar layouter</span>
                     </p>
                     <section className='flex flex-row items-center justify-center gap-0'>
                       <div className='animate-spin'>
