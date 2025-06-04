@@ -271,7 +271,6 @@ export const WireViewContent = (props: ViewProps & {
                     props.onDialogClose(props.id)
                   }
 
-                  console.log(selectedPlanning)
                   createArticle({
                     provider,
                     status,
