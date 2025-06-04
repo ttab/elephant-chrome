@@ -67,7 +67,7 @@ export function MetaSheet({ container, documentId, readOnly, readOnlyVersion }: 
 
                   <Label htmlFor='tags' className='text-xs text-muted-foreground -mb-3'>Etiketter</Label>
                   <div className='flex flex-row gap-3' id='tags'>
-                    <Story />
+                    <Story asSubject />
                     <Section />
                   </div>
 

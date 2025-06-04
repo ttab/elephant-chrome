@@ -27,8 +27,9 @@ import { Button } from '@ttab/elephant-ui'
 import { createStateless, StatelessType } from '@/shared/stateless'
 import { useSession } from 'next-auth/react'
 import { PlanningHeader } from './components/PlanningHeader'
-import React, { type SetStateAction, useCallback, useEffect } from 'react'
+import React, { type SetStateAction, useCallback, useEffect, useState } from 'react'
 import type { NewItem } from '../Event/components/PlanningTable'
+import { MoveDialog } from './components/MoveDialog'
 
 type Setter = React.Dispatch<SetStateAction<NewItem>>
 
@@ -81,6 +82,7 @@ const PlanningViewContent = (props: ViewProps & { documentId: string, setNewItem
   const [, setIsFocused] = useAwareness(props.documentId)
   const [newTitle] = useYValue('root.title')
   const [isChanged] = useYValue<boolean>('root.changed')
+  const [newDate, setNewDate] = useState<string | undefined>(undefined)
 
   useEffect(() => {
     provider?.setAwarenessField('data', user)
@@ -155,7 +157,20 @@ const PlanningViewContent = (props: ViewProps & { documentId: string, setNewItem
             <Description role='internal' />
 
             <Form.Group icon={Calendar}>
-              <PlanDate />
+              <PlanDate
+                onValueChange={(value) => {
+                  setNewDate(value)
+                }}
+              />
+
+              {newDate && (
+                <MoveDialog
+                  newDate={newDate}
+                  onClose={() => {
+                    setNewDate(undefined)
+                  }}
+                />
+              )}
             </Form.Group>
 
             <Form.Group icon={Tags}>
