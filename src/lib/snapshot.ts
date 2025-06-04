@@ -1,5 +1,3 @@
-import { toast } from 'sonner'
-
 const BASE_URL = import.meta.env.BASE_URL
 
 type SnapshotResponse = {
@@ -27,26 +25,22 @@ export async function snapshot(id: string, force?: true, delay: number = 0): Pro
     const data = await response.json() as SnapshotResponse
 
     if (!response.ok) {
-      throw new Error((data && typeof data?.statusMessage === 'string')
-        ? data.statusMessage
-        : response.statusText)
+      return {
+        statusCode: response.status,
+        statusMessage: (data && typeof data?.statusMessage === 'string')
+          ? data.statusMessage
+          : response.statusText
+      }
     }
 
     return data
   } catch (ex) {
-    if (ex instanceof Error) {
-      console.error('Failed to save snapshot:', ex.message)
-      toast.error(`Lyckades inte spara kopia! ${ex.message}`)
-      return {
-        statusCode: 500,
-        statusMessage: ex.message
-      }
-    } else {
-      toast.error(`Lyckades inte spara kopia!`)
-      return {
-        statusCode: 500,
-        statusMessage: 'Unknown error occurred while saving snapshot'
-      }
+    const msg = (ex instanceof Error) ? ex.message : 'Failed saving snapshot'
+    console.error(msg)
+
+    return {
+      statusCode: -1,
+      statusMessage: msg
     }
   }
 }

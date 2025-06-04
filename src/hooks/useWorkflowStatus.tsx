@@ -63,6 +63,7 @@ export const useWorkflowStatus = (uuid?: string, isWorkflow: boolean = false): [
       const snapshotResponse = uuid && await snapshot(uuid, true)
 
       if (snapshotResponse && 'statusCode' in snapshotResponse && snapshotResponse.statusCode !== 200) {
+        toast.error(`Ett fel uppstod när aktuell status skulle ändras: ${snapshotResponse.statusMessage || 'Okänt fel'}`)
         return
       }
 
