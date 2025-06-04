@@ -243,14 +243,6 @@ export const WireViewContent = (props: ViewProps & {
               </Form.Group>
             )}
 
-            {(!selectedPlanning) && (
-              <Form.Group icon={Tag}>
-                <SluglineEditable
-                  path='meta.tt/slugline[0].value'
-                />
-              </Form.Group>
-            )}
-
             <UserMessage asDialog={!!props?.asDialog}>
               {!selectedPlanning
                 ? (<>Väljer du ingen planering kommer en ny planering med tillhörande uppdrag skapas åt dig.</>)
