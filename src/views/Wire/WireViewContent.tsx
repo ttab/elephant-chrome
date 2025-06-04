@@ -24,6 +24,9 @@ import { CreatePrompt } from '@/components/CreatePrompt'
 import type { Wire as WireType } from '@/hooks/index/useDocuments/schemas/wire'
 import { toSlateYXmlText } from '@/shared/yUtils'
 import type { FormProps } from '@/components/Form/Root'
+import { useDocuments } from '@/hooks/index/useDocuments'
+import { QueryV1, BoolQueryV1, TermQueryV1 } from '@ttab/elephant-api/index'
+import { Block } from '@ttab/elephant-api/newsdoc'
 
 export const WireViewContent = (props: ViewProps & {
   wire: WireType
@@ -44,8 +47,49 @@ export const WireViewContent = (props: ViewProps & {
   } | undefined>(undefined)
   const [slugline, setSlugline] = useYValue<Y.XmlText>('meta.tt/slugline[0].value')
   const [_newsvalue, setNewsValue] = useYValue<string>('meta.core/newsvalue[0].value')
+  const [contentSource, setContentSource] = useYValue<Block[]>('links.core/content-source')
+
+  const providerUri = props.wire?.fields['document.rel.provider.uri']?.values[0] || ''
+  const { data, isLoading } = useDocuments({
+    documentType: 'tt/wire-provider',
+    fields: ['document.rel.use_source.uri', 'document.rel.use_source.title'],
+    query: QueryV1.create({
+      conditions: {
+        oneofKind: 'bool',
+        bool: BoolQueryV1.create({
+          must: [
+            {
+              conditions: {
+                oneofKind: 'term',
+                term: TermQueryV1.create({
+                  field: 'document.uri',
+                  value: providerUri
+                })
+              }
+            }
+          ]
+        })
+      }
+    })
+  })
 
   const handleSubmit = (): void => {
+    if (!isLoading) {
+      const sourceTitle = data?.[0]?.fields['document.rel.use_source.title']?.values[0]
+      const sourceUri = data?.[0]?.fields['document.rel.use_source.uri']?.values[0]
+
+      if (sourceTitle && sourceUri) {
+        setContentSource([
+          ...contentSource || [],
+          Block.create({
+            type: 'core/content-source',
+            title: sourceTitle,
+            uri: sourceUri,
+            rel: 'source'
+          })
+        ])
+      }
+    }
     setShowVerifyDialog(true)
   }
 
