@@ -7,7 +7,7 @@ import { useSession } from 'next-auth/react'
 import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
 import { type Hypenation } from '@ttab/elephant-tt-api/baboon'
-import { Button, Label } from '@ttab/elephant-ui'
+import { Button, Label, ScrollArea } from '@ttab/elephant-ui'
 
 const HypenationItem = ({ isNew, setIsNew, word, hypenated, handleListHyphenations }: { isNew: boolean, setIsNew: (isNew: boolean) => void, word: string, hypenated: string, handleListHyphenations: () => void }) => {
   const [_word, setWord] = useState(word)
@@ -16,84 +16,101 @@ const HypenationItem = ({ isNew, setIsNew, word, hypenated, handleListHyphenatio
   const { data: session } = useSession()
   const [editMode, setEditMode] = useState(isNew ? true : false)
   return (
-    <div className='grid grid-cols-3 gap-2'>
-      <input
-        disabled={!editMode && !isNew}
-        type='text'
-        value={_word}
-        onChange={(e) => setWord(e.target.value)}
-        className='col-span-1 border border-gray-300 rounded-md p-2'
-      />
-      <input
-        disabled={!editMode}
-        type='text'
-        value={_hypenated}
-        onChange={(e) => setHypenated(e.target.value)}
-        className='col-span-1 border border-gray-300 rounded-md p-2'
-      />
+    <div className='group/edit grid grid-cols-3 gap-x-2 gap-y-0 items-center hover:bg-gray-100 px-2' onClick={() => setEditMode(true)}>
       {editMode
         ? (
-            <div className='col-span-1 flex items-end justify-end gap-2'>
-              <Button
-                size='sm'
-                onClick={() => {
-                  (async () => {
-                    await baboon?.setHypenation({
-                      language: 'sv',
-                      word: _word,
-                      hypenated: _hypenated,
-                      ignore: false
-                    }, session?.accessToken || '')
-                    handleListHyphenations()
-                    setEditMode(false)
-                    setIsNew(false)
-                  })().catch(console.error)
+            <>
+              <input
+                disabled={!editMode && !isNew}
+                type='text'
+                value={_word}
+                onClick={(e) => {
+                  e.stopPropagation()
+                  setEditMode(true)
                 }}
-              >
-                Spara
-              </Button>
-              <Button
-                variant='ghost'
-                size='sm'
-                onClick={() => {
-                  setEditMode(false)
-                  setIsNew(false)
-                }}
-              >
-                Avbryt
-              </Button>
-              {!isNew && (
+                onChange={(e) => setWord(e.target.value)}
+                className='col-span-1 border border-gray-300 rounded-md px-2 py-1'
+              />
+              <input
+                disabled={!editMode}
+                type='text'
+                value={_hypenated}
+                onChange={(e) => setHypenated(e.target.value)}
+                className='col-span-1 border border-gray-300 rounded-md px-2 py-1'
+              />
+              <div className='col-span-1 flex items-end justify-end gap-2'>
                 <Button
-                  className='bg-red-500 hover:bg-red-400'
-                  variant='ghost'
                   size='sm'
-                  onClick={() => {
+                  onClick={(e) => {
+                    e.stopPropagation();
                     (async () => {
-                      await baboon?.removeHypenation({
+                      await baboon?.setHypenation({
                         language: 'sv',
-                        word: _word
+                        word: _word,
+                        hypenated: _hypenated,
+                        ignore: false
                       }, session?.accessToken || '')
                       handleListHyphenations()
+                      setEditMode(false)
+                      setIsNew(false)
                     })().catch(console.error)
                   }}
                 >
-                  <Trash strokeWidth={1.75} size={18} className='text-white' />
+                  Spara
                 </Button>
-              )}
-            </div>
+                {!isNew && (
+                  <Button
+                    className='bg-red-500 hover:bg-red-400'
+                    variant='ghost'
+                    size='sm'
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      (async () => {
+                        await baboon?.removeHypenation({
+                          language: 'sv',
+                          word: _word
+                        }, session?.accessToken || '')
+                        handleListHyphenations()
+                      })().catch(console.error)
+                    }}
+                  >
+                    <Trash strokeWidth={1.75} size={18} className='text-white' />
+                  </Button>
+                )}
+                <Button
+                  variant='ghost'
+                  size='sm'
+                  onClick={(e) => {
+                    e.stopPropagation()
+                    setEditMode(false)
+                    setIsNew(false)
+                  }}
+                >
+                  Avbryt
+                </Button>
+              </div>
+            </>
           )
         : (
-            <div className='col-span-1 flex items-end justify-end gap-2'>
-              <Button variant='ghost' size='sm' onClick={() => setEditMode(true)}>
-                <Pencil strokeWidth={1.75} size={18} />
-              </Button>
-            </div>
+            <>
+              <div className='text-sm w-full col-span-1'>
+                {_word}
+              </div>
+              <div className='text-sm w-full col-span-1'>
+                {_hypenated}
+              </div>
+              <div className='invisible group-hover/edit:visible col-span-1 flex items-end justify-end gap-2'>
+                <Button variant='ghost' size='sm' onClick={() => setEditMode(true)}>
+                  <Pencil strokeWidth={1.75} size={18} />
+                </Button>
+              </div>
+            </>
           )}
     </div>
   )
 }
 
-const Dictionary = ({ asDialog, onDialogClose, className }: ViewProps): JSX.Element => {
+const Dictionary = ({ className }: ViewProps): JSX.Element => {
   const { baboon } = useRegistry()
   const { data: session } = useSession()
   const [hyphenations, setHyphenations] = useState<Hypenation[]>([])
@@ -125,14 +142,12 @@ const Dictionary = ({ asDialog, onDialogClose, className }: ViewProps): JSX.Elem
   }, [])
 
   return (
-    <View.Root asDialog={asDialog} className={cn(className, 'min-h-[900px]')}>
+    <View.Root className={cn(className, 'min-h-[900px]')}>
       <ViewHeader.Root>
         <ViewHeader.Content>
-          {asDialog && (
-            <div className='flex h-full items-center space-x-2 font-bold'>
-              <ViewHeader.Title name='dictionary' title='Sammansättningar' icon={BookA} iconColor='#006bb3' />
-            </div>
-          )}
+          <div className='flex h-full items-center space-x-2 font-bold'>
+            <ViewHeader.Title name='dictionary' title='Avstavningar' icon={BookA} iconColor='#006bb3' />
+          </div>
           <div className='flex items-center justify-end mt-4'>
             <Button
               onClick={() => setIsNew(!isNew)}
@@ -144,27 +159,29 @@ const Dictionary = ({ asDialog, onDialogClose, className }: ViewProps): JSX.Elem
             </Button>
           </div>
         </ViewHeader.Content>
-        <ViewHeader.Action onDialogClose={onDialogClose} asDialog={asDialog}>
+        <ViewHeader.Action>
         </ViewHeader.Action>
       </ViewHeader.Root>
-      <View.Content className='p-4 w-full'>
+      <View.Content className='p-2 w-full'>
         <div className='flex flex-col gap-2'>
-          <div className='grid grid-cols-3 gap-2'>
-            <h3 className='col-span-1'>
+          <div className='grid grid-cols-3 gap-2 mx-2'>
+            <h3 className='font-bold text-sm col-span-1'>
               Ord
             </h3>
-            <h3 className='col-span-1'>
-              Sammansättning
+            <h3 className='font-bold text-sm col-span-1'>
+              Avstavning
             </h3>
             <Label className='col-span-1'>
             </Label>
           </div>
-          <ul className='flex flex-col gap-2'>
-            {isNew && <HypenationItem isNew={isNew} setIsNew={setIsNew} word='' hypenated='' handleListHyphenations={() => { void handleListHyphenations() }} />}
-            {hyphenations.map((hyphenation) => (
-              <HypenationItem key={hyphenation.word} isNew={false} setIsNew={setIsNew} word={hyphenation.word} hypenated={hyphenation.hypenated} handleListHyphenations={() => { void handleListHyphenations() }} />
-            ))}
-          </ul>
+          <ScrollArea className='h-[calc(100vh-6.2rem)]'>
+            <ul className='flex flex-col gap-2'>
+              {isNew && <HypenationItem isNew={isNew} setIsNew={setIsNew} word='' hypenated='' handleListHyphenations={() => { void handleListHyphenations() }} />}
+              {hyphenations.map((hyphenation) => (
+                <HypenationItem key={hyphenation.word} isNew={false} setIsNew={setIsNew} word={hyphenation.word} hypenated={hyphenation.hypenated} handleListHyphenations={() => { void handleListHyphenations() }} />
+              ))}
+            </ul>
+          </ScrollArea>
         </div>
       </View.Content>
     </View.Root>
