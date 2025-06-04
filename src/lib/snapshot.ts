@@ -37,8 +37,16 @@ export async function snapshot(id: string, force?: true, delay: number = 0): Pro
     if (ex instanceof Error) {
       console.error('Failed to save snapshot:', ex.message)
       toast.error(`Lyckades inte spara kopia! ${ex.message}`)
+      return {
+        statusCode: 500,
+        statusMessage: ex.message
+      }
     } else {
       toast.error(`Lyckades inte spara kopia!`)
+      return {
+        statusCode: 500,
+        statusMessage: 'Unknown error occurred while saving snapshot'
+      }
     }
   }
 }
