@@ -62,6 +62,11 @@ export const useWorkflowStatus = (uuid?: string, isWorkflow: boolean = false): [
       // Snapshot document to make sure we have the latest version, get the new version from the response
       const snapshotResponse = uuid && await snapshot(uuid, true)
 
+      if (snapshotResponse && 'statusCode' in snapshotResponse && snapshotResponse.statusCode !== 200) {
+        toast.error(`Ett fel uppstod när aktuell status skulle ändras: ${snapshotResponse.statusMessage || 'Okänt fel'}`)
+        return
+      }
+
       const newVersion = snapshotResponse && 'version' in snapshotResponse && typeof snapshotResponse.version === 'string'
         ? BigInt(snapshotResponse.version)
         : documentStatus?.version
