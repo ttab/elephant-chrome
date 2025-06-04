@@ -51,13 +51,13 @@ export const AssignmentVisibility = ({ path, editable, disabled, className = '',
         <SelectContent>
           <SelectItem key='true' value='true'>
             <span className='flex flex-row gap-2'>
-              <Building size={18} strokeWidth={1.75} />
+              <Globe size={18} strokeWidth={1.75} />
               Publik
             </span>
           </SelectItem>
           <SelectItem key='false' value='false'>
             <span className='flex flex-row gap-2'>
-              <Globe size={18} strokeWidth={1.75} />
+              <Building size={18} strokeWidth={1.75} />
               Internt
             </span>
           </SelectItem>
