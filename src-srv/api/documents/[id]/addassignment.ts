@@ -17,7 +17,7 @@ type Response = RouteContentResponse | RouteStatusResponse
  * Add assignment to an existing planning or a newly created one.
  */
 export const POST: RouteHandler = async (req: Request, { collaborationServer, res }) => {
-  const planningId = req.params.id
+  const planningId = req.params.id === 'undefined' ? undefined : req.params.id
   const locals = res.locals as Record<string, unknown> | undefined
   const session = locals?.session as { accessToken?: string, user?: Context['user'] } | undefined
 
@@ -86,7 +86,7 @@ export const POST: RouteHandler = async (req: Request, { collaborationServer, re
   await connection.transact((document) => {
     if (!planningId && section) {
       // If we have no planningId we create a new planning item using
-      // planningDocumentTemplate as a basis and apply it to the cocument.
+      // planningDocumentTemplate as a basis and apply it to the document.
       toYjsNewsDoc(
         toGroupedNewsDoc({
           version: 0n,

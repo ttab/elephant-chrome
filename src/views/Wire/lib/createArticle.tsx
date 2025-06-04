@@ -6,6 +6,7 @@ import { toast } from 'sonner'
 import { ToastAction } from '../ToastAction'
 import { addAssignmentWithDeliverable } from '@/lib/index/addAssignment'
 import { convertToISOStringInTimeZone } from '@/lib/datetime'
+import { createStateless, StatelessType } from '@/shared/stateless'
 
 export async function createArticle({
   provider: articleProvider,
@@ -14,7 +15,8 @@ export async function createArticle({
   planningId,
   planningTitle,
   section,
-  timeZone
+  timeZone,
+  session
 }: {
   provider: HocuspocusProvider
   status: string
@@ -37,6 +39,20 @@ export async function createArticle({
     return
   }
 
+  // Create article in repo
+  articleProvider.sendStateless(
+    createStateless(StatelessType.IN_PROGRESS, {
+      state: false,
+      id: documentId,
+      context: {
+        agent: 'server',
+        accessToken: session.accessToken,
+        user: session.user,
+        type: 'Flash'
+      }
+    })
+  )
+
   // Create and collect all base data for the assignment
   const dt = new Date()
   const isoDateTime = `${new Date().toISOString().split('.')[0]}Z` // Remove ms, add Z back again
@@ -52,19 +68,13 @@ export async function createArticle({
     deliverableId: documentId,
     title: assignmentTitle || '',
     slugline: assignmentSlugline,
-    priority: newsValue ? parseInt(newsValue) : undefined,
+    priority: newsValue ? parseInt(newsValue) : 3,
     publicVisibility: false,
     localDate,
     isoDateTime,
     section,
     wire
   })
-
-  // Create article in repo
-  const root = articleProvider.document.getMap('root')
-  if (root && root.get('__inProgress')) {
-    root.delete('__inProgress')
-  }
 
   toast.success(`Artikel skapad`, {
     action: <ToastAction planningId={updatedPlanningId} wireId={documentId} target='last' />
