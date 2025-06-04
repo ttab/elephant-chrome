@@ -1,5 +1,5 @@
 import { type ViewMetadata } from '@/types'
-import Dictionary from '../PrintArticles/Dictionary'
+import Dictionary from './Dictionary'
 
 /**
  * PrintPreview component.
