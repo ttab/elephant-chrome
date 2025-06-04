@@ -4,7 +4,7 @@ import { BookA, Plus } from '@ttab/elephant-ui/icons'
 import { DateChanger } from '@/components/Header/Datechanger'
 import { useModal } from '@/components/Modal/useModal'
 import { PrintFlows } from './PrintFlows'
-import Dictionary from './Dictionary'
+import { useLink } from '@/hooks/useLink'
 /**
  * PrintArticlesHeader component.
  *
@@ -19,6 +19,8 @@ import Dictionary from './Dictionary'
 
 export const PrintArticlesHeader = (): JSX.Element => {
   const { showModal, hideModal } = useModal()
+  const openDictionary = useLink('PrintDictionary')
+
   return (
     <ViewHeader.Root className='flex flex-row gap-2 items-center justify-between'>
       <div className='flex flex-row gap-4 items-center justify-start'>
@@ -62,9 +64,7 @@ export const PrintArticlesHeader = (): JSX.Element => {
         variant='outline'
         size='sm'
         onClick={() => {
-          showModal(
-            <Dictionary asDialog onDialogClose={hideModal} className='w-full' />
-          )
+          openDictionary(undefined, {})
         }}
       >
         <BookA strokeWidth={1.75} size={18} />
