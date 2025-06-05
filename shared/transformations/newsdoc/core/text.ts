@@ -5,33 +5,14 @@ import type { TBElement, TBText } from '@ttab/textbit'
 import escapeHTML from 'escape-html'
 import { jsx } from 'slate-hyperscript'
 
-interface PrintChild {
-  text?: string
-}
-
 /**
  * Transform a text Block into Slate Element
  */
 export function transformText(element: Block): TBElement {
-  const { id, data } = element
+  const { data } = element
   const rootElement = parse(data?.text || '')
   const value = deserializeNode(rootElement, {}, element.type)
-  const children = element.type !== 'tt/print-text'
-    ? (Array.isArray(value)) ? value : [value]
-    : [
-        {
-          id: id || crypto.randomUUID(),
-          class: 'text',
-          type: 'tt/print-text/text',
-          children: [{ text: element.data.text }]
-        },
-        {
-          id: id || crypto.randomUUID(),
-          class: 'text',
-          type: 'tt/print-text/role',
-          children: [{ text: element.role }]
-        }
-      ]
+  const children = (Array.isArray(value)) ? value : [value]
 
   return {
     id: element.id || crypto.randomUUID(), // Must have id, if id is missing positioning in drag'n drop does not work
@@ -48,21 +29,6 @@ export function transformText(element: Block): TBElement {
  */
 export function revertText(element: TBElement): Block {
   const text = serializeNode(element)
-  const isPrintText = element.type === 'tt/print-text'
-
-  if (isPrintText) {
-    const printTextNode = element.children.find((child) => child.type === 'tt/print-text/text')
-    const printText = (printTextNode?.children as PrintChild[] | undefined)?.[0]?.text ?? ''
-    const printRoleNode = element.children.find((child) => child.type === 'tt/print-text/role')
-    const printRole = (printRoleNode?.children as PrintChild[] | undefined)?.[0]?.text ?? ''
-
-    return Block.create({
-      id: element.id,
-      type: 'tt/print-text',
-      role: printRole,
-      data: { text: printText }
-    })
-  }
 
   return Block.create({
     id: element.id,

@@ -6,6 +6,7 @@ import { revertFactbox, transformFactbox } from './core/factbox.js'
 import { revertTable, transformTable } from './core/table.js'
 import { revertTvListing, transformTvListing } from './tt/tvListing.js'
 import { revertPrintArticle, transformPrintArticle } from './tt/printArticle.js'
+import { revertPrintText, transformPrintText } from './tt/printText.js'
 
 /**
  * Convert a NewsDoc block array to slate TBElement array
@@ -15,8 +16,9 @@ export function newsDocToSlate(content: Block[]): TBElement[] {
     return content.map((element: Block): TBElement => {
       switch (element.type) {
         case 'core/text':
-        case 'tt/print-text':
           return transformText(element)
+        case 'tt/print-text':
+          return transformPrintText(element)
         case 'tt/visual':
           return transformVisual(element)
         case 'core/factbox':
@@ -48,9 +50,9 @@ export function slateToNewsDoc(elements: TBElement[]): Block[] | undefined {
   return elements.map((element: TBElement) => {
     switch (element.type) {
       case 'core/text':
-      case 'tt/print-text':
         return revertText(element)
-
+      case 'tt/print-text':
+        return revertPrintText(element)
       case 'tt/visual':
       case 'core/image':
         return revertVisual(element)
