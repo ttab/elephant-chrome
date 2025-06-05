@@ -184,6 +184,14 @@ function AssignmentListItem({ index, newDate, onChangeSelected }: {
           />
           {title}
         </div>
+
+        {Array.isArray(assignmentTime?.time) && assignmentTime.icon && (
+          <Tooltip content={assignmentTime.tooltip}>
+            <div className='flex flex-row items-center justify-start gap-3'>
+              <AssignmentTime assignmentTime={assignmentTime} />
+            </div>
+          </Tooltip>
+        )}
       </div>
     </Label>
   )
