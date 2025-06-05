@@ -80,17 +80,14 @@ export async function mapRoutes(apiDir: string): Promise<RouteMap> {
 }
 
 /**
- * Connect all route handlers found to their respective routes. Order
- * the route by specificity so that /documents:/id comes after /documents/:id/restore
- * so that less specific does not catch all.
+ * Connect all route handlers found to their respective routes
  */
 export function connectRouteHandlers(app: Application, routes: RouteMap, context: RouteInitContext): Application {
   const BASE_URL = process.env.BASE_URL || ''
-  const sortedRoutes = Object.entries(routes).sort().reverse()
+  for (const route in routes) {
+    const routePath = path.join(BASE_URL, '/api', route)
 
-  sortedRoutes.forEach(([basePath, route]) => {
-    const routePath = path.join(BASE_URL, '/api', basePath)
-    const { GET, POST, PUT, PATCH, DELETE, WEB_SOCKET } = route.handlers || {}
+    const { GET, POST, PUT, PATCH, DELETE, WEB_SOCKET } = routes[route].handlers || {}
 
     if (GET) {
       connectRouteHandler(app, routePath, GET, context)
@@ -115,7 +112,7 @@ export function connectRouteHandlers(app: Application, routes: RouteMap, context
     if (WEB_SOCKET) {
       connectWebsocketHandler(app, routePath, WEB_SOCKET, context)
     }
-  })
+  }
 
   return app
 }
