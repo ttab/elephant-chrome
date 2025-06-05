@@ -157,7 +157,7 @@ export const AssignmentRow = ({ index, onSelect, isFocused = false, asDialog, on
     const timeIcons: Record<string, React.FC<LucideProps>> = {
       start: Clock1,
       publish: AlarmClockCheck,
-      'start-end': Watch
+      'start-end': ClockFading
     }
 
     const type = publishTime ? 'publish' : endTime && startTime && endTime !== startTime ? 'start-end' : 'start'

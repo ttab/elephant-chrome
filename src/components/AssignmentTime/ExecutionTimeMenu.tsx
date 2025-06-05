@@ -155,7 +155,7 @@ export const ExecutionTimeMenu = ({ handleOnSelect, index, startDate }: Executio
     }
   }
 
-  const timePickType = timePickTypes[1]
+  const timePickType = hasEndTime ? timePickTypes[1] : timePickTypes[2]
 
   return (
     <Popover open={open} onOpenChange={handleOpenChange}>

@@ -1,4 +1,4 @@
-import { CalendarFoldIcon, CalendarClockIcon, Clock2Icon, Clock5Icon, Clock6Icon, Clock10Icon } from '@ttab/elephant-ui/icons'
+import { CalendarFoldIcon, CalendarClockIcon, Clock2Icon, Clock5Icon, Clock6Icon, Clock10Icon, ClockFading, Clock1 } from '@ttab/elephant-ui/icons'
 import { type AssignmentValueOption } from '../components/AssignmentTime/types'
 
 
@@ -61,7 +61,13 @@ export const timePickTypes: AssignmentValueOption[] = [
   {
     label: 'Välj tid',
     value: 'start-end-execution',
-    icon: CalendarClockIcon,
+    icon: ClockFading,
+    iconProps
+  },
+  {
+    label: 'Välj tid',
+    value: 'start-end-execution',
+    icon: Clock1,
     iconProps
   }
 ]
