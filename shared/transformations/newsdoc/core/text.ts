@@ -9,15 +9,17 @@ import { jsx } from 'slate-hyperscript'
  * Transform a text Block into Slate Element
  */
 export function transformText(element: Block): TBElement {
-  const rootElement = parse(element?.data?.text || '')
-  const value = deserializeNode(rootElement)
+  const { data } = element
+  const rootElement = parse(data?.text || '')
+  const value = deserializeNode(rootElement, {}, element.type)
+  const children = (Array.isArray(value)) ? value : [value]
 
   return {
     id: element.id || crypto.randomUUID(), // Must have id, if id is missing positioning in drag'n drop does not work
-    type: 'core/text',
+    type: element.type,
     properties: element.role ? { role: element.role } : {},
     class: 'text',
-    children: (Array.isArray(value)) ? value : [value]
+    children
   }
 }
 
@@ -85,7 +87,7 @@ function serializeNode(node: TBElement | TBText): string {
 }
 
 
-function deserializeNode(el: HTMLElement, markAttributes: Record<string, boolean> = {}): Array<TBElement | TBText> | TBElement | TBText {
+function deserializeNode(el: HTMLElement, markAttributes: Record<string, boolean> = {}, type: string): Array<TBElement | TBText> | TBElement | TBText {
   if (el.nodeType === NodeType.TEXT_NODE) {
     return jsx('text', markAttributes, el.textContent === '\n' ? '' : el.textContent) as unknown as TBText
   }
@@ -115,7 +117,7 @@ function deserializeNode(el: HTMLElement, markAttributes: Record<string, boolean
 
   const children = el.childNodes
     .map((node) => {
-      return deserializeNode(node as HTMLElement, nodeAttributes)
+      return deserializeNode(node as HTMLElement, nodeAttributes, type)
     })
     .filter((el) => !!el)
     .flat()
