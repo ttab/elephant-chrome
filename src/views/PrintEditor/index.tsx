@@ -4,6 +4,7 @@ import { AwarenessDocument, View } from '@/components'
 import { Textbit, useTextbit } from '@ttab/textbit'
 import {
   Bold,
+  Italic,
   Text,
   TTVisual,
   Factbox,
@@ -102,6 +103,7 @@ function EditorWrapper(props: ViewProps & {
   const getConfiguredPlugins = () => {
     const basePlugins = [
       Bold,
+      Italic,
       TTVisual,
       ImageSearchPlugin,
       FactboxPlugin,
