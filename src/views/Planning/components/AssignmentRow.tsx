@@ -101,8 +101,17 @@ export const AssignmentRow = ({ index, onSelect, isFocused = false, asDialog, on
     if (typeof assignmentType !== 'string') {
       return undefined
     }
+    const endAndStartAreNotEqual = endTime && startTime && endTime !== startTime
 
     if (['picture', 'video'].includes(assignmentType) && startTime) {
+      if (endAndStartAreNotEqual) {
+        return {
+          time: [new Date(startTime), new Date(endTime)],
+          tooltip: 'Start- och sluttid',
+          type: assignmentType
+        }
+      }
+
       return {
         time: [new Date(startTime)],
         tooltip: 'Starttid',
