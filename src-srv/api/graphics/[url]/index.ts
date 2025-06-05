@@ -1,4 +1,4 @@
-import type { Context } from '../../../lib/context.js'
+import type { Context } from '../../../lib/assertContext.js'
 import { mediaHelper } from '../../../lib/mediaHelper.js'
 import type { RouteHandler } from '../../../routes.js'
 
