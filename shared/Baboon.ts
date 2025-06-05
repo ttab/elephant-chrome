@@ -1,5 +1,5 @@
 import { TwirpFetchTransport } from '@protobuf-ts/twirp-transport'
-import type { CopyArticleToFlowRequest, CreateFlowRequest, ListHypenationsRequest, RenderArticleRequest, SetHypenationRequest } from '@ttab/elephant-tt-api/baboon'
+import type { CopyArticleToFlowRequest, CreateFlowRequest, ListHypenationsRequest, RemoveHypenationRequest, RenderArticleRequest, SetHypenationRequest } from '@ttab/elephant-tt-api/baboon'
 import { PrintClient } from '@ttab/elephant-tt-api/baboon'
 import { meta } from './meta'
 import { toast } from 'sonner'
@@ -63,6 +63,15 @@ export class Baboon {
     } catch (ex) {
       console.error('Error listing hyphenations:', ex)
       toast.error('Kunde inte lista hyphenations')
+    }
+  }
+
+  async removeHypenation(payload: RemoveHypenationRequest, accessToken: string) {
+    try {
+      return this.#client.removeHypenation(payload, meta(accessToken))
+    } catch (ex) {
+      console.error('Error removing hypenation:', ex)
+      toast.error('Kunde inte ta bort hyphenation')
     }
   }
 }

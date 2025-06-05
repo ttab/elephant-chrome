@@ -123,3 +123,4 @@ export function printArticlesListColumns(): Array<ColumnDef<PrintArticle>> {
     }
   ]
 }
+
