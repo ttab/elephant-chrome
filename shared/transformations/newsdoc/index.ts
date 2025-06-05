@@ -48,6 +48,7 @@ export function slateToNewsDoc(elements: TBElement[]): Block[] | undefined {
   return elements.map((element: TBElement) => {
     switch (element.type) {
       case 'core/text':
+      case 'tt/print-text':
         return revertText(element)
 
       case 'tt/visual':
