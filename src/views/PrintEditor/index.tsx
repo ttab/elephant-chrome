@@ -4,14 +4,13 @@ import { AwarenessDocument, View } from '@/components'
 import { Textbit, useTextbit } from '@ttab/textbit'
 import {
   Bold,
-  Italic,
-  Link,
   Text,
   TTVisual,
   Factbox,
   Table,
   LocalizedQuotationMarks,
-  TVListing
+  TVListing,
+  PrintText
 } from '@ttab/textbit-plugins'
 import { ImageSearchPlugin } from '../../plugins/ImageSearch'
 import { FactboxPlugin } from '../../plugins/Factboxes'
@@ -103,14 +102,13 @@ function EditorWrapper(props: ViewProps & {
   const getConfiguredPlugins = () => {
     const basePlugins = [
       Bold,
-      Italic,
-      Link,
       TTVisual,
       ImageSearchPlugin,
       FactboxPlugin,
       Table,
       LocalizedQuotationMarks,
-      TVListing
+      TVListing,
+      PrintText
     ]
 
     return [
