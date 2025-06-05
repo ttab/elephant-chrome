@@ -1,6 +1,6 @@
 import type { RouteContentResponse, RouteStatusResponse } from '../routes.js'
 import type * as Y from 'yjs'
-import type { Context } from '../lib/context.js'
+import type { Context } from '../lib/assertContext.js'
 import type { CollaborationServer } from '../utils/CollaborationServer.js'
 import logger from '../lib/logger.js'
 

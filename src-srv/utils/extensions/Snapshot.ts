@@ -4,7 +4,8 @@ import {
   type onDisconnectPayload
 } from '@hocuspocus/server'
 import { type DebouncedFunc, debounce } from 'lodash-es'
-import { type Context, isContext } from '../../lib/context.js'
+import type { Context } from '../../lib/assertContext.js'
+import { assertContext } from '../../lib/assertContext.js'
 import { isValidUUID } from '../isValidUUID.js'
 import logger from '../../lib/logger.js'
 
@@ -31,7 +32,7 @@ export class Snapshot implements Extension {
       return
     }
 
-    if (!isContext(context)) {
+    if (!assertContext(context)) {
       throw new Error('Invalid context provided')
     }
 
@@ -55,7 +56,7 @@ export class Snapshot implements Extension {
 
       // If the document has a debounceFn it's dirty, check if there are no other clients
       if (debouncedFn && payload.clientsCount === 0) {
-        // Flush (immidiately call the function)
+      // Flush (immidiately call the function)
         await debouncedFn.flush()
       }
     } catch (ex) {

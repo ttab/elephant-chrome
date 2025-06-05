@@ -9,8 +9,8 @@ type SnapshotResponse = {
   statusMessage: undefined
 } | undefined
 
-export async function snapshot(id: string, force?: true, delay: number = 0): Promise<SnapshotResponse> {
-  if (!id) {
+export async function snapshot(uuid: string, force?: true, delay: number = 0): Promise<SnapshotResponse> {
+  if (!uuid) {
     throw new Error('UUID is required')
   }
 
@@ -20,7 +20,7 @@ export async function snapshot(id: string, force?: true, delay: number = 0): Pro
   }
 
   try {
-    const url = `${BASE_URL}/api/documents/${id}/snapshot${force === true ? '?force=true' : ''}`
+    const url = `${BASE_URL}/api/snapshot/${uuid}${force === true ? '?force=true' : ''}`
     const response = await fetch(url)
     const data = await response.json() as SnapshotResponse
 
