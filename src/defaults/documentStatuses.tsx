@@ -168,7 +168,7 @@ export const PrintArticleStatuses: DefaultValueOption[] = [
   },
   {
     label: 'Inställd',
-    value: 'cancelled',
+    value: 'unpublished',
     icon: CircleX,
     iconProps: {
       color: '#ffffff',

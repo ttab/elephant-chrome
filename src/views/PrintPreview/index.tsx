@@ -29,11 +29,11 @@ const meta: ViewMetadata = {
   widths: {
     sm: 12,
     md: 12,
-    lg: 6,
-    xl: 6,
-    '2xl': 6,
-    hd: 5,
-    fhd: 5,
+    lg: 4,
+    xl: 4,
+    '2xl': 4,
+    hd: 3,
+    fhd: 3,
     qhd: 3,
     uhd: 2
   }
@@ -43,9 +43,9 @@ const meta: ViewMetadata = {
 const PrintPreview = (props: ViewProps): JSX.Element => {
   const [height, setHeight] = useState(0)
   useEffect(() => {
-    setHeight(window.innerHeight - 70)
+    setHeight(window.innerHeight - 75)
     window.addEventListener('resize', () => {
-      setHeight(window.innerHeight - 70)
+      setHeight(window.innerHeight - 75)
     })
     return () => {
       window.removeEventListener('resize', () => {})
@@ -85,9 +85,9 @@ const PrintPreview = (props: ViewProps): JSX.Element => {
           )
         : (
             <>
-              <View.Content className='flex flex-col max-w-[1200px]'>
+              <View.Content className='h-max flex flex-col max-w-[1200px]'>
                 <div className='p-2 flex flex-col gap-2'>
-                  <ScrollArea className='h-full mx-auto w-full'>
+                  <ScrollArea className='h-max mx-auto w-full'>
                     <iframe src={props?.source || ''} height={height} width='100%' />
                   </ScrollArea>
                 </div>

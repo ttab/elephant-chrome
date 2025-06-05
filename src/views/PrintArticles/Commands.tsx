@@ -49,7 +49,7 @@ export const Commands = (props: FilterProps): JSX.Element => {
       label: 'Exporterad'
     },
     {
-      value: 'cancelled',
+      value: 'unpublished',
       label: 'Inställd'
     }
   ]
