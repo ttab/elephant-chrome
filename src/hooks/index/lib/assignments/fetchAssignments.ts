@@ -297,23 +297,23 @@ function getRelatedDocuments(repository: Repository, accessToken: string, uuids:
 
 // TODO: Do we collect utility funcs like these somewhere?
 
-function hasPublishSlot(assignment : AssignmentInterface) : Boolean {
-  return !!(assignment.data && assignment.data["publish_slot"])
+function hasPublishSlot(assignment: AssignmentInterface): boolean {
+  return !!(assignment.data && assignment.data['publish_slot'])
 }
 
-function getPlanningDate(doc: Document) : string {
+function getPlanningDate(doc: Document): string {
   for (const block of doc.meta) {
-    if (block.type != "core/planning-item") {
+    if (block.type != 'core/planning-item') {
       continue
     }
 
-    const date = block.data["start_date"]
+    const date = block.data['start_date']
     if (!date) {
-      return ""
+      return ''
     }
 
     return date
   }
 
-  return ""
+  return ''
 }
