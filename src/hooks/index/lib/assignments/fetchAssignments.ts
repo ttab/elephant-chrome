@@ -1,5 +1,6 @@
 import type { Index } from '@/shared/Index'
 import type { Repository } from '@/shared/Repository'
+import type { Document } from '@ttab/elephant-api/newsdoc'
 import { QueryV1, BoolQueryV1, TermQueryV1, RangeQueryV1 } from '@ttab/elephant-api/index'
 import type { DocumentMetrics, StatusOverviewItem } from '@ttab/elephant-api/repository'
 import { type BulkGetResponse, type GetMetricsResponse, type GetStatusOverviewResponse } from '@ttab/elephant-api/repository'
@@ -53,6 +54,7 @@ export async function fetchAssignments({ index, repository, type, requireDeliver
   const metricsDocumentsRequests: Promise<GetMetricsResponse | null>[] = []
 
   do {
+    const dateStr = format(date, 'yyyy-MM-dd')
     const query = constructQuery(date, dateType, timeZone)
 
     const { ok, hits, errorMessage } = await index.query({
@@ -72,7 +74,13 @@ export async function fetchAssignments({ index, repository, type, requireDeliver
     const uuids: string[] = []
     for (const { document } of hits) {
       if (document) {
+        const sameDay = getPlanningDate(document) == dateStr
+
         for (const assignment of getAssignmentsFromDocument(document, type)) {
+          if (!sameDay && hasPublishSlot(assignment)) {
+            continue
+          }
+
           if (!requireDeliverable || assignment._deliverableId) {
             assignments.push(assignment)
           }
@@ -185,6 +193,7 @@ function constructQuery(
   const { from, to } = getUTCDateRange(date, timeZone)
   // CAVEAT: This is in reality a local date but with zero time and a misleading Z in it.
   const formattedDate = format(date, 'yyyy-MM-dd\'T00:00:00:000Z\'')
+  const shortDate = format(date, 'yyyy-MM-dd')
 
   if (dateType === 'combined-date') {
     return QueryV1.create({
@@ -209,6 +218,17 @@ function constructQuery(
                   field: 'document.meta.core_assignment.data.publish',
                   gte: `${from}`,
                   lte: `${to}`
+                })
+              }
+            },
+            // Include planning documents on the current date to get assignments
+            // with time slots.
+            {
+              conditions: {
+                oneofKind: 'term',
+                term: TermQueryV1.create({
+                  field: 'document.meta.core_planning_item.data.start_date',
+                  value: shortDate
                 })
               }
             }
@@ -273,4 +293,27 @@ function getRelatedDocuments(repository: Repository, accessToken: string, uuids:
 
 
   return [documentsRequest, statusesRequest]
+}
+
+// TODO: Do we collect utility funcs like these somewhere?
+
+function hasPublishSlot(assignment : AssignmentInterface) : Boolean {
+  return !!(assignment.data && assignment.data["publish_slot"])
+}
+
+function getPlanningDate(doc: Document) : string {
+  for (const block of doc.meta) {
+    if (block.type != "core/planning-item") {
+      continue
+    }
+
+    const date = block.data["start_date"]
+    if (!date) {
+      return ""
+    }
+
+    return date
+  }
+
+  return ""
 }
