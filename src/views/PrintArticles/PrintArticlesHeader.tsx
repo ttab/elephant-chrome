@@ -1,9 +1,10 @@
 import { ViewHeader } from '@/components/View'
 import { Button, Popover, PopoverContent, PopoverTrigger } from '@ttab/elephant-ui'
-import { Plus } from '@ttab/elephant-ui/icons'
+import { BookA, Plus } from '@ttab/elephant-ui/icons'
 import { DateChanger } from '@/components/Header/Datechanger'
 import { useModal } from '@/components/Modal/useModal'
 import { PrintFlows } from './PrintFlows'
+import { useLink } from '@/hooks/useLink'
 /**
  * PrintArticlesHeader component.
  *
@@ -18,6 +19,8 @@ import { PrintFlows } from './PrintFlows'
 
 export const PrintArticlesHeader = (): JSX.Element => {
   const { showModal, hideModal } = useModal()
+  const openDictionary = useLink('PrintDictionary')
+
   return (
     <ViewHeader.Root className='flex flex-row gap-2 items-center justify-between'>
       <div className='flex flex-row gap-4 items-center justify-start'>
@@ -56,6 +59,16 @@ export const PrintArticlesHeader = (): JSX.Element => {
         </Popover>
         <DateChanger type='PrintArticles' />
       </div>
+      <Button
+        title='Skapa en text i ett flöde'
+        variant='outline'
+        size='sm'
+        onClick={() => {
+          openDictionary(undefined, {})
+        }}
+      >
+        <BookA strokeWidth={1.75} size={18} />
+      </Button>
     </ViewHeader.Root>
   )
 }
