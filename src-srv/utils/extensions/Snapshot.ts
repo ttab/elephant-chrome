@@ -107,7 +107,7 @@ export async function snapshot(uuid: string, context: Context): Promise<Snapshot
     }
 
     const base = `${process.env.PROTOCOL || 'http'}://${process.env.HOST || 'localhost'}${process.env.PORT ? `:${process.env.PORT}` : ''}`
-    const url = new URL(`${BASE_URL}/api/documents/${uuid}/snapshot/`, base)
+    const url = new URL(`${BASE_URL}/api/snapshot/${uuid}`, base)
 
     const response = await fetch(url, {
       headers: {
