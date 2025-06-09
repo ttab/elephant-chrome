@@ -39,9 +39,7 @@ const Note = ({ noteIndex, handleRemove }: {
   const SelectedIcon = selectedOptions.length && selectedOptions[0].icon
 
   return (
-    <Alert className={cn('flex p-1 pl-4', role === 'public'
-      ? 'bg-blue-50'
-      : 'bg-yellow-50')}
+    <Alert className={'flex p-1 pl-4 bg-yellow-50'}
     >
       <div className='flex flex-row w-full justify-between'>
         <AlertDescription className='flex space-x-2 items-center w-full'>
@@ -52,10 +50,7 @@ const Note = ({ noteIndex, handleRemove }: {
             }}
           >
             <SelectTrigger
-              className={cn({
-                'bg-blue-50': role === 'public',
-                'bg-yellow-50': role === 'internal'
-              }, 'w-fit border-0')}
+              className={'w-fit border-0 bg-yellow-50'}
             >
               {selectedOptions?.[0] && SelectedIcon && (
                 <div className='flex pr-2'>
