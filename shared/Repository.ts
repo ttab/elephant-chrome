@@ -298,40 +298,4 @@ export class Repository {
       fromGroupedNewsDoc(documentResponse)
     )
   }
-
-  /**
-   * Upload a file to the repository and file storage.
-   */
-  async uploadFile(name: string, contentType: string, file: File | Blob, accessToken: string) {
-    const { response } = await this.#client.createUpload({
-      name,
-      contentType,
-      meta: {}
-    }, meta(accessToken))
-
-    if (!response.url) {
-      throw new Error('CreateUpload request did not return a signed upload url')
-    }
-
-    try {
-      const uploadResponse = await fetch(response.url, {
-        method: 'PUT',
-        body: file,
-        headers: {
-          'Content-Type': contentType
-        }
-      })
-
-      if (!uploadResponse.ok) {
-        throw new Error(`Upload failed: ${uploadResponse.status} ${uploadResponse.statusText}`)
-      }
-
-      // FIXME: Update (create) actual document and return
-      console.log('File uploaded successfully')
-      return uploadResponse
-    } catch (error) {
-      console.error('Upload error:', error)
-      throw error
-    }
-  }
 }
