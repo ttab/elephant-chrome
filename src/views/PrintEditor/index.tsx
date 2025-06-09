@@ -22,6 +22,8 @@ import {
   Table,
   LocalizedQuotationMarks
 } from '@ttab/textbit-plugins'
+import { ImagePlugin } from './ImagePlugin/index'
+
 import { ImageSearchPlugin } from '../../plugins/ImageSearch'
 import { FactboxPlugin } from '../../plugins/Factboxes'
 
@@ -31,7 +33,8 @@ import {
   useLink,
   useView,
   useYjsEditor,
-  useAwareness
+  useAwareness,
+  useRegistry
 } from '@/hooks'
 import { type ViewMetadata, type ViewProps } from '@/types'
 import { EditorHeader } from './EditorHeader'
@@ -50,6 +53,7 @@ import { DropMarker } from '@/components/Editor/DropMarker'
 
 import { getValueByYPath } from '@/lib/yUtils'
 import { useOnSpellcheck } from '@/hooks/useOnSpellcheck'
+import { useSession } from 'next-auth/react'
 
 // Metadata definition
 const meta: ViewMetadata = {
@@ -126,6 +130,8 @@ function EditorWrapper(
     autoFocus?: boolean
   }
 ): JSX.Element {
+  const { repository } = useRegistry()
+  const { data } = useSession()
   const { provider, synced, user } = useCollaboration()
   const openFactboxEditor = useLink('Factbox')
   const [, setIsFocused] = useAwareness(props.documentId)
@@ -139,7 +145,6 @@ function EditorWrapper(
       Italic,
       Link,
       TTVisual,
-      ImageSearchPlugin,
       FactboxPlugin,
       Table,
       LocalizedQuotationMarks
@@ -149,6 +154,10 @@ function EditorWrapper(
       ...basePlugins.map((initPlugin) => initPlugin()),
       Text({
         countCharacters: ['heading-1']
+      }),
+      ImagePlugin({
+        repository,
+        accessToken: data?.accessToken || ''
       }),
       Factbox({
         onEditOriginal: (id: string) => {
@@ -227,11 +236,11 @@ function EditorContainer({
               <div className='flex-grow overflow-auto pr-12 max-w-screen-xl'>
                 {!!provider && synced
                   ? (
-                      <EditorContent provider={provider} user={user} />
-                    )
+                    <EditorContent provider={provider} user={user} />
+                  )
                   : (
-                      <></>
-                    )}
+                    <></>
+                  )}
               </div>
             </ScrollArea>
           </div>
@@ -240,21 +249,21 @@ function EditorContainer({
               <h2 className='text-base font-bold'>Layouter</h2>
               {bulkSelected.length > 0
                 ? (
-                    <Button
-                      title='När layouter har valts, visa alternativ för att skapa en kopia av texten med de valda layouterna och ta bort dem från nuvarande artikel. Öppna kopian direkt till höger'
-                      className='p-2 flex gap-2 items-center'
-                      onClick={() => {
-                        openPrintEditor(undefined, { id: documentId })
-                        setBulkSelected([])
-                      }}
-                    >
-                      Flytta till kopia
-                      <span className='text-sm font-bold'>
-                        {`(${bulkSelected.length} st)`}
-                      </span>
-                      <ChevronRight strokeWidth={1.75} size={18} />
-                    </Button>
-                  )
+                  <Button
+                    title='När layouter har valts, visa alternativ för att skapa en kopia av texten med de valda layouterna och ta bort dem från nuvarande artikel. Öppna kopian direkt till höger'
+                    className='p-2 flex gap-2 items-center'
+                    onClick={() => {
+                      openPrintEditor(undefined, { id: documentId })
+                      setBulkSelected([])
+                    }}
+                  >
+                    Flytta till kopia
+                    <span className='text-sm font-bold'>
+                      {`(${bulkSelected.length} st)`}
+                    </span>
+                    <ChevronRight strokeWidth={1.75} size={18} />
+                  </Button>
+                )
                 : null}
             </header>
             <ScrollArea className='h-[calc(100vh-12rem)]'>
