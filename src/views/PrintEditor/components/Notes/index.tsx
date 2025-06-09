@@ -1,5 +1,4 @@
 import { useYValue } from '@/hooks/useYValue'
-import { cn } from '@ttab/elephant-ui/utils'
 import type { Block } from '@ttab/elephant-api/newsdoc'
 
 import {
@@ -39,8 +38,7 @@ const Note = ({ noteIndex, handleRemove }: {
   const SelectedIcon = selectedOptions.length && selectedOptions[0].icon
 
   return (
-    <Alert className={'flex p-1 pl-4 bg-yellow-50'}
-    >
+    <Alert className='flex p-1 pl-4 bg-yellow-50'>
       <div className='flex flex-row w-full justify-between'>
         <AlertDescription className='flex space-x-2 items-center w-full'>
           <Select
@@ -50,7 +48,7 @@ const Note = ({ noteIndex, handleRemove }: {
             }}
           >
             <SelectTrigger
-              className={'w-fit border-0 bg-yellow-50'}
+              className='w-fit border-0 bg-yellow-50'
             >
               {selectedOptions?.[0] && SelectedIcon && (
                 <div className='flex pr-2'>
