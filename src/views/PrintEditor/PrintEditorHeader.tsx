@@ -26,11 +26,13 @@ import { AddNote } from '../Editor/components/Notes/AddNote'
 export const EditorHeader = ({
   documentId,
   name,
-  flowName
+  flowName,
+  isChanged
 }: {
   documentId: string
   name?: string
   flowName?: string
+  isChanged?: boolean
 }): JSX.Element => {
   const { viewId } = useView()
   const containerRef = useRef<HTMLElement | null>(null)
@@ -64,6 +66,7 @@ export const EditorHeader = ({
                   <StatusMenu
                     documentId={documentId}
                     type='tt/print-article'
+                    isChanged={isChanged}
                   />
                 </>
               )}

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { AwarenessDocument, View } from '@/components'
 
 import { Textbit, useTextbit } from '@ttab/textbit'
@@ -51,6 +51,7 @@ import { toast } from 'sonner'
 import { useSession } from 'next-auth/react'
 import { Prompt } from '@/components/Prompt'
 import { snapshot } from '@/lib/snapshot'
+import type * as Y from 'yjs'
 
 const meta: ViewMetadata = {
   name: 'PrintEditor',
@@ -183,6 +184,18 @@ function EditorContainer({
   const [,,allParams] = useQuery(['from'], true)
   const date = allParams?.filter((item) => item.name === 'PrintArticles')?.[0]?.params?.from || ''
 
+  const [isChanged] = useYValue<boolean>('root.changed')
+
+  const handleChange = useCallback((value: boolean): void => {
+    const root = provider?.document.getMap('ele').get('root') as Y.Map<unknown>
+    const changed = root.get('changed') as boolean
+
+
+    if (changed !== value) {
+      root.set('changed', value)
+    }
+  }, [provider])
+
   if (!layouts) {
     return <p>no layouts</p>
   }
@@ -262,7 +275,7 @@ function EditorContainer({
 
   return (
     <>
-      <EditorHeader documentId={documentId} name={name} flowName={flowName} />
+      <EditorHeader documentId={documentId} name={name} flowName={flowName} isChanged={isChanged} />
       {!!notes?.length && <div className='p-4'><Notes /></div>}
       <View.Content className='flex flex-col max-w-[1000px]'>
         <section className='grid grid-cols-12'>
@@ -271,7 +284,7 @@ function EditorContainer({
               <div className='flex-grow overflow-auto pr-12 max-w-screen-xl'>
                 {!!provider && synced
                   ? (
-                      <EditorContent provider={provider} user={user} />
+                      <EditorContent provider={provider} user={user} onChange={handleChange} />
                     )
                   : (
                       <></>
@@ -355,6 +368,7 @@ function EditorContainer({
                             layoutIdForRender={layout.id}
                             layoutId={layout.links['_'][0].uuid}
                             index={index}
+                            onChange={handleChange}
                             deleteLayout={(layoutId) => {
                               const newLayouts = layouts.filter((_layout) => _layout.id !== layoutId)
                               setLayouts(newLayouts)
@@ -384,9 +398,10 @@ function EditorContainer({
 }
 
 
-function EditorContent({ provider, user }: {
+function EditorContent({ provider, user, onChange }: {
   provider: HocuspocusProvider
   user: AwarenessUserData
+  onChange?: (value: boolean) => void
 }): JSX.Element {
   const { isActive } = useView()
   const ref = useRef<HTMLDivElement>(null)
@@ -410,6 +425,7 @@ function EditorContent({ provider, user }: {
       yjsEditor={yjsEditor}
       lang={documentLanguage}
       onSpellcheck={onSpellcheck}
+      onChange={() => onChange?.(true)}
       className='outline-none
         h-full
         dark:text-slate-100
