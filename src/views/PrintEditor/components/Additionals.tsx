@@ -6,8 +6,9 @@ export interface Additional {
   value: string
 }
 
-export const Additionals = ({ basePath }: {
+export const Additionals = ({ basePath, onChange }: {
   basePath: string
+  onChange?: (value: boolean) => void
 }): JSX.Element | null => {
   const [additionals, setAdditionals] = useYValue<Additional[]>(`${basePath}.meta.tt/print-features[0].content.tt/print-feature`)
 
@@ -17,6 +18,7 @@ export const Additionals = ({ basePath }: {
       i === index ? { ...item, value: item.value === 'true' ? 'false' : 'true' } : item
     )
     setAdditionals(updated)
+    onChange?.(true)
   }
 
   if (additionals?.length) {
@@ -47,8 +49,9 @@ const Additional = ({ additional, index, onChange }: {
     <Checkbox
       className='bg-white'
       checked={additional.value === 'true'}
-      onCheckedChange={() =>
-        onChange(index)}
+      onCheckedChange={() => {
+        onChange(index)
+      }}
     />
     {additional.name}
   </Label>

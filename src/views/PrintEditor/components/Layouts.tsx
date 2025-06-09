@@ -5,10 +5,11 @@ import { Loader } from '@ttab/elephant-ui/icons'
 import { useYValue } from '@/hooks/useYValue'
 import { cn } from '@ttab/elephant-ui/utils'
 
-export const Layouts = ({ articleLayoutId, basePath, className }: {
+export const Layouts = ({ articleLayoutId, basePath, onChange, className }: {
   articleLayoutId?: string
   className?: string
   basePath: string
+  onChange?: (value: boolean) => void
 }) => {
   const { data: layouts } = useDocuments({
     documentType: 'tt/print-layout',
@@ -44,6 +45,7 @@ export const Layouts = ({ articleLayoutId, basePath, className }: {
           value: l
         }))}
       onSelect={(option) => {
+        onChange?.(true)
         setArticleLayoutName(option.value)
       }}
     />
