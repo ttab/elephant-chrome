@@ -30,9 +30,9 @@ export const StatusMenu = ({ documentId, type, publishTime, onBeforeStatusChange
   const shouldUseWorkflowStatus = [
     'core/article',
     'core/flash',
-    'core/editorial-info',
-    'tt/print-article'
+    'core/editorial-info'
   ].includes(type)
+
   const [documentStatus, setDocumentStatus] = useWorkflowStatus(documentId, shouldUseWorkflowStatus)
   const containerRef = useRef<HTMLDivElement>(null)
   const [dropdownWidth, setDropdownWidth] = useState<number>(0)
