@@ -25,7 +25,7 @@ import { Frown, Settings } from '@ttab/elephant-ui/icons'
 // Metadata definition
 const meta: ViewMetadata = {
   name: 'PrintPreview',
-  path: `${import.meta.env.BASE_URL || ''}/print`,
+  path: `${import.meta.env.BASE_URL || ''}/print-preview`,
   widths: {
     sm: 12,
     md: 12,

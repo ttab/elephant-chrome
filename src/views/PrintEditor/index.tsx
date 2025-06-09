@@ -54,7 +54,7 @@ import { snapshot } from '@/lib/snapshot'
 
 const meta: ViewMetadata = {
   name: 'PrintEditor',
-  path: `${import.meta.env.BASE_URL || ''}/print`,
+  path: `${import.meta.env.BASE_URL || ''}/print-editor`,
   widths: {
     sm: 12,
     md: 12,
