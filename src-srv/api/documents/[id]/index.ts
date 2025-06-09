@@ -6,7 +6,8 @@ import { fromYjsNewsDoc } from '@/shared/transformations/yjsNewsDoc.js'
 import * as Y from 'yjs'
 import logger from '../../../lib/logger.js'
 
-import { type Context, isContext } from '../../../lib/context.js'
+import type { Context } from '../../../lib/assertContext.js'
+import { assertContext } from '../../../lib/assertContext.js'
 import { getValueByYPath, setValueByYPath } from '../../../../shared/yUtils.js'
 import type { EleBlock } from '@/shared/types/index.js'
 import { createSnapshot } from '../../../utils/createSnapshot.js'
@@ -159,7 +160,7 @@ export const PATCH: RouteHandler = async (req: Request, { collaborationServer, r
     agent: 'server'
   }
 
-  if (!isContext(context)) {
+  if (!assertContext(context)) {
     return {
       statusCode: 500,
       statusMessage: 'Invalid context provided'
