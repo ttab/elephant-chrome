@@ -61,16 +61,16 @@ export const Planning = (props: ViewProps & { document?: Y.Doc, setNewItem?: Set
     <>
       {typeof documentId === 'string'
         ? (
-          <AwarenessDocument documentId={documentId} document={props.document}>
-            <PlanningViewContent {...props} documentId={documentId} setNewItem={props?.setNewItem} />
-          </AwarenessDocument>
-        )
+            <AwarenessDocument documentId={documentId} document={props.document}>
+              <PlanningViewContent {...props} documentId={documentId} setNewItem={props?.setNewItem} />
+            </AwarenessDocument>
+          )
         : (
-          <Error
-            title='Planeringsdokument saknas'
-            message='Inget planeringsdokument är angivet. Navigera tillbaka till översikten och försök igen.'
-          />
-        )}
+            <Error
+              title='Planeringsdokument saknas'
+              message='Inget planeringsdokument är angivet. Navigera tillbaka till översikten och försök igen.'
+            />
+          )}
     </>
   )
 }
