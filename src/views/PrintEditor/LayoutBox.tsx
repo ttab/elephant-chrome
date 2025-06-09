@@ -19,13 +19,15 @@ export function LayoutBox({
   layoutIdForRender,
   layoutId,
   index,
-  deleteLayout
+  deleteLayout,
+  onChange
 }: {
   documentId: string
   layoutIdForRender: string
   layoutId: string
   index: number
   deleteLayout: (layoutId: string) => void
+  onChange?: (value: boolean) => void
 }) {
   const { baboon } = useRegistry()
   const { data: session } = useSession()
@@ -144,10 +146,11 @@ export function LayoutBox({
           articleLayoutId={layoutId}
           basePath={base}
           className='w-full'
+          onChange={onChange}
         />
       </div>
-      <Position basePath={base} />
-      <Additionals basePath={base} />
+      <Position basePath={base} onChange={onChange} />
+      <Additionals basePath={base} onChange={onChange} />
     </div>
   )
 }
