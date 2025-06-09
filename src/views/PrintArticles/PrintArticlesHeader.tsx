@@ -5,6 +5,7 @@ import { DateChanger } from '@/components/Header/Datechanger'
 import { useModal } from '@/components/Modal/useModal'
 import { PrintFlows } from './PrintFlows'
 import { useLink } from '@/hooks/useLink'
+
 /**
  * PrintArticlesHeader component.
  *
@@ -59,16 +60,20 @@ export const PrintArticlesHeader = (): JSX.Element => {
         </Popover>
         <DateChanger type='PrintArticles' />
       </div>
-      <Button
-        title='Skapa en text i ett flöde'
-        variant='outline'
-        size='sm'
-        onClick={() => {
-          openDictionary(undefined, {})
-        }}
-      >
-        <BookA strokeWidth={1.75} size={18} />
-      </Button>
+      <div className='flex flex-row gap-2 items-center justify-end'>
+        <Button
+          title='Skapa en text i ett flöde'
+          variant='outline'
+          size='sm'
+          onClick={() => {
+            openDictionary(undefined, {})
+          }}
+        >
+          <BookA strokeWidth={1.75} size={18} />
+        </Button>
+        <ViewHeader.Action>
+        </ViewHeader.Action>
+      </div>
     </ViewHeader.Root>
   )
 }

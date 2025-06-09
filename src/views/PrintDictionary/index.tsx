@@ -19,15 +19,15 @@ import Dictionary from './Dictionary'
 // Metadata definition
 const meta: ViewMetadata = {
   name: 'PrintDictionary',
-  path: `${import.meta.env.BASE_URL || ''}/print`,
+  path: `${import.meta.env.BASE_URL || ''}/print-dictionary`,
   widths: {
     sm: 12,
     md: 12,
     lg: 6,
     xl: 6,
     '2xl': 6,
-    hd: 4,
-    fhd: 4,
+    hd: 5,
+    fhd: 5,
     qhd: 3,
     uhd: 2
   }

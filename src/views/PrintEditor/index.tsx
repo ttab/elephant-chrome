@@ -33,6 +33,7 @@ import { type AwarenessUserData } from '@/contexts/CollaborationProvider'
 import { Error } from '../Error'
 
 import { ContentMenu } from '@/components/Editor/ContentMenu'
+import { Notes } from './components/Notes'
 import { Toolbar } from '@/components/Editor/Toolbar'
 import { ContextMenu } from '@/components/Editor/ContextMenu'
 import { Gutter } from '@/components/Editor/Gutter'
@@ -162,7 +163,8 @@ function EditorContainer({
   provider,
   synced,
   user,
-  documentId
+  documentId,
+  notes
 }: {
   provider: HocuspocusProvider | undefined
   synced: boolean
@@ -210,8 +212,14 @@ function EditorContainer({
         date: date as string,
         article: name || ''
       }, session.accessToken)
+        .catch((ex: unknown) => {
+          console.error('Error creating print article:', ex)
+          toast.error('Något gick fel när printartikel skulle dupliceras nytt')
+          setPromptIsOpen(false)
+        })
       if (response?.status.code === 'OK') {
         setPromptIsOpen(false)
+        toast.success(response.status.code)
       }
     } catch (ex: unknown) {
       console.error('Error creating print article:', ex)
@@ -236,7 +244,6 @@ function EditorContainer({
           renderPng: false,
           pngScale: 300n
         }, session.accessToken)
-        console.log('response', response?.response)
         if (response?.status.code === 'OK') {
           const _checkedLayout = {
             ..._layout,
@@ -269,6 +276,7 @@ function EditorContainer({
   return (
     <>
       <EditorHeader documentId={documentId} name={name} flowName={flowName} isChanged={isChanged} />
+      {!!notes?.length && <div className='p-4'><Notes /></div>}
       <View.Content className='flex flex-col max-w-[1000px]'>
         <section className='grid grid-cols-12'>
           <div className='col-span-8'>
@@ -362,7 +370,7 @@ function EditorContainer({
                             index={index}
                             onChange={handleChange}
                             deleteLayout={(layoutId) => {
-                              const newLayouts = layouts.filter((_layout) => _layout.links['_'][0].uuid !== layoutId)
+                              const newLayouts = layouts.filter((_layout) => _layout.id !== layoutId)
                               setLayouts(newLayouts)
                             }}
                           />
