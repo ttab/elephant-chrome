@@ -99,7 +99,7 @@ export const applicationMenu: ApplicationMenu = {
       name: 'Print',
       items: [
         {
-          name: 'PrintArticles',
+          name: 'Print',
           label: 'Print',
           icon: Library,
           color: '#006bb3'

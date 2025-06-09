@@ -9,7 +9,7 @@ import { cva } from 'class-variance-authority'
 import type { ModalData } from '../Modal/ModalContext'
 import { getWireStatus } from './lib/getWireStatus'
 
-type DocumentType = 'Planning' | 'Event' | 'Assignments' | 'Search' | 'Wires' | 'Factbox' | 'PrintArticles' | 'PrintEditor'
+type DocumentType = 'Planning' | 'Event' | 'Assignments' | 'Search' | 'Wires' | 'Factbox' | 'Print' | 'PrintEditor'
 
 export const WireRow = ({ row, handleOpen, openDocuments, type }: {
   type: DocumentType

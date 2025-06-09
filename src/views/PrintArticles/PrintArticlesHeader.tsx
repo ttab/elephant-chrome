@@ -25,7 +25,7 @@ export const PrintArticlesHeader = (): JSX.Element => {
   return (
     <ViewHeader.Root className='flex flex-row gap-2 items-center justify-between'>
       <div className='flex flex-row gap-4 items-center justify-start'>
-        <ViewHeader.Title title='Print' name='PrintArticles' />
+        <ViewHeader.Title title='Print' name='Print' />
         <Popover>
           <PopoverTrigger asChild>
             <Button title='Skapa ny...' size='sm' className='gap-1 px-2 py-0'>
@@ -58,7 +58,7 @@ export const PrintArticlesHeader = (): JSX.Element => {
             </Button>
           </PopoverContent>
         </Popover>
-        <DateChanger type='PrintArticles' />
+        <DateChanger type='Print' />
       </div>
       <div className='flex flex-row gap-2 items-center justify-end'>
         <Button
