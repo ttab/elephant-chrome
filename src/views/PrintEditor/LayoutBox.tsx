@@ -95,7 +95,7 @@ export function LayoutBox({
             primaryLabel='Radera'
             secondaryLabel='Avbryt'
             onPrimary={() => {
-              deleteLayout(layoutId)
+              deleteLayout(layoutIdForRender)
               setPromptIsOpen(false)
             }}
             onSecondary={() => {

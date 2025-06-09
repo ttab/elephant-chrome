@@ -356,7 +356,7 @@ function EditorContainer({
                             layoutId={layout.links['_'][0].uuid}
                             index={index}
                             deleteLayout={(layoutId) => {
-                              const newLayouts = layouts.filter((_layout) => _layout.links['_'][0].uuid !== layoutId)
+                              const newLayouts = layouts.filter((_layout) => _layout.id !== layoutId)
                               setLayouts(newLayouts)
                             }}
                           />
