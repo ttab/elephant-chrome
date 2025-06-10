@@ -24,6 +24,7 @@ import assertEnvs from './lib/assertEnvs.js'
 import { authSession } from './utils/authSession.js'
 
 import Pyroscope from '@pyroscope/nodejs'
+import { createRemoteJWKSet } from 'jose'
 
 /*
  * Read and normalize all environment variables
@@ -61,6 +62,7 @@ export async function runServer(): Promise<string> {
   })
 
   const repository = new Repository(REPOSITORY_URL)
+  const JWKS = createRemoteJWKSet(new URL(`${AUTH_KEYCLOAK_ISSUER}/protocol/openid-connect/certs`))
 
   const userTokenService = new TokenService(
     `${AUTH_KEYCLOAK_ISSUER}/protocol/openid-connect/token`,
@@ -72,8 +74,12 @@ export async function runServer(): Promise<string> {
 
   app.set('trust proxy', true)
   app.use(`${BASE_URL}/api/auth/*`, ExpressAuth(authConfig) as RequestHandler)
-  app.use(`${BASE_URL}/api/documents`, assertAuthenticatedUser as RequestHandler)
-  app.use(`${BASE_URL}/api/introspection`, assertAuthenticatedUser as RequestHandler)
+  app.use(`${BASE_URL}/api/documents`, (req, res, next) => {
+    assertAuthenticatedUser(JWKS)(req, res, next).catch(next)
+  })
+  app.use(`${BASE_URL}/api/introspection`, (req, res, next) => {
+    assertAuthenticatedUser(JWKS)(req, res, next).catch(next)
+  })
 
   app.use(cors({
     credentials: true,

@@ -10,6 +10,7 @@ import { type Context, isContext } from '../../../lib/context.js'
 import { getValueByYPath, setValueByYPath } from '../../../../shared/yUtils.js'
 import type { EleBlock } from '@/shared/types/index.js'
 import { createSnapshot } from '../../../utils/createSnapshot.js'
+import { getSession } from '../../../lib/context.js'
 
 type Response = RouteContentResponse | RouteStatusResponse
 
@@ -21,7 +22,14 @@ export const GET: RouteHandler = async (req: Request, { cache, repository, res }
   const version = Number(req.query.version || '0')
   const type = req.query.type
 
-  const { session } = res.locals
+  const { accessToken } = getSession(req, res)
+
+  if (!accessToken) {
+    return {
+      statusCode: 401,
+      statusMessage: 'Unauthorized: Access token not found, can not fetch document'
+    }
+  }
 
   if (!uuid || typeof uuid !== 'string' || !isValidUUID(uuid)) {
     return {
@@ -66,7 +74,7 @@ export const GET: RouteHandler = async (req: Request, { cache, repository, res }
     // Fetch content fron repository
     const doc = await repository.getDocument({
       uuid,
-      accessToken: (session as { accessToken: string })?.accessToken,
+      accessToken,
       version
     }).catch((ex) => {
       throw new Error('get document from repository', { cause: ex })
@@ -118,10 +126,9 @@ export const GET: RouteHandler = async (req: Request, { cache, repository, res }
  * - Set start time for draft
  */
 export const PATCH: RouteHandler = async (req: Request, { collaborationServer, res }) => {
-  const locals = res.locals as Record<string, unknown> | undefined
-  const session = locals?.session as { accessToken?: string, user?: Context['user'] } | undefined
+  const { accessToken, user } = getSession(req, res)
 
-  if (!session?.accessToken || !session?.user) {
+  if (!accessToken || !user) {
     return {
       statusCode: 401,
       statusMessage: 'Unauthorized: Session not found, can not snapshot document'
@@ -154,8 +161,8 @@ export const PATCH: RouteHandler = async (req: Request, { collaborationServer, r
   }
 
   const context: Context = {
-    accessToken: session.accessToken,
-    user: session.user,
+    accessToken,
+    user,
     agent: 'server'
   }
 

@@ -2,8 +2,7 @@ import logger from '../../../lib/logger.js'
 import type { Request } from 'express'
 import type { RouteContentResponse, RouteHandler, RouteStatusResponse } from '../../../routes.js'
 import { createSnapshot } from '../../../utils/createSnapshot.js'
-import type { Session } from 'next-auth'
-import { getContextFromValidSession, isContext, type Context } from '../../../lib/context.js'
+import { getContextFromValidSession, getSession, isContext } from '../../../lib/context.js'
 
 type Response = RouteContentResponse | RouteStatusResponse
 
@@ -11,26 +10,7 @@ export const GET: RouteHandler = async (req: Request, { collaborationServer, cac
   const uuid = req.params.id
   const force = req.query.force
 
-  // Get accessToken from request headers or session
-  const locals = res.locals as Record<string, unknown> | undefined
-  const session = locals?.session as { accessToken?: string, user?: Context['user'] } | undefined
-  let accessToken = session?.accessToken
-  if (!accessToken) {
-    const authHeader = req.headers['authorization'] || req.headers['Authorization']
-    if (typeof authHeader === 'string' && authHeader.startsWith('Bearer ')) {
-      accessToken = authHeader.slice(7)
-    }
-  }
-
-  let user = session?.user
-  if (!user) {
-    const userHeader = req.headers['x-user'] || req.headers['X-User']
-    if (typeof userHeader === 'string') {
-      user = JSON.parse(userHeader) as Session['user']
-    }
-  }
-
-  const context = getContextFromValidSession(session)
+  const context = getContextFromValidSession(getSession(req, res))
   if (!isContext(context)) {
     return context
   }
