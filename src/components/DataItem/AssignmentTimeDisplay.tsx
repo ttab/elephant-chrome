@@ -10,7 +10,13 @@ export const AssignmentTimeDisplay = ({ date, className, icon }: { date: Time, c
   const Icon = icon
 
   function displayDay(time: Array<Date | string | undefined>): string {
-    const timeValue = typeof time[0] === 'object' ? time[0] : typeof time[0] === 'string' ? new Date(time[0]) : ''
+    let timeValue
+    if (typeof time[0] === 'object') {
+      timeValue = time[0]
+    }
+    if (typeof time[0] === 'string') {
+      timeValue = new Date(time[0])
+    }
     if (!timeValue) {
       return ''
     }
