@@ -24,7 +24,7 @@ import { PrintArticlesHeader } from './PrintArticlesHeader'
  */
 
 const meta: ViewMetadata = {
-  name: 'PrintArticles',
+  name: 'Print',
   path: `${import.meta.env.BASE_URL}/print`,
   widths: {
     sm: 12,
@@ -49,7 +49,7 @@ const meta: ViewMetadata = {
  * @returns The rendered PrintArticles component.
  */
 
-export const PrintArticles = (): JSX.Element => {
+export const Print = (): JSX.Element => {
   const columns = useMemo(
     () => printArticlesListColumns(),
     []
@@ -85,4 +85,4 @@ export const PrintArticles = (): JSX.Element => {
   )
 }
 
-PrintArticles.meta = meta
+Print.meta = meta

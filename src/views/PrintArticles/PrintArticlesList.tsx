@@ -7,6 +7,7 @@ import type { ColumnDef } from '@tanstack/react-table'
 import { useDocuments } from '@/hooks/index/useDocuments'
 import { constructQuery } from '@/hooks/baboon/useDocuments/printArticle'
 import { fields, type PrintArticleFields } from '@/hooks/baboon/lib/printArticles/schema'
+import { SortingV1 } from '@ttab/elephant-api/index'
 
 /**
  * PrintArticleList component.
@@ -35,6 +36,10 @@ export const PrintArticleList = ({ columns }: {
     query: constructQuery(filter),
     size: 1000,
     fields,
+    sort: [
+      SortingV1.create({ field: 'document.rel.flow.title.sort', desc: false }),
+      SortingV1.create({ field: 'document.title.sort', desc: false })
+    ],
     options: {
       setTableData: true,
       subscribe: true

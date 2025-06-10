@@ -457,14 +457,14 @@ export const WorkflowSpecifications: Record<string, WorkflowSpecification> = {
       title: 'Exporterad',
       description: 'Printartikeln är exporterad',
       transitions: {
-        cancelled: {
+        unpublished: {
           verify: true,
           title: 'Dra tillbaka',
           description: 'Avbryt export och arkivera printartikeln'
         }
       }
     },
-    cancelled: {
+    unpublished: {
       title: 'Inställd',
       description: 'Printartikeln är avpublicerad',
       transitions: {

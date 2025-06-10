@@ -31,7 +31,7 @@ export const StatusMenu = ({ documentId, type, publishTime, onBeforeStatusChange
     'core/article',
     'core/flash',
     'core/editorial-info',
-    'core/print-article'
+    'tt/print-article'
   ].includes(type)
 
   const [documentStatus, setDocumentStatus] = useWorkflowStatus(documentId, shouldUseWorkflowStatus)
@@ -91,7 +91,8 @@ export const StatusMenu = ({ documentId, type, publishTime, onBeforeStatusChange
         const viewType: Record<string, View> = {
           'core/article': 'Editor',
           'core/planning-item': 'Planning',
-          'core/event': 'Event'
+          'core/event': 'Event',
+          'tt/print-article': 'PrintEditor'
         }
         handleLink({
           dispatch,
@@ -121,6 +122,17 @@ export const StatusMenu = ({ documentId, type, publishTime, onBeforeStatusChange
     return null
   }
 
+  const getCurrentCause = (cause: string | undefined, type: string, isChanged: boolean | undefined, prompt: { status: string } & WorkflowTransition | undefined) => {
+    if (cause !== undefined) {
+      return cause
+    } else if (type === 'tt/print-article') {
+      return ''
+    } else if (isChanged && prompt?.status === 'usable') {
+      return ''
+    } else {
+      return undefined
+    }
+  }
   return (
     <>
       <div className='flex items-center' ref={containerRef}>
@@ -192,9 +204,7 @@ export const StatusMenu = ({ documentId, type, publishTime, onBeforeStatusChange
               showPrompt={showPrompt}
               setStatus={(...args) => void setStatus(...args)}
               currentCause={
-                documentStatus?.cause !== undefined
-                  ? documentStatus.cause
-                  : (isChanged && prompt.status === 'usable') ? '' : undefined
+                getCurrentCause(documentStatus?.cause, type, isChanged, prompt)
               }
               requireCause={!!documentStatus.checkpoint && [
                 'core/article',
