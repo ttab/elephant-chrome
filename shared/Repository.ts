@@ -12,7 +12,7 @@ import type {
   GetStatusHistoryReponse,
   GetMetricsResponse
 } from '@ttab/elephant-api/repository'
-import type { Document } from '@ttab/elephant-api/newsdoc'
+import { Block, Document } from '@ttab/elephant-api/newsdoc'
 import type { RpcError, FinishedUnaryCall } from '@protobuf-ts/runtime-rpc'
 import type * as Y from 'yjs'
 import { isValidUUID } from '../src-srv/utils/isValidUUID.js'
@@ -323,27 +323,51 @@ export class Repository {
       meta: {}
     }, meta(accessToken))
 
-    if (!response.url) {
+    const { id: uploadId, url } = response || {}
+    if (!url || !uploadId) {
       throw new Error('CreateUpload request did not return a signed upload url')
     }
 
     try {
-      const uploadResponse = await fetch(response.url, {
+      const uploadResponse = await fetch(url, {
         method: 'PUT',
         body: file,
         headers: {
           'Content-Type': contentType
-        }
+        },
+        mode: 'cors'
       })
 
       if (!uploadResponse.ok) {
-        throw new Error(`Upload failed: ${uploadResponse.status} ${uploadResponse.statusText}`)
+        const errorText = await uploadResponse.text().catch(() => 'Unknown error')
+        throw new Error(`Upload failed: ${uploadResponse.status} ${uploadResponse.statusText}. Response: ${errorText}`)
       }
 
-      // FIXME: Update (create) actual document and return
-      console.log('File uploaded successfully')
+      const uuid = crypto.randomUUID()
+      const document = Document.create({
+        uuid,
+        uri: `core://image/${uuid}`,
+        title: name,
+        type: 'core/image',
+        meta: [
+          Block.create({
+            type: 'core/image',
+            data: {
+              filename: name,
+              mimetype: contentType
+            }
+          })
+        ]
+      })
+
+      await this.saveDocument(document, accessToken, 1n)
+
       return uploadResponse
     } catch (error) {
+      if (error instanceof TypeError && error.message === 'Failed to fetch') {
+        console.error('CORS error: The S3 bucket is not configured to allow requests from this origin. Please configure CORS policy on the S3 bucket.')
+        throw new Error('Upload failed due to CORS policy. Please contact your administrator to configure the S3 bucket CORS settings.')
+      }
       console.error('Upload error:', error)
       throw error
     }
