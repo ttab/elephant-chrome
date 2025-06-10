@@ -27,20 +27,32 @@ export const AssignmentTime = ({ index, onChange }: {
 } & FormProps): JSX.Element => {
   const [assignmentType] = useYValue<string>(`meta.core/assignment[${index}].meta.core/assignment-type[0].value`)
   const [data, setData] = useYValue<AssignmentData>(`meta.core/assignment[${index}].data`)
-  const { full_day: fullDay, end, publish_slot: publishSlot, end_date: endDate, start_date: startDate } = data || {}
-
+  const { full_day: fullDay, end, start, publish_slot: publishSlot, end_date: endDate, start_date: startDate } = data || {}
   let selectedLabel = ''
   const selectedOption = timeSlotTypes.concat(timePickTypes).find((option) => {
     if (fullDay === 'true' && option.value === 'fullday') {
       selectedLabel = option.label
       return true
     } else if (end && option.value === 'endexecution') {
-      const aDate = new Date(end.toString())
+      if (start && end && start !== end) {
+        const from = new Date(start.toString()).toLocaleString('sv-SE', {
+          hour: '2-digit',
+          minute: '2-digit'
+        })
 
-      selectedLabel = aDate.toLocaleString('sv-SE', {
-        hour: '2-digit',
-        minute: '2-digit'
-      })
+        const to = new Date(end.toString()).toLocaleString('sv-SE', {
+          hour: '2-digit',
+          minute: '2-digit'
+        })
+
+        selectedLabel = `${from} - ${to}`
+      } else {
+        const aDate = new Date(end.toString())
+        selectedLabel = aDate.toLocaleString('sv-SE', {
+          hour: '2-digit',
+          minute: '2-digit'
+        })
+      }
 
       return true
     } else if (publishSlot) {
