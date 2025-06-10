@@ -419,13 +419,22 @@ function EditorContent({ provider, user, onChange }: {
     }
   }, [isActive, ref])
 
+  // Initialization of the editor causes a call to onChange, we're not interested in that.
+  const hasInitialized = useRef(false)
+
   return (
     <Textbit.Editable
       ref={ref}
       yjsEditor={yjsEditor}
       lang={documentLanguage}
       onSpellcheck={onSpellcheck}
-      onChange={() => onChange?.(true)}
+      onChange={(_value) => {
+        if (hasInitialized.current) {
+          onChange?.(true)
+        } else {
+          hasInitialized.current = true
+        }
+      }}
       className='outline-none
         h-full
         dark:text-slate-100
