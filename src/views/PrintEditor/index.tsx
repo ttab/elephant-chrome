@@ -53,6 +53,7 @@ import { Prompt } from '@/components/Prompt'
 import { snapshot } from '@/lib/snapshot'
 import type * as Y from 'yjs'
 import { ImagePlugin } from './ImagePlugin'
+import { ChannelComboBox } from './components/ChannelComboBox'
 
 const meta: ViewMetadata = {
   name: 'PrintEditor',
@@ -114,7 +115,6 @@ function EditorWrapper(props: ViewProps & {
       FactboxPlugin,
       Table,
       LocalizedQuotationMarks,
-      TVListing,
       PrintText
     ]
 
@@ -127,6 +127,9 @@ function EditorWrapper(props: ViewProps & {
       ImagePlugin({
         repository,
         accessToken: data?.accessToken || ''
+      }),
+      TVListing({
+        channelComponent: ChannelComboBox
       }),
       Factbox({
         onEditOriginal: (id: string) => {
