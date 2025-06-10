@@ -1,4 +1,4 @@
-import { type MouseEvent } from 'react'
+import { useState, type MouseEvent } from 'react'
 
 import {
   Button,
@@ -21,6 +21,7 @@ export const DatePicker = ({ date, changeDate, setDate, forceYear = false, disab
   disabled?: boolean
 }): JSX.Element => {
   const { locale, timeZone } = useRegistry()
+  const [open, setOpen] = useState<boolean>(false)
 
   const formattedDate = new Intl.DateTimeFormat(locale.code.full, {
     weekday: 'short',
@@ -56,7 +57,7 @@ export const DatePicker = ({ date, changeDate, setDate, forceYear = false, disab
   })
 
   return (
-    <Popover modal={true}>
+    <Popover modal={true} open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <Button
           variant='outline'
@@ -84,15 +85,16 @@ export const DatePicker = ({ date, changeDate, setDate, forceYear = false, disab
           locale={locale.module}
           selected={date}
           onSelect={(selectedDate) => {
-            if (!selectedDate) return
+            if (selectedDate) {
+              if (changeDate) {
+                changeDate(undefined, { from: format(selectedDate, 'yyyy-MM-dd') }, 'self')
+              }
 
-            if (changeDate) {
-              changeDate(undefined, { from: format(selectedDate, 'yyyy-MM-dd') }, 'self')
+              if (setDate) {
+                setDate(format(selectedDate, 'yyyy-MM-dd'))
+              }
             }
-
-            if (setDate) {
-              setDate(format(selectedDate, 'yyyy-MM-dd'))
-            }
+            setOpen(false)
           }}
         />
       </PopoverContent>
