@@ -20,10 +20,12 @@ export const normalizeImage = (editor: Editor, nodeEntry: NodeEntry): boolean | 
         continue
       }
 
+      // @ts-expect-error Fix needed in Textbit to handle type better
       if (child.type === 'core/image/image') {
         hasImage = true
       }
 
+      // @ts-expect-error Fix needed in Textbit to handle type better
       if (child.type === 'core/image/text') {
         hasText = true
       }
@@ -39,6 +41,7 @@ export const normalizeImage = (editor: Editor, nodeEntry: NodeEntry): boolean | 
       Transforms.insertNodes(
         editor,
         {
+          // @ts-expect-error Fix needed in Textbit to handle type better
           id: crypto.randomUUID(),
           class: 'text',
           type: addType,
@@ -65,6 +68,7 @@ export const normalizeImage = (editor: Editor, nodeEntry: NodeEntry): boolean | 
     if (n === 1 && !TextbitElement.isOfType(child, 'core/image/text')) {
       Transforms.setNodes(
         editor,
+        // @ts-expect-error Fix needed in Textbit to handle type better
         { type: 'core/image/text' },
         { at: childPath }
       )
@@ -75,6 +79,7 @@ export const normalizeImage = (editor: Editor, nodeEntry: NodeEntry): boolean | 
       // Excessive nodes are lifted and transformed to text
       Transforms.setNodes(
         editor,
+        // @ts-expect-error Fix needed in Textbit to handle type better
         { type: 'core/text', properties: {} },
         { at: childPath }
       )
