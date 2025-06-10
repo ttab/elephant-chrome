@@ -28,16 +28,18 @@ export const consume = async (input: Plugin.Resource | Plugin.Resource[], reposi
       tmpImage.src = reader.result
       tmpImage.onload = () => {
         repository.uploadFile(name, type, input.data as File, accessToken)
-          .then(() => {
+          .then(({ uuid, name, type }) => {
+            // FIXME: Investigate why not inserted
+            // FIXME: Call getAttachment to get display src in component
             resolve({
               ...input,
               data: {
-                id: crypto.randomUUID(),
+                id: uuid,
                 class: 'block',
                 type: 'core/image',
                 properties: {
                   type,
-                  src: tmpImage.src,
+                  src: 'https://billetto.imgix.net/fqz1tfi3bhaizogvfowibztwpl97?w=1200&h=675&fit=crop&auto=compress%2Cformat&rect=0%2C0%2C940%2C529&s=862785ab0d3b66272db80380444a44b5', // Should not be filled in as it is fetched from a backend on render
                   title: name,
                   size,
                   width: tmpImage.width,

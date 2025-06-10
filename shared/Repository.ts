@@ -316,7 +316,11 @@ export class Repository {
   /**
    * Upload a file to the repository and file storage.
    */
-  async uploadFile(name: string, contentType: string, file: File | Blob, accessToken: string) {
+  async uploadFile(name: string, contentType: string, file: File | Blob, accessToken: string): Promise<{
+    uuid: string
+    name: string
+    type: string
+  }> {
     const { response } = await this.#client.createUpload({
       name,
       contentType,
@@ -362,7 +366,11 @@ export class Repository {
 
       await this.saveDocument(document, accessToken, 1n)
 
-      return uploadResponse
+      return {
+        uuid,
+        name,
+        type: contentType
+      }
     } catch (error) {
       if (error instanceof TypeError && error.message === 'Failed to fetch') {
         console.error('CORS error: The S3 bucket is not configured to allow requests from this origin. Please configure CORS policy on the S3 bucket.')
