@@ -122,8 +122,10 @@ export const StatusMenu = ({ documentId, type, publishTime, onBeforeStatusChange
     return null
   }
 
-  const getCurrentCause = (type: string, isChanged: boolean | undefined, prompt: { status: string } & WorkflowTransition | undefined) => {
-    if (type === 'tt/print-article') {
+  const getCurrentCause = (cause: string | undefined, type: string, isChanged: boolean | undefined, prompt: { status: string } & WorkflowTransition | undefined) => {
+    if (cause !== undefined) {
+      return cause
+    } else if (type === 'tt/print-article') {
       return ''
     } else if (isChanged && prompt?.status === 'usable') {
       return ''
@@ -202,9 +204,7 @@ export const StatusMenu = ({ documentId, type, publishTime, onBeforeStatusChange
               showPrompt={showPrompt}
               setStatus={(...args) => void setStatus(...args)}
               currentCause={
-                documentStatus?.cause !== undefined
-                  ? documentStatus.cause
-                  : getCurrentCause(type, isChanged, prompt)
+                getCurrentCause(documentStatus?.cause, type, isChanged, prompt)
               }
               requireCause={!!documentStatus.checkpoint && [
                 'core/article',
