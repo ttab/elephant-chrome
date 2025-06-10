@@ -31,7 +31,8 @@ import logger from '../lib/logger.js'
 import type { UpdateRequest, UpdateResponse } from '@ttab/elephant-api/repository'
 import { type GetDocumentResponse } from '@ttab/elephant-api/repository'
 import type { FinishedUnaryCall } from '@protobuf-ts/runtime-rpc'
-import { type Context, isContext } from '../lib/context.js'
+import type { Context } from '../lib/assertContext.js'
+import { assertContext } from '../lib/assertContext.js'
 import { isValidUUID } from './isValidUUID.js'
 
 interface CollaborationServerOptions {
@@ -271,7 +272,7 @@ export class CollaborationServer {
       return Y.encodeStateAsUpdate(ydoc)
     }
 
-    if (!isContext(context)) {
+    if (!assertContext(context)) {
       logger.warn({ context, documentName: uuid }, 'Invalid context provided')
       throw new Error('#fetchDocument - Invalid context provided')
     }

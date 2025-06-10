@@ -1,5 +1,3 @@
-import { toast } from 'sonner'
-
 const BASE_URL = import.meta.env.BASE_URL
 
 type SnapshotResponse = {
@@ -11,8 +9,8 @@ type SnapshotResponse = {
   statusMessage: undefined
 } | undefined
 
-export async function snapshot(id: string, force?: true, delay: number = 0): Promise<SnapshotResponse> {
-  if (!id) {
+export async function snapshot(uuid: string, force?: true, delay: number = 0): Promise<SnapshotResponse> {
+  if (!uuid) {
     throw new Error('UUID is required')
   }
 
@@ -22,23 +20,27 @@ export async function snapshot(id: string, force?: true, delay: number = 0): Pro
   }
 
   try {
-    const url = `${BASE_URL}/api/documents/${id}/snapshot${force === true ? '?force=true' : ''}`
+    const url = `${BASE_URL}/api/snapshot/${uuid}${force === true ? '?force=true' : ''}`
     const response = await fetch(url)
     const data = await response.json() as SnapshotResponse
 
     if (!response.ok) {
-      throw new Error((data && typeof data?.statusMessage === 'string')
-        ? data.statusMessage
-        : response.statusText)
+      return {
+        statusCode: response.status,
+        statusMessage: (data && typeof data?.statusMessage === 'string')
+          ? data.statusMessage
+          : response.statusText
+      }
     }
 
     return data
   } catch (ex) {
-    if (ex instanceof Error) {
-      console.error('Failed to save snapshot:', ex.message)
-      toast.error(`Lyckades inte spara kopia! ${ex.message}`)
-    } else {
-      toast.error(`Lyckades inte spara kopia!`)
+    const msg = (ex instanceof Error) ? ex.message : 'Failed saving snapshot'
+    console.error(msg)
+
+    return {
+      statusCode: -1,
+      statusMessage: msg
     }
   }
 }

@@ -78,6 +78,43 @@ export function dateToReadableDateTime(
 * @param date Date
 * @param locale string
 * @param timeZone string
+* @param includeYear boolean
+* @returns string
+* */
+export function dateToReadableDate(
+  date: Date,
+  locale: string,
+  timeZone: string,
+  includeYear?: boolean
+): string | undefined {
+  const yearFormat = {
+    timeZone,
+    year: 'numeric' as '2-digit'
+  }
+  const year = new Intl.DateTimeFormat(locale, yearFormat).format(date)
+  const currentYear = new Intl.DateTimeFormat(locale, yearFormat).format(new Date())
+
+  if (year === currentYear) {
+    return new Intl.DateTimeFormat(locale, {
+      timeZone,
+      day: 'numeric',
+      month: 'short'
+    }).format(date)
+  }
+
+  return new Intl.DateTimeFormat(locale, {
+    timeZone,
+    ...(includeYear
+      ? { month: 'short', day: 'numeric', year: 'numeric' }
+      : { timeStyle: 'short', dateStyle: 'full' })
+  }).format(date)
+}
+
+/**
+* Format a iso string to a human readable date.
+* @param date Date
+* @param locale string
+* @param timeZone string
 * @returns string
 * */
 export function dateToReadableTime(
