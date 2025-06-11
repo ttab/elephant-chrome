@@ -127,6 +127,10 @@ export const Version = ({ documentId, hideDetails = false, textOnly = true }: { 
         }
       }
 
+      if (v.version === -1n) {
+        status.name = 'Avpublicerad'
+      }
+
       return status
     }
 

@@ -12,6 +12,7 @@ import logger from '../../lib/logger.js'
 import { getInterval } from '../../../shared/getInterval.js'
 
 interface EleContext {
+  agent?: 'server'
   user: {
     sub: string
     preferred_username: string
@@ -158,7 +159,9 @@ export class OpenDocuments implements Extension {
    * Add user that opened the document to the correct document in the tracker.
    */
   async connected({ documentName, context }: EleConnectedPayload) {
-    if (this.isTrackerDocument(documentName)) return
+    if (context.agent === 'server' || this.isTrackerDocument(documentName)) {
+      return
+    }
 
     const { sub: userId, preferred_username: userName, name } = context.user || {}
 

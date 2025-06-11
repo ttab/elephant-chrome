@@ -3,7 +3,8 @@ import {
   CircleCheck,
   CircleDot,
   CircleX,
-  BadgeCheck
+  BadgeCheck,
+  CircleArrowLeft
 } from '@ttab/elephant-ui/icons'
 
 
@@ -107,6 +108,16 @@ export const PlanningEventStatuses: DefaultValueOption[] = [
       size: 18,
       strokeWidth: 1.75
     }
+  },
+  {
+    label: 'Avpublicerad',
+    value: 'unpublished',
+    icon: CircleArrowLeft,
+    iconProps: {
+      className: 'text-muted-foreground',
+      size: 18,
+      strokeWidth: 1.75
+    }
   }
 ] as const
 
@@ -157,7 +168,7 @@ export const PrintArticleStatuses: DefaultValueOption[] = [
   },
   {
     label: 'Inställd',
-    value: 'cancelled',
+    value: 'unpublished',
     icon: CircleX,
     iconProps: {
       color: '#ffffff',

@@ -5,7 +5,9 @@ import { ComboBox } from '@ttab/elephant-ui'
 import { useRef } from 'react'
 import type { FormProps } from './Form/Root'
 
-export const Story = ({ onChange }: FormProps): JSX.Element => {
+export const Story = ({ onChange, asSubject }: {
+  asSubject?: boolean
+} & FormProps): JSX.Element => {
   const allStories = useStories().map((_) => {
     return {
       value: _.id,
@@ -37,7 +39,9 @@ export const Story = ({ onChange }: FormProps): JSX.Element => {
             ? undefined
             : Block.create({
               type: 'core/story',
-              rel: 'story',
+              // Workaround for rel differences in the API
+              // Article is subject, planning and event are story
+              rel: asSubject ? 'subject' : 'story',
               uuid: option.value,
               title: option.label
             }))

@@ -15,6 +15,7 @@ const BASE_URL: string
 
 export const transformVisual = (element: Block): TBElement => {
   const { id, data, links } = element
+  const mediaType = links[0]?.url?.includes('/media/graphic/') ? 'graphics' : 'images'
 
   return {
     id: id || crypto.randomUUID(), // Must have id, if id is missing positioning in drag'n drop does not work
@@ -22,7 +23,7 @@ export const transformVisual = (element: Block): TBElement => {
     type: 'tt/visual',
     properties: {
       href: links[0]?.url,
-      proxy: `${BASE_URL}/api/images/${links[0]?.url.split('/').pop()}`,
+      proxy: `${BASE_URL}/api/${mediaType}/${links[0]?.url.split('/').pop()}`,
       rel: links[0].rel,
       uri: links[0].uri,
       type: links[0].type,

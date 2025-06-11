@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { type Dispatch, type SetStateAction, useState } from 'react'
 import { View, ViewHeader } from '@/components'
 import { type ViewMetadata } from '@/types'
 import { Loader, ListEnd, Image } from '@ttab/elephant-ui/icons'
@@ -11,6 +11,8 @@ import { createFetcher } from './lib/fetcher'
 import { useRegistry } from '@/hooks/useRegistry'
 import { type ttninjs } from '@ttab/api-client'
 import { useSession } from 'next-auth/react'
+
+export type MediaTypes = 'image' | 'graphic'
 
 const meta: ViewMetadata = {
   name: 'ImageSearch',
@@ -44,21 +46,28 @@ const ImageSearchResult = ({ children }: {
 export const ImageSearch = (): JSX.Element => {
   const { server: { contentApiUrl } } = useRegistry()
   const { data: session } = useSession()
+  const [mediaType, setMediaType] = useState<MediaTypes>('image')
 
   return (
-    <SWRConfig value={{ fetcher: createFetcher(contentApiUrl, session) }}>
-      <ImageSearchContent />
+    <SWRConfig value={{ fetcher: createFetcher(contentApiUrl, session, mediaType) }}>
+      <ImageSearchContent setMediaType={setMediaType} mediaType={mediaType} />
     </SWRConfig>
   )
 }
 
-const ImageSearchContent = (): JSX.Element => {
+const ImageSearchContent = ({
+  setMediaType,
+  mediaType
+}: {
+  setMediaType: Dispatch<SetStateAction<MediaTypes>>
+  mediaType: MediaTypes
+}): JSX.Element => {
   const [queryString, setQueryString] = useState('')
   const SIZE = 10
 
   const swr = useSWRInfinite<{ hits: ttninjs[] }, Error>(
     (index) => {
-      return [queryString, index, SIZE]
+      return [queryString, index, SIZE, mediaType]
     },
     {
       revalidateFirstPage: false
@@ -74,7 +83,7 @@ const ImageSearchContent = (): JSX.Element => {
           icon={Image}
         />
         <ViewHeader.Content>
-          <ImageSearchInput setQueryString={setQueryString} />
+          <ImageSearchInput setQueryString={setQueryString} setMediaType={setMediaType} />
         </ViewHeader.Content>
         <ViewHeader.Action />
       </ViewHeader.Root>

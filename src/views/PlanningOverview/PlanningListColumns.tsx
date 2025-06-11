@@ -43,7 +43,12 @@ export function planningListColumns({ sections = [], authors = [] }: {
           </span>
         )
       },
-      accessorFn: (data) => data?.fields['document.meta.status']?.values[0],
+      accessorFn: (data) => {
+        if (data?.fields['heads.usable.version']?.values[0] === '-1') {
+          return 'unpublished'
+        }
+        return data?.fields['document.meta.status']?.values[0]
+      },
       cell: ({ row }) => {
         const status = row.getValue<string>('documentStatus')
         return <DocumentStatus type='core/planning-item' status={status} />
