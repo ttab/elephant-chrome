@@ -10,6 +10,7 @@ import { toYjsNewsDoc } from '@/shared/transformations/yjsNewsDoc.js'
 import { toGroupedNewsDoc } from '@/shared/transformations/groupedNewsDoc.js'
 import type { Wire } from '../../../../src/hooks/index/useDocuments/schemas/wire.js'
 import { getContextFromValidSession, isContext, type Context } from '../../../lib/context.js'
+import { isValidUUID } from '../../../utils/isValidUUID.js'
 
 type Response = RouteContentResponse | RouteStatusResponse
 
@@ -79,12 +80,12 @@ export const POST: RouteHandler = async (req: Request, { collaborationServer, re
   }
 
   // Either request the document for the existing planning id
-  // or use a new id to spawn a new Y.Doc.
-  const documentId = planningId || crypto.randomUUID()
+  // or use a new id to spawn a new Y.Doc. Validate that planningId is a valid UUID.
+  const documentId = (isValidUUID(planningId) && planningId) || crypto.randomUUID()
   const connection = await collaborationServer.server.openDirectConnection(documentId, context)
 
   await connection.transact((document) => {
-    if (!planningId && section) {
+    if (!isValidUUID(planningId) && section) {
       // If we have no planningId we create a new planning item using
       // planningDocumentTemplate as a basis and apply it to the cocument.
       toYjsNewsDoc(
