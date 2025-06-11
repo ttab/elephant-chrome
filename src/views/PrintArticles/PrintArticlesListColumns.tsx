@@ -6,6 +6,7 @@ import type { PrintArticle } from '@/hooks/baboon/lib/printArticles'
 import { DocumentStatuses } from '@/defaults/documentStatuses'
 import { DocumentStatus } from '@/components/Table/Items/DocumentStatus'
 import { FacetedFilter } from '@/components/Commands/FacetedFilter'
+import { PrintFlows } from './PrintFlows'
 /**
  * Generates column definitions for the Print Articles list.
  *
@@ -56,13 +57,15 @@ export function printArticlesListColumns(): Array<ColumnDef<PrintArticle>> {
         // options: PrintFlows,
         name: 'Flöde',
         columnIcon: Pen,
-        className: 'flex-1 w-[200px]'
+        className: 'flex-1 w-[200px] hidden',
+        display: (value: string) => (
+          <span>
+            {value}
+          </span>
+        )
       },
       accessorFn: (data) => (data.fields['document.rel.flow.title'].values[0]),
-      cell: ({ row }) => {
-        const flow = row.getValue('printFlow')
-        return <span>{flow as string}</span>
-      }
+      cell: () => <span />
     },
     {
       id: 'articleTitle',
