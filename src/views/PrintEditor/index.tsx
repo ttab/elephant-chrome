@@ -52,6 +52,7 @@ import { useSession } from 'next-auth/react'
 import { Prompt } from '@/components/Prompt'
 import { snapshot } from '@/lib/snapshot'
 import type * as Y from 'yjs'
+import { format } from 'date-fns'
 
 const meta: ViewMetadata = {
   name: 'PrintEditor',
@@ -182,8 +183,7 @@ function EditorContainer({
   const { baboon } = useRegistry()
   const { data: session } = useSession()
   const [,,allParams] = useQuery(['from'], true)
-  const date = allParams?.filter((item) => item.name === 'PrintArticles')?.[0]?.params?.from || ''
-
+  const date = allParams?.filter((item) => item.name === 'Print')?.[0]?.params?.from || format(new Date(), 'yyyy-MM-dd')
   const [isChanged] = useYValue<boolean>('root.changed')
 
   const handleChange = useCallback((value: boolean): void => {
