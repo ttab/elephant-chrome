@@ -53,6 +53,7 @@ import { Prompt } from '@/components/Prompt'
 import { snapshot } from '@/lib/snapshot'
 import type * as Y from 'yjs'
 import { format } from 'date-fns'
+import { ChannelComboBox } from './components/ChannelComboBox'
 
 const meta: ViewMetadata = {
   name: 'PrintEditor',
@@ -112,7 +113,6 @@ function EditorWrapper(props: ViewProps & {
       FactboxPlugin,
       Table,
       LocalizedQuotationMarks,
-      TVListing,
       PrintText
     ]
 
@@ -121,6 +121,9 @@ function EditorWrapper(props: ViewProps & {
       Text({
         countCharacters: ['heading-1'],
         ...contentMenuLabels
+      }),
+      TVListing({
+        channelComponent: ChannelComboBox
       }),
       Factbox({
         onEditOriginal: (id: string) => {
