@@ -20,7 +20,7 @@ import {
 } from '@/hooks'
 import type { ViewMetadata, ViewProps } from '@/types'
 import { EditorHeader } from './EditorHeader'
-import { type HocuspocusProvider } from '@hocuspocus/provider'
+import { WebSocketStatus, type HocuspocusProvider } from '@hocuspocus/provider'
 import { type AwarenessUserData } from '@/contexts/CollaborationProvider'
 import { Error } from '../Error'
 
@@ -34,6 +34,7 @@ import type { Block } from '@ttab/elephant-api/newsdoc'
 import { getValueByYPath } from '@/shared/yUtils'
 import { useOnSpellcheck } from '@/hooks/useOnSpellcheck'
 import { contentMenuLabels } from '@/defaults/contentMenuLabels'
+import { ConnectionAlert } from './components/ConnectionAlert'
 
 // Metadata definition
 const meta: ViewMetadata = {
@@ -97,7 +98,7 @@ function EditorWrapper(props: ViewProps & {
   planningId?: string | null
   autoFocus?: boolean
 }): JSX.Element {
-  const { provider, synced, user } = useCollaboration()
+  const { provider, synced, user, status } = useCollaboration()
   const openFactboxEditor = useLink('Factbox')
   const [notes] = useYValue<Block[] | undefined>('meta.core/note')
   const [, setIsFocused] = useAwareness(props.documentId)
@@ -146,6 +147,7 @@ function EditorWrapper(props: ViewProps & {
       >
         <EditorContainer
           provider={provider}
+          status={status}
           synced={synced}
           user={user}
           planningId={props.planningId}
@@ -161,6 +163,7 @@ function EditorWrapper(props: ViewProps & {
 // Container component that uses TextBit context
 function EditorContainer({
   provider,
+  status,
   synced,
   user,
   documentId,
@@ -168,6 +171,7 @@ function EditorContainer({
   notes
 }: {
   provider: HocuspocusProvider | undefined
+  status?: WebSocketStatus
   synced: boolean
   user: AwarenessUserData
   documentId: string
@@ -180,11 +184,14 @@ function EditorContainer({
     <>
       <EditorHeader documentId={documentId} planningId={planningId} />
       {!!notes?.length && <div className='p-4'><Notes /></div>}
+      {status !== WebSocketStatus.Connected && (
+        <ConnectionAlert />
+      )}
       <View.Content className='flex flex-col max-w-[1000px]'>
 
         <div className='flex-grow overflow-auto pr-12 max-w-screen-xl'>
           {!!provider && synced
-            ? <EditorContent provider={provider} user={user} />
+            ? <EditorContent provider={provider} user={user} status={status} />
             : <></>}
         </div>
       </View.Content>
@@ -204,8 +211,9 @@ function EditorContainer({
 }
 
 
-function EditorContent({ provider, user }: {
+function EditorContent({ provider, user, status }: {
   provider: HocuspocusProvider
+  status?: WebSocketStatus
   user: AwarenessUserData
 }): JSX.Element {
   const { isActive } = useView()
@@ -230,6 +238,7 @@ function EditorContent({ provider, user }: {
       yjsEditor={yjsEditor}
       lang={documentLanguage}
       onSpellcheck={onSpellcheck}
+      readOnly={status !== WebSocketStatus.Connected}
       className='outline-none
         h-full
         dark:text-slate-100

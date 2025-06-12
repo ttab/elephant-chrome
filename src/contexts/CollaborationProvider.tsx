@@ -6,6 +6,7 @@ import {
   useContext,
   useEffect
 } from 'react'
+import type { WebSocketStatus } from '@hocuspocus/provider'
 import { HocuspocusProvider } from '@hocuspocus/provider'
 import { useSession } from 'next-auth/react'
 import { Collaboration } from '@/defaults'
@@ -15,6 +16,7 @@ import { createStateless, StatelessType } from '@/shared/stateless'
 import { useModal } from '@/components/Modal/useModal'
 import { useKeydownGlobal } from '@/hooks/useKeydownGlobal'
 import { Button } from '@ttab/elephant-ui'
+import { toast } from 'sonner'
 
 export interface AwarenessUserData {
   name: string
@@ -39,6 +41,7 @@ export interface CollaborationProviderState {
   connected: boolean
   synced: boolean
   user: AwarenessUserData
+  status?: WebSocketStatus
 }
 
 const initialState: CollaborationProviderState = {
@@ -51,7 +54,8 @@ const initialState: CollaborationProviderState = {
     initials: '',
     color: '',
     avatar: undefined
-  }
+  },
+  status: undefined
 }
 
 
@@ -67,6 +71,7 @@ export const CollaborationProviderContext = ({ documentId, document, children }:
 
   const [synced, setSynced] = useState<boolean>(false)
   const [connected, setConnected] = useState<boolean>(false)
+
   const [provider, setProvider] = useState<HocuspocusProvider>()
 
   // Developer tool to display current document source in a dialog
@@ -96,9 +101,25 @@ export const CollaborationProviderContext = ({ documentId, document, children }:
   if (status !== 'authenticated') {
     throw new Error('Collaboration is not allowed without a valid access_token')
   }
+  useEffect(() => {
+    if (!provider) return
+
+    const handleDisconnect = () => {
+      provider.connect().catch((error) => {
+        console.error('Error reconnecting provider:', error)
+        toast.error('Kunde inte återansluta till dokumentet')
+      })
+    }
+
+    provider.on('disconnect', handleDisconnect)
+
+    return () => {
+      provider.off('disconnect', handleDisconnect)
+    }
+  }, [provider])
 
   useEffect(() => {
-    if (!documentId || !webSocket) {
+    if (!documentId || !webSocket || !data?.accessToken) {
       return
     }
 
@@ -119,6 +140,7 @@ export const CollaborationProviderContext = ({ documentId, document, children }:
       },
       onDisconnect: () => {
         setSynced(false)
+        setConnected(false)
       }
     })
 
@@ -156,7 +178,8 @@ export const CollaborationProviderContext = ({ documentId, document, children }:
     documentId,
     connected,
     synced,
-    user
+    user,
+    status: webSocket?.status
   }
 
   return (
