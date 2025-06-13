@@ -22,6 +22,13 @@ const getMidnightISOString = (endDate: string | undefined): string => {
   return endDateIsoString
 }
 
+const makeLocalString = (date: string) => {
+  return new Date(date.toString()).toLocaleString('sv-SE', {
+    hour: '2-digit',
+    minute: '2-digit'
+  })
+}
+
 export const AssignmentTime = ({ index, onChange }: {
   index: number
 } & FormProps): JSX.Element => {
@@ -33,17 +40,19 @@ export const AssignmentTime = ({ index, onChange }: {
     if (fullDay === 'true' && option.value === 'fullday') {
       selectedLabel = option.label
       return true
+    }
+    if (assignmentType === 'text' && start && end && start !== end) {
+      if (option.value === 'start-end-execution') {
+        const from = makeLocalString(start)
+        const to = makeLocalString(end)
+
+        selectedLabel = `${from} - ${to}`
+        return true
+      }
     } else if (end && option.value === 'endexecution') {
       if (start && end && start !== end) {
-        const from = new Date(start.toString()).toLocaleString('sv-SE', {
-          hour: '2-digit',
-          minute: '2-digit'
-        })
-
-        const to = new Date(end.toString()).toLocaleString('sv-SE', {
-          hour: '2-digit',
-          minute: '2-digit'
-        })
+        const from = makeLocalString(start)
+        const to = makeLocalString(end)
 
         selectedLabel = `${from} - ${to}`
       } else {
