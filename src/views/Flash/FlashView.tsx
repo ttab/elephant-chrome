@@ -93,7 +93,7 @@ function EditorContainer({
 
   return (
     <>
-      <FlashHeader id={documentId} asDialog={false} readOnly={readOnly} />
+      <FlashHeader documentId={documentId} asDialog={false} readOnly={readOnly} />
 
       <View.Content className='flex flex-col max-w-[1000px]'>
         <div className='flex-grow overflow-auto max-w-screen-xl'>
