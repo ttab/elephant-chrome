@@ -44,9 +44,13 @@ export const TimeSelectItem = ({ handleOnSelect, index, handleParentOpenChange }
     }
   }, [valid, endTime, handleOnSelect, handleParentOpenChange])
 
-  const timePickType = timePickTypes[0]
+  const timePickType = data?.end && data?.start ? timePickTypes.find((t) => t.value === 'start-end-execution') : timePickTypes[0]
 
   const handleConfirm = (evt: MouseEvent<HTMLButtonElement> | React.KeyboardEvent): void => {
+    if (!timePickType) {
+      return
+    }
+
     evt.preventDefault()
     evt.stopPropagation()
     handleOnSelect({ value: timePickType.value, selectValue: endTime })
