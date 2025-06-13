@@ -17,6 +17,10 @@ export const transformTvListing = (element: Block): TBElement => {
     },
     children: [
       {
+        type: 'tt/tv-listing/title',
+        children: [{ text: data.title ?? '' }]
+      },
+      {
         type: 'tt/tv-listing/channel',
         children: [{ text: data.channel ?? '' }]
       },
@@ -25,16 +29,12 @@ export const transformTvListing = (element: Block): TBElement => {
         children: [{ text: data.day ?? '' }]
       },
       {
-        type: 'tt/tv-listing/end_time',
-        children: [{ text: data.end_time ?? '' }]
-      },
-      {
         type: 'tt/tv-listing/time',
         children: [{ text: data.time ?? '' }]
       },
       {
-        type: 'tt/tv-listing/title',
-        children: [{ text: data.title ?? '' }]
+        type: 'tt/tv-listing/end_time',
+        children: [{ text: data.end_time ?? '' }]
       }
     ]
   }
@@ -50,7 +50,8 @@ export function revertTvListing(element: TBElement): Block {
     }
   })
 
-  const channel = parseChildren.find((c) => c.type === 'tt/tv-listing/channel')?.text
+  const channelName = element.properties?.channel
+  const channelUri = element.properties?.uri as string || ''
   const title = parseChildren.find((c) => c.type === 'tt/tv-listing/title')?.text
   const time = parseChildren.find((c) => c.type === 'tt/tv-listing/time')?.text
   const end_time = parseChildren.find((c) => c.type === 'tt/tv-listing/end_time')?.text
@@ -59,16 +60,18 @@ export function revertTvListing(element: TBElement): Block {
   return Block.create({
     id,
     type: 'tt/tv-listing',
-    links: [{
-      rel: 'self',
-      uri: `tt://tv-listing/${id}`
-    }],
     data: {
-      channel: toString(channel),
+      channel: toString(channelName),
       day: toString(day),
       end_time: toString(end_time),
       time: toString(time),
       title: toString(title)
-    }
+    },
+    links: [
+      {
+        rel: 'channel',
+        uri: channelUri
+      }
+    ]
   })
 }
