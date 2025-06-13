@@ -29,8 +29,6 @@ export const consume = async (input: Plugin.Resource | Plugin.Resource[], reposi
       tmpImage.onload = () => {
         repository.uploadFile(name, type, input.data as File, accessToken)
           .then(({ uuid, name, type }) => {
-            // FIXME: Investigate why not inserted
-            // FIXME: Call getAttachment to get display src in component
             resolve({
               ...input,
               data: {
