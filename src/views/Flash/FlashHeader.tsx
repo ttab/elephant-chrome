@@ -16,7 +16,7 @@ export const FlashHeader = ({
   asDialog,
   onDialogClose
 }: {
-  documentId: string
+  documentId: string | undefined
   readOnly?: boolean
   asDialog?: boolean
   onDialogClose?: (() => void) | undefined
