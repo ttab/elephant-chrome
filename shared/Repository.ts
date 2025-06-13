@@ -10,7 +10,8 @@ import type {
   ValidateRequest,
   ValidateResponse,
   GetStatusHistoryReponse,
-  GetMetricsResponse
+  GetMetricsResponse,
+  AttachmentDetails
 } from '@ttab/elephant-api/repository'
 import { Block, Document } from '@ttab/elephant-api/newsdoc'
 import type { RpcError, FinishedUnaryCall } from '@protobuf-ts/runtime-rpc'
@@ -379,5 +380,23 @@ export class Repository {
       console.error('Upload error:', error)
       throw error
     }
+  }
+
+  /**
+   * Get a signed download url to an uploaded file.
+   */
+  async getAttachmentDetails(id: string, accessToken: string): Promise<AttachmentDetails> {
+    const { response } = await this.#client.getAttachments({
+      documents: [id],
+      attachmentName: id,
+      downloadLink: true
+    }, meta(accessToken))
+
+    const { attachments } = response || {}
+    if (!Array.isArray(attachments) || !attachments.length) {
+      throw new Error('Get attachments request did not return a signed download url')
+    }
+
+    return attachments[0]
   }
 }

@@ -29,6 +29,8 @@ export const consume = async (input: Plugin.Resource | Plugin.Resource[], reposi
       tmpImage.onload = () => {
         repository.uploadFile(name, type, input.data as File, accessToken)
           .then(({ uuid, name, type }) => {
+            // FIXME: Ensure this is the correct image (textbit element) structure
+            // FIXME: and that the image is rendered using FigureImage component.
             resolve({
               ...input,
               data: {
