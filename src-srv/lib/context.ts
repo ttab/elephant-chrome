@@ -1,4 +1,5 @@
 import type { User as DefaultUser } from '@auth/express'
+import type { Request, Response } from 'express'
 
 interface User extends DefaultUser {
   sub: string
@@ -66,7 +67,7 @@ export function isContext(context: unknown): context is Context {
 /**
  * Local type guard for session
  */
-const isSession = (value: unknown): value is {
+export const isSession = (value: unknown): value is {
   accessToken: string
   user: Context['user']
 } => {
@@ -76,4 +77,37 @@ const isSession = (value: unknown): value is {
     && typeof value.accessToken === 'string'
     && 'user' in value
     && !!value.user
+}
+
+
+export function getSession(req: Request, res: Response): { accessToken?: string, user?: User | undefined } {
+  // Try to get token and user from session
+  const session: unknown = res.locals?.session
+
+  if (isSession(session)) {
+    return {
+      accessToken: (session as { accessToken?: string }).accessToken,
+      user: (session as { user?: User }).user
+    }
+  }
+
+  // Try to get token and user from headers (e.g., Authorization: Bearer <token>, X-User: <user>)
+  const authHeader = req.headers['authorization']
+  const userHeader = req.headers['x-user']
+
+  let user: unknown = undefined
+  if (typeof userHeader === 'string') {
+    try {
+      user = JSON.parse(userHeader)
+    } catch {
+      user = undefined
+    }
+  }
+
+  return {
+    accessToken: typeof authHeader === 'string' && authHeader.startsWith('Bearer ')
+      ? authHeader.slice(7).trim()
+      : undefined,
+    user: user as User
+  }
 }
