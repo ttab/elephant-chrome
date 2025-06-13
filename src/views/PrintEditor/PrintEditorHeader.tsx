@@ -1,5 +1,5 @@
 import { useView, useYValue } from '@/hooks'
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { ViewHeader } from '@/components/View'
 import { StatusMenu } from '@/components/DocumentStatus/StatusMenu'
 import { PenBoxIcon } from '@ttab/elephant-ui/icons'
@@ -39,7 +39,7 @@ export const EditorHeader = ({
   useEffect(() => {
     containerRef.current = document.getElementById(viewId)
   }, [viewId])
-
+  const [isDirty, setIsDirty] = useState(false)
   const [title, setTitle] = useYValue<string>('root.title')
 
   return (
@@ -56,13 +56,19 @@ export const EditorHeader = ({
                   placeholder='Printartikelnamn'
                   className='px-2 py-1'
                   value={title}
-                  onChange={(e) => setTitle(e.target.value)}
+                  onChange={(e) => {
+                    setIsDirty(true)
+                    setTitle(e.target.value)
+                  }}
                   onBlur={() => {
-                    snapshot(documentId).then(() => {
-                      toast.success('Titel uppdaterad')
-                    }).catch((error) => {
-                      console.error('Error updating title:', error)
-                    })
+                    if (isDirty) {
+                      setIsDirty(false)
+                      snapshot(documentId).then(() => {
+                        toast.success('Titel uppdaterad')
+                      }).catch((error) => {
+                        console.error('Error updating title:', error)
+                      })
+                    }
                   }}
                 />
               </div>

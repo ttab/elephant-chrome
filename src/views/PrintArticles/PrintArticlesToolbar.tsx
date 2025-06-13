@@ -110,37 +110,6 @@ export const Toolbar = <PrintArticle,>({ columns }: {
           className='px-1'
         >
           <ToggleGroupItem
-            key='nyheter'
-            value={['6eaca8e0-22d9-54de-8881-9afde05be217'].join(',')}
-            aria-label='Toggle nyheter'
-            className='border data-[state=off]:text-muted-foreground'
-          >
-            Nyheter
-          </ToggleGroupItem>
-          <ToggleGroupItem
-            key='tv'
-            value={[
-              'd2cebd5d-8d3e-5b6d-9cf5-df8f5b4049ad',
-              'f32b11e4-9d3f-537a-a683-81a1b014be25',
-              '4ad81610-d063-52e9-b0ac-b424821c9119',
-              '44522ab9-4419-5efd-9b32-b8de9a7385c6',
-              'ae53f29d-d588-527a-9a61-e78e78c2a7ac',
-              '4a0eebdb-c315-5358-962a-896546efaa9e',
-              'd74279ee-3608-5ead-92c3-9beb4848acfd'].join(',')}
-            aria-label='Toggle tv'
-            className='border data-[state=off]:text-muted-foreground'
-          >
-            TV
-          </ToggleGroupItem>
-          <ToggleGroupItem
-            key='expressen'
-            value={['85c43dcf-eee6-5952-bf41-e5c818134422', '97981bcb-127f-5af7-b750-b3ba4c709ef1'].join(',')}
-            aria-label='Toggle expressen'
-            className='border data-[state=off]:text-muted-foreground'
-          >
-            Expressen
-          </ToggleGroupItem>
-          <ToggleGroupItem
             value='user'
             aria-label='Toggle user'
             className='border data-[state=off]:text-muted-foreground'
