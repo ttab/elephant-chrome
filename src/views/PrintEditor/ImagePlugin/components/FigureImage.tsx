@@ -6,6 +6,9 @@ export const FigureImage = ({ children, rootNode }: Plugin.ComponentProps): JSX.
   const src: string = properties?.src as string || ''
   const imgContainerRef = useRef<HTMLDivElement>(null)
 
+  //
+  // FIXME: Use element/node id to request a src url from backend.
+  //
   useEffect(() => {
     if (!imgContainerRef?.current) {
       return
