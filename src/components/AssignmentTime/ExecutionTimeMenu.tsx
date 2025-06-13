@@ -38,7 +38,7 @@ export const ExecutionTimeMenu = ({ handleOnSelect, index, startDate }: Executio
   const [endTimeValue, setEndTimeValue] = useState<string>('23:59')
   const [startDateValue, setStartDateValue] = useState<string>('')
   const [endDateValue, setEndDateValue] = useState<string>('')
-  const [hasEndTime, setHasEndTime] = useState<boolean>()
+  const [hasEndTime, setHasEndTime] = useState<boolean>(false)
   const { locale, timeZone } = useRegistry()
   const [mounted, setMounted] = useState(false)
   const [startTimeValid, setStartTimeValid] = useState(false)
@@ -155,7 +155,7 @@ export const ExecutionTimeMenu = ({ handleOnSelect, index, startDate }: Executio
     }
   }
 
-  const timePickType = timePickTypes[1]
+  const timePickType = hasEndTime ? timePickTypes[1] : timePickTypes[2]
 
   return (
     <Popover open={open} onOpenChange={handleOpenChange}>
