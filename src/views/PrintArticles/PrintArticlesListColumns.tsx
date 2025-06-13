@@ -1,5 +1,4 @@
 
-import { Title } from '@/components/Table/Items/Title'
 import { type ColumnDef } from '@tanstack/react-table'
 import { CircleCheck, Pen, Tv } from '@ttab/elephant-ui/icons'
 import type { PrintArticle } from '@/hooks/baboon/lib/printArticles'
@@ -117,7 +116,7 @@ export function printArticlesListColumns(): Array<ColumnDef<PrintArticle>> {
         const tvTitle = data?.fields['document.content.tt_tv_listing.data.title']?.values?.[0] || ''
         return tvTitle
           ? (
-              <div className='flex items-center gap-2'>
+              <div className='flex items-center gap-2 text-sm'>
                 <Tv size={16} />
                 {tvTitle}
               </div>
@@ -126,12 +125,7 @@ export function printArticlesListColumns(): Array<ColumnDef<PrintArticle>> {
       },
       cell: ({ row }) => {
         const title = row.getValue('articleTitle')
-        return (
-          <Title
-            title={title as string}
-            className='text-sm'
-          />
-        )
+        return title as string
       }
     }
   ]
