@@ -1,9 +1,11 @@
-import { useView } from '@/hooks'
+import { useView, useYValue } from '@/hooks'
 import { useEffect, useRef } from 'react'
 import { ViewHeader } from '@/components/View'
 import { StatusMenu } from '@/components/DocumentStatus/StatusMenu'
 import { PenBoxIcon } from '@ttab/elephant-ui/icons'
 import { AddNote } from '../Editor/components/Notes/AddNote'
+import { snapshot } from '@/lib/snapshot'
+import { toast } from 'sonner'
 
 /**
  * EditorHeader component.
@@ -25,12 +27,10 @@ import { AddNote } from '../Editor/components/Notes/AddNote'
 
 export const EditorHeader = ({
   documentId,
-  name,
   flowName,
   isChanged
 }: {
   documentId: string
-  name?: string
   flowName?: string
   isChanged?: boolean
 }): JSX.Element => {
@@ -39,6 +39,8 @@ export const EditorHeader = ({
   useEffect(() => {
     containerRef.current = document.getElementById(viewId)
   }, [viewId])
+
+  const [title, setTitle] = useYValue<string>('root.title')
 
   return (
     <ViewHeader.Root className='grid grid-cols-2'>
@@ -53,8 +55,15 @@ export const EditorHeader = ({
                   type='text'
                   placeholder='Printartikelnamn'
                   className='px-2 py-1'
-                  defaultValue={name}
-                  disabled
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                  onBlur={() => {
+                    snapshot(documentId).then(() => {
+                      toast.success('Titel uppdaterad')
+                    }).catch((error) => {
+                      console.error('Error updating title:', error)
+                    })
+                  }}
                 />
               </div>
             </div>

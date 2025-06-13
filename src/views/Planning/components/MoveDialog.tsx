@@ -118,11 +118,6 @@ export const MoveDialog = ({ onClose, newDate }: {
                   )
                 }
 
-                // Set planning date
-                setStartString(newDate)
-                setEndString(newDate)
-
-
                 // Set the dates and times of the assignments
                 const base = `meta.core/assignment[${index}]`
                 setValueByYPath(yRoot, `${base}.data.start_date`, newDate)
@@ -136,15 +131,19 @@ export const MoveDialog = ({ onClose, newDate }: {
                   setValueByYPath(yRoot, `${base}.data.start`, zuluTime(asgn.newTime[0]))
                   setValueByYPath(yRoot, `${base}.data.end`, zuluTime(asgn.newTime[1]))
                 }
+              }
 
-                if (id) {
-                  snapshot(id).then(() => {
-                    onClose()
-                  }).catch((err) => {
-                    console.error(err)
-                    toast.error('Planeringen har ändrats lokalt men gick inte att spara.')
-                  })
-                }
+              if (id) {
+                // Set planning date and snapshot
+                setStartString(newDate)
+                setEndString(newDate)
+
+                snapshot(id).then(() => {
+                  onClose()
+                }).catch((err) => {
+                  console.error(err)
+                  toast.error('Planeringen har ändrats lokalt men gick inte att spara.')
+                })
               }
             }}
           >

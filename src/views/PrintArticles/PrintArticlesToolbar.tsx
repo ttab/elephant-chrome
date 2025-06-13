@@ -4,15 +4,12 @@ import { Commands } from './Commands'
 import { useCallback, useMemo, useState } from 'react'
 import { DotDropdownMenu } from '@/components/ui/DotMenu'
 import { Save, UserCog } from '@ttab/elephant-ui/icons'
-import { Button, ToggleGroup, ToggleGroupItem } from '@ttab/elephant-ui'
+import { ToggleGroup, ToggleGroupItem } from '@ttab/elephant-ui'
 import { useTable } from '@/hooks/useTable'
-import { ColumnDef, ColumnFiltersState } from '@tanstack/react-table'
+import { type ColumnDef, type ColumnFiltersState } from '@tanstack/react-table'
 import { useUserTracker } from '@/hooks/useUserTracker'
-import { QueryParams } from '@/hooks/useQuery'
-import { useSections } from '@/hooks/useSections'
-import { columnFilterToQuery, loadFilters } from '@/lib/loadFilters'
-import { PrintArticle } from '@/hooks/index/useDocuments/schemas/printArticle'
-import { columns } from './columns'
+import { type QueryParams } from '@/hooks/useQuery'
+import { columnFilterToQuery } from '@/lib/loadFilters'
 import { toast } from 'sonner'
 
 /**
@@ -33,20 +30,15 @@ import { toast } from 'sonner'
 export const Toolbar = <PrintArticle,>({ columns }: {
   columns: ColumnDef<PrintArticle>[]
 }): JSX.Element => {
-  const { table, type, command } = useTable<PrintArticle>()
-  const { columnFilters, globalFilter } = table.getState() as {
+  const { table, type } = useTable<PrintArticle>()
+  const { columnFilters } = table.getState() as {
     columnFilters: ColumnFiltersState
-    globalFilter: string
   }
-  const isFiltered = useMemo(() => columnFilters.length > 0
-    || !!globalFilter, [columnFilters, globalFilter])
-  const allSections = useSections()
   const column = table.getColumn('printFlow')
   const [filters, setFilters] = useUserTracker<QueryParams | undefined>(`filters.${type}`)
   const columnFilterValue = column?.getFilterValue()
   const savedUserFilter = useMemo(() => {
-    console.log('savedUserFilter', filters, columns)
-    return [] // loadFilters<PrintArticle>(filters, columns)
+    return []
   }, [filters, columns])
 
   const isUserFilter = (savedUserFilter: ColumnFiltersState, currentFilter: ColumnFiltersState): boolean => (
@@ -63,12 +55,6 @@ export const Toolbar = <PrintArticle,>({ columns }: {
     setPages,
     search,
     setSearch
-  }
-
-  // console.log('columnFilterValue', columnFilterValue, 'savedUserFilter', savedUserFilter, 'columnFilters', columnFilters)
-  const handleResetFilters = () => {
-    table.resetColumnFilters()
-    table.resetGlobalFilter()
   }
 
   const handleSaveUserFilter = () => {
@@ -154,13 +140,13 @@ export const Toolbar = <PrintArticle,>({ columns }: {
           >
             Expressen
           </ToggleGroupItem>
-            <ToggleGroupItem
-              value='user'
-              aria-label='Toggle user'
-              className='border data-[state=off]:text-muted-foreground'
-            >
-              <UserCog size={18} strokeWidth={1.75} />
-            </ToggleGroupItem>
+          <ToggleGroupItem
+            value='user'
+            aria-label='Toggle user'
+            className='border data-[state=off]:text-muted-foreground'
+          >
+            <UserCog size={18} strokeWidth={1.75} />
+          </ToggleGroupItem>
         </ToggleGroup>
         <DotDropdownMenu
           trigger='vertical'

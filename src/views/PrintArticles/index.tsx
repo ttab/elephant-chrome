@@ -17,7 +17,7 @@ import { PrintFlows } from './PrintFlows'
 import { PrintArticlesHeader } from './PrintArticlesHeader'
 import { loadFilters } from '@/lib/loadFilters'
 import { useQuery } from '@/hooks/useQuery'
-  
+
 /**
  * Metadata for the PrintArticles view.
  *

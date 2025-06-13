@@ -157,13 +157,11 @@ const PlanningViewContent = (props: ViewProps & { documentId: string, setNewItem
             <Description role='internal' />
 
             <Form.Group icon={Calendar}>
-              <PlanDate
-                onValueChange={(value) => {
-                  setNewDate(value)
-                }}
-              />
+              {props.asDialog !== true
+                ? <PlanDate onValueChange={setNewDate} />
+                : <PlanDate />}
 
-              {newDate && (
+              {newDate && props.asDialog !== true && (
                 <MoveDialog
                   newDate={newDate}
                   onClose={() => {

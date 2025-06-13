@@ -45,7 +45,7 @@ import { useOnSpellcheck } from '@/hooks/useOnSpellcheck'
 import { contentMenuLabels } from '@/defaults/contentMenuLabels'
 import { Button, ScrollArea } from '@ttab/elephant-ui'
 import { LayoutBox } from './LayoutBox'
-import { Copy, ScanEye, Settings, TriangleAlert } from '@ttab/elephant-ui/icons'
+import { CopyPlus, ScanEye, Settings, TriangleAlert } from '@ttab/elephant-ui/icons'
 import type { EleBlock } from '@/shared/types'
 import { toast } from 'sonner'
 import { useSession } from 'next-auth/react'
@@ -182,8 +182,8 @@ function EditorContainer({
   const { baboon } = useRegistry()
   const { data: session } = useSession()
   const [,,allParams] = useQuery(['from'], true)
-  const date = allParams?.filter((item) => item.name === 'PrintArticles')?.[0]?.params?.from || ''
-
+  const fromDate = allParams?.filter((item) => item.name === 'Print')?.[0]?.params?.from
+  const [date] = useYValue<string>('meta.tt/print-article[0].data.date')
   const [isChanged] = useYValue<boolean>('root.changed')
 
   const handleChange = useCallback((value: boolean): void => {
@@ -205,11 +205,13 @@ function EditorContainer({
       toast.error('Något gick fel när printartikel skulle dupliceras')
       return
     }
+    await snapshot(documentId)
     try {
+      const _date = (fromDate || date) as string
       const response = await baboon.createPrintArticle({
         sourceUuid: documentId,
         flowUuid: flowUuid || '',
-        date: date as string,
+        date: _date,
         article: name || ''
       }, session.accessToken)
         .catch((ex: unknown) => {
@@ -219,7 +221,7 @@ function EditorContainer({
         })
       if (response?.status.code === 'OK') {
         setPromptIsOpen(false)
-        toast.success(response.status.code)
+        toast.success('Printartikel har duplicerats till datumet: ' + _date)
       }
     } catch (ex: unknown) {
       console.error('Error creating print article:', ex)
@@ -275,7 +277,7 @@ function EditorContainer({
 
   return (
     <>
-      <EditorHeader documentId={documentId} name={name} flowName={flowName} isChanged={isChanged} />
+      <EditorHeader documentId={documentId} flowName={flowName} isChanged={isChanged} />
       {!!notes?.length && <div className='p-4'><Notes /></div>}
       <View.Content className='flex flex-col max-w-[1000px]'>
         <section className='grid grid-cols-12'>
@@ -305,7 +307,7 @@ function EditorContainer({
                     setPromptIsOpen(true)
                   }}
                 >
-                  <Copy strokeWidth={1.75} size={18} />
+                  <CopyPlus strokeWidth={1.75} size={18} />
                 </Button>
               </div>
               <h2 className={`text-base font-bold flex items-center gap-2 ${layouts.some((layout) => layout.data?.status === 'false') ? 'text-red-500' : ''}`}>
