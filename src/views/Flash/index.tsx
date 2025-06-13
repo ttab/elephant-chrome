@@ -1,5 +1,5 @@
 import type * as Y from 'yjs'
-import { AwarenessDocument } from '@/components'
+import { AwarenessDocument, View } from '@/components'
 import type { ViewMetadata, ViewProps } from '@/types'
 import { FlashDialog } from './FlashDialog'
 import { createDocument } from '@/lib/createYItem'
@@ -8,6 +8,9 @@ import * as Templates from '@/defaults/templates'
 import { useQuery } from '@/hooks/useQuery'
 import { Error } from '../Error'
 import { FlashView } from './FlashView'
+import { useWorkflowStatus } from '@/hooks/useWorkflowStatus'
+import { FlashHeader } from './FlashHeader'
+import { Editor as PlainEditor } from '@/components/PlainEditor'
 
 const meta: ViewMetadata = {
   name: 'Flash',
@@ -30,6 +33,7 @@ export const Flash = (props: ViewProps & {
 }): JSX.Element => {
   const [query] = useQuery()
   const [document, setDocument] = useState<Y.Doc | undefined>(undefined)
+  const [workflowStatus] = useWorkflowStatus(props.id || '', true)
 
   // We must not read query.id if we are in a dialog or we pick up other documents ids
   const [documentId, setDocumentId] = useState<string | undefined>(props.id || (props.asDialog ? undefined : query.id as string))
@@ -53,6 +57,20 @@ export const Flash = (props: ViewProps & {
         title='Flashdokument saknas'
         message='Inget flashdokument är angivet. Navigera tillbaka till översikten och försök igen.'
       />
+    )
+  }
+
+  // If published or specific version has be specified
+  if (workflowStatus?.name === 'usable' || props.version || workflowStatus?.name === 'unpublished') {
+    const bigIntVersion = workflowStatus?.name === 'usable'
+      ? workflowStatus?.version
+      : BigInt(props.version ?? 0)
+
+    return (
+      <View.Root>
+        <FlashHeader documentId={documentId} readOnly />
+        <PlainEditor key={props.version} id={documentId} version={bigIntVersion} />
+      </View.Root>
     )
   }
 

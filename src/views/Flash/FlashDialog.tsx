@@ -39,6 +39,7 @@ export const FlashDialog = (props: ViewProps): JSX.Element => {
     title: string
   } | undefined>(undefined)
   const [documentId] = useYValue<string>('root.uuid')
+  const readOnly = Number(props?.version) > 0 && !props.asDialog
   const allSections = useSections()
   const [, setYSection] = useYValue<Block | undefined>('links.core/section[0]')
 
@@ -91,7 +92,7 @@ export const FlashDialog = (props: ViewProps): JSX.Element => {
 
   return (
     <View.Root asDialog={props.asDialog} className={props.className}>
-      <FlashHeader id={documentId} asDialog={props.asDialog} onDialogClose={props.onDialogClose} />
+      <FlashHeader documentId={documentId} asDialog={props.asDialog} onDialogClose={props.onDialogClose} readOnly={readOnly} />
       <View.Content>
         <Form.Root asDialog={props.asDialog}>
           <Form.Content>
@@ -221,7 +222,7 @@ export const FlashDialog = (props: ViewProps): JSX.Element => {
                         config.setPrompt(false)
                       })
                       .catch((ex: unknown) => {
-                        console.log(ex)
+                        console.error(ex)
                       })
                   }}
                   onSecondary={() => {

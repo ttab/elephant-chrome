@@ -1,39 +1,55 @@
 import { StatusMenu } from '@/components/DocumentStatus/StatusMenu'
 import { ViewHeader } from '@/components/View'
 import type { ViewProps } from '@/types/index'
-import { ZapIcon } from '@ttab/elephant-ui/icons'
+import { ZapIcon, ZapOff } from '@ttab/elephant-ui/icons'
 import { useState, useCallback } from 'react'
 import { toast } from 'sonner'
 import { useDeliverablePlanningId } from '@/hooks/index/useDeliverablePlanningId'
 import { updateAssignmentTime } from '@/lib/index/updateAssignmentPublishTime'
+import { handleLink } from '@/components/Link/lib/handleLink'
+import { useView } from '@/hooks/useView'
+import { useHistory, useNavigation, useWorkflowStatus } from '@/hooks/index'
 
-
-export const FlashHeader = (props: ViewProps) => {
+export const FlashHeader = ({
+  documentId,
+  readOnly,
+  asDialog,
+  onDialogClose
+}: {
+  documentId: string | undefined
+  readOnly?: boolean
+  asDialog?: boolean
+  onDialogClose?: (() => void) | undefined
+}) => {
   return (
     <ViewHeader.Root>
-      {!props.asDialog && (
-        <ViewHeader.Title name='Flash' title='Flash' icon={ZapIcon} iconColor='#FF5150' />
+      {!asDialog && (
+        <ViewHeader.Title name='Flash' title='Flash' icon={!readOnly ? ZapIcon : ZapOff} iconColor='#FF5150' />
       )}
 
       <ViewHeader.Content>
         <div className='flex w-full h-full items-center space-x-2 font-bold'>
-          {props.asDialog && (
+          {asDialog && (
             <ViewHeader.Title name='Flash' title='Skapa ny flash' icon={ZapIcon} iconColor='#FF3140' />
           )}
         </div>
 
-        {!props.asDialog && !!props.id && <ViewHeader.RemoteUsers documentId={props.id} />}
-        {!props.asDialog && !!props.id && <StatusMenuHeader id={props.id} />}
+        {!asDialog && !!documentId && <ViewHeader.RemoteUsers documentId={documentId} />}
+        {!asDialog && !!documentId && <StatusMenuHeader id={documentId} />}
       </ViewHeader.Content>
 
-      <ViewHeader.Action onDialogClose={props.onDialogClose} asDialog={props.asDialog} />
+      <ViewHeader.Action onDialogClose={onDialogClose} asDialog={asDialog} />
     </ViewHeader.Root>
   )
 }
 
-const StatusMenuHeader = (props: ViewProps) => {
-  const planningId = useDeliverablePlanningId(props.id || '')
+const StatusMenuHeader = ({ id }: ViewProps) => {
+  const planningId = useDeliverablePlanningId(id || '')
   const [publishTime] = useState<string | null>(null)
+  const { viewId } = useView()
+  const { state, dispatch } = useNavigation()
+  const history = useHistory()
+  const [workflowStatus] = useWorkflowStatus(id || '', true)
 
   // FIXME: We must have a way to retrieve the publish time defined in the planning.
   // FIXME: When yjs opening of related planning have been fixed this should be readded/remade.
@@ -59,6 +75,33 @@ const StatusMenuHeader = (props: ViewProps) => {
       return false
     }
 
+    if (newStatus === 'usable') {
+      handleLink({
+        dispatch,
+        viewItem: state.viewRegistry.get('Flash'),
+        props: { id: id },
+        viewId: crypto.randomUUID(),
+        history,
+        origin: viewId,
+        target: 'self',
+        readOnly: {
+          version: workflowStatus?.version
+        }
+      })
+    }
+
+    if (newStatus === 'draft') {
+      handleLink({
+        dispatch,
+        viewItem: state.viewRegistry.get('Flash'),
+        props: { id: id },
+        viewId: crypto.randomUUID(),
+        history,
+        origin: viewId,
+        target: 'self'
+      })
+    }
+
     // We don't need to update publish time for flashes unless scheduling (when that would be?)
     if (newStatus !== 'withheld') {
       return true
@@ -74,18 +117,18 @@ const StatusMenuHeader = (props: ViewProps) => {
       ? data.time
       : new Date()
 
-    if (props.id) {
-      await updateAssignmentTime(props.id, planningId, newStatus, newPublishTime)
+    if (id) {
+      await updateAssignmentTime(id, planningId, newStatus, newPublishTime)
     }
 
     return true
-  }, [planningId, props.id])
+  }, [planningId, id, dispatch, history, state.viewRegistry, viewId, workflowStatus])
 
   return (
     <>
-      {!!planningId && props.id && (
+      {!!planningId && id && (
         <StatusMenu
-          documentId={props.id}
+          documentId={id}
           type='core/article' // same workflow as article?
           publishTime={publishTime ? new Date(publishTime) : undefined}
           onBeforeStatusChange={onBeforeStatusChange}
