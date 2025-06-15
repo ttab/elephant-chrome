@@ -64,8 +64,24 @@ export function LayoutBox({
       if (response?.status.code === 'OK') {
         openPreview(undefined, { source: response?.response?.pdfUrl })
         if (response?.response?.overflows?.length) {
-          const _toastText = response?.response?.overflows?.map((overflow) => overflow.frame).join('\n')
-          toast.error(`${response?.response?.overflows?.length} fel uppstod när printartikel skulle renderas: ${_toastText}`)
+          const _toastText = response?.response?.overflows?.map((overflow, index) => {
+            return (
+              <div key={index}>
+                {index + 1}
+                .&nbsp;
+                {overflow.frame}
+              </div>
+            )
+          })
+          toast.error('Fel i layouten', {
+            description: _toastText,
+            duration: 30000,
+            position: 'top-right',
+            cancel: {
+              label: 'Stäng',
+              onClick: () => console.log('Cancel!')
+            }
+          })
           setStatus('false')
         } else {
           setStatus('true')
@@ -73,7 +89,9 @@ export function LayoutBox({
       }
     } catch (ex: unknown) {
       openPreview(undefined, { id: 'error' })
-      toast.error(`Något gick fel när printartikel skulle renderas: ${ex instanceof Error ? ex.message : 'Okänt fel'}`)
+      toast.error('Något gick fel när printartikel skulle renderas', {
+        description: ex instanceof Error ? ex.message : 'Okänt fel'
+      })
     }
   }
 
