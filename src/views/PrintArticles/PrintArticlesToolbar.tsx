@@ -59,14 +59,12 @@ export const Toolbar = <PrintArticle,>({ columns }: {
 
   const handleSaveUserFilter = () => {
     const columnFilters = table.getState().columnFilters
-    console.log('handleSaveUserFilter', columnFilters)
     setFilters(columnFilterToQuery(columnFilters))
 
     toast.success('Ditt filter har sparats')
   }
 
   const handleToggleGroupValue = useCallback(() => {
-    console.log('handleToggleGroupValue', columnFilterValue, 'columnFilters', columnFilters)
     if (isUserFilter(savedUserFilter, columnFilters)) {
       return 'user'
     }

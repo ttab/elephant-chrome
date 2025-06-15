@@ -65,6 +65,7 @@ export const PrintArticlesHeader = (): JSX.Element => {
           title='Skapa en text i ett flöde'
           variant='outline'
           size='sm'
+          className='bg-none'
           onClick={() => {
             openDictionary(undefined, {})
           }}

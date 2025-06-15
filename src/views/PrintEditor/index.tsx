@@ -172,6 +172,7 @@ function EditorContainer({
   documentId: string
   notes: Block[] | undefined
 }): JSX.Element {
+  const openPrintArticle = useLink('PrintEditor')
   const [promptIsOpen, setPromptIsOpen] = useState(false)
   const [isChecking, setIsChecking] = useState(false)
   const { words, characters } = useTextbit()
@@ -220,6 +221,8 @@ function EditorContainer({
           setPromptIsOpen(false)
         })
       if (response?.status.code === 'OK') {
+        console.log('response', response)
+        openPrintArticle(undefined, { id: response?.response?.uuid })
         setPromptIsOpen(false)
         toast.success('Printartikel har duplicerats till datumet: ' + _date)
       }

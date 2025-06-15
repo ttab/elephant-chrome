@@ -23,11 +23,11 @@ const meta: ViewMetadata = {
   widths: {
     sm: 12,
     md: 12,
-    lg: 6,
-    xl: 6,
-    '2xl': 6,
-    hd: 5,
-    fhd: 5,
+    lg: 4,
+    xl: 4,
+    '2xl': 4,
+    hd: 3,
+    fhd: 3,
     qhd: 3,
     uhd: 2
   }

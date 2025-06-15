@@ -58,7 +58,6 @@ export const Print = (): JSX.Element => {
     []
   )
   const [openCreateFlow, setOpenCreateFlow] = useState(false)
-  console.log('Print bu', columns)
   return (
     <View.Root>
       <PrintArticlesHeader />
