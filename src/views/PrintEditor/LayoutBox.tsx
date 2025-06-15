@@ -64,18 +64,23 @@ export function LayoutBox({
       if (response?.status.code === 'OK') {
         openPreview(undefined, { source: response?.response?.pdfUrl })
         if (response?.response?.overflows?.length) {
-          const _toastText = response?.response?.overflows?.map((overflow, index) => {
-            return (
-              <div key={index}>
-                {index + 1}
-                .&nbsp;
-                {overflow.frame}
-              </div>
-            )
-          })
+          const _toastText = (
+            <div>
+              <h3 className='font-bold text-gray-500 mt-2'>Overflows</h3>
+              {response?.response?.overflows?.map((overflow, index) => {
+                return (
+                  <div key={index}>
+                    {index + 1}
+                    .&nbsp;
+                    {overflow.frame}
+                  </div>
+                )
+              })}
+            </div>
+          )
           toast.error('Fel i layouten', {
             description: _toastText,
-            duration: 30000,
+            duration: 60000,
             position: 'top-right',
             cancel: {
               label: 'Stäng',

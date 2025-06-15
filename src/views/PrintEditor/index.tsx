@@ -257,10 +257,6 @@ function EditorContainer({
               status: response?.response?.overflows?.length ? 'false' : 'true'
             }
           }
-          if (response?.response?.overflows?.length) {
-            const _toastText = response?.response?.overflows?.map((overflow) => overflow.frame).join('\n')
-            toast.error(`${response?.response?.overflows?.length} fel uppstod när printartikel skulle renderas: ${_toastText}`)
-          }
           results.push(_checkedLayout)
         }
       } catch (ex: unknown) {
