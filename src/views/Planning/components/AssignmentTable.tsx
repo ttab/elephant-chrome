@@ -145,8 +145,10 @@ export const AssignmentTable = ({ asDialog = false, documentId, onChange }: {
             deleteByYPath(yRoot, `meta.core/assignment[${newAssigment.index}]`)
           }}
           onClose={() => {
-            handleClose().catch(console.error)
-            toast.error('Kunde inte spara uppdraget.')
+            handleClose().catch((ex) => {
+              console.error('Error closing assignment:', ex)
+              toast.error('Kunde inte spara uppdraget.')
+            })
           }}
           className='mb-6'
         />
