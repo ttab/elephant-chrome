@@ -187,7 +187,7 @@ const PlanningViewContent = (props: ViewProps & { documentId: string, setNewItem
           </Form.Content>
 
           <Form.Table>
-            <AssignmentTable asDialog={props.asDialog} onChange={handleChange} />
+            <AssignmentTable asDialog={props.asDialog} onChange={handleChange} documentId={props.documentId} />
           </Form.Table>
 
           <Form.Footer>

@@ -273,7 +273,10 @@ export class CollaborationServer {
     }
 
     if (!assertContext(context)) {
-      logger.warn({ context, documentName: uuid }, 'Invalid context provided')
+      logger.warn({
+        context: context as unknown,
+        documentName: uuid
+      }, 'Invalid context provided')
       throw new Error('#fetchDocument - Invalid context provided')
     }
 
@@ -313,11 +316,13 @@ export class CollaborationServer {
     return Y.encodeStateAsUpdate(yDoc)
   }
 
-  async snapshotDocument({ documentName, document: yDoc, context, force = false, transacting = false }: {
+  async snapshotDocument({ documentName, document: yDoc, context, force = false, transacting = false, status, cause }: {
     documentName: string
     document: Y.Doc
     context: Context
     force?: boolean
+    status?: string
+    cause?: string
     transacting?: boolean
   }): Promise<FinishedUnaryCall<UpdateRequest, UpdateResponse> | null> {
     // Ignore userTracker documents and invalid uuids, most likely same as the first
@@ -350,8 +355,9 @@ export class CollaborationServer {
       hash,
       context.accessToken,
       context,
-      undefined,
-      transacting ? yDoc : undefined
+      status,
+      transacting ? yDoc : undefined,
+      cause
     )
   }
 
@@ -362,7 +368,8 @@ export class CollaborationServer {
     accessToken: string,
     context: Context,
     status?: string,
-    transactingDoc?: Y.Doc
+    transactingDoc?: Y.Doc,
+    cause?: string
   ): Promise<FinishedUnaryCall<UpdateRequest, UpdateResponse>> {
     const { document, version } = documentResponse
     if (!document) {
@@ -373,7 +380,8 @@ export class CollaborationServer {
       document,
       accessToken,
       version,
-      status
+      status,
+      cause
     )
 
     if (result?.status.code !== 'OK') {
