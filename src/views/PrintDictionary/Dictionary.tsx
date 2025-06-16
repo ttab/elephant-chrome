@@ -143,7 +143,6 @@ const Dictionary = ({ className }: ViewProps): JSX.Element => {
   const [hyphenations, setHyphenations] = useState<Hypenation[]>([])
   const [isNew, setIsNew] = useState(false)
   const [query] = useQuery(['page'])
-  console.log(query?.page?.[0])
   const paginate = useLink('PrintDictionary')
 
   const handlePaginate = (page: string) => {
@@ -165,7 +164,6 @@ const Dictionary = ({ className }: ViewProps): JSX.Element => {
       page: BigInt(query?.page?.[0] || 0)
     }, session?.accessToken)
     setHyphenations(hyphenations?.response?.items || [])
-    console.log(hyphenations)
   }
 
   useEffect(() => {
