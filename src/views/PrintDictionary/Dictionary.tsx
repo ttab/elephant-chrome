@@ -20,6 +20,7 @@ const HypenationItem = ({ isNew, setIsNew, word, hypenated, ignore, handleListHy
   const { data: session } = useSession()
   const [editMode, setEditMode] = useState(isNew ? true : false)
   const [promptIsOpen, setPromptIsOpen] = useState(false)
+  const [defaultWord] = useState(word)
 
   return (
     <div className='group/edit grid grid-cols-7 gap-x-2 gap-y-0 items-center hover:bg-gray-100 px-2' onClick={() => setEditMode(true)}>
@@ -74,6 +75,12 @@ const HypenationItem = ({ isNew, setIsNew, word, hypenated, ignore, handleListHy
                   onClick={(e) => {
                     e.stopPropagation();
                     (async () => {
+                      if (defaultWord.trim() !== '') {
+                        await baboon?.removeHypenation({
+                          language: 'sv',
+                          word: defaultWord
+                        }, session?.accessToken || '')
+                      }
                       await baboon?.setHypenation({
                         language: 'sv',
                         word: _word,
@@ -173,8 +180,6 @@ const Dictionary = ({ className }: ViewProps): JSX.Element => {
         toast.error('Kunde inte lista hyphenations')
       })
   }, [])
-
-  console.log('query', query)
 
   return (
     <View.Root className={cn(className, 'min-h-[900px]')}>

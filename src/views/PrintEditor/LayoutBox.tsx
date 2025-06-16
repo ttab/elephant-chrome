@@ -84,7 +84,7 @@ export function LayoutBox({
             position: 'top-right',
             cancel: {
               label: 'Stäng',
-              onClick: () => console.log('Cancel!')
+              onClick: () => null
             }
           })
           setStatus('false')
