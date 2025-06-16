@@ -15,6 +15,8 @@ import {
 } from '@ttab/elephant-ui'
 import { PrintFlows } from './PrintFlows'
 import { PrintArticlesHeader } from './PrintArticlesHeader'
+import { loadFilters } from '@/lib/loadFilters'
+import { useQuery } from '@/hooks/useQuery'
 
 /**
  * Metadata for the PrintArticles view.
@@ -50,19 +52,23 @@ const meta: ViewMetadata = {
  */
 
 export const Print = (): JSX.Element => {
+  const [query] = useQuery()
   const columns = useMemo(
     () => printArticlesListColumns(),
     []
   )
   const [openCreateFlow, setOpenCreateFlow] = useState(false)
-
   return (
     <View.Root>
       <PrintArticlesHeader />
       <TableProvider<PrintArticle>
         type={meta.name}
         columns={columns}
-        initialState={{}}
+        initialState={{
+          grouping: ['printFlow'],
+          columnFilters: loadFilters<PrintArticle>(query, columns),
+          globalFilter: query.query
+        }}
       >
         <View.Content>
           <PrintArticleList columns={columns} />

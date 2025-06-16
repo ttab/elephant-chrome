@@ -172,6 +172,7 @@ function EditorContainer({
   documentId: string
   notes: Block[] | undefined
 }): JSX.Element {
+  const openPrintArticle = useLink('PrintEditor')
   const [promptIsOpen, setPromptIsOpen] = useState(false)
   const [isChecking, setIsChecking] = useState(false)
   const { words, characters } = useTextbit()
@@ -220,6 +221,7 @@ function EditorContainer({
           setPromptIsOpen(false)
         })
       if (response?.status.code === 'OK') {
+        openPrintArticle(undefined, { id: response?.response?.uuid })
         setPromptIsOpen(false)
         toast.success('Printartikel har duplicerats till datumet: ' + _date)
       }
@@ -254,10 +256,6 @@ function EditorContainer({
               status: response?.response?.overflows?.length ? 'false' : 'true'
             }
           }
-          if (response?.response?.overflows?.length) {
-            const _toastText = response?.response?.overflows?.map((overflow) => overflow.frame).join('\n')
-            toast.error(`${response?.response?.overflows?.length} fel uppstod när printartikel skulle renderas: ${_toastText}`)
-          }
           results.push(_checkedLayout)
         }
       } catch (ex: unknown) {
@@ -277,7 +275,7 @@ function EditorContainer({
 
   return (
     <>
-      <EditorHeader documentId={documentId} name={name} flowName={flowName} isChanged={isChanged} />
+      <EditorHeader documentId={documentId} flowName={flowName} isChanged={isChanged} />
       {!!notes?.length && <div className='p-4'><Notes /></div>}
       <View.Content className='flex flex-col max-w-[1000px]'>
         <section className='grid grid-cols-12'>

@@ -1,6 +1,6 @@
 import { View, ViewHeader } from '@/components/View'
 import { type ViewProps } from '@/types/index'
-import { BookA, Check, Pencil, Plus, Trash } from '@ttab/elephant-ui/icons'
+import { ArrowLeft, ArrowRight, BookA, Check, Pencil, Plus, Trash } from '@ttab/elephant-ui/icons'
 import { cn } from '@ttab/elephant-ui/utils'
 import { useRegistry } from '@/hooks/useRegistry'
 import { useSession } from 'next-auth/react'
@@ -9,6 +9,8 @@ import { toast } from 'sonner'
 import { type Hypenation } from '@ttab/elephant-tt-api/baboon'
 import { Button, ScrollArea } from '@ttab/elephant-ui'
 import { Prompt } from '@/components/Prompt'
+import { useQuery } from '@/hooks/useQuery'
+import { useLink } from '@/hooks/useLink'
 
 const HypenationItem = ({ isNew, setIsNew, word, hypenated, ignore, handleListHyphenations }: { isNew: boolean, setIsNew: (isNew: boolean) => void, word: string, hypenated: string, ignore: boolean, handleListHyphenations: () => void }) => {
   const [_word, setWord] = useState(word)
@@ -140,6 +142,12 @@ const Dictionary = ({ className }: ViewProps): JSX.Element => {
   const { data: session } = useSession()
   const [hyphenations, setHyphenations] = useState<Hypenation[]>([])
   const [isNew, setIsNew] = useState(false)
+  const [query] = useQuery(['page'])
+  const paginate = useLink('PrintDictionary')
+
+  const handlePaginate = (page: string) => {
+    paginate(undefined, { from: page }, 'self')
+  }
 
   const handleListHyphenations = async () => {
     if (!session?.accessToken) {
@@ -153,10 +161,9 @@ const Dictionary = ({ className }: ViewProps): JSX.Element => {
     }
     const hyphenations = await baboon?.listHypenations({
       language: 'sv',
-      page: 0n
+      page: BigInt(query?.page?.[0] || 0)
     }, session?.accessToken)
     setHyphenations(hyphenations?.response?.items || [])
-    console.log(hyphenations)
   }
 
   useEffect(() => {
@@ -182,6 +189,24 @@ const Dictionary = ({ className }: ViewProps): JSX.Element => {
             >
               <Plus strokeWidth={1.75} size={18} />
               Ny
+            </Button>
+          </div>
+          <div className='flex items-center justify-end mt-4'>
+            <Button
+              onClick={() => handlePaginate('0')}
+              size='sm'
+              variant='outline'
+              className='mb-4 flex items-center gap-2'
+            >
+              <ArrowLeft strokeWidth={1.75} size={18} />
+            </Button>
+            <Button
+              onClick={() => handlePaginate('1')}
+              size='sm'
+              variant='outline'
+              className='mb-4 flex items-center gap-2'
+            >
+              <ArrowRight strokeWidth={1.75} size={18} />
             </Button>
           </div>
         </ViewHeader.Content>
