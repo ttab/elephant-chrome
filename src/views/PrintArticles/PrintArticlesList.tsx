@@ -57,7 +57,7 @@ export const PrintArticleList = ({ columns }: {
 
   return (
     <>
-      <Toolbar columns={columns} />
+      <Toolbar />
       <Table
         type='PrintEditor'
         columns={columns}

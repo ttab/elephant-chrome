@@ -110,7 +110,7 @@ export function printArticlesListColumns(): Array<ColumnDef<PrintArticle>> {
       }
     },
     {
-      id: 'articleTitle',
+      id: 'tvTitle',
       enableGrouping: false,
       meta: {
         name: 'Artikel',
@@ -129,7 +129,7 @@ export function printArticlesListColumns(): Array<ColumnDef<PrintArticle>> {
           : ''
       },
       cell: ({ row }) => {
-        const title = row.getValue('articleTitle')
+        const title = row.getValue('tvTitle')
         return title as string
       }
     }
