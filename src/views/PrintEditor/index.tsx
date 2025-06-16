@@ -249,11 +249,14 @@ function EditorContainer({
           pngScale: 300n
         }, session.accessToken)
         if (response?.status.code === 'OK') {
+          const overflowsStatus = response?.response?.overflows?.length > 0
+          const underflowsStatus = response?.response?.underflows?.length > 0
+          const lowresPicsStatus = response?.response?.images?.filter((image) => image.ppi <= 130).length > 0
           const _checkedLayout = {
             ..._layout,
             data: {
               ..._layout?.data,
-              status: response?.response?.overflows?.length ? 'false' : 'true'
+              status: overflowsStatus || underflowsStatus || lowresPicsStatus ? 'false' : 'true'
             }
           }
           results.push(_checkedLayout)
