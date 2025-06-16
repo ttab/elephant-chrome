@@ -62,7 +62,6 @@ export const useWorkflowStatus = (uuid?: string, isWorkflow: boolean = false): [
 
       // Handle wire status updates
       if (asWire && typeof newStatus === 'object' && repository) {
-        console.log('handle wire', newStatus)
         void setWireStatus(newStatus, repository, session)
         return
       }

@@ -88,18 +88,18 @@ export const PreviewSheet = ({ id, wire, handleClose, textOnly = true, version, 
 
 
   if (!wire) {
-    return <p>no wire</p>
+    return <p>No wire id provided</p>
   }
 
-  const source = wire?.fields['document.rel.source.uri']?.values[0]
+  const source = wire.fields['document.rel.source.uri']?.values[0]
     ?.replace('wires://source/', '')
 
-  const provider = wire?.fields['document.rel.provider.uri']?.values[0]
+  const provider = wire.fields['document.rel.provider.uri']?.values[0]
     ?.replace('wires://provider/', '')
 
-  const role = wire?.fields['document.meta.tt_wire.role'].values[0]
-  const newsvalue = wire?.fields['document.meta.core_newsvalue.value']?.values[0]
-  const currentVersion = BigInt(wire?.fields['current_version']?.values[0] || '')
+  const role = wire.fields['document.meta.tt_wire.role'].values[0]
+  const newsvalue = wire.fields['document.meta.core_newsvalue.value']?.values[0]
+  const currentVersion = BigInt(wire.fields['current_version']?.values[0] || '')
   const currentStatus = getWireStatus('Wires', wire)
 
   return (

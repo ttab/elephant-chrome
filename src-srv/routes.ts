@@ -91,7 +91,6 @@ export function connectRouteHandlers(app: Application, routes: RouteMap, context
 
     const { GET, POST, PUT, PATCH, DELETE, WEB_SOCKET } = routes[route].handlers || {}
 
-
     if (GET) {
       connectRouteHandler(app, routePath, GET, context)
     }

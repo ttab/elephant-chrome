@@ -273,7 +273,10 @@ export class CollaborationServer {
     }
 
     if (!assertContext(context)) {
-      logger.warn({ context, documentName: uuid }, 'Invalid context provided')
+      logger.warn({
+        context: context as unknown,
+        documentName: uuid
+      }, 'Invalid context provided')
       throw new Error('#fetchDocument - Invalid context provided')
     }
 

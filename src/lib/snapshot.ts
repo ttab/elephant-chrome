@@ -36,10 +36,8 @@ export async function snapshot(
     if (options?.status) url.searchParams.set('status', options.status)
     if (options?.cause) url.searchParams.set('cause', options.cause)
 
-    // TODO: v1 or v2
     const update = document ? Y.encodeStateAsUpdateV2(document) : null
 
-    console.log('src/lib/snapshot', url)
     const response = await fetch(url, {
       method: 'POST',
       headers: {
@@ -49,7 +47,6 @@ export async function snapshot(
     })
 
     const result = await response.json() as SnapshotResponse
-    console.log('Snapshot response', result)
 
     if (!response.ok) {
       return {

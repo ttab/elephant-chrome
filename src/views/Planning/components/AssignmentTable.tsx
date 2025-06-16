@@ -13,6 +13,7 @@ import { cva } from 'class-variance-authority'
 import { Button } from '@ttab/elephant-ui'
 import { useActiveAuthor } from '@/hooks/useActiveAuthor'
 import { snapshot } from '@/lib/snapshot'
+import { toast } from 'sonner'
 
 export const AssignmentTable = ({ asDialog = false, documentId, onChange }: {
   asDialog?: boolean
@@ -83,7 +84,7 @@ export const AssignmentTable = ({ asDialog = false, documentId, onChange }: {
       }, provider?.document)
     }
 
-    // Set document as changed once we abort the new assignment
+    // Set document as changed once we close the new assignment
     onChange?.(true)
   }
 
@@ -145,6 +146,7 @@ export const AssignmentTable = ({ asDialog = false, documentId, onChange }: {
           }}
           onClose={() => {
             handleClose().catch(console.error)
+            toast.error('Kunde inte spara uppdraget.')
           }}
           className='mb-6'
         />

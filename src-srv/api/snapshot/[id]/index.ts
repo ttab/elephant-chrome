@@ -61,7 +61,7 @@ export const POST: RouteHandler = async (req: Request, { collaborationServer, ca
   try {
     // Check if document exists in cache
     const state = await cache.get(uuid)
-    // TODO: CHECK THIS
+
     if (!state && !payload) {
       const notFoundMessage = `Document not found in cache: ${uuid}`
       logger.warn(notFoundMessage)
@@ -81,7 +81,6 @@ export const POST: RouteHandler = async (req: Request, { collaborationServer, ca
       statusMessage: cacheErrorMessage
     }
   }
-
 
   const connection = await collaborationServer.server.openDirectConnection(uuid, context)
 
