@@ -12,9 +12,11 @@ import { type EleBlock } from '@/shared/types'
 import { cva } from 'class-variance-authority'
 import { Button } from '@ttab/elephant-ui'
 import { useActiveAuthor } from '@/hooks/useActiveAuthor'
+import { snapshot } from '@/lib/snapshot'
 
-export const AssignmentTable = ({ asDialog = false, onChange }: {
+export const AssignmentTable = ({ asDialog = false, documentId, onChange }: {
   asDialog?: boolean
+  documentId?: string
   onChange?: (arg: boolean) => void
 }): JSX.Element => {
   const { provider } = useCollaboration()
@@ -60,6 +62,29 @@ export const AssignmentTable = ({ asDialog = false, onChange }: {
         : undefined,
       type: 'text'
     })
+  }
+
+  const handleClose = async () => {
+    const currentAssigmentPath = `meta.core/assignment[${newAssigment?.index}]`
+
+    // Since we're transfering the slugline to new text assignments, we need to clean up
+    const [assignmentType] = getValueByYPath(yRoot,
+      `${currentAssigmentPath}.meta.core/assignment-type[0].value`)
+
+    if (assignmentType !== 'text' && assignmentType !== 'editorial-info') {
+      deleteByYPath(yRoot, `${currentAssigmentPath}.meta.[tt/slugline]`)
+    }
+
+    deleteByYPath(yRoot, `${currentAssigmentPath}.__inProgress`)
+
+    if (documentId) {
+      await snapshot(documentId, {
+        force: true
+      }, provider?.document)
+    }
+
+    // Set document as changed once we abort the new assignment
+    onChange?.(true)
   }
 
   useNavigationKeys({
@@ -119,20 +144,7 @@ export const AssignmentTable = ({ asDialog = false, onChange }: {
             deleteByYPath(yRoot, `meta.core/assignment[${newAssigment.index}]`)
           }}
           onClose={() => {
-            const currentAssigmentPath = `meta.core/assignment[${newAssigment.index}]`
-
-            // Since we're transfering the slugline to new text assignments, we need to clean up
-            const [assignmentType] = getValueByYPath(yRoot,
-              `${currentAssigmentPath}.meta.core/assignment-type[0].value`)
-
-            if (assignmentType !== 'text' && assignmentType !== 'editorial-info') {
-              deleteByYPath(yRoot, `${currentAssigmentPath}.meta.[tt/slugline]`)
-            }
-
-            deleteByYPath(yRoot, `${currentAssigmentPath}.__inProgress`)
-
-            // Set document as changed once we abort the new assignment
-            onChange?.(true)
+            handleClose().catch(console.error)
           }}
           className='mb-6'
         />

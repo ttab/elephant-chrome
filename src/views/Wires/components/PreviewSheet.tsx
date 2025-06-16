@@ -11,6 +11,7 @@ import { MetaSheet } from '@/views/Editor/components/MetaSheet'
 import { useEffect, useRef } from 'react'
 import { useWorkflowStatus } from '@/hooks/useWorkflowStatus'
 import { decodeString } from '@/lib/decodeString'
+import { getWireStatus } from '@/components/Table/lib/getWireStatus'
 
 export const PreviewSheet = ({ id, wire, handleClose, textOnly = true, version, versionStatusHistory }: {
   id: string
@@ -20,8 +21,75 @@ export const PreviewSheet = ({ id, wire, handleClose, textOnly = true, version, 
   versionStatusHistory?: DocumentStatuses[]
   handleClose: () => void
 }): JSX.Element => {
-  const [documentStatus, setDocumentStatus] = useWorkflowStatus(id)
+  const [documentStatus, setDocumentStatus, mutate] = useWorkflowStatus(id)
   const { showModal, hideModal } = useModal()
+
+  const containerRef = useRef<HTMLElement | null>(null)
+
+  useEffect(() => {
+    containerRef.current = (document.getElementById(id))
+  }, [id])
+
+  useNavigationKeys({
+    keys: ['s', 'r', 'c', 'u', 'Escape'],
+    onNavigation: (event) => {
+      event.stopPropagation()
+      if (documentStatus) {
+        if (event.key === 'r') {
+          const payload = {
+            name: currentStatus === 'read' ? 'draft' : 'read',
+            version: documentStatus?.version,
+            uuid: documentStatus?.uuid
+          }
+
+          void setDocumentStatus(payload, undefined, true)
+          void mutate(payload, false)
+
+          return
+        }
+
+        if (event.key === 's') {
+          const payload = {
+            name: currentStatus === 'saved' ? 'draft' : 'saved',
+            version: documentStatus?.version,
+            uuid: documentStatus?.uuid
+          }
+
+          void setDocumentStatus(payload, undefined, true)
+          void mutate(payload, false)
+
+          return
+        }
+
+        if (event.key === 'u') {
+          const payload = {
+            name: currentStatus === 'used' ? 'draft' : 'used',
+            version: documentStatus?.version,
+            uuid: documentStatus?.uuid
+          }
+
+          void setDocumentStatus(payload, undefined, true)
+          void mutate(payload, false)
+
+          return
+        }
+
+        if (event.key === 'c') {
+          showModal(<Wire onDialogClose={hideModal} asDialog wire={wire} />)
+          return
+        }
+
+        if (event.key === 'Escape') {
+          handleClose()
+        }
+      }
+    }
+  })
+
+
+  if (!wire) {
+    return <p>no wire</p>
+  }
 
   const source = wire?.fields['document.rel.source.uri']?.values[0]
     ?.replace('wires://source/', '')
@@ -32,34 +100,7 @@ export const PreviewSheet = ({ id, wire, handleClose, textOnly = true, version, 
   const role = wire?.fields['document.meta.tt_wire.role'].values[0]
   const newsvalue = wire?.fields['document.meta.core_newsvalue.value']?.values[0]
   const currentVersion = BigInt(wire?.fields['current_version']?.values[0] || '')
-
-
-  const containerRef = useRef<HTMLElement | null>(null)
-
-  useEffect(() => {
-    containerRef.current = (document.getElementById(id))
-  }, [id])
-
-  useNavigationKeys({
-    keys: ['s', 'r', 'c'],
-    onNavigation: (event) => {
-      event.stopPropagation()
-      if (event.key === 'r') {
-        void setDocumentStatus('read')
-        return
-      }
-
-      if (event.key === 's') {
-        void setDocumentStatus('saved')
-        return
-      }
-
-      if (event.key === 'c') {
-        showModal(<Wire onDialogClose={hideModal} asDialog wire={wire} />)
-        return
-      }
-    }
-  })
+  const currentStatus = getWireStatus('Wires', wire)
 
   return (
     <FaroErrorBoundary fallback={(error) => <Error error={error} />}>
@@ -105,14 +146,18 @@ export const PreviewSheet = ({ id, wire, handleClose, textOnly = true, version, 
                     ? documentStatus?.name
                     : ''}
                   onValueChange={(value) => {
-                    if (!value && documentStatus) {
+                    if (!value && documentStatus) { // reset status to draft
                       void setDocumentStatus({
                         name: 'draft',
                         version: documentStatus.version,
                         uuid: documentStatus.uuid
-                      })
-                    } else {
-                      void setDocumentStatus(value)
+                      }, undefined, true)
+                    } else if (documentStatus && value) { // set status to saved, read or used
+                      void setDocumentStatus({
+                        name: value,
+                        version: documentStatus?.version,
+                        uuid: documentStatus?.uuid
+                      }, undefined, true)
                     }
                   }}
                 >
@@ -166,7 +211,7 @@ export const PreviewSheet = ({ id, wire, handleClose, textOnly = true, version, 
                             name: 'used',
                             uuid: wire.id,
                             version: BigInt(wire.fields.current_version.values?.[0])
-                          }).catch(console.error)
+                          }, undefined, true).catch(console.error)
                         }
                         showModal(
                           <Wire

@@ -1,3 +1,4 @@
+import * as Y from 'yjs'
 const BASE_URL = import.meta.env.BASE_URL
 
 type SnapshotResponse = {
@@ -9,31 +10,57 @@ type SnapshotResponse = {
   statusMessage: undefined
 } | undefined
 
-export async function snapshot(uuid: string, force?: true, delay: number = 0): Promise<SnapshotResponse> {
+export async function snapshot(
+  uuid: string,
+  options?: {
+    force?: true
+    delay?: number
+    status?: string
+    cause?: string
+  },
+  document?: Y.Doc): Promise<SnapshotResponse> {
   if (!uuid) {
     throw new Error('UUID is required')
   }
 
+  const delay = options?.delay || 0
 
   if (delay > 0) {
     await new Promise((resolve) => setTimeout(resolve, delay))
   }
 
   try {
-    const url = `${BASE_URL}/api/snapshot/${uuid}${force === true ? '?force=true' : ''}`
-    const response = await fetch(url)
-    const data = await response.json() as SnapshotResponse
+    const url = new URL(`${BASE_URL}/api/snapshot/${uuid}`, window.location.origin)
+
+    if (options?.force) url.searchParams.set('force', 'true')
+    if (options?.status) url.searchParams.set('status', options.status)
+    if (options?.cause) url.searchParams.set('cause', options.cause)
+
+    // TODO: v1 or v2
+    const update = document ? Y.encodeStateAsUpdateV2(document) : null
+
+    console.log('src/lib/snapshot', url)
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/octet-stream'
+      },
+      body: update
+    })
+
+    const result = await response.json() as SnapshotResponse
+    console.log('Snapshot response', result)
 
     if (!response.ok) {
       return {
         statusCode: response.status,
-        statusMessage: (data && typeof data?.statusMessage === 'string')
-          ? data.statusMessage
+        statusMessage: (result && typeof result?.statusMessage === 'string')
+          ? result.statusMessage
           : response.statusText
       }
     }
 
-    return data
+    return result
   } catch (ex) {
     const msg = (ex instanceof Error) ? ex.message : 'Failed saving snapshot'
     console.error(msg)

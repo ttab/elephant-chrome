@@ -5,12 +5,19 @@ import type { Context } from '../../../lib/assertContext.js'
 import { assertContext } from '../../../lib/assertContext.js'
 import { createSnapshot } from '../../../utils/createSnapshot.js'
 import type { Session } from 'next-auth'
+import * as Y from 'yjs'
 
 type Response = RouteContentResponse | RouteStatusResponse
 
-export const GET: RouteHandler = async (req: Request, { collaborationServer, cache, res }) => {
+export const POST: RouteHandler = async (req: Request, { collaborationServer, cache, res }) => {
   const uuid = req.params.id
   const force = req.query.force
+  const status = req.query.status
+  const cause = req.query.cause
+
+  const payload = (req.body instanceof Buffer && req.body.length === 0)
+    ? undefined
+    : req.body as Uint8Array | undefined
 
   // Get accessToken from request headers or session
   const locals = res.locals as Record<string, unknown> | undefined
@@ -54,7 +61,8 @@ export const GET: RouteHandler = async (req: Request, { collaborationServer, cac
   try {
     // Check if document exists in cache
     const state = await cache.get(uuid)
-    if (!state) {
+    // TODO: CHECK THIS
+    if (!state && !payload) {
       const notFoundMessage = `Document not found in cache: ${uuid}`
       logger.warn(notFoundMessage)
 
@@ -74,15 +82,22 @@ export const GET: RouteHandler = async (req: Request, { collaborationServer, cac
     }
   }
 
+
   const connection = await collaborationServer.server.openDirectConnection(uuid, context)
 
   const snapshotResponse = await new Promise<Response>((resolve) => {
     void connection.transact((document) => {
+      if (payload instanceof Uint8Array) {
+        Y.applyUpdateV2(document, payload)
+      }
+
       createSnapshot(collaborationServer, {
         documentName: uuid,
         document,
         context,
-        force: !!force
+        force: !!force,
+        status: typeof status === 'string' ? status : undefined,
+        cause: typeof cause === 'string' ? cause : undefined
       })
         .then(resolve)
         .catch((ex: Error) => {

@@ -388,7 +388,9 @@ export const AssignmentRow = ({ index, onSelect, isFocused = false, asDialog, on
               })
 
               if (planningId) {
-                void snapshot(planningId, undefined, 800).then(() => {
+                void snapshot(planningId, {
+                  force: true
+                }, provider.document).then(() => {
                   const openDocument = assignmentType === 'flash' ? openFlash : openArticle
                   openDocument(undefined, { id, planningId }, 'blank')
                 })
