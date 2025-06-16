@@ -120,17 +120,15 @@ export function printArticlesListColumns(): Array<ColumnDef<PrintArticle>> {
       accessorFn: (data) => {
         const tvTitle = data?.fields['document.content.tt_tv_listing.data.title']?.values?.[0] || ''
         return tvTitle
-          ? (
-              <div className='flex items-center gap-2 text-sm'>
-                <Tv size={16} />
-                {tvTitle}
-              </div>
-            )
-          : ''
       },
       cell: ({ row }) => {
         const title = row.getValue('tvTitle')
-        return title as string
+        return (
+          <div className='flex items-center gap-2 text-sm'>
+            <Tv size={16} />
+            {title as string}
+          </div>
+        )
       }
     }
   ]

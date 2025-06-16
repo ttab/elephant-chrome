@@ -45,8 +45,6 @@ export const Toolbar = (): JSX.Element => {
         </Filter>
         <SelectedFilters />
       </div>
-      <div className='flex flex-row flex-grow flex-wrap items-center'>
-      </div>
       <div className='flex justify-end'>
         <ToggleGroup
           type='single'

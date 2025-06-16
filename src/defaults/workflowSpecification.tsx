@@ -423,6 +423,10 @@ export const WorkflowSpecifications: Record<string, WorkflowSpecification> = {
           title: 'Exportera',
           description: 'Exportera printartikeln'
         },
+        cancelled: {
+          title: 'Kasta',
+          description: 'Kasta printartikeln'
+        },
         draft: {
           title: 'Till utkast',
           description: 'Gör om printartikeln till ett utkast igen'
@@ -447,6 +451,10 @@ export const WorkflowSpecifications: Record<string, WorkflowSpecification> = {
           title: 'Begär korrläsning',
           description: 'Behöver korrläsning av printartikeln'
         },
+        cancelled: {
+          title: 'Kasta',
+          description: 'Kasta printartikeln'
+        },
         draft: {
           title: 'Till utkast',
           description: 'Gör om printartikeln till ett utkast igen'
@@ -467,6 +475,16 @@ export const WorkflowSpecifications: Record<string, WorkflowSpecification> = {
     unpublished: {
       title: 'Inställd',
       description: 'Printartikeln är avpublicerad',
+      transitions: {
+        draft: {
+          title: 'Till utkast',
+          description: 'Gör om printartikeln till ett utkast igen'
+        }
+      }
+    },
+    cancelled: {
+      title: 'Kastad',
+      description: 'Printartikeln är kastad',
       transitions: {
         draft: {
           title: 'Till utkast',
