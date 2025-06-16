@@ -1,6 +1,6 @@
 import { View, ViewHeader } from '@/components/View'
 import { type ViewProps } from '@/types/index'
-import { ArrowLeft, ArrowRight, BookA, Check, Pencil, Plus, Trash } from '@ttab/elephant-ui/icons'
+import { BookA, Check, ChevronRight, ChevronLeft, Pencil, Plus, Trash } from '@ttab/elephant-ui/icons'
 import { cn } from '@ttab/elephant-ui/utils'
 import { useRegistry } from '@/hooks/useRegistry'
 import { useSession } from 'next-auth/react'
@@ -142,7 +142,7 @@ const Dictionary = ({ className }: ViewProps): JSX.Element => {
   const { data: session } = useSession()
   const [hyphenations, setHyphenations] = useState<Hypenation[]>([])
   const [isNew, setIsNew] = useState(false)
-  const [query] = useQuery(['page'])
+  const [query] = useQuery(['page', 'from'])
   const paginate = useLink('PrintDictionary')
 
   const handlePaginate = (page: string) => {
@@ -161,7 +161,7 @@ const Dictionary = ({ className }: ViewProps): JSX.Element => {
     }
     const hyphenations = await baboon?.listHypenations({
       language: 'sv',
-      page: BigInt(query?.page?.[0] || 0)
+      page: BigInt(query?.from?.[0] || 0)
     }, session?.accessToken)
     setHyphenations(hyphenations?.response?.items || [])
   }
@@ -173,6 +173,8 @@ const Dictionary = ({ className }: ViewProps): JSX.Element => {
         toast.error('Kunde inte lista hyphenations')
       })
   }, [])
+
+  console.log('query', query)
 
   return (
     <View.Root className={cn(className, 'min-h-[900px]')}>
@@ -193,20 +195,24 @@ const Dictionary = ({ className }: ViewProps): JSX.Element => {
           </div>
           <div className='flex items-center justify-end mt-4'>
             <Button
-              onClick={() => handlePaginate('0')}
+              onClick={() => handlePaginate(query?.from?.[0] && Number(query?.from?.[0]) > 0 ? String(Number(query?.from?.[0]) - 1) : '0')}
               size='sm'
-              variant='outline'
+              variant='ghost'
               className='mb-4 flex items-center gap-2'
             >
-              <ArrowLeft strokeWidth={1.75} size={18} />
+              <ChevronLeft strokeWidth={1.75} size={18} />
             </Button>
+            <div className='text-sm text-gray-700 mb-4 flex items-center gap-2'>
+              <span>Sida</span>
+              <span>{query?.from?.[0] ? Number(query?.from?.[0]) + 1 : 1}</span>
+            </div>
             <Button
-              onClick={() => handlePaginate('1')}
+              onClick={() => handlePaginate(query?.from?.[0] ? String(Number(query?.from?.[0]) + 1) : '1')}
               size='sm'
-              variant='outline'
+              variant='ghost'
               className='mb-4 flex items-center gap-2'
             >
-              <ArrowRight strokeWidth={1.75} size={18} />
+              <ChevronRight strokeWidth={1.75} size={18} />
             </Button>
           </div>
         </ViewHeader.Content>

@@ -51,6 +51,10 @@ export const Commands = (props: FilterProps): JSX.Element => {
     {
       value: 'unpublished',
       label: 'Inställd'
+    },
+    {
+      value: 'cancelled',
+      label: 'Kastad'
     }
   ]
   const optionsPrintFlows = data?.map((hit) => ({
