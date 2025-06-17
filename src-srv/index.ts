@@ -142,9 +142,7 @@ export async function runServer(): Promise<string> {
     process.exit(1)
   })
 
-  /**
-  * Run the Pyroscope profiler in push mode
-  */
+  // Run the Pyroscope profiler in push mode
   Pyroscope.SourceMapper.create(['.'])
     .then((sourceMapper) => {
       Pyroscope.init({
