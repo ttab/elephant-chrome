@@ -122,7 +122,7 @@ export function LayoutBox({
           )
         }
         if (_overflowToastText || _lowresToastText || _underflowToastText) {
-          toast.error('Fixa felen', {
+          toast.error('', {
             description: (
               <div>
                 {_lowresToastText}
