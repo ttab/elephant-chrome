@@ -70,11 +70,17 @@ export function LayoutBox({
             <div>
               <h3 className='font-bold text-gray-500 mt-2'>Bilder (under 130 ppi)</h3>
               {lowresPics.map((image, index) => {
+                console.log('image', image)
                 return (
                   <div key={index}>
                     {index + 1}
                     .&nbsp;
                     {image.frame}
+                    &nbsp;
+                    (
+                    {Math.round(image.ppi)}
+                    &nbsp;
+                    ppi)
                   </div>
                 )
               })}
@@ -116,7 +122,7 @@ export function LayoutBox({
           )
         }
         if (_overflowToastText || _lowresToastText || _underflowToastText) {
-          toast.error('Fel i layouten', {
+          toast.error('Fixa felen', {
             description: (
               <div>
                 {_lowresToastText}
@@ -124,8 +130,7 @@ export function LayoutBox({
                 {_underflowToastText}
               </div>
             ),
-            duration: 60000,
-            position: 'top-right',
+            duration: 15000,
             cancel: {
               label: 'Stäng',
               onClick: () => null

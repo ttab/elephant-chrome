@@ -221,7 +221,7 @@ function EditorContainer({
           setPromptIsOpen(false)
         })
       if (response?.status.code === 'OK') {
-        openPrintArticle(undefined, { id: response?.response?.uuid })
+        openPrintArticle(undefined, { id: response?.response?.uuid }, 'self')
         setPromptIsOpen(false)
         toast.success('Printartikel har duplicerats till datumet: ' + _date)
       }
