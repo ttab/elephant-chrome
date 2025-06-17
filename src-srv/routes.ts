@@ -7,6 +7,8 @@ import type { CollaborationServer } from './utils/CollaborationServer.js'
 import type { RedisCache } from './utils/RedisCache.js'
 import logger from './lib/logger.js'
 
+import { raw as expressRaw } from 'express'
+
 /* Route types */
 interface Route {
   path: string
@@ -168,6 +170,18 @@ function connectRouteHandler(app: Application, routePath: string, func: RouteHan
       return app.get(routePath, handlerFunc)
 
     case 'POST':
+      if (func.length > 0) {
+        return app.post(
+          routePath,
+          (req, res, next) => {
+            if (req.is('application/octet-stream')) {
+              return expressRaw({ type: 'application/octet-stream' })(req, res, next)
+            }
+            next()
+          },
+          handlerFunc
+        )
+      }
       return app.post(routePath, handlerFunc)
 
     case 'PUT':

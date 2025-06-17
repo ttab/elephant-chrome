@@ -198,7 +198,7 @@ export const Table = <TData, TValue>({
             name: currentStatus === 'read' ? 'draft' : 'read',
             uuid: wireRow.original.id,
             version: BigInt(wireRow.original.fields.current_version.values?.[0])
-          })
+          }, undefined, true)
         }
         return
       }
@@ -212,7 +212,7 @@ export const Table = <TData, TValue>({
             name: currentStatus === 'used' ? 'draft' : 'used',
             uuid: wireRow.original.id,
             version: BigInt(wireRow.original.fields.current_version.values?.[0])
-          })
+          }, undefined, true)
         }
         return
       }
@@ -229,7 +229,7 @@ export const Table = <TData, TValue>({
             name: currentStatus === 'saved' ? 'draft' : 'saved',
             uuid: wireRow.original.id,
             version: BigInt(wireRow.original.fields.current_version.values?.[0])
-          })
+          }, undefined, true)
         }
         return
       }
@@ -243,7 +243,7 @@ export const Table = <TData, TValue>({
               name: 'used',
               uuid: wireRow.original.id,
               version: BigInt(wireRow.original.fields.current_version.values?.[0])
-            })
+            }, undefined, true)
           }
           showModal(
             <Wire
