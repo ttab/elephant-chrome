@@ -95,7 +95,7 @@ export const Table = <TData, TValue>({
   const [, setDocumentStatus] = useWorkflowStatus()
   const [,,allParams] = useQuery(['id'], true)
   const activeId = allParams?.filter((item) => {
-    return item.name === 'PrintEditor' || item.name === 'Planning' || item.name === 'Event' || item.name === 'Assignments'
+    return item.name === 'PrintEditor'
   })?.[0]?.params?.id as string
 
   const handlePreview = useCallback((row: RowType<unknown>): void => {
