@@ -209,7 +209,11 @@ function connectWebsocketHandler(app: Application, routePath: string, func: Webs
 function buildRoutes(routes: RouteMap, directory: string, baseRoute: string = ''): void {
   const items = fs.readdirSync(directory)
 
-  items.forEach((item) => {
+  for (const item of items) {
+    if (item.endsWith('.js.map')) {
+      continue
+    }
+
     const itemPath = path.join(directory, item)
     const route = path.join(baseRoute, item)
 
@@ -219,7 +223,7 @@ function buildRoutes(routes: RouteMap, directory: string, baseRoute: string = ''
       const [expressRoute, obj] = buildRoute(route, itemPath)
       routes[expressRoute] = obj
     }
-  })
+  }
 }
 
 
