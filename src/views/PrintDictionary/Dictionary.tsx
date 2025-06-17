@@ -1,6 +1,6 @@
 import { View, ViewHeader } from '@/components/View'
 import { type ViewProps } from '@/types/index'
-import { BookA, Check, ChevronRight, ChevronLeft, Pencil, Plus, Trash } from '@ttab/elephant-ui/icons'
+import { BookA, Check, Pencil, Plus, Trash } from '@ttab/elephant-ui/icons'
 import { cn } from '@ttab/elephant-ui/utils'
 import { useRegistry } from '@/hooks/useRegistry'
 import { useSession } from 'next-auth/react'
@@ -10,7 +10,7 @@ import { type Hypenation } from '@ttab/elephant-tt-api/baboon'
 import { Button, ScrollArea } from '@ttab/elephant-ui'
 import { Prompt } from '@/components/Prompt'
 import { useQuery } from '@/hooks/useQuery'
-import { useLink } from '@/hooks/useLink'
+import { Pagination } from '@/components/Table/Pagination'
 
 const HypenationItem = ({ isNew, setIsNew, word, hypenated, ignore, handleListHyphenations }: { isNew: boolean, setIsNew: (isNew: boolean) => void, word: string, hypenated: string, ignore: boolean, handleListHyphenations: () => void }) => {
   const [_word, setWord] = useState(word)
@@ -150,11 +150,6 @@ const Dictionary = ({ className }: ViewProps): JSX.Element => {
   const [hyphenations, setHyphenations] = useState<Hypenation[]>([])
   const [isNew, setIsNew] = useState(false)
   const [query] = useQuery(['page', 'from'])
-  const paginate = useLink('PrintDictionary')
-
-  const handlePaginate = (page: string) => {
-    paginate(undefined, { from: page }, 'self')
-  }
 
   const handleListHyphenations = async () => {
     if (!session?.accessToken) {
@@ -166,9 +161,10 @@ const Dictionary = ({ className }: ViewProps): JSX.Element => {
       toast.error('Något gick fel när avstämningsordlista skulle hämtas')
       return
     }
+    console.log('query', query)
     const hyphenations = await baboon?.listHypenations({
       language: 'sv',
-      page: BigInt(query?.from?.[0] || 0)
+      page: BigInt(parseInt(query?.page?.[0] || '1') - 1)
     }, session?.accessToken)
     setHyphenations(hyphenations?.response?.items || [])
   }
@@ -179,7 +175,7 @@ const Dictionary = ({ className }: ViewProps): JSX.Element => {
         console.error('Error listing hyphenations:', ex)
         toast.error('Kunde inte lista hyphenations')
       })
-  }, [])
+  }, [query?.page?.[0]])
 
   return (
     <View.Root className={cn(className, 'min-h-[900px]')}>
@@ -196,28 +192,6 @@ const Dictionary = ({ className }: ViewProps): JSX.Element => {
             >
               <Plus strokeWidth={1.75} size={18} />
               Ny
-            </Button>
-          </div>
-          <div className='flex items-center justify-end mt-4'>
-            <Button
-              onClick={() => handlePaginate(query?.from?.[0] && Number(query?.from?.[0]) > 0 ? String(Number(query?.from?.[0]) - 1) : '0')}
-              size='sm'
-              variant='ghost'
-              className='mb-4 flex items-center gap-2'
-            >
-              <ChevronLeft strokeWidth={1.75} size={18} />
-            </Button>
-            <div className='text-sm text-gray-700 mb-4 flex items-center gap-2'>
-              <span>Sida</span>
-              <span>{query?.from?.[0] ? Number(query?.from?.[0]) + 1 : 1}</span>
-            </div>
-            <Button
-              onClick={() => handlePaginate(query?.from?.[0] ? String(Number(query?.from?.[0]) + 1) : '1')}
-              size='sm'
-              variant='ghost'
-              className='mb-4 flex items-center gap-2'
-            >
-              <ChevronRight strokeWidth={1.75} size={18} />
             </Button>
           </div>
         </ViewHeader.Content>
@@ -238,7 +212,7 @@ const Dictionary = ({ className }: ViewProps): JSX.Element => {
             </h3>
             <h3 className='font-bold text-sm col-span-2'></h3>
           </div>
-          <ScrollArea className='h-[calc(100vh-6.2rem)]'>
+          <ScrollArea className='h-[calc(100vh-10rem)]'>
             <ul className='flex flex-col gap-2'>
               {isNew && <HypenationItem isNew={isNew} setIsNew={setIsNew} word='' hypenated='' ignore={false} handleListHyphenations={() => { void handleListHyphenations() }} />}
               {hyphenations.map((hyphenation) => (
@@ -246,6 +220,9 @@ const Dictionary = ({ className }: ViewProps): JSX.Element => {
               ))}
             </ul>
           </ScrollArea>
+          <footer className='sticky bottom-0 bg-white'>
+            <Pagination />
+          </footer>
         </div>
       </View.Content>
     </View.Root>
