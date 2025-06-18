@@ -149,7 +149,7 @@ const Dictionary = ({ className }: ViewProps): JSX.Element => {
   const { data: session } = useSession()
   const [hyphenations, setHyphenations] = useState<Hypenation[]>([])
   const [isNew, setIsNew] = useState(false)
-  const [query] = useQuery(['page', 'from'])
+  const [query] = useQuery(['page'])
 
   const handleListHyphenations = async () => {
     if (!session?.accessToken) {
@@ -161,7 +161,6 @@ const Dictionary = ({ className }: ViewProps): JSX.Element => {
       toast.error('Något gick fel när avstämningsordlista skulle hämtas')
       return
     }
-    console.log('query', query)
     const hyphenations = await baboon?.listHypenations({
       language: 'sv',
       page: BigInt(parseInt(query?.page?.[0] || '1') - 1)
