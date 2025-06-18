@@ -1,9 +1,11 @@
-import { useView } from '@/hooks'
-import { useEffect, useRef } from 'react'
+import { useView, useYValue } from '@/hooks'
+import { useEffect, useRef, useState } from 'react'
 import { ViewHeader } from '@/components/View'
 import { StatusMenu } from '@/components/DocumentStatus/StatusMenu'
-import { RefreshCw, PenBoxIcon } from '@ttab/elephant-ui/icons'
-import { Button } from '@ttab/elephant-ui'
+import { PenBoxIcon } from '@ttab/elephant-ui/icons'
+import { AddNote } from '../Editor/components/Notes/AddNote'
+import { snapshot } from '@/lib/snapshot'
+import { toast } from 'sonner'
 
 /**
  * EditorHeader component.
@@ -25,65 +27,69 @@ import { Button } from '@ttab/elephant-ui'
 
 export const EditorHeader = ({
   documentId,
-  name,
-  flowName
+  flowName,
+  isChanged
 }: {
   documentId: string
-  name?: string
   flowName?: string
+  isChanged?: boolean
 }): JSX.Element => {
   const { viewId } = useView()
   const containerRef = useRef<HTMLElement | null>(null)
   useEffect(() => {
     containerRef.current = document.getElementById(viewId)
   }, [viewId])
+  const [isDirty, setIsDirty] = useState(false)
+  const [title, setTitle] = useYValue<string>('root.title')
 
   return (
-    <ViewHeader.Root className='grid grid-cols-3'>
+    <ViewHeader.Root className='@container grid grid-cols-2'>
       <section className='col-span-2 flex flex-row gap-2 justify-between items-center w-full'>
-        <ViewHeader.Title name={flowName || ''} title={flowName || ''} icon={PenBoxIcon} />
+        <div className='hidden @printEditor:block'>
+          <ViewHeader.Title name={flowName || ''} title={flowName || ''} icon={PenBoxIcon} />
+        </div>
 
         <ViewHeader.Content className='justify-start w-full'>
           <div className='max-w-[1040px] mx-auto flex flex-row gap-2 justify-between items-center w-full'>
             <div className='flex flex-row gap-1 justify-start items-center @7xl/view:-ml-20'>
-              <div className='hidden flex-row gap-2 justify-start items-center @lg/view:flex'>
+              <div className='flex flex-row gap-2 justify-start items-center'>
                 <input
                   type='text'
                   placeholder='Printartikelnamn'
-                  className='px-2 py-1'
-                  defaultValue={name}
-                  disabled
+                  className='px-2 py-1 w-[130px] @printEditor:w-full'
+                  value={title}
+                  onChange={(e) => {
+                    setIsDirty(true)
+                    setTitle(e.target.value)
+                  }}
+                  onBlur={() => {
+                    if (isDirty) {
+                      setIsDirty(false)
+                      snapshot(documentId).then(() => {
+                        toast.success('Titel uppdaterad')
+                      }).catch((error) => {
+                        console.error('Error updating title:', error)
+                      })
+                    }
+                  }}
                 />
               </div>
             </div>
             <div className='flex flex-row gap-2 justify-end items-center'>
+              <div className='hidden @printEditor:block'><AddNote /></div>
               {!!documentId && (
                 <>
                   <ViewHeader.RemoteUsers documentId={documentId} />
                   <StatusMenu
                     documentId={documentId}
                     type='tt/print-article'
+                    isChanged={isChanged}
                   />
                 </>
               )}
             </div>
           </div>
         </ViewHeader.Content>
-      </section>
-      <section className='col-span-1 flex items-center justify-between flex-row gap-2 w-full'>
-        <Button
-          title='Rendera om alla layouter.'
-          variant='outline'
-          size='sm'
-          className='px-2 py-0 flex gap-2 items-center'
-          onClick={(e) => {
-            e.preventDefault()
-            window.alert('Ej implementerat')
-          }}
-        >
-          <RefreshCw strokeWidth={1.75} size={16} />
-          Uppdatera alla
-        </Button>
         <ViewHeader.Action>
         </ViewHeader.Action>
       </section>

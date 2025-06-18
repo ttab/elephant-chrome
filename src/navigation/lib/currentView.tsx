@@ -12,6 +12,10 @@ export const currentView = (): { name: View, props: Record<string, string> } => 
     if (nameFromPath[1]) {
       name = nameFromPath[1]?.toUpperCase() + nameFromPath.slice(2)
     }
+
+    if (name && name.includes('-')) {
+      name = name.replace(/-([a-z])/g, (_, c: string) => c.toUpperCase()) as typeof name
+    }
   } else {
     name = 'Plannings'
   }

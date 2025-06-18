@@ -80,7 +80,7 @@ export async function initializeAuthor({ url, session, repository }: {
       ? (operation = 'update', appendSub(authorDoc.hits[0].document!, session, envRole))
       : createAuthorDoc(session, envRole, 'sv-se')
 
-    const result = await repository.saveDocument(document, session.accessToken, 0n, 'usable')
+    const result = await repository.saveDocument(document, session.accessToken, 'usable')
     if (result?.status.code !== 'OK') {
       throw new Error(`Failed to ${operation} author doc`)
     }

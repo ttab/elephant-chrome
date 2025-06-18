@@ -3,7 +3,19 @@ import { AssignmentType } from '@/components/DataItem/AssignmentType'
 import { AssigneeAvatars } from '@/components/DataItem/AssigneeAvatars'
 import type { DotDropdownMenuActionItem } from '@/components/ui/DotMenu'
 import { DotDropdownMenu } from '@/components/ui/DotMenu'
-import { AlarmClockCheck, Clock1, Delete, Edit, Eye, FileInput, Library, type LucideProps, MoveRight, Pen, Watch } from '@ttab/elephant-ui/icons'
+import {
+  AlarmClockCheck,
+  Clock1,
+  ClockFading,
+  Delete,
+  Edit,
+  Eye,
+  FileInput,
+  Library,
+  MoveRight,
+  Pen,
+  type LucideProps
+} from '@ttab/elephant-ui/icons'
 import { type MouseEvent, useMemo, useState, useCallback, useEffect, useRef } from 'react'
 import { SluglineButton } from '@/components/DataItem/Slugline'
 import { useYValue } from '@/hooks/useYValue'
@@ -89,11 +101,21 @@ export const AssignmentRow = ({ index, onSelect, isFocused = false, asDialog, on
     if (typeof assignmentType !== 'string') {
       return undefined
     }
+    const endAndStartAreNotEqual = endTime && startTime && endTime !== startTime
 
     if (['picture', 'video'].includes(assignmentType) && startTime) {
+      if (endAndStartAreNotEqual) {
+        return {
+          time: [new Date(startTime), new Date(endTime)],
+          tooltip: 'Start- och sluttid',
+          type: assignmentType
+        }
+      }
+
       return {
         time: [new Date(startTime)],
-        tooltip: 'Starttid'
+        tooltip: 'Starttid',
+        type: assignmentType
       }
     }
 
@@ -101,28 +123,32 @@ export const AssignmentRow = ({ index, onSelect, isFocused = false, asDialog, on
       const slotName = timeSlotTypes.find((slot) => slot.slots?.includes(publishSlot))?.label
       return {
         time: [slotName],
-        tooltip: 'Publiceringsfönster'
+        tooltip: 'Publiceringsfönster',
+        type: assignmentType
       }
     }
 
     if (publishTime) {
       return {
         time: [new Date(publishTime)],
-        tooltip: 'Publiceringstid'
+        tooltip: 'Publiceringstid',
+        type: assignmentType
       }
     }
 
-    if (endTime && startTime && endTime !== startTime) {
+    if (endAndStartAreNotEqual) {
       return {
         time: [new Date(startTime), new Date(endTime)],
-        tooltip: 'Start- och sluttid'
+        tooltip: 'Start- och sluttid',
+        type: assignmentType
       }
     }
 
     if (startTime) {
       return {
         time: [new Date(startTime)],
-        tooltip: 'Starttid'
+        tooltip: 'Starttid',
+        type: assignmentType
       }
     }
   }, [publishTime, assignmentType, startTime, endTime, publishSlot])
@@ -131,7 +157,7 @@ export const AssignmentRow = ({ index, onSelect, isFocused = false, asDialog, on
     const timeIcons: Record<string, React.FC<LucideProps>> = {
       start: Clock1,
       publish: AlarmClockCheck,
-      'start-end': Watch
+      'start-end': ClockFading
     }
 
     const type = publishTime ? 'publish' : endTime && startTime && endTime !== startTime ? 'start-end' : 'start'
@@ -388,7 +414,7 @@ export const AssignmentRow = ({ index, onSelect, isFocused = false, asDialog, on
               })
 
               if (planningId) {
-                void snapshot(planningId, undefined, 800).then(() => {
+                void snapshot(planningId, undefined, provider.document).then(() => {
                   const openDocument = assignmentType === 'flash' ? openFlash : openArticle
                   openDocument(undefined, { id, planningId }, 'blank')
                 })

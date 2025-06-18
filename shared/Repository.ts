@@ -253,7 +253,7 @@ export class Repository {
    * @param accessToken string
    * @returns Promise<FinishedUnaryCall<UpdateRequest, UpdateResponse>
    */
-  async saveDocument(document: Document, accessToken: string, version: bigint, status?: string, cause?: string): Promise<FinishedUnaryCall<UpdateRequest, UpdateResponse> | undefined> {
+  async saveDocument(document: Document, accessToken: string, status?: string, cause?: string): Promise<FinishedUnaryCall<UpdateRequest, UpdateResponse> | undefined> {
     const payload: UpdateRequest = {
       document,
       meta: {},
@@ -262,7 +262,8 @@ export class Repository {
       status: status
         ? [{
             name: status,
-            version,
+            // Use the resulting version from the save
+            version: 0n,
             meta: cause ? { cause } : {},
             // No optimistic lock
             ifMatch: 0n

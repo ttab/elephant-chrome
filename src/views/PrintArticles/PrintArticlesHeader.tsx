@@ -1,9 +1,11 @@
 import { ViewHeader } from '@/components/View'
 import { Button, Popover, PopoverContent, PopoverTrigger } from '@ttab/elephant-ui'
-import { Plus } from '@ttab/elephant-ui/icons'
+import { BookA, Plus } from '@ttab/elephant-ui/icons'
 import { DateChanger } from '@/components/Header/Datechanger'
 import { useModal } from '@/components/Modal/useModal'
 import { PrintFlows } from './PrintFlows'
+import { useLink } from '@/hooks/useLink'
+
 /**
  * PrintArticlesHeader component.
  *
@@ -18,10 +20,12 @@ import { PrintFlows } from './PrintFlows'
 
 export const PrintArticlesHeader = (): JSX.Element => {
   const { showModal, hideModal } = useModal()
+  const openDictionary = useLink('PrintDictionary')
+
   return (
     <ViewHeader.Root className='flex flex-row gap-2 items-center justify-between'>
       <div className='flex flex-row gap-4 items-center justify-start'>
-        <ViewHeader.Title title='Print' name='PrintArticles' />
+        <ViewHeader.Title title='Print' name='Print' />
         <Popover>
           <PopoverTrigger asChild>
             <Button title='Skapa ny...' size='sm' className='gap-1 px-2 py-0'>
@@ -54,7 +58,21 @@ export const PrintArticlesHeader = (): JSX.Element => {
             </Button>
           </PopoverContent>
         </Popover>
-        <DateChanger type='PrintArticles' />
+        <DateChanger type='Print' />
+      </div>
+      <div className='flex flex-row gap-2 items-center justify-end'>
+        <Button
+          title='Skapa en text i ett flöde'
+          variant='outline'
+          size='sm'
+          onClick={() => {
+            openDictionary(undefined, {})
+          }}
+        >
+          <BookA strokeWidth={1.75} size={18} />
+        </Button>
+        <ViewHeader.Action>
+        </ViewHeader.Action>
       </div>
     </ViewHeader.Root>
   )

@@ -23,7 +23,8 @@ import {
   useHistory,
   useNavigationKeys,
   useOpenDocuments,
-  useWorkflowStatus
+  useWorkflowStatus,
+  useQuery
 } from '@/hooks'
 import { handleLink } from '@/components/Link/lib/handleLink'
 import { NewItems } from './NewItems'
@@ -40,7 +41,7 @@ const BASE_URL = import.meta.env.BASE_URL
 
 interface TableProps<TData, TValue> {
   columns: Array<ColumnDef<TData, TValue>>
-  type: 'Planning' | 'Event' | 'Assignments' | 'Search' | 'Wires' | 'Factbox' | 'PrintArticles' | 'PrintEditor'
+  type: 'Planning' | 'Event' | 'Assignments' | 'Search' | 'Wires' | 'Factbox' | 'Print' | 'PrintEditor'
   onRowSelected?: (row?: TData) => void
 }
 
@@ -92,6 +93,10 @@ export const Table = <TData, TValue>({
   const openDocuments = useOpenDocuments({ idOnly: true })
   const { showModal, hideModal, currentModal } = useModal()
   const [, setDocumentStatus] = useWorkflowStatus()
+  const [,,allParams] = useQuery(['id'], true)
+  const activeId = allParams?.filter((item) => {
+    return item.name === 'PrintEditor'
+  })?.[0]?.params?.id as string
 
   const handlePreview = useCallback((row: RowType<unknown>): void => {
     row.toggleSelected(true)
@@ -193,7 +198,7 @@ export const Table = <TData, TValue>({
             name: currentStatus === 'read' ? 'draft' : 'read',
             uuid: wireRow.original.id,
             version: BigInt(wireRow.original.fields.current_version.values?.[0])
-          })
+          }, undefined, true)
         }
         return
       }
@@ -207,7 +212,7 @@ export const Table = <TData, TValue>({
             name: currentStatus === 'used' ? 'draft' : 'used',
             uuid: wireRow.original.id,
             version: BigInt(wireRow.original.fields.current_version.values?.[0])
-          })
+          }, undefined, true)
         }
         return
       }
@@ -224,7 +229,7 @@ export const Table = <TData, TValue>({
             name: currentStatus === 'saved' ? 'draft' : 'saved',
             uuid: wireRow.original.id,
             version: BigInt(wireRow.original.fields.current_version.values?.[0])
-          })
+          }, undefined, true)
         }
         return
       }
@@ -238,7 +243,7 @@ export const Table = <TData, TValue>({
               name: 'used',
               uuid: wireRow.original.id,
               version: BigInt(wireRow.original.fields.current_version.values?.[0])
-            })
+            }, undefined, true)
           }
           showModal(
             <Wire
@@ -310,6 +315,7 @@ export const Table = <TData, TValue>({
             columns={columns}
             handleOpen={handleOpen}
             openDocuments={openDocuments}
+            activeId={activeId}
           />
         )
       : (

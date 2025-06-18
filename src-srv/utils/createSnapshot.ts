@@ -12,6 +12,8 @@ export async function createSnapshot(collaborationServer: CollaborationServer, p
   document: Y.Doc
   context: Context
   force?: boolean
+  status?: string
+  cause?: string
 }): Promise<Response> {
   // FIXME: We should probably expose collaborationServer.#storeDocumentInRepository and call directly
   // FIXME: So we don't need to pass on transacting etc.

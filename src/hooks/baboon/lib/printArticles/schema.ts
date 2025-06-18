@@ -11,7 +11,8 @@ const _fields = [
   'document.meta.tt_print_article.title',
   'document.rel.flow.*',
   'document.meta.tt_print_article.data.date',
-  'workflow_state'
+  'workflow_state',
+  'document.content.tt_tv_listing.data.title'
 ] as const
 
 /**

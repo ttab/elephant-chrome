@@ -31,6 +31,7 @@ export const createFetcher = (url: URL, session: Session | null, mediaType: Medi
       sort: 'default:desc',
       p: productCodes,
       q: queryString,
+      pubstatus: ['usable', 'commissioned'],
       s: SIZE,
       fr: (index) * SIZE
     })

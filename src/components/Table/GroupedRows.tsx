@@ -4,9 +4,10 @@ import { GroupedRowsHeader } from './GroupedRowsHeader'
 import { Row as RegularRow } from './Row'
 import { WireRow } from './WireRow'
 
-export const GroupedRows = <TData, TValue>({ row, columns, handleOpen, openDocuments, type }: {
+export const GroupedRows = <TData, TValue>({ row, columns, handleOpen, openDocuments, type, activeId }: {
+  activeId?: string
   row: RowType<unknown>
-  type: 'Planning' | 'Event' | 'Assignments' | 'Search' | 'Wires' | 'Factbox' | 'PrintArticles' | 'PrintEditor'
+  type: 'Planning' | 'Event' | 'Assignments' | 'Search' | 'Wires' | 'Factbox' | 'Print' | 'PrintEditor'
   columns: Array<ColumnDef<TData, TValue>>
   handleOpen: (event: MouseEvent<HTMLTableRowElement> | KeyboardEvent, subRow: RowType<unknown>) => void
   openDocuments: string[]
@@ -16,7 +17,6 @@ export const GroupedRows = <TData, TValue>({ row, columns, handleOpen, openDocum
   }
 
   const Row = type === 'Wires' ? WireRow : RegularRow
-
   return (
     <React.Fragment key={row.id}>
       <GroupedRowsHeader row={row} columns={columns} />
@@ -28,6 +28,7 @@ export const GroupedRows = <TData, TValue>({ row, columns, handleOpen, openDocum
           row={subRow}
           handleOpen={handleOpen}
           openDocuments={openDocuments}
+          isActive={activeId === (subRow.original as { id: string }).id}
         />
       ))}
     </React.Fragment>

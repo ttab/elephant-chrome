@@ -1,6 +1,6 @@
 import type { Index } from '@/shared/Index'
 import type { Repository } from '@/shared/Repository'
-import type { Document } from '@ttab/elephant-api/newsdoc'
+import type { Block, Document } from '@ttab/elephant-api/newsdoc'
 import { QueryV1, BoolQueryV1, TermQueryV1, RangeQueryV1 } from '@ttab/elephant-api/index'
 import type { DocumentMetrics, StatusOverviewItem } from '@ttab/elephant-api/repository'
 import { type BulkGetResponse, type GetMetricsResponse, type GetStatusOverviewResponse } from '@ttab/elephant-api/repository'
@@ -71,23 +71,29 @@ export async function fetchAssignments({ index, repository, type, requireDeliver
     }
 
     // Collect all assignments and deliverable uuids for this result page
+    // Ignore:
+    // * slot assignments where planning date is not the same as the given date
+    // * assignments with start date not matching the given date
+    // TODO: Take withheld/publish into account?
     const uuids: string[] = []
     for (const { document } of hits) {
-      if (document) {
-        const sameDay = getPlanningDate(document) == dateStr
+      if (!document) continue
 
-        for (const assignment of getAssignmentsFromDocument(document, type)) {
-          if (!sameDay && hasPublishSlot(assignment)) {
-            continue
-          }
+      const sameDay = getPlanningDate(document) === dateStr
 
-          if (!requireDeliverable || assignment._deliverableId) {
-            assignments.push(assignment)
-          }
+      for (const assignment of getAssignmentsFromDocument(document, type)) {
+        const sameDayAssignment = getAssignmentDate(assignment) === dateStr
 
-          if (assignment._deliverableId) {
-            uuids.push(assignment._deliverableId)
-          }
+        if (!sameDay && (hasPublishSlot(assignment) || !sameDayAssignment)) {
+          continue
+        }
+
+        if (!requireDeliverable || assignment._deliverableId) {
+          assignments.push(assignment)
+        }
+
+        if (assignment._deliverableId) {
+          uuids.push(assignment._deliverableId)
         }
       }
     }
@@ -316,4 +322,8 @@ function getPlanningDate(doc: Document): string {
   }
 
   return ''
+}
+
+function getAssignmentDate(assignment: Block): string {
+  return assignment.data['start_date'] || ''
 }
