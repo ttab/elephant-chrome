@@ -8,7 +8,7 @@ import { useModal } from '@/components/Modal/useModal'
 import type { Wire as WireType } from '@/hooks/index/useDocuments/schemas/wire'
 import type { Status as DocumentStatuses } from '@ttab/elephant-api/repository'
 import { MetaSheet } from '@/views/Editor/components/MetaSheet'
-import { useEffect, useRef } from 'react'
+import { useEffect, useMemo, useRef } from 'react'
 import { useWorkflowStatus } from '@/hooks/useWorkflowStatus'
 import { decodeString } from '@/lib/decodeString'
 import { getWireStatus } from '@/components/Table/lib/getWireStatus'
@@ -30,6 +30,21 @@ export const PreviewSheet = ({ id, wire, handleClose, textOnly = true, version, 
     containerRef.current = (document.getElementById(id))
   }, [id])
 
+
+  const currentWire = useMemo(() => {
+    if (!wire) return
+
+    return {
+      source: wire?.fields['document.rel.source.uri']?.values[0]
+        ?.replace('wires://source/', ''),
+      provider: wire?.fields['document.rel.provider.uri']?.values[0]
+        ?.replace('wires://provider/', ''),
+      role: wire?.fields['document.meta.tt_wire.role'].values[0],
+      newsvalue: wire?.fields['document.meta.core_newsvalue.value']?.values[0],
+      status: getWireStatus('Wires', wire)
+    }
+  }, [wire])
+
   useNavigationKeys({
     keys: ['s', 'r', 'c', 'u', 'Escape'],
     onNavigation: (event) => {
@@ -37,7 +52,7 @@ export const PreviewSheet = ({ id, wire, handleClose, textOnly = true, version, 
       if (documentStatus) {
         if (event.key === 'r') {
           const payload = {
-            name: currentStatus === 'read' ? 'draft' : 'read',
+            name: currentWire?.status === 'read' ? 'draft' : 'read',
             version: documentStatus?.version,
             uuid: documentStatus?.uuid
           }
@@ -50,7 +65,7 @@ export const PreviewSheet = ({ id, wire, handleClose, textOnly = true, version, 
 
         if (event.key === 's') {
           const payload = {
-            name: currentStatus === 'saved' ? 'draft' : 'saved',
+            name: currentWire?.status === 'saved' ? 'draft' : 'saved',
             version: documentStatus?.version,
             uuid: documentStatus?.uuid
           }
@@ -63,7 +78,7 @@ export const PreviewSheet = ({ id, wire, handleClose, textOnly = true, version, 
 
         if (event.key === 'u') {
           const payload = {
-            name: currentStatus === 'used' ? 'draft' : 'used',
+            name: currentWire?.status === 'used' ? 'draft' : 'used',
             version: documentStatus?.version,
             uuid: documentStatus?.uuid
           }
@@ -87,37 +102,24 @@ export const PreviewSheet = ({ id, wire, handleClose, textOnly = true, version, 
   })
 
 
-  if (!wire) {
-    return <p>No wire id provided</p>
-  }
-
-  const source = wire.fields['document.rel.source.uri']?.values[0]
-    ?.replace('wires://source/', '')
-
-  const provider = wire.fields['document.rel.provider.uri']?.values[0]
-    ?.replace('wires://provider/', '')
-
-  const role = wire.fields['document.meta.tt_wire.role'].values[0]
-  const newsvalue = wire.fields['document.meta.core_newsvalue.value']?.values[0]
-  const currentVersion = BigInt(wire.fields['current_version']?.values[0] || '')
-  const currentStatus = getWireStatus('Wires', wire)
+  const currentVersion = BigInt(wire?.fields['current_version']?.values[0] || '')
 
   return (
     <FaroErrorBoundary fallback={(error) => <Error error={error} />}>
       <div className='w-full flex flex-col gap-4'>
         <div className='flex flex-row gap-6 justify-between items-center'>
           <div className='flex flex-row gap-2'>
-            {source && (
+            {currentWire?.source && (
               <Badge className='w-fit h-6 justify-center align-center'>
-                {source}
+                {currentWire.source}
               </Badge>
             )}
-            {provider && provider !== source && provider.toLocaleLowerCase() !== source && (
+            {currentWire?.provider && currentWire.provider !== currentWire.source && currentWire.provider.toLocaleLowerCase() !== currentWire.source && (
               <Badge className='w-fit h-6 justify-center align-center'>
-                {decodeString(provider)}
+                {decodeString(currentWire.provider)}
               </Badge>
             )}
-            {role === 'pressrelease' && (
+            {currentWire?.role === 'pressrelease' && (
               <Badge
                 className='w-fit h-6 justify-center align-center bg-gray-400'
               >
@@ -125,7 +127,7 @@ export const PreviewSheet = ({ id, wire, handleClose, textOnly = true, version, 
               </Badge>
             )}
 
-            {newsvalue === '6' && (
+            {currentWire?.newsvalue === '6' && (
               <Badge
                 variant='destructive'
                 className='w-fit h-6 justify-center align-center'
