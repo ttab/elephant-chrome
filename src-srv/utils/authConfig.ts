@@ -15,7 +15,8 @@ const scopes = [
   'user',
   'baboon',
   'media',
-  'content-api'
+  'content-api',
+  'asset_upload'
 ]
 
 const authorizationUrl = new URL(`${process.env.AUTH_KEYCLOAK_ISSUER}/protocol/openid-connect/auth`)
@@ -90,7 +91,8 @@ export const authConfig: AuthConfig = {
           accessToken: account.access_token,
           accessTokenExpires: Date.now() + (account.expires_in || 300) * 1000,
           refreshToken: account.refresh_token,
-          user
+          user,
+          scope: account.scope
         }
       }
 
