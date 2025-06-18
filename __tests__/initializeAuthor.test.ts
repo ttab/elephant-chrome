@@ -100,7 +100,6 @@ describe('initializeAuthor', () => {
         ])
       }),
       mockSession.accessToken,
-      expect.any(BigInt),
       expect.any(String)
     )
     expect(toast.success).toHaveBeenCalledWith('Författardokument är uppdaterat')

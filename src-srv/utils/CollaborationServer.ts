@@ -371,7 +371,7 @@ export class CollaborationServer {
     transactingDoc?: Y.Doc,
     cause?: string
   ): Promise<FinishedUnaryCall<UpdateRequest, UpdateResponse>> {
-    const { document, version } = documentResponse
+    const { document } = documentResponse
     if (!document) {
       throw new Error(`Store document ${documentName} failed, no document in GetDocumentResponse parameter`)
     }
@@ -379,7 +379,6 @@ export class CollaborationServer {
     const result = await this.#repository.saveDocument(
       document,
       accessToken,
-      version,
       status,
       cause
     )
