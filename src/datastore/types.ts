@@ -74,6 +74,11 @@ export interface IDBWireSource {
   title: string
 }
 
+export interface IDBContentSource {
+  uri: string
+  title: string
+}
+
 export interface IDBLanguage {
   id: string
 }
