@@ -12,7 +12,7 @@ import { Additionals } from './components/Additionals'
 import { Position } from './components/Position'
 import { Prompt } from '@/components/Prompt'
 import { snapshot } from '@/lib/snapshot'
-import { useState } from 'react'
+import { type ReactNode, useState } from 'react'
 
 export function LayoutBox({
   documentId,
@@ -63,8 +63,33 @@ export function LayoutBox({
       }, session.accessToken)
       if (response?.status.code === 'OK') {
         openPreview(undefined, { source: response?.response?.pdfUrl })
+        const lowresPics = response?.response?.images?.filter((image) => image.ppi <= 130)
+        let _lowresToastText: ReactNode | undefined = undefined
+        if (lowresPics.length > 0) {
+          _lowresToastText = (
+            <div>
+              <h3 className='font-bold text-gray-500 mt-2'>Bilder (under 130 ppi)</h3>
+              {lowresPics.map((image, index) => {
+                console.log('image', image)
+                return (
+                  <div key={index}>
+                    {index + 1}
+                    .&nbsp;
+                    {image.frame}
+                    &nbsp;
+                    (
+                    {Math.round(image.ppi)}
+                    &nbsp;
+                    ppi)
+                  </div>
+                )
+              })}
+            </div>
+          )
+        }
+        let _overflowToastText: ReactNode | undefined = undefined
         if (response?.response?.overflows?.length) {
-          const _toastText = (
+          _overflowToastText = (
             <div>
               <h3 className='font-bold text-gray-500 mt-2'>Overflows</h3>
               {response?.response?.overflows?.map((overflow, index) => {
@@ -78,13 +103,37 @@ export function LayoutBox({
               })}
             </div>
           )
-          toast.error('Fel i layouten', {
-            description: _toastText,
-            duration: 60000,
-            position: 'top-right',
+        }
+        let _underflowToastText: ReactNode | undefined = undefined
+        if (response?.response?.underflows?.length) {
+          _underflowToastText = (
+            <div>
+              <h3 className='font-bold text-gray-500 mt-2'>Underflows</h3>
+              {response?.response?.underflows?.map((underflow, index) => {
+                return (
+                  <div key={index}>
+                    {index + 1}
+                    .&nbsp;
+                    {underflow.frame}
+                  </div>
+                )
+              })}
+            </div>
+          )
+        }
+        if (_overflowToastText || _lowresToastText || _underflowToastText) {
+          toast.error('', {
+            description: (
+              <div>
+                {_lowresToastText}
+                {_overflowToastText}
+                {_underflowToastText}
+              </div>
+            ),
+            duration: 15000,
             cancel: {
               label: 'Stäng',
-              onClick: () => console.log('Cancel!')
+              onClick: () => null
             }
           })
           setStatus('false')

@@ -12,5 +12,12 @@ export default {
   ],
   plugins: [
     containerQueries
-  ]
+  ],
+  theme: {
+    extend: {
+      containers: {
+        printEditor: '40rem'
+      }
+    }
+  }
 } satisfies Config

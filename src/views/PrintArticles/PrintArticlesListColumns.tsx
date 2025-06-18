@@ -1,6 +1,6 @@
 
 import { type ColumnDef } from '@tanstack/react-table'
-import { CircleCheck, Pen, Tv, Heading1 } from '@ttab/elephant-ui/icons'
+import { CircleCheck, Pen, Tv } from '@ttab/elephant-ui/icons'
 import type { PrintArticle } from '@/hooks/baboon/lib/printArticles'
 import { DocumentStatuses } from '@/defaults/documentStatuses'
 import { DocumentStatus } from '@/components/Table/Items/DocumentStatus'
@@ -98,15 +98,16 @@ export function printArticlesListColumns(): Array<ColumnDef<PrintArticle>> {
           }
         })
         return (
-          <div className='flex items-center gap-2 text-sm'>
-            <Heading1 size={16} />
-            {_title || ''}
-          </div>
+          _title || ''
         )
       },
       cell: ({ row }) => {
         const title = row?.getValue('headline')
-        return title as string
+        return (
+          <div className='flex items-center gap-2 text-sm'>
+            {title as string}
+          </div>
+        )
       }
     },
     {
@@ -123,12 +124,14 @@ export function printArticlesListColumns(): Array<ColumnDef<PrintArticle>> {
       },
       cell: ({ row }) => {
         const title = row.getValue('tvTitle')
-        return (
-          <div className='flex items-center gap-2 text-sm'>
-            <Tv size={16} />
-            {title as string}
-          </div>
-        )
+        return title
+          ? (
+              <div className='flex items-center gap-2 text-sm'>
+                <Tv size={16} />
+                {title as string}
+              </div>
+            )
+          : null
       }
     }
   ]

@@ -5,7 +5,8 @@ import { cn } from '@ttab/elephant-ui/utils'
 
 type DocumentType = 'Planning' | 'Event' | 'Assignments' | 'Search' | 'Wires' | 'Factbox' | 'Print' | 'PrintEditor'
 
-export const Row = ({ row, handleOpen, type }: {
+export const Row = ({ row, handleOpen, type, isActive }: {
+  isActive?: boolean
   type: DocumentType
   row: RowType<unknown>
   handleOpen: (event: MouseEvent<HTMLTableRowElement>, row: RowType<unknown>) => void
@@ -16,7 +17,8 @@ export const Row = ({ row, handleOpen, type }: {
       tabIndex={0}
       className={cn(
         'flex cursor-default scroll-mt-10 ring-inset focus:outline-none focus-visible:ring-2 focus-visible:ring-table-selected data-[state=selected]:bg-table-selected',
-        type === 'Assignments' ? 'items-start' : 'items-center'
+        type === 'Assignments' ? 'items-start' : 'items-center',
+        isActive ? 'bg-blue-200' : ''
       )}
       onClick={(event: MouseEvent<HTMLTableRowElement>) => handleOpen(event, row)}
       ref={(el) => {

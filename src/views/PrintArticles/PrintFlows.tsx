@@ -15,6 +15,7 @@ import { parseDate } from '@/lib/datetime'
 import { useSession } from 'next-auth/react'
 import { useQuery } from '@/hooks/useQuery'
 import { format } from 'date-fns'
+import { useLink } from '@/hooks/useLink'
 
 /**
  * PrintFlows component.
@@ -42,6 +43,7 @@ export const PrintFlows = ({ asDialog, onDialogClose, className, action }: ViewP
     toast.error('Kunde inte hämta printflöden')
     console.error('Could not fetch PrintFlows:', error)
   }
+  const openPrintArticle = useLink('PrintEditor')
   const [articleName, setArticleName] = useState<string>()
   const [filter] = useQuery(['from'])
   const [printFlow, setPrintFlow] = useState<string>()
@@ -81,6 +83,7 @@ export const PrintFlows = ({ asDialog, onDialogClose, className, action }: ViewP
       }, session.accessToken)
 
       if (response?.status.code === 'OK') {
+        openPrintArticle(undefined, { id: response?.response?.articles?.[0]?.uuid }, 'self')
         toast.success('Printartikel skapad')
 
         if (onDialogClose) {

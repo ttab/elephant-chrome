@@ -221,7 +221,7 @@ function EditorContainer({
           setPromptIsOpen(false)
         })
       if (response?.status.code === 'OK') {
-        openPrintArticle(undefined, { id: response?.response?.uuid })
+        openPrintArticle(undefined, { id: response?.response?.uuid }, 'self')
         setPromptIsOpen(false)
         toast.success('Printartikel har duplicerats till datumet: ' + _date)
       }
@@ -249,11 +249,14 @@ function EditorContainer({
           pngScale: 300n
         }, session.accessToken)
         if (response?.status.code === 'OK') {
+          const overflowsStatus = response?.response?.overflows?.length > 0
+          const underflowsStatus = response?.response?.underflows?.length > 0
+          const lowresPicsStatus = response?.response?.images?.filter((image) => image.ppi <= 130).length > 0
           const _checkedLayout = {
             ..._layout,
             data: {
               ..._layout?.data,
-              status: response?.response?.overflows?.length ? 'false' : 'true'
+              status: overflowsStatus || underflowsStatus || lowresPicsStatus ? 'false' : 'true'
             }
           }
           results.push(_checkedLayout)
@@ -278,8 +281,8 @@ function EditorContainer({
       <EditorHeader documentId={documentId} flowName={flowName} isChanged={isChanged} />
       {!!notes?.length && <div className='p-4'><Notes /></div>}
       <View.Content className='flex flex-col max-w-[1000px]'>
-        <section className='grid grid-cols-12'>
-          <div className='col-span-8'>
+        <section className='flex flex-col-reverse @printEditor:grid @printEditor:grid-cols-12 @container'>
+          <div className='@printEditor:col-span-8'>
             <ScrollArea className='h-[calc(100vh-7rem)]'>
               <div className='flex-grow overflow-auto pr-12 max-w-screen-xl'>
                 {!!provider && synced
@@ -292,7 +295,7 @@ function EditorContainer({
               </div>
             </ScrollArea>
           </div>
-          <aside className='col-span-4 sticky top-16 p-4'>
+          <aside className='@printEditor:col-span-4 @printEditor:sticky @printEditor:top-16 p-4'>
             <header className='flex flex-row gap-2 items-center justify-between mb-2'>
               <div className='flex items-center'>
                 <Button variant='ghost' size='sm' onClick={() => { void statusChecker() }}>
