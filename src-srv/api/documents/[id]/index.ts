@@ -32,34 +32,36 @@ export const GET: RouteHandler = async (req: Request, { cache, repository, res }
   }
 
   try {
-    // Fetch from Redis if exists
-    const state = await cache.get(uuid).catch((ex) => {
-      throw new Error('get cached document', { cause: ex })
-    })
+    // Fetch from Redis if exists and no version specified
+    if (!version) {
+      const state = await cache.get(uuid).catch((ex) => {
+        throw new Error('get cached document', { cause: ex })
+      })
 
-    // Check for collaborative/cached document first
-    if (state) {
-      const yDoc = new Y.Doc()
-      Y.applyUpdate(yDoc, state)
-      const { documentResponse } = fromYjsNewsDoc(yDoc)
+      // Check for collaborative/cached document
+      if (state) {
+        const yDoc = new Y.Doc()
+        Y.applyUpdate(yDoc, state)
+        const { documentResponse } = fromYjsNewsDoc(yDoc)
 
-      // Return newsdoc from cache
-      if (type === 'newsdoc') {
+        // Return newsdoc from cache
+        if (type === 'newsdoc') {
+          return {
+            payload: {
+              from: 'cache',
+              version: documentResponse.version.toString(),
+              document: fromGroupedNewsDoc(documentResponse).document
+            }
+          }
+        }
+
+        // Return grouped newsdoc from cache
         return {
           payload: {
             from: 'cache',
             version: documentResponse.version.toString(),
-            document: fromGroupedNewsDoc(documentResponse).document
+            document: documentResponse.document
           }
-        }
-      }
-
-      // Return grouped newsdoc from cache
-      return {
-        payload: {
-          from: 'cache',
-          version: documentResponse.version.toString(),
-          document: documentResponse.document
         }
       }
     }
