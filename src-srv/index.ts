@@ -148,8 +148,7 @@ export async function runServer(): Promise<string> {
       Pyroscope.init({
         appName: 'elephant-chrome',
         serverAddress: PYROSCOPE_URL,
-        sourceMapper: sourceMapper,
-        flushIntervalMs: 3000
+        sourceMapper: sourceMapper
       })
       Pyroscope.start()
       logger.info(`Started Pyroscope profiler in push mode`)
