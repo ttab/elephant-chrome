@@ -59,36 +59,40 @@ export function MetaSheet({ container, documentId, readOnly, readOnlyVersion }: 
             : (
                 <div className='flex flex-col gap-6 px-5 py-4 border-t'>
 
-                  <Label htmlFor='properties' className='text-xs text-muted-foreground -mb-3'>Egenskaper</Label>
-                  <div className='flex flex-row gap-3' id='properties'>
-                    <Newsvalue />
-                    <SluglineButton path='meta.tt/slugline[0].value' />
-                  </div>
+                  {documentType === 'core/article' && (
+                    <>
+                      <Label htmlFor='properties' className='text-xs text-muted-foreground -mb-3'>Egenskaper</Label>
+                      <div className='flex flex-row gap-3' id='properties'>
+                        <Newsvalue />
+                        <SluglineButton path='meta.tt/slugline[0].value' />
+                      </div>
 
-                  <Label htmlFor='tags' className='text-xs text-muted-foreground -mb-3'>Etiketter</Label>
-                  <div className='flex flex-row gap-3' id='tags'>
-                    <Story asSubject />
-                    <Section />
-                  </div>
+                      <Label htmlFor='tags' className='text-xs text-muted-foreground -mb-3'>Etiketter</Label>
+                      <div className='flex flex-row gap-3' id='tags'>
+                        <Story asSubject />
+                        <Section />
+                      </div>
 
-                  <Label htmlFor='byline' className='text-xs text-muted-foreground -mb-3'>Byline</Label>
-                  <div id='byline'>
-                    <Byline />
-                  </div>
+                      <Label htmlFor='byline' className='text-xs text-muted-foreground -mb-3'>Byline</Label>
+                      <div id='byline'>
+                        <Byline />
+                      </div>
 
-                  <Label htmlFor='actions' className='text-xs text-muted-foreground -mb-3'>Åtgärder</Label>
-                  <div className='flex flex-row gap-3' id='actions'>
-                    <AddNote text='Lägg till intern notering' variant='outline' />
-                  </div>
+                      <Label htmlFor='actions' className='text-xs text-muted-foreground -mb-3'>Åtgärder</Label>
+                      <div className='flex flex-row gap-3' id='actions'>
+                        <AddNote text='Lägg till intern notering' variant='outline' />
+                      </div>
+
+                      <Label htmlFor='content-source'>Källor andra än TT</Label>
+                      <div id='content-source'>
+                        <ContentSource />
+                      </div>
+                    </>
+                  )}
 
                   <Label htmlFor='version' className='text-xs text-muted-foreground -mb-3'>Versioner</Label>
                   <div id='version'>
                     <Version documentId={documentId} textOnly={false} />
-                  </div>
-
-                  <Label htmlFor='content-source'>Källor andra än TT</Label>
-                  <div id='content-source'>
-                    <ContentSource />
                   </div>
 
                   {documentType === 'core/editorial-info' && (
