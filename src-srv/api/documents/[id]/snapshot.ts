@@ -1,10 +1,8 @@
 import logger from '../../../lib/logger.js'
 import type { Request } from 'express'
 import type { RouteContentResponse, RouteHandler, RouteStatusResponse } from '../../../routes.js'
-import type { Context } from '../../../lib/assertContext.js'
-import { assertContext } from '../../../lib/assertContext.js'
 import { createSnapshot } from '../../../utils/createSnapshot.js'
-import type { Session } from 'next-auth'
+import { getContextFromValidSession, getSession, isContext } from '../../../lib/context.js'
 import * as Y from 'yjs'
 
 type Response = RouteContentResponse | RouteStatusResponse
@@ -19,43 +17,9 @@ export const POST: RouteHandler = async (req: Request, { collaborationServer, ca
     ? undefined
     : req.body as Uint8Array | undefined
 
-  // Get accessToken from request headers or session
-  const locals = res.locals as Record<string, unknown> | undefined
-  const session = locals?.session as { accessToken?: string, user?: Context['user'] } | undefined
-  let accessToken = session?.accessToken
-  if (!accessToken) {
-    const authHeader = req.headers['authorization'] || req.headers['Authorization']
-    if (typeof authHeader === 'string' && authHeader.startsWith('Bearer ')) {
-      accessToken = authHeader.slice(7)
-    }
-  }
-
-  let user = session?.user
-  if (!user) {
-    const userHeader = req.headers['x-user'] || req.headers['X-User']
-    if (typeof userHeader === 'string') {
-      user = JSON.parse(userHeader) as Session['user']
-    }
-  }
-
-  if (!accessToken || !user) {
-    return {
-      statusCode: 401,
-      statusMessage: 'Unauthorized: Session not found, can not snapshot document'
-    }
-  }
-
-  const context: Context = {
-    accessToken,
-    user,
-    agent: 'server'
-  }
-
-  if (!assertContext(context)) {
-    return {
-      statusCode: 500,
-      statusMessage: 'Invalid context provided'
-    }
+  const context = getContextFromValidSession(getSession(req, res))
+  if (!isContext(context)) {
+    return context
   }
 
   try {

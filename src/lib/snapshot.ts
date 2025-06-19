@@ -30,7 +30,7 @@ export async function snapshot(
   }
 
   try {
-    const url = new URL(`${BASE_URL}/api/snapshot/${uuid}`, window.location.origin)
+    const url = new URL(`${BASE_URL}/api/documents/${uuid}/snapshot`, window.location.origin)
 
     if (options?.force) url.searchParams.set('force', 'true')
     if (options?.status) url.searchParams.set('status', options.status)
