@@ -33,8 +33,7 @@ export function CreateDeliverablePrompt({ deliverableType, payload, onClose, tit
     const template = getTemplateFromDeliverable(deliverableType)
     await repository.saveDocument(
       template(id, payload),
-      session.accessToken,
-      BigInt(-1)
+      session.accessToken
     )
 
     return id

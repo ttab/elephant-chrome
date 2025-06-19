@@ -3,8 +3,8 @@ import { SelectedFilters } from './SelectedFilters'
 import { Commands } from './Commands'
 import { useState } from 'react'
 import { DotDropdownMenu } from '@/components/ui/DotMenu'
-import { Save } from '@ttab/elephant-ui/icons'
-import { Button } from '@ttab/elephant-ui'
+import { Save, UserCog } from '@ttab/elephant-ui/icons'
+import { ToggleGroup, ToggleGroupItem } from '@ttab/elephant-ui'
 
 /**
  * Toolbar component.
@@ -20,7 +20,6 @@ import { Button } from '@ttab/elephant-ui'
  * a border at the bottom. The button's functionality is not yet implemented.
  */
 
-
 export const Toolbar = (): JSX.Element => {
   const [pages, setPages] = useState<string[]>([])
   const [search, setSearch] = useState<string | undefined>('')
@@ -33,8 +32,13 @@ export const Toolbar = (): JSX.Element => {
     search,
     setSearch
   }
+
+  const handleSaveUserFilter = () => {
+    window.alert('Ej implementerat')
+  }
+
   return (
-    <div className='flex items-center justify-between py-1 px-4 border-b sticky top-0 bg-whitez-10'>
+    <div className='bg-white z-10 flex items-center justify-between py-1 px-4 border-b sticky top-0'>
       <div className='flex flex-1 items-center space-x-2'>
         <Filter {...props}>
           <Commands {...props} />
@@ -42,23 +46,30 @@ export const Toolbar = (): JSX.Element => {
         <SelectedFilters />
       </div>
       <div className='flex justify-end'>
+        <ToggleGroup
+          type='single'
+          size='xs'
+          value=''
+          onValueChange={() => {
+            window.alert('Ej implementerat')
+          }}
+          className='px-1'
+        >
+          <ToggleGroupItem
+            value='user'
+            aria-label='Toggle user'
+            className='border data-[state=off]:text-muted-foreground'
+          >
+            <UserCog size={18} strokeWidth={1.75} />
+          </ToggleGroupItem>
+        </ToggleGroup>
         <DotDropdownMenu
           trigger='vertical'
           items={[
             {
               label: 'Spara personligt filter',
               icon: Save,
-              item: (
-                <Button
-                  size='sm'
-                  variant='ghost'
-                  onClick={() => {
-                    window.alert('Ej implementerat')
-                  }}
-                >
-                  Spara personligt filter
-                </Button>
-              )
+              item: handleSaveUserFilter
             }
           ]}
         />

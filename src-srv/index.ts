@@ -33,7 +33,6 @@ const NODE_ENV = process.env.NODE_ENV === 'production' ? 'production' : 'develop
 const PROTOCOL = process.env.VITE_PROTOCOL || 'https'
 const HOST = process.env.HOST || '127.0.0.1'
 const PORT = process.env.PORT ? parseInt(process.env.PORT) : 5183
-const PROFILE_PORT = process.env.PROFILE_PORT ? parseInt(process.env.PROFILE_PORT) : 1081
 const REPOSITORY_URL = process.env.REPOSITORY_URL || ''
 const REDIS_URL = process.env.REDIS_URL || ''
 const BASE_URL = process.env.BASE_URL || ''
@@ -41,6 +40,7 @@ const USER_URL = process.env.USER_URL || ''
 const AUTH_KEYCLOAK_ISSUER = process.env.AUTH_KEYCLOAK_ISSUER || ''
 const ELEPHANT_CHROME_CLIENT_ID = process.env.ELEPHANT_CHROME_CLIENT_ID || ''
 const ELEPHANT_CHROME_CLIENT_SECRET = process.env.ELEPHANT_CHROME_CLIENT_SECRET || ''
+const PYROSCOPE_URL = process.env.PYROSCOPE_URL || ''
 
 /**
  * Run the server
@@ -148,6 +148,21 @@ export async function runServer(): Promise<string> {
     process.exit(1)
   })
 
+  // Run the Pyroscope profiler in push mode
+  Pyroscope.SourceMapper.create(['.'])
+    .then((sourceMapper) => {
+      Pyroscope.init({
+        appName: 'elephant-chrome',
+        serverAddress: PYROSCOPE_URL,
+        sourceMapper: sourceMapper
+      })
+      Pyroscope.start()
+      logger.info(`Started Pyroscope profiler in push mode`)
+    })
+    .catch((ex) => {
+      logger.error(ex, 'Pyroscope profiler failed')
+    })
+
   const serverUrl = `${PROTOCOL}://${HOST}:${PORT}${BASE_URL || ''}`
 
   switch (NODE_ENV) {
@@ -180,35 +195,6 @@ runServer().then((url) => {
   logger.error(ex)
   process.exit(1)
 })
-
-/**
- * Run the profile server
- */
-async function runProfileServer(): Promise<string> {
-  const serverUrl = `${PROTOCOL}://${HOST}:${PROFILE_PORT}`
-
-  Pyroscope.init()
-
-  const app = express()
-
-  app.use(Pyroscope.expressMiddleware())
-
-  return new Promise((resolve, reject) => {
-    const server = app.listen(PROFILE_PORT)
-
-    server.once('listening', () => resolve(serverUrl))
-    server.once('error', reject)
-  })
-}
-
-
-runProfileServer().then((url) => {
-  logger.info(`Serving Profile API on ${url}/debug/pprof/*`)
-}).catch((ex) => {
-  logger.error(ex)
-  process.exit(1)
-})
-
 
 function getPaths(): {
   distDir: string

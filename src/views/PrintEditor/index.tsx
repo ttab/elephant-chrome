@@ -1,93 +1,79 @@
-import { useEffect, useState, useRef } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { AwarenessDocument, View } from '@/components'
-import {
-  Button,
-  ScrollArea
-} from '@ttab/elephant-ui'
-import { ChevronRight } from '@ttab/elephant-ui/icons'
-import { useLayouts } from '@/hooks/baboon/useLayouts'
-
-import type * as Y from 'yjs'
 
 import { Textbit, useTextbit } from '@ttab/textbit'
 import {
   Bold,
   Italic,
-  Link,
   Text,
-  OrderedList,
-  UnorderedList,
   TTVisual,
   Factbox,
   Table,
-  LocalizedQuotationMarks
+  LocalizedQuotationMarks,
+  TVListing,
+  PrintText
 } from '@ttab/textbit-plugins'
 import { ImageSearchPlugin } from '../../plugins/ImageSearch'
 import { FactboxPlugin } from '../../plugins/Factboxes'
-import { toast } from 'sonner'
 
 import {
   useQuery,
   useCollaboration,
   useLink,
+  useYValue,
   useView,
   useYjsEditor,
   useAwareness,
-  useRegistry,
-  useWorkflowStatus
+  useRegistry
 } from '@/hooks'
-import { type ViewMetadata, type ViewProps } from '@/types'
+import type { ViewMetadata, ViewProps } from '@/types'
 import { EditorHeader } from './PrintEditorHeader'
-import { LayoutBox } from './LayoutBox'
 import { type HocuspocusProvider } from '@hocuspocus/provider'
 import { type AwarenessUserData } from '@/contexts/CollaborationProvider'
-import { articleDocumentTemplate } from '@/defaults/templates/articleDocumentTemplate'
-import { createDocument } from '@/lib/createYItem'
 import { Error } from '../Error'
 
 import { ContentMenu } from '@/components/Editor/ContentMenu'
+import { Notes } from './components/Notes'
 import { Toolbar } from '@/components/Editor/Toolbar'
 import { ContextMenu } from '@/components/Editor/ContextMenu'
 import { Gutter } from '@/components/Editor/Gutter'
 import { DropMarker } from '@/components/Editor/DropMarker'
 
+import { type Block } from '@ttab/elephant-api/newsdoc'
 import { getValueByYPath } from '@/shared/yUtils'
 import { useOnSpellcheck } from '@/hooks/useOnSpellcheck'
+import { contentMenuLabels } from '@/defaults/contentMenuLabels'
+import { Button, ScrollArea } from '@ttab/elephant-ui'
+import { LayoutBox } from './LayoutBox'
+import { CopyPlus, ScanEye, Settings, TriangleAlert } from '@ttab/elephant-ui/icons'
+import type { EleBlock } from '@/shared/types'
+import { toast } from 'sonner'
 import { useSession } from 'next-auth/react'
-import type { Block, Document } from '@ttab/elephant-api/newsdoc'
+import { Prompt } from '@/components/Prompt'
+import { snapshot } from '@/lib/snapshot'
+import type * as Y from 'yjs'
 
-// Metadata definition
 const meta: ViewMetadata = {
   name: 'PrintEditor',
-  path: `${import.meta.env.BASE_URL || ''}/print`,
+  path: `${import.meta.env.BASE_URL || ''}/print-editor`,
   widths: {
     sm: 12,
     md: 12,
-    lg: 6,
-    xl: 6,
-    '2xl': 6,
-    hd: 6,
-    fhd: 6,
+    lg: 4,
+    xl: 4,
+    '2xl': 4,
+    hd: 3,
+    fhd: 3,
     qhd: 3,
     uhd: 2
   }
 }
 
-/**
- * PrintEditor Component - Handles document initialization
- *
- * This component is responsible for initializing the document for the Print Editor.
- * It checks for the presence of a document ID and handles the creation of a new document
- * if necessary. If the document ID is missing or invalid, it displays an error message.
- *
- * @param props - The properties object containing view-related data.
- * @returns The rendered PrintEditor component or an error message if the document ID is missing.
- */
-
+// Main Editor Component - Handles document initialization
 const PrintEditor = (props: ViewProps): JSX.Element => {
   const [query] = useQuery()
-  const [document, setDocument] = useState<Y.Doc | undefined>(undefined)
-  const documentId = props.id || query.id
+  const documentId = props.id || query.id as string
+
   // Error handling for missing document
   if (!documentId || typeof documentId !== 'string') {
     return (
@@ -98,66 +84,49 @@ const PrintEditor = (props: ViewProps): JSX.Element => {
     )
   }
 
-  // Document creation if needed
-  if (props.onDocumentCreated && !document) {
-    const [, doc] = createDocument({
-      template: (id: string) => {
-        return articleDocumentTemplate(id, props?.payload)
-      },
-      documentId
-    })
-    setDocument(doc)
-    return <></>
-  }
-  if (document && props.onDocumentCreated) {
-    props.onDocumentCreated()
-  }
   return (
-    <AwarenessDocument
-      documentId={documentId}
-      document={document}
-      className='h-full'
-    >
+    <AwarenessDocument documentId={documentId} className='h-full'>
       <EditorWrapper documentId={documentId} {...props} />
     </AwarenessDocument>
   )
 }
 
 // Main editor wrapper after document initialization
-function EditorWrapper(
-  props: ViewProps & {
-    documentId: string
-    autoFocus?: boolean
-  }
-): JSX.Element {
+function EditorWrapper(props: ViewProps & {
+  documentId: string
+  autoFocus?: boolean
+}): JSX.Element {
   const { provider, synced, user } = useCollaboration()
   const openFactboxEditor = useLink('Factbox')
+  const [notes] = useYValue<Block[] | undefined>('meta.core/note')
   const [, setIsFocused] = useAwareness(props.documentId)
 
   // Plugin configuration
   const getConfiguredPlugins = () => {
     const basePlugins = [
-      UnorderedList,
-      OrderedList,
       Bold,
       Italic,
-      Link,
       TTVisual,
       ImageSearchPlugin,
       FactboxPlugin,
       Table,
-      LocalizedQuotationMarks
+      LocalizedQuotationMarks,
+      TVListing,
+      PrintText
     ]
 
     return [
       ...basePlugins.map((initPlugin) => initPlugin()),
       Text({
-        countCharacters: ['heading-1']
+        countCharacters: ['heading-1'],
+        ...contentMenuLabels
       }),
       Factbox({
         onEditOriginal: (id: string) => {
           openFactboxEditor(undefined, { id })
-        }
+        },
+        removable: true,
+        ...contentMenuLabels
       })
     ]
   }
@@ -181,117 +150,144 @@ function EditorWrapper(
           synced={synced}
           user={user}
           documentId={props.documentId}
+          notes={notes}
         />
       </Textbit.Root>
     </View.Root>
   )
 }
 
+
 // Container component that uses TextBit context
 function EditorContainer({
   provider,
   synced,
   user,
-  documentId
+  documentId,
+  notes
 }: {
   provider: HocuspocusProvider | undefined
   synced: boolean
   user: AwarenessUserData
   documentId: string
+  notes: Block[] | undefined
 }): JSX.Element {
+  const openPrintArticle = useLink('PrintEditor')
+  const [promptIsOpen, setPromptIsOpen] = useState(false)
+  const [isChecking, setIsChecking] = useState(false)
   const { words, characters } = useTextbit()
-  const [bulkSelected, setBulkSelected] = useState<string[]>([])
-  const [layouts, setLayouts] = useState<Block[]>([])
-  const [cleanLayouts, setCleanLayouts] = useState<Block[]>()
-
-  const [isDirty, setIsDirty] = useState<string | undefined>(undefined)
-  const openPrintEditor = useLink('PrintEditor')
-  const { data: doc } = useLayouts(documentId) as { data: { layouts: Block[], document: Document } }
+  const [layouts, setLayouts] = useYValue<EleBlock[]>('meta.tt/print-article[0].meta.tt/article-layout')
+  const [name] = useYValue<string>('meta.tt/print-article[0].name')
+  const [flowName] = useYValue<string>('links.tt/print-flow[0].title')
+  const [flowUuid] = useYValue<string>('links.tt/print-flow[0].uuid')
+  const { baboon } = useRegistry()
   const { data: session } = useSession()
-  const { repository } = useRegistry()
-  const [workflowStatus] = useWorkflowStatus(documentId, true)
-  useEffect(() => {
-    if (doc) {
-      setLayouts(doc.layouts)
+  const [,,allParams] = useQuery(['from'], true)
+  const fromDate = allParams?.filter((item) => item.name === 'Print')?.[0]?.params?.from
+  const [date] = useYValue<string>('meta.tt/print-article[0].data.date')
+  const [isChanged] = useYValue<boolean>('root.changed')
+
+  const handleChange = useCallback((value: boolean): void => {
+    const root = provider?.document.getMap('ele').get('root') as Y.Map<unknown>
+    const changed = root.get('changed') as boolean
+
+
+    if (changed !== value) {
+      root.set('changed', value)
     }
-  }, [doc])
-  useEffect(() => {
-    if (layouts && !isDirty) {
-      setCleanLayouts(layouts)
-    }
-  }, [layouts, isDirty])
-  const name: string = doc?.document?.meta.filter((m: { type: string }) => m.type === 'tt/print-article')[0]?.name || ''
-  const flowName: string = doc?.document?.links.filter((m: { type: string }) => m.type === 'tt/print-flow')[0]?.title || ''
-  const updateLayout = (_layout: Block) => {
-    const box = document.getElementById(_layout.id)
-    if (box) {
-      box.scrollIntoView({ behavior: 'smooth', block: 'center' })
-    }
-    const updatedLayouts = layouts.map((layout) => {
-      if (layout.id === _layout.id) {
-        return _layout
-      }
-      return layout
-    })
-    setLayouts(updatedLayouts)
-    setIsDirty(_layout.id)
+  }, [provider])
+
+  if (!layouts) {
+    return <p>no layouts</p>
   }
-  const deleteLayout = (_layout: Block) => {
-    const updatedLayouts = layouts.filter((layout) => layout.id !== _layout.id)
-    setLayouts(updatedLayouts)
-    saveUpdates(updatedLayouts)
-  }
-  const saveUpdates = (updatedLayouts: Block[] | undefined) => {
-    const _meta: Block[] = doc?.document?.meta?.map((m) => {
-      if (m.type === 'tt/print-article') {
-        return Object.assign({}, m, {
-          meta: updatedLayouts || layouts
+  const handleCopyArticle = async () => {
+    if (!baboon || !session?.accessToken) {
+      console.error(`Missing prerequisites: ${!baboon ? 'baboon-client' : 'accessToken'} is missing`)
+      toast.error('Något gick fel när printartikel skulle dupliceras')
+      return
+    }
+    await snapshot(documentId)
+    try {
+      const _date = (fromDate || date) as string
+      const response = await baboon.createPrintArticle({
+        sourceUuid: documentId,
+        flowUuid: flowUuid || '',
+        date: _date,
+        article: name || ''
+      }, session.accessToken)
+        .catch((ex: unknown) => {
+          console.error('Error creating print article:', ex)
+          toast.error('Något gick fel när printartikel skulle dupliceras nytt')
+          setPromptIsOpen(false)
         })
+      if (response?.status.code === 'OK') {
+        openPrintArticle(undefined, { id: response?.response?.uuid }, 'self')
+        setPromptIsOpen(false)
+        toast.success('Printartikel har duplicerats till datumet: ' + _date)
       }
-      return m
-    })
-    const _document: Document = Object.assign({}, doc?.document, {
-      meta: _meta
-    })
-    if (!repository || !session) {
-      return (
-        <Error
-          title='Repository or session not found'
-          message='Layouter sparades inte'
-        />
-      )
+    } catch (ex: unknown) {
+      console.error('Error creating print article:', ex)
+      toast.error('Något gick fel när printartikel skulle dupliceras')
+      setPromptIsOpen(false)
     }
-    (async () => {
-      const result = await repository.saveDocument(_document, session.accessToken, 0n, workflowStatus?.name || 'draft')
-      if (result?.status?.code !== 'OK') {
-        return (
-          <Error
-            title='Failed to save print article'
-            message='Layouter sparades inte'
-          />
-        )
+  }
+  async function processArray(arr: EleBlock[]) {
+    if (!baboon || !session?.accessToken) {
+      console.error(`Missing prerequisites: ${!baboon ? 'baboon-client' : 'accessToken'} is missing`)
+      toast.error('Något gick fel när printartikel skulle renderas')
+      return
+    }
+    await snapshot(documentId)
+    const results: EleBlock[] = []
+    for (const _layout of arr) {
+      try {
+        const response = await baboon.renderArticle({
+          articleUuid: documentId,
+          layoutId: _layout.id,
+          renderPdf: true,
+          renderPng: false,
+          pngScale: 300n
+        }, session.accessToken)
+        if (response?.status.code === 'OK') {
+          const overflowsStatus = response?.response?.overflows?.length > 0
+          const underflowsStatus = response?.response?.underflows?.length > 0
+          const lowresPicsStatus = response?.response?.images?.filter((image) => image.ppi <= 130).length > 0
+          const _checkedLayout = {
+            ..._layout,
+            data: {
+              ..._layout?.data,
+              status: overflowsStatus || underflowsStatus || lowresPicsStatus ? 'false' : 'true'
+            }
+          }
+          results.push(_checkedLayout)
+        }
+      } catch (ex: unknown) {
+        console.error('Error rendering article:', ex)
+        toast.error('Något gick fel när printartikel skulle renderas')
       }
-      setIsDirty(undefined)
-      setLayouts(updatedLayouts || layouts)
-      toast.success('Layouter är sparad')
-    })().catch((error) => {
-      console.error(error)
-      toast.error('Layouter sparades inte')
-    })
+    }
+
+    return results
+  }
+  const statusChecker = async () => {
+    setIsChecking(true)
+    const newLayouts = await processArray(layouts)
+    setLayouts(newLayouts || [])
+    setIsChecking(false)
   }
 
   return (
     <>
-      <EditorHeader documentId={documentId} flowName={flowName} name={name} />
-
-      <View.Content className='flex flex-col max-w-[1200px]'>
-        <section className='grid grid-cols-12'>
-          <div className='col-span-8'>
+      <EditorHeader documentId={documentId} flowName={flowName} isChanged={isChanged} />
+      {!!notes?.length && <div className='p-4'><Notes /></div>}
+      <View.Content className='flex flex-col max-w-[1000px]'>
+        <section className='flex flex-col-reverse @printEditor:grid @printEditor:grid-cols-12 @container'>
+          <div className='@printEditor:col-span-8'>
             <ScrollArea className='h-[calc(100vh-7rem)]'>
               <div className='flex-grow overflow-auto pr-12 max-w-screen-xl'>
                 {!!provider && synced
                   ? (
-                      <EditorContent provider={provider} user={user} />
+                      <EditorContent provider={provider} user={user} onChange={handleChange} />
                     )
                   : (
                       <></>
@@ -299,67 +295,104 @@ function EditorContainer({
               </div>
             </ScrollArea>
           </div>
-          <aside className='col-span-4 sticky top-16 p-4'>
+          <aside className='@printEditor:col-span-4 @printEditor:sticky @printEditor:top-16 p-4'>
             <header className='flex flex-row gap-2 items-center justify-between mb-2'>
-              <h2 className='text-base font-bold'>
-                Layouter (
-                {layouts.length}
-                )
-              </h2>
-              {bulkSelected.length > 0
-                ? (
-                    <Button
-                      title='När layouter har valts, visa alternativ för att skapa en kopia av texten med de valda layouterna och ta bort dem från nuvarande artikel. Öppna kopian direkt till höger'
-                      className='p-2 flex gap-2 items-center'
-                      onClick={() => {
-                        openPrintEditor(undefined, { id: documentId })
-                        setBulkSelected([])
-                      }}
-                    >
-                      Flytta till kopia
-                      <span className='text-sm font-bold'>
-                        {`(${bulkSelected.length} st)`}
-                      </span>
-                      <ChevronRight strokeWidth={1.75} size={18} />
-                    </Button>
-                  )
-                : null}
-            </header>
-            <ScrollArea className='h-[calc(100vh-12rem)]'>
-              <div className='flex flex-col gap-2'>
-                {Array.isArray(layouts) && layouts.map((layout: Block) => {
-                  if (!layout) {
-                    return null
-                  }
-                  return (
-                    <LayoutBox
-                      key={layout.id}
-                      bulkSelected={bulkSelected}
-                      setBulkSelected={setBulkSelected}
-                      layout={layout}
-                      updateLayout={updateLayout}
-                      isDirty={isDirty}
-                      setIsDirty={() => setIsDirty(undefined)}
-                      setLayouts={(newLayouts: Block[] | ((prevState: Block[]) => Block[])) => setLayouts(newLayouts)}
-                      cleanLayouts={cleanLayouts || []}
-                      saveUpdates={() => saveUpdates(layouts || [])}
-                      deleteLayout={() => deleteLayout(layout)}
-                    />
-                  )
-                })}
+              <div className='flex items-center'>
+                <Button variant='ghost' size='sm' onClick={() => { void statusChecker() }}>
+                  <ScanEye strokeWidth={1.75} size={18} />
+                </Button>
+                <Button
+                  variant='ghost'
+                  size='sm'
+                  onClick={() => {
+                    setPromptIsOpen(true)
+                  }}
+                >
+                  <CopyPlus strokeWidth={1.75} size={18} />
+                </Button>
               </div>
-            </ScrollArea>
+              <h2 className={`text-base font-bold flex items-center gap-2 ${layouts.some((layout) => layout.data?.status === 'false') ? 'text-red-500' : ''}`}>
+                {layouts.some((layout) => layout.data?.status === 'false')
+                  ? <TriangleAlert size={18} strokeWidth={1.75} className='text-red-500' />
+                  : <span />}
+                Layouter
+                <span className='text-sm'>
+                  (
+                  {layouts.length}
+                  )
+                </span>
+              </h2>
+            </header>
+            {promptIsOpen && (
+              <Prompt
+                title='Duplicera artikel'
+                description='Är du säker på att du vill duplicera denna artikel?'
+                primaryLabel='Duplicera'
+                secondaryLabel='Avbryt'
+                onPrimary={() => {
+                  void handleCopyArticle().catch(console.error)
+                  setPromptIsOpen(false)
+                }}
+                onSecondary={() => {
+                  setPromptIsOpen(false)
+                }}
+              />
+            )}
+            {isChecking
+              ? (
+                  <main className='flex flex-col items-center justify-center mt-8 gap-4'>
+                    <p className='flex gap-1'>
+                      <span>Kontrollerar layouter</span>
+                    </p>
+                    <section className='flex flex-row items-center justify-center gap-0'>
+                      <div className='animate-spin'>
+                        <Settings className='animate-pulse text-[#006bb3]' strokeWidth={1.75} size={24} />
+                      </div>
+                      <div className='animate-spin mt-4'>
+                        <Settings className='animate-pulse text-[#006bb3]' strokeWidth={1.75} size={24} />
+                      </div>
+                      <div className='animate-spin'>
+                        <Settings className='animate-pulse text-[#006bb3]' strokeWidth={1.75} size={24} />
+                      </div>
+                    </section>
+                  </main>
+                )
+              : (
+                  <ScrollArea className='h-[calc(100vh-12rem)]'>
+                    <div className='flex flex-col gap-2'>
+                      {Array.isArray(layouts) && layouts.map((layout, index) => {
+                        if (!layout.links?.['_']?.[0]?.uuid) {
+                          return null
+                        }
+                        return (
+                          <LayoutBox
+                            key={layout.id}
+                            documentId={documentId}
+                            layoutIdForRender={layout.id}
+                            layoutId={layout.links['_'][0].uuid}
+                            index={index}
+                            onChange={handleChange}
+                            deleteLayout={(layoutId) => {
+                              const newLayouts = layouts.filter((_layout) => _layout.id !== layoutId)
+                              setLayouts(newLayouts)
+                            }}
+                          />
+                        )
+                      })}
+                    </div>
+                  </ScrollArea>
+                )}
           </aside>
         </section>
       </View.Content>
 
       <View.Footer>
         <div className='flex gap-2'>
-          <strong>Words:</strong>
+          <strong>Ord:</strong>
           <span>{words}</span>
         </div>
         <div className='flex gap-2'>
-          <strong>Characters:</strong>
+          <strong>Tecken:</strong>
           <span>{characters}</span>
         </div>
       </View.Footer>
@@ -367,19 +400,15 @@ function EditorContainer({
   )
 }
 
-function EditorContent({
-  provider,
-  user
-}: {
+
+function EditorContent({ provider, user, onChange }: {
   provider: HocuspocusProvider
   user: AwarenessUserData
+  onChange?: (value: boolean) => void
 }): JSX.Element {
   const { isActive } = useView()
   const ref = useRef<HTMLDivElement>(null)
-  const [documentLanguage] = getValueByYPath<string>(
-    provider.document.getMap('ele'),
-    'root.language'
-  )
+  const [documentLanguage] = getValueByYPath<string>(provider.document.getMap('ele'), 'root.language')
 
   const yjsEditor = useYjsEditor(provider, user)
   const onSpellcheck = useOnSpellcheck(documentLanguage)
@@ -392,13 +421,30 @@ function EditorContent({
       }, 0)
     }
   }, [isActive, ref])
+
+  // Initialization of the editor causes a call to onChange, we're not interested in that.
+  const hasInitialized = useRef(false)
+
   return (
     <Textbit.Editable
       ref={ref}
       yjsEditor={yjsEditor}
       lang={documentLanguage}
       onSpellcheck={onSpellcheck}
-      className='outline-none h-full dark:text-slate-100 [&_[data-spelling-error]]:border-b-2 [&_[data-spelling-error]]:border-dotted [&_[data-spelling-error]]:border-red-500'
+      onChange={(_value) => {
+        if (hasInitialized.current) {
+          onChange?.(true)
+        } else {
+          hasInitialized.current = true
+        }
+      }}
+      className='outline-none
+        h-full
+        dark:text-slate-100
+        [&_[data-spelling-error]]:border-b-2
+        [&_[data-spelling-error]]:border-dotted
+        [&_[data-spelling-error]]:border-red-500
+      '
     >
       <DropMarker />
       <Gutter>

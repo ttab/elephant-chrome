@@ -109,6 +109,7 @@ export async function snapshot(uuid: string, context: Context): Promise<Snapshot
     const url = new URL(`${BASE_URL}/api/documents/${uuid}/snapshot`, base)
 
     const response = await fetch(url, {
+      method: 'POST',
       headers: {
         Authorization: `Bearer ${context.accessToken}`,
         ...(context.user && { 'X-User': JSON.stringify(context.user) })

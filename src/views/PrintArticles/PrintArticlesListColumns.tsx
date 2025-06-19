@@ -1,11 +1,11 @@
 
-import { Title } from '@/components/Table/Items/Title'
 import { type ColumnDef } from '@tanstack/react-table'
-import { CircleCheck, Pen } from '@ttab/elephant-ui/icons'
+import { CircleCheck, Pen, Tv } from '@ttab/elephant-ui/icons'
 import type { PrintArticle } from '@/hooks/baboon/lib/printArticles'
 import { DocumentStatuses } from '@/defaults/documentStatuses'
 import { DocumentStatus } from '@/components/Table/Items/DocumentStatus'
 import { FacetedFilter } from '@/components/Commands/FacetedFilter'
+
 /**
  * Generates column definitions for the Print Articles list.
  *
@@ -56,32 +56,15 @@ export function printArticlesListColumns(): Array<ColumnDef<PrintArticle>> {
         // options: PrintFlows,
         name: 'Flöde',
         columnIcon: Pen,
-        className: 'flex-1 w-[200px]'
+        className: 'flex-1 w-[200px] hidden',
+        display: (value: string) => (
+          <span>
+            {value}
+          </span>
+        )
       },
       accessorFn: (data) => (data.fields['document.rel.flow.title'].values[0]),
-      cell: ({ row }) => {
-        const flow = row.getValue('printFlow')
-        return <span>{flow as string}</span>
-      }
-    },
-    {
-      id: 'articleTitle',
-      enableGrouping: false,
-      meta: {
-        name: 'Artikel',
-        columnIcon: Pen,
-        className: 'flex-1 w-8'
-      },
-      accessorFn: (data) => (data.fields['document.meta.tt_print_article.title'].values[0]),
-      cell: ({ row }) => {
-        const title = row.getValue('articleTitle')
-        return (
-          <Title
-            title={title as string}
-            className='text-sm'
-          />
-        )
-      }
+      cell: () => <span />
     },
     {
       id: 'document.title',
@@ -106,20 +89,51 @@ export function printArticlesListColumns(): Array<ColumnDef<PrintArticle>> {
         className: 'flex-1'
       },
       accessorFn: (data) => {
-        const _texts = data.fields['document.content.core_text.data.text'].values
-        const _roles = data.fields['document.content.core_text.role'].values
+        const _texts = data?.fields['document.content.core_text.data.text']?.values
+        const _roles = data?.fields['document.content.core_text.role']?.values
         let _title = ''
-        _roles.forEach((role, index) => {
+        _roles?.forEach((role, index) => {
           if (role === 'heading-1') {
             _title = _texts[index]
           }
         })
-        return _title || ''
+        return (
+          _title || ''
+        )
       },
       cell: ({ row }) => {
-        const title = row.getValue('headline')
-        return <span>{title as string}</span>
+        const title = row?.getValue('headline')
+        return (
+          <div className='flex items-center gap-2 text-sm'>
+            {title as string}
+          </div>
+        )
+      }
+    },
+    {
+      id: 'tvTitle',
+      enableGrouping: false,
+      meta: {
+        name: 'Artikel',
+        columnIcon: Pen,
+        className: 'flex-1 w-8'
+      },
+      accessorFn: (data) => {
+        const tvTitle = data?.fields['document.content.tt_tv_listing.data.title']?.values?.[0] || ''
+        return tvTitle
+      },
+      cell: ({ row }) => {
+        const title = row.getValue('tvTitle')
+        return title
+          ? (
+              <div className='flex items-center gap-2 text-sm'>
+                <Tv size={16} />
+                {title as string}
+              </div>
+            )
+          : null
       }
     }
   ]
 }
+

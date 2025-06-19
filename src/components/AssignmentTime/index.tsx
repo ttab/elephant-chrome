@@ -22,25 +22,46 @@ const getMidnightISOString = (endDate: string | undefined): string => {
   return endDateIsoString
 }
 
+const makeLocalString = (date: string) => {
+  return new Date(date.toString()).toLocaleString('sv-SE', {
+    hour: '2-digit',
+    minute: '2-digit'
+  })
+}
+
 export const AssignmentTime = ({ index, onChange }: {
   index: number
 } & FormProps): JSX.Element => {
   const [assignmentType] = useYValue<string>(`meta.core/assignment[${index}].meta.core/assignment-type[0].value`)
   const [data, setData] = useYValue<AssignmentData>(`meta.core/assignment[${index}].data`)
-  const { full_day: fullDay, end, publish_slot: publishSlot, end_date: endDate, start_date: startDate } = data || {}
-
+  const { full_day: fullDay, end, start, publish_slot: publishSlot, end_date: endDate, start_date: startDate } = data || {}
   let selectedLabel = ''
   const selectedOption = timeSlotTypes.concat(timePickTypes).find((option) => {
     if (fullDay === 'true' && option.value === 'fullday') {
       selectedLabel = option.label
       return true
-    } else if (end && option.value === 'endexecution') {
-      const aDate = new Date(end.toString())
+    }
+    if (assignmentType === 'text' && start && end && start !== end) {
+      if (option.value === 'start-end-execution') {
+        const from = makeLocalString(start)
+        const to = makeLocalString(end)
 
-      selectedLabel = aDate.toLocaleString('sv-SE', {
-        hour: '2-digit',
-        minute: '2-digit'
-      })
+        selectedLabel = `${from} - ${to}`
+        return true
+      }
+    } else if (end && option.value === 'endexecution') {
+      if (start && end && start !== end) {
+        const from = makeLocalString(start)
+        const to = makeLocalString(end)
+
+        selectedLabel = `${from} - ${to}`
+      } else {
+        const aDate = new Date(end.toString())
+        selectedLabel = aDate.toLocaleString('sv-SE', {
+          hour: '2-digit',
+          minute: '2-digit'
+        })
+      }
 
       return true
     } else if (publishSlot) {

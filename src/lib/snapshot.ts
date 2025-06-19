@@ -1,5 +1,4 @@
-import { toast } from 'sonner'
-
+import * as Y from 'yjs'
 const BASE_URL = import.meta.env.BASE_URL
 
 type SnapshotResponse = {
@@ -11,34 +10,61 @@ type SnapshotResponse = {
   statusMessage: undefined
 } | undefined
 
-export async function snapshot(id: string, force?: true, delay: number = 0): Promise<SnapshotResponse> {
-  if (!id) {
+export async function snapshot(
+  uuid: string,
+  options?: {
+    force?: true
+    delay?: number
+    status?: string
+    cause?: string
+  },
+  document?: Y.Doc): Promise<SnapshotResponse> {
+  if (!uuid) {
     throw new Error('UUID is required')
   }
 
+  const delay = options?.delay || 0
 
   if (delay > 0) {
     await new Promise((resolve) => setTimeout(resolve, delay))
   }
 
   try {
-    const url = `${BASE_URL}/api/documents/${id}/snapshot${force === true ? '?force=true' : ''}`
-    const response = await fetch(url)
-    const data = await response.json() as SnapshotResponse
+    const url = new URL(`${BASE_URL}/api/documents/${uuid}/snapshot`, window.location.origin)
+
+    if (options?.force) url.searchParams.set('force', 'true')
+    if (options?.status) url.searchParams.set('status', options.status)
+    if (options?.cause) url.searchParams.set('cause', options.cause)
+
+    const update = document ? Y.encodeStateAsUpdateV2(document) : null
+
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/octet-stream'
+      },
+      body: update
+    })
+
+    const result = await response.json() as SnapshotResponse
 
     if (!response.ok) {
-      throw new Error((data && typeof data?.statusMessage === 'string')
-        ? data.statusMessage
-        : response.statusText)
+      return {
+        statusCode: response.status,
+        statusMessage: (result && typeof result?.statusMessage === 'string')
+          ? result.statusMessage
+          : response.statusText
+      }
     }
 
-    return data
+    return result
   } catch (ex) {
-    if (ex instanceof Error) {
-      console.error('Failed to save snapshot:', ex.message)
-      toast.error(`Lyckades inte spara kopia! ${ex.message}`)
-    } else {
-      toast.error(`Lyckades inte spara kopia!`)
+    const msg = (ex instanceof Error) ? ex.message : 'Failed saving snapshot'
+    console.error(msg)
+
+    return {
+      statusCode: -1,
+      statusMessage: msg
     }
   }
 }

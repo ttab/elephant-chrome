@@ -1,24 +1,28 @@
 import { useSession } from 'next-auth/react'
+import type { KeyedMutator } from 'swr'
 import useSWR, { mutate as globalMutate } from 'swr'
 import { useCallback } from 'react'
-import { useRegistry, useYValue } from '@/hooks'
+import { useCollaboration, useRegistry, useYValue } from '@/hooks'
 import { toast } from 'sonner'
-import type { Status } from '@/shared/Repository'
+import type { Repository, Status } from '@/shared/Repository'
 import { snapshot } from '@/lib/snapshot'
 import { getStatusFromMeta } from '@/lib/getStatusFromMeta'
+import type { Session } from 'next-auth'
 
 export const useWorkflowStatus = (uuid?: string, isWorkflow: boolean = false): [
   Status | undefined,
-  (newStatusName: string | Status, cause?: string) => Promise<void>
+  (newStatusName: string | Status, cause?: string, asWire?: boolean) => Promise<void>,
+  KeyedMutator<Status | undefined>
 ] => {
   const { repository } = useRegistry()
   const { data: session } = useSession()
+  const { provider } = useCollaboration()
   const [, setChanged] = useYValue('root.changed')
 
   /**
    * SWR callback that fetches current workflow status
    */
-  const { data: documentStatus, mutate, error } = useSWR<Status | undefined, Error>(
+  const { data: documentStatus, error, mutate } = useSWR<Status | undefined, Error>(
     (uuid && session && repository) ? [`status/${uuid}`] : null,
     async () => {
       // Dont try to fetch if document is inProgress
@@ -50,84 +54,59 @@ export const useWorkflowStatus = (uuid?: string, isWorkflow: boolean = false): [
    * Callback hook to update the workflow status of a document
    */
   const setDocumentStatus = useCallback(
-    async (newStatus: string | Status, cause?: string) => {
-      if (!session || !repository) {
+    async (newStatus: string | Status, cause?: string, asWire?: boolean) => {
+      if (!session) {
         toast.error('Ett fel har uppstått, aktuell status kunde inte ändras! Ladda om webbläsaren och försök igen.')
         return
       }
 
-      // Work with the latest status if possible
-      const currentStatus = documentStatus || await globalMutate([`status/${uuid}`], undefined, false)
-
-      // Snapshot document to make sure we have the latest version, get the new version from the response
-      const snapshotResponse = uuid && await snapshot(uuid, true)
-
-      const newVersion = snapshotResponse && 'version' in snapshotResponse && typeof snapshotResponse.version === 'string'
-        ? BigInt(snapshotResponse.version)
-        : documentStatus?.version
-
-      let payload: Status | undefined
-      if (typeof newStatus !== 'string') {
-        payload = {
-          ...newStatus,
-          version: newVersion || newStatus.version
-        }
-      } else if (typeof newStatus === 'string' && documentStatus && uuid) {
-        if (!newVersion) {
-          console.error('Unable to get current version to update status')
-          toast.error('Ett fel har uppstått, aktuell status kunde inte ändras!')
-          return
-        }
-
-        payload = {
-          ...documentStatus,
-          uuid,
-          name: newStatus,
-          version: newVersion
-        }
-      }
-
-      if (!payload) {
-        toast.error('Ett fel uppstod och status kunde inte ändras!')
+      // Handle wire status updates
+      if (asWire && typeof newStatus === 'object' && repository) {
+        void setWireStatus(newStatus, repository, session)
         return
       }
 
-      // Optimistically update the SWR cache before performing the actual API call
-      await mutate(payload, false)
 
-      // Change status of document in repository
-      try {
-        // If there is a previous checkpoint (published/scheduled/unpublished version) we require a cause to publish a new version
-        if (currentStatus?.checkpoint
-          && ['usable', 'withheld', 'unpublished'].includes(payload.name)
-          && typeof cause !== 'string'
-        ) {
-          toast.error('En anledning måste ges för att skapa en ny version. Aktuell status kunde inte ändras!')
-          return
-        }
+      // Snapshot and if applicable, update the status with cause in one call
+      const snapshotResponse = uuid && await snapshot(uuid, {
+        force: true,
+        status: typeof newStatus === 'string'
+          ? newStatus
+          : newStatus.name,
+        cause
+      }, provider?.document)
 
-        await repository.saveMeta({
-          status: payload,
-          currentStatus: isWorkflow ? currentStatus : undefined,
-          accessToken: session.accessToken,
-          cause,
-          isWorkflow
-        })
-
-        // Reset unsaved changes state
-        setChanged(undefined)
-
-        // Revalidate after the mutation completes
-        await globalMutate([`status/${uuid || payload.uuid}`])
-      } catch (error) {
-        console.error('Failed to update status', error)
-        toast.error('Ett fel uppstod och aktuell status kunde inte ändras!')
-        // Rollback the optimistic update if the ststus update fails
-        await mutate(currentStatus, false)
+      if (snapshotResponse && 'statusCode' in snapshotResponse && snapshotResponse.statusCode !== 200) {
+        toast.error(`Ett fel uppstod när aktuell status skulle ändras: ${snapshotResponse.statusMessage || 'Okänt fel'}`)
+        return
       }
+
+
+      // Reset unsaved changes state
+      setChanged(undefined)
+
+      // Revalidate after the mutation completes
+      await globalMutate([`status/${uuid}`])
     },
-    [session, uuid, documentStatus, mutate, repository, isWorkflow, setChanged]
+    [session, uuid, setChanged, provider?.document, repository]
   )
 
-  return [documentStatus, setDocumentStatus]
+  return [documentStatus, setDocumentStatus, mutate]
+}
+
+async function setWireStatus(newStatus: Status, repository: Repository, session: Session) {
+  try {
+    if (!repository || !session.accessToken) {
+      throw new Error('Repository or session access token is not available')
+    }
+
+    await repository.saveMeta({
+      status: newStatus,
+      currentStatus: undefined,
+      accessToken: session.accessToken
+    })
+  } catch (error) {
+    console.error('Failed to set wire status', error)
+    toast.error('Ett fel uppstod när aktuell status skulle sparas')
+  }
 }

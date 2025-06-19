@@ -15,6 +15,7 @@ import { parseDate } from '@/lib/datetime'
 import { useSession } from 'next-auth/react'
 import { useQuery } from '@/hooks/useQuery'
 import { format } from 'date-fns'
+import { useLink } from '@/hooks/useLink'
 
 /**
  * PrintFlows component.
@@ -42,6 +43,7 @@ export const PrintFlows = ({ asDialog, onDialogClose, className, action }: ViewP
     toast.error('Kunde inte hämta printflöden')
     console.error('Could not fetch PrintFlows:', error)
   }
+  const openPrintArticle = useLink('PrintEditor')
   const [articleName, setArticleName] = useState<string>()
   const [filter] = useQuery(['from'])
   const [printFlow, setPrintFlow] = useState<string>()
@@ -76,10 +78,12 @@ export const PrintFlows = ({ asDialog, onDialogClose, className, action }: ViewP
       const response = await baboon.createFlow({
         flowUuid: printFlow,
         date: format(new Date(date), 'yyyy-MM-dd'),
-        articles: [articleName || '']
+        articles: [articleName || ''],
+        templateUuid: ''
       }, session.accessToken)
 
       if (response?.status.code === 'OK') {
+        openPrintArticle(undefined, { id: response?.response?.articles?.[0]?.uuid }, 'self')
         toast.success('Printartikel skapad')
 
         if (onDialogClose) {
@@ -106,7 +110,8 @@ export const PrintFlows = ({ asDialog, onDialogClose, className, action }: ViewP
       const response = await baboon.createFlow({
         flowUuid: printFlow,
         date: format(new Date(date), 'yyyy-MM-dd'),
-        articles: []
+        articles: [],
+        templateUuid: ''
       }, session.accessToken)
 
       if (response?.status.code === 'OK') {
@@ -118,7 +123,7 @@ export const PrintFlows = ({ asDialog, onDialogClose, className, action }: ViewP
       }
     } catch (ex) {
       console.error('Error creating print flow:', ex)
-      toast.error('Något gick fel när printflöde skulle skapas')
+      toast.error(ex instanceof Error ? ex.message : 'Något gick fel när printflöde skulle skapas')
     }
   }
   return (

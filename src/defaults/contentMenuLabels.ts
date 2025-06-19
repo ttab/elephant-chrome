@@ -3,5 +3,8 @@ export const contentMenuLabels = {
   subTitleLabel: 'Underrubrik',
   bodyTextLabel: 'Brödtext',
   vignetteLabel: 'Vinjett',
-  preambleLabel: 'Ingress'
+  preambleLabel: 'Ingress',
+  tvListingLabel: 'Tablåinfo',
+  unorderedLabel: 'Lista',
+  orderedLabel: 'Punktlista'
 }

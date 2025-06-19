@@ -8,9 +8,10 @@ import { useModal } from '@/components/Modal/useModal'
 import type { Wire as WireType } from '@/hooks/index/useDocuments/schemas/wire'
 import type { Status as DocumentStatuses } from '@ttab/elephant-api/repository'
 import { MetaSheet } from '@/views/Editor/components/MetaSheet'
-import { useEffect, useRef } from 'react'
+import { useEffect, useMemo, useRef } from 'react'
 import { useWorkflowStatus } from '@/hooks/useWorkflowStatus'
 import { decodeString } from '@/lib/decodeString'
+import { getWireStatus } from '@/components/Table/lib/getWireStatus'
 
 export const PreviewSheet = ({ id, wire, handleClose, textOnly = true, version, versionStatusHistory }: {
   id: string
@@ -20,19 +21,8 @@ export const PreviewSheet = ({ id, wire, handleClose, textOnly = true, version, 
   versionStatusHistory?: DocumentStatuses[]
   handleClose: () => void
 }): JSX.Element => {
-  const [documentStatus, setDocumentStatus] = useWorkflowStatus(id)
+  const [documentStatus, setDocumentStatus, mutate] = useWorkflowStatus(id)
   const { showModal, hideModal } = useModal()
-
-  const source = wire?.fields['document.rel.source.uri']?.values[0]
-    ?.replace('wires://source/', '')
-
-  const provider = wire?.fields['document.rel.provider.uri']?.values[0]
-    ?.replace('wires://provider/', '')
-
-  const role = wire?.fields['document.meta.tt_wire.role'].values[0]
-  const newsvalue = wire?.fields['document.meta.core_newsvalue.value']?.values[0]
-  const currentVersion = BigInt(wire?.fields['current_version']?.values[0] || '')
-
 
   const containerRef = useRef<HTMLElement | null>(null)
 
@@ -40,43 +30,96 @@ export const PreviewSheet = ({ id, wire, handleClose, textOnly = true, version, 
     containerRef.current = (document.getElementById(id))
   }, [id])
 
+
+  const currentWire = useMemo(() => {
+    if (!wire) return
+
+    return {
+      source: wire?.fields['document.rel.source.uri']?.values[0]
+        ?.replace('wires://source/', ''),
+      provider: wire?.fields['document.rel.provider.uri']?.values[0]
+        ?.replace('wires://provider/', ''),
+      role: wire?.fields['document.meta.tt_wire.role'].values[0],
+      newsvalue: wire?.fields['document.meta.core_newsvalue.value']?.values[0],
+      status: getWireStatus('Wires', wire)
+    }
+  }, [wire])
+
   useNavigationKeys({
-    keys: ['s', 'r', 'c'],
+    keys: ['s', 'r', 'c', 'u', 'Escape'],
     onNavigation: (event) => {
       event.stopPropagation()
-      if (event.key === 'r') {
-        void setDocumentStatus('read')
-        return
-      }
+      if (documentStatus) {
+        if (event.key === 'r') {
+          const payload = {
+            name: currentWire?.status === 'read' ? 'draft' : 'read',
+            version: documentStatus?.version,
+            uuid: documentStatus?.uuid
+          }
 
-      if (event.key === 's') {
-        void setDocumentStatus('saved')
-        return
-      }
+          void setDocumentStatus(payload, undefined, true)
+          void mutate(payload, false)
 
-      if (event.key === 'c') {
-        showModal(<Wire onDialogClose={hideModal} asDialog wire={wire} />)
-        return
+          return
+        }
+
+        if (event.key === 's') {
+          const payload = {
+            name: currentWire?.status === 'saved' ? 'draft' : 'saved',
+            version: documentStatus?.version,
+            uuid: documentStatus?.uuid
+          }
+
+          void setDocumentStatus(payload, undefined, true)
+          void mutate(payload, false)
+
+          return
+        }
+
+        if (event.key === 'u') {
+          const payload = {
+            name: currentWire?.status === 'used' ? 'draft' : 'used',
+            version: documentStatus?.version,
+            uuid: documentStatus?.uuid
+          }
+
+          void setDocumentStatus(payload, undefined, true)
+          void mutate(payload, false)
+
+          return
+        }
+
+        if (event.key === 'c') {
+          showModal(<Wire onDialogClose={hideModal} asDialog wire={wire} />)
+          return
+        }
+
+        if (event.key === 'Escape') {
+          handleClose()
+        }
       }
     }
   })
+
+
+  const currentVersion = BigInt(wire?.fields['current_version']?.values[0] || '')
 
   return (
     <FaroErrorBoundary fallback={(error) => <Error error={error} />}>
       <div className='w-full flex flex-col gap-4'>
         <div className='flex flex-row gap-6 justify-between items-center'>
           <div className='flex flex-row gap-2'>
-            {source && (
+            {currentWire?.source && (
               <Badge className='w-fit h-6 justify-center align-center'>
-                {source}
+                {currentWire.source}
               </Badge>
             )}
-            {provider && provider !== source && provider.toLocaleLowerCase() !== source && (
+            {currentWire?.provider && currentWire.provider !== currentWire.source && currentWire.provider.toLocaleLowerCase() !== currentWire.source && (
               <Badge className='w-fit h-6 justify-center align-center'>
-                {decodeString(provider)}
+                {decodeString(currentWire.provider)}
               </Badge>
             )}
-            {role === 'pressrelease' && (
+            {currentWire?.role === 'pressrelease' && (
               <Badge
                 className='w-fit h-6 justify-center align-center bg-gray-400'
               >
@@ -84,7 +127,7 @@ export const PreviewSheet = ({ id, wire, handleClose, textOnly = true, version, 
               </Badge>
             )}
 
-            {newsvalue === '6' && (
+            {currentWire?.newsvalue === '6' && (
               <Badge
                 variant='destructive'
                 className='w-fit h-6 justify-center align-center'
@@ -105,14 +148,18 @@ export const PreviewSheet = ({ id, wire, handleClose, textOnly = true, version, 
                     ? documentStatus?.name
                     : ''}
                   onValueChange={(value) => {
-                    if (!value && documentStatus) {
+                    if (!value && documentStatus) { // reset status to draft
                       void setDocumentStatus({
                         name: 'draft',
                         version: documentStatus.version,
                         uuid: documentStatus.uuid
-                      })
-                    } else {
-                      void setDocumentStatus(value)
+                      }, undefined, true)
+                    } else if (documentStatus && value) { // set status to saved, read or used
+                      void setDocumentStatus({
+                        name: value,
+                        version: documentStatus?.version,
+                        uuid: documentStatus?.uuid
+                      }, undefined, true)
                     }
                   }}
                 >
@@ -166,7 +213,7 @@ export const PreviewSheet = ({ id, wire, handleClose, textOnly = true, version, 
                             name: 'used',
                             uuid: wire.id,
                             version: BigInt(wire.fields.current_version.values?.[0])
-                          }).catch(console.error)
+                          }, undefined, true).catch(console.error)
                         }
                         showModal(
                           <Wire

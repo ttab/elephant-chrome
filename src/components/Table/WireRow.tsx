@@ -4,12 +4,10 @@ import { TableRow, TableCell } from '@ttab/elephant-ui'
 import { type Row as RowType, flexRender } from '@tanstack/react-table'
 import { cn } from '@ttab/elephant-ui/utils'
 import type { Wire } from '@/hooks/index/useDocuments/schemas/wire'
-import { useModal } from '../Modal/useModal'
 import { cva } from 'class-variance-authority'
-import type { ModalData } from '../Modal/ModalContext'
 import { getWireStatus } from './lib/getWireStatus'
 
-type DocumentType = 'Planning' | 'Event' | 'Assignments' | 'Search' | 'Wires' | 'Factbox' | 'PrintArticles' | 'PrintEditor'
+type DocumentType = 'Planning' | 'Event' | 'Assignments' | 'Search' | 'Wires' | 'Factbox' | 'Print' | 'PrintEditor'
 
 export const WireRow = ({ row, handleOpen, openDocuments, type }: {
   type: DocumentType
@@ -17,7 +15,6 @@ export const WireRow = ({ row, handleOpen, openDocuments, type }: {
   handleOpen: (event: MouseEvent<HTMLTableRowElement>, row: RowType<unknown>) => void
   openDocuments: string[]
 }): JSX.Element => {
-  const { currentModal } = useModal()
   const wire = row.original as Wire
   const wireRow = row as RowType<Wire>
 
@@ -46,7 +43,7 @@ export const WireRow = ({ row, handleOpen, openDocuments, type }: {
       )}
       data-state={getDataState(openDocuments, wire, type, wireRow)}
       onClick={(event: MouseEvent<HTMLTableRowElement>) => handleOpen(event, row)}
-      ref={(el) => handleRef(el, wireRow, currentModal, type)}
+      ref={(el) => handleRef(el, wireRow)}
     >
       {row.getVisibleCells().map((cell) => (
         <TableCell
@@ -87,13 +84,8 @@ function getDataState(openDocuments: string[], wire: Wire, type: DocumentType, r
   return ((openDocuments.includes(wire.id) && 'selected') || (type === 'Wires' && row.getIsSelected() && 'focused')) || undefined
 }
 
-function handleRef(el: HTMLTableRowElement | null, row: RowType<Wire>, currentModal: ModalData | undefined, type: DocumentType): void {
+function handleRef(el: HTMLTableRowElement | null, row: RowType<Wire>): void {
   if (el && row.getIsSelected()) {
     el.focus()
-
-    // When modal is active and a wire view, then change scroll behavior
-    if (currentModal?.id && type === 'Wires') {
-      el.scrollIntoView({ behavior: 'smooth', block: 'start' })
-    }
   }
 }

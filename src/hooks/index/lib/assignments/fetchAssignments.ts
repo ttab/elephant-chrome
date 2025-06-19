@@ -1,5 +1,6 @@
 import type { Index } from '@/shared/Index'
 import type { Repository } from '@/shared/Repository'
+import type { Block, Document } from '@ttab/elephant-api/newsdoc'
 import { QueryV1, BoolQueryV1, TermQueryV1, RangeQueryV1 } from '@ttab/elephant-api/index'
 import type { DocumentMetrics, StatusOverviewItem } from '@ttab/elephant-api/repository'
 import { type BulkGetResponse, type GetMetricsResponse, type GetStatusOverviewResponse } from '@ttab/elephant-api/repository'
@@ -53,6 +54,7 @@ export async function fetchAssignments({ index, repository, type, requireDeliver
   const metricsDocumentsRequests: Promise<GetMetricsResponse | null>[] = []
 
   do {
+    const dateStr = format(date, 'yyyy-MM-dd')
     const query = constructQuery(date, dateType, timeZone)
 
     const { ok, hits, errorMessage } = await index.query({
@@ -69,17 +71,29 @@ export async function fetchAssignments({ index, repository, type, requireDeliver
     }
 
     // Collect all assignments and deliverable uuids for this result page
+    // Ignore:
+    // * slot assignments where planning date is not the same as the given date
+    // * assignments with start date not matching the given date
+    // TODO: Take withheld/publish into account?
     const uuids: string[] = []
     for (const { document } of hits) {
-      if (document) {
-        for (const assignment of getAssignmentsFromDocument(document, type)) {
-          if (!requireDeliverable || assignment._deliverableId) {
-            assignments.push(assignment)
-          }
+      if (!document) continue
 
-          if (assignment._deliverableId) {
-            uuids.push(assignment._deliverableId)
-          }
+      const sameDay = getPlanningDate(document) === dateStr
+
+      for (const assignment of getAssignmentsFromDocument(document, type)) {
+        const sameDayAssignment = getAssignmentDate(assignment) === dateStr
+
+        if (!sameDay && (hasPublishSlot(assignment) || !sameDayAssignment)) {
+          continue
+        }
+
+        if (!requireDeliverable || assignment._deliverableId) {
+          assignments.push(assignment)
+        }
+
+        if (assignment._deliverableId) {
+          uuids.push(assignment._deliverableId)
         }
       }
     }
@@ -185,6 +199,7 @@ function constructQuery(
   const { from, to } = getUTCDateRange(date, timeZone)
   // CAVEAT: This is in reality a local date but with zero time and a misleading Z in it.
   const formattedDate = format(date, 'yyyy-MM-dd\'T00:00:00:000Z\'')
+  const shortDate = format(date, 'yyyy-MM-dd')
 
   if (dateType === 'combined-date') {
     return QueryV1.create({
@@ -209,6 +224,17 @@ function constructQuery(
                   field: 'document.meta.core_assignment.data.publish',
                   gte: `${from}`,
                   lte: `${to}`
+                })
+              }
+            },
+            // Include planning documents on the current date to get assignments
+            // with time slots.
+            {
+              conditions: {
+                oneofKind: 'term',
+                term: TermQueryV1.create({
+                  field: 'document.meta.core_planning_item.data.start_date',
+                  value: shortDate
                 })
               }
             }
@@ -273,4 +299,31 @@ function getRelatedDocuments(repository: Repository, accessToken: string, uuids:
 
 
   return [documentsRequest, statusesRequest]
+}
+
+// TODO: Do we collect utility funcs like these somewhere?
+
+function hasPublishSlot(assignment: AssignmentInterface): boolean {
+  return !!(assignment.data && assignment.data['publish_slot'])
+}
+
+function getPlanningDate(doc: Document): string {
+  for (const block of doc.meta) {
+    if (block.type != 'core/planning-item') {
+      continue
+    }
+
+    const date = block.data['start_date']
+    if (!date) {
+      return ''
+    }
+
+    return date
+  }
+
+  return ''
+}
+
+function getAssignmentDate(assignment: Block): string {
+  return assignment.data['start_date'] || ''
 }
