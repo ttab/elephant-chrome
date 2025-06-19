@@ -7,6 +7,7 @@ import { CoreOrganiserProvider } from '../../datastore/contexts/CoreOrganiserPro
 import { CoreSectionProvider } from '../../datastore/contexts/CoreSectionProvider'
 import { CoreStoryProvider } from '../../datastore/contexts/CoreStoryProvider'
 import { TTWireSourceProvider } from '../../datastore/contexts/TTWireSourceProvider'
+import { CoreContentSourceProvider } from '../../datastore/contexts/CoreContentSourceProvider'
 import { TTEditorialInfoTypeProvider } from '../../datastore/contexts/TTEditorialInfoTypeProvider'
 import { DocTrackerProvider } from '../../contexts'
 import { useRegistry } from '@/hooks/useRegistry'
@@ -104,11 +105,13 @@ export const Init = ({ children }: PropsWithChildren): JSX.Element => {
             <CoreCategoryProvider>
               <CoreOrganiserProvider>
                 <TTWireSourceProvider>
-                  <TTEditorialInfoTypeProvider>
-                    <NavigationProvider>
-                      {children}
-                    </NavigationProvider>
-                  </TTEditorialInfoTypeProvider>
+                  <CoreContentSourceProvider>
+                    <TTEditorialInfoTypeProvider>
+                      <NavigationProvider>
+                        {children}
+                      </NavigationProvider>
+                    </TTEditorialInfoTypeProvider>
+                  </CoreContentSourceProvider>
                 </TTWireSourceProvider>
               </CoreOrganiserProvider>
             </CoreCategoryProvider>
