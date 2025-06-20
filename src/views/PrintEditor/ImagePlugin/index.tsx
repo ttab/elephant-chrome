@@ -49,7 +49,7 @@ export const ImagePlugin: Plugin.InitFunction = (options) => {
       children: [
         {
           type: 'image',
-          class: 'text',
+          class: 'void',
           component: FigureImage
         },
         {

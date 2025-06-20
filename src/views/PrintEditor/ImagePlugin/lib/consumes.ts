@@ -2,6 +2,7 @@ import { type Plugin } from '@ttab/textbit'
 import { CONFIG } from '../config'
 
 export const consumes: Plugin.ConsumesFunction = ({ input }) => {
+  console.log(' :5 ~ input', input)
   if (!(input.data instanceof File)) {
     return [false]
   }

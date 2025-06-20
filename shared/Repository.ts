@@ -254,8 +254,13 @@ export class Repository {
    * @param accessToken string
    * @returns Promise<FinishedUnaryCall<UpdateRequest, UpdateResponse>
    */
-  async saveDocument(document: Document, accessToken: string, status?: string, cause?: string, attachObjects?: Record<string, string>): Promise<FinishedUnaryCall<UpdateRequest, UpdateResponse> | undefined> {
-    // console.log(' :258 ~ Repository ~ saveDocument ~ uploadId', uploadId)
+  async saveDocument(
+    document: Document,
+    accessToken: string,
+    status?: string,
+    cause?: string,
+    attachObjects?: Record<string, string>
+  ): Promise<FinishedUnaryCall<UpdateRequest, UpdateResponse> | undefined> {
     const payload: UpdateRequest = {
       document,
       meta: {},
@@ -322,20 +327,18 @@ export class Repository {
   async uploadFile(name: string, contentType: string, file: File | Blob, accessToken: string): Promise<{
     uuid: string
     name: string
-    type: string
+    contentType: string
     url: string
     uploadId: string
   }> {
-    console.log(' :323 ~ Repository ~ uploadFile ~ file', file)
     const { response } = await this.#client.createUpload({
       name,
       contentType,
       meta: {}
     }, meta(accessToken))
-    console.log(' :330 ~ Repository ~ uploadFile ~ response', response)
 
     const { id: uploadId, url } = response || {}
-    console.log(' :334 ~ Repository ~ uploadFile ~ url', url)
+
     if (!url || !uploadId) {
       throw new Error('CreateUpload request did not return a signed upload url')
     }
@@ -349,14 +352,13 @@ export class Repository {
         },
         mode: 'cors'
       })
-      console.log(' :346 ~ Repository ~ uploadFile ~ uploadResponse', uploadResponse)
-
       if (!uploadResponse.ok) {
         const errorText = await uploadResponse.text().catch(() => 'Unknown error')
         throw new Error(`Upload failed: ${uploadResponse.status} ${uploadResponse.statusText}. Response: ${errorText}`)
       }
 
       const uuid = crypto.randomUUID()
+
       const document = Document.create({
         uuid,
         uri: `core://image/${uuid}`,
@@ -373,14 +375,14 @@ export class Repository {
           })
         ]
       })
-      console.log(' :369 ~ Repository ~ uploadFile ~ document', document)
 
+      // Pass attachObjects with image upload id to set it to document
       await this.saveDocument(document, accessToken, undefined, undefined, { image: uploadId })
 
       return {
         uuid,
         name,
-        type: contentType,
+        contentType,
         url: uploadResponse.url,
         uploadId
       }

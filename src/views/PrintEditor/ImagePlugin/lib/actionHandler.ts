@@ -11,8 +11,8 @@ export const actionHandler = ({ editor, api }: { editor: Editor, api?: unknown }
   fileSelector.addEventListener('change', (e: unknown) => {
     const event: ChangeEvent<HTMLInputElement> = e as ChangeEvent<HTMLInputElement>
 
-    if (event.target.files?.length) {
-      console.log(' :23 ~ fileSelector.addEventListener ~ event', event)
+    if (event?.target?.files?.length) {
+      console.log('has files in event?', event.target)
       // @ts-expect-error Needs fixing in Textbit
       api.consumeFileInputChangeEvent(editor, event)
     }
