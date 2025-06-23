@@ -16,6 +16,7 @@ import { createStateless, StatelessType } from '@/shared/stateless'
 import { useModal } from '@/components/Modal/useModal'
 import { useKeydownGlobal } from '@/hooks/useKeydownGlobal'
 import { Button } from '@ttab/elephant-ui'
+import { toast } from 'sonner'
 
 export interface AwarenessUserData {
   name: string
@@ -99,7 +100,7 @@ export const CollaborationProviderContext = ({ documentId, document, children }:
   }
 
   useEffect(() => {
-    if (!documentId || !webSocket) {
+    if (!documentId || !webSocket || !data?.accessToken) {
       return
     }
 
@@ -120,6 +121,7 @@ export const CollaborationProviderContext = ({ documentId, document, children }:
       },
       onDisconnect: () => {
         setSynced(false)
+        setConnected(false)
       }
     })
 
@@ -133,6 +135,23 @@ export const CollaborationProviderContext = ({ documentId, document, children }:
     // JWT.token should be used on creation but provider should not be recreated on token change
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [documentId, document, webSocket])
+
+  useEffect(() => {
+    if (!provider) return
+
+    const handleDisconnect = () => {
+      provider.connect().catch((error) => {
+        console.error('Error reconnecting provider:', error)
+        toast.error('Kunde inte återansluta till dokumentet')
+      })
+    }
+
+    provider.on('disconnect', handleDisconnect)
+
+    return () => {
+      provider.off('disconnect', handleDisconnect)
+    }
+  }, [provider])
 
 
   // Create and destroy a local indexeddb sync engine
