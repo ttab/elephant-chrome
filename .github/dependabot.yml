@@ -8,7 +8,7 @@ updates:
   schedule:
     interval: daily
   target-branch: "main"
-  open-pull-requests-limit: 10
+  open-pull-requests-limit: 30
 - package-ecosystem: docker
   directory: "/"
   schedule:
