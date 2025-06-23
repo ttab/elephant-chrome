@@ -15,7 +15,8 @@ const scopes = [
   'user',
   'baboon',
   'media',
-  'content-api'
+  'content-api',
+  'asset_upload'
 ]
 
 const authorizationUrl = new URL(`${process.env.AUTH_KEYCLOAK_ISSUER}/protocol/openid-connect/auth`)
