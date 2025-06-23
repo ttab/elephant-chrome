@@ -6,6 +6,7 @@ import {
   Bold,
   Italic,
   Text,
+  Link,
   TTVisual,
   Factbox,
   Table,
@@ -106,6 +107,7 @@ function EditorWrapper(props: ViewProps & {
     const basePlugins = [
       Bold,
       Italic,
+      Link,
       TTVisual,
       ImageSearchPlugin,
       FactboxPlugin,
