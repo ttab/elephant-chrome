@@ -52,6 +52,7 @@ import { useSession } from 'next-auth/react'
 import { Prompt } from '@/components/Prompt'
 import { snapshot } from '@/lib/snapshot'
 import type * as Y from 'yjs'
+import { ImagePlugin } from './ImagePlugin'
 
 const meta: ViewMetadata = {
   name: 'PrintEditor',
@@ -96,6 +97,8 @@ function EditorWrapper(props: ViewProps & {
   documentId: string
   autoFocus?: boolean
 }): JSX.Element {
+  const { data } = useSession()
+  const { repository } = useRegistry()
   const { provider, synced, user } = useCollaboration()
   const openFactboxEditor = useLink('Factbox')
   const [notes] = useYValue<Block[] | undefined>('meta.core/note')
@@ -120,6 +123,10 @@ function EditorWrapper(props: ViewProps & {
       Text({
         countCharacters: ['heading-1'],
         ...contentMenuLabels
+      }),
+      ImagePlugin({
+        repository,
+        accessToken: data?.accessToken || ''
       }),
       Factbox({
         onEditOriginal: (id: string) => {
