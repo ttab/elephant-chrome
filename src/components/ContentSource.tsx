@@ -1,32 +1,18 @@
 import { ComboBox } from '@ttab/elephant-ui'
-import { useWireSources, useYValue } from '../hooks'
+import { useYValue } from '../hooks'
 import { Block } from '@ttab/elephant-api/newsdoc'
 import { Awareness } from './Awareness'
 import { useRef } from 'react'
+import { useContentSources } from '@/hooks/useContentSources'
 
 export const ContentSource = (): JSX.Element => {
-  // Workaround, useWireSources, since they are close to similar
-  const allWireSources = useWireSources().map((_) => {
+  const allContentSources = useContentSources().map((_) => {
     return {
       value: _.uri,
       label: _.title
     }
   })
-  const removeList = [
-    'wires://source/globenewswire',
-    'wires://source/email',
-    'wires://source/rss',
-    'wires://source/businesswire',
-    'wires://source/viatt',
-    'wires://source/efes'
-  ]
 
-  const allContentSources = allWireSources
-    .filter((source) => !removeList.includes(source.value))
-    .map((source) => ({
-      ...source,
-      value: source.value.replace('wires://source/', 'tt://content-source/')
-    }))
 
   const path = 'links.core/content-source'
   const setFocused = useRef<(value: boolean, start: string) => void>(() => { })
@@ -40,7 +26,7 @@ export const ContentSource = (): JSX.Element => {
       <ComboBox
         sortOrder='label'
         size='xs'
-        modal={false}
+        modal={true}
         options={allContentSources}
         selectedOptions={selectedOptions}
         placeholder='Lägg till källa'
