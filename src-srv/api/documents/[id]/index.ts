@@ -6,11 +6,11 @@ import { fromYjsNewsDoc } from '@/shared/transformations/yjsNewsDoc.js'
 import * as Y from 'yjs'
 import logger from '../../../lib/logger.js'
 
-import type { Context } from '../../../lib/assertContext.js'
-import { assertContext } from '../../../lib/assertContext.js'
+import { type Context, isContext } from '../../../lib/context.js'
 import { getValueByYPath, setValueByYPath } from '../../../../shared/yUtils.js'
 import type { EleBlock } from '@/shared/types/index.js'
 import { createSnapshot } from '../../../utils/createSnapshot.js'
+import { getSession } from '../../../lib/context.js'
 
 type Response = RouteContentResponse | RouteStatusResponse
 
@@ -22,7 +22,14 @@ export const GET: RouteHandler = async (req: Request, { cache, repository, res }
   const version = Number(req.query.version || '0')
   const type = req.query.type
 
-  const { session } = res.locals
+  const { accessToken } = getSession(req, res)
+
+  if (!accessToken) {
+    return {
+      statusCode: 401,
+      statusMessage: 'Unauthorized: Access token not found, can not fetch document'
+    }
+  }
 
   if (!uuid || typeof uuid !== 'string' || !isValidUUID(uuid)) {
     return {
@@ -32,34 +39,36 @@ export const GET: RouteHandler = async (req: Request, { cache, repository, res }
   }
 
   try {
-    // Fetch from Redis if exists
-    const state = await cache.get(uuid).catch((ex) => {
-      throw new Error('get cached document', { cause: ex })
-    })
+    // Fetch from Redis if exists and no version specified
+    if (!version) {
+      const state = await cache.get(uuid).catch((ex) => {
+        throw new Error('get cached document', { cause: ex })
+      })
 
-    // Check for collaborative/cached document first
-    if (state) {
-      const yDoc = new Y.Doc()
-      Y.applyUpdate(yDoc, state)
-      const { documentResponse } = fromYjsNewsDoc(yDoc)
+      // Check for collaborative/cached document
+      if (state) {
+        const yDoc = new Y.Doc()
+        Y.applyUpdate(yDoc, state)
+        const { documentResponse } = fromYjsNewsDoc(yDoc)
 
-      // Return newsdoc from cache
-      if (type === 'newsdoc') {
+        // Return newsdoc from cache
+        if (type === 'newsdoc') {
+          return {
+            payload: {
+              from: 'cache',
+              version: documentResponse.version.toString(),
+              document: fromGroupedNewsDoc(documentResponse).document
+            }
+          }
+        }
+
+        // Return grouped newsdoc from cache
         return {
           payload: {
             from: 'cache',
             version: documentResponse.version.toString(),
-            document: fromGroupedNewsDoc(documentResponse).document
+            document: documentResponse.document
           }
-        }
-      }
-
-      // Return grouped newsdoc from cache
-      return {
-        payload: {
-          from: 'cache',
-          version: documentResponse.version.toString(),
-          document: documentResponse.document
         }
       }
     }
@@ -67,7 +76,7 @@ export const GET: RouteHandler = async (req: Request, { cache, repository, res }
     // Fetch content fron repository
     const doc = await repository.getDocument({
       uuid,
-      accessToken: (session as { accessToken: string })?.accessToken,
+      accessToken,
       version
     }).catch((ex) => {
       throw new Error('get document from repository', { cause: ex })
@@ -119,10 +128,9 @@ export const GET: RouteHandler = async (req: Request, { cache, repository, res }
  * - Set start time for draft
  */
 export const PATCH: RouteHandler = async (req: Request, { collaborationServer, res }) => {
-  const locals = res.locals as Record<string, unknown> | undefined
-  const session = locals?.session as { accessToken?: string, user?: Context['user'] } | undefined
+  const { accessToken, user } = getSession(req, res)
 
-  if (!session?.accessToken || !session?.user) {
+  if (!accessToken || !user) {
     return {
       statusCode: 401,
       statusMessage: 'Unauthorized: Session not found, can not snapshot document'
@@ -155,12 +163,12 @@ export const PATCH: RouteHandler = async (req: Request, { collaborationServer, r
   }
 
   const context: Context = {
-    accessToken: session.accessToken,
-    user: session.user,
+    accessToken,
+    user,
     agent: 'server'
   }
 
-  if (!assertContext(context)) {
+  if (!isContext(context)) {
     return {
       statusCode: 500,
       statusMessage: 'Invalid context provided'

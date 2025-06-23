@@ -2,7 +2,7 @@
   "name": "elephant-chrome",
   "private": false,
   "license": "MIT",
-  "version": "1.1.4",
+  "version": "1.2.0",
   "type": "module",
   "scripts": {
     "debug": "concurrently npm:debug:vite npm:dev:client:css",
@@ -61,6 +61,7 @@
     "express": "^4.21.2",
     "express-ws": "^5.0.2",
     "get-user-locale": "^3.0.0",
+    "jose": "^6.0.11",
     "lodash-es": "^4.17.21",
     "next-auth": "^5.0.0-beta.25",
     "node-html-parser": "^7.0.1",

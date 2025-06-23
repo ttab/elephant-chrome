@@ -49,7 +49,7 @@ export const PreviewSheet = ({ id, wire, handleClose, textOnly = true, version, 
     keys: ['s', 'r', 'c', 'u', 'Escape'],
     onNavigation: (event) => {
       event.stopPropagation()
-      if (documentStatus) {
+      if (documentStatus && wire) {
         if (event.key === 'r') {
           const payload = {
             name: currentWire?.status === 'read' ? 'draft' : 'read',
@@ -231,7 +231,7 @@ export const PreviewSheet = ({ id, wire, handleClose, textOnly = true, version, 
                 </ToggleGroup>
               </>
             )}
-            <MetaSheet container={containerRef.current} documentId={id} />
+            <MetaSheet container={containerRef.current} documentId={id} readOnly readOnlyVersion={version} />
             <SheetClose
               className='rounded-md hover:bg-gray-100 w-8 h-8 flex items-center justify-center outline-none -mr-7'
               onClick={handleClose}
