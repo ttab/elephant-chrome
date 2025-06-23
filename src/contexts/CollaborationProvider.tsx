@@ -7,6 +7,7 @@ import {
   useEffect
 } from 'react'
 import { HocuspocusProvider } from '@hocuspocus/provider'
+import { IndexeddbPersistence } from 'y-indexeddb'
 import { useSession } from 'next-auth/react'
 import { Collaboration } from '@/defaults'
 import { HPWebSocketProviderContext } from '.'
@@ -132,6 +133,20 @@ export const CollaborationProviderContext = ({ documentId, document, children }:
     // JWT.token should be used on creation but provider should not be recreated on token change
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [documentId, document, webSocket])
+
+
+  // Create and destroy a local indexeddb sync engine
+  useEffect(() => {
+    if (!documentId || !provider?.document) {
+      return
+    }
+
+    const indexeddb = new IndexeddbPersistence(documentId, provider.document)
+
+    return () => {
+      void indexeddb.destroy()
+    }
+  }, [documentId, provider?.document])
 
   useEffect(() => {
     // When the token is refreshed we need to send it to the server
