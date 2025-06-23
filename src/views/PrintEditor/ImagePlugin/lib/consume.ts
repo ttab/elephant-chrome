@@ -15,7 +15,7 @@ export const consume = async (
     throw new Error('Image plugin expected File for consumation, wrong indata')
   }
 
-  const { name, type, size } = input.data
+  const { name, type: contentType, size } = input.data
 
   const getImageProperties = async () => {
     return await new Promise<Plugin.Resource>((resolve, reject) => {
@@ -33,7 +33,7 @@ export const consume = async (
       }
 
       repository
-        .uploadFile(name, (input.data as File).type, input.data as File, accessToken)
+        .uploadFile(name, contentType, input.data as File, accessToken)
         .then(({ uuid, name }) => {
           toast.success('Bilduppladdning lyckades!')
           reader.onload = () => {
