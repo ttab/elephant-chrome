@@ -11,12 +11,12 @@ import { revertPrintText, transformPrintText } from './tt/printText.js'
 /**
  * Convert a NewsDoc block array to slate TBElement array
  */
-export function newsDocToSlate(content: Block[]): TBElement[] {
+export function newsDocToSlate(content: Block[], isPrintArticle = false): TBElement[] {
   if (content !== undefined && Array.isArray(content)) {
     return content.map((element: Block): TBElement => {
       switch (element.type) {
         case 'core/text':
-          return transformText(element)
+          return transformText(element, isPrintArticle)
         case 'tt/print-text':
           return transformPrintText(element)
         case 'tt/visual':

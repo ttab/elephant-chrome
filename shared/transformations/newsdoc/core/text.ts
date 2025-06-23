@@ -8,10 +8,10 @@ import { jsx } from 'slate-hyperscript'
 /**
  * Transform a text Block into Slate Element
  */
-export function transformText(element: Block): TBElement {
+export function transformText(element: Block, isPrintArticle = false): TBElement {
   const { data } = element
   const rootElement = parse(data?.text || '')
-  const value = deserializeNode(rootElement, {}, element.type)
+  const value = deserializeNode(rootElement, {}, element.type, isPrintArticle)
   const children = (Array.isArray(value)) ? value : [value]
 
   return {
@@ -87,7 +87,7 @@ function serializeNode(node: TBElement | TBText): string {
 }
 
 
-function deserializeNode(el: HTMLElement, markAttributes: Record<string, boolean> = {}, type: string): Array<TBElement | TBText> | TBElement | TBText {
+function deserializeNode(el: HTMLElement, markAttributes: Record<string, boolean> = {}, type: string, isPrintArticle: boolean): Array<TBElement | TBText> | TBElement | TBText {
   if (el.nodeType === NodeType.TEXT_NODE) {
     return jsx('text', markAttributes, el.textContent === '\n' ? '' : el.textContent) as unknown as TBText
   }
@@ -117,7 +117,7 @@ function deserializeNode(el: HTMLElement, markAttributes: Record<string, boolean
 
   const children = el.childNodes
     .map((node) => {
-      return deserializeNode(node as HTMLElement, nodeAttributes, type)
+      return deserializeNode(node as HTMLElement, nodeAttributes, type, isPrintArticle)
     })
     .filter((el) => !!el)
     .flat()
@@ -129,15 +129,22 @@ function deserializeNode(el: HTMLElement, markAttributes: Record<string, boolean
   // NOTE: Add other/new supported inline elements here
   switch (nodeName) {
     case 'a':
-      return {
-        id: el.id,
-        class: 'inline',
-        type: 'core/link',
-        properties: {
-          url: decodeURI(el.getAttribute('href') || '')
-        },
-        children
-      } as TBElement
+      return !isPrintArticle
+        ? {
+            id: el.id,
+            class: 'inline',
+            type: 'core/link',
+            properties: {
+              url: decodeURI(el.getAttribute('href') || '')
+            },
+            children
+          } as TBElement
+        : {
+            id: el.id,
+            class: 'text',
+            type: 'core/text',
+            children
+          } as TBElement
 
     default:
       return children

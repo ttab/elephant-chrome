@@ -27,7 +27,7 @@ export const toGroupedNewsDoc = (payload: GetDocumentResponse): EleDocumentRespo
 
   const yDocument: EleDocument = {
     ...document,
-    content: newsDocToSlate(document.content),
+    content: newsDocToSlate(document.content, document.type === 'tt/print-article'),
     meta: group(document.meta || [], 'type'),
     links: group(document.links || [], 'type')
   }
