@@ -13,6 +13,7 @@ import { normalizeImage } from './lib/normalizeImage'
 import { actionHandler } from './lib/actionHandler'
 import type { Repository } from '@/shared/Repository'
 
+// @ts-expect-error Textbit types uncertainty
 export const ImagePlugin: Plugin.InitFunction = (options) => {
   return {
     class: 'block',
