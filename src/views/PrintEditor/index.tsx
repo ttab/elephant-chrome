@@ -450,7 +450,7 @@ function EditorContent({ provider, user, onChange }: {
       <Gutter>
         <ContentMenu />
       </Gutter>
-      <Toolbar />
+      <Toolbar isPrintArticle />
       <ContextMenu />
     </Textbit.Editable>
   )
