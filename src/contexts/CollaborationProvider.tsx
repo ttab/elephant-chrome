@@ -16,7 +16,7 @@ import { createStateless, StatelessType } from '@/shared/stateless'
 import { useModal } from '@/components/Modal/useModal'
 import { useKeydownGlobal } from '@/hooks/useKeydownGlobal'
 import { Button } from '@ttab/elephant-ui'
-// import { toast } from 'sonner'
+import { toast } from 'sonner'
 
 export interface AwarenessUserData {
   name: string
@@ -64,10 +64,11 @@ export const CollaborationProviderContext = ({ documentId, document, children }:
   documentId?: string
   document?: Y.Doc
 }): JSX.Element => {
-  const { webSocket, connected } = useContext(HPWebSocketProviderContext)
+  const { webSocket } = useContext(HPWebSocketProviderContext)
   const { data, status } = useSession()
 
   const [synced, setSynced] = useState<boolean>(false)
+  const [connected, setConnected] = useState<boolean>(false)
   const [provider, setProvider] = useState<HocuspocusProvider>()
 
   // Developer tool to display current document source in a dialog
@@ -109,11 +110,18 @@ export const CollaborationProviderContext = ({ documentId, document, children }:
       document,
       token: data.accessToken,
 
+      onConnect: () => {
+        setConnected(true)
+      },
+      onClose() {
+        setConnected(false)
+      },
       onSynced: () => {
         setSynced(true)
       },
       onDisconnect: () => {
         setSynced(false)
+        setConnected(false)
       }
     })
 
@@ -128,26 +136,22 @@ export const CollaborationProviderContext = ({ documentId, document, children }:
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [documentId, document, webSocket])
 
-  // FIXME: Either remove or reenable if HPWebSocketProviderContext
-  // changes does not work.
-  //
-  // useEffect(() => {
-  //   if (!provider) return
+  useEffect(() => {
+    if (!provider) return
 
-  //   const handleDisconnect = () => {
-  //     console.log('DISCONNECTED')
-  //     provider.connect().catch((error) => {
-  //       console.error('Error reconnecting provider:', error)
-  //       toast.error('Kunde inte återansluta till dokumentet')
-  //     })
-  //   }
+    const handleDisconnect = () => {
+      provider.connect().catch((error) => {
+        console.error('Error reconnecting provider:', error)
+        toast.error('Kunde inte återansluta till dokumentet')
+      })
+    }
 
-  //   provider.on('disconnect', handleDisconnect)
+    provider.on('disconnect', handleDisconnect)
 
-  //   return () => {
-  //     provider.off('disconnect', handleDisconnect)
-  //   }
-  // }, [provider])
+    return () => {
+      provider.off('disconnect', handleDisconnect)
+    }
+  }, [provider])
 
 
   // Create and destroy a local indexeddb sync engine
