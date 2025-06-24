@@ -57,6 +57,24 @@ export function revertImage(element: TBElement): Block {
   const captionText = getText(textNode)
   const bylineText = getText(bylineNode)
 
+  const links = [
+    {
+      type: 'core/image',
+      rel: 'image',
+      uri: toString(properties?.uri),
+      uuid: id
+    }
+  ]
+
+  if (bylineText.length > 0) {
+    links.push(Block.create({
+      rel: 'author',
+      type: 'core/author',
+      title: toString(bylineText),
+      uuid: crypto.randomUUID()
+    }))
+  }
+
   return Block.create({
     id,
     type: 'core/image',
@@ -66,19 +84,6 @@ export function revertImage(element: TBElement): Block {
       height: toString(properties?.height),
       width: toString(properties?.width)
     },
-    links: [
-      {
-        type: 'core/image',
-        rel: 'image',
-        uri: toString(properties?.uri),
-        uuid: id
-      },
-      {
-        rel: 'author',
-        type: 'core/author',
-        title: bylineText,
-        uuid: crypto.randomUUID()
-      }
-    ]
+    links
   })
 }
