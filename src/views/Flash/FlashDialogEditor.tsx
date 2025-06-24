@@ -33,7 +33,10 @@ export const FlashEditor = ({ setTitle, onValidation, validateStateRef }: {
       <Textbit.Root
         plugins={[
           ...plugins.map((initPlugin) => initPlugin()),
-          Text({ countCharacters: ['heading-1', 'body'] })
+          Text({
+            countCharacters: ['heading-1', 'body'],
+            preventHotkeys: ['heading-2', 'preamble']
+          })
         ]}
         placeholders='multiple'
         className='w-full h-full rounded-md border'
