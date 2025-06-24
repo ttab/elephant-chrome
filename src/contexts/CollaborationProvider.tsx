@@ -110,13 +110,11 @@ export const CollaborationProviderContext = ({ documentId, document, children }:
       document,
       token: data.accessToken,
 
-      onConnect: () => {
-        setConnected(true)
-      },
       onClose() {
         setConnected(false)
       },
       onSynced: () => {
+        setConnected(true)
         setSynced(true)
       },
       onDisconnect: () => {
@@ -198,6 +196,12 @@ export const CollaborationProviderContext = ({ documentId, document, children }:
       {!!provider && (
         <CollaborationContext.Provider value={{ ...state }}>
           {children}
+          {(synced && !connected)
+          && (
+            <div className='absolute w-full min-h-14 p-1 bottom-0 flex justify-center items-center text-center bg-red-200 text-red-950 z-50'>
+              Kopplingen till tjänsten har problem. Vänta en stund och ladda sedan om din webbläsare.
+            </div>
+          )}
         </CollaborationContext.Provider>
       )}
     </>
