@@ -35,7 +35,7 @@ export const FlashEditor = ({ setTitle, onValidation, validateStateRef }: {
           ...plugins.map((initPlugin) => initPlugin()),
           Text({
             countCharacters: ['heading-1', 'body'],
-            preventHotkeys: ['heading-2', 'preamble']
+            preventHotkeys: ['heading-1', 'heading-2', 'preamble']
           })
         ]}
         placeholders='multiple'
