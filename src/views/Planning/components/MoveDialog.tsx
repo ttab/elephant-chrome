@@ -14,8 +14,9 @@ import { snapshot } from '@/lib/snapshot'
 import { toast } from 'sonner'
 import { AssignmentType } from '@/components/DataItem/AssignmentType'
 
-export const MoveDialog = ({ onClose, newDate }: {
+export const MoveDialog = ({ onClose, onChange, newDate }: {
   onClose: () => void
+  onChange: (value: boolean) => void
   newDate: string // YYYY-MM-DD in local time
 }) => {
   const { provider } = useCollaboration()
@@ -139,6 +140,7 @@ export const MoveDialog = ({ onClose, newDate }: {
                 setEndString(newDate)
 
                 snapshot(id).then(() => {
+                  onChange(true)
                   onClose()
                 }).catch((err) => {
                   console.error(err)
