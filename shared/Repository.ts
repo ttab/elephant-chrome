@@ -10,9 +10,10 @@ import type {
   ValidateRequest,
   ValidateResponse,
   GetStatusHistoryReponse,
-  GetMetricsResponse
+  GetMetricsResponse,
+  AttachmentDetails
 } from '@ttab/elephant-api/repository'
-import type { Document } from '@ttab/elephant-api/newsdoc'
+import { Block, Document } from '@ttab/elephant-api/newsdoc'
 import type { RpcError, FinishedUnaryCall } from '@protobuf-ts/runtime-rpc'
 import type * as Y from 'yjs'
 import { isValidUUID } from '../src-srv/utils/isValidUUID.js'
@@ -253,7 +254,13 @@ export class Repository {
    * @param accessToken string
    * @returns Promise<FinishedUnaryCall<UpdateRequest, UpdateResponse>
    */
-  async saveDocument(document: Document, accessToken: string, status?: string, cause?: string): Promise<FinishedUnaryCall<UpdateRequest, UpdateResponse> | undefined> {
+  async saveDocument(
+    document: Document,
+    accessToken: string,
+    status?: string,
+    cause?: string,
+    attachObjects?: Record<string, string>
+  ): Promise<FinishedUnaryCall<UpdateRequest, UpdateResponse> | undefined> {
     const payload: UpdateRequest = {
       document,
       meta: {},
@@ -275,7 +282,7 @@ export class Repository {
       updateMetaDocument: false,
       ifWorkflowState: '',
       ifStatusHeads: {},
-      attachObjects: {},
+      attachObjects: attachObjects || {},
       detachObjects: []
     }
 
@@ -312,5 +319,98 @@ export class Repository {
     return await this.#client.validate(
       fromGroupedNewsDoc(documentResponse)
     )
+  }
+
+  /**
+   * Upload a file to the repository and file storage.
+   */
+  async uploadFile(name: string, contentType: string, file: File | Blob, accessToken: string): Promise<{
+    uuid: string
+    name: string
+    contentType: string
+    url: string
+    uploadId: string
+  }> {
+    const { response } = await this.#client.createUpload({
+      name,
+      contentType,
+      meta: {}
+    }, meta(accessToken))
+
+    const { id: uploadId, url } = response || {}
+
+    if (!url || !uploadId) {
+      throw new Error('CreateUpload request did not return a signed upload url')
+    }
+
+    try {
+      const uploadResponse = await fetch(url, {
+        method: 'PUT',
+        body: file,
+        headers: {
+          'Content-Type': contentType
+        },
+        mode: 'cors'
+      })
+      if (!uploadResponse.ok) {
+        const errorText = await uploadResponse.text().catch(() => 'Unknown error')
+        throw new Error(`Upload failed: ${uploadResponse.status} ${uploadResponse.statusText}. Response: ${errorText}`)
+      }
+
+      const uuid = crypto.randomUUID()
+
+      const document = Document.create({
+        uuid,
+        uri: `core://image/${uuid}`,
+        language: 'sv-se',
+        title: name,
+        type: 'core/image',
+        meta: [
+          Block.create({
+            type: 'core/image',
+            data: {
+              filename: name,
+              mimetype: contentType
+            }
+          })
+        ]
+      })
+
+      // Pass attachObjects object as last parameter, together with image upload id
+      await this.saveDocument(document, accessToken, undefined, undefined, { image: uploadId })
+
+      return {
+        uuid,
+        name,
+        contentType,
+        url: uploadResponse.url,
+        uploadId
+      }
+    } catch (error) {
+      if (error instanceof TypeError && error.message === 'Failed to fetch') {
+        console.error('CORS error: The S3 bucket is not configured to allow requests from this origin. Please configure CORS policy on the S3 bucket.')
+        throw new Error('Upload failed due to CORS policy. Please contact your administrator to configure the S3 bucket CORS settings.')
+      }
+      console.error('Upload error:', error)
+      throw error
+    }
+  }
+
+  /**
+   * Get a signed download url to an uploaded file.
+   */
+  async getAttachmentDetails(docId: string, accessToken: string): Promise<AttachmentDetails> {
+    const { response } = await this.#client.getAttachments({
+      documents: [docId],
+      attachmentName: 'image',
+      downloadLink: true
+    }, meta(accessToken))
+
+    const { attachments } = response || {}
+    if (!Array.isArray(attachments) || !attachments.length) {
+      throw new Error('Get attachments request did not return a signed download url')
+    }
+
+    return attachments[0]
   }
 }
