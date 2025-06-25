@@ -121,10 +121,6 @@ export const Table = ({ type, header }: {
                 id: document?.uuid
               })}
             >
-              <TableCell className='flex-none first:pl-2 last:pr-2 sm:first:pl-6 sm:last:pr-6'>
-                {newsvalue && <Newsvalue newsvalue={newsvalue} />}
-              </TableCell>
-
               {type === 'Planning' && (
                 <>
                   <TableCell className='flex-none first:pl-2 last:pr-2 sm:first:pl-6 sm:last:pr-6'>
@@ -139,6 +135,11 @@ export const Table = ({ type, header }: {
                   </TableCell>
                 </>
               )}
+
+              <TableCell className='flex-none first:pl-2 last:pr-2 sm:first:pl-6 sm:last:pr-6 hidden @3xl/view:[display:revert]'>
+                {newsvalue && <Newsvalue newsvalue={newsvalue} />}
+              </TableCell>
+
               <TableCell className='flex-1 w-[300px]'>
                 <Title title={title} slugline={slugline} />
 
