@@ -44,10 +44,11 @@ export function planningListColumns({ sections = [], authors = [] }: {
         )
       },
       accessorFn: (data) => {
-        if (data?.fields['heads.usable.version']?.values[0] === '-1') {
+        const currentStatus = data?.fields['document.meta.status']?.values[0]
+        if (currentStatus === 'usable' && data?.fields['heads.usable.version']?.values[0] === '-1') {
           return 'unpublished'
         }
-        return data?.fields['document.meta.status']?.values[0]
+        return currentStatus
       },
       cell: ({ row }) => {
         const status = row.getValue<string>('documentStatus')
