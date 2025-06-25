@@ -160,7 +160,13 @@ export const WorkflowSpecifications: Record<string, WorkflowSpecification> = {
     unpublished: {
       title: 'Avpublicerad',
       description: 'Planeringen har avpublicerats',
-      transitions: {}
+      transitions: {
+        done: {
+          default: true,
+          title: 'Använd internt',
+          description: 'Gör planeringen internt synlig'
+        }
+      }
     }
   },
   'core/article': {
