@@ -13,11 +13,11 @@ export const Root = ({ children, className, tab, onTabChange, asDialog = false }
   const divRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
-    if (!tab && !onTabChange && divRef.current) {
+    if (!asDialog && !tab && !onTabChange && divRef.current) {
       divRef.current.focus()
       divRef.current.blur()
     }
-  }, [tab, onTabChange])
+  }, [asDialog, tab, onTabChange])
 
   const variants = cva('flex flex-col', {
     variants: {
