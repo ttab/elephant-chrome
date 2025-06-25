@@ -93,10 +93,10 @@ export const PreviewSheet = ({ id, wire, handleClose, textOnly = true, version, 
           showModal(<Wire onDialogClose={hideModal} asDialog wire={wire} />)
           return
         }
+      }
 
-        if (event.key === 'Escape') {
-          handleClose()
-        }
+      if (event.key === 'Escape') {
+        handleClose()
       }
     }
   })
