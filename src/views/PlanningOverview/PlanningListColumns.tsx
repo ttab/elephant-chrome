@@ -45,7 +45,14 @@ export function planningListColumns({ sections = [], authors = [] }: {
       },
       accessorFn: (data) => {
         const currentStatus = data?.fields['document.meta.status']?.values[0]
-        if (currentStatus === 'usable' && data?.fields['heads.usable.version']?.values[0] === '-1') {
+        const isUnpublished = data?.fields['heads.usable.version']?.values[0] === '-1'
+        if (currentStatus === 'usable' && isUnpublished) {
+          const lastModified = data?.fields['modified']?.values[0]
+          const lastUsableCreated = data?.fields['heads.usable.created']?.values[0]
+
+          if (lastModified > lastUsableCreated) {
+            return 'draft'
+          }
           return 'unpublished'
         }
         return currentStatus
