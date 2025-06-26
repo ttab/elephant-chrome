@@ -9,9 +9,13 @@ import {
   Select,
   SelectItem,
   SelectContent,
-  SelectTrigger
+  SelectTrigger,
+  DropdownMenu,
+  DropdownMenuTrigger,
+  DropdownMenuContent,
+  DropdownMenuItem
 } from '@ttab/elephant-ui'
-import { MessageCircleMore, Text, X } from '@ttab/elephant-ui/icons'
+import { MessageCircleMore, MoreVertical, Text } from '@ttab/elephant-ui/icons'
 import { TextBox } from '@/components/ui'
 import type { DefaultValueOption } from '@/types/index'
 import { useState } from 'react'
@@ -78,14 +82,38 @@ const Note = ({ noteIndex, handleRemove }: {
             singleLine={true}
           />
         </AlertDescription>
-        <div>
-          <Button
-            variant='icon'
-            onClick={() => { setShowVerifyDialog(true) }}
-          >
-            <X strokeWidth={1.75} size={18} className='ml-auto' />
-          </Button>
-        </div>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button
+              variant='ghost'
+              className='flex h-8 w-8 p-0 data-[state=open]:bg-muted hover:bg-accent2'
+              onClickCapture={(e) => e.preventDefault()}
+            >
+              <MoreVertical size={18} strokeWidth={1.75} />
+            </Button>
+          </DropdownMenuTrigger>
+
+          <DropdownMenuContent className='w-56'>
+            <DropdownMenuItem className='hover:cursor-pointer' onClick={() => setShowVerifyDialog(true)}>
+              Ta bort
+            </DropdownMenuItem>
+            <DropdownMenuItem>
+              <Select
+                value={selectedOptions?.[0]?.value}
+                onValueChange={() => {
+                  setShowVerifyChange(true)
+                }}
+              >
+                <SelectTrigger className='border-0 p-0'>Byt typ</SelectTrigger>
+                <SelectContent>
+                  {roles.map((role) => (
+                    <SelectItem value={role.value} key={role.value}>{role.label}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
 
 
