@@ -89,8 +89,8 @@ export interface ThemeProviderState {
 }
 
 export interface ViewProviderState {
-  viewId: string
-  name: string
+  viewId: string | undefined
+  name: string | undefined
   isActive: boolean
   isFocused: boolean
   isHidden: boolean

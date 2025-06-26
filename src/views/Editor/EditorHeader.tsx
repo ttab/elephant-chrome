@@ -30,7 +30,9 @@ export const EditorHeader = ({ documentId, readOnly, readOnlyVersion, planningId
   const openLatestVersion = useLink('Editor')
 
   useEffect(() => {
-    containerRef.current = (document.getElementById(viewId))
+    if (viewId) {
+      containerRef.current = (document.getElementById(viewId))
+    }
   }, [viewId])
 
   // FIXME: We must have a way to retrieve the publish time defined in the planning.

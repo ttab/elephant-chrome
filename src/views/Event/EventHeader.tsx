@@ -32,7 +32,9 @@ export const EventHeader = ({
   const containerRef = useRef<HTMLElement | null>(null)
 
   useEffect(() => {
-    containerRef.current = (document.getElementById(viewId))
+    if (viewId) {
+      containerRef.current = (document.getElementById(viewId))
+    }
   }, [viewId])
 
   return (
