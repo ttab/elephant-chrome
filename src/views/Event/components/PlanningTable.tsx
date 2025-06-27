@@ -153,15 +153,18 @@ export const PlanningTable = ({ provider, documentId, asDialog }: {
           />
         </DialogContent>
       </Dialog>
-      <div className='pl-6'>
+      <div className='pl-6 w-full'>
         {data?.length > 0 && (
           <>
             <Separator />
-            <div className='text-muted-foreground py-2'>Planeringar</div>
+            <div className='flex gap-2 items-center'>
+              <GanttChartSquare color='#FF971E' strokeWidth={1.75} size={18} className='text-muted-foreground' />
+              <div className='text-muted-foreground py-2'>Planeringar</div>
+            </div>
             {data?.map((planning) => (
               <Link key={planning.id} to='Planning' props={{ id: planning.id }} target='last'>
                 <div
-                  className='text-sm flex items-center gap-2 hover:bg-gray-100'
+                  className='w-fit text-sm flex items-center gap-2 hover:bg-gray-100'
                   onClick={() => {
                     setNestedOpen(false)
                     if (asDialog) {
@@ -169,7 +172,6 @@ export const PlanningTable = ({ provider, documentId, asDialog }: {
                     }
                   }}
                 >
-                  <GanttChartSquare strokeWidth={1.75} size={18} className='text-muted-foreground' />
                   {planning.fields['document.title']?.values[0]}
                 </div>
               </Link>

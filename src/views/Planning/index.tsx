@@ -30,6 +30,8 @@ import { PlanningHeader } from './components/PlanningHeader'
 import React, { type SetStateAction, useCallback, useEffect, useState } from 'react'
 import type { NewItem } from '../Event/components/PlanningTable'
 import { MoveDialog } from './components/MoveDialog'
+import { RelatedEvents } from './components/RelatedEvents'
+import type { Block } from '@ttab/elephant-api/newsdoc'
 
 type Setter = React.Dispatch<SetStateAction<NewItem>>
 
@@ -82,6 +84,7 @@ const PlanningViewContent = (props: ViewProps & { documentId: string, setNewItem
   const [, setIsFocused] = useAwareness(props.documentId)
   const [newTitle] = useYValue('root.title')
   const [isChanged] = useYValue<boolean>('root.changed')
+  const [relatedEvents] = useYValue<Block[]>('links.core/event')
   const [newDate, setNewDate] = useState<string | undefined>(undefined)
 
   useEffect(() => {
@@ -189,6 +192,7 @@ const PlanningViewContent = (props: ViewProps & { documentId: string, setNewItem
 
           <Form.Table>
             <AssignmentTable asDialog={props.asDialog} onChange={handleChange} documentId={props.documentId} />
+            <RelatedEvents events={relatedEvents} />
           </Form.Table>
 
           <Form.Footer>
