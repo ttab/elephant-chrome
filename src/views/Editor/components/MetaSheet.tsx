@@ -80,7 +80,7 @@ export function MetaSheet({ container, documentId, readOnly, readOnlyVersion }: 
 
                       <Label htmlFor='actions' className='text-xs text-muted-foreground -mb-3'>Åtgärder</Label>
                       <div className='flex flex-row gap-3' id='actions'>
-                        <AddNote text='Lägg till intern notering' variant='outline' />
+                        <AddNote text='Lägg till notering' />
                       </div>
 
                       <Label htmlFor='content-source'>Källor andra än TT</Label>
