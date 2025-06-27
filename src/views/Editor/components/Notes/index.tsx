@@ -97,14 +97,14 @@ const Note = ({ noteIndex, handleRemove }: {
             <DropdownMenuItem className='hover:cursor-pointer' onClick={() => setShowVerifyDialog(true)}>
               Ta bort
             </DropdownMenuItem>
-            <DropdownMenuItem>
+            <DropdownMenuItem className='py-0'>
               <Select
                 value={selectedOptions?.[0]?.value}
                 onValueChange={() => {
                   setShowVerifyChange(true)
                 }}
               >
-                <SelectTrigger className='border-0 p-0'>Byt typ</SelectTrigger>
+                <SelectTrigger className='border-0 p-0 hover:bg-accent focus:bg-accent'>Byt typ</SelectTrigger>
                 <SelectContent>
                   {roles.map((role) => (
                     <SelectItem value={role.value} key={role.value}>{role.label}</SelectItem>
