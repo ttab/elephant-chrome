@@ -106,7 +106,7 @@ export function assignmentColumns({ authors = [], locale, timeZone, sections = [
         display: (value: string) => (
           <span>
             {sections
-              .find((section) => section.id === value)?.id}
+              .find((section) => section.id === value)?.title}
           </span>
         )
       },
