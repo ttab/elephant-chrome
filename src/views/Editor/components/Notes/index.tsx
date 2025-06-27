@@ -50,30 +50,11 @@ const Note = ({ noteIndex, handleRemove }: {
     >
       <div className='flex flex-row w-full justify-between'>
         <AlertDescription className='flex space-x-2 items-center w-full'>
-          <Select
-            value={selectedOptions?.[0]?.value}
-            onValueChange={() => {
-              setShowVerifyChange(true)
-            }}
-          >
-            <SelectTrigger
-              className={cn({
-                'bg-blue-50': role === 'public',
-                'bg-yellow-50': role === 'internal'
-              }, 'w-fit border-0')}
-            >
-              {selectedOptions?.[0] && SelectedIcon && (
-                <div className='flex pr-2'>
-                  <SelectedIcon {...selectedOptions[0].iconProps} />
-                </div>
-              )}
-            </SelectTrigger>
-            <SelectContent>
-              {roles.map((role) => (
-                <SelectItem value={role.value} key={role.value}>{role.label}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          {selectedOptions?.[0] && SelectedIcon && (
+            <div className='flex pr-2'>
+              <SelectedIcon {...selectedOptions[0].iconProps} />
+            </div>
+          )}
           <TextBox
             key={role}
             path={`meta.core/note[${noteIndex}].data.text`}
