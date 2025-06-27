@@ -44,7 +44,13 @@ export function getStatusFromMeta(meta: DocumentMeta | StatusOverviewItem, isWor
   if (isWorkflow) {
     flow = meta.workflowState
   } else {
-    flow = meta.workflowCheckpoint || meta.workflowState
+    if (meta.workflowCheckpoint === 'unpublished') {
+      flow = meta.workflowState
+    }
+
+    if (meta.workflowCheckpoint !== 'unpublished') {
+      flow = meta.workflowCheckpoint || meta.workflowState
+    }
   }
 
   return {

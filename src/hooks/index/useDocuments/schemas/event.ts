@@ -5,6 +5,7 @@ import type { FieldValuesV1, HitV1 } from '@ttab/elephant-api/index'
  * List of fields used in the schema.
  */
 export const _fields = [
+  'modified',
   'document.title',
   'document.meta.status',
   'document.meta.core_event.data.start',
