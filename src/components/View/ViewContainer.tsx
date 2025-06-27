@@ -61,7 +61,7 @@ export const ViewContainer = ({ children, colSpan: wantedColSpan }: {
 
   useEffect(() => {
     const handleSetActive = (e: MouseEvent): void => {
-      if (!isActive && sectionRef.current?.contains(e.target as Node)) {
+      if (!isActive && sectionRef.current?.contains(e.target as Node) && viewId) {
         setActiveView(viewId)
       }
     }

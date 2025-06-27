@@ -41,7 +41,7 @@ export const Action = ({ onDialogClose = undefined, children, asDialog }: PropsW
 }
 
 function handleClose(
-  viewId: string,
+  viewId: string | undefined,
   state: NavigationState,
   history: HistoryInterface
 ): void {
