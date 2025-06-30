@@ -2,7 +2,7 @@ import { useRegistry } from '@/hooks/useRegistry'
 import { fetch } from '@/lib/index/fetch-plannings-twirp'
 import type { DefaultValueOption } from '@ttab/elephant-ui'
 import { Button, Checkbox, ComboBox, Input, Label } from '@ttab/elephant-ui'
-import { ArrowRightLeft, BriefcaseBusiness, Calendar, CircleXIcon, GanttChartSquare } from '@ttab/elephant-ui/icons'
+import { ArrowRightLeft, BriefcaseBusiness, Calendar, CalendarDays, CircleXIcon, GanttChartSquare } from '@ttab/elephant-ui/icons'
 import { useSession } from 'next-auth/react'
 import { useMemo, useState } from 'react'
 import type { Doc } from 'yjs'
@@ -15,7 +15,7 @@ import type * as Y from 'yjs'
 import { deleteByYPath, getValueByYPath, setValueByYPath, toYStructure } from '@/shared/yUtils'
 import { Block } from '@ttab/elephant-api/newsdoc'
 import { toast } from 'sonner'
-import { ToastAction } from '@/views/Wire/ToastAction'
+import { ToastAction } from '@/components/ToastAction'
 import { createPayload } from '@/defaults/templates/lib/createPayload'
 import { DatePicker } from '../Datepicker'
 import { currentDateInUTC, parseDate } from '@/lib/datetime'
@@ -125,7 +125,16 @@ export const Move = (props: ViewProps & {
 
       const newPlanningUUID = getValueByYPath<string>(newEle, 'root.uuid')?.[0]
       toast.success('Uppdraget har flyttats', {
-        action: <ToastAction planningId={newPlanningUUID} />
+        action: (
+          <ToastAction actions={[
+            {
+              label: 'Öppna planering',
+              view: 'Planning',
+              props: { id: newPlanningUUID },
+              icon: CalendarDays
+            }]}
+          />
+        )
       })
 
       setShowVerifyDialog(false)

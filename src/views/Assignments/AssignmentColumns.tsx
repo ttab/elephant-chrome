@@ -1,6 +1,6 @@
 import { NewsvalueMap } from '@/defaults/newsvalueMap'
 import { Newsvalue } from '@/components/Table/Items/Newsvalue'
-import { Briefcase, Clock3Icon, Crosshair, Navigation, SignalHigh, Users, Shapes } from '@ttab/elephant-ui/icons'
+import { Briefcase, Clock3Icon, Crosshair, Navigation, SignalHigh, Users, Shapes, Pen, CalendarDays, Library } from '@ttab/elephant-ui/icons'
 import { Newsvalues } from '@/defaults/newsvalues'
 import { FacetedFilter } from '@/components/Commands/FacetedFilter'
 import { AssignmentTypes } from '@/defaults/assignmentTypes'
@@ -18,13 +18,17 @@ import { SectionBadge } from '@/components/DataItem/SectionBadge'
 import type { Assignment } from '@/hooks/index/useDocuments/schemas/assignments'
 import { parseISO } from 'date-fns'
 import { ActionMenu } from '@/components/ActionMenu'
+import { CreatePrintArticle } from '@/components/CreatePrintArticle'
+import { documentTypeLinkTarget } from '@/lib/documentTypeLinkTarget'
 
-export function assignmentColumns({ authors = [], locale, timeZone, sections = [], currentDate }: {
+export function assignmentColumns({ authors = [], locale, timeZone, sections = [], currentDate, showModal, hideModal }: {
   authors?: IDBAuthor[]
   sections?: IDBSection[]
   locale: LocaleData
   timeZone: string
   currentDate: Date
+  showModal: (content: React.ReactNode) => void
+  hideModal: () => void
 }): Array<ColumnDef<Assignment>> {
   return [
     // Used for start time grouping
@@ -256,29 +260,47 @@ export function assignmentColumns({ authors = [], locale, timeZone, sections = [
       meta: {
         name: 'Action',
         columnIcon: Navigation,
-        className: 'flex-none p-0'
+        className: 'flex-none'
       },
       cell: ({ row }) => {
         const deliverableUuid = row.original?.fields['document.meta.core_assignment.rel.deliverable.uuid']?.values[0] || ''
         const planningId = row.original.id
-        return (
-          <div className='shrink p-'>
-            <ActionMenu
-              actions={[
-                {
-                  to: 'Editor',
-                  id: deliverableUuid,
-                  title: 'Öppna artikel'
-                },
+        const documentType = row.original.fields['document.meta.core_assignment.meta.core_assignment_type.value']?.values[0]
 
-                {
-                  to: 'Planning',
-                  id: planningId,
-                  title: 'Öppna planering'
+        const linkTarget = documentTypeLinkTarget(documentType)
+
+        return (
+          <ActionMenu
+            actions={[
+              {
+                title: `Öppna ${linkTarget.label}`,
+                icon: Pen,
+                to: linkTarget.to,
+                id: deliverableUuid
+              },
+              {
+                title: 'Öppna planering',
+                icon: CalendarDays,
+                to: 'Planning',
+                id: planningId
+              },
+              {
+                title: 'Skapa printartikel',
+                icon: Library,
+                disabled: documentType !== 'text',
+                onClick: () => {
+                  showModal(
+                    <CreatePrintArticle
+                      asDialog
+                      onDialogClose={hideModal}
+                      id={deliverableUuid}
+                    />
+                  )
                 }
-              ]}
-            />
-          </div>
+
+              }
+            ]}
+          />
         )
       }
     }

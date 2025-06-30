@@ -17,6 +17,7 @@ import { newLocalDate } from '@/lib/datetime'
 import { loadFilters } from '@/lib/loadFilters'
 import { useSections } from '@/hooks/useSections'
 import type { Assignment } from '@/hooks/index/useDocuments/schemas/assignments'
+import { useModal } from '@/components/Modal/useModal'
 
 const meta: ViewMetadata = {
   name: 'Assignments',
@@ -41,6 +42,7 @@ export const Assignments = (): JSX.Element => {
   const { locale, timeZone } = useRegistry()
   const { data: session } = useSession()
   const sections = useSections()
+  const { showModal, hideModal } = useModal()
 
   const assigneeId = useMemo(() => {
     const userSub = session?.user?.sub
@@ -60,7 +62,8 @@ export const Assignments = (): JSX.Element => {
 
 
   const columns = useMemo(() =>
-    assignmentColumns({ authors, locale, timeZone, sections, currentDate: date }), [authors, locale, timeZone, sections, date])
+    assignmentColumns({ authors, locale, timeZone, sections, currentDate: date, showModal, hideModal }),
+  [authors, locale, timeZone, sections, date, showModal, hideModal])
   const columnFilters = loadFilters<Assignment>(query, columns)
 
   return (

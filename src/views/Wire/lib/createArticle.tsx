@@ -3,9 +3,10 @@ import type { Session } from 'next-auth'
 import { getValueByYPath } from '@/shared/yUtils'
 import type { Wire } from '@/hooks/index/useDocuments/schemas/wire'
 import { toast } from 'sonner'
-import { ToastAction } from '../ToastAction'
 import { addAssignmentWithDeliverable } from '@/lib/index/addAssignment'
 import { convertToISOStringInTimeZone } from '@/lib/datetime'
+import { ToastAction } from '@/components/ToastAction'
+import { CalendarDays, Pen } from '@ttab/elephant-ui/icons'
 
 export async function createArticle({
   provider: articleProvider,
@@ -67,6 +68,25 @@ export async function createArticle({
   }
 
   toast.success(`Artikel skapad`, {
-    action: <ToastAction planningId={updatedPlanningId} wireId={documentId} target='last' />
+    action: (
+      <ToastAction
+        actions={[
+          {
+            label: 'Öppna planering',
+            view: 'Planning',
+            props: { id: updatedPlanningId },
+            target: 'last',
+            icon: CalendarDays
+          },
+          {
+            label: 'Öppna artikel',
+            view: 'Editor',
+            props: { id: documentId },
+            target: 'last',
+            icon: Pen
+          }
+        ]}
+      />
+    )
   })
 }
