@@ -38,7 +38,7 @@
     "@grafana/faro-react": "1.14.1",
     "@hocuspocus/extension-database": "^2.15.2",
     "@hocuspocus/extension-logger": "^2.15.2",
-    "@hocuspocus/extension-redis": "^2.15.2",
+    "@hocuspocus/extension-redis": "^3.2.1",
     "@hocuspocus/provider": "^2.15.2",
     "@hocuspocus/server": "^2.15.2",
     "@microsoft/fetch-event-source": "^2.0.1",
