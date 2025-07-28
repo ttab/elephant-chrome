@@ -52,21 +52,6 @@ export const EditorHeader = ({ documentId, readOnly, readOnlyVersion, planningId
 
   // Callback to set correct withheld time to the assignment
   const onBeforeStatusChange = useCallback(async (newStatus: string, data?: Record<string, unknown>) => {
-    if (newStatus === 'usable') {
-      handleLink({
-        dispatch,
-        viewItem: state.viewRegistry.get('Editor'),
-        props: { id: documentId },
-        viewId: crypto.randomUUID(),
-        history,
-        origin: viewId,
-        target: 'self',
-        readOnly: {
-          version: workflowStatus?.version
-        }
-      })
-    }
-
     if (newStatus === 'draft') {
       handleLink({
         dispatch,
@@ -95,7 +80,7 @@ export const EditorHeader = ({ documentId, readOnly, readOnlyVersion, planningId
     }
 
     return true
-  }, [planningId, dispatch, documentId, history, state.viewRegistry, viewId, workflowStatus])
+  }, [planningId, dispatch, documentId, history, state.viewRegistry, viewId])
 
   const title = documentType === 'core/editorial-info' ? 'Till red' : 'Artikel'
 
