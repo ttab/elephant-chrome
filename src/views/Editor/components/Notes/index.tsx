@@ -85,7 +85,12 @@ const Note = ({ noteIndex, handleRemove }: {
                   setShowVerifyChange(true)
                 }}
               >
-                <SelectTrigger className='border-0 p-0 hover:bg-accent focus:bg-accent'>Byt typ</SelectTrigger>
+                <SelectTrigger
+                  className='border-0 p-0 hover:bg-accent focus:bg-accent'
+                  onClickCapture={(e) => e.preventDefault()}
+                >
+                  Byt typ
+                </SelectTrigger>
                 <SelectContent>
                   {roles.map((role) => (
                     <SelectItem value={role.value} key={role.value}>{role.label}</SelectItem>
