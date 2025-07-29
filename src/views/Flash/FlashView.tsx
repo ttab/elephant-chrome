@@ -13,6 +13,7 @@ import { useOnSpellcheck } from '@/hooks/useOnSpellcheck'
 
 export const FlashView = (props: ViewProps): JSX.Element => {
   const { provider } = useCollaboration()
+  const readOnly = Number(props?.version) > 0 && !props.asDialog
 
   if (!props.id || !provider?.synced) {
     return <></>
@@ -22,7 +23,7 @@ export const FlashView = (props: ViewProps): JSX.Element => {
     <View.Root className={props.className}>
       <View.Content>
         <Form.Root asDialog={props.asDialog}>
-          <FlashEditor documentId={props.id} />
+          <FlashEditor documentId={props.id} readOnly={readOnly} />
         </Form.Root>
       </View.Content>
     </View.Root>
@@ -35,6 +36,8 @@ function FlashEditor(props: ViewProps & {
   documentId: string
   planningId?: string | null
   autoFocus?: boolean
+  version?: string
+  readOnly?: boolean
 }): JSX.Element {
   const { provider, synced, user } = useCollaboration()
   const [, setIsFocused] = useAwareness(props.documentId)
@@ -46,7 +49,10 @@ function FlashEditor(props: ViewProps & {
       <Textbit.Root
         plugins={[
           ...plugins.map((initPlugin) => initPlugin()),
-          Text({ countCharacters: ['heading-1', 'body'] })
+          Text({
+            countCharacters: ['heading-1', 'body'],
+            preventHotkeys: ['heading-1', 'heading-2', 'preamble']
+          })
         ]}
         autoFocus={props.autoFocus ?? true}
         onBlur={() => {
@@ -64,6 +70,7 @@ function FlashEditor(props: ViewProps & {
           user={user}
           planningId={props.planningId}
           documentId={props.documentId}
+          readOnly={props?.readOnly}
         />
       </Textbit.Root>
     </View.Root>
@@ -75,24 +82,26 @@ function EditorContainer({
   provider,
   synced,
   user,
-  documentId
+  documentId,
+  readOnly
 }: {
   provider: HocuspocusProvider | undefined
   synced: boolean
   user: AwarenessUserData
   documentId: string
   planningId?: string | null
+  readOnly?: boolean
 }): JSX.Element {
   const { words, characters } = useTextbit()
 
   return (
     <>
-      <FlashHeader id={documentId} asDialog={false} />
+      <FlashHeader documentId={documentId} asDialog={false} readOnly={readOnly} />
 
       <View.Content className='flex flex-col max-w-[1000px]'>
         <div className='flex-grow overflow-auto max-w-screen-xl'>
           {!!provider && synced
-            ? <EditorContent provider={provider} user={user} />
+            ? <EditorContent provider={provider} user={user} readOnly={readOnly} />
             : <></>}
         </div>
       </View.Content>
@@ -111,9 +120,10 @@ function EditorContainer({
   )
 }
 
-function EditorContent({ provider, user }: {
+function EditorContent({ provider, user, readOnly }: {
   provider: HocuspocusProvider
   user: AwarenessUserData
+  readOnly?: boolean
 }): JSX.Element {
   const { isActive } = useView()
   const ref = useRef<HTMLDivElement>(null)
@@ -133,6 +143,7 @@ function EditorContent({ provider, user }: {
 
   return (
     <Textbit.Editable
+      readOnly={readOnly}
       ref={ref}
       yjsEditor={yjsEditor}
       lang={documentLanguage}

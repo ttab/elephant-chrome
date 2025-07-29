@@ -15,9 +15,9 @@ import { Validation } from '@/components/Validation'
 import type { FormProps } from '@/components/Form/Root'
 import { getValueByYPath } from '@/shared/yUtils'
 
-
-export const FlashEditor = ({ setTitle, onValidation, validateStateRef }: {
+export const FlashEditor = ({ setTitle, onValidation, validateStateRef, readOnly }: {
   setTitle: (value: string | undefined) => void
+  readOnly?: boolean
 } & FormProps): JSX.Element => {
   const plugins = [UnorderedList, OrderedList, Bold, Italic, LocalizedQuotationMarks]
   const { provider, synced, user } = useCollaboration()
@@ -33,13 +33,16 @@ export const FlashEditor = ({ setTitle, onValidation, validateStateRef }: {
       <Textbit.Root
         plugins={[
           ...plugins.map((initPlugin) => initPlugin()),
-          Text({ countCharacters: ['heading-1', 'body'] })
+          Text({
+            countCharacters: ['heading-1', 'body'],
+            preventHotkeys: ['heading-1', 'heading-2', 'preamble']
+          })
         ]}
         placeholders='multiple'
         className='w-full h-full rounded-md border'
       >
         {!!provider && synced
-          ? <EditorContent provider={provider} user={user} setTitle={setTitle} />
+          ? <EditorContent provider={provider} user={user} setTitle={setTitle} readOnly={readOnly} />
           : <></>}
       </Textbit.Root>
     </Validation>
@@ -47,10 +50,11 @@ export const FlashEditor = ({ setTitle, onValidation, validateStateRef }: {
 }
 
 
-function EditorContent({ provider, user, setTitle }: {
+function EditorContent({ provider, user, setTitle, readOnly }: {
   provider: HocuspocusProvider
   user: AwarenessUserData
   setTitle: (value: string | undefined) => void
+  readOnly?: boolean
 }): JSX.Element {
   const { data: session } = useSession()
   const { spellchecker } = useRegistry()
@@ -87,6 +91,7 @@ function EditorContent({ provider, user, setTitle }: {
 
   return (
     <Textbit.Editable
+      readOnly={readOnly}
       yjsEditor={yjsEditor}
       lang={documentLanguage}
       onSpellcheck={async (texts) => {

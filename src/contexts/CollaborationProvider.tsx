@@ -7,6 +7,7 @@ import {
   useEffect
 } from 'react'
 import { HocuspocusProvider } from '@hocuspocus/provider'
+import { IndexeddbPersistence } from 'y-indexeddb'
 import { useSession } from 'next-auth/react'
 import { Collaboration } from '@/defaults'
 import { HPWebSocketProviderContext } from '.'
@@ -15,6 +16,7 @@ import { createStateless, StatelessType } from '@/shared/stateless'
 import { useModal } from '@/components/Modal/useModal'
 import { useKeydownGlobal } from '@/hooks/useKeydownGlobal'
 import { Button } from '@ttab/elephant-ui'
+import { toast } from 'sonner'
 
 export interface AwarenessUserData {
   name: string
@@ -98,7 +100,7 @@ export const CollaborationProviderContext = ({ documentId, document, children }:
   }
 
   useEffect(() => {
-    if (!documentId || !webSocket) {
+    if (!documentId || !webSocket || !data?.accessToken) {
       return
     }
 
@@ -108,17 +110,16 @@ export const CollaborationProviderContext = ({ documentId, document, children }:
       document,
       token: data.accessToken,
 
-      onConnect: () => {
-        setConnected(true)
-      },
       onClose() {
         setConnected(false)
       },
       onSynced: () => {
+        setConnected(true)
         setSynced(true)
       },
       onDisconnect: () => {
         setSynced(false)
+        setConnected(false)
       }
     })
 
@@ -132,6 +133,37 @@ export const CollaborationProviderContext = ({ documentId, document, children }:
     // JWT.token should be used on creation but provider should not be recreated on token change
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [documentId, document, webSocket])
+
+  useEffect(() => {
+    if (!provider) return
+
+    const handleDisconnect = () => {
+      provider.connect().catch((error) => {
+        console.error('Error reconnecting provider:', error)
+        toast.error('Kunde inte återansluta till dokumentet')
+      })
+    }
+
+    provider.on('disconnect', handleDisconnect)
+
+    return () => {
+      provider.off('disconnect', handleDisconnect)
+    }
+  }, [provider])
+
+
+  // Create and destroy a local indexeddb sync engine
+  useEffect(() => {
+    if (!documentId || !provider?.document) {
+      return
+    }
+
+    const indexeddb = new IndexeddbPersistence(documentId, provider.document)
+
+    return () => {
+      void indexeddb.destroy()
+    }
+  }, [documentId, provider?.document])
 
   useEffect(() => {
     // When the token is refreshed we need to send it to the server
@@ -164,6 +196,12 @@ export const CollaborationProviderContext = ({ documentId, document, children }:
       {!!provider && (
         <CollaborationContext.Provider value={{ ...state }}>
           {children}
+          {(synced && !connected)
+          && (
+            <div className='absolute w-full min-h-14 p-1 bottom-0 flex justify-center items-center text-center bg-red-200 text-red-950 z-50'>
+              Kopplingen till tjänsten har problem. Vänta en stund och ladda sedan om din webbläsare.
+            </div>
+          )}
         </CollaborationContext.Provider>
       )}
     </>

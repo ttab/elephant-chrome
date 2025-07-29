@@ -11,7 +11,8 @@ import type {
   ValidateResponse,
   GetStatusHistoryReponse,
   GetMetricsResponse,
-  AttachmentDetails
+  AttachmentDetails,
+  StatusUpdate
 } from '@ttab/elephant-api/repository'
 import { Block, Document } from '@ttab/elephant-api/newsdoc'
 import type { RpcError, FinishedUnaryCall } from '@protobuf-ts/runtime-rpc'
@@ -261,21 +262,32 @@ export class Repository {
     cause?: string,
     attachObjects?: Record<string, string>
   ): Promise<FinishedUnaryCall<UpdateRequest, UpdateResponse> | undefined> {
+    const basicStatus: StatusUpdate[] = [{
+      name: status || '',
+      // Use the resulting version from the save
+      version: 0n,
+      meta: cause ? { cause } : {},
+      // No optimistic lock
+      ifMatch: 0n
+    }]
+
     const payload: UpdateRequest = {
       document,
       meta: {},
       // No optimistic lock
       ifMatch: 0n,
-      status: status
-        ? [{
-            name: status,
-            // Use the resulting version from the save
-            version: 0n,
-            meta: cause ? { cause } : {},
-            // No optimistic lock
-            ifMatch: 0n
-          }]
-        : [],
+      status: ([
+        'core/article',
+        'tt/print-article',
+        'core/flash',
+        'core/editorial-info'
+      ].includes(document.type))
+        ? status
+          ? basicStatus
+          : []
+        : status && status !== 'draft'
+          ? basicStatus
+          : [],
       acl: [{ uri: 'core://unit/redaktionen', permissions: ['r', 'w'] }],
       uuid: document.uuid,
       lockToken: '',
