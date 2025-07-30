@@ -1,21 +1,8 @@
 import { useYValue } from '@/hooks/useYValue'
 import { cn } from '@ttab/elephant-ui/utils'
 import type { Block } from '@ttab/elephant-api/newsdoc'
-
-import {
-  Alert,
-  AlertDescription,
-  Button,
-  Select,
-  SelectItem,
-  SelectContent,
-  SelectTrigger,
-  DropdownMenu,
-  DropdownMenuTrigger,
-  DropdownMenuContent,
-  DropdownMenuItem
-} from '@ttab/elephant-ui'
-import { MessageCircleMore, MoreVertical, Text } from '@ttab/elephant-ui/icons'
+import { Alert, AlertDescription } from '@ttab/elephant-ui'
+import { MessageCircleMore, Trash2, Text } from '@ttab/elephant-ui/icons'
 import { TextBox } from '@/components/ui'
 import type { DefaultValueOption } from '@/types/index'
 import { useState } from 'react'
@@ -48,7 +35,7 @@ const Note = ({ noteIndex, handleRemove }: {
       ? 'bg-blue-50'
       : 'bg-yellow-50')}
     >
-      <div className='flex flex-row w-full justify-between'>
+      <div className='flex flex-row w-full justify-between items-center'>
         <AlertDescription className='flex space-x-2 items-center w-full'>
           {selectedOptions?.[0] && SelectedIcon && (
             <div className='flex pr-2'>
@@ -63,43 +50,9 @@ const Note = ({ noteIndex, handleRemove }: {
             singleLine={true}
           />
         </AlertDescription>
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button
-              variant='ghost'
-              className='flex h-8 w-8 p-0 data-[state=open]:bg-muted hover:bg-accent2'
-              onClickCapture={(e) => e.preventDefault()}
-            >
-              <MoreVertical size={18} strokeWidth={1.75} />
-            </Button>
-          </DropdownMenuTrigger>
-
-          <DropdownMenuContent className='w-56'>
-            <DropdownMenuItem className='hover:cursor-pointer' onClick={() => setShowVerifyDialog(true)}>
-              Ta bort
-            </DropdownMenuItem>
-            <DropdownMenuItem className='py-0'>
-              <Select
-                value={selectedOptions?.[0]?.value}
-                onValueChange={() => {
-                  setShowVerifyChange(true)
-                }}
-              >
-                <SelectTrigger
-                  className='border-0 p-0 hover:bg-accent focus:bg-accent'
-                  onClickCapture={(e) => e.preventDefault()}
-                >
-                  Byt typ
-                </SelectTrigger>
-                <SelectContent>
-                  {roles.map((role) => (
-                    <SelectItem value={role.value} key={role.value}>{role.label}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+        <div className='hover:cursor-pointer rounded-md p-1 hover:bg-accent2' onClick={() => setShowVerifyDialog(true)}>
+          <Trash2 size={18} strokeWidth={1.75} color='#ee2222' />
+        </div>
       </div>
 
 
