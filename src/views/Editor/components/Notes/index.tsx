@@ -51,7 +51,7 @@ const Note = ({ noteIndex, handleRemove }: {
           />
         </AlertDescription>
         <div className='hover:cursor-pointer rounded-md p-1 hover:bg-accent2' onClick={() => setShowVerifyDialog(true)}>
-          <Trash2 size={18} strokeWidth={1.75} color='#ee2222' />
+          <Trash2 size={18} strokeWidth={1.75} />
         </div>
       </div>
 
