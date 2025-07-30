@@ -36,7 +36,7 @@ export const AddNote = ({ text = '' }: {
           Intern notering
         </DropdownMenuItem>
         <DropdownMenuItem onClick={() => handleClick('public')}>
-          Redaktionell notering
+          Info till kund
         </DropdownMenuItem>
       </DropdownMenuContent>
 
