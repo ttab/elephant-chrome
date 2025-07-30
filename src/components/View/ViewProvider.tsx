@@ -3,13 +3,13 @@ import { createContext, useMemo } from 'react'
 import { type ViewProviderState } from '@/types'
 
 interface ViewProviderProps {
-  viewId: string
-  name: string
+  viewId: string | undefined
+  name: string | undefined
   children: React.ReactNode
 }
 
 const initialState = {
-  viewId: '',
+  viewId: undefined,
   name: '',
   isActive: false,
   isFocused: false,

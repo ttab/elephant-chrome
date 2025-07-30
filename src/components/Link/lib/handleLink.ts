@@ -16,7 +16,7 @@ interface LinkClick {
   viewItem: ViewRegistryItem
   viewId: string
   props?: ViewProps
-  origin: string
+  origin: string | undefined
   target?: Target
   onDocumentCreated?: () => void
   history: HistoryInterface
