@@ -15,6 +15,7 @@ export const useLatest = (): HitV1[] => {
     documentType: 'core/article',
     fields: [
       'document.title',
+      'document.type',
       'document.uri',
       'heads.usable.created',
       'heads.usable.version',
@@ -39,6 +40,7 @@ export const useLatest = (): HitV1[] => {
     documentType: 'core/flash',
     fields: [
       'document.title',
+      'document.type',
       'document.uri',
       'heads.usable.created',
       'heads.usable.version',
@@ -62,6 +64,7 @@ export const useLatest = (): HitV1[] => {
     documentType: 'core/editorial-info',
     fields: [
       'document.title',
+      'document.type',
       'document.uri',
       'heads.usable.created',
       'heads.usable.version',

@@ -6,8 +6,8 @@ import { useState } from 'react'
 import { toast } from 'sonner'
 import type { HocuspocusProvider } from '@hocuspocus/provider'
 import type { Session } from 'next-auth'
-import { CopyPlus } from '@ttab/elephant-ui/icons'
-import { ToastAction } from '@/views/Flash/ToastAction'
+import { CalendarPlus2, CopyPlus } from '@ttab/elephant-ui/icons'
+import { ToastAction } from '@/components/ToastAction'
 
 type allowedTypes = 'Event'
 
@@ -79,7 +79,15 @@ export const Duplicate = ({ provider, title, session, status, type }: {
                   })
                 )
                 toast.success(`Händelsen "${title}" kopierades till ${format(duplicateDate, 'dd/MM/yyyy')}`, {
-                  action: <ToastAction eventId={duplicateId} />
+                  action: (
+                    <ToastAction actions={[{
+                      label: 'Öppna kopia',
+                      view: 'Event',
+                      props: { id: duplicateId },
+                      icon: CalendarPlus2
+                    }]}
+                    />
+                  )
                 })
               } catch (error) {
                 toast.error(`Något gick fel: ${JSON.stringify(error)}`)

@@ -3,9 +3,10 @@ import type { Session } from 'next-auth'
 import { getValueByYPath } from '@/shared/yUtils'
 import { convertToISOStringInTimeZone } from '@/lib/datetime'
 import { toast } from 'sonner'
-import { ToastAction } from '../ToastAction'
+import { ToastAction } from '@/components/ToastAction'
 import { addAssignmentWithDeliverable } from '@/lib/index/addAssignment'
 import { createStateless, StatelessType } from '@/shared/stateless'
+import { CalendarDays, Zap } from '@ttab/elephant-ui/icons'
 
 export type CreateFlashDocumentStatus = 'usable' | 'done' | undefined
 export async function createFlash({
@@ -36,7 +37,15 @@ export async function createFlash({
   if (!flashProvider || status !== 'authenticated' || !documentId) {
     console.error(`Failed adding flash ${documentId} to a planning`)
     toast.error('Kunde inte lägga flashen till en planering', {
-      action: <ToastAction flashId={documentId} />
+      action: (
+        <ToastAction actions={[{
+          label: 'Öppna flash',
+          view: 'Flash',
+          props: { id: documentId },
+          icon: Zap
+        }]}
+        />
+      )
     })
     return
   }
@@ -102,11 +111,35 @@ export async function createFlash({
 
   if (!updatedPlanningId) {
     toast.error('Flashen har skapats. Tyvärr misslyckades det att koppla den till en planering. Kontakta support för mer hjälp.', {
-      action: <ToastAction planningId={updatedPlanningId} flashId={documentId} />
+      action: (
+        <ToastAction actions={[{
+          label: 'Öppna flash',
+          view: 'Flash',
+          props: { id: documentId },
+          icon: Zap
+        }]}
+        />
+      )
     })
   } else {
     toast.success(getLabel(documentStatus), {
-      action: <ToastAction planningId={updatedPlanningId} flashId={documentId} />
+      action: (
+        <ToastAction actions={[
+          {
+            label: 'Öppna planering',
+            view: 'Planning',
+            props: { id: updatedPlanningId },
+            icon: CalendarDays
+          },
+          {
+            label: 'Öppna flash',
+            view: 'Flash',
+            props: { id: documentId },
+            icon: Zap
+          }
+        ]}
+        />
+      )
     })
   }
 }

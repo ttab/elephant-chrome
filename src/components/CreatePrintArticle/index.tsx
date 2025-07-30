@@ -1,4 +1,4 @@
-import { Calendar, Library, Tag } from '@ttab/elephant-ui/icons'
+import { Calendar, Library, Pen, Tag } from '@ttab/elephant-ui/icons'
 import { Form } from '../Form'
 import { View, ViewHeader } from '../View'
 import type { ViewProps } from '@/types/index'
@@ -13,12 +13,14 @@ import { parseDate } from '@/lib/datetime'
 import { useDocuments } from '@/hooks/index/useDocuments'
 import { fields } from '@/hooks/index/useDocuments/schemas/printFlow'
 import type { PrintFlow, PrintFlowFields } from '@/hooks/index/useDocuments/schemas/printFlow'
+import { ToastAction } from '@/components/ToastAction'
+import { format } from 'date-fns'
 
 const fallbackDate = new Date()
 
 export const CreatePrintArticle = ({ id, asDialog, onDialogClose, className }: ViewProps) => {
-  const [printFlow, setPrintFlow] = useState<string>()
-  const [articleName, setArticleName] = useState<string>()
+  const [printFlow, setPrintFlow] = useState<string>('')
+  const [articleName, setArticleName] = useState<string>('')
   const [dateString, setDateString] = useState<string>()
   const { baboon } = useRegistry()
   const { data: session } = useSession()
@@ -46,7 +48,7 @@ export const CreatePrintArticle = ({ id, asDialog, onDialogClose, className }: V
 
   const selectedPrintFlow = allPrintFlows?.find((flow) => flow.value === printFlow)
 
-  const isSubmitDisabled = !printFlow || !articleName || !dateString || !id
+  const isSubmitDisabled = !printFlow || !articleName || !id
 
   const handleCreatePrintArticle = async () => {
     if (!session?.accessToken) {
@@ -60,15 +62,37 @@ export const CreatePrintArticle = ({ id, asDialog, onDialogClose, className }: V
     }
 
     try {
-      const response = await baboon.createPrintArticle({
+      const result = await baboon.createPrintArticle({
         sourceUuid: id,
         flowUuid: printFlow,
-        date: dateString,
+        date: dateString || format(fallbackDate, 'yyyy-MM-dd'),
         article: articleName
       }, session.accessToken)
 
-      if (response?.status.code === 'OK') {
-        toast.success('Printartikel skapad')
+      if (result?.status.code === 'OK') {
+        toast.success('Printartikel skapad', {
+          action: (
+            <ToastAction actions={[
+              {
+                label: 'Öppna printöversikt',
+                view: 'Print',
+                icon: Library,
+                props: {
+                  from: dateString
+                }
+              },
+              {
+                label: 'Öppna printartikel',
+                view: 'PrintEditor',
+                icon: Pen,
+                props: {
+                  id: result.response.uuid
+                }
+              }
+            ]}
+            />
+          )
+        })
 
         if (onDialogClose) {
           onDialogClose()
@@ -104,7 +128,7 @@ export const CreatePrintArticle = ({ id, asDialog, onDialogClose, className }: V
                 <Form.Content>
                   <Form.Group icon={Tag}>
                     <Select
-                      value={selectedPrintFlow?.value}
+                      value={selectedPrintFlow?.value || ''}
                       onValueChange={(option) => {
                         setPrintFlow(option)
                       }}
