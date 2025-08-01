@@ -2,7 +2,7 @@ import { Button, Calendar, Popover, PopoverContent, PopoverTrigger } from '@ttab
 import { DuplicatePrompt } from './DuplicatePrompt'
 import { addDays, format } from 'date-fns'
 import { createStateless, StatelessType } from '@/shared/stateless'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
 import type { HocuspocusProvider } from '@hocuspocus/provider'
 import type { Session } from 'next-auth'
@@ -15,6 +15,55 @@ import { type SetStateAction, type Dispatch } from 'react'
 
 type allowedTypes = 'Event'
 
+const SingleOrRangedCalendar = ({
+  granularity,
+  duplicateDate,
+  setDuplicateDate
+}: {
+  granularity: 'date' | 'datetime' | undefined
+  duplicateDate: { from: Date, to?: Date | undefined }
+  setDuplicateDate: Dispatch<SetStateAction<{ from: Date, to?: Date | undefined }>>
+}) => {
+  if (!granularity) {
+    return <></>
+  }
+
+  if (granularity === 'date' && duplicateDate?.from) {
+    return (
+      <Calendar
+        mode='range'
+        selected={duplicateDate}
+        startMonth={new Date(duplicateDate?.from)}
+        onSelect={(selectedDate) => {
+          if (!selectedDate?.from || !selectedDate?.to) {
+            return
+          }
+
+          setDuplicateDate({
+            from: new Date(format(selectedDate.from, 'yyyy-MM-dd')),
+            to: new Date(format(selectedDate?.to, 'yyyy-MM-dd'))
+          })
+        }}
+      />
+    )
+  }
+
+  return (
+    <Calendar
+      mode='single'
+      selected={duplicateDate?.from}
+      startMonth={new Date(duplicateDate?.from)}
+      onSelect={(selectedDate) => {
+        if (!selectedDate) {
+          return
+        }
+
+        setDuplicateDate({ from: new Date(format(selectedDate, 'yyyy-MM-dd')), to: undefined })
+      }}
+    />
+  )
+}
+
 export const Duplicate = ({ provider, title, session, status, type }: {
   provider: HocuspocusProvider
   title: string | undefined
@@ -22,8 +71,44 @@ export const Duplicate = ({ provider, title, session, status, type }: {
   status: 'authenticated' | 'loading' | 'unauthenticated'
   type: 'event'
 }) => {
-  const [duplicateDate, setDuplicateDate] = useState<Date>(addDays(new Date(), 1))
+  const [eventData] = useYValue<EventData>('meta.core/event[0].data')
+  const granularity = eventData?.dateGranularity
+  const [duplicateDate, setDuplicateDate] = useState<{ from: Date, to?: Date | undefined }>({ from: new Date(), to: new Date() })
   const [showConfirm, setShowConfirm] = useState<boolean>(false)
+
+  useEffect(() => {
+    const dates = granularity === 'date'
+      ? { from: addDays(eventData?.start ? new Date(eventData?.start) : new Date(), 1), to: addDays(eventData?.end ? new Date(eventData?.end) : new Date(), 1) }
+      : { from: addDays(eventData?.start ? new Date(eventData?.start) : new Date(), 1), to: eventData?.end ? addDays(new Date(eventData?.end), 1) : undefined }
+    if (eventData?.start) {
+      setDuplicateDate(dates)
+    }
+  }, [eventData?.start, eventData?.end, granularity])
+
+  const createTexts = (granularity: 'date' | 'datetime' | undefined): { description: string, success: string } => {
+    if (!granularity) {
+      return { description: '', success: '' }
+    }
+    const start = format(duplicateDate.from, 'dd/MM/yyyy')
+
+    if (granularity === 'date' && duplicateDate?.to) {
+      const end = format(duplicateDate?.to, 'dd/MM/yyyy')
+      const datesFormatted = `${start === end ? `${start}` : `${start} - ${end}`}`
+
+      return {
+        description: `Vill du kopiera ${type === 'event' ? 'händelsen' : ''} till ${datesFormatted}?`,
+        success: `Händelsen "${title}" har kopierats till ${datesFormatted}`
+      }
+    }
+
+    if (granularity === 'datetime') {
+      return {
+        description: `Vill du kopiera ${type === 'event' ? 'händelsen' : ''} till ${start}?`,
+        success: `Händelsen "${title}" kopierades till ${start}`
+      }
+    }
+    return { description: '', success: '' }
+  }
 
   return (
     <div className='flex-row gap-2 justify-start items-center'>
@@ -36,22 +121,12 @@ export const Duplicate = ({ provider, title, session, status, type }: {
           </div>
         </PopoverTrigger>
         <PopoverContent onEscapeKeyDown={(event) => event?.stopPropagation()}>
-          <Calendar
-            mode='single'
-            disabled={{ before: addDays(new Date(), 1) }}
-            selected={duplicateDate}
-            startMonth={new Date(duplicateDate)}
-            onSelect={(selectedDate) => {
-              if (!selectedDate) {
-                return
-              }
-              setDuplicateDate(new Date(format(selectedDate, 'yyyy-MM-dd')))
-            }}
-          />
+          {granularity === 'date' && (
+            <div className='text-sm flex justify-center'>Det här är ett heldagsevent</div>
+          )}
+          <SingleOrRangedCalendar granularity={granularity} duplicateDate={duplicateDate} setDuplicateDate={setDuplicateDate} />
           <div className='flex w-full justify-end'>
-            <Button
-              onClick={() => setShowConfirm(!showConfirm)}
-            >
+            <Button onClick={() => setShowConfirm(!showConfirm)}>
               Kopiera
             </Button>
           </div>
@@ -63,7 +138,7 @@ export const Duplicate = ({ provider, title, session, status, type }: {
           provider={provider}
           title={title || ''}
           type={type}
-          description={`Vill du kopiera ${type === 'event' ? 'händelsen' : ''} till ${format(duplicateDate, 'dd/MM/yyyy')}?`}
+          description={createTexts(granularity).description}
           secondaryLabel='Avbryt'
           primaryLabel='Kopiera'
           onPrimary={(duplicateId: string | undefined) => {
@@ -82,7 +157,7 @@ export const Duplicate = ({ provider, title, session, status, type }: {
                     }
                   })
                 )
-                toast.success(`Händelsen "${title}" kopierades till ${format(duplicateDate, 'dd/MM/yyyy')}`, {
+                toast.success(createTexts(granularity).success, {
                   action: <ToastAction eventId={duplicateId} />
                 })
               } catch (error) {
