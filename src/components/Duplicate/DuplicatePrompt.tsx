@@ -15,6 +15,7 @@ import { fromYjsNewsDoc, toYjsNewsDoc } from '@/shared/transformations/yjsNewsDo
 import { fromGroupedNewsDoc, toGroupedNewsDoc } from '@/shared/transformations/groupedNewsDoc'
 import { Block } from '@ttab/elephant-api/newsdoc'
 import * as Y from 'yjs'
+import { subDays } from 'date-fns'
 
 export const DuplicatePrompt = ({
   provider,
@@ -34,7 +35,7 @@ export const DuplicatePrompt = ({
   onPrimary: (duplicateId: string | undefined) => void
   onSecondary?: (event: MouseEvent<HTMLButtonElement> | React.KeyboardEvent<HTMLButtonElement> | KeyboardEvent) => void
   provider?: HocuspocusProvider
-  duplicateDate: Date
+  duplicateDate: { from: Date, to?: Date | undefined }
   type: string
 }): JSX.Element => {
   useKeydownGlobal((event) => {
@@ -65,12 +66,17 @@ export const DuplicatePrompt = ({
       const eventBlock = newsdoc.document.meta.find((block) => block.type === 'core/event')
 
       if (eventBlock) {
+        const start = eventBlock.data.dateGranularity === 'date'
+          ? mergeDateWithTime(eventBlock?.data?.start, subDays(duplicateDate.from, 1).toISOString())
+          : mergeDateWithTime(eventBlock?.data?.start, duplicateDate.from.toISOString())
+        const end = mergeDateWithTime(eventBlock?.data?.end, duplicateDate?.to?.toISOString())
+
         const newEventBlock = Block.create({
           type: 'core/event',
           data: {
             ...eventBlock.data,
-            start: mergeDateWithTime(eventBlock?.data?.start, duplicateDate.toISOString()),
-            end: mergeDateWithTime(eventBlock?.data?.end, duplicateDate.toISOString())
+            start,
+            end: end || start
           }
         })
 
@@ -112,9 +118,7 @@ export const DuplicatePrompt = ({
           {!!title && <DialogTitle>{title}</DialogTitle>}
         </DialogHeader>
 
-        <DialogDescription>
-          {description}
-        </DialogDescription>
+        <DialogDescription>{description}</DialogDescription>
 
         <DialogFooter className='flex flex-col gap-2 pt-4'>
           {!!onSecondary && !!secondaryLabel && (
