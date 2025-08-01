@@ -121,9 +121,6 @@ export const Duplicate = ({ provider, title, session, status, type }: {
           </div>
         </PopoverTrigger>
         <PopoverContent onEscapeKeyDown={(event) => event?.stopPropagation()}>
-          {granularity === 'date' && (
-            <div className='text-sm flex justify-center'>Det här är ett heldagsevent</div>
-          )}
           <SingleOrRangedCalendar granularity={granularity} duplicateDate={duplicateDate} setDuplicateDate={setDuplicateDate} />
           <div className='flex w-full justify-end'>
             <Button onClick={() => setShowConfirm(!showConfirm)}>
