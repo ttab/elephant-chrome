@@ -104,7 +104,7 @@ export const Duplicate = ({ provider, title, session, status, type }: {
     if (granularity === 'datetime') {
       return {
         description: `Vill du kopiera ${type === 'event' ? 'händelsen' : ''} till ${start}?`,
-        success: `Händelsen "${title}" kopierades till ${start}`
+        success: `Händelsen "${title}" har kopierats till ${start}`
       }
     }
     return { description: '', success: '' }
