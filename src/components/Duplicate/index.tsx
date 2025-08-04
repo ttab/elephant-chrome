@@ -11,7 +11,7 @@ import { ToastAction } from '@/views/Flash/ToastAction'
 import { useYValue } from '@/hooks/useYValue'
 import type { EventData } from '@/views/Event/components/EventTime'
 import { type SetStateAction, type Dispatch } from 'react'
-
+import { useRegistry } from '@/hooks/useRegistry'
 
 type allowedTypes = 'Event'
 
@@ -75,6 +75,7 @@ export const Duplicate = ({ provider, title, session, status, type }: {
   const granularity = eventData?.dateGranularity
   const [duplicateDate, setDuplicateDate] = useState<{ from: Date, to?: Date | undefined }>({ from: new Date(), to: new Date() })
   const [showConfirm, setShowConfirm] = useState<boolean>(false)
+  const { locale } = useRegistry()
 
   useEffect(() => {
     const dates = granularity === 'date'
@@ -89,10 +90,10 @@ export const Duplicate = ({ provider, title, session, status, type }: {
     if (!granularity) {
       return { description: '', success: '' }
     }
-    const start = format(duplicateDate.from, 'dd/MM/yyyy')
+    const start = format(duplicateDate.from, 'EEEE yyyy-MM-dd', { locale: locale.module })
 
     if (granularity === 'date' && duplicateDate?.to) {
-      const end = format(duplicateDate?.to, 'dd/MM/yyyy')
+      const end = format(duplicateDate?.to, 'EEEE yyyy-MM-dd', { locale: locale.module })
       const datesFormatted = `${start === end ? `${start}` : `${start} - ${end}`}`
 
       return {
