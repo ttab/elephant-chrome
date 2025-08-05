@@ -13,7 +13,7 @@ import { TimeInput } from '@/components/TimeInput'
 import { TriangleAlert } from '@ttab/elephant-ui/icons'
 import type { FormProps } from '@/components/Form/Root'
 
-interface EventData {
+export interface EventData {
   end: string
   start: string
   registration: string

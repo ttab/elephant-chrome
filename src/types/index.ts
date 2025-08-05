@@ -141,3 +141,10 @@ export interface QueryType {
   fields?: string[]
   sort?: Array<Record<string, 'asc' | 'desc'>>
 }
+
+export interface PlanningData {
+  end_date: string
+  public: string
+  start_date: string
+  tentative: string
+}

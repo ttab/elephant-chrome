@@ -145,6 +145,9 @@ const PlanningViewContent = (props: ViewProps & { documentId: string, setNewItem
         asDialog={!!props.asDialog}
         onDialogClose={props.onDialogClose}
         isChanged={isChanged}
+        session={data}
+        provider={provider}
+        status={status}
       />
 
       <View.Content className='max-w-[1000px]'>

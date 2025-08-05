@@ -19,7 +19,7 @@ export const ToastAction = ({ planningId, flashId, eventId }: {
         >
           <Button
             variant='icon'
-            onClick={(event) => openPlanning(event, { id: planningId })}
+            onClick={(event) => openPlanning(event, { id: planningId }, 'last')}
           >
             <CalendarDaysIcon size={16} strokeWidth={1.75} />
           </Button>
@@ -31,7 +31,7 @@ export const ToastAction = ({ planningId, flashId, eventId }: {
         >
           <Button
             variant='icon'
-            onClick={(event) => openFlash(event, { id: flashId })}
+            onClick={(event) => openFlash(event, { id: flashId }, 'last')}
           >
             <FileInput size={16} strokeWidth={1.75} />
           </Button>
