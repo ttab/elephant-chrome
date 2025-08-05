@@ -7,7 +7,6 @@ import {
   DialogContent,
   DialogDescription,
   DialogFooter,
-  DialogHeader,
   DialogTitle
 } from '@ttab/elephant-ui'
 import { useMemo, type MouseEvent } from 'react'
