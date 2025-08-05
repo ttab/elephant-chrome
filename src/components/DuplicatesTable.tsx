@@ -43,7 +43,7 @@ export const DuplicatesTable = ({ documentId, type }: {
     }
   })
 
-  useRepositoryEvents(type === 'core/event' ? 'core/event' : 'core/planning-item', (event) => {
+  useRepositoryEvents(type, (event) => {
     if (createdDocumentIdRef.current === event.uuid && event.type === 'document') {
       void (async () => {
         try {
@@ -72,21 +72,26 @@ export const DuplicatesTable = ({ documentId, type }: {
       <div className='text-sm font-bold pt-2'>{`Kopierade ${type === 'core/event' ? 'händelser' : 'planeringar'}`}</div>
       {data?.map((duplicate) => {
         let start, end
+        const title = duplicate.fields['document.title']?.values[0]
+
         if (type === 'core/event') {
           start = format(new Date(duplicate.fields['document.meta.core_event.data.start']?.values[0]), 'yyyy-MM-dd')
           end = format(new Date(duplicate.fields['document.meta.core_event.data.end']?.values[0]), 'yyyy-MM-dd')
         }
+
         if (type === 'core/planning-item') {
           start = format(new Date(duplicate.fields['document.meta.core_planning_item.data.start_date']?.values[0]), 'yyyy-MM-dd')
         }
+
+        const dateFormatted = `(${(start === end) || (start && !end) ? start : `${start} - ${end}`})`
 
         return (
           <div key={duplicate.id} className='py-1 hover:bg-gray-100 dark:hover:bg-gray-700'>
             <Link to={type === 'core/event' ? 'Event' : 'Planning'} props={{ id: duplicate.id }} target='last'>
               <div className='flex items-center gap-2 text-sm'>
                 <CalendarPlus2 strokeWidth={1.75} size={18} className='text-muted-foreground' />
-                <div>{duplicate.fields['document.title']?.values[0]}</div>
-                <div>{`(${(start === end) || (start && !end) ? start : `${start} - ${end}`})`}</div>
+                <div>{title}</div>
+                <div>{dateFormatted}</div>
               </div>
             </Link>
           </div>

@@ -32,8 +32,8 @@ import type { NewItem } from '../Event/components/PlanningTable'
 import { MoveDialog } from './components/MoveDialog'
 import { RelatedEvents } from './components/RelatedEvents'
 import type { Block } from '@ttab/elephant-api/newsdoc'
-import { CopyGroup } from '../Event/components/CopyGroup'
-import { DuplicatesTable } from '../Event/components/DuplicatesTable'
+import { CopyGroup } from '../../components/CopyGroup'
+import { DuplicatesTable } from '../../components/DuplicatesTable'
 
 type Setter = React.Dispatch<SetStateAction<NewItem>>
 

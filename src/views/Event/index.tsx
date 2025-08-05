@@ -28,9 +28,9 @@ import { Form } from '@/components/Form'
 import { EventTimeMenu } from './components/EventTime'
 import { useCallback, useEffect } from 'react'
 import { EventHeader } from './EventHeader'
-import { DuplicatesTable } from './components/DuplicatesTable'
+import { DuplicatesTable } from '../../components/DuplicatesTable'
 import { Cancel } from './components/Cancel'
-import { CopyGroup } from './components/CopyGroup'
+import { CopyGroup } from '../../components/CopyGroup'
 
 const meta: ViewMetadata = {
   name: 'Event',
