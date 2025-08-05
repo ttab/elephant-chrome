@@ -33,6 +33,7 @@ import { MoveDialog } from './components/MoveDialog'
 import { RelatedEvents } from './components/RelatedEvents'
 import type { Block } from '@ttab/elephant-api/newsdoc'
 import { CopyGroup } from '../Event/components/CopyGroup'
+import { DuplicatesTable } from '../Event/components/DuplicatesTable'
 
 type Setter = React.Dispatch<SetStateAction<NewItem>>
 
@@ -198,7 +199,8 @@ const PlanningViewContent = (props: ViewProps & { documentId: string, setNewItem
           <Form.Table>
             <AssignmentTable asDialog={props.asDialog} onChange={handleChange} documentId={props.documentId} />
             <RelatedEvents events={relatedEvents} />
-            {copyGroupId && <CopyGroup copyGroupId={copyGroupId} type='core/planning-item' />}
+            {!props.asDialog && <DuplicatesTable documentId={props.documentId} type='core/planning-item' />}
+            {copyGroupId && !props.asDialog && <CopyGroup copyGroupId={copyGroupId} type='core/planning-item' />}
           </Form.Table>
 
           <Form.Footer>

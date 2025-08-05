@@ -175,8 +175,8 @@ const EventViewContent = (props: ViewProps & { documentId: string }): JSX.Elemen
 
           <Form.Table>
             <PlanningTable provider={provider} asDialog={props.asDialog} documentId={props.documentId} />
-            <DuplicatesTable documentId={props.documentId} />
-            {copyGroupId && <CopyGroup copyGroupId={copyGroupId} type='core/event' />}
+            {!props.asDialog && <DuplicatesTable documentId={props.documentId} type='core/event' />}
+            {copyGroupId && !props.asDialog && <CopyGroup copyGroupId={copyGroupId} type='core/event' />}
           </Form.Table>
 
           <Form.Footer>
