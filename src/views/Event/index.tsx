@@ -135,7 +135,6 @@ const EventViewContent = (props: ViewProps & { documentId: string }): JSX.Elemen
         title={eventTitle}
         provider={provider}
         session={data}
-        type='event'
         status={status}
         isChanged={isChanged}
       />

@@ -10,43 +10,49 @@ import { CopyPlus } from '@ttab/elephant-ui/icons'
 import { ToastAction } from '@/views/Flash/ToastAction'
 import { useYValue } from '@/hooks/useYValue'
 import type { EventData } from '@/views/Event/components/EventTime'
+import type { PlanningData } from '@/types/index'
 import { type SetStateAction, type Dispatch } from 'react'
 import { useRegistry } from '@/hooks/useRegistry'
-
-type allowedTypes = 'Event'
+import { isEvent, isPlanning } from './isType'
+type allowedTypes = 'Event' | 'Planning'
 
 const SingleOrRangedCalendar = ({
   granularity,
   duplicateDate,
-  setDuplicateDate
+  setDuplicateDate,
+  dataInfo
 }: {
   granularity: 'date' | 'datetime' | undefined
   duplicateDate: { from: Date, to?: Date | undefined }
   setDuplicateDate: Dispatch<SetStateAction<{ from: Date, to?: Date | undefined }>>
+  dataInfo: EventData | PlanningData
 }) => {
-  if (!granularity) {
-    return <></>
+  if (isEvent(dataInfo)) {
+    if (!granularity) {
+      return <></>
+    }
+
+    if (granularity === 'date' && duplicateDate?.from) {
+      return (
+        <Calendar
+          mode='range'
+          selected={duplicateDate}
+          startMonth={new Date(duplicateDate?.from)}
+          onSelect={(selectedDate) => {
+            if (!selectedDate?.from || !selectedDate?.to) {
+              return
+            }
+
+            setDuplicateDate({
+              from: new Date(selectedDate.from),
+              to: new Date(selectedDate?.to)
+            })
+          }}
+        />
+      )
+    }
   }
 
-  if (granularity === 'date' && duplicateDate?.from) {
-    return (
-      <Calendar
-        mode='range'
-        selected={duplicateDate}
-        startMonth={new Date(duplicateDate?.from)}
-        onSelect={(selectedDate) => {
-          if (!selectedDate?.from || !selectedDate?.to) {
-            return
-          }
-
-          setDuplicateDate({
-            from: new Date(format(selectedDate.from, 'yyyy-MM-dd')),
-            to: new Date(format(selectedDate?.to, 'yyyy-MM-dd'))
-          })
-        }}
-      />
-    )
-  }
 
   return (
     <Calendar
@@ -64,31 +70,34 @@ const SingleOrRangedCalendar = ({
   )
 }
 
-export const Duplicate = ({ provider, title, session, status, type }: {
+export const Duplicate = ({ provider, title, session, status, type, dataInfo }: {
   provider: HocuspocusProvider
   title: string | undefined
   session: Session | null
   status: 'authenticated' | 'loading' | 'unauthenticated'
-  type: 'event'
+  type: 'Event' | 'Planning'
+  dataInfo: EventData | PlanningData
 }) => {
-  const [eventData] = useYValue<EventData>('meta.core/event[0].data')
-  const granularity = eventData?.dateGranularity
+  const granularity = isEvent(dataInfo) ? dataInfo?.dateGranularity : undefined
   const [duplicateDate, setDuplicateDate] = useState<{ from: Date, to?: Date | undefined }>({ from: new Date(), to: new Date() })
   const [showConfirm, setShowConfirm] = useState<boolean>(false)
   const { locale } = useRegistry()
 
   useEffect(() => {
-    const dates = granularity === 'date'
-      ? { from: addDays(eventData?.start ? new Date(eventData?.start) : new Date(), 1), to: addDays(eventData?.end ? new Date(eventData?.end) : new Date(), 1) }
-      : { from: addDays(eventData?.start ? new Date(eventData?.start) : new Date(), 1), to: eventData?.end ? addDays(new Date(eventData?.end), 1) : undefined }
-    if (eventData?.start) {
+    if (isEvent(dataInfo)) {
+      const dates = granularity === 'date'
+        ? { from: dataInfo?.start ? new Date(dataInfo?.start) : new Date(), to: dataInfo?.end ? new Date(dataInfo?.end) : new Date() }
+        : { from: dataInfo?.start ? new Date(dataInfo?.start) : new Date(), to: dataInfo?.end ? new Date(dataInfo?.end) : undefined }
+
       setDuplicateDate(dates)
     }
-  }, [eventData?.start, eventData?.end, granularity])
 
-  const createTexts = (granularity: 'date' | 'datetime' | undefined): { description: string, success: string } => {
-    if (!granularity) {
-      return { description: '', success: '' }
+    if (isPlanning(dataInfo)) {
+      const dates = {
+        from: addDays(new Date(dataInfo.start_date), 1),
+        to: addDays(new Date(dataInfo.end_date), 1)
+      }
+      setDuplicateDate(dates)
     }
     const start = format(duplicateDate.from, 'EEEE yyyy-MM-dd', { locale: locale.module })
 
@@ -122,7 +131,12 @@ export const Duplicate = ({ provider, title, session, status, type }: {
           </div>
         </PopoverTrigger>
         <PopoverContent onEscapeKeyDown={(event) => event?.stopPropagation()}>
-          <SingleOrRangedCalendar granularity={granularity} duplicateDate={duplicateDate} setDuplicateDate={setDuplicateDate} />
+          <SingleOrRangedCalendar
+            dataInfo={dataInfo}
+            granularity={granularity}
+            duplicateDate={duplicateDate}
+            setDuplicateDate={setDuplicateDate}
+          />
           <div className='flex w-full justify-end'>
             <Button onClick={() => setShowConfirm(!showConfirm)}>
               Kopiera
@@ -134,13 +148,12 @@ export const Duplicate = ({ provider, title, session, status, type }: {
         <DuplicatePrompt
           duplicateDate={duplicateDate}
           provider={provider}
-          title={title || ''}
           type={type}
           description={createTexts(granularity).description}
           secondaryLabel='Avbryt'
           primaryLabel='Kopiera'
           onPrimary={(duplicateId: string | undefined) => {
-            const capitalized: allowedTypes = type.slice(0, 1).toUpperCase().concat(type.slice(1)) as allowedTypes
+            const capitalized: allowedTypes = type as allowedTypes
             if (provider && status === 'authenticated' && duplicateId && session) {
               try {
                 provider.sendStateless(
@@ -156,7 +169,7 @@ export const Duplicate = ({ provider, title, session, status, type }: {
                   })
                 )
                 toast.success(createTexts(granularity).success, {
-                  action: <ToastAction eventId={duplicateId} />
+                  action: <ToastAction planningId={type === 'Planning' ? duplicateId : undefined} eventId={type === 'Event' ? duplicateId : undefined} />
                 })
               } catch (error) {
                 toast.error(`Något gick fel: ${JSON.stringify(error)}`)

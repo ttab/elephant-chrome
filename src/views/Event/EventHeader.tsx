@@ -1,4 +1,4 @@
-import { useView } from '@/hooks'
+import { useView, useYValue } from '@/hooks'
 import { useEffect, useRef } from 'react'
 import { StatusMenu } from '@/components/DocumentStatus/StatusMenu'
 import { ViewHeader } from '@/components/View'
@@ -6,6 +6,7 @@ import { Duplicate } from '@/components/Duplicate'
 import type { Session } from 'next-auth'
 import type { HocuspocusProvider } from '@hocuspocus/provider'
 import { MetaSheet } from '../Editor/components/MetaSheet'
+import type { EventData } from './components/EventTime'
 
 export const EventHeader = ({
   documentId,
@@ -15,7 +16,6 @@ export const EventHeader = ({
   title,
   status,
   session,
-  type,
   isChanged
 }: {
   documentId: string
@@ -24,12 +24,12 @@ export const EventHeader = ({
   title: string | undefined
   session: Session | null
   provider: HocuspocusProvider | undefined
-  type: 'event'
   status: 'authenticated' | 'loading' | 'unauthenticated'
   isChanged?: boolean
 }): JSX.Element => {
   const { viewId } = useView()
   const containerRef = useRef<HTMLElement | null>(null)
+  const [eventData] = useYValue<EventData | undefined>('meta.core/event[0].data')
 
   useEffect(() => {
     containerRef.current = (document.getElementById(viewId))
@@ -65,13 +65,14 @@ export const EventHeader = ({
                 <ViewHeader.RemoteUsers documentId={documentId} />
               </>
             )}
-            {!asDialog && provider && (
+            {!asDialog && provider && eventData && (
               <Duplicate
                 title={title}
                 provider={provider}
                 session={session}
                 status={status}
-                type={type}
+                type='Event'
+                dataInfo={eventData}
               />
             )}
           </div>
