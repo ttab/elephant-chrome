@@ -41,6 +41,7 @@ export function revertImage(element: TBElement): Block {
   const { id, properties, children } = element
   const textNode = children?.find((c) => c.type === 'core/image/text')
   const bylineNode = children?.find((c) => c.type === 'core/image/byline')
+  const imageId = (properties?.uri as string).split('core://image/')[1]
 
   function getText(node: Descendant | undefined) {
     let text = ''
@@ -62,7 +63,7 @@ export function revertImage(element: TBElement): Block {
       type: 'core/image',
       rel: 'image',
       uri: toString(properties?.uri),
-      uuid: id
+      uuid: imageId
     }
   ]
 
