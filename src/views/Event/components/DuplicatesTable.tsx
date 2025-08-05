@@ -8,16 +8,17 @@ import type { HitV1 } from '@ttab/elephant-api/index'
 import { BoolQueryV1, QueryV1, SortingV1, TermsQueryV1 } from '@ttab/elephant-api/index'
 import { format } from 'date-fns'
 
-type DuplicateFields = ['document.title', 'document.meta.core_event.data.start', 'document.meta.core_event.data.end']
+type DuplicateFields = ['document.title', 'document.meta.core_event.data.start', 'document.meta.core_event.data.end', 'document.meta.core_planning_item.data.start_date']
 
-export const DuplicatesTable = ({ documentId }: {
+export const DuplicatesTable = ({ documentId, type }: {
   documentId: string
+  type: 'core/event' | 'core/planning-item'
 } & FormProps): JSX.Element => {
   const createdDocumentIdRef = useRef<string | undefined>()
 
   const { data, mutate, error, isLoading } = useDocuments<HitV1, DuplicateFields>({
-    documentType: 'core/event',
-    fields: ['document.title', 'document.meta.core_event.data.start', 'document.meta.core_event.data.end'],
+    documentType: type,
+    fields: ['document.title', 'document.meta.core_event.data.start', 'document.meta.core_event.data.end', 'document.meta.core_planning_item.data.start_date'],
     query: QueryV1.create({
       conditions: {
         oneofKind: 'bool',
@@ -42,7 +43,7 @@ export const DuplicatesTable = ({ documentId }: {
     }
   })
 
-  useRepositoryEvents('core/event', (event) => {
+  useRepositoryEvents(type === 'core/event' ? 'core/event' : 'core/planning-item', (event) => {
     if (createdDocumentIdRef.current === event.uuid && event.type === 'document') {
       void (async () => {
         try {
@@ -68,17 +69,24 @@ export const DuplicatesTable = ({ documentId }: {
 
   return (
     <div className='pl-6 border-t'>
-      <div className='text-sm font-bold pt-2'>Duplicerade händelser</div>
+      <div className='text-sm font-bold pt-2'>{`Kopierade ${type === 'core/event' ? 'händelser' : 'planeringar'}`}</div>
       {data?.map((duplicate) => {
-        const start = format(new Date(duplicate.fields['document.meta.core_event.data.start']?.values[0]), 'yyyy-MM-dd')
-        const end = format(new Date(duplicate.fields['document.meta.core_event.data.end']?.values[0]), 'yyyy-MM-dd')
+        let start, end
+        if (type === 'core/event') {
+          start = format(new Date(duplicate.fields['document.meta.core_event.data.start']?.values[0]), 'yyyy-MM-dd')
+          end = format(new Date(duplicate.fields['document.meta.core_event.data.end']?.values[0]), 'yyyy-MM-dd')
+        }
+        if (type === 'core/planning-item') {
+          start = format(new Date(duplicate.fields['document.meta.core_planning_item.data.start_date']?.values[0]), 'yyyy-MM-dd')
+        }
+
         return (
           <div key={duplicate.id} className='py-1 hover:bg-gray-100 dark:hover:bg-gray-700'>
-            <Link to='Event' props={{ id: duplicate.id }} target='last'>
+            <Link to={type === 'core/event' ? 'Event' : 'Planning'} props={{ id: duplicate.id }} target='last'>
               <div className='flex items-center gap-2 text-sm'>
                 <CalendarPlus2 strokeWidth={1.75} size={18} className='text-muted-foreground' />
                 <div>{duplicate.fields['document.title']?.values[0]}</div>
-                <div>{`(${start === end ? start : `${start} - ${end}`})`}</div>
+                <div>{`(${(start === end) || (start && !end) ? start : `${start} - ${end}`})`}</div>
               </div>
             </Link>
           </div>
