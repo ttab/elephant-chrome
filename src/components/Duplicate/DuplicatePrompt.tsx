@@ -14,12 +14,10 @@ import { fromYjsNewsDoc, toYjsNewsDoc } from '@/shared/transformations/yjsNewsDo
 import { fromGroupedNewsDoc, toGroupedNewsDoc } from '@/shared/transformations/groupedNewsDoc'
 import { Block } from '@ttab/elephant-api/newsdoc'
 import * as Y from 'yjs'
-import { subDays } from 'date-fns'
 
 export const DuplicatePrompt = ({
   provider,
   duplicateDate,
-  title,
   description,
   primaryLabel,
   secondaryLabel,
