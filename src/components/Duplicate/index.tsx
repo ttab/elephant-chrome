@@ -99,25 +99,40 @@ export const Duplicate = ({ provider, title, session, status, type, dataInfo }: 
       }
       setDuplicateDate(dates)
     }
+  }, [dataInfo, granularity])
+
+  if (!dataInfo) {
+    return <></>
+  }
+
+  const createTexts = (granularity: 'date' | 'datetime' | undefined): { description: string, success: string } => {
     const start = format(duplicateDate.from, 'EEEE yyyy-MM-dd', { locale: locale.module })
+    const defaultTexts = {
+      description: `Vill du kopiera "${title}" till ${start}?`,
+      success: `"${title}" har kopierats till ${start}`
+    }
 
-    if (granularity === 'date' && duplicateDate?.to) {
-      const end = format(duplicateDate?.to, 'EEEE yyyy-MM-dd', { locale: locale.module })
-      const datesFormatted = `${start === end ? `${start}` : `${start} - ${end}`}`
+    if (isEvent(dataInfo)) {
+      if (!granularity) {
+        return { description: '', success: '' }
+      }
 
-      return {
-        description: `Vill du kopiera ${type === 'event' ? 'händelsen' : ''} till ${datesFormatted}?`,
-        success: `Händelsen "${title}" har kopierats till ${datesFormatted}`
+      if (granularity === 'date' && duplicateDate?.to) {
+        const end = format(duplicateDate?.to, 'EEEE yyyy-MM-dd', { locale: locale.module })
+        const datesFormatted = `${start === end ? `${start}` : `${start} - ${end}`}`
+
+        return {
+          description: `Vill du kopiera händelsen till ${datesFormatted}?`,
+          success: `Händelsen "${title}" har kopierats till ${datesFormatted}`
+        }
+      }
+
+      if (granularity === 'datetime') {
+        return defaultTexts
       }
     }
 
-    if (granularity === 'datetime') {
-      return {
-        description: `Vill du kopiera ${type === 'event' ? 'händelsen' : ''} till ${start}?`,
-        success: `Händelsen "${title}" har kopierats till ${start}`
-      }
-    }
-    return { description: '', success: '' }
+    return defaultTexts
   }
 
   return (
