@@ -32,6 +32,7 @@ import type { NewItem } from '../Event/components/PlanningTable'
 import { MoveDialog } from './components/MoveDialog'
 import { RelatedEvents } from './components/RelatedEvents'
 import type { Block } from '@ttab/elephant-api/newsdoc'
+import { CopyGroup } from '../Event/components/CopyGroup'
 
 type Setter = React.Dispatch<SetStateAction<NewItem>>
 
@@ -81,6 +82,7 @@ const PlanningViewContent = (props: ViewProps & { documentId: string, setNewItem
   const { provider, user } = useCollaboration()
   const { data, status } = useSession()
   const [documentStatus] = useWorkflowStatus(props.documentId)
+  const [copyGroupId] = useYValue<string | undefined>('meta.core/copy-group[0].uuid')
   const [, setIsFocused] = useAwareness(props.documentId)
   const [newTitle] = useYValue('root.title')
   const [isChanged] = useYValue<boolean>('root.changed')
@@ -196,6 +198,7 @@ const PlanningViewContent = (props: ViewProps & { documentId: string, setNewItem
           <Form.Table>
             <AssignmentTable asDialog={props.asDialog} onChange={handleChange} documentId={props.documentId} />
             <RelatedEvents events={relatedEvents} />
+            {copyGroupId && <CopyGroup copyGroupId={copyGroupId} type='core/planning-item' />}
           </Form.Table>
 
           <Form.Footer>
