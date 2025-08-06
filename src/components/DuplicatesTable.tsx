@@ -7,8 +7,7 @@ import { useDocuments } from '@/hooks/index/useDocuments'
 import type { HitV1 } from '@ttab/elephant-api/index'
 import { BoolQueryV1, QueryV1, SortingV1, TermsQueryV1 } from '@ttab/elephant-api/index'
 import { format } from 'date-fns'
-
-type DuplicateFields = ['document.title', 'document.meta.core_event.data.start', 'document.meta.core_event.data.end', 'document.meta.core_planning_item.data.start_date']
+import { duplicateFields, type DuplicateFields } from '@/lib/getSharedFields'
 
 export const DuplicatesTable = ({ documentId, type }: {
   documentId: string
@@ -18,7 +17,7 @@ export const DuplicatesTable = ({ documentId, type }: {
 
   const { data, mutate, error, isLoading } = useDocuments<HitV1, DuplicateFields>({
     documentType: type,
-    fields: ['document.title', 'document.meta.core_event.data.start', 'document.meta.core_event.data.end', 'document.meta.core_planning_item.data.start_date'],
+    fields: duplicateFields(type),
     query: QueryV1.create({
       conditions: {
         oneofKind: 'bool',

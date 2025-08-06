@@ -1,13 +1,16 @@
 import { Link } from '@/components/index'
 import { useDocuments } from '@/hooks/index/useDocuments'
+import { type CopyGroupFields, copyGroupFields } from '@/lib/getSharedFields'
 import { TermsQueryV1, BoolQueryV1, type HitV1, QueryV1 } from '@ttab/elephant-api/index'
 import { CalendarPlus2 } from '@ttab/elephant-ui/icons'
 import { format } from 'date-fns'
 
 export const CopyGroup = ({ copyGroupId, type }: { copyGroupId: string, type: 'core/event' | 'core/planning-item' }) => {
-  const { data } = useDocuments<HitV1, ['document.id', 'document.title', 'document.meta.core_event.data.start', 'document.meta.core_planning_item.data.start_date']>({
+  const fields: CopyGroupFields = copyGroupFields(type)
+
+  const { data } = useDocuments<HitV1, CopyGroupFields>({
     documentType: type,
-    fields: ['document.id', 'document.title', 'document.meta.core_event.data.start', 'document.meta.core_planning_item.data.start_date'],
+    fields,
     query: QueryV1.create({
       conditions: {
         oneofKind: 'bool',
