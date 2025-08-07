@@ -136,7 +136,7 @@ export const DuplicatePrompt = ({
     throw new Error('no provider')
   }, [provider, type, duplicateDate])
 
-  const { documentId: duplicateId } = useCollaborationDocument(collaborationPayload)
+  const { documentId: duplicateId, synced, connected } = useCollaborationDocument(collaborationPayload)
 
   return (
     <Dialog open={true}>
@@ -163,6 +163,7 @@ export const DuplicatePrompt = ({
 
           <Button
             autoFocus
+            disabled={!synced || !connected}
             onClick={() => {
               onPrimary(duplicateId)
             }}
