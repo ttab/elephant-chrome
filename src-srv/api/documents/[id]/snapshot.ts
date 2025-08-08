@@ -7,7 +7,7 @@ import * as Y from 'yjs'
 
 type Response = RouteContentResponse | RouteStatusResponse
 
-export const POST: RouteHandler = async (req: Request, { collaborationServer, cache, res }) => {
+export const POST: RouteHandler = async (req: Request, { collaborationServer, res }) => {
   const uuid = req.params.id
   const force = req.query.force
   const status = req.query.status
@@ -20,30 +20,6 @@ export const POST: RouteHandler = async (req: Request, { collaborationServer, ca
   const context = getContextFromValidSession(getSession(req, res))
   if (!isContext(context)) {
     return context
-  }
-
-  try {
-    // Check if document exists in cache
-    const state = await cache.get(uuid)
-
-    if (!state && !payload) {
-      const notFoundMessage = `Document not found in cache: ${uuid}`
-      logger.warn(notFoundMessage)
-
-      return {
-        statusCode: 200,
-        statusMessage: notFoundMessage
-      }
-    }
-  } catch (ex) {
-    const exMessage = ex instanceof Error ? ex.message : JSON.stringify(ex)
-    const cacheErrorMessage = `Error while getting cached document to snapshot: ${exMessage}`
-    logger.error(cacheErrorMessage)
-
-    return {
-      statusCode: 500,
-      statusMessage: cacheErrorMessage
-    }
   }
 
   const connection = await collaborationServer.server.openDirectConnection(uuid, context)
