@@ -7,7 +7,7 @@ import * as Y from 'yjs'
 
 type Response = RouteContentResponse | RouteStatusResponse
 
-export const POST: RouteHandler = async (req: Request, { collaborationServer, cache, res }) => {
+export const POST: RouteHandler = async (req: Request, { collaborationServer, res }) => {
   const uuid = req.params.id
   const force = req.query.force
   const status = req.query.status
