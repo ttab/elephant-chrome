@@ -27,7 +27,9 @@ export const PreviewSheet = ({ id, wire, handleClose, textOnly = true, version, 
   const containerRef = useRef<HTMLElement | null>(null)
 
   useEffect(() => {
-    containerRef.current = (document.getElementById(id))
+    if (id) {
+      containerRef.current = (document.getElementById(id))
+    }
   }, [id])
 
 

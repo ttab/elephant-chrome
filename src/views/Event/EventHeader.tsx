@@ -32,7 +32,9 @@ export const EventHeader = ({
   const [eventData] = useYValue<EventData | undefined>('meta.core/event[0].data')
 
   useEffect(() => {
-    containerRef.current = (document.getElementById(viewId))
+    if (viewId) {
+      containerRef.current = (document.getElementById(viewId))
+    }
   }, [viewId])
 
   return (

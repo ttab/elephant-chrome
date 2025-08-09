@@ -25,7 +25,9 @@ export const PlanningHeader = ({ documentId, asDialog, onDialogClose, isChanged,
   const [planningTitle] = useYValue<string>('root.title')
 
   useEffect(() => {
-    containerRef.current = (document.getElementById(viewId))
+    if (viewId) {
+      containerRef.current = (document.getElementById(viewId))
+    }
   }, [viewId])
 
   return (
