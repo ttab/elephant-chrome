@@ -213,7 +213,9 @@ export class CollaborationServer {
       await connection.transact((doc) => {
         const ele = doc.getMap('ele')
         const root = ele.get('root') as Y.Map<unknown>
-        root.delete('__inProgress')
+        if (root && root.has('__inProgress')) {
+          root.delete('__inProgress')
+        }
       }).catch((ex) => {
         throw new Error('remove in progress flag', { cause: ex })
       })
