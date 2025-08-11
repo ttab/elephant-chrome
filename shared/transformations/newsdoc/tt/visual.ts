@@ -17,21 +17,31 @@ export const transformVisual = (element: Block): TBElement => {
   const { id, data, links } = element
   const mediaType = links[0]?.url?.includes('/media/graphic/') ? 'graphics' : 'images'
 
+  const properties: Record<string, string> = {
+    href: links[0]?.url,
+    proxy: `${BASE_URL}/api/${mediaType}/${links[0]?.url.split('/').pop()}`,
+    rel: links[0].rel,
+    uri: links[0].uri,
+    type: links[0].type,
+    credit: links[0].data.credit,
+    text: data.caption,
+    width: links[0].data.width,
+    height: links[0].data.height
+  }
+
+  if (links[0].data.crop) {
+    properties['crop'] = links[0].data.crop
+  }
+
+  if (links[0].data.focus) {
+    properties['focus'] = links[0].data.focus
+  }
+
   return {
     id: id || crypto.randomUUID(), // Must have id, if id is missing positioning in drag'n drop does not work
     class: 'block',
     type: 'tt/visual',
-    properties: {
-      href: links[0]?.url,
-      proxy: `${BASE_URL}/api/${mediaType}/${links[0]?.url.split('/').pop()}`,
-      rel: links[0].rel,
-      uri: links[0].uri,
-      type: links[0].type,
-      credit: links[0].data.credit,
-      text: data.caption,
-      width: links[0].data.width,
-      height: links[0].data.height
-    },
+    properties,
     children: [
       {
         type: 'tt/visual/image',
@@ -69,6 +79,20 @@ export function revertVisual(element: TBElement): Block {
   const captionText = getText(textNode)
   const bylineText = getText(bylineNode)
 
+  const data: Record<string, string> = {
+    credit: toString(bylineText),
+    height: toString(properties?.height),
+    width: toString(properties?.width)
+  }
+
+  if (properties?.crop) {
+    data['crop'] = properties.crop as string
+  }
+
+  if (properties?.focus) {
+    data['focus'] = properties.focus as string
+  }
+
   return Block.create({
     id,
     type: 'tt/visual',
@@ -77,11 +101,7 @@ export function revertVisual(element: TBElement): Block {
     },
     links: [
       {
-        data: {
-          credit: toString(bylineText),
-          height: toString(properties?.height),
-          width: toString(properties?.width)
-        },
+        data,
         rel: toString(properties?.rel),
         type: toString(properties?.type),
         uri: toString(properties?.uri),
