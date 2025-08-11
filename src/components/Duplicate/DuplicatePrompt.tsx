@@ -130,6 +130,10 @@ export const DuplicatePrompt = ({
         toGroupedNewsDoc(newsdoc),
         yDoc
       )
+
+      const yRoot = yDoc.getMap('ele').get('root') as Y.Map<unknown>
+      yRoot.set('__inProgress', true)
+
       return { documentId, initialDocument: yDoc }
     }
 
