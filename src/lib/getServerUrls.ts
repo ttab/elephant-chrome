@@ -38,9 +38,10 @@ export async function getServerUrls(): Promise<ServerUrls> {
       urls[field] = new URL(value)
     }
 
-    urls['repositoryEventsUrl'] = new URL('/sse', urls['repositoryUrl'])
-
-    return urls as unknown as ServerUrls
+    return {
+      ...urls,
+      repositoryEventsUrl: new URL('/sse', urls['repositoryUrl'])
+    } as ServerUrls
   } catch (ex) {
     throw new Error('Failed fetching remote server urls in getServerUrls', { cause: ex as Error })
   }
