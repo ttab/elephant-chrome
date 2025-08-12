@@ -3,21 +3,19 @@ import fs from 'fs'
 import path from 'path'
 import { jwtVerify, type JWTVerifyGetKey } from 'jose'
 import { getSession } from '@auth/express'
-import { authConfig } from './authConfig.js'
 import logger from '../lib/logger.js'
 import { isSession } from '../lib/context.js'
+import type { AuthConfig } from '@auth/core'
 
-const BASE_URL = process.env.BASE_URL || ''
-
-export function assertAuthenticatedUser(JWKS: JWTVerifyGetKey) {
+export function assertAuthenticatedUser(baseUrl: string, conf: AuthConfig, JWKS: JWTVerifyGetKey) {
   return async function (req: Request, res: Response, next: NextFunction): Promise<void> {
     try {
-      if (isUnprotectedRoute(req)) {
+      if (isUnprotectedRoute(baseUrl, req)) {
         next()
         return
       }
 
-      const session: unknown = res.locals.session ?? (await getSession(req, authConfig))
+      const session: unknown = res.locals.session ?? (await getSession(req, conf))
       const bearerToken = req.headers['authorization']?.toString().replace(/^Bearer\s+/i, '')
 
       if (isSession(session)) { // User has a authjs session
@@ -34,7 +32,7 @@ export function assertAuthenticatedUser(JWKS: JWTVerifyGetKey) {
           return
         }
       } else {
-        res.redirect(`${BASE_URL}/login`)
+        res.redirect(`${baseUrl}/login`)
         return
       }
     } catch (err) {
@@ -44,16 +42,16 @@ export function assertAuthenticatedUser(JWKS: JWTVerifyGetKey) {
   }
 }
 
-export function isUnprotectedRoute(req: Request): boolean {
-  const unprotectedRoutes = getUnprotectedRoutes()
+export function isUnprotectedRoute(baseUrl: string, req: Request): boolean {
+  const unprotectedRoutes = getUnprotectedRoutes(baseUrl)
   return unprotectedRoutes.some((route) => req.path.startsWith(route))
 }
 
-function getUnprotectedRoutes(): string[] {
+function getUnprotectedRoutes(baseUrl: string): string[] {
   const unprotectedRoutes = [
-    `${BASE_URL}/auth/`,
-    `${BASE_URL}/init`,
-    `${BASE_URL}/assets`
+    `${baseUrl}/auth/`,
+    `${baseUrl}/init`,
+    `${baseUrl}/assets`
   ]
 
   if (process.env.NODE_ENV === 'development') {
@@ -63,10 +61,10 @@ function getUnprotectedRoutes(): string[] {
     const localPaths = [
       ...fs.readdirSync(projectRoot).filter((file) => {
         return fs.statSync(path.join(projectRoot, file)).isDirectory()
-      }).map((dir) => `${BASE_URL}/${dir}`),
+      }).map((dir) => `${baseUrl}/${dir}`),
 
-      `${BASE_URL}/@react-refresh`,
-      `${BASE_URL}/@vite`
+      `${baseUrl}/@react-refresh`,
+      `${baseUrl}/@vite`
     ]
 
     return unprotectedRoutes.concat(localPaths)
@@ -74,4 +72,3 @@ function getUnprotectedRoutes(): string[] {
 
   return unprotectedRoutes
 }
-

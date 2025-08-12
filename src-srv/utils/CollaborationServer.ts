@@ -33,6 +33,7 @@ import { type GetDocumentResponse } from '@ttab/elephant-api/repository'
 import type { FinishedUnaryCall } from '@protobuf-ts/runtime-rpc'
 import { type Context, isContext } from '../lib/context.js'
 import { isValidUUID } from './isValidUUID.js'
+import type { AuthInfo } from './authConfig.js'
 
 interface CollaborationServerOptions {
   name: string
@@ -42,6 +43,7 @@ interface CollaborationServerOptions {
   repository: Repository
   user: User
   expressServer: Application
+  authInfo: AuthInfo
   quiet?: boolean
 }
 
@@ -62,7 +64,7 @@ export class CollaborationServer {
    * a Hocuspocus server and it's extensions. Call listen() to
    * open collaboration server for business.
    */
-  constructor({ port, redisUrl, redisCache, repository, expressServer, user, quiet = false }: CollaborationServerOptions) {
+  constructor({ port, redisUrl, redisCache, repository, expressServer, user, authInfo, quiet = false }: CollaborationServerOptions) {
     this.#quiet = quiet
     this.#port = port
     this.#expressServer = expressServer
@@ -123,7 +125,7 @@ export class CollaborationServer {
         new Snapshot({
           debounce: 120000
         }),
-        new Auth()
+        new Auth(authInfo.oidcConfig)
       ], this.#errorHandler),
 
       onStateless: async (payload: onStatelessPayload) => {
