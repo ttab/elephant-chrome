@@ -1,7 +1,6 @@
 import { Button, Calendar, Popover, PopoverContent, PopoverTrigger } from '@ttab/elephant-ui'
 import { DuplicatePrompt } from './DuplicatePrompt'
 import { addDays, format } from 'date-fns'
-import { createStateless, StatelessType } from '@/shared/stateless'
 import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
 import type { HocuspocusProvider } from '@hocuspocus/provider'
@@ -13,7 +12,7 @@ import type { PlanningData } from '@/types/index'
 import { type SetStateAction, type Dispatch } from 'react'
 import { useRegistry } from '@/hooks/useRegistry'
 import { isEvent, isPlanning } from './isType'
-type allowedTypes = 'Event' | 'Planning'
+import type { Document } from '@ttab/elephant-api/newsdoc'
 
 const SingleOrRangedCalendar = ({
   granularity,
@@ -80,7 +79,7 @@ export const Duplicate = ({ provider, title, session, status, type, dataInfo }: 
   const granularity = isEvent(dataInfo) ? dataInfo?.dateGranularity : undefined
   const [duplicateDate, setDuplicateDate] = useState<{ from: Date, to?: Date | undefined }>({ from: new Date(), to: new Date() })
   const [showConfirm, setShowConfirm] = useState<boolean>(false)
-  const { locale } = useRegistry()
+  const { locale, repository } = useRegistry()
 
   useEffect(() => {
     if (isEvent(dataInfo)) {
@@ -166,22 +165,13 @@ export const Duplicate = ({ provider, title, session, status, type, dataInfo }: 
           description={createTexts(granularity).description}
           secondaryLabel='Avbryt'
           primaryLabel='Kopiera'
-          onPrimary={(duplicateId: string | undefined) => {
-            const capitalized: allowedTypes = type as allowedTypes
-            if (provider && status === 'authenticated' && duplicateId && session) {
+          onPrimary={(duplicateId: string | undefined, duplicatedDocument: Document) => {
+            if (provider && status === 'authenticated' && duplicateId && session && repository) {
               try {
-                provider.sendStateless(
-                  createStateless(StatelessType.IN_PROGRESS, {
-                    state: false,
-                    id: duplicateId,
-                    context: {
-                      agent: 'server',
-                      accessToken: session.accessToken,
-                      user: session.user,
-                      type: capitalized
-                    }
-                  })
-                )
+                void (async () => {
+                  await repository.saveDocument(duplicatedDocument, session.accessToken).catch((err) => console.error(err))
+                })()
+
                 toast.success(createTexts(granularity).success, {
                   action: <ToastAction planningId={type === 'Planning' ? duplicateId : undefined} eventId={type === 'Event' ? duplicateId : undefined} />
                 })
