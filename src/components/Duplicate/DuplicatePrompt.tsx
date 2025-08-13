@@ -164,7 +164,7 @@ export const DuplicatePrompt = ({
 
           <Button
             autoFocus
-            // disabled={!synced || !connected}
+            disabled={!duplicateId || !duplicatedDocument}
             onClick={() => {
               onPrimary(duplicateId, duplicatedDocument)
             }}
