@@ -87,7 +87,7 @@ export const POST: RouteHandler = async (req: Request, { collaborationServer, re
   await connection.transact((document) => {
     if (!isValidUUID(planningId) && section) {
       // If we have no planningId we create a new planning item using
-      // planningDocumentTemplate as a basis and apply it to the cocument.
+      // planningDocumentTemplate as a basis and apply it to the document.
       toYjsNewsDoc(
         toGroupedNewsDoc({
           version: 0n,
