@@ -52,7 +52,7 @@
     "@ttab/elephant-tt-api": "^0.1.8",
     "@ttab/elephant-ui": "^0.9.8",
     "@ttab/textbit": "^0.21.7",
-    "@ttab/textbit-plugins": "^0.10.1",
+    "@ttab/textbit-plugins": "^0.11.0",
     "class-variance-authority": "^0.7.1",
     "cors": "^2.8.5",
     "date-fns": "^4.1.0",
