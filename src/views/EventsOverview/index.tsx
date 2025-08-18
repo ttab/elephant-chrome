@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react'
 import { type ViewMetadata } from '@/types'
 import { View, ViewHeader } from '@/components'
-import { Tabs, TabsContent } from '@ttab/elephant-ui'
+import { TabsContent } from '@ttab/elephant-ui'
 import { TableProvider } from '@/contexts/TableProvider'
 import { TableCommandMenu } from '@/components/Commands/TableCommand'
 import { EventsList } from './EventsList'
