@@ -23,7 +23,7 @@ export const Root = ({ children, className, tab, onTabChange, asDialog = false }
     variants: {
       asDialog: {
         true: '',
-        false: 'h-screen'
+        false: 'h-screen grid grid-rows-[56px_auto]'
       }
     }
   })
