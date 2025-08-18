@@ -56,10 +56,11 @@ export const Plannings = (): JSX.Element => {
         </TableCommandMenu>
 
         <ViewHeader.Root>
-          <ViewHeader.Title name='Plannings' title='Planeringar' />
           <ViewHeader.Content>
+            <ViewHeader.Title name='Plannings' title='Planeringar' />
             <Header type='Planning' />
           </ViewHeader.Content>
+
           <ViewHeader.Action />
         </ViewHeader.Root>
 

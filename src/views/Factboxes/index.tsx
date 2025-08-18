@@ -45,10 +45,11 @@ export const Factboxes = (): JSX.Element => {
         </TableCommandMenu>
 
         <ViewHeader.Root>
-          <ViewHeader.Title name='Factboxes' title='Faktarutor' />
           <ViewHeader.Content>
+            <ViewHeader.Title name='Factboxes' title='Faktarutor' />
             <Header type='Factbox' />
           </ViewHeader.Content>
+
           <ViewHeader.Action />
         </ViewHeader.Root>
 
