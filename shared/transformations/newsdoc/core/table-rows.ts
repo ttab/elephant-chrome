@@ -18,6 +18,16 @@ export function parseTableRows(tablebody: string) {
 
   return rows.map((row) => {
     const cells = row.children
+
+    // Handle empty rows, will be displayed a 'unknown object'
+    if (cells.length === 0) {
+      return {
+        type: 'core/table/row/error',
+        class: 'block',
+        children: [{ text: '' }]
+      }
+    }
+
     return {
       type: 'core/table/row',
       class: 'block',
