@@ -1,7 +1,7 @@
 import { useMemo, useState } from 'react'
 import { type ViewMetadata } from '@/types'
 import { View, ViewHeader } from '@/components'
-import { Tabs, TabsContent } from '@ttab/elephant-ui'
+import { TabsContent } from '@ttab/elephant-ui'
 import { TableProvider } from '@/contexts/TableProvider'
 import { TableCommandMenu } from '@/components/Commands/TableCommand'
 import { EventsList } from './EventsList'
@@ -43,7 +43,7 @@ export const Events = (): JSX.Element => {
   const columnFilters = loadFilters<Event>(query, columns)
 
   return (
-    <View.Root>
+    <View.Root tab={currentTab} onTabChange={setCurrentTab}>
       <TableProvider<Event>
         type={meta.name}
         columns={columns}
@@ -53,34 +53,27 @@ export const Events = (): JSX.Element => {
           globalFilter: query.query
         }}
       >
-        <Tabs defaultValue={currentTab} className='flex-1' onValueChange={setCurrentTab}>
+        <TableCommandMenu heading='Events'>
+          <Commands />
+        </TableCommandMenu>
 
-          <TableCommandMenu heading='Events'>
-            <Commands />
-          </TableCommandMenu>
+        <ViewHeader.Root>
+          <ViewHeader.Content>
+            <ViewHeader.Title name='Events' title='Händelser' short='Händelser' />
+            <Header type='Event' />
+          </ViewHeader.Content>
 
-          <div className='flex flex-col h-screen'>
-            <ViewHeader.Root>
-              <ViewHeader.Title name='Events' title='Händelser' short='Händelser' />
+          <ViewHeader.Action />
+        </ViewHeader.Root>
 
-              <ViewHeader.Content>
-                <Header type='Event' />
-              </ViewHeader.Content>
+        <View.Content>
+          <TabsContent value='list' className='mt-0'>
+            <EventsList />
+          </TabsContent>
 
-              <ViewHeader.Action />
-            </ViewHeader.Root>
-
-            <View.Content>
-              <TabsContent value='list' className='mt-0'>
-                <EventsList />
-              </TabsContent>
-
-              <TabsContent value='grid'>
-              </TabsContent>
-            </View.Content>
-          </div>
-
-        </Tabs>
+          <TabsContent value='grid'>
+          </TabsContent>
+        </View.Content>
       </TableProvider>
     </View.Root>
   )
