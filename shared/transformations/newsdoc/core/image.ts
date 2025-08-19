@@ -6,20 +6,30 @@ import type { Descendant } from 'slate'
 export const transformImage = (element: Block): TBElement => {
   const { id, data, links } = element
 
+  const properties: Record<string, string> = {
+    rel: links[0].rel,
+    uri: links[0].uri,
+    type: links[0].type,
+    text: data.text,
+    credit: links[0].data.credit,
+    width: data.width,
+    height: data.height,
+    uploadId: links[0].uri.split('/').at(-1) || ''
+  }
+
+  if (links[0].data.crop) {
+    properties['crop'] = links[0].data.crop
+  }
+
+  if (links[0].data.focus) {
+    properties['focus'] = links[0].data.focus
+  }
+
   return {
     id: id || crypto.randomUUID(), // Must have id, if id is missing positioning in drag'n drop does not work
     class: 'block',
     type: 'core/image',
-    properties: {
-      rel: links[0].rel,
-      uri: links[0].uri,
-      type: links[0].type,
-      text: data.text,
-      credit: links[0].data.credit,
-      width: data.width,
-      height: data.height,
-      uploadId: links[0].uri.split('/').at(-1) || ''
-    },
+    properties,
     children: [
       {
         type: 'core/image/image',
@@ -76,15 +86,25 @@ export function revertImage(element: TBElement): Block {
     }))
   }
 
+  const data: Record<string, string> = {
+    text: toString(captionText),
+    credit: toString(bylineText),
+    height: toString(properties?.height),
+    width: toString(properties?.width)
+  }
+
+  if (properties?.crop) {
+    data['crop'] = properties.crop as string
+  }
+
+  if (properties?.focus) {
+    data['focus'] = properties.focus as string
+  }
+
   return Block.create({
     id,
     type: 'core/image',
-    data: {
-      text: toString(captionText),
-      credit: toString(bylineText),
-      height: toString(properties?.height),
-      width: toString(properties?.width)
-    },
+    data,
     links
   })
 }
