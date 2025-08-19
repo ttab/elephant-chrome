@@ -2,9 +2,10 @@ import { Block } from '@ttab/elephant-api/newsdoc'
 import { toString } from '../../lib/toString.js'
 import type { TBElement } from '@ttab/textbit'
 import type { Descendant } from 'slate'
+import { transformSoftcrop, revertSoftblock } from './softcrop.js'
 
 export const transformImage = (element: Block): TBElement => {
-  const { id, data, links } = element
+  const { id, data, links, meta } = element
 
   const properties: Record<string, string> = {
     rel: links[0].rel,
@@ -14,15 +15,8 @@ export const transformImage = (element: Block): TBElement => {
     credit: links[0].data.credit,
     width: data.width,
     height: data.height,
-    uploadId: links[0].uri.split('/').at(-1) || ''
-  }
-
-  if (links[0].data.crop) {
-    properties['crop'] = links[0].data.crop
-  }
-
-  if (links[0].data.focus) {
-    properties['focus'] = links[0].data.focus
+    uploadId: links[0].uri.split('/').at(-1) || '',
+    ...transformSoftcrop(meta) || {}
   }
 
   return {
@@ -93,18 +87,12 @@ export function revertImage(element: TBElement): Block {
     width: toString(properties?.width)
   }
 
-  if (properties?.crop) {
-    data['crop'] = properties.crop as string
-  }
-
-  if (properties?.focus) {
-    data['focus'] = properties.focus as string
-  }
 
   return Block.create({
     id,
     type: 'core/image',
     data,
-    links
+    links,
+    meta: revertSoftblock(element)
   })
 }

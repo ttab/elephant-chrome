@@ -2,6 +2,7 @@ import { Block } from '@ttab/elephant-api/newsdoc'
 import { toString } from '../../lib/toString.js'
 import type { TBElement } from '@ttab/textbit'
 import type { Descendant } from 'slate'
+import { transformSoftcrop, revertSoftblock } from '../core/softcrop.js'
 
 // Construed way of making it work in both environments
 const BASE_URL: string
@@ -14,7 +15,7 @@ const BASE_URL: string
       : ''
 
 export const transformVisual = (element: Block): TBElement => {
-  const { id, data, links } = element
+  const { id, data, links, meta } = element
   const mediaType = links[0]?.url?.includes('/media/graphic/') ? 'graphics' : 'images'
 
   const properties: Record<string, string> = {
@@ -26,15 +27,8 @@ export const transformVisual = (element: Block): TBElement => {
     credit: links[0].data.credit,
     text: data.caption,
     width: links[0].data.width,
-    height: links[0].data.height
-  }
-
-  if (links[0].data.crop) {
-    properties['crop'] = links[0].data.crop
-  }
-
-  if (links[0].data.focus) {
-    properties['focus'] = links[0].data.focus
+    height: links[0].data.height,
+    ...transformSoftcrop(meta) || {}
   }
 
   return {
@@ -85,20 +79,13 @@ export function revertVisual(element: TBElement): Block {
     width: toString(properties?.width)
   }
 
-  if (properties?.crop) {
-    data['crop'] = properties.crop as string
-  }
-
-  if (properties?.focus) {
-    data['focus'] = properties.focus as string
-  }
-
   return Block.create({
     id,
     type: 'tt/visual',
     data: {
       caption: toString(captionText)
     },
+    meta: revertSoftblock(element),
     links: [
       {
         data,
