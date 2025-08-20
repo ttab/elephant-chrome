@@ -2,24 +2,28 @@ import { Block } from '@ttab/elephant-api/newsdoc'
 import { toString } from '../../lib/toString.js'
 import type { TBElement } from '@ttab/textbit'
 import type { Descendant } from 'slate'
+import { transformSoftcrop, revertSoftcrop } from './softcrop.js'
 
 export const transformImage = (element: Block): TBElement => {
-  const { id, data, links } = element
+  const { id, data, links, meta } = element
+
+  const properties: Record<string, string> = {
+    rel: links[0].rel,
+    uri: links[0].uri,
+    type: links[0].type,
+    text: data.text,
+    credit: links[0].data.credit,
+    width: data.width,
+    height: data.height,
+    uploadId: links[0].uri.split('/').at(-1) || '',
+    ...transformSoftcrop(meta) || {}
+  }
 
   return {
     id: id || crypto.randomUUID(), // Must have id, if id is missing positioning in drag'n drop does not work
     class: 'block',
     type: 'core/image',
-    properties: {
-      rel: links[0].rel,
-      uri: links[0].uri,
-      type: links[0].type,
-      text: data.text,
-      credit: links[0].data.credit,
-      width: data.width,
-      height: data.height,
-      uploadId: links[0].uri.split('/').at(-1) || ''
-    },
+    properties,
     children: [
       {
         type: 'core/image/image',
@@ -76,15 +80,19 @@ export function revertImage(element: TBElement): Block {
     }))
   }
 
+  const data: Record<string, string> = {
+    text: toString(captionText),
+    credit: toString(bylineText),
+    height: toString(properties?.height),
+    width: toString(properties?.width)
+  }
+
+
   return Block.create({
     id,
     type: 'core/image',
-    data: {
-      text: toString(captionText),
-      credit: toString(bylineText),
-      height: toString(properties?.height),
-      width: toString(properties?.width)
-    },
-    links
+    data,
+    links,
+    meta: revertSoftcrop(element)
   })
 }
