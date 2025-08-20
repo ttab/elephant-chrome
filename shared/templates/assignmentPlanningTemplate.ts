@@ -1,17 +1,7 @@
-import type { Wire } from '../tmp/wire.js'
+import type { Wire } from '../../src/hooks/index/useDocuments/schemas/wire.js'
+import type { IDBAuthor } from '../../src/datastore/types.js'
 import { Block } from '@ttab/elephant-api/newsdoc'
 
-// TODO: Type defined here, but not usable in this file yet.
-// import type { IDBAuthor } from 'src/datastore/types'
-interface IDBAuthor {
-  id: string
-  name: string
-  firstName: string
-  lastName: string
-  initials: string
-  email: string
-  sub: string
-}
 
 /**
  * Create a template structure for an assigment
