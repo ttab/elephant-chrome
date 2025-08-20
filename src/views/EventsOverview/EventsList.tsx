@@ -9,7 +9,7 @@ import { Table } from '@/components/Table'
 import { useDocuments } from '@/hooks/index/useDocuments'
 import { SortingV1 } from '@ttab/elephant-api/index'
 import { toast } from 'sonner'
-import { getUTCDateRange } from '@/lib/datetime'
+import { getUTCDateRange } from '@/shared/datetime'
 
 export const EventsList = (): JSX.Element => {
   const sections = useSections()

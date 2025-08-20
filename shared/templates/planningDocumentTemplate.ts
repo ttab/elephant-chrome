@@ -1,5 +1,5 @@
 import { Document, Block } from '@ttab/elephant-api/newsdoc'
-import { currentDateInUTC } from '../tmp/datetime.js'
+import { currentDateInUTC } from '../datetime.js'
 import type { TemplatePayload } from './index.js'
 
 /**

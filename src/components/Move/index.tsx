@@ -18,7 +18,7 @@ import { toast } from 'sonner'
 import { ToastAction } from '@/views/Wire/ToastAction'
 import { createPayload } from '@/defaults/templates/lib/createPayload'
 import { DatePicker } from '../Datepicker'
-import { currentDateInUTC, parseDate } from '@/lib/datetime'
+import { currentDateInUTC, parseDate } from '@/shared/datetime'
 
 export const Move = (props: ViewProps & {
   original: {

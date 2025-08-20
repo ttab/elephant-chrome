@@ -10,7 +10,7 @@ import { fields } from '@/hooks/index/useDocuments/schemas/planning'
 import { SortingV1 } from '@ttab/elephant-api/index'
 import { constructQuery } from '@/hooks/index/useDocuments/queries/views/plannings'
 import { useQuery } from '@/hooks/useQuery'
-import { getDateTimeBoundariesUTC } from '@/lib/datetime'
+import { getDateTimeBoundariesUTC } from '@/shared/datetime'
 import { toast } from 'sonner'
 
 export const PlanningList = ({ columns }: {

@@ -5,7 +5,7 @@ import type { Wire } from '@/hooks/index/useDocuments/schemas/wire'
 import { toast } from 'sonner'
 import { ToastAction } from '../ToastAction'
 import { addAssignmentWithDeliverable } from '@/lib/index/addAssignment'
-import { convertToISOStringInTimeZone } from '@/lib/datetime'
+import { convertToISOStringInTimeZone } from '@/shared/datetime'
 
 export async function createArticle({
   provider: articleProvider,

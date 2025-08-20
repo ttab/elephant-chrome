@@ -1,4 +1,4 @@
-import { dateToReadableTime } from '@/lib/datetime'
+import { dateToReadableTime } from '@/shared/datetime'
 import { useRegistry } from '@/hooks'
 import { cn } from '@ttab/elephant-ui/utils'
 

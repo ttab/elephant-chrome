@@ -9,7 +9,7 @@ import { Button, Select, SelectContent, SelectItem, SelectTrigger } from '@ttab/
 import { useState } from 'react'
 import { LoadingText } from '../LoadingText'
 import { DatePicker } from '../Datepicker'
-import { parseDate } from '@/lib/datetime'
+import { parseDate } from '@/shared/datetime'
 import { useDocuments } from '@/hooks/index/useDocuments'
 import { fields } from '@/hooks/index/useDocuments/schemas/printFlow'
 import type { PrintFlow, PrintFlowFields } from '@/hooks/index/useDocuments/schemas/printFlow'

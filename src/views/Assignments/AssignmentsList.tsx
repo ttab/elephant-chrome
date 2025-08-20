@@ -6,7 +6,7 @@ import { useDocuments } from '@/hooks/index/useDocuments'
 import { constructQuery } from '@/hooks/index/useDocuments/queries/views/assignments'
 import { fields } from '@/hooks/index/useDocuments/schemas/assignments'
 import type { Assignment, AssignmentFields } from '@/hooks/index/useDocuments/schemas/assignments'
-import { getUTCDateRange } from '@/lib/datetime'
+import { getUTCDateRange } from '@/shared/datetime'
 import { SortingV1 } from '@ttab/elephant-api/index'
 
 export const AssignmentsList = ({ columns, date }: {

@@ -11,7 +11,7 @@ import { Error } from '@/views/Error'
 import type { GetStatusHistoryReponse } from '@ttab/elephant-api/repository'
 import type { Status as DocumentStatus } from '@ttab/elephant-api/repository'
 import type { EleDocumentResponse } from '@/shared/types'
-import { dateToReadableDateTime } from '@/lib/datetime'
+import { dateToReadableDateTime } from '@/shared/datetime'
 import { CAUSE_KEYS } from './causekeys'
 const BASE_URL = import.meta.env.BASE_URL || ''
 
