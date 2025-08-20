@@ -2,7 +2,7 @@ import { Block } from '@ttab/elephant-api/newsdoc'
 import { toString } from '../../lib/toString.js'
 import type { TBElement } from '@ttab/textbit'
 import type { Descendant } from 'slate'
-import { transformSoftcrop, revertSoftblock } from './softcrop.js'
+import { transformSoftcrop, revertSoftcrop } from './softcrop.js'
 
 export const transformImage = (element: Block): TBElement => {
   const { id, data, links, meta } = element
@@ -93,6 +93,6 @@ export function revertImage(element: TBElement): Block {
     type: 'core/image',
     data,
     links,
-    meta: revertSoftblock(element)
+    meta: revertSoftcrop(element)
   })
 }

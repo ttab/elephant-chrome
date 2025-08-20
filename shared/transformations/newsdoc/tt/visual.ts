@@ -2,7 +2,7 @@ import { Block } from '@ttab/elephant-api/newsdoc'
 import { toString } from '../../lib/toString.js'
 import type { TBElement } from '@ttab/textbit'
 import type { Descendant } from 'slate'
-import { transformSoftcrop, revertSoftblock } from '../core/softcrop.js'
+import { transformSoftcrop, revertSoftcrop } from '../core/softcrop.js'
 
 // Construed way of making it work in both environments
 const BASE_URL: string
@@ -85,7 +85,7 @@ export function revertVisual(element: TBElement): Block {
     data: {
       caption: toString(captionText)
     },
-    meta: revertSoftblock(element),
+    meta: revertSoftcrop(element),
     links: [
       {
         data,
