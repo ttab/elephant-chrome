@@ -5,7 +5,7 @@ import { Maximize2, Minimize2 } from '@ttab/elephant-ui/icons'
 import { useNavigation } from '@/hooks'
 import { NavigationActionType } from '@/types'
 
-export const ViewFocus = ({ viewId }: { viewId: string }): JSX.Element => {
+export const ViewFocus = ({ viewId }: { viewId?: string }): JSX.Element => {
   const { state, dispatch } = useNavigation()
 
   useEffect(() => {

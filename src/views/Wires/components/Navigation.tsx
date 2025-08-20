@@ -27,7 +27,7 @@ const canNavigate = (
 const navigate = (
   contentState: ContentState[],
   replaceState: (url: string, state: HistoryState) => void,
-  active: string,
+  active: string | undefined,
   modifier: number
 ) => {
   const currentIdx = contentState.findIndex((obj) => obj.viewId === active)

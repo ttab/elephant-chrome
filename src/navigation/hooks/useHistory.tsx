@@ -9,7 +9,7 @@ export interface HistoryEvent extends Partial<CustomEvent> {
 }
 
 export interface HistoryState {
-  viewId: string
+  viewId: string | undefined
   contentState: ContentState[]
 }
 
