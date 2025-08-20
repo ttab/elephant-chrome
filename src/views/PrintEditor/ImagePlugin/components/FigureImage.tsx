@@ -52,9 +52,6 @@ export const FigureImage = ({ editor, children, rootNode, options }: Plugin.Comp
       <div ref={imgContainerRef} className='relative rounded rounded-xs overflow-hidden'>
         <img width='100%' src={attachmentDetails?.downloadLink} />
 
-        {/* <div ref={imgContainerRef} className='rounded rounded-xs overflow-hidden'>
-        <img width='100%' src={attachmentDetails?.downloadLink} /> */}
-
         {!!attachmentDetails?.downloadLink
         && (
           <>
