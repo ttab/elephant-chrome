@@ -1,5 +1,5 @@
 import * as Y from 'yjs'
-import { createPayload } from '@/defaults/templates/lib/createPayload'
+import { createPayload } from '@/shared/templates/lib/createPayload'
 import { planning } from './data/planning-newsdoc'
 import { toGroupedNewsDoc } from '@/shared/transformations/groupedNewsDoc'
 import { toYjsNewsDoc } from '@/shared/transformations/yjsNewsDoc'

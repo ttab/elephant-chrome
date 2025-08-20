@@ -7,8 +7,8 @@ import { PersonalAssignmentsFilter } from './PersonalAssignmentsFilter'
 import { useMemo } from 'react'
 import { useModal } from '../Modal/useModal'
 import * as Views from '@/views'
-import { createDocument } from '@/lib/createYItem'
-import { getTemplateFromView } from '@/defaults/templates/lib/getTemplateFromView'
+import { createDocument } from '@/shared/createYItem'
+import { getTemplateFromView } from '@/shared/templates/lib/getTemplateFromView'
 
 export const Header = ({ assigneeId, type }: {
   type: View

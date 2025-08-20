@@ -1,12 +1,12 @@
 import * as Y from 'yjs'
-import { assignmentPlanningTemplate } from '../defaults/templates/assignmentPlanningTemplate'
 import { Block, type Document } from '@ttab/elephant-api/newsdoc'
-import { toYMap } from '@/shared/transformations/toYMap'
-import { toGroupedNewsDoc, group } from '@/shared/transformations/groupedNewsDoc'
-import { toYjsNewsDoc } from '@/shared/transformations/yjsNewsDoc'
-import type { Wire } from '@/hooks/index/useDocuments/schemas/wire'
-import type { IDBAuthor } from 'src/datastore/types'
-import type { DeliverableType } from '@/defaults/templates/lib/getDeliverableType'
+import type { Wire } from '../src/hooks/index/useDocuments/schemas/wire.js'
+import { assignmentPlanningTemplate } from '@/shared/templates/assignmentPlanningTemplate.js'
+import type { DeliverableType } from '@/shared/templates/lib/getDeliverableType.js'
+import { group, toGroupedNewsDoc } from '@/shared/transformations/groupedNewsDoc.js'
+import { toYMap } from '@/shared/transformations/toYMap.js'
+import { toYjsNewsDoc } from '@/shared/transformations/yjsNewsDoc.js'
+import type { IDBAuthor } from '../src/datastore/types.js'
 
 /**
 * General function to create a new document as Y.Doc from a template

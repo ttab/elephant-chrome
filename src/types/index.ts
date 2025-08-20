@@ -1,7 +1,7 @@
 import { type Block } from '@ttab/elephant-api/newsdoc'
 import type * as views from '@/views'
 import { type LucideIcon } from '@ttab/elephant-ui/icons'
-import type { TemplatePayload } from '@/defaults/templates'
+import type { TemplatePayload } from '@/shared/templates'
 import type { Locale } from 'date-fns'
 
 export enum NavigationActionType {
