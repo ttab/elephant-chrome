@@ -15,7 +15,7 @@ import type { IDBSection, IDBAuthor } from 'src/datastore/types'
 import { slotLabels, timesSlots } from '@/defaults/assignmentTimeslots'
 import { Time } from './Time'
 import { SectionBadge } from '@/components/DataItem/SectionBadge'
-import type { Assignment } from '@/hooks/index/useDocuments/schemas/assignments'
+import type { Assignment } from '@/shared/schemas/assignments'
 import { parseISO } from 'date-fns'
 import { ActionMenu } from '@/components/ActionMenu'
 

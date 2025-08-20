@@ -11,8 +11,8 @@ import { LoadingText } from '../LoadingText'
 import { DatePicker } from '../Datepicker'
 import { parseDate } from '@/shared/datetime'
 import { useDocuments } from '@/hooks/index/useDocuments'
-import { fields } from '@/hooks/index/useDocuments/schemas/printFlow'
-import type { PrintFlow, PrintFlowFields } from '@/hooks/index/useDocuments/schemas/printFlow'
+import { fields } from '@/shared/schemas/printFlow'
+import type { PrintFlow, PrintFlowFields } from '@/shared/schemas/printFlow'
 
 const fallbackDate = new Date()
 

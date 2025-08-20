@@ -1,5 +1,5 @@
 import type { QueryV1 } from '@ttab/elephant-api/index'
-import type { Assignment } from '../schemas/assignments'
+import type { Assignment } from '@/shared/schemas/assignments'
 import { isWithinInterval, parseISO } from 'date-fns'
 import type { Block } from '@ttab/elephant-api/newsdoc'
 

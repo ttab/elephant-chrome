@@ -5,7 +5,7 @@ import * as Templates from '@/shared/templates'
 import { createDocument } from '@/shared/createYItem'
 import { useMemo } from 'react'
 import { Block } from '@ttab/elephant-api/newsdoc'
-import type { Wire as WireType } from '@/hooks/index/useDocuments/schemas/wire'
+import type { Wire as WireType } from '@/shared/schemas/wire'
 
 const meta: ViewMetadata = {
   name: 'Wire',

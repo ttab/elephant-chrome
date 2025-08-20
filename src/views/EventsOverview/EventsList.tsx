@@ -1,7 +1,7 @@
 import { useCallback, useMemo } from 'react'
 import { useOrganisers, useQuery, useRegistry, useSections } from '@/hooks'
-import type { EventFields } from '@/hooks/index/useDocuments/schemas/event'
-import { type Event, fields } from '@/hooks/index/useDocuments/schemas/event'
+import type { EventFields } from '@/shared/schemas/event'
+import { type Event, fields } from '@/shared/schemas/event'
 import { constructQuery } from '@/hooks/index/useDocuments/queries/views/events'
 import { eventTableColumns } from '@/views/EventsOverview/EventsListColumns'
 

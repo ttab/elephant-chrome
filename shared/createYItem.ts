@@ -1,6 +1,6 @@
 import * as Y from 'yjs'
 import { Block, type Document } from '@ttab/elephant-api/newsdoc'
-import type { Wire } from '../src/hooks/index/useDocuments/schemas/wire.js'
+import type { Wire } from '@/shared/schemas/wire.js'
 import { assignmentPlanningTemplate } from '@/shared/templates/assignmentPlanningTemplate.js'
 import type { DeliverableType } from '@/shared/templates/lib/getDeliverableType.js'
 import { group, toGroupedNewsDoc } from '@/shared/transformations/groupedNewsDoc.js'

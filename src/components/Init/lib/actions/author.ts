@@ -7,8 +7,8 @@ import { Block } from '@ttab/elephant-api/newsdoc'
 import type { Session } from 'next-auth'
 import { decodeJwt } from 'jose'
 import { toast } from 'sonner'
-import { fields } from '@/hooks/index/useDocuments/schemas/author'
-import type { Author, AuthorFields } from '@/hooks/index/useDocuments/schemas/author'
+import { fields } from '@/shared/schemas/author'
+import type { Author, AuthorFields } from '@/shared/schemas/author'
 
 /**
  * Initializes the author by verifying or creating an author document in the repository.

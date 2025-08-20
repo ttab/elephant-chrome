@@ -8,7 +8,7 @@ import { planningDocumentTemplate } from '@/shared/templates/planningDocumentTem
 import { getDeliverableType } from '@/shared/templates/lib/getDeliverableType.js'
 import { toYjsNewsDoc } from '@/shared/transformations/yjsNewsDoc.js'
 import { toGroupedNewsDoc } from '@/shared/transformations/groupedNewsDoc.js'
-import type { Wire } from '../../../../src/hooks/index/useDocuments/schemas/wire.js'
+import type { Wire } from '@/shared/schemas/wire.js'
 import { getContextFromValidSession, isContext, type Context } from '../../../lib/context.js'
 import { isValidUUID } from '../../../utils/isValidUUID.js'
 

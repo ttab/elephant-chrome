@@ -14,7 +14,7 @@ import { Block } from '@ttab/elephant-api/newsdoc'
 import { useDocuments } from '@/hooks/index/useDocuments'
 import { QueryV1, BoolQueryV1, TermsQueryV1 } from '@ttab/elephant-api/index'
 import { Link } from '@/components/index'
-import type { Planning as PlanningType } from '@/hooks/index/useDocuments/schemas/planning'
+import type { Planning as PlanningType } from '@/shared/schemas/planning'
 import type { Doc } from 'yjs'
 
 export type NewItem = { title: string, uuid: string } | undefined

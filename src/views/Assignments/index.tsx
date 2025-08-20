@@ -16,7 +16,7 @@ import { useQuery } from '@/hooks/useQuery'
 import { newLocalDate } from '@/shared/datetime'
 import { loadFilters } from '@/lib/loadFilters'
 import { useSections } from '@/hooks/useSections'
-import type { Assignment } from '@/hooks/index/useDocuments/schemas/assignments'
+import type { Assignment } from '@/shared/schemas/assignments'
 
 const meta: ViewMetadata = {
   name: 'Assignments',

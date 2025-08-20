@@ -6,7 +6,7 @@ import { withPlannings } from './withPlannings'
 import type { useDocumentsFetchOptions } from '../'
 import type { Dispatch, SetStateAction } from 'react'
 import { asAssignments } from './asAssignments'
-import type { Assignment } from '../schemas/assignments'
+import type { Assignment } from '@/shared/schemas/assignments'
 
 export async function fetch<T extends HitV1, F>({
   index,

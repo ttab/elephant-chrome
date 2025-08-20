@@ -1,5 +1,5 @@
 import { Title } from '@/components/Table/Items/Title'
-import type { Factbox } from '@/hooks/index/useDocuments/schemas/factbox'
+import type { Factbox } from '@/shared/schemas/factbox'
 import { dateToReadableDateTime } from '@/shared/datetime'
 import type { LocaleData } from '@/types/index'
 import type { ColumnDef, Row } from '@tanstack/react-table'
