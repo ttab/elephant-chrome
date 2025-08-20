@@ -1,4 +1,3 @@
-import { useCollaborationDocument } from '@/hooks/useCollaborationDocument'
 import { useKeydownGlobal } from '@/hooks/useKeydownGlobal'
 import type { HocuspocusProvider } from '@hocuspocus/provider'
 import {
@@ -12,7 +11,7 @@ import {
 import { useMemo, type MouseEvent } from 'react'
 import { fromYjsNewsDoc, toYjsNewsDoc } from '@/shared/transformations/yjsNewsDoc'
 import { fromGroupedNewsDoc, toGroupedNewsDoc } from '@/shared/transformations/groupedNewsDoc'
-import { Block } from '@ttab/elephant-api/newsdoc'
+import { Block, type Document } from '@ttab/elephant-api/newsdoc'
 import * as Y from 'yjs'
 import { format } from 'date-fns'
 import { getDateTimeBoundaries } from '@/lib/datetime'
@@ -31,7 +30,7 @@ export const DuplicatePrompt = ({
   description: string
   primaryLabel: string
   secondaryLabel?: string
-  onPrimary: (duplicateId: string | undefined) => void
+  onPrimary: (duplicateId: string | undefined, duplicatedDocument: Document) => void
   onSecondary?: (event: MouseEvent<HTMLButtonElement> | React.KeyboardEvent<HTMLButtonElement> | KeyboardEvent) => void
   provider?: HocuspocusProvider
   duplicateDate: { from: Date, to?: Date | undefined }
@@ -54,7 +53,7 @@ export const DuplicatePrompt = ({
     return `${newDate}T${originalTime}`
   }
 
-  const collaborationPayload = useMemo(() => {
+  const payload = useMemo(() => {
     const documentId = crypto.randomUUID()
     const yDoc = new Y.Doc()
 
@@ -130,13 +129,15 @@ export const DuplicatePrompt = ({
         toGroupedNewsDoc(newsdoc),
         yDoc
       )
-      return { documentId, initialDocument: yDoc }
+
+
+      return { documentId, initialDocument: newsdoc.document }
     }
 
     throw new Error('no provider')
   }, [provider, type, duplicateDate])
 
-  const { documentId: duplicateId, synced, connected } = useCollaborationDocument(collaborationPayload)
+  const { documentId: duplicateId, initialDocument: duplicatedDocument } = payload
 
   return (
     <Dialog open={true}>
@@ -163,13 +164,13 @@ export const DuplicatePrompt = ({
 
           <Button
             autoFocus
-            disabled={!synced || !connected}
+            disabled={!duplicateId || !duplicatedDocument}
             onClick={() => {
-              onPrimary(duplicateId)
+              onPrimary(duplicateId, duplicatedDocument)
             }}
             onKeyDown={(event: React.KeyboardEvent<HTMLButtonElement>) => {
               if (event.key === 'Enter') {
-                onPrimary(duplicateId)
+                onPrimary(duplicateId, duplicatedDocument)
               }
             }}
           >

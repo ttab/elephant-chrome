@@ -68,7 +68,7 @@ export const DuplicatesTable = ({ documentId, type }: {
 
   return (
     <div className='pl-6 border-t'>
-      <div className='text-sm font-bold pt-2'>{`Kopierade ${type === 'core/event' ? 'händelser' : 'planeringar'}`}</div>
+      <div className='text-sm font-bold pt-2'>Kopierad till</div>
       {data?.map((duplicate) => {
         let start, end
         const title = duplicate.fields['document.title']?.values[0]

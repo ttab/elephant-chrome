@@ -1,6 +1,7 @@
 import { type AuthConfig } from '@auth/core'
 import Keycloak from '@auth/express/providers/keycloak'
 import { type JWT } from '@auth/core/jwt'
+import type pino from 'pino'
 
 const scopes = [
   'openid',
@@ -19,42 +20,142 @@ const scopes = [
   'asset_upload'
 ]
 
-const authorizationUrl = new URL(`${process.env.AUTH_KEYCLOAK_ISSUER}/protocol/openid-connect/auth`)
-authorizationUrl.searchParams.set('scope', scopes.join(' '))
-if (process.env.AUTH_KEYCLOAK_IDP_HINT) {
-  authorizationUrl.searchParams.set('kc_idp_hint', process.env.AUTH_KEYCLOAK_IDP_HINT)
+export interface OidcConfig {
+  token_endpoint: string
+  jwks_uri: string
+  end_session_endpoint: string
+  authorization_endpoint: string
+  userinfo_endpoint: string
 }
 
-async function refreshAccessToken(token: JWT): Promise<JWT> {
-  try {
-    const url = `${process.env.AUTH_KEYCLOAK_ISSUER}/protocol/openid-connect/token`
+export interface AuthInfo {
+  authConfig: AuthConfig
+  oidcConfig: OidcConfig
+}
 
+export async function createAuthInfo(
+  logger: pino.Logger,
+  providerUrl: string,
+  clientID: string, clientSecret: string,
+  idpHint?: string
+): Promise<AuthInfo> {
+  const oidcConf = await fetchOidcConfig(providerUrl).catch((e) => {
+    throw new Error('fetch OIDC configuration', { cause: e })
+  })
+
+  const authorizationUrl = new URL(oidcConf.authorization_endpoint)
+
+  authorizationUrl.searchParams.set('scope', scopes.join(' '))
+
+  if (idpHint) {
+    authorizationUrl.searchParams.set('kc_idp_hint', idpHint)
+  }
+
+  const auth = {
+    providers: [
+      Keycloak({
+        authorization: authorizationUrl.toString()
+      })
+    ],
+    callbacks: {
+      async session({ session, token }) {
+        return Promise.resolve({
+          ...session,
+          ...token
+        })
+      },
+      async jwt({ token, user, account }) {
+        // First time user is logging in
+        if (account && user) {
+          if (account.access_token) {
+            // @ts-expect-error sub exists
+            user.sub = account.providerAccountId
+          }
+          return {
+            accessToken: account.access_token,
+            accessTokenExpires: Date.now() + (account.expires_in || 300) * 1000,
+            refreshToken: account.refresh_token,
+            user
+          }
+        }
+
+        // The user is already logged in, check if the access token is expired
+        // We want to refresh with 150 seconds left
+        const accessTokenExpires = (Number(token.accessTokenExpires) || 0) - 150 * 1000
+        const remaining = accessTokenExpires - Date.now()
+        if (remaining < 0) {
+          return await refreshAccessToken(logger, oidcConf, token, clientID, clientSecret).catch((e) => {
+            throw new Error('refresh access token', { cause: e })
+          })
+        }
+
+        return token
+      }
+    },
+    pages: {
+      signIn: `${process.env.BASE_URL}/login`
+    }
+  } as AuthConfig
+
+  return {
+    oidcConfig: oidcConf,
+    authConfig: auth
+  }
+}
+
+async function fetchOidcConfig(provider: string): Promise<OidcConfig> {
+  const resp = await fetch(`${provider}/.well-known/openid-configuration`).catch((e) => {
+    throw new Error('make fetch request', { cause: e })
+  })
+
+  if (!resp.ok) {
+    throw new Error(`error response from provider: ${resp.status} ${resp.statusText}`)
+  }
+
+  const config = await resp.json().catch((e) => {
+    throw new Error('parse OIDC config', { cause: e })
+  }) as OidcConfig
+
+  return config
+}
+
+async function refreshAccessToken(
+  logger: pino.Logger,
+  conf: OidcConfig,
+  token: JWT,
+  clientID: string,
+  clientSecret: string
+): Promise<JWT> {
+  try {
     const params = new URLSearchParams({
-      client_id: process.env.AUTH_KEYCLOAK_ID ?? '',
-      client_secret: process.env.AUTH_KEYCLOAK_SECRET ?? '',
+      client_id: clientID,
+      client_secret: clientSecret,
       grant_type: 'refresh_token',
       refresh_token: token.refreshToken as string ?? ''
     })
 
-    const response = await fetch(url, {
+    const response = await fetch(conf.token_endpoint, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
         Accept: 'application/json'
       },
       body: params
+    }).catch((e) => {
+      throw new Error('fetch refresh token', { cause: e })
     })
 
     if (!response.ok) {
       throw new Error(`refresh request error response: ${response.statusText}`)
     }
 
-    const refreshedTokens = await response.json() as unknown
+    const refreshedTokens = await response.json().catch((e) => {
+      throw new Error('parse refresh response', { cause: e })
+    }) as unknown
 
     if (!isRefreshedTokens(refreshedTokens)) {
       throw new Error('refresh request error response: invalid token response')
     }
-
 
     return {
       ...token,
@@ -62,52 +163,13 @@ async function refreshAccessToken(token: JWT): Promise<JWT> {
       accessTokenExpires: Date.now() + refreshedTokens.expires_in * 1000,
       refreshToken: refreshedTokens.refresh_token ?? token.refreshToken
     }
-  } catch (_ex) {
+  } catch (ex) {
+    logger.error({
+      err: ex,
+      sub: token.sub
+    }, 'failed to refresh token')
+
     return { ...token, error: 'refreshAccessTokenError' }
-  }
-}
-
-export const authConfig: AuthConfig = {
-  providers: [
-    Keycloak({
-      authorization: authorizationUrl.toString()
-    })
-  ],
-  callbacks: {
-    async session({ session, token }) {
-      return Promise.resolve({
-        ...session,
-        ...token
-      })
-    },
-    async jwt({ token, user, account }) {
-      // First time user is logging in
-      if (account && user) {
-        if (account.access_token) {
-          // @ts-expect-error sub exists
-          user.sub = account.providerAccountId
-        }
-        return {
-          accessToken: account.access_token,
-          accessTokenExpires: Date.now() + (account.expires_in || 300) * 1000,
-          refreshToken: account.refresh_token,
-          user
-        }
-      }
-
-      // The user is already logged in, check if the access token is expired
-      // We want to refresh with 150 seconds left
-      const accessTokenExpires = (Number(token.accessTokenExpires) || 0) - 150 * 1000
-      const remaining = accessTokenExpires - Date.now()
-      if (remaining < 0) {
-        return await refreshAccessToken(token)
-      }
-
-      return token
-    }
-  },
-  pages: {
-    signIn: `${process.env.BASE_URL}/login`
   }
 }
 

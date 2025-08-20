@@ -82,8 +82,12 @@ const dateMidnight = (date: Date): Date => {
 }
 
 export const EventTimeMenu = ({ onChange }: FormProps): JSX.Element => {
+  const [eventData] = useYValue<EventData>('meta.core/event[0].data')
+  const [, setEventStart] = useYValue<string>('meta.core/event[0].data.start')
+  const [, setEventEnd] = useYValue<string>('meta.core/event[0].data.end')
+  const [, setDateGranularity] = useYValue<string>('meta.core/event[0].data.dateGranularity')
+
   const [open, setOpen] = useState(false)
-  const [eventData, setEventData] = useYValue<EventData>('meta.core/event[0].data')
   const [selected, setSelected] = useState<CalendarTypes.DateRange | undefined>({ from: dateMidnight(new Date()) })
   const [startTimeValue, setStartTimeValue] = useState<string>('00:00')
   const [endTimeValue, setEndTimeValue] = useState<string>('23:59')
@@ -164,13 +168,10 @@ export const EventTimeMenu = ({ onChange }: FormProps): JSX.Element => {
       )
       endDate = endDay.toISOString()
     }
-    const newEventData: EventData = {
-      start: startDate,
-      end: endDate,
-      dateGranularity: fullDay ? 'date' : 'datetime',
-      registration: eventData?.registration ? eventData.registration : ''
-    }
-    setEventData(newEventData)
+
+    setEventStart(startDate)
+    setEventEnd(endDate)
+    setDateGranularity(fullDay ? 'date' : 'datetime')
   }
 
   const handleStartTimeChange = (time: string): void => {

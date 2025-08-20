@@ -83,13 +83,11 @@ export const Assignments = (): JSX.Element => {
         </TableCommandMenu>
 
         <ViewHeader.Root>
-          <ViewHeader.Title name={meta.name} title='Uppdrag' />
           <ViewHeader.Content>
-            <Header
-              type={meta.name}
-              assigneeId={assigneeId}
-            />
+            <ViewHeader.Title name={meta.name} title='Uppdrag' />
+            <Header type={meta.name} assigneeId={assigneeId} />
           </ViewHeader.Content>
+
           <ViewHeader.Action />
         </ViewHeader.Root>
 

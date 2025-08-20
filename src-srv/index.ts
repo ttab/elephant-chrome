@@ -17,11 +17,11 @@ import {
 
 import { ExpressAuth } from '@auth/express'
 import { assertAuthenticatedUser } from './utils/assertAuthenticatedUser.js'
-import { authConfig } from './utils/authConfig.js'
+import { createAuthInfo } from './utils/authConfig.js'
 import logger from './lib/logger.js'
 import { pinoHttp } from 'pino-http'
 import assertEnvs from './lib/assertEnvs.js'
-import { authSession } from './utils/authSession.js'
+import { authSessionMiddleware } from './utils/authSession.js'
 
 import Pyroscope from '@pyroscope/nodejs'
 import { createRemoteJWKSet } from 'jose'
@@ -37,7 +37,10 @@ const REPOSITORY_URL = process.env.REPOSITORY_URL || ''
 const REDIS_URL = process.env.REDIS_URL || ''
 const BASE_URL = process.env.BASE_URL || ''
 const USER_URL = process.env.USER_URL || ''
-const AUTH_KEYCLOAK_ISSUER = process.env.AUTH_KEYCLOAK_ISSUER || ''
+const AUTH_KEYCLOAK_PROVIDER = process.env.AUTH_KEYCLOAK_PROVIDER ?? process.env.AUTH_KEYCLOAK_ISSUER ?? ''
+const AUTH_KEYCLOAK_ID = process.env.AUTH_KEYCLOAK_ID || ''
+const AUTH_KEYCLOAK_SECRET = process.env.AUTH_KEYCLOAK_SECRET || ''
+const AUTH_KEYCLOAK_IDP_HINT = process.env.AUTH_KEYCLOAK_IDP_HINT
 const ELEPHANT_CHROME_CLIENT_ID = process.env.ELEPHANT_CHROME_CLIENT_ID || ''
 const ELEPHANT_CHROME_CLIENT_SECRET = process.env.ELEPHANT_CHROME_CLIENT_SECRET || ''
 const PYROSCOPE_URL = process.env.PYROSCOPE_URL || ''
@@ -61,11 +64,22 @@ export async function runServer(): Promise<string> {
     throw new Error('connect to redis cache', { cause: ex })
   })
 
+  const authInfo = await createAuthInfo(
+    logger,
+    AUTH_KEYCLOAK_PROVIDER,
+    AUTH_KEYCLOAK_ID,
+    AUTH_KEYCLOAK_SECRET,
+    AUTH_KEYCLOAK_IDP_HINT
+  ).catch((e) => {
+    throw new Error('configure authentication', { cause: e })
+  })
+
   const repository = new Repository(REPOSITORY_URL)
-  const JWKS = createRemoteJWKSet(new URL(`${AUTH_KEYCLOAK_ISSUER}/protocol/openid-connect/certs`))
+
+  const JWKS = createRemoteJWKSet(new URL(authInfo.oidcConfig.jwks_uri))
 
   const userTokenService = new TokenService(
-    `${AUTH_KEYCLOAK_ISSUER}/protocol/openid-connect/token`,
+    authInfo.oidcConfig.token_endpoint,
     ELEPHANT_CHROME_CLIENT_ID,
     ELEPHANT_CHROME_CLIENT_SECRET,
     'user'
@@ -73,12 +87,12 @@ export async function runServer(): Promise<string> {
   const user = new User(USER_URL, userTokenService)
 
   app.set('trust proxy', true)
-  app.use(`${BASE_URL}/api/auth/*`, ExpressAuth(authConfig) as RequestHandler)
+  app.use(`${BASE_URL}/api/auth/*`, ExpressAuth(authInfo.authConfig) as RequestHandler)
   app.use(`${BASE_URL}/api/documents`, (req, res, next) => {
-    assertAuthenticatedUser(JWKS)(req, res, next).catch(next)
+    assertAuthenticatedUser(BASE_URL, authInfo.authConfig, JWKS)(req, res, next).catch(next)
   })
   app.use(`${BASE_URL}/api/introspection`, (req, res, next) => {
-    assertAuthenticatedUser(JWKS)(req, res, next).catch(next)
+    assertAuthenticatedUser(BASE_URL, authInfo.authConfig, JWKS)(req, res, next).catch(next)
   })
 
   app.use(cors({
@@ -87,7 +101,7 @@ export async function runServer(): Promise<string> {
 
   }))
   app.use(BASE_URL, express.json())
-  app.use(authSession)
+  app.use(authSessionMiddleware(BASE_URL, authInfo.authConfig))
 
   app.use((err: unknown, req: Request, res: Response, next: NextFunction) => {
     if (err) {
@@ -106,6 +120,7 @@ export async function runServer(): Promise<string> {
     redisCache: cache,
     repository,
     expressServer: app,
+    authInfo: authInfo,
     user
   })
 
