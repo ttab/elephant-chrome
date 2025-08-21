@@ -18,6 +18,10 @@ export function asAssignments(data: Assignment[], query: QueryV1, statuses: GetS
           .filter((link) => link.rel === 'deliverable')
           .map((link) => ({ uuid: link.uuid }))
 
+        const status = statuses?.items.find((status) => {
+          return deliverableIds.some((deliverable) => status.uuid === deliverable.uuid)
+        })
+
         const currentAssignmentType = currentAssignmentMeta?.meta.find((block) => block.type === 'core/assignment-type')?.value
         const currentStart = getStart(currentAssignmentType, currentAssignmentMeta?.data)
 
@@ -52,6 +56,9 @@ export function asAssignments(data: Assignment[], query: QueryV1, statuses: GetS
             },
             'document.meta.core_assignment.rel.deliverable.uuid': {
               values: deliverableIds.map((id) => id.uuid)
+            },
+            'document.meta.status': {
+              values: [status?.workflowState || 'draft']
             },
             'document.meta.core_assignment.data.start': {
               values: [currentAssignmentMeta.data.start]

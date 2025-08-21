@@ -13,6 +13,7 @@ const _fields = [
   'document.meta.tt_slugline.value',
   'document.rel.section.uuid',
   'document.rel.section.title',
+  'document.meta.status',
   'document.meta.core_assignment.title',
   'document.meta.core_assignment.id',
   'document.meta.core_assignment.rel.assignee.uuid',
