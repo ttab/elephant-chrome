@@ -14,6 +14,10 @@ export function asAssignments(data: Assignment[], query: QueryV1, statuses: GetS
       const currentAssignmentMeta = doc.document?.meta.find((block) => block.id === id)
 
       if (currentAssignmentMeta && isWithinRange(currentAssignmentMeta.data.start_date, queryRange)) {
+        const deliverableIds = currentAssignmentMeta.links
+          .filter((link) => link.rel === 'deliverable')
+          .map((link) => ({ uuid: link.uuid }))
+
         const currentAssignmentType = currentAssignmentMeta?.meta.find((block) => block.type === 'core/assignment-type')?.value
         const currentStart = getStart(currentAssignmentType, currentAssignmentMeta?.data)
 
@@ -47,9 +51,7 @@ export function asAssignments(data: Assignment[], query: QueryV1, statuses: GetS
                 .map((block) => block.value)
             },
             'document.meta.core_assignment.rel.deliverable.uuid': {
-              values: currentAssignmentMeta.links
-                .filter((link) => link.rel === 'deliverable')
-                .map((link) => link.uuid)
+              values: deliverableIds.map((id) => id.uuid)
             },
             'document.meta.core_assignment.data.start': {
               values: [currentAssignmentMeta.data.start]
