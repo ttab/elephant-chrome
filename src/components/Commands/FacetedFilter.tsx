@@ -5,6 +5,7 @@ import { type Column } from '@tanstack/react-table'
 import { cn } from '@ttab/elephant-ui/utils'
 import { CommandItem } from '@ttab/elephant-ui'
 import { type SetStateAction, type Dispatch } from 'react'
+import { DocumentStatuses } from '@/defaults/documentStatuses'
 
 interface FacetedFilterProps<TData, TValue> {
   column?: Column<TData, TValue>
@@ -53,10 +54,17 @@ export const FacetedFilter = <TData, TValue>({
           >
             <CheckIcon size={18} strokeWidth={1.75} />
           </div>
-          {option.icon && (
-            <option.icon size={18} strokeWidth={1.75} />
-          )}
-          <span>{option.label}</span>
+          <div className='flex items-center gap-2'>
+            {option.icon && (
+              <option.icon
+                size={18}
+                strokeWidth={1.75}
+                color={DocumentStatuses.find((status) => status.value === option.value)?.iconProps?.color}
+                className={DocumentStatuses.find((status) => status.value === option.value)?.iconProps?.className}
+              />
+            )}
+            <span>{option.label}</span>
+          </div>
           <span className='ml-auto flex h-4 w-4 items-center justify-center font-mono text-xs'>
             {facets?.get(option.value) && (
               <span className='ml-auto flex h-4 w-4 items-center justify-center font-mono text-xs'>
