@@ -1,6 +1,7 @@
 import type { Index } from '@/shared/Index'
 import type { Session } from 'next-auth'
 import type { HitV1, QueryV1, SortingV1, SubscriptionReference } from '@ttab/elephant-api/index'
+import type { Repository } from '@/shared/Repository'
 import { withStatus } from './withStatus'
 import { withPlannings } from './withPlannings'
 import type { useDocumentsFetchOptions } from '../'
@@ -10,6 +11,7 @@ import type { Assignment } from '../schemas/assignments'
 
 export async function fetch<T extends HitV1, F>({
   index,
+  repository,
   session,
   query,
   page = 1,
@@ -22,6 +24,7 @@ export async function fetch<T extends HitV1, F>({
 }: {
   index: Index | undefined
   session: Session | null
+  repository?: Repository
   query?: QueryV1
   page?: number
   size?: number
@@ -56,10 +59,35 @@ export async function fetch<T extends HitV1, F>({
 
   let result = hits
 
-  // Format planning result as assingments
-  if (options?.asAssignments && query) {
+  // Format planning result as assignments
+  if (options?.asAssignments && query && repository) {
     // FIXME: Could this be better
-    return asAssignments(result as unknown as Assignment[], query) as unknown as T[]
+    const uuids: string[] = result.reduce((all: string[], current) => {
+      const allowedTypes = ['text', 'flash', 'editorial-info']
+
+      const ass = current.document?.meta.filter((m) => {
+        const assignmentType = m.meta.find((m) => m.type === 'core/assignment-type')?.value
+
+        if (assignmentType) {
+          return m.type === 'core/assignment' && allowedTypes.includes(assignmentType)
+        }
+
+        return false
+      })
+
+      const deliverables = ass?.map((a) => a.links?.filter((link) => link?.rel === 'deliverable').map((deliverable) => deliverable.uuid)).flat()
+      if (deliverables && deliverables.length > 0) {
+        all.push(...deliverables)
+      }
+      return all
+    }, []).flat()
+
+    const statuses = await repository.getStatuses({
+      uuids,
+      statuses: knownStatuses,
+      accessToken: session.accessToken
+    })
+    return asAssignments(result as unknown as Assignment[], query, statuses) as unknown as T[]
   }
   // Append and format statuses
   if (options?.withStatus) {

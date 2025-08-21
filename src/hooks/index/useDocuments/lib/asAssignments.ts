@@ -2,8 +2,9 @@ import type { QueryV1 } from '@ttab/elephant-api/index'
 import type { Assignment } from '../schemas/assignments'
 import { isWithinInterval, parseISO } from 'date-fns'
 import type { Block } from '@ttab/elephant-api/newsdoc'
+import type { GetStatusOverviewResponse } from '@ttab/elephant-api/repository'
 
-export function asAssignments(data: Assignment[], query: QueryV1): Assignment[] {
+export function asAssignments(data: Assignment[], query: QueryV1, statuses: GetStatusOverviewResponse | null): Assignment[] {
   const queryRange = getQueryRange(query)
 
   const aggregatedAssignments: Assignment[] = []
