@@ -8,6 +8,7 @@ import type { useDocumentsFetchOptions } from '../'
 import type { Dispatch, SetStateAction } from 'react'
 import { asAssignments } from './asAssignments'
 import type { Assignment } from '../schemas/assignments'
+import { StatusSpecifications } from '@/defaults/workflowSpecification'
 
 export async function fetch<T extends HitV1, F>({
   index,
@@ -48,6 +49,8 @@ export async function fetch<T extends HitV1, F>({
     sort,
     options
   })
+
+  const knownStatuses = Object.keys(StatusSpecifications)
 
   if (!ok) {
     throw new Error(errorMessage || 'Unknown error while fetching data')
