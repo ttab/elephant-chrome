@@ -4,36 +4,13 @@ import { toYjsNewsDoc, fromYjsNewsDoc } from '@/shared/transformations/yjsNewsDo
 
 import * as Y from 'yjs'
 
-import { planning } from './data/planning-newsdoc'
-import { articleFactbox } from './data/article-factbox-newsdoc'
-import { article } from './data/article-newsdoc'
+import { planning } from '../data/planning-newsdoc'
+import { articleFactbox } from '../data/article-factbox-newsdoc'
+import { article } from '../data/article-newsdoc'
 import { type GetDocumentResponse } from '@ttab/elephant-api/repository'
 import { Block, type Document } from '@ttab/elephant-api/newsdoc'
 import { YBlock } from '@/shared/YBlock'
-
-/*
- * Array order is not guaranteed.
- * Sorts the JSON object recursively so that we can compare the objects
- */
-function sortDocument(json: unknown): unknown {
-  if (Array.isArray(json)) {
-    return json.map(sortDocument)
-      .sort((a, b) => {
-        if (typeof a === 'object' && typeof b === 'object') {
-          return JSON.stringify(sortDocument(a)).localeCompare(JSON.stringify(sortDocument(b)))
-        }
-        return JSON.stringify(a).localeCompare(JSON.stringify(b))
-      })
-  } else if (typeof json === 'object' && json !== null) {
-    const sortedObject: Record<string, unknown> = {}
-    Object.keys(json).sort().forEach((key) => {
-      sortedObject[key] = sortDocument((json as Record<string, unknown>)[key])
-    })
-    return sortedObject
-  }
-  return json
-}
-
+import { sortDocument } from '../utils/sortDocument'
 
 describe('Transform planning GetDocumentResponse', () => {
   const groupedPlanning = toGroupedNewsDoc(planning)
