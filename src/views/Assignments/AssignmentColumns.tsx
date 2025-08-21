@@ -1,6 +1,6 @@
 import { NewsvalueMap } from '@/defaults/newsvalueMap'
 import { Newsvalue } from '@/components/Table/Items/Newsvalue'
-import { Briefcase, Clock3Icon, Crosshair, Navigation, SignalHigh, Users, Shapes } from '@ttab/elephant-ui/icons'
+import { Briefcase, Clock3Icon, Crosshair, Navigation, SignalHigh, Users, Shapes, CircleCheck } from '@ttab/elephant-ui/icons'
 import { Newsvalues } from '@/defaults/newsvalues'
 import { FacetedFilter } from '@/components/Commands/FacetedFilter'
 import { AssignmentTypes } from '@/defaults/assignmentTypes'
@@ -18,6 +18,8 @@ import { SectionBadge } from '@/components/DataItem/SectionBadge'
 import type { Assignment } from '@/hooks/index/useDocuments/schemas/assignments'
 import { parseISO } from 'date-fns'
 import { ActionMenu } from '@/components/ActionMenu'
+import { DocumentStatus } from '@/components/Table/Items/DocumentStatus'
+import { DocumentStatuses } from '@/defaults/documentStatuses'
 
 export function assignmentColumns({ authors = [], locale, timeZone, sections = [], currentDate }: {
   authors?: IDBAuthor[]
@@ -27,6 +29,34 @@ export function assignmentColumns({ authors = [], locale, timeZone, sections = [
   currentDate: Date
 }): Array<ColumnDef<Assignment>> {
   return [
+    {
+      id: 'deliverableStatus',
+      meta: {
+        Filter: ({ column, setSearch }) => (
+          <FacetedFilter column={column} setSearch={setSearch} />
+        ),
+        options: DocumentStatuses,
+        name: 'Status',
+        columnIcon: CircleCheck,
+        className: 'flex-none',
+        display: (value: string) => (
+          <span>
+            <DocumentStatus type='core/article' status={value} />
+          </span>
+        )
+      },
+      accessorFn: (data) => {
+        const currentStatus = data?.fields['document.meta.status']?.values[0]
+        return currentStatus
+      },
+      cell: ({ row }) => {
+        const status = row.getValue<string>('deliverableStatus')
+        return <DocumentStatus type='core/article' status={status} />
+      },
+      filterFn: (row, id, value: string[]) =>
+        value.includes(row.getValue(id)),
+      enableColumnFilter: true
+    },
     // Used for start time grouping
     {
       id: 'startTime',
