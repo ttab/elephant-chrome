@@ -26,9 +26,6 @@
     "preview": "vite preview"
   },
   "overrides": {
-    "vite": {
-      "rollup": "npm:@rollup/wasm-node"
-    },
     "@grafana/faro-web-sdk": "$@grafana/faro-react",
     "@grafana/faro-core": "$@grafana/faro-react"
   },
