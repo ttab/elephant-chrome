@@ -9,6 +9,7 @@ export interface Context {
   agent: string
   accessToken: string
   user: User
+  loadedFromCache?: boolean
 }
 
 /**

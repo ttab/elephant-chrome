@@ -69,7 +69,7 @@ export type StatelessAuth = z.infer<typeof StatelessAuthSchema>
 type StatelessMessage = z.infer<typeof StatelessMessageSchema>
 type StatelessInProgress = z.infer<typeof StatelessInProgressSchema>
 
-type inProgressMessage = z.infer<typeof inProgressMessageSchema>
+export type inProgressMessage = z.infer<typeof inProgressMessageSchema>
 type authMessage = z.infer<typeof authMessageSchema>
 
 type StatelessPayload = StatelessAuth | StatelessMessage | StatelessInProgress

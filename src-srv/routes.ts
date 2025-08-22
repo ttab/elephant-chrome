@@ -3,7 +3,7 @@ import path from 'node:path'
 import type { Request, Response } from 'express'
 import type { Application, WebsocketRequestHandler } from 'express-ws'
 import type { Repository } from '@/shared/Repository.js'
-import type { CollaborationServer } from './utils/CollaborationServer.js'
+import type { CollaborationServer } from './collaboration/CollaborationServer.js'
 import type { RedisCache } from './utils/RedisCache.js'
 import logger from './lib/logger.js'
 

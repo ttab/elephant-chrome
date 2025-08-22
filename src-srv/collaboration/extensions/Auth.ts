@@ -7,7 +7,7 @@ import {
 } from '@hocuspocus/server'
 import { decodeJwt } from 'jose'
 import { type JWT } from '@auth/core/jwt'
-import type { OidcConfig } from '../authConfig.js'
+import type { OidcConfig } from '../../utils/authConfig.js'
 
 export class Auth implements Extension {
   oidc: OidcConfig

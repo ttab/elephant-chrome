@@ -117,7 +117,7 @@ export async function runServer(): Promise<string> {
     name: 'Elephant',
     port: PORT,
     redisUrl: REDIS_URL,
-    redisCache: cache,
+    cache,
     repository,
     expressServer: app,
     authInfo: authInfo,
