@@ -1,4 +1,4 @@
-import type { LocaleData } from '@/types/index'
+import type { LocaleData, View } from '@/types/index'
 import { type ViewMetadata } from '@/types/index'
 import { Badge } from '@ttab/elephant-ui'
 import { useRef } from 'react'
@@ -7,10 +7,14 @@ import { useRegistry } from '@/hooks/useRegistry'
 import { handleLink } from '@/components/Link/lib/handleLink'
 import { useHistory, useNavigation, useView } from '@/hooks/index'
 import { cn } from '@ttab/elephant-ui/utils'
-import { ActionMenu } from '@/components/ActionMenu'
 import type { HitV1 } from '@ttab/elephant-api/index'
 import { useDeliverablePlanningId } from '@/hooks/index/useDeliverablePlanningId'
 import { useLatest } from './hooks/useLatest'
+import { CalendarDays, Library, Pen } from '@ttab/elephant-ui/icons'
+import { CreatePrintArticle } from '@/components/CreatePrintArticle'
+import { useModal } from '@/components/Modal/useModal'
+import { ActionMenu } from '@/components/ActionMenu'
+import { documentTypeLinkTarget } from '@/lib/documentTypeLinkTarget'
 
 const meta: ViewMetadata = {
   name: 'Latest',
@@ -52,6 +56,7 @@ const Content = ({ documents, locale }: {
 
   const origin = useRef(history.state?.viewId)
 
+
   function getLocalizedDate(date: Date, locale: LocaleData): string | undefined {
     if (!locale.module) {
       console.warn(`Locale ${locale.code.full} not supported.`)
@@ -75,6 +80,14 @@ const Content = ({ documents, locale }: {
         const slugline = item.fields['document.meta.tt_slugline.value']?.values[0]
         const section = item.fields['document.rel.section.title']?.values[0]
         const uri = item.fields['document.uri']?.values[0]
+        // Workaround, document.type is not indexed for core/flash
+        const type = item.fields['document.type']?.values[0]
+          ? item.fields['document.type'].values[0]
+          : uri.startsWith('core://flash')
+            ? 'core/flash'
+            : undefined
+
+        const linkTarget = documentTypeLinkTarget(type)
 
         return (
           <div
@@ -89,7 +102,7 @@ const Content = ({ documents, locale }: {
 
               handleLink({
                 dispatch,
-                viewItem: state.viewRegistry.get('Editor'),
+                viewItem: state.viewRegistry.get(linkTarget.to),
                 props: { id, version: lastUsableVersion?.toString() },
                 viewId: crypto.randomUUID(),
                 history,
@@ -112,7 +125,7 @@ const Content = ({ documents, locale }: {
                     className='bg-background rounded-md text-muted-foreground font-normal text-sm whitespace-nowrap'
                     data-row-action
                   >
-                    {uri.startsWith('core://flash') ? 'TT-FLASH' : slugline}
+                    {type === 'core/flash' ? 'TT-FLASH' : slugline}
                   </Badge>
 
                   <div>
@@ -121,7 +134,7 @@ const Content = ({ documents, locale }: {
                 </div>
               </div>
             </div>
-            <Menu articleId={id} />
+            <Menu documentId={id} documentType={type} linkTarget={linkTarget} />
           </div>
         )
       }
@@ -130,26 +143,50 @@ const Content = ({ documents, locale }: {
   )
 }
 
-const Menu = ({ articleId }: { articleId: string }): JSX.Element => {
-  const planningId = useDeliverablePlanningId(articleId)
-  return (
-    <div className='shrink p-'>
-      <ActionMenu
-        actions={[
-          {
-            to: 'Editor',
-            id: articleId,
-            title: 'Öppna artikel'
-          },
+const Menu = ({ documentId, documentType }: {
+  documentId: string
+  documentType?: string
+  linkTarget: {
+    to: View
+    label: string
+  }
+}): JSX.Element => {
+  const planningId = useDeliverablePlanningId(documentId)
+  const { showModal, hideModal } = useModal()
 
-          {
-            to: 'Planning',
-            id: planningId,
-            title: 'Öppna planering'
-          }
-        ]}
-      />
-    </div>
+  const linkTarget = documentTypeLinkTarget(documentType)
+
+  return (
+    <ActionMenu actions={[
+      {
+        title: `Öppna ${linkTarget.label}`,
+        icon: Pen,
+        to: linkTarget.to,
+        id: documentId
+      },
+      {
+        title: 'Öppna planering',
+        icon: CalendarDays,
+        to: 'Planning',
+        id: planningId
+      },
+      {
+        title: 'Skapa printartikel',
+        icon: Library,
+        disabled: documentType !== 'core/article',
+        onClick: () => {
+          showModal(
+            <CreatePrintArticle
+              asDialog
+              onDialogClose={hideModal}
+              id={documentId}
+            />
+          )
+        }
+
+      }
+    ]}
+    />
   )
 }
 

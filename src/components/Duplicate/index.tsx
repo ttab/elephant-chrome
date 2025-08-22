@@ -5,8 +5,8 @@ import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
 import type { HocuspocusProvider } from '@hocuspocus/provider'
 import type { Session } from 'next-auth'
-import { CopyPlus } from '@ttab/elephant-ui/icons'
-import { ToastAction } from '@/views/Flash/ToastAction'
+import { CalendarPlus2, CopyPlus } from '@ttab/elephant-ui/icons'
+import { ToastAction } from '@/components/ToastAction'
 import type { EventData } from '@/views/Event/components/EventTime'
 import type { PlanningData } from '@/types/index'
 import { type SetStateAction, type Dispatch } from 'react'
@@ -172,8 +172,16 @@ export const Duplicate = ({ provider, title, session, status, type, dataInfo }: 
                   await repository.saveDocument(duplicatedDocument, session.accessToken).catch((err) => console.error(err))
                 })()
 
-                toast.success(createTexts(granularity).success, {
-                  action: <ToastAction planningId={type === 'Planning' ? duplicateId : undefined} eventId={type === 'Event' ? duplicateId : undefined} />
+                toast.success(`Händelsen "${title}" kopierades till ${format(duplicateDate.from, 'dd/MM/yyyy')}`, {
+                  action: (
+                    <ToastAction actions={[{
+                      label: 'Öppna kopia',
+                      view: 'Event',
+                      props: { id: duplicateId },
+                      icon: CalendarPlus2
+                    }]}
+                    />
+                  )
                 })
               } catch (error) {
                 toast.error(`Något gick fel: ${JSON.stringify(error)}`)

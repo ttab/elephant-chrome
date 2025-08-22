@@ -1,4 +1,5 @@
-import { Pen, CalendarDaysIcon, MoreHorizontal } from '@ttab/elephant-ui/icons'
+import type { LucideIcon } from '@ttab/elephant-ui/icons'
+import { MoreHorizontal } from '@ttab/elephant-ui/icons'
 
 import {
   Button,
@@ -9,12 +10,16 @@ import {
 } from '@ttab/elephant-ui'
 
 import { Link } from '@/components/index'
+import type { View } from '../types'
 
 export const ActionMenu = ({ actions }: {
   actions: Array<{
-    to: 'Planning' | 'Editor'
-    id: string
+    to?: View
+    id?: string
+    icon: LucideIcon
     title: string
+    onClick?: () => void
+    disabled?: boolean
   }>
 }): JSX.Element => {
   return (
@@ -30,21 +35,56 @@ export const ActionMenu = ({ actions }: {
       </DropdownMenuTrigger>
 
       <DropdownMenuContent className='w-56'>
-        {actions.map(({ to, id, title }) => {
-          const Icon = (to === 'Planning') ? CalendarDaysIcon : Pen
-
+        {actions.map((action) => {
           return (
-            <DropdownMenuItem key={id}>
-              <Link to={to} target='last' props={{ id }} className='flex flex-row gap-5'>
-                <div className='pt-1'>
-                  <Icon size={14} strokeWidth={1.5} className='shrink' />
-                </div>
-                <div className='grow'>{title}</div>
-              </Link>
-            </DropdownMenuItem>
+            <ActionItem action={action} key={action.title} />
           )
         })}
       </DropdownMenuContent>
     </DropdownMenu>
+  )
+}
+
+const ActionItem = ({ action }: {
+  action: {
+    title: string
+    icon: LucideIcon
+    to?: View
+    id?: string
+    onClick?: () => void
+    disabled?: boolean
+  }
+}): JSX.Element | null => {
+  return (
+    <DropdownMenuItem
+      asChild
+      disabled={action.disabled}
+      onClick={(event) => {
+        if (action.onClick) {
+          event.stopPropagation()
+          action.onClick()
+        }
+      }}
+    >
+      {action.to
+        ? (
+            <Link to={action.to} target='last' props={{ id: action.id }} className='flex flex-row gap-5'>
+              <div className='pt-1'>
+                <action.icon size={14} strokeWidth={1.5} className='shrink' />
+              </div>
+              <div className='grow'>{action.title}</div>
+            </Link>
+          )
+        : action.onClick
+          ? (
+              <div className='flex flex-row gap-5'>
+                <div className='pt-1'>
+                  <action.icon size={14} strokeWidth={1.5} className='shrink' />
+                </div>
+                <div className='grow'>{action.title}</div>
+              </div>
+            )
+          : null}
+    </DropdownMenuItem>
   )
 }
