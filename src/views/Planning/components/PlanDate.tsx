@@ -1,7 +1,7 @@
 import { DatePicker } from '@/components/Datepicker'
 import type { FormProps } from '@/components/Form/Root'
 import { useRegistry, useYValue } from '@/hooks'
-import { newLocalDate, parseDate } from '@/lib/datetime'
+import { newLocalDate, parseDate } from '@/shared/datetime'
 
 type PlanDateProps = FormProps & (
   | { onValueChange: (newValue: string) => void, onChange?: never }

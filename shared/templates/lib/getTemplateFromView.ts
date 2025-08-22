@@ -1,6 +1,6 @@
 import { type View } from '@/types/index'
 import type { Document } from '@ttab/elephant-api/newsdoc'
-import * as Templates from '@/defaults/templates'
+import * as Templates from '@/shared/templates'
 
 export function getTemplateFromView(type: View): (id: string, payload?: Templates.TemplatePayload) => Document {
   switch (type) {

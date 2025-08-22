@@ -10,7 +10,7 @@ import { type DefaultValueOption } from '@/types/index'
 import { PrintArticleStatuses } from '@/defaults/documentStatuses'
 import { useQuery } from '@/hooks/useQuery'
 import { useDocuments } from '@/hooks/index/useDocuments'
-import { type PrintFlow, type PrintFlowFields, fields } from '@/hooks/index/useDocuments/schemas/printFlow'
+import { type PrintFlow, type PrintFlowFields, fields } from '@/shared/schemas/printFlow'
 import { toast } from 'sonner'
 
 interface SelectedBase {

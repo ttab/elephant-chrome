@@ -1,11 +1,11 @@
 import type { HocuspocusProvider } from '@hocuspocus/provider'
 import type { Session } from 'next-auth'
 import { getValueByYPath } from '@/shared/yUtils'
-import type { Wire } from '@/hooks/index/useDocuments/schemas/wire'
+import type { Wire } from '@/shared/schemas/wire'
 import { toast } from 'sonner'
 import { ToastAction } from '../ToastAction'
 import { addAssignmentWithDeliverable } from '@/lib/index/addAssignment'
-import { convertToISOStringInTimeZone } from '@/lib/datetime'
+import { convertToISOStringInTimeZone } from '@/shared/datetime'
 
 export async function createArticle({
   provider: articleProvider,

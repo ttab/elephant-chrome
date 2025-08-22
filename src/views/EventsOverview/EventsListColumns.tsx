@@ -1,5 +1,5 @@
 import { type ColumnDef } from '@tanstack/react-table'
-import { type Event } from '@/hooks/index/useDocuments/schemas/event'
+import { type Event } from '@/shared/schemas/event'
 import { Newsvalue } from '@/components/Table/Items/Newsvalue'
 import { type MouseEvent } from 'react'
 import {

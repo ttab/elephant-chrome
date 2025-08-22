@@ -1,11 +1,11 @@
 import { AwarenessDocument } from '@/components'
 import type { ViewMetadata, ViewProps } from '@/types/index'
 import { WireViewContent } from './WireViewContent'
-import * as Templates from '@/defaults/templates'
-import { createDocument } from '@/lib/createYItem'
+import * as Templates from '@/shared/templates'
+import { createDocument } from '@/shared/createYItem'
 import { useMemo } from 'react'
 import { Block } from '@ttab/elephant-api/newsdoc'
-import type { Wire as WireType } from '@/hooks/index/useDocuments/schemas/wire'
+import type { Wire as WireType } from '@/shared/schemas/wire'
 
 const meta: ViewMetadata = {
   name: 'Wire',

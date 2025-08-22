@@ -3,11 +3,11 @@ import { useQuery } from '@/hooks'
 
 import { Table } from '@/components/Table'
 import type { ColumnDef } from '@tanstack/react-table'
-import type { Factbox, FactboxFields } from '@/hooks/index/useDocuments/schemas/factbox'
+import type { Factbox, FactboxFields } from '@/shared/schemas/factbox'
 import { Toolbar } from './Toolbar'
 import { useDocuments } from '@/hooks/index/useDocuments'
 import { constructQuery } from '@/hooks/index/useDocuments/queries/views/factboxes'
-import { fields } from '@/hooks/index/useDocuments/schemas/factbox'
+import { fields } from '@/shared/schemas/factbox'
 
 
 export const FactboxList = ({ columns }: {

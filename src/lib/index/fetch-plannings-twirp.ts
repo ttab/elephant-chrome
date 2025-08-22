@@ -4,7 +4,7 @@ import { QueryV1, BoolQueryV1, MultiMatchQueryV1, RangeQueryV1 } from '@ttab/ele
 import type { Session } from 'next-auth'
 import { toast } from 'sonner'
 import type { LocaleData } from '@/types/index'
-import { dateInTimestampOrShortMonthDayYear } from '../datetime'
+import { dateInTimestampOrShortMonthDayYear } from '../../../shared/datetime'
 import { UTCDate } from '@date-fns/utc'
 
 export const fetch = async (

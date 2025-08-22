@@ -1,7 +1,7 @@
 // src/hooks/index/eventHandlers.ts
 import type { EventlogItem } from '@ttab/elephant-api/repository'
 import type { Repository } from '@/shared/Repository'
-import type { Wire } from '@/hooks/index/useDocuments/schemas/wire'
+import type { Wire } from '@/shared/schemas/wire'
 import type { Session } from 'next-auth'
 
 const TIMEOUT = 5000

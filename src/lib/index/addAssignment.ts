@@ -1,4 +1,4 @@
-import type { Wire } from '@/hooks/index/useDocuments/schemas/wire'
+import type { Wire } from '@/shared/schemas/wire'
 import { toast } from 'sonner'
 
 const BASE_URL = import.meta.env.BASE_URL || ''

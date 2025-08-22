@@ -15,9 +15,9 @@ import { Toolbar } from './Toolbar'
 import type { ColumnDef } from '@tanstack/react-table'
 import { createSearchColumns } from './lib/createSearchColumns'
 import type { SearchKeys } from '@/hooks/index/useDocuments/queries/views/search'
-import type { Planning } from '@/hooks/index/useDocuments/schemas/planning'
-import type { Event } from '@/hooks/index/useDocuments/schemas/event'
-import type { Article } from '@/hooks/index/useDocuments/schemas/article'
+import type { Planning } from '@/shared/schemas/planning'
+import type { Event } from '@/shared/schemas/event'
+import type { Article } from '@/shared/schemas/article'
 
 const meta: ViewMetadata = {
   name: 'Search',

@@ -1,7 +1,7 @@
 import type { HocuspocusProvider } from '@hocuspocus/provider'
 import type { Session } from 'next-auth'
 import { getValueByYPath } from '@/shared/yUtils'
-import { convertToISOStringInTimeZone } from '@/lib/datetime'
+import { convertToISOStringInTimeZone } from '@/shared/datetime'
 import { toast } from 'sonner'
 import { ToastAction } from '../ToastAction'
 import { addAssignmentWithDeliverable } from '@/lib/index/addAssignment'

@@ -10,7 +10,7 @@ import {
 } from '@ttab/elephant-ui'
 import { timePickTypes } from '../../defaults/assignmentTimeConstants'
 import { useYValue } from '@/hooks/useYValue'
-import { dateToReadableDateTime, createDateWithTime } from '@/lib/datetime'
+import { dateToReadableDateTime, createDateWithTime } from '@/shared/datetime'
 import { useRegistry } from '@/hooks'
 import { type AssignmentData } from './types'
 import { TimeInput } from '../TimeInput'

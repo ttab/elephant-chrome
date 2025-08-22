@@ -20,6 +20,7 @@
   "include": [
     "./**/*.ts",
     "../eslint.config.mjs",
-    "../src/types/next-auth.d.ts"
+    "../src/types/next-auth.d.ts",
+    "../shared/createYItem.ts"
   ],
 }

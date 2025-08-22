@@ -9,7 +9,7 @@ import type { FilterProps } from '@/components/Filter'
 import { DatePicker } from '@/components/Datepicker'
 import { useMemo } from 'react'
 import type { SearchKeys } from '@/hooks/index/useDocuments/queries/views/search'
-import { parseDate } from '@/lib/datetime'
+import { parseDate } from '@/shared/datetime'
 
 export const Commands = (props: FilterProps & { type: SearchKeys }): JSX.Element => {
   if (props.page === undefined || props.pages === undefined || props.setPages === undefined || props.setSearch === undefined) {

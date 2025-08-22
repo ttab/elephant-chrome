@@ -14,7 +14,7 @@ import { fromGroupedNewsDoc, toGroupedNewsDoc } from '@/shared/transformations/g
 import { Block, type Document } from '@ttab/elephant-api/newsdoc'
 import * as Y from 'yjs'
 import { format } from 'date-fns'
-import { getDateTimeBoundaries } from '@/lib/datetime'
+import { getDateTimeBoundaries } from '@/shared/datetime'
 
 export const DuplicatePrompt = ({
   provider,

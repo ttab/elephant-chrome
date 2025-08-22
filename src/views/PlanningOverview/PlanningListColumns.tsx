@@ -1,6 +1,6 @@
 
 import { type ColumnDef } from '@tanstack/react-table'
-import { type Planning } from '@/hooks/index/useDocuments/schemas/planning'
+import { type Planning } from '@/shared/schemas/planning'
 import { Newsvalue } from '@/components/Table/Items/Newsvalue'
 import { Title } from '@/components/Table/Items/Title'
 import { Assignees } from '@/components/Table/Items/Assignees'

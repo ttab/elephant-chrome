@@ -1,6 +1,13 @@
 import type { QueryParams } from '@/hooks/useQuery'
-import { QueryV1, BoolQueryV1, TermsQueryV1, MultiMatchQueryV1, SortingV1, RangeQueryV1 } from '@ttab/elephant-api/index'
-import { fields } from '../../../schemas/event'
+import {
+  QueryV1,
+  BoolQueryV1,
+  TermsQueryV1,
+  MultiMatchQueryV1,
+  SortingV1,
+  RangeQueryV1
+} from '@ttab/elephant-api/index'
+import { fields } from '@/shared/schemas/event'
 
 /**
  * Constructs a query object based on the provided filter parameters.

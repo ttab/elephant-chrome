@@ -1,4 +1,4 @@
-import { dateToReadableTime, dateToReadableDateTime } from '@/lib/datetime'
+import { dateToReadableTime, dateToReadableDateTime } from '@/shared/datetime'
 
 const isSameDate = (fromDate: string, toDate: string): boolean => {
   const f = new Date(fromDate)

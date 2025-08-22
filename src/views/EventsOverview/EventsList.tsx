@@ -1,7 +1,7 @@
 import { useCallback, useMemo } from 'react'
 import { useOrganisers, useQuery, useRegistry, useSections } from '@/hooks'
-import type { EventFields } from '@/hooks/index/useDocuments/schemas/event'
-import { type Event, fields } from '@/hooks/index/useDocuments/schemas/event'
+import type { EventFields } from '@/shared/schemas/event'
+import { type Event, fields } from '@/shared/schemas/event'
 import { constructQuery } from '@/hooks/index/useDocuments/queries/views/events'
 import { eventTableColumns } from '@/views/EventsOverview/EventsListColumns'
 
@@ -9,7 +9,7 @@ import { Table } from '@/components/Table'
 import { useDocuments } from '@/hooks/index/useDocuments'
 import { SortingV1 } from '@ttab/elephant-api/index'
 import { toast } from 'sonner'
-import { getUTCDateRange } from '@/lib/datetime'
+import { getUTCDateRange } from '@/shared/datetime'
 
 export const EventsList = (): JSX.Element => {
   const sections = useSections()
