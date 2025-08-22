@@ -59,7 +59,7 @@ export const Header = ({ assigneeId, type }: {
       <DateChanger type={type} />
 
       {type === 'Assignments'
-      && <PersonalAssignmentsFilter assigneeId={assigneeId} />}
+        && <PersonalAssignmentsFilter assigneeId={assigneeId} />}
     </>
   )
 }

@@ -35,14 +35,14 @@ export const ContextMenu = ({ className }: { className?: string }): JSX.Element 
       <ContextMenuGroup>
         <>
           {spelling.suggestions.length === 0
-          && <ContextMenuItem apply={() => { }}>Inga förslag</ContextMenuItem>}
+            && <ContextMenuItem apply={() => { }}>Inga förslag</ContextMenuItem>}
         </>
         <>
           {spelling.suggestions.map((suggestion) => (
             <ContextMenuItem key={suggestion.text} apply={() => { spelling.apply(suggestion.text) }}>
               {suggestion.text}
               {!!suggestion.description
-              && <span className='em text-muted-foreground text-xs max-w-60 pt-1'>{suggestion.description}</span>}
+                && <span className='em text-muted-foreground text-xs max-w-60 pt-1'>{suggestion.description}</span>}
             </ContextMenuItem>
           ))}
         </>
