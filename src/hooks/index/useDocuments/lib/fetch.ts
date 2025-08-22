@@ -8,7 +8,7 @@ import type { useDocumentsFetchOptions } from '../'
 import type { Dispatch, SetStateAction } from 'react'
 import { asAssignments } from './asAssignments'
 import type { Assignment } from '../schemas/assignments'
-import { StatusSpecifications } from '@/defaults/workflowSpecification'
+import { getDeliverableStatuses } from './getDeliverableStatuses'
 
 export async function fetch<T extends HitV1, F>({
   index,
@@ -50,8 +50,6 @@ export async function fetch<T extends HitV1, F>({
     options
   })
 
-  const knownStatuses = Object.keys(StatusSpecifications)
-
   if (!ok) {
     throw new Error(errorMessage || 'Unknown error while fetching data')
   }
@@ -63,33 +61,8 @@ export async function fetch<T extends HitV1, F>({
   let result = hits
 
   // Format planning result as assignments
-  if (options?.asAssignments && query && repository) {
-    // FIXME: Could this be better
-    const uuids: string[] = result.reduce((all: string[], current) => {
-      const allowedTypes = ['text', 'flash', 'editorial-info']
-
-      const ass = current.document?.meta.filter((m) => {
-        const assignmentType = m.meta.find((m) => m.type === 'core/assignment-type')?.value
-
-        if (assignmentType) {
-          return m.type === 'core/assignment' && allowedTypes.includes(assignmentType)
-        }
-
-        return false
-      })
-
-      const deliverables = ass?.map((a) => a.links?.filter((link) => link?.rel === 'deliverable').map((deliverable) => deliverable.uuid)).flat()
-      if (deliverables && deliverables.length > 0) {
-        all.push(...deliverables)
-      }
-      return all
-    }, []).flat()
-
-    const statuses = await repository.getStatuses({
-      uuids,
-      statuses: knownStatuses,
-      accessToken: session.accessToken
-    })
+  if (options?.asAssignments && query) {
+    const statuses = await getDeliverableStatuses({ result, repository, session })
     return asAssignments(result as unknown as Assignment[], query, statuses) as unknown as T[]
   }
   // Append and format statuses
