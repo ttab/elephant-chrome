@@ -93,7 +93,7 @@ export const CreatePrintArticle = ({ id, asDialog, onDialogClose, className }: V
 
         <ViewHeader.Action onDialogClose={onDialogClose}>
           {!asDialog && !!id
-          && <ViewHeader.RemoteUsers documentId={id} />}
+            && <ViewHeader.RemoteUsers documentId={id} />}
         </ViewHeader.Action>
       </ViewHeader.Root>
 

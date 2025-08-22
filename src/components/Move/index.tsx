@@ -149,7 +149,7 @@ export const Move = (props: ViewProps & {
 
         <ViewHeader.Action onDialogClose={props.onDialogClose} asDialog={props.asDialog}>
           {!props.asDialog && !!props.id
-          && <ViewHeader.RemoteUsers documentId={props.id} />}
+            && <ViewHeader.RemoteUsers documentId={props.id} />}
         </ViewHeader.Action>
       </ViewHeader.Root>
 
@@ -185,18 +185,18 @@ export const Move = (props: ViewProps & {
               </ComboBox>
 
               {!!selectedPlanning
-              && (
-                <>
-                  <Button
-                    variant='ghost'
-                    asChild
-                    className='text-muted-foreground flex size-4 p-0 data-[state=open]:bg-muted hover:bg-accent2'
-                    onClick={handleClearPlanning}
-                  >
-                    <CircleXIcon size={18} strokeWidth={1.75} />
-                  </Button>
-                </>
-              )}
+                && (
+                  <>
+                    <Button
+                      variant='ghost'
+                      asChild
+                      className='text-muted-foreground flex size-4 p-0 data-[state=open]:bg-muted hover:bg-accent2'
+                      onClick={handleClearPlanning}
+                    >
+                      <CircleXIcon size={18} strokeWidth={1.75} />
+                    </Button>
+                  </>
+                )}
               <>
                 <Checkbox
                   id='SearchOlder'

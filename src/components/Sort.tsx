@@ -62,15 +62,15 @@ export const Sort = <TData,>() => {
               onValueChange={handleQuickSortChange}
             >
               {sortableColumns.find((column) => column.id === 'startTime')
-              && (
-                <ToggleGroupItem
-                  value='startTime'
-                  aria-label='Sortera efter tid'
-                  className='border data-[state=off]:text-muted-foreground'
-                >
-                  Tid
-                </ToggleGroupItem>
-              )}
+                && (
+                  <ToggleGroupItem
+                    value='startTime'
+                    aria-label='Sortera efter tid'
+                    className='border data-[state=off]:text-muted-foreground'
+                  >
+                    Tid
+                  </ToggleGroupItem>
+                )}
               <ToggleGroupItem
                 value='newsvalue'
                 aria-label='Sortera efter nyhetsvärde'

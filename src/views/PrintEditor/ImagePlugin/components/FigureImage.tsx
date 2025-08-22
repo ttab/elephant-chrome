@@ -53,45 +53,45 @@ export const FigureImage = ({ editor, children, rootNode, options }: Plugin.Comp
         <img width='100%' src={attachmentDetails?.downloadLink} />
 
         {!!attachmentDetails?.downloadLink
-        && (
-          <>
-            {/* Overlay with cutout for crop area */}
-            {crop && <Crop.VisualCrop crop={crop} />}
+          && (
+            <>
+              {/* Overlay with cutout for crop area */}
+              {crop && <Crop.VisualCrop crop={crop} />}
 
-            {/* Focus point indicator */}
-            {focus && <Crop.VisualFocus focus={focus} />}
+              {/* Focus point indicator */}
+              {focus && <Crop.VisualFocus focus={focus} />}
 
-            <Crop.Dialog
-              src={attachmentDetails?.downloadLink}
-              area={crop}
-              point={focus}
-              onChange={({ crop, focus }) => {
+              <Crop.Dialog
+                src={attachmentDetails?.downloadLink}
+                area={crop}
+                point={focus}
+                onChange={({ crop, focus }) => {
                 // @ts-expect-error Fix needed in Textbit to handle type better
-                const n = editor.children.findIndex((child: Descendant) => child.id === rootNode?.id)
-                if (n < 0) {
-                  return
-                }
+                  const n = editor.children.findIndex((child: Descendant) => child.id === rootNode?.id)
+                  if (n < 0) {
+                    return
+                  }
 
-                // Convert back to string format for storage
-                const cropString = crop ? `${crop.x} ${crop.y} ${crop.w} ${crop.h}` : undefined
-                const focusString = focus ? `${focus.x} ${focus.y}` : undefined
+                  // Convert back to string format for storage
+                  const cropString = crop ? `${crop.x} ${crop.y} ${crop.w} ${crop.h}` : undefined
+                  const focusString = focus ? `${focus.x} ${focus.y}` : undefined
 
-                Transforms.setNodes(
-                  editor as Editor,
-                  {
+                  Transforms.setNodes(
+                    editor as Editor,
+                    {
                     // @ts-expect-error Fix needed in Textbit to handle type better
-                    properties: {
-                      ...rootNode.properties,
-                      crop: cropString,
-                      focus: focusString
-                    }
-                  },
-                  { at: [n] }
-                )
-              }}
-            />
-          </>
-        )}
+                      properties: {
+                        ...rootNode.properties,
+                        crop: cropString,
+                        focus: focusString
+                      }
+                    },
+                    { at: [n] }
+                  )
+                }}
+              />
+            </>
+          )}
       </div>
       {children}
     </div>
