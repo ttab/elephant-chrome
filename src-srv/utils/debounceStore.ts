@@ -1,5 +1,3 @@
-// debounce.ts
-
 type DebounceFunction<T extends (...args: never[]) => void> = (...args: Parameters<T>) => void
 
 interface DebounceWithMaxTimeOptions {
