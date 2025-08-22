@@ -59,7 +59,7 @@ export const useDocuments = <T extends HitV1, F>({ documentType, query, size, pa
   options?: useDocumentsFetchOptions
 }): SWRResponse<T[], Error> => {
   const { data: session } = useSession()
-  const { index } = useRegistry()
+  const { index, repository } = useRegistry()
   const { setData } = useTable<T>()
   const [subscriptions, setSubscriptions] = useState<SubscriptionReference[]>()
   const subscriptionsRef = useRef<SubscriptionReference[] | undefined>(subscriptions)
@@ -74,6 +74,7 @@ export const useDocuments = <T extends HitV1, F>({ documentType, query, size, pa
   const fetcher = useMemo(() => (): Promise<T[]> =>
     fetch<T, F>({
       index,
+      repository,
       session,
       page,
       size,
@@ -84,7 +85,7 @@ export const useDocuments = <T extends HitV1, F>({ documentType, query, size, pa
       options,
       setSubscriptions
     }),
-  [index, session, page, size, documentType, query, fields, sort, options])
+  [index, repository, session, page, size, documentType, query, fields, sort, options])
 
   const { data, error, mutate, isLoading, isValidating } = useSWR<T[], Error>(key, fetcher)
 
