@@ -44,10 +44,18 @@ export function planningListColumns({ sections = [], authors = [] }: {
         )
       },
       accessorFn: (data) => {
-        if (data?.fields['heads.usable.version']?.values[0] === '-1') {
+        const currentStatus = data?.fields['document.meta.status']?.values[0]
+        const isUnpublished = data?.fields['heads.usable.version']?.values[0] === '-1'
+        if (currentStatus === 'usable' && isUnpublished) {
+          const lastModified = data?.fields['modified']?.values[0]
+          const lastUsableCreated = data?.fields['heads.usable.created']?.values[0]
+
+          if (lastModified > lastUsableCreated) {
+            return 'draft'
+          }
           return 'unpublished'
         }
-        return data?.fields['document.meta.status']?.values[0]
+        return currentStatus
       },
       cell: ({ row }) => {
         const status = row.getValue<string>('documentStatus')

@@ -28,8 +28,9 @@ import { Form } from '@/components/Form'
 import { EventTimeMenu } from './components/EventTime'
 import { useCallback, useEffect } from 'react'
 import { EventHeader } from './EventHeader'
-import { DuplicatesTable } from './components/DuplicatesTable'
+import { DuplicatesTable } from '../../components/DuplicatesTable'
 import { Cancel } from './components/Cancel'
+import { CopyGroup } from '../../components/CopyGroup'
 
 const meta: ViewMetadata = {
   name: 'Event',
@@ -78,6 +79,7 @@ const EventViewContent = (props: ViewProps & { documentId: string }): JSX.Elemen
   const { data, status } = useSession()
   const [, setIsFocused] = useAwareness(props.documentId)
   const [eventTitle] = useYValue<string | undefined>('root.title')
+  const [copyGroupId] = useYValue<string | undefined>('meta.core/copy-group[0].uuid')
   const [cancelled, setCancelled] = useYValue<string | undefined>('meta.core/event[0].data.cancelled')
   const [isChanged] = useYValue<boolean>('root.changed')
 
@@ -135,7 +137,6 @@ const EventViewContent = (props: ViewProps & { documentId: string }): JSX.Elemen
         title={eventTitle}
         provider={provider}
         session={data}
-        type='event'
         status={status}
         isChanged={isChanged}
       />
@@ -174,7 +175,8 @@ const EventViewContent = (props: ViewProps & { documentId: string }): JSX.Elemen
 
           <Form.Table>
             <PlanningTable provider={provider} asDialog={props.asDialog} documentId={props.documentId} />
-            <DuplicatesTable documentId={props.documentId} />
+            {!props.asDialog && <DuplicatesTable documentId={props.documentId} type='core/event' />}
+            {copyGroupId && !props.asDialog && <CopyGroup copyGroupId={copyGroupId} type='core/event' />}
           </Form.Table>
 
           <Form.Footer>

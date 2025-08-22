@@ -3,8 +3,8 @@ const BASE_URL = import.meta.env.BASE_URL || ''
 interface ServerUrls {
   webSocketUrl: URL
   indexUrl: URL
-  repositoryEventsUrl: URL
   repositoryUrl: URL
+  repositoryEventsUrl: URL
   contentApiUrl: URL
   spellcheckUrl: URL
   userUrl: URL
@@ -20,42 +20,28 @@ export async function getServerUrls(): Promise<ServerUrls> {
   }
 
   try {
-    const {
-      indexUrl,
-      repositoryUrl,
-      webSocketUrl,
-      contentApiUrl,
-      spellcheckUrl,
-      userUrl,
-      faroUrl,
-      baboonUrl
-    } = await response.json() as ServerUrls
+    const servers = await response.json() as Record<string, string>
+    const attributes = [
+      'webSocketUrl', 'indexUrl', 'repositoryUrl', 'contentApiUrl',
+      'spellcheckUrl', 'userUrl', 'faroUrl', 'baboonUrl'
+    ]
 
+    const urls = {} as Record<string, URL>
 
-    if (typeof indexUrl !== 'string' || indexUrl === ''
-      || typeof repositoryUrl !== 'string' || repositoryUrl === ''
-      || typeof webSocketUrl !== 'string' || webSocketUrl === ''
-      || typeof contentApiUrl !== 'string' || contentApiUrl === ''
-      || typeof spellcheckUrl !== 'string' || spellcheckUrl === ''
-      || typeof userUrl !== 'string' || userUrl === ''
-      || typeof faroUrl !== 'string' || faroUrl === ''
-      || typeof baboonUrl !== 'string' || baboonUrl === ''
-    ) {
-      throw new Error('One or several server urls are empty')
+    for (const field of attributes) {
+      const value = servers[field]
+
+      if (typeof value != 'string' || value == '') {
+        throw new Error(`missing '${field}' server URL`)
+      }
+
+      urls[field] = new URL(value)
     }
-
 
     return {
-      webSocketUrl: new URL(webSocketUrl),
-      indexUrl: new URL(indexUrl),
-      repositoryEventsUrl: new URL('/sse', repositoryUrl),
-      repositoryUrl: new URL(repositoryUrl),
-      contentApiUrl: new URL(contentApiUrl),
-      spellcheckUrl: new URL(spellcheckUrl),
-      userUrl: new URL(userUrl),
-      faroUrl: new URL(faroUrl),
-      baboonUrl: new URL(baboonUrl)
-    }
+      ...urls,
+      repositoryEventsUrl: new URL('/sse', urls['repositoryUrl'])
+    } as ServerUrls
   } catch (ex) {
     throw new Error('Failed fetching remote server urls in getServerUrls', { cause: ex as Error })
   }

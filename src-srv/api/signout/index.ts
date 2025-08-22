@@ -2,6 +2,7 @@ import type { RouteHandler } from '../../routes.js'
 
 
 export const GET: RouteHandler = async (_) => {
+  // TODO: Should use OIDC configuation instead. How do we set such context?
   const KEYCLOAK_URL = process.env.AUTH_KEYCLOAK_ISSUER || ''
   const AUTH_POST_LOGOUT_URI = process.env.AUTH_POST_LOGOUT_URI || 'https://tt.se'
   const AUTH_KEYCLOAK_ID = process.env.AUTH_KEYCLOAK_ID || 'elephant'

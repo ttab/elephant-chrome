@@ -1,17 +1,8 @@
 import { useYValue } from '@/hooks/useYValue'
 import { cn } from '@ttab/elephant-ui/utils'
 import type { Block } from '@ttab/elephant-api/newsdoc'
-
-import {
-  Alert,
-  AlertDescription,
-  Button,
-  Select,
-  SelectItem,
-  SelectContent,
-  SelectTrigger
-} from '@ttab/elephant-ui'
-import { MessageCircleMore, Text, X } from '@ttab/elephant-ui/icons'
+import { Alert, AlertDescription } from '@ttab/elephant-ui'
+import { MessageCircleMore, Trash2, Text } from '@ttab/elephant-ui/icons'
 import { TextBox } from '@/components/ui'
 import type { DefaultValueOption } from '@/types/index'
 import { useState } from 'react'
@@ -44,32 +35,13 @@ const Note = ({ noteIndex, handleRemove }: {
       ? 'bg-blue-50'
       : 'bg-yellow-50')}
     >
-      <div className='flex flex-row w-full justify-between'>
+      <div className='flex flex-row w-full justify-between items-center'>
         <AlertDescription className='flex space-x-2 items-center w-full'>
-          <Select
-            value={selectedOptions?.[0]?.value}
-            onValueChange={() => {
-              setShowVerifyChange(true)
-            }}
-          >
-            <SelectTrigger
-              className={cn({
-                'bg-blue-50': role === 'public',
-                'bg-yellow-50': role === 'internal'
-              }, 'w-fit border-0')}
-            >
-              {selectedOptions?.[0] && SelectedIcon && (
-                <div className='flex pr-2'>
-                  <SelectedIcon {...selectedOptions[0].iconProps} />
-                </div>
-              )}
-            </SelectTrigger>
-            <SelectContent>
-              {roles.map((role) => (
-                <SelectItem value={role.value} key={role.value}>{role.label}</SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
+          {selectedOptions?.[0] && SelectedIcon && (
+            <div className='flex pr-2'>
+              <SelectedIcon {...selectedOptions[0].iconProps} />
+            </div>
+          )}
           <TextBox
             key={role}
             path={`meta.core/note[${noteIndex}].data.text`}
@@ -78,13 +50,8 @@ const Note = ({ noteIndex, handleRemove }: {
             singleLine={true}
           />
         </AlertDescription>
-        <div>
-          <Button
-            variant='icon'
-            onClick={() => { setShowVerifyDialog(true) }}
-          >
-            <X strokeWidth={1.75} size={18} className='ml-auto' />
-          </Button>
+        <div className='hover:cursor-pointer rounded-md p-1 hover:bg-accent2' onClick={() => setShowVerifyDialog(true)}>
+          <Trash2 size={18} strokeWidth={1.75} />
         </div>
       </div>
 

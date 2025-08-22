@@ -73,9 +73,9 @@ export const Search = (): JSX.Element => {
         }}
       >
         <ViewHeader.Root>
-          <ViewHeader.Title name='Search' title='Sök' />
-
           <ViewHeader.Content>
+            <ViewHeader.Title name='Search' title='Sök' />
+
             {!Object.keys(params).length
               ? null
               : (

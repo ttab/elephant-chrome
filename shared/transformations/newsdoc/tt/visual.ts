@@ -2,6 +2,7 @@ import { Block } from '@ttab/elephant-api/newsdoc'
 import { toString } from '../../lib/toString.js'
 import type { TBElement } from '@ttab/textbit'
 import type { Descendant } from 'slate'
+import { transformSoftcrop, revertSoftcrop } from '../core/softcrop.js'
 
 // Construed way of making it work in both environments
 const BASE_URL: string
@@ -14,24 +15,27 @@ const BASE_URL: string
       : ''
 
 export const transformVisual = (element: Block): TBElement => {
-  const { id, data, links } = element
+  const { id, data, links, meta } = element
   const mediaType = links[0]?.url?.includes('/media/graphic/') ? 'graphics' : 'images'
+
+  const properties: Record<string, string> = {
+    href: links[0]?.url,
+    proxy: `${BASE_URL}/api/${mediaType}/${links[0]?.url.split('/').pop()}`,
+    rel: links[0].rel,
+    uri: links[0].uri,
+    type: links[0].type,
+    credit: links[0].data.credit,
+    text: data.caption,
+    width: links[0].data.width,
+    height: links[0].data.height,
+    ...transformSoftcrop(meta) || {}
+  }
 
   return {
     id: id || crypto.randomUUID(), // Must have id, if id is missing positioning in drag'n drop does not work
     class: 'block',
     type: 'tt/visual',
-    properties: {
-      href: links[0]?.url,
-      proxy: `${BASE_URL}/api/${mediaType}/${links[0]?.url.split('/').pop()}`,
-      rel: links[0].rel,
-      uri: links[0].uri,
-      type: links[0].type,
-      credit: links[0].data.credit,
-      text: data.caption,
-      width: links[0].data.width,
-      height: links[0].data.height
-    },
+    properties,
     children: [
       {
         type: 'tt/visual/image',
@@ -69,19 +73,22 @@ export function revertVisual(element: TBElement): Block {
   const captionText = getText(textNode)
   const bylineText = getText(bylineNode)
 
+  const data: Record<string, string> = {
+    credit: toString(bylineText),
+    height: toString(properties?.height),
+    width: toString(properties?.width)
+  }
+
   return Block.create({
     id,
     type: 'tt/visual',
     data: {
       caption: toString(captionText)
     },
+    meta: revertSoftcrop(element),
     links: [
       {
-        data: {
-          credit: toString(bylineText),
-          height: toString(properties?.height),
-          width: toString(properties?.width)
-        },
+        data,
         rel: toString(properties?.rel),
         type: toString(properties?.type),
         uri: toString(properties?.uri),

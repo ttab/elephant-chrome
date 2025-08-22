@@ -1,25 +1,137 @@
 import { Button, Calendar, Popover, PopoverContent, PopoverTrigger } from '@ttab/elephant-ui'
 import { DuplicatePrompt } from './DuplicatePrompt'
 import { addDays, format } from 'date-fns'
-import { createStateless, StatelessType } from '@/shared/stateless'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
 import type { HocuspocusProvider } from '@hocuspocus/provider'
 import type { Session } from 'next-auth'
 import { CalendarPlus2, CopyPlus } from '@ttab/elephant-ui/icons'
 import { ToastAction } from '@/components/ToastAction'
+import type { EventData } from '@/views/Event/components/EventTime'
+import type { PlanningData } from '@/types/index'
+import { type SetStateAction, type Dispatch } from 'react'
+import { useRegistry } from '@/hooks/useRegistry'
+import { isEvent, isPlanning } from './isType'
+import type { Document } from '@ttab/elephant-api/newsdoc'
 
-type allowedTypes = 'Event'
+const SingleOrRangedCalendar = ({
+  granularity,
+  duplicateDate,
+  setDuplicateDate,
+  dataInfo
+}: {
+  granularity: 'date' | 'datetime' | undefined
+  duplicateDate: { from: Date, to?: Date | undefined }
+  setDuplicateDate: Dispatch<SetStateAction<{ from: Date, to?: Date | undefined }>>
+  dataInfo: EventData | PlanningData
+}) => {
+  if (isEvent(dataInfo)) {
+    if (!granularity) {
+      return <></>
+    }
 
-export const Duplicate = ({ provider, title, session, status, type }: {
+    if (granularity === 'date' && duplicateDate?.from) {
+      return (
+        <Calendar
+          mode='range'
+          selected={duplicateDate}
+          startMonth={new Date(duplicateDate?.from)}
+          onSelect={(selectedDate) => {
+            if (!selectedDate?.from || !selectedDate?.to) {
+              return
+            }
+
+            setDuplicateDate({
+              from: new Date(selectedDate.from),
+              to: new Date(selectedDate?.to)
+            })
+          }}
+        />
+      )
+    }
+  }
+
+
+  return (
+    <Calendar
+      mode='single'
+      selected={duplicateDate?.from}
+      startMonth={new Date(duplicateDate?.from)}
+      onSelect={(selectedDate) => {
+        if (!selectedDate) {
+          return
+        }
+
+        setDuplicateDate({ from: new Date(format(selectedDate, 'yyyy-MM-dd')), to: undefined })
+      }}
+    />
+  )
+}
+
+export const Duplicate = ({ provider, title, session, status, type, dataInfo }: {
   provider: HocuspocusProvider
   title: string | undefined
   session: Session | null
   status: 'authenticated' | 'loading' | 'unauthenticated'
-  type: 'event'
+  type: 'Event' | 'Planning'
+  dataInfo: EventData | PlanningData
 }) => {
-  const [duplicateDate, setDuplicateDate] = useState<Date>(addDays(new Date(), 1))
+  const granularity = isEvent(dataInfo) ? dataInfo?.dateGranularity : undefined
+  const [duplicateDate, setDuplicateDate] = useState<{ from: Date, to?: Date | undefined }>({ from: new Date(), to: new Date() })
   const [showConfirm, setShowConfirm] = useState<boolean>(false)
+  const { locale, repository } = useRegistry()
+
+  useEffect(() => {
+    if (isEvent(dataInfo)) {
+      const dates = granularity === 'date'
+        ? { from: dataInfo?.start ? new Date(dataInfo?.start) : new Date(), to: dataInfo?.end ? new Date(dataInfo?.end) : new Date() }
+        : { from: dataInfo?.start ? new Date(dataInfo?.start) : new Date(), to: dataInfo?.end ? new Date(dataInfo?.end) : undefined }
+
+      setDuplicateDate(dates)
+    }
+
+    if (isPlanning(dataInfo)) {
+      const dates = {
+        from: addDays(new Date(dataInfo.start_date), 1),
+        to: addDays(new Date(dataInfo.end_date), 1)
+      }
+      setDuplicateDate(dates)
+    }
+  }, [dataInfo, granularity])
+
+  if (!dataInfo) {
+    return <></>
+  }
+
+  const createTexts = (granularity: 'date' | 'datetime' | undefined): { description: string, success: string } => {
+    const start = format(duplicateDate.from, 'EEEE yyyy-MM-dd', { locale: locale.module })
+    const defaultTexts = {
+      description: `Vill du kopiera "${title}" till ${start}?`,
+      success: `"${title}" har kopierats till ${start}`
+    }
+
+    if (isEvent(dataInfo)) {
+      if (!granularity) {
+        return { description: '', success: '' }
+      }
+
+      if (granularity === 'date' && duplicateDate?.to) {
+        const end = format(duplicateDate?.to, 'EEEE yyyy-MM-dd', { locale: locale.module })
+        const datesFormatted = `${start === end ? `${start}` : `${start} - ${end}`}`
+
+        return {
+          description: `Vill du kopiera händelsen till ${datesFormatted}?`,
+          success: `Händelsen "${title}" har kopierats till ${datesFormatted}`
+        }
+      }
+
+      if (granularity === 'datetime') {
+        return defaultTexts
+      }
+    }
+
+    return defaultTexts
+  }
 
   return (
     <div className='flex-row gap-2 justify-start items-center'>
@@ -32,22 +144,14 @@ export const Duplicate = ({ provider, title, session, status, type }: {
           </div>
         </PopoverTrigger>
         <PopoverContent onEscapeKeyDown={(event) => event?.stopPropagation()}>
-          <Calendar
-            mode='single'
-            disabled={{ before: addDays(new Date(), 1) }}
-            selected={duplicateDate}
-            startMonth={new Date(duplicateDate)}
-            onSelect={(selectedDate) => {
-              if (!selectedDate) {
-                return
-              }
-              setDuplicateDate(new Date(format(selectedDate, 'yyyy-MM-dd')))
-            }}
+          <SingleOrRangedCalendar
+            dataInfo={dataInfo}
+            granularity={granularity}
+            duplicateDate={duplicateDate}
+            setDuplicateDate={setDuplicateDate}
           />
           <div className='flex w-full justify-end'>
-            <Button
-              onClick={() => setShowConfirm(!showConfirm)}
-            >
+            <Button onClick={() => setShowConfirm(!showConfirm)}>
               Kopiera
             </Button>
           </div>
@@ -57,28 +161,18 @@ export const Duplicate = ({ provider, title, session, status, type }: {
         <DuplicatePrompt
           duplicateDate={duplicateDate}
           provider={provider}
-          title={title || ''}
           type={type}
-          description={`Vill du kopiera ${type === 'event' ? 'händelsen' : ''} till ${format(duplicateDate, 'dd/MM/yyyy')}?`}
+          description={createTexts(granularity).description}
           secondaryLabel='Avbryt'
           primaryLabel='Kopiera'
-          onPrimary={(duplicateId: string | undefined) => {
-            const capitalized: allowedTypes = type.slice(0, 1).toUpperCase().concat(type.slice(1)) as allowedTypes
-            if (provider && status === 'authenticated' && duplicateId && session) {
+          onPrimary={(duplicateId: string | undefined, duplicatedDocument: Document) => {
+            if (provider && status === 'authenticated' && duplicateId && session && repository) {
               try {
-                provider.sendStateless(
-                  createStateless(StatelessType.IN_PROGRESS, {
-                    state: false,
-                    id: duplicateId,
-                    context: {
-                      agent: 'server',
-                      accessToken: session.accessToken,
-                      user: session.user,
-                      type: capitalized
-                    }
-                  })
-                )
-                toast.success(`Händelsen "${title}" kopierades till ${format(duplicateDate, 'dd/MM/yyyy')}`, {
+                void (async () => {
+                  await repository.saveDocument(duplicatedDocument, session.accessToken).catch((err) => console.error(err))
+                })()
+
+                toast.success(`Händelsen "${title}" kopierades till ${format(duplicateDate.from, 'dd/MM/yyyy')}`, {
                   action: (
                     <ToastAction actions={[{
                       label: 'Öppna kopia',

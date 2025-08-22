@@ -6,17 +6,18 @@ import { Link } from '@/components/index'
 import { useDocuments } from '@/hooks/index/useDocuments'
 import type { HitV1 } from '@ttab/elephant-api/index'
 import { BoolQueryV1, QueryV1, SortingV1, TermsQueryV1 } from '@ttab/elephant-api/index'
+import { format } from 'date-fns'
+import { duplicateFields, type DuplicateFields } from '@/lib/getSharedFields'
 
-type DuplicateFields = ['document.title']
-
-export const DuplicatesTable = ({ documentId }: {
+export const DuplicatesTable = ({ documentId, type }: {
   documentId: string
+  type: 'core/event' | 'core/planning-item'
 } & FormProps): JSX.Element => {
   const createdDocumentIdRef = useRef<string | undefined>()
 
   const { data, mutate, error, isLoading } = useDocuments<HitV1, DuplicateFields>({
-    documentType: 'core/event',
-    fields: ['document.title'],
+    documentType: type,
+    fields: duplicateFields(type),
     query: QueryV1.create({
       conditions: {
         oneofKind: 'bool',
@@ -41,7 +42,7 @@ export const DuplicatesTable = ({ documentId }: {
     }
   })
 
-  useRepositoryEvents('core/event', (event) => {
+  useRepositoryEvents(type, (event) => {
     if (createdDocumentIdRef.current === event.uuid && event.type === 'document') {
       void (async () => {
         try {
@@ -67,17 +68,34 @@ export const DuplicatesTable = ({ documentId }: {
 
   return (
     <div className='pl-6 border-t'>
-      <div className='text-sm font-bold pt-2'>Duplicerade händelser</div>
-      {data?.map((duplicate) => (
-        <div key={duplicate.id} className='pt-2'>
-          <Link to='Event' props={{ id: duplicate.id }} target='last'>
-            <div className='flex items-center gap-2'>
-              <CalendarPlus2 strokeWidth={1.75} size={18} className='text-muted-foreground' />
-              <div className='text-sm'>{duplicate.fields['document.title']?.values[0]}</div>
-            </div>
-          </Link>
-        </div>
-      ))}
+      <div className='text-sm font-bold pt-2'>Kopierad till</div>
+      {data?.map((duplicate) => {
+        let start, end
+        const title = duplicate.fields['document.title']?.values[0]
+
+        if (type === 'core/event') {
+          start = format(new Date(duplicate.fields['document.meta.core_event.data.start']?.values[0]), 'yyyy-MM-dd')
+          end = format(new Date(duplicate.fields['document.meta.core_event.data.end']?.values[0]), 'yyyy-MM-dd')
+        }
+
+        if (type === 'core/planning-item') {
+          start = format(new Date(duplicate.fields['document.meta.core_planning_item.data.start_date']?.values[0]), 'yyyy-MM-dd')
+        }
+
+        const dateFormatted = `(${(start === end) || (start && !end) ? start : `${start} - ${end}`})`
+
+        return (
+          <div key={duplicate.id} className='py-1 hover:bg-gray-100 dark:hover:bg-gray-700'>
+            <Link to={type === 'core/event' ? 'Event' : 'Planning'} props={{ id: duplicate.id }} target='last'>
+              <div className='flex items-center gap-2 text-sm'>
+                <CalendarPlus2 strokeWidth={1.75} size={18} className='text-muted-foreground' />
+                <div>{title}</div>
+                <div>{dateFormatted}</div>
+              </div>
+            </Link>
+          </div>
+        )
+      })}
     </div>
   )
 }
