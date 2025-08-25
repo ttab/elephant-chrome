@@ -1,6 +1,5 @@
 import type {
   Extension,
-  onChangePayload,
   onLoadDocumentPayload,
   onStoreDocumentPayload
 } from '@hocuspocus/server'
@@ -34,7 +33,7 @@ export class CacheExtension implements Extension {
 
   async onLoadDocument(payload: onLoadDocumentPayload) {
     try {
-      // Only check context for real uuid documents
+      // Only require correct context for real uuid documents
       if ((isValidUUID(payload.documentName) && !isContext(payload.context))) {
         throw new Error(`Invalid context received in CacheExtension.onLoadDocument for ${payload.documentName}`)
       }
@@ -44,7 +43,9 @@ export class CacheExtension implements Extension {
         Y.applyUpdate(payload.document, update)
 
         // Add flag to context
-        payload.context.loadedFromCache = true
+        if (isContext(payload.context)) {
+          payload.context.loadedFromCache = true
+        }
       }
     } catch (ex) {
       this.#errorHandler.error(
