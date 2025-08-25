@@ -10,18 +10,17 @@ import { fields } from '@/shared/schemas/planning'
 import { SortingV1 } from '@ttab/elephant-api/index'
 import { constructQuery } from '@/hooks/index/useDocuments/queries/views/plannings'
 import { useQuery } from '@/hooks/useQuery'
-import { getDateTimeBoundariesUTC } from '@/shared/datetime'
+import { getUTCDateRange } from '../../../shared/datetime.js'
 import { toast } from 'sonner'
+import { useRegistry } from '@/hooks/useRegistry'
 
 export const PlanningList = ({ columns }: {
   columns: ColumnDef<Planning>[]
 }): JSX.Element => {
   const [query] = useQuery()
+  const { timeZone } = useRegistry()
   const { from, to } = useMemo(() =>
-    getDateTimeBoundariesUTC(typeof query.from === 'string'
-      ? new Date(`${query.from}T00:00:00.000Z`)
-      : new Date())
-  , [query.from])
+    getUTCDateRange(query?.from ? new Date(query?.from as string) : new Date(), timeZone), [query, timeZone])
 
   const { error } = useDocuments<Planning, PlanningFields>({
     documentType: 'core/planning-item',
