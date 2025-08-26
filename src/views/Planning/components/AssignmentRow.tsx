@@ -349,13 +349,16 @@ export const AssignmentRow = ({ index, onSelect, isFocused = false, asDialog, on
       </div>
 
       <div className='flex flex-row text-[15px] font-medium justify-between'>
-        <span className='leading-relaxed group-hover/assrow:underline'>{title}</span>
-        <div className='flex items-center gap-2'>
+        <div className='flex items-center gap-2 px-2'>
+
           {StatusIcon?.icon && (
             <Tooltip content={StatusIcon.label}>
               <StatusIcon.icon size={18} {...StatusIcon.iconProps} />
             </Tooltip>
           )}
+          <span className='leading-relaxed group-hover/assrow:underline'>{title}</span>
+        </div>
+        <div className='flex items-center gap-2'>
           <AssignmentVisibility path={`meta.core/assignment[${index}].data.public`} editable={false} disabled={false} />
         </div>
       </div>
