@@ -3,11 +3,11 @@ import type { RedisClientType } from 'redis'
 
 export class RedisCache {
   readonly #url: string
-  redisClient?: RedisClientType
+  #redisClient?: RedisClientType
 
   constructor(url: string) {
     this.#url = url
-    this.redisClient = undefined
+    this.#redisClient = undefined
   }
 
   async connect(): Promise<void> {
@@ -17,13 +17,13 @@ export class RedisCache {
       throw new Error('connect to redis', { cause: ex })
     })
 
-    this.redisClient = client as RedisClientType
+    this.#redisClient = client as RedisClientType
   }
 
   async get(key: string): Promise<Uint8Array | undefined> {
-    const cachedDoc = await this.redisClient?.get(`elc::hp:${key}`)
+    const cachedDoc = await this.#redisClient?.get(`elc::hp:${key}`)
     if (!cachedDoc) {
-      await this.redisClient?.zAdd('elc::doc_touched', { score: Date.now(), value: key })
+      await this.#redisClient?.zAdd('elc::doc_touched', { score: Date.now(), value: key })
       return
     }
 
@@ -35,9 +35,18 @@ export class RedisCache {
   }
 
   async store(key: string, state: Buffer): Promise<void> {
-    await this.redisClient?.set(
+    await this.#redisClient?.set(
       `elc::hp:${key}`,
       Buffer.from(state).toString('binary')
     )
+  }
+
+  async aquireLock(key: string, value: string, expire: number = 5000): Promise<boolean> {
+    const response = await this.#redisClient?.set(key, value, {
+      PX: expire, // Expiration in milliseconds
+      NX: true // Only set if key doesn't exist
+    })
+
+    return response === 'OK'
   }
 }

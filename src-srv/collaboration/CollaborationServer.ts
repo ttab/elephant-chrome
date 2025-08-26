@@ -18,12 +18,13 @@ import CollaborationServerErrorHandler, { withErrorHandler } from '../lib/errorH
 import logger from '../lib/logger.js'
 import type { AuthInfo } from '../utils/authConfig.js'
 import { CacheExtension } from './extensions/Cache.js'
+import type { Context } from '../lib/context.js'
 
 interface CollaborationServerOptions {
   name: string
   port: number
   redisUrl: string
-  cache: RedisCache
+  redis: RedisCache
   repository: Repository
   user: User
   expressServer: Application
@@ -39,6 +40,8 @@ export class CollaborationServer {
   readonly #repository: Repository
   readonly #errorHandler: CollaborationServerErrorHandler
   readonly #openDocuments: OpenDocuments
+  readonly #repositoryExtension: RepositoryExtension
+
   #handlePaths: string[]
   #openForBusiness: boolean
 
@@ -54,6 +57,11 @@ export class CollaborationServer {
     this.#repository = configuration.repository
     this.#errorHandler = new CollaborationServerErrorHandler(configuration.user)
     this.#openDocuments = new OpenDocuments()
+    this.#repositoryExtension = new RepositoryExtension({
+      repository: this.#repository,
+      errorHandler: this.#errorHandler,
+      redis: configuration.redis
+    })
 
     const {
       host: redisHost,
@@ -66,6 +74,7 @@ export class CollaborationServer {
     this.#quiet = process.env.LOG_LEVEL !== 'info' && process.env.LOG_LEVEL !== 'debug'
 
     this.server = Server.configure({
+      name: crypto.randomUUID(), // We need a server instance id to be able to aquire locks
       port: this.#port,
       timeout: 30000,
       debounce: 5000,
@@ -89,13 +98,10 @@ export class CollaborationServer {
         }),
         this.#openDocuments,
         new CacheExtension({
-          cache: configuration.cache,
+          redis: configuration.redis,
           errorHandler: this.#errorHandler
         }),
-        new RepositoryExtension({
-          repository: this.#repository,
-          errorHandler: this.#errorHandler
-        }),
+        this.#repositoryExtension,
         new Auth(configuration.authInfo.oidcConfig)
       ], this.#errorHandler)
     })
@@ -152,6 +158,16 @@ export class CollaborationServer {
       this.#openForBusiness = false
       this.#handlePaths = []
     }
+  }
+
+  /**
+   * Handles flushing of unsaved document changes as well as adding
+   * new/created(?) documents to the users history/tracking document.
+   */
+  async flushDocument(id: string, status: string | null, cause: string | null, context: Context): Promise<{
+    version: string
+  } | void> {
+    return this.#repositoryExtension.flushDocument(id, status, cause, context)
   }
 
   /**

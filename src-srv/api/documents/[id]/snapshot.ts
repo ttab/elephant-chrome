@@ -1,15 +1,11 @@
 import logger from '../../../lib/logger.js'
 import type { Request } from 'express'
-import type { RouteContentResponse, RouteHandler, RouteStatusResponse } from '../../../routes.js'
-import { createSnapshot } from '../../../utils/createSnapshot.js'
+import type { RouteHandler } from '../../../routes.js'
 import { getContextFromValidSession, getSession, isContext } from '../../../lib/context.js'
 import * as Y from 'yjs'
 
-type Response = RouteContentResponse | RouteStatusResponse
-
 export const POST: RouteHandler = async (req: Request, { collaborationServer, res }) => {
-  const uuid = req.params.id
-  const force = req.query.force
+  const id = req.params.id
   const status = req.query.status
   const cause = req.query.cause
 
@@ -22,36 +18,42 @@ export const POST: RouteHandler = async (req: Request, { collaborationServer, re
     return context
   }
 
-  const connection = await collaborationServer.server.openDirectConnection(uuid, context)
+  try {
+    // If we receive an update we apply it first
+    if (payload instanceof Uint8Array) {
+      const connection = await collaborationServer.server.openDirectConnection(id, context)
 
-  const snapshotResponse = await new Promise<Response>((resolve) => {
-    void connection.transact((document) => {
-      if (payload instanceof Uint8Array) {
+      await connection.transact((document) => {
         Y.applyUpdateV2(document, payload)
-      }
-
-      createSnapshot(collaborationServer, {
-        documentName: uuid,
-        document,
-        context,
-        force: !!force,
-        status: typeof status === 'string' ? status : undefined,
-        cause: typeof cause === 'string' ? cause : undefined
       })
-        .then(resolve)
-        .catch((ex: Error) => {
-          const snapshotResponse = {
-            statusCode: 500,
-            statusMessage: `Error during snapshot transaction: ${ex.message || 'unknown reason'}`
-          }
+      await connection.disconnect()
+    }
 
-          logger.error(snapshotResponse.statusMessage, ex)
-          resolve(snapshotResponse)
-        })
-    })
-  })
+    // Flush unsaved changes to the repository immediately
+    const result = await collaborationServer.flushDocument(
+      id,
+      typeof status === 'string' ? status : null,
+      typeof cause === 'string' ? cause : null,
+      context
+    )
 
-  await connection.disconnect()
+    if (!result?.version) {
+      throw new Error('Failed creating a new version')
+    }
 
-  return snapshotResponse
+    return {
+      statusCode: 200,
+      payload: {
+        uuid: id,
+        version: result.version
+      }
+    }
+  } catch (ex: unknown) {
+    logger.error('Failed storing new version of document', ex)
+
+    return {
+      statusCode: 500,
+      statusMessage: `Failed storing new version of document: ${(ex as Error).message || 'unknown reason'}`
+    }
+  }
 }

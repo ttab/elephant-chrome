@@ -3,22 +3,25 @@ import * as Y from 'yjs'
 
 import type { Repository as RepositoryWrapper } from '@/shared/Repository.js'
 import { isValidUUID } from '../../utils/isValidUUID.js'
+import type { Context } from '../../lib/context.js'
 import { isContext } from '../../lib/context.js'
 import type CollaborationServerErrorHandler from '../../lib/errorHandler.js'
 import { getErrorContext } from '../../lib/errorHandler.js'
 import { fromYjsNewsDoc, toYjsNewsDoc } from '@/shared/transformations/yjsNewsDoc.js'
 import { fromGroupedNewsDoc, toGroupedNewsDoc } from '@/shared/transformations/groupedNewsDoc.js'
-import { type inProgressMessage, StatelessType, parseStateless } from '@/shared/stateless.js'
+import { StatelessType, parseStateless } from '@/shared/stateless.js'
 import type { EleDocumentResponse } from '@/shared/types/index.js'
 import { createMultiDebounceWithMaxTime } from '../../utils/debounceStore.js'
+import type { RedisCache } from '../../utils/RedisCache.js'
+import logger from '../../lib/logger.js'
 
 interface RepisitoryExtensionConfiguration {
   repository: RepositoryWrapper
   errorHandler: CollaborationServerErrorHandler
+  redis: RedisCache
   debounceInterval?: number
   maxDebounceTime?: number
 }
-
 
 export class RepositoryExtension implements Extension {
   readonly #repository: RepositoryWrapper
@@ -31,10 +34,12 @@ export class RepositoryExtension implements Extension {
   }
 
   #hp?: Hocuspocus
+  #redis: RedisCache
 
   constructor(configuration: RepisitoryExtensionConfiguration) {
     this.#repository = configuration.repository
     this.#errorHandler = configuration.errorHandler
+    this.#redis = configuration.redis
 
     this.#debounceInterval = configuration.debounceInterval ?? this.#debounceInterval
     this.#maxDebounceTime = configuration.maxDebounceTime ?? this.#maxDebounceTime
@@ -141,10 +146,6 @@ export class RepositoryExtension implements Extension {
     return Promise.resolve()
   }
 
-  /**
-   * Handles removal of __inProgress flags, storing the document as well as
-   * adding the created(?) document to the users history/tracking document.
-   */
   async onStateless(payload: onStatelessPayload) {
     if (!this.#hp) {
       throw new Error('Hocuspocus is not yet finished configuring')
@@ -153,12 +154,37 @@ export class RepositoryExtension implements Extension {
     const msg = parseStateless(payload.payload)
 
     // Only handle IN_PROGRESS and ignore state messages
-    if (msg.type !== StatelessType.IN_PROGRESS || msg.message.state) {
+    if (msg.type !== StatelessType.IN_PROGRESS) {
       return
     }
 
-    const connection = await this.#hp.openDirectConnection(msg.message.id, {
-      ...msg.message.context,
+    return await this.flushDocument(
+      msg.message.id,
+      msg.message.status ?? null,
+      null,
+      msg.message.context
+    )
+  }
+
+  /**
+   * Handles flushing of unsaved document changes as well as adding
+   * new/created(?) documents to the users history/tracking document.
+   */
+  async flushDocument(id: string, status: string | null, cause: string | null, context: Context): Promise<{
+    version: string
+  } | void> {
+    if (!this.#hp) {
+      throw new Error('Hocuspocus is not yet finished configuring')
+    }
+
+    // Only one server should handle a flush, aquire a lock or ignore
+    const serverId = this.#hp.configuration.name || 'default'
+    if (await this.#redis.aquireLock(`stateless:${id}`, serverId) !== true) {
+      return
+    }
+
+    const connection = await this.#hp.openDirectConnection(id, {
+      ...context,
       agent: 'server'
     }).catch((ex) => {
       throw new Error('Failed acquire connection to HP server', { cause: ex })
@@ -176,19 +202,22 @@ export class RepositoryExtension implements Extension {
     })
 
     const { documentResponse, updatedHash, originalHash } = fromYjsNewsDoc(connection.document)
-    await this.#storeDocument(
+    const result = await this.#storeDocument(
       connection.document,
       documentResponse,
-      msg.message.context.accessToken,
+      context.accessToken,
       updatedHash || originalHash,
-      msg.message.status
+      status,
+      cause
     )
 
     // Finally update the user history document
-    await this.#addDocumentToUserHistory(msg.message)
+    await this.#addDocumentToUserHistory(id, context)
 
     // Cleanup
     await connection.disconnect()
+
+    return result
   }
 
   /**
@@ -215,36 +244,53 @@ export class RepositoryExtension implements Extension {
   /**
    * Store document in repository as well as update the hash and version in the Y.Doc
    */
-  async #storeDocument(document: Y.Doc, documentResponse: EleDocumentResponse, accessToken: string, hash: number, status?: string) {
+  async #storeDocument(
+    document: Y.Doc,
+    documentResponse: EleDocumentResponse,
+    accessToken: string,
+    hash: number,
+    status?: string | null,
+    cause?: string | null
+  ): Promise<{
+      version: string
+    }> {
     const result = await this.#repository.saveDocument(
       fromGroupedNewsDoc(documentResponse).document,
       accessToken,
-      status
+      status ?? undefined,
+      cause ?? undefined
     )
 
     if (result?.status.code !== 'OK') {
       throw new Error('Save snapshot document to repository failed', { cause: result })
     }
 
-    console.info('=====> DOCUMENT STORED in REPOSITORY')
-
     // Update the document version and hash
     const versionMap = document.getMap('version')
     const hashMap = document.getMap('hash')
-    versionMap.set('version', result?.response.version.toString())
+    versionMap.set('version', result.response.version.toString())
     hashMap.set('hash', hash)
+
+    return {
+      version: result.response.version.toString()
+    }
   }
 
   /**
    * Add a document to the user history tracking document.
    * Will create a user trackering document if non existing.
    */
-  async #addDocumentToUserHistory(msg: inProgressMessage) {
+  async #addDocumentToUserHistory(id: string, context: Context) {
     if (!this.#hp) {
       throw new Error('Hocuspocus is not yet finished configuring')
     }
 
-    const { id, context } = msg
+    const type = context.type
+    if (!type) {
+      logger.warn(`Could not add document ${id} to user history, missing document type`)
+      return
+    }
+
     const userId = context.user.sub.replace('core://user/', '')
     const connection = await this.#hp.openDirectConnection(userId, {
       ...context,
@@ -255,7 +301,6 @@ export class RepositoryExtension implements Extension {
 
     await connection.transact((doc) => {
       const documents = doc.getMap('ele')
-      const type = context.type
 
       if (!documents.get(type)) {
         documents.set(type, new Y.Array())

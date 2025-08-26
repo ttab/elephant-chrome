@@ -11,7 +11,7 @@ import type { RedisCache } from '../../utils/RedisCache.js'
 import { isValidUUID } from '../../utils/isValidUUID.js'
 
 interface CacheExtensionConfiguration {
-  cache: RedisCache
+  redis: RedisCache
   errorHandler: CollaborationServerErrorHandler
 
 }
@@ -21,13 +21,15 @@ interface CacheExtensionConfiguration {
  *
  * Contrary to the RepositoryExtension this stores and retrieves all documents,
  * repository documents and non persistent documents like tracker documents alike.
+ *
+ * IMPORTANT: For the cache to work it must be loaded before the repository extension.
  */
 export class CacheExtension implements Extension {
-  readonly #cache: RedisCache
+  readonly #redis: RedisCache
   readonly #errorHandler: CollaborationServerErrorHandler
 
   constructor(configuration: CacheExtensionConfiguration) {
-    this.#cache = configuration.cache
+    this.#redis = configuration.redis
     this.#errorHandler = configuration.errorHandler
   }
 
@@ -38,11 +40,11 @@ export class CacheExtension implements Extension {
         throw new Error(`Invalid context received in CacheExtension.onLoadDocument for ${payload.documentName}`)
       }
 
-      const update = await this.#cache.get(payload.documentName)
+      const update = await this.#redis.get(payload.documentName)
       if (update) {
         Y.applyUpdate(payload.document, update)
 
-        // Add flag to context
+        // Add a flag to the context to signal that this request is taken care of
         if (isContext(payload.context)) {
           payload.context.loadedFromCache = true
         }
@@ -56,7 +58,7 @@ export class CacheExtension implements Extension {
   }
 
   async onStoreDocument({ documentName, document }: onStoreDocumentPayload) {
-    await this.#cache.store(
+    await this.#redis.store(
       documentName,
       Buffer.from(Y.encodeStateAsUpdate(document))
     )

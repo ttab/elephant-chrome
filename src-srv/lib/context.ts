@@ -10,6 +10,7 @@ export interface Context {
   accessToken: string
   user: User
   loadedFromCache?: boolean
+  type?: string
 }
 
 /**
