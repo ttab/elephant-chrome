@@ -9,7 +9,7 @@ import { parseISO } from 'date-fns'
 import { getAssignmentsFromDocument } from './getAssignmentsFromDocument'
 import type { AssignmentInterface } from './types'
 import { StatusSpecifications } from '@/defaults/workflowSpecification'
-import { getUTCDateRange } from '@/lib/datetime'
+import { getUTCDateRange } from '@/shared/datetime'
 import { format } from 'date-fns'
 import { getStatusFromMeta } from '@/lib/getStatusFromMeta'
 

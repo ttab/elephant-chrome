@@ -1,6 +1,6 @@
 import { PlusIcon } from '@ttab/elephant-ui/icons'
 import { AssignmentRow } from './AssignmentRow'
-import { appendAssignment } from '@/lib/createYItem'
+import { appendAssignment } from '@/shared/createYItem'
 import { useCollaboration, useNavigationKeys, useYValue } from '@/hooks'
 import { Assignment } from './Assignment'
 import { type Block } from '@ttab/elephant-api/newsdoc'

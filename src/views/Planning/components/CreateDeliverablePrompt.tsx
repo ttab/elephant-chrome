@@ -1,12 +1,10 @@
 import { Prompt } from '@/components'
 import { useCollaboration } from '@/hooks/useCollaboration'
-import {
-  type TemplatePayload
-} from '@/defaults/templates/'
+import type { TemplatePayload } from '@/shared/templates/'
 import { useSession } from 'next-auth/react'
 import { useRegistry } from '@/hooks/useRegistry'
 import { toast } from 'sonner'
-import { getTemplateFromDeliverable } from '@/defaults/templates/lib/getTemplateFromDeliverable'
+import { getTemplateFromDeliverable } from '@/shared/templates/lib/getTemplateFromDeliverable'
 
 /**
  * Deliverable document creation dialog, responsible for creating articles and flashes in the repository.

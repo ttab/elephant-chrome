@@ -21,7 +21,7 @@ import { createArticle } from './lib/createArticle'
 import { SluglineEditable } from '@/components/DataItem/SluglineEditable'
 import type * as Y from 'yjs'
 import { CreatePrompt } from '@/components/CreatePrompt'
-import type { Wire as WireType } from '@/hooks/index/useDocuments/schemas/wire'
+import type { Wire as WireType } from '@/shared/schemas/wire'
 import { toSlateYXmlText } from '@/shared/yUtils'
 import type { FormProps } from '@/components/Form/Root'
 

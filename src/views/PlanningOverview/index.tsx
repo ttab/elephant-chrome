@@ -12,7 +12,7 @@ import { useAuthors } from '@/hooks/useAuthors'
 import { Commands } from '@/components/Commands'
 import { useQuery } from '@/hooks/useQuery'
 import { loadFilters } from '@/lib/loadFilters'
-import type { Planning } from '@/hooks/index/useDocuments/schemas/planning'
+import type { Planning } from '@/shared/schemas/planning'
 
 const meta: ViewMetadata = {
   name: 'Plannings',
