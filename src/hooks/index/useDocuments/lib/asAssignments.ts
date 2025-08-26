@@ -2,8 +2,9 @@ import type { QueryV1 } from '@ttab/elephant-api/index'
 import type { Assignment } from '@/shared/schemas/assignments'
 import { isWithinInterval, parseISO } from 'date-fns'
 import type { Block } from '@ttab/elephant-api/newsdoc'
+import type { GetStatusOverviewResponse } from '@ttab/elephant-api/repository'
 
-export function asAssignments(data: Assignment[], query: QueryV1): Assignment[] {
+export function asAssignments(data: Assignment[], query: QueryV1, statuses: GetStatusOverviewResponse | null): Assignment[] {
   const queryRange = getQueryRange(query)
 
   const aggregatedAssignments: Assignment[] = []
@@ -13,6 +14,14 @@ export function asAssignments(data: Assignment[], query: QueryV1): Assignment[] 
       const currentAssignmentMeta = doc.document?.meta.find((block) => block.id === id)
 
       if (currentAssignmentMeta && isWithinRange(currentAssignmentMeta.data.start_date, queryRange)) {
+        const deliverableIds = currentAssignmentMeta.links
+          .filter((link) => link.rel === 'deliverable')
+          .map((link) => ({ uuid: link.uuid }))
+
+        const status = statuses?.items.find((status) => {
+          return deliverableIds.some((deliverable) => status.uuid === deliverable.uuid)
+        })
+
         const currentAssignmentType = currentAssignmentMeta?.meta.find((block) => block.type === 'core/assignment-type')?.value
         const currentStart = getStart(currentAssignmentType, currentAssignmentMeta?.data)
 
@@ -46,9 +55,10 @@ export function asAssignments(data: Assignment[], query: QueryV1): Assignment[] 
                 .map((block) => block.value)
             },
             'document.meta.core_assignment.rel.deliverable.uuid': {
-              values: currentAssignmentMeta.links
-                .filter((link) => link.rel === 'deliverable')
-                .map((link) => link.uuid)
+              values: deliverableIds.map((id) => id.uuid)
+            },
+            'document.meta.status': {
+              values: [status?.workflowState || 'draft']
             },
             'document.meta.core_assignment.data.start': {
               values: [currentAssignmentMeta.data.start]
