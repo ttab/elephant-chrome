@@ -178,7 +178,7 @@ export const POST: RouteHandler = async (req: Request, { collaborationServer, re
             statusMessage: `Error during snapshot transaction: ${ex.message || 'unknown reason'}`
           }
 
-          logger.error(snapshotResponse.statusMessage, ex)
+          logger.error(ex, snapshotResponse.statusMessage)
           resolve(snapshotResponse)
         })
     })

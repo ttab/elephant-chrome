@@ -108,7 +108,6 @@ function EditorWrapper(props: ViewProps & {
       Bold,
       Italic,
       Link,
-      TTVisual,
       ImageSearchPlugin,
       FactboxPlugin,
       Table,
@@ -117,6 +116,9 @@ function EditorWrapper(props: ViewProps & {
 
     return [
       ...basePlugins.map((initPlugin) => initPlugin()),
+      TTVisual({
+        enableCrop: false
+      }),
       Text({
         countCharacters: ['heading-1'],
         ...contentMenuLabels
