@@ -355,7 +355,10 @@ export const AssignmentRow = ({ index, onSelect, isFocused = false, asDialog, on
             <Tooltip content={StatusIcon.label}>
               <StatusIcon.icon size={18} {...StatusIcon.iconProps} />
             </Tooltip>
+
           )}
+          {/* Render empty space as distancing for assignments without statuses */}
+          {!StatusIcon?.icon && <div style={{ width: 18, height: 18 }} />}
           <span className='leading-relaxed group-hover/assrow:underline'>{title}</span>
         </div>
         <div className='flex items-center gap-2'>
