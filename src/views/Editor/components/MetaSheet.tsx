@@ -13,7 +13,7 @@ import {
 } from '@ttab/elephant-ui'
 import { PanelRightClose, PanelRightOpen } from '@ttab/elephant-ui/icons'
 import { useState } from 'react'
-import { AddNote } from './Notes/AddNote'
+import { AddNote } from '@/components/Notes/AddNote'
 import { Version } from '@/components/Version'
 import { ReadOnly } from './ReadOnly'
 import { EditorialInfoTypes } from '@/components/EditorialInfoTypes'

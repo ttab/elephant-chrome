@@ -3,7 +3,7 @@ import { useEffect, useRef, useState } from 'react'
 import { ViewHeader } from '@/components/View'
 import { StatusMenu } from '@/components/DocumentStatus/StatusMenu'
 import { PenBoxIcon } from '@ttab/elephant-ui/icons'
-import { AddNote } from '../Editor/components/Notes/AddNote'
+import { AddNote } from '@/components/Notes/AddNote'
 import { snapshot } from '@/lib/snapshot'
 import { toast } from 'sonner'
 
@@ -76,7 +76,7 @@ export const EditorHeader = ({
               </div>
             </div>
             <div className='flex flex-row gap-2 justify-end items-center'>
-              <div className='hidden @printEditor:block'><AddNote /></div>
+              <div className='hidden @printEditor:block'><AddNote role='internal' /></div>
               {!!documentId && (
                 <>
                   <ViewHeader.RemoteUsers documentId={documentId} />
