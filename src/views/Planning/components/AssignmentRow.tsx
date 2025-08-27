@@ -44,6 +44,7 @@ import { AssignmentVisibility } from '@/components/DataItem/AssignmentVisibility
 import { timeSlotTypes } from '@/defaults/assignmentTimeConstants'
 import { DocumentStatuses } from '@/defaults/documentStatuses'
 import useSWR from 'swr'
+import { useRepositoryEvents } from '@/hooks/useRepositoryEvents'
 
 export const AssignmentRow = ({ index, onSelect, isFocused = false, asDialog, onChange }: {
   index: number
@@ -279,6 +280,12 @@ export const AssignmentRow = ({ index, onSelect, isFocused = false, asDialog, on
   ]
   const selected = articleId && openDocuments.includes(articleId)
   const StatusIcon = DocumentStatuses.find((status) => status.value === articleStatus?.meta?.workflowState)
+
+  useRepositoryEvents('core/article+meta', (event) => {
+    if (event.mainDocument === articleId) {
+      void mutate()
+    }
+  })
 
   return (
     <div
