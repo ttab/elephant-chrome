@@ -6,7 +6,7 @@ import { DotDropdownMenu } from '@/components/ui/DotMenu'
 import type { AssignmentInterface } from '@/hooks/index/useAssignments'
 import { useLink } from '@/hooks/useLink'
 import { useRegistry } from '@/hooks/useRegistry'
-import { CalendarDays, FileInput, Zap } from '@ttab/elephant-ui/icons'
+import { CalendarDays, FileInput, FileWarning, Zap } from '@ttab/elephant-ui/icons'
 import { parseISO, format } from 'date-fns'
 import { toZonedTime } from 'date-fns-tz'
 import { PreviewSheet } from '../Wires/components'
@@ -120,7 +120,9 @@ export const ApprovalsCard = ({ assignment, isSelected, isFocused, status }: {
           <span className='bg-secondary inline-block px-1 rounded'>
             {assignment._deliverableType === 'core/flash'
               ? <Zap strokeWidth={1.75} size={14} className='text-red-500' />
-              : assignment._newsvalue}
+              : assignment._deliverableType === 'core/editorial-info'
+                ? <FileWarning size={14} />
+                : assignment._newsvalue}
           </span>
           {users && (
             <AvatarGroup size='xxs'>
