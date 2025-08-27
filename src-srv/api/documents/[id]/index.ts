@@ -1,5 +1,5 @@
 import type { Request } from 'express'
-import type { RouteContentResponse, RouteHandler, RouteStatusResponse } from '../../../routes.js'
+import type { RouteHandler } from '../../../routes.js'
 import { isValidUUID } from '../../../utils/isValidUUID.js'
 import { fromGroupedNewsDoc, toGroupedNewsDoc } from '@/shared/transformations/groupedNewsDoc.js'
 import { fromYjsNewsDoc } from '@/shared/transformations/yjsNewsDoc.js'
@@ -9,10 +9,8 @@ import logger from '../../../lib/logger.js'
 import { type Context, isContext } from '../../../lib/context.js'
 import { getValueByYPath, setValueByYPath } from '../../../../shared/yUtils.js'
 import type { EleBlock } from '@/shared/types/index.js'
-import { createSnapshot } from '../../../utils/createSnapshot.js'
 import { getSession } from '../../../lib/context.js'
-
-type Response = RouteContentResponse | RouteStatusResponse
+import { flush } from '../../../utils/flush.js'
 
 /**
  * Fetch a fresh document, either directly from Redis cache if it is there or from reposity if not,
@@ -175,12 +173,6 @@ export const PATCH: RouteHandler = async (req: Request, { collaborationServer, r
     }
   }
 
-
-  let response: Response = {
-    statusCode: 500,
-    statusMessage: ''
-  }
-
   const connection = await collaborationServer.server.openDirectConnection(id, context)
 
   // Make the change to the document in one transaction
@@ -203,38 +195,17 @@ export const PATCH: RouteHandler = async (req: Request, { collaborationServer, r
         setValueByYPath(yRoot, `${base}.data.start`, time)
       }
     }
-
-    response = {
-      statusCode: 200,
-      payload: {}
-    }
-  })
-
-  // Then we snapshot the document to the repository
-  await new Promise<Response>((resolve) => {
-    void connection.transact((document) => {
-      createSnapshot(collaborationServer, {
-        documentName: id,
-        document,
-        context,
-        force: true
-      })
-        .then(resolve)
-        .catch((ex: Error) => {
-          const snapshotResponse = {
-            statusCode: 500,
-            statusMessage: `Error during snapshot transaction: ${ex.message || 'unknown reason'}`
-          }
-
-          logger.error(snapshotResponse.statusMessage, ex)
-          resolve(snapshotResponse)
-        })
-    })
   })
 
   await connection.disconnect()
 
-  return response
+  return flush(
+    collaborationServer,
+    id,
+    null,
+    null,
+    context
+  )
 }
 
 

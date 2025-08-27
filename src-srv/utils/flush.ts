@@ -1,0 +1,41 @@
+import type { CollaborationServer } from '../collaboration/CollaborationServer.js'
+import type { Context } from '../lib/context.js'
+import logger from '../lib/logger.js'
+import type { RouteContentResponse, RouteStatusResponse } from '../routes.js'
+
+
+export async function flush(
+  collaborationServer: CollaborationServer,
+  documentName: string,
+  status: string | null,
+  cause: string | null,
+  context: Context
+): Promise<RouteContentResponse | RouteStatusResponse> {
+  try {
+    const result = await collaborationServer.flushDocument(
+      documentName,
+      status,
+      cause,
+      context
+    )
+
+    if (!result?.version) {
+      throw new Error('Failed creating a new version')
+    }
+
+    return {
+      statusCode: 200,
+      payload: {
+        uuid: documentName,
+        version: result.version
+      }
+    }
+  } catch (ex: unknown) {
+    logger.error('Failed storing new version of document', ex)
+
+    return {
+      statusCode: 500,
+      statusMessage: `Failed storing new version of document: ${(ex as Error).message || 'unknown reason'}`
+    }
+  }
+}

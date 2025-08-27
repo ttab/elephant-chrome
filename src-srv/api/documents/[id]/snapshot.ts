@@ -3,6 +3,7 @@ import type { Request } from 'express'
 import type { RouteHandler } from '../../../routes.js'
 import { getContextFromValidSession, getSession, isContext } from '../../../lib/context.js'
 import * as Y from 'yjs'
+import { flush } from '../../../utils/flush.js'
 
 export const POST: RouteHandler = async (req: Request, { collaborationServer, res }) => {
   const id = req.params.id
@@ -28,26 +29,6 @@ export const POST: RouteHandler = async (req: Request, { collaborationServer, re
       })
       await connection.disconnect()
     }
-
-    // Flush unsaved changes to the repository immediately
-    const result = await collaborationServer.flushDocument(
-      id,
-      typeof status === 'string' ? status : null,
-      typeof cause === 'string' ? cause : null,
-      context
-    )
-
-    if (!result?.version) {
-      throw new Error('Failed creating a new version')
-    }
-
-    return {
-      statusCode: 200,
-      payload: {
-        uuid: id,
-        version: result.version
-      }
-    }
   } catch (ex: unknown) {
     logger.error('Failed storing new version of document', ex)
 
@@ -56,4 +37,12 @@ export const POST: RouteHandler = async (req: Request, { collaborationServer, re
       statusMessage: `Failed storing new version of document: ${(ex as Error).message || 'unknown reason'}`
     }
   }
+
+  return flush(
+    collaborationServer,
+    id,
+    typeof status === 'string' ? status : null,
+    typeof cause === 'string' ? cause : null,
+    context
+  )
 }

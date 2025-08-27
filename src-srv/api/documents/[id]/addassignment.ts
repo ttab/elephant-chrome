@@ -1,9 +1,7 @@
 import type { Request } from 'express'
-import type { RouteContentResponse, RouteHandler, RouteStatusResponse } from '../../../routes.js'
-import logger from '../../../lib/logger.js'
+import type { RouteHandler } from '../../../routes.js'
 import { Block } from '@ttab/elephant-api/newsdoc'
 import { appendAssignment, appendDocumentToAssignment } from '../../../lib/createYItem.js'
-import { createSnapshot } from '../../../utils/createSnapshot.js'
 import { planningDocumentTemplate } from '../../../../shared/templates/planningDocumentTemplate.js'
 import { getDeliverableType } from '../../../../src/defaults/templates/lib/getDeliverableType.js'
 import { toYjsNewsDoc } from '@/shared/transformations/yjsNewsDoc.js'
@@ -11,8 +9,7 @@ import { toGroupedNewsDoc } from '@/shared/transformations/groupedNewsDoc.js'
 import type { Wire } from '../../../../src/hooks/index/useDocuments/schemas/wire.js'
 import { getContextFromValidSession, isContext, type Context } from '../../../lib/context.js'
 import { isValidUUID } from '../../../utils/isValidUUID.js'
-
-type Response = RouteContentResponse | RouteStatusResponse
+import { flush } from '../../../utils/flush.js'
 
 /**
  * Add assignment to an existing planning or a newly created one.
@@ -72,11 +69,6 @@ export const POST: RouteHandler = async (req: Request, { collaborationServer, re
       statusCode: 400,
       statusMessage: 'Invalid input to document addassignment endpoint'
     }
-  }
-
-  let response: Response = {
-    statusCode: 500,
-    statusMessage: ''
   }
 
   // Either request the document for the existing planning id
@@ -153,38 +145,15 @@ export const POST: RouteHandler = async (req: Request, { collaborationServer, re
       slug: '',
       type: getDeliverableType(type)
     })
-
-    response = {
-      statusCode: 200,
-      payload: {
-        planningId: documentId
-      }
-    }
-  })
-
-  // Then we snapshot the document to the repository
-  await new Promise<Response>((resolve) => {
-    void connection.transact((document) => {
-      createSnapshot(collaborationServer, {
-        documentName: documentId,
-        document,
-        context,
-        force: true
-      })
-        .then(resolve)
-        .catch((ex: Error) => {
-          const snapshotResponse = {
-            statusCode: 500,
-            statusMessage: `Error during snapshot transaction: ${ex.message || 'unknown reason'}`
-          }
-
-          logger.error(snapshotResponse.statusMessage, ex)
-          resolve(snapshotResponse)
-        })
-    })
   })
 
   await connection.disconnect()
 
-  return response
+  return flush(
+    collaborationServer,
+    documentId,
+    null,
+    null,
+    context
+  )
 }
