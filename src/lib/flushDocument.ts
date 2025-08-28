@@ -1,7 +1,7 @@
 import * as Y from 'yjs'
 const BASE_URL = import.meta.env.BASE_URL
 
-type SnapshotResponse = {
+type FlushDocumentResponse = {
   statusCode: number
   statusMessage: string
 } | {
@@ -10,7 +10,10 @@ type SnapshotResponse = {
   statusMessage: undefined
 } | undefined
 
-export async function snapshot(
+/**
+ * Flush unsaved document changes to primary repository.
+ */
+export async function flushDocument(
   uuid: string,
   options?: {
     force?: true
@@ -18,7 +21,7 @@ export async function snapshot(
     status?: string
     cause?: string
   },
-  document?: Y.Doc): Promise<SnapshotResponse> {
+  document?: Y.Doc): Promise<FlushDocumentResponse> {
   if (!uuid) {
     throw new Error('UUID is required')
   }
@@ -30,7 +33,7 @@ export async function snapshot(
   }
 
   try {
-    const url = new URL(`${BASE_URL}/api/documents/${uuid}/snapshot`, window.location.origin)
+    const url = new URL(`${BASE_URL}/api/documents/${uuid}/flush`, window.location.origin)
 
     if (options?.force) url.searchParams.set('force', 'true')
     if (options?.status) url.searchParams.set('status', options.status)
@@ -46,7 +49,7 @@ export async function snapshot(
       body: update
     })
 
-    const result = await response.json() as SnapshotResponse
+    const result = await response.json() as FlushDocumentResponse
 
     if (!response.ok) {
       return {
@@ -59,7 +62,7 @@ export async function snapshot(
 
     return result
   } catch (ex) {
-    const msg = (ex instanceof Error) ? ex.message : 'Failed saving snapshot'
+    const msg = (ex instanceof Error) ? ex.message : 'Failed flushing unsaved changes to primary storage'
     console.error(msg)
 
     return {

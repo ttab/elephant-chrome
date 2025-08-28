@@ -10,7 +10,7 @@ import { getValueByYPath, setValueByYPath } from '@/shared/yUtils'
 import type { Block } from '@ttab/elephant-api/newsdoc'
 import { format, toZonedTime } from 'date-fns-tz'
 import { type TimeDef, useAssignmentTime } from '@/hooks/useAssignmentTime'
-import { snapshot } from '@/lib/snapshot'
+import { flushDocument } from '@/lib/flushDocument'
 import { toast } from 'sonner'
 import { AssignmentType } from '@/components/DataItem/AssignmentType'
 
@@ -135,11 +135,11 @@ export const MoveDialog = ({ onClose, onChange, newDate }: {
               }
 
               if (id) {
-                // Set planning date and snapshot
+                // Set planning date and flush changes to repository
                 setStartString(newDate)
                 setEndString(newDate)
 
-                snapshot(id).then(() => {
+                flushDocument(id).then(() => {
                   onChange(true)
                   onClose()
                 }).catch((err) => {

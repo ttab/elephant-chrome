@@ -50,7 +50,7 @@ import type { EleBlock } from '@/shared/types'
 import { toast } from 'sonner'
 import { useSession } from 'next-auth/react'
 import { Prompt } from '@/components/Prompt'
-import { snapshot } from '@/lib/snapshot'
+import { flushDocument } from '@/lib/flushDocument'
 import type * as Y from 'yjs'
 import { ImagePlugin } from './ImagePlugin'
 
@@ -213,7 +213,7 @@ function EditorContainer({
       toast.error('Något gick fel när printartikel skulle dupliceras')
       return
     }
-    await snapshot(documentId)
+    await flushDocument(documentId)
     try {
       const _date = (fromDate || date) as string
       const response = await baboon.createPrintArticle({
@@ -244,7 +244,7 @@ function EditorContainer({
       toast.error('Något gick fel när printartikel skulle renderas')
       return
     }
-    await snapshot(documentId)
+    await flushDocument(documentId)
     const results: EleBlock[] = []
     for (const _layout of arr) {
       try {

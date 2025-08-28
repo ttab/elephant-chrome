@@ -4,7 +4,7 @@ import { ViewDialogClose } from './ViewDialogClose'
 import { type HistoryInterface } from '@/navigation/hooks/useHistory'
 import { useHistory, useNavigation, useView } from '@/hooks'
 import type { NavigationState } from '@/types'
-import { snapshot } from '@/lib/snapshot'
+import { flushDocument } from '@/lib/flushDocument'
 
 
 export const Action = ({ onDialogClose = undefined, children, asDialog }: PropsWithChildren & {
@@ -19,7 +19,7 @@ export const Action = ({ onDialogClose = undefined, children, asDialog }: PropsW
     const currentState = history.state?.contentState.find((obj) => obj.viewId === viewId)
 
     if (currentState?.name === 'Editor' && currentState?.props?.id && !currentState.props.version) {
-      void snapshot(currentState.props.id)
+      void flushDocument(currentState.props.id)
     }
     handleClose(viewId, state, history)
   })

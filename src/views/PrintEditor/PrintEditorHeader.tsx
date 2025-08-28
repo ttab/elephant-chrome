@@ -4,7 +4,7 @@ import { ViewHeader } from '@/components/View'
 import { StatusMenu } from '@/components/DocumentStatus/StatusMenu'
 import { PenBoxIcon } from '@ttab/elephant-ui/icons'
 import { AddNote } from '../Editor/components/Notes/AddNote'
-import { snapshot } from '@/lib/snapshot'
+import { flushDocument } from '@/lib/flushDocument'
 import { toast } from 'sonner'
 
 /**
@@ -65,7 +65,7 @@ export const EditorHeader = ({
                   onBlur={() => {
                     if (isDirty) {
                       setIsDirty(false)
-                      snapshot(documentId).then(() => {
+                      flushDocument(documentId).then(() => {
                         toast.success('Titel uppdaterad')
                       }).catch((error) => {
                         console.error('Error updating title:', error)
