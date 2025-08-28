@@ -122,8 +122,8 @@ export const Version = ({ documentId, hideDetails = false, textOnly = true }: { 
       const status: Status = { name: '', created: v.created, creator: createdBy(v.creator) }
 
       if (v.meta && 'cause' in v.meta) {
-        if ((CAUSE_KEYS as Record<string, string>)[v?.meta?.cause]) {
-          status.name = (CAUSE_KEYS as Record<string, string>)[v?.meta?.cause]
+        if ((CAUSE_KEYS as Record<string, { short: string, long: string }>)[v?.meta?.cause]) {
+          status.name = (CAUSE_KEYS as Record<string, { short: string, long: string }>)[v?.meta?.cause]?.short
         }
       }
 
