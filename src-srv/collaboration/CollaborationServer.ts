@@ -164,10 +164,14 @@ export class CollaborationServer {
    * Handles flushing of unsaved document changes as well as adding
    * new/created(?) documents to the users history/tracking document.
    */
-  async flushDocument(id: string, status: string | null, cause: string | null, context: Context): Promise<{
+  async flushDocument(id: string, context: Context, options?: {
+    status?: string
+    cause?: string
+    addToHistory?: boolean
+  }): Promise<{
     version: string
   } | void> {
-    return this.#repositoryExtension.flushDocument(id, status, cause, context)
+    return this.#repositoryExtension.flushDocument(id, context, options)
   }
 
   /**

@@ -202,8 +202,6 @@ export const PATCH: RouteHandler = async (req: Request, { collaborationServer, r
   return flush(
     collaborationServer,
     id,
-    null,
-    null,
     context
   )
 }

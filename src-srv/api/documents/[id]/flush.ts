@@ -41,8 +41,11 @@ export const POST: RouteHandler = async (req: Request, { collaborationServer, re
   return flush(
     collaborationServer,
     id,
-    typeof status === 'string' ? status : null,
-    typeof cause === 'string' ? cause : null,
-    context
+    context,
+    {
+      status: typeof status === 'string' ? status : undefined,
+      cause: typeof cause === 'string' ? cause : undefined,
+      addToHistory: true
+    }
   )
 }

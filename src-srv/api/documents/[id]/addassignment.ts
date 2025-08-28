@@ -152,8 +152,6 @@ export const POST: RouteHandler = async (req: Request, { collaborationServer, re
   return flush(
     collaborationServer,
     documentId,
-    null,
-    null,
     context
   )
 }

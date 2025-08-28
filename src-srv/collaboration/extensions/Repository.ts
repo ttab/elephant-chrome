@@ -160,9 +160,10 @@ export class RepositoryExtension implements Extension {
 
     return await this.flushDocument(
       msg.message.id,
-      msg.message.status ?? null,
-      null,
-      msg.message.context
+      msg.message.context,
+      {
+        status: msg.message.status
+      }
     )
   }
 
@@ -170,7 +171,11 @@ export class RepositoryExtension implements Extension {
    * Handles flushing of unsaved document changes as well as adding
    * new/created(?) documents to the users history/tracking document.
    */
-  async flushDocument(id: string, status: string | null, cause: string | null, context: Context): Promise<{
+  async flushDocument(id: string, context: Context, options?: {
+    status?: string
+    cause?: string
+    addToHistory?: boolean
+  }): Promise<{
     version: string
   } | void> {
     if (!this.#hp) {
@@ -182,6 +187,8 @@ export class RepositoryExtension implements Extension {
     if (await this.#redis.aquireLock(`stateless:${id}`, serverId) !== true) {
       return
     }
+
+    const { status = null, cause = null } = options || {}
 
     const connection = await this.#hp.openDirectConnection(id, {
       ...context,
@@ -211,11 +218,13 @@ export class RepositoryExtension implements Extension {
       cause
     )
 
-    // Finally update the user history document
-    await this.#addDocumentToUserHistory(id, context)
-
     // Cleanup
     await connection.disconnect()
+
+    // Finally update the user history document if applicable
+    if (options?.addToHistory === true) {
+      await this.#addDocumentToUserHistory(id, context)
+    }
 
     return result
   }

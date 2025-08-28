@@ -7,16 +7,18 @@ import type { RouteContentResponse, RouteStatusResponse } from '../routes.js'
 export async function flush(
   collaborationServer: CollaborationServer,
   documentName: string,
-  status: string | null,
-  cause: string | null,
-  context: Context
+  context: Context,
+  options?: {
+    status?: string
+    cause?: string
+    addToHistory?: boolean
+  }
 ): Promise<RouteContentResponse | RouteStatusResponse> {
   try {
     const result = await collaborationServer.flushDocument(
       documentName,
-      status,
-      cause,
-      context
+      context,
+      options
     )
 
     if (!result?.version) {
