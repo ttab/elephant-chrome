@@ -12,7 +12,7 @@ import type { GetStatusHistoryReponse } from '@ttab/elephant-api/repository'
 import type { Status as DocumentStatus } from '@ttab/elephant-api/repository'
 import type { EleDocumentResponse } from '@/shared/types'
 import { dateToReadableDateTime } from '@/shared/datetime'
-import { CAUSE_KEYS } from './causekeys'
+import { CAUSE_KEYS } from '../../defaults/causekeys'
 const BASE_URL = import.meta.env.BASE_URL || ''
 
 type Status = { name: string, created: string, creator: string }
