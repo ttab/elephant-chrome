@@ -19,6 +19,8 @@ import { AvatarGroup } from '@/components/AvatarGroup'
 import { Tooltip } from '@ttab/elephant-ui'
 import { timesSlots } from '@/defaults/assignmentTimeslots'
 import { useMemo } from 'react'
+import { useWorkflowStatus } from '@/hooks/useWorkflowStatus'
+import { CAUSE_KEYS } from '@/defaults/causekeys'
 
 export const ApprovalsCard = ({ assignment, isSelected, isFocused, status }: {
   assignment: AssignmentInterface
@@ -32,6 +34,7 @@ export const ApprovalsCard = ({ assignment, isSelected, isFocused, status }: {
   const openArticle = useLink('Editor')
   const openFlash = useLink('Flash')
   const [users] = useYValue<Record<string, { id: string, name: string, username: string }>>(`${assignment._deliverableId}.users`, false, undefined, 'open-documents')
+  const [documentStatus] = useWorkflowStatus(assignment._deliverableId)
 
   const openType = (assignmentType: string) => assignmentType === 'core/flash' ? openFlash : openArticle
   const time = useMemo(() =>
@@ -90,6 +93,9 @@ export const ApprovalsCard = ({ assignment, isSelected, isFocused, status }: {
 
   const title = assignment._deliverableDocument?.title
 
+  const slugline = assignment.meta.find((m) => m.type === 'tt/slugline')?.value
+  const longCause = documentStatus?.cause ? CAUSE_KEYS[documentStatus.cause as keyof typeof CAUSE_KEYS].long : ''
+
   return (
     <Card.Root
       status={assignment._deliverableStatus || 'draft'}
@@ -144,8 +150,10 @@ export const ApprovalsCard = ({ assignment, isSelected, isFocused, status }: {
       <Card.Content>
         <Card.Title>
           <div className='truncate'>{title}</div>
-          <div className='text-xs font-normal opacity-60'>
-            {assignment.meta.find((m) => m.type === 'tt/slugline')?.value || ' '}
+          <div className='text-xs font-normal opacity-60 flex gap-1'>
+            {slugline && <div>{slugline}</div>}
+            <div>{`${slugline ? ' - ' : ''}v${statusData?.version}`}</div>
+            {longCause && <div>{`- ${longCause}`}</div>}
           </div>
         </Card.Title>
       </Card.Content>
