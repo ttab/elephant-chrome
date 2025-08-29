@@ -17,7 +17,7 @@ interface CacheExtensionConfiguration {
 }
 
 /**
- * CacheExtension to store and load document updates in the cache for faster retrieval.
+ * CacheExtension to store and load document updates in the cache.
  *
  * Contrary to the RepositoryExtension this stores and retrieves all documents,
  * repository documents and non persistent documents like tracker documents alike.

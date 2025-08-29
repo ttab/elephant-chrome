@@ -81,11 +81,12 @@ export class CollaborationServer {
       maxDebounce: 30000,
       quiet: this.#quiet,
       extensions: withErrorHandler([
-        new Logger({
-          log: (msg) => {
-            logger.info(msg)
-          }
-        }),
+        // new Logger({
+        //   onChange: false,
+        //   log: (msg) => {
+        //     logger.info(msg)
+        //   }
+        // }),
         new Redis({
           prefix: 'elc::hp',
           host: redisHost,

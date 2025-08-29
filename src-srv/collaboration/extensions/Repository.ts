@@ -1,4 +1,12 @@
-import type { Extension, Hocuspocus, onConfigurePayload, onDisconnectPayload, onLoadDocumentPayload, onStatelessPayload, onStoreDocumentPayload } from '@hocuspocus/server'
+import type {
+  Extension,
+  Hocuspocus,
+  onConfigurePayload,
+  onDisconnectPayload,
+  onLoadDocumentPayload,
+  onStatelessPayload,
+  onStoreDocumentPayload
+} from '@hocuspocus/server'
 import * as Y from 'yjs'
 
 import type { Repository as RepositoryWrapper } from '@/shared/Repository.js'
@@ -11,7 +19,7 @@ import { fromYjsNewsDoc, toYjsNewsDoc } from '@/shared/transformations/yjsNewsDo
 import { fromGroupedNewsDoc, toGroupedNewsDoc } from '@/shared/transformations/groupedNewsDoc.js'
 import { StatelessType, parseStateless } from '@/shared/stateless.js'
 import type { EleDocumentResponse } from '@/shared/types/index.js'
-import { createMultiDebounceWithMaxTime } from '../../utils/debounceStore.js'
+import { createDebounceMap } from '@/shared/leadingDebounce.js'
 import type { RedisCache } from '../../utils/RedisCache.js'
 import logger from '../../lib/logger.js'
 
@@ -26,12 +34,7 @@ interface RepisitoryExtensionConfiguration {
 export class RepositoryExtension implements Extension {
   readonly #repository: RepositoryWrapper
   readonly #errorHandler: CollaborationServerErrorHandler
-  readonly #debounceInterval: number = 20000
-  readonly #maxDebounceTime: number = 60000
-  readonly #debouncedStore: {
-    call: (key: string, payload: onStoreDocumentPayload) => void
-    flush: (key: string, payload: onStoreDocumentPayload) => void
-  }
+  readonly #storeDebouncer: ReturnType<typeof createDebounceMap<onStoreDocumentPayload>>
 
   #hp?: Hocuspocus
   #redis: RedisCache
@@ -41,20 +44,14 @@ export class RepositoryExtension implements Extension {
     this.#errorHandler = configuration.errorHandler
     this.#redis = configuration.redis
 
-    this.#debounceInterval = configuration.debounceInterval ?? this.#debounceInterval
-    this.#maxDebounceTime = configuration.maxDebounceTime ?? this.#maxDebounceTime
-
-    // Create a multi-debounced store function
-    this.#debouncedStore = createMultiDebounceWithMaxTime(
-      (payload: onStoreDocumentPayload) => {
-        this.#performDebouncedStore(payload).catch((ex) => {
-          this.#errorHandler.error(ex, getErrorContext(payload))
+    this.#storeDebouncer = createDebounceMap<onStoreDocumentPayload>(
+      (documentName, payload) => {
+        this.#performDebouncedStore(payload).catch ((ex) => {
+          this.#errorHandler.error(ex, { documentName, context: 'debouncedStore' })
         })
       },
-      {
-        debounceMs: this.#debounceInterval,
-        maxDebounceMs: this.#maxDebounceTime
-      }
+      configuration.debounceInterval ?? 15000,
+      configuration.maxDebounceTime ?? 120000
     )
   }
 
@@ -90,57 +87,33 @@ export class RepositoryExtension implements Extension {
         toYjsNewsDoc(toGroupedNewsDoc(newsDoc), payload.document)
       }
     } catch (ex) {
-      this.#errorHandler.error(
-        ex,
-        getErrorContext(payload)
-      )
+      this.#errorHandler.error(ex, getErrorContext(payload))
     }
   }
 
   async onStoreDocument(payload: onStoreDocumentPayload) {
     const { document, documentName } = payload
-
     if (!this.#shouldBeStored(document, documentName, payload.context)) {
       return
     }
 
     if (!isContext(payload.context)) {
-      throw new Error(`Invalid context received in Repository.onStoreDocument for ${documentName}`)
+      throw new Error(`Invalid context in Repository.onStoreDocument for ${documentName}`)
     }
 
-    this.#debouncedStore.call(documentName, payload)
+    if (payload.context.disconnected === true) {
+      // Client disconnected from this document, immediately flush all pending changes to repo
+      this.#storeDebouncer.flush(payload.documentName, payload)
+    } else {
+      this.#storeDebouncer.call(payload.documentName, payload)
+    }
+
     return Promise.resolve()
   }
 
-  /**
-   * When a client disconnects we flush any pending changes to the repository.
-   */
   async onDisconnect(payload: onDisconnectPayload) {
-    // Only flush documents that should be stored
-    if (!this.#shouldBeStored(payload.document, payload.documentName, payload.context)) {
-      return
-    }
-
-    if (!isContext(payload.context)) {
-      throw new Error(`Invalid context received in Repository.onDisconnect for ${payload.documentName}`)
-    }
-
-    try {
-      // Flush any pending debounced save for this document
-      this.#debouncedStore.flush(
-        payload.documentName,
-        {
-          ...payload,
-          clientsCount: payload.clientsCount ?? 0
-        }
-      )
-
-      console.info(`Flushed pending save for ${payload.documentName} on disconnect`)
-    } catch (ex) {
-      this.#errorHandler.error(
-        ex,
-        getErrorContext(payload)
-      )
+    if (isContext(payload.context)) {
+      payload.context.disconnected = true
     }
 
     return Promise.resolve()
@@ -171,7 +144,7 @@ export class RepositoryExtension implements Extension {
    * Handles flushing of unsaved document changes as well as adding
    * new/created(?) documents to the users history/tracking document.
    */
-  async flushDocument(id: string, context: Context, options?: {
+  async flushDocument(documentName: string, context: Context, options?: {
     status?: string
     cause?: string
     addToHistory?: boolean
@@ -184,13 +157,13 @@ export class RepositoryExtension implements Extension {
 
     // Only one server should handle a flush, aquire a lock or ignore
     const serverId = this.#hp.configuration.name || 'default'
-    if (await this.#redis.aquireLock(`stateless:${id}`, serverId) !== true) {
+    if (await this.#redis.aquireLock(`stateless:${documentName}`, serverId) !== true) {
       return
     }
 
     const { status = null, cause = null } = options || {}
 
-    const connection = await this.#hp.openDirectConnection(id, {
+    const connection = await this.#hp.openDirectConnection(documentName, {
       ...context,
       agent: 'server'
     }).catch((ex) => {
@@ -210,6 +183,7 @@ export class RepositoryExtension implements Extension {
 
     const { documentResponse, updatedHash, originalHash } = fromYjsNewsDoc(connection.document)
     const result = await this.#storeDocument(
+      documentName,
       connection.document,
       documentResponse,
       context.accessToken,
@@ -223,7 +197,7 @@ export class RepositoryExtension implements Extension {
 
     // Finally update the user history document if applicable
     if (options?.addToHistory === true) {
-      await this.#addDocumentToUserHistory(id, context)
+      await this.#addDocumentToUserHistory(documentName, context)
     }
 
     return result
@@ -240,20 +214,24 @@ export class RepositoryExtension implements Extension {
     }
 
     const { documentResponse, updatedHash } = fromYjsNewsDoc(document)
-    if (updatedHash) {
-      await this.#storeDocument(
-        document,
-        documentResponse,
-        payload.context.accessToken,
-        updatedHash
-      )
+    if (!updatedHash) {
+      return
     }
+
+    return await this.#storeDocument(
+      documentName,
+      document,
+      documentResponse,
+      payload.context.accessToken,
+      updatedHash
+    )
   }
 
   /**
    * Store document in repository as well as update the hash and version in the Y.Doc
    */
   async #storeDocument(
+    documentName: string,
     document: Y.Doc,
     documentResponse: EleDocumentResponse,
     accessToken: string,
@@ -271,17 +249,21 @@ export class RepositoryExtension implements Extension {
     )
 
     if (result?.status.code !== 'OK') {
-      throw new Error('Save snapshot document to repository failed', { cause: result })
+      throw new Error(`Failed storing document ${documentName} in repository`, { cause: result })
     }
 
     // Update the document version and hash
     const versionMap = document.getMap('version')
     const hashMap = document.getMap('hash')
-    versionMap.set('version', result.response.version.toString())
+    const version = result.response.version.toString()
+
+    versionMap.set('version', version)
     hashMap.set('hash', hash)
 
+    logger.info(`Document ${documentName} v${version} stored in repository`)
+
     return {
-      version: result.response.version.toString()
+      version
     }
   }
 
