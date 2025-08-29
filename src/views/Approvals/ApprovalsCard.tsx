@@ -10,8 +10,7 @@ import { CalendarDays, FileInput, Zap } from '@ttab/elephant-ui/icons'
 import { parseISO, format } from 'date-fns'
 import { toZonedTime } from 'date-fns-tz'
 import { PreviewSheet } from '../Wires/components'
-import { DoneMarkedBy } from './DoneMarkedBy'
-import type { StatusData } from 'src/datastore/types'
+import type { IDBAuthor, StatusData } from 'src/datastore/types'
 import { useSections } from '@/hooks/useSections'
 import type { StatusSpecification } from '@/defaults/workflowSpecification'
 import { useYValue } from '@/hooks/useYValue'
@@ -19,12 +18,14 @@ import { AvatarGroup } from '@/components/AvatarGroup'
 import { Tooltip } from '@ttab/elephant-ui'
 import { timesSlots } from '@/defaults/assignmentTimeslots'
 import { useMemo } from 'react'
+import { makeAuthorNames } from './makeAuthorNames'
 
-export const ApprovalsCard = ({ assignment, isSelected, isFocused, status }: {
+export const ApprovalsCard = ({ assignment, isSelected, isFocused, status, authors }: {
   assignment: AssignmentInterface
   status: StatusSpecification
   isSelected: boolean
   isFocused: boolean
+  authors: IDBAuthor[]
 }) => {
   const { timeZone } = useRegistry()
   const { showModal, hideModal } = useModal()
