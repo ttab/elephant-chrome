@@ -18,7 +18,7 @@ export const DoneMarkedBy = ({ doneStatus, authors }: {
   const creatorId = doneStatus.creator.slice(doneStatus.creator.lastIndexOf('/'))
   const matchedAuthor = authors.find((a) => {
     return creatorId === a?.sub?.slice(a?.sub?.lastIndexOf('/'))
-  })?.name
+  })
 
   if (!matchedAuthor) {
     return <></>
@@ -26,12 +26,14 @@ export const DoneMarkedBy = ({ doneStatus, authors }: {
 
   const created = dateToReadableDateTime(new Date(doneStatus.created), locale.code.full, timeZone)
 
+  const author = authorOutput(matchedAuthor)
+
   return (
     <div className='flex flex-col items-start justify-start'>
-      <Tooltip content={`Senast klarmarkerat ${created}`}>
+      <Tooltip content={`Senast klarmarkerat ${created} av ${matchedAuthor.name}`}>
         <div className='flex gap-1 items-center relative'>
           <Check size={16} />
-          <div>{`${matchedAuthor}`}</div>
+          <div>{author}</div>
         </div>
       </Tooltip>
     </div>
