@@ -1,4 +1,5 @@
 import { Server, type Hocuspocus } from '@hocuspocus/server'
+import { Logger } from '@hocuspocus/extension-logger'
 import { Redis } from '@hocuspocus/extension-redis'
 
 import type { RedisCache } from '../utils/RedisCache.js'
@@ -14,6 +15,7 @@ import { OpenDocuments } from './extensions/OpenDocuments.js'
 import { RepositoryExtension } from './extensions/Repository.js'
 
 import CollaborationServerErrorHandler, { withErrorHandler } from '../lib/errorHandler.js'
+import logger from '../lib/logger.js'
 import type { AuthInfo } from '../utils/authConfig.js'
 import { CacheExtension } from './extensions/Cache.js'
 import type { Context } from '../lib/context.js'
@@ -79,12 +81,12 @@ export class CollaborationServer {
       maxDebounce: 30000,
       quiet: this.#quiet,
       extensions: withErrorHandler([
-        // new Logger({
-        //   onChange: false,
-        //   log: (msg) => {
-        //     logger.info(msg)
-        //   }
-        // }),
+        new Logger({
+          onChange: false,
+          log: (msg) => {
+            logger.info(msg)
+          }
+        }),
         new Redis({
           prefix: 'elc::hp',
           host: redisHost,
