@@ -10,8 +10,7 @@ import { CalendarDays, FileInput, Zap } from '@ttab/elephant-ui/icons'
 import { parseISO, format } from 'date-fns'
 import { toZonedTime } from 'date-fns-tz'
 import { PreviewSheet } from '../Wires/components'
-import { DoneMarkedBy } from './DoneMarkedBy'
-import type { StatusData } from 'src/datastore/types'
+import type { IDBAuthor, StatusData } from 'src/datastore/types'
 import { useSections } from '@/hooks/useSections'
 import type { StatusSpecification } from '@/defaults/workflowSpecification'
 import { useYValue } from '@/hooks/useYValue'
@@ -19,12 +18,14 @@ import { AvatarGroup } from '@/components/AvatarGroup'
 import { Tooltip } from '@ttab/elephant-ui'
 import { timesSlots } from '@/defaults/assignmentTimeslots'
 import { useMemo } from 'react'
+import { makeAuthorNames } from './makeAuthorNames'
 
-export const ApprovalsCard = ({ assignment, isSelected, isFocused, status }: {
+export const ApprovalsCard = ({ assignment, isSelected, isFocused, status, authors }: {
   assignment: AssignmentInterface
   status: StatusSpecification
   isSelected: boolean
   isFocused: boolean
+  authors: IDBAuthor[]
 }) => {
   const { timeZone } = useRegistry()
   const { showModal, hideModal } = useModal()
@@ -38,16 +39,44 @@ export const ApprovalsCard = ({ assignment, isSelected, isFocused, status }: {
     getAssignmentTime(assignment, timeZone), [assignment, timeZone])
 
   const documentId = assignment._deliverableId
-  const assignees = assignment.links.filter((m) => m.type === 'core/author' && m.title).map((l) => l.title)
 
   const statusData = assignment?._statusData
     ? JSON.parse(assignment._statusData) as StatusData
     : null
-  const entries = statusData ? Object.entries(statusData.heads) : []
+  const entries = statusData ? Object.entries(statusData.heads).sort((a, b) => a[1].created > b[1].created ? -1 : 1) : []
+
+
+  const lastUpdated = entries?.[0]?.[1]
+  const lastUpdatedById = lastUpdated?.creator.slice(lastUpdated?.creator.lastIndexOf('/'))
+
+  const lastStatusUpdateAuthor = authors.find((a) => {
+    return lastUpdatedById === a?.sub?.slice(a?.sub?.lastIndexOf('/'))
+  })
+
+  const getAuthorAfterSetStatus = (status: string) => {
+    const statusIndex = entries.findIndex((entry) => entry[0] === status)
+    const afterStatus = entries[statusIndex - 1]?.[1]
+
+    const creatorId = afterStatus?.creator.slice(afterStatus?.creator.lastIndexOf('/'))
+    return authors.find((a) => {
+      return creatorId === a?.sub?.slice(a?.sub?.lastIndexOf('/'))
+    })
+  }
+
+  const afterDraftAuthor = getAuthorAfterSetStatus('draft')
+
+  const byline = assignment.links.find((l) => l.type === 'core/author')?.title
+
+  const assignees = assignment.links
+    .filter((m) => m.type === 'core/author' && m.title)
+    .map((l) => l.title)
+
   const doneStatus = statusData
     ? entries
       ?.find((entry) => entry[0] === 'done')?.[1]
     : undefined
+
+  const authorNames = makeAuthorNames({ byline, assignees, doneStatus, authors, afterDraftAuthor, lastStatusUpdateAuthor })
 
   const menuItemDocumentLabel = assignment._deliverableType === 'core/flash' ? 'flash' : 'artikel'
   const menuItems = [{
@@ -152,10 +181,8 @@ export const ApprovalsCard = ({ assignment, isSelected, isFocused, status }: {
 
       <Card.Footer>
         <div className='flex flex-col w-full'>
-          <div className='truncate'>
-            {!assignees.length && <DoneMarkedBy doneStatus={doneStatus} />}
-            {assignees.length === 1 && assignees[0]}
-            {assignees.length > 1 && `${assignees.join(', ')}`}
+          <div className='truncate' title={assignees.join(', ')}>
+            {authorNames}
           </div>
           <div className='flex flex-grow justify-between align-middle'>
             <div className='flex flex-row content-center opacity-60 gap-1'>
