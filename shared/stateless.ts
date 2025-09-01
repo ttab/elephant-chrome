@@ -10,33 +10,9 @@ import type pino from 'pino'
 
 export enum StatelessType {
   AUTH = 'auth',
-  IN_PROGRESS = 'inProgress',
   MESSAGE = 'message',
   ERROR = 'error'
 }
-
-const inProgressMessageSchema = z.object({
-  state: z.boolean().optional(),
-  status: z.string().optional(),
-  id: z.string(),
-  context: z.object({
-    agent: z.string(),
-    accessToken: z.string(),
-    user: z.object({
-      name: z.string(),
-      email: z.string(),
-      id: z.string(),
-      sub: z.string()
-    }),
-    type: z.string()
-  })
-})
-
-const StatelessInProgressSchema = z.object({
-  type: z.enum([StatelessType.IN_PROGRESS]),
-  message: inProgressMessageSchema
-})
-
 
 const ErrorMessageSchema = z.object({
   type: z.string(),
@@ -67,17 +43,14 @@ const StatelessAuthSchema = z.object({
 
 export type StatelessAuth = z.infer<typeof StatelessAuthSchema>
 type StatelessMessage = z.infer<typeof StatelessMessageSchema>
-type StatelessInProgress = z.infer<typeof StatelessInProgressSchema>
 
-export type inProgressMessage = z.infer<typeof inProgressMessageSchema>
 type authMessage = z.infer<typeof authMessageSchema>
 
-type StatelessPayload = StatelessAuth | StatelessMessage | StatelessInProgress
+type StatelessPayload = StatelessAuth | StatelessMessage
 
 const StatelessSchemaMap = {
   [StatelessType.AUTH]: StatelessAuthSchema,
   [StatelessType.MESSAGE]: StatelessMessageSchema,
-  [StatelessType.IN_PROGRESS]: StatelessInProgressSchema,
   [StatelessType.ERROR]: StatelessErrorSchema
 }
 
@@ -108,7 +81,7 @@ export function parseStateless<T extends StatelessPayload>(payload: string): T {
  * @throws {Error} Will throw an error if the prefix is not a valid StatelessType.
  */
 
-type StatelessMessageType = string | inProgressMessage | authMessage | pino.SerializedError
+type StatelessMessageType = string | authMessage | pino.SerializedError
 export function createStateless(prefix: StatelessType, message: StatelessMessageType): string {
   if (!Object.values(StatelessType).includes(prefix)) {
     throw new Error(`Invalid stateless type: ${prefix as string}`)

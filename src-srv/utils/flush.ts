@@ -33,7 +33,7 @@ export async function flush(
       }
     }
   } catch (ex: unknown) {
-    logger.error('Failed storing new version of document', ex)
+    logger.error(`Failed flushing changes to a new version of document ${documentName}`, ex)
 
     return {
       statusCode: 500,

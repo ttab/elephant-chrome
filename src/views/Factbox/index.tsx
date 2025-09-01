@@ -8,7 +8,6 @@ import { type HocuspocusProvider } from '@hocuspocus/provider'
 import { type AwarenessUserData } from '@/contexts/CollaborationProvider'
 import { TextBox } from '@/components/ui'
 import { Button } from '@ttab/elephant-ui'
-import { createStateless, StatelessType } from '@/shared/stateless'
 import { useSession } from 'next-auth/react'
 import { ContentMenu } from '@/components/Editor/ContentMenu'
 import { Toolbar } from '@/components/Editor/Toolbar'
@@ -23,6 +22,7 @@ import { Error } from '@/views/Error'
 import { useCallback, useEffect, useRef } from 'react'
 import { cn } from '@ttab/elephant-ui/utils'
 import { contentMenuLabels } from '@/defaults/contentMenuLabels'
+import { flushDocument } from '@/lib/flushDocument'
 
 const meta: ViewMetadata = {
   name: 'Factbox',
@@ -138,7 +138,7 @@ const FactboxContainer = ({
   documentId: string
 } & ViewProps): JSX.Element => {
   const { words, characters } = useTextbit()
-  const { data: session, status } = useSession()
+  const { status } = useSession()
   const [isChanged] = useYValue<boolean>('root.changed')
 
   // TODO: useYValue doesn't provider a stable setter, this cause rerenders down the tree
@@ -159,18 +159,7 @@ const FactboxContainer = ({
     }
 
     if (provider && status === 'authenticated') {
-      provider.sendStateless(
-        createStateless(StatelessType.IN_PROGRESS, {
-          state: false,
-          id: documentId,
-          context: {
-            agent: 'server',
-            accessToken: session.accessToken,
-            user: session.user,
-            type: 'Factbox'
-          }
-        })
-      )
+      void flushDocument(documentId)
     }
   }
 

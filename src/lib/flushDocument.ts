@@ -20,6 +20,7 @@ export async function flushDocument(
     delay?: number
     status?: string
     cause?: string
+    addToHistory?: boolean
   },
   document?: Y.Doc): Promise<FlushDocumentResponse> {
   if (!uuid) {
@@ -38,6 +39,7 @@ export async function flushDocument(
     if (options?.force) url.searchParams.set('force', 'true')
     if (options?.status) url.searchParams.set('status', options.status)
     if (options?.cause) url.searchParams.set('cause', options.cause)
+    url.searchParams.set('addToHistory', options?.addToHistory === true ? '1' : '0')
 
     const update = document ? Y.encodeStateAsUpdateV2(document) : null
 

@@ -7,8 +7,7 @@ import { flush } from '../../../utils/flush.js'
 
 export const POST: RouteHandler = async (req: Request, { collaborationServer, res }) => {
   const id = req.params.id
-  const status = req.query.status
-  const cause = req.query.cause
+  const { status, cause, addToHistory } = req.query
 
   const payload = (req.body instanceof Buffer && req.body.length === 0)
     ? undefined
@@ -22,7 +21,12 @@ export const POST: RouteHandler = async (req: Request, { collaborationServer, re
   try {
     // If we receive an update we apply it first
     if (payload instanceof Uint8Array) {
-      const connection = await collaborationServer.server.openDirectConnection(id, context)
+      const connection = await collaborationServer.server.openDirectConnection(id, {
+        context,
+        agent: 'server'
+      })
+
+      console.info('APPLYING UPDATE')
 
       await connection.transact((document) => {
         Y.applyUpdateV2(document, payload)
@@ -30,7 +34,7 @@ export const POST: RouteHandler = async (req: Request, { collaborationServer, re
       await connection.disconnect()
     }
   } catch (ex: unknown) {
-    logger.error('Failed storing new version of document', ex)
+    logger.error(`Failed applying update to document ${id}`, ex)
 
     return {
       statusCode: 500,
@@ -41,11 +45,11 @@ export const POST: RouteHandler = async (req: Request, { collaborationServer, re
   return flush(
     collaborationServer,
     id,
-    context,
+    { ...context, agent: 'server' },
     {
       status: typeof status === 'string' ? status : undefined,
       cause: typeof cause === 'string' ? cause : undefined,
-      addToHistory: true
+      addToHistory: addToHistory === '1' ? true : false
     }
   )
 }

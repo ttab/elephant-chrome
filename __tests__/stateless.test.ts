@@ -17,30 +17,6 @@ describe('stateless', () => {
     expect(parsed).toEqual({ type: StatelessType.MESSAGE, message: 'test message' })
   })
 
-  it('should create and parse a stateless in progress message', () => {
-    const message = {
-      state: false,
-      id: 'abce123',
-      context: {
-        agent: 'server',
-        accessToken: 'secrettoken',
-        user: {
-          id: 'abce123',
-          sub: '123abc',
-          name: 'Name Name',
-          email: 'name@example.com'
-        },
-        type: 'Planning'
-      }
-    }
-
-    const statelessMsg = createStateless(StatelessType.IN_PROGRESS, message)
-    expect(statelessMsg).toEqual(`${StatelessType.IN_PROGRESS}@${JSON.stringify(message)}`)
-
-    const parsed = parseStateless(statelessMsg)
-    expect(parsed).toEqual({ type: StatelessType.IN_PROGRESS, message })
-  })
-
   it('should throw an error for invalid stateless type', () => {
     // @ts-expect-error test invalid state
     expect(() => createStateless('invalid', 'test message'))

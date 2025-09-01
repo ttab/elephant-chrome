@@ -4,7 +4,6 @@ import type {
   onConfigurePayload,
   onDisconnectPayload,
   onLoadDocumentPayload,
-  onStatelessPayload,
   onStoreDocumentPayload
 } from '@hocuspocus/server'
 import * as Y from 'yjs'
@@ -17,7 +16,6 @@ import type CollaborationServerErrorHandler from '../../lib/errorHandler.js'
 import { getErrorContext } from '../../lib/errorHandler.js'
 import { fromYjsNewsDoc, toYjsNewsDoc } from '@/shared/transformations/yjsNewsDoc.js'
 import { fromGroupedNewsDoc, toGroupedNewsDoc } from '@/shared/transformations/groupedNewsDoc.js'
-import { StatelessType, parseStateless } from '@/shared/stateless.js'
 import type { EleDocumentResponse } from '@/shared/types/index.js'
 import { createDebounceMap } from '@/shared/leadingDebounce.js'
 import type { RedisCache } from '../../utils/RedisCache.js'
@@ -119,27 +117,6 @@ export class RepositoryExtension implements Extension {
     return Promise.resolve()
   }
 
-  async onStateless(payload: onStatelessPayload) {
-    if (!this.#hp) {
-      throw new Error('Hocuspocus is not yet finished configuring')
-    }
-
-    const msg = parseStateless(payload.payload)
-
-    // Only handle IN_PROGRESS and ignore state messages
-    if (msg.type !== StatelessType.IN_PROGRESS) {
-      return
-    }
-
-    return await this.flushDocument(
-      msg.message.id,
-      msg.message.context,
-      {
-        status: msg.message.status
-      }
-    )
-  }
-
   /**
    * Handles flushing of unsaved document changes as well as adding
    * new/created(?) documents to the users history/tracking document.
@@ -175,10 +152,22 @@ export class RepositoryExtension implements Extension {
       throw new Error('No document retrieved from connection')
     }
 
+    let documentType
     await connection.transact((doc) => {
       const ele = doc.getMap('ele')
       const root = ele.get('root') as Y.Map<unknown>
       root?.delete('__inProgress')
+
+      // FIXME: We should use the raw type, not translate into English,
+      // needs changing in "latest created" lists.
+      switch (root.get('type')) {
+        case 'core/planning-item':
+          documentType = 'Planning'
+          break
+        case 'core/event':
+          documentType = 'Event'
+          break
+      }
     })
 
     const { documentResponse, updatedHash, originalHash } = fromYjsNewsDoc(connection.document)
@@ -196,8 +185,8 @@ export class RepositoryExtension implements Extension {
     await connection.disconnect()
 
     // Finally update the user history document if applicable
-    if (options?.addToHistory === true) {
-      await this.#addDocumentToUserHistory(documentName, context)
+    if (options?.addToHistory === true && typeof documentType === 'string') {
+      await this.#addDocumentToUserHistory(documentName, documentType, context)
     }
 
     return result
@@ -262,24 +251,16 @@ export class RepositoryExtension implements Extension {
 
     logger.info(`Document ${documentName} v${version} stored in repository`)
 
-    return {
-      version
-    }
+    return { version }
   }
 
   /**
    * Add a document to the user history tracking document.
    * Will create a user trackering document if non existing.
    */
-  async #addDocumentToUserHistory(id: string, context: Context) {
+  async #addDocumentToUserHistory(id: string, documentType: string, context: Context) {
     if (!this.#hp) {
       throw new Error('Hocuspocus is not yet finished configuring')
-    }
-
-    const type = context.type
-    if (!type) {
-      logger.warn(`Could not add document ${id} to user history, missing document type`)
-      return
     }
 
     const userId = context.user.sub.replace('core://user/', '')
@@ -293,11 +274,11 @@ export class RepositoryExtension implements Extension {
     await connection.transact((doc) => {
       const documents = doc.getMap('ele')
 
-      if (!documents.get(type)) {
-        documents.set(type, new Y.Array())
+      if (!documents.get(documentType)) {
+        documents.set(documentType, new Y.Array())
       }
 
-      const items = documents.get(type) as Y.Array<unknown>
+      const items = documents.get(documentType) as Y.Array<unknown>
       items.push([{
         id,
         timestamp: Date.now()
