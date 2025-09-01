@@ -1,10 +1,11 @@
 import { Block } from '@ttab/elephant-api/newsdoc'
 import { type TBElement } from '@ttab/textbit'
-import { newsDocToSlate, slateToNewsDoc } from '../index.js'
+import { newsDocToSlate } from '../index.js'
 import { toString } from '../../lib/toString.js'
+import { revertText } from './text.js'
 
 export const transformFactbox = (element: Block): TBElement => {
-  const { id, data, title, content, links } = element
+  const { id, data, title, content = [], links = [] } = element
 
   return {
     id: id || crypto.randomUUID(),
@@ -12,9 +13,9 @@ export const transformFactbox = (element: Block): TBElement => {
     type: 'core/factbox',
     properties: {
       byline: data?.byline,
-      text: data?.text,
-      original_updated: data?.original_updated,
-      original_version: data?.original_version,
+      ...(data?.text !== undefined && { text: toString(data.text) }),
+      ...(data?.original_updated !== undefined && { original_updated: data.original_updated }),
+      ...(data?.original_version !== undefined && { original_version: data.original_version }),
       original_id: links[0]?.uuid
     },
     children: [
@@ -50,9 +51,11 @@ interface Data {
 
 export function revertFactbox(element: TBElement): Block {
   const factboxTitle = element.children.find((child) => child.type === 'core/factbox/title')
-  const title = (factboxTitle?.children as FactboxChild[] | undefined)?.[0]?.text ?? ''
-
   const factboxBody = element.children.find((child) => child.type === 'core/factbox/body')
+
+  const title = (factboxTitle?.children as FactboxChild[] | undefined)?.[0]?.text ?? ''
+  const body = (factboxBody?.children as FactboxChild[] | undefined)
+    ?.map((child) => revertText(child as TBElement))
 
   const { id, properties } = element
 
@@ -81,8 +84,6 @@ export function revertFactbox(element: TBElement): Block {
           uuid: toString(properties?.original_id)
         }]
       : [],
-    content: factboxBody
-      ? slateToNewsDoc(factboxBody?.children as TBElement[])
-      : []
+    content: body
   })
 }

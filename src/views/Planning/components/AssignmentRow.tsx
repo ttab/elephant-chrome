@@ -22,27 +22,28 @@ import { useYValue } from '@/hooks/useYValue'
 import { useLink } from '@/hooks/useLink'
 import { Prompt } from '@/components'
 import { useCollaboration } from '@/hooks/useCollaboration'
-import { Button } from '@ttab/elephant-ui'
+import { Button, Tooltip } from '@ttab/elephant-ui'
 import type { Block } from '@ttab/elephant-api/newsdoc'
 import { deleteByYPath, getValueByYPath } from '@/shared/yUtils'
 import { useOpenDocuments } from '@/hooks/useOpenDocuments'
 import { cn } from '@ttab/elephant-ui/utils'
 import { useNavigationKeys } from '@/hooks/useNavigationKeys'
 import { CreateDeliverablePrompt } from './CreateDeliverablePrompt'
-import { appendDocumentToAssignment } from '@/lib/createYItem'
-import { createPayload } from '@/defaults/templates/lib/createPayload'
+import { appendDocumentToAssignment } from '@/shared/createYItem'
+import { createPayload } from '@/shared/templates/lib/createPayload'
 import { Move } from '@/components/Move/'
 import { useModal } from '@/components/Modal/useModal'
 import type * as Y from 'yjs'
 import { useRegistry } from '@/hooks/useRegistry'
 import { useSession } from 'next-auth/react'
 import useSWRImmutable from 'swr/immutable'
-import { getDeliverableType } from '@/defaults/templates/lib/getDeliverableType'
+import { getDeliverableType } from '@/shared/templates/lib/getDeliverableType'
 import { AssignmentTypes } from '@/defaults/assignmentTypes'
 import { CreatePrintArticle } from '@/components/CreatePrintArticle'
 import { storeDocument } from '@/lib/storeDocument'
 import { AssignmentVisibility } from '@/components/DataItem/AssignmentVisibility'
 import { timeSlotTypes } from '@/defaults/assignmentTimeConstants'
+import { DocumentStatuses } from '@/defaults/documentStatuses'
 
 export const AssignmentRow = ({ index, onSelect, isFocused = false, asDialog, onChange }: {
   index: number
@@ -277,6 +278,8 @@ export const AssignmentRow = ({ index, onSelect, isFocused = false, asDialog, on
     }
   ]
   const selected = articleId && openDocuments.includes(articleId)
+  const StatusIcon = DocumentStatuses.find((status) => status.value === articleStatus?.meta?.workflowState)
+
   return (
     <div
       ref={rowRef}
@@ -346,8 +349,21 @@ export const AssignmentRow = ({ index, onSelect, isFocused = false, asDialog, on
       </div>
 
       <div className='flex flex-row text-[15px] font-medium justify-between'>
-        <span className='leading-relaxed group-hover/assrow:underline'>{title}</span>
-        <AssignmentVisibility path={`meta.core/assignment[${index}].data.public`} editable={false} disabled={false} />
+        <div className='flex items-center gap-2 px-2'>
+
+          {StatusIcon?.icon && (
+            <Tooltip content={StatusIcon.label}>
+              <StatusIcon.icon size={18} {...StatusIcon.iconProps} />
+            </Tooltip>
+
+          )}
+          {/* Render empty space as distancing for assignments without statuses */}
+          {!StatusIcon?.icon && <div style={{ width: 18, height: 18 }} />}
+          <span className='leading-relaxed group-hover/assrow:underline'>{title}</span>
+        </div>
+        <div className='flex items-center gap-2'>
+          <AssignmentVisibility path={`meta.core/assignment[${index}].data.public`} editable={false} disabled={false} />
+        </div>
       </div>
 
       {

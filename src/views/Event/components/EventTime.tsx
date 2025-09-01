@@ -8,7 +8,7 @@ import {
 } from '@ttab/elephant-ui'
 import { useYValue } from '@/hooks/useYValue'
 import { useRegistry } from '@/hooks'
-import { dateToReadableDateTime, dateToReadableTime, dateToReadableDay, createDateWithTime } from '@/lib/datetime'
+import { dateToReadableDateTime, dateToReadableTime, dateToReadableDay, createDateWithTime } from '@/shared/datetime'
 import { TimeInput } from '@/components/TimeInput'
 import { TriangleAlert } from '@ttab/elephant-ui/icons'
 import type { FormProps } from '@/components/Form/Root'

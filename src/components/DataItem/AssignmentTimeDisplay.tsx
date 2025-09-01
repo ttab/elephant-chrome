@@ -1,4 +1,4 @@
-import { dateToReadableDay, dateToReadableTime } from '@/lib/datetime'
+import { dateToReadableDay, dateToReadableTime } from '@/shared/datetime'
 import { useRegistry } from '@/hooks'
 import { cn } from '@ttab/elephant-ui/utils'
 import type { LucideProps } from '@ttab/elephant-ui/icons'

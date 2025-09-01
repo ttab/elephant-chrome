@@ -34,7 +34,7 @@ export const POST: RouteHandler = async (req: Request, { collaborationServer, re
       await connection.disconnect()
     }
   } catch (ex: unknown) {
-    logger.error(`Failed applying update to document ${id}`, ex)
+    logger.error(ex, `Failed applying update to document ${id}`)
 
     return {
       statusCode: 500,

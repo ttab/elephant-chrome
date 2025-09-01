@@ -1,7 +1,7 @@
 import { Check } from '@ttab/elephant-ui/icons'
 import { useAuthors } from '@/hooks/useAuthors'
 import type { StatusMeta } from 'src/datastore/types'
-import { dateToReadableDateTime } from '@/lib/datetime'
+import { dateToReadableDateTime } from '@/shared/datetime'
 import { useRegistry } from '@/hooks/useRegistry'
 import { Tooltip } from '@ttab/elephant-ui'
 

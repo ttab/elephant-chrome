@@ -1,4 +1,4 @@
-import { parseDate, dateToReadableShort } from '@/lib/datetime'
+import { parseDate, dateToReadableShort } from '@/shared/datetime'
 import type { LocaleData } from '@/types/index'
 import { eventTableColumns } from '@/views/EventsOverview/EventsListColumns'
 import { planningListColumns } from '@/views/PlanningOverview/PlanningListColumns'
