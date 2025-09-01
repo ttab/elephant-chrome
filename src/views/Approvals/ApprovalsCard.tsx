@@ -18,7 +18,7 @@ import { AvatarGroup } from '@/components/AvatarGroup'
 import { Tooltip } from '@ttab/elephant-ui'
 import { timesSlots } from '@/defaults/assignmentTimeslots'
 import { useMemo } from 'react'
-import { makeAuthorNames } from './makeAuthorNames'
+import { AuthorNames } from './AuthorNames'
 
 export const ApprovalsCard = ({ assignment, isSelected, isFocused, status, authors }: {
   assignment: AssignmentInterface
@@ -75,8 +75,6 @@ export const ApprovalsCard = ({ assignment, isSelected, isFocused, status, autho
     ? entries
       ?.find((entry) => entry[0] === 'done')?.[1]
     : undefined
-
-  const authorNames = makeAuthorNames({ byline, assignees, doneStatus, authors, afterDraftAuthor, lastStatusUpdateAuthor })
 
   const menuItemDocumentLabel = assignment._deliverableType === 'core/flash' ? 'flash' : 'artikel'
   const menuItems = [{
@@ -182,7 +180,14 @@ export const ApprovalsCard = ({ assignment, isSelected, isFocused, status, autho
       <Card.Footer>
         <div className='flex flex-col w-full'>
           <div className='truncate' title={assignees.join(', ')}>
-            {authorNames}
+            <AuthorNames
+              byline={byline}
+              doneStatus={doneStatus}
+              assignees={assignees}
+              authors={authors}
+              afterDraftAuthor={afterDraftAuthor}
+              lastStatusUpdateAuthor={lastStatusUpdateAuthor}
+            />
           </div>
           <div className='flex flex-grow justify-between align-middle'>
             <div className='flex flex-row content-center opacity-60 gap-1'>

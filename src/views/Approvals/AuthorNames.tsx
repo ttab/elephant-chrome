@@ -18,7 +18,7 @@ export const authorOutput = (matchedAuthor: IDBAuthor) => {
      * 5. Whoever updates the status after that is to be output next
      *    Could be the same as the reporter, in that case don't bother outputting it again
   */
-export const makeAuthorNames = ({
+export const AuthorNames = ({
   byline,
   doneStatus,
   authors,
@@ -38,7 +38,7 @@ export const makeAuthorNames = ({
   }
 
   if (!byline) {
-    if (assignees.length === 0) {
+    if (assignees.length === 0 && doneStatus) {
       return <DoneMarkedBy doneStatus={doneStatus} authors={authors} />
     }
 
@@ -56,8 +56,9 @@ export const makeAuthorNames = ({
       if (!afterDraftAuthor?.name && lastStatusUpdateAuthor?.name) {
         authors += authorOutput(lastStatusUpdateAuthor)
       }
-      return authors
+
+      return <div title={assignees.join(', ')}>{authors}</div>
     }
-    return ''
+    return <></>
   }
 }

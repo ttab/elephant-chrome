@@ -3,7 +3,7 @@ import type { IDBAuthor, StatusMeta } from 'src/datastore/types'
 import { dateToReadableDateTime } from '@/shared/datetime'
 import { useRegistry } from '@/hooks/useRegistry'
 import { Tooltip } from '@ttab/elephant-ui'
-import { authorOutput } from './makeAuthorNames'
+import { authorOutput } from './AuthorNames'
 
 export const DoneMarkedBy = ({ doneStatus, authors }: {
   doneStatus: StatusMeta | undefined
