@@ -22,7 +22,7 @@ import { Error } from '@/views/Error'
 import { useCallback, useEffect, useRef } from 'react'
 import { cn } from '@ttab/elephant-ui/utils'
 import { contentMenuLabels } from '@/defaults/contentMenuLabels'
-import { flushDocument } from '@/lib/flushDocument'
+import { storeDocument } from '@/lib/storeDocument'
 
 const meta: ViewMetadata = {
   name: 'Factbox',
@@ -159,7 +159,7 @@ const FactboxContainer = ({
     }
 
     if (provider && status === 'authenticated') {
-      void flushDocument(documentId)
+      void storeDocument(documentId)
     }
   }
 

@@ -30,7 +30,7 @@ import { EventHeader } from './EventHeader'
 import { DuplicatesTable } from '../../components/DuplicatesTable'
 import { Cancel } from './components/Cancel'
 import { CopyGroup } from '../../components/CopyGroup'
-import { flushDocument } from '@/lib/flushDocument'
+import { storeDocument } from '@/lib/storeDocument'
 
 const meta: ViewMetadata = {
   name: 'Event',
@@ -113,7 +113,7 @@ const EventViewContent = (props: ViewProps & { documentId: string }): JSX.Elemen
     }
 
     if (provider && status === 'authenticated') {
-      void flushDocument(props.documentId, {
+      void storeDocument(props.documentId, {
         status: documentStatus,
         addToHistory: true
       })

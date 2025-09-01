@@ -40,7 +40,7 @@ import useSWRImmutable from 'swr/immutable'
 import { getDeliverableType } from '@/defaults/templates/lib/getDeliverableType'
 import { AssignmentTypes } from '@/defaults/assignmentTypes'
 import { CreatePrintArticle } from '@/components/CreatePrintArticle'
-import { flushDocument } from '@/lib/flushDocument'
+import { storeDocument } from '@/lib/storeDocument'
 import { AssignmentVisibility } from '@/components/DataItem/AssignmentVisibility'
 import { timeSlotTypes } from '@/defaults/assignmentTimeConstants'
 
@@ -415,7 +415,7 @@ export const AssignmentRow = ({ index, onSelect, isFocused = false, asDialog, on
               })
 
               if (planningId) {
-                void flushDocument(planningId, undefined, provider.document).then(() => {
+                void storeDocument(planningId, undefined, provider.document).then(() => {
                   const openDocument = assignmentType === 'flash' ? openFlash : openArticle
                   openDocument(undefined, { id, planningId }, 'blank')
                 })

@@ -33,7 +33,7 @@ import { RelatedEvents } from './components/RelatedEvents'
 import type { Block } from '@ttab/elephant-api/newsdoc'
 import { CopyGroup } from '../../components/CopyGroup'
 import { DuplicatesTable } from '../../components/DuplicatesTable'
-import { flushDocument } from '@/lib/flushDocument'
+import { storeDocument } from '@/lib/storeDocument'
 
 type Setter = React.Dispatch<SetStateAction<NewItem>>
 
@@ -122,7 +122,7 @@ const PlanningViewContent = (props: ViewProps & { documentId: string, setNewItem
     }
 
     if (provider && status === 'authenticated') {
-      void flushDocument(props.documentId, {
+      void storeDocument(props.documentId, {
         status: documentStatus,
         addToHistory: true
       })

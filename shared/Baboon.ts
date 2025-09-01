@@ -3,7 +3,7 @@ import type { CopyArticleToFlowRequest, CreateFlowRequest, ListHypenationsReques
 import { PrintClient } from '@ttab/elephant-tt-api/baboon'
 import { meta } from './meta'
 import { toast } from 'sonner'
-import { flushDocument } from '@/lib/flushDocument'
+import { storeDocument } from '@/lib/storeDocument'
 
 export class Baboon {
   readonly #client: PrintClient
@@ -40,7 +40,7 @@ export class Baboon {
 
   async renderArticle(payload: RenderArticleRequest, accessToken: string) {
     try {
-      await flushDocument(payload?.articleUuid)
+      await storeDocument(payload?.articleUuid)
       return this.#client.renderArticle(payload, meta(accessToken))
     } catch (ex) {
       console.error('Error rendering article:', ex)

@@ -11,7 +11,7 @@ import { LoadingText } from '@/components/LoadingText'
 import { Additionals } from './components/Additionals'
 import { Position } from './components/Position'
 import { Prompt } from '@/components/Prompt'
-import { flushDocument } from '@/lib/flushDocument'
+import { storeDocument } from '@/lib/storeDocument'
 import { type ReactNode, useState } from 'react'
 
 export function LayoutBox({
@@ -53,7 +53,7 @@ export function LayoutBox({
       return
     }
     try {
-      await flushDocument(documentId)
+      await storeDocument(documentId)
       const response = await baboon.renderArticle({
         articleUuid: documentId,
         layoutId: layoutIdForRender,

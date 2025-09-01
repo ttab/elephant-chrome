@@ -1,7 +1,7 @@
 import * as Y from 'yjs'
 const BASE_URL = import.meta.env.BASE_URL
 
-type FlushDocumentResponse = {
+type StoreDocumentResponse = {
   statusCode: number
   statusMessage: string
 } | {
@@ -13,7 +13,7 @@ type FlushDocumentResponse = {
 /**
  * Flush unsaved document changes to primary repository.
  */
-export async function flushDocument(
+export async function storeDocument(
   uuid: string,
   options?: {
     force?: true
@@ -22,7 +22,7 @@ export async function flushDocument(
     cause?: string
     addToHistory?: boolean
   },
-  document?: Y.Doc): Promise<FlushDocumentResponse> {
+  document?: Y.Doc): Promise<StoreDocumentResponse> {
   if (!uuid) {
     throw new Error('UUID is required')
   }
@@ -34,7 +34,7 @@ export async function flushDocument(
   }
 
   try {
-    const url = new URL(`${BASE_URL}/api/documents/${uuid}/flush`, window.location.origin)
+    const url = new URL(`${BASE_URL}/api/documents/${uuid}/store`, window.location.origin)
 
     if (options?.force) url.searchParams.set('force', 'true')
     if (options?.status) url.searchParams.set('status', options.status)
@@ -51,7 +51,7 @@ export async function flushDocument(
       body: update
     })
 
-    const result = await response.json() as FlushDocumentResponse
+    const result = await response.json() as StoreDocumentResponse
 
     if (!response.ok) {
       return {
