@@ -11,7 +11,7 @@ const newNote = Block.create({
   role: 'internal'
 })
 
-export const AddNote = ({ text = '', variant = 'ghost' }: {
+export const AddNote = ({ text = '' }: {
   text?: string
   variant?: string
 }): JSX.Element => {
@@ -26,7 +26,7 @@ export const AddNote = ({ text = '', variant = 'ghost' }: {
 
   return (
     <Button
-      variant={variant}
+      variant='ghost'
       onClick={handleClick}
       className='flex flex-row gap-1 p-0 m-0 h-9 min-w-9 text-xs hover:bg-gray-200 dark:hover:bg-gray-700'
     >

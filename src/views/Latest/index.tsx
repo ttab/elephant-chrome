@@ -107,8 +107,6 @@ const Content = ({ documents, locale }: {
 
                 <div className='flex gap-2 items-center w-full text-muted-foreground  -ml-1'>
                   <Badge
-                    size='xs'
-                    variant='ghost'
                     className='bg-background rounded-md text-muted-foreground font-normal text-sm whitespace-nowrap'
                     data-row-action
                   >
