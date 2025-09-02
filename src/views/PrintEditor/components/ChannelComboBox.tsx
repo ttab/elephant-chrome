@@ -1,11 +1,11 @@
 import { useDocuments } from '@/hooks/index/useDocuments'
 import { ComboBox } from '@ttab/elephant-ui'
-import { fields } from '@/hooks/index/useDocuments/schemas/tvChannels'
+import { fields } from '@/shared/schemas/tvChannels'
 import { useMemo, useState } from 'react'
 import { useYjsEditor } from '@/hooks/useYjsEditor'
 import { useCollaboration } from '@/hooks/useCollaboration'
 import { Transforms } from 'slate'
-import type { TVChannels, TVChannelsFields } from '@/hooks/index/useDocuments/schemas/tvChannels'
+import type { TVChannels, TVChannelsFields } from '@/shared/schemas/tvChannels'
 import { type TBElement } from '@ttab/textbit'
 
 export const ChannelComboBox = () => {
