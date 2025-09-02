@@ -296,8 +296,8 @@ export const AssignmentRow = ({ index, onSelect, isFocused = false, asDialog, on
         flex-col
         gap-2
         text-sm
-        px-6
-        pt-2.5
+        px-4
+        pt-4
         pb-4
         ring-inset
         hover:bg-muted
@@ -355,7 +355,7 @@ export const AssignmentRow = ({ index, onSelect, isFocused = false, asDialog, on
         </div>
       </div>
 
-      <div className='flex flex-row text-[15px] font-medium justify-between'>
+      <div className='flex flex-row text-[15px] font-medium justify-between pr-2'>
         <div className='flex items-center gap-2 px-2'>
 
           {StatusIcon?.icon && (
@@ -375,8 +375,11 @@ export const AssignmentRow = ({ index, onSelect, isFocused = false, asDialog, on
 
       {
         !!description && (
-          <div className='font-light pl-10'>
-            {description}
+          <div className='flex gap-2'>
+            <div style={{ minWidth: 18, height: 18 }} className='pl-2' />
+            <div className='font-light px-2'>
+              {description}
+            </div>
           </div>
         )
       }
