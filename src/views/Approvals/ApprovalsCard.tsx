@@ -157,7 +157,7 @@ export const ApprovalsCard = ({ assignment, isSelected, isFocused, status }: {
             {assignees.length === 1 && assignees[0]}
             {assignees.length > 1 && `${assignees.join(', ')}`}
           </div>
-          <div className='flex flex-grow justify-between align-middle'>
+          <div className='flex grow justify-between align-middle'>
             <div className='flex flex-row content-center opacity-60 gap-1'>
               {sections
                 .find((section) => section.id === assignment._section)

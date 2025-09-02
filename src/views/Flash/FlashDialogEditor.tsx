@@ -115,14 +115,14 @@ function EditorContent({ provider, user, setTitle, readOnly }: {
         overflow-y-scroll
         dark:text-slate-100
         px-2
-        [&_[data-spelling-error]]:border-b-2
-        [&_[data-spelling-error]]:border-dotted
-        [&_[data-spelling-error]]:border-red-500
+        **:data-spelling-error:border-b-2
+        **:data-spelling-error:border-dotted
+        **:data-spelling-error:border-red-500
         '
     >
       <DropMarker />
       <Toolbar />
-      <ContextMenu className='fooo z-[9999]' />
+      <ContextMenu className='fooo z-9999' />
     </Textbit.Editable>
   )
 }

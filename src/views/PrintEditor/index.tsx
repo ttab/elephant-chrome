@@ -291,7 +291,7 @@ function EditorContainer({
         <section className='flex flex-col-reverse @printEditor:grid @printEditor:grid-cols-12 @container'>
           <div className='@printEditor:col-span-8'>
             <ScrollArea className='h-[calc(100vh-7rem)]'>
-              <div className='flex-grow overflow-auto pr-12 max-w-screen-xl'>
+              <div className='grow overflow-auto pr-12 max-w-(--breakpoint-xl)'>
                 {!!provider && synced
                   ? (
                       <EditorContent provider={provider} user={user} onChange={handleChange} />
@@ -448,9 +448,9 @@ function EditorContent({ provider, user, onChange }: {
       className='outline-none
         h-full
         dark:text-slate-100
-        [&_[data-spelling-error]]:border-b-2
-        [&_[data-spelling-error]]:border-dotted
-        [&_[data-spelling-error]]:border-red-500
+        **:data-spelling-error:border-b-2
+        **:data-spelling-error:border-dotted
+        **:data-spelling-error:border-red-500
       '
     >
       <DropMarker />

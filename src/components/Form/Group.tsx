@@ -14,8 +14,8 @@ export const Group = ({ children, icon: Icon, asDialog, onValidation, validateSt
       [&_[role="textbox"]]:font-sans
       [&_[role="textbox"]]:text-sm
       [&_[role="textbox"]]:border
-      [&_[role="textbox"]:has([data-slate-placeholder="true"])]:!ring-0
-      [&_[data-slate-placeholder="true"]]:!opacity-100
+      [&_[role="textbox"]:has([data-slate-placeholder="true"])]:ring-0!
+      **:data-[slate-placeholder="true"]:opacity-100!
       [&_[data-ele-placeholder="true"][data-ele-validation="true"]]:border-[#5D709F]
       [&_[data-ele-placeholder="true"][data-ele-validation="true"]]:text-[#5D709F]
       [&_[data-ele-validation="true"]_[role="textbox"]:has([data-slate-placeholder="true"])]:text-[#5D709F]

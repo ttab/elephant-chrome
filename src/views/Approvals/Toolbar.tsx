@@ -68,7 +68,7 @@ export const Toolbar = ({ facets }: { facets: Facets }): JSX.Element => {
   const page = pages[pages.length - 1] || ''
 
   return (
-    <div className='flex flex-wrap flex-grow items-center space-x-2 px-4 border-b py-1 pr-2.5'>
+    <div className='flex flex-wrap grow items-center space-x-2 px-4 border-b py-1 pr-2.5'>
       <Filter page={page} pages={pages} setPages={setPages} search={search} setSearch={setSearch}>
         <Commands
           page={page}
@@ -90,8 +90,8 @@ export const Toolbar = ({ facets }: { facets: Facets }): JSX.Element => {
           <X size={18} strokeWidth={1.75} className='ml-2' />
         </Button>
       )}
-      <div className='flex flex-row flex-grow flex-wrap items-center'>
-        <div className='flex-grow'></div>
+      <div className='flex flex-row grow flex-wrap items-center'>
+        <div className='grow'></div>
         <div className='hidden @2xl/view:flex'>
           <ToggleGroup
             type='single'

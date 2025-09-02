@@ -1,4 +1,4 @@
-import type { PropsWithChildren } from 'react'
+import { useEffect, useState, type PropsWithChildren } from 'react'
 import { useKeydownGlobal } from '@/hooks/useKeydownGlobal'
 import { Button, Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@ttab/elephant-ui'
 import type { MouseEvent } from 'react'
@@ -31,8 +31,16 @@ export const Prompt = ({
     }
   })
 
+  const [open, setOpen] = useState<boolean>(true)
+
+  useEffect(() => {
+    return () => {
+      document.body.style.pointerEvents = 'auto'
+    }
+  }, [])
+
   return (
-    <Dialog open={true} modal={true}>
+    <Dialog open={open} onOpenChange={setOpen} modal={true}>
       <DialogContent
         className='z-50'
         onPointerDownOutside={() => {

@@ -20,7 +20,7 @@ export const ModalSheet = ({ children, isVisible, side }: {
       >
         <SheetTitle />
         <SheetDescription />
-        <div className='h-full flex flex-grow gap-4 p-6 pb-12 pt-0'>
+        <div className='h-full flex grow gap-4 p-6 pb-12 pt-0'>
           {children}
         </div>
       </SheetContent>

@@ -171,10 +171,10 @@ export const PreviewSheet = ({ id, wire, handleClose, textOnly = true, version, 
                       value='saved'
                       aria-label='Toggle save'
                       className='border
-              !border-done-border
-              data-[state="on"]:!bg-done
-              data-[state="off"]:!bg-done-background
-              data-[state="off"]:!text-muted-foreground'
+              border-done-border!
+              data-[state="on"]:bg-done!
+              data-[state="off"]:bg-done-background!
+              data-[state="off"]:text-muted-foreground!'
                     >
                       <Save className='h-4 w-4' />
                     </ToggleGroupItem>
@@ -187,10 +187,10 @@ export const PreviewSheet = ({ id, wire, handleClose, textOnly = true, version, 
                       value='read'
                       aria-label='Toggle read'
                       className='border
-              !border-approved-border
-              data-[state="on"]:!bg-approved
-              data-[state="off"]:!bg-approved-background
-              data-[state="off"]:!text-muted-foreground'
+              border-approved-border!
+              data-[state="on"]:bg-approved!
+              data-[state="off"]:bg-approved-background!
+              data-[state="off"]:text-muted-foreground!'
                     >
                       <Check className='h-4 w-4' />
                     </ToggleGroupItem>
@@ -202,10 +202,10 @@ export const PreviewSheet = ({ id, wire, handleClose, textOnly = true, version, 
                       value='used'
                       aria-label='Toggle used'
                       className='border
-              !border-usable-border
-              data-[state="on"]:!bg-usable
+              border-usable-border!
+              data-[state="on"]:bg-usable!
               data-[state="off"]:!bg-useable-background
-              data-[state="off"]:!text-muted-foreground'
+              data-[state="off"]:text-muted-foreground!'
                       onClick={(event) => {
                         event.preventDefault()
                         const onDocumentCreated = () => {
