@@ -32,7 +32,20 @@ export function transformPrintText(element: Block): TBElement {
 }
 
 export function revertPrintText(element: TBElement): Block {
-  const printTextNode = element.children.find((child) => child.type === 'tt/print-text/text')
+  const printTextNode = element.children.find((child) => {
+    const type = child.type as string
+
+    if (type === 'tt/print-text/text') {
+      return true
+    }
+
+    if (type === 'core/text') {
+      child.type = 'tt/print-text/text'
+    }
+
+    return true
+  })
+
   const printText = (printTextNode?.children as PrintChild[] | undefined)?.[0]?.text ?? ''
   const printRoleNode = element.children.find((child) => child.type === 'tt/print-text/role')
   const printRole = (printRoleNode?.children as PrintChild[] | undefined)?.[0]?.text ?? ''
