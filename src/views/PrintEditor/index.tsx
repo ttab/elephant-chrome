@@ -128,6 +128,9 @@ function EditorWrapper(props: ViewProps & {
         repository,
         accessToken: data?.accessToken || ''
       }),
+      TTVisual({
+        enableCrop: true
+      }),
       Factbox({
         onEditOriginal: (id: string) => {
           openFactboxEditor(undefined, { id })
