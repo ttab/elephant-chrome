@@ -65,7 +65,7 @@ export const ApprovalsCard = ({ assignment, isSelected, isFocused, status, autho
 
   const afterDraftAuthor = getAuthorAfterSetStatus('draft')
 
-  const byline = (assignment?._deliverableDocument?.links ?? [])?.find((l) => l.type === 'core/author')?.title
+  const byline = (assignment?._deliverableDocument?.links ?? [])?.filter((l) => l.type === 'core/author').map((author) => author.title).join(', ')
 
   const assignees = assignment.links
     .filter((m) => m.type === 'core/author' && m.title)
