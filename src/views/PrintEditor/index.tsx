@@ -109,7 +109,6 @@ function EditorWrapper(props: ViewProps & {
     const basePlugins = [
       Bold,
       Italic,
-      TTVisual,
       ImageSearchPlugin,
       FactboxPlugin,
       Table,
