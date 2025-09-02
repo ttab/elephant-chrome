@@ -95,7 +95,6 @@ export const ApprovalsCard = ({ assignment, isSelected, isFocused, status }: {
 
   const slugline = assignment.meta.find((m) => m.type === 'tt/slugline')?.value
   const longCause = documentStatus?.cause ? CAUSE_KEYS[documentStatus.cause as keyof typeof CAUSE_KEYS].long : ''
-  const lastUsableVersion = statusData?.heads.usable?.version
 
   return (
     <Card.Root
@@ -113,6 +112,7 @@ export const ApprovalsCard = ({ assignment, isSelected, isFocused, status }: {
         } else if (documentId) {
           const openDocument = openType(assignment._deliverableType as string)
           if (assignment._deliverableStatus === 'usable') {
+            const lastUsableVersion = statusData?.heads.usable?.version
             openDocument(event, { id: documentId }, 'last', undefined, undefined, { version: lastUsableVersion as bigint })
           } else {
             openDocument(event, { id: documentId })
@@ -152,7 +152,7 @@ export const ApprovalsCard = ({ assignment, isSelected, isFocused, status }: {
           <div className='truncate'>{title}</div>
           <div className='text-xs font-normal opacity-60 flex gap-1'>
             {slugline && <div>{slugline}</div>}
-            {slugline && lastUsableVersion && <div>{`${` - v${lastUsableVersion}`}`}</div>}
+            <div>{`${slugline ? ' - ' : ''}v${statusData?.version}`}</div>
             {longCause && <div>{`- ${longCause}`}</div>}
           </div>
         </Card.Title>
