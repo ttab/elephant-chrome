@@ -110,7 +110,6 @@ function EditorWrapper(props: ViewProps & {
     const basePlugins = [
       Bold,
       Italic,
-      TTVisual,
       ImageSearchPlugin,
       FactboxPlugin,
       Table,
@@ -130,6 +129,9 @@ function EditorWrapper(props: ViewProps & {
       }),
       TVListing({
         channelComponent: ChannelComboBox
+      }),
+      TTVisual({
+        enableCrop: true
       }),
       Factbox({
         onEditOriginal: (id: string) => {
