@@ -95,7 +95,10 @@ export const ApprovalsCard = ({ assignment, isSelected, isFocused, status }: {
 
   const slugline = assignment.meta.find((m) => m.type === 'tt/slugline')?.value
   const longCause = documentStatus?.cause ? CAUSE_KEYS[documentStatus.cause as keyof typeof CAUSE_KEYS].long : ''
-  const lastPublishedOrder = statusData?.heads.usable?.id
+  // heads.usable.id is a bigint counter that represents the version number
+  // of the current 'usable' status. Each time a version is tagged as usable,
+  // this id is incremented by 1
+  const lastUsableOrder = statusData?.heads.usable?.id
 
   return (
     <Card.Root
@@ -153,7 +156,7 @@ export const ApprovalsCard = ({ assignment, isSelected, isFocused, status }: {
           <div className='truncate'>{title}</div>
           <div className='text-xs font-normal opacity-60 flex gap-1'>
             {slugline && <div>{slugline}</div>}
-            {slugline && lastPublishedOrder && <div>{`- v${lastPublishedOrder}`}</div>}
+            {slugline && lastUsableOrder && <div>{`- v${lastUsableOrder}`}</div>}
             {longCause && <div>{`- ${longCause}`}</div>}
           </div>
         </Card.Title>
