@@ -38,7 +38,7 @@ export const Toolbar = (): JSX.Element => {
   }
 
   return (
-    <div className='bg-white z-10 flex items-center justify-between py-1 px-4 border-b sticky top-0'>
+    <div className='z-10 flex items-center justify-between py-1 px-4 border-b sticky top-0'>
       <div className='flex flex-1 items-center space-x-2'>
         <Filter {...props}>
           <Commands {...props} />

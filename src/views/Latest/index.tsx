@@ -80,7 +80,7 @@ const Content = ({ documents, locale }: {
         return (
           <div
             key={id}
-            className={cn('hover:bg-gray-100 flex flex-row py-3 pl-5 pr-3',
+            className={cn('hover:bg-table-focused dark:hover:bg-table-focused flex flex-row py-3 pl-5 pr-3',
               id ? 'cursor-pointer' : 'cursor-not-allowed'
             )}
             onClick={() => {
