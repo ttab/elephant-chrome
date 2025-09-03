@@ -32,10 +32,9 @@ export function transformPrintText(element: Block): TBElement {
 }
 
 export function revertPrintText(element: TBElement): Block {
-  // core/text type is for handling if user copy-pastes a text from an article into print-text,
-  // then the core/text type overwrites tt/print-text/text
-  const [firstNode] = element.children as PrintChild[]
-  const printText = firstNode.text ?? ''
+  const [firstChild] = (element.children || []) as TBElement[] & { children?: PrintChild[] }
+  const [firstNode] = (firstChild.children ?? [])
+  const printText = (firstNode as PrintChild)?.text?.trim() ?? ''
   const printRoleNode = element.children.find((child) => child.type === 'tt/print-text/role')
   const printRole = (printRoleNode?.children as PrintChild[] | undefined)?.[0]?.text ?? ''
 
