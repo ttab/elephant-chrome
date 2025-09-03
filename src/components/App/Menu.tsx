@@ -8,7 +8,7 @@ import {
   SheetTrigger
 } from '@ttab/elephant-ui'
 import { Link, Logo } from '@/components'
-import { Menu as MenuIcon, X } from '@ttab/elephant-ui/icons'
+import { MenuIcon, XIcon } from '@ttab/elephant-ui/icons'
 import { ThemeSwitcher } from './ThemeSwitcher'
 import { MenuItem } from './MenuItem'
 import { useSession } from 'next-auth/react'
@@ -66,7 +66,7 @@ export const Menu = (): JSX.Element => {
 
               <div className='flex flex-row gap-4 justify-between justify-items-center items-center h-14 px-4'>
                 <SheetClose className='rounded-md hover:bg-table-focused dark:hover:bg-table-focused w-9 h-9 flex items-center justify-center'>
-                  <X strokeWidth={2.25} />
+                  <XIcon strokeWidth={2.25} />
                 </SheetClose>
 
                 <SheetClose asChild>

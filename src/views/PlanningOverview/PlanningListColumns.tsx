@@ -7,13 +7,13 @@ import { Assignees } from '@/components/Table/Items/Assignees'
 import { Type } from '@/components/Table/Items/Type'
 import { Actions } from '@/components/Table/Items/Actions'
 import {
-  SignalHigh,
-  Pen,
-  Shapes,
-  Users,
-  Crosshair,
-  Navigation,
-  CircleCheck
+  SignalHighIcon,
+  PenIcon,
+  ShapesIcon,
+  UsersIcon,
+  CrosshairIcon,
+  NavigationIcon,
+  CircleCheckIcon
 } from '@ttab/elephant-ui/icons'
 import { Newsvalues, NewsvalueMap, AssignmentTypes, PlanningEventStatuses } from '@/defaults'
 import { DocumentStatus } from '@/components/Table/Items/DocumentStatus'
@@ -35,7 +35,7 @@ export function planningListColumns({ sections = [], authors = [] }: {
         ),
         options: PlanningEventStatuses,
         name: 'Status',
-        columnIcon: CircleCheck,
+        columnIcon: CircleCheckIcon,
         className: 'flex-none',
         display: (value: string) => (
           <span>
@@ -75,7 +75,7 @@ export function planningListColumns({ sections = [], authors = [] }: {
         ),
         options: Newsvalues,
         name: 'Nyhetsvärde',
-        columnIcon: SignalHigh,
+        columnIcon: SignalHighIcon,
         className: 'flex-none hidden @3xl/view:[display:revert]'
       },
       accessorFn: (data) => data.fields['document.meta.core_newsvalue.value']?.values[0],
@@ -95,7 +95,7 @@ export function planningListColumns({ sections = [], authors = [] }: {
       id: 'title',
       meta: {
         name: 'Titel',
-        columnIcon: Pen,
+        columnIcon: PenIcon,
         className: 'flex-1 w-[200px]'
       },
       accessorFn: (data) => data.fields['document.title']?.values[0],
@@ -120,7 +120,7 @@ export function planningListColumns({ sections = [], authors = [] }: {
           <FacetedFilter column={column} setSearch={setSearch} />
         ),
         name: 'Sektion',
-        columnIcon: Shapes,
+        columnIcon: ShapesIcon,
         className: 'flex-none w-[115px] hidden @4xl/view:[display:revert]',
         display: (value: string) => (
           <span>
@@ -151,7 +151,7 @@ export function planningListColumns({ sections = [], authors = [] }: {
           <FacetedFilter column={column} setSearch={setSearch} facetFn={() => getNestedFacetedUniqueValues(column)} />
         ),
         name: 'Uppdragstagare',
-        columnIcon: Users,
+        columnIcon: UsersIcon,
         className: 'flex-none w-[112px] hidden @5xl/view:[display:revert]'
       },
       accessorFn: (data) => data.fields['document.meta.core_assignment.rel.assignee.uuid']?.values,
@@ -177,7 +177,7 @@ export function planningListColumns({ sections = [], authors = [] }: {
         ),
         options: AssignmentTypes,
         name: 'Typ',
-        columnIcon: Crosshair,
+        columnIcon: CrosshairIcon,
         className: 'flex-none w-[120px] hidden @6xl/view:[display:revert]',
         display: (value: string | string[]) => {
           const items = AssignmentTypes
@@ -210,7 +210,7 @@ export function planningListColumns({ sections = [], authors = [] }: {
       id: 'action',
       meta: {
         name: 'Action',
-        columnIcon: Navigation,
+        columnIcon: NavigationIcon,
         className: 'flex-none'
       },
       cell: ({ row }) => {

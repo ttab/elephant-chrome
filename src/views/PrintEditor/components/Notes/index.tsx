@@ -10,7 +10,7 @@ import {
   SelectContent,
   SelectTrigger
 } from '@ttab/elephant-ui'
-import { MessageCircleMore, X } from '@ttab/elephant-ui/icons'
+import { MessageCircleMoreIcon, XIcon } from '@ttab/elephant-ui/icons'
 import { TextBox } from '@/components/ui'
 import type { DefaultValueOption } from '@/types/index'
 import { useState } from 'react'
@@ -31,7 +31,7 @@ const Note = ({ noteIndex, handleRemove }: {
 
 
   const roles: DefaultValueOption[] = [
-    { value: 'internal', label: 'Intern info', icon: MessageCircleMore, iconProps }
+    { value: 'internal', label: 'Intern info', icon: MessageCircleMoreIcon, iconProps }
   ]
 
   const selectedOptions = roles.filter((r) => r.value === role)
@@ -75,7 +75,7 @@ const Note = ({ noteIndex, handleRemove }: {
             variant='icon'
             onClick={() => { setShowVerifyDialog(true) }}
           >
-            <X strokeWidth={1.75} size={18} className='ml-auto' />
+            <XIcon strokeWidth={1.75} size={18} className='ml-auto' />
           </Button>
         </div>
       </div>

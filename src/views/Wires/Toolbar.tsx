@@ -1,4 +1,4 @@
-import { Save } from '@ttab/elephant-ui/icons'
+import { SaveIcon } from '@ttab/elephant-ui/icons'
 import { SelectedFilters } from '@/components/Filter/SelectedFilters'
 import { DotDropdownMenu } from '@/components/ui/DotMenu'
 import type { FilterProps } from '@/components/Filter'
@@ -33,7 +33,7 @@ export const Toolbar = (): JSX.Element => {
         items={[
           {
             label: 'Spara filter',
-            icon: Save,
+            icon: SaveIcon,
             item: () => {
               console.log('save wire search')
             }

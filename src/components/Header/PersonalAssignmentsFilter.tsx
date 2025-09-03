@@ -1,6 +1,6 @@
 import { useTable } from '@/hooks/useTable'
 import { Button } from '@ttab/elephant-ui'
-import { User } from '@ttab/elephant-ui/icons'
+import { UserIcon } from '@ttab/elephant-ui/icons'
 
 
 export const PersonalAssignmentsFilter = ({ assigneeId }: {
@@ -26,7 +26,7 @@ export const PersonalAssignmentsFilter = ({ assigneeId }: {
         })
       }}
     >
-      <User size={18} strokeWidth={1.75} className='shrink-0 sm:mr-2' />
+      <UserIcon size={18} strokeWidth={1.75} className='shrink-0 sm:mr-2' />
       <div className='text-sm hidden @3xl/view:[display:revert]'>Mina uppdrag</div>
     </Button>
   )

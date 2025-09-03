@@ -2,7 +2,7 @@ import { useCollaboration } from '@/hooks/useCollaboration'
 import { useYValue } from '@/hooks/useYValue'
 import { timeSlotTypes } from '@/defaults/assignmentTimeConstants'
 import type { LucideIcon } from '@ttab/elephant-ui/icons'
-import { AlarmClockCheck, CalendarClockIcon, ClockFading } from '@ttab/elephant-ui/icons'
+import { AlarmClockCheckIcon, CalendarClockIcon, ClockFadingIcon } from '@ttab/elephant-ui/icons'
 
 export interface TimeDef {
   name: 'start' | 'range' | 'slot' | 'publish'
@@ -42,7 +42,7 @@ export function useAssignmentTime(index: number, newDate?: string): undefined | 
           combineDateAndTime(newDate, originalEnd)
         ],
         tooltip: 'Start- och sluttid',
-        icon: ClockFading
+        icon: ClockFadingIcon
       }
     }
 
@@ -77,7 +77,7 @@ export function useAssignmentTime(index: number, newDate?: string): undefined | 
       time: [originalPublish],
       newTime: [combineDateAndTime(newDate, originalPublish)],
       tooltip: 'Publiceringstid',
-      icon: AlarmClockCheck
+      icon: AlarmClockCheckIcon
     }
   }
 
@@ -93,7 +93,7 @@ export function useAssignmentTime(index: number, newDate?: string): undefined | 
         combineDateAndTime(newDate, originalEnd)
       ],
       tooltip: 'Start- och sluttid',
-      icon: ClockFading
+      icon: ClockFadingIcon
     }
   }
 

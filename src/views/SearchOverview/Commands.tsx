@@ -1,7 +1,15 @@
 import { CommandList } from '@ttab/elephant-ui'
 import { ClearFilter } from '@/components/Filter/ClearFilter'
 import { OptionsFilter } from '@/components/Filter/common/OptionsFilter'
-import { BookUser, Calendar, Crosshair, Shapes, SignalHigh, Tag, Users } from '@ttab/elephant-ui/icons'
+import {
+  BookUserIcon,
+  CalendarIcon,
+  CrosshairIcon,
+  ShapesIcon,
+  SignalHighIcon,
+  TagIcon,
+  UsersIcon
+} from '@ttab/elephant-ui/icons'
 import { useCategories, useOrganisers, useSections, useQuery, useAuthors } from '@/hooks'
 import { Newsvalues } from '@/defaults/newsvalues'
 import { AssignmentTypes } from '@/defaults/assignmentTypes'
@@ -61,14 +69,14 @@ export const Commands = (props: FilterProps & { type: SearchKeys }): JSX.Element
         options={sections}
         label='Sektion'
         filterPage='section'
-        Icon={Shapes}
+        Icon={ShapesIcon}
       />
       <OptionsFilter
         {...props}
         options={Newsvalues}
         label='Nyhetsvärde'
         filterPage='newsvalue'
-        Icon={SignalHigh}
+        Icon={SignalHighIcon}
       />
       {type !== 'articles' && type !== 'events' && (
         <OptionsFilter
@@ -76,7 +84,7 @@ export const Commands = (props: FilterProps & { type: SearchKeys }): JSX.Element
           options={AssignmentTypes}
           label='Typ'
           filterPage='aType'
-          Icon={Crosshair}
+          Icon={CrosshairIcon}
         />
       )}
       {type === 'events' && (
@@ -86,14 +94,14 @@ export const Commands = (props: FilterProps & { type: SearchKeys }): JSX.Element
             options={organisers}
             label='Organisatör'
             filterPage='organiser'
-            Icon={BookUser}
+            Icon={BookUserIcon}
           />
           <OptionsFilter
             {...props}
             options={categories}
             label='Kategori'
             filterPage='category'
-            Icon={Tag}
+            Icon={TagIcon}
           />
         </>
       )}
@@ -103,11 +111,11 @@ export const Commands = (props: FilterProps & { type: SearchKeys }): JSX.Element
           options={authors}
           label='Uppdragstagare'
           filterPage='author'
-          Icon={Users}
+          Icon={UsersIcon}
         />
       )}
       <div className='flex gap-1 w-full items-center px-2 my-1'>
-        <Calendar size={18} strokeWidth={1.75} />
+        <CalendarIcon size={18} strokeWidth={1.75} />
         <div className='text-xs'>Från</div>
         <DatePicker
           date={currentDate}

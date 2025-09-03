@@ -11,7 +11,7 @@ import {
   SheetTitle,
   SheetTrigger
 } from '@ttab/elephant-ui'
-import { PanelRightClose, PanelRightOpen } from '@ttab/elephant-ui/icons'
+import { PanelRightCloseIcon, PanelRightOpenIcon } from '@ttab/elephant-ui/icons'
 import { useState } from 'react'
 import { AddNote } from './Notes/AddNote'
 import { Version } from '@/components/Version'
@@ -32,8 +32,8 @@ export function MetaSheet({ container, documentId, readOnly, readOnlyVersion }: 
     <Sheet onOpenChange={setIsOpen}>
       <SheetTrigger className='rounded-md  w-9 h-9 flex items-center justify-center hover:bg-gray-200 dark:hover:bg-gray-700'>
         {!isOpen
-          ? <PanelRightOpen size={18} strokeWidth={1.75} />
-          : <PanelRightClose size={18} strokeWidth={1.75} />}
+          ? <PanelRightOpenIcon size={18} strokeWidth={1.75} />
+          : <PanelRightCloseIcon size={18} strokeWidth={1.75} />}
       </SheetTrigger>
 
       <SheetDescription />
@@ -47,7 +47,7 @@ export function MetaSheet({ container, documentId, readOnly, readOnlyVersion }: 
           <SheetHeader>
             <SheetTitle className='flex flex-row gap-4 justify-start justify-items-center items-center h-14 px-5 text-sm opacity-90'>
               <SheetClose className='rounded-md hover:bg-gray-100 w-9 h-9 flex items-center justify-center'>
-                <PanelRightClose size={18} strokeWidth={1.75} />
+                <PanelRightCloseIcon size={18} strokeWidth={1.75} />
               </SheetClose>
               <span className=' font-semibold'>
                 Metadata

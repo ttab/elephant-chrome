@@ -1,6 +1,6 @@
 import { TextBox } from '@/components/ui'
 import { Button } from '@ttab/elephant-ui'
-import { MessageCircleMore, Tags } from '@ttab/elephant-ui/icons'
+import { MessageCircleMoreIcon, TagsIcon } from '@ttab/elephant-ui/icons'
 import { AssignmentType } from '@/components/DataItem/AssignmentType'
 import { useYValue } from '@/hooks/useYValue'
 import { AssignmentTime } from '@/components/AssignmentTime'
@@ -63,7 +63,7 @@ export const Assignment = ({ index, onAbort, onClose, onChange }: {
             path={`meta.core/assignment[${index}].meta.core/description[0].data.text`}
             placeholder='Internt meddelande'
             icon={(
-              <MessageCircleMore
+              <MessageCircleMoreIcon
                 size={18}
                 strokeWidth={1.75}
                 className='text-muted-foreground mr-4'
@@ -73,7 +73,7 @@ export const Assignment = ({ index, onAbort, onClose, onChange }: {
 
           {(assignmentType === 'text' || assignmentType === 'editorial-info')
           && (
-            <Form.Group icon={Tags}>
+            <Form.Group icon={TagsIcon}>
               <SluglineEditable
                 disabled={!!documentId}
                 path={`meta.core/assignment[${index}].meta.tt/slugline[0].value`}

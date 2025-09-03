@@ -1,6 +1,6 @@
 import { View, ViewHeader } from '@/components/View'
 import { type ViewMetadata } from '@/types/index'
-import { Minus, Save } from '@ttab/elephant-ui/icons'
+import { MinusIcon, SaveIcon } from '@ttab/elephant-ui/icons'
 import { useMemo } from 'react'
 import { wiresListColumns } from './WiresListColumns'
 import { Commands } from '@/components/Commands'
@@ -74,7 +74,7 @@ export const Wires = (): JSX.Element => {
                   }
                 }}
               >
-                <Save strokeWidth={1.75} size={18} />
+                <SaveIcon strokeWidth={1.75} size={18} />
               </Button>
             </>
           )}
@@ -88,7 +88,7 @@ export const Wires = (): JSX.Element => {
               && (
                 <ViewDialogClose
                   onClick={() => handleClose(viewId, history)}
-                  Icon={Minus}
+                  Icon={MinusIcon}
                 />
               )}
             </div>

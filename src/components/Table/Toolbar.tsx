@@ -1,4 +1,4 @@
-import { Save, UserCog, X } from '@ttab/elephant-ui/icons'
+import { SaveIcon, UserCogIcon, XIcon } from '@ttab/elephant-ui/icons'
 import { Button, ToggleGroup, ToggleGroupItem } from '@ttab/elephant-ui'
 import { SelectedFilters } from './SelectedFilters'
 import { useSections } from '@/hooks/useSections'
@@ -94,7 +94,7 @@ export const Toolbar = <TData,>({ columns }: {
           className='h-8 px-2 lg:px-3'
         >
           Rensa
-          <X size={18} strokeWidth={1.75} className='ml-2' />
+          <XIcon size={18} strokeWidth={1.75} className='ml-2' />
         </Button>
       )}
       <div className='flex flex-row grow flex-wrap items-center'>
@@ -122,7 +122,7 @@ export const Toolbar = <TData,>({ columns }: {
               aria-label='Toggle user'
               className='border data-[state=off]:text-muted-foreground'
             >
-              <UserCog size={18} strokeWidth={1.75} />
+              <UserCogIcon size={18} strokeWidth={1.75} />
             </ToggleGroupItem>
           </ToggleGroup>
         </div>
@@ -132,7 +132,7 @@ export const Toolbar = <TData,>({ columns }: {
             items={[
               {
                 label: 'Spara personligt filter',
-                icon: Save,
+                icon: SaveIcon,
                 item: handleSaveUserFilter
               }
             ]}
@@ -150,14 +150,14 @@ export const Toolbar = <TData,>({ columns }: {
               })),
               {
                 label: 'Personligt filter',
-                icon: UserCog,
+                icon: UserCogIcon,
                 item: () => {
                   table.setColumnFilters(savedUserFilter)
                 }
               },
               {
                 label: 'Spara personligt filter',
-                icon: Save,
+                icon: SaveIcon,
                 item: handleSaveUserFilter
               }
             ]}

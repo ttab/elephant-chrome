@@ -2,7 +2,7 @@ import { useLink } from '@/hooks/useLink'
 import { useUserTracker } from '@/hooks/useUserTracker'
 import { type EleDocumentResponse } from '@/shared/types'
 import { type View } from '@/types/index'
-import { GanttChartSquare } from '@ttab/elephant-ui/icons'
+import { GanttChartSquareIcon } from '@ttab/elephant-ui/icons'
 import useSWR from 'swr'
 import type { NewItem } from './Root'
 
@@ -41,7 +41,7 @@ export const List = ({ type, createdIdRef, asDialog }: {
           }
         }}
       >
-        <GanttChartSquare strokeWidth={1.75} size={18} className='text-muted-foreground' />
+        <GanttChartSquareIcon strokeWidth={1.75} size={18} className='text-muted-foreground' />
         {document.document?.title}
       </a>
     </div>

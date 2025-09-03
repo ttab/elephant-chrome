@@ -3,16 +3,16 @@ import { type Event } from '@/shared/schemas/event'
 import { Newsvalue } from '@/components/Table/Items/Newsvalue'
 import { type MouseEvent } from 'react'
 import {
-  SignalHigh,
-  Pen,
-  Shapes,
+  SignalHighIcon,
+  PenIcon,
+  ShapesIcon,
   Clock3Icon,
-  Navigation,
-  NotebookPen,
-  Edit,
-  Delete,
-  CircleCheck,
-  BookUser
+  NavigationIcon,
+  NotebookPenIcon,
+  EditIcon,
+  DeleteIcon,
+  CircleCheckIcon,
+  BookUserIcon
 } from '@ttab/elephant-ui/icons'
 import type { DotDropdownMenuActionItem } from '@/components/ui/DotMenu'
 import { DotDropdownMenu } from '@/components/ui/DotMenu'
@@ -37,7 +37,7 @@ export function eventTableColumns({ sections = [], organisers = [], locale }: {
       id: 'startTime',
       meta: {
         name: 'Starttid',
-        columnIcon: SignalHigh,
+        columnIcon: SignalHighIcon,
         className: 'hidden',
         display: (value: string) => {
           const [hour, day] = value.split(' ')
@@ -82,7 +82,7 @@ export function eventTableColumns({ sections = [], organisers = [], locale }: {
         ),
         options: PlanningEventStatuses,
         name: 'Status',
-        columnIcon: CircleCheck,
+        columnIcon: CircleCheckIcon,
         className: 'flex-none',
         display: (value: string) => (
           <span>
@@ -118,7 +118,7 @@ export function eventTableColumns({ sections = [], organisers = [], locale }: {
         ),
         options: Newsvalues,
         name: 'Nyhetsvärde',
-        columnIcon: SignalHigh,
+        columnIcon: SignalHighIcon,
         className: 'flex-none hidden @3xl/view:[display:revert]'
       },
       accessorFn: (data) => data?.fields['document.meta.core_newsvalue.value']?.values?.[0] || 'N/A',
@@ -133,7 +133,7 @@ export function eventTableColumns({ sections = [], organisers = [], locale }: {
       id: 'title',
       meta: {
         name: 'Titel',
-        columnIcon: Pen,
+        columnIcon: PenIcon,
         className: 'flex-1 w-[200px]',
         display: (value: string) => (
           <span>
@@ -159,7 +159,7 @@ export function eventTableColumns({ sections = [], organisers = [], locale }: {
       id: 'organiser',
       meta: {
         name: 'Organisatör',
-        columnIcon: BookUser,
+        columnIcon: BookUserIcon,
         className: 'flex-none hidden @4xl/view:[display:revert]',
         options: organisers.map((o) => ({ label: o.title, value: o.title })),
         display: (value: string) => (
@@ -198,7 +198,7 @@ export function eventTableColumns({ sections = [], organisers = [], locale }: {
           }
         }),
         name: 'Sektion',
-        columnIcon: Shapes,
+        columnIcon: ShapesIcon,
         className: 'flex-none w-[115px] hidden @4xl/view:[display:revert]',
         display: (value: string) => (
           <span>
@@ -230,7 +230,7 @@ export function eventTableColumns({ sections = [], organisers = [], locale }: {
         ),
         options: [{ label: 'Planerad', value: 'planned' }, { label: 'Ej planerad', value: 'unplanned' }],
         name: 'Planeringsstatus',
-        columnIcon: NotebookPen,
+        columnIcon: NotebookPenIcon,
         className: 'flex-none w-[112px] hidden @5xl/view:[display:revert]',
         display: (value: string) => (
           <span>
@@ -280,7 +280,7 @@ export function eventTableColumns({ sections = [], organisers = [], locale }: {
       id: 'action',
       meta: {
         name: 'Action',
-        columnIcon: Navigation,
+        columnIcon: NavigationIcon,
         className: 'flex-none'
       },
       accessorFn: (data) => data,
@@ -294,7 +294,7 @@ export function eventTableColumns({ sections = [], organisers = [], locale }: {
 const menuItems: DotDropdownMenuActionItem[] = [
   {
     label: 'Redigera',
-    icon: Edit,
+    icon: EditIcon,
     item: (event: MouseEvent<HTMLDivElement>) => {
       event.preventDefault()
       event.stopPropagation()
@@ -302,7 +302,7 @@ const menuItems: DotDropdownMenuActionItem[] = [
   },
   {
     label: 'Ta bort',
-    icon: Delete,
+    icon: DeleteIcon,
     item: (event: MouseEvent<HTMLDivElement>) => {
       event.preventDefault()
       event.stopPropagation()

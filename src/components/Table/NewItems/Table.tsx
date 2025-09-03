@@ -7,7 +7,7 @@ import { type EleDocumentResponse } from '@/shared/types'
 import { Button, Table as _Table, TableBody, TableCell, TableRow } from '@ttab/elephant-ui'
 import { DocumentStatus } from '../Items/DocumentStatus'
 import { useLink } from '@/hooks/useLink'
-import { Check, CheckCheck } from '@ttab/elephant-ui/icons'
+import { CheckIcon, CheckCheckIcon } from '@ttab/elephant-ui/icons'
 import { useRepositoryEvents } from '@/hooks/useRepositoryEvents'
 import { useCallback } from 'react'
 import { useUserTracker } from '@/hooks/useUserTracker'
@@ -101,7 +101,7 @@ export const Table = ({ type, header }: {
               size='xs'
               onClick={() => setNewDocuments([])}
             >
-              <CheckCheck size={18} strokeWidth={1.75} />
+              <CheckCheckIcon size={18} strokeWidth={1.75} />
             </Button>
           </TableCell>
         </TableRow>
@@ -162,7 +162,7 @@ export const Table = ({ type, header }: {
                     }
                   }}
                 >
-                  <Check size={18} strokeWidth={1.75} />
+                  <CheckIcon size={18} strokeWidth={1.75} />
                 </Button>
               </TableCell>
             </TableRow>

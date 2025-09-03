@@ -6,7 +6,7 @@ import { DotDropdownMenu } from '@/components/ui/DotMenu'
 import type { AssignmentInterface } from '@/hooks/index/useAssignments'
 import { useLink } from '@/hooks/useLink'
 import { useRegistry } from '@/hooks/useRegistry'
-import { CalendarDays, FileInput, Zap } from '@ttab/elephant-ui/icons'
+import { CalendarDaysIcon, FileInputIcon, ZapIcon } from '@ttab/elephant-ui/icons'
 import { parseISO, format } from 'date-fns'
 import { toZonedTime } from 'date-fns-tz'
 import { PreviewSheet } from '../Wires/components'
@@ -52,7 +52,7 @@ export const ApprovalsCard = ({ assignment, isSelected, isFocused, status }: {
   const menuItemDocumentLabel = assignment._deliverableType === 'core/flash' ? 'flash' : 'artikel'
   const menuItems = [{
     label: `Öppna ${menuItemDocumentLabel}`,
-    icon: FileInput,
+    icon: FileInputIcon,
     item: (
       <Link
         to={assignment._deliverableType === 'core/flash' ? 'Flash' : 'Editor'}
@@ -60,7 +60,7 @@ export const ApprovalsCard = ({ assignment, isSelected, isFocused, status }: {
       >
         <div className='flex flex-row justify-center items-center'>
           <div className='opacity-70 flex-none w-7'>
-            <FileInput size={16} strokeWidth={1.75} />
+            <FileInputIcon size={16} strokeWidth={1.75} />
           </div>
 
           <div className='grow'>
@@ -72,12 +72,12 @@ export const ApprovalsCard = ({ assignment, isSelected, isFocused, status }: {
   },
   {
     label: 'Öppna planering',
-    icon: CalendarDays,
+    icon: CalendarDaysIcon,
     item: (
       <Link to='Planning' props={{ id: assignment._id }}>
         <div className='flex flex-row justify-center items-center'>
           <div className='opacity-70 flex-none w-7'>
-            <CalendarDays size={16} strokeWidth={1.75} />
+            <CalendarDaysIcon size={16} strokeWidth={1.75} />
           </div>
 
           <div className='grow'>
@@ -119,7 +119,7 @@ export const ApprovalsCard = ({ assignment, isSelected, isFocused, status }: {
           {status.icon && <status.icon size={15} strokeWidth={1.75} className={status.className} />}
           <span className='bg-secondary inline-block px-1 rounded'>
             {assignment._deliverableType === 'core/flash'
-              ? <Zap strokeWidth={1.75} size={14} className='text-red-500' />
+              ? <ZapIcon strokeWidth={1.75} size={14} className='text-red-500' />
               : assignment._newsvalue}
           </span>
           {users && (

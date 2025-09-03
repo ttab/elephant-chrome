@@ -1,5 +1,5 @@
 import { useRepositoryEvents } from '@/hooks/useRepositoryEvents'
-import { GanttChartSquare, PlusIcon } from '@ttab/elephant-ui/icons'
+import { GanttChartSquareIcon, PlusIcon } from '@ttab/elephant-ui/icons'
 import { useRef, useState, useEffect } from 'react'
 import { NewItems } from '@/components/Table/NewItems'
 import type { FormProps } from '@/components/Form/Root'
@@ -158,7 +158,7 @@ export const PlanningTable = ({ provider, documentId, asDialog }: {
           <>
             <Separator />
             <div className='flex gap-2 items-center'>
-              <GanttChartSquare color='#FF971E' strokeWidth={1.75} size={18} className='text-muted-foreground' />
+              <GanttChartSquareIcon color='#FF971E' strokeWidth={1.75} size={18} className='text-muted-foreground' />
               <div className='text-muted-foreground py-2'>Planeringar</div>
             </div>
             {data?.map((planning) => (

@@ -1,4 +1,4 @@
-import { Clock5 } from '@ttab/elephant-ui/icons'
+import { Clock5Icon } from '@ttab/elephant-ui/icons'
 import { useYValue } from '@/hooks/useYValue'
 import { Block } from '@ttab/elephant-api/newsdoc'
 import { TimeDeliveryMenu } from './TimeDeliveryMenu'
@@ -191,7 +191,7 @@ export const AssignmentTime = ({ index, onChange }: {
                     <div className='pl-1'>{selectedLabel}</div>
                   </div>
                 )
-              : <Clock5 size={18} strokeWidth={1.75} className='text-muted-foreground' />}
+              : <Clock5Icon size={18} strokeWidth={1.75} className='text-muted-foreground' />}
           </TimeDeliveryMenu>
         )
   )

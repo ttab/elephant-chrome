@@ -1,7 +1,7 @@
 import { Link } from '@/components/index'
 import type { Block } from '@ttab/elephant-api/newsdoc'
 import { Separator } from '@ttab/elephant-ui'
-import { CalendarPlus2 } from '@ttab/elephant-ui/icons'
+import { CalendarPlus2Icon } from '@ttab/elephant-ui/icons'
 
 export const RelatedEvents = ({ events = [] }: { events: Block[] | undefined }) => {
   if (!events || events?.length < 1) {
@@ -13,7 +13,12 @@ export const RelatedEvents = ({ events = [] }: { events: Block[] | undefined }) 
       <Separator />
       <div className='pl-6'>
         <div className='flex items-center gap-2'>
-          <CalendarPlus2 color='#D802FD' strokeWidth={1.75} size={18} className='text-muted-foreground' />
+          <CalendarPlus2Icon
+            color='#D802FD'
+            strokeWidth={1.75}
+            size={18}
+            className='text-muted-foreground'
+          />
           <div className='text-muted-foreground py-2'>Länkade händelser</div>
         </div>
         <div>

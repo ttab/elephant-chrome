@@ -3,7 +3,7 @@ import { SelectedFilters } from './SelectedFilters'
 import { Commands } from './Commands'
 import { useState } from 'react'
 import { DotDropdownMenu } from '@/components/ui/DotMenu'
-import { Save, UserCog } from '@ttab/elephant-ui/icons'
+import { SaveIcon, UserCogIcon } from '@ttab/elephant-ui/icons'
 import { ToggleGroup, ToggleGroupItem } from '@ttab/elephant-ui'
 
 /**
@@ -60,7 +60,7 @@ export const Toolbar = (): JSX.Element => {
             aria-label='Toggle user'
             className='border data-[state=off]:text-muted-foreground'
           >
-            <UserCog size={18} strokeWidth={1.75} />
+            <UserCogIcon size={18} strokeWidth={1.75} />
           </ToggleGroupItem>
         </ToggleGroup>
         <DotDropdownMenu
@@ -68,7 +68,7 @@ export const Toolbar = (): JSX.Element => {
           items={[
             {
               label: 'Spara personligt filter',
-              icon: Save,
+              icon: SaveIcon,
               item: handleSaveUserFilter
             }
           ]}

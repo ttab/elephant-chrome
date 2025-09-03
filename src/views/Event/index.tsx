@@ -11,7 +11,7 @@ import { useSession } from 'next-auth/react'
 import { View } from '@/components/View'
 import { createStateless, StatelessType } from '@/shared/stateless'
 import { Button } from '@ttab/elephant-ui'
-import { Tags, CalendarClock } from '@ttab/elephant-ui/icons'
+import { TagsIcon, CalendarClockIcon } from '@ttab/elephant-ui/icons'
 import {
   Description,
   Newsvalue,
@@ -153,17 +153,17 @@ const EventViewContent = (props: ViewProps & { documentId: string }): JSX.Elemen
             <Description role='public' />
             <Registration />
 
-            <Form.Group icon={CalendarClock}>
+            <Form.Group icon={CalendarClockIcon}>
               <EventTimeMenu />
               <Newsvalue />
             </Form.Group>
 
-            <Form.Group icon={Tags}>
+            <Form.Group icon={TagsIcon}>
               <Section />
               <Organiser />
             </Form.Group>
 
-            <Form.Group icon={Tags}>
+            <Form.Group icon={TagsIcon}>
               <Category />
               <Story />
             </Form.Group>

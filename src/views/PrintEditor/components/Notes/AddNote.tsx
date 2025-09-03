@@ -1,7 +1,7 @@
 import { useYValue } from '@/hooks/useYValue'
 import { Block } from '@ttab/elephant-api/newsdoc'
 import { Button } from '@ttab/elephant-ui'
-import { MessageSquarePlus } from '@ttab/elephant-ui/icons'
+import { MessageSquarePlusIcon } from '@ttab/elephant-ui/icons'
 
 const newNote = Block.create({
   type: 'core/note',
@@ -30,7 +30,7 @@ export const AddNote = ({ text = '' }: {
       onClick={handleClick}
       className='flex flex-row gap-1 p-0 m-0 h-9 min-w-9 text-xs hover:bg-gray-200 dark:hover:bg-gray-700'
     >
-      <MessageSquarePlus size={18} strokeWidth={1.75} />
+      <MessageSquarePlusIcon size={18} strokeWidth={1.75} />
       {text && <span className='text-muted-foreground'>{text}</span>}
     </Button>
   )

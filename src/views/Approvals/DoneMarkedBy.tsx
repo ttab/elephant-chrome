@@ -1,4 +1,4 @@
-import { Check } from '@ttab/elephant-ui/icons'
+import { CheckIcon } from '@ttab/elephant-ui/icons'
 import { useAuthors } from '@/hooks/useAuthors'
 import type { StatusMeta } from 'src/datastore/types'
 import { dateToReadableDateTime } from '@/shared/datetime'
@@ -30,7 +30,7 @@ export const DoneMarkedBy = ({ doneStatus }: {
     <div className='flex flex-col items-start justify-start'>
       <Tooltip content={`Senast klarmarkerat ${created}`}>
         <div className='flex gap-1 items-center relative'>
-          <Check size={16} />
+          <CheckIcon size={16} />
           <div>{`${matchedAuthor}`}</div>
         </div>
       </Tooltip>

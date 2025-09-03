@@ -1,6 +1,6 @@
 import { useLink } from '@/hooks/useLink'
 import { Button, Tooltip } from '@ttab/elephant-ui'
-import { CalendarDaysIcon, CalendarPlus2, FileInput } from '@ttab/elephant-ui/icons'
+import { CalendarDaysIcon, CalendarPlus2Icon, FileInputIcon } from '@ttab/elephant-ui/icons'
 
 export const ToastAction = ({ planningId, flashId, eventId }: {
   planningId?: string
@@ -33,7 +33,7 @@ export const ToastAction = ({ planningId, flashId, eventId }: {
             variant='icon'
             onClick={(event) => openFlash(event, { id: flashId }, 'last')}
           >
-            <FileInput size={16} strokeWidth={1.75} />
+            <FileInputIcon size={16} strokeWidth={1.75} />
           </Button>
         </Tooltip>
       )}
@@ -45,7 +45,7 @@ export const ToastAction = ({ planningId, flashId, eventId }: {
             variant='icon'
             onClick={(event) => openEvent(event, { id: eventId }, 'last')}
           >
-            <CalendarPlus2 size={16} strokeWidth={1.75} />
+            <CalendarPlus2Icon size={16} strokeWidth={1.75} />
           </Button>
         </Tooltip>
       )}

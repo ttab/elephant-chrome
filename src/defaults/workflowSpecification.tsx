@@ -1,10 +1,10 @@
 import {
-  CircleCheck,
-  CircleDot,
-  CircleArrowLeft,
-  BadgeCheck,
-  type LucideIcon,
-  CircleX
+  CircleCheckIcon,
+  CircleDotIcon,
+  CircleArrowLeftIcon,
+  BadgeCheckIcon,
+  CircleXIcon,
+  type LucideIcon
 } from '@ttab/elephant-ui/icons'
 
 interface WorkflowItem {
@@ -29,39 +29,39 @@ export interface StatusSpecification {
 
 export const StatusSpecifications: Record<string, StatusSpecification> = {
   draft: {
-    icon: CircleDot,
+    icon: CircleDotIcon,
     className: ''
   },
   done: {
-    icon: CircleCheck,
+    icon: CircleCheckIcon,
     className: 'bg-done text-white fill-done rounded-full'
   },
   approved: {
-    icon: BadgeCheck,
+    icon: BadgeCheckIcon,
     className: 'bg-approved text-white fill-approved rounded-full'
   },
   withheld: {
-    icon: CircleCheck,
+    icon: CircleCheckIcon,
     className: 'bg-withheld text-white fill-withheld rounded-full'
   },
   usable: {
-    icon: CircleCheck,
+    icon: CircleCheckIcon,
     className: 'bg-usable text-white fill-usable rounded-full'
   },
   unpublished: {
-    icon: CircleArrowLeft,
+    icon: CircleArrowLeftIcon,
     className: 'bg-unpublished text-white fill-unpublished rounded-full'
   },
   print_done: {
-    icon: BadgeCheck,
+    icon: BadgeCheckIcon,
     className: 'bg-approved text-white fill-approved rounded-full'
   },
   needs_proofreading: {
-    icon: CircleCheck,
+    icon: CircleCheckIcon,
     className: 'bg-done text-white fill-done rounded-full'
   },
   cancelled: {
-    icon: CircleX,
+    icon: CircleXIcon,
     className: 'bg-cancelled text-white fill-cancelled rounded-full'
   }
 }
