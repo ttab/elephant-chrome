@@ -10,7 +10,7 @@ import { type Context, isContext } from '../../../lib/context.js'
 import { getValueByYPath, setValueByYPath } from '../../../../shared/yUtils.js'
 import type { EleBlock } from '@/shared/types/index.js'
 import { getSession } from '../../../lib/context.js'
-import { flush } from '../../../utils/flush.js'
+import { snapshot } from '../../../utils/snapshot.js'
 
 /**
  * Fetch a fresh document, either directly from Redis cache if it is there or from reposity if not,
@@ -199,7 +199,7 @@ export const PATCH: RouteHandler = async (req: Request, { collaborationServer, r
 
   await connection.disconnect()
 
-  return flush(
+  return snapshot(
     collaborationServer,
     id,
     context

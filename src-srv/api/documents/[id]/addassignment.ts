@@ -9,7 +9,7 @@ import { toGroupedNewsDoc } from '@/shared/transformations/groupedNewsDoc.js'
 import type { Wire } from '@/shared/schemas/wire.js'
 import { getContextFromValidSession, isContext, type Context } from '../../../lib/context.js'
 import { isValidUUID } from '../../../utils/isValidUUID.js'
-import { flush } from '../../../utils/flush.js'
+import { snapshot } from '../../../utils/snapshot.js'
 
 /**
  * Add assignment to an existing planning or a newly created one.
@@ -149,7 +149,7 @@ export const POST: RouteHandler = async (req: Request, { collaborationServer, re
 
   await connection.disconnect()
 
-  return flush(
+  return snapshot(
     collaborationServer,
     documentId,
     context

@@ -3,7 +3,7 @@ import type { Request } from 'express'
 import type { RouteHandler } from '../../../routes.js'
 import { getContextFromValidSession, getSession, isContext } from '../../../lib/context.js'
 import * as Y from 'yjs'
-import { flush } from '../../../utils/flush.js'
+import { snapshot } from '../../../utils/snapshot.js'
 
 export const POST: RouteHandler = async (req: Request, { collaborationServer, res }) => {
   const id = req.params.id
@@ -40,7 +40,7 @@ export const POST: RouteHandler = async (req: Request, { collaborationServer, re
     }
   }
 
-  return flush(
+  return snapshot(
     collaborationServer,
     id,
     { ...context, agent: 'server' },

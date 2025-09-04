@@ -4,7 +4,7 @@ import logger from '../lib/logger.js'
 import type { RouteContentResponse, RouteStatusResponse } from '../routes.js'
 
 
-export async function flush(
+export async function snapshot(
   collaborationServer: CollaborationServer,
   documentName: string,
   context: Context,
