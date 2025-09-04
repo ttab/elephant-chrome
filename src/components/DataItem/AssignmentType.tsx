@@ -29,7 +29,7 @@ export const AssignmentType = ({ path, editable = false, readOnly = false, class
     return (
       <Button
         variant='icon'
-        className='w-fit px-2'
+        className='w-fit pl-2 pr-0.5'
       >
         {SelectedIcon
           ? (
@@ -79,7 +79,7 @@ export const AssignmentType = ({ path, editable = false, readOnly = false, class
         }
       }}
     >
-      <SelectTrigger className='w-fit px-2 border-0'>
+      <SelectTrigger className='w-fit pl-2 pr-1 border-0'>
         {SelectedIcon
           ? (
               <SelectedIcon

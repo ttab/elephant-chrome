@@ -1,15 +1,18 @@
 import { useYValue } from '@/hooks/useYValue'
 import { Block } from '@ttab/elephant-api/newsdoc'
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@ttab/elephant-ui'
+import { Button, DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@ttab/elephant-ui'
 import { MessageSquarePlus } from '@ttab/elephant-ui/icons'
 import { cn } from '@ttab/elephant-ui/utils'
 
-export const AddNote = ({ text = '' }: {
+type NoteRole = 'internal' | 'public'
+
+export const AddNote = ({ text = '', role }: {
   text?: string
+  role?: NoteRole
 }): JSX.Element => {
   const [notes, setNotes] = useYValue<Block[] | undefined>('meta.core/note')
 
-  const handleClick = (role: string) => {
+  const handleClick = (role: NoteRole) => {
     const newNote = Block.create({
       type: 'core/note',
       data: {
@@ -22,6 +25,18 @@ export const AddNote = ({ text = '' }: {
       setNotes([newNote])
     } else
       setNotes([...notes, newNote])
+  }
+
+  if (role) {
+    return (
+      <Button
+        variant='ghost'
+        onClick={() => handleClick(role)}
+      >
+        <MessageSquarePlus size={18} strokeWidth={1.75} />
+        {text && <span className='text-muted-foreground'>{text}</span>}
+      </Button>
+    )
   }
 
   return (
