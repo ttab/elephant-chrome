@@ -43,7 +43,6 @@ export class CollaborationServer {
   readonly #repositoryExtension: RepositoryExtension
 
   #handlePaths: string[]
-  #openForBusiness: boolean
 
   /**
    * Collaboration server constructor. Creates and initializes
@@ -108,7 +107,6 @@ export class CollaborationServer {
     })
 
     this.#handlePaths = []
-    this.#openForBusiness = false
   }
 
   /**
@@ -119,7 +117,7 @@ export class CollaborationServer {
       return false
     }
 
-    if (this.#handlePaths.length || this.#openForBusiness) {
+    if (this.#handlePaths.length) {
       this.#errorHandler.warn('Collab server already open for business, closing, cleaning up and reinitializing')
       await this.close()
     }
@@ -146,7 +144,7 @@ export class CollaborationServer {
    * This allows the server to reinitialize itself.
    */
   async close(): Promise<void> {
-    if (!this.server || !this.#openForBusiness) {
+    if (!this.server) {
       return
     }
 
@@ -155,7 +153,6 @@ export class CollaborationServer {
     } catch (ex) {
       this.#errorHandler.error(ex)
     } finally {
-      this.#openForBusiness = false
       this.#handlePaths = []
     }
   }
