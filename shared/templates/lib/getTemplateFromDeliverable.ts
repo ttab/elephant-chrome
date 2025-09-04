@@ -1,5 +1,5 @@
-import * as Templates from '@/defaults/templates'
-import type { TemplatePayload } from '@/defaults/templates'
+import * as Templates from '@/shared/templates'
+import type { TemplatePayload } from '@/shared/templates'
 import type { DeliverableType } from './getDeliverableType'
 import type { Document } from '@ttab/elephant-api/newsdoc'
 

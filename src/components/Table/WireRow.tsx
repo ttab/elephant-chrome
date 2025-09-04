@@ -3,7 +3,7 @@ import { type MouseEvent } from 'react'
 import { TableRow, TableCell } from '@ttab/elephant-ui'
 import { type Row as RowType, flexRender } from '@tanstack/react-table'
 import { cn } from '@ttab/elephant-ui/utils'
-import type { Wire } from '@/hooks/index/useDocuments/schemas/wire'
+import type { Wire } from '@/shared/schemas/wire'
 import { cva } from 'class-variance-authority'
 import { getWireStatus } from './lib/getWireStatus'
 

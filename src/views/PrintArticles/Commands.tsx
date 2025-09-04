@@ -5,8 +5,8 @@ import { useDocuments } from '@/hooks/index/useDocuments'
 import type { FilterProps } from '@/components/Filter'
 import { OptionsFilter } from '@/components/Filter/common/OptionsFilter'
 import { CircleCheck, Tag } from '@ttab/elephant-ui/icons'
-import type { PrintFlow, PrintFlowFields } from '@/hooks/index/useDocuments/schemas/printFlow'
-import { fields } from '@/hooks/index/useDocuments/schemas/printFlow'
+import type { PrintFlow, PrintFlowFields } from '@/shared/schemas/printFlow'
+import { fields } from '@/shared/schemas/printFlow'
 import { toast } from 'sonner'
 
 export const Commands = (props: FilterProps): JSX.Element => {

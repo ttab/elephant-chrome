@@ -1,5 +1,5 @@
 import { ungroup } from '@/shared/transformations/groupedNewsDoc'
-import type { TemplatePayload } from '..'
+import type { TemplatePayload } from '@/shared/templates'
 import type * as Y from 'yjs'
 
 export function createPayload(document: Y.Doc, index?: number, payloadType: string = ''): TemplatePayload | undefined {

@@ -16,9 +16,9 @@ import { deleteByYPath, getValueByYPath, setValueByYPath, toYStructure } from '@
 import { Block } from '@ttab/elephant-api/newsdoc'
 import { toast } from 'sonner'
 import { ToastAction } from '@/views/Wire/ToastAction'
-import { createPayload } from '@/defaults/templates/lib/createPayload'
+import { createPayload } from '@/shared/templates/lib/createPayload'
 import { DatePicker } from '../Datepicker'
-import { currentDateInUTC, parseDate } from '@/lib/datetime'
+import { currentDateInUTC, parseDate } from '@/shared/datetime'
 
 export const Move = (props: ViewProps & {
   original: {

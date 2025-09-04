@@ -13,10 +13,10 @@ import { useSession } from 'next-auth/react'
 import { type ViewMetadata } from '@/types'
 import { type IDBAuthor } from 'src/datastore/types'
 import { useQuery } from '@/hooks/useQuery'
-import { newLocalDate } from '@/lib/datetime'
+import { newLocalDate } from '@/shared/datetime'
 import { loadFilters } from '@/lib/loadFilters'
 import { useSections } from '@/hooks/useSections'
-import type { Assignment } from '@/hooks/index/useDocuments/schemas/assignments'
+import type { Assignment } from '@/shared/schemas/assignments'
 
 const meta: ViewMetadata = {
   name: 'Assignments',
