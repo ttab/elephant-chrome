@@ -33,7 +33,7 @@ import { type AwarenessUserData } from '@/contexts/CollaborationProvider'
 import { Error } from '../Error'
 
 import { ContentMenu } from '@/components/Editor/ContentMenu'
-import { Notes } from './components/Notes'
+import { Notes } from '@/components/Notes'
 import { Toolbar } from '@/components/Editor/Toolbar'
 import { ContextMenu } from '@/components/Editor/ContextMenu'
 import { Gutter } from '@/components/Editor/Gutter'
@@ -109,7 +109,6 @@ function EditorWrapper(props: ViewProps & {
     const basePlugins = [
       Bold,
       Italic,
-      TTVisual,
       ImageSearchPlugin,
       FactboxPlugin,
       Table,
@@ -127,6 +126,9 @@ function EditorWrapper(props: ViewProps & {
       ImagePlugin({
         repository,
         accessToken: data?.accessToken || ''
+      }),
+      TTVisual({
+        enableCrop: true
       }),
       Factbox({
         onEditOriginal: (id: string) => {

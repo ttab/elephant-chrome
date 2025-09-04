@@ -29,7 +29,7 @@ export const AssigneeAvatars = ({ assignees, size = 'sm', color = '' }: {
           ))
         }
         >
-          <span className='font-semibold text-muted-foreground px-4 pt-1 text-xs'>
+          <span className='font-semibold items-start text-muted-foreground px-4 pt-1 text-xs'>
             {assignees.length > 3 && `+${assignees.length - 3}`}
           </span>
         </Tooltip>

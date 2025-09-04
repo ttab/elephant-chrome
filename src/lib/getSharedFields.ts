@@ -4,9 +4,9 @@ type WithEventDate = ['document.meta.core_event.data.start', 'document.meta.core
 type WithPlanningDate = ['document.meta.core_planning_item.data.start_date']
 
 export type CopyGroupFields = ['document.id', 'document.title', 'document.meta.core_event.data.start' | 'document.meta.core_planning_item.data.start_date']
-export type DuplicateFields =
-  | [...DuplicateBase, ...WithEventDate]
-  | [...DuplicateBase, ...WithPlanningDate]
+export type DuplicateFields
+  = | [...DuplicateBase, ...WithEventDate]
+    | [...DuplicateBase, ...WithPlanningDate]
 
 export const copyGroupFields = (t: 'core/event' | 'core/planning-item'): CopyGroupFields => {
   const base: CopyGroupBase = ['document.id', 'document.title']

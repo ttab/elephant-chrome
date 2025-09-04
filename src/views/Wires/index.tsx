@@ -85,12 +85,12 @@ export const Wires = (): JSX.Element => {
                 <Controller />
               )}
               {!isFocused && (history.state?.contentState?.length ?? 0) > 1
-              && (
-                <ViewDialogClose
-                  onClick={() => handleClose(viewId, history)}
-                  Icon={MinusIcon}
-                />
-              )}
+                && (
+                  <ViewDialogClose
+                    onClick={() => handleClose(viewId, history)}
+                    Icon={MinusIcon}
+                  />
+                )}
             </div>
           </ViewHeader.Content>
 

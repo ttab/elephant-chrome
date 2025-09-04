@@ -34,7 +34,7 @@ export const transformSoftcrop = (blocks: Block[]): Record<string, string | numb
    */
 export const revertSoftcrop = (element: TBElement): Block[] => {
   const { properties } = element
-  if (!properties?.crop || !properties?.focus) {
+  if (!properties?.crop && !properties?.focus) {
     return []
   }
 

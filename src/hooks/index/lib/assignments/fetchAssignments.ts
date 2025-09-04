@@ -12,6 +12,7 @@ import { StatusSpecifications } from '@/defaults/workflowSpecification'
 import { getUTCDateRange } from '@/shared/datetime'
 import { format } from 'date-fns'
 import { getStatusFromMeta } from '@/lib/getStatusFromMeta'
+import { getNewsValues } from './getNewsvalues'
 
 
 // We want to fetch all known statuses for deliverables and then
@@ -76,12 +77,15 @@ export async function fetchAssignments({ index, repository, type, requireDeliver
     // * assignments with start date not matching the given date
     // TODO: Take withheld/publish into account?
     const uuids: string[] = []
+
+    const deliverableNewsValues = await getNewsValues(hits, repository, session)
+
     for (const { document } of hits) {
       if (!document) continue
 
       const sameDay = getPlanningDate(document) === dateStr
 
-      for (const assignment of getAssignmentsFromDocument(document, type)) {
+      for (const assignment of getAssignmentsFromDocument(document, type, deliverableNewsValues)) {
         const sameDayAssignment = getAssignmentDate(assignment) === dateStr
 
         if (!sameDay && (hasPublishSlot(assignment) || !sameDayAssignment)) {

@@ -72,14 +72,14 @@ export const Assignment = ({ index, onAbort, onClose, onChange }: {
           />
 
           {(assignmentType === 'text' || assignmentType === 'editorial-info')
-          && (
-            <Form.Group icon={TagsIcon}>
-              <SluglineEditable
-                disabled={!!documentId}
-                path={`meta.core/assignment[${index}].meta.tt/slugline[0].value`}
-              />
-            </Form.Group>
-          )}
+            && (
+              <Form.Group icon={TagsIcon}>
+                <SluglineEditable
+                  disabled={!!documentId}
+                  path={`meta.core/assignment[${index}].meta.tt/slugline[0].value`}
+                />
+              </Form.Group>
+            )}
 
 
           <Form.Group>
@@ -105,14 +105,14 @@ export const Assignment = ({ index, onAbort, onClose, onChange }: {
           <Form.Submit onSubmit={onClose} onReset={onAbort}>
             <div className='flex gap-2 justify-end pt-4'>
               {assignmentInProgress && !!onAbort
-              && (
-                <Button
-                  type='reset'
-                  variant='ghost'
-                >
-                  Avbryt
-                </Button>
-              )}
+                && (
+                  <Button
+                    type='reset'
+                    variant='ghost'
+                  >
+                    Avbryt
+                  </Button>
+                )}
               <Button
                 type='submit'
                 variant='outline'
