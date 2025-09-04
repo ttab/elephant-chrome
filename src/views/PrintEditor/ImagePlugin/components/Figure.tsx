@@ -1,10 +1,10 @@
 import type { TBElement, Plugin, TBText } from '@ttab/textbit'
 import { FocusBlock } from './FocusBlock'
-import { Transforms } from 'slate'
+import { type BaseEditor, Transforms } from 'slate'
 import { cn } from '@ttab/elephant-ui/utils'
 import { XIcon } from '@ttab/elephant-ui/icons'
 
-export const Figure = ({ editor, children, element }: Plugin.ComponentProps & { element: TBElement }): JSX.Element => {
+export const Figure = ({ editor, children, element }: Plugin.ComponentProps & { editor: BaseEditor, element: TBElement }): JSX.Element => {
   return (
     <FocusBlock className='my-2'>
       <figure
@@ -20,7 +20,7 @@ export const Figure = ({ editor, children, element }: Plugin.ComponentProps & { 
               const n = editor.children.findIndex((child: TBElement | TBText) => child.id === element.id)
 
               if (n > -1) {
-                Transforms.removeNodes(editor, { at: [n] })
+                Transforms.removeNodes(editor as BaseEditor, { at: [n] })
               }
             }}
           >
