@@ -50,7 +50,7 @@ import type { EleBlock } from '@/shared/types'
 import { toast } from 'sonner'
 import { useSession } from 'next-auth/react'
 import { Prompt } from '@/components/Prompt'
-import { storeDocument } from '@/lib/storeDocument'
+import { snapshotDocument } from '@/lib/snapshotDocument'
 import type * as Y from 'yjs'
 import { ImagePlugin } from './ImagePlugin'
 
@@ -191,7 +191,7 @@ function EditorContainer({
   const [flowUuid] = useYValue<string>('links.tt/print-flow[0].uuid')
   const { baboon } = useRegistry()
   const { data: session } = useSession()
-  const [,,allParams] = useQuery(['from'], true)
+  const [, , allParams] = useQuery(['from'], true)
   const fromDate = allParams?.filter((item) => item.name === 'Print')?.[0]?.params?.from
   const [date] = useYValue<string>('meta.tt/print-article[0].data.date')
   const [isChanged] = useYValue<boolean>('root.changed')
@@ -215,7 +215,7 @@ function EditorContainer({
       toast.error('Något gick fel när printartikel skulle dupliceras')
       return
     }
-    await storeDocument(documentId)
+    await snapshotDocument(documentId)
     try {
       const _date = (fromDate || date) as string
       const response = await baboon.createPrintArticle({
@@ -246,7 +246,7 @@ function EditorContainer({
       toast.error('Något gick fel när printartikel skulle renderas')
       return
     }
-    await storeDocument(documentId)
+    await snapshotDocument(documentId)
     const results: EleBlock[] = []
     for (const _layout of arr) {
       try {
@@ -296,11 +296,11 @@ function EditorContainer({
               <div className='flex-grow overflow-auto pr-12 max-w-screen-xl'>
                 {!!provider && synced
                   ? (
-                      <EditorContent provider={provider} user={user} onChange={handleChange} />
-                    )
+                    <EditorContent provider={provider} user={user} onChange={handleChange} />
+                  )
                   : (
-                      <></>
-                    )}
+                    <></>
+                  )}
               </div>
             </ScrollArea>
           </div>
@@ -349,48 +349,48 @@ function EditorContainer({
             )}
             {isChecking
               ? (
-                  <main className='flex flex-col items-center justify-center mt-8 gap-4'>
-                    <p className='flex gap-1'>
-                      <span>Kontrollerar layouter</span>
-                    </p>
-                    <section className='flex flex-row items-center justify-center gap-0'>
-                      <div className='animate-spin'>
-                        <Settings className='animate-pulse text-[#006bb3]' strokeWidth={1.75} size={24} />
-                      </div>
-                      <div className='animate-spin mt-4'>
-                        <Settings className='animate-pulse text-[#006bb3]' strokeWidth={1.75} size={24} />
-                      </div>
-                      <div className='animate-spin'>
-                        <Settings className='animate-pulse text-[#006bb3]' strokeWidth={1.75} size={24} />
-                      </div>
-                    </section>
-                  </main>
-                )
-              : (
-                  <ScrollArea className='h-[calc(100vh-12rem)]'>
-                    <div className='flex flex-col gap-2'>
-                      {Array.isArray(layouts) && layouts.map((layout, index) => {
-                        if (!layout.links?.['_']?.[0]?.uuid) {
-                          return null
-                        }
-                        return (
-                          <LayoutBox
-                            key={layout.id}
-                            documentId={documentId}
-                            layoutIdForRender={layout.id}
-                            layoutId={layout.links['_'][0].uuid}
-                            index={index}
-                            onChange={handleChange}
-                            deleteLayout={(layoutId) => {
-                              const newLayouts = layouts.filter((_layout) => _layout.id !== layoutId)
-                              setLayouts(newLayouts)
-                            }}
-                          />
-                        )
-                      })}
+                <main className='flex flex-col items-center justify-center mt-8 gap-4'>
+                  <p className='flex gap-1'>
+                    <span>Kontrollerar layouter</span>
+                  </p>
+                  <section className='flex flex-row items-center justify-center gap-0'>
+                    <div className='animate-spin'>
+                      <Settings className='animate-pulse text-[#006bb3]' strokeWidth={1.75} size={24} />
                     </div>
-                  </ScrollArea>
-                )}
+                    <div className='animate-spin mt-4'>
+                      <Settings className='animate-pulse text-[#006bb3]' strokeWidth={1.75} size={24} />
+                    </div>
+                    <div className='animate-spin'>
+                      <Settings className='animate-pulse text-[#006bb3]' strokeWidth={1.75} size={24} />
+                    </div>
+                  </section>
+                </main>
+              )
+              : (
+                <ScrollArea className='h-[calc(100vh-12rem)]'>
+                  <div className='flex flex-col gap-2'>
+                    {Array.isArray(layouts) && layouts.map((layout, index) => {
+                      if (!layout.links?.['_']?.[0]?.uuid) {
+                        return null
+                      }
+                      return (
+                        <LayoutBox
+                          key={layout.id}
+                          documentId={documentId}
+                          layoutIdForRender={layout.id}
+                          layoutId={layout.links['_'][0].uuid}
+                          index={index}
+                          onChange={handleChange}
+                          deleteLayout={(layoutId) => {
+                            const newLayouts = layouts.filter((_layout) => _layout.id !== layoutId)
+                            setLayouts(newLayouts)
+                          }}
+                        />
+                      )
+                    })}
+                  </div>
+                </ScrollArea>
+              )}
           </aside>
         </section>
       </View.Content>

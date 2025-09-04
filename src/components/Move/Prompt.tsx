@@ -9,7 +9,7 @@ import type * as Y from 'yjs'
 import { useSession } from 'next-auth/react'
 import type { HocuspocusProvider } from '@hocuspocus/provider'
 import { toast } from 'sonner'
-import { storeDocument } from '@/lib/storeDocument'
+import { snapshotDocument } from '@/lib/snapshotDocument'
 
 export const MovePrompt = ({
   title,
@@ -73,7 +73,7 @@ export const MovePrompt = ({
     onPrimary(planning)
 
     if (!selectedPlanning && provider?.synced && session) {
-      void storeDocument(planningId)
+      void snapshotDocument(planningId)
     }
   }
 

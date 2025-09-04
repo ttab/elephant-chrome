@@ -12,7 +12,7 @@ import { type EleBlock } from '@/shared/types'
 import { cva } from 'class-variance-authority'
 import { Button } from '@ttab/elephant-ui'
 import { useActiveAuthor } from '@/hooks/useActiveAuthor'
-import { storeDocument } from '@/lib/storeDocument'
+import { snapshotDocument } from '@/lib/snapshotDocument'
 import { toast } from 'sonner'
 
 export const AssignmentTable = ({ asDialog = false, documentId, onChange }: {
@@ -79,7 +79,7 @@ export const AssignmentTable = ({ asDialog = false, documentId, onChange }: {
     deleteByYPath(yRoot, `${currentAssigmentPath}.__inProgress`)
 
     if (documentId) {
-      await storeDocument(documentId, {
+      await snapshotDocument(documentId, {
         force: true
       }, provider?.document)
     }
@@ -160,28 +160,28 @@ export const AssignmentTable = ({ asDialog = false, documentId, onChange }: {
             <div key={`${_.id}`} className='border-b last:border-0'>
               {selectedAssignment === index
                 ? (
-                    <Assignment
-                      onChange={onChange}
-                      index={index}
-                      onClose={() => {
-                        setSelectedAssignment(undefined)
-                      }}
-                      className='-my-[1px] -mx-[5px]'
-                    />
-                  )
+                  <Assignment
+                    onChange={onChange}
+                    index={index}
+                    onClose={() => {
+                      setSelectedAssignment(undefined)
+                    }}
+                    className='-my-[1px] -mx-[5px]'
+                  />
+                )
                 : (
-                    <AssignmentRow
-                      index={index}
-                      isFocused={index === focusedRowIndex}
-                      asDialog={asDialog}
-                      onChange={onChange}
-                      onSelect={() => {
-                        if (!newAssigment) {
-                          setSelectedAssignment(index)
-                        }
-                      }}
-                    />
-                  )}
+                  <AssignmentRow
+                    index={index}
+                    isFocused={index === focusedRowIndex}
+                    asDialog={asDialog}
+                    onChange={onChange}
+                    onSelect={() => {
+                      if (!newAssigment) {
+                        setSelectedAssignment(index)
+                      }
+                    }}
+                  />
+                )}
             </div>
           ))}
         </div>

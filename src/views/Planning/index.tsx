@@ -33,7 +33,7 @@ import { RelatedEvents } from './components/RelatedEvents'
 import type { Block } from '@ttab/elephant-api/newsdoc'
 import { CopyGroup } from '../../components/CopyGroup'
 import { DuplicatesTable } from '../../components/DuplicatesTable'
-import { storeDocument } from '@/lib/storeDocument'
+import { snapshotDocument } from '@/lib/snapshotDocument'
 
 type Setter = React.Dispatch<SetStateAction<NewItem>>
 
@@ -65,16 +65,16 @@ export const Planning = (props: ViewProps & { document?: Y.Doc, setNewItem?: Set
     <>
       {typeof documentId === 'string'
         ? (
-            <AwarenessDocument documentId={documentId} document={props.document}>
-              <PlanningViewContent {...props} documentId={documentId} setNewItem={props?.setNewItem} />
-            </AwarenessDocument>
-          )
+          <AwarenessDocument documentId={documentId} document={props.document}>
+            <PlanningViewContent {...props} documentId={documentId} setNewItem={props?.setNewItem} />
+          </AwarenessDocument>
+        )
         : (
-            <Error
-              title='Planeringsdokument saknas'
-              message='Inget planeringsdokument är angivet. Navigera tillbaka till översikten och försök igen.'
-            />
-          )}
+          <Error
+            title='Planeringsdokument saknas'
+            message='Inget planeringsdokument är angivet. Navigera tillbaka till översikten och försök igen.'
+          />
+        )}
     </>
   )
 }
@@ -122,7 +122,7 @@ const PlanningViewContent = (props: ViewProps & { documentId: string, setNewItem
     }
 
     if (provider && status === 'authenticated') {
-      void storeDocument(props.documentId, {
+      void snapshotDocument(props.documentId, {
         status: documentStatus,
         addToHistory: true
       })

@@ -13,7 +13,7 @@ type StoreDocumentResponse = {
 /**
  * Flush unsaved document changes to primary repository.
  */
-export async function storeDocument(
+export async function snapshotDocument(
   uuid: string,
   options?: {
     force?: true

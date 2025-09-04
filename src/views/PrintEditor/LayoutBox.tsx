@@ -11,7 +11,7 @@ import { LoadingText } from '@/components/LoadingText'
 import { Additionals } from './components/Additionals'
 import { Position } from './components/Position'
 import { Prompt } from '@/components/Prompt'
-import { storeDocument } from '@/lib/storeDocument'
+import { snapshotDocument } from '@/lib/snapshotDocument'
 import { type ReactNode, useState } from 'react'
 
 export function LayoutBox({
@@ -53,7 +53,7 @@ export function LayoutBox({
       return
     }
     try {
-      await storeDocument(documentId)
+      await snapshotDocument(documentId)
       const response = await baboon.renderArticle({
         articleUuid: documentId,
         layoutId: layoutIdForRender,
@@ -183,7 +183,7 @@ export function LayoutBox({
             className='group/render px-2 py-0 flex gap-2 justify-start hover:bg-approved-background/50'
             size='sm'
             onClick={() => {
-              openPreview(undefined, { })
+              openPreview(undefined, {})
               void handleRenderArticle()
             }}
           >

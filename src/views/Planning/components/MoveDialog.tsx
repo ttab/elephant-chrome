@@ -10,7 +10,7 @@ import { getValueByYPath, setValueByYPath } from '@/shared/yUtils'
 import type { Block } from '@ttab/elephant-api/newsdoc'
 import { format, toZonedTime } from 'date-fns-tz'
 import { type TimeDef, useAssignmentTime } from '@/hooks/useAssignmentTime'
-import { storeDocument } from '@/lib/storeDocument'
+import { snapshotDocument } from '@/lib/snapshotDocument'
 import { toast } from 'sonner'
 import { AssignmentType } from '@/components/DataItem/AssignmentType'
 
@@ -139,7 +139,7 @@ export const MoveDialog = ({ onClose, onChange, newDate }: {
                 setStartString(newDate)
                 setEndString(newDate)
 
-                storeDocument(id).then(() => {
+                snapshotDocument(id).then(() => {
                   onChange(true)
                   onClose()
                 }).catch((err) => {

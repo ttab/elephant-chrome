@@ -30,7 +30,7 @@ import { EventHeader } from './EventHeader'
 import { DuplicatesTable } from '../../components/DuplicatesTable'
 import { Cancel } from './components/Cancel'
 import { CopyGroup } from '../../components/CopyGroup'
-import { storeDocument } from '@/lib/storeDocument'
+import { snapshotDocument } from '@/lib/snapshotDocument'
 
 const meta: ViewMetadata = {
   name: 'Event',
@@ -60,16 +60,16 @@ export const Event = (props: ViewProps & { document?: Y.Doc }): JSX.Element => {
     <>
       {typeof documentId === 'string'
         ? (
-            <AwarenessDocument documentId={documentId} document={props.document}>
-              <EventViewContent {...props} documentId={documentId} />
-            </AwarenessDocument>
-          )
+          <AwarenessDocument documentId={documentId} document={props.document}>
+            <EventViewContent {...props} documentId={documentId} />
+          </AwarenessDocument>
+        )
         : (
-            <Error
-              title='Händelsedokument saknas'
-              message='Inget händelsedokument är angivet. Navigera tillbaka till översikten och försök igen'
-            />
-          )}
+          <Error
+            title='Händelsedokument saknas'
+            message='Inget händelsedokument är angivet. Navigera tillbaka till översikten och försök igen'
+          />
+        )}
     </>
   )
 }
@@ -113,7 +113,7 @@ const EventViewContent = (props: ViewProps & { documentId: string }): JSX.Elemen
     }
 
     if (provider && status === 'authenticated') {
-      void storeDocument(props.documentId, {
+      void snapshotDocument(props.documentId, {
         status: documentStatus,
         addToHistory: true
       })

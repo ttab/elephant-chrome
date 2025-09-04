@@ -5,7 +5,7 @@ import { convertToISOStringInTimeZone } from '@/shared/datetime'
 import { toast } from 'sonner'
 import { ToastAction } from '../ToastAction'
 import { addAssignmentWithDeliverable } from '@/lib/index/addAssignment'
-import { storeDocument } from '@/lib/storeDocument'
+import { snapshotDocument } from '@/lib/snapshotDocument'
 
 export type CreateFlashDocumentStatus = 'usable' | 'done' | undefined
 export async function createFlash({
@@ -41,7 +41,7 @@ export async function createFlash({
   }
 
   // Trigger the creation of the flash in the repository
-  void storeDocument(documentId, {
+  void snapshotDocument(documentId, {
     status: documentStatus
   })
 
