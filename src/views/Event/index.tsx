@@ -60,16 +60,16 @@ export const Event = (props: ViewProps & { document?: Y.Doc }): JSX.Element => {
     <>
       {typeof documentId === 'string'
         ? (
-          <AwarenessDocument documentId={documentId} document={props.document}>
-            <EventViewContent {...props} documentId={documentId} />
-          </AwarenessDocument>
-        )
+            <AwarenessDocument documentId={documentId} document={props.document}>
+              <EventViewContent {...props} documentId={documentId} />
+            </AwarenessDocument>
+          )
         : (
-          <Error
-            title='Händelsedokument saknas'
-            message='Inget händelsedokument är angivet. Navigera tillbaka till översikten och försök igen'
-          />
-        )}
+            <Error
+              title='Händelsedokument saknas'
+              message='Inget händelsedokument är angivet. Navigera tillbaka till översikten och försök igen'
+            />
+          )}
     </>
   )
 }

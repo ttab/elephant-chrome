@@ -296,11 +296,11 @@ function EditorContainer({
               <div className='flex-grow overflow-auto pr-12 max-w-screen-xl'>
                 {!!provider && synced
                   ? (
-                    <EditorContent provider={provider} user={user} onChange={handleChange} />
-                  )
+                      <EditorContent provider={provider} user={user} onChange={handleChange} />
+                    )
                   : (
-                    <></>
-                  )}
+                      <></>
+                    )}
               </div>
             </ScrollArea>
           </div>
@@ -349,48 +349,48 @@ function EditorContainer({
             )}
             {isChecking
               ? (
-                <main className='flex flex-col items-center justify-center mt-8 gap-4'>
-                  <p className='flex gap-1'>
-                    <span>Kontrollerar layouter</span>
-                  </p>
-                  <section className='flex flex-row items-center justify-center gap-0'>
-                    <div className='animate-spin'>
-                      <Settings className='animate-pulse text-[#006bb3]' strokeWidth={1.75} size={24} />
-                    </div>
-                    <div className='animate-spin mt-4'>
-                      <Settings className='animate-pulse text-[#006bb3]' strokeWidth={1.75} size={24} />
-                    </div>
-                    <div className='animate-spin'>
-                      <Settings className='animate-pulse text-[#006bb3]' strokeWidth={1.75} size={24} />
-                    </div>
-                  </section>
-                </main>
-              )
+                  <main className='flex flex-col items-center justify-center mt-8 gap-4'>
+                    <p className='flex gap-1'>
+                      <span>Kontrollerar layouter</span>
+                    </p>
+                    <section className='flex flex-row items-center justify-center gap-0'>
+                      <div className='animate-spin'>
+                        <Settings className='animate-pulse text-[#006bb3]' strokeWidth={1.75} size={24} />
+                      </div>
+                      <div className='animate-spin mt-4'>
+                        <Settings className='animate-pulse text-[#006bb3]' strokeWidth={1.75} size={24} />
+                      </div>
+                      <div className='animate-spin'>
+                        <Settings className='animate-pulse text-[#006bb3]' strokeWidth={1.75} size={24} />
+                      </div>
+                    </section>
+                  </main>
+                )
               : (
-                <ScrollArea className='h-[calc(100vh-12rem)]'>
-                  <div className='flex flex-col gap-2'>
-                    {Array.isArray(layouts) && layouts.map((layout, index) => {
-                      if (!layout.links?.['_']?.[0]?.uuid) {
-                        return null
-                      }
-                      return (
-                        <LayoutBox
-                          key={layout.id}
-                          documentId={documentId}
-                          layoutIdForRender={layout.id}
-                          layoutId={layout.links['_'][0].uuid}
-                          index={index}
-                          onChange={handleChange}
-                          deleteLayout={(layoutId) => {
-                            const newLayouts = layouts.filter((_layout) => _layout.id !== layoutId)
-                            setLayouts(newLayouts)
-                          }}
-                        />
-                      )
-                    })}
-                  </div>
-                </ScrollArea>
-              )}
+                  <ScrollArea className='h-[calc(100vh-12rem)]'>
+                    <div className='flex flex-col gap-2'>
+                      {Array.isArray(layouts) && layouts.map((layout, index) => {
+                        if (!layout.links?.['_']?.[0]?.uuid) {
+                          return null
+                        }
+                        return (
+                          <LayoutBox
+                            key={layout.id}
+                            documentId={documentId}
+                            layoutIdForRender={layout.id}
+                            layoutId={layout.links['_'][0].uuid}
+                            index={index}
+                            onChange={handleChange}
+                            deleteLayout={(layoutId) => {
+                              const newLayouts = layouts.filter((_layout) => _layout.id !== layoutId)
+                              setLayouts(newLayouts)
+                            }}
+                          />
+                        )
+                      })}
+                    </div>
+                  </ScrollArea>
+                )}
           </aside>
         </section>
       </View.Content>
