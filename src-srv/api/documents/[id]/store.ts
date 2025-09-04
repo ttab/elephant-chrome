@@ -26,8 +26,6 @@ export const POST: RouteHandler = async (req: Request, { collaborationServer, re
         agent: 'server'
       })
 
-      console.info('APPLYING UPDATE')
-
       await connection.transact((document) => {
         Y.applyUpdateV2(document, payload)
       })
