@@ -109,7 +109,6 @@ function EditorWrapper(props: ViewProps & {
     const basePlugins = [
       Bold,
       Italic,
-      TTVisual,
       ImageSearchPlugin,
       FactboxPlugin,
       Table,
@@ -127,6 +126,9 @@ function EditorWrapper(props: ViewProps & {
       ImagePlugin({
         repository,
         accessToken: data?.accessToken || ''
+      }),
+      TTVisual({
+        enableCrop: true
       }),
       Factbox({
         onEditOriginal: (id: string) => {
