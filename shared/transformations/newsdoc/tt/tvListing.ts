@@ -61,11 +61,11 @@ export function revertTvListing(element: TBElement): Block {
     id,
     type: 'tt/tv-listing',
     data: {
+      title: toString(title),
       channel: toString(channelName),
       day: toString(day),
-      end_time: toString(end_time),
       time: toString(time),
-      title: toString(title)
+      end_time: toString(end_time)
     },
     links: [
       {
