@@ -74,7 +74,7 @@
     "swr": "^2.3.3",
     "vite-express": "^0.20.0",
     "y-indexeddb": "^9.0.12",
-    "yjs": "^13.6.26",
+    "yjs": "^13.6.27",
     "zod": "^3.24.3"
   },
   "devDependencies": {
