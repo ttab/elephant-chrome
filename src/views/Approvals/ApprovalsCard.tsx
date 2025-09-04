@@ -128,8 +128,8 @@ export const ApprovalsCard = ({ assignment, isSelected, isFocused, status, autho
             <PreviewSheet
               id={documentId}
               handleClose={hideModal}
-            />
-            , 'sheet')
+            />,
+            'sheet')
         } else if (documentId) {
           const openDocument = openType(assignment._deliverableType as string)
           if (assignment._deliverableStatus === 'usable') {

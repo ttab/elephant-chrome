@@ -23,7 +23,7 @@ export const Group = ({ children, icon: Icon, asDialog, onValidation, validateSt
   >
     <div className='flex gap-2 w-full items-center'>
       {Icon
-      && <Icon size={18} strokeWidth={1.75} className='text-muted-foreground mr-4' />}
+        && <Icon size={18} strokeWidth={1.75} className='text-muted-foreground mr-4' />}
       {React.Children.map(children, (child: React.ReactNode): React.ReactNode =>
         React.isValidElement<FormProps>(child)
           ? React.cloneElement(child, {
