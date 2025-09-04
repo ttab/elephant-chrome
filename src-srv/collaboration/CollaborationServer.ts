@@ -43,6 +43,7 @@ export class CollaborationServer {
   readonly #repositoryExtension: RepositoryExtension
 
   #handlePaths: string[]
+  #openForBusiness: boolean = false
 
   /**
    * Collaboration server constructor. Creates and initializes
@@ -117,7 +118,7 @@ export class CollaborationServer {
       return false
     }
 
-    if (this.#handlePaths.length) {
+    if (this.#handlePaths.length || this.#openForBusiness) {
       this.#errorHandler.warn('Collab server already open for business, closing, cleaning up and reinitializing')
       await this.close()
     }
@@ -128,15 +129,17 @@ export class CollaborationServer {
     try {
       paths.forEach((path) => {
         this.#expressServer.ws(path, (websocket, request) => {
-          this.server.handleConnection(websocket, request)
+          if (this.#openForBusiness) {
+            this.server.handleConnection(websocket, request)
+          }
         })
       })
+      this.#openForBusiness = true
     } catch (ex) {
       this.#errorHandler.fatal(ex)
-      return false
     }
 
-    return true
+    return this.#openForBusiness
   }
 
   /**
@@ -144,12 +147,14 @@ export class CollaborationServer {
    * This allows the server to reinitialize itself.
    */
   async close(): Promise<void> {
-    if (!this.server) {
+    if (!this.server || !this.#openForBusiness) {
       return
     }
 
     try {
+      this.#openForBusiness = false
       await this.server.destroy()
+      // FIXME: Remove the express server paths setup in listen..?
     } catch (ex) {
       this.#errorHandler.error(ex)
     } finally {
