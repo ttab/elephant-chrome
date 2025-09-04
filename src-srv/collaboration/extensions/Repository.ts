@@ -44,7 +44,7 @@ export class RepositoryExtension implements Extension {
 
     this.#storeDebouncer = createDebounceMap<onStoreDocumentPayload>(
       (documentName, payload) => {
-        this.#performDebouncedStore(payload).catch ((ex) => {
+        this.#performDebouncedStore(payload).catch((ex) => {
           this.#errorHandler.error(ex, { documentName, context: 'debouncedStore' })
         })
       },
