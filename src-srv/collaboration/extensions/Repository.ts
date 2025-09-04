@@ -21,7 +21,7 @@ import { createDebounceMap } from '@/shared/leadingDebounce.js'
 import type { RedisCache } from '../../utils/RedisCache.js'
 import logger from '../../lib/logger.js'
 
-interface RepisitoryExtensionConfiguration {
+interface RepositoryExtensionConfiguration {
   repository: RepositoryWrapper
   errorHandler: CollaborationServerErrorHandler
   redis: RedisCache
@@ -37,7 +37,7 @@ export class RepositoryExtension implements Extension {
   #hp?: Hocuspocus
   #redis: RedisCache
 
-  constructor(configuration: RepisitoryExtensionConfiguration) {
+  constructor(configuration: RepositoryExtensionConfiguration) {
     this.#repository = configuration.repository
     this.#errorHandler = configuration.errorHandler
     this.#redis = configuration.redis
