@@ -3,8 +3,8 @@ import { useEffect, useRef, useState } from 'react'
 import { ViewHeader } from '@/components/View'
 import { StatusMenu } from '@/components/DocumentStatus/StatusMenu'
 import { PenBoxIcon } from '@ttab/elephant-ui/icons'
+import { snapshotDocument } from '@/lib/snapshotDocument'
 import { AddNote } from '@/components/Notes/AddNote'
-import { snapshot } from '@/lib/snapshot'
 import { toast } from 'sonner'
 
 /**
@@ -65,7 +65,7 @@ export const EditorHeader = ({
                   onBlur={() => {
                     if (isDirty) {
                       setIsDirty(false)
-                      snapshot(documentId).then(() => {
+                      snapshotDocument(documentId).then(() => {
                         toast.success('Titel uppdaterad')
                       }).catch((error) => {
                         console.error('Error updating title:', error)

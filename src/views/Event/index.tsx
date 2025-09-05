@@ -9,7 +9,6 @@ import {
 } from '@/hooks'
 import { useSession } from 'next-auth/react'
 import { View } from '@/components/View'
-import { createStateless, StatelessType } from '@/shared/stateless'
 import { Button } from '@ttab/elephant-ui'
 import { TagsIcon, CalendarClockIcon } from '@ttab/elephant-ui/icons'
 import {
@@ -31,6 +30,7 @@ import { EventHeader } from './EventHeader'
 import { DuplicatesTable } from '../../components/DuplicatesTable'
 import { Cancel } from './components/Cancel'
 import { CopyGroup } from '../../components/CopyGroup'
+import { snapshotDocument } from '@/lib/snapshotDocument'
 
 const meta: ViewMetadata = {
   name: 'Event',
@@ -113,18 +113,10 @@ const EventViewContent = (props: ViewProps & { documentId: string }): JSX.Elemen
     }
 
     if (provider && status === 'authenticated') {
-      provider.sendStateless(
-        createStateless(StatelessType.IN_PROGRESS, {
-          state: false,
-          status: documentStatus,
-          id: props.documentId,
-          context: {
-            agent: 'server',
-            accessToken: data.accessToken,
-            user: data.user,
-            type: 'Event'
-          }
-        }))
+      void snapshotDocument(props.documentId, {
+        status: documentStatus,
+        addToHistory: true
+      })
     }
   }
 

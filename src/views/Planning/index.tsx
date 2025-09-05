@@ -24,7 +24,6 @@ import { Error } from '../Error'
 import { Form } from '@/components/Form'
 import { SluglineEditable } from '@/components/DataItem/SluglineEditable'
 import { Button } from '@ttab/elephant-ui'
-import { createStateless, StatelessType } from '@/shared/stateless'
 import { useSession } from 'next-auth/react'
 import { PlanningHeader } from './components/PlanningHeader'
 import React, { type SetStateAction, useCallback, useEffect, useState } from 'react'
@@ -34,6 +33,7 @@ import { RelatedEvents } from './components/RelatedEvents'
 import type { Block } from '@ttab/elephant-api/newsdoc'
 import { CopyGroup } from '../../components/CopyGroup'
 import { DuplicatesTable } from '../../components/DuplicatesTable'
+import { snapshotDocument } from '@/lib/snapshotDocument'
 
 type Setter = React.Dispatch<SetStateAction<NewItem>>
 
@@ -122,20 +122,12 @@ const PlanningViewContent = (props: ViewProps & { documentId: string, setNewItem
     }
 
     if (provider && status === 'authenticated') {
-      provider.sendStateless(
-        createStateless(StatelessType.IN_PROGRESS, {
-          state: false,
-          status: documentStatus,
-          id: props.documentId,
-          context: {
-            agent: 'server',
-            accessToken: data.accessToken,
-            user: data.user,
-            type: 'Planning'
-          }
-        })
-      )
+      void snapshotDocument(props.documentId, {
+        status: documentStatus,
+        addToHistory: true
+      })
     }
+
     if (props?.setNewItem) {
       props.setNewItem({ uuid: props.documentId, title: newTitle as string })
     }

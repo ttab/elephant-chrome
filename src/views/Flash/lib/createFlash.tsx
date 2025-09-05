@@ -5,13 +5,12 @@ import { convertToISOStringInTimeZone } from '@/shared/datetime'
 import { toast } from 'sonner'
 import { ToastAction } from '../ToastAction'
 import { addAssignmentWithDeliverable } from '@/lib/index/addAssignment'
-import { createStateless, StatelessType } from '@/shared/stateless'
+import { snapshotDocument } from '@/lib/snapshotDocument'
 
 export type CreateFlashDocumentStatus = 'usable' | 'done' | undefined
 export async function createFlash({
   flashProvider,
   status,
-  session,
   planningId,
   timeZone,
   documentStatus,
@@ -42,19 +41,9 @@ export async function createFlash({
   }
 
   // Trigger the creation of the flash in the repository
-  flashProvider.sendStateless(
-    createStateless(StatelessType.IN_PROGRESS, {
-      state: false,
-      status: documentStatus,
-      id: documentId,
-      context: {
-        agent: 'server',
-        accessToken: session.accessToken,
-        user: session.user,
-        type: 'Flash'
-      }
-    })
-  )
+  void snapshotDocument(documentId, {
+    status: documentStatus
+  })
 
   // Create and collect all base data for the assignment
   const [flashTitle] = getValueByYPath<string>(flashEle, 'root.title')
