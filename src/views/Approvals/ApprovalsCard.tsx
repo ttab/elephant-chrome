@@ -117,6 +117,12 @@ export const ApprovalsCard = ({ assignment, isSelected, isFocused, status, autho
 
   const title = assignment._deliverableDocument?.title
 
+  const slugline = assignment.meta.find((m) => m.type === 'tt/slugline')?.value
+  // heads.usable.id is a bigint counter that represents the version number
+  // of the current 'usable' status. Each time a version is tagged as usable,
+  // this id is incremented by 1
+  const lastUsableOrder = statusData?.heads.usable?.id
+
   return (
     <Card.Root
       status={assignment._deliverableStatus || 'draft'}
@@ -173,8 +179,9 @@ export const ApprovalsCard = ({ assignment, isSelected, isFocused, status, autho
       <Card.Content>
         <Card.Title>
           <div className='truncate'>{title}</div>
-          <div className='text-xs font-normal opacity-60'>
-            {assignment.meta.find((m) => m.type === 'tt/slugline')?.value || ' '}
+          <div className='text-xs font-normal opacity-60 flex gap-1'>
+            {slugline && <div>{slugline}</div>}
+            {slugline && lastUsableOrder && <div>{`- v${lastUsableOrder}`}</div>}
           </div>
         </Card.Title>
       </Card.Content>
