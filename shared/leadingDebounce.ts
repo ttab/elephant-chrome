@@ -6,7 +6,7 @@
  * - Max wait prevents indefinite delays in high frequency scenarios.
  */
 
- type Fn<T> = (arg: T) => void
+type Fn<T> = (arg: T) => void
 
 export function createLeadingDebounce<T>(fn: Fn<T>, wait: number, maxWait: number) {
   let timeout: NodeJS.Timeout | undefined

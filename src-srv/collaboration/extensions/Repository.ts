@@ -227,9 +227,7 @@ export class RepositoryExtension implements Extension {
     hash: number,
     status?: string | null,
     cause?: string | null
-  ): Promise<{
-      version: string
-    }> {
+  ): Promise<{ version: string }> {
     const result = await this.#repository.saveDocument(
       fromGroupedNewsDoc(documentResponse).document,
       accessToken,
