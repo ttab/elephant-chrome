@@ -1,8 +1,8 @@
 import { Server, type Hocuspocus } from '@hocuspocus/server'
 import { Logger } from '@hocuspocus/extension-logger'
-import { Redis } from '@hocuspocus/extension-redis'
+import { Redis as PubsubExtension } from '@hocuspocus/extension-redis'
 
-import type { RedisCache } from '../utils/RedisCache.js'
+import type { Redis } from '../utils/Redis.js'
 import type { Repository } from '@/shared/Repository.js'
 import type { User } from '@/shared/User.js'
 
@@ -24,7 +24,7 @@ interface CollaborationServerOptions {
   name: string
   port: number
   redisUrl: string
-  redis: RedisCache
+  redis: Redis
   repository: Repository
   user: User
   expressServer: Application
@@ -87,7 +87,7 @@ export class CollaborationServer {
             logger.info(msg)
           }
         }),
-        new Redis({
+        new PubsubExtension({
           prefix: 'elc::hp',
           host: redisHost,
           port: parseInt(redisPort, 10),

@@ -7,11 +7,11 @@ import * as Y from 'yjs'
 import { isContext } from '../../lib/context.js'
 import type CollaborationServerErrorHandler from '../../lib/errorHandler.js'
 import { getErrorContext } from '../../lib/errorHandler.js'
-import type { RedisCache } from '../../utils/RedisCache.js'
+import type { Redis } from '../../utils/Redis.js'
 import { isValidUUID } from '../../utils/isValidUUID.js'
 
 interface CacheExtensionConfiguration {
-  redis: RedisCache
+  redis: Redis
   errorHandler: CollaborationServerErrorHandler
 
 }
@@ -25,7 +25,7 @@ interface CacheExtensionConfiguration {
  * IMPORTANT: For the cache to work it must be loaded before the repository extension.
  */
 export class CacheExtension implements Extension {
-  readonly #redis: RedisCache
+  readonly #redis: Redis
   readonly #errorHandler: CollaborationServerErrorHandler
 
   constructor(configuration: CacheExtensionConfiguration) {

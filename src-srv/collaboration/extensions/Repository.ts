@@ -18,13 +18,13 @@ import { fromYjsNewsDoc, toYjsNewsDoc } from '@/shared/transformations/yjsNewsDo
 import { fromGroupedNewsDoc, toGroupedNewsDoc } from '@/shared/transformations/groupedNewsDoc.js'
 import type { EleDocumentResponse } from '@/shared/types/index.js'
 import { createDebounceMap } from '@/shared/leadingDebounce.js'
-import type { RedisCache } from '../../utils/RedisCache.js'
+import type { Redis } from '../../utils/Redis.js'
 import logger from '../../lib/logger.js'
 
 interface RepositoryExtensionConfiguration {
   repository: RepositoryWrapper
   errorHandler: CollaborationServerErrorHandler
-  redis: RedisCache
+  redis: Redis
   debounceInterval?: number
   maxDebounceTime?: number
 }
@@ -35,7 +35,7 @@ export class RepositoryExtension implements Extension {
   readonly #storeDebouncer: ReturnType<typeof createDebounceMap<onStoreDocumentPayload>>
 
   #hp?: Hocuspocus
-  #redis: RedisCache
+  #redis: Redis
 
   constructor(configuration: RepositoryExtensionConfiguration) {
     this.#repository = configuration.repository

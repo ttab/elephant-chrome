@@ -1,7 +1,7 @@
 import { createClient } from 'redis'
 import type { RedisClientType } from 'redis'
 
-export class RedisCache {
+export class Redis {
   readonly #url: string
   #redisClient?: RedisClientType
 
