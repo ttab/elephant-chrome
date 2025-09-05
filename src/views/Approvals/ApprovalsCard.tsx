@@ -18,8 +18,6 @@ import { AvatarGroup } from '@/components/AvatarGroup'
 import { Tooltip } from '@ttab/elephant-ui'
 import { timesSlots } from '@/defaults/assignmentTimeslots'
 import { useMemo } from 'react'
-import { useWorkflowStatus } from '@/hooks/useWorkflowStatus'
-import { CAUSE_KEYS } from '@/defaults/causekeys'
 import { AuthorNames } from './AuthorNames'
 
 export const ApprovalsCard = ({ assignment, isSelected, isFocused, status, authors }: {
@@ -35,7 +33,6 @@ export const ApprovalsCard = ({ assignment, isSelected, isFocused, status, autho
   const openArticle = useLink('Editor')
   const openFlash = useLink('Flash')
   const [users] = useYValue<Record<string, { id: string, name: string, username: string }>>(`${assignment._deliverableId}.users`, false, undefined, 'open-documents')
-  const [documentStatus] = useWorkflowStatus(assignment._deliverableId)
 
   const openType = (assignmentType: string) => assignmentType === 'core/flash' ? openFlash : openArticle
   const time = useMemo(() =>
@@ -121,7 +118,6 @@ export const ApprovalsCard = ({ assignment, isSelected, isFocused, status, autho
   const title = assignment._deliverableDocument?.title
 
   const slugline = assignment.meta.find((m) => m.type === 'tt/slugline')?.value
-  const longCause = documentStatus?.cause ? CAUSE_KEYS[documentStatus.cause as keyof typeof CAUSE_KEYS].long : ''
   // heads.usable.id is a bigint counter that represents the version number
   // of the current 'usable' status. Each time a version is tagged as usable,
   // this id is incremented by 1
@@ -186,7 +182,6 @@ export const ApprovalsCard = ({ assignment, isSelected, isFocused, status, autho
           <div className='text-xs font-normal opacity-60 flex gap-1'>
             {slugline && <div>{slugline}</div>}
             {slugline && lastUsableOrder && <div>{`- v${lastUsableOrder}`}</div>}
-            {longCause && <div>{`- ${longCause}`}</div>}
           </div>
         </Card.Title>
       </Card.Content>
