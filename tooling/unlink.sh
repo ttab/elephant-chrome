@@ -5,21 +5,27 @@
 set -e
 
 LIB_PATH="$1"
-APP_PATH="$(pwd)"
-
 if [ -z "$LIB_PATH" ]; then
   echo "Usage: $0 <relative/path/to/library>"
   exit 1
 fi
 
-# Resolve absolute path
 LIB_PATH="$(cd "$LIB_PATH" && pwd)"
-PKG_NAME=$(node -p "require('$LIB_PATH/package.json').name")
+APP_PATH="$(pwd)"
+LIB_NAME=$(node -p "require('$LIB_PATH/package.json').name")
 
-echo "🔗 Unlinking $PKG_NAME from the app..."
-(cd "$APP_PATH" && npm unlink "$PKG_NAME")
+# Using npm install of npm unlink, this will restore to package.json version of previously linked
+# package. npm unlink will _remove_ the previously linked package.
+echo "📦 Reinstalling $LIB_NAME from registry in $APP_PATH..."
+(cd "$APP_PATH" && npm install)
 
-echo "📦 Unlinking the library globally..."
-(cd "$LIB_PATH" && npm unlink)
+echo "📦 Reinstalling dependencies in $LIB_PATH..."
+(cd "$LIB_PATH" && npm install)
 
-echo "🧹 Unlink complete for $PKG_NAME."
+echo "📦 Reinstalling dependencies in $APP_PATH..."
+if ! (cd "$APP_PATH" && npm install &>/dev/null); then
+  echo "npm install failed in $APP_PATH" >&2
+  (cd "$APP_PATH" && npm ci)
+fi
+
+echo "👍 Unlink complete. $LIB_NAME and $APP_PATH restored."
