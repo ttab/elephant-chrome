@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react'
 import { toast } from 'sonner'
 import type { HocuspocusProvider } from '@hocuspocus/provider'
 import type { Session } from 'next-auth'
-import { CopyPlus } from '@ttab/elephant-ui/icons'
+import { CopyPlusIcon } from '@ttab/elephant-ui/icons'
 import { ToastAction } from '@/views/Flash/ToastAction'
 import type { EventData } from '@/views/Event/components/EventTime'
 import type { PlanningData } from '@/types/index'
@@ -140,7 +140,7 @@ export const Duplicate = ({ provider, title, session, status, type, dataInfo }: 
           <div
             className='flex items-center justify-center w-9 h-9 px-0 hover:bg-gray-200 dark:hover:bg-gray-700'
           >
-            <CopyPlus size={20} strokeWidth={1.75} />
+            <CopyPlusIcon size={20} strokeWidth={1.75} />
           </div>
         </PopoverTrigger>
         <PopoverContent onEscapeKeyDown={(event) => event?.stopPropagation()}>

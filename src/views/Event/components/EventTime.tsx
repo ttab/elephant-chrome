@@ -10,7 +10,7 @@ import { useYValue } from '@/hooks/useYValue'
 import { useRegistry } from '@/hooks'
 import { dateToReadableDateTime, dateToReadableTime, dateToReadableDay, createDateWithTime } from '@/shared/datetime'
 import { TimeInput } from '@/components/TimeInput'
-import { TriangleAlert } from '@ttab/elephant-ui/icons'
+import { TriangleAlertIcon } from '@ttab/elephant-ui/icons'
 import type { FormProps } from '@/components/Form/Root'
 
 export interface EventData {
@@ -268,7 +268,7 @@ export const EventTimeMenu = ({ onChange }: FormProps): JSX.Element => {
         <div className={`${!fullDay && startDateValue && endDateValue && startDateValue > endDateValue ? 'border-2 rounded-md border-red-400 relative' : ''}`}>
           {!fullDay && startDateValue && endDateValue && startDateValue > endDateValue && (
             <div className='absolute -top-1 right-0 h-2 w-2 z-10'>
-              <TriangleAlert color='red' fill='#ffffff' size={15} strokeWidth={1.75} />
+              <TriangleAlertIcon color='red' fill='#ffffff' size={15} strokeWidth={1.75} />
             </div>
           )}
 

@@ -2,7 +2,13 @@ import { useRegistry } from '@/hooks/useRegistry'
 import { fetch } from '@/lib/index/fetch-plannings-twirp'
 import type { DefaultValueOption } from '@ttab/elephant-ui'
 import { Button, Checkbox, ComboBox, Input, Label } from '@ttab/elephant-ui'
-import { ArrowRightLeft, BriefcaseBusiness, Calendar, CircleXIcon, GanttChartSquare } from '@ttab/elephant-ui/icons'
+import {
+  ArrowRightLeftIcon,
+  BriefcaseBusinessIcon,
+  CalendarIcon,
+  CircleXIcon,
+  GanttChartSquareIcon
+} from '@ttab/elephant-ui/icons'
 import { useSession } from 'next-auth/react'
 import { useMemo, useState } from 'react'
 import type { Doc } from 'yjs'
@@ -142,7 +148,7 @@ export const Move = (props: ViewProps & {
         <ViewHeader.Content>
           {props.asDialog && (
             <div className='flex w-full h-full items-center space-x-2 font-bold'>
-              <ViewHeader.Title name='Assignment' title='Flytta uppdrag' icon={ArrowRightLeft} iconColor='#006bb3' />
+              <ViewHeader.Title name='Assignment' title='Flytta uppdrag' icon={ArrowRightLeftIcon} iconColor='#006bb3' />
             </div>
           )}
         </ViewHeader.Content>
@@ -156,7 +162,7 @@ export const Move = (props: ViewProps & {
       <View.Content>
         <Form.Root asDialog={props.asDialog}>
           <Form.Content>
-            <Form.Group icon={BriefcaseBusiness}>
+            <Form.Group icon={BriefcaseBusinessIcon}>
               <>
                 <Input
                   className='pl-0 pt-2 h-8 text-medium border-0 truncate'
@@ -165,7 +171,7 @@ export const Move = (props: ViewProps & {
                 />
               </>
             </Form.Group>
-            <Form.Group icon={GanttChartSquare}>
+            <Form.Group icon={GanttChartSquareIcon}>
               <ComboBox
                 max={1}
                 size='xs'
@@ -211,7 +217,7 @@ export const Move = (props: ViewProps & {
                 ? (
                     <div className='flex flex-col gap-4'>
                       Väljer du ingen planering kommer en ny planering med detta uppdrag att skapas åt dig på valt datum.
-                      <Form.Group icon={Calendar}>
+                      <Form.Group icon={CalendarIcon}>
                         <DatePicker date={date} setDate={(value) => setPlanningDateString(value)} />
                       </Form.Group>
                     </div>

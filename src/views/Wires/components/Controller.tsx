@@ -2,7 +2,7 @@ import { useHistory, useLink } from '@/hooks/index'
 import { useUserTracker } from '@/hooks/useUserTracker'
 import type { HistoryState } from '@/navigation/hooks/useHistory'
 import { Button } from '@ttab/elephant-ui'
-import { Cable, Plus } from '@ttab/elephant-ui/icons'
+import { CableIcon, PlusIcon } from '@ttab/elephant-ui/icons'
 import { useEffect } from 'react'
 import { toast } from 'sonner'
 
@@ -23,7 +23,7 @@ export const Controller = (): JSX.Element => {
         id: 'unsaved-changes',
         position: 'bottom-center',
         duration: Infinity,
-        icon: <Cable className='pr-1' />,
+        icon: <CableIcon className='pr-1' />,
         action: {
           label: 'Spara',
           onClick: () => {
@@ -61,7 +61,7 @@ export const Controller = (): JSX.Element => {
           }
         }}
       >
-        <Plus strokeWidth={1.75} size={18} />
+        <PlusIcon strokeWidth={1.75} size={18} />
       </Button>
     </div>
   )

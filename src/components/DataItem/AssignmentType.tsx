@@ -3,7 +3,7 @@ import { Button, Select, SelectContent, SelectItem, SelectTrigger } from '@ttab/
 import { cn } from '@ttab/elephant-ui/utils'
 import { Block } from '@ttab/elephant-api/newsdoc'
 import { useYValue } from '@/hooks/useYValue'
-import { FilePen, FilePlus2 } from '@ttab/elephant-ui/icons'
+import { FilePenIcon, FilePlus2Icon } from '@ttab/elephant-ui/icons'
 import type { DefaultValueOption } from '@/types/index'
 import type { FormProps } from '../Form/Root'
 
@@ -109,7 +109,7 @@ function getIcon(selectedOptions: DefaultValueOption[], editable: boolean, readO
   }
 
   if (readOnly) {
-    return editable ? FilePlus2 : FilePen
+    return editable ? FilePlus2Icon : FilePenIcon
   }
 
   return selectedOptions[0]?.icon

@@ -1,7 +1,7 @@
 import type { StatusSpecification, WorkflowSpecification } from '@/defaults/workflowSpecification'
 import type { Status } from '@/shared/Repository'
 import { Button } from '@ttab/elephant-ui'
-import { ChevronDown } from '@ttab/elephant-ui/icons'
+import { ChevronDownIcon } from '@ttab/elephant-ui/icons'
 import { forwardRef } from 'react'
 
 export const StatusButton = forwardRef<HTMLButtonElement, {
@@ -41,7 +41,7 @@ export const StatusButton = forwardRef<HTMLButtonElement, {
         {asSave ? 'Opublicerade ändringar' : workflow[currentStatusName]?.title}
       </div>
       <div className='ps-1'>
-        <ChevronDown size={16} />
+        <ChevronDownIcon size={16} />
       </div>
 
     </Button>

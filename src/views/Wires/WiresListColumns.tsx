@@ -6,7 +6,7 @@ import { Title } from '@/components/Table/Items/Title'
 import { NewsvalueMap } from '@/defaults/newsvalueMap'
 import { Newsvalues } from '@/defaults/newsvalues'
 import { type ColumnDef } from '@tanstack/react-table'
-import { Pen, Shapes, SignalHigh } from '@ttab/elephant-ui/icons'
+import { PenIcon, ShapesIcon, SignalHighIcon } from '@ttab/elephant-ui/icons'
 import { type IDBSection } from 'src/datastore/types'
 import type { Wire } from '@/shared/schemas/wire'
 
@@ -20,7 +20,7 @@ export function wiresListColumns({ sections = [], locale = 'sv-SE' }: {
       enableGrouping: true,
       meta: {
         name: 'Tid',
-        columnIcon: SignalHigh,
+        columnIcon: SignalHighIcon,
         display: (value: string) => {
           const [hour, day] = value.split(' ')
           return (
@@ -50,7 +50,7 @@ export function wiresListColumns({ sections = [], locale = 'sv-SE' }: {
       id: 'modifiedMinutes',
       meta: {
         name: 'Utgiven',
-        columnIcon: SignalHigh,
+        columnIcon: SignalHighIcon,
         className: 'flex-px-3'
       },
       accessorFn: (data) => {
@@ -77,7 +77,7 @@ export function wiresListColumns({ sections = [], locale = 'sv-SE' }: {
         ),
         options: Newsvalues,
         name: 'Nyhetsvärde',
-        columnIcon: SignalHigh,
+        columnIcon: SignalHighIcon,
         className: 'flex-none hidden @3xl/view:[display:revert] px-3'
       },
       accessorFn: (data) => data.fields['document.meta.core_newsvalue.value']?.values[0],
@@ -98,7 +98,7 @@ export function wiresListColumns({ sections = [], locale = 'sv-SE' }: {
       id: 'title',
       meta: {
         name: 'Slugg',
-        columnIcon: Pen,
+        columnIcon: PenIcon,
         className: 'flex-1 w-[200px]'
       },
       accessorFn: (data) => (data.fields['document.title'].values[0]),
@@ -132,7 +132,7 @@ export function wiresListColumns({ sections = [], locale = 'sv-SE' }: {
           <FacetedFilter column={column} setSearch={setSearch} />
         ),
         name: 'Sektion',
-        columnIcon: Shapes,
+        columnIcon: ShapesIcon,
         className: 'flex-none w-[115px] hidden @4xl/view:[display:revert]'
       },
       accessorFn: (data) => {

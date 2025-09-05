@@ -1,7 +1,7 @@
 import React, { type Dispatch, type SetStateAction, useState } from 'react'
 import { View, ViewHeader } from '@/components'
 import { type ViewMetadata } from '@/types'
-import { Loader, ListEnd, Image } from '@ttab/elephant-ui/icons'
+import { LoaderIcon, ListEndIcon, ImageIcon } from '@ttab/elephant-ui/icons'
 import useSWRInfinite from 'swr/infinite'
 import InfiniteScroll from './InfiniteScroll'
 import { Thumbnail } from './Thumbnail'
@@ -80,7 +80,7 @@ const ImageSearchContent = ({
         <ViewHeader.Title
           name='ImageSearch'
           title='Bilder'
-          icon={Image}
+          icon={ImageIcon}
         />
         <ViewHeader.Content>
           <ImageSearchInput setQueryString={setQueryString} setMediaType={setMediaType} />
@@ -92,8 +92,8 @@ const ImageSearchContent = ({
         <ImageSearchResult total={0}>
           <InfiniteScroll
             swr={swr}
-            loadingIndicator={<Loader size='32' color='#9ca3af' strokeWidth='2' />}
-            endingIndicator={<ListEnd size='32' color='#9ca3af' strokeWidth='2' />}
+            loadingIndicator={<LoaderIcon size='32' color='#9ca3af' strokeWidth='2' />}
+            endingIndicator={<ListEndIcon size='32' color='#9ca3af' strokeWidth='2' />}
             isReachingEnd={(swr) =>
               swr.data?.[0].hits.length === 0 || (swr.data?.[swr.data?.length - 1]?.hits.length ?? 0) < SIZE}
           >

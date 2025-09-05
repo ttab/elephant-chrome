@@ -1,6 +1,6 @@
 import { CommandItem } from '@ttab/elephant-ui'
 import { type ReactNode } from 'react'
-import { FileQuestion } from '@ttab/elephant-ui/icons'
+import { FileQuestionIcon } from '@ttab/elephant-ui/icons'
 import { useTable } from '@/hooks'
 
 export const ColumnFilter = (): ReactNode => {
@@ -24,7 +24,7 @@ export const ColumnFilter = (): ReactNode => {
             >
               {column.columnDef.meta?.columnIcon
                 ? <column.columnDef.meta.columnIcon size={18} strokeWidth={1.75} className='mr-2' />
-                : <FileQuestion size={18} strokeWidth={1.75} className='mr-2' />}
+                : <FileQuestionIcon size={18} strokeWidth={1.75} className='mr-2' />}
               {column.columnDef.meta?.name || 'unknown'}
             </CommandItem>
           )

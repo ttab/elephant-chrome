@@ -1,18 +1,18 @@
 import { type ReactNode } from 'react'
 import { Badge, Button } from '@ttab/elephant-ui'
 import {
-  Binoculars,
-  Calendar,
-  CircleCheck,
-  CircleHelp,
-  Contact,
-  Crosshair,
-  Shapes,
-  SignalHigh,
-  SquareCode,
-  Tag,
-  Users,
-  X
+  BinocularsIcon,
+  CalendarIcon,
+  CircleCheckIcon,
+  CircleHelpIcon,
+  ContactIcon,
+  CrosshairIcon,
+  ShapesIcon,
+  SignalHighIcon,
+  SquareCodeIcon,
+  TagIcon,
+  UsersIcon,
+  XIcon
 } from '@ttab/elephant-ui/icons'
 import { type DefaultValueOption } from '@/types/index'
 import { useSections } from '@/hooks/useSections'
@@ -99,67 +99,67 @@ const SelectedButton = ({ type, value }: { value: string | string[] | undefined,
       case 'section': {
         return {
           options: sections as DefaultValueOption[],
-          Icon: Shapes
+          Icon: ShapesIcon
         }
       }
       case 'source': {
         return {
           options: sources as DefaultValueOption[],
-          Icon: SquareCode
+          Icon: SquareCodeIcon
         }
       }
       case 'newsvalue': {
         return {
           options: Newsvalues,
-          Icon: SignalHigh
+          Icon: SignalHighIcon
         }
       }
       case 'query': {
         return {
-          Icon: Binoculars
+          Icon: BinocularsIcon
         }
       }
       case 'status': {
         return {
-          Icon: CircleCheck,
+          Icon: CircleCheckIcon,
           options: DocumentStatuses
         }
       }
       case 'organiser': {
         return {
-          Icon: Contact,
+          Icon: ContactIcon,
           options: organisers
         }
       }
       case 'category': {
         return {
-          Icon: Tag,
+          Icon: TagIcon,
           options: categories
         }
       }
       case 'from': {
         return {
-          Icon: Calendar,
+          Icon: CalendarIcon,
           options: []
         }
       }
       case 'author': {
         return {
-          Icon: Users,
+          Icon: UsersIcon,
           options: authors
         }
       }
 
       case 'aType': {
         return {
-          Icon: Crosshair,
+          Icon: CrosshairIcon,
           options: AssignmentTypes
         }
       }
       default: {
         return {
           options: [],
-          Icon: CircleHelp
+          Icon: CircleHelpIcon
 
         }
       }
@@ -180,7 +180,7 @@ const SelectedButton = ({ type, value }: { value: string | string[] | undefined,
       <Icon size={18} strokeWidth={1.75} className='mr-2' />
       {type === 'from' && <span className='text-xs'>sedan</span>}
       <SelectedBadge value={value} options={options} />
-      <X size={18} strokeWidth={1.75} className='ml-2' />
+      <XIcon size={18} strokeWidth={1.75} className='ml-2' />
     </Button>
   )
 }

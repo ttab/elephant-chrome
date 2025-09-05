@@ -2,7 +2,7 @@ import { Awareness } from '@/components'
 import { ComboBox } from '@ttab/elephant-ui'
 import { useAuthors } from '@/hooks/useAuthors'
 import { useYValue } from '@/hooks/useYValue'
-import { UserPlus } from '@ttab/elephant-ui/icons'
+import { UserPlusIcon } from '@ttab/elephant-ui/icons'
 import { useRef } from 'react'
 
 import { AssigneeAvatars } from '@/components/DataItem/AssigneeAvatars'
@@ -62,7 +62,7 @@ export const Assignees = ({ path, placeholder, asDialog, onChange }: {
             }
           }}
         >
-          <UserPlus size={20} strokeWidth={1.75} />
+          <UserPlusIcon size={20} strokeWidth={1.75} />
         </ComboBox>
       </Awareness>
 

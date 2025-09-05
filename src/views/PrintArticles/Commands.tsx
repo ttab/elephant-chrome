@@ -4,7 +4,7 @@ import { useQuery } from '@/hooks/useQuery'
 import { useDocuments } from '@/hooks/index/useDocuments'
 import type { FilterProps } from '@/components/Filter'
 import { OptionsFilter } from '@/components/Filter/common/OptionsFilter'
-import { CircleCheck, Tag } from '@ttab/elephant-ui/icons'
+import { CircleCheckIcon, TagIcon } from '@ttab/elephant-ui/icons'
 import type { PrintFlow, PrintFlowFields } from '@/shared/schemas/printFlow'
 import { fields } from '@/shared/schemas/printFlow'
 import { toast } from 'sonner'
@@ -69,14 +69,14 @@ export const Commands = (props: FilterProps): JSX.Element => {
         options={optionsPrintFlows}
         label='Flöde'
         filterPage='printFlow'
-        Icon={Tag}
+        Icon={TagIcon}
       />
       <OptionsFilter
         {...props}
         options={optionsStatuses}
         label='Status'
         filterPage='workflowState'
-        Icon={CircleCheck}
+        Icon={CircleCheckIcon}
       />
       <ClearFilter
         hasFilter={hasFilter}

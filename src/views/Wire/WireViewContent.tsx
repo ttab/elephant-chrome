@@ -9,7 +9,14 @@ import {
 import type { ViewProps } from '@/types'
 import type { DefaultValueOption } from '@ttab/elephant-ui'
 import { Button, Checkbox, ComboBox, Input, Label } from '@ttab/elephant-ui'
-import { CircleXIcon, Tags, GanttChartSquare, Cable, BriefcaseBusiness, Tag } from '@ttab/elephant-ui/icons'
+import {
+  CircleXIcon,
+  TagsIcon,
+  GanttChartSquareIcon,
+  CableIcon,
+  BriefcaseBusinessIcon,
+  TagIcon
+} from '@ttab/elephant-ui/icons'
 import { useCollaboration, useRegistry, useYValue } from '@/hooks'
 import { useSession } from 'next-auth/react'
 import type { PropsWithChildren } from 'react'
@@ -54,7 +61,7 @@ export const WireViewContent = (props: ViewProps & {
         <ViewHeader.Content>
           {props.asDialog && (
             <div className='flex w-full h-full items-center space-x-2 font-bold'>
-              <ViewHeader.Title name='Wires' title='Skapa artikel' icon={Cable} iconColor='#FF6347' />
+              <ViewHeader.Title name='Wires' title='Skapa artikel' icon={CableIcon} iconColor='#FF6347' />
             </div>
           )}
         </ViewHeader.Content>
@@ -68,7 +75,7 @@ export const WireViewContent = (props: ViewProps & {
         <Form.Root asDialog={props.asDialog}>
           {!!selectedPlanning && <ValidateNow />}
           <Form.Content>
-            <Form.Group icon={Cable}>
+            <Form.Group icon={CableIcon}>
               <>
                 <Input
                   className='pl-0 pt-2 h-8 text-medium border-0 truncate'
@@ -78,7 +85,7 @@ export const WireViewContent = (props: ViewProps & {
               </>
             </Form.Group>
 
-            <Form.Group icon={GanttChartSquare}>
+            <Form.Group icon={GanttChartSquareIcon}>
               <Awareness path='wirePlanningItem' ref={documentAwareness}>
                 <ComboBox
                   max={1}
@@ -151,7 +158,7 @@ export const WireViewContent = (props: ViewProps & {
 
 
             {!selectedPlanning && (
-              <Form.Group icon={Tags}>
+              <Form.Group icon={TagsIcon}>
                 <Section onSelect={setSection} />
                 <SluglineEditable
                   path='meta.tt/slugline[0].value'
@@ -162,7 +169,7 @@ export const WireViewContent = (props: ViewProps & {
 
             )}
             {!selectedPlanning && (
-              <Form.Group icon={GanttChartSquare}>
+              <Form.Group icon={GanttChartSquareIcon}>
                 <>
                   <Input
                     className='pt-2 h-7 text-medium placeholder:text-[#5D709F] placeholder-shown:border-[#5D709F]'
@@ -173,13 +180,13 @@ export const WireViewContent = (props: ViewProps & {
               </Form.Group>
             )}
 
-            <Form.Group icon={BriefcaseBusiness}>
+            <Form.Group icon={BriefcaseBusinessIcon}>
               <Title
                 placeholder='Uppdragstitel'
               />
             </Form.Group>
 
-            <Form.Group icon={Tag}>
+            <Form.Group icon={TagIcon}>
               {selectedPlanning && (
                 <SluglineEditable
                   key={selectedPlanning?.value}

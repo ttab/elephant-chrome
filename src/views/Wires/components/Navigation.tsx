@@ -2,7 +2,7 @@ import { useHistory } from '@/hooks/index'
 import type { HistoryState } from '@/navigation/hooks/useHistory'
 import type { ContentState } from '@/types/index'
 import { Button } from '@ttab/elephant-ui'
-import { ChevronLeft, ChevronRight } from '@ttab/elephant-ui/icons'
+import { ChevronLeftIcon, ChevronRightIcon } from '@ttab/elephant-ui/icons'
 
 type Direction = 'left' | 'right'
 
@@ -61,7 +61,7 @@ export const Navigation = ({ visibleContent }: {
             state.viewId,
             -1)}
         >
-          <ChevronLeft strokeWidth={1.75} size={18} className='text-muted-foreground' />
+          <ChevronLeftIcon strokeWidth={1.75} size={18} className='text-muted-foreground' />
         </Button>
       )}
       {canNavigate(visibleContent, state?.contentState, 'right') && (
@@ -74,7 +74,7 @@ export const Navigation = ({ visibleContent }: {
             state.viewId,
             1)}
         >
-          <ChevronRight strokeWidth={1.75} size={18} className='text-muted-foreground' />
+          <ChevronRightIcon strokeWidth={1.75} size={18} className='text-muted-foreground' />
         </Button>
       )}
     </>

@@ -7,7 +7,7 @@ import React, {
   type SetStateAction
 } from 'react'
 import {
-  GanttChart
+  GanttChartIcon
 } from '@ttab/elephant-ui/icons'
 
 import {
@@ -89,7 +89,7 @@ export const CommandMenu = ({ children, onKeyDown, onChange }: CommandMenuProps)
                   target: 'self'
                 }))}
               >
-                <GanttChart size={18} strokeWidth={1.75} className='mr-2' />
+                <GanttChartIcon size={18} strokeWidth={1.75} className='mr-2' />
                 <span>Planning overview</span>
               </CommandItem>
             </CommandGroup>

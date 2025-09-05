@@ -8,7 +8,7 @@ import {
   View
 } from '@/components'
 import { type ViewMetadata, type ViewProps } from '@/types'
-import { Tags, Calendar } from '@ttab/elephant-ui/icons'
+import { TagsIcon, CalendarIcon } from '@ttab/elephant-ui/icons'
 import {
   useQuery,
   useWorkflowStatus,
@@ -157,7 +157,7 @@ const PlanningViewContent = (props: ViewProps & { documentId: string, setNewItem
             <Description role='public' />
             <Description role='internal' />
 
-            <Form.Group icon={Calendar}>
+            <Form.Group icon={CalendarIcon}>
               {props.asDialog !== true
                 ? <PlanDate onValueChange={setNewDate} />
                 : <PlanDate />}
@@ -173,7 +173,7 @@ const PlanningViewContent = (props: ViewProps & { documentId: string, setNewItem
               )}
             </Form.Group>
 
-            <Form.Group icon={Tags}>
+            <Form.Group icon={TagsIcon}>
               <SluglineEditable
                 path='meta.tt/slugline[0].value'
                 documentStatus={documentStatus?.name}
@@ -181,7 +181,7 @@ const PlanningViewContent = (props: ViewProps & { documentId: string, setNewItem
               <Newsvalue />
             </Form.Group>
 
-            <Form.Group icon={Tags}>
+            <Form.Group icon={TagsIcon}>
               <Section />
               <Story />
             </Form.Group>

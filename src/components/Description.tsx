@@ -1,5 +1,5 @@
 import React from 'react'
-import { MessageCircleMore, Text } from '@ttab/elephant-ui/icons'
+import { MessageCircleMoreIcon, TextIcon } from '@ttab/elephant-ui/icons'
 import { TextBox } from '@/components/ui'
 import { type Block } from '@ttab/elephant-api/newsdoc'
 import { useYValue } from '@/hooks/useYValue'
@@ -20,8 +20,8 @@ export const Description = React.memo(function Description({ role, onChange }: {
         path={path}
         onChange={onChange}
         icon={role === 'internal'
-          ? <MessageCircleMore size={18} strokeWidth={1.75} className='text-muted-foreground mr-4' />
-          : <Text size={18} strokeWidth={1.75} className='text-muted-foreground mr-4' />}
+          ? <MessageCircleMoreIcon size={18} strokeWidth={1.75} className='text-muted-foreground mr-4' />
+          : <TextIcon size={18} strokeWidth={1.75} className='text-muted-foreground mr-4' />}
         placeholder={role === 'public' ? 'Publik beskrivning' : 'Internt meddelande'}
         className='text-sm'
       />

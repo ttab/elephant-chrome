@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 import { Button } from '@ttab/elephant-ui'
-import { Maximize2, Minimize2 } from '@ttab/elephant-ui/icons'
+import { Maximize2Icon, Minimize2Icon } from '@ttab/elephant-ui/icons'
 
 import { useNavigation } from '@/hooks'
 import { NavigationActionType } from '@/types'
@@ -35,8 +35,8 @@ export const ViewFocus = ({ viewId }: { viewId: string }): JSX.Element => {
       }}
     >
       {state.focus === viewId
-        ? <Minimize2 size={18} strokeWidth={1.75} />
-        : <Maximize2 size={18} strokeWidth={1.75} />}
+        ? <Minimize2Icon size={18} strokeWidth={1.75} />
+        : <Maximize2Icon size={18} strokeWidth={1.75} />}
     </Button>
   )
 }

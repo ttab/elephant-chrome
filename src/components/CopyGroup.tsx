@@ -2,7 +2,7 @@ import { Link } from '@/components/index'
 import { useDocuments } from '@/hooks/index/useDocuments'
 import { type CopyGroupFields, copyGroupFields } from '@/lib/getSharedFields'
 import { TermsQueryV1, BoolQueryV1, type HitV1, QueryV1 } from '@ttab/elephant-api/index'
-import { CalendarPlus2 } from '@ttab/elephant-ui/icons'
+import { CalendarPlus2Icon } from '@ttab/elephant-ui/icons'
 import { format } from 'date-fns'
 
 export const CopyGroup = ({ copyGroupId, type }: { copyGroupId: string, type: 'core/event' | 'core/planning-item' }) => {
@@ -56,7 +56,7 @@ export const CopyGroup = ({ copyGroupId, type }: { copyGroupId: string, type: 'c
             <div key={original.id} className='py-1 hover:bg-gray-100 dark:hover:bg-gray-700'>
               <Link to={type === 'core/event' ? 'Event' : 'Planning'} props={{ id: original.id }} target='last'>
                 <div className='flex items-center gap-2 text-sm'>
-                  <CalendarPlus2 strokeWidth={1.75} size={18} className='text-muted-foreground' />
+                  <CalendarPlus2Icon strokeWidth={1.75} size={18} className='text-muted-foreground' />
                   <div>{title}</div>
                   {start && <div>{`(${start})`}</div>}
                 </div>

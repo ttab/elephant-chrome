@@ -1,18 +1,17 @@
 import { type DefaultValueOption } from '@/types'
 import {
-  CircleCheck,
-  CircleDot,
-  CircleX,
-  BadgeCheck,
-  CircleArrowLeft
+  CircleCheckIcon,
+  CircleDotIcon,
+  CircleXIcon,
+  BadgeCheckIcon,
+  CircleArrowLeftIcon
 } from '@ttab/elephant-ui/icons'
-
 
 export const DocumentStatuses: DefaultValueOption[] = [
   {
     label: 'Publicerad',
     value: 'usable',
-    icon: CircleCheck,
+    icon: CircleCheckIcon,
     iconProps: {
       color: '#ffffff',
       className: 'bg-usable fill-usable rounded-full',
@@ -23,7 +22,7 @@ export const DocumentStatuses: DefaultValueOption[] = [
   {
     label: 'Tidsplanerad',
     value: 'withheld',
-    icon: CircleCheck,
+    icon: CircleCheckIcon,
     iconProps: {
       color: '#ffffff',
       className: 'bg-withheld fill-withheld rounded-full',
@@ -34,7 +33,7 @@ export const DocumentStatuses: DefaultValueOption[] = [
   {
     label: 'Klar',
     value: 'done',
-    icon: CircleCheck,
+    icon: CircleCheckIcon,
     iconProps: {
       color: '#ffffff',
       className: 'bg-done fill-done rounded-full',
@@ -45,7 +44,7 @@ export const DocumentStatuses: DefaultValueOption[] = [
   {
     label: 'Godkänd',
     value: 'approved',
-    icon: BadgeCheck,
+    icon: BadgeCheckIcon,
     iconProps: {
       color: '#ffffff',
       className: 'bg-approved fill-approved rounded-full',
@@ -56,7 +55,7 @@ export const DocumentStatuses: DefaultValueOption[] = [
   {
     label: 'Utkast',
     value: 'draft',
-    icon: CircleDot,
+    icon: CircleDotIcon,
     iconProps: {
       className: 'text-muted-foreground',
       size: 18,
@@ -69,7 +68,7 @@ export const PlanningEventStatuses: DefaultValueOption[] = [
   {
     label: 'Publicerad',
     value: 'usable',
-    icon: CircleCheck,
+    icon: CircleCheckIcon,
     iconProps: {
       color: '#ffffff',
       className: 'bg-usable fill-usable rounded-full',
@@ -80,7 +79,7 @@ export const PlanningEventStatuses: DefaultValueOption[] = [
   {
     label: 'Tidsplanerad',
     value: 'withheld',
-    icon: CircleCheck,
+    icon: CircleCheckIcon,
     iconProps: {
       color: '#ffffff',
       className: 'bg-withheld fill-withheld rounded-full',
@@ -91,7 +90,7 @@ export const PlanningEventStatuses: DefaultValueOption[] = [
   {
     label: 'Intern',
     value: 'done',
-    icon: CircleCheck,
+    icon: CircleCheckIcon,
     iconProps: {
       color: '#ffffff',
       className: 'bg-done fill-done rounded-full',
@@ -102,7 +101,7 @@ export const PlanningEventStatuses: DefaultValueOption[] = [
   {
     label: 'Utkast',
     value: 'draft',
-    icon: CircleDot,
+    icon: CircleDotIcon,
     iconProps: {
       className: 'text-muted-foreground',
       size: 18,
@@ -112,7 +111,7 @@ export const PlanningEventStatuses: DefaultValueOption[] = [
   {
     label: 'Avpublicerad',
     value: 'unpublished',
-    icon: CircleArrowLeft,
+    icon: CircleArrowLeftIcon,
     iconProps: {
       className: 'text-muted-foreground',
       size: 18,
@@ -125,7 +124,7 @@ export const PrintArticleStatuses: DefaultValueOption[] = [
   {
     label: 'Exporterad',
     value: 'usable',
-    icon: CircleCheck,
+    icon: CircleCheckIcon,
     iconProps: {
       color: '#ffffff',
       className: 'bg-usable fill-usable rounded-full',
@@ -136,7 +135,7 @@ export const PrintArticleStatuses: DefaultValueOption[] = [
   {
     label: 'Klar för korr',
     value: 'needs_proofreading',
-    icon: CircleCheck,
+    icon: CircleCheckIcon,
     iconProps: {
       color: '#ffffff',
       className: 'bg-done fill-done rounded-full',
@@ -147,7 +146,7 @@ export const PrintArticleStatuses: DefaultValueOption[] = [
   {
     label: 'Klar',
     value: 'print_done',
-    icon: CircleCheck,
+    icon: CircleCheckIcon,
     iconProps: {
       color: '#ffffff',
       className: 'bg-done fill-done rounded-full',
@@ -158,7 +157,7 @@ export const PrintArticleStatuses: DefaultValueOption[] = [
   {
     label: 'Godkänd',
     value: 'approved',
-    icon: BadgeCheck,
+    icon: BadgeCheckIcon,
     iconProps: {
       color: '#ffffff',
       className: 'bg-approved fill-approved rounded-full',
@@ -169,7 +168,7 @@ export const PrintArticleStatuses: DefaultValueOption[] = [
   {
     label: 'Inställd',
     value: 'unpublished',
-    icon: CircleX,
+    icon: CircleXIcon,
     iconProps: {
       color: '#ffffff',
       className: 'bg-cancelled fill-cancelled rounded-full',
@@ -180,7 +179,7 @@ export const PrintArticleStatuses: DefaultValueOption[] = [
   {
     label: 'Utkast',
     value: 'draft',
-    icon: CircleDot,
+    icon: CircleDotIcon,
     iconProps: {
       className: 'text-muted-foreground',
       size: 18,

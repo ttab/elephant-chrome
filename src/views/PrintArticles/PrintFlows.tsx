@@ -8,7 +8,7 @@ import { toast } from 'sonner'
 import { ViewHeader } from '@/components/View/ViewHeader'
 import { View } from '@/components/View'
 import type { ViewProps } from '@/types/index'
-import { Library, Tag } from '@ttab/elephant-ui/icons'
+import { LibraryIcon, TagIcon } from '@ttab/elephant-ui/icons'
 import { Form } from '@/components/Form'
 import { LoadingText } from '@/components/LoadingText'
 import { parseDate } from '@/shared/datetime'
@@ -132,7 +132,7 @@ export const PrintFlows = ({ asDialog, onDialogClose, className, action }: ViewP
         <ViewHeader.Content>
           {asDialog && (
             <div className='flex w-full h-full items-center space-x-2 font-bold'>
-              <ViewHeader.Title name='printheader' title={action === 'createArticle' ? 'Skapa printartikel' : 'Skapa printflöde'} icon={Library} iconColor='#006bb3' />
+              <ViewHeader.Title name='printheader' title={action === 'createArticle' ? 'Skapa printartikel' : 'Skapa printflöde'} icon={LibraryIcon} iconColor='#006bb3' />
             </div>
           )}
         </ViewHeader.Content>
@@ -144,7 +144,7 @@ export const PrintFlows = ({ asDialog, onDialogClose, className, action }: ViewP
           ? (
               <Form.Root asDialog={asDialog}>
                 <Form.Content>
-                  <Form.Group icon={Tag}>
+                  <Form.Group icon={TagIcon}>
                     <Select
                       value={selectedPrintFlow?.value}
                       onValueChange={(option) => {
@@ -164,7 +164,7 @@ export const PrintFlows = ({ asDialog, onDialogClose, className, action }: ViewP
                     </Select>
                   </Form.Group>
                   {action === 'createArticle' && (
-                    <Form.Group icon={Tag}>
+                    <Form.Group icon={TagIcon}>
                       <Select
                         disabled={!printFlow}
                         value={articleName}

@@ -1,6 +1,6 @@
 import { type ReactNode } from 'react'
 import { Badge, Button } from '@ttab/elephant-ui'
-import { Search, X } from '@ttab/elephant-ui/icons'
+import { SearchIcon, XIcon } from '@ttab/elephant-ui/icons'
 import type { ColumnFiltersState } from '@tanstack/react-table'
 import { type Table } from '@tanstack/react-table'
 import { type DefaultValueOption } from '@/types/index'
@@ -58,7 +58,7 @@ const SelectedButton = <TData, >({ id, value, table }: SelectedBase & {
     >
       {FilterIcon && <FilterIcon size={18} strokeWidth={1.75} className='mr-2' />}
       <SelectedBadge id={id} value={value} options={options} />
-      <X size={18} strokeWidth={1.75} className='ml-2' />
+      <XIcon size={18} strokeWidth={1.75} className='ml-2' />
     </Button>
   )
 }
@@ -80,9 +80,9 @@ export const SelectedFilters = <TData, >({ table }: {
           className='h-8 border-dashed'
           onClick={() => table.resetGlobalFilter()}
         >
-          <Search className='h4 w-4 mr-2' />
+          <SearchIcon className='h4 w-4 mr-2' />
           {`"${globalFilter}"`}
-          <X className='h-4 w-4 ml-2' />
+          <XIcon className='h-4 w-4 ml-2' />
         </Button>
       )
     : null

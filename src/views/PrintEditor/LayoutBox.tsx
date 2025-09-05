@@ -1,7 +1,7 @@
 import { useLink } from '@/hooks/useLink'
 import type { Block } from '@ttab/elephant-api/newsdoc'
 import { Button, Label, Input } from '@ttab/elephant-ui'
-import { X, Eye } from '@ttab/elephant-ui/icons'
+import { XIcon, EyeIcon } from '@ttab/elephant-ui/icons'
 import { toast } from 'sonner'
 import { useRegistry } from '@/hooks/useRegistry'
 import { useSession } from 'next-auth/react'
@@ -187,7 +187,7 @@ export function LayoutBox({
               void handleRenderArticle()
             }}
           >
-            <Eye strokeWidth={1.75} size={16} />
+            <EyeIcon strokeWidth={1.75} size={16} />
             <Label className='cursor-pointer transition-opacity ease-in-out delay-500 opacity-0 group-hover/render:opacity-100'>
               Förhandsgranska
             </Label>
@@ -201,7 +201,7 @@ export function LayoutBox({
               setPromptIsOpen(true)
             }}
           >
-            <X strokeWidth={1.75} size={18} />
+            <XIcon strokeWidth={1.75} size={18} />
           </Button>
         </div>
       </header>

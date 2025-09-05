@@ -1,6 +1,6 @@
 import { ViewHeader } from '@/components/View'
 import { Button, Popover, PopoverContent, PopoverTrigger } from '@ttab/elephant-ui'
-import { BookA, Plus } from '@ttab/elephant-ui/icons'
+import { BookAIcon, PlusIcon } from '@ttab/elephant-ui/icons'
 import { DateChanger } from '@/components/Header/Datechanger'
 import { useModal } from '@/components/Modal/useModal'
 import { PrintFlows } from './PrintFlows'
@@ -29,7 +29,7 @@ export const PrintArticlesHeader = (): JSX.Element => {
         <Popover>
           <PopoverTrigger asChild>
             <Button title='Skapa ny...' size='sm' className='gap-1 px-2 py-0'>
-              <Plus strokeWidth={1.75} size={16} />
+              <PlusIcon strokeWidth={1.75} size={16} />
               Nytt
             </Button>
           </PopoverTrigger>
@@ -69,7 +69,7 @@ export const PrintArticlesHeader = (): JSX.Element => {
             openDictionary(undefined, {})
           }}
         >
-          <BookA strokeWidth={1.75} size={18} />
+          <BookAIcon strokeWidth={1.75} size={18} />
         </Button>
         <ViewHeader.Action>
         </ViewHeader.Action>

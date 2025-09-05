@@ -1,4 +1,4 @@
-import { CalendarPlus2 } from '@ttab/elephant-ui/icons'
+import { CalendarPlus2Icon } from '@ttab/elephant-ui/icons'
 import type { FormProps } from '@/components/Form/Root'
 import { useRepositoryEvents } from '@/hooks/useRepositoryEvents'
 import { useRef } from 'react'
@@ -88,7 +88,7 @@ export const DuplicatesTable = ({ documentId, type }: {
           <div key={duplicate.id} className='py-1 hover:bg-gray-100 dark:hover:bg-gray-700'>
             <Link to={type === 'core/event' ? 'Event' : 'Planning'} props={{ id: duplicate.id }} target='last'>
               <div className='flex items-center gap-2 text-sm'>
-                <CalendarPlus2 strokeWidth={1.75} size={18} className='text-muted-foreground' />
+                <CalendarPlus2Icon strokeWidth={1.75} size={18} className='text-muted-foreground' />
                 <div>{title}</div>
                 <div>{dateFormatted}</div>
               </div>

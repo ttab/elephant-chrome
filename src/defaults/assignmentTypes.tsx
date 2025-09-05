@@ -1,12 +1,12 @@
 import { type DefaultValueOption } from '@/types'
 import {
-  FileText,
-  Image,
-  Camera,
-  Video,
-  Aperture,
+  FileTextIcon,
+  ImageIcon,
+  CameraIcon,
+  VideoIcon,
+  ApertureIcon,
   ZapIcon,
-  FileWarning
+  FileWarningIcon
 } from '@ttab/elephant-ui/icons'
 
 const iconProps = {
@@ -19,7 +19,7 @@ export const AssignmentTypes: DefaultValueOption[] = [
   {
     label: 'Artikel',
     value: 'text',
-    icon: FileText,
+    icon: FileTextIcon,
     iconProps
   },
   {
@@ -31,31 +31,31 @@ export const AssignmentTypes: DefaultValueOption[] = [
   {
     label: 'Till red',
     value: 'editorial-info',
-    icon: FileWarning,
+    icon: FileWarningIcon,
     iconProps
   },
   {
     label: 'Grafik',
     value: 'graphic',
-    icon: Image,
+    icon: ImageIcon,
     iconProps
   },
   {
     label: 'Bild',
     value: 'picture',
-    icon: Camera,
+    icon: CameraIcon,
     iconProps
   },
   {
     label: 'Video',
     value: 'video',
-    icon: Video,
+    icon: VideoIcon,
     iconProps
   },
   {
     label: 'Bild/Video',
     value: 'picture/video',
-    icon: Aperture,
+    icon: ApertureIcon,
     iconProps
   }
 ]

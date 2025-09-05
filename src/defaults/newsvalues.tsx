@@ -1,8 +1,8 @@
 import { type DefaultValueOption } from '@/types'
 import {
-  SignalHigh,
-  SignalMedium,
-  SignalLow
+  SignalHighIcon,
+  SignalMediumIcon,
+  SignalLowIcon
 } from '@ttab/elephant-ui/icons'
 
 const iconProps = {
@@ -13,7 +13,7 @@ export const Newsvalues: DefaultValueOption[] = [
   {
     value: '6',
     label: '6',
-    icon: SignalHigh,
+    icon: SignalHighIcon,
     iconProps: {
       color: '#E12430',
       ...iconProps
@@ -22,7 +22,7 @@ export const Newsvalues: DefaultValueOption[] = [
   {
     value: '5',
     label: '5',
-    icon: SignalHigh,
+    icon: SignalHighIcon,
     iconProps: {
       color: '#FF5050',
       ...iconProps
@@ -31,25 +31,25 @@ export const Newsvalues: DefaultValueOption[] = [
   {
     value: '4',
     label: '4',
-    icon: SignalMedium,
+    icon: SignalMediumIcon,
     iconProps
   },
   {
     value: '3',
     label: '3',
-    icon: SignalMedium,
+    icon: SignalMediumIcon,
     iconProps
   },
   {
     value: '2',
     label: '2',
-    icon: SignalLow,
+    icon: SignalLowIcon,
     iconProps
   },
   {
     value: '1',
     label: '1',
-    icon: SignalLow,
+    icon: SignalLowIcon,
     iconProps
   }
 ]

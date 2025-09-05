@@ -8,7 +8,7 @@ import {
   SheetTrigger
 } from '@ttab/elephant-ui'
 import { Link, Logo } from '@/components'
-import { Menu as MenuIcon, X } from '@ttab/elephant-ui/icons'
+import { MenuIcon, XIcon } from '@ttab/elephant-ui/icons'
 import { ThemeSwitcher } from './ThemeSwitcher'
 import { MenuItem } from './MenuItem'
 import { useSession } from 'next-auth/react'
@@ -46,7 +46,7 @@ export const Menu = (): JSX.Element => {
       <Sheet open={mainOpen} onOpenChange={setMainMenuOpen}>
         <SheetTrigger
           ref={triggerRef}
-          className='rounded-md hover:bg-gray-100 hover:border w-9 h-9 flex items-center justify-center'
+          className='rounded-md hover:bg-table-focused dark:bg-table-focused hover:border w-9 h-9 flex items-center justify-center'
         >
           <MenuIcon strokeWidth={2.25} size={18} />
         </SheetTrigger>
@@ -65,8 +65,8 @@ export const Menu = (): JSX.Element => {
               <SheetDescription className='sr-only' />
 
               <div className='flex flex-row gap-4 justify-between justify-items-center items-center h-14 px-4'>
-                <SheetClose className='rounded-md hover:bg-gray-100 w-9 h-9 flex items-center justify-center'>
-                  <X strokeWidth={2.25} />
+                <SheetClose className='rounded-md hover:bg-table-focused dark:hover:bg-table-focused w-9 h-9 flex items-center justify-center'>
+                  <XIcon strokeWidth={2.25} />
                 </SheetClose>
 
                 <SheetClose asChild>
@@ -89,7 +89,7 @@ export const Menu = (): JSX.Element => {
                           <button
                             key={item.name}
                             onClick={() => handleSubSheetClick(item)}
-                            className='rounded-md hover:bg-gray-100 h-9 px-3 w-full'
+                            className='rounded-md hover:bg-table-focused h-9 px-3 w-full'
                           >
                             <div className='flex items-center gap-3'>
                               <item.icon strokeWidth={2.25} size={18} color={item.color} />

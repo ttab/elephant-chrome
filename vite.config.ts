@@ -1,5 +1,6 @@
 /// <reference types="vitest" />
 import path from 'path'
+import tailwindcss from '@tailwindcss/vite'
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import { viteStaticCopy } from 'vite-plugin-static-copy'
@@ -9,7 +10,6 @@ export default defineConfig(() => {
     port: 5173,
     base: '/elephant',
     plugins: [
-      react(),
       viteStaticCopy({
         targets: [
           {
@@ -17,7 +17,9 @@ export default defineConfig(() => {
             dest: './assets'
           }
         ]
-      })
+      }),
+      react(),
+      tailwindcss()
     ],
     resolve: {
       alias: {

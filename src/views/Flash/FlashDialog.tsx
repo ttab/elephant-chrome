@@ -5,7 +5,7 @@ import {
 } from '@/components'
 import type { DefaultValueOption, ViewProps } from '@/types'
 import { Button, Checkbox, ComboBox, Label } from '@ttab/elephant-ui'
-import { CircleXIcon, Tags, GanttChartSquare } from '@ttab/elephant-ui/icons'
+import { CircleXIcon, TagsIcon, GanttChartSquareIcon } from '@ttab/elephant-ui/icons'
 import { useCollaboration, useYValue, useRegistry, useSections } from '@/hooks'
 import { useSession } from 'next-auth/react'
 import type { Dispatch, SetStateAction } from 'react'
@@ -97,7 +97,7 @@ export const FlashDialog = (props: ViewProps): JSX.Element => {
         <Form.Root asDialog={props.asDialog}>
           <Form.Content>
             {props.asDialog && (
-              <Form.Group icon={GanttChartSquare}>
+              <Form.Group icon={GanttChartSquareIcon}>
                 <Awareness path='FlashPlanningItem' ref={planningAwareness}>
                   <ComboBox
                     max={1}
@@ -170,7 +170,7 @@ export const FlashDialog = (props: ViewProps): JSX.Element => {
 
 
             {!selectedPlanning && props.asDialog && (
-              <Form.Group icon={Tags}>
+              <Form.Group icon={TagsIcon}>
                 <Section onSelect={setSection} />
               </Form.Group>
             )}

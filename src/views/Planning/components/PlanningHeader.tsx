@@ -2,7 +2,7 @@ import { useView, useYValue } from '@/hooks'
 import { useEffect, useRef } from 'react'
 import { StatusMenu } from '@/components/DocumentStatus/StatusMenu'
 import { ViewHeader } from '@/components/View'
-import { GanttChartSquare } from '@ttab/elephant-ui/icons'
+import { GanttChartSquareIcon } from '@ttab/elephant-ui/icons'
 import { MetaSheet } from '@/views/Editor/components/MetaSheet'
 import { Duplicate } from '@/components/Duplicate'
 import type { PlanningData } from '@/types/index'
@@ -33,7 +33,7 @@ export const PlanningHeader = ({ documentId, asDialog, onDialogClose, isChanged,
       <ViewHeader.Title
         name='Plannings'
         title={(!asDialog) ? 'Planering' : 'Skapa ny planering'}
-        icon={GanttChartSquare}
+        icon={GanttChartSquareIcon}
         asDialog={asDialog}
       />
 

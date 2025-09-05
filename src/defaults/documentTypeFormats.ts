@@ -1,9 +1,14 @@
-import { BriefcaseBusiness, CalendarDaysIcon, CalendarPlus2, NewspaperIcon } from '@ttab/elephant-ui/icons'
+import {
+  BriefcaseBusinessIcon,
+  CalendarDaysIcon,
+  CalendarPlus2Icon,
+  NewspaperIcon
+} from '@ttab/elephant-ui/icons'
 import { type LucideIcon } from '@ttab/elephant-ui/icons'
 
 export const documentTypeValueFormat: Record<string, { icon: LucideIcon, label: string, color: string }> = {
   'core/event': {
-    icon: CalendarPlus2,
+    icon: CalendarPlus2Icon,
     label: 'Händelse',
     color: '#5E9F5D'
   },
@@ -13,7 +18,7 @@ export const documentTypeValueFormat: Record<string, { icon: LucideIcon, label: 
     color: '#FF971E'
   },
   'core/assignment': {
-    icon: BriefcaseBusiness,
+    icon: BriefcaseBusinessIcon,
     label: 'Uppdrag',
     color: '#006bb3'
   },

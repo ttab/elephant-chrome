@@ -1,4 +1,4 @@
-import { ScanSearch } from '@ttab/elephant-ui/icons'
+import { ScanSearchIcon } from '@ttab/elephant-ui/icons'
 import { useLink } from '@/hooks'
 import { type Plugin } from '@ttab/textbit'
 
@@ -17,7 +17,7 @@ export const ImageSearchPlugin: Plugin.InitFunction = () => {
       {
         name: 'tt/visual/search',
         title: 'Sök bilder',
-        tool: () => <ScanSearch style={{ width: '1em', height: '1em' }} />,
+        tool: () => <ScanSearchIcon style={{ width: '1em', height: '1em' }} />,
         handler: () => {
           openImageSearch(undefined, {})
         },

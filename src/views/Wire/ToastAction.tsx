@@ -1,7 +1,7 @@
 import type { Target } from '@/components/Link/lib/handleLink'
 import { useLink } from '@/hooks/useLink'
 import { Button, Tooltip } from '@ttab/elephant-ui'
-import { CalendarDaysIcon, FileInput } from '@ttab/elephant-ui/icons'
+import { CalendarDaysIcon, FileInputIcon } from '@ttab/elephant-ui/icons'
 
 export const ToastAction = ({ planningId, wireId, target }: {
   planningId?: string
@@ -35,7 +35,7 @@ export const ToastAction = ({ planningId, wireId, target }: {
             onClick={(event) =>
               openArticle(event, { id: wireId }, target)}
           >
-            <FileInput size={16} strokeWidth={1.75} />
+            <FileInputIcon size={16} strokeWidth={1.75} />
           </Button>
         </Tooltip>
       )}

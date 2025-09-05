@@ -3,7 +3,13 @@ import { TimeDisplay } from '@/components/DataItem/TimeDisplay'
 import { AssignmentTypes } from '@/defaults/assignmentTypes'
 import { useRegistry } from '@/hooks/useRegistry'
 import { Button } from '@ttab/elephant-ui'
-import { CalendarIcon, MessageCircleMore, SignalMedium, Tag, Text } from '@ttab/elephant-ui/icons'
+import {
+  CalendarIcon,
+  MessageCircleMoreIcon,
+  SignalMediumIcon,
+  TagIcon,
+  TextIcon
+} from '@ttab/elephant-ui/icons'
 import type { EleBlock } from '@/shared/types'
 import type { AssignmentData } from '@/components/AssignmentTime/types'
 import type { PropsWithChildren } from 'react'
@@ -26,7 +32,7 @@ export const Slugline = ({ slugline }: { slugline: string }) => {
   return slugline
     ? (
         <div className='flex items-center pb-2'>
-          <Tag {...iconProps} />
+          <TagIcon {...iconProps} />
           <DisabledButton>{slugline}</DisabledButton>
         </div>
       )
@@ -38,7 +44,7 @@ export const Description = ({ descriptions }: { descriptions: Array<{ text: stri
     ? descriptions?.map((d: { text: string, role: string }) => (
       <div key={d.role} className='flex pb-2'>
         <div>
-          {d.role === 'internal' ? <MessageCircleMore {...iconProps} /> : <Text {...iconProps} />}
+          {d.role === 'internal' ? <MessageCircleMoreIcon {...iconProps} /> : <TextIcon {...iconProps} />}
         </div>
         <div className='text-sm border rounded p-2 font-normal text-muted-foreground'>{d.text}</div>
       </div>
@@ -81,7 +87,7 @@ export const Newsvalue = ({ newsvalue }: { newsvalue?: string }) => {
   return newsvalue && (
     <div className='flex items-center pb-2'>
       <DisabledButton>
-        <SignalMedium {...iconProps} />
+        <SignalMediumIcon {...iconProps} />
         {newsvalue}
       </DisabledButton>
     </div>
@@ -91,7 +97,7 @@ export const Newsvalue = ({ newsvalue }: { newsvalue?: string }) => {
 export const Section = ({ section }: { section?: string }) => {
   return section && (
     <div className='flex items-center pb-2'>
-      <Tag {...iconProps} />
+      <TagIcon {...iconProps} />
       <DisabledButton>{section}</DisabledButton>
     </div>
   )
@@ -110,7 +116,7 @@ export const Story = ({ story }: { story?: string }) => {
 export const Category = ({ category }: { category: string[] }) => {
   return category && (
     <div className='flex items-center'>
-      <Tag {...iconProps} />
+      <TagIcon {...iconProps} />
       <div className='flex items-center pb-2 gap-1'>
         {category.map((c) => (
           <DisabledButton key={c}>

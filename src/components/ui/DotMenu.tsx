@@ -2,8 +2,8 @@ import React from 'react'
 import type { MouseEvent } from 'react'
 import {
   type LucideIcon,
-  MoreHorizontal,
-  MoreVertical
+  MoreHorizontalIcon,
+  MoreVerticalIcon
 } from '@ttab/elephant-ui/icons'
 
 import {
@@ -55,8 +55,8 @@ export const DotDropdownMenu = ({ trigger = 'horizontal', items }: {
       <DropdownMenuTrigger asChild>
         <Button variant='ghost' className='flex h-8 w-8 p-0 data-[state=open]:bg-muted hover:bg-accent2'>
           {trigger === 'horizontal'
-            ? <MoreHorizontal size={18} strokeWidth={1.75} />
-            : <MoreVertical size={18} strokeWidth={1.75} />}
+            ? <MoreHorizontalIcon size={18} strokeWidth={1.75} />
+            : <MoreVerticalIcon size={18} strokeWidth={1.75} />}
         </Button>
       </DropdownMenuTrigger>
 

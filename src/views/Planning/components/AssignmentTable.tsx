@@ -166,7 +166,7 @@ export const AssignmentTable = ({ asDialog = false, documentId, onChange }: {
                       onClose={() => {
                         setSelectedAssignment(undefined)
                       }}
-                      className='-my-[1px] -mx-[5px]'
+                      className='-my-px -mx-[5px]'
                     />
                   )
                 : (

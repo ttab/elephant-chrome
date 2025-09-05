@@ -5,7 +5,7 @@ import { MetaSheet } from './components/MetaSheet'
 import { StatusMenu } from '@/components/DocumentStatus/StatusMenu'
 import { AddNote } from '@/components/Notes/AddNote'
 import { ViewHeader } from '@/components/View'
-import { PenBoxIcon, PenOff } from '@ttab/elephant-ui/icons'
+import { PenBoxIcon, PenOffIcon } from '@ttab/elephant-ui/icons'
 import { toast } from 'sonner'
 import { handleLink } from '@/components/Link/lib/handleLink'
 import { useDeliverablePlanningId } from '@/hooks/index/useDeliverablePlanningId'
@@ -89,7 +89,7 @@ export const EditorHeader = ({ documentId, readOnly, readOnlyVersion, planningId
 
   return (
     <ViewHeader.Root>
-      <ViewHeader.Title name='Editor' title={title} icon={readOnly ? PenOff : PenBoxIcon} />
+      <ViewHeader.Title name='Editor' title={title} icon={readOnly ? PenOffIcon : PenBoxIcon} />
 
       <ViewHeader.Content className='justify-start'>
         <div className='max-w-[810px] mx-auto flex flex-row gap-2 justify-between items-center w-full'>

@@ -1,5 +1,3 @@
-import tailwindConfig from '@ttab/elephant-ui/styles/presetResolved.json'
-
 export interface ScreenDefinition {
   key: string
   value: number
@@ -11,7 +9,16 @@ export interface ScreenDefinition {
  * @returns Array<{ key: string, value: number }>
  */
 export function getScreenDefinitions(): ScreenDefinition[] {
-  const definedScreens = tailwindConfig.theme.screens as Record<string, string>
+  const definedScreens: Record<string, string> = {
+    sm: '640px',
+    md: '768px',
+    lg: '1024px',
+    xl: '1280px',
+    '2xl': '1536px',
+    fhd: '1920px',
+    qhd: '2560px',
+    uhd: '3840px'
+  }
   const screens: Array<{ key: string, value: number }> = []
 
   for (const key of Object.keys(definedScreens)) {

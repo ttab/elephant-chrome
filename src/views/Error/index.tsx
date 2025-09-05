@@ -1,6 +1,6 @@
 import { type ViewMetadata, type ViewProps } from '@/types'
 import { View, ViewHeader } from '@/components/View'
-import { MessageCircleWarning } from '@ttab/elephant-ui/icons'
+import { MessageCircleWarningIcon } from '@ttab/elephant-ui/icons'
 
 const meta: ViewMetadata = {
   name: 'Error',
@@ -27,7 +27,7 @@ export const Error = ({ title, error, message }: ViewProps & {
   return (
     <View.Root>
       <ViewHeader.Root>
-        <ViewHeader.Title name='Error' title='Ett fel har uppstått!' icon={MessageCircleWarning} />
+        <ViewHeader.Title name='Error' title='Ett fel har uppstått!' icon={MessageCircleWarningIcon} />
         <ViewHeader.Content />
         <ViewHeader.Action />
       </ViewHeader.Root>

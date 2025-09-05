@@ -1,6 +1,6 @@
 import { View, ViewHeader } from '@/components/View'
 import { type ViewProps } from '@/types/index'
-import { BookA, Check, Pencil, Plus, Trash } from '@ttab/elephant-ui/icons'
+import { BookAIcon, CheckIcon, PencilIcon, PlusIcon, TrashIcon } from '@ttab/elephant-ui/icons'
 import { cn } from '@ttab/elephant-ui/utils'
 import { useRegistry } from '@/hooks/useRegistry'
 import { useSession } from 'next-auth/react'
@@ -105,7 +105,7 @@ const HypenationItem = ({ isNew, setIsNew, word, hypenated, ignore, handleListHy
                       setPromptIsOpen(true)
                     }}
                   >
-                    <Trash strokeWidth={1.75} size={18} className='text-white' />
+                    <TrashIcon strokeWidth={1.75} size={18} className='text-white' />
                   </Button>
                 )}
                 <Button
@@ -131,11 +131,11 @@ const HypenationItem = ({ isNew, setIsNew, word, hypenated, ignore, handleListHy
                 {_hypenated}
               </div>
               <div className='text-sm w-full col-span-1'>
-                {_ignore ? <Check strokeWidth={1.75} size={18} /> : ''}
+                {_ignore ? <CheckIcon strokeWidth={1.75} size={18} /> : ''}
               </div>
               <div className='invisible group-hover/edit:visible col-span-2 flex items-end justify-end gap-2'>
                 <Button variant='ghost' size='sm' onClick={() => setEditMode(true)}>
-                  <Pencil strokeWidth={1.75} size={18} />
+                  <PencilIcon strokeWidth={1.75} size={18} />
                 </Button>
               </div>
             </>
@@ -181,7 +181,7 @@ const Dictionary = ({ className }: ViewProps): JSX.Element => {
       <ViewHeader.Root>
         <ViewHeader.Content>
           <div className='flex h-full items-center space-x-2 font-bold'>
-            <ViewHeader.Title name='dictionary' title='Avstavningar' icon={BookA} iconColor='#006bb3' />
+            <ViewHeader.Title name='dictionary' title='Avstavningar' icon={BookAIcon} iconColor='#006bb3' />
           </div>
           <div className='flex items-center justify-end mt-4'>
             <Button
@@ -189,7 +189,7 @@ const Dictionary = ({ className }: ViewProps): JSX.Element => {
               size='sm'
               className='mb-4 flex items-center gap-2'
             >
-              <Plus strokeWidth={1.75} size={18} />
+              <PlusIcon strokeWidth={1.75} size={18} />
               Ny
             </Button>
           </div>

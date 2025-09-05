@@ -99,7 +99,7 @@ function EditorContainer({
       <FlashHeader documentId={documentId} asDialog={false} readOnly={readOnly} />
 
       <View.Content className='flex flex-col max-w-[1000px]'>
-        <div className='flex-grow overflow-auto max-w-screen-xl'>
+        <div className='grow overflow-auto max-w-(--breakpoint-xl)'>
           {!!provider && synced
             ? <EditorContent provider={provider} user={user} readOnly={readOnly} />
             : <></>}
@@ -151,9 +151,9 @@ function EditorContent({ provider, user, readOnly }: {
       className='outline-none
         h-full
         dark:text-slate-100
-        [&_[data-spelling-error]]:border-b-2
-        [&_[data-spelling-error]]:border-dotted
-        [&_[data-spelling-error]]:border-red-500
+        **:data-spelling-error:border-b-2
+        **:data-spelling-error:border-dotted
+        **:data-spelling-error:border-red-500
         px-[56px]
       '
     >

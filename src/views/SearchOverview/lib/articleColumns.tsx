@@ -8,7 +8,7 @@ import { Newsvalues } from '@/defaults/newsvalues'
 import type { Article } from '@/shared/schemas/article'
 import type { Column, ColumnDef } from '@tanstack/react-table'
 import { DocumentStatuses } from '@/defaults/documentStatuses'
-import { CircleCheck, Pen, Shapes, SignalHigh } from '@ttab/elephant-ui/icons'
+import { CircleCheckIcon, PenIcon, ShapesIcon, SignalHighIcon } from '@ttab/elephant-ui/icons'
 import type { Dispatch, SetStateAction } from 'react'
 import type { IDBSection } from 'src/datastore/types'
 
@@ -24,7 +24,7 @@ export function articleColumns({ sections = [] }: {
         ),
         options: DocumentStatuses,
         name: 'Status',
-        columnIcon: CircleCheck,
+        columnIcon: CircleCheckIcon,
         className: 'flex-none',
         display: (value: string) => (
           <span>
@@ -52,7 +52,7 @@ export function articleColumns({ sections = [] }: {
         ),
         options: Newsvalues,
         name: 'Nyhetsvärde',
-        columnIcon: SignalHigh,
+        columnIcon: SignalHighIcon,
         className: 'flex-none hidden @3xl/view:[display:revert]'
       },
       accessorFn: (data) => data.fields['document.meta.core_newsvalue.value']?.values[0],
@@ -72,7 +72,7 @@ export function articleColumns({ sections = [] }: {
       id: 'title',
       meta: {
         name: 'Titel',
-        columnIcon: Pen,
+        columnIcon: PenIcon,
         className: 'flex-1 w-[200px]'
       },
       accessorFn: (data) => data.fields['document.title']?.values[0],
@@ -97,7 +97,7 @@ export function articleColumns({ sections = [] }: {
           <FacetedFilter column={column} setSearch={setSearch} />
         ),
         name: 'Sektion',
-        columnIcon: Shapes,
+        columnIcon: ShapesIcon,
         className: 'flex-none w-[135px] hidden @4xl/view:[display:revert]'
       },
       accessorFn: (data: Article) => data.fields['document.rel.section.title']?.values[0],

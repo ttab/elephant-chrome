@@ -1,6 +1,6 @@
 import { useTable } from '@/hooks'
 import { CommandItem } from '@ttab/elephant-ui'
-import { Search } from '@ttab/elephant-ui/icons'
+import { SearchIcon } from '@ttab/elephant-ui/icons'
 
 export const TextFilter = (): JSX.Element | null => {
   const { command, table } = useTable()
@@ -19,7 +19,7 @@ export const TextFilter = (): JSX.Element | null => {
             }
           }}
         >
-          <Search size={18} strokeWidth={1.75} className='mr-2' />
+          <SearchIcon size={18} strokeWidth={1.75} className='mr-2' />
           Fritext
         </CommandItem>
       )

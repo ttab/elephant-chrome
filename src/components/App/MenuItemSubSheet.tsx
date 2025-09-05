@@ -7,7 +7,7 @@ import {
   SheetHeader,
   SheetTitle
 } from '@ttab/elephant-ui'
-import { X } from '@ttab/elephant-ui/icons'
+import { XIcon } from '@ttab/elephant-ui/icons'
 import { Latest as LatestComponent } from '@/views/Latest'
 
 interface SheetComponentProps {
@@ -41,7 +41,7 @@ export const MenuItemSubSheet = ({
 
           <div className='flex flex-row gap-4 justify-between justify-items-center items-center h-14 px-4 border-b'>
             <SheetClose className='rounded-md hover:bg-gray-100 w-9 h-9 flex items-center justify-center'>
-              <X strokeWidth={2.25} />
+              <XIcon strokeWidth={2.25} />
             </SheetClose>
 
             <div className='flex items-center gap-2'>

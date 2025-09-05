@@ -209,7 +209,7 @@ function AssignmentCheckBox({ index, newDate, onChangeSelected }: {
   const assignmentTime = useAssignmentTime(index, newDate)
 
   return (
-    <Label htmlFor={id} className='grid gap-3 grid-cols-[auto_2rem] items-center border rounded p-3 text-sm hover:bg-accent/50 has-[[aria-checked=true]]:border-blue-600 has-[[aria-checked=true]]:bg-blue-50 dark:has-[[aria-checked=true]]:border-blue-900 dark:has-[[aria-checked=true]]:bg-blue-950'>
+    <Label htmlFor={id} className='grid gap-3 grid-cols-[auto_2rem] items-center border rounded p-3 text-sm hover:bg-accent/50 has-aria-checked:border-blue-600 has-aria-checked:bg-blue-50 dark:has-aria-checked:border-blue-900 dark:has-aria-checked:bg-blue-950'>
       <div>
         <div className='font-semibold mb-2 flex items-center -m-2'>
           <AssignmentType
@@ -222,7 +222,7 @@ function AssignmentCheckBox({ index, newDate, onChangeSelected }: {
 
         {Array.isArray(assignmentTime?.time) && assignmentTime.icon && (
           <Tooltip content={assignmentTime.tooltip}>
-            <div className='flex flex-row items-center justify-start gap-3 has-[[aria-checked=true]]:opacity-50'>
+            <div className='flex flex-row items-center justify-start gap-3 has-aria-checked:opacity-50'>
               <AssignmentTime assignmentTime={assignmentTime} />
             </div>
           </Tooltip>

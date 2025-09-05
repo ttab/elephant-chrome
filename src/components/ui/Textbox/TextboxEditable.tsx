@@ -59,7 +59,7 @@ export const TextboxEditable = ({ provider, path, user, content, singleLine, spe
       yjsEditor={yjsEditor}
       lang={documentLanguage}
       onSpellcheck={spellcheck ? onSpellcheck : undefined}
-      className={cn(!singleLine && '!min-h-20',
+      className={cn(!singleLine && 'min-h-20!',
         `p-1
         py-1.5
         ps-2
@@ -70,13 +70,13 @@ export const TextboxEditable = ({ provider, path, user, content, singleLine, spe
         ring-input
         focus:dark:ring-gray-600
         whitespace-nowrap
-        [&_[data-spelling-error]]:border-b-2
-        [&_[data-spelling-error]]:border-dotted
-        [&_[data-spelling-error]]:border-red-500
+        **:data-spelling-error:border-b-2
+        **:data-spelling-error:border-dotted
+        **:data-spelling-error:border-red-500
         dark:bg-input`
       )}
     >
-      <ContextMenu className='z-[9999]' />
+      <ContextMenu className='z-9999' />
     </Textbit.Editable>
   )
 }

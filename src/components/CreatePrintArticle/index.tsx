@@ -1,4 +1,4 @@
-import { Calendar, Library, Tag } from '@ttab/elephant-ui/icons'
+import { CalendarIcon, LibraryIcon, TagIcon } from '@ttab/elephant-ui/icons'
 import { Form } from '../Form'
 import { View, ViewHeader } from '../View'
 import type { ViewProps } from '@/types/index'
@@ -86,7 +86,7 @@ export const CreatePrintArticle = ({ id, asDialog, onDialogClose, className }: V
         <ViewHeader.Content>
           {asDialog && (
             <div className='flex w-full h-full items-center space-x-2 font-bold'>
-              <ViewHeader.Title name='Assignment' title='Skapa printartikel' icon={Library} iconColor='#006bb3' />
+              <ViewHeader.Title name='Assignment' title='Skapa printartikel' icon={LibraryIcon} iconColor='#006bb3' />
             </div>
           )}
         </ViewHeader.Content>
@@ -102,7 +102,7 @@ export const CreatePrintArticle = ({ id, asDialog, onDialogClose, className }: V
           ? (
               <Form.Root asDialog={asDialog}>
                 <Form.Content>
-                  <Form.Group icon={Tag}>
+                  <Form.Group icon={TagIcon}>
                     <Select
                       value={selectedPrintFlow?.value}
                       onValueChange={(option) => {
@@ -121,7 +121,7 @@ export const CreatePrintArticle = ({ id, asDialog, onDialogClose, className }: V
                       </SelectContent>
                     </Select>
                   </Form.Group>
-                  <Form.Group icon={Tag}>
+                  <Form.Group icon={TagIcon}>
                     <Select
                       disabled={!printFlow}
                       value={articleName}
@@ -141,7 +141,7 @@ export const CreatePrintArticle = ({ id, asDialog, onDialogClose, className }: V
                       </SelectContent>
                     </Select>
                   </Form.Group>
-                  <Form.Group icon={Calendar}>
+                  <Form.Group icon={CalendarIcon}>
                     <DatePicker date={date} setDate={(newDate) => setDateString(newDate)} disabled={!printFlow} />
                   </Form.Group>
                 </Form.Content>

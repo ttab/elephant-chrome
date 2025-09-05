@@ -9,7 +9,7 @@ export const RemoteUsers = ({ documentId }: PropsWithChildren & {
   const [states] = useAwareness(documentId)
 
   return (
-    <div className='flex-grow flex items-center justify-end'>
+    <div className='grow flex items-center justify-end'>
       <AvatarGroup>
         {states.map((user) => {
           return (
