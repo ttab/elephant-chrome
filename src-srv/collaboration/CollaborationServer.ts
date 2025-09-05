@@ -71,8 +71,6 @@ export class CollaborationServer {
       protocol: redisProtocol
     } = new URL(configuration.redisUrl)
 
-    this.#quiet = process.env.LOG_LEVEL !== 'info' && process.env.LOG_LEVEL !== 'debug'
-
     this.server = Server.configure({
       name: crypto.randomUUID(), // We need a server instance id to be able to acquire locks
       port: this.#port,

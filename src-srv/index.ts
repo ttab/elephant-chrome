@@ -121,7 +121,8 @@ export async function runServer(): Promise<string> {
     repository,
     expressServer: app,
     authInfo: authInfo,
-    user
+    user,
+    quiet: process.env.LOG_LEVEL !== 'info' && process.env.LOG_LEVEL !== 'debug'
   })
 
   await collaborationServer.listen([`${BASE_URL}/:document`]).catch((ex) => {
