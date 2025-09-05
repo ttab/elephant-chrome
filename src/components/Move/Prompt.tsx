@@ -6,10 +6,10 @@ import * as Templates from '@/shared/templates'
 import { useKeydownGlobal } from '@/hooks/useKeydownGlobal'
 import { useCollaborationDocument } from '@/hooks/useCollaborationDocument'
 import type * as Y from 'yjs'
-import { createStateless, StatelessType } from '@/shared/stateless'
 import { useSession } from 'next-auth/react'
 import type { HocuspocusProvider } from '@hocuspocus/provider'
 import { toast } from 'sonner'
+import { snapshotDocument } from '@/lib/snapshotDocument'
 
 export const MovePrompt = ({
   title,
@@ -73,18 +73,7 @@ export const MovePrompt = ({
     onPrimary(planning)
 
     if (!selectedPlanning && provider?.synced && session) {
-      provider.sendStateless(
-        createStateless(StatelessType.IN_PROGRESS, {
-          state: false,
-          id: planningId,
-          context: {
-            agent: 'server',
-            accessToken: session.accessToken,
-            user: session.user,
-            type: 'Planning'
-          }
-        })
-      )
+      void snapshotDocument(planningId)
     }
   }
 

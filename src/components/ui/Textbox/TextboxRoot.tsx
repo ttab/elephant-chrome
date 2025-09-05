@@ -41,37 +41,37 @@ export const TextboxRoot = ({
   return (
     <>
       {!!provider && content
-      && (
-        <Textbit.Root
-          debounce={0}
-          autoFocus={autoFocus}
-          onBlur={onBlur}
-          onFocus={onFocus}
-          placeholder={placeholder}
-          plugins={[
-            LocalizedQuotationMarks(),
-            Text({
-              singleLine,
-              countCharacters,
-              classNames: {
-                body: 'font-sans py-0'
-              }
-            })
-          ]}
-          className='h-min-2 w-full'
-        >
-          <TextboxEditable
-            disabled={disabled}
-            content={content}
-            provider={provider}
-            path={path}
-            singleLine={singleLine}
-            user={user}
-            spellcheck={spellcheck}
-            onChange={onChange}
-          />
-        </Textbit.Root>
-      )}
+        && (
+          <Textbit.Root
+            debounce={0}
+            autoFocus={autoFocus}
+            onBlur={onBlur}
+            onFocus={onFocus}
+            placeholder={placeholder}
+            plugins={[
+              LocalizedQuotationMarks(),
+              Text({
+                singleLine,
+                countCharacters,
+                classNames: {
+                  body: 'font-sans py-0'
+                }
+              })
+            ]}
+            className='h-min-2 w-full'
+          >
+            <TextboxEditable
+              disabled={disabled}
+              content={content}
+              provider={provider}
+              path={path}
+              singleLine={singleLine}
+              user={user}
+              spellcheck={spellcheck}
+              onChange={onChange}
+            />
+          </Textbit.Root>
+        )}
     </>
   )
 }

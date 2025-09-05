@@ -81,11 +81,11 @@ export const UserTrackerProvider = ({ children }: PropsWithChildren): JSX.Elemen
   return (
     <>
       {!!provider
-      && (
-        <UserTrackerContext.Provider value={{ ...state }}>
-          {children}
-        </UserTrackerContext.Provider>
-      )}
+        && (
+          <UserTrackerContext.Provider value={{ ...state }}>
+            {children}
+          </UserTrackerContext.Provider>
+        )}
     </>
   )
 }

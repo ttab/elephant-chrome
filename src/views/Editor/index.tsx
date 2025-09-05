@@ -1,7 +1,6 @@
 import { useEffect, useRef } from 'react'
 import { AwarenessDocument, View } from '@/components'
-import { Notes } from './components/Notes'
-
+import { Notes } from '@/components/Notes'
 import { Textbit, useTextbit } from '@ttab/textbit'
 import { Bold, Italic, Link, Text, TTVisual, Factbox, Table, LocalizedQuotationMarks } from '@ttab/textbit-plugins'
 import { ImageSearchPlugin } from '../../plugins/ImageSearch'

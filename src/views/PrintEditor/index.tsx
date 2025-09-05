@@ -33,7 +33,7 @@ import { type AwarenessUserData } from '@/contexts/CollaborationProvider'
 import { Error } from '../Error'
 
 import { ContentMenu } from '@/components/Editor/ContentMenu'
-import { Notes } from './components/Notes'
+import { Notes } from '@/components/Notes'
 import { Toolbar } from '@/components/Editor/Toolbar'
 import { ContextMenu } from '@/components/Editor/ContextMenu'
 import { Gutter } from '@/components/Editor/Gutter'
@@ -50,7 +50,7 @@ import type { EleBlock } from '@/shared/types'
 import { toast } from 'sonner'
 import { useSession } from 'next-auth/react'
 import { Prompt } from '@/components/Prompt'
-import { snapshot } from '@/lib/snapshot'
+import { snapshotDocument } from '@/lib/snapshotDocument'
 import type * as Y from 'yjs'
 import { ImagePlugin } from './ImagePlugin'
 import { ChannelComboBox } from './components/ChannelComboBox'
@@ -194,7 +194,7 @@ function EditorContainer({
   const [flowUuid] = useYValue<string>('links.tt/print-flow[0].uuid')
   const { baboon } = useRegistry()
   const { data: session } = useSession()
-  const [,,allParams] = useQuery(['from'], true)
+  const [, , allParams] = useQuery(['from'], true)
   const fromDate = allParams?.filter((item) => item.name === 'Print')?.[0]?.params?.from
   const [date] = useYValue<string>('meta.tt/print-article[0].data.date')
   const [isChanged] = useYValue<boolean>('root.changed')
@@ -218,7 +218,7 @@ function EditorContainer({
       toast.error('Något gick fel när printartikel skulle dupliceras')
       return
     }
-    await snapshot(documentId)
+    await snapshotDocument(documentId)
     try {
       const _date = (fromDate || date) as string
       const response = await baboon.createPrintArticle({
@@ -249,7 +249,7 @@ function EditorContainer({
       toast.error('Något gick fel när printartikel skulle renderas')
       return
     }
-    await snapshot(documentId)
+    await snapshotDocument(documentId)
     const results: EleBlock[] = []
     for (const _layout of arr) {
       try {

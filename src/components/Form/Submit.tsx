@@ -89,8 +89,8 @@ export const Submit = ({
 
   const applyOnClickHandler = (child: React.ReactNode): React.ReactNode => {
     if (React.isValidElement(child)) {
-      const props: FormProps &
-        { onClick?: (event: React.MouseEvent<HTMLButtonElement>) => void
+      const props: FormProps
+        & { onClick?: (event: React.MouseEvent<HTMLButtonElement>) => void
           onKeyDown?: (event: React.KeyboardEvent<HTMLButtonElement>) => void
         } = {}
 

@@ -12,7 +12,7 @@ import { type EleBlock } from '@/shared/types'
 import { cva } from 'class-variance-authority'
 import { Button } from '@ttab/elephant-ui'
 import { useActiveAuthor } from '@/hooks/useActiveAuthor'
-import { snapshot } from '@/lib/snapshot'
+import { snapshotDocument } from '@/lib/snapshotDocument'
 import { toast } from 'sonner'
 
 export const AssignmentTable = ({ asDialog = false, documentId, onChange }: {
@@ -79,7 +79,7 @@ export const AssignmentTable = ({ asDialog = false, documentId, onChange }: {
     deleteByYPath(yRoot, `${currentAssigmentPath}.__inProgress`)
 
     if (documentId) {
-      await snapshot(documentId, {
+      await snapshotDocument(documentId, {
         force: true
       }, provider?.document)
     }

@@ -58,9 +58,9 @@ export async function runServer(): Promise<string> {
   const routes = await mapRoutes(apiDir)
 
   // Connect to Redis
-  const cache = new RedisCache(REDIS_URL)
+  const redis = new RedisCache(REDIS_URL)
 
-  await cache.connect().catch((ex) => {
+  await redis.connect().catch((ex) => {
     throw new Error('connect to redis cache', { cause: ex })
   })
 
@@ -117,11 +117,12 @@ export async function runServer(): Promise<string> {
     name: 'Elephant',
     port: PORT,
     redisUrl: REDIS_URL,
-    redisCache: cache,
+    redis: redis,
     repository,
     expressServer: app,
     authInfo: authInfo,
-    user
+    user,
+    quiet: process.env.LOG_LEVEL !== 'info' && process.env.LOG_LEVEL !== 'debug'
   })
 
   await collaborationServer.listen([`${BASE_URL}/:document`]).catch((ex) => {
@@ -130,7 +131,7 @@ export async function runServer(): Promise<string> {
 
   connectRouteHandlers(app, routes, {
     repository,
-    cache,
+    cache: redis,
     collaborationServer
   })
 
