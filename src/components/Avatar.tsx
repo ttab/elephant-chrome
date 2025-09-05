@@ -34,8 +34,8 @@ const avatarVariants = cva('cursor-default text-opacity-60',
 export type AvatarSize = 'xxs' | 'xs' | 'sm' | 'lg' | 'xl' | 'default' | undefined | null
 
 export const Avatar = ({ user, value, variant = 'default', size = 'default', color, stacked = false, className }:
-  React.HTMLAttributes<HTMLDivElement> &
-  VariantProps<typeof avatarVariants> & {
+  React.HTMLAttributes<HTMLDivElement>
+  & VariantProps<typeof avatarVariants> & {
     value?: string
     user?: Session['user'] | undefined
     color?: string
