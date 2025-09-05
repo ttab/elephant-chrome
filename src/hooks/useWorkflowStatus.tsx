@@ -5,7 +5,7 @@ import { useCallback } from 'react'
 import { useCollaboration, useRegistry, useYValue } from '@/hooks'
 import { toast } from 'sonner'
 import type { Repository, Status } from '@/shared/Repository'
-import { snapshot } from '@/lib/snapshot'
+import { snapshotDocument } from '@/lib/snapshotDocument'
 import { getStatusFromMeta } from '@/lib/getStatusFromMeta'
 import type { Session } from 'next-auth'
 
@@ -67,8 +67,8 @@ export const useWorkflowStatus = (uuid?: string, isWorkflow: boolean = false): [
       }
 
 
-      // Snapshot and if applicable, update the status with cause in one call
-      const snapshotResponse = uuid && await snapshot(uuid, {
+      // Flush document to repsitory and if applicable, update the status with cause
+      const snapshotResponse = uuid && await snapshotDocument(uuid, {
         force: true,
         status: typeof newStatus === 'string'
           ? newStatus

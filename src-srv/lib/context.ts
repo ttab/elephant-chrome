@@ -9,6 +9,13 @@ export interface Context {
   agent: string
   accessToken: string
   user: User
+  type?: string
+
+  // Is set to true when redis cache already loaded document
+  loadedFromCache?: boolean
+
+  // Is set to true when a user has disconnected from a document
+  disconnected?: boolean
 }
 
 /**

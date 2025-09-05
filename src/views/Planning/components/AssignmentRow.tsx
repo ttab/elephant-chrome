@@ -39,7 +39,7 @@ import { useSession } from 'next-auth/react'
 import { getDeliverableType } from '@/shared/templates/lib/getDeliverableType'
 import { AssignmentTypes } from '@/defaults/assignmentTypes'
 import { CreatePrintArticle } from '@/components/CreatePrintArticle'
-import { snapshot } from '@/lib/snapshot'
+import { snapshotDocument } from '@/lib/snapshotDocument'
 import { AssignmentVisibility } from '@/components/DataItem/AssignmentVisibility'
 import { timeSlotTypes } from '@/defaults/assignmentTimeConstants'
 import { DocumentStatuses } from '@/defaults/documentStatuses'
@@ -441,7 +441,7 @@ export const AssignmentRow = ({ index, onSelect, isFocused = false, asDialog, on
               })
 
               if (planningId) {
-                void snapshot(planningId, undefined, provider.document).then(() => {
+                void snapshotDocument(planningId, undefined, provider.document).then(() => {
                   const openDocument = assignmentType === 'flash' ? openFlash : openArticle
                   openDocument(undefined, { id, planningId }, 'blank')
                 })

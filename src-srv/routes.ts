@@ -3,8 +3,8 @@ import path from 'node:path'
 import type { Request, Response } from 'express'
 import type { Application, WebsocketRequestHandler } from 'express-ws'
 import type { Repository } from '@/shared/Repository.js'
-import type { CollaborationServer } from './utils/CollaborationServer.js'
-import type { RedisCache } from './utils/RedisCache.js'
+import type { CollaborationServer } from './collaboration/CollaborationServer.js'
+import type { Redis } from './utils/Redis.js'
 import logger from './lib/logger.js'
 
 import { raw as expressRaw } from 'express'
@@ -18,7 +18,7 @@ interface Route {
 
 interface RouteInitContext {
   repository: Repository
-  cache: RedisCache
+  cache: Redis
   collaborationServer: CollaborationServer
   [key: string]: unknown
 }

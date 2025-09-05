@@ -11,7 +11,6 @@ import type {
 import logger from './logger.js'
 import { RpcError } from '@protobuf-ts/runtime-rpc'
 import { isValidUUID } from '../utils/isValidUUID.js'
-import { parseStateless, StatelessType } from '@/shared/stateless.js'
 import type { User } from '@/shared/User.js'
 
 /**
@@ -196,15 +195,6 @@ export function getErrorContext(
   if ('context' in payload) {
     const context = payload.context as { user?: { sub?: string } }
     userSub = context?.user?.sub
-  } else if (isOnStatelessPayload(payload)) {
-    try {
-      const msg = parseStateless(payload.payload)
-      if (msg.type == StatelessType.IN_PROGRESS) {
-        userSub = msg.message.context.user.sub
-      }
-    } catch (_err) {
-      // Ignore errors, userSub remains undefined if not found
-    }
   }
 
   const docName = payload.documentName
@@ -227,12 +217,4 @@ export function getErrorContext(
     docUuid,
     docType
   }
-}
-
-// Type guard function for onStatelessPayload
-function isOnStatelessPayload(payload: unknown): payload is onStatelessPayload {
-  return payload !== null
-    && typeof payload === 'object'
-    && 'payload' in payload
-    && typeof payload.payload === 'string'
 }

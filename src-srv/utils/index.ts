@@ -1,2 +1,2 @@
-export { RedisCache } from './RedisCache.js'
-export { CollaborationServer } from './CollaborationServer.js'
+export { Redis as RedisCache } from './Redis.js'
+export { CollaborationServer } from '../collaboration/CollaborationServer.js'
