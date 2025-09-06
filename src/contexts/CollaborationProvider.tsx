@@ -123,7 +123,10 @@ export const CollaborationProviderContext = ({ documentId, document, children }:
       }
     })
 
-    setProvider(provider)
+    if (provider) {
+      provider.attach()
+      setProvider(provider)
+    }
 
     return () => {
       // Provider must be destroyed first, then unset, to trigger correct events in collaboration server

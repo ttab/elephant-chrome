@@ -27,7 +27,7 @@ describe('useYValue', () => {
   })
 
   afterAll(async () => {
-    await init.server.destroy()
+    await init.server.server?.destroy()
     init.provider.destroy()
   })
 

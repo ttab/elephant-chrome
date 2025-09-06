@@ -1,4 +1,4 @@
-import { Server, type Hocuspocus } from '@hocuspocus/server'
+import { Hocuspocus } from '@hocuspocus/server'
 import { Logger } from '@hocuspocus/extension-logger'
 import { Redis as PubsubExtension } from '@hocuspocus/extension-redis'
 
@@ -33,7 +33,6 @@ interface CollaborationServerOptions {
 }
 
 export class CollaborationServer {
-  readonly #port: number
   readonly #quiet: boolean
   readonly #expressServer: Application
   readonly server: Hocuspocus
@@ -52,7 +51,6 @@ export class CollaborationServer {
    */
   constructor(configuration: CollaborationServerOptions) {
     this.#quiet = configuration.quiet ?? false
-    this.#port = configuration.port
     this.#expressServer = configuration.expressServer
     this.#repository = configuration.repository
     this.#errorHandler = new CollaborationServerErrorHandler(configuration.user)
@@ -71,9 +69,8 @@ export class CollaborationServer {
       protocol: redisProtocol
     } = new URL(configuration.redisUrl)
 
-    this.server = Server.configure({
+    this.server = new Hocuspocus({
       name: crypto.randomUUID(), // We need a server instance id to be able to acquire locks
-      port: this.#port,
       timeout: 30000,
       debounce: 5000,
       maxDebounce: 30000,
@@ -92,7 +89,7 @@ export class CollaborationServer {
           options: {
             username: redisUsername,
             password: redisPassword,
-            tls: redisProtocol === 'rediss:'
+            ...(redisProtocol === 'rediss:' ? { tls: { rejectUnauthorized: true } } : {})
           }
         }),
         this.#openDocuments,
@@ -151,13 +148,18 @@ export class CollaborationServer {
 
     try {
       this.#openForBusiness = false
-      await this.server.destroy()
+
+      // Does this actually destroy the HP server?
+      this.server.closeConnections()
+      await this.server.server?.destroy()
       // FIXME: Remove the express server paths setup in listen..?
     } catch (ex) {
       this.#errorHandler.error(ex)
     } finally {
       this.#handlePaths = []
     }
+
+    return Promise.resolve()
   }
 
   /**
