@@ -78,6 +78,9 @@ export const UserTrackerProvider = ({ children }: PropsWithChildren): JSX.Elemen
     provider?.sendStateless(createStateless(StatelessType.AUTH, { accessToken: data.accessToken || '' }))
   }, [provider, data.accessToken])
 
+  if (provider) {
+    provider.attach()
+  }
   return (
     <>
       {!!provider
