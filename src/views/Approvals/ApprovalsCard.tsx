@@ -170,9 +170,6 @@ export const ApprovalsCard = ({ assignment, isSelected, isFocused, status, autho
               })}
             </AvatarGroup>
           )}
-        </div>
-
-        <div className='flex flex-row gap-2 items-baseline'>
           {internalInfo && (
             <Popover>
               <PopoverTrigger onClick={(e) => {
@@ -186,10 +183,11 @@ export const ApprovalsCard = ({ assignment, isSelected, isFocused, status, autho
               <PopoverContent>{internalInfo}</PopoverContent>
             </Popover>
           )}
-          <div className='flex flex-row gap-1 items-center'>
-            <ClockIcon hour={(time) ? parseInt(time.slice(0, 2)) : undefined} size={14} className='opacity-50' />
-            <time>{time}</time>
-          </div>
+        </div>
+
+        <div className='flex flex-row gap-1 items-center'>
+          <ClockIcon hour={(time) ? parseInt(time.slice(0, 2)) : undefined} size={14} className='opacity-50' />
+          <time>{time}</time>
         </div>
       </Card.Header>
 
