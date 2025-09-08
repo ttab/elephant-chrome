@@ -178,7 +178,7 @@ export const ApprovalsCard = ({ assignment, isSelected, isFocused, status, autho
             </div>
             <Tooltip content='Öppna planering'>
               <div
-                className='opacity-70'
+                className='opacity-70 block md:hidden md:group-hover:block hover:bg-gray-300 dark:hover:bg-gray-700'
                 onClick={(e) => e.stopPropagation()}
               >
                 <Link to='Planning' props={{ id: assignment._id }}>
