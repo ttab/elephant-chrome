@@ -2,11 +2,11 @@ import { Card } from '@/components/Card'
 import { ClockIcon } from '@/components/ClockIcon'
 import { Avatar, Link } from '@/components/index'
 import { useModal } from '@/components/Modal/useModal'
-import { DotDropdownMenu } from '@/components/ui/DotMenu'
+
 import type { AssignmentInterface } from '@/hooks/index/useAssignments'
 import { useLink } from '@/hooks/useLink'
 import { useRegistry } from '@/hooks/useRegistry'
-import { CalendarDays, FileInput, FileWarning, Zap } from '@ttab/elephant-ui/icons'
+import { CalendarDays, FileWarning, Zap } from '@ttab/elephant-ui/icons'
 import { parseISO, format } from 'date-fns'
 import { toZonedTime } from 'date-fns-tz'
 import { PreviewSheet } from '../Wires/components'
@@ -75,45 +75,6 @@ export const ApprovalsCard = ({ assignment, isSelected, isFocused, status, autho
     ? entries
       ?.find((entry) => entry[0] === 'done')?.[1]
     : undefined
-
-  const menuItemDocumentLabel = assignment._deliverableType === 'core/flash' ? 'flash' : 'artikel'
-  const menuItems = [{
-    label: `Öppna ${menuItemDocumentLabel}`,
-    icon: FileInput,
-    item: (
-      <Link
-        to={assignment._deliverableType === 'core/flash' ? 'Flash' : 'Editor'}
-        props={{ id: documentId }}
-      >
-        <div className='flex flex-row justify-center items-center'>
-          <div className='opacity-70 flex-none w-7'>
-            <FileInput size={16} strokeWidth={1.75} />
-          </div>
-
-          <div className='grow'>
-            {`Öppna ${menuItemDocumentLabel}`}
-          </div>
-        </div>
-      </Link>
-    )
-  },
-  {
-    label: 'Öppna planering',
-    icon: CalendarDays,
-    item: (
-      <Link to='Planning' props={{ id: assignment._id }}>
-        <div className='flex flex-row justify-center items-center'>
-          <div className='opacity-70 flex-none w-7'>
-            <CalendarDays size={16} strokeWidth={1.75} />
-          </div>
-
-          <div className='grow'>
-            Öppna planering
-          </div>
-        </div>
-      </Link>
-    )
-  }]
 
   const title = assignment._deliverableDocument?.title
 
@@ -215,7 +176,16 @@ export const ApprovalsCard = ({ assignment, isSelected, isFocused, status, autho
                 </span>
               )}
             </div>
-            <DotDropdownMenu items={menuItems} />
+            <Tooltip content='Öppna planering'>
+              <div
+                className='opacity-70'
+                onClick={(e) => e.stopPropagation()}
+              >
+                <Link to='Planning' props={{ id: assignment._id }}>
+                  <CalendarDays size={16} strokeWidth={1.75} />
+                </Link>
+              </div>
+            </Tooltip>
           </div>
         </div>
       </Card.Footer>
