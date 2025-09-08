@@ -82,6 +82,10 @@ export const DocTrackerProvider = ({ children }: DocTrackerContextProviderProps)
     provider?.sendStateless(createStateless(StatelessType.AUTH, { accessToken: data.accessToken || '' }))
   }, [provider, data.accessToken])
 
+  if (provider) {
+    provider.attach()
+  }
+
   return (
     <>
       {!!provider
