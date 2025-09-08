@@ -1,6 +1,8 @@
 import { createClient } from 'redis'
 import type { RedisClientType } from 'redis'
 
+const BASE_PREFIX = 'elc::hp'
+
 export class Redis {
   readonly #url: string
   #redisClient?: RedisClientType
@@ -21,9 +23,9 @@ export class Redis {
   }
 
   async get(key: string): Promise<Uint8Array | undefined> {
-    const cachedDoc = await this.#redisClient?.get(`elc::hp:${key}`)
+    const cachedDoc = await this.#redisClient?.get(`${BASE_PREFIX}:${key}`)
     if (!cachedDoc) {
-      await this.#redisClient?.zAdd('elc::doc_touched', { score: Date.now(), value: key })
+      await this.#redisClient?.zAdd(`${BASE_PREFIX}:doc_touched`, { score: Date.now(), value: key })
       return
     }
 
@@ -36,13 +38,13 @@ export class Redis {
 
   async store(key: string, state: Buffer): Promise<void> {
     await this.#redisClient?.set(
-      `elc::hp:${key}`,
+      `${BASE_PREFIX}:${key}`,
       Buffer.from(state).toString('binary')
     )
   }
 
-  async aquireLock(key: string, value: string, expire: number = 5000): Promise<boolean> {
-    const response = await this.#redisClient?.set(key, value, {
+  async acquireLock(key: string, value: string, expire: number = 5000): Promise<boolean> {
+    const response = await this.#redisClient?.set(`${BASE_PREFIX}:lock:${key}`, value, {
       PX: expire, // Expiration in milliseconds
       NX: true // Only set if key doesn't exist
     })
