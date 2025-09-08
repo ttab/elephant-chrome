@@ -296,13 +296,14 @@ export class RepositoryExtension implements Extension {
       return false
     }
 
-    if (!isContext(context)) {
-      throw new Error(`Invalid context received in Repository.shouldBeStored for ${documentName}`)
+    // Ignore server contexts
+    if ((context as { agent: string })?.agent === 'server') {
+      return false
     }
 
-    // Ignore server contexts
-    if (context.agent === 'server') {
-      return false
+    // Validate context
+    if (!isContext(context)) {
+      throw new Error(`Invalid context received in Repository.shouldBeStored for ${documentName}`)
     }
 
     // Ignore user documents
