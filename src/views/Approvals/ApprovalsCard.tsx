@@ -6,7 +6,7 @@ import { DotDropdownMenu } from '@/components/ui/DotMenu'
 import type { AssignmentInterface } from '@/hooks/index/useAssignments'
 import { useLink } from '@/hooks/useLink'
 import { useRegistry } from '@/hooks/useRegistry'
-import { CalendarDays, FileInput, FileWarning, Zap } from '@ttab/elephant-ui/icons'
+import { CalendarDays, FileInput, FileWarning, MessageSquarePlusIcon, Zap } from '@ttab/elephant-ui/icons'
 import { parseISO, format } from 'date-fns'
 import { toZonedTime } from 'date-fns-tz'
 import { PreviewSheet } from '../Wires/components'
@@ -15,7 +15,7 @@ import { useSections } from '@/hooks/useSections'
 import type { StatusSpecification } from '@/defaults/workflowSpecification'
 import { useYValue } from '@/hooks/useYValue'
 import { AvatarGroup } from '@/components/AvatarGroup'
-import { Tooltip } from '@ttab/elephant-ui'
+import { Popover, PopoverContent, PopoverTrigger, Tooltip } from '@ttab/elephant-ui'
 import { timesSlots } from '@/defaults/assignmentTimeslots'
 import { useMemo } from 'react'
 import { AuthorNames } from './AuthorNames'
@@ -123,6 +123,8 @@ export const ApprovalsCard = ({ assignment, isSelected, isFocused, status, autho
   // this id is incremented by 1
   const lastUsableOrder = statusData?.heads.usable?.id
 
+  const internalInfo = assignment._deliverableDocument?.meta.find((block) => block.type === 'core/note' && block.role === 'internal')?.data?.text
+
   return (
     <Card.Root
       status={assignment._deliverableStatus || 'draft'}
@@ -170,9 +172,24 @@ export const ApprovalsCard = ({ assignment, isSelected, isFocused, status, autho
           )}
         </div>
 
-        <div className='flex flex-row gap-1 items-center'>
-          <ClockIcon hour={(time) ? parseInt(time.slice(0, 2)) : undefined} size={14} className='opacity-50' />
-          <time>{time}</time>
+        <div className='flex flex-row gap-2 items-baseline'>
+          {internalInfo && (
+            <Popover>
+              <PopoverTrigger onClick={(e) => {
+                e.stopPropagation()
+              }}
+              >
+                <Tooltip content={internalInfo}>
+                  <MessageSquarePlusIcon className='opacity-50' size={14} />
+                </Tooltip>
+              </PopoverTrigger>
+              <PopoverContent>{internalInfo}</PopoverContent>
+            </Popover>
+          )}
+          <div className='flex flex-row gap-1 items-center'>
+            <ClockIcon hour={(time) ? parseInt(time.slice(0, 2)) : undefined} size={14} className='opacity-50' />
+            <time>{time}</time>
+          </div>
         </div>
       </Card.Header>
 
