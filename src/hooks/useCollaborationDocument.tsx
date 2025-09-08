@@ -43,7 +43,6 @@ export const useCollaborationDocument = ({
       name: documentId,
       document: initialDocument,
       token: sessionData?.accessToken,
-      // preserveConnection: false,
       onConnect: () => setConnected(true),
       onSynced: () => {
         setDocument(provider.document)
