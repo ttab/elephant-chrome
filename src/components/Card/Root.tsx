@@ -73,7 +73,6 @@ export const Root = ({ className, isFocused = false, isSelected = false, status,
 
   return (
     <div
-      title={status}
       ref={ref}
       tabIndex={0}
       className={cn(variants({
