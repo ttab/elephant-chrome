@@ -221,7 +221,9 @@ export class OpenDocuments implements Extension {
    * Remove the user (or decrease count) from a tracked document userlist.
    */
   async onDisconnect({ documentName, context }: EleOnDisconnectPayload) {
-    if (this.isTrackerDocument(documentName)) return
+    if (this.isTrackerDocument(documentName) || context.agent === 'server') {
+      return
+    }
 
     const { sub: userId } = context.user || {}
 
