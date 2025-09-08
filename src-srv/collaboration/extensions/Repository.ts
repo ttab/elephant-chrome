@@ -35,12 +35,10 @@ export class RepositoryExtension implements Extension {
   readonly #storeDebouncer: ReturnType<typeof createDebounceMap<onStoreDocumentPayload>>
 
   #hp?: Hocuspocus
-  #redis: Redis
 
   constructor(configuration: RepositoryExtensionConfiguration) {
     this.#repository = configuration.repository
     this.#errorHandler = configuration.errorHandler
-    this.#redis = configuration.redis
 
     this.#storeDebouncer = createDebounceMap<onStoreDocumentPayload>(
       (documentName, payload) => {
@@ -130,12 +128,6 @@ export class RepositoryExtension implements Extension {
   } | void> {
     if (!this.#hp) {
       throw new Error('Hocuspocus is not yet finished configuring')
-    }
-
-    // Only one server should handle a flush, acquire a lock or ignore
-    const serverId = this.#hp.configuration.name || 'default'
-    if (await this.#redis.acquireLock(documentName, serverId) !== true) {
-      return
     }
 
     const { status = null, cause = null } = options || {}
