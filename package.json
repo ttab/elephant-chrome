@@ -2,7 +2,7 @@
   "name": "elephant-chrome",
   "private": false,
   "license": "MIT",
-  "version": "1.7.0-1",
+  "version": "1.7.0-2",
   "type": "module",
   "scripts": {
     "debug": "concurrently npm:debug:vite npm:dev:client:css",
@@ -103,7 +103,7 @@
     "tsc-alias": "^1.8.16",
     "tsx": "^4.20.5",
     "typescript": "^5.8.3",
-    "vite": "^7.1.4",
+    "vite": "^7.1.5",
     "vite-plugin-static-copy": "^3.1.2",
     "vitest": "^3.0.4"
   }

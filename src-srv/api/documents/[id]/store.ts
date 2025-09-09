@@ -22,7 +22,7 @@ export const POST: RouteHandler = async (req: Request, { collaborationServer, re
     // If we receive an update we apply it first
     if (payload instanceof Uint8Array) {
       const connection = await collaborationServer.server.openDirectConnection(id, {
-        context,
+        ...context,
         agent: 'server'
       })
 

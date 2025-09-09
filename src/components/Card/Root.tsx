@@ -53,6 +53,7 @@ export const Root = ({ className, isFocused = false, isSelected = false, status,
     focus-visible:ring-table-selected
     focus-visible:ring-2
     cursor-default
+    group
     `, {
     variants: {
       isSelected: {
