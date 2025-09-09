@@ -123,6 +123,7 @@ export class RepositoryExtension implements Extension {
     status?: string
     cause?: string
     addToHistory?: boolean
+    stateVector?: Uint8Array
   }): Promise<{
     version: string
   } | void> {
@@ -146,6 +147,12 @@ export class RepositoryExtension implements Extension {
 
     let documentType
     await connection.transact((doc) => {
+      // If we receive a state vector as an update we must first
+      // apply it so that we get all the latest changes.
+      if (options?.stateVector) {
+        Y.applyUpdateV2(doc, options.stateVector)
+      }
+
       const ele = doc.getMap('ele')
       const root = ele.get('root') as Y.Map<unknown>
       root?.delete('__inProgress')
