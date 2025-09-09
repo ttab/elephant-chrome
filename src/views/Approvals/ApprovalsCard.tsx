@@ -138,7 +138,9 @@ export const ApprovalsCard = ({ assignment, isSelected, isFocused, status, autho
               }}
               >
                 <Tooltip content={internalInfo}>
-                  <MessageSquarePlusIcon className='opacity-50' size={14} />
+                  <div className='hover:bg-gray-300 dark:hover:bg-gray-700 p-1 -m-1 rounded'>
+                    <MessageSquarePlusIcon className='opacity-50' size={14} />
+                  </div>
                 </Tooltip>
               </PopoverTrigger>
               <PopoverContent>{internalInfo}</PopoverContent>
