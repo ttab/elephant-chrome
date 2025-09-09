@@ -12,7 +12,7 @@ import type { GetStatusHistoryReponse } from '@ttab/elephant-api/repository'
 import type { Status as DocumentStatus } from '@ttab/elephant-api/repository'
 import type { EleDocumentResponse } from '@/shared/types'
 import { dateToReadableDateTime } from '@/shared/datetime'
-import { CAUSE_KEYS } from './causekeys'
+import { CAUSE_KEYS } from '../../defaults/causekeys'
 const BASE_URL = import.meta.env.BASE_URL || ''
 
 type Status = { name: string, created: string, creator: string }
@@ -122,8 +122,8 @@ export const Version = ({ documentId, hideDetails = false, textOnly = true }: { 
       const status: Status = { name: '', created: v.created, creator: createdBy(v.creator) }
 
       if (v.meta && 'cause' in v.meta) {
-        if ((CAUSE_KEYS as Record<string, string>)[v?.meta?.cause]) {
-          status.name = (CAUSE_KEYS as Record<string, string>)[v?.meta?.cause]
+        if ((CAUSE_KEYS as Record<string, { short: string, long: string }>)[v?.meta?.cause]) {
+          status.name = (CAUSE_KEYS as Record<string, { short: string, long: string }>)[v?.meta?.cause]?.short
         }
       }
 

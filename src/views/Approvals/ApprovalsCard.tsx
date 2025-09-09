@@ -2,11 +2,11 @@ import { Card } from '@/components/Card'
 import { ClockIcon } from '@/components/ClockIcon'
 import { Avatar, Link } from '@/components/index'
 import { useModal } from '@/components/Modal/useModal'
-import { DotDropdownMenu } from '@/components/ui/DotMenu'
+
 import type { AssignmentInterface } from '@/hooks/index/useAssignments'
 import { useLink } from '@/hooks/useLink'
 import { useRegistry } from '@/hooks/useRegistry'
-import { CalendarDaysIcon, FileWarningIcon, FileInputIcon, ZapIcon } from '@ttab/elephant-ui/icons'
+import { CalendarDaysIcon, FileWarningIcon, ZapIcon } from '@ttab/elephant-ui/icons'
 import { parseISO, format } from 'date-fns'
 import { toZonedTime } from 'date-fns-tz'
 import { PreviewSheet } from '../Wires/components'
@@ -76,46 +76,13 @@ export const ApprovalsCard = ({ assignment, isSelected, isFocused, status, autho
       ?.find((entry) => entry[0] === 'done')?.[1]
     : undefined
 
-  const menuItemDocumentLabel = assignment._deliverableType === 'core/flash' ? 'flash' : 'artikel'
-  const menuItems = [{
-    label: `Öppna ${menuItemDocumentLabel}`,
-    icon: FileInputIcon,
-    item: (
-      <Link
-        to={assignment._deliverableType === 'core/flash' ? 'Flash' : 'Editor'}
-        props={{ id: documentId }}
-      >
-        <div className='flex flex-row justify-center items-center'>
-          <div className='opacity-70 flex-none w-7'>
-            <FileInputIcon size={16} strokeWidth={1.75} />
-          </div>
-
-          <div className='grow'>
-            {`Öppna ${menuItemDocumentLabel}`}
-          </div>
-        </div>
-      </Link>
-    )
-  },
-  {
-    label: 'Öppna planering',
-    icon: CalendarDaysIcon,
-    item: (
-      <Link to='Planning' props={{ id: assignment._id }}>
-        <div className='flex flex-row justify-center items-center'>
-          <div className='opacity-70 flex-none w-7'>
-            <CalendarDaysIcon size={16} strokeWidth={1.75} />
-          </div>
-
-          <div className='grow'>
-            Öppna planering
-          </div>
-        </div>
-      </Link>
-    )
-  }]
-
   const title = assignment._deliverableDocument?.title
+
+  const slugline = assignment.meta.find((m) => m.type === 'tt/slugline')?.value
+  // heads.usable.id is a bigint counter that represents the version number
+  // of the current 'usable' status. Each time a version is tagged as usable,
+  // this id is incremented by 1
+  const lastUsableOrder = statusData?.heads.usable?.id
 
   return (
     <Card.Root
@@ -173,8 +140,9 @@ export const ApprovalsCard = ({ assignment, isSelected, isFocused, status, autho
       <Card.Content>
         <Card.Title>
           <div className='truncate'>{title}</div>
-          <div className='text-xs font-normal opacity-60'>
-            {assignment.meta.find((m) => m.type === 'tt/slugline')?.value || ' '}
+          <div className='text-xs font-normal opacity-60 flex gap-1'>
+            {slugline && <div>{slugline}</div>}
+            {slugline && lastUsableOrder && <div>{`- v${lastUsableOrder}`}</div>}
           </div>
         </Card.Title>
       </Card.Content>
@@ -208,7 +176,16 @@ export const ApprovalsCard = ({ assignment, isSelected, isFocused, status, autho
                 </span>
               )}
             </div>
-            <DotDropdownMenu items={menuItems} />
+            <Tooltip content='Öppna planering'>
+              <div
+                className='opacity-70 block md:opacity-0 md:group-hover:opacity-70 hover:bg-gray-300 dark:hover:bg-gray-700 p-1 -m-1 rounded transition-all'
+                onClick={(e) => e.stopPropagation()}
+              >
+                <Link to='Planning' props={{ id: assignment._id }}>
+                  <CalendarDaysIcon size={16} strokeWidth={1.75} />
+                </Link>
+              </div>
+            </Tooltip>
           </div>
         </div>
       </Card.Footer>

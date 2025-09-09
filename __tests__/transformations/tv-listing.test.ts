@@ -6,8 +6,8 @@ const tvListingNewsDoc = Block.create({
   id: 'eee539ba-63bc-463d-a513-9b3f67cb467d',
   type: 'tt/tv-listing',
   links: [{
-    rel: 'self',
-    uri: 'tt://tv-listing/eee539ba-63bc-463d-a513-9b3f67cb467d'
+    rel: 'channel',
+    uri: ''
   }],
   data: {
     channel: 'SVT1',
@@ -31,6 +31,14 @@ const tvListingSlate: TBElement = {
   },
   children: [
     {
+      type: 'tt/tv-listing/title',
+      children: [
+        {
+          text: 'Melodifestivalen'
+        }
+      ]
+    },
+    {
       type: 'tt/tv-listing/channel',
       children: [
         {
@@ -47,14 +55,6 @@ const tvListingSlate: TBElement = {
       ]
     },
     {
-      type: 'tt/tv-listing/end_time',
-      children: [
-        {
-          text: '22.30'
-        }
-      ]
-    },
-    {
       type: 'tt/tv-listing/time',
       children: [
         {
@@ -63,10 +63,10 @@ const tvListingSlate: TBElement = {
       ]
     },
     {
-      type: 'tt/tv-listing/title',
+      type: 'tt/tv-listing/end_time',
       children: [
         {
-          text: 'Melodifestivalen'
+          text: '22.30'
         }
       ]
     }

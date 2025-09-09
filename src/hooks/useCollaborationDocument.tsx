@@ -43,7 +43,6 @@ export const useCollaborationDocument = ({
       name: documentId,
       document: initialDocument,
       token: sessionData?.accessToken,
-      preserveConnection: false,
       onConnect: () => setConnected(true),
       onSynced: () => {
         setDocument(provider.document)
@@ -57,7 +56,10 @@ export const useCollaborationDocument = ({
       onClose: () => setConnected(false)
     })
 
-    providerRef.current = provider
+    if (provider) {
+      provider.attach()
+      providerRef.current = provider
+    }
 
     return () => {
       provider.destroy()

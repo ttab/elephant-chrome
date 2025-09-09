@@ -132,9 +132,9 @@ export class RepositoryExtension implements Extension {
       throw new Error('Hocuspocus is not yet finished configuring')
     }
 
-    // Only one server should handle a flush, aquire a lock or ignore
+    // Only one server should handle a flush, acquire a lock or ignore
     const serverId = this.#hp.configuration.name || 'default'
-    if (await this.#redis.aquireLock(`stateless:${documentName}`, serverId) !== true) {
+    if (await this.#redis.acquireLock(documentName, serverId) !== true) {
       return
     }
 
@@ -296,13 +296,14 @@ export class RepositoryExtension implements Extension {
       return false
     }
 
-    if (!isContext(context)) {
-      throw new Error(`Invalid context received in Repository.shouldBeStored for ${documentName}`)
+    // Ignore server contexts
+    if ((context as { agent: string })?.agent === 'server') {
+      return false
     }
 
-    // Ignore server contexts
-    if (context.agent === 'server') {
-      return false
+    // Validate context
+    if (!isContext(context)) {
+      throw new Error(`Invalid context received in Repository.shouldBeStored for ${documentName}`)
     }
 
     // Ignore user documents
