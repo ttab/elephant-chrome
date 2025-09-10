@@ -1,6 +1,7 @@
 import { toZonedTime } from 'date-fns-tz'
 import { parseISO, getHours } from 'date-fns'
 import type { AssignmentInterface } from './types'
+import type { StatusData } from 'src/datastore/types'
 
 export interface AssignmentResponseInterface {
   key?: string
@@ -74,6 +75,12 @@ export function structureAssignments(
 
   response.forEach((slot) => {
     slot.items.sort((a, b) => {
+      if (a?._statusData && b?._statusData) {
+        const aData = JSON.parse(a._statusData) as StatusData
+        const bData = JSON.parse(b._statusData) as StatusData
+        return aData?.modified > bData.modified ? -1 : 1
+      }
+
       const aHasSlot = !!a.data.publish_slot
       const bHasSlot = !!b.data.publish_slot
       if (aHasSlot && !bHasSlot) return -1
@@ -86,6 +93,7 @@ export function structureAssignments(
       }
       if (aWithheld) return -1
       if (bWithheld) return 1
+
 
       if (a.data.start && b.data.start) {
         return a.data.start.localeCompare(b.data.start)
