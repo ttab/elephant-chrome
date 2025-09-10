@@ -51,11 +51,7 @@ export function toYjsNewsDoc(eleDoc: EleDocumentResponse, yDoc: Document | Y.Doc
 /**
  * Convert a yjs structure to a grouped YDocumentResponse
  */
-export function fromYjsNewsDoc(yDoc: Y.Doc): {
-  documentResponse: EleDocumentResponse
-  updatedHash: number | undefined
-  originalHash: number
-} {
+export function fromYjsNewsDoc(yDoc: Y.Doc): EleDocumentResponse {
   const yMap = yDoc.getMap('ele')
 
   const root = yMap.get('root') as Y.Map<unknown>
@@ -90,7 +86,7 @@ export function fromYjsNewsDoc(yDoc: Y.Doc): {
 
   const _title = makeTitle()
 
-  const responseDocument = {
+  return {
     version: yDoc.getMap('version').get('version') as string,
     isMetaDocument: false,
     mainDocument: '',
@@ -105,16 +101,6 @@ export function fromYjsNewsDoc(yDoc: Y.Doc): {
       links,
       language
     }
-  }
-
-  const currentHash = createHash(JSON.stringify(responseDocument.document))
-  const originalHash = (yDoc.getMap('hash')?.get('hash') || 0) as number
-
-  // Return response, original hash from yjs structure and newly calculated hash
-  return {
-    documentResponse: responseDocument,
-    updatedHash: (currentHash !== originalHash) ? currentHash : undefined,
-    originalHash
   }
 }
 

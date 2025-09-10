@@ -1,4 +1,5 @@
 import type {
+  DirectConnection,
   Extension,
   Hocuspocus,
   onConfigurePayload,
@@ -20,6 +21,7 @@ import type { EleDocumentResponse } from '@/shared/types/index.js'
 import { createDebounceMap } from '@/shared/leadingDebounce.js'
 import type { Redis } from '../../utils/Redis.js'
 import logger from '../../lib/logger.js'
+import createHash from '@/shared/createHash.js'
 
 interface RepositoryExtensionConfiguration {
   repository: RepositoryWrapper
@@ -133,55 +135,71 @@ export class RepositoryExtension implements Extension {
 
     const { status = null, cause = null } = options || {}
 
-    const connection = await this.#hp.openDirectConnection(documentName, {
-      ...context,
-      agent: 'server'
-    }).catch((ex) => {
-      throw new Error('Failed acquire connection to HP server', { cause: ex })
-    })
+    // Helper function to get document and connection.
+    // The document can be local only when based on state vector to ensure
+    // that what the client sends is what is stored. So setting the hash,
+    // must be done on connection.document.
+    const getDocument = async (hp: Hocuspocus, stateVector?: Uint8Array): Promise<{
+      document: Y.Doc
+      connection: DirectConnection
+    }> => {
+      const connection = await hp.openDirectConnection(documentName, {
+        ...context,
+        agent: 'server'
+      }).catch((ex) => {
+        throw new Error('Failed acquire connection to HP server', { cause: ex })
+      })
 
-    if (!connection.document) {
-      await connection.disconnect()
-      throw new Error('No document retrieved from connection')
+      if (!connection.document) {
+        await connection.disconnect()
+        throw new Error('No document retrieved from connection')
+      }
+
+      if (stateVector) {
+        const document = new Y.Doc()
+        Y.applyUpdate(document, stateVector)
+        return { document, connection }
+      } else {
+        return { document: connection.document, connection }
+      }
     }
 
+    const { document, connection } = await getDocument(this.#hp, options?.stateVector)
+
+    // Find the document type
+    const ele = document.getMap('ele')
+    const root = ele.get('root') as Y.Map<unknown>
+
     let documentType
-    await connection.transact((doc) => {
-      // If we receive a state vector as an update we must first
-      // apply it so that we get all the latest changes.
-      if (options?.stateVector) {
-        Y.applyUpdateV2(doc, options.stateVector)
-      }
+    switch (root.get('type')) {
+      case 'core/planning-item':
+        documentType = 'Planning'
+        break
+      case 'core/event':
+        documentType = 'Event'
+        break
+    }
 
-      const ele = doc.getMap('ele')
-      const root = ele.get('root') as Y.Map<unknown>
-      root?.delete('__inProgress')
-
-      // FIXME: We should use the raw type, not translate into English,
-      // needs changing in "latest created" lists.
-      switch (root.get('type')) {
-        case 'core/planning-item':
-          documentType = 'Planning'
-          break
-        case 'core/event':
-          documentType = 'Event'
-          break
-      }
-    })
-
-    const { documentResponse, updatedHash, originalHash } = fromYjsNewsDoc(connection.document)
+    const documentResponse = fromYjsNewsDoc(document)
     const result = await this.#storeDocument(
       documentName,
-      connection.document,
       documentResponse,
       context.accessToken,
-      updatedHash || originalHash,
       status,
       cause
     )
 
+    // Set new hash an version to the actual connected document
+    await connection.transact((doc) => {
+      doc.getMap('hash').set(
+        'hash',
+        createHash(JSON.stringify(doc.getMap('ele').toJSON()))
+      )
+      doc.getMap('version').set('version', result.version)
+    })
+
     // Cleanup
-    await connection.disconnect()
+    connection.disconnect()
 
     // Finally update the user history document if applicable
     if (options?.addToHistory === true && typeof documentType === 'string') {
@@ -201,18 +219,25 @@ export class RepositoryExtension implements Extension {
       throw new Error(`Invalid context received in Repository.#performStore for ${documentName}`)
     }
 
-    const { documentResponse, updatedHash } = fromYjsNewsDoc(document)
-    if (!updatedHash) {
+    const documentResponse = fromYjsNewsDoc(document)
+
+    // Regular lifecycle stores should ignore all stores with an unchanged hash.
+    const newHash = createHash(JSON.stringify(document.getMap('ele').toJSON()))
+    if (newHash === document.getMap('hash').get('hash')) {
       return
     }
 
-    return await this.#storeDocument(
+    const result = await this.#storeDocument(
       documentName,
-      document,
       documentResponse,
-      payload.context.accessToken,
-      updatedHash
+      payload.context.accessToken
     )
+
+    // Update hash and version
+    document.getMap('hash').set('hash', newHash)
+    document.getMap('version').set('version', result.version)
+
+    return result
   }
 
   /**
@@ -220,10 +245,8 @@ export class RepositoryExtension implements Extension {
    */
   async #storeDocument(
     documentName: string,
-    document: Y.Doc,
     documentResponse: EleDocumentResponse,
     accessToken: string,
-    hash: number,
     status?: string | null,
     cause?: string | null
   ): Promise<{ version: string }> {
@@ -238,14 +261,7 @@ export class RepositoryExtension implements Extension {
       throw new Error(`Failed storing document ${documentName} in repository`, { cause: result })
     }
 
-    // Update the document version and hash
-    const versionMap = document.getMap('version')
-    const hashMap = document.getMap('hash')
     const version = result.response.version.toString()
-
-    versionMap.set('version', version)
-    hashMap.set('hash', hash)
-
     logger.info(`Document ${documentName} v${version} stored in repository`)
 
     return { version }
