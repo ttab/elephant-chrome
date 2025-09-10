@@ -1,4 +1,3 @@
-import { fromYjsNewsDoc } from '@/shared/transformations/yjsNewsDoc'
 import * as Y from 'yjs'
 const BASE_URL = import.meta.env.BASE_URL
 
