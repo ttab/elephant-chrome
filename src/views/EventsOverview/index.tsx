@@ -12,8 +12,8 @@ import { type Event } from '@/shared/schemas/event'
 import { useSections } from '@/hooks/useSections'
 import { useQuery } from '@/hooks/useQuery'
 import { useOrganisers } from '@/hooks/useOrganisers'
-import { loadFilters } from '@/lib/loadFilters'
 import { useRegistry } from '@/hooks/useRegistry'
+import { useInitFilters } from '@/hooks/useFilters'
 
 const meta: ViewMetadata = {
   name: 'Events',
@@ -40,7 +40,8 @@ export const Events = (): JSX.Element => {
   const { locale } = useRegistry()
   const columns = useMemo(() =>
     eventTableColumns({ sections, organisers, locale }), [sections, organisers, locale])
-  const columnFilters = loadFilters<Event>(query, columns)
+
+  const columnFilters = useInitFilters<Event>({ type: 'Events', columns })
 
   return (
     <View.Root tab={currentTab} onTabChange={setCurrentTab}>

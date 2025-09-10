@@ -9,20 +9,37 @@ import type { ColumnDef, ColumnFiltersState, Updater } from '@tanstack/react-tab
  * @param columns - The definitions of the columns to filter.
  * @returns The state of the column filters.
  */
-export function loadFilters<TData>(
-  query: QueryParams | undefined,
+export function loadFilters<TData>({
+  query,
+  userFilters,
+  setQuery,
+  columns
+}: {
+  query?: QueryParams
+  userFilters?: QueryParams
+  setQuery?: (params: QueryParams) => void
   columns: ColumnDef<TData>[]
-): ColumnFiltersState {
-  // Get all query parameters that match the column ids
-  const filters = Object.entries(query || {}).filter(([key]) =>
-    columns.some((column) => column.id === key)
-  )
+}): ColumnFiltersState {
+  // Prefer query, fallback to userFilters if setQuery is provided
+  const source = hasDefinedFilter(query)
+    ? query
+    : hasDefinedFilter(userFilters) && setQuery
+      ? userFilters
+      : undefined
 
-  // Arrange query params into a ColumnFiltersState
-  return filters.map(([key, value]) =>
-    ({ id: key, value: Array.isArray(value) ? value : [value] }))
+  if (source) {
+    if (source === userFilters && setQuery) setQuery(userFilters)
+    return Object.entries(source)
+      .filter(([key]) => columns
+        .some((column) => column.id === key))
+      .map(([key, value]) => ({
+        id: key,
+        value: Array.isArray(value) ? value : [value]
+      }))
+  }
+
+  return []
 }
-
 
 /**
  * Updates and converts columnFilters to a QueryParams.
@@ -57,4 +74,12 @@ export function columnFilterToQuery(columnFilters: ColumnFiltersState): QueryPar
   }
 
   return query
+}
+
+
+export function hasDefinedFilter(obj?: QueryParams): boolean {
+  return !!obj && Object
+    .values(obj)
+    .some((v) =>
+      v !== undefined && v !== null && v !== '')
 }

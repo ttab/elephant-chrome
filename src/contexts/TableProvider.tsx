@@ -29,6 +29,8 @@ import {
 import { useQuery } from '../hooks'
 import { updateFilter } from '@/lib/loadFilters'
 import type { View } from '../types'
+import type { QueryParams } from '@/hooks/useQuery'
+import { useUserTracker } from '@/hooks/useUserTracker'
 
 export interface CommandArgs {
   pages: string[]
@@ -72,6 +74,8 @@ export const TableProvider = <T,>({
   const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({ startTime: false, modified: false, date: false })
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>(initialState?.columnFilters || [])
   const [sorting, setSorting] = useState<SortingState>(initialState?.sorting || [])
+
+  const [,setUserFilters] = useUserTracker<QueryParams | undefined>(`filters.${type}`)
 
   const [pages, setPages] = useState<string[]>([])
   const page = pages[pages.length - 1]
@@ -119,11 +123,15 @@ export const TableProvider = <T,>({
       setGlobalFilter(updater)
     },
     onColumnFiltersChange: useCallback((updater: Updater<ColumnFiltersState>) => {
+      const qp = updateFilter(updater, columnFilters)
+
       // Update query
-      setQuery(updateFilter(updater, columnFilters))
+      setQuery(qp)
       // Set filter in table
       setColumnFilters(updater)
-    }, [setColumnFilters, setQuery, columnFilters]),
+      // Set filter in user tracker
+      setUserFilters(qp)
+    }, [setColumnFilters, setQuery, columnFilters, setUserFilters]),
     onColumnVisibilityChange: useCallback(setColumnVisibility, [setColumnVisibility]),
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel: getFilteredRowModel(),

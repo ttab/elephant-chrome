@@ -26,11 +26,11 @@ export const Toolbar = <TData,>({ columns }: {
     || !!globalFilter, [columnFilters, globalFilter])
   const allSections = useSections()
   const column = table.getColumn('section')
-  const [filters, setFilters] = useUserTracker<QueryParams | undefined>(`filters.${type}`)
+  const [userFilters, setUserFilters] = useUserTracker<QueryParams | undefined>(`filters.${type}`)
   const columnFilterValue = column?.getFilterValue()
 
   const savedUserFilter = useMemo(() =>
-    loadFilters<TData>(filters, columns), [filters, columns])
+    loadFilters<TData>({ userFilters, columns }), [userFilters, columns])
 
   const isUserFilter = (savedUserFilter: ColumnFiltersState, currentFilter: ColumnFiltersState): boolean => (
     JSON.stringify(savedUserFilter.sort()) === JSON.stringify(currentFilter.sort())
@@ -43,7 +43,7 @@ export const Toolbar = <TData,>({ columns }: {
 
   const handleSaveUserFilter = () => {
     const columnFilters = table.getState().columnFilters
-    setFilters(columnFilterToQuery(columnFilters))
+    setUserFilters(columnFilterToQuery(columnFilters))
 
     toast.success('Ditt filter har sparats')
   }

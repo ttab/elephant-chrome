@@ -12,11 +12,14 @@ import { useRegistry } from '@/hooks/useRegistry'
 import { useSession } from 'next-auth/react'
 import { type ViewMetadata } from '@/types'
 import { type IDBAuthor } from 'src/datastore/types'
+import type { QueryParams } from '@/hooks/useQuery'
 import { useQuery } from '@/hooks/useQuery'
 import { newLocalDate } from '@/shared/datetime'
 import { loadFilters } from '@/lib/loadFilters'
 import { useSections } from '@/hooks/useSections'
 import type { Assignment } from '@/shared/schemas/assignments'
+import { useUserTracker } from '@/hooks/useUserTracker'
+import { useInitFilters } from '@/hooks/useFilters'
 
 const meta: ViewMetadata = {
   name: 'Assignments',
@@ -61,7 +64,8 @@ export const Assignments = (): JSX.Element => {
 
   const columns = useMemo(() =>
     assignmentColumns({ authors, locale, timeZone, sections, currentDate: date }), [authors, locale, timeZone, sections, date])
-  const columnFilters = loadFilters<Assignment>(query, columns)
+
+  const columnFilters = useInitFilters({ type: 'Assignments', columns })
 
   return (
     <View.Root tab={currentTab} onTabChange={setCurrentTab}>
