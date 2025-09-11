@@ -148,10 +148,20 @@ export const ApprovalsCard = ({ assignment, isSelected, isFocused, status, autho
           )}
         </div>
 
-        <div className='flex flex-row gap-1 items-center'>
-          <ClockIcon hour={(time) ? parseInt(time.slice(0, 2)) : undefined} size={14} className='opacity-50' />
-          <time>{time}</time>
-        </div>
+        <Popover>
+          <PopoverTrigger onClick={(e) => {
+            e.stopPropagation()
+          }}
+          >
+            <Tooltip content={statusData?.modified ? `Senast ändrad ${format(toZonedTime(parseISO(statusData.modified), timeZone), 'HH:mm')}` : 'Senast ändrad'}>
+              <div className='flex flex-row gap-1 items-center'>
+                <ClockIcon hour={(time) ? parseInt(time.slice(0, 2)) : undefined} size={14} className='opacity-50' />
+                <time>{time}</time>
+              </div>
+            </Tooltip>
+          </PopoverTrigger>
+          <PopoverContent>{statusData?.modified ? `Senast ändrad ${format(toZonedTime(parseISO(statusData.modified), timeZone), 'HH:mm')}` : 'Senast ändrad'}</PopoverContent>
+        </Popover>
       </Card.Header>
 
       <Card.Content>
@@ -213,6 +223,10 @@ export const ApprovalsCard = ({ assignment, isSelected, isFocused, status, autho
 
 
 function getAssignmentTime(assignment: AssignmentInterface, timeZone: string) {
+  if (assignment?._statusData) {
+    const modified = (JSON.parse(assignment._statusData) as StatusData)?.modified
+    return format(toZonedTime(parseISO(modified), timeZone), 'HH:mm')
+  }
   if (assignment.data.publish && assignment._deliverableStatus === 'withheld') {
     return format(toZonedTime(parseISO(assignment.data.publish), timeZone), 'HH:mm')
   }
