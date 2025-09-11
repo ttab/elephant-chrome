@@ -41,7 +41,11 @@ export const Events = (): JSX.Element => {
   const columns = useMemo(() =>
     eventTableColumns({ sections, organisers, locale }), [sections, organisers, locale])
 
-  const columnFilters = useInitFilters<Event>({ type: 'Events', columns })
+  // Load current filters from user tracker if any
+  const columnFilters = useInitFilters<Event>({
+    path: 'filters.Events.current',
+    columns
+  })
 
   return (
     <View.Root tab={currentTab} onTabChange={setCurrentTab}>

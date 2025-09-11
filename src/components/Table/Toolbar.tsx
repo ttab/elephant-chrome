@@ -4,7 +4,7 @@ import { SelectedFilters } from './SelectedFilters'
 import { useSections } from '@/hooks/useSections'
 import { DotDropdownMenu } from '../ui/DotMenu'
 import { useUserTracker } from '@/hooks/useUserTracker'
-import { columnFilterToQuery, loadFilters } from '@/lib/loadFilters'
+import { columnFilterToQuery, queryToColumnFilter } from '@/lib/loadFilters'
 import { useTable } from '@/hooks/useTable'
 import type { ColumnDef, ColumnFiltersState } from '@tanstack/react-table'
 import type { QueryParams } from '@/hooks/useQuery'
@@ -14,64 +14,87 @@ import { Filter } from '@/components/Filter'
 import { Commands } from '@/components/Commands'
 import { Sort } from '../Sort'
 
-export const Toolbar = <TData,>({ columns }: {
-  columns: ColumnDef<TData>[]
-}): JSX.Element => {
+export const Toolbar = <TData,>({ columns }: { columns: ColumnDef<TData>[] }): JSX.Element => {
   const { table, type, command } = useTable<TData>()
   const { columnFilters, globalFilter } = table.getState() as {
     columnFilters: ColumnFiltersState
     globalFilter: string
   }
-  const isFiltered = useMemo(() => columnFilters.length > 0
-    || !!globalFilter, [columnFilters, globalFilter])
   const allSections = useSections()
   const column = table.getColumn('section')
-  const [userFilters, setUserFilters] = useUserTracker<QueryParams | undefined>(`filters.${type}`)
+  const [userFilters, setUserFilters] = useUserTracker<QueryParams | undefined>(`filters.${type}.user`)
   const columnFilterValue = column?.getFilterValue()
 
-  const savedUserFilter = useMemo(() =>
-    loadFilters<TData>({ userFilters, columns }), [userFilters, columns])
+  const savedUserFilters = useMemo(() => {
+    if (!userFilters) return undefined
+    return queryToColumnFilter<TData>(userFilters, columns)
+  }, [userFilters, columns])
 
-  const isUserFilter = (savedUserFilter: ColumnFiltersState, currentFilter: ColumnFiltersState): boolean => (
-    JSON.stringify(savedUserFilter.sort()) === JSON.stringify(currentFilter.sort())
-  )
+  const isUserFilter = useCallback((saved?: ColumnFiltersState, current?: ColumnFiltersState) => {
+    const stableStringify = (arr: ColumnFiltersState) =>
+      JSON.stringify([...arr].sort((a, b) => a.id.localeCompare(b.id)))
 
-  const handleResetFilters = () => {
+    if (!saved || !current) return false
+    return stableStringify(saved) === stableStringify(current)
+  }, [])
+
+  const isFiltered = useMemo(() => columnFilters.length > 0 || !!globalFilter,
+    [columnFilters, globalFilter])
+
+  const handleResetFilters = useCallback(() => {
     table.resetColumnFilters()
     table.resetGlobalFilter()
-  }
+  }, [table])
 
-  const handleSaveUserFilter = () => {
-    const columnFilters = table.getState().columnFilters
-    setUserFilters(columnFilterToQuery(columnFilters))
-
+  const handleSaveUserFilter = useCallback(() => {
+    setUserFilters(columnFilterToQuery(table.getState().columnFilters))
     toast.success('Ditt filter har sparats')
-  }
+  }, [setUserFilters, table])
 
-  const handleToggleGroupValue = useCallback(() => {
-    if (isUserFilter(savedUserFilter, columnFilters)) {
-      return 'user'
-    }
+  const handleToggleGroupValue = useMemo(() => {
+    if (isUserFilter(savedUserFilters, columnFilters)) return 'user'
 
     return Array.isArray(columnFilterValue) && columnFilterValue.length === 1
       ? columnFilterValue[0] as string
       : ''
-  }, [columnFilterValue, savedUserFilter, columnFilters])
+  }, [columnFilterValue, savedUserFilters, columnFilters, isUserFilter])
 
-  const handleToggleValueChange = (value: string | undefined) => {
-    if (value === 'user') {
-      table.setColumnFilters(savedUserFilter)
+  const handleToggleValueChange = useCallback((value: string | undefined) => {
+    if (value === 'user' && savedUserFilters) {
+      table.setColumnFilters(savedUserFilters)
       return
     }
 
-    // If current filter is userFilter, reset all filters
-    if (value === '' && isUserFilter(savedUserFilter, table.getState().columnFilters)) {
+    if (value === '' && isUserFilter(savedUserFilters, table.getState().columnFilters)) {
       table.resetColumnFilters()
       return
     }
 
-    column?.setFilterValue(value ? [value] : undefined)
-  }
+    if (value !== 'user') {
+      column?.setFilterValue(value ? [value] : undefined)
+    }
+  }, [savedUserFilters, table, column, isUserFilter])
+
+  // Dropdown menu items memoized
+  const sectionMenuItems = useMemo(() =>
+    allSections.map((section) => ({
+      label: section.title,
+      item: () => column?.setFilterValue([section.id])
+    })), [allSections, column])
+
+  const dropdownItems = useMemo(() => [
+    ...sectionMenuItems,
+    {
+      label: 'Personligt filter',
+      icon: UserCog,
+      item: () => savedUserFilters && table.setColumnFilters(savedUserFilters)
+    },
+    {
+      label: 'Spara personligt filter',
+      icon: Save,
+      item: handleSaveUserFilter
+    }
+  ], [sectionMenuItems, savedUserFilters, table, handleSaveUserFilter])
 
   return (
     <div className='flex flex-wrap flex-grow items-center space-x-2 border-b px-4 py-1 pr-2.5 sticky top-0 bg-white z-10'>
@@ -103,7 +126,7 @@ export const Toolbar = <TData,>({ columns }: {
           <ToggleGroup
             type='single'
             size='xs'
-            value={(() => handleToggleGroupValue())()}
+            value={handleToggleGroupValue}
             onValueChange={handleToggleValueChange}
             className='px-1'
           >
@@ -119,6 +142,7 @@ export const Toolbar = <TData,>({ columns }: {
             ))}
             <ToggleGroupItem
               value='user'
+              disabled={!savedUserFilters}
               aria-label='Toggle user'
               className='border data-[state=off]:text-muted-foreground'
             >
@@ -141,26 +165,7 @@ export const Toolbar = <TData,>({ columns }: {
         <div className='flex justify-end @2xl/view:hidden'>
           <DotDropdownMenu
             trigger='vertical'
-            items={[
-              ...allSections.map((section) => ({
-                label: section.title,
-                item: () => {
-                  column?.setFilterValue([section.id])
-                }
-              })),
-              {
-                label: 'Personligt filter',
-                icon: UserCog,
-                item: () => {
-                  table.setColumnFilters(savedUserFilter)
-                }
-              },
-              {
-                label: 'Spara personligt filter',
-                icon: Save,
-                item: handleSaveUserFilter
-              }
-            ]}
+            items={dropdownItems}
           />
         </div>
       </div>

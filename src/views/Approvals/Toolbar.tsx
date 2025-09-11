@@ -14,7 +14,8 @@ import { useCallback, useState } from 'react'
 export const Toolbar = ({ facets }: { facets: Facets }): JSX.Element => {
   const [filters, setFilters] = useQuery(['status', 'section'])
   const isFiltered = Object.values(filters).some((value) => value?.length)
-  const [userFilters, setUserFilters] = useUserTracker<QueryParams | undefined>(`filters.Approvals`)
+  const [userFilters, setUserFilters] = useUserTracker<QueryParams | undefined>(`filters.Approvals.user`)
+  const [currentFilters, setCurrentFilters] = useUserTracker<QueryParams | undefined>(`filters.Approvals.current`)
 
 
   const [pages, setPages] = useState<string[]>([])
@@ -52,17 +53,20 @@ export const Toolbar = ({ facets }: { facets: Facets }): JSX.Element => {
     // Set userFilter
     if (value === 'user') {
       setFilters(userFilters || {})
+      setCurrentFilters((userFilters))
       return
     }
 
     // If current filter is userFilter, reset all filters
     if (value === '' && isUserFilter(userFilters, filters)) {
       setFilters({})
+      setCurrentFilters({})
       return
     }
 
     // Toggle section filter
     setFilters({ ...filters, section: value ? [value] : undefined })
+    setCurrentFilters({ ...filters, section: value ? [value] : undefined })
   }
 
   const page = pages[pages.length - 1] || ''
@@ -112,6 +116,7 @@ export const Toolbar = ({ facets }: { facets: Facets }): JSX.Element => {
             ))}
             <ToggleGroupItem
               value='user'
+              disabled={!userFilters}
               aria-label='Toggle user'
               className='border data-[state=off]:text-muted-foreground'
             >

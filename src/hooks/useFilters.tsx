@@ -3,18 +3,17 @@ import { useQuery, type QueryParams } from './useQuery'
 import { useUserTracker } from './useUserTracker'
 import { useEffect, useMemo, useRef } from 'react'
 
-export const useInitFilters = <TData,>({ type, columns }: {
-  type: string
+export const useInitFilters = <TData,>({ path, columns }: {
+  path: string
   queryKeys?: string[]
-  columns: ColumnDef<TData>[]
+  columns?: ColumnDef<TData>[]
 }): ColumnFiltersState => {
   const [query, setQuery] = useQuery()
-  const [userFilters] = useUserTracker<QueryParams | undefined>(`filters.${type}`)
+  const [userFilters] = useUserTracker<QueryParams | undefined>(path)
 
   const didSetQuery = useRef(false)
   useEffect(() => {
-    if (
-      userFilters
+    if (userFilters
       && hasDefinedFilter(userFilters)
       && !hasDefinedFilter(query)
       && JSON.stringify(userFilters) !== JSON.stringify(query)
@@ -33,12 +32,17 @@ export const useInitFilters = <TData,>({ type, columns }: {
 
   const filters = useMemo(() => {
     if (!sourceFilters) return []
-    return Object.entries(sourceFilters)
-      .filter(([key]) => columns.some((column) => column.id === key))
-      .map(([key, value]) => ({
-        id: key,
-        value: Array.isArray(value) ? value : [value]
-      }))
+
+    const filtered = columns
+      ? Object.entries(sourceFilters)
+        .filter(([key]) =>
+          columns.some((column) => column.id === key))
+      : Object.entries(sourceFilters)
+
+    return filtered.map(([key, value]) => ({
+      id: key,
+      value: Array.isArray(value) ? value : [value]
+    }))
   }, [sourceFilters, columns])
 
   return filters

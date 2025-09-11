@@ -39,7 +39,10 @@ export const Plannings = (): JSX.Element => {
   const columns = useMemo(() =>
     planningListColumns({ sections, authors }), [sections, authors])
 
-  const columnFilters = useInitFilters({ type: 'Plannings', columns })
+  const columnFilters = useInitFilters<Planning>({
+    path: 'filters.Plannings.current',
+    columns
+  })
 
   return (
     <View.Root tab={currentTab} onTabChange={setCurrentTab}>

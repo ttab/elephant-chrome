@@ -8,7 +8,9 @@ import type { AssignmentResponseInterface } from './lib/assignments/structureAss
 import { structureAssignments } from './lib/assignments/structureAssignments'
 import type { Facets } from './lib/assignments/filterAssignments'
 import { filterAssignments, getFacets } from './lib/assignments/filterAssignments'
-import { useQuery } from '../useQuery'
+import type { Planning } from '@/shared/schemas/planning'
+import { useInitFilters } from '../useFilters'
+import { columnFilterToQuery } from '@/lib/loadFilters'
 
 export { AssignmentInterface }
 
@@ -18,7 +20,15 @@ const defaultStatuses = ['draft', 'done', 'approved', 'withheld']
  * Fetch all assignments in specific date as Block[] extended with some planning level data.
  * Allows optional filtering by type and optional sorting into buckets.
  */
-export const useAssignments = ({ date, type, dateType = 'start-date', slots, status, requireDeliverable = false, requireMetrics = null }: {
+export const useAssignments = ({
+  date,
+  type,
+  dateType = 'start-date',
+  slots,
+  status,
+  requireDeliverable = false,
+  requireMetrics = null
+}: {
   date: Date
   dateType?: 'start-date' | 'combined-date'
   type?: string | string[]
@@ -35,11 +45,24 @@ export const useAssignments = ({ date, type, dateType = 'start-date', slots, sta
   const { index, repository, timeZone } = useRegistry()
   const key = type ? `core/assignment/${type.toString()}/${date.toString()}` : 'core/assignment'
 
-  const [filters] = useQuery(['status', 'section'])
+  // This hook is currently only used for the Approvals view, so we hardcode the filter path
+  const filters = columnFilterToQuery(useInitFilters<Planning>({
+    path: 'filters.Approvals.current'
+  }))
 
   const { data, mutate, error } = useSWR<AssignmentInterface[] | undefined, Error>(
-    key,
-    (): Promise<AssignmentInterface[] | undefined> => fetchAssignments({ index, repository, session, date, dateType, timeZone, requireDeliverable, requireMetrics, type })
+    key, (): Promise<AssignmentInterface[] | undefined> =>
+      fetchAssignments({
+        index,
+        repository,
+        session,
+        date,
+        dateType,
+        timeZone,
+        requireDeliverable,
+        requireMetrics,
+        type
+      })
   )
 
   if (error) {
@@ -62,7 +85,9 @@ export const useAssignments = ({ date, type, dateType = 'start-date', slots, sta
     'core/editorial-info', 'core/editorial-info+meta',
     'core/flash', 'core/flash+meta'
   ], (event) => {
-    if ((event.event !== 'document' && event.event !== 'status' && event.event !== 'delete_document')) {
+    if ((event.event !== 'document'
+      && event.event !== 'status'
+      && event.event !== 'delete_document')) {
       return
     }
 
@@ -73,7 +98,9 @@ export const useAssignments = ({ date, type, dateType = 'start-date', slots, sta
     for (const slot of structuredData) {
       const assignment = slot.items
         .find((assignment) =>
-          (assignment._id === event.uuid || event.mainDocument === assignment._id || assignment._deliverableId === event.uuid))
+          (assignment._id === event.uuid
+            || event.mainDocument === assignment._id
+            || assignment._deliverableId === event.uuid))
       if (assignment) {
         void mutate()
         return

@@ -75,7 +75,8 @@ export const TableProvider = <T,>({
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>(initialState?.columnFilters || [])
   const [sorting, setSorting] = useState<SortingState>(initialState?.sorting || [])
 
-  const [,setUserFilters] = useUserTracker<QueryParams | undefined>(`filters.${type}`)
+  // Use current filters from user tracker
+  const [,setUserFilters] = useUserTracker<QueryParams | undefined>(`filters.${type}.current`)
 
   const [pages, setPages] = useState<string[]>([])
   const page = pages[pages.length - 1]

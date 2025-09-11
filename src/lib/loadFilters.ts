@@ -76,6 +76,15 @@ export function columnFilterToQuery(columnFilters: ColumnFiltersState): QueryPar
   return query
 }
 
+export function queryToColumnFilter<TData>(obj: QueryParams, columns: ColumnDef<TData>[]): ColumnFiltersState {
+  return Object.entries(obj)
+    .filter(([key]) => columns
+      .some((column) => column.id === key))
+    .map(([key, value]) => ({
+      id: key,
+      value: Array.isArray(value) ? value : [value]
+    }))
+}
 
 export function hasDefinedFilter(obj?: QueryParams): boolean {
   return !!obj && Object
