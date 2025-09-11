@@ -40,7 +40,7 @@ describe('Transform planning GetDocumentResponse', () => {
     const yDoc = new Y.Doc()
     toYjsNewsDoc(groupedPlanning, yDoc)
 
-    const { documentResponse } = fromYjsNewsDoc(yDoc)
+    const documentResponse = fromYjsNewsDoc(yDoc)
     const ungroupedPlanning = fromGroupedNewsDoc(documentResponse)
 
     expect(ungroupedPlanning.version).toBe(planning.version)
@@ -76,7 +76,7 @@ describe('Transform article GetDocumentResponse', () => {
     const yDoc = new Y.Doc()
     toYjsNewsDoc(groupedArticle, yDoc)
 
-    const { documentResponse } = fromYjsNewsDoc(yDoc)
+    const documentResponse = fromYjsNewsDoc(yDoc)
     const ungroupedArticle = fromGroupedNewsDoc(documentResponse)
 
     expect(ungroupedArticle.version).toBe(article.version)
@@ -122,7 +122,7 @@ describe('Description and slugline handling in planning', () => {
 
     it('removes empty sluglines from assignments when reverting', () => {
       // Revert to newsDoc
-      const { documentResponse } = fromYjsNewsDoc(yDoc)
+      const documentResponse = fromYjsNewsDoc(yDoc)
       const { document } = fromGroupedNewsDoc(documentResponse)
 
       // Created and unused slugline on planning is removed
@@ -164,7 +164,7 @@ describe('Description and slugline handling in planning', () => {
 
     it('removes empty descriptions when reverting', () => {
       // Revert to newsDoc
-      const { documentResponse } = fromYjsNewsDoc(yDoc)
+      const documentResponse = fromYjsNewsDoc(yDoc)
       const { document, version } = fromGroupedNewsDoc(documentResponse)
 
       expect(version).toBe(planning.version)
@@ -208,7 +208,7 @@ describe('Description and slugline handling in planning', () => {
 
     it('removes them when reverting', () => {
       // Revert to newsDoc
-      const { documentResponse } = fromYjsNewsDoc(yDoc)
+      const documentResponse = fromYjsNewsDoc(yDoc)
       const { document, version } = fromGroupedNewsDoc(documentResponse)
 
       expect(version).toBe(planning.version)
@@ -225,7 +225,7 @@ describe('Description and slugline handling in planning', () => {
         yDoc
       )
 
-      const { documentResponse } = fromYjsNewsDoc(yDoc)
+      const documentResponse = fromYjsNewsDoc(yDoc)
       const { document, version } = fromGroupedNewsDoc(documentResponse)
 
       if (!document || !articleFactbox.document) {
