@@ -86,6 +86,12 @@ export const ApprovalsCard = ({ assignment, isSelected, isFocused, status, autho
 
   const internalInfo = assignment._deliverableDocument?.meta.find((block) => block.type === 'core/note' && block.role === 'internal')?.data?.text
 
+  const timeTooltip = (assignment._deliverableStatus === 'withheld' && assignment?.data?.publish)
+    ? `Schemalagd kl ${format(toZonedTime(parseISO(assignment.data.publish), timeZone), 'HH:mm')}`
+    : statusData?.modified
+      ? `Senast ändrad ${format(toZonedTime(parseISO(statusData.modified), timeZone), 'HH:mm')}`
+      : 'Senast ändrad'
+
   return (
     <Card.Root
       status={assignment._deliverableStatus || 'draft'}
@@ -153,7 +159,7 @@ export const ApprovalsCard = ({ assignment, isSelected, isFocused, status, autho
             e.stopPropagation()
           }}
           >
-            <Tooltip content={statusData?.modified ? `Senast ändrad ${format(toZonedTime(parseISO(statusData.modified), timeZone), 'HH:mm')}` : 'Senast ändrad'}>
+            <Tooltip content={timeTooltip}>
               <div className='flex flex-row gap-1 items-center'>
                 <ClockIcon hour={(time) ? parseInt(time.slice(0, 2)) : undefined} size={14} className='opacity-50' />
                 <time>{time}</time>
