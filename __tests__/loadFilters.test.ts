@@ -13,7 +13,7 @@ describe('loadFilters', () => {
       { id: 'newsvalue', value: ['4'] }
     ]
 
-    const result = loadFilters(query, columns)
+    const result = loadFilters({ query, columns })
     expect(result).toEqual(expected)
   })
 })

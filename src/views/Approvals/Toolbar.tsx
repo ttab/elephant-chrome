@@ -15,7 +15,7 @@ export const Toolbar = ({ facets }: { facets: Facets }): JSX.Element => {
   const [filters, setFilters] = useQuery(['status', 'section'])
   const isFiltered = Object.values(filters).some((value) => value?.length)
   const [userFilters, setUserFilters] = useUserTracker<QueryParams | undefined>(`filters.Approvals.user`)
-  const [currentFilters, setCurrentFilters] = useUserTracker<QueryParams | undefined>(`filters.Approvals.current`)
+  const [, setCurrentFilters] = useUserTracker<QueryParams | undefined>(`filters.Approvals.current`)
 
 
   const [pages, setPages] = useState<string[]>([])

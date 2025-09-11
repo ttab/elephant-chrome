@@ -37,6 +37,7 @@ import { Wire } from '@/views/Wire'
 import { GroupedRows } from './GroupedRows'
 import { getWireStatus } from './lib/getWireStatus'
 import { type View } from '@/types/index'
+import { QuickFilter } from './QuickFilter'
 const BASE_URL = import.meta.env.BASE_URL
 
 interface TableProps<TData, TValue> {
@@ -333,8 +334,11 @@ export const Table = <TData, TValue>({
 
   return (
     <>
-      {!['Wires', 'Factbox', 'Search', 'PrintEditor'].includes(type) && (
-        <Toolbar columns={columns} />
+      {!['Wires', 'Factbox', 'Search'].includes(type) && (
+        <Toolbar>
+          {type !== 'PrintEditor'
+            && <QuickFilter columns={columns} />}
+        </Toolbar>
       )}
 
       {(type === 'Planning' || type === 'Event') && (

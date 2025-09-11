@@ -15,8 +15,8 @@ import {
 } from '@ttab/elephant-ui'
 import { PrintFlows } from './PrintFlows'
 import { PrintArticlesHeader } from './PrintArticlesHeader'
-import { loadFilters } from '@/lib/loadFilters'
 import { useQuery } from '@/hooks/useQuery'
+import { useInitFilters } from '@/hooks/useFilters'
 
 /**
  * Metadata for the PrintArticles view.
@@ -57,6 +57,12 @@ export const Print = (): JSX.Element => {
     () => printArticlesListColumns(),
     []
   )
+
+  const columnFilters = useInitFilters<PrintArticle>({
+    path: 'filters.Print.current',
+    columns
+  })
+
   const [openCreateFlow, setOpenCreateFlow] = useState(false)
   return (
     <View.Root>
@@ -66,7 +72,7 @@ export const Print = (): JSX.Element => {
         columns={columns}
         initialState={{
           grouping: ['printFlow'],
-          columnFilters: loadFilters<PrintArticle>(query, columns),
+          columnFilters,
           globalFilter: query.query
         }}
       >
