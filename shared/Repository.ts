@@ -68,8 +68,14 @@ export class Repository {
     statuses: string[]
     accessToken: string
   }): Promise<GetStatusOverviewResponse | null> {
-    if (!uuids.length || uuids.filter(isValidUUID).length !== uuids.length) {
-      throw new Error('Invalid uuid format in input')
+    if (!uuids.length) {
+      console.warn('no uuids to fetch statuses from')
+      return { items: [] }
+    }
+
+    if (uuids.filter(isValidUUID).length !== uuids.length) {
+      console.warn('number of valid uuids did not match')
+      return { items: [] }
     }
 
     try {
