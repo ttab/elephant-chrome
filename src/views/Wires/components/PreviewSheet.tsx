@@ -1,5 +1,5 @@
 import { Badge, SheetClose, ToggleGroup, ToggleGroupItem, Tooltip } from '@ttab/elephant-ui'
-import { Check, FilePlus2, Save, X } from '@ttab/elephant-ui/icons'
+import { CheckIcon, FilePlus2Icon, SaveIcon, XIcon } from '@ttab/elephant-ui/icons'
 import { Editor } from '../../../components/PlainEditor'
 import { FaroErrorBoundary } from '@grafana/faro-react'
 import { Error, Wire } from '@/views'
@@ -171,12 +171,12 @@ export const PreviewSheet = ({ id, wire, handleClose, textOnly = true, version, 
                       value='saved'
                       aria-label='Toggle save'
                       className='border
-              !border-done-border
-              data-[state="on"]:!bg-done
-              data-[state="off"]:!bg-done-background
-              data-[state="off"]:!text-muted-foreground'
+              border-done-border!
+              data-[state="on"]:bg-done!
+              data-[state="off"]:bg-done-background!
+              data-[state="off"]:text-muted-foreground!'
                     >
-                      <Save className='h-4 w-4' />
+                      <SaveIcon className='h-4 w-4' />
                     </ToggleGroupItem>
                   </Tooltip>
 
@@ -187,12 +187,12 @@ export const PreviewSheet = ({ id, wire, handleClose, textOnly = true, version, 
                       value='read'
                       aria-label='Toggle read'
                       className='border
-              !border-approved-border
-              data-[state="on"]:!bg-approved
-              data-[state="off"]:!bg-approved-background
-              data-[state="off"]:!text-muted-foreground'
+              border-approved-border!
+              data-[state="on"]:bg-approved!
+              data-[state="off"]:bg-approved-background!
+              data-[state="off"]:text-muted-foreground!'
                     >
-                      <Check className='h-4 w-4' />
+                      <CheckIcon className='h-4 w-4' />
                     </ToggleGroupItem>
                   </Tooltip>
                   <Tooltip
@@ -202,10 +202,10 @@ export const PreviewSheet = ({ id, wire, handleClose, textOnly = true, version, 
                       value='used'
                       aria-label='Toggle used'
                       className='border
-              !border-usable-border
-              data-[state="on"]:!bg-usable
+              border-usable-border!
+              data-[state="on"]:bg-usable!
               data-[state="off"]:!bg-useable-background
-              data-[state="off"]:!text-muted-foreground'
+              data-[state="off"]:text-muted-foreground!'
                       onClick={(event) => {
                         event.preventDefault()
                         const onDocumentCreated = () => {
@@ -225,7 +225,7 @@ export const PreviewSheet = ({ id, wire, handleClose, textOnly = true, version, 
                         )
                       }}
                     >
-                      <FilePlus2 className='h-4 w-4' />
+                      <FilePlus2Icon className='h-4 w-4' />
                     </ToggleGroupItem>
                   </Tooltip>
                 </ToggleGroup>
@@ -236,7 +236,7 @@ export const PreviewSheet = ({ id, wire, handleClose, textOnly = true, version, 
               className='rounded-md hover:bg-gray-100 w-8 h-8 flex items-center justify-center outline-none -mr-7'
               onClick={handleClose}
             >
-              <X strokeWidth={1.75} size={18} />
+              <XIcon strokeWidth={1.75} size={18} />
             </SheetClose>
           </div>
         </div>

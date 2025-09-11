@@ -9,6 +9,8 @@ import { RepositoryEventsProvider } from './contexts/RepositoryEventsProvider.ts
 import { Init } from './components/Init/index.tsx'
 import { UserMessagesReceiver } from './components/UserMessagesReceiver.tsx'
 import { Toaster } from '@ttab/elephant-ui'
+import './index.css'
+
 banner()
 
 const root = document.getElementById('root')

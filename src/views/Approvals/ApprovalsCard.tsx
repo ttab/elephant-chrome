@@ -6,7 +6,7 @@ import { useModal } from '@/components/Modal/useModal'
 import type { AssignmentInterface } from '@/hooks/index/useAssignments'
 import { useLink } from '@/hooks/useLink'
 import { useRegistry } from '@/hooks/useRegistry'
-import { CalendarDays, FileWarning, MessageSquarePlusIcon, Zap } from '@ttab/elephant-ui/icons'
+import { CalendarDaysIcon, FileWarningIcon, MessageSquarePlusIcon, ZapIcon } from '@ttab/elephant-ui/icons'
 import { parseISO, format } from 'date-fns'
 import { toZonedTime } from 'date-fns-tz'
 import { PreviewSheet } from '../Wires/components'
@@ -115,9 +115,9 @@ export const ApprovalsCard = ({ assignment, isSelected, isFocused, status, autho
           {status.icon && <status.icon size={15} strokeWidth={1.75} className={status.className} />}
           <span className='bg-secondary inline-block px-1 rounded'>
             {assignment._deliverableType === 'core/flash'
-              ? <Zap strokeWidth={1.75} size={14} className='text-red-500' />
+              ? <ZapIcon strokeWidth={1.75} size={14} className='text-red-500' />
               : assignment._deliverableType === 'core/editorial-info'
-                ? <FileWarning size={14} />
+                ? <FileWarningIcon size={14} />
                 : assignment._newsvalue}
           </span>
           {users && (
@@ -176,7 +176,7 @@ export const ApprovalsCard = ({ assignment, isSelected, isFocused, status, autho
               lastStatusUpdateAuthor={lastStatusUpdateAuthor}
             />
           </div>
-          <div className='flex flex-grow justify-between align-middle'>
+          <div className='flex grow justify-between align-middle'>
             <div className='flex flex-row content-center opacity-60 gap-1'>
               {sections
                 .find((section) => section.id === assignment._section)
@@ -199,7 +199,7 @@ export const ApprovalsCard = ({ assignment, isSelected, isFocused, status, autho
                 onClick={(e) => e.stopPropagation()}
               >
                 <Link to='Planning' props={{ id: assignment._id }}>
-                  <CalendarDays size={16} strokeWidth={1.75} />
+                  <CalendarDaysIcon size={16} strokeWidth={1.75} />
                 </Link>
               </div>
             </Tooltip>

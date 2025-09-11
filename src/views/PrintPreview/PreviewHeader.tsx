@@ -1,5 +1,5 @@
 import { ViewHeader } from '@/components/View'
-import { Eye } from '@ttab/elephant-ui/icons'
+import { EyeIcon } from '@ttab/elephant-ui/icons'
 /**
  * PreviewHeader component.
  *
@@ -19,7 +19,7 @@ import { Eye } from '@ttab/elephant-ui/icons'
 export const PreviewHeader = (): JSX.Element => {
   return (
     <ViewHeader.Root className='flex flex-row justify-between items-center'>
-      <ViewHeader.Title name='Förhandsvisning' title='Förhandsvisning' icon={Eye} />
+      <ViewHeader.Title name='Förhandsvisning' title='Förhandsvisning' icon={EyeIcon} />
       <ViewHeader.Action>
       </ViewHeader.Action>
     </ViewHeader.Root>

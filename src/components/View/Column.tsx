@@ -7,8 +7,8 @@ export const Column = ({ className, children }: {
   return (
     <div className={cn(`
       col-span-1
-      flex-grow
-      flex-shrink-0
+      grow
+      shrink-0
       snap-center
       flex
       flex-col
@@ -23,8 +23,8 @@ export const Column = ({ className, children }: {
       @xl/view:w-[49vw]
       @2xl/view:w-[25vw]
       @fhd/view:w-[25vw]
-      qhd:w-[auto]
-      uhd:w-[auto]
+      qhd:w-auto
+      uhd:w-auto
       @lg/view:snap-start
       @lg/view:last:pe-1
       @lg/view:last:me-0

@@ -1,4 +1,18 @@
-import { Clock10Icon, Clock11Icon, Clock12Icon, Clock1Icon, Clock2Icon, Clock3Icon, Clock4Icon, Clock5Icon, Clock6Icon, Clock7Icon, Clock8Icon, Clock9Icon, ClockIcon as DefaultClockIcon } from '@ttab/elephant-ui/icons'
+import {
+  Clock10Icon,
+  Clock11Icon,
+  Clock12Icon,
+  Clock1Icon,
+  Clock2Icon,
+  Clock3Icon,
+  Clock4Icon,
+  Clock5Icon,
+  Clock6Icon,
+  Clock7Icon,
+  Clock8Icon,
+  Clock9Icon,
+  ClockIcon as DefaultClockIcon
+} from '@ttab/elephant-ui/icons'
 
 export const ClockIcon = ({ hour, color, className, strokeWidth = 1.75, size = 18 }: {
   hour?: number | 'string'

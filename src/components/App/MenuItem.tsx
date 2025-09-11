@@ -22,7 +22,7 @@ const MenuItemViewOpener = ({ menuItem }: {
   menuItem: ApplicationMenuItem
 }): JSX.Element => (
   <SheetClose asChild key={menuItem.name}>
-    <Link to={menuItem.name} className='flex gap-3 items-center px-3 py-2 rounded-md hover:bg-gray-100'>
+    <Link to={menuItem.name} className='flex gap-3 items-center px-3 py-2 rounded-md hover:bg-table-focused'>
       <div className='flex items-center justify-center opacity-80 pr-2'>
         <menuItem.icon strokeWidth={1.75} size={18} color={menuItem.color} />
       </div>
@@ -40,7 +40,7 @@ const MenuItemDialogOpener = ({ menuItem }: {
   return (
     <SheetClose
       key={menuItem.name}
-      className='w-full flex gap-3 items-center px-3 py-2 rounded-md hover:bg-gray-100 hover:cursor-pointer'
+      className='w-full flex gap-3 items-center px-3 py-2 rounded-md hover:bg-table-focused hover:cursor-pointer'
       onClick={() => {
         showModal(
           <ViewDialog onDialogClose={hideModal} asDialog />

@@ -5,7 +5,7 @@ import { useQuery } from '@/hooks/useQuery'
 import type { FilterProps } from '@/components/Filter'
 import { OptionsFilter } from '@/components/Filter/common/OptionsFilter'
 import { useSections } from '@/hooks/useSections'
-import { Binoculars, Shapes, SignalHigh, SquareCode } from '@ttab/elephant-ui/icons'
+import { BinocularsIcon, ShapesIcon, SignalHighIcon, SquareCodeIcon } from '@ttab/elephant-ui/icons'
 import { useWireSources } from '@/hooks/useWireSources'
 import { Newsvalues } from '@/defaults/newsvalues'
 
@@ -39,28 +39,28 @@ export const Commands = (props: FilterProps): JSX.Element => {
         {...props}
         label='Fritext'
         filterPage='query'
-        Icon={Binoculars}
+        Icon={BinocularsIcon}
       />
       <OptionsFilter
         {...props}
         options={optionsSections}
         label='Sektion'
         filterPage='section'
-        Icon={Shapes}
+        Icon={ShapesIcon}
       />
       <OptionsFilter
         {...props}
         options={optionsSources}
         label='Källor'
         filterPage='source'
-        Icon={SquareCode}
+        Icon={SquareCodeIcon}
       />
       <OptionsFilter
         {...props}
         options={Newsvalues}
         label='Nyhetsvärde'
         filterPage='newsvalue'
-        Icon={SignalHigh}
+        Icon={SignalHighIcon}
       />
       <ClearFilter
         hasFilter={hasFilter}

@@ -2,7 +2,7 @@ import { useYValue } from '@/hooks/useYValue'
 import { cn } from '@ttab/elephant-ui/utils'
 import type { Block } from '@ttab/elephant-api/newsdoc'
 import { Alert, AlertDescription } from '@ttab/elephant-ui'
-import { MessageCircleMore, Trash2, Text } from '@ttab/elephant-ui/icons'
+import { MessageCircleMoreIcon, Trash2Icon, TextIcon } from '@ttab/elephant-ui/icons'
 import { TextBox } from '@/components/ui'
 import type { DefaultValueOption } from '@/types/index'
 import { useState } from 'react'
@@ -23,8 +23,8 @@ const Note = ({ noteIndex, handleRemove }: {
 
 
   const roles: DefaultValueOption[] = [
-    { value: 'public', label: 'Info till kund', icon: Text, iconProps },
-    { value: 'internal', label: 'Intern info', icon: MessageCircleMore, iconProps }
+    { value: 'public', label: 'Info till kund', icon: TextIcon, iconProps },
+    { value: 'internal', label: 'Intern info', icon: MessageCircleMoreIcon, iconProps }
   ]
 
   const selectedOptions = roles.filter((r) => r.value === role)
@@ -51,7 +51,7 @@ const Note = ({ noteIndex, handleRemove }: {
           />
         </AlertDescription>
         <div className='hover:cursor-pointer rounded-md p-1 hover:bg-accent2' onClick={() => setShowVerifyDialog(true)}>
-          <Trash2 size={18} strokeWidth={1.75} />
+          <Trash2Icon size={18} strokeWidth={1.75} />
         </div>
       </div>
 

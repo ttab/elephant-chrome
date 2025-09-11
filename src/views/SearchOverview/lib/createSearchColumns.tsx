@@ -7,7 +7,7 @@ import type { IDBAuthor, IDBOrganiser, IDBSection } from 'src/datastore/types'
 import search from '@/hooks/index/useDocuments/queries/views/search'
 import type { SearchKeys } from '@/hooks/index/useDocuments/queries/views/search'
 import { articleColumns } from './articleColumns'
-import { Calendar } from '@ttab/elephant-ui/icons'
+import { CalendarIcon } from '@ttab/elephant-ui/icons'
 
 interface SearchColumnsParams {
   searchType: SearchKeys
@@ -24,7 +24,7 @@ export const createSearchColumns = (params: SearchColumnsParams) => {
       enableGrouping: true,
       meta: {
         name: 'Datum',
-        columnIcon: Calendar,
+        columnIcon: CalendarIcon,
         className: 'flex-none w-[100px]',
         display: (value: string) => {
           const formattedDate = parseDate(value)

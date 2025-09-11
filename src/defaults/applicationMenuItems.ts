@@ -1,4 +1,16 @@
-import { Cable, BriefcaseBusiness, CalendarDaysIcon, CalendarPlus2, SearchIcon, ZapIcon, type LucideIcon, EarthIcon, UtilityPole, Boxes, Library } from '@ttab/elephant-ui/icons'
+import {
+  CableIcon,
+  BriefcaseBusinessIcon,
+  CalendarDaysIcon,
+  CalendarPlus2Icon,
+  SearchIcon,
+  ZapIcon,
+  EarthIcon,
+  UtilityPoleIcon,
+  BoxesIcon,
+  LibraryIcon,
+  type LucideIcon
+} from '@ttab/elephant-ui/icons'
 import type { ViewProps, View } from '../types'
 
 /**
@@ -47,32 +59,32 @@ export const applicationMenu: ApplicationMenu = {
         {
           name: 'Events',
           label: 'Händelser',
-          icon: CalendarPlus2,
+          icon: CalendarPlus2Icon,
           color: '#D802FD'
         },
         {
           name: 'Assignments',
           label: 'Uppdrag',
-          icon: BriefcaseBusiness,
+          icon: BriefcaseBusinessIcon,
           color: '#006bb3'
         },
         {
           name: 'Wires',
           label: 'Telegram',
-          icon: Cable,
+          icon: CableIcon,
           color: '#FF6347'
         },
         {
           name: 'Latest',
           label: 'Senast utgivet',
-          icon: UtilityPole,
+          icon: UtilityPoleIcon,
           color: '#996633',
           target: 'sheet'
         },
         {
           name: 'Factboxes',
           label: 'Faktarutor',
-          icon: Boxes,
+          icon: BoxesIcon,
           color: '#99c5c4'
         }
       ]
@@ -101,7 +113,7 @@ export const applicationMenu: ApplicationMenu = {
         {
           name: 'Print',
           label: 'Print',
-          icon: Library,
+          icon: LibraryIcon,
           color: '#006bb3'
         }
       ]

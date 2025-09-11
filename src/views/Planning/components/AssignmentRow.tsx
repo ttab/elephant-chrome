@@ -4,16 +4,16 @@ import { AssigneeAvatars } from '@/components/DataItem/AssigneeAvatars'
 import type { DotDropdownMenuActionItem } from '@/components/ui/DotMenu'
 import { DotDropdownMenu } from '@/components/ui/DotMenu'
 import {
-  AlarmClockCheck,
-  Clock1,
-  ClockFading,
-  Delete,
-  Edit,
-  Eye,
-  FileInput,
-  Library,
-  MoveRight,
-  Pen,
+  AlarmClockCheckIcon,
+  Clock1Icon,
+  ClockFadingIcon,
+  DeleteIcon,
+  EditIcon,
+  EyeIcon,
+  FileInputIcon,
+  LibraryIcon,
+  MoveRightIcon,
+  PenIcon,
   type LucideProps
 } from '@ttab/elephant-ui/icons'
 import { type MouseEvent, useMemo, useState, useCallback, useEffect, useRef } from 'react'
@@ -158,9 +158,9 @@ export const AssignmentRow = ({ index, onSelect, isFocused = false, asDialog, on
 
   const TimeIcon = useMemo(() => {
     const timeIcons: Record<string, React.FC<LucideProps>> = {
-      start: Clock1,
-      publish: AlarmClockCheck,
-      'start-end': ClockFading
+      start: Clock1Icon,
+      publish: AlarmClockCheckIcon,
+      'start-end': ClockFadingIcon
     }
 
     const type = publishTime ? 'publish' : endTime && startTime && endTime !== startTime ? 'start-end' : 'start'
@@ -217,7 +217,7 @@ export const AssignmentRow = ({ index, onSelect, isFocused = false, asDialog, on
     {
       label: 'Öppna',
       disabled: !isDocument,
-      icon: isUsable ? Eye : FileInput,
+      icon: isUsable ? EyeIcon : FileInputIcon,
       item: <T extends HTMLElement>(event: MouseEvent<T>) => {
         const usable = articleStatus?.meta?.workflowState === 'usable'
         const version = articleStatus?.meta?.heads['usable']?.version
@@ -227,7 +227,7 @@ export const AssignmentRow = ({ index, onSelect, isFocused = false, asDialog, on
     },
     {
       label: 'Redigera',
-      icon: Edit,
+      icon: EditIcon,
       item: <T extends HTMLElement>(event: MouseEvent<T>) => {
         event.stopPropagation()
         event.preventDefault()
@@ -237,7 +237,7 @@ export const AssignmentRow = ({ index, onSelect, isFocused = false, asDialog, on
     {
       label: 'Ta bort',
       disabled: isUsable,
-      icon: Delete,
+      icon: DeleteIcon,
       item: () => {
         setShowVerifyDialog(true)
       }
@@ -245,7 +245,7 @@ export const AssignmentRow = ({ index, onSelect, isFocused = false, asDialog, on
     {
       label: 'Flytta',
       disabled: isUsable,
-      icon: MoveRight,
+      icon: MoveRightIcon,
       item: () => {
         showModal(
           <Move
@@ -266,7 +266,7 @@ export const AssignmentRow = ({ index, onSelect, isFocused = false, asDialog, on
     {
       label: 'Skapa printartikel',
       disabled: !isDocument,
-      icon: Library,
+      icon: LibraryIcon,
       item: () => {
         showModal(
           <CreatePrintArticle
@@ -348,7 +348,7 @@ export const AssignmentRow = ({ index, onSelect, isFocused = false, asDialog, on
               onSelect()
             }}
           >
-            <Pen size={18} strokeWidth={1.75} className='text-muted-foreground' />
+            <PenIcon size={18} strokeWidth={1.75} className='text-muted-foreground' />
           </Button>
 
           {!inProgress && <DotDropdownMenu items={menuItems} />}

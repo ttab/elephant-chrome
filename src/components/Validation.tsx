@@ -1,5 +1,5 @@
 import { useCollaboration, useYValue } from '@/hooks'
-import { TriangleAlert } from '@ttab/elephant-ui/icons'
+import { TriangleAlertIcon } from '@ttab/elephant-ui/icons'
 import { useEffect, useMemo } from 'react'
 import type { OnValidation } from './Form/Root'
 import { type FormProps } from './Form/Root'
@@ -37,7 +37,7 @@ export const Validation = ({ children, path, label, block, compareValues, onVali
     <div className='w-full relative flex items-center'>
       {!isValid && synced && (
         <div className='absolute -top-1 right-0 h-2 w-2 z-10'>
-          <TriangleAlert color='red' fill='#ffffff' size={15} strokeWidth={1.75} />
+          <TriangleAlertIcon color='red' fill='#ffffff' size={15} strokeWidth={1.75} />
         </div>
       )}
       <div data-ele-validation={!!onValidation} className='flex flex-col w-full'>

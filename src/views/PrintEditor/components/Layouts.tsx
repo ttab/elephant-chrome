@@ -1,7 +1,7 @@
 import { useDocuments } from '@/hooks/index/useDocuments'
 import { constructQuery, fields } from '@/hooks/baboon/useDocuments/layoutNames'
 import { ComboBox } from '@ttab/elephant-ui'
-import { Loader } from '@ttab/elephant-ui/icons'
+import { LoaderIcon } from '@ttab/elephant-ui/icons'
 import { useYValue } from '@/hooks/useYValue'
 import { cn } from '@ttab/elephant-ui/utils'
 
@@ -21,7 +21,7 @@ export const Layouts = ({ articleLayoutId, basePath, onChange, className }: {
   const [articleLayoutName, setArticleLayoutName] = useYValue<string>(`${basePath}.name`)
 
   if (!layouts || !layouts?.length) {
-    return <Loader size={16} strokeWidth={1.75} className='animate-spin' />
+    return <LoaderIcon size={16} strokeWidth={1.75} className='animate-spin' />
   }
 
   const slots = layouts[0].fields['document.content.tt_print_slot.name'].values

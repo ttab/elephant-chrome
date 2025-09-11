@@ -1,5 +1,5 @@
 import { CommandItem } from '@ttab/elephant-ui'
-import { X } from '@ttab/elephant-ui/icons'
+import { XIcon } from '@ttab/elephant-ui/icons'
 
 export const ClearFilter = ({ hasFilter, onClear }: {
   hasFilter: boolean
@@ -10,7 +10,7 @@ export const ClearFilter = ({ hasFilter, onClear }: {
         <CommandItem
           onSelect={onClear}
         >
-          <X size={18} strokeWidth={1.75} />
+          <XIcon size={18} strokeWidth={1.75} />
           Rensa filter
         </CommandItem>
       )

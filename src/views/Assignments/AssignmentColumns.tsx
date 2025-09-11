@@ -1,6 +1,15 @@
 import { NewsvalueMap } from '@/defaults/newsvalueMap'
 import { Newsvalue } from '@/components/Table/Items/Newsvalue'
-import { Briefcase, Clock3Icon, Crosshair, Navigation, SignalHigh, Users, Shapes, CircleCheck } from '@ttab/elephant-ui/icons'
+import {
+  BriefcaseIcon,
+  Clock3Icon,
+  CrosshairIcon,
+  NavigationIcon,
+  SignalHighIcon,
+  UsersIcon,
+  ShapesIcon,
+  CircleCheckIcon
+} from '@ttab/elephant-ui/icons'
 import { Newsvalues } from '@/defaults/newsvalues'
 import { FacetedFilter } from '@/components/Commands/FacetedFilter'
 import { AssignmentTypes } from '@/defaults/assignmentTypes'
@@ -37,7 +46,7 @@ export function assignmentColumns({ authors = [], locale, timeZone, sections = [
         ),
         options: DocumentStatuses,
         name: 'Status',
-        columnIcon: CircleCheck,
+        columnIcon: CircleCheckIcon,
         className: 'flex-none',
         display: (value: string) => (
           <span>
@@ -107,7 +116,7 @@ export function assignmentColumns({ authors = [], locale, timeZone, sections = [
       id: 'title',
       meta: {
         name: 'Titel',
-        columnIcon: Briefcase,
+        columnIcon: BriefcaseIcon,
         className: 'flex-1'
       },
       accessorFn: (data) => data.fields['document.meta.core_assignment.title']?.values,
@@ -131,7 +140,7 @@ export function assignmentColumns({ authors = [], locale, timeZone, sections = [
           <FacetedFilter column={column} setSearch={setSearch} />
         ),
         name: 'Sektion',
-        columnIcon: Shapes,
+        columnIcon: ShapesIcon,
         className: 'flex-none w-[115px] hidden @4xl/view:[display:revert]',
         display: (value: string) => (
           <span>
@@ -161,7 +170,7 @@ export function assignmentColumns({ authors = [], locale, timeZone, sections = [
         ),
         options: Newsvalues,
         name: 'Nyhetsvärde',
-        columnIcon: SignalHigh,
+        columnIcon: SignalHighIcon,
         className: 'box-content w-4 sm:w-8 pr-1 sm:pr-4 hidden sm:[display:revert]'
       },
       accessorFn: (data) => data.fields['document.meta.core_newsvalue.value']?.values[0],
@@ -184,7 +193,7 @@ export function assignmentColumns({ authors = [], locale, timeZone, sections = [
           <FacetedFilter column={column} setSearch={setSearch} facetFn={() => getNestedFacetedUniqueValues(column)} />
         ),
         name: 'Uppdragstagare',
-        columnIcon: Users,
+        columnIcon: UsersIcon,
         className: 'flex-none w-[112px] hidden @5xl/view:[display:revert]'
       },
       accessorFn: (data) => data.fields['document.meta.core_assignment.rel.assignee.uuid']?.values,
@@ -243,7 +252,7 @@ export function assignmentColumns({ authors = [], locale, timeZone, sections = [
         ),
         options: AssignmentTypes,
         name: 'Typ',
-        columnIcon: Crosshair,
+        columnIcon: CrosshairIcon,
         className: 'box-content w-8 sm:w-8 pr-1 sm:pr-4',
         display: (value: string | string[]) => {
           const items = AssignmentTypes
@@ -285,7 +294,7 @@ export function assignmentColumns({ authors = [], locale, timeZone, sections = [
       id: 'action',
       meta: {
         name: 'Action',
-        columnIcon: Navigation,
+        columnIcon: NavigationIcon,
         className: 'flex-none p-0'
       },
       cell: ({ row }) => {

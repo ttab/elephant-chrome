@@ -5,7 +5,7 @@ import type { Facets } from '@/hooks/index/lib/assignments/filterAssignments'
 import { useQuery } from '@/hooks/useQuery'
 import type { FilterProps } from '@/components/Filter'
 import { useSections } from '@/hooks/useSections'
-import { CircleCheck, Shapes } from '@ttab/elephant-ui/icons'
+import { CircleCheckIcon, ShapesIcon } from '@ttab/elephant-ui/icons'
 import { DocumentStatuses } from '@/defaults/documentStatuses'
 
 export const Commands = (props: {
@@ -36,7 +36,7 @@ export const Commands = (props: {
         options={DocumentStatuses}
         label='Status'
         filterPage='status'
-        Icon={CircleCheck}
+        Icon={CircleCheckIcon}
         facets={props.facets?.section}
       />
       <OptionsFilter
@@ -44,7 +44,7 @@ export const Commands = (props: {
         options={optionsSections}
         label='Sektion'
         filterPage='section'
-        Icon={Shapes}
+        Icon={ShapesIcon}
         facets={props.facets?.section}
       />
       <ClearFilter hasFilter={hasFilter} onClear={handleClear} />
