@@ -41,14 +41,21 @@ export async function snapshotDocument(
     if (options?.cause) url.searchParams.set('cause', options.cause)
     url.searchParams.set('addToHistory', options?.addToHistory === true ? '1' : '0')
 
-    const update = document ? Y.encodeStateAsUpdateV2(document) : null
+    // Always remove __inProgress flag if it exists to allow storage into repository
+    if (document) {
+      const root = document.getMap('ele')
+        .get('root') as Y.Map<unknown>
+      root?.delete('__inProgress')
+    }
 
     const response = await fetch(url, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/octet-stream'
       },
-      body: update
+      // Send client state as an update, as the local content
+      // is what the client expects to be stored.
+      body: document ? Y.encodeStateAsUpdate(document) : null
     })
 
     const result = await response.json() as StoreDocumentResponse
