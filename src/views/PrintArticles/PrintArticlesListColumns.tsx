@@ -5,6 +5,7 @@ import type { PrintArticle } from '@/hooks/baboon/lib/printArticles'
 import { DocumentStatuses } from '@/defaults/documentStatuses'
 import { DocumentStatus } from '@/components/Table/Items/DocumentStatus'
 import { FacetedFilter } from '@/components/Commands/FacetedFilter'
+import type { PrintFlow } from '@/shared/schemas/printFlow'
 
 /**
  * Generates column definitions for the Print Articles list.
@@ -16,7 +17,9 @@ import { FacetedFilter } from '@/components/Commands/FacetedFilter'
  * @returns An array of column definitions for the Print Articles table.
  */
 
-export function printArticlesListColumns(): Array<ColumnDef<PrintArticle>> {
+export function printArticlesListColumns({ printFlows = [] }: {
+  printFlows?: PrintFlow[]
+}): Array<ColumnDef<PrintArticle>> {
   return [
     {
       id: 'workflowState',
@@ -49,22 +52,30 @@ export function printArticlesListColumns(): Array<ColumnDef<PrintArticle>> {
       id: 'printFlow',
       enableGrouping: true,
       enableSorting: true,
+      enableColumnFilter: true,
       meta: {
         Filter: ({ column, setSearch }) => (
           <FacetedFilter column={column} setSearch={setSearch} />
         ),
-        // options: PrintFlows,
+        options: printFlows.map((_) => ({
+          value: _.id,
+          label: _.fields['document.title'].values[0]
+        })),
         name: 'Flöde',
         columnIcon: PenIcon,
         className: 'flex-1 w-[200px] hidden',
         display: (value: string) => (
           <span>
-            {value}
+            {printFlows
+              .find((printFlow) =>
+                printFlow.id === value)?.fields['document.title'].values[0]}
           </span>
         )
       },
-      accessorFn: (data) => (data.fields['document.rel.flow.title'].values[0]),
-      cell: () => <span />
+      accessorFn: (data) => data.fields['document.rel.flow.uuid'].values[0],
+      cell: () => <span />,
+      filterFn: (row, id, value: string[]) =>
+        value.includes(row.getValue(id))
     },
     {
       id: 'document.title',
