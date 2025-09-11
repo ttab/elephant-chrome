@@ -148,10 +148,20 @@ export const ApprovalsCard = ({ assignment, isSelected, isFocused, status, autho
           )}
         </div>
 
-        <div className='flex flex-row gap-1 items-center'>
-          <ClockIcon hour={(time) ? parseInt(time.slice(0, 2)) : undefined} size={14} className='opacity-50' />
-          <time>{time}</time>
-        </div>
+        <Popover>
+          <PopoverTrigger onClick={(e) => {
+            e.stopPropagation()
+          }}
+          >
+            <Tooltip content={statusData?.modified ? `Senast ändrad ${format(toZonedTime(parseISO(statusData.modified), timeZone), 'HH:mm')}` : 'Senast ändrad'}>
+              <div className='flex flex-row gap-1 items-center'>
+                <ClockIcon hour={(time) ? parseInt(time.slice(0, 2)) : undefined} size={14} className='opacity-50' />
+                <time>{time}</time>
+              </div>
+            </Tooltip>
+          </PopoverTrigger>
+          <PopoverContent>{statusData?.modified ? `Senast ändrad ${format(toZonedTime(parseISO(statusData.modified), timeZone), 'HH:mm')}` : 'Senast ändrad'}</PopoverContent>
+        </Popover>
       </Card.Header>
 
       <Card.Content>
