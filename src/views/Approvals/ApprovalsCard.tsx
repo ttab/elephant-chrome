@@ -223,12 +223,12 @@ export const ApprovalsCard = ({ assignment, isSelected, isFocused, status, autho
 
 
 function getAssignmentTime(assignment: AssignmentInterface, timeZone: string) {
+  if (assignment.data.publish && assignment._deliverableStatus === 'withheld') {
+    return format(toZonedTime(parseISO(assignment.data.publish), timeZone), 'HH:mm')
+  }
   if (assignment?._statusData) {
     const modified = (JSON.parse(assignment._statusData) as StatusData)?.modified
     return format(toZonedTime(parseISO(modified), timeZone), 'HH:mm')
-  }
-  if (assignment.data.publish && assignment._deliverableStatus === 'withheld') {
-    return format(toZonedTime(parseISO(assignment.data.publish), timeZone), 'HH:mm')
   }
   if (assignment.data.publish_slot) {
     return getTimeslotLabel(parseInt(assignment.data.publish_slot))
