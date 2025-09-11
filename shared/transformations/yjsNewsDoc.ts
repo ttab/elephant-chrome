@@ -41,10 +41,9 @@ export function toYjsNewsDoc(eleDoc: EleDocumentResponse, yDoc: Document | Y.Doc
   const yVersion = yDoc.getMap('version')
   yVersion?.set('version', version)
 
-  // Create original hash based on eleDocument content and store in yjs structure
-  const originalHash = createHash(JSON.stringify(eleDoc.document))
-  const yOriginalHash = yDoc.getMap('hash')
-  yOriginalHash?.set('hash', originalHash)
+  // Create original hash based on ele map content and store in yjs structure
+  yDoc.getMap('hash')
+    .set('hash', createHash(JSON.stringify(yMap.toJSON())))
 }
 
 
