@@ -67,11 +67,13 @@ export function revertTvListing(element: TBElement): Block {
       time: toString(time),
       end_time: toString(end_time)
     },
-    links: [
-      {
-        rel: 'channel',
-        uri: channelUri
-      }
-    ]
+    links: channelUri
+      ? [
+          {
+            rel: 'channel',
+            uri: channelUri
+          }
+        ]
+      : []
   })
 }

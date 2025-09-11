@@ -5,10 +5,7 @@ import { revertTvListing, transformTvListing } from '@/shared/transformations/ne
 const tvListingNewsDoc = Block.create({
   id: 'eee539ba-63bc-463d-a513-9b3f67cb467d',
   type: 'tt/tv-listing',
-  links: [{
-    rel: 'channel',
-    uri: ''
-  }],
+  links: [],
   data: {
     channel: 'SVT1',
     day: 'Lördag',
