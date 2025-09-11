@@ -30,7 +30,7 @@ function EditableSlugline({ path, setActive }: {
 
   return (
     <Button
-      className='text-muted-foreground h-7 font-normal text-sm whitespace-nowrap'
+      className='text-muted-foreground h-7 font-normal text-sm whitespace-nowrap px-2.5'
       variant='outline'
       onClick={() => setActive(true)}
     >
@@ -58,8 +58,7 @@ function StaticSluglineByValue({ value }: {
 
   return (
     <Badge
-      size='sm'
-      variant='ghost'
+      variant='outline'
       className='bg-background rounded-md text-muted-foreground font-normal text-sm whitespace-nowrap'
       data-row-action
     >

@@ -22,7 +22,6 @@ export const SearchInput = React.forwardRef<HTMLInputElement, SearchInputProps>(
             border-input
             rounded
             border-solid
-            border-slate-200
             bg-background
             py-0
             ring-offset-background

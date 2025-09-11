@@ -1,7 +1,7 @@
 import { Alert, AlertDescription, AlertTitle } from '@ttab/elephant-ui'
 import { useCollaboration, useQuery, useRegistry } from '@/hooks'
 import type { ValidateStateRef } from '@/types/index'
-import { Files, FileWarning } from '@ttab/elephant-ui/icons'
+import { FilesIcon, FileWarningIcon } from '@ttab/elephant-ui/icons'
 import useSWR from 'swr'
 import { useSession } from 'next-auth/react'
 import { type ValidationResult } from '@ttab/elephant-api/repository'
@@ -61,8 +61,8 @@ export const ValidationAlert = ({ validateStateRef }: {
 
   return (
     <Alert variant='destructive'>
-      <FileWarning strokeWidth={1.75} size={18} />
-      <Files size={18} strokeWidth={1.75} />
+      <FileWarningIcon strokeWidth={1.75} size={18} />
+      <FilesIcon size={18} strokeWidth={1.75} />
       <AlertTitle>Valideringsfel</AlertTitle>
       <AlertDescription>
         <pre className='whitespace-pre-wrap break-words'>{validationError}</pre>

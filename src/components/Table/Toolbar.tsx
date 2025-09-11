@@ -1,4 +1,4 @@
-import { X } from '@ttab/elephant-ui/icons'
+import { XIcon } from '@ttab/elephant-ui/icons'
 import { Button } from '@ttab/elephant-ui'
 import { SelectedFilters } from './SelectedFilters'
 import { useTable } from '@/hooks/useTable'
@@ -25,7 +25,7 @@ export const Toolbar = <TData,>({ children }: PropsWithChildren): JSX.Element =>
   }, [table])
 
   return (
-    <div className='flex flex-wrap flex-grow items-center space-x-2 border-b px-4 py-1 pr-2.5 sticky top-0 bg-white z-10'>
+    <div className='bg-background flex flex-wrap grow items-center space-x-2 border-b px-4 py-1 pr-2.5 sticky top-0 z-10'>
       <Filter
         page={command.page}
         pages={command.pages}
@@ -45,7 +45,7 @@ export const Toolbar = <TData,>({ children }: PropsWithChildren): JSX.Element =>
           className='h-8 px-2 lg:px-3'
         >
           Rensa
-          <X size={18} strokeWidth={1.75} className='ml-2' />
+          <XIcon size={18} strokeWidth={1.75} className='ml-2' />
         </Button>
       )}
       {children}

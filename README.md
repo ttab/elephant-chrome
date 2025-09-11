@@ -47,6 +47,7 @@ src/
 ```
 
 ### Component naming and structure
+
 Component and view filenames should use _PascalCase_, both for folder and main file. Exported name from a file should be same as filename. Parent directories should have an `index.tsx` with all views, components, lib files, etc.
 
 Support functions in component files should use _camelCase_ (i.e `myFunction()` and never be exported.
@@ -78,7 +79,27 @@ function allIsOk(): boolean {
 ```
 
 ### Hooks and lib naming
+
 All hooks and support functions in _hooks/_ and _lib/_ should all use _camelCase_ naming. Hooks should always use `.tsx` as suffix to separate them from other type of function files in _lib/_.
 
 ### Import aliases
+
 Use `@/lib/...`, `@/components/`, `@/hooks/` and `@/views/` etc to import components and functions.
+
+## Other resources
+
+`elephant-chrome` depends on other packages:
+
+* elephant-ui - components and styles
+* textbit - text editor
+* textbit-plugins - plugins for textbit editor
+
+To link these packages there's a utility script in `./tooling` named link. Which can be executed
+with `npm run link:elephant-ui` to hassle free link the packages during development.
+
+```json
+    "link:elephant-ui": "./tooling/link.sh ../elephant-ui",
+    "unlink:elephant-ui": "./tooling/unlink.sh ../elephant-ui"
+```
+
+the link/unlink scripts takes a relative path to the package as argument.

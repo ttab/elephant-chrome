@@ -76,7 +76,7 @@ export const Editor = ({ id, version, textOnly = false, versionStatusHistory }: 
   }
 
   return (
-    <div className='flex flex-col w-full pb-6 overflow-y-auto overflow-x-hidden max-w-screen-lg mx-auto'>
+    <div className='flex flex-col w-full pb-6 overflow-y-auto overflow-x-hidden max-w-(--breakpoint-lg) mx-auto'>
       {versionStatusHistory && version && (
         <PreVersionInfo version={version} versionStatusHistory={versionStatusHistory} />
       )}

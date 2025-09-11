@@ -1,10 +1,10 @@
 import { type ReactNode } from 'react'
 import { Badge, Button } from '@ttab/elephant-ui'
 import {
-  CircleCheck,
-  CircleHelp,
-  Tag,
-  X
+  CircleCheckIcon,
+  CircleHelpIcon,
+  TagIcon,
+  XIcon
 } from '@ttab/elephant-ui/icons'
 import { type DefaultValueOption } from '@/types/index'
 import { PrintArticleStatuses } from '@/defaults/documentStatuses'
@@ -71,20 +71,20 @@ const SelectedButton = ({ type, value }: { value: string | string[] | undefined,
     switch (type) {
       case 'workflowState': {
         return {
-          Icon: CircleCheck,
+          Icon: CircleCheckIcon,
           options: PrintArticleStatuses
         }
       }
       case 'printFlow': {
         return {
-          Icon: Tag,
+          Icon: TagIcon,
           options: printFlows
         }
       }
       default: {
         return {
           options: [],
-          Icon: CircleHelp
+          Icon: CircleHelpIcon
 
         }
       }
@@ -105,7 +105,7 @@ const SelectedButton = ({ type, value }: { value: string | string[] | undefined,
         >
           <Icon size={18} strokeWidth={1.75} className='mr-2' />
           <SelectedBadge value={value} options={options} />
-          <X size={18} strokeWidth={1.75} className='ml-2' />
+          <XIcon size={18} strokeWidth={1.75} className='ml-2' />
         </Button>
       )
     : <span />

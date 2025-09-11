@@ -53,6 +53,7 @@ export const Root = ({ className, isFocused = false, isSelected = false, status,
     focus-visible:ring-table-selected
     focus-visible:ring-2
     cursor-default
+    group
     `, {
     variants: {
       isSelected: {
@@ -73,7 +74,6 @@ export const Root = ({ className, isFocused = false, isSelected = false, status,
 
   return (
     <div
-      title={status}
       ref={ref}
       tabIndex={0}
       className={cn(variants({

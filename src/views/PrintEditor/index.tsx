@@ -45,7 +45,7 @@ import { useOnSpellcheck } from '@/hooks/useOnSpellcheck'
 import { contentMenuLabels } from '@/defaults/contentMenuLabels'
 import { Button, ScrollArea } from '@ttab/elephant-ui'
 import { LayoutBox } from './LayoutBox'
-import { CopyPlus, ScanEye, Settings, TriangleAlert } from '@ttab/elephant-ui/icons'
+import { CopyPlusIcon, ScanEyeIcon, SettingsIcon, TriangleAlertIcon } from '@ttab/elephant-ui/icons'
 import type { EleBlock } from '@/shared/types'
 import { toast } from 'sonner'
 import { useSession } from 'next-auth/react'
@@ -296,7 +296,7 @@ function EditorContainer({
         <section className='flex flex-col-reverse @printEditor:grid @printEditor:grid-cols-12 @container'>
           <div className='@printEditor:col-span-8'>
             <ScrollArea className='h-[calc(100vh-7rem)]'>
-              <div className='flex-grow overflow-auto pr-12 max-w-screen-xl'>
+              <div className='grow overflow-auto pr-12 max-w-(--breakpoint-xl)'>
                 {!!provider && synced
                   ? (
                       <EditorContent provider={provider} user={user} onChange={handleChange} />
@@ -311,7 +311,7 @@ function EditorContainer({
             <header className='flex flex-row gap-2 items-center justify-between mb-2'>
               <div className='flex items-center'>
                 <Button variant='ghost' size='sm' onClick={() => { void statusChecker() }}>
-                  <ScanEye strokeWidth={1.75} size={18} />
+                  <ScanEyeIcon strokeWidth={1.75} size={18} />
                 </Button>
                 <Button
                   variant='ghost'
@@ -320,12 +320,12 @@ function EditorContainer({
                     setPromptIsOpen(true)
                   }}
                 >
-                  <CopyPlus strokeWidth={1.75} size={18} />
+                  <CopyPlusIcon strokeWidth={1.75} size={18} />
                 </Button>
               </div>
               <h2 className={`text-base font-bold flex items-center gap-2 ${layouts.some((layout) => layout.data?.status === 'false') ? 'text-red-500' : ''}`}>
                 {layouts.some((layout) => layout.data?.status === 'false')
-                  ? <TriangleAlert size={18} strokeWidth={1.75} className='text-red-500' />
+                  ? <TriangleAlertIcon size={18} strokeWidth={1.75} className='text-red-500' />
                   : <span />}
                 Layouter
                 <span className='text-sm'>
@@ -358,13 +358,13 @@ function EditorContainer({
                     </p>
                     <section className='flex flex-row items-center justify-center gap-0'>
                       <div className='animate-spin'>
-                        <Settings className='animate-pulse text-[#006bb3]' strokeWidth={1.75} size={24} />
+                        <SettingsIcon className='animate-pulse text-[#006bb3]' strokeWidth={1.75} size={24} />
                       </div>
                       <div className='animate-spin mt-4'>
-                        <Settings className='animate-pulse text-[#006bb3]' strokeWidth={1.75} size={24} />
+                        <SettingsIcon className='animate-pulse text-[#006bb3]' strokeWidth={1.75} size={24} />
                       </div>
                       <div className='animate-spin'>
-                        <Settings className='animate-pulse text-[#006bb3]' strokeWidth={1.75} size={24} />
+                        <SettingsIcon className='animate-pulse text-[#006bb3]' strokeWidth={1.75} size={24} />
                       </div>
                     </section>
                   </main>
@@ -453,9 +453,9 @@ function EditorContent({ provider, user, onChange }: {
       className='outline-none
         h-full
         dark:text-slate-100
-        [&_[data-spelling-error]]:border-b-2
-        [&_[data-spelling-error]]:border-dotted
-        [&_[data-spelling-error]]:border-red-500
+        **:data-spelling-error:border-b-2
+        **:data-spelling-error:border-dotted
+        **:data-spelling-error:border-red-500
       '
     >
       <DropMarker />

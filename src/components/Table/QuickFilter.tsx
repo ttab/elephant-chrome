@@ -10,7 +10,7 @@ import { useTable } from '@/hooks/useTable'
 
 import type { ColumnDef, ColumnFiltersState } from '@tanstack/react-table'
 
-import { Save, UserCog } from '@ttab/elephant-ui/icons'
+import { SaveIcon, UserCogIcon } from '@ttab/elephant-ui/icons'
 
 
 export const QuickFilter = <TData,>({ columns }: { columns: ColumnDef<TData>[] }): JSX.Element => {
@@ -80,12 +80,12 @@ export const QuickFilter = <TData,>({ columns }: { columns: ColumnDef<TData>[] }
     ...sectionMenuItems,
     {
       label: 'Personligt filter',
-      icon: UserCog,
+      icon: UserCogIcon,
       item: () => savedUserFilters && table.setColumnFilters(savedUserFilters)
     },
     {
       label: 'Spara personligt filter',
-      icon: Save,
+      icon: SaveIcon,
       item: handleSaveUserFilter
     }
   ], [sectionMenuItems, savedUserFilters, table, handleSaveUserFilter])
@@ -116,7 +116,7 @@ export const QuickFilter = <TData,>({ columns }: { columns: ColumnDef<TData>[] }
             aria-label='Toggle user'
             className='border data-[state=off]:text-muted-foreground'
           >
-            <UserCog size={18} strokeWidth={1.75} />
+            <UserCogIcon size={18} strokeWidth={1.75} />
           </ToggleGroupItem>
         </ToggleGroup>
       </div>
@@ -126,7 +126,7 @@ export const QuickFilter = <TData,>({ columns }: { columns: ColumnDef<TData>[] }
           items={[
             {
               label: 'Spara personligt filter',
-              icon: Save,
+              icon: SaveIcon,
               item: handleSaveUserFilter
             }
           ]}

@@ -12,7 +12,7 @@ export const Title = ({ slugline, title, className, cancelled }: {
     <div className='truncate space-x-2 justify-start items-center'>
       <span
         title={cancelled ? 'Markerad som inställd' : ''}
-        className={cn('font-medium text-sm', className, cancelled && cancelled ? 'text-muted-foreground line-through' : 'text-black no-underline')}
+        className={cn('font-medium text-sm', className, cancelled && cancelled ? 'text-muted-foreground line-through' : 'no-underline')}
       >
         {title}
       </span>

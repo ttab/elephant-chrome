@@ -58,7 +58,7 @@ export const DuplicatePrompt = ({
     const yDoc = new Y.Doc()
 
     if (provider) {
-      const newsdoc = fromGroupedNewsDoc(fromYjsNewsDoc(provider.document).documentResponse)
+      const newsdoc = fromGroupedNewsDoc(fromYjsNewsDoc(provider.document))
       const originalUuid = newsdoc.document.uuid
       newsdoc.document.uuid = documentId
       newsdoc.document.uri = `core://${type.toLowerCase()}/${documentId}`

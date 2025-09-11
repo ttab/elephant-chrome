@@ -1,5 +1,5 @@
 import { useCallback } from 'react'
-import { ArrowLeftFromLine, ArrowRightFromLine } from '@ttab/elephant-ui/icons'
+import { ArrowLeftFromLineIcon, ArrowRightFromLineIcon } from '@ttab/elephant-ui/icons'
 import { useQuery } from '@/hooks'
 
 export const Pagination = ({ total }: {
@@ -16,7 +16,7 @@ export const Pagination = ({ total }: {
   const buttons = [
     {
       id: 'left-arrow',
-      icon: ArrowLeftFromLine,
+      icon: ArrowLeftFromLineIcon,
       onClick: () => {
         const newPage = Number(page) - 1
         if (newPage > 1) {
@@ -29,7 +29,7 @@ export const Pagination = ({ total }: {
     },
     {
       id: 'right-arrow',
-      icon: ArrowRightFromLine,
+      icon: ArrowRightFromLineIcon,
       onClick: () => setPage(Number(page) + 1),
       disabled: Number(page) === maxNumberOfPages
     }

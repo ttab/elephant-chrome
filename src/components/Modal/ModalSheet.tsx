@@ -2,10 +2,11 @@ import { Sheet, SheetContent, SheetDescription, SheetTitle } from '@ttab/elephan
 import type { PropsWithChildren } from 'react'
 import { useModal } from './useModal'
 import { cn } from '@ttab/elephant-ui/utils'
+import type { ModalSide } from './ModalContext'
 
 export const ModalSheet = ({ children, isVisible, side }: {
   isVisible: boolean
-  side?: string
+  side?: ModalSide
 } & PropsWithChildren): JSX.Element => {
   const { hideModal } = useModal()
   return (
@@ -19,7 +20,7 @@ export const ModalSheet = ({ children, isVisible, side }: {
       >
         <SheetTitle />
         <SheetDescription />
-        <div className='h-full flex flex-grow gap-4 p-6 pb-12 pt-0'>
+        <div className='h-full flex grow gap-4 p-6 pb-12 pt-0'>
           {children}
         </div>
       </SheetContent>

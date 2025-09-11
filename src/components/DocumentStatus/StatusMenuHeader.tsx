@@ -1,4 +1,4 @@
-import { Check, type LucideIcon } from '@ttab/elephant-ui/icons'
+import { CheckIcon, type LucideIcon } from '@ttab/elephant-ui/icons'
 import { cn } from '@ttab/elephant-ui/utils'
 
 export const StatusMenuHeader = ({ icon: Icon, className, title, description }: {
@@ -23,7 +23,7 @@ export const StatusMenuHeader = ({ icon: Icon, className, title, description }: 
         <div className='text-sm'>{description}</div>
       </div>
       <div>
-        <Check
+        <CheckIcon
           size={24}
           strokeWidth={2.25}
           className='mt-1'

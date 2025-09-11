@@ -1,5 +1,5 @@
 import { Popover, PopoverTrigger, Button, PopoverContent, Command } from '@ttab/elephant-ui'
-import { ListFilter } from '@ttab/elephant-ui/icons'
+import { ListFilterIcon } from '@ttab/elephant-ui/icons'
 import type { Dispatch, PropsWithChildren, SetStateAction } from 'react'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { DebouncedCommandInput } from '@/components/Commands/Menu/DebouncedCommandInput'
@@ -51,7 +51,7 @@ export const Filter = ({ page, pages, setPages, search, setSearch, children, set
           role='combobox'
           aria-expanded={open}
         >
-          <ListFilter
+          <ListFilterIcon
             size={18}
             strokeWidth={1.75}
             className='@3xl/view:shrink-0 @3xl/view:mr-2'

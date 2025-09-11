@@ -2,7 +2,6 @@ import type { Wire } from '@/shared/schemas/wire.js'
 import type { IDBAuthor } from '../../src/datastore/types.js'
 import { Block } from '@ttab/elephant-api/newsdoc'
 
-
 /**
  * Create a template structure for an assigment
  * @returns Block
@@ -61,6 +60,13 @@ export function assignmentPlanningTemplate({
       : undefined
   ].filter((x): x is Block => x !== undefined)
 
+  // Text assignments should be set with a publish_slot
+  if (assignmentType === 'text') {
+    if (assignmentData && !assignmentData.publish_slot) {
+      assignmentData.publish_slot = new Date().getHours().toString()
+    }
+  }
+
   // Plain dates, are getting set with UI
   return Block.create({
     id: crypto.randomUUID(),
@@ -70,6 +76,7 @@ export function assignmentPlanningTemplate({
     data: assignmentData || {
       full_day: 'false',
       end_date: planningDate,
+      ...(assignmentType === 'text' && { publish_slot: new Date().getHours().toString() }),
       start_date: planningDate,
       start: startDateAndTime(assignmentType),
       public: assignmentType === 'flash'

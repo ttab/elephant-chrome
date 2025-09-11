@@ -1,6 +1,5 @@
 import type { LocaleData } from '@/types/index'
 import { type ViewMetadata } from '@/types/index'
-import { Badge } from '@ttab/elephant-ui'
 import { useRef } from 'react'
 import { format } from 'date-fns'
 import { useRegistry } from '@/hooks/useRegistry'
@@ -11,6 +10,8 @@ import { ActionMenu } from '@/components/ActionMenu'
 import type { HitV1 } from '@ttab/elephant-api/index'
 import { useDeliverablePlanningId } from '@/hooks/index/useDeliverablePlanningId'
 import { useLatest } from './hooks/useLatest'
+import { SluglineButton } from '@/components/DataItem/Slugline'
+import { SectionBadge } from '@/components/DataItem/SectionBadge'
 
 const meta: ViewMetadata = {
   name: 'Latest',
@@ -79,7 +80,7 @@ const Content = ({ documents, locale }: {
         return (
           <div
             key={id}
-            className={cn('hover:bg-gray-100 flex flex-row py-3 pl-5 pr-3',
+            className={cn('hover:bg-table-focused dark:hover:bg-table-focused flex flex-row py-3 pl-5 pr-3',
               id ? 'cursor-pointer' : 'cursor-not-allowed'
             )}
             onClick={() => {
@@ -106,18 +107,8 @@ const Content = ({ documents, locale }: {
                 </div>
 
                 <div className='flex gap-2 items-center w-full text-muted-foreground  -ml-1'>
-                  <Badge
-                    size='xs'
-                    variant='ghost'
-                    className='bg-background rounded-md text-muted-foreground font-normal text-sm whitespace-nowrap'
-                    data-row-action
-                  >
-                    {uri.startsWith('core://flash') ? 'TT-FLASH' : slugline}
-                  </Badge>
-
-                  <div>
-                    {section}
-                  </div>
+                  <SluglineButton value={uri.startsWith('core://flash') ? 'TT-FLASH' : slugline} />
+                  <SectionBadge title={section} />
                 </div>
               </div>
             </div>

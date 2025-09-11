@@ -1,6 +1,6 @@
 
 import { type ColumnDef } from '@tanstack/react-table'
-import { CircleCheck, Pen, Tv } from '@ttab/elephant-ui/icons'
+import { CircleCheckIcon, PenIcon, TvIcon } from '@ttab/elephant-ui/icons'
 import type { PrintArticle } from '@/hooks/baboon/lib/printArticles'
 import { DocumentStatuses } from '@/defaults/documentStatuses'
 import { DocumentStatus } from '@/components/Table/Items/DocumentStatus'
@@ -28,7 +28,7 @@ export function printArticlesListColumns(): Array<ColumnDef<PrintArticle>> {
         ),
         options: DocumentStatuses,
         name: 'Status',
-        columnIcon: CircleCheck,
+        columnIcon: CircleCheckIcon,
         className: 'flex-none w-16',
         display: (value: string) => (
           <span>
@@ -55,7 +55,7 @@ export function printArticlesListColumns(): Array<ColumnDef<PrintArticle>> {
         ),
         // options: PrintFlows,
         name: 'Flöde',
-        columnIcon: Pen,
+        columnIcon: PenIcon,
         className: 'flex-1 w-[200px] hidden',
         display: (value: string) => (
           <span>
@@ -71,7 +71,7 @@ export function printArticlesListColumns(): Array<ColumnDef<PrintArticle>> {
       enableGrouping: false,
       meta: {
         name: 'Titel',
-        columnIcon: Pen,
+        columnIcon: PenIcon,
         className: 'flex-1'
       },
       accessorFn: (data) => (data.fields['document.title'].values[0]),
@@ -85,7 +85,7 @@ export function printArticlesListColumns(): Array<ColumnDef<PrintArticle>> {
       enableGrouping: false,
       meta: {
         name: 'Rubrik',
-        columnIcon: Pen,
+        columnIcon: PenIcon,
         className: 'flex-1'
       },
       accessorFn: (data) => {
@@ -115,7 +115,7 @@ export function printArticlesListColumns(): Array<ColumnDef<PrintArticle>> {
       enableGrouping: false,
       meta: {
         name: 'Artikel',
-        columnIcon: Pen,
+        columnIcon: PenIcon,
         className: 'flex-1 w-8'
       },
       accessorFn: (data) => {
@@ -127,7 +127,7 @@ export function printArticlesListColumns(): Array<ColumnDef<PrintArticle>> {
         return title
           ? (
               <div className='flex items-center gap-2 text-sm'>
-                <Tv size={16} />
+                <TvIcon size={16} />
                 {title as string}
               </div>
             )

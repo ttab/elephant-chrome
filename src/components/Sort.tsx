@@ -4,7 +4,12 @@ import { Popover, PopoverTrigger, PopoverContent,
   Button,
   Label
 } from '@ttab/elephant-ui'
-import { ArrowDownNarrowWide, ArrowUpDown, ArrowUpWideNarrow, Settings2 } from '@ttab/elephant-ui/icons'
+import {
+  ArrowDownNarrowWideIcon,
+  ArrowUpDownIcon,
+  ArrowUpWideNarrowIcon,
+  Settings2Icon
+} from '@ttab/elephant-ui/icons'
 import { useMemo, useState } from 'react'
 import { useTable } from '../hooks'
 
@@ -45,7 +50,7 @@ export const Sort = <TData,>() => {
           role='combobox'
           aria-expanded={open}
         >
-          <ArrowUpDown
+          <ArrowUpDownIcon
             size={18}
             strokeWidth={1.75}
           />
@@ -54,7 +59,7 @@ export const Sort = <TData,>() => {
       <PopoverContent className='' align='start'>
         <div className='flex flex-col gap-4'>
           <div className='flex flex-row gap-4 items-center'>
-            <Settings2 strokeWidth={1.75} size={18} />
+            <Settings2Icon strokeWidth={1.75} size={18} />
             <ToggleGroup
               type='single'
               size='xs'
@@ -148,8 +153,8 @@ export const Sort = <TData,>() => {
               }}
             >
               {order === 'asc'
-                ? <ArrowDownNarrowWide strokeWidth={1.75} size={18} />
-                : <ArrowUpWideNarrow strokeWidth={1.75} size={18} />}
+                ? <ArrowDownNarrowWideIcon strokeWidth={1.75} size={18} />
+                : <ArrowUpWideNarrowIcon strokeWidth={1.75} size={18} />}
             </Button>
           </div>
         </div>

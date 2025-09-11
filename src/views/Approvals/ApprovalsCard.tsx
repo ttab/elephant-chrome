@@ -2,11 +2,11 @@ import { Card } from '@/components/Card'
 import { ClockIcon } from '@/components/ClockIcon'
 import { Avatar, Link } from '@/components/index'
 import { useModal } from '@/components/Modal/useModal'
-import { DotDropdownMenu } from '@/components/ui/DotMenu'
+
 import type { AssignmentInterface } from '@/hooks/index/useAssignments'
 import { useLink } from '@/hooks/useLink'
 import { useRegistry } from '@/hooks/useRegistry'
-import { CalendarDays, FileInput, FileWarning, Zap } from '@ttab/elephant-ui/icons'
+import { CalendarDaysIcon, FileWarningIcon, MessageSquarePlusIcon, ZapIcon } from '@ttab/elephant-ui/icons'
 import { parseISO, format } from 'date-fns'
 import { toZonedTime } from 'date-fns-tz'
 import { PreviewSheet } from '../Wires/components'
@@ -15,7 +15,7 @@ import { useSections } from '@/hooks/useSections'
 import type { StatusSpecification } from '@/defaults/workflowSpecification'
 import { useYValue } from '@/hooks/useYValue'
 import { AvatarGroup } from '@/components/AvatarGroup'
-import { Tooltip } from '@ttab/elephant-ui'
+import { Popover, PopoverContent, PopoverTrigger, Tooltip } from '@ttab/elephant-ui'
 import { timesSlots } from '@/defaults/assignmentTimeslots'
 import { useMemo } from 'react'
 import { AuthorNames } from './AuthorNames'
@@ -76,45 +76,6 @@ export const ApprovalsCard = ({ assignment, isSelected, isFocused, status, autho
       ?.find((entry) => entry[0] === 'done')?.[1]
     : undefined
 
-  const menuItemDocumentLabel = assignment._deliverableType === 'core/flash' ? 'flash' : 'artikel'
-  const menuItems = [{
-    label: `Öppna ${menuItemDocumentLabel}`,
-    icon: FileInput,
-    item: (
-      <Link
-        to={assignment._deliverableType === 'core/flash' ? 'Flash' : 'Editor'}
-        props={{ id: documentId }}
-      >
-        <div className='flex flex-row justify-center items-center'>
-          <div className='opacity-70 flex-none w-7'>
-            <FileInput size={16} strokeWidth={1.75} />
-          </div>
-
-          <div className='grow'>
-            {`Öppna ${menuItemDocumentLabel}`}
-          </div>
-        </div>
-      </Link>
-    )
-  },
-  {
-    label: 'Öppna planering',
-    icon: CalendarDays,
-    item: (
-      <Link to='Planning' props={{ id: assignment._id }}>
-        <div className='flex flex-row justify-center items-center'>
-          <div className='opacity-70 flex-none w-7'>
-            <CalendarDays size={16} strokeWidth={1.75} />
-          </div>
-
-          <div className='grow'>
-            Öppna planering
-          </div>
-        </div>
-      </Link>
-    )
-  }]
-
   const title = assignment._deliverableDocument?.title
 
   const slugline = assignment.meta.find((m) => m.type === 'tt/slugline')?.value
@@ -122,6 +83,8 @@ export const ApprovalsCard = ({ assignment, isSelected, isFocused, status, autho
   // of the current 'usable' status. Each time a version is tagged as usable,
   // this id is incremented by 1
   const lastUsableOrder = statusData?.heads.usable?.id
+
+  const internalInfo = assignment._deliverableDocument?.meta.find((block) => block.type === 'core/note' && block.role === 'internal')?.data?.text
 
   return (
     <Card.Root
@@ -152,9 +115,9 @@ export const ApprovalsCard = ({ assignment, isSelected, isFocused, status, autho
           {status.icon && <status.icon size={15} strokeWidth={1.75} className={status.className} />}
           <span className='bg-secondary inline-block px-1 rounded'>
             {assignment._deliverableType === 'core/flash'
-              ? <Zap strokeWidth={1.75} size={14} className='text-red-500' />
+              ? <ZapIcon strokeWidth={1.75} size={14} className='text-red-500' />
               : assignment._deliverableType === 'core/editorial-info'
-                ? <FileWarning size={14} />
+                ? <FileWarningIcon size={14} />
                 : assignment._newsvalue}
           </span>
           {users && (
@@ -168,12 +131,37 @@ export const ApprovalsCard = ({ assignment, isSelected, isFocused, status, autho
               })}
             </AvatarGroup>
           )}
+          {internalInfo && (
+            <Popover>
+              <PopoverTrigger onClick={(e) => {
+                e.stopPropagation()
+              }}
+              >
+                <Tooltip content={internalInfo}>
+                  <div className='hover:bg-gray-300 dark:hover:bg-gray-700 p-1 -m-1 rounded'>
+                    <MessageSquarePlusIcon className='opacity-50' size={14} />
+                  </div>
+                </Tooltip>
+              </PopoverTrigger>
+              <PopoverContent>{internalInfo}</PopoverContent>
+            </Popover>
+          )}
         </div>
 
-        <div className='flex flex-row gap-1 items-center'>
-          <ClockIcon hour={(time) ? parseInt(time.slice(0, 2)) : undefined} size={14} className='opacity-50' />
-          <time>{time}</time>
-        </div>
+        <Popover>
+          <PopoverTrigger onClick={(e) => {
+            e.stopPropagation()
+          }}
+          >
+            <Tooltip content={statusData?.modified ? `Senast ändrad ${format(toZonedTime(parseISO(statusData.modified), timeZone), 'HH:mm')}` : 'Senast ändrad'}>
+              <div className='flex flex-row gap-1 items-center'>
+                <ClockIcon hour={(time) ? parseInt(time.slice(0, 2)) : undefined} size={14} className='opacity-50' />
+                <time>{time}</time>
+              </div>
+            </Tooltip>
+          </PopoverTrigger>
+          <PopoverContent>{statusData?.modified ? `Senast ändrad ${format(toZonedTime(parseISO(statusData.modified), timeZone), 'HH:mm')}` : 'Senast ändrad'}</PopoverContent>
+        </Popover>
       </Card.Header>
 
       <Card.Content>
@@ -198,7 +186,7 @@ export const ApprovalsCard = ({ assignment, isSelected, isFocused, status, autho
               lastStatusUpdateAuthor={lastStatusUpdateAuthor}
             />
           </div>
-          <div className='flex flex-grow justify-between align-middle'>
+          <div className='flex grow justify-between align-middle'>
             <div className='flex flex-row content-center opacity-60 gap-1'>
               {sections
                 .find((section) => section.id === assignment._section)
@@ -215,7 +203,16 @@ export const ApprovalsCard = ({ assignment, isSelected, isFocused, status, autho
                 </span>
               )}
             </div>
-            <DotDropdownMenu items={menuItems} />
+            <Tooltip content='Öppna planering'>
+              <div
+                className='opacity-70 block md:opacity-0 md:group-hover:opacity-70 hover:bg-gray-300 dark:hover:bg-gray-700 p-1 -m-1 rounded transition-all'
+                onClick={(e) => e.stopPropagation()}
+              >
+                <Link to='Planning' props={{ id: assignment._id }}>
+                  <CalendarDaysIcon size={16} strokeWidth={1.75} />
+                </Link>
+              </div>
+            </Tooltip>
           </div>
         </div>
       </Card.Footer>
@@ -226,6 +223,10 @@ export const ApprovalsCard = ({ assignment, isSelected, isFocused, status, autho
 
 
 function getAssignmentTime(assignment: AssignmentInterface, timeZone: string) {
+  if (assignment?._statusData) {
+    const modified = (JSON.parse(assignment._statusData) as StatusData)?.modified
+    return format(toZonedTime(parseISO(modified), timeZone), 'HH:mm')
+  }
   if (assignment.data.publish && assignment._deliverableStatus === 'withheld') {
     return format(toZonedTime(parseISO(assignment.data.publish), timeZone), 'HH:mm')
   }

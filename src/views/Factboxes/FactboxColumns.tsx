@@ -3,7 +3,7 @@ import type { Factbox } from '@/shared/schemas/factbox'
 import { dateToReadableDateTime } from '@/shared/datetime'
 import type { LocaleData } from '@/types/index'
 import type { ColumnDef, Row } from '@tanstack/react-table'
-import { Boxes } from '@ttab/elephant-ui/icons'
+import { BoxesIcon } from '@ttab/elephant-ui/icons'
 
 interface FactboxData {
   title: string
@@ -38,7 +38,7 @@ export function factboxColumns({ locale, timeZone }: { locale: LocaleData, timeZ
       id: 'title',
       meta: {
         name: 'Titel',
-        columnIcon: Boxes,
+        columnIcon: BoxesIcon,
         className: 'flex-none'
       },
       accessorFn: (data) => data.fields['document.title'].values[0],
@@ -57,7 +57,7 @@ export function factboxColumns({ locale, timeZone }: { locale: LocaleData, timeZ
       id: 'description',
       meta: {
         name: 'Beskrivning',
-        columnIcon: Boxes,
+        columnIcon: BoxesIcon,
         className: 'flex-1 w-[200px]'
       },
       accessorFn: (data) => data.fields?.['document.content.core_text.data.text']?.values[0],
@@ -77,7 +77,7 @@ export function factboxColumns({ locale, timeZone }: { locale: LocaleData, timeZ
       id: 'edited',
       meta: {
         name: 'Senast ändrad',
-        columnIcon: Boxes,
+        columnIcon: BoxesIcon,
         className: 'flex-none'
       },
       accessorFn: (data) => data.fields.modified.values[0],

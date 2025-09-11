@@ -66,9 +66,11 @@ export const TimeDeliveryMenu = ({
               <CommandGroup>
                 <TimeSlotItems handleOnSelect={handleOnSelect} handleParentOpenChange={handleOpenChange} assignmentType={assignmentType} />
               </CommandGroup>
-              <CommandGroup>
-                <TimeSelectItem handleOnSelect={handleOnSelect} index={index} handleParentOpenChange={handleOpenChange} />
-              </CommandGroup>
+              {assignmentType !== 'text' && (
+                <CommandGroup>
+                  <TimeSelectItem handleOnSelect={handleOnSelect} index={index} handleParentOpenChange={handleOpenChange} />
+                </CommandGroup>
+              )}
             </div>
           </CommandList>
         </Command>

@@ -42,13 +42,4 @@ export class Redis {
       Buffer.from(state).toString('binary')
     )
   }
-
-  async acquireLock(key: string, value: string, expire: number = 5000): Promise<boolean> {
-    const response = await this.#redisClient?.set(`${BASE_PREFIX}:lock:${key}`, value, {
-      PX: expire, // Expiration in milliseconds
-      NX: true // Only set if key doesn't exist
-    })
-
-    return response === 'OK'
-  }
 }

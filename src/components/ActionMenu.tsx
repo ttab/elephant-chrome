@@ -1,4 +1,4 @@
-import { Pen, CalendarDaysIcon, MoreHorizontal } from '@ttab/elephant-ui/icons'
+import { PenIcon, CalendarDaysIcon, MoreHorizontalIcon } from '@ttab/elephant-ui/icons'
 
 import {
   Button,
@@ -25,13 +25,13 @@ export const ActionMenu = ({ actions }: {
           className='flex h-8 w-8 p-0 data-[state=open]:bg-muted hover:bg-accent2'
           onClickCapture={(e) => e.preventDefault()}
         >
-          <MoreHorizontal size={18} strokeWidth={1.75} />
+          <MoreHorizontalIcon size={18} strokeWidth={1.75} />
         </Button>
       </DropdownMenuTrigger>
 
       <DropdownMenuContent className='w-56'>
         {actions.map(({ to, id, title }) => {
-          const Icon = (to === 'Planning') ? CalendarDaysIcon : Pen
+          const Icon = (to === 'Planning') ? CalendarDaysIcon : PenIcon
 
           return (
             <DropdownMenuItem key={id}>

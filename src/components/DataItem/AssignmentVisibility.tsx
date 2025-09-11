@@ -1,6 +1,6 @@
 import { useYValue } from '@/hooks/useYValue'
 import { Tooltip, Select, SelectTrigger, SelectContent, SelectItem } from '@ttab/elephant-ui'
-import { Building, Globe } from '@ttab/elephant-ui/icons'
+import { BuildingIcon, GlobeIcon } from '@ttab/elephant-ui/icons'
 import { cn } from '@ttab/elephant-ui/utils'
 import { useCallback, useMemo } from 'react'
 import type { FormProps } from '../Form/Root'
@@ -26,8 +26,8 @@ export const AssignmentVisibility = ({ path, editable, disabled, className = '',
   )
 
   const renderIcon = (status: string) => status === 'true'
-    ? <Globe size={18} strokeWidth={1.75} className='text-muted-foreground' />
-    : <Building size={18} strokeWidth={1.75} className='text-muted-foreground' />
+    ? <GlobeIcon size={18} strokeWidth={1.75} className='text-muted-foreground' />
+    : <BuildingIcon size={18} strokeWidth={1.75} className='text-muted-foreground' />
 
   if (!editable && visibilityStatus) {
     return (
@@ -51,13 +51,13 @@ export const AssignmentVisibility = ({ path, editable, disabled, className = '',
         <SelectContent>
           <SelectItem key='true' value='true'>
             <span className='flex flex-row gap-2'>
-              <Globe size={18} strokeWidth={1.75} />
+              <GlobeIcon size={18} strokeWidth={1.75} />
               Publik
             </span>
           </SelectItem>
           <SelectItem key='false' value='false'>
             <span className='flex flex-row gap-2'>
-              <Building size={18} strokeWidth={1.75} />
+              <BuildingIcon size={18} strokeWidth={1.75} />
               Internt
             </span>
           </SelectItem>

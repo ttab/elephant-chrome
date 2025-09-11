@@ -1,4 +1,4 @@
-import { ChevronLeft, ChevronRight } from '@ttab/elephant-ui/icons'
+import { ChevronLeftIcon, ChevronRightIcon } from '@ttab/elephant-ui/icons'
 import { Link } from '@/components'
 import { DatePicker } from '../Datepicker'
 import { useMemo } from 'react'
@@ -36,7 +36,7 @@ export const DateChanger = ({ type }: {
         props={{ ...query, from: decrementDate(currentDate, steps).toISOString().split('T')[0] }}
         target='self'
       >
-        <ChevronLeft
+        <ChevronLeftIcon
           strokeWidth={1.75}
           className='w-6 h-8 px-1 py-2 rounded cursor-pointer hover:bg-muted'
         />
@@ -49,7 +49,7 @@ export const DateChanger = ({ type }: {
         props={{ ...query, from: incrementDate(currentDate, steps).toISOString().split('T')[0] }}
         target='self'
       >
-        <ChevronRight
+        <ChevronRightIcon
           strokeWidth={1.75}
           className='w-6 h-8 px-1 py-2 rounded cursor-pointer hover:bg-muted'
         />

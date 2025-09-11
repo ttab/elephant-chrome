@@ -1,5 +1,5 @@
 import { Link } from '..'
-import { MoreHorizontal } from '@ttab/elephant-ui/icons'
+import { MoreHorizontalIcon } from '@ttab/elephant-ui/icons'
 import {
   Button,
   DropdownMenu,
@@ -19,7 +19,7 @@ export const ActionMenu = ({ deliverableUuids, planningId }: { deliverableUuids:
           variant='ghost'
           className='flex h-8 w-8 p-0 data-[state=open]:bg-muted hover:bg-accent2'
         >
-          <MoreHorizontal size={18} strokeWidth={1.75} />
+          <MoreHorizontalIcon size={18} strokeWidth={1.75} />
           <span className='sr-only'>Open</span>
         </Button>
       </DropdownMenuTrigger>
