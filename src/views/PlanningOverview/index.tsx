@@ -12,7 +12,7 @@ import { useAuthors } from '@/hooks/useAuthors'
 import { Commands } from '@/components/Commands'
 import { useQuery } from '@/hooks/useQuery'
 import type { Planning } from '@/shared/schemas/planning'
-import { useInitFilters } from '@/hooks/useFilters'
+import { useInitFilters } from '@/hooks/useInitFilters'
 
 const meta: ViewMetadata = {
   name: 'Plannings',

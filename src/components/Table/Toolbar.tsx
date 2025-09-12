@@ -6,10 +6,10 @@ import type { ColumnFiltersState } from '@tanstack/react-table'
 import { Filter } from '@/components/Filter'
 import { Commands } from '@/components/Commands'
 import { Sort } from '../Sort'
-import type { PropsWithChildren } from 'react'
 import { useMemo, useCallback } from 'react'
+import { QuickFilter } from './QuickFilter'
 
-export const Toolbar = <TData,>({ children }: PropsWithChildren): JSX.Element => {
+export const Toolbar = <TData,>(): JSX.Element => {
   const { table, command } = useTable<TData>()
 
   const { columnFilters, globalFilter } = table.getState() as {
@@ -48,7 +48,7 @@ export const Toolbar = <TData,>({ children }: PropsWithChildren): JSX.Element =>
           <XIcon size={18} strokeWidth={1.75} className='ml-2' />
         </Button>
       )}
-      {children}
+      <QuickFilter />
     </div>
   )
 }

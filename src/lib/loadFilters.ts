@@ -2,46 +2,6 @@ import type { QueryParams } from '@/hooks/useQuery'
 import type { ColumnDef, ColumnFiltersState, Updater } from '@tanstack/react-table'
 
 /**
- * Loads filters for columns based on query parameters and saved filters.
- *
- * @template T - The type of the column data.
- * @param query - The query parameters from the URL or other sources.
- * @param columns - The definitions of the columns to filter.
- * @returns The state of the column filters.
- */
-export function loadFilters<TData>({
-  query,
-  userFilters,
-  setQuery,
-  columns
-}: {
-  query?: QueryParams
-  userFilters?: QueryParams
-  setQuery?: (params: QueryParams) => void
-  columns: ColumnDef<TData>[]
-}): ColumnFiltersState {
-  // Prefer query, fallback to userFilters if setQuery is provided
-  const source = hasDefinedFilter(query)
-    ? query
-    : hasDefinedFilter(userFilters) && setQuery
-      ? userFilters
-      : undefined
-
-  if (source) {
-    if (source === userFilters && setQuery) setQuery(userFilters)
-    return Object.entries(source)
-      .filter(([key]) => columns
-        .some((column) => column.id === key))
-      .map(([key, value]) => ({
-        id: key,
-        value: Array.isArray(value) ? value : [value]
-      }))
-  }
-
-  return []
-}
-
-/**
  * Updates and converts columnFilters to a QueryParams.
  * Sets removed values to undefined
  *

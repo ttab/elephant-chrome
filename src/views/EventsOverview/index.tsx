@@ -13,7 +13,7 @@ import { useSections } from '@/hooks/useSections'
 import { useQuery } from '@/hooks/useQuery'
 import { useOrganisers } from '@/hooks/useOrganisers'
 import { useRegistry } from '@/hooks/useRegistry'
-import { useInitFilters } from '@/hooks/useFilters'
+import { useInitFilters } from '@/hooks/useInitFilters'
 
 const meta: ViewMetadata = {
   name: 'Events',

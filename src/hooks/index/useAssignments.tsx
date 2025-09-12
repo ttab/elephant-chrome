@@ -9,7 +9,7 @@ import { structureAssignments } from './lib/assignments/structureAssignments'
 import type { Facets } from './lib/assignments/filterAssignments'
 import { filterAssignments, getFacets } from './lib/assignments/filterAssignments'
 import type { Planning } from '@/shared/schemas/planning'
-import { useInitFilters } from '../useFilters'
+import { useInitFilters } from '../useInitFilters'
 import { columnFilterToQuery } from '@/lib/loadFilters'
 
 export { AssignmentInterface }

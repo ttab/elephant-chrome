@@ -16,7 +16,7 @@ import {
 import { PrintFlows } from './PrintFlows'
 import { PrintArticlesHeader } from './PrintArticlesHeader'
 import { useQuery } from '@/hooks/useQuery'
-import { useInitFilters } from '@/hooks/useFilters'
+import { useInitFilters } from '@/hooks/useInitFilters'
 import { useDocuments } from '@/hooks/index/useDocuments'
 import type { PrintFlow, PrintFlowFields } from '@/shared/schemas/printFlow'
 import { fields } from '@/shared/schemas/printFlow'

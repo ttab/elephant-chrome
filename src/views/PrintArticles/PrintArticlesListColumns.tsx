@@ -1,4 +1,3 @@
-
 import { type ColumnDef } from '@tanstack/react-table'
 import { CircleCheckIcon, PenIcon, TvIcon } from '@ttab/elephant-ui/icons'
 import type { PrintArticle } from '@/hooks/baboon/lib/printArticles'
@@ -54,13 +53,13 @@ export function printArticlesListColumns({ printFlows = [] }: {
       enableSorting: true,
       enableColumnFilter: true,
       meta: {
-        Filter: ({ column, setSearch }) => (
-          <FacetedFilter column={column} setSearch={setSearch} />
-        ),
         options: printFlows.map((_) => ({
           value: _.id,
           label: _.fields['document.title'].values[0]
         })),
+        Filter: ({ column, setSearch }) => (
+          <FacetedFilter column={column} setSearch={setSearch} />
+        ),
         name: 'Flöde',
         columnIcon: PenIcon,
         className: 'flex-1 w-[200px] hidden',
