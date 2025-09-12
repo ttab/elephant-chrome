@@ -292,9 +292,9 @@ function EditorContainer({
     <>
       <EditorHeader documentId={documentId} flowName={flowName} isChanged={isChanged} />
       {!!notes?.length && <div className='p-4'><Notes /></div>}
-      <View.Content className='flex flex-col max-w-[1000px]'>
-        <section className='flex flex-col-reverse @printEditor:grid @printEditor:grid-cols-12 @container'>
-          <div className='@printEditor:col-span-8'>
+      <View.Content className='flex flex-col max-w-[1400px] grow'>
+        <section className='flex @printEditor:grid @printEditor:grid-cols-12 @container'>
+          <div className='@printEditor:col-span-10'>
             <ScrollArea className='h-[calc(100vh-7rem)]'>
               <div className='grow overflow-auto pr-12 max-w-(--breakpoint-xl)'>
                 {!!provider && synced
@@ -307,7 +307,7 @@ function EditorContainer({
               </div>
             </ScrollArea>
           </div>
-          <aside className='@printEditor:col-span-4 @printEditor:sticky @printEditor:top-16 p-4'>
+          <aside className='@printEditor:col-span-2 @printEditor:sticky @printEditor:top-16 p-4'>
             <header className='flex flex-row gap-2 items-center justify-between mb-2'>
               <div className='flex items-center'>
                 <Button variant='ghost' size='sm' onClick={() => { void statusChecker() }}>
