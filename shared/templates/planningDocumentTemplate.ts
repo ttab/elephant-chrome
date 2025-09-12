@@ -2,6 +2,7 @@ import { Document, Block } from '@ttab/elephant-api/newsdoc'
 import type { TemplatePayload } from './index.js'
 import { getUserTimeZone } from '../../src/lib/getUserTimeZone.js'
 import { getUTCDateRange } from '../../shared/datetime.js'
+import { DEFAULT_TIMEZONE } from '../../src/defaults/defaultTimezone.js'
 
 /**
  * Create a template structure for a planning document
@@ -18,7 +19,7 @@ export function planningDocumentTemplate(documentId: string, payload?: TemplateP
       return targetDate.split('T')[0]
     }
 
-    const timeZonedPlanningDate = getUTCDateRange(new Date(), getUserTimeZone() || 'Europe/Stockholm')
+    const timeZonedPlanningDate = getUTCDateRange(new Date(), getUserTimeZone() || DEFAULT_TIMEZONE)
     return timeZonedPlanningDate?.to.split('T')[0]
   }
 

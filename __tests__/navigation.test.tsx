@@ -18,6 +18,7 @@ import { UserTrackerContext } from '@/contexts/UserTrackerProvider'
 import type { RegistryProviderState } from '@/contexts/RegistryProvider'
 import { RegistryContext } from '@/contexts/RegistryProvider'
 import { sv } from 'date-fns/locale'
+import { DEFAULT_TIMEZONE } from '@/defaults/defaultTimezone'
 
 globalThis.indexedDB = indexeddb
 
@@ -48,7 +49,7 @@ const registry = {
     },
     module: sv
   },
-  timeZone: 'Europe/Stockholm',
+  timeZone: DEFAULT_TIMEZONE,
   server: {},
   dispatch: {},
   index: {

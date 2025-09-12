@@ -16,8 +16,7 @@ import { User } from '@/shared/User'
 import { defaultLocale, getLocaleData } from '@/shared/getLocaleData'
 import type { LocaleData } from '@/types'
 import { Baboon } from '@/shared/Baboon'
-
-const DEFAULT_TIMEZONE = 'Europe/Stockholm'
+import { DEFAULT_TIMEZONE } from '@/defaults/defaultTimezone'
 
 /** Registry registry provider state interface */
 export interface RegistryProviderState {
