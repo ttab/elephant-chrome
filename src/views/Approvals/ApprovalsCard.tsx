@@ -181,7 +181,9 @@ export const ApprovalsCard = ({ assignment, isSelected, isFocused, status, autho
           <div className='truncate'>{title}</div>
           <div className='text-xs font-normal opacity-60 flex gap-1'>
             {slugline && <div>{slugline}</div>}
-            {slugline && lastUsableOrder && <div>{`- ${documentStatus?.checkpoint !== 'usable' ? Number(lastUsableOrder) + 1 : Number(lastUsableOrder)}`}</div>}
+            {slugline && lastUsableOrder && Number(lastUsableOrder) !== 1 && (
+              <div>{`- v${'workflowState' in statusData && statusData?.workflowState !== 'usable' ? Number(lastUsableOrder) + 1 : Number(lastUsableOrder)}`}</div>
+            )}
             {cause && <div>{`- ${cause}`}</div>}
           </div>
         </Card.Title>
