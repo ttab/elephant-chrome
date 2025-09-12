@@ -1,4 +1,6 @@
+import type { QueryParams } from '@/hooks/useQuery'
 import { useQuery } from '@/hooks/useQuery'
+import { useUserTracker } from '@/hooks/useUserTracker'
 import { CommandItem } from '@ttab/elephant-ui'
 import { CheckIcon } from '@ttab/elephant-ui/icons'
 import { cn } from '@ttab/elephant-ui/utils'
@@ -9,6 +11,7 @@ export const BaseSelected = ({ options, filterPage, facets }: {
   filterPage: string
 }) => {
   const [filter, setFilter] = useQuery([filterPage])
+  const [currentFilters, setCurrentFilters] = useUserTracker<QueryParams | undefined>(`filters.Approvals.current`)
   const selected = new Set(filter[filterPage])
   return options.map((option) => {
     const isSelected = selected?.has?.(option.value)
@@ -18,6 +21,7 @@ export const BaseSelected = ({ options, filterPage, facets }: {
         className='flex gap-1 items-center'
         key={option.value}
         onSelect={() => {
+          // Apply change both to queryparams and to current in userTracker document
           if (isSelected) {
             selected.delete(option.value)
             setFilter({
@@ -26,10 +30,20 @@ export const BaseSelected = ({ options, filterPage, facets }: {
                 ? undefined
                 : Array.from(selected)
             })
+            setCurrentFilters({
+              ...currentFilters,
+              [filterPage]: selected.size === 0
+                ? undefined
+                : Array.from(selected)
+            })
           } else {
             selected.add(option.value)
             setFilter({
               ...filter,
+              [filterPage]: Array.from(selected)
+            })
+            setCurrentFilters({
+              ...currentFilters,
               [filterPage]: Array.from(selected)
             })
           }

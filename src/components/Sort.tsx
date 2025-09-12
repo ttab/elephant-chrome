@@ -76,20 +76,28 @@ export const Sort = <TData,>() => {
                     Tid
                   </ToggleGroupItem>
                 )}
-              <ToggleGroupItem
-                value='newsvalue'
-                aria-label='Sortera efter nyhetsvärde'
-                className='border data-[state=off]:text-muted-foreground'
-              >
-                Nyhetsvärde
-              </ToggleGroupItem>
-              <ToggleGroupItem
-                value='section'
-                aria-label='Sortera efter sektion'
-                className='border data-[state=off]:text-muted-foreground'
-              >
-                Sektion
-              </ToggleGroupItem>
+
+              {sortableColumns.find((column) => column.id === 'newsvalue')
+                && (
+                  <ToggleGroupItem
+                    value='newsvalue'
+                    aria-label='Sortera efter nyhetsvärde'
+                    className='border data-[state=off]:text-muted-foreground'
+                  >
+                    Nyhetsvärde
+                  </ToggleGroupItem>
+                )}
+
+              {sortableColumns.find((column) => column.id === 'section')
+                && (
+                  <ToggleGroupItem
+                    value='section'
+                    aria-label='Sortera efter sektion'
+                    className='border data-[state=off]:text-muted-foreground'
+                  >
+                    Sektion
+                  </ToggleGroupItem>
+                )}
             </ToggleGroup>
           </div>
           <Label htmlFor='grouping'>Gruppera</Label>

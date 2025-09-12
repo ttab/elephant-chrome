@@ -2,11 +2,13 @@ import { CommandList } from '@ttab/elephant-ui'
 import { OptionsFilter } from '@/components/Filter/common/OptionsFilter'
 import { ClearFilter } from '@/components/Filter/ClearFilter'
 import type { Facets } from '@/hooks/index/lib/assignments/filterAssignments'
+import type { QueryParams } from '@/hooks/useQuery'
 import { useQuery } from '@/hooks/useQuery'
 import type { FilterProps } from '@/components/Filter'
 import { useSections } from '@/hooks/useSections'
 import { CircleCheckIcon, ShapesIcon } from '@ttab/elephant-ui/icons'
 import { DocumentStatuses } from '@/defaults/documentStatuses'
+import { useUserTracker } from '@/hooks/useUserTracker'
 
 export const Commands = (props: {
   facets?: Facets
@@ -16,10 +18,12 @@ export const Commands = (props: {
   }
 
   const [filters, setFilters] = useQuery(['status', 'section'])
+  const [, setCurrentFilters] = useUserTracker<QueryParams | undefined>(`filters.Approvals.current`)
   const hasFilter = Object.values(filters).some((value) => value?.length)
 
   const handleClear = () => {
     setFilters({})
+    setCurrentFilters({})
   }
 
   const optionsSections = useSections().map((_) => {

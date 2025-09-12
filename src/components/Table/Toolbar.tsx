@@ -1,77 +1,28 @@
-import { SaveIcon, UserCogIcon, XIcon } from '@ttab/elephant-ui/icons'
-import { Button, ToggleGroup, ToggleGroupItem } from '@ttab/elephant-ui'
+import { XIcon } from '@ttab/elephant-ui/icons'
+import { Button } from '@ttab/elephant-ui'
 import { SelectedFilters } from './SelectedFilters'
-import { useSections } from '@/hooks/useSections'
-import { DotDropdownMenu } from '../ui/DotMenu'
-import { useUserTracker } from '@/hooks/useUserTracker'
-import { columnFilterToQuery, loadFilters } from '@/lib/loadFilters'
 import { useTable } from '@/hooks/useTable'
-import type { ColumnDef, ColumnFiltersState } from '@tanstack/react-table'
-import type { QueryParams } from '@/hooks/useQuery'
-import { useCallback, useMemo } from 'react'
-import { toast } from 'sonner'
+import type { ColumnFiltersState } from '@tanstack/react-table'
 import { Filter } from '@/components/Filter'
 import { Commands } from '@/components/Commands'
 import { Sort } from '../Sort'
+import { useMemo, useCallback } from 'react'
+import { QuickFilter } from './QuickFilter'
 
-export const Toolbar = <TData,>({ columns }: {
-  columns: ColumnDef<TData>[]
-}): JSX.Element => {
-  const { table, type, command } = useTable<TData>()
+export const Toolbar = <TData,>(): JSX.Element => {
+  const { table, command } = useTable<TData>()
+
   const { columnFilters, globalFilter } = table.getState() as {
     columnFilters: ColumnFiltersState
     globalFilter: string
   }
-  const isFiltered = useMemo(() => columnFilters.length > 0
-    || !!globalFilter, [columnFilters, globalFilter])
-  const allSections = useSections()
-  const column = table.getColumn('section')
-  const [filters, setFilters] = useUserTracker<QueryParams | undefined>(`filters.${type}`)
-  const columnFilterValue = column?.getFilterValue()
+  const isFiltered = useMemo(() => columnFilters.length > 0 || !!globalFilter,
+    [columnFilters, globalFilter])
 
-  const savedUserFilter = useMemo(() =>
-    loadFilters<TData>(filters, columns), [filters, columns])
-
-  const isUserFilter = (savedUserFilter: ColumnFiltersState, currentFilter: ColumnFiltersState): boolean => (
-    JSON.stringify(savedUserFilter.sort()) === JSON.stringify(currentFilter.sort())
-  )
-
-  const handleResetFilters = () => {
+  const handleResetFilters = useCallback(() => {
     table.resetColumnFilters()
     table.resetGlobalFilter()
-  }
-
-  const handleSaveUserFilter = () => {
-    const columnFilters = table.getState().columnFilters
-    setFilters(columnFilterToQuery(columnFilters))
-
-    toast.success('Ditt filter har sparats')
-  }
-
-  const handleToggleGroupValue = useCallback(() => {
-    if (isUserFilter(savedUserFilter, columnFilters)) {
-      return 'user'
-    }
-
-    return Array.isArray(columnFilterValue) && columnFilterValue.length === 1
-      ? columnFilterValue[0] as string
-      : ''
-  }, [columnFilterValue, savedUserFilter, columnFilters])
-
-  const handleToggleValueChange = (value: string | undefined) => {
-    if (value === 'user') {
-      table.setColumnFilters(savedUserFilter)
-      return
-    }
-
-    // If current filter is userFilter, reset all filters
-    if (value === '' && isUserFilter(savedUserFilter, table.getState().columnFilters)) {
-      table.resetColumnFilters()
-      return
-    }
-
-    column?.setFilterValue(value ? [value] : undefined)
-  }
+  }, [table])
 
   return (
     <div className='bg-background flex flex-wrap grow items-center space-x-2 border-b px-4 py-1 pr-2.5 sticky top-0 z-10'>
@@ -97,73 +48,7 @@ export const Toolbar = <TData,>({ columns }: {
           <XIcon size={18} strokeWidth={1.75} className='ml-2' />
         </Button>
       )}
-      <div className='flex flex-row grow flex-wrap items-center'>
-        <div className='grow'></div>
-        <div className='hidden @2xl/view:flex'>
-          <ToggleGroup
-            type='single'
-            size='xs'
-            value={(() => handleToggleGroupValue())()}
-            onValueChange={handleToggleValueChange}
-            className='px-1'
-          >
-            {allSections.map((section) => (
-              <ToggleGroupItem
-                key={section.id}
-                value={section.id}
-                aria-label={`Toggle ${section.title}`}
-                className='border data-[state=off]:text-muted-foreground'
-              >
-                {section.title}
-              </ToggleGroupItem>
-            ))}
-            <ToggleGroupItem
-              value='user'
-              aria-label='Toggle user'
-              className='border data-[state=off]:text-muted-foreground'
-            >
-              <UserCogIcon size={18} strokeWidth={1.75} />
-            </ToggleGroupItem>
-          </ToggleGroup>
-        </div>
-        <div className='hidden @2xl/view:flex justify-end'>
-          <DotDropdownMenu
-            trigger='vertical'
-            items={[
-              {
-                label: 'Spara personligt filter',
-                icon: SaveIcon,
-                item: handleSaveUserFilter
-              }
-            ]}
-          />
-        </div>
-        <div className='flex justify-end @2xl/view:hidden'>
-          <DotDropdownMenu
-            trigger='vertical'
-            items={[
-              ...allSections.map((section) => ({
-                label: section.title,
-                item: () => {
-                  column?.setFilterValue([section.id])
-                }
-              })),
-              {
-                label: 'Personligt filter',
-                icon: UserCogIcon,
-                item: () => {
-                  table.setColumnFilters(savedUserFilter)
-                }
-              },
-              {
-                label: 'Spara personligt filter',
-                icon: SaveIcon,
-                item: handleSaveUserFilter
-              }
-            ]}
-          />
-        </div>
-      </div>
+      <QuickFilter />
     </div>
   )
 }

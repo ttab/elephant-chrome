@@ -9,6 +9,7 @@ declare module '@tanstack/react-table' {
       column: Column<TData, TValue>
       setSearch: Dispatch<SetStateAction<string | undefined>>
     }) => JSX.Element)
+    quickFilter?: boolean
     name: string
     columnIcon: LucideIcon
     options?: DefaultValueOption[]

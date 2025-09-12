@@ -208,7 +208,8 @@ export function eventTableColumns({ sections = [], organisers = [], locale }: {
         ),
         Filter: ({ column, setSearch }) => (
           <FacetedFilter column={column} setSearch={setSearch} />
-        )
+        ),
+        quickFilter: true
       },
       accessorFn: (data) => data.fields['document.rel.section.uuid']?.values[0],
       cell: ({ row }) => {

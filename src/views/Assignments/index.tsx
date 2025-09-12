@@ -14,9 +14,9 @@ import { type ViewMetadata } from '@/types'
 import { type IDBAuthor } from 'src/datastore/types'
 import { useQuery } from '@/hooks/useQuery'
 import { newLocalDate } from '@/shared/datetime'
-import { loadFilters } from '@/lib/loadFilters'
 import { useSections } from '@/hooks/useSections'
 import type { Assignment } from '@/shared/schemas/assignments'
+import { useInitFilters } from '@/hooks/useInitFilters'
 
 const meta: ViewMetadata = {
   name: 'Assignments',
@@ -61,7 +61,11 @@ export const Assignments = (): JSX.Element => {
 
   const columns = useMemo(() =>
     assignmentColumns({ authors, locale, timeZone, sections, currentDate: date }), [authors, locale, timeZone, sections, date])
-  const columnFilters = loadFilters<Assignment>(query, columns)
+
+  const columnFilters = useInitFilters({
+    path: 'filters.Assignments.current',
+    columns
+  })
 
   return (
     <View.Root tab={currentTab} onTabChange={setCurrentTab}>
