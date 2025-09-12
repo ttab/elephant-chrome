@@ -43,21 +43,25 @@ export const AuthorNames = ({
     }
 
     if (assignees.length >= 1) {
-      let authors = ''
+      let initials = ''
+      let full = ''
 
       if (afterDraftAuthor?.name) {
-        authors += authorOutput(afterDraftAuthor)
+        initials += authorOutput(afterDraftAuthor)
+        full += afterDraftAuthor.name
 
         if (lastStatusUpdateAuthor?.name && (afterDraftAuthor?.name !== lastStatusUpdateAuthor.name)) {
-          authors += `, ${authorOutput(lastStatusUpdateAuthor)}`
+          initials += `, ${authorOutput(lastStatusUpdateAuthor)}`
+          full += `, ${lastStatusUpdateAuthor.name}`
         }
       }
 
       if (!afterDraftAuthor?.name && lastStatusUpdateAuthor?.name) {
-        authors += authorOutput(lastStatusUpdateAuthor)
+        initials += authorOutput(lastStatusUpdateAuthor)
+        full += lastStatusUpdateAuthor.name
       }
 
-      return <div title={assignees.join(', ')}>{authors}</div>
+      return <div title={full}>{initials}</div>
     }
     return <></>
   }
