@@ -31,6 +31,7 @@ export const Toolbar = ({ facets }: { facets: Facets }): JSX.Element => {
 
   const handleResetFilters = () => {
     setFilters({})
+    setCurrentFilters({})
   }
 
   const handleSaveUserFilter = () => {
