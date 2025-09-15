@@ -19,6 +19,8 @@ import { Popover, PopoverContent, PopoverTrigger, Tooltip } from '@ttab/elephant
 import { timesSlots } from '@/defaults/assignmentTimeslots'
 import { useMemo } from 'react'
 import { AuthorNames } from './AuthorNames'
+import { CAUSE_KEYS } from '@/defaults/causekeys'
+import { useWorkflowStatus } from '@/hooks/useWorkflowStatus'
 
 export const ApprovalsCard = ({ assignment, isSelected, isFocused, status, authors }: {
   assignment: AssignmentInterface
@@ -33,6 +35,7 @@ export const ApprovalsCard = ({ assignment, isSelected, isFocused, status, autho
   const openArticle = useLink('Editor')
   const openFlash = useLink('Flash')
   const [users] = useYValue<Record<string, { id: string, name: string, username: string }>>(`${assignment._deliverableId}.users`, false, undefined, 'open-documents')
+  const [documentStatus] = useWorkflowStatus(assignment._deliverableId)
 
   const openType = (assignmentType: string) => assignmentType === 'core/flash' ? openFlash : openArticle
   const time = useMemo(() =>
@@ -91,6 +94,9 @@ export const ApprovalsCard = ({ assignment, isSelected, isFocused, status, autho
     : statusData?.modified
       ? `Senast ändrad ${format(toZonedTime(parseISO(statusData.modified), timeZone), 'HH:mm')}`
       : 'Senast ändrad'
+
+
+  const cause = documentStatus?.cause ? CAUSE_KEYS[documentStatus.cause as keyof typeof CAUSE_KEYS].short : ''
 
   return (
     <Card.Root
@@ -175,7 +181,10 @@ export const ApprovalsCard = ({ assignment, isSelected, isFocused, status, autho
           <div className='truncate'>{title}</div>
           <div className='text-xs font-normal opacity-60 flex gap-1'>
             {slugline && <div>{slugline}</div>}
-            {slugline && lastUsableOrder && <div>{`- v${lastUsableOrder}`}</div>}
+            {slugline && lastUsableOrder && Number(lastUsableOrder) >= 1 && ('workflowState' in statusData) && !(statusData.workflowState === 'usable' && Number(lastUsableOrder) === 1) && (
+              <div>{`- v${statusData?.workflowState !== 'usable' ? Number(lastUsableOrder) + 1 : Number(lastUsableOrder)}`}</div>
+            )}
+            {cause && <div>{`- ${cause}`}</div>}
           </div>
         </Card.Title>
       </Card.Content>
