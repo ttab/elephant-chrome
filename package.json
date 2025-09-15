@@ -99,7 +99,7 @@
     "concurrently": "^9.2.1",
     "eslint": "^9.35.0",
     "fake-indexeddb": "^6.2.2",
-    "jsdom": "^26.1.0",
+    "jsdom": "^27.0.0",
     "tailwindcss": "^4.1.12",
     "tsc-alias": "^1.8.16",
     "tsx": "^4.20.5",
