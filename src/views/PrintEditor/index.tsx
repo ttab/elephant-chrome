@@ -105,6 +105,13 @@ function EditorWrapper(props: ViewProps & {
   const [notes] = useYValue<Block[] | undefined>('meta.core/note')
   const [, setIsFocused] = useAwareness(props.documentId)
 
+  useEffect(() => {
+    setIsFocused(true)
+    return () => setIsFocused(false)
+    // We only want to rerun when provider change
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [provider])
+
   // Plugin configuration
   const getConfiguredPlugins = () => {
     const basePlugins = [
@@ -147,12 +154,6 @@ function EditorWrapper(props: ViewProps & {
     <View.Root>
       <Textbit.Root
         autoFocus={props.autoFocus ?? true}
-        onBlur={() => {
-          setIsFocused(false)
-        }}
-        onFocus={() => {
-          setIsFocused(true)
-        }}
         plugins={getConfiguredPlugins()}
         placeholders='multiple'
         className='h-screen max-h-screen flex flex-col'

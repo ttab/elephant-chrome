@@ -96,12 +96,6 @@ const FactboxWrapper = (props: ViewProps & { documentId: string }): JSX.Element 
       <Textbit.Root
         debounce={0}
         autoFocus={props.autoFocus ?? true}
-        onBlur={() => {
-          setIsFocused(false)
-        }}
-        onFocus={() => {
-          setIsFocused(true)
-        }}
         plugins={getPlugins()}
         placeholders='multiple'
         className={cn('h-screen max-h-screen flex flex-col',
