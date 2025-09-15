@@ -1,5 +1,5 @@
 import type { ColumnDef, ColumnFiltersState } from '@tanstack/react-table'
-import { useQuery, type QueryParams } from './useQuery'
+import { useQuery, type QueryParams } from '@/hooks/useQuery'
 import { useUserTracker } from '@/hooks/useUserTracker'
 import { useCallback, useEffect, useMemo, useRef } from 'react'
 
@@ -36,10 +36,13 @@ export const useInitFilters = <TData,>({ path, columns }: {
       setQuery(userFilters)
       isQueryInitialized.current = true
     }
+
+    isQueryInitialized.current = true
   }, [userFilters, query, setQuery, shouldInitializeQuery])
 
   // Determine the active filter source (query takes precedence over user filters)
   const activeFilters = useMemo((): QueryParams | undefined => {
+    if (isQueryInitialized.current === true) return undefined
     if (hasDefinedFilter(query)) return query
     if (hasDefinedFilter(userFilters)) return userFilters
     return undefined
