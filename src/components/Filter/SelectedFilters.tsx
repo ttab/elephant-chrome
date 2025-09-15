@@ -19,11 +19,13 @@ import { useSections } from '@/hooks/useSections'
 import { useWireSources } from '@/hooks/useWireSources'
 import { Newsvalues } from '@/defaults/newsvalues'
 import { DocumentStatuses } from '@/defaults/documentStatuses'
+import type { QueryParams } from '@/hooks/useQuery'
 import { useQuery } from '@/hooks/useQuery'
 import { useOrganisers } from '@/hooks/useOrganisers'
 import { useCategories } from '@/hooks/useCategories'
 import { useAuthors } from '@/hooks/useAuthors'
 import { AssignmentTypes } from '@/defaults/assignmentTypes'
+import { useUserTracker } from '@/hooks/useUserTracker'
 
 interface SelectedBase {
   value: unknown
@@ -63,6 +65,7 @@ const SelectedBadge = ({ value, options }: SelectedBase & {
 
 const SelectedButton = ({ type, value }: { value: string | string[] | undefined, type: string }): JSX.Element => {
   const [filters, setFilters] = useQuery(['section', 'status', 'source', 'organiser', 'category', 'author', 'newsvalue', 'aType'])
+  const [currentFilters, setCurrentFilters] = useUserTracker<QueryParams | undefined>(`filters.Approvals.current`)
 
   const sections = useSections().map((_) => {
     return {
@@ -175,6 +178,7 @@ const SelectedButton = ({ type, value }: { value: string | string[] | undefined,
       className='h-8 border-dashed'
       onClick={() => {
         setFilters({ ...filters, [type]: undefined })
+        setCurrentFilters({ ...currentFilters, [type]: undefined })
       }}
     >
       <Icon size={18} strokeWidth={1.75} className='mr-2' />
