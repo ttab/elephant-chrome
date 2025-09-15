@@ -23,30 +23,43 @@ export const Link = forwardRef((props: LinkProps, ref: ForwardedRef<HTMLAnchorEl
 
   const { viewId: origin } = useView()
 
+  const handleClick = (
+    event: MouseEvent<HTMLAnchorElement>
+  ) => {
+    event.stopPropagation()
+    // Execute forwarded onClick handler
+    if (props.onClick) {
+      props.onClick(event)
+    }
+
+    // Our onClick handler
+    handleLink({
+      event,
+      dispatch,
+      viewItem,
+      props: { ...props.props },
+      viewId,
+      origin,
+      target: props.target,
+      history
+    })
+  }
+
+  const handleKeyDown = (
+    event: React.KeyboardEvent<HTMLAnchorElement>
+  ) => {
+    if (event.key === 'Enter') {
+      handleClick(event as unknown as MouseEvent<HTMLAnchorElement>)
+    }
+  }
+
   return (
     <a
       className={props?.className || ''}
       {...props}
       href={`${viewItem.meta.path}${qs || ''}`}
-      onClick={(event) => {
-        event.stopPropagation()
-        // Execute forwarded onClick handler
-        if (props.onClick) {
-          props.onClick(event)
-        }
-
-        // Our onClick handler
-        handleLink({
-          event,
-          dispatch,
-          viewItem,
-          props: { ...props.props },
-          viewId,
-          origin,
-          target: props.target,
-          history
-        })
-      }}
+      onKeyDown={(event) => handleKeyDown(event)}
+      onClick={(event) => handleClick(event)}
       ref={ref}
     >
       {props.children}
