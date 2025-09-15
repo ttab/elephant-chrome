@@ -195,7 +195,6 @@ export const ApprovalsCard = ({ assignment, isSelected, isFocused, status, autho
             <AuthorNames
               byline={byline}
               doneStatus={doneStatus}
-              assignees={assignees}
               authors={authors}
               afterDraftAuthor={afterDraftAuthor}
               lastStatusUpdateAuthor={lastStatusUpdateAuthor}

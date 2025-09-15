@@ -1,68 +1,72 @@
 import type { IDBAuthor, StatusMeta } from 'src/datastore/types'
-import { DoneMarkedBy } from './DoneMarkedBy'
 
+// Return initials created from first letters of first and last name
 export const authorOutput = (matchedAuthor: IDBAuthor) => {
-  if (matchedAuthor.initials && matchedAuthor.initials.length > 0) {
-    return matchedAuthor.initials
-  }
   const [first, last] = matchedAuthor.name.split(' ').slice(0, 2)
   return `${first[0]}${last[0]}`
 }
 
 /**
-     * Names are displayed using this order of priority:
-     * 1. If there is a byline, output the byline
-     * 2. If there is no byline, output the signature of each assignee
-     * 3. If there are no assignees, output the initials whoever marked the deliverable as 'done'
-     * 4. The user who changes status from draft to something else is to be output first
-     * 5. Whoever updates the status after that is to be output next
-     *    Could be the same as the reporter, in that case don't bother outputting it again
-  */
+ * Displays author names/initials for an approval item.
+ *
+ * Priority order for displayed value:
+ * 1. If `byline` is provided, use it for both initials and full name.
+ * 2. Else, if `doneStatus.creator` exists, use the matching author from `authors` (via doneStatusName).
+ * 3. Else, if `afterDraftAuthor` is provided, use its name.
+ * 4. If `lastStatusUpdateAuthor` is provided, append its initials and name.
+ *
+ * @param byline - Optional string to override author display.
+ * @param doneStatus - StatusMeta object, may contain creator info.
+ * @param authors - List of possible authors.
+ * @param afterDraftAuthor - Optional author to use after draft.
+ * @param lastStatusUpdateAuthor - Optional author to append after status update.
+ * @returns JSX.Element displaying initials (with full name as tooltip).
+ */
 export const AuthorNames = ({
   byline,
   doneStatus,
-  authors,
-  assignees,
   afterDraftAuthor,
+  authors,
   lastStatusUpdateAuthor
 }: {
   byline: string | undefined
   doneStatus: StatusMeta | undefined
-  assignees: string[]
   authors: IDBAuthor[]
   afterDraftAuthor?: IDBAuthor
   lastStatusUpdateAuthor?: IDBAuthor
 }) => {
+  const getAuthorInfo = (author?: IDBAuthor) =>
+    author?.name ? { initials: authorOutput(author), full: author.name } : { initials: '', full: '' }
+
+  let initials = ''
+  let full = ''
+
   if (byline) {
-    return byline
+    initials = full = byline
+  } else {
+    const authorObj = doneStatus?.creator
+      ? doneStatusName(doneStatus, authors)
+      : afterDraftAuthor?.name ? afterDraftAuthor : undefined
+
+    if (authorObj) {
+      ({ initials, full } = getAuthorInfo(authorObj))
+    }
   }
 
-  if (!byline) {
-    if (assignees.length === 0 && doneStatus) {
-      return <DoneMarkedBy doneStatus={doneStatus} authors={authors} />
-    }
-
-    if (assignees.length >= 1) {
-      let initials = ''
-      let full = ''
-
-      if (afterDraftAuthor?.name) {
-        initials += authorOutput(afterDraftAuthor)
-        full += afterDraftAuthor.name
-
-        if (lastStatusUpdateAuthor?.name && (afterDraftAuthor?.name !== lastStatusUpdateAuthor.name)) {
-          initials += `, ${authorOutput(lastStatusUpdateAuthor)}`
-          full += `, ${lastStatusUpdateAuthor.name}`
-        }
-      }
-
-      if (!afterDraftAuthor?.name && lastStatusUpdateAuthor?.name) {
-        initials += authorOutput(lastStatusUpdateAuthor)
-        full += lastStatusUpdateAuthor.name
-      }
-
-      return <div title={full}>{initials}</div>
-    }
-    return <></>
+  if (lastStatusUpdateAuthor?.name) {
+    const { initials: lastInitials, full: lastFull } = getAuthorInfo(lastStatusUpdateAuthor)
+    initials = initials ? `${initials}, ${lastInitials}` : lastInitials
+    full = full ? `${full}, ${lastFull}` : lastFull
   }
+
+  return <div title={full}>{initials}</div>
+}
+
+function doneStatusName(doneStatus?: StatusMeta, authors?: IDBAuthor[]): IDBAuthor | undefined {
+  if (!doneStatus || !authors) return undefined
+
+  const creatorId = doneStatus.creator.slice(doneStatus.creator.lastIndexOf('/'))
+  return authors.find((a) => {
+    return creatorId === a?.sub?.slice(a?.sub?.lastIndexOf('/'))
+  })
 }
