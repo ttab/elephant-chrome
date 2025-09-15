@@ -10,13 +10,13 @@ import {
   type Application
 } from 'express-ws'
 
+import type { AuthConfiguration } from './extensions/Auth.js'
 import { Auth } from './extensions/Auth.js'
 import { OpenDocuments } from './extensions/OpenDocuments.js'
 import { RepositoryExtension } from './extensions/Repository.js'
 
 import CollaborationServerErrorHandler, { withErrorHandler } from '../lib/errorHandler.js'
 import logger from '../lib/logger.js'
-import type { AuthInfo } from '../utils/authConfig.js'
 import { CacheExtension } from './extensions/Cache.js'
 import type { Context } from '../lib/context.js'
 
@@ -28,7 +28,7 @@ interface CollaborationServerOptions {
   repository: Repository
   user: User
   expressServer: Application
-  authInfo: AuthInfo
+  auth: AuthConfiguration
   quiet?: boolean
 }
 
@@ -98,7 +98,7 @@ export class CollaborationServer {
           errorHandler: this.#errorHandler
         }),
         this.#repositoryExtension,
-        new Auth(configuration.authInfo.oidcConfig)
+        new Auth(configuration.auth)
       ], this.#errorHandler)
     })
 

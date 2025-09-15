@@ -37,6 +37,7 @@ const REPOSITORY_URL = process.env.REPOSITORY_URL || ''
 const REDIS_URL = process.env.REDIS_URL || ''
 const BASE_URL = process.env.BASE_URL || ''
 const USER_URL = process.env.USER_URL || ''
+const AUTH_KEYCLOAK_ISSUER = process.env.AUTH_KEYCLOAK_ISSUER
 const AUTH_KEYCLOAK_PROVIDER = process.env.AUTH_KEYCLOAK_PROVIDER ?? process.env.AUTH_KEYCLOAK_ISSUER ?? ''
 const AUTH_KEYCLOAK_ID = process.env.AUTH_KEYCLOAK_ID || ''
 const AUTH_KEYCLOAK_SECRET = process.env.AUTH_KEYCLOAK_SECRET || ''
@@ -120,8 +121,13 @@ export async function runServer(): Promise<string> {
     redis: redis,
     repository,
     expressServer: app,
-    authInfo: authInfo,
     user,
+    auth: {
+      jwks: JWKS,
+      verifyOptions: {
+        issuer: AUTH_KEYCLOAK_ISSUER
+      }
+    },
     quiet: process.env.LOG_LEVEL !== 'info' && process.env.LOG_LEVEL !== 'debug'
   })
 
