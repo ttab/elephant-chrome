@@ -8,6 +8,7 @@ describe('useQuery hook', () => {
 
   beforeEach(() => {
     // Mock window.history.replaceState
+    vi.clearAllMocks()
     replaceStateMock = vi.spyOn(window.history, 'replaceState').mockImplementation((_, __, url) => {
       if (typeof url === 'string') {
         const search = url.split('?')[1] || ''

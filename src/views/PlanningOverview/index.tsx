@@ -11,8 +11,8 @@ import { useSections } from '@/hooks/useSections'
 import { useAuthors } from '@/hooks/useAuthors'
 import { Commands } from '@/components/Commands'
 import { useQuery } from '@/hooks/useQuery'
-import { loadFilters } from '@/lib/loadFilters'
 import type { Planning } from '@/shared/schemas/planning'
+import { useInitFilters } from '@/hooks/useInitFilters'
 
 const meta: ViewMetadata = {
   name: 'Plannings',
@@ -32,14 +32,18 @@ const meta: ViewMetadata = {
 
 export const Plannings = (): JSX.Element => {
   const [query] = useQuery()
-
   const [currentTab, setCurrentTab] = useState<string>('list')
   const sections = useSections()
   const authors = useAuthors()
 
   const columns = useMemo(() =>
     planningListColumns({ sections, authors }), [sections, authors])
-  const columnFilters = loadFilters<Planning>(query, columns)
+
+  const columnFilters = useInitFilters<Planning>({
+    path: 'filters.Plannings.current',
+    columns
+  })
+
   return (
     <View.Root tab={currentTab} onTabChange={setCurrentTab}>
       <TableProvider<Planning>

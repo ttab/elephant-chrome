@@ -333,10 +333,9 @@ export const Table = <TData, TValue>({
 
   return (
     <>
-      {!['Wires', 'Factbox', 'Search', 'PrintEditor'].includes(type) && (
-        <Toolbar columns={columns} />
+      {!['Wires', 'Factbox', 'Search'].includes(type) && (
+        <Toolbar />
       )}
-
       {(type === 'Planning' || type === 'Event') && (
         <NewItems.Root>
           <NewItems.Table

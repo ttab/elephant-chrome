@@ -1,6 +1,5 @@
 import { useCallback } from 'react'
 import { useQuery } from '@/hooks'
-import { Toolbar } from './PrintArticlesToolbar'
 import { Table } from '@/components/Table'
 import type { PrintArticle } from '@/hooks/baboon/lib/printArticles'
 import type { ColumnDef } from '@tanstack/react-table'
@@ -57,7 +56,6 @@ export const PrintArticleList = ({ columns }: {
 
   return (
     <>
-      <Toolbar />
       <Table
         type='PrintEditor'
         columns={columns}
