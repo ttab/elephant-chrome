@@ -59,7 +59,7 @@ export const AssignmentTable = ({ asDialog = false, documentId, onChange }: {
     appendAssignment({
       document: provider.document,
       inProgress: {
-        sub: session?.user?.id ?? ''
+        sub: session?.user.sub ?? ''
       },
       assignee: author,
       slugLine: (!slugLines?.includes(planningSlugLine || ''))
@@ -142,7 +142,7 @@ export const AssignmentTable = ({ asDialog = false, documentId, onChange }: {
         </div>
       )}
 
-      {!!newAssigment && session?.user?.id === newAssigment.assignment?.__inProgress?.sub && (
+      {!!newAssigment && session?.user.sub === newAssigment.assignment?.__inProgress?.sub && (
         <div>
           <Assignment
             index={newAssigment.index}
