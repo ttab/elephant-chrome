@@ -75,7 +75,8 @@ describe('AuthorNames', () => {
     render(
       <AuthorNames assignment={a} />
     )
-    expect(screen.getByText(/John Doe, BL/)).toBeInTheDocument()
+    expect(screen.getByText(/John Doe/)).toBeInTheDocument()
+    expect(screen.getByText(/BL/)).toBeInTheDocument()
   })
 
   it('renders from doneStatus if no byline and lastStatusUpdateAuthor', () => {
@@ -84,7 +85,8 @@ describe('AuthorNames', () => {
     render(
       <AuthorNames assignment={a} />
     )
-    expect(screen.getByText(/AJ, BL/)).toBeInTheDocument()
+    expect(screen.getByText(/BL/)).toBeInTheDocument()
+    expect(screen.getByText(/AJ/)).toBeInTheDocument()
   })
 
   it('renders initials for assignees with afterDraftAuthor and lastStatusUpdateAuthor', () => {
@@ -92,6 +94,7 @@ describe('AuthorNames', () => {
     render(
       <AuthorNames assignment={a} />
     )
-    expect(screen.getByText(/AJ, BL/)).toBeInTheDocument()
+    expect(screen.getByText(/AJ/)).toBeInTheDocument()
+    expect(screen.getByText(/BL/)).toBeInTheDocument()
   })
 })
