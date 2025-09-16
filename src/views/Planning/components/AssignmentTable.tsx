@@ -14,6 +14,7 @@ import { Button } from '@ttab/elephant-ui'
 import { useActiveAuthor } from '@/hooks/useActiveAuthor'
 import { snapshotDocument } from '@/lib/snapshotDocument'
 import { toast } from 'sonner'
+import { useSession } from 'next-auth/react'
 
 export const AssignmentTable = ({ asDialog = false, documentId, onChange }: {
   asDialog?: boolean
@@ -26,6 +27,7 @@ export const AssignmentTable = ({ asDialog = false, documentId, onChange }: {
   const [selectedAssignment, setSelectedAssignment] = useState<number | undefined>(undefined)
   const [focusedRowIndex, setFocusedRowIndex] = useState<number | undefined>()
   const author = useActiveAuthor({ full: false })
+  const { data: session } = useSession()
 
   const newAssigment = useMemo(() => {
     const index = assignments?.findIndex((a) => a.__inProgress) ?? -1
@@ -56,7 +58,9 @@ export const AssignmentTable = ({ asDialog = false, documentId, onChange }: {
 
     appendAssignment({
       document: provider.document,
-      inProgress: true,
+      inProgress: {
+        sub: session?.user?.id ?? ''
+      },
       assignee: author,
       slugLine: (!slugLines?.includes(planningSlugLine || ''))
         ? planningSlugLine
@@ -138,20 +142,22 @@ export const AssignmentTable = ({ asDialog = false, documentId, onChange }: {
         </div>
       )}
 
-      {!!newAssigment && (
-        <Assignment
-          index={newAssigment.index}
-          onAbort={() => {
-            deleteByYPath(yRoot, `meta.core/assignment[${newAssigment.index}]`)
-          }}
-          onClose={() => {
-            handleClose().catch((ex) => {
-              console.error('Error closing assignment:', ex)
-              toast.error('Kunde inte spara uppdraget.')
-            })
-          }}
-          className='mb-6'
-        />
+      {!!newAssigment && session?.user?.id === newAssigment.assignment?.__inProgress?.sub && (
+        <div>
+          <Assignment
+            index={newAssigment.index}
+            onAbort={() => {
+              deleteByYPath(yRoot, `meta.core/assignment[${newAssigment.index}]`)
+            }}
+            onClose={() => {
+              handleClose().catch((ex) => {
+                console.error('Error closing assignment:', ex)
+                toast.error('Kunde inte spara uppdraget.')
+              })
+            }}
+            className='mb-6'
+          />
+        </div>
       )}
 
       {!!existingAssigments.length && (

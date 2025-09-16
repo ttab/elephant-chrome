@@ -20,7 +20,7 @@ export const Figure = ({ editor, children, element }: Plugin.ComponentProps & { 
               const n = editor.children.findIndex((child: TBElement | TBText) => child.id === element.id)
 
               if (n > -1) {
-                Transforms.removeNodes(editor as BaseEditor, { at: [n] })
+                Transforms.removeNodes(editor, { at: [n] })
               }
             }}
           >
