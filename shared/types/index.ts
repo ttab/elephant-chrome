@@ -27,7 +27,7 @@ export interface EleDocument extends Omit<Document, 'meta' | 'links' | 'content'
 export type EleBlockGroup = Record<string, EleBlock[]>
 
 export interface EleBlock extends Omit<Block, 'meta' | 'links' | 'content'> {
-  __inProgress?: boolean
+  __inProgress?: { sub: string }
   meta: EleBlockGroup
   links: EleBlockGroup
   content: EleBlockGroup
