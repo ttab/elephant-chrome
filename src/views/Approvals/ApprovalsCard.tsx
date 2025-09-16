@@ -1,15 +1,12 @@
 import { Card } from '@/components/Card'
 import { ClockIcon } from '@/components/ClockIcon'
 import { Avatar, Link } from '@/components/index'
-import { useModal } from '@/components/Modal/useModal'
-
 import type { AssignmentInterface } from '@/hooks/index/useAssignments'
 import { useLink } from '@/hooks/useLink'
 import { useRegistry } from '@/hooks/useRegistry'
 import { CalendarDaysIcon, FileWarningIcon, MessageSquarePlusIcon, ZapIcon } from '@ttab/elephant-ui/icons'
 import { parseISO, format } from 'date-fns'
 import { toZonedTime } from 'date-fns-tz'
-import { PreviewSheet } from '../Wires/components'
 import type { IDBAuthor, StatusData } from 'src/datastore/types'
 import { useSections } from '@/hooks/useSections'
 import type { StatusSpecification } from '@/defaults/workflowSpecification'
@@ -22,15 +19,15 @@ import { AuthorNames } from './AuthorNames'
 import { CAUSE_KEYS } from '@/defaults/causekeys'
 import { useWorkflowStatus } from '@/hooks/useWorkflowStatus'
 
-export const ApprovalsCard = ({ assignment, isSelected, isFocused, status, authors }: {
+export const ApprovalsCard = ({ assignment, isSelected, isFocused, status, authors, openEditors }: {
   assignment: AssignmentInterface
   status: StatusSpecification
   isSelected: boolean
   isFocused: boolean
   authors: IDBAuthor[]
+  openEditors: string[]
 }) => {
   const { timeZone } = useRegistry()
-  const { showModal, hideModal } = useModal()
   const sections = useSections()
   const openArticle = useLink('Editor')
   const openFlash = useLink('Flash')
@@ -104,15 +101,10 @@ export const ApprovalsCard = ({ assignment, isSelected, isFocused, status, autho
       isFocused={isFocused}
       isSelected={isSelected}
       onSelect={(event) => {
+        const openDocument = openType(assignment._deliverableType as string)
         if (event instanceof KeyboardEvent && event.key == ' ' && documentId) {
-          showModal(
-            <PreviewSheet
-              id={documentId}
-              handleClose={hideModal}
-            />,
-            'sheet')
+          openDocument(event, { id: documentId, autoFocus: false }, openEditors.length > 0 ? 'parent' : 'last', undefined, true)
         } else if (documentId) {
-          const openDocument = openType(assignment._deliverableType as string)
           if (assignment._deliverableStatus === 'usable') {
             const lastUsableVersion = statusData?.heads.usable?.version
             openDocument(event, { id: documentId }, 'last', undefined, undefined, { version: lastUsableVersion as bigint })
