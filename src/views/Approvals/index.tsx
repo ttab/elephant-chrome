@@ -4,7 +4,7 @@ import { timesSlots as Slots } from '@/defaults/assignmentTimeslots'
 import { TimeSlot } from './TimeSlot'
 import { useAssignments } from '@/hooks/index/useAssignments'
 import { useEffect, useMemo, useState } from 'react'
-import { useQuery, useNavigationKeys, useOpenDocuments, useRegistry, useAuthors } from '@/hooks'
+import { useQuery, useNavigationKeys, useOpenDocuments, useRegistry } from '@/hooks'
 import { Header } from '@/components/Header'
 import { newLocalDate } from '@/shared/datetime.ts'
 import { ApprovalsCard } from './ApprovalsCard'
@@ -46,7 +46,6 @@ export const ApprovalsView = (): JSX.Element => {
     }
   })
   const [query] = useQuery()
-  const authors = useAuthors()
 
   const date = useMemo(() => {
     return (typeof query.from === 'string')
@@ -166,7 +165,6 @@ export const ApprovalsView = (): JSX.Element => {
                     status={StatusSpecifications[assignment._deliverableStatus || 'draft']}
                     isFocused={colN === focusedColumn && cardN === focusedCard}
                     isSelected={((assignment._deliverableId && openEditors.includes(assignment._deliverableId)) || openPlannings.includes(assignment._id))}
-                    authors={authors}
                   />
                 )
               })}

@@ -1,42 +1,50 @@
-import type { IDBAuthor, StatusMeta } from 'src/datastore/types'
+import type { AssignmentInterface } from '@/hooks/index/useAssignments'
+import { useAuthors } from '@/hooks/useAuthors'
+import type { IDBAuthor, StatusData, StatusMeta } from 'src/datastore/types'
+import { useMemo } from 'react'
 
-// Return initials created from first letters of first and last name
-export const authorOutput = (matchedAuthor: IDBAuthor) => {
-  const [first, last] = matchedAuthor.name.split(' ').slice(0, 2)
-  return `${first[0]}${last[0]}`
-}
+export const AuthorNames = ({ assignment }: { assignment: AssignmentInterface }): JSX.Element => {
+  const authors = useAuthors()
 
-/**
- * Displays author names/initials for an approval item.
- *
- * Priority order for displayed value:
- * 1. If `byline` is provided, use it for both initials and full name.
- * 2. Else, if `doneStatus.creator` exists, use the matching author from `authors` (via doneStatusName).
- * 3. Else, if `afterDraftAuthor` is provided, use its name.
- * 4. If `lastStatusUpdateAuthor` is provided, append its initials and name.
- *
- * @param byline - Optional string to override author display.
- * @param doneStatus - StatusMeta object, may contain creator info.
- * @param authors - List of possible authors.
- * @param afterDraftAuthor - Optional author to use after draft.
- * @param lastStatusUpdateAuthor - Optional author to append after status update.
- * @returns JSX.Element displaying initials (with full name as tooltip).
- */
-export const AuthorNames = ({
-  byline,
-  doneStatus,
-  afterDraftAuthor,
-  authors,
-  lastStatusUpdateAuthor
-}: {
-  byline: string | undefined
-  doneStatus: StatusMeta | undefined
-  authors: IDBAuthor[]
-  afterDraftAuthor?: IDBAuthor
-  lastStatusUpdateAuthor?: IDBAuthor
-}) => {
-  const getAuthorInfo = (author?: IDBAuthor) =>
-    author?.name ? { initials: authorOutput(author), full: author.name } : { initials: '', full: '' }
+  const statusData = useMemo(
+    () => assignment?._statusData ? JSON.parse(assignment._statusData) as StatusData : null,
+    [assignment?._statusData]
+  )
+
+  const entries = useMemo(
+    () =>
+      statusData
+        ? Object.entries(statusData.heads).sort((a, b) => a[1].created > b[1].created ? -1 : 1)
+        : [],
+    [statusData]
+  )
+
+  const lastUpdated = entries[0]?.[1]
+  const lastUpdatedById = useMemo(() => extractId(lastUpdated?.creator), [lastUpdated])
+
+  const byline = useMemo(
+    () =>
+      (assignment?._deliverableDocument?.links ?? [])
+        .filter((l) => l.type === 'core/author')
+        .map((author) => author.title)
+        .join(', '),
+    [assignment?._deliverableDocument?.links]
+  )
+
+  const doneStatus = useMemo(
+    () => entries.find((entry) => entry[0] === 'done')?.[1],
+    [entries]
+  )
+
+  const afterDraftAuthor = useMemo(
+    () => getAuthorAfterSetStatus(entries, 'draft', authors),
+    [entries, authors]
+  )
+
+  const lastStatusUpdateAuthor = useMemo(
+    () => authors.find((a) => lastUpdatedById === extractId(a?.sub)),
+    [authors, lastUpdatedById]
+  )
 
   let initials = ''
   let full = ''
@@ -46,7 +54,9 @@ export const AuthorNames = ({
   } else {
     const authorObj = doneStatus?.creator
       ? doneStatusName(doneStatus, authors)
-      : afterDraftAuthor?.name ? afterDraftAuthor : undefined
+      : afterDraftAuthor?.name
+        ? afterDraftAuthor
+        : undefined
 
     if (authorObj) {
       ({ initials, full } = getAuthorInfo(authorObj))
@@ -64,9 +74,33 @@ export const AuthorNames = ({
 
 function doneStatusName(doneStatus?: StatusMeta, authors?: IDBAuthor[]): IDBAuthor | undefined {
   if (!doneStatus || !authors) return undefined
-
-  const creatorId = doneStatus.creator.slice(doneStatus.creator.lastIndexOf('/'))
-  return authors.find((a) => {
-    return creatorId === a?.sub?.slice(a?.sub?.lastIndexOf('/'))
-  })
+  const creatorId = extractId(doneStatus.creator)
+  return authors.find((a) => creatorId === extractId(a?.sub))
 }
+
+function getAuthorInfo(author?: IDBAuthor) {
+  return author?.name
+    ? { initials: authorOutput(author), full: author.name }
+    : { initials: '', full: '' }
+}
+
+function getAuthorAfterSetStatus(
+  entries: [string, StatusMeta][],
+  status: string,
+  authors: IDBAuthor[]
+) {
+  const statusIndex = entries.findIndex((entry) => entry[0] === status)
+  const afterStatus = entries[statusIndex - 1]?.[1]
+  const creatorId = extractId(afterStatus?.creator)
+  return (authors || []).find((a) => creatorId === extractId(a?.sub))
+}
+
+function extractId(uri: string = '') {
+  return uri.slice(uri.lastIndexOf('/'))
+}
+
+export function authorOutput(matchedAuthor: IDBAuthor) {
+  const [first = '', last = ''] = matchedAuthor.name.split(' ').slice(0, 2)
+  return `${first[0] ?? ''}${last[0] ?? ''}`
+}
+
