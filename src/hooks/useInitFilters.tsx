@@ -42,9 +42,10 @@ export const useInitFilters = <TData,>({ path, columns }: {
 
   // Determine the active filter source (query takes precedence over user filters)
   const activeFilters = useMemo((): QueryParams | undefined => {
-    if (isQueryInitialized.current === true) return undefined
+    if (isQueryInitialized.current === true) return query
     if (hasDefinedFilter(query)) return query
     if (hasDefinedFilter(userFilters)) return userFilters
+
     return undefined
   }, [query, userFilters])
 
