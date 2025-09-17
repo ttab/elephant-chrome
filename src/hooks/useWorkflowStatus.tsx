@@ -2,7 +2,7 @@ import { useSession } from 'next-auth/react'
 import type { KeyedMutator } from 'swr'
 import useSWR, { mutate as globalMutate } from 'swr'
 import { useCallback } from 'react'
-import { useCollaboration, useRegistry, useYValue } from '@/hooks'
+import { useCollaboration, useRegistry, useRepositoryEvents, useYValue } from '@/hooks'
 import { toast } from 'sonner'
 import type { Repository, Status } from '@/shared/Repository'
 import { snapshotDocument } from '@/lib/snapshotDocument'
@@ -48,6 +48,12 @@ export const useWorkflowStatus = (uuid?: string, isWorkflow: boolean = false): [
     console.error('Unable to get documentStatus', error)
     toast.error('Ett fel uppstod när aktuell status skulle hämtas. Försök ladda om sidan.')
   }
+
+  useRepositoryEvents('core/article+meta', (event) => {
+    if (event.mainDocument === uuid) {
+      void mutate()
+    }
+  })
 
 
   /**
