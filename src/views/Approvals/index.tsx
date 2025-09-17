@@ -159,13 +159,15 @@ export const ApprovalsView = (): JSX.Element => {
               <TimeSlot label={slot.label || ''} slots={slot.hours || []} />
 
               {slot.items.map((assignment, cardN) => {
+                const isSelected = ((assignment._deliverableId && openEditors.includes(assignment._deliverableId)) || openPlannings.includes(assignment._id))
+
                 return (
                   <ApprovalsCard
                     key={assignment.id}
                     assignment={assignment}
                     status={StatusSpecifications[assignment._deliverableStatus || 'draft']}
                     isFocused={colN === focusedColumn && cardN === focusedCard}
-                    isSelected={((assignment._deliverableId && openEditors.includes(assignment._deliverableId)) || openPlannings.includes(assignment._id))}
+                    isSelected={isSelected}
                     authors={authors}
                     openEditors={openEditors}
                   />
