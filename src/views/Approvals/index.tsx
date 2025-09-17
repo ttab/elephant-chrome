@@ -167,6 +167,7 @@ export const ApprovalsView = (): JSX.Element => {
                     isFocused={colN === focusedColumn && cardN === focusedCard}
                     isSelected={((assignment._deliverableId && openEditors.includes(assignment._deliverableId)) || openPlannings.includes(assignment._id))}
                     authors={authors}
+                    openEditors={openEditors}
                   />
                 )
               })}
