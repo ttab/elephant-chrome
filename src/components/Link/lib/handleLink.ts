@@ -9,7 +9,7 @@ import {
 import { toQueryString } from './toQueryString'
 import type { HistoryInterface } from '@/navigation/hooks/useHistory'
 
-export type Target = 'self' | 'blank' | 'last' | 'parent'
+export type Target = 'self' | 'blank' | 'last'
 interface LinkClick {
   event?: MouseEvent<Element> | KeyboardEvent | React.KeyboardEvent<HTMLButtonElement> | undefined
   dispatch: React.Dispatch<NavigationAction>

@@ -103,7 +103,7 @@ export const ApprovalsCard = ({ assignment, isSelected, isFocused, status, autho
       onSelect={(event) => {
         const openDocument = openType(assignment._deliverableType as string)
         if (event instanceof KeyboardEvent && event.key == ' ' && documentId) {
-          openDocument(event, { id: documentId, autoFocus: false }, openEditors.length > 0 ? 'parent' : 'last', undefined, true)
+          openDocument(event, { id: documentId, autoFocus: false }, openEditors.length > 0 ? undefined : 'last', undefined, true)
         } else if (documentId) {
           if (assignment._deliverableStatus === 'usable') {
             const lastUsableVersion = statusData?.heads.usable?.version
