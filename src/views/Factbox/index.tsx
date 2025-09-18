@@ -206,7 +206,7 @@ const FactboxContainer = ({
   )
 }
 
-const FactboxContent = ({ provider, user, onChange, onValidation, validateStateRef }: {
+const FactboxContent = ({ provider, user, onChange, onValidation, validateStateRef, asDialog }: {
   provider: HocuspocusProvider
   user: AwarenessUserData
   onChange?: (value: boolean) => void
@@ -229,7 +229,10 @@ const FactboxContent = ({ provider, user, onChange, onValidation, validateStateR
 
   return (
     <>
-      <Form.Root asDialog={true} className='[&_[role="textbox"]:focus]:bg-white [&_[role="textbox"]:focus]:ring-gray-200'>
+      <Form.Root
+        asDialog={asDialog}
+        className='[&_[role="textbox"]:focus]:bg-white [&_[role="textbox"]]:ring-transparent [&_[role="textbox"]:focus]:ring-gray-200'
+      >
         <Form.Content>
 
           <Validation
