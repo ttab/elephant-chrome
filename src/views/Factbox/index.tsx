@@ -228,8 +228,9 @@ const FactboxContent = ({ provider, user, onChange, onValidation, validateStateR
   }, [isActive, ref])
 
   return (
-    <Form.Root>
-      <Form.Content>
+    <>
+      <Form.Root asDialog={true} className='[&_[role="textbox"]:focus]:bg-white [&_[role="textbox"]:focus]:ring-gray-200'>
+        <Form.Content>
 
         <Validation
           label='Titel'
