@@ -54,6 +54,12 @@ export const useNavigationKeys = (
 
     // Don't override arrow navigation in editable targets
     if (target && isEditableElement(target)) {
+      // But allow alt+left and alt+right, for view navigation.
+      if (event.altKey && (event.key === 'ArrowLeft' || event.key === 'ArrowRight')) {
+        // Browser navigation default will intercept otherwise
+        event.preventDefault()
+        onNavigation(event)
+      }
       return
     }
 
