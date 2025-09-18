@@ -232,50 +232,50 @@ const FactboxContent = ({ provider, user, onChange, onValidation, validateStateR
       <Form.Root asDialog={true} className='[&_[role="textbox"]:focus]:bg-white [&_[role="textbox"]:focus]:ring-gray-200'>
         <Form.Content>
 
-        <Validation
-          label='Titel'
-          path='root.title'
-          block='title'
-          onValidation={onValidation}
-          validateStateRef={validateStateRef}
-        >
-          <TextBox
+          <Validation
+            label='Titel'
             path='root.title'
-            placeholder='Rubrik'
-            className='font-bold text-lg'
-            autoFocus={true}
-            singleLine={true}
-            onChange={onChange}
-          />
-
-          <Textbit.Editable
-            yjsEditor={yjsEditor}
-            lang={documentLanguage}
-            onSpellcheck={onSpellcheck}
-            className='outline-none
-              my-1
-              h-full
-              dark:text-slate-100
-              **:data-spelling-error:border-b-2
-              **:data-spelling-error:border-dotted
-              **:data-spelling-error:border-red-500'
-            onChange={() => {
-              if (provider.hasUnsyncedChanges) {
-                onChange?.(true)
-              }
-            }}
+            block='title'
+            onValidation={onValidation}
+            validateStateRef={validateStateRef}
           >
-            <DropMarker />
-            <Gutter>
-              <ContentMenu />
-            </Gutter>
-            <Toolbar />
-            <ContextMenu />
-          </Textbit.Editable>
-        </Validation>
+            <TextBox
+              path='root.title'
+              placeholder='Rubrik'
+              className='font-bold text-lg'
+              autoFocus={true}
+              singleLine={true}
+              onChange={onChange}
+            />
+          </Validation>
 
-      </Form.Content>
-    </Form.Root>
+        </Form.Content>
+      </Form.Root>
+      <Textbit.Editable
+        yjsEditor={yjsEditor}
+        lang={documentLanguage}
+        onSpellcheck={onSpellcheck}
+        className='outline-none
+          my-1
+          h-full
+          dark:text-slate-100
+          **:data-spelling-error:border-b-2
+          **:data-spelling-error:border-dotted
+          **:data-spelling-error:border-red-500'
+        onChange={() => {
+          if (provider.hasUnsyncedChanges) {
+            onChange?.(true)
+          }
+        }}
+      >
+        <DropMarker />
+        <Gutter>
+          <ContentMenu />
+        </Gutter>
+        <Toolbar />
+        <ContextMenu />
+      </Textbit.Editable>
+    </>
   )
 }
 
