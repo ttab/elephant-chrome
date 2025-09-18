@@ -131,7 +131,7 @@ const FactboxContainer = ({
   user: AwarenessUserData
   documentId: string
 } & ViewProps): JSX.Element => {
-  const { words, characters } = useTextbit()
+  const { stats } = useTextbit()
   const { status } = useSession()
   const [isChanged] = useYValue<boolean>('root.changed')
 
@@ -187,11 +187,11 @@ const FactboxContainer = ({
               <>
                 <div className='flex gap-2'>
                   <strong>Ord:</strong>
-                  <span>{words}</span>
+                  <span title='Antal ord totalt'>{stats.full.words}</span>
                 </div>
                 <div className='flex gap-2'>
                   <strong>Tecken:</strong>
-                  <span>{characters}</span>
+                  <span title='Antal tecken totalt'>{stats.full.characters}</span>
                 </div>
               </>
             )}

@@ -92,7 +92,7 @@ function EditorContainer({
   planningId?: string | null
   readOnly?: boolean
 }): JSX.Element {
-  const { words, characters } = useTextbit()
+  const { stats } = useTextbit()
 
   return (
     <>
@@ -109,11 +109,11 @@ function EditorContainer({
       <View.Footer>
         <div className='flex gap-2'>
           <strong>Ord:</strong>
-          <span>{words}</span>
+          <span title='Antal ord totalt'>{stats.full.words}</span>
         </div>
         <div className='flex gap-2'>
           <strong>Tecken:</strong>
-          <span>{characters}</span>
+          <span title='Antal tecken totalt'>{stats.full.characters}</span>
         </div>
       </View.Footer>
     </>
