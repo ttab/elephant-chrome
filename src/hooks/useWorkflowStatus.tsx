@@ -23,7 +23,7 @@ export const useWorkflowStatus = (uuid?: string, isWorkflow: boolean = false): [
    * SWR callback that fetches current workflow status
    */
   const { data: documentStatus, error, mutate } = useSWR<Status | undefined, Error>(
-    (uuid && session && repository) ? [`status/${uuid}`] : null,
+    (uuid && session && repository) ? [`status/${uuid}/${isWorkflow}`] : null,
     async () => {
       // Dont try to fetch if document is inProgress
       if (!session || !repository || !uuid) {
@@ -42,7 +42,6 @@ export const useWorkflowStatus = (uuid?: string, isWorkflow: boolean = false): [
       }
     }
   )
-
 
   if (error) {
     console.error('Unable to get documentStatus', error)
