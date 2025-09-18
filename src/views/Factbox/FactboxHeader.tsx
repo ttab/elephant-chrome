@@ -33,14 +33,15 @@ export const FactboxHeader = ({ documentId, asDialog, onDialogClose, isChanged }
 
           <div className='flex flex-row gap-2 justify-end items-center'>
             {!asDialog && (
-              <StatusMenu
-                documentId={documentId}
-                type='core/factbox'
-                isChanged={isChanged}
-              />
+              <>
+                <StatusMenu
+                  documentId={documentId}
+                  type='core/factbox'
+                  isChanged={isChanged}
+                />
+                <MetaSheet container={containerRef.current} documentId={documentId} />
+              </>
             )}
-
-            <MetaSheet container={containerRef.current} documentId={documentId} />
             {!!documentId && <ViewHeader.RemoteUsers documentId={documentId} />}
           </div>
         </div>
