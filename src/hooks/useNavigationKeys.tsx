@@ -130,5 +130,5 @@ function isMacOs(): boolean {
     platform = navigator.userAgent
   }
 
-  return /\bmac\b/i.test(platform)
+  return /\bmac/i.test(platform)
 }
