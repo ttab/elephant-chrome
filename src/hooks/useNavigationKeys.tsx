@@ -54,8 +54,11 @@ export const useNavigationKeys = (
 
     // Don't override arrow navigation in editable targets
     if (target && isEditableElement(target)) {
-      // But allow alt+left and alt+right, for view navigation.
+      // But allow alt+left and alt+right, for view navigation if _not_ MacOs.
       if (event.altKey && (event.key === 'ArrowLeft' || event.key === 'ArrowRight')) {
+        // On macOS, Option+Arrow is word navigation, so skip handling
+        if (isMacOs()) return
+
         // Browser navigation default will intercept otherwise
         event.preventDefault()
         onNavigation(event)
@@ -108,4 +111,24 @@ function isEditableElement(element: Element | null): element is HTMLInputElement
   }
 
   return false
+}
+
+
+function isMacOs(): boolean {
+  const navigatorModernApi = navigator as Navigator & { userAgentData?: { platform?: string } }
+  let platform: string | undefined
+
+  if ('userAgentData' in navigatorModernApi && typeof navigatorModernApi.userAgentData?.platform === 'string') {
+    platform = navigatorModernApi.userAgentData.platform
+  }
+
+  if (!platform && typeof navigator.platform === 'string') {
+    platform = navigator.platform
+  }
+
+  if (!platform) {
+    platform = navigator.userAgent
+  }
+
+  return /\bmac\b/i.test(platform)
 }
