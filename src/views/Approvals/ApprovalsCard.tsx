@@ -32,7 +32,7 @@ export const ApprovalsCard = ({ assignment, isSelected, isFocused, status, autho
   const openArticle = useLink('Editor')
   const openFlash = useLink('Flash')
   const [users] = useYValue<Record<string, { id: string, name: string, username: string }>>(`${assignment._deliverableId}.users`, false, undefined, 'open-documents')
-  const [documentStatus] = useWorkflowStatus(assignment._deliverableId)
+  const [documentStatus] = useWorkflowStatus(assignment._deliverableId, true)
 
   const openType = (assignmentType: string) => assignmentType === 'core/flash' ? openFlash : openArticle
   const time = useMemo(() =>
