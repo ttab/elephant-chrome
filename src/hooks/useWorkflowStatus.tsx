@@ -1,7 +1,7 @@
 import { useSession } from 'next-auth/react'
 import type { KeyedMutator } from 'swr'
 import useSWR, { mutate as globalMutate } from 'swr'
-import { useCallback } from 'react'
+import { useCallback, useMemo } from 'react'
 import { useCollaboration, useRegistry, useRepositoryEvents, useYValue } from '@/hooks'
 import { toast } from 'sonner'
 import type { Repository, Status } from '@/shared/Repository'
@@ -19,11 +19,14 @@ export const useWorkflowStatus = (uuid?: string, isWorkflow: boolean = false): [
   const { provider } = useCollaboration()
   const [, setChanged] = useYValue('root.changed')
 
+  const CACHE_KEY = useMemo(
+    () => `status/${uuid}/${isWorkflow}`,
+    [uuid, isWorkflow])
   /**
    * SWR callback that fetches current workflow status
    */
   const { data: documentStatus, error, mutate } = useSWR<Status | undefined, Error>(
-    (uuid && session && repository) ? [`status/${uuid}/${isWorkflow}`] : null,
+    (uuid && session && repository) ? [CACHE_KEY] : null,
     async () => {
       // Dont try to fetch if document is inProgress
       if (!session || !repository || !uuid) {
@@ -91,9 +94,9 @@ export const useWorkflowStatus = (uuid?: string, isWorkflow: boolean = false): [
       setChanged(undefined)
 
       // Revalidate after the mutation completes
-      await globalMutate([`status/${uuid}`])
+      await globalMutate([CACHE_KEY])
     },
-    [session, uuid, setChanged, provider?.document, repository]
+    [session, uuid, setChanged, provider?.document, repository, CACHE_KEY]
   )
 
   return [documentStatus, setDocumentStatus, mutate]
