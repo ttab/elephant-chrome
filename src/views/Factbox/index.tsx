@@ -16,13 +16,15 @@ import { DropMarker } from '@/components/Editor/DropMarker'
 import { ContextMenu } from '@/components/Editor/ContextMenu'
 import { getValueByYPath } from '@/shared/yUtils'
 import { useOnSpellcheck } from '@/hooks/useOnSpellcheck'
-import { View } from '@/components'
+import { Form, View } from '@/components'
 import { FactboxHeader } from './FactboxHeader'
 import { Error } from '@/views/Error'
 import { useCallback, useEffect, useRef } from 'react'
 import { cn } from '@ttab/elephant-ui/utils'
 import { contentMenuLabels } from '@/defaults/contentMenuLabels'
 import { snapshotDocument } from '@/lib/snapshotDocument'
+import { Validation } from '@/components/Validation'
+import type { FormProps } from '@/components/Form/Root'
 
 const meta: ViewMetadata = {
   name: 'Factbox',
@@ -134,6 +136,7 @@ const FactboxContainer = ({
   const { words, characters } = useTextbit()
   const { status } = useSession()
   const [isChanged] = useYValue<boolean>('root.changed')
+  const [title] = useYValue<boolean>('root.title')
 
   // TODO: useYValue doesn't provider a stable setter, this cause rerenders down the tree
   const handleChange = useCallback((value: boolean): void => {
@@ -167,9 +170,11 @@ const FactboxContainer = ({
       />
 
       <View.Content className='flex flex-col max-w-[1000px]'>
-        <div className='grow overflow-auto pr-12 max-w-(--breakpoint-xl)'>
+        <div className='grow overflow-auto pt-2 pr-12 max-w-(--breakpoint-xl)'>
           {!!provider && synced
-            ? <FactboxContent provider={provider} user={user} onChange={handleChange} />
+            ? (
+                <FactboxContent provider={provider} user={user} onChange={handleChange} />
+              )
             : <></>}
         </div>
       </View.Content>
@@ -179,6 +184,7 @@ const FactboxContainer = ({
           ? (
               <Button
                 onClick={handleSubmit}
+                disabled={!title}
               >
                 Skapa faktaruta
               </Button>
@@ -200,11 +206,11 @@ const FactboxContainer = ({
   )
 }
 
-const FactboxContent = ({ provider, user, onChange }: {
+const FactboxContent = ({ provider, user, onChange, onValidation, validateStateRef, asDialog }: {
   provider: HocuspocusProvider
   user: AwarenessUserData
   onChange?: (value: boolean) => void
-}): JSX.Element => {
+} & FormProps): JSX.Element => {
   const { isActive } = useView()
   const ref = useRef<HTMLDivElement>(null)
   const [documentLanguage] = getValueByYPath<string>(provider.document.getMap('ele'), 'root.language')
@@ -223,26 +229,42 @@ const FactboxContent = ({ provider, user, onChange }: {
 
   return (
     <>
-      <TextBox
-        path='root.title'
-        placeholder='Rubrik'
-        className='font-bold text-lg basis-auto'
-        autoFocus={true}
-        singleLine={true}
-        onChange={onChange}
-      />
+      <Form.Root
+        asDialog={asDialog}
+        className='[&_[role="textbox"]:focus]:bg-white [&_[role="textbox"]]:ring-transparent [&_[role="textbox"]:focus]:ring-gray-200'
+      >
+        <Form.Content>
 
+          <Validation
+            label='Titel'
+            path='root.title'
+            block='title'
+            onValidation={onValidation}
+            validateStateRef={validateStateRef}
+          >
+            <TextBox
+              path='root.title'
+              placeholder='Rubrik'
+              className='font-bold text-lg'
+              autoFocus={true}
+              singleLine={true}
+              onChange={onChange}
+            />
+          </Validation>
+
+        </Form.Content>
+      </Form.Root>
       <Textbit.Editable
         yjsEditor={yjsEditor}
         lang={documentLanguage}
         onSpellcheck={onSpellcheck}
         className='outline-none
+          my-1
           h-full
           dark:text-slate-100
           **:data-spelling-error:border-b-2
           **:data-spelling-error:border-dotted
-          **:data-spelling-error:border-red-500
-        '
+          **:data-spelling-error:border-red-500'
         onChange={() => {
           if (provider.hasUnsyncedChanges) {
             onChange?.(true)

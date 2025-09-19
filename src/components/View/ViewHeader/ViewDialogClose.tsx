@@ -32,7 +32,7 @@ export const ViewDialogClose = ({ onClick, Icon = XIcon, asDialog }: {
     <>
       <Button
         variant='ghost'
-        className='w-9 h-9 p-0 hover:bg-gray-200 dark:hover:bg-gray-100'
+        className='w-9 h-9 p-0 hover:bg-gray-200 dark:hover:bg-gray-700'
         onClick={() => {
           if (isChanged) {
             setShowVerifyDialog(true)
