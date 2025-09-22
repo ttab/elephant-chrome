@@ -155,7 +155,7 @@ const FactboxContainer = ({
     if (provider && status === 'authenticated') {
       void snapshotDocument(documentId).then((response) => {
         if (response?.statusMessage) {
-          toast.error('Kunde inte spara faktaruta!', {
+          toast.error('Kunde inte skapa ny faktaruta!', {
             duration: 5000,
             position: 'top-center'
           })
