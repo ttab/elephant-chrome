@@ -34,6 +34,7 @@ import type { Block } from '@ttab/elephant-api/newsdoc'
 import { CopyGroup } from '../../components/CopyGroup'
 import { DuplicatesTable } from '../../components/DuplicatesTable'
 import { snapshotDocument } from '@/lib/snapshotDocument'
+import { toast } from 'sonner'
 
 type Setter = React.Dispatch<SetStateAction<NewItem>>
 
@@ -117,14 +118,22 @@ const PlanningViewContent = (props: ViewProps & { documentId: string, setNewItem
   const handleSubmit = ({ documentStatus }: {
     documentStatus: 'usable' | 'done' | undefined
   }): void => {
-    if (props.onDialogClose) {
-      props.onDialogClose(props.documentId, 'title')
-    }
-
     if (provider && status === 'authenticated') {
       void snapshotDocument(props.documentId, {
         status: documentStatus,
         addToHistory: true
+      }).then((response) => {
+        if (response?.statusMessage) {
+          toast.error('Kunde inte skapa ny planering!', {
+            duration: 5000,
+            position: 'top-center'
+          })
+          return
+        }
+
+        if (props?.onDialogClose) {
+          props.onDialogClose()
+        }
       })
     }
 

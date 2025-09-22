@@ -31,6 +31,7 @@ import { DuplicatesTable } from '../../components/DuplicatesTable'
 import { Cancel } from './components/Cancel'
 import { CopyGroup } from '../../components/CopyGroup'
 import { snapshotDocument } from '@/lib/snapshotDocument'
+import { toast } from 'sonner'
 
 const meta: ViewMetadata = {
   name: 'Event',
@@ -108,14 +109,22 @@ const EventViewContent = (props: ViewProps & { documentId: string }): JSX.Elemen
   const handleSubmit = ({ documentStatus }: {
     documentStatus: 'usable' | 'done' | undefined
   }): void => {
-    if (props?.onDialogClose) {
-      props.onDialogClose()
-    }
-
     if (provider && status === 'authenticated') {
       void snapshotDocument(props.documentId, {
         status: documentStatus,
         addToHistory: true
+      }).then((response) => {
+        if (response?.statusMessage) {
+          toast.error('Kunde inte skapa ny händelse!', {
+            duration: 5000,
+            position: 'top-center'
+          })
+          return
+        }
+
+        if (props?.onDialogClose) {
+          props.onDialogClose()
+        }
       })
     }
   }

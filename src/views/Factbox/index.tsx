@@ -25,6 +25,7 @@ import { contentMenuLabels } from '@/defaults/contentMenuLabels'
 import { snapshotDocument } from '@/lib/snapshotDocument'
 import { Validation } from '@/components/Validation'
 import type { FormProps } from '@/components/Form/Root'
+import { toast } from 'sonner'
 
 const meta: ViewMetadata = {
   name: 'Factbox',
@@ -151,12 +152,20 @@ const FactboxContainer = ({
 
 
   const handleSubmit = (): void => {
-    if (onDialogClose) {
-      onDialogClose(documentId, 'title')
-    }
-
     if (provider && status === 'authenticated') {
-      void snapshotDocument(documentId)
+      void snapshotDocument(documentId).then((response) => {
+        if (response?.statusMessage) {
+          toast.error('Kunde inte spara faktaruta!', {
+            duration: 5000,
+            position: 'top-center'
+          })
+          return
+        }
+
+        if (onDialogClose) {
+          onDialogClose(documentId, 'title')
+        }
+      })
     }
   }
 
