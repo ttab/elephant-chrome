@@ -212,7 +212,7 @@ export const Version = ({ documentId, hideDetails = false, textOnly = true }: { 
           )}
         </SelectTrigger>
 
-        <SelectContent>
+        <SelectContent className='max-h-[400px] overflow-y-auto'>
           {VersionStack}
         </SelectContent>
       </Select>
