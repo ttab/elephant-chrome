@@ -164,6 +164,7 @@ export const Version = ({ documentId, hideDetails = false, textOnly = true }: { 
                   ? <span>{bylineNames.join(', ')}</span>
                   : <span>{usable?.creator || '???'}</span>}
               </div>
+              {usable?.created && <span className='italic'>{`${formatDateAndTime(usable.created)}`}</span>}
             </div>
           </div>
         </SelectItem>
