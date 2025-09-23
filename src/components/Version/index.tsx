@@ -144,6 +144,7 @@ export const Version = ({ documentId, hideDetails = false, textOnly = true }: { 
     return versionStatusHistory?.map((v: DocumentStatus & { bylines?: Block[], title?: string, slugline?: string }) => {
       const usable = getUsable(v)
       const bylineNames = v.bylines?.map((block) => block.title) || []
+      const versionNumber = v.id
 
       return (
         <SelectItem
