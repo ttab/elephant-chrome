@@ -142,6 +142,8 @@ const PlanningViewContent = (props: ViewProps & { documentId: string, setNewItem
     }
   }
 
+  const environmentIsSane = provider && status === 'authenticated'
+
   return (
     <View.Root asDialog={props.asDialog} className={props?.className}>
       <PlanningHeader
@@ -205,6 +207,13 @@ const PlanningViewContent = (props: ViewProps & { documentId: string, setNewItem
           </Form.Table>
 
           <Form.Footer>
+            {!environmentIsSane && (
+              <div className='font-semibold pb-6 text-sm'>
+                <p>Du har blivit utloggad eller tappat kontakten med systemet.</p>
+                <p>Vänligen försök logga in igen.</p>
+              </div>
+            )}
+
             <Form.Submit
               onSubmit={() => handleSubmit({ documentStatus: 'usable' })}
               onSecondarySubmit={() => handleSubmit({ documentStatus: 'done' })}
@@ -212,14 +221,14 @@ const PlanningViewContent = (props: ViewProps & { documentId: string, setNewItem
             >
               <div className='flex justify-between'>
                 <div className='flex gap-2'>
-                  <Button type='button' variant='secondary' role='tertiary'>
+                  <Button type='button' variant='secondary' role='tertiary' disabled={!environmentIsSane}>
                     Utkast
                   </Button>
-                  <Button type='button' variant='secondary' role='secondary'>
+                  <Button type='button' variant='secondary' role='secondary' disabled={!environmentIsSane}>
                     Intern
                   </Button>
                 </div>
-                <Button type='submit'>
+                <Button type='submit' disabled={!environmentIsSane}>
                   Publicera
                 </Button>
               </div>

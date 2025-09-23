@@ -169,6 +169,8 @@ const FactboxContainer = ({
     }
   }
 
+  const environmentIsSane = provider && status === 'authenticated'
+
   return (
     <>
       <FactboxHeader
@@ -191,12 +193,22 @@ const FactboxContainer = ({
       <View.Footer>
         {asDialog
           ? (
-              <Button
-                onClick={handleSubmit}
-                disabled={!title}
-              >
-                Skapa faktaruta
-              </Button>
+              <>
+                {!environmentIsSane && (
+                  <div className='text-sm leading-tight pe-2'>
+                    Du är utloggad eller har tappat kontakt med systemet.
+                    Vänligen försök logga in igen.
+                  </div>
+                )}
+
+                <Button
+                  onClick={handleSubmit}
+                  disabled={!title || !environmentIsSane}
+                  className='whitespace-nowrap'
+                >
+                  Skapa faktaruta
+                </Button>
+              </>
             )
           : (
               <>
