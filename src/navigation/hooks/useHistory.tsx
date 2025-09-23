@@ -74,11 +74,6 @@ export function useHistory(): HistoryInterface {
       return
     }
 
-    const newState = {
-      viewId,
-      contentState: state?.contentState || []
-    }
-
     replaceState(view.path, newState, false)
 
     window.dispatchEvent(new CustomEvent('activeview', {
