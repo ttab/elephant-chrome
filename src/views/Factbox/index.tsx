@@ -25,6 +25,8 @@ import { contentMenuLabels } from '@/defaults/contentMenuLabels'
 import { snapshotDocument } from '@/lib/snapshotDocument'
 import { Validation } from '@/components/Validation'
 import type { FormProps } from '@/components/Form/Root'
+import { toast } from 'sonner'
+import { InfoIcon } from '@ttab/elephant-ui/icons'
 
 const meta: ViewMetadata = {
   name: 'Factbox',
@@ -151,14 +153,24 @@ const FactboxContainer = ({
 
 
   const handleSubmit = (): void => {
-    if (onDialogClose) {
-      onDialogClose(documentId, 'title')
-    }
-
     if (provider && status === 'authenticated') {
-      void snapshotDocument(documentId)
+      void snapshotDocument(documentId).then((response) => {
+        if (response?.statusMessage) {
+          toast.error('Kunde inte skapa ny faktaruta!', {
+            duration: 5000,
+            position: 'top-center'
+          })
+          return
+        }
+
+        if (onDialogClose) {
+          onDialogClose(documentId, 'title')
+        }
+      })
     }
   }
+
+  const environmentIsSane = provider && status === 'authenticated'
 
   return (
     <>
@@ -182,12 +194,27 @@ const FactboxContainer = ({
       <View.Footer>
         {asDialog
           ? (
-              <Button
-                onClick={handleSubmit}
-                disabled={!title}
-              >
-                Skapa faktaruta
-              </Button>
+              <>
+                {!environmentIsSane && (
+                  <div className='text-sm leading-tight pb-2 text-left flex gap-2'>
+                    <span className='w-4'>
+                      <InfoIcon size={18} strokeWidth={1.75} className='text-muted-foreground' />
+                    </span>
+                    <p>
+                      Du är utloggad eller har tappat kontakt med systemet.
+                      Vänligen försök logga in igen.
+                    </p>
+                  </div>
+                )}
+
+                <Button
+                  onClick={handleSubmit}
+                  disabled={!title || !environmentIsSane}
+                  className='whitespace-nowrap'
+                >
+                  Skapa faktaruta
+                </Button>
+              </>
             )
           : (
               <>
