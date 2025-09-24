@@ -5,7 +5,8 @@ import {
   Description,
   Story,
   Section,
-  View
+  View,
+  UserMessage
 } from '@/components'
 import { type ViewMetadata, type ViewProps } from '@/types'
 import { TagsIcon, CalendarIcon } from '@ttab/elephant-ui/icons'
@@ -208,10 +209,13 @@ const PlanningViewContent = (props: ViewProps & { documentId: string, setNewItem
 
           <Form.Footer>
             {!environmentIsSane && (
-              <div className='font-semibold pb-6 text-sm'>
-                <p>Du har blivit utloggad eller tappat kontakten med systemet.</p>
-                <p>Vänligen försök logga in igen.</p>
+              <div className='pb-6'>
+                <UserMessage asDialog={!!props.asDialog}>
+                  Du har blivit utloggad eller tappat kontakt med systemet.
+                  Vänligen försök logga in igen.
+                </UserMessage>
               </div>
+
             )}
 
             <Form.Submit

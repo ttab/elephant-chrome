@@ -19,7 +19,8 @@ import {
   Story,
   Registration,
   Category,
-  Organiser
+  Organiser,
+  UserMessage
 } from '@/components'
 import { PlanningTable } from './components/PlanningTable'
 import { Error } from '../Error'
@@ -184,9 +185,11 @@ const EventViewContent = (props: ViewProps & { documentId: string }): JSX.Elemen
 
           <Form.Footer>
             {!environmentIsSane && (
-              <div className='font-semibold pb-6 text-sm'>
-                <p>Du har blivit utloggad eller tappat kontakt med systemet.</p>
-                <p>Vänligen försök logga in igen.</p>
+              <div className='pb-6'>
+                <UserMessage asDialog={!!props.asDialog}>
+                  Du har blivit utloggad eller tappat kontakt med systemet.
+                  Vänligen försök logga in igen.
+                </UserMessage>
               </div>
             )}
 

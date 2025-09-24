@@ -26,6 +26,7 @@ import { snapshotDocument } from '@/lib/snapshotDocument'
 import { Validation } from '@/components/Validation'
 import type { FormProps } from '@/components/Form/Root'
 import { toast } from 'sonner'
+import { InfoIcon } from '@ttab/elephant-ui/icons'
 
 const meta: ViewMetadata = {
   name: 'Factbox',
@@ -195,9 +196,14 @@ const FactboxContainer = ({
           ? (
               <>
                 {!environmentIsSane && (
-                  <div className='text-sm leading-tight pe-2'>
-                    Du är utloggad eller har tappat kontakt med systemet.
-                    Vänligen försök logga in igen.
+                  <div className='text-sm leading-tight pb-2 text-left flex gap-2'>
+                    <span className='w-4'>
+                      <InfoIcon size={18} strokeWidth={1.75} className='text-muted-foreground' />
+                    </span>
+                    <p>
+                      Du är utloggad eller har tappat kontakt med systemet.
+                      Vänligen försök logga in igen.
+                    </p>
                   </div>
                 )}
 
