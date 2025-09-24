@@ -6,7 +6,6 @@ import { useSession } from 'next-auth/react'
 import { useModal } from '../Modal/useModal'
 import { PreviewSheet } from '@/views/Wires/components'
 import { useAuthors } from '@/hooks/useAuthors'
-import { getCreatorBySub } from './getCreatorBySub'
 import { Error } from '@/views/Error'
 import type { GetStatusHistoryReponse } from '@ttab/elephant-api/repository'
 import type { Status as DocumentStatus } from '@ttab/elephant-api/repository'
@@ -14,6 +13,7 @@ import type { EleDocumentResponse } from '@/shared/types'
 import { dateToReadableDateTime } from '@/shared/datetime'
 import { CAUSE_KEYS } from '../../defaults/causekeys'
 import type { Block } from '@ttab/elephant-api/newsdoc'
+import { getAuthorBySub } from '@/lib/getAuthorBySub'
 const BASE_URL = import.meta.env.BASE_URL || ''
 
 type Status = { name: string, created: string, creator: string }
@@ -94,10 +94,10 @@ export const Version = ({ documentId, hideDetails = false, textOnly = true }: { 
 
     // Set last version as starting point
     const lastStatus = { ...result?.statuses[0], name: 'usable' }
-    const createdBy = getCreatorBySub({
+    const createdBy = getAuthorBySub(
       authors,
-      creator: lastStatus?.creator || result?.statuses[0]?.creator
-    })?.name || '???'
+      lastStatus?.creator || result?.statuses[0]?.creator
+    )?.name || '???'
 
     setVersion({
       ...result?.statuses[0],
@@ -110,7 +110,7 @@ export const Version = ({ documentId, hideDetails = false, textOnly = true }: { 
   const [selectedVersion, setVersion] = useState<SelectedVersion>()
   const { showModal, hideModal } = useModal()
 
-  const createdBy = useCallback((creator: string) => getCreatorBySub({ authors, creator })?.name || '???', [authors])
+  const createdBy = useCallback((creator: string) => getAuthorBySub(authors, creator)?.name || '???', [authors])
 
   const formatDateAndTime = useCallback((date: string) => {
     if (date) {
