@@ -6,7 +6,7 @@ import { Assignment } from './Assignment'
 import { type Block } from '@ttab/elephant-api/newsdoc'
 import type { MouseEvent, KeyboardEvent } from 'react'
 import { useMemo, useState } from 'react'
-import { deleteByYPath, getValueByYPath } from '@/shared/yUtils'
+import { deleteByYPath, getValueByYPath, setValueByYPath } from '@/shared/yUtils'
 import { type EleBlock } from '@/shared/types'
 import { cva } from 'class-variance-authority'
 import { Button } from '@ttab/elephant-ui'
@@ -115,7 +115,7 @@ export const AssignmentTable = ({ asDialog = false, documentId, onChange }: {
 
   return (
     <>
-      <div className='flex flex-start pt-2 text-primary pb-4 items-center'>
+      <div className='flex flex-col pt-2 text-primary pb-4'>
         <div className={variants({ asDialog })}>
           <Button
             disabled={newAssigment !== undefined || !provider?.document}
@@ -139,14 +139,26 @@ export const AssignmentTable = ({ asDialog = false, documentId, onChange }: {
           </Button>
         </div>
 
+
         {!!newAssigment && session?.user.sub !== newAssigment.assignment?.__inProgress?.sub
           && (
-            <div className='text-sm ps-1 flex flex-row gap-1 text-muted-foreground items-center'>
+            <div className='text-sm ps-10 py-2 flex flex-row gap-1 text-muted-foreground items-center'>
               <InfoIcon size={18} strokeWidth={1.75} />
               <div>
                 <span className='hidden sm:inline'>Nytt uppdrag skapas av</span>
                 {' '}
                 {getAuthorBySub(authors, newAssigment.assignment?.__inProgress?.sub)?.name || `okänd: ${newAssigment.assignment?.__inProgress?.sub ?? 'användare'}`}
+                {', '}
+                <a
+                  className='text-primary hover:underline'
+                  href='#'
+                  onClick={(e) => {
+                    e.preventDefault()
+                    setValueByYPath(yRoot, `meta.core/assignment[${newAssigment?.index}].__inProgress.sub`, session?.user.sub)
+                  }}
+                >
+                  Ta över
+                </a>
               </div>
             </div>
           )}
