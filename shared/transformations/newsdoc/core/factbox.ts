@@ -31,7 +31,7 @@ export const transformFactbox = (element: Block): TBElement => {
       },
       {
         id: crypto.randomUUID(),
-        class: 'text',
+        class: 'block',
         type: 'core/factbox/body',
         children: [
           ...newsDocToSlate(content)
