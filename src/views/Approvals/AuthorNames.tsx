@@ -1,4 +1,5 @@
-import type { IDBAuthor, StatusMeta } from 'src/datastore/types'
+import type { IDBAuthor } from 'src/datastore/types'
+import type { StatusMeta } from '@/types'
 import { DoneMarkedBy } from './DoneMarkedBy'
 
 export const authorOutput = (matchedAuthor: IDBAuthor) => {

@@ -1,7 +1,7 @@
 import { toZonedTime } from 'date-fns-tz'
 import { parseISO, getHours } from 'date-fns'
 import type { AssignmentInterface } from './types'
-import type { StatusData } from 'src/datastore/types'
+import type { StatusData } from '@/types'
 import { getTimeValue } from './getTimeValue'
 
 export interface AssignmentResponseInterface {
