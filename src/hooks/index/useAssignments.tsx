@@ -100,7 +100,10 @@ export const useAssignments = ({
         .find((assignment) =>
           (assignment._id === event.uuid
             || event.mainDocument === assignment._id
-            || assignment._deliverableId === event.uuid))
+            || assignment._deliverableId === event.uuid
+            || assignment._planningId === event.uuid
+          ))
+
       if (assignment) {
         void mutate()
         return
