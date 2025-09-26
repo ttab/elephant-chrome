@@ -85,7 +85,6 @@ export const useAssignments = ({
     'core/editorial-info', 'core/editorial-info+meta',
     'core/flash', 'core/flash+meta'
   ], (event) => {
-    console.log('event', event)
     if ((event.event !== 'document'
       && event.event !== 'status'
       && event.event !== 'delete_document')) {
