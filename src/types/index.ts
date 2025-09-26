@@ -148,3 +148,28 @@ export interface PlanningData {
   start_date: string
   tentative: string
 }
+
+export interface StatusMeta {
+  created: string
+  creator: string
+  id: bigint
+  meta: object
+  metaDocVersion: bigint
+  version: bigint
+}
+
+export interface StatusData {
+  heads: {
+    usable?: StatusMeta
+    done?: StatusMeta
+    approved?: StatusMeta
+    withheld?: StatusMeta
+    cancelled?: StatusMeta
+  }
+  modified: string
+  uuid: string
+  version: string
+  workflowState: string
+  workflowCheckpoint: string
+}
+

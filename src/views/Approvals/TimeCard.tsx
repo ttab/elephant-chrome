@@ -6,7 +6,7 @@ import { dateInTimestampOrShortMonthDayTimestamp, newLocalDate, parseDate } from
 import { DEFAULT_TIMEZONE } from '@/defaults/defaultTimezone'
 import { useQuery } from '@/hooks/useQuery'
 import type { AssignmentInterface } from '@/hooks/index/useAssignments'
-import type { StatusData } from 'src/datastore/types'
+import type { StatusData } from '@/types'
 import { useRegistry } from '@/hooks/useRegistry'
 import { useMemo } from 'react'
 import { timesSlots } from '@/defaults/assignmentTimeslots'
