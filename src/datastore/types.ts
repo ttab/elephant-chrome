@@ -49,6 +49,8 @@ export interface StatusData {
   modified: string
   uuid: string
   version: string
+  workflowState: string
+  workflowCheckpoint: string
 }
 
 /** Category structure in indexedDB objectStore */

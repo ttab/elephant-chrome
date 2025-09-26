@@ -1,23 +1,18 @@
 import { Card } from '@/components/Card'
-import { ClockIcon } from '@/components/ClockIcon'
 import { Avatar, Link } from '@/components/index'
 import type { AssignmentInterface } from '@/hooks/index/useAssignments'
 import { useLink } from '@/hooks/useLink'
-import { useRegistry } from '@/hooks/useRegistry'
 import { CalendarDaysIcon, FileWarningIcon, MessageSquarePlusIcon, ZapIcon } from '@ttab/elephant-ui/icons'
-import { parseISO, format } from 'date-fns'
-import { toZonedTime } from 'date-fns-tz'
 import type { IDBAuthor, StatusData } from 'src/datastore/types'
 import { useSections } from '@/hooks/useSections'
 import type { StatusSpecification } from '@/defaults/workflowSpecification'
 import { useYValue } from '@/hooks/useYValue'
 import { AvatarGroup } from '@/components/AvatarGroup'
 import { Popover, PopoverContent, PopoverTrigger, Tooltip } from '@ttab/elephant-ui'
-import { timesSlots } from '@/defaults/assignmentTimeslots'
-import { useMemo } from 'react'
 import { AuthorNames } from './AuthorNames'
 import { CAUSE_KEYS } from '@/defaults/causekeys'
 import { useWorkflowStatus } from '@/hooks/useWorkflowStatus'
+import { TimeCard } from './TimeCard'
 
 export const ApprovalsCard = ({ assignment, isSelected, isFocused, status, authors, openEditors }: {
   assignment: AssignmentInterface
@@ -27,7 +22,6 @@ export const ApprovalsCard = ({ assignment, isSelected, isFocused, status, autho
   authors: IDBAuthor[]
   openEditors: string[]
 }) => {
-  const { timeZone } = useRegistry()
   const sections = useSections()
   const openArticle = useLink('Editor')
   const openFlash = useLink('Flash')
@@ -35,8 +29,6 @@ export const ApprovalsCard = ({ assignment, isSelected, isFocused, status, autho
   const [documentStatus] = useWorkflowStatus(assignment._deliverableId, true)
 
   const openType = (assignmentType: string) => assignmentType === 'core/flash' ? openFlash : openArticle
-  const time = useMemo(() =>
-    getAssignmentTime(assignment, timeZone), [assignment, timeZone])
 
   const documentId = assignment._deliverableId
 
@@ -85,13 +77,6 @@ export const ApprovalsCard = ({ assignment, isSelected, isFocused, status, autho
   const lastUsableOrder = statusData?.heads.usable?.id
 
   const internalInfo = assignment._deliverableDocument?.meta.find((block) => block.type === 'core/note' && block.role === 'internal')?.data?.text
-
-  const timeTooltip = (assignment._deliverableStatus === 'withheld' && assignment?.data?.publish)
-    ? `Schemalagd kl ${format(toZonedTime(parseISO(assignment.data.publish), timeZone), 'HH:mm')}`
-    : statusData?.modified
-      ? `Senast ändrad ${format(toZonedTime(parseISO(statusData.modified), timeZone), 'HH:mm')}`
-      : 'Senast ändrad'
-
 
   const cause = documentStatus?.cause ? CAUSE_KEYS[documentStatus.cause as keyof typeof CAUSE_KEYS].short : ''
 
@@ -151,21 +136,7 @@ export const ApprovalsCard = ({ assignment, isSelected, isFocused, status, autho
             </Popover>
           )}
         </div>
-
-        <Popover>
-          <PopoverTrigger onClick={(e) => {
-            e.stopPropagation()
-          }}
-          >
-            <Tooltip content={timeTooltip}>
-              <div className='flex flex-row gap-1 items-center'>
-                <ClockIcon hour={(time) ? parseInt(time.slice(0, 2)) : undefined} size={14} className='opacity-50' />
-                <time>{time}</time>
-              </div>
-            </Tooltip>
-          </PopoverTrigger>
-          <PopoverContent>{statusData?.modified ? `Senast ändrad ${format(toZonedTime(parseISO(statusData.modified), timeZone), 'HH:mm')}` : 'Senast ändrad'}</PopoverContent>
-        </Popover>
+        <TimeCard assignment={assignment} />
       </Card.Header>
 
       <Card.Content>
@@ -226,31 +197,4 @@ export const ApprovalsCard = ({ assignment, isSelected, isFocused, status, autho
 
     </Card.Root>
   )
-}
-
-
-function getAssignmentTime(assignment: AssignmentInterface, timeZone: string) {
-  if (assignment.data.publish && assignment._deliverableStatus === 'withheld') {
-    return format(toZonedTime(parseISO(assignment.data.publish), timeZone), 'HH:mm')
-  }
-  if (assignment?._statusData) {
-    const modified = (JSON.parse(assignment._statusData) as StatusData)?.modified
-    return format(toZonedTime(parseISO(modified), timeZone), 'HH:mm')
-  }
-  if (assignment.data.publish_slot) {
-    return getTimeslotLabel(parseInt(assignment.data.publish_slot))
-  }
-  if (assignment.data.start) {
-    return format(toZonedTime(parseISO(assignment.data.start), timeZone), 'HH:mm')
-  }
-  return undefined
-}
-
-export function getTimeslotLabel(hour: number): string | undefined {
-  for (const key in timesSlots) {
-    if (timesSlots[key].slots.includes(hour)) {
-      return timesSlots[key].label
-    }
-  }
-  return undefined
 }
