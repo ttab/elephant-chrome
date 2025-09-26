@@ -48,10 +48,8 @@ export const TimeCard = ({ assignment }: { assignment: AssignmentInterface }) =>
           </div>
         </Tooltip>
       </PopoverTrigger>
-      <PopoverContent>
-        {statusData?.modified
-          ? `Senast ändrad ${format(toZonedTime(parseISO(statusData.modified), timeZone), 'HH:mm')}`
-          : 'Senast ändrad'}
+      <PopoverContent className='lg:hidden'>
+        {timeTooltip}
       </PopoverContent>
     </Popover>
   )
