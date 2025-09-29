@@ -6,7 +6,7 @@ import {
   useContext,
   useEffect
 } from 'react'
-import { HocuspocusProvider } from '@hocuspocus/provider'
+import { HocuspocusProvider, WebSocketStatus } from '@hocuspocus/provider'
 import { IndexeddbPersistence } from 'y-indexeddb'
 import { useSession } from 'next-auth/react'
 import { Collaboration } from '@/defaults'
@@ -16,7 +16,6 @@ import { createStateless, StatelessType } from '@/shared/stateless'
 import { useModal } from '@/components/Modal/useModal'
 import { useKeydownGlobal } from '@/hooks/useKeydownGlobal'
 import { Button } from '@ttab/elephant-ui'
-import { toast } from 'sonner'
 
 export interface AwarenessUserData {
   name: string
@@ -70,6 +69,7 @@ export const CollaborationProviderContext = ({ documentId, document, children }:
   const [synced, setSynced] = useState<boolean>(false)
   const [connected, setConnected] = useState<boolean>(false)
   const [provider, setProvider] = useState<HocuspocusProvider>()
+  const [refreshKey, setRefreshKey] = useState(0)
 
   // Developer tool to display current document source in a dialog
   const { showModal, hideModal } = useModal()
@@ -141,9 +141,11 @@ export const CollaborationProviderContext = ({ documentId, document, children }:
     if (!provider) return
 
     const handleDisconnect = () => {
-      provider.connect().catch((error) => {
-        console.error('Error reconnecting provider:', error)
-        toast.error('Kunde inte återansluta till dokumentet')
+      webSocket?.on('status', (status: { status: string }) => {
+        // Websocket is ready, we need to refresh the provider to make it work
+        if (status.status === 'connecting') {
+          setRefreshKey((prev) => prev + 1)
+        }
       })
     }
 
@@ -152,7 +154,7 @@ export const CollaborationProviderContext = ({ documentId, document, children }:
     return () => {
       provider.off('disconnect', handleDisconnect)
     }
-  }, [provider])
+  }, [provider, webSocket])
 
 
   // Create and destroy a local indexeddb sync engine
@@ -197,9 +199,9 @@ export const CollaborationProviderContext = ({ documentId, document, children }:
   return (
     <>
       {!!provider && (
-        <CollaborationContext.Provider value={{ ...state }}>
+        <CollaborationContext.Provider key={refreshKey} value={{ ...state }}>
           {children}
-          {(synced && !connected)
+          {(webSocket?.status !== WebSocketStatus.Connected && !connected)
             && (
               <div className='absolute w-full min-h-14 p-1 bottom-0 flex justify-center items-center text-center bg-red-200 text-red-950 z-50'>
                 Kopplingen till tjänsten har problem. Vänta en stund och ladda sedan om din webbläsare.
