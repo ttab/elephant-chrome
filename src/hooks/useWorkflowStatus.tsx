@@ -51,8 +51,10 @@ export const useWorkflowStatus = (uuid?: string, isWorkflow: boolean = false): [
     toast.error('Ett fel uppstod när aktuell status skulle hämtas. Försök ladda om sidan.')
   }
 
-  useRepositoryEvents('core/article+meta', (event) => {
-    if (event.mainDocument === uuid) {
+  useRepositoryEvents([
+    'core/article', 'core/article+meta'
+  ], (event) => {
+    if (event.uuid === uuid || event.mainDocument === uuid) {
       void mutate()
     }
   })
