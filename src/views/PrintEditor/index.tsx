@@ -308,7 +308,7 @@ function EditorContainer({
               </div>
             </ScrollArea>
           </div>
-          <aside className='w-1/3'>
+          <aside className='w-1/3 top-16 p-4'>
             <header className='flex flex-row gap-2 items-center justify-between mb-2'>
               <div className='flex items-center'>
                 <Button variant='ghost' size='sm' onClick={() => { void statusChecker() }}>
