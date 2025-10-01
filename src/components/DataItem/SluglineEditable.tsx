@@ -1,24 +1,22 @@
-import { useMemo, useRef } from 'react'
-import { Awareness } from '@/components'
+import { useMemo } from 'react'
 import { TextBox } from '../ui'
-import { useYValue } from '@/hooks/useYValue'
 import type * as Y from 'yjs'
 import { Validation } from '../Validation'
 import { SluglineButton } from './Slugline'
 import { type FormProps } from '../Form/Root'
 import type { Block } from '@ttab/elephant-api/newsdoc'
-import type { TBElement } from '@ttab/textbit'
+import { useYValue, type YDocument } from '@/modules/yjs/hooks'
 
-export const SluglineEditable = ({ path, documentStatus, onValidation, validateStateRef, compareValues, disabled, onChange }: {
-  disabled?: boolean
+export const SluglineEditable = ({ ydoc, path, documentStatus, onValidation, validateStateRef, compareValues, disabled }: {
+  ydoc: YDocument<Y.Map<unknown>>
   path: string
+  disabled?: boolean
   compareValues?: string[]
   documentStatus?: string
-  onChange?: (value: TBElement[]) => void
 } & FormProps): JSX.Element => {
-  const setFocused = useRef<(value: boolean) => void>(null)
-  const [slugLine] = useYValue<Y.XmlText>(path)
-  const [assignments] = useYValue<Block[]>('meta.core/assignment')
+  const editable = documentStatus !== 'usable'
+  const [slugLine] = useYValue<Y.XmlText | string>(ydoc.document, path, editable)
+  const [assignments] = useYValue<Block[]>(ydoc.document, ['meta', 'core/assignment'])
 
   // Get all current sluglines from assignments for validation purposes
   // or use provided compareValues
@@ -42,30 +40,30 @@ export const SluglineEditable = ({ path, documentStatus, onValidation, validateS
       className='flex flex-col gap-2 items-center [&_[role="textbox"]:has([data-slate-placeholder="true"])]:min-w-28'
       data-ele-validation={!!onValidation}
     >
-      {documentStatus !== 'usable'
+      {editable
         ? (
-            <Awareness path={path} ref={setFocused}>
-              <Validation
-                label='Slugline'
-                block='tt/slugline'
-                path={path}
-                onValidation={onValidation}
-                compareValues={slugLines}
-                validateStateRef={validateStateRef}
-              >
-                <TextBox
-                  disabled={disabled}
-                  path={path}
-                  placeholder='Lägg till slugg'
-                  singleLine={true}
-                  className='h-6 font-normal text-sm whitespace-nowrap mb-1'
-                  spellcheck={false}
-                  onChange={onChange}
-                />
-              </Validation>
-            </Awareness>
+            <Validation
+              label='Slugline'
+              block='tt/slugline'
+              path={path}
+              onValidation={onValidation}
+              compareValues={slugLines}
+              validateStateRef={validateStateRef}
+            >
+              <TextBox
+                ydoc={ydoc}
+                value={slugLine as Y.XmlText}
+                disabled={disabled}
+                placeholder='Lägg till slugg'
+                singleLine={true}
+                className='h-6 font-normal text-sm whitespace-nowrap mb-1'
+                spellcheck={false}
+              />
+            </Validation>
           )
-        : <SluglineButton path={path} />}
+        : (
+            <SluglineButton value={slugLine as string} />
+          )}
     </div>
   )
 }

@@ -8,14 +8,16 @@ import { Duplicate } from '@/components/Duplicate'
 import type { PlanningData } from '@/types/index'
 import type { Session } from 'next-auth'
 import type { HocuspocusProvider } from '@hocuspocus/provider'
+import type { YDocument } from '@/modules/yjs/hooks'
+import type * as Y from 'yjs'
 
-export const PlanningHeader = ({ documentId, asDialog, onDialogClose, isChanged, session, provider, status }: {
-  documentId: string
+export const PlanningHeader = ({ ydoc, asDialog, onDialogClose, isChanged, session, provider, status }: {
+  ydoc?: YDocument<Y.Map<unknown>>
   asDialog: boolean
   onDialogClose?: () => void
   isChanged?: boolean
   session: Session | null
-  provider: HocuspocusProvider | undefined
+  provider: HocuspocusProvider | null
   status: 'authenticated' | 'loading' | 'unauthenticated'
 
 }): JSX.Element => {
@@ -43,15 +45,15 @@ export const PlanningHeader = ({ documentId, asDialog, onDialogClose, isChanged,
           </div>
 
           <div className='flex flex-row gap-2 justify-end items-center'>
-            {!asDialog && (
+            {!asDialog && ydoc && (
               <StatusMenu
-                documentId={documentId}
+                documentId={ydoc.id}
                 type='core/planning-item'
                 isChanged={isChanged}
               />
             )}
 
-            {!!documentId && <ViewHeader.RemoteUsers documentId={documentId} />}
+            {!!ydoc && <ViewHeader.RemoteUsers ydoc={ydoc} />}
           </div>
         </div>
         {!asDialog && provider && planningData && (
@@ -67,7 +69,9 @@ export const PlanningHeader = ({ documentId, asDialog, onDialogClose, isChanged,
       </ViewHeader.Content>
 
       <ViewHeader.Action onDialogClose={onDialogClose} asDialog={asDialog}>
-        {!asDialog && <MetaSheet container={containerRef.current} documentId={documentId} />}
+        {!asDialog && ydoc && (
+          <MetaSheet container={containerRef.current} documentId={ydoc.id} />
+        )}
       </ViewHeader.Action>
     </ViewHeader.Root>
   )

@@ -9,15 +9,14 @@ import { CoreStoryProvider } from '../../datastore/contexts/CoreStoryProvider'
 import { TTWireSourceProvider } from '../../datastore/contexts/TTWireSourceProvider'
 import { CoreContentSourceProvider } from '../../datastore/contexts/CoreContentSourceProvider'
 import { TTEditorialInfoTypeProvider } from '../../datastore/contexts/TTEditorialInfoTypeProvider'
-import { DocTrackerProvider } from '../../contexts'
+import { DocTrackerProvider, UserTrackerProvider } from '../../contexts'
 import { useRegistry } from '@/hooks/useRegistry'
 import { initializeAuthor } from './lib/actions/author'
 import { initializeFaro } from './lib/actions/faro'
-import type { QueryParams } from '@/hooks/useQuery'
-import { useUserTracker } from '@/hooks/useUserTracker'
 import { LoadingText } from '../LoadingText'
 import { NavigationProvider } from '@/navigation/NavigationProvider'
 import { View } from '../View'
+import { WebSocketProvider } from '@/modules/yjs'
 
 interface InitState {
   faro: boolean | undefined
@@ -27,20 +26,12 @@ interface InitState {
 
 export const Init = ({ children }: PropsWithChildren): JSX.Element => {
   const { data: session } = useSession()
-  const [, , synced] = useUserTracker<Record<string, QueryParams> | undefined>(`filters`)
-
-  const { repository, server: { faroUrl, indexUrl } } = useRegistry()
+  const { repository, server: { faroUrl, indexUrl, webSocketUrl } } = useRegistry()
   const [isInitialized, setIsInitialized] = useState<InitState>({
     faro: undefined,
     author: undefined,
-    userTracker: undefined
+    userTracker: true
   })
-
-  useEffect(() => {
-    if (synced && isInitialized.userTracker === undefined) {
-      setIsInitialized((prevState) => ({ ...prevState, userTracker: true }))
-    }
-  }, [synced, isInitialized.userTracker])
 
   useEffect(() => {
     if (isInitialized.faro === undefined) {
@@ -97,27 +88,32 @@ export const Init = ({ children }: PropsWithChildren): JSX.Element => {
     )
   }
 
+  console.log(webSocketUrl.toString())
   return (
-    <DocTrackerProvider>
-      <CoreSectionProvider>
-        <CoreAuthorProvider>
-          <CoreStoryProvider>
-            <CoreCategoryProvider>
-              <CoreOrganiserProvider>
-                <TTWireSourceProvider>
-                  <CoreContentSourceProvider>
-                    <TTEditorialInfoTypeProvider>
-                      <NavigationProvider>
-                        {children}
-                      </NavigationProvider>
-                    </TTEditorialInfoTypeProvider>
-                  </CoreContentSourceProvider>
-                </TTWireSourceProvider>
-              </CoreOrganiserProvider>
-            </CoreCategoryProvider>
-          </CoreStoryProvider>
-        </CoreAuthorProvider>
-      </CoreSectionProvider>
-    </DocTrackerProvider>
+    <WebSocketProvider url={webSocketUrl.toString()}>
+      <UserTrackerProvider>
+        <DocTrackerProvider>
+          <CoreSectionProvider>
+            <CoreAuthorProvider>
+              <CoreStoryProvider>
+                <CoreCategoryProvider>
+                  <CoreOrganiserProvider>
+                    <TTWireSourceProvider>
+                      <CoreContentSourceProvider>
+                        <TTEditorialInfoTypeProvider>
+                          <NavigationProvider>
+                            {children}
+                          </NavigationProvider>
+                        </TTEditorialInfoTypeProvider>
+                      </CoreContentSourceProvider>
+                    </TTWireSourceProvider>
+                  </CoreOrganiserProvider>
+                </CoreCategoryProvider>
+              </CoreStoryProvider>
+            </CoreAuthorProvider>
+          </CoreSectionProvider>
+        </DocTrackerProvider>
+      </UserTrackerProvider>
+    </WebSocketProvider>
   )
 }

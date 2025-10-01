@@ -1,10 +1,15 @@
 import React, { useCallback, useRef } from 'react'
 import { Awareness } from '../Awareness'
 import { TextboxRoot } from './Textbox/TextboxRoot'
+import { useYPath, type YDocument } from '@/modules/yjs/hooks'
+import type * as Y from 'yjs'
+import type { Descendant } from 'slate'
+import { cn } from '@ttab/elephant-ui/utils'
 
-export const TextBox = ({ icon: Icon, path, onChange, ...props }: {
+export const TextBox = ({ icon: Icon, value, onChange, ...props }: {
+  ydoc: YDocument<Y.Map<unknown>>
+  value: Y.XmlText | undefined
   disabled?: boolean
-  path: string
   icon?: React.ReactNode
   placeholder?: string
   className?: string
@@ -14,8 +19,9 @@ export const TextBox = ({ icon: Icon, path, onChange, ...props }: {
   spellcheck?: boolean
   onBlur?: React.FocusEventHandler<HTMLDivElement>
   onFocus?: React.FocusEventHandler<HTMLDivElement>
-  onChange?: (arg: boolean) => void
+  onChange?: (arg: Descendant[]) => void
 }): JSX.Element => {
+  const path = useYPath(value, true)
   const setFocused = useRef<(value: boolean, key: string) => void>(() => { })
   const { onFocus, onBlur } = props
 
@@ -34,7 +40,7 @@ export const TextBox = ({ icon: Icon, path, onChange, ...props }: {
   }, [onBlur])
 
   return (
-    <Awareness path={path} ref={setFocused} className='w-full'>
+    <Awareness ydoc={props.ydoc} path={path} ref={setFocused} className='w-full'>
       <div className='w-full flex flex-row gap-2'>
         {Icon && (
           <div className='pt-1.5'>
@@ -42,9 +48,30 @@ export const TextBox = ({ icon: Icon, path, onChange, ...props }: {
           </div>
         )}
 
-        <TextboxRoot {...props} path={path} onBlur={handleOnBlur} onFocus={handleOnFocus} onChange={onChange} />
+        {value
+          ? (
+              <TextboxRoot {...props} value={value} onBlur={handleOnBlur} onFocus={handleOnFocus} />
+            )
+          : (
+              <div className={cn(!props.singleLine && 'h-20!',
+                `w-full
+                p-1
+                py-1.5
+                ps-2
+                h-8
+                rounded-md
+                outline-none
+                ring-offset-background
+                ring-1
+                ring-input
+                dark:ring-gray-600
+                whitespace-nowrap
+                bg-gray-50
+                dark:bg-input`
+              )}
+              />
+            )}
       </div>
     </Awareness>
   )
 }
-

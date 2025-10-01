@@ -1,21 +1,16 @@
 import {
-  AwarenessDocument,
   Newsvalue,
   Title,
-  Description,
   Story,
   Section,
   View,
   UserMessage
 } from '@/components'
 import { type ViewMetadata, type ViewProps } from '@/types'
-import { TagsIcon, CalendarIcon } from '@ttab/elephant-ui/icons'
+import { TagsIcon, CalendarIcon, MessageCircleIcon, TextIcon } from '@ttab/elephant-ui/icons'
 import {
   useQuery,
-  useWorkflowStatus,
-  useCollaboration,
-  useAwareness,
-  useYValue
+  useWorkflowStatus
 } from '@/hooks'
 import { PlanDate } from './components/PlanDate'
 import { AssignmentTable } from './components/AssignmentTable'
@@ -27,7 +22,7 @@ import { SluglineEditable } from '@/components/DataItem/SluglineEditable'
 import { Button } from '@ttab/elephant-ui'
 import { useSession } from 'next-auth/react'
 import { PlanningHeader } from './components/PlanningHeader'
-import React, { type SetStateAction, useCallback, useEffect, useState } from 'react'
+import React, { type SetStateAction, useMemo, useState } from 'react'
 import type { NewItem } from '../Event/components/PlanningTable'
 import { MoveDialog } from './components/MoveDialog'
 import { RelatedEvents } from './components/RelatedEvents'
@@ -36,6 +31,13 @@ import { CopyGroup } from '../../components/CopyGroup'
 import { DuplicatesTable } from '../../components/DuplicatesTable'
 import { snapshotDocument } from '@/lib/snapshotDocument'
 import { toast } from 'sonner'
+import { useYDocument, useYValue } from '../../modules/yjs/hooks'
+import { getTemplateFromView } from '@/shared/templates/lib/getTemplateFromView'
+import { toGroupedNewsDoc } from '@/shared/transformations/groupedNewsDoc'
+import type { EleDocumentResponse } from '@/shared/types'
+import { TextBox } from '@/components/ui'
+import { useDescriptionIndex } from './_utils/useDescriptionIndex'
+import { Validation } from '@/components/Validation'
 
 type Setter = React.Dispatch<SetStateAction<NewItem>>
 
@@ -55,9 +57,27 @@ const meta: ViewMetadata = {
   }
 }
 
-export const Planning = (props: ViewProps & { document?: Y.Doc, setNewItem?: Setter }): JSX.Element => {
+export const Planning = (props: ViewProps & {
+  document?: Y.Doc
+  setNewItem?: Setter
+}): JSX.Element => {
   const [query] = useQuery()
   const documentId = props.id || query.id
+
+  // Planning should be responsible for creating new as well as editing,
+  // ignore incoming document.
+  const data = useMemo(() => {
+    if (!props.document || !documentId || typeof documentId !== 'string') {
+      return undefined
+    }
+
+    return toGroupedNewsDoc({
+      version: 0n,
+      isMetaDocument: false,
+      mainDocument: '',
+      document: getTemplateFromView('Planning')(documentId)
+    })
+  }, [documentId, props.document])
 
   if (!documentId) {
     return <></>
@@ -67,9 +87,12 @@ export const Planning = (props: ViewProps & { document?: Y.Doc, setNewItem?: Set
     <>
       {typeof documentId === 'string'
         ? (
-            <AwarenessDocument documentId={documentId} document={props.document}>
-              <PlanningViewContent {...props} documentId={documentId} setNewItem={props?.setNewItem} />
-            </AwarenessDocument>
+            <PlanningViewContent
+              {...props}
+              documentId={documentId}
+              setNewItem={props?.setNewItem}
+              data={data}
+            />
           )
         : (
             <Error
@@ -81,40 +104,26 @@ export const Planning = (props: ViewProps & { document?: Y.Doc, setNewItem?: Set
   )
 }
 
-const PlanningViewContent = (props: ViewProps & { documentId: string, setNewItem?: Setter }): JSX.Element | undefined => {
-  const { provider, user } = useCollaboration()
-  const { data, status } = useSession()
+const PlanningViewContent = (props: ViewProps & {
+  documentId: string
+  data?: EleDocumentResponse
+  setNewItem?: Setter
+}): JSX.Element | undefined => {
+  const ydoc = useYDocument<Y.Map<unknown>>(props.documentId, { data: props.data })
+  const { provider, document, isChanged, setIsChanged, connected } = ydoc
+
+  const { data: session, status } = useSession()
   const [documentStatus] = useWorkflowStatus(props.documentId)
-  const [copyGroupId] = useYValue<string | undefined>('meta.core/copy-group[0].uuid')
-  const [, setIsFocused] = useAwareness(props.documentId)
-  const [newTitle] = useYValue('root.title')
-  const [isChanged] = useYValue<boolean>('root.changed')
-  const [relatedEvents] = useYValue<Block[]>('links.core/event')
+  const [copyGroupId] = useYValue<string | undefined>(document, ['meta', 'core', 'copy-group', 0, 'uuid'])
+  const [newTitle] = useYValue(document, ['root', 'title'])
+  const [relatedEvents] = useYValue<Block[]>(document, ['links', 'core/event'])
   const [newDate, setNewDate] = useState<string | undefined>(undefined)
 
-  useEffect(() => {
-    provider?.setAwarenessField('data', user)
-    setIsFocused(true)
-
-    return () => {
-      setIsFocused(false)
-    }
-
-    // We only want to rerun when provider change
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [provider])
-
-  // TODO: useYValue doesn't provider a stable setter, this cause rerenders down the tree
-  const handleChange = useCallback((value: boolean): void => {
-    const root = provider?.document.getMap('ele').get('root') as Y.Map<unknown>
-    const changed = root.get('changed') as boolean
-
-
-    if (changed !== value) {
-      root.set('changed', value)
-    }
-  }, [provider])
-
+  const [title] = useYValue<Y.XmlText>(document, ['root', 'title'], true)
+  const pubIndex = useDescriptionIndex(document, 'public')
+  const intIndex = useDescriptionIndex(document, 'internal')
+  const [publicDescription] = useYValue<Y.XmlText>(document, ['meta', 'core/description', pubIndex, 'data', 'text'], true)
+  const [internalDescription] = useYValue<Y.XmlText>(document, ['meta', 'core/description', intIndex, 'data', 'text'], true)
 
   const handleSubmit = ({ documentStatus }: {
     documentStatus: 'usable' | 'done' | undefined
@@ -143,31 +152,47 @@ const PlanningViewContent = (props: ViewProps & { documentId: string, setNewItem
     }
   }
 
-  const environmentIsSane = provider && status === 'authenticated'
+  const environmentIsSane = connected && status === 'authenticated'
 
   return (
     <View.Root asDialog={props.asDialog} className={props?.className}>
       <PlanningHeader
-        documentId={props.documentId}
+        ydoc={ydoc}
         asDialog={!!props.asDialog}
         onDialogClose={props.onDialogClose}
         isChanged={isChanged}
-        session={data}
+        session={session}
         provider={provider}
         status={status}
       />
 
       <View.Content className='max-w-[1000px]'>
-        <Form.Root asDialog={props.asDialog} onChange={handleChange}>
+        <Form.Root asDialog={props.asDialog} onChange={setIsChanged}>
           <Form.Content>
             <Form.Title>
-              <Title
-                autoFocus={props.asDialog}
-                placeholder='Planeringstitel'
-              />
+              <Validation label='Titel' path='root.title' block='title'>
+                <TextBox
+                  ydoc={ydoc}
+                  value={title}
+                  placeholder='Titel'
+                  autoFocus={!!props.asDialog}
+                  singleLine={true}
+                />
+              </Validation>
             </Form.Title>
-            <Description role='public' />
-            <Description role='internal' />
+
+            <TextBox
+              ydoc={ydoc}
+              value={publicDescription}
+              icon={<TextIcon size={18} strokeWidth={1.75} className='text-muted-foreground mr-4' />}
+              placeholder='Publik beskrivning'
+            />
+            <TextBox
+              ydoc={ydoc}
+              value={internalDescription}
+              icon={<MessageCircleIcon size={18} strokeWidth={1.75} className='text-muted-foreground mr-4' />}
+              placeholder='Internt meddelande'
+            />
 
             <Form.Group icon={CalendarIcon}>
               {props.asDialog !== true
@@ -177,7 +202,75 @@ const PlanningViewContent = (props: ViewProps & { documentId: string, setNewItem
               {newDate && props.asDialog !== true && (
                 <MoveDialog
                   newDate={newDate}
-                  onChange={handleChange}
+                  onChange={setIsChanged}
+                  onClose={() => {
+                    setNewDate(undefined)
+                  }}
+                />
+              )}
+            </Form.Group>
+
+            <Form.Group icon={TagsIcon}>
+              <SluglineEditable
+                ydoc={ydoc}
+                path='meta.tt/slugline[0].value'
+                documentStatus={documentStatus?.name}
+              />
+
+              {/* <Newsvalue /> */}
+            </Form.Group>
+
+          </Form.Content>
+        </Form.Root>
+      </View.Content>
+    </View.Root>
+  )
+  return (
+    <View.Root asDialog={props.asDialog} className={props?.className}>
+      <PlanningHeader
+        documentId={props.documentId}
+        asDialog={!!props.asDialog}
+        onDialogClose={props.onDialogClose}
+        isChanged={isChanged}
+        session={session}
+        provider={provider}
+        status={status}
+      />
+
+      <View.Content className='max-w-[1000px]'>
+        <Form.Root asDialog={props.asDialog} onChange={setIsChanged}>
+          <Form.Content>
+            <Form.Title>
+              <Title
+                autoFocus={props.asDialog}
+                placeholder='Planeringstitel'
+              />
+            </Form.Title>
+
+            <TextBox
+              value={description0}
+              icon={<TextIcon size={18} strokeWidth={1.75} className='text-muted-foreground mr-4' />}
+              placeholder='Publik beskrivning'
+            />
+            <TextBox
+              value={description1}
+              icon={<MessageCircleIcon size={18} strokeWidth={1.75} className='text-muted-foreground mr-4' />}
+              placeholder='Internt meddelande'
+            />
+
+
+            {/* <Description role='public' /> */}
+            {/* <Description role='internal' /> */}
+
+            <Form.Group icon={CalendarIcon}>
+              {props.asDialog !== true
+                ? <PlanDate onValueChange={setNewDate} />
+                : <PlanDate />}
+
+              {newDate && props.asDialog !== true && (
+                <MoveDialog
+                  newDate={newDate}
+                  onChange={setIsChanged}
                   onClose={() => {
                     setNewDate(undefined)
                   }}
@@ -201,7 +294,7 @@ const PlanningViewContent = (props: ViewProps & { documentId: string, setNewItem
           </Form.Content>
 
           <Form.Table>
-            <AssignmentTable asDialog={props.asDialog} onChange={handleChange} documentId={props.documentId} />
+            <AssignmentTable asDialog={props.asDialog} onChange={setIsChanged} documentId={props.documentId} />
             <RelatedEvents events={relatedEvents} />
             {!props.asDialog && <DuplicatesTable documentId={props.documentId} type='core/planning-item' />}
             {copyGroupId && !props.asDialog && <CopyGroup copyGroupId={copyGroupId} type='core/planning-item' />}

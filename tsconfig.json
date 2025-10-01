@@ -78,6 +78,9 @@
       ],
       "@/shared": [
         "./shared/index.ts"
+      ],
+      "@/modules/*": [
+        "./src/modules/*"
       ]
     },
   },
