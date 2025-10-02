@@ -23,7 +23,7 @@ export function useOpenDocuments(params: { name?: string, idOnly?: boolean } = {
   const { currentModal } = useModal()
 
   useEffect(() => {
-    const names = ['Planning', 'Event', 'Editor', 'Factbox', 'Flash']
+    const names = ['Planning', 'Event', 'Editor', 'Factbox', 'Flash', 'PrintEditor']
     const filteredDocuments = state.content.filter((s) => {
       return (!!s?.props?.id) && ((name && s.name === name) || names.includes(s.name))
     }).map((s) => {
