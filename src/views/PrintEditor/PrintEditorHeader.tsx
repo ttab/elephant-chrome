@@ -45,9 +45,7 @@ export const EditorHeader = ({
   return (
     <ViewHeader.Root className='@container grid grid-cols-2'>
       <section className='col-span-2 flex flex-row gap-2 justify-between items-center w-full'>
-        <div className='hidden @printEditor:block'>
-          <ViewHeader.Title name={flowName || ''} title={flowName || ''} icon={PenBoxIcon} />
-        </div>
+        <ViewHeader.Title name={flowName || ''} title={flowName || ''} icon={PenBoxIcon} />
 
         <ViewHeader.Content className='justify-start w-full'>
           <div className='max-w-[1040px] mx-auto flex flex-row gap-2 justify-between items-center w-full'>
@@ -56,7 +54,7 @@ export const EditorHeader = ({
                 <input
                   type='text'
                   placeholder='Printartikelnamn'
-                  className='px-2 py-1 w-[130px] @printEditor:w-full'
+                  className='px-2 py-1 w-[130px]'
                   value={title}
                   onChange={(e) => {
                     setIsDirty(true)
@@ -76,7 +74,7 @@ export const EditorHeader = ({
               </div>
             </div>
             <div className='flex flex-row gap-2 justify-end items-center'>
-              <div className='hidden @printEditor:block'><AddNote role='internal' /></div>
+              <AddNote role='internal' />
               {!!documentId && (
                 <>
                   <ViewHeader.RemoteUsers documentId={documentId} />
