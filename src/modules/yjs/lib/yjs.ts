@@ -91,7 +91,7 @@ export function extractYData<T>(y: Y.Map<unknown> | Y.Array<unknown> | Y.XmlText
     const result: Record<string, unknown> = {}
 
     for (const [key, value] of y.entries()) {
-      if (value instanceof Y.Map || value instanceof Y.Array) {
+      if (value instanceof Y.Map || value instanceof Y.Array || value instanceof Y.XmlText) {
         result[key] = extractYData(value)
       } else {
         result[key] = value
@@ -103,7 +103,7 @@ export function extractYData<T>(y: Y.Map<unknown> | Y.Array<unknown> | Y.XmlText
 
   if (y instanceof Y.Array) {
     return y.toArray().map((item) =>
-      item instanceof Y.Map || item instanceof Y.Array
+      item instanceof Y.Map || item instanceof Y.Array || item instanceof Y.XmlText
         ? extractYData(item)
         : item
     ) as T
@@ -119,31 +119,35 @@ export function extractYData<T>(y: Y.Map<unknown> | Y.Array<unknown> | Y.XmlText
  * updateYMap(document.get('document'), { meta: { priority: Number(value) } })
  */
 export function updateYMap<T extends Record<string, unknown>>(ymap: Y.Map<unknown>, newData: DeepPartial<T>) {
-  ymap.doc?.transact(() => { // Ensure all changes are atomic
-    for (const [key, value] of Object.entries(newData)) {
+  function update<U extends Record<string, unknown>>(target: Y.Map<unknown>, data: DeepPartial<U>) {
+    for (const [key, value] of Object.entries(data)) {
       if (Array.isArray(value)) {
         const yarray = new Y.Array<unknown>()
         value.forEach((item) => {
           if (typeof item === 'object' && item !== null) {
             const childMap = new Y.Map<unknown>()
-            updateYMap(childMap, item as Record<string, unknown>)
+            update(childMap, item as DeepPartial<Record<string, unknown>>)
             yarray.push([childMap])
           } else {
             yarray.push([item])
           }
         })
-        ymap.set(key, yarray)
+        target.set(key, yarray)
       } else if (typeof value === 'object' && value !== null) {
-        let existingYMap = ymap.get(key) as Y.Map<unknown> | undefined
+        let existingYMap = target.get(key) as Y.Map<unknown> | undefined
         if (!(existingYMap instanceof Y.Map)) {
           existingYMap = new Y.Map<unknown>()
-          ymap.set(key, existingYMap)
+          target.set(key, existingYMap)
         }
-        updateYMap(existingYMap, value as Record<string, unknown>)
+        update(existingYMap, value as DeepPartial<Record<string, unknown>>)
       } else {
-        ymap.set(key, value)
+        target.set(key, value)
       }
     }
+  }
+
+  ymap.doc?.transact(() => {
+    update(ymap, newData)
   })
 }
 
