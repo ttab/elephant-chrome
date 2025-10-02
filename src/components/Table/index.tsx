@@ -36,12 +36,13 @@ import type { Wire as WireType } from '@/shared/schemas/wire'
 import { Wire } from '@/views/Wire'
 import { GroupedRows } from './GroupedRows'
 import { getWireStatus } from './lib/getWireStatus'
+import type { DocumentType } from '@/types/index'
 import { type View } from '@/types/index'
 const BASE_URL = import.meta.env.BASE_URL
 
 interface TableProps<TData, TValue> {
   columns: Array<ColumnDef<TData, TValue>>
-  type: 'Planning' | 'Event' | 'Assignments' | 'Search' | 'Wires' | 'Factbox' | 'Print' | 'PrintEditor'
+  type: DocumentType
   onRowSelected?: (row?: TData) => void
 }
 

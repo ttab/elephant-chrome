@@ -6,8 +6,7 @@ import { cn } from '@ttab/elephant-ui/utils'
 import type { Wire } from '@/shared/schemas/wire'
 import { cva } from 'class-variance-authority'
 import { getWireStatus } from './lib/getWireStatus'
-
-type DocumentType = 'Planning' | 'Event' | 'Assignments' | 'Search' | 'Wires' | 'Factbox' | 'Print' | 'PrintEditor'
+import type { DocumentType } from '@/types/index'
 
 export const WireRow = ({ row, handleOpen, openDocuments, type }: {
   type: DocumentType
