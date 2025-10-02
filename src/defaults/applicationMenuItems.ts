@@ -9,7 +9,8 @@ import {
   UtilityPoleIcon,
   BoxesIcon,
   LibraryIcon,
-  type LucideIcon
+  type LucideIcon,
+  CogIcon
 } from '@ttab/elephant-ui/icons'
 import type { ViewProps, View } from '../types'
 
@@ -115,6 +116,17 @@ export const applicationMenu: ApplicationMenu = {
           label: 'Print',
           icon: LibraryIcon,
           color: '#006bb3'
+        }
+      ]
+    },
+    {
+      name: 'Concept Admin',
+      items: [
+        {
+          name: 'ConceptAdmin',
+          label: 'Concept Admin',
+          icon: CogIcon,
+          color: '#b4385b'
         }
       ]
     }
