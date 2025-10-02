@@ -31,10 +31,6 @@ export const Section = ({ ydoc, path, onValidation, validateStateRef, onChange, 
   const setFocused = useRef<(value: boolean, path: string) => void>(() => { })
   const selectedOptions = (allSections || [])?.filter((s) => s.value === section?.uuid)
 
-  console.log(section)
-  console.log(allSections)
-  console.log(selectedOptions)
-
   return (
     <Awareness ref={setFocused} ydoc={ydoc} path={path}>
       <Validation
