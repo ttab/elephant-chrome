@@ -88,7 +88,6 @@ export const Init = ({ children }: PropsWithChildren): JSX.Element => {
     )
   }
 
-  console.log(webSocketUrl.toString())
   return (
     <WebSocketProvider url={webSocketUrl.toString()}>
       <UserTrackerProvider>
