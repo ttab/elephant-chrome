@@ -1,12 +1,13 @@
-import type { FormProps } from './Form/Root'
-import { TextBox } from './ui'
-import { Validation } from './Validation'
-import { useYValue, type YDocument } from '@/modules/yjs/hooks'
+import type { FormProps } from '../Form/Root'
+import { TextBox } from './'
+import { Validation } from '../Validation'
+import { useYPath, type YDocument } from '@/modules/yjs/hooks'
 import type * as Y from 'yjs'
 
-export const Title = ({
+export const TextInput = ({
   ydoc,
-  path,
+  value,
+  label,
   autoFocus,
   placeholder,
   className,
@@ -14,18 +15,19 @@ export const Title = ({
   validateStateRef
 }: {
   ydoc: YDocument<Y.Map<unknown>>
-  path?: string
+  value: Y.XmlText | undefined
+  label: string
   autoFocus?: boolean
   placeholder: string
   className?: string
 } & FormProps): JSX.Element => {
-  const [value] = useYValue<Y.XmlText>(ydoc.document, path || 'root.title', true)
+  const path = useYPath(value, true)
 
   return (
     <Validation
       ydoc={ydoc}
-      label='Titel'
-      path={path || 'root.title'}
+      label={label}
+      path={path}
       block='title'
       onValidation={onValidation}
       validateStateRef={validateStateRef}
@@ -41,5 +43,3 @@ export const Title = ({
     </Validation>
   )
 }
-
-Title.displayName = 'Title'

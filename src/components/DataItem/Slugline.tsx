@@ -4,6 +4,10 @@ export const SluglineButton = ({ value, setActive }: {
   value?: string
   setActive?: ((value: boolean) => void) | null
 }): JSX.Element => {
+  if (!setActive && !value) {
+    return <></>
+  }
+
   return (!setActive)
     ? (
         <Badge

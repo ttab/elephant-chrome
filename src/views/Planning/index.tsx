@@ -37,7 +37,7 @@ import { toGroupedNewsDoc } from '@/shared/transformations/groupedNewsDoc'
 import type { EleDocumentResponse } from '@/shared/types'
 import { TextBox } from '@/components/ui'
 import { useDescriptionIndex } from './_utils/useDescriptionIndex'
-import { Validation } from '@/components/Validation'
+import { TextInput } from '@/components/ui/TextInput'
 
 type Setter = React.Dispatch<SetStateAction<NewItem>>
 
@@ -114,12 +114,12 @@ const PlanningViewContent = (props: ViewProps & {
 
   const { data: session, status } = useSession()
   const [documentStatus] = useWorkflowStatus(props.documentId)
-  const [copyGroupId] = useYValue<string | undefined>(document, ['meta', 'core', 'copy-group', 0, 'uuid'])
+  const [copyGroupId] = useYValue<string | undefined>(document, 'meta.core.copy-group[0].uuid')
   const [newTitle] = useYValue(document, ['root', 'title'])
-  const [relatedEvents] = useYValue<Block[]>(document, ['links', 'core/event'])
+  const [relatedEvents] = useYValue<Block[]>(document, 'links.core/event')
   const [newDate, setNewDate] = useState<string | undefined>(undefined)
 
-  const [title] = useYValue<Y.XmlText>(document, ['root', 'title'], true)
+  const [title] = useYValue<Y.XmlText>(document, 'root.title', true)
   const pubIndex = useDescriptionIndex(document, 'public')
   const intIndex = useDescriptionIndex(document, 'internal')
   const [publicDescription] = useYValue<Y.XmlText>(document, ['meta', 'core/description', pubIndex, 'data', 'text'], true)
@@ -170,15 +170,13 @@ const PlanningViewContent = (props: ViewProps & {
         <Form.Root asDialog={props.asDialog} onChange={setIsChanged}>
           <Form.Content>
             <Form.Title>
-              <Validation label='Titel' path='root.title' block='title'>
-                <TextBox
-                  ydoc={ydoc}
-                  value={title}
-                  placeholder='Titel'
-                  autoFocus={!!props.asDialog}
-                  singleLine={true}
-                />
-              </Validation>
+              <TextInput
+                ydoc={ydoc}
+                value={title}
+                label='Titel'
+                autoFocus={!!props.asDialog}
+                placeholder='Planeringstitel'
+              />
             </Form.Title>
 
             <TextBox
@@ -187,6 +185,7 @@ const PlanningViewContent = (props: ViewProps & {
               icon={<TextIcon size={18} strokeWidth={1.75} className='text-muted-foreground mr-4' />}
               placeholder='Publik beskrivning'
             />
+
             <TextBox
               ydoc={ydoc}
               value={internalDescription}
@@ -217,7 +216,12 @@ const PlanningViewContent = (props: ViewProps & {
                 documentStatus={documentStatus?.name}
               />
 
-              {/* <Newsvalue /> */}
+              <Newsvalue ydoc={ydoc} path='meta.core/newsvalue[0].value' />
+            </Form.Group>
+
+            <Form.Group icon={TagsIcon}>
+              <Section ydoc={ydoc} path='links.core/section[0]' />
+              {/* <Story /> */}
             </Form.Group>
 
           </Form.Content>

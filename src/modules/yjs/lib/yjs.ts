@@ -10,6 +10,8 @@ type DeepPartial<T> = {
     : T[P]
 }
 
+type YjsContainer = Y.Map<unknown> | Y.Array<unknown> | Y.Text | Y.XmlText | Y.XmlFragment | Y.XmlElement
+
 /*
  * Create a typed YJS document from a given object.
  */
@@ -146,7 +148,7 @@ export function updateYMap<T extends Record<string, unknown>>(ymap: Y.Map<unknow
 }
 
 /**
- * Converts a string path to the same array path format used by yjs maintaing
+ * Converts a string path to the same array path format used by yjs maintaining
  * the difference between strings for map properties and numbers for array positions.
  *
  * Example:
@@ -170,13 +172,29 @@ export function stringToYPath(input: string): YPath {
   return result as YPath
 }
 
-type YjsContainer = Y.Map<unknown> | Y.Array<unknown> | Y.Text | Y.XmlText | Y.XmlFragment | Y.XmlElement
+/**
+ * Convert a Yjs path array to a string representation.
+ * Numeric indices are wrapped in brackets, string keys are separated by dots.
+ *
+ * @param {(string | number)[]} path - The path array to convert.
+ * @returns {string} The string representation of the path.
+ * @example
+ * yPathToString(['meta', 'assignments', 0, 'title']) // 'meta.assignments[0].title'
+ */
+export function yPathToString(path: (string | number)[]): string {
+  return path.reduce<string>((acc, segment, index) => {
+    if (typeof segment === 'number') {
+      return `${acc}[${segment}]`
+    }
+    return index === 0 ? segment : `${acc}.${segment}`
+  }, '')
+}
 
 /**
  * Get the path of a Yjs value within its parent structure.
  *
- * @param {Y.AbstractType<unknown>} v - The Yjs value to get the path for.
- * @param {(string | number)[]} path - The current path being constructed.
+ * @param {Y.AbstractType<unknown>} value - The Yjs value to get the path for.
+ * @param {boolean} asString - Optionally return as string if true.
  * @returns {(string | number)[]} The path of the Yjs value as an array of strings and numbers.
  */
 export function getYjsPath(value: YjsContainer | undefined, asString: true): string
@@ -204,5 +222,5 @@ export function getYjsPath(
     }
   }
 
-  return asString ? path.join('.') : path
+  return asString ? yPathToString(path) : path
 }

@@ -43,6 +43,7 @@ export const SluglineEditable = ({ ydoc, path, documentStatus, onValidation, val
       {editable
         ? (
             <Validation
+              ydoc={ydoc}
               label='Slugline'
               block='tt/slugline'
               path={path}

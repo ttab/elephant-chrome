@@ -5,6 +5,9 @@ import { type Block } from '@ttab/elephant-api/newsdoc'
 import { useYValue } from '@/hooks/useYValue'
 import type { FormProps } from './Form/Root'
 
+/**
+ * @deprecated - use Textbox directly instead
+ */
 export const Description = React.memo(function Description({ role, onChange }: {
   role: 'internal' | 'public'
 } & FormProps): JSX.Element | null {
@@ -39,4 +42,3 @@ function findIndex(stateDescriptions: Block[] | undefined, role: 'internal' | 'p
   const foundIndex = stateDescriptions.findIndex((description) => description.role === role)
   return foundIndex === -1 ? stateDescriptions.length : foundIndex
 }
-
