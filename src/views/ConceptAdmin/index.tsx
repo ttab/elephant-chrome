@@ -1,4 +1,9 @@
+import { Commands } from '@/components/Commands'
+import { TableCommandMenu } from '@/components/Commands/TableCommand'
+import { View } from '@/components/View'
+import { TableProvider } from '@/contexts/TableProvider'
 import type { ViewMetadata } from '@/types/index'
+import { useState } from 'react'
 
 
 const meta: ViewMetadata = {
@@ -18,9 +23,21 @@ const meta: ViewMetadata = {
 }
 
 export const ConceptAdmin = () => {
+  const [currentTab, setCurrentTab] = useState<string>('list')
   return (
     <>
-      <h1>Concept admin</h1>
+      <View.Root tab={currentTab} onTabChange={setCurrentTab}>
+        <TableProvider<Concept>
+          columns={columns}
+          type={meta.name}>
+
+          <TableCommandMenu heading='ConceptAdmin'>
+            <Commands />
+          </TableCommandMenu>
+
+        </TableProvider>
+
+      </View.Root>
     </>
   )
 }
