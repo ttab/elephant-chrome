@@ -1,16 +1,10 @@
 import { View, ViewHeader } from '@/components/View'
 import { TableProvider } from '@/contexts/TableProvider'
-import type { ViewMetadata } from '@/types/index'
+import type { ViewMetadata, ViewProps } from '@/types/index'
 import { useMemo, useState } from 'react'
 import { Header } from '@/components/Header'
 import { TabsContent } from '@ttab/elephant-ui'
 import { useRegistry } from '@/hooks/useRegistry'
-import { PlanningList } from '../PlanningOverview/PlanningList'
-import { useSections } from '@/hooks/useSections'
-import { useAuthors } from '@/hooks/useAuthors'
-import { planningListColumns } from '../PlanningOverview/PlanningListColumns'
-import { useInitFilters } from '@/hooks/useInitFilters'
-import type { Planning } from '@/shared/schemas/planning'
 import { TableCommandMenu } from '@/components/Commands/TableCommand'
 import { Commands } from '@/components/Commands'
 import { ConceptList } from './ConceptList'
@@ -35,10 +29,10 @@ const meta: ViewMetadata = {
 }
 
 
-export const Concepts = () => {
+export const Concepts = ({ documentType }: ViewProps) => {
   const [currentTab, setCurrentTab] = useState<string>('list')
   const { locale, timeZone } = useRegistry()
-
+  console.log(documentType)
   const columns = useMemo(() =>
     factboxColumns({ locale, timeZone }), [locale, timeZone])
 
@@ -64,7 +58,7 @@ export const Concepts = () => {
 
         <View.Content>
           <TabsContent value='list' className='mt-0'>
-            <ConceptList columns={columns} />
+            <ConceptList columns={columns} documentType={documentType ? documentType : ' '} />
           </TabsContent>
 
         </View.Content>

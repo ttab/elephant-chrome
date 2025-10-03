@@ -31,7 +31,7 @@ export const ConceptOverview = () => {
       return (
         <TableRow
           onClick={() => {
-            handleOpen(undefined, {})
+            handleOpen(undefined, { documentType: concept.path })
           }}
           key={i}
         >

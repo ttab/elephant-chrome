@@ -4,28 +4,26 @@ import { useCallback } from 'react'
 import { Table } from '@/components/Table'
 import { useDocuments } from '@/hooks/index/useDocuments'
 import type { ColumnDef } from '@tanstack/react-table'
-import { SortingV1 } from '@ttab/elephant-api/index'
-import { constructQuery } from '@/hooks/index/useDocuments/queries/views/plannings'
 import { toast } from 'sonner'
 import type { Factbox, FactboxFields } from '@/shared/schemas/factbox.js'
+import { constructQuery } from '@/hooks/index/useDocuments/queries/views/concepts'
 
-export const ConceptList = ({ columns }: {
+export const ConceptList = ({ columns, documentType }: {
   columns: ColumnDef<Factbox>[]
+  documentType: string
 }): JSX.Element => {
-  const { error } = useDocuments<Factbox, FactboxFields>({
-    documentType: 'core/story',
+  const { error, data } = useDocuments<Factbox, FactboxFields>({
+    documentType: 'core/section',
     query: constructQuery({}),
-    sort: [
-      SortingV1.create({ field: 'document.meta.core_planning_item.data.start_date', desc: true }),
-      SortingV1.create({ field: 'document.meta.core_newsvalue.value', desc: true })
-    ],
-    options: {
+    options: { 
       aggregatePages: true,
       withStatus: true,
       setTableData: true,
       subscribe: true
     }
   })
+
+  console.log(data)
 
   const onRowSelected = useCallback((row?: Factbox) => {
     if (row) {
