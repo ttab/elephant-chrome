@@ -11,7 +11,6 @@ export function constructQuery(filter?: QueryParams): QueryV1 | undefined {
   if (!filter) {
     return undefined
   }
-
   const query = QueryV1.create({
     conditions: {
       oneofKind: 'bool',
