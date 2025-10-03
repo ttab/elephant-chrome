@@ -4,24 +4,21 @@ import type { ViewMetadata, ViewProps } from '@/types/index'
 import { useMemo, useState } from 'react'
 import { Header } from '@/components/Header'
 import { TabsContent } from '@ttab/elephant-ui'
-import { useRegistry } from '@/hooks/useRegistry'
-import { TableCommandMenu } from '@/components/Commands/TableCommand'
-import { Commands } from '@/components/Commands'
 import { ConceptList } from './ConceptList'
-import type { Factbox } from '@/shared/schemas/factbox'
-import { factboxColumns } from '../Factboxes/FactboxColumns'
+import type { SectionConcept } from '@/shared/schemas/conceptSchemas/sectionConcept'
+import { sectionConceptColumns } from './SectionConceptColumns'
 
 
 const meta: ViewMetadata = {
   name: 'Concepts',
   path: `${import.meta.env.BASE_URL || ''}/concepts`,
   widths: {
-    sm: 4,
-    md: 4,
-    lg: 4,
-    xl: 4,
-    '2xl': 4,
-    hd: 4,
+    sm: 12,
+    md: 12,
+    lg: 6,
+    xl: 6,
+    '2xl': 6,
+    hd: 6,
     fhd: 4,
     qhd: 3,
     uhd: 2
@@ -29,27 +26,22 @@ const meta: ViewMetadata = {
 }
 
 
-export const Concepts = ({ documentType }: ViewProps) => {
+export const Concepts = ({ documentType, title }: ViewProps) => {
   const [currentTab, setCurrentTab] = useState<string>('list')
-  const { locale, timeZone } = useRegistry()
-  console.log(documentType)
+  console.log(title)
   const columns = useMemo(() =>
-    factboxColumns({ locale, timeZone }), [locale, timeZone])
+    sectionConceptColumns(documentType), [documentType])
 
-
+  console.log(columns)
   return (
     <View.Root tab={currentTab} onTabChange={setCurrentTab}>
-      <TableProvider<Factbox>
+      <TableProvider<SectionConcept>
         columns={columns}
         type={meta.name}
       >
-        <TableCommandMenu heading='Concepts'>
-          <Commands />
-        </TableCommandMenu>
-
         <ViewHeader.Root>
           <ViewHeader.Content>
-            <ViewHeader.Title name='Concepts' title='Concepts' />
+            <ViewHeader.Title name={title ?? 'Concepts'} title={title ?? 'Concepts'} />
             <Header type='Concept' />
           </ViewHeader.Content>
 
