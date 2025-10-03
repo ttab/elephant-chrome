@@ -17,46 +17,60 @@ workflowspecifications
 applicationMenuItems */
 
 import { Block } from '@ttab/elephant-api/newsdoc'
+import type { LucideIcon } from '@ttab/elephant-ui/icons'
+import { CogIcon } from '@ttab/elephant-ui/icons'
 
+export const Concepts: conceptItem[] = [
+  {
+    label: 'Sektion',
+    description: 'Övergripande kategorier för nyheter',
+    path: 'core/section',
+    icon: CogIcon
+  },
+  {
+    label: 'Story',
+    description: '',
+    path: 'core/story',
+    icon: CogIcon
+  },
+  {
+    label: 'Kategori',
+    description: '',
+    path: 'core/category',
+    icon: CogIcon
+  },
+  {
+    label: 'Organisatör',
+    description: '',
+    path: 'core/organiser',
+    icon: CogIcon
+  },
+  {
+    label: 'Plats',
+    description: '',
+    path: 'core/place',
+    icon: CogIcon
+  },
+  {
+    label: 'Content Source',
+    description: '',
+    path: 'core/content-source',
+    icon: CogIcon
+  },
+  {
+    label: 'Wire Source',
+    description: '',
+    path: 'tt/wwire-source',
+    icon: CogIcon
+  }
+]
 
-/*
-==========> Core/section <==========
-
-    _id: 0004cb22-45f6-5ab1-9cf7-11743e7f0425
-  label: Section
-  description: Section for stor // Custom description for each type
-  type: string
-  value: string
+interface conceptItem {
+  label: string
+  description: string
+  path: string
+  icon: LucideIcon
 }
-
-export interface conceptSection extends conceptType {
-  valiation: string
-  code: string
-}
-
-=========> core/story <==========
-Avnänds för att märka ut underkategorier för nyheter, ex Covid-19, Melodifestivalen-2025
-label = story-tag
-path = core_story
-description = An ongoing story that gets reported on
-
-=========> core/category <==========
-=========> core/organisers <==========
-=========> tt/wire-sources <==========
-=========> tt/wire-providers <==========
-=========> content/source <==========
-=========> core/place <==========
-
-label = place
-path = core_place
-description =
-_id =
-values = [ city(string), POINT(latitude, longitude) ]
-attributes =
-rel = <T>[]
-=========> Core story <==========
-
-    */
 
 export interface conceptType {
   _id: string
@@ -138,7 +152,7 @@ export interface conceptPlace extends conceptType {
       value: 'city' | 'country' | 'county' | 'municipality'
     }
   ]
-  links: [ //optional fields
+  links: [ // optional fields
     {
       uuid: string
       type: 'core/place'
