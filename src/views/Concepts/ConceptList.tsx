@@ -23,8 +23,6 @@ export const ConceptList = ({ columns, documentType }: {
     }
   })
 
-  console.log(data)
-
   const onRowSelected = useCallback((row?: SectionConcept) => {
     if (row) {
       console.info(`Selected concept item ${row.id}`)

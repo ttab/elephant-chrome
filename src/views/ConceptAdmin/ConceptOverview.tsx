@@ -2,6 +2,8 @@ import { Table, TableBody, TableCell, TableRow } from '@ttab/elephant-ui'
 import { Concepts } from './ConceptTypes'
 import { useLink } from '@/hooks/useLink'
 import type { ViewMetadata } from '@/types/index'
+import { useQuery } from '@/hooks/useQuery'
+import { useState } from 'react'
 
 const meta: ViewMetadata = {
   name: 'Concepts',
@@ -19,39 +21,62 @@ const meta: ViewMetadata = {
   }
 }
 
-export const ConceptOverview = () => {
+export const ConceptOverview = ({ filter }: { filter: string }) => {
+  const [conceptList, setConceptList] = useState()
+
   const handleOpen = useLink('Concepts')
-  const conceptList = () => {
-    return Concepts.map((concept, i) => {
-      console.log(concept.label)
-      const Icon = concept.icon
-      return (
-        <TableRow
-          className='border-2 border-amber-900'
-          onClick={() => {
-            handleOpen(undefined, { documentType: concept.path, title: concept.label })
-          }}
-          key={i}
-        >
-          <TableCell>
-            {' '}
-            <Icon
-              className='ml-auto'
-              size={24}
-              strokeWidth={1.75}
-            />
-          </TableCell>
-          <TableCell>{concept.label}</TableCell>
-          <TableCell>{concept.description}</TableCell>
-        </TableRow>
-      )
-    })
+  const displayConceptList = () => {
+    if (filter) {
+      return Concepts.filter((concept) => concept.label.startsWith(filter)).map((concept, i) => {
+        const Icon = concept.icon
+        return (
+          <TableRow
+            onClick={() => {
+              handleOpen(undefined, { documentType: concept.path, title: concept.label })
+            }}
+            key={i}
+          >
+            <TableCell className='w-4'>
+              {' '}
+              <Icon
+                size={24}
+                strokeWidth={1.75}
+              />
+            </TableCell>
+            <TableCell>{concept.label}</TableCell>
+            <TableCell>{concept.description}</TableCell>
+          </TableRow>
+        )
+      })
+    } else {
+      return Concepts.map((concept, i) => {
+        const Icon = concept.icon
+        return (
+          <TableRow
+            onClick={() => {
+              handleOpen(undefined, { documentType: concept.path, title: concept.label })
+            }}
+            key={i}
+          >
+            <TableCell className='w-4'>
+              {' '}
+              <Icon
+                size={24}
+                strokeWidth={1.75}
+              />
+            </TableCell>
+            <TableCell>{concept.label}</TableCell>
+            <TableCell>{concept.description}</TableCell>
+          </TableRow>
+        )
+      })
+    }
   }
   return (
     <>
       <Table>
         <TableBody>
-          {conceptList()}
+          {displayConceptList()}
         </TableBody>
       </Table>
     </>

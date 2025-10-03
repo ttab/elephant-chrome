@@ -1,8 +1,8 @@
 import { View, ViewHeader } from '@/components/View'
 import type { ViewMetadata } from '@/types/index'
 import { useState } from 'react'
-import { Toolbar } from '../Factboxes/Toolbar'
 import { ConceptOverview } from './ConceptOverview'
+import { ConceptToolbar } from './components/ConceptToolbar'
 
 
 const meta: ViewMetadata = {
@@ -23,6 +23,7 @@ const meta: ViewMetadata = {
 
 export const ConceptAdmin = () => {
   const [currentTab, setCurrentTab] = useState<string>('list')
+  const [filter, setFilter] = useState('')
 
   return (
     <>
@@ -31,11 +32,11 @@ export const ConceptAdmin = () => {
           <ViewHeader.Content>
             <ViewHeader.Title name='ConceptAdmin' title='Concept Admin' />
           </ViewHeader.Content>
-         {/*  <ViewHeader.Action /> */}
+          {/*  <ViewHeader.Action /> */}
         </ViewHeader.Root>
-        <Toolbar />
+        <ConceptToolbar filter={filter} setFilter={setFilter} />
         <View.Content>
-          <ConceptOverview />
+          <ConceptOverview filter={filter} />
         </View.Content>
       </View.Root>
     </>
