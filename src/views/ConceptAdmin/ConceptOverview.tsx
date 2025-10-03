@@ -3,10 +3,9 @@ import { Concepts } from './ConceptTypes'
 import { useLink } from '@/hooks/useLink'
 import type { ViewMetadata } from '@/types/index'
 
-
 const meta: ViewMetadata = {
-  name: 'Factboxes',
-  path: `${import.meta.env.BASE_URL}/factboxes`,
+  name: 'Concepts',
+  path: `${import.meta.env.BASE_URL}/concepts`,
   widths: {
     sm: 12,
     md: 12,
@@ -21,20 +20,27 @@ const meta: ViewMetadata = {
 }
 
 export const ConceptOverview = () => {
-  console.log(Concepts)
-
   const handleOpen = useLink('Concepts')
-
-
   const conceptList = () => {
     return Concepts.map((concept, i) => {
+      console.log(concept.label)
+      const Icon = concept.icon
       return (
         <TableRow
+          className='border-2 border-amber-900'
           onClick={() => {
-            handleOpen(undefined, { documentType: concept.path })
+            handleOpen(undefined, { documentType: concept.path, title: concept.label })
           }}
           key={i}
         >
+          <TableCell>
+            {' '}
+            <Icon
+              className='ml-auto'
+              size={24}
+              strokeWidth={1.75}
+            />
+          </TableCell>
           <TableCell>{concept.label}</TableCell>
           <TableCell>{concept.description}</TableCell>
         </TableRow>

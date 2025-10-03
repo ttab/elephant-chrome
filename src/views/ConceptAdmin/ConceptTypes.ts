@@ -18,50 +18,50 @@ applicationMenuItems */
 
 import { Block } from '@ttab/elephant-api/newsdoc'
 import type { LucideIcon } from '@ttab/elephant-ui/icons'
-import { CogIcon } from '@ttab/elephant-ui/icons'
+import { CircleSmallIcon } from '@ttab/elephant-ui/icons'
 
 export const Concepts: conceptItem[] = [
   {
-    label: 'Sektion',
-    description: 'Övergripande kategorier för nyheter',
+    label: 'Sektioner',
+    description: 'A section for content',
     path: 'core/section',
-    icon: CogIcon
+    icon: CircleSmallIcon
   },
   {
-    label: 'Story',
-    description: '',
+    label: 'Story tags',
+    description: 'An ongoing story that gets reported on',
     path: 'core/story',
-    icon: CogIcon
+    icon: CircleSmallIcon
   },
   {
-    label: 'Kategori',
-    description: '',
+    label: 'Kategorier',
+    description: 'A category for content',
     path: 'core/category',
-    icon: CogIcon
+    icon: CircleSmallIcon
   },
   {
-    label: 'Organisatör',
-    description: '',
+    label: 'Organisatörer',
+    description: 'A document describing an organisation',
     path: 'core/organiser',
-    icon: CogIcon
+    icon: CircleSmallIcon
   },
   {
-    label: 'Plats',
-    description: '',
+    label: 'Platser',
+    description: 'A geographical location',
     path: 'core/place',
-    icon: CogIcon
+    icon: CircleSmallIcon
   },
   {
-    label: 'Content Source',
-    description: '',
+    label: 'Källor',
+    description: 'The entity that is the source of the content, e.g. the organisation that produced it.',
     path: 'core/content-source',
-    icon: CogIcon
+    icon: CircleSmallIcon
   },
   {
-    label: 'Wire Source',
+    label: 'Telegramkällor',
     description: '',
-    path: 'tt/wwire-source',
-    icon: CogIcon
+    path: 'tt/wire-source',
+    icon: CircleSmallIcon
   }
 ]
 
