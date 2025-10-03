@@ -80,6 +80,7 @@ export interface ViewProps {
   autoFocus?: boolean
   setOpen?: (open?: boolean) => boolean
   documentType?: string
+  title?: string
 }
 
 export type Theme = 'dark' | 'light' | 'system'
