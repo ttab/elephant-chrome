@@ -5,7 +5,8 @@ import {
   Description,
   Story,
   Section,
-  View
+  View,
+  UserMessage
 } from '@/components'
 import { type ViewMetadata, type ViewProps } from '@/types'
 import { TagsIcon, CalendarIcon } from '@ttab/elephant-ui/icons'
@@ -34,6 +35,7 @@ import type { Block } from '@ttab/elephant-api/newsdoc'
 import { CopyGroup } from '../../components/CopyGroup'
 import { DuplicatesTable } from '../../components/DuplicatesTable'
 import { snapshotDocument } from '@/lib/snapshotDocument'
+import { toast } from 'sonner'
 
 type Setter = React.Dispatch<SetStateAction<NewItem>>
 
@@ -117,14 +119,22 @@ const PlanningViewContent = (props: ViewProps & { documentId: string, setNewItem
   const handleSubmit = ({ documentStatus }: {
     documentStatus: 'usable' | 'done' | undefined
   }): void => {
-    if (props.onDialogClose) {
-      props.onDialogClose(props.documentId, 'title')
-    }
-
     if (provider && status === 'authenticated') {
       void snapshotDocument(props.documentId, {
         status: documentStatus,
         addToHistory: true
+      }).then((response) => {
+        if (response?.statusMessage) {
+          toast.error('Kunde inte skapa ny planering!', {
+            duration: 5000,
+            position: 'top-center'
+          })
+          return
+        }
+
+        if (props?.onDialogClose) {
+          props.onDialogClose()
+        }
       })
     }
 
@@ -132,6 +142,8 @@ const PlanningViewContent = (props: ViewProps & { documentId: string, setNewItem
       props.setNewItem({ uuid: props.documentId, title: newTitle as string })
     }
   }
+
+  const environmentIsSane = provider && status === 'authenticated'
 
   return (
     <View.Root asDialog={props.asDialog} className={props?.className}>
@@ -196,6 +208,16 @@ const PlanningViewContent = (props: ViewProps & { documentId: string, setNewItem
           </Form.Table>
 
           <Form.Footer>
+            {!environmentIsSane && (
+              <div className='pb-6'>
+                <UserMessage asDialog={!!props.asDialog}>
+                  Du har blivit utloggad eller tappat kontakt med systemet.
+                  Vänligen försök logga in igen.
+                </UserMessage>
+              </div>
+
+            )}
+
             <Form.Submit
               onSubmit={() => handleSubmit({ documentStatus: 'usable' })}
               onSecondarySubmit={() => handleSubmit({ documentStatus: 'done' })}
@@ -203,14 +225,14 @@ const PlanningViewContent = (props: ViewProps & { documentId: string, setNewItem
             >
               <div className='flex justify-between'>
                 <div className='flex gap-2'>
-                  <Button type='button' variant='secondary' role='tertiary'>
+                  <Button type='button' variant='secondary' role='tertiary' disabled={!environmentIsSane}>
                     Utkast
                   </Button>
-                  <Button type='button' variant='secondary' role='secondary'>
+                  <Button type='button' variant='secondary' role='secondary' disabled={!environmentIsSane}>
                     Intern
                   </Button>
                 </div>
-                <Button type='submit'>
+                <Button type='submit' disabled={!environmentIsSane}>
                   Publicera
                 </Button>
               </div>

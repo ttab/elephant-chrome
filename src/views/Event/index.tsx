@@ -19,7 +19,8 @@ import {
   Story,
   Registration,
   Category,
-  Organiser
+  Organiser,
+  UserMessage
 } from '@/components'
 import { PlanningTable } from './components/PlanningTable'
 import { Error } from '../Error'
@@ -31,6 +32,7 @@ import { DuplicatesTable } from '../../components/DuplicatesTable'
 import { Cancel } from './components/Cancel'
 import { CopyGroup } from '../../components/CopyGroup'
 import { snapshotDocument } from '@/lib/snapshotDocument'
+import { toast } from 'sonner'
 
 const meta: ViewMetadata = {
   name: 'Event',
@@ -108,17 +110,27 @@ const EventViewContent = (props: ViewProps & { documentId: string }): JSX.Elemen
   const handleSubmit = ({ documentStatus }: {
     documentStatus: 'usable' | 'done' | undefined
   }): void => {
-    if (props?.onDialogClose) {
-      props.onDialogClose()
-    }
-
     if (provider && status === 'authenticated') {
       void snapshotDocument(props.documentId, {
         status: documentStatus,
         addToHistory: true
+      }).then((response) => {
+        if (response?.statusMessage) {
+          toast.error('Kunde inte skapa ny händelse!', {
+            duration: 5000,
+            position: 'top-center'
+          })
+          return
+        }
+
+        if (props?.onDialogClose) {
+          props.onDialogClose()
+        }
       })
     }
   }
+
+  const environmentIsSane = provider && status === 'authenticated'
 
   return (
     <View.Root asDialog={props.asDialog} className={props.className}>
@@ -172,6 +184,15 @@ const EventViewContent = (props: ViewProps & { documentId: string }): JSX.Elemen
           </Form.Table>
 
           <Form.Footer>
+            {!environmentIsSane && (
+              <div className='pb-6'>
+                <UserMessage asDialog={!!props.asDialog}>
+                  Du har blivit utloggad eller tappat kontakt med systemet.
+                  Vänligen försök logga in igen.
+                </UserMessage>
+              </div>
+            )}
+
             <Form.Submit
               onSubmit={() => handleSubmit({ documentStatus: 'usable' })}
               onSecondarySubmit={() => handleSubmit({ documentStatus: 'done' })}
@@ -179,14 +200,14 @@ const EventViewContent = (props: ViewProps & { documentId: string }): JSX.Elemen
             >
               <div className='flex justify-between'>
                 <div className='flex gap-2'>
-                  <Button type='button' variant='secondary' role='tertiary'>
+                  <Button type='button' variant='secondary' role='tertiary' disabled={!environmentIsSane}>
                     Utkast
                   </Button>
-                  <Button type='button' variant='secondary' role='secondary'>
+                  <Button type='button' variant='secondary' role='secondary' disabled={!environmentIsSane}>
                     Intern
                   </Button>
                 </div>
-                <Button type='submit'>
+                <Button type='submit' disabled={!environmentIsSane}>
                   Publicera
                 </Button>
               </div>

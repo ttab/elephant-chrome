@@ -1,8 +1,9 @@
 import type { AssignmentInterface } from '@/hooks/index/useAssignments'
 import { useAuthors } from '@/hooks/useAuthors'
-import type { IDBAuthor, StatusData, StatusMeta } from 'src/datastore/types'
 import { useMemo } from 'react'
 import { UserIcon, PenIcon, AwardIcon } from 'lucide-react'
+import type { IDBAuthor } from 'src/datastore/types'
+import type { StatusMeta, StatusData } from '@/types'
 
 export const AuthorNames = ({ assignment }: { assignment: AssignmentInterface }): JSX.Element => {
   const authors = useAuthors()
@@ -23,14 +24,11 @@ export const AuthorNames = ({ assignment }: { assignment: AssignmentInterface })
   const lastUpdated = entries[0]?.[1]
   const lastUpdatedById = useMemo(() => extractId(lastUpdated?.creator), [lastUpdated])
 
-  const byline = useMemo(
-    () =>
-      (assignment?._deliverableDocument?.links ?? [])
-        .filter((l) => l.type === 'core/author')
-        .map((author) => author.title)
-        .join(', '),
-    [assignment?._deliverableDocument?.links]
-  )
+  const byline = useMemo(() => (assignment?._deliverableDocument?.links ?? [])
+    .filter((l) => l.type === 'core/author')
+    .map((author) => author.title)
+    .join(', '),
+  [assignment?._deliverableDocument?.links])
 
   const doneStatus = useMemo(() => entries.find((entry) => entry[0] === 'done')?.[1],
     [entries]

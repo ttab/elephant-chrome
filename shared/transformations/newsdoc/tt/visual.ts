@@ -39,14 +39,17 @@ export const transformVisual = (element: Block): TBElement => {
     children: [
       {
         type: 'tt/visual/image',
+        class: 'block',
         children: [{ text: '' }]
       },
       {
         type: 'tt/visual/text',
+        class: 'text',
         children: [{ text: data.caption ?? '' }]
       },
       {
         type: 'tt/visual/byline',
+        class: 'text',
         children: [{ text: links[0].data.credit ?? '' }]
       }
     ]

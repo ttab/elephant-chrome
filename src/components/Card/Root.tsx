@@ -1,4 +1,5 @@
 import { useNavigationKeys } from '@/hooks/useNavigationKeys'
+import { useView } from '@/hooks/useView'
 import { cn } from '@ttab/elephant-ui/utils'
 import { cva } from 'class-variance-authority'
 import type { MouseEvent } from 'react'
@@ -18,8 +19,10 @@ export const Root = ({ className, isFocused = false, isSelected = false, status,
   status?: string
 } & PropsWithChildren) => {
   const ref = useRef<HTMLDivElement>(null)
+  const { isActive } = useView()
+
   useEffect(() => {
-    if (ref?.current && isFocused) {
+    if (ref?.current && isFocused && isActive) {
       ref.current.focus()
 
       ref.current.scrollIntoView({
@@ -49,15 +52,15 @@ export const Root = ({ className, isFocused = false, isSelected = false, status,
     p-2
     text-xs
     outline-none
-    ring-inset
     focus-visible:ring-table-selected
     focus-visible:ring-2
+    focus-visible:ring-offset-1
     cursor-default
     group
     `, {
     variants: {
       isSelected: {
-        true: 'bg-table-selected focus-visible:outline-table-selected'
+        true: 'outline-solid outline-gray-400 outline-2 outline-offset-1 focus-visible:ring-offset-2 focus-visible:outline-offset-1 focus-visible:outline-1'
       },
       status: {
         draft: 'border-s-[6px] bg-background',

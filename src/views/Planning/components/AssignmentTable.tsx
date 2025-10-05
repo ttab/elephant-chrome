@@ -1,19 +1,20 @@
-import { PlusIcon } from '@ttab/elephant-ui/icons'
+import { InfoIcon, PlusIcon } from '@ttab/elephant-ui/icons'
 import { AssignmentRow } from './AssignmentRow'
 import { appendAssignment } from '@/shared/createYItem'
-import { useCollaboration, useNavigationKeys, useYValue } from '@/hooks'
+import { useAuthors, useCollaboration, useNavigationKeys, useYValue } from '@/hooks'
 import { Assignment } from './Assignment'
 import { type Block } from '@ttab/elephant-api/newsdoc'
 import type { MouseEvent, KeyboardEvent } from 'react'
 import { useMemo, useState } from 'react'
-import { deleteByYPath, getValueByYPath } from '@/shared/yUtils'
-import { cn } from '@ttab/elephant-ui/utils'
+import { deleteByYPath, getValueByYPath, setValueByYPath } from '@/shared/yUtils'
 import { type EleBlock } from '@/shared/types'
 import { cva } from 'class-variance-authority'
 import { Button } from '@ttab/elephant-ui'
 import { useActiveAuthor } from '@/hooks/useActiveAuthor'
 import { snapshotDocument } from '@/lib/snapshotDocument'
 import { toast } from 'sonner'
+import { useSession } from 'next-auth/react'
+import { getAuthorBySub } from '@/lib/getAuthorBySub'
 
 export const AssignmentTable = ({ asDialog = false, documentId, onChange }: {
   asDialog?: boolean
@@ -26,6 +27,8 @@ export const AssignmentTable = ({ asDialog = false, documentId, onChange }: {
   const [selectedAssignment, setSelectedAssignment] = useState<number | undefined>(undefined)
   const [focusedRowIndex, setFocusedRowIndex] = useState<number | undefined>()
   const author = useActiveAuthor({ full: false })
+  const { data: session } = useSession()
+  const authors = useAuthors()
 
   const newAssigment = useMemo(() => {
     const index = assignments?.findIndex((a) => a.__inProgress) ?? -1
@@ -56,7 +59,9 @@ export const AssignmentTable = ({ asDialog = false, documentId, onChange }: {
 
     appendAssignment({
       document: provider.document,
-      inProgress: true,
+      inProgress: {
+        sub: session?.user.sub ?? ''
+      },
       assignee: author,
       slugLine: (!slugLines?.includes(planningSlugLine || ''))
         ? planningSlugLine
@@ -110,48 +115,71 @@ export const AssignmentTable = ({ asDialog = false, documentId, onChange }: {
 
   return (
     <>
-      {newAssigment === undefined && provider?.document && (
-        <div className={cn('flex flex-start pt-2 text-primary pb-4',
-          selectedAssignment != null ? 'opacity-50' : '')}
-        >
-          <div className={variants({ asDialog })}>
-            <Button
-              variant='ghost'
-              onKeyDown={(event: KeyboardEvent<HTMLButtonElement>) => event.key === 'Enter'
-                && handleNewAssignment(event)}
-              onClick={(event: MouseEvent<HTMLButtonElement>) => handleNewAssignment(event)}
-            >
+      <div className='flex flex-col pt-2 text-primary pb-4'>
+        <div className={variants({ asDialog })}>
+          <Button
+            disabled={newAssigment !== undefined || !provider?.document}
+            variant='ghost'
+            onKeyDown={(event: KeyboardEvent<HTMLButtonElement>) => event.key === 'Enter'
+              && handleNewAssignment(event)}
+            onClick={(event: MouseEvent<HTMLButtonElement>) => handleNewAssignment(event)}
+          >
 
-              <div className='flex flex-row items-center gap-2'>
-                <div className='bg-primary rounded-full w-5 h-5 relative'>
-                  <PlusIcon
-                    size={15}
-                    strokeWidth={2.25}
-                    color='#FFFFFF'
-                    className='absolute inset-0 m-auto'
-                  />
-                </div>
-                Lägg till uppdrag
+            <div className='flex flex-row items-center gap-2'>
+              <div className='bg-primary rounded-full w-5 h-5 relative'>
+                <PlusIcon
+                  size={15}
+                  strokeWidth={2.25}
+                  color='#FFFFFF'
+                  className='absolute inset-0 m-auto'
+                />
               </div>
-            </Button>
-          </div>
+              Lägg till uppdrag
+            </div>
+          </Button>
         </div>
-      )}
 
-      {!!newAssigment && (
-        <Assignment
-          index={newAssigment.index}
-          onAbort={() => {
-            deleteByYPath(yRoot, `meta.core/assignment[${newAssigment.index}]`)
-          }}
-          onClose={() => {
-            handleClose().catch((ex) => {
-              console.error('Error closing assignment:', ex)
-              toast.error('Kunde inte spara uppdraget.')
-            })
-          }}
-          className='mb-6'
-        />
+
+        {!!newAssigment && session?.user.sub !== newAssigment.assignment?.__inProgress?.sub
+          && (
+            <div className='text-sm ps-10 py-2 flex flex-row gap-1 text-muted-foreground items-center'>
+              <InfoIcon size={18} strokeWidth={1.75} />
+              <div>
+                <span className='hidden sm:inline'>Nytt uppdrag skapas av</span>
+                {' '}
+                {getAuthorBySub(authors, newAssigment.assignment?.__inProgress?.sub)?.name || `okänd: ${newAssigment.assignment?.__inProgress?.sub ?? 'användare'}`}
+                {', '}
+                <a
+                  className='text-primary hover:underline'
+                  href='#'
+                  onClick={(e) => {
+                    e.preventDefault()
+                    setValueByYPath(yRoot, `meta.core/assignment[${newAssigment?.index}].__inProgress.sub`, session?.user.sub)
+                  }}
+                >
+                  Ta över
+                </a>
+              </div>
+            </div>
+          )}
+      </div>
+
+      {!!newAssigment && session?.user.sub === newAssigment.assignment?.__inProgress?.sub && (
+        <div className='pb-6'>
+          <Assignment
+            index={newAssigment.index}
+            onAbort={() => {
+              deleteByYPath(yRoot, `meta.core/assignment[${newAssigment.index}]`)
+            }}
+            onClose={() => {
+              handleClose().catch((ex) => {
+                console.error('Error closing assignment:', ex)
+                toast.error('Kunde inte spara uppdraget.')
+              })
+            }}
+            className='mb-6'
+          />
+        </div>
       )}
 
       {!!existingAssigments.length && (

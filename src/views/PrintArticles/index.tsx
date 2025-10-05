@@ -4,7 +4,7 @@ import { useMemo, useState } from 'react'
 import { printArticlesListColumns } from './PrintArticlesListColumns'
 import { TableProvider } from '@/contexts/TableProvider'
 import { PrintArticleList } from './PrintArticlesList'
-import type { PrintArticle } from '@/hooks/baboon/lib/printArticles'
+import { type PrintArticle } from '@/hooks/baboon/lib/printArticles'
 import {
   Button,
   Dialog,
@@ -15,8 +15,11 @@ import {
 } from '@ttab/elephant-ui'
 import { PrintFlows } from './PrintFlows'
 import { PrintArticlesHeader } from './PrintArticlesHeader'
-import { loadFilters } from '@/lib/loadFilters'
 import { useQuery } from '@/hooks/useQuery'
+import { useInitFilters } from '@/hooks/useInitFilters'
+import { useDocuments } from '@/hooks/index/useDocuments'
+import type { PrintFlow, PrintFlowFields } from '@/shared/schemas/printFlow'
+import { fields } from '@/shared/schemas/printFlow'
 
 /**
  * Metadata for the PrintArticles view.
@@ -53,10 +56,22 @@ const meta: ViewMetadata = {
 
 export const Print = (): JSX.Element => {
   const [query] = useQuery()
+
+  const { data } = useDocuments<PrintFlow, PrintFlowFields>({
+    documentType: 'tt/print-flow',
+    fields
+  })
+
   const columns = useMemo(
-    () => printArticlesListColumns(),
-    []
+    () => printArticlesListColumns({ printFlows: data }),
+    [data]
   )
+
+  const columnFilters = useInitFilters<PrintArticle>({
+    path: 'filters.Print.current',
+    columns
+  })
+
   const [openCreateFlow, setOpenCreateFlow] = useState(false)
   return (
     <View.Root>
@@ -66,7 +81,7 @@ export const Print = (): JSX.Element => {
         columns={columns}
         initialState={{
           grouping: ['printFlow'],
-          columnFilters: loadFilters<PrintArticle>(query, columns),
+          columnFilters,
           globalFilter: query.query
         }}
       >

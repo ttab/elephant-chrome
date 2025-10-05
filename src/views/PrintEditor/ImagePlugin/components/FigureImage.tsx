@@ -3,7 +3,6 @@ import type { AttachmentDetails } from '@ttab/elephant-api/repository'
 import { type TBElement, TextbitElement, type Plugin } from '@ttab/textbit'
 import { Crop } from '@ttab/textbit-plugins'
 import { useEffect, useRef, useState } from 'react'
-import type { Editor } from 'slate'
 import { Transforms, type Descendant } from 'slate'
 import { parseCropString, parseFocusString } from '../lib/utils'
 
@@ -77,10 +76,10 @@ export const FigureImage = ({ editor, children, rootNode, options }: Plugin.Comp
                   const focusString = focus ? `${focus.x} ${focus.y}` : undefined
 
                   Transforms.setNodes(
-                    editor as Editor,
+                    editor,
                     {
-                    // @ts-expect-error Fix needed in Textbit to handle type better
                       properties: {
+                        // @ts-expect-error Fix needed in Textbit to handle type better
                         ...rootNode.properties,
                         crop: cropString,
                         focus: focusString

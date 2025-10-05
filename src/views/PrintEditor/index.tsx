@@ -188,7 +188,7 @@ function EditorContainer({
   const openPrintArticle = useLink('PrintEditor')
   const [promptIsOpen, setPromptIsOpen] = useState(false)
   const [isChecking, setIsChecking] = useState(false)
-  const { words, characters } = useTextbit()
+  const { stats } = useTextbit()
   const [layouts, setLayouts] = useYValue<EleBlock[]>('meta.tt/print-article[0].meta.tt/article-layout')
   const [name] = useYValue<string>('meta.tt/print-article[0].name')
   const [flowName] = useYValue<string>('links.tt/print-flow[0].title')
@@ -294,10 +294,10 @@ function EditorContainer({
       <EditorHeader documentId={documentId} flowName={flowName} isChanged={isChanged} />
       {!!notes?.length && <div className='p-4'><Notes /></div>}
       <View.Content className='flex flex-col max-w-[1400px] grow'>
-        <section className='flex'>
-          <div className='w-2/3'>
+        <section className='flex flex-col-reverse @4xl:grid @4xl:grid-cols-12 @container'>
+          <div className='@4xl:col-span-8'>
             <ScrollArea className='h-[calc(100vh-7rem)]'>
-              <div className='grow overflow-auto pr-12 max-w-(--breakpoint-xl)'>
+              <div className='flex-grow overflow-auto pr-12 max-w-screen-2xl'>
                 {!!provider && synced
                   ? (
                       <EditorContent provider={provider} user={user} onChange={handleChange} />
@@ -308,7 +308,7 @@ function EditorContainer({
               </div>
             </ScrollArea>
           </div>
-          <aside className='w-1/3 @printEditor:sticky @printEditor:top-16 p-4'>
+          <aside className='@4xl:col-span-4 @4xl:sticky @4xl:top-16 p-4'>
             <header className='flex flex-row gap-2 items-center justify-between mb-2'>
               <div className='flex items-center'>
                 <Button variant='ghost' size='sm' onClick={() => { void statusChecker() }}>
@@ -402,11 +402,11 @@ function EditorContainer({
       <View.Footer>
         <div className='flex gap-2'>
           <strong>Ord:</strong>
-          <span>{words}</span>
+          <span title='Antal ord: artikel (totalt)'>{`${stats.short.words} (${stats.full.words})`}</span>
         </div>
         <div className='flex gap-2'>
           <strong>Tecken:</strong>
-          <span>{characters}</span>
+          <span title='Antal tecken: artikel (totalt)'>{`${stats.short.characters} (${stats.full.characters})`}</span>
         </div>
       </View.Footer>
     </>

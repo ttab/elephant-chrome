@@ -119,6 +119,7 @@ export function planningListColumns({ sections = [], authors = [] }: {
         Filter: ({ column, setSearch }) => (
           <FacetedFilter column={column} setSearch={setSearch} />
         ),
+        quickFilter: true,
         name: 'Sektion',
         columnIcon: ShapesIcon,
         className: 'flex-none w-[115px] hidden @4xl/view:[display:revert]',

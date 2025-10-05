@@ -74,7 +74,7 @@ export function appendAssignment({
   document: Y.Doc
   assignee?: IDBAuthor | null | undefined
   type: 'text' | 'flash' | 'graphic' | 'picture' | 'video' | 'picture/video'
-  inProgress?: boolean
+  inProgress?: { sub: string }
   slugLine?: string
   title?: string
   wire?: Wire
@@ -113,7 +113,7 @@ export function appendAssignment({
   // Append __inProgress if needed
   if (inProgress) {
     // @ts-expect-error We need to override Block to add this property
-    assignment.__inProgress = true
+    assignment.__inProgress = inProgress
   }
 
   // Group assignment

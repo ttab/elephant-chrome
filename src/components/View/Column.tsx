@@ -15,7 +15,6 @@ export const Column = ({ className, children }: {
       bg-muted
       rounded-sm
       gap-1
-      -mx-1
       @md/view:px-2
       px-1
       last:-border-s-0
