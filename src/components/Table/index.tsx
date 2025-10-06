@@ -38,6 +38,7 @@ import { GroupedRows } from './GroupedRows'
 import { getWireStatus } from './lib/getWireStatus'
 import type { DocumentType } from '@/types/index'
 import { type View } from '@/types/index'
+import { ConceptsToolbar } from '@/views/Concepts/components/ConceptsToolbar'
 const BASE_URL = import.meta.env.BASE_URL
 
 interface TableProps<TData, TValue> {
@@ -334,8 +335,11 @@ export const Table = <TData, TValue>({
 
   return (
     <>
-      {!['Wires', 'Factbox', 'Search'].includes(type) && (
+      {!['Wires', 'Factbox', 'Search', 'Concept'].includes(type) && (
         <Toolbar />
+      )}
+      {(type === 'Concept') && (
+        <ConceptsToolbar />
       )}
       {(type === 'Planning' || type === 'Event') && (
         <NewItems.Root>
@@ -355,6 +359,8 @@ export const Table = <TData, TValue>({
           </TableBody>
         </_Table>
       )}
+
+
     </>
   )
 }
