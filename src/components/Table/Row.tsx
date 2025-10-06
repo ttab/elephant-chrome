@@ -5,8 +5,7 @@ import { cn } from '@ttab/elephant-ui/utils'
 import type { ViewType } from '@/types/index'
 
 
-export const Row = ({ row, handleOpen, type, isActive }: {
-  isActive?: boolean
+export const Row = ({ row, handleOpen, type, openDocuments }: {
   type: ViewType
   row: RowType<unknown>
   handleOpen: (event: MouseEvent<HTMLTableRowElement>, row: RowType<unknown>) => void
