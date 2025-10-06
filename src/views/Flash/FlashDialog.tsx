@@ -216,7 +216,7 @@ export const FlashDialog = (props: ViewProps): JSX.Element => {
                     })
                       .then(() => {
                         config.setPrompt(false)
-                        props?.onDialogClose?.()
+                        props.onDialogClose?.()
                       })
                       .catch((ex: unknown) => {
                         console.error(ex)
