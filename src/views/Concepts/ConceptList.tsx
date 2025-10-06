@@ -12,7 +12,7 @@ export const ConceptList = ({ columns, documentType }: {
   columns: ColumnDef<SectionConcept>[]
   documentType: string
 }): JSX.Element => {
-  const { error, data } = useDocuments<SectionConcept, SectionConceptFields>({
+  const { error } = useDocuments<SectionConcept, SectionConceptFields>({
     documentType: documentType,
     fields,
     query: constructQuery({}),

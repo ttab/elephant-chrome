@@ -32,7 +32,7 @@ export const ConceptAdmin = () => {
           <ViewHeader.Content>
             <ViewHeader.Title name='ConceptAdmin' title='Concept Admin' />
           </ViewHeader.Content>
-          {/*  <ViewHeader.Action /> */}
+          <ViewHeader.Action />
         </ViewHeader.Root>
         <ConceptToolbar filter={filter} setFilter={setFilter} />
         <View.Content>

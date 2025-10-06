@@ -2,8 +2,6 @@ import { Table, TableBody, TableCell, TableRow } from '@ttab/elephant-ui'
 import { Concepts } from './ConceptTypes'
 import { useLink } from '@/hooks/useLink'
 import type { ViewMetadata } from '@/types/index'
-import { useQuery } from '@/hooks/useQuery'
-import { useState } from 'react'
 
 const meta: ViewMetadata = {
   name: 'Concepts',
@@ -22,12 +20,10 @@ const meta: ViewMetadata = {
 }
 
 export const ConceptOverview = ({ filter }: { filter: string }) => {
-  const [conceptList, setConceptList] = useState()
-
   const handleOpen = useLink('Concepts')
   const displayConceptList = () => {
     if (filter) {
-      return Concepts.filter((concept) => concept.label.startsWith(filter)).map((concept, i) => {
+      return Concepts.filter((concept) => concept.label.startsWith(filter) || concept.description.includes(filter)).map((concept, i) => {
         const Icon = concept.icon
         return (
           <TableRow
@@ -61,7 +57,7 @@ export const ConceptOverview = ({ filter }: { filter: string }) => {
             <TableCell className='w-4'>
               {' '}
               <Icon
-                size={24}
+                size={20}
                 strokeWidth={1.75}
               />
             </TableCell>
