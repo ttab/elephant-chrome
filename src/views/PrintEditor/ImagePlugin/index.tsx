@@ -12,9 +12,12 @@ import { consumes } from './lib/consumes'
 import { normalizeImage } from './lib/normalizeImage'
 import { actionHandler } from './lib/actionHandler'
 import type { Repository } from '@/shared/Repository'
+import { useSession } from 'next-auth/react'
 
 // @ts-expect-error Textbit types uncertainty
 export const ImagePlugin: Plugin.InitFunction = (options) => {
+  const { data } = useSession()
+
   return {
     class: 'block',
     name: 'core/image',
@@ -24,7 +27,7 @@ export const ImagePlugin: Plugin.InitFunction = (options) => {
       consume: ({ input }) => consume(
         input,
         options?.repository as Repository,
-        options?.accessToken as string
+        data?.accessToken as string
       )
     },
     actions: [

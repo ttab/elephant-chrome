@@ -12,13 +12,16 @@ export const Row = ({ row, handleOpen, type, isActive }: {
   handleOpen: (event: MouseEvent<HTMLTableRowElement>, row: RowType<unknown>) => void
   openDocuments: string[]
 }): JSX.Element => {
+  const { id } = row.original as { id: string }
+  const selected = !!id && openDocuments.includes(id)
+
   return (
     <TableRow
       tabIndex={0}
+      data-state={selected && 'selected'}
       className={cn(
-        'flex cursor-default scroll-mt-10 ring-inset focus:outline-none focus-visible:ring-2 focus-visible:ring-table-selected data-[state=selected]:bg-table-selected',
-        type === 'Assignments' ? 'items-start' : 'items-center',
-        isActive ? 'bg-blue-200' : ''
+        'flex cursor-default scroll-mt-10 ring-inset focus:outline-none focus-visible:ring-2 focus-visible:ring-table-selected data-[state=selected]:bg-table-focused',
+        type === 'Assignments' ? 'items-start' : 'items-center'
       )}
       onClick={(event: MouseEvent<HTMLTableRowElement>) => handleOpen(event, row)}
       ref={(el) => {
