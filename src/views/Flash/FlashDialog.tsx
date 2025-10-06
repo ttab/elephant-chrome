@@ -29,7 +29,7 @@ export const FlashDialog = (props: ViewProps): JSX.Element => {
   const [savePrompt, setSavePrompt] = useState(false)
   const [donePrompt, setDonePrompt] = useState(false)
   const [selectedPlanning, setSelectedPlanning] = useState<Omit<DefaultValueOption, 'payload'> & { payload: unknown } | undefined>(undefined)
-  const [title, setTitle] = useYValue<string | undefined>('root.title')
+  const [, setTitle] = useYValue<string | undefined>('root.title')
   const { index, locale, timeZone } = useRegistry()
   const [searchOlder, setSearchOlder] = useState(false)
   const [section, setSection] = useState<{
