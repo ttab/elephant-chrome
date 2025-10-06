@@ -8,9 +8,12 @@ import { toast } from 'sonner'
 import { constructQuery } from '@/hooks/index/useDocuments/queries/views/concepts'
 import type { SectionConcept, SectionConceptFields } from '@/shared/schemas/conceptSchemas/sectionConcept'
 import { fields } from '@/shared/schemas/conceptSchemas/sectionConcept'
-export const ConceptList = ({ columns, documentType }: {
+import { ConceptsToolbar } from './components/ConceptsToolbar'
+
+export const ConceptList = ({ columns, documentType, title }: {
   columns: ColumnDef<SectionConcept>[]
   documentType: string
+  title: string
 }): JSX.Element => {
   const { error } = useDocuments<SectionConcept, SectionConceptFields>({
     documentType: documentType,
@@ -40,10 +43,13 @@ export const ConceptList = ({ columns, documentType }: {
 
 
   return (
-    <Table
-      type='Concept'
-      columns={columns}
-      onRowSelected={onRowSelected}
-    />
+    <>
+    <ConceptsToolbar />
+      <Table
+        type='Concept'
+        columns={columns}
+        onRowSelected={onRowSelected}
+      />
+    </>
   )
 }
