@@ -200,10 +200,6 @@ export const FlashDialog = (props: ViewProps): JSX.Element => {
                       return
                     }
 
-                    if (props?.onDialogClose) {
-                      props.onDialogClose(props.id, title)
-                    }
-
                     const { startDate } = (selectedPlanning?.payload ?? {}) as {
                       startDate?: string
                     }
@@ -220,6 +216,7 @@ export const FlashDialog = (props: ViewProps): JSX.Element => {
                     })
                       .then(() => {
                         config.setPrompt(false)
+                        props?.onDialogClose?.()
                       })
                       .catch((ex: unknown) => {
                         console.error(ex)
