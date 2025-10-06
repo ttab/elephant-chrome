@@ -1,7 +1,7 @@
 import type { Wire } from '@/shared/schemas/wire'
-import type { DocumentType } from '@/types/index'
+import type { ViewType } from '@/types/index'
 
-export function getWireStatus(type: DocumentType, wire: Wire): 'draft' | 'read' | 'saved' | 'used' | null {
+export function getWireStatus(type: ViewType, wire: Wire): 'draft' | 'read' | 'saved' | 'used' | null {
   if (type !== 'Wires') {
     return null
   }
