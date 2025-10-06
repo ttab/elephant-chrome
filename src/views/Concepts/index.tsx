@@ -48,7 +48,7 @@ export const Concepts = ({ documentType, title }: ViewProps) => {
 
         <View.Content>
           <TabsContent value='list' className='mt-0'>
-            <ConceptList columns={columns} documentType={documentType ? documentType : ' '} />
+            <ConceptList columns={columns} documentType={documentType ? documentType : ' '} title={title} />
           </TabsContent>
 
         </View.Content>
