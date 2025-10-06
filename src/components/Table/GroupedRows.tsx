@@ -5,7 +5,7 @@ import { Row as RegularRow } from './Row'
 import { WireRow } from './WireRow'
 import type { ViewType } from '@/types/index'
 
-export const GroupedRows = <TData, TValue>({ row, columns, handleOpen, openDocuments, type, activeId }: {
+export const GroupedRows = <TData, TValue>({ row, columns, handleOpen, openDocuments, type }: {
   activeId?: string
   row: RowType<unknown>
   type: ViewType
@@ -29,7 +29,6 @@ export const GroupedRows = <TData, TValue>({ row, columns, handleOpen, openDocum
           row={subRow}
           handleOpen={handleOpen}
           openDocuments={openDocuments}
-          isActive={activeId === (subRow.original as { id: string }).id}
         />
       ))}
     </React.Fragment>
