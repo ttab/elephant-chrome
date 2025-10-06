@@ -1,5 +1,5 @@
 import type { QueryParams } from '@/hooks/useQuery'
-import { QueryV1, MultiMatchQueryV1, MatchAllQueryV1, BoolQueryV1 } from '@ttab/elephant-api/index'
+import { QueryV1, MultiMatchQueryV1, BoolQueryV1 } from '@ttab/elephant-api/index'
 
 /**
  * Constructs a query object based on the provided filter parameters.

@@ -30,7 +30,7 @@ export const Concepts = ({ documentType, title }: ViewProps) => {
   const [currentTab, setCurrentTab] = useState<string>('list')
   console.log(title)
   const columns = useMemo(() =>
-    sectionConceptColumns(documentType), [documentType])
+    sectionConceptColumns(), [])
 
   console.log(columns)
   return (

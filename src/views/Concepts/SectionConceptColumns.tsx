@@ -8,7 +8,7 @@ interface SectionConceptData {
   id: string
 }
 
-export function sectionConceptColumns(documentType: string | undefined): Array<ColumnDef<SectionConcept>> {
+export function sectionConceptColumns(): Array<ColumnDef<SectionConcept>> {
   const handleDragStart = (event: React.DragEvent<HTMLDivElement>, row: Row<SectionConcept>) => {
     const SectionConceptData: SectionConceptData = {
       title: row.getValue<string>('title'),
