@@ -18,7 +18,7 @@ applicationMenuItems */
 
 import { Block } from '@ttab/elephant-api/newsdoc'
 import type { LucideIcon } from '@ttab/elephant-ui/icons'
-import { CircleSmallIcon, TagIcon } from '@ttab/elephant-ui/icons'
+import { TagIcon } from '@ttab/elephant-ui/icons'
 
 export const Concepts: conceptItem[] = [
   {
