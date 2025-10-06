@@ -9,16 +9,18 @@ import { constructQuery } from '@/hooks/index/useDocuments/queries/views/concept
 import type { SectionConcept, SectionConceptFields } from '@/shared/schemas/conceptSchemas/sectionConcept'
 import { fields } from '@/shared/schemas/conceptSchemas/sectionConcept'
 import { ConceptsToolbar } from './components/ConceptsToolbar'
+import { useQuery } from '@/hooks/useQuery'
 
 export const ConceptList = ({ columns, documentType, title }: {
   columns: ColumnDef<SectionConcept>[]
   documentType: string
   title: string
 }): JSX.Element => {
+  const [filter] = useQuery(['query'])
   const { error } = useDocuments<SectionConcept, SectionConceptFields>({
     documentType: documentType,
     fields,
-    query: constructQuery({}),
+    query: constructQuery(filter),
     sort: [{ field: 'modified', desc: true }],
     options: {
       subscribe: true,
@@ -44,7 +46,7 @@ export const ConceptList = ({ columns, documentType, title }: {
 
   return (
     <>
-    <ConceptsToolbar />
+      <ConceptsToolbar placeholder={title} />
       <Table
         type='Concept'
         columns={columns}
