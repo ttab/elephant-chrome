@@ -18,50 +18,50 @@ applicationMenuItems */
 
 import { Block } from '@ttab/elephant-api/newsdoc'
 import type { LucideIcon } from '@ttab/elephant-ui/icons'
-import { CircleSmallIcon } from '@ttab/elephant-ui/icons'
+import { CircleSmallIcon, TagIcon } from '@ttab/elephant-ui/icons'
 
 export const Concepts: conceptItem[] = [
   {
     label: 'Sektioner',
     description: 'A section for content',
     path: 'core/section',
-    icon: CircleSmallIcon
+    icon: TagIcon
   },
   {
     label: 'Story tags',
     description: 'An ongoing story that gets reported on',
     path: 'core/story',
-    icon: CircleSmallIcon
+    icon: TagIcon
   },
   {
     label: 'Kategorier',
     description: 'A category for content',
     path: 'core/category',
-    icon: CircleSmallIcon
+    icon: TagIcon
   },
   {
     label: 'Organisatörer',
     description: 'A document describing an organisation',
     path: 'core/organiser',
-    icon: CircleSmallIcon
+    icon: TagIcon
   },
   {
     label: 'Platser',
     description: 'A geographical location',
     path: 'core/place',
-    icon: CircleSmallIcon
+    icon: TagIcon
   },
   {
     label: 'Källor',
     description: 'The entity that is the source of the content, e.g. the organisation that produced it.',
     path: 'core/content-source',
-    icon: CircleSmallIcon
+    icon: TagIcon
   },
   {
     label: 'Telegramkällor',
     description: '',
     path: 'tt/wire-source',
-    icon: CircleSmallIcon
+    icon: TagIcon
   }
 ]
 
