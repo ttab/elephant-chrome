@@ -3,12 +3,12 @@ import { type ColumnDef, type Row as RowType } from '@tanstack/react-table'
 import { GroupedRowsHeader } from './GroupedRowsHeader'
 import { Row as RegularRow } from './Row'
 import { WireRow } from './WireRow'
-import type { DocumentType } from '@/types/index'
+import type { ViewType } from '@/types/index'
 
 export const GroupedRows = <TData, TValue>({ row, columns, handleOpen, openDocuments, type, activeId }: {
   activeId?: string
   row: RowType<unknown>
-  type: DocumentType
+  type: ViewType
   columns: Array<ColumnDef<TData, TValue>>
   handleOpen: (event: MouseEvent<HTMLTableRowElement> | KeyboardEvent, subRow: RowType<unknown>) => void
   openDocuments: string[]

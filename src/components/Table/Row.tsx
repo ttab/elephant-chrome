@@ -2,12 +2,12 @@ import { type MouseEvent } from 'react'
 import { TableRow, TableCell } from '@ttab/elephant-ui'
 import { type Row as RowType, flexRender } from '@tanstack/react-table'
 import { cn } from '@ttab/elephant-ui/utils'
-import type { DocumentType } from '@/types/index'
+import type { ViewType } from '@/types/index'
 
 
 export const Row = ({ row, handleOpen, type, isActive }: {
   isActive?: boolean
-  type: DocumentType
+  type: ViewType
   row: RowType<unknown>
   handleOpen: (event: MouseEvent<HTMLTableRowElement>, row: RowType<unknown>) => void
   openDocuments: string[]

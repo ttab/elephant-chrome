@@ -28,11 +28,9 @@ const meta: ViewMetadata = {
 
 export const Concepts = ({ documentType, title }: ViewProps) => {
   const [currentTab, setCurrentTab] = useState<string>('list')
-  console.log(title)
   const columns = useMemo(() =>
     sectionConceptColumns(), [])
 
-  console.log(columns)
   return (
     <View.Root tab={currentTab} onTabChange={setCurrentTab}>
       <TableProvider<SectionConcept>

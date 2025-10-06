@@ -1,22 +1,3 @@
-/*
-nyhetsvärde - finns inte
-uppdragstyper - finns inte
-slottar (med timmar, labels, ikoner) - finns inte
-synlighet - behövs det?
-telegram-leverantör - finns tt/wire-providers
-content-source
-
-CAUSE_KEYS - finns inte
-dokumentstatusar - oklart?
-documentTypeValueFormat
-
-default system time zone - finns inte
-default system locale - finns inte
-ƒ
-workflowspecifications
-applicationMenuItems */
-
-import { Block } from '@ttab/elephant-api/newsdoc'
 import type { LucideIcon } from '@ttab/elephant-ui/icons'
 import { TagIcon } from '@ttab/elephant-ui/icons'
 
@@ -179,11 +160,3 @@ export interface conceptWireSources extends conceptType {
   uri: string // wires://source/ + slug
   title: string
 }
-
-
-const test = Block.create({
-  type: 'core/place',
-  value: ''
-})
-
-console.log(test)

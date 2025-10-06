@@ -1,3 +1,5 @@
+import type {
+  LucideIcon } from '@ttab/elephant-ui/icons'
 import {
   CableIcon,
   BriefcaseBusinessIcon,
@@ -9,7 +11,6 @@ import {
   UtilityPoleIcon,
   BoxesIcon,
   LibraryIcon,
-  type LucideIcon,
   CogIcon
 } from '@ttab/elephant-ui/icons'
 import type { ViewProps, View } from '../types'

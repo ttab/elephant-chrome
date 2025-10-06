@@ -6,10 +6,10 @@ import { cn } from '@ttab/elephant-ui/utils'
 import type { Wire } from '@/shared/schemas/wire'
 import { cva } from 'class-variance-authority'
 import { getWireStatus } from './lib/getWireStatus'
-import type { DocumentType } from '@/types/index'
+import type { ViewType } from '@/types/index'
 
 export const WireRow = ({ row, handleOpen, openDocuments, type }: {
-  type: DocumentType
+  type: ViewType
   row: RowType<unknown>
   handleOpen: (event: MouseEvent<HTMLTableRowElement>, row: RowType<unknown>) => void
   openDocuments: string[]
@@ -79,7 +79,7 @@ function isUpdated(wire: Wire): boolean {
   })
 }
 
-function getDataState(openDocuments: string[], wire: Wire, type: DocumentType, row: RowType<Wire>): 'focused' | 'selected' | undefined {
+function getDataState(openDocuments: string[], wire: Wire, type: ViewType, row: RowType<Wire>): 'focused' | 'selected' | undefined {
   return ((openDocuments.includes(wire.id) && 'selected') || (type === 'Wires' && row.getIsSelected() && 'focused')) || undefined
 }
 
