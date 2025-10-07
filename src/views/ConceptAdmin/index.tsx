@@ -23,7 +23,6 @@ const meta: ViewMetadata = {
 
 export const ConceptAdmin = () => {
   const [currentTab, setCurrentTab] = useState<string>('list')
-  const [filter, setFilter] = useState('')
 
   return (
     <>
@@ -34,7 +33,7 @@ export const ConceptAdmin = () => {
           </ViewHeader.Content>
           <ViewHeader.Action />
         </ViewHeader.Root>
-        <Toolbar filter={filter} setFilter={setFilter} />
+        <Toolbar />
         <View.Content>
           <ConceptOverview />
         </View.Content>
