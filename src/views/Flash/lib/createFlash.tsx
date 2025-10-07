@@ -41,9 +41,9 @@ export async function createFlash({
   }
 
   // Trigger the creation of the flash in the repository
-  void snapshotDocument(documentId, {
+  await snapshotDocument(documentId, {
     status: documentStatus
-  })
+  }, flashProvider.document)
 
   // Create and collect all base data for the assignment
   const [flashTitle] = getValueByYPath<string>(flashEle, 'root.title')

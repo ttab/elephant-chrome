@@ -114,7 +114,7 @@ const EventViewContent = (props: ViewProps & { documentId: string }): JSX.Elemen
       void snapshotDocument(props.documentId, {
         status: documentStatus,
         addToHistory: true
-      }).then((response) => {
+      }, provider.document).then((response) => {
         if (response?.statusMessage) {
           toast.error('Kunde inte skapa ny händelse!', {
             duration: 5000,
