@@ -2,7 +2,7 @@ import { View, ViewHeader } from '@/components/View'
 import type { ViewMetadata } from '@/types/index'
 import { useState } from 'react'
 import { ConceptOverview } from './ConceptOverview'
-import { ConceptToolbar } from './components/ConceptToolbar'
+import { Toolbar } from './components/Toolbar'
 
 
 const meta: ViewMetadata = {
@@ -34,7 +34,7 @@ export const ConceptAdmin = () => {
           </ViewHeader.Content>
           <ViewHeader.Action />
         </ViewHeader.Root>
-        <ConceptToolbar filter={filter} setFilter={setFilter} />
+        <Toolbar filter={filter} setFilter={setFilter} />
         <View.Content>
           <ConceptOverview filter={filter} />
         </View.Content>

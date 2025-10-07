@@ -1,7 +1,7 @@
 import { Table, TableBody } from '@ttab/elephant-ui'
 import type { ViewMetadata } from '@/types/index'
 import { FilteredList } from './components/FilteredList'
-import { UnfilteredList } from './components/unfilteredList'
+import { UnfilteredList } from './components/UnfilteredList'
 
 const meta: ViewMetadata = {
   name: 'Concepts',
