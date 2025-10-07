@@ -4,7 +4,7 @@ import { BoxesIcon } from '@ttab/elephant-ui/icons'
 import type { SectionConcept } from '@/shared/schemas/conceptSchemas/sectionConcept'
 
 
-export function sectionConceptColumns(): Array<ColumnDef<SectionConcept>> {
+export function ConceptColumns(): Array<ColumnDef<SectionConcept>> {
   return [
     {
       id: 'title',
