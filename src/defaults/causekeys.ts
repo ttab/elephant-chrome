@@ -3,7 +3,7 @@ export const CAUSE_KEYS = {
     short: 'UV',
     long: 'Utveckling'
   },
-  fix: {
+  correction: {
     short: 'RÄ',
     long: 'Rättelse'
   },
@@ -11,7 +11,7 @@ export const CAUSE_KEYS = {
     short: 'OMS',
     long: 'Omsändning'
   },
-  correction: {
+  fix: {
     short: 'KORR',
     long: 'Korrigering'
   }
