@@ -2,7 +2,6 @@ import { Table, TableBody } from '@ttab/elephant-ui'
 import type { ViewMetadata } from '@/types/index'
 import { FilteredList } from './components/FilteredList'
 import { UnfilteredList } from './components/UnfilteredList'
-import { useQuery } from '@/hooks/useQuery'
 
 const meta: ViewMetadata = {
   name: 'Concepts',
@@ -20,13 +19,12 @@ const meta: ViewMetadata = {
   }
 }
 
-export const ConceptOverview = () => {
-  const [filter] = useQuery(['query'])
+export const ConceptOverview = ({ filter }: { filter: string }) => {
   return (
     <>
       <Table>
         <TableBody>
-          {filter.query ? <FilteredList filter={filter.query[0]} /> : <UnfilteredList />}
+          {filter ? <FilteredList filter={filter} /> : <UnfilteredList />}
         </TableBody>
       </Table>
     </>
