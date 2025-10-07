@@ -8,8 +8,8 @@ import { toast } from 'sonner'
 import { constructQuery } from '@/hooks/index/useDocuments/queries/views/concepts'
 import type { SectionConcept, SectionConceptFields } from '@/shared/schemas/conceptSchemas/sectionConcept'
 import { fields } from '@/shared/schemas/conceptSchemas/sectionConcept'
-import { ConceptsToolbar } from './components/ConceptsToolbar'
 import { useQuery } from '@/hooks/useQuery'
+import { Toolbar } from './components/Toolbar'
 
 export const ConceptList = ({ columns, documentType, title }: {
   columns: ColumnDef<SectionConcept>[]
@@ -46,7 +46,7 @@ export const ConceptList = ({ columns, documentType, title }: {
 
   return (
     <>
-      <ConceptsToolbar placeholder={title} />
+      <Toolbar placeholder={title} />
       <Table
         type='Concept'
         columns={columns}
