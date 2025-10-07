@@ -3,6 +3,7 @@ import type { ViewMetadata } from '@/types/index'
 import { useState } from 'react'
 import { ConceptOverview } from './ConceptOverview'
 import { Toolbar } from './components/Toolbar'
+import { useQuery } from '@/hooks/useQuery'
 
 
 const meta: ViewMetadata = {
@@ -23,7 +24,6 @@ const meta: ViewMetadata = {
 
 export const ConceptAdmin = () => {
   const [currentTab, setCurrentTab] = useState<string>('list')
-  const [filter, setFilter] = useState('')
 
   return (
     <>
@@ -34,9 +34,9 @@ export const ConceptAdmin = () => {
           </ViewHeader.Content>
           <ViewHeader.Action />
         </ViewHeader.Root>
-        <Toolbar filter={filter} setFilter={setFilter} />
+        <Toolbar />
         <View.Content>
-          <ConceptOverview filter={filter} />
+          <ConceptOverview />
         </View.Content>
       </View.Root>
     </>
