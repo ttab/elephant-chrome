@@ -110,7 +110,7 @@ const PlanningViewContent = (props: ViewProps & {
   setNewItem?: Setter
 }): JSX.Element | undefined => {
   const ydoc = useYDocument<Y.Map<unknown>>(props.documentId, { data: props.data })
-  const { provider, document, isChanged, setIsChanged, connected } = ydoc
+  const { provider, document, isChanged, setIsChanged, connected, synced } = ydoc
 
   const { data: session, status } = useSession()
   const [documentStatus] = useWorkflowStatus(props.documentId)
@@ -124,6 +124,9 @@ const PlanningViewContent = (props: ViewProps & {
   const intIndex = useDescriptionIndex(document, 'internal')
   const [publicDescription] = useYValue<Y.XmlText>(document, ['meta', 'core/description', pubIndex, 'data', 'text'], true)
   const [internalDescription] = useYValue<Y.XmlText>(document, ['meta', 'core/description', intIndex, 'data', 'text'], true)
+
+  // FIXME: Remove console.log
+  console.log('synced', connected, synced)
 
   const handleSubmit = ({ documentStatus }: {
     documentStatus: 'usable' | 'done' | undefined
@@ -221,8 +224,15 @@ const PlanningViewContent = (props: ViewProps & {
 
             <Form.Group icon={TagsIcon}>
               <Section ydoc={ydoc} path='links.core/section[0]' />
-              {/* <Story /> */}
+              <Story ydoc={ydoc} path='links.core/story[0]' />
             </Form.Group>
+
+            <Form.Table className='w-full'>
+              <AssignmentTable ydoc={ydoc} asDialog={props.asDialog} onChange={setIsChanged} documentId={props.documentId} />
+              <RelatedEvents events={relatedEvents} />
+              {!props.asDialog && <DuplicatesTable documentId={props.documentId} type='core/planning-item' />}
+              {copyGroupId && !props.asDialog && <CopyGroup copyGroupId={copyGroupId} type='core/planning-item' />}
+            </Form.Table>
 
           </Form.Content>
         </Form.Root>
@@ -263,8 +273,8 @@ const PlanningViewContent = (props: ViewProps & {
             />
 
 
-            {/* <Description role='public' /> */}
-            {/* <Description role='internal' /> */}
+            <Description role='public' />
+            <Description role='internal' />
 
             <Form.Group icon={CalendarIcon}>
               {props.asDialog !== true

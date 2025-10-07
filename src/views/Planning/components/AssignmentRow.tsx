@@ -18,7 +18,6 @@ import {
 } from '@ttab/elephant-ui/icons'
 import { type MouseEvent, useMemo, useState, useCallback, useEffect, useRef } from 'react'
 import { SluglineButton } from '@/components/DataItem/Slugline'
-import { useYValue } from '@/hooks/useYValue'
 import { useLink } from '@/hooks/useLink'
 import { Prompt } from '@/components'
 import { useCollaboration } from '@/hooks/useCollaboration'
@@ -45,8 +44,10 @@ import { timeSlotTypes } from '@/defaults/assignmentTimeConstants'
 import { DocumentStatuses } from '@/defaults/documentStatuses'
 import useSWR from 'swr'
 import { useRepositoryEvents } from '@/hooks/useRepositoryEvents'
+import { type YDocument, useYValue } from '@/modules/yjs/hooks'
 
-export const AssignmentRow = ({ index, onSelect, isFocused = false, asDialog, onChange }: {
+export const AssignmentRow = ({ ydoc, index, onSelect, isFocused = false, asDialog, onChange }: {
+  ydoc: YDocument<Y.Map<unknown>>
   index: number
   onSelect: () => void
   isFocused?: boolean
@@ -62,29 +63,30 @@ export const AssignmentRow = ({ index, onSelect, isFocused = false, asDialog, on
   const { data: session } = useSession()
 
   const base = `meta.core/assignment[${index}]`
-  const [assignment] = useYValue<Y.Map<unknown> | undefined>(base, true)
-  const [inProgress] = useYValue(`${base}.__inProgress`)
-  const [articleId] = useYValue<string>(`${base}.links.core/article[0].uuid`)
-  const [flashId] = useYValue<string>(`${base}.links.core/flash[0].uuid`)
+  const [assignment] = useYValue<Y.Map<unknown> | undefined>(ydoc.document, base, true)
+  const [inProgress] = useYValue(ydoc.document, `${base}.__inProgress`)
+  const [articleId] = useYValue<string>(ydoc.document, `${base}.links.core/article[0].uuid`)
+  const [flashId] = useYValue<string>(ydoc.document, `${base}.links.core/flash[0].uuid`)
 
   const { data: articleStatus, mutate } = useSWR(['articlestatus', articleId, flashId], async () => {
     const id = articleId || flashId
+
     if ((id) && session?.accessToken) {
       return await repository?.getMeta({ uuid: id, accessToken: session.accessToken })
     }
   })
 
-  const [editorialInfoId] = useYValue<string>(`${base}.links.core/editorial-info[0].uuid`)
-  const [assignmentType] = useYValue<string>(`${base}.meta.core/assignment-type[0].value`)
-  const [assignmentId] = useYValue<string>(`${base}.id`)
-  const [title] = useYValue<string>(`${base}.title`)
-  const [description] = useYValue<string>(`${base}.meta.core/description[0].data.text`)
-  const [publishTime] = useYValue<string>(`${base}.data.publish`)
-  const [startTime] = useYValue<string>(`${base}.data.start`)
-  const [endTime] = useYValue<string>(`${base}.data.end`)
-  const [publishSlot] = useYValue<string>(`${base}.data.publish_slot`)
-  const [authors = []] = useYValue<Block[]>(`meta.core/assignment[${index}].links.core/author`)
-  const [slugline] = useYValue<string>(`${base}.meta.tt/slugline[0].value`)
+  const [editorialInfoId] = useYValue<string>(ydoc.document, `${base}.links.core/editorial-info[0].uuid`)
+  const [assignmentType] = useYValue<string>(ydoc.document, `${base}.meta.core/assignment-type[0].value`)
+  const [assignmentId] = useYValue<string>(ydoc.document, `${base}.id`)
+  const [title] = useYValue<string>(ydoc.document, `${base}.title`)
+  const [description] = useYValue<string>(ydoc.document, `${base}.meta.core/description[0].data.text`)
+  const [publishTime] = useYValue<string>(ydoc.document, `${base}.data.publish`)
+  const [startTime] = useYValue<string>(ydoc.document, `${base}.data.start`)
+  const [endTime] = useYValue<string>(ydoc.document, `${base}.data.end`)
+  const [publishSlot] = useYValue<string>(ydoc.document, `${base}.data.publish_slot`)
+  const [authors = []] = useYValue<Block[]>(ydoc.document, `meta.core/assignment[${index}].links.core/author`)
+  const [slugline] = useYValue<string>(ydoc.document, `${base}.meta.tt/slugline[0].value`)
 
   const [showVerifyDialog, setShowVerifyDialog] = useState<boolean>(false)
   const [showCreateDialogPayload, setShowCreateDialogPayload] = useState<boolean>(false)
@@ -322,6 +324,7 @@ export const AssignmentRow = ({ index, onSelect, isFocused = false, asDialog, on
 
         <div className='flex grow gap-2 items-center'>
           <AssignmentType
+            ydoc={ydoc}
             path={`meta.core/assignment[${index}]`}
             editable={!documentId}
             readOnly
@@ -329,7 +332,7 @@ export const AssignmentRow = ({ index, onSelect, isFocused = false, asDialog, on
           <AssigneeAvatars assignees={authors.map((author) => author.title)} />
 
           <div className='hidden items-center @3xl/view:flex'>
-            <SluglineButton path={`meta.core/assignment[${index}].meta.tt/slugline[0].value`} />
+            <SluglineButton value={slugline} />
           </div>
         </div>
 
@@ -385,7 +388,8 @@ export const AssignmentRow = ({ index, onSelect, isFocused = false, asDialog, on
       }
 
       <div className='flex flex-row @3xl/view:hidden'>
-        <SluglineButton path={`meta.core/assignment[${index}].meta.tt/slugline[0].value`} />
+        <SluglineButton value={slugline} />
+        {/* <SluglineButton path={`meta.core/assignment[${index}].meta.tt/slugline[0].value`} /> */}
       </div>
 
       {showVerifyDialog && (

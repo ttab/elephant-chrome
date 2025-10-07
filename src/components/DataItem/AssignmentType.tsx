@@ -2,19 +2,21 @@ import { AssignmentTypes } from '@/defaults'
 import { Button, Select, SelectContent, SelectItem, SelectTrigger } from '@ttab/elephant-ui'
 import { cn } from '@ttab/elephant-ui/utils'
 import { Block } from '@ttab/elephant-api/newsdoc'
-import { useYValue } from '@/hooks/useYValue'
 import { FilePenIcon, FilePlus2Icon } from '@ttab/elephant-ui/icons'
 import type { DefaultValueOption } from '@/types/index'
 import type { FormProps } from '../Form/Root'
+import { type YDocument, useYValue } from '@/modules/yjs/hooks'
+import type * as Y from 'yjs'
 
-export const AssignmentType = ({ path, editable = false, readOnly = false, className, onChange }: {
+export const AssignmentType = ({ ydoc, path, editable = false, readOnly = false, className, onChange }: {
+  ydoc: YDocument<Y.Map<unknown>>
   path: string
   className?: string
   editable?: boolean
   readOnly?: boolean
 } & FormProps): JSX.Element => {
-  const [assignmentType, setAssignmentType] = useYValue<Block[]>(path + '.meta.core/assignment-type')
-  const [, setAssignmentVisibility] = useYValue<string>(path + 'data.public')
+  const [assignmentType, setAssignmentType] = useYValue<Block[]>(ydoc.document, path + '.meta.core/assignment-type')
+  const [, setAssignmentVisibility] = useYValue<string>(ydoc.document, path + 'data.public')
 
   const selectedOptions = AssignmentTypes.filter((type) => {
     const value = assignmentType?.map ? assignmentType.map((s) => s.value).sort().join('/') : ''

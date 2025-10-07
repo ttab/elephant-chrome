@@ -2,7 +2,6 @@ import { TextBox } from '@/components/ui'
 import { Button } from '@ttab/elephant-ui'
 import { MessageCircleMoreIcon, TagsIcon } from '@ttab/elephant-ui/icons'
 import { AssignmentType } from '@/components/DataItem/AssignmentType'
-import { useYValue } from '@/hooks/useYValue'
 import { AssignmentTime } from '@/components/AssignmentTime'
 import { Assignees } from '@/components/Assignees'
 import { Title } from '@/components/Title'
@@ -11,20 +10,23 @@ import { Form } from '@/components/Form'
 import { type FormProps } from '@/components/Form/Root'
 import { useEffect, useRef } from 'react'
 import { AssignmentVisibility } from '@/components/DataItem/AssignmentVisibility'
+import { type YDocument, useYValue } from '@/modules/yjs/hooks'
+import type * as Y from 'yjs'
 
-export const Assignment = ({ index, onAbort, onClose, onChange }: {
+export const Assignment = ({ ydoc, index, onAbort, onClose, onChange }: {
+  ydoc: YDocument<Y.Map<unknown>>
   index: number
   onClose: () => void
   onAbort?: () => void
   className?: string
 } & FormProps): JSX.Element => {
-  const [assignment] = useYValue<boolean>(`meta.core/assignment[${index}]`)
-  const [articleId] = useYValue<string>(`meta.core/assignment[${index}].links.core/article[0].uuid`)
-  const [flashId] = useYValue<string>(`meta.core/assignment[${index}].links.core/flash[0].uuid`)
-  const [editorialInfoId] = useYValue<string>(`meta.core/assignment[${index}].links.core/editorial-info[0].uuid`)
-  const [assignmentInProgress] = useYValue<boolean>(`meta.core/assignment[${index}].__inProgress`)
-  const [assignmentType] = useYValue<string | undefined>(`meta.core/assignment[${index}].meta.core/assignment-type[0].value`)
-
+  const [assignment] = useYValue<boolean>(ydoc.document, `meta.core/assignment[${index}]`)
+  const [articleId] = useYValue<string>(ydoc.document, `meta.core/assignment[${index}].links.core/article[0].uuid`)
+  const [flashId] = useYValue<string>(ydoc.document, `meta.core/assignment[${index}].links.core/flash[0].uuid`)
+  const [editorialInfoId] = useYValue<string>(ydoc.document, `meta.core/assignment[${index}].links.core/editorial-info[0].uuid`)
+  const [assignmentInProgress] = useYValue<boolean>(ydoc.document, `meta.core/assignment[${index}].__inProgress`)
+  const [assignmentType] = useYValue<string | undefined>(ydoc.document, `meta.core/assignment[${index}].meta.core/assignment-type[0].value`)
+  const [description] = useYValue<Y.XmlText | undefined>(ydoc.document, `meta.core/assignment[${index}].meta.core/description[0].data.text`, true)
   const documentId = articleId || flashId || editorialInfoId
 
   const formRef = useRef<HTMLDivElement>(null)
@@ -44,7 +46,7 @@ export const Assignment = ({ index, onAbort, onClose, onChange }: {
     }
   }, [onAbort, onClose])
 
-  if (!assignment) {
+  if (!ydoc || !assignment) {
     return <></>
   }
 
@@ -54,13 +56,15 @@ export const Assignment = ({ index, onAbort, onClose, onChange }: {
         <Form.Content>
           <Form.Title>
             <Title
+              ydoc={ydoc}
               path={`meta.core/assignment[${index}].title`}
               placeholder='Uppdragsrubrik'
               autoFocus={true}
             />
           </Form.Title>
           <TextBox
-            path={`meta.core/assignment[${index}].meta.core/description[0].data.text`}
+            ydoc={ydoc}
+            value={description}
             placeholder='Internt meddelande'
             icon={(
               <MessageCircleMoreIcon
@@ -75,6 +79,7 @@ export const Assignment = ({ index, onAbort, onClose, onChange }: {
             && (
               <Form.Group icon={TagsIcon}>
                 <SluglineEditable
+                  ydoc={ydoc}
                   disabled={!!documentId}
                   path={`meta.core/assignment[${index}].meta.tt/slugline[0].value`}
                 />
@@ -84,10 +89,12 @@ export const Assignment = ({ index, onAbort, onClose, onChange }: {
 
           <Form.Group>
             <AssignmentType
+              ydoc={ydoc}
               path={`meta.core/assignment[${index}]`}
               editable={!articleId && !flashId}
             />
             <Assignees
+              ydoc={ydoc}
               path={`meta.core/assignment[${index}].links.core/author`}
               placeholder='Lägg till uppdragstagare'
             />
@@ -99,29 +106,21 @@ export const Assignment = ({ index, onAbort, onClose, onChange }: {
               className='ml-auto'
             />
           </Form.Group>
-
         </Form.Content>
+
         <Form.Footer>
           <Form.Submit onSubmit={onClose} onReset={onAbort}>
             <div className='flex gap-2 justify-end pt-4'>
               {assignmentInProgress && !!onAbort
                 && (
-                  <Button
-                    type='reset'
-                    variant='ghost'
-                  >
+                  <Button type='reset' variant='ghost'>
                     Avbryt
                   </Button>
                 )}
-              <Button
-                type='submit'
-                variant='outline'
-                className='whitespace-nowrap'
-              >
+              <Button type='submit' variant='outline' className='whitespace-nowrap'>
                 {assignmentInProgress ? 'Lägg till' : 'Stäng'}
               </Button>
             </div>
-
           </Form.Submit>
         </Form.Footer>
       </Form.Root>
