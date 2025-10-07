@@ -3,6 +3,7 @@ import type { ViewMetadata } from '@/types/index'
 import { useState } from 'react'
 import { ConceptOverview } from './ConceptOverview'
 import { Toolbar } from './components/Toolbar'
+import { useQuery } from '@/hooks/useQuery'
 
 const meta: ViewMetadata = {
   name: 'ConceptAdmin',
