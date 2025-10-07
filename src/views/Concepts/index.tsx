@@ -6,7 +6,7 @@ import { Header } from '@/components/Header'
 import { TabsContent } from '@ttab/elephant-ui'
 import { ConceptList } from './ConceptList'
 import type { SectionConcept } from '@/shared/schemas/conceptSchemas/sectionConcept'
-import { sectionConceptColumns } from './SectionConceptColumns'
+import { sectionConceptColumns } from './ConceptColumns'
 
 
 const meta: ViewMetadata = {
