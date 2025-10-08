@@ -34,11 +34,6 @@ export class CacheExtension implements Extension {
     this.#errorHandler = configuration.errorHandler
   }
 
-  async beforeHandleMessage({ documentName }: beforeHandleMessagePayload): Promise<void> {
-    console.log('msg ->', documentName)
-    return Promise.resolve()
-  }
-
   async onLoadDocument(payload: onLoadDocumentPayload) {
     try {
       // Only require correct context for real uuid documents
