@@ -170,7 +170,7 @@ export class CollaborationServer {
     status?: string
     cause?: string
     addToHistory?: boolean
-    stateVector?: Uint8Array
+    yjsUpdate?: Uint8Array
   }): Promise<{
     version: string
   } | void> {

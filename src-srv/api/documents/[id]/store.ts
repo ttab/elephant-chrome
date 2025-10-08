@@ -7,7 +7,7 @@ export const POST: RouteHandler = async (req: Request, { collaborationServer, re
   const id = req.params.id
   const { status, cause, addToHistory } = req.query
 
-  const stateVector = (req.body instanceof Buffer && req.body.length === 0)
+  const yjsUpdate = (req.body instanceof Buffer && req.body.length === 0)
     ? undefined
     : req.body as Uint8Array | undefined
 
@@ -24,7 +24,7 @@ export const POST: RouteHandler = async (req: Request, { collaborationServer, re
       status: typeof status === 'string' ? status : undefined,
       cause: typeof cause === 'string' ? cause : undefined,
       addToHistory: addToHistory === '1' ? true : false,
-      stateVector: stateVector instanceof Uint8Array ? stateVector : undefined
+      yjsUpdate: yjsUpdate instanceof Uint8Array ? yjsUpdate : undefined
     }
   )
 }

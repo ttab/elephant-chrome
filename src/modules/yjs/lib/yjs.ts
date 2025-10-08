@@ -21,7 +21,7 @@ export function createTypedYDoc(
     document?: Y.Doc
     rootMap?: string
     metaMap?: string
-    isReady?: boolean
+    isInProgress?: boolean
   }
 ): Y.Doc {
   // Base document and base maps
@@ -30,8 +30,8 @@ export function createTypedYDoc(
   const yMeta = ydoc.getMap(options?.metaMap ?? '__meta')
 
   // Setup __meta (system only information about the document)
-  if (options && Object.hasOwnProperty.call(options, 'isReady')) {
-    yMeta.set('isReady', options.isReady)
+  if (options && typeof options.isInProgress === 'boolean') {
+    yMeta.set('isInProgress', options.isInProgress)
   }
 
   if (!data?.document) {

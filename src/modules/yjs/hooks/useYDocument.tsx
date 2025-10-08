@@ -62,7 +62,7 @@ export function useYDocument<T>(
   // Create yjs document
   const [document] = useState<Y.Doc>(createTypedYDoc(options?.data, {
     rootMap,
-    isReady: !options?.data
+    isInProgress: !!options?.data
   }))
 
   // Whether document is ready to be saved to repository (is valid)
