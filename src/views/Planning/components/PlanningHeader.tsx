@@ -37,6 +37,7 @@ export const PlanningHeader = ({ ydoc, asDialog, onDialogClose, isChanged, sessi
         title={(!asDialog) ? 'Planering' : 'Skapa ny planering'}
         icon={GanttChartSquareIcon}
         asDialog={asDialog}
+        ydoc={ydoc}
       />
 
       <ViewHeader.Content className='justify-start'>

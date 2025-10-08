@@ -1,6 +1,5 @@
 import {
   Newsvalue,
-  Title,
   Story,
   Section,
   View,
@@ -124,9 +123,6 @@ const PlanningViewContent = (props: ViewProps & {
   const intIndex = useDescriptionIndex(document, 'internal')
   const [publicDescription] = useYValue<Y.XmlText>(document, ['meta', 'core/description', pubIndex, 'data', 'text'], true)
   const [internalDescription] = useYValue<Y.XmlText>(document, ['meta', 'core/description', intIndex, 'data', 'text'], true)
-
-  // FIXME: Remove console.log
-  console.log('synced', connected, synced)
 
   const handleSubmit = ({ documentStatus }: {
     documentStatus: 'usable' | 'done' | undefined

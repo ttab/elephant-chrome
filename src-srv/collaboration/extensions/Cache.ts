@@ -1,4 +1,5 @@
 import type {
+  beforeHandleMessagePayload,
   Extension,
   onLoadDocumentPayload,
   onStoreDocumentPayload
@@ -31,6 +32,11 @@ export class CacheExtension implements Extension {
   constructor(configuration: CacheExtensionConfiguration) {
     this.#redis = configuration.redis
     this.#errorHandler = configuration.errorHandler
+  }
+
+  async beforeHandleMessage({ documentName }: beforeHandleMessagePayload): Promise<void> {
+    console.log('msg ->', documentName)
+    return Promise.resolve()
   }
 
   async onLoadDocument(payload: onLoadDocumentPayload) {
