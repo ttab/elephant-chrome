@@ -345,7 +345,7 @@ export const Table = <TData, TValue>({
       {type === 'Concept'
         && <Toolbar searchbar={true} searchPlaceholder='Sök Concept' filter={false} />}
       {type === 'Factbox'
-        && <Toolbar searchbar={true} searchPlaceholder='Fritextsökning' filter={false} sort={false} quickFilter={false}/>}
+        && <Toolbar searchbar={true} searchPlaceholder='Fritextsökning' filter={false} sort={false} quickFilter={false} />}
 
       {(type !== 'Search' || !loading) && (
         <_Table className='table-auto relative'>
