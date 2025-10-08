@@ -3,8 +3,8 @@
 import type { ViewMetadata } from '@/types/index'
 
 const meta: ViewMetadata = {
-  name: 'ConceptAdmin',
-  path: `${import.meta.env.BASE_URL}/conceptAdmin`,
+  name: 'Concept',
+  path: `${import.meta.env.BASE_URL}/concept`,
   widths: {
     sm: 12,
     md: 12,
