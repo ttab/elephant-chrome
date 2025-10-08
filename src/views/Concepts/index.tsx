@@ -5,9 +5,8 @@ import { useMemo, useState } from 'react'
 import { Header } from '@/components/Header'
 import { TabsContent } from '@ttab/elephant-ui'
 import { ConceptList } from './ConceptList'
-import type { SectionConcept } from '@/shared/schemas/conceptSchemas/sectionConcept'
 import { ConceptColumns } from './ConceptColumns'
-import { Concept } from '@/shared/schemas/conceptSchemas/baseConcept'
+import type { Concept } from '@/shared/schemas/conceptSchemas/baseConcept'
 
 
 const meta: ViewMetadata = {
@@ -31,7 +30,6 @@ export const Concepts = ({ documentType, title }: ViewProps) => {
   const [currentTab, setCurrentTab] = useState<string>('list')
   const columns = useMemo(() =>
     ConceptColumns(), [])
-console.log(columns)
   return (
     <View.Root tab={currentTab} onTabChange={setCurrentTab}>
       <TableProvider<Concept>

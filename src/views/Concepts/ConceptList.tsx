@@ -46,7 +46,6 @@ export const ConceptList = ({ columns, documentType, title }: {
 
   return (
     <>
-      <Toolbar placeholder={title} />
       <Table
         type='Concept'
         columns={columns}

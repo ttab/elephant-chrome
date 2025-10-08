@@ -19,7 +19,7 @@ export const SearchBar = ({ placeholder }: { placeholder: string }): JSX.Element
                 setFilter({})
               }
             }}
-            placeholder={`Sök ${placeholder.toLowerCase()}`}
+            placeholder={`${placeholder.toLowerCase()}`}
             className='h-9'
           />
         </Command>

@@ -342,6 +342,9 @@ export const Table = <TData, TValue>({
         </NewItems.Root>
       )}
 
+      {type === 'Concept'
+        && <Toolbar searchbar={true} searchPlaceholder='Sök Concept' filter={false} />}
+
       {(type !== 'Search' || !loading) && (
         <_Table className='table-auto relative'>
           <TableBody>
