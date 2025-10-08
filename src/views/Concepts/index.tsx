@@ -49,7 +49,7 @@ console.log(columns)
 
         <View.Content>
           <TabsContent value='list' className='mt-0'>
-            <ConceptList columns={columns} documentType={documentType ? documentType : ' '} />
+            <ConceptList columns={columns} documentType={documentType ? documentType : ' '} title={title ?? 'Concept title'} />
           </TabsContent>
 
         </View.Content>

@@ -1,8 +1,9 @@
 import { Command } from '@ttab/elephant-ui'
 import { DebouncedCommandInput } from '@/components/Commands/Menu/DebouncedCommandInput'
-import React from 'react'
+import { useQuery } from '@/hooks/useQuery'
 
-export const ConceptToolbar = ({ filter, setFilter }: { filter: string, setFilter: React.Dispatch<React.SetStateAction<string>> }): JSX.Element => {
+export const Toolbar = (): JSX.Element => {
+  const [filter, setFilter] = useQuery(['query'])
   return (
     <div className='bg-table-bg flex items-center justify-between py-1 px-4 border-b sticky top-0 z-10'>
       <div className='flex flex-1 items-center space-x-2'>
@@ -10,12 +11,12 @@ export const ConceptToolbar = ({ filter, setFilter }: { filter: string, setFilte
           className='[&_[cmdk-input-wrapper]]:border-none'
         >
           <DebouncedCommandInput
-            value={filter}
+            value={filter.query?.[0]}
             onChange={(value: string | undefined) => {
               if (value) {
-                setFilter(value)
+                setFilter({ query: [value] })
               } else {
-                setFilter('')
+                setFilter({})
               }
             }}
             placeholder='Sök concept'

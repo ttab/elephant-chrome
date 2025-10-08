@@ -2,7 +2,7 @@ import { View, ViewHeader } from '@/components/View'
 import type { ViewMetadata } from '@/types/index'
 import { useMemo, useState } from 'react'
 import { ConceptOverview } from './ConceptOverview'
-import { ConceptToolbar } from './components/ConceptToolbar'
+import { Toolbar } from './components/Toolbar'
 import { TableProvider } from '@/contexts/TableProvider'
 import type { Concept } from '@/shared/schemas/conceptSchemas/baseConcept'
 import { ConceptColumns } from '../Concepts/ConceptColumns'
@@ -26,7 +26,6 @@ const meta: ViewMetadata = {
 
 export const ConceptAdmin = () => {
   const [currentTab, setCurrentTab] = useState<string>('list')
-  const [filter, setFilter] = useState('')
 
   const columns = useMemo(() =>
     ConceptColumns(), [])
@@ -44,9 +43,9 @@ export const ConceptAdmin = () => {
             </ViewHeader.Content>
             <ViewHeader.Action />
           </ViewHeader.Root>
-          <ConceptToolbar filter={filter} setFilter={setFilter} />
+          <Toolbar />
           <View.Content>
-            <ConceptOverview filter={filter} />
+            <ConceptOverview />
           </View.Content>
         </TableProvider>
       </View.Root>

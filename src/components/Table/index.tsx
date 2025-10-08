@@ -328,7 +328,7 @@ export const Table = <TData, TValue>({
 
   return (
     <>
-      {!['Wires', 'Factbox', 'Search'].includes(type) && (
+      {!['Wires', 'Factbox', 'Search', 'Concept'].includes(type) && (
         <Toolbar />
       )}
       {(type === 'Planning' || type === 'Event') && (
@@ -349,6 +349,8 @@ export const Table = <TData, TValue>({
           </TableBody>
         </_Table>
       )}
+
+
     </>
   )
 }
