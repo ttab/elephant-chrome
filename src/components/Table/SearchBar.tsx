@@ -5,7 +5,7 @@ import { useQuery } from '@/hooks/useQuery'
 export const SearchBar = ({ placeholder }: { placeholder: string }): JSX.Element => {
   const [filter, setFilter] = useQuery(['query'])
   return (
-    <div className='bg-table-bg flex items-center justify-between sticky top-0 z-10'>
+    <div className='bg-table-bg flex items-center justify-between sticky top-0 z-10 w-full'>
       <div className='flex flex-1 items-center space-x-2'>
         <Command
           className='[&_[cmdk-input-wrapper]]:border-none'
@@ -19,7 +19,7 @@ export const SearchBar = ({ placeholder }: { placeholder: string }): JSX.Element
                 setFilter({})
               }
             }}
-            placeholder={`${placeholder.toLowerCase()}`}
+            placeholder={placeholder}
             className='h-9'
           />
         </Command>

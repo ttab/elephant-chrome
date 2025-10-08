@@ -1,4 +1,4 @@
-import { Command } from '@ttab/elephant-ui'
+/* import { Command } from '@ttab/elephant-ui'
 import { DebouncedCommandInput } from '@/components/Commands/Menu/DebouncedCommandInput'
 import { useQuery } from '@/hooks/useQuery'
 
@@ -28,3 +28,4 @@ export const Toolbar = (): JSX.Element => {
     </div>
   )
 }
+ */

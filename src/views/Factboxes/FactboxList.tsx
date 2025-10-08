@@ -41,7 +41,6 @@ export const FactboxList = ({ columns }: {
 
   return (
     <>
-      <Toolbar />
       <Table
         type='Factbox'
         columns={columns}
