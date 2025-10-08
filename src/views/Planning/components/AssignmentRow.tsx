@@ -344,7 +344,7 @@ export const AssignmentRow = ({ ydoc, index, onSelect, isFocused = false, asDial
           <Button
             variant='ghost'
             size='sm'
-            className='w-9 px-0 hover:bg-accent2'
+            className='w-9 px-0 hover:bg-accent2 hover:bg-gray-200'
             onClick={(event) => {
               event.preventDefault()
               event.stopPropagation()
@@ -372,7 +372,13 @@ export const AssignmentRow = ({ ydoc, index, onSelect, isFocused = false, asDial
           <span className='leading-relaxed group-hover/assrow:underline'>{title}</span>
         </div>
         <div className='flex items-center gap-2'>
-          <AssignmentVisibility path={`meta.core/assignment[${index}].data.public`} editable={false} disabled={false} />
+          {void console.log('ydoc', ydoc)}
+          <AssignmentVisibility
+            ydoc={ydoc}
+            path={`meta.core/assignment[${index}].data.public`}
+            editable={false}
+            disabled={false}
+          />
         </div>
       </div>
 

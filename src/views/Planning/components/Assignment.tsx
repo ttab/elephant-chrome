@@ -100,6 +100,7 @@ export const Assignment = ({ ydoc, index, onAbort, onClose, onChange }: {
             />
             <AssignmentTime index={index} />
             <AssignmentVisibility
+              ydoc={ydoc}
               path={`meta.core/assignment[${index}].data.public`}
               disabled={!!documentId}
               editable

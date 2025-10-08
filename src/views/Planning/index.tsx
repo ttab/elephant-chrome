@@ -234,117 +234,38 @@ const PlanningViewContent = (props: ViewProps & {
               {copyGroupId && !props.asDialog && <CopyGroup copyGroupId={copyGroupId} type='core/planning-item' />}
             </Form.Table>
 
-          </Form.Content>
-        </Form.Root>
-      </View.Content>
-    </View.Root>
-  )
-  return (
-    <View.Root asDialog={props.asDialog} className={props?.className}>
-      <PlanningHeader
-        documentId={props.documentId}
-        asDialog={!!props.asDialog}
-        onDialogClose={props.onDialogClose}
-        isChanged={isChanged}
-        session={session}
-        provider={provider}
-        status={status}
-      />
+            <Form.Footer>
+              {!environmentIsSane && (
+                <div className='pb-6'>
+                  <UserMessage asDialog={!!props.asDialog}>
+                    Du har blivit utloggad eller tappat kontakt med systemet.
+                    Vänligen försök logga in igen.
+                  </UserMessage>
+                </div>
 
-      <View.Content className='max-w-[1000px]'>
-        <Form.Root asDialog={props.asDialog} onChange={setIsChanged}>
-          <Form.Content>
-            <Form.Title>
-              <Title
-                autoFocus={props.asDialog}
-                placeholder='Planeringstitel'
-              />
-            </Form.Title>
-
-            <TextBox
-              value={description0}
-              icon={<TextIcon size={18} strokeWidth={1.75} className='text-muted-foreground mr-4' />}
-              placeholder='Publik beskrivning'
-            />
-            <TextBox
-              value={description1}
-              icon={<MessageCircleIcon size={18} strokeWidth={1.75} className='text-muted-foreground mr-4' />}
-              placeholder='Internt meddelande'
-            />
-
-
-            <Description role='public' />
-            <Description role='internal' />
-
-            <Form.Group icon={CalendarIcon}>
-              {props.asDialog !== true
-                ? <PlanDate onValueChange={setNewDate} />
-                : <PlanDate />}
-
-              {newDate && props.asDialog !== true && (
-                <MoveDialog
-                  newDate={newDate}
-                  onChange={setIsChanged}
-                  onClose={() => {
-                    setNewDate(undefined)
-                  }}
-                />
               )}
-            </Form.Group>
 
-            <Form.Group icon={TagsIcon}>
-              <SluglineEditable
-                path='meta.tt/slugline[0].value'
-                documentStatus={documentStatus?.name}
-              />
-              <Newsvalue />
-            </Form.Group>
-
-            <Form.Group icon={TagsIcon}>
-              <Section />
-              <Story />
-            </Form.Group>
-
-          </Form.Content>
-
-          <Form.Table>
-            <AssignmentTable asDialog={props.asDialog} onChange={setIsChanged} documentId={props.documentId} />
-            <RelatedEvents events={relatedEvents} />
-            {!props.asDialog && <DuplicatesTable documentId={props.documentId} type='core/planning-item' />}
-            {copyGroupId && !props.asDialog && <CopyGroup copyGroupId={copyGroupId} type='core/planning-item' />}
-          </Form.Table>
-
-          <Form.Footer>
-            {!environmentIsSane && (
-              <div className='pb-6'>
-                <UserMessage asDialog={!!props.asDialog}>
-                  Du har blivit utloggad eller tappat kontakt med systemet.
-                  Vänligen försök logga in igen.
-                </UserMessage>
-              </div>
-
-            )}
-
-            <Form.Submit
-              onSubmit={() => handleSubmit({ documentStatus: 'usable' })}
-              onSecondarySubmit={() => handleSubmit({ documentStatus: 'done' })}
-              onTertiarySubmit={() => handleSubmit({ documentStatus: undefined })}
-            >
-              <div className='flex justify-between'>
-                <div className='flex gap-2'>
-                  <Button type='button' variant='secondary' role='tertiary' disabled={!environmentIsSane}>
-                    Utkast
-                  </Button>
-                  <Button type='button' variant='secondary' role='secondary' disabled={!environmentIsSane}>
-                    Intern
+              <Form.Submit
+                onSubmit={() => handleSubmit({ documentStatus: 'usable' })}
+                onSecondarySubmit={() => handleSubmit({ documentStatus: 'done' })}
+                onTertiarySubmit={() => handleSubmit({ documentStatus: undefined })}
+              >
+                <div className='flex justify-between'>
+                  <div className='flex gap-2'>
+                    <Button type='button' variant='secondary' role='tertiary' disabled={!environmentIsSane}>
+                      Utkast
+                    </Button>
+                    <Button type='button' variant='secondary' role='secondary' disabled={!environmentIsSane}>
+                      Intern
+                    </Button>
+                  </div>
+                  <Button type='submit' disabled={!environmentIsSane}>
+                    Publicera
                   </Button>
                 </div>
-                <Button type='submit' disabled={!environmentIsSane}>
-                  Publicera
-                </Button>
-              </div>
-            </Form.Submit>
-          </Form.Footer>
+              </Form.Submit>
+            </Form.Footer>
+          </Form.Content>
         </Form.Root>
       </View.Content>
     </View.Root>
