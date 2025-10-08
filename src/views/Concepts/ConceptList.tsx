@@ -6,13 +6,13 @@ import { useDocuments } from '@/hooks/index/useDocuments'
 import type { ColumnDef } from '@tanstack/react-table'
 import { toast } from 'sonner'
 import { constructQuery } from '@/hooks/index/useDocuments/queries/views/concepts'
-import type { SectionConcept, SectionConceptFields } from '@/shared/schemas/conceptSchemas/sectionConcept'
 import { fields } from '@/shared/schemas/conceptSchemas/sectionConcept'
+import type { BaseConceptFields, Concept } from '@/shared/schemas/conceptSchemas/baseConcept'
 export const ConceptList = ({ columns, documentType }: {
-  columns: ColumnDef<SectionConcept>[]
+  columns: ColumnDef<Concept>[]
   documentType: string
 }): JSX.Element => {
-  const { error } = useDocuments<SectionConcept, SectionConceptFields>({
+  const { error } = useDocuments<Concept, BaseConceptFields>({
     documentType: documentType,
     fields,
     query: constructQuery({}),
@@ -23,7 +23,7 @@ export const ConceptList = ({ columns, documentType }: {
     }
   })
 
-  const onRowSelected = useCallback((row?: SectionConcept) => {
+  const onRowSelected = useCallback((row?: Concept) => {
     if (row) {
       console.info(`Selected concept item ${row.id}`)
     } else {

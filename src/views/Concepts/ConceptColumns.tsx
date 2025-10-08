@@ -1,10 +1,10 @@
 import { Title } from '@/components/Table/Items/Title'
 import type { ColumnDef } from '@tanstack/react-table'
 import { BoxesIcon } from '@ttab/elephant-ui/icons'
-import type { SectionConcept } from '@/shared/schemas/conceptSchemas/sectionConcept'
+import type { Concept } from '@/shared/schemas/conceptSchemas/baseConcept'
 
 
-export function ConceptColumns(): Array<ColumnDef<SectionConcept>> {
+export function ConceptColumns(): Array<ColumnDef<Concept>> {
   return [
     {
       id: 'title',
