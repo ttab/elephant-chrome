@@ -8,26 +8,31 @@ import { toast } from 'sonner'
 import { constructQuery } from '@/hooks/index/useDocuments/queries/views/concepts'
 import { fields } from '@/shared/schemas/conceptSchemas/sectionConcept'
 import { useQuery } from '@/hooks/useQuery'
-import { Toolbar } from './components/Toolbar'
 
 import type { BaseConceptFields, Concept } from '@/shared/schemas/conceptSchemas/baseConcept'
-export const ConceptList = ({ columns, documentType, title }: {
+import { Pagination } from '@/components/Table/Pagination'
+
+export const ConceptList = ({ columns, documentType }: {
   columns: ColumnDef<Concept>[]
   documentType: string
   title: string
 }): JSX.Element => {
   const [filter] = useQuery(['query'])
-  const { error } = useDocuments<Concept, BaseConceptFields>({
+  const [{ page }] = useQuery()
+  const { error, data } = useDocuments<Concept, BaseConceptFields>({
     documentType: documentType,
     fields,
     query: constructQuery(filter),
-    sort: [{ field: 'modified', desc: true }],
+    page: typeof page === 'string'
+      ? parseInt(page)
+      : undefined,
     options: {
       subscribe: true,
       setTableData: true
     }
   })
 
+  console.log(data)
   const onRowSelected = useCallback((row?: Concept) => {
     if (row) {
       console.info(`Selected concept item ${row.id}`)
@@ -51,6 +56,7 @@ export const ConceptList = ({ columns, documentType, title }: {
         columns={columns}
         onRowSelected={onRowSelected}
       />
+      <Pagination total={data?.total || 0} />
     </>
   )
 }

@@ -8,7 +8,6 @@ import { ConceptList } from './ConceptList'
 import { ConceptColumns } from './ConceptColumns'
 import type { Concept } from '@/shared/schemas/conceptSchemas/baseConcept'
 
-
 const meta: ViewMetadata = {
   name: 'Concepts',
   path: `${import.meta.env.BASE_URL || ''}/concepts`,
@@ -49,7 +48,6 @@ export const Concepts = ({ documentType, title }: ViewProps) => {
           <TabsContent value='list' className='mt-0'>
             <ConceptList columns={columns} documentType={documentType ? documentType : ' '} title={title ?? 'Concept title'} />
           </TabsContent>
-
         </View.Content>
       </TableProvider>
     </View.Root>
