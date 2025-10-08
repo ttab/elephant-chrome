@@ -226,46 +226,46 @@ const PlanningViewContent = (props: ViewProps & {
               <Section ydoc={ydoc} path='links.core/section[0]' />
               <Story ydoc={ydoc} path='links.core/story[0]' />
             </Form.Group>
+          </Form.Content>
 
-            <Form.Table className='w-full'>
-              <AssignmentTable ydoc={ydoc} asDialog={props.asDialog} onChange={setIsChanged} documentId={props.documentId} />
-              <RelatedEvents events={relatedEvents} />
-              {!props.asDialog && <DuplicatesTable documentId={props.documentId} type='core/planning-item' />}
-              {copyGroupId && !props.asDialog && <CopyGroup copyGroupId={copyGroupId} type='core/planning-item' />}
-            </Form.Table>
+          <Form.Table>
+            <AssignmentTable ydoc={ydoc} asDialog={props.asDialog} onChange={setIsChanged} documentId={props.documentId} />
+            <RelatedEvents events={relatedEvents} />
+            {!props.asDialog && <DuplicatesTable documentId={props.documentId} type='core/planning-item' />}
+            {copyGroupId && !props.asDialog && <CopyGroup copyGroupId={copyGroupId} type='core/planning-item' />}
+          </Form.Table>
 
-            <Form.Footer>
-              {!environmentIsSane && (
-                <div className='pb-6'>
-                  <UserMessage asDialog={!!props.asDialog}>
-                    Du har blivit utloggad eller tappat kontakt med systemet.
-                    Vänligen försök logga in igen.
-                  </UserMessage>
-                </div>
+          <Form.Footer>
+            {!environmentIsSane && (
+              <div className='pb-6'>
+                <UserMessage asDialog={!!props.asDialog}>
+                  Du har blivit utloggad eller tappat kontakt med systemet.
+                  Vänligen försök logga in igen.
+                </UserMessage>
+              </div>
 
-              )}
+            )}
 
-              <Form.Submit
-                onSubmit={() => handleSubmit({ documentStatus: 'usable' })}
-                onSecondarySubmit={() => handleSubmit({ documentStatus: 'done' })}
-                onTertiarySubmit={() => handleSubmit({ documentStatus: undefined })}
-              >
-                <div className='flex justify-between'>
-                  <div className='flex gap-2'>
-                    <Button type='button' variant='secondary' role='tertiary' disabled={!environmentIsSane}>
-                      Utkast
-                    </Button>
-                    <Button type='button' variant='secondary' role='secondary' disabled={!environmentIsSane}>
-                      Intern
-                    </Button>
-                  </div>
-                  <Button type='submit' disabled={!environmentIsSane}>
-                    Publicera
+            <Form.Submit
+              onSubmit={() => handleSubmit({ documentStatus: 'usable' })}
+              onSecondarySubmit={() => handleSubmit({ documentStatus: 'done' })}
+              onTertiarySubmit={() => handleSubmit({ documentStatus: undefined })}
+            >
+              <div className='flex justify-between'>
+                <div className='flex gap-2'>
+                  <Button type='button' variant='secondary' role='tertiary' disabled={!environmentIsSane}>
+                    Utkast
+                  </Button>
+                  <Button type='button' variant='secondary' role='secondary' disabled={!environmentIsSane}>
+                    Intern
                   </Button>
                 </div>
-              </Form.Submit>
-            </Form.Footer>
-          </Form.Content>
+                <Button type='submit' disabled={!environmentIsSane}>
+                  Publicera
+                </Button>
+              </div>
+            </Form.Submit>
+          </Form.Footer>
         </Form.Root>
       </View.Content>
     </View.Root>

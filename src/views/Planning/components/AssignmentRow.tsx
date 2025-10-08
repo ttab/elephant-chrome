@@ -372,7 +372,6 @@ export const AssignmentRow = ({ ydoc, index, onSelect, isFocused = false, asDial
           <span className='leading-relaxed group-hover/assrow:underline'>{title}</span>
         </div>
         <div className='flex items-center gap-2'>
-          {void console.log('ydoc', ydoc)}
           <AssignmentVisibility
             ydoc={ydoc}
             path={`meta.core/assignment[${index}].data.public`}
@@ -395,7 +394,6 @@ export const AssignmentRow = ({ ydoc, index, onSelect, isFocused = false, asDial
 
       <div className='flex flex-row @3xl/view:hidden'>
         <SluglineButton value={slugline} />
-        {/* <SluglineButton path={`meta.core/assignment[${index}].meta.tt/slugline[0].value`} /> */}
       </div>
 
       {showVerifyDialog && (

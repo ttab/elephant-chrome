@@ -102,20 +102,10 @@ export const AssignmentTable = ({ ydoc, asDialog = false, documentId, onChange }
     }
   })
 
-  const variants = cva('',
-    {
-      variants: {
-        asDialog: {
-          false: 'pl-6',
-          true: 'pl-2'
-        }
-      }
-    })
-
   return (
     <>
       <div className='flex flex-col pt-2 text-primary pb-4'>
-        <div className={variants({ asDialog })}>
+        <div className='pl-2'>
           <Button
             disabled={newAssignment !== undefined || !ydoc.connected}
             variant='ghost'
