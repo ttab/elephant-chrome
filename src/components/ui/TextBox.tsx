@@ -53,7 +53,7 @@ export const TextBox = ({ icon: Icon, value, onChange, ...props }: {
               <TextboxRoot {...props} value={value} onBlur={handleOnBlur} onFocus={handleOnFocus} />
             )
           : (
-              <div className={cn(!props.singleLine && 'h-20!',
+              <div className={cn(!props.singleLine && 'h-20!!',
                 `w-full
                 p-1
                 py-1.5

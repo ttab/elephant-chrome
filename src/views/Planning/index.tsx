@@ -63,8 +63,7 @@ export const Planning = (props: ViewProps & {
   const [query] = useQuery()
   const documentId = props.id || query.id
 
-  // Planning should be responsible for creating new as well as editing,
-  // ignore incoming document.
+  // Planning should be responsible for creating new as well as editing
   const data = useMemo(() => {
     if (!props.document || !documentId || typeof documentId !== 'string') {
       return undefined

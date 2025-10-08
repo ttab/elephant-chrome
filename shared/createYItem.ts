@@ -49,8 +49,7 @@ export function createDocument<T>({
   )
 
   if (inProgress) {
-    const yRoot = yDoc.getMap('ele').get('root') as Y.Map<unknown>
-    yRoot.set('__inProgress', true)
+    yDoc.getMap('__meta').set('isInProgress', true)
   }
 
   return [docId, yDoc]

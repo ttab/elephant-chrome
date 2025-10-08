@@ -1,6 +1,8 @@
 import * as Y from 'yjs'
 import type { EleDocumentResponse } from '@/shared/types'
 import { slateNodesToInsertDelta } from '@slate-yjs/core'
+import createHash from '@/shared/createHash'
+import { toYMap } from '@/shared/transformations/toYMap'
 
 export type YPath = [string, ...(string | number)[]]
 
@@ -14,6 +16,7 @@ type YjsContainer = Y.Map<unknown> | Y.Array<unknown> | Y.Text | Y.XmlText | Y.X
 
 /*
  * Create a typed YJS document from a given object.
+ * @deprecated Use createYjsNewsYDoc() in @/shared/transformations
  */
 export function createTypedYDoc(
   data?: EleDocumentResponse,
@@ -26,7 +29,7 @@ export function createTypedYDoc(
 ): Y.Doc {
   // Base document and base maps
   const ydoc = options?.document ?? new Y.Doc()
-  const ymap = ydoc.getMap(options?.rootMap ?? 'document')
+  const yMap = ydoc.getMap(options?.rootMap ?? 'ele')
   const yMeta = ydoc.getMap(options?.metaMap ?? '__meta')
 
   // Setup __meta (system only information about the document)
@@ -38,43 +41,22 @@ export function createTypedYDoc(
     return ydoc
   }
 
-  function populateYMap(obj: EleDocumentResponse, ymap: Y.Map<unknown>) {
-    for (const [key, value] of Object.entries(obj)) {
-      if (Array.isArray(value)) {
-        const yarray = new Y.Array<unknown>()
-        value.forEach((item) => {
-          if (typeof item === 'object' && item !== null) {
-            const childMap = new Y.Map<unknown>()
-            populateYMap(item as EleDocumentResponse, childMap)
-            yarray.push([childMap])
-          } else {
-            yarray.push([item])
-          }
-        })
-        ymap.set(key, yarray)
-      } else if (typeof value === 'object' && value !== null) {
-        const childMap = new Y.Map<unknown>()
-        populateYMap(value as EleDocumentResponse, childMap)
-        ymap.set(key, childMap)
-      } else {
-        ymap.set(key, value)
-      }
-    }
-  }
+  const { meta, links, content, ...properties } = data.document
+  yMap.set('meta', toYMap(meta))
+  yMap.set('links', toYMap(links))
+  yMap.set('root', toYMap(properties, new Y.Map()))
 
-  populateYMap(data, ymap)
-
-  // EleDocument specific handling
+  // Slate text to yjs
   const yContent = new Y.XmlText()
   yContent.applyDelta(
-    slateNodesToInsertDelta(data.document.content)
+    slateNodesToInsertDelta(content)
   )
 
-  ymap.set('content', yContent)
+  yMap.set('content', yContent)
 
-  // Set version
-  const yVersion = ydoc.getMap('version')
-  yVersion?.set('version', data.version)
+  // Set version and original hash
+  yMeta.set('version', data.version)
+  yMeta.set('hash', createHash(JSON.stringify(yMap.toJSON())))
 
   return ydoc
 }

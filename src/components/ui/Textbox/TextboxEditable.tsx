@@ -42,6 +42,8 @@ export const TextboxEditable = ({ value, ydoc, singleLine, spellcheck, disabled 
     }
   }, [yjsEditor])
 
+  if (!yjsEditor) return
+
   return (
     <Textbit.Editable
       readOnly={disabled}
