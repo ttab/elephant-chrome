@@ -39,7 +39,7 @@ export const ConceptAdmin = () => {
         >
           <ViewHeader.Root>
             <ViewHeader.Content>
-              <ViewHeader.Title name='ConceptAdmin' title='Concept Admin' />
+              <ViewHeader.Title name='ConceptAdmin' title='Admin' />
             </ViewHeader.Content>
             <ViewHeader.Action />
           </ViewHeader.Root>

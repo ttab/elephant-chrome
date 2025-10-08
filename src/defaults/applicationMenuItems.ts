@@ -121,11 +121,11 @@ export const applicationMenu: ApplicationMenu = {
       ]
     },
     {
-      name: 'Concept Admin',
+      name: 'Admin',
       items: [
         {
           name: 'ConceptAdmin',
-          label: 'Concept Admin',
+          label: 'Admin',
           icon: CogIcon,
           color: '#b4385b'
         }
