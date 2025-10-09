@@ -16,6 +16,7 @@ export const PromptDefault = ({ prompt, setStatus, showPrompt, requireCause = fa
   unPublishDocument?: (name: string) => void
 }) => {
   const [cause, setCause] = useState<string | undefined>(currentCause)
+  const showCauseField = prompt.status === 'unpublished' ? false : requireCause || cause
 
   useEffect(() => {
     if (prompt.status === 'draft') {
@@ -42,8 +43,9 @@ export const PromptDefault = ({ prompt, setStatus, showPrompt, requireCause = fa
         showPrompt(undefined)
       }}
       disablePrimary={requireCause && !cause}
+      primaryVariant={prompt.status === 'unpublished' ? 'destructive' : undefined}
     >
-      {(cause || requireCause) && (
+      {(showCauseField) && (
         <PromptCauseField
           onValueChange={setCause}
           cause={prompt.status !== 'draft' ? cause : ''}
