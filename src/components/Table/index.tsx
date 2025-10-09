@@ -342,7 +342,7 @@ export const Table = <TData, TValue>({
         </NewItems.Root>
       )}
 
-      {type === 'Concept'
+      {(type === 'Concept' || type === 'Concepts')
         && <Toolbar searchbar={true} searchPlaceholder='Fritextsökning' filter={false} />}
       {type === 'Factbox'
         && <Toolbar searchbar={true} searchPlaceholder='Fritextsökning' filter={false} sort={false} quickFilter={false} />}

@@ -3,6 +3,7 @@ import type { ViewMetadata } from '@/types/index'
 import { FilteredList } from './components/FilteredList'
 import { UnfilteredList } from './components/UnfilteredList'
 import { useQuery } from '@/hooks/useQuery'
+import { Toolbar } from '@/components/Table/Toolbar'
 
 const meta: ViewMetadata = {
   name: 'Concepts',
@@ -24,6 +25,7 @@ export const ConceptOverview = () => {
   const [filter] = useQuery(['query'])
   return (
     <>
+      <Toolbar searchbar={true} searchPlaceholder='Fritextsökning' quickFilter={false} filter={false} />
       <Table>
         <TableBody>
           {filter.query ? <FilteredList filter={filter.query[0]} /> : <UnfilteredList />}
