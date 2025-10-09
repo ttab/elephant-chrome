@@ -65,7 +65,6 @@ export const useDocuments = <T extends HitV1, F>({ documentType, query, size, pa
   const subscriptionsRef = useRef<SubscriptionReference[] | undefined>(subscriptions)
   const mutateRef = useRef<KeyedMutator<{ result: T[], total: number }> | null>(null)
   const dataRef = useRef<{ result: T[], total: number } | undefined>(undefined)
-
   const key = useMemo(() => query
     ? `${documentType}/${JSON.stringify(query, (_, v: unknown) => typeof v === 'bigint' ? v.toString() : v)}${page ? `/${page}` : ''}`
     : documentType, [query, page, documentType])
@@ -88,7 +87,6 @@ export const useDocuments = <T extends HitV1, F>({ documentType, query, size, pa
   [index, repository, session, page, size, documentType, query, fields, sort, options])
 
   const { data, error, mutate, isLoading, isValidating } = useSWR<{ result: T[], total: number }, Error>(key, fetcher)
-  console.log(data?.result)
   // Keep refs up to date for polling
   useEffect(() => {
     subscriptionsRef.current = subscriptions
