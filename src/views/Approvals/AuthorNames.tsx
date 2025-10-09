@@ -3,109 +3,186 @@ import { useAuthors } from '@/hooks/useAuthors'
 import { useMemo } from 'react'
 import { UserIcon, PenIcon, AwardIcon } from 'lucide-react'
 import type { IDBAuthor } from 'src/datastore/types'
-import type { StatusMeta, StatusData } from '@/types'
+import type { StatusMeta } from '@/types'
+import type { Status, StatusOverviewItem } from '@ttab/elephant-api/repository'
+import { getAuthorBySub } from '@/lib/getAuthorBySub'
+import { DocumentStatuses } from '@/defaults/documentStatuses'
 
 export const AuthorNames = ({ assignment }: { assignment: AssignmentInterface }): JSX.Element => {
   const authors = useAuthors()
 
-  const statusData = useMemo(
-    () => assignment?._statusData ? JSON.parse(assignment._statusData) as StatusData : null,
-    [assignment?._statusData]
-  )
+  // Parse status data only if it exists and changes
+  const statusData = useMemo<StatusOverviewItem | null>(() => {
+    if (!assignment?._statusData) return null
+    try {
+      return JSON.parse(assignment._statusData) as StatusOverviewItem
+    } catch {
+      return null
+    }
+  }, [assignment?._statusData])
 
-  const entries = useMemo(
-    () =>
-      statusData
-        ? Object.entries(statusData.heads).sort((a, b) => a[1].created > b[1].created ? -1 : 1)
-        : [],
-    [statusData]
-  )
+  // Memoize sorted status entries
+  const entries = useMemo<[string, Status][]>(() => {
+    if (!statusData) return []
+    return Object.entries(statusData.heads).sort((a, b) =>
+      a[1].created > b[1].created ? -1 : 1
+    )
+  }, [statusData])
 
+  // Get last status update and author
   const lastUpdated = entries[0]?.[1]
   const lastUpdatedById = useMemo(() => extractId(lastUpdated?.creator), [lastUpdated])
+  const lastStatusUpdateAuthor = useMemo(() =>
+    authors.find((a) => lastUpdatedById && lastUpdatedById === extractId(a?.sub)),
+  [authors, lastUpdatedById])
 
-  const byline = useMemo(() => (assignment?._deliverableDocument?.links ?? [])
-    .filter((l) => l.type === 'core/author')
-    .map((author) => author.title)
-    .join(', '),
-  [assignment?._deliverableDocument?.links])
-
-  const doneStatus = useMemo(() => entries.find((entry) => entry[0] === 'done')?.[1],
-    [entries]
+  // Get display and full text for tooltip
+  const { display, full } = useMemo(
+    () => getDisplayAndFull(assignment, authors, entries, statusData),
+    [assignment, authors, entries, statusData]
   )
 
-  const afterDraftAuthor = useMemo(
-    () => getAuthorAfterSetStatus(entries, 'draft', authors),
-    [entries, authors]
-  )
+  // Optionally append last status setter if not draft/done
+  const enhancedDisplay = useMemo(() => {
+    if (!lastStatusUpdateAuthor?.name || !lastUpdated || !statusData?.workflowState) return display
 
-  const lastStatusUpdateAuthor = useMemo(
-    () => authors.find((a) => lastUpdatedById && lastUpdatedById === extractId(a?.sub)),
-    [authors, lastUpdatedById]
-  )
-
-  let display: React.ReactNode = null
-  let full = ''
-
-  if (byline) {
-    display = (
-      <span className='flex items-center'>
-        <UserIcon size={14} />
-        <span>{byline}</span>
-      </span>
+    const lastStatus = DocumentStatuses.find(
+      (status) => status.value === statusData.workflowState
     )
-    full = byline
-  } else if (doneStatus) {
-    const authorObj = doneStatusName(doneStatus, authors)
-    if (authorObj) {
-      display = (
-        <span className='flex items-center'>
-          <PenIcon size={14} />
-          <span>{authorOutput(authorObj)}</span>
-        </span>
+    const Icon = lastStatus?.icon ?? AwardIcon
+    const statusValue = lastStatus?.value
+
+    if (statusValue !== 'draft' && statusValue !== 'done') {
+      return (
+        <>
+          {display}
+          <span className='flex gap-0.5 items-center'>
+            {Icon && <Icon size={14} />}
+            <span>{authorOutput(lastStatusUpdateAuthor)}</span>
+          </span>
+        </>
       )
-      full = authorObj.name
     }
-  } else if (afterDraftAuthor?.name) {
-    display = (
-      <span className='flex items-center'>
-        <PenIcon size={14} />
-        <span>{authorOutput(afterDraftAuthor)}</span>
-      </span>
-    )
-    full = afterDraftAuthor.name
-  }
+    return display
+  }, [display, lastStatusUpdateAuthor, lastUpdated, statusData])
 
-  if (lastStatusUpdateAuthor?.name && lastUpdated) {
-    display = (
-      <>
-        {display && (
-          display
-        )}
-        <span className='flex items-center'>
-          <AwardIcon size={14} />
-          <span>{authorOutput(lastStatusUpdateAuthor)}</span>
-        </span>
-      </>
+  const enhancedFull = useMemo(() => {
+    if (!lastStatusUpdateAuthor?.name || !lastUpdated || !statusData?.workflowState) return full
+
+    const lastStatus = DocumentStatuses.find(
+      (status) => status.value === statusData.workflowState
     )
-    full = full ? `${full}, ${lastStatusUpdateAuthor.name}` : lastStatusUpdateAuthor.name
-  }
+    const statusLabel = lastStatus?.label
+    const statusValue = lastStatus?.value
+
+    if (statusValue !== 'draft' && statusValue !== 'done') {
+      return full
+        ? `${full}, ${statusLabel} av ${lastStatusUpdateAuthor.name}`
+        : `${statusLabel} av ${lastStatusUpdateAuthor.name}`
+    }
+    return full
+  }, [full, lastStatusUpdateAuthor, lastUpdated, statusData])
 
   return (
-    <div title={full}>
-      <span className='flex flex-row gap-2 items-center'>
-        {display}
-      </span>
+    <div title={enhancedFull}>
+      <span className='flex flex-row gap-2 items-center'>{enhancedDisplay}</span>
     </div>
   )
 }
 
+// Helper to get display and full tooltip text
+function getDisplayAndFull(
+  assignment: AssignmentInterface,
+  authors: IDBAuthor[],
+  entries: [string, Status][],
+  statusData: StatusOverviewItem | null
+) {
+  // Prefer byline from deliverable document
+  const byline = (assignment?._deliverableDocument?.links ?? [])
+    .filter((l) => l.type === 'core/author')
+    .map((author) => author.title)
+    .join(', ')
+
+  if (byline) {
+    return {
+      display: (
+        <span className='flex items-center'>
+          <UserIcon size={14} />
+          <span>{byline}</span>
+        </span>
+      ),
+      full: `Byline ${byline}`
+    }
+  }
+
+  // Show author who set status Done
+  const doneStatus = entries.find((entry) => entry[0] === 'done')?.[1]
+  if (doneStatus) {
+    const authorObj = doneStatusName(doneStatus, authors)
+    return {
+      display: (
+        <span className='flex items-center'>
+          <PenIcon size={14} />
+          <span>{authorObj ? authorOutput(authorObj) : '??'}</span>
+        </span>
+      ),
+      full: `Klar av ${authorObj?.name || '??'}`
+    }
+  }
+
+  // Show author who moved out of draft
+  const afterDraftAuthor = getAuthorAfterSetStatus(entries, 'draft', authors)
+  if (afterDraftAuthor?.name) {
+    return {
+      display: (
+        <span className='flex items-center'>
+          <PenIcon size={14} />
+          <span>{authorOutput(afterDraftAuthor)}</span>
+        </span>
+      ),
+      full: `Av ${afterDraftAuthor.name}`
+    }
+  }
+
+  // Show author who created a new version after 'usable'
+  const afterUsableAuthor = getAuthorAfterSetStatus(entries, 'usable', authors)
+  if (afterUsableAuthor?.name) {
+    return {
+      display: (
+        <span className='flex items-center'>
+          <PenIcon size={14} />
+          <span>{authorOutput(afterUsableAuthor)}</span>
+        </span>
+      ),
+      full: afterUsableAuthor.name
+    }
+  }
+
+  // Show creator of deliverable
+  if (statusData?.creatorUri) {
+    const creator = getAuthorBySub(authors, statusData.creatorUri)
+    return {
+      display: (
+        <span className='flex items-center'>
+          <PenIcon size={14} />
+          <span>{creator ? authorOutput(creator) : '??'}</span>
+        </span>
+      ),
+      full: creator?.name ? `Skapad av ${creator.name}` : ''
+    }
+  }
+
+  return { display: null, full: '' }
+}
+
+// Find author who set status Done
 function doneStatusName(doneStatus?: StatusMeta, authors?: IDBAuthor[]): IDBAuthor | undefined {
   if (!doneStatus || !authors) return undefined
   const creatorId = extractId(doneStatus.creator)
   return authors.find((a) => creatorId === extractId(a?.sub))
 }
 
+// Find author who set a status, then get the author who set the previous status
 function getAuthorAfterSetStatus(
   entries: [string, StatusMeta][],
   status: string,
@@ -117,10 +194,12 @@ function getAuthorAfterSetStatus(
   return (authors || []).find((a) => creatorId && creatorId === extractId(a?.sub))
 }
 
+// Extract ID from URI
 function extractId(uri: string = '') {
   return uri.slice(uri.lastIndexOf('/'))
 }
 
+// Format author name to initials
 export function authorOutput(matchedAuthor: IDBAuthor) {
   const [first = '', last = ''] = matchedAuthor.name.split(' ').slice(0, 2)
   return `${first[0] ?? ''}${last[0] ?? ''}`
