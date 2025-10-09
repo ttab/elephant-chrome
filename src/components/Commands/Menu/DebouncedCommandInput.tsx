@@ -20,7 +20,7 @@ const DebouncedCommandInput = forwardRef(({
   }
 
   useEffect(() => {
-    setValue(globalFilter ?? '')
+    if (!globalFilter) setValue(initialValue)
   }, [globalFilter])
 
   const handleInputChange = (value: string | undefined): void => {
