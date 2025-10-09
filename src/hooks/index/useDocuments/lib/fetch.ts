@@ -70,7 +70,7 @@ export async function fetch<T extends HitV1, F>({
   if (options?.withStatus) {
     result = withStatus<T>(result)
   }
-  
+
   // Append _relatedPlannings
   if (options?.withPlannings) {
     result = await withPlannings<T>({ hits: result, session, index })
