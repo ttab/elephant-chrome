@@ -26,6 +26,7 @@ export const Toolbar = <TData,>({ searchbar = false, searchPlaceholder = 'Sök',
     columnFilters: ColumnFiltersState
     globalFilter: string
   }
+
   const isFiltered = useMemo(() => columnFilters.length > 0 || !!globalFilter,
     [columnFilters, globalFilter])
 
@@ -63,7 +64,12 @@ export const Toolbar = <TData,>({ searchbar = false, searchPlaceholder = 'Sök',
           <XIcon size={18} strokeWidth={1.75} className='ml-2' />
         </Button>
       )}
-      {searchbar && <SearchBar placeholder={searchPlaceholder} />}
+      {searchbar && (
+        <SearchBar
+          placeholder={searchPlaceholder}
+          setGlobalTextFilter={table.setGlobalFilter}
+        />
+      )}
       {quickFilter
         && <QuickFilter />}
     </div>
