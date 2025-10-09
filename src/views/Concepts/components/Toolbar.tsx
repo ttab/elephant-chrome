@@ -1,4 +1,4 @@
-import { SearchBar } from './SearchBar'
+import { SearchBar } from '@/components/Table/SearchBar'
 
 export const Toolbar = ({ placeholder }: { placeholder: string }): JSX.Element => {
   return (

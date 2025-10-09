@@ -50,13 +50,13 @@ export const PrintFlows = ({ asDialog, onDialogClose, className, action }: ViewP
   const { baboon } = useRegistry()
   const { data: session } = useSession()
   const date = !filter?.from ? fallbackDate : parseDate(filter?.from?.[0] || '')
-  const allPrintFlows = data?.map((hit) => ({
+  const allPrintFlows = data?.result.map((hit) => ({
     value: hit.id,
     label: hit.fields['document.title'].values[0]
   })) || []
 
   const allArticleNames = data
-    ?.find((hit) => hit.id === printFlow)
+    ?.result.find((hit) => hit.id === printFlow)
     ?.fields['document.content.tt_print_content.name'].values || []
 
   const selectedPrintFlow = allPrintFlows?.find((flow) => flow.value === printFlow)
@@ -140,7 +140,7 @@ export const PrintFlows = ({ asDialog, onDialogClose, className, action }: ViewP
         </ViewHeader.Action>
       </ViewHeader.Root>
       <View.Content className='p-4'>
-        {data?.length
+        {data?.result.length
           ? (
               <Form.Root asDialog={asDialog}>
                 <Form.Content>
