@@ -3,6 +3,8 @@ import type { EleDocumentResponse } from '@/shared/types'
 import { slateNodesToInsertDelta } from '@slate-yjs/core'
 import createHash from '@/shared/createHash'
 import { toYMap } from '@/shared/transformations/toYMap'
+import type { TBElement } from '@ttab/textbit'
+import { isTextEntry } from '@/shared/transformations/isTextEntry'
 
 export type YPath = [string, ...(string | number)[]]
 
@@ -46,19 +48,125 @@ export function createTypedYDoc(
   yMap.set('links', toYMap(links))
   yMap.set('root', toYMap(properties, new Y.Map()))
 
-  // Slate text to yjs
-  const yContent = new Y.XmlText()
-  yContent.applyDelta(
-    slateNodesToInsertDelta(content)
-  )
+  if (typeof content === 'string') {
+    // Text string to textbit elements YXmlText
+    yMap.set('content', toSlateYXmlText(content))
+  } else {
+    // Textbit elements to YXmlText
+    const yContent = new Y.XmlText()
+    yContent.applyDelta(
+      slateNodesToInsertDelta(content)
+    )
 
-  yMap.set('content', yContent)
+    yMap.set('content', yContent)
+  }
 
   // Set version and original hash
   yMeta.set('version', data.version)
   yMeta.set('hash', createHash(JSON.stringify(yMap.toJSON())))
 
   return ydoc
+}
+
+export function getValueFromPath<T>(root: unknown, path: YPath): T | undefined {
+  let current = root
+
+  for (const key of path) {
+    if (current instanceof Y.Map && typeof key === 'string') {
+      current = current.get(key)
+    } else if (current instanceof Y.Array && typeof key === 'number') {
+      current = current.get(key)
+    } else {
+      return undefined
+    }
+  }
+
+  return current as T | undefined
+}
+
+/**
+ * Set a value at the specified path. Will transform the value if necessary.
+ *
+ * @param yRoot Y.Map - Root Y.Map or Y.Array
+ * @param path string - Path from yRoot including the index or property
+ * @param value unknown
+ */
+export function setValueByPath<T>(ystruct: Y.Map<unknown> | Y.Array<unknown>, path: YPath, newValue: T) {
+  const current = getParent(ystruct, path)
+  if (!current) {
+    return false
+  }
+
+  const finalKey = path[path.length - 1]
+
+  if (current instanceof Y.Map && typeof finalKey === 'string') {
+    current.set(
+      finalKey,
+      toYStructure(newValue)
+    )
+  } else if (current instanceof Y.Array && typeof finalKey === 'number') {
+    if (ystruct.doc) {
+      // When part of a document we can do this in a transaction
+      ystruct.doc.transact(() => {
+        setArrayValue(current, finalKey, newValue)
+      })
+    } else {
+      // Without transaction
+      setArrayValue(current, finalKey, newValue)
+    }
+  }
+}
+
+function getParent(yRoot: Y.Map<unknown> | Y.Array<unknown>, yPath: YPath): Y.Map<unknown> | Y.Array<unknown> | undefined {
+  let current = yRoot
+
+  for (let i = 0; i < yPath.length - 1; i++) {
+    const currentKey = yPath[i]
+    const isArrayIndex = typeof currentKey === 'number'
+    const isNextArrayIndex = typeof yPath[i + 1] === 'number'
+
+    if (isArrayIndex) {
+      if (current instanceof Y.Map) {
+        throw new Error(`Invalid path. Expected an array, but encountered a map at '${currentKey}'.`)
+      }
+
+      current = current.get(currentKey) as Y.Map<unknown> | Y.Array<unknown>
+    } else {
+      if (current instanceof Y.Map && !current.has(currentKey)) {
+        current.set(currentKey, isNextArrayIndex ? new Y.Array() : new Y.Map())
+      }
+
+      current = current.get(currentKey as never) as Y.Map<unknown>
+    }
+  }
+
+  return current
+}
+
+/**
+ * Set an array value in a Yjs array. Will push if the index is out of bounds,
+ * otherwise it will insert at the specified index replacing what was there.
+ *
+ * Replacing is a two step process. First the element at the index is deleted,
+ * then the new value is inserted at the same index.
+ * It is the callers responsibility to do this in a transaction if possible.
+ *
+ * @param {Y.Array<T>} yarray - yjs array
+ * @param {number} finalKey - index of the element to set
+ * @param {T} newValue - new value to set
+ */
+function setArrayValue<T>(yarray: Y.Array<unknown>, finalKey: number, newValue: T) {
+  if (finalKey < yarray.length) {
+    yarray.delete(finalKey, 1)
+  }
+
+  if (typeof newValue !== 'undefined' && newValue !== null) {
+    if (finalKey + 1 > yarray.length) {
+      yarray.push([newValue])
+    } else {
+      yarray.insert(finalKey, [newValue])
+    }
+  }
 }
 
 /*
@@ -94,8 +202,37 @@ export function extractYData<T>(y: Y.Map<unknown> | Y.Array<unknown> | Y.XmlText
   throw new Error('Unsupported Yjs type')
 }
 
+/**
+ * Transform any value/structure to a Y representation.
+ *
+ * @param value unknown
+ * @returns unkown
+ */
+export function toYStructure(value: unknown): unknown {
+  if (Array.isArray(value)) {
+    const yArray = new Y.Array()
+    value.forEach((v: unknown) => yArray.push([toYStructure(v)]))
+    return yArray
+  }
+
+  if (isRecord(value)) {
+    const yMap = new Y.Map()
+
+    for (const key in value) {
+      if (isTextEntry(key, value.type as string)) {
+        yMap.set(key, toSlateYXmlText(value[key] as string))
+      } else {
+        yMap.set(key, toYStructure(value[key]))
+      }
+    }
+    return yMap
+  }
+
+  return value
+}
+
 /*
- * Recursively updates a YJS document
+ * Recursively updates a Y.Map key
  *
  * @example
  * updateYMap(document.get('document'), { meta: { priority: Number(value) } })
@@ -209,4 +346,46 @@ export function getYjsPath(
   }
 
   return asString ? yPathToString(path) : path
+}
+
+/**
+ * Transform a string to a Y.XmlText structure suitable for Textbit/Slate
+ *
+ * @param value string
+ * @returns Y.XmlText
+ */
+export function toSlateYXmlText(value: string): Y.XmlText {
+  const elements = stringToTextbitText(value)
+
+  const yXmlText = new Y.XmlText()
+  yXmlText.applyDelta(slateNodesToInsertDelta(elements))
+
+  return yXmlText
+}
+
+/**
+ * Transform a string separated by newlines to an array of Textbit Slate Elements
+ * of type text/core with no further type information (no titles, visuals etc).
+ *
+ * @param value string
+ * @returns TBElement[]
+ */
+function stringToTextbitText(value: string): TBElement[] {
+  const lines = value.trim().split('\n')
+
+  return lines.map((line) => {
+    return {
+      id: crypto.randomUUID(),
+      class: 'text',
+      type: 'core/text',
+      children: [{ text: line }]
+    }
+  })
+}
+
+/**
+ * Typeguard for Record<string, unknown>
+ */
+export function isRecord(value: unknown): value is Record<string, unknown> {
+  return !!value && typeof value === 'object' && value.constructor === Object
 }

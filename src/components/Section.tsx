@@ -51,9 +51,7 @@ export const Section = ({ ydoc, path, onValidation, validateStateRef, onChange, 
           placeholder={section?.title || 'Lägg till sektion'}
           validation={!!onValidation}
           onOpenChange={(isOpen: boolean) => {
-            if (setFocused?.current) {
-              setFocused.current(true, (isOpen) ? path : '')
-            }
+            setFocused.current(true, (isOpen) ? path : '')
           }}
           onSelect={(option) => {
             const value = {

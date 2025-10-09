@@ -1,5 +1,5 @@
 import { isEqualDeep } from '../lib/isEqualDeep'
-import { extractYData, stringToYPath, type YPath } from '../lib/yjs'
+import { extractYData, getValueFromPath, setValueByPath, stringToYPath, type YPath } from '../lib/yjs'
 import { useCallback, useMemo, useRef, useSyncExternalStore } from 'react'
 import * as Y from 'yjs'
 
@@ -120,68 +120,10 @@ export function useYValue<T>(
   ]
 }
 
-function getValueFromPath<T>(root: unknown, path: (string | number)[]): T | undefined {
-  let current = root
-
-  for (const key of path) {
-    if (current instanceof Y.Map && typeof key === 'string') {
-      current = current.get(key)
-    } else if (current instanceof Y.Array && typeof key === 'number') {
-      current = current.get(key)
-    } else {
-      return undefined
-    }
-  }
-
-  return current as T | undefined
-}
-
-function setValueByPath<T>(ystruct: Y.Map<unknown> | Y.Array<unknown>, path: (string | number)[], newValue: T) {
-  if (!ystruct.doc) {
-    return
-  }
-
-  const ydoc = ystruct.doc
-  let current = ystruct as unknown
-
-  for (let i = 0; i < path.length - 1; i++) {
-    const key = path[i]
-    if (current instanceof Y.Map && typeof key === 'string') {
-      current = current.get(key)
-    } else if (current instanceof Y.Array && typeof key === 'number') {
-      current = current.get(key)
-    } else {
-      return
-    }
-  }
-
-  const finalKey = path[path.length - 1]
-
-  if (current instanceof Y.Map && typeof finalKey === 'string') {
-    current.set(finalKey, newValue)
-  } else if (current instanceof Y.Array && typeof finalKey === 'number') {
-    // Handle array manipulations
-
-    ydoc.transact(() => {
-      if (finalKey < current.length) {
-        current.delete(finalKey, 1)
-      }
-
-      if (typeof newValue !== 'undefined' && newValue !== null) {
-        if (finalKey + 1 > current.length) {
-          current.push([newValue])
-        } else {
-          current.insert(finalKey, [newValue])
-        }
-      }
-    })
-  }
-}
-
-function getRoot(y: Y.Doc | Y.Map<unknown> | undefined, relativePath: [string, ...(string | number)[]]): undefined | {
+function getRoot(y: Y.Doc | Y.Map<unknown> | undefined, relativePath: YPath): undefined | {
   ydoc: Y.Doc
   ymap: Y.Map<unknown> | Y.Array<unknown>
-  path: Array<string | number>
+  path: YPath
 } {
   if (!y) {
     return
@@ -199,7 +141,7 @@ function getRoot(y: Y.Doc | Y.Map<unknown> | undefined, relativePath: [string, .
     }
   }
 
-  const path = [...relativePath]
+  const path = [...relativePath] as YPath
   const rootKey = path.shift()
   if (typeof rootKey !== 'string') {
     return

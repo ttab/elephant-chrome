@@ -82,7 +82,7 @@ export function fromYjsNewsDoc(yDoc: Y.Doc): EleDocumentResponse {
   const _title = makeTitle()
 
   return {
-    version: yDoc.getMap('version').get('version') as string,
+    version: yDoc.getMap('__meta').get('version') as string,
     isMetaDocument: false,
     mainDocument: '',
     document: {
