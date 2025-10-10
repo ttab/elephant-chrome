@@ -17,6 +17,7 @@ export const PromptDefault = ({ prompt, setStatus, showPrompt, requireCause = fa
 }) => {
   const [cause, setCause] = useState<string | undefined>(currentCause)
   const showCauseField = prompt.status === 'unpublished' ? false : requireCause || cause
+  const disablePrimary = showCauseField ? false : requireCause && !cause
 
   useEffect(() => {
     if (prompt.status === 'draft') {
@@ -42,7 +43,7 @@ export const PromptDefault = ({ prompt, setStatus, showPrompt, requireCause = fa
       onSecondary={() => {
         showPrompt(undefined)
       }}
-      disablePrimary={requireCause && !cause}
+      disablePrimary={disablePrimary}
       primaryVariant={prompt.status === 'unpublished' ? 'destructive' : undefined}
     >
       {(showCauseField) && (
