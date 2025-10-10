@@ -58,8 +58,8 @@ export function useYValue<T>(
           : [...event.path, ...Array.from(event.keys.keys())]
         const changedKey = yPathToString([...changedPath])
 
-        // Direct match
         if (changedKey === observedKey) {
+          // Exact observed path have changed
           const newValue = getValueFromPath<T>(yContainer, observedPath)
 
           if (event.target instanceof Y.XmlText) {
@@ -68,12 +68,14 @@ export function useYValue<T>(
               onStoreChange()
             }
           } else if (!isEqualDeep(newValue, snapshotRef.current)) {
+            // All other directly observed path changes should report a change
             onStoreChange()
           }
 
           return
         } else if (event.target instanceof Y.Array) {
           if (doesArrayChangeAffectPath(event as Y.YEvent<Y.Array<unknown>>, observedPath)) {
+            // An array change affects the observed path
             onStoreChange()
             return
           }
