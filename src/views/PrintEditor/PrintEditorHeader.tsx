@@ -3,10 +3,8 @@ import { useEffect, useRef } from 'react'
 import { ViewHeader } from '@/components/View'
 import { StatusMenu } from '@/components/DocumentStatus/StatusMenu'
 import { PenBoxIcon } from '@ttab/elephant-ui/icons'
-import { snapshotDocument } from '@/lib/snapshotDocument'
 import { AddNote } from '@/components/Notes/AddNote'
-import { toast } from 'sonner'
-import { TextBox } from '@/components/ui'
+import { ArticleTitle } from './components/ArticleTitle'
 
 /**
  * EditorHeader component.
@@ -41,8 +39,6 @@ export const EditorHeader = ({
     containerRef.current = document.getElementById(viewId)
   }, [viewId])
 
-  const isDirtyRef = useRef(false)
-
   return (
     <ViewHeader.Root className='@container grid grid-cols-2'>
       <section className='col-span-2 flex flex-row gap-2 justify-between items-center w-full'>
@@ -50,27 +46,7 @@ export const EditorHeader = ({
 
         <ViewHeader.Content className='justify-start w-full'>
           <div className='max-w-[1040px] mx-auto flex flex-row gap-2 justify-between items-center w-full'>
-            <div className='flex flex-row gap-1 justify-start items-center @7xl/view:-ml-20'>
-              <div className='flex flex-row gap-2 justify-start items-center'>
-                <TextBox
-                  singleLine
-                  path='root.title'
-                  placeholder='Printartikelnamn'
-                  onChange={() => isDirtyRef.current = true}
-                  onBlur={() => {
-                    if (isDirtyRef.current) {
-                      snapshotDocument(documentId).then(() => {
-                        toast.success('Titel uppdaterad')
-                      }).catch((error) => {
-                        console.error('Error updating title:', error)
-                      })
-
-                      isDirtyRef.current = false
-                    }
-                  }}
-                />
-              </div>
-            </div>
+            <ArticleTitle documentId={documentId} />
             <div className='flex flex-row gap-2 justify-end items-center'>
               <AddNote role='internal' />
               {!!documentId && (
