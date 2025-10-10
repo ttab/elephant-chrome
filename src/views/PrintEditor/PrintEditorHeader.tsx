@@ -1,11 +1,12 @@
-import { useView, useYValue } from '@/hooks'
-import { useEffect, useRef, useState } from 'react'
+import { useView } from '@/hooks'
+import { useEffect, useRef } from 'react'
 import { ViewHeader } from '@/components/View'
 import { StatusMenu } from '@/components/DocumentStatus/StatusMenu'
 import { PenBoxIcon } from '@ttab/elephant-ui/icons'
 import { snapshotDocument } from '@/lib/snapshotDocument'
 import { AddNote } from '@/components/Notes/AddNote'
 import { toast } from 'sonner'
+import { TextBox } from '@/components/ui'
 
 /**
  * EditorHeader component.
@@ -39,8 +40,8 @@ export const EditorHeader = ({
   useEffect(() => {
     containerRef.current = document.getElementById(viewId)
   }, [viewId])
-  const [isDirty, setIsDirty] = useState(false)
-  const [title, setTitle] = useYValue<string>('root.title')
+
+  const isDirtyRef = useRef(false)
 
   return (
     <ViewHeader.Root className='@container grid grid-cols-2'>
@@ -51,23 +52,20 @@ export const EditorHeader = ({
           <div className='max-w-[1040px] mx-auto flex flex-row gap-2 justify-between items-center w-full'>
             <div className='flex flex-row gap-1 justify-start items-center @7xl/view:-ml-20'>
               <div className='flex flex-row gap-2 justify-start items-center'>
-                <input
-                  type='text'
+                <TextBox
+                  singleLine
+                  path='root.title'
                   placeholder='Printartikelnamn'
-                  className='px-2 py-1 w-[130px]'
-                  value={title}
-                  onChange={(e) => {
-                    setIsDirty(true)
-                    setTitle(e.target.value)
-                  }}
+                  onChange={() => isDirtyRef.current = true}
                   onBlur={() => {
-                    if (isDirty) {
-                      setIsDirty(false)
+                    if (isDirtyRef.current) {
                       snapshotDocument(documentId).then(() => {
                         toast.success('Titel uppdaterad')
                       }).catch((error) => {
                         console.error('Error updating title:', error)
                       })
+
+                      isDirtyRef.current = false
                     }
                   }}
                 />
