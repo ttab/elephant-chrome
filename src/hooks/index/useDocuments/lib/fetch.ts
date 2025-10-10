@@ -34,12 +34,12 @@ export async function fetch<T extends HitV1, F>({
   sort?: SortingV1[]
   setSubscriptions?: Dispatch<SetStateAction<SubscriptionReference[] | undefined>>
   options?: useDocumentsFetchOptions
-}): Promise<T[]> {
+}): Promise<{ result: T[], total: number }> {
   if (!index || !session?.accessToken) {
     throw new Error('Index or access token is missing')
   }
 
-  const { ok, hits, errorMessage, subscriptions } = await index.query<T, F>({
+  const { ok, hits, errorMessage, subscriptions, total } = await index.query<T, F>({
     documentType,
     fields,
     accessToken: session.accessToken,
@@ -49,6 +49,7 @@ export async function fetch<T extends HitV1, F>({
     sort,
     options
   })
+
 
   if (!ok) {
     throw new Error(errorMessage || 'Unknown error while fetching data')
@@ -63,7 +64,7 @@ export async function fetch<T extends HitV1, F>({
   // Format planning result as assignments
   if (options?.asAssignments && query) {
     const statuses = await getDeliverableStatuses({ result, repository, session })
-    return asAssignments(result as unknown as Assignment[], query, statuses) as unknown as T[]
+    return { result: asAssignments(result as unknown as Assignment[], query, statuses) as unknown as T[], total: total }
   }
   // Append and format statuses
   if (options?.withStatus) {
@@ -76,5 +77,5 @@ export async function fetch<T extends HitV1, F>({
   }
 
 
-  return result
+  return { result: result, total: total }
 }

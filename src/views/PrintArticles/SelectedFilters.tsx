@@ -62,7 +62,7 @@ const SelectedButton = ({ type, value }: { value: string | string[] | undefined,
     console.error('Could not fetch PrintFlows:', error)
   }
 
-  const printFlows = data?.map((hit) => ({
+  const printFlows = data?.result.map((hit) => ({
     value: hit.id,
     label: hit.fields['document.title'].values[0]
   })) || []

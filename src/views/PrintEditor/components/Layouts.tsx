@@ -20,11 +20,11 @@ export const Layouts = ({ articleLayoutId, basePath, onChange, className }: {
 
   const [articleLayoutName, setArticleLayoutName] = useYValue<string>(`${basePath}.name`)
 
-  if (!layouts || !layouts?.length) {
+  if (!layouts || !layouts?.result.length) {
     return <LoaderIcon size={16} strokeWidth={1.75} className='animate-spin' />
   }
 
-  const slots = layouts[0].fields['document.content.tt_print_slot.name'].values
+  const slots = layouts.result[0].fields['document.content.tt_print_slot.name'].values
   const selectedOptions = slots.filter((slot) => slot === articleLayoutName)
     .map((slot) => ({
       label: slot,
@@ -39,7 +39,7 @@ export const Layouts = ({ articleLayoutId, basePath, onChange, className }: {
       sortOrder='label'
       className={cn('justify-start', className)}
       selectedOptions={selectedOptions}
-      options={layouts[0].fields['document.content.tt_print_slot.name'].values
+      options={layouts.result[0].fields['document.content.tt_print_slot.name'].values
         .map((l) => ({
           label: l,
           value: l

@@ -32,14 +32,14 @@ export const CopyGroup = ({ copyGroupId, type }: { copyGroupId: string, type: 'c
     }
   })
 
-  if (!Array.isArray(data) || (Array.isArray(data) && data?.length === 0)) {
+  if (!Array.isArray(data?.result) || (Array.isArray(data.result) && data?.result.length === 0)) {
     return <></>
   }
 
   return (
     <div className='pl-6 border-t'>
       <div className='text-sm font-bold pt-2'>Kopierad från</div>
-      {data.map((original) => {
+      {data.result.map((original) => {
         const [title] = original.fields['document.title'].values
         let start
 

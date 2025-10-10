@@ -5,6 +5,7 @@ import { useLink } from '@/hooks/useLink'
 
 export const FilteredList = ({ filter }: { filter: string }) => {
   const handleOpen = useLink('Concepts')
+
   return Concepts.filter((concept) => concept.label.startsWith(filter) || concept.description.includes(filter)).map((concept) => {
     const Icon = concept.icon
     return (

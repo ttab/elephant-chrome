@@ -57,7 +57,7 @@ export const Commands = (props: FilterProps): JSX.Element => {
       label: 'Kastad'
     }
   ]
-  const optionsPrintFlows = data?.map((hit) => ({
+  const optionsPrintFlows = data?.result.map((hit) => ({
     value: hit.id,
     label: hit.fields['document.title'].values[0]
   })) || []

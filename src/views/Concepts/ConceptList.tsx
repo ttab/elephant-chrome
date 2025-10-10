@@ -6,24 +6,33 @@ import { useDocuments } from '@/hooks/index/useDocuments'
 import type { ColumnDef } from '@tanstack/react-table'
 import { toast } from 'sonner'
 import { constructQuery } from '@/hooks/index/useDocuments/queries/views/concepts'
-import type { SectionConcept, SectionConceptFields } from '@/shared/schemas/conceptSchemas/sectionConcept'
 import { fields } from '@/shared/schemas/conceptSchemas/sectionConcept'
+import { useQuery } from '@/hooks/useQuery'
+
+import type { BaseConceptFields, Concept } from '@/shared/schemas/conceptSchemas/baseConcept'
+import { Pagination } from '@/components/Table/Pagination'
+
 export const ConceptList = ({ columns, documentType }: {
-  columns: ColumnDef<SectionConcept>[]
+  columns: ColumnDef<Concept>[]
   documentType: string
+  title: string
 }): JSX.Element => {
-  const { error } = useDocuments<SectionConcept, SectionConceptFields>({
+  const [filter] = useQuery(['query'])
+  const [{ page }] = useQuery()
+  const { error, data } = useDocuments<Concept, BaseConceptFields>({
     documentType: documentType,
     fields,
-    query: constructQuery({}),
-    sort: [{ field: 'modified', desc: true }],
+    query: constructQuery(filter),
+    page: typeof page === 'string'
+      ? parseInt(page)
+      : undefined,
     options: {
       subscribe: true,
       setTableData: true
     }
   })
 
-  const onRowSelected = useCallback((row?: SectionConcept) => {
+  const onRowSelected = useCallback((row?: Concept) => {
     if (row) {
       console.info(`Selected concept item ${row.id}`)
     } else {
@@ -40,10 +49,13 @@ export const ConceptList = ({ columns, documentType }: {
 
 
   return (
-    <Table
-      type='Concept'
-      columns={columns}
-      onRowSelected={onRowSelected}
-    />
+    <>
+      <Table
+        type='Concept'
+        columns={columns}
+        onRowSelected={onRowSelected}
+      />
+      <Pagination total={data?.total || 0} />
+    </>
   )
 }
