@@ -61,6 +61,17 @@ export const DocumentStatuses: DefaultValueOption[] = [
       size: 18,
       strokeWidth: 1.75
     }
+  },
+  {
+    label: 'Avpublicerad',
+    value: 'unpublished',
+    icon: CircleArrowLeftIcon,
+    iconProps: {
+      color: '#ffffff',
+      className: 'bg-cancelled fill-cancelled rounded-full',
+      size: 18,
+      strokeWidth: 1.75
+    }
   }
 ] as const
 
@@ -113,7 +124,8 @@ export const PlanningEventStatuses: DefaultValueOption[] = [
     value: 'unpublished',
     icon: CircleArrowLeftIcon,
     iconProps: {
-      className: 'text-muted-foreground',
+      color: '#ffffff',
+      className: 'bg-cancelled fill-cancelled rounded-full',
       size: 18,
       strokeWidth: 1.75
     }
