@@ -349,6 +349,60 @@ export function getYjsPath(
 }
 
 /**
+ * Check if a Y.Array change affects an observed path. True if the
+ * change occurs in any array on any level above an observed value.
+ */
+export function doesArrayChangeAffectPath(
+  event: Y.YEvent<Y.Array<unknown>>,
+  observedPath: YPath
+): boolean {
+  // Find the deepest array index in our observed path that matches this event
+  for (let i = observedPath.length - 1; i >= 0; i--) {
+    if (typeof observedPath[i] !== 'number') {
+      continue
+    }
+
+    // Check if the event path matches the path up to this array
+    const pathUpToArray = observedPath.slice(0, i)
+    const pathUpToArrayStr = pathUpToArray.join('.')
+    const eventPathStr = event.path.join('.')
+
+    if (eventPathStr !== pathUpToArrayStr) {
+      continue
+    }
+
+    const observedIndex = observedPath[i] as number
+
+    // Check if any operation in the delta affects our index
+    let currentIndex = 0
+
+    for (const op of event.changes.delta) {
+      if (op.retain) {
+        currentIndex += op.retain
+      } else if (op.insert) {
+        const insertCount = Array.isArray(op.insert) ? op.insert.length : 1
+
+        // Items inserted at or before our index shift our item
+        if (currentIndex <= observedIndex) {
+          return true
+        }
+
+        currentIndex += insertCount
+      } else if (op.delete) {
+        const deleteStart = currentIndex
+
+        // Deletion at or before our index affects us
+        if (deleteStart <= observedIndex) {
+          return true
+        }
+      }
+    }
+  }
+
+  return false
+}
+
+/**
  * Transform a string to a Y.XmlText structure suitable for Textbit/Slate
  *
  * @param value string

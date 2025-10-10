@@ -1,33 +1,40 @@
 import { isEqualDeep } from '../lib/isEqualDeep'
-import { extractYData, getValueFromPath, setValueByPath, stringToYPath, type YPath } from '../lib/yjs'
+import { doesArrayChangeAffectPath, extractYData, getValueFromPath, setValueByPath, stringToYPath, yPathToString, type YPath } from '../lib/yjs'
 import { useCallback, useMemo, useRef, useSyncExternalStore } from 'react'
 import * as Y from 'yjs'
 
 export function useYValue<T>(
-  y: Y.Doc | Y.Map<unknown> | undefined,
-  fullPath: YPath | string,
+  yContainer: Y.Map<unknown> | Y.Array<unknown> | undefined,
+  relativePath: YPath | string,
   raw: boolean = false
 ): [T | undefined, (newValue: T) => void] {
-  const normalizedPath = useMemo(() =>
-    typeof fullPath === 'string' ? stringToYPath(fullPath) : fullPath,
-  [fullPath]
-  )
+  const valid = useRef<boolean>(true)
+  const [observedKey, observedPath] = useMemo(() => {
+    return (typeof relativePath === 'string')
+      ? [relativePath, stringToYPath(relativePath)]
+      : [yPathToString(relativePath), relativePath]
+  }, [relativePath])
 
-  // Get snapshot of current value
+  /**
+   *  Callback to get snapshot of current value
+   */
   const getSnapshot = useCallback((): T | undefined => {
-    const { ymap, path } = getRoot(y, normalizedPath) || {}
-    if (!ymap || !path) return undefined
+    if (!yContainer || !valid.current) return undefined
 
-    const val = getValueFromPath<T>(ymap, path)
+    const val = getValueFromPath<T>(yContainer, observedPath)
     return (!raw && (val instanceof Y.Map || val instanceof Y.Array || val instanceof Y.XmlText))
       ? extractYData(val)
       : val
-  }, [y, normalizedPath, raw])
+  }, [yContainer, observedPath, raw])
 
-  // Track snapshoted values
+  /**
+   * Ref to current snapshot value
+   */
   const snapshotRef = useRef<T | undefined>(getSnapshot())
 
-  // Get stable snapshot which ensures stable references when value is not changed
+  /**
+   * Callback to get a stable snapshot to ensure stable references when value is not changed
+   */
   const getStableSnapshot = useCallback((): T | undefined => {
     const nextValue = getSnapshot()
     if (!isEqualDeep(nextValue, snapshotRef.current)) {
@@ -37,124 +44,56 @@ export function useYValue<T>(
     return snapshotRef.current
   }, [getSnapshot])
 
-  // Subscribe to changes
+  /**
+   * Callback for subscribing to changes
+   */
   const subscribe = useCallback((onStoreChange: () => void) => {
-    const { ymap, path } = getRoot(y, normalizedPath) || {}
-    if (!ymap || !path) return () => { }
-
-    const targetPath = path.join('.')
-    let lastValue = getValueFromPath<T>(ymap, path)
+    if (!yContainer) return () => { }
 
     // Yjs observeDeep() event handler
-    const onEvent = (events: Y.YEvent<Y.Map<T>>[]) => {
+    const onEvent = (events: Y.YEvent<Y.Map<T> | Y.Array<T>>[]) => {
       for (const event of events) {
-        const changedPath = [...event.path, ...Array.from(event.keys.keys())].join('.')
+        const changedPath = (event.target instanceof Y.XmlText)
+          ? event.path.slice(0, -1)
+          : [...event.path, ...Array.from(event.keys.keys())]
+        const changedKey = yPathToString([...changedPath])
 
-        if (changedPath === targetPath) {
-          // Y.Map key have changed
-          const newValue = getValueFromPath<T>(ymap, path)
+        // Direct match
+        if (changedKey === observedKey) {
+          const newValue = getValueFromPath<T>(yContainer, observedPath)
 
-          if (!isEqualDeep(newValue, lastValue)) {
-            lastValue = newValue
+          if (event.target instanceof Y.XmlText) {
+            // Y.XmlText values only report change if the string value is observed
+            if (!raw && newValue?.toString() !== snapshotRef.current) {
+              onStoreChange()
+            }
+          } else if (!isEqualDeep(newValue, snapshotRef.current)) {
             onStoreChange()
           }
+
           return
-        }
-
-        if (event.target instanceof Y.Array && typeof path.at(-1) === 'number') {
-          // Y.Array have changed
-          const idx = path.at(-1) as number
-
-          let index = 0
-          for (const op of event.changes.delta) {
-            if (op.retain) {
-              index += op.retain
-            } else if (op.insert) {
-              const start = index
-              const end = index + op.insert.length
-
-              if (idx >= start && idx < end) {
-                // This is wrong
-                const newValue = getValueFromPath<T>(ymap, path)
-                if (!isEqualDeep(newValue, lastValue)) {
-                  lastValue = newValue
-                  onStoreChange()
-                }
-                break
-              }
-              index = end
-            } else if (op.delete) {
-              const start = index
-              const end = index + op.delete
-              if (idx >= start && idx < end) {
-                // This is wrong
-                const newValue = getValueFromPath<T>(ymap, path)
-                if (!isEqualDeep(newValue, lastValue)) {
-                  lastValue = newValue
-                  onStoreChange()
-                }
-                break
-              }
-              // index stays the same
-            }
+        } else if (event.target instanceof Y.Array) {
+          if (doesArrayChangeAffectPath(event as Y.YEvent<Y.Array<unknown>>, observedPath)) {
+            onStoreChange()
+            return
           }
         }
       }
     }
 
-    ymap.observeDeep(onEvent)
-    return () => ymap.unobserveDeep(onEvent)
-  }, [y, normalizedPath])
+    yContainer.observeDeep(onEvent)
+    return () => yContainer.unobserveDeep(onEvent)
+  }, [yContainer, observedKey, observedPath, raw])
 
   // Set value callback function
   const set = useCallback((newValue: T) => {
-    const { ymap, path } = getRoot(y, normalizedPath) || {}
-    if (ymap && path) {
-      setValueByPath(ymap, path, newValue)
+    if (yContainer) {
+      setValueByPath(yContainer, observedPath, newValue)
     }
-  }, [y, normalizedPath])
+  }, [yContainer, observedPath])
 
   return [
     useSyncExternalStore(subscribe, getStableSnapshot),
     set
   ]
-}
-
-function getRoot(y: Y.Doc | Y.Map<unknown> | undefined, relativePath: YPath): undefined | {
-  ydoc: Y.Doc
-  ymap: Y.Map<unknown> | Y.Array<unknown>
-  path: YPath
-} {
-  if (!y) {
-    return
-  }
-
-  if (y instanceof Y.Map) {
-    if (!y.doc) {
-      return
-    }
-
-    return {
-      ydoc: y.doc,
-      ymap: y,
-      path: relativePath
-    }
-  }
-
-  const path = [...relativePath] as YPath
-  const rootKey = path.shift()
-  if (typeof rootKey !== 'string') {
-    return
-  }
-
-  const ymap = y.getMap(rootKey)
-  if (!ymap) {
-    return
-  }
-
-  return {
-    ydoc: y,
-    ymap,
-    path
-  }
 }
