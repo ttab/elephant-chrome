@@ -3,7 +3,14 @@ import { Prompt } from '../Prompt'
 import { useEffect, useState } from 'react'
 import { PromptCauseField } from './PromptCauseField'
 
-export const PromptDefault = ({ prompt, setStatus, showPrompt, requireCause = false, currentCause, unPublishDocument }: {
+export const PromptDefault = ({
+  prompt,
+  setStatus,
+  showPrompt,
+  requireCause = false,
+  currentCause,
+  unPublishDocument
+}: {
   prompt: {
     status: string
   } & WorkflowTransition
@@ -16,8 +23,14 @@ export const PromptDefault = ({ prompt, setStatus, showPrompt, requireCause = fa
   unPublishDocument?: (name: string) => void
 }) => {
   const [cause, setCause] = useState<string | undefined>(currentCause)
-  const showCauseField = prompt.status === 'unpublished' ? false : requireCause || cause
-  const disablePrimary = showCauseField ? false : requireCause && !cause
+  const isUnpublishPrompt = prompt.status === 'unpublished'
+
+  const showCauseField = isUnpublishPrompt
+    ? false
+    : requireCause || cause
+  const disablePrimary = isUnpublishPrompt
+    ? false
+    : requireCause && !cause
 
   useEffect(() => {
     if (prompt.status === 'draft') {
@@ -34,7 +47,7 @@ export const PromptDefault = ({ prompt, setStatus, showPrompt, requireCause = fa
       onPrimary={() => {
         showPrompt(undefined)
 
-        if (prompt.status === 'unpublished' && unPublishDocument) {
+        if (isUnpublishPrompt && unPublishDocument) {
           void unPublishDocument('unpublished')
         } else {
           void setStatus(prompt.status, { cause })
@@ -44,7 +57,7 @@ export const PromptDefault = ({ prompt, setStatus, showPrompt, requireCause = fa
         showPrompt(undefined)
       }}
       disablePrimary={disablePrimary}
-      primaryVariant={prompt.status === 'unpublished' ? 'destructive' : undefined}
+      primaryVariant={isUnpublishPrompt ? 'destructive' : undefined}
     >
       {(showCauseField) && (
         <PromptCauseField
