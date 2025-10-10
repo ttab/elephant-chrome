@@ -9,6 +9,8 @@ import { useCollaboration } from '@/hooks/useCollaboration'
 import { useAwareness } from '@/hooks/useAwareness'
 import { useEffect } from 'react'
 import { View } from '@/components/View'
+import { useYValue } from '@/hooks/useYValue'
+import { ConceptHeader } from './ConceptHeader'
 
 const meta: ViewMetadata = {
   name: 'Concept',
@@ -55,7 +57,9 @@ export const Concept = (props: ViewProps & { document?: Y.Doc }) => {
 const ConceptWrapper = (props: ViewProps & { documentId: string }): JSX.Element => {
   const { provider, synced, user } = useCollaboration()
   const [, setIsFocused] = useAwareness(props.documentId)
+  const [isChanged] = useYValue<boolean>('root.changed')
 
+  console.log(provider)
   useEffect(() => {
     provider?.setAwarenessField('data', user)
     setIsFocused(true)
@@ -68,7 +72,12 @@ const ConceptWrapper = (props: ViewProps & { documentId: string }): JSX.Element 
   return (
     <>
       <View.Root asDialog={props?.asDialog} className={props?.className}>
-        <h1>Concept Wrapper</h1>
+        <ConceptHeader
+          documentId={props.documentId}
+          asDialog={!!props.asDialog}
+          onDialogClose={props.onDialogClose}
+          isChanged={isChanged}
+        />
 
       </View.Root>
     </>
