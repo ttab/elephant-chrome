@@ -7,10 +7,13 @@ import type * as Y from 'yjs'
 import { Error } from '../Error'
 import { useCollaboration } from '@/hooks/useCollaboration'
 import { useAwareness } from '@/hooks/useAwareness'
-import { useEffect } from 'react'
+import { useCallback, useEffect } from 'react'
 import { View } from '@/components/View'
 import { useYValue } from '@/hooks/useYValue'
 import { ConceptHeader } from './ConceptHeader'
+import { PenIcon } from '@ttab/elephant-ui/icons'
+import { Form } from '@/components/Form'
+import { TextBox } from '@/components/ui'
 
 const meta: ViewMetadata = {
   name: 'Concept',
@@ -78,10 +81,53 @@ const ConceptWrapper = (props: ViewProps & { documentId: string }): JSX.Element 
           onDialogClose={props.onDialogClose}
           isChanged={isChanged}
         />
-
+        {!!provider && synced
+          ? (
+              <ConceptContent {...props} documentId={props.documentId} />
+            )
+          : <></>}
+        <View.Footer className='justify-center'>
+          <h1>Concept Footer</h1>
+        </View.Footer>
       </View.Root>
     </>
   )
 }
 
+const ConceptContent = (props: ViewProps & { documentId: string }): JSX.Element => {
+  const { provider, used, sync } = useCollaboration()
+  const [isChanged] = useYValue<boolean>('root.changed')
+  const { documentType } = props
+  console.log(documentType)
+  const handleChange = useCallback((value: boolean): void => {
+    const root = provider?.document.getMap('ele').get('root') as Y.Map<unknown>
+    const changed = root.get('changed') as boolean
+    if (changed !== value) {
+      root.set('changed', value)
+    }
+  }, [provider])
+
+  return (
+    <>
+      <View.Content className='flex flex-col max-w-[1000px] p-5'>
+        <Form.Root asDialog={props.asDialog} onChange={handleChange}>
+          <Form.Content>
+            <TextBox
+              singleLine={true}
+              onChange={handleChange}
+              path='root.title'
+              icon={(
+                <PenIcon
+                  size={18}
+                  className='text-mutated-foreground mr-4'
+                />
+              )}
+            >
+            </TextBox>
+          </Form.Content>
+        </Form.Root>
+      </View.Content>
+    </>
+  )
+}
 Concept.meta = meta
