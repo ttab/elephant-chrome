@@ -54,6 +54,7 @@ export const ConceptList = ({ columns, documentType }: {
         type='Concept'
         columns={columns}
         onRowSelected={onRowSelected}
+        documentType={documentType}
       />
       <Pagination total={data?.total || 0} />
     </>
