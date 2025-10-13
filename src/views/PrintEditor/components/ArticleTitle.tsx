@@ -36,6 +36,7 @@ export const ArticleTitle = ({ documentId }: { documentId: string }): JSX.Elemen
               snapshotDocument(documentId).then(() => {
                 toast.success('Titel uppdaterad')
               }).catch((error) => {
+                toast.error('Kunde inte uppdatera titel')
                 console.error('Error updating title:', error)
               })
 
