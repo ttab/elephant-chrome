@@ -3,11 +3,9 @@ import { AssignmentRow } from './AssignmentRow'
 import { appendAssignment } from '@/shared/createYItem'
 import { useAuthors, useCollaboration, useNavigationKeys } from '@/hooks'
 import { Assignment } from './Assignment'
-import { type Block } from '@ttab/elephant-api/newsdoc'
 import type { MouseEvent, KeyboardEvent } from 'react'
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { deleteByYPath, getValueByYPath, setValueByYPath } from '@/shared/yUtils'
-import { type EleBlock } from '@/shared/types'
 import { Button } from '@ttab/elephant-ui'
 import { useActiveAuthor } from '@/hooks/useActiveAuthor'
 import { snapshotDocument } from '@/lib/snapshotDocument'
@@ -24,38 +22,39 @@ export const AssignmentTable = ({ ydoc, asDialog = false, documentId, onChange }
   onChange?: (arg: boolean) => void
 }): JSX.Element => {
   const { provider } = useCollaboration()
-  const [assignments] = useYValue<EleBlock[]>(ydoc.document, 'meta.core/assignment')
+  const [assignments] = useYValue<Y.Array<Y.Map<unknown>>>(ydoc.document, 'meta.core/assignment', true)
   const [planningSlugLine] = useYValue<string | undefined>(ydoc.document, 'meta.tt/slugline[0].value')
-  const [selectedAssignment, setSelectedAssignment] = useState<number | undefined>(undefined)
+  const [selectedAssignment, setSelectedAssignment] = useState<Y.Map<unknown> | undefined>(undefined)
+  const [newAssignment, setNewAssignment] = useState<Y.Map<unknown> | undefined>(undefined)
   const [focusedRowIndex, setFocusedRowIndex] = useState<number | undefined>()
   const author = useActiveAuthor({ full: false })
   const { data: session } = useSession()
   const authors = useAuthors()
 
-  const newAssignment = useMemo(() => {
-    const index = assignments?.findIndex((a) => a.__inProgress) ?? -1
-    return (index < 0) ? undefined : { assignment: assignments?.[index], index }
-  }, [assignments])
-
-  const existingAssigments = useMemo(() => {
-    return assignments?.filter((a) => !a.__inProgress) ?? []
-  }, [assignments])
+  useEffect(() => {
+    for (const a of assignments ?? []) {
+      if ((a.get('__inProgress') as Y.Map<unknown>)?.get('sub') === session?.user.sub) {
+        setNewAssignment(a)
+      }
+    }
+  }, [assignments, session?.user.sub])
 
   const slugLines = useMemo(() => {
-    return (assignments || []).reduce<string[]>((acc, item) => {
-      const slugline = (item.meta as unknown as Record<string, Block[]>)?.['tt/slugline']?.[0]?.value
-      return (slugline) ? [...acc, slugline] : acc
-    }, [])
+    const slugs = []
+    for (const a of assignments ?? []) {
+      slugs.push(getValueByYPath<string>(a, 'meta.tt/slugline[0].value')?.[0])
+    }
+    return slugs
   }, [assignments])
 
   const handleNewAssignment = (event: MouseEvent<HTMLButtonElement> | KeyboardEvent<HTMLButtonElement>) => {
     event.preventDefault()
     event.stopPropagation()
-    if (selectedAssignment != null || !ydoc.provider) {
+    if (newAssignment || selectedAssignment != null || !ydoc.provider) {
       return
     }
 
-    appendAssignment({
+    const [, createdAssignment] = appendAssignment({
       document: ydoc.provider.document,
       inProgress: {
         sub: session?.user.sub ?? ''
@@ -66,37 +65,52 @@ export const AssignmentTable = ({ ydoc, asDialog = false, documentId, onChange }
         : undefined,
       type: 'text'
     })
+
+    setNewAssignment(createdAssignment)
   }
 
-  const handleClose = async () => {
-    const currentAssigmentPath = `meta.core/assignment[${newAssignment?.index}]`
+  const handleClose = () => {
+    if (!newAssignment) return
 
-    // Since we're transfering the slugline to new text assignments, we need to clean up
-    const [assignmentType] = getValueByYPath(ydoc.document,
-      `${currentAssigmentPath}.meta.core/assignment-type[0].value`)
-
+    const [assignmentType] = getValueByYPath(newAssignment, 'meta.core/assignment-type[0].value')
     if (assignmentType !== 'text' && assignmentType !== 'editorial-info') {
-      deleteByYPath(ydoc.document, `${currentAssigmentPath}.meta.[tt/slugline]`)
+      deleteByYPath(newAssignment, 'meta.[tt/slugline]')
     }
-
-    deleteByYPath(ydoc.document, `${currentAssigmentPath}.__inProgress`)
+    newAssignment.delete('__inProgress')
 
     if (documentId) {
-      await snapshotDocument(documentId, {
-        force: true
-      }, provider?.document)
+      snapshotDocument(documentId, { force: true }, provider?.document)
+        .then(() => {
+          setNewAssignment(undefined)
+          onChange?.(true)
+        })
+        .catch((ex) => {
+          console.error('Error closing assignment:', ex)
+          toast.error('Kunde inte spara uppdraget.')
+        })
     }
+  }
 
-    // Set document as changed once we close the new assignment
-    onChange?.(true)
+  const handleAbort = () => {
+    if (!newAssignment) return
+
+    const index = (assignments?.toArray() ?? []).findIndex((assignment) => {
+      return assignment.get('id') === newAssignment?.get('id')
+    }) ?? -1
+
+    setNewAssignment(undefined)
+    if (index > -1 && assignments) {
+      assignments.delete(index)
+    }
   }
 
   useNavigationKeys({
     keys: ['ArrowUp', 'ArrowDown'],
     onNavigation: (event) => {
+      if (!assignments?.length) return
       const idx = (focusedRowIndex === undefined)
-        ? (event.key === 'ArrowDown' ? 0 : existingAssigments.length - 1)
-        : (focusedRowIndex + (event.key === 'ArrowDown' ? 1 : -1) + existingAssigments.length) % existingAssigments.length
+        ? (event.key === 'ArrowDown' ? 0 : assignments?.length - 1)
+        : (focusedRowIndex + (event.key === 'ArrowDown' ? 1 : -1) + assignments.length) % assignments.length
       setFocusedRowIndex(idx)
     }
   })
@@ -127,83 +141,91 @@ export const AssignmentTable = ({ ydoc, asDialog = false, documentId, onChange }
           </Button>
         </div>
 
-        {!!newAssignment && session?.user.sub !== newAssignment.assignment?.__inProgress?.sub
-          && (
-            <div className='text-sm ps-10 py-2 flex flex-row gap-1 text-muted-foreground items-center'>
-              <InfoIcon size={18} strokeWidth={1.75} />
-              <div>
-                <span className='hidden sm:inline'>Nytt uppdrag skapas av</span>
-                {' '}
-                {getAuthorBySub(authors, newAssignment.assignment?.__inProgress?.sub)?.name || `okänd: ${newAssignment.assignment?.__inProgress?.sub ?? 'användare'}`}
-                {', '}
-                <a
-                  className='text-primary hover:underline'
-                  href='#'
-                  onClick={(e) => {
-                    e.preventDefault()
-                    setValueByYPath(
-                      ydoc.document,
-                      `meta.core/assignment[${newAssignment?.index}].__inProgress.sub`,
-                      session?.user.sub
-                    )
-                  }}
-                >
-                  Ta över
-                </a>
-              </div>
-            </div>
-          )}
+
+        {!!assignments?.length && (
+          <>
+            {assignments.map((assignment, index: number) => {
+              const [sub] = getValueByYPath<string>(assignment, '__inProgress.sub')
+              if (!sub || sub === session?.user.sub) {
+                return null
+              }
+              const user = getAuthorBySub(authors, sub)
+
+              return (
+                <div key={`${assignment.get('id') as string}`} className='border-b last:border-0'>
+                  <div className='text-sm ps-6 py-2 flex flex-row gap-2 text-muted-foreground items-center'>
+                    <InfoIcon size={18} strokeWidth={1.75} />
+                    <div>
+                      <span className='hidden sm:inline'>Nytt uppdrag skapas av</span>
+                      {' '}
+                      {user?.name || `okänd: ${sub ?? 'användare'}`}
+                      {', '}
+                      <a
+                        className='text-primary hover:underline'
+                        href='#'
+                        onClick={(e) => {
+                          e.preventDefault()
+                          setValueByYPath(
+                            ydoc.document,
+                            `meta.core/assignment[${index}].__inProgress.sub`,
+                            session?.user.sub
+                          )
+                        }}
+                      >
+                        Ta över
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              )
+            })}
+          </>
+        )}
+
       </div>
 
-      {!!newAssignment && session?.user.sub === newAssignment.assignment?.__inProgress?.sub && (
+      {newAssignment && (
         <div className='pb-6'>
           <Assignment
             ydoc={ydoc}
-            index={newAssignment.index}
-            onAbort={() => {
-              deleteByYPath(ydoc.document, `meta.core/assignment[${newAssignment.index}]`)
-            }}
-            onClose={() => {
-              handleClose().catch((ex) => {
-                console.error('Error closing assignment:', ex)
-                toast.error('Kunde inte spara uppdraget.')
-              })
-            }}
+            assignment={newAssignment}
+            onAbort={handleAbort}
+            onClose={handleClose}
             className='mb-6'
           />
         </div>
       )}
 
-      {!!existingAssigments.length && (
+      {!!assignments?.length && (
         <div className='border rounded-md'>
-          {existingAssigments?.map((_, index: number) => (
-            <div key={`${_.id}`} className='border-b last:border-0'>
-              {selectedAssignment === index
-                ? (
-                    <Assignment
-                      ydoc={ydoc}
-                      onChange={onChange}
-                      index={index}
-                      onClose={() => {
-                        setSelectedAssignment(undefined)
-                      }}
-                      className='-my-px -mx-[5px]'
-                    />
-                  )
-                : (
-                    <AssignmentRow
-                      ydoc={ydoc}
-                      index={index}
-                      isFocused={index === focusedRowIndex}
-                      asDialog={asDialog}
-                      onChange={onChange}
-                      onSelect={() => {
-                        if (!newAssignment) {
-                          setSelectedAssignment(index)
-                        }
-                      }}
-                    />
-                  )}
+          {assignments.map((assignment, index: number) => (
+            <div key={`${assignment.get('id') as string}`} className='border-b last:border-0'>
+              {selectedAssignment?.get('id') === assignment.get('id')
+                && (
+                  <Assignment
+                    ydoc={ydoc}
+                    assignment={assignment}
+                    onChange={onChange}
+                    onClose={() => setSelectedAssignment(undefined)}
+                    className='-my-px -mx-[5px]'
+                  />
+                )}
+
+              {selectedAssignment?.get('id') !== assignment.get('id') && newAssignment?.get('id') !== assignment.get('id')
+                && (
+                  <AssignmentRow
+                    ydoc={ydoc}
+                    assignment={assignment}
+                    isFocused={index === focusedRowIndex}
+                    asDialog={asDialog}
+                    onChange={onChange}
+                    onSelect={() => {
+                      if (!newAssignment) {
+                        setSelectedAssignment(assignment)
+                      }
+                    }}
+                  />
+                )}
             </div>
           ))}
         </div>

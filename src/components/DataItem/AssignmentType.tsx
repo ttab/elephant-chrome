@@ -106,7 +106,7 @@ export const AssignmentType = ({ ydoc, path, editable = false, readOnly = false,
 }
 
 function getIcon(selectedOptions: DefaultValueOption[], editable: boolean, readOnly = false) {
-  if (selectedOptions[0].value !== 'text') {
+  if (selectedOptions[0]?.value !== 'text') {
     return selectedOptions[0]?.icon
   }
 

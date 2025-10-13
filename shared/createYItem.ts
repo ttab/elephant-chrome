@@ -78,7 +78,7 @@ export function appendAssignment({
   title?: string
   wire?: Wire
   assignmentData?: Block['data']
-}): number {
+}): [number, Y.Map<unknown>] {
   const meta = document.getMap('ele').get('meta') as Y.Map<unknown>
 
   // Get slugline from planning
@@ -127,7 +127,10 @@ export function appendAssignment({
   // Push to existing assignments
   yAssignments.push([yAssignment])
 
-  return yAssignments.length - 1
+  return [
+    yAssignments.length - 1,
+    yAssignment
+  ]
 }
 
 /**

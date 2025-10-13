@@ -67,6 +67,10 @@ export function useYValue<T>(
             if (!raw && newValue?.toString() !== snapshotRef.current) {
               onStoreChange()
             }
+          } else if (event.target instanceof Y.Array || event.target instanceof Y.Map) {
+            // Y.Array or Y.Map changed
+            onStoreChange()
+            return
           } else if (!isEqualDeep(newValue, snapshotRef.current)) {
             // All other directly observed path changes should report a change
             onStoreChange()

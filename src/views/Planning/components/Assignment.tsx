@@ -12,21 +12,23 @@ import { useEffect, useRef } from 'react'
 import { AssignmentVisibility } from '@/components/DataItem/AssignmentVisibility'
 import { type YDocument, useYValue } from '@/modules/yjs/hooks'
 import type * as Y from 'yjs'
+import { getYjsPath } from '@/modules/yjs/lib/yjs'
 
-export const Assignment = ({ ydoc, index, onAbort, onClose, onChange }: {
+export const Assignment = ({ ydoc, assignment, onAbort, onClose, onChange }: {
   ydoc: YDocument<Y.Map<unknown>>
-  index: number
+  assignment: Y.Map<unknown>
   onClose: () => void
   onAbort?: () => void
   className?: string
 } & FormProps): JSX.Element => {
-  const [assignment] = useYValue<boolean>(ydoc.document, `meta.core/assignment[${index}]`)
-  const [articleId] = useYValue<string>(ydoc.document, `meta.core/assignment[${index}].links.core/article[0].uuid`)
-  const [flashId] = useYValue<string>(ydoc.document, `meta.core/assignment[${index}].links.core/flash[0].uuid`)
-  const [editorialInfoId] = useYValue<string>(ydoc.document, `meta.core/assignment[${index}].links.core/editorial-info[0].uuid`)
-  const [assignmentInProgress] = useYValue<boolean>(ydoc.document, `meta.core/assignment[${index}].__inProgress`)
-  const [assignmentType] = useYValue<string | undefined>(ydoc.document, `meta.core/assignment[${index}].meta.core/assignment-type[0].value`)
-  const [description] = useYValue<Y.XmlText | undefined>(ydoc.document, `meta.core/assignment[${index}].meta.core/description[0].data.text`, true)
+  const path = getYjsPath(assignment, true)
+  const [index] = getYjsPath(assignment).slice(-1)
+  const [articleId] = useYValue<string>(ydoc.document, `${path}.links.core/article[0].uuid`)
+  const [flashId] = useYValue<string>(ydoc.document, `${path}.links.core/flash[0].uuid`)
+  const [editorialInfoId] = useYValue<string>(ydoc.document, `${path}.links.core/editorial-info[0].uuid`)
+  const [assignmentInProgress] = useYValue<boolean>(ydoc.document, `${path}.__inProgress`)
+  const [assignmentType] = useYValue<string | undefined>(ydoc.document, `${path}.meta.core/assignment-type[0].value`)
+  const [description] = useYValue<Y.XmlText | undefined>(ydoc.document, `${path}.meta.core/description[0].data.text`, true)
   const documentId = articleId || flashId || editorialInfoId
 
   const formRef = useRef<HTMLDivElement>(null)
@@ -46,7 +48,7 @@ export const Assignment = ({ ydoc, index, onAbort, onClose, onChange }: {
     }
   }, [onAbort, onClose])
 
-  if (!ydoc || !assignment) {
+  if (!ydoc || !assignment || !path || typeof index !== 'number') {
     return <></>
   }
 
@@ -57,7 +59,7 @@ export const Assignment = ({ ydoc, index, onAbort, onClose, onChange }: {
           <Form.Title>
             <Title
               ydoc={ydoc}
-              path={`meta.core/assignment[${index}].title`}
+              path={`${path}.title`}
               placeholder='Uppdragsrubrik'
               autoFocus={true}
             />
@@ -81,7 +83,7 @@ export const Assignment = ({ ydoc, index, onAbort, onClose, onChange }: {
                 <SluglineEditable
                   ydoc={ydoc}
                   disabled={!!documentId}
-                  path={`meta.core/assignment[${index}].meta.tt/slugline[0].value`}
+                  path={`${path}.meta.tt/slugline[0].value`}
                 />
               </Form.Group>
             )}
@@ -90,18 +92,18 @@ export const Assignment = ({ ydoc, index, onAbort, onClose, onChange }: {
           <Form.Group>
             <AssignmentType
               ydoc={ydoc}
-              path={`meta.core/assignment[${index}]`}
+              path={path}
               editable={!articleId && !flashId}
             />
             <Assignees
               ydoc={ydoc}
-              path={`meta.core/assignment[${index}].links.core/author`}
+              path={`${path}.links.core/author`}
               placeholder='Lägg till uppdragstagare'
             />
             <AssignmentTime index={index} />
             <AssignmentVisibility
               ydoc={ydoc}
-              path={`meta.core/assignment[${index}].data.public`}
+              path={`${path}.data.public`}
               disabled={!!documentId}
               editable
               className='ml-auto'
@@ -112,12 +114,11 @@ export const Assignment = ({ ydoc, index, onAbort, onClose, onChange }: {
         <Form.Footer>
           <Form.Submit onSubmit={onClose} onReset={onAbort}>
             <div className='flex gap-2 justify-end pt-4'>
-              {assignmentInProgress && !!onAbort
-                && (
-                  <Button type='reset' variant='ghost'>
-                    Avbryt
-                  </Button>
-                )}
+              {assignmentInProgress && !!onAbort && (
+                <Button type='reset' variant='ghost'>
+                  Avbryt
+                </Button>
+              )}
               <Button type='submit' variant='outline' className='whitespace-nowrap'>
                 {assignmentInProgress ? 'Lägg till' : 'Stäng'}
               </Button>

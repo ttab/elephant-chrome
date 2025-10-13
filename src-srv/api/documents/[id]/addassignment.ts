@@ -128,7 +128,7 @@ export const POST: RouteHandler = async (req: Request, { collaborationServer, re
       assignmentData.publish = publishTime
     }
 
-    const index = appendAssignment({
+    const [index] = appendAssignment({
       document,
       type,
       wire,

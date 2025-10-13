@@ -45,10 +45,11 @@ import { DocumentStatuses } from '@/defaults/documentStatuses'
 import useSWR from 'swr'
 import { useRepositoryEvents } from '@/hooks/useRepositoryEvents'
 import { type YDocument, useYValue } from '@/modules/yjs/hooks'
+import { getYjsPath } from '@/modules/yjs/lib/yjs'
 
-export const AssignmentRow = ({ ydoc, index, onSelect, isFocused = false, asDialog, onChange }: {
+export const AssignmentRow = ({ ydoc, assignment, onSelect, isFocused = false, asDialog, onChange }: {
   ydoc: YDocument<Y.Map<unknown>>
-  index: number
+  assignment: Y.Map<unknown>
   onSelect: () => void
   isFocused?: boolean
   asDialog?: boolean
@@ -62,8 +63,8 @@ export const AssignmentRow = ({ ydoc, index, onSelect, isFocused = false, asDial
   const { repository } = useRegistry()
   const { data: session } = useSession()
 
-  const base = `meta.core/assignment[${index}]`
-  const [assignment] = useYValue<Y.Map<unknown> | undefined>(ydoc.document, base, true)
+  const base = getYjsPath(assignment, true)
+  const [index] = getYjsPath(assignment).slice(-1) as number[]
   const [inProgress] = useYValue(ydoc.document, `${base}.__inProgress`)
   const [articleId] = useYValue<string>(ydoc.document, `${base}.links.core/article[0].uuid`)
   const [flashId] = useYValue<string>(ydoc.document, `${base}.links.core/flash[0].uuid`)
@@ -405,11 +406,7 @@ export const AssignmentRow = ({ ydoc, index, onSelect, isFocused = false, asDial
           onPrimary={(event) => {
             event.stopPropagation()
             setShowVerifyDialog(false)
-            deleteByYPath(
-              provider?.document.getMap('ele'),
-              `meta.core/assignment[${index}]`
-            )
-
+            deleteByYPath(ydoc.document, `meta.core/assignment[${index}]`)
             onChange?.(true)
           }}
           onSecondary={() => {
