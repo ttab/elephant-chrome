@@ -9,7 +9,7 @@ import { snapshotDocument } from '@/lib/snapshotDocument'
 import { getStatusFromMeta } from '@/lib/getStatusFromMeta'
 import type { Session } from 'next-auth'
 
-export const useWorkflowStatus = (uuid?: string, isWorkflow: boolean = false): [
+export const useWorkflowStatus = (uuid?: string, isWorkflow: boolean = false, asPrint?: boolean): [
   Status | undefined,
   (newStatusName: string | Status, cause?: string, asWire?: boolean) => Promise<void>,
   KeyedMutator<Status | undefined>
@@ -39,6 +39,12 @@ export const useWorkflowStatus = (uuid?: string, isWorkflow: boolean = false): [
         return
       }
 
+      if (asPrint && meta.workflowCheckpoint === 'usable') {
+        return {
+          uuid,
+          ...getStatusFromMeta(meta, false)
+        }
+      }
       return {
         uuid,
         ...getStatusFromMeta(meta, isWorkflow)
@@ -51,8 +57,19 @@ export const useWorkflowStatus = (uuid?: string, isWorkflow: boolean = false): [
     toast.error('Ett fel uppstod när aktuell status skulle hämtas. Försök ladda om sidan.')
   }
 
+  // Listen to repository events and revalidate if the current document is affected
   useRepositoryEvents([
-    'core/article', 'core/article+meta'
+    'core/article',
+    'core/article+meta',
+    'core/flash',
+    'core/flash+meta',
+    'core/editorial-info',
+    'core/editorial-info+meta',
+    'tt/print-article',
+    'tt/print-article+meta',
+    'core/planning-item',
+    'core/planning-item+meta'
+
   ], (event) => {
     if (event.uuid === uuid || event.mainDocument === uuid) {
       void mutate()
@@ -77,7 +94,7 @@ export const useWorkflowStatus = (uuid?: string, isWorkflow: boolean = false): [
       }
 
 
-      // Flush document to repsitory and if applicable, update the status with cause
+      // Flush document to repository and if applicable, update the status with cause
       const snapshotResponse = uuid && await snapshotDocument(uuid, {
         force: true,
         status: typeof newStatus === 'string'

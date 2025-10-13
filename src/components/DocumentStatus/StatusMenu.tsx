@@ -34,7 +34,7 @@ export const StatusMenu = ({ documentId, type, publishTime, onBeforeStatusChange
     'tt/print-article'
   ].includes(type)
 
-  const [documentStatus, setDocumentStatus] = useWorkflowStatus(documentId, shouldUseWorkflowStatus)
+  const [documentStatus, setDocumentStatus] = useWorkflowStatus(documentId, shouldUseWorkflowStatus, type === 'tt/print-article')
   const containerRef = useRef<HTMLDivElement>(null)
   const [dropdownWidth, setDropdownWidth] = useState<number>(0)
   const { statuses, workflow } = useWorkflow(type)
@@ -133,6 +133,13 @@ export const StatusMenu = ({ documentId, type, publishTime, onBeforeStatusChange
       return undefined
     }
   }
+
+  // For print-articles we show "unpublished changes" _only_ if checkpoint is 'usable'
+  const asSave = !!(type === 'tt/print-article'
+    ? isChanged && documentStatus.checkpoint === 'usable'
+    : isChanged && documentStatus.name !== 'draft'
+  )
+
   return (
     <>
       <div className='flex items-center' ref={containerRef}>
@@ -144,7 +151,7 @@ export const StatusMenu = ({ documentId, type, publishTime, onBeforeStatusChange
               workflow={workflow}
               currentStatusName={currentStatusName}
               currentStatusDef={currentStatusDef}
-              asSave={!!(isChanged && documentStatus.name !== 'draft')}
+              asSave={asSave}
 
             />
           </DropdownMenuTrigger>
@@ -166,7 +173,7 @@ export const StatusMenu = ({ documentId, type, publishTime, onBeforeStatusChange
               statuses={statuses}
               onSelect={showPrompt}
             >
-              {isChanged && documentStatus.name !== 'draft' && (
+              {asSave && (
                 <StatusMenuOption
                   key='save'
                   status={documentStatus.name}
