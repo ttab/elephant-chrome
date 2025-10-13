@@ -1,11 +1,10 @@
 import { useView } from '@/hooks'
 import { useEffect, useRef } from 'react'
-import { StatusMenu } from '@/components/DocumentStatus/StatusMenu'
 import { ViewHeader } from '@/components/View'
 import { TagIcon } from '@ttab/elephant-ui/icons'
 import { MetaSheet } from '../Editor/components/MetaSheet'
 
-export const ConceptHeader = ({ documentId, asDialog, onDialogClose, isChanged }: {
+export const ConceptHeader = ({ documentId, asDialog, onDialogClose }: {
   documentId: string
   asDialog: boolean
   onDialogClose?: () => void
@@ -34,11 +33,6 @@ export const ConceptHeader = ({ documentId, asDialog, onDialogClose, isChanged }
           <div className='flex flex-row gap-2 justify-end items-center'>
             {!asDialog && (
               <>
-                <StatusMenu
-                  documentId={documentId}
-                  type='core/factbox'
-                  isChanged={isChanged}
-                />
                 <MetaSheet container={containerRef.current} documentId={documentId} />
               </>
             )}
@@ -47,7 +41,6 @@ export const ConceptHeader = ({ documentId, asDialog, onDialogClose, isChanged }
         </div>
       </ViewHeader.Content>
       <ViewHeader.Action onDialogClose={onDialogClose} asDialog={asDialog} />
-
     </ViewHeader.Root>
   )
 }
