@@ -354,8 +354,6 @@ export const Table = <TData, TValue>({
           </TableBody>
         </_Table>
       )}
-
-
     </>
   )
 }
