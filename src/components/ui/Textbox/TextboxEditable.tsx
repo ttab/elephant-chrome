@@ -10,7 +10,7 @@ import { ContextMenu } from '../../Editor/ContextMenu'
 import { useOnSpellcheck } from '@/hooks/useOnSpellcheck'
 import { getValueByYPath } from '@/shared/yUtils'
 
-export const TextboxEditable = ({ provider, path, user, content, singleLine, spellcheck, disabled = false, onChange }: {
+export const TextboxEditable = ({ provider, path, user, content, singleLine, spellcheck, disabled = false, onChange, className }: {
   disabled?: boolean
   provider: HocuspocusProvider
   path: string
@@ -19,6 +19,7 @@ export const TextboxEditable = ({ provider, path, user, content, singleLine, spe
   content: Y.XmlText
   spellcheck?: boolean
   onChange?: (arg: boolean) => void
+  className?: string
 }): JSX.Element | undefined => {
   const [documentLanguage] = getValueByYPath<string>(provider.document.getMap('ele'), 'root.language')
   const onSpellcheck = useOnSpellcheck(documentLanguage)
@@ -73,7 +74,7 @@ export const TextboxEditable = ({ provider, path, user, content, singleLine, spe
         **:data-spelling-error:border-b-2
         **:data-spelling-error:border-dotted
         **:data-spelling-error:border-red-500
-        dark:bg-input`
+        dark:bg-input ${className}`
       )}
     >
       <ContextMenu className='z-9999' />

@@ -7,13 +7,15 @@ import type * as Y from 'yjs'
 import { Error } from '../Error'
 import { useCollaboration } from '@/hooks/useCollaboration'
 import { useAwareness } from '@/hooks/useAwareness'
-import { useCallback, useEffect } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { View } from '@/components/View'
 import { useYValue } from '@/hooks/useYValue'
 import { ConceptHeader } from './ConceptHeader'
 import { PenIcon } from '@ttab/elephant-ui/icons'
 import { Form } from '@/components/Form'
 import { TextBox } from '@/components/ui'
+import { useSession } from 'next-auth/react'
+import { Button } from '@ttab/elephant-ui'
 
 const meta: ViewMetadata = {
   name: 'Concept',
@@ -62,7 +64,6 @@ const ConceptWrapper = (props: ViewProps & { documentId: string }): JSX.Element 
   const [, setIsFocused] = useAwareness(props.documentId)
   const [isChanged] = useYValue<boolean>('root.changed')
 
-  console.log(provider)
   useEffect(() => {
     provider?.setAwarenessField('data', user)
     setIsFocused(true)
@@ -96,9 +97,15 @@ const ConceptWrapper = (props: ViewProps & { documentId: string }): JSX.Element 
 
 const ConceptContent = (props: ViewProps & { documentId: string }): JSX.Element => {
   const { provider, used, sync } = useCollaboration()
-  const [isChanged] = useYValue<boolean>('root.changed')
-  const { documentType } = props
-  console.log(documentType)
+  const { status } = useSession()
+  const [inEditStage, setInEditStage] = useState(false)
+  /* const [isChanged] = useYValue<boolean>('root.changed') */
+  const [title] = useYValue<boolean>('root.title')
+  /*  const { documentType } = props */
+
+  const environmentIsSane = provider && status === 'authenticated'
+
+
   const handleChange = useCallback((value: boolean): void => {
     const root = provider?.document.getMap('ele').get('root') as Y.Map<unknown>
     const changed = root.get('changed') as boolean
@@ -114,16 +121,38 @@ const ConceptContent = (props: ViewProps & { documentId: string }): JSX.Element 
           <Form.Content>
             <TextBox
               singleLine={true}
+              disabled={inEditStage ? false : true}
               onChange={handleChange}
               path='root.title'
-              icon={(
-                <PenIcon
-                  size={18}
-                  className='text-mutated-foreground mr-4'
-                />
-              )}
+              className={inEditStage ? 'border-[1px]' : ''}
             >
             </TextBox>
+            {inEditStage
+              ? (
+                  <div className='flex gap-2.5 align-end'>
+                    <Button
+                      onClick={() => { console.log('Submitting change') }}
+                      disabled={!title || !environmentIsSane}
+                      className='inline'
+                    >
+                      Spara
+                    </Button>
+                    <Button
+                      onClick={() => { setInEditStage(false) }}
+                      disabled={!title || !environmentIsSane}
+                      className='inline'
+                    >
+                      Avbryt
+                    </Button>
+                  </div>
+                )
+              : (
+                  <Button
+                    onClick={() => setInEditStage(true)}
+                  >
+                    Redigera
+                  </Button>
+                )}
           </Form.Content>
         </Form.Root>
       </View.Content>
