@@ -57,7 +57,7 @@ export const AuthorNames = ({ assignment }: { assignment: AssignmentInterface })
         <>
           {display}
           <span className='flex gap-0.5 items-center'>
-            {Icon && <Icon size={14} />}
+            {Icon && <Icon size={14} className='-mt-0.5' />}
             <span>{authorOutput(lastStatusUpdateAuthor)}</span>
           </span>
         </>
@@ -106,8 +106,8 @@ function getDisplayAndFull(
   if (byline) {
     return {
       display: (
-        <span className='flex items-center'>
-          <UserIcon size={14} />
+        <span className='flex items-center gap-0.5'>
+          <UserIcon size={14} className='-mt-0.5' />
           <span>{byline}</span>
         </span>
       ),
@@ -121,8 +121,8 @@ function getDisplayAndFull(
     const authorObj = doneStatusName(doneStatus, authors)
     return {
       display: (
-        <span className='flex items-center'>
-          <PenIcon size={14} />
+        <span className='flex items-center gap-0.5'>
+          <PenIcon size={14} className='-mt-0.5' />
           <span>{authorObj ? authorOutput(authorObj) : '??'}</span>
         </span>
       ),
@@ -135,8 +135,8 @@ function getDisplayAndFull(
   if (afterDraftAuthor?.name) {
     return {
       display: (
-        <span className='flex items-center'>
-          <PenIcon size={14} />
+        <span className='flex items-center gap-0.5'>
+          <PenIcon size={14} className='-mt-0.5' />
           <span>{authorOutput(afterDraftAuthor)}</span>
         </span>
       ),
@@ -149,8 +149,8 @@ function getDisplayAndFull(
   if (afterUsableAuthor?.name) {
     return {
       display: (
-        <span className='flex items-center'>
-          <PenIcon size={14} />
+        <span className='flex items-center gap-0.5'>
+          <PenIcon size={14} className='-mt-0.5' />
           <span>{authorOutput(afterUsableAuthor)}</span>
         </span>
       ),
@@ -163,8 +163,8 @@ function getDisplayAndFull(
     const creator = getAuthorBySub(authors, statusData.creatorUri)
     return {
       display: (
-        <span className='flex items-center'>
-          <PenIcon size={14} />
+        <span className='flex items-center gap-0.5'>
+          <PenIcon size={14} className='-mt-0.5' />
           <span>{creator ? authorOutput(creator) : '??'}</span>
         </span>
       ),
