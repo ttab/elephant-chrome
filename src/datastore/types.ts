@@ -24,7 +24,7 @@ export interface IDBAuthor {
   name: string
   firstName: string
   lastName: string
-  initials: string
+  initials?: string
   email: string
   sub: string
 }
