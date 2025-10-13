@@ -11,11 +11,12 @@ import { useCallback, useEffect, useState } from 'react'
 import { View } from '@/components/View'
 import { useYValue } from '@/hooks/useYValue'
 import { ConceptHeader } from './ConceptHeader'
-import { PenIcon } from '@ttab/elephant-ui/icons'
 import { Form } from '@/components/Form'
 import { TextBox } from '@/components/ui'
 import { useSession } from 'next-auth/react'
 import { Button } from '@ttab/elephant-ui'
+import { toast } from 'sonner'
+import { snapshotDocument } from '@/lib/snapshotDocument'
 
 const meta: ViewMetadata = {
   name: 'Concept',
@@ -79,7 +80,6 @@ const ConceptWrapper = (props: ViewProps & { documentId: string }): JSX.Element 
         <ConceptHeader
           documentId={props.documentId}
           asDialog={!!props.asDialog}
-          onDialogClose={props.onDialogClose}
           isChanged={isChanged}
         />
         {!!provider && synced
@@ -96,23 +96,50 @@ const ConceptWrapper = (props: ViewProps & { documentId: string }): JSX.Element 
 }
 
 const ConceptContent = (props: ViewProps & { documentId: string }): JSX.Element => {
-  const { provider, used, sync } = useCollaboration()
-  const { status } = useSession()
+  const { provider } = useCollaboration()
+  const { status, data: session } = useSession()
   const [inEditStage, setInEditStage] = useState(false)
-  /* const [isChanged] = useYValue<boolean>('root.changed') */
   const [title] = useYValue<boolean>('root.title')
-  /*  const { documentType } = props */
-
+  const [, setChanged] = useYValue('root.changed')
   const environmentIsSane = provider && status === 'authenticated'
+  const [initialValue, setInitialValue] = useState(title)
+
+  console.log(initialValue)
 
 
   const handleChange = useCallback((value: boolean): void => {
     const root = provider?.document.getMap('ele').get('root') as Y.Map<unknown>
     const changed = root.get('changed') as boolean
+
+
     if (changed !== value) {
       root.set('changed', value)
     }
   }, [provider])
+
+  const onCancel = () => {
+    // Todo set value back to initalValue
+  }
+
+
+  const onSave = async (): Promise<void> => {
+    if (!session) {
+      toast.error('Ett fel har uppstått, ändringen kunde inte spara! Ladda om webbläsaren och försök igen')
+      return
+    }
+
+    const snapshotResponse = await snapshotDocument(props.documentId, {
+      status: 'usable'
+    }, provider?.document)
+
+    if (snapshotResponse && 'statusCode' in snapshotResponse && snapshotResponse.statusCode !== 200) {
+      toast.error(`Ett fel uppstod när ändringen skulle sparas: ${snapshotResponse.statusMessage || 'Okänt fel'}`)
+      return
+    }
+
+    setChanged(undefined)
+    setInEditStage(false)
+  }
 
   return (
     <>
@@ -131,16 +158,19 @@ const ConceptContent = (props: ViewProps & { documentId: string }): JSX.Element 
               ? (
                   <div className='flex gap-2.5 align-end'>
                     <Button
-                      onClick={() => { console.log('Submitting change') }}
+                      onClick={(e) => {
+                        e.preventDefault()
+                        void onSave()
+                      }}
                       disabled={!title || !environmentIsSane}
-                      className='inline'
+                      className=''
                     >
                       Spara
                     </Button>
                     <Button
                       onClick={() => { setInEditStage(false) }}
                       disabled={!title || !environmentIsSane}
-                      className='inline'
+                      variant='secondary'
                     >
                       Avbryt
                     </Button>
