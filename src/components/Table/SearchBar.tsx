@@ -3,12 +3,10 @@ import { DebouncedCommandInput } from '@/components/Commands/Menu/DebouncedComma
 import type { Updater } from '@tanstack/react-table'
 import { useTable } from '@/hooks/useTable'
 
-interface FilterProps {
+export const SearchBar = ({ placeholder, setGlobalTextFilter }: {
   setGlobalTextFilter?: (updater: Updater<unknown>) => void
   placeholder: string
-}
-
-export const SearchBar = ({ placeholder, setGlobalTextFilter }: FilterProps): JSX.Element => {
+}): JSX.Element => {
   const { table } = useTable()
   const { globalFilter } = table.getState() as {
     globalFilter: string
