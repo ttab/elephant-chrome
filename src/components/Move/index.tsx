@@ -5,6 +5,7 @@ import { Button, Checkbox, ComboBox, Input, Label } from '@ttab/elephant-ui'
 import {
   ArrowRightLeftIcon,
   BriefcaseBusinessIcon,
+  CalendarDaysIcon,
   CalendarIcon,
   CircleXIcon,
   GanttChartSquareIcon
@@ -131,7 +132,14 @@ export const Move = (props: ViewProps & {
 
       const newPlanningUUID = getValueByYPath<string>(newEle, 'root.uuid')?.[0]
       toast.success('Uppdraget har flyttats', {
-        action: <ToastAction planningId={newPlanningUUID} />
+        action: (
+          <ToastAction
+            documentId={newPlanningUUID}
+            withView='Planning'
+            label='Öppna planering'
+            Icon={CalendarDaysIcon}
+          />
+        )
       })
 
       setShowVerifyDialog(false)
