@@ -33,12 +33,13 @@ export const ArticleTitle = ({ documentId }: { documentId: string }): JSX.Elemen
           onChange={() => isDirtyRef.current = true}
           onBlur={() => {
             if (isDirtyRef.current) {
-              snapshotDocument(documentId).then(() => {
-                toast.success('Titel uppdaterad')
-              }).catch((error) => {
-                toast.error('Kunde inte uppdatera titel')
-                console.error('Error updating title:', error)
-              })
+              snapshotDocument(documentId, undefined, provider?.document)
+                .then(() => {
+                  toast.success('Titel uppdaterad')
+                }).catch((error) => {
+                  toast.error('Kunde inte uppdatera titel')
+                  console.error('Error updating title:', error)
+                })
 
               isDirtyRef.current = false
             }
