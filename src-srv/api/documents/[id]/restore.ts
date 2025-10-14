@@ -33,6 +33,15 @@ export const POST: RouteHandler = async (req: Request, { collaborationServer, ca
   }
 
   try {
+    // Check if the document has been loaded into redis, if not, we don't need
+    // to do anything.
+    const exists = await cache.exists(id)
+    if (!exists) {
+      return {
+        payload: {}
+      }
+    }
+
     // Fetch content from repository
     const doc = await repository.getDocument({
       uuid: id,
