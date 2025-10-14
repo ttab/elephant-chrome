@@ -6,7 +6,7 @@ import { addDays, subDays } from 'date-fns'
 import { type View } from '@/types/index'
 import { useMemo } from 'react'
 
-const validViews: View[] = ['Plannings', 'Events', 'Assignments', 'Approvals', 'Print']
+const validViews: View[] = ['Plannings', 'Events', 'Assignments', 'Approvals', 'Print', 'Concepts']
 
 export const DateChanger = ({ type }: { type: View }): JSX.Element | null => {
   const [query] = useQuery()
