@@ -224,7 +224,12 @@ const PlanningViewContent = (props: ViewProps & {
           </Form.Content>
 
           <Form.Table>
-            <AssignmentTable ydoc={ydoc} asDialog={props.asDialog} onChange={setIsChanged} documentId={props.documentId} />
+            <AssignmentTable
+              ydoc={ydoc}
+              asDialog={props.asDialog}
+              onChange={setIsChanged}
+              documentId={props.documentId}
+            />
             <RelatedEvents events={relatedEvents} />
             {!props.asDialog && <DuplicatesTable documentId={props.documentId} type='core/planning-item' />}
             {copyGroupId && !props.asDialog && <CopyGroup copyGroupId={copyGroupId} type='core/planning-item' />}

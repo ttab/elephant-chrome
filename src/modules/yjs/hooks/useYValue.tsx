@@ -37,7 +37,10 @@ export function useYValue<T>(
    */
   const getStableSnapshot = useCallback((): T | undefined => {
     const nextValue = getSnapshot()
-    if (!isEqualDeep(nextValue, snapshotRef.current)) {
+
+    if (nextValue instanceof Y.Array && nextValue.length !== snapshotRef.current?.length) {
+      snapshotRef.current = nextValue
+    } else if (!isEqualDeep(nextValue, snapshotRef.current)) {
       snapshotRef.current = nextValue
     }
 
@@ -53,33 +56,40 @@ export function useYValue<T>(
     // Yjs observeDeep() event handler
     const onEvent = (events: Y.YEvent<Y.Map<T> | Y.Array<T>>[]) => {
       for (const event of events) {
-        const changedPath = (event.target instanceof Y.XmlText)
-          ? event.path.slice(0, -1)
-          : [...event.path, ...Array.from(event.keys.keys())]
+        let changedPath: (string | number)[]
+        if (event.target instanceof Y.XmlText) {
+          // Y.XmlText refers to a position in it's last path segment
+          changedPath = event.path.slice(0, -1)
+        } else if (event.target instanceof Y.Array) {
+          // For arrays, the path is just event.path (changes are in delta, not keys)
+          changedPath = event.path
+        } else {
+          // For maps include the changed keys
+          changedPath = [...event.path, ...Array.from(event.keys.keys())]
+        }
+
         const changedKey = yPathToString([...changedPath])
 
         if (changedKey === observedKey) {
-          // Exact observed path have changed
+          // Direct path match
           const newValue = getValueFromPath<T>(yContainer, observedPath)
 
-          if (event.target instanceof Y.XmlText) {
+          if (event.target instanceof Y.Array) {
+            onStoreChange()
+          } else if (event.target instanceof Y.XmlText) {
             // Y.XmlText values only report change if the string value is observed
             if (!raw && newValue?.toString() !== snapshotRef.current) {
               onStoreChange()
             }
-          } else if (event.target instanceof Y.Array || event.target instanceof Y.Map) {
-            // Y.Array or Y.Map changed
-            onStoreChange()
-            return
           } else if (!isEqualDeep(newValue, snapshotRef.current)) {
-            // All other directly observed path changes should report a change
             onStoreChange()
           }
 
+          // If we had a direct path match we stop looking
           return
         } else if (event.target instanceof Y.Array) {
+          // Check for indirect influences when array contents change
           if (doesArrayChangeAffectPath(event as Y.YEvent<Y.Array<unknown>>, observedPath)) {
-            // An array change affects the observed path
             onStoreChange()
             return
           }

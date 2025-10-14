@@ -12,17 +12,17 @@ import { useEffect, useRef } from 'react'
 import { AssignmentVisibility } from '@/components/DataItem/AssignmentVisibility'
 import { type YDocument, useYValue } from '@/modules/yjs/hooks'
 import type * as Y from 'yjs'
-import { getYjsPath } from '@/modules/yjs/lib/yjs'
 
-export const Assignment = ({ ydoc, assignment, onAbort, onClose, onChange }: {
+export const Assignment = ({ ydoc, index, onAbort, onClose, onChange }: {
   ydoc: YDocument<Y.Map<unknown>>
-  assignment: Y.Map<unknown>
+  index: number
   onClose: () => void
   onAbort?: () => void
   className?: string
 } & FormProps): JSX.Element => {
-  const path = getYjsPath(assignment, true)
-  const [index] = getYjsPath(assignment).slice(-1)
+  const path = `meta.core/assignment[${index}]`
+  const [assignment] = useYValue<Y.Map<unknown>>(ydoc.document, path, true)
+
   const [articleId] = useYValue<string>(ydoc.document, `${path}.links.core/article[0].uuid`)
   const [flashId] = useYValue<string>(ydoc.document, `${path}.links.core/flash[0].uuid`)
   const [editorialInfoId] = useYValue<string>(ydoc.document, `${path}.links.core/editorial-info[0].uuid`)

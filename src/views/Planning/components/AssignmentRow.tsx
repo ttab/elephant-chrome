@@ -45,11 +45,10 @@ import { DocumentStatuses } from '@/defaults/documentStatuses'
 import useSWR from 'swr'
 import { useRepositoryEvents } from '@/hooks/useRepositoryEvents'
 import { type YDocument, useYValue } from '@/modules/yjs/hooks'
-import { getYjsPath } from '@/modules/yjs/lib/yjs'
 
-export const AssignmentRow = ({ ydoc, assignment, onSelect, isFocused = false, asDialog, onChange }: {
+export const AssignmentRow = ({ ydoc, index, onSelect, isFocused = false, asDialog, onChange }: {
   ydoc: YDocument<Y.Map<unknown>>
-  assignment: Y.Map<unknown>
+  index: number
   onSelect: () => void
   isFocused?: boolean
   asDialog?: boolean
@@ -63,8 +62,8 @@ export const AssignmentRow = ({ ydoc, assignment, onSelect, isFocused = false, a
   const { repository } = useRegistry()
   const { data: session } = useSession()
 
-  const base = getYjsPath(assignment, true)
-  const [index] = getYjsPath(assignment).slice(-1) as number[]
+  const base = `meta.core/assignment[${index}]`
+  const [assignment] = useYValue<Y.Map<unknown>>(ydoc.document, base, true)
   const [inProgress] = useYValue(ydoc.document, `${base}.__inProgress`)
   const [articleId] = useYValue<string>(ydoc.document, `${base}.links.core/article[0].uuid`)
   const [flashId] = useYValue<string>(ydoc.document, `${base}.links.core/flash[0].uuid`)
