@@ -28,10 +28,11 @@ export const ConceptList = ({ columns, documentType }: {
       : undefined,
     options: {
       subscribe: true,
-      setTableData: true
+      setTableData: true,
+      withStatus: true
     }
   })
-
+  console.log(data)
   const onRowSelected = useCallback((row?: Concept) => {
     if (row) {
       console.info(`Selected concept item ${row.id}`)
