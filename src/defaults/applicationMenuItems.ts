@@ -124,7 +124,7 @@ export const applicationMenu: ApplicationMenu = {
       name: 'Admin',
       items: [
         {
-          name: 'ConceptAdmin',
+          name: 'Admin',
           label: 'Admin',
           icon: CogIcon,
           color: '#b4385b'

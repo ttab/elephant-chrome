@@ -8,8 +8,8 @@ import { ConceptColumns } from '../Concepts/ConceptColumns'
 
 
 const meta: ViewMetadata = {
-  name: 'ConceptAdmin',
-  path: `${import.meta.env.BASE_URL}/conceptAdmin`,
+  name: 'Admin',
+  path: `${import.meta.env.BASE_URL}/admin`,
   widths: {
     sm: 12,
     md: 12,
@@ -23,7 +23,7 @@ const meta: ViewMetadata = {
   }
 }
 
-export const ConceptAdmin = () => {
+export const Admin = () => {
   const [currentTab, setCurrentTab] = useState<string>('list')
 
   const columns = useMemo(() =>
@@ -38,7 +38,7 @@ export const ConceptAdmin = () => {
         >
           <ViewHeader.Root>
             <ViewHeader.Content>
-              <ViewHeader.Title name='ConceptAdmin' title='Admin' />
+              <ViewHeader.Title name='Admin' title='Admin' />
             </ViewHeader.Content>
             <ViewHeader.Action />
           </ViewHeader.Root>
@@ -51,4 +51,4 @@ export const ConceptAdmin = () => {
   )
 }
 
-ConceptAdmin.meta = meta
+Admin.meta = meta
