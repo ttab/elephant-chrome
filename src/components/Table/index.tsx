@@ -328,7 +328,7 @@ export const Table = <TData, TValue>({
 
   return (
     <>
-      {!['Wires', 'Factbox', 'Search'].includes(type) && (
+      {!['Wires', 'Factbox', 'Search', 'Concept'].includes(type) && (
         <Toolbar />
       )}
       {(type === 'Planning' || type === 'Event') && (
@@ -341,6 +341,11 @@ export const Table = <TData, TValue>({
           />
         </NewItems.Root>
       )}
+
+      {(type === 'Concept' || type === 'Concepts')
+        && <Toolbar searchbar={true} searchPlaceholder='Fritextsökning' filter={false} />}
+      {type === 'Factbox'
+        && <Toolbar searchbar={true} searchPlaceholder='Fritextsökning' filter={false} sort={false} quickFilter={false} />}
 
       {(type !== 'Search' || !loading) && (
         <_Table className='table-auto relative'>

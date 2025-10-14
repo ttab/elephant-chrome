@@ -4,7 +4,6 @@ import { useQuery } from '@/hooks'
 import { Table } from '@/components/Table'
 import type { ColumnDef } from '@tanstack/react-table'
 import type { Factbox, FactboxFields } from '@/shared/schemas/factbox'
-import { Toolbar } from './Toolbar'
 import { useDocuments } from '@/hooks/index/useDocuments'
 import { constructQuery } from '@/hooks/index/useDocuments/queries/views/factboxes'
 import { fields } from '@/shared/schemas/factbox'
@@ -41,7 +40,6 @@ export const FactboxList = ({ columns }: {
 
   return (
     <>
-      <Toolbar />
       <Table
         type='Factbox'
         columns={columns}

@@ -63,8 +63,8 @@ export const PlanningTable = ({ provider, documentId, asDialog }: {
     if (createdDocumentIdRef.current === event.uuid && event.type === 'core/planning-item' && event.event === 'document') {
       void (async () => {
         try {
-          if (Array.isArray(data) && newItem?.title) {
-            await mutate([...data, {
+          if (Array.isArray(data?.result) && newItem?.title) {
+            await mutate({ result: [...data.result, {
               source: {},
               score: 1,
               sort: [''],
@@ -77,7 +77,7 @@ export const PlanningTable = ({ provider, documentId, asDialog }: {
                 }
               },
               id: newItem?.uuid
-            } as PlanningType], { revalidate: false })
+            } as PlanningType], total: data.total + 1 }, { revalidate: false })
           }
         } catch (error) {
           console.warn('Failed to update planning table', error)
@@ -154,14 +154,14 @@ export const PlanningTable = ({ provider, documentId, asDialog }: {
         </DialogContent>
       </Dialog>
       <div className='pl-6 w-full'>
-        {data?.length > 0 && (
+        {data?.result.length > 0 && (
           <>
             <Separator />
             <div className='flex gap-2 items-center'>
               <GanttChartSquareIcon color='#FF971E' strokeWidth={1.75} size={18} className='text-muted-foreground' />
               <div className='text-muted-foreground py-2'>Planeringar</div>
             </div>
-            {data?.map((planning) => (
+            {data?.result.map((planning) => (
               <Link key={planning.id} to='Planning' props={{ id: planning.id }} target='last'>
                 <div
                   className='w-fit text-sm flex items-center gap-2 hover:bg-gray-100'

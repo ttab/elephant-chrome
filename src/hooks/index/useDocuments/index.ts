@@ -57,21 +57,20 @@ export const useDocuments = <T extends HitV1, F>({ documentType, query, size, pa
   page?: number
   sort?: SortingV1[]
   options?: useDocumentsFetchOptions
-}): SWRResponse<T[], Error> => {
+}): SWRResponse<{ result: T[], total: number }, Error> => {
   const { data: session } = useSession()
   const { index, repository } = useRegistry()
   const { setData } = useTable<T>()
   const [subscriptions, setSubscriptions] = useState<SubscriptionReference[]>()
   const subscriptionsRef = useRef<SubscriptionReference[] | undefined>(subscriptions)
-  const mutateRef = useRef<KeyedMutator<T[]> | null>(null)
-  const dataRef = useRef<T[] | undefined>(undefined)
-
+  const mutateRef = useRef<KeyedMutator<{ result: T[], total: number }> | null>(null)
+  const dataRef = useRef<{ result: T[], total: number } | undefined>(undefined)
   const key = useMemo(() => query
     ? `${documentType}/${JSON.stringify(query, (_, v: unknown) => typeof v === 'bigint' ? v.toString() : v)}${page ? `/${page}` : ''}`
     : documentType, [query, page, documentType])
 
   // Memoize fetcher
-  const fetcher = useMemo(() => (): Promise<T[]> =>
+  const fetcher = useMemo(() => (): Promise<{ result: T[], total: number }> =>
     fetch<T, F>({
       index,
       repository,
@@ -87,8 +86,7 @@ export const useDocuments = <T extends HitV1, F>({ documentType, query, size, pa
     }),
   [index, repository, session, page, size, documentType, query, fields, sort, options])
 
-  const { data, error, mutate, isLoading, isValidating } = useSWR<T[], Error>(key, fetcher)
-
+  const { data, error, mutate, isLoading, isValidating } = useSWR<{ result: T[], total: number }, Error>(key, fetcher)
   // Keep refs up to date for polling
   useEffect(() => {
     subscriptionsRef.current = subscriptions
@@ -104,7 +102,7 @@ export const useDocuments = <T extends HitV1, F>({ documentType, query, size, pa
   // Set table data after fetch
   useEffect(() => {
     if (data && setData && options?.setTableData) {
-      setData(data)
+      setData(data?.result)
     }
   }, [data, setData, options?.setTableData])
 
@@ -119,7 +117,7 @@ export const useDocuments = <T extends HitV1, F>({ documentType, query, size, pa
       try {
         subscriptionsRef.current = await pollSubscriptions({
           index,
-          data: dataRef.current,
+          data: dataRef.current?.result,
           accessToken: session.accessToken,
           subscriptions: subscriptionsRef.current ?? [],
           mutate: mutateRef.current!,
@@ -198,7 +196,7 @@ async function pollSubscriptions<T extends HitV1>({
   data?: T[]
   accessToken: string
   subscriptions: SubscriptionReference[]
-  mutate: KeyedMutator<T[]>
+  mutate: KeyedMutator<{ result: T[], total: number }>
   abortController?: AbortController
 }): Promise<SubscriptionReference[]> {
   try {
@@ -249,7 +247,7 @@ async function pollSubscriptions<T extends HitV1>({
           : obj
       )
 
-      await mutate(updatedData, false)
+      await mutate({ result: updatedData, total: 0 }, false)
     }
 
     return newSubscriptions

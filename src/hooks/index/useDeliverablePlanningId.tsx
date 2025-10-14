@@ -25,8 +25,8 @@ export const useDeliverablePlanningId = (deliverableId: string): string => {
     }
   })
 
-  if (data?.length === 1) {
-    return data[0].id
+  if (data?.result.length === 1) {
+    return data.result[0].id
   }
 
 

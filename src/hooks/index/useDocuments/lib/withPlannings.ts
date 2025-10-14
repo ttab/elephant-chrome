@@ -38,7 +38,7 @@ export async function withPlannings<T extends HitV1>({ hits, session, index }: {
     })
   })
 
-  const hasPlannings = plannings.map((hit) => hit.fields['document.rel.event.uuid']?.values[0] || '')
+  const hasPlannings = plannings.result.map((hit) => hit.fields['document.rel.event.uuid']?.values[0] || '')
 
   return hits.map((hit) => {
     const relatedItemIndex = hasPlannings.findIndex((item) => item === hit.id)
