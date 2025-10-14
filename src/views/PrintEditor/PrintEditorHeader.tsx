@@ -5,6 +5,7 @@ import { StatusMenu } from '@/components/DocumentStatus/StatusMenu'
 import { PenBoxIcon } from '@ttab/elephant-ui/icons'
 import { AddNote } from '@/components/Notes/AddNote'
 import { ArticleTitle } from './components/ArticleTitle'
+import type * as Y from 'yjs'
 
 /**
  * EditorHeader component.
@@ -32,11 +33,12 @@ export const EditorHeader = ({
   documentId: string
   flowName?: string
   isChanged?: boolean
+  document?: Y.Doc
 }): JSX.Element => {
   const { viewId } = useView()
   const containerRef = useRef<HTMLElement | null>(null)
   useEffect(() => {
-    containerRef.current = document.getElementById(viewId)
+    containerRef.current = window.document.getElementById(viewId)
   }, [viewId])
 
   return (

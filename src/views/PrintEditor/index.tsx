@@ -45,7 +45,7 @@ import { useOnSpellcheck } from '@/hooks/useOnSpellcheck'
 import { contentMenuLabels } from '@/defaults/contentMenuLabels'
 import { Button, ScrollArea } from '@ttab/elephant-ui'
 import { LayoutBox } from './LayoutBox'
-import { CopyPlusIcon, ScanEyeIcon, SettingsIcon, TriangleAlertIcon } from '@ttab/elephant-ui/icons'
+import { CopyPlusIcon, FileIcon, ScanEyeIcon, SettingsIcon, TriangleAlertIcon } from '@ttab/elephant-ui/icons'
 import type { EleBlock } from '@/shared/types'
 import { toast } from 'sonner'
 import { useSession } from 'next-auth/react'
@@ -54,6 +54,7 @@ import { snapshotDocument } from '@/lib/snapshotDocument'
 import type * as Y from 'yjs'
 import { ImagePlugin } from './ImagePlugin'
 import { ChannelComboBox } from './components/ChannelComboBox'
+import { ToastAction } from '../Wire/ToastAction'
 
 const meta: ViewMetadata = {
   name: 'PrintEditor',
@@ -199,6 +200,7 @@ function EditorContainer({
   const fromDate = allParams?.filter((item) => item.name === 'Print')?.[0]?.params?.from
   const [date] = useYValue<string>('meta.tt/print-article[0].data.date')
   const [isChanged] = useYValue<boolean>('root.changed')
+  const yDoc = provider?.document
 
   const handleChange = useCallback((value: boolean): void => {
     const root = provider?.document.getMap('ele').get('root') as Y.Map<unknown>
@@ -219,7 +221,8 @@ function EditorContainer({
       toast.error('Något gick fel när printartikel skulle dupliceras')
       return
     }
-    await snapshotDocument(documentId)
+
+    await snapshotDocument(documentId, undefined, yDoc)
     try {
       const _date = (fromDate || date) as string
       const response = await baboon.createPrintArticle({
@@ -228,15 +231,21 @@ function EditorContainer({
         date: _date,
         article: name || ''
       }, session.accessToken)
-        .catch((ex: unknown) => {
-          console.error('Error creating print article:', ex)
-          toast.error('Något gick fel när printartikel skulle dupliceras nytt')
-          setPromptIsOpen(false)
-        })
+
       if (response?.status.code === 'OK') {
         openPrintArticle(undefined, { id: response?.response?.uuid }, 'self')
         setPromptIsOpen(false)
-        toast.success('Printartikel har duplicerats till datumet: ' + _date)
+        toast.success(`Printartikel har duplicerats till: ${_date}`, {
+          action: (
+            <ToastAction
+              documentId={response?.response?.uuid}
+              withView='PrintEditor'
+              label='Öppna artikeln'
+              Icon={FileIcon}
+              target='self'
+            />
+          )
+        })
       }
     } catch (ex: unknown) {
       console.error('Error creating print article:', ex)
@@ -250,7 +259,7 @@ function EditorContainer({
       toast.error('Något gick fel när printartikel skulle renderas')
       return
     }
-    await snapshotDocument(documentId)
+    await snapshotDocument(documentId, undefined, yDoc)
     const results: EleBlock[] = []
     for (const _layout of arr) {
       try {
@@ -291,7 +300,7 @@ function EditorContainer({
 
   return (
     <>
-      <EditorHeader documentId={documentId} flowName={flowName} isChanged={isChanged} />
+      <EditorHeader documentId={documentId} flowName={flowName} isChanged={isChanged} document={yDoc} />
       {!!notes?.length && <div className='p-4'><Notes /></div>}
       <View.Content className='flex flex-col max-w-[1400px] grow'>
         <section className='flex flex-col-reverse @4xl:grid @4xl:grid-cols-12 @container'>
@@ -381,6 +390,7 @@ function EditorContainer({
                           <LayoutBox
                             key={layout.id}
                             documentId={documentId}
+                            document={yDoc}
                             layoutIdForRender={layout.id}
                             layoutId={layout.links['_'][0].uuid}
                             index={index}
