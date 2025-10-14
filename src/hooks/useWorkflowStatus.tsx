@@ -9,6 +9,8 @@ import { snapshotDocument } from '@/lib/snapshotDocument'
 import { getStatusFromMeta } from '@/lib/getStatusFromMeta'
 import type { Session } from 'next-auth'
 
+// TODO: rename asPrint to a more generic name.
+// "asPrint" chould probably be used for planning-items and events as well
 export const useWorkflowStatus = (uuid?: string, isWorkflow: boolean = false, asPrint?: boolean): [
   Status | undefined,
   (newStatusName: string | Status, cause?: string, asWire?: boolean) => Promise<void>,
