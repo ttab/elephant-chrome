@@ -1,5 +1,4 @@
 import type {
-  beforeHandleMessagePayload,
   Extension,
   onLoadDocumentPayload,
   onStoreDocumentPayload
