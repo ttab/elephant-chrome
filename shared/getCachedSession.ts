@@ -19,7 +19,7 @@ export async function getCachedSession(options?: { force?: boolean }): Promise<C
       return cachedSession
     }
 
-    const expiresAt = cachedSession.expires ? new Date(cachedSession.expires).getTime() : undefined
+    const expiresAt = cachedSession.accessTokenExpires ? new Date(cachedSession.accessTokenExpires).getTime() : undefined
     if (!expiresAt || expiresAt - EXPIRY_SKEW_MS > Date.now()) {
       return cachedSession
     }
