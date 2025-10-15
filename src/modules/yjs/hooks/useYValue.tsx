@@ -1,5 +1,5 @@
 import { isEqualDeep } from '../lib/isEqualDeep'
-import { doesArrayChangeAffectPath, extractYData, getValueFromPath, setValueByPath, stringToYPath, yPathToString, type YPath } from '../lib/yjs'
+import { doesArrayChangeAffectPath, getValueFromPath, setValueByPath, stringToYPath, yPathToString, type YPath } from '../lib/yjs'
 import { useCallback, useMemo, useRef, useSyncExternalStore } from 'react'
 import * as Y from 'yjs'
 
@@ -16,21 +16,22 @@ export function useYValue<T>(
   }, [relativePath])
 
   /**
+   * Ref to current snapshot value
+   */
+  const snapshotRef = useRef<T | undefined>(getValueFromPath<T>(yContainer, observedPath, raw))
+
+  /**
    *  Callback to get snapshot of current value
    */
   const getSnapshot = useCallback((): T | undefined => {
     if (!yContainer || !valid.current) return undefined
 
-    const val = getValueFromPath<T>(yContainer, observedPath)
-    return (!raw && (val instanceof Y.Map || val instanceof Y.Array || val instanceof Y.XmlText))
-      ? extractYData(val)
-      : val
+    const nextValue = getValueFromPath<T>(yContainer, observedPath, raw)
+    if (!isEqualDeep(nextValue, snapshotRef.current)) {
+      snapshotRef.current = nextValue
+    }
+    return snapshotRef.current
   }, [yContainer, observedPath, raw])
-
-  /**
-   * Ref to current snapshot value
-   */
-  const snapshotRef = useRef<T | undefined>(getSnapshot())
 
   /**
    * Callback to get a stable snapshot to ensure stable references when value is not changed
@@ -74,13 +75,15 @@ export function useYValue<T>(
           // Direct path match
           const newValue = getValueFromPath<T>(yContainer, observedPath)
 
-          if (event.target instanceof Y.Array) {
-            onStoreChange()
-          } else if (event.target instanceof Y.XmlText) {
+          if (event.target instanceof Y.XmlText) {
             // Y.XmlText values only report change if the string value is observed
             if (!raw && newValue?.toString() !== snapshotRef.current) {
               onStoreChange()
             }
+          } else if (event.target instanceof Y.Array || event.target instanceof Y.Map) {
+            // Direct path matched Y.Array or Y.Map changed, equal deep can
+            onStoreChange()
+            return
           } else if (!isEqualDeep(newValue, snapshotRef.current)) {
             onStoreChange()
           }

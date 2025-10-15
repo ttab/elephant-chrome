@@ -68,7 +68,7 @@ export function createTypedYDoc(
   return ydoc
 }
 
-export function getValueFromPath<T>(root: unknown, path: YPath): T | undefined {
+export function getValueFromPath<T>(root: unknown, path: YPath, raw = false): T | undefined {
   let current = root
 
   for (const key of path) {
@@ -81,7 +81,9 @@ export function getValueFromPath<T>(root: unknown, path: YPath): T | undefined {
     }
   }
 
-  return current as T | undefined
+  return (!raw && (current instanceof Y.Map || current instanceof Y.Array || current instanceof Y.XmlText))
+    ? extractYData(current)
+    : current as T | undefined
 }
 
 /**
