@@ -13,7 +13,6 @@ import { AssignmentVisibility } from '@/components/DataItem/AssignmentVisibility
 import { type YDocument, useYPath, useYValue } from '@/modules/yjs/hooks'
 import type * as Y from 'yjs'
 import { useSession } from 'next-auth/react'
-import { getValueFromPath } from '@/modules/yjs/lib/yjs'
 
 export const Assignment = ({ ydoc, assignment, onAbort, onClose, onChange }: {
   ydoc: YDocument<Y.Map<unknown>>
@@ -108,8 +107,7 @@ export const Assignment = ({ ydoc, assignment, onAbort, onClose, onChange }: {
               path={`${path}.links.core/author`}
               placeholder='Lägg till uppdragstagare'
             />
-            {/* FIXME: Must enable assignment time corrrectly */}
-            {/* <AssignmentTime index={index} /> */}
+            <AssignmentTime assignment={assignment} />
             <AssignmentVisibility
               ydoc={ydoc}
               path={`${path}.data.public`}
