@@ -9,6 +9,7 @@ import type { Dispatch, SetStateAction } from 'react'
 import { asAssignments } from './asAssignments'
 import type { Assignment } from '@/shared/schemas/assignments'
 import { getDeliverableStatuses } from './getDeliverableStatuses'
+import { usableOnly } from './usableOnly'
 
 export async function fetch<T extends HitV1, F>({
   index,
@@ -76,6 +77,9 @@ export async function fetch<T extends HitV1, F>({
     result = await withPlannings<T>({ hits: result, session, index })
   }
 
+  if (options?.usableOnly) {
+    result = await usableOnly<T>({ repository, hits: result, session, index })
+  }
 
   return { result: result, total: total }
 }
