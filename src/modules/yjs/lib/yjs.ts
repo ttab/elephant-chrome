@@ -82,7 +82,7 @@ export function getValueFromPath<T>(root: unknown, path: YPath, raw = false): T 
   }
 
   return (!raw && (current instanceof Y.Map || current instanceof Y.Array || current instanceof Y.XmlText))
-    ? extractYData(current)
+    ? fromYStructure(current)
     : current as T | undefined
 }
 
@@ -174,7 +174,7 @@ function setArrayValue<T>(yarray: Y.Array<unknown>, finalKey: number, newValue: 
 /*
  * Recursively extracts data from a YJS structure
  */
-export function extractYData<T>(y: Y.Map<unknown> | Y.Array<unknown> | Y.XmlText): T {
+export function fromYStructure<T>(y: Y.Map<unknown> | Y.Array<unknown> | Y.XmlText): T {
   if (y instanceof Y.XmlText) {
     return y.toString() as T
   }
@@ -184,7 +184,7 @@ export function extractYData<T>(y: Y.Map<unknown> | Y.Array<unknown> | Y.XmlText
 
     for (const [key, value] of y.entries()) {
       if (value instanceof Y.Map || value instanceof Y.Array || value instanceof Y.XmlText) {
-        result[key] = extractYData(value)
+        result[key] = fromYStructure(value)
       } else {
         result[key] = value
       }
@@ -196,7 +196,7 @@ export function extractYData<T>(y: Y.Map<unknown> | Y.Array<unknown> | Y.XmlText
   if (y instanceof Y.Array) {
     return y.toArray().map((item) =>
       item instanceof Y.Map || item instanceof Y.Array || item instanceof Y.XmlText
-        ? extractYData(item)
+        ? fromYStructure(item)
         : item
     ) as T
   }

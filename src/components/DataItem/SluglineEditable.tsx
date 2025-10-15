@@ -7,8 +7,9 @@ import { type FormProps } from '../Form/Root'
 import type { Block } from '@ttab/elephant-api/newsdoc'
 import { useYPath, useYValue, type YDocument } from '@/modules/yjs/hooks'
 
-export const SluglineEditable = ({ ydoc, value, documentStatus, onValidation, validateStateRef, compareValues, disabled }: {
+export const SluglineEditable = ({ ydoc, rootMap, value, documentStatus, onValidation, validateStateRef, compareValues, disabled }: {
   ydoc: YDocument<Y.Map<unknown>>
+  rootMap?: Y.Map<unknown>
   value?: Y.XmlText
   disabled?: boolean
   compareValues?: string[]
@@ -45,6 +46,7 @@ export const SluglineEditable = ({ ydoc, value, documentStatus, onValidation, va
         ? (
             <Validation
               ydoc={ydoc}
+              rootMap={rootMap}
               label='Slugline'
               block='tt/slugline'
               path={path}

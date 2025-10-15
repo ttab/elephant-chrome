@@ -6,6 +6,7 @@ import type * as Y from 'yjs'
 
 export const Title = ({
   ydoc,
+  rootMap,
   value,
   autoFocus,
   placeholder,
@@ -14,6 +15,7 @@ export const Title = ({
   validateStateRef
 }: {
   ydoc: YDocument<Y.Map<unknown>>
+  rootMap?: Y.Map<unknown>
   value?: Y.XmlText
   autoFocus?: boolean
   placeholder: string
@@ -28,6 +30,7 @@ export const Title = ({
   return (
     <Validation
       ydoc={ydoc}
+      rootMap={rootMap}
       label='Titel'
       path={path}
       block='title'

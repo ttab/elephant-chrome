@@ -15,7 +15,7 @@ import { getAuthorBySub } from '@/lib/getAuthorBySub'
 import { type YDocument, useYValue } from '@/modules/yjs/hooks'
 import * as Y from 'yjs'
 import type { EleBlock } from '@/shared/types'
-import { getValueFromPath } from '@/modules/yjs/lib/yjs'
+import { fromYStructure, getValueFromPath, toYStructure } from '@/modules/yjs/lib/yjs'
 
 export const AssignmentTable = ({ ydoc, asDialog = false, documentId, onChange }: {
   ydoc: YDocument<Y.Map<unknown>>
@@ -27,11 +27,22 @@ export const AssignmentTable = ({ ydoc, asDialog = false, documentId, onChange }
   const [assignments] = useYValue<EleBlock[]>(ydoc.ele, 'meta.core/assignment')
   const [rawAssignments] = useYValue<Y.Array<Y.Map<unknown>>>(ydoc.ele, 'meta.core/assignment', true)
   const [planningSlugLine] = useYValue<string | undefined>(ydoc.ele, 'meta.tt/slugline[0].value')
-  const [selectedAssignment, setSelectedAssignment] = useState<Y.Map<unknown> | undefined>(undefined)
+  const [selectedId, setSelectedId] = useState<string | undefined>(undefined)
   const [newAssignment] = useYValue<EleBlock>(ydoc.meta, `core/assignment.${session?.user.sub || ''}`)
   const [focusedRowIndex, setFocusedRowIndex] = useState<number | undefined>()
   const author = useActiveAuthor({ full: false })
   const authors = useAuthors()
+
+  const selectedAssignment = useMemo(() => {
+    if (!selectedId) return undefined
+    const index = assignments?.findIndex((assignment) => assignment.id === selectedId) ?? -1
+
+    return getValueByYPath<Y.Map<unknown>>(
+      ydoc.ele,
+      `meta.core/assignment[${index}]`,
+      true
+    )?.[0]
+  }, [ydoc.ele, selectedId, assignments])
 
   const slugLines = useMemo(() => {
     return (assignments ?? []).map((_, i) => {
@@ -46,7 +57,7 @@ export const AssignmentTable = ({ ydoc, asDialog = false, documentId, onChange }
     event.preventDefault()
     event.stopPropagation()
 
-    if (!session || newAssignment || selectedAssignment || !ydoc.provider) {
+    if (!session || !ydoc.provider) {
       return
     }
 
@@ -77,7 +88,12 @@ export const AssignmentTable = ({ ydoc, asDialog = false, documentId, onChange }
     if (assignmentType && !['text', 'editorial-info'].includes(assignmentType)) {
       deleteByYPath(assignment, ['meta', 'tt/slugline'])
     }
-    rawAssignments?.push([assignment])
+
+    rawAssignments?.push([
+      toYStructure(
+        fromYStructure(assignment)
+      ) as Y.Map<unknown>
+    ])
     deleteByYPath(ydoc.meta, ['core/assignment', session?.user.sub])
 
     if (documentId && ydoc.provider) {
@@ -197,37 +213,27 @@ export const AssignmentTable = ({ ydoc, asDialog = false, documentId, onChange }
           {assignments.map((assignment, index: number) => (
             <div key={`${assignment.id}`} className='border-b last:border-0'>
               {selectedAssignment?.get('id') === assignment.id
-                && (
-                  <Assignment
-                    ydoc={ydoc}
-                    assignment={selectedAssignment}
-                    onChange={onChange}
-                    onClose={() => setSelectedAssignment(undefined)}
-                    className='-my-px -mx-[5px]'
-                  />
-                )}
-
-              {selectedAssignment?.get('id') !== assignment.id
-                && (
-                  <AssignmentRow
-                    ydoc={ydoc}
-                    index={index}
-                    isFocused={index === focusedRowIndex}
-                    asDialog={asDialog}
-                    onChange={onChange}
-                    onSelect={!newAssignment
-                      ? () => {
-                          setSelectedAssignment(
-                            getValueByYPath<Y.Map<unknown>>(
-                              ydoc.ele,
-                              `meta.core/assignment[${index}]`,
-                              true
-                            )?.[0]
-                          )
-                        }
-                      : undefined}
-                  />
-                )}
+                ? (
+                    <Assignment
+                      ydoc={ydoc}
+                      assignment={selectedAssignment}
+                      onChange={onChange}
+                      onClose={() => setSelectedId(undefined)}
+                      className='-my-px -mx-[5px]'
+                    />
+                  )
+                : (
+                    <AssignmentRow
+                      ydoc={ydoc}
+                      index={index}
+                      isFocused={index === focusedRowIndex}
+                      asDialog={asDialog}
+                      onChange={onChange}
+                      onSelect={!newAssignment
+                        ? () => setSelectedId(assignment.id)
+                        : undefined}
+                    />
+                  )}
             </div>
           ))}
         </div>

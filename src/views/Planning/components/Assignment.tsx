@@ -33,7 +33,7 @@ export const Assignment = ({ ydoc, assignment, onAbort, onClose, onChange }: {
   const [slugline] = useYValue<Y.XmlText>(assignment, `meta.tt/slugline[0].value`, true)
   const [description] = useYValue<Y.XmlText | undefined>(assignment, `meta.core/description[0].data.text`, true)
   const documentId = articleId || flashId || editorialInfoId
-  console.log('PATH', path, getValueFromPath(assignment, ['title']))
+
   const formRef = useRef<HTMLDivElement>(null)
 
   // Track assignments in progress in meta
@@ -65,6 +65,7 @@ export const Assignment = ({ ydoc, assignment, onAbort, onClose, onChange }: {
           <Form.Title>
             <Title
               ydoc={ydoc}
+              rootMap={!assignmentInProgress ? ydoc.ele : ydoc.meta}
               value={title}
               placeholder='Uppdragsrubrik'
               autoFocus={true}
@@ -88,6 +89,7 @@ export const Assignment = ({ ydoc, assignment, onAbort, onClose, onChange }: {
               <Form.Group icon={TagsIcon}>
                 <SluglineEditable
                   ydoc={ydoc}
+                  rootMap={!assignmentInProgress ? ydoc.ele : ydoc.meta}
                   disabled={!!documentId}
                   value={slugline}
                 />

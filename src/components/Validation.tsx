@@ -7,14 +7,15 @@ import type * as Y from 'yjs'
 
 export const Validation = (props: {
   ydoc: YDocument<Y.Map<unknown>>
+  rootMap?: Y.Map<unknown>
   path: string
   label: string
   block: string
   compareValues?: string[]
   onValidation?: (args: OnValidation) => boolean
 } & FormProps): JSX.Element | null => {
-  const { ydoc, children, path, label, block, compareValues, onValidation, validateStateRef } = props
-  const [value] = useYValue<string | undefined>(ydoc.ele, path)
+  const { ydoc, rootMap, children, path, label, block, compareValues, onValidation, validateStateRef } = props
+  const [value] = useYValue<string | undefined>(rootMap ?? ydoc.ele, path)
   const { synced } = ydoc
 
   const isValid = useMemo(() => {
