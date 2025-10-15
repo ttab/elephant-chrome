@@ -5,17 +5,18 @@ import { Validation } from '../Validation'
 import { SluglineButton } from './Slugline'
 import { type FormProps } from '../Form/Root'
 import type { Block } from '@ttab/elephant-api/newsdoc'
-import { useYValue, type YDocument } from '@/modules/yjs/hooks'
+import { useYPath, useYValue, type YDocument } from '@/modules/yjs/hooks'
 
-export const SluglineEditable = ({ ydoc, path, documentStatus, onValidation, validateStateRef, compareValues, disabled }: {
+export const SluglineEditable = ({ ydoc, value, documentStatus, onValidation, validateStateRef, compareValues, disabled }: {
   ydoc: YDocument<Y.Map<unknown>>
-  path: string
+  value?: Y.XmlText
   disabled?: boolean
   compareValues?: string[]
   documentStatus?: string
 } & FormProps): JSX.Element => {
+  const path = useYPath(value, true)
   const editable = documentStatus !== 'usable'
-  const [slugLine] = useYValue<Y.XmlText | string>(ydoc.document, path, editable)
+  const [slugLine] = useYValue<Y.XmlText | string>(ydoc.document, path)
   const [assignments] = useYValue<Block[]>(ydoc.document, ['meta', 'core/assignment'])
 
   // Get all current sluglines from assignments for validation purposes
@@ -31,7 +32,7 @@ export const SluglineEditable = ({ ydoc, path, documentStatus, onValidation, val
     }, [])
   }, [assignments, compareValues])
 
-  if (typeof slugLine === 'undefined') {
+  if (!editable && typeof slugLine === 'undefined') {
     return <></>
   }
 
@@ -53,7 +54,7 @@ export const SluglineEditable = ({ ydoc, path, documentStatus, onValidation, val
             >
               <TextBox
                 ydoc={ydoc}
-                value={slugLine as Y.XmlText}
+                value={value}
                 disabled={disabled}
                 placeholder='Lägg till slugg'
                 singleLine={true}

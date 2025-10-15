@@ -1,6 +1,6 @@
 import { InfoIcon, PlusIcon } from '@ttab/elephant-ui/icons'
 import { AssignmentRow } from './AssignmentRow'
-import { appendAssignment } from '@/shared/createYItem'
+import { createNewAssignment } from '@/shared/createYItem'
 import { useAuthors, useCollaboration, useNavigationKeys } from '@/hooks'
 import { Assignment } from './Assignment'
 import type { MouseEvent, KeyboardEvent } from 'react'
@@ -13,8 +13,9 @@ import { toast } from 'sonner'
 import { useSession } from 'next-auth/react'
 import { getAuthorBySub } from '@/lib/getAuthorBySub'
 import { type YDocument, useYValue } from '@/modules/yjs/hooks'
-import type * as Y from 'yjs'
+import * as Y from 'yjs'
 import type { EleBlock } from '@/shared/types'
+import { getValueFromPath } from '@/modules/yjs/lib/yjs'
 
 export const AssignmentTable = ({ ydoc, asDialog = false, documentId, onChange }: {
   ydoc: YDocument<Y.Map<unknown>>
@@ -22,24 +23,15 @@ export const AssignmentTable = ({ ydoc, asDialog = false, documentId, onChange }
   documentId?: string
   onChange?: (arg: boolean) => void
 }): JSX.Element => {
-  const { provider } = useCollaboration()
+  const { data: session } = useSession()
   const [assignments] = useYValue<EleBlock[]>(ydoc.document, 'meta.core/assignment')
   const [rawAssignments] = useYValue<Y.Array<Y.Map<unknown>>>(ydoc.document, 'meta.core/assignment', true)
   const [planningSlugLine] = useYValue<string | undefined>(ydoc.document, 'meta.tt/slugline[0].value')
-  const [selectedAssignment, setSelectedAssignment] = useState<string | undefined>(undefined)
-  const [newAssignment, setNewAssignment] = useState<number | undefined>(undefined)
+  const [selectedAssignment, setSelectedAssignment] = useState<Y.Map<unknown> | undefined>(undefined)
+  const [newAssignment] = useYValue<EleBlock>(ydoc.meta, `core/assignment.${session?.user.sub || ''}`)
   const [focusedRowIndex, setFocusedRowIndex] = useState<number | undefined>()
   const author = useActiveAuthor({ full: false })
-  const { data: session } = useSession()
   const authors = useAuthors()
-
-  useEffect(() => {
-    // Keep track of new assignment entry
-    const foundAssignment = (assignments ?? []).findIndex((a) => {
-      return a.__inProgress?.sub === session?.user.sub
-    })
-    setNewAssignment(foundAssignment !== -1 ? foundAssignment : undefined)
-  }, [assignments, session?.user.sub])
 
   const slugLines = useMemo(() => {
     return (assignments ?? []).map((_, i) => {
@@ -53,36 +45,44 @@ export const AssignmentTable = ({ ydoc, asDialog = false, documentId, onChange }
   const handleNewAssignment = (event: MouseEvent<HTMLButtonElement> | KeyboardEvent<HTMLButtonElement>) => {
     event.preventDefault()
     event.stopPropagation()
-    if (newAssignment || selectedAssignment != null || !ydoc.provider) {
+
+    if (!session || newAssignment || selectedAssignment || !ydoc.provider) {
       return
     }
 
-    appendAssignment({
-      document: ydoc.provider.document,
-      inProgress: {
-        sub: session?.user.sub ?? ''
-      },
-      assignee: author,
-      slugLine: (!slugLines?.includes(planningSlugLine || ''))
-        ? planningSlugLine
-        : undefined,
-      type: 'text'
-    })
+    if (!ydoc.meta.get('core/assignment')) {
+      ydoc.meta.set('core/assignment', new Y.Map())
+    }
+
+    (ydoc.meta.get('core/assignment') as Y.Map<unknown>).set(
+      session.user.sub,
+      createNewAssignment({
+        document: ydoc.provider.document,
+        assignee: author,
+        slugLine: (!slugLines?.includes(planningSlugLine || ''))
+          ? planningSlugLine
+          : undefined,
+        type: 'text'
+      })
+    )
   }
 
   const handleClose = () => {
-    if (!newAssignment) return
+    if (!rawAssignments || !newAssignment || !session) return
 
-    const [assignmentType] = getValueByYPath(ydoc.document, `meta.core/assignment[${newAssignment}].meta.core/assignment-type[0].value`)
-    if (assignmentType !== 'text' && assignmentType !== 'editorial-info') {
-      deleteByYPath(ydoc.document, `meta.core/assignment[${newAssignment}].meta.[tt/slugline]`)
+    const assignment = getValueFromPath<Y.Map<unknown>>(ydoc.meta, ['core/assignment', session?.user.sub], true)
+    if (!assignment) return
+
+    const [assignmentType] = getValueByYPath<string>(assignment, ['meta', 'core/assignment-type', 0, 'value'])
+    if (assignmentType && !['text', 'editorial-info'].includes(assignmentType)) {
+      deleteByYPath(assignment, ['meta', 'tt/slugline'])
     }
-    deleteByYPath(ydoc.document, `meta.core/assignment[${newAssignment}].__inProgress`)
+    rawAssignments?.push([assignment])
+    deleteByYPath(ydoc.meta, ['core/assignment', session?.user.sub])
 
-    if (documentId) {
-      snapshotDocument(documentId, { force: true }, provider?.document)
+    if (documentId && ydoc.provider) {
+      snapshotDocument(documentId, { force: true }, ydoc.provider.document)
         .then(() => {
-          setNewAssignment(undefined)
           onChange?.(true)
         })
         .catch((ex) => {
@@ -93,10 +93,8 @@ export const AssignmentTable = ({ ydoc, asDialog = false, documentId, onChange }
   }
 
   const handleAbort = () => {
-    if (newAssignment !== undefined) {
-      rawAssignments?.delete(newAssignment)
-      setNewAssignment(undefined)
-    }
+    if (!session) return
+    (ydoc.meta.get('core/assignment') as Y.Map<unknown>).delete(session.user.sub)
   }
 
   useNavigationKeys({
@@ -176,14 +174,17 @@ export const AssignmentTable = ({ ydoc, asDialog = false, documentId, onChange }
             })}
           </>
         )}
-
       </div>
 
       {newAssignment && (
         <div className='pb-6'>
           <Assignment
             ydoc={ydoc}
-            index={newAssignment}
+            assignment={getValueByYPath<Y.Map<unknown>>(
+              ydoc.meta,
+              ['core/assignment', session?.user.sub || ''],
+              true
+            )?.[0] as Y.Map<unknown>}
             onAbort={handleAbort}
             onClose={handleClose}
             className='mb-6'
@@ -195,18 +196,18 @@ export const AssignmentTable = ({ ydoc, asDialog = false, documentId, onChange }
         <div className='border rounded-md'>
           {assignments.map((assignment, index: number) => (
             <div key={`${assignment.id}`} className='border-b last:border-0'>
-              {selectedAssignment === assignment.id
+              {selectedAssignment?.get('id') === assignment.id
                 && (
                   <Assignment
                     ydoc={ydoc}
-                    index={index}
+                    assignment={selectedAssignment}
                     onChange={onChange}
                     onClose={() => setSelectedAssignment(undefined)}
                     className='-my-px -mx-[5px]'
                   />
                 )}
 
-              {selectedAssignment !== assignment.id && index !== newAssignment
+              {selectedAssignment?.get('id') !== assignment.id
                 && (
                   <AssignmentRow
                     ydoc={ydoc}
@@ -214,11 +215,17 @@ export const AssignmentTable = ({ ydoc, asDialog = false, documentId, onChange }
                     isFocused={index === focusedRowIndex}
                     asDialog={asDialog}
                     onChange={onChange}
-                    onSelect={() => {
-                      if (!newAssignment) {
-                        setSelectedAssignment(assignment.id)
-                      }
-                    }}
+                    onSelect={!newAssignment
+                      ? () => {
+                          setSelectedAssignment(
+                            getValueByYPath<Y.Map<unknown>>(
+                              ydoc.document,
+                              `meta.core/assignment[${index}]`,
+                              true
+                            )?.[0]
+                          )
+                        }
+                      : undefined}
                   />
                 )}
             </div>

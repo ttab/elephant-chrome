@@ -49,7 +49,7 @@ import { type YDocument, useYValue } from '@/modules/yjs/hooks'
 export const AssignmentRow = ({ ydoc, index, onSelect, isFocused = false, asDialog, onChange }: {
   ydoc: YDocument<Y.Map<unknown>>
   index: number
-  onSelect: () => void
+  onSelect?: () => void
   isFocused?: boolean
   asDialog?: boolean
   onChange?: (arg: boolean) => void
@@ -230,10 +230,13 @@ export const AssignmentRow = ({ ydoc, index, onSelect, isFocused = false, asDial
     {
       label: 'Redigera',
       icon: EditIcon,
+      disabled: !onSelect,
       item: <T extends HTMLElement>(event: MouseEvent<T>) => {
         event.stopPropagation()
         event.preventDefault()
-        onSelect()
+        if (onSelect) {
+          onSelect()
+        }
       }
     },
     {
@@ -315,7 +318,7 @@ export const AssignmentRow = ({ ydoc, index, onSelect, isFocused = false, asDial
             || (assignmentType === 'flash' && articleStatus?.meta?.heads?.['usable']?.version === articleStatus?.meta?.currentVersion)
           const version = articleStatus?.meta?.heads?.['usable']?.version
           onOpenEvent(event, isUsable && version ? { version } : undefined)
-        } else {
+        } else if (onSelect) {
           onSelect()
         }
       }}
@@ -342,13 +345,16 @@ export const AssignmentRow = ({ ydoc, index, onSelect, isFocused = false, asDial
           </div>
 
           <Button
+            disabled={!onSelect}
             variant='ghost'
             size='sm'
             className='w-9 px-0 hover:bg-accent2 hover:bg-gray-200'
             onClick={(event) => {
               event.preventDefault()
               event.stopPropagation()
-              onSelect()
+              if (onSelect) {
+                onSelect()
+              }
             }}
           >
             <PenIcon size={18} strokeWidth={1.75} className='text-muted-foreground' />

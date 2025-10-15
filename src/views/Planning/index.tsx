@@ -118,6 +118,7 @@ const PlanningViewContent = (props: ViewProps & {
   const [newDate, setNewDate] = useState<string | undefined>(undefined)
 
   const [title] = useYValue<Y.XmlText>(document, 'root.title', true)
+  const [slugline] = useYValue<Y.XmlText>(document, 'meta.tt/slugline[0].value', true)
   const pubIndex = useDescriptionIndex(document, 'public')
   const intIndex = useDescriptionIndex(document, 'internal')
   const [publicDescription] = useYValue<Y.XmlText>(document, ['meta', 'core/description', pubIndex, 'data', 'text'], true)
@@ -210,7 +211,7 @@ const PlanningViewContent = (props: ViewProps & {
             <Form.Group icon={TagsIcon}>
               <SluglineEditable
                 ydoc={ydoc}
-                path='meta.tt/slugline[0].value'
+                value={slugline}
                 documentStatus={documentStatus?.name}
               />
 
