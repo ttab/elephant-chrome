@@ -35,8 +35,6 @@ export const TextboxEditable = ({ value, ydoc, singleLine, spellcheck, disabled 
       )
   }, [value, path, ydoc.user, ydoc.provider?.awareness])
 
-  console.log('Editor for path', path)
-
   useLayoutEffect(() => {
     if (yjsEditor) {
       YjsEditor.connect(yjsEditor)
