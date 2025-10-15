@@ -11,7 +11,7 @@ export const Newsvalue = ({ ydoc, path, onValidation, validateStateRef, onChange
   ydoc: YDocument<Y.Map<unknown>>
   path: string
 } & FormProps): JSX.Element => {
-  const [newsvalue, setNewsvalue] = useYValue<string | undefined>(ydoc.document, path)
+  const [newsvalue, setNewsvalue] = useYValue<string | undefined>(ydoc.ele, path)
   const setFocused = useRef<(value: boolean, path: string) => void>(() => { })
   const selectedOptions = Newsvalues.filter((type) => type.value === newsvalue)
 

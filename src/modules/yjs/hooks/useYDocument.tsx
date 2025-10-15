@@ -12,7 +12,7 @@ import type { EleDocumentResponse } from '@/shared/types'
 
 export interface YDocument<T> {
   id: string
-  document: T
+  ele: T
   meta: Y.Map<unknown>
   connected: boolean
   synced: boolean
@@ -185,7 +185,7 @@ export function useYDocument<T>(
   }, [document])
 
   resultRef.current.id = id
-  resultRef.current.document = document.getMap(rootMap) as T
+  resultRef.current.ele = document.getMap(rootMap) as T
   resultRef.current.meta = document.getMap('__meta')
   resultRef.current.connected = connected && online
   resultRef.current.synced = synced

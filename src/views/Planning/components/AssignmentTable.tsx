@@ -24,9 +24,9 @@ export const AssignmentTable = ({ ydoc, asDialog = false, documentId, onChange }
   onChange?: (arg: boolean) => void
 }): JSX.Element => {
   const { data: session } = useSession()
-  const [assignments] = useYValue<EleBlock[]>(ydoc.document, 'meta.core/assignment')
-  const [rawAssignments] = useYValue<Y.Array<Y.Map<unknown>>>(ydoc.document, 'meta.core/assignment', true)
-  const [planningSlugLine] = useYValue<string | undefined>(ydoc.document, 'meta.tt/slugline[0].value')
+  const [assignments] = useYValue<EleBlock[]>(ydoc.ele, 'meta.core/assignment')
+  const [rawAssignments] = useYValue<Y.Array<Y.Map<unknown>>>(ydoc.ele, 'meta.core/assignment', true)
+  const [planningSlugLine] = useYValue<string | undefined>(ydoc.ele, 'meta.tt/slugline[0].value')
   const [selectedAssignment, setSelectedAssignment] = useState<Y.Map<unknown> | undefined>(undefined)
   const [newAssignment] = useYValue<EleBlock>(ydoc.meta, `core/assignment.${session?.user.sub || ''}`)
   const [focusedRowIndex, setFocusedRowIndex] = useState<number | undefined>()
@@ -36,11 +36,11 @@ export const AssignmentTable = ({ ydoc, asDialog = false, documentId, onChange }
   const slugLines = useMemo(() => {
     return (assignments ?? []).map((_, i) => {
       return getValueByYPath<string>(
-        ydoc.document,
+        ydoc.ele,
         `meta.core/assignment[${i}].meta.tt/slugline[0].value`
       )?.[0]
     })
-  }, [ydoc.document, assignments])
+  }, [ydoc.ele, assignments])
 
   const handleNewAssignment = (event: MouseEvent<HTMLButtonElement> | KeyboardEvent<HTMLButtonElement>) => {
     event.preventDefault()
@@ -159,7 +159,7 @@ export const AssignmentTable = ({ ydoc, asDialog = false, documentId, onChange }
                         onClick={(e) => {
                           e.preventDefault()
                           setValueByYPath(
-                            ydoc.document,
+                            ydoc.ele,
                             `meta.core/assignment[${index}].__inProgress.sub`,
                             session?.user.sub
                           )
@@ -219,7 +219,7 @@ export const AssignmentTable = ({ ydoc, asDialog = false, documentId, onChange }
                       ? () => {
                           setSelectedAssignment(
                             getValueByYPath<Y.Map<unknown>>(
-                              ydoc.document,
+                              ydoc.ele,
                               `meta.core/assignment[${index}]`,
                               true
                             )?.[0]

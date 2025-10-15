@@ -108,7 +108,7 @@ const PlanningViewContent = (props: ViewProps & {
   setNewItem?: Setter
 }): JSX.Element | undefined => {
   const ydoc = useYDocument<Y.Map<unknown>>(props.documentId, { data: props.data })
-  const { provider, document, isChanged, setIsChanged, connected } = ydoc
+  const { provider, ele: document, isChanged, setIsChanged, connected } = ydoc
 
   const { data: session, status } = useSession()
   const [documentStatus] = useWorkflowStatus(props.documentId)

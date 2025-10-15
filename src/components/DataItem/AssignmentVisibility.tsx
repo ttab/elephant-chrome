@@ -13,7 +13,7 @@ export const AssignmentVisibility = ({ ydoc, path, editable, disabled, className
   disabled: boolean
   className?: string
 } & FormProps): JSX.Element => {
-  const [visibilityStatus, setAssignmentVisibility] = useYValue<string>(ydoc.document, path)
+  const [visibilityStatus, setAssignmentVisibility] = useYValue<string>(ydoc.ele, path)
 
   const onValueChange = useCallback(
     (value: string) => {

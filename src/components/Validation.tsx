@@ -14,7 +14,7 @@ export const Validation = (props: {
   onValidation?: (args: OnValidation) => boolean
 } & FormProps): JSX.Element | null => {
   const { ydoc, children, path, label, block, compareValues, onValidation, validateStateRef } = props
-  const [value] = useYValue<string | undefined>(ydoc.document, path)
+  const [value] = useYValue<string | undefined>(ydoc.ele, path)
   const { synced } = ydoc
 
   const isValid = useMemo(() => {

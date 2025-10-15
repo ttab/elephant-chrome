@@ -16,7 +16,7 @@ export const TextboxEditable = ({ value, ydoc, singleLine, spellcheck, disabled 
   spellcheck?: boolean
 }): JSX.Element | undefined => {
   const path = useYPath(value, true)
-  const [documentLanguage] = useYValue<string>(ydoc.document, ['root', 'language'])
+  const [documentLanguage] = useYValue<string>(ydoc.ele, ['root', 'language'])
   const onSpellcheck = useOnSpellcheck(documentLanguage)
 
   const yjsEditor = useMemo(() => {

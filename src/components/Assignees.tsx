@@ -22,7 +22,7 @@ export const Assignees = ({ ydoc, path, placeholder, asDialog, onChange }: {
       label: _.name
     }
   })
-  const [assignees, setAssignees] = useYValue<EleBlock[]>(ydoc.document, path)
+  const [assignees, setAssignees] = useYValue<EleBlock[]>(ydoc.ele, path)
   const selectedOptions = ((assignees || [])?.map((a) => {
     return {
       value: a.uuid,

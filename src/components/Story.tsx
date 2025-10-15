@@ -19,7 +19,7 @@ export const Story = ({ ydoc, path, onChange, asSubject }: {
     }
   })
 
-  const [story, setStory] = useYValue<Block | undefined>(ydoc.document, path)
+  const [story, setStory] = useYValue<Block | undefined>(ydoc.ele, path)
   const setFocused = useRef<(value: boolean, path: string) => void>(() => { })
   const selectedOptions = (allStories || []).filter((s) => s.value === story?.uuid)
 

@@ -16,8 +16,8 @@ export const SluglineEditable = ({ ydoc, value, documentStatus, onValidation, va
 } & FormProps): JSX.Element => {
   const path = useYPath(value, true)
   const editable = documentStatus !== 'usable'
-  const [slugLine] = useYValue<Y.XmlText | string>(ydoc.document, path)
-  const [assignments] = useYValue<Block[]>(ydoc.document, ['meta', 'core/assignment'])
+  const [slugLine] = useYValue<Y.XmlText | string>(ydoc.ele, path)
+  const [assignments] = useYValue<Block[]>(ydoc.ele, ['meta', 'core/assignment'])
 
   // Get all current sluglines from assignments for validation purposes
   // or use provided compareValues

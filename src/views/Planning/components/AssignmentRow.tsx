@@ -63,10 +63,10 @@ export const AssignmentRow = ({ ydoc, index, onSelect, isFocused = false, asDial
   const { data: session } = useSession()
 
   const base = `meta.core/assignment[${index}]`
-  const [assignment] = useYValue<Y.Map<unknown>>(ydoc.document, base, true)
-  const [inProgress] = useYValue(ydoc.document, `${base}.__inProgress`)
-  const [articleId] = useYValue<string>(ydoc.document, `${base}.links.core/article[0].uuid`)
-  const [flashId] = useYValue<string>(ydoc.document, `${base}.links.core/flash[0].uuid`)
+  const [assignment] = useYValue<Y.Map<unknown>>(ydoc.ele, base, true)
+  const [inProgress] = useYValue(ydoc.ele, `${base}.__inProgress`)
+  const [articleId] = useYValue<string>(ydoc.ele, `${base}.links.core/article[0].uuid`)
+  const [flashId] = useYValue<string>(ydoc.ele, `${base}.links.core/flash[0].uuid`)
 
   const { data: articleStatus, mutate } = useSWR(['articlestatus', articleId, flashId], async () => {
     const id = articleId || flashId
@@ -76,17 +76,17 @@ export const AssignmentRow = ({ ydoc, index, onSelect, isFocused = false, asDial
     }
   })
 
-  const [editorialInfoId] = useYValue<string>(ydoc.document, `${base}.links.core/editorial-info[0].uuid`)
-  const [assignmentType] = useYValue<string>(ydoc.document, `${base}.meta.core/assignment-type[0].value`)
-  const [assignmentId] = useYValue<string>(ydoc.document, `${base}.id`)
-  const [title] = useYValue<string>(ydoc.document, `${base}.title`)
-  const [description] = useYValue<string>(ydoc.document, `${base}.meta.core/description[0].data.text`)
-  const [publishTime] = useYValue<string>(ydoc.document, `${base}.data.publish`)
-  const [startTime] = useYValue<string>(ydoc.document, `${base}.data.start`)
-  const [endTime] = useYValue<string>(ydoc.document, `${base}.data.end`)
-  const [publishSlot] = useYValue<string>(ydoc.document, `${base}.data.publish_slot`)
-  const [authors = []] = useYValue<Block[]>(ydoc.document, `meta.core/assignment[${index}].links.core/author`)
-  const [slugline] = useYValue<string>(ydoc.document, `${base}.meta.tt/slugline[0].value`)
+  const [editorialInfoId] = useYValue<string>(ydoc.ele, `${base}.links.core/editorial-info[0].uuid`)
+  const [assignmentType] = useYValue<string>(ydoc.ele, `${base}.meta.core/assignment-type[0].value`)
+  const [assignmentId] = useYValue<string>(ydoc.ele, `${base}.id`)
+  const [title] = useYValue<string>(ydoc.ele, `${base}.title`)
+  const [description] = useYValue<string>(ydoc.ele, `${base}.meta.core/description[0].data.text`)
+  const [publishTime] = useYValue<string>(ydoc.ele, `${base}.data.publish`)
+  const [startTime] = useYValue<string>(ydoc.ele, `${base}.data.start`)
+  const [endTime] = useYValue<string>(ydoc.ele, `${base}.data.end`)
+  const [publishSlot] = useYValue<string>(ydoc.ele, `${base}.data.publish_slot`)
+  const [authors = []] = useYValue<Block[]>(ydoc.ele, `meta.core/assignment[${index}].links.core/author`)
+  const [slugline] = useYValue<string>(ydoc.ele, `${base}.meta.tt/slugline[0].value`)
 
   const [showVerifyDialog, setShowVerifyDialog] = useState<boolean>(false)
   const [showCreateDialogPayload, setShowCreateDialogPayload] = useState<boolean>(false)
@@ -411,7 +411,7 @@ export const AssignmentRow = ({ ydoc, index, onSelect, isFocused = false, asDial
           onPrimary={(event) => {
             event.stopPropagation()
             setShowVerifyDialog(false)
-            deleteByYPath(ydoc.document, `meta.core/assignment[${index}]`)
+            deleteByYPath(ydoc.ele, `meta.core/assignment[${index}]`)
             onChange?.(true)
           }}
           onSecondary={() => {

@@ -27,7 +27,7 @@ export const Section = ({ ydoc, path, onValidation, validateStateRef, onChange, 
       label: _.title
     }
   })
-  const [section, setSection] = useYValue<Block | undefined>(ydoc.document, path)
+  const [section, setSection] = useYValue<Block | undefined>(ydoc.ele, path)
   const setFocused = useRef<(value: boolean, path: string) => void>(() => { })
   const selectedOptions = (allSections || [])?.filter((s) => s.value === section?.uuid)
 
