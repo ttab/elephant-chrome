@@ -33,7 +33,7 @@ export const SluglineEditable = ({ ydoc, rootMap, value, documentStatus, onValid
     }, [])
   }, [assignments, compareValues])
 
-  if (!editable && typeof slugLine === 'undefined') {
+  if (!editable && typeof slugLine !== 'string') {
     return <></>
   }
 
