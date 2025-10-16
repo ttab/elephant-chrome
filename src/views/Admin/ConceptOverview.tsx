@@ -1,9 +1,8 @@
 import { Table, TableBody } from '@ttab/elephant-ui'
 import type { ViewMetadata } from '@/types/index'
-import { FilteredList } from './components/FilteredList'
-import { UnfilteredList } from './components/UnfilteredList'
 import { useQuery } from '@/hooks/useQuery'
 import { Toolbar } from '@/components/Table/Toolbar'
+import { ConceptsList } from './ConceptList'
 
 const meta: ViewMetadata = {
   name: 'Concepts',
@@ -28,7 +27,7 @@ export const ConceptOverview = () => {
       <Toolbar searchbar={true} searchPlaceholder='Fritextsökning' quickFilter={false} filter={false} />
       <Table>
         <TableBody>
-          {filter.query ? <FilteredList filter={filter.query[0]} /> : <UnfilteredList />}
+          <ConceptsList filter={filter.query?.[0]} />
         </TableBody>
       </Table>
     </>

@@ -1,5 +1,4 @@
 import { useRef } from 'react'
-
 import { useQuery } from '@/hooks/useQuery'
 import { Input } from '@ttab/elephant-ui'
 import type { SearchKeys } from '@/hooks/index/useDocuments/queries/views/search'

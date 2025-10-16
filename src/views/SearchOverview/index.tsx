@@ -44,7 +44,6 @@ export const Search = (): JSX.Element => {
   const organisers = useOrganisers()
   const authors = useAuthors()
 
-
   const columns = useMemo(() => {
     return createSearchColumns({
       searchType,

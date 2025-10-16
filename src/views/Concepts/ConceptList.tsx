@@ -33,6 +33,7 @@ export const ConceptList = ({ columns, documentType }: {
       usableOnly: true
     }
   })
+
   const onRowSelected = useCallback((row?: Concept) => {
     if (row) {
       console.info(`Selected concept item ${row.id}`)
@@ -55,7 +56,6 @@ export const ConceptList = ({ columns, documentType }: {
         type='Concept'
         columns={columns}
         onRowSelected={onRowSelected}
-        documentType={documentType}
       />
       <Pagination total={data?.total || 0} />
     </>

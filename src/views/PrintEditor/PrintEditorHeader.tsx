@@ -1,11 +1,11 @@
-import { useView, useYValue } from '@/hooks'
-import { useEffect, useRef, useState } from 'react'
+import { useView } from '@/hooks'
+import { useEffect, useRef } from 'react'
 import { ViewHeader } from '@/components/View'
 import { StatusMenu } from '@/components/DocumentStatus/StatusMenu'
 import { PenBoxIcon } from '@ttab/elephant-ui/icons'
-import { snapshotDocument } from '@/lib/snapshotDocument'
 import { AddNote } from '@/components/Notes/AddNote'
-import { toast } from 'sonner'
+import { ArticleTitle } from './components/ArticleTitle'
+import type * as Y from 'yjs'
 
 /**
  * EditorHeader component.
@@ -33,14 +33,13 @@ export const EditorHeader = ({
   documentId: string
   flowName?: string
   isChanged?: boolean
+  document?: Y.Doc
 }): JSX.Element => {
   const { viewId } = useView()
   const containerRef = useRef<HTMLElement | null>(null)
   useEffect(() => {
-    containerRef.current = document.getElementById(viewId)
+    containerRef.current = window.document.getElementById(viewId)
   }, [viewId])
-  const [isDirty, setIsDirty] = useState(false)
-  const [title, setTitle] = useYValue<string>('root.title')
 
   return (
     <ViewHeader.Root className='@container grid grid-cols-2'>
@@ -49,30 +48,7 @@ export const EditorHeader = ({
 
         <ViewHeader.Content className='justify-start w-full'>
           <div className='max-w-[1040px] mx-auto flex flex-row gap-2 justify-between items-center w-full'>
-            <div className='flex flex-row gap-1 justify-start items-center @7xl/view:-ml-20'>
-              <div className='flex flex-row gap-2 justify-start items-center'>
-                <input
-                  type='text'
-                  placeholder='Printartikelnamn'
-                  className='px-2 py-1 w-[130px]'
-                  value={title}
-                  onChange={(e) => {
-                    setIsDirty(true)
-                    setTitle(e.target.value)
-                  }}
-                  onBlur={() => {
-                    if (isDirty) {
-                      setIsDirty(false)
-                      snapshotDocument(documentId).then(() => {
-                        toast.success('Titel uppdaterad')
-                      }).catch((error) => {
-                        console.error('Error updating title:', error)
-                      })
-                    }
-                  }}
-                />
-              </div>
-            </div>
+            <ArticleTitle documentId={documentId} />
             <div className='flex flex-row gap-2 justify-end items-center'>
               <AddNote role='internal' />
               {!!documentId && (
