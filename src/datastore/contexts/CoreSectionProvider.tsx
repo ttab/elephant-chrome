@@ -14,11 +14,12 @@ export const CoreSectionContext = createContext<CoreSectionProviderState>({
   objects: []
 })
 
-export const CoreSectionProvider = ({ children }: {
+export const CoreSectionProvider = ({ children, usableOnly = true }: {
   children: React.ReactNode
+  usableOnly?: boolean
 }): JSX.Element => {
   const documentType = 'core/section'
-  const { server: { indexUrl } } = useRegistry()
+  const { server: { indexUrl }, repository } = useRegistry()
   const { data } = useSession()
   const [objects, setObjects] = useState<IDBSection[]>([])
   const IDB = useIndexedDB()
@@ -31,20 +32,55 @@ export const CoreSectionProvider = ({ children }: {
       return
     }
 
-    const cachedObjects = await fetchOrRefresh<IDBSection, IndexedSection>(
-      IDB,
-      documentType,
-      indexUrl,
-      data.accessToken,
-      force,
-      (item) => {
-        const { _id: id, _source: _ } = item
-        return {
-          id,
-          title: _['document.title'][0].trim()
+    const getCachedObjects = async () => {
+      const newDocs = await fetchOrRefresh<IDBSection, IndexedSection>(
+        IDB,
+        documentType,
+        indexUrl,
+        data.accessToken,
+        force,
+        (item) => {
+          console.log(item)
+          // get usable document here
+          const { _id: id, _source: _ } = item
+          return {
+            id,
+            title: _['document.title'][0].trim(),
+            usableId: BigInt(_['heads.usable.id'][0])
+          }
         }
+      )
+
+      if (!usableOnly) {
+        return newDocs
       }
-    )
+
+      const usableVersions = newDocs.map((item) => {
+        return {
+          uuid: item.id,
+          version: item.usableId
+        }
+      })
+
+      const usables = await repository?.getDocuments({
+        documents: usableVersions,
+        accessToken: data.accessToken
+      })
+
+      newDocs.forEach((document) => {
+        if (!document.id) {
+          return
+        }
+        const match = usables && usables.items.find((item) => item.document?.uuid === document.id)
+
+        if (match) {
+          document.title = match.document?.title ? match.document.title : ''
+        }
+      })
+      return newDocs
+    }
+
+    const cachedObjects = await getCachedObjects()
 
     if (Array.isArray(cachedObjects) && cachedObjects.length) {
       setObjects(cachedObjects)

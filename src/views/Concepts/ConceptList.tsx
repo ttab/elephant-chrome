@@ -2,37 +2,43 @@ import {
 } from '@/lib/index'
 import { useCallback } from 'react'
 import { Table } from '@/components/Table'
-import { useDocuments } from '@/hooks/index/useDocuments'
 import type { ColumnDef } from '@tanstack/react-table'
 import { toast } from 'sonner'
-import { constructQuery } from '@/hooks/index/useDocuments/queries/views/concepts'
-import { fields } from '@/shared/schemas/conceptSchemas/sectionConcept'
-import { useQuery } from '@/hooks/useQuery'
 
-import type { BaseConceptFields, Concept } from '@/shared/schemas/conceptSchemas/baseConcept'
+import type { Concept } from '@/shared/schemas/conceptSchemas/baseConcept'
 import { Pagination } from '@/components/Table/Pagination'
+import { useSections } from '@/hooks/useSections'
+import { useStories } from '@/hooks/useStories'
+import { useCategories } from '@/hooks/useCategories'
+import { useTable } from '@/hooks/useTable'
+import { IDBCategory, IDBSection, IDBStory } from 'src/datastore/types'
 
-export const ConceptList = ({ columns, documentType }: {
+export const ConceptList = ({ columns, documentType, title }: {
   columns: ColumnDef<Concept>[]
   documentType: string
   title: string
 }): JSX.Element => {
-  const [filter] = useQuery(['query'])
-  const [{ page }] = useQuery()
-  const { error, data } = useDocuments<Concept, BaseConceptFields>({
-    documentType: documentType,
-    fields,
-    query: constructQuery(filter),
-    page: typeof page === 'string'
-      ? parseInt(page)
-      : undefined,
-    options: {
-      subscribe: true,
-      setTableData: true,
-      withStatus: true,
-      usableOnly: true
+  const sections = useSections()
+  const storyTags = useStories()
+  const categories = useCategories()
+  const { setData } = useTable<IDBSection | IDBStory | IDBCategory>()
+
+
+  const tableDataMap = {
+    Sektioner: sections,
+    'Story tags': storyTags,
+    Kategorier: categories
+  } as const
+
+  const getObjects = () => {
+    const data = tableDataMap[title as keyof typeof tableDataMap]
+    if (data) {
+      setData(data)
     }
-  })
+    return data
+  }
+
+  const objects = getObjects()
 
   const onRowSelected = useCallback((row?: Concept) => {
     if (row) {
@@ -44,11 +50,10 @@ export const ConceptList = ({ columns, documentType }: {
   }, [])
 
 
-  if (error) {
-    console.error('Error fetching concept items:', error)
+  if (objects.length === 0) {
+    console.error('Error fetching concept items:')
     toast.error('Kunde inte hämta concept')
   }
-
 
   return (
     <>
@@ -57,7 +62,7 @@ export const ConceptList = ({ columns, documentType }: {
         columns={columns}
         onRowSelected={onRowSelected}
       />
-      <Pagination total={data?.total || 0} />
+      <Pagination total={objects?.length || 0} />
     </>
   )
 }

@@ -104,9 +104,6 @@ const ConceptContent = (props: ViewProps & { documentId: string }): JSX.Element 
   const environmentIsSane = provider && status === 'authenticated'
   const [initialValue, setInitialValue] = useState(title)
 
-  console.log(initialValue)
-
-
   const handleChange = useCallback((value: boolean): void => {
     const root = provider?.document.getMap('ele').get('root') as Y.Map<unknown>
     const changed = root.get('changed') as boolean

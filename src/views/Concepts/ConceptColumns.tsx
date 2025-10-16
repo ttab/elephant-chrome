@@ -1,10 +1,10 @@
 import { Title } from '@/components/Table/Items/Title'
 import type { ColumnDef } from '@tanstack/react-table'
 import { BoxesIcon } from '@ttab/elephant-ui/icons'
-import type { Concept } from '@/shared/schemas/conceptSchemas/baseConcept'
+import type { IDBSection } from 'src/datastore/types'
 
 
-export function ConceptColumns(): Array<ColumnDef<Concept>> {
+export function ConceptColumns(): Array<ColumnDef<IDBSection>> {
   return [
     {
       id: 'title',
@@ -14,7 +14,7 @@ export function ConceptColumns(): Array<ColumnDef<Concept>> {
         className: 'flex-none'
       },
       accessorFn: (data) => {
-        return data.fields['_usable_title'].values[0]
+        return data.title
       },
       cell: ({ row }) => {
         return (
