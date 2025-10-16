@@ -1,6 +1,7 @@
 import { TwirpFetchTransport } from '@protobuf-ts/twirp-transport'
 import { CheckClient } from '@ttab/elephant-api/spell'
 import { meta } from './meta'
+import { getCachedSession } from './getCachedSession'
 
 export class Spellchecker {
   readonly #client: CheckClient
@@ -23,18 +24,19 @@ export class Spellchecker {
    * @param {string[]} text - Array of strings to spellcheck
    * @param {string} documentLanguage - Language of provided document
    * @param {string[]} supportedLanguages - String array of languages supported for spellchecking
-   * @param {string} accessToken - Access token
    *
    * @returns Promise<GetDocumentResponse>
    */
-  async check(text: string[], documentLanguage: string, supportedLanguages: string[], accessToken: string): Promise<Array<Array<{
+  async check(text: string[], documentLanguage: string, supportedLanguages: string[]): Promise<Array<Array<{
     text: string
     suggestions: Array<{
       text: string
       description: string
     }>
   }>>> {
-    if (!accessToken) {
+    const session = await getCachedSession()
+
+    if (!session?.accessToken) {
       console.warn('No access token, no spellchecking')
       return []
     }
@@ -65,7 +67,7 @@ export class Spellchecker {
       const { response } = await this.#client.text({
         language,
         text
-      }, meta(accessToken))
+      }, meta(session.accessToken))
 
       const resturnResult = !Array.isArray(response?.misspelled)
         ? []
