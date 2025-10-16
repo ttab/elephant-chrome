@@ -46,6 +46,7 @@ export const TextboxEditable = ({ value, ydoc, singleLine, spellcheck, disabled 
 
   return (
     <Textbit.Editable
+      key={path} // This triggers a re-render if the path changes
       readOnly={disabled}
       yjsEditor={yjsEditor}
       lang={documentLanguage}
