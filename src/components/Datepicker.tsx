@@ -8,7 +8,7 @@ import {
   PopoverTrigger
 } from '@ttab/elephant-ui'
 import { cn } from '@ttab/elephant-ui/utils'
-import { useRegistry } from '@/hooks'
+import { useQuery, useRegistry } from '@/hooks'
 import { cva } from 'class-variance-authority'
 import { format } from 'date-fns'
 import { type ViewProps } from '../types'
@@ -22,6 +22,8 @@ export const DatePicker = ({ date, changeDate, setDate, forceYear = false, disab
 }): JSX.Element => {
   const { locale, timeZone } = useRegistry()
   const [open, setOpen] = useState<boolean>(false)
+
+  const [query] = useQuery()
 
   const formattedDate = new Intl.DateTimeFormat(locale.code.full, {
     weekday: 'short',
@@ -87,7 +89,7 @@ export const DatePicker = ({ date, changeDate, setDate, forceYear = false, disab
           onSelect={(selectedDate) => {
             if (selectedDate) {
               if (changeDate) {
-                changeDate(undefined, { from: format(selectedDate, 'yyyy-MM-dd') }, 'self')
+                changeDate(undefined, { ...query, from: format(selectedDate, 'yyyy-MM-dd') }, 'self')
               }
 
               if (setDate) {

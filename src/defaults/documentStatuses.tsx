@@ -156,17 +156,6 @@ export const PrintArticleStatuses: DefaultValueOption[] = [
     }
   },
   {
-    label: 'Klar',
-    value: 'print_done',
-    icon: CircleCheckIcon,
-    iconProps: {
-      color: '#ffffff',
-      className: 'bg-done fill-done rounded-full',
-      size: 18,
-      strokeWidth: 1.75
-    }
-  },
-  {
     label: 'Godkänd',
     value: 'approved',
     icon: BadgeCheckIcon,
