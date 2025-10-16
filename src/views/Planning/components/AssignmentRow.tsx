@@ -20,7 +20,6 @@ import { type MouseEvent, useMemo, useState, useCallback, useEffect, useRef } fr
 import { SluglineButton } from '@/components/DataItem/Slugline'
 import { useLink } from '@/hooks/useLink'
 import { Prompt } from '@/components'
-import { useCollaboration } from '@/hooks/useCollaboration'
 import { Button, Tooltip } from '@ttab/elephant-ui'
 import type { Block } from '@ttab/elephant-api/newsdoc'
 import { deleteByYPath, getValueByYPath } from '@/shared/yUtils'
@@ -54,7 +53,6 @@ export const AssignmentRow = ({ ydoc, index, onSelect, isFocused = false, asDial
   asDialog?: boolean
   onChange?: (arg: boolean) => void
 }): JSX.Element => {
-  const { provider } = useCollaboration()
   const openArticle = useLink('Editor')
   const openFlash = useLink('Flash')
 
@@ -90,8 +88,7 @@ export const AssignmentRow = ({ ydoc, index, onSelect, isFocused = false, asDial
 
   const [showVerifyDialog, setShowVerifyDialog] = useState<boolean>(false)
   const [showCreateDialogPayload, setShowCreateDialogPayload] = useState<boolean>(false)
-  const yRoot = provider?.document.getMap('ele')
-  const [planningId] = getValueByYPath<string | undefined>(yRoot, 'root.uuid')
+  const [planningId] = getValueByYPath<string | undefined>(ydoc.ele, 'root.uuid')
 
   const documentId = articleId || flashId || editorialInfoId
   const isDocument = assignmentType === 'flash' || assignmentType === 'text' || assignmentType === 'editorial-info'
@@ -187,12 +184,10 @@ export const AssignmentRow = ({ ydoc, index, onSelect, isFocused = false, asDial
         undefined,
         undefined,
         event instanceof KeyboardEvent && event.key === ' ')
-    } else {
-      if (!asDialog && provider?.document) {
-        setShowCreateDialogPayload(true)
-      }
+    } else if (!asDialog && ydoc.ele) {
+      setShowCreateDialogPayload(true)
     }
-  }, [documentId, provider?.document, openDocument, asDialog])
+  }, [documentId, ydoc.ele, openDocument, asDialog])
 
   const rowRef = useRef<HTMLDivElement>(null)
   useEffect(() => {
@@ -258,7 +253,7 @@ export const AssignmentRow = ({ ydoc, index, onSelect, isFocused = false, asDial
             onChange={onChange}
             onDialogClose={hideModal}
             original={{
-              document: provider?.document,
+              document: ydoc.provider?.document,
               assignmentId,
               assignmentTitle: title,
               assignment,
@@ -433,17 +428,18 @@ export const AssignmentRow = ({ ydoc, index, onSelect, isFocused = false, asDial
         />
       )}
 
-      {showCreateDialogPayload && provider?.document && (slugline || assignmentType === 'flash') && (
+      {showCreateDialogPayload && ydoc.provider?.document && (slugline || assignmentType === 'flash') && (
         <CreateDeliverablePrompt
-          payload={createPayload(provider.document, index, assignmentType) || {}}
+          ydoc={ydoc}
+          payload={createPayload(ydoc.provider.document, index, assignmentType) || {}}
           deliverableType={getDeliverableType(assignmentType)}
           title={title || ''}
           documentLabel={documentLabel || ''}
           onClose={(id) => {
-            if (id && provider?.document) {
+            if (id && ydoc.provider?.document) {
               // Add document id to correct assignment
               appendDocumentToAssignment({
-                document: provider.document,
+                document: ydoc.provider.document,
                 id,
                 index,
                 slug: '',
@@ -451,7 +447,7 @@ export const AssignmentRow = ({ ydoc, index, onSelect, isFocused = false, asDial
               })
 
               if (planningId) {
-                void snapshotDocument(planningId, undefined, provider.document).then(() => {
+                void snapshotDocument(planningId, undefined, ydoc.provider.document).then(() => {
                   const openDocument = assignmentType === 'flash' ? openFlash : openArticle
                   openDocument(undefined, { id, planningId }, 'blank')
                 })
