@@ -8,7 +8,7 @@ export const _baseConceptFields = [
   'document.title',
   'heads.usable.version',
   'heads.current.version',
-  '_usable.title'
+  '_usable_title'
 ] as const
 
 /**

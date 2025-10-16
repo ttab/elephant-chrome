@@ -14,7 +14,7 @@ export function ConceptColumns(): Array<ColumnDef<Concept>> {
         className: 'flex-none'
       },
       accessorFn: (data) => {
-        return data.fields['document.title'].values[0]
+        return data.fields['_usable_title'].values[0]
       },
       cell: ({ row }) => {
         return (
