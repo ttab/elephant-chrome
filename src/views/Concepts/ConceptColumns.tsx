@@ -1,10 +1,10 @@
 import { Title } from '@/components/Table/Items/Title'
 import type { ColumnDef } from '@tanstack/react-table'
 import { BoxesIcon } from '@ttab/elephant-ui/icons'
-import type { IDBSection } from 'src/datastore/types'
+import type { IDBConcept } from 'src/datastore/types'
 
 
-export function ConceptColumns(): Array<ColumnDef<IDBSection>> {
+export function ConceptColumns(): Array<ColumnDef<IDBConcept>> {
   return [
     {
       id: 'title',

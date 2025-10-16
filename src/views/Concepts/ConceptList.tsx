@@ -4,17 +4,15 @@ import { useCallback } from 'react'
 import { Table } from '@/components/Table'
 import type { ColumnDef } from '@tanstack/react-table'
 import { toast } from 'sonner'
-
-import type { Concept } from '@/shared/schemas/conceptSchemas/baseConcept'
 import { Pagination } from '@/components/Table/Pagination'
 import { useSections } from '@/hooks/useSections'
 import { useStories } from '@/hooks/useStories'
 import { useCategories } from '@/hooks/useCategories'
 import { useTable } from '@/hooks/useTable'
-import { IDBCategory, IDBSection, IDBStory } from 'src/datastore/types'
+import type { IDBCategory, IDBConcept, IDBSection, IDBStory } from 'src/datastore/types'
 
 export const ConceptList = ({ columns, documentType, title }: {
-  columns: ColumnDef<Concept>[]
+  columns: ColumnDef<IDBConcept>[]
   documentType: string
   title: string
 }): JSX.Element => {
@@ -40,7 +38,7 @@ export const ConceptList = ({ columns, documentType, title }: {
 
   const objects = getObjects()
 
-  const onRowSelected = useCallback((row?: Concept) => {
+  const onRowSelected = useCallback((row?: IDBConcept) => {
     if (row) {
       console.info(`Selected concept item ${row.id}`)
     } else {

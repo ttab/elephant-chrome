@@ -1,9 +1,11 @@
 /** Section structure in indexedDB objectStore  */
-export interface IBDConcept {
+export interface IDBConcept {
+  id: string
+  title: string
   usableId?: bigint
 }
 
-export interface IDBSection extends IBDConcept {
+export interface IDBSection extends IDBConcept {
   id: string
   title: string
 }
@@ -15,7 +17,7 @@ export interface IDBEditorialInfoType {
 }
 
 /** Story structure in indexedDB objectStore  */
-export interface IDBStory extends IBDConcept {
+export interface IDBStory extends IDBConcept {
   id: string
   title: string
   shortText: string
@@ -34,7 +36,7 @@ export interface IDBAuthor {
 }
 
 /** Category structure in indexedDB objectStore */
-export interface IDBCategory extends IBDConcept {
+export interface IDBCategory extends IDBConcept {
   id: string
   title: string
 }

@@ -6,12 +6,7 @@ import { Header } from '@/components/Header'
 import { TabsContent } from '@ttab/elephant-ui'
 import { ConceptList } from './ConceptList'
 import { ConceptColumns } from './ConceptColumns'
-import type { Concept } from '@/shared/schemas/conceptSchemas/baseConcept'
-import { useSections } from '@/hooks/useSections'
-import { useStories } from '@/hooks/useStories'
-import { useCategories } from '@/hooks/useCategories'
-import { useQuery } from '@/hooks/useQuery'
-import { useLink } from '@/hooks/useLink'
+import type { IDBConcept } from 'src/datastore/types'
 
 const meta: ViewMetadata = {
   name: 'Concepts',
@@ -36,7 +31,7 @@ export const Concepts = ({ documentType, title }: ViewProps) => {
     ConceptColumns(), [])
   return (
     <View.Root tab={currentTab} onTabChange={setCurrentTab}>
-      <TableProvider<Concept>
+      <TableProvider<IDBConcept>
         columns={columns}
         type={meta.name}
       >

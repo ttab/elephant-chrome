@@ -85,7 +85,7 @@ export const CoreSectionProvider = ({ children, usableOnly = true }: {
     if (Array.isArray(cachedObjects) && cachedObjects.length) {
       setObjects(cachedObjects)
     }
-  }, [data?.accessToken, indexUrl, IDB])
+  }, [data?.accessToken, indexUrl, IDB, usableOnly, repository])
 
 
   /**
