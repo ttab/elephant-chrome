@@ -2,7 +2,7 @@
   "name": "elephant-chrome",
   "private": false,
   "license": "MIT",
-  "version": "1.7.1",
+  "version": "1.7.2-2",
   "type": "module",
   "scripts": {
     "debug": "concurrently npm:debug:vite",
@@ -43,7 +43,7 @@
     "@slate-yjs/core": "^1.0.2",
     "@tanstack/react-table": "^8.21.3",
     "@ttab/api-client": "^2.11.1",
-    "@ttab/elephant-api": "^0.17.23",
+    "@ttab/elephant-api": "^0.18.2",
     "@ttab/elephant-tt-api": "^0.1.8",
     "@ttab/elephant-ui": "^1.0.0",
     "@ttab/textbit": "^0.22.3",

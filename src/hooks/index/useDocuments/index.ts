@@ -231,6 +231,8 @@ async function pollSubscriptions<T extends HitV1>({
 
     // if there are missing matches, we need to refetch the data
     if (missingMatch) {
+      // Due to opensearches refresh_interval we need to wait 1 second before refetching
+      await new Promise((resolve) => setTimeout(resolve, 1000))
       await mutate()
     } else {
       // Build a map of matched items by id for quick lookup

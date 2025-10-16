@@ -13,8 +13,10 @@ import { Position } from './components/Position'
 import { Prompt } from '@/components/Prompt'
 import { snapshotDocument } from '@/lib/snapshotDocument'
 import { type ReactNode, useState } from 'react'
+import type * as Y from 'yjs'
 
 export function LayoutBox({
+  document,
   documentId,
   layoutIdForRender,
   layoutId,
@@ -22,6 +24,7 @@ export function LayoutBox({
   deleteLayout,
   onChange
 }: {
+  document?: Y.Doc
   documentId: string
   layoutIdForRender: string
   layoutId: string
@@ -53,7 +56,7 @@ export function LayoutBox({
       return
     }
     try {
-      await snapshotDocument(documentId)
+      await snapshotDocument(documentId, undefined, document)
       const response = await baboon.renderArticle({
         articleUuid: documentId,
         layoutId: layoutIdForRender,
