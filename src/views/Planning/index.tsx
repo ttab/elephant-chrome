@@ -199,6 +199,7 @@ const PlanningViewContent = (props: ViewProps & {
 
               {newDate && props.asDialog !== true && (
                 <MoveDialog
+                  ydoc={ydoc}
                   newDate={newDate}
                   onChange={setIsChanged}
                   onClose={() => {
