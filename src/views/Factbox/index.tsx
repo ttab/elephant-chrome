@@ -153,21 +153,18 @@ const FactboxContainer = ({
 
 
   const handleSubmit = (): void => {
-    if (provider && status === 'authenticated') {
-      void snapshotDocument(documentId).then((response) => {
-        if (response?.statusMessage) {
-          toast.error('Kunde inte skapa ny faktaruta!', {
-            duration: 5000,
-            position: 'top-center'
-          })
-          return
-        }
-
+    snapshotDocument(documentId, undefined, provider?.document)
+      .then(() => {
         if (onDialogClose) {
-          onDialogClose(documentId, 'title')
+          onDialogClose()
         }
+      }).catch((ex) => {
+        toast.error('Kunde inte skapa ny faktaruta!', {
+          duration: 5000,
+          position: 'top-center'
+        })
+        console.error(ex)
       })
-    }
   }
 
   const environmentIsSane = provider && status === 'authenticated'

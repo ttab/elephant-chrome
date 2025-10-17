@@ -139,7 +139,7 @@ export const MoveDialog = ({ onClose, onChange, newDate }: {
                 setStartString(newDate)
                 setEndString(newDate)
 
-                snapshotDocument(id).then(() => {
+                snapshotDocument(id, undefined, provider?.document).then(() => {
                   onChange(true)
                   onClose()
                 }).catch((err) => {

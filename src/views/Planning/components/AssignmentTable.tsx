@@ -84,13 +84,17 @@ export const AssignmentTable = ({ asDialog = false, documentId, onChange }: {
     deleteByYPath(yRoot, `${currentAssigmentPath}.__inProgress`)
 
     if (documentId) {
-      await snapshotDocument(documentId, {
-        force: true
-      }, provider?.document)
-    }
+      try {
+        await snapshotDocument(documentId, {
+          force: true
+        }, provider?.document)
 
-    // Set document as changed once we close the new assignment
-    onChange?.(true)
+        // Set document as changed once we close the new assignment
+        onChange?.(true)
+      } catch (ex) {
+        toast.error(ex instanceof Error ? ex.message : 'Kunde inte spara planeringen')
+      }
+    }
   }
 
   useNavigationKeys({

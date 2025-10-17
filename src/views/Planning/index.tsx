@@ -120,21 +120,20 @@ const PlanningViewContent = (props: ViewProps & { documentId: string, setNewItem
     documentStatus: 'usable' | 'done' | undefined
   }): void => {
     if (provider && status === 'authenticated') {
-      void snapshotDocument(props.documentId, {
+      snapshotDocument(props.documentId, {
         status: documentStatus,
         addToHistory: true
-      }).then((response) => {
-        if (response?.statusMessage) {
-          toast.error('Kunde inte skapa ny planering!', {
-            duration: 5000,
-            position: 'top-center'
-          })
-          return
-        }
-
+      }).then(() => {
         if (props?.onDialogClose) {
           props.onDialogClose()
         }
+      }).catch((ex: unknown) => {
+        console.error('Failed to snapshot document', ex)
+        toast.error('Kunde inte skapa ny planering!', {
+          duration: 5000,
+          position: 'top-center'
+        })
+        return
       })
     }
 
