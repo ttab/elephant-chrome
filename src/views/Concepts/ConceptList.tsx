@@ -10,6 +10,7 @@ import { useStories } from '@/hooks/useStories'
 import { useCategories } from '@/hooks/useCategories'
 import { useTable } from '@/hooks/useTable'
 import type { IDBCategory, IDBConcept, IDBSection, IDBStory } from 'src/datastore/types'
+import { useOrganisers } from '@/hooks/useOrganisers'
 
 export const ConceptList = ({ columns, documentType, title }: {
   columns: ColumnDef<IDBConcept>[]
@@ -19,13 +20,15 @@ export const ConceptList = ({ columns, documentType, title }: {
   const sections = useSections()
   const storyTags = useStories()
   const categories = useCategories()
+  const organisers = useOrganisers()
   const { setData } = useTable<IDBSection | IDBStory | IDBCategory>()
 
 
   const tableDataMap = {
     Sektioner: sections,
     'Story tags': storyTags,
-    Kategorier: categories
+    Kategorier: categories,
+    Organisatörer: organisers
   } as const
 
   const getObjects = () => {
@@ -48,7 +51,7 @@ export const ConceptList = ({ columns, documentType, title }: {
   }, [])
 
 
-  if (objects.length === 0) {
+  if (objects && objects.length === 0) {
     console.error('Error fetching concept items:')
     toast.error('Kunde inte hämta concept')
   }
