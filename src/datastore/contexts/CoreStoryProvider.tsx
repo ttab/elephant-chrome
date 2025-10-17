@@ -7,11 +7,11 @@ import { type IDBStory } from '../types'
 import { type IndexedStory } from '@/lib/index'
 
 interface CoreStoryProviderState {
-  objects: IDBStory[]
+  objects: IDBStory[] | undefined
 }
 
 export const CoreStoryContext = createContext<CoreStoryProviderState>({
-  objects: []
+  objects: undefined
 })
 
 export const CoreStoryProvider = ({ children }: {
@@ -20,7 +20,7 @@ export const CoreStoryProvider = ({ children }: {
   const documentType = 'core/story'
   const { server: { indexUrl } } = useRegistry()
   const { data } = useSession()
-  const [objects, setObjects] = useState<IDBStory[]>([])
+  const [objects, setObjects] = useState<IDBStory[] | undefined>(undefined)
   const IDB = useIndexedDB()
 
   /*

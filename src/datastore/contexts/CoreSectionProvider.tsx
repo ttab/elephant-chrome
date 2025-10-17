@@ -7,11 +7,11 @@ import { type IDBSection } from '../types'
 import { type IndexedSection } from '@/lib/index'
 
 interface CoreSectionProviderState {
-  objects: IDBSection[]
+  objects: IDBSection[] | undefined
 }
 
 export const CoreSectionContext = createContext<CoreSectionProviderState>({
-  objects: []
+  objects: undefined
 })
 
 export const CoreSectionProvider = ({ children, usableOnly = true }: {
@@ -21,7 +21,7 @@ export const CoreSectionProvider = ({ children, usableOnly = true }: {
   const documentType = 'core/section'
   const { server: { indexUrl }, repository } = useRegistry()
   const { data } = useSession()
-  const [objects, setObjects] = useState<IDBSection[]>([])
+  const [objects, setObjects] = useState<IDBSection[] | undefined>(undefined)
   const IDB = useIndexedDB()
 
   /*
