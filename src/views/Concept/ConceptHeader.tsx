@@ -1,7 +1,7 @@
 import { useView } from '@/hooks'
 import { useEffect, useRef } from 'react'
 import { ViewHeader } from '@/components/View'
-import { TagIcon } from '@ttab/elephant-ui/icons'
+import { PenIcon, TagIcon } from '@ttab/elephant-ui/icons'
 import { MetaSheet } from '../Editor/components/MetaSheet'
 
 export const ConceptHeader = ({ documentId, asDialog, onDialogClose }: {
@@ -22,7 +22,7 @@ export const ConceptHeader = ({ documentId, asDialog, onDialogClose }: {
       <ViewHeader.Title
         name='Concept'
         title='Redigera'
-        icon={TagIcon}
+        icon={PenIcon}
         asDialog={asDialog}
       />
       <ViewHeader.Content className='justify-start'>
