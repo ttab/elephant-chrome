@@ -22,7 +22,6 @@ export const ConceptList = ({ columns, title }: {
   const organisers = useOrganisers()
   const { setData } = useTable<IDBSection | IDBStory | IDBCategory>()
 
-
   const tableDataMap = {
     Sektioner: sections,
     'Story tags': storyTags,

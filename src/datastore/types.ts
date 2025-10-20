@@ -2,7 +2,7 @@
 export interface IDBConcept {
   id: string
   title: string
-  usableId?: bigint
+  usableVersion?: bigint
 }
 
 export interface IDBSection extends IDBConcept {

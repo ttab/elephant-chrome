@@ -44,7 +44,7 @@ export const CoreSectionProvider = ({ children, usableOnly = true }: {
           return {
             id,
             title: _['document.title'][0].trim(),
-            usableId: BigInt(_['heads.usable.id'][0])
+            usableVersion: BigInt(_['heads.usable.version'][0])
           }
         }
       )
@@ -56,15 +56,14 @@ export const CoreSectionProvider = ({ children, usableOnly = true }: {
       const usableVersions = newDocs.map((item) => {
         return {
           uuid: item.id,
-          version: item.usableId
+          version: item.usableVersion
         }
       })
-
+      
       const usables = await repository?.getDocuments({
         documents: usableVersions,
         accessToken: data.accessToken
       })
-
       newDocs.forEach((document) => {
         if (!document.id) {
           return
