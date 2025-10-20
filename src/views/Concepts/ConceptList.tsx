@@ -12,9 +12,8 @@ import { useTable } from '@/hooks/useTable'
 import type { IDBCategory, IDBConcept, IDBSection, IDBStory } from 'src/datastore/types'
 import { useOrganisers } from '@/hooks/useOrganisers'
 
-export const ConceptList = ({ columns, documentType, title }: {
+export const ConceptList = ({ columns, title }: {
   columns: ColumnDef<IDBConcept>[]
-  documentType: string
   title: string
 }): JSX.Element => {
   const sections = useSections()
