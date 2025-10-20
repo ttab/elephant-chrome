@@ -64,24 +64,17 @@ export function appendAssignment(options: {
   document: Y.Doc
   assignee?: IDBAuthor | null | undefined
   type: 'text' | 'flash' | 'graphic' | 'picture' | 'video' | 'picture/video'
-  inProgress?: { sub: string }
   slugLine?: string
   title?: string
   wire?: Wire
   assignmentData?: Block['data']
 }): [number, Y.Map<unknown>] {
-  const { document, inProgress } = options
+  const { document } = options
   const yAssignment = createNewAssignment(options)
   const meta = document.getMap('ele').get('meta') as Y.Map<unknown>
 
   // Get existing assignments
   const yAssignments = meta.get('core/assignment') as Y.Array<unknown>
-
-  // Append __inProgress if needed
-  if (inProgress) {
-    // @ts-expect-error We need to override Block to add this property
-    yAssignment.__inProgress = inProgress
-  }
 
   // Push to existing assignments
   yAssignments.push([yAssignment])
