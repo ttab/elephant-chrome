@@ -191,10 +191,10 @@ export class RepositoryExtension implements Extension {
 
     // Set new hash an version to the actual connected document
     await connection.transact((doc) => {
-      const yMeta = doc.getMap('meta')
-      yMeta.delete('isInProgress')
-      yMeta.set('hash', createHash(JSON.stringify(doc.getMap('ele').toJSON())))
-      yMeta.set('version', result.version)
+      const yCtx = doc.getMap('ctx')
+      yCtx.delete('isInProgress')
+      yCtx.set('hash', createHash(JSON.stringify(doc.getMap('ele').toJSON())))
+      yCtx.set('version', result.version)
     })
 
     // Cleanup
