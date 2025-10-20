@@ -27,7 +27,7 @@ export const Toolbar = ({ facets }: { facets: Facets }): JSX.Element => {
     }
     return JSON.stringify(savedUserFilter, Object.keys(savedUserFilter).sort()) === JSON.stringify(currentFilter, Object.keys(currentFilter).sort())
   }
-  const allSections = useSections()
+  const allSections = useSections() ?? []
 
   const handleResetFilters = () => {
     setFilters({})

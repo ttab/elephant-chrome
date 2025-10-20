@@ -17,12 +17,12 @@ interface SectionProps {
 
 export const Section = ({ onValidation, validateStateRef, onChange, onSelect }:
   FormProps & SectionProps): JSX.Element => {
-  const allSections = useSections().map((_) => {
+  const allSections = useSections()?.map((_) => {
     return {
       value: _.id,
       label: _.title
     }
-  })
+  }) ?? []
   const path = 'links.core/section[0]'
   const [section, setSection] = useYValue<Block | undefined>(path)
   const setFocused = useRef<(value: boolean, path: string) => void>(() => { })

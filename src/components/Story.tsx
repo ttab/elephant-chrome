@@ -8,12 +8,12 @@ import type { FormProps } from './Form/Root'
 export const Story = ({ onChange, asSubject }: {
   asSubject?: boolean
 } & FormProps): JSX.Element => {
-  const allStories = useStories().map((_) => {
+  const allStories = useStories()?.map((_) => {
     return {
       value: _.id,
       label: _.title
     }
-  })
+  }) ?? []
 
   const path = 'links.core/story[0]'
   const [story, setStory] = useYValue<Block | undefined>(path)

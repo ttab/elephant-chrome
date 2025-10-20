@@ -26,12 +26,12 @@ export const Commands = (props: {
     setCurrentFilters({})
   }
 
-  const optionsSections = useSections().map((_) => {
+  const optionsSections = useSections()?.map((_) => {
     return {
       value: _.id,
       label: _.title
     }
-  })
+  }) ?? []
 
   return (
     <CommandList>

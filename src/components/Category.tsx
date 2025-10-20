@@ -6,17 +6,17 @@ import { useRef } from 'react'
 import type { FormProps } from './Form/Root'
 
 export const Category = ({ asDialog, onChange }: FormProps): JSX.Element => {
-  const allCategories = useCategories().map((_) => {
+  const allCategories = useCategories()?.map((_) => {
     return {
       value: _.id,
       label: _.title
     }
-  })
+  }) ?? []
 
   const path = 'links.core/category'
   const [categories, setCategories] = useYValue<Block[] | undefined>(path)
   const setFocused = useRef<(value: boolean, start: string) => void>(() => { })
-  const selectedOptions = allCategories.filter((category) =>
+  const selectedOptions = allCategories?.filter((category) =>
     categories?.some((cat) => cat.uuid === category.value)
   )
 

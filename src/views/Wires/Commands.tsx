@@ -21,12 +21,12 @@ export const Commands = (props: FilterProps): JSX.Element => {
     setFilters({})
   }
 
-  const optionsSections = useSections().map((_) => {
+  const optionsSections = useSections()?.map((_) => {
     return {
       value: _.id,
       label: _.title
     }
-  })
+  }) ?? []
 
   const optionsSources = useWireSources().map(({ uri, title }) => ({
     value: uri,

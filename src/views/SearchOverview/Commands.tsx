@@ -42,20 +42,20 @@ export const Commands = (props: FilterProps & { type: SearchKeys }): JSX.Element
     setFilters({})
   }
 
-  const sections = useSections().map((s) => ({
+  const sections = useSections()?.map((s) => ({
     value: s.id,
     label: s.title
-  }))
+  })) ?? []
 
-  const organisers = useOrganisers().map((o) => ({
+  const organisers = useOrganisers()?.map((o) => ({
     value: o.id,
     label: o.title
-  }))
+  })) ?? []
 
-  const categories = useCategories().map((c) => ({
+  const categories = useCategories()?.map((c) => ({
     value: c.id,
     label: c.title
-  }))
+  })) ?? []
 
   const authors = useAuthors().map((a) => ({
     value: a.id,
