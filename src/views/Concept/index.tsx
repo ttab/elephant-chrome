@@ -19,6 +19,7 @@ import { toast } from 'sonner'
 import { snapshotDocument } from '@/lib/snapshotDocument'
 import type { HocuspocusProvider } from '@hocuspocus/provider'
 import type { AwarenessUserData } from '@/contexts/CollaborationProvider'
+import { InfoIcon } from '@ttab/elephant-ui/icons'
 
 const meta: ViewMetadata = {
   name: 'Concept',
@@ -66,6 +67,8 @@ const ConceptWrapper = (props: ViewProps & { documentId: string }): JSX.Element 
   const { provider, synced, user } = useCollaboration()
   const [, setIsFocused] = useAwareness(props.documentId)
   const [isChanged] = useYValue<boolean>('root.changed')
+  const [title] = useYValue<boolean>('root.changed')
+  const { status } = useSession()
 
   useEffect(() => {
     provider?.setAwarenessField('data', user)
@@ -75,6 +78,26 @@ const ConceptWrapper = (props: ViewProps & { documentId: string }): JSX.Element 
       setIsFocused(false)
     }
   }, [provider, user])
+
+  const environmentIsSane = provider && status === 'authenticated'
+
+  const handleSubmit = (): void => {
+    if (environmentIsSane) {
+      void snapshotDocument(props.documentId).then((response) => {
+        if (response?.statusMessage) {
+          toast.error('Kunde inte skapa ny sektion!', {
+            duration: 5000,
+            position: 'top-center'
+          })
+          return
+        }
+
+        if (props.onDialogClose) {
+          props.onDialogClose(props.documentId, 'title')
+        }
+      })
+    }
+  }
 
   return (
     <>
@@ -97,7 +120,30 @@ const ConceptWrapper = (props: ViewProps & { documentId: string }): JSX.Element 
             )
           : <></>}
         <View.Footer className='justify-center'>
-          <h1>Concept Footer</h1>
+          {props.asDialog
+            && (
+              <>
+                {!environmentIsSane && (
+                  <div className='text-sm leading-tight pb-2 text-left flex gap-2'>
+                    <span className='w-4'>
+                      <InfoIcon size={18} strokeWidth={1.75} className='text-muted-foreground' />
+                    </span>
+                    <p>
+                      Du är utloggad eller har tappat kontakt med systemet.
+                      Vänligen försök logga in igen.
+                    </p>
+                  </div>
+                )}
+
+                <Button
+                  onClick={handleSubmit}
+                  disabled={!title || !environmentIsSane}
+                  className='whitespace-nowrap'
+                >
+                  Skapa Sektion
+                </Button>
+              </>
+            )}
         </View.Footer>
       </View.Root>
     </>
@@ -162,18 +208,21 @@ const ConceptContent = ({
               onChange={handleChange}
             >
             </TextBox>
-            <div className='flex gap-2.5 align-end'>
-              <Button
-                onClick={(e) => {
-                  e.preventDefault()
-                  void onSave()
-                }}
-                disabled={!title || !environmentIsSane || !isChanged}
-                className=''
-              >
-                Spara
-              </Button>
-            </div>
+            {!asDialog
+              && (
+                <div className='flex gap-2.5 align-end'>
+                  <Button
+                    onClick={(e) => {
+                      e.preventDefault()
+                      void onSave()
+                    }}
+                    disabled={!title || !environmentIsSane || !isChanged}
+                    className=''
+                  >
+                    Spara
+                  </Button>
+                </div>
+              )}
           </Form.Content>
         </Form.Root>
       </View.Content>
