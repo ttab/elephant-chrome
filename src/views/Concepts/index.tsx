@@ -6,6 +6,7 @@ import { TabsContent } from '@ttab/elephant-ui'
 import { ConceptList } from './ConceptList'
 import { ConceptColumns } from './ConceptColumns'
 import type { IDBConcept } from 'src/datastore/types'
+import { Header } from '@/components/Header'
 
 const meta: ViewMetadata = {
   name: 'Concepts',
@@ -37,6 +38,7 @@ export const Concepts = ({ title }: ViewProps) => {
         <ViewHeader.Root>
           <ViewHeader.Content>
             <ViewHeader.Title name={title ?? 'Concepts'} title={title ?? 'Concepts'} />
+            <Header type='Concept' />
           </ViewHeader.Content>
           <ViewHeader.Action />
         </ViewHeader.Root>
