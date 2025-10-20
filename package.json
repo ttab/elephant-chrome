@@ -33,7 +33,7 @@
     "@auth/express": "^0.9.0",
     "@date-fns/utc": "^2.1.1",
     "@grafana/faro-react": "1.14.1",
-    "@hocuspocus/extension-logger": "^3.2.3",
+    "@hocuspocus/extension-logger": "^3.2.6",
     "@hocuspocus/extension-redis": "^3.2.3",
     "@hocuspocus/provider": "^3.2.3",
     "@hocuspocus/server": "^3.2.3",
