@@ -5,18 +5,17 @@ import { Block } from '@ttab/elephant-api/newsdoc'
 import { FilePenIcon, FilePlus2Icon } from '@ttab/elephant-ui/icons'
 import type { DefaultValueOption } from '@/types/index'
 import type { FormProps } from '../Form/Root'
-import { type YDocument, useYValue } from '@/modules/yjs/hooks'
+import { useYValue } from '@/modules/yjs/hooks'
 import type * as Y from 'yjs'
 
-export const AssignmentType = ({ ydoc, path, editable = false, readOnly = false, className, onChange }: {
-  ydoc: YDocument<Y.Map<unknown>>
-  path: string
+export const AssignmentType = ({ assignment, editable = false, readOnly = false, className, onChange }: {
+  assignment?: Y.Map<unknown>
   className?: string
   editable?: boolean
   readOnly?: boolean
 } & FormProps): JSX.Element => {
-  const [assignmentType, setAssignmentType] = useYValue<Block[]>(ydoc.ele, path + '.meta.core/assignment-type')
-  const [, setAssignmentVisibility] = useYValue<string>(ydoc.ele, path + 'data.public')
+  const [assignmentType, setAssignmentType] = useYValue<Block[]>(assignment, 'meta.core/assignment-type')
+  const [, setAssignmentVisibility] = useYValue<string>(assignment, 'data.public')
 
   const selectedOptions = AssignmentTypes.filter((type) => {
     const value = assignmentType?.map ? assignmentType.map((s) => s.value).sort().join('/') : ''
@@ -26,6 +25,10 @@ export const AssignmentType = ({ ydoc, path, editable = false, readOnly = false,
   const { className: defaultClassName = '', ...iconProps } = selectedOptions[0]?.iconProps || {}
 
   const SelectedIcon = getIcon(selectedOptions, editable, readOnly)
+
+  if (!assignment) {
+    return <></>
+  }
 
   if (readOnly) {
     return (

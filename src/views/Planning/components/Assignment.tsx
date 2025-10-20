@@ -98,8 +98,7 @@ export const Assignment = ({ ydoc, assignment, onAbort, onClose, onChange }: {
 
           <Form.Group>
             <AssignmentType
-              ydoc={ydoc}
-              path={path}
+              assignment={assignment}
               editable={!articleId && !flashId}
             />
             <Assignees

@@ -62,9 +62,9 @@ export const AssignmentRow = ({ ydoc, index, onSelect, isFocused = false, asDial
 
   const base = `meta.core/assignment[${index}]`
   const [assignment] = useYValue<Y.Map<unknown>>(ydoc.ele, base, true)
-  const [inProgress] = useYValue(ydoc.ele, `${base}.__inProgress`)
-  const [articleId] = useYValue<string>(ydoc.ele, `${base}.links.core/article[0].uuid`)
-  const [flashId] = useYValue<string>(ydoc.ele, `${base}.links.core/flash[0].uuid`)
+  const [inProgress] = useYValue(assignment, '__inProgress')
+  const [articleId] = useYValue<string>(assignment, 'links.core/article[0].uuid')
+  const [flashId] = useYValue<string>(assignment, 'links.core/flash[0].uuid')
 
   const { data: articleStatus, mutate } = useSWR(['articlestatus', articleId, flashId], async () => {
     const id = articleId || flashId
@@ -74,17 +74,17 @@ export const AssignmentRow = ({ ydoc, index, onSelect, isFocused = false, asDial
     }
   })
 
-  const [editorialInfoId] = useYValue<string>(ydoc.ele, `${base}.links.core/editorial-info[0].uuid`)
-  const [assignmentType] = useYValue<string>(ydoc.ele, `${base}.meta.core/assignment-type[0].value`)
-  const [assignmentId] = useYValue<string>(ydoc.ele, `${base}.id`)
-  const [title] = useYValue<string>(ydoc.ele, `${base}.title`)
-  const [description] = useYValue<string>(ydoc.ele, `${base}.meta.core/description[0].data.text`)
-  const [publishTime] = useYValue<string>(ydoc.ele, `${base}.data.publish`)
-  const [startTime] = useYValue<string>(ydoc.ele, `${base}.data.start`)
-  const [endTime] = useYValue<string>(ydoc.ele, `${base}.data.end`)
-  const [publishSlot] = useYValue<string>(ydoc.ele, `${base}.data.publish_slot`)
-  const [authors = []] = useYValue<Block[]>(ydoc.ele, `meta.core/assignment[${index}].links.core/author`)
-  const [slugline] = useYValue<string>(ydoc.ele, `${base}.meta.tt/slugline[0].value`)
+  const [editorialInfoId] = useYValue<string>(assignment, 'links.core/editorial-info[0].uuid')
+  const [assignmentType] = useYValue<string>(assignment, 'meta.core/assignment-type[0].value')
+  const [assignmentId] = useYValue<string>(assignment, 'id')
+  const [title] = useYValue<string>(assignment, 'title')
+  const [description] = useYValue<string>(assignment, 'meta.core/description[0].data.text')
+  const [publishTime] = useYValue<string>(assignment, 'data.publish')
+  const [startTime] = useYValue<string>(assignment, 'data.start')
+  const [endTime] = useYValue<string>(assignment, 'data.end')
+  const [publishSlot] = useYValue<string>(assignment, 'data.publish_slot')
+  const [authors = []] = useYValue<Block[]>(assignment, 'links.core/author')
+  const [slugline] = useYValue<string>(assignment, 'meta.tt/slugline[0].value')
 
   const [showVerifyDialog, setShowVerifyDialog] = useState<boolean>(false)
   const [showCreateDialogPayload, setShowCreateDialogPayload] = useState<boolean>(false)
@@ -322,8 +322,7 @@ export const AssignmentRow = ({ ydoc, index, onSelect, isFocused = false, asDial
 
         <div className='flex grow gap-2 items-center'>
           <AssignmentType
-            ydoc={ydoc}
-            path={`meta.core/assignment[${index}]`}
+            assignment={assignment}
             editable={!documentId}
             readOnly
           />

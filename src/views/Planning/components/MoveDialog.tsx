@@ -11,7 +11,7 @@ import { type TimeDef, useAssignmentTime } from '@/hooks/useAssignmentTime'
 import { snapshotDocument } from '@/lib/snapshotDocument'
 import { toast } from 'sonner'
 import { AssignmentType } from '@/components/DataItem/AssignmentType'
-import { type YDocument, useYPath, useYValue } from '@/modules/yjs/hooks'
+import { type YDocument, useYValue } from '@/modules/yjs/hooks'
 import type * as Y from 'yjs'
 
 export const MoveDialog = ({ ydoc, onClose, onChange, newDate }: {
@@ -51,7 +51,6 @@ export const MoveDialog = ({ ydoc, onClose, onChange, newDate }: {
                 return (
                   <AssignmentListItem
                     key={assignment.get('id') as string}
-                    ydoc={ydoc}
                     assignment={assignment}
                     newDate={newDate}
                     onChangeSelected={(id, value) => {
@@ -76,7 +75,6 @@ export const MoveDialog = ({ ydoc, onClose, onChange, newDate }: {
                 return (
                   <AssignmentCheckBox
                     key={assignment.get('id') as string}
-                    ydoc={ydoc}
                     assignment={assignment}
                     newDate={newDate}
                     onChangeSelected={(id, value) => {
@@ -161,13 +159,11 @@ export const MoveDialog = ({ ydoc, onClose, onChange, newDate }: {
   )
 }
 
-function AssignmentListItem({ ydoc, assignment, newDate, onChangeSelected }: {
-  ydoc: YDocument<Y.Map<unknown>>
+function AssignmentListItem({ assignment, newDate, onChangeSelected }: {
   assignment: Y.Map<unknown>
   newDate: string
   onChangeSelected: (id: string, value?: TimeDef) => void
 }) {
-  const path = useYPath(assignment, true)
   const [id] = useYValue<string>(assignment, 'id', false)
   const [title] = useYValue<string>(assignment, 'title', false)
   const assignmentTime = useAssignmentTime(assignment, newDate)
@@ -184,8 +180,7 @@ function AssignmentListItem({ ydoc, assignment, newDate, onChangeSelected }: {
       <div>
         <div className='font-semibold mb-2 flex items-center -m-2'>
           <AssignmentType
-            ydoc={ydoc}
-            path={path}
+            assignment={assignment}
             editable={false}
             readOnly
           />
@@ -204,13 +199,11 @@ function AssignmentListItem({ ydoc, assignment, newDate, onChangeSelected }: {
   )
 }
 
-function AssignmentCheckBox({ ydoc, assignment, newDate, onChangeSelected }: {
-  ydoc: YDocument<Y.Map<unknown>>
+function AssignmentCheckBox({ assignment, newDate, onChangeSelected }: {
   assignment: Y.Map<unknown>
   newDate: string
   onChangeSelected: (id: string, value?: TimeDef) => void
 }) {
-  const path = useYPath(assignment, true)
   const [id] = useYValue<string>(assignment, 'id')
   const [title] = useYValue<string>(assignment, 'title')
   const assignmentTime = useAssignmentTime(assignment, newDate)
@@ -220,8 +213,7 @@ function AssignmentCheckBox({ ydoc, assignment, newDate, onChangeSelected }: {
       <div>
         <div className='font-semibold mb-2 flex items-center -m-2'>
           <AssignmentType
-            ydoc={ydoc}
-            path={path}
+            assignment={assignment}
             editable={false}
             readOnly
           />
