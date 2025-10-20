@@ -35,7 +35,7 @@ import { getTemplateFromView } from '@/shared/templates/lib/getTemplateFromView'
 import { toGroupedNewsDoc } from '@/shared/transformations/groupedNewsDoc'
 import type { EleDocumentResponse } from '@/shared/types'
 import { TextBox } from '@/components/ui'
-import { useDescriptionIndex } from './_utils/useDescriptionIndex'
+import { useDescriptionIndex } from './hooks/useDescriptionIndex'
 import { TextInput } from '@/components/ui/TextInput'
 
 type Setter = React.Dispatch<SetStateAction<NewItem>>

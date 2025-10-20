@@ -16,7 +16,7 @@ type Role = 'internal' | 'public'
  * vs
  * ['meta', 'core/description', 1, 'data', 'text']
  */
-export const useDescriptionIndex = (document: Y.Doc | Y.Map<unknown>, role: Role) => {
+export const useDescriptionIndex = (document: Y.Map<unknown> | undefined, role: Role) => {
   const [descriptions] = useYValue<Block[]>(document, ['meta', 'core/description'])
   return findDescriptionIndex(descriptions, role)
 }
