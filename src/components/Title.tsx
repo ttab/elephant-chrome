@@ -4,6 +4,10 @@ import { Validation } from './Validation'
 import { useYPath, type YDocument } from '@/modules/yjs/hooks'
 import type * as Y from 'yjs'
 
+/**
+ *
+ * @deprecated Use the new TextInput component instead.
+ */
 export const Title = ({
   ydoc,
   rootMap,
