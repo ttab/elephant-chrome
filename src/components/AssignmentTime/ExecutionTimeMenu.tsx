@@ -15,7 +15,7 @@ import { type AssignmentData } from './types'
 import { TimeInput } from '../TimeInput'
 import { FromDateTimeLabel, FromToDateTimeLabel } from './ExecutionTimeLabel'
 import type * as Y from 'yjs'
-import { useYPath, useYValue } from '@/modules/yjs/hooks'
+import { useYValue } from '@/modules/yjs/hooks'
 
 interface ExecutionTimeItemsProps extends React.PropsWithChildren {
   handleOnSelect: ({ executionStart, executionEnd }: { executionStart: string | undefined, executionEnd: string | undefined }) => void
@@ -34,9 +34,8 @@ const testValid = (time: string): boolean => {
  */
 export const ExecutionTimeMenu = ({ handleOnSelect, assignment, startDate }: ExecutionTimeItemsProps): JSX.Element => {
   const [open, setOpen] = useState(false)
-  const path = useYPath(assignment, true)
 
-  const [data] = useYValue<AssignmentData>(assignment, `[${path}.data`)
+  const [data] = useYValue<AssignmentData>(assignment, 'data')
   const [selected, setSelected] = useState<CalendarTypes.DateRange | undefined>({ from: new Date(`${startDate}T00:00:00`) })
   const [startTimeValue, setStartTimeValue] = useState<string>('00:00')
   const [endTimeValue, setEndTimeValue] = useState<string>('23:59')
