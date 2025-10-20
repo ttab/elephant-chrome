@@ -59,7 +59,7 @@ export const CoreSectionProvider = ({ children, usableOnly = true }: {
           version: item.usableVersion
         }
       })
-      
+
       const usables = await repository?.getDocuments({
         documents: usableVersions,
         accessToken: data.accessToken
