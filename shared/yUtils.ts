@@ -26,18 +26,18 @@ export function createTypedYDoc(
   options?: {
     document?: Y.Doc
     rootMap?: string
-    metaMap?: string
+    ctxMap?: string
     isInProgress?: boolean
   }
 ): Y.Doc {
   // Base document and base maps
   const ydoc = options?.document ?? new Y.Doc()
   const yMap = ydoc.getMap(options?.rootMap ?? 'ele')
-  const yMeta = ydoc.getMap(options?.metaMap ?? '__meta')
+  const yCtx = ydoc.getMap(options?.ctxMap ?? 'ctx')
 
-  // Setup __meta (system only information about the document)
+  // Setup ctx (system only information about the document)
   if (options && typeof options.isInProgress === 'boolean') {
-    yMeta.set('isInProgress', options.isInProgress)
+    yCtx.set('isInProgress', options.isInProgress)
   }
 
   if (!data?.document) {
@@ -63,8 +63,8 @@ export function createTypedYDoc(
   }
 
   // Set version and original hash
-  yMeta.set('version', data.version)
-  yMeta.set('hash', createHash(JSON.stringify(yMap.toJSON())))
+  yCtx.set('version', data.version)
+  yCtx.set('hash', createHash(JSON.stringify(yMap.toJSON())))
 
   return ydoc
 }

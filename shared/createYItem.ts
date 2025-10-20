@@ -49,7 +49,7 @@ export function createDocument<T>({
   )
 
   if (inProgress) {
-    yDoc.getMap('__meta').set('isInProgress', true)
+    yDoc.getMap('ctx').set('isInProgress', true)
   }
 
   return [docId, yDoc]

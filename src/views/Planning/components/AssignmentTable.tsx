@@ -34,7 +34,7 @@ export const AssignmentTable = ({ ydoc, asDialog = false, documentId, onChange }
   const [rawAssignments] = useYValue<Y.Array<Y.Map<unknown>>>(ydoc.ele, 'meta.core/assignment', true)
   const [planningSlugLine] = useYValue<string | undefined>(ydoc.ele, 'meta.tt/slugline[0].value')
   const [selectedId, setSelectedId] = useState<string | undefined>(undefined)
-  const [newAssignment] = useYValue<EleBlock>(ydoc.meta, `core/assignment.${session?.user.sub || ''}`)
+  const [newAssignment] = useYValue<EleBlock>(ydoc.ctx, `core/assignment.${session?.user.sub || ''}`)
   const [focusedRowIndex, setFocusedRowIndex] = useState<number | undefined>()
   const author = useActiveAuthor({ full: false })
   const authors = useAuthors()
@@ -67,11 +67,11 @@ export const AssignmentTable = ({ ydoc, asDialog = false, documentId, onChange }
       return
     }
 
-    if (!ydoc.meta.get('core/assignment')) {
-      ydoc.meta.set('core/assignment', new Y.Map())
+    if (!ydoc.ctx.get('core/assignment')) {
+      ydoc.ctx.set('core/assignment', new Y.Map())
     }
 
-    (ydoc.meta.get('core/assignment') as Y.Map<unknown>).set(
+    (ydoc.ctx.get('core/assignment') as Y.Map<unknown>).set(
       session.user.sub,
       createNewAssignment({
         document: ydoc.provider.document,
@@ -87,7 +87,7 @@ export const AssignmentTable = ({ ydoc, asDialog = false, documentId, onChange }
   const handleClose = () => {
     if (!rawAssignments || !newAssignment || !session) return
 
-    const assignment = getValueFromPath<Y.Map<unknown>>(ydoc.meta, ['core/assignment', session?.user.sub], true)
+    const assignment = getValueFromPath<Y.Map<unknown>>(ydoc.ctx, ['core/assignment', session?.user.sub], true)
     if (!assignment) return
 
     const [assignmentType] = getValueByYPath<string>(assignment, ['meta', 'core/assignment-type', 0, 'value'])
@@ -100,7 +100,7 @@ export const AssignmentTable = ({ ydoc, asDialog = false, documentId, onChange }
         fromYStructure(assignment)
       ) as Y.Map<unknown>
     ])
-    deleteByYPath(ydoc.meta, ['core/assignment', session?.user.sub])
+    deleteByYPath(ydoc.ctx, ['core/assignment', session?.user.sub])
 
     if (documentId && ydoc.provider) {
       snapshotDocument(documentId, { force: true }, ydoc.provider.document)
@@ -116,7 +116,7 @@ export const AssignmentTable = ({ ydoc, asDialog = false, documentId, onChange }
 
   const handleAbort = () => {
     if (!session) return
-    (ydoc.meta.get('core/assignment') as Y.Map<unknown>).delete(session.user.sub)
+    (ydoc.ctx.get('core/assignment') as Y.Map<unknown>).delete(session.user.sub)
   }
 
   useNavigationKeys({
@@ -203,7 +203,7 @@ export const AssignmentTable = ({ ydoc, asDialog = false, documentId, onChange }
           <Assignment
             ydoc={ydoc}
             assignment={getValueByYPath<Y.Map<unknown>>(
-              ydoc.meta,
+              ydoc.ctx,
               ['core/assignment', session?.user.sub || ''],
               true
             )?.[0] as Y.Map<unknown>}

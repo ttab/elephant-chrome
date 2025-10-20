@@ -13,7 +13,7 @@ import type { EleDocumentResponse } from '@/shared/types'
 export interface YDocument<T> {
   id: string
   ele: T
-  meta: Y.Map<unknown>
+  ctx: Y.Map<unknown>
   connected: boolean
   synced: boolean
   online: boolean
@@ -40,7 +40,6 @@ export function useYDocument<T>(
     invisible?: boolean
   }
 ): YDocument<T> {
-  const rootMap = 'ele'
   const { data: session } = useSession()
   const { userColor } = useRegistry()
   const { isConnected: connected, isOnline: online, websocketProvider } = useWebSocket()
@@ -62,13 +61,12 @@ export function useYDocument<T>(
 
   // Create yjs document
   const [document] = useState<Y.Doc>(createTypedYDoc(options?.data, {
-    rootMap,
     isInProgress: !!options?.data
   }))
 
   // Whether document is ready to be saved to repository (is valid)
-  const [isReady, setIsReady] = useYValue<boolean>(document.getMap('__meta'), ['isReady'])
-  const [isChanged, setIsChanged] = useYValue<boolean>(document.getMap('__meta'), ['isChanged'])
+  const [isReady, setIsReady] = useYValue<boolean>(document.getMap('ctx'), ['isReady'])
+  const [isChanged, setIsChanged] = useYValue<boolean>(document.getMap('ctx'), ['isChanged'])
 
   // IndexedDB lifecycle
   useEffect(() => {
@@ -179,14 +177,14 @@ export function useYDocument<T>(
   // Utility function to perform multiple actions as one transaction on this document
   const transact = useCallback((f: (arg0: Y.Map<T>, arg1: Y.Transaction) => void) => {
     document.transact((tr) => {
-      const map = document.getMap(rootMap)
+      const map = document.getMap('ele')
       f(map as Y.Map<T>, tr)
     })
   }, [document])
 
   resultRef.current.id = id
-  resultRef.current.ele = document.getMap(rootMap) as T
-  resultRef.current.meta = document.getMap('__meta')
+  resultRef.current.ele = document.getMap('ele') as T
+  resultRef.current.ctx = document.getMap('ctx')
   resultRef.current.connected = connected && online
   resultRef.current.synced = synced
   resultRef.current.online = online

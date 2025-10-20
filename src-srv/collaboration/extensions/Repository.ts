@@ -222,7 +222,7 @@ export class RepositoryExtension implements Extension {
 
     // Regular lifecycle stores should ignore all stores with an unchanged hash.
     const newHash = createHash(JSON.stringify(document.getMap('ele').toJSON()))
-    if (newHash === document.getMap('__meta').get('hash')) {
+    if (newHash === document.getMap('ctx').get('hash')) {
       return
     }
 
@@ -234,9 +234,9 @@ export class RepositoryExtension implements Extension {
 
     // Update hash and version
     document.transact(() => {
-      const yMeta = document.getMap('__meta')
-      yMeta.set('hash', newHash)
-      yMeta.set('version', result.version)
+      const ctx = document.getMap('ctx')
+      ctx.set('hash', newHash)
+      ctx.set('version', result.version)
     })
 
     return result
@@ -329,7 +329,7 @@ export class RepositoryExtension implements Extension {
     }
 
     // Ignore in progress documents as they can be invalid or incomplete
-    if (document.getMap('__meta').get('isInProgress')) {
+    if (document.getMap('ctx').get('isInProgress')) {
       return false
     }
 

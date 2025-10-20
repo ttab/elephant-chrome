@@ -38,9 +38,9 @@ export function toYjsNewsDoc(eleDoc: EleDocumentResponse, yDoc: Document | Y.Doc
   yMap.set('content', yContent)
 
   // Set version and original hash
-  const yMeta = yDoc.getMap('__meta')
-  yMeta.set('version', version)
-  yMeta.set('hash', createHash(JSON.stringify(yMap.toJSON())))
+  const yCtx = yDoc.getMap('ctx')
+  yCtx.set('version', version)
+  yCtx.set('hash', createHash(JSON.stringify(yMap.toJSON())))
 }
 
 /**
@@ -82,7 +82,7 @@ export function fromYjsNewsDoc(yDoc: Y.Doc): EleDocumentResponse {
   const _title = makeTitle()
 
   return {
-    version: yDoc.getMap('__meta').get('version') as string,
+    version: yDoc.getMap('ctx').get('version') as string,
     isMetaDocument: false,
     mainDocument: '',
     document: {

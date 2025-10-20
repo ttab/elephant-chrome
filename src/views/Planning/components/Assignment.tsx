@@ -36,7 +36,7 @@ export const Assignment = ({ ydoc, assignment, onAbort, onClose, onChange }: {
   const formRef = useRef<HTMLDivElement>(null)
 
   // Track assignments in progress in meta
-  const [assignmentInProgress] = useYValue(ydoc.meta, `core/assignment.${session?.user.sub || ''}`)
+  const [assignmentInProgress] = useYValue(ydoc.ctx, `core/assignment.${session?.user.sub || ''}`)
 
   useEffect(() => {
     if (formRef.current) {
@@ -64,7 +64,7 @@ export const Assignment = ({ ydoc, assignment, onAbort, onClose, onChange }: {
           <Form.Title>
             <Title
               ydoc={ydoc}
-              rootMap={!assignmentInProgress ? ydoc.ele : ydoc.meta}
+              rootMap={!assignmentInProgress ? ydoc.ele : ydoc.ctx}
               value={title}
               placeholder='Uppdragsrubrik'
               autoFocus={true}
@@ -88,7 +88,7 @@ export const Assignment = ({ ydoc, assignment, onAbort, onClose, onChange }: {
               <Form.Group icon={TagsIcon}>
                 <SluglineEditable
                   ydoc={ydoc}
-                  rootMap={!assignmentInProgress ? ydoc.ele : ydoc.meta}
+                  rootMap={!assignmentInProgress ? ydoc.ele : ydoc.ctx}
                   disabled={!!documentId}
                   value={slugline}
                 />

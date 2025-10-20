@@ -4,7 +4,7 @@ import type { YDocument } from './useYDocument'
 export interface YAwarenessUser {
   name: string
   color?: string | null
-  image?: string | null
+  avatar?: string | null
   initials?: string | null
 }
 
