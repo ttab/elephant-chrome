@@ -40,8 +40,6 @@ export const CoreSectionProvider = ({ children, usableOnly = true }: {
         data.accessToken,
         force,
         (item) => {
-          console.log(item)
-          // get usable document here
           const { _id: id, _source: _ } = item
           return {
             id,

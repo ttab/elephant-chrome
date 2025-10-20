@@ -15,7 +15,7 @@ export const ConceptHeader = ({ documentId, asDialog, onDialogClose, isChanged }
   const containerRef = useRef<HTMLElement | null>(null)
 
   useEffect(() => {
-    containerRef.current = (document.getElementById(viewId))
+    containerRef.current = document.getElementById(viewId)
   }, [viewId])
 
   return (
