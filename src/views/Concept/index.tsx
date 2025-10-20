@@ -7,7 +7,7 @@ import type * as Y from 'yjs'
 import { Error } from '../Error'
 import { useCollaboration } from '@/hooks/useCollaboration'
 import { useAwareness } from '@/hooks/useAwareness'
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect } from 'react'
 import { View } from '@/components/View'
 import { useYValue } from '@/hooks/useYValue'
 import { ConceptHeader } from './ConceptHeader'
@@ -17,6 +17,8 @@ import { useSession } from 'next-auth/react'
 import { Button } from '@ttab/elephant-ui'
 import { toast } from 'sonner'
 import { snapshotDocument } from '@/lib/snapshotDocument'
+import type { HocuspocusProvider } from '@hocuspocus/provider'
+import type { AwarenessUserData } from '@/contexts/CollaborationProvider'
 
 const meta: ViewMetadata = {
   name: 'Concept',
@@ -34,7 +36,7 @@ const meta: ViewMetadata = {
   }
 }
 
-export const Concept = (props: ViewProps & { document?: Y.Doc }) => {
+export const Concept = (props: ViewProps & { document?: Y.Doc }): JSX.Element => {
   const [query] = useQuery()
   const documentId = props.id || query.id
 
@@ -72,7 +74,7 @@ const ConceptWrapper = (props: ViewProps & { documentId: string }): JSX.Element 
     return () => {
       setIsFocused(false)
     }
-  }, [provider])
+  }, [provider, user])
 
   return (
     <>
@@ -81,10 +83,17 @@ const ConceptWrapper = (props: ViewProps & { documentId: string }): JSX.Element 
           documentId={props.documentId}
           asDialog={!!props.asDialog}
           isChanged={isChanged}
+          onDialogClose={props.onDialogClose}
         />
         {!!provider && synced
           ? (
-              <ConceptContent {...props} documentId={props.documentId} />
+              <ConceptContent
+                {...props}
+                documentId={props.documentId}
+                provider={provider}
+                synced={synced}
+                user={user}
+              />
             )
           : <></>}
         <View.Footer className='justify-center'>
@@ -95,14 +104,20 @@ const ConceptWrapper = (props: ViewProps & { documentId: string }): JSX.Element 
   )
 }
 
-const ConceptContent = (props: ViewProps & { documentId: string }): JSX.Element => {
-  const { provider } = useCollaboration()
+const ConceptContent = ({
+  provider,
+  documentId,
+  asDialog
+}: {
+  provider: HocuspocusProvider | undefined
+  synced: boolean
+  user: AwarenessUserData
+  documentId: string
+} & ViewProps): JSX.Element => {
   const { status, data: session } = useSession()
-  const [inEditStage, setInEditStage] = useState(false)
   const [title] = useYValue<boolean>('root.title')
-  const [, setChanged] = useYValue('root.changed')
+  const [isChanged, setChanged] = useYValue<boolean>('root.changed')
   const environmentIsSane = provider && status === 'authenticated'
-  const [initialValue, setInitialValue] = useState(title)
 
   const handleChange = useCallback((value: boolean): void => {
     const root = provider?.document.getMap('ele').get('root') as Y.Map<unknown>
@@ -114,18 +129,13 @@ const ConceptContent = (props: ViewProps & { documentId: string }): JSX.Element 
     }
   }, [provider])
 
-  const onCancel = () => {
-    // Todo set value back to initalValue
-  }
-
-
   const onSave = async (): Promise<void> => {
     if (!session) {
       toast.error('Ett fel har uppstått, ändringen kunde inte spara! Ladda om webbläsaren och försök igen')
       return
     }
 
-    const snapshotResponse = await snapshotDocument(props.documentId, {
+    const snapshotResponse = await snapshotDocument(documentId, {
       status: 'usable'
     }, provider?.document)
 
@@ -134,52 +144,36 @@ const ConceptContent = (props: ViewProps & { documentId: string }): JSX.Element 
       return
     }
 
-    setChanged(undefined)
-    setInEditStage(false)
+    setChanged(false)
   }
 
   return (
     <>
       <View.Content className='flex flex-col max-w-[1000px] p-5'>
-        <Form.Root asDialog={props.asDialog} onChange={handleChange}>
+        <Form.Root
+          asDialog={asDialog}
+          onChange={handleChange}
+        >
           <Form.Content>
             <TextBox
               singleLine={true}
-              disabled={inEditStage ? false : true}
-              onChange={handleChange}
               path='root.title'
-              className={inEditStage ? 'border-[1px]' : ''}
+              className='border-[1px]'
+              onChange={handleChange}
             >
             </TextBox>
-            {inEditStage
-              ? (
-                  <div className='flex gap-2.5 align-end'>
-                    <Button
-                      onClick={(e) => {
-                        e.preventDefault()
-                        void onSave()
-                      }}
-                      disabled={!title || !environmentIsSane}
-                      className=''
-                    >
-                      Spara
-                    </Button>
-                    <Button
-                      onClick={() => { setInEditStage(false) }}
-                      disabled={!title || !environmentIsSane}
-                      variant='secondary'
-                    >
-                      Avbryt
-                    </Button>
-                  </div>
-                )
-              : (
-                  <Button
-                    onClick={() => setInEditStage(true)}
-                  >
-                    Redigera
-                  </Button>
-                )}
+            <div className='flex gap-2.5 align-end'>
+              <Button
+                onClick={(e) => {
+                  e.preventDefault()
+                  void onSave()
+                }}
+                disabled={!title || !environmentIsSane || !isChanged}
+                className=''
+              >
+                Spara
+              </Button>
+            </div>
           </Form.Content>
         </Form.Root>
       </View.Content>
