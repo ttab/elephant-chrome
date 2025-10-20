@@ -5,6 +5,7 @@ import { Crop } from '@ttab/textbit-plugins'
 import { useEffect, useRef, useState } from 'react'
 import { Transforms, type Descendant } from 'slate'
 import { parseCropString, parseFocusString } from '../lib/utils'
+import { useSession } from 'next-auth/react'
 
 /**
  * Render a "handout" image using a retreived signed download url.
@@ -23,13 +24,14 @@ export const FigureImage = ({ editor, children, rootNode, options }: Plugin.Comp
   const crop = parseCropString(cropStr)
   const focus = parseFocusString(focusStr)
 
-  const { repository: repository, accessToken } = options
+  const { repository: repository } = options
   const { uploadId }: { uploadId?: string } = properties
   const imgContainerRef = useRef<HTMLDivElement>(null)
   const [attachmentDetails, setAttachmentDetails] = useState<AttachmentDetails | null>(null)
+  const { data: session } = useSession()
 
   useEffect(() => {
-    if (!repository || !accessToken || !uploadId) {
+    if (!repository || !session || !uploadId) {
       return
     }
 
@@ -37,18 +39,18 @@ export const FigureImage = ({ editor, children, rootNode, options }: Plugin.Comp
       return
     }
 
-    repository.getAttachmentDetails(uploadId, accessToken)
+    repository.getAttachmentDetails(uploadId, session?.accessToken)
       .then((details) => {
         setAttachmentDetails(details)
       })
       .catch((ex) => {
         console.error(ex)
       })
-  }, [accessToken, repository, uploadId])
+  }, [session, repository, uploadId])
 
   return (
     <div contentEditable={false} draggable={false}>
-      <div ref={imgContainerRef} className='relative rounded rounded-xs overflow-hidden'>
+      <div ref={imgContainerRef} className='relative rounded-xs overflow-hidden'>
         <img width='100%' src={attachmentDetails?.downloadLink} />
 
         {!!attachmentDetails?.downloadLink

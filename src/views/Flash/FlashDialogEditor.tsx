@@ -10,7 +10,6 @@ import { type YXmlText } from 'node_modules/yjs/dist/src/internals'
 import { Toolbar } from '@/components/Editor/Toolbar'
 import { DropMarker } from '@/components/Editor/DropMarker'
 import { ContextMenu } from '@/components/Editor/ContextMenu'
-import { useSession } from 'next-auth/react'
 import { Validation } from '@/components/Validation'
 import type { FormProps } from '@/components/Form/Root'
 import { getValueByYPath } from '@/shared/yUtils'
@@ -56,7 +55,6 @@ function EditorContent({ provider, user, setTitle, readOnly }: {
   setTitle: (value: string | undefined) => void
   readOnly?: boolean
 }): JSX.Element {
-  const { data: session } = useSession()
   const { spellchecker } = useRegistry()
   const supportedLanguages = useSupportedLanguages()
   const [documentLanguage] = getValueByYPath<string>(provider.document.getMap('ele'), 'root.language')
@@ -96,7 +94,7 @@ function EditorContent({ provider, user, setTitle, readOnly }: {
       lang={documentLanguage}
       onSpellcheck={async (texts) => {
         if (documentLanguage) {
-          const spellingResult = await spellchecker?.check(texts.map(({ text }) => text), documentLanguage, supportedLanguages, session?.accessToken ?? '')
+          const spellingResult = await spellchecker?.check(texts.map(({ text }) => text), documentLanguage, supportedLanguages)
           if (spellingResult) {
             return spellingResult
           }
