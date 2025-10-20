@@ -1,4 +1,4 @@
-import { isEqualDeep } from '@/lib/isEqualDeep'
+import { isEqualDeep } from '@/modules/yjs/lib/isEqualDeep'
 import { useCallback, useRef, useSyncExternalStore } from 'react'
 import { getValueFromPath, setValueByYPath, stringToYPath } from '@/shared/yUtils'
 import { useCollaboration } from './useCollaboration'
