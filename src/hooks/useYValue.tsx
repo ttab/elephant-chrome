@@ -1,10 +1,12 @@
 import { isEqualDeep } from '@/lib/isEqualDeep'
 import { useCallback, useRef, useSyncExternalStore } from 'react'
-import { getValueByYPath, setValueByYPath, stringToYPath } from '@/shared/yUtils'
+import { getValueFromPath, setValueByYPath, stringToYPath } from '@/shared/yUtils'
 import { useCollaboration } from './useCollaboration'
 import type { HocuspocusProvider } from '@hocuspocus/provider'
 
 /**
+ * @deprecated Use useYValue from src/modules/yjs/hooks instead.
+ *
  * Observe a value in a an exact path. If the observed value is a Y.XmlText all changes beneath
  * that value are observed, but the value returned is returned as string.
  *
@@ -40,7 +42,7 @@ export function useYValue<T>(path: string, raw: boolean = false, externalProvide
     },
     () => {
       // Get the current value at the path
-      const [currentData] = getValueByYPath(yRoot, yPath, raw)
+      const currentData = getValueFromPath(yRoot, yPath, raw)
 
       if (isEqualDeep(prevDataRef.current, currentData)) {
         return prevDataRef.current
@@ -49,7 +51,7 @@ export function useYValue<T>(path: string, raw: boolean = false, externalProvide
         return currentData
       }
     },
-    () => getValueByYPath(yRoot, yPath, raw) // Fallback for server-side rendering
+    () => getValueFromPath(yRoot, yPath, raw) // Fallback for server-side rendering
   )
 
   // Setter function to update the value at the path

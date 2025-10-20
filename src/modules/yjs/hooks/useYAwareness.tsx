@@ -2,12 +2,10 @@ import { useCallback, useEffect, useState } from 'react'
 import type { YDocument } from './useYDocument'
 
 export interface YAwarenessUser {
-  id: string
-  email: string
   name: string
   color?: string | null
   image?: string | null
-  ghost?: boolean
+  initials?: string | null
 }
 
 interface YAwarenessFocus {

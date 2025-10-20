@@ -1,5 +1,5 @@
 import type * as Y from 'yjs'
-import { getYjsPath } from '../lib/yjs'
+import { getYjsPath } from '@/shared/yUtils'
 
 type YjsContainer = Y.Map<unknown> | Y.Array<unknown> | Y.Text | Y.XmlText | Y.XmlFragment | Y.XmlElement
 

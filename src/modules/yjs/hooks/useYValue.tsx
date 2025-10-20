@@ -1,5 +1,5 @@
 import { isEqualDeep } from '../lib/isEqualDeep'
-import { doesArrayChangeAffectPath, getValueFromPath, setValueByPath, stringToYPath, yPathToString, type YPath } from '../lib/yjs'
+import { doesArrayChangeAffectPath, getValueFromPath, setValueByPath, stringToYPath, yPathToString, type YPath } from '@/shared/yUtils'
 import { useCallback, useMemo, useRef, useSyncExternalStore } from 'react'
 import * as Y from 'yjs'
 
@@ -39,7 +39,7 @@ export function useYValue<T>(
   const getStableSnapshot = useCallback((): T | undefined => {
     const nextValue = getSnapshot()
 
-    if (nextValue instanceof Y.Array && nextValue.length !== snapshotRef.current?.length) {
+    if (nextValue instanceof Y.Array && nextValue.length !== (snapshotRef.current as Y.Array<unknown>)?.length) {
       snapshotRef.current = nextValue
     } else if (!isEqualDeep(nextValue, snapshotRef.current)) {
       snapshotRef.current = nextValue

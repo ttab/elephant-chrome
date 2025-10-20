@@ -4,7 +4,7 @@ import { Button, Checkbox, Dialog, DialogContent, DialogDescription, DialogFoote
 import { dateToReadableDateTime } from '@/shared/datetime'
 import { useEffect, useRef } from 'react'
 import { dateToReadableDate, dateToReadableTime } from '@/shared/datetime'
-import { getValueByYPath, setValueByYPath } from '@/shared/yUtils'
+import { getValueByYPath, setValueByYPath, getValueFromPath } from '@/shared/yUtils'
 import type { Block } from '@ttab/elephant-api/newsdoc'
 import { format, toZonedTime } from 'date-fns-tz'
 import { type TimeDef, useAssignmentTime } from '@/hooks/useAssignmentTime'
@@ -13,7 +13,6 @@ import { toast } from 'sonner'
 import { AssignmentType } from '@/components/DataItem/AssignmentType'
 import { type YDocument, useYPath, useYValue } from '@/modules/yjs/hooks'
 import type * as Y from 'yjs'
-import { getValueFromPath } from '@/modules/yjs/lib/yjs'
 
 export const MoveDialog = ({ ydoc, onClose, onChange, newDate }: {
   ydoc: YDocument<Y.Map<unknown>>

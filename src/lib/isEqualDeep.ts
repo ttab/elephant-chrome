@@ -1,3 +1,6 @@
+/**
+ * @deprecated Use src/modules/yjs/isEqualDeep instead.
+ */
 export function isEqualDeep(a: unknown, b: unknown): boolean {
   // Handle cases where one or both values are null or undefined (whence the double = and not triple =)
   if (a == null || b == null) {

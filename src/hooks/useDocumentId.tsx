@@ -1,4 +1,4 @@
-import { getValueByYPath } from '@/shared/yUtils'
+import { getValueFromPath } from '@/shared/yUtils'
 import { useCollaboration } from './useCollaboration'
 
 /**
@@ -6,7 +6,7 @@ import { useCollaboration } from './useCollaboration'
  */
 export const useDocumentId = (): string => {
   const { provider } = useCollaboration()
-  const [uuid] = getValueByYPath(provider?.document.getMap('ele'), 'root.uuid')
+  const uuid = getValueFromPath(provider?.document.getMap('ele'), ['root', 'uuid'])
 
   return (typeof uuid === 'string') ? uuid : ''
 }

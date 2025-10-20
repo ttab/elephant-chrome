@@ -28,7 +28,7 @@ export const Awareness = React.forwardRef(({ ydoc, path, className: externalClas
     .filter((state) => {
       return (path) ? path === state.focus?.path : true
     })
-    .map((state) => state.focus?.color || 'rgb(121,121,121)')
+    .map((state) => state.data?.color || 'rgb(121,121,121)')
     .filter(Boolean)
 
   const className = cn(

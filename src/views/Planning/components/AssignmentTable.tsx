@@ -5,7 +5,6 @@ import { useAuthors, useNavigationKeys } from '@/hooks'
 import { Assignment } from './Assignment'
 import type { MouseEvent, KeyboardEvent } from 'react'
 import { useMemo, useState } from 'react'
-import { deleteByYPath, getValueByYPath, setValueByYPath } from '@/shared/yUtils'
 import { Button } from '@ttab/elephant-ui'
 import { useActiveAuthor } from '@/hooks/useActiveAuthor'
 import { snapshotDocument } from '@/lib/snapshotDocument'
@@ -15,7 +14,14 @@ import { getAuthorBySub } from '@/lib/getAuthorBySub'
 import { type YDocument, useYValue } from '@/modules/yjs/hooks'
 import * as Y from 'yjs'
 import type { EleBlock } from '@/shared/types'
-import { fromYStructure, getValueFromPath, toYStructure } from '@/modules/yjs/lib/yjs'
+import {
+  deleteByYPath,
+  getValueByYPath,
+  setValueByYPath,
+  fromYStructure,
+  getValueFromPath,
+  toYStructure
+} from '@/shared/yUtils'
 
 export const AssignmentTable = ({ ydoc, asDialog = false, documentId, onChange }: {
   ydoc: YDocument<Y.Map<unknown>>
