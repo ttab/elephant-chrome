@@ -35,7 +35,7 @@ export const ConceptList = ({ columns, title }: {
       setData(data)
       return data
     } else {
-      return 'no data'
+      return 'No data found'
     }
   }
 
@@ -51,10 +51,10 @@ export const ConceptList = ({ columns, title }: {
   }, [])
 
 
-  if (objects && objects === 'no data') {
+  if (objects && typeof objects === 'string') {
     return (
       <LoadingText className='mt-8'>
-        No Data Found
+        {objects}
       </LoadingText>
     )
   } else {
