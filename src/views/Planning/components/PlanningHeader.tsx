@@ -1,5 +1,6 @@
-import { useView, useYValue } from '@/hooks'
-import { useEffect, useRef } from 'react'
+import { useView } from '@/hooks'
+import { useYValue } from '@/modules/yjs/hooks'
+import { useRef, useEffect } from 'react'
 import { StatusMenu } from '@/components/DocumentStatus/StatusMenu'
 import { ViewHeader } from '@/components/View'
 import { GanttChartSquareIcon } from '@ttab/elephant-ui/icons'
@@ -12,7 +13,7 @@ import type { YDocument } from '@/modules/yjs/hooks'
 import type * as Y from 'yjs'
 
 export const PlanningHeader = ({ ydoc, asDialog, onDialogClose, isChanged, session, provider, status }: {
-  ydoc?: YDocument<Y.Map<unknown>>
+  ydoc: YDocument<Y.Map<unknown>>
   asDialog: boolean
   onDialogClose?: () => void
   isChanged?: boolean
@@ -23,8 +24,8 @@ export const PlanningHeader = ({ ydoc, asDialog, onDialogClose, isChanged, sessi
 }): JSX.Element => {
   const { viewId } = useView()
   const containerRef = useRef<HTMLElement | null>(null)
-  const [planningData] = useYValue<PlanningData>('meta.core/planning-item[0].data')
-  const [planningTitle] = useYValue<string>('root.title')
+  const [planningData] = useYValue<PlanningData>(ydoc.ele, 'meta.core/planning-item[0].data')
+  const [planningTitle] = useYValue<string>(ydoc.ele, 'root.title')
 
   useEffect(() => {
     containerRef.current = (document.getElementById(viewId))

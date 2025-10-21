@@ -38,7 +38,7 @@ export const Avatar = ({ user, value, variant = 'default', size = 'default', col
   & VariantProps<typeof avatarVariants> & {
     value?: string
     user?: Session['user'] | undefined
-    color?: string
+    color?: string | null | undefined
     stacked?: boolean
   }): JSX.Element => {
   const style = color ? { backgroundColor: color } : {} // rgb(x, y, z)
