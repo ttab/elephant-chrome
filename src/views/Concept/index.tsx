@@ -96,9 +96,6 @@ const ConceptWrapper = (props: ViewProps & { documentId: string }): JSX.Element 
               />
             )
           : <></>}
-        <View.Footer className='justify-center'>
-          <h1>Concept Footer</h1>
-        </View.Footer>
       </View.Root>
     </>
   )
