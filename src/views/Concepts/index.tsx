@@ -1,6 +1,6 @@
 import { View, ViewHeader } from '@/components/View'
 import { TableProvider } from '@/contexts/TableProvider'
-import type { ViewMetadata, ViewProps } from '@/types/index'
+import type { ViewMetadata, ViewProps, ViewType } from '@/types/index'
 import { useMemo, useState } from 'react'
 import { TabsContent } from '@ttab/elephant-ui'
 import { ConceptList } from './ConceptList'
@@ -24,11 +24,41 @@ const meta: ViewMetadata = {
   }
 }
 
-
 export const Concepts = ({ title }: ViewProps) => {
   const [currentTab, setCurrentTab] = useState<string>('list')
   const columns = useMemo(() =>
     ConceptColumns(), [])
+
+  const tableDataMap = {
+    Sektioner: {
+      conceptView: 'Section'
+    },
+    'Story tags': {
+      conceptView: 'StoryTag'
+    },
+    Kategorier: {
+      conceptView: 'Category'
+    },
+    Organisatörer: {
+      conceptView: 'Organiser'
+    },
+    Platser: {
+      conceptView: 'Place'
+    },
+    Källor: {
+      conceptView: 'Source'
+    },
+    Telegramkällor: {
+      conceptView: 'WireSource'
+    }
+  } as const
+
+
+  const getType = () => {
+    const data = tableDataMap[title as keyof typeof tableDataMap]
+    return data.conceptView as ViewType
+  }
+
   return (
     <View.Root tab={currentTab} onTabChange={setCurrentTab}>
       <TableProvider<IDBConcept>
@@ -38,7 +68,7 @@ export const Concepts = ({ title }: ViewProps) => {
         <ViewHeader.Root>
           <ViewHeader.Content>
             <ViewHeader.Title name={title ?? 'Concepts'} title={title ?? 'Concepts'} />
-            <Header type='Concept' />
+            <Header type={getType()} />
           </ViewHeader.Content>
           <ViewHeader.Action />
         </ViewHeader.Root>

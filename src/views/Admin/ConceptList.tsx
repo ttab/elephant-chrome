@@ -3,10 +3,11 @@ import { Concepts } from './ConceptTypes'
 import { useLink } from '@/hooks/useLink'
 
 
-export const ConceptsList = ({ filter }: { filter?: string }) => {
+export const ConceptsList = ({ filter }: {
+  filter?: string
+}) => {
   const handleOpen = useLink('Concepts')
   const refinedFilter = filter && filter.toLowerCase()
-
   const data = refinedFilter
     ? Concepts.filter((concept) => concept.label.toLowerCase().startsWith(refinedFilter)
       || concept.description.includes(refinedFilter))

@@ -1,27 +1,29 @@
-/* import { AwarenessDocument } from '@/components/AwarenessDocument'
-import { useQuery } from '@/hooks/useQuery'
 import type { ViewMetadata, ViewProps } from '@/types/index'
+
 import type * as Y from 'yjs'
+import { useQuery } from '@/hooks/useQuery'
+import { AwarenessDocument } from '@/components/AwarenessDocument'
 import { Error } from '../Error'
 import { useCollaboration } from '@/hooks/useCollaboration'
 import { useAwareness } from '@/hooks/useAwareness'
-import { useCallback, useEffect } from 'react'
-import { View } from '@/components/View'
 import { useYValue } from '@/hooks/useYValue'
-import { ConceptHeader } from './ConceptHeader'
-import { Form } from '@/components/Form'
-import { TextBox } from '@/components/ui'
 import { useSession } from 'next-auth/react'
-import { Button } from '@ttab/elephant-ui'
-import { toast } from 'sonner'
+import { useCallback, useEffect } from 'react'
 import { snapshotDocument } from '@/lib/snapshotDocument'
+import { toast } from 'sonner'
+import { View } from '@/components/View'
+import { ConceptHeader } from '../Concept/ConceptHeader'
+import { InfoIcon } from '@ttab/elephant-ui/icons'
+import { Button } from '@ttab/elephant-ui'
 import type { HocuspocusProvider } from '@hocuspocus/provider'
 import type { AwarenessUserData } from '@/contexts/CollaborationProvider'
-import { InfoIcon } from '@ttab/elephant-ui/icons'
+import { Form } from '@/components/Form'
+import { TextBox } from '@/components/ui'
+
 
 const meta: ViewMetadata = {
-  name: 'Concept',
-  path: `${import.meta.env.BASE_URL}/concept`,
+  name: 'Section',
+  path: `${import.meta.env.BASE_URL}/section`,
   widths: {
     sm: 12,
     md: 12,
@@ -35,7 +37,7 @@ const meta: ViewMetadata = {
   }
 }
 
-export const Concept = (props: ViewProps & { document?: Y.Doc }): JSX.Element => {
+export const Section = (props: ViewProps & { document?: Y.Doc }): JSX.Element => {
   const [query] = useQuery()
   const documentId = props.id || query.id
   if (!documentId) {
@@ -47,7 +49,7 @@ export const Concept = (props: ViewProps & { document?: Y.Doc }): JSX.Element =>
       {typeof documentId === 'string'
         ? (
             <AwarenessDocument documentId={documentId} document={props.document}>
-              <ConceptWrapper {...props} documentId={documentId} />
+              <SectionWrapper {...props} documentId={documentId} />
             </AwarenessDocument>
           )
         : (
@@ -60,12 +62,13 @@ export const Concept = (props: ViewProps & { document?: Y.Doc }): JSX.Element =>
   )
 }
 
-const ConceptWrapper = (props: ViewProps & { documentId: string }): JSX.Element => {
+const SectionWrapper = (props: ViewProps & { documentId: string }): JSX.Element => {
   const { provider, synced, user } = useCollaboration()
   const [, setIsFocused] = useAwareness(props.documentId)
   const [isChanged] = useYValue<boolean>('root.changed')
   const [title] = useYValue<boolean>('root.changed')
   const { status } = useSession()
+
   useEffect(() => {
     provider?.setAwarenessField('data', user)
     setIsFocused(true)
@@ -103,11 +106,11 @@ const ConceptWrapper = (props: ViewProps & { documentId: string }): JSX.Element 
           asDialog={!!props.asDialog}
           isChanged={isChanged}
           onDialogClose={props.onDialogClose}
-          type=''
+          type='Sektion'
         />
         {!!provider && synced
           ? (
-              <ConceptContent
+              <SectionContent
                 {...props}
                 documentId={props.documentId}
                 provider={provider}
@@ -147,7 +150,7 @@ const ConceptWrapper = (props: ViewProps & { documentId: string }): JSX.Element 
   )
 }
 
-const ConceptContent = ({
+const SectionContent = ({
   provider,
   documentId,
   asDialog
@@ -227,5 +230,4 @@ const ConceptContent = ({
     </>
   )
 }
-Concept.meta = meta
- */
+Section.meta = meta

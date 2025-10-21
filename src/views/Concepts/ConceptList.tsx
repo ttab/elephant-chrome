@@ -11,6 +11,7 @@ import { useCategories } from '@/hooks/useCategories'
 import { useTable } from '@/hooks/useTable'
 import type { IDBCategory, IDBConcept, IDBSection, IDBStory } from 'src/datastore/types'
 import { useOrganisers } from '@/hooks/useOrganisers'
+import type { ViewType } from '@/types/index'
 
 export const ConceptList = ({ columns, title }: {
   columns: ColumnDef<IDBConcept>[]
@@ -21,24 +22,39 @@ export const ConceptList = ({ columns, title }: {
   const categories = useCategories()
   const organisers = useOrganisers()
   const { setData } = useTable<IDBSection | IDBStory | IDBCategory>()
-
   const tableDataMap = {
-    Sektioner: sections,
-    'Story tags': storyTags,
-    Kategorier: categories,
-    Organisatörer: organisers
+    Sektioner: {
+      conceptTitle: 'Sektion',
+      data: sections,
+      conceptView: 'Section'
+    },
+    'Story tags': {
+      conceptTitle: 'Story Tag',
+      data: storyTags,
+      conceptView: 'StoryTag'
+    },
+    Kategorier: {
+      conceptTitle: 'Kategori',
+      data: categories,
+      conceptView: 'Category'
+    },
+    Organisatörer: {
+      conceptTitle: 'Organisatör',
+      data: organisers,
+      conceptView: 'Organiser'
+    }
   } as const
+
 
   const getObjects = () => {
     const data = tableDataMap[title as keyof typeof tableDataMap]
-    if (data) {
-      setData(data)
+    if (data.data) {
+      setData(data.data)
     }
     return data
   }
 
-  const objects = getObjects()
-
+  const conceptData = getObjects()
   const onRowSelected = useCallback((row?: IDBConcept) => {
     if (row) {
       console.info(`Selected concept item ${row.id}`)
@@ -49,7 +65,7 @@ export const ConceptList = ({ columns, title }: {
   }, [])
 
 
-  if (objects && objects.length === 0) {
+  if (conceptData.data && conceptData.data.length === 0) {
     console.error('Error fetching concept items:')
     toast.error('Kunde inte hämta concept')
   }
@@ -57,11 +73,12 @@ export const ConceptList = ({ columns, title }: {
   return (
     <>
       <Table
-        type='Concept'
+        type={conceptData.conceptView as ViewType}
         columns={columns}
         onRowSelected={onRowSelected}
+        /* conceptTitle={conceptData.conceptTitle} */
       />
-      <Pagination total={objects?.length || 0} />
+      <Pagination total={conceptData.data?.length || 0} />
     </>
   )
 }

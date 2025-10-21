@@ -15,14 +15,13 @@ export const Header = ({ assigneeId, type }: {
   assigneeId?: string | undefined
 }): JSX.Element => {
   const showButton = useMemo(() => {
-    const viewTypes: View[] = ['Planning', 'Event', 'Factbox', 'Concept']
+    const viewTypes: View[] = ['Planning', 'Event', 'Factbox', 'Section']
     if (viewTypes.includes(type)) {
       return true
     }
     return false
   }, [type])
   const { showModal, hideModal } = useModal()
-
   const ViewDialog = Views[type]
 
   return (
@@ -51,7 +50,7 @@ export const Header = ({ assigneeId, type }: {
         </Button>
       )}
 
-      {type !== 'Concept'
+      {type !== 'Section'
         && (
           <>
             <div className='hidden sm:block'>
