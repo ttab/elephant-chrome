@@ -13,14 +13,12 @@ export const RemoteUsers = ({ ydoc }: PropsWithChildren & {
     <div className='grow flex items-center justify-end'>
       <AvatarGroup>
         {states.map((user) => {
-          const color = user.data?.color ?? undefined
-
           return (
             <Avatar
               key={user.clientId}
               value={user.data?.name || ''}
-              variant={color ? 'color' : 'default'}
-              color={color}
+              variant='color'
+              color={user.data?.color}
               size='sm'
             />
           )

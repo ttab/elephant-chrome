@@ -67,28 +67,21 @@ export const Event = (props: ViewProps & { document?: Y.Doc }): JSX.Element => {
     })
   }, [documentId, props.document])
 
-  if (!documentId) {
-    return <></>
+  if (typeof documentId !== 'string' || !documentId) {
+    return (
+      <Error
+        title='Händelsedokument saknas'
+        message='Inget händelsedokument är angivet. Navigera tillbaka till översikten och försök igen.'
+      />
+    )
   }
 
   return (
-    <>
-      {typeof documentId === 'string'
-        ? (
-            <EventViewContent
-              {...props}
-              documentId={documentId}
-              // setNewItem={props?.setNewItem}
-              data={data}
-            />
-          )
-        : (
-            <Error
-              title='Händelsedokument saknas'
-              message='Inget händelsedokument är angivet. Navigera tillbaka till översikten och försök igen.'
-            />
-          )}
-    </>
+    <EventViewContent
+      {...props}
+      documentId={documentId}
+      data={data}
+    />
   )
 }
 
