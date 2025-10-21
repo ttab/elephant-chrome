@@ -3,9 +3,9 @@ import type { YDocument } from './useYDocument'
 
 export interface YAwarenessUser {
   name: string
-  color?: string | null
-  avatar?: string | null
-  initials?: string | null
+  color?: string
+  avatar?: string
+  initials?: string
 }
 
 interface YAwarenessFocus {
