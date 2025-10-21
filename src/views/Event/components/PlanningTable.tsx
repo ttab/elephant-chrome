@@ -22,7 +22,7 @@ type PlanningTableFields = ['document.title', 'document.rel.event.uuid']
 
 export const PlanningTable = ({ provider, documentId, asDialog }: {
   documentId: string
-  provider?: HocuspocusProvider
+  provider: HocuspocusProvider | null
 } & FormProps): JSX.Element => {
   const createdDocumentIdRef = useRef<string | undefined>()
   const { hideModal } = useModal()
