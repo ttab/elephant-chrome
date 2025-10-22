@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react'
 import type { YDocument } from './useYDocument'
 
-export interface YAwarenessUser {
+export interface YAwarenessUser extends Record<string, unknown> {
   name: string
   color?: string
   avatar?: string
