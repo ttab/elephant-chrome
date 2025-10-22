@@ -34,7 +34,6 @@ const Note = ({ ydoc, noteIndex, handleRemove }: {
   const selectedOptions = roles.filter((r) => r.value === role)
   const SelectedIcon = selectedOptions.length && selectedOptions[0].icon
 
-  console.log('value', typeof value)
   return (
     <Alert className={cn('flex p-1 pl-4', role === 'public'
       ? 'bg-blue-50'
