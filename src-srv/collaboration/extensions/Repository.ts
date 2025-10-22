@@ -195,6 +195,7 @@ export class RepositoryExtension implements Extension {
       yCtx.delete('isInProgress')
       yCtx.set('hash', createHash(JSON.stringify(doc.getMap('ele').toJSON())))
       yCtx.set('version', result.version)
+      yCtx.delete('isChanged')
     })
 
     // Cleanup
@@ -237,6 +238,7 @@ export class RepositoryExtension implements Extension {
       const ctx = document.getMap('ctx')
       ctx.set('hash', newHash)
       ctx.set('version', result.version)
+      ctx.delete('isChanged')
     })
 
     return result

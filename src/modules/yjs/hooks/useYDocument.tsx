@@ -9,6 +9,7 @@ import { useSession } from 'next-auth/react'
 import { useRegistry } from '@/hooks/useRegistry'
 import type { YAwarenessUser } from './useYAwareness'
 import type { EleDocumentResponse } from '@/shared/types'
+import createHash from '@/shared/createHash'
 
 export interface YDocument<T> {
   id: string
@@ -17,8 +18,8 @@ export interface YDocument<T> {
   connected: boolean
   synced: boolean
   online: boolean
-  isReady: boolean
-  setIsReady: (isReady: boolean) => void
+  isInProgress: boolean
+  setIsInProgress: (isInProgress: boolean) => void
   isChanged: boolean
   setIsChanged: (isChanged: boolean) => void
   transact: (f: (arg0: Y.Map<T>, arg1: Y.Transaction) => void) => void
@@ -65,7 +66,7 @@ export function useYDocument<T>(
   }))
 
   // Whether document is ready to be saved to repository (is valid)
-  const [isReady, setIsReady] = useYValue<boolean>(document.getMap('ctx'), ['isReady'])
+  const [isInProgress, setIsInProgress] = useYValue<boolean>(document.getMap('ctx'), ['isInProgress'])
   const [isChanged, setIsChanged] = useYValue<boolean>(document.getMap('ctx'), ['isChanged'])
 
   // IndexedDB lifecycle
@@ -74,13 +75,13 @@ export function useYDocument<T>(
     setIndexedDB(indexeddb)
 
     return () => {
-      if (isReady && !options?.persistent && providerRef.current?.hasUnsyncedChanges === false) {
+      if (isInProgress && !options?.persistent && providerRef.current?.hasUnsyncedChanges === false) {
         void indexeddb.clearData() // Clearing from IndexedDB
       } else {
         void indexeddb.destroy() // Keeps doc in IndexedDB
       }
     }
-  }, [id, document, options?.persistent, isReady])
+  }, [id, document, options?.persistent, isInProgress])
 
   // Hocuspocus lifecycle
   useEffect(() => {
@@ -153,6 +154,24 @@ export function useYDocument<T>(
     }
   }, [document, id, websocketProvider, indexedDB, options?.invisible, session?.accessToken])
 
+  // Observe changes to the ele root map (the actual document) and set the isChange flag
+  // to true if the calculated hash is different from the existing one.
+  useEffect(() => {
+    if (!document) return
+
+    const ele = document.getMap('ele')
+    const ctx = document.getMap('ctx')
+    const onChange = () => {
+      setIsChanged(createHash(JSON.stringify(ele.toJSON())) !== ctx.get('hash'))
+    }
+
+    ele.observeDeep(onChange)
+
+    return () => {
+      ele.unobserveDeep(onChange)
+    }
+  }, [document, setIsChanged])
+
   // Utility function to send stateless messages
   const send = useCallback((key: string, payload: unknown) => {
     if (!providerRef.current) {
@@ -188,8 +207,8 @@ export function useYDocument<T>(
   resultRef.current.connected = connected && online
   resultRef.current.synced = synced
   resultRef.current.online = online
-  resultRef.current.isReady = isReady ?? false
-  resultRef.current.setIsReady = setIsReady
+  resultRef.current.isInProgress = isInProgress ?? false
+  resultRef.current.setIsInProgress = setIsInProgress
   resultRef.current.isChanged = isChanged ?? false
   resultRef.current.setIsChanged = setIsChanged
   resultRef.current.transact = transact

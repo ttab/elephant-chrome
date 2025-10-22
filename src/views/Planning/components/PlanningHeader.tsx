@@ -1,5 +1,4 @@
 import { useView } from '@/hooks'
-import { useYValue } from '@/modules/yjs/hooks'
 import { useRef, useEffect } from 'react'
 import { StatusMenu } from '@/components/DocumentStatus/StatusMenu'
 import { ViewHeader } from '@/components/View'
@@ -9,10 +8,10 @@ import { Duplicate } from '@/components/Duplicate'
 import type { PlanningData } from '@/types/index'
 import type { Session } from 'next-auth'
 import type { HocuspocusProvider } from '@hocuspocus/provider'
-import type { YDocument } from '@/modules/yjs/hooks'
+import { useYValue, type YDocument } from '@/modules/yjs/hooks'
 import type * as Y from 'yjs'
 
-export const PlanningHeader = ({ ydoc, asDialog, onDialogClose, isChanged, session, provider, status }: {
+export const PlanningHeader = ({ ydoc, asDialog, onDialogClose, session, provider, status }: {
   ydoc: YDocument<Y.Map<unknown>>
   asDialog: boolean
   onDialogClose?: () => void
@@ -26,6 +25,7 @@ export const PlanningHeader = ({ ydoc, asDialog, onDialogClose, isChanged, sessi
   const containerRef = useRef<HTMLElement | null>(null)
   const [planningData] = useYValue<PlanningData>(ydoc.ele, 'meta.core/planning-item[0].data')
   const [planningTitle] = useYValue<string>(ydoc.ele, 'root.title')
+  const isChanged = ydoc.isChanged || false
 
   useEffect(() => {
     containerRef.current = (document.getElementById(viewId))
