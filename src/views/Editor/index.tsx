@@ -1,5 +1,5 @@
 import { useEffect, useRef } from 'react'
-import { AwarenessDocument, View } from '@/components'
+import { View } from '@/components'
 import { Notes } from '@/components/Notes'
 import { Textbit, useTextbit } from '@ttab/textbit'
 import { Bold, Italic, Link, Text, TTVisual, Factbox, Table, LocalizedQuotationMarks } from '@ttab/textbit-plugins'
@@ -9,18 +9,13 @@ import { Editor as PlainEditor } from '@/components/PlainEditor'
 
 import {
   useQuery,
-  useCollaboration,
   useLink,
-  useYValue,
   useView,
   useYjsEditor,
-  useAwareness,
   useWorkflowStatus
 } from '@/hooks'
 import type { ViewMetadata, ViewProps } from '@/types'
 import { EditorHeader } from './EditorHeader'
-import { type HocuspocusProvider } from '@hocuspocus/provider'
-import { type AwarenessUserData } from '@/contexts/CollaborationProvider'
 import { Error } from '../Error'
 
 import { ContentMenu } from '@/components/Editor/ContentMenu'
@@ -29,10 +24,12 @@ import { ContextMenu } from '@/components/Editor/ContextMenu'
 import { Gutter } from '@/components/Editor/Gutter'
 import { DropMarker } from '@/components/Editor/DropMarker'
 
-import type { Block } from '@ttab/elephant-api/newsdoc'
 import { getValueByYPath } from '@/shared/yUtils'
 import { useOnSpellcheck } from '@/hooks/useOnSpellcheck'
 import { contentMenuLabels } from '@/defaults/contentMenuLabels'
+import type { YDocument } from '@/modules/yjs/hooks'
+import { useYDocument } from '@/modules/yjs/hooks'
+import type * as Y from 'yjs'
 
 // Metadata definition
 const meta: ViewMetadata = {
@@ -75,7 +72,11 @@ const Editor = (props: ViewProps): JSX.Element => {
 
     return (
       <View.Root>
-        <EditorHeader documentId={documentId} readOnly readOnlyVersion={bigIntVersion} />
+        <EditorHeader
+          ydoc={{ id: documentId } as YDocument<Y.Map<unknown>>}
+          readOnly
+          readOnlyVersion={bigIntVersion}
+        />
         <View.Content className='flex flex-col max-w-[1000px] px-4 h-full'>
           <PlainEditor key={props.version} id={documentId} version={bigIntVersion} />
         </View.Content>
@@ -84,9 +85,10 @@ const Editor = (props: ViewProps): JSX.Element => {
   }
 
   return (
-    <AwarenessDocument documentId={documentId} className='h-full'>
-      <EditorWrapper documentId={documentId} {...props} />
-    </AwarenessDocument>
+    <EditorWrapper
+      {...props}
+      documentId={documentId}
+    />
   )
 }
 
@@ -96,17 +98,9 @@ function EditorWrapper(props: ViewProps & {
   planningId?: string | null
   autoFocus?: boolean
 }): JSX.Element {
-  const { provider, synced, user } = useCollaboration()
-  const openFactboxEditor = useLink('Factbox')
-  const [notes] = useYValue<Block[] | undefined>('meta.core/note')
-  const [, setIsFocused] = useAwareness(props.documentId)
+  const ydoc = useYDocument<Y.Map<unknown>>(props.documentId)
 
-  useEffect(() => {
-    setIsFocused(true)
-    return () => setIsFocused(false)
-    // We only want to rerun when provider change
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [provider])
+  const openFactboxEditor = useLink('Factbox')
 
   // Plugin configuration
   const getConfiguredPlugins = () => {
@@ -147,12 +141,8 @@ function EditorWrapper(props: ViewProps & {
         className='h-screen max-h-screen flex flex-col'
       >
         <EditorContainer
-          provider={provider}
-          synced={synced}
-          user={user}
+          ydoc={ydoc}
           planningId={props.planningId}
-          documentId={props.documentId}
-          notes={notes}
         />
       </Textbit.Root>
     </View.Root>
@@ -162,31 +152,26 @@ function EditorWrapper(props: ViewProps & {
 
 // Container component that uses TextBit context
 function EditorContainer({
-  provider,
-  synced,
-  user,
-  documentId,
-  planningId,
-  notes
+  ydoc,
+  planningId
 }: {
-  provider: HocuspocusProvider | undefined
-  synced: boolean
-  user: AwarenessUserData
-  documentId: string
+  ydoc: YDocument<Y.Map<unknown>>
   planningId?: string | null
-  notes: Block[] | undefined
 }): JSX.Element {
   const { stats } = useTextbit()
 
   return (
     <>
-      <EditorHeader documentId={documentId} planningId={planningId} />
-      {!!notes?.length && <div className='p-4'><Notes /></div>}
+      <EditorHeader
+        ydoc={ydoc}
+        planningId={planningId}
+      />
+      <Notes ydoc={ydoc} />
       <View.Content className='flex flex-col max-w-[1000px]'>
 
         <div className='grow overflow-auto pr-12 max-w-(--breakpoint-xl)'>
-          {!!provider && synced
-            ? <EditorContent provider={provider} user={user} />
+          {ydoc.provider && ydoc.provider.isSynced
+            ? <EditorContent ydoc={ydoc} />
             : <></>}
         </div>
       </View.Content>
@@ -206,15 +191,14 @@ function EditorContainer({
 }
 
 
-function EditorContent({ provider, user }: {
-  provider: HocuspocusProvider
-  user: AwarenessUserData
+function EditorContent({ ydoc }: {
+  ydoc: YDocument<Y.Map<unknown>>
 }): JSX.Element {
   const { isActive } = useView()
   const ref = useRef<HTMLDivElement>(null)
-  const [documentLanguage] = getValueByYPath<string>(provider.document.getMap('ele'), 'root.language')
+  const [documentLanguage] = getValueByYPath<string>(ydoc.ele, 'root.language')
 
-  const yjsEditor = useYjsEditor(provider, user)
+  const yjsEditor = useYjsEditor(ydoc)
   const onSpellcheck = useOnSpellcheck(documentLanguage)
 
   // Handle focus on active state
