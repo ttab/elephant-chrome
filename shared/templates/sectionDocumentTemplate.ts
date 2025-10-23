@@ -12,9 +12,9 @@ export function sectionDocumentTemplate(id: string): Document {
     uri: `core://section/${id}`,
     language: 'sv-se',
     title: '',
-    content: [
+    meta: [
       Block.create({
-        type: 'core/text',
+        type: 'core/section',
         data: {
           code: ''
         }

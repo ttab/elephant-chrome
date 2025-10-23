@@ -23,7 +23,6 @@ export const CoreSectionProvider = ({ children, usableOnly = true }: {
   const { data } = useSession()
   const [objects, setObjects] = useState<IDBSection[] | undefined>(undefined)
   const IDB = useIndexedDB()
-
   /*
    * Get objects from objectStore, else from index and add replace objectStore objects
    */
@@ -44,7 +43,8 @@ export const CoreSectionProvider = ({ children, usableOnly = true }: {
           return {
             id,
             title: _['document.title'][0].trim(),
-            usableVersion: BigInt(_['heads.usable.version'][0])
+            usableVersion: BigInt(_['heads.usable.version'][0]),
+            code: _['document.meta.core_section.data.code'][0]
           }
         }
       )

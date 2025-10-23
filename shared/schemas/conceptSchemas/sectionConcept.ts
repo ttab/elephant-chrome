@@ -7,7 +7,8 @@ import { _baseConceptFields } from './baseConcept'
  */
 const _fields = [
   ..._baseConceptFields,
-  'document.meta.data.code'
+  'document.meta.type',
+  'document.meta.core_section.data.code'
 ] as const
 
 /**
