@@ -80,7 +80,7 @@ const SectionWrapper = (props: ViewProps & { documentId: string }): JSX.Element 
 
   const handleSubmit = (): void => {
     if (environmentIsSane) {
-      void snapshotDocument(props.documentId).then((response) => {
+      void snapshotDocument(props.documentId, { status: 'usable' }).then((response) => {
         if (response?.statusMessage) {
           toast.error('Kunde inte skapa ny sektion!', {
             duration: 5000,
