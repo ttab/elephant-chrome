@@ -30,7 +30,7 @@ import type { ViewMetadata, ViewProps } from '@/types'
 import { EditorHeader } from './PrintEditorHeader'
 import { type HocuspocusProvider } from '@hocuspocus/provider'
 import { type AwarenessUserData } from '@/contexts/CollaborationProvider'
-import { Error } from '../Error'
+import { Error as ErrorView } from '../Error'
 
 import { ContentMenu } from '@/components/Editor/ContentMenu'
 import { Notes } from '@/components/Notes'
@@ -45,7 +45,7 @@ import { useOnSpellcheck } from '@/hooks/useOnSpellcheck'
 import { contentMenuLabels } from '@/defaults/contentMenuLabels'
 import { Button, ScrollArea } from '@ttab/elephant-ui'
 import { LayoutBox } from './LayoutBox'
-import { CopyPlusIcon, ScanEyeIcon, SettingsIcon, TriangleAlertIcon } from '@ttab/elephant-ui/icons'
+import { CopyPlusIcon, FileIcon, ScanEyeIcon, SettingsIcon, TriangleAlertIcon } from '@ttab/elephant-ui/icons'
 import type { EleBlock } from '@/shared/types'
 import { toast } from 'sonner'
 import { useSession } from 'next-auth/react'
@@ -54,6 +54,7 @@ import { snapshotDocument } from '@/lib/snapshotDocument'
 import type * as Y from 'yjs'
 import { ImagePlugin } from './ImagePlugin'
 import { ChannelComboBox } from './components/ChannelComboBox'
+import { ToastAction } from '../Wire/ToastAction'
 
 const meta: ViewMetadata = {
   name: 'PrintEditor',
@@ -79,7 +80,7 @@ const PrintEditor = (props: ViewProps): JSX.Element => {
   // Error handling for missing document
   if (!documentId || typeof documentId !== 'string') {
     return (
-      <Error
+      <ErrorView
         title='Artikeldokument saknas'
         message='Inget artikeldokument är angivet. Navigera tillbaka till översikten och försök igen.'
       />
@@ -199,6 +200,7 @@ function EditorContainer({
   const fromDate = allParams?.filter((item) => item.name === 'Print')?.[0]?.params?.from
   const [date] = useYValue<string>('meta.tt/print-article[0].data.date')
   const [isChanged] = useYValue<boolean>('root.changed')
+  const yDoc = provider?.document
 
   const handleChange = useCallback((value: boolean): void => {
     const root = provider?.document.getMap('ele').get('root') as Y.Map<unknown>
@@ -219,7 +221,7 @@ function EditorContainer({
       toast.error('Något gick fel när printartikel skulle dupliceras')
       return
     }
-    await snapshotDocument(documentId)
+
     try {
       const _date = (fromDate || date) as string
       const response = await baboon.createPrintArticle({
@@ -228,15 +230,21 @@ function EditorContainer({
         date: _date,
         article: name || ''
       }, session.accessToken)
-        .catch((ex: unknown) => {
-          console.error('Error creating print article:', ex)
-          toast.error('Något gick fel när printartikel skulle dupliceras nytt')
-          setPromptIsOpen(false)
-        })
+
       if (response?.status.code === 'OK') {
         openPrintArticle(undefined, { id: response?.response?.uuid }, 'self')
         setPromptIsOpen(false)
-        toast.success('Printartikel har duplicerats till datumet: ' + _date)
+        toast.success(`Printartikel har duplicerats till: ${_date}`, {
+          action: (
+            <ToastAction
+              documentId={response?.response?.uuid}
+              withView='PrintEditor'
+              label='Öppna artikeln'
+              Icon={FileIcon}
+              target='self'
+            />
+          )
+        })
       }
     } catch (ex: unknown) {
       console.error('Error creating print article:', ex)
@@ -244,60 +252,62 @@ function EditorContainer({
       setPromptIsOpen(false)
     }
   }
-  async function processArray(arr: EleBlock[]) {
+  async function checkAllLayouts(arr: EleBlock[]) {
     if (!baboon || !session?.accessToken) {
-      console.error(`Missing prerequisites: ${!baboon ? 'baboon-client' : 'accessToken'} is missing`)
-      toast.error('Något gick fel när printartikel skulle renderas')
-      return
+      throw new Error(`Missing prerequisites: ${!baboon ? 'baboon-client' : 'accessToken'} is missing`)
     }
-    await snapshotDocument(documentId)
+
     const results: EleBlock[] = []
     for (const _layout of arr) {
-      try {
-        const response = await baboon.renderArticle({
-          articleUuid: documentId,
-          layoutId: _layout.id,
-          renderPdf: true,
-          renderPng: false,
-          pngScale: 300n
-        }, session.accessToken)
-        if (response?.status.code === 'OK') {
-          const overflowsStatus = response?.response?.overflows?.length > 0
-          const underflowsStatus = response?.response?.underflows?.length > 0
-          const lowresPicsStatus = response?.response?.images?.filter((image) => image.ppi <= 130).length > 0
-          const _checkedLayout = {
-            ..._layout,
-            data: {
-              ..._layout?.data,
-              status: overflowsStatus || underflowsStatus || lowresPicsStatus ? 'false' : 'true'
-            }
+      const response = await baboon.renderArticle({
+        articleUuid: documentId,
+        layoutId: _layout.id,
+        renderPdf: true,
+        renderPng: false,
+        pngScale: 300n
+      }, session.accessToken)
+      if (response?.status.code === 'OK') {
+        const overflowsStatus = response?.response?.overflows?.length > 0
+        const underflowsStatus = response?.response?.underflows?.length > 0
+        const lowresPicsStatus = response?.response?.images?.filter((image) => image.ppi <= 130).length > 0
+        const _checkedLayout = {
+          ..._layout,
+          data: {
+            ..._layout?.data,
+            status: overflowsStatus || underflowsStatus || lowresPicsStatus ? 'false' : 'true'
           }
-          results.push(_checkedLayout)
         }
-      } catch (ex: unknown) {
-        console.error('Error rendering article:', ex)
-        toast.error('Något gick fel när printartikel skulle renderas')
+        results.push(_checkedLayout)
       }
     }
 
     return results
   }
+
   const statusChecker = async () => {
-    setIsChecking(true)
-    const newLayouts = await processArray(layouts)
-    setLayouts(newLayouts || [])
-    setIsChecking(false)
+    try {
+      await snapshotDocument(documentId, undefined, yDoc)
+
+      setIsChecking(true)
+      const newLayouts = await checkAllLayouts(layouts)
+
+      setLayouts(newLayouts || [])
+      setIsChecking(false)
+    } catch (ex) {
+      setIsChecking(false)
+      toast.error(ex instanceof Error ? ex.message : 'Något gick fel när layouterna skulle kontrolleras')
+    }
   }
 
   return (
     <>
-      <EditorHeader documentId={documentId} flowName={flowName} isChanged={isChanged} />
+      <EditorHeader documentId={documentId} flowName={flowName} isChanged={isChanged} document={yDoc} />
       {!!notes?.length && <div className='p-4'><Notes /></div>}
       <View.Content className='flex flex-col max-w-[1400px] grow'>
-        <section className='flex'>
-          <div className='w-2/3'>
+        <section className='flex flex-col-reverse @4xl:grid @4xl:grid-cols-12 @container'>
+          <div className='@4xl:col-span-8'>
             <ScrollArea className='h-[calc(100vh-7rem)]'>
-              <div className='grow overflow-auto pr-12 max-w-(--breakpoint-xl)'>
+              <div className='flex-grow overflow-auto pr-12 max-w-screen-2xl'>
                 {!!provider && synced
                   ? (
                       <EditorContent provider={provider} user={user} onChange={handleChange} />
@@ -308,7 +318,7 @@ function EditorContainer({
               </div>
             </ScrollArea>
           </div>
-          <aside className='w-1/3 @printEditor:sticky @printEditor:top-16 p-4'>
+          <aside className='@4xl:col-span-4 @4xl:sticky @4xl:top-16 p-4'>
             <header className='flex flex-row gap-2 items-center justify-between mb-2'>
               <div className='flex items-center'>
                 <Button variant='ghost' size='sm' onClick={() => { void statusChecker() }}>
@@ -343,8 +353,15 @@ function EditorContainer({
                 primaryLabel='Duplicera'
                 secondaryLabel='Avbryt'
                 onPrimary={() => {
-                  void handleCopyArticle().catch(console.error)
                   setPromptIsOpen(false)
+
+                  snapshotDocument(documentId, undefined, yDoc)
+                    .then(() => {
+                      void handleCopyArticle()
+                    })
+                    .catch((ex: Error) => {
+                      toast.error(ex instanceof Error ? ex.message : 'Något gick fel när printartikel skulle dupliceras')
+                    })
                 }}
                 onSecondary={() => {
                   setPromptIsOpen(false)
@@ -381,6 +398,7 @@ function EditorContainer({
                           <LayoutBox
                             key={layout.id}
                             documentId={documentId}
+                            document={yDoc}
                             layoutIdForRender={layout.id}
                             layoutId={layout.links['_'][0].uuid}
                             index={index}

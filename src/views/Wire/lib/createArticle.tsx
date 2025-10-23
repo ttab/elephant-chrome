@@ -6,6 +6,7 @@ import { toast } from 'sonner'
 import { ToastAction } from '../ToastAction'
 import { addAssignmentWithDeliverable } from '@/lib/index/addAssignment'
 import { convertToISOStringInTimeZone } from '@/shared/datetime'
+import { CalendarDaysIcon, FileInputIcon } from '@ttab/elephant-ui/icons'
 
 export async function createArticle({
   provider: articleProvider,
@@ -67,6 +68,24 @@ export async function createArticle({
   }
 
   toast.success(`Artikel skapad`, {
-    action: <ToastAction planningId={updatedPlanningId} wireId={documentId} target='last' />
+    action: [
+      <ToastAction
+        key='open-planning'
+        documentId={updatedPlanningId}
+        withView='Planning'
+        label='Öppna planering'
+        Icon={CalendarDaysIcon}
+        target='last'
+      />,
+
+      <ToastAction
+        key='open-article'
+        documentId={documentId}
+        withView='Editor'
+        label='Öppna artikel'
+        Icon={FileInputIcon}
+        target='last'
+      />
+    ]
   })
 }

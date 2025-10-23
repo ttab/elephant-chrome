@@ -1,7 +1,7 @@
 import { type ColumnDef } from '@tanstack/react-table'
 import { CircleCheckIcon, PenIcon, TvIcon } from '@ttab/elephant-ui/icons'
 import type { PrintArticle } from '@/hooks/baboon/lib/printArticles'
-import { DocumentStatuses } from '@/defaults/documentStatuses'
+import { PrintArticleStatuses } from '@/defaults/documentStatuses'
 import { DocumentStatus } from '@/components/Table/Items/DocumentStatus'
 import { FacetedFilter } from '@/components/Commands/FacetedFilter'
 import type { PrintFlow } from '@/shared/schemas/printFlow'
@@ -28,20 +28,21 @@ export function printArticlesListColumns({ printFlows = [] }: {
         Filter: ({ column, setSearch }) => (
           <FacetedFilter column={column} setSearch={setSearch} />
         ),
-        options: DocumentStatuses,
+        options: PrintArticleStatuses,
         name: 'Status',
         columnIcon: CircleCheckIcon,
         className: 'flex-none w-16',
         display: (value: string) => (
           <span>
-            {DocumentStatuses
+            {PrintArticleStatuses
               .find((status) => status.value === value)?.label || 'draft'}
           </span>
         )
       },
       accessorFn: (data) => (data.fields['workflow_state'].values[0]),
       cell: ({ row }) => {
-        const status = row.original.fields['workflow_state']?.values[0] || 'draft'
+        const status = row.original.fields['workflow_checkpoint']?.values[0]
+          || row.original.fields['workflow_state']?.values[0] || 'draft'
         return <DocumentStatus type='tt/print-article' status={status} />
       },
       filterFn: (row, id, value: string[]) =>

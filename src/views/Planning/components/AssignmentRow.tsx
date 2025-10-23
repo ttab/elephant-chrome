@@ -44,6 +44,7 @@ import { DocumentStatuses } from '@/defaults/documentStatuses'
 import useSWR from 'swr'
 import { useRepositoryEvents } from '@/hooks/useRepositoryEvents'
 import { type YDocument, useYValue } from '@/modules/yjs/hooks'
+import { toast } from 'sonner'
 
 export const AssignmentRow = ({ ydoc, index, onSelect, isFocused = false, asDialog, onChange }: {
   ydoc: YDocument<Y.Map<unknown>>
@@ -446,9 +447,11 @@ export const AssignmentRow = ({ ydoc, index, onSelect, isFocused = false, asDial
               })
 
               if (planningId) {
-                void snapshotDocument(planningId, undefined, ydoc.provider.document).then(() => {
+                snapshotDocument(planningId, undefined, ydoc.provider.document).then(() => {
                   const openDocument = assignmentType === 'flash' ? openFlash : openArticle
                   openDocument(undefined, { id, planningId }, 'blank')
+                }).catch((ex: unknown) => {
+                  toast.error(ex instanceof Error ? ex.message : 'Kunde inte spara planeringen')
                 })
               }
             }

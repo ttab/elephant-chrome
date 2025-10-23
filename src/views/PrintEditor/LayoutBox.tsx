@@ -13,8 +13,10 @@ import { Position } from './components/Position'
 import { Prompt } from '@/components/Prompt'
 import { snapshotDocument } from '@/lib/snapshotDocument'
 import { type ReactNode, useState } from 'react'
+import type * as Y from 'yjs'
 
 export function LayoutBox({
+  document,
   documentId,
   layoutIdForRender,
   layoutId,
@@ -22,6 +24,7 @@ export function LayoutBox({
   deleteLayout,
   onChange
 }: {
+  document?: Y.Doc
   documentId: string
   layoutIdForRender: string
   layoutId: string
@@ -52,8 +55,8 @@ export function LayoutBox({
       toast.error('Något gick fel när printartikel skulle renderas')
       return
     }
+
     try {
-      await snapshotDocument(documentId)
       const response = await baboon.renderArticle({
         articleUuid: documentId,
         layoutId: layoutIdForRender,
@@ -183,8 +186,14 @@ export function LayoutBox({
             className='group/render px-2 py-0 flex gap-2 justify-start hover:bg-approved-background/50'
             size='sm'
             onClick={() => {
-              openPreview(undefined, {})
-              void handleRenderArticle()
+              snapshotDocument(documentId, undefined, document)
+                .then(() => {
+                  openPreview(undefined, {})
+                  void handleRenderArticle()
+                })
+                .catch((ex) => {
+                  toast.error(ex instanceof Error ? ex.message : 'Kunde inte spara artikel innan förhandsgranskning')
+                })
             }}
           >
             <EyeIcon strokeWidth={1.75} size={16} />

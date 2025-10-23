@@ -42,4 +42,10 @@ export class Redis {
       Buffer.from(state).toString('binary')
     )
   }
+
+  async exists(key: string): Promise<boolean> {
+    const existsCount = await this.#redisClient?.exists(`${BASE_PREFIX}:${key}`)
+
+    return existsCount != undefined && existsCount > 0
+  }
 }
