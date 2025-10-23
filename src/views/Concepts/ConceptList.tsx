@@ -9,7 +9,7 @@ import { useSections } from '@/hooks/useSections'
 import { useStories } from '@/hooks/useStories'
 import { useCategories } from '@/hooks/useCategories'
 import { useTable } from '@/hooks/useTable'
-import type { IDBCategory, IDBConcept, IDBSection, IDBStory } from 'src/datastore/types'
+import type { IDBCategory, IDBConcept, IDBOrganiser, IDBSection, IDBStory } from 'src/datastore/types'
 import { useOrganisers } from '@/hooks/useOrganisers'
 import type { ViewType } from '@/types/index'
 
@@ -21,7 +21,7 @@ export const ConceptList = ({ columns, title }: {
   const storyTags = useStories()
   const categories = useCategories()
   const organisers = useOrganisers()
-  const { setData } = useTable<IDBSection | IDBStory | IDBCategory>()
+  const { setData } = useTable<IDBSection | IDBStory | IDBCategory | IDBOrganiser>()
   const tableDataMap = {
     Sektioner: {
       conceptTitle: 'Sektion',
@@ -64,7 +64,6 @@ export const ConceptList = ({ columns, title }: {
     return row
   }, [])
 
-
   if (conceptData.data && conceptData.data.length === 0) {
     console.error('Error fetching concept items:')
     toast.error('Kunde inte hämta concept')
@@ -76,7 +75,6 @@ export const ConceptList = ({ columns, title }: {
         type={conceptData.conceptView as ViewType}
         columns={columns}
         onRowSelected={onRowSelected}
-        /* conceptTitle={conceptData.conceptTitle} */
       />
       <Pagination total={conceptData.data?.length || 0} />
     </>

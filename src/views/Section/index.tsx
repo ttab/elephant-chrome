@@ -12,7 +12,7 @@ import { useCallback, useEffect } from 'react'
 import { snapshotDocument } from '@/lib/snapshotDocument'
 import { toast } from 'sonner'
 import { View } from '@/components/View'
-import { ConceptHeader } from '../Concept/ConceptHeader'
+import { ConceptHeader } from '../Concepts/components/ConceptHeader'
 import { InfoIcon } from '@ttab/elephant-ui/icons'
 import { Button } from '@ttab/elephant-ui'
 import type { HocuspocusProvider } from '@hocuspocus/provider'
@@ -36,14 +36,12 @@ const meta: ViewMetadata = {
     uhd: 2
   }
 }
-
 export const Section = (props: ViewProps & { document?: Y.Doc }): JSX.Element => {
   const [query] = useQuery()
   const documentId = props.id || query.id
   if (!documentId) {
     return <></>
   }
-
   return (
     <>
       {typeof documentId === 'string'
@@ -66,7 +64,7 @@ const SectionWrapper = (props: ViewProps & { documentId: string }): JSX.Element 
   const { provider, synced, user } = useCollaboration()
   const [, setIsFocused] = useAwareness(props.documentId)
   const [isChanged] = useYValue<boolean>('root.changed')
-  const [title] = useYValue<boolean>('root.changed')
+  const [title] = useYValue<boolean>('root.title')
   const { status } = useSession()
 
   useEffect(() => {
@@ -164,17 +162,13 @@ const SectionContent = ({
   const [title] = useYValue<boolean>('root.title')
   const [isChanged, setChanged] = useYValue<boolean>('root.changed')
   const environmentIsSane = provider && status === 'authenticated'
-
   const handleChange = useCallback((value: boolean): void => {
     const root = provider?.document.getMap('ele').get('root') as Y.Map<unknown>
     const changed = root.get('changed') as boolean
-
-
     if (changed !== value) {
       root.set('changed', value)
     }
   }, [provider])
-
   const onSave = async (): Promise<void> => {
     if (!session) {
       toast.error('Ett fel har uppstått, ändringen kunde inte spara! Ladda om webbläsaren och försök igen')
@@ -206,7 +200,15 @@ const SectionContent = ({
               path='root.title'
               className='border-[1px]'
               onChange={handleChange}
-              placeholder='Sektion'
+              placeholder='Titel'
+            >
+            </TextBox>
+            <TextBox
+              singleLine={true}
+              path='meta.core/section[0].data.code'
+              className='border-[1px]'
+              onChange={handleChange}
+              placeholder='Kod'
             >
             </TextBox>
             {!asDialog
