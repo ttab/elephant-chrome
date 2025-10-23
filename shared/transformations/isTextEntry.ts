@@ -13,9 +13,8 @@ export function isTextEntry(key: string, t?: unknown): boolean {
       'value'
     ],
     '*': [
-      'text', 'title', 'registration'
-    ],
-    'core/section': ['code']
+      'text', 'title', 'registration', 'code'
+    ]
   }
 
   const type = typeof t === 'string' ? t : ''
