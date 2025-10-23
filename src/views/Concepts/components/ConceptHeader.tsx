@@ -2,7 +2,7 @@ import { useView } from '@/hooks'
 import { useEffect, useRef } from 'react'
 import { ViewHeader } from '@/components/View'
 import { PenIcon } from '@ttab/elephant-ui/icons'
-import { MetaSheet } from '../Editor/components/MetaSheet'
+import { MetaSheet } from '../../Editor/components/MetaSheet'
 import { StatusMenu } from '@/components/DocumentStatus/StatusMenu'
 
 export const ConceptHeader = ({ documentId, asDialog, onDialogClose, isChanged, type }: {
