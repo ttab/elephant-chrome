@@ -1,5 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
-import { AwarenessDocument, View } from '@/components'
+import { useEffect, useRef, useState } from 'react'
 
 import { Textbit, useTextbit } from '@ttab/textbit'
 import {
@@ -18,18 +17,13 @@ import { FactboxPlugin } from '../../plugins/Factboxes'
 
 import {
   useQuery,
-  useCollaboration,
   useLink,
-  useYValue,
   useView,
   useYjsEditor,
-  useAwareness,
   useRegistry
 } from '@/hooks'
 import type { ViewMetadata, ViewProps } from '@/types'
 import { EditorHeader } from './PrintEditorHeader'
-import { type HocuspocusProvider } from '@hocuspocus/provider'
-import { type AwarenessUserData } from '@/contexts/CollaborationProvider'
 import { Error as ErrorView } from '../Error'
 
 import { ContentMenu } from '@/components/Editor/ContentMenu'
@@ -39,7 +33,6 @@ import { ContextMenu } from '@/components/Editor/ContextMenu'
 import { Gutter } from '@/components/Editor/Gutter'
 import { DropMarker } from '@/components/Editor/DropMarker'
 
-import { type Block } from '@ttab/elephant-api/newsdoc'
 import { getValueByYPath } from '@/shared/yUtils'
 import { useOnSpellcheck } from '@/hooks/useOnSpellcheck'
 import { contentMenuLabels } from '@/defaults/contentMenuLabels'
@@ -55,6 +48,9 @@ import type * as Y from 'yjs'
 import { ImagePlugin } from './ImagePlugin'
 import { ChannelComboBox } from './components/ChannelComboBox'
 import { ToastAction } from '../Wire/ToastAction'
+import type { YDocument } from '@/modules/yjs/hooks'
+import { useYDocument, useYValue } from '@/modules/yjs/hooks'
+import { View } from '@/components/View'
 
 const meta: ViewMetadata = {
   name: 'PrintEditor',
@@ -88,9 +84,7 @@ const PrintEditor = (props: ViewProps): JSX.Element => {
   }
 
   return (
-    <AwarenessDocument documentId={documentId} className='h-full'>
-      <EditorWrapper documentId={documentId} {...props} />
-    </AwarenessDocument>
+    <EditorWrapper documentId={documentId} {...props} />
   )
 }
 
@@ -99,19 +93,11 @@ function EditorWrapper(props: ViewProps & {
   documentId: string
   autoFocus?: boolean
 }): JSX.Element {
+  const ydoc = useYDocument<Y.Map<unknown>>(props.documentId)
+
   const { data } = useSession()
   const { repository } = useRegistry()
-  const { provider, synced, user } = useCollaboration()
   const openFactboxEditor = useLink('Factbox')
-  const [notes] = useYValue<Block[] | undefined>('meta.core/note')
-  const [, setIsFocused] = useAwareness(props.documentId)
-
-  useEffect(() => {
-    setIsFocused(true)
-    return () => setIsFocused(false)
-    // We only want to rerun when provider change
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [provider])
 
   // Plugin configuration
   const getConfiguredPlugins = () => {
@@ -136,7 +122,7 @@ function EditorWrapper(props: ViewProps & {
         accessToken: data?.accessToken || ''
       }),
       TVListing({
-        channelComponent: ChannelComboBox
+        channelComponent: () => ChannelComboBox({ ydoc })
       }),
       TTVisual({
         enableCrop: true
@@ -160,11 +146,7 @@ function EditorWrapper(props: ViewProps & {
         className='h-screen max-h-screen flex flex-col'
       >
         <EditorContainer
-          provider={provider}
-          synced={synced}
-          user={user}
-          documentId={props.documentId}
-          notes={notes}
+          ydoc={ydoc}
         />
       </Textbit.Root>
     </View.Root>
@@ -174,43 +156,23 @@ function EditorWrapper(props: ViewProps & {
 
 // Container component that uses TextBit context
 function EditorContainer({
-  provider,
-  synced,
-  user,
-  documentId,
-  notes
+  ydoc
 }: {
-  provider: HocuspocusProvider | undefined
-  synced: boolean
-  user: AwarenessUserData
-  documentId: string
-  notes: Block[] | undefined
+  ydoc: YDocument<Y.Map<unknown>>
 }): JSX.Element {
   const openPrintArticle = useLink('PrintEditor')
   const [promptIsOpen, setPromptIsOpen] = useState(false)
   const [isChecking, setIsChecking] = useState(false)
   const { stats } = useTextbit()
-  const [layouts, setLayouts] = useYValue<EleBlock[]>('meta.tt/print-article[0].meta.tt/article-layout')
-  const [name] = useYValue<string>('meta.tt/print-article[0].name')
-  const [flowName] = useYValue<string>('links.tt/print-flow[0].title')
-  const [flowUuid] = useYValue<string>('links.tt/print-flow[0].uuid')
+  const [layouts, setLayouts] = useYValue<EleBlock[]>(ydoc.ele, 'meta.tt/print-article[0].meta.tt/article-layout')
+  const [name] = useYValue<string>(ydoc.ele, 'meta.tt/print-article[0].name')
+  const [flowName] = useYValue<string>(ydoc.ele, 'links.tt/print-flow[0].title')
+  const [flowUuid] = useYValue<string>(ydoc.ele, 'links.tt/print-flow[0].uuid')
   const { baboon } = useRegistry()
   const { data: session } = useSession()
   const [, , allParams] = useQuery(['from'], true)
   const fromDate = allParams?.filter((item) => item.name === 'Print')?.[0]?.params?.from
-  const [date] = useYValue<string>('meta.tt/print-article[0].data.date')
-  const [isChanged] = useYValue<boolean>('root.changed')
-  const yDoc = provider?.document
-
-  const handleChange = useCallback((value: boolean): void => {
-    const root = provider?.document.getMap('ele').get('root') as Y.Map<unknown>
-    const changed = root.get('changed') as boolean
-
-
-    if (changed !== value) {
-      root.set('changed', value)
-    }
-  }, [provider])
+  const [date] = useYValue<string>(ydoc.ele, 'meta.tt/print-article[0].data.date')
 
   if (!layouts) {
     return <p>no layouts</p>
@@ -225,7 +187,7 @@ function EditorContainer({
     try {
       const _date = (fromDate || date) as string
       const response = await baboon.createPrintArticle({
-        sourceUuid: documentId,
+        sourceUuid: ydoc.id,
         flowUuid: flowUuid || '',
         date: _date,
         article: name || ''
@@ -260,7 +222,7 @@ function EditorContainer({
     const results: EleBlock[] = []
     for (const _layout of arr) {
       const response = await baboon.renderArticle({
-        articleUuid: documentId,
+        articleUuid: ydoc.id,
         layoutId: _layout.id,
         renderPdf: true,
         renderPng: false,
@@ -286,7 +248,7 @@ function EditorContainer({
 
   const statusChecker = async () => {
     try {
-      await snapshotDocument(documentId, undefined, yDoc)
+      await snapshotDocument(ydoc.id, undefined, ydoc.provider?.document)
 
       setIsChecking(true)
       const newLayouts = await checkAllLayouts(layouts)
@@ -301,16 +263,16 @@ function EditorContainer({
 
   return (
     <>
-      <EditorHeader documentId={documentId} flowName={flowName} isChanged={isChanged} document={yDoc} />
-      {!!notes?.length && <div className='p-4'><Notes /></div>}
+      <EditorHeader ydoc={ydoc} flowName={flowName} />
+      <Notes ydoc={ydoc} />
       <View.Content className='flex flex-col max-w-[1400px] grow'>
         <section className='flex flex-col-reverse @4xl:grid @4xl:grid-cols-12 @container'>
           <div className='@4xl:col-span-8'>
             <ScrollArea className='h-[calc(100vh-7rem)]'>
               <div className='flex-grow overflow-auto pr-12 max-w-screen-2xl'>
-                {!!provider && synced
+                {!!ydoc.provider && ydoc.provider.isSynced
                   ? (
-                      <EditorContent provider={provider} user={user} onChange={handleChange} />
+                      <EditorContent ydoc={ydoc} />
                     )
                   : (
                       <></>
@@ -355,7 +317,7 @@ function EditorContainer({
                 onPrimary={() => {
                   setPromptIsOpen(false)
 
-                  snapshotDocument(documentId, undefined, yDoc)
+                  snapshotDocument(ydoc.id, undefined, ydoc.provider?.document)
                     .then(() => {
                       void handleCopyArticle()
                     })
@@ -397,12 +359,10 @@ function EditorContainer({
                         return (
                           <LayoutBox
                             key={layout.id}
-                            documentId={documentId}
-                            document={yDoc}
+                            ydoc={ydoc}
                             layoutIdForRender={layout.id}
                             layoutId={layout.links['_'][0].uuid}
                             index={index}
-                            onChange={handleChange}
                             deleteLayout={(layoutId) => {
                               const newLayouts = layouts.filter((_layout) => _layout.id !== layoutId)
                               setLayouts(newLayouts)
@@ -432,16 +392,14 @@ function EditorContainer({
 }
 
 
-function EditorContent({ provider, user, onChange }: {
-  provider: HocuspocusProvider
-  user: AwarenessUserData
-  onChange?: (value: boolean) => void
+function EditorContent({ ydoc }: {
+  ydoc: YDocument<Y.Map<unknown>>
 }): JSX.Element {
   const { isActive } = useView()
   const ref = useRef<HTMLDivElement>(null)
-  const [documentLanguage] = getValueByYPath<string>(provider.document.getMap('ele'), 'root.language')
+  const [documentLanguage] = getValueByYPath<string>(ydoc.ele, 'root.language')
 
-  const yjsEditor = useYjsEditor(provider, user)
+  const yjsEditor = useYjsEditor(ydoc)
   const onSpellcheck = useOnSpellcheck(documentLanguage)
 
   // Handle focus on active state
@@ -453,22 +411,12 @@ function EditorContent({ provider, user, onChange }: {
     }
   }, [isActive, ref])
 
-  // Initialization of the editor causes a call to onChange, we're not interested in that.
-  const hasInitialized = useRef(false)
-
   return (
     <Textbit.Editable
       ref={ref}
       yjsEditor={yjsEditor}
       lang={documentLanguage}
       onSpellcheck={onSpellcheck}
-      onChange={(_value) => {
-        if (hasInitialized.current) {
-          onChange?.(true)
-        } else {
-          hasInitialized.current = true
-        }
-      }}
       className='outline-none
         h-full
         dark:text-slate-100

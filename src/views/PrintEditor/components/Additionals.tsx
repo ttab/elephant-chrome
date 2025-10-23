@@ -1,16 +1,19 @@
-import { useYValue } from '@/hooks/useYValue'
+import { useYValue } from '@/modules/yjs/hooks/useYValue'
+import type { YDocument } from '@/modules/yjs/hooks'
 import { Label, Checkbox } from '@ttab/elephant-ui'
+import type * as Y from 'yjs'
 
 export interface Additional {
   name: string
   value: string
 }
 
-export const Additionals = ({ basePath, onChange }: {
+export const Additionals = ({ ydoc, basePath, onChange }: {
+  ydoc: YDocument<Y.Map<unknown>>
   basePath: string
   onChange?: (value: boolean) => void
 }): JSX.Element | null => {
-  const [additionals, setAdditionals] = useYValue<Additional[]>(`${basePath}.meta.tt/print-features[0].content.tt/print-feature`)
+  const [additionals, setAdditionals] = useYValue<Additional[]>(ydoc.ele, `${basePath}.meta.tt/print-features[0].content.tt/print-feature`)
 
   const handleChange = (index: number) => {
     if (!additionals) return

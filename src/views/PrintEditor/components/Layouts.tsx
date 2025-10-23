@@ -2,10 +2,13 @@ import { useDocuments } from '@/hooks/index/useDocuments'
 import { constructQuery, fields } from '@/hooks/baboon/useDocuments/layoutNames'
 import { ComboBox } from '@ttab/elephant-ui'
 import { LoaderIcon } from '@ttab/elephant-ui/icons'
-import { useYValue } from '@/hooks/useYValue'
 import { cn } from '@ttab/elephant-ui/utils'
+import type { YDocument } from '@/modules/yjs/hooks'
+import { useYValue } from '@/modules/yjs/hooks'
+import type * as Y from 'yjs'
 
-export const Layouts = ({ articleLayoutId, basePath, onChange, className }: {
+export const Layouts = ({ ydoc, articleLayoutId, basePath, onChange, className }: {
+  ydoc: YDocument<Y.Map<unknown>>
   articleLayoutId?: string
   className?: string
   basePath: string
@@ -18,7 +21,7 @@ export const Layouts = ({ articleLayoutId, basePath, onChange, className }: {
     fields
   })
 
-  const [articleLayoutName, setArticleLayoutName] = useYValue<string>(`${basePath}.name`)
+  const [articleLayoutName, setArticleLayoutName] = useYValue<string>(ydoc.ele, `${basePath}.name`)
 
   if (!layouts || !layouts?.length) {
     return <LoaderIcon size={16} strokeWidth={1.75} className='animate-spin' />
