@@ -2,7 +2,7 @@ import { useContext } from 'react'
 import { CoreSectionContext } from '../datastore/contexts/CoreSectionProvider'
 import { type IDBSection } from '../datastore/types'
 
-export const useSections = (options?: { sort?: 'title' }): IDBSection[] | undefined => {
+export const useSections = (options?: { sort?: 'title' }): IDBSection[] => {
   const { objects } = useContext(CoreSectionContext)
 
   if (options?.sort === 'title') {

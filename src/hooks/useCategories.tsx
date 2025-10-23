@@ -2,7 +2,7 @@ import { useContext } from 'react'
 import { CoreCategoryContext } from '../datastore/contexts/CoreCategoryProvider'
 import { type IDBCategory } from '../datastore/types'
 
-export const useCategories = (): IDBCategory[] | undefined => {
+export const useCategories = (): IDBCategory[] => {
   const { objects } = useContext(CoreCategoryContext)
 
   return (objects)?.sort((a1, a2) => {

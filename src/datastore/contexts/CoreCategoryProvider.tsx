@@ -7,11 +7,11 @@ import { type IDBCategory } from '../types'
 import { type IndexedCategory } from '@/lib/index'
 
 interface CoreCategoryProviderState {
-  objects: IDBCategory[] | undefined
+  objects: IDBCategory[]
 }
 
 export const CoreCategoryContext = createContext<CoreCategoryProviderState>({
-  objects: undefined
+  objects: []
 })
 
 export const CoreCategoryProvider = ({ children }: {
@@ -20,7 +20,7 @@ export const CoreCategoryProvider = ({ children }: {
   const documentType = 'core/category'
   const { server: { indexUrl } } = useRegistry()
   const { data } = useSession()
-  const [objects, setObjects] = useState<IDBCategory[] | undefined>(undefined)
+  const [objects, setObjects] = useState<IDBCategory[]>([])
   const IDB = useIndexedDB()
 
   /*

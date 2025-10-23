@@ -21,7 +21,7 @@ export const ApprovalsCard = ({ assignment, isSelected, isFocused, status, openE
   isFocused: boolean
   openEditors: string[]
 }) => {
-  const sections = useSections() ?? []
+  const sections = useSections()
   const openArticle = useLink('Editor')
   const openFlash = useLink('Flash')
   const [users] = useYValue<Record<string, { id: string, name: string, username: string }>>(`${assignment._deliverableId}.users`, false, undefined, 'open-documents')

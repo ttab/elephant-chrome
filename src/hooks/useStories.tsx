@@ -2,7 +2,7 @@ import { useContext } from 'react'
 import { CoreStoryContext } from '../datastore/contexts/CoreStoryProvider'
 import { type IDBStory } from '../datastore/types'
 
-export const useStories = (options?: { sort?: 'title' }): IDBStory[] | undefined => {
+export const useStories = (options?: { sort?: 'title' }): IDBStory[] => {
   const { objects } = useContext(CoreStoryContext)
 
   if (options?.sort === 'title') {
