@@ -1,6 +1,12 @@
 import { useRegistry } from '@/hooks/useRegistry'
 import type { EleBlock } from '@/shared/types'
-import { Button, Checkbox, Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, Label, Tooltip } from '@ttab/elephant-ui'
+import {
+  Button,
+  Checkbox,
+  Label,
+  Tooltip,
+  Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle
+} from '@ttab/elephant-ui'
 import { dateToReadableDateTime } from '@/shared/datetime'
 import { useEffect, useRef } from 'react'
 import { dateToReadableDate, dateToReadableTime } from '@/shared/datetime'
@@ -141,7 +147,7 @@ export const MoveDialog = ({ ydoc, onClose, onChange, newDate }: {
                 setStartString(newDate)
                 setEndString(newDate)
 
-                snapshotDocument(id, undefined, provider?.document).then(() => {
+                snapshotDocument(id, undefined, ydoc.provider?.document).then(() => {
                   onChange(true)
                   onClose()
                 }).catch((err) => {

@@ -5,7 +5,6 @@ import { XIcon, EyeIcon } from '@ttab/elephant-ui/icons'
 import { toast } from 'sonner'
 import { useRegistry } from '@/hooks/useRegistry'
 import { useSession } from 'next-auth/react'
-import { useYValue } from '@/hooks/useYValue'
 import { Layouts } from './components/Layouts'
 import { LoadingText } from '@/components/LoadingText'
 import { Additionals } from './components/Additionals'
@@ -13,19 +12,19 @@ import { Position } from './components/Position'
 import { Prompt } from '@/components/Prompt'
 import { snapshotDocument } from '@/lib/snapshotDocument'
 import { type ReactNode, useState } from 'react'
+import type { YDocument } from '@/modules/yjs/hooks'
+import { useYValue } from '@/modules/yjs/hooks'
 import type * as Y from 'yjs'
 
 export function LayoutBox({
-  document,
-  documentId,
+  ydoc,
   layoutIdForRender,
   layoutId,
   index,
   deleteLayout,
   onChange
 }: {
-  document?: Y.Doc
-  documentId: string
+  ydoc: YDocument<Y.Map<unknown>>
   layoutIdForRender: string
   layoutId: string
   index: number
@@ -37,9 +36,9 @@ export function LayoutBox({
   const openPreview = useLink('PrintPreview')
   const [promptIsOpen, setPromptIsOpen] = useState(false)
   const base = `meta.tt/print-article[0].meta.tt/article-layout[${index}]`
-  const [linkTitle] = useYValue<string>(`${base}.links.[_][0].title`)
-  const [articleLayout] = useYValue<Block | undefined>(base)
-  const [status, setStatus] = useYValue<string>(`${base}.data.status`)
+  const [linkTitle] = useYValue<string>(ydoc.ele, `${base}.links.[_][0].title`)
+  const [articleLayout] = useYValue<Block | undefined>(ydoc.ele, base)
+  const [status, setStatus] = useYValue<string>(ydoc.ele, `${base}.data.status`)
 
   if (!articleLayout) {
     return (
@@ -58,7 +57,7 @@ export function LayoutBox({
 
     try {
       const response = await baboon.renderArticle({
-        articleUuid: documentId,
+        articleUuid: ydoc.id,
         layoutId: layoutIdForRender,
         renderPdf: true,
         renderPng: false,
@@ -73,7 +72,6 @@ export function LayoutBox({
             <div>
               <h3 className='font-bold text-gray-500 mt-2'>Bilder (under 130 ppi)</h3>
               {lowresPics.map((image, index) => {
-                console.log('image', image)
                 return (
                   <div key={index}>
                     {index + 1}
@@ -186,7 +184,7 @@ export function LayoutBox({
             className='group/render px-2 py-0 flex gap-2 justify-start hover:bg-approved-background/50'
             size='sm'
             onClick={() => {
-              snapshotDocument(documentId, undefined, document)
+              snapshotDocument(ydoc.id, undefined, ydoc.provider?.document)
                 .then(() => {
                   openPreview(undefined, {})
                   void handleRenderArticle()
@@ -224,14 +222,15 @@ export function LayoutBox({
       </div>
       <div className='col-span-10 row-span-1 mr-1'>
         <Layouts
+          ydoc={ydoc}
           articleLayoutId={layoutId}
           basePath={base}
           className='w-full'
           onChange={onChange}
         />
       </div>
-      <Position basePath={base} onChange={onChange} />
-      <Additionals basePath={base} onChange={onChange} />
+      <Position ydoc={ydoc} basePath={base} />
+      <Additionals ydoc={ydoc} basePath={base} />
     </div>
   )
 }
