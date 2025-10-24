@@ -12,6 +12,7 @@ const _fields = [
   'document.rel.flow.*',
   'document.meta.tt_print_article.data.date',
   'workflow_state',
+  'workflow_checkpoint',
   'document.content.tt_tv_listing.data.title'
 ] as const
 

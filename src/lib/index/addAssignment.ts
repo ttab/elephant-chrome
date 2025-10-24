@@ -39,12 +39,12 @@ export async function addAssignmentWithDeliverable(payload: {
       toast.error('Det gick inte att lägga till uppdraget i en kopplad planering.')
     }
 
-    const result = await response.json() as { planningId: string }
-    if (!result.planningId) {
+    const result = await response.json() as { uuid: string }
+    if (!result.uuid) {
       throw new Error('Incorrect or no planning id received from backend')
     }
 
-    return result.planningId
+    return result.uuid
   } catch (ex) {
     console.error('Failed backend call to add assignment', ex)
     toast.error('Det gick inte att lägga till uppdraget i en kopplad planering.')

@@ -23,8 +23,7 @@ export const ImagePlugin: Plugin.InitFunction = (options) => {
       consumes,
       consume: ({ input }) => consume(
         input,
-        options?.repository as Repository,
-        options?.accessToken as string
+        options?.repository as Repository
       )
     },
     actions: [

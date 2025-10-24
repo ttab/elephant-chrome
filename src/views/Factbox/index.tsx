@@ -139,19 +139,18 @@ const FactboxContainer = ({
 
   const handleSubmit = (): void => {
     if (ydoc.provider && status === 'authenticated') {
-      void snapshotDocument(ydoc.id).then((response) => {
-        if (response?.statusMessage) {
+      snapshotDocument(ydoc.id, undefined, ydoc.provider?.document)
+        .then(() => {
+          if (onDialogClose) {
+            onDialogClose()
+          }
+        }).catch((ex) => {
           toast.error('Kunde inte skapa ny faktaruta!', {
             duration: 5000,
             position: 'top-center'
           })
-          return
-        }
-
-        if (onDialogClose) {
-          onDialogClose(ydoc.id, 'title')
-        }
-      })
+          console.error(ex)
+        })
     }
   }
 

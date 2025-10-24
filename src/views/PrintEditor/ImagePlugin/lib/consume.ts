@@ -1,11 +1,11 @@
 import type { Repository } from '@/shared/Repository'
 import { type Plugin } from '@ttab/textbit'
+import { getCachedSession } from '@/shared/getCachedSession'
 import { toast } from 'sonner'
 
 export const consume = async (
   input: Plugin.Resource | Plugin.Resource[],
-  repository: Repository,
-  accessToken: string
+  repository: Repository
 ): Promise<Plugin.Resource | undefined> => {
   if (Array.isArray(input)) {
     throw new Error('Image plugin expected File for consumation, not a list/array')
@@ -18,6 +18,12 @@ export const consume = async (
   const { name, type: contentType, size } = input.data
 
   const getImageProperties = async () => {
+    const session = await getCachedSession()
+
+    if (!session) {
+      throw new Error('No session found, user must be logged in to upload images')
+    }
+
     return await new Promise<Plugin.Resource>((resolve, reject) => {
       const reader = new FileReader()
       const tmpImage = new Image()
@@ -33,7 +39,7 @@ export const consume = async (
       }
 
       repository
-        .uploadFile(name, contentType, input.data as File, accessToken)
+        .uploadFile(name, contentType, input.data as File, session?.accessToken)
         .then(({ uuid, name }) => {
           toast.success('Bilduppladdning lyckades!')
           reader.onload = () => {

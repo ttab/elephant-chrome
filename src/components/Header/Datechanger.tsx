@@ -1,39 +1,51 @@
 import { ChevronLeftIcon, ChevronRightIcon } from '@ttab/elephant-ui/icons'
 import { Link } from '@/components'
 import { DatePicker } from '../Datepicker'
-import { useMemo } from 'react'
 import { useQuery, useLink } from '@/hooks'
 import { addDays, subDays } from 'date-fns'
 import { type View } from '@/types/index'
+import { useMemo } from 'react'
 
-export const DateChanger = ({ type }: {
-  type: View
-}): JSX.Element | undefined => {
-  const [{ from, to }] = useQuery()
+// Only these views are valid targets for date changes
+const validViews: View[] = ['Plannings', 'Events', 'Assignments', 'Approvals', 'Print']
+
+export const DateChanger = ({ type }: { type: View }): JSX.Element | null => {
+  const [query] = useQuery()
+  const { from, to } = query
+
+  const linkTarget = validViews.find((view: View) => view.startsWith(type))
 
   const currentDate = useMemo(() => {
-    return typeof from === 'string'
-      ? new Date(from)
-      : new Date()
+    if (typeof from === 'string') {
+      const parsed = new Date(from)
+      if (!isNaN(parsed.getTime())) {
+        return parsed
+      }
+    }
+    return new Date()
   }, [from])
 
   const steps = to ? 7 : 1
 
-  const validViews: View[] = ['Plannings', 'Events', 'Assignments', 'Approvals', 'Print']
-  const linkTarget = validViews.find((view) => view.startsWith(type))
-  const [query] = useQuery()
-
   const changeDate = useLink(linkTarget || type)
 
+  const getDateString = (date: Date) => date.toISOString().split('T')[0]
+
+  const getLinkProps = (fn: (currentDate: Date, steps: number) => Date) => {
+    const date = fn(currentDate, steps)
+
+    return { ...query, from: getDateString(date) }
+  }
+
   if (!linkTarget) {
-    return
+    return null
   }
 
   return (
     <div className='flex items-center'>
       <Link
         to={linkTarget}
-        props={{ ...query, from: decrementDate(currentDate, steps).toISOString().split('T')[0] }}
+        props={getLinkProps(subDays)}
         target='self'
       >
         <ChevronLeftIcon
@@ -46,7 +58,7 @@ export const DateChanger = ({ type }: {
 
       <Link
         to={linkTarget}
-        props={{ ...query, from: incrementDate(currentDate, steps).toISOString().split('T')[0] }}
+        props={getLinkProps(addDays)}
         target='self'
       >
         <ChevronRightIcon
@@ -56,12 +68,4 @@ export const DateChanger = ({ type }: {
       </Link>
     </div>
   )
-}
-
-function decrementDate(date: Date, steps: number): Date {
-  return subDays(date, steps)
-}
-
-function incrementDate(date: Date, steps: number): Date {
-  return addDays(date, steps)
 }

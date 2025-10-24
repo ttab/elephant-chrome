@@ -9,7 +9,9 @@ import { snapshotDocument } from '@/lib/snapshotDocument'
 import { getStatusFromMeta } from '@/lib/getStatusFromMeta'
 import type { Session } from 'next-auth'
 
-export const useWorkflowStatus = (uuid?: string, isWorkflow: boolean = false): [
+// TODO: rename asPrint to a more generic name.
+// "asPrint" chould probably be used for planning-items and events as well
+export const useWorkflowStatus = (uuid?: string, isWorkflow: boolean = false, asPrint?: boolean): [
   Status | undefined,
   (newStatusName: string | Status, cause?: string, asWire?: boolean) => Promise<void>,
   KeyedMutator<Status | undefined>
@@ -39,6 +41,12 @@ export const useWorkflowStatus = (uuid?: string, isWorkflow: boolean = false): [
         return
       }
 
+      if (asPrint && meta.workflowCheckpoint === 'usable') {
+        return {
+          uuid,
+          ...getStatusFromMeta(meta, false)
+        }
+      }
       return {
         uuid,
         ...getStatusFromMeta(meta, isWorkflow)
@@ -51,8 +59,21 @@ export const useWorkflowStatus = (uuid?: string, isWorkflow: boolean = false): [
     toast.error('Ett fel uppstod när aktuell status skulle hämtas. Försök ladda om sidan.')
   }
 
-  useRepositoryEvents('core/article+meta', (event) => {
-    if (event.mainDocument === uuid) {
+  // Listen to repository events and revalidate if the current document is affected
+  useRepositoryEvents([
+    'core/article',
+    'core/article+meta',
+    'core/flash',
+    'core/flash+meta',
+    'core/editorial-info',
+    'core/editorial-info+meta',
+    'tt/print-article',
+    'tt/print-article+meta',
+    'core/planning-item',
+    'core/planning-item+meta'
+
+  ], (event) => {
+    if (event.uuid === uuid || event.mainDocument === uuid) {
       void mutate()
     }
   })
@@ -63,38 +84,36 @@ export const useWorkflowStatus = (uuid?: string, isWorkflow: boolean = false): [
    */
   const setDocumentStatus = useCallback(
     async (newStatus: string | Status, cause?: string, asWire?: boolean) => {
-      if (!session) {
+      if (!session || !uuid) {
         toast.error('Ett fel har uppstått, aktuell status kunde inte ändras! Ladda om webbläsaren och försök igen.')
         return
       }
 
-      // Handle wire status updates
-      if (asWire && typeof newStatus === 'object' && repository) {
-        void setWireStatus(newStatus, repository, session)
-        return
+      try {
+        // Handle wire status updates
+        if (asWire && typeof newStatus === 'object' && repository) {
+          await setWireStatus(newStatus, repository, session)
+
+          return
+        }
+
+        // Flush document to repository and if applicable, update the status with cause
+        await snapshotDocument(uuid, {
+          force: true,
+          status: typeof newStatus === 'string'
+            ? newStatus
+            : newStatus.name,
+          cause
+        }, provider?.document)
+
+        // Reset unsaved changes state
+        setChanged(undefined)
+
+        // Revalidate after the mutation completes
+        await globalMutate([CACHE_KEY])
+      } catch (ex) {
+        toast.error(ex instanceof Error ? ex.message : 'Ett fel uppstod när aktuell status skulle ändras')
       }
-
-
-      // Flush document to repsitory and if applicable, update the status with cause
-      const snapshotResponse = uuid && await snapshotDocument(uuid, {
-        force: true,
-        status: typeof newStatus === 'string'
-          ? newStatus
-          : newStatus.name,
-        cause
-      }, provider?.document)
-
-      if (snapshotResponse && 'statusCode' in snapshotResponse && snapshotResponse.statusCode !== 200) {
-        toast.error(`Ett fel uppstod när aktuell status skulle ändras: ${snapshotResponse.statusMessage || 'Okänt fel'}`)
-        return
-      }
-
-
-      // Reset unsaved changes state
-      setChanged(undefined)
-
-      // Revalidate after the mutation completes
-      await globalMutate([CACHE_KEY])
     },
     [session, uuid, setChanged, provider?.document, repository, CACHE_KEY]
   )
