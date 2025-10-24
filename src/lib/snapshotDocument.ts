@@ -41,13 +41,6 @@ export async function snapshotDocument(
     if (options?.cause) url.searchParams.set('cause', options.cause)
     url.searchParams.set('addToHistory', options?.addToHistory === true ? '1' : '0')
 
-    // Always remove __inProgress flag if it exists to allow storage into repository
-    if (document) {
-      const root = document.getMap('ele')
-        .get('root') as Y.Map<unknown>
-      root?.delete('__inProgress')
-    }
-
     const response = await fetch(url, {
       method: 'POST',
       headers: {

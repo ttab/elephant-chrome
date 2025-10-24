@@ -1,41 +1,22 @@
 import {
-  useRef,
-  useEffect,
   type PropsWithChildren
 } from 'react'
 import type * as Y from 'yjs'
 
 import { CollaborationProviderContext } from '@/contexts'
-import { Awareness } from './'
 
 /**
- * Use as a wrapper around all documents that needs awareness
+ * Use as a wrapper around all documents that needs awareness.
+ * @deprecated - Use `CollaborationProviderContext` instead.
  */
-export const AwarenessDocument = ({ children, documentId, document, className }: PropsWithChildren & {
+export const AwarenessDocument = ({ children, documentId, document }: PropsWithChildren & {
   documentId: string
   document?: Y.Doc
   className?: string
 }): JSX.Element => {
-  const setAsOpen = useRef<(value: boolean) => void>(null)
-
-  useEffect(() => {
-    const { current } = setAsOpen
-    if (current) {
-      current(true)
-    }
-
-    return () => {
-      if (current) {
-        current(false)
-      }
-    }
-  }, [setAsOpen])
-
   return (
     <CollaborationProviderContext documentId={documentId} document={document}>
-      <Awareness ref={setAsOpen} className={className}>
-        {children}
-      </Awareness>
+      {children}
     </CollaborationProviderContext>
   )
 }

@@ -1,4 +1,6 @@
-import { useView, useYValue } from '@/hooks'
+import { useView } from '@/hooks'
+import { useYValue } from '@/modules/yjs/hooks'
+
 import { useEffect, useRef } from 'react'
 import { StatusMenu } from '@/components/DocumentStatus/StatusMenu'
 import { ViewHeader } from '@/components/View'
@@ -7,9 +9,11 @@ import type { Session } from 'next-auth'
 import type { HocuspocusProvider } from '@hocuspocus/provider'
 import { MetaSheet } from '../Editor/components/MetaSheet'
 import type { EventData } from './components/EventTime'
+import type * as Y from 'yjs'
+import type { YDocument } from '@/modules/yjs/hooks'
 
 export const EventHeader = ({
-  documentId,
+  ydoc,
   asDialog,
   onDialogClose,
   provider,
@@ -18,18 +22,18 @@ export const EventHeader = ({
   session,
   isChanged
 }: {
-  documentId: string
+  ydoc: YDocument<Y.Map<unknown>>
   asDialog: boolean
   onDialogClose?: () => void
   title: string | undefined
   session: Session | null
-  provider: HocuspocusProvider | undefined
+  provider: HocuspocusProvider | null
   status: 'authenticated' | 'loading' | 'unauthenticated'
   isChanged?: boolean
 }): JSX.Element => {
   const { viewId } = useView()
   const containerRef = useRef<HTMLElement | null>(null)
-  const [eventData] = useYValue<EventData | undefined>('meta.core/event[0].data')
+  const [eventData] = useYValue<EventData | undefined>(ydoc.ele, 'meta.core/event[0].data')
 
   useEffect(() => {
     containerRef.current = (document.getElementById(viewId))
@@ -52,17 +56,17 @@ export const EventHeader = ({
           </div>
 
           <div className='flex flex-row gap-2 justify-end items-center'>
-            {!asDialog && (
+            {!asDialog && ydoc && (
               <StatusMenu
-                documentId={documentId}
+                documentId={ydoc.id}
                 type='core/event'
                 isChanged={isChanged}
               />
             )}
 
-            {!!documentId && !asDialog && (
+            {!!ydoc && !asDialog && (
               <>
-                <ViewHeader.RemoteUsers documentId={documentId} />
+                <ViewHeader.RemoteUsers ydoc={ydoc} />
               </>
             )}
             {!asDialog && provider && eventData && (
@@ -80,7 +84,9 @@ export const EventHeader = ({
       </ViewHeader.Content>
 
       <ViewHeader.Action onDialogClose={onDialogClose} asDialog={asDialog}>
-        {!asDialog && <MetaSheet container={containerRef.current} documentId={documentId} />}
+        {!asDialog && ydoc && (
+          <MetaSheet container={containerRef.current} documentId={ydoc.id} />
+        )}
       </ViewHeader.Action>
     </ViewHeader.Root>
   )

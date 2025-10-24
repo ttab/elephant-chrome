@@ -125,7 +125,7 @@ export class RepositoryExtension implements Extension {
     status?: string
     cause?: string
     addToHistory?: boolean
-    stateVector?: Uint8Array
+    yjsUpdate?: Uint8Array
   }): Promise<{
     version: string
   } | void> {
@@ -139,7 +139,7 @@ export class RepositoryExtension implements Extension {
     // The document can be local only when based on state vector to ensure
     // that what the client sends is what is stored. So setting the hash,
     // must be done on connection.document.
-    const getDocument = async (hp: Hocuspocus, stateVector?: Uint8Array): Promise<{
+    const getDocument = async (hp: Hocuspocus, yjsUpdate?: Uint8Array): Promise<{
       document: Y.Doc
       connection: DirectConnection
     }> => {
@@ -155,16 +155,16 @@ export class RepositoryExtension implements Extension {
         throw new Error('No document retrieved from connection')
       }
 
-      if (stateVector) {
+      if (yjsUpdate) {
         const document = new Y.Doc()
-        Y.applyUpdate(document, stateVector)
+        Y.applyUpdate(document, yjsUpdate)
         return { document, connection }
       } else {
         return { document: connection.document, connection }
       }
     }
 
-    const { document, connection } = await getDocument(this.#hp, options?.stateVector)
+    const { document, connection } = await getDocument(this.#hp, options?.yjsUpdate)
 
     // Find the document type
     const ele = document.getMap('ele')
@@ -191,11 +191,11 @@ export class RepositoryExtension implements Extension {
 
     // Set new hash an version to the actual connected document
     await connection.transact((doc) => {
-      doc.getMap('hash').set(
-        'hash',
-        createHash(JSON.stringify(doc.getMap('ele').toJSON()))
-      )
-      doc.getMap('version').set('version', result.version)
+      const yCtx = doc.getMap('ctx')
+      yCtx.delete('isInProgress')
+      yCtx.set('hash', createHash(JSON.stringify(doc.getMap('ele').toJSON())))
+      yCtx.set('version', result.version)
+      yCtx.delete('isChanged')
     })
 
     // Cleanup
@@ -223,7 +223,7 @@ export class RepositoryExtension implements Extension {
 
     // Regular lifecycle stores should ignore all stores with an unchanged hash.
     const newHash = createHash(JSON.stringify(document.getMap('ele').toJSON()))
-    if (newHash === document.getMap('hash').get('hash')) {
+    if (newHash === document.getMap('ctx').get('hash')) {
       return
     }
 
@@ -234,8 +234,12 @@ export class RepositoryExtension implements Extension {
     )
 
     // Update hash and version
-    document.getMap('hash').set('hash', newHash)
-    document.getMap('version').set('version', result.version)
+    document.transact(() => {
+      const ctx = document.getMap('ctx')
+      ctx.set('hash', newHash)
+      ctx.set('version', result.version)
+      ctx.delete('isChanged')
+    })
 
     return result
   }
@@ -327,7 +331,7 @@ export class RepositoryExtension implements Extension {
     }
 
     // Ignore in progress documents as they can be invalid or incomplete
-    if ((document.getMap('ele').get('root') as Y.Map<unknown>).get('__inProgress')) {
+    if (document.getMap('ctx').get('isInProgress')) {
       return false
     }
 

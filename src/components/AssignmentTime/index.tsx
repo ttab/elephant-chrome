@@ -1,11 +1,12 @@
 import { Clock5Icon } from '@ttab/elephant-ui/icons'
-import { useYValue } from '@/hooks/useYValue'
 import { Block } from '@ttab/elephant-api/newsdoc'
 import { TimeDeliveryMenu } from './TimeDeliveryMenu'
 import { type AssignmentValueOption, type AssignmentData } from './types'
 import { ExecutionTimeMenu } from './ExecutionTimeMenu'
 import { timeSlotTypes, timePickTypes } from '../../defaults/assignmentTimeConstants'
 import type { FormProps } from '../Form/Root'
+import { useYValue } from '@/modules/yjs/hooks'
+import type * as Y from 'yjs'
 
 const getTimeSlot = (timeSlot: string): AssignmentValueOption | undefined => {
   return timeSlotTypes.find((type) => type.slots?.includes(timeSlot))
@@ -29,13 +30,14 @@ const makeLocalString = (date: string) => {
   })
 }
 
-export const AssignmentTime = ({ index, onChange }: {
-  index: number
+export const AssignmentTime = ({ assignment, onChange }: {
+  assignment: Y.Map<unknown>
 } & FormProps): JSX.Element => {
-  const [assignmentType] = useYValue<string>(`meta.core/assignment[${index}].meta.core/assignment-type[0].value`)
-  const [data, setData] = useYValue<AssignmentData>(`meta.core/assignment[${index}].data`)
+  const [assignmentType] = useYValue<string>(assignment, `meta.core/assignment-type[0].value`)
+  const [data, setData] = useYValue<AssignmentData>(assignment, `data`)
   const { full_day: fullDay, end, start, publish_slot: publishSlot, end_date: endDate, start_date: startDate } = data || {}
   let selectedLabel = ''
+
   const selectedOption = timeSlotTypes.concat(timePickTypes).find((option) => {
     if (fullDay === 'true' && option.value === 'fullday') {
       selectedLabel = option.label
@@ -176,12 +178,12 @@ export const AssignmentTime = ({ index, onChange }: {
 
   return (
     (assignmentType && (assignmentType === 'picture' || assignmentType === 'video'))
-      ? (<ExecutionTimeMenu handleOnSelect={onExecutionTimeSelect} index={index} startDate={startDate} />)
+      ? (<ExecutionTimeMenu handleOnSelect={onExecutionTimeSelect} assignment={assignment} startDate={startDate} />)
       : (
           <TimeDeliveryMenu
             handleOnSelect={handleOnSelect}
             className='w-fit font-sans font-normal text-ellipsis px-2 h-7'
-            index={index}
+            assignment={assignment}
             assignmentType={assignmentType}
           >
             {selectedOption?.icon

@@ -1,6 +1,6 @@
 import ReactDOM from 'react-dom/client'
 import { App } from './App.tsx'
-import { ThemeProvider, RegistryProvider, HPWebSocketProvider, UserTrackerProvider } from '@/contexts'
+import { ThemeProvider, RegistryProvider } from '@/contexts'
 import { SessionProvider } from './contexts/SessionProvider'
 import { banner } from './lib/banner.ts'
 import { IndexedDBProvider } from './datastore/contexts/IndexedDBProvider.tsx'
@@ -23,23 +23,19 @@ ReactDOM.createRoot(root).render(
   <>
     <IndexedDBProvider>
       <RegistryProvider>
-        <HPWebSocketProvider>
-          <SessionProvider>
-            <RepositoryEventsProvider>
-              <SupportedLanguagesProvider>
-                <ThemeProvider defaultTheme='light' storageKey='ele-ui-theme'>
-                  <UserTrackerProvider>
-                    <Init>
-                      <UserMessagesReceiver>
-                        <App />
-                      </UserMessagesReceiver>
-                    </Init>
-                  </UserTrackerProvider>
-                </ThemeProvider>
-              </SupportedLanguagesProvider>
-            </RepositoryEventsProvider>
-          </SessionProvider>
-        </HPWebSocketProvider>
+        <SessionProvider>
+          <RepositoryEventsProvider>
+            <SupportedLanguagesProvider>
+              <ThemeProvider defaultTheme='light' storageKey='ele-ui-theme'>
+                <Init>
+                  <UserMessagesReceiver>
+                    <App />
+                  </UserMessagesReceiver>
+                </Init>
+              </ThemeProvider>
+            </SupportedLanguagesProvider>
+          </RepositoryEventsProvider>
+        </SessionProvider>
       </RegistryProvider>
     </IndexedDBProvider>
 

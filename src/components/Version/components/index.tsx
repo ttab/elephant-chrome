@@ -1,3 +1,6 @@
+/**
+ * TODO: Investigate whether these components are needed?
+ */
 import { AssigneeAvatars } from '@/components/DataItem/AssigneeAvatars'
 import { TimeDisplay } from '@/components/DataItem/TimeDisplay'
 import { AssignmentTypes } from '@/defaults/assignmentTypes'

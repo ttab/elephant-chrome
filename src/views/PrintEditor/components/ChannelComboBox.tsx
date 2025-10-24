@@ -3,12 +3,15 @@ import { ComboBox } from '@ttab/elephant-ui'
 import { fields } from '@/shared/schemas/tvChannels'
 import { useMemo, useState } from 'react'
 import { useYjsEditor } from '@/hooks/useYjsEditor'
-import { useCollaboration } from '@/hooks/useCollaboration'
 import { Transforms } from 'slate'
 import type { TVChannels, TVChannelsFields } from '@/shared/schemas/tvChannels'
 import { type TBElement } from '@ttab/textbit'
+import type { YDocument } from '@/modules/yjs/hooks'
+import type * as Y from 'yjs'
 
-export const ChannelComboBox = () => {
+export const ChannelComboBox = ({ ydoc }: {
+  ydoc: YDocument<Y.Map<unknown>>
+}) => {
   const { data } = useDocuments<TVChannels, TVChannelsFields>({
     documentType: 'tt/tv-channel',
     fields
@@ -19,8 +22,7 @@ export const ChannelComboBox = () => {
     value: hit.fields['document.uri'].values[0]
   })) || [], [data])
 
-  const { provider, user } = useCollaboration()
-  const editor = useYjsEditor(provider, user)
+  const editor = useYjsEditor(ydoc)
 
   const channel: string | undefined = useMemo(() => {
     const node: TBElement = editor?.children.find((c) => 'type' in c && c.type === 'tt/tv-listing') as TBElement

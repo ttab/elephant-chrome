@@ -27,6 +27,7 @@ export const Group = ({ children, icon: Icon, asDialog, onValidation, validateSt
       {React.Children.map(children, (child: React.ReactNode): React.ReactNode =>
         React.isValidElement<FormProps>(child)
           ? React.cloneElement(child, {
+            ...child.props,
             asDialog,
             onValidation,
             onChange,

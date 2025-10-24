@@ -26,8 +26,10 @@ import { ToastAction } from '@/views/Wire/ToastAction'
 import { createPayload } from '@/shared/templates/lib/createPayload'
 import { DatePicker } from '../Datepicker'
 import { currentDateInUTC, parseDate } from '@/shared/datetime'
+import type { YDocument } from '@/modules/yjs/hooks'
 
-export const Move = (props: ViewProps & {
+export const Move = ({ ydoc, ...props }: ViewProps & {
+  ydoc: YDocument<Y.Map<unknown>>
   original: {
     document: Doc | undefined
     assignmentId: string | undefined
@@ -162,8 +164,8 @@ export const Move = (props: ViewProps & {
         </ViewHeader.Content>
 
         <ViewHeader.Action onDialogClose={props.onDialogClose} asDialog={props.asDialog}>
-          {!props.asDialog && !!props.id
-            && <ViewHeader.RemoteUsers documentId={props.id} />}
+          {!props.asDialog && !!ydoc.id
+            && <ViewHeader.RemoteUsers ydoc={ydoc} />}
         </ViewHeader.Action>
       </ViewHeader.Root>
 

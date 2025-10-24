@@ -17,6 +17,7 @@ import { defaultLocale, getLocaleData } from '@/shared/getLocaleData'
 import type { LocaleData } from '@/types'
 import { Baboon } from '@/shared/Baboon'
 import { DEFAULT_TIMEZONE } from '@/defaults/defaultTimezone'
+import { Collaboration } from '@/defaults'
 
 /** Registry registry provider state interface */
 export interface RegistryProviderState {
@@ -40,12 +41,16 @@ export interface RegistryProviderState {
   user?: User
   baboon?: Baboon
   dispatch: React.Dispatch<Partial<RegistryProviderState>>
+  userColor: string
 }
+
+const colors = Object.keys(Collaboration.colors)
 
 /** Registry registry provider state */
 const initialState: RegistryProviderState = {
   locale: defaultLocale,
   timeZone: getUserTimeZone() || DEFAULT_TIMEZONE,
+  userColor: colors[Math.floor(Math.random() * colors.length)],
   server: {
     webSocketUrl: new URL('http://localhost'),
     indexUrl: new URL('http://localhost'),

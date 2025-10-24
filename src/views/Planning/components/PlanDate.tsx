@@ -1,18 +1,19 @@
 import { DatePicker } from '@/components/Datepicker'
 import type { FormProps } from '@/components/Form/Root'
-import { useRegistry, useYValue } from '@/hooks'
+import { useRegistry } from '@/hooks'
+import { useYValue } from '@/modules/yjs/hooks'
 import { newLocalDate, parseDate } from '@/shared/datetime'
+import type * as Y from 'yjs'
 
 type PlanDateProps = FormProps & (
-  | { onValueChange: (newValue: string) => void, onChange?: never }
-  | { onChange?: (arg: boolean) => void, onValueChange?: never }
+  | { planningItem: Y.Map<unknown>, onValueChange: (newValue: string) => void, onChange?: never }
+  | { planningItem: Y.Map<unknown>, onChange?: (arg: boolean) => void, onValueChange?: never }
 )
 
-export const PlanDate = ({ onChange, onValueChange }: PlanDateProps): JSX.Element => {
+export const PlanDate = ({ planningItem, onChange, onValueChange }: PlanDateProps): JSX.Element => {
   const { timeZone } = useRegistry()
-
-  const [startString, setStartString] = useYValue<string>('meta.core/planning-item[0].data.start_date')
-  const [, setEndString] = useYValue<string>('meta.core/planning-item[0].data.end_date')
+  const [startString, setStartString] = useYValue<string>(planningItem, 'meta.core/planning-item[0].data.start_date')
+  const [, setEndString] = useYValue<string>(planningItem, 'meta.core/planning-item[0].data.end_date')
 
   const setDateString = (date: string) => {
     if (onValueChange) {

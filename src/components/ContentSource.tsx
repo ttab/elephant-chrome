@@ -1,11 +1,16 @@
 import { ComboBox } from '@ttab/elephant-ui'
-import { useYValue } from '../hooks'
 import { Block } from '@ttab/elephant-api/newsdoc'
 import { Awareness } from './Awareness'
 import { useRef } from 'react'
 import { useContentSources } from '@/hooks/useContentSources'
+import { useYValue } from '@/modules/yjs/hooks'
+import type { YDocument } from '@/modules/yjs/hooks'
+import type * as Y from 'yjs'
 
-export const ContentSource = (): JSX.Element => {
+export const ContentSource = ({ ydoc, path }: {
+  ydoc: YDocument<Y.Map<unknown>>
+  path: string
+}): JSX.Element => {
   const allContentSources = useContentSources().map((_) => {
     return {
       value: _.uri,
@@ -14,15 +19,14 @@ export const ContentSource = (): JSX.Element => {
   })
 
 
-  const path = 'links.core/content-source'
   const setFocused = useRef<(value: boolean, start: string) => void>(() => { })
-  const [contentSources, setContentSources] = useYValue<Block[] | undefined>(path)
+  const [contentSources, setContentSources] = useYValue<Block[] | undefined>(ydoc.ele, path)
   const selectedOptions = allContentSources.filter((contentSource) =>
     contentSources?.some((cs) => cs.uri === contentSource.value)
   )
 
   return (
-    <Awareness ref={setFocused} path={path}>
+    <Awareness ref={setFocused} ydoc={ydoc} path={path}>
       <ComboBox
         sortOrder='label'
         size='xs'
