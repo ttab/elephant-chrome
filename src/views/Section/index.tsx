@@ -1,4 +1,4 @@
-import type { ViewMetadata, ViewProps } from '@/types/index'
+import type { NavigationState, ViewMetadata, ViewProps } from '@/types/index'
 
 import type * as Y from 'yjs'
 import { useQuery } from '@/hooks/useQuery'
@@ -8,7 +8,7 @@ import { useCollaboration } from '@/hooks/useCollaboration'
 import { useAwareness } from '@/hooks/useAwareness'
 import { useYValue } from '@/hooks/useYValue'
 import { useSession } from 'next-auth/react'
-import { useCallback, useEffect } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { snapshotDocument } from '@/lib/snapshotDocument'
 import { toast } from 'sonner'
 import { View } from '@/components/View'
@@ -19,7 +19,10 @@ import { Form } from '@/components/Form'
 import { TextBox } from '@/components/ui'
 import { Validation } from '@/components/Validation'
 import { Title } from '@/components/Title'
-
+import type { HistoryInterface } from '@/navigation/hooks/useHistory'
+import { useView } from '@/hooks/useView'
+import { useHistory, useNavigation } from '@/hooks/index'
+import { Prompt } from '@/components/Prompt'
 
 const meta: ViewMetadata = {
   name: 'Section',
@@ -47,7 +50,7 @@ export const Section = (props: ViewProps & { document?: Y.Doc }): JSX.Element =>
       {typeof documentId === 'string'
         ? (
             <AwarenessDocument documentId={documentId} document={props.document}>
-              <SectionContent2 {...props} documentId={documentId} />
+              <SectionContent {...props} documentId={documentId} />
             </AwarenessDocument>
           )
         : (
@@ -60,7 +63,7 @@ export const Section = (props: ViewProps & { document?: Y.Doc }): JSX.Element =>
   )
 }
 
-const SectionContent2 = ({
+const SectionContent = ({
   documentId,
   onDialogClose,
   asDialog,
@@ -74,6 +77,11 @@ const SectionContent2 = ({
   const { status, data: session } = useSession()
   const [, setChanged] = useYValue<boolean>('root.changed')
   const environmentIsSane = provider && status === 'authenticated'
+  const [showVerifyDialog, setShowVerifyDialog] = useState(false)
+  const { viewId } = useView()
+  const { state } = useNavigation()
+  const history = useHistory()
+  console.log(onDialogClose)
   useEffect(() => {
     provider?.setAwarenessField('data', user)
     setIsFocused(true)
@@ -105,15 +113,12 @@ const SectionContent2 = ({
 
         // TODO should add mutate to add it to show in the list directly
         if (onDialogClose) {
-          onDialogClose(/* props.documentId, 'title' */)
+          onDialogClose()
         }
       })
     }
   }
 
-  const handleReset = (): void => {
-    console.log('reset')
-  }
 
   const onSave = async (): Promise<void> => {
     if (!session) {
@@ -131,6 +136,21 @@ const SectionContent2 = ({
     }
 
     setChanged(false)
+  }
+
+  const close = onDialogClose || (() => {
+    handleClose(viewId, state, history)
+  })
+
+  const handleCancel = () => {
+    if (isChanged) {
+      setShowVerifyDialog(true)
+      console.log(isChanged)
+    } else {
+      if (onDialogClose) {
+        close()
+      }
+    }
   }
 
   return (
@@ -192,7 +212,7 @@ const SectionContent2 = ({
                   <Form.Footer>
                     <Form.Submit
                       onSubmit={() => handleSubmit()}
-                      onReset={() => handleReset()}
+                      onReset={handleCancel}
                       className='w-full flex gap-2 justify-end'
                     >
                       <Button
@@ -234,9 +254,76 @@ const SectionContent2 = ({
               </View.Content>
             )
           : <></>}
+        {showVerifyDialog && (
+          <Prompt
+            title='Du har osparade ändringar'
+            description='Är du säker på att du vill stänga utan att spara?'
+            onPrimary={() => close()}
+            primaryLabel='Ja'
+            onSecondary={() => setShowVerifyDialog(false)}
+            secondaryLabel='Nej'
+          />
+        )}
       </View.Root>
     </>
   )
+}
+
+function handleClose(
+  viewId: string,
+  state: NavigationState,
+  history: HistoryInterface
+): void {
+  const content = history.state?.contentState || []
+  const indexToRemove = content.findIndex((obj) => obj.viewId === viewId)
+
+  if (content.length === 1 || indexToRemove === -1) {
+    console.warn('Tried to close unknown view or the last view visible, ignoring.')
+    return
+  }
+
+  // If the active view is not removed we want the active view to stay active
+  const preserveActiveId = state.active !== viewId
+
+  // If it is the last view being removed, simply go back one step in the history
+  if (indexToRemove === content.length - 1) {
+    history.go(-1)
+    return
+  }
+
+  // Split views into before/after the view to remove
+  const beforeRemoved = content.slice(0, indexToRemove)
+  const afterRemoved = content.slice(indexToRemove + 1)
+
+  // If it is the first view being removed, hide it and push new history item.
+  // This way the user can navigate back to the previous state.
+  if (indexToRemove === 0) {
+    const view = afterRemoved[0]
+    history.pushState(view.path, {
+      viewId: preserveActiveId ? viewId : view.viewId,
+      contentState: afterRemoved
+    })
+    return
+  }
+
+  // When the full backwards navigation finish, add history items back one by one
+  window.addEventListener('popstate', () => {
+    const newContent = [...beforeRemoved]
+
+    for (const view of afterRemoved) {
+      newContent.push(view)
+      const activeViewId = (preserveActiveId && newContent.findIndex((v) => v.viewId === state.active) === -1)
+
+      history.pushState(view.path, {
+        viewId: activeViewId ? viewId : view.viewId,
+        contentState: newContent
+      })
+    }
+  }, { once: true })
+
+  // Trigger backwards navigation to just before
+  // the removed item was added originally.
+  history.go(-(afterRemoved.length + 1))
 }
 
 Section.meta = meta
