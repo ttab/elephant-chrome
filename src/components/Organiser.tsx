@@ -6,17 +6,17 @@ import { useRef } from 'react'
 import { type FormProps } from './Form/Root'
 
 export const Organiser = ({ asDialog, onChange }: FormProps): JSX.Element => {
-  const allOrganisers = useOrganisers()?.map((_) => {
+  const allOrganisers = useOrganisers().map((_) => {
     return {
       value: _.id,
       label: _.title
     }
-  }) ?? []
+  })
 
   const path = 'links.core/organiser[0]'
   const [organiser, setOrganiser] = useYValue<Block | undefined>(path)
   const setFocused = useRef<(value: boolean, path: string) => void>(() => { })
-  const selectedOptions = (allOrganisers || []).filter((s) => s.value === organiser?.uuid)
+  const selectedOptions = (allOrganisers).filter((s) => s.value === organiser?.uuid)
 
   return (
     <Awareness ref={setFocused} path={path}>
