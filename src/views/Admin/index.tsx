@@ -3,8 +3,8 @@ import type { ViewMetadata } from '@/types/index'
 import { useMemo, useState } from 'react'
 import { ConceptOverview } from './ConceptOverview'
 import { TableProvider } from '@/contexts/TableProvider'
-import type { Concept } from '@/shared/schemas/conceptSchemas/baseConcept'
 import { ConceptColumns } from '../Concepts/ConceptColumns'
+import type { IDBConcept } from 'src/datastore/types'
 
 
 const meta: ViewMetadata = {
@@ -32,7 +32,7 @@ export const Admin = () => {
   return (
     <>
       <View.Root tab={currentTab} onTabChange={setCurrentTab}>
-        <TableProvider<Concept>
+        <TableProvider<IDBConcept>
           columns={columns}
           type={meta.name}
         >

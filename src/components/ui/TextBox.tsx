@@ -2,7 +2,7 @@ import React, { useCallback, useRef } from 'react'
 import { Awareness } from '../Awareness'
 import { TextboxRoot } from './Textbox/TextboxRoot'
 
-export const TextBox = ({ icon: Icon, path, onChange, ...props }: {
+export const TextBox = ({ icon: Icon, path, onChange, className, ...props }: {
   disabled?: boolean
   path: string
   icon?: React.ReactNode
@@ -42,7 +42,7 @@ export const TextBox = ({ icon: Icon, path, onChange, ...props }: {
           </div>
         )}
 
-        <TextboxRoot {...props} path={path} onBlur={handleOnBlur} onFocus={handleOnFocus} onChange={onChange} />
+        <TextboxRoot className={className} {...props} path={path} onBlur={handleOnBlur} onFocus={handleOnFocus} onChange={onChange} />
       </div>
     </Awareness>
   )

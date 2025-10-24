@@ -1,7 +1,7 @@
 import { type ColumnDef } from '@tanstack/react-table'
 import { CircleCheckIcon, PenIcon, TvIcon } from '@ttab/elephant-ui/icons'
 import type { PrintArticle } from '@/hooks/baboon/lib/printArticles'
-import { DocumentStatuses } from '@/defaults/documentStatuses'
+import { PrintArticleStatuses } from '@/defaults/documentStatuses'
 import { DocumentStatus } from '@/components/Table/Items/DocumentStatus'
 import { FacetedFilter } from '@/components/Commands/FacetedFilter'
 import type { PrintFlow } from '@/shared/schemas/printFlow'
@@ -28,13 +28,13 @@ export function printArticlesListColumns({ printFlows = [] }: {
         Filter: ({ column, setSearch }) => (
           <FacetedFilter column={column} setSearch={setSearch} />
         ),
-        options: DocumentStatuses,
+        options: PrintArticleStatuses,
         name: 'Status',
         columnIcon: CircleCheckIcon,
         className: 'flex-none w-16',
         display: (value: string) => (
           <span>
-            {DocumentStatuses
+            {PrintArticleStatuses
               .find((status) => status.value === value)?.label || 'draft'}
           </span>
         )

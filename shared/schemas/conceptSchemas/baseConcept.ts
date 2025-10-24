@@ -5,7 +5,10 @@ import type { FieldValuesV1, HitV1 } from '@ttab/elephant-api/index'
  * List of fields used in the schema.
  */
 export const _baseConceptFields = [
-  'document.title'
+  'document.title',
+  'heads.usable.version',
+  'heads.current.version',
+  '_usableTitle'
 ] as const
 
 /**

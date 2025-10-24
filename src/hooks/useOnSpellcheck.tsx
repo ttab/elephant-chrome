@@ -1,7 +1,6 @@
 import { useCallback } from 'react'
 import { useRegistry } from './useRegistry'
 import { useSupportedLanguages } from './useSupportedLanguages'
-import { useSession } from 'next-auth/react'
 
 /**
  * Hook that provides a callback function for spellchecking
@@ -9,7 +8,6 @@ import { useSession } from 'next-auth/react'
 export function useOnSpellcheck(
   language: string | undefined
 ) {
-  const { data: session } = useSession()
   const { spellchecker } = useRegistry()
   const supportedLanguages = useSupportedLanguages()
 
@@ -21,10 +19,9 @@ export function useOnSpellcheck(
     return await spellchecker?.check(
       texts.map(({ text }) => text),
       language,
-      supportedLanguages,
-      session?.accessToken ?? ''
+      supportedLanguages
     ) || []
-  }, [session?.accessToken, language, spellchecker, supportedLanguages])
+  }, [language, spellchecker, supportedLanguages])
 
   return onSpellcheck
 }

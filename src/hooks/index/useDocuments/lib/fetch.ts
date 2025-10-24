@@ -76,6 +76,5 @@ export async function fetch<T extends HitV1, F>({
     result = await withPlannings<T>({ hits: result, session, index })
   }
 
-
   return { result: result, total: total }
 }

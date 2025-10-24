@@ -107,7 +107,8 @@ vi.mock('next-auth/react', async () => {
     ...originalModule,
     useSession: vi.fn(() => {
       return { data: mockSession, status: 'authenticated' }
-    })
+    }),
+    getSession: vi.fn(async () => Promise.resolve(mockSession))
   }
 })
 
@@ -118,4 +119,3 @@ vi.mock('@/hooks/useAuthors', () => ({
     { id: '345', name: 'Christine King', firstName: 'Christine', lastName: 'King', initials: 'CK', email: 'ck@example.com', sub: 'core://user/0003' }
   ]
 }))
-

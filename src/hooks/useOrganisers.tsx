@@ -5,7 +5,7 @@ import { type IDBOrganiser } from '../datastore/types'
 export const useOrganisers = (): IDBOrganiser[] => {
   const { objects } = useContext(CoreOrganiserContext)
 
-  return (objects).sort((a1, a2) => {
+  return (objects)?.sort((a1, a2) => {
     return a1.title.localeCompare(a2.title)
   })
 }
