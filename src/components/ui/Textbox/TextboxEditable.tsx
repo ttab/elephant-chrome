@@ -61,20 +61,12 @@ export const TextboxEditable = ({ provider, path, user, content, singleLine, spe
       lang={documentLanguage}
       onSpellcheck={spellcheck ? onSpellcheck : undefined}
       className={cn(!singleLine && 'min-h-20!',
-        `p-1
-        py-1.5
-        ps-2
-        rounded-md
-        outline-none
-        ring-offset-background
-        focus:ring-1
-        ring-input
-        focus:dark:ring-gray-600
-        whitespace-nowrap
-        **:data-spelling-error:border-b-2
-        **:data-spelling-error:border-dotted
-        **:data-spelling-error:border-red-500
-        dark:bg-input ${className}`
+        'p-1 py-1.5 ps-2 rounded-md outline-none ring-offset-background focus:ring-1 ring-input focus:dark:ring-gray-600 whitespace-nowrap',
+        '**:data-spelling-error:border-b-2',
+        '**:data-spelling-error:border-dotted',
+        '**:data-spelling-error:border-red-500',
+        'dark:bg-input',
+        className
       )}
     >
       <ContextMenu className='z-9999' />
