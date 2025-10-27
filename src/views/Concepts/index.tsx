@@ -76,7 +76,6 @@ export const Concepts = ({ title }: ViewProps) => {
         <View.Content>
           <TabsContent value='list' className='mt-0'>
             <ConceptList columns={columns} title={title ?? 'Concept title'} />
-            <ConceptList columns={columns} title={title ?? 'Concept title'} />
           </TabsContent>
         </View.Content>
       </TableProvider>
