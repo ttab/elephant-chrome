@@ -5,7 +5,15 @@ import { applicationMenu } from '@/defaults/applicationMenuItems'
 import type { YDocument } from '@/modules/yjs/hooks'
 import type * as Y from 'yjs'
 
-export const Title = ({ name, title, short: shortTitle, iconColor, icon: Icon, asDialog, ydoc }: {
+export const Title = ({
+  name,
+  title,
+  short: shortTitle,
+  iconColor,
+  icon: Icon,
+  asDialog,
+  ydoc
+}: {
   name: string
   title: string
   short?: string
@@ -44,7 +52,7 @@ export const Title = ({ name, title, short: shortTitle, iconColor, icon: Icon, a
   return (
     <div className={viewVariants({ asDialog })}>
 
-      {(connected && synced && isSyncing !== 1)
+      {(!ydoc || (connected && synced && isSyncing !== 1))
         && (
           <>
             {!Icon && !!ViewIcon && <ViewIcon size={18} strokeWidth={2.05} color={color || '#222'} />}
