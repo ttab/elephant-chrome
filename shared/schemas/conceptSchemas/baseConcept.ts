@@ -6,9 +6,7 @@ import type { FieldValuesV1, HitV1 } from '@ttab/elephant-api/index'
  */
 export const _baseConceptFields = [
   'document.title',
-  'heads.usable.version',
-  'heads.current.version',
-  '_usableTitle'
+  'heads.usable.version'
 ] as const
 
 /**
