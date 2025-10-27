@@ -10,6 +10,8 @@ export function getTemplateFromView(type: View): (id: string, payload?: Template
       return Templates.event
     case 'Factbox':
       return Templates.factbox
+    case 'Flash':
+      return Templates.flash
     default:
       throw new Error(`No template for ${type}`)
   }

@@ -1,8 +1,8 @@
 import * as Y from 'yjs'
-import type { EleDocumentResponse } from '@/shared/types'
+import type { EleDocumentResponse } from '@/shared/types/index.js'
 import { slateNodesToInsertDelta } from '@slate-yjs/core'
-import createHash from '@/shared/createHash'
-import { toYMap } from '@/shared/transformations/toYMap'
+import createHash from '@/shared/createHash.js'
+import { toYMap } from '@/shared/transformations/toYMap.js'
 import type { TBElement } from '@ttab/textbit'
 import { isTextEntry } from './transformations/isTextEntry.js'
 export type YPath = [string, ...(string | number)[]]
