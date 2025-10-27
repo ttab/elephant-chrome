@@ -9,14 +9,16 @@ import { updateAssignmentTime } from '@/lib/index/updateAssignmentPublishTime'
 import { handleLink } from '@/components/Link/lib/handleLink'
 import { useView } from '@/hooks/useView'
 import { useHistory, useNavigation, useWorkflowStatus } from '@/hooks/index'
+import type { YDocument } from '@/modules/yjs/hooks'
+import type * as Y from 'yjs'
 
 export const FlashHeader = ({
-  documentId,
+  ydoc,
   readOnly,
   asDialog,
   onDialogClose
 }: {
-  documentId: string | undefined
+  ydoc: YDocument<Y.Map<unknown>>
   readOnly?: boolean
   asDialog?: boolean
   onDialogClose?: (() => void) | undefined
@@ -34,8 +36,8 @@ export const FlashHeader = ({
           )}
         </div>
 
-        {!asDialog && !!documentId && <ViewHeader.RemoteUsers documentId={documentId} />}
-        {!asDialog && !!documentId && <StatusMenuHeader id={documentId} />}
+        {!asDialog && !!ydoc && <ViewHeader.RemoteUsers ydoc={ydoc} />}
+        {!asDialog && !!ydoc.id && <StatusMenuHeader id={ydoc.id} />}
       </ViewHeader.Content>
 
       <ViewHeader.Action onDialogClose={onDialogClose} asDialog={asDialog} />
