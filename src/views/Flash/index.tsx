@@ -40,7 +40,6 @@ export const Flash = (props: ViewProps & {
 
   const data = useMemo(() => {
     if (!documentId || typeof documentId !== 'string') {
-      console.log('here')
       return undefined
     }
 
