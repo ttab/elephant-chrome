@@ -4,9 +4,12 @@ import { ViewDialogClose } from './ViewDialogClose'
 import { type HistoryInterface } from '@/navigation/hooks/useHistory'
 import { useHistory, useNavigation, useView } from '@/hooks'
 import type { NavigationState } from '@/types'
+import type * as Y from 'yjs'
+import type { YDocument } from '@/modules/yjs/hooks'
 
 
-export const Action = ({ onDialogClose = undefined, children, asDialog }: PropsWithChildren & {
+export const Action = ({ ydoc, onDialogClose = undefined, children, asDialog }: PropsWithChildren & {
+  ydoc?: YDocument<Y.Map<unknown>>
   onDialogClose?: () => void
   asDialog?: boolean
 }): JSX.Element => {
@@ -28,7 +31,7 @@ export const Action = ({ onDialogClose = undefined, children, asDialog }: PropsW
       )}
 
       {((onDialogClose || state.content.length > 1) && !isFocused) && (
-        <ViewDialogClose onClick={closer} asDialog={asDialog} />
+        <ViewDialogClose ydoc={ydoc} onClick={closer} asDialog={asDialog} />
       )}
     </div>
   )
