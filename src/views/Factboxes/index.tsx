@@ -46,7 +46,7 @@ export const Factboxes = (): JSX.Element => {
 
         <ViewHeader.Root>
           <ViewHeader.Content>
-            <ViewHeader.Title name='Factboxes' title='Faktarutor' asStatic />
+            <ViewHeader.Title name='Factboxes' title='Faktarutor' />
             <Header type='Factbox' />
           </ViewHeader.Content>
 

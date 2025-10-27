@@ -60,7 +60,7 @@ export const Wires = (): JSX.Element => {
         <ViewHeader.Root>
           {isFirst && (
             <>
-              <ViewHeader.Title title='Telegram' name='Wires' asStatic />
+              <ViewHeader.Title title='Telegram' name='Wires' />
 
               <Button
                 variant='ghost'

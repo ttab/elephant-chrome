@@ -12,8 +12,7 @@ export const Title = ({
   iconColor,
   icon: Icon,
   asDialog,
-  ydoc,
-  asStatic = false
+  ydoc
 }: {
   name: string
   title: string
@@ -22,7 +21,6 @@ export const Title = ({
   iconColor?: string
   asDialog?: boolean
   ydoc?: YDocument<Y.Map<unknown>>
-  asStatic?: boolean
 } & PropsWithChildren): JSX.Element => {
   const { connected, synced, provider } = ydoc ?? { connected: false, synced: false }
   const [isSyncing, setIsSyncing] = useState(-1)
@@ -54,7 +52,7 @@ export const Title = ({
   return (
     <div className={viewVariants({ asDialog })}>
 
-      {((connected && synced && isSyncing !== 1) || asStatic)
+      {(!ydoc || (connected && synced && isSyncing !== 1))
         && (
           <>
             {!Icon && !!ViewIcon && <ViewIcon size={18} strokeWidth={2.05} color={color || '#222'} />}

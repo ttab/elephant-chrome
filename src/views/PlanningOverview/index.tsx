@@ -61,7 +61,7 @@ export const Plannings = (): JSX.Element => {
 
         <ViewHeader.Root>
           <ViewHeader.Content>
-            <ViewHeader.Title name='Plannings' title='Planeringar' asStatic />
+            <ViewHeader.Title name='Plannings' title='Planeringar' />
             <Header type='Planning' />
           </ViewHeader.Content>
 

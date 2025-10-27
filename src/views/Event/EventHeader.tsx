@@ -45,7 +45,6 @@ export const EventHeader = ({
         name='Events'
         title={(!asDialog) ? 'Händelse' : 'Skapa ny händelse'}
         asDialog={asDialog}
-        asStatic
       />
 
       <ViewHeader.Content className='justify-start'>
