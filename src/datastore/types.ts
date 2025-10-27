@@ -8,6 +8,11 @@ export interface IDBConcept {
 export interface IDBSection extends IDBConcept {
   id: string
   title: string
+  usableVersion?: bigint
+}
+
+export interface IDBSection extends IDBConcept {
+  code: string
 }
 
 /** Section structure in indexedDB objectStore  */

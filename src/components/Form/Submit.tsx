@@ -13,7 +13,8 @@ export const Submit = ({
   onSecondarySubmit,
   onTertiarySubmit,
   onDocumentCreated,
-  onReset
+  onReset,
+  className
 }: FormProps & {
   documentId?: string
   onDialogClose?: (id: string, title: string) => void
@@ -22,6 +23,7 @@ export const Submit = ({
   onTertiarySubmit?: () => void
   onDocumentCreated?: () => void
   onReset?: () => void
+  className?: string
 }): JSX.Element | null => {
   const handleValidate = (func: () => void): void => {
     if (validateStateRef && Object.values(validateStateRef.current).every((block) => block.valid)) {
@@ -161,7 +163,7 @@ export const Submit = ({
 
   if (children) {
     return (
-      <div>
+      <div className={className}>
         {React.Children.map(children, applyOnClickHandler)}
       </div>
     )

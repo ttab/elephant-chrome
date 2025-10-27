@@ -8,8 +8,9 @@ import { useSections } from '@/hooks/useSections'
 import { useStories } from '@/hooks/useStories'
 import { useCategories } from '@/hooks/useCategories'
 import { useTable } from '@/hooks/useTable'
-import type { IDBCategory, IDBConcept, IDBSection, IDBStory } from 'src/datastore/types'
+import type { IDBCategory, IDBConcept, IDBOrganiser, IDBSection, IDBStory } from 'src/datastore/types'
 import { useOrganisers } from '@/hooks/useOrganisers'
+import type { ViewType } from '@/types/index'
 import { LoadingText } from '@/components/LoadingText'
 
 export const ConceptList = ({ columns, title }: {
@@ -20,27 +21,42 @@ export const ConceptList = ({ columns, title }: {
   const storyTags = useStories()
   const categories = useCategories()
   const organisers = useOrganisers()
-  const { setData } = useTable<IDBSection | IDBStory | IDBCategory>()
-
+  const { setData } = useTable<IDBSection | IDBStory | IDBCategory | IDBOrganiser>()
   const tableDataMap = {
-    Sektioner: sections,
-    'Story tags': storyTags,
-    Kategorier: categories,
-    Organisatörer: organisers
+    Sektioner: {
+      conceptTitle: 'Sektion',
+      data: sections,
+      conceptView: 'Section'
+    },
+    'Story tags': {
+      conceptTitle: 'Story Tag',
+      data: storyTags,
+      conceptView: 'StoryTag'
+    },
+    Kategorier: {
+      conceptTitle: 'Kategori',
+      data: categories,
+      conceptView: 'Category'
+    },
+    Organisatörer: {
+      conceptTitle: 'Organisatör',
+      data: organisers,
+      conceptView: 'Organiser'
+    }
   } as const
+
 
   const getObjects = () => {
     const data = tableDataMap[title as keyof typeof tableDataMap]
-    if (data && data.length > 0) {
-      setData(data)
+    if (data.data && data.data.length > 0) {
+      setData(data.data)
       return data
     } else {
       return 'No data found'
     }
   }
 
-  const objects = getObjects()
-
+  const conceptData = getObjects()
   const onRowSelected = useCallback((row?: IDBConcept) => {
     if (row) {
       console.info(`Selected concept item ${row.id}`)
@@ -51,21 +67,21 @@ export const ConceptList = ({ columns, title }: {
   }, [])
 
 
-  if (objects && typeof objects === 'string') {
+  if (conceptData && typeof conceptData === 'string') {
     return (
       <LoadingText className='mt-8'>
-        {objects}
+        {conceptData}
       </LoadingText>
     )
   } else {
     return (
       <>
         <Table
-          type='Concept'
+          type={conceptData.conceptView as ViewType}
           columns={columns}
           onRowSelected={onRowSelected}
         />
-        <Pagination total={objects?.length || 0} />
+        <Pagination total={conceptData.data?.length || 0} />
       </>
     )
   }

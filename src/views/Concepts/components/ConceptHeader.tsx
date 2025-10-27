@@ -2,14 +2,15 @@ import { useView } from '@/hooks'
 import { useEffect, useRef } from 'react'
 import { ViewHeader } from '@/components/View'
 import { PenIcon } from '@ttab/elephant-ui/icons'
-import { MetaSheet } from '../Editor/components/MetaSheet'
+import { MetaSheet } from '../../Editor/components/MetaSheet'
 import { StatusMenu } from '@/components/DocumentStatus/StatusMenu'
 
-export const ConceptHeader = ({ documentId, asDialog, onDialogClose, isChanged }: {
+export const ConceptHeader = ({ documentId, asDialog, onDialogClose, isChanged, type }: {
   documentId: string
   asDialog: boolean
   onDialogClose?: () => void
   isChanged?: boolean
+  type: string
 }): JSX.Element => {
   const { viewId } = useView()
   const containerRef = useRef<HTMLElement | null>(null)
@@ -21,8 +22,8 @@ export const ConceptHeader = ({ documentId, asDialog, onDialogClose, isChanged }
   return (
     <ViewHeader.Root asDialog={asDialog}>
       <ViewHeader.Title
-        name='Concept'
-        title='Redigera'
+        name={type}
+        title={type}
         icon={PenIcon}
         asDialog={asDialog}
       />
