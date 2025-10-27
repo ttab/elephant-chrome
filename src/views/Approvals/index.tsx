@@ -144,7 +144,7 @@ export const ApprovalsView = (): JSX.Element => {
     <View.Root tab={currentTab} onTabChange={setCurrentTab}>
       <ViewHeader.Root>
         <ViewHeader.Content>
-          <ViewHeader.Title name='Approvals' title='Dagen' />
+          <ViewHeader.Title name='Approvals' title='Dagen' asStatic />
           <Header type='Approvals' />
         </ViewHeader.Content>
         <ViewHeader.Action />

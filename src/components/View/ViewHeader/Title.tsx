@@ -5,7 +5,16 @@ import { applicationMenu } from '@/defaults/applicationMenuItems'
 import type { YDocument } from '@/modules/yjs/hooks'
 import type * as Y from 'yjs'
 
-export const Title = ({ name, title, short: shortTitle, iconColor, icon: Icon, asDialog, ydoc }: {
+export const Title = ({
+  name,
+  title,
+  short: shortTitle,
+  iconColor,
+  icon: Icon,
+  asDialog,
+  ydoc,
+  asStatic = false
+}: {
   name: string
   title: string
   short?: string
@@ -13,6 +22,7 @@ export const Title = ({ name, title, short: shortTitle, iconColor, icon: Icon, a
   iconColor?: string
   asDialog?: boolean
   ydoc?: YDocument<Y.Map<unknown>>
+  asStatic?: boolean
 } & PropsWithChildren): JSX.Element => {
   const { connected, synced, provider } = ydoc ?? { connected: false, synced: false }
   const [isSyncing, setIsSyncing] = useState(-1)
@@ -44,7 +54,7 @@ export const Title = ({ name, title, short: shortTitle, iconColor, icon: Icon, a
   return (
     <div className={viewVariants({ asDialog })}>
 
-      {(connected && synced && isSyncing !== 1)
+      {((connected && synced && isSyncing !== 1) || asStatic)
         && (
           <>
             {!Icon && !!ViewIcon && <ViewIcon size={18} strokeWidth={2.05} color={color || '#222'} />}
