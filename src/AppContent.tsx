@@ -8,11 +8,15 @@ import { Navigation } from './views/Wires/components/Navigation'
 import { FaroErrorBoundary } from '@grafana/faro-react'
 import { Error } from './views'
 import { useIndexedDB } from './datastore/hooks/useIndexedDB'
+import { ClientRegistryProvider } from './modules/yjs/contexts/ClientRegistryProvider'
+import { useSession } from 'next-auth/react'
 
 export const AppContent = (): JSX.Element => {
   const { setActiveView } = useHistory()
   const { state } = useNavigation()
   const idb = useIndexedDB()
+  const { data: session } = useSession()
+
   useResize()
 
   const { components, content } = useMemo(() => {
@@ -35,7 +39,9 @@ export const AppContent = (): JSX.Element => {
             <FaroErrorBoundary
               fallback={(error) => <Error error={error} />}
             >
-              <Component {...item.props} />
+              <ClientRegistryProvider accessToken={session?.accessToken}>
+                <Component {...item.props} />
+              </ClientRegistryProvider>
             </FaroErrorBoundary>
           </ViewWrapper>
         )

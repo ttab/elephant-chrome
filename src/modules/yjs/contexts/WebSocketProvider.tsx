@@ -1,55 +1,58 @@
-import type { PropsWithChildren } from 'react'
-import { useEffect, useMemo, useState } from 'react'
+import { PropsWithChildren, useEffect, useRef, useState } from 'react'
 import { HocuspocusProviderWebsocket } from '@hocuspocus/provider'
-import { WebSocketContext } from './WebSocketContext'
-import { useIsOnline } from '../hooks/useIsOnline.tsx'
+import { WebSocketContext } from "./WebSocketContext"
 
 export function WebSocketProvider({ url, children }: PropsWithChildren & {
   url: string
 }) {
+  const wsp = useRef<HocuspocusProviderWebsocket | null>(null)
   const [isConnected, setIsConnected] = useState<boolean>(false)
-  const isOnline = useIsOnline()
-
-  const websocketProvider = useMemo(() => {
-    return new HocuspocusProviderWebsocket({ url })
-  }, [url])
 
   useEffect(() => {
-    // Set up event listeners only once when the provider is created
-    const handleConnect = () => {
-      console.info('✅ WebSocket connected')
+    if (wsp.current) {
+      return
+    }
+
+    wsp.current = new HocuspocusProviderWebsocket({
+      url,
+      autoConnect: false
+    })
+
+    // setInterval(() => {
+    //   const ws = wsp.current?.webSocket
+    //   if (!ws) return
+
+    //   const status = ['connecting', 'open', 'closing', 'closed'][ws.readyState]
+    //   console.info('   ws  is ', status)
+    //   console.info('   wsp is ', wsp.current?.status, `(${isConnected})`)
+    // }, 1000)
+
+    wsp.current.on('error', (error: Error) => {
+      console.info('⚠️ WebSocket provider error', error)
       setIsConnected(true)
-    }
+    })
 
-    const handleDisconnect = ({ event }: { event?: CloseEvent }) => {
-      console.warn('❌ WebSocket disconnected:', event?.code, event?.reason)
+    wsp.current.on('open', () => {
+      console.info('🔌 WebSocket provider connection opened')
+      setIsConnected(true)
+    })
+
+    wsp.current.on('disconnect', ({ event }: { event?: CloseEvent }) => {
+      console.warn('❌ WebSocket provider disconnected:', event?.code, event?.reason)
       setIsConnected(false)
-    }
+    })
 
-    websocketProvider.on('connect', handleConnect)
-    websocketProvider.on('disconnect', handleDisconnect)
-
-    return () => {
-      websocketProvider.off('connect', handleConnect)
-      websocketProvider.off('disconnect', handleDisconnect)
-    }
-  }, [websocketProvider])
+    // Connect to the WebSocket server when the provider is created
+    wsp.current.connect()
+  }, [url])
 
   return (
     <WebSocketContext.Provider value={{
-      isOnline,
       isConnected,
       url,
-      websocketProvider
-    }}
-    >
+      webSocketProvider: wsp.current
+    }}>
       {children}
-
-      {(!isConnected) && (
-        <div className='absolute w-full min-h-14 p-1 bottom-0 flex justify-center items-center text-center bg-red-200 text-red-950 z-50 opacity-0 transition-opacity duration-1000'>
-          Kopplingen till tjänsten har problem. Vänta en stund och ladda sedan om din webbläsare.
-        </div>
-      )}
     </WebSocketContext.Provider>
   )
 }

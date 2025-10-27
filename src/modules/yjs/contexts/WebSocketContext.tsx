@@ -3,14 +3,12 @@ import { createContext } from 'react'
 
 export interface WebSocketContextType {
   url: string
-  websocketProvider: HocuspocusProviderWebsocket | null
+  webSocketProvider: HocuspocusProviderWebsocket | null
   isConnected: boolean
-  isOnline: boolean
 }
 
 export const WebSocketContext = createContext<WebSocketContextType>({
   url: '',
-  websocketProvider: null,
-  isConnected: false,
-  isOnline: false
+  webSocketProvider: null,
+  isConnected: false
 })
