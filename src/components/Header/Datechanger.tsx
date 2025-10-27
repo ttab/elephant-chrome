@@ -6,7 +6,8 @@ import { addDays, subDays } from 'date-fns'
 import { type View } from '@/types/index'
 import { useMemo } from 'react'
 
-const validViews: View[] = ['Plannings', 'Events', 'Assignments', 'Approvals', 'Print', 'Concepts']
+// Only these views are valid targets for date changes
+const validViews: View[] = ['Plannings', 'Events', 'Assignments', 'Approvals', 'Print']
 
 export const DateChanger = ({ type }: { type: View }): JSX.Element | null => {
   const [query] = useQuery()
@@ -37,7 +38,6 @@ export const DateChanger = ({ type }: { type: View }): JSX.Element | null => {
   }
 
   if (!linkTarget) {
-    console.warn(`No valid linkTarget found for type: ${type}`)
     return null
   }
 

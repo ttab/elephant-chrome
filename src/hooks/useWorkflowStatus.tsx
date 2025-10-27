@@ -84,38 +84,36 @@ export const useWorkflowStatus = (uuid?: string, isWorkflow: boolean = false, as
    */
   const setDocumentStatus = useCallback(
     async (newStatus: string | Status, cause?: string, asWire?: boolean) => {
-      if (!session) {
+      if (!session || !uuid) {
         toast.error('Ett fel har uppstått, aktuell status kunde inte ändras! Ladda om webbläsaren och försök igen.')
         return
       }
 
-      // Handle wire status updates
-      if (asWire && typeof newStatus === 'object' && repository) {
-        void setWireStatus(newStatus, repository, session)
-        return
+      try {
+        // Handle wire status updates
+        if (asWire && typeof newStatus === 'object' && repository) {
+          await setWireStatus(newStatus, repository, session)
+
+          return
+        }
+
+        // Flush document to repository and if applicable, update the status with cause
+        await snapshotDocument(uuid, {
+          force: true,
+          status: typeof newStatus === 'string'
+            ? newStatus
+            : newStatus.name,
+          cause
+        }, provider?.document)
+
+        // Reset unsaved changes state
+        setChanged(undefined)
+
+        // Revalidate after the mutation completes
+        await globalMutate([CACHE_KEY])
+      } catch (ex) {
+        toast.error(ex instanceof Error ? ex.message : 'Ett fel uppstod när aktuell status skulle ändras')
       }
-
-
-      // Flush document to repository and if applicable, update the status with cause
-      const snapshotResponse = uuid && await snapshotDocument(uuid, {
-        force: true,
-        status: typeof newStatus === 'string'
-          ? newStatus
-          : newStatus.name,
-        cause
-      }, provider?.document)
-
-      if (snapshotResponse && 'statusCode' in snapshotResponse && snapshotResponse.statusCode !== 200) {
-        toast.error(`Ett fel uppstod när aktuell status skulle ändras: ${snapshotResponse.statusMessage || 'Okänt fel'}`)
-        return
-      }
-
-
-      // Reset unsaved changes state
-      setChanged(undefined)
-
-      // Revalidate after the mutation completes
-      await globalMutate([CACHE_KEY])
     },
     [session, uuid, setChanged, provider?.document, repository, CACHE_KEY]
   )
