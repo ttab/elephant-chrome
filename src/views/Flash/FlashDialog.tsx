@@ -40,7 +40,7 @@ export const FlashDialog = (props: ViewProps): JSX.Element => {
   } | undefined>(undefined)
   const [documentId] = useYValue<string>('root.uuid')
   const readOnly = Number(props?.version) > 0 && !props.asDialog
-  const allSections = useSections() ?? []
+  const allSections = useSections()
   const [, setYSection] = useYValue<Block | undefined>('links.core/section[0]')
 
   const handleSubmit = (setCreatePrompt: Dispatch<SetStateAction<boolean>>): void => {

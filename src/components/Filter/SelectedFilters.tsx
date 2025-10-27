@@ -67,12 +67,12 @@ const SelectedButton = ({ type, value }: { value: string | string[] | undefined,
   const [filters, setFilters] = useQuery(['section', 'status', 'source', 'organiser', 'category', 'author', 'newsvalue', 'aType'])
   const [currentFilters, setCurrentFilters] = useUserTracker<QueryParams | undefined>(`filters.Approvals.current`)
 
-  const sections = useSections()?.map((_) => {
+  const sections = useSections().map((_) => {
     return {
       value: _.id,
       label: _.title
     }
-  }) ?? []
+  })
 
   const sources = useWireSources().map((_) => {
     return {
@@ -81,7 +81,7 @@ const SelectedButton = ({ type, value }: { value: string | string[] | undefined,
     }
   })
 
-  const organisers = useOrganisers()?.map((_) => {
+  const organisers = useOrganisers().map((_) => {
     return {
       value: _.id,
       label: _.title
@@ -91,7 +91,7 @@ const SelectedButton = ({ type, value }: { value: string | string[] | undefined,
   const categories = useCategories().map((_) => ({
     value: _.id,
     label: _.title
-  })) ?? []
+  }))
 
   const authors = useAuthors().map((_) => ({
     value: _.id,

@@ -7,11 +7,11 @@ import { type IDBOrganiser } from '../types'
 import { type IndexedOrganiser } from '@/lib/index'
 
 interface CoreOrganiserProviderState {
-  objects: IDBOrganiser[] | undefined
+  objects: IDBOrganiser[]
 }
 
 export const CoreOrganiserContext = createContext<CoreOrganiserProviderState>({
-  objects: undefined
+  objects: []
 })
 
 export const CoreOrganiserProvider = ({ children }: {
@@ -20,7 +20,7 @@ export const CoreOrganiserProvider = ({ children }: {
   const documentType = 'core/organiser'
   const { server: { indexUrl } } = useRegistry()
   const { data } = useSession()
-  const [objects, setObjects] = useState<IDBOrganiser[] | undefined>(undefined)
+  const [objects, setObjects] = useState<IDBOrganiser[]>([])
   const IDB = useIndexedDB()
 
   /*

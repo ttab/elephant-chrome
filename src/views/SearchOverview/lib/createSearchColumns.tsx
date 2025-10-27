@@ -11,7 +11,7 @@ import { CalendarIcon } from '@ttab/elephant-ui/icons'
 
 interface SearchColumnsParams {
   searchType: SearchKeys
-  sections: IDBSection[] | undefined
+  sections: IDBSection[]
   authors: IDBAuthor[]
   organisers?: IDBOrganiser[]
   locale: LocaleData
