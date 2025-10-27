@@ -81,7 +81,6 @@ const SectionContent = ({
   const { viewId } = useView()
   const { state } = useNavigation()
   const history = useHistory()
-  console.log(onDialogClose)
   useEffect(() => {
     provider?.setAwarenessField('data', user)
     setIsFocused(true)
@@ -145,7 +144,6 @@ const SectionContent = ({
   const handleCancel = () => {
     if (isChanged) {
       setShowVerifyDialog(true)
-      console.log(isChanged)
     } else {
       if (onDialogClose) {
         close()
@@ -183,6 +181,7 @@ const SectionContent = ({
                       block='meta.core/section[0].data.code'
                     >
                       <TextBox
+                        onChange={handleChange}
                         singleLine={true}
                         path='meta.core/section[0].data.code'
                         className='border-[1px]'
