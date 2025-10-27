@@ -46,7 +46,6 @@ import { contentMenuLabels } from '@/defaults/contentMenuLabels'
 import { Button, ScrollArea } from '@ttab/elephant-ui'
 import { LayoutBox } from './LayoutBox'
 import { CopyPlusIcon, FileIcon, ScanEyeIcon, SettingsIcon, TriangleAlertIcon } from '@ttab/elephant-ui/icons'
-import { CopyPlusIcon, FileIcon, ScanEyeIcon, SettingsIcon, TriangleAlertIcon } from '@ttab/elephant-ui/icons'
 import type { EleBlock } from '@/shared/types'
 import { toast } from 'sonner'
 import { useSession } from 'next-auth/react'
@@ -55,7 +54,6 @@ import { snapshotDocument } from '@/lib/snapshotDocument'
 import type * as Y from 'yjs'
 import { ImagePlugin } from './ImagePlugin'
 import { ChannelComboBox } from './components/ChannelComboBox'
-import { ToastAction } from '../Wire/ToastAction'
 import { ToastAction } from '../Wire/ToastAction'
 
 const meta: ViewMetadata = {
@@ -202,7 +200,6 @@ function EditorContainer({
   const fromDate = allParams?.filter((item) => item.name === 'Print')?.[0]?.params?.from
   const [date] = useYValue<string>('meta.tt/print-article[0].data.date')
   const [isChanged] = useYValue<boolean>('root.changed')
-  const yDoc = provider?.document
   const yDoc = provider?.document
 
   const handleChange = useCallback((value: boolean): void => {
