@@ -70,11 +70,14 @@ export const MovePrompt = ({
       return
     }
 
-    onPrimary(planning)
 
-    if (!selectedPlanning && provider?.synced && session) {
-      void snapshotDocument(planningId)
-    }
+    snapshotDocument(planningId, undefined, provider.document)
+      .then(() => {
+        onPrimary(planning)
+      })
+      .catch((ex: unknown) => {
+        toast.error(ex instanceof Error ? ex.message : 'Kunde inte spara efter flytt')
+      })
   }
 
   const handlePrimaryKeyDown = (event: React.KeyboardEvent<HTMLButtonElement>) => {

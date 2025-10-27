@@ -45,6 +45,7 @@ import { timeSlotTypes } from '@/defaults/assignmentTimeConstants'
 import { DocumentStatuses } from '@/defaults/documentStatuses'
 import useSWR from 'swr'
 import { useRepositoryEvents } from '@/hooks/useRepositoryEvents'
+import { toast } from 'sonner'
 
 export const AssignmentRow = ({ index, onSelect, isFocused = false, asDialog, onChange }: {
   index: number
@@ -441,9 +442,11 @@ export const AssignmentRow = ({ index, onSelect, isFocused = false, asDialog, on
               })
 
               if (planningId) {
-                void snapshotDocument(planningId, undefined, provider.document).then(() => {
+                snapshotDocument(planningId, undefined, provider.document).then(() => {
                   const openDocument = assignmentType === 'flash' ? openFlash : openArticle
                   openDocument(undefined, { id, planningId }, 'blank')
+                }).catch((ex: unknown) => {
+                  toast.error(ex instanceof Error ? ex.message : 'Kunde inte spara planeringen')
                 })
               }
             }

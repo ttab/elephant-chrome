@@ -48,10 +48,12 @@ export const ConceptList = ({ columns, title }: {
 
   const getObjects = () => {
     const data = tableDataMap[title as keyof typeof tableDataMap]
-    if (data.data) {
+    if (data.data && data.data.length > 0) {
       setData(data.data)
+      return data.data
+    } else {
+      return 'No data found'
     }
-    return data
   }
 
   const conceptData = getObjects()

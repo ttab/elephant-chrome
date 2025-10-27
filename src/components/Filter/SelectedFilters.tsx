@@ -86,9 +86,9 @@ const SelectedButton = ({ type, value }: { value: string | string[] | undefined,
       value: _.id,
       label: _.title
     }
-  }) ?? []
+  })
 
-  const categories = useCategories()?.map((_) => ({
+  const categories = useCategories().map((_) => ({
     value: _.id,
     label: _.title
   })) ?? []

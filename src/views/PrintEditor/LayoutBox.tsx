@@ -55,8 +55,8 @@ export function LayoutBox({
       toast.error('Något gick fel när printartikel skulle renderas')
       return
     }
+
     try {
-      await snapshotDocument(documentId, undefined, document)
       const response = await baboon.renderArticle({
         articleUuid: documentId,
         layoutId: layoutIdForRender,
@@ -186,8 +186,14 @@ export function LayoutBox({
             className='group/render px-2 py-0 flex gap-2 justify-start hover:bg-approved-background/50'
             size='sm'
             onClick={() => {
-              openPreview(undefined, {})
-              void handleRenderArticle()
+              snapshotDocument(documentId, undefined, document)
+                .then(() => {
+                  openPreview(undefined, {})
+                  void handleRenderArticle()
+                })
+                .catch((ex) => {
+                  toast.error(ex instanceof Error ? ex.message : 'Kunde inte spara artikel innan förhandsgranskning')
+                })
             }}
           >
             <EyeIcon strokeWidth={1.75} size={16} />

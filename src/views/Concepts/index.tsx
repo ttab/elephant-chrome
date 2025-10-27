@@ -62,6 +62,7 @@ export const Concepts = ({ title }: ViewProps) => {
   return (
     <View.Root tab={currentTab} onTabChange={setCurrentTab}>
       <TableProvider<IDBConcept>
+      <TableProvider<IDBConcept>
         columns={columns}
         type={meta.name}
       >
@@ -75,6 +76,7 @@ export const Concepts = ({ title }: ViewProps) => {
 
         <View.Content>
           <TabsContent value='list' className='mt-0'>
+            <ConceptList columns={columns} title={title ?? 'Concept title'} />
             <ConceptList columns={columns} title={title ?? 'Concept title'} />
           </TabsContent>
         </View.Content>
