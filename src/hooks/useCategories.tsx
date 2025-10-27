@@ -5,7 +5,7 @@ import { type IDBCategory } from '../datastore/types'
 export const useCategories = (): IDBCategory[] => {
   const { objects } = useContext(CoreCategoryContext)
 
-  return (objects).sort((a1, a2) => {
+  return (objects)?.sort((a1, a2) => {
     return a1.title.localeCompare(a2.title)
   })
 }

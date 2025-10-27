@@ -15,7 +15,8 @@ export const TextboxRoot = ({
   spellcheck = true,
   onBlur,
   onFocus,
-  onChange
+  onChange,
+  className
 }: {
   disabled?: boolean
   path: string
@@ -27,6 +28,7 @@ export const TextboxRoot = ({
   onBlur: React.FocusEventHandler<HTMLDivElement>
   onFocus: React.FocusEventHandler<HTMLDivElement>
   onChange?: (arg: boolean) => void
+  className?: string
 }): JSX.Element => {
   const { provider, user } = useCollaboration()
   // FIXME: We need to check that the path exists. If not we need to create the missing Block
@@ -69,6 +71,7 @@ export const TextboxRoot = ({
               user={user}
               spellcheck={spellcheck}
               onChange={onChange}
+              className={className}
             />
           </Textbit.Root>
         )}

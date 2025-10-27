@@ -84,8 +84,9 @@ export const Table = <TData, TValue>({
   columns,
   type,
   onRowSelected,
-  searchType
-}: TableProps<TData, TValue> & { searchType?: View }): JSX.Element => {
+  searchType,
+  documentType
+}: TableProps<TData, TValue> & { searchType?: View, documentType?: string }): JSX.Element => {
   const { state, dispatch } = useNavigation()
   const history = useHistory()
   const { viewId: origin } = useView()
@@ -93,12 +94,10 @@ export const Table = <TData, TValue>({
   const openDocuments = useOpenDocuments({ idOnly: true })
   const { showModal, hideModal, currentModal } = useModal()
   const [, setDocumentStatus] = useWorkflowStatus()
-
   const handlePreview = useCallback((row: RowType<unknown>): void => {
     row.toggleSelected(true)
 
     const originalId = (row.original as { id: string }).id
-
     showModal(
       <PreviewSheet
         id={originalId}
@@ -142,7 +141,7 @@ export const Table = <TData, TValue>({
         event,
         dispatch,
         viewItem: state.viewRegistry.get(!searchType ? type : searchType),
-        props: { id },
+        props: { id, documentType },
         viewId: crypto.randomUUID(),
         origin,
         history,
@@ -154,7 +153,7 @@ export const Table = <TData, TValue>({
         })
       })
     }
-  }, [dispatch, state.viewRegistry, onRowSelected, origin, type, history, handlePreview, searchType])
+  }, [dispatch, state.viewRegistry, onRowSelected, origin, type, history, handlePreview, searchType, documentType])
 
   useNavigationKeys({
     keys: ['ArrowUp', 'ArrowDown', 'Enter', 'Escape', ' ', 's', 'r', 'c', 'u'],
@@ -354,6 +353,8 @@ export const Table = <TData, TValue>({
           </TableBody>
         </_Table>
       )}
+
+
     </>
   )
 }

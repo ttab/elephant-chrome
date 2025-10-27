@@ -2,37 +2,46 @@ import {
 } from '@/lib/index'
 import { useCallback } from 'react'
 import { Table } from '@/components/Table'
-import { useDocuments } from '@/hooks/index/useDocuments'
 import type { ColumnDef } from '@tanstack/react-table'
-import { toast } from 'sonner'
-import { constructQuery } from '@/hooks/index/useDocuments/queries/views/concepts'
-import { fields } from '@/shared/schemas/conceptSchemas/sectionConcept'
-import { useQuery } from '@/hooks/useQuery'
-
-import type { BaseConceptFields, Concept } from '@/shared/schemas/conceptSchemas/baseConcept'
 import { Pagination } from '@/components/Table/Pagination'
+import { useSections } from '@/hooks/useSections'
+import { useStories } from '@/hooks/useStories'
+import { useCategories } from '@/hooks/useCategories'
+import { useTable } from '@/hooks/useTable'
+import type { IDBCategory, IDBConcept, IDBSection, IDBStory } from 'src/datastore/types'
+import { useOrganisers } from '@/hooks/useOrganisers'
+import { LoadingText } from '@/components/LoadingText'
 
-export const ConceptList = ({ columns, documentType }: {
-  columns: ColumnDef<Concept>[]
-  documentType: string
+export const ConceptList = ({ columns, title }: {
+  columns: ColumnDef<IDBConcept>[]
   title: string
 }): JSX.Element => {
-  const [filter] = useQuery(['query'])
-  const [{ page }] = useQuery()
-  const { error, data } = useDocuments<Concept, BaseConceptFields>({
-    documentType: documentType,
-    fields,
-    query: constructQuery(filter),
-    page: typeof page === 'string'
-      ? parseInt(page)
-      : undefined,
-    options: {
-      subscribe: true,
-      setTableData: true
-    }
-  })
+  const sections = useSections()
+  const storyTags = useStories()
+  const categories = useCategories()
+  const organisers = useOrganisers()
+  const { setData } = useTable<IDBSection | IDBStory | IDBCategory>()
 
-  const onRowSelected = useCallback((row?: Concept) => {
+  const tableDataMap = {
+    Sektioner: sections,
+    'Story tags': storyTags,
+    Kategorier: categories,
+    Organisatörer: organisers
+  } as const
+
+  const getObjects = () => {
+    const data = tableDataMap[title as keyof typeof tableDataMap]
+    if (data && data.length > 0) {
+      setData(data)
+      return data
+    } else {
+      return 'No data found'
+    }
+  }
+
+  const objects = getObjects()
+
+  const onRowSelected = useCallback((row?: IDBConcept) => {
     if (row) {
       console.info(`Selected concept item ${row.id}`)
     } else {
@@ -42,20 +51,22 @@ export const ConceptList = ({ columns, documentType }: {
   }, [])
 
 
-  if (error) {
-    console.error('Error fetching concept items:', error)
-    toast.error('Kunde inte hämta concept')
+  if (objects && typeof objects === 'string') {
+    return (
+      <LoadingText className='mt-8'>
+        {objects}
+      </LoadingText>
+    )
+  } else {
+    return (
+      <>
+        <Table
+          type='Concept'
+          columns={columns}
+          onRowSelected={onRowSelected}
+        />
+        <Pagination total={objects?.length || 0} />
+      </>
+    )
   }
-
-
-  return (
-    <>
-      <Table
-        type='Concept'
-        columns={columns}
-        onRowSelected={onRowSelected}
-      />
-      <Pagination total={data?.total || 0} />
-    </>
-  )
 }
