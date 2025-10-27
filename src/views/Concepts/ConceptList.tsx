@@ -3,7 +3,6 @@ import {
 import { useCallback } from 'react'
 import { Table } from '@/components/Table'
 import type { ColumnDef } from '@tanstack/react-table'
-import { toast } from 'sonner'
 import { Pagination } from '@/components/Table/Pagination'
 import { useSections } from '@/hooks/useSections'
 import { useStories } from '@/hooks/useStories'
@@ -12,6 +11,7 @@ import { useTable } from '@/hooks/useTable'
 import type { IDBCategory, IDBConcept, IDBOrganiser, IDBSection, IDBStory } from 'src/datastore/types'
 import { useOrganisers } from '@/hooks/useOrganisers'
 import type { ViewType } from '@/types/index'
+import { LoadingText } from '@/components/LoadingText'
 
 export const ConceptList = ({ columns, title }: {
   columns: ColumnDef<IDBConcept>[]
@@ -50,7 +50,7 @@ export const ConceptList = ({ columns, title }: {
     const data = tableDataMap[title as keyof typeof tableDataMap]
     if (data.data && data.data.length > 0) {
       setData(data.data)
-      return data.data
+      return data
     } else {
       return 'No data found'
     }
@@ -66,19 +66,23 @@ export const ConceptList = ({ columns, title }: {
     return row
   }, [])
 
-  if (conceptData.data && conceptData.data.length === 0) {
-    console.error('Error fetching concept items:')
-    toast.error('Kunde inte hämta concept')
-  }
 
-  return (
-    <>
-      <Table
-        type={conceptData.conceptView as ViewType}
-        columns={columns}
-        onRowSelected={onRowSelected}
-      />
-      <Pagination total={conceptData.data?.length || 0} />
-    </>
-  )
+  if (conceptData && typeof conceptData === 'string') {
+    return (
+      <LoadingText className='mt-8'>
+        {conceptData}
+      </LoadingText>
+    )
+  } else {
+    return (
+      <>
+        <Table
+          type={conceptData.conceptView as ViewType}
+          columns={columns}
+          onRowSelected={onRowSelected}
+        />
+        <Pagination total={conceptData.data?.length || 0} />
+      </>
+    )
+  }
 }
