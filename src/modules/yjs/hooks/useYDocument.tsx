@@ -70,12 +70,8 @@ export function useYDocument<T>(
   useEffect(() => {
     if (!id || !clientRegistry) return
 
-    let mounted = true
-
     void clientRegistry.get(id, { document: document.current })
       .then((client) => {
-        if (!mounted) return
-
         setClient(client)
         // Use the collaboration client's document, not the created
         // local document. This is important when we get a reused client.
@@ -84,7 +80,6 @@ export function useYDocument<T>(
 
     // Cleanup: release reference when component unmounts
     return () => {
-      mounted = false
       if (clientRegistry) {
         clientRegistry.release(id)
       }
