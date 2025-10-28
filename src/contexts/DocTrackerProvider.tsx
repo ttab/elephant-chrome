@@ -31,7 +31,7 @@ interface DocTrackerContextProviderProps extends PropsWithChildren {
 }
 
 export const DocTrackerProvider = ({ children }: DocTrackerContextProviderProps): JSX.Element => {
-  const { webSocketProvider: websocketProvider } = useWebSocket()
+  const { webSocketProvider } = useWebSocket()
   const { data, status } = useSession()
 
   const [synced, setSynced] = useState<boolean>(false)
@@ -42,12 +42,12 @@ export const DocTrackerProvider = ({ children }: DocTrackerContextProviderProps)
   }
 
   const provider = useMemo(() => {
-    if (!websocketProvider) {
+    if (!webSocketProvider) {
       return
     }
 
     return new HocuspocusProvider({
-      websocketProvider,
+      websocketProvider: webSocketProvider,
       name: 'document-tracker',
       token: data.accessToken,
       onConnect: () => {
@@ -66,7 +66,7 @@ export const DocTrackerProvider = ({ children }: DocTrackerContextProviderProps)
     // JWT.token should be used on creation, but provider should not be recreated on token change
     // In this case we don't need to update the token since auth is done on when provider opens the connection
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [websocketProvider])
+  }, [webSocketProvider])
 
   const state = {
     provider,
