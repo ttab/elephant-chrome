@@ -1,18 +1,27 @@
 import '@testing-library/jest-dom'
-
+import { initializeNavigationState } from '@/navigation/lib'
 import { randomUUID } from 'node:crypto'
 import { TextEncoder, TextDecoder } from 'util'
 import { type Mock, vi } from 'vitest'
-import { initializeNavigationState } from '@/navigation/lib'
 import { type Dispatch } from 'react'
 import { useNavigation, useView } from './src/hooks'
 import { type NavigationActionType } from './src/types'
 export * from '@testing-library/react'
 
+// Set up crypto mock FIRST before any other imports
 window.crypto.randomUUID = randomUUID
+
+// Use Object.defineProperty to override the crypto global
+Object.defineProperty(global, 'crypto', {
+  value: { randomUUID },
+  writable: true,
+  configurable: true
+})
+
 global.TextEncoder = TextEncoder
 // @ts-expect-error unknown
 global.TextDecoder = TextDecoder
+
 
 const BASE_URL = import.meta.env.BASE_URL
 
