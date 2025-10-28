@@ -5,8 +5,8 @@ import createHash from '@/shared/createHash.js'
 import { toYMap } from '@/shared/transformations/toYMap.js'
 import type { TBElement } from '@ttab/textbit'
 import { isTextEntry } from './transformations/isTextEntry.js'
-export type YPath = [string, ...(string | number)[]]
 import { isNumber, isRecord, isYArray, isYContainer, isYMap, isYXmlText } from '../src/lib/isType.js'
+export type YPath = [string, ...(string | number)[]]
 
 type DeepPartial<T> = {
   [P in keyof T]?: T[P] extends Record<string, unknown>
@@ -463,6 +463,8 @@ export function doesArrayChangeAffectPath(
   event: Y.YEvent<Y.Array<unknown>>,
   observedPath: YPath
 ): boolean {
+  const eventPathStr = event.path.join('.')
+
   // Find the deepest array index in our observed path that matches this event
   for (let i = observedPath.length - 1; i >= 0; i--) {
     if (typeof observedPath[i] !== 'number') {
@@ -472,7 +474,6 @@ export function doesArrayChangeAffectPath(
     // Check if the event path matches the path up to this array
     const pathUpToArray = observedPath.slice(0, i)
     const pathUpToArrayStr = pathUpToArray.join('.')
-    const eventPathStr = event.path.join('.')
 
     if (eventPathStr !== pathUpToArrayStr) {
       continue
