@@ -98,7 +98,7 @@ export const EditorHeader = ({ ydoc, readOnly, readOnlyVersion, planningId: prop
         <div className='max-w-[810px] mx-auto flex flex-row gap-2 justify-between items-center w-full'>
           <div className='flex flex-row gap-1 justify-start items-center @7xl/view:-ml-20'>
             <div className='hidden flex-row gap-2 justify-start items-center @lg/view:flex'>
-              {!readOnly && <AddNote />}
+              {!readOnly && <AddNote ydoc={ydoc} />}
               {!readOnly && documentType !== 'core/editorial-info' && <Newsvalue ydoc={ydoc} path='meta.core/newsvalue[0].value' />}
             </div>
           </div>

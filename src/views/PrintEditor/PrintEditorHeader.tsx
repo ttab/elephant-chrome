@@ -30,7 +30,7 @@ export const EditorHeader = ({
           <div className='max-w-[1040px] mx-auto flex flex-row gap-2 justify-between items-center w-full'>
             <ArticleTitle ydoc={ydoc} />
             <div className='flex flex-row gap-2 justify-end items-center'>
-              <AddNote role='internal' />
+              <AddNote ydoc={ydoc} role='internal' />
               {!!ydoc.id && (
                 <>
                   <ViewHeader.RemoteUsers ydoc={ydoc} />
