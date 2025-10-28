@@ -2,7 +2,7 @@ import { useSession } from 'next-auth/react'
 import type { KeyedMutator } from 'swr'
 import useSWR, { mutate as globalMutate } from 'swr'
 import { useCallback, useMemo } from 'react'
-import { useCollaboration, useRegistry, useRepositoryEvents, useYValue } from '@/hooks'
+import { useCollaboration, useRegistry, useRepositoryEvents } from '@/hooks'
 import { toast } from 'sonner'
 import type { Repository, Status } from '@/shared/Repository'
 import { snapshotDocument } from '@/lib/snapshotDocument'
@@ -19,7 +19,6 @@ export const useWorkflowStatus = (uuid?: string, isWorkflow: boolean = false, as
   const { repository } = useRegistry()
   const { data: session } = useSession()
   const { provider } = useCollaboration()
-  const [, setChanged] = useYValue('root.changed')
 
   const CACHE_KEY = useMemo(
     () => `status/${uuid}/${isWorkflow}`,
@@ -106,16 +105,13 @@ export const useWorkflowStatus = (uuid?: string, isWorkflow: boolean = false, as
           cause
         }, provider?.document)
 
-        // Reset unsaved changes state
-        setChanged(undefined)
-
         // Revalidate after the mutation completes
         await globalMutate([CACHE_KEY])
       } catch (ex) {
         toast.error(ex instanceof Error ? ex.message : 'Ett fel uppstod när aktuell status skulle ändras')
       }
     },
-    [session, uuid, setChanged, provider?.document, repository, CACHE_KEY]
+    [session, uuid, provider?.document, repository, CACHE_KEY]
   )
 
   return [documentStatus, setDocumentStatus, mutate]

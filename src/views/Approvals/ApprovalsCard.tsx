@@ -6,25 +6,27 @@ import { CalendarDaysIcon, FileWarningIcon, MessageSquarePlusIcon, ZapIcon } fro
 import type { StatusData } from '@/types'
 import { useSections } from '@/hooks/useSections'
 import type { StatusSpecification } from '@/defaults/workflowSpecification'
-import { useYValue } from '@/hooks/useYValue'
 import { AvatarGroup } from '@/components/AvatarGroup'
 import { Popover, PopoverContent, PopoverTrigger, Tooltip } from '@ttab/elephant-ui'
 import { AuthorNames } from './AuthorNames'
 import { CAUSE_KEYS } from '@/defaults/causekeys'
 import { useWorkflowStatus } from '@/hooks/useWorkflowStatus'
 import { TimeCard } from './TimeCard'
+import { useYValue, type YDocument } from '@/modules/yjs/hooks'
+import type * as Y from 'yjs'
 
-export const ApprovalsCard = ({ assignment, isSelected, isFocused, status, openEditors }: {
+export const ApprovalsCard = ({ ydoc, assignment, isSelected, isFocused, status, openEditors }: {
   assignment: AssignmentInterface
   status: StatusSpecification
   isSelected: boolean
   isFocused: boolean
   openEditors: string[]
+  ydoc: YDocument<Y.Map<unknown>>
 }) => {
   const sections = useSections()
   const openArticle = useLink('Editor')
   const openFlash = useLink('Flash')
-  const [users] = useYValue<Record<string, { id: string, name: string, username: string }>>(`${assignment._deliverableId}.users`, false, undefined, 'open-documents')
+  const [users] = useYValue<Record<string, { id: string, name: string, username: string }>>(ydoc.provider?.document.getMap('open-documents'), `${assignment._deliverableId}.users`)
   const [documentStatus] = useWorkflowStatus(assignment._deliverableId, true)
 
   const openType = (assignmentType: string) => assignmentType === 'core/flash' ? openFlash : openArticle
