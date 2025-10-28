@@ -6,19 +6,19 @@ import { CollaborationClientRegistry } from '../classes/CollaborationClientRegis
 export function ClientRegistryProvider({ accessToken, children }: PropsWithChildren & {
   accessToken?: string | null
 }) {
-  const { webSocketProvider } = useWebSocket()
+  const { webSocketProvider: websocketProvider } = useWebSocket()
   const [registry, setRegistry] = useState<CollaborationClientRegistry | null>(null)
 
   useEffect(() => {
-    if (registry || !webSocketProvider || !accessToken) {
+    if (registry || !websocketProvider || !accessToken) {
       return
     }
 
     setRegistry(new CollaborationClientRegistry({
-      webSocketProvider,
+      webSocketProvider: websocketProvider,
       accessToken
     }))
-  }, [accessToken, webSocketProvider, registry])
+  }, [accessToken, websocketProvider, registry])
 
   useEffect(() => {
     if (registry && accessToken) {

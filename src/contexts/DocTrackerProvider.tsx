@@ -31,7 +31,7 @@ interface DocTrackerContextProviderProps extends PropsWithChildren {
 }
 
 export const DocTrackerProvider = ({ children }: DocTrackerContextProviderProps): JSX.Element => {
-  const { websocketProvider } = useWebSocket()
+  const { webSocketProvider: websocketProvider } = useWebSocket()
   const { data, status } = useSession()
 
   const [synced, setSynced] = useState<boolean>(false)

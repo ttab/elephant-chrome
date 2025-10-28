@@ -1,5 +1,5 @@
 import { createContext } from 'react'
-import { CollaborationClientRegistry } from '../classes/CollaborationClientRegistry'
+import type { CollaborationClientRegistry } from '../classes/CollaborationClientRegistry'
 
 export interface ClientRegistryContextType {
   registry: CollaborationClientRegistry | null

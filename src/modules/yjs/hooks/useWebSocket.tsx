@@ -1,7 +1,7 @@
 import { useContext } from 'react'
 import { WebSocketContext } from '../contexts/WebSocketContext'
 
- export function useWebSocket() {
+export function useWebSocket() {
   const context = useContext(WebSocketContext)
 
   if (context === undefined) {

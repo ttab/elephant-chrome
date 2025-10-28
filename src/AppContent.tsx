@@ -8,14 +8,11 @@ import { Navigation } from './views/Wires/components/Navigation'
 import { FaroErrorBoundary } from '@grafana/faro-react'
 import { Error } from './views'
 import { useIndexedDB } from './datastore/hooks/useIndexedDB'
-import { ClientRegistryProvider } from './modules/yjs/contexts/ClientRegistryProvider'
-import { useSession } from 'next-auth/react'
 
 export const AppContent = (): JSX.Element => {
   const { setActiveView } = useHistory()
   const { state } = useNavigation()
   const idb = useIndexedDB()
-  const { data: session } = useSession()
 
   useResize()
 
@@ -33,21 +30,17 @@ export const AppContent = (): JSX.Element => {
         const item = content[n]
         const { colSpan } = views[n]
 
-        // FIXME: This whole thing must be memoized(?), or could we handle colSpan better further down the tree?
         return (
           <ViewWrapper key={item.viewId} viewId={item.viewId} name={item.name} colSpan={colSpan}>
-            <FaroErrorBoundary
-              fallback={(error) => <Error error={error} />}
-            >
-              <ClientRegistryProvider accessToken={session?.accessToken}>
-                <Component {...item.props} />
-              </ClientRegistryProvider>
+            <FaroErrorBoundary fallback={(error) => <Error error={error} />}>
+              <Component {...item.props} />
             </FaroErrorBoundary>
           </ViewWrapper>
         )
       })}
 
       <Navigation visibleContent={content} />
+
       <Dialog open={!idb?.isConnected}>
         <DialogContent className='focus-visible:outline-none'>
           <DialogHeader>

@@ -1,6 +1,7 @@
-import { PropsWithChildren, useEffect, useRef, useState } from 'react'
+import type { PropsWithChildren } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { HocuspocusProviderWebsocket } from '@hocuspocus/provider'
-import { WebSocketContext } from "./WebSocketContext"
+import { WebSocketContext } from './WebSocketContext'
 
 export function WebSocketProvider({ url, children }: PropsWithChildren & {
   url: string
@@ -18,15 +19,6 @@ export function WebSocketProvider({ url, children }: PropsWithChildren & {
       autoConnect: false
     })
 
-    // setInterval(() => {
-    //   const ws = wsp.current?.webSocket
-    //   if (!ws) return
-
-    //   const status = ['connecting', 'open', 'closing', 'closed'][ws.readyState]
-    //   console.info('   ws  is ', status)
-    //   console.info('   wsp is ', wsp.current?.status, `(${isConnected})`)
-    // }, 1000)
-
     wsp.current.on('error', (error: Error) => {
       console.info('⚠️ WebSocket provider error', error)
       setIsConnected(true)
@@ -43,7 +35,7 @@ export function WebSocketProvider({ url, children }: PropsWithChildren & {
     })
 
     // Connect to the WebSocket server when the provider is created
-    wsp.current.connect()
+    void wsp.current.connect()
   }, [url])
 
   return (
@@ -51,7 +43,8 @@ export function WebSocketProvider({ url, children }: PropsWithChildren & {
       isConnected,
       url,
       webSocketProvider: wsp.current
-    }}>
+    }}
+    >
       {children}
     </WebSocketContext.Provider>
   )
