@@ -28,21 +28,7 @@ export interface StatusSpecification {
 }
 
 const baseConcept = {
-  draft: {
-    title: 'Redigerar',
-    description: 'Du jobbar på ett utkast av inställningen',
-    transitions: {
-      usable: {
-        verify: true,
-        title: 'Använd inställning',
-        description: 'Nuvarande version kommer att användas'
-      },
-      cancelled: {
-        title: 'Släng utkast',
-        description: 'Tar bort nuvarande ändringar och återställer sparad version'
-      }
-    }
-  },
+
   usable: {
     title: 'Används',
     description: 'Nuvarande version används',
@@ -50,7 +36,18 @@ const baseConcept = {
       unpublished: {
         verify: true,
         title: 'Inaktivera',
-        description: 'Inaktiverar nuvarande inställning'
+        description: 'Inställningen kommer att inaktiveras'
+      }
+    }
+  },
+  unpublished: {
+    title: 'Inaktiv',
+    description: 'Inställningen är inte aktiv',
+    transitions: {
+      published: {
+        verify: true,
+        title: 'Använd inställning',
+        description: 'Nuvarande version kommer att användas'
       }
     }
   }
