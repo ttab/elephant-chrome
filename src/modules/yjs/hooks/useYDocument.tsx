@@ -106,7 +106,9 @@ export function useYDocument<T>(
     const ymeta = document.current.getMap('ctx')
     const ymap = document.current.getMap('ele')
     const onChange = () => {
-      setIsChanged(createHash(JSON.stringify(ymap.toJSON())) !== ymeta.get('hash'))
+      if (!isChanged) {
+        setIsChanged(createHash(JSON.stringify(ymap.toJSON())) !== ymeta.get('hash'))
+      }
     }
 
     ymap.observeDeep(onChange)

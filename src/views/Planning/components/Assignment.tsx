@@ -14,7 +14,7 @@ import { type YDocument, useYPath, useYValue } from '@/modules/yjs/hooks'
 import type * as Y from 'yjs'
 import { useSession } from 'next-auth/react'
 
-export const Assignment = ({ ydoc, assignment, onAbort, onClose, onChange }: {
+export const Assignment = ({ ydoc, assignment, onAbort, onClose }: {
   ydoc: YDocument<Y.Map<unknown>>
   assignment: Y.Map<unknown>
   onClose: () => void
@@ -59,7 +59,7 @@ export const Assignment = ({ ydoc, assignment, onAbort, onClose, onChange }: {
 
   return (
     <div className='flex flex-col rounded-md border shadow-xl -mx-1 -my-1 z-10 bg-background' ref={formRef}>
-      <Form.Root asDialog={true} onChange={onChange}>
+      <Form.Root asDialog={true}>
         <Form.Content>
           <Form.Title>
             <Title

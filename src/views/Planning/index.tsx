@@ -108,7 +108,7 @@ const PlanningViewContent = (props: ViewProps & {
   setNewItem?: Setter
 }): JSX.Element | undefined => {
   const ydoc = useYDocument<Y.Map<unknown>>(props.documentId, { data: props.data })
-  const { provider, ele: document, isChanged, setIsChanged, connected } = ydoc
+  const { provider, ele: document, connected } = ydoc
 
   const { data: session, status } = useSession()
   const [documentStatus] = useWorkflowStatus(props.documentId)
@@ -158,14 +158,13 @@ const PlanningViewContent = (props: ViewProps & {
         ydoc={ydoc}
         asDialog={!!props.asDialog}
         onDialogClose={props.onDialogClose}
-        isChanged={isChanged}
         session={session}
         provider={provider}
         status={status}
       />
 
       <View.Content className='max-w-[1000px]'>
-        <Form.Root asDialog={props.asDialog} onChange={setIsChanged}>
+        <Form.Root asDialog={props.asDialog}>
           <Form.Content>
             <Form.Title>
               <TextInput
@@ -200,7 +199,6 @@ const PlanningViewContent = (props: ViewProps & {
                 <MoveDialog
                   ydoc={ydoc}
                   newDate={newDate}
-                  onChange={setIsChanged}
                   onClose={() => {
                     setNewDate(undefined)
                   }}
@@ -228,7 +226,6 @@ const PlanningViewContent = (props: ViewProps & {
             <AssignmentTable
               ydoc={ydoc}
               asDialog={props.asDialog}
-              onChange={setIsChanged}
               documentId={props.documentId}
             />
             <RelatedEvents events={relatedEvents} />

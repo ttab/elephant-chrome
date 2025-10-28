@@ -1,6 +1,5 @@
 import { StatusMenu } from '@/components/DocumentStatus/StatusMenu'
 import { ViewHeader } from '@/components/View'
-import type { ViewProps } from '@/types/index'
 import { ZapIcon, ZapOffIcon } from '@ttab/elephant-ui/icons'
 import { useState, useCallback } from 'react'
 import { toast } from 'sonner'
@@ -37,7 +36,7 @@ export const FlashHeader = ({
         </div>
 
         {!asDialog && !!ydoc && <ViewHeader.RemoteUsers ydoc={ydoc} />}
-        {!asDialog && !!ydoc.id && <StatusMenuHeader id={ydoc.id} />}
+        {!asDialog && !!ydoc.id && <StatusMenuHeader ydoc={ydoc} />}
       </ViewHeader.Content>
 
       <ViewHeader.Action onDialogClose={onDialogClose} asDialog={asDialog} />
@@ -45,13 +44,15 @@ export const FlashHeader = ({
   )
 }
 
-const StatusMenuHeader = ({ id }: ViewProps) => {
-  const planningId = useDeliverablePlanningId(id || '')
+const StatusMenuHeader = ({ ydoc }: {
+  ydoc: YDocument<Y.Map<unknown>>
+}) => {
+  const planningId = useDeliverablePlanningId(ydoc.id || '')
   const [publishTime] = useState<string | null>(null)
   const { viewId } = useView()
   const { state, dispatch } = useNavigation()
   const history = useHistory()
-  const [workflowStatus] = useWorkflowStatus(id || '', true)
+  const [workflowStatus] = useWorkflowStatus(ydoc.id || '', true)
 
   // FIXME: We must have a way to retrieve the publish time defined in the planning.
   // FIXME: When yjs opening of related planning have been fixed this should be readded/remade.
@@ -81,7 +82,7 @@ const StatusMenuHeader = ({ id }: ViewProps) => {
       handleLink({
         dispatch,
         viewItem: state.viewRegistry.get('Flash'),
-        props: { id: id },
+        props: { id: ydoc.id },
         viewId: crypto.randomUUID(),
         history,
         origin: viewId,
@@ -96,7 +97,7 @@ const StatusMenuHeader = ({ id }: ViewProps) => {
       handleLink({
         dispatch,
         viewItem: state.viewRegistry.get('Flash'),
-        props: { id: id },
+        props: { id: ydoc.id },
         viewId: crypto.randomUUID(),
         history,
         origin: viewId,
@@ -119,18 +120,18 @@ const StatusMenuHeader = ({ id }: ViewProps) => {
       ? data.time
       : new Date()
 
-    if (id) {
-      await updateAssignmentTime(id, planningId, newStatus, newPublishTime)
+    if (ydoc.id) {
+      await updateAssignmentTime(ydoc.id, planningId, newStatus, newPublishTime)
     }
 
     return true
-  }, [planningId, id, dispatch, history, state.viewRegistry, viewId, workflowStatus])
+  }, [planningId, ydoc.id, dispatch, history, state.viewRegistry, viewId, workflowStatus])
 
   return (
     <>
-      {!!planningId && id && (
+      {!!planningId && ydoc.id && (
         <StatusMenu
-          documentId={id}
+          ydoc={ydoc}
           type='core/article' // same workflow as article?
           publishTime={publishTime ? new Date(publishTime) : undefined}
           onBeforeStatusChange={onBeforeStatusChange}

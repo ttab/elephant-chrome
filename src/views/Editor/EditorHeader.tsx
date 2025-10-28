@@ -125,7 +125,7 @@ export const EditorHeader = ({ ydoc, readOnly, readOnlyVersion, planningId: prop
 
                 {!!(propPlanningId || planningId) && (!isReadOnlyAndUpdated || isUnpublished) && (
                   <StatusMenu
-                    documentId={ydoc.id}
+                    ydoc={ydoc}
                     type={documentType || 'core/article'}
                     publishTime={publishTime ? new Date(publishTime) : undefined}
                     onBeforeStatusChange={onBeforeStatusChange}
