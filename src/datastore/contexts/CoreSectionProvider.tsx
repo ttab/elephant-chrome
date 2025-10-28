@@ -33,6 +33,8 @@ export const CoreSectionProvider = ({ children, usableOnly = true }: {
     }
 
     const getCachedObjects = async () => {
+      // Due to opensearches refresh_interval we need to wait 3 second before refetching
+      await new Promise((resolve) => setTimeout(resolve, 3000))
       const newDocs = await fetchOrRefresh<IDBSection, IndexedSection>(
         IDB,
         documentType,
