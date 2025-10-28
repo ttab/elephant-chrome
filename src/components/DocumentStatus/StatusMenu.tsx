@@ -33,8 +33,9 @@ export const StatusMenu = ({ documentId, type, publishTime, onBeforeStatusChange
     'core/editorial-info',
     'tt/print-article'
   ].includes(type)
-
+  // type = core section
   const [documentStatus, setDocumentStatus] = useWorkflowStatus(documentId, shouldUseWorkflowStatus, type === 'tt/print-article')
+  // documentStatus usable
   const containerRef = useRef<HTMLDivElement>(null)
   const [dropdownWidth, setDropdownWidth] = useState<number>(0)
   const { statuses, workflow } = useWorkflow(type)
@@ -44,13 +45,11 @@ export const StatusMenu = ({ documentId, type, publishTime, onBeforeStatusChange
   const { state, dispatch } = useNavigation()
   const history = useHistory()
   const { viewId } = useView()
-
   useEffect(() => {
     if (containerRef.current) {
       setDropdownWidth(containerRef.current.offsetWidth)
     }
   }, [])
-
   // Callback function to set status. Will first call onBeforeStatusChange() if
   // provided by props, then proceed to change the status if allowed.
   const setStatus = useCallback(async (newStatus: string, data?: Record<string, unknown>) => {
@@ -59,13 +58,11 @@ export const StatusMenu = ({ documentId, type, publishTime, onBeforeStatusChange
         return
       }
     }
-
     await setDocumentStatus(
       newStatus,
       (typeof data?.cause === 'string') ? data.cause : undefined
     )
   }, [onBeforeStatusChange, setDocumentStatus])
-
   const unPublishDocument = (newStatus?: string) => {
     if (!repository || !session?.accessToken || newStatus !== 'unpublished') {
       return
@@ -92,7 +89,8 @@ export const StatusMenu = ({ documentId, type, publishTime, onBeforeStatusChange
           'core/article': 'Editor',
           'core/planning-item': 'Planning',
           'core/event': 'Event',
-          'tt/print-article': 'PrintEditor'
+          'tt/print-article': 'PrintEditor',
+          'core/section': 'Concept'
         }
         handleLink({
           dispatch,
@@ -117,7 +115,6 @@ export const StatusMenu = ({ documentId, type, publishTime, onBeforeStatusChange
   const currentStatusName = documentStatus.name
   const currentStatusDef = statuses[currentStatusName] || StatusSpecifications[currentStatusName]
   const transitions = workflow[currentStatusName]?.transitions || {}
-
   if (!Object.keys(transitions).length && currentStatusName !== 'unpublished') {
     return null
   }
@@ -185,7 +182,6 @@ export const StatusMenu = ({ documentId, type, publishTime, onBeforeStatusChange
                   onSelect={showPrompt}
                   statusDef={currentStatusDef}
                 />
-
               )}
             </StatusOptions>
 
