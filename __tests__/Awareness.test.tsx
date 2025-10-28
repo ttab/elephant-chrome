@@ -2,11 +2,13 @@ import { createRef } from 'react'
 import { screen, render } from '@testing-library/react'
 import { Awareness } from '@/components/Awareness'
 import { vi } from 'vitest'
-import * as hooks from '@/hooks'
+import * as hooks from '@/modules/yjs/hooks'
+import type { YDocument } from '@/modules/yjs/hooks'
+import type * as Y from 'yjs'
 
 const setIsFocusedMock = vi.fn()
 
-vi.spyOn(hooks, 'useAwareness').mockReturnValue([
+vi.spyOn(hooks, 'useYAwareness').mockReturnValue([
   [
     {
       clientId: 1870901647,
@@ -16,8 +18,7 @@ vi.spyOn(hooks, 'useAwareness').mockReturnValue([
         color: 'rgb(6 182 212)'
       },
       focus: {
-        key: 'PlanSection',
-        color: 'rgb(6 182 212)'
+        key: 'PlanSection'
       }
     }
   ], setIsFocusedMock])
@@ -25,7 +26,7 @@ vi.spyOn(hooks, 'useAwareness').mockReturnValue([
 describe('Awareness component', () => {
   it('renders children with className "relative" when path is given', () => {
     render(
-      <Awareness path='root.fake.path'>
+      <Awareness ydoc={{ id: '123' } as YDocument<Y.Map<unknown>>} path='root.fake.path'>
         <div data-testid='child'>Child Component</div>
       </Awareness>
     )
@@ -39,7 +40,7 @@ describe('Awareness component', () => {
 
   it('renders children without className "relative" when path is not given', () => {
     render(
-      <Awareness>
+      <Awareness ydoc={{ id: '123' } as YDocument<Y.Map<unknown>>}>
         <div data-testid='child'>Child Component</div>
       </Awareness>
     )
@@ -52,18 +53,18 @@ describe('Awareness component', () => {
   })
 
   it('forwards setIsFocused function through ref', () => {
-    const ref = createRef<() => void>()
+    const ref = createRef<(focused: boolean, path?: string) => void>()
 
     render(
-      <Awareness path='test' ref={ref}>
+      <Awareness ydoc={{ id: '123' } as YDocument<Y.Map<unknown>>} path='test' ref={ref}>
         <div data-testid='child'>Child Component</div>
       </Awareness>
-    );
+    )
 
-    // Access the ref and trigger the function returned by useImperativeHandle
-    (ref.current as () => void)()
+    // Call the function with proper arguments
+    ref.current?.(true, 'test-path')
 
-    // Check if setIsFocused function is called
-    expect(setIsFocusedMock).toHaveBeenCalled()
+    // Check if setIsFocused function was called with correct arguments
+    expect(setIsFocusedMock).toHaveBeenCalledWith(true, 'test-path')
   })
 })

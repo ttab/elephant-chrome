@@ -1,24 +1,24 @@
 import { Textbit } from '@ttab/textbit'
-import { useCollaboration } from '@/hooks'
 import type * as Y from 'yjs'
 import { LocalizedQuotationMarks, Text } from '@ttab/textbit-plugins'
-import { useYValue } from '@/hooks/useYValue'
 import { TextboxEditable } from './TextboxEditable'
+import type { YDocument } from '@/modules/yjs/hooks'
 
 export const TextboxRoot = ({
+  value,
+  ydoc,
   disabled,
   placeholder,
-  path,
   singleLine = false,
   countCharacters = false,
   autoFocus = false,
   spellcheck = true,
   onBlur,
-  onFocus,
-  onChange
+  onFocus
 }: {
+  value: Y.XmlText
+  ydoc: YDocument<Y.Map<unknown>>
   disabled?: boolean
-  path: string
   placeholder?: string
   singleLine?: boolean
   autoFocus?: boolean
@@ -26,52 +26,33 @@ export const TextboxRoot = ({
   spellcheck?: boolean
   onBlur: React.FocusEventHandler<HTMLDivElement>
   onFocus: React.FocusEventHandler<HTMLDivElement>
-  onChange?: (arg: boolean) => void
 }): JSX.Element => {
-  const { provider, user } = useCollaboration()
-  // FIXME: We need to check that the path exists. If not we need to create the missing Block
-  const [content] = useYValue<Y.XmlText>(path, true)
-
-  if (!provider?.document || content === undefined) {
-    return (
-      <div className='h-10 w-full'></div>
-    )
-  }
-
   return (
-    <>
-      {!!provider && content
-        && (
-          <Textbit.Root
-            debounce={0}
-            autoFocus={autoFocus}
-            onBlur={onBlur}
-            onFocus={onFocus}
-            placeholder={placeholder}
-            plugins={[
-              LocalizedQuotationMarks(),
-              Text({
-                singleLine,
-                countCharacters,
-                classNames: {
-                  body: 'font-sans py-0'
-                }
-              })
-            ]}
-            className='h-min-2 w-full'
-          >
-            <TextboxEditable
-              disabled={disabled}
-              content={content}
-              provider={provider}
-              path={path}
-              singleLine={singleLine}
-              user={user}
-              spellcheck={spellcheck}
-              onChange={onChange}
-            />
-          </Textbit.Root>
-        )}
-    </>
+    <Textbit.Root
+      debounce={0}
+      autoFocus={autoFocus}
+      onBlur={onBlur}
+      onFocus={onFocus}
+      placeholder={placeholder}
+      plugins={[
+        LocalizedQuotationMarks(),
+        Text({
+          singleLine,
+          countCharacters,
+          classNames: {
+            body: 'font-sans py-0'
+          }
+        })
+      ]}
+      className='h-min-2 w-full'
+    >
+      <TextboxEditable
+        disabled={disabled}
+        value={value}
+        ydoc={ydoc}
+        singleLine={singleLine}
+        spellcheck={spellcheck}
+      />
+    </Textbit.Root>
   )
 }

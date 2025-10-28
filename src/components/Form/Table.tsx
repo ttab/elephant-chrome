@@ -1,7 +1,9 @@
 import { cva } from 'class-variance-authority'
 import { type FormProps } from './Root'
 
-export const Table = ({ children, asDialog }: FormProps): JSX.Element => {
+export const Table = ({ children, asDialog, className }: FormProps & {
+  className?: string
+}): JSX.Element => {
   const variants = cva('flex flex-col px-4',
     {
       variants: {
@@ -13,7 +15,7 @@ export const Table = ({ children, asDialog }: FormProps): JSX.Element => {
     })
 
   return (
-    <div className={variants({ asDialog })}>
+    <div className={variants({ asDialog, className })}>
       {children}
     </div>
   )

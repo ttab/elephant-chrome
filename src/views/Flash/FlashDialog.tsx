@@ -6,7 +6,7 @@ import {
 import type { DefaultValueOption, ViewProps } from '@/types'
 import { Button, Checkbox, ComboBox, Label } from '@ttab/elephant-ui'
 import { CircleXIcon, TagsIcon, GanttChartSquareIcon } from '@ttab/elephant-ui/icons'
-import { useCollaboration, useYValue, useRegistry, useSections } from '@/hooks'
+import { useRegistry, useSections } from '@/hooks'
 import { useSession } from 'next-auth/react'
 import type { Dispatch, SetStateAction } from 'react'
 import { useRef, useState } from 'react'
@@ -20,16 +20,23 @@ import { CreatePrompt } from '@/components/CreatePrompt'
 import { FlashHeader } from './FlashHeader'
 import { Block } from '@ttab/elephant-api/newsdoc'
 import { toast } from 'sonner'
+import { useYDocument, useYValue } from '@/modules/yjs/hooks'
+import type { EleDocumentResponse } from '@/shared/types'
+import type * as Y from 'yjs'
 
-export const FlashDialog = (props: ViewProps): JSX.Element => {
-  const { provider } = useCollaboration()
+export const FlashDialog = (props: {
+  documentId: string
+  data?: EleDocumentResponse
+} & ViewProps): JSX.Element => {
+  const ydoc = useYDocument<Y.Map<unknown>>(props.documentId, { data: props.data })
+
   const { status, data: session } = useSession()
   const planningAwareness = useRef<(value: boolean) => void>(null)
   const [sendPrompt, setSendPrompt] = useState(false)
   const [savePrompt, setSavePrompt] = useState(false)
   const [donePrompt, setDonePrompt] = useState(false)
   const [selectedPlanning, setSelectedPlanning] = useState<Omit<DefaultValueOption, 'payload'> & { payload: unknown } | undefined>(undefined)
-  const [, setTitle] = useYValue<string | undefined>('root.title')
+  const [, setTitle] = useYValue<string | undefined>(ydoc.ele, 'root.title')
   const { index, locale, timeZone } = useRegistry()
   const [searchOlder, setSearchOlder] = useState(false)
   const [section, setSection] = useState<{
@@ -38,10 +45,9 @@ export const FlashDialog = (props: ViewProps): JSX.Element => {
     uuid: string
     title: string
   } | undefined>(undefined)
-  const [documentId] = useYValue<string>('root.uuid')
   const readOnly = Number(props?.version) > 0 && !props.asDialog
   const allSections = useSections()
-  const [, setYSection] = useYValue<Block | undefined>('links.core/section[0]')
+  const [, setYSection] = useYValue<Block | undefined>(ydoc.ele, 'links.core/section[0]')
 
   const handleSubmit = (setCreatePrompt: Dispatch<SetStateAction<boolean>>): void => {
     setCreatePrompt(true)
@@ -86,19 +92,19 @@ export const FlashDialog = (props: ViewProps): JSX.Element => {
     }
   ]
 
-  if (!provider?.synced) {
+  if (!ydoc.provider?.isSynced) {
     return <></>
   }
 
   return (
     <View.Root asDialog={props.asDialog} className={props.className}>
-      <FlashHeader documentId={documentId} asDialog={props.asDialog} onDialogClose={props.onDialogClose} readOnly={readOnly} />
+      <FlashHeader ydoc={ydoc} asDialog={props.asDialog} onDialogClose={props.onDialogClose} readOnly={readOnly} />
       <View.Content>
         <Form.Root asDialog={props.asDialog}>
           <Form.Content>
             {props.asDialog && (
               <Form.Group icon={GanttChartSquareIcon}>
-                <Awareness path='FlashPlanningItem' ref={planningAwareness}>
+                <Awareness path='FlashPlanningItem' ref={planningAwareness} ydoc={ydoc}>
                   <ComboBox
                     max={1}
                     size='xs'
@@ -171,7 +177,7 @@ export const FlashDialog = (props: ViewProps): JSX.Element => {
 
             {!selectedPlanning && props.asDialog && (
               <Form.Group icon={TagsIcon}>
-                <Section onSelect={setSection} />
+                <Section ydoc={ydoc} path='links.core/section[0]' onSelect={setSection} />
               </Form.Group>
             )}
 
@@ -181,7 +187,7 @@ export const FlashDialog = (props: ViewProps): JSX.Element => {
                 : (<>Denna flash kommer läggas i ett nytt uppdrag i den valda planeringen</>)}
             </UserMessage>
 
-            <FlashEditor setTitle={setTitle} />
+            <FlashEditor ydoc={ydoc} setTitle={setTitle} />
 
           </Form.Content>
 
@@ -195,7 +201,7 @@ export const FlashDialog = (props: ViewProps): JSX.Element => {
                   secondaryLabel={config.secondaryLabel}
                   primaryLabel={config.primaryLabel}
                   onPrimary={() => {
-                    if (!provider || !props.id || !session) {
+                    if (!ydoc.provider || !props.documentId || !session) {
                       console.error('Environment is not sane, flash cannot be created')
                       return
                     }
@@ -205,7 +211,7 @@ export const FlashDialog = (props: ViewProps): JSX.Element => {
                     }
 
                     createFlash({
-                      flashProvider: provider,
+                      flashProvider: ydoc.provider,
                       status,
                       session,
                       planningId: selectedPlanning?.value,

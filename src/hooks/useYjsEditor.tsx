@@ -2,23 +2,22 @@ import { useMemo, useEffect } from 'react'
 import { createEditor } from 'slate'
 import { YjsEditor, withCursors, withYHistory, withYjs } from '@slate-yjs/core'
 import { type YXmlText } from 'node_modules/yjs/dist/src/internals'
-import { type HocuspocusProvider } from '@hocuspocus/provider'
-import { type AwarenessUserData } from '@/contexts/CollaborationProvider'
-
+import type { YDocument } from '@/modules/yjs/hooks'
+import type * as Y from 'yjs'
 /**
  * Hook for creating and managing a YJS-enabled Textbit editor
  */
 export function useYjsEditor(
-  provider: HocuspocusProvider | undefined,
-  user: AwarenessUserData
+  ydoc: YDocument<Y.Map<unknown>>
 ) {
   // Create YJS editor with cursors and history
   const yjsEditor = useMemo(() => {
-    if (!provider?.awareness) {
+    if (!ydoc.provider?.awareness) {
+      console.warn('No provider awareness found')
       return undefined
     }
 
-    const content = provider.document.getMap('ele').get('content') as YXmlText
+    const content = ydoc.ele.get('content') as YXmlText
 
     return withYHistory(
       withCursors(
@@ -26,11 +25,11 @@ export function useYjsEditor(
           createEditor(),
           content
         ),
-        provider.awareness,
-        { data: user as unknown as Record<string, unknown> }
+        ydoc.provider.awareness,
+        { data: ydoc.user ?? undefined }
       )
     )
-  }, [provider?.awareness, provider?.document, user])
+  }, [ydoc])
 
   // Connect/disconnect from provider
   useEffect(() => {

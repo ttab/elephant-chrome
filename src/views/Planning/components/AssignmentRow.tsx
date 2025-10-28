@@ -18,10 +18,8 @@ import {
 } from '@ttab/elephant-ui/icons'
 import { type MouseEvent, useMemo, useState, useCallback, useEffect, useRef } from 'react'
 import { SluglineButton } from '@/components/DataItem/Slugline'
-import { useYValue } from '@/hooks/useYValue'
 import { useLink } from '@/hooks/useLink'
 import { Prompt } from '@/components'
-import { useCollaboration } from '@/hooks/useCollaboration'
 import { Button, Tooltip } from '@ttab/elephant-ui'
 import type { Block } from '@ttab/elephant-api/newsdoc'
 import { deleteByYPath, getValueByYPath } from '@/shared/yUtils'
@@ -45,16 +43,17 @@ import { timeSlotTypes } from '@/defaults/assignmentTimeConstants'
 import { DocumentStatuses } from '@/defaults/documentStatuses'
 import useSWR from 'swr'
 import { useRepositoryEvents } from '@/hooks/useRepositoryEvents'
+import { type YDocument, useYValue } from '@/modules/yjs/hooks'
 import { toast } from 'sonner'
 
-export const AssignmentRow = ({ index, onSelect, isFocused = false, asDialog, onChange }: {
+export const AssignmentRow = ({ ydoc, index, onSelect, isFocused = false, asDialog, onChange }: {
+  ydoc: YDocument<Y.Map<unknown>>
   index: number
-  onSelect: () => void
+  onSelect?: () => void
   isFocused?: boolean
   asDialog?: boolean
   onChange?: (arg: boolean) => void
 }): JSX.Element => {
-  const { provider } = useCollaboration()
   const openArticle = useLink('Editor')
   const openFlash = useLink('Flash')
 
@@ -63,34 +62,34 @@ export const AssignmentRow = ({ index, onSelect, isFocused = false, asDialog, on
   const { data: session } = useSession()
 
   const base = `meta.core/assignment[${index}]`
-  const [assignment] = useYValue<Y.Map<unknown> | undefined>(base, true)
-  const [inProgress] = useYValue(`${base}.__inProgress`)
-  const [articleId] = useYValue<string>(`${base}.links.core/article[0].uuid`)
-  const [flashId] = useYValue<string>(`${base}.links.core/flash[0].uuid`)
+  const [assignment] = useYValue<Y.Map<unknown>>(ydoc.ele, base, true)
+  const [inProgress] = useYValue(assignment, '__inProgress')
+  const [articleId] = useYValue<string>(assignment, 'links.core/article[0].uuid')
+  const [flashId] = useYValue<string>(assignment, 'links.core/flash[0].uuid')
 
   const { data: articleStatus, mutate } = useSWR(['articlestatus', articleId, flashId], async () => {
     const id = articleId || flashId
+
     if ((id) && session?.accessToken) {
       return await repository?.getMeta({ uuid: id, accessToken: session.accessToken })
     }
   })
 
-  const [editorialInfoId] = useYValue<string>(`${base}.links.core/editorial-info[0].uuid`)
-  const [assignmentType] = useYValue<string>(`${base}.meta.core/assignment-type[0].value`)
-  const [assignmentId] = useYValue<string>(`${base}.id`)
-  const [title] = useYValue<string>(`${base}.title`)
-  const [description] = useYValue<string>(`${base}.meta.core/description[0].data.text`)
-  const [publishTime] = useYValue<string>(`${base}.data.publish`)
-  const [startTime] = useYValue<string>(`${base}.data.start`)
-  const [endTime] = useYValue<string>(`${base}.data.end`)
-  const [publishSlot] = useYValue<string>(`${base}.data.publish_slot`)
-  const [authors = []] = useYValue<Block[]>(`meta.core/assignment[${index}].links.core/author`)
-  const [slugline] = useYValue<string>(`${base}.meta.tt/slugline[0].value`)
+  const [editorialInfoId] = useYValue<string>(assignment, 'links.core/editorial-info[0].uuid')
+  const [assignmentType] = useYValue<string>(assignment, 'meta.core/assignment-type[0].value')
+  const [assignmentId] = useYValue<string>(assignment, 'id')
+  const [title] = useYValue<string>(assignment, 'title')
+  const [description] = useYValue<string>(assignment, 'meta.core/description[0].data.text')
+  const [publishTime] = useYValue<string>(assignment, 'data.publish')
+  const [startTime] = useYValue<string>(assignment, 'data.start')
+  const [endTime] = useYValue<string>(assignment, 'data.end')
+  const [publishSlot] = useYValue<string>(assignment, 'data.publish_slot')
+  const [authors = []] = useYValue<Block[]>(assignment, 'links.core/author')
+  const [slugline] = useYValue<string>(assignment, 'meta.tt/slugline[0].value')
 
   const [showVerifyDialog, setShowVerifyDialog] = useState<boolean>(false)
   const [showCreateDialogPayload, setShowCreateDialogPayload] = useState<boolean>(false)
-  const yRoot = provider?.document.getMap('ele')
-  const [planningId] = getValueByYPath<string | undefined>(yRoot, 'root.uuid')
+  const [planningId] = getValueByYPath<string | undefined>(ydoc.ele, 'root.uuid')
 
   const documentId = articleId || flashId || editorialInfoId
   const isDocument = assignmentType === 'flash' || assignmentType === 'text' || assignmentType === 'editorial-info'
@@ -186,12 +185,10 @@ export const AssignmentRow = ({ index, onSelect, isFocused = false, asDialog, on
         undefined,
         undefined,
         event instanceof KeyboardEvent && event.key === ' ')
-    } else {
-      if (!asDialog && provider?.document) {
-        setShowCreateDialogPayload(true)
-      }
+    } else if (!asDialog && ydoc.ele) {
+      setShowCreateDialogPayload(true)
     }
-  }, [documentId, provider?.document, openDocument, asDialog])
+  }, [documentId, ydoc.ele, openDocument, asDialog])
 
   const rowRef = useRef<HTMLDivElement>(null)
   useEffect(() => {
@@ -229,10 +226,13 @@ export const AssignmentRow = ({ index, onSelect, isFocused = false, asDialog, on
     {
       label: 'Redigera',
       icon: EditIcon,
+      disabled: !onSelect,
       item: <T extends HTMLElement>(event: MouseEvent<T>) => {
         event.stopPropagation()
         event.preventDefault()
-        onSelect()
+        if (onSelect) {
+          onSelect()
+        }
       }
     },
     {
@@ -250,11 +250,12 @@ export const AssignmentRow = ({ index, onSelect, isFocused = false, asDialog, on
       item: () => {
         showModal(
           <Move
+            ydoc={ydoc}
             asDialog
             onChange={onChange}
             onDialogClose={hideModal}
             original={{
-              document: provider?.document,
+              document: ydoc.provider?.document,
               assignmentId,
               assignmentTitle: title,
               assignment,
@@ -271,9 +272,9 @@ export const AssignmentRow = ({ index, onSelect, isFocused = false, asDialog, on
       item: () => {
         showModal(
           <CreatePrintArticle
+            ydoc={ydoc}
             asDialog
             onDialogClose={hideModal}
-            id={documentId}
           />
         )
       }
@@ -314,7 +315,7 @@ export const AssignmentRow = ({ index, onSelect, isFocused = false, asDialog, on
             || (assignmentType === 'flash' && articleStatus?.meta?.heads?.['usable']?.version === articleStatus?.meta?.currentVersion)
           const version = articleStatus?.meta?.heads?.['usable']?.version
           onOpenEvent(event, isUsable && version ? { version } : undefined)
-        } else {
+        } else if (onSelect) {
           onSelect()
         }
       }}
@@ -323,14 +324,14 @@ export const AssignmentRow = ({ index, onSelect, isFocused = false, asDialog, on
 
         <div className='flex grow gap-2 items-center'>
           <AssignmentType
-            path={`meta.core/assignment[${index}]`}
+            assignment={assignment}
             editable={!documentId}
             readOnly
           />
           <AssigneeAvatars assignees={authors.map((author) => author.title)} />
 
           <div className='hidden items-center @3xl/view:flex'>
-            <SluglineButton path={`meta.core/assignment[${index}].meta.tt/slugline[0].value`} />
+            <SluglineButton value={slugline} />
           </div>
         </div>
 
@@ -340,13 +341,16 @@ export const AssignmentRow = ({ index, onSelect, isFocused = false, asDialog, on
           </div>
 
           <Button
+            disabled={!onSelect}
             variant='ghost'
             size='sm'
-            className='w-9 px-0 hover:bg-accent2'
+            className='w-9 px-0 hover:bg-accent2 hover:bg-gray-200'
             onClick={(event) => {
               event.preventDefault()
               event.stopPropagation()
-              onSelect()
+              if (onSelect) {
+                onSelect()
+              }
             }}
           >
             <PenIcon size={18} strokeWidth={1.75} className='text-muted-foreground' />
@@ -370,7 +374,12 @@ export const AssignmentRow = ({ index, onSelect, isFocused = false, asDialog, on
           <span className='leading-relaxed group-hover/assrow:underline'>{title}</span>
         </div>
         <div className='flex items-center gap-2'>
-          <AssignmentVisibility path={`meta.core/assignment[${index}].data.public`} editable={false} disabled={false} />
+          <AssignmentVisibility
+            ydoc={ydoc}
+            path={`meta.core/assignment[${index}].data.public`}
+            editable={false}
+            disabled={false}
+          />
         </div>
       </div>
 
@@ -386,7 +395,7 @@ export const AssignmentRow = ({ index, onSelect, isFocused = false, asDialog, on
       }
 
       <div className='flex flex-row @3xl/view:hidden'>
-        <SluglineButton path={`meta.core/assignment[${index}].meta.tt/slugline[0].value`} />
+        <SluglineButton value={slugline} />
       </div>
 
       {showVerifyDialog && (
@@ -398,11 +407,7 @@ export const AssignmentRow = ({ index, onSelect, isFocused = false, asDialog, on
           onPrimary={(event) => {
             event.stopPropagation()
             setShowVerifyDialog(false)
-            deleteByYPath(
-              provider?.document.getMap('ele'),
-              `meta.core/assignment[${index}]`
-            )
-
+            deleteByYPath(ydoc.ele, `meta.core/assignment[${index}]`)
             onChange?.(true)
           }}
           onSecondary={() => {
@@ -424,17 +429,18 @@ export const AssignmentRow = ({ index, onSelect, isFocused = false, asDialog, on
         />
       )}
 
-      {showCreateDialogPayload && provider?.document && (slugline || assignmentType === 'flash') && (
+      {showCreateDialogPayload && ydoc.provider?.document && (slugline || assignmentType === 'flash') && (
         <CreateDeliverablePrompt
-          payload={createPayload(provider.document, index, assignmentType) || {}}
+          ydoc={ydoc}
+          payload={createPayload(ydoc.provider.document, index, assignmentType) || {}}
           deliverableType={getDeliverableType(assignmentType)}
           title={title || ''}
           documentLabel={documentLabel || ''}
           onClose={(id) => {
-            if (id && provider?.document) {
+            if (id && ydoc.provider?.document) {
               // Add document id to correct assignment
               appendDocumentToAssignment({
-                document: provider.document,
+                document: ydoc.provider.document,
                 id,
                 index,
                 slug: '',
@@ -442,7 +448,7 @@ export const AssignmentRow = ({ index, onSelect, isFocused = false, asDialog, on
               })
 
               if (planningId) {
-                snapshotDocument(planningId, undefined, provider.document).then(() => {
+                snapshotDocument(planningId, undefined, ydoc.provider.document).then(() => {
                   const openDocument = assignmentType === 'flash' ? openFlash : openArticle
                   openDocument(undefined, { id, planningId }, 'blank')
                 }).catch((ex: unknown) => {

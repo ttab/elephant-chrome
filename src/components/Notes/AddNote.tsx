@@ -1,16 +1,19 @@
-import { useYValue } from '@/hooks/useYValue'
+import type { YDocument } from '@/modules/yjs/hooks'
+import { useYValue } from '@/modules/yjs/hooks/useYValue'
 import { Block } from '@ttab/elephant-api/newsdoc'
 import { Button, DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@ttab/elephant-ui'
 import { MessageSquarePlusIcon } from '@ttab/elephant-ui/icons'
 import { cn } from '@ttab/elephant-ui/utils'
+import type * as Y from 'yjs'
 
 type NoteRole = 'internal' | 'public'
 
-export const AddNote = ({ text = '', role }: {
+export const AddNote = ({ ydoc, text = '', role }: {
+  ydoc: YDocument<Y.Map<unknown>>
   text?: string
   role?: NoteRole
 }): JSX.Element => {
-  const [notes, setNotes] = useYValue<Block[] | undefined>('meta.core/note')
+  const [notes, setNotes] = useYValue<Block[] | undefined>(ydoc.ele, 'meta.core/note')
 
   const handleClick = (role: NoteRole) => {
     const newNote = Block.create({

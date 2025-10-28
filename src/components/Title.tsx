@@ -1,42 +1,56 @@
-import React from 'react'
 import type { FormProps } from './Form/Root'
 import { TextBox } from './ui'
 import { Validation } from './Validation'
+import { useYPath, type YDocument } from '@/modules/yjs/hooks'
+import type * as Y from 'yjs'
 
-export const Title = React.memo(({
+/**
+ *
+ * @deprecated Use the new TextInput component instead.
+ */
+export const Title = ({
+  ydoc,
+  rootMap,
+  value,
   autoFocus,
   placeholder,
-  path,
   className,
   onValidation,
-  validateStateRef,
-  countCharacters,
-  onChange
+  validateStateRef
 }: {
+  ydoc: YDocument<Y.Map<unknown>>
+  rootMap?: Y.Map<unknown>
+  value?: Y.XmlText
   autoFocus?: boolean
   placeholder: string
-  path?: string
   className?: string
-  countCharacters?: boolean
-} & FormProps): JSX.Element => (
-  <Validation
-    label='Titel'
-    path={path || 'root.title'}
-    block='title'
-    onValidation={onValidation}
-    validateStateRef={validateStateRef}
-  >
-    <TextBox
-      path={path || 'root.title'}
-      placeholder={placeholder}
-      className={className}
-      autoFocus={!!autoFocus}
-      singleLine={true}
-      countCharacters={countCharacters}
-      onChange={onChange}
-    />
-  </Validation>
-)
-)
+} & FormProps): JSX.Element => {
+  const path = useYPath(value, true)
+
+  if (!value) {
+    return <></>
+  }
+
+  return (
+    <Validation
+      ydoc={ydoc}
+      rootMap={rootMap}
+      label='Titel'
+      path={path}
+      block='title'
+      onValidation={onValidation}
+      validateStateRef={validateStateRef}
+    >
+      <TextBox
+        ydoc={ydoc}
+        value={value}
+        placeholder={placeholder}
+        className={className}
+        autoFocus={autoFocus}
+        singleLine={true}
+      />
+    </Validation>
+  )
+}
 
 Title.displayName = 'Title'

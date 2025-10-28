@@ -1,11 +1,12 @@
 import { renderHook } from '@testing-library/react'
-import { useYValue } from '@/hooks/useYValue'
+import { useYValue } from '@/modules/yjs/hooks'
 import { type CollaborationWrapper, initializeCollaborationWrapper } from './utils/initializeCollaborationWrapper'
 import { act } from '../setupTests'
 import { Block } from '@ttab/elephant-api/newsdoc'
-import type * as Y from 'yjs'
+import * as Y from 'yjs'
 
 let init: CollaborationWrapper
+let ydoc: Y.Map<unknown>
 
 const culturePayload = Block.create({
   uuid: '1c0df6b4-d82e-5ae6-aaee-47e33c04ba5b',
@@ -24,6 +25,7 @@ const sportsPayload = Block.create({
 describe('useYValue', () => {
   beforeAll(async () => {
     init = await initializeCollaborationWrapper()
+    ydoc = init.provider.document.getMap('ele')
   })
 
   afterAll(async () => {
@@ -33,20 +35,20 @@ describe('useYValue', () => {
 
   it('gets a simple value', () => {
     const { result } = renderHook(() =>
-      useYValue<string>('meta.core/assignment[0].title'), { wrapper: init.wrapper })
+      useYValue<string>(ydoc, 'meta.core/assignment[0].title'), { wrapper: init.wrapper })
     expect(result.current[0]).toBe('Kortare text utsänd. Uppdateras')
   })
 
   it('sets a simple value', () => {
     const { result } = renderHook(() =>
-      useYValue<string>('meta.core/assignment[0].title'), { wrapper: init.wrapper })
+      useYValue<string>(ydoc, 'meta.core/assignment[0].title'), { wrapper: init.wrapper })
     act(() => result.current[1]('Kortare text utbytt. Uppdaterats'))
     expect(result.current[0]).toBe('Kortare text utbytt. Uppdaterats')
   })
 
   it('gets an object from an array, SPT', () => {
     const { result } = renderHook(() =>
-      useYValue<Block>('links.core/section[0]'), { wrapper: init.wrapper })
+      useYValue<Block>(ydoc, 'links.core/section[0]'), { wrapper: init.wrapper })
 
     expect(result.current[0]).toEqual({
       ...sportsPayload,
@@ -56,33 +58,35 @@ describe('useYValue', () => {
     })
   })
 
-
   it('replaces an object in an array, from SPT to KLT', () => {
     const { result } = renderHook(() =>
-      useYValue<Block>('links.core/section[0]'), { wrapper: init.wrapper })
+      useYValue<Block>(ydoc, 'links.core/section[0]'), { wrapper: init.wrapper })
 
     act(() => result.current[1](culturePayload))
     expect(result.current[0]).toEqual(culturePayload)
+
+    act(() => result.current[1](sportsPayload))
   })
 
   it('appends and removes an object to an array', () => {
     const { result } = renderHook(() =>
-      useYValue<Block[] | undefined>('links.core/section'), { wrapper: init.wrapper })
+      useYValue<Block[] | undefined>(ydoc, 'links.core/section'), { wrapper: init.wrapper })
 
-    expect(result.current[0]).toHaveLength(1)
+    const initialSections = [...(result.current[0] ?? [])]
+    expect(initialSections).toHaveLength(1)
 
     // Append
-    act(() => result.current[1]([...(result.current[0] || []), sportsPayload]))
+    act(() => result.current[1]([...(result.current[0] ?? []), sportsPayload]))
     expect(result.current[0]).toHaveLength(2)
 
     // Remove
-    act(() => result.current[1]((result.current[0] || []).slice(0, 1)))
+    act(() => result.current[1](initialSections))
     expect(result.current[0]).toHaveLength(1)
   })
 
   it('modifies existing slugline', () => {
     const { result } = renderHook(() =>
-      useYValue<string | undefined>('meta.core/assignment[0].meta.tt/slugline[0].value'), { wrapper: init.wrapper })
+      useYValue<string | undefined>(ydoc, 'meta.core/assignment[0].meta.tt/slugline[0].value'), { wrapper: init.wrapper })
 
     expect(result.current[0]).toBe('lands-tomasson')
     act(() => result.current[1]('test'))
@@ -91,28 +95,106 @@ describe('useYValue', () => {
 
   it('creates non-existing slugline', () => {
     const { result } = renderHook(() =>
-      useYValue<string | undefined>('meta.core/assignment[1].meta.tt/slugline[0].value'), { wrapper: init.wrapper })
+      useYValue<string | undefined>(ydoc, 'meta.core/assignment[1].meta.tt/slugline[0].value'), { wrapper: init.wrapper })
 
     expect(result.current[0]).toBe('')
     act(() => result.current[1]('test'))
     expect(result.current[0]).toEqual('test')
   })
 
-  it('handles __inProgress', () => {
-    const { result } = renderHook(() => {
-      return {
-        progress: useYValue<boolean | undefined>('meta.core/assignment[0].__inProgress'),
-        assignment: useYValue<Y.Map<boolean>>('meta.core/assignment[0]', true)
-      }
-    }, { wrapper: init.wrapper }
-    )
+  it('returns and preserves raw Y.XmlText', () => {
+    const { result } = renderHook(() =>
+      useYValue<Y.XmlText>(ydoc, 'root.title', true), { wrapper: init.wrapper })
 
-    expect(result.current.progress[0]).toBeFalsy()
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+    const originalValue = result.current[0]?.toString()
+    expect(result.current[0]).toBeInstanceOf(Y.XmlText)
+    expect(originalValue).toBeTruthy()
 
     act(() => {
-      result.current.assignment[0]?.set('__inProgress', true)
+      result.current[0]?.insert(0, 'Updated: ')
     })
 
-    expect(result.current.progress[0]).toBeTruthy()
+    expect(result.current[0]?.toString()).toBe(`Updated: ${originalValue}`)
+
+    act(() => {
+      const rawText = result.current[0]
+      rawText?.delete(0, 'Updated: '.length)
+    })
+
+    expect(result.current[0]?.toString()).toBe(originalValue)
+  })
+
+  it('recomputes when array mutations shift nested paths', () => {
+    const { result } = renderHook(() => {
+      return {
+        sectionTitle: useYValue<string | undefined>(ydoc, 'links.core/section[0].title'),
+        sections: useYValue<Block[] | undefined>(ydoc, 'links.core/section')
+      }
+    }, { wrapper: init.wrapper })
+
+    const originalSections = [...(result.current.sections[0] ?? [])]
+    expect(result.current.sectionTitle[0]).toBe('Sport')
+
+    act(() => {
+      result.current.sections[1]([culturePayload, ...(result.current.sections[0] ?? [])])
+    })
+
+    expect(result.current.sectionTitle[0]).toBe('Kultur och nöje')
+
+    act(() => {
+      result.current.sections[1](originalSections)
+    })
+
+    expect(result.current.sectionTitle[0]).toBe('Sport')
+  })
+
+  it('recovers after replacing the observed tree', () => {
+    const { result } = renderHook(() => {
+      return {
+        assignmentTitle: useYValue<string>(ydoc, 'meta.core/assignment[0].title'),
+        assignments: useYValue<Block[] | undefined>(ydoc, 'meta.core/assignment')
+      }
+    }, { wrapper: init.wrapper })
+
+    const originalAssignments = [...(result.current.assignments[0] ?? [])]
+    const originalTitle = originalAssignments[0]?.title
+
+    const replacementAssignments = originalAssignments.map((assignment, index) => {
+      if (index === 0) {
+        return {
+          ...assignment,
+          title: 'Replaced assignment title'
+        }
+      }
+      return assignment
+    })
+
+    expect(result.current.assignmentTitle[0]).toBe(originalTitle)
+
+    act(() => {
+      result.current.assignments[1](replacementAssignments)
+    })
+
+    expect(result.current.assignmentTitle[0]).toBe('Replaced assignment title')
+
+    act(() => {
+      result.current.assignments[1](originalAssignments)
+    })
+
+    expect(result.current.assignmentTitle[0]).toBe(originalTitle)
+  })
+
+  it('gracefully handles missing containers', () => {
+    const { result } = renderHook(() =>
+      useYValue<string>(undefined, 'meta.core/assignment[0].title'))
+
+    expect(result.current[0]).toBeUndefined()
+
+    act(() => {
+      result.current[1]('should not throw')
+    })
+
+    expect(result.current[0]).toBeUndefined()
   })
 })

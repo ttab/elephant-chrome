@@ -6,12 +6,14 @@ import {
   Switch,
   PopoverDrawer
 } from '@ttab/elephant-ui'
-import { useYValue } from '@/hooks/useYValue'
 import { useRegistry } from '@/hooks'
 import { dateToReadableDateTime, dateToReadableTime, dateToReadableDay, createDateWithTime } from '@/shared/datetime'
 import { TimeInput } from '@/components/TimeInput'
 import { TriangleAlertIcon } from '@ttab/elephant-ui/icons'
 import type { FormProps } from '@/components/Form/Root'
+import { useYValue } from '@/modules/yjs/hooks'
+import type { YDocument } from '@/modules/yjs/hooks'
+import type * as Y from 'yjs'
 
 export interface EventData {
   end: string
@@ -81,11 +83,13 @@ const dateMidnight = (date: Date): Date => {
   )
 }
 
-export const EventTimeMenu = ({ onChange }: FormProps): JSX.Element => {
-  const [eventData] = useYValue<EventData>('meta.core/event[0].data')
-  const [, setEventStart] = useYValue<string>('meta.core/event[0].data.start')
-  const [, setEventEnd] = useYValue<string>('meta.core/event[0].data.end')
-  const [, setDateGranularity] = useYValue<string>('meta.core/event[0].data.dateGranularity')
+export const EventTimeMenu = ({ ydoc, onChange }: {
+  ydoc: YDocument<Y.Map<unknown>>
+} & FormProps): JSX.Element => {
+  const [eventData] = useYValue<EventData>(ydoc.ele, 'meta.core/event[0].data')
+  const [, setEventStart] = useYValue<string>(ydoc.ele, 'meta.core/event[0].data.start')
+  const [, setEventEnd] = useYValue<string>(ydoc.ele, 'meta.core/event[0].data.end')
+  const [, setDateGranularity] = useYValue<string>(ydoc.ele, 'meta.core/event[0].data.dateGranularity')
 
   const [open, setOpen] = useState(false)
   const [selected, setSelected] = useState<CalendarTypes.DateRange | undefined>({ from: dateMidnight(new Date()) })

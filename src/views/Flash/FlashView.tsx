@@ -1,21 +1,23 @@
 import { View } from '@/components'
 import type { ViewProps } from '@/types'
-import { useAwareness, useCollaboration, useView, useYjsEditor } from '@/hooks'
+import { useView, useYjsEditor } from '@/hooks'
 import { Form } from '@/components/Form'
 import { LocalizedQuotationMarks, Text } from '@ttab/textbit-plugins'
 import Textbit, { Gutter, useTextbit } from '@ttab/textbit'
-import type { HocuspocusProvider } from '@hocuspocus/provider'
-import type { AwarenessUserData } from '@/contexts/CollaborationProvider'
 import { FlashHeader } from './FlashHeader'
 import { useEffect, useRef } from 'react'
 import { getValueByYPath } from '@/shared/yUtils'
 import { useOnSpellcheck } from '@/hooks/useOnSpellcheck'
+import { useYDocument, type YDocument } from '@/modules/yjs/hooks'
+import type * as Y from 'yjs'
 
-export const FlashView = (props: ViewProps): JSX.Element => {
-  const { provider } = useCollaboration()
+export const FlashView = (props: {
+  documentId: string
+} & ViewProps): JSX.Element => {
+  const ydoc = useYDocument<Y.Map<unknown>>(props.documentId)
   const readOnly = Number(props?.version) > 0 && !props.asDialog
 
-  if (!props.id || !provider?.synced) {
+  if (!props.id || !ydoc.provider?.isSynced) {
     return <></>
   }
 
@@ -23,7 +25,7 @@ export const FlashView = (props: ViewProps): JSX.Element => {
     <View.Root className={props.className}>
       <View.Content>
         <Form.Root asDialog={props.asDialog}>
-          <FlashEditor documentId={props.id} readOnly={readOnly} />
+          <FlashEditor ydoc={ydoc} readOnly={readOnly} />
         </Form.Root>
       </View.Content>
     </View.Root>
@@ -32,16 +34,13 @@ export const FlashView = (props: ViewProps): JSX.Element => {
 
 
 // Main editor wrapper after document initialization
-function FlashEditor(props: ViewProps & {
-  documentId: string
+function FlashEditor({ ydoc, ...props }: ViewProps & {
+  ydoc: YDocument<Y.Map<unknown>>
   planningId?: string | null
   autoFocus?: boolean
   version?: string
   readOnly?: boolean
 }): JSX.Element {
-  const { provider, synced, user } = useCollaboration()
-  const [, setIsFocused] = useAwareness(props.documentId)
-
   const plugins = [LocalizedQuotationMarks]
 
   return (
@@ -55,21 +54,12 @@ function FlashEditor(props: ViewProps & {
           })
         ]}
         autoFocus={props.autoFocus ?? true}
-        onBlur={() => {
-          setIsFocused(false)
-        }}
-        onFocus={() => {
-          setIsFocused(true)
-        }}
         placeholders='multiple'
         className='h-screen max-h-screen flex flex-col'
       >
         <EditorContainer
-          provider={provider}
-          synced={synced}
-          user={user}
+          ydoc={ydoc}
           planningId={props.planningId}
-          documentId={props.documentId}
           readOnly={props?.readOnly}
         />
       </Textbit.Root>
@@ -79,16 +69,10 @@ function FlashEditor(props: ViewProps & {
 
 // Container component that uses TextBit context
 function EditorContainer({
-  provider,
-  synced,
-  user,
-  documentId,
+  ydoc,
   readOnly
 }: {
-  provider: HocuspocusProvider | undefined
-  synced: boolean
-  user: AwarenessUserData
-  documentId: string
+  ydoc: YDocument<Y.Map<unknown>>
   planningId?: string | null
   readOnly?: boolean
 }): JSX.Element {
@@ -96,12 +80,12 @@ function EditorContainer({
 
   return (
     <>
-      <FlashHeader documentId={documentId} asDialog={false} readOnly={readOnly} />
+      <FlashHeader ydoc={ydoc} asDialog={false} readOnly={readOnly} />
 
       <View.Content className='flex flex-col max-w-[1000px]'>
         <div className='grow overflow-auto max-w-(--breakpoint-xl)'>
-          {!!provider && synced
-            ? <EditorContent provider={provider} user={user} readOnly={readOnly} />
+          {!!ydoc.provider && ydoc.provider.isSynced
+            ? <EditorContent ydoc={ydoc} readOnly={readOnly} />
             : <></>}
         </div>
       </View.Content>
@@ -120,16 +104,15 @@ function EditorContainer({
   )
 }
 
-function EditorContent({ provider, user, readOnly }: {
-  provider: HocuspocusProvider
-  user: AwarenessUserData
+function EditorContent({ ydoc, readOnly }: {
+  ydoc: YDocument<Y.Map<unknown>>
   readOnly?: boolean
 }): JSX.Element {
   const { isActive } = useView()
   const ref = useRef<HTMLDivElement>(null)
-  const [documentLanguage] = getValueByYPath<string>(provider.document.getMap('ele'), 'root.language')
+  const [documentLanguage] = getValueByYPath<string>(ydoc.ele, 'root.language')
 
-  const yjsEditor = useYjsEditor(provider, user)
+  const yjsEditor = useYjsEditor(ydoc)
   const onSpellcheck = useOnSpellcheck(documentLanguage)
 
   // Handle focus on active state

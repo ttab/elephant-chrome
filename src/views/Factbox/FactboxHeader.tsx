@@ -4,9 +4,11 @@ import { StatusMenu } from '@/components/DocumentStatus/StatusMenu'
 import { ViewHeader } from '@/components/View'
 import { BookTextIcon } from '@ttab/elephant-ui/icons'
 import { MetaSheet } from '../Editor/components/MetaSheet'
+import type { YDocument } from '@/modules/yjs/hooks'
+import type * as Y from 'yjs'
 
-export const FactboxHeader = ({ documentId, asDialog, onDialogClose, isChanged }: {
-  documentId: string
+export const FactboxHeader = ({ ydoc, asDialog, onDialogClose, isChanged }: {
+  ydoc: YDocument<Y.Map<unknown>>
   asDialog: boolean
   onDialogClose?: () => void
   isChanged?: boolean
@@ -35,14 +37,14 @@ export const FactboxHeader = ({ documentId, asDialog, onDialogClose, isChanged }
             {!asDialog && (
               <>
                 <StatusMenu
-                  documentId={documentId}
+                  documentId={ydoc.id}
                   type='core/factbox'
                   isChanged={isChanged}
                 />
-                <MetaSheet container={containerRef.current} documentId={documentId} />
+                <MetaSheet container={containerRef.current} documentId={ydoc.id} />
               </>
             )}
-            {!!documentId && <ViewHeader.RemoteUsers documentId={documentId} />}
+            {!!ydoc.id && <ViewHeader.RemoteUsers ydoc={ydoc} />}
           </div>
         </div>
       </ViewHeader.Content>
