@@ -13,10 +13,6 @@ import { useYValue } from '@/hooks/useYValue'
 import { ConceptHeader } from './ConceptHeader'
 import { Form } from '@/components/Form'
 import { TextBox } from '@/components/ui'
-import { useSession } from 'next-auth/react'
-import { Button } from '@ttab/elephant-ui'
-import { toast } from 'sonner'
-import { snapshotDocument } from '@/lib/snapshotDocument'
 import type { HocuspocusProvider } from '@hocuspocus/provider'
 import type { AwarenessUserData } from '@/contexts/CollaborationProvider'
 
@@ -103,7 +99,6 @@ const ConceptWrapper = (props: ViewProps & { documentId: string }): JSX.Element 
 
 const ConceptContent = ({
   provider,
-  documentId,
   asDialog
 }: {
   provider: HocuspocusProvider | undefined
@@ -111,11 +106,6 @@ const ConceptContent = ({
   user: AwarenessUserData
   documentId: string
 } & ViewProps): JSX.Element => {
-  const { status, data: session } = useSession()
-  const [title] = useYValue<boolean>('root.title')
-  const [isChanged, setChanged] = useYValue<boolean>('root.changed')
-  const environmentIsSane = provider && status === 'authenticated'
-
   const handleChange = useCallback((value: boolean): void => {
     const root = provider?.document.getMap('ele').get('root') as Y.Map<unknown>
     const changed = root.get('changed') as boolean
@@ -126,23 +116,6 @@ const ConceptContent = ({
     }
   }, [provider])
 
-  const onSave = async (): Promise<void> => {
-    if (!session) {
-      toast.error('Ett fel har uppstått, ändringen kunde inte spara! Ladda om webbläsaren och försök igen')
-      return
-    }
-
-    const snapshotResponse = await snapshotDocument(documentId, {
-      status: 'usable'
-    }, provider?.document)
-
-    if (snapshotResponse && 'statusCode' in snapshotResponse && snapshotResponse.statusCode !== 200) {
-      toast.error(`Ett fel uppstod när ändringen skulle sparas: ${snapshotResponse.statusMessage || 'Okänt fel'}`)
-      return
-    }
-
-    setChanged(false)
-  }
 
   return (
     <>
@@ -159,18 +132,6 @@ const ConceptContent = ({
               onChange={handleChange}
             >
             </TextBox>
-            <div className='flex gap-2.5 align-end'>
-              <Button
-                onClick={(e) => {
-                  e.preventDefault()
-                  void onSave()
-                }}
-                disabled={!title || !environmentIsSane || !isChanged}
-                className=''
-              >
-                Spara
-              </Button>
-            </div>
           </Form.Content>
         </Form.Root>
       </View.Content>
