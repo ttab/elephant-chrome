@@ -1,4 +1,4 @@
-import { ZapIcon, ZapOffIcon, type LucideIcon } from '@ttab/elephant-ui/icons'
+import { ZapOffIcon, type LucideIcon } from '@ttab/elephant-ui/icons'
 import { cva } from 'class-variance-authority'
 import { useEffect, useRef, useState, type PropsWithChildren } from 'react'
 import { applicationMenu } from '@/defaults/applicationMenuItems'
@@ -22,7 +22,7 @@ export const Title = ({
   asDialog?: boolean
   ydoc?: YDocument<Y.Map<unknown>>
 } & PropsWithChildren): JSX.Element => {
-  const { connected, synced, provider } = ydoc ?? { connected: false, synced: false }
+  const { connected, synced } = ydoc ?? { connected: false, synced: false }
   const [isConnected, setIsConnected] = useState(true)
   const [isSynced, setIsSynced] = useState(true)
   const timeoutRef = useRef<NodeJS.Timeout | null>(null)
