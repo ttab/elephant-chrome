@@ -62,7 +62,6 @@ const ConceptWrapper = (props: ViewProps & { documentId: string }): JSX.Element 
   const { provider, synced, user } = useCollaboration()
   const [, setIsFocused] = useAwareness(props.documentId)
   const [isChanged] = useYValue<boolean>('root.changed')
-
   useEffect(() => {
     provider?.setAwarenessField('data', user)
     setIsFocused(true)
@@ -109,7 +108,6 @@ const ConceptContent = ({
   const handleChange = useCallback((value: boolean): void => {
     const root = provider?.document.getMap('ele').get('root') as Y.Map<unknown>
     const changed = root.get('changed') as boolean
-
 
     if (changed !== value) {
       root.set('changed', value)
