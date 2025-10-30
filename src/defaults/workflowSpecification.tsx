@@ -42,12 +42,12 @@ const baseConcept = {
   },
   unpublished: {
     title: 'Inaktiv',
-    description: 'Inställningen är inte aktiv',
+    description: 'Inställningen används inte',
     transitions: {
       published: {
         verify: true,
-        title: 'Använd inställning',
-        description: 'Nuvarande version kommer att användas'
+        title: 'Använd',
+        description: 'Nuvarande version kommer att aktiveras för användning'
       }
     }
   }
