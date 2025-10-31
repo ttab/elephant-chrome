@@ -1,11 +1,5 @@
-/** Section structure in indexedDB objectStore  */
+/** Concept structure in indexedDB objectStore  */
 export interface IDBConcept {
-  id: string
-  title: string
-  usableVersion?: bigint
-}
-
-export interface IDBSection extends IDBConcept {
   id: string
   title: string
   usableVersion?: bigint

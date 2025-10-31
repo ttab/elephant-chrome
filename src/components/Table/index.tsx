@@ -113,7 +113,6 @@ export const Table = <TData, TValue>({
     )
   }, [hideModal, showModal])
 
-
   const handleOpen = useCallback((event: MouseEvent<HTMLTableRowElement> | KeyboardEvent, row: RowType<unknown>): void => {
     if (type === 'Wires') {
       handlePreview(row)
