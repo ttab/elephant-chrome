@@ -44,7 +44,7 @@ const baseConcept = {
     title: 'Inaktiv',
     description: 'Inställningen används inte',
     transitions: {
-      published: {
+      usable: {
         verify: true,
         title: 'Använd',
         description: 'Nuvarande version kommer att aktiveras för användning'

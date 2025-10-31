@@ -32,7 +32,6 @@ export const ConceptList = ({ columns, title }: {
 
   const getObjects = () => {
     const data = tableDataMap[title as keyof typeof tableDataMap]
-    console.log(data)
     if (data && data.length > 0) {
       setData(data)
       return data

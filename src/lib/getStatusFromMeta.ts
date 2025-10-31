@@ -17,7 +17,6 @@ export function getStatusFromMeta(meta: DocumentMeta | StatusOverviewItem, isWor
   const isMeta = isMetaData(meta)
   const heads = meta.heads
   const version = isMeta ? meta.currentVersion : meta.version
-
   // If there are no heads it's always implicitly a 'draft'
   if (!heads || Object.keys(heads).length === 0) {
     return {
@@ -42,7 +41,11 @@ export function getStatusFromMeta(meta: DocumentMeta | StatusOverviewItem, isWor
   // need to check for them specifically.
   let flow
   if (isWorkflow) {
-    flow = meta.workflowState
+    if (meta.heads.usable.version < 0) {
+      flow = 'unpublished'
+    } else {
+      flow = meta.workflowState
+    }
   } else {
     if (meta.workflowCheckpoint === 'unpublished') {
       flow = meta.workflowState
@@ -52,7 +55,6 @@ export function getStatusFromMeta(meta: DocumentMeta | StatusOverviewItem, isWor
       flow = meta.workflowCheckpoint || meta.workflowState
     }
   }
-
   return {
     name: flow || name,
     version,

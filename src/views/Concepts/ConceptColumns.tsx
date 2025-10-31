@@ -15,7 +15,7 @@ export function ConceptColumns(): Array<ColumnDef<IDBConcept>> {
         className: 'flex-none'
       },
       accessorFn: (data) => {
-        return data?.usableVersion && data.usableVersion > 0 ? 'usable' : 'cancelled'
+        return data?.usableVersion && data.usableVersion > 0 ? 'usable' : 'unpublished'
       },
       cell: ({ row }) => {
         const status = row.getValue<string>('documentStatus')

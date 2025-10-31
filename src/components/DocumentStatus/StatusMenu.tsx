@@ -31,7 +31,8 @@ export const StatusMenu = ({ documentId, type, publishTime, onBeforeStatusChange
     'core/article',
     'core/flash',
     'core/editorial-info',
-    'tt/print-article'
+    'tt/print-article',
+    'core/section'
   ].includes(type)
   // type = core section
   const [documentStatus, setDocumentStatus] = useWorkflowStatus(documentId, shouldUseWorkflowStatus, type === 'tt/print-article')
@@ -81,7 +82,7 @@ export const StatusMenu = ({ documentId, type, publishTime, onBeforeStatusChange
           status,
           accessToken: session?.accessToken || '',
           cause: documentStatus?.cause,
-          isWorkflow: type === 'core/article' || type === 'core/planning-item' || type === 'core/event',
+          isWorkflow: type === 'core/article' || type === 'core/planning-item' || type === 'core/event' || type === 'core/section',
           currentStatus: documentStatus
         })
 
@@ -108,6 +109,10 @@ export const StatusMenu = ({ documentId, type, publishTime, onBeforeStatusChange
     }
   }
 
+  const resetDocument = () => {
+    console.log('reset documents')
+  }
+
   if (!documentStatus || !Object.keys(statuses).length) {
     return null
   }
@@ -130,13 +135,11 @@ export const StatusMenu = ({ documentId, type, publishTime, onBeforeStatusChange
       return undefined
     }
   }
-
   // For print-articles we show "unpublished changes" _only_ if checkpoint is 'usable'
   const asSave = !!(type === 'tt/print-article'
     ? isChanged && documentStatus.checkpoint === 'usable'
     : isChanged && documentStatus.name !== 'draft'
   )
-
   return (
     <>
       <div className='flex items-center' ref={containerRef}>
@@ -171,17 +174,37 @@ export const StatusMenu = ({ documentId, type, publishTime, onBeforeStatusChange
               onSelect={showPrompt}
             >
               {asSave && (
-                <StatusMenuOption
-                  key='save'
-                  status={documentStatus.name}
-                  state={{
-                    verify: true,
-                    title: `Uppdatera ändringar - ${workflow[currentStatusName]?.title}`,
-                    description: 'Uppdatera med ändringar'
-                  }}
-                  onSelect={showPrompt}
-                  statusDef={currentStatusDef}
-                />
+                <>
+                  <StatusMenuOption
+                    key='save'
+                    status={documentStatus.name}
+                    state={{
+                      verify: true,
+                      title: `Uppdatera ändringar - ${workflow[currentStatusName]?.title}`,
+                      description: 'Uppdatera med ändringar'
+                    }}
+                    onSelect={showPrompt}
+                    statusDef={currentStatusDef}
+                  />
+                  {type === 'core/section'
+                    && (
+                      <StatusMenuOption
+                        key='reset'
+                        status={documentStatus.name}
+                        state={{
+                          verify: true,
+                          title: `Återställ`,
+                          description: 'Återställ till senast avända version'
+                        }}
+                        onSelect={() => showPrompt({
+                          verify: true,
+                          title: 'Återställ',
+                          description: 'Återställ till senast avända version',
+                          status: 'reset' })}
+                        statusDef={currentStatusDef}
+                      />
+                    )}
+                </>
               )}
             </StatusOptions>
 
@@ -215,6 +238,7 @@ export const StatusMenu = ({ documentId, type, publishTime, onBeforeStatusChange
                 'core/editorial-info'
               ].includes(type)}
               unPublishDocument={unPublishDocument}
+              resetDocument={resetDocument}
             />
           )}
         </>
