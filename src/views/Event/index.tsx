@@ -91,7 +91,7 @@ const EventViewContent = (props: ViewProps & {
   // setNewItem?: Setter
 }): JSX.Element | undefined => {
   const ydoc = useYDocument<Y.Map<unknown>>(props.documentId, { data: props.data })
-  const { provider, ele: document, isChanged, setIsChanged, connected } = ydoc
+  const { provider, ele: document, connected } = ydoc
 
   const { data, status } = useSession()
   const [title] = useYValue<Y.XmlText>(document, 'root.title', true)
@@ -134,12 +134,11 @@ const EventViewContent = (props: ViewProps & {
         onDialogClose={props.onDialogClose}
         title={title?.toJSON()}
         session={data}
-        isChanged={isChanged}
         provider={provider}
         status={status}
       />
       <View.Content className='max-w-[1000px] flex-auto'>
-        <Form.Root asDialog={props.asDialog} onChange={setIsChanged}>
+        <Form.Root asDialog={props.asDialog}>
           <Form.Content>
             <Form.Title>
               <TextInput

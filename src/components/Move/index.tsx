@@ -37,7 +37,6 @@ export const Move = ({ ydoc, ...props }: ViewProps & {
     assignment: Y.Map<unknown> | undefined
     planningId: string | undefined
   }
-  onChange?: (arg: boolean) => void
 }): JSX.Element => {
   const [selectedPlanning, setSelectedPlanning] = useState<DefaultValueOption | undefined>(undefined)
   const [showVerifyDialog, setShowVerifyDialog] = useState(false)
@@ -129,8 +128,6 @@ export const Move = ({ ydoc, ...props }: ViewProps & {
 
       // Remove from old planning
       deleteByYPath(yRootOriginal, `meta.core/assignment[${originalAssignmentIndex}]`)
-
-      props.onChange?.(true)
 
       const newPlanningUUID = getValueByYPath<string>(newEle, 'root.uuid')?.[0]
       toast.success('Uppdraget har flyttats', {

@@ -15,7 +15,7 @@ import { useOnSpellcheck } from '@/hooks/useOnSpellcheck'
 import { Form, View } from '@/components'
 import { FactboxHeader } from './FactboxHeader'
 import { Error } from '@/views/Error'
-import { useCallback, useEffect, useMemo, useRef } from 'react'
+import { useEffect, useMemo, useRef } from 'react'
 import { cn } from '@ttab/elephant-ui/utils'
 import { contentMenuLabels } from '@/defaults/contentMenuLabels'
 import { snapshotDocument } from '@/lib/snapshotDocument'
@@ -123,19 +123,7 @@ const FactboxContainer = ({
 } & ViewProps): JSX.Element => {
   const { stats } = useTextbit()
   const { status } = useSession()
-  const [isChanged] = useYValue<boolean>(ydoc.ele, 'root.changed')
   const [title] = useYValue<boolean>(ydoc.ele, 'root.title')
-
-  const handleChange = useCallback((value: boolean): void => {
-    const root = ydoc.ele.get('root') as Y.Map<unknown>
-    const changed = root.get('changed') as boolean
-
-
-    if (changed !== value) {
-      root.set('changed', value)
-    }
-  }, [ydoc])
-
 
   const handleSubmit = (): void => {
     if (ydoc.provider && status === 'authenticated') {
@@ -162,14 +150,13 @@ const FactboxContainer = ({
         ydoc={ydoc}
         asDialog={!!asDialog}
         onDialogClose={onDialogClose}
-        isChanged={isChanged}
       />
 
       <View.Content className='flex flex-col max-w-[1000px]'>
         <div className='grow overflow-auto pt-2 pr-12 max-w-(--breakpoint-xl)'>
           {!!ydoc.provider && ydoc.provider.isSynced
             ? (
-                <FactboxContent ydoc={ydoc} onChange={handleChange} />
+                <FactboxContent ydoc={ydoc} />
               )
             : <></>}
         </div>

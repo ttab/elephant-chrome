@@ -19,8 +19,7 @@ export const EventHeader = ({
   provider,
   title,
   status,
-  session,
-  isChanged
+  session
 }: {
   ydoc: YDocument<Y.Map<unknown>>
   asDialog: boolean
@@ -29,7 +28,6 @@ export const EventHeader = ({
   session: Session | null
   provider: HocuspocusProvider | null
   status: 'authenticated' | 'loading' | 'unauthenticated'
-  isChanged?: boolean
 }): JSX.Element => {
   const { viewId } = useView()
   const containerRef = useRef<HTMLElement | null>(null)
@@ -58,9 +56,8 @@ export const EventHeader = ({
           <div className='flex flex-row gap-2 justify-end items-center'>
             {!asDialog && ydoc && (
               <StatusMenu
-                documentId={ydoc.id}
+                ydoc={ydoc}
                 type='core/event'
-                isChanged={isChanged}
               />
             )}
 

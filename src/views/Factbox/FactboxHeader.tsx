@@ -7,11 +7,10 @@ import { MetaSheet } from '../Editor/components/MetaSheet'
 import type { YDocument } from '@/modules/yjs/hooks'
 import type * as Y from 'yjs'
 
-export const FactboxHeader = ({ ydoc, asDialog, onDialogClose, isChanged }: {
+export const FactboxHeader = ({ ydoc, asDialog, onDialogClose }: {
   ydoc: YDocument<Y.Map<unknown>>
   asDialog: boolean
   onDialogClose?: () => void
-  isChanged?: boolean
 }): JSX.Element => {
   const { viewId } = useView()
   const containerRef = useRef<HTMLElement | null>(null)
@@ -37,14 +36,13 @@ export const FactboxHeader = ({ ydoc, asDialog, onDialogClose, isChanged }: {
             {!asDialog && (
               <>
                 <StatusMenu
-                  documentId={ydoc.id}
+                  ydoc={ydoc}
                   type='core/factbox'
-                  isChanged={isChanged}
                 />
                 <MetaSheet container={containerRef.current} documentId={ydoc.id} />
               </>
             )}
-            {!!ydoc.id && <ViewHeader.RemoteUsers ydoc={ydoc} />}
+            {!!ydoc && <ViewHeader.RemoteUsers ydoc={ydoc} />}
           </div>
         </div>
       </ViewHeader.Content>
