@@ -30,7 +30,7 @@ export const Concepts = ({ title }: ViewProps) => {
   const [currentTab, setCurrentTab] = useState<string>('list')
   const { getType, getData } = useConcepts(title)
   const columns = useMemo(() =>
-    ConceptColumns(), [title])
+    ConceptColumns(), [])
   const type = useMemo(() => getType(), [title])
   const conceptData = useMemo(() => getData(), [title])
 
