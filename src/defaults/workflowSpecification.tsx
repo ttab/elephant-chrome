@@ -4,7 +4,8 @@ import {
   CircleArrowLeftIcon,
   BadgeCheckIcon,
   CircleXIcon,
-  type LucideIcon
+  type LucideIcon,
+  CircleIcon
 } from '@ttab/elephant-ui/icons'
 
 interface WorkflowItem {
@@ -89,6 +90,10 @@ export const StatusSpecifications: Record<string, StatusSpecification> = {
   cancelled: {
     icon: CircleXIcon,
     className: 'bg-cancelled text-white fill-cancelled rounded-full'
+  },
+  inactive: {
+    icon: CircleIcon,
+    className: '  text-zinc-300 rounded-full '
   }
 }
 

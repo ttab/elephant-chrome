@@ -18,7 +18,8 @@ export function ConceptColumns(): Array<ColumnDef<IDBConcept>> {
         return data?.usableVersion && data.usableVersion > 0 ? 'usable' : 'unpublished'
       },
       cell: ({ row }) => {
-        const status = row.getValue<string>('documentStatus')
+        const status = row.getValue<string>('documentStatus') === 'usable' ? 'usable' : 'inactive'
+        console.log(status)
         return <DocumentStatus type='core/section' status={status} />
       }
     },
@@ -33,9 +34,10 @@ export function ConceptColumns(): Array<ColumnDef<IDBConcept>> {
         return data.title
       },
       cell: ({ row }) => {
+        const status = row.getValue<string>('documentStatus') === 'usable' ? 'usable' : 'inactive'
         return (
           <div>
-            <Title title={row.getValue<string>('title')} className={row.original.usableVersion && row.original.usableVersion < 0 ? 'text-zinc-400' : ''} />
+            <Title title={row.getValue<string>('title')} className={status === 'inactive' ? 'text-zinc-500' : ''} />
           </div>
         )
       }
