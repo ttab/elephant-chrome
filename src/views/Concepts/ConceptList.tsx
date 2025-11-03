@@ -26,18 +26,14 @@ export const ConceptList = ({ columns, type, conceptData }: {
 
   setData(conceptData)
 
-  if (conceptData && conceptData.length === 0) {
-    return <></>
-  } else {
-    return (
-      <>
-        <Table
-          type={type}
-          columns={columns}
-          onRowSelected={onRowSelected}
-        />
-        <Pagination total={conceptData.length || 0} />
-      </>
-    )
-  }
+  return (
+    <>
+      <Table
+        type={type}
+        columns={columns}
+        onRowSelected={onRowSelected}
+      />
+      <Pagination total={conceptData.length || 0} />
+    </>
+  )
 }

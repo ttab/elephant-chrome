@@ -35,11 +35,17 @@ export const useConcepts = (title: string | undefined) => {
   } as const
 
   const getData = () => {
+    if (!title || !(title in tableDataMap)) {
+      return undefined
+    }
     const data = tableDataMap[title as keyof typeof tableDataMap]
     return data.data
   }
 
   const getType = () => {
+    if (!title || !(title in tableDataMap)) {
+      return undefined
+    }
     const data = tableDataMap[title as keyof typeof tableDataMap]
     return data.conceptView as ViewType
   }
