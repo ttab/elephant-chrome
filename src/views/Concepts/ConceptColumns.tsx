@@ -19,7 +19,6 @@ export function ConceptColumns(): Array<ColumnDef<IDBConcept>> {
       },
       cell: ({ row }) => {
         const status = row.getValue<string>('documentStatus') === 'usable' ? 'usable' : 'inactive'
-        console.log(status)
         return <DocumentStatus type='core/section' status={status} />
       }
     },

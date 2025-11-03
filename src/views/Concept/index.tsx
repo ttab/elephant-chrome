@@ -15,6 +15,7 @@ import { Form } from '@/components/Form'
 import { TextBox } from '@/components/ui'
 import type { HocuspocusProvider } from '@hocuspocus/provider'
 import type { AwarenessUserData } from '@/contexts/CollaborationProvider'
+import { useWorkflowStatus } from '@/hooks/useWorkflowStatus'
 
 const meta: ViewMetadata = {
   name: 'Concept',
@@ -62,6 +63,7 @@ const ConceptWrapper = (props: ViewProps & { documentId: string }): JSX.Element 
   const { provider, synced, user } = useCollaboration()
   const [, setIsFocused] = useAwareness(props.documentId)
   const [isChanged] = useYValue<boolean>('root.changed')
+
   useEffect(() => {
     provider?.setAwarenessField('data', user)
     setIsFocused(true)
@@ -98,13 +100,16 @@ const ConceptWrapper = (props: ViewProps & { documentId: string }): JSX.Element 
 
 const ConceptContent = ({
   provider,
-  asDialog
+  asDialog,
+  documentId
 }: {
   provider: HocuspocusProvider | undefined
   synced: boolean
   user: AwarenessUserData
   documentId: string
 } & ViewProps): JSX.Element => {
+  const [documentStatus] = useWorkflowStatus(documentId, true)
+  const isActive = documentStatus && documentStatus.name === 'usable'
   const handleChange = useCallback((value: boolean): void => {
     const root = provider?.document.getMap('ele').get('root') as Y.Map<unknown>
     const changed = root.get('changed') as boolean
@@ -113,7 +118,6 @@ const ConceptContent = ({
       root.set('changed', value)
     }
   }, [provider])
-
 
   return (
     <>
@@ -126,8 +130,9 @@ const ConceptContent = ({
             <TextBox
               singleLine={true}
               path='root.title'
-              className='border-[1px]'
+              className={isActive ? 'border-[1px]' : ''}
               onChange={handleChange}
+              disabled={!isActive}
             >
             </TextBox>
           </Form.Content>
