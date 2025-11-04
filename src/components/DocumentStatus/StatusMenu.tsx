@@ -62,6 +62,7 @@ export const StatusMenu = ({ documentId, type, publishTime, onBeforeStatusChange
       (typeof data?.cause === 'string') ? data.cause : undefined
     )
   }, [onBeforeStatusChange, setDocumentStatus])
+
   const unPublishDocument = (newStatus?: string) => {
     if (!repository || !session?.accessToken || newStatus !== 'unpublished') {
       return
@@ -107,7 +108,12 @@ export const StatusMenu = ({ documentId, type, publishTime, onBeforeStatusChange
     }
   }
 
-  const resetDocument = () => {
+  const resetDocument = async () => {
+   /*  if (!documentId || !session?.accessToken) return
+    const usableDocument = await repository?.getStatuses({ uuids: [documentId], statuses: ['usable'], accessToken: session?.accessToken })
+    console.log(usableDocument) */
+    // get usable version
+    // create a copy of usable version and put it as the latest
     console.log('reset documents')
   }
 
@@ -170,6 +176,7 @@ export const StatusMenu = ({ documentId, type, publishTime, onBeforeStatusChange
               transitions={transitions}
               statuses={statuses}
               onSelect={showPrompt}
+              asSave={asSave}
             >
               {asSave && (
                 <>
@@ -192,12 +199,12 @@ export const StatusMenu = ({ documentId, type, publishTime, onBeforeStatusChange
                         state={{
                           verify: true,
                           title: `Återställ`,
-                          description: 'Återställ till senast avända version'
+                          description: 'Återställ till senast använda version'
                         }}
                         onSelect={() => showPrompt({
                           verify: true,
                           title: 'Återställ',
-                          description: 'Återställ till senast avända version',
+                          description: 'Återställ till senast använda version',
                           status: 'reset' })}
                         statusDef={currentStatusDef}
                       />
@@ -205,7 +212,6 @@ export const StatusMenu = ({ documentId, type, publishTime, onBeforeStatusChange
                 </>
               )}
             </StatusOptions>
-
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
