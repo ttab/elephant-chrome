@@ -108,13 +108,19 @@ export const StatusMenu = ({ documentId, type, publishTime, onBeforeStatusChange
     }
   }
 
-  const resetDocument = async () => {
-   /*  if (!documentId || !session?.accessToken) return
-    const usableDocument = await repository?.getStatuses({ uuids: [documentId], statuses: ['usable'], accessToken: session?.accessToken })
-    console.log(usableDocument) */
-    // get usable version
-    // create a copy of usable version and put it as the latest
+  const resetDocument = /* async */ () => {
+    if (!documentId || !session?.accessToken) return
+    /* const usableDocument = await repository?.getStatuses({ uuids: [documentId], statuses: ['usable'], accessToken: session?.accessToken }) */
+    /* const usableVersion = usableDocument?.items[0].heads.usable.version */
+
+    /*  const lastUsable = (await repository?.getDocuments({
+      documents: [{ uuid: documentId, version: usableVersion }],
+      accessToken: session.accessToken
+    }))?.items[0].document */
+
     console.log('reset documents')
+
+    // TODO Need to create a copy of last usable document and set that as usable. To continue after merge with other branch as components needed from there.
   }
 
   if (!documentStatus || !Object.keys(statuses).length) {
