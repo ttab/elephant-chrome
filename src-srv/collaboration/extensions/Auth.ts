@@ -1,7 +1,10 @@
 import { parseStateless, type StatelessAuth, StatelessType } from '@/shared/stateless.js'
 import type { User } from '@auth/express'
+import type {
+  beforeHandleMessagePayload
+} from '@hocuspocus/server'
 import {
-  type onStatelessPayload,
+  type onTokenSyncPayload,
   type Extension,
   type onAuthenticatePayload
 } from '@hocuspocus/server'
@@ -36,6 +39,7 @@ export class Auth implements Extension {
     accessToken: string
     user: JWT
   }> {
+    console.log('=======> onAuthenticate', accessToken.substring(0, 5))
     const jwt = await this.validateAccessToken(accessToken)
 
     return {
@@ -45,21 +49,33 @@ export class Auth implements Extension {
     }
   }
 
-  async onStateless({ payload, connection }: onStatelessPayload): Promise<void> {
-    const statelessMessage = parseStateless<StatelessAuth>(payload)
+  async onTokenSync({ token, connection }: onTokenSyncPayload): Promise<void> {
+    console.log('=======> onTokenSync', token.substring(0, 5))
+    const jwt = await this.validateAccessToken(token)
 
-    if (statelessMessage.type === StatelessType.AUTH) {
-      const jwt = await this.validateAccessToken(statelessMessage.message.accessToken)
-
-      const context = connection.context as {
-        accessToken: string
-        user: User
-      }
-
-      context.accessToken = statelessMessage.message.accessToken
-      context.user = jwt
+    const context = connection.context as {
+      accessToken: string
+      user: User
     }
+    context.accessToken = token
+    context.user = jwt
   }
+
+  // async onStateless({ payload, connection }: onStatelessPayload): Promise<void> {
+  //   const statelessMessage = parseStateless<StatelessAuth>(payload)
+
+  //   if (statelessMessage.type === StatelessType.AUTH) {
+  //     const jwt = await this.validateAccessToken(statelessMessage.message.accessToken)
+
+  //     const context = connection.context as {
+  //       accessToken: string
+  //       user: User
+  //     }
+
+  //     context.accessToken = statelessMessage.message.accessToken
+  //     context.user = jwt
+  //   }
+  // }
 
   async validateAccessToken(accessToken: string) {
     try {

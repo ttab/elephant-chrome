@@ -105,14 +105,27 @@ export class CollaborationClient {
    * Update access token and re-authenticate
    */
   updateAccessToken(newAccessToken: string): void {
+    console.log('old', this.#hp?.getToken())
     this.#accessToken = newAccessToken
 
-    if (this.#hp && this.#isConnected) {
-      // Send auth message to re-authenticate
-      const msg = `auth@${JSON.stringify({ accessToken: newAccessToken })}`
-      this.#hp.sendStateless(msg)
-      console.log('🔑 Access token updated for:', this.#documentName)
+    if (!this.#hp) {
+      return
     }
+
+    this.#hp.setConfiguration({ token: newAccessToken })
+    console.log('new', this.#hp?.getToken())
+    debugger
+    void this.#hp.sendToken().then(() => {
+      console.log('🔑 Token updated for:', this.#documentName)
+    }).catch((error) => {
+      console.error('Failed to update token:', error)
+    })
+    // if (this.#hp && this.#isConnected) {
+    //   // Send auth message to re-authenticate
+    //   const msg = `auth@${JSON.stringify({ accessToken: newAccessToken })}`
+    //   this.#hp.sendStateless(msg)
+    //
+    // }
   }
 
   /**

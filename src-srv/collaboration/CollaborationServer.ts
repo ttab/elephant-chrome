@@ -105,6 +105,10 @@ export class CollaborationServer {
     this.#handlePaths = []
   }
 
+  async onTokenSync(payload): Promise<void> {
+    console.log('ON TOKEN SYNC')
+  }
+
   /**
    * Start listening for websocket connections on all specified paths
    */
