@@ -62,7 +62,7 @@ export const Concept = (props: ViewProps & { document?: Y.Doc }): JSX.Element =>
 const ConceptWrapper = (props: ViewProps & { documentId: string }): JSX.Element => {
   const { provider, synced, user } = useCollaboration()
   const [, setIsFocused] = useAwareness(props.documentId)
-  const [isChanged] = useYValue<boolean>('root.changed')
+  const [isChanged, setChanged] = useYValue<boolean>('root.changed')
 
   useEffect(() => {
     provider?.setAwarenessField('data', user)
@@ -81,6 +81,7 @@ const ConceptWrapper = (props: ViewProps & { documentId: string }): JSX.Element 
           asDialog={!!props.asDialog}
           isChanged={isChanged}
           onDialogClose={props.onDialogClose}
+          setChanged={setChanged}
         />
         {!!provider && synced
           ? (

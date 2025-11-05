@@ -15,8 +15,9 @@ import { toast } from 'sonner'
 import { handleLink } from '../Link/lib/handleLink'
 import { useHistory, useNavigation, useView } from '@/hooks/index'
 import type { View } from '@/types/index'
+import { reset } from '@/views/Concepts/lib/reset'
 
-export const StatusMenu = ({ documentId, type, publishTime, onBeforeStatusChange, isChanged }: {
+export const StatusMenu = ({ documentId, type, publishTime, onBeforeStatusChange, isChanged, setChanged }: {
   documentId: string
   type: string
   publishTime?: Date
@@ -25,6 +26,7 @@ export const StatusMenu = ({ documentId, type, publishTime, onBeforeStatusChange
     data?: Record<string, unknown>
   ) => Promise<boolean>
   isChanged?: boolean
+  setChanged: (arg0: boolean) => void
 }) => {
   // Should read the workflow status to get correct status
   const shouldUseWorkflowStatus = [
@@ -108,19 +110,10 @@ export const StatusMenu = ({ documentId, type, publishTime, onBeforeStatusChange
     }
   }
 
-  const resetDocument = /* async */ () => {
-    if (!documentId || !session?.accessToken) return
-    /* const usableDocument = await repository?.getStatuses({ uuids: [documentId], statuses: ['usable'], accessToken: session?.accessToken }) */
-    /* const usableVersion = usableDocument?.items[0].heads.usable.version */
-
-    /*  const lastUsable = (await repository?.getDocuments({
-      documents: [{ uuid: documentId, version: usableVersion }],
-      accessToken: session.accessToken
-    }))?.items[0].document */
-
-    console.log('reset documents')
-
-    // TODO Need to create a copy of last usable document and set that as usable. To continue after merge with other branch as components needed from there.
+  const resetDocument = async () => {
+    if (!documentId || !session?.accessToken || !repository) return
+    await reset(repository, documentId, session.accessToken)
+    setChanged(false)
   }
 
   if (!documentStatus || !Object.keys(statuses).length) {
