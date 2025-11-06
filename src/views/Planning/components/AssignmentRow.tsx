@@ -46,13 +46,12 @@ import { useRepositoryEvents } from '@/hooks/useRepositoryEvents'
 import { type YDocument, useYValue } from '@/modules/yjs/hooks'
 import { toast } from 'sonner'
 
-export const AssignmentRow = ({ ydoc, index, onSelect, isFocused = false, asDialog, onChange }: {
+export const AssignmentRow = ({ ydoc, index, onSelect, isFocused = false, asDialog }: {
   ydoc: YDocument<Y.Map<unknown>>
   index: number
   onSelect?: () => void
   isFocused?: boolean
   asDialog?: boolean
-  onChange?: (arg: boolean) => void
 }): JSX.Element => {
   const openArticle = useLink('Editor')
   const openFlash = useLink('Flash')
@@ -252,7 +251,6 @@ export const AssignmentRow = ({ ydoc, index, onSelect, isFocused = false, asDial
           <Move
             ydoc={ydoc}
             asDialog
-            onChange={onChange}
             onDialogClose={hideModal}
             original={{
               document: ydoc.provider?.document,
@@ -408,7 +406,6 @@ export const AssignmentRow = ({ ydoc, index, onSelect, isFocused = false, asDial
             event.stopPropagation()
             setShowVerifyDialog(false)
             deleteByYPath(ydoc.ele, `meta.core/assignment[${index}]`)
-            onChange?.(true)
           }}
           onSecondary={() => {
             setShowVerifyDialog(false)

@@ -20,10 +20,9 @@ import { AssignmentType } from '@/components/DataItem/AssignmentType'
 import { type YDocument, useYValue } from '@/modules/yjs/hooks'
 import type * as Y from 'yjs'
 
-export const MoveDialog = ({ ydoc, onClose, onChange, newDate }: {
+export const MoveDialog = ({ ydoc, onClose, newDate }: {
   ydoc: YDocument<Y.Map<unknown>>
   onClose: () => void
-  onChange: (value: boolean) => void
   newDate: string // YYYY-MM-DD in local time
 }) => {
   const [id] = useYValue<string>(ydoc.ele, 'root.uuid')
@@ -148,7 +147,6 @@ export const MoveDialog = ({ ydoc, onClose, onChange, newDate }: {
                 setEndString(newDate)
 
                 snapshotDocument(id, undefined, ydoc.provider?.document).then(() => {
-                  onChange(true)
                   onClose()
                 }).catch((err) => {
                   console.error(err)

@@ -15,7 +15,6 @@ export const PlanningHeader = ({ ydoc, asDialog, onDialogClose, session, provide
   ydoc: YDocument<Y.Map<unknown>>
   asDialog: boolean
   onDialogClose?: () => void
-  isChanged?: boolean
   session: Session | null
   provider: HocuspocusProvider | null
   status: 'authenticated' | 'loading' | 'unauthenticated'
@@ -25,7 +24,6 @@ export const PlanningHeader = ({ ydoc, asDialog, onDialogClose, session, provide
   const containerRef = useRef<HTMLElement | null>(null)
   const [planningData] = useYValue<PlanningData>(ydoc.ele, 'meta.core/planning-item[0].data')
   const [planningTitle] = useYValue<string>(ydoc.ele, 'root.title')
-  const isChanged = ydoc.isChanged || false
 
   useEffect(() => {
     containerRef.current = (document.getElementById(viewId))
@@ -49,9 +47,8 @@ export const PlanningHeader = ({ ydoc, asDialog, onDialogClose, session, provide
           <div className='flex flex-row gap-2 justify-end items-center'>
             {!asDialog && ydoc && (
               <StatusMenu
-                documentId={ydoc.id}
+                ydoc={ydoc}
                 type='core/planning-item'
-                isChanged={isChanged}
               />
             )}
 

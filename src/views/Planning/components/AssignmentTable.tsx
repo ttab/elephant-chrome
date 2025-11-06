@@ -23,11 +23,10 @@ import {
   toYStructure
 } from '@/shared/yUtils'
 
-export const AssignmentTable = ({ ydoc, asDialog = false, documentId, onChange }: {
+export const AssignmentTable = ({ ydoc, asDialog = false, documentId }: {
   ydoc: YDocument<Y.Map<unknown>>
   asDialog?: boolean
   documentId?: string
-  onChange?: (arg: boolean) => void
 }): JSX.Element => {
   const { data: session } = useSession()
   const [assignments] = useYValue<EleBlock[]>(ydoc.ele, 'meta.core/assignment')
@@ -104,9 +103,6 @@ export const AssignmentTable = ({ ydoc, asDialog = false, documentId, onChange }
 
     if (documentId && ydoc.provider) {
       snapshotDocument(documentId, { force: true }, ydoc.provider.document)
-        .then(() => {
-          onChange?.(true)
-        })
         .catch((ex) => {
           console.error('Error closing assignment:', ex)
           toast.error('Kunde inte spara uppdraget.')
@@ -223,7 +219,6 @@ export const AssignmentTable = ({ ydoc, asDialog = false, documentId, onChange }
                     <Assignment
                       ydoc={ydoc}
                       assignment={selectedAssignment}
-                      onChange={onChange}
                       onClose={() => setSelectedId(undefined)}
                       className='-my-px -mx-[5px]'
                     />
@@ -234,7 +229,6 @@ export const AssignmentTable = ({ ydoc, asDialog = false, documentId, onChange }
                       index={index}
                       isFocused={index === focusedRowIndex}
                       asDialog={asDialog}
-                      onChange={onChange}
                       onSelect={!newAssignment
                         ? () => setSelectedId(assignment.id)
                         : undefined}
