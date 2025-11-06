@@ -4,7 +4,6 @@ import { MessageCircleMoreIcon, TagsIcon } from '@ttab/elephant-ui/icons'
 import { AssignmentType } from '@/components/DataItem/AssignmentType'
 import { AssignmentTime } from '@/components/AssignmentTime'
 import { Assignees } from '@/components/Assignees'
-import { Title } from '@/components/Title'
 import { SluglineEditable } from '@/components/DataItem/SluglineEditable'
 import { Form } from '@/components/Form'
 import { type FormProps } from '@/components/Form/Root'
@@ -13,6 +12,7 @@ import { AssignmentVisibility } from '@/components/DataItem/AssignmentVisibility
 import { type YDocument, useYPath, useYValue } from '@/modules/yjs/hooks'
 import type * as Y from 'yjs'
 import { useSession } from 'next-auth/react'
+import { TextInput } from '@/components/ui/TextInput'
 
 export const Assignment = ({ ydoc, assignment, onAbort, onClose }: {
   ydoc: YDocument<Y.Map<unknown>>
@@ -62,12 +62,12 @@ export const Assignment = ({ ydoc, assignment, onAbort, onClose }: {
       <Form.Root asDialog={true}>
         <Form.Content>
           <Form.Title>
-            <Title
+            <TextInput
               ydoc={ydoc}
-              rootMap={!assignmentInProgress ? ydoc.ele : ydoc.ctx}
               value={title}
-              placeholder='Uppdragsrubrik'
-              autoFocus={true}
+              label='Titel'
+              placeholder='Uppdragstitel'
+              autoFocus
             />
           </Form.Title>
           <TextBox

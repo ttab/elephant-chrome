@@ -12,6 +12,12 @@ export interface GetClientOptions {
   persistent?: boolean
 }
 
+interface ClientEntry {
+  client: CollaborationClient
+  refCount: number
+  cleanupTimer?: ReturnType<typeof setTimeout>
+}
+
 /**
  * CollaborationClientRegistry
  * Singleton registry that manages and reuses CollaborationClient instances
@@ -19,7 +25,8 @@ export interface GetClientOptions {
 export class CollaborationClientRegistry {
   #hpWebsocketProvider: HocuspocusProviderWebsocket
   #accessToken: string
-  #clients: Map<string, CollaborationClient> = new Map()
+  #clients: Map<string, ClientEntry> = new Map()
+  #cleanupDelay: number = 30000 // 30 seconds after last component unmounts
 
   constructor(config: CollaborationClientRegistryConfig) {
     this.#accessToken = config.accessToken
@@ -33,12 +40,12 @@ export class CollaborationClientRegistry {
     if (newAccessToken !== this.#accessToken) {
       this.#accessToken = newAccessToken
 
-      for (const client of this.#clients.values()) {
-        client.updateAccessToken(newAccessToken)
+      for (const entry of this.#clients.values()) {
+        entry.client.updateAccessToken(newAccessToken)
       }
 
       if (this.#clients.size) {
-        console.log('🔑 Access token updated for all clients')
+        console.info('🔑 Access token updated for all clients')
       }
     }
   }
@@ -49,29 +56,85 @@ export class CollaborationClientRegistry {
    */
   async get(documentName: string, options: GetClientOptions
   ): Promise<CollaborationClient> {
-    let client = this.#clients.get(documentName)
+    const entry = this.#clients.get(documentName)
 
-    if (client) {
-      console.log('♻️ Reusing existing client for:', documentName)
-      return client
+    if (entry) {
+      // Cancel any pending cleanup
+      if (entry.cleanupTimer) {
+        clearTimeout(entry.cleanupTimer)
+        entry.cleanupTimer = undefined
+        console.info('⏸️  Cleanup cancelled for:', documentName)
+      }
+
+      entry.refCount++
+      console.info(`♻️  Reusing client for: ${documentName} (refs: ${entry.refCount})`)
+      return entry.client
     }
 
-    client = new CollaborationClient(documentName, {
+    console.info('🆕 Creating new client for:', documentName)
+
+    const client = new CollaborationClient(documentName, {
       accessToken: this.#accessToken,
       hpWebsocketProvider: this.#hpWebsocketProvider,
       document: options.document,
       persistent: options.persistent
     })
-    this.#clients.set(documentName, client)
+
+    this.#clients.set(documentName, {
+      client,
+      refCount: 1
+    })
+
     await client.connect()
     return client
+  }
+
+  /**
+   * Release a reference to a client. When refCount reaches 0,
+   * schedules cleanup after a delay.
+   */
+  release(documentName: string): void {
+    const entry = this.#clients.get(documentName)
+    if (!entry) {
+      console.warn(`⚠️ Attempted to release unknown client: ${documentName}`)
+      return
+    }
+
+    entry.refCount--
+    console.info(`📉 Released client: ${documentName} (refs: ${entry.refCount})`)
+
+    if (entry.refCount <= 0) {
+      // Schedule cleanup after delay
+      console.info(`⏲️ Scheduling cleanup for: ${documentName} in ${this.#cleanupDelay}ms`)
+      entry.cleanupTimer = setTimeout(() => {
+        void this.#cleanup(documentName)
+      }, this.#cleanupDelay)
+    }
+  }
+
+  /**
+   * Internal cleanup method
+   */
+  async #cleanup(documentName: string): Promise<void> {
+    const entry = this.#clients.get(documentName)
+    if (!entry) return
+
+    // Double-check refCount in case it was incremented during the delay
+    if (entry.refCount > 0) {
+      console.info(`⏭️ Canceling cleanup for ${documentName} - still in use (refs: ${entry.refCount})`)
+      return
+    }
+
+    console.info('🗑️ Cleaning up unused client:', documentName)
+    await entry.client.disconnect()
+    this.#clients.delete(documentName)
   }
 
   /**
    * Get a client synchronously (returns undefined if not exists)
    */
   getSync(documentName: string): CollaborationClient | undefined {
-    return this.#clients.get(documentName)
+    return this.#clients.get(documentName)?.client
   }
 
   /**
@@ -85,15 +148,14 @@ export class CollaborationClientRegistry {
    * Disconnect and remove a specific client
    */
   async remove(documentName: string): Promise<void> {
-    const client = this.#clients.get(documentName)
-
-    if (!client) {
+    const entry = this.#clients.get(documentName)
+    if (!entry) {
       return
     }
 
-    console.log('🗑️ Removing client for:', documentName)
+    console.info('🗑️ Removing client for:', documentName)
 
-    await client.disconnect()
+    await entry.client.disconnect()
     this.#clients.delete(documentName)
   }
 
@@ -101,16 +163,21 @@ export class CollaborationClientRegistry {
    * Disconnect and remove all clients
    */
   async clear(): Promise<void> {
-    console.log('🗑️ Clearing all clients...')
+    console.info('🗑️ Clearing all clients...')
 
-    const disconnectPromises = Array.from(this.#clients.values()).map((client) =>
-      client.disconnect()
+    for (const entry of this.#clients.values()) {
+      if (entry.cleanupTimer) {
+        clearTimeout(entry.cleanupTimer)
+      }
+    }
+    const disconnectPromises = Array.from(this.#clients.values()).map((entry) =>
+      entry.client.disconnect()
     )
 
     await Promise.all(disconnectPromises)
     this.#clients.clear()
 
-    console.log('✅ All clients cleared')
+    console.info('✅ All clients cleared')
   }
 
   /**
@@ -131,6 +198,6 @@ export class CollaborationClientRegistry {
    * Get all clients
    */
   getAllClients(): CollaborationClient[] {
-    return Array.from(this.#clients.values())
+    return Array.from(this.#clients.values()).map((entry) => entry.client)
   }
 }

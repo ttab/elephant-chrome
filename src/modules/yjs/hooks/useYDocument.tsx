@@ -65,22 +65,33 @@ export function useYDocument<T>(
   const [isChanged, setIsChanged] = useYValue<boolean>(document.current.getMap('ctx'), ['isChanged'])
 
   /**
-   * Client lifecycle
+   * Client lifecycle - get client and release on unmount
    */
   useEffect(() => {
     if (!id || !clientRegistry) return
 
-    void clientRegistry?.get(id, { document: document.current })
+    void clientRegistry.get(id, { document: document.current })
       .then((client) => {
         setClient(client)
         // Use the collaboration client's document, not the created
         // local document. This is important when we get a reused client.
         document.current = client.getDocument()
       })
+
+    // Cleanup: release reference when component unmounts
+    return () => {
+      if (clientRegistry) {
+        clientRegistry.release(id)
+      }
+    }
   }, [id, clientRegistry])
 
+  /**
+   * Subscribe to client status changes
+   */
   useEffect(() => {
     if (!client) return
+
     return client.onStatusChange((status) => {
       setIsSynced(status.hpSynced)
       setIsConnected(status.hpOnline)
@@ -106,9 +117,7 @@ export function useYDocument<T>(
     const ymeta = document.current.getMap('ctx')
     const ymap = document.current.getMap('ele')
     const onChange = () => {
-      if (!isChanged) {
-        setIsChanged(createHash(JSON.stringify(ymap.toJSON())) !== ymeta.get('hash'))
-      }
+      setIsChanged(createHash(JSON.stringify(ymap.toJSON())) !== ymeta.get('hash'))
     }
 
     ymap.observeDeep(onChange)
@@ -135,10 +144,11 @@ export function useYDocument<T>(
       const map = document.current.getMap<T>('document')
       f(map, tr)
     })
-  }, [document])
+  }, [])
 
-
-  // Refresh access token when needed
+  /**
+   * Refresh access token when needed
+   */
   useEffect(() => {
     const provider = client?.getProvider()
     if (!provider) {

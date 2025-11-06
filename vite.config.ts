@@ -1,11 +1,11 @@
 /// <reference types="vitest" />
 import path from 'path'
 import tailwindcss from '@tailwindcss/vite'
-import { defineConfig } from 'vite'
+import { defineConfig, loadEnv } from 'vite'
 import react from '@vitejs/plugin-react'
 import { viteStaticCopy } from 'vite-plugin-static-copy'
 
-export default defineConfig(() => {
+export default defineConfig(({ mode }) => {
   return {
     port: 5173,
     base: '/elephant',
@@ -50,6 +50,7 @@ export default defineConfig(() => {
       include: ['date-fns']
     },
     test: {
+      env: loadEnv(mode, process.cwd(), ''),
       include: ['__tests__/**/*.test.ts(x)?'],
       deps: {
         optimizer: {
