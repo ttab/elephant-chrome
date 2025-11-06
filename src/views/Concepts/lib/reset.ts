@@ -1,34 +1,17 @@
-import { snapshotDocument } from '@/lib/snapshotDocument'
-import { createDocument } from '@/shared/createYItem'
 import type { Repository } from '@/shared/Repository'
-import { sectionDocumentTemplate } from '@/shared/templates/sectionDocumentTemplate'
 import { toast } from 'sonner'
+const BASE_URL = import.meta.env.BASE_URL || ''
 
-export const reset = async <T>(repository: Repository, documentId: string, accessToken: string) => {
-// Get last usable version id of document
+export const reset = async (repository: Repository, documentId: string, accessToken: string) => {
+  try {
+    const usableDocument = await repository.getStatuses({ uuids: [documentId], statuses: ['usable'], accessToken: accessToken })
+    const usableVersion = usableDocument?.items[0].heads.usable.version
 
-  const usableDocument = await repository.getStatuses({ uuids: [documentId], statuses: ['usable'], accessToken: accessToken })
-  const usableVersion = usableDocument?.items[0].heads.usable.version
-
-  const lastUsable = (await repository.getDocuments({
-    documents: [{ uuid: documentId, version: usableVersion }],
-    accessToken: accessToken
-  }))?.items[0].document
-
-  const documentCopy = createDocument({ template: sectionDocumentTemplate, inProgress: false, payload: lastUsable, documentId: documentId })
-  void snapshotDocument(documentId, { status: 'usable', addToHistory: true }, documentCopy[1]).then((response) => {
-    if (response?.statusMessage) {
-      toast.error('Kunde inte återställa dokumentet!', {
-        duration: 5000,
-        position: 'top-center'
-      })
-      return
-    }
-  })
-  console.log(lastUsable)
-  console.log(documentCopy)
+    await fetch(`${BASE_URL}/api/documents/${documentId}/restore?version=${usableVersion}`, {
+      method: 'POST'
+    })
+  } catch (error) {
+    toast.error('Det gick inte att återställa dokumentet')
+    console.error('error while restoring document: ', error)
+  }
 }
-
-// Make a copy
-// Save copy as new document
-/* const usableCopy = createDocument({ template: sectionDocumentTemplate, inProgress: false,  }) */
