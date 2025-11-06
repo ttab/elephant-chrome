@@ -12,10 +12,12 @@ export const TextInput = ({
   placeholder,
   className,
   onValidation,
+  rootMap,
   validateStateRef
 }: {
   ydoc: YDocument<Y.Map<unknown>>
   value: Y.XmlText | undefined
+  rootMap?: Y.Map<unknown>
   label: string
   autoFocus?: boolean
   placeholder: string
@@ -26,6 +28,7 @@ export const TextInput = ({
   return (
     <Validation
       ydoc={ydoc}
+      rootMap={rootMap}
       label={label}
       path={path}
       block='title'
