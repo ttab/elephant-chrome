@@ -17,7 +17,7 @@ import { useHistory, useNavigation, useView } from '@/hooks/index'
 import type { View } from '@/types/index'
 import { reset } from '@/views/Concepts/lib/reset'
 
-export const StatusMenu = ({ documentId, type, publishTime, onBeforeStatusChange, isChanged, setChanged }: {
+export const StatusMenu = ({ documentId, type, publishTime, onBeforeStatusChange, isChanged }: {
   documentId: string
   type: string
   publishTime?: Date
@@ -26,7 +26,6 @@ export const StatusMenu = ({ documentId, type, publishTime, onBeforeStatusChange
     data?: Record<string, unknown>
   ) => Promise<boolean>
   isChanged?: boolean
-  setChanged: (arg0: boolean) => void
 }) => {
   // Should read the workflow status to get correct status
   const shouldUseWorkflowStatus = [
@@ -113,7 +112,6 @@ export const StatusMenu = ({ documentId, type, publishTime, onBeforeStatusChange
   const resetDocument = async () => {
     if (!documentId || !session?.accessToken || !repository) return
     await reset(repository, documentId, session.accessToken)
-    setChanged(false)
   }
 
   if (!documentStatus || !Object.keys(statuses).length) {

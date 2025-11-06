@@ -36,11 +36,9 @@ const meta: ViewMetadata = {
 export const Concept = (props: ViewProps & { document?: Y.Doc }): JSX.Element => {
   const [query] = useQuery()
   const documentId = props.id || query.id
-
   if (!documentId) {
     return <></>
   }
-
   return (
     <>
       {typeof documentId === 'string'
@@ -62,8 +60,7 @@ export const Concept = (props: ViewProps & { document?: Y.Doc }): JSX.Element =>
 const ConceptWrapper = (props: ViewProps & { documentId: string }): JSX.Element => {
   const { provider, synced, user } = useCollaboration()
   const [, setIsFocused] = useAwareness(props.documentId)
-  const [isChanged, setChanged] = useYValue<boolean>('root.changed')
-
+  const [isChanged] = useYValue<boolean>('root.changed')
   useEffect(() => {
     provider?.setAwarenessField('data', user)
     setIsFocused(true)
@@ -81,7 +78,6 @@ const ConceptWrapper = (props: ViewProps & { documentId: string }): JSX.Element 
           asDialog={!!props.asDialog}
           isChanged={isChanged}
           onDialogClose={props.onDialogClose}
-          setChanged={setChanged}
         />
         {!!provider && synced
           ? (
@@ -119,7 +115,6 @@ const ConceptContent = ({
       root.set('changed', value)
     }
   }, [provider])
-
   return (
     <>
       <View.Content className='flex flex-col max-w-[1000px] p-5'>
