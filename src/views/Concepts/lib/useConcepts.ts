@@ -3,6 +3,8 @@ import { useOrganisers } from '@/hooks/useOrganisers'
 import { useSections } from '@/hooks/useSections'
 import { useStories } from '@/hooks/useStories'
 import type { ViewType } from '@/types/index'
+import { useEffect, useState } from 'react'
+import type { IDBCategory, IDBOrganiser, IDBSection, IDBStory } from 'src/datastore/types'
 
 
 export const useConcepts = (title: string | undefined) => {
@@ -10,6 +12,13 @@ export const useConcepts = (title: string | undefined) => {
   const storyTags = useStories()
   const categories = useCategories()
   const organisers = useOrganisers()
+  const [type, setType] = useState<ViewType | undefined>('Concepts')
+  const [data, setData] = useState<(IDBSection | IDBStory | IDBCategory | IDBOrganiser)[] | undefined>([])
+
+  useEffect(() => {
+    setType(getType())
+    setData(getData())
+  }, [title, setType, setData])
 
   const tableDataMap = {
     Sektioner: {
@@ -50,5 +59,5 @@ export const useConcepts = (title: string | undefined) => {
     return data.conceptView as ViewType
   }
 
-  return { getType, getData }
+  return { type, data, getData, getType }
 }

@@ -28,13 +28,11 @@ const meta: ViewMetadata = {
 
 export const Concepts = ({ title }: ViewProps) => {
   const [currentTab, setCurrentTab] = useState<string>('list')
-  const { getType, getData } = useConcepts(title)
+  const { data, type } = useConcepts(title)
   const columns = useMemo(() =>
     ConceptColumns(), [])
-  const type = useMemo(() => getType(), [title])
-  const conceptData = useMemo(() => getData(), [title])
 
-  if (!conceptData || !type) {
+  if (!data || !type) {
     return <Error></Error>
   } else {
     return (
@@ -53,7 +51,7 @@ export const Concepts = ({ title }: ViewProps) => {
 
           <View.Content>
             <TabsContent value='list' className='mt-0'>
-              <ConceptList columns={columns} type={type} conceptData={conceptData} />
+              <ConceptList columns={columns} type={type} data={data} />
             </TabsContent>
           </View.Content>
         </TableProvider>

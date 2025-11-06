@@ -1,6 +1,6 @@
 import {
 } from '@/lib/index'
-import { useCallback } from 'react'
+import { useCallback, useEffect } from 'react'
 import { Table } from '@/components/Table'
 import type { ColumnDef } from '@tanstack/react-table'
 import { Pagination } from '@/components/Table/Pagination'
@@ -8,13 +8,16 @@ import { useTable } from '@/hooks/useTable'
 import type { IDBCategory, IDBConcept, IDBOrganiser, IDBSection, IDBStory } from 'src/datastore/types'
 import type { ViewType } from '@/types/index'
 
-export const ConceptList = ({ columns, type, conceptData }: {
+export const ConceptList = ({ columns, type, data }: {
   columns: ColumnDef<IDBConcept>[]
   type: ViewType
-  conceptData: (IDBSection | IDBStory | IDBCategory | IDBOrganiser)[]
+  data: (IDBSection | IDBStory | IDBCategory | IDBOrganiser)[]
 }): JSX.Element => {
   const { setData } = useTable<IDBSection | IDBStory | IDBCategory | IDBOrganiser>()
 
+  useEffect(() => {
+    setData(data)
+  }, [data, setData])
   const onRowSelected = useCallback((row?: IDBConcept) => {
     if (row) {
       console.info(`Selected concept item ${row.id}`)
@@ -24,7 +27,6 @@ export const ConceptList = ({ columns, type, conceptData }: {
     return row
   }, [])
 
-  setData(conceptData)
 
   return (
     <>
@@ -33,7 +35,7 @@ export const ConceptList = ({ columns, type, conceptData }: {
         columns={columns}
         onRowSelected={onRowSelected}
       />
-      <Pagination total={conceptData.length || 0} />
+      <Pagination total={data.length || 0} />
     </>
   )
 }
