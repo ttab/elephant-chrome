@@ -1,4 +1,4 @@
-/** Section structure in indexedDB objectStore  */
+/** Concept structure in indexedDB objectStore  */
 export interface IDBConcept {
   id: string
   title: string
@@ -6,8 +6,7 @@ export interface IDBConcept {
 }
 
 export interface IDBSection extends IDBConcept {
-  id: string
-  title: string
+  code: string
 }
 
 /** Section structure in indexedDB objectStore  */
