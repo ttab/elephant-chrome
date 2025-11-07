@@ -70,7 +70,7 @@ export const Title = ({
         </>
       )}
 
-      {!isConnected && (
+      {ydoc && !isConnected && (
         <>
           {isSynced
             ? <ZapOffIcon className='animate-pulse' size={18} strokeWidth={2.05} color={iconColor || color || '#555'} />
