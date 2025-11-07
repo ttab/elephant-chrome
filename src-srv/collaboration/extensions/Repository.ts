@@ -10,7 +10,7 @@ import type {
 import * as Y from 'yjs'
 
 import type { Repository as RepositoryWrapper } from '@/shared/Repository.js'
-import { isValidUUID } from '../../utils/isValidUUID.js'
+import { isValidUUID } from '@/shared/isValidUUID.js'
 import type { Context } from '../../lib/context.js'
 import { isContext } from '../../lib/context.js'
 import type CollaborationServerErrorHandler from '../../lib/errorHandler.js'

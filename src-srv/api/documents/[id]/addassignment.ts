@@ -8,7 +8,7 @@ import { toYjsNewsDoc } from '@/shared/transformations/yjsNewsDoc.js'
 import { toGroupedNewsDoc } from '@/shared/transformations/groupedNewsDoc.js'
 import type { Wire } from '@/shared/schemas/wire.js'
 import { getContextFromValidSession, isContext, type Context } from '../../../lib/context.js'
-import { isValidUUID } from '../../../utils/isValidUUID.js'
+import { isValidUUID } from '@/shared/isValidUUID.js'
 import { snapshot } from '../../../utils/snapshot.js'
 
 /**

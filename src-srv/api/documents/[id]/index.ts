@@ -1,6 +1,6 @@
 import type { Request } from 'express'
 import type { RouteHandler } from '../../../routes.js'
-import { isValidUUID } from '../../../utils/isValidUUID.js'
+import { isValidUUID } from '@/shared/isValidUUID.js'
 import { fromGroupedNewsDoc, toGroupedNewsDoc } from '@/shared/transformations/groupedNewsDoc.js'
 import { fromYjsNewsDoc } from '@/shared/transformations/yjsNewsDoc.js'
 import * as Y from 'yjs'

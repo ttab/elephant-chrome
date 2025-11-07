@@ -17,7 +17,7 @@ import type {
 import { Block, Document } from '@ttab/elephant-api/newsdoc'
 import type { RpcError, FinishedUnaryCall } from '@protobuf-ts/runtime-rpc'
 import type * as Y from 'yjs'
-import { isValidUUID } from '../src-srv/utils/isValidUUID.js'
+import { isValidUUID } from './isValidUUID.js'
 import { fromYjsNewsDoc } from '@/shared/transformations/yjsNewsDoc.js'
 import { fromGroupedNewsDoc } from '@/shared/transformations/groupedNewsDoc.js'
 
