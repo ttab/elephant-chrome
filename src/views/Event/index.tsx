@@ -63,7 +63,7 @@ export const Event = (props: ViewProps & { document?: Y.Doc }): JSX.Element => {
       version: 0n,
       isMetaDocument: false,
       mainDocument: '',
-      document: getTemplateFromView('Planning')(documentId)
+      document: getTemplateFromView('Event')(documentId)
     })
   }, [documentId, props.document])
 
@@ -189,12 +189,10 @@ const EventViewContent = (props: ViewProps & {
 
           <Form.Footer>
             {!environmentIsSane && (
-              <div className='pb-6'>
-                <UserMessage asDialog={!!props.asDialog}>
-                  Du har blivit utloggad eller tappat kontakt med systemet.
-                  Vänligen försök logga in igen.
-                </UserMessage>
-              </div>
+              <UserMessage asDialog={!!props.asDialog} className='pb-6'>
+                Du har blivit utloggad eller tappat kontakt med systemet.
+                Vänligen försök logga in igen.
+              </UserMessage>
             )}
 
             <Form.Submit
