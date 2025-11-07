@@ -64,6 +64,7 @@ export const Assignment = ({ ydoc, assignment, onAbort, onClose }: {
           <Form.Title>
             <TextInput
               ydoc={ydoc}
+              rootMap={!assignmentInProgress ? ydoc.ele : ydoc.ctx}
               value={title}
               label='Titel'
               placeholder='Uppdragstitel'
