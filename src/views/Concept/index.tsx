@@ -105,7 +105,7 @@ const ConceptContent = ({
   user: AwarenessUserData
   documentId: string
 } & ViewProps): JSX.Element => {
-  const [documentStatus] = useWorkflowStatus(documentId, true)
+  const [documentStatus] = useWorkflowStatus(documentId, false, undefined, 'core/section')
   const isActive = documentStatus && documentStatus.name === 'usable'
   const handleChange = useCallback((value: boolean): void => {
     const root = provider?.document.getMap('ele').get('root') as Y.Map<unknown>

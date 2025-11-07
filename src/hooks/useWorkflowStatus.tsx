@@ -11,7 +11,7 @@ import type { Session } from 'next-auth'
 
 // TODO: rename asPrint to a more generic name.
 // "asPrint" chould probably be used for planning-items and events as well
-export const useWorkflowStatus = (uuid?: string, isWorkflow: boolean = false, asPrint?: boolean): [
+export const useWorkflowStatus = (uuid?: string, isWorkflow: boolean = false, asPrint?: boolean, type?: string): [
   Status | undefined,
   (newStatusName: string | Status, cause?: string, asWire?: boolean) => Promise<void>,
   KeyedMutator<Status | undefined>
@@ -20,7 +20,6 @@ export const useWorkflowStatus = (uuid?: string, isWorkflow: boolean = false, as
   const { data: session } = useSession()
   const { provider } = useCollaboration()
   const [, setChanged] = useYValue('root.changed')
-
   const CACHE_KEY = useMemo(
     () => `status/${uuid}/${isWorkflow}`,
     [uuid, isWorkflow])
@@ -36,7 +35,6 @@ export const useWorkflowStatus = (uuid?: string, isWorkflow: boolean = false, as
       }
 
       const { meta } = await repository.getMeta({ uuid, accessToken: session.accessToken }) || {}
-
       if (!meta) {
         return
       }
@@ -44,12 +42,13 @@ export const useWorkflowStatus = (uuid?: string, isWorkflow: boolean = false, as
       if (asPrint && meta.workflowCheckpoint === 'usable') {
         return {
           uuid,
-          ...getStatusFromMeta(meta, false)
+          ...getStatusFromMeta(meta, false, type)
         }
       }
+
       return {
         uuid,
-        ...getStatusFromMeta(meta, isWorkflow)
+        ...getStatusFromMeta(meta, isWorkflow, type)
       }
     }
   )
