@@ -68,7 +68,7 @@ const ConceptWrapper = (props: ViewProps & { documentId: string }): JSX.Element 
     return () => {
       setIsFocused(false)
     }
-  }, [provider, user])
+  }, [provider, user, setIsFocused])
 
   return (
     <>
