@@ -218,11 +218,10 @@ export class CollaborationClientRegistry {
   static async cleanupLocalDocuments(): Promise<void> {
     const { indexedDB: idb } = window
 
-    const dbs = await idb.databases()
-    dbs.map(({ name }) => {
+    for (const { name } of await idb.databases()) {
       if (isValidUUID(name)) {
         idb.deleteDatabase(name)
       }
-    })
+    }
   }
 }
