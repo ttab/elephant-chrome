@@ -1,10 +1,12 @@
 import type { HocuspocusProviderWebsocket } from '@hocuspocus/provider'
 import { CollaborationClient } from './CollaborationClient'
 import type * as Y from 'yjs'
+import { isValidUUID } from '@/shared/isValidUUID'
 
 export interface CollaborationClientRegistryConfig {
   webSocketProvider: HocuspocusProviderWebsocket
   accessToken: string
+  cleanupIndexedDB?: boolean
 }
 
 export interface GetClientOptions {
@@ -26,7 +28,13 @@ export class CollaborationClientRegistry {
   #hpWebsocketProvider: HocuspocusProviderWebsocket
   #accessToken: string
   #clients: Map<string, ClientEntry> = new Map()
-  #cleanupDelay: number = 30000 // 30 seconds after last component unmounts
+
+  // 30 seconds after last component unmounts
+  #cleanupDelay: number = 30000
+
+  // Whether to cleanup IndexedDB when last client is removed, this does not
+  // sync across browser tabs which could lead to data not being persisted locally.
+  #cleanupIndexedDB: boolean = false
 
   constructor(config: CollaborationClientRegistryConfig) {
     this.#accessToken = config.accessToken
@@ -77,7 +85,8 @@ export class CollaborationClientRegistry {
       accessToken: this.#accessToken,
       hpWebsocketProvider: this.#hpWebsocketProvider,
       document: options.document,
-      persistent: options.persistent
+      persistent: options.persistent,
+      cleanupIndexedDB: this.#cleanupIndexedDB
     })
 
     this.#clients.set(documentName, {
@@ -199,5 +208,20 @@ export class CollaborationClientRegistry {
    */
   getAllClients(): CollaborationClient[] {
     return Array.from(this.#clients.values()).map((entry) => entry.client)
+  }
+
+  /**
+   * Static function to cleanup all local documents in indexedDB
+   *
+   * FIXME: Implement way of syncing documents w hocuspocus that are not synced previously.
+   */
+  static async cleanupLocalDocuments(): Promise<void> {
+    const { indexedDB: idb } = window
+
+    for (const { name } of await idb.databases()) {
+      if (isValidUUID(name)) {
+        idb.deleteDatabase(name)
+      }
+    }
   }
 }

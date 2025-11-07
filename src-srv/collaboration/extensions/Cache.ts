@@ -8,7 +8,7 @@ import { isContext } from '../../lib/context.js'
 import type CollaborationServerErrorHandler from '../../lib/errorHandler.js'
 import { getErrorContext } from '../../lib/errorHandler.js'
 import type { Redis } from '../../utils/Redis.js'
-import { isValidUUID } from '../../utils/isValidUUID.js'
+import { isValidUUID } from '@/shared/isValidUUID.js'
 
 interface CacheExtensionConfiguration {
   redis: Redis
