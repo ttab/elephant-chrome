@@ -41,7 +41,7 @@ export function getStatusFromMeta(meta: DocumentMeta | StatusOverviewItem, isWor
   // need to check for them specifically.
   let flow
   if (isWorkflow) {
-    if (meta.heads.usable.version < 0) {
+    if (meta.heads?.usable?.version < 0) {
       flow = 'unpublished'
     } else {
       flow = meta.workflowState
