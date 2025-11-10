@@ -21,7 +21,7 @@ interface EleContext {
     preferred_username: string
     name: string
   }
-  preview?: boolean
+  invisible?: boolean
 }
 
 interface EleConnectedPayload extends connectedPayload {
@@ -100,7 +100,7 @@ export class OpenDocuments implements Extension {
     const statelessMessage = parseStateless<StatelessContext>(payload)
 
     if (typeof statelessMessage.message.preview === 'boolean') {
-      context.preview = statelessMessage.message.preview
+      context.invisible = statelessMessage.message.preview
       if (statelessMessage.message.preview && context.user?.sub) {
         await this.#removeUserFromDocument(statelessMessage.message.id, context.user.sub)
       }
@@ -108,7 +108,7 @@ export class OpenDocuments implements Extension {
       return
     }
 
-    delete context.preview
+    delete context.invisible
   }
 
   /**
@@ -202,7 +202,7 @@ export class OpenDocuments implements Extension {
     }
 
     setTimeout(() => {
-      if (context.preview === true) {
+      if (context.invisible === true) {
         return
       }
 
@@ -299,7 +299,7 @@ export class OpenDocuments implements Extension {
   }
 
   async onDisconnect({ documentName, context }: EleOnDisconnectPayload) {
-    if (this.isTrackerDocument(documentName) || context.agent === 'server' || context.preview === true) {
+    if (this.isTrackerDocument(documentName) || context.agent === 'server' || context.invisible === true) {
       return
     }
 

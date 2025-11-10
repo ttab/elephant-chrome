@@ -10,7 +10,7 @@ export interface Context {
   accessToken: string
   user: User
   type?: string
-  preview?: boolean
+  invisible?: boolean
 
   // Is set to true when redis cache already loaded document
   loadedFromCache?: boolean
