@@ -99,11 +99,13 @@ export function useYDocument<T>(
   }, [client])
 
   if (!userRef.current || userRef.current.name !== session?.user.name || userRef.current.color !== userColor) {
-    userRef.current = {
-      name: session?.user.name ?? '',
-      initials: session?.user.name.split(' ').map((t) => t.substring(0, 1)).join('') ?? '',
-      color: userColor,
-      avatar: undefined
+    if (!options?.preview) {
+      userRef.current = {
+        name: session?.user.name ?? '',
+        initials: session?.user.name.split(' ').map((t) => t.substring(0, 1)).join('') ?? '',
+        color: userColor,
+        avatar: undefined
+      }
     }
   }
 
