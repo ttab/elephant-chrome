@@ -30,7 +30,7 @@ export class CollaborationClientRegistry {
   #clients: Map<string, ClientEntry> = new Map()
 
   // 30 seconds after last component unmounts
-  #cleanupDelay: number = 30000
+  #cleanupDelay: number = 0
 
   // Whether to cleanup IndexedDB when last client is removed, this does not
   // sync across browser tabs which could lead to data not being persisted locally.

@@ -57,6 +57,36 @@ export function useYValue<T>(
     // Yjs observeDeep() event handler
     const onEvent = (events: Y.YEvent<Y.Map<T> | Y.Array<T>>[]) => {
       for (const event of events) {
+        const handleChangeForPath = (path: (string | number)[]) => {
+          const candidateKey = yPathToString(path)
+          if (candidateKey !== observedKey) {
+            return false
+          }
+
+          const newValue = getValueFromPath<T>(yContainer, observedPath, raw)
+
+          if (event.target instanceof Y.XmlText) {
+            if (!raw && newValue?.toString() !== snapshotRef.current) {
+              onStoreChange()
+            }
+            return true
+          }
+
+          if (event.target instanceof Y.Array || event.target instanceof Y.Map) {
+            onStoreChange()
+            return true
+          }
+
+          if (!isEqualDeep(newValue, snapshotRef.current)) {
+            onStoreChange()
+          }
+          return true
+        }
+
+        if (handleChangeForPath(event.path)) {
+          return
+        }
+
         let changedPath: (string | number)[]
         if (event.target instanceof Y.XmlText) {
           // Y.XmlText refers to a position in it's last path segment
@@ -69,26 +99,8 @@ export function useYValue<T>(
           changedPath = [...event.path, ...Array.from(event.keys.keys())]
         }
 
-        const changedKey = yPathToString([...changedPath])
-
-        if (changedKey === observedKey) {
-          // Direct path match
-          const newValue = getValueFromPath<T>(yContainer, observedPath)
-
-          if (event.target instanceof Y.XmlText) {
-            // Y.XmlText values only report change if the string value is observed
-            if (!raw && newValue?.toString() !== snapshotRef.current) {
-              onStoreChange()
-            }
-          } else if (event.target instanceof Y.Array || event.target instanceof Y.Map) {
-            // Direct path matched Y.Array or Y.Map changed, equal deep can
-            onStoreChange()
-            return
-          } else if (!isEqualDeep(newValue, snapshotRef.current)) {
-            onStoreChange()
-          }
-
-          // If we had a direct path match we stop looking
+        if (handleChangeForPath(changedPath)) {
+          // If we handled the change via the expanded path we stop looking
           return
         } else if (event.target instanceof Y.Array) {
           // Check for indirect influences when array contents change
