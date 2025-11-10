@@ -108,7 +108,7 @@ export const EditorHeader = ({ ydoc, readOnly, readOnlyVersion, planningId: prop
               <>
                 {!readOnly && <ViewHeader.RemoteUsers ydoc={ydoc} />}
 
-                {isReadOnlyAndUpdated && !isUnpublished && (
+                {isReadOnlyAndUpdated && !isUnpublished && readOnlyVersion && (
                   <Button
                     variant='secondary'
                     onClick={(event) => {

@@ -11,7 +11,8 @@ import type pino from 'pino'
 export enum StatelessType {
   AUTH = 'auth',
   MESSAGE = 'message',
-  ERROR = 'error'
+  ERROR = 'error',
+  CONTEXT = 'context'
 }
 
 const ErrorMessageSchema = z.object({
@@ -41,17 +42,30 @@ const StatelessAuthSchema = z.object({
   message: authMessageSchema
 })
 
+const StatelessContextMessageSchema = z.object({
+  preview: z.boolean().optional(),
+  id: z.string()
+})
+
+const StatelessContextSchema = z.object({
+  type: z.enum([StatelessType.CONTEXT]),
+  message: StatelessContextMessageSchema
+})
+
 export type StatelessAuth = z.infer<typeof StatelessAuthSchema>
+export type StatelessContext = z.infer<typeof StatelessContextSchema>
 type StatelessMessage = z.infer<typeof StatelessMessageSchema>
 
 type authMessage = z.infer<typeof authMessageSchema>
+type StatelessContextMessage = z.infer<typeof StatelessContextMessageSchema>
 
-type StatelessPayload = StatelessAuth | StatelessMessage
+type StatelessPayload = StatelessAuth | StatelessMessage | StatelessContext
 
 const StatelessSchemaMap = {
   [StatelessType.AUTH]: StatelessAuthSchema,
   [StatelessType.MESSAGE]: StatelessMessageSchema,
-  [StatelessType.ERROR]: StatelessErrorSchema
+  [StatelessType.ERROR]: StatelessErrorSchema,
+  [StatelessType.CONTEXT]: StatelessContextSchema
 }
 
 export function parseStateless<T extends StatelessPayload>(payload: string): T {
@@ -81,7 +95,7 @@ export function parseStateless<T extends StatelessPayload>(payload: string): T {
  * @throws {Error} Will throw an error if the prefix is not a valid StatelessType.
  */
 
-type StatelessMessageType = string | authMessage | pino.SerializedError
+type StatelessMessageType = string | authMessage | StatelessContextMessage | pino.SerializedError
 export function createStateless(prefix: StatelessType, message: StatelessMessageType): string {
   if (!Object.values(StatelessType).includes(prefix)) {
     throw new Error(`Invalid stateless type: ${prefix as string}`)

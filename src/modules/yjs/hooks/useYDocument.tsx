@@ -39,7 +39,7 @@ export function useYDocument<T>(
   options?: {
     data?: EleDocumentResponse
     persistent?: boolean
-    invisible?: boolean
+    preview?: boolean
   }
 ): YDocument<T> {
   const { data: session } = useSession()
@@ -159,6 +159,21 @@ export function useYDocument<T>(
       accessToken: session?.accessToken || ''
     })
   }, [send, client, session?.accessToken])
+
+  useEffect(() => {
+    if (typeof options?.preview !== 'boolean') {
+      return
+    }
+
+    if (!isConnected) {
+      return
+    }
+
+    send('context', {
+      preview: options.preview,
+      id
+    })
+  }, [options?.preview, isConnected, send, id])
 
   resultRef.current.id = id
   resultRef.current.ele = document.current.getMap('ele') as T
