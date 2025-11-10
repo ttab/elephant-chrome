@@ -75,7 +75,7 @@ const SectionContent = ({
   const environmentIsSane = provider && status === 'authenticated'
   const [showVerifyDialog, setShowVerifyDialog] = useState(false)
   const [documentStatus] = useWorkflowStatus(documentId, true, undefined, 'core/section')
-  const isActive = documentStatus && documentStatus.name === 'usable'
+  const isActive = !documentStatus || documentStatus.name === 'usable'
 
   useEffect(() => {
     provider?.setAwarenessField('data', user)
