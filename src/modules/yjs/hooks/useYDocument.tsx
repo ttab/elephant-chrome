@@ -99,11 +99,13 @@ export function useYDocument<T>(
   }, [client])
 
   if (!userRef.current || userRef.current.name !== session?.user.name || userRef.current.color !== userColor) {
-    userRef.current = {
-      name: session?.user.name ?? '',
-      initials: session?.user.name.split(' ').map((t) => t.substring(0, 1)).join('') ?? '',
-      color: userColor,
-      avatar: undefined
+    if (!options?.invisible) {
+      userRef.current = {
+        name: session?.user.name ?? '',
+        initials: session?.user.name.split(' ').map((t) => t.substring(0, 1)).join('') ?? '',
+        color: userColor,
+        avatar: undefined
+      }
     }
   }
 
@@ -159,6 +161,21 @@ export function useYDocument<T>(
       accessToken: session?.accessToken || ''
     })
   }, [send, client, session?.accessToken])
+
+  useEffect(() => {
+    if (typeof options?.invisible !== 'boolean') {
+      return
+    }
+
+    if (!isConnected) {
+      return
+    }
+
+    send('context', {
+      invisible: options.invisible,
+      id
+    })
+  }, [options?.invisible, isConnected, send, id])
 
   resultRef.current.id = id
   resultRef.current.ele = document.current.getMap('ele') as T

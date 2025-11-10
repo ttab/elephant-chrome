@@ -26,7 +26,12 @@ export const ApprovalsCard = ({ ydoc, assignment, isSelected, isFocused, status,
   const sections = useSections()
   const openArticle = useLink('Editor')
   const openFlash = useLink('Flash')
-  const [users] = useYValue<Record<string, { id: string, name: string, username: string }>>(ydoc.provider?.document.getMap('open-documents'), `${assignment._deliverableId}.users`)
+
+  const path = `${assignment._deliverableId}.users`
+  const [users] = useYValue<Record<string, { id: string, name: string, username: string }>>(
+    ydoc.provider?.document.getMap('open-documents'), path
+  )
+
   const [documentStatus] = useWorkflowStatus(assignment._deliverableId, true)
 
   const openType = (assignmentType: string) => assignmentType === 'core/flash' ? openFlash : openArticle
@@ -40,9 +45,6 @@ export const ApprovalsCard = ({ ydoc, assignment, isSelected, isFocused, status,
   const title = assignment._deliverableDocument?.title
 
   const slugline = assignment.meta.find((m) => m.type === 'tt/slugline')?.value
-  // heads.usable.id is a bigint counter that represents the version number
-  // of the current 'usable' status. Each time a version is tagged as usable,
-  // this id is incremented by 1
   const lastUsableOrder = statusData?.heads.usable?.id
 
   const internalInfo = assignment._deliverableDocument?.meta.find((block) => block.type === 'core/note' && block.role === 'internal')?.data?.text
@@ -55,13 +57,14 @@ export const ApprovalsCard = ({ ydoc, assignment, isSelected, isFocused, status,
       isFocused={isFocused}
       isSelected={isSelected}
       onSelect={(event) => {
-        const openDocument = openType(assignment._deliverableType as string)
+        const openDocument = openType(assignment._deliverableType!)
+
         if (event instanceof KeyboardEvent && event.key == ' ' && documentId) {
-          openDocument(event, { id: documentId, autoFocus: false }, openEditors.length > 0 ? undefined : 'last', undefined, true)
+          openDocument(event, { id: documentId, autoFocus: false, preview: true }, openEditors.length > 0 ? undefined : 'last', undefined, true)
         } else if (documentId) {
           if (assignment._deliverableStatus === 'usable') {
             const lastUsableVersion = statusData?.heads.usable?.version
-            openDocument(event, { id: documentId }, 'last', undefined, undefined, { version: lastUsableVersion as bigint })
+            openDocument(event, { id: documentId, preview: false }, 'last', undefined, undefined, { version: lastUsableVersion as bigint })
           } else {
             openDocument(event, { id: documentId })
           }

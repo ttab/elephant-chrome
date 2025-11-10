@@ -97,8 +97,11 @@ function EditorWrapper(props: ViewProps & {
   documentId: string
   planningId?: string | null
   autoFocus?: boolean
+  preview?: boolean
 }): JSX.Element {
-  const ydoc = useYDocument<Y.Map<unknown>>(props.documentId)
+  const ydoc = useYDocument<Y.Map<unknown>>(props.documentId, {
+    invisible: props.preview || false
+  })
 
   const openFactboxEditor = useLink('Factbox')
 
@@ -143,6 +146,7 @@ function EditorWrapper(props: ViewProps & {
         <EditorContainer
           ydoc={ydoc}
           planningId={props.planningId}
+          preview={props.preview}
         />
       </Textbit.Root>
     </View.Root>
@@ -153,10 +157,12 @@ function EditorWrapper(props: ViewProps & {
 // Container component that uses TextBit context
 function EditorContainer({
   ydoc,
-  planningId
+  planningId,
+  preview
 }: {
   ydoc: YDocument<Y.Map<unknown>>
   planningId?: string | null
+  preview?: boolean
 }): JSX.Element {
   const { stats } = useTextbit()
 
@@ -165,13 +171,14 @@ function EditorContainer({
       <EditorHeader
         ydoc={ydoc}
         planningId={planningId}
+        readOnly={preview}
       />
       <Notes ydoc={ydoc} />
       <View.Content className='flex flex-col max-w-[1000px]'>
 
         <div className='grow overflow-auto pr-12 max-w-(--breakpoint-xl)'>
           {ydoc.provider && ydoc.provider.isSynced
-            ? <EditorContent ydoc={ydoc} />
+            ? <EditorContent ydoc={ydoc} preview={preview} />
             : <></>}
         </div>
       </View.Content>
@@ -191,8 +198,9 @@ function EditorContainer({
 }
 
 
-function EditorContent({ ydoc }: {
+function EditorContent({ ydoc, preview }: {
   ydoc: YDocument<Y.Map<unknown>>
+  preview?: boolean
 }): JSX.Element {
   const { isActive } = useView()
   const ref = useRef<HTMLDivElement>(null)
@@ -212,6 +220,7 @@ function EditorContent({ ydoc }: {
 
   return (
     <Textbit.Editable
+      readOnly={preview}
       ref={ref}
       yjsEditor={yjsEditor}
       lang={documentLanguage}
