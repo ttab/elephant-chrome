@@ -84,6 +84,43 @@ describe('useYValue', () => {
     expect(result.current[0]).toHaveLength(1)
   })
 
+  it('updates when map entries are removed', () => {
+    const doc = new Y.Doc()
+    const container = doc.getMap('open-documents')
+    const assignmentMap = new Y.Map<unknown>()
+    const usersMap = new Y.Map<unknown>()
+
+    const user = new Y.Map<unknown>()
+    user.set('id', 'user-1')
+    user.set('name', 'Test User')
+    user.set('username', 'test-user')
+
+    doc.transact(() => {
+      usersMap.set('user-1', user)
+      assignmentMap.set('users', usersMap)
+      container.set('assignment-1', assignmentMap)
+    })
+
+    const { result } = renderHook(() =>
+      useYValue<Record<string, { id: string }>>(container, 'assignment-1.users'), { wrapper: init.wrapper })
+
+    expect(result.current[0]).toMatchObject({
+      'user-1': {
+        id: 'user-1'
+      }
+    })
+
+    act(() => {
+      doc.transact(() => {
+        usersMap.delete('user-1')
+      })
+    })
+
+    expect(result.current[0]).toEqual({})
+
+    doc.destroy()
+  })
+
   it('modifies existing slugline', () => {
     const { result } = renderHook(() =>
       useYValue<string | undefined>(ydoc, 'meta.core/assignment[0].meta.tt/slugline[0].value'), { wrapper: init.wrapper })
