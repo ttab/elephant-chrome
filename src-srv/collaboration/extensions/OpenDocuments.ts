@@ -99,9 +99,10 @@ export class OpenDocuments implements Extension {
 
     const statelessMessage = parseStateless<StatelessContext>(payload)
 
-    if (typeof statelessMessage.message.preview === 'boolean') {
-      context.invisible = statelessMessage.message.preview
-      if (statelessMessage.message.preview && context.user?.sub) {
+    if (typeof statelessMessage.message.invisible === 'boolean') {
+      context.invisible = statelessMessage.message.invisible
+
+      if (statelessMessage.message.invisible && context.user?.sub) {
         await this.#removeUserFromDocument(statelessMessage.message.id, context.user.sub)
       }
 

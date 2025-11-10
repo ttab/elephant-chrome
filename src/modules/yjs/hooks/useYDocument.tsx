@@ -39,7 +39,7 @@ export function useYDocument<T>(
   options?: {
     data?: EleDocumentResponse
     persistent?: boolean
-    preview?: boolean
+    invisible?: boolean
   }
 ): YDocument<T> {
   const { data: session } = useSession()
@@ -99,7 +99,7 @@ export function useYDocument<T>(
   }, [client])
 
   if (!userRef.current || userRef.current.name !== session?.user.name || userRef.current.color !== userColor) {
-    if (!options?.preview) {
+    if (!options?.invisible) {
       userRef.current = {
         name: session?.user.name ?? '',
         initials: session?.user.name.split(' ').map((t) => t.substring(0, 1)).join('') ?? '',
@@ -163,7 +163,7 @@ export function useYDocument<T>(
   }, [send, client, session?.accessToken])
 
   useEffect(() => {
-    if (typeof options?.preview !== 'boolean') {
+    if (typeof options?.invisible !== 'boolean') {
       return
     }
 
@@ -172,10 +172,10 @@ export function useYDocument<T>(
     }
 
     send('context', {
-      preview: options.preview,
+      invisible: options.invisible,
       id
     })
-  }, [options?.preview, isConnected, send, id])
+  }, [options?.invisible, isConnected, send, id])
 
   resultRef.current.id = id
   resultRef.current.ele = document.current.getMap('ele') as T

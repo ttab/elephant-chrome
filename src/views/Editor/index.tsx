@@ -100,7 +100,7 @@ function EditorWrapper(props: ViewProps & {
   preview?: boolean
 }): JSX.Element {
   const ydoc = useYDocument<Y.Map<unknown>>(props.documentId, {
-    preview: props.preview || false
+    invisible: props.preview || false
   })
 
   const openFactboxEditor = useLink('Factbox')
