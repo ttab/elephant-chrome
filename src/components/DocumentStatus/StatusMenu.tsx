@@ -16,6 +16,7 @@ import { handleLink } from '../Link/lib/handleLink'
 import { useHistory, useNavigation, useView } from '@/hooks/index'
 import type { View } from '@/types/index'
 import { reset } from '@/views/Concepts/lib/reset'
+import { reset } from '@/views/Concepts/lib/reset'
 
 export const StatusMenu = ({ documentId, type, publishTime, onBeforeStatusChange, isChanged }: {
   documentId: string
@@ -34,7 +35,10 @@ export const StatusMenu = ({ documentId, type, publishTime, onBeforeStatusChange
     'core/editorial-info',
     'tt/print-article',
     'core/section'
+    'tt/print-article',
+    'core/section'
   ].includes(type)
+  const [documentStatus, setDocumentStatus] = useWorkflowStatus(documentId, shouldUseWorkflowStatus, type === 'tt/print-article', type)
   const [documentStatus, setDocumentStatus] = useWorkflowStatus(documentId, shouldUseWorkflowStatus, type === 'tt/print-article', type)
   const containerRef = useRef<HTMLDivElement>(null)
   const [dropdownWidth, setDropdownWidth] = useState<number>(0)
@@ -83,12 +87,20 @@ export const StatusMenu = ({ documentId, type, publishTime, onBeforeStatusChange
       'core/section'
     ])
 
+    const WORKFLOW_TYPES = new Set([
+      'core/article',
+      'core/planning-item',
+      'core/event',
+      'core/section'
+    ])
+
     try {
       (async () => {
         await repository?.saveMeta({
           status,
           accessToken: session?.accessToken || '',
           cause: documentStatus?.cause,
+          isWorkflow: WORKFLOW_TYPES.has(type),
           isWorkflow: WORKFLOW_TYPES.has(type),
           currentStatus: documentStatus
         })
@@ -114,6 +126,11 @@ export const StatusMenu = ({ documentId, type, publishTime, onBeforeStatusChange
       toast.error('Det gick inte att avpublicera dokumentet')
       console.error('error while unpublishing document:', error)
     }
+  }
+
+  const resetDocument = async () => {
+    if (!documentId || !session?.accessToken || !repository) return
+    await reset(repository, documentId, session.accessToken)
   }
 
   const resetDocument = async () => {

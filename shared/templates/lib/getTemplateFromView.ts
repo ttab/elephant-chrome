@@ -10,7 +10,7 @@ export function getTemplateFromView(type: View): (id: string, payload?: Template
       return Templates.event
     case 'Factbox':
       return Templates.factbox
-    case 'Concept':
+    case 'Section':
       return Templates.section
     default:
       throw new Error(`No template for ${type}`)

@@ -17,14 +17,14 @@ export async function fetchOrRefresh<TObject, TIndexItem>(
 ): Promise<TObject[]> {
   const { lastRefresh } = await IDB.get<{ lastRefresh: Date }>('__meta', storeName) || {}
   const maxRefreshInterval = 1000 * 3600 * 48
-
   if (force || !lastRefresh || (Date.now() - (lastRefresh.getTime() || 0) > maxRefreshInterval)) {
     await navigator.locks.request(`__meta_${storeName}`, { ifAvailable: true },
       async (lock) => {
         if (!lock) {
           return
         }
-
+        // Due to opensearches refresh_interval we need to wait 1 second before refetching
+        await new Promise((resolve) => setTimeout(resolve, 1000))
         const items = await fetchFromIndex(indexUrl, accessToken, storeName, transformer)
         if (!Array.isArray(items)) {
           return []

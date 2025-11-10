@@ -113,7 +113,6 @@ export const Table = <TData, TValue>({
     )
   }, [hideModal, showModal])
 
-
   const handleOpen = useCallback((event: MouseEvent<HTMLTableRowElement> | KeyboardEvent, row: RowType<unknown>): void => {
     if (type === 'Wires') {
       handlePreview(row)
@@ -324,10 +323,9 @@ export const Table = <TData, TValue>({
     )
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [rows, columns, loading, handleOpen, table, rowSelection])
-
   return (
     <>
-      {!['Wires', 'Factbox', 'Search', 'Concept'].includes(type) && (
+      {!['Wires', 'Factbox', 'Search', 'Section'].includes(type) && (
         <Toolbar />
       )}
       {(type === 'Planning' || type === 'Event') && (
@@ -340,9 +338,8 @@ export const Table = <TData, TValue>({
           />
         </NewItems.Root>
       )}
-
-      {(type === 'Concept' || type === 'Concepts')
-        && <Toolbar searchbar={true} searchPlaceholder='Fritextsökning' filter={false} quickFilter={false} />}
+      {(type === 'Section' || type === 'Concepts')
+        && <Toolbar searchbar={true} searchPlaceholder='Fritextsökning' filter={false} quickFilter={false}/>}
       {type === 'Factbox'
         && <Toolbar searchbar={true} searchPlaceholder='Fritextsökning' filter={false} sort={false} quickFilter={false} />}
 

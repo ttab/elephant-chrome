@@ -1,7 +1,7 @@
 import { Block, Document } from '@ttab/elephant-api/newsdoc'
 
 /**
-* Create a template for a factbox document
+* Create a template for a section document
 * @returns Document
 */
 
@@ -12,9 +12,9 @@ export function sectionDocumentTemplate(id: string): Document {
     uri: `core://section/${id}`,
     language: 'sv-se',
     title: '',
-    content: [
+    meta: [
       Block.create({
-        type: 'core/text',
+        type: 'core/section',
         data: {
           code: ''
         }
