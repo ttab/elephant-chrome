@@ -17,7 +17,6 @@ import { Button } from '@ttab/elephant-ui'
 import { Form } from '@/components/Form'
 import { TextBox } from '@/components/ui'
 import { Validation } from '@/components/Validation'
-import { Title } from '@/components/Title'
 import { Prompt } from '@/components/Prompt'
 import { useWorkflowStatus } from '@/hooks/useWorkflowStatus'
 
@@ -76,7 +75,7 @@ const SectionContent = ({
   const environmentIsSane = provider && status === 'authenticated'
   const [showVerifyDialog, setShowVerifyDialog] = useState(false)
   const [documentStatus] = useWorkflowStatus(documentId, true, undefined, 'core/section')
-  const isActive = documentStatus && documentStatus.name === 'usable'
+  const isActive = !documentStatus || documentStatus.name === 'usable'
 
   useEffect(() => {
     provider?.setAwarenessField('data', user)

@@ -18,7 +18,6 @@ export const useSections = (
 
   if (activeOnly) {
     const filteredObjects = objects.filter((item) => item.usableVersion && item.usableVersion > 0)
-    console.log(filteredObjects)
     return filteredObjects
   }
   return objects
