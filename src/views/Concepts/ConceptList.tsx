@@ -6,8 +6,7 @@ import type { ColumnDef } from '@tanstack/react-table'
 import { Pagination } from '@/components/Table/Pagination'
 import { useTable } from '@/hooks/useTable'
 import type { IDBCategory, IDBConcept, IDBOrganiser, IDBSection, IDBStory } from 'src/datastore/types'
-import { useOrganisers } from '@/hooks/useOrganisers'
-import { LoadingText } from '@/components/LoadingText'
+import type { ViewType } from '@/types/index'
 
 export const ConceptList = ({ columns, type, data }: {
   columns: ColumnDef<IDBConcept>[]
