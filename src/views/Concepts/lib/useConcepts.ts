@@ -8,7 +8,7 @@ import type { IDBCategory, IDBOrganiser, IDBSection, IDBStory } from 'src/datast
 
 
 export const useConcepts = (title: string | undefined) => {
-  const sections = useSections()
+  const sections = useSections({ activeOnly: false })
   const storyTags = useStories()
   const categories = useCategories()
   const organisers = useOrganisers()
