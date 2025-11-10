@@ -64,7 +64,7 @@ export const ApprovalsCard = ({ ydoc, assignment, isSelected, isFocused, status,
         } else if (documentId) {
           if (assignment._deliverableStatus === 'usable') {
             const lastUsableVersion = statusData?.heads.usable?.version
-            openDocument(event, { id: documentId }, 'last', undefined, undefined, { version: lastUsableVersion as bigint })
+            openDocument(event, { id: documentId, preview: false }, 'last', undefined, undefined, { version: lastUsableVersion as bigint })
           } else {
             openDocument(event, { id: documentId })
           }

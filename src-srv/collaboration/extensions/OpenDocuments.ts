@@ -21,6 +21,7 @@ interface EleContext {
     preferred_username: string
     name: string
   }
+  preview?: boolean
 }
 
 interface EleConnectedPayload extends connectedPayload {
@@ -55,6 +56,7 @@ export class OpenDocuments implements Extension {
   readonly #ttl = 120
   readonly #doc: Y.Doc
   readonly #instanceId: string
+  readonly #addToDocumentDelay = 200
   #server?: Hocuspocus
   #connection?: DirectConnection
   priority = 1
@@ -98,7 +100,7 @@ export class OpenDocuments implements Extension {
     const statelessMessage = parseStateless<StatelessContext>(payload)
 
     if (typeof statelessMessage.message.preview === 'boolean') {
-      context.invisible = statelessMessage.message.preview
+      context.preview = statelessMessage.message.preview
       if (statelessMessage.message.preview && context.user?.sub) {
         await this.#removeUserFromDocument(statelessMessage.message.id, context.user.sub)
       }
@@ -106,7 +108,7 @@ export class OpenDocuments implements Extension {
       return
     }
 
-    delete context.invisible
+    delete context.preview
   }
 
   /**
@@ -199,6 +201,36 @@ export class OpenDocuments implements Extension {
       throw new Error('User information is missing for OpenDocuments.connected')
     }
 
+    setTimeout(() => {
+      if (context.preview === true) {
+        return
+      }
+
+      void this.#addUserToDocument(documentName, userId, userName, name).catch((error: unknown) => {
+        logger.error({ documentName, userId, error }, 'Failed to add user to open-documents')
+      })
+    }, this.#addToDocumentDelay)
+
+    return Promise.resolve()
+  }
+
+  /**
+   * Create initial user Y.Map.
+   */
+  #getUserYMap(id: string, username: string, name: string): Y.Map<unknown> {
+    const count = new Y.Array()
+    count.push([this.#instanceId])
+
+    const yUser = new Y.Map()
+    yUser.set('id', id)
+    yUser.set('username', username)
+    yUser.set('name', name)
+    yUser.set('count', count)
+
+    return yUser
+  }
+
+  async #addUserToDocument(documentName: string, userId: string, userName: string, name: string) {
     await this.#connection?.transact((doc) => {
       const yOpenDocuments = doc.getMap('open-documents')
 
@@ -231,22 +263,6 @@ export class OpenDocuments implements Extension {
   }
 
   /**
-   * Create initial user Y.Map.
-   */
-  #getUserYMap(id: string, username: string, name: string): Y.Map<unknown> {
-    const count = new Y.Array()
-    count.push([this.#instanceId])
-
-    const yUser = new Y.Map()
-    yUser.set('id', id)
-    yUser.set('username', username)
-    yUser.set('name', name)
-    yUser.set('count', count)
-
-    return yUser
-  }
-
-  /**
  * Remove or decrement a user from a document's user list.
  */
   async #removeUserFromDocument(documentName: string, userId: string) {
@@ -255,12 +271,16 @@ export class OpenDocuments implements Extension {
       const yDocEntry = yOpenDocuments.get(documentName) as Y.Map<unknown>
 
       if (!yDocEntry?.size) {
-        logger.warn(`Client <${userId}> on instance <${this.#instanceId}> disconnected from <${documentName}> but there was no document entry in open-documents`)
         return
       }
 
       const yUsers = yDocEntry.get('users') as Y.Map<unknown>
       const yUser = yUsers.get(userId) as Y.Map<unknown>
+
+      if (!yUser) {
+        return
+      }
+
       const count = yUser.get('count') as Y.Array<string>
 
       if (count.length <= 1) {
@@ -279,7 +299,7 @@ export class OpenDocuments implements Extension {
   }
 
   async onDisconnect({ documentName, context }: EleOnDisconnectPayload) {
-    if (this.isTrackerDocument(documentName) || context.agent === 'server') {
+    if (this.isTrackerDocument(documentName) || context.agent === 'server' || context.preview === true) {
       return
     }
 
