@@ -7,7 +7,6 @@ export const DocumentStatus = ({ type, status }: {
 }): JSX.Element => {
   const docStatus = StatusSpecifications[status]
   const label = WorkflowSpecifications[type]?.[status]?.title || null
-
   return (
     <Tooltip content={label}>
       <div className='flex items-center'>

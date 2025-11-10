@@ -37,7 +37,7 @@ export const ConceptHeader = ({ documentId, asDialog, onDialogClose, isChanged, 
               <>
                 <StatusMenu
                   documentId={documentId}
-                  type='core/factbox'
+                  type='core/section' // TODO need to change this to dynamic value depending on concept type
                   isChanged={isChanged}
                 />
                 <MetaSheet container={containerRef.current} documentId={documentId} />

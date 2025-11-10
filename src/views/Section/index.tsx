@@ -19,6 +19,7 @@ import { TextBox } from '@/components/ui'
 import { Validation } from '@/components/Validation'
 import { Title } from '@/components/Title'
 import { Prompt } from '@/components/Prompt'
+import { useWorkflowStatus } from '@/hooks/useWorkflowStatus'
 
 const meta: ViewMetadata = {
   name: 'Section',
@@ -70,10 +71,13 @@ const SectionContent = ({
   const { provider, synced, user } = useCollaboration()
   const [, setIsFocused] = useAwareness(documentId)
   const [isChanged] = useYValue<boolean>('root.changed')
-  const { status, data: session } = useSession()
+  const { status } = useSession()
   const [, setChanged] = useYValue<boolean>('root.changed')
   const environmentIsSane = provider && status === 'authenticated'
   const [showVerifyDialog, setShowVerifyDialog] = useState(false)
+  const [documentStatus] = useWorkflowStatus(documentId, true, undefined, 'core/section')
+  const isActive = documentStatus && documentStatus.name === 'usable'
+
   useEffect(() => {
     provider?.setAwarenessField('data', user)
     setIsFocused(true)
@@ -81,7 +85,7 @@ const SectionContent = ({
     return () => {
       setIsFocused(false)
     }
-  }, [provider, user])
+  }, [provider, user, setIsFocused])
 
   const handleChange = useCallback((value: boolean): void => {
     const root = provider?.document.getMap('ele').get('root') as Y.Map<unknown>
@@ -101,30 +105,12 @@ const SectionContent = ({
           })
           return
         }
-
+        setChanged(false)
         if (onDialogClose) {
           onDialogClose()
         }
       })
     }
-  }
-
-  const onSave = async (): Promise<void> => {
-    if (!session) {
-      toast.error('Ett fel har uppstått, ändringen kunde inte spara! Ladda om webbläsaren och försök igen')
-      return
-    }
-
-    const snapshotResponse = await snapshotDocument(documentId, {
-      status: 'usable'
-    }, provider?.document)
-
-    if (snapshotResponse && 'statusCode' in snapshotResponse && snapshotResponse.statusCode !== 200) {
-      toast.error(`Ett fel uppstod när ändringen skulle sparas: ${snapshotResponse.statusMessage || 'Okänt fel'}`)
-      return
-    }
-
-    setChanged(false)
   }
 
   const handleCancel = () => {
@@ -155,12 +141,15 @@ const SectionContent = ({
                   onChange={handleChange}
                 >
                   <Form.Content>
-                    <Form.Title>
-                      <Title
-                        placeholder='Sektionsnamn'
-                        autoFocus={true}
-                      />
-                    </Form.Title>
+                    <TextBox
+                      singleLine={true}
+                      path='root.title'
+                      className={isActive ? 'border-[1px]' : ''}
+                      onChange={handleChange}
+                      placeholder='Titel'
+                      disabled={!isActive}
+                    >
+                    </TextBox>
                     <Validation
                       path='meta.core/section[0].data.code'
                       label='code'
@@ -170,26 +159,12 @@ const SectionContent = ({
                         onChange={handleChange}
                         singleLine={true}
                         path='meta.core/section[0].data.code'
-                        className='border-[1px]'
+                        className={isActive ? 'border-[1px]' : ''}
                         placeholder='Kod'
+                        disabled={!isActive}
                       >
                       </TextBox>
                     </Validation>
-                    {!asDialog
-                      && (
-                        <div className='flex gap-2.5 align-end'>
-                          <Button
-                            onClick={(e) => {
-                              e.preventDefault()
-                              void onSave()
-                            }}
-                            disabled={!environmentIsSane}
-                            className=''
-                          >
-                            Spara
-                          </Button>
-                        </div>
-                      )}
                   </Form.Content>
                   <Form.Footer>
                     <Form.Submit

@@ -4,7 +4,8 @@ import {
   CircleArrowLeftIcon,
   BadgeCheckIcon,
   CircleXIcon,
-  type LucideIcon
+  type LucideIcon,
+  CircleIcon
 } from '@ttab/elephant-ui/icons'
 
 interface WorkflowItem {
@@ -28,25 +29,26 @@ export interface StatusSpecification {
 }
 
 const baseConcept = {
-  draft: {
-    title: 'Utkast',
-    description: 'Du jobbar på ett utkast av faktarutan',
-    transitions: {
-      usable: {
-        verify: true,
-        title: 'Publicera',
-        description: 'Publicera faktarutan för användning'
-      }
-    }
-  },
+
   usable: {
-    title: 'Användbar',
-    description: 'Faktarutan är användbar',
+    title: 'Används',
+    description: 'Nuvarande version används',
     transitions: {
       unpublished: {
         verify: true,
-        title: 'Arkivera',
-        description: 'Dra tillbaka och arkivera den här faktarutan'
+        title: 'Inaktivera',
+        description: 'Inställningen kommer att inaktiveras'
+      }
+    }
+  },
+  unpublished: {
+    title: 'Inaktiv',
+    description: 'Inställningen används inte',
+    transitions: {
+      usable: {
+        verify: true,
+        title: 'Använd',
+        description: 'Nuvarande version kommer att aktiveras för användning'
       }
     }
   }
@@ -88,6 +90,10 @@ export const StatusSpecifications: Record<string, StatusSpecification> = {
   cancelled: {
     icon: CircleXIcon,
     className: 'bg-cancelled text-white fill-cancelled rounded-full'
+  },
+  inactive: {
+    icon: CircleIcon,
+    className: '  text-zinc-400 rounded-full '
   }
 }
 
@@ -536,36 +542,4 @@ export const WorkflowSpecifications: Record<string, WorkflowSpecification> = {
     }
   },
   'core/section': baseConcept
-  /* 'core/concept': {
-    draft: {
-      title: 'Redigeras',
-      description: 'Du jobbar på ett utkast av inställningen',
-      transitions: {
-        usable: {
-          verify: true,
-          title: 'Spara',
-          description: 'Sparar nuvarande inställningen för användning i systemet'
-        },
-        cancelled: {
-          title: 'Avbryt',
-          description: 'Avrbyter nuvarande redigering och återställer sparad version'
-        },
-        delete: {
-          title: 'Ta bort',
-          description: 'Tar bort inställningen helt från systemet'
-        }
-      }
-    },
-    usable: {
-      title: 'Sparad version',
-      description: 'Senast sparad versionen',
-      transitions: {
-        cancelled: {
-          verify: true,
-          title: 'Ta bort',
-          description: 'Tar bort inställningen helt från systemet'
-        }
-      }
-    }
-  } */
 }

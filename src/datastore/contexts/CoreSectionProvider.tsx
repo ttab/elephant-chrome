@@ -32,6 +32,8 @@ export const CoreSectionProvider = ({ children, usableOnly = true }: {
     }
 
     const getCachedObjects = async () => {
+      // Due to opensearches refresh_interval we need to wait 3 second before refetching
+      await new Promise((resolve) => setTimeout(resolve, 3000))
       const newDocs = await fetchOrRefresh<IDBSection, IndexedSection>(
         IDB,
         documentType,
@@ -49,31 +51,31 @@ export const CoreSectionProvider = ({ children, usableOnly = true }: {
         }
       )
 
-      if (!usableOnly) {
-        return newDocs
+      // Return the data for the version set to usable
+      if (usableOnly) {
+        const usableVersions = newDocs.map((item) => {
+          return {
+            uuid: item.id,
+            version: item.usableVersion
+          }
+        })
+
+        const usables = await repository?.getDocuments({
+          documents: usableVersions,
+          accessToken: data.accessToken
+        })
+
+        newDocs.forEach((document) => {
+          if (!document.id) {
+            return
+          }
+          const match = usables && usables.items.find((item) => item.document?.uuid === document.id)
+          if (match) {
+            document.title = match.document?.title ? match.document.title : ''
+          }
+        })
       }
 
-      const usableVersions = newDocs.map((item) => {
-        return {
-          uuid: item.id,
-          version: item.usableVersion
-        }
-      })
-
-      const usables = await repository?.getDocuments({
-        documents: usableVersions,
-        accessToken: data.accessToken
-      })
-      newDocs.forEach((document) => {
-        if (!document.id) {
-          return
-        }
-        const match = usables && usables.items.find((item) => item.document?.uuid === document.id)
-
-        if (match) {
-          document.title = match.document?.title ? match.document.title : ''
-        }
-      })
       return newDocs
     }
 
@@ -82,7 +84,7 @@ export const CoreSectionProvider = ({ children, usableOnly = true }: {
     if (Array.isArray(cachedObjects) && cachedObjects.length) {
       setObjects(cachedObjects)
     }
-  }, [data?.accessToken, indexUrl, IDB, usableOnly, repository])
+  }, [data?.accessToken, indexUrl, IDB, repository, usableOnly])
 
 
   /**

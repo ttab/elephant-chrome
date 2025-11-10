@@ -15,6 +15,7 @@ import { toast } from 'sonner'
 import { handleLink } from '../Link/lib/handleLink'
 import { useHistory, useNavigation, useView } from '@/hooks/index'
 import type { View } from '@/types/index'
+import { reset } from '@/views/Concepts/lib/reset'
 
 export const StatusMenu = ({ documentId, type, publishTime, onBeforeStatusChange, isChanged }: {
   documentId: string
@@ -31,10 +32,10 @@ export const StatusMenu = ({ documentId, type, publishTime, onBeforeStatusChange
     'core/article',
     'core/flash',
     'core/editorial-info',
-    'tt/print-article'
+    'tt/print-article',
+    'core/section'
   ].includes(type)
-
-  const [documentStatus, setDocumentStatus] = useWorkflowStatus(documentId, shouldUseWorkflowStatus, type === 'tt/print-article')
+  const [documentStatus, setDocumentStatus] = useWorkflowStatus(documentId, shouldUseWorkflowStatus, type === 'tt/print-article', type)
   const containerRef = useRef<HTMLDivElement>(null)
   const [dropdownWidth, setDropdownWidth] = useState<number>(0)
   const { statuses, workflow } = useWorkflow(type)
@@ -44,13 +45,11 @@ export const StatusMenu = ({ documentId, type, publishTime, onBeforeStatusChange
   const { state, dispatch } = useNavigation()
   const history = useHistory()
   const { viewId } = useView()
-
   useEffect(() => {
     if (containerRef.current) {
       setDropdownWidth(containerRef.current.offsetWidth)
     }
   }, [])
-
   // Callback function to set status. Will first call onBeforeStatusChange() if
   // provided by props, then proceed to change the status if allowed.
   const setStatus = useCallback(async (newStatus: string, data?: Record<string, unknown>) => {
@@ -59,7 +58,6 @@ export const StatusMenu = ({ documentId, type, publishTime, onBeforeStatusChange
         return
       }
     }
-
     await setDocumentStatus(
       newStatus,
       (typeof data?.cause === 'string') ? data.cause : undefined
@@ -78,13 +76,20 @@ export const StatusMenu = ({ documentId, type, publishTime, onBeforeStatusChange
       version: -1n
     }
 
+    const WORKFLOW_TYPES = new Set([
+      'core/article',
+      'core/planning-item',
+      'core/event',
+      'core/section'
+    ])
+
     try {
       (async () => {
         await repository?.saveMeta({
           status,
           accessToken: session?.accessToken || '',
           cause: documentStatus?.cause,
-          isWorkflow: type === 'core/article' || type === 'core/planning-item' || type === 'core/event',
+          isWorkflow: WORKFLOW_TYPES.has(type),
           currentStatus: documentStatus
         })
 
@@ -92,7 +97,8 @@ export const StatusMenu = ({ documentId, type, publishTime, onBeforeStatusChange
           'core/article': 'Editor',
           'core/planning-item': 'Planning',
           'core/event': 'Event',
-          'tt/print-article': 'PrintEditor'
+          'tt/print-article': 'PrintEditor',
+          'core/section': 'Section'
         }
         handleLink({
           dispatch,
@@ -110,6 +116,11 @@ export const StatusMenu = ({ documentId, type, publishTime, onBeforeStatusChange
     }
   }
 
+  const resetDocument = async () => {
+    if (!documentId || !session?.accessToken || !repository) return
+    await reset(repository, documentId, session.accessToken)
+  }
+
   if (!documentStatus || !Object.keys(statuses).length) {
     return null
   }
@@ -117,7 +128,6 @@ export const StatusMenu = ({ documentId, type, publishTime, onBeforeStatusChange
   const currentStatusName = documentStatus.name
   const currentStatusDef = statuses[currentStatusName] || StatusSpecifications[currentStatusName]
   const transitions = workflow[currentStatusName]?.transitions || {}
-
   if (!Object.keys(transitions).length && currentStatusName !== 'unpublished') {
     return null
   }
@@ -133,13 +143,11 @@ export const StatusMenu = ({ documentId, type, publishTime, onBeforeStatusChange
       return undefined
     }
   }
-
   // For print-articles we show "unpublished changes" _only_ if checkpoint is 'usable'
   const asSave = !!(type === 'tt/print-article'
     ? isChanged && documentStatus.checkpoint === 'usable'
     : isChanged && documentStatus.name !== 'draft'
   )
-
   return (
     <>
       <div className='flex items-center' ref={containerRef}>
@@ -172,23 +180,42 @@ export const StatusMenu = ({ documentId, type, publishTime, onBeforeStatusChange
               transitions={transitions}
               statuses={statuses}
               onSelect={showPrompt}
+              asSave={asSave}
             >
               {asSave && (
-                <StatusMenuOption
-                  key='save'
-                  status={documentStatus.name}
-                  state={{
-                    verify: true,
-                    title: `Uppdatera ändringar - ${workflow[currentStatusName]?.title}`,
-                    description: 'Uppdatera med ändringar'
-                  }}
-                  onSelect={showPrompt}
-                  statusDef={currentStatusDef}
-                />
-
+                <>
+                  <StatusMenuOption
+                    key='save'
+                    status={documentStatus.name}
+                    state={{
+                      verify: true,
+                      title: `Uppdatera ändringar - ${workflow[currentStatusName]?.title}`,
+                      description: 'Uppdatera med ändringar'
+                    }}
+                    onSelect={showPrompt}
+                    statusDef={currentStatusDef}
+                  />
+                  {type === 'core/section'
+                    && (
+                      <StatusMenuOption
+                        key='reset'
+                        status={documentStatus.name}
+                        state={{
+                          verify: true,
+                          title: `Återställ`,
+                          description: 'Återställ till senast använda version'
+                        }}
+                        onSelect={() => showPrompt({
+                          verify: true,
+                          title: 'Återställ',
+                          description: 'Återställ till senast använda version',
+                          status: 'reset' })}
+                        statusDef={currentStatusDef}
+                      />
+                    )}
+                </>
               )}
             </StatusOptions>
-
           </DropdownMenuContent>
         </DropdownMenu>
       </div>
@@ -219,6 +246,7 @@ export const StatusMenu = ({ documentId, type, publishTime, onBeforeStatusChange
                 'core/editorial-info'
               ].includes(type)}
               unPublishDocument={unPublishDocument}
+              resetDocument={resetDocument}
             />
           )}
         </>

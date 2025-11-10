@@ -14,7 +14,7 @@ export const get = async <T>(endpoint: URL, accessToken: string, index: string, 
     query: {
       range: {
         'heads.usable.version': {
-          gte: 1
+          gte: -1
         }
       }
     }

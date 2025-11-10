@@ -9,7 +9,8 @@ export const PromptDefault = ({
   showPrompt,
   requireCause = false,
   currentCause,
-  unPublishDocument
+  unPublishDocument,
+  resetDocument
 }: {
   prompt: {
     status: string
@@ -21,10 +22,11 @@ export const PromptDefault = ({
   requireCause?: boolean
   currentCause?: string
   unPublishDocument?: (name: string) => void
+  resetDocument: () => Promise<void>
 }) => {
   const [cause, setCause] = useState<string | undefined>(currentCause)
   const isUnpublishPrompt = prompt.status === 'unpublished'
-
+  const isResetPromt = prompt.status === 'reset'
   const showCauseField = isUnpublishPrompt
     ? false
     : requireCause || cause
@@ -49,6 +51,8 @@ export const PromptDefault = ({
 
         if (isUnpublishPrompt && unPublishDocument) {
           void unPublishDocument('unpublished')
+        } else if (isResetPromt) {
+          void resetDocument()
         } else {
           void setStatus(prompt.status, { cause })
         }

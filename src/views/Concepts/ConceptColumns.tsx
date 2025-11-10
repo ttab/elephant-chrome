@@ -1,3 +1,4 @@
+import { DocumentStatus } from '@/components/Table/Items/DocumentStatus'
 import { Title } from '@/components/Table/Items/Title'
 import type { ColumnDef } from '@tanstack/react-table'
 import { BoxesIcon } from '@ttab/elephant-ui/icons'
@@ -6,6 +7,22 @@ import type { IDBConcept } from 'src/datastore/types'
 
 export function ConceptColumns(): Array<ColumnDef<IDBConcept>> {
   return [
+    {
+      id: 'documentStatus',
+      meta: {
+        name: 'Status',
+        columnIcon: BoxesIcon,
+        className: 'flex-none'
+      },
+      accessorFn: (data) => {
+        console.log(data)
+        return data?.usableVersion && data.usableVersion > 0 ? 'usable' : 'unpublished'
+      },
+      cell: ({ row }) => {
+        const status = row.getValue<string>('documentStatus') === 'usable' ? 'usable' : 'inactive'
+        return <DocumentStatus type='core/section' status={status} />
+      }
+    },
     {
       id: 'title',
       meta: {
@@ -17,11 +34,10 @@ export function ConceptColumns(): Array<ColumnDef<IDBConcept>> {
         return data.title
       },
       cell: ({ row }) => {
+        const status = row.getValue<string>('documentStatus') === 'usable' ? 'usable' : 'inactive'
         return (
-          <div
-            draggable='false'
-          >
-            <Title title={row.getValue<string>('title')} />
+          <div>
+            <Title title={row.getValue<string>('title')} className={status === 'inactive' ? 'text-zinc-500' : ''} />
           </div>
         )
       }
