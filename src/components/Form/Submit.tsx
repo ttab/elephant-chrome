@@ -44,7 +44,6 @@ export const Submit = ({
     event.stopPropagation()
 
     if (isSubmitting) {
-      console.log('Form is already submitting')
       return
     }
 
