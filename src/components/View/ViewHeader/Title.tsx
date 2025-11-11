@@ -4,6 +4,7 @@ import { useEffect, useRef, useState, type PropsWithChildren } from 'react'
 import { applicationMenu } from '@/defaults/applicationMenuItems'
 import type { YDocument } from '@/modules/yjs/hooks'
 import type * as Y from 'yjs'
+import { useQuery } from '@/hooks/useQuery'
 
 export const Title = ({
   name,
@@ -12,7 +13,8 @@ export const Title = ({
   iconColor,
   icon: Icon,
   asDialog,
-  ydoc
+  ydoc,
+  preview
 }: {
   name: string
   title: string
@@ -21,6 +23,7 @@ export const Title = ({
   iconColor?: string
   asDialog?: boolean
   ydoc?: YDocument<Y.Map<unknown>>
+  preview?: boolean
 } & PropsWithChildren): JSX.Element => {
   const { connected, synced } = ydoc ?? { connected: false, synced: false }
   const [isConnected, setIsConnected] = useState(true)
@@ -56,17 +59,33 @@ export const Title = ({
     }
   })
 
+  const [, setQuery] = useQuery()
+
+  const handleEdit = () => {
+    if (!preview) {
+      return
+    }
+    setQuery({ preview: undefined })
+  }
+
   const { icon: ViewIcon, color } = applicationMenu.groups
     .flatMap((g) => g.items)
     .find((i) => i.name === name) || {}
+
+  const displayTitle = preview && title
+    ? `${title} - Förhandsvisning`
+    : title
+  const displayShortTitle = preview && shortTitle
+    ? `${shortTitle} - Förhandsvisning`
+    : shortTitle
 
   return (
     <div className={viewVariants({ asDialog })}>
 
       {(!ydoc || (isConnected && isSynced)) && (
         <>
-          {!Icon && !!ViewIcon && <ViewIcon size={18} strokeWidth={2.05} color={color || '#222'} />}
-          {!!Icon && <Icon size={18} strokeWidth={2.05} color={iconColor || color || '#555'} />}
+          {!Icon && !!ViewIcon && <ViewIcon size={18} strokeWidth={2.05} color={color || '#222'} onClick={handleEdit} />}
+          {!!Icon && <Icon size={18} strokeWidth={2.05} color={iconColor || color || '#555'} onClick={handleEdit} />}
         </>
       )}
 
@@ -78,14 +97,14 @@ export const Title = ({
         </>
       )}
 
-      {!!title && (
+      {!!displayTitle && (
         <h2 role='header-title' className='font-bold cursor-default whitespace-nowrap opacity-90 dark:bg-secondary'>
           {typeof shortTitle !== 'string'
-            ? <>{title}</>
+            ? <>{displayTitle}</>
             : (
                 <>
-                  <span className='@3xl/view:hidden'>{shortTitle}</span>
-                  <span className='hidden @3xl/view:inline' role='header-title'>{title}</span>
+                  <span className='@3xl/view:hidden'>{displayShortTitle}</span>
+                  <span className='hidden @3xl/view:inline' role='header-title'>{displayTitle}</span>
                 </>
               )}
         </h2>

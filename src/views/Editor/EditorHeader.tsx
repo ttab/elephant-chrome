@@ -92,7 +92,12 @@ export const EditorHeader = ({ ydoc, readOnly, readOnlyVersion, planningId: prop
 
   return (
     <ViewHeader.Root>
-      <ViewHeader.Title name='Editor' title={title} icon={readOnly ? PenOffIcon : PenBoxIcon} />
+      <ViewHeader.Title
+        name='Editor'
+        preview={readOnly && !readOnlyVersion}
+        title={title}
+        icon={readOnly ? PenOffIcon : PenBoxIcon}
+      />
 
       <ViewHeader.Content className='justify-start'>
         <div className='max-w-[810px] mx-auto flex flex-row gap-2 justify-between items-center w-full'>
