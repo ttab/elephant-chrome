@@ -35,7 +35,7 @@ export const Assignment = ({ ydoc, assignment, onAbort, onClose }: {
 
   const formRef = useRef<HTMLDivElement>(null)
 
-  // Track assignments in progress in meta
+  // Track assignments in progress in ctx
   const [assignmentInProgress] = useYValue(ydoc.ctx, `core/assignment.${session?.user.sub || ''}`)
 
   useEffect(() => {

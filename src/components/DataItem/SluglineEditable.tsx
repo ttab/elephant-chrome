@@ -19,6 +19,7 @@ export const SluglineEditable = ({ ydoc, rootMap, value, documentStatus, onValid
   const editable = documentStatus !== 'usable'
   const [slugLine] = useYValue<Y.XmlText | string>(ydoc.ele, path)
   const [assignments] = useYValue<Block[]>(ydoc.ele, ['meta', 'core/assignment'])
+  const [inProgressAssignment] = useYValue<Block>(ydoc.ctx, 'core/assignment.core://user/9744')
 
   // Get all current sluglines from assignments for validation purposes
   // or use provided compareValues
@@ -27,11 +28,29 @@ export const SluglineEditable = ({ ydoc, rootMap, value, documentStatus, onValid
       return compareValues
     }
 
-    return (assignments || []).reduce<string[]>((acc, item) => {
-      const slugline = (item.meta as unknown as Record<string, Block[]>)?.['tt/slugline']?.[0]?.value
-      return (slugline) ? [...acc, slugline] : acc
-    }, [])
-  }, [assignments, compareValues])
+    const collectSlugline = (meta?: unknown): string | undefined => {
+      const value = (meta as Record<string, Block[]> | undefined)?.['tt/slugline']?.[0]?.value
+      return typeof value === 'string' && value.trim().length > 0 ? value : undefined
+    }
+
+    const collected: string[] = []
+    const inProgressSlugline = collectSlugline(inProgressAssignment?.meta)
+
+    if (inProgressSlugline) {
+      collected.push(inProgressSlugline)
+    }
+
+    if (Array.isArray(assignments)) {
+      for (const assignment of assignments) {
+        const slugline = collectSlugline(assignment.meta)
+        if (slugline) {
+          collected.push(slugline)
+        }
+      }
+    }
+
+    return collected
+  }, [assignments, inProgressAssignment, compareValues])
 
   if (!editable && typeof slugLine !== 'string') {
     return <></>
