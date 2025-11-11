@@ -270,7 +270,7 @@ export const AssignmentRow = ({ ydoc, index, onSelect, isFocused = false, asDial
       item: () => {
         showModal(
           <CreatePrintArticle
-            ydoc={ydoc}
+            id={documentId}
             asDialog
             onDialogClose={hideModal}
           />
