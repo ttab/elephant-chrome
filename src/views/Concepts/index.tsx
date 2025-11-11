@@ -9,6 +9,7 @@ import type { IDBConcept } from 'src/datastore/types'
 import { Header } from '@/components/Header'
 import { useConcepts } from './lib/useConcepts'
 import { Error } from '../Error'
+import type { TableDataKey } from './lib/conceptDataTable'
 
 const meta: ViewMetadata = {
   name: 'Concepts',
@@ -28,10 +29,9 @@ const meta: ViewMetadata = {
 
 export const Concepts = ({ title }: ViewProps) => {
   const [currentTab, setCurrentTab] = useState<string>('list')
-  const { data, type } = useConcepts(title)
+  const { data, type } = useConcepts(title as TableDataKey)
   const columns = useMemo(() =>
     ConceptColumns(), [])
-
   if (!data || !type) {
     return <Error></Error>
   } else {

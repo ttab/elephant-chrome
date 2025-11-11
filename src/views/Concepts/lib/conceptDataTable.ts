@@ -9,7 +9,7 @@ export const tableDataMap = {
   'Story tags': {
     conceptTitle: 'Story Tag',
     data: null as unknown as IDBStory[],
-    conceptView: 'StoryTag'
+    conceptView: 'Story'
   }/* ,
     Kategorier: {
       conceptTitle: 'Kategori',
