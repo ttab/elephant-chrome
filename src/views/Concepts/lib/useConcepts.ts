@@ -1,63 +1,20 @@
-import { useCategories } from '@/hooks/useCategories'
-import { useOrganisers } from '@/hooks/useOrganisers'
 import { useSections } from '@/hooks/useSections'
 import { useStories } from '@/hooks/useStories'
-import type { ViewType } from '@/types/index'
-import { useEffect, useState } from 'react'
-import type { IDBCategory, IDBOrganiser, IDBSection, IDBStory } from 'src/datastore/types'
+import type { TableDataKey } from './conceptDataTable'
+import { tableDataMap } from './conceptDataTable'
 
 
-export const useConcepts = (title: string | undefined) => {
+export const useConcepts = (title: TableDataKey | undefined) => {
   const sections = useSections({ activeOnly: false })
   const storyTags = useStories()
-  const categories = useCategories()
-  const organisers = useOrganisers()
-  const [type, setType] = useState<ViewType | undefined>('Concepts')
-  const [data, setData] = useState<(IDBSection | IDBStory | IDBCategory | IDBOrganiser)[] | undefined>([])
-
-  useEffect(() => {
-    setType(getType())
-    setData(getData())
-  }, [title, setType, setData])
-
-  const tableDataMap = {
-    Sektioner: {
-      conceptTitle: 'Sektion',
-      data: sections,
-      conceptView: 'Section'
-    },
-    'Story tags': {
-      conceptTitle: 'Story Tag',
-      data: storyTags,
-      conceptView: 'StoryTag'
-    },
-    Kategorier: {
-      conceptTitle: 'Kategori',
-      data: categories,
-      conceptView: 'Category'
-    },
-    Organisatörer: {
-      conceptTitle: 'Organisatör',
-      data: organisers,
-      conceptView: 'Organiser'
-    }
-  } as const
-
-  const getData = () => {
-    if (!title || !(title in tableDataMap)) {
-      return undefined
-    }
-    const data = tableDataMap[title as keyof typeof tableDataMap]
-    return data.data
+  /* const categories = useCategories()
+  const organisers = useOrganisers() */
+  const conceptMap = {
+    Sektioner: { ...tableDataMap.Sektioner, data: sections },
+    'Story tags': { ...tableDataMap['Story tags'], data: storyTags }
   }
 
-  const getType = () => {
-    if (!title || !(title in tableDataMap)) {
-      return undefined
-    }
-    const data = tableDataMap[title as keyof typeof tableDataMap]
-    return data.conceptView as ViewType
-  }
+  const concept = title ? conceptMap[title] : undefined
 
-  return { type, data, getData, getType }
+  return { type: concept?.conceptView, data: concept?.data }
 }
