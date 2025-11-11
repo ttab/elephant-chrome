@@ -47,7 +47,8 @@ export const StatusMenu = ({ ydoc, type, publishTime, onBeforeStatusChange }: {
   const { viewId } = useView()
 
 
-  const isChanged = ydoc.isChanged || false
+  // TODO: Revisit once reworking changed status logic for plannings etc
+  const isChanged = shouldUseWorkflowStatus ? false : ydoc.isChanged
 
   useEffect(() => {
     if (containerRef.current) {
