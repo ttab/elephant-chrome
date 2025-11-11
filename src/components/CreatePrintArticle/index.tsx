@@ -13,14 +13,10 @@ import { parseDate } from '@/shared/datetime'
 import { useDocuments } from '@/hooks/index/useDocuments'
 import { fields } from '@/shared/schemas/printFlow'
 import type { PrintFlow, PrintFlowFields } from '@/shared/schemas/printFlow'
-import type { YDocument } from '@/modules/yjs/hooks'
-import type * as Y from 'yjs'
 
 const fallbackDate = new Date()
 
-export const CreatePrintArticle = ({ ydoc, asDialog, onDialogClose, className }: {
-  ydoc: YDocument<Y.Map<unknown>>
-} & ViewProps) => {
+export const CreatePrintArticle = ({ id, asDialog, onDialogClose, className }: ViewProps) => {
   const [printFlow, setPrintFlow] = useState<string>()
   const [articleName, setArticleName] = useState<string>()
   const [dateString, setDateString] = useState<string>()
@@ -50,7 +46,7 @@ export const CreatePrintArticle = ({ ydoc, asDialog, onDialogClose, className }:
 
   const selectedPrintFlow = allPrintFlows?.find((flow) => flow.value === printFlow)
 
-  const isSubmitDisabled = !printFlow || !articleName || !dateString || !ydoc.id
+  const isSubmitDisabled = !printFlow || !articleName || !dateString || !id
 
   const handleCreatePrintArticle = async () => {
     if (!session?.accessToken) {
@@ -65,7 +61,7 @@ export const CreatePrintArticle = ({ ydoc, asDialog, onDialogClose, className }:
 
     try {
       const response = await baboon.createPrintArticle({
-        sourceUuid: ydoc.id,
+        sourceUuid: id,
         flowUuid: printFlow,
         date: dateString,
         article: articleName
@@ -95,10 +91,7 @@ export const CreatePrintArticle = ({ ydoc, asDialog, onDialogClose, className }:
           )}
         </ViewHeader.Content>
 
-        <ViewHeader.Action onDialogClose={onDialogClose}>
-          {!asDialog && !!ydoc.id
-            && <ViewHeader.RemoteUsers ydoc={ydoc} />}
-        </ViewHeader.Action>
+        <ViewHeader.Action onDialogClose={onDialogClose} />
       </ViewHeader.Root>
 
       <View.Content>
