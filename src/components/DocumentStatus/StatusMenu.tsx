@@ -35,6 +35,7 @@ export const StatusMenu = ({ ydoc, type, publishTime, onBeforeStatusChange }: {
     'tt/print-article'
   ].includes(type)
 
+  console.log('shouldUseWorkflowStatus', shouldUseWorkflowStatus, type)
   const [documentStatus, setDocumentStatus] = useWorkflowStatus(ydoc.id, shouldUseWorkflowStatus, type === 'tt/print-article')
   const containerRef = useRef<HTMLDivElement>(null)
   const [dropdownWidth, setDropdownWidth] = useState<number>(0)
@@ -47,7 +48,8 @@ export const StatusMenu = ({ ydoc, type, publishTime, onBeforeStatusChange }: {
   const { viewId } = useView()
 
 
-  const isChanged = ydoc.isChanged || false
+  // TODO: Revisit once reworking changed status logic for plannings etc
+  const isChanged = shouldUseWorkflowStatus ? false : ydoc.isChanged
 
   useEffect(() => {
     if (containerRef.current) {
