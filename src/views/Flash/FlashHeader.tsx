@@ -15,17 +15,19 @@ export const FlashHeader = ({
   ydoc,
   readOnly,
   asDialog,
-  onDialogClose
+  onDialogClose,
+  preview
 }: {
   ydoc: YDocument<Y.Map<unknown>>
   readOnly?: boolean
   asDialog?: boolean
   onDialogClose?: (() => void) | undefined
+  preview?: boolean
 }) => {
   return (
     <ViewHeader.Root>
       {!asDialog && (
-        <ViewHeader.Title name='Flash' title='Flash' icon={!readOnly ? ZapIcon : ZapOffIcon} iconColor='#FF5150' />
+        <ViewHeader.Title name='Flash' title='Flash' icon={!readOnly ? ZapIcon : ZapOffIcon} iconColor='#FF5150' preview={preview} />
       )}
 
       <ViewHeader.Content>
@@ -35,8 +37,8 @@ export const FlashHeader = ({
           )}
         </div>
 
-        {!asDialog && !!ydoc && <ViewHeader.RemoteUsers ydoc={ydoc} />}
-        {!asDialog && !!ydoc.id && <StatusMenuHeader ydoc={ydoc} />}
+        {!asDialog && !!ydoc && !preview && <ViewHeader.RemoteUsers ydoc={ydoc} />}
+        {!asDialog && !!ydoc.id && !preview && <StatusMenuHeader ydoc={ydoc} />}
       </ViewHeader.Content>
 
       <ViewHeader.Action onDialogClose={onDialogClose} asDialog={asDialog} />

@@ -2,7 +2,7 @@ import { Card } from '@/components/Card'
 import { Avatar, Link } from '@/components/index'
 import type { AssignmentInterface } from '@/hooks/index/useAssignments'
 import { useLink } from '@/hooks/useLink'
-import { CalendarDaysIcon, FileWarningIcon, MessageSquarePlusIcon, ZapIcon } from '@ttab/elephant-ui/icons'
+import { CalendarDaysIcon, EyeIcon, FileWarningIcon, MessageSquarePlusIcon, ZapIcon } from '@ttab/elephant-ui/icons'
 import type { StatusData } from '@/types'
 import { useSections } from '@/hooks/useSections'
 import type { StatusSpecification } from '@/defaults/workflowSpecification'
@@ -146,16 +146,30 @@ export const ApprovalsCard = ({ ydoc, assignment, isSelected, isFocused, status,
                 </span>
               )}
             </div>
-            <Link
-              to='Planning'
-              props={{ id: assignment._id }}
-              className='block p-1 -m-1 rounded transition-all opacity-70 md:opacity-0 md:group-hover:opacity-70 md:group-focus:opacity-70 md:group-focus-within:opacity-70 hover:bg-gray-300 dark:hover:bg-gray-700'
-              onClick={(e) => e.stopPropagation()}
-            >
-              <Tooltip content='Öppna planering'>
-                <CalendarDaysIcon size={16} strokeWidth={1.75} />
-              </Tooltip>
-            </Link>
+
+            <div className='flex flex-row gap-3'>
+              <Link
+                to={assignment._deliverableType === 'core/flash' ? 'Flash' : 'Editor'}
+                props={{ id: assignment._deliverableId, autoFocus: false, preview: true }}
+                className='block p-1 -m-1 rounded transition-all opacity-70 md:opacity-0 md:group-hover:opacity-70 md:group-focus:opacity-70 md:group-focus-within:opacity-70 hover:bg-gray-300 dark:hover:bg-gray-700'
+                keepFocus
+                onClick={(e) => e.stopPropagation()}
+              >
+                <Tooltip content='Öppna förhandsgranskning'>
+                  <EyeIcon size={16} strokeWidth={1.75} />
+                </Tooltip>
+              </Link>
+              <Link
+                to='Planning'
+                props={{ id: assignment._id }}
+                className='block p-1 -m-1 rounded transition-all opacity-70 md:opacity-0 md:group-hover:opacity-70 md:group-focus:opacity-70 md:group-focus-within:opacity-70 hover:bg-gray-300 dark:hover:bg-gray-700'
+                onClick={(e) => e.stopPropagation()}
+              >
+                <Tooltip content='Öppna planering'>
+                  <CalendarDaysIcon size={16} strokeWidth={1.75} />
+                </Tooltip>
+              </Link>
+            </div>
           </div>
         </div>
       </Card.Footer>

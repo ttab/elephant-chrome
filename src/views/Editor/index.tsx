@@ -52,6 +52,8 @@ const meta: ViewMetadata = {
 const Editor = (props: ViewProps): JSX.Element => {
   const [query] = useQuery()
   const documentId = props.id || query.id as string
+  const preview = query.preview === 'true'
+
   const [workflowStatus] = useWorkflowStatus(documentId, true)
 
   // Error handling for missing document
@@ -87,6 +89,7 @@ const Editor = (props: ViewProps): JSX.Element => {
   return (
     <EditorWrapper
       {...props}
+      preview={preview}
       documentId={documentId}
     />
   )
