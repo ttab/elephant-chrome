@@ -152,6 +152,7 @@ export const POST: RouteHandler = async (req: Request, { collaborationServer, re
   return snapshot(
     collaborationServer,
     documentId,
-    context
+    context,
+    { addToHistory: !!planningId }
   )
 }

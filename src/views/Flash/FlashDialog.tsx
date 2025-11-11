@@ -211,7 +211,7 @@ export const FlashDialog = (props: {
                     }
 
                     createFlash({
-                      flashProvider: ydoc.provider,
+                      ydoc,
                       status,
                       session,
                       planningId: selectedPlanning?.value,
