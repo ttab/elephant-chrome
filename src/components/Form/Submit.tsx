@@ -1,7 +1,8 @@
 import type { ButtonHTMLAttributes } from 'react'
-import React from 'react'
+import React, { useState } from 'react'
 import { type FormProps } from './Root'
 import { toast } from 'sonner'
+import { LoaderIcon } from '@ttab/elephant-ui/icons'
 
 
 export const Submit = ({
@@ -23,6 +24,7 @@ export const Submit = ({
   onDocumentCreated?: () => void
   onReset?: () => void
 }): JSX.Element | null => {
+  const [isSubmitting, setIsSubmitting] = useState<ButtonHTMLAttributes<HTMLButtonElement>['type'] | null>(null)
   const handleValidate = (func: () => void): void => {
     if (validateStateRef && Object.values(validateStateRef.current).every((block) => block.valid)) {
       func()
@@ -36,10 +38,16 @@ export const Submit = ({
   const handleClick = (
     event: React.MouseEvent<HTMLButtonElement> | React.KeyboardEvent<HTMLButtonElement>,
     type: ButtonHTMLAttributes<HTMLButtonElement>['type'],
-    role: 'primary' | 'secondary' | 'tertiary'
+    role: 'primary' | 'secondary' | 'tertiary' | undefined
   ): void => {
     event.preventDefault()
     event.stopPropagation()
+
+    if (isSubmitting) {
+      return
+    }
+
+    setIsSubmitting(type)
 
     if (handleValidate) {
       switch (type) {
@@ -92,10 +100,14 @@ export const Submit = ({
       const props: FormProps
         & { onClick?: (event: React.MouseEvent<HTMLButtonElement>) => void
           onKeyDown?: (event: React.KeyboardEvent<HTMLButtonElement>) => void
+          disabled?: boolean
         } = {}
 
-      const childProps = child.props as { type: string, children: React.ReactElement, role: 'primary' | 'secondary' | 'tertiary' }
-
+      const childProps = child.props as {
+        type?: ButtonHTMLAttributes<HTMLButtonElement>['type']
+        children?: React.ReactNode
+        role?: 'primary' | 'secondary' | 'tertiary'
+      }
 
       if (child.props && 'type' in child.props) {
         if (childProps.type === 'button' && !childProps.role) {
@@ -113,6 +125,8 @@ export const Submit = ({
                 handleClick(event, 'submit', childProps.role)
               }
             }
+
+            props.disabled = !!isSubmitting
             break
 
           case 'reset':
@@ -124,6 +138,9 @@ export const Submit = ({
                 handleClick(event, 'reset', childProps.role)
               }
             }
+
+
+            props.disabled = !!isSubmitting
             break
 
           case 'button':
@@ -135,6 +152,9 @@ export const Submit = ({
                 handleClick(event, 'button', childProps.role)
               }
             }
+
+
+            props.disabled = !!isSubmitting
             break
         }
       }
@@ -149,12 +169,23 @@ export const Submit = ({
         }
       }
 
-      // Recursively apply to children
-      if (childProps?.children) {
-        props.children = React.Children.map(childProps.children, applyOnClickHandler)
+      const mappedChildren = childProps?.children
+        ? React.Children.map(childProps.children, applyOnClickHandler)
+        : childProps?.children
+
+      const shouldShowLoader = Boolean(isSubmitting && childProps?.type === isSubmitting)
+
+      if (shouldShowLoader) {
+        props.disabled = true
+
+        return React.cloneElement(
+          child,
+          props,
+          <LoaderIcon size={14} strokeWidth={1.75} className='animate-spin' />
+        )
       }
 
-      return React.cloneElement(child, props)
+      return React.cloneElement(child, props, mappedChildren)
     }
     return child
   }
