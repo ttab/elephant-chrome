@@ -6,7 +6,7 @@ import { tableDataMap } from './conceptDataTable'
 
 export const useConcepts = (title: TableDataKey | undefined) => {
   const sections = useSections({ activeOnly: false })
-  const storyTags = useStories()
+  const storyTags = useStories({ activeOnly: false })
   /* const categories = useCategories()
   const organisers = useOrganisers() */
   const conceptMap = {
