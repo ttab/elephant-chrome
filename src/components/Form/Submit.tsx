@@ -28,11 +28,16 @@ export const Submit = ({
   const handleValidate = (func: () => void): void => {
     if (validateStateRef && Object.values(validateStateRef.current).every((block) => block.valid)) {
       func()
+      return
     }
 
     if (setValidateForm) {
       setValidateForm(true)
+      setIsSubmitting(undefined)
+      return
     }
+
+    setIsSubmitting(undefined)
   }
 
   const handleClick = (
