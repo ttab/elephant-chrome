@@ -5,12 +5,13 @@ import { PenIcon } from '@ttab/elephant-ui/icons'
 import { MetaSheet } from '../../Editor/components/MetaSheet'
 import { StatusMenu } from '@/components/DocumentStatus/StatusMenu'
 
-export const ConceptHeader = ({ documentId, asDialog, onDialogClose, isChanged, type }: {
+export const ConceptHeader = ({ documentId, asDialog, onDialogClose, isChanged, type, documentType }: {
   documentId: string
   asDialog: boolean
   onDialogClose?: () => void
   isChanged?: boolean
   type: string
+  documentType: string
 }): JSX.Element => {
   const { viewId } = useView()
   const containerRef = useRef<HTMLElement | null>(null)
@@ -37,7 +38,7 @@ export const ConceptHeader = ({ documentId, asDialog, onDialogClose, isChanged, 
               <>
                 <StatusMenu
                   documentId={documentId}
-                  type='core/section' // TODO need to change this to dynamic value depending on concept type
+                  type={documentType}
                   isChanged={isChanged}
                 />
                 <MetaSheet container={containerRef.current} documentId={documentId} />

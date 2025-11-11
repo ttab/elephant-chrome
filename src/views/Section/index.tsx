@@ -131,6 +131,7 @@ const SectionContent = ({
           isChanged={isChanged}
           onDialogClose={onDialogClose}
           type='Sektion'
+          documentType='core/section'
         />
         {!!provider && synced
           ? (
