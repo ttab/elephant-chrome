@@ -4,31 +4,27 @@ import { useRef, useState, useEffect } from 'react'
 import { NewItems } from '@/components/Table/NewItems'
 import type { FormProps } from '@/components/Form/Root'
 import { Button, Dialog, DialogContent, DialogDescription, DialogTitle, DialogTrigger, Separator } from '@ttab/elephant-ui'
-import { createDocument } from '@/shared/createYItem'
 import { Planning } from '@/views/Planning'
 import { useModal } from '@/components/Modal/useModal'
-import * as Templates from '@/shared/templates'
-import type { HocuspocusProvider } from '@hocuspocus/provider'
 import { createPayload } from '@/shared/templates/lib/createPayload'
-import { Block } from '@ttab/elephant-api/newsdoc'
 import { useDocuments } from '@/hooks/index/useDocuments'
 import { QueryV1, BoolQueryV1, TermsQueryV1 } from '@ttab/elephant-api/index'
 import { Link } from '@/components/index'
 import type { Planning as PlanningType } from '@/shared/schemas/planning'
-import type { Doc } from 'yjs'
+import type { YDocument } from '@/modules/yjs/hooks'
+import type * as Y from 'yjs'
+import { getTemplateFromView } from '@/shared/templates/lib/getTemplateFromView'
+import { Block, type Document } from '@ttab/elephant-api/newsdoc'
 
 export type NewItem = { title: string, uuid: string } | undefined
 type PlanningTableFields = ['document.title', 'document.rel.event.uuid']
 
-export const PlanningTable = ({ provider, documentId, asDialog }: {
-  documentId: string
-  provider: HocuspocusProvider | null
+export const PlanningTable = ({ ydoc, asDialog }: {
+  ydoc: YDocument<Y.Map<unknown>>
 } & FormProps): JSX.Element => {
-  const createdDocumentIdRef = useRef<string | undefined>()
+  const createdDocumentRef = useRef<[string, Document] | []>([])
   const { hideModal } = useModal()
   const [newItem, setNewItem] = useState<NewItem>()
-  const [initialDocument, setInitialDocument] = useState<Doc>()
-  const [initialId, setInitialDocId] = useState<string>()
   const [nestedDialogOpen, setNestedOpen] = useState<boolean>(false)
 
   useEffect(() => {
@@ -49,7 +45,7 @@ export const PlanningTable = ({ provider, documentId, asDialog }: {
               oneofKind: 'terms',
               terms: TermsQueryV1.create({
                 field: 'document.rel.event.uuid',
-                values: [documentId]
+                values: [ydoc.id]
               })
             }
           }
@@ -60,7 +56,7 @@ export const PlanningTable = ({ provider, documentId, asDialog }: {
   })
 
   useRepositoryEvents('core/planning-item', (event) => {
-    if (createdDocumentIdRef.current === event.uuid && event.type === 'core/planning-item' && event.event === 'document') {
+    if (createdDocumentRef.current[0] === event.uuid && event.type === 'core/planning-item' && event.event === 'document') {
       void (async () => {
         try {
           if (Array.isArray(data) && newItem?.title) {
@@ -73,7 +69,7 @@ export const PlanningTable = ({ provider, documentId, asDialog }: {
                   values: [newItem?.title]
                 },
                 'document.rel.event.uuid': {
-                  values: [documentId]
+                  values: [ydoc.id]
                 }
               },
               id: newItem?.uuid
@@ -104,30 +100,30 @@ export const PlanningTable = ({ provider, documentId, asDialog }: {
             onClick={(e) => {
               setNestedOpen(true)
               e.stopPropagation()
-              const payload = provider?.document
-                ? createPayload(provider.document)
+              const eventData = ydoc.provider?.document
+                ? createPayload(ydoc.provider.document)
                 : undefined
 
-              const [docId, initialDocument] = createDocument({
-                template: Templates.planning,
-                inProgress: true,
-                createdDocumentIdRef,
-                payload: {
-                  ...payload || {},
-                  links: {
-                    ...payload?.links,
-                    'core/event': [Block.create({
-                      type: 'core/event',
-                      uuid: documentId,
-                      title: payload?.title || 'Titel saknas',
-                      rel: 'event'
-                    })]
-                  }
-                }
-              })
 
-              setInitialDocument(initialDocument)
-              setInitialDocId(docId)
+              const payload = {
+                ...eventData || {},
+                links: {
+                  ...eventData?.links,
+                  'core/event': [Block.create({
+                    type: 'core/event',
+                    uuid: ydoc.id,
+                    title: eventData?.title || 'Titel saknas',
+                    rel: 'event'
+                  })]
+                }
+              }
+
+              const id = crypto.randomUUID()
+
+              createdDocumentRef.current = [
+                id,
+                getTemplateFromView('Planning')(id, payload)
+              ]
             }}
           >
             <div className='bg-primary rounded-full w-5 h-5 relative'>
@@ -148,8 +144,8 @@ export const PlanningTable = ({ provider, documentId, asDialog }: {
             onDialogClose={() => setNestedOpen(!nestedDialogOpen)}
             asDialog
             setNewItem={setNewItem}
-            id={initialId}
-            document={initialDocument}
+            id={createdDocumentRef.current[0]}
+            document={createdDocumentRef.current[1]}
           />
         </DialogContent>
       </Dialog>
@@ -180,7 +176,7 @@ export const PlanningTable = ({ provider, documentId, asDialog }: {
         )}
         {asDialog && (
           <NewItems.Root>
-            <NewItems.List type='Planning' createdIdRef={createdDocumentIdRef} asDialog={asDialog} />
+            <NewItems.List type='Planning' createdIdRef={createdDocumentRef.current[0]} asDialog={asDialog} />
           </NewItems.Root>
         )}
       </div>

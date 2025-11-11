@@ -20,6 +20,10 @@ interface CreateDocumentParams<T> {
   documentId?: string
 }
 
+/**
+ * @deprecated
+ * See views for alternatives
+ */
 export function createDocument<T>({
   template,
   inProgress,

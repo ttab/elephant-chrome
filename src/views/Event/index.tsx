@@ -32,6 +32,7 @@ import { TextInput } from '@/components/ui/TextInput'
 import { getTemplateFromView } from '@/shared/templates/lib/getTemplateFromView'
 import { toGroupedNewsDoc } from '@/shared/transformations/groupedNewsDoc'
 import { TextBox } from '@/components/ui'
+import type { Document } from '@ttab/elephant-api/newsdoc'
 
 const meta: ViewMetadata = {
   name: 'Event',
@@ -49,7 +50,7 @@ const meta: ViewMetadata = {
   }
 }
 
-export const Event = (props: ViewProps & { document?: Y.Doc }): JSX.Element => {
+export const Event = (props: ViewProps & { document?: Document }): JSX.Element => {
   const [query] = useQuery()
   const documentId = props.id || query.id
 
@@ -63,7 +64,7 @@ export const Event = (props: ViewProps & { document?: Y.Doc }): JSX.Element => {
       version: 0n,
       isMetaDocument: false,
       mainDocument: '',
-      document: getTemplateFromView('Event')(documentId)
+      document: props.document || getTemplateFromView('Event')(documentId)
     })
   }, [documentId, props.document])
 
@@ -182,7 +183,7 @@ const EventViewContent = (props: ViewProps & {
           </Form.Content>
 
           <Form.Table>
-            <PlanningTable provider={provider} asDialog={props.asDialog} documentId={props.documentId} />
+            <PlanningTable ydoc={ydoc} asDialog={props.asDialog} />
             {!props.asDialog && <DuplicatesTable documentId={props.documentId} type='core/event' />}
             {copyGroupId && !props.asDialog && <CopyGroup copyGroupId={copyGroupId} type='core/event' />}
           </Form.Table>
