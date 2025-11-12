@@ -29,6 +29,5 @@ export function storyDocumentTemplate(id: string): Document {
       })
     ]
   })
-  console.log(newDocument)
   return newDocument
 }
