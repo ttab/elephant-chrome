@@ -132,7 +132,7 @@ const StoryContent = ({
       longIndex: longIndex || shortIndex === 1 ? 0 : 1
     }
     // check
-    if (shortIndex === -1) {
+    if (shortIndex === -1 || !data) {
       setValueByYPath(provider?.document.getMap('ele'), `meta.core/definition[${indexCheck.shortIndex}]`, toYStructure(Block.create({
         type: 'core/definition',
         role: 'short',
@@ -141,7 +141,7 @@ const StoryContent = ({
         }
       })))
     }
-    if (longIndex === -1) {
+    if (longIndex === -1 || !data) {
       setValueByYPath(provider?.document.getMap('ele'), `meta.core/definition[${indexCheck.longIndex}]`, toYStructure(Block.create({
         type: 'core/definition',
         role: 'long',
@@ -186,7 +186,7 @@ const StoryContent = ({
                     </TextBox>
                     <TextBox
                       singleLine={true}
-                      path='meta.core/definition[0].data.text'
+                      path={`meta.core/definition[${textPaths?.shortIndex}].data.text`}
                       className={isActive ? 'border-[1px]' : ''}
                       onChange={handleChange}
                       placeholder='Kort text'
