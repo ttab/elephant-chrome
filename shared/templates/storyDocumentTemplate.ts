@@ -14,14 +14,14 @@ export function storyDocumentTemplate(id: string): Document {
     title: '',
     meta: [
       Block.create({
-        type: 'core/story',
+        type: 'core/definition',
         role: 'short',
         data: {
           text: ''
         }
       }),
       Block.create({
-        type: 'core/story',
+        type: 'core/definition',
         role: 'long',
         data: {
           text: ''
