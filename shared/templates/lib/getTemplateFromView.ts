@@ -12,6 +12,8 @@ export function getTemplateFromView(type: View): (id: string, payload?: Template
       return Templates.factbox
     case 'Section':
       return Templates.section
+    case 'Story':
+      return Templates.story
     default:
       throw new Error(`No template for ${type}`)
   }

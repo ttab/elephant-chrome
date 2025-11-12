@@ -8,6 +8,7 @@ export { planningDocumentTemplate as planning } from './planningDocumentTemplate
 export { eventDocumentTemplate as event } from './eventDocumentTemplate.js'
 export { editorialInfoDocumentTemplate as editorialInfo } from './editorialInfoDocumentTemplate.js'
 export { sectionDocumentTemplate as section } from './sectionDocumentTemplate.js'
+export { storyDocumentTemplate as story } from './storyDocumentTemplate.js'
 
 export interface TemplatePayload {
   title?: string
