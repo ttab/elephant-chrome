@@ -20,6 +20,7 @@ import { Prompt } from '@/components/Prompt'
 import { useWorkflowStatus } from '@/hooks/useWorkflowStatus'
 import { Block } from '@ttab/elephant-api/newsdoc'
 import { setValueByYPath, toYStructure } from '@/shared/yUtils'
+import { Validation } from '@/components/Validation'
 
 const meta: ViewMetadata = {
   name: 'Story',
@@ -155,7 +156,6 @@ const StoryContent = ({
       longIndex: longIndex
     }
   }, [data, provider?.document])
-  console.log(data)
   return (
     <>
       <View.Root asDialog={asDialog} className={className}>
@@ -175,15 +175,20 @@ const StoryContent = ({
                   onChange={handleChange}
                 >
                   <Form.Content>
-                    <TextBox
-                      singleLine={true}
+                    <Validation
                       path='root.title'
-                      className={isActive ? 'border-[1px]' : ''}
-                      onChange={handleChange}
-                      placeholder='Titel'
-                      disabled={!isActive}
+                      label='title'
+                      block='root.title'
                     >
-                    </TextBox>
+                      <TextBox
+                        singleLine={true}
+                        path='root.title'
+                        className={isActive ? 'border-[1px]' : ''}
+                        onChange={handleChange}
+                        placeholder='Titel'
+                        disabled={!isActive}
+                      />
+                    </Validation>
                     <TextBox
                       singleLine={true}
                       path={`meta.core/definition[${textPaths?.shortIndex}].data.text`}
@@ -193,7 +198,7 @@ const StoryContent = ({
                       disabled={!isActive}
                     />
                     <TextBox
-                      singleLine={true}
+                      singleLine={false}
                       path={`meta.core/definition[${textPaths?.longIndex}].data.text`}
                       className={isActive ? 'border-[1px]' : ''}
                       onChange={handleChange}

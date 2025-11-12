@@ -141,15 +141,20 @@ const SectionContent = ({
                   onChange={handleChange}
                 >
                   <Form.Content>
-                    <TextBox
-                      singleLine={true}
+                    <Validation
                       path='root.title'
-                      className={isActive ? 'border-[1px]' : ''}
-                      onChange={handleChange}
-                      placeholder='Titel'
-                      disabled={!isActive}
+                      label='title'
+                      block='root.title'
                     >
-                    </TextBox>
+                      <TextBox
+                        singleLine={true}
+                        path='root.title'
+                        className={isActive ? 'border-[1px]' : ''}
+                        onChange={handleChange}
+                        placeholder='Titel'
+                        disabled={!isActive}
+                      />
+                    </Validation>
                     <Validation
                       path='meta.core/section[0].data.code'
                       label='code'
