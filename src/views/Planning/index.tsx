@@ -25,7 +25,7 @@ import React, { type SetStateAction, useMemo, useState } from 'react'
 import type { NewItem } from '../Event/components/PlanningTable'
 import { MoveDialog } from './components/MoveDialog'
 import { RelatedEvents } from './components/RelatedEvents'
-import type { Block } from '@ttab/elephant-api/newsdoc'
+import type { Block, Document } from '@ttab/elephant-api/newsdoc'
 import { CopyGroup } from '../../components/CopyGroup'
 import { DuplicatesTable } from '../../components/DuplicatesTable'
 import { snapshotDocument } from '@/lib/snapshotDocument'
@@ -57,7 +57,7 @@ const meta: ViewMetadata = {
 }
 
 export const Planning = (props: ViewProps & {
-  document?: Y.Doc
+  document?: Document
   setNewItem?: Setter
 }): JSX.Element => {
   const [query] = useQuery()
@@ -73,7 +73,7 @@ export const Planning = (props: ViewProps & {
       version: 0n,
       isMetaDocument: false,
       mainDocument: '',
-      document: getTemplateFromView('Planning')(documentId)
+      document: props.document || getTemplateFromView('Planning')(documentId)
     })
   }, [documentId, props.document])
 

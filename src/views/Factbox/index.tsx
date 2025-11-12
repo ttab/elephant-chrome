@@ -28,6 +28,7 @@ import { TextInput } from '@/components/ui/TextInput'
 import { getTemplateFromView } from '@/shared/templates/lib/getTemplateFromView'
 import { toGroupedNewsDoc } from '@/shared/transformations/groupedNewsDoc'
 import type { EleDocumentResponse } from '@/shared/types'
+import type { Document } from '@ttab/elephant-api/newsdoc'
 
 const meta: ViewMetadata = {
   name: 'Factbox',
@@ -45,7 +46,7 @@ const meta: ViewMetadata = {
   }
 }
 
-const Factbox = (props: ViewProps & { document?: Y.Doc }): JSX.Element => {
+const Factbox = (props: ViewProps & { document?: Document }): JSX.Element => {
   const [query] = useQuery()
   const documentId = props.id || query.id
 
@@ -59,7 +60,7 @@ const Factbox = (props: ViewProps & { document?: Y.Doc }): JSX.Element => {
       version: 0n,
       isMetaDocument: false,
       mainDocument: '',
-      document: getTemplateFromView('Factbox')(documentId)
+      document: props.document || getTemplateFromView('Factbox')(documentId)
     })
   }, [documentId, props.document])
 

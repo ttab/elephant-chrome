@@ -12,6 +12,7 @@ import { Editor as PlainEditor } from '@/components/PlainEditor'
 import { getTemplateFromView } from '@/shared/templates/lib/getTemplateFromView'
 import { toGroupedNewsDoc } from '@/shared/transformations/groupedNewsDoc'
 import type { YDocument } from '@/modules/yjs/hooks'
+import type { Document } from '@ttab/elephant-api/newsdoc'
 
 const meta: ViewMetadata = {
   name: 'Flash',
@@ -30,7 +31,7 @@ const meta: ViewMetadata = {
 }
 
 export const Flash = (props: ViewProps & {
-  document?: Y.Doc
+  document?: Document
 }): JSX.Element => {
   const [query] = useQuery()
   const [workflowStatus] = useWorkflowStatus(props.id || '', true)
@@ -47,9 +48,9 @@ export const Flash = (props: ViewProps & {
       version: 0n,
       isMetaDocument: false,
       mainDocument: '',
-      document: getTemplateFromView('Flash')(documentId)
+      document: props.document || getTemplateFromView('Flash')(documentId)
     })
-  }, [documentId])
+  }, [documentId, props.document])
 
   // Error handling for missing document
   if ((!props.asDialog && !documentId) || typeof documentId !== 'string') {
