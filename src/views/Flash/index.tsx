@@ -2,7 +2,7 @@ import type * as Y from 'yjs'
 import { View } from '@/components'
 import type { ViewMetadata, ViewProps } from '@/types'
 import { FlashDialog } from './FlashDialog'
-import { useMemo } from 'react'
+import { useMemo, useRef } from 'react'
 import { useQuery } from '@/hooks/useQuery'
 import { Error } from '../Error'
 import { FlashView } from './FlashView'
@@ -36,8 +36,13 @@ export const Flash = (props: ViewProps & {
   const [query] = useQuery()
   const [workflowStatus] = useWorkflowStatus(props.id || '', true)
 
+  const persistentDocumentId = useRef<string>()
+  if (!persistentDocumentId.current) {
+    persistentDocumentId.current = crypto.randomUUID()
+  }
+
   // We must not read query.id if we are in a dialog or we pick up other documents ids
-  const documentId = props.id || (!props.asDialog && query.id) || crypto.randomUUID()
+  const documentId = props.id || (!props.asDialog && query.id) || persistentDocumentId.current
 
   const data = useMemo(() => {
     if (!documentId || typeof documentId !== 'string') {
