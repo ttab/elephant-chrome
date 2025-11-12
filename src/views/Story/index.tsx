@@ -7,7 +7,7 @@ import { useCollaboration } from '@/hooks/useCollaboration'
 import { useAwareness } from '@/hooks/useAwareness'
 import { useYValue } from '@/hooks/useYValue'
 import { useSession } from 'next-auth/react'
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { snapshotDocument } from '@/lib/snapshotDocument'
 import { toast } from 'sonner'
 import { View } from '@/components/View'
@@ -18,6 +18,7 @@ import { Form } from '@/components/Form'
 import { TextBox } from '@/components/ui'
 import { Prompt } from '@/components/Prompt'
 import { useWorkflowStatus } from '@/hooks/useWorkflowStatus'
+import type { Block } from '@ttab/elephant-api/newsdoc'
 
 const meta: ViewMetadata = {
   name: 'Story',
@@ -71,11 +72,12 @@ const StoryContent = ({
   const [isChanged] = useYValue<boolean>('root.changed')
   const { status } = useSession()
   const [, setChanged] = useYValue<boolean>('root.changed')
+  const [data] = useYValue<Block[]>('meta.core/definition')
   const environmentIsSane = provider && status === 'authenticated'
   const [showVerifyDialog, setShowVerifyDialog] = useState(false)
   const [documentStatus] = useWorkflowStatus(documentId, true, undefined, 'core/story')
   const isActive = !documentStatus || documentStatus.name === 'usable'
-
+  console.log(data)
   useEffect(() => {
     provider?.setAwarenessField('data', user)
     setIsFocused(true)
@@ -121,6 +123,17 @@ const StoryContent = ({
     }
   }
 
+  const textPaths = useMemo(() => {
+    const shortIndex = data?.findIndex((d) => {
+      return d.role === 'short'
+    })
+    const longIndex = data?.findIndex((d) => d.role === 'long')
+    return {
+      shortIndex: shortIndex || longIndex === 0 ? 1 : 0,
+      longIndex: longIndex || shortIndex === 1 ? 0 : 1
+    }
+  }, [data])
+
   return (
     <>
       <View.Root asDialog={asDialog} className={className}>
@@ -149,6 +162,22 @@ const StoryContent = ({
                       disabled={!isActive}
                     >
                     </TextBox>
+                    <TextBox
+                      singleLine={true}
+                      path={`meta.core/definition[${textPaths.shortIndex}].data.text`}
+                      className={isActive ? 'border-[1px]' : ''}
+                      onChange={handleChange}
+                      placeholder='Kort text'
+                      disabled={!isActive}
+                    />
+                    <TextBox
+                      singleLine={true}
+                      path={`meta.core/definition[${textPaths.longIndex}].data.text`}
+                      className={isActive ? 'border-[1px]' : ''}
+                      onChange={handleChange}
+                      placeholder='Lång text'
+                      disabled={!isActive}
+                    />
                   </Form.Content>
                   <Form.Footer>
                     <Form.Submit

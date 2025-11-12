@@ -4,22 +4,26 @@ export const tableDataMap = {
   Sektioner: {
     conceptTitle: 'Sektion',
     data: null as unknown as IDBSection[],
-    conceptView: 'Section'
+    conceptView: 'Section',
+    documentType: 'core/section'
   },
   'Story tags': {
     conceptTitle: 'Story Tag',
     data: null as unknown as IDBStory[],
-    conceptView: 'Story'
+    conceptView: 'Story',
+    documentType: 'core/story'
   }/* ,
     Kategorier: {
       conceptTitle: 'Kategori',
       data: null as unknown as IDBCategory,
       conceptView: 'Category'
-    },
-    Organisatörer: {
-      conceptTitle: 'Organisatör',
-      data: null as unknown as IDBOrganiser,
-      conceptView: 'Organiser'
+      documentType: 'core/category'
+      },
+      Organisatörer: {
+        conceptTitle: 'Organisatör',
+        data: null as unknown as IDBOrganiser,
+        conceptView: 'Organiser'
+        documentType: 'core/organiser'
     } */
 } as const
 
