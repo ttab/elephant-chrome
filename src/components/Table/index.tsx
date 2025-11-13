@@ -37,6 +37,7 @@ import { GroupedRows } from './GroupedRows'
 import { getWireStatus } from './lib/getWireStatus'
 import type { ViewType } from '@/types/index'
 import { type View } from '@/types/index'
+import { isConceptType } from '@/views/Concepts/lib/isConceptType'
 const BASE_URL = import.meta.env.BASE_URL
 
 interface TableProps<TData, TValue> {
@@ -325,7 +326,7 @@ export const Table = <TData, TValue>({
   }, [rows, columns, loading, handleOpen, table, rowSelection])
   return (
     <>
-      {!['Wires', 'Factbox', 'Search', 'Section'].includes(type) && (
+      {!['Wires', 'Factbox', 'Search'].includes(type) && !isConceptType(type) && (
         <Toolbar />
       )}
       {(type === 'Planning' || type === 'Event') && (
@@ -338,7 +339,7 @@ export const Table = <TData, TValue>({
           />
         </NewItems.Root>
       )}
-      {(type === 'Section' || type === 'Concepts')
+      {isConceptType(type)
         && <Toolbar searchbar={true} searchPlaceholder='Fritextsökning' filter={false} quickFilter={false} />}
       {type === 'Factbox'
         && <Toolbar searchbar={true} searchPlaceholder='Fritextsökning' filter={false} sort={false} quickFilter={false} />}

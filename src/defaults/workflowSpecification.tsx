@@ -541,5 +541,6 @@ export const WorkflowSpecifications: Record<string, WorkflowSpecification> = {
       }
     }
   },
-  'core/section': baseConcept
+  'core/section': baseConcept,
+  'core/story': baseConcept
 }

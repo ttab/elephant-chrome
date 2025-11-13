@@ -7,7 +7,7 @@ import { useCollaboration } from '@/hooks/useCollaboration'
 import { useAwareness } from '@/hooks/useAwareness'
 import { useYValue } from '@/hooks/useYValue'
 import { useSession } from 'next-auth/react'
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { snapshotDocument } from '@/lib/snapshotDocument'
 import { toast } from 'sonner'
 import { View } from '@/components/View'
@@ -16,13 +16,16 @@ import { InfoIcon } from '@ttab/elephant-ui/icons'
 import { Button } from '@ttab/elephant-ui'
 import { Form } from '@/components/Form'
 import { TextBox } from '@/components/ui'
-import { Validation } from '@/components/Validation'
 import { Prompt } from '@/components/Prompt'
 import { useWorkflowStatus } from '@/hooks/useWorkflowStatus'
+import { Block } from '@ttab/elephant-api/newsdoc'
+import { setValueByYPath, toYStructure } from '@/shared/yUtils'
+import { Validation } from '@/components/Validation'
+import { LoadingText } from '@/components/LoadingText'
 
 const meta: ViewMetadata = {
-  name: 'Section',
-  path: `${import.meta.env.BASE_URL}/section`,
+  name: 'Story',
+  path: `${import.meta.env.BASE_URL}/story`,
   widths: {
     sm: 12,
     md: 12,
@@ -35,7 +38,7 @@ const meta: ViewMetadata = {
     uhd: 2
   }
 }
-export const Section = (props: ViewProps & { document?: Y.Doc }): JSX.Element => {
+export const Story = (props: ViewProps & { document?: Y.Doc }): JSX.Element => {
   const [query] = useQuery()
   const documentId = props.id || query.id
   if (!documentId) {
@@ -46,7 +49,7 @@ export const Section = (props: ViewProps & { document?: Y.Doc }): JSX.Element =>
       {typeof documentId === 'string'
         ? (
             <AwarenessDocument documentId={documentId} document={props.document}>
-              <SectionContent {...props} documentId={documentId} />
+              <StoryContent {...props} documentId={documentId} />
             </AwarenessDocument>
           )
         : (
@@ -59,7 +62,7 @@ export const Section = (props: ViewProps & { document?: Y.Doc }): JSX.Element =>
   )
 }
 
-const SectionContent = ({
+const StoryContent = ({
   documentId,
   onDialogClose,
   asDialog,
@@ -72,11 +75,11 @@ const SectionContent = ({
   const [isChanged] = useYValue<boolean>('root.changed')
   const { status } = useSession()
   const [, setChanged] = useYValue<boolean>('root.changed')
+  const [data] = useYValue<Block[]>('meta.core/definition')
   const environmentIsSane = provider && status === 'authenticated'
   const [showVerifyDialog, setShowVerifyDialog] = useState(false)
-  const [documentStatus] = useWorkflowStatus(documentId, true, undefined, 'core/section')
+  const [documentStatus] = useWorkflowStatus(documentId, true, undefined, 'core/story')
   const isActive = !documentStatus || documentStatus.name === 'usable'
-
   useEffect(() => {
     provider?.setAwarenessField('data', user)
     setIsFocused(true)
@@ -100,7 +103,7 @@ const SectionContent = ({
     if (environmentIsSane) {
       void snapshotDocument(documentId, { status: 'usable', addToHistory: true }).then((response) => {
         if (response?.statusMessage) {
-          toast.error('Kunde inte skapa ny sektion!', {
+          toast.error('Kunde inte skapa ny storyTag!', {
             duration: 5000,
             position: 'top-center'
           })
@@ -124,6 +127,39 @@ const SectionContent = ({
     }
   }
 
+  const textPaths = useMemo(() => {
+    if (!data || !provider?.document || !synced) return
+    const shortIndex = data?.findIndex((d) => d.role === 'short')
+    const longIndex = data?.findIndex((d) => d.role === 'long')
+    const indexCheck = {
+      shortIndex: shortIndex || longIndex === 0 ? 1 : 0,
+      longIndex: longIndex || shortIndex === 1 ? 0 : 1
+    }
+
+    if (shortIndex === -1 || !data) {
+      setValueByYPath(provider?.document.getMap('ele'), `meta.core/definition[${indexCheck.shortIndex}]`, toYStructure(Block.create({
+        type: 'core/definition',
+        role: 'short',
+        data: {
+          text: ''
+        }
+      })))
+    }
+    if (longIndex === -1 || !data) {
+      setValueByYPath(provider?.document.getMap('ele'), `meta.core/definition[${indexCheck.longIndex}]`, toYStructure(Block.create({
+        type: 'core/definition',
+        role: 'long',
+        data: {
+          text: ''
+        }
+      })))
+    }
+    return {
+      shortIndex: shortIndex,
+      longIndex: longIndex
+    }
+  }, [data, provider?.document, synced])
+
   return (
     <>
       <View.Root asDialog={asDialog} className={className}>
@@ -132,10 +168,10 @@ const SectionContent = ({
           asDialog={!!asDialog}
           isChanged={isChanged}
           onDialogClose={onDialogClose}
-          type='Sektion'
-          documentType='core/section'
+          type='Story'
+          documentType='core/story'
         />
-        {!!provider && synced
+        {!!provider && synced && textPaths
           ? (
               <View.Content className='flex flex-col max-w-[1000px] p-5'>
                 <Form.Root
@@ -157,21 +193,22 @@ const SectionContent = ({
                         disabled={!isActive}
                       />
                     </Validation>
-                    <Validation
-                      path='meta.core/section[0].data.code'
-                      label='code'
-                      block='meta.core/section[0].data.code'
-                    >
-                      <TextBox
-                        onChange={handleChange}
-                        singleLine={true}
-                        path='meta.core/section[0].data.code'
-                        className={isActive ? 'border-[1px]' : ''}
-                        placeholder='Kod'
-                        disabled={!isActive}
-                      >
-                      </TextBox>
-                    </Validation>
+                    <TextBox
+                      singleLine={true}
+                      path={`meta.core/definition[${textPaths?.shortIndex}].data.text`}
+                      className={isActive ? 'border-[1px]' : ''}
+                      onChange={handleChange}
+                      placeholder='Kort text'
+                      disabled={!isActive}
+                    />
+                    <TextBox
+                      singleLine={false}
+                      path={`meta.core/definition[${textPaths?.longIndex}].data.text`}
+                      className={isActive ? 'border-[1px]' : ''}
+                      onChange={handleChange}
+                      placeholder='Lång text'
+                      disabled={!isActive}
+                    />
                   </Form.Content>
                   <Form.Footer>
                     <Form.Submit
@@ -193,7 +230,7 @@ const SectionContent = ({
                         disabled={!environmentIsSane}
                         className='whitespace-nowrap'
                       >
-                        Skapa Sektion
+                        Skapa Story
                       </Button>
                     </Form.Submit>
                     {asDialog
@@ -217,7 +254,7 @@ const SectionContent = ({
                 </Form.Root>
               </View.Content>
             )
-          : <></>}
+          : <LoadingText>Laddar Story tag</LoadingText>}
         {showVerifyDialog && (
           <Prompt
             title='Du har osparade ändringar'
@@ -233,4 +270,4 @@ const SectionContent = ({
   )
 }
 
-Section.meta = meta
+Story.meta = meta

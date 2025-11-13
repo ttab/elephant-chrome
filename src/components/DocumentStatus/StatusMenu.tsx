@@ -16,6 +16,7 @@ import { handleLink } from '../Link/lib/handleLink'
 import { useHistory, useNavigation, useView } from '@/hooks/index'
 import type { View } from '@/types/index'
 import { reset } from '@/views/Concepts/lib/reset'
+import { isConceptType } from '@/views/Concepts/lib/isConceptType'
 
 export const StatusMenu = ({ documentId, type, publishTime, onBeforeStatusChange, isChanged }: {
   documentId: string
@@ -32,9 +33,8 @@ export const StatusMenu = ({ documentId, type, publishTime, onBeforeStatusChange
     'core/article',
     'core/flash',
     'core/editorial-info',
-    'tt/print-article',
-    'core/section'
-  ].includes(type)
+    'tt/print-article'
+  ].includes(type) || isConceptType(type)
   const [documentStatus, setDocumentStatus] = useWorkflowStatus(documentId, shouldUseWorkflowStatus, type === 'tt/print-article', type)
   const containerRef = useRef<HTMLDivElement>(null)
   const [dropdownWidth, setDropdownWidth] = useState<number>(0)
@@ -80,7 +80,8 @@ export const StatusMenu = ({ documentId, type, publishTime, onBeforeStatusChange
       'core/article',
       'core/planning-item',
       'core/event',
-      'core/section'
+      'core/section',
+      'core/story'
     ])
 
     try {
@@ -98,7 +99,8 @@ export const StatusMenu = ({ documentId, type, publishTime, onBeforeStatusChange
           'core/planning-item': 'Planning',
           'core/event': 'Event',
           'tt/print-article': 'PrintEditor',
-          'core/section': 'Section'
+          'core/section': 'Section',
+          'core/story': 'Story'
         }
         handleLink({
           dispatch,
@@ -195,7 +197,7 @@ export const StatusMenu = ({ documentId, type, publishTime, onBeforeStatusChange
                     onSelect={showPrompt}
                     statusDef={currentStatusDef}
                   />
-                  {type === 'core/section'
+                  {isConceptType(type)
                     && (
                       <StatusMenuOption
                         key='reset'

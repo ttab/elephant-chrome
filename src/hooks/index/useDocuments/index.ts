@@ -20,7 +20,6 @@ import type { Session } from 'next-auth'
  * @property {boolean} withPlannings - Append `_relatedPlannings` to the result.
  * @property {boolean} setTableData - Set the data in the table context.
  * @property {boolean} subscribe - Subscribe to document changes.
- * @property {boolean} usableOnly - Returns only documents with status usable.
  */
 export interface useDocumentsFetchOptions {
   aggregatePages?: boolean

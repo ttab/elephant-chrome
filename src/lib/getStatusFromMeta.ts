@@ -1,3 +1,4 @@
+import { isConceptType } from '@/views/Concepts/lib/isConceptType'
 import type { StatusOverviewItem, DocumentMeta } from '@ttab/elephant-api/repository'
 
 interface Status {
@@ -11,9 +12,9 @@ interface Status {
 /**
  * Parse meta heads information to retrieve the current status of a document.
  */
-export function getStatusFromMeta(meta: DocumentMeta, isWorkflow: boolean, type?: string): Status
-export function getStatusFromMeta(meta: StatusOverviewItem, isWorkflow: boolean, type?: string): Status
-export function getStatusFromMeta(meta: DocumentMeta | StatusOverviewItem, isWorkflow: boolean, type?: string): Status {
+export function getStatusFromMeta(meta: DocumentMeta, isWorkflow: boolean, documentType?: string): Status
+export function getStatusFromMeta(meta: StatusOverviewItem, isWorkflow: boolean, documentType?: string): Status
+export function getStatusFromMeta(meta: DocumentMeta | StatusOverviewItem, isWorkflow: boolean, documentType?: string): Status {
   const isMeta = isMetaData(meta)
   const heads = meta.heads
   const version = isMeta ? meta.currentVersion : meta.version
@@ -38,9 +39,10 @@ export function getStatusFromMeta(meta: DocumentMeta | StatusOverviewItem, isWor
   // core/planning-item, core/event
   // Unpublished documents are now a valid workflow state and workflow checkpoint and we don't
   // need to check for them specifically.
+
   let flow
   if (isWorkflow) {
-    if (meta.heads?.usable?.version < 0 && type === 'core/section') {
+    if (meta.heads?.usable?.version < 0 && isConceptType(documentType)) {
       flow = 'unpublished'
     } else {
       flow = meta.workflowState

@@ -9,13 +9,14 @@ import { useModal } from '../Modal/useModal'
 import * as Views from '@/views'
 import { createDocument } from '@/shared/createYItem'
 import { getTemplateFromView } from '@/shared/templates/lib/getTemplateFromView'
+import { isConceptType } from '@/views/Concepts/lib/isConceptType'
 
 export const Header = ({ assigneeId, type }: {
   type: View
   assigneeId?: string | undefined
 }): JSX.Element => {
   const showButton = useMemo(() => {
-    const viewTypes: View[] = ['Planning', 'Event', 'Factbox', 'Section']
+    const viewTypes: View[] = ['Planning', 'Event', 'Factbox', 'Section', 'Story']
     if (viewTypes.includes(type)) {
       return true
     }
@@ -50,7 +51,7 @@ export const Header = ({ assigneeId, type }: {
         </Button>
       )}
 
-      {type !== 'Section'
+      {!isConceptType(type)
         && (
           <>
             <div className='hidden sm:block'>

@@ -175,5 +175,5 @@ export interface StatusData {
   workflowCheckpoint: string
 }
 
-export type ViewType = 'Planning' | 'Event' | 'Assignments' | 'Search' | 'Wires' | 'Factbox' | 'Print' | 'PrintEditor' | 'Concepts' | 'Section'
+export type ViewType = 'Planning' | 'Event' | 'Assignments' | 'Search' | 'Wires' | 'Factbox' | 'Print' | 'PrintEditor' | 'Concepts' | 'Section' | 'Story'
 

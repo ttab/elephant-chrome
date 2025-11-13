@@ -51,7 +51,7 @@ export const CoreSectionProvider = ({ children, usableOnly = true }: {
         }
       )
 
-      // Return the data for the version set to usable
+      // Return the data for the version set to usable, not last version
       if (usableOnly) {
         const usableVersions = newDocs.map((item) => {
           return {
