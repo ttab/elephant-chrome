@@ -271,7 +271,7 @@ export const Move = ({ ydoc, ...props }: ViewProps & {
           <Form.Footer>
             <Form.Submit
               onSubmit={handleSubmit}
-              onReset={() => setShowVerifyDialog(false)}
+              onReset={() => props.onDialogClose?.()}
             >
               <div className='flex gap-2 justify-end'>
                 <Button type='reset'>Avbryt</Button>

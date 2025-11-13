@@ -14,7 +14,8 @@ export const Submit = ({
   onSecondarySubmit,
   onTertiarySubmit,
   onDocumentCreated,
-  onReset
+  onReset,
+  disableOnSubmit
 }: FormProps & {
   documentId?: string
   onDialogClose?: (id: string, title: string) => void
@@ -23,6 +24,7 @@ export const Submit = ({
   onTertiarySubmit?: () => void
   onDocumentCreated?: () => void
   onReset?: () => void
+  disableOnSubmit?: boolean
 }): JSX.Element | null => {
   const [isSubmitting, setIsSubmitting] = useState<ButtonHTMLAttributes<HTMLButtonElement>['type'] | null>(null)
   const handleValidate = (func: () => void): void => {
@@ -52,13 +54,16 @@ export const Submit = ({
       return
     }
 
-    setIsSubmitting(type)
 
     if (handleValidate) {
       switch (type) {
         case 'submit':
           if (onSubmit) {
             handleValidate(() => {
+              if (disableOnSubmit) {
+                setIsSubmitting(type)
+              }
+
               onSubmit()
               if (onDocumentCreated) {
                 onDocumentCreated()
@@ -70,6 +75,10 @@ export const Submit = ({
         case 'button':
           if (onSecondarySubmit && role === 'secondary') {
             handleValidate(() => {
+              if (disableOnSubmit) {
+                setIsSubmitting(type)
+              }
+
               onSecondarySubmit()
               if (onDocumentCreated) {
                 onDocumentCreated()
@@ -79,6 +88,10 @@ export const Submit = ({
 
           if (onTertiarySubmit && role === 'tertiary') {
             handleValidate(() => {
+              if (disableOnSubmit) {
+                setIsSubmitting(type)
+              }
+
               onTertiarySubmit()
               if (onDocumentCreated) {
                 onDocumentCreated()

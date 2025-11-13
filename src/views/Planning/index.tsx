@@ -246,6 +246,7 @@ const PlanningViewContent = (props: ViewProps & {
               onSubmit={() => handleSubmit({ documentStatus: 'usable' })}
               onSecondarySubmit={() => handleSubmit({ documentStatus: 'done' })}
               onTertiarySubmit={() => handleSubmit({ documentStatus: undefined })}
+              disableOnSubmit
             >
               <div className='flex justify-between'>
                 <div className='flex gap-2'>
