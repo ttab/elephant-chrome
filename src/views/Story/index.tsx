@@ -157,7 +157,7 @@ const StoryContent = ({
       longIndex: longIndex
     }
   }, [data, provider?.document, synced])
-  
+
   return (
     <>
       <View.Root asDialog={asDialog} className={className}>
