@@ -126,14 +126,14 @@ const StoryContent = ({
   }
 
   const textPaths = useMemo(() => {
-    if (!provider?.document || !synced) return
+    if (!data || !provider?.document || !synced) return
     const shortIndex = data?.findIndex((d) => d.role === 'short')
     const longIndex = data?.findIndex((d) => d.role === 'long')
     const indexCheck = {
       shortIndex: shortIndex || longIndex === 0 ? 1 : 0,
       longIndex: longIndex || shortIndex === 1 ? 0 : 1
     }
-    // check
+
     if (shortIndex === -1 || !data) {
       setValueByYPath(provider?.document.getMap('ele'), `meta.core/definition[${indexCheck.shortIndex}]`, toYStructure(Block.create({
         type: 'core/definition',
