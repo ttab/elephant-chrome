@@ -79,7 +79,7 @@
     "@auth/core": "^0.38.0",
     "@protobuf-ts/runtime-rpc": "^2.11.1",
     "@tailwindcss/cli": "^4.1.16",
-    "@tailwindcss/vite": "^4.1.16",
+    "@tailwindcss/vite": "^4.1.17",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.0",
     "@testing-library/user-event": "^14.6.1",
