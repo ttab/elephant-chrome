@@ -60,6 +60,11 @@ export const PlanningTable = ({ ydoc, asDialog }: {
       void (async () => {
         try {
           if (Array.isArray(data) && newItem?.title) {
+            const createdId = createdDocumentRef.current[0]
+            // Check if the createdId is already in the data, if so, noop
+            if (typeof createdId === 'string' && data.some((planning) => planning.id === createdId)) {
+              return
+            }
             await mutate([...data, {
               source: {},
               score: 1,
@@ -176,7 +181,7 @@ export const PlanningTable = ({ ydoc, asDialog }: {
         )}
         {asDialog && (
           <NewItems.Root>
-            <NewItems.List type='Planning' createdIdRef={createdDocumentRef.current[0]} asDialog={asDialog} />
+            <NewItems.List type='Planning' createdId={createdDocumentRef.current[0]} asDialog={asDialog} />
           </NewItems.Root>
         )}
       </div>
