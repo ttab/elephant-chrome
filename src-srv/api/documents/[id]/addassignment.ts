@@ -10,6 +10,7 @@ import type { Wire } from '@/shared/schemas/wire.js'
 import { getContextFromValidSession, isContext, type Context } from '../../../lib/context.js'
 import { isValidUUID } from '@/shared/isValidUUID.js'
 import { snapshot } from '../../../utils/snapshot.js'
+import logger from '../../../lib/logger.js'
 
 /**
  * Add assignment to an existing planning or a newly created one.
@@ -138,16 +139,19 @@ export const POST: RouteHandler = async (req: Request, { collaborationServer, re
     })
 
     // Append the deliverable to the assignment
+    const deliverableType = getDeliverableType(type)
     appendDocumentToAssignment({
       document,
       id: deliverableId,
       index,
       slug: '',
-      type: getDeliverableType(type)
+      type: deliverableType
     })
   })
 
-  await connection.disconnect()
+  void connection.disconnect().catch((ex) => {
+    logger.error(ex, 'Failed disconnecting after addAssignment')
+  })
 
   return snapshot(
     collaborationServer,

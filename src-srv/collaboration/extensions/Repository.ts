@@ -151,7 +151,9 @@ export class RepositoryExtension implements Extension {
       })
 
       if (!connection.document) {
-        await connection.disconnect()
+        void connection.disconnect().catch((ex) => {
+          logger.error(ex, 'Failed disconnecting from HP server after missing document')
+        })
         throw new Error('No document retrieved from connection')
       }
 
@@ -189,8 +191,8 @@ export class RepositoryExtension implements Extension {
       cause
     )
 
-    // Set new hash an version to the actual connected document
-    await connection.transact((doc) => {
+    // Set new hash and version to the actual connected document, don't wait
+    void connection.transact((doc) => {
       const yCtx = doc.getMap('ctx')
       yCtx.delete('isInProgress')
       yCtx.set('hash', createHash(JSON.stringify(doc.getMap('ele').toJSON())))
@@ -198,14 +200,18 @@ export class RepositoryExtension implements Extension {
       if (status) {
         yCtx.delete('isChanged')
       }
+    }).catch((ex) => {
+      logger.error(ex, `Failed updating context for document ${documentName} after flush`)
     })
 
     // Cleanup
     connection.disconnect()
 
-    // Finally update the user history document if applicable
+    // Finally update the user history document if applicable, don't wait
     if (options?.addToHistory === true && typeof documentType === 'string') {
-      await this.#addDocumentToUserHistory(documentName, documentType, context)
+      void this.#addDocumentToUserHistory(documentName, documentType, context).catch((ex) => {
+        logger.error(ex, `Failed adding document ${documentName} to user history`)
+      })
     }
 
     return result

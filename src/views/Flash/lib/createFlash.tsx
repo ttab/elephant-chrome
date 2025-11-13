@@ -39,7 +39,8 @@ export async function createFlash({
   }
 
   // Trigger the creation of the flash in the repository
-  await snapshotDocument(ydoc.id, {
+  // dont await it here as we want to do other things in parallel
+  const snapshotPromise = snapshotDocument(ydoc.id, {
     status: documentStatus
   }, ydoc.provider?.document)
     .catch((ex) => {
@@ -76,6 +77,9 @@ export async function createFlash({
     isoDateTime,
     section
   })
+
+  // Ensure the snapshot is complete before showing the toast
+  await snapshotPromise
 
   const getLabel = (documentStatus: CreateFlashDocumentStatus): string => {
     switch (documentStatus) {
