@@ -87,7 +87,7 @@ const StoryContent = ({
     return () => {
       setIsFocused(false)
     }
-  }, [provider, user, setIsFocused])
+  }, [provider])
 
   const handleChange = useCallback((value: boolean): void => {
     const root = provider?.document.getMap('ele').get('root') as Y.Map<unknown>
@@ -126,9 +126,7 @@ const StoryContent = ({
   }
 
   const textPaths = useMemo(() => {
-    console.log(provider?.document.toJSON())
     if (!provider?.document || !synced) return
-    console.log(synced)
     const shortIndex = data?.findIndex((d) => d.role === 'short')
     const longIndex = data?.findIndex((d) => d.role === 'long')
     const indexCheck = {
@@ -159,7 +157,7 @@ const StoryContent = ({
       longIndex: longIndex
     }
   }, [data, provider?.document, synced])
-
+  
   return (
     <>
       <View.Root asDialog={asDialog} className={className}>
@@ -254,7 +252,7 @@ const StoryContent = ({
                 </Form.Root>
               </View.Content>
             )
-          : <LoadingText></LoadingText>}
+          : <LoadingText>Laddar Story tag</LoadingText>}
         {showVerifyDialog && (
           <Prompt
             title='Du har osparade ändringar'

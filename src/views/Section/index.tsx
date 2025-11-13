@@ -84,7 +84,7 @@ const SectionContent = ({
     return () => {
       setIsFocused(false)
     }
-  }, [provider, user, setIsFocused])
+  }, [provider])
 
   const handleChange = useCallback((value: boolean): void => {
     const root = provider?.document.getMap('ele').get('root') as Y.Map<unknown>
