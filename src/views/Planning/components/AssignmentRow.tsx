@@ -208,7 +208,7 @@ export const AssignmentRow = ({ ydoc, index, onSelect, isFocused = false, asDial
     }
   })
 
-  const isUsable = articleStatus?.meta?.workflowState === 'usable'
+  const isUsable = articleStatus?.meta?.workflowCheckpoint === 'usable'
 
   const menuItems: DotDropdownMenuActionItem[] = [
     {
@@ -244,7 +244,6 @@ export const AssignmentRow = ({ ydoc, index, onSelect, isFocused = false, asDial
     },
     {
       label: 'Flytta',
-      disabled: isUsable,
       icon: MoveRightIcon,
       item: () => {
         showModal(
