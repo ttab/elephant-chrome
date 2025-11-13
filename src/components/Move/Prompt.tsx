@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, Button } from '@ttab/elephant-ui'
 import { createDocument } from '@/shared/createYItem'
 import type { DefaultValueOption } from '@ttab/elephant-ui'
@@ -34,6 +34,7 @@ export const MovePrompt = ({
   payload: Templates.TemplatePayload | undefined
 }): JSX.Element => {
   const { data: session, status } = useSession()
+  const [isSubmitting, setIsSubmitting] = useState(false)
   useKeydownGlobal((event) => {
     if (event.key === 'Escape' && secondaryLabel && onSecondary) {
       onSecondary()
@@ -59,14 +60,20 @@ export const MovePrompt = ({
   const { document: planning, documentId: planningId, provider } = useCollaborationDocument(collaborationPayload)
 
   const handlePrimaryClick = () => {
+    if (isSubmitting) return
+
+    setIsSubmitting(true)
+
     if (status !== 'authenticated' || !session || !provider?.synced) {
       toast.error('Uppdraget kunde inte flyttas. Du är inte inloggad.')
+      setIsSubmitting(false)
       return
     }
 
     if (!planning) {
       toast.error('Uppdraget kunde inte flyttas. Var god försök igen.')
       onSecondary?.()
+      setIsSubmitting(false)
       return
     }
 
@@ -77,6 +84,10 @@ export const MovePrompt = ({
       })
       .catch((ex: unknown) => {
         toast.error(ex instanceof Error ? ex.message : 'Kunde inte spara efter flytt')
+        setIsSubmitting(false)
+      })
+      .finally(() => {
+        setIsSubmitting(false)
       })
   }
 
