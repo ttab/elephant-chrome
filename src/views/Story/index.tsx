@@ -87,6 +87,8 @@ const StoryContent = ({
     return () => {
       setIsFocused(false)
     }
+    // We only want to rerun when provider change
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [provider])
 
   const handleChange = useCallback((value: boolean): void => {
