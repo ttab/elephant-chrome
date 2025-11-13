@@ -21,6 +21,7 @@ import { useWorkflowStatus } from '@/hooks/useWorkflowStatus'
 import { Block } from '@ttab/elephant-api/newsdoc'
 import { setValueByYPath, toYStructure } from '@/shared/yUtils'
 import { Validation } from '@/components/Validation'
+import { LoadingText } from '@/components/LoadingText'
 
 const meta: ViewMetadata = {
   name: 'Story',
@@ -125,7 +126,9 @@ const StoryContent = ({
   }
 
   const textPaths = useMemo(() => {
-    if (!provider?.document) return
+    console.log(provider?.document.toJSON())
+    if (!provider?.document || !synced) return
+    console.log(synced)
     const shortIndex = data?.findIndex((d) => d.role === 'short')
     const longIndex = data?.findIndex((d) => d.role === 'long')
     const indexCheck = {
@@ -155,7 +158,8 @@ const StoryContent = ({
       shortIndex: shortIndex,
       longIndex: longIndex
     }
-  }, [data, provider?.document])
+  }, [data, provider?.document, synced])
+
   return (
     <>
       <View.Root asDialog={asDialog} className={className}>
@@ -167,7 +171,7 @@ const StoryContent = ({
           type='Story'
           documentType='core/story'
         />
-        {!!provider && synced
+        {!!provider && synced && textPaths
           ? (
               <View.Content className='flex flex-col max-w-[1000px] p-5'>
                 <Form.Root
@@ -250,7 +254,7 @@ const StoryContent = ({
                 </Form.Root>
               </View.Content>
             )
-          : <></>}
+          : <LoadingText></LoadingText>}
         {showVerifyDialog && (
           <Prompt
             title='Du har osparade ändringar'
