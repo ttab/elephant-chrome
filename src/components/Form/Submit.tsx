@@ -4,6 +4,9 @@ import { type FormProps } from './Root'
 import { toast } from 'sonner'
 import { LoaderIcon } from '@ttab/elephant-ui/icons'
 
+const isPromise = (value: unknown): value is Promise<unknown> =>
+  typeof value === 'object' && value !== null && typeof (value as Promise<unknown>).then === 'function'
+
 
 export const Submit = ({
   children,
@@ -19,14 +22,48 @@ export const Submit = ({
 }: FormProps & {
   documentId?: string
   onDialogClose?: (id: string, title: string) => void
-  onSubmit?: () => void
-  onSecondarySubmit?: () => void
-  onTertiarySubmit?: () => void
+  onSubmit?: () => void | Promise<void>
+  onSecondarySubmit?: () => void | Promise<void>
+  onTertiarySubmit?: () => void | Promise<void>
   onDocumentCreated?: () => void
   onReset?: () => void
   disableOnSubmit?: boolean
 }): JSX.Element | null => {
   const [isSubmitting, setIsSubmitting] = useState<ButtonHTMLAttributes<HTMLButtonElement>['type'] | null>(null)
+  const runSubmitHandler = (
+    action: (() => unknown) | undefined,
+    warningLabel: string
+  ): void => {
+    if (!action) {
+      return
+    }
+
+    const handleSuccess = (): void => {
+      if (onDocumentCreated) {
+        onDocumentCreated()
+      }
+    }
+
+    try {
+      const result = action()
+
+      if (isPromise(result)) {
+        result
+          .then(handleSuccess)
+          .catch((ex: unknown) => {
+            console.warn(warningLabel, ex)
+            setIsSubmitting(null)
+          })
+        return
+      }
+
+      handleSuccess()
+    } catch (ex) {
+      console.warn(warningLabel, ex)
+      setIsSubmitting(null)
+    }
+  }
+
   const handleValidate = (func: () => void): void => {
     if (validateStateRef && Object.values(validateStateRef.current).every((block) => block.valid)) {
       func()
@@ -64,15 +101,7 @@ export const Submit = ({
                 setIsSubmitting(type)
               }
 
-              try {
-                onSubmit()
-                if (onDocumentCreated) {
-                  onDocumentCreated()
-                }
-              } catch (ex) {
-                console.warn('Submit handler failed', ex)
-                setIsSubmitting(null)
-              }
+              runSubmitHandler(onSubmit, 'Submit handler failed')
             })
           }
           break
@@ -84,15 +113,7 @@ export const Submit = ({
                 setIsSubmitting(type)
               }
 
-              try {
-                onSecondarySubmit()
-                if (onDocumentCreated) {
-                  onDocumentCreated()
-                }
-              } catch (ex) {
-                console.warn('Secondary submit handler failed', ex)
-                setIsSubmitting(null)
-              }
+              runSubmitHandler(onSecondarySubmit, 'Secondary submit handler failed')
             })
           }
 
@@ -102,15 +123,7 @@ export const Submit = ({
                 setIsSubmitting(type)
               }
 
-              try {
-                onTertiarySubmit()
-                if (onDocumentCreated) {
-                  onDocumentCreated()
-                }
-              } catch (ex) {
-                console.warn('Tertiary submit handler failed', ex)
-                setIsSubmitting(null)
-              }
+              runSubmitHandler(onTertiarySubmit, 'Tertiary submit handler failed')
             })
           }
           break
@@ -140,6 +153,7 @@ export const Submit = ({
         type?: ButtonHTMLAttributes<HTMLButtonElement>['type']
         children?: React.ReactNode
         role?: 'primary' | 'secondary' | 'tertiary'
+        disabled?: boolean
       }
 
       if (child.props && 'type' in child.props) {
@@ -158,8 +172,6 @@ export const Submit = ({
                 handleClick(event, 'submit', childProps.role)
               }
             }
-
-            props.disabled = !!isSubmitting
             break
 
           case 'reset':
@@ -171,9 +183,6 @@ export const Submit = ({
                 handleClick(event, 'reset', childProps.role)
               }
             }
-
-
-            props.disabled = !!isSubmitting
             break
 
           case 'button':
@@ -185,11 +194,15 @@ export const Submit = ({
                 handleClick(event, 'button', childProps.role)
               }
             }
-
-
-            props.disabled = !!isSubmitting
             break
         }
+      }
+
+      const shouldDisableForSubmit = Boolean(disableOnSubmit && isSubmitting)
+      const isChildDisabled = Boolean(childProps?.disabled)
+
+      if (shouldDisableForSubmit || isChildDisabled) {
+        props.disabled = true
       }
 
       if (typeof child.type !== 'string' && child.type && 'type' in child.props) {

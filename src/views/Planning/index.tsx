@@ -125,14 +125,20 @@ const PlanningViewContent = (props: ViewProps & {
   const [publicDescription] = useYValue<Y.XmlText>(document, ['meta', 'core/description', pubIndex, 'data', 'text'], true)
   const [internalDescription] = useYValue<Y.XmlText>(document, ['meta', 'core/description', intIndex, 'data', 'text'], true)
 
-  const handleSubmit = ({ documentStatus }: {
+  const handleSubmit = async ({ documentStatus }: {
     documentStatus: 'usable' | 'done' | undefined
-  }): void => {
+  }): Promise<void> => {
+    if (props?.setNewItem) {
+      props.setNewItem({ uuid: props.documentId, title: newTitle as string })
+    }
+
     if (provider && status === 'authenticated') {
-      snapshotDocument(props.documentId, {
-        status: documentStatus,
-        addToHistory: true
-      }).then(() => {
+      try {
+        await snapshotDocument(props.documentId, {
+          status: documentStatus,
+          addToHistory: true
+        })
+
         if (props?.onDialogClose) {
           props.onDialogClose()
         }
@@ -152,17 +158,16 @@ const PlanningViewContent = (props: ViewProps & {
             />
           )
         })
-      }).catch((ex: unknown) => {
+      } catch (ex) {
         console.error('Failed to snapshot document', ex)
         toast.error('Kunde inte skapa ny planering!', {
           duration: 5000,
           position: 'top-center'
         })
-      })
-    }
 
-    if (props?.setNewItem) {
-      props.setNewItem({ uuid: props.documentId, title: newTitle as string })
+        // re-throw to allow further handling in Submit
+        throw ex
+      }
     }
   }
 
@@ -259,9 +264,9 @@ const PlanningViewContent = (props: ViewProps & {
             )}
 
             <Form.Submit
-              onSubmit={() => handleSubmit({ documentStatus: 'usable' })}
-              onSecondarySubmit={() => handleSubmit({ documentStatus: 'done' })}
-              onTertiarySubmit={() => handleSubmit({ documentStatus: undefined })}
+              onSubmit={() => { void handleSubmit({ documentStatus: 'usable' }) }}
+              onSecondarySubmit={() => { void handleSubmit({ documentStatus: 'done' }) }}
+              onTertiarySubmit={() => { void handleSubmit({ documentStatus: undefined }) }}
               disableOnSubmit
             >
               <div className='flex justify-between'>
