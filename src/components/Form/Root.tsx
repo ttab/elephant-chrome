@@ -61,7 +61,6 @@ export const Root = ({ children, asDialog = false, className }: PropsWithChildre
     [validateForm]
   )
 
-
   const props = useMemo(
     () => ({
       asDialog,
