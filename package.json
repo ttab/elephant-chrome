@@ -60,7 +60,7 @@
     "next-auth": "^5.0.0-beta.30",
     "node-html-parser": "^7.0.1",
     "pino": "^10.1.0",
-    "pino-http": "^10.4.0",
+    "pino-http": "^11.0.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "redis": "^4.7.0",
@@ -72,7 +72,7 @@
     "vite-express": "^0.21.1",
     "y-indexeddb": "^9.0.12",
     "yjs": "^13.6.26",
-    "zod": "^3.24.3"
+    "zod": "^4.1.12"
   },
   "devDependencies": {
     "@auth/core": "^0.38.0",
