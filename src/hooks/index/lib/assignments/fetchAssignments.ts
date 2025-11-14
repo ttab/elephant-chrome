@@ -54,10 +54,13 @@ export async function fetchAssignments({ index, repository, type, requireDeliver
   const deliverableDocumentsRequests: Promise<BulkGetResponse | null>[] = []
   const metricsDocumentsRequests: Promise<GetMetricsResponse | null>[] = []
 
+  let pass = 0
   do {
     const dateStr = format(date, 'yyyy-MM-dd')
     const query = constructQuery(date, dateType, timeZone)
 
+    pass += 1
+    console.debug(`Pass ${pass}: -> About to query the index`)
     const { ok, hits, errorMessage } = await index.query({
       accessToken: session.accessToken,
       documentType: 'core/planning-item',
@@ -66,10 +69,15 @@ export async function fetchAssignments({ index, repository, type, requireDeliver
       loadDocument: true,
       query
     })
+    console.debug(`Pass ${pass}: -> Queried the index`)
 
     if (!ok) {
+      console.debug(`Pass ${pass}: -> Not ok, failed querying the index`)
+
       throw new Error(errorMessage || 'Unknown error while searching for text assignments')
     }
+
+    console.debug(`Pass ${pass}: -> Successfully queried the index`)
 
     // Collect all assignments and deliverable uuids for this result page
     // Ignore:
@@ -78,6 +86,7 @@ export async function fetchAssignments({ index, repository, type, requireDeliver
     // TODO: Take withheld/publish into account?
     const uuids: string[] = []
 
+    console.debug(`Pass ${pass}: -> Fetching news values`)
     const deliverableNewsValues = await getNewsValues(hits, repository, session)
 
     for (const { document } of hits) {
@@ -105,6 +114,7 @@ export async function fetchAssignments({ index, repository, type, requireDeliver
     // If we found deliverable uuids we want to fetch statuses and the deliverable documents
     if (uuids.length > 0 && repository) {
       // Initialize a getStatuses request for this result page
+      console.debug(`Pass ${pass}: -> Fetching related documents`)
       const [documentsRequest, statusesRequest] = getRelatedDocuments(repository, session.accessToken, uuids)
 
       if (documentsRequest instanceof Promise) {
@@ -119,6 +129,7 @@ export async function fetchAssignments({ index, repository, type, requireDeliver
 
     // if metrics are required, fetch them
     if (requireMetrics?.length && uuids.length > 0 && repository) {
+      console.debug(`Pass ${pass}: -> Fetching metrics`)
       const metricsRequest = repository.getMetrics(uuids, requireMetrics, session.accessToken)
       if (metricsRequest instanceof Promise) {
         metricsDocumentsRequests.push(metricsRequest)
@@ -132,16 +143,32 @@ export async function fetchAssignments({ index, repository, type, requireDeliver
   const filteredTextAssignments: AssignmentInterface[] = []
 
   // Wait for all statuses requests to finish and extract all status overviews
-  const statusOverviews = (await Promise.all(deliverableStatusesRequests))
-    .reduce<StatusOverviewItem[]>((prev, curr) => {
-      return [...prev || [], ...curr?.items || []]
+  // Use allSettled to handle individual request failures gracefully
+  console.debug(`Post loop: -> Waiting for all status requests to finish`)
+  const statusOverviewsResults = await Promise.allSettled(deliverableStatusesRequests)
+  const statusOverviews = statusOverviewsResults
+    .reduce<StatusOverviewItem[]>((prev, result) => {
+      if (result.status === 'fulfilled' && result.value) {
+        return [...prev, ...result.value.items || []]
+      } else if (result.status === 'rejected') {
+        console.error('Failed to fetch status overview:', result.reason)
+      }
+      return prev
     }, [])
-
-
-  const metricsOverviews = (await Promise.all(metricsDocumentsRequests))
-    .reduce<Record<string, DocumentMetrics>>((prev, curr) => {
-      return { ...prev, ...curr?.documents }
+  console.debug(`Post loop: -> Status requests finished`)
+  console.debug(`Post loop: -> Waiting for all individual requests to finish`)
+  // Use allSettled to handle individual request failures gracefully
+  const metricsOverviewsResults = await Promise.allSettled(metricsDocumentsRequests)
+  const metricsOverviews = metricsOverviewsResults
+    .reduce<Record<string, DocumentMetrics>>((prev, result) => {
+      if (result.status === 'fulfilled' && result.value?.documents) {
+        return { ...prev, ...result.value.documents }
+      } else if (result.status === 'rejected') {
+        console.error('Failed to fetch metrics:', result.reason)
+      }
+      return prev
     }, {})
+  console.debug(`Post loop: -> Individual requests finished`)
 
   // Apply status to all assignments
   assignments.forEach((assignment) => {
@@ -164,18 +191,25 @@ export async function fetchAssignments({ index, repository, type, requireDeliver
 
 
   // Wait for all documents requests to finish and find document for each deliverable
-  const documentsResponses = await Promise.all(deliverableDocumentsRequests)
-  documentsResponses.forEach((documentsResponse) => {
-    documentsResponse?.items.forEach((item) => {
-      const matchingAssignment = filteredTextAssignments.find((fta) => {
-        return fta._deliverableId === item.document?.uuid
-      })
+  // Use allSettled to handle individual request failures gracefully
+  console.debug(`Post loop: -> Waiting for all document requests to finish`)
+  const documentsResponsesResults = await Promise.allSettled(deliverableDocumentsRequests)
+  documentsResponsesResults.forEach((result) => {
+    if (result.status === 'fulfilled' && result.value) {
+      result.value.items.forEach((item) => {
+        const matchingAssignment = filteredTextAssignments.find((fta) => {
+          return fta._deliverableId === item.document?.uuid
+        })
 
-      if (matchingAssignment) {
-        matchingAssignment._deliverableDocument = item.document
-      }
-    })
+        if (matchingAssignment) {
+          matchingAssignment._deliverableDocument = item.document
+        }
+      })
+    } else if (result.status === 'rejected') {
+      console.error('Failed to fetch deliverable documents:', result.reason)
+    }
   })
+  console.debug(`Post loop: -> Document requests finished`)
 
   // Sort assignments with fullday first, then in time order
   filteredTextAssignments.sort((a, b) => {
