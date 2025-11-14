@@ -8,7 +8,7 @@ import {
 import { useSession } from 'next-auth/react'
 import { View } from '@/components/View'
 import { Button } from '@ttab/elephant-ui'
-import { TagsIcon, CalendarClockIcon, TextIcon, KeyIcon } from '@ttab/elephant-ui/icons'
+import { TagsIcon, CalendarClockIcon, TextIcon, KeyIcon, CalendarPlus2Icon } from '@ttab/elephant-ui/icons'
 import {
   Newsvalue,
   Section,
@@ -33,6 +33,7 @@ import { getTemplateFromView } from '@/shared/templates/lib/getTemplateFromView'
 import { toGroupedNewsDoc } from '@/shared/transformations/groupedNewsDoc'
 import { TextBox } from '@/components/ui'
 import type { Document } from '@ttab/elephant-api/newsdoc'
+import { ToastAction } from '../Wire/ToastAction'
 
 const meta: ViewMetadata = {
   name: 'Event',
@@ -113,6 +114,23 @@ const EventViewContent = (props: ViewProps & {
           if (props?.onDialogClose) {
             props.onDialogClose()
           }
+
+
+          toast.success(`Händelse skapad`, {
+            classNames: {
+              title: 'whitespace-nowrap'
+            },
+            action: (
+              <ToastAction
+                key='open-event'
+                documentId={props.documentId}
+                withView='Event'
+                label='Öppna händelse'
+                Icon={CalendarPlus2Icon}
+                target='last'
+              />
+            )
+          })
         })
         .catch((ex: unknown) => {
           console.error(ex)

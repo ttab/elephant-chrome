@@ -64,9 +64,14 @@ export const Submit = ({
                 setIsSubmitting(type)
               }
 
-              onSubmit()
-              if (onDocumentCreated) {
-                onDocumentCreated()
+              try {
+                onSubmit()
+                if (onDocumentCreated) {
+                  onDocumentCreated()
+                }
+              } catch (ex) {
+                console.warn('Submit handler failed', ex)
+                setIsSubmitting(null)
               }
             })
           }
@@ -79,9 +84,14 @@ export const Submit = ({
                 setIsSubmitting(type)
               }
 
-              onSecondarySubmit()
-              if (onDocumentCreated) {
-                onDocumentCreated()
+              try {
+                onSecondarySubmit()
+                if (onDocumentCreated) {
+                  onDocumentCreated()
+                }
+              } catch (ex) {
+                console.warn('Secondary submit handler failed', ex)
+                setIsSubmitting(null)
               }
             })
           }
@@ -92,9 +102,14 @@ export const Submit = ({
                 setIsSubmitting(type)
               }
 
-              onTertiarySubmit()
-              if (onDocumentCreated) {
-                onDocumentCreated()
+              try {
+                onTertiarySubmit()
+                if (onDocumentCreated) {
+                  onDocumentCreated()
+                }
+              } catch (ex) {
+                console.warn('Tertiary submit handler failed', ex)
+                setIsSubmitting(null)
               }
             })
           }

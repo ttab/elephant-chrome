@@ -6,7 +6,7 @@ import {
   UserMessage
 } from '@/components'
 import { type ViewMetadata, type ViewProps } from '@/types'
-import { TagsIcon, CalendarIcon, MessageCircleIcon, TextIcon } from '@ttab/elephant-ui/icons'
+import { TagsIcon, CalendarIcon, MessageCircleIcon, TextIcon, CalendarDaysIcon } from '@ttab/elephant-ui/icons'
 import {
   useQuery,
   useWorkflowStatus
@@ -37,6 +37,7 @@ import type { EleDocumentResponse } from '@/shared/types'
 import { TextBox } from '@/components/ui'
 import { useDescriptionIndex } from './hooks/useDescriptionIndex'
 import { TextInput } from '@/components/ui/TextInput'
+import { ToastAction } from '../Wire/ToastAction'
 
 type Setter = React.Dispatch<SetStateAction<NewItem>>
 
@@ -135,13 +136,28 @@ const PlanningViewContent = (props: ViewProps & {
         if (props?.onDialogClose) {
           props.onDialogClose()
         }
+
+        toast.success(`Planering skapad`, {
+          classNames: {
+            title: 'whitespace-nowrap'
+          },
+          action: (
+            <ToastAction
+              key='open-planning'
+              documentId={props.documentId}
+              withView='Planning'
+              label='Öppna planering'
+              Icon={CalendarDaysIcon}
+              target='last'
+            />
+          )
+        })
       }).catch((ex: unknown) => {
         console.error('Failed to snapshot document', ex)
         toast.error('Kunde inte skapa ny planering!', {
           duration: 5000,
           position: 'top-center'
         })
-        return
       })
     }
 
