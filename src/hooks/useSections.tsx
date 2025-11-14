@@ -1,12 +1,17 @@
 import { useContext } from 'react'
 import { CoreSectionContext } from '../datastore/contexts/CoreSectionProvider'
 import { type IDBSection } from '../datastore/types'
+import { getActiveOnly } from '@/lib/getActiveOnly'
 
 export const useSections = (
   { sort, activeOnly = true }: {
     sort?: 'title'
     activeOnly?: boolean } = {}): IDBSection[] => {
-  const { objects } = useContext(CoreSectionContext)
+  let { objects } = useContext(CoreSectionContext)
+
+  if (activeOnly) {
+    objects = getActiveOnly(objects)
+  }
 
   if (sort === 'title') {
     objects.sort((s1, s2) => {
@@ -16,9 +21,5 @@ export const useSections = (
     })
   }
 
-  if (activeOnly) {
-    const filteredObjects = objects.filter((item) => item.usableVersion && item.usableVersion > 0)
-    return filteredObjects
-  }
   return objects
 }

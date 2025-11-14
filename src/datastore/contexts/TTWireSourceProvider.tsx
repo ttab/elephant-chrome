@@ -42,7 +42,8 @@ export const TTWireSourceProvider = ({ children }: {
         return {
           id,
           uri: _['document.uri'][0].trim(),
-          title: _['document.title'][0].trim()
+          title: _['document.title'][0].trim(),
+          usableVersion: BigInt(_['heads.usable.version'][0])
         }
       }
     )

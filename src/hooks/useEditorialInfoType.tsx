@@ -1,9 +1,15 @@
 import { useContext } from 'react'
 import { TTEditorialInfoTypeContext } from '../datastore/contexts/TTEditorialInfoTypeProvider'
 import { type IDBEditorialInfoType } from '../datastore/types'
+import { getActiveOnly } from '@/lib/getActiveOnly'
 
-export const useEditorialInfoTypes = (options?: { sort?: 'title' }): IDBEditorialInfoType[] => {
-  const { objects } = useContext(TTEditorialInfoTypeContext)
+export const useEditorialInfoTypes = (options?: { sort?: 'title', activeOnly: boolean }): IDBEditorialInfoType[] => {
+  let { objects } = useContext(TTEditorialInfoTypeContext)
+  const getActive = options?.activeOnly ?? true
+
+  if (getActive) {
+    objects = getActiveOnly(objects)
+  }
 
   if (options?.sort === 'title') {
     return objects.sort((s1, s2) => {

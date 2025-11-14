@@ -1,9 +1,16 @@
 import { useContext } from 'react'
 import { TTWireSourceContext } from '../datastore/contexts/TTWireSourceProvider'
 import { type IDBWireSource } from '../datastore/types'
+import { getActiveOnly } from '@/lib/getActiveOnly'
 
-export const useWireSources = (options?: { sort?: 'title' }): IDBWireSource[] => {
-  const { objects } = useContext(TTWireSourceContext)
+export const useWireSources = (options?: { sort?: 'title', activeOnly: boolean }): IDBWireSource[] => {
+  let { objects } = useContext(TTWireSourceContext)
+
+  const getActive = options?.activeOnly ?? true
+
+  if (getActive) {
+    objects = getActiveOnly(objects)
+  }
 
   if (options?.sort === 'title') {
     return objects.sort((s1, s2) => {
