@@ -87,7 +87,8 @@ export const useAssignments = ({
   ], (event) => {
     if ((event.event !== 'document'
       && event.event !== 'status'
-      && event.event !== 'delete_document')) {
+      && event.event !== 'delete_document'
+    )) {
       return
     }
 
@@ -108,6 +109,13 @@ export const useAssignments = ({
         void mutate()
         return
       }
+    }
+
+    // Fallback: if the event is a document change, we need to refetch, or we can find new documents
+    // temp fix until we have a more fine grained way, aka websocket api.
+    // Should rely on swr cache, and not refresh unless the changed document is relevant
+    if (event.event === 'document') {
+      void mutate()
     }
   })
 
