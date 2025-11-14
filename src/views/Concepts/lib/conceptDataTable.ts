@@ -1,4 +1,4 @@
-import type { IDBCategory, IDBContentSource, IDBEditorialInfoType, IDBOrganiser, IDBSection, IDBStory, IDBWireSource } from 'src/datastore/types'
+import type { IDBSection, IDBStory } from 'src/datastore/types'
 
 export const tableDataMap = {
   Sektioner: {
@@ -12,7 +12,7 @@ export const tableDataMap = {
     data: null as unknown as IDBStory[],
     conceptView: 'Story',
     documentType: 'core/story'
-  },
+  }/* ,
   Kategorier: {
     conceptTitle: 'Kategori',
     data: null as unknown as IDBCategory,
@@ -42,7 +42,7 @@ export const tableDataMap = {
     data: null as unknown as IDBWireSource,
     conceptView: 'WireSource',
     documentType: 'tt/wire-source'
-  }
+  } */
 } as const
 
 export type TableDataMap = typeof tableDataMap
