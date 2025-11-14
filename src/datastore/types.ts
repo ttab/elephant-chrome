@@ -17,15 +17,12 @@ export interface IDBEditorialInfoType extends IDBConcept {
 
 /** Story structure in indexedDB objectStore  */
 export interface IDBStory extends IDBConcept {
-  id: string
-  title: string
   shortText: string
   longText: string
 }
 
 /** Author structure in indexedDB objectStore */
 export interface IDBAuthor extends IDBConcept {
-  id: string
   name: string
   firstName: string
   lastName: string
@@ -52,12 +49,10 @@ export interface IDBOrganiser extends IDBConcept {
 /** Category structure in indexedDB objectStore */
 export interface IDBWireSource extends IDBConcept {
   uri: string
-  title: string
 }
 
 export interface IDBContentSource extends IDBConcept {
   uri: string
-  title: string
 }
 
 export interface IDBLanguage {
