@@ -131,6 +131,9 @@ export const Move = ({ ydoc, ...props }: ViewProps & {
 
       const newPlanningUUID = getValueByYPath<string>(newEle, 'root.uuid')?.[0]
       toast.success('Uppdraget har flyttats', {
+        classNames: {
+          title: 'whitespace-nowrap'
+        },
         action: (
           <ToastAction
             documentId={newPlanningUUID}

@@ -6,7 +6,7 @@ import {
   UserMessage
 } from '@/components'
 import { type ViewMetadata, type ViewProps } from '@/types'
-import { TagsIcon, CalendarIcon, MessageCircleIcon, TextIcon } from '@ttab/elephant-ui/icons'
+import { TagsIcon, CalendarIcon, MessageCircleIcon, TextIcon, CalendarDaysIcon } from '@ttab/elephant-ui/icons'
 import {
   useQuery,
   useWorkflowStatus
@@ -37,6 +37,7 @@ import type { EleDocumentResponse } from '@/shared/types'
 import { TextBox } from '@/components/ui'
 import { useDescriptionIndex } from './hooks/useDescriptionIndex'
 import { TextInput } from '@/components/ui/TextInput'
+import { ToastAction } from '../Wire/ToastAction'
 
 type Setter = React.Dispatch<SetStateAction<NewItem>>
 
@@ -124,29 +125,49 @@ const PlanningViewContent = (props: ViewProps & {
   const [publicDescription] = useYValue<Y.XmlText>(document, ['meta', 'core/description', pubIndex, 'data', 'text'], true)
   const [internalDescription] = useYValue<Y.XmlText>(document, ['meta', 'core/description', intIndex, 'data', 'text'], true)
 
-  const handleSubmit = ({ documentStatus }: {
+  const handleSubmit = async ({ documentStatus }: {
     documentStatus: 'usable' | 'done' | undefined
-  }): void => {
+  }): Promise<void> => {
+    if (props?.setNewItem) {
+      props.setNewItem({ uuid: props.documentId, title: newTitle as string })
+    }
+
     if (provider && status === 'authenticated') {
-      snapshotDocument(props.documentId, {
-        status: documentStatus,
-        addToHistory: true
-      }).then(() => {
+      try {
+        await snapshotDocument(props.documentId, {
+          status: documentStatus,
+          addToHistory: true
+        })
+
         if (props?.onDialogClose) {
           props.onDialogClose()
         }
-      }).catch((ex: unknown) => {
+
+        toast.success(`Planering skapad`, {
+          classNames: {
+            title: 'whitespace-nowrap'
+          },
+          action: (
+            <ToastAction
+              key='open-planning'
+              documentId={props.documentId}
+              withView='Planning'
+              label='Öppna planering'
+              Icon={CalendarDaysIcon}
+              target='last'
+            />
+          )
+        })
+      } catch (ex) {
         console.error('Failed to snapshot document', ex)
         toast.error('Kunde inte skapa ny planering!', {
           duration: 5000,
           position: 'top-center'
         })
-        return
-      })
-    }
 
-    if (props?.setNewItem) {
-      props.setNewItem({ uuid: props.documentId, title: newTitle as string })
+        // re-throw to allow further handling in Submit
+        throw ex
+      }
     }
   }
 
@@ -243,9 +264,9 @@ const PlanningViewContent = (props: ViewProps & {
             )}
 
             <Form.Submit
-              onSubmit={() => handleSubmit({ documentStatus: 'usable' })}
-              onSecondarySubmit={() => handleSubmit({ documentStatus: 'done' })}
-              onTertiarySubmit={() => handleSubmit({ documentStatus: undefined })}
+              onSubmit={() => { void handleSubmit({ documentStatus: 'usable' }) }}
+              onSecondarySubmit={() => { void handleSubmit({ documentStatus: 'done' }) }}
+              onTertiarySubmit={() => { void handleSubmit({ documentStatus: undefined }) }}
               disableOnSubmit
             >
               <div className='flex justify-between'>

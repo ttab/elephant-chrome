@@ -8,7 +8,7 @@ import {
 import { useSession } from 'next-auth/react'
 import { View } from '@/components/View'
 import { Button } from '@ttab/elephant-ui'
-import { TagsIcon, CalendarClockIcon, TextIcon, KeyIcon } from '@ttab/elephant-ui/icons'
+import { TagsIcon, CalendarClockIcon, TextIcon, KeyIcon, CalendarPlus2Icon } from '@ttab/elephant-ui/icons'
 import {
   Newsvalue,
   Section,
@@ -33,6 +33,7 @@ import { getTemplateFromView } from '@/shared/templates/lib/getTemplateFromView'
 import { toGroupedNewsDoc } from '@/shared/transformations/groupedNewsDoc'
 import { TextBox } from '@/components/ui'
 import type { Document } from '@ttab/elephant-api/newsdoc'
+import { ToastAction } from '../Wire/ToastAction'
 
 const meta: ViewMetadata = {
   name: 'Event',
@@ -101,27 +102,45 @@ const EventViewContent = (props: ViewProps & {
   const [copyGroupId] = useYValue<string | undefined>(document, 'meta.core/copy-group[0].uuid')
   const [cancelled, setCancelled] = useYValue<string | undefined>(document, 'meta.core/event[0].data.cancelled')
 
-  const handleSubmit = ({ documentStatus }: {
+  const handleSubmit = async ({ documentStatus }: {
     documentStatus: 'usable' | 'done' | undefined
-  }): void => {
+  }): Promise<void> => {
     if (provider && status === 'authenticated') {
-      snapshotDocument(props.documentId, {
-        status: documentStatus,
-        addToHistory: true
-      }, provider.document)
-        .then(() => {
-          if (props?.onDialogClose) {
-            props.onDialogClose()
-          }
+      try {
+        await snapshotDocument(props.documentId, {
+          status: documentStatus,
+          addToHistory: true
+        }, provider.document)
+
+        if (props?.onDialogClose) {
+          props.onDialogClose()
+        }
+
+        toast.success(`Händelse skapad`, {
+          classNames: {
+            title: 'whitespace-nowrap'
+          },
+          action: (
+            <ToastAction
+              key='open-event'
+              documentId={props.documentId}
+              withView='Event'
+              label='Öppna händelse'
+              Icon={CalendarPlus2Icon}
+              target='last'
+            />
+          )
         })
-        .catch((ex: unknown) => {
-          console.error(ex)
-          toast.error('Kunde inte skapa ny händelse!', {
-            duration: 5000,
-            position: 'top-center'
-          })
-          return
+      } catch (ex) {
+        console.error('Failed to snapshot event', ex)
+        toast.error('Kunde inte skapa ny händelse!', {
+          duration: 5000,
+          position: 'top-center'
         })
+
+        // re-throw to allow further handling in Submit
+        throw ex
+      }
     }
   }
 
@@ -197,9 +216,9 @@ const EventViewContent = (props: ViewProps & {
             )}
 
             <Form.Submit
-              onSubmit={() => handleSubmit({ documentStatus: 'usable' })}
-              onSecondarySubmit={() => handleSubmit({ documentStatus: 'done' })}
-              onTertiarySubmit={() => handleSubmit({ documentStatus: undefined })}
+              onSubmit={() => { void handleSubmit({ documentStatus: 'usable' }) }}
+              onSecondarySubmit={() => { void handleSubmit({ documentStatus: 'done' }) }}
+              onTertiarySubmit={() => { void handleSubmit({ documentStatus: undefined }) }}
               disableOnSubmit
             >
               <div className='flex justify-between'>

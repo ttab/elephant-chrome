@@ -67,6 +67,9 @@ export async function createArticle({
   }
 
   toast.success(`Artikel skapad`, {
+    classNames: {
+      title: 'whitespace-nowrap'
+    },
     action: [
       <ToastAction
         key='open-planning'
