@@ -28,6 +28,8 @@ export const SluglineEditable = ({ ydoc, rootMap, value, documentStatus, onValid
       return compareValues
     }
 
+    if (!path.includes('assignment')) return []
+
     const collectSlugline = (meta?: unknown): string | undefined => {
       const value = (meta as Record<string, Block[]> | undefined)?.['tt/slugline']?.[0]?.value
       return typeof value === 'string' && value.trim().length > 0 ? value : undefined
@@ -50,7 +52,7 @@ export const SluglineEditable = ({ ydoc, rootMap, value, documentStatus, onValid
     }
 
     return collected
-  }, [assignments, inProgressAssignment, compareValues])
+  }, [assignments, inProgressAssignment, compareValues, path])
 
   if (!editable && typeof slugLine !== 'string') {
     return <></>
