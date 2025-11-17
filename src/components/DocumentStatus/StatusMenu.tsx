@@ -17,6 +17,7 @@ import { useHistory, useNavigation, useView } from '@/hooks/index'
 import type { View } from '@/types/index'
 import { reset } from '@/views/Concepts/lib/reset'
 import { isConceptType } from '@/views/Concepts/lib/isConceptType'
+import { tableDataMap } from '@/views/Concepts/lib/conceptDataTable'
 
 export const StatusMenu = ({ documentId, type, publishTime, onBeforeStatusChange, isChanged }: {
   documentId: string
@@ -94,18 +95,20 @@ export const StatusMenu = ({ documentId, type, publishTime, onBeforeStatusChange
           currentStatus: documentStatus
         })
 
+        const ConceptViews = Object.fromEntries(Object.keys(tableDataMap).map((key) => [key, 'Concept']))
+
         const viewType: Record<string, View> = {
           'core/article': 'Editor',
           'core/planning-item': 'Planning',
           'core/event': 'Event',
           'tt/print-article': 'PrintEditor',
-          'core/section': 'Section',
-          'core/story': 'Story'
+          ...ConceptViews
         }
+
         handleLink({
           dispatch,
           viewItem: state.viewRegistry.get(viewType[type]),
-          props: { id: documentId },
+          props: { id: documentId, documentType: type },
           viewId: crypto.randomUUID(),
           history,
           origin: viewId,
