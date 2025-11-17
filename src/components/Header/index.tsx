@@ -25,7 +25,7 @@ export const Header = ({ assigneeId, type, documentType }: {
   }, [type])
   const { showModal, hideModal } = useModal()
   const ViewDialog = Views[type]
-  
+
   return (
     <>
       {showButton && (
