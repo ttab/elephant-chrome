@@ -139,7 +139,7 @@ const ConceptContent = ({
     if (environmentIsSane) {
       void snapshotDocument(documentId, { status: 'usable', addToHistory: true }).then((response) => {
         if (response?.statusMessage) {
-          toast.error('Kunde inte skapa ny sektion!', {
+          toast.error('Kunde inte skapa ny inställning!', {
             duration: 5000,
             position: 'top-center'
           })
