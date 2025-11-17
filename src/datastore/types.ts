@@ -2,7 +2,7 @@
 export interface IDBConcept {
   id: string
   title: string
-  usableVersion?: bigint
+  usableVersion: bigint
 }
 
 export interface IDBSection extends IDBConcept {
@@ -10,22 +10,19 @@ export interface IDBSection extends IDBConcept {
 }
 
 /** Section structure in indexedDB objectStore  */
-export interface IDBEditorialInfoType {
+export interface IDBEditorialInfoType extends IDBConcept {
   id: string
   title: string
 }
 
 /** Story structure in indexedDB objectStore  */
 export interface IDBStory extends IDBConcept {
-  id: string
-  title: string
   shortText: string
   longText: string
 }
 
 /** Author structure in indexedDB objectStore */
-export interface IDBAuthor {
-  id: string
+export interface IDBAuthor extends IDBConcept {
   name: string
   firstName: string
   lastName: string
@@ -41,9 +38,7 @@ export interface IDBCategory extends IDBConcept {
 }
 
 /** Organiser structure in indexedDB objectStore */
-export interface IDBOrganiser {
-  id: string
-  title: string
+export interface IDBOrganiser extends IDBConcept {
   city: string
   country: string
   email: string
@@ -52,14 +47,12 @@ export interface IDBOrganiser {
 }
 
 /** Category structure in indexedDB objectStore */
-export interface IDBWireSource {
+export interface IDBWireSource extends IDBConcept {
   uri: string
-  title: string
 }
 
-export interface IDBContentSource {
+export interface IDBContentSource extends IDBConcept {
   uri: string
-  title: string
 }
 
 export interface IDBLanguage {

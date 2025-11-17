@@ -6,10 +6,20 @@ import { tableDataMap } from './conceptDataTable'
 export const useConcepts = (title: TableDataKey | undefined) => {
   const sections = useSections({ activeOnly: false })
   const storyTags = useStories({ activeOnly: false })
+  /* const categories = useCategories({ activeOnly: false })
+  const organisers = useOrganisers({ activeOnly: false })
+  const contentSources = useContentSources({ activeOnly: false })
+  const editorialInfoTypes = useEditorialInfoTypes({ activeOnly: false })
+  const wireSources = useWireSources({ activeOnly: false }) */
 
   const conceptMap = {
     Sektioner: { ...tableDataMap.Sektioner, data: sections },
-    'Story tags': { ...tableDataMap['Story tags'], data: storyTags }
+    'Story tags': { ...tableDataMap['Story tags'], data: storyTags }/* ,
+    Kategorier: { ...tableDataMap.Kategorier, data: categories },
+    Organisatörer: { ...tableDataMap.Organisatörer, data: organisers },
+    Källor: { ...tableDataMap.Källor, data: contentSources },
+    'Redaktionella informationstyper': { ...tableDataMap['Redaktionella informationstyper'], data: editorialInfoTypes },
+    Telegramkällor: { ...tableDataMap.Telegramkällor, data: wireSources } */
   }
 
   const concept = title ? conceptMap[title] : undefined

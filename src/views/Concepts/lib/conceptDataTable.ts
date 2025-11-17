@@ -13,18 +13,36 @@ export const tableDataMap = {
     conceptView: 'Story',
     documentType: 'core/story'
   }/* ,
-    Kategorier: {
-      conceptTitle: 'Kategori',
-      data: null as unknown as IDBCategory,
-      conceptView: 'Category'
-      documentType: 'core/category'
-      },
-      Organisatörer: {
-        conceptTitle: 'Organisatör',
-        data: null as unknown as IDBOrganiser,
-        conceptView: 'Organiser'
-        documentType: 'core/organiser'
-    } */
+  Kategorier: {
+    conceptTitle: 'Kategori',
+    data: null as unknown as IDBCategory,
+    conceptView: 'Category',
+    documentType: 'core/category'
+  },
+  Organisatörer: {
+    conceptTitle: 'Organisatör',
+    data: null as unknown as IDBOrganiser,
+    conceptView: 'Organiser',
+    documentType: 'core/organiser'
+  },
+  Källor: {
+    conceptTitle: 'Källor',
+    data: null as unknown as IDBContentSource,
+    conceptView: 'ContentSource',
+    documentType: 'core/content-source'
+  },
+  'Redaktionella informationstyper': {
+    conceptTitle: 'Redaktionell informationstyp',
+    data: null as unknown as IDBEditorialInfoType,
+    conceptView: 'EditorialInfoType',
+    documentType: 'tt/editorial-info-type'
+  },
+  Telegramkällor: {
+    conceptTitle: 'Telegramkälla',
+    data: null as unknown as IDBWireSource,
+    conceptView: 'WireSource',
+    documentType: 'tt/wire-source'
+  } */
 } as const
 
 export type TableDataMap = typeof tableDataMap

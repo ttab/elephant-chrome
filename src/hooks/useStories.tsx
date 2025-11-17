@@ -1,14 +1,17 @@
 import { useContext } from 'react'
 import { CoreStoryContext } from '../datastore/contexts/CoreStoryProvider'
 import { type IDBStory } from '../datastore/types'
+import { getActiveOnly } from '@/lib/getActiveOnly'
 
-export const useStories = (
-  { sort, activeOnly = true }: {
-    sort?: 'title'
-    activeOnly?: boolean } = {}): IDBStory[] => {
-  const { objects } = useContext(CoreStoryContext)
+export const useStories = (options?: { sort?: 'title', activeOnly: boolean }): IDBStory[] => {
+  let { objects } = useContext(CoreStoryContext)
+  const getActive = options?.activeOnly ?? true
 
-  if (sort === 'title') {
+  if (getActive) {
+    objects = getActiveOnly(objects)
+  }
+
+  if (options?.sort === 'title') {
     return objects.sort((s1, s2) => {
       const v1 = s1.title.trim().toLocaleLowerCase()
       const v2 = s2.title.trim().toLocaleLowerCase()
@@ -16,10 +19,6 @@ export const useStories = (
     })
   }
 
-  if (activeOnly) {
-    const filteredObjects = objects.filter((item) => item.usableVersion && item.usableVersion > 0)
-    return filteredObjects
-  }
 
   return objects
 }

@@ -7,29 +7,35 @@ const mockAuthors: IDBAuthor[] = [
   {
     id: 'author-0',
     name: 'Author Zero',
+    title: 'Author Zero',
     firstName: 'Author',
     lastName: 'Zero',
     initials: 'AZ',
     email: 'author.zero@example.com',
-    sub: 'core://user/sub/12'
+    sub: 'core://user/sub/12',
+    usableVersion: 1n
   },
   {
     id: 'author-1',
     name: 'Author One',
+    title: 'Author One',
     firstName: 'Author',
     lastName: 'One',
     initials: 'AO',
     email: 'author.one@example.com',
-    sub: 'core://user/sub/1234'
+    sub: 'core://user/sub/1234',
+    usableVersion: 1n
   },
   {
     id: 'author-2',
     name: 'Author Two',
+    title: 'Author Two',
     firstName: 'Author',
     lastName: 'Two',
     initials: 'AT',
     email: 'author.two@example.com',
-    sub: 'core://user/sub/cf8eb669-0c0f-432d-8fdf-b479ac2082a1'
+    sub: 'core://user/sub/cf8eb669-0c0f-432d-8fdf-b479ac2082a1',
+    usableVersion: 1n
   }
 ]
 

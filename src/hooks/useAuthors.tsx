@@ -1,10 +1,16 @@
 import { useContext } from 'react'
 import { CoreAuthorContext } from '../datastore/contexts/CoreAuthorProvider'
 import { type IDBAuthor } from '../datastore/types'
+import { getActiveOnly } from '@/lib/getActiveOnly'
 
-export const useAuthors = (options?: { sort?: 'name' | 'firstName' | 'lastName' }): IDBAuthor[] => {
-  const { objects } = useContext(CoreAuthorContext)
+export const useAuthors = (options?: { sort?: 'name' | 'firstName' | 'lastName', activeOnly: boolean }): IDBAuthor[] => {
+  let { objects } = useContext(CoreAuthorContext)
   const sortKey = (['name', 'firstName', 'lastName'].includes(options?.sort || '')) ? options?.sort : 'name'
+  const getActive = options?.activeOnly ?? true
+
+  if (getActive) {
+    objects = getActiveOnly(objects)
+  }
 
   return (objects).sort((a1, a2) => {
     if (sortKey === 'firstName') {
