@@ -6,6 +6,7 @@ import { SluglineButton } from './Slugline'
 import { type FormProps } from '../Form/Root'
 import type { Block } from '@ttab/elephant-api/newsdoc'
 import { useYPath, useYValue, type YDocument } from '@/modules/yjs/hooks'
+import { useSession } from 'next-auth/react'
 
 export const SluglineEditable = ({ ydoc, rootMap, value, documentStatus, onValidation, validateStateRef, compareValues, disabled }: {
   ydoc: YDocument<Y.Map<unknown>>
@@ -19,7 +20,8 @@ export const SluglineEditable = ({ ydoc, rootMap, value, documentStatus, onValid
   const editable = documentStatus !== 'usable'
   const [slugLine] = useYValue<Y.XmlText | string>(ydoc.ele, path)
   const [assignments] = useYValue<Block[]>(ydoc.ele, ['meta', 'core/assignment'])
-  const [inProgressAssignment] = useYValue<Block>(ydoc.ctx, 'core/assignment.core://user/9744')
+  const { data: session } = useSession()
+  const [inProgressAssignment] = useYValue<Block>(ydoc.ctx, `core/assignment.${session?.user.sub || ''}`)
 
   // Get all current sluglines from assignments for validation purposes
   // or use provided compareValues
