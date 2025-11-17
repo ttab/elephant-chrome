@@ -1,3 +1,4 @@
+import { Form } from '@/components/Form'
 import { TextBox } from '@/components/ui'
 import { Validation } from '@/components/Validation'
 
@@ -8,7 +9,7 @@ export const StoryTagContent = ({ isActive, handleChange, textPaths }: {
   textPaths: { shortIndex: number, longIndex: number } | undefined
 }) => {
   return (
-    <>
+    <Form.Content>
       <Validation
         path='root.title'
         label='title'
@@ -39,6 +40,6 @@ export const StoryTagContent = ({ isActive, handleChange, textPaths }: {
         placeholder='Lång text'
         disabled={!isActive}
       />
-    </>
+    </Form.Content>
   )
 }

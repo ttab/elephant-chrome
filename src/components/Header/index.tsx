@@ -14,7 +14,7 @@ import { getConceptTemplateFromDocumentType } from '@/shared/templates/lib/getCo
 export const Header = ({ assigneeId, type, documentType }: {
   type: View
   assigneeId?: string | undefined
-  documentType: string
+  documentType?: string
 }): JSX.Element => {
   const showButton = useMemo(() => {
     const viewTypes: View[] = ['Planning', 'Event', 'Factbox', 'Concept']
@@ -25,7 +25,7 @@ export const Header = ({ assigneeId, type, documentType }: {
   }, [type])
   const { showModal, hideModal } = useModal()
   const ViewDialog = Views[type]
-
+  
   return (
     <>
       {showButton && (
@@ -43,6 +43,7 @@ export const Header = ({ assigneeId, type, documentType }: {
                 asDialog
                 id={initialDocument[0]}
                 document={initialDocument[1]}
+                documentType={documentType}
               />
             )
           }}

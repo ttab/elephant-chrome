@@ -1,3 +1,4 @@
+import { Form } from '@/components/Form'
 import { TextBox } from '@/components/ui'
 import { Validation } from '@/components/Validation'
 import type { HocuspocusProvider } from '@hocuspocus/provider'
@@ -11,7 +12,7 @@ export const SectionContent = ({ isActive, handleChange }: {
   data?: Block[] | undefined
 }) => {
   return (
-    <>
+    <Form.Content>
       <Validation
         path='root.title'
         label='title'
@@ -41,6 +42,6 @@ export const SectionContent = ({ isActive, handleChange }: {
         >
         </TextBox>
       </Validation>
-    </>
+    </Form.Content>
   )
 }

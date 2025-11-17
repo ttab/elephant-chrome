@@ -44,7 +44,7 @@ export const Concepts = ({ title, documentType }: ViewProps) => {
           <ViewHeader.Root>
             <ViewHeader.Content>
               <ViewHeader.Title name={title ?? 'Concepts'} title={title ?? 'Concepts'} />
-              <Header type='Concept' />
+              <Header type='Concept' documentType={documentType} />
             </ViewHeader.Content>
             <ViewHeader.Action />
           </ViewHeader.Root>

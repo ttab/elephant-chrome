@@ -41,7 +41,7 @@ const meta: ViewMetadata = {
 export const Concept = (props: ViewProps & { document?: Y.Doc }): JSX.Element => {
   const [query] = useQuery()
   const documentId = props.id || query.id
-  
+
   if (!documentId || !props.documentType) {
     return <></>
   }
@@ -183,9 +183,7 @@ const ConceptContent = ({
                         asDialog={asDialog}
                         onChange={handleChange}
                       >
-                        <Form.Content>
-                          {concept.content({ isActive, handleChange, textPaths })}
-                        </Form.Content>
+                        {concept.content({ isActive, handleChange, textPaths })}
                         <Form.Footer>
                           <Form.Submit
                             onSubmit={() => handleSubmit()}
