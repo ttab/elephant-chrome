@@ -280,8 +280,12 @@ export const AssignmentRow = ({ ydoc, index, onSelect, isFocused = false, asDial
   const selected = articleId && openDocuments.includes(articleId)
   const StatusIcon = DocumentStatuses.find((status) => status.value === articleStatus?.meta?.workflowState)
 
-  useRepositoryEvents('core/article+meta', (event) => {
-    if (event.mainDocument === articleId) {
+  useRepositoryEvents([
+    'core/article',
+    'core/flash',
+    'core/editorial-info'
+  ], (event) => {
+    if (event.event === 'status' && event.uuid === documentId) {
       void mutate()
     }
   })
