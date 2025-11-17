@@ -14,12 +14,12 @@ export const CoreSectionContext = createContext<CoreSectionProviderState>({
   objects: []
 })
 
-export const CoreSectionProvider = ({ children, usableOnly = true }: {
+export const CoreSectionProvider = ({ children/* , usableOnly = false */ }: {
   children: React.ReactNode
   usableOnly?: boolean
 }): JSX.Element => {
   const documentType = 'core/section'
-  const { server: { indexUrl }, repository } = useRegistry()
+  const { server: { indexUrl }/* , repository */ } = useRegistry()
   const { data } = useSession()
   const [objects, setObjects] = useState<IDBSection[]>([])
   const IDB = useIndexedDB()
@@ -52,7 +52,7 @@ export const CoreSectionProvider = ({ children, usableOnly = true }: {
       )
 
       // Return the data for the version set to usable, not last version
-      if (usableOnly) {
+      /* if (usableOnly) {
         const usableVersions = newDocs.map((item) => {
           return {
             uuid: item.id,
@@ -74,7 +74,7 @@ export const CoreSectionProvider = ({ children, usableOnly = true }: {
             document.title = match.document?.title ? match.document.title : ''
           }
         })
-      }
+      } */
 
       return newDocs
     }
@@ -84,7 +84,7 @@ export const CoreSectionProvider = ({ children, usableOnly = true }: {
     if (Array.isArray(cachedObjects) && cachedObjects.length) {
       setObjects(cachedObjects)
     }
-  }, [data?.accessToken, indexUrl, IDB, repository, usableOnly])
+  }, [data?.accessToken, indexUrl, IDB/* , repository, usableOnly */])
 
 
   /**

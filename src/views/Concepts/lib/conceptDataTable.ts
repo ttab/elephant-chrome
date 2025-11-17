@@ -9,7 +9,6 @@ export const tableDataMap = {
     conceptTitle: 'Sektion',
     description: 'A section for content',
     data: null as unknown as IDBSection[],
-    /* conceptView: 'Section', */
     documentType: 'core/section',
     icon: TagIcon,
     content: SectionContent
@@ -19,7 +18,6 @@ export const tableDataMap = {
     conceptTitle: 'Story Tag',
     description: 'An ongoing story that gets reported on',
     data: null as unknown as IDBStory[],
-    /* conceptView: 'Story', */
     documentType: 'core/story',
     icon: TagIcon,
     content: StoryTagContent
@@ -29,7 +27,7 @@ export const tableDataMap = {
     conceptTitle: 'Kategori',
     description: 'A category for content',
     data: null as unknown as IDBCategory,
-    conceptView: 'Category',
+
     documentType: 'core/category',
     icon: TagIcon
   },
@@ -38,7 +36,6 @@ export const tableDataMap = {
     conceptTitle: 'Organisatör',
     description: 'A document describing an organisation',
     data: null as unknown as IDBOrganiser,
-    conceptView: 'Organiser',
     documentType: 'core/organiser',
     icon: TagIcon
   },
@@ -47,7 +44,6 @@ export const tableDataMap = {
     conceptTitle: 'Källa',
     description: 'The entity that is the source of the content, e.g. the organisation that produced it.',
     data: null as unknown as IDBContentSource,
-    conceptView: 'ContentSource',
     documentType: 'core/content-source',
     icon: TagIcon
   },
@@ -55,7 +51,6 @@ export const tableDataMap = {
     label: 'Redaktionella informationstyper
     conceptTitle: 'Redaktionell informationstyp',
     data: null as unknown as IDBEditorialInfoType,
-    conceptView: 'EditorialInfoType',
     documentType: 'tt/editorial-info-type',
     icon: TagIcon
   },
@@ -64,7 +59,6 @@ export const tableDataMap = {
     conceptTitle: 'Telegramkälla',
     description: '',
     data: null as unknown as IDBWireSource,
-    conceptView: 'WireSource',
     documentType: 'tt/wire-source',
     icon: TagIcon
   } */
@@ -75,7 +69,6 @@ export const tableDataMap = {
   conceptTitle: string
   description: string
   data: object[]
-  conceptView: string
   documentType: string
   icon: LucideIcon
 }
