@@ -143,7 +143,7 @@ export const EditorHeader = ({ ydoc, readOnly, readOnlyVersion, planningId: prop
       </ViewHeader.Content>
 
       <ViewHeader.Action>
-        <MetaSheet container={containerRef.current} documentId={ydoc.id} readOnly={readOnly} readOnlyVersion={readOnlyVersion} />
+        <MetaSheet container={containerRef.current} ydoc={ydoc} readOnly={readOnly} readOnlyVersion={readOnlyVersion} />
       </ViewHeader.Action>
     </ViewHeader.Root>
   )
