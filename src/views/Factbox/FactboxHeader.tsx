@@ -3,7 +3,7 @@ import { useEffect, useRef } from 'react'
 import { StatusMenu } from '@/components/DocumentStatus/StatusMenu'
 import { ViewHeader } from '@/components/View'
 import { BookTextIcon } from '@ttab/elephant-ui/icons'
-import { MetaSheet } from '../Editor/components/MetaSheet'
+import { MetaSheet } from '@/components/MetaSheet/MetaSheet'
 import type { YDocument } from '@/modules/yjs/hooks'
 import type * as Y from 'yjs'
 
@@ -39,7 +39,7 @@ export const FactboxHeader = ({ ydoc, asDialog, onDialogClose }: {
                   ydoc={ydoc}
                   type='core/factbox'
                 />
-                <MetaSheet container={containerRef.current} documentId={ydoc.id} />
+                <MetaSheet container={containerRef.current} ydoc={ydoc} />
               </>
             )}
             {!!ydoc && <ViewHeader.RemoteUsers ydoc={ydoc} />}
