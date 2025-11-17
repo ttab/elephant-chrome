@@ -80,18 +80,15 @@ export const StatusMenu = ({ documentId, type, publishTime, onBeforeStatusChange
     const WORKFLOW_TYPES = new Set([
       'core/article',
       'core/planning-item',
-      'core/event',
-      'core/section',
-      'core/story'
+      'core/event'
     ])
-
     try {
       (async () => {
         await repository?.saveMeta({
           status,
           accessToken: session?.accessToken || '',
           cause: documentStatus?.cause,
-          isWorkflow: WORKFLOW_TYPES.has(type),
+          isWorkflow: WORKFLOW_TYPES.has(type) || isConceptType(type),
           currentStatus: documentStatus
         })
 
