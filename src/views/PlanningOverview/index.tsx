@@ -52,7 +52,8 @@ export const Plannings = (): JSX.Element => {
         initialState={{
           grouping: ['newsvalue'],
           columnFilters,
-          globalFilter: query.query
+          globalFilter: query.query,
+          sorting: [{ id: 'newsvalue', desc: true }]
         }}
       >
         <TableCommandMenu heading='Plannings'>
