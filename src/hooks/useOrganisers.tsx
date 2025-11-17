@@ -3,9 +3,9 @@ import { CoreOrganiserContext } from '../datastore/contexts/CoreOrganiserProvide
 import { type IDBOrganiser } from '../datastore/types'
 import { getActiveOnly } from '@/lib/getActiveOnly'
 
-export const useOrganisers = (activeOnly?: boolean): IDBOrganiser[] => {
+export const useOrganisers = (options?: { activeOnly: boolean }): IDBOrganiser[] => {
   let { objects } = useContext(CoreOrganiserContext)
-  const getActive = activeOnly ?? true
+  const getActive = options?.activeOnly ?? true
 
   if (getActive) {
     objects = getActiveOnly(objects)

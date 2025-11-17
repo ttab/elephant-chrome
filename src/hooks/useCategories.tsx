@@ -3,12 +3,11 @@ import { CoreCategoryContext } from '../datastore/contexts/CoreCategoryProvider'
 import { type IDBCategory } from '../datastore/types'
 import { getActiveOnly } from '@/lib/getActiveOnly'
 
-export const useCategories = (
-  { activeOnly = true }: {
-    activeOnly?: boolean } = {}): IDBCategory[] => {
+export const useCategories = (options?: { activeOnly: boolean }): IDBCategory[] => {
   let { objects } = useContext(CoreCategoryContext)
+  const getActive = options?.activeOnly ?? true
 
-  if (activeOnly) {
+  if (getActive) {
     objects = getActiveOnly(objects)
   }
 
