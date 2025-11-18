@@ -53,7 +53,7 @@ export const Header = ({ assigneeId, type, documentType }: {
         </Button>
       )}
 
-      {type === 'Concept'
+      {type !== 'Concept'
         && (
           <>
             <div className='hidden sm:block'>

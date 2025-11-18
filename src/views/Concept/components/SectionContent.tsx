@@ -1,15 +1,10 @@
 import { Form } from '@/components/Form'
 import { TextBox } from '@/components/ui'
 import { Validation } from '@/components/Validation'
-import type { HocuspocusProvider } from '@hocuspocus/provider'
-import type { Block } from '@ttab/elephant-api/newsdoc'
 
 export const SectionContent = ({ isActive, handleChange }: {
   isActive: boolean
   handleChange: (value: boolean) => void
-  synced?: boolean
-  provider?: HocuspocusProvider | undefined
-  data?: Block[] | undefined
 }) => {
   return (
     <Form.Content>
