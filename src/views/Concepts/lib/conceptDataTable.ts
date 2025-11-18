@@ -1,51 +1,37 @@
+import { TagIcon } from '@ttab/elephant-ui/icons'
 import type { IDBSection, IDBStory } from 'src/datastore/types'
+import { SectionContent } from '../../Concept/components/SectionContent'
+import { StoryTagContent } from '../../Concept/components/StoryTagContent'
 
 export const tableDataMap = {
-  Sektioner: {
+  'core/section': {
+    label: 'Sektioner',
     conceptTitle: 'Sektion',
+    description: 'En sektion för innehåll',
     data: null as unknown as IDBSection[],
-    conceptView: 'Section',
-    documentType: 'core/section'
+    documentType: 'core/section',
+    icon: TagIcon,
+    content: SectionContent
   },
-  'Story tags': {
+  'core/story': {
+    label: 'Story tags',
     conceptTitle: 'Story Tag',
+    description: 'En pågående historia som det rapporteras om',
     data: null as unknown as IDBStory[],
-    conceptView: 'Story',
-    documentType: 'core/story'
-  }/* ,
-  Kategorier: {
-    conceptTitle: 'Kategori',
-    data: null as unknown as IDBCategory,
-    conceptView: 'Category',
-    documentType: 'core/category'
-  },
+    documentType: 'core/story',
+    icon: TagIcon,
+    content: StoryTagContent
+  }/*
   Organisatörer: {
+  label: 'Organisatörer',
     conceptTitle: 'Organisatör',
+    description: 'Ett dokument som beskriver en organisatör',
     data: null as unknown as IDBOrganiser,
-    conceptView: 'Organiser',
-    documentType: 'core/organiser'
-  },
-  Källor: {
-    conceptTitle: 'Källor',
-    data: null as unknown as IDBContentSource,
-    conceptView: 'ContentSource',
-    documentType: 'core/content-source'
-  },
-  'Redaktionella informationstyper': {
-    conceptTitle: 'Redaktionell informationstyp',
-    data: null as unknown as IDBEditorialInfoType,
-    conceptView: 'EditorialInfoType',
-    documentType: 'tt/editorial-info-type'
-  },
-  Telegramkällor: {
-    conceptTitle: 'Telegramkälla',
-    data: null as unknown as IDBWireSource,
-    conceptView: 'WireSource',
-    documentType: 'tt/wire-source'
+    documentType: 'core/organiser',
+    icon: TagIcon
   } */
 } as const
 
-export type TableDataMap = typeof tableDataMap
-export type TableDataKey = keyof TableDataMap
-/* export type TableDataValue<K extends TableDataKey> = TableDataMap[K]
-export type TableDataInnerKey<K extends TableDataKey> = keyof TableDataValue<K> */
+export type ConceptTableDataMap = typeof tableDataMap
+export type ConceptTableDataKey = keyof ConceptTableDataMap
+

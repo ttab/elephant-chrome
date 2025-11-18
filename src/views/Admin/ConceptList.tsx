@@ -1,6 +1,6 @@
 import { TableCell, TableRow } from '@ttab/elephant-ui'
-import { Concepts } from './ConceptTypes'
 import { useLink } from '@/hooks/useLink'
+import { tableDataMap } from '../Concepts/lib/conceptDataTable'
 
 
 export const ConceptsList = ({ filter }: {
@@ -9,16 +9,20 @@ export const ConceptsList = ({ filter }: {
   const handleOpen = useLink('Concepts')
   const refinedFilter = filter && filter.toLowerCase()
   const data = refinedFilter
-    ? Concepts.filter((concept) => concept.label.toLowerCase().startsWith(refinedFilter)
-      || concept.description.includes(refinedFilter))
-    : Concepts
+    ? Object.fromEntries(
+      Object.entries(tableDataMap).filter(([_, concept]) =>
+        concept.label.toLowerCase().startsWith(refinedFilter)
+        || concept.description.toLowerCase().includes(refinedFilter)
+      )
+    )
+    : tableDataMap
 
-  return data.map((concept) => {
+  return Object.values(data).map((concept) => {
     const Icon = concept.icon
     return (
       <TableRow
         onClick={() => {
-          handleOpen(undefined, { documentType: concept.path, title: concept.label })
+          handleOpen(undefined, { documentType: concept.documentType, title: concept.label })
         }}
         key={concept.label}
       >

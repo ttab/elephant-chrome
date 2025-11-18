@@ -9,7 +9,7 @@ import type { IDBConcept } from 'src/datastore/types'
 import { Header } from '@/components/Header'
 import { useConcepts } from './lib/useConcepts'
 import { Error } from '../Error'
-import type { TableDataKey } from './lib/conceptDataTable'
+import type { ConceptTableDataKey } from './lib/conceptDataTable'
 
 const meta: ViewMetadata = {
   name: 'Concepts',
@@ -27,12 +27,12 @@ const meta: ViewMetadata = {
   }
 }
 
-export const Concepts = ({ title }: ViewProps) => {
+export const Concepts = ({ title, documentType }: ViewProps) => {
   const [currentTab, setCurrentTab] = useState<string>('list')
-  const { data, type } = useConcepts(title as TableDataKey)
+  const { concept } = useConcepts(documentType as ConceptTableDataKey)
   const columns = useMemo(() =>
     ConceptColumns(), [])
-  if (!data || !type) {
+  if (!documentType || !concept?.data || !concept) {
     return <Error></Error>
   } else {
     return (
@@ -44,14 +44,14 @@ export const Concepts = ({ title }: ViewProps) => {
           <ViewHeader.Root>
             <ViewHeader.Content>
               <ViewHeader.Title name={title ?? 'Concepts'} title={title ?? 'Concepts'} />
-              <Header type={type} />
+              <Header type='Concept' documentType={documentType} />
             </ViewHeader.Content>
             <ViewHeader.Action />
           </ViewHeader.Root>
 
           <View.Content>
             <TabsContent value='list' className='mt-0'>
-              <ConceptList columns={columns} type={type} data={data} />
+              <ConceptList columns={columns} data={concept.data} documentType={concept.documentType} />
             </TabsContent>
           </View.Content>
         </TableProvider>

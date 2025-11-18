@@ -9,14 +9,15 @@ import { useModal } from '../Modal/useModal'
 import * as Views from '@/views'
 import { createDocument } from '@/shared/createYItem'
 import { getTemplateFromView } from '@/shared/templates/lib/getTemplateFromView'
-import { isConceptType } from '@/views/Concepts/lib/isConceptType'
+import { getConceptTemplateFromDocumentType } from '@/shared/templates/lib/getConceptTemplateFromDocumentType'
 
-export const Header = ({ assigneeId, type }: {
+export const Header = ({ assigneeId, type, documentType }: {
   type: View
   assigneeId?: string | undefined
+  documentType?: string
 }): JSX.Element => {
   const showButton = useMemo(() => {
-    const viewTypes: View[] = ['Planning', 'Event', 'Factbox', 'Section', 'Story']
+    const viewTypes: View[] = ['Planning', 'Event', 'Factbox', 'Concept']
     if (viewTypes.includes(type)) {
       return true
     }
@@ -33,7 +34,7 @@ export const Header = ({ assigneeId, type }: {
           className='h-8 pr-4'
           onClick={() => {
             const initialDocument = createDocument({
-              template: getTemplateFromView(type),
+              template: type === 'Concept' ? getConceptTemplateFromDocumentType(documentType) : getTemplateFromView(type),
               inProgress: true
             })
             showModal(
@@ -42,6 +43,7 @@ export const Header = ({ assigneeId, type }: {
                 asDialog
                 id={initialDocument[0]}
                 document={initialDocument[1]}
+                documentType={documentType}
               />
             )
           }}
@@ -51,7 +53,7 @@ export const Header = ({ assigneeId, type }: {
         </Button>
       )}
 
-      {!isConceptType(type)
+      {type !== 'Concept'
         && (
           <>
             <div className='hidden sm:block'>
