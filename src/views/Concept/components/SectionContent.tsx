@@ -16,7 +16,7 @@ export const SectionContent = ({ isActive, handleChange }: {
         <TextBox
           singleLine={true}
           path='root.title'
-          className={isActive ? 'border-[1px]' : ''}
+          className={isActive ? 'border' : ''}
           onChange={handleChange}
           placeholder='Titel'
           disabled={!isActive}
@@ -31,7 +31,7 @@ export const SectionContent = ({ isActive, handleChange }: {
           onChange={handleChange}
           singleLine={true}
           path='meta.core/section[0].data.code'
-          className={isActive ? 'border-[1px]' : ''}
+          className={isActive ? 'border' : ''}
           placeholder='Kod'
           disabled={!isActive}
         >

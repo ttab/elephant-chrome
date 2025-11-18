@@ -18,7 +18,7 @@ export const StoryTagContent = ({ isActive, handleChange, textPaths }: {
         <TextBox
           singleLine={true}
           path='root.title'
-          className={isActive ? 'border-[1px]' : ''}
+          className={isActive ? 'border' : ''}
           onChange={handleChange}
           placeholder='Titel'
           disabled={!isActive}
@@ -27,7 +27,7 @@ export const StoryTagContent = ({ isActive, handleChange, textPaths }: {
       <TextBox
         singleLine={true}
         path={`meta.core/definition[${textPaths?.shortIndex}].data.text`}
-        className={isActive ? 'border-[1px]' : ''}
+        className={isActive ? 'border' : ''}
         onChange={handleChange}
         placeholder='Kort text'
         disabled={!isActive}
@@ -35,7 +35,7 @@ export const StoryTagContent = ({ isActive, handleChange, textPaths }: {
       <TextBox
         singleLine={false}
         path={`meta.core/definition[${textPaths?.longIndex}].data.text`}
-        className={isActive ? 'border-[1px]' : ''}
+        className={isActive ? 'border' : ''}
         onChange={handleChange}
         placeholder='Lång text'
         disabled={!isActive}
