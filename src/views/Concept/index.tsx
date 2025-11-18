@@ -204,7 +204,7 @@ const ConceptContent = ({
                               disabled={!environmentIsSane}
                               className='whitespace-nowrap'
                             >
-                              Skapa Sektion
+                              {`Skapa ${concept.conceptTitle.toLocaleLowerCase()}`}
                             </Button>
                           </Form.Submit>
                           {asDialog
