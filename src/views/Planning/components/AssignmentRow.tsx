@@ -38,7 +38,6 @@ import { getDeliverableType } from '@/shared/templates/lib/getDeliverableType'
 import { AssignmentTypes } from '@/defaults/assignmentTypes'
 import { CreatePrintArticle } from '@/components/CreatePrintArticle'
 import { snapshotDocument } from '@/lib/snapshotDocument'
-import { AssignmentVisibility } from '@/components/DataItem/AssignmentVisibility'
 import { timeSlotTypes } from '@/defaults/assignmentTimeConstants'
 import { DocumentStatuses } from '@/defaults/documentStatuses'
 import useSWR from 'swr'
@@ -374,6 +373,7 @@ export const AssignmentRow = ({ ydoc, index, onSelect, isFocused = false, asDial
           {!StatusIcon?.icon && <div style={{ width: 18, height: 18 }} />}
           <span className='leading-relaxed group-hover/assrow:underline'>{title}</span>
         </div>
+        {/* FIXME: Disable until we have an idea of how this should be clear to end-user
         <div className='flex items-center gap-2'>
           <AssignmentVisibility
             ydoc={ydoc}
@@ -381,7 +381,7 @@ export const AssignmentRow = ({ ydoc, index, onSelect, isFocused = false, asDial
             editable={false}
             disabled={false}
           />
-        </div>
+        </div> */}
       </div>
 
       {

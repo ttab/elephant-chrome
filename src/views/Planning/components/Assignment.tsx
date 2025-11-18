@@ -8,7 +8,6 @@ import { SluglineEditable } from '@/components/DataItem/SluglineEditable'
 import { Form } from '@/components/Form'
 import { type FormProps } from '@/components/Form/Root'
 import { useEffect, useRef } from 'react'
-import { AssignmentVisibility } from '@/components/DataItem/AssignmentVisibility'
 import { type YDocument, useYPath, useYValue } from '@/modules/yjs/hooks'
 import type * as Y from 'yjs'
 import { useSession } from 'next-auth/react'
@@ -108,13 +107,15 @@ export const Assignment = ({ ydoc, assignment, onAbort, onClose }: {
               placeholder='Lägg till uppdragstagare'
             />
             <AssignmentTime assignment={assignment} />
+
+            {/* FIXME: Disable until we have an idea of how this should be clear to end-user
             <AssignmentVisibility
               ydoc={ydoc}
               path={`${path}.data.public`}
               disabled={!!documentId}
               editable
               className='ml-auto'
-            />
+            /> */}
           </Form.Group>
         </Form.Content>
 
