@@ -10,7 +10,7 @@ import {
   SheetTitle,
   SheetTrigger
 } from '@ttab/elephant-ui'
-import { useYValue, useYDocument } from '@/modules/yjs/hooks'
+import { useYValue, type YDocument } from '@/modules/yjs/hooks'
 import { PanelRightCloseIcon, PanelRightOpenIcon } from '@ttab/elephant-ui/icons'
 import { useState } from 'react'
 import { AddNote } from '@/components/Notes/AddNote'
@@ -20,13 +20,12 @@ import { EditorialInfoTypes } from '@/components/EditorialInfoTypes'
 import { ContentSource } from '@/components/ContentSource'
 import type * as Y from 'yjs'
 
-export function MetaSheet({ container, documentId, readOnly, readOnlyVersion }: {
+export function MetaSheet({ container, ydoc, readOnly, readOnlyVersion }: {
   container: HTMLElement | null
-  documentId: string
+  ydoc: YDocument<Y.Map<unknown>>
   readOnly?: boolean
   readOnlyVersion?: bigint
 }): JSX.Element {
-  const ydoc = useYDocument<Y.Map<unknown>>(documentId)
   const [documentType] = useYValue<string | undefined>(ydoc.ele, 'root.type')
   const [slugline] = useYValue<string | undefined>(ydoc.ele, 'meta.tt/slugline[0].value')
   const [isOpen, setIsOpen] = useState(false)
@@ -58,7 +57,7 @@ export function MetaSheet({ container, documentId, readOnly, readOnlyVersion }: 
             </SheetTitle>
           </SheetHeader>
           {readOnly
-            ? <ReadOnly documentId={documentId} version={readOnlyVersion} />
+            ? <ReadOnly documentId={ydoc.id} version={readOnlyVersion} />
             : (
                 <div className='flex flex-col gap-6 px-5 py-4 border-t'>
 
@@ -95,7 +94,7 @@ export function MetaSheet({ container, documentId, readOnly, readOnlyVersion }: 
 
                   <Label htmlFor='version' className='text-xs text-muted-foreground -mb-3'>Versioner</Label>
                   <div id='version'>
-                    <Version documentId={documentId} textOnly={false} />
+                    <Version documentId={ydoc.id} textOnly={false} />
                   </div>
 
                   {documentType === 'core/editorial-info' && (

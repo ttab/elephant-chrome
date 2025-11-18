@@ -3,7 +3,7 @@ import { useRef, useEffect } from 'react'
 import { StatusMenu } from '@/components/DocumentStatus/StatusMenu'
 import { ViewHeader } from '@/components/View'
 import { GanttChartSquareIcon } from '@ttab/elephant-ui/icons'
-import { MetaSheet } from '@/views/Editor/components/MetaSheet'
+import { MetaSheet } from '@/components/MetaSheet/MetaSheet'
 import { Duplicate } from '@/components/Duplicate'
 import type { PlanningData } from '@/types/index'
 import type { Session } from 'next-auth'
@@ -69,7 +69,7 @@ export const PlanningHeader = ({ ydoc, asDialog, onDialogClose, session, provide
 
       <ViewHeader.Action ydoc={ydoc} onDialogClose={onDialogClose} asDialog={asDialog}>
         {!asDialog && ydoc && (
-          <MetaSheet container={containerRef.current} documentId={ydoc.id} />
+          <MetaSheet container={containerRef.current} ydoc={ydoc} />
         )}
       </ViewHeader.Action>
     </ViewHeader.Root>

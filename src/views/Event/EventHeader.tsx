@@ -7,7 +7,7 @@ import { ViewHeader } from '@/components/View'
 import { Duplicate } from '@/components/Duplicate'
 import type { Session } from 'next-auth'
 import type { HocuspocusProvider } from '@hocuspocus/provider'
-import { MetaSheet } from '../Editor/components/MetaSheet'
+import { MetaSheet } from '@/components/MetaSheet/MetaSheet'
 import type { EventData } from './components/EventTime'
 import type * as Y from 'yjs'
 import type { YDocument } from '@/modules/yjs/hooks'
@@ -82,7 +82,7 @@ export const EventHeader = ({
 
       <ViewHeader.Action ydoc={ydoc} onDialogClose={onDialogClose} asDialog={asDialog}>
         {!asDialog && ydoc && (
-          <MetaSheet container={containerRef.current} documentId={ydoc.id} />
+          <MetaSheet container={containerRef.current} ydoc={ydoc} />
         )}
       </ViewHeader.Action>
     </ViewHeader.Root>
