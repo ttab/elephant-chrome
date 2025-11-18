@@ -7,6 +7,8 @@ export function getConceptTemplateFromDocumentType(documentType: string | undefi
       return Templates.section
     case 'core/story':
       return Templates.story
+    case 'core/organiser':
+      return Templates.organiser
     default:
       throw new Error(`No template for ${documentType}`)
   }

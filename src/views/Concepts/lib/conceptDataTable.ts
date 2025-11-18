@@ -1,7 +1,8 @@
 import { TagIcon } from '@ttab/elephant-ui/icons'
-import type { IDBSection, IDBStory } from 'src/datastore/types'
+import type { IDBOrganiser, IDBSection, IDBStory } from 'src/datastore/types'
 import { SectionContent } from '../../Concept/components/SectionContent'
 import { StoryTagContent } from '../../Concept/components/StoryTagContent'
+import { OrganiserContent } from '@/views/Concept/components/OrganiserContent'
 
 export const tableDataMap = {
   'core/section': {
@@ -21,15 +22,16 @@ export const tableDataMap = {
     documentType: 'core/story',
     icon: TagIcon,
     content: StoryTagContent
-  }/*
-  Organisatörer: {
-  label: 'Organisatörer',
+  },
+  'core/organiser': {
+    label: 'Organisatörer',
     conceptTitle: 'Organisatör',
-    description: 'Ett dokument som beskriver en organisatör',
-    data: null as unknown as IDBOrganiser,
+    description: 'Ett dokument som beskriver en organisation',
+    data: null as unknown as IDBOrganiser[],
     documentType: 'core/organiser',
-    icon: TagIcon
-  } */
+    icon: TagIcon,
+    content: OrganiserContent
+  }
 } as const
 
 export type ConceptTableDataMap = typeof tableDataMap
