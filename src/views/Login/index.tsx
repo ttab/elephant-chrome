@@ -38,7 +38,8 @@ const LoginForm = ({ callbackUrl }: {
           onClick={() => {
             (async () => {
               await IDB.remove()
-              await CollaborationClientRegistry.cleanupLocalDocuments()
+              // FIXME: Implement a better approach so we do not remove unsynced documents
+              // await CollaborationClientRegistry.cleanupLocalDocuments()
             })().catch((err) => console.error(err))
             signIn('keycloak', { callbackUrl: callbackUrl || import.meta.env.BASE_URL })
               .catch((error) => console.error(error))
