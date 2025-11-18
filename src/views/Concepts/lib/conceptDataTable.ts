@@ -7,7 +7,7 @@ export const tableDataMap = {
   'core/section': {
     label: 'Sektioner',
     conceptTitle: 'Sektion',
-    description: 'A section for content',
+    description: 'En sektion för innehåll',
     data: null as unknown as IDBSection[],
     documentType: 'core/section',
     icon: TagIcon,
@@ -16,64 +16,22 @@ export const tableDataMap = {
   'core/story': {
     label: 'Story tags',
     conceptTitle: 'Story Tag',
-    description: 'An ongoing story that gets reported on',
+    description: 'En pågående historia som det rapporteras om',
     data: null as unknown as IDBStory[],
     documentType: 'core/story',
     icon: TagIcon,
     content: StoryTagContent
-  }/* ,
-  Kategorier: {
-    label: 'Kategorier',
-    conceptTitle: 'Kategori',
-    description: 'A category for content',
-    data: null as unknown as IDBCategory,
-
-    documentType: 'core/category',
-    icon: TagIcon
-  },
+  }/*
   Organisatörer: {
   label: 'Organisatörer',
     conceptTitle: 'Organisatör',
-    description: 'A document describing an organisation',
+    description: 'Ett dokument som beskriver en organisatör',
     data: null as unknown as IDBOrganiser,
     documentType: 'core/organiser',
-    icon: TagIcon
-  },
-  Källor: {
-    label: 'Källor',
-    conceptTitle: 'Källa',
-    description: 'The entity that is the source of the content, e.g. the organisation that produced it.',
-    data: null as unknown as IDBContentSource,
-    documentType: 'core/content-source',
-    icon: TagIcon
-  },
-  'Redaktionella informationstyper': {
-    label: 'Redaktionella informationstyper
-    conceptTitle: 'Redaktionell informationstyp',
-    data: null as unknown as IDBEditorialInfoType,
-    documentType: 'tt/editorial-info-type',
-    icon: TagIcon
-  },
-  Telegramkällor: {
-    label: 'Telegramkällor',
-    conceptTitle: 'Telegramkälla',
-    description: '',
-    data: null as unknown as IDBWireSource,
-    documentType: 'tt/wire-source',
     icon: TagIcon
   } */
 } as const
 
-/* interface conceptsItem {
-  label: string
-  conceptTitle: string
-  description: string
-  data: object[]
-  documentType: string
-  icon: LucideIcon
-}
- */
 export type ConceptTableDataMap = typeof tableDataMap
 export type ConceptTableDataKey = keyof ConceptTableDataMap
-/* export type TableDataValue<K extends TableDataKey> = TableDataMap[K] */
-/* export type TableDataInnerKey<K extends TableDataKey> = keyof TableDataValue<K> */
+
