@@ -23,7 +23,8 @@
     "test:coverage": "vitest run --coverage",
     "preview": "vite preview",
     "link:elephant-ui": "./tooling/link.sh ../elephant-ui",
-    "unlink:elephant-ui": "./tooling/unlink.sh ../elephant-ui"
+    "unlink:elephant-ui": "./tooling/unlink.sh ../elephant-ui",
+    "dev:multi": "./tooling/multi.sh"
   },
   "overrides": {
     "@grafana/faro-web-sdk": "$@grafana/faro-react",
