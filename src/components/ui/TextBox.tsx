@@ -1,8 +1,12 @@
 import React, { useCallback, useRef } from 'react'
 import { Awareness } from '../Awareness'
 import { TextboxRoot } from './Textbox/TextboxRoot'
+import { Label } from '@ttab/elephant-ui'
 
-export const TextBox = ({ icon: Icon, path, onChange, className, ...props }: {
+export const TextBox = ({ id, label, asDialog, icon: Icon, path, onChange, className, ...props }: {
+  id?: string
+  label?: string
+  asDialog?: boolean | undefined
   disabled?: boolean
   path: string
   icon?: React.ReactNode
@@ -35,13 +39,13 @@ export const TextBox = ({ icon: Icon, path, onChange, className, ...props }: {
 
   return (
     <Awareness path={path} ref={setFocused} className='w-full'>
-      <div className='w-full flex flex-row gap-2'>
+      {!asDialog && label && <Label htmlFor={id}>{label}</Label>}
+      <div id={id} className='w-full flex flex-row gap-2'>
         {Icon && (
           <div className='pt-1.5'>
             {Icon}
           </div>
         )}
-
         <TextboxRoot className={className} {...props} path={path} onBlur={handleOnBlur} onFocus={handleOnFocus} onChange={onChange} />
       </div>
     </Awareness>

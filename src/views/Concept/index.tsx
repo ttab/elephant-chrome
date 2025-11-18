@@ -183,7 +183,7 @@ const ConceptContent = ({
                         asDialog={asDialog}
                         onChange={handleChange}
                       >
-                        {concept.content({ isActive, handleChange, textPaths })}
+                        {concept.content({ isActive, handleChange, textPaths, asDialog })}
                         <Form.Footer>
                           <Form.Submit
                             onSubmit={() => handleSubmit()}
