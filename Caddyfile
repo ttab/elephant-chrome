@@ -1,0 +1,28 @@
+(elephant-shared) {
+	encode zstd gzip
+	header {
+		Cache-Control "no-store"
+	}
+	@ws {
+		header Connection *Upgrade*
+		header Upgrade websocket
+	}
+}
+
+http://localhost:3333 {
+	import elephant-shared
+	reverse_proxy @ws {
+		to localhost:5183
+		to localhost:5283
+		lb_policy round_robin
+		header_up Host {http.reverse_proxy.upstream.hostport}
+		header_up Upgrade {http.upgrade}
+		header_up Connection {http.request.header.Connection}
+	}
+	reverse_proxy * {
+		to localhost:5183
+		to localhost:5283
+		lb_policy round_robin
+		header_up Host {http.reverse_proxy.upstream.hostport}
+	}
+}
