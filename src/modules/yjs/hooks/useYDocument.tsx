@@ -61,8 +61,8 @@ export function useYDocument<T>(
   }))
 
   // Whether document is ready to be saved to repository (is valid)
-  const [isInProgress, setIsInProgress] = useYValue<boolean>(document.current.getMap('ctx'), ['isInProgress'])
-  const [isChanged, setIsChanged] = useYValue<boolean>(document.current.getMap('ctx'), ['isChanged'])
+  const [isInProgress, setIsInProgress] = useYValue<boolean>(document.current.getMap('ctx'), 'isInProgress')
+  const [isChanged, setIsChanged] = useYValue<boolean>(document.current.getMap('ctx'), 'isChanged')
 
   /**
    * Client lifecycle - get client and release on unmount
@@ -113,25 +113,23 @@ export function useYDocument<T>(
    * Observe changes to the ele root map (the actual document) and set the isChange flag
    * to true if the calculated hash is different from the existing one.
    */
-  const yCtx = document.current?.getMap('ctx')
-  const yEle = document.current?.getMap('ele')
-
-  const onChange = useCallback(() => {
-    if (!yEle || !yCtx) return
-    if (isChanged) return
-
-    const currentHash = createHash(JSON.stringify(yEle.toJSON()))
-    setIsChanged(currentHash !== yCtx.get('hash'))
-  }, [isChanged, yEle, yCtx, setIsChanged])
-
   useEffect(() => {
-    if (!yEle) return
+    if (!document.current) return
+
+    const yCtx = document.current.getMap('ctx')
+    const yEle = document.current.getMap('ele')
+    const onChange = () => {
+      if (isChanged) return
+
+      setIsChanged(createHash(JSON.stringify(yEle.toJSON())) !== yCtx.get('hash'))
+    }
 
     yEle.observeDeep(onChange)
+
     return () => {
       yEle.unobserveDeep(onChange)
     }
-  }, [yEle, onChange])
+  }, [isChanged, setIsChanged])
 
   /**
    * Utility function to send stateless messages
