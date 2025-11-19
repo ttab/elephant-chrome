@@ -61,8 +61,8 @@ export function useYDocument<T>(
   }))
 
   // Whether document is ready to be saved to repository (is valid)
-  const [isInProgress, setIsInProgress] = useYValue<boolean>(document.current.getMap('ctx'), ['isInProgress'])
-  const [isChanged, setIsChanged] = useYValue<boolean>(document.current.getMap('ctx'), ['isChanged'])
+  const [isInProgress, setIsInProgress] = useYValue<boolean>(document.current.getMap('ctx'), 'isInProgress')
+  const [isChanged, setIsChanged] = useYValue<boolean>(document.current.getMap('ctx'), 'isChanged')
 
   /**
    * Client lifecycle - get client and release on unmount
@@ -116,20 +116,20 @@ export function useYDocument<T>(
   useEffect(() => {
     if (!document.current) return
 
-    const ymeta = document.current.getMap('ctx')
-    const ymap = document.current.getMap('ele')
+    const yCtx = document.current.getMap('ctx')
+    const yEle = document.current.getMap('ele')
     const onChange = () => {
-      setIsChanged(createHash(JSON.stringify(ymap.toJSON())) !== ymeta.get('hash'))
+      if (isChanged) return
+
+      setIsChanged(createHash(JSON.stringify(yEle.toJSON())) !== yCtx.get('hash'))
     }
 
-    ymap.observeDeep(onChange)
+    yEle.observeDeep(onChange)
 
     return () => {
-      ymap.unobserveDeep(onChange)
+      yEle.unobserveDeep(onChange)
     }
-    // We need document.current as dependency to observe correctly.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [document.current, setIsChanged])
+  }, [isChanged, setIsChanged])
 
   /**
    * Utility function to send stateless messages
