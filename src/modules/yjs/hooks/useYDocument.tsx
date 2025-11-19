@@ -113,23 +113,25 @@ export function useYDocument<T>(
    * Observe changes to the ele root map (the actual document) and set the isChange flag
    * to true if the calculated hash is different from the existing one.
    */
+  const yCtx = document.current?.getMap('ctx')
+  const yEle = document.current?.getMap('ele')
+
+  const onChange = useCallback(() => {
+    if (!yEle || !yCtx) return
+    if (isChanged) return
+
+    const currentHash = createHash(JSON.stringify(yEle.toJSON()))
+    setIsChanged(currentHash !== yCtx.get('hash'))
+  }, [isChanged, yEle, yCtx, setIsChanged])
+
   useEffect(() => {
-    if (!document.current) return
+    if (!yEle) return
 
-    const ymeta = document.current.getMap('ctx')
-    const ymap = document.current.getMap('ele')
-    const onChange = () => {
-      setIsChanged(createHash(JSON.stringify(ymap.toJSON())) !== ymeta.get('hash'))
-    }
-
-    ymap.observeDeep(onChange)
-
+    yEle.observeDeep(onChange)
     return () => {
-      ymap.unobserveDeep(onChange)
+      yEle.unobserveDeep(onChange)
     }
-    // We need document.current as dependency to observe correctly.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [document.current, setIsChanged])
+  }, [yEle, onChange])
 
   /**
    * Utility function to send stateless messages
