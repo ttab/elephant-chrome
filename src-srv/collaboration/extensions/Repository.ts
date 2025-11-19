@@ -172,9 +172,9 @@ export class RepositoryExtension implements Extension {
     let documentType
     try {
       const ele = document.getMap('ele')
-      const root = ele.get('root') as Y.Map<unknown> | undefined
+      const root = ele.get('root') as Y.Map<unknown>
 
-      switch (root?.get('type')) {
+      switch (root.get('type')) {
         case 'core/planning-item':
           documentType = 'Planning'
           break
@@ -184,6 +184,7 @@ export class RepositoryExtension implements Extension {
       }
     } catch (ex) {
       console.trace('Failed to find document type', ex)
+      console.warn(JSON.stringify(document.getMap('ele').toJSON()), null, 2)
     }
 
     const documentResponse = fromYjsNewsDoc(document)
