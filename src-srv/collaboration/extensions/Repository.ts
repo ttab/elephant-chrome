@@ -169,17 +169,21 @@ export class RepositoryExtension implements Extension {
     const { document, connection } = await getDocument(this.#hp, options?.yjsUpdate)
 
     // Find the document type
-    const ele = document.getMap('ele')
-    const root = ele.get('root') as Y.Map<unknown>
-
     let documentType
-    switch (root.get('type')) {
-      case 'core/planning-item':
-        documentType = 'Planning'
-        break
-      case 'core/event':
-        documentType = 'Event'
-        break
+    try {
+      const ele = document.getMap('ele')
+      const root = ele.get('root') as Y.Map<unknown> | undefined
+
+      switch (root?.get('type')) {
+        case 'core/planning-item':
+          documentType = 'Planning'
+          break
+        case 'core/event':
+          documentType = 'Event'
+          break
+      }
+    } catch (ex) {
+      console.trace('Failed to find document type', ex)
     }
 
     const documentResponse = fromYjsNewsDoc(document)
@@ -231,8 +235,12 @@ export class RepositoryExtension implements Extension {
 
     // Regular lifecycle stores should ignore all stores with an unchanged hash.
     const newHash = createHash(JSON.stringify(document.getMap('ele').toJSON()))
-    if (newHash === document.getMap('ctx').get('hash')) {
-      return
+    try {
+      if (newHash === document.getMap('ctx').get('hash')) {
+        return
+      }
+    } catch (ex) {
+      logger.trace(ex, `Failed to compare hash for ${documentName}`, ex)
     }
 
     const result = await this.#storeDocument(
@@ -308,6 +316,7 @@ export class RepositoryExtension implements Extension {
         timestamp: Date.now()
       }])
     }).catch((ex) => {
+      console.trace('Failed to add document to user history', ex)
       throw new Error('error', { cause: ex })
     }).finally(() => {
       void connection.disconnect()
