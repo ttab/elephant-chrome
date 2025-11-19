@@ -6,34 +6,14 @@ import { PenBoxIcon } from '@ttab/elephant-ui/icons'
 import { AddNote } from '@/components/Notes/AddNote'
 import { ArticleTitle } from './components/ArticleTitle'
 import type * as Y from 'yjs'
-
-/**
- * EditorHeader component.
- *
- * This component represents the header section of the Print Editor. It includes
- * the title, input for the print article name, and controls for adding notes and
- * managing document status.
- *
- * @param props - The properties object.
- * @param props.documentId - The unique identifier for the document.
- *
- * @returns The rendered EditorHeader component.
- *
- * @remarks
- * The component uses the `useView` hook to get the current view ID and manages
- * a reference to the container element. It also includes a button to refresh
- * layouts and displays remote users and document status if a document ID is provided.
- */
+import type { YDocument } from '@/modules/yjs/hooks'
 
 export const EditorHeader = ({
-  documentId,
-  flowName,
-  isChanged
+  ydoc,
+  flowName
 }: {
-  documentId: string
+  ydoc: YDocument<Y.Map<unknown>>
   flowName?: string
-  isChanged?: boolean
-  document?: Y.Doc
 }): JSX.Element => {
   const { viewId } = useView()
   const containerRef = useRef<HTMLElement | null>(null)
@@ -48,16 +28,15 @@ export const EditorHeader = ({
 
         <ViewHeader.Content className='justify-start w-full'>
           <div className='max-w-[1040px] mx-auto flex flex-row gap-2 justify-between items-center w-full'>
-            <ArticleTitle documentId={documentId} />
+            <ArticleTitle ydoc={ydoc} />
             <div className='flex flex-row gap-2 justify-end items-center'>
-              <AddNote role='internal' />
-              {!!documentId && (
+              <AddNote ydoc={ydoc} role='internal' />
+              {!!ydoc.id && (
                 <>
-                  <ViewHeader.RemoteUsers documentId={documentId} />
+                  <ViewHeader.RemoteUsers ydoc={ydoc} />
                   <StatusMenu
-                    documentId={documentId}
+                    ydoc={ydoc}
                     type='tt/print-article'
-                    isChanged={isChanged}
                   />
                 </>
               )}

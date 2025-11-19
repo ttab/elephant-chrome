@@ -1,4 +1,3 @@
-import type { HocuspocusProvider } from '@hocuspocus/provider'
 import type { Session } from 'next-auth'
 import { getValueByYPath } from '@/shared/yUtils'
 import { convertToISOStringInTimeZone } from '@/shared/datetime'
@@ -6,10 +5,12 @@ import { toast } from 'sonner'
 import { ToastAction } from '../ToastAction'
 import { addAssignmentWithDeliverable } from '@/lib/index/addAssignment'
 import { snapshotDocument } from '@/lib/snapshotDocument'
+import type { YDocument } from '@/modules/yjs/hooks'
+import type * as Y from 'yjs'
 
 export type CreateFlashDocumentStatus = 'usable' | 'done' | undefined
 export async function createFlash({
-  flashProvider,
+  ydoc,
   status,
   planningId,
   timeZone,
@@ -17,7 +18,7 @@ export async function createFlash({
   section,
   startDate
 }: {
-  flashProvider: HocuspocusProvider
+  ydoc: YDocument<Y.Map<unknown>>
   status: string
   session: Session
   planningId?: string
@@ -29,28 +30,26 @@ export async function createFlash({
   }
   startDate?: string
 }): Promise<void> {
-  const flashEle = flashProvider.document.getMap('ele')
-  const [documentId] = getValueByYPath<string>(flashEle, 'root.uuid')
-
-  if (!flashProvider || status !== 'authenticated' || !documentId) {
-    console.error(`Failed adding flash ${documentId} to a planning`)
+  if (!ydoc || status !== 'authenticated') {
+    console.error(`Failed adding flash ${ydoc.id} to a planning`)
     toast.error('Kunde inte lägga flashen till en planering', {
-      action: <ToastAction flashId={documentId} />
+      action: <ToastAction flashId={ydoc.id} />
     })
     return
   }
 
   // Trigger the creation of the flash in the repository
-  await snapshotDocument(documentId, {
+  // dont await it here as we want to do other things in parallel
+  const snapshotPromise = snapshotDocument(ydoc.id, {
     status: documentStatus
-  }, flashProvider.document)
+  }, ydoc.provider?.document)
     .catch((ex) => {
       toast.error('Kunde inte spara flash')
       console.error('Failed creating flash snapshot', ex)
     })
 
   // Create and collect all base data for the assignment
-  const [flashTitle] = getValueByYPath<string>(flashEle, 'root.title')
+  const [flashTitle] = getValueByYPath<string>(ydoc.ele, 'root.title')
   const dt = new Date()
   let localDate: string
   let isoDateTime: string
@@ -70,7 +69,7 @@ export async function createFlash({
   const updatedPlanningId = await addAssignmentWithDeliverable({
     planningId,
     type: 'flash',
-    deliverableId: documentId,
+    deliverableId: ydoc.id,
     title: flashTitle || 'Ny flash',
     priority: 5,
     publicVisibility: false,
@@ -78,6 +77,9 @@ export async function createFlash({
     isoDateTime,
     section
   })
+
+  // Ensure the snapshot is complete before showing the toast
+  await snapshotPromise
 
   const getLabel = (documentStatus: CreateFlashDocumentStatus): string => {
     switch (documentStatus) {
@@ -95,11 +97,11 @@ export async function createFlash({
 
   if (!updatedPlanningId) {
     toast.error('Flashen har skapats. Tyvärr misslyckades det att koppla den till en planering. Kontakta support för mer hjälp.', {
-      action: <ToastAction planningId={updatedPlanningId} flashId={documentId} />
+      action: <ToastAction planningId={updatedPlanningId} flashId={ydoc.id} />
     })
   } else {
     toast.success(getLabel(documentStatus), {
-      action: <ToastAction planningId={updatedPlanningId} flashId={documentId} />
+      action: <ToastAction planningId={updatedPlanningId} flashId={ydoc.id} />
     })
   }
 }

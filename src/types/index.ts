@@ -79,6 +79,7 @@ export interface ViewProps {
   payload?: TemplatePayload
   autoFocus?: boolean
   setOpen?: (open?: boolean) => boolean
+  preview?: boolean
 }
 
 export type Theme = 'dark' | 'light' | 'system'

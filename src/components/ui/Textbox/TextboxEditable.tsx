@@ -3,43 +3,37 @@ import { createEditor } from 'slate'
 import { cn } from '@ttab/elephant-ui/utils'
 import { useLayoutEffect, useMemo } from 'react'
 import { YjsEditor, withCursors, withYHistory, withYjs } from '@slate-yjs/core'
-import { type HocuspocusProvider } from '@hocuspocus/provider'
-import { type AwarenessUserData } from '@/contexts/CollaborationProvider'
 import type * as Y from 'yjs'
 import { ContextMenu } from '../../Editor/ContextMenu'
 import { useOnSpellcheck } from '@/hooks/useOnSpellcheck'
-import { getValueByYPath } from '@/shared/yUtils'
+import { useYPath, useYValue, type YDocument } from '@/modules/yjs/hooks'
 
-export const TextboxEditable = ({ provider, path, user, content, singleLine, spellcheck, disabled = false, onChange }: {
+export const TextboxEditable = ({ value, ydoc, singleLine, spellcheck, disabled = false }: {
+  value: Y.XmlText
+  ydoc: YDocument<Y.Map<unknown>>
   disabled?: boolean
-  provider: HocuspocusProvider
-  path: string
   singleLine: boolean
-  user: AwarenessUserData
-  content: Y.XmlText
   spellcheck?: boolean
-  onChange?: (arg: boolean) => void
 }): JSX.Element | undefined => {
-  const [documentLanguage] = getValueByYPath<string>(provider.document.getMap('ele'), 'root.language')
+  const path = useYPath(value, true)
+  const [documentLanguage] = useYValue<string>(ydoc.ele, ['root', 'language'])
   const onSpellcheck = useOnSpellcheck(documentLanguage)
 
   const yjsEditor = useMemo(() => {
-    if (!provider?.awareness) {
-      return
-    }
-
-    return withYHistory(
-      withCursors(
-        withYjs(createEditor(), content),
-        provider.awareness,
-        {
-          autoSend: false,
-          data: user as unknown as Record<string, unknown>,
-          cursorStateField: path
-        }
+    return (!ydoc.provider?.awareness || !ydoc.user)
+      ? undefined
+      : withYHistory(
+        withCursors(
+          withYjs(createEditor(), value),
+          ydoc.provider.awareness,
+          {
+            autoSend: false,
+            data: ydoc.user ?? undefined,
+            cursorStateField: path
+          }
+        )
       )
-    )
-  }, [provider?.awareness, user, path, content])
+  }, [value, path, ydoc.user, ydoc.provider?.awareness])
 
   useLayoutEffect(() => {
     if (yjsEditor) {
@@ -48,13 +42,11 @@ export const TextboxEditable = ({ provider, path, user, content, singleLine, spe
     }
   }, [yjsEditor])
 
+  if (!yjsEditor) return
+
   return (
     <Textbit.Editable
-      onChange={() => {
-        if (provider.hasUnsyncedChanges) {
-          onChange?.(true)
-        }
-      }}
+      key={path} // This triggers a re-render if the path changes
       readOnly={disabled}
       yjsEditor={yjsEditor}
       lang={documentLanguage}

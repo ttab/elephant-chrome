@@ -2,32 +2,40 @@ import { TextBox } from '@/components/ui'
 import { Button } from '@ttab/elephant-ui'
 import { MessageCircleMoreIcon, TagsIcon } from '@ttab/elephant-ui/icons'
 import { AssignmentType } from '@/components/DataItem/AssignmentType'
-import { useYValue } from '@/hooks/useYValue'
 import { AssignmentTime } from '@/components/AssignmentTime'
 import { Assignees } from '@/components/Assignees'
-import { Title } from '@/components/Title'
 import { SluglineEditable } from '@/components/DataItem/SluglineEditable'
 import { Form } from '@/components/Form'
 import { type FormProps } from '@/components/Form/Root'
 import { useEffect, useRef } from 'react'
-import { AssignmentVisibility } from '@/components/DataItem/AssignmentVisibility'
+import { type YDocument, useYPath, useYValue } from '@/modules/yjs/hooks'
+import type * as Y from 'yjs'
+import { useSession } from 'next-auth/react'
+import { TextInput } from '@/components/ui/TextInput'
 
-export const Assignment = ({ index, onAbort, onClose, onChange }: {
-  index: number
+export const Assignment = ({ ydoc, assignment, onAbort, onClose }: {
+  ydoc: YDocument<Y.Map<unknown>>
+  assignment: Y.Map<unknown>
   onClose: () => void
   onAbort?: () => void
   className?: string
 } & FormProps): JSX.Element => {
-  const [assignment] = useYValue<boolean>(`meta.core/assignment[${index}]`)
-  const [articleId] = useYValue<string>(`meta.core/assignment[${index}].links.core/article[0].uuid`)
-  const [flashId] = useYValue<string>(`meta.core/assignment[${index}].links.core/flash[0].uuid`)
-  const [editorialInfoId] = useYValue<string>(`meta.core/assignment[${index}].links.core/editorial-info[0].uuid`)
-  const [assignmentInProgress] = useYValue<boolean>(`meta.core/assignment[${index}].__inProgress`)
-  const [assignmentType] = useYValue<string | undefined>(`meta.core/assignment[${index}].meta.core/assignment-type[0].value`)
+  const { data: session } = useSession()
 
+  const path = useYPath(assignment, true)
+  const [articleId] = useYValue<string>(assignment, `links.core/article[0].uuid`)
+  const [flashId] = useYValue<string>(assignment, `links.core/flash[0].uuid`)
+  const [editorialInfoId] = useYValue<string>(assignment, `links.core/editorial-info[0].uuid`)
+  const [assignmentType] = useYValue<string | undefined>(assignment, `meta.core/assignment-type[0].value`)
+  const [title] = useYValue<Y.XmlText>(assignment, 'title', true)
+  const [slugline] = useYValue<Y.XmlText>(assignment, `meta.tt/slugline[0].value`, true)
+  const [description] = useYValue<Y.XmlText | undefined>(assignment, `meta.core/description[0].data.text`, true)
   const documentId = articleId || flashId || editorialInfoId
 
   const formRef = useRef<HTMLDivElement>(null)
+
+  // Track assignments in progress in ctx
+  const [assignmentInProgress] = useYValue(ydoc.ctx, `core/assignment.${session?.user.sub || ''}`)
 
   useEffect(() => {
     if (formRef.current) {
@@ -44,23 +52,27 @@ export const Assignment = ({ index, onAbort, onClose, onChange }: {
     }
   }, [onAbort, onClose])
 
-  if (!assignment) {
+  if (!ydoc || !assignment || !path) {
     return <></>
   }
 
   return (
     <div className='flex flex-col rounded-md border shadow-xl -mx-1 -my-1 z-10 bg-background' ref={formRef}>
-      <Form.Root asDialog={true} onChange={onChange}>
+      <Form.Root asDialog={true}>
         <Form.Content>
           <Form.Title>
-            <Title
-              path={`meta.core/assignment[${index}].title`}
-              placeholder='Uppdragsrubrik'
-              autoFocus={true}
+            <TextInput
+              ydoc={ydoc}
+              rootMap={!assignmentInProgress ? ydoc.ele : ydoc.ctx}
+              value={title}
+              label='Titel'
+              placeholder='Uppdragstitel'
+              autoFocus
             />
           </Form.Title>
           <TextBox
-            path={`meta.core/assignment[${index}].meta.core/description[0].data.text`}
+            ydoc={ydoc}
+            value={description}
             placeholder='Internt meddelande'
             icon={(
               <MessageCircleMoreIcon
@@ -75,8 +87,10 @@ export const Assignment = ({ index, onAbort, onClose, onChange }: {
             && (
               <Form.Group icon={TagsIcon}>
                 <SluglineEditable
+                  ydoc={ydoc}
+                  rootMap={!assignmentInProgress ? ydoc.ele : ydoc.ctx}
                   disabled={!!documentId}
-                  path={`meta.core/assignment[${index}].meta.tt/slugline[0].value`}
+                  value={slugline}
                 />
               </Form.Group>
             )}
@@ -84,44 +98,39 @@ export const Assignment = ({ index, onAbort, onClose, onChange }: {
 
           <Form.Group>
             <AssignmentType
-              path={`meta.core/assignment[${index}]`}
+              assignment={assignment}
               editable={!articleId && !flashId}
             />
             <Assignees
-              path={`meta.core/assignment[${index}].links.core/author`}
+              ydoc={ydoc}
+              path={`${path}.links.core/author`}
               placeholder='Lägg till uppdragstagare'
             />
-            <AssignmentTime index={index} />
+            <AssignmentTime assignment={assignment} />
+
+            {/* FIXME: Disable until we have an idea of how this should be clear to end-user
             <AssignmentVisibility
-              path={`meta.core/assignment[${index}].data.public`}
+              ydoc={ydoc}
+              path={`${path}.data.public`}
               disabled={!!documentId}
               editable
               className='ml-auto'
-            />
+            /> */}
           </Form.Group>
-
         </Form.Content>
+
         <Form.Footer>
           <Form.Submit onSubmit={onClose} onReset={onAbort}>
             <div className='flex gap-2 justify-end pt-4'>
-              {assignmentInProgress && !!onAbort
-                && (
-                  <Button
-                    type='reset'
-                    variant='ghost'
-                  >
-                    Avbryt
-                  </Button>
-                )}
-              <Button
-                type='submit'
-                variant='outline'
-                className='whitespace-nowrap'
-              >
+              {!!assignmentInProgress && !!onAbort && (
+                <Button type='reset' variant='ghost'>
+                  Avbryt
+                </Button>
+              )}
+              <Button type='submit' variant='outline' className='whitespace-nowrap'>
                 {assignmentInProgress ? 'Lägg till' : 'Stäng'}
               </Button>
             </div>
-
           </Form.Submit>
         </Form.Footer>
       </Form.Root>

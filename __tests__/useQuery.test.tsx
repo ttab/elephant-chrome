@@ -1,10 +1,11 @@
 import { renderHook, act } from '@testing-library/react'
 import { useQuery } from '@/hooks'
-import { vi } from 'vitest'
+import { vi, type Mock } from 'vitest'
 const BASE_URL = import.meta.env.BASE_URL
 
 describe('useQuery hook', () => {
-  let replaceStateMock: ReturnType<typeof vi.spyOn>
+  type ReplaceState = typeof window.history['replaceState']
+  let replaceStateMock: Mock<ReplaceState>
 
   beforeEach(() => {
     // Mock window.history.replaceState
@@ -116,4 +117,3 @@ describe('useQuery hook', () => {
     expect(window.location.search).toBe('?foo=bar%2Cbaz')
   })
 })
-

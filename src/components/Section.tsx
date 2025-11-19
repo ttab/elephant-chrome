@@ -1,10 +1,12 @@
 import { Awareness } from '@/components'
 import { ComboBox } from '@ttab/elephant-ui'
-import { useSections, useYValue } from '@/hooks'
+import { useSections } from '@/hooks'
 import { Block } from '@ttab/elephant-api/newsdoc'
 import { useRef } from 'react'
 import { Validation } from './Validation'
 import { type FormProps } from './Form/Root'
+import { type YDocument, useYValue } from '@/modules/yjs/hooks'
+import type * as Y from 'yjs'
 
 interface SectionProps {
   onSelect?: (selectedOption: {
@@ -15,22 +17,24 @@ interface SectionProps {
   }) => void
 }
 
-export const Section = ({ onValidation, validateStateRef, onChange, onSelect }:
-  FormProps & SectionProps): JSX.Element => {
+export const Section = ({ ydoc, path, onValidation, validateStateRef, onChange, onSelect }: {
+  ydoc: YDocument<Y.Map<unknown>>
+  path: string
+} & FormProps & SectionProps): JSX.Element => {
   const allSections = useSections().map((_) => {
     return {
       value: _.id,
       label: _.title
     }
   })
-  const path = 'links.core/section[0]'
-  const [section, setSection] = useYValue<Block | undefined>(path)
+  const [section, setSection] = useYValue<Block | undefined>(ydoc.ele, path)
   const setFocused = useRef<(value: boolean, path: string) => void>(() => { })
   const selectedOptions = (allSections || [])?.filter((s) => s.value === section?.uuid)
 
   return (
-    <Awareness ref={setFocused} path={path}>
+    <Awareness ref={setFocused} ydoc={ydoc} path={path}>
       <Validation
+        ydoc={ydoc}
         label='Sektion'
         path={path}
         block='core/section[0]'
@@ -47,9 +51,7 @@ export const Section = ({ onValidation, validateStateRef, onChange, onSelect }:
           placeholder={section?.title || 'Lägg till sektion'}
           validation={!!onValidation}
           onOpenChange={(isOpen: boolean) => {
-            if (setFocused?.current) {
-              setFocused.current(true, (isOpen) ? path : '')
-            }
+            setFocused.current(true, (isOpen) ? path : '')
           }}
           onSelect={(option) => {
             const value = {

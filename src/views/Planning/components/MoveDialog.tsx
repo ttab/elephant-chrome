@@ -1,32 +1,36 @@
-import { useCollaboration } from '@/hooks/useCollaboration'
 import { useRegistry } from '@/hooks/useRegistry'
-import { useYValue } from '@/hooks/useYValue'
 import type { EleBlock } from '@/shared/types'
-import { Button, Checkbox, Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, Label, Tooltip } from '@ttab/elephant-ui'
+import {
+  Button,
+  Checkbox,
+  Label,
+  Tooltip,
+  Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle
+} from '@ttab/elephant-ui'
 import { dateToReadableDateTime } from '@/shared/datetime'
 import { useEffect, useRef } from 'react'
 import { dateToReadableDate, dateToReadableTime } from '@/shared/datetime'
-import { getValueByYPath, setValueByYPath } from '@/shared/yUtils'
+import { getValueByYPath, setValueByYPath, getValueFromPath } from '@/shared/yUtils'
 import type { Block } from '@ttab/elephant-api/newsdoc'
 import { format, toZonedTime } from 'date-fns-tz'
 import { type TimeDef, useAssignmentTime } from '@/hooks/useAssignmentTime'
 import { snapshotDocument } from '@/lib/snapshotDocument'
 import { toast } from 'sonner'
 import { AssignmentType } from '@/components/DataItem/AssignmentType'
+import { type YDocument, useYValue } from '@/modules/yjs/hooks'
+import type * as Y from 'yjs'
 
-export const MoveDialog = ({ onClose, onChange, newDate }: {
+export const MoveDialog = ({ ydoc, onClose, newDate }: {
+  ydoc: YDocument<Y.Map<unknown>>
   onClose: () => void
-  onChange: (value: boolean) => void
   newDate: string // YYYY-MM-DD in local time
 }) => {
-  const { provider } = useCollaboration()
-  const [id] = useYValue<string>('root.uuid')
-  const [assignments] = useYValue<EleBlock[]>('meta.core/assignment', false)
-  const [, setStartString] = useYValue<string>('meta.core/planning-item[0].data.start_date')
-  const [, setEndString] = useYValue<string>('meta.core/planning-item[0].data.end_date')
+  const [id] = useYValue<string>(ydoc.ele, 'root.uuid')
+  const [assignments] = useYValue<EleBlock[]>(ydoc.ele, 'meta.core/assignment', false)
+  const [, setStartString] = useYValue<string>(ydoc.ele, 'meta.core/planning-item[0].data.start_date')
+  const [, setEndString] = useYValue<string>(ydoc.ele, 'meta.core/planning-item[0].data.end_date')
   // Record of assignment ids and times to change
   const assignmentTimes = useRef<Record<string, TimeDef | undefined>>({})
-  const yRoot = provider?.document.getMap('ele')
 
   return (
     <Dialog open={true}>
@@ -44,13 +48,15 @@ export const MoveDialog = ({ onClose, onChange, newDate }: {
           </DialogDescription>
 
           <div className='flex flex-col gap-3 py-2 text-left'>
-            {(assignments || []).map((assignment, n) => {
-              const [value] = getValueByYPath(yRoot, `meta.core/assignment[${n}].meta.core/assignment-type[0].value`) as unknown as string
-              if (!['picture', 'video'].includes(value)) {
+            {(assignments || []).map((_, n) => {
+              const assignment = getValueFromPath<Y.Map<unknown>>(ydoc.ele, ['meta', 'core/assignment', n], true)
+              const assignmentType = getValueFromPath<string>(assignment, ['meta', 'core/assignment-type', 0, 'value']) || ''
+
+              if (assignment && !['picture', 'video'].includes(assignmentType)) {
                 return (
                   <AssignmentListItem
-                    key={assignment.id}
-                    index={n}
+                    key={assignment.get('id') as string}
+                    assignment={assignment}
                     newDate={newDate}
                     onChangeSelected={(id, value) => {
                       assignmentTimes.current[id] = value
@@ -66,13 +72,15 @@ export const MoveDialog = ({ onClose, onChange, newDate }: {
           </DialogDescription>
 
           <div className='flex flex-col gap-3 py-2 text-left'>
-            {(assignments || []).map((assignment, n) => {
-              const [value] = getValueByYPath(yRoot, `meta.core/assignment[${n}].meta.core/assignment-type[0].value`) as unknown as string
-              if (['picture', 'video'].includes(value)) {
+            {(assignments || []).map((_, n) => {
+              const assignment = getValueFromPath<Y.Map<unknown>>(ydoc.ele, ['meta', 'core/assignment', n], true)
+              const assignmentType = getValueFromPath<string>(assignment, ['meta', 'core/assignment-type', 0, 'value']) || ''
+
+              if (assignment && ['picture', 'video'].includes(assignmentType)) {
                 return (
                   <AssignmentCheckBox
-                    key={assignment.id}
-                    index={n}
+                    key={assignment.get('id') as string}
+                    assignment={assignment}
                     newDate={newDate}
                     onChangeSelected={(id, value) => {
                       assignmentTimes.current[id] = value
@@ -97,7 +105,7 @@ export const MoveDialog = ({ onClose, onChange, newDate }: {
             autoFocus
             onClick={() => {
               for (const aid in assignmentTimes.current) {
-                if (!provider?.document) {
+                if (!ydoc.provider?.document) {
                   return
                 }
 
@@ -106,8 +114,7 @@ export const MoveDialog = ({ onClose, onChange, newDate }: {
                   return
                 }
 
-                const yRoot = provider.document.getMap('ele')
-                const assignments = getValueByYPath<Block[] | undefined>(yRoot, 'meta.core/assignment')?.[0] || []
+                const assignments = getValueByYPath<Block[] | undefined>(ydoc.ele, 'meta.core/assignment')?.[0] || []
                 const index = assignments.findIndex(
                   (assignment: Block) => assignment.id === aid
                 )
@@ -121,16 +128,16 @@ export const MoveDialog = ({ onClose, onChange, newDate }: {
 
                 // Set the dates and times of the assignments
                 const base = `meta.core/assignment[${index}]`
-                setValueByYPath(yRoot, `${base}.data.start_date`, newDate)
-                setValueByYPath(yRoot, `${base}.data.end_date`, newDate)
+                setValueByYPath(ydoc.ele, `${base}.data.start_date`, newDate)
+                setValueByYPath(ydoc.ele, `${base}.data.end_date`, newDate)
 
                 if (asgn.name === 'start' && typeof asgn.newTime[0] !== 'string') {
-                  setValueByYPath(yRoot, `${base}.data.start`, zuluTime(asgn.newTime[0]))
+                  setValueByYPath(ydoc.ele, `${base}.data.start`, zuluTime(asgn.newTime[0]))
                 } else if (asgn.name === 'publish' && typeof asgn.newTime[0] !== 'string') {
-                  setValueByYPath(yRoot, `${base}.data.publish`, zuluTime(asgn.newTime[0]))
+                  setValueByYPath(ydoc.ele, `${base}.data.publish`, zuluTime(asgn.newTime[0]))
                 } else if (asgn.name === 'range' && typeof asgn.newTime[0] !== 'string' && typeof asgn.newTime[1] !== 'string') {
-                  setValueByYPath(yRoot, `${base}.data.start`, zuluTime(asgn.newTime[0]))
-                  setValueByYPath(yRoot, `${base}.data.end`, zuluTime(asgn.newTime[1]))
+                  setValueByYPath(ydoc.ele, `${base}.data.start`, zuluTime(asgn.newTime[0]))
+                  setValueByYPath(ydoc.ele, `${base}.data.end`, zuluTime(asgn.newTime[1]))
                 }
               }
 
@@ -139,8 +146,7 @@ export const MoveDialog = ({ onClose, onChange, newDate }: {
                 setStartString(newDate)
                 setEndString(newDate)
 
-                snapshotDocument(id, undefined, provider?.document).then(() => {
-                  onChange(true)
+                snapshotDocument(id, undefined, ydoc.provider?.document).then(() => {
                   onClose()
                 }).catch((err) => {
                   console.error(err)
@@ -157,15 +163,14 @@ export const MoveDialog = ({ onClose, onChange, newDate }: {
   )
 }
 
-function AssignmentListItem({ index, newDate, onChangeSelected }: {
-  index: number
+function AssignmentListItem({ assignment, newDate, onChangeSelected }: {
+  assignment: Y.Map<unknown>
   newDate: string
   onChangeSelected: (id: string, value?: TimeDef) => void
 }) {
-  const base = `meta.core/assignment[${index}]`
-  const [id] = useYValue<string>(`${base}.id`, false)
-  const [title] = useYValue<string>(`${base}.title`, false)
-  const assignmentTime = useAssignmentTime(index, newDate)
+  const [id] = useYValue<string>(assignment, 'id', false)
+  const [title] = useYValue<string>(assignment, 'title', false)
+  const assignmentTime = useAssignmentTime(assignment, newDate)
 
   useEffect(() => {
     // Default is to have the assignment selected to change, so callback immediately on load
@@ -179,7 +184,7 @@ function AssignmentListItem({ index, newDate, onChangeSelected }: {
       <div>
         <div className='font-semibold mb-2 flex items-center -m-2'>
           <AssignmentType
-            path={`meta.core/assignment[${index}]`}
+            assignment={assignment}
             editable={false}
             readOnly
           />
@@ -198,22 +203,21 @@ function AssignmentListItem({ index, newDate, onChangeSelected }: {
   )
 }
 
-function AssignmentCheckBox({ index, newDate, onChangeSelected }: {
-  index: number
+function AssignmentCheckBox({ assignment, newDate, onChangeSelected }: {
+  assignment: Y.Map<unknown>
   newDate: string
   onChangeSelected: (id: string, value?: TimeDef) => void
 }) {
-  const base = `meta.core/assignment[${index}]`
-  const [id] = useYValue<string>(`${base}.id`, false)
-  const [title] = useYValue<string>(`${base}.title`, false)
-  const assignmentTime = useAssignmentTime(index, newDate)
+  const [id] = useYValue<string>(assignment, 'id')
+  const [title] = useYValue<string>(assignment, 'title')
+  const assignmentTime = useAssignmentTime(assignment, newDate)
 
   return (
     <Label htmlFor={id} className='grid gap-3 grid-cols-[auto_2rem] items-center border rounded p-3 text-sm hover:bg-accent/50 has-aria-checked:border-blue-600 has-aria-checked:bg-blue-50 dark:has-aria-checked:border-blue-900 dark:has-aria-checked:bg-blue-950'>
       <div>
         <div className='font-semibold mb-2 flex items-center -m-2'>
           <AssignmentType
-            path={`meta.core/assignment[${index}]`}
+            assignment={assignment}
             editable={false}
             readOnly
           />

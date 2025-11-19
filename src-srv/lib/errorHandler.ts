@@ -10,7 +10,7 @@ import type {
 } from '@hocuspocus/server'
 import logger from './logger.js'
 import { RpcError } from '@protobuf-ts/runtime-rpc'
-import { isValidUUID } from '../utils/isValidUUID.js'
+import { isValidUUID } from '@/shared/isValidUUID.js'
 import type { User } from '@/shared/User.js'
 
 /**

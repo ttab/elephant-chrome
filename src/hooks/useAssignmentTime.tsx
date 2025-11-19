@@ -1,8 +1,8 @@
-import { useCollaboration } from '@/hooks/useCollaboration'
-import { useYValue } from '@/hooks/useYValue'
 import { timeSlotTypes } from '@/defaults/assignmentTimeConstants'
 import type { LucideIcon } from '@ttab/elephant-ui/icons'
 import { AlarmClockCheckIcon, CalendarClockIcon, ClockFadingIcon } from '@ttab/elephant-ui/icons'
+import { useYValue } from '@/modules/yjs/hooks'
+import type * as Y from 'yjs'
 
 export interface TimeDef {
   name: 'start' | 'range' | 'slot' | 'publish'
@@ -16,14 +16,15 @@ export interface TimeDef {
  * Hook that updates to the correct assignment time with icons and labels based
  * on the current open collaborative planning document.
  */
-export function useAssignmentTime(index: number, newDate?: string): undefined | TimeDef {
-  const { provider } = useCollaboration()
-  const base = `meta.core/assignment[${index}]`
-  const [assignmentType] = useYValue<string>(`${base}.meta.core/assignment-type[0].value`, false, provider)
-  const [publishTime] = useYValue<string>(`${base}.data.publish`, false, provider)
-  const [startTime] = useYValue<string>(`${base}.data.start`, false, provider)
-  const [endTime] = useYValue<string>(`${base}.data.end`, false, provider)
-  const [publishSlot] = useYValue<string>(`${base}.data.publish_slot`, false, provider)
+export function useAssignmentTime(
+  assignment: Y.Map<unknown>,
+  newDate?: string
+): undefined | TimeDef {
+  const [assignmentType] = useYValue<string>(assignment, 'meta.core/assignment-type[0].value')
+  const [publishTime] = useYValue<string>(assignment, 'data.publish')
+  const [startTime] = useYValue<string>(assignment, 'data.start')
+  const [endTime] = useYValue<string>(assignment, 'data.end')
+  const [publishSlot] = useYValue<string>(assignment, 'data.publish_slot')
 
   if (typeof assignmentType !== 'string') {
     return undefined

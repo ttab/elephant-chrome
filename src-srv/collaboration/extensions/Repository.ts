@@ -10,7 +10,7 @@ import type {
 import * as Y from 'yjs'
 
 import type { Repository as RepositoryWrapper } from '@/shared/Repository.js'
-import { isValidUUID } from '../../utils/isValidUUID.js'
+import { isValidUUID } from '@/shared/isValidUUID.js'
 import type { Context } from '../../lib/context.js'
 import { isContext } from '../../lib/context.js'
 import type CollaborationServerErrorHandler from '../../lib/errorHandler.js'
@@ -125,7 +125,7 @@ export class RepositoryExtension implements Extension {
     status?: string
     cause?: string
     addToHistory?: boolean
-    stateVector?: Uint8Array
+    yjsUpdate?: Uint8Array
   }): Promise<{
     version: string
   } | void> {
@@ -139,7 +139,7 @@ export class RepositoryExtension implements Extension {
     // The document can be local only when based on state vector to ensure
     // that what the client sends is what is stored. So setting the hash,
     // must be done on connection.document.
-    const getDocument = async (hp: Hocuspocus, stateVector?: Uint8Array): Promise<{
+    const getDocument = async (hp: Hocuspocus, yjsUpdate?: Uint8Array): Promise<{
       document: Y.Doc
       connection: DirectConnection
     }> => {
@@ -151,20 +151,22 @@ export class RepositoryExtension implements Extension {
       })
 
       if (!connection.document) {
-        await connection.disconnect()
+        void connection.disconnect().catch((ex) => {
+          logger.error(ex, 'Failed disconnecting from HP server after missing document')
+        })
         throw new Error('No document retrieved from connection')
       }
 
-      if (stateVector) {
+      if (yjsUpdate) {
         const document = new Y.Doc()
-        Y.applyUpdate(document, stateVector)
+        Y.applyUpdate(document, yjsUpdate)
         return { document, connection }
       } else {
         return { document: connection.document, connection }
       }
     }
 
-    const { document, connection } = await getDocument(this.#hp, options?.stateVector)
+    const { document, connection } = await getDocument(this.#hp, options?.yjsUpdate)
 
     // Find the document type
     const ele = document.getMap('ele')
@@ -189,21 +191,27 @@ export class RepositoryExtension implements Extension {
       cause
     )
 
-    // Set new hash an version to the actual connected document
-    await connection.transact((doc) => {
-      doc.getMap('hash').set(
-        'hash',
-        createHash(JSON.stringify(doc.getMap('ele').toJSON()))
-      )
-      doc.getMap('version').set('version', result.version)
+    // Set new hash and version to the actual connected document, don't wait
+    void connection.transact((doc) => {
+      const yCtx = doc.getMap('ctx')
+      yCtx.delete('isInProgress')
+      yCtx.set('hash', createHash(JSON.stringify(doc.getMap('ele').toJSON())))
+      yCtx.set('version', result.version)
+      if (status) {
+        yCtx.delete('isChanged')
+      }
+    }).catch((ex) => {
+      logger.error(ex, `Failed updating context for document ${documentName} after flush`)
     })
 
     // Cleanup
     connection.disconnect()
 
-    // Finally update the user history document if applicable
+    // Finally update the user history document if applicable, don't wait
     if (options?.addToHistory === true && typeof documentType === 'string') {
-      await this.#addDocumentToUserHistory(documentName, documentType, context)
+      void this.#addDocumentToUserHistory(documentName, documentType, context).catch((ex) => {
+        logger.error(ex, `Failed adding document ${documentName} to user history`)
+      })
     }
 
     return result
@@ -223,7 +231,7 @@ export class RepositoryExtension implements Extension {
 
     // Regular lifecycle stores should ignore all stores with an unchanged hash.
     const newHash = createHash(JSON.stringify(document.getMap('ele').toJSON()))
-    if (newHash === document.getMap('hash').get('hash')) {
+    if (newHash === document.getMap('ctx').get('hash')) {
       return
     }
 
@@ -234,8 +242,11 @@ export class RepositoryExtension implements Extension {
     )
 
     // Update hash and version
-    document.getMap('hash').set('hash', newHash)
-    document.getMap('version').set('version', result.version)
+    document.transact(() => {
+      const ctx = document.getMap('ctx')
+      ctx.set('hash', newHash)
+      ctx.set('version', result.version)
+    })
 
     return result
   }
@@ -327,7 +338,7 @@ export class RepositoryExtension implements Extension {
     }
 
     // Ignore in progress documents as they can be invalid or incomplete
-    if ((document.getMap('ele').get('root') as Y.Map<unknown>).get('__inProgress')) {
+    if (document.getMap('ctx').get('isInProgress')) {
       return false
     }
 

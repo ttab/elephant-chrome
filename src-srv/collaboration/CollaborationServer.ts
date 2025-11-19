@@ -11,14 +11,13 @@ import {
 } from 'express-ws'
 
 import type { AuthConfiguration } from './extensions/Auth.js'
+import { CacheExtension } from './extensions/Cache.js'
+import type { Context } from '../lib/context.js'
 import { Auth } from './extensions/Auth.js'
 import { OpenDocuments } from './extensions/OpenDocuments.js'
 import { RepositoryExtension } from './extensions/Repository.js'
-
 import CollaborationServerErrorHandler, { withErrorHandler } from '../lib/errorHandler.js'
 import logger from '../lib/logger.js'
-import { CacheExtension } from './extensions/Cache.js'
-import type { Context } from '../lib/context.js'
 
 interface CollaborationServerOptions {
   name: string
@@ -170,7 +169,7 @@ export class CollaborationServer {
     status?: string
     cause?: string
     addToHistory?: boolean
-    stateVector?: Uint8Array
+    yjsUpdate?: Uint8Array
   }): Promise<{
     version: string
   } | void> {

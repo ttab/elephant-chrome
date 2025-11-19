@@ -1,28 +1,29 @@
-import { useView, useYValue } from '@/hooks'
-import { useEffect, useRef } from 'react'
+import { useView } from '@/hooks'
+import { useRef, useEffect } from 'react'
 import { StatusMenu } from '@/components/DocumentStatus/StatusMenu'
 import { ViewHeader } from '@/components/View'
 import { GanttChartSquareIcon } from '@ttab/elephant-ui/icons'
-import { MetaSheet } from '@/views/Editor/components/MetaSheet'
+import { MetaSheet } from '@/components/MetaSheet/MetaSheet'
 import { Duplicate } from '@/components/Duplicate'
 import type { PlanningData } from '@/types/index'
 import type { Session } from 'next-auth'
 import type { HocuspocusProvider } from '@hocuspocus/provider'
+import { useYValue, type YDocument } from '@/modules/yjs/hooks'
+import type * as Y from 'yjs'
 
-export const PlanningHeader = ({ documentId, asDialog, onDialogClose, isChanged, session, provider, status }: {
-  documentId: string
+export const PlanningHeader = ({ ydoc, asDialog, onDialogClose, session, provider, status }: {
+  ydoc: YDocument<Y.Map<unknown>>
   asDialog: boolean
   onDialogClose?: () => void
-  isChanged?: boolean
   session: Session | null
-  provider: HocuspocusProvider | undefined
+  provider: HocuspocusProvider | null
   status: 'authenticated' | 'loading' | 'unauthenticated'
 
 }): JSX.Element => {
   const { viewId } = useView()
   const containerRef = useRef<HTMLElement | null>(null)
-  const [planningData] = useYValue<PlanningData>('meta.core/planning-item[0].data')
-  const [planningTitle] = useYValue<string>('root.title')
+  const [planningData] = useYValue<PlanningData>(ydoc.ele, 'meta.core/planning-item[0].data')
+  const [planningTitle] = useYValue<string>(ydoc.ele, 'root.title')
 
   useEffect(() => {
     containerRef.current = (document.getElementById(viewId))
@@ -35,6 +36,7 @@ export const PlanningHeader = ({ documentId, asDialog, onDialogClose, isChanged,
         title={(!asDialog) ? 'Planering' : 'Skapa ny planering'}
         icon={GanttChartSquareIcon}
         asDialog={asDialog}
+        ydoc={ydoc}
       />
 
       <ViewHeader.Content className='justify-start'>
@@ -43,15 +45,14 @@ export const PlanningHeader = ({ documentId, asDialog, onDialogClose, isChanged,
           </div>
 
           <div className='flex flex-row gap-2 justify-end items-center'>
-            {!asDialog && (
+            {!asDialog && ydoc && (
               <StatusMenu
-                documentId={documentId}
+                ydoc={ydoc}
                 type='core/planning-item'
-                isChanged={isChanged}
               />
             )}
 
-            {!!documentId && <ViewHeader.RemoteUsers documentId={documentId} />}
+            {!!ydoc && <ViewHeader.RemoteUsers ydoc={ydoc} />}
           </div>
         </div>
         {!asDialog && provider && planningData && (
@@ -66,8 +67,10 @@ export const PlanningHeader = ({ documentId, asDialog, onDialogClose, isChanged,
         )}
       </ViewHeader.Content>
 
-      <ViewHeader.Action onDialogClose={onDialogClose} asDialog={asDialog}>
-        {!asDialog && <MetaSheet container={containerRef.current} documentId={documentId} />}
+      <ViewHeader.Action ydoc={ydoc} onDialogClose={onDialogClose} asDialog={asDialog}>
+        {!asDialog && ydoc && (
+          <MetaSheet container={containerRef.current} ydoc={ydoc} />
+        )}
       </ViewHeader.Action>
     </ViewHeader.Root>
   )

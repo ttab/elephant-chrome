@@ -132,15 +132,28 @@ export async function fetchAssignments({ index, repository, type, requireDeliver
   const filteredTextAssignments: AssignmentInterface[] = []
 
   // Wait for all statuses requests to finish and extract all status overviews
-  const statusOverviews = (await Promise.all(deliverableStatusesRequests))
-    .reduce<StatusOverviewItem[]>((prev, curr) => {
-      return [...prev || [], ...curr?.items || []]
+  // Use allSettled to handle individual request failures gracefully
+  const statusOverviewsResults = await Promise.allSettled(deliverableStatusesRequests)
+  const statusOverviews = statusOverviewsResults
+    .reduce<StatusOverviewItem[]>((prev, result) => {
+      if (result.status === 'fulfilled' && result.value) {
+        return [...prev, ...result.value.items || []]
+      } else if (result.status === 'rejected') {
+        console.error('Failed to fetch status overview:', result.reason)
+      }
+      return prev
     }, [])
 
-
-  const metricsOverviews = (await Promise.all(metricsDocumentsRequests))
-    .reduce<Record<string, DocumentMetrics>>((prev, curr) => {
-      return { ...prev, ...curr?.documents }
+  // Use allSettled to handle individual request failures gracefully
+  const metricsOverviewsResults = await Promise.allSettled(metricsDocumentsRequests)
+  const metricsOverviews = metricsOverviewsResults
+    .reduce<Record<string, DocumentMetrics>>((prev, result) => {
+      if (result.status === 'fulfilled' && result.value?.documents) {
+        return { ...prev, ...result.value.documents }
+      } else if (result.status === 'rejected') {
+        console.error('Failed to fetch metrics:', result.reason)
+      }
+      return prev
     }, {})
 
   // Apply status to all assignments
@@ -164,17 +177,22 @@ export async function fetchAssignments({ index, repository, type, requireDeliver
 
 
   // Wait for all documents requests to finish and find document for each deliverable
-  const documentsResponses = await Promise.all(deliverableDocumentsRequests)
-  documentsResponses.forEach((documentsResponse) => {
-    documentsResponse?.items.forEach((item) => {
-      const matchingAssignment = filteredTextAssignments.find((fta) => {
-        return fta._deliverableId === item.document?.uuid
-      })
+  // Use allSettled to handle individual request failures gracefully
+  const documentsResponsesResults = await Promise.allSettled(deliverableDocumentsRequests)
+  documentsResponsesResults.forEach((result) => {
+    if (result.status === 'fulfilled' && result.value) {
+      result.value.items.forEach((item) => {
+        const matchingAssignment = filteredTextAssignments.find((fta) => {
+          return fta._deliverableId === item.document?.uuid
+        })
 
-      if (matchingAssignment) {
-        matchingAssignment._deliverableDocument = item.document
-      }
-    })
+        if (matchingAssignment) {
+          matchingAssignment._deliverableDocument = item.document
+        }
+      })
+    } else if (result.status === 'rejected') {
+      console.error('Failed to fetch deliverable documents:', result.reason)
+    }
   })
 
   // Sort assignments with fullday first, then in time order

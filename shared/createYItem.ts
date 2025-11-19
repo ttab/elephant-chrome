@@ -20,6 +20,10 @@ interface CreateDocumentParams<T> {
   documentId?: string
 }
 
+/**
+ * @deprecated
+ * See views for alternatives
+ */
 export function createDocument<T>({
   template,
   inProgress,
@@ -49,8 +53,7 @@ export function createDocument<T>({
   )
 
   if (inProgress) {
-    const yRoot = yDoc.getMap('ele').get('root') as Y.Map<unknown>
-    yRoot.set('__inProgress', true)
+    yDoc.getMap('ctx').set('isInProgress', true)
   }
 
   return [docId, yDoc]
@@ -61,11 +64,35 @@ export function createDocument<T>({
 * and append it to the meta yMap
 * @returns void
 */
-export function appendAssignment({
+export function appendAssignment(options: {
+  document: Y.Doc
+  assignee?: IDBAuthor | null | undefined
+  type: 'text' | 'flash' | 'graphic' | 'picture' | 'video' | 'picture/video'
+  slugLine?: string
+  title?: string
+  wire?: Wire
+  assignmentData?: Block['data']
+}): [number, Y.Map<unknown>] {
+  const { document } = options
+  const yAssignment = createNewAssignment(options)
+  const meta = document.getMap('ele').get('meta') as Y.Map<unknown>
+
+  // Get existing assignments
+  const yAssignments = meta.get('core/assignment') as Y.Array<unknown>
+
+  // Push to existing assignments
+  yAssignments.push([yAssignment])
+
+  return [
+    yAssignments.length - 1,
+    yAssignment
+  ]
+}
+
+export function createNewAssignment({
   assignee,
   document,
   type,
-  inProgress,
   slugLine,
   title,
   wire,
@@ -74,12 +101,11 @@ export function appendAssignment({
   document: Y.Doc
   assignee?: IDBAuthor | null | undefined
   type: 'text' | 'flash' | 'graphic' | 'picture' | 'video' | 'picture/video'
-  inProgress?: { sub: string }
   slugLine?: string
   title?: string
   wire?: Wire
   assignmentData?: Block['data']
-}): number {
+}): Y.Map<unknown> {
   const meta = document.getMap('ele').get('meta') as Y.Map<unknown>
 
   // Get slugline from planning
@@ -87,13 +113,10 @@ export function appendAssignment({
   const slugLineYXml = slugLineArray?.get(0) as Y.Map<unknown>
   const slugLineFromPlanning = (slugLineYXml?.get('value') as Y.XmlText)?.toString() as string || undefined
 
-  // Check if 'core/assignment' exists
+  // Assure that 'core/assignment' exists
   if (!meta.has('core/assignment')) {
     meta.set('core/assignment', new Y.Array())
   }
-
-  // Get existing assignments
-  const yAssignments = meta.get('core/assignment') as Y.Array<unknown>
 
   const yMeta = meta.get('core/planning-item') as Y.Array<Y.Map<unknown>>
   const planningDate = (yMeta?.get(0)?.get('data') as Y.Map<unknown>)
@@ -110,25 +133,14 @@ export function appendAssignment({
     assignmentData
   })
 
-  // Append __inProgress if needed
-  if (inProgress) {
-    // @ts-expect-error We need to override Block to add this property
-    assignment.__inProgress = inProgress
-  }
-
   // Group assignment
   const [groupedAssignment] = group([assignment], 'type')['core/assignment']
 
   // Convert to YMap
-  const yAssignment = toYMap(
+  return toYMap(
     groupedAssignment as unknown as Record<string, unknown>,
     new Y.Map()
   )
-
-  // Push to existing assignments
-  yAssignments.push([yAssignment])
-
-  return yAssignments.length - 1
 }
 
 /**

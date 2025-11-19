@@ -26,8 +26,10 @@ import { ToastAction } from '@/views/Wire/ToastAction'
 import { createPayload } from '@/shared/templates/lib/createPayload'
 import { DatePicker } from '../Datepicker'
 import { currentDateInUTC, parseDate } from '@/shared/datetime'
+import type { YDocument } from '@/modules/yjs/hooks'
 
-export const Move = (props: ViewProps & {
+export const Move = ({ ydoc, ...props }: ViewProps & {
+  ydoc: YDocument<Y.Map<unknown>>
   original: {
     document: Doc | undefined
     assignmentId: string | undefined
@@ -35,7 +37,6 @@ export const Move = (props: ViewProps & {
     assignment: Y.Map<unknown> | undefined
     planningId: string | undefined
   }
-  onChange?: (arg: boolean) => void
 }): JSX.Element => {
   const [selectedPlanning, setSelectedPlanning] = useState<DefaultValueOption | undefined>(undefined)
   const [showVerifyDialog, setShowVerifyDialog] = useState(false)
@@ -128,10 +129,11 @@ export const Move = (props: ViewProps & {
       // Remove from old planning
       deleteByYPath(yRootOriginal, `meta.core/assignment[${originalAssignmentIndex}]`)
 
-      props.onChange?.(true)
-
       const newPlanningUUID = getValueByYPath<string>(newEle, 'root.uuid')?.[0]
       toast.success('Uppdraget har flyttats', {
+        classNames: {
+          title: 'whitespace-nowrap'
+        },
         action: (
           <ToastAction
             documentId={newPlanningUUID}
@@ -162,8 +164,8 @@ export const Move = (props: ViewProps & {
         </ViewHeader.Content>
 
         <ViewHeader.Action onDialogClose={props.onDialogClose} asDialog={props.asDialog}>
-          {!props.asDialog && !!props.id
-            && <ViewHeader.RemoteUsers documentId={props.id} />}
+          {!props.asDialog && !!ydoc.id
+            && <ViewHeader.RemoteUsers ydoc={ydoc} />}
         </ViewHeader.Action>
       </ViewHeader.Root>
 
@@ -272,7 +274,7 @@ export const Move = (props: ViewProps & {
           <Form.Footer>
             <Form.Submit
               onSubmit={handleSubmit}
-              onReset={() => setShowVerifyDialog(false)}
+              onReset={() => props.onDialogClose?.()}
             >
               <div className='flex gap-2 justify-end'>
                 <Button type='reset'>Avbryt</Button>

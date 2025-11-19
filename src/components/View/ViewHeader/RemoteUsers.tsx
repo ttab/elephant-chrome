@@ -1,12 +1,13 @@
 import { type PropsWithChildren } from 'react'
-import { useAwareness } from '@/hooks'
 import { AvatarGroup } from '@/components/AvatarGroup'
 import { Avatar } from '@/components/Avatar'
+import { useYAwareness, type YDocument } from '@/modules/yjs/hooks'
+import type * as Y from 'yjs'
 
-export const RemoteUsers = ({ documentId }: PropsWithChildren & {
-  documentId: string
+export const RemoteUsers = ({ ydoc }: PropsWithChildren & {
+  ydoc: YDocument<Y.Map<unknown>>
 }): JSX.Element => {
-  const [states] = useAwareness(documentId)
+  const [states] = useYAwareness(ydoc, ydoc.id)
 
   return (
     <div className='grow flex items-center justify-end'>

@@ -1,17 +1,19 @@
-import { useYValue } from '@/hooks/useYValue'
 import { Tooltip, Select, SelectTrigger, SelectContent, SelectItem } from '@ttab/elephant-ui'
 import { BuildingIcon, GlobeIcon } from '@ttab/elephant-ui/icons'
 import { cn } from '@ttab/elephant-ui/utils'
 import { useCallback, useMemo } from 'react'
 import type { FormProps } from '../Form/Root'
+import { type YDocument, useYValue } from '@/modules/yjs/hooks'
+import type * as Y from 'yjs'
 
-export const AssignmentVisibility = ({ path, editable, disabled, className = '', onChange }: {
+export const AssignmentVisibility = ({ ydoc, path, editable, disabled, className = '', onChange }: {
+  ydoc: YDocument<Y.Map<unknown>>
   path: string
   editable: boolean
   disabled: boolean
   className?: string
 } & FormProps): JSX.Element => {
-  const [visibilityStatus, setAssignmentVisibility] = useYValue<string>(path)
+  const [visibilityStatus, setAssignmentVisibility] = useYValue<string>(ydoc.ele, path)
 
   const onValueChange = useCallback(
     (value: string) => {

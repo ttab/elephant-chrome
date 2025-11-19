@@ -6,10 +6,13 @@ import type {
   Extension,
   Hocuspocus,
   onConfigurePayload,
-  onDisconnectPayload
+  onDisconnectPayload,
+  onStatelessPayload
 } from '@hocuspocus/server'
 import logger from '../../lib/logger.js'
-import { getInterval } from '../../../shared/getInterval.js'
+import { getInterval } from '@/shared/getInterval.js'
+import { parseStateless, StatelessType, type StatelessContext } from '@/shared/stateless.js'
+import { isContext } from '../../lib/context.js'
 
 interface EleContext {
   agent?: 'server'
@@ -18,6 +21,7 @@ interface EleContext {
     preferred_username: string
     name: string
   }
+  invisible?: boolean
 }
 
 interface EleConnectedPayload extends connectedPayload {
@@ -52,8 +56,10 @@ export class OpenDocuments implements Extension {
   readonly #ttl = 120
   readonly #doc: Y.Doc
   readonly #instanceId: string
+  readonly #addToDocumentDelay = 200
   #server?: Hocuspocus
   #connection?: DirectConnection
+  priority = 1
 
   constructor() {
     this.#instanceId = crypto.randomUUID()
@@ -78,6 +84,32 @@ export class OpenDocuments implements Extension {
 
     // Periodically check that all instances are connected and clean up if not.
     setInterval(() => void this.#cleanupIfNecessary(), getInterval(100, 140))
+  }
+
+  async onStateless({ payload, connection }: onStatelessPayload): Promise<void> {
+    if (!payload.startsWith(`${StatelessType.CONTEXT}@`)) {
+      return
+    }
+
+    const context = connection.context as unknown
+
+    if (!isContext(context)) {
+      return
+    }
+
+    const statelessMessage = parseStateless<StatelessContext>(payload)
+
+    if (typeof statelessMessage.message.invisible === 'boolean') {
+      context.invisible = statelessMessage.message.invisible
+
+      if (statelessMessage.message.invisible && context.user?.sub) {
+        await this.#removeUserFromDocument(statelessMessage.message.id, context.user.sub)
+      }
+
+      return
+    }
+
+    delete context.invisible
   }
 
   /**
@@ -170,6 +202,36 @@ export class OpenDocuments implements Extension {
       throw new Error('User information is missing for OpenDocuments.connected')
     }
 
+    setTimeout(() => {
+      if (context.invisible === true) {
+        return
+      }
+
+      void this.#addUserToDocument(documentName, userId, userName, name).catch((error: unknown) => {
+        logger.error({ documentName, userId, error }, 'Failed to add user to open-documents')
+      })
+    }, this.#addToDocumentDelay)
+
+    return Promise.resolve()
+  }
+
+  /**
+   * Create initial user Y.Map.
+   */
+  #getUserYMap(id: string, username: string, name: string): Y.Map<unknown> {
+    const count = new Y.Array()
+    count.push([this.#instanceId])
+
+    const yUser = new Y.Map()
+    yUser.set('id', id)
+    yUser.set('username', username)
+    yUser.set('name', name)
+    yUser.set('count', count)
+
+    return yUser
+  }
+
+  async #addUserToDocument(documentName: string, userId: string, userName: string, name: string) {
     await this.#connection?.transact((doc) => {
       const yOpenDocuments = doc.getMap('open-documents')
 
@@ -202,47 +264,24 @@ export class OpenDocuments implements Extension {
   }
 
   /**
-   * Create initial user Y.Map.
-   */
-  #getUserYMap(id: string, username: string, name: string): Y.Map<unknown> {
-    const count = new Y.Array()
-    count.push([this.#instanceId])
-
-    const yUser = new Y.Map()
-    yUser.set('id', id)
-    yUser.set('username', username)
-    yUser.set('name', name)
-    yUser.set('count', count)
-
-    return yUser
-  }
-
-  /**
-   * Remove the user (or decrease count) from a tracked document userlist.
-   */
-  async onDisconnect({ documentName, context }: EleOnDisconnectPayload) {
-    if (this.isTrackerDocument(documentName) || context.agent === 'server') {
-      return
-    }
-
-    const { sub: userId } = context.user || {}
-
-    if (!userId) {
-      logger.warn({ documentName, context }, 'User information is missing for OpenDocuments.onDisconnect')
-      throw new Error('User information is missing for OpenDocuments.onDisconnect')
-    }
-
+ * Remove or decrement a user from a document's user list.
+ */
+  async #removeUserFromDocument(documentName: string, userId: string) {
     await this.#connection?.transact((doc) => {
       const yOpenDocuments = doc.getMap('open-documents')
       const yDocEntry = yOpenDocuments.get(documentName) as Y.Map<unknown>
 
       if (!yDocEntry?.size) {
-        logger.warn(`Client <${userId}> on instance <${this.#instanceId}> disconnected from <${documentName}> but there was no document entry in open-documents`)
         return
       }
 
       const yUsers = yDocEntry.get('users') as Y.Map<unknown>
       const yUser = yUsers.get(userId) as Y.Map<unknown>
+
+      if (!yUser) {
+        return
+      }
+
       const count = yUser.get('count') as Y.Array<string>
 
       if (count.length <= 1) {
@@ -258,6 +297,21 @@ export class OpenDocuments implements Extension {
 
       yDocEntry.set('count', (yDocEntry.get('count') as number ?? 0) - 1)
     })
+  }
+
+  async onDisconnect({ documentName, context }: EleOnDisconnectPayload) {
+    if (this.isTrackerDocument(documentName) || context.agent === 'server' || context.invisible === true) {
+      return
+    }
+
+    const { sub: userId } = context.user || {}
+
+    if (!userId) {
+      logger.warn({ documentName, context }, 'User information is missing for OpenDocuments.onDisconnect')
+      throw new Error('User information is missing for OpenDocuments.onDisconnect')
+    }
+
+    await this.#removeUserFromDocument(documentName, userId)
   }
 
   /**

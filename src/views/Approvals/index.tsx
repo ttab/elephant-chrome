@@ -1,4 +1,4 @@
-import { AwarenessDocument, View, ViewHeader } from '@/components'
+import { View, ViewHeader } from '@/components'
 import { type ViewMetadata } from '@/types'
 import { timesSlots as Slots } from '@/defaults/assignmentTimeslots'
 import { TimeSlot } from './TimeSlot'
@@ -10,6 +10,8 @@ import { newLocalDate } from '@/shared/datetime.ts'
 import { ApprovalsCard } from './ApprovalsCard'
 import { Toolbar } from './Toolbar.tsx'
 import { StatusSpecifications } from '@/defaults/workflowSpecification'
+import { useYDocument } from '@/modules/yjs/hooks.tsx'
+import type * as Y from 'yjs'
 
 const meta: ViewMetadata = {
   name: 'Approvals',
@@ -29,13 +31,13 @@ const meta: ViewMetadata = {
 
 export const Approvals = (): JSX.Element => {
   return (
-    <AwarenessDocument documentId='document-tracker'>
-      <ApprovalsView />
-    </AwarenessDocument>
+    <ApprovalsView />
   )
 }
 
 export const ApprovalsView = (): JSX.Element => {
+  const ydoc = useYDocument<Y.Map<unknown>>('document-tracker')
+
   const { timeZone } = useRegistry()
 
   const slots = Object.keys(Slots).map((key) => {
@@ -168,6 +170,7 @@ export const ApprovalsView = (): JSX.Element => {
                     isFocused={colN === focusedColumn && cardN === focusedCard}
                     isSelected={isSelected}
                     openEditors={openEditors}
+                    ydoc={ydoc}
                   />
                 )
               })}

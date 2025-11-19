@@ -1,18 +1,20 @@
-import { useEffect, useState } from 'react'
-import { useCollaboration } from './useCollaboration'
+import { useCallback, useEffect, useState } from 'react'
 import {
   type AwarenessStates
 } from '@/contexts/CollaborationProvider'
+import type { YDocument } from '@/modules/yjs/hooks'
+import type * as Y from 'yjs'
 
 type AwarenessState = [
-  AwarenessStates, // value
-  (value: boolean, path?: string) => void // set value
+  AwarenessStates,
+  (value: boolean, path?: string) => void
 ]
-
-
-export const useAwareness = (key: string): AwarenessState => {
-  const { provider, user } = useCollaboration()
+/**
+ * @deprecated - use useYAwareness() hook from yjs module
+ */
+export const useAwareness = (ydoc: YDocument<Y.Map<unknown>>, key: string): AwarenessState => {
   const [value, setValue] = useState<AwarenessStates>([])
+  const { provider, user } = ydoc
 
   useEffect(() => {
     provider?.on('awarenessUpdate', ({ states }: { states: AwarenessStates }) => {
@@ -30,10 +32,12 @@ export const useAwareness = (key: string): AwarenessState => {
     })
   }, [key, provider])
 
+  const setIsFocused = useCallback((value: boolean, path?: string) => {
+    provider?.setAwarenessField('focus', value ? { key, color: user?.color, path } : undefined)
+  }, [key, provider, user?.color])
+
   return [
     value,
-    (newValue, path = undefined) => {
-      provider?.setAwarenessField('focus', newValue ? { key, color: user.color, path } : undefined)
-    }
+    setIsFocused
   ]
 }

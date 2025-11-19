@@ -2,19 +2,20 @@ import { AssignmentTypes } from '@/defaults'
 import { Button, Select, SelectContent, SelectItem, SelectTrigger } from '@ttab/elephant-ui'
 import { cn } from '@ttab/elephant-ui/utils'
 import { Block } from '@ttab/elephant-api/newsdoc'
-import { useYValue } from '@/hooks/useYValue'
 import { FilePenIcon, FilePlus2Icon } from '@ttab/elephant-ui/icons'
 import type { DefaultValueOption } from '@/types/index'
 import type { FormProps } from '../Form/Root'
+import { useYValue } from '@/modules/yjs/hooks'
+import type * as Y from 'yjs'
 
-export const AssignmentType = ({ path, editable = false, readOnly = false, className, onChange }: {
-  path: string
+export const AssignmentType = ({ assignment, editable = false, readOnly = false, className, onChange }: {
+  assignment?: Y.Map<unknown>
   className?: string
   editable?: boolean
   readOnly?: boolean
 } & FormProps): JSX.Element => {
-  const [assignmentType, setAssignmentType] = useYValue<Block[]>(path + '.meta.core/assignment-type')
-  const [, setAssignmentVisibility] = useYValue<string>(path + 'data.public')
+  const [assignmentType, setAssignmentType] = useYValue<Block[]>(assignment, 'meta.core/assignment-type')
+  const [, setAssignmentVisibility] = useYValue<string>(assignment, 'data.public')
 
   const selectedOptions = AssignmentTypes.filter((type) => {
     const value = assignmentType?.map ? assignmentType.map((s) => s.value).sort().join('/') : ''
@@ -24,6 +25,10 @@ export const AssignmentType = ({ path, editable = false, readOnly = false, class
   const { className: defaultClassName = '', ...iconProps } = selectedOptions[0]?.iconProps || {}
 
   const SelectedIcon = getIcon(selectedOptions, editable, readOnly)
+
+  if (!assignment) {
+    return <></>
+  }
 
   if (readOnly) {
     return (
@@ -104,7 +109,7 @@ export const AssignmentType = ({ path, editable = false, readOnly = false, class
 }
 
 function getIcon(selectedOptions: DefaultValueOption[], editable: boolean, readOnly = false) {
-  if (selectedOptions[0].value !== 'text') {
+  if (selectedOptions[0]?.value !== 'text') {
     return selectedOptions[0]?.icon
   }
 

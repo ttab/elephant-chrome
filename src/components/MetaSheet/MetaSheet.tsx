@@ -1,6 +1,5 @@
 import { Story, Section, Byline, Newsvalue } from '@/components'
 import { SluglineButton } from '@/components/DataItem/Slugline'
-import { useYValue } from '@/hooks/useYValue'
 import {
   Label,
   Sheet,
@@ -11,6 +10,7 @@ import {
   SheetTitle,
   SheetTrigger
 } from '@ttab/elephant-ui'
+import { useYValue, type YDocument } from '@/modules/yjs/hooks'
 import { PanelRightCloseIcon, PanelRightOpenIcon } from '@ttab/elephant-ui/icons'
 import { useState } from 'react'
 import { AddNote } from '@/components/Notes/AddNote'
@@ -18,14 +18,16 @@ import { Version } from '@/components/Version'
 import { ReadOnly } from './ReadOnly'
 import { EditorialInfoTypes } from '@/components/EditorialInfoTypes'
 import { ContentSource } from '@/components/ContentSource'
+import type * as Y from 'yjs'
 
-export function MetaSheet({ container, documentId, readOnly, readOnlyVersion }: {
+export function MetaSheet({ container, ydoc, readOnly, readOnlyVersion }: {
   container: HTMLElement | null
-  documentId: string
+  ydoc: YDocument<Y.Map<unknown>>
   readOnly?: boolean
   readOnlyVersion?: bigint
 }): JSX.Element {
-  const [documentType] = useYValue<string | undefined>('root.type')
+  const [documentType] = useYValue<string | undefined>(ydoc.ele, 'root.type')
+  const [slugline] = useYValue<string | undefined>(ydoc.ele, 'meta.tt/slugline[0].value')
   const [isOpen, setIsOpen] = useState(false)
 
   return (
@@ -55,7 +57,7 @@ export function MetaSheet({ container, documentId, readOnly, readOnlyVersion }: 
             </SheetTitle>
           </SheetHeader>
           {readOnly
-            ? <ReadOnly documentId={documentId} version={readOnlyVersion} />
+            ? <ReadOnly documentId={ydoc.id} version={readOnlyVersion} />
             : (
                 <div className='flex flex-col gap-6 px-5 py-4 border-t'>
 
@@ -63,43 +65,43 @@ export function MetaSheet({ container, documentId, readOnly, readOnlyVersion }: 
                     <>
                       <Label htmlFor='properties' className='text-xs text-muted-foreground -mb-3'>Egenskaper</Label>
                       <div className='flex flex-row gap-3' id='properties'>
-                        <Newsvalue />
-                        <SluglineButton path='meta.tt/slugline[0].value' />
+                        <Newsvalue ydoc={ydoc} path='meta.core/newsvalue[0].value' />
+                        <SluglineButton value={slugline} />
                       </div>
 
                       <Label htmlFor='tags' className='text-xs text-muted-foreground -mb-3'>Etiketter</Label>
                       <div className='flex flex-row gap-3' id='tags'>
-                        <Story asSubject />
-                        <Section />
+                        <Story ydoc={ydoc} path='links.core/story[0]' asSubject />
+                        <Section ydoc={ydoc} path='links.core/section[0]' />
                       </div>
 
                       <Label htmlFor='byline' className='text-xs text-muted-foreground -mb-3'>Byline</Label>
                       <div id='byline'>
-                        <Byline />
+                        <Byline ydoc={ydoc} path='links.core/author' />
                       </div>
 
                       <Label htmlFor='actions' className='text-xs text-muted-foreground -mb-3'>Åtgärder</Label>
                       <div className='flex flex-row gap-3' id='actions'>
-                        <AddNote text='Lägg till notering' />
+                        <AddNote ydoc={ydoc} text='Lägg till notering' />
                       </div>
 
                       <Label htmlFor='content-source'>Källor andra än TT</Label>
                       <div id='content-source'>
-                        <ContentSource />
+                        <ContentSource ydoc={ydoc} path='links.core/content-source' />
                       </div>
                     </>
                   )}
 
                   <Label htmlFor='version' className='text-xs text-muted-foreground -mb-3'>Versioner</Label>
                   <div id='version'>
-                    <Version documentId={documentId} textOnly={false} />
+                    <Version documentId={ydoc.id} textOnly={false} />
                   </div>
 
                   {documentType === 'core/editorial-info' && (
                     <>
                       <Label htmlFor='editorial-info-type'>Redaktionell info, typ</Label>
                       <div id='editorial-info-type'>
-                        <EditorialInfoTypes />
+                        <EditorialInfoTypes ydoc={ydoc} />
                       </div>
                     </>
                   )}

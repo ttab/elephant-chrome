@@ -1,21 +1,15 @@
 import {
-  AwarenessDocument,
   Newsvalue,
-  Title,
-  Description,
   Story,
   Section,
   View,
   UserMessage
 } from '@/components'
 import { type ViewMetadata, type ViewProps } from '@/types'
-import { TagsIcon, CalendarIcon } from '@ttab/elephant-ui/icons'
+import { TagsIcon, CalendarIcon, MessageCircleIcon, TextIcon, CalendarDaysIcon } from '@ttab/elephant-ui/icons'
 import {
   useQuery,
-  useWorkflowStatus,
-  useCollaboration,
-  useAwareness,
-  useYValue
+  useWorkflowStatus
 } from '@/hooks'
 import { PlanDate } from './components/PlanDate'
 import { AssignmentTable } from './components/AssignmentTable'
@@ -27,15 +21,23 @@ import { SluglineEditable } from '@/components/DataItem/SluglineEditable'
 import { Button } from '@ttab/elephant-ui'
 import { useSession } from 'next-auth/react'
 import { PlanningHeader } from './components/PlanningHeader'
-import React, { type SetStateAction, useCallback, useEffect, useState } from 'react'
+import React, { type SetStateAction, useMemo, useState } from 'react'
 import type { NewItem } from '../Event/components/PlanningTable'
 import { MoveDialog } from './components/MoveDialog'
 import { RelatedEvents } from './components/RelatedEvents'
-import type { Block } from '@ttab/elephant-api/newsdoc'
+import type { Block, Document } from '@ttab/elephant-api/newsdoc'
 import { CopyGroup } from '../../components/CopyGroup'
 import { DuplicatesTable } from '../../components/DuplicatesTable'
 import { snapshotDocument } from '@/lib/snapshotDocument'
 import { toast } from 'sonner'
+import { useYDocument, useYValue } from '@/modules/yjs/hooks'
+import { getTemplateFromView } from '@/shared/templates/lib/getTemplateFromView'
+import { toGroupedNewsDoc } from '@/shared/transformations/groupedNewsDoc'
+import type { EleDocumentResponse } from '@/shared/types'
+import { TextBox } from '@/components/ui'
+import { useDescriptionIndex } from './hooks/useDescriptionIndex'
+import { TextInput } from '@/components/ui/TextInput'
+import { ToastAction } from '../Wire/ToastAction'
 
 type Setter = React.Dispatch<SetStateAction<NewItem>>
 
@@ -55,9 +57,26 @@ const meta: ViewMetadata = {
   }
 }
 
-export const Planning = (props: ViewProps & { document?: Y.Doc, setNewItem?: Setter }): JSX.Element => {
+export const Planning = (props: ViewProps & {
+  document?: Document
+  setNewItem?: Setter
+}): JSX.Element => {
   const [query] = useQuery()
   const documentId = props.id || query.id
+
+  // Planning should be responsible for creating new as well as editing
+  const data = useMemo(() => {
+    if (!props.document || !documentId || typeof documentId !== 'string') {
+      return undefined
+    }
+
+    return toGroupedNewsDoc({
+      version: 0n,
+      isMetaDocument: false,
+      mainDocument: '',
+      document: props.document || getTemplateFromView('Planning')(documentId)
+    })
+  }, [documentId, props.document])
 
   if (!documentId) {
     return <></>
@@ -67,9 +86,12 @@ export const Planning = (props: ViewProps & { document?: Y.Doc, setNewItem?: Set
     <>
       {typeof documentId === 'string'
         ? (
-            <AwarenessDocument documentId={documentId} document={props.document}>
-              <PlanningViewContent {...props} documentId={documentId} setNewItem={props?.setNewItem} />
-            </AwarenessDocument>
+            <PlanningViewContent
+              {...props}
+              documentId={documentId}
+              setNewItem={props?.setNewItem}
+              data={data}
+            />
           )
         : (
             <Error
@@ -81,102 +103,123 @@ export const Planning = (props: ViewProps & { document?: Y.Doc, setNewItem?: Set
   )
 }
 
-const PlanningViewContent = (props: ViewProps & { documentId: string, setNewItem?: Setter }): JSX.Element | undefined => {
-  const { provider, user } = useCollaboration()
-  const { data, status } = useSession()
+const PlanningViewContent = (props: ViewProps & {
+  documentId: string
+  data?: EleDocumentResponse
+  setNewItem?: Setter
+}): JSX.Element | undefined => {
+  const ydoc = useYDocument<Y.Map<unknown>>(props.documentId, { data: props.data })
+  const { provider, ele: document, connected } = ydoc
+
+  const { data: session, status } = useSession()
   const [documentStatus] = useWorkflowStatus(props.documentId)
-  const [copyGroupId] = useYValue<string | undefined>('meta.core/copy-group[0].uuid')
-  const [, setIsFocused] = useAwareness(props.documentId)
-  const [newTitle] = useYValue('root.title')
-  const [isChanged] = useYValue<boolean>('root.changed')
-  const [relatedEvents] = useYValue<Block[]>('links.core/event')
+  const [copyGroupId] = useYValue<string | undefined>(document, 'meta.core/copy-group[0].uuid')
+  const [newTitle] = useYValue(document, ['root', 'title'])
+  const [relatedEvents] = useYValue<Block[]>(document, 'links.core/event')
   const [newDate, setNewDate] = useState<string | undefined>(undefined)
 
-  useEffect(() => {
-    provider?.setAwarenessField('data', user)
-    setIsFocused(true)
+  const [title] = useYValue<Y.XmlText>(document, 'root.title', true)
+  const [slugline] = useYValue<Y.XmlText>(document, 'meta.tt/slugline[0].value', true)
+  const pubIndex = useDescriptionIndex(document, 'public')
+  const intIndex = useDescriptionIndex(document, 'internal')
+  const [publicDescription] = useYValue<Y.XmlText>(document, ['meta', 'core/description', pubIndex, 'data', 'text'], true)
+  const [internalDescription] = useYValue<Y.XmlText>(document, ['meta', 'core/description', intIndex, 'data', 'text'], true)
 
-    return () => {
-      setIsFocused(false)
-    }
-
-    // We only want to rerun when provider change
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [provider])
-
-  // TODO: useYValue doesn't provider a stable setter, this cause rerenders down the tree
-  const handleChange = useCallback((value: boolean): void => {
-    const root = provider?.document.getMap('ele').get('root') as Y.Map<unknown>
-    const changed = root.get('changed') as boolean
-
-
-    if (changed !== value) {
-      root.set('changed', value)
-    }
-  }, [provider])
-
-
-  const handleSubmit = ({ documentStatus }: {
+  const handleSubmit = async ({ documentStatus }: {
     documentStatus: 'usable' | 'done' | undefined
-  }): void => {
+  }): Promise<void> => {
+    if (props?.setNewItem) {
+      props.setNewItem({ uuid: props.documentId, title: newTitle as string })
+    }
+
     if (provider && status === 'authenticated') {
-      snapshotDocument(props.documentId, {
-        status: documentStatus,
-        addToHistory: true
-      }).then(() => {
+      try {
+        await snapshotDocument(props.documentId, {
+          status: documentStatus,
+          addToHistory: true
+        })
+
         if (props?.onDialogClose) {
           props.onDialogClose()
         }
-      }).catch((ex: unknown) => {
+
+        toast.success(`Planering skapad`, {
+          classNames: {
+            title: 'whitespace-nowrap'
+          },
+          action: (
+            <ToastAction
+              key='open-planning'
+              documentId={props.documentId}
+              withView='Planning'
+              label='Öppna planering'
+              Icon={CalendarDaysIcon}
+              target='last'
+            />
+          )
+        })
+      } catch (ex) {
         console.error('Failed to snapshot document', ex)
         toast.error('Kunde inte skapa ny planering!', {
           duration: 5000,
           position: 'top-center'
         })
-        return
-      })
-    }
 
-    if (props?.setNewItem) {
-      props.setNewItem({ uuid: props.documentId, title: newTitle as string })
+        // re-throw to allow further handling in Submit
+        throw ex
+      }
     }
   }
 
-  const environmentIsSane = provider && status === 'authenticated'
+  const environmentIsSane = connected && status === 'authenticated'
 
   return (
     <View.Root asDialog={props.asDialog} className={props?.className}>
       <PlanningHeader
-        documentId={props.documentId}
+        ydoc={ydoc}
         asDialog={!!props.asDialog}
         onDialogClose={props.onDialogClose}
-        isChanged={isChanged}
-        session={data}
+        session={session}
         provider={provider}
         status={status}
       />
 
       <View.Content className='max-w-[1000px]'>
-        <Form.Root asDialog={props.asDialog} onChange={handleChange}>
+        <Form.Root asDialog={props.asDialog}>
           <Form.Content>
             <Form.Title>
-              <Title
-                autoFocus={props.asDialog}
+              <TextInput
+                ydoc={ydoc}
+                value={title}
+                label='Titel'
+                autoFocus={!!props.asDialog}
                 placeholder='Planeringstitel'
               />
             </Form.Title>
-            <Description role='public' />
-            <Description role='internal' />
+
+            <TextBox
+              ydoc={ydoc}
+              value={publicDescription}
+              icon={<TextIcon size={18} strokeWidth={1.75} className='text-muted-foreground mr-4' />}
+              placeholder='Publik beskrivning'
+            />
+
+            <TextBox
+              ydoc={ydoc}
+              value={internalDescription}
+              icon={<MessageCircleIcon size={18} strokeWidth={1.75} className='text-muted-foreground mr-4' />}
+              placeholder='Internt meddelande'
+            />
 
             <Form.Group icon={CalendarIcon}>
               {props.asDialog !== true
-                ? <PlanDate onValueChange={setNewDate} />
-                : <PlanDate />}
+                ? <PlanDate planningItem={ydoc.ele} onValueChange={setNewDate} />
+                : <PlanDate planningItem={ydoc.ele} />}
 
               {newDate && props.asDialog !== true && (
                 <MoveDialog
+                  ydoc={ydoc}
                   newDate={newDate}
-                  onChange={handleChange}
                   onClose={() => {
                     setNewDate(undefined)
                   }}
@@ -186,21 +229,26 @@ const PlanningViewContent = (props: ViewProps & { documentId: string, setNewItem
 
             <Form.Group icon={TagsIcon}>
               <SluglineEditable
-                path='meta.tt/slugline[0].value'
+                ydoc={ydoc}
+                value={slugline}
                 documentStatus={documentStatus?.name}
               />
-              <Newsvalue />
+
+              <Newsvalue ydoc={ydoc} path='meta.core/newsvalue[0].value' />
             </Form.Group>
 
             <Form.Group icon={TagsIcon}>
-              <Section />
-              <Story />
+              <Section ydoc={ydoc} path='links.core/section[0]' />
+              <Story ydoc={ydoc} path='links.core/story[0]' />
             </Form.Group>
-
           </Form.Content>
 
           <Form.Table>
-            <AssignmentTable asDialog={props.asDialog} onChange={handleChange} documentId={props.documentId} />
+            <AssignmentTable
+              ydoc={ydoc}
+              asDialog={props.asDialog}
+              documentId={props.documentId}
+            />
             <RelatedEvents events={relatedEvents} />
             {!props.asDialog && <DuplicatesTable documentId={props.documentId} type='core/planning-item' />}
             {copyGroupId && !props.asDialog && <CopyGroup copyGroupId={copyGroupId} type='core/planning-item' />}
@@ -208,19 +256,18 @@ const PlanningViewContent = (props: ViewProps & { documentId: string, setNewItem
 
           <Form.Footer>
             {!environmentIsSane && (
-              <div className='pb-6'>
-                <UserMessage asDialog={!!props.asDialog}>
-                  Du har blivit utloggad eller tappat kontakt med systemet.
-                  Vänligen försök logga in igen.
-                </UserMessage>
-              </div>
+              <UserMessage asDialog={!!props.asDialog} className='pb-6'>
+                Du har blivit utloggad eller tappat kontakt med systemet.
+                Vänligen försök logga in igen.
+              </UserMessage>
 
             )}
 
             <Form.Submit
-              onSubmit={() => handleSubmit({ documentStatus: 'usable' })}
-              onSecondarySubmit={() => handleSubmit({ documentStatus: 'done' })}
-              onTertiarySubmit={() => handleSubmit({ documentStatus: undefined })}
+              onSubmit={() => { void handleSubmit({ documentStatus: 'usable' }) }}
+              onSecondarySubmit={() => { void handleSubmit({ documentStatus: 'done' }) }}
+              onTertiarySubmit={() => { void handleSubmit({ documentStatus: undefined }) }}
+              disableOnSubmit
             >
               <div className='flex justify-between'>
                 <div className='flex gap-2'>
