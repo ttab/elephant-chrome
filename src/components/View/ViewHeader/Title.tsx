@@ -1,4 +1,4 @@
-import { ZapOffIcon, type LucideIcon } from '@ttab/elephant-ui/icons'
+import { WifiOffIcon, type LucideIcon } from '@ttab/elephant-ui/icons'
 import { cva } from 'class-variance-authority'
 import { useEffect, useRef, useState, type PropsWithChildren } from 'react'
 import { applicationMenu } from '@/defaults/applicationMenuItems'
@@ -92,8 +92,8 @@ export const Title = ({
       {ydoc && !isConnected && (
         <>
           {isSynced
-            ? <ZapOffIcon className='animate-pulse' size={18} strokeWidth={2.05} color={iconColor || color || '#555'} />
-            : <ZapOffIcon className='animate-pulse fill-red-600 stroke-red-600' size={18} strokeWidth={2.05} />}
+            ? <WifiOffIcon className='animate-pulse' size={18} strokeWidth={2.05} color={iconColor || color || '#555'} />
+            : <WifiOffIcon className='animate-pulse fill-red-600 stroke-red-600' size={18} strokeWidth={2.05} />}
         </>
       )}
 
