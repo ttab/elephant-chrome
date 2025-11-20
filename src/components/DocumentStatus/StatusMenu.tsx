@@ -48,7 +48,12 @@ export const StatusMenu = ({ ydoc, type, publishTime, onBeforeStatusChange }: {
 
 
   // TODO: Revisit once reworking changed status logic for plannings etc
-  const isChanged = shouldUseWorkflowStatus ? false : ydoc.isChanged
+  let isChanged: boolean
+  if (type === 'tt/print-article' && documentStatus?.name === 'usable') {
+    isChanged = ydoc.isChanged
+  } else {
+    isChanged = shouldUseWorkflowStatus ? false : ydoc.isChanged
+  }
 
   useEffect(() => {
     if (containerRef.current) {
