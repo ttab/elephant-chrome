@@ -34,7 +34,6 @@ export const GET: RouteHandler = async (req: Request, { cache, repository, res }
   // FIXME: Bypass cache if direct is specified
   // This is a temporary solution
   if (direct) {
-    console.log('Bypassing cache as direct=true is specified')
     try {
     // Fetch content direct from repository
       const doc = await repository.getDocument({
