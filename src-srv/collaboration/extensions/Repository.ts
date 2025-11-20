@@ -170,10 +170,16 @@ export class RepositoryExtension implements Extension {
 
     // Find the document type
     const ele = document.getMap('ele')
-    const root = ele.get('root') as Y.Map<unknown>
+    const root = ele.get('root') as Y.Map<unknown> | undefined
+
+    if (!root) {
+      connection.disconnect()
+      throw new Error('Root map not found in the document')
+    }
+
 
     let documentType
-    switch (root.get('type')) {
+    switch (root?.get('type')) {
       case 'core/planning-item':
         documentType = 'Planning'
         break
