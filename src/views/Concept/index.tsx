@@ -91,34 +91,42 @@ const ConceptContent = ({
   }, [data])
 
   useEffect(() => {
-    if (!provider?.document || !synced || !data) return
-    const yRoot = provider.document.getMap('ele')
-    const shortIndex = data?.findIndex((d) => d.role === 'short')
-    const longIndex = data?.findIndex((d) => d.role === 'long')
+    if (!provider?.document || !synced || !data) {
+      return
+    }
 
-    const indexCheck = {
-      shortIndex: shortIndex || longIndex === 0 ? 1 : 0,
-      longIndex: longIndex || shortIndex === 1 ? 0 : 1
+    const yRoot = provider.document.getMap('ele')
+
+    if (documentType === 'core/story') {
+      const shortIndex = data?.findIndex((d) => d.role === 'short')
+      const longIndex = data?.findIndex((d) => d.role === 'long')
+
+      const indexCheck = {
+        shortIndex: shortIndex || longIndex === 0 ? 1 : 0,
+        longIndex: longIndex || shortIndex === 1 ? 0 : 1
+      }
+
+      if (shortIndex === -1) {
+        setValueByYPath(yRoot, `meta.core/definition[${indexCheck.shortIndex}]`, toYStructure(Block.create({
+          type: 'core/definition',
+          role: 'short',
+          data: {
+            text: ''
+          }
+        })))
+      }
+
+      if (longIndex === -1 || !data) {
+        setValueByYPath(yRoot, `meta.core/definition[${indexCheck.longIndex}]`, toYStructure(Block.create({
+          type: 'core/definition',
+          role: 'long',
+          data: {
+            text: ''
+          }
+        })))
+      }
     }
-    if (shortIndex === -1) {
-      setValueByYPath(yRoot, `meta.core/definition[${indexCheck.shortIndex}]`, toYStructure(Block.create({
-        type: 'core/definition',
-        role: 'short',
-        data: {
-          text: ''
-        }
-      })))
-    }
-    if (longIndex === -1 || !data) {
-      setValueByYPath(yRoot, `meta.core/definition[${indexCheck.longIndex}]`, toYStructure(Block.create({
-        type: 'core/definition',
-        role: 'long',
-        data: {
-          text: ''
-        }
-      })))
-    }
-  }, [data, provider?.document, synced])
+  }, [data, provider?.document, synced, documentType])
 
   useEffect(() => {
     provider?.setAwarenessField('data', user)
