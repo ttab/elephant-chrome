@@ -97,7 +97,7 @@ export const EditorHeader = ({ ydoc, readOnly, readOnlyVersion, planningId: prop
         preview={readOnly && !readOnlyVersion}
         title={title}
         icon={readOnly ? PenOffIcon : PenBoxIcon}
-        ydoc={ydoc}
+        ydoc={!readOnly ? ydoc : undefined}
       />
 
       <ViewHeader.Content className='justify-start'>
