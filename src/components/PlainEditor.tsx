@@ -21,12 +21,24 @@ const fetcher = async (url: string): Promise<TBElement[] | EleDocument | undefin
   return result.document?.content
 }
 
-export const Editor = ({ id, version, textOnly = false, versionStatusHistory }: {
+export const Editor = ({ id, version, textOnly = false, direct, versionStatusHistory }: {
   id: string
   textOnly?: boolean
   version?: bigint | undefined
   versionStatusHistory?: DocumentStatuses[]
+  direct?: boolean
 }): JSX.Element => {
+  const searchParams = new URLSearchParams()
+  if (typeof version !== 'undefined') {
+    searchParams.set('version', version.toString())
+  }
+
+  if (direct) {
+    searchParams.set('direct', 'true')
+  }
+
+  const documentUrl = `${BASE_URL}/api/documents/${id}${searchParams.size ? `?${searchParams.toString()}` : ''}`
+
   const getPlugins = () => {
     const basePlugins = [Text, UnorderedList, OrderedList, Bold, Italic, Link, Table]
     return [
@@ -47,7 +59,7 @@ export const Editor = ({ id, version, textOnly = false, versionStatusHistory }: 
   }
 
   const { data: content, error } = useSWR<TBElement[] | EleDocument | undefined, Error>(
-    `${BASE_URL}/api/documents/${id}${version ? `?version=${version}` : ''}`,
+    documentUrl,
     fetcher,
     { revalidateOnFocus: false, revalidateOnReconnect: false }
   )

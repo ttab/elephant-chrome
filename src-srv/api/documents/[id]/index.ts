@@ -19,8 +19,10 @@ export const GET: RouteHandler = async (req: Request, { cache, repository, res }
   const uuid = req.params.id
   const version = Number(req.query.version || '0')
   const type = req.query.type
+  const direct = req.query.direct === 'true'
 
   const { accessToken } = getSession(req, res)
+
 
   if (!accessToken) {
     return {
@@ -38,7 +40,7 @@ export const GET: RouteHandler = async (req: Request, { cache, repository, res }
 
   try {
     // Fetch from Redis if exists and no version specified
-    if (!version) {
+    if (!version && !direct) {
       const state = await cache.get(uuid).catch((ex) => {
         throw new Error('get cached document', { cause: ex })
       })
