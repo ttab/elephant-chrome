@@ -3,7 +3,6 @@ import { TextBox } from '@/components/ui'
 import { Validation } from '@/components/Validation'
 import { getValueByYPath, stringToYPath } from '@/shared/yUtils'
 import type { HocuspocusProvider } from '@hocuspocus/provider'
-import { Label, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@ttab/elephant-ui'
 import { ExternalLinkIcon } from '@ttab/elephant-ui/icons'
 
 export const OrganiserContent = ({ isActive, handleChange, asDialog, provider }: {
@@ -12,8 +11,6 @@ export const OrganiserContent = ({ isActive, handleChange, asDialog, provider }:
   asDialog: boolean | undefined
   provider: HocuspocusProvider
 }) => {
-  const links: string[] = provider?.document.getMap('ele').toJSON().links['text/html']
-  const phone = provider?.document.getMap('ele').toJSON().meta['core/contact-info'][0].data.phone
   const LinkIcon = <ExternalLinkIcon size={18} strokeWidth={1.75} className='mr-2' />
   const openLink = (path: string) => {
     const yRoot = provider?.document.getMap('ele')
@@ -34,7 +31,7 @@ export const OrganiserContent = ({ isActive, handleChange, asDialog, provider }:
           asDialog={asDialog}
           singleLine={true}
           path='root.title'
-          className={isActive ? 'border' : ''}
+          className={isActive ? 'border' : 'bg-slate-100 text-slate-500'}
           onChange={handleChange}
           placeholder='Organistörens namn'
           disabled={!isActive}
@@ -46,7 +43,7 @@ export const OrganiserContent = ({ isActive, handleChange, asDialog, provider }:
         asDialog={asDialog}
         singleLine={true}
         path='meta.core/contact-info[0].data.streetAddress'
-        className={isActive ? 'border' : ''}
+        className={isActive ? 'border' : 'bg-slate-100 text-slate-500'}
         onChange={handleChange}
         placeholder='Adress'
         disabled={!isActive}
@@ -57,7 +54,7 @@ export const OrganiserContent = ({ isActive, handleChange, asDialog, provider }:
         asDialog={asDialog}
         singleLine={true}
         path='meta.core/contact-info[0].data.city'
-        className={isActive ? 'border' : ''}
+        className={isActive ? 'border' : 'bg-slate-100 text-slate-500'}
         onChange={handleChange}
         placeholder='Stad'
         disabled={!isActive}
@@ -68,7 +65,7 @@ export const OrganiserContent = ({ isActive, handleChange, asDialog, provider }:
         asDialog={asDialog}
         singleLine={true}
         path='meta.core/contact-info[0].data.country'
-        className={isActive ? 'border' : ''}
+        className={isActive ? 'border' : 'bg-slate-100 text-slate-500'}
         onChange={handleChange}
         placeholder='Land'
         disabled={!isActive}
@@ -79,7 +76,7 @@ export const OrganiserContent = ({ isActive, handleChange, asDialog, provider }:
         asDialog={asDialog}
         singleLine={true}
         path='meta.core/contact-info[0].data.email'
-        className={isActive ? 'border' : ''}
+        className={isActive ? 'border' : 'bg-slate-100 text-slate-500'}
         onChange={handleChange}
         placeholder='E-postaddress'
         disabled={!isActive}
@@ -90,30 +87,24 @@ export const OrganiserContent = ({ isActive, handleChange, asDialog, provider }:
         asDialog={asDialog}
         singleLine={true}
         path='meta.core/contact-info[0].data.phone'
-        className={isActive ? 'border' : ''}
+        className={isActive ? 'border' : 'bg-slate-100 text-slate-500'}
         onChange={handleChange}
         placeholder='Telefon'
         disabled={!isActive}
       />
-      {links.length > 0
-        && links.map((link, i) => {
-          return (
-            <TextBox
-              key={link}
-              id='link'
-              label='Länkar'
-              asDialog={asDialog}
-              singleLine={true}
-              path={`links[text/html][${0}].url`}
-              className={isActive ? 'border truncate' : 'truncate'}
-              onChange={handleChange}
-              placeholder='Website url'
-              disabled={!isActive}
-              icon={LinkIcon}
-              iconAction={() => openLink(`links[text/html][${i}].url`)}
-            />
-          )
-        })}
+      <TextBox
+        id='link'
+        label='Länkar'
+        asDialog={asDialog}
+        singleLine={true}
+        path={`links[text/html][${0}].url`}
+        className={isActive ? 'border truncate' : 'bg-slate-100 text-slate-500 truncate'}
+        onChange={handleChange}
+        placeholder='Website url'
+        disabled={!isActive}
+        icon={LinkIcon}
+        iconAction={() => openLink(`links[text/html][0].url`)}
+      />
     </Form.Content>
   )
 }
