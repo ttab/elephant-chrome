@@ -81,8 +81,15 @@ export function fromYjsNewsDoc(yDoc: Y.Doc): EleDocumentResponse {
 
   const _title = makeTitle()
 
+  // From 20 nov 2025, using ctx for all extra document data
+  let version = yDoc.getMap('ctx').get('version') as string
+  if (!version) {
+    // Backwards compatibility with older collaborative documents
+    version = yDoc.getMap('version').get('version') as string
+  }
+
   return {
-    version: yDoc.getMap('ctx').get('version') as string,
+    version,
     isMetaDocument: false,
     mainDocument: '',
     document: {
