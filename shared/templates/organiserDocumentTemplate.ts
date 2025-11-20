@@ -36,7 +36,7 @@ export function organiserDocumentTemplate(id: string): Document {
       Block.create({
         url: '',
         type: 'text/html',
-        rel: ''
+        rel: 'see-also'
       })
     ]
   })

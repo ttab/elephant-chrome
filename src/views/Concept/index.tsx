@@ -84,16 +84,24 @@ const ConceptContent = ({
   const [data] = useYValue<Block[]>('meta.core/definition')
 
   const textPaths = useMemo(() => {
-    if (!data || !provider?.document || !synced) return
+    if (!data) return undefined
     const shortIndex = data?.findIndex((d) => d.role === 'short')
     const longIndex = data?.findIndex((d) => d.role === 'long')
+    return { shortIndex, longIndex }
+  }, [data])
+
+  useEffect(() => {
+    if (!provider?.document || !synced || !data) return
+    const yRoot = provider.document.getMap('ele')
+    const shortIndex = data?.findIndex((d) => d.role === 'short')
+    const longIndex = data?.findIndex((d) => d.role === 'long')
+
     const indexCheck = {
       shortIndex: shortIndex || longIndex === 0 ? 1 : 0,
       longIndex: longIndex || shortIndex === 1 ? 0 : 1
     }
-
-    if (shortIndex === -1 || !data) {
-      setValueByYPath(provider?.document.getMap('ele'), `meta.core/definition[${indexCheck.shortIndex}]`, toYStructure(Block.create({
+    if (shortIndex === -1) {
+      setValueByYPath(yRoot, `meta.core/definition[${indexCheck.shortIndex}]`, toYStructure(Block.create({
         type: 'core/definition',
         role: 'short',
         data: {
@@ -102,17 +110,13 @@ const ConceptContent = ({
       })))
     }
     if (longIndex === -1 || !data) {
-      setValueByYPath(provider?.document.getMap('ele'), `meta.core/definition[${indexCheck.longIndex}]`, toYStructure(Block.create({
+      setValueByYPath(yRoot, `meta.core/definition[${indexCheck.longIndex}]`, toYStructure(Block.create({
         type: 'core/definition',
         role: 'long',
         data: {
           text: ''
         }
       })))
-    }
-    return {
-      shortIndex: shortIndex,
-      longIndex: longIndex
     }
   }, [data, provider?.document, synced])
 
@@ -125,7 +129,7 @@ const ConceptContent = ({
     }
     // We only want to rerun when provider change
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [provider, concept])
+  }, [provider])
 
   const handleChange = useCallback((value: boolean): void => {
     const root = provider?.document.getMap('ele').get('root') as Y.Map<unknown>
@@ -162,8 +166,9 @@ const ConceptContent = ({
       }
     }
   }
+
   return (
-    !concept
+    !concept || !provider
       ? <LoadingText>Laddar data</LoadingText>
       : (
           <>
@@ -183,7 +188,7 @@ const ConceptContent = ({
                         asDialog={asDialog}
                         onChange={handleChange}
                       >
-                        {concept.content({ isActive, handleChange, textPaths, asDialog })}
+                        {concept.content({ isActive, handleChange, textPaths, asDialog, provider })}
                         <Form.Footer>
                           <Form.Submit
                             onSubmit={() => handleSubmit()}
