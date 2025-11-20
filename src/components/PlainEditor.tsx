@@ -28,6 +28,17 @@ export const Editor = ({ id, version, textOnly = false, direct, versionStatusHis
   versionStatusHistory?: DocumentStatuses[]
   direct?: boolean
 }): JSX.Element => {
+  const searchParams = new URLSearchParams()
+  if (typeof version !== 'undefined') {
+    searchParams.set('version', version.toString())
+  }
+
+  if (direct) {
+    searchParams.set('direct', 'true')
+  }
+
+  const documentUrl = `${BASE_URL}/api/documents/${id}${searchParams.size ? `?${searchParams.toString()}` : ''}`
+
   const getPlugins = () => {
     const basePlugins = [Text, UnorderedList, OrderedList, Bold, Italic, Link, Table]
     return [
@@ -48,7 +59,7 @@ export const Editor = ({ id, version, textOnly = false, direct, versionStatusHis
   }
 
   const { data: content, error } = useSWR<TBElement[] | EleDocument | undefined, Error>(
-    `${BASE_URL}/api/documents/${id}${version ? `?version=${version}` : ''}${direct ? `?direct=true` : ''}`,
+    documentUrl,
     fetcher,
     { revalidateOnFocus: false, revalidateOnReconnect: false }
   )
