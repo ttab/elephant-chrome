@@ -17,7 +17,7 @@ const DebouncedCommandInput = forwardRef(({
   const { globalFilter } = table.getState() as {
     globalFilter: string
   }
-
+  console.log(typeof globalFilter)
   const handleInputChange = (value: string | undefined): void => {
     table.setGlobalFilter(value)
 
@@ -34,7 +34,7 @@ const DebouncedCommandInput = forwardRef(({
     <CommandInput
       {...props}
       ref={ref}
-      value={globalFilter}
+      value={globalFilter ? globalFilter : ''}
       onValueChange={(value: string | number) => handleInputChange(value as string)}
     />
   )
