@@ -7,13 +7,10 @@ import { useNavigationKeys } from '@/hooks/useNavigationKeys'
 import { useModal } from '@/components/Modal/useModal'
 import type { Wire as WireType } from '@/shared/schemas/wire'
 import type { Status as DocumentStatuses } from '@ttab/elephant-api/repository'
-import { MetaSheet } from '@/components/MetaSheet/MetaSheet'
 import { useEffect, useMemo, useRef } from 'react'
 import { useWorkflowStatus } from '@/hooks/useWorkflowStatus'
 import { decodeString } from '@/lib/decodeString'
 import { getWireStatus } from '@/components/Table/lib/getWireStatus'
-import { useYDocument } from '@/modules/yjs/hooks'
-import type * as Y from 'yjs'
 
 export const PreviewSheet = ({ id, wire, handleClose, textOnly = true, version, versionStatusHistory }: {
   id: string
@@ -25,9 +22,6 @@ export const PreviewSheet = ({ id, wire, handleClose, textOnly = true, version, 
 }): JSX.Element => {
   const [documentStatus, setDocumentStatus, mutate] = useWorkflowStatus(id)
   const { showModal, hideModal } = useModal()
-  const ydoc = useYDocument<Y.Map<unknown>>(id, {
-    invisible: true
-  })
   const containerRef = useRef<HTMLElement | null>(null)
 
   useEffect(() => {
@@ -235,7 +229,6 @@ export const PreviewSheet = ({ id, wire, handleClose, textOnly = true, version, 
                 </ToggleGroup>
               </>
             )}
-            <MetaSheet container={containerRef.current} ydoc={ydoc} readOnly readOnlyVersion={version} />
             <SheetClose
               className='rounded-md hover:bg-gray-100 w-8 h-8 flex items-center justify-center outline-none -mr-7'
               onClick={handleClose}
@@ -245,7 +238,7 @@ export const PreviewSheet = ({ id, wire, handleClose, textOnly = true, version, 
           </div>
         </div>
         <div className='flex flex-col h-full'>
-          <Editor id={id} textOnly={textOnly} version={version} versionStatusHistory={versionStatusHistory} />
+          <Editor id={id} textOnly={textOnly} version={version} versionStatusHistory={versionStatusHistory} direct />
         </div>
       </div>
     </FaroErrorBoundary>

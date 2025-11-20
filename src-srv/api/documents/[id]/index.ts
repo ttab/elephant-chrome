@@ -19,13 +19,56 @@ export const GET: RouteHandler = async (req: Request, { cache, repository, res }
   const uuid = req.params.id
   const version = Number(req.query.version || '0')
   const type = req.query.type
+  const direct = req.query.direct === 'true'
 
   const { accessToken } = getSession(req, res)
+
 
   if (!accessToken) {
     return {
       statusCode: 401,
       statusMessage: 'Unauthorized: Access token not found, can not fetch document'
+    }
+  }
+
+  // FIXME: Bypass cache if direct is specified
+  // This is a temporary solution
+  if (direct) {
+    console.log('Bypassing cache as direct=true is specified')
+    try {
+    // Fetch content direct from repository
+      const doc = await repository.getDocument({
+        uuid,
+        accessToken,
+        version
+      }).catch((ex) => {
+        throw new Error('get document from repository', { cause: ex })
+      })
+
+      if (!doc) {
+        return {
+          statusCode: 404,
+          statusMessage: 'Not found'
+        }
+      }
+
+      const documentResponse = toGroupedNewsDoc(doc)
+
+      // Return grouped newsdoc from repository
+      return {
+        payload: {
+          from: 'repository',
+          version: documentResponse.version.toString(),
+          document: documentResponse.document
+        }
+      }
+    } catch (ex) {
+      logger.error(ex)
+
+      return {
+        statusCode: 500,
+        statusMessage: (ex as { message: string })?.message || 'Unknown error'
+      }
     }
   }
 
