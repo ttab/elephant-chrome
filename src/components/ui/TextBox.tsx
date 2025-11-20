@@ -3,13 +3,14 @@ import { Awareness } from '../Awareness'
 import { TextboxRoot } from './Textbox/TextboxRoot'
 import { Label } from '@ttab/elephant-ui'
 
-export const TextBox = ({ id, label, asDialog, icon: Icon, path, onChange, className, ...props }: {
+export const TextBox = ({ id, label, asDialog, icon: Icon, iconAction, path, onChange, className, ...props }: {
   id?: string
   label?: string
   asDialog?: boolean | undefined
   disabled?: boolean
   path: string
   icon?: React.ReactNode
+  iconAction?: () => void
   placeholder?: string
   className?: string
   singleLine?: boolean
@@ -41,8 +42,8 @@ export const TextBox = ({ id, label, asDialog, icon: Icon, path, onChange, class
     <Awareness path={path} ref={setFocused} className='w-full'>
       {!asDialog && label && <Label htmlFor={id}>{label}</Label>}
       <div id={id} className='w-full flex flex-row gap-2'>
-        {Icon && (
-          <div className='pt-1.5'>
+        {Icon && !asDialog && (
+          <div className='pt-1.5' onClick={iconAction && iconAction}>
             {Icon}
           </div>
         )}
