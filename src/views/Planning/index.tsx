@@ -137,7 +137,7 @@ const PlanningViewContent = (props: ViewProps & {
         await snapshotDocument(props.documentId, {
           status: documentStatus,
           addToHistory: true
-        })
+        }, ydoc.provider?.document)
 
         if (props?.onDialogClose) {
           props.onDialogClose()
