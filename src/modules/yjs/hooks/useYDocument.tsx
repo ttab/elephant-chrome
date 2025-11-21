@@ -62,7 +62,7 @@ export function useYDocument<T>(
 
   // Whether document is ready to be saved to repository (is valid)
   const [isInProgress, setIsInProgress] = useYValue<boolean>(document.current.getMap('ctx'), 'isInProgress')
-  const [isChanged, setIsChanged] = useYValue<boolean>(document.current.getMap('ctx'), 'isChanged')
+  const [isChanged, setIsChanged] = useState(document.current.getMap('ctx')?.get('isChanged') as boolean ?? false)
 
   /**
    * Client lifecycle - get client and release on unmount
@@ -121,7 +121,11 @@ export function useYDocument<T>(
     const onChange = () => {
       if (isChanged) return
 
-      setIsChanged(createHash(JSON.stringify(yEle.toJSON())) !== yCtx.get('hash'))
+      const newValue = createHash(JSON.stringify(yEle.toJSON())) !== yCtx.get('hash')
+      if (newValue !== isChanged) {
+        setIsChanged(newValue)
+        yCtx.set('isChanged', newValue)
+      }
     }
 
     yEle.observeDeep(onChange)
@@ -130,6 +134,27 @@ export function useYDocument<T>(
       yEle.unobserveDeep(onChange)
     }
   }, [isChanged, setIsChanged])
+
+  /**
+   * Observe changes to the ctx root map and set the local state accordingly.
+   */
+  useEffect(() => {
+    if (!document.current) return
+    const yCtx = document.current.getMap('ctx')
+
+    const onChange = () => {
+      const newValue = yCtx.get('isChanged') as boolean ?? false
+      setIsChanged((currValue) => {
+        return currValue !== newValue ? newValue : currValue
+      })
+    }
+
+    yCtx.observeDeep(onChange)
+
+    return () => {
+      yCtx.unobserveDeep(onChange)
+    }
+  }, [])
 
   /**
    * Utility function to send stateless messages
