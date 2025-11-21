@@ -3,7 +3,6 @@ import {
 import { useCallback, useEffect } from 'react'
 import { Table } from '@/components/Table'
 import type { ColumnDef } from '@tanstack/react-table'
-import { Pagination } from '@/components/Table/Pagination'
 import { useTable } from '@/hooks/useTable'
 import type { IDBCategory, IDBConcept, IDBOrganiser, IDBSection, IDBStory } from 'src/datastore/types'
 
@@ -36,7 +35,6 @@ export const ConceptList = ({ columns, data, documentType }: {
         onRowSelected={onRowSelected}
         documentType={documentType}
       />
-      <Pagination total={data.length || 0} />
     </>
   )
 }
