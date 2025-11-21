@@ -203,8 +203,9 @@ export class RepositoryExtension implements Extension {
       yCtx.delete('isInProgress')
       yCtx.set('hash', createHash(JSON.stringify(doc.getMap('ele').toJSON())))
       yCtx.set('version', result.version)
+
       if (status) {
-        yCtx.delete('isChanged')
+        yCtx.set('isChanged', false)
       }
     }).catch((ex) => {
       logger.error(ex, `Failed updating context for document ${documentName} after flush`)
