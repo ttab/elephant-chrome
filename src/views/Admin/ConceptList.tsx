@@ -1,13 +1,16 @@
 import { TableCell, TableRow } from '@ttab/elephant-ui'
 import { useLink } from '@/hooks/useLink'
 import { tableDataMap } from '../Concepts/lib/conceptDataTable'
+import { useTable } from '@/hooks/useTable'
 
 
-export const ConceptsList = ({ filter }: {
-  filter?: string
-}) => {
+export const ConceptsList = () => {
   const handleOpen = useLink('Concepts')
-  const refinedFilter = filter && filter.toLowerCase()
+  const { table } = useTable()
+  const { globalFilter } = table.getState() as {
+    globalFilter: string
+  }
+  const refinedFilter = globalFilter && globalFilter.toLowerCase()
   const data = refinedFilter
     ? Object.fromEntries(
       Object.entries(tableDataMap).filter(([_, concept]) =>
