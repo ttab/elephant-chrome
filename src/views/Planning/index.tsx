@@ -112,7 +112,7 @@ const PlanningViewContent = (props: ViewProps & {
   const { provider, ele: document, connected } = ydoc
 
   const { data: session, status } = useSession()
-  const [documentStatus] = useWorkflowStatus(props.documentId)
+  const [documentStatus] = useWorkflowStatus({ ydoc, documentId: props.documentId })
   const [copyGroupId] = useYValue<string | undefined>(document, 'meta.core/copy-group[0].uuid')
   const [newTitle] = useYValue(document, ['root', 'title'])
   const [relatedEvents] = useYValue<Block[]>(document, 'links.core/event')

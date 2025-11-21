@@ -27,7 +27,7 @@ export const EditorHeader = ({ ydoc, readOnly, readOnlyVersion, planningId: prop
   const planningId = useDeliverablePlanningId(ydoc.id)
   const containerRef = useRef<HTMLElement | null>(null)
   const [publishTime] = useState<string | null>(null)
-  const [workflowStatus] = useWorkflowStatus(ydoc.id, true)
+  const [workflowStatus] = useWorkflowStatus({ ydoc, documentId: ydoc.id, isWorkflow: true })
   const [documentType] = useYValue<string>(ydoc.ele, 'root.type')
 
   const openLatestVersion = useLink('Editor')

@@ -54,7 +54,7 @@ const StatusMenuHeader = ({ ydoc }: {
   const { viewId } = useView()
   const { state, dispatch } = useNavigation()
   const history = useHistory()
-  const [workflowStatus] = useWorkflowStatus(ydoc.id || '', true)
+  const [workflowStatus] = useWorkflowStatus({ ydoc, isWorkflow: true })
 
   // FIXME: We must have a way to retrieve the publish time defined in the planning.
   // FIXME: When yjs opening of related planning have been fixed this should be readded/remade.
