@@ -110,6 +110,18 @@ export function useYDocument<T>(
   }
 
   /**
+   * When we have a user and provider awareness we set the user data field
+   */
+  useEffect(() => {
+    if (!userRef.current || !client) return
+
+    const provider = client?.getProvider?.()
+    if (provider) {
+      provider.setAwarenessField('data', userRef.current)
+    }
+  }, [client, userRef])
+
+  /**
    * Observe changes to the ele root map (the actual document) and set the isChange flag
    * to true if the calculated hash is different from the existing one.
    */
