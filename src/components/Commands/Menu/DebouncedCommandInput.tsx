@@ -29,7 +29,7 @@ const DebouncedCommandInput = forwardRef(({
     <CommandInput
       {...props}
       ref={ref}
-      value={value ? value : ''}
+      value={initialValue ? value : ''}
       onValueChange={(value: string | number) => handleInputChange(value as string)}
     />
   )

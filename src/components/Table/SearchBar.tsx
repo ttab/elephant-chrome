@@ -10,14 +10,15 @@ export const SearchBar = ({ placeholder, setGlobalTextFilter }: {
   const { globalFilter } = table.getState() as {
     globalFilter: string
   }
-
-  const handleChange = (value: string): void => {
+  const handleChange = (value: string | number): void => {
     if (value) {
       if (setGlobalTextFilter) {
         setGlobalTextFilter(value)
       }
-    } else if (!value || value === '') {
-      table.resetGlobalFilter()
+    } else if (!value) {
+      if (setGlobalTextFilter) {
+        setGlobalTextFilter('')
+      }
     }
   }
   return (
@@ -28,10 +29,10 @@ export const SearchBar = ({ placeholder, setGlobalTextFilter }: {
         >
           <CommandInput
             value={globalFilter ?? ''}
-            onValueChange={(value) => handleChange(value)}
+            onValueChange={(value: string | number) => handleChange(value ?? '')}
             placeholder={placeholder}
-            className='h-9'
           />
+
         </Command>
       </div>
     </div>
