@@ -3,7 +3,7 @@ import type { Updater } from '@tanstack/react-table'
 import { useTable } from '@/hooks/useTable'
 
 export const SearchBar = ({ placeholder, setGlobalTextFilter }: {
-  setGlobalTextFilter?: (updater: Updater<unknown>) => void
+  setGlobalTextFilter: (updater: Updater<unknown>) => void
   placeholder: string
 }): JSX.Element => {
   const { table } = useTable()
@@ -12,13 +12,9 @@ export const SearchBar = ({ placeholder, setGlobalTextFilter }: {
   }
   const handleChange = (value: string | number): void => {
     if (value) {
-      if (setGlobalTextFilter) {
-        setGlobalTextFilter(value)
-      }
-    } else if (!value) {
-      if (setGlobalTextFilter) {
-        setGlobalTextFilter('')
-      }
+      setGlobalTextFilter(value)
+    } else {
+      setGlobalTextFilter('')
     }
   }
   return (
