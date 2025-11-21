@@ -158,10 +158,15 @@ export class RepositoryExtension implements Extension {
       }
 
       if (yjsUpdate) {
+        console.log('XXXXXXXXXX APPLY UPDATE FOR', documentName)
+        // console.log(documentName, 'Applying Yjs update of length', yjsUpdate.byteLength)
+        // console.log(documentName, 'Yjs logUpdate', Y.logUpdate(yjsUpdate))
         const document = new Y.Doc()
         Y.applyUpdate(document, yjsUpdate)
+        // console.log(documentName, 'Yjs update applied', document.toJSON())
         return { document, connection }
       } else {
+        console.log('XXXXXXXXXX NO APPLY UPDATE FOR', documentName)
         return { document: connection.document, connection }
       }
     }
@@ -267,8 +272,10 @@ export class RepositoryExtension implements Extension {
     status?: string | null,
     cause?: string | null
   ): Promise<{ version: string }> {
+    const payload = fromGroupedNewsDoc(documentResponse).document
+
     const result = await this.#repository.saveDocument(
-      fromGroupedNewsDoc(documentResponse).document,
+      payload,
       accessToken,
       status ?? undefined,
       cause ?? undefined
@@ -279,7 +286,7 @@ export class RepositoryExtension implements Extension {
     }
 
     const version = result.response.version.toString()
-    logger.info(`Document ${documentName} v${version} stored in repository`)
+    logger.info(`Document ${documentName} v${version} stored in repository, payload: ${JSON.stringify(payload)}`)
 
     return { version }
   }

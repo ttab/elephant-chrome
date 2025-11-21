@@ -20,7 +20,7 @@ export const PreviewSheet = ({ id, wire, handleClose, textOnly = true, version, 
   versionStatusHistory?: DocumentStatuses[]
   handleClose: () => void
 }): JSX.Element => {
-  const [documentStatus, setDocumentStatus, mutate] = useWorkflowStatus(id)
+  const [documentStatus, setDocumentStatus, mutate] = useWorkflowStatus({ documentId: id })
   const { showModal, hideModal } = useModal()
   const containerRef = useRef<HTMLElement | null>(null)
 

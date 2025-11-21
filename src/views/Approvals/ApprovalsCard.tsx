@@ -32,7 +32,7 @@ export const ApprovalsCard = ({ ydoc, assignment, isSelected, isFocused, status,
     ydoc.provider?.document.getMap('open-documents'), path
   )
 
-  const [documentStatus] = useWorkflowStatus(assignment._deliverableId, true)
+  const [documentStatus] = useWorkflowStatus({ documentId: assignment._deliverableId, isWorkflow: true })
 
   const openType = (assignmentType: string) => assignmentType === 'core/flash' ? openFlash : openArticle
 

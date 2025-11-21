@@ -35,7 +35,7 @@ export const StatusMenu = ({ ydoc, type, publishTime, onBeforeStatusChange }: {
     'tt/print-article'
   ].includes(type)
 
-  const [documentStatus, setDocumentStatus] = useWorkflowStatus(ydoc.id, shouldUseWorkflowStatus, type === 'tt/print-article')
+  const [documentStatus, setDocumentStatus] = useWorkflowStatus({ ydoc, documentId: ydoc.id, isWorkflow: shouldUseWorkflowStatus, asPrint: type === 'tt/print-article' })
   const containerRef = useRef<HTMLDivElement>(null)
   const [dropdownWidth, setDropdownWidth] = useState<number>(0)
   const { statuses, workflow } = useWorkflow(type)

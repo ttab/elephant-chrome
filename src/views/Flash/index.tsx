@@ -34,7 +34,7 @@ export const Flash = (props: ViewProps & {
   document?: Document
 }): JSX.Element => {
   const [query] = useQuery()
-  const [workflowStatus] = useWorkflowStatus(props.id || '', true)
+  const [workflowStatus] = useWorkflowStatus({ documentId: props.id || '', isWorkflow: true })
 
   const persistentDocumentId = useRef<string>()
   if (!persistentDocumentId.current) {
