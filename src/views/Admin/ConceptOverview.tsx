@@ -22,7 +22,7 @@ const meta: ViewMetadata = {
 export const ConceptOverview = () => {
   return (
     <>
-      <Toolbar searchbar={true} searchPlaceholder='Fritextsökning' quickFilter={false} filter={false} />
+      <Toolbar searchbar={true} searchPlaceholder='Fritextsökning' quickFilter={false} filter={false} sort={false} />
       <Table>
         <TableBody>
           <ConceptsList />

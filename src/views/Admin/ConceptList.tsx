@@ -29,7 +29,7 @@ export const ConceptsList = () => {
         }}
         key={concept.label}
       >
-        <TableCell className='w-4'>
+        <TableCell className='w-4 pl-6'>
           {' '}
           <Icon
             size={20}
