@@ -36,6 +36,18 @@ export class Redis {
     return uint8array
   }
 
+  async setEx(key: string, value: string, ttl: number): Promise<void> {
+    await this.#redisClient?.set(
+      `${BASE_PREFIX}:${key}`,
+      value,
+      { EX: ttl }
+    )
+  }
+
+  async keys(pattern: string): Promise<string[]> {
+    return await this.#redisClient?.keys(`${BASE_PREFIX}:${pattern}`) || []
+  }
+
   async store(key: string, state: Buffer): Promise<void> {
     await this.#redisClient?.set(
       `${BASE_PREFIX}:${key}`,
@@ -47,5 +59,9 @@ export class Redis {
     const existsCount = await this.#redisClient?.exists(`${BASE_PREFIX}:${key}`)
 
     return existsCount != undefined && existsCount > 0
+  }
+
+  get prefix(): string {
+    return BASE_PREFIX
   }
 }

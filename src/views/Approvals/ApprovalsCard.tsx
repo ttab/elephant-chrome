@@ -12,26 +12,19 @@ import { AuthorNames } from './AuthorNames'
 import { CAUSE_KEYS } from '@/defaults/causekeys'
 import { useWorkflowStatus } from '@/hooks/useWorkflowStatus'
 import { TimeCard } from './TimeCard'
-import { useYValue, type YDocument } from '@/modules/yjs/hooks'
-import type * as Y from 'yjs'
+import type { TrackedDocument } from '@/hooks/useTrackedDocuments'
 
-export const ApprovalsCard = ({ ydoc, assignment, isSelected, isFocused, status, openEditors }: {
+export const ApprovalsCard = ({ trackedDocument, assignment, isSelected, isFocused, status, openEditors }: {
   assignment: AssignmentInterface
   status: StatusSpecification
   isSelected: boolean
   isFocused: boolean
   openEditors: string[]
-  ydoc: YDocument<Y.Map<unknown>>
+  trackedDocument?: TrackedDocument
 }) => {
   const sections = useSections()
   const openArticle = useLink('Editor')
   const openFlash = useLink('Flash')
-
-  const path = `${assignment._deliverableId}.users`
-  const [users] = useYValue<Record<string, { id: string, name: string, username: string }>>(
-    ydoc.provider?.document.getMap('open-documents'), path
-  )
-
   const [documentStatus] = useWorkflowStatus({ documentId: assignment._deliverableId, isWorkflow: true })
 
   const openType = (assignmentType: string) => assignmentType === 'core/flash' ? openFlash : openArticle
@@ -81,9 +74,9 @@ export const ApprovalsCard = ({ ydoc, assignment, isSelected, isFocused, status,
                 ? <FileWarningIcon size={14} />
                 : assignment._newsvalue}
           </span>
-          {users && (
+          {trackedDocument?.users?.length && (
             <AvatarGroup size='xxs'>
-              {Object.values(users).map((user) => {
+              {Object.values(trackedDocument.users).map((user) => {
                 return (
                   <Tooltip key={user.id} content={user.name}>
                     <Avatar value={user.name} size='xxs' className='bg-primary text-white dark:text-black border-none' />

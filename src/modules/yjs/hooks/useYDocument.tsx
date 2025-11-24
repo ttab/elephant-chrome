@@ -40,6 +40,7 @@ export function useYDocument<T>(
     data?: EleDocumentResponse
     persistent?: boolean
     invisible?: boolean
+    rootMap?: string
   }
 ): YDocument<T> {
   const { data: session } = useSession()
@@ -53,11 +54,14 @@ export function useYDocument<T>(
   const userRef = useRef<YAwarenessUser | null>(null)
   const resultRef = useRef<YDocument<T>>({} as YDocument<T>)
 
+  const rootMap = options?.rootMap || 'ele'
+
   /**
    * Create yjs document and subscribe to ready state
    */
   const document = useRef<Y.Doc>(createTypedYDoc(options?.data, {
-    isInProgress: !!options?.data
+    isInProgress: !!options?.data,
+    rootMap
   }))
 
   // Whether document is ready to be saved to repository (is valid)
@@ -117,7 +121,7 @@ export function useYDocument<T>(
     if (!document.current) return
 
     const yCtx = document.current.getMap('ctx')
-    const yEle = document.current.getMap('ele')
+    const yEle = document.current.getMap(rootMap)
     const onChange = () => {
       if (isChanged) return
 
@@ -133,7 +137,7 @@ export function useYDocument<T>(
     return () => {
       yEle.unobserveDeep(onChange)
     }
-  }, [isChanged, setIsChanged])
+  }, [isChanged, setIsChanged, rootMap])
 
   /**
    * Observe changes to the ctx root map and set the local state accordingly.
@@ -188,22 +192,19 @@ export function useYDocument<T>(
   }, [send, client, session?.accessToken])
 
   useEffect(() => {
-    if (typeof options?.invisible !== 'boolean') {
-      return
-    }
-
     if (!isConnected) {
       return
     }
 
+    // Turn on visibility if not invisible
     send('context', {
-      invisible: options.invisible,
+      invisible: options?.invisible ?? true,
       id
     })
   }, [options?.invisible, isConnected, send, id])
 
   resultRef.current.id = id
-  resultRef.current.ele = document.current.getMap('ele') as T
+  resultRef.current.ele = document.current.getMap(rootMap) as T
   resultRef.current.ctx = document.current.getMap('ctx')
   resultRef.current.connected = isOnline && isConnected
   resultRef.current.synced = isSynced
