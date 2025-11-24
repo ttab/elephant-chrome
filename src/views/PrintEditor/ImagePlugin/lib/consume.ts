@@ -16,6 +16,19 @@ export const consume = async (
   }
 
   const { name, type: contentType, size } = input.data
+  const isLikelyImage = (() => {
+    if (contentType?.startsWith('image/')) {
+      return true
+    }
+    const extension = name.split('.').pop()?.toLowerCase()
+    const whitelistedExtensions = ['jpg', 'jpeg', 'png', 'gif', 'webp', 'avif', 'svg', 'bmp', 'tiff', 'heic', 'heif']
+    return extension ? whitelistedExtensions.includes(extension) : false
+  })()
+
+  if (!isLikelyImage) {
+    toast.error('Filen verkar inte vara en bild, avbryter uppladdning')
+    throw new Error('Unsupported file type, expected an image')
+  }
 
   const getImageProperties = async () => {
     const session = await getCachedSession()
@@ -27,30 +40,63 @@ export const consume = async (
     return await new Promise<Plugin.Resource>((resolve, reject) => {
       const reader = new FileReader()
       const tmpImage = new Image()
+      let cancelled = false
 
-      reader.onerror = (e) => {
-        console.error('reader error', e)
-        reject(new Error('Failed to read file as data URL'))
+      const cancel = (toastMessage: string, errorMessage: string) => {
+        if (cancelled) {
+          return
+        }
+        cancelled = true
+        toast.error(toastMessage)
+        reject(new Error(errorMessage))
       }
 
-      tmpImage.onerror = (error) => {
-        console.error('image load error', error)
-        reject(new Error('Image failed to load'))
+      reader.onerror = (event: ProgressEvent<FileReader>) => {
+        const readerTarget = (event?.target) ?? reader
+        const readerError = readerTarget?.error ?? reader.error ?? null
+        const errorName = readerError?.name ?? 'UnknownError'
+        const errorMessage = readerError?.message ?? 'Failed to read file as data URL'
+        console.error(`ImagePlugin: reader error (${errorName})`, readerError ?? event)
+        cancel(`Bilden kunde inte läsas (${errorName})`, errorMessage)
+        reader.abort()
+        tmpImage.src = ''
       }
+
+      tmpImage.onerror = (e) => {
+        console.error('ImagePlugin: image load error', e)
+        cancel('Bilden kunde inte tolkas, kontrollera att filen inte är korrupt', 'Image failed to load')
+      }
+
 
       repository
         .uploadFile(name, contentType, input.data as File, session?.accessToken)
         .then(({ uuid, name }) => {
-          toast.success('Bilduppladdning lyckades!')
           reader.onload = () => {
             if (typeof reader.result !== 'string') {
-              reject(new Error(`Error when image dropped, resulted in ${typeof reader.result}`))
+              reject(new Error(`ImagePlugin: Error when image dropped, resulted in ${typeof reader.result}`))
+              return
+            }
+
+            if (!reader.result.startsWith('data:image/')) {
+              toast.error('Innehållet identifierades inte som en bild')
+              reject(new Error('ImagePlugin: Reader result is not an image data URL'))
               return
             }
 
             tmpImage.src = reader.result
 
             tmpImage.onload = () => {
+              if (cancelled) {
+                return
+              }
+
+              const hasDimensions = Boolean(tmpImage.naturalWidth && tmpImage.naturalHeight)
+              if (!hasDimensions) {
+                cancel('Bilden saknar giltiga dimensioner', 'ImagePlugin: Image has invalid dimensions')
+                return
+              }
+
+              toast.success('Bilduppladdning lyckades!')
               resolve({
                 ...input,
                 type: 'core/image',
