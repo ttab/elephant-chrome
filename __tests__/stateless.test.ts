@@ -18,11 +18,11 @@ describe('stateless', () => {
   })
 
   it('should create and parse a stateless context message', () => {
-    const statelessMsg = createStateless(StatelessType.CONTEXT, { invisible: true, id: '123' })
-    expect(statelessMsg).toEqual(`${StatelessType.CONTEXT}@${JSON.stringify({ invisible: true, id: '123' })}`)
+    const statelessMsg = createStateless(StatelessType.CONTEXT, { visibility: true, usageId: 'abc', id: '123' })
+    expect(statelessMsg).toEqual(`${StatelessType.CONTEXT}@${JSON.stringify({ visibility: true, usageId: 'abc', id: '123' })}`)
 
     const parsed = parseStateless(statelessMsg)
-    expect(parsed).toEqual({ type: StatelessType.CONTEXT, message: { invisible: true, id: '123' } })
+    expect(parsed).toEqual({ type: StatelessType.CONTEXT, message: { visibility: true, usageId: 'abc', id: '123' } })
   })
 
   it('should throw an error for invalid stateless type', () => {
