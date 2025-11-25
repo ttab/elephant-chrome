@@ -8,9 +8,9 @@ import type {
 } from '@/shared/types/index.js'
 
 import { newsDocToSlate, slateToNewsDoc } from './newsdoc/index.js'
-import { isConceptType } from '@/views/Concepts/lib/isConceptType.js'
+import { isConceptType } from '../isConceptType.js'
 import { assertConceptHasNecessaryProperties } from '@/shared/transformations/lib/assertConceptHasNeccesaryProperties.js'
-import { assertConceptHasNoEmptyProperties } from '@/shared/transformations/lib/asserConceptHasNoEmptyProperties.js'
+import { assertConceptHasNoEmptyProperties } from '@/shared/transformations/lib/assertConceptHasNoEmptyProperties.js'
 
 
 /**

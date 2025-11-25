@@ -1,5 +1,5 @@
 import { TagIcon } from '@ttab/elephant-ui/icons'
-import type { IDBOrganiser, IDBSection, IDBStory } from 'src/datastore/types'
+import type { IDBOrganiser, IDBSection, IDBStory } from '../../../datastore/types.js'
 
 export const tableDataMap = {
   'core/section': {
