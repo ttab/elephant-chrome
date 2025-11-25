@@ -17,7 +17,7 @@ interface UserConnection {
   sub: string
   name: string
   email: string
-  invisible: boolean
+  visibility: Record<string, boolean>
   instanceId: string
   socketId: string
   connectedAt: number
@@ -36,7 +36,6 @@ interface EleContext {
     name: string
     email?: string
   }
-  invisible?: boolean
 }
 
 interface EleConnectedPayload extends connectedPayload {
@@ -46,7 +45,18 @@ interface EleConnectedPayload extends connectedPayload {
 /**
  * TrackedDocuments extension for Hocuspocus
  *
- * Tracks which documents are open and which users have them open.
+ * Tracks which documents are open and which users have them open. Users
+ * are added as invisible by default. The client must then send a stateless
+ * message to make them visible. The tracker tracks the combination of
+ * socket id and hocuspocus server id. This allows the user to have multiple
+ * connections to the same document in many different browser tabs.
+ *
+ * Visibility is not a flag. It is tracked by a document usage id per socketid
+ * and hocuspocus server id combination. Each time a document is opened,
+ * regardless of whether it was already open or not, the usage receives a "usageId"
+ * which then is toggled as invisible or visible. This allows the user to have
+ * multiple uses of the same document through the same hocuspocus provider and
+ * still manage their visibility independently.
  *
  * Structure:
  * root [this.#map] Y.Map -> documentId -> Y.Array<UserConnection>
@@ -196,7 +206,7 @@ export class OpenDocuments implements Extension {
         sub,
         name,
         email: email ?? '',
-        invisible: true,
+        visibility: {},
         instanceId: this.#instanceId,
         socketId,
         connectedAt: Date.now()
@@ -251,7 +261,7 @@ export class OpenDocuments implements Extension {
   }
 
   /**
-   * Message handler to receive user invisible mode.
+   * Message handler to receive user visibility mode.
    */
   async onStateless({ payload, connection }: onStatelessPayload): Promise<void> {
     if (!payload.startsWith(`${StatelessType.CONTEXT}@`) || !this.#connection) {
@@ -259,25 +269,25 @@ export class OpenDocuments implements Extension {
     }
 
     const context = connection.context as unknown
-
     if (!isContext(context)) {
       return
     }
 
-    const statelessMessage = parseStateless<StatelessContext>(payload)
+    const { message } = parseStateless<StatelessContext>(payload)
 
-    if (typeof statelessMessage.message.invisible === 'boolean') {
-      void this.#setConnectionVisibility(
-        statelessMessage.message.id,
-        connection.socketId,
-        statelessMessage.message.invisible
-      )
+    if (!message.usageId) {
+      return
     }
 
-    return Promise.resolve()
+    await this.#setConnectionVisibility(
+      message.id,
+      connection.socketId,
+      message.usageId,
+      message.visibility
+    )
   }
 
-  async #setConnectionVisibility(documentName: string, socketId: string, invisible: boolean) {
+  async #setConnectionVisibility(documentName: string, socketId: string, usageId: string, visibility: boolean | undefined) {
     if (!this.#connection) {
       return
     }
@@ -290,11 +300,17 @@ export class OpenDocuments implements Extension {
         return
       }
 
-      // Find the connection
+      // Find the connection and apply the visibility change
       for (let i = connections.length - 1; i >= 0; i--) {
         const conn = connections.get(i)
         if (conn.instanceId === this.#instanceId && conn.socketId === socketId) {
-          const updatedConn: UserConnection = { ...conn, invisible }
+          const updatedConn: UserConnection = { ...conn }
+
+          if (visibility === true) {
+            updatedConn.visibility[usageId] = visibility
+          } else {
+            delete updatedConn.visibility[usageId]
+          }
           connections.delete(i)
           connections.insert(i, [updatedConn])
           break

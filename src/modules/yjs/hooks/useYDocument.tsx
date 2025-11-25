@@ -33,13 +33,15 @@ export interface YDocument<T> {
  * Create an IndexeddbPersistence provider and when synced also create
  * a HocuspocusProvider. Manage synced and connected state towards the
  * HocuspocusServer.
+ *
+ * Visibility is false by default if not specified.
  */
 export function useYDocument<T>(
   id: string,
   options?: {
     data?: EleDocumentResponse
     persistent?: boolean
-    invisible?: boolean
+    visibility?: boolean
     rootMap?: string
   }
 ): YDocument<T> {
@@ -55,6 +57,9 @@ export function useYDocument<T>(
   const resultRef = useRef<YDocument<T>>({} as YDocument<T>)
 
   const rootMap = options?.rootMap || 'ele'
+
+  // Unique identifier for this usage of the document
+  const ydocumentId = useRef(crypto.randomUUID())
 
   /**
    * Create yjs document and subscribe to ready state
@@ -103,7 +108,7 @@ export function useYDocument<T>(
   }, [client])
 
   if (!userRef.current || userRef.current.name !== session?.user.name || userRef.current.color !== userColor) {
-    if (!options?.invisible) {
+    if (options?.visibility === true) {
       userRef.current = {
         name: session?.user.name ?? '',
         initials: session?.user.name.split(' ').map((t) => t.substring(0, 1)).join('') ?? '',
@@ -199,12 +204,26 @@ export function useYDocument<T>(
       return
     }
 
-    // Turn on visibility if not invisible
-    send('context', {
-      invisible: options?.invisible ?? true,
-      id
-    })
-  }, [options?.invisible, isConnected, send, id])
+    const usageId = ydocumentId.current
+
+    // Turn on visibility for this usage id if not invisible
+    if (options?.visibility === true) {
+      send('context', {
+        visibility: options.visibility,
+        id,
+        usageId
+      })
+    }
+
+    return () => {
+      if (options?.visibility === true) {
+        send('context', {
+          id,
+          usageId
+        })
+      }
+    }
+  }, [options?.visibility, isConnected, send, id])
 
   resultRef.current.id = id
   resultRef.current.ele = document.current.getMap(rootMap) as T

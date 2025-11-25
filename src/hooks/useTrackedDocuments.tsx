@@ -7,7 +7,7 @@ interface UserConnection {
   sub: string
   name: string
   email: string
-  invisible: boolean
+  visibility: Record<string, boolean>
   instanceId: string
   socketId: string
   connectedAt: number
@@ -81,7 +81,7 @@ export function useTrackedDocuments(includeInvisible: boolean = false): OpenDocu
         result.push({
           id: documentId,
           count: connections.length,
-          users: aggregateUsers(connections, includeInvisible, documentId)
+          users: aggregateUsers(connections, includeInvisible)
         })
       })
 
@@ -106,13 +106,13 @@ export function useTrackedDocuments(includeInvisible: boolean = false): OpenDocu
 /**
  * Aggregate connections into unique users with counts
  */
-function aggregateUsers(connections: UserConnection[] | undefined, includeInvisible: boolean, documentId: string): DocumentUser[] {
+function aggregateUsers(connections: UserConnection[] | undefined, includeInvisible: boolean): DocumentUser[] {
   if (!connections || connections.length === 0) return []
 
   const userMap = new Map<string, DocumentUser>()
 
   for (const conn of connections) {
-    if (!userMap.has(conn.sub) && (includeInvisible || !conn.invisible)) {
+    if (!userMap.has(conn.sub) && (includeInvisible || Object.values(conn.visibility).includes(true))) {
       userMap.set(conn.sub, {
         id: conn.sub,
         name: conn.name,
