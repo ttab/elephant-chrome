@@ -51,8 +51,7 @@ export const CollaborationProviderContext = ({ documentId, children }: PropsWith
   }
 
   const { connected, synced, provider, user } = useYDocument(documentId || '', {
-    persistent: true,
-    invisible: false
+    persistent: true
   })
 
   const state: CollaborationProviderState = {
