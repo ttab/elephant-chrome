@@ -318,4 +318,68 @@ export class OpenDocuments implements Extension {
       }
     })
   }
+
+  /**
+   * Get a snapshot of all currently open documents and their users
+   */
+  async getSnapshot(): Promise<{
+    documents: Array<{
+      id: string
+      users: Array<UserConnection>
+    }>
+    totalDocuments: number
+    totalConnections: number
+    instanceId: string
+    timestamp: number
+  }> {
+    if (!this.#connection) {
+      return {
+        documents: [],
+        totalDocuments: 0,
+        totalConnections: 0,
+        instanceId: this.#instanceId,
+        timestamp: Date.now()
+      }
+    }
+
+    return new Promise((resolve) => {
+      void this.#connection!.transact((doc) => {
+        const documentsMap = doc.getMap<Y.Array<UserConnection>>(this.#mapName)
+        const documents: Array<{
+          id: string
+          users: Array<UserConnection>
+        }> = []
+
+        let totalConnections = 0
+
+        documentsMap.forEach((connectionsArray, documentId) => {
+          const connections = connectionsArray.toArray()
+
+          // Aggregate users by userId
+          const userMap = new Map<string, UserConnection>()
+
+          for (const conn of connections) {
+            totalConnections++
+
+            if (!userMap.has(conn.sub)) {
+              userMap.set(conn.sub, { ...conn })
+            }
+          }
+
+          documents.push({
+            id: documentId,
+            users: Array.from(userMap.values())
+          })
+        })
+
+        resolve({
+          documents,
+          totalDocuments: documents.length,
+          totalConnections,
+          instanceId: this.#instanceId,
+          timestamp: Date.now()
+        })
+      })
+    })
+  }
 }

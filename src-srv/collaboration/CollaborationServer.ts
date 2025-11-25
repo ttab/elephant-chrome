@@ -194,6 +194,6 @@ export class CollaborationServer {
    * Snapshot of open documents and by who
    */
   getSnapshot() {
-    return this.#openDocuments.getSnapshot()
+    return this.#openDocuments?.getSnapshot()
   }
 }
