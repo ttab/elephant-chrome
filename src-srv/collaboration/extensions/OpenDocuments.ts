@@ -162,33 +162,6 @@ export class OpenDocuments implements Extension {
   }
 
   /**
-   * Message handler to receive user invisible mode.
-   */
-  async onStateless({ payload, connection }: onStatelessPayload): Promise<void> {
-    if (!payload.startsWith(`${StatelessType.CONTEXT}@`) || !this.#connection) {
-      return
-    }
-
-    const context = connection.context as unknown
-
-    if (!isContext(context)) {
-      return
-    }
-
-    const statelessMessage = parseStateless<StatelessContext>(payload)
-
-    if (typeof statelessMessage.message.invisible === 'boolean') {
-      void this.#setConnectionVisibility(
-        statelessMessage.message.id,
-        connection.socketId,
-        statelessMessage.message.invisible
-      )
-    }
-
-    return Promise.resolve()
-  }
-
-  /**
    * Add user that opened the document to the correct document in the tracker.
    */
   async connected({ documentName, context, socketId }: EleConnectedPayload) {
@@ -204,12 +177,10 @@ export class OpenDocuments implements Extension {
 
     // Add connection as invisible user first, if the user wants to be visible
     // a stateless message will follow that sets the user as visible.
-    void this.#addConnection(socketId, documentName, sub, name, email, true)
-
-    return Promise.resolve()
+    await this.#addConnection(socketId, documentName, sub, name, email)
   }
 
-  async #addConnection(socketId: string, documentName: string, sub: string, name: string, email: string | undefined, invisible: boolean) {
+  async #addConnection(socketId: string, documentName: string, sub: string, name: string, email: string | undefined) {
     if (!this.#connection) return
 
     await this.#connection.transact((doc) => {
@@ -225,7 +196,7 @@ export class OpenDocuments implements Extension {
         sub,
         name,
         email: email ?? '',
-        invisible,
+        invisible: true,
         instanceId: this.#instanceId,
         socketId,
         connectedAt: Date.now()
@@ -256,7 +227,6 @@ export class OpenDocuments implements Extension {
       const documents = doc.getMap<Y.Array<UserConnection>>(this.#mapName)
       const connections = documents.get(documentName)
 
-      console.log('Removing ', documentName, 'from', connections?.toJSON())
       if (!connections) {
         return
       }
@@ -280,6 +250,33 @@ export class OpenDocuments implements Extension {
     await this.#updateHeartbeat()
   }
 
+  /**
+   * Message handler to receive user invisible mode.
+   */
+  async onStateless({ payload, connection }: onStatelessPayload): Promise<void> {
+    if (!payload.startsWith(`${StatelessType.CONTEXT}@`) || !this.#connection) {
+      return
+    }
+
+    const context = connection.context as unknown
+
+    if (!isContext(context)) {
+      return
+    }
+
+    const statelessMessage = parseStateless<StatelessContext>(payload)
+
+    if (typeof statelessMessage.message.invisible === 'boolean') {
+      void this.#setConnectionVisibility(
+        statelessMessage.message.id,
+        connection.socketId,
+        statelessMessage.message.invisible
+      )
+    }
+
+    return Promise.resolve()
+  }
+
   async #setConnectionVisibility(documentName: string, socketId: string, invisible: boolean) {
     if (!this.#connection) {
       return
@@ -298,12 +295,11 @@ export class OpenDocuments implements Extension {
         const conn = connections.get(i)
         if (conn.instanceId === this.#instanceId && conn.socketId === socketId) {
           const updatedConn: UserConnection = { ...conn, invisible }
-          connections.push([updatedConn])
+          connections.delete(i)
+          connections.insert(i, [updatedConn])
           break
         }
       }
-
-      console.log(doc.toJSON())
     })
   }
 }

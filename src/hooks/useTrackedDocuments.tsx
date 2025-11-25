@@ -1,10 +1,10 @@
-import { useYDocument, useYValue } from '@/modules/yjs/hooks'
+import { useYDocument } from '@/modules/yjs/hooks'
 import { useMemo, useState, useEffect } from 'react'
 import type * as Y from 'yjs'
 
 // Connection as stored in the Yjs Array
 interface UserConnection {
-  userId: string
+  sub: string
   name: string
   email: string
   invisible: boolean
@@ -18,7 +18,6 @@ export interface DocumentUser {
   id: string
   name: string
   email: string
-  connectionCount: number
 }
 
 // Document with its users
@@ -43,6 +42,8 @@ export function useTrackedDocuments(includeInvisible: boolean = false): OpenDocu
   const yDocument = useYDocument<Y.Map<Y.Array<UserConnection>>>(
     'tracked-documents',
     {
+      // Set yDocument.ele to point at the root Y.Map "documents"
+      // where we will find the open documents map instead of in ele.
       rootMap: 'documents'
     }
   )
@@ -50,34 +51,45 @@ export function useTrackedDocuments(includeInvisible: boolean = false): OpenDocu
   const [updateCount, forceUpdate] = useState(0)
   const documentsMap = yDocument.ele as Y.Map<Y.Array<UserConnection>> | undefined
 
-  // Subscribe to changes
   useEffect(() => {
     if (!documentsMap || typeof documentsMap.observeDeep !== 'function') {
       return
     }
 
-    const onChange = () => forceUpdate((n) => n + 1)
+    const onChange = () => {
+      forceUpdate((n) => n + 1)
+    }
+
     documentsMap.observeDeep(onChange)
 
     return () => documentsMap.unobserveDeep(onChange)
-  }, [documentsMap, yDocument.synced])
+  }, [documentsMap])
 
   // Transform to array structure
   const documents = useMemo<TrackedDocument[]>(() => {
-    if (!documentsMap) return []
-
-    try {
-      const rawData = documentsMap.toJSON() as Record<string, UserConnection[]>
-
-      return Object.entries(rawData).map(([documentId, connections]) => ({
-        id: documentId,
-        count: connections.length,
-        users: aggregateUsers(connections, includeInvisible)
-      }))
-    } catch {
+    if (!documentsMap || !yDocument.synced) {
       return []
     }
-  }, [documentsMap, updateCount, includeInvisible])
+
+    try {
+      const result: TrackedDocument[] = []
+
+      // Iterate directly over the Y.Map
+      documentsMap.forEach((connectionsArray, documentId) => {
+        const connections = connectionsArray.toJSON() as UserConnection[]
+
+        result.push({
+          id: documentId,
+          count: connections.length,
+          users: aggregateUsers(connections, includeInvisible, documentId)
+        })
+      })
+
+      return result
+    } catch (_) {
+      return []
+    }
+  }, [documentsMap, updateCount, includeInvisible, yDocument.synced])
 
   const getDocument = useMemo(() => {
     return (documentId: string) => documents.find((doc) => doc.id === documentId)
@@ -92,59 +104,21 @@ export function useTrackedDocuments(includeInvisible: boolean = false): OpenDocu
 }
 
 /**
- * Hook to get users on a specific document
- */
-export function useTrackedUsers(documentId: string, includeInvisible = false): {
-  users: DocumentUser[]
-  count: number
-  isConnected: boolean
-  isSynced: boolean
-} {
-  const yDocument = useYDocument<Y.Map<Y.Array<UserConnection>>>(
-    'tracked-documents',
-    {
-      rootMap: 'documents'
-    }
-  )
-
-  // Subscribe to just this document's connections
-  const [rawConnections] = useYValue<UserConnection[]>(
-    yDocument.ele as Y.Map<unknown>,
-    documentId
-  )
-
-  const users = useMemo(() => {
-    return aggregateUsers(rawConnections, includeInvisible)
-  }, [rawConnections, includeInvisible])
-
-  const count = rawConnections?.length ?? 0
-
-  return {
-    users,
-    count,
-    isConnected: yDocument.connected,
-    isSynced: yDocument.synced
-  }
-}
-
-/**
  * Aggregate connections into unique users with counts
  */
-function aggregateUsers(connections: UserConnection[] | undefined, includeInvisible: boolean): DocumentUser[] {
+function aggregateUsers(connections: UserConnection[] | undefined, includeInvisible: boolean, documentId: string): DocumentUser[] {
   if (!connections || connections.length === 0) return []
 
   const userMap = new Map<string, DocumentUser>()
 
   for (const conn of connections) {
-    if (!userMap.has(conn.userId) && (includeInvisible || !conn.invisible)) {
-      userMap.set(conn.userId, {
-        id: conn.userId,
+    if (!userMap.has(conn.sub) && (includeInvisible || !conn.invisible)) {
+      userMap.set(conn.sub, {
+        id: conn.sub,
         name: conn.name,
-        email: conn.email,
-        connectionCount: 0
+        email: conn.email
       })
     }
-    userMap.get(conn.userId)!.connectionCount++
   }
 
   return Array.from(userMap.values())

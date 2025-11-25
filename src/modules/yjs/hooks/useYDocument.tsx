@@ -191,6 +191,9 @@ export function useYDocument<T>(
     })
   }, [send, client, session?.accessToken])
 
+  /**
+   * Turn on visibility if not invisible
+   */
   useEffect(() => {
     if (!isConnected) {
       return
