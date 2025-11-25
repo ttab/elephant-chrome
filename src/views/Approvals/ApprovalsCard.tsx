@@ -74,7 +74,7 @@ export const ApprovalsCard = ({ trackedDocument, assignment, isSelected, isFocus
                 ? <FileWarningIcon size={14} />
                 : assignment._newsvalue}
           </span>
-          {trackedDocument?.users?.length && (
+          {!!trackedDocument?.users?.length && (
             <AvatarGroup size='xxs'>
               {Object.values(trackedDocument.users).map((user) => {
                 return (
