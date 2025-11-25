@@ -1,37 +1,28 @@
 import { Block, Document } from '@ttab/elephant-api/newsdoc'
+import type { TemplatePayload } from './index.js'
 
 /**
-* Create a template for a flash article document
-* @returns Document
-*/
+ * Generates a document template for a flash.
+ *
+ * @param {string} id - The unique identifier for the flash.
+ * @param {TemplatePayload} [payload] - Optional payload containing additional template data.
+ * @returns {Document} - The generated document template.
+ */
+export function flashDocumentTemplate(id: string, payload?: TemplatePayload): Document {
+  // no story in flash, remove those
+  delete payload?.links?.['core/story']
 
-export function flashDocumentTemplate(id: string, defaults: {
-  title?: string
-  section?: {
-    uuid: string
-    title: string
-  }
-  authors?: Array<{
-    uuid: string
-    name: string
-  }>
-} = {}): Document {
-  const {
-    title = '',
-    section
-  } = defaults
-
-  const doc = Document.create({
+  return Document.create({
     uuid: id,
     type: 'core/flash',
     uri: `core://flash/${id}`,
     language: 'sv-se',
-    title,
+    title: payload?.title,
     content: [
       Block.create({
         type: 'core/text',
         data: {
-          text: title || ''
+          text: payload?.title || ''
         },
         role: 'heading-1'
       }),
@@ -42,17 +33,8 @@ export function flashDocumentTemplate(id: string, defaults: {
         }
       })
     ],
-    links: []
+    links: [
+      ...Object.values(payload?.links ?? {}).flat()
+    ]
   })
-
-  if (section) {
-    doc.links.push(Block.create({
-      type: 'core/section',
-      rel: 'section',
-      uuid: section.uuid,
-      title: section.title
-    }))
-  }
-
-  return doc
 }
