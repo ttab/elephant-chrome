@@ -89,7 +89,8 @@ export function useTrackedDocuments(includeInvisible: boolean = false): OpenDocu
     } catch (_) {
       return []
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // updateCount is used to force re-renders
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [documentsMap, updateCount, includeInvisible, yDocument.synced])
 
   const getDocument = useMemo(() => {
