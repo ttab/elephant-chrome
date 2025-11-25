@@ -18,10 +18,11 @@ import { Form } from '@/components/Form'
 import { Prompt } from '@/components/Prompt'
 import { useWorkflowStatus } from '@/hooks/useWorkflowStatus'
 import { useConcepts } from '../Concepts/lib/useConcepts'
-import type { ConceptTableDataKey } from '../Concepts/lib/conceptDataTable'
+import { type ConceptTableDataKey } from '../Concepts/lib/conceptDataTable'
 import { LoadingText } from '@/components/LoadingText'
 import { Block } from '@ttab/elephant-api/newsdoc'
 import { setValueByYPath, toYStructure } from '@/shared/yUtils'
+import { conceptContentType } from '../Concepts/lib/conceptContentType'
 
 const meta: ViewMetadata = {
   name: 'Concept',
@@ -82,7 +83,6 @@ const ConceptContent = ({
   const isActive = !documentStatus || documentStatus.name === 'usable'
   const { concept } = useConcepts(documentType as ConceptTableDataKey)
   const [data] = useYValue<Block[]>('meta.core/definition')
-
   const textPaths = useMemo(() => {
     if (!data) return undefined
     const shortIndex = data?.findIndex((d) => d.role === 'short')
@@ -196,7 +196,7 @@ const ConceptContent = ({
                         asDialog={asDialog}
                         onChange={handleChange}
                       >
-                        {concept.content({ isActive, handleChange, textPaths, asDialog, provider })}
+                        {conceptContentType[concept.documentType]({ isActive, handleChange, textPaths, asDialog, provider })}
                         <Form.Footer>
                           <Form.Submit
                             onSubmit={() => handleSubmit()}

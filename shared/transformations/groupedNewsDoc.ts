@@ -8,6 +8,9 @@ import type {
 } from '@/shared/types/index.js'
 
 import { newsDocToSlate, slateToNewsDoc } from './newsdoc/index.js'
+import { isConceptType } from '@/views/Concepts/lib/isConceptType.js'
+import { assertConceptHasNecessaryProperties } from '@/shared/transformations/lib/assertConceptHasNeccesaryProperties.js'
+import { assertConceptHasNoEmptyProperties } from '@/shared/transformations/lib/asserConceptHasNoEmptyProperties.js'
 
 
 /**
@@ -19,6 +22,10 @@ export const toGroupedNewsDoc = (payload: GetDocumentResponse): EleDocumentRespo
 
   if (!document) {
     throw new Error('GetDocumentResponse contains no document')
+  }
+
+  if (isConceptType(document.type)) {
+    assertConceptHasNecessaryProperties(document)
   }
 
   if (document.type === 'core/planning-item') {
@@ -46,16 +53,18 @@ export const toGroupedNewsDoc = (payload: GetDocumentResponse): EleDocumentRespo
  */
 export const fromGroupedNewsDoc = (payload: EleDocumentResponse): { document: Document } & Omit<GetDocumentResponse, 'document'> => {
   const { document, version, isMetaDocument, mainDocument } = payload
-
   if (!document) {
     throw new Error('YDocumentResponse contains no document')
   }
-
   const newsDocument = {
     ...document,
     content: slateToNewsDoc(document.content) || [],
     meta: ungroup(document.meta),
     links: ungroup(document.links)
+  }
+
+  if (isConceptType(newsDocument.type)) {
+    assertConceptHasNoEmptyProperties(newsDocument)
   }
 
   if (document.type === 'core/planning-item') {

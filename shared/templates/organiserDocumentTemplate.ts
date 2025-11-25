@@ -23,13 +23,6 @@ export function organiserDocumentTemplate(id: string): Document {
           phone: '',
           streetAddress: ''
         }
-      }),
-      Block.create({
-        type: 'core/definition',
-        data: {
-          text: ''
-        },
-        role: ''
       })
     ],
     links: [
