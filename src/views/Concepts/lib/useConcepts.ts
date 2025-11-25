@@ -4,8 +4,8 @@ import type { ConceptTableDataKey } from './conceptDataTable'
 import { tableDataMap } from './conceptDataTable'
 
 export const useConcepts = (title: ConceptTableDataKey | undefined) => {
-  const sections = useSections({ activeOnly: false })
-  const storyTags = useStories({ activeOnly: false })
+  const sections = useSections({ sort: 'title', activeOnly: false })
+  const storyTags = useStories({ sort: 'title', activeOnly: false })
   /* const categories = useCategories({ activeOnly: false })
   const organisers = useOrganisers({ activeOnly: false })
   const contentSources = useContentSources({ activeOnly: false })
