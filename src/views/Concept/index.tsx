@@ -20,8 +20,7 @@ import { useWorkflowStatus } from '@/hooks/useWorkflowStatus'
 import { useConcepts } from '../Concepts/lib/useConcepts'
 import { type ConceptTableDataKey } from '../Concepts/lib/conceptDataTable'
 import { LoadingText } from '@/components/LoadingText'
-import { Block } from '@ttab/elephant-api/newsdoc'
-import { setValueByYPath, toYStructure } from '@/shared/yUtils'
+import type { Block } from '@ttab/elephant-api/newsdoc'
 import { conceptContentType } from '../Concepts/lib/conceptContentType'
 
 const meta: ViewMetadata = {
@@ -89,44 +88,6 @@ const ConceptContent = ({
     const longIndex = data?.findIndex((d) => d.role === 'long')
     return { shortIndex, longIndex }
   }, [data])
-
-  useEffect(() => {
-    if (!provider?.document || !synced || !data) {
-      return
-    }
-
-    const yRoot = provider.document.getMap('ele')
-
-    if (documentType === 'core/story') {
-      const shortIndex = data?.findIndex((d) => d.role === 'short')
-      const longIndex = data?.findIndex((d) => d.role === 'long')
-
-      const indexCheck = {
-        shortIndex: shortIndex || longIndex === 0 ? 1 : 0,
-        longIndex: longIndex || shortIndex === 1 ? 0 : 1
-      }
-
-      if (shortIndex === -1) {
-        setValueByYPath(yRoot, `meta.core/definition[${indexCheck.shortIndex}]`, toYStructure(Block.create({
-          type: 'core/definition',
-          role: 'short',
-          data: {
-            text: ''
-          }
-        })))
-      }
-
-      if (longIndex === -1 || !data) {
-        setValueByYPath(yRoot, `meta.core/definition[${indexCheck.longIndex}]`, toYStructure(Block.create({
-          type: 'core/definition',
-          role: 'long',
-          data: {
-            text: ''
-          }
-        })))
-      }
-    }
-  }, [data, provider?.document, synced, documentType])
 
   useEffect(() => {
     provider?.setAwarenessField('data', user)

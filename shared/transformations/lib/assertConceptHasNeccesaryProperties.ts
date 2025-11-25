@@ -2,7 +2,6 @@ import type { Document } from '@ttab/elephant-api/newsdoc'
 import { Block } from '@ttab/elephant-api/newsdoc'
 
 export const assertConceptHasNecessaryProperties = (document: Document | Block) => {
-  console.log(document.type)
   if (!document) {
     return
   }
@@ -39,6 +38,31 @@ export const assertConceptHasNecessaryProperties = (document: Document | Block) 
           return block
       }
     })
+  }
+
+  if (document.type === 'core/story') {
+    const short = document.meta.find((d) => d.role === 'short')
+    const long = document.meta.find((d) => d.role === 'long')
+
+    if (!short) {
+      document.meta.push(Block.create({
+        type: 'core/definition',
+        role: 'short',
+        data: {
+          text: ''
+        }
+      }))
+    }
+
+    if (!long) {
+      Block.create({
+        type: 'core/definition',
+        role: 'long',
+        data: {
+          text: ''
+        }
+      })
+    }
   }
 }
 
