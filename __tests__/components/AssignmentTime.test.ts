@@ -1,6 +1,13 @@
-import { describe, expect, it } from 'vitest'
-import { deriveExecutionDates, getDateInDefaultTimeZone } from '@/components/AssignmentTime/utils'
-import type { AssignmentData } from '@/components/AssignmentTime/types'
+import { describe, expect, it, vi } from 'vitest'
+import {
+  deriveExecutionDates,
+  getDateInDefaultTimeZone,
+  getMedianSlot,
+  getMidnightISOString,
+  getTimeSlot,
+  makeLocalString
+} from '@/components/AssignmentTime/utils'
+import type { AssignmentData, AssignmentValueOption } from '@/components/AssignmentTime/types'
 
 describe('AssignmentTime utils', () => {
   it('normalizes timestamps to DEFAULT_TIMEZONE dates', () => {
@@ -36,5 +43,46 @@ describe('AssignmentTime utils', () => {
 
   it('returns undefined for invalid ISO strings', () => {
     expect(getDateInDefaultTimeZone('not-a-date')).toBeUndefined()
+  })
+
+  it('selects the correct time slot for a given slot identifier', () => {
+    const options: AssignmentValueOption[] = [
+      { label: 'Morning', value: 'morning', slots: ['08:00', '09:00'] },
+      { label: 'Evening', value: 'evening', slots: ['18:00'] }
+    ]
+
+    const morningSlot = getTimeSlot('08:00', options)
+    expect(morningSlot?.value).toBe('morning')
+
+    const missingSlot = getTimeSlot('12:00', options)
+    expect(missingSlot).toBeUndefined()
+  })
+
+  it('returns the configured median for a slot or -1 when absent', () => {
+    const slots: AssignmentValueOption[] = [
+      { label: 'Night', value: 'night', median: '02:00' },
+      { label: 'Day', value: 'day', median: '12:00' }
+    ]
+
+    expect(getMedianSlot(slots, 'day')).toBe('12:00')
+    expect(getMedianSlot(slots, 'unknown')).toBe('-1')
+  })
+
+  it('builds an ISO string anchored at local midnight', () => {
+    const result = getMidnightISOString('2025-05-01')
+    const expected = new Date('2025-05-01T00:00:00').toISOString()
+
+    expect(result).toBe(expected)
+  })
+
+  it('formats execution timestamps with sv-SE locale 2-digit time', () => {
+    const toLocaleSpy = vi.spyOn(Date.prototype, 'toLocaleString').mockReturnValue('08:45')
+
+    const formatted = makeLocalString('2025-05-01T06:45:00.000Z')
+
+    expect(formatted).toBe('08:45')
+    expect(toLocaleSpy).toHaveBeenCalledWith('sv-SE', { hour: '2-digit', minute: '2-digit' })
+
+    toLocaleSpy.mockRestore()
   })
 })
