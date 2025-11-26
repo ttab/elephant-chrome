@@ -1,7 +1,7 @@
 import { Document, Block } from '@ttab/elephant-api/newsdoc'
 import type { TemplatePayload } from './index.js'
 import { getUserTimeZone } from '../../src/lib/getUserTimeZone.js'
-import { getUTCDateRange } from '../../shared/datetime.js'
+import { getUTCDateRange } from '@/shared/datetime.js'
 import { DEFAULT_TIMEZONE } from '../../src/defaults/defaultTimezone.js'
 
 /**
