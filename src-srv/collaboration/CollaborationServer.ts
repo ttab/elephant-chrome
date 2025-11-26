@@ -53,7 +53,7 @@ export class CollaborationServer {
     this.#expressServer = configuration.expressServer
     this.#repository = configuration.repository
     this.#errorHandler = new CollaborationServerErrorHandler(configuration.user)
-    this.#openDocuments = new OpenDocuments()
+    this.#openDocuments = new OpenDocuments({ redis: configuration.redis })
     this.#repositoryExtension = new RepositoryExtension({
       repository: this.#repository,
       errorHandler: this.#errorHandler,
@@ -194,6 +194,6 @@ export class CollaborationServer {
    * Snapshot of open documents and by who
    */
   getSnapshot() {
-    return this.#openDocuments.getSnapshot()
+    return this.#openDocuments?.getSnapshot()
   }
 }

@@ -10,8 +10,7 @@ import { newLocalDate } from '@/shared/datetime.ts'
 import { ApprovalsCard } from './ApprovalsCard'
 import { Toolbar } from './Toolbar.tsx'
 import { StatusSpecifications } from '@/defaults/workflowSpecification'
-import { useYDocument } from '@/modules/yjs/hooks.tsx'
-import type * as Y from 'yjs'
+import { useTrackedDocuments } from '@/hooks/useTrackedDocuments.tsx'
 
 const meta: ViewMetadata = {
   name: 'Approvals',
@@ -36,7 +35,7 @@ export const Approvals = (): JSX.Element => {
 }
 
 export const ApprovalsView = (): JSX.Element => {
-  const ydoc = useYDocument<Y.Map<unknown>>('document-tracker')
+  const trackedDocuments = useTrackedDocuments()
 
   const { timeZone } = useRegistry()
 
@@ -170,7 +169,7 @@ export const ApprovalsView = (): JSX.Element => {
                     isFocused={colN === focusedColumn && cardN === focusedCard}
                     isSelected={isSelected}
                     openEditors={openEditors}
-                    ydoc={ydoc}
+                    trackedDocument={trackedDocuments.documents.find((doc) => doc.id === assignment._deliverableId)}
                   />
                 )
               })}

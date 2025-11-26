@@ -33,13 +33,16 @@ export interface YDocument<T> {
  * Create an IndexeddbPersistence provider and when synced also create
  * a HocuspocusProvider. Manage synced and connected state towards the
  * HocuspocusServer.
+ *
+ * Visibility is false by default if not specified.
  */
 export function useYDocument<T>(
   id: string,
   options?: {
     data?: EleDocumentResponse
     persistent?: boolean
-    invisible?: boolean
+    visibility?: boolean
+    rootMap?: string
   }
 ): YDocument<T> {
   const { data: session } = useSession()
@@ -53,11 +56,17 @@ export function useYDocument<T>(
   const userRef = useRef<YAwarenessUser | null>(null)
   const resultRef = useRef<YDocument<T>>({} as YDocument<T>)
 
+  const rootMap = options?.rootMap || 'ele'
+
+  // Unique identifier for this usage of the document
+  const ydocumentId = useRef(crypto.randomUUID())
+
   /**
    * Create yjs document and subscribe to ready state
    */
   const document = useRef<Y.Doc>(createTypedYDoc(options?.data, {
-    isInProgress: !!options?.data
+    isInProgress: !!options?.data,
+    rootMap
   }))
 
   // Whether document is ready to be saved to repository (is valid)
@@ -99,7 +108,7 @@ export function useYDocument<T>(
   }, [client])
 
   if (!userRef.current || userRef.current.name !== session?.user.name || userRef.current.color !== userColor) {
-    if (!options?.invisible) {
+    if (options?.visibility === true) {
       userRef.current = {
         name: session?.user.name ?? '',
         initials: session?.user.name.split(' ').map((t) => t.substring(0, 1)).join('') ?? '',
@@ -129,7 +138,7 @@ export function useYDocument<T>(
     if (!document.current) return
 
     const yCtx = document.current.getMap('ctx')
-    const yEle = document.current.getMap('ele')
+    const yEle = document.current.getMap(rootMap)
     const onChange = () => {
       if (isChanged) return
 
@@ -145,7 +154,7 @@ export function useYDocument<T>(
     return () => {
       yEle.unobserveDeep(onChange)
     }
-  }, [isChanged, setIsChanged])
+  }, [isChanged, setIsChanged, rootMap])
 
   /**
    * Observe changes to the ctx root map and set the local state accordingly.
@@ -199,23 +208,37 @@ export function useYDocument<T>(
     })
   }, [send, client, session?.accessToken])
 
+  /**
+   * Turn on visibility if not invisible
+   */
   useEffect(() => {
-    if (typeof options?.invisible !== 'boolean') {
-      return
-    }
-
     if (!isConnected) {
       return
     }
 
-    send('context', {
-      invisible: options.invisible,
-      id
-    })
-  }, [options?.invisible, isConnected, send, id])
+    const usageId = ydocumentId.current
+
+    // Turn on visibility for this usage id if not invisible
+    if (options?.visibility === true) {
+      send('context', {
+        visibility: options.visibility,
+        id,
+        usageId
+      })
+    }
+
+    return () => {
+      if (options?.visibility === true) {
+        send('context', {
+          id,
+          usageId
+        })
+      }
+    }
+  }, [options?.visibility, isConnected, send, id])
 
   resultRef.current.id = id
-  resultRef.current.ele = document.current.getMap('ele') as T
+  resultRef.current.ele = document.current.getMap(rootMap) as T
   resultRef.current.ctx = document.current.getMap('ctx')
   resultRef.current.connected = isOnline && isConnected
   resultRef.current.synced = isSynced

@@ -15,9 +15,12 @@ export const FlashView = (props: {
   documentId: string
 } & ViewProps): JSX.Element => {
   const [query] = useQuery()
-  const ydoc = useYDocument<Y.Map<unknown>>(props.documentId)
   const readOnly = Number(props?.version) > 0 && !props.asDialog
   const preview = query.preview === 'true'
+
+  const ydoc = useYDocument<Y.Map<unknown>>(props.documentId, {
+    visibility: !preview
+  })
 
   if (!props.id || !ydoc.provider?.isSynced) {
     return <></>

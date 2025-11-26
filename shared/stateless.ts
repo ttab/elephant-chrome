@@ -43,7 +43,8 @@ const StatelessAuthSchema = z.object({
 })
 
 const StatelessContextMessageSchema = z.object({
-  invisible: z.boolean().optional(),
+  visibility: z.boolean().optional(),
+  usageId: z.string().optional(),
   id: z.string()
 })
 

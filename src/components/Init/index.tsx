@@ -9,7 +9,7 @@ import { CoreStoryProvider } from '../../datastore/contexts/CoreStoryProvider'
 import { TTWireSourceProvider } from '../../datastore/contexts/TTWireSourceProvider'
 import { CoreContentSourceProvider } from '../../datastore/contexts/CoreContentSourceProvider'
 import { TTEditorialInfoTypeProvider } from '../../datastore/contexts/TTEditorialInfoTypeProvider'
-import { DocTrackerProvider, UserTrackerProvider } from '../../contexts'
+import { UserTrackerProvider } from '../../contexts'
 import { useRegistry } from '@/hooks/useRegistry'
 import { initializeAuthor } from './lib/actions/author'
 import { initializeFaro } from './lib/actions/faro'
@@ -93,27 +93,25 @@ export const Init = ({ children }: PropsWithChildren): JSX.Element => {
     <WebSocketProvider url={webSocketUrl.toString()}>
       <ClientRegistryProvider accessToken={session?.accessToken}>
         <UserTrackerProvider>
-          <DocTrackerProvider>
-            <CoreSectionProvider>
-              <CoreAuthorProvider>
-                <CoreStoryProvider>
-                  <CoreCategoryProvider>
-                    <CoreOrganiserProvider>
-                      <TTWireSourceProvider>
-                        <CoreContentSourceProvider>
-                          <TTEditorialInfoTypeProvider>
-                            <NavigationProvider>
-                              {children}
-                            </NavigationProvider>
-                          </TTEditorialInfoTypeProvider>
-                        </CoreContentSourceProvider>
-                      </TTWireSourceProvider>
-                    </CoreOrganiserProvider>
-                  </CoreCategoryProvider>
-                </CoreStoryProvider>
-              </CoreAuthorProvider>
-            </CoreSectionProvider>
-          </DocTrackerProvider>
+          <CoreSectionProvider>
+            <CoreAuthorProvider>
+              <CoreStoryProvider>
+                <CoreCategoryProvider>
+                  <CoreOrganiserProvider>
+                    <TTWireSourceProvider>
+                      <CoreContentSourceProvider>
+                        <TTEditorialInfoTypeProvider>
+                          <NavigationProvider>
+                            {children}
+                          </NavigationProvider>
+                        </TTEditorialInfoTypeProvider>
+                      </CoreContentSourceProvider>
+                    </TTWireSourceProvider>
+                  </CoreOrganiserProvider>
+                </CoreCategoryProvider>
+              </CoreStoryProvider>
+            </CoreAuthorProvider>
+          </CoreSectionProvider>
         </UserTrackerProvider>
       </ClientRegistryProvider>
     </WebSocketProvider>
