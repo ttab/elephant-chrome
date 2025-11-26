@@ -1,6 +1,8 @@
 import type { Wire } from '@/shared/schemas/wire.js'
 import type { IDBAuthor } from '../../src/datastore/types.js'
 import { Block } from '@ttab/elephant-api/newsdoc'
+import { DEFAULT_TIMEZONE } from '../../src/defaults/defaultTimezone.js'
+import { newLocalDate } from '@/shared/datetime.js'
 
 /**
  * Create a template structure for an assigment
@@ -23,12 +25,15 @@ export function assignmentPlanningTemplate({
   assignmentData?: Block['data']
   assignee: IDBAuthor | null | undefined
 }): Block {
+  const zonedNow = newLocalDate(DEFAULT_TIMEZONE)
+  const currentTimezoneHour = zonedNow.getHours().toString()
+  const currentIsoTime = zonedNow.toISOString().split('T')[1]
+
   const startDateAndTime = (type: string): string => {
     const isTextFlashOrEditorialInfo = ['text', 'flash', 'editorial-info'].includes(type)
 
     if (isTextFlashOrEditorialInfo) {
-      const currentTime = new Date().toISOString().split('T')[1]
-      return new Date(`${planningDate}T${currentTime}`).toISOString()
+      return new Date(`${planningDate}T${currentIsoTime}`).toISOString()
     } else {
       return new Date(`${planningDate}T00:00:00`).toISOString()
     }
@@ -63,7 +68,7 @@ export function assignmentPlanningTemplate({
   // Text assignments should be set with a publish_slot
   if (assignmentType === 'text') {
     if (assignmentData && !assignmentData.publish_slot) {
-      assignmentData.publish_slot = new Date().getHours().toString()
+      assignmentData.publish_slot = currentTimezoneHour
     }
   }
 
@@ -76,7 +81,7 @@ export function assignmentPlanningTemplate({
     data: assignmentData || {
       full_day: 'false',
       end_date: planningDate,
-      ...(assignmentType === 'text' && { publish_slot: new Date().getHours().toString() }),
+      ...(assignmentType === 'text' && { publish_slot: currentTimezoneHour }),
       start_date: planningDate,
       start: startDateAndTime(assignmentType),
       public: assignmentType === 'flash'
@@ -106,4 +111,3 @@ export function assignmentPlanningTemplate({
     ]
   })
 }
-

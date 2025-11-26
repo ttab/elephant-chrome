@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest'
+import { vi } from 'vitest'
 import { editorialInfoDocumentTemplate } from '@/shared/templates/editorialInfoDocumentTemplate.js'
 import type { TemplatePayload } from '@/shared/templates'
 import { Block } from '@ttab/elephant-api/newsdoc'

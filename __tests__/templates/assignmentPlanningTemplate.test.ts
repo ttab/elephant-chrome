@@ -2,7 +2,7 @@ import type { Wire } from '@/shared/schemas/wire'
 import { assignmentPlanningTemplate } from '@/shared/templates/assignmentPlanningTemplate'
 import type { Block } from '@ttab/elephant-api/newsdoc'
 import type { IDBAuthor } from 'src/datastore/types'
-import { describe, it, expect, beforeEach, vi } from 'vitest'
+import { vi } from 'vitest'
 
 Object.defineProperty(global, 'crypto', {
   value: {
@@ -24,6 +24,16 @@ const mockAssignee = {
 }
 
 describe('assignmentPlanningTemplate', () => {
+  const fixedDate = new Date('2024-06-01T10:00:00.000Z')
+  beforeAll(() => {
+    vi.useFakeTimers()
+    vi.setSystemTime(fixedDate)
+  })
+
+  afterAll(() => {
+    vi.useRealTimers()
+  })
+
   beforeEach(() => {
     vi.clearAllMocks()
   })
@@ -53,7 +63,7 @@ describe('assignmentPlanningTemplate', () => {
       assignee: null,
       assignmentData
     })
-    expect(assignmentData.publish_slot).toBe(String(new Date().getHours()))
+    expect(assignmentData.publish_slot).toBe('12')
   })
 
   it('does not set publish_slot for non-text assignments', () => {

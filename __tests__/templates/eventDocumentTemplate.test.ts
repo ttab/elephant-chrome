@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest'
+import { vi } from 'vitest'
 import { eventDocumentTemplate } from '@/shared/templates/eventDocumentTemplate'
 import type { Block } from '@ttab/elephant-api/newsdoc'
 
