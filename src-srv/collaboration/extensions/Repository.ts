@@ -90,20 +90,24 @@ export class RepositoryExtension implements Extension {
   }
 
   async onStoreDocument(payload: onStoreDocumentPayload) {
-    const { document, documentName } = payload
-    if (!this.#shouldBeStored(document, documentName, payload.context)) {
-      return
-    }
+    try {
+      const { document, documentName } = payload
+      if (!this.#shouldBeStored(document, documentName, payload.context)) {
+        return
+      }
 
-    if (!isContext(payload.context)) {
-      throw new Error(`Invalid context in Repository.onStoreDocument for ${documentName}`)
-    }
+      if (!isContext(payload.context)) {
+        throw new Error(`Invalid context in Repository.onStoreDocument for ${documentName}`)
+      }
 
-    if (payload.context.disconnected === true) {
-      // Client disconnected from this document, immediately flush all pending changes to repo
-      this.#storeDebouncer.flush(payload.documentName, payload)
-    } else {
-      this.#storeDebouncer.call(payload.documentName, payload)
+      if (payload.context.disconnected === true) {
+        // Client disconnected from this document, immediately flush all pending changes to repo
+        this.#storeDebouncer.flush(payload.documentName, payload)
+      } else {
+        this.#storeDebouncer.call(payload.documentName, payload)
+      }
+    } catch (ex) {
+      this.#errorHandler.error(ex, getErrorContext(payload))
     }
 
     return Promise.resolve()

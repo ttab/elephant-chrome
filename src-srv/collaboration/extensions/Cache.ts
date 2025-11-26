@@ -57,10 +57,19 @@ export class CacheExtension implements Extension {
     }
   }
 
-  async onStoreDocument({ documentName, document }: onStoreDocumentPayload) {
-    await this.#redis.store(
-      documentName,
-      Buffer.from(Y.encodeStateAsUpdate(document))
-    )
+  async onStoreDocument(payload: onStoreDocumentPayload) {
+    const { documentName, document } = payload
+
+    try {
+      await this.#redis.store(
+        documentName,
+        Buffer.from(Y.encodeStateAsUpdate(document))
+      )
+    } catch (ex) {
+      this.#errorHandler.error(
+        ex,
+        getErrorContext(payload)
+      )
+    }
   }
 }
