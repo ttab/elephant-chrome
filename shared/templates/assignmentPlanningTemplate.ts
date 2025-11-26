@@ -3,7 +3,7 @@ import type { IDBAuthor } from '../../src/datastore/types.js'
 import { Block } from '@ttab/elephant-api/newsdoc'
 
 /**
- * Create a template structure for an assigment
+ * Create a template structure for an assignment
  * @returns Block
  */
 export function assignmentPlanningTemplate({
@@ -72,7 +72,7 @@ export function assignmentPlanningTemplate({
     id: crypto.randomUUID(),
     type: 'core/assignment',
     title: title || undefined,
-    // Use provided assignmentData or default values
+    // N.B. Use provided assignmentData or default values
     data: assignmentData || {
       full_day: 'false',
       end_date: planningDate,
