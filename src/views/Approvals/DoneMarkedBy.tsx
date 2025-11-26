@@ -1,5 +1,6 @@
 import { CheckIcon } from '@ttab/elephant-ui/icons'
-import type { IDBAuthor, StatusMeta } from 'src/datastore/types'
+import type { IDBAuthor } from 'src/datastore/types'
+import type { StatusMeta } from '@/types'
 import { dateToReadableDateTime } from '@/shared/datetime'
 import { useRegistry } from '@/hooks/useRegistry'
 import { Tooltip } from '@ttab/elephant-ui'

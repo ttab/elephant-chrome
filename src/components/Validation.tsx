@@ -1,18 +1,22 @@
-import { useCollaboration, useYValue } from '@/hooks'
 import { TriangleAlertIcon } from '@ttab/elephant-ui/icons'
 import { useEffect, useMemo } from 'react'
 import type { OnValidation } from './Form/Root'
 import { type FormProps } from './Form/Root'
+import { useYValue, type YDocument } from '@/modules/yjs/hooks'
+import type * as Y from 'yjs'
 
-export const Validation = ({ children, path, label, block, compareValues, onValidation, validateStateRef }: {
+export const Validation = (props: {
+  ydoc: YDocument<Y.Map<unknown>>
+  rootMap?: Y.Map<unknown>
   path: string
   label: string
   block: string
   compareValues?: string[]
   onValidation?: (args: OnValidation) => boolean
 } & FormProps): JSX.Element | null => {
-  const [value] = useYValue<string | undefined>(path)
-  const { synced } = useCollaboration()
+  const { ydoc, rootMap, children, path, label, block, compareValues, onValidation, validateStateRef } = props
+  const [value] = useYValue<string | undefined>(rootMap ?? ydoc.ele, path)
+  const { synced } = ydoc
 
   const isValid = useMemo(() => {
     return onValidation
@@ -46,4 +50,3 @@ export const Validation = ({ children, path, label, block, compareValues, onVali
     </div>
   )
 }
-

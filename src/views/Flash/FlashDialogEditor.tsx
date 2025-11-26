@@ -1,8 +1,6 @@
-import { useCollaboration, useRegistry, useSupportedLanguages } from '@/hooks'
+import { useRegistry, useSupportedLanguages } from '@/hooks'
 import { Bold, Italic, Text, OrderedList, UnorderedList, LocalizedQuotationMarks } from '@ttab/textbit-plugins'
 import Textbit, { type TBText } from '@ttab/textbit'
-import { type HocuspocusProvider } from '@hocuspocus/provider'
-import { type AwarenessUserData } from '@/contexts/CollaborationProvider'
 import { useEffect, useMemo } from 'react'
 import { withCursors, withYHistory, withYjs, YjsEditor } from '@slate-yjs/core'
 import { createEditor } from 'slate'
@@ -10,20 +8,22 @@ import { type YXmlText } from 'node_modules/yjs/dist/src/internals'
 import { Toolbar } from '@/components/Editor/Toolbar'
 import { DropMarker } from '@/components/Editor/DropMarker'
 import { ContextMenu } from '@/components/Editor/ContextMenu'
-import { useSession } from 'next-auth/react'
 import { Validation } from '@/components/Validation'
 import type { FormProps } from '@/components/Form/Root'
 import { getValueByYPath } from '@/shared/yUtils'
+import type { YDocument } from '@/modules/yjs/hooks'
+import type * as Y from 'yjs'
 
-export const FlashEditor = ({ setTitle, onValidation, validateStateRef, readOnly }: {
+export const FlashEditor = ({ ydoc, setTitle, onValidation, validateStateRef, readOnly }: {
+  ydoc: YDocument<Y.Map<unknown>>
   setTitle: (value: string | undefined) => void
   readOnly?: boolean
 } & FormProps): JSX.Element => {
   const plugins = [UnorderedList, OrderedList, Bold, Italic, LocalizedQuotationMarks]
-  const { provider, synced, user } = useCollaboration()
 
   return (
     <Validation
+      ydoc={ydoc}
       label='Rubrik och innehåll'
       path='root.title'
       block='title'
@@ -41,8 +41,8 @@ export const FlashEditor = ({ setTitle, onValidation, validateStateRef, readOnly
         placeholders='multiple'
         className='w-full h-full rounded-md border'
       >
-        {!!provider && synced
-          ? <EditorContent provider={provider} user={user} setTitle={setTitle} readOnly={readOnly} />
+        {!!ydoc.provider && ydoc.provider.isSynced
+          ? <EditorContent ydoc={ydoc} setTitle={setTitle} readOnly={readOnly} />
           : <></>}
       </Textbit.Root>
     </Validation>
@@ -50,22 +50,20 @@ export const FlashEditor = ({ setTitle, onValidation, validateStateRef, readOnly
 }
 
 
-function EditorContent({ provider, user, setTitle, readOnly }: {
-  provider: HocuspocusProvider
-  user: AwarenessUserData
+function EditorContent({ ydoc, setTitle, readOnly }: {
+  ydoc: YDocument<Y.Map<unknown>>
   setTitle: (value: string | undefined) => void
   readOnly?: boolean
 }): JSX.Element {
-  const { data: session } = useSession()
   const { spellchecker } = useRegistry()
   const supportedLanguages = useSupportedLanguages()
-  const [documentLanguage] = getValueByYPath<string>(provider.document.getMap('ele'), 'root.language')
+  const [documentLanguage] = getValueByYPath<string>(ydoc.ele, 'root.language')
 
   const yjsEditor = useMemo(() => {
-    if (!provider?.awareness) {
+    if (!ydoc.provider?.awareness || !ydoc.user) {
       return
     }
-    const content = provider.document.getMap('ele').get('content') as YXmlText
+    const content = ydoc.ele.get('content') as YXmlText
     if (!content) {
       return
     }
@@ -76,11 +74,11 @@ function EditorContent({ provider, user, setTitle, readOnly }: {
           createEditor(),
           content
         ),
-        provider.awareness,
-        { data: user as unknown as Record<string, unknown> }
+        ydoc.provider.awareness,
+        { data: ydoc.user }
       )
     )
-  }, [provider, user])
+  }, [ydoc])
 
   useEffect(() => {
     if (yjsEditor) {
@@ -96,7 +94,7 @@ function EditorContent({ provider, user, setTitle, readOnly }: {
       lang={documentLanguage}
       onSpellcheck={async (texts) => {
         if (documentLanguage) {
-          const spellingResult = await spellchecker?.check(texts.map(({ text }) => text), documentLanguage, supportedLanguages, session?.accessToken ?? '')
+          const spellingResult = await spellchecker?.check(texts.map(({ text }) => text), documentLanguage, supportedLanguages)
           if (spellingResult) {
             return spellingResult
           }

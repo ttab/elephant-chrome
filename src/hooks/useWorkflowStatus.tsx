@@ -2,45 +2,58 @@ import { useSession } from 'next-auth/react'
 import type { KeyedMutator } from 'swr'
 import useSWR, { mutate as globalMutate } from 'swr'
 import { useCallback, useMemo } from 'react'
-import { useCollaboration, useRegistry, useRepositoryEvents, useYValue } from '@/hooks'
+import { useRegistry, useRepositoryEvents } from '@/hooks'
 import { toast } from 'sonner'
 import type { Repository, Status } from '@/shared/Repository'
 import { snapshotDocument } from '@/lib/snapshotDocument'
 import { getStatusFromMeta } from '@/lib/getStatusFromMeta'
 import type { Session } from 'next-auth'
+import type { YDocument } from '@/modules/yjs/hooks'
+import type * as Y from 'yjs'
 
-export const useWorkflowStatus = (uuid?: string, isWorkflow: boolean = false): [
+// TODO: rename asPrint to a more generic name.
+// "asPrint" chould probably be used for planning-items and events as well
+export const useWorkflowStatus = ({ ydoc, documentId, isWorkflow = false, asPrint }: {
+  ydoc?: YDocument<Y.Map<unknown>>
+  documentId?: string
+  isWorkflow?: boolean
+  asPrint?: boolean
+}): [
   Status | undefined,
   (newStatusName: string | Status, cause?: string, asWire?: boolean) => Promise<void>,
   KeyedMutator<Status | undefined>
 ] => {
   const { repository } = useRegistry()
   const { data: session } = useSession()
-  const { provider } = useCollaboration()
-  const [, setChanged] = useYValue('root.changed')
 
   const CACHE_KEY = useMemo(
-    () => `status/${uuid}/${isWorkflow}`,
-    [uuid, isWorkflow])
+    () => `status/${documentId}/${isWorkflow}`,
+    [documentId, isWorkflow])
   /**
    * SWR callback that fetches current workflow status
    */
   const { data: documentStatus, error, mutate } = useSWR<Status | undefined, Error>(
-    (uuid && session && repository) ? [CACHE_KEY] : null,
+    (documentId && session && repository) ? [CACHE_KEY] : null,
     async () => {
       // Dont try to fetch if document is inProgress
-      if (!session || !repository || !uuid) {
+      if (!session || !repository || !documentId) {
         return
       }
 
-      const { meta } = await repository.getMeta({ uuid, accessToken: session.accessToken }) || {}
+      const { meta } = await repository.getMeta({ uuid: documentId, accessToken: session.accessToken }) || {}
 
       if (!meta) {
         return
       }
 
+      if (asPrint && meta.workflowCheckpoint === 'usable') {
+        return {
+          uuid: documentId,
+          ...getStatusFromMeta(meta, false)
+        }
+      }
       return {
-        uuid,
+        uuid: documentId,
         ...getStatusFromMeta(meta, isWorkflow)
       }
     }
@@ -51,8 +64,21 @@ export const useWorkflowStatus = (uuid?: string, isWorkflow: boolean = false): [
     toast.error('Ett fel uppstod när aktuell status skulle hämtas. Försök ladda om sidan.')
   }
 
-  useRepositoryEvents('core/article+meta', (event) => {
-    if (event.mainDocument === uuid) {
+  // Listen to repository events and revalidate if the current document is affected
+  useRepositoryEvents([
+    'core/article',
+    'core/article+meta',
+    'core/flash',
+    'core/flash+meta',
+    'core/editorial-info',
+    'core/editorial-info+meta',
+    'tt/print-article',
+    'tt/print-article+meta',
+    'core/planning-item',
+    'core/planning-item+meta'
+
+  ], (event) => {
+    if (event.uuid === documentId || event.mainDocument === documentId) {
       void mutate()
     }
   })
@@ -63,40 +89,35 @@ export const useWorkflowStatus = (uuid?: string, isWorkflow: boolean = false): [
    */
   const setDocumentStatus = useCallback(
     async (newStatus: string | Status, cause?: string, asWire?: boolean) => {
-      if (!session) {
+      if (!session || !documentId) {
         toast.error('Ett fel har uppstått, aktuell status kunde inte ändras! Ladda om webbläsaren och försök igen.')
         return
       }
 
-      // Handle wire status updates
-      if (asWire && typeof newStatus === 'object' && repository) {
-        void setWireStatus(newStatus, repository, session)
-        return
+      try {
+        // Handle wire status updates
+        if (asWire && typeof newStatus === 'object' && repository) {
+          await setWireStatus(newStatus, repository, session)
+
+          return
+        }
+
+        // Flush document to repository and if applicable, update the status with cause
+        await snapshotDocument(documentId, {
+          force: true,
+          status: typeof newStatus === 'string'
+            ? newStatus
+            : newStatus.name,
+          cause
+        }, ydoc?.provider?.document)
+
+        // Revalidate after the mutation completes
+        await globalMutate([CACHE_KEY])
+      } catch (ex) {
+        toast.error(ex instanceof Error ? ex.message : 'Ett fel uppstod när aktuell status skulle ändras')
       }
-
-
-      // Flush document to repsitory and if applicable, update the status with cause
-      const snapshotResponse = uuid && await snapshotDocument(uuid, {
-        force: true,
-        status: typeof newStatus === 'string'
-          ? newStatus
-          : newStatus.name,
-        cause
-      }, provider?.document)
-
-      if (snapshotResponse && 'statusCode' in snapshotResponse && snapshotResponse.statusCode !== 200) {
-        toast.error(`Ett fel uppstod när aktuell status skulle ändras: ${snapshotResponse.statusMessage || 'Okänt fel'}`)
-        return
-      }
-
-
-      // Reset unsaved changes state
-      setChanged(undefined)
-
-      // Revalidate after the mutation completes
-      await globalMutate([CACHE_KEY])
     },
-    [session, uuid, setChanged, provider?.document, repository, CACHE_KEY]
+    [session, documentId, ydoc?.provider?.document, repository, CACHE_KEY]
   )
 
   return [documentStatus, setDocumentStatus, mutate]

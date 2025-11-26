@@ -57,7 +57,7 @@ const factboxSlate: TBElement = {
     },
     {
       id: 'random-uuid',
-      class: 'text',
+      class: 'block',
       type: 'core/factbox/body',
       children: [
         {

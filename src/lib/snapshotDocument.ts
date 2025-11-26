@@ -41,13 +41,6 @@ export async function snapshotDocument(
     if (options?.cause) url.searchParams.set('cause', options.cause)
     url.searchParams.set('addToHistory', options?.addToHistory === true ? '1' : '0')
 
-    // Always remove __inProgress flag if it exists to allow storage into repository
-    if (document) {
-      const root = document.getMap('ele')
-        .get('root') as Y.Map<unknown>
-      root?.delete('__inProgress')
-    }
-
     const response = await fetch(url, {
       method: 'POST',
       headers: {
@@ -61,22 +54,16 @@ export async function snapshotDocument(
     const result = await response.json() as StoreDocumentResponse
 
     if (!response.ok) {
-      return {
-        statusCode: response.status,
-        statusMessage: (result && typeof result?.statusMessage === 'string')
-          ? result.statusMessage
-          : response.statusText
-      }
+      const message = (result && typeof result === 'object' && 'statusMessage' in result && typeof (result as { statusMessage?: unknown }).statusMessage === 'string')
+        ? (result as { statusMessage: string }).statusMessage
+        : (response.statusText || `Request failed with status ${response.status}`)
+      throw new Error(message || 'Failed storing document snapshot')
     }
 
     return result
   } catch (ex) {
-    const msg = (ex instanceof Error) ? ex.message : 'Failed flushing unsaved changes to primary storage'
-    console.error(msg)
-
-    return {
-      statusCode: -1,
-      statusMessage: msg
-    }
+    const err = ex instanceof Error ? ex : new Error('Failed flushing unsaved changes to primary storage')
+    console.error(err)
+    throw err
   }
 }

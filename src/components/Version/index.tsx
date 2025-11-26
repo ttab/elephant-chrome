@@ -6,13 +6,14 @@ import { useSession } from 'next-auth/react'
 import { useModal } from '../Modal/useModal'
 import { PreviewSheet } from '@/views/Wires/components'
 import { useAuthors } from '@/hooks/useAuthors'
-import { getCreatorBySub } from './getCreatorBySub'
 import { Error } from '@/views/Error'
 import type { GetStatusHistoryReponse } from '@ttab/elephant-api/repository'
 import type { Status as DocumentStatus } from '@ttab/elephant-api/repository'
 import type { EleDocumentResponse } from '@/shared/types'
 import { dateToReadableDateTime } from '@/shared/datetime'
 import { CAUSE_KEYS } from '../../defaults/causekeys'
+import type { Block } from '@ttab/elephant-api/newsdoc'
+import { getAuthorBySub } from '@/lib/getAuthorBySub'
 const BASE_URL = import.meta.env.BASE_URL || ''
 
 type Status = { name: string, created: string, creator: string }
@@ -29,7 +30,11 @@ export const Version = ({ documentId, hideDetails = false, textOnly = true }: { 
   const authors = useAuthors()
   const [lastUpdated, setLastUpdated] = useState('')
 
-  const { data: versionStatusHistory, error } = useSWR<DocumentStatus[], Error>(`version/${documentId}`, async (): Promise<Array<DocumentStatus & { title?: string, slugline?: string }>> => {
+  const { data: versionStatusHistory, error } = useSWR<DocumentStatus[], Error>(`version/${documentId}`, async (): Promise<Array<DocumentStatus & {
+    bylines?: Block[]
+    title?: string
+    slugline?: string
+  }>> => {
     if (!session?.accessToken || !repository) {
       return []
     }
@@ -66,6 +71,7 @@ export const Version = ({ documentId, hideDetails = false, textOnly = true }: { 
         }
 
         const slugline = doc?.meta?.['tt/slugline']?.[0]?.value ?? ''
+        const bylines = doc?.links?.['core/author'] ?? []
 
         if (doc?.content.length) {
           // If we're dealing with an article or a wire, the title can be found
@@ -79,7 +85,8 @@ export const Version = ({ documentId, hideDetails = false, textOnly = true }: { 
         return {
           ...version,
           title: docTitle || headingTitle,
-          slugline
+          slugline,
+          bylines
         }
       }
       return version
@@ -87,10 +94,10 @@ export const Version = ({ documentId, hideDetails = false, textOnly = true }: { 
 
     // Set last version as starting point
     const lastStatus = { ...result?.statuses[0], name: 'usable' }
-    const createdBy = getCreatorBySub({
+    const createdBy = getAuthorBySub(
       authors,
-      creator: lastStatus?.creator || result?.statuses[0]?.creator
-    })?.name || '???'
+      lastStatus?.creator || result?.statuses[0]?.creator
+    )?.name || '???'
 
     setVersion({
       ...result?.statuses[0],
@@ -103,7 +110,7 @@ export const Version = ({ documentId, hideDetails = false, textOnly = true }: { 
   const [selectedVersion, setVersion] = useState<SelectedVersion>()
   const { showModal, hideModal } = useModal()
 
-  const createdBy = useCallback((creator: string) => getCreatorBySub({ authors, creator })?.name || '???', [authors])
+  const createdBy = useCallback((creator: string) => getAuthorBySub(authors, creator)?.name || '???', [authors])
 
   const formatDateAndTime = useCallback((date: string) => {
     if (date) {
@@ -134,8 +141,10 @@ export const Version = ({ documentId, hideDetails = false, textOnly = true }: { 
       return status
     }
 
-    return versionStatusHistory?.map((v: DocumentStatus & { title?: string, slugline?: string }) => {
+    return versionStatusHistory?.map((v: DocumentStatus & { bylines?: Block[], title?: string, slugline?: string }) => {
       const usable = getUsable(v)
+      const bylineNames = v.bylines?.map((block) => block.title) || []
+      const versionNumber = v.id
 
       return (
         <SelectItem
@@ -144,12 +153,18 @@ export const Version = ({ documentId, hideDetails = false, textOnly = true }: { 
         >
           <div className='flex flex-col gap-1'>
             <span className='hidden sm:block font-bold'>{`${v?.title}`}</span>
-            <div className='m-0'>
-              <span className='text-muted-foreground'>{`${v?.slugline}`}</span>
-              <div className='flex items-center gap-2'>
-                {usable?.created && <span>{`${formatDateAndTime(usable.created)}`}</span>}
-                <span>{`${usable?.name} av ${usable?.creator || '???'}`}</span>
+            <div className='m-0 flex items-center gap-1 text-muted-foreground'>
+              {v.slugline && <span>{`${v?.slugline}`}</span>}
+              <span>{`- v${versionNumber}`}</span>
+              {usable?.name && <span>{`- ${usable?.name}`}</span>}
+            </div>
+            <div className='flex flex-col gap-1'>
+              <div>
+                {bylineNames?.length > 0
+                  ? <span>{bylineNames.join(', ')}</span>
+                  : <span>{usable?.creator || '???'}</span>}
               </div>
+              {usable?.created && <span className='italic'>{`${formatDateAndTime(usable.created)}`}</span>}
             </div>
           </div>
         </SelectItem>
@@ -197,7 +212,7 @@ export const Version = ({ documentId, hideDetails = false, textOnly = true }: { 
           )}
         </SelectTrigger>
 
-        <SelectContent>
+        <SelectContent className='max-h-[400px] overflow-y-auto'>
           {VersionStack}
         </SelectContent>
       </Select>

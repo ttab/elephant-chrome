@@ -1,12 +1,8 @@
-import { useQuery, useCollaboration, useYjsEditor, useAwareness, useView, useYValue } from '@/hooks'
-import { AwarenessDocument } from '@/components/AwarenessDocument'
+import { useQuery, useYjsEditor, useView } from '@/hooks'
 import { type ViewProps, type ViewMetadata } from '@/types/index'
 import type * as Y from 'yjs'
 import { Bold, Italic, Text, OrderedList, UnorderedList, LocalizedQuotationMarks } from '@ttab/textbit-plugins'
 import Textbit, { useTextbit } from '@ttab/textbit'
-import { type HocuspocusProvider } from '@hocuspocus/provider'
-import { type AwarenessUserData } from '@/contexts/CollaborationProvider'
-import { TextBox } from '@/components/ui'
 import { Button } from '@ttab/elephant-ui'
 import { useSession } from 'next-auth/react'
 import { ContentMenu } from '@/components/Editor/ContentMenu'
@@ -19,12 +15,20 @@ import { useOnSpellcheck } from '@/hooks/useOnSpellcheck'
 import { Form, View } from '@/components'
 import { FactboxHeader } from './FactboxHeader'
 import { Error } from '@/views/Error'
-import { useCallback, useEffect, useRef } from 'react'
+import { useEffect, useMemo, useRef } from 'react'
 import { cn } from '@ttab/elephant-ui/utils'
 import { contentMenuLabels } from '@/defaults/contentMenuLabels'
 import { snapshotDocument } from '@/lib/snapshotDocument'
-import { Validation } from '@/components/Validation'
 import type { FormProps } from '@/components/Form/Root'
+import { toast } from 'sonner'
+import { InfoIcon } from '@ttab/elephant-ui/icons'
+import type { YDocument } from '@/modules/yjs/hooks'
+import { useYDocument, useYValue } from '@/modules/yjs/hooks'
+import { TextInput } from '@/components/ui/TextInput'
+import { getTemplateFromView } from '@/shared/templates/lib/getTemplateFromView'
+import { toGroupedNewsDoc } from '@/shared/transformations/groupedNewsDoc'
+import type { EleDocumentResponse } from '@/shared/types'
+import type { Document } from '@ttab/elephant-api/newsdoc'
 
 const meta: ViewMetadata = {
   name: 'Factbox',
@@ -42,47 +46,41 @@ const meta: ViewMetadata = {
   }
 }
 
-const Factbox = (props: ViewProps & { document?: Y.Doc }): JSX.Element => {
+const Factbox = (props: ViewProps & { document?: Document }): JSX.Element => {
   const [query] = useQuery()
   const documentId = props.id || query.id
 
-  if (!documentId) {
-    return <></>
+  // Factbox should be responsible for creating new as well as editing
+  const data = useMemo(() => {
+    if (!props.document || !documentId || typeof documentId !== 'string') {
+      return undefined
+    }
+
+    return toGroupedNewsDoc({
+      version: 0n,
+      isMetaDocument: false,
+      mainDocument: '',
+      document: props.document || getTemplateFromView('Factbox')(documentId)
+    })
+  }, [documentId, props.document])
+
+  // Error handling for missing document
+  if (!documentId || typeof documentId !== 'string') {
+    return (
+      <Error
+        title='Artikeldokument saknas'
+        message='Inget artikeldokument är angivet. Navigera tillbaka till översikten och försök igen.'
+      />
+    )
   }
 
   return (
-    <>
-      {typeof documentId === 'string'
-        ? (
-            <AwarenessDocument documentId={documentId} document={props.document}>
-              <FactboxWrapper {...props} documentId={documentId} />
-            </AwarenessDocument>
-          )
-        : (
-            <Error
-              title='Faktarutedokument saknas'
-              message='Inget faktarutedokument är angivet. Navigera tillbaka till översikten och försök igen.'
-            />
-          )}
-    </>
+    <FactboxWrapper {...props} documentId={documentId} data={data} />
   )
 }
 
-const FactboxWrapper = (props: ViewProps & { documentId: string }): JSX.Element => {
-  const { provider, synced, user } = useCollaboration()
-  const [, setIsFocused] = useAwareness(props.documentId)
-
-  useEffect(() => {
-    provider?.setAwarenessField('data', user)
-    setIsFocused(true)
-
-    return () => {
-      setIsFocused(false)
-    }
-
-    // We only want to rerun when provider change
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [provider])
+const FactboxWrapper = (props: ViewProps & { documentId: string, data?: EleDocumentResponse }): JSX.Element => {
+  const ydoc = useYDocument<Y.Map<unknown>>(props.documentId, { data: props.data })
 
   const getPlugins = () => {
     const basePlugins = [UnorderedList, OrderedList, Bold, Italic, LocalizedQuotationMarks]
@@ -106,10 +104,7 @@ const FactboxWrapper = (props: ViewProps & { documentId: string }): JSX.Element 
             : '')}
       >
         <FactboxContainer
-          provider={provider}
-          synced={synced}
-          user={user}
-          documentId={props.documentId}
+          ydoc={ydoc}
           asDialog={props.asDialog}
           onDialogClose={props.onDialogClose}
         />
@@ -121,59 +116,48 @@ const FactboxWrapper = (props: ViewProps & { documentId: string }): JSX.Element 
 
 
 const FactboxContainer = ({
-  provider,
-  synced,
-  user,
-  documentId,
+  ydoc,
   asDialog,
   onDialogClose
 }: {
-  provider: HocuspocusProvider | undefined
-  synced: boolean
-  user: AwarenessUserData
-  documentId: string
+  ydoc: YDocument<Y.Map<unknown>>
 } & ViewProps): JSX.Element => {
   const { stats } = useTextbit()
   const { status } = useSession()
-  const [isChanged] = useYValue<boolean>('root.changed')
-  const [title] = useYValue<boolean>('root.title')
-
-  // TODO: useYValue doesn't provider a stable setter, this cause rerenders down the tree
-  const handleChange = useCallback((value: boolean): void => {
-    const root = provider?.document.getMap('ele').get('root') as Y.Map<unknown>
-    const changed = root.get('changed') as boolean
-
-
-    if (changed !== value) {
-      root.set('changed', value)
-    }
-  }, [provider])
-
+  const [title] = useYValue<boolean>(ydoc.ele, 'root.title')
 
   const handleSubmit = (): void => {
-    if (onDialogClose) {
-      onDialogClose(documentId, 'title')
-    }
-
-    if (provider && status === 'authenticated') {
-      void snapshotDocument(documentId)
+    if (ydoc.provider && status === 'authenticated') {
+      snapshotDocument(ydoc.id, undefined, ydoc.provider?.document)
+        .then(() => {
+          if (onDialogClose) {
+            onDialogClose()
+          }
+        }).catch((ex) => {
+          toast.error('Kunde inte skapa ny faktaruta!', {
+            duration: 5000,
+            position: 'top-center'
+          })
+          console.error(ex)
+        })
     }
   }
+
+  const environmentIsSane = ydoc.provider && status === 'authenticated'
 
   return (
     <>
       <FactboxHeader
-        documentId={documentId}
+        ydoc={ydoc}
         asDialog={!!asDialog}
         onDialogClose={onDialogClose}
-        isChanged={isChanged}
       />
 
       <View.Content className='flex flex-col max-w-[1000px]'>
         <div className='grow overflow-auto pt-2 pr-12 max-w-(--breakpoint-xl)'>
-          {!!provider && synced
+          {!!ydoc.provider && ydoc.provider.isSynced
             ? (
-                <FactboxContent provider={provider} user={user} onChange={handleChange} />
+                <FactboxContent ydoc={ydoc} />
               )
             : <></>}
         </div>
@@ -182,12 +166,27 @@ const FactboxContainer = ({
       <View.Footer>
         {asDialog
           ? (
-              <Button
-                onClick={handleSubmit}
-                disabled={!title}
-              >
-                Skapa faktaruta
-              </Button>
+              <>
+                {!environmentIsSane && (
+                  <div className='text-sm leading-tight pb-2 text-left flex gap-2'>
+                    <span className='w-4'>
+                      <InfoIcon size={18} strokeWidth={1.75} className='text-muted-foreground' />
+                    </span>
+                    <p>
+                      Du är utloggad eller har tappat kontakt med systemet.
+                      Vänligen försök logga in igen.
+                    </p>
+                  </div>
+                )}
+
+                <Button
+                  onClick={handleSubmit}
+                  disabled={!title || !environmentIsSane}
+                  className='whitespace-nowrap'
+                >
+                  Skapa faktaruta
+                </Button>
+              </>
             )
           : (
               <>
@@ -206,16 +205,17 @@ const FactboxContainer = ({
   )
 }
 
-const FactboxContent = ({ provider, user, onChange, onValidation, validateStateRef, asDialog }: {
-  provider: HocuspocusProvider
-  user: AwarenessUserData
+const FactboxContent = ({ ydoc, asDialog }: {
+  ydoc: YDocument<Y.Map<unknown>>
   onChange?: (value: boolean) => void
 } & FormProps): JSX.Element => {
   const { isActive } = useView()
   const ref = useRef<HTMLDivElement>(null)
-  const [documentLanguage] = getValueByYPath<string>(provider.document.getMap('ele'), 'root.language')
+  const [documentLanguage] = getValueByYPath<string>(ydoc.ele, 'root.language')
 
-  const yjsEditor = useYjsEditor(provider, user)
+  const [title] = useYValue<Y.XmlText>(ydoc.ele, 'root.title', true)
+
+  const yjsEditor = useYjsEditor(ydoc)
   const onSpellcheck = useOnSpellcheck(documentLanguage)
 
   // Handle focus on active state
@@ -234,23 +234,13 @@ const FactboxContent = ({ provider, user, onChange, onValidation, validateStateR
         className='[&_[role="textbox"]:focus]:bg-white [&_[role="textbox"]]:ring-transparent [&_[role="textbox"]:focus]:ring-gray-200'
       >
         <Form.Content>
-
-          <Validation
+          <TextInput
+            ydoc={ydoc}
+            value={title}
             label='Titel'
-            path='root.title'
-            block='title'
-            onValidation={onValidation}
-            validateStateRef={validateStateRef}
-          >
-            <TextBox
-              path='root.title'
-              placeholder='Rubrik'
-              className='font-bold text-lg'
-              autoFocus={true}
-              singleLine={true}
-              onChange={onChange}
-            />
-          </Validation>
+            // autoFocus={!!props.asDialog}
+            placeholder='Planeringstitel'
+          />
 
         </Form.Content>
       </Form.Root>
@@ -265,11 +255,6 @@ const FactboxContent = ({ provider, user, onChange, onValidation, validateStateR
           **:data-spelling-error:border-b-2
           **:data-spelling-error:border-dotted
           **:data-spelling-error:border-red-500'
-        onChange={() => {
-          if (provider.hasUnsyncedChanges) {
-            onChange?.(true)
-          }
-        }}
       >
         <DropMarker />
         <Gutter>

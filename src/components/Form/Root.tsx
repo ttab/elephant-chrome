@@ -21,9 +21,8 @@ export interface FormProps extends PropsWithChildren {
   children?: React.ReactNode
 }
 
-export const Root = ({ children, asDialog = false, onChange, className }: PropsWithChildren & {
+export const Root = ({ children, asDialog = false, className }: PropsWithChildren & {
   asDialog?: boolean
-  onChange?: (arg: boolean) => void
   className?: string
 }): JSX.Element => {
   const validateStateRef = useRef<ValidateState>({})
@@ -62,16 +61,14 @@ export const Root = ({ children, asDialog = false, onChange, className }: PropsW
     [validateForm]
   )
 
-
   const props = useMemo(
     () => ({
       asDialog,
       onValidation: handleValidation,
       setValidateForm,
-      onChange,
       validateStateRef
     }),
-    [asDialog, handleValidation, onChange, validateStateRef]
+    [asDialog, handleValidation, validateStateRef]
   )
 
   return (

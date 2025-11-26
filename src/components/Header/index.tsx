@@ -7,7 +7,6 @@ import { PersonalAssignmentsFilter } from './PersonalAssignmentsFilter'
 import { useMemo } from 'react'
 import { useModal } from '../Modal/useModal'
 import * as Views from '@/views'
-import { createDocument } from '@/shared/createYItem'
 import { getTemplateFromView } from '@/shared/templates/lib/getTemplateFromView'
 
 export const Header = ({ assigneeId, type }: {
@@ -33,16 +32,14 @@ export const Header = ({ assigneeId, type }: {
           size='sm'
           className='h-8 pr-4'
           onClick={() => {
-            const initialDocument = createDocument({
-              template: getTemplateFromView(type),
-              inProgress: true
-            })
+            const id = crypto.randomUUID()
+            const initialDocument = getTemplateFromView(type)(id)
             showModal(
               <ViewDialog
                 onDialogClose={hideModal}
                 asDialog
-                id={initialDocument[0]}
-                document={initialDocument[1]}
+                id={id}
+                document={initialDocument}
               />
             )
           }}

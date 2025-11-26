@@ -77,7 +77,7 @@ export function handleLink({
   }
 
   const viewId = keepFocus && currentViewId ? currentViewId : newViewId
-  const path = keepFocus && currentPath ? currentPath.path : viewItem.meta.path
+  const path = keepFocus && currentPath ? currentPath.path : `${viewItem.meta.path}${toQueryString(props)}`
 
   // Listen for when the change has been done and then add onDocumentCreated callback
   // to the navigation state as we can't store functions in history state.
@@ -94,7 +94,7 @@ export function handleLink({
   }, { once: true })
 
   // Push new history state
-  history.pushState(`${path}${toQueryString(props)}`, {
+  history.pushState(path, {
     viewId,
     contentState: content
   })

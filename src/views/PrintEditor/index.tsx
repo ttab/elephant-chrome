@@ -1,5 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
-import { AwarenessDocument, View } from '@/components'
+import { useEffect, useRef, useState } from 'react'
 
 import { Textbit, useTextbit } from '@ttab/textbit'
 import {
@@ -18,19 +17,14 @@ import { FactboxPlugin } from '../../plugins/Factboxes'
 
 import {
   useQuery,
-  useCollaboration,
   useLink,
-  useYValue,
   useView,
   useYjsEditor,
-  useAwareness,
   useRegistry
 } from '@/hooks'
 import type { ViewMetadata, ViewProps } from '@/types'
 import { EditorHeader } from './PrintEditorHeader'
-import { type HocuspocusProvider } from '@hocuspocus/provider'
-import { type AwarenessUserData } from '@/contexts/CollaborationProvider'
-import { Error } from '../Error'
+import { Error as ErrorView } from '../Error'
 
 import { ContentMenu } from '@/components/Editor/ContentMenu'
 import { Notes } from '@/components/Notes'
@@ -39,13 +33,12 @@ import { ContextMenu } from '@/components/Editor/ContextMenu'
 import { Gutter } from '@/components/Editor/Gutter'
 import { DropMarker } from '@/components/Editor/DropMarker'
 
-import { type Block } from '@ttab/elephant-api/newsdoc'
 import { getValueByYPath } from '@/shared/yUtils'
 import { useOnSpellcheck } from '@/hooks/useOnSpellcheck'
 import { contentMenuLabels } from '@/defaults/contentMenuLabels'
 import { Button, ScrollArea } from '@ttab/elephant-ui'
 import { LayoutBox } from './LayoutBox'
-import { CopyPlusIcon, ScanEyeIcon, SettingsIcon, TriangleAlertIcon } from '@ttab/elephant-ui/icons'
+import { CopyPlusIcon, FileIcon, ScanEyeIcon, SettingsIcon, TriangleAlertIcon } from '@ttab/elephant-ui/icons'
 import type { EleBlock } from '@/shared/types'
 import { toast } from 'sonner'
 import { useSession } from 'next-auth/react'
@@ -54,6 +47,10 @@ import { snapshotDocument } from '@/lib/snapshotDocument'
 import type * as Y from 'yjs'
 import { ImagePlugin } from './ImagePlugin'
 import { ChannelComboBox } from './components/ChannelComboBox'
+import { ToastAction } from '../Wire/ToastAction'
+import type { YDocument } from '@/modules/yjs/hooks'
+import { useYDocument, useYValue } from '@/modules/yjs/hooks'
+import { View } from '@/components/View'
 
 const meta: ViewMetadata = {
   name: 'PrintEditor',
@@ -79,7 +76,7 @@ const PrintEditor = (props: ViewProps): JSX.Element => {
   // Error handling for missing document
   if (!documentId || typeof documentId !== 'string') {
     return (
-      <Error
+      <ErrorView
         title='Artikeldokument saknas'
         message='Inget artikeldokument är angivet. Navigera tillbaka till översikten och försök igen.'
       />
@@ -87,9 +84,7 @@ const PrintEditor = (props: ViewProps): JSX.Element => {
   }
 
   return (
-    <AwarenessDocument documentId={documentId} className='h-full'>
-      <EditorWrapper documentId={documentId} {...props} />
-    </AwarenessDocument>
+    <EditorWrapper documentId={documentId} {...props} />
   )
 }
 
@@ -98,19 +93,11 @@ function EditorWrapper(props: ViewProps & {
   documentId: string
   autoFocus?: boolean
 }): JSX.Element {
+  const ydoc = useYDocument<Y.Map<unknown>>(props.documentId)
+
   const { data } = useSession()
   const { repository } = useRegistry()
-  const { provider, synced, user } = useCollaboration()
   const openFactboxEditor = useLink('Factbox')
-  const [notes] = useYValue<Block[] | undefined>('meta.core/note')
-  const [, setIsFocused] = useAwareness(props.documentId)
-
-  useEffect(() => {
-    setIsFocused(true)
-    return () => setIsFocused(false)
-    // We only want to rerun when provider change
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [provider])
 
   // Plugin configuration
   const getConfiguredPlugins = () => {
@@ -135,7 +122,7 @@ function EditorWrapper(props: ViewProps & {
         accessToken: data?.accessToken || ''
       }),
       TVListing({
-        channelComponent: ChannelComboBox
+        channelComponent: () => ChannelComboBox({ ydoc })
       }),
       TTVisual({
         enableCrop: true
@@ -159,11 +146,7 @@ function EditorWrapper(props: ViewProps & {
         className='h-screen max-h-screen flex flex-col'
       >
         <EditorContainer
-          provider={provider}
-          synced={synced}
-          user={user}
-          documentId={props.documentId}
-          notes={notes}
+          ydoc={ydoc}
         />
       </Textbit.Root>
     </View.Root>
@@ -173,42 +156,23 @@ function EditorWrapper(props: ViewProps & {
 
 // Container component that uses TextBit context
 function EditorContainer({
-  provider,
-  synced,
-  user,
-  documentId,
-  notes
+  ydoc
 }: {
-  provider: HocuspocusProvider | undefined
-  synced: boolean
-  user: AwarenessUserData
-  documentId: string
-  notes: Block[] | undefined
+  ydoc: YDocument<Y.Map<unknown>>
 }): JSX.Element {
   const openPrintArticle = useLink('PrintEditor')
   const [promptIsOpen, setPromptIsOpen] = useState(false)
   const [isChecking, setIsChecking] = useState(false)
   const { stats } = useTextbit()
-  const [layouts, setLayouts] = useYValue<EleBlock[]>('meta.tt/print-article[0].meta.tt/article-layout')
-  const [name] = useYValue<string>('meta.tt/print-article[0].name')
-  const [flowName] = useYValue<string>('links.tt/print-flow[0].title')
-  const [flowUuid] = useYValue<string>('links.tt/print-flow[0].uuid')
+  const [layouts, setLayouts] = useYValue<EleBlock[]>(ydoc.ele, 'meta.tt/print-article[0].meta.tt/article-layout')
+  const [name] = useYValue<string>(ydoc.ele, 'meta.tt/print-article[0].name')
+  const [flowName] = useYValue<string>(ydoc.ele, 'links.tt/print-flow[0].title')
+  const [flowUuid] = useYValue<string>(ydoc.ele, 'links.tt/print-flow[0].uuid')
   const { baboon } = useRegistry()
   const { data: session } = useSession()
   const [, , allParams] = useQuery(['from'], true)
   const fromDate = allParams?.filter((item) => item.name === 'Print')?.[0]?.params?.from
-  const [date] = useYValue<string>('meta.tt/print-article[0].data.date')
-  const [isChanged] = useYValue<boolean>('root.changed')
-
-  const handleChange = useCallback((value: boolean): void => {
-    const root = provider?.document.getMap('ele').get('root') as Y.Map<unknown>
-    const changed = root.get('changed') as boolean
-
-
-    if (changed !== value) {
-      root.set('changed', value)
-    }
-  }, [provider])
+  const [date] = useYValue<string>(ydoc.ele, 'meta.tt/print-article[0].data.date')
 
   if (!layouts) {
     return <p>no layouts</p>
@@ -219,24 +183,30 @@ function EditorContainer({
       toast.error('Något gick fel när printartikel skulle dupliceras')
       return
     }
-    await snapshotDocument(documentId)
+
     try {
       const _date = (fromDate || date) as string
       const response = await baboon.createPrintArticle({
-        sourceUuid: documentId,
+        sourceUuid: ydoc.id,
         flowUuid: flowUuid || '',
         date: _date,
         article: name || ''
       }, session.accessToken)
-        .catch((ex: unknown) => {
-          console.error('Error creating print article:', ex)
-          toast.error('Något gick fel när printartikel skulle dupliceras nytt')
-          setPromptIsOpen(false)
-        })
+
       if (response?.status.code === 'OK') {
         openPrintArticle(undefined, { id: response?.response?.uuid }, 'self')
         setPromptIsOpen(false)
-        toast.success('Printartikel har duplicerats till datumet: ' + _date)
+        toast.success(`Printartikel har duplicerats till: ${_date}`, {
+          action: (
+            <ToastAction
+              documentId={response?.response?.uuid}
+              withView='PrintEditor'
+              label='Öppna artikeln'
+              Icon={FileIcon}
+              target='self'
+            />
+          )
+        })
       }
     } catch (ex: unknown) {
       console.error('Error creating print article:', ex)
@@ -244,63 +214,65 @@ function EditorContainer({
       setPromptIsOpen(false)
     }
   }
-  async function processArray(arr: EleBlock[]) {
+  async function checkAllLayouts(arr: EleBlock[]) {
     if (!baboon || !session?.accessToken) {
-      console.error(`Missing prerequisites: ${!baboon ? 'baboon-client' : 'accessToken'} is missing`)
-      toast.error('Något gick fel när printartikel skulle renderas')
-      return
+      throw new Error(`Missing prerequisites: ${!baboon ? 'baboon-client' : 'accessToken'} is missing`)
     }
-    await snapshotDocument(documentId)
+
     const results: EleBlock[] = []
     for (const _layout of arr) {
-      try {
-        const response = await baboon.renderArticle({
-          articleUuid: documentId,
-          layoutId: _layout.id,
-          renderPdf: true,
-          renderPng: false,
-          pngScale: 300n
-        }, session.accessToken)
-        if (response?.status.code === 'OK') {
-          const overflowsStatus = response?.response?.overflows?.length > 0
-          const underflowsStatus = response?.response?.underflows?.length > 0
-          const lowresPicsStatus = response?.response?.images?.filter((image) => image.ppi <= 130).length > 0
-          const _checkedLayout = {
-            ..._layout,
-            data: {
-              ..._layout?.data,
-              status: overflowsStatus || underflowsStatus || lowresPicsStatus ? 'false' : 'true'
-            }
+      const response = await baboon.renderArticle({
+        articleUuid: ydoc.id,
+        layoutId: _layout.id,
+        renderPdf: true,
+        renderPng: false,
+        pngScale: 300n
+      }, session.accessToken)
+      if (response?.status.code === 'OK') {
+        const overflowsStatus = response?.response?.overflows?.length > 0
+        const underflowsStatus = response?.response?.underflows?.length > 0
+        const lowresPicsStatus = response?.response?.images?.filter((image) => image.ppi <= 130).length > 0
+        const _checkedLayout = {
+          ..._layout,
+          data: {
+            ..._layout?.data,
+            status: overflowsStatus || underflowsStatus || lowresPicsStatus ? 'false' : 'true'
           }
-          results.push(_checkedLayout)
         }
-      } catch (ex: unknown) {
-        console.error('Error rendering article:', ex)
-        toast.error('Något gick fel när printartikel skulle renderas')
+        results.push(_checkedLayout)
       }
     }
 
     return results
   }
+
   const statusChecker = async () => {
-    setIsChecking(true)
-    const newLayouts = await processArray(layouts)
-    setLayouts(newLayouts || [])
-    setIsChecking(false)
+    try {
+      await snapshotDocument(ydoc.id, undefined, ydoc.provider?.document)
+
+      setIsChecking(true)
+      const newLayouts = await checkAllLayouts(layouts)
+
+      setLayouts(newLayouts || [])
+      setIsChecking(false)
+    } catch (ex) {
+      setIsChecking(false)
+      toast.error(ex instanceof Error ? ex.message : 'Något gick fel när layouterna skulle kontrolleras')
+    }
   }
 
   return (
     <>
-      <EditorHeader documentId={documentId} flowName={flowName} isChanged={isChanged} />
-      {!!notes?.length && <div className='p-4'><Notes /></div>}
+      <EditorHeader ydoc={ydoc} flowName={flowName} />
+      <Notes ydoc={ydoc} />
       <View.Content className='flex flex-col max-w-[1400px] grow'>
-        <section className='flex'>
-          <div className='w-2/3'>
+        <section className='flex flex-col-reverse @4xl:grid @4xl:grid-cols-12 @container'>
+          <div className='@4xl:col-span-8'>
             <ScrollArea className='h-[calc(100vh-7rem)]'>
-              <div className='grow overflow-auto pr-12 max-w-(--breakpoint-xl)'>
-                {!!provider && synced
+              <div className='flex-grow overflow-auto pr-12 max-w-screen-2xl'>
+                {!!ydoc.provider && ydoc.provider.isSynced
                   ? (
-                      <EditorContent provider={provider} user={user} onChange={handleChange} />
+                      <EditorContent ydoc={ydoc} />
                     )
                   : (
                       <></>
@@ -308,7 +280,7 @@ function EditorContainer({
               </div>
             </ScrollArea>
           </div>
-          <aside className='w-1/3 @printEditor:sticky @printEditor:top-16 p-4'>
+          <aside className='@4xl:col-span-4 @4xl:sticky @4xl:top-16 p-4'>
             <header className='flex flex-row gap-2 items-center justify-between mb-2'>
               <div className='flex items-center'>
                 <Button variant='ghost' size='sm' onClick={() => { void statusChecker() }}>
@@ -343,8 +315,15 @@ function EditorContainer({
                 primaryLabel='Duplicera'
                 secondaryLabel='Avbryt'
                 onPrimary={() => {
-                  void handleCopyArticle().catch(console.error)
                   setPromptIsOpen(false)
+
+                  snapshotDocument(ydoc.id, undefined, ydoc.provider?.document)
+                    .then(() => {
+                      void handleCopyArticle()
+                    })
+                    .catch((ex: Error) => {
+                      toast.error(ex instanceof Error ? ex.message : 'Något gick fel när printartikel skulle dupliceras')
+                    })
                 }}
                 onSecondary={() => {
                   setPromptIsOpen(false)
@@ -380,11 +359,10 @@ function EditorContainer({
                         return (
                           <LayoutBox
                             key={layout.id}
-                            documentId={documentId}
+                            ydoc={ydoc}
                             layoutIdForRender={layout.id}
                             layoutId={layout.links['_'][0].uuid}
                             index={index}
-                            onChange={handleChange}
                             deleteLayout={(layoutId) => {
                               const newLayouts = layouts.filter((_layout) => _layout.id !== layoutId)
                               setLayouts(newLayouts)
@@ -414,16 +392,14 @@ function EditorContainer({
 }
 
 
-function EditorContent({ provider, user, onChange }: {
-  provider: HocuspocusProvider
-  user: AwarenessUserData
-  onChange?: (value: boolean) => void
+function EditorContent({ ydoc }: {
+  ydoc: YDocument<Y.Map<unknown>>
 }): JSX.Element {
   const { isActive } = useView()
   const ref = useRef<HTMLDivElement>(null)
-  const [documentLanguage] = getValueByYPath<string>(provider.document.getMap('ele'), 'root.language')
+  const [documentLanguage] = getValueByYPath<string>(ydoc.ele, 'root.language')
 
-  const yjsEditor = useYjsEditor(provider, user)
+  const yjsEditor = useYjsEditor(ydoc)
   const onSpellcheck = useOnSpellcheck(documentLanguage)
 
   // Handle focus on active state
@@ -435,22 +411,12 @@ function EditorContent({ provider, user, onChange }: {
     }
   }, [isActive, ref])
 
-  // Initialization of the editor causes a call to onChange, we're not interested in that.
-  const hasInitialized = useRef(false)
-
   return (
     <Textbit.Editable
       ref={ref}
       yjsEditor={yjsEditor}
       lang={documentLanguage}
       onSpellcheck={onSpellcheck}
-      onChange={(_value) => {
-        if (hasInitialized.current) {
-          onChange?.(true)
-        } else {
-          hasInitialized.current = true
-        }
-      }}
       className='outline-none
         h-full
         dark:text-slate-100

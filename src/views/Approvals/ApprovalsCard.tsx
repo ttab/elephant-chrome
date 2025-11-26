@@ -1,97 +1,53 @@
 import { Card } from '@/components/Card'
-import { ClockIcon } from '@/components/ClockIcon'
 import { Avatar, Link } from '@/components/index'
 import type { AssignmentInterface } from '@/hooks/index/useAssignments'
 import { useLink } from '@/hooks/useLink'
-import { useRegistry } from '@/hooks/useRegistry'
-import { CalendarDaysIcon, FileWarningIcon, MessageSquarePlusIcon, ZapIcon } from '@ttab/elephant-ui/icons'
-import { parseISO, format } from 'date-fns'
-import { toZonedTime } from 'date-fns-tz'
-import type { IDBAuthor, StatusData } from 'src/datastore/types'
+import { CalendarDaysIcon, EyeIcon, FileWarningIcon, MessageSquarePlusIcon, ZapIcon } from '@ttab/elephant-ui/icons'
+import type { StatusData } from '@/types'
 import { useSections } from '@/hooks/useSections'
 import type { StatusSpecification } from '@/defaults/workflowSpecification'
-import { useYValue } from '@/hooks/useYValue'
 import { AvatarGroup } from '@/components/AvatarGroup'
 import { Popover, PopoverContent, PopoverTrigger, Tooltip } from '@ttab/elephant-ui'
-import { timesSlots } from '@/defaults/assignmentTimeslots'
-import { useMemo } from 'react'
 import { AuthorNames } from './AuthorNames'
 import { CAUSE_KEYS } from '@/defaults/causekeys'
 import { useWorkflowStatus } from '@/hooks/useWorkflowStatus'
+import { TimeCard } from './TimeCard'
+import { useYValue, type YDocument } from '@/modules/yjs/hooks'
+import type * as Y from 'yjs'
 
-export const ApprovalsCard = ({ assignment, isSelected, isFocused, status, authors, openEditors }: {
+export const ApprovalsCard = ({ ydoc, assignment, isSelected, isFocused, status, openEditors }: {
   assignment: AssignmentInterface
   status: StatusSpecification
   isSelected: boolean
   isFocused: boolean
-  authors: IDBAuthor[]
   openEditors: string[]
+  ydoc: YDocument<Y.Map<unknown>>
 }) => {
-  const { timeZone } = useRegistry()
   const sections = useSections()
   const openArticle = useLink('Editor')
   const openFlash = useLink('Flash')
-  const [users] = useYValue<Record<string, { id: string, name: string, username: string }>>(`${assignment._deliverableId}.users`, false, undefined, 'open-documents')
-  const [documentStatus] = useWorkflowStatus(assignment._deliverableId, true)
+
+  const path = `${assignment._deliverableId}.users`
+  const [users] = useYValue<Record<string, { id: string, name: string, username: string }>>(
+    ydoc.provider?.document.getMap('open-documents'), path
+  )
+
+  const [documentStatus] = useWorkflowStatus({ documentId: assignment._deliverableId, isWorkflow: true })
 
   const openType = (assignmentType: string) => assignmentType === 'core/flash' ? openFlash : openArticle
-  const time = useMemo(() =>
-    getAssignmentTime(assignment, timeZone), [assignment, timeZone])
 
   const documentId = assignment._deliverableId
 
   const statusData = assignment?._statusData
     ? JSON.parse(assignment._statusData) as StatusData
     : null
-  const entries = statusData ? Object.entries(statusData.heads).sort((a, b) => a[1].created > b[1].created ? -1 : 1) : []
-
-
-  const lastUpdated = entries?.[0]?.[1]
-  const lastUpdatedById = lastUpdated?.creator.slice(lastUpdated?.creator.lastIndexOf('/'))
-
-  const lastStatusUpdateAuthor = authors.find((a) => {
-    return lastUpdatedById === a?.sub?.slice(a?.sub?.lastIndexOf('/'))
-  })
-
-  const getAuthorAfterSetStatus = (status: string) => {
-    const statusIndex = entries.findIndex((entry) => entry[0] === status)
-    const afterStatus = entries[statusIndex - 1]?.[1]
-
-    const creatorId = afterStatus?.creator.slice(afterStatus?.creator.lastIndexOf('/'))
-    return authors.find((a) => {
-      return creatorId === a?.sub?.slice(a?.sub?.lastIndexOf('/'))
-    })
-  }
-
-  const afterDraftAuthor = getAuthorAfterSetStatus('draft')
-
-  const byline = (assignment?._deliverableDocument?.links ?? [])?.filter((l) => l.type === 'core/author').map((author) => author.title).join(', ')
-
-  const assignees = assignment.links
-    .filter((m) => m.type === 'core/author' && m.title)
-    .map((l) => l.title)
-
-  const doneStatus = statusData
-    ? entries
-      ?.find((entry) => entry[0] === 'done')?.[1]
-    : undefined
 
   const title = assignment._deliverableDocument?.title
 
   const slugline = assignment.meta.find((m) => m.type === 'tt/slugline')?.value
-  // heads.usable.id is a bigint counter that represents the version number
-  // of the current 'usable' status. Each time a version is tagged as usable,
-  // this id is incremented by 1
   const lastUsableOrder = statusData?.heads.usable?.id
 
   const internalInfo = assignment._deliverableDocument?.meta.find((block) => block.type === 'core/note' && block.role === 'internal')?.data?.text
-
-  const timeTooltip = (assignment._deliverableStatus === 'withheld' && assignment?.data?.publish)
-    ? `Schemalagd kl ${format(toZonedTime(parseISO(assignment.data.publish), timeZone), 'HH:mm')}`
-    : statusData?.modified
-      ? `Senast ändrad ${format(toZonedTime(parseISO(statusData.modified), timeZone), 'HH:mm')}`
-      : 'Senast ändrad'
-
 
   const cause = documentStatus?.cause ? CAUSE_KEYS[documentStatus.cause as keyof typeof CAUSE_KEYS].short : ''
 
@@ -101,13 +57,14 @@ export const ApprovalsCard = ({ assignment, isSelected, isFocused, status, autho
       isFocused={isFocused}
       isSelected={isSelected}
       onSelect={(event) => {
-        const openDocument = openType(assignment._deliverableType as string)
+        const openDocument = openType(assignment._deliverableType!)
+
         if (event instanceof KeyboardEvent && event.key == ' ' && documentId) {
-          openDocument(event, { id: documentId, autoFocus: false }, openEditors.length > 0 ? undefined : 'last', undefined, true)
+          openDocument(event, { id: documentId, autoFocus: false, preview: true }, openEditors.length > 0 ? undefined : 'last', undefined, true)
         } else if (documentId) {
           if (assignment._deliverableStatus === 'usable') {
             const lastUsableVersion = statusData?.heads.usable?.version
-            openDocument(event, { id: documentId }, 'last', undefined, undefined, { version: lastUsableVersion as bigint })
+            openDocument(event, { id: documentId, preview: false }, 'last', undefined, undefined, { version: lastUsableVersion as bigint })
           } else {
             openDocument(event, { id: documentId })
           }
@@ -151,21 +108,7 @@ export const ApprovalsCard = ({ assignment, isSelected, isFocused, status, autho
             </Popover>
           )}
         </div>
-
-        <Popover>
-          <PopoverTrigger onClick={(e) => {
-            e.stopPropagation()
-          }}
-          >
-            <Tooltip content={timeTooltip}>
-              <div className='flex flex-row gap-1 items-center'>
-                <ClockIcon hour={(time) ? parseInt(time.slice(0, 2)) : undefined} size={14} className='opacity-50' />
-                <time>{time}</time>
-              </div>
-            </Tooltip>
-          </PopoverTrigger>
-          <PopoverContent>{statusData?.modified ? `Senast ändrad ${format(toZonedTime(parseISO(statusData.modified), timeZone), 'HH:mm')}` : 'Senast ändrad'}</PopoverContent>
-        </Popover>
+        <TimeCard assignment={assignment} />
       </Card.Header>
 
       <Card.Content>
@@ -183,15 +126,8 @@ export const ApprovalsCard = ({ assignment, isSelected, isFocused, status, autho
 
       <Card.Footer>
         <div className='flex flex-col w-full'>
-          <div className='truncate' title={assignees.join(', ')}>
-            <AuthorNames
-              byline={byline}
-              doneStatus={doneStatus}
-              assignees={assignees}
-              authors={authors}
-              afterDraftAuthor={afterDraftAuthor}
-              lastStatusUpdateAuthor={lastStatusUpdateAuthor}
-            />
+          <div className='truncate'>
+            <AuthorNames assignment={assignment} />
           </div>
           <div className='flex grow justify-between align-middle'>
             <div className='flex flex-row content-center opacity-60 gap-1'>
@@ -210,47 +146,34 @@ export const ApprovalsCard = ({ assignment, isSelected, isFocused, status, autho
                 </span>
               )}
             </div>
-            <Link
-              to='Planning'
-              props={{ id: assignment._id }}
-              className='block p-1 -m-1 rounded transition-all opacity-70 md:opacity-0 md:group-hover:opacity-70 md:group-focus:opacity-70 md:group-focus-within:opacity-70 hover:bg-gray-300 dark:hover:bg-gray-700'
-              onClick={(e) => e.stopPropagation()}
-            >
-              <Tooltip content='Öppna planering'>
-                <CalendarDaysIcon size={16} strokeWidth={1.75} />
-              </Tooltip>
-            </Link>
+
+            <div className='flex flex-row gap-3'>
+              <Link
+                to={assignment._deliverableType === 'core/flash' ? 'Flash' : 'Editor'}
+                props={{ id: assignment._deliverableId, autoFocus: false, preview: true }}
+                className='block p-1 -m-1 rounded transition-all opacity-70 md:opacity-0 md:group-hover:opacity-70 md:group-focus:opacity-70 md:group-focus-within:opacity-70 hover:bg-gray-300 dark:hover:bg-gray-700'
+                keepFocus
+                onClick={(e) => e.stopPropagation()}
+              >
+                <Tooltip content='Öppna förhandsgranskning'>
+                  <EyeIcon size={16} strokeWidth={1.75} />
+                </Tooltip>
+              </Link>
+              <Link
+                to='Planning'
+                props={{ id: assignment._id }}
+                className='block p-1 -m-1 rounded transition-all opacity-70 md:opacity-0 md:group-hover:opacity-70 md:group-focus:opacity-70 md:group-focus-within:opacity-70 hover:bg-gray-300 dark:hover:bg-gray-700'
+                onClick={(e) => e.stopPropagation()}
+              >
+                <Tooltip content='Öppna planering'>
+                  <CalendarDaysIcon size={16} strokeWidth={1.75} />
+                </Tooltip>
+              </Link>
+            </div>
           </div>
         </div>
       </Card.Footer>
 
     </Card.Root>
   )
-}
-
-
-function getAssignmentTime(assignment: AssignmentInterface, timeZone: string) {
-  if (assignment.data.publish && assignment._deliverableStatus === 'withheld') {
-    return format(toZonedTime(parseISO(assignment.data.publish), timeZone), 'HH:mm')
-  }
-  if (assignment?._statusData) {
-    const modified = (JSON.parse(assignment._statusData) as StatusData)?.modified
-    return format(toZonedTime(parseISO(modified), timeZone), 'HH:mm')
-  }
-  if (assignment.data.publish_slot) {
-    return getTimeslotLabel(parseInt(assignment.data.publish_slot))
-  }
-  if (assignment.data.start) {
-    return format(toZonedTime(parseISO(assignment.data.start), timeZone), 'HH:mm')
-  }
-  return undefined
-}
-
-export function getTimeslotLabel(hour: number): string | undefined {
-  for (const key in timesSlots) {
-    if (timesSlots[key].slots.includes(hour)) {
-      return timesSlots[key].label
-    }
-  }
-  return undefined
 }

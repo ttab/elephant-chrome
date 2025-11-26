@@ -103,3 +103,21 @@ with `npm run link:elephant-ui` to hassle free link the packages during developm
 ```
 
 the link/unlink scripts takes a relative path to the package as argument.
+
+## Running multiple dev instances with Caddy
+
+`npm run dev:multi` kicks off `tooling/multi.sh`, which ensures `concurrently` + `caddy` exist before launching both dev stacks and the proxy from `Caddyfile`.
+
+* Instance A: `PORT=5183`, `VITE_DEV_SERVER_PORT=5173`, `VITE_HMR_PORT=6000`
+* Instance B: `PORT=5283`, `VITE_DEV_SERVER_PORT=5273`, `VITE_HMR_PORT=5000`
+* Caddy listens on `http://localhost:3333` and round-robins HTTP + websockets between both
+
+Edit `tooling/multi.sh` (and `Caddyfile`) to change ports; run the script directly or stick with npm.
+For single-instance work, just run `npm run dev` with your own env vars.
+To install caddy:
+
+```bash
+brew install caddy #MacOS
+sudo apt install caddy #Debian/Ubuntu
+nix-shell -p caddy #Nixos
+```

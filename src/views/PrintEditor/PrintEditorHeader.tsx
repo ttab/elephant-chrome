@@ -1,89 +1,42 @@
-import { useView, useYValue } from '@/hooks'
-import { useEffect, useRef, useState } from 'react'
+import { useView } from '@/hooks'
+import { useEffect, useRef } from 'react'
 import { ViewHeader } from '@/components/View'
 import { StatusMenu } from '@/components/DocumentStatus/StatusMenu'
 import { PenBoxIcon } from '@ttab/elephant-ui/icons'
-import { snapshotDocument } from '@/lib/snapshotDocument'
 import { AddNote } from '@/components/Notes/AddNote'
-import { toast } from 'sonner'
-
-/**
- * EditorHeader component.
- *
- * This component represents the header section of the Print Editor. It includes
- * the title, input for the print article name, and controls for adding notes and
- * managing document status.
- *
- * @param props - The properties object.
- * @param props.documentId - The unique identifier for the document.
- *
- * @returns The rendered EditorHeader component.
- *
- * @remarks
- * The component uses the `useView` hook to get the current view ID and manages
- * a reference to the container element. It also includes a button to refresh
- * layouts and displays remote users and document status if a document ID is provided.
- */
+import { ArticleTitle } from './components/ArticleTitle'
+import type * as Y from 'yjs'
+import type { YDocument } from '@/modules/yjs/hooks'
 
 export const EditorHeader = ({
-  documentId,
-  flowName,
-  isChanged
+  ydoc,
+  flowName
 }: {
-  documentId: string
+  ydoc: YDocument<Y.Map<unknown>>
   flowName?: string
-  isChanged?: boolean
 }): JSX.Element => {
   const { viewId } = useView()
   const containerRef = useRef<HTMLElement | null>(null)
   useEffect(() => {
-    containerRef.current = document.getElementById(viewId)
+    containerRef.current = window.document.getElementById(viewId)
   }, [viewId])
-  const [isDirty, setIsDirty] = useState(false)
-  const [title, setTitle] = useYValue<string>('root.title')
 
   return (
     <ViewHeader.Root className='@container grid grid-cols-2'>
       <section className='col-span-2 flex flex-row gap-2 justify-between items-center w-full'>
-        <div className='hidden @printEditor:block'>
-          <ViewHeader.Title name={flowName || ''} title={flowName || ''} icon={PenBoxIcon} />
-        </div>
+        <ViewHeader.Title name={flowName || ''} title={flowName || ''} icon={PenBoxIcon} />
 
         <ViewHeader.Content className='justify-start w-full'>
           <div className='max-w-[1040px] mx-auto flex flex-row gap-2 justify-between items-center w-full'>
-            <div className='flex flex-row gap-1 justify-start items-center @7xl/view:-ml-20'>
-              <div className='flex flex-row gap-2 justify-start items-center'>
-                <input
-                  type='text'
-                  placeholder='Printartikelnamn'
-                  className='px-2 py-1 w-[130px] @printEditor:w-full'
-                  value={title}
-                  onChange={(e) => {
-                    setIsDirty(true)
-                    setTitle(e.target.value)
-                  }}
-                  onBlur={() => {
-                    if (isDirty) {
-                      setIsDirty(false)
-                      snapshotDocument(documentId).then(() => {
-                        toast.success('Titel uppdaterad')
-                      }).catch((error) => {
-                        console.error('Error updating title:', error)
-                      })
-                    }
-                  }}
-                />
-              </div>
-            </div>
+            <ArticleTitle ydoc={ydoc} />
             <div className='flex flex-row gap-2 justify-end items-center'>
-              <div className='hidden @printEditor:block'><AddNote role='internal' /></div>
-              {!!documentId && (
+              <AddNote ydoc={ydoc} role='internal' />
+              {!!ydoc.id && (
                 <>
-                  <ViewHeader.RemoteUsers documentId={documentId} />
+                  <ViewHeader.RemoteUsers ydoc={ydoc} />
                   <StatusMenu
-                    documentId={documentId}
+                    ydoc={ydoc}
                     type='tt/print-article'
-                    isChanged={isChanged}
                   />
                 </>
               )}

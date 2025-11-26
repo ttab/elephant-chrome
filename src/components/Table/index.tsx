@@ -23,8 +23,7 @@ import {
   useHistory,
   useNavigationKeys,
   useOpenDocuments,
-  useWorkflowStatus,
-  useQuery
+  useWorkflowStatus
 } from '@/hooks'
 import { handleLink } from '@/components/Link/lib/handleLink'
 import { NewItems } from './NewItems'
@@ -92,11 +91,7 @@ export const Table = <TData, TValue>({
   const { table, loading } = useTable()
   const openDocuments = useOpenDocuments({ idOnly: true })
   const { showModal, hideModal, currentModal } = useModal()
-  const [, setDocumentStatus] = useWorkflowStatus()
-  const [,,allParams] = useQuery(['id'], true)
-  const activeId = allParams?.filter((item) => {
-    return item.name === 'PrintEditor'
-  })?.[0]?.params?.id as string
+  const [, setDocumentStatus] = useWorkflowStatus({})
 
   const handlePreview = useCallback((row: RowType<unknown>): void => {
     row.toggleSelected(true)
@@ -315,7 +310,6 @@ export const Table = <TData, TValue>({
             columns={columns}
             handleOpen={handleOpen}
             openDocuments={openDocuments}
-            activeId={activeId}
           />
         )
       : (

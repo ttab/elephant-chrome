@@ -1,7 +1,6 @@
 import { Awareness } from '@/components'
 import { ComboBox } from '@ttab/elephant-ui'
 import { useAuthors } from '@/hooks/useAuthors'
-import { useYValue } from '@/hooks/useYValue'
 import { UserPlusIcon } from '@ttab/elephant-ui/icons'
 import { useRef } from 'react'
 
@@ -9,8 +8,11 @@ import { AssigneeAvatars } from '@/components/DataItem/AssigneeAvatars'
 import { YBlock } from '@/shared/YBlock'
 import type { EleBlock } from '@/shared/types'
 import { type FormProps } from './Form/Root'
+import { type YDocument, useYValue } from '@/modules/yjs/hooks'
+import type * as Y from 'yjs'
 
-export const Assignees = ({ path, placeholder, asDialog, onChange }: {
+export const Assignees = ({ ydoc, path, placeholder, asDialog, onChange }: {
+  ydoc: YDocument<Y.Map<unknown>>
   placeholder: string
   path: string
 } & FormProps): JSX.Element | undefined => {
@@ -20,7 +22,7 @@ export const Assignees = ({ path, placeholder, asDialog, onChange }: {
       label: _.name
     }
   })
-  const [assignees, setAssignees] = useYValue<EleBlock[]>(path)
+  const [assignees, setAssignees] = useYValue<EleBlock[]>(ydoc.ele, path)
   const selectedOptions = ((assignees || [])?.map((a) => {
     return {
       value: a.uuid,
@@ -31,7 +33,7 @@ export const Assignees = ({ path, placeholder, asDialog, onChange }: {
 
   return (
     <div className='flex gap-2 items-center'>
-      <Awareness ref={setFocused} path={path}>
+      <Awareness ydoc={ydoc} ref={setFocused} path={path}>
         <ComboBox
           variant='ghost'
           size='xs'

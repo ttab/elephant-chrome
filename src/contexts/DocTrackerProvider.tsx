@@ -2,14 +2,13 @@ import {
   createContext,
   type PropsWithChildren,
   useState,
-  useContext,
   useMemo,
   useEffect
 } from 'react'
 import { HocuspocusProvider } from '@hocuspocus/provider'
 import { useSession } from 'next-auth/react'
-import { HPWebSocketProviderContext } from '.'
 import { createStateless, StatelessType } from '@/shared/stateless'
+import { useWebSocket } from '@/modules/yjs/hooks'
 
 interface DocTrackerProviderState {
   provider?: HocuspocusProvider
@@ -32,7 +31,7 @@ interface DocTrackerContextProviderProps extends PropsWithChildren {
 }
 
 export const DocTrackerProvider = ({ children }: DocTrackerContextProviderProps): JSX.Element => {
-  const { webSocket } = useContext(HPWebSocketProviderContext)
+  const { webSocketProvider } = useWebSocket()
   const { data, status } = useSession()
 
   const [synced, setSynced] = useState<boolean>(false)
@@ -43,12 +42,12 @@ export const DocTrackerProvider = ({ children }: DocTrackerContextProviderProps)
   }
 
   const provider = useMemo(() => {
-    if (!webSocket) {
+    if (!webSocketProvider) {
       return
     }
 
     return new HocuspocusProvider({
-      websocketProvider: webSocket,
+      websocketProvider: webSocketProvider,
       name: 'document-tracker',
       token: data.accessToken,
       onConnect: () => {
@@ -67,7 +66,7 @@ export const DocTrackerProvider = ({ children }: DocTrackerContextProviderProps)
     // JWT.token should be used on creation, but provider should not be recreated on token change
     // In this case we don't need to update the token since auth is done on when provider opens the connection
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [webSocket])
+  }, [webSocketProvider])
 
   const state = {
     provider,

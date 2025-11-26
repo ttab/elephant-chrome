@@ -7,7 +7,6 @@ import { useNavigationKeys } from '@/hooks/useNavigationKeys'
 import { useModal } from '@/components/Modal/useModal'
 import type { Wire as WireType } from '@/shared/schemas/wire'
 import type { Status as DocumentStatuses } from '@ttab/elephant-api/repository'
-import { MetaSheet } from '@/views/Editor/components/MetaSheet'
 import { useEffect, useMemo, useRef } from 'react'
 import { useWorkflowStatus } from '@/hooks/useWorkflowStatus'
 import { decodeString } from '@/lib/decodeString'
@@ -21,9 +20,8 @@ export const PreviewSheet = ({ id, wire, handleClose, textOnly = true, version, 
   versionStatusHistory?: DocumentStatuses[]
   handleClose: () => void
 }): JSX.Element => {
-  const [documentStatus, setDocumentStatus, mutate] = useWorkflowStatus(id)
+  const [documentStatus, setDocumentStatus, mutate] = useWorkflowStatus({ documentId: id })
   const { showModal, hideModal } = useModal()
-
   const containerRef = useRef<HTMLElement | null>(null)
 
   useEffect(() => {
@@ -231,7 +229,6 @@ export const PreviewSheet = ({ id, wire, handleClose, textOnly = true, version, 
                 </ToggleGroup>
               </>
             )}
-            <MetaSheet container={containerRef.current} documentId={id} readOnly readOnlyVersion={version} />
             <SheetClose
               className='rounded-md hover:bg-gray-100 w-8 h-8 flex items-center justify-center outline-none -mr-7'
               onClick={handleClose}
@@ -241,7 +238,7 @@ export const PreviewSheet = ({ id, wire, handleClose, textOnly = true, version, 
           </div>
         </div>
         <div className='flex flex-col h-full'>
-          <Editor id={id} textOnly={textOnly} version={version} versionStatusHistory={versionStatusHistory} />
+          <Editor id={id} textOnly={textOnly} version={version} versionStatusHistory={versionStatusHistory} direct />
         </div>
       </div>
     </FaroErrorBoundary>

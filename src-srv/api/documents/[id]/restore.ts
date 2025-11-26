@@ -1,6 +1,6 @@
 import type { Request } from 'express'
 import type { RouteHandler } from '../../../routes.js'
-import { isValidUUID } from '../../../utils/isValidUUID.js'
+import { isValidUUID } from '@/shared/isValidUUID.js'
 import { toGroupedNewsDoc } from '@/shared/transformations/groupedNewsDoc.js'
 import logger from '../../../lib/logger.js'
 import { getContextFromValidSession, getSession, isContext } from '../../../lib/context.js'
@@ -33,6 +33,15 @@ export const POST: RouteHandler = async (req: Request, { collaborationServer, ca
   }
 
   try {
+    // Check if the document has been loaded into redis, if not, we don't need
+    // to do anything.
+    const exists = await cache.exists(id)
+    if (!exists) {
+      return {
+        payload: {}
+      }
+    }
+
     // Fetch content from repository
     const doc = await repository.getDocument({
       uuid: id,

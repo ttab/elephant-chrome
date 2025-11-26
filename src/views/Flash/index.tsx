@@ -1,16 +1,18 @@
 import type * as Y from 'yjs'
-import { AwarenessDocument, View } from '@/components'
+import { View } from '@/components'
 import type { ViewMetadata, ViewProps } from '@/types'
 import { FlashDialog } from './FlashDialog'
-import { createDocument } from '@/shared/createYItem'
-import { useState } from 'react'
-import * as Templates from '@/shared/templates'
+import { useMemo, useRef } from 'react'
 import { useQuery } from '@/hooks/useQuery'
 import { Error } from '../Error'
 import { FlashView } from './FlashView'
 import { useWorkflowStatus } from '@/hooks/useWorkflowStatus'
 import { FlashHeader } from './FlashHeader'
 import { Editor as PlainEditor } from '@/components/PlainEditor'
+import { getTemplateFromView } from '@/shared/templates/lib/getTemplateFromView'
+import { toGroupedNewsDoc } from '@/shared/transformations/groupedNewsDoc'
+import type { YDocument } from '@/modules/yjs/hooks'
+import type { Document } from '@ttab/elephant-api/newsdoc'
 
 const meta: ViewMetadata = {
   name: 'Flash',
@@ -29,29 +31,34 @@ const meta: ViewMetadata = {
 }
 
 export const Flash = (props: ViewProps & {
-  document?: Y.Doc
+  document?: Document
 }): JSX.Element => {
   const [query] = useQuery()
-  const [document, setDocument] = useState<Y.Doc | undefined>(undefined)
-  const [workflowStatus] = useWorkflowStatus(props.id || '', true)
+  const [workflowStatus] = useWorkflowStatus({ documentId: props.id || '', isWorkflow: true })
 
-  // We must not read query.id if we are in a dialog or we pick up other documents ids
-  const [documentId, setDocumentId] = useState<string | undefined>(props.id || (props.asDialog ? undefined : query.id as string))
-
-  // Create docment if in a dialog
-  if (props.asDialog && !documentId) {
-    const [docId, doc] = createDocument({
-      template: Templates.flash,
-      documentId: props.id || undefined,
-      inProgress: props.asDialog
-    })
-
-    setDocument(doc)
-    setDocumentId(docId)
+  const persistentDocumentId = useRef<string>()
+  if (!persistentDocumentId.current) {
+    persistentDocumentId.current = crypto.randomUUID()
   }
 
+  // We must not read query.id if we are in a dialog or we pick up other documents ids
+  const documentId = props.id || (!props.asDialog && query.id) || persistentDocumentId.current
+
+  const data = useMemo(() => {
+    if (!documentId || typeof documentId !== 'string') {
+      return undefined
+    }
+
+    return toGroupedNewsDoc({
+      version: 0n,
+      isMetaDocument: false,
+      mainDocument: '',
+      document: props.document || getTemplateFromView('Flash')(documentId)
+    })
+  }, [documentId, props.document])
+
   // Error handling for missing document
-  if (!documentId || typeof documentId !== 'string') {
+  if ((!props.asDialog && !documentId) || typeof documentId !== 'string') {
     return (
       <Error
         title='Flashdokument saknas'
@@ -68,7 +75,10 @@ export const Flash = (props: ViewProps & {
 
     return (
       <View.Root>
-        <FlashHeader documentId={documentId} readOnly />
+        <FlashHeader
+          ydoc={{ id: documentId } as YDocument<Y.Map<unknown>>}
+          readOnly
+        />
         <PlainEditor key={props.version} id={documentId} version={bigIntVersion} />
       </View.Root>
     )
@@ -78,14 +88,14 @@ export const Flash = (props: ViewProps & {
     <>
       {props.asDialog
         ? (
-            <AwarenessDocument documentId={documentId} document={document}>
-              <FlashDialog {...{ ...props, id: documentId }} />
-            </AwarenessDocument>
+            <FlashDialog
+              {...props}
+              documentId={documentId}
+              data={data}
+            />
           )
         : (
-            <AwarenessDocument documentId={documentId}>
-              <FlashView {...{ ...props, id: documentId }} />
-            </AwarenessDocument>
+            <FlashView {...{ ...props, documentId, data }} />
           )}
     </>
   )

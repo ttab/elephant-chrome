@@ -2,11 +2,12 @@ import { useContext } from 'react'
 import {
   UserTrackerContext
 } from '@/contexts'
-import { useYValue } from './useYValue'
+import { useYValue } from '@/modules/yjs/hooks'
 
 export const useUserTracker = <T,>(path: string): [T | undefined, (arg0: T) => void, boolean] => {
   const context = useContext(UserTrackerContext)
-  const [user, setUser] = useYValue<T>(path, false, context.provider)
+  const ele = context.provider?.document.getMap('ele')
+  const [user, setUser] = useYValue<T>(ele, path)
   const synced = !!context.provider?.synced
 
   if (!context) {

@@ -1,36 +1,39 @@
 import type * as Y from 'yjs'
 import { type ViewMetadata, type ViewProps } from '@/types/index'
-import { AwarenessDocument } from '@/components/AwarenessDocument'
+import { useYDocument, useYValue } from '@/modules/yjs/hooks'
+import type { EleDocumentResponse } from '@/shared/types'
 import {
-  useCollaboration,
-  useQuery,
-  useAwareness,
-  useYValue
+  useQuery
 } from '@/hooks'
 import { useSession } from 'next-auth/react'
 import { View } from '@/components/View'
 import { Button } from '@ttab/elephant-ui'
-import { TagsIcon, CalendarClockIcon } from '@ttab/elephant-ui/icons'
+import { TagsIcon, CalendarClockIcon, TextIcon, KeyIcon, CalendarPlus2Icon } from '@ttab/elephant-ui/icons'
 import {
-  Description,
   Newsvalue,
-  Title,
   Section,
   Story,
-  Registration,
   Category,
-  Organiser
+  Organiser,
+  UserMessage
 } from '@/components'
 import { PlanningTable } from './components/PlanningTable'
 import { Error } from '../Error'
 import { Form } from '@/components/Form'
 import { EventTimeMenu } from './components/EventTime'
-import { useCallback, useEffect } from 'react'
+import { useMemo } from 'react'
 import { EventHeader } from './EventHeader'
 import { DuplicatesTable } from '../../components/DuplicatesTable'
 import { Cancel } from './components/Cancel'
 import { CopyGroup } from '../../components/CopyGroup'
 import { snapshotDocument } from '@/lib/snapshotDocument'
+import { toast } from 'sonner'
+import { TextInput } from '@/components/ui/TextInput'
+import { getTemplateFromView } from '@/shared/templates/lib/getTemplateFromView'
+import { toGroupedNewsDoc } from '@/shared/transformations/groupedNewsDoc'
+import { TextBox } from '@/components/ui'
+import type { Document } from '@ttab/elephant-api/newsdoc'
+import { ToastAction } from '../Wire/ToastAction'
 
 const meta: ViewMetadata = {
   name: 'Event',
@@ -48,116 +51,149 @@ const meta: ViewMetadata = {
   }
 }
 
-export const Event = (props: ViewProps & { document?: Y.Doc }): JSX.Element => {
+export const Event = (props: ViewProps & { document?: Document }): JSX.Element => {
   const [query] = useQuery()
   const documentId = props.id || query.id
 
-  if (!documentId) {
-    return <></>
+  // Event should be responsible for creating new as well as editing
+  const data = useMemo(() => {
+    if (!props.document || !documentId || typeof documentId !== 'string') {
+      return undefined
+    }
+
+    return toGroupedNewsDoc({
+      version: 0n,
+      isMetaDocument: false,
+      mainDocument: '',
+      document: props.document || getTemplateFromView('Event')(documentId)
+    })
+  }, [documentId, props.document])
+
+  if (typeof documentId !== 'string' || !documentId) {
+    return (
+      <Error
+        title='Händelsedokument saknas'
+        message='Inget händelsedokument är angivet. Navigera tillbaka till översikten och försök igen.'
+      />
+    )
   }
 
   return (
-    <>
-      {typeof documentId === 'string'
-        ? (
-            <AwarenessDocument documentId={documentId} document={props.document}>
-              <EventViewContent {...props} documentId={documentId} />
-            </AwarenessDocument>
-          )
-        : (
-            <Error
-              title='Händelsedokument saknas'
-              message='Inget händelsedokument är angivet. Navigera tillbaka till översikten och försök igen'
-            />
-          )}
-    </>
+    <EventViewContent
+      {...props}
+      documentId={documentId}
+      data={data}
+    />
   )
 }
 
-const EventViewContent = (props: ViewProps & { documentId: string }): JSX.Element | undefined => {
-  const { provider, user } = useCollaboration()
+const EventViewContent = (props: ViewProps & {
+  documentId: string
+  data?: EleDocumentResponse
+  // setNewItem?: Setter
+}): JSX.Element | undefined => {
+  const ydoc = useYDocument<Y.Map<unknown>>(props.documentId, { data: props.data })
+  const { provider, ele: document, connected } = ydoc
+
   const { data, status } = useSession()
-  const [, setIsFocused] = useAwareness(props.documentId)
-  const [eventTitle] = useYValue<string | undefined>('root.title')
-  const [copyGroupId] = useYValue<string | undefined>('meta.core/copy-group[0].uuid')
-  const [cancelled, setCancelled] = useYValue<string | undefined>('meta.core/event[0].data.cancelled')
-  const [isChanged] = useYValue<boolean>('root.changed')
+  const [title] = useYValue<Y.XmlText>(document, 'root.title', true)
+  const [registration] = useYValue<Y.XmlText>(document, 'meta.core/event[0].data.registration', true)
+  const [publicDescription] = useYValue<Y.XmlText>(document, ['meta', 'core/description', 0, 'data', 'text'], true)
+  const [copyGroupId] = useYValue<string | undefined>(document, 'meta.core/copy-group[0].uuid')
+  const [cancelled, setCancelled] = useYValue<string | undefined>(document, 'meta.core/event[0].data.cancelled')
 
-  useEffect(() => {
-    provider?.setAwarenessField('data', user)
-    setIsFocused(true)
-
-    return () => {
-      setIsFocused(false)
-    }
-
-    // We only want to rerun when provider change
-    // eslint-disable-next-line
-  }, [provider])
-
-  const handleChange = useCallback((value: boolean): void => {
-    const root = provider?.document.getMap('ele').get('root') as Y.Map<unknown>
-    const changed = root.get('changed') as boolean
-
-
-    if (changed !== value) {
-      root.set('changed', value)
-    }
-  }, [provider])
-
-  const handleSubmit = ({ documentStatus }: {
+  const handleSubmit = async ({ documentStatus }: {
     documentStatus: 'usable' | 'done' | undefined
-  }): void => {
-    if (props?.onDialogClose) {
-      props.onDialogClose()
-    }
-
+  }): Promise<void> => {
     if (provider && status === 'authenticated') {
-      void snapshotDocument(props.documentId, {
-        status: documentStatus,
-        addToHistory: true
-      })
+      try {
+        await snapshotDocument(props.documentId, {
+          status: documentStatus,
+          addToHistory: true
+        }, provider.document)
+
+        if (props?.onDialogClose) {
+          props.onDialogClose()
+        }
+
+        toast.success(`Händelse skapad`, {
+          classNames: {
+            title: 'whitespace-nowrap'
+          },
+          action: (
+            <ToastAction
+              key='open-event'
+              documentId={props.documentId}
+              withView='Event'
+              label='Öppna händelse'
+              Icon={CalendarPlus2Icon}
+              target='last'
+            />
+          )
+        })
+      } catch (ex) {
+        console.error('Failed to snapshot event', ex)
+        toast.error('Kunde inte skapa ny händelse!', {
+          duration: 5000,
+          position: 'top-center'
+        })
+
+        // re-throw to allow further handling in Submit
+        throw ex
+      }
     }
   }
+
+  const environmentIsSane = connected && status === 'authenticated'
 
   return (
     <View.Root asDialog={props.asDialog} className={props.className}>
       <EventHeader
+        ydoc={ydoc}
         asDialog={!!props.asDialog}
         onDialogClose={props.onDialogClose}
-        documentId={props.documentId}
-        title={eventTitle}
-        provider={provider}
+        title={title?.toJSON()}
         session={data}
+        provider={provider}
         status={status}
-        isChanged={isChanged}
       />
       <View.Content className='max-w-[1000px] flex-auto'>
-        <Form.Root asDialog={props.asDialog} onChange={handleChange}>
+        <Form.Root asDialog={props.asDialog}>
           <Form.Content>
             <Form.Title>
-              <Title
-                autoFocus={props.asDialog}
-                placeholder='Händelserubrik'
+              <TextInput
+                ydoc={ydoc}
+                value={title}
+                label='Titel'
+                autoFocus={!!props.asDialog}
+                placeholder='Händelsestitel'
               />
-
             </Form.Title>
-            <Description role='public' />
-            <Registration />
-
+            <TextBox
+              ydoc={ydoc}
+              value={publicDescription}
+              icon={<TextIcon size={18} strokeWidth={1.75} className='text-muted-foreground mr-4' />}
+              placeholder='Publik beskrivning'
+            />
+            <TextBox
+              ydoc={ydoc}
+              value={registration}
+              icon={<KeyIcon size={18} strokeWidth={1.75} className='text-muted-foreground mr-4' />}
+              placeholder='Ackreditering'
+            />
             <Form.Group icon={CalendarClockIcon}>
-              <EventTimeMenu />
-              <Newsvalue />
+              <EventTimeMenu ydoc={ydoc} />
+              <Newsvalue ydoc={ydoc} path='meta.core/newsvalue[0].value' />
             </Form.Group>
 
             <Form.Group icon={TagsIcon}>
-              <Section />
-              <Organiser />
+              <Section ydoc={ydoc} path='links.core/section[0]' />
+              <Organiser ydoc={ydoc} path='links.core/organiser[0]' />
             </Form.Group>
 
             <Form.Group icon={TagsIcon}>
-              <Category />
-              <Story />
+              <Category ydoc={ydoc} path='links.core/category' />
+              <Story ydoc={ydoc} path='links.core/story[0]' />
             </Form.Group>
             {!props.asDialog && (
               <Cancel cancelled={cancelled} setCancelled={setCancelled} />
@@ -166,27 +202,35 @@ const EventViewContent = (props: ViewProps & { documentId: string }): JSX.Elemen
           </Form.Content>
 
           <Form.Table>
-            <PlanningTable provider={provider} asDialog={props.asDialog} documentId={props.documentId} />
+            <PlanningTable ydoc={ydoc} asDialog={props.asDialog} />
             {!props.asDialog && <DuplicatesTable documentId={props.documentId} type='core/event' />}
             {copyGroupId && !props.asDialog && <CopyGroup copyGroupId={copyGroupId} type='core/event' />}
           </Form.Table>
 
           <Form.Footer>
+            {!environmentIsSane && (
+              <UserMessage asDialog={!!props.asDialog} className='pb-6'>
+                Du har blivit utloggad eller tappat kontakt med systemet.
+                Vänligen försök logga in igen.
+              </UserMessage>
+            )}
+
             <Form.Submit
-              onSubmit={() => handleSubmit({ documentStatus: 'usable' })}
-              onSecondarySubmit={() => handleSubmit({ documentStatus: 'done' })}
-              onTertiarySubmit={() => handleSubmit({ documentStatus: undefined })}
+              onSubmit={() => { void handleSubmit({ documentStatus: 'usable' }) }}
+              onSecondarySubmit={() => { void handleSubmit({ documentStatus: 'done' }) }}
+              onTertiarySubmit={() => { void handleSubmit({ documentStatus: undefined }) }}
+              disableOnSubmit
             >
               <div className='flex justify-between'>
                 <div className='flex gap-2'>
-                  <Button type='button' variant='secondary' role='tertiary'>
+                  <Button type='button' variant='secondary' role='tertiary' disabled={!environmentIsSane}>
                     Utkast
                   </Button>
-                  <Button type='button' variant='secondary' role='secondary'>
+                  <Button type='button' variant='secondary' role='secondary' disabled={!environmentIsSane}>
                     Intern
                   </Button>
                 </div>
-                <Button type='submit'>
+                <Button type='submit' disabled={!environmentIsSane}>
                   Publicera
                 </Button>
               </div>

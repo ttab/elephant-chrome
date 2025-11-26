@@ -1,7 +1,7 @@
-import { useHistory, useLink, useNavigation, useView, useWorkflowStatus, useYValue } from '@/hooks'
+import { useHistory, useLink, useNavigation, useView, useWorkflowStatus } from '@/hooks'
 import { Newsvalue } from '@/components/Newsvalue'
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { MetaSheet } from './components/MetaSheet'
+import { MetaSheet } from '@/components/MetaSheet/MetaSheet'
 import { StatusMenu } from '@/components/DocumentStatus/StatusMenu'
 import { AddNote } from '@/components/Notes/AddNote'
 import { ViewHeader } from '@/components/View'
@@ -11,9 +11,12 @@ import { handleLink } from '@/components/Link/lib/handleLink'
 import { useDeliverablePlanningId } from '@/hooks/index/useDeliverablePlanningId'
 import { Button } from '@ttab/elephant-ui'
 import { updateAssignmentTime } from '@/lib/index/updateAssignmentPublishTime'
+import type { YDocument } from '@/modules/yjs/hooks'
+import { useYValue } from '@/modules/yjs/hooks'
+import type * as Y from 'yjs'
 
-export const EditorHeader = ({ documentId, readOnly, readOnlyVersion, planningId: propPlanningId }: {
-  documentId: string
+export const EditorHeader = ({ ydoc, readOnly, readOnlyVersion, planningId: propPlanningId }: {
+  ydoc: YDocument<Y.Map<unknown>>
   planningId?: string | null
   readOnly?: boolean
   readOnlyVersion?: bigint
@@ -21,11 +24,11 @@ export const EditorHeader = ({ documentId, readOnly, readOnlyVersion, planningId
   const { viewId } = useView()
   const { state, dispatch } = useNavigation()
   const history = useHistory()
-  const planningId = useDeliverablePlanningId(documentId)
+  const planningId = useDeliverablePlanningId(ydoc.id)
   const containerRef = useRef<HTMLElement | null>(null)
   const [publishTime] = useState<string | null>(null)
-  const [workflowStatus] = useWorkflowStatus(documentId, true)
-  const [documentType] = useYValue<string>('root.type')
+  const [workflowStatus] = useWorkflowStatus({ ydoc, documentId: ydoc.id, isWorkflow: true })
+  const [documentType] = useYValue<string>(ydoc.ele, 'root.type')
 
   const openLatestVersion = useLink('Editor')
 
@@ -56,7 +59,7 @@ export const EditorHeader = ({ documentId, readOnly, readOnlyVersion, planningId
       handleLink({
         dispatch,
         viewItem: state.viewRegistry.get('Editor'),
-        props: { id: documentId },
+        props: { id: ydoc.id },
         viewId: crypto.randomUUID(),
         history,
         origin: viewId,
@@ -76,11 +79,11 @@ export const EditorHeader = ({ documentId, readOnly, readOnlyVersion, planningId
         ? data.time
         : new Date()
 
-      await updateAssignmentTime(documentId, planningId, newStatus, newTime)
+      await updateAssignmentTime(ydoc.id, planningId, newStatus, newTime)
     }
 
     return true
-  }, [planningId, dispatch, documentId, history, state.viewRegistry, viewId])
+  }, [planningId, dispatch, ydoc.id, history, state.viewRegistry, viewId])
 
   const title = documentType === 'core/editorial-info' ? 'Till red' : 'Artikel'
 
@@ -89,29 +92,35 @@ export const EditorHeader = ({ documentId, readOnly, readOnlyVersion, planningId
 
   return (
     <ViewHeader.Root>
-      <ViewHeader.Title name='Editor' title={title} icon={readOnly ? PenOffIcon : PenBoxIcon} />
+      <ViewHeader.Title
+        name='Editor'
+        preview={readOnly && !readOnlyVersion}
+        title={title}
+        icon={readOnly ? PenOffIcon : PenBoxIcon}
+        ydoc={!readOnly ? ydoc : undefined}
+      />
 
       <ViewHeader.Content className='justify-start'>
         <div className='max-w-[810px] mx-auto flex flex-row gap-2 justify-between items-center w-full'>
           <div className='flex flex-row gap-1 justify-start items-center @7xl/view:-ml-20'>
             <div className='hidden flex-row gap-2 justify-start items-center @lg/view:flex'>
-              {!readOnly && <AddNote />}
-              {!readOnly && documentType !== 'core/editorial-info' && <Newsvalue />}
+              {!readOnly && <AddNote ydoc={ydoc} />}
+              {!readOnly && documentType !== 'core/editorial-info' && <Newsvalue ydoc={ydoc} path='meta.core/newsvalue[0].value' />}
             </div>
           </div>
 
           <div className='flex flex-row gap-2 justify-end items-center'>
-            {!!documentId && (
+            {!!ydoc.id && (
               <>
-                {!readOnly && <ViewHeader.RemoteUsers documentId={documentId} />}
+                {!readOnly && <ViewHeader.RemoteUsers ydoc={ydoc} />}
 
-                {isReadOnlyAndUpdated && !isUnpublished && (
+                {isReadOnlyAndUpdated && !isUnpublished && readOnlyVersion && (
                   <Button
                     variant='secondary'
                     onClick={(event) => {
                       openLatestVersion(
                         event,
-                        { id: documentId },
+                        { id: ydoc.id },
                         'self'
                       )
                     }}
@@ -122,7 +131,7 @@ export const EditorHeader = ({ documentId, readOnly, readOnlyVersion, planningId
 
                 {!!(propPlanningId || planningId) && (!isReadOnlyAndUpdated || isUnpublished) && (
                   <StatusMenu
-                    documentId={documentId}
+                    ydoc={ydoc}
                     type={documentType || 'core/article'}
                     publishTime={publishTime ? new Date(publishTime) : undefined}
                     onBeforeStatusChange={onBeforeStatusChange}
@@ -135,7 +144,7 @@ export const EditorHeader = ({ documentId, readOnly, readOnlyVersion, planningId
       </ViewHeader.Content>
 
       <ViewHeader.Action>
-        <MetaSheet container={containerRef.current} documentId={documentId} readOnly={readOnly} readOnlyVersion={readOnlyVersion} />
+        <MetaSheet container={containerRef.current} ydoc={ydoc} readOnly={readOnly} readOnlyVersion={readOnlyVersion} />
       </ViewHeader.Action>
     </ViewHeader.Root>
   )

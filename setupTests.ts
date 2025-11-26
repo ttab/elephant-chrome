@@ -1,18 +1,27 @@
 import '@testing-library/jest-dom'
-
+import { initializeNavigationState } from '@/navigation/lib'
 import { randomUUID } from 'node:crypto'
 import { TextEncoder, TextDecoder } from 'util'
 import { type Mock, vi } from 'vitest'
-import { initializeNavigationState } from '@/navigation/lib'
 import { type Dispatch } from 'react'
 import { useNavigation, useView } from './src/hooks'
 import { type NavigationActionType } from './src/types'
 export * from '@testing-library/react'
 
+// Set up crypto mock FIRST before any other imports
 window.crypto.randomUUID = randomUUID
+
+// Use Object.defineProperty to override the crypto global
+Object.defineProperty(global, 'crypto', {
+  value: { randomUUID },
+  writable: true,
+  configurable: true
+})
+
 global.TextEncoder = TextEncoder
 // @ts-expect-error unknown
 global.TextDecoder = TextDecoder
+
 
 const BASE_URL = import.meta.env.BASE_URL
 
@@ -107,6 +116,15 @@ vi.mock('next-auth/react', async () => {
     ...originalModule,
     useSession: vi.fn(() => {
       return { data: mockSession, status: 'authenticated' }
-    })
+    }),
+    getSession: vi.fn(async () => Promise.resolve(mockSession))
   }
 })
+
+vi.mock('@/hooks/useAuthors', () => ({
+  useAuthors: () => [
+    { id: '123', name: 'Alice Johnson', firstName: 'Alice', lastName: 'Johnson', initials: 'AAJ', email: 'aj@example.com', sub: 'core://user/0001' },
+    { id: '234', name: 'Bob Lee', firstName: 'Bob', lastName: 'Lee', email: 'bl@example.com', sub: 'core://user/0002' },
+    { id: '345', name: 'Christine King', firstName: 'Christine', lastName: 'King', initials: 'CK', email: 'ck@example.com', sub: 'core://user/0003' }
+  ]
+}))

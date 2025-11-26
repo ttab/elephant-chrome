@@ -15,16 +15,17 @@ import { toast } from 'sonner'
 import { handleLink } from '../Link/lib/handleLink'
 import { useHistory, useNavigation, useView } from '@/hooks/index'
 import type { View } from '@/types/index'
+import type { YDocument } from '@/modules/yjs/hooks'
+import type * as Y from 'yjs'
 
-export const StatusMenu = ({ documentId, type, publishTime, onBeforeStatusChange, isChanged }: {
-  documentId: string
+export const StatusMenu = ({ ydoc, type, publishTime, onBeforeStatusChange }: {
+  ydoc: YDocument<Y.Map<unknown>>
   type: string
   publishTime?: Date
   onBeforeStatusChange?: (
     status: string,
     data?: Record<string, unknown>
   ) => Promise<boolean>
-  isChanged?: boolean
 }) => {
   // Should read the workflow status to get correct status
   const shouldUseWorkflowStatus = [
@@ -34,7 +35,7 @@ export const StatusMenu = ({ documentId, type, publishTime, onBeforeStatusChange
     'tt/print-article'
   ].includes(type)
 
-  const [documentStatus, setDocumentStatus] = useWorkflowStatus(documentId, shouldUseWorkflowStatus)
+  const [documentStatus, setDocumentStatus] = useWorkflowStatus({ ydoc, documentId: ydoc.id, isWorkflow: shouldUseWorkflowStatus, asPrint: type === 'tt/print-article' })
   const containerRef = useRef<HTMLDivElement>(null)
   const [dropdownWidth, setDropdownWidth] = useState<number>(0)
   const { statuses, workflow } = useWorkflow(type)
@@ -44,6 +45,15 @@ export const StatusMenu = ({ documentId, type, publishTime, onBeforeStatusChange
   const { state, dispatch } = useNavigation()
   const history = useHistory()
   const { viewId } = useView()
+
+
+  // TODO: Revisit once reworking changed status logic for plannings etc
+  let isChanged: boolean
+  if (type === 'tt/print-article' && documentStatus?.name === 'usable') {
+    isChanged = ydoc.isChanged
+  } else {
+    isChanged = shouldUseWorkflowStatus ? false : ydoc.isChanged
+  }
 
   useEffect(() => {
     if (containerRef.current) {
@@ -73,7 +83,7 @@ export const StatusMenu = ({ documentId, type, publishTime, onBeforeStatusChange
 
     // Unpublishing a document is done by setting version: -1, status name to 'usable'
     const status = {
-      uuid: documentId,
+      uuid: ydoc.id,
       name: 'usable',
       version: -1n
     }
@@ -97,7 +107,7 @@ export const StatusMenu = ({ documentId, type, publishTime, onBeforeStatusChange
         handleLink({
           dispatch,
           viewItem: state.viewRegistry.get(viewType[type]),
-          props: { id: documentId },
+          props: { id: ydoc.id },
           viewId: crypto.randomUUID(),
           history,
           origin: viewId,
@@ -122,7 +132,12 @@ export const StatusMenu = ({ documentId, type, publishTime, onBeforeStatusChange
     return null
   }
 
-  const getCurrentCause = (cause: string | undefined, type: string, isChanged: boolean | undefined, prompt: { status: string } & WorkflowTransition | undefined) => {
+  const getCurrentCause = (
+    cause: string | undefined,
+    type: string,
+    isChanged: boolean,
+    prompt: { status: string } & WorkflowTransition | undefined
+  ): string | undefined => {
     if (cause !== undefined) {
       return cause
     } else if (type === 'tt/print-article') {
@@ -133,6 +148,13 @@ export const StatusMenu = ({ documentId, type, publishTime, onBeforeStatusChange
       return undefined
     }
   }
+
+  // For print-articles we show "unpublished changes" _only_ if checkpoint is 'usable'
+  const asSave = !!(type === 'tt/print-article'
+    ? isChanged && documentStatus.checkpoint === 'usable'
+    : isChanged && documentStatus.name !== 'draft'
+  )
+
   return (
     <>
       <div className='flex items-center' ref={containerRef}>
@@ -144,7 +166,7 @@ export const StatusMenu = ({ documentId, type, publishTime, onBeforeStatusChange
               workflow={workflow}
               currentStatusName={currentStatusName}
               currentStatusDef={currentStatusDef}
-              asSave={!!(isChanged && documentStatus.name !== 'draft')}
+              asSave={asSave}
 
             />
           </DropdownMenuTrigger>
@@ -166,7 +188,7 @@ export const StatusMenu = ({ documentId, type, publishTime, onBeforeStatusChange
               statuses={statuses}
               onSelect={showPrompt}
             >
-              {isChanged && documentStatus.name !== 'draft' && (
+              {asSave && (
                 <StatusMenuOption
                   key='save'
                   status={documentStatus.name}
