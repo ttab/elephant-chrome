@@ -20,7 +20,7 @@ export const TextboxEditable = ({ value, ydoc, singleLine, spellcheck, disabled 
   const onSpellcheck = useOnSpellcheck(documentLanguage)
 
   const yjsEditor = useMemo(() => {
-    return (!ydoc.provider?.awareness || !ydoc.user)
+    return (!ydoc.provider?.awareness)
       ? undefined
       : withYHistory(
         withCursors(
