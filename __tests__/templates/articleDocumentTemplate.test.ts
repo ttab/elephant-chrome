@@ -1,5 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
-import type { Block } from '@ttab/elephant-api/newsdoc'
+import { Block } from '@ttab/elephant-api/newsdoc'
 import { articleDocumentTemplate } from '@/shared/templates/articleDocumentTemplate'
 import type { TemplatePayload } from '@/shared/templates'
 
@@ -17,19 +17,44 @@ describe('articleDocumentTemplate', () => {
   })
 
   it('removes core/description from meta', () => {
-    const payload = {
-      meta: { 'core/description': ['desc'], foo: ['bar'] }
+    const payload: TemplatePayload = {
+      meta: {
+        'core/description': [
+          Block.create({
+            type: 'core/description',
+            role: 'public',
+            data: { text: 'desc' }
+          })
+        ]
+      }
     }
-    articleDocumentTemplate('id', payload as unknown as TemplatePayload)
-    expect(payload.meta['core/description']).toBeUndefined()
+
+    articleDocumentTemplate('id', payload)
+
+    expect(payload.meta?.['core/description']).toBeUndefined()
   })
 
   it('sets core/story rel to subject', () => {
-    const payload = {
-      links: { 'core/story': [{ rel: 'story' }] }
+    const payload: TemplatePayload = {
+      links: {
+        'core/story': [
+          Block.create({
+            type: 'core/story',
+            rel: 'story'
+          })
+        ]
+      }
     }
-    articleDocumentTemplate('id', payload as unknown as TemplatePayload)
-    expect(payload.links['core/story'][0].rel).toBe('subject')
+
+    articleDocumentTemplate('id', payload)
+
+    const storyLink = payload.links?.['core/story']?.[0]
+
+    if (!storyLink) {
+      throw new Error('Expected core/story link to exist on payload')
+    }
+
+    expect(storyLink.rel).toBe('subject')
   })
 
   it('includes TT content source link', () => {

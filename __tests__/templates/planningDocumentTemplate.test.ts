@@ -1,5 +1,5 @@
-import { describe, it, expect, vi } from 'vitest'
-import type { Block } from '@ttab/elephant-api/newsdoc'
+import { describe, it, expect, vi, beforeAll, afterAll, beforeEach } from 'vitest'
+import { Block } from '@ttab/elephant-api/newsdoc'
 import { planningDocumentTemplate } from '@/shared/templates/planningDocumentTemplate.js'
 import type { TemplatePayload } from '@/shared/templates'
 
@@ -11,6 +11,21 @@ Object.defineProperty(global, 'crypto', {
 })
 
 describe('planningDocumentTemplate', () => {
+  const fixedDate = new Date('2024-06-01T10:00:00.000Z')
+
+  beforeAll(() => {
+    vi.useFakeTimers()
+    vi.setSystemTime(fixedDate)
+  })
+
+  afterAll(() => {
+    vi.useRealTimers()
+  })
+
+  beforeEach(() => {
+    vi.clearAllMocks()
+  })
+
   it('creates a document with correct basic properties', () => {
     const doc = planningDocumentTemplate('planning-123')
 
@@ -37,14 +52,20 @@ describe('planningDocumentTemplate', () => {
   })
 
   it('uses existing planning-item meta from payload', () => {
-    const payload = {
+    const payload: TemplatePayload = {
       meta: {
-        'core/planning-item': [{ type: 'core/planning-item', data: { custom: 'value' } }]
+        'core/planning-item': [Block.create({ type: 'core/planning-item', data: { custom: 'value' } })]
       }
     }
-    const doc = planningDocumentTemplate('id', payload as unknown as TemplatePayload)
+    const doc = planningDocumentTemplate('id', payload)
 
-    expect(doc.meta).toContain(payload.meta['core/planning-item'][0])
+    const planningMeta = doc.meta.find((block) => block.type === 'core/planning-item')
+
+    if (!planningMeta) {
+      throw new Error('Expected planning meta block to be present in document')
+    }
+
+    expect(planningMeta.data).toMatchObject({ custom: 'value' })
   })
 
   it('creates default newsvalue meta block', () => {
@@ -54,14 +75,19 @@ describe('planningDocumentTemplate', () => {
   })
 
   it('uses existing newsvalue meta from payload', () => {
-    const payload = {
+    const payload: TemplatePayload = {
       meta: {
-        'core/newsvalue': [{ type: 'core/newsvalue', value: '5' }]
+        'core/newsvalue': [Block.create({ type: 'core/newsvalue', value: '5' })]
       }
     }
-    const doc = planningDocumentTemplate('id', payload as unknown as TemplatePayload)
+    const doc = planningDocumentTemplate('id', payload)
 
-    expect(doc.meta).toContain(payload.meta['core/newsvalue'][0])
+    expect(doc.meta).toEqual(expect.arrayContaining([
+      expect.objectContaining({
+        type: 'core/newsvalue',
+        value: '5'
+      })
+    ]))
   })
 
   it('creates default slugline meta block', () => {
@@ -71,15 +97,15 @@ describe('planningDocumentTemplate', () => {
   })
 
   it('uses existing public description from payload', () => {
-    const payload = {
+    const payload: TemplatePayload = {
       meta: {
         'core/description': [
-          { role: 'public', type: 'core/description', data: { text: 'Public desc' } },
-          { role: 'internal', type: 'core/description', data: { text: 'Internal desc' } }
+          Block.create({ role: 'public', type: 'core/description', data: { text: 'Public desc' } }),
+          Block.create({ role: 'internal', type: 'core/description', data: { text: 'Internal desc' } })
         ]
       }
     }
-    const doc = planningDocumentTemplate('id', payload as unknown as TemplatePayload)
+    const doc = planningDocumentTemplate('id', payload)
 
     const publicDesc = doc.meta.find((block: Block) => block.type === 'core/description' && block.role === 'public')
     expect(publicDesc?.data.text).toBe('Public desc')
@@ -104,35 +130,37 @@ describe('planningDocumentTemplate', () => {
   })
 
   it('includes links from payload', () => {
-    const payload = {
+    const payload: TemplatePayload = {
       links: {
-        'core/event': [{ type: 'core/event', title: 'Event' }],
-        'core/story': [{ type: 'core/story', title: 'Story' }],
-        'core/section': [{ type: 'core/section', title: 'Section' }]
+        'core/event': [Block.create({ type: 'core/event', title: 'Event' })],
+        'core/story': [Block.create({ type: 'core/story', title: 'Story' })],
+        'core/section': [Block.create({ type: 'core/section', title: 'Section' })]
       }
     }
-    const doc = planningDocumentTemplate('id', payload as unknown as TemplatePayload)
+    const doc = planningDocumentTemplate('id', payload)
 
-    expect(doc.links).toContain(payload.links['core/event'][0])
-    expect(doc.links).toContain(payload.links['core/story'][0])
-    expect(doc.links).toContain(payload.links['core/section'][0])
+    expect(doc.links).toEqual(expect.arrayContaining([
+      expect.objectContaining({ type: 'core/event', title: 'Event' }),
+      expect.objectContaining({ type: 'core/story', title: 'Story' }),
+      expect.objectContaining({ type: 'core/section', title: 'Section' })
+    ]))
   })
 
   it('extracts date from event payload', () => {
-    const payload = {
+    const payload: TemplatePayload = {
       meta: {
         'core/event': [
-          {
+          Block.create({
             type: 'core/event',
             data: {
               start: '2024-07-15T14:30:00.000Z',
               end: '2024-07-15T16:30:00.000Z'
             }
-          }
+          })
         ]
       }
     }
-    const doc = planningDocumentTemplate('id', payload as unknown as TemplatePayload)
+    const doc = planningDocumentTemplate('id', payload)
 
     const planningBlock = doc.meta.find((block: Block) => block.type === 'core/planning-item')
     expect(planningBlock?.data.end_date).toBe('2024-07-15')
@@ -140,19 +168,19 @@ describe('planningDocumentTemplate', () => {
   })
 
   it('uses start date when end date is not available in event', () => {
-    const payload = {
+    const payload: TemplatePayload = {
       meta: {
         'core/event': [
-          {
+          Block.create({
             type: 'core/event',
             data: {
               start: '2024-07-15T14:30:00.000Z'
             }
-          }
+          })
         ]
       }
     }
-    const doc = planningDocumentTemplate('id', payload as unknown as TemplatePayload)
+    const doc = planningDocumentTemplate('id', payload)
 
     const planningBlock = doc.meta.find((block: Block) => block.type === 'core/planning-item')
     expect(planningBlock?.data.end_date).toBe('2024-07-15')
@@ -160,32 +188,32 @@ describe('planningDocumentTemplate', () => {
   })
 
   it('matches inline snapshot', () => {
-    const payload = {
+    const payload: TemplatePayload = {
       title: 'Planning Document with Event',
       meta: {
         'core/event': [
-          {
+          Block.create({
             type: 'core/event',
             data: {
               start: '2024-07-15T14:30:00.000Z',
               end: '2024-07-15T16:30:00.000Z'
             }
-          }
+          })
         ],
         'core/description': [
-          { role: 'public', type: 'core/description', data: { text: 'Existing public description' } }
+          Block.create({ role: 'public', type: 'core/description', data: { text: 'Existing public description' } })
         ],
-        'core/newsvalue': [{ type: 'core/newsvalue', value: '5' }],
-        'tt/slugline': [{ type: 'tt/slugline', data: { text: 'BREAKING' } }]
+        'core/newsvalue': [Block.create({ type: 'core/newsvalue', value: '5' })],
+        'tt/slugline': [Block.create({ type: 'tt/slugline', data: { text: 'BREAKING' } })]
       },
       links: {
-        'core/event': [{ type: 'core/event', title: 'Conference Event', uuid: 'event-123' }],
-        'core/story': [{ type: 'core/story', title: 'Main Story', uuid: 'story-456' }],
-        'core/section': [{ type: 'core/section', title: 'Politics', uuid: 'section-789' }]
+        'core/event': [Block.create({ type: 'core/event', title: 'Conference Event', uuid: 'event-123' })],
+        'core/story': [Block.create({ type: 'core/story', title: 'Main Story', uuid: 'story-456' })],
+        'core/section': [Block.create({ type: 'core/section', title: 'Politics', uuid: 'section-789' })]
       }
     }
 
-    const doc = planningDocumentTemplate('test-planning-id', payload as unknown as TemplatePayload)
+    const doc = planningDocumentTemplate('test-planning-id', payload)
 
     expect(doc).toMatchInlineSnapshot(`
       {
