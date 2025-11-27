@@ -84,8 +84,8 @@ const ConceptContent = ({
   const [data] = useYValue<Block[]>('meta.core/definition')
   const textPaths = useMemo(() => {
     if (!data) return undefined
-    const shortIndex = data?.findIndex((d) => d.role === 'short')
-    const longIndex = data?.findIndex((d) => d.role === 'long')
+    const shortIndex = data.findIndex((d) => d.role === 'short')
+    const longIndex = data.findIndex((d) => d.role === 'long')
     return { shortIndex, longIndex }
   }, [data])
 
