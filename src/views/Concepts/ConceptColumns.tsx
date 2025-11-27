@@ -12,13 +12,27 @@ export function ConceptColumns(): Array<ColumnDef<IDBConcept>> {
       meta: {
         name: 'Status',
         columnIcon: BoxesIcon,
-        className: 'flex-none'
+        className: 'flex-none',
+        options: [
+          {
+            label: 'Används',
+            value: '1'
+          },
+          {
+            label: 'Inaktiva',
+            value: '0'
+          }
+        ],
+        display: (value: string) => {
+          return <span>{value}</span>
+        },
+        quickFilter: true
       },
       accessorFn: (data) => {
-        return data?.usableVersion && data.usableVersion > 0 ? 'usable' : 'unpublished'
+        return data?.usableVersion && data.usableVersion > 0 ? 'usable' : 'inactive'
       },
       cell: ({ row }) => {
-        const status = row.getValue<string>('documentStatus') === 'usable' ? 'usable' : 'inactive'
+        const status = row.getValue<string>('documentStatus') === 'usable' ? 'usable' : 'unpublished'
         return <DocumentStatus type='core/section' status={status} />
       }
     },
@@ -39,7 +53,8 @@ export function ConceptColumns(): Array<ColumnDef<IDBConcept>> {
             <Title title={row.getValue<string>('title')} className={status === 'inactive' ? 'text-zinc-500' : ''} />
           </div>
         )
-      }
+      },
+      enableGrouping: false
 
     }
   ]
