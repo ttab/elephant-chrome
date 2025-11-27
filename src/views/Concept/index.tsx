@@ -83,7 +83,7 @@ const ConceptContent = ({
   const { concept } = useConcepts(documentType as ConceptTableDataKey)
   const [data] = useYValue<Block[]>('meta.core/definition')
   const textPaths = useMemo(() => {
-    if (!data) return undefined
+    if (!data) return { shortIndex: 0, longIndex: 1 }
     const shortIndex = data.findIndex((d) => d.role === 'short')
     const longIndex = data.findIndex((d) => d.role === 'long')
     return { shortIndex, longIndex }

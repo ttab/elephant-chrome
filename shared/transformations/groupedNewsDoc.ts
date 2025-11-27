@@ -9,7 +9,7 @@ import type {
 
 import { newsDocToSlate, slateToNewsDoc } from './newsdoc/index.js'
 import { isConceptType } from '../isConceptType.js'
-import { assertConceptHasNecessaryProperties } from '@/shared/transformations/lib/assertConceptHasNeccesaryProperties.js'
+import { assertConceptHasNecessaryProperties } from '@/shared/transformations/lib/assertConceptHasNecessaryProperties.js'
 import { assertConceptHasNoEmptyProperties } from '@/shared/transformations/lib/assertConceptHasNoEmptyProperties.js'
 
 
