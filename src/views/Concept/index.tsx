@@ -8,8 +8,6 @@ import { useAwareness } from '@/hooks/useAwareness'
 import { useYValue } from '@/hooks/useYValue'
 import { useSession } from 'next-auth/react'
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { snapshotDocument } from '@/lib/snapshotDocument'
-import { toast } from 'sonner'
 import { View } from '@/components/View'
 import { ConceptHeader } from '../Concepts/components/ConceptHeader'
 import { InfoIcon } from '@ttab/elephant-ui/icons'
@@ -21,9 +19,10 @@ import { useConcepts } from '../Concepts/lib/useConcepts'
 import { type ConceptTableDataKey } from '../Concepts/lib/conceptDataTable'
 import { LoadingText } from '@/components/LoadingText'
 import type { Block } from '@ttab/elephant-api/newsdoc'
-import { SectionContent } from './components/SectionContent'
-import { StoryTagContent } from './components/StoryTagContent'
-import { OrganiserContent } from './components/OrganiserContent'
+import { showContentType } from './lib/showContentType'
+import { handleCancel } from './lib/handleCancel'
+import { handleSubmit } from './lib/handleSubmit'
+import { handleRootChange } from './lib/handleRootChange'
 
 const meta: ViewMetadata = {
   name: 'Concept',
@@ -102,54 +101,10 @@ const ConceptContent = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [provider])
 
-  const handleChange = useCallback((value: boolean): void => {
-    const root = provider?.document.getMap('ele').get('root') as Y.Map<unknown>
-    const changed = root.get('changed') as boolean
-    if (changed !== value) {
-      root.set('changed', value)
-    }
-  }, [provider])
-
-  const handleSubmit = (): void => {
-    if (environmentIsSane) {
-      void snapshotDocument(documentId, { status: 'usable', addToHistory: true }).then((response) => {
-        if (response?.statusMessage) {
-          toast.error('Kunde inte skapa ny inställning!', {
-            duration: 5000,
-            position: 'top-center'
-          })
-          return
-        }
-        setChanged(false)
-        if (onDialogClose) {
-          onDialogClose()
-        }
-      })
-    }
-  }
-
-  const handleCancel = () => {
-    if (isChanged) {
-      setShowVerifyDialog(true)
-    } else {
-      if (onDialogClose) {
-        onDialogClose()
-      }
-    }
-  }
-
-  const showContentType = (documentType: string) => {
-    if (!concept || !provider) return <></>
-
-    switch (documentType) {
-      case 'core/section':
-        return SectionContent({ isActive, handleChange, asDialog })
-      case 'core/story':
-        return StoryTagContent({ isActive, handleChange, textPaths, asDialog })
-      case 'core/organiser':
-        return OrganiserContent({ isActive, handleChange, asDialog, provider })
-    }
-  }
+  const handleChange = useCallback(
+    (value: boolean) => {
+      handleRootChange(value, provider)
+    }, [provider])
 
   return (
     !concept || !provider
@@ -172,11 +127,11 @@ const ConceptContent = ({
                         asDialog={asDialog}
                         onChange={handleChange}
                       >
-                        {showContentType(concept.documentType)}
+                        {showContentType({ documentType, concept, provider, isActive, asDialog, handleChange, textPaths })}
                         <Form.Footer>
                           <Form.Submit
-                            onSubmit={() => handleSubmit()}
-                            onReset={handleCancel}
+                            onSubmit={() => handleSubmit(environmentIsSane, documentId, setChanged, onDialogClose)}
+                            onReset={() => handleCancel(isChanged, setShowVerifyDialog, onDialogClose)}
                             className='w-full flex gap-2 justify-end'
                           >
                             <Button
