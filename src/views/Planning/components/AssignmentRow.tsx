@@ -153,7 +153,7 @@ export const AssignmentRow = ({ ydoc, index, onSelect, isFocused = false, asDial
         type: assignmentType
       }
     }
-  }, [publishTime, assignmentType, startTime, endTime, publishSlot])
+  }, [publishTime, assignmentType, startTime, endTime, publishSlot, isVisualAssignment])
 
   const TimeIcon = useMemo(() => {
     const timeIcons: Record<string, React.FC<LucideProps>> = {

@@ -30,7 +30,7 @@ const TextAssignment = ({ workflowState }: {
   const IconComponent = StatusIcon?.icon
 
   return (
-    <div className='flex h-9 w-9 items-center justify-start' title={StatusIcon?.label}>
+    <div className='flex h-8 w-12 items-center justify-start' title={StatusIcon?.label}>
       {IconComponent ? <IconComponent {...StatusIcon.iconProps} /> : null}
     </div>
   )
@@ -53,13 +53,13 @@ const VisualAssignment = ({ ydoc, path }: {
     ?? selectableStatuses[0]
 
   return (
-    <div className='w-9'>
+    <div className='w-12' title={currentStatus.label}>
       <Select
         name='AssignmentStatus'
         onValueChange={onValueChange}
         value={visualAssignmentStatus || 'todo'}
       >
-        <SelectTrigger className='flex h-9 w-9 items-center justify-start border-none p-0' title={currentStatus.label}>
+        <SelectTrigger className='flex h-8 w-12 items-center justify-start -ml-1 px-1'>
           <currentStatus.Icon {...currentStatus.iconProps} />
         </SelectTrigger>
         <SelectContent>
