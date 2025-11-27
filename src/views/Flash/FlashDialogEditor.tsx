@@ -60,7 +60,7 @@ function EditorContent({ ydoc, setTitle, readOnly }: {
   const [documentLanguage] = getValueByYPath<string>(ydoc.ele, 'root.language')
 
   const yjsEditor = useMemo(() => {
-    if (!ydoc.provider?.awareness || !ydoc.user) {
+    if (!ydoc.provider?.awareness) {
       return
     }
     const content = ydoc.ele.get('content') as YXmlText
@@ -75,7 +75,7 @@ function EditorContent({ ydoc, setTitle, readOnly }: {
           content
         ),
         ydoc.provider.awareness,
-        { data: ydoc.user }
+        { data: ydoc.user ?? undefined }
       )
     )
   }, [ydoc])
