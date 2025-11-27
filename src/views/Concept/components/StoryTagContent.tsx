@@ -1,13 +1,22 @@
 import { Form } from '@/components/Form'
 import { TextBox } from '@/components/ui'
 import { Validation } from '@/components/Validation'
+import { useYValue } from '@/hooks/useYValue'
+import type { Block } from '@ttab/elephant-api/newsdoc'
+import { useMemo } from 'react'
 
-export const StoryTagContent = ({ isActive, handleChange, textPaths, asDialog }: {
+export const StoryTagContent = ({ isActive, handleChange, asDialog }: {
   isActive: boolean
   handleChange: (value: boolean) => void
-  textPaths: { shortIndex: number, longIndex: number }
   asDialog: boolean | undefined
 }) => {
+  const [data] = useYValue<Block[]>('meta.core/definition')
+  const textPaths = useMemo(() => {
+    if (!data) return { shortIndex: -1, longIndex: -1 }
+    const shortIndex = data.findIndex((d) => d.role === 'short')
+    const longIndex = data.findIndex((d) => d.role === 'long')
+    return { shortIndex, longIndex }
+  }, [data])
   return (
     <Form.Content>
       <Validation
