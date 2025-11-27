@@ -1,5 +1,3 @@
-
-
 const conceptDocumentTypes = [
   'core/section',
   'core/story',

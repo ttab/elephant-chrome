@@ -1,7 +1,6 @@
 import { snapshotDocument } from '@/lib/snapshotDocument'
 import { toast } from 'sonner'
 
-
 export const handleSubmit = (
   environmentIsSane: boolean | undefined,
   documentId: string,
