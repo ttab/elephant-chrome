@@ -78,7 +78,8 @@ function FlashEditor({ ydoc, ...props }: ViewProps & {
 function EditorContainer({
   ydoc,
   readOnly,
-  preview
+  preview,
+  planningId
 }: {
   ydoc: YDocument<Y.Map<unknown>>
   planningId?: string | null
@@ -89,7 +90,7 @@ function EditorContainer({
 
   return (
     <>
-      <FlashHeader ydoc={ydoc} asDialog={false} readOnly={readOnly} preview={preview} />
+      <FlashHeader ydoc={ydoc} asDialog={false} readOnly={readOnly} preview={preview} planningId={planningId} />
 
       <View.Content className='flex flex-col max-w-[1000px]'>
         <div className='grow overflow-auto max-w-(--breakpoint-xl)'>
