@@ -1,7 +1,7 @@
 import { Block, Document } from '@ttab/elephant-api/newsdoc'
 
 /**
-* Create a template for a section document
+* Create a template for an organiser document
 * @returns Document
 */
 
