@@ -14,7 +14,6 @@ export function organiserDocumentTemplate(id: string): Document {
     title: '',
     meta: [
       Block.create({
-        id: '',
         type: 'core/contact-info',
         data: {
           city: '',
