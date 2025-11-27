@@ -109,7 +109,7 @@ export const OrganiserContent = ({ isActive, handleChange, asDialog, provider }:
         onChange={handleChange}
         placeholder='Website url'
         disabled={!isActive}
-        icon={isLinkValid() ? LinkIcon : undefined}
+        icon={isLinkValid() && !asDialog ? LinkIcon : undefined}
         iconAction={openLink}
       />
     </Form.Content>
