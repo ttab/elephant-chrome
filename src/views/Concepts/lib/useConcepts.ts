@@ -5,8 +5,8 @@ import { tableDataMap } from './conceptDataTable'
 import { useOrganisers } from '@/hooks/useOrganisers'
 
 export const useConcepts = (title: ConceptTableDataKey | undefined) => {
-  const sections = useSections({ activeOnly: false })
-  const storyTags = useStories({ activeOnly: false })
+  const sections = useSections({ sort: 'title', activeOnly: false })
+  const storyTags = useStories({ sort: 'title', activeOnly: false })
   const organisers = useOrganisers({ activeOnly: false })
 
   const conceptMap = {
