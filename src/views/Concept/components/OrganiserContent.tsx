@@ -11,12 +11,19 @@ export const OrganiserContent = ({ isActive, handleChange, asDialog, provider }:
   asDialog: boolean | undefined
   provider: HocuspocusProvider
 }) => {
-  const LinkIcon = <ExternalLinkIcon size={18} strokeWidth={1.75} className='mr-2' />
-  const openLink = (path: string) => {
-    const yRoot = provider?.document.getMap('ele')
-    const yPath = stringToYPath(path)
-    const [link] = getValueByYPath<string>(yRoot, yPath, false)
-    window.open(link)
+  const yRoot = provider?.document.getMap('ele')
+  const yPath = stringToYPath(`links[text/html][0].url`)
+  const [link] = getValueByYPath<string>(yRoot, yPath, false)
+  const LinkIcon = <ExternalLinkIcon size={18} strokeWidth={1.75} className='mr-2 hover:cursor-pointer' />
+
+  const isLinkValid = () => {
+    return typeof link === 'string' && link.toString() !== ''
+  }
+
+  const openLink = () => {
+    if (isLinkValid()) {
+      window.open(link)
+    }
   }
   return (
     <Form.Content>
@@ -97,13 +104,13 @@ export const OrganiserContent = ({ isActive, handleChange, asDialog, provider }:
         label='Länkar'
         asDialog={asDialog}
         singleLine={true}
-        path={`links[text/html][${0}].url`}
+        path='links[text/html][0].url'
         className={isActive ? 'border truncate' : 'bg-slate-100 text-slate-500 truncate'}
         onChange={handleChange}
         placeholder='Website url'
         disabled={!isActive}
-        icon={LinkIcon}
-        iconAction={() => openLink(`links[text/html][0].url`)}
+        icon={isLinkValid() ? LinkIcon : undefined}
+        iconAction={openLink}
       />
     </Form.Content>
   )
