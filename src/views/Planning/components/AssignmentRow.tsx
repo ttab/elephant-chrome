@@ -20,7 +20,7 @@ import { type MouseEvent, useMemo, useState, useCallback, useEffect, useRef } fr
 import { SluglineButton } from '@/components/DataItem/Slugline'
 import { useLink } from '@/hooks/useLink'
 import { Prompt } from '@/components'
-import { Button, Tooltip } from '@ttab/elephant-ui'
+import { Button } from '@ttab/elephant-ui'
 import type { Block } from '@ttab/elephant-api/newsdoc'
 import { deleteByYPath, getValueByYPath } from '@/shared/yUtils'
 import { useOpenDocuments } from '@/hooks/useOpenDocuments'
@@ -39,11 +39,11 @@ import { AssignmentTypes } from '@/defaults/assignmentTypes'
 import { CreatePrintArticle } from '@/components/CreatePrintArticle'
 import { snapshotDocument } from '@/lib/snapshotDocument'
 import { timeSlotTypes } from '@/defaults/assignmentTimeConstants'
-import { DocumentStatuses } from '@/defaults/documentStatuses'
 import useSWR from 'swr'
 import { useRepositoryEvents } from '@/hooks/useRepositoryEvents'
 import { type YDocument, useYValue } from '@/modules/yjs/hooks'
 import { toast } from 'sonner'
+import { AssignmentStatus } from './AssignmentStatus'
 
 export const AssignmentRow = ({ ydoc, index, onSelect, isFocused = false, asDialog }: {
   ydoc: YDocument<Y.Map<unknown>>
@@ -97,6 +97,7 @@ export const AssignmentRow = ({ ydoc, index, onSelect, isFocused = false, asDial
 
   const openDocument = assignmentType === 'flash' ? openFlash : openArticle
   const { showModal, hideModal } = useModal()
+  const isVisualAssignment = ['picture', 'video'].includes(assignmentType || '')
 
   const assignmentTime = useMemo(() => {
     if (typeof assignmentType !== 'string') {
@@ -104,7 +105,7 @@ export const AssignmentRow = ({ ydoc, index, onSelect, isFocused = false, asDial
     }
     const endAndStartAreNotEqual = endTime && startTime && endTime !== startTime
 
-    if (['picture', 'video'].includes(assignmentType) && startTime) {
+    if (isVisualAssignment && startTime) {
       if (endAndStartAreNotEqual) {
         return {
           time: [new Date(startTime), new Date(endTime)],
@@ -152,7 +153,7 @@ export const AssignmentRow = ({ ydoc, index, onSelect, isFocused = false, asDial
         type: assignmentType
       }
     }
-  }, [publishTime, assignmentType, startTime, endTime, publishSlot])
+  }, [publishTime, assignmentType, startTime, endTime, publishSlot, isVisualAssignment])
 
   const TimeIcon = useMemo(() => {
     const timeIcons: Record<string, React.FC<LucideProps>> = {
@@ -277,7 +278,7 @@ export const AssignmentRow = ({ ydoc, index, onSelect, isFocused = false, asDial
     }
   ]
   const selected = articleId && openDocuments.includes(articleId)
-  const StatusIcon = DocumentStatuses.find((status) => status.value === articleStatus?.meta?.workflowState)
+  const workflowState = articleStatus?.meta?.workflowState
 
   useRepositoryEvents([
     'core/article',
@@ -362,26 +363,23 @@ export const AssignmentRow = ({ ydoc, index, onSelect, isFocused = false, asDial
 
       <div className='flex flex-row text-[15px] font-medium justify-between pr-2'>
         <div className='flex items-center gap-2 px-2'>
-
-          {StatusIcon?.icon && (
-            <Tooltip content={StatusIcon.label}>
-              <StatusIcon.icon size={18} {...StatusIcon.iconProps} />
-            </Tooltip>
-
-          )}
-          {/* Render empty space as distancing for assignments without statuses */}
-          {!StatusIcon?.icon && <div style={{ width: 18, height: 18 }} />}
+          <AssignmentStatus
+            isVisualAssignment={isVisualAssignment}
+            ydoc={ydoc}
+            path={`meta.core/assignment[${index}].data.status`}
+            workflowState={workflowState}
+          />
           <span className='leading-relaxed group-hover/assrow:underline'>{title}</span>
         </div>
-        {/* FIXME: Disable until we have an idea of how this should be clear to end-user
         <div className='flex items-center gap-2'>
+          {/* FIXME: Disable until we have an idea of how this should be clear to end-user
           <AssignmentVisibility
             ydoc={ydoc}
             path={`meta.core/assignment[${index}].data.public`}
             editable={false}
             disabled={false}
-          />
-        </div> */}
+          /> */}
+        </div>
       </div>
 
       {
