@@ -185,11 +185,14 @@ export class OpenDocuments implements Extension {
       throw new Error('User information is missing for OpenDocuments.connected')
     }
 
-    // Add connection as invisible user first, if the user wants to be visible
-    // a stateless message will follow that sets the user as visible.
     await this.#addConnection(socketId, documentName, sub, name, email)
   }
 
+  /**
+   * Add user that opened the document to the correct document in the tracker.
+   * The user will always be added as invisible, if the user wants to be visible
+   * a stateless message will follow that sets the user as visible.
+   */
   async #addConnection(socketId: string, documentName: string, sub: string, name: string, email: string | undefined) {
     if (!this.#connection) return
 

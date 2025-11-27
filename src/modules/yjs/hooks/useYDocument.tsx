@@ -19,6 +19,7 @@ export interface YDocument<T> {
   connected: boolean
   synced: boolean
   online: boolean
+  visibility: boolean
   isInProgress: boolean
   setIsInProgress: (isInProgress: boolean) => void
   isChanged: boolean
@@ -34,7 +35,7 @@ export interface YDocument<T> {
  * a HocuspocusProvider. Manage synced and connected state towards the
  * HocuspocusServer.
  *
- * Visibility is false by default if not specified.
+ * Visibility is true by default if not specified.
  */
 export function useYDocument<T>(
   id: string,
@@ -60,6 +61,9 @@ export function useYDocument<T>(
 
   // Unique identifier for this usage of the document
   const ydocumentId = useRef(crypto.randomUUID())
+
+  // Default visibility is true
+  const visibility = options?.visibility ?? true
 
   /**
    * Create yjs document and subscribe to ready state
@@ -108,7 +112,7 @@ export function useYDocument<T>(
   }, [client])
 
   if (!userRef.current || userRef.current.name !== session?.user.name || userRef.current.color !== userColor) {
-    if (options?.visibility === true) {
+    if (visibility === true) {
       userRef.current = {
         name: session?.user.name ?? '',
         initials: session?.user.name.split(' ').map((t) => t.substring(0, 1)).join('') ?? '',
@@ -219,23 +223,23 @@ export function useYDocument<T>(
     const usageId = ydocumentId.current
 
     // Turn on visibility for this usage id if not invisible
-    if (options?.visibility === true) {
+    if (visibility === true) {
       send('context', {
-        visibility: options.visibility,
+        visibility: true,
         id,
         usageId
       })
     }
 
     return () => {
-      if (options?.visibility === true) {
+      if (visibility === true) {
         send('context', {
           id,
           usageId
         })
       }
     }
-  }, [options?.visibility, isConnected, send, id])
+  }, [visibility, isConnected, send, id])
 
   resultRef.current.id = id
   resultRef.current.ele = document.current.getMap(rootMap) as T
@@ -243,6 +247,7 @@ export function useYDocument<T>(
   resultRef.current.connected = isOnline && isConnected
   resultRef.current.synced = isSynced
   resultRef.current.online = isOnline
+  resultRef.current.visibility = visibility
   resultRef.current.isInProgress = isInProgress ?? false
   resultRef.current.setIsInProgress = setIsInProgress
   resultRef.current.isChanged = isChanged ?? false
