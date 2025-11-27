@@ -16,13 +16,15 @@ export const FlashHeader = ({
   readOnly,
   asDialog,
   onDialogClose,
-  preview
+  preview,
+  planningId
 }: {
   ydoc: YDocument<Y.Map<unknown>>
   readOnly?: boolean
   asDialog?: boolean
   onDialogClose?: (() => void) | undefined
   preview?: boolean
+  planningId?: string | null
 }) => {
   return (
     <ViewHeader.Root>
@@ -38,7 +40,7 @@ export const FlashHeader = ({
         </div>
 
         {!asDialog && !!ydoc && !preview && <ViewHeader.RemoteUsers ydoc={ydoc} />}
-        {!asDialog && !!ydoc.id && !preview && <StatusMenuHeader ydoc={ydoc} />}
+        {!asDialog && !!ydoc.id && !preview && <StatusMenuHeader ydoc={ydoc} planningId={planningId} />}
       </ViewHeader.Content>
 
       <ViewHeader.Action onDialogClose={onDialogClose} asDialog={asDialog} />
@@ -46,8 +48,9 @@ export const FlashHeader = ({
   )
 }
 
-const StatusMenuHeader = ({ ydoc }: {
+const StatusMenuHeader = ({ ydoc, planningId: propPlanningId }: {
   ydoc: YDocument<Y.Map<unknown>>
+  planningId?: string | null
 }) => {
   const planningId = useDeliverablePlanningId(ydoc.id || '')
   const [publishTime] = useState<string | null>(null)
@@ -131,7 +134,7 @@ const StatusMenuHeader = ({ ydoc }: {
 
   return (
     <>
-      {!!planningId && ydoc.id && (
+      {!!(propPlanningId || planningId) && ydoc.id && (
         <StatusMenu
           ydoc={ydoc}
           type='core/article' // same workflow as article?
