@@ -16,11 +16,11 @@ export function ConceptColumns(): Array<ColumnDef<IDBConcept>> {
         options: [
           {
             label: 'Används',
-            value: '1'
+            value: 'usable'
           },
           {
             label: 'Inaktiva',
-            value: '0'
+            value: 'inactive'
           }
         ],
         display: (value: string) => {
