@@ -1,6 +1,5 @@
-import { type ForwardedRef, forwardRef, useRef, type InputHTMLAttributes } from 'react'
+import { type ForwardedRef, forwardRef, useRef, type InputHTMLAttributes, useState } from 'react'
 import { CommandInput } from '@ttab/elephant-ui'
-import { useTable } from '@/hooks/useTable'
 
 const DebouncedCommandInput = forwardRef(({
   value: initialValue,
@@ -13,13 +12,9 @@ const DebouncedCommandInput = forwardRef(({
   debounce?: number
 } & Omit<InputHTMLAttributes<HTMLInputElement>, 'onChange'>, ref: ForwardedRef<HTMLInputElement>): JSX.Element => {
   const debounceTimeout = useRef<NodeJS.Timeout | null>(null)
-  const { table } = useTable()
-  const { globalFilter } = table.getState() as {
-    globalFilter: string
-  }
-
+  const [value, setValue] = useState<string | undefined>(initialValue)
   const handleInputChange = (value: string | undefined): void => {
-    table.setGlobalFilter(value)
+    setValue(value)
 
     if (debounceTimeout.current) {
       clearTimeout(debounceTimeout.current)
@@ -34,7 +29,7 @@ const DebouncedCommandInput = forwardRef(({
     <CommandInput
       {...props}
       ref={ref}
-      value={globalFilter}
+      value={initialValue ? value : ''}
       onValueChange={(value: string | number) => handleInputChange(value as string)}
     />
   )
