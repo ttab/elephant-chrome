@@ -7,7 +7,7 @@ import { useCollaboration } from '@/hooks/useCollaboration'
 import { useAwareness } from '@/hooks/useAwareness'
 import { useYValue } from '@/hooks/useYValue'
 import { useSession } from 'next-auth/react'
-import { useCallback, useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { View } from '@/components/View'
 import { ConceptHeader } from '../Concepts/components/ConceptHeader'
 import { InfoIcon } from '@ttab/elephant-ui/icons'
@@ -18,8 +18,7 @@ import { useWorkflowStatus } from '@/hooks/useWorkflowStatus'
 import { useConcepts } from '../Concepts/lib/useConcepts'
 import { type ConceptTableDataKey } from '../Concepts/lib/conceptDataTable'
 import { LoadingText } from '@/components/LoadingText'
-import type { Block } from '@ttab/elephant-api/newsdoc'
-import { showContentType } from './lib/showContentType'
+import { ConceptContentRender } from './lib/ConceptContentRender'
 import { handleCancel } from './lib/handleCancel'
 import { handleSubmit } from './lib/handleSubmit'
 import { handleRootChange } from './lib/handleRootChange'
@@ -82,13 +81,6 @@ const ConceptContent = ({
   const [documentStatus] = useWorkflowStatus(documentId, true, undefined, documentType)
   const isActive = !documentStatus || documentStatus.name === 'usable'
   const { concept } = useConcepts(documentType as ConceptTableDataKey)
-  const [data] = useYValue<Block[]>('meta.core/definition')
-  const textPaths = useMemo(() => {
-    if (!data) return { shortIndex: 0, longIndex: 1 }
-    const shortIndex = data.findIndex((d) => d.role === 'short')
-    const longIndex = data.findIndex((d) => d.role === 'long')
-    return { shortIndex, longIndex }
-  }, [data])
 
   useEffect(() => {
     provider?.setAwarenessField('data', user)
@@ -127,7 +119,7 @@ const ConceptContent = ({
                         asDialog={asDialog}
                         onChange={handleChange}
                       >
-                        {showContentType({ documentType, concept, provider, isActive, asDialog, handleChange, textPaths })}
+                        <ConceptContentRender documentType={documentType} concept={concept} provider={provider} isActive={isActive} asDialog={asDialog} handleChange={handleChange} />
                         <Form.Footer>
                           <Form.Submit
                             onSubmit={() => handleSubmit(environmentIsSane, documentId, setChanged, onDialogClose)}

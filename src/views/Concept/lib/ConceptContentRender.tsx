@@ -1,9 +1,10 @@
 import { OrganiserContent } from '@/views/Concept/components/OrganiserContent'
 import { SectionContent } from '@/views/Concept/components/SectionContent'
 import { StoryTagContent } from '@/views/Concept/components/StoryTagContent'
+import { Error } from '@/views/Error'
 import type { HocuspocusProvider } from '@hocuspocus/provider'
 
-export const showContentType = ({ documentType, concept, provider, isActive, asDialog, handleChange, textPaths }:
+export const ConceptContentRender = ({ documentType, concept, provider, isActive, asDialog, handleChange }:
 {
   documentType: string | undefined
   concept: object
@@ -11,7 +12,6 @@ export const showContentType = ({ documentType, concept, provider, isActive, asD
   isActive: boolean
   asDialog: boolean | undefined
   handleChange: (value: boolean) => void
-  textPaths: { shortIndex: number, longIndex: number }
 }) => {
   if (!concept || !provider) return <></>
 
@@ -19,8 +19,10 @@ export const showContentType = ({ documentType, concept, provider, isActive, asD
     case 'core/section':
       return SectionContent({ isActive, handleChange, asDialog })
     case 'core/story':
-      return StoryTagContent({ isActive, handleChange, textPaths, asDialog })
+      return StoryTagContent({ isActive, handleChange, asDialog })
     case 'core/organiser':
       return OrganiserContent({ isActive, handleChange, asDialog, provider })
+    default:
+      return <Error title='Innehållet hittades inte' message='Dokumenttypen finns inte' />
   }
 }
