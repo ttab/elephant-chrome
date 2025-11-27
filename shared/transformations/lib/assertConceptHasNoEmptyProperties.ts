@@ -14,6 +14,5 @@ export const assertConceptHasNoEmptyProperties = (document: Document | Block) =>
       block.data = Object.fromEntries(Object.entries(block.data).filter(([__, value]) => value))
     }
   })
-  document.links = document.links.filter((block) => Object.keys(block.data))
-  console.log(document)
+  document.links = document.links.filter((block) => Object.keys(block.data).length !== 0)
 }
