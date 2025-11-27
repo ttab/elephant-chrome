@@ -21,7 +21,9 @@ import { useConcepts } from '../Concepts/lib/useConcepts'
 import { type ConceptTableDataKey } from '../Concepts/lib/conceptDataTable'
 import { LoadingText } from '@/components/LoadingText'
 import type { Block } from '@ttab/elephant-api/newsdoc'
-import { conceptContentType } from '../Concepts/lib/conceptContentType'
+import { SectionContent } from './components/SectionContent'
+import { StoryTagContent } from './components/StoryTagContent'
+import { OrganiserContent } from './components/OrganiserContent'
 
 const meta: ViewMetadata = {
   name: 'Concept',
@@ -136,6 +138,19 @@ const ConceptContent = ({
     }
   }
 
+  const showContentType = (documentType: string) => {
+    if (!concept || !provider) return <></>
+
+    switch (documentType) {
+      case 'core/section':
+        return SectionContent({ isActive, handleChange, asDialog })
+      case 'core/story':
+        return StoryTagContent({ isActive, handleChange, textPaths, asDialog })
+      case 'core/organiser':
+        return OrganiserContent({ isActive, handleChange, asDialog, provider })
+    }
+  }
+
   return (
     !concept || !provider
       ? <LoadingText>Laddar data</LoadingText>
@@ -157,7 +172,7 @@ const ConceptContent = ({
                         asDialog={asDialog}
                         onChange={handleChange}
                       >
-                        {conceptContentType[concept.documentType]({ isActive, handleChange, textPaths, asDialog, provider })}
+                        {showContentType(concept.documentType)}
                         <Form.Footer>
                           <Form.Submit
                             onSubmit={() => handleSubmit()}
