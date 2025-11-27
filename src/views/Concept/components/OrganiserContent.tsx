@@ -40,7 +40,7 @@ export const OrganiserContent = ({ isActive, handleChange, asDialog, provider }:
           path='root.title'
           className={isActive ? 'border' : 'bg-slate-100 text-slate-500'}
           onChange={handleChange}
-          placeholder='Organistörens namn'
+          placeholder='Organisatörens namn'
           disabled={!isActive}
         />
       </Validation>
@@ -85,7 +85,7 @@ export const OrganiserContent = ({ isActive, handleChange, asDialog, provider }:
         path='meta.core/contact-info[0].data.email'
         className={isActive ? 'border' : 'bg-slate-100 text-slate-500'}
         onChange={handleChange}
-        placeholder='E-postaddress'
+        placeholder='E-postadress'
         disabled={!isActive}
       />
       <TextBox
