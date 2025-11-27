@@ -6,7 +6,6 @@ export const ContentMenu = (): JSX.Element => {
   const { actions } = usePluginRegistry()
 
   const textActions = actions.filter((action) => action.plugin.class === 'text')
-  const textblockActions = actions.filter((action) => action.plugin.class === 'textblock')
   const blockActions = actions.filter((action) => action.plugin.class === 'block')
 
   return (
@@ -23,13 +22,6 @@ export const ContentMenu = (): JSX.Element => {
           && (
             <ContentMenuGroup>
               {textActions.map((action) => <ContentMenuItem action={action} key={action.name} />)}
-            </ContentMenuGroup>
-          )}
-
-        {textblockActions.length > 0
-          && (
-            <ContentMenuGroup>
-              {textblockActions.map((action) => <ContentMenuItem action={action} key={action.name} />)}
             </ContentMenuGroup>
           )}
       </Menu.Content>

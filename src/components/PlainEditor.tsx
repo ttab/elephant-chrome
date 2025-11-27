@@ -1,5 +1,5 @@
 import type { EleDocument, EleDocumentResponse } from '@/shared/types'
-import Textbit, { type TBElement } from '@ttab/textbit'
+import { Textbit, type Element } from '@ttab/textbit'
 import useSWR from 'swr'
 import { LoadingText } from './LoadingText'
 import { Bold, Italic, Link, Text, OrderedList, UnorderedList, TTVisual, Factbox, Table } from '@ttab/textbit-plugins'
@@ -8,7 +8,7 @@ import type { Status as DocumentStatuses } from '@ttab/elephant-api/repository'
 import { PreVersionInfo } from './Version/PreVersionInfo'
 const BASE_URL = import.meta.env.BASE_URL || ''
 
-const fetcher = async (url: string): Promise<TBElement[] | EleDocument | undefined> => {
+const fetcher = async (url: string): Promise<Element[] | EleDocument | undefined> => {
   const response = await fetch(url)
   if (!response.ok) {
     throw new Error('Network response was not ok')
@@ -58,7 +58,7 @@ export const Editor = ({ id, version, textOnly = false, direct, versionStatusHis
     ]
   }
 
-  const { data: content, error } = useSWR<TBElement[] | EleDocument | undefined, Error>(
+  const { data: content, error } = useSWR<Element[] | EleDocument | undefined, Error>(
     documentUrl,
     fetcher,
     { revalidateOnFocus: false, revalidateOnReconnect: false }
@@ -92,19 +92,19 @@ export const Editor = ({ id, version, textOnly = false, direct, versionStatusHis
       {versionStatusHistory && version && (
         <PreVersionInfo version={version} versionStatusHistory={versionStatusHistory} />
       )}
-      <Textbit.Root plugins={getPlugins()}>
-        <Textbit.Editable
-          key={id}
-          readOnly
-          value={filterText(content, textOnly)}
-        />
+      <Textbit.Root
+        value={filterText(content, textOnly)}
+        plugins={getPlugins()}
+        readOnly
+      >
+        <Textbit.Editable key={id} />
       </Textbit.Root>
     </div>
 
   )
 }
 
-function filterText(content: TBElement[], textOnly: boolean): TBElement[] {
+function filterText(content: Element[], textOnly: boolean): Element[] {
   if (!textOnly) {
     return content
   }

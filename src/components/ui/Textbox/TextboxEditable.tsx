@@ -1,56 +1,58 @@
 import { Textbit } from '@ttab/textbit'
-import { createEditor } from 'slate'
+// import { createEditor } from 'slate'
 import { cn } from '@ttab/elephant-ui/utils'
-import { useLayoutEffect, useMemo } from 'react'
-import { YjsEditor, withCursors, withYHistory, withYjs } from '@slate-yjs/core'
-import type * as Y from 'yjs'
+// import { useLayoutEffect, useMemo } from 'react'
+// import { YjsEditor, withCursors, withYHistory, withYjs } from '@slate-yjs/core'
+// import type * as Y from 'yjs'
 import { ContextMenu } from '../../Editor/ContextMenu'
-import { useOnSpellcheck } from '@/hooks/useOnSpellcheck'
-import { useYPath, useYValue, type YDocument } from '@/modules/yjs/hooks'
+// import { useOnSpellcheck } from '@/hooks/useOnSpellcheck'
+// import { useYPath, useYValue, type YDocument } from '@/modules/yjs/hooks'
 
-export const TextboxEditable = ({ value, ydoc, singleLine, spellcheck, disabled = false }: {
-  value: Y.XmlText
-  ydoc: YDocument<Y.Map<unknown>>
-  disabled?: boolean
+export const TextboxEditable = ({ documentLanguage, singleLine, autoFocus, onFocus, onBlur }: {
   singleLine: boolean
+  documentLanguage?: string
   spellcheck?: boolean
+  autoFocus?: boolean
+  onBlur: React.FocusEventHandler<HTMLDivElement>
+  onFocus: React.FocusEventHandler<HTMLDivElement>
 }): JSX.Element | undefined => {
-  const path = useYPath(value, true)
-  const [documentLanguage] = useYValue<string>(ydoc.ele, ['root', 'language'])
-  const onSpellcheck = useOnSpellcheck(documentLanguage)
+  // const path = useYPath(value, true)
+  // const [documentLanguage] = useYValue<string>(ydoc.ele, ['root', 'language'])
+  // const onSpellcheck = useOnSpellcheck(documentLanguage)
 
-  const yjsEditor = useMemo(() => {
-    return (!ydoc.provider?.awareness)
-      ? undefined
-      : withYHistory(
-        withCursors(
-          withYjs(createEditor(), value),
-          ydoc.provider.awareness,
-          {
-            autoSend: false,
-            data: ydoc.user ?? undefined,
-            cursorStateField: path
-          }
-        )
-      )
-  }, [value, path, ydoc.user, ydoc.provider?.awareness])
+  // const yjsEditor = useMemo(() => {
+  //   return (!ydoc.provider?.awareness)
+  //     ? undefined
+  //     : withYHistory(
+  //       withCursors(
+  //         withYjs(createEditor(), value),
+  //         ydoc.provider.awareness,
+  //         {
+  //           autoSend: false,
+  //           data: ydoc.user ?? undefined,
+  //           cursorStateField: path
+  //         }
+  //       )
+  //     )
+  // }, [value, path, ydoc.user, ydoc.provider?.awareness])
 
-  useLayoutEffect(() => {
-    if (yjsEditor) {
-      YjsEditor.connect(yjsEditor)
-      return () => YjsEditor.disconnect(yjsEditor)
-    }
-  }, [yjsEditor])
+  // useLayoutEffect(() => {
+  //   if (yjsEditor) {
+  //     YjsEditor.connect(yjsEditor)
+  //     return () => YjsEditor.disconnect(yjsEditor)
+  //   }
+  // }, [yjsEditor])
 
-  if (!yjsEditor) return
+  // if (!yjsEditor) return
 
   return (
     <Textbit.Editable
-      key={path} // This triggers a re-render if the path changes
-      readOnly={disabled}
-      yjsEditor={yjsEditor}
+      // key={path} // This triggers a re-render if the path changes
+      autoFocus={autoFocus}
+      onBlur={onBlur}
+      onFocus={onFocus}
+      // yjsEditor={yjsEditor}
       lang={documentLanguage}
-      onSpellcheck={spellcheck ? onSpellcheck : undefined}
       className={cn(!singleLine && 'min-h-20!',
         `p-1
         py-1.5
@@ -68,7 +70,8 @@ export const TextboxEditable = ({ value, ydoc, singleLine, spellcheck, disabled 
         dark:bg-input`
       )}
     >
-      <ContextMenu className='z-9999' />
+      {/* Keep context menu as it will be used later */}
+      {/* <ContextMenu className='z-9999' /> */}
     </Textbit.Editable>
   )
 }

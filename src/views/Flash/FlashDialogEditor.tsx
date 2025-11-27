@@ -1,6 +1,6 @@
 import { useRegistry, useSupportedLanguages } from '@/hooks'
 import { Bold, Italic, Text, OrderedList, UnorderedList, LocalizedQuotationMarks } from '@ttab/textbit-plugins'
-import Textbit, { type TBText } from '@ttab/textbit'
+import { Textbit, type TBText } from '@ttab/textbit'
 import { useEffect, useMemo } from 'react'
 import { withCursors, withYHistory, withYjs, YjsEditor } from '@slate-yjs/core'
 import { createEditor } from 'slate'

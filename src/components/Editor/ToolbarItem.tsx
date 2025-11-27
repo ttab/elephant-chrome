@@ -1,9 +1,9 @@
 import {
-  type PluginRegistryAction,
+  type TBPluginRegistryAction,
   Toolbar
 } from '@ttab/textbit'
 
-export const ToolbarItem = ({ action }: { action: PluginRegistryAction }): JSX.Element => {
+export const ToolbarItem = ({ action }: { action: TBPluginRegistryAction }): JSX.Element => {
   return (
     <Toolbar.Item
       action={action}

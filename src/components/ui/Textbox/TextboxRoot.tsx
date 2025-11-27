@@ -2,7 +2,8 @@ import { Textbit } from '@ttab/textbit'
 import type * as Y from 'yjs'
 import { LocalizedQuotationMarks, Text } from '@ttab/textbit-plugins'
 import { TextboxEditable } from './TextboxEditable'
-import type { YDocument } from '@/modules/yjs/hooks'
+import { useYPath, useYValue, type YDocument } from '@/modules/yjs/hooks'
+import { useOnSpellcheck } from '@/hooks/useOnSpellcheck'
 
 export const TextboxRoot = ({
   value,
@@ -11,7 +12,7 @@ export const TextboxRoot = ({
   placeholder,
   singleLine = false,
   countCharacters = false,
-  autoFocus = false,
+  autoFocus,
   spellcheck = true,
   onBlur,
   onFocus
@@ -27,12 +28,23 @@ export const TextboxRoot = ({
   onBlur: React.FocusEventHandler<HTMLDivElement>
   onFocus: React.FocusEventHandler<HTMLDivElement>
 }): JSX.Element => {
+  const path = useYPath(value, true)
+  const [documentLanguage] = useYValue<string>(ydoc.ele, ['root', 'language'])
+  const onSpellcheck = useOnSpellcheck(documentLanguage)
+
   return (
     <Textbit.Root
+      value={value}
+      awareness={ydoc.provider?.awareness}
+      cursor={{
+        autoSend: false,
+        dataField: 'data',
+        data: ydoc.user as Record<string, unknown>,
+        stateField: path
+      }}
       debounce={0}
-      autoFocus={autoFocus}
-      onBlur={onBlur}
-      onFocus={onFocus}
+      onSpellcheck={spellcheck ? onSpellcheck : undefined}
+      readOnly={disabled}
       placeholder={placeholder}
       plugins={[
         LocalizedQuotationMarks(),
@@ -47,11 +59,12 @@ export const TextboxRoot = ({
       className='h-min-2 w-full'
     >
       <TextboxEditable
-        disabled={disabled}
-        value={value}
-        ydoc={ydoc}
-        singleLine={singleLine}
+        documentLanguage={documentLanguage}
         spellcheck={spellcheck}
+        autoFocus={autoFocus}
+        onFocus={onFocus}
+        onBlur={onBlur}
+        singleLine={singleLine}
       />
     </Textbit.Root>
   )
