@@ -1,5 +1,6 @@
 import { DocumentStatus } from '@/components/Table/Items/DocumentStatus'
 import { Title } from '@/components/Table/Items/Title'
+import { ConceptStatuses } from '@/defaults/documentStatuses'
 import type { ColumnDef } from '@tanstack/react-table'
 import { BoxesIcon } from '@ttab/elephant-ui/icons'
 import type { IDBConcept } from 'src/datastore/types'
@@ -13,16 +14,7 @@ export function ConceptColumns(): Array<ColumnDef<IDBConcept>> {
         name: 'Status',
         columnIcon: BoxesIcon,
         className: 'flex-none',
-        options: [
-          {
-            label: 'Används',
-            value: 'usable'
-          },
-          {
-            label: 'Inaktiva',
-            value: 'inactive'
-          }
-        ],
+        options: ConceptStatuses,
         display: (value: string) => {
           return <span>{value}</span>
         },
