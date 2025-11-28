@@ -18,18 +18,10 @@ fi
 # Resolve absolute path
 LIB_PATH="$(cd "$LIB_PATH" && pwd)"
 
-APP_REACT="$APP_PATH/node_modules/react"
-APP_REACT_DOM="$APP_PATH/node_modules/react-dom"
-APP_TYPES_REACT="$APP_PATH/node_modules/@types/react"
-APP_TYPES_REACT_DOM="$APP_PATH/node_modules/@types/react-dom"
+APP_NODE_MODULES="$APP_PATH/node_modules"
 
-if [ ! -d "$APP_REACT" ]; then
-  echo "⚠ React not found in app's node_modules."
-  exit 1
-fi
-
-if [ ! -d "$APP_REACT_DOM" ]; then
-  echo "⚠ ReactDOM not found in app's node_modules."
+if [ ! -d "$APP_NODE_MODULES" ]; then
+  echo "⚠ node_modules not installed at $APP_NODE_MODULES."
   exit 1
 fi
 
@@ -45,17 +37,34 @@ if ! (cd "$APP_PATH" && npm link "$LIB_NAME" >/dev/null); then
   echo "npm link failed for $LIB_NAME" >&2
 fi
 
-echo "🧹 Removing $LIB_NAME react, react-dom and @types..."
-rm -rf "$LIB_PATH/node_modules/react"
-rm -rf "$LIB_PATH/node_modules/react-dom"
-rm -rf "$LIB_PATH/node_modules/@types/react"
-rm -rf "$LIB_PATH/node_modules/@types/react-dom"
+echo "🧹 Cleaning up duplicated peer dependencies..."
+LINK_PACKAGES=(
+  "react"
+  "react-dom"
+  "@types/react"
+  "@types/react-dom"
+  "@slate-yjs/core"
+  "@slate-yjs/react"
+  "slate"
+  "slate-react"
+  "slate-history"
+  "yjs"
+)
 
-echo "🔗 Linking react, react-dom and @types from $APP_NAME to $LIB_NAME..."
-ln -s "$APP_REACT" "$LIB_PATH/node_modules/react"
-ln -s "$APP_REACT_DOM" "$LIB_PATH/node_modules/react-dom"
-ln -s "$APP_TYPES_REACT" "$LIB_PATH/node_modules/@types/react"
-ln -s "$APP_TYPES_REACT_DOM" "$LIB_PATH/node_modules/@types/react-dom"
+for PACKAGE in "${LINK_PACKAGES[@]}"; do
+  SOURCE="$APP_NODE_MODULES/$PACKAGE"
+  DEST="$LIB_PATH/node_modules/$PACKAGE"
+
+  if [ ! -e "$SOURCE" ]; then
+    echo "⚠ Skipping $PACKAGE; not found in app node_modules."
+    continue
+  fi
+
+  echo "   - Linking $PACKAGE"
+  rm -rf "$DEST"
+  mkdir -p "$(dirname "$DEST")"
+  ln -s "$SOURCE" "$DEST"
+done
 
 echo "🧹 Removing vite cache..."
 rm -rf "$APP_PATH/node_modules/.vite"
