@@ -4,6 +4,9 @@ import { useCallback, useMemo } from 'react'
 import type * as Y from 'yjs'
 import { DocumentStatuses } from '@/defaults/documentStatuses'
 import { CircleDotIcon, CircleCheckIcon, CircleArrowUpIcon } from '@ttab/elephant-ui/icons'
+import type { DefaultValueOption } from '@/types/index'
+import { snapshotDocument } from '@/lib/snapshotDocument'
+import { toast } from 'sonner'
 
 export const AssignmentStatus = (props: {
   ydoc?: YDocument<Y.Map<unknown>>
@@ -45,7 +48,12 @@ const VisualAssignment = ({ ydoc, path }: {
 
   const onValueChange = useCallback((value: string) => {
     setVisualAssignmentStatus(value)
-  }, [setVisualAssignmentStatus])
+    snapshotDocument(ydoc.id, undefined, ydoc.provider?.document)
+      .catch((ex) => {
+        console.error('Failed to snapshot document after changing visual assignment status', ex)
+        toast.error('Kunde inte spara ändringen')
+      })
+  }, [setVisualAssignmentStatus, ydoc])
 
 
   const currentStatus = selectableStatuses
@@ -60,13 +68,15 @@ const VisualAssignment = ({ ydoc, path }: {
         value={visualAssignmentStatus || 'todo'}
       >
         <SelectTrigger className='flex h-8 w-12 items-center justify-start -ml-1 px-1'>
-          <currentStatus.Icon {...currentStatus.iconProps} />
+          {currentStatus.icon && (
+            <currentStatus.icon {...currentStatus.iconProps} />
+          )}
         </SelectTrigger>
         <SelectContent>
-          {selectableStatuses.map(({ value, Icon, iconProps, label }) => (
+          {selectableStatuses.map(({ value, icon: IconComponent, iconProps, label }) => (
             <SelectItem key={value} value={value} className='flex justify-start' aria-label={label}>
               <span className='flex flex-row items-center justify-start gap-2'>
-                <Icon {...iconProps} />
+                {IconComponent && <IconComponent {...iconProps} />}
                 <span>{label}</span>
               </span>
             </SelectItem>
@@ -77,11 +87,11 @@ const VisualAssignment = ({ ydoc, path }: {
   )
 }
 
-const selectableStatuses = [
+export const selectableStatuses: DefaultValueOption[] = [
   {
     value: 'todo',
     label: 'Att göra',
-    Icon: CircleDotIcon,
+    icon: CircleDotIcon,
     iconProps: {
       className: 'text-muted-foreground',
       size: 18,
@@ -91,10 +101,9 @@ const selectableStatuses = [
   {
     value: 'started',
     label: 'Påbörjad',
-    Icon: CircleArrowUpIcon,
+    icon: CircleArrowUpIcon,
     iconProps: {
-      color: '#ffffff',
-      className: 'bg-done rounded-full',
+      className: 'bg-done text-white rounded-full',
       size: 18,
       strokeWidth: 1.75
     }
@@ -102,10 +111,9 @@ const selectableStatuses = [
   {
     value: 'done',
     label: 'Klar',
-    Icon: CircleCheckIcon,
+    icon: CircleCheckIcon,
     iconProps: {
-      color: '#ffffff',
-      className: 'bg-usable fill-usable rounded-full',
+      className: 'bg-usable text-white fill-usable rounded-full',
       size: 18,
       strokeWidth: 1.75
     }
