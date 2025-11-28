@@ -1,5 +1,6 @@
 import { DocumentStatus } from '@/components/Table/Items/DocumentStatus'
 import { Title } from '@/components/Table/Items/Title'
+import { ConceptStatuses } from '@/defaults/documentStatuses'
 import type { ColumnDef } from '@tanstack/react-table'
 import { BoxesIcon } from '@ttab/elephant-ui/icons'
 import type { IDBConcept } from 'src/datastore/types'
@@ -12,13 +13,18 @@ export function ConceptColumns(): Array<ColumnDef<IDBConcept>> {
       meta: {
         name: 'Status',
         columnIcon: BoxesIcon,
-        className: 'flex-none'
+        className: 'flex-none',
+        options: ConceptStatuses,
+        display: (value: string) => {
+          return <span>{value}</span>
+        },
+        quickFilter: true
       },
       accessorFn: (data) => {
-        return data?.usableVersion && data.usableVersion > 0 ? 'usable' : 'unpublished'
+        return data?.usableVersion && data.usableVersion > 0 ? 'usable' : 'inactive'
       },
       cell: ({ row }) => {
-        const status = row.getValue<string>('documentStatus') === 'usable' ? 'usable' : 'inactive'
+        const status = row.getValue<string>('documentStatus') === 'usable' ? 'usable' : 'unpublished'
         return <DocumentStatus type='core/section' status={status} />
       }
     },
@@ -39,7 +45,8 @@ export function ConceptColumns(): Array<ColumnDef<IDBConcept>> {
             <Title title={row.getValue<string>('title')} className={status === 'inactive' ? 'text-zinc-500' : ''} />
           </div>
         )
-      }
+      },
+      enableGrouping: false
 
     }
   ]
