@@ -1,4 +1,4 @@
-import { isConceptType } from '@/views/Concepts/lib/isConceptType'
+import { isConceptType } from '@/shared/isConceptType'
 import type { StatusOverviewItem, DocumentMeta } from '@ttab/elephant-api/repository'
 
 interface Status {

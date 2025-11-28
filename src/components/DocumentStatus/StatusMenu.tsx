@@ -16,7 +16,7 @@ import { handleLink } from '../Link/lib/handleLink'
 import { useHistory, useNavigation, useView } from '@/hooks/index'
 import type { View } from '@/types/index'
 import { reset } from '@/views/Concepts/lib/reset'
-import { isConceptType } from '@/views/Concepts/lib/isConceptType'
+import { isConceptType } from '@/shared/isConceptType'
 import { tableDataMap } from '@/views/Concepts/lib/conceptDataTable'
 
 export const StatusMenu = ({ documentId, type, publishTime, onBeforeStatusChange, isChanged }: {
