@@ -26,7 +26,7 @@ export const StoryTagContent = ({ isActive, handleChange, asDialog }: {
       >
         <TextBox
           id='storyTag'
-          label='Story tag'
+          label={!asDialog ? 'Story tag' : undefined}
           asDialog={asDialog}
           singleLine={true}
           path='root.title'
@@ -38,7 +38,7 @@ export const StoryTagContent = ({ isActive, handleChange, asDialog }: {
       </Validation>
       <TextBox
         id='shortText'
-        label='Kort text'
+        label={!asDialog ? 'Kort text' : undefined}
         asDialog={asDialog}
         singleLine={true}
         path={`meta.core/definition[${textPaths.shortIndex}].data.text`}
@@ -49,7 +49,7 @@ export const StoryTagContent = ({ isActive, handleChange, asDialog }: {
       />
       <TextBox
         id='longText'
-        label='Lång text'
+        label={!asDialog ? 'Lång text' : undefined}
         asDialog={asDialog}
         singleLine={false}
         path={`meta.core/definition[${textPaths.longIndex}].data.text`}

@@ -16,7 +16,7 @@ export const SectionContent = ({ isActive, handleChange, asDialog }: {
       >
         <TextBox
           id='sectionTitle'
-          label='Sektionsnamn'
+          label={!asDialog ? 'Sektionsnamn' : undefined}
           asDialog={asDialog}
           singleLine={true}
           path='root.title'
@@ -33,7 +33,7 @@ export const SectionContent = ({ isActive, handleChange, asDialog }: {
       >
         <TextBox
           id='code'
-          label='Kod'
+          label={!asDialog ? 'Kod' : undefined}
           asDialog={asDialog}
           onChange={handleChange}
           singleLine={true}

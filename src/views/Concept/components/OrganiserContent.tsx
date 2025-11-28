@@ -34,7 +34,7 @@ export const OrganiserContent = ({ isActive, handleChange, asDialog, provider }:
       >
         <TextBox
           id='organiser'
-          label='Organisatör'
+          label={!asDialog ? 'Organisatör' : undefined}
           asDialog={asDialog}
           singleLine={true}
           path='root.title'
@@ -46,7 +46,7 @@ export const OrganiserContent = ({ isActive, handleChange, asDialog, provider }:
       </Validation>
       <TextBox
         id='streetAddress'
-        label='Adress'
+        label={!asDialog ? 'Adress' : undefined}
         asDialog={asDialog}
         singleLine={true}
         path='meta.core/contact-info[0].data.streetAddress'
@@ -57,7 +57,7 @@ export const OrganiserContent = ({ isActive, handleChange, asDialog, provider }:
       />
       <TextBox
         id='city'
-        label='Stad'
+        label={!asDialog ? 'Stad' : undefined}
         asDialog={asDialog}
         singleLine={true}
         path='meta.core/contact-info[0].data.city'
@@ -68,7 +68,7 @@ export const OrganiserContent = ({ isActive, handleChange, asDialog, provider }:
       />
       <TextBox
         id='country'
-        label='Land'
+        label={!asDialog ? 'Land' : undefined}
         asDialog={asDialog}
         singleLine={true}
         path='meta.core/contact-info[0].data.country'
@@ -79,7 +79,7 @@ export const OrganiserContent = ({ isActive, handleChange, asDialog, provider }:
       />
       <TextBox
         id='email'
-        label='E-postadress'
+        label={!asDialog ? 'E-postadress' : undefined}
         asDialog={asDialog}
         singleLine={true}
         path='meta.core/contact-info[0].data.email'
@@ -90,7 +90,7 @@ export const OrganiserContent = ({ isActive, handleChange, asDialog, provider }:
       />
       <TextBox
         id='phone'
-        label='Telefon'
+        label={!asDialog ? 'Telefon' : undefined}
         asDialog={asDialog}
         singleLine={true}
         path='meta.core/contact-info[0].data.phone'
@@ -101,7 +101,7 @@ export const OrganiserContent = ({ isActive, handleChange, asDialog, provider }:
       />
       <TextBox
         id='link'
-        label='Länkar'
+        label={!asDialog ? 'Länkar' : undefined}
         asDialog={asDialog}
         singleLine={true}
         path='links[text/html][0].url'

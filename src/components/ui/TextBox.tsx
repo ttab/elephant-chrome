@@ -37,10 +37,9 @@ export const TextBox = ({ id, label, asDialog, icon: Icon, iconAction, path, onC
       onBlur(e)
     }
   }, [onBlur])
-
   return (
     <Awareness path={path} ref={setFocused} className='w-full'>
-      {!asDialog && label && <Label htmlFor={id}>{label}</Label>}
+      {label && <Label htmlFor={id}>{label}</Label>}
       <div id={id} className='w-full flex flex-row gap-2'>
         {Icon && (
           <div className='pt-1.5' onClick={iconAction}>
