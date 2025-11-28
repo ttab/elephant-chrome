@@ -68,6 +68,9 @@ export function asAssignments(data: Assignment[], query: QueryV1, statuses: GetS
             },
             'document.meta.core_assignment.data.publish_slot': {
               values: [currentAssignmentMeta.data.publish_slot]
+            },
+            'document.meta.core_assignment.data.status': {
+              values: [currentAssignmentMeta.data.status]
             }
             /* Dont think we need this?
              * 'document.meta.core_assignment.data.publish': {

@@ -26,7 +26,8 @@ export const AssignmentsList = ({ columns, date }: {
     options: {
       aggregatePages: true,
       asAssignments: true,
-      setTableData: true
+      setTableData: true,
+      subscribe: true
     }
   })
 

@@ -65,6 +65,7 @@ export const useDocuments = <T extends HitV1, F>({ documentType, query, size, pa
   const subscriptionsRef = useRef<SubscriptionReference[] | undefined>(subscriptions)
   const mutateRef = useRef<KeyedMutator<T[]> | null>(null)
   const dataRef = useRef<T[] | undefined>(undefined)
+  const optionsRef = useRef(options)
 
   const key = useMemo(() => query
     ? `${documentType}/${JSON.stringify(query, (_, v: unknown) => typeof v === 'bigint' ? v.toString() : v)}${page ? `/${page}` : ''}`
@@ -123,7 +124,8 @@ export const useDocuments = <T extends HitV1, F>({ documentType, query, size, pa
           accessToken: session.accessToken,
           subscriptions: subscriptionsRef.current ?? [],
           mutate: mutateRef.current!,
-          abortController
+          abortController,
+          options: optionsRef.current
         })
       } catch (error) {
         if (error instanceof AbortError) {
@@ -192,7 +194,8 @@ async function pollSubscriptions<T extends HitV1>({
   subscriptions,
   data = [],
   mutate,
-  abortController
+  abortController,
+  options
 }: {
   index: Index
   data?: T[]
@@ -200,6 +203,7 @@ async function pollSubscriptions<T extends HitV1>({
   subscriptions: SubscriptionReference[]
   mutate: KeyedMutator<T[]>
   abortController?: AbortController
+  options?: useDocumentsFetchOptions
 }): Promise<SubscriptionReference[]> {
   try {
     const response: PollSubscriptionResponse = await index.pollSubscription({
@@ -237,6 +241,10 @@ async function pollSubscriptions<T extends HitV1>({
       await new Promise((resolve) => setTimeout(resolve, 1000))
       await mutate()
     } else {
+      if (options?.asAssignments) {
+        await mutate()
+        return newSubscriptions
+      }
       // Build a map of matched items by id for quick lookup
       const matchedMap = new Map<string, SubscriptionItem>(
         matchedItems.map((item) => [item.id, item])

@@ -26,6 +26,7 @@ const _fields = [
   'document.meta.core_assignment.data.full_day',
   'document.meta.core_assignment.data.publish_slot',
   'document.meta.core_assignment.data.public',
+  'document.meta.core_assignment.data.status',
   'document.meta.core_planning_item.data.start_date',
   'document.rel.event.uuid'
 ] as const
