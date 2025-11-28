@@ -1,12 +1,6 @@
 import { Textbit } from '@ttab/textbit'
-// import { createEditor } from 'slate'
 import { cn } from '@ttab/elephant-ui/utils'
-// import { useLayoutEffect, useMemo } from 'react'
-// import { YjsEditor, withCursors, withYHistory, withYjs } from '@slate-yjs/core'
-// import type * as Y from 'yjs'
 import { ContextMenu } from '../../Editor/ContextMenu'
-// import { useOnSpellcheck } from '@/hooks/useOnSpellcheck'
-// import { useYPath, useYValue, type YDocument } from '@/modules/yjs/hooks'
 
 export const TextboxEditable = ({ documentLanguage, singleLine, autoFocus, onFocus, onBlur }: {
   singleLine: boolean
@@ -16,42 +10,12 @@ export const TextboxEditable = ({ documentLanguage, singleLine, autoFocus, onFoc
   onBlur: React.FocusEventHandler<HTMLDivElement>
   onFocus: React.FocusEventHandler<HTMLDivElement>
 }): JSX.Element | undefined => {
-  // const path = useYPath(value, true)
-  // const [documentLanguage] = useYValue<string>(ydoc.ele, ['root', 'language'])
-  // const onSpellcheck = useOnSpellcheck(documentLanguage)
-
-  // const yjsEditor = useMemo(() => {
-  //   return (!ydoc.provider?.awareness)
-  //     ? undefined
-  //     : withYHistory(
-  //       withCursors(
-  //         withYjs(createEditor(), value),
-  //         ydoc.provider.awareness,
-  //         {
-  //           autoSend: false,
-  //           data: ydoc.user ?? undefined,
-  //           cursorStateField: path
-  //         }
-  //       )
-  //     )
-  // }, [value, path, ydoc.user, ydoc.provider?.awareness])
-
-  // useLayoutEffect(() => {
-  //   if (yjsEditor) {
-  //     YjsEditor.connect(yjsEditor)
-  //     return () => YjsEditor.disconnect(yjsEditor)
-  //   }
-  // }, [yjsEditor])
-
-  // if (!yjsEditor) return
-
   return (
     <Textbit.Editable
-      // key={path} // This triggers a re-render if the path changes
+      // key={path} // Necessary? This triggers a re-render if the path changes
       autoFocus={autoFocus}
       onBlur={onBlur}
       onFocus={onFocus}
-      // yjsEditor={yjsEditor}
       lang={documentLanguage}
       className={cn(!singleLine && 'min-h-20!',
         `p-1
@@ -70,8 +34,7 @@ export const TextboxEditable = ({ documentLanguage, singleLine, autoFocus, onFoc
         dark:bg-input`
       )}
     >
-      {/* Keep context menu as it will be used later */}
-      {/* <ContextMenu className='z-9999' /> */}
+      <ContextMenu className='z-9999' />
     </Textbit.Editable>
   )
 }
