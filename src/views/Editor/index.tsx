@@ -105,6 +105,8 @@ function EditorWrapper(props: ViewProps & {
   const ydoc = useYDocument<Y.Map<unknown>>(props.documentId, {
     visibility: !props.preview
   })
+  const [documentLanguage] = getValueByYPath<string>(ydoc.ele, 'root.language')
+  const onSpellcheck = useOnSpellcheck(documentLanguage)
 
   const openFactboxEditor = useLink('Factbox')
 
@@ -141,7 +143,16 @@ function EditorWrapper(props: ViewProps & {
   return (
     <View.Root>
       <Textbit.Root
-        autoFocus={props.autoFocus ?? true}
+        value={ydoc.ele.get('content') as Y.XmlText}
+        awareness={ydoc.provider?.awareness}
+        cursor={{
+          autoSend: false,
+          dataField: 'data',
+          data: ydoc.user as Record<string, unknown>
+        }}
+        readOnly={props.preview}
+        onSpellcheck={onSpellcheck}
+        // autoFocus={props.autoFocus ?? true}
         plugins={getConfiguredPlugins()}
         placeholders='multiple'
         className='h-screen max-h-screen flex flex-col'
@@ -149,7 +160,7 @@ function EditorWrapper(props: ViewProps & {
         <EditorContainer
           ydoc={ydoc}
           planningId={props.planningId}
-          preview={props.preview}
+          documentLanguage={documentLanguage}
         />
       </Textbit.Root>
     </View.Root>
@@ -161,11 +172,13 @@ function EditorWrapper(props: ViewProps & {
 function EditorContainer({
   ydoc,
   planningId,
-  preview
+  preview,
+  documentLanguage
 }: {
   ydoc: YDocument<Y.Map<unknown>>
   planningId?: string | null
   preview?: boolean
+  documentLanguage?: string
 }): JSX.Element {
   const { stats } = useTextbit()
 
@@ -181,7 +194,7 @@ function EditorContainer({
 
         <div className='grow overflow-auto pr-12 max-w-(--breakpoint-xl)'>
           {ydoc.provider && ydoc.provider.isSynced
-            ? <EditorContent ydoc={ydoc} preview={preview} />
+            ? <EditorContent documentLanguage={documentLanguage} />
             : <></>}
         </div>
       </View.Content>
@@ -201,33 +214,25 @@ function EditorContainer({
 }
 
 
-function EditorContent({ ydoc, preview }: {
-  ydoc: YDocument<Y.Map<unknown>>
-  preview?: boolean
+function EditorContent({ documentLanguage }: {
+  documentLanguage?: string
 }): JSX.Element {
-  const { isActive } = useView()
-  const ref = useRef<HTMLDivElement>(null)
-  const [documentLanguage] = getValueByYPath<string>(ydoc.ele, 'root.language')
-
-  const yjsEditor = useYjsEditor(ydoc)
-  const onSpellcheck = useOnSpellcheck(documentLanguage)
+  // const { isActive } = useView()
+  // const ref = useRef<HTMLDivElement>(null)
 
   // Handle focus on active state
-  useEffect(() => {
-    if (isActive && ref?.current?.dataset['state'] !== 'focused') {
-      setTimeout(() => {
-        ref?.current?.focus()
-      }, 0)
-    }
-  }, [isActive, ref])
+  // useEffect(() => {
+  //   if (isActive && ref?.current?.dataset['state'] !== 'focused') {
+  //     setTimeout(() => {
+  //       ref?.current?.focus()
+  //     }, 0)
+  //   }
+  // }, [isActive, ref])
 
   return (
     <Textbit.Editable
-      readOnly={preview}
-      ref={ref}
-      yjsEditor={yjsEditor}
+      // ref={ref}
       lang={documentLanguage}
-      onSpellcheck={onSpellcheck}
       className='outline-none
         h-full
         dark:text-slate-100
