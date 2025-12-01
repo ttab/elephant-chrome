@@ -30,7 +30,7 @@ export const FlashView = (props: {
     <View.Root className={props.className}>
       <View.Content>
         <Form.Root asDialog={props.asDialog}>
-          <FlashEditor ydoc={ydoc} readOnly={readOnly} preview={preview} />
+          <FlashEditor ydoc={ydoc} readOnly={readOnly} preview={preview} planningId={props.planningId} />
         </Form.Root>
       </View.Content>
     </View.Root>
