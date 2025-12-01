@@ -59,12 +59,23 @@ const VisualAssignment = ({ ydoc, path }: {
         onValueChange={onValueChange}
         value={visualAssignmentStatus || 'todo'}
       >
-        <SelectTrigger className='flex h-8 w-12 items-center justify-start -ml-1 px-1'>
+        <SelectTrigger
+          className='flex h-8 w-12 items-center justify-start -ml-1 px-1'
+          onPointerDownCapture={stopRowClick}
+          onClick={stopRowClick}
+        >
           <currentStatus.Icon {...currentStatus.iconProps} />
         </SelectTrigger>
         <SelectContent>
           {selectableStatuses.map(({ value, Icon, iconProps, label }) => (
-            <SelectItem key={value} value={value} className='flex justify-start' aria-label={label}>
+            <SelectItem
+              key={value}
+              value={value}
+              className='flex justify-start'
+              aria-label={label}
+              onPointerDownCapture={stopRowClick}
+              onClick={stopRowClick}
+            >
               <span className='flex flex-row items-center justify-start gap-2'>
                 <Icon {...iconProps} />
                 <span>{label}</span>
@@ -75,6 +86,10 @@ const VisualAssignment = ({ ydoc, path }: {
       </Select>
     </div>
   )
+}
+
+function stopRowClick(event: React.PointerEvent | React.MouseEvent) {
+  event.stopPropagation()
 }
 
 const selectableStatuses = [
