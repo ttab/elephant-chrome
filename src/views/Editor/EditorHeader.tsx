@@ -27,7 +27,7 @@ export const EditorHeader = ({ ydoc, readOnly, readOnlyVersion, planningId: prop
   const planningId = useDeliverablePlanningId(ydoc.id)
   const containerRef = useRef<HTMLElement | null>(null)
   const [publishTime] = useState<string | null>(null)
-  const [workflowStatus] = useWorkflowStatus({ ydoc, documentId: ydoc.id, isWorkflow: true })
+  const [workflowStatus] = useWorkflowStatus({ ydoc, documentId: ydoc.id })
   const [documentType] = useYValue<string>(ydoc.ele, 'root.type')
 
   const openLatestVersion = useLink('Editor')
@@ -132,7 +132,6 @@ export const EditorHeader = ({ ydoc, readOnly, readOnlyVersion, planningId: prop
                 {!!(propPlanningId || planningId) && (!isReadOnlyAndUpdated || isUnpublished) && (
                   <StatusMenu
                     ydoc={ydoc}
-                    type={documentType || 'core/article'}
                     publishTime={publishTime ? new Date(publishTime) : undefined}
                     onBeforeStatusChange={onBeforeStatusChange}
                   />

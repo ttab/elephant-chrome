@@ -36,7 +36,6 @@ export const EditorHeader = ({
                   <ViewHeader.RemoteUsers ydoc={ydoc} />
                   <StatusMenu
                     ydoc={ydoc}
-                    type='tt/print-article'
                   />
                 </>
               )}
