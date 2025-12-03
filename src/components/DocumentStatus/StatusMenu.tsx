@@ -127,25 +127,6 @@ export const StatusMenu = ({ ydoc, publishTime, onBeforeStatusChange }: {
     return null
   }
 
-  /* TODO: Remove if not needed
-   * getCurrentCause(documentStatus?.cause, type, ydoc.isChanged, prompt)
-   * const getCurrentCause = (
-    cause: string | undefined,
-    type: string,
-    isChanged: boolean,
-    prompt: { status: string } & WorkflowTransition | undefined
-  ): string | undefined => {
-    if (cause !== undefined) {
-      return cause
-    } else if (type === 'tt/print-article' || type === 'core/planning-item') {
-      return ''
-    } else if (isChanged && prompt?.status === 'usable') {
-      return ''
-    } else {
-      return undefined
-    }
-  } */
-
   return (
     <>
       <div className='flex items-center' ref={containerRef}>
