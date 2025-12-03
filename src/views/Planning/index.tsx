@@ -60,7 +60,7 @@ const meta: ViewMetadata = {
 export const Planning = (props: ViewProps & {
   document?: Document
   setNewItem?: Setter
-}): JSX.Element => {
+}): React.JSX.Element => {
   const [query] = useQuery()
   const documentId = props.id || query.id
 
@@ -107,7 +107,7 @@ const PlanningViewContent = (props: ViewProps & {
   documentId: string
   data?: EleDocumentResponse
   setNewItem?: Setter
-}): JSX.Element | undefined => {
+}): React.JSX.Element | undefined => {
   const ydoc = useYDocument<Y.Map<unknown>>(props.documentId, { data: props.data })
   const { provider, ele: document, connected } = ydoc
 
@@ -192,7 +192,7 @@ const PlanningViewContent = (props: ViewProps & {
                 ydoc={ydoc}
                 value={title}
                 label='Titel'
-                autoFocus={!!props.asDialog}
+                autoFocus={true}
                 placeholder='Planeringstitel'
               />
             </Form.Title>

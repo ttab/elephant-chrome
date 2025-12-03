@@ -6,6 +6,8 @@ import type { YDocument } from '@/modules/yjs/hooks'
 import type * as Y from 'yjs'
 /**
  * Hook for creating and managing a YJS-enabled Textbit editor
+ * FIXME: This should be removed completely after refactoring
+ * @deprecated Built into textbit
  */
 export function useYjsEditor(
   ydoc: YDocument<Y.Map<unknown>>

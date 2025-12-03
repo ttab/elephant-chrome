@@ -1,3 +1,4 @@
+import type { JSX } from 'react'
 import { Textbit } from '@ttab/textbit'
 import type * as Y from 'yjs'
 import { LocalizedQuotationMarks, Text } from '@ttab/textbit-plugins'

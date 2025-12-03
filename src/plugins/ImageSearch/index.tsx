@@ -1,8 +1,8 @@
 import { ScanSearchIcon } from '@ttab/elephant-ui/icons'
 import { useLink } from '@/hooks'
-import { type Plugin } from '@ttab/textbit'
+import type { TBPluginInitFunction } from '@ttab/textbit'
 
-export const ImageSearchPlugin: Plugin.InitFunction = () => {
+export const ImageSearchPlugin: TBPluginInitFunction = () => {
   const openImageSearch = useLink('ImageSearch')
 
   return {

@@ -1,4 +1,5 @@
-import { useEffect, useRef } from 'react'
+import type { JSX } from 'react'
+import { useMemo } from 'react'
 import { View } from '@/components'
 import { Notes } from '@/components/Notes'
 import { Textbit, useTextbit } from '@ttab/textbit'
@@ -10,8 +11,6 @@ import { Editor as PlainEditor } from '@/components/PlainEditor'
 import {
   useQuery,
   useLink,
-  useView,
-  useYjsEditor,
   useWorkflowStatus
 } from '@/hooks'
 import type { ViewMetadata, ViewProps } from '@/types'
@@ -106,12 +105,12 @@ function EditorWrapper(props: ViewProps & {
     visibility: !props.preview
   })
   const [documentLanguage] = getValueByYPath<string>(ydoc.ele, 'root.language')
+  const [content] = getValueByYPath<Y.XmlText>(ydoc.ele, 'content', true)
   const onSpellcheck = useOnSpellcheck(documentLanguage)
-
   const openFactboxEditor = useLink('Factbox')
 
   // Plugin configuration
-  const getConfiguredPlugins = () => {
+  const configuredPlugins = useMemo(() => {
     const basePlugins = [
       Bold,
       Italic,
@@ -138,47 +137,43 @@ function EditorWrapper(props: ViewProps & {
         removable: true
       })
     ]
-  }
+  }, [openFactboxEditor])
 
   return (
     <View.Root>
-      <Textbit.Root
-        value={ydoc.ele.get('content') as Y.XmlText}
-        awareness={ydoc.provider?.awareness}
-        cursor={{
-          autoSend: false,
-          dataField: 'data',
-          data: ydoc.user as Record<string, unknown>
-        }}
-        readOnly={props.preview}
-        onSpellcheck={onSpellcheck}
-        // autoFocus={props.autoFocus ?? true}
-        plugins={getConfiguredPlugins()}
-        placeholders='multiple'
-        className='h-screen max-h-screen flex flex-col'
-      >
-        <EditorContainer
-          ydoc={ydoc}
-          planningId={props.planningId}
-          documentLanguage={documentLanguage}
-        />
-      </Textbit.Root>
+      {!content
+        ? null
+        : (
+            <Textbit.Root
+              value={content}
+              awareness={ydoc.provider?.awareness}
+              cursor={{
+                dataField: 'data',
+                data: ydoc.user as Record<string, unknown>
+              }}
+              readOnly={props.preview}
+              onSpellcheck={onSpellcheck}
+              plugins={configuredPlugins}
+              placeholders='multiple'
+              className='h-screen max-h-screen flex flex-col'
+              lang={documentLanguage}
+            >
+              <EditorContainer
+                ydoc={ydoc}
+                planningId={props.planningId}
+              />
+            </Textbit.Root>
+          )}
     </View.Root>
   )
 }
 
 
 // Container component that uses TextBit context
-function EditorContainer({
-  ydoc,
-  planningId,
-  preview,
-  documentLanguage
-}: {
+function EditorContainer({ ydoc, planningId, preview }: {
   ydoc: YDocument<Y.Map<unknown>>
   planningId?: string | null
   preview?: boolean
-  documentLanguage?: string
 }): JSX.Element {
   const { stats } = useTextbit()
 
@@ -194,7 +189,27 @@ function EditorContainer({
 
         <div className='grow overflow-auto pr-12 max-w-(--breakpoint-xl)'>
           {ydoc.provider && ydoc.provider.isSynced
-            ? <EditorContent documentLanguage={documentLanguage} />
+            ? (
+                <Textbit.Editable
+                  autoFocus={true}
+                  className='outline-none
+                    h-full
+                    ms-14
+                    pt-4
+                    dark:text-slate-100
+                    **:data-spelling-error:border-b-2
+                    **:data-spelling-error:border-dotted
+                    **:data-spelling-error:border-red-500
+                  '
+                >
+                  <DropMarker />
+                  <Gutter>
+                    <ContentMenu />
+                  </Gutter>
+                  <Toolbar />
+                  <ContextMenu />
+                </Textbit.Editable>
+              )
             : <></>}
         </div>
       </View.Content>
@@ -210,44 +225,6 @@ function EditorContainer({
         </div>
       </View.Footer>
     </>
-  )
-}
-
-
-function EditorContent({ documentLanguage }: {
-  documentLanguage?: string
-}): JSX.Element {
-  // const { isActive } = useView()
-  // const ref = useRef<HTMLDivElement>(null)
-
-  // Handle focus on active state
-  // useEffect(() => {
-  //   if (isActive && ref?.current?.dataset['state'] !== 'focused') {
-  //     setTimeout(() => {
-  //       ref?.current?.focus()
-  //     }, 0)
-  //   }
-  // }, [isActive, ref])
-
-  return (
-    <Textbit.Editable
-      // ref={ref}
-      lang={documentLanguage}
-      className='outline-none
-        h-full
-        dark:text-slate-100
-        **:data-spelling-error:border-b-2
-        **:data-spelling-error:border-dotted
-        **:data-spelling-error:border-red-500
-      '
-    >
-      <DropMarker />
-      <Gutter>
-        <ContentMenu />
-      </Gutter>
-      <Toolbar />
-      <ContextMenu />
-    </Textbit.Editable>
   )
 }
 

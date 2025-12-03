@@ -1,4 +1,4 @@
-import React, { useCallback, useRef } from 'react'
+import React, { type JSX, useCallback, useRef } from 'react'
 import { Awareness } from '../Awareness'
 import { TextboxRoot } from './Textbox/TextboxRoot'
 import { useYPath, type YDocument } from '@/modules/yjs/hooks'

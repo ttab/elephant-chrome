@@ -1,8 +1,8 @@
 import { TextSearchIcon } from '@ttab/elephant-ui/icons'
 import { useLink } from '@/hooks'
-import { type Plugin } from '@ttab/textbit'
+import type { TBPluginInitFunction } from '@ttab/textbit'
 
-export const FactboxPlugin: Plugin.InitFunction = () => {
+export const FactboxPlugin: TBPluginInitFunction = () => {
   const openFactboxes = useLink('Factboxes')
 
   return {
