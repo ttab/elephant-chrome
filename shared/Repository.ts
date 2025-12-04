@@ -29,6 +29,7 @@ export interface Status {
   uuid: string
   checkpoint?: string
   cause?: string
+  type?: string
 }
 
 export class Repository {

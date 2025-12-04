@@ -37,7 +37,6 @@ export const FactboxHeader = ({ ydoc, asDialog, onDialogClose }: {
               <>
                 <StatusMenu
                   ydoc={ydoc}
-                  type='core/factbox'
                 />
                 <MetaSheet container={containerRef.current} ydoc={ydoc} />
               </>
