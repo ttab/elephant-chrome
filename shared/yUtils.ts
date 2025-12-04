@@ -32,7 +32,7 @@ export function createTypedYDoc(
 ): Y.Doc {
   // Base document and base maps
   const ydoc = options?.document ?? new Y.Doc()
-  const yEle = ydoc.getMap(options?.rootMap ?? 'ele')
+  const yMap = ydoc.getMap(options?.rootMap ?? 'ele')
   const yCtx = ydoc.getMap(options?.ctxMap ?? 'ctx')
 
   // Setup ctx (system only information about the document)
@@ -45,13 +45,13 @@ export function createTypedYDoc(
   }
 
   const { meta, links, content, ...properties } = data.document
-  yEle.set('meta', toYMap(meta))
-  yEle.set('links', toYMap(links))
-  yEle.set('root', toYMap(properties, new Y.Map()))
+  yMap.set('meta', toYMap(meta))
+  yMap.set('links', toYMap(links))
+  yMap.set('root', toYMap(properties, new Y.Map()))
 
   if (typeof content === 'string') {
     // Text string to textbit elements YXmlText
-    yEle.set('content', toSlateYXmlText(content))
+    yMap.set('content', toSlateYXmlText(content))
   } else {
     // Textbit elements to YXmlText
     const yContent = new Y.XmlText()
@@ -59,12 +59,12 @@ export function createTypedYDoc(
       slateNodesToInsertDelta(content)
     )
 
-    yEle.set('content', yContent)
+    yMap.set('content', yContent)
   }
 
   // Set version and original hash
   yCtx.set('version', data.version)
-  yCtx.set('hash', createHash(yEle))
+  yCtx.set('hash', createHash(JSON.stringify(yMap.toJSON())))
 
   return ydoc
 }

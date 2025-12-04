@@ -40,7 +40,7 @@ export function toYjsNewsDoc(eleDoc: EleDocumentResponse, yDoc: Document | Y.Doc
   // Set version and original hash
   const yCtx = yDoc.getMap('ctx')
   yCtx.set('version', version)
-  yCtx.set('hash', createHash(yMap))
+  yCtx.set('hash', createHash(JSON.stringify(yMap.toJSON())))
 }
 
 /**

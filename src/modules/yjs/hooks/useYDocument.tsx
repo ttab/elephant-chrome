@@ -146,7 +146,7 @@ export function useYDocument<T>(
     const onChange = () => {
       if (isChanged) return
 
-      const newValue = createHash(yEle) !== yCtx.get('hash')
+      const newValue = createHash(JSON.stringify(yEle.toJSON())) !== yCtx.get('hash')
       if (newValue !== isChanged) {
         setIsChanged(newValue)
         yCtx.set('isChanged', newValue)
