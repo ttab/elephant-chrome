@@ -1,10 +1,10 @@
+import type { JSX } from 'react'
 import { Textbit } from '@ttab/textbit'
 import { cn } from '@ttab/elephant-ui/utils'
 import { ContextMenu } from '../../Editor/ContextMenu'
 
-export const TextboxEditable = ({ documentLanguage, singleLine, autoFocus, onFocus, onBlur }: {
+export const TextboxEditable = ({ singleLine, autoFocus, onFocus, onBlur }: {
   singleLine: boolean
-  documentLanguage?: string
   spellcheck?: boolean
   autoFocus?: boolean
   onBlur: React.FocusEventHandler<HTMLDivElement>
@@ -12,11 +12,9 @@ export const TextboxEditable = ({ documentLanguage, singleLine, autoFocus, onFoc
 }): JSX.Element | undefined => {
   return (
     <Textbit.Editable
-      // key={path} // Necessary? This triggers a re-render if the path changes
       autoFocus={autoFocus}
       onBlur={onBlur}
       onFocus={onFocus}
-      lang={documentLanguage}
       className={cn(!singleLine && 'min-h-20!',
         `p-1
         py-1.5
