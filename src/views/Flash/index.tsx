@@ -87,16 +87,8 @@ export const Flash = (props: ViewProps & {
   return (
     <>
       {props.asDialog
-        ? (
-            <FlashDialog
-              {...props}
-              documentId={documentId}
-              data={data}
-            />
-          )
-        : (
-            <FlashView {...{ ...props, documentId, data }} />
-          )}
+        ? <FlashDialog {...props} documentId={documentId} data={data} />
+        : <FlashView {...{ ...props, documentId, data }} />}
     </>
   )
 }

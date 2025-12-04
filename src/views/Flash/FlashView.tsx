@@ -10,12 +10,12 @@ import { useYDocument } from '@/modules/yjs/hooks'
 import type * as Y from 'yjs'
 import { BaseEditor } from '@/components/Editor/BaseEditor'
 
-export function FlashView(props: ViewProps & {
+export const FlashView = (props: ViewProps & {
   documentId: string
   version?: string
   readOnly?: boolean
   preview?: boolean
-}): JSX.Element {
+}): JSX.Element => {
   const [query] = useQuery()
   const readOnly = Number(props?.version) > 0 && !props.asDialog
   const preview = query.preview === 'true'

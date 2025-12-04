@@ -8,7 +8,7 @@ const sectionVariants = cva('overscroll-auto @5xl:w-[1024px] space-y-4', {
   variants: {
     asCreateDialog: {
       false: 'px-8',
-      true: 'px-6'
+      true: ''
     }
   }
 })

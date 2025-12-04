@@ -1,6 +1,6 @@
 import { useOnSpellcheck } from '@/hooks/useOnSpellcheck'
 import type { YDocument } from '@/modules/yjs/hooks'
-import { Textbit, useTextbit, type TBPluginDefinition } from '@ttab/textbit'
+import { Textbit, useTextbit, type TBPluginDefinition, type Descendant } from '@ttab/textbit'
 import type * as Y from 'yjs'
 import { ContextMenu } from './ContextMenu'
 import { Toolbar } from './Toolbar'
@@ -16,6 +16,7 @@ interface EditorRootProps {
   readOnly?: boolean
   plugins?: TBPluginDefinition[]
   content: Y.XmlText
+  onChange?: (value: Descendant[]) => void
   lang?: string
   className?: string
   children?: React.ReactNode
@@ -36,8 +37,9 @@ const EditorRoot = (props: EditorRootProps) => {
       onSpellcheck={onSpellcheck}
       plugins={props.plugins}
       placeholders='multiple'
-      className='h-screen max-h-screen flex flex-col'
+      className={cn('h-screen max-h-screen flex flex-col', props.className)}
       lang={props.lang}
+      onChange={props.onChange}
     >
       {props.children}
     </Textbit.Root>
