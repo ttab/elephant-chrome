@@ -2,7 +2,7 @@ import type * as Y from 'yjs'
 import { View } from '@/components'
 import type { ViewMetadata, ViewProps } from '@/types'
 import { FlashDialog } from './FlashDialog'
-import { useMemo, useRef } from 'react'
+import { type JSX, useMemo, useRef } from 'react'
 import { useQuery } from '@/hooks/useQuery'
 import { Error } from '../Error'
 import { FlashView } from './FlashView'
@@ -36,7 +36,7 @@ export const Flash = (props: ViewProps & {
   const [query] = useQuery()
   const [workflowStatus] = useWorkflowStatus({ documentId: props.id || '', isWorkflow: true })
 
-  const persistentDocumentId = useRef<string>()
+  const persistentDocumentId = useRef<string>('')
   if (!persistentDocumentId.current) {
     persistentDocumentId.current = crypto.randomUUID()
   }

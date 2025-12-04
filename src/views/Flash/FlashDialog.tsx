@@ -9,7 +9,7 @@ import { CircleXIcon, TagsIcon, GanttChartSquareIcon } from '@ttab/elephant-ui/i
 import { useRegistry, useSections } from '@/hooks'
 import { useSession } from 'next-auth/react'
 import type { Dispatch, SetStateAction } from 'react'
-import { useRef, useState } from 'react'
+import { type JSX, useRef, useState } from 'react'
 import { FlashEditor } from './FlashDialogEditor'
 import { UserMessage } from '@/components/UserMessage'
 import { Form } from '@/components/Form'

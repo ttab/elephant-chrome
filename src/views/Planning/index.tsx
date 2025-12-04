@@ -192,7 +192,6 @@ const PlanningViewContent = (props: ViewProps & {
                 ydoc={ydoc}
                 value={title}
                 label='Titel'
-                autoFocus={true}
                 placeholder='Planeringstitel'
               />
             </Form.Title>
