@@ -1,27 +1,16 @@
-import { useQuery, useYjsEditor, useView } from '@/hooks'
+import { useQuery } from '@/hooks'
 import { type ViewProps, type ViewMetadata } from '@/types/index'
 import type * as Y from 'yjs'
 import { Bold, Italic, Text, OrderedList, UnorderedList, LocalizedQuotationMarks } from '@ttab/textbit-plugins'
-import { Textbit, useTextbit } from '@ttab/textbit'
 import { Button } from '@ttab/elephant-ui'
 import { useSession } from 'next-auth/react'
-import { ContentMenu } from '@/components/Editor/ContentMenu'
-import { Toolbar } from '@/components/Editor/Toolbar'
-import { Gutter } from '@/components/Editor/Gutter'
-import { DropMarker } from '@/components/Editor/DropMarker'
-import { ContextMenu } from '@/components/Editor/ContextMenu'
 import { getValueByYPath } from '@/shared/yUtils'
-import { useOnSpellcheck } from '@/hooks/useOnSpellcheck'
-import { Form, View } from '@/components'
+import { Form, UserMessage, View } from '@/components'
 import { FactboxHeader } from './FactboxHeader'
 import { Error } from '@/views/Error'
-import { useEffect, useMemo, useRef } from 'react'
-import { cn } from '@ttab/elephant-ui/utils'
+import { useMemo, useState, type JSX } from 'react'
 import { contentMenuLabels } from '@/defaults/contentMenuLabels'
 import { snapshotDocument } from '@/lib/snapshotDocument'
-import type { FormProps } from '@/components/Form/Root'
-import { toast } from 'sonner'
-import { InfoIcon } from '@ttab/elephant-ui/icons'
 import type { YDocument } from '@/modules/yjs/hooks'
 import { useYDocument, useYValue } from '@/modules/yjs/hooks'
 import { TextInput } from '@/components/ui/TextInput'
@@ -29,6 +18,8 @@ import { getTemplateFromView } from '@/shared/templates/lib/getTemplateFromView'
 import { toGroupedNewsDoc } from '@/shared/transformations/groupedNewsDoc'
 import type { EleDocumentResponse } from '@/shared/types'
 import type { Document } from '@ttab/elephant-api/newsdoc'
+import { BaseEditor } from '@/components/Editor/BaseEditor'
+import { cn } from '@ttab/elephant-ui/utils'
 
 const meta: ViewMetadata = {
   name: 'Factbox',
@@ -46,6 +37,7 @@ const meta: ViewMetadata = {
   }
 }
 
+// FIXME: Something is rerendeing this and makes user loose focus
 const Factbox = (props: ViewProps & { document?: Document }): JSX.Element => {
   const [query] = useQuery()
   const documentId = props.id || query.id
@@ -81,6 +73,12 @@ const Factbox = (props: ViewProps & { document?: Document }): JSX.Element => {
 
 const FactboxWrapper = (props: ViewProps & { documentId: string, data?: EleDocumentResponse }): JSX.Element => {
   const ydoc = useYDocument<Y.Map<unknown>>(props.documentId, { data: props.data })
+  const [title] = useYValue<Y.XmlText>(ydoc.ele, 'root.title', true)
+  const [content] = getValueByYPath<Y.XmlText>(ydoc.ele, 'content', true)
+  const [documentLanguage] = getValueByYPath<string>(ydoc.ele, 'root.language')
+  const { status } = useSession()
+  const [errorMessage, setErrorMessage] = useState<string | null>(null)
+  const environmentIsSane = ydoc.provider && status === 'authenticated'
 
   const getPlugins = () => {
     const basePlugins = [UnorderedList, OrderedList, Bold, Italic, LocalizedQuotationMarks]
@@ -90,180 +88,119 @@ const FactboxWrapper = (props: ViewProps & { documentId: string, data?: EleDocum
     ]
   }
 
-
-  return (
-    <View.Root asDialog={props?.asDialog} className={props?.className}>
-      <Textbit.Root
-        debounce={0}
-        autoFocus={props.autoFocus ?? true}
-        plugins={getPlugins()}
-        placeholders='multiple'
-        className={cn('h-screen max-h-screen flex flex-col',
-          props.asDialog
-            ? 'h-full min-h-[600px] max-h-[800px] max-w-full'
-            : '')}
-      >
-        <FactboxContainer
-          ydoc={ydoc}
-          asDialog={props.asDialog}
-          onDialogClose={props.onDialogClose}
-        />
-      </Textbit.Root>
-    </View.Root>
-
-  )
-}
-
-
-const FactboxContainer = ({
-  ydoc,
-  asDialog,
-  onDialogClose
-}: {
-  ydoc: YDocument<Y.Map<unknown>>
-} & ViewProps): JSX.Element => {
-  const { stats } = useTextbit()
-  const { status } = useSession()
-  const [title] = useYValue<boolean>(ydoc.ele, 'root.title')
-
-  const handleSubmit = (): void => {
-    if (ydoc.provider && status === 'authenticated') {
-      snapshotDocument(ydoc.id, undefined, ydoc.provider?.document)
-        .then(() => {
-          if (onDialogClose) {
-            onDialogClose()
-          }
-        }).catch((ex) => {
-          toast.error('Kunde inte skapa ny faktaruta!', {
-            duration: 5000,
-            position: 'top-center'
-          })
-          console.error(ex)
-        })
-    }
+  if (!ydoc.provider?.isSynced || !content) {
+    return <View.Root />
   }
 
-  const environmentIsSane = ydoc.provider && status === 'authenticated'
-
   return (
-    <>
-      <FactboxHeader
+    <View.Root asDialog={props.asDialog} className={props?.className}>
+      <BaseEditor.Root
         ydoc={ydoc}
-        asDialog={!!asDialog}
-        onDialogClose={onDialogClose}
-      />
+        content={content}
+        lang={documentLanguage}
+        plugins={getPlugins()}
+        className={cn(
+          'rounded-md border',
+          props.asDialog ? 'h-auto min-h-48' : ''
+        )}
+      >
+        <FactboxHeader
+          ydoc={ydoc}
+          asDialog={!!props.asDialog}
+          onDialogClose={props.onDialogClose}
+        />
 
-      <View.Content className='flex flex-col max-w-[1000px]'>
-        <div className='grow overflow-auto pt-2 pr-12 max-w-(--breakpoint-xl)'>
-          {!!ydoc.provider && ydoc.provider.isSynced
-            ? (
-                <FactboxContent ydoc={ydoc} />
-              )
-            : <></>}
-        </div>
-      </View.Content>
+        <View.Content className='flex flex-col max-w-[1000px]'>
+          <Form.Root asDialog={props?.asDialog}>
+            <Form.Content>
+              <Form.Title>
+                <TextInput
+                  ydoc={ydoc}
+                  value={title}
+                  autoFocus={!!props.asDialog}
+                  className={cn(
+                    !props.asDialog ? 'ms-[13px]' : 'ms-6 me-5'
+                  )}
+                  label='Titel'
+                  placeholder='Planeringstitel'
+                />
+              </Form.Title>
+            </Form.Content>
+          </Form.Root>
 
-      <View.Footer>
-        {asDialog
-          ? (
-              <>
-                {!environmentIsSane && (
-                  <div className='text-sm leading-tight pb-2 text-left flex gap-2'>
-                    <span className='w-4'>
-                      <InfoIcon size={18} strokeWidth={1.75} className='text-muted-foreground' />
-                    </span>
-                    <p>
-                      Du är utloggad eller har tappat kontakt med systemet.
-                      Vänligen försök logga in igen.
-                    </p>
-                  </div>
-                )}
+          <div className='flex flex-col gap-4 mb-4'>
+            <BaseEditor.Text
+              ydoc={ydoc}
+              autoFocus={!props.asDialog}
+              className={cn(
+                props.asDialog ? 'rounded-md border me-[43px] min-h-48' : ''
+              )}
+            />
 
-                <Button
-                  onClick={handleSubmit}
-                  disabled={!title || !environmentIsSane}
-                  className='whitespace-nowrap'
-                >
-                  Skapa faktaruta
-                </Button>
-              </>
-            )
-          : (
-              <>
-                <div className='flex gap-2'>
-                  <strong>Ord:</strong>
-                  <span title='Antal ord totalt'>{stats.full.words}</span>
-                </div>
-                <div className='flex gap-2'>
-                  <strong>Tecken:</strong>
-                  <span title='Antal tecken totalt'>{stats.full.characters}</span>
-                </div>
-              </>
-            )}
-      </View.Footer>
-    </>
+            <div className='mx-12'>
+              {!environmentIsSane && (
+                <UserMessage asDialog={!!props?.asDialog} variant='destructive'>
+                  Du är utloggad eller har tappat kontakt med systemet.
+                  Vänligen försök logga in igen.
+                </UserMessage>
+              )}
+
+              {errorMessage && (
+                <UserMessage asDialog={!!props?.asDialog} variant='destructive'>
+                  {errorMessage}
+                </UserMessage>
+              )}
+            </div>
+          </div>
+        </View.Content>
+
+        <View.Footer>
+          {!props.asDialog
+            ? <BaseEditor.Footer />
+            : (
+                <FactboxDialogFooter
+                  ydoc={ydoc}
+                  disabled={!environmentIsSane}
+                  onError={setErrorMessage}
+                  onSuccess={props.onDialogClose}
+                />
+              )}
+        </View.Footer>
+      </BaseEditor.Root>
+    </View.Root>
   )
 }
 
-const FactboxContent = ({ ydoc, asDialog }: {
+const FactboxDialogFooter = ({ ydoc, disabled, onSuccess, onError}: {
   ydoc: YDocument<Y.Map<unknown>>
-  onChange?: (value: boolean) => void
-} & FormProps): JSX.Element => {
-  const { isActive } = useView()
-  const ref = useRef<HTMLDivElement>(null)
-  const [documentLanguage] = getValueByYPath<string>(ydoc.ele, 'root.language')
+  disabled?: boolean
+  onSuccess?: () => void
+  onError: (message: string) => void
+}) => {
+  const [title] = useYValue<string>(ydoc.ele, 'root.title')
 
-  const [title] = useYValue<Y.XmlText>(ydoc.ele, 'root.title', true)
-
-  const yjsEditor = useYjsEditor(ydoc)
-  const onSpellcheck = useOnSpellcheck(documentLanguage)
-
-  // Handle focus on active state
-  useEffect(() => {
-    if (isActive && ref?.current?.dataset['state'] !== 'focused') {
-      setTimeout(() => {
-        ref?.current?.focus()
-      }, 0)
+  const handleSubmit = (): void => {
+    if (disabled) {
+      return
     }
-  }, [isActive, ref])
+
+    snapshotDocument(ydoc.id, undefined, ydoc.provider?.document)
+      .then(() => {
+        onSuccess?.()
+      }).catch((ex) => {
+        onError('Det gick inte att skapa ny faktaruta!')
+        console.error(ex)
+      })
+  }
 
   return (
-    <>
-      <Form.Root
-        asDialog={asDialog}
-        className='[&_[role="textbox"]:focus]:bg-white [&_[role="textbox"]]:ring-transparent [&_[role="textbox"]:focus]:ring-gray-200'
-      >
-        <Form.Content>
-          <TextInput
-            ydoc={ydoc}
-            value={title}
-            label='Titel'
-            // autoFocus={!!props.asDialog}
-            placeholder='Planeringstitel'
-          />
-
-        </Form.Content>
-      </Form.Root>
-      <Textbit.Editable
-        yjsEditor={yjsEditor}
-        lang={documentLanguage}
-        onSpellcheck={onSpellcheck}
-        className='outline-none
-          my-1
-          h-full
-          dark:text-slate-100
-          **:data-spelling-error:border-b-2
-          **:data-spelling-error:border-dotted
-          **:data-spelling-error:border-red-500'
-      >
-        <DropMarker />
-        <Gutter>
-          <ContentMenu />
-        </Gutter>
-        <Toolbar />
-        <ContextMenu />
-      </Textbit.Editable>
-    </>
+    <Button
+      onClick={handleSubmit}
+      disabled={!title || disabled}
+      className='whitespace-nowrap'
+    >
+      Skapa faktaruta
+    </Button>
   )
 }
 

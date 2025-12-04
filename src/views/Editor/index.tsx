@@ -91,7 +91,6 @@ const Editor = (props: ViewProps): JSX.Element => {
 function EditorWrapper(props: ViewProps & {
   documentId: string
   planningId?: string | null
-  autoFocus?: boolean
   preview?: boolean
 }): JSX.Element {
   const ydoc = useYDocument<Y.Map<unknown>>(props.documentId, {

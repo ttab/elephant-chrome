@@ -50,7 +50,12 @@ export const TextBox = ({ icon: Icon, value, onChange, ...props }: {
 
         {value
           ? (
-              <TextboxRoot {...props} value={value} onBlur={handleOnBlur} onFocus={handleOnFocus} />
+              <TextboxRoot
+                {...props}
+                value={value}
+                onBlur={handleOnBlur}
+                onFocus={handleOnFocus}
+              />
             )
           : (
               <div className={cn(!props.singleLine && 'h-20!!',
@@ -67,7 +72,8 @@ export const TextBox = ({ icon: Icon, value, onChange, ...props }: {
                 dark:ring-gray-600
                 whitespace-nowrap
                 bg-gray-50
-                dark:bg-input`
+                dark:bg-input`,
+                props.className
               )}
               />
             )}

@@ -236,25 +236,23 @@ export const FlashDialog = (props: {
             )
           }
 
-          {
-            props.asDialog && (
-              <Form.Footer>
-                <Form.Submit
-                  onSubmit={() => handleSubmit(setSendPrompt)}
-                  onSecondarySubmit={() => handleSubmit(setSavePrompt)}
-                  onTertiarySubmit={() => handleSubmit(setDonePrompt)}
-                >
-                  <div className='flex justify-between'>
-                    <div className='flex gap-2'>
-                      <Button variant='secondary' type='button' role='secondary'>Utkast</Button>
-                      <Button variant='secondary' type='button' role='tertiary'>Klarmarkera</Button>
-                    </div>
-                    <Button type='submit' role='primary'>Publicera</Button>
+          {props.asDialog && (
+            <Form.Footer>
+              <Form.Submit
+                onSubmit={() => handleSubmit(setSendPrompt)}
+                onSecondarySubmit={() => handleSubmit(setSavePrompt)}
+                onTertiarySubmit={() => handleSubmit(setDonePrompt)}
+              >
+                <div className='flex justify-between'>
+                  <div className='flex gap-2'>
+                    <Button variant='secondary' type='button' role='secondary'>Utkast</Button>
+                    <Button variant='secondary' type='button' role='tertiary'>Klarmarkera</Button>
                   </div>
-                </Form.Submit>
-              </Form.Footer>
-            )
-          }
+                  <Button type='submit' role='primary'>Publicera</Button>
+                </div>
+              </Form.Submit>
+            </Form.Footer>
+          )}
         </Form.Root>
       </View.Content>
     </View.Root>

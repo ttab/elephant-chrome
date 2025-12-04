@@ -72,7 +72,7 @@ const EditorText = (props: EditorTextProps) => {
 
   return (
     <Textbit.Editable
-      autoFocus={props.autoFocus && isActive}
+      autoFocus={props.autoFocus === true && isActive}
       className={cn(`outline-none
           h-full
           pt-4

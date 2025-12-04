@@ -5,6 +5,7 @@ import { LocalizedQuotationMarks, Text } from '@ttab/textbit-plugins'
 import { TextboxEditable } from './TextboxEditable'
 import { useYValue, type YDocument } from '@/modules/yjs/hooks'
 import { useOnSpellcheck } from '@/hooks/useOnSpellcheck'
+import { cn } from '@ttab/elephant-ui/utils'
 
 export const TextboxRoot = ({
   value,
@@ -16,7 +17,8 @@ export const TextboxRoot = ({
   autoFocus,
   spellcheck = true,
   onBlur,
-  onFocus
+  onFocus,
+  className
 }: {
   value: Y.XmlText
   ydoc: YDocument<Y.Map<unknown>>
@@ -28,6 +30,7 @@ export const TextboxRoot = ({
   spellcheck?: boolean
   onBlur: React.FocusEventHandler<HTMLDivElement>
   onFocus: React.FocusEventHandler<HTMLDivElement>
+  className?: string
 }): JSX.Element => {
   const [documentLanguage] = useYValue<string>(ydoc.ele, ['root', 'language'])
   const onSpellcheck = useOnSpellcheck(documentLanguage)
@@ -50,7 +53,7 @@ export const TextboxRoot = ({
           }
         })
       ]}
-      className='h-min-2 w-full'
+      className={cn('h-min-2 w-full', className)}
     >
       <TextboxEditable
         spellcheck={spellcheck}
