@@ -67,7 +67,7 @@ export const Assignment = ({ ydoc, assignment, onAbort, onClose }: {
               value={title}
               label='Titel'
               placeholder='Uppdragstitel'
-              autoFocus={false}
+              autoFocus={true}
             />
           </Form.Title>
           <TextBox
