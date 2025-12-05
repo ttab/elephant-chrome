@@ -1,6 +1,5 @@
-import { useEffect, useRef, useState, type JSX } from 'react'
-
-import { Textbit, useTextbit } from '@ttab/textbit'
+import { useMemo, useState, type JSX } from 'react'
+import { useTextbit } from '@ttab/textbit'
 import {
   Bold,
   Italic,
@@ -18,23 +17,15 @@ import { FactboxPlugin } from '../../plugins/Factboxes'
 import {
   useQuery,
   useLink,
-  useView,
-  useYjsEditor,
   useRegistry
 } from '@/hooks'
 import type { ViewMetadata, ViewProps } from '@/types'
 import { EditorHeader } from './PrintEditorHeader'
 import { Error as ErrorView } from '../Error'
 
-import { ContentMenu } from '@/components/Editor/ContentMenu'
 import { Notes } from '@/components/Notes'
-import { Toolbar } from '@/components/Editor/Toolbar'
-import { ContextMenu } from '@/components/Editor/ContextMenu'
-import { Gutter } from '@/components/Editor/Gutter'
-import { DropMarker } from '@/components/Editor/DropMarker'
 
 import { getValueByYPath } from '@/shared/yUtils'
-import { useOnSpellcheck } from '@/hooks/useOnSpellcheck'
 import { contentMenuLabels } from '@/defaults/contentMenuLabels'
 import { Button, ScrollArea } from '@ttab/elephant-ui'
 import { LayoutBox } from './LayoutBox'
@@ -48,9 +39,9 @@ import type * as Y from 'yjs'
 import { ImagePlugin } from './ImagePlugin'
 import { ChannelComboBox } from './components/ChannelComboBox'
 import { ToastAction } from '../Wire/ToastAction'
-import type { YDocument } from '@/modules/yjs/hooks'
-import { useYDocument, useYValue } from '@/modules/yjs/hooks'
+import { useYDocument, useYValue, type YDocument } from '@/modules/yjs/hooks'
 import { View } from '@/components/View'
+import { BaseEditor } from '@/components/Editor/BaseEditor'
 
 const meta: ViewMetadata = {
   name: 'PrintEditor',
@@ -94,13 +85,15 @@ function EditorWrapper(props: ViewProps & {
   autoFocus?: boolean
 }): JSX.Element {
   const ydoc = useYDocument<Y.Map<unknown>>(props.documentId)
+  const [documentLanguage] = getValueByYPath<string>(ydoc.ele, 'root.language')
+  const [content] = getValueByYPath<Y.XmlText>(ydoc.ele, 'content', true)
 
   const { data } = useSession()
   const { repository } = useRegistry()
   const openFactboxEditor = useLink('Factbox')
 
   // Plugin configuration
-  const getConfiguredPlugins = () => {
+  const configuredPlugins = useMemo(() => {
     const basePlugins = [
       Bold,
       Italic,
@@ -122,7 +115,7 @@ function EditorWrapper(props: ViewProps & {
         accessToken: data?.accessToken || ''
       }),
       TVListing({
-        channelComponent: () => ChannelComboBox({ ydoc })
+        channelComponent: () => ChannelComboBox()
       }),
       TTVisual({
         enableCrop: true
@@ -135,29 +128,29 @@ function EditorWrapper(props: ViewProps & {
         ...contentMenuLabels
       })
     ]
+  }, [openFactboxEditor, data, repository])
+
+  if (!content) {
+    return <View.Root />
   }
 
   return (
     <View.Root>
-      <Textbit.Root
-        autoFocus={props.autoFocus ?? true}
-        plugins={getConfiguredPlugins()}
-        placeholders='multiple'
-        className='h-screen max-h-screen flex flex-col'
+      <BaseEditor.Root
+        ydoc={ydoc}
+        content={content}
+        plugins={configuredPlugins}
+        lang={documentLanguage}
       >
-        <EditorContainer
-          ydoc={ydoc}
-        />
-      </Textbit.Root>
+        <EditorContainer ydoc={ydoc} />
+      </BaseEditor.Root>
     </View.Root>
   )
 }
 
 
 // Container component that uses TextBit context
-function EditorContainer({
-  ydoc
-}: {
+function EditorContainer({ ydoc }: {
   ydoc: YDocument<Y.Map<unknown>>
 }): JSX.Element {
   const openPrintArticle = useLink('PrintEditor')
@@ -264,22 +257,21 @@ function EditorContainer({
   return (
     <>
       <EditorHeader ydoc={ydoc} flowName={flowName} />
+
       <Notes ydoc={ydoc} />
+
       <View.Content className='flex flex-col max-w-[1400px] grow'>
         <section className='flex flex-col-reverse @4xl:grid @4xl:grid-cols-12 @container'>
           <div className='@4xl:col-span-8'>
             <ScrollArea className='h-[calc(100vh-7rem)]'>
               <div className='flex-grow overflow-auto pr-12 max-w-screen-2xl'>
                 {!!ydoc.provider && ydoc.provider.isSynced
-                  ? (
-                      <EditorContent ydoc={ydoc} />
-                    )
-                  : (
-                      <></>
-                    )}
+                  ? <BaseEditor.Text ydoc={ydoc} autoFocus={true} />
+                  : null}
               </div>
             </ScrollArea>
           </div>
+
           <aside className='@4xl:col-span-4 @4xl:sticky @4xl:top-16 p-4'>
             <header className='flex flex-row gap-2 items-center justify-between mb-2'>
               <div className='flex items-center'>
@@ -296,6 +288,7 @@ function EditorContainer({
                   <CopyPlusIcon strokeWidth={1.75} size={18} />
                 </Button>
               </div>
+
               <h2 className={`text-base font-bold flex items-center gap-2 ${layouts.some((layout) => layout.data?.status === 'false') ? 'text-red-500' : ''}`}>
                 {layouts.some((layout) => layout.data?.status === 'false')
                   ? <TriangleAlertIcon size={18} strokeWidth={1.75} className='text-red-500' />
@@ -308,6 +301,7 @@ function EditorContainer({
                 </span>
               </h2>
             </header>
+
             {promptIsOpen && (
               <Prompt
                 title='Duplicera artikel'
@@ -330,6 +324,7 @@ function EditorContainer({
                 }}
               />
             )}
+
             {isChecking
               ? (
                   <main className='flex flex-col items-center justify-center mt-8 gap-4'>
@@ -392,48 +387,48 @@ function EditorContainer({
 }
 
 
-function EditorContent({ ydoc }: {
-  ydoc: YDocument<Y.Map<unknown>>
-}): JSX.Element {
-  const { isActive } = useView()
-  const ref = useRef<HTMLDivElement>(null)
-  const [documentLanguage] = getValueByYPath<string>(ydoc.ele, 'root.language')
+// function EditorContent({ ydoc }: {
+//   ydoc: YDocument<Y.Map<unknown>>
+// }): JSX.Element {
+//   const { isActive } = useView()
+//   const ref = useRef<HTMLDivElement>(null)
+//   const [documentLanguage] = getValueByYPath<string>(ydoc.ele, 'root.language')
 
-  const yjsEditor = useYjsEditor(ydoc)
-  const onSpellcheck = useOnSpellcheck(documentLanguage)
+//   const yjsEditor = useYjsEditor(ydoc)
+//   const onSpellcheck = useOnSpellcheck(documentLanguage)
 
-  // Handle focus on active state
-  useEffect(() => {
-    if (isActive && ref?.current?.dataset['state'] !== 'focused') {
-      setTimeout(() => {
-        ref?.current?.focus()
-      }, 0)
-    }
-  }, [isActive, ref])
+//   // Handle focus on active state
+//   useEffect(() => {
+//     if (isActive && ref?.current?.dataset['state'] !== 'focused') {
+//       setTimeout(() => {
+//         ref?.current?.focus()
+//       }, 0)
+//     }
+//   }, [isActive, ref])
 
-  return (
-    <Textbit.Editable
-      ref={ref}
-      yjsEditor={yjsEditor}
-      lang={documentLanguage}
-      onSpellcheck={onSpellcheck}
-      className='outline-none
-        h-full
-        dark:text-slate-100
-        **:data-spelling-error:border-b-2
-        **:data-spelling-error:border-dotted
-        **:data-spelling-error:border-red-500
-      '
-    >
-      <DropMarker />
-      <Gutter>
-        <ContentMenu />
-      </Gutter>
-      <Toolbar isPrintArticle />
-      <ContextMenu />
-    </Textbit.Editable>
-  )
-}
+//   return (
+//     <Textbit.Editable
+//       ref={ref}
+//       yjsEditor={yjsEditor}
+//       lang={documentLanguage}
+//       onSpellcheck={onSpellcheck}
+//       className='outline-none
+//         h-full
+//         dark:text-slate-100
+//         **:data-spelling-error:border-b-2
+//         **:data-spelling-error:border-dotted
+//         **:data-spelling-error:border-red-500
+//       '
+//     >
+//       <DropMarker />
+//       <Gutter>
+//         <ContentMenu />
+//       </Gutter>
+//       <Toolbar isPrintArticle />
+//       <ContextMenu />
+//     </Textbit.Editable>
+//   )
+// }
 
 PrintEditor.meta = meta
 
