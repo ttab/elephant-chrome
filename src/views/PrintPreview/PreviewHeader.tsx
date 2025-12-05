@@ -1,5 +1,7 @@
 import { ViewHeader } from '@/components/View'
 import { EyeIcon } from '@ttab/elephant-ui/icons'
+import { type JSX } from 'react'
+
 /**
  * PreviewHeader component.
  *

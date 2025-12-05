@@ -1,6 +1,6 @@
 import type { AssignmentInterface } from '@/hooks/index/useAssignments'
 import { useAuthors } from '@/hooks/useAuthors'
-import { useMemo } from 'react'
+import { useMemo, type JSX } from 'react'
 import { UserIcon, PenIcon, AwardIcon } from 'lucide-react'
 import type { IDBAuthor } from 'src/datastore/types'
 import type { StatusMeta } from '@/types'

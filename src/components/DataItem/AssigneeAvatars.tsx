@@ -1,8 +1,7 @@
-import {
-  Tooltip
-} from '@ttab/elephant-ui'
+import { Tooltip } from '@ttab/elephant-ui'
 import { Avatar, type AvatarSize } from '@/components'
 import { AvatarGroup } from '../AvatarGroup'
+import type { JSX } from 'react'
 
 export const AssigneeAvatars = ({ assignees, size = 'sm', color = '' }: {
   assignees: string[]

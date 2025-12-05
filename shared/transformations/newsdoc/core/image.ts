@@ -26,14 +26,17 @@ export const transformImage = (element: Block): TBElement => {
     properties,
     children: [
       {
+        class: 'text',
         type: 'core/image/image',
         children: [{ text: '' }]
       },
       {
+        class: 'text',
         type: 'core/image/text',
         children: [{ text: data.text ?? '' }]
       },
       {
+        class: 'text',
         type: 'core/image/byline',
         children: [{ text: data.credit ?? '' }]
       }

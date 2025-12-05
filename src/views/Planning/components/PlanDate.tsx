@@ -4,6 +4,7 @@ import { useRegistry } from '@/hooks'
 import { useYValue } from '@/modules/yjs/hooks'
 import { newLocalDate, parseDate } from '@/shared/datetime'
 import type * as Y from 'yjs'
+import type { JSX } from 'react'
 
 type PlanDateProps = FormProps & (
   | { planningItem: Y.Map<unknown>, onValueChange: (newValue: string) => void, onChange?: never }

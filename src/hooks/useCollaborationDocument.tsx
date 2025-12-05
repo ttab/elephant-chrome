@@ -25,7 +25,7 @@ export const useCollaborationDocument = ({
   const { data: sessionData, status } = useSession()
   const { server: { webSocketUrl } } = useRegistry()
 
-  const providerRef = useRef<HocuspocusProvider>()
+  const providerRef = useRef<HocuspocusProvider>(undefined)
   const [document, setDocument] = useState<Y.Doc | undefined>(initialDocument)
   const [connected, setConnected] = useState(false)
   const [synced, setSynced] = useState(false)

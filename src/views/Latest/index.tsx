@@ -1,6 +1,6 @@
 import type { LocaleData } from '@/types/index'
 import { type ViewMetadata } from '@/types/index'
-import { useRef } from 'react'
+import { useRef, type JSX } from 'react'
 import { format } from 'date-fns'
 import { useRegistry } from '@/hooks/useRegistry'
 import { handleLink } from '@/components/Link/lib/handleLink'

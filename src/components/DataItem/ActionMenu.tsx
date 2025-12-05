@@ -10,6 +10,7 @@ import {
   DropdownMenuSubTrigger,
   DropdownMenuTrigger
 } from '@ttab/elephant-ui'
+import type { JSX } from 'react'
 
 export const ActionMenu = ({ deliverableUuids, planningId }: { deliverableUuids: string[], planningId: string }): JSX.Element => {
   return (

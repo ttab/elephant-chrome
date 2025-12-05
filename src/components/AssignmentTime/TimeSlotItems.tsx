@@ -1,7 +1,5 @@
-import {
-  CommandItem
-} from '@ttab/elephant-ui'
-
+import { CommandItem } from '@ttab/elephant-ui'
+import type { JSX } from 'react'
 import { timeSlotTypes as slotTypes } from '../../defaults/assignmentTimeConstants'
 import type { AssignmentValueOption } from './types'
 

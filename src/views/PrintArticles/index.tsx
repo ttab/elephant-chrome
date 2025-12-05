@@ -1,6 +1,6 @@
 import { View } from '@/components/View'
 import { type ViewMetadata } from '@/types/index'
-import { useMemo, useState } from 'react'
+import { useMemo, useState, type JSX } from 'react'
 import { printArticlesListColumns } from './PrintArticlesListColumns'
 import { TableProvider } from '@/contexts/TableProvider'
 import { PrintArticleList } from './PrintArticlesList'

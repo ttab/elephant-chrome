@@ -20,6 +20,7 @@ const imageElement: TBElement = {
   },
   children: [{
     id: '604713cd-1e36-43c5-a64d-3534d67b2bd9',
+    class: 'text',
     type: 'core/image/image',
     children: [{ text: '' }]
   }]

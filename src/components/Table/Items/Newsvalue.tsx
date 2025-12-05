@@ -3,7 +3,7 @@ import {
   Badge,
   Tooltip
 } from '@ttab/elephant-ui'
-import { useMemo } from 'react'
+import { useMemo, type JSX } from 'react'
 
 export const Newsvalue = ({ newsvalue }: { newsvalue: DefaultValueOption }): JSX.Element => {
   return useMemo(() => (

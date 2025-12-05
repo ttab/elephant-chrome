@@ -1,5 +1,5 @@
 import { Badge, Button } from '@ttab/elephant-ui'
-
+import type { JSX } from 'react'
 export const SluglineButton = ({ value, setActive }: {
   value?: string
   setActive?: ((value: boolean) => void) | null

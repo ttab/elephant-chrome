@@ -6,6 +6,7 @@ import { toast } from 'sonner'
 import { getTemplateFromDeliverable } from '@/shared/templates/lib/getTemplateFromDeliverable'
 import type { YDocument } from '@/modules/yjs/hooks'
 import type * as Y from 'yjs'
+import type { JSX } from 'react'
 
 /**
  * Deliverable document creation dialog, responsible for creating articles and flashes in the repository.

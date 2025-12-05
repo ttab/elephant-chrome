@@ -1,5 +1,6 @@
 import { StatusSpecifications, WorkflowSpecifications } from '@/defaults/workflowSpecification'
 import { Tooltip } from '@ttab/elephant-ui'
+import type { JSX } from 'react'
 
 export const DocumentStatus = ({ type, status }: {
   type: string

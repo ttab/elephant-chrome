@@ -10,6 +10,7 @@ import { useYValue } from '@/modules/yjs/hooks'
 import type * as Y from 'yjs'
 import { Block } from '@ttab/elephant-api/newsdoc'
 import { useEditorialInfoTypes } from '../hooks/useEditorialInfoType'
+import type { JSX } from 'react'
 
 export const EditorialInfoTypes = ({ ydoc }: {
   ydoc: YDocument<Y.Map<unknown>>

@@ -2,7 +2,7 @@ import { CommandMenu } from '@/components/Commands/Menu'
 import { CommandGroup } from '@ttab/elephant-ui'
 import { useTable } from '@/hooks'
 import { type CommandArgs } from '@/contexts/TableProvider'
-import { type PropsWithChildren } from 'react'
+import type { PropsWithChildren, JSX } from 'react'
 import { type View } from '@/types/index'
 
 export const TableCommandMenu = ({ children, heading }: PropsWithChildren & { heading: View }): JSX.Element => {

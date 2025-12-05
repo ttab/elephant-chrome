@@ -1,6 +1,7 @@
 import { type VariantProps, cva } from 'class-variance-authority'
 import { cn } from '@ttab/elephant-ui/utils'
 import { getInitials } from '@/lib/getInitials'
+import type { JSX } from 'react'
 
 import {
   Avatar as AvatarMain,

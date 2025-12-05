@@ -2,6 +2,7 @@ import { dateToReadableDay, dateToReadableTime } from '@/shared/datetime'
 import { useRegistry } from '@/hooks'
 import { cn } from '@ttab/elephant-ui/utils'
 import type { LucideProps } from '@ttab/elephant-ui/icons'
+import type { JSX } from 'react'
 
 type Time = { time: Array<Date | string | undefined>, tooltip: string, type: string } | undefined
 

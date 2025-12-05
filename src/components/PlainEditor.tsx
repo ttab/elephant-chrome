@@ -6,6 +6,8 @@ import { Bold, Italic, Link, Text, OrderedList, UnorderedList, TTVisual, Factbox
 import { PreVersion } from './Version/PreVersion'
 import type { Status as DocumentStatuses } from '@ttab/elephant-api/repository'
 import { PreVersionInfo } from './Version/PreVersionInfo'
+import type { JSX } from 'react'
+
 const BASE_URL = import.meta.env.BASE_URL || ''
 
 const fetcher = async (url: string): Promise<Element[] | EleDocument | undefined> => {

@@ -1,4 +1,4 @@
-import { useRef } from 'react'
+import { useRef, type JSX } from 'react'
 import { Preview } from '../Preview'
 import { type ttninjs } from '@ttab/api-client'
 import { Dialog, DialogContent, DialogDescription, DialogTrigger } from '@ttab/elephant-ui'

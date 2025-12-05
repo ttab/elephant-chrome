@@ -45,6 +45,7 @@ export const transformVisual = (element: Block): TBElement => {
     properties,
     children: [
       {
+        id: '',
         type: 'tt/visual/image',
         class: 'block',
         children: [{ text: '' }]

@@ -1,4 +1,4 @@
-import type { PropsWithChildren } from 'react'
+import type { PropsWithChildren, JSX } from 'react'
 import { useEffect, useState } from 'react'
 import { useSession } from 'next-auth/react'
 import { CoreAuthorProvider } from '../../datastore/contexts/CoreAuthorProvider'

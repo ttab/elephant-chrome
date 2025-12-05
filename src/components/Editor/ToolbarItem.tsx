@@ -2,6 +2,7 @@ import {
   type TBPluginRegistryAction,
   Toolbar
 } from '@ttab/textbit'
+import type { JSX } from 'react'
 
 export const ToolbarItem = ({ action }: { action: TBPluginRegistryAction }): JSX.Element => {
   return (

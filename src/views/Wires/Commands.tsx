@@ -8,6 +8,7 @@ import { useSections } from '@/hooks/useSections'
 import { BinocularsIcon, ShapesIcon, SignalHighIcon, SquareCodeIcon } from '@ttab/elephant-ui/icons'
 import { useWireSources } from '@/hooks/useWireSources'
 import { Newsvalues } from '@/defaults/newsvalues'
+import type { JSX } from 'react'
 
 export const Commands = (props: FilterProps): JSX.Element => {
   if (props.page === undefined || props.pages === undefined || props.setPages === undefined || props.setSearch === undefined) {

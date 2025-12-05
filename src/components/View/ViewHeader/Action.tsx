@@ -1,4 +1,4 @@
-import { type PropsWithChildren } from 'react'
+import type { PropsWithChildren, JSX } from 'react'
 import { ViewFocus } from './ViewFocus'
 import { ViewDialogClose } from './ViewDialogClose'
 import { type HistoryInterface } from '@/navigation/hooks/useHistory'

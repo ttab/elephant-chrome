@@ -1,5 +1,5 @@
 import { type ViewProps, type ViewMetadata } from '@/types'
-import { useState, useEffect } from 'react'
+import { useState, useEffect, type JSX } from 'react'
 import { Button, Checkbox } from '@ttab/elephant-ui'
 import { signIn } from 'next-auth/react'
 import { LoadingText } from '@/components/LoadingText'

@@ -1,5 +1,5 @@
 import { Block } from '@ttab/elephant-api/newsdoc'
-import type { TBElement } from '@ttab/textbit'
+import type { Descendant, TBElement } from '@ttab/textbit'
 
 interface PrintChild {
   text?: string
@@ -7,7 +7,7 @@ interface PrintChild {
 
 export function transformPrintText(element: Block): TBElement {
   const { id, data } = element
-  const children = [
+  const children: Descendant[] = [
     {
       id: id || crypto.randomUUID(),
       class: 'text',

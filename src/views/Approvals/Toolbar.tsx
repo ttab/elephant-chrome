@@ -9,7 +9,7 @@ import { useQuery, type QueryParams } from '@/hooks/useQuery'
 import { Filter } from '@/components/Filter'
 import type { Facets } from '@/hooks/index/lib/assignments/filterAssignments'
 import { Commands } from './Commands'
-import { useCallback, useState } from 'react'
+import { useCallback, useState, type JSX } from 'react'
 
 export const Toolbar = ({ facets }: { facets: Facets }): JSX.Element => {
   const [filters, setFilters] = useQuery(['status', 'section'])

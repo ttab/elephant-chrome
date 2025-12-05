@@ -1,6 +1,6 @@
 import { SluglineButton } from '@/components/DataItem/Slugline'
 import { cn } from '@ttab/elephant-ui/utils'
-import { useMemo } from 'react'
+import { useMemo, type JSX } from 'react'
 
 export const Title = ({ slugline, title, className, cancelled }: {
   slugline?: string

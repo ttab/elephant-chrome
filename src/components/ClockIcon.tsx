@@ -13,6 +13,7 @@ import {
   Clock9Icon,
   ClockIcon as DefaultClockIcon
 } from '@ttab/elephant-ui/icons'
+import type { JSX } from 'react'
 
 export const ClockIcon = ({ hour, color, className, strokeWidth = 1.75, size = 18 }: {
   hour?: number | 'string'

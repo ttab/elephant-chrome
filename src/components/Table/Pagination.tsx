@@ -1,4 +1,4 @@
-import { useCallback } from 'react'
+import { useCallback, type JSX } from 'react'
 import { ArrowLeftFromLineIcon, ArrowRightFromLineIcon } from '@ttab/elephant-ui/icons'
 import { useQuery } from '@/hooks'
 

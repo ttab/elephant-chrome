@@ -2,6 +2,7 @@ import {
   Menu,
   type TBPluginRegistryAction
 } from '@ttab/textbit'
+import type { JSX } from 'react'
 
 export const ContentMenuItem = ({ action }: { action: TBPluginRegistryAction }): JSX.Element => {
   return (

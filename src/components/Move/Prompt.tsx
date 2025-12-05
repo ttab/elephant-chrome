@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useMemo, useState, type JSX } from 'react'
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter, Button } from '@ttab/elephant-ui'
 import { createDocument } from '@/shared/createYItem'
 import type { DefaultValueOption } from '@ttab/elephant-ui'

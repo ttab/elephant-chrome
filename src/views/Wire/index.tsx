@@ -1,7 +1,7 @@
 import type { ViewMetadata, ViewProps } from '@/types/index'
 import { WireViewContent } from './WireViewContent'
 import * as Templates from '@/shared/templates'
-import { useMemo } from 'react'
+import { useMemo, type JSX } from 'react'
 import { Block } from '@ttab/elephant-api/newsdoc'
 import type { Wire as WireType } from '@/shared/schemas/wire'
 import { toGroupedNewsDoc } from '@/shared/transformations/groupedNewsDoc'
