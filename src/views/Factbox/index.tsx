@@ -37,7 +37,10 @@ const meta: ViewMetadata = {
   }
 }
 
+//
 // FIXME: Something is rerendeing this and makes user loose focus
+// FIXME: Is it maybe the plugins that should use useMemo
+//
 const Factbox = (props: ViewProps & { document?: Document }): JSX.Element => {
   const [query] = useQuery()
   const documentId = props.id || query.id
@@ -110,7 +113,7 @@ const FactboxWrapper = (props: ViewProps & { documentId: string, data?: EleDocum
           onDialogClose={props.onDialogClose}
         />
 
-        <View.Content className='flex flex-col max-w-[1000px]'>
+        <View.Content className='flex flex-col max-w-[1000px]' variant='grid'>
           <Form.Root asDialog={props?.asDialog}>
             <Form.Content>
               <Form.Title>
@@ -128,7 +131,7 @@ const FactboxWrapper = (props: ViewProps & { documentId: string, data?: EleDocum
             </Form.Content>
           </Form.Root>
 
-          <div className='flex flex-col gap-4 mb-4'>
+          <div className='flex flex-col gap-4 mb-4 grow'>
             <BaseEditor.Text
               ydoc={ydoc}
               autoFocus={!props.asDialog}

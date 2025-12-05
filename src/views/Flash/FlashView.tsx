@@ -61,6 +61,7 @@ export const FlashView = (props: ViewProps & {
                     ydoc={ydoc}
                     autoFocus={true}
                     allowStyling={false}
+                    className='border-b'
                   />
                 )}
             </div>

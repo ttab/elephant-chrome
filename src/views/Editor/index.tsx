@@ -71,7 +71,7 @@ const Editor = (props: ViewProps): JSX.Element => {
           readOnly
           readOnlyVersion={bigIntVersion}
         />
-        <View.Content className='flex flex-col max-w-[1000px] px-4 h-full'>
+        <View.Content className='flex flex-col max-w-[1000px] px-4 h-full' variant='grid'>
           <PlainEditor key={props.version} id={documentId} version={bigIntVersion} />
         </View.Content>
       </View.Root>
@@ -147,7 +147,7 @@ function EditorWrapper(props: ViewProps & {
 
         <Notes ydoc={ydoc} />
 
-        <View.Content className='flex flex-col max-w-[1000px]'>
+        <View.Content className='flex flex-col max-w-[1000px]'variant='grid'>
           <div className='grow overflow-auto pr-12 max-w-(--breakpoint-xl)'>
             <BaseEditor.Text
               ydoc={ydoc}

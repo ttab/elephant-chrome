@@ -1,4 +1,4 @@
-import type { CSSProperties, PropsWithChildren } from 'react'
+import type { CSSProperties, PropsWithChildren, JSX } from 'react'
 import { ScrollArea } from '@ttab/elephant-ui'
 import { cn } from '@ttab/elephant-ui/utils'
 
