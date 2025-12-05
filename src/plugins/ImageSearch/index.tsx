@@ -1,9 +1,13 @@
+import type { LinkHandlerFunction } from '@/hooks/useLink'
 import { ScanSearchIcon } from '@ttab/elephant-ui/icons'
-import { useLink } from '@/hooks'
 import type { TBPluginInitFunction } from '@ttab/textbit'
 
-export const ImageSearchPlugin: TBPluginInitFunction = () => {
-  const openImageSearch = useLink('ImageSearch')
+type ImageSearchPluginOptions = {
+  openImageSearch: LinkHandlerFunction
+}
+
+export const ImageSearchPlugin: TBPluginInitFunction<ImageSearchPluginOptions> = (options) => {
+  const openImageSearch = options?.openImageSearch
 
   return {
     class: 'block',
@@ -19,7 +23,7 @@ export const ImageSearchPlugin: TBPluginInitFunction = () => {
         title: 'Sök bilder',
         tool: () => <ScanSearchIcon style={{ width: '1em', height: '1em' }} />,
         handler: () => {
-          openImageSearch(undefined, {})
+          openImageSearch?.(undefined, {})
         },
         visibility: () => {
           return [

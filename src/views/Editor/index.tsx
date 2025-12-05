@@ -99,21 +99,19 @@ function EditorWrapper(props: ViewProps & {
   const [documentLanguage] = getValueByYPath<string>(ydoc.ele, 'root.language')
   const [content] = getValueByYPath<Y.XmlText>(ydoc.ele, 'content', true)
   const openFactboxEditor = useLink('Factbox')
+  const openImageSearch = useLink('ImageSearch')
+  const openFactboxes = useLink('Factboxes')
 
   // Plugin configuration
   const configuredPlugins = useMemo(() => {
-    const basePlugins = [
-      Bold,
-      Italic,
-      Link,
-      ImageSearchPlugin,
-      FactboxPlugin,
-      Table,
-      LocalizedQuotationMarks
-    ]
-
     return [
-      ...basePlugins.map((initPlugin) => initPlugin()),
+      Bold(),
+      Italic(),
+      Link(),
+      ImageSearchPlugin({ openImageSearch }),
+      FactboxPlugin({ openFactboxes }),
+      Table(),
+      LocalizedQuotationMarks(),
       TTVisual({
         enableCrop: false
       }),

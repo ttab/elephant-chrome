@@ -91,21 +91,19 @@ function EditorWrapper(props: ViewProps & {
   const { data } = useSession()
   const { repository } = useRegistry()
   const openFactboxEditor = useLink('Factbox')
+  const openImageSearch = useLink('ImageSearch')
+  const openFactboxes = useLink('Factboxes')
 
   // Plugin configuration
   const configuredPlugins = useMemo(() => {
-    const basePlugins = [
-      Bold,
-      Italic,
-      ImageSearchPlugin,
-      FactboxPlugin,
-      Table,
-      LocalizedQuotationMarks,
-      PrintText
-    ]
-
     return [
-      ...basePlugins.map((initPlugin) => initPlugin()),
+      Bold(),
+      Italic(),
+      ImageSearchPlugin({ openImageSearch }),
+      FactboxPlugin({ openFactboxes }),
+      Table(),
+      LocalizedQuotationMarks(),
+      PrintText(),
       Text({
         countCharacters: ['heading-1'],
         ...contentMenuLabels
