@@ -4,7 +4,7 @@ import { DatePicker } from '../Datepicker'
 import { useQuery, useLink } from '@/hooks'
 import { addDays, subDays } from 'date-fns'
 import { type View } from '@/types/index'
-import { useMemo } from 'react'
+import { useMemo, type JSX } from 'react'
 
 // Only these views are valid targets for date changes
 const validViews: View[] = ['Plannings', 'Events', 'Assignments', 'Approvals', 'Print']

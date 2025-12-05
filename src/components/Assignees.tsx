@@ -2,7 +2,7 @@ import { Awareness } from '@/components'
 import { ComboBox } from '@ttab/elephant-ui'
 import { useAuthors } from '@/hooks/useAuthors'
 import { UserPlusIcon } from '@ttab/elephant-ui/icons'
-import { useRef } from 'react'
+import { useRef, type JSX } from 'react'
 
 import { AssigneeAvatars } from '@/components/DataItem/AssigneeAvatars'
 import { YBlock } from '@/shared/YBlock'

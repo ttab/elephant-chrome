@@ -5,6 +5,7 @@ import { FilesIcon, FileWarningIcon } from '@ttab/elephant-ui/icons'
 import useSWR from 'swr'
 import { useSession } from 'next-auth/react'
 import { type ValidationResult } from '@ttab/elephant-api/repository'
+import type { JSX } from 'react'
 
 interface Entity {
   refType: string
