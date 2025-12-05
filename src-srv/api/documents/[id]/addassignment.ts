@@ -2,7 +2,7 @@ import type { Request } from 'express'
 import type { RouteHandler } from '../../../routes.js'
 import { Block } from '@ttab/elephant-api/newsdoc'
 import { appendAssignment, appendDocumentToAssignment } from '../../../../shared/createYItem.js'
-import { planningDocumentTemplate } from '@/shared/templates/planningDocumentTemplate.js'
+import * as templates from '@/shared/templates/index.js'
 import { getDeliverableType } from '@/shared/templates/lib/getDeliverableType.js'
 import { toYjsNewsDoc } from '@/shared/transformations/yjsNewsDoc.js'
 import { toGroupedNewsDoc } from '@/shared/transformations/groupedNewsDoc.js'
@@ -38,7 +38,8 @@ export const POST: RouteHandler = async (req: Request, { collaborationServer, re
     isoDateTime,
     publishTime,
     section,
-    wire
+    wire,
+    twoOnTwoData
   } = req.body as {
     planningId?: string
     planningTitle?: string
@@ -56,6 +57,7 @@ export const POST: RouteHandler = async (req: Request, { collaborationServer, re
       title: string
     }
     wire?: Wire
+    twoOnTwoData?: { title?: string, text?: string, deliverableId: string }
   }
 
   if (!type || !deliverableId || !title || !localDate || !isoDateTime) {
@@ -80,13 +82,13 @@ export const POST: RouteHandler = async (req: Request, { collaborationServer, re
   await connection.transact((document) => {
     if (!isValidUUID(planningId) && section) {
       // If we have no planningId we create a new planning item using
-      // planningDocumentTemplate as a basis and apply it to the cocument.
+      // planningDocumentTemplate as a basis and apply it to the document.
       toYjsNewsDoc(
         toGroupedNewsDoc({
           version: 0n,
           isMetaDocument: false,
           mainDocument: '',
-          document: planningDocumentTemplate(documentId, {
+          document: templates.planning(documentId, {
             title: planningTitle || title,
             links: {
               'core/section': [Block.create({
@@ -142,10 +144,10 @@ export const POST: RouteHandler = async (req: Request, { collaborationServer, re
     const deliverableType = getDeliverableType(type)
     appendDocumentToAssignment({
       document,
-      id: deliverableId,
+      id: twoOnTwoData?.deliverableId || deliverableId,
       index,
       slug: '',
-      type: deliverableType
+      type: twoOnTwoData?.deliverableId ? 'article' : deliverableType
     })
   })
 

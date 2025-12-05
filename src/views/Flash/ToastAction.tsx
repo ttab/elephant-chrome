@@ -7,6 +7,8 @@ export const ToastAction = ({ planningId, flashId, eventId }: {
   flashId?: string
   eventId?: string
 }): JSX.Element => {
+  console.log('🚀 ~ :10 ~ ToastAction ~ flashId:', flashId)
+  console.log('🚀 ~ :10 ~ ToastAction ~ planningId:', planningId)
   const openFlash = useLink('Flash')
   const openPlanning = useLink('Planning')
   const openEvent = useLink('Event')
