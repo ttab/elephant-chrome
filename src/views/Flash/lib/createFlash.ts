@@ -113,7 +113,8 @@ export async function createFlash({
         title: flashTitle,
         text: flashBodyText,
         deliverableId: crypto.randomUUID(),
-        section
+        section,
+        slugline: !flashTitle ? '2på2' : `${flashTitle?.toLocaleLowerCase()?.split(' ').slice(0, 3).join('-')}-2på2`
       }
     : undefined
 

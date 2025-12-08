@@ -57,7 +57,7 @@ export async function createTwoOnTwo({
     type: 'text',
     deliverableId: data?.deliverableId || crypto.randomUUID(),
     title: 'Kort första text',
-    slugline: makeSlugline(data?.title),
+    slugline: data?.slugline,
     priority: 5,
     publicVisibility: true,
     localDate,

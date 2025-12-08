@@ -1,4 +1,3 @@
-import { makeSlugline } from '@/views/Flash/lib/createTwoOnTwo'
 import { Block, Document } from '@ttab/elephant-api/newsdoc'
 
 // Two-on-two document template, following the creation of flash-level text assignments
@@ -41,7 +40,7 @@ export function twoOnTwoDocumentTemplate(payload?: {
       }),
       Block.create({
         type: 'tt/slugline',
-        value: slugline
+        value: payload?.slugline || ''
       })
     ],
     links: [
