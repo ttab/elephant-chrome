@@ -144,7 +144,7 @@ export const POST: RouteHandler = async (req: Request, { collaborationServer, re
     const deliverableType = getDeliverableType(type)
     appendDocumentToAssignment({
       document,
-      id: deliverableId,
+      id: twoOnTwoData?.deliverableId || deliverableId,
       index,
       slug: '',
       type: deliverableType
