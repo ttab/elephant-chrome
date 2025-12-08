@@ -1,12 +1,13 @@
 import type { Session } from 'next-auth'
 import { getValueByYPath } from '@/shared/yUtils'
 import { convertToISOStringInTimeZone } from '@/shared/datetime'
-import { toast } from 'sonner'
-import { ToastAction } from '../ToastAction'
 import { addAssignmentWithDeliverable } from '@/lib/index/addAssignment'
 import { snapshotDocument } from '@/lib/snapshotDocument'
+import { yTextToSlateElement } from '@slate-yjs/core'
 import type { YDocument } from '@/modules/yjs/hooks'
 import type * as Y from 'yjs'
+import type { YXmlText } from 'node_modules/yjs/dist/src/internals'
+import type { TBElement } from '@ttab/textbit'
 
 export type CreateFlashDocumentStatus = 'usable' | 'done' | undefined
 export async function createFlash({
@@ -29,13 +30,18 @@ export async function createFlash({
     title: string
   }
   startDate?: string
-}): Promise<void> {
+}): Promise<{
+  documentStatus: CreateFlashDocumentStatus
+  updatedPlanningId: string
+  twoOnTwoData: {
+    title: string | undefined
+    text: string
+    deliverableId: string
+  } | undefined
+} | undefined> {
   if (!ydoc || status !== 'authenticated') {
     console.error(`Failed adding flash ${ydoc.id} to a planning`)
-    toast.error('Kunde inte lägga flashen till en planering', {
-      action: <ToastAction flashId={ydoc.id} />
-    })
-    return
+    throw new Error('Failed to authenticate')
   }
 
   // Trigger the creation of the flash in the repository
@@ -44,12 +50,22 @@ export async function createFlash({
     status: documentStatus
   }, ydoc.provider?.document)
     .catch((ex) => {
-      toast.error('Kunde inte spara flash')
       console.error('Failed creating flash snapshot', ex)
+      throw new Error('FlashCreationError')
     })
 
   // Create and collect all base data for the assignment
   const [flashTitle] = getValueByYPath<string>(ydoc.ele, 'root.title')
+
+  const content = yTextToSlateElement((ydoc.ele.get('content') as YXmlText))?.children as TBElement[]
+
+  const bodyTextNode = content.find((c) => {
+    const properties = c.properties as { role?: string }
+    return !properties.role
+  })?.children[0]
+
+  const flashBodyText = bodyTextNode && 'text' in bodyTextNode ? bodyTextNode?.text : ''
+
   const dt = new Date()
   let localDate: string
   let isoDateTime: string
@@ -81,27 +97,19 @@ export async function createFlash({
   // Ensure the snapshot is complete before showing the toast
   await snapshotPromise
 
-  const getLabel = (documentStatus: CreateFlashDocumentStatus): string => {
-    switch (documentStatus) {
-      case 'usable': {
-        return 'Flash skickad'
-      }
-      case 'done': {
-        return 'Flash godkänd'
-      }
-      default: {
-        return 'Flash sparad'
-      }
-    }
+  if (!updatedPlanningId) {
+    throw new Error('CreateAssignmentError')
   }
 
-  if (!updatedPlanningId) {
-    toast.error('Flashen har skapats. Tyvärr misslyckades det att koppla den till en planering. Kontakta support för mer hjälp.', {
-      action: <ToastAction planningId={updatedPlanningId} flashId={ydoc.id} />
-    })
-  } else {
-    toast.success(getLabel(documentStatus), {
-      action: <ToastAction planningId={updatedPlanningId} flashId={ydoc.id} />
-    })
-  }
+  // A complementary text assignment (2on2) is co-created for a quick first version.
+  // Only create 2on2 if the flash is immediately published, for now.
+  const twoOnTwoData = documentStatus === 'usable'
+    ? {
+        title: flashTitle,
+        text: flashBodyText,
+        deliverableId: crypto.randomUUID()
+      }
+    : undefined
+
+  return { twoOnTwoData, documentStatus, updatedPlanningId }
 }

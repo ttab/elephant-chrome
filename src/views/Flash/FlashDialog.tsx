@@ -23,6 +23,9 @@ import { toast } from 'sonner'
 import { useYDocument, useYValue } from '@/modules/yjs/hooks'
 import type { EleDocumentResponse } from '@/shared/types'
 import type * as Y from 'yjs'
+import { createTwoOnTwo } from './lib/createTwoOnTwo'
+import { ToastAction } from './ToastAction'
+import { twoOnTwoDocumentTemplate } from '@/shared/templates/twoOnTwoDocumentTemplate'
 
 export const FlashDialog = (props: {
   documentId: string
@@ -226,6 +229,19 @@ export const FlashDialog = (props: {
                       })
                       .catch((ex: unknown) => {
                         console.error(ex)
+
+                        if (ex === 'FlashCreationError') {
+                          // Both flash and two-on-two creation were unsuccessful
+                          toast.error('Flashen kunde inte skapas. Kontakta support för mer hjälp.', {
+                            action: <ToastAction flashId={ydoc.id} />
+                          })
+                        }
+
+                        if (ex === 'CreateAssignmentError') {
+                          toast.error('Flashen har skapats. Tyvärr misslyckades det att koppla den till en planering. Kontakta support för mer hjälp.', {
+                            action: <ToastAction flashId={ydoc.id} />
+                          })
+                        }
                       })
                   }}
                   onSecondary={() => {
