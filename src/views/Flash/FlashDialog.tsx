@@ -62,8 +62,8 @@ export const FlashDialog = (props: {
       key: 'send',
       title: 'Skapa och skicka flash?',
       description: !selectedPlanning
-        ? 'En ny planering med tillhörande uppdrag för denna flash kommer att skapas åt dig.'
-        : `Denna flash kommer att läggas i ett nytt uppdrag i planeringen "${selectedPlanning.label}"`,
+        ? 'En ny planering med tillhörande uppdrag för denna flash kommer att skapas åt dig. I samma planering kommer även ett textuppdrag med flashinnehållet att läggas till.'
+        : `Denna flash kommer att läggas i ett nytt uppdrag i planeringen "${selectedPlanning.label}". I samma planering kommer även ett textuppdrag med flashinnehållet att läggas till.`,
       secondaryLabel: 'Avbryt',
       primaryLabel: 'Skicka',
       documentStatus: 'usable' as CreateFlashDocumentStatus,
