@@ -246,6 +246,11 @@ export const FlashDialog = (props: {
                         if (data?.twoOnTwoData) {
                           const id = crypto.randomUUID()
                           data.twoOnTwoData.deliverableId = id
+
+                          if (!data.twoOnTwoData.section && section) {
+                            data.twoOnTwoData.section = section
+                          }
+
                           const twoOnTwoDocument = twoOnTwoDocumentTemplate({ ...data.twoOnTwoData })
 
                           void (async () => {

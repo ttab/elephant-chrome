@@ -9,6 +9,14 @@ import type * as Y from 'yjs'
 import type { YXmlText } from 'node_modules/yjs/dist/src/internals'
 import type { TBElement } from '@ttab/textbit'
 
+
+type Section = {
+  uuid: string
+  title: string
+  type: string
+  rel: string
+}
+
 export type CreateFlashDocumentStatus = 'usable' | 'done' | undefined
 export async function createFlash({
   ydoc,
@@ -25,10 +33,7 @@ export async function createFlash({
   planningId?: string
   timeZone: string
   documentStatus: CreateFlashDocumentStatus
-  section?: {
-    uuid: string
-    title: string
-  }
+  section?: Section
   startDate?: string
 }): Promise<{
   documentStatus: CreateFlashDocumentStatus
@@ -37,6 +42,7 @@ export async function createFlash({
     title: string | undefined
     text: string
     deliverableId: string
+    section?: Section
   } | undefined
 } | undefined> {
   if (!ydoc || status !== 'authenticated') {
@@ -107,7 +113,8 @@ export async function createFlash({
     ? {
         title: flashTitle,
         text: flashBodyText,
-        deliverableId: crypto.randomUUID()
+        deliverableId: crypto.randomUUID(),
+        section
       }
     : undefined
 
