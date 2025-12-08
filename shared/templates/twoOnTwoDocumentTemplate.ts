@@ -1,19 +1,8 @@
 import { Block, Document } from '@ttab/elephant-api/newsdoc'
+import type { TwoOnTwoData } from '../types/index.ts'
 
 // Two-on-two document template, following the creation of flash-level text assignments
-export function twoOnTwoDocumentTemplate(payload?: {
-  title?: string
-  text?: string
-  section?: {
-    type: string
-    uuid: string
-    title: string
-    rel: string
-  }
-  deliverableId?: string
-}): Document {
-  const slugline = makeSlugline(payload?.title)
-
+export function twoOnTwoDocumentTemplate(payload?: TwoOnTwoData): Document {
   return Document.create({
     uuid: payload?.deliverableId,
     uri: `core://article/${payload?.deliverableId}`,

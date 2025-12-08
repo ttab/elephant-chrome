@@ -8,8 +8,9 @@ import type { YDocument } from '@/modules/yjs/hooks'
 import type * as Y from 'yjs'
 import type { YXmlText } from 'node_modules/yjs/dist/src/internals'
 import type { TBElement } from '@ttab/textbit'
+import type { TwoOnTwoData } from '@/shared/types'
 
-type Section = {
+export type Section = {
   uuid: string
   title: string
   type: string
@@ -32,17 +33,12 @@ export async function createFlash({
   planningId?: string
   timeZone: string
   documentStatus: CreateFlashDocumentStatus
-  section?: Section
+  section?: Section | undefined
   startDate?: string
 }): Promise<{
   documentStatus: CreateFlashDocumentStatus
   updatedPlanningId: string
-  twoOnTwoData: {
-    title: string | undefined
-    text: string
-    deliverableId: string
-    section?: Section
-  } | undefined
+  twoOnTwoData: TwoOnTwoData | undefined
 } | undefined> {
   if (!ydoc || status !== 'authenticated') {
     console.error(`Failed adding flash ${ydoc.id} to a planning`)

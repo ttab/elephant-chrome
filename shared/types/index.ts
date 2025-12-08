@@ -32,3 +32,16 @@ export interface EleBlock extends Omit<Block, 'meta' | 'links' | 'content'> {
   links: EleBlockGroup
   content: EleBlockGroup
 }
+
+export type TwoOnTwoData = {
+  title: string | undefined
+  text: string
+  deliverableId: string
+  slugline: string
+  section?: Section
+}
+
+export type Section = {
+  uuid: string
+  title: string
+} | undefined

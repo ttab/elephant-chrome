@@ -1,27 +1,6 @@
 import { addAssignmentWithDeliverable } from '@/lib/index/addAssignment'
 import { convertToISOStringInTimeZone } from '@/shared/datetime'
-
-type TwoOnTwoData = {
-  title: string | undefined
-  text: string
-  deliverableId: string
-} | undefined
-
-type Section = {
-  uuid: string
-  title: string
-} | undefined
-
-
-// Make unique slugline for flash, considering there could
-// potentially be multiple flash assignments each day.
-export const makeSlugline = (title?: string) => {
-  if (!title) {
-    return '2på2-text'
-  }
-
-  return title?.toLocaleLowerCase()?.split(' ').slice(0, 3).join('-') + '-2på2'
-}
+import type { TwoOnTwoData } from '@/shared/types'
 
 export async function createTwoOnTwo({
   planningId,
