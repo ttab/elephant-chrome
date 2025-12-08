@@ -6,14 +6,12 @@ export async function createTwoOnTwo({
   planningId,
   startDate,
   timeZone,
-  section,
   data
 }: {
   planningId: string
   timeZone: string
   startDate?: string
-  section?: Section
-  data?: TwoOnTwoData
+  data: TwoOnTwoData | undefined
 }) {
   const dt = new Date()
   let localDate: string
@@ -41,7 +39,7 @@ export async function createTwoOnTwo({
     publicVisibility: true,
     localDate,
     isoDateTime,
-    section,
+    section: data?.section,
     twoOnTwoData: data
   })
 

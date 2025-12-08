@@ -264,7 +264,6 @@ export const FlashDialog = (props: {
                               planningId: data?.updatedPlanningId,
                               timeZone,
                               startDate,
-                              section: data.twoOnTwoData?.section,
                               data: data.twoOnTwoData
                             })
                               .then(() => {
