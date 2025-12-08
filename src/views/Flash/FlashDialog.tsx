@@ -40,7 +40,7 @@ export const FlashDialog = (props: {
   const [donePrompt, setDonePrompt] = useState(false)
   const [selectedPlanning, setSelectedPlanning] = useState<Omit<DefaultValueOption, 'payload'> & { payload: unknown } | undefined>(undefined)
   const [, setTitle] = useYValue<string | undefined>(ydoc.ele, 'root.title')
-  const { index, locale, timeZone } = useRegistry()
+  const { index, locale, timeZone, repository } = useRegistry()
   const [searchOlder, setSearchOlder] = useState(false)
   const [section, setSection] = useState<{
     type: string
