@@ -5,7 +5,7 @@ const BASE_URL = import.meta.env.BASE_URL || ''
 
 /**
  * Ask the backend to create an assignment with existing deliverable and add it to a planning item.
- * If no planning item id is given a new planning iten will be created.
+ * If no planning item id is given a new planning item will be created.
  */
 export async function addAssignmentWithDeliverable(payload: {
   planningId?: string
