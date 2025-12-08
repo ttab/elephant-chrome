@@ -23,6 +23,7 @@ export async function addAssignmentWithDeliverable(payload: {
     uuid: string
     title: string
   }
+  twoOnTwoData?: { title?: string, text?: string }
   wire?: Wire
 }): Promise<string | undefined> {
   try {

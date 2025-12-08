@@ -38,7 +38,8 @@ export const POST: RouteHandler = async (req: Request, { collaborationServer, re
     isoDateTime,
     publishTime,
     section,
-    wire
+    wire,
+    twoOnTwoData
   } = req.body as {
     planningId?: string
     planningTitle?: string
@@ -56,6 +57,7 @@ export const POST: RouteHandler = async (req: Request, { collaborationServer, re
       title: string
     }
     wire?: Wire
+    twoOnTwoData?: { title?: string, text?: string, deliverableId: string }
   }
 
   if (!type || !deliverableId || !title || !localDate || !isoDateTime) {
