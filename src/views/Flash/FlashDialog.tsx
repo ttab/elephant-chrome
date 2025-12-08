@@ -223,7 +223,58 @@ export const FlashDialog = (props: {
                       startDate,
                       section: (!selectedPlanning?.value) ? section || undefined : undefined
                     })
-                      .then(() => {
+                    // After flash has been successfully created, we celebrate with a toast
+                      .then((data) => {
+                        const getLabel = (documentStatus: CreateFlashDocumentStatus): string => {
+                          switch (documentStatus) {
+                            case 'usable': {
+                              return 'Flash skickad'
+                            }
+                            case 'done': {
+                              return 'Flash godkänd'
+                            }
+                            default: {
+                              return 'Flash sparad'
+                            }
+                          }
+                        }
+
+                        toast.success(getLabel(data?.documentStatus), {
+                          action: <ToastAction planningId={data?.updatedPlanningId} flashId={ydoc.id} />
+                        })
+
+                        if (data?.twoOnTwoData) {
+                          const id = crypto.randomUUID()
+                          data.twoOnTwoData.deliverableId = id
+                          const twoOnTwoDocument = twoOnTwoDocumentTemplate({ ...data.twoOnTwoData })
+
+                          void (async () => {
+                            await repository?.saveDocument(
+                              twoOnTwoDocument,
+                              session?.accessToken || '',
+                              'draft'
+                            ).catch((error) => console.error('could not save two-on-two document', error))
+
+                            createTwoOnTwo({
+                              planningId: data?.updatedPlanningId,
+                              timeZone,
+                              startDate,
+                              section: (!selectedPlanning?.value) ? section || undefined : undefined,
+                              data: data.twoOnTwoData
+                            })
+                              .then(() => {
+                                toast.success('Två-på-två har skapats', {
+                                  action: <ToastAction planningId={data?.updatedPlanningId} flashId={ydoc.id} />
+                                })
+                              })
+                              .catch(() => {
+                                // Flash creation OK, two-on-two creation unsuccessful
+                                toast.error('Fel när två-på-två skapades. Kontakta support för mer hjälp.', {
+                                  action: <ToastAction planningId={data.updatedPlanningId} flashId={ydoc.id} />
+                                })
+                              })
+                          })()
+                        }
                         config.setPrompt(false)
                         props.onDialogClose?.()
                       })
