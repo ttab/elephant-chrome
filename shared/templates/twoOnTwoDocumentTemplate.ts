@@ -41,7 +41,7 @@ export function twoOnTwoDocumentTemplate(payload?: {
       }),
       Block.create({
         type: 'tt/slugline',
-        data: { text: slugline }
+        value: slugline
       })
     ],
     links: [
