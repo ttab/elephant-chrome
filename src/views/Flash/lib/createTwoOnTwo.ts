@@ -12,6 +12,17 @@ type Section = {
   title: string
 } | undefined
 
+
+// Make unique slugline for flash, considering there could
+// potentially be multiple flash assignments each day.
+export const makeSlugline = (title?: string) => {
+  if (!title) {
+    return '2på2-text'
+  }
+
+  return title?.toLocaleLowerCase()?.split(' ').slice(0, 3).join('-') + '-2på2'
+}
+
 export async function createTwoOnTwo({
   planningId,
   startDate,
@@ -41,24 +52,12 @@ export async function createTwoOnTwo({
     localDate = convertToISOStringInTimeZone(dt, timeZone).slice(0, 10)
   }
 
-  const makeSlugline = (twoOnTwoData: TwoOnTwoData) => {
-    if (!twoOnTwoData?.title) {
-      return '2på2-text'
-    }
-
-    return twoOnTwoData?.title?.toLocaleLowerCase()?.split(' ').slice(0, 3).join('-') + '-2på2'
-  }
-
-  // Make unique slugline for flash, considering there could
-  // potentially be multiple flash assignments each day.
-  const slugline = makeSlugline(data)
-
   const assignmentId = await addAssignmentWithDeliverable({
     planningId,
     type: 'text',
     deliverableId: data?.deliverableId || crypto.randomUUID(),
     title: 'Kort första text',
-    slugline,
+    slugline: makeSlugline(data?.title),
     priority: 5,
     publicVisibility: true,
     localDate,

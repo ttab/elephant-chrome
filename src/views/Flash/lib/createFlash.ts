@@ -9,7 +9,6 @@ import type * as Y from 'yjs'
 import type { YXmlText } from 'node_modules/yjs/dist/src/internals'
 import type { TBElement } from '@ttab/textbit'
 
-
 type Section = {
   uuid: string
   title: string

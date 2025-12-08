@@ -1,7 +1,20 @@
+import { makeSlugline } from '@/views/Flash/lib/createTwoOnTwo'
 import { Block, Document } from '@ttab/elephant-api/newsdoc'
 
 // Two-on-two document template, following the creation of flash-level text assignments
-export function twoOnTwoDocumentTemplate(payload?: { title?: string, text?: string, section?: { type: string, uuid: string, title: string, rel: string }, deliverableId?: string }): Document {
+export function twoOnTwoDocumentTemplate(payload?: {
+  title?: string
+  text?: string
+  section?: {
+    type: string
+    uuid: string
+    title: string
+    rel: string
+  }
+  deliverableId?: string
+}): Document {
+  const slugline = makeSlugline(payload?.title)
+
   return Document.create({
     uuid: payload?.deliverableId,
     uri: `core://article/${payload?.deliverableId}`,
@@ -25,6 +38,10 @@ export function twoOnTwoDocumentTemplate(payload?: { title?: string, text?: stri
       Block.create({
         type: 'core/newsvalue',
         value: '5'
+      }),
+      Block.create({
+        type: 'tt/slugline',
+        data: { text: slugline }
       })
     ],
     links: [
