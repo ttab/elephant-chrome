@@ -100,7 +100,24 @@ export const FlashDialog = (props: {
       twoOnTwoData.section = section
     }
 
-    const twoOnTwoDocument = twoOnTwoDocumentTemplate({ ...twoOnTwoData })
+    const twoOnTwoDocument = twoOnTwoDocumentTemplate(
+      twoOnTwoData.deliverableId,
+      twoOnTwoData?.text,
+      {
+        title: twoOnTwoData.title,
+        meta: {
+          'core/newsvalue': [Block.create({ type: 'core/newsvalue', value: '5' })],
+          'tt/slugline': [Block.create({ type: 'tt/slugline', value: twoOnTwoData?.slugline || '' })]
+        },
+        links: {
+          'core/section': [Block.create({
+            type: 'core/section',
+            uuid: twoOnTwoData?.section?.uuid,
+            title: twoOnTwoData?.section?.title,
+            rel: 'section'
+          })]
+        }
+      })
 
     void (async () => {
       await repository?.saveDocument(
