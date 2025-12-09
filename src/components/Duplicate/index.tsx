@@ -25,6 +25,8 @@ const SingleOrRangedCalendar = ({
   setDuplicateDate: Dispatch<SetStateAction<{ from: Date, to?: Date | undefined }>>
   dataInfo: EventData | PlanningData
 }) => {
+  const { locale } = useRegistry()
+
   if (isEvent(dataInfo)) {
     if (!granularity) {
       return <></>
@@ -34,6 +36,7 @@ const SingleOrRangedCalendar = ({
       return (
         <Calendar
           mode='range'
+          locale={locale.module}
           selected={duplicateDate}
           startMonth={new Date(duplicateDate?.from)}
           onSelect={(selectedDate) => {
@@ -55,6 +58,7 @@ const SingleOrRangedCalendar = ({
   return (
     <Calendar
       mode='single'
+      locale={locale.module}
       selected={duplicateDate?.from}
       startMonth={new Date(duplicateDate?.from)}
       onSelect={(selectedDate) => {

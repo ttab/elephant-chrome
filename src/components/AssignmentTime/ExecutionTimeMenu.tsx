@@ -176,6 +176,7 @@ export const ExecutionTimeMenu = ({ handleOnSelect, assignment, startDate }: Exe
         <div>
           <Calendar
             mode='range'
+            locale={locale.module}
             required={false}
             selected={selected}
             weekStartsOn={1}

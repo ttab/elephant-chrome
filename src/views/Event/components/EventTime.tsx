@@ -254,6 +254,7 @@ export const EventTimeMenu = ({ ydoc, onChange }: {
       <div className='p-2'>
         <Calendar
           mode='range'
+          locale={locale.module}
           required={false}
           selected={selected}
           weekStartsOn={1}
