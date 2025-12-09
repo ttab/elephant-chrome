@@ -9,13 +9,7 @@ import type * as Y from 'yjs'
 import type { YXmlText } from 'node_modules/yjs/dist/src/internals'
 import type { TBElement } from '@ttab/textbit'
 import type { TwoOnTwoData } from '@/shared/types'
-
-export type Section = {
-  uuid: string
-  title: string
-  type: string
-  rel: string
-}
+import { Block } from '@ttab/elephant-api/newsdoc'
 
 export type CreateFlashDocumentStatus = 'usable' | 'done' | undefined
 export async function createFlash({
@@ -33,7 +27,12 @@ export async function createFlash({
   planningId?: string
   timeZone: string
   documentStatus: CreateFlashDocumentStatus
-  section?: Section | undefined
+  section?: {
+    uuid: string
+    title: string
+    type: string
+    rel: string
+  }
   startDate?: string
 }): Promise<{
   documentStatus: CreateFlashDocumentStatus
@@ -106,11 +105,23 @@ export async function createFlash({
   // Only create 2on2 if the flash is immediately published, for now.
   const twoOnTwoData = documentStatus === 'usable'
     ? {
-        title: flashTitle,
-        text: flashBodyText,
         deliverableId: crypto.randomUUID(),
-        section,
-        slugline: !flashTitle ? '2på2' : `${flashTitle?.toLocaleLowerCase()?.split(' ').slice(0, 3).join('-')}-2på2`
+        text: flashBodyText,
+        payload: {
+          title: flashTitle,
+          meta: {
+            'core/newsvalue': [Block.create({ type: 'core/newsvalue', value: '5' })],
+            'tt/slugline': [Block.create({ type: 'tt/slugline', value: !flashTitle ? '2på2' : `${flashTitle?.toLocaleLowerCase()?.split(' ').slice(0, 3).join('-')}-2på2` })]
+          },
+          links: {
+            'core/section': [Block.create({
+              type: 'core/section',
+              uuid: section?.uuid,
+              title: section?.title,
+              rel: 'section'
+            })]
+          }
+        }
       }
     : undefined
 

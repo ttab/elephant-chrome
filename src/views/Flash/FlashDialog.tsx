@@ -88,36 +88,12 @@ export const FlashDialog = (props: {
     twoOnTwoData: TwoOnTwoData | undefined
   }, startDate: string | undefined) => {
     const { twoOnTwoData } = data
-    const id = crypto.randomUUID()
 
     if (!twoOnTwoData) {
       return
     }
 
-    twoOnTwoData.deliverableId = id
-
-    if (!twoOnTwoData.section && section) {
-      twoOnTwoData.section = section
-    }
-
-    const twoOnTwoDocument = twoOnTwoDocumentTemplate(
-      twoOnTwoData.deliverableId,
-      twoOnTwoData?.text,
-      {
-        title: twoOnTwoData.title,
-        meta: {
-          'core/newsvalue': [Block.create({ type: 'core/newsvalue', value: '5' })],
-          'tt/slugline': [Block.create({ type: 'tt/slugline', value: twoOnTwoData?.slugline || '' })]
-        },
-        links: {
-          'core/section': [Block.create({
-            type: 'core/section',
-            uuid: twoOnTwoData?.section?.uuid,
-            title: twoOnTwoData?.section?.title,
-            rel: 'section'
-          })]
-        }
-      })
+    const twoOnTwoDocument = twoOnTwoDocumentTemplate(twoOnTwoData.deliverableId, twoOnTwoData.text, twoOnTwoData.payload)
 
     void (async () => {
       await repository?.saveDocument(
