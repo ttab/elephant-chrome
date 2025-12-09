@@ -27,15 +27,17 @@ export const Additionals = ({ ydoc, basePath, onChange }: {
   if (additionals?.length) {
     return (
       <div className='col-span-12 row-span-1 flex flex-col gap-2 mt-1'>
-        <h4 className='text-sm font-bold'>Tillägg</h4>
-        {additionals.map((additional, index) => (
-          <Additional
-            key={additional.name}
-            additional={additional}
-            index={index}
-            onChange={handleChange}
-          />
-        ))}
+        <Label htmlFor='additionals'>Tillägg</Label>
+        <div id='additionals' className='grid grid-cols-2 gap-2'>
+          {additionals.map((additional, index) => (
+            <Additional
+              key={additional.name}
+              additional={additional}
+              index={index}
+              onChange={handleChange}
+            />
+          ))}
+        </div>
       </div>
     )
   }
