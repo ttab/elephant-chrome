@@ -8,11 +8,13 @@ import { useMemo } from 'react'
 import { useModal } from '../Modal/useModal'
 import * as Views from '@/views'
 import { getTemplateFromView } from '@/shared/templates/lib/getTemplateFromView'
+import { useQuery } from '@/hooks/useQuery'
 
 export const Header = ({ assigneeId, type }: {
   type: View
   assigneeId?: string | undefined
 }): JSX.Element => {
+  const [query] = useQuery()
   const showButton = useMemo(() => {
     const viewTypes: View[] = ['Planning', 'Event', 'Factbox']
     if (viewTypes.includes(type)) {
@@ -33,7 +35,7 @@ export const Header = ({ assigneeId, type }: {
           className='h-8 pr-4'
           onClick={() => {
             const id = crypto.randomUUID()
-            const initialDocument = getTemplateFromView(type)(id)
+            const initialDocument = getTemplateFromView(type)(id, { query })
             showModal(
               <ViewDialog
                 onDialogClose={hideModal}
