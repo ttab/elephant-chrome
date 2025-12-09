@@ -1,3 +1,5 @@
+import type { Block } from '@ttab/elephant-api/newsdoc'
+
 /** Section structure in indexedDB objectStore  */
 export interface IDBSection {
   id: string
@@ -63,4 +65,19 @@ export interface IDBLanguage {
 
 export interface SupportedLanguage {
   code: string
+}
+
+export type TwoOnTwoData = {
+  deliverableId: string
+  text: string
+  payload: {
+    title: string | undefined
+    meta: {
+      'core/newsvalue': Block[]
+      'tt/slugline': Block[]
+    }
+    links: {
+      'core/section': Block[]
+    }
+  }
 }

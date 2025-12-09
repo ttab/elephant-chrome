@@ -32,18 +32,3 @@ export interface EleBlock extends Omit<Block, 'meta' | 'links' | 'content'> {
   links: EleBlockGroup
   content: EleBlockGroup
 }
-
-export type TwoOnTwoData = {
-  deliverableId: string
-  text: string
-  payload: {
-    title: string | undefined
-    meta: {
-      'core/newsvalue': Block[]
-      'tt/slugline': Block[]
-    }
-    links: {
-      'core/section': Block[]
-    }
-  }
-}

@@ -1,5 +1,5 @@
 import type { Wire } from '@/shared/schemas/wire'
-import type { TwoOnTwoData } from '@/shared/types'
+import type { TwoOnTwoData } from 'src/datastore/types'
 import { toast } from 'sonner'
 
 const BASE_URL = import.meta.env.BASE_URL || ''

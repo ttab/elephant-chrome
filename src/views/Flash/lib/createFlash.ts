@@ -8,7 +8,7 @@ import type { YDocument } from '@/modules/yjs/hooks'
 import type * as Y from 'yjs'
 import type { YXmlText } from 'node_modules/yjs/dist/src/internals'
 import type { TBElement } from '@ttab/textbit'
-import type { TwoOnTwoData } from '@/shared/types'
+import type { TwoOnTwoData } from 'src/datastore/types'
 import { Block } from '@ttab/elephant-api/newsdoc'
 
 export type CreateFlashDocumentStatus = 'usable' | 'done' | undefined
