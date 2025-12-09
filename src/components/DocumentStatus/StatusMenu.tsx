@@ -97,6 +97,8 @@ export const StatusMenu = ({ ydoc, publishTime, onBeforeStatusChange }: {
           'core/article': 'Editor',
           'core/planning-item': 'Planning',
           'core/event': 'Event',
+          'core/factbox': 'Factbox',
+          'core/flash': 'Flash',
           'tt/print-article': 'PrintEditor'
         }
         handleLink({

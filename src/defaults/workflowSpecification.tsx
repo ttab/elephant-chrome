@@ -346,6 +346,7 @@ export const WorkflowSpecifications: Record<string, WorkflowSpecification> = {
   },
   'core/article': baseDeliverable,
   'core/flash': baseDeliverable,
+  // Factbox workflow needs to be defined
   'core/factbox': {
     draft: {
       title: 'Utkast',
@@ -363,11 +364,12 @@ export const WorkflowSpecifications: Record<string, WorkflowSpecification> = {
       title: 'Användbar',
       description: 'Faktarutan är användbar',
       isWorkflow: false,
+      asSave: true,
       transitions: {
-        unpublished: {
+        draft: {
           verify: true,
-          title: 'Arkivera',
-          description: 'Dra tillbaka och arkivera den här faktarutan'
+          title: 'Till utkast',
+          description: 'Gör om faktarutan till ett utkast igen'
         }
       }
     }
