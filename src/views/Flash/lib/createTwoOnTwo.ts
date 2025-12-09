@@ -34,12 +34,12 @@ export async function createTwoOnTwo({
     type: 'text',
     deliverableId: data?.deliverableId || crypto.randomUUID(),
     title: 'Kort första text',
-    slugline: data?.slugline,
+    slugline: data?.payload.meta['tt/slugline'][0].value,
     priority: 5,
     publicVisibility: true,
     localDate,
     isoDateTime,
-    section: data?.section,
+    section: { uuid: data?.payload.links['core/section'][0].uuid || '', title: data?.payload.links['core/section'][0].title || '' },
     twoOnTwoData: data
   })
 
