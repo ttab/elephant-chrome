@@ -32,6 +32,7 @@ type PromptConfig = {
   key: string
   title: string
   description: string
+  secondaryDescription?: string
   secondaryLabel: string
   primaryLabel: string
   documentStatus: CreateFlashDocumentStatus
@@ -169,8 +170,9 @@ export const FlashDialog = (props: {
       key: 'send',
       title: 'Skapa och skicka flash?',
       description: !selectedPlanning
-        ? 'En ny planering med tillhörande uppdrag för denna flash kommer att skapas åt dig. I samma planering kommer även ett textuppdrag med flashinnehållet att läggas till.'
-        : `Denna flash kommer att läggas i ett nytt uppdrag i planeringen "${selectedPlanning.label}". I samma planering kommer även ett textuppdrag med flashinnehållet att läggas till.`,
+        ? 'En ny planering med tillhörande uppdrag för denna flash kommer att skapas åt dig.'
+        : `Denna flash kommer att läggas i ett nytt uppdrag i planeringen "${selectedPlanning.label}".`,
+      secondaryDescription: 'I samma planering kommer även ett textuppdrag med flashinnehållet att läggas till.',
       secondaryLabel: 'Avbryt',
       primaryLabel: 'Skicka',
       documentStatus: 'usable' as CreateFlashDocumentStatus,
@@ -308,6 +310,7 @@ export const FlashDialog = (props: {
                   key={config.key}
                   title={config.title}
                   description={config.description}
+                  secondaryDescription={config.secondaryDescription}
                   secondaryLabel={config.secondaryLabel}
                   primaryLabel={config.primaryLabel}
                   onPrimary={() => {
