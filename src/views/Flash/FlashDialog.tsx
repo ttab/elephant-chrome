@@ -21,11 +21,22 @@ import { FlashHeader } from './FlashHeader'
 import { Block } from '@ttab/elephant-api/newsdoc'
 import { toast } from 'sonner'
 import { useYDocument, useYValue } from '@/modules/yjs/hooks'
-import type { EleDocumentResponse } from '@/shared/types'
+import type { EleDocumentResponse, TwoOnTwoData } from '@/shared/types'
 import type * as Y from 'yjs'
 import { createTwoOnTwo } from './lib/createTwoOnTwo'
 import { ToastAction } from './ToastAction'
 import { twoOnTwoDocumentTemplate } from '@/shared/templates/twoOnTwoDocumentTemplate'
+
+type PromptConfig = {
+  visible: boolean
+  key: string
+  title: string
+  description: string
+  secondaryLabel: string
+  primaryLabel: string
+  documentStatus: CreateFlashDocumentStatus
+  setPrompt: Dispatch<SetStateAction<boolean>>
+}
 
 export const FlashDialog = (props: {
   documentId: string
@@ -56,7 +67,103 @@ export const FlashDialog = (props: {
     setCreatePrompt(true)
   }
 
-  const promptConfig = [
+  const getLabel = (documentStatus: CreateFlashDocumentStatus): string => {
+    switch (documentStatus) {
+      case 'usable': {
+        return 'Flash skickad'
+      }
+      case 'done': {
+        return 'Flash godkänd'
+      }
+      default: {
+        return 'Flash sparad'
+      }
+    }
+  }
+
+  const createAndSaveTwoOnTwo = (data: {
+    documentStatus: CreateFlashDocumentStatus
+    updatedPlanningId: string
+    twoOnTwoData: TwoOnTwoData | undefined
+  }, startDate: string | undefined) => {
+    const { twoOnTwoData } = data
+    const id = crypto.randomUUID()
+
+    if (!twoOnTwoData) {
+      return
+    }
+
+    twoOnTwoData.deliverableId = id
+
+    if (!twoOnTwoData.section && section) {
+      twoOnTwoData.section = section
+    }
+
+    const twoOnTwoDocument = twoOnTwoDocumentTemplate({ ...twoOnTwoData })
+
+    void (async () => {
+      await repository?.saveDocument(
+        twoOnTwoDocument,
+        session?.accessToken || '',
+        'draft'
+      ).catch((error) => console.error('could not save two-on-two document', error))
+
+      createTwoOnTwo({
+        planningId: data?.updatedPlanningId,
+        timeZone,
+        startDate,
+        data: twoOnTwoData
+      })
+        .then(() => {
+          toast.success('Två-på-två har skapats', {
+            action: <ToastAction planningId={data?.updatedPlanningId} flashId={ydoc.id} />
+          })
+        })
+        .catch(() => {
+          // Flash creation OK, two-on-two creation unsuccessful
+          toast.error('Fel när två-på-två skapades. Kontakta support för mer hjälp.', {
+            action: <ToastAction planningId={data.updatedPlanningId} flashId={ydoc.id} />
+          })
+        })
+    })()
+  }
+
+  const handleCreationSuccess = (data: {
+    documentStatus: CreateFlashDocumentStatus
+    updatedPlanningId: string
+    twoOnTwoData: TwoOnTwoData | undefined
+  } | undefined, config: PromptConfig, startDate: string | undefined) => {
+    // After flash has been successfully created, we celebrate with a toast
+    toast.success(getLabel(data?.documentStatus), {
+      action: <ToastAction planningId={data?.updatedPlanningId} flashId={ydoc.id} />
+    })
+
+    if (data?.twoOnTwoData) {
+      createAndSaveTwoOnTwo(data, startDate)
+    }
+
+    config.setPrompt(false)
+    props.onDialogClose?.()
+  }
+
+  const handleCreationErrors = (ex: unknown) => {
+    console.error(ex)
+
+    if (ex === 'FlashCreationError') {
+    // Both flash and two-on-two creation were unsuccessful
+      toast.error('Flashen kunde inte skapas. Kontakta support för mer hjälp.', {
+        action: <ToastAction flashId={ydoc.id} />
+      })
+    }
+
+    if (ex === 'CreateAssignmentError') {
+      toast.error('Flashen har skapats. Tyvärr misslyckades det att koppla den till en planering. Kontakta support för mer hjälp.', {
+        action: <ToastAction flashId={ydoc.id} />
+      })
+    }
+  }
+
+  const promptConfig: PromptConfig[] = [
     {
       visible: sendPrompt,
       key: 'send',
@@ -223,80 +330,11 @@ export const FlashDialog = (props: {
                       startDate,
                       section: (!selectedPlanning?.value) ? section || undefined : undefined
                     })
-                    // After flash has been successfully created, we celebrate with a toast
                       .then((data) => {
-                        const getLabel = (documentStatus: CreateFlashDocumentStatus): string => {
-                          switch (documentStatus) {
-                            case 'usable': {
-                              return 'Flash skickad'
-                            }
-                            case 'done': {
-                              return 'Flash godkänd'
-                            }
-                            default: {
-                              return 'Flash sparad'
-                            }
-                          }
-                        }
-
-                        toast.success(getLabel(data?.documentStatus), {
-                          action: <ToastAction planningId={data?.updatedPlanningId} flashId={ydoc.id} />
-                        })
-
-                        if (data?.twoOnTwoData) {
-                          const id = crypto.randomUUID()
-                          data.twoOnTwoData.deliverableId = id
-
-                          if (!data.twoOnTwoData.section && section) {
-                            data.twoOnTwoData.section = section
-                          }
-
-                          const twoOnTwoDocument = twoOnTwoDocumentTemplate({ ...data.twoOnTwoData })
-
-                          void (async () => {
-                            await repository?.saveDocument(
-                              twoOnTwoDocument,
-                              session?.accessToken || '',
-                              'draft'
-                            ).catch((error) => console.error('could not save two-on-two document', error))
-
-                            createTwoOnTwo({
-                              planningId: data?.updatedPlanningId,
-                              timeZone,
-                              startDate,
-                              data: data.twoOnTwoData
-                            })
-                              .then(() => {
-                                toast.success('Två-på-två har skapats', {
-                                  action: <ToastAction planningId={data?.updatedPlanningId} flashId={ydoc.id} />
-                                })
-                              })
-                              .catch(() => {
-                                // Flash creation OK, two-on-two creation unsuccessful
-                                toast.error('Fel när två-på-två skapades. Kontakta support för mer hjälp.', {
-                                  action: <ToastAction planningId={data.updatedPlanningId} flashId={ydoc.id} />
-                                })
-                              })
-                          })()
-                        }
-                        config.setPrompt(false)
-                        props.onDialogClose?.()
+                        handleCreationSuccess(data, config, startDate)
                       })
                       .catch((ex: unknown) => {
-                        console.error(ex)
-
-                        if (ex === 'FlashCreationError') {
-                          // Both flash and two-on-two creation were unsuccessful
-                          toast.error('Flashen kunde inte skapas. Kontakta support för mer hjälp.', {
-                            action: <ToastAction flashId={ydoc.id} />
-                          })
-                        }
-
-                        if (ex === 'CreateAssignmentError') {
-                          toast.error('Flashen har skapats. Tyvärr misslyckades det att koppla den till en planering. Kontakta support för mer hjälp.', {
-                            action: <ToastAction flashId={ydoc.id} />
-                          })
-                        }
+                        handleCreationErrors(ex)
                       })
                   }}
                   onSecondary={() => {
