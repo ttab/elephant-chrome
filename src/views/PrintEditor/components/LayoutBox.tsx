@@ -323,7 +323,7 @@ export const LayoutBox = ({
             />
             <span
               title={isPinnedOpen ? 'Fäll in layoutpanelen' : 'Visa layoutpanelen'}
-              className='inline-flex items-center justify-center text-[0.6rem] tracking-[0.18em] leading-1 [writing-mode:vertical-rl] rotate-180 cursor-pointer'
+              className='inline-flex items-center justify-center text-[0.6rem] tracking-[0.18em] [writing-mode:vertical-rl] rotate-180 cursor-pointer'
             >
               {layoutLabel}
             </span>
