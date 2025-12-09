@@ -24,7 +24,7 @@ export const DatePicker = ({ date, changeDate, setDate, forceYear = false, disab
   const { locale, timeZone } = useRegistry()
   const [open, setOpen] = useState<boolean>(false)
 
-  const [query] = useQuery()
+  const [query, setQuery] = useQuery()
   const today = newLocalDate(timeZone)
   const selectedIsToday = isSameDay(date, today)
 
@@ -92,12 +92,7 @@ export const DatePicker = ({ date, changeDate, setDate, forceYear = false, disab
                 <Button
                   variant='outline'
                   onClick={() => {
-                    if (changeDate) {
-                      changeDate(undefined, {
-                        ...query,
-                        from: format(today, 'yyyy-MM-dd')
-                      }, 'self')
-                    }
+                    setQuery({ ...query, from: undefined })
                   }}
                 >
                   Gå till idag
