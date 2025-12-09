@@ -8,10 +8,7 @@ import { ArticleTitle } from './components/ArticleTitle'
 import type * as Y from 'yjs'
 import type { YDocument } from '@/modules/yjs/hooks'
 
-export const EditorHeader = ({
-  ydoc,
-  flowName
-}: {
+export const EditorHeader = ({ ydoc, flowName }: {
   ydoc: YDocument<Y.Map<unknown>>
   flowName?: string
 }): JSX.Element => {
@@ -42,8 +39,7 @@ export const EditorHeader = ({
             </div>
           </div>
         </ViewHeader.Content>
-        <ViewHeader.Action>
-        </ViewHeader.Action>
+        <ViewHeader.Action ydoc={ydoc} />
       </section>
     </ViewHeader.Root>
   )
