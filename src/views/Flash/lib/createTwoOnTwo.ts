@@ -1,6 +1,6 @@
 import { addAssignmentWithDeliverable } from '@/lib/index/addAssignment'
 import { convertToISOStringInTimeZone } from '@/shared/datetime'
-import type { TwoOnTwoData } from 'src/datastore/types'
+import type { TwoOnTwoData } from '@/shared/types'
 
 export async function createTwoOnTwo({
   planningId,
