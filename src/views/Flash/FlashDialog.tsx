@@ -116,7 +116,7 @@ export const FlashDialog = (props: {
         })
         .catch(() => {
           // Flash creation OK, two-on-two creation unsuccessful
-          toast.error('Fel när två-på-två skapades. Kontakta support för mer hjälp.', {
+          toast.error('Fel när två-på-två skapades', {
             action: <ToastAction planningId={data.updatedPlanningId} flashId={ydoc.id} />
           })
         })
@@ -144,15 +144,15 @@ export const FlashDialog = (props: {
   const handleCreationErrors = (ex: unknown) => {
     console.error(ex)
 
-    if (ex === 'FlashCreationError') {
-    // Both flash and two-on-two creation were unsuccessful
-      toast.error('Flashen kunde inte skapas. Kontakta support för mer hjälp.', {
+    if (ex?.message === 'FlashCreationError') {
+      // Both flash and two-on-two creation were unsuccessful
+      toast.error('Flashen kunde inte skapas.', {
         action: <ToastAction flashId={ydoc.id} />
       })
     }
 
-    if (ex === 'CreateAssignmentError') {
-      toast.error('Flashen har skapats. Tyvärr misslyckades det att koppla den till en planering. Kontakta support för mer hjälp.', {
+    if (ex?.message === 'CreateAssignmentError') {
+      toast.error('Flashen har skapats. Tyvärr misslyckades det att koppla den till en planering.', {
         action: <ToastAction flashId={ydoc.id} />
       })
     }
