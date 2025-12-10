@@ -34,10 +34,10 @@ const meta: ViewMetadata = {
   widths: {
     sm: 12,
     md: 12,
-    lg: 4,
-    xl: 4,
-    '2xl': 4,
-    hd: 3,
+    lg: 12,
+    xl: 6,
+    '2xl': 6,
+    hd: 6,
     fhd: 3,
     qhd: 3,
     uhd: 2

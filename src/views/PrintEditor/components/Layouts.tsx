@@ -1,56 +1,73 @@
-import { useDocuments } from '@/hooks/index/useDocuments'
-import { constructQuery, fields } from '@/hooks/baboon/useDocuments/layoutNames'
-import { ComboBox } from '@ttab/elephant-ui'
-import { LoaderIcon } from '@ttab/elephant-ui/icons'
-import { cn } from '@ttab/elephant-ui/utils'
-import type { YDocument } from '@/modules/yjs/hooks'
-import { useYValue } from '@/modules/yjs/hooks'
+import { useState } from 'react'
 import type * as Y from 'yjs'
+import { useYValue, type YDocument } from '@/modules/yjs/hooks'
+import type { EleBlock } from '@/shared/types'
+import { LayoutBoxHeader } from './Header'
+import { LayoutBox } from './LayoutBox'
 
-export const Layouts = ({ ydoc, articleLayoutId, basePath, onChange, className }: {
+export const Layouts = ({ ydoc }: {
   ydoc: YDocument<Y.Map<unknown>>
-  articleLayoutId?: string
-  className?: string
-  basePath: string
-  onChange?: (value: boolean) => void
 }) => {
-  const { data: layouts } = useDocuments({
-    documentType: 'tt/print-layout',
-    query: constructQuery(articleLayoutId || ''),
-    size: 100,
-    fields
-  })
+  const [layouts, setLayouts] = useYValue<EleBlock[]>(ydoc.ele, 'meta.tt/print-article[0].meta.tt/article-layout')
+  const [openedLayoutId, setOpenedLayoutId] = useState<string | null>(null)
+  const [selected, setSelected] = useState<Array<string>>([])
 
-  const [articleLayoutName, setArticleLayoutName] = useYValue<string>(ydoc.ele, `${basePath}.name`)
-
-  if (!layouts || !layouts?.length) {
-    return <LoaderIcon size={16} strokeWidth={1.75} className='animate-spin' />
+  if (!layouts) {
+    return null // Spinner
   }
 
-  const slots = layouts[0].fields['document.content.tt_print_slot.name'].values
-  const selectedOptions = slots.filter((slot) => slot === articleLayoutName)
-    .map((slot) => ({
-      label: slot,
-      value: slot
+  const handleSelectAll = () => {
+    const allLayoutIds = layouts.map((layout) => layout.id)
+    setSelected(allLayoutIds)
+  }
 
-    }))
+  const handleSelectedDelete = () => {
+    const filteredLayouts = layouts.filter((layout) => !selected.includes(layout.id))
+    setLayouts(filteredLayouts)
+    setSelected([])
+  }
+
+  const handleDeleteLayout = (layoutId: string) => {
+    const filteredLayouts = layouts.filter((layout) => layout.id !== layoutId)
+    setLayouts(filteredLayouts)
+  }
 
   return (
-    <ComboBox
-      max={1}
-      size='sm'
-      sortOrder='label'
-      className={cn('justify-start', className)}
-      selectedOptions={selectedOptions}
-      options={layouts[0].fields['document.content.tt_print_slot.name'].values
-        .map((l) => ({
-          label: l,
-          value: l
-        }))}
-      onSelect={(option) => {
-        onChange?.(true)
-        setArticleLayoutName(option.value)
-      }}
-    />
+    <aside className='top-0 sticky flex flex-col gap-3 items-end z-50 w-[2.75rem] flex-none self-start @4xl/view:col-span-4 @4xl/view:w-full @4xl/view:items-stretch mr-2.5'>
+      <LayoutBoxHeader
+        ydoc={ydoc}
+        selected={selected}
+        onSelectAll={handleSelectAll}
+        onSelectedDelete={handleSelectedDelete}
+      />
+      {Array.isArray(layouts) && layouts.length > 0 && (
+        <div className='flex flex-col gap-1 items-end w-full pb-10 @4xl/view:gap-2'>
+          {layouts.map((layout, index) => {
+            const uuid = layout.links?.['_']?.[0]?.uuid
+            if (!uuid) {
+              return null
+            }
+
+            return (
+              <LayoutBox
+                key={layout.id}
+                ydoc={ydoc}
+                index={index}
+                layoutIdForRender={layout.id}
+                layoutUuid={uuid}
+                openedLayoutId={openedLayoutId}
+                setOpenedLayoutId={setOpenedLayoutId}
+                onDeleteLayout={() => {
+                  handleDeleteLayout(layout.id)
+                  setSelected((prev) => prev.filter((id) => id !== layout.id))
+                }}
+                selected={selected}
+                setSelected={setSelected}
+              />
+            )
+          })}
+        </div>
+      )}
+    </aside>
   )
 }
