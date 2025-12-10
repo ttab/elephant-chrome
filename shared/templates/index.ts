@@ -9,6 +9,7 @@ export { eventDocumentTemplate as event } from './eventDocumentTemplate.js'
 export { editorialInfoDocumentTemplate as editorialInfo } from './editorialInfoDocumentTemplate.js'
 
 export interface TemplatePayload {
+  query?: Record<string, string | string[] | undefined>
   title?: string
   meta?: {
     'tt/slugline'?: Block[]

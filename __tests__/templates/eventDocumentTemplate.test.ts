@@ -72,6 +72,24 @@ describe('eventDocumentTemplate', () => {
     expect(endTime.getTime()).toBeLessThanOrEqual(afterCall.getTime())
   })
 
+  it('uses DEFAULT_TIMEZONE time when query.from is provided', () => {
+    const fixedDate = new Date('2024-06-01T10:00:00.000Z')
+    vi.setSystemTime(fixedDate)
+
+    const doc = eventDocumentTemplate('id', {
+      query: {
+        from: '2024-05-30'
+      }
+    })
+
+    const eventBlock = doc.meta.find((block: Block) => block.type === 'core/event')
+
+    expect(eventBlock?.data.start).toBe('2024-05-30T10:00:00.000Z')
+    expect(eventBlock?.data.end).toBe('2024-05-30T10:00:00.000Z')
+
+    vi.useRealTimers()
+  })
+
   it('matches snapshot with fixed date', () => {
     const fixedDate = new Date('2024-06-01T10:00:00.000Z')
     vi.setSystemTime(fixedDate)
