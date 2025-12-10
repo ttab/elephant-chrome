@@ -45,15 +45,13 @@ const EditorRoot = (props: {
   )
 }
 
-interface EditorTextProps {
+
+const EditorText = (props: {
   ydoc: YDocument<Y.Map<unknown>>
   autoFocus?: boolean
   className?: string
   allowStyling?: boolean
-}
-
-const EditorText = (props: EditorTextProps) => {
-  const { isActive } = useView()
+}) => {
   const ref = useRef<HTMLDivElement>(null)
 
   // Handle focus on active state
