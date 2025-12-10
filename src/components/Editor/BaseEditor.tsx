@@ -11,7 +11,8 @@ import { cn } from '@ttab/elephant-ui/utils'
 import { useView } from '@/hooks/useView'
 import { useEffect, useRef } from 'react'
 
-interface EditorRootProps {
+
+const EditorRoot = (props: {
   ydoc: YDocument<Y.Map<unknown>>
   readOnly?: boolean
   plugins?: TBPluginDefinition[]
@@ -20,9 +21,7 @@ interface EditorRootProps {
   lang?: string
   className?: string
   children?: React.ReactNode
-}
-
-const EditorRoot = (props: EditorRootProps) => {
+}) => {
   const onSpellcheck = useOnSpellcheck(props.lang)
 
   return (
