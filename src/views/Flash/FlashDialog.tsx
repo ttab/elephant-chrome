@@ -141,7 +141,7 @@ export const FlashDialog = (props: {
     props.onDialogClose?.()
   }
 
-  const handleCreationErrors = (ex: unknown) => {
+  const handleCreationErrors = (ex: Error) => {
     console.error(ex)
 
     if (ex?.message === 'FlashCreationError') {
@@ -330,7 +330,7 @@ export const FlashDialog = (props: {
                       .then((data) => {
                         handleCreationSuccess(data, config, startDate)
                       })
-                      .catch((ex: unknown) => {
+                      .catch((ex: Error) => {
                         handleCreationErrors(ex)
                       })
                   }}
