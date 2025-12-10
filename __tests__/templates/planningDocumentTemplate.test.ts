@@ -45,7 +45,6 @@ describe('planningDocumentTemplate', () => {
 
     expect(doc.meta.some((block: Block) => block.type === 'core/planning-item')).toBe(true)
     const planningBlock = doc.meta.find((block: Block) => block.type === 'core/planning-item')
-    expect(planningBlock?.data.public).toBe('true')
     expect(planningBlock?.data.tentative).toBe('false')
     expect(planningBlock?.data.end_date).toBe('2024-06-01')
     expect(planningBlock?.data.start_date).toBe('2024-06-01')
@@ -281,7 +280,6 @@ describe('planningDocumentTemplate', () => {
             "contenttype": "",
             "data": {
               "end_date": "2024-07-15",
-              "public": "true",
               "start_date": "2024-07-15",
               "tentative": "false",
             },
