@@ -31,7 +31,7 @@
     "@grafana/faro-core": "$@grafana/faro-react"
   },
   "dependencies": {
-    "@auth/express": "^0.9.0",
+    "@auth/express": "^0.12.1",
     "@date-fns/utc": "^2.1.1",
     "@grafana/faro-react": "1.14.1",
     "@hocuspocus/extension-logger": "^3.4.0",
