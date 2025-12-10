@@ -37,10 +37,6 @@ const meta: ViewMetadata = {
   }
 }
 
-//
-// FIXME: Something is rerendeing this and makes user loose focus
-// FIXME: Is it maybe the plugins that should use useMemo
-//
 const Factbox = (props: ViewProps & { document?: Document }): JSX.Element => {
   const [query] = useQuery()
   const documentId = props.id || query.id
@@ -83,13 +79,16 @@ const FactboxWrapper = (props: ViewProps & { documentId: string, data?: EleDocum
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
   const environmentIsSane = ydoc.provider && status === 'authenticated'
 
-  const getPlugins = () => {
-    const basePlugins = [UnorderedList, OrderedList, Bold, Italic, LocalizedQuotationMarks]
+  const configuredPlugins = useMemo(() => {
     return [
-      ...basePlugins.map((initPlugin) => initPlugin()),
+      UnorderedList(),
+      OrderedList(),
+      Bold(),
+      Italic(),
+      LocalizedQuotationMarks(),
       Text({ ...contentMenuLabels })
     ]
-  }
+  }, [])
 
   if (!ydoc.provider?.isSynced || !content) {
     return <View.Root />
@@ -101,7 +100,7 @@ const FactboxWrapper = (props: ViewProps & { documentId: string, data?: EleDocum
         ydoc={ydoc}
         content={content}
         lang={documentLanguage}
-        plugins={getPlugins()}
+        plugins={configuredPlugins}
         className={cn(
           'rounded-md border',
           props.asDialog ? 'h-auto min-h-48' : ''
