@@ -1,5 +1,5 @@
 import type { Wire } from '@/shared/schemas/wire'
-import type { TwoOnTwoData } from '@/shared/types'
+import type { QuickArticleData } from '@/shared/types'
 
 import { toast } from 'sonner'
 
@@ -25,7 +25,7 @@ export async function addAssignmentWithDeliverable(payload: {
     uuid: string
     title: string
   }
-  twoOnTwoData?: TwoOnTwoData
+  quickArticleData?: QuickArticleData
   wire?: Wire
 }): Promise<string | undefined> {
   try {

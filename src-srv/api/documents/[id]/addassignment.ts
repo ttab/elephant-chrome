@@ -39,7 +39,7 @@ export const POST: RouteHandler = async (req: Request, { collaborationServer, re
     publishTime,
     section,
     wire,
-    twoOnTwoData
+    quickArticleData
   } = req.body as {
     planningId?: string
     planningTitle?: string
@@ -57,7 +57,7 @@ export const POST: RouteHandler = async (req: Request, { collaborationServer, re
       title: string
     }
     wire?: Wire
-    twoOnTwoData?: { title?: string, text?: string, deliverableId: string }
+    quickArticleData?: { title?: string, text?: string, deliverableId: string }
   }
 
   if (!type || !deliverableId || !title || !localDate || !isoDateTime) {
@@ -144,7 +144,7 @@ export const POST: RouteHandler = async (req: Request, { collaborationServer, re
     const deliverableType = getDeliverableType(type)
     appendDocumentToAssignment({
       document,
-      id: twoOnTwoData?.deliverableId || deliverableId,
+      id: quickArticleData?.deliverableId || deliverableId,
       index,
       slug: '',
       type: deliverableType

@@ -8,7 +8,7 @@ import type { YDocument } from '@/modules/yjs/hooks'
 import type * as Y from 'yjs'
 import type { YXmlText } from 'node_modules/yjs/dist/src/internals'
 import type { TBElement } from '@ttab/textbit'
-import type { TwoOnTwoData } from '@/shared/types'
+import type { QuickArticleData } from '@/shared/types'
 import { Block } from '@ttab/elephant-api/newsdoc'
 
 export type CreateFlashDocumentStatus = 'usable' | 'done' | undefined
@@ -37,7 +37,7 @@ export async function createFlash({
 }): Promise<{
   documentStatus: CreateFlashDocumentStatus
   updatedPlanningId: string
-  twoOnTwoData: TwoOnTwoData | undefined
+  quickArticleData: QuickArticleData | undefined
 } | undefined> {
   if (!ydoc || status !== 'authenticated') {
     console.error(`Failed adding flash ${ydoc.id} to a planning`)
@@ -101,9 +101,9 @@ export async function createFlash({
     throw new Error('CreateAssignmentError')
   }
 
-  // A complementary text assignment (2on2) is co-created for a quick first version.
-  // Only create 2on2 if the flash is immediately published, for now.
-  const twoOnTwoData = documentStatus === 'usable'
+  // A complementary text assignment is co-created for a quick first version.
+  // Only create if the flash is immediately published, for now.
+  const quickArticleData = documentStatus === 'usable'
     ? {
         deliverableId: crypto.randomUUID(),
         text: flashBodyText,
@@ -111,7 +111,7 @@ export async function createFlash({
           title: flashTitle,
           meta: {
             'core/newsvalue': [Block.create({ type: 'core/newsvalue', value: '5' })],
-            'tt/slugline': [Block.create({ type: 'tt/slugline', value: !flashTitle ? '2på2' : `${flashTitle?.toLocaleLowerCase()?.split(' ').slice(0, 3).join('-')}-2på2` })]
+            'tt/slugline': [Block.create({ type: 'tt/slugline', value: !flashTitle ? 'snabbartikel' : `${flashTitle?.toLocaleLowerCase()?.split(' ').slice(0, 3).join('-').slice(0, 20)}` })]
           },
           links: {
             'core/section': [Block.create({
@@ -125,5 +125,5 @@ export async function createFlash({
       }
     : undefined
 
-  return { twoOnTwoData, documentStatus, updatedPlanningId }
+  return { quickArticleData, documentStatus, updatedPlanningId }
 }

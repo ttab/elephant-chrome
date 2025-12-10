@@ -2,7 +2,7 @@ import { Block, Document } from '@ttab/elephant-api/newsdoc'
 import type { TemplatePayload } from './index.ts'
 
 // Two-on-two document template, following the creation of flash-level text assignments
-export function twoOnTwoDocumentTemplate(deliverableId: string, text: string, payload?: TemplatePayload): Document {
+export function quickArticleDocumentTemplate(deliverableId: string, text: string, payload?: TemplatePayload): Document {
   return Document.create({
     uuid: deliverableId,
     uri: `core://article/${deliverableId}`,

@@ -1,8 +1,8 @@
 import { addAssignmentWithDeliverable } from '@/lib/index/addAssignment'
 import { convertToISOStringInTimeZone } from '@/shared/datetime'
-import type { TwoOnTwoData } from '@/shared/types'
+import type { QuickArticleData } from '@/shared/types'
 
-export async function createTwoOnTwo({
+export async function createQuickArticle({
   planningId,
   startDate,
   timeZone,
@@ -11,7 +11,7 @@ export async function createTwoOnTwo({
   planningId: string
   timeZone: string
   startDate?: string
-  data: TwoOnTwoData | undefined
+  data: QuickArticleData | undefined
 }) {
   const dt = new Date()
   let localDate: string
@@ -40,10 +40,10 @@ export async function createTwoOnTwo({
     localDate,
     isoDateTime,
     section: { uuid: data?.payload.links['core/section'][0].uuid || '', title: data?.payload.links['core/section'][0].title || '' },
-    twoOnTwoData: data
+    quickArticleData: data
   })
 
   if (!assignmentId) {
-    throw new Error('twoOnTwoCreationError')
+    throw new Error('quickArticleCreationError')
   }
 }

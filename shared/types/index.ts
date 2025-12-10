@@ -33,7 +33,7 @@ export interface EleBlock extends Omit<Block, 'meta' | 'links' | 'content'> {
   content: EleBlockGroup
 }
 
-export type TwoOnTwoData = {
+export type QuickArticleData = {
   deliverableId: string
   text: string
   payload: {

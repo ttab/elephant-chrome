@@ -22,11 +22,11 @@ import { Block } from '@ttab/elephant-api/newsdoc'
 import { toast } from 'sonner'
 import { useYDocument, useYValue } from '@/modules/yjs/hooks'
 import type { EleDocumentResponse } from '@/shared/types'
-import type { TwoOnTwoData } from '@/shared/types'
+import type { QuickArticleData } from '@/shared/types'
 import type * as Y from 'yjs'
-import { createTwoOnTwo } from './lib/createTwoOnTwo'
+import { createQuickArticle } from './lib/createQuickArticle'
 import { ToastAction } from './ToastAction'
-import { twoOnTwoDocumentTemplate } from '@/shared/templates/twoOnTwoDocumentTemplate'
+import { quickArticleDocumentTemplate } from '@/shared/templates/quickArticleDocumentTemplate'
 
 type PromptConfig = {
   visible: boolean
@@ -83,40 +83,40 @@ export const FlashDialog = (props: {
     }
   }
 
-  const createAndSaveTwoOnTwo = (data: {
+  const createAndSaveQuickArticle = (data: {
     documentStatus: CreateFlashDocumentStatus
     updatedPlanningId: string
-    twoOnTwoData: TwoOnTwoData | undefined
+    quickArticleData: QuickArticleData | undefined
   }, startDate: string | undefined) => {
-    const { twoOnTwoData } = data
+    const { quickArticleData } = data
 
-    if (!twoOnTwoData) {
+    if (!quickArticleData) {
       return
     }
 
-    const twoOnTwoDocument = twoOnTwoDocumentTemplate(twoOnTwoData.deliverableId, twoOnTwoData.text, twoOnTwoData.payload)
+    const quickArticleDocument = quickArticleDocumentTemplate(quickArticleData.deliverableId, quickArticleData.text, quickArticleData.payload)
 
     void (async () => {
       await repository?.saveDocument(
-        twoOnTwoDocument,
+        quickArticleDocument,
         session?.accessToken || '',
         'draft'
-      ).catch((error) => console.error('could not save two-on-two document', error))
+      ).catch((error) => console.error('could not save quick-article document', error))
 
-      createTwoOnTwo({
+      createQuickArticle({
         planningId: data?.updatedPlanningId,
         timeZone,
         startDate,
-        data: twoOnTwoData
+        data: quickArticleData
       })
         .then(() => {
-          toast.success('Två-på-två har skapats', {
+          toast.success('Snabbartikel har skapats', {
             action: <ToastAction planningId={data?.updatedPlanningId} flashId={ydoc.id} />
           })
         })
         .catch(() => {
-          // Flash creation OK, two-on-two creation unsuccessful
-          toast.error('Fel när två-på-två skapades', {
+          // Flash creation OK, quick-article creation unsuccessful
+          toast.error('Fel när snabbartikel skapades', {
             action: <ToastAction planningId={data.updatedPlanningId} flashId={ydoc.id} />
           })
         })
@@ -126,15 +126,15 @@ export const FlashDialog = (props: {
   const handleCreationSuccess = (data: {
     documentStatus: CreateFlashDocumentStatus
     updatedPlanningId: string
-    twoOnTwoData: TwoOnTwoData | undefined
+    quickArticleData: QuickArticleData | undefined
   } | undefined, config: PromptConfig, startDate: string | undefined) => {
     // After flash has been successfully created, we celebrate with a toast
     toast.success(getLabel(data?.documentStatus), {
       action: <ToastAction planningId={data?.updatedPlanningId} flashId={ydoc.id} />
     })
 
-    if (data?.twoOnTwoData) {
-      createAndSaveTwoOnTwo(data, startDate)
+    if (data?.quickArticleData) {
+      createAndSaveQuickArticle(data, startDate)
     }
 
     config.setPrompt(false)
@@ -145,7 +145,7 @@ export const FlashDialog = (props: {
     console.error(ex)
 
     if (ex?.message === 'FlashCreationError') {
-      // Both flash and two-on-two creation were unsuccessful
+      // Both flash and quick-article creation were unsuccessful
       toast.error('Flashen kunde inte skapas.', {
         action: <ToastAction flashId={ydoc.id} />
       })
