@@ -35,7 +35,7 @@ import type * as Y from 'yjs'
 import { useRegistry } from '@/hooks/useRegistry'
 import { useSession } from 'next-auth/react'
 import { getDeliverableType } from '@/shared/templates/lib/getDeliverableType'
-import { AssignmentTypes } from '@/defaults/assignmentTypes'
+import { AssignmentTypes, isVisualAssignmentType } from '@/defaults/assignmentTypes'
 import { CreatePrintArticle } from '@/components/CreatePrintArticle'
 import { snapshotDocument } from '@/lib/snapshotDocument'
 import { timeSlotTypes } from '@/defaults/assignmentTimeConstants'
@@ -97,7 +97,6 @@ export const AssignmentRow = ({ ydoc, index, onSelect, isFocused = false, asDial
 
   const openDocument = assignmentType === 'flash' ? openFlash : openArticle
   const { showModal, hideModal } = useModal()
-  const isVisualAssignment = ['picture', 'video'].includes(assignmentType || '')
 
   const assignmentTime = useMemo(() => {
     if (typeof assignmentType !== 'string') {
@@ -105,7 +104,7 @@ export const AssignmentRow = ({ ydoc, index, onSelect, isFocused = false, asDial
     }
     const endAndStartAreNotEqual = endTime && startTime && endTime !== startTime
 
-    if (isVisualAssignment && startTime) {
+    if (isVisualAssignmentType(assignmentType) && startTime) {
       if (endAndStartAreNotEqual) {
         return {
           time: [new Date(startTime), new Date(endTime)],
@@ -153,7 +152,7 @@ export const AssignmentRow = ({ ydoc, index, onSelect, isFocused = false, asDial
         type: assignmentType
       }
     }
-  }, [publishTime, assignmentType, startTime, endTime, publishSlot, isVisualAssignment])
+  }, [publishTime, assignmentType, startTime, endTime, publishSlot])
 
   const TimeIcon = useMemo(() => {
     const timeIcons: Record<string, React.FC<LucideProps>> = {
@@ -364,7 +363,7 @@ export const AssignmentRow = ({ ydoc, index, onSelect, isFocused = false, asDial
       <div className='flex flex-row text-[15px] font-medium justify-between pr-2'>
         <div className='flex items-center gap-2 px-2'>
           <AssignmentStatus
-            isVisualAssignment={isVisualAssignment}
+            isVisualAssignment={isVisualAssignmentType(assignmentType)}
             ydoc={ydoc}
             path={`meta.core/assignment[${index}].data.status`}
             workflowState={workflowState}

@@ -59,3 +59,7 @@ export const AssignmentTypes: DefaultValueOption[] = [
     iconProps
   }
 ]
+
+export function isVisualAssignmentType(type: string | null | undefined): boolean {
+  return ['picture', 'video', 'graphic'].includes(type || '')
+}

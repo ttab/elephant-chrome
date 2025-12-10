@@ -12,7 +12,7 @@ import {
 } from '@ttab/elephant-ui/icons'
 import { Newsvalues } from '@/defaults/newsvalues'
 import { FacetedFilter } from '@/components/Commands/FacetedFilter'
-import { AssignmentTypes } from '@/defaults/assignmentTypes'
+import { AssignmentTypes, isVisualAssignmentType } from '@/defaults/assignmentTypes'
 import { Type } from '@/components/Table/Items/Type'
 import { getNestedFacetedUniqueValues } from '@/components/Table/lib/getNestedFacetedUniqueValues'
 import { Assignees } from '@/components/Table/Items/Assignees'
@@ -57,10 +57,9 @@ export function assignmentColumns({ authors = [], locale, timeZone, sections = [
       },
       accessorFn: (data) => {
         const type = data.fields['document.meta.core_assignment.meta.core_assignment_type.value']?.values[0]
-        const isVisualAssignment = ['picture', 'video'].includes(type || '')
 
         // If visual assignment, return assignment status
-        if (isVisualAssignment) {
+        if (isVisualAssignmentType(type)) {
           const assignmentStatus = data.fields['document.meta.core_assignment.data.status']?.values[0]
           return assignmentStatus || 'todo'
         }
