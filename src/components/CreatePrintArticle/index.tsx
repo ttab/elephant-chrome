@@ -5,7 +5,7 @@ import type { ViewProps } from '@/types/index'
 import { useRegistry } from '@/hooks/useRegistry'
 import { useSession } from 'next-auth/react'
 import { toast } from 'sonner'
-import { Button, Select, SelectContent, SelectItem, SelectTrigger } from '@ttab/elephant-ui'
+import { Button, Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@ttab/elephant-ui'
 import { useState } from 'react'
 import { LoadingText } from '../LoadingText'
 import { DatePicker } from '../Datepicker'
@@ -101,15 +101,19 @@ export const CreatePrintArticle = ({ id, asDialog, onDialogClose, className }: V
                 <Form.Content>
                   <Form.Group icon={TagIcon}>
                     <Select
-                      value={selectedPrintFlow?.value}
+                      value={selectedPrintFlow?.value || ''}
                       onValueChange={(option) => {
                         setPrintFlow(option)
                       }}
                     >
                       <SelectTrigger>
-                        {selectedPrintFlow?.label || 'Välj printflöde'}
+                        <SelectValue placeholder='Välj printflöde'>{selectedPrintFlow?.label}</SelectValue>
                       </SelectTrigger>
-                      <SelectContent>
+                      <SelectContent
+                        style={{
+                          width: 'var(--radix-select-trigger-width)',
+                          maxHeight: 'var(--radix-select-content-available-height)' }}
+                      >
                         {allPrintFlows.map((flow) => (
                           <SelectItem value={flow.value} key={flow.value}>
                             {flow.label}
@@ -121,15 +125,21 @@ export const CreatePrintArticle = ({ id, asDialog, onDialogClose, className }: V
                   <Form.Group icon={TagIcon}>
                     <Select
                       disabled={!printFlow}
-                      value={articleName}
+                      value={articleName || ''}
                       onValueChange={(option) => {
                         setArticleName(option)
                       }}
                     >
                       <SelectTrigger>
-                        {articleName || 'Välj namn'}
+
+                        <SelectValue placeholder='Välj namn'>{articleName}</SelectValue>
                       </SelectTrigger>
-                      <SelectContent>
+                      <SelectContent
+                        style={{
+                          width: 'var(--radix-select-trigger-width)',
+                          maxHeight: 'var(--radix-select-content-available-height)' }}
+                      >
+
                         {allArticleNames.map((type) => (
                           <SelectItem value={type} key={type}>
                             {type}
