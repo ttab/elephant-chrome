@@ -159,6 +159,6 @@ export const POST: RouteHandler = async (req: Request, { collaborationServer, re
     collaborationServer,
     documentId,
     context,
-    { addToHistory: !!planningId }
+    { addToHistory: planningId === 'create' }
   )
 }
