@@ -1,6 +1,6 @@
 export const contentMenuLabels = {
   titleLabel: 'Rubrik',
-  subTitleLabel: 'Underrubrik',
+  subTitleLabel: 'Mellanrubrik',
   bodyTextLabel: 'Brödtext',
   vignetteLabel: 'Vinjett',
   preambleLabel: 'Ingress',
