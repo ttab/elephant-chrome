@@ -35,7 +35,6 @@ const SingleOrRangedCalendar = ({
         <Calendar
           mode='range'
           selected={duplicateDate}
-          startMonth={new Date(duplicateDate?.from)}
           onSelect={(selectedDate) => {
             if (!selectedDate?.from || !selectedDate?.to) {
               return
@@ -56,7 +55,6 @@ const SingleOrRangedCalendar = ({
     <Calendar
       mode='single'
       selected={duplicateDate?.from}
-      startMonth={new Date(duplicateDate?.from)}
       onSelect={(selectedDate) => {
         if (!selectedDate) {
           return
