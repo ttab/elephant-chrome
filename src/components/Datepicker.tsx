@@ -10,8 +10,9 @@ import {
 import { cn } from '@ttab/elephant-ui/utils'
 import { useQuery, useRegistry } from '@/hooks'
 import { cva } from 'class-variance-authority'
-import { format } from 'date-fns'
+import { format, isSameDay } from 'date-fns'
 import { type ViewProps } from '../types'
+import { newLocalDate } from '@/shared/datetime'
 
 export const DatePicker = ({ date, changeDate, setDate, forceYear = false, disabled = false }: {
   date: Date
@@ -23,7 +24,9 @@ export const DatePicker = ({ date, changeDate, setDate, forceYear = false, disab
   const { locale, timeZone } = useRegistry()
   const [open, setOpen] = useState<boolean>(false)
 
-  const [query] = useQuery()
+  const [query, setQuery] = useQuery()
+  const today = newLocalDate(timeZone)
+  const selectedIsToday = isSameDay(date, today)
 
   const formattedDate = new Intl.DateTimeFormat(locale.code.full, {
     weekday: 'short',
@@ -83,9 +86,22 @@ export const DatePicker = ({ date, changeDate, setDate, forceYear = false, disab
       >
         <Calendar
           disabled={disabled}
+          footer={selectedIsToday
+            ? undefined
+            : (
+                <Button
+                  variant='outline'
+                  onClick={() => {
+                    setQuery({ ...query, from: undefined })
+                  }}
+                >
+                  Gå till idag
+                </Button>
+              )}
           mode='single'
           locale={locale.module}
           selected={date}
+          defaultMonth={date}
           onSelect={(selectedDate) => {
             if (selectedDate) {
               if (changeDate) {
