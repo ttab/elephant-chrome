@@ -1,6 +1,6 @@
 import { transformText, revertText, transformUnorderedList } from './core/index.js'
 import { transformVisual, revertVisual } from './tt/visual.js'
-import type { TBElement } from '@ttab/textbit'
+// import type { TBElement } from '@ttab/textbit'
 import type { Block } from '@ttab/elephant-api/newsdoc'
 import { revertFactbox, transformFactbox } from './core/factbox.js'
 import { revertTable, transformTable } from './core/table.js'
@@ -8,7 +8,15 @@ import { revertTvListing, transformTvListing } from './tt/tvListing.js'
 import { revertPrintArticle, transformPrintArticle } from './tt/printArticle.js'
 import { revertPrintText, transformPrintText } from './tt/printText.js'
 import { revertImage, transformImage } from './core/image.js'
-
+import type { TBEditor, TBElement, TBRange, TBText } from '@ttab/textbit'
+declare module 'slate' {
+  interface CustomTypes {
+    Editor: TBEditor
+    Element: TBElement
+    Text: TBText
+    Range: TBRange
+  }
+}
 /**
  * Convert a NewsDoc block array to slate TBElement array
  */

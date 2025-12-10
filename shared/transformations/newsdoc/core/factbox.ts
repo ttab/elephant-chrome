@@ -50,8 +50,12 @@ interface Data {
 }
 
 export function revertFactbox(element: TBElement): Block {
-  const factboxTitle = element.children.find((child) => (TextbitElement.isElement(child) && child.type === 'core/factbox/title'))
-  const factboxBody = element.children.find((child) => TextbitElement.isElement(child) && child.type === 'core/factbox/body')
+  const factboxTitle = (element.children as TBElement[]).find((child) => {
+    return TextbitElement.isElement(child) && child.type === 'core/factbox/title'
+  })
+  const factboxBody = (element.children as TBElement[]).find((child) => {
+    return TextbitElement.isElement(child) && child.type === 'core/factbox/body'
+  })
 
   const title = (factboxTitle?.children as FactboxChild[] | undefined)?.[0]?.text ?? ''
   const body = (factboxBody?.children as FactboxChild[] | undefined)

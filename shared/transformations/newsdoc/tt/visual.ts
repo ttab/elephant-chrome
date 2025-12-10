@@ -65,7 +65,9 @@ export const transformVisual = (element: Block): TBElement => {
 }
 
 export function revertVisual(element: TBElement): Block {
-  const { id, properties, children } = element
+  const { id, properties } = element
+  const children = element.children as TBElement[] || undefined
+
   const textNode = children?.find((c) => c.type === 'tt/visual/text')
   const bylineNode = children?.find((c) => c.type === 'tt/visual/byline')
 
