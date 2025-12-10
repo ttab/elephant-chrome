@@ -52,6 +52,7 @@ const EditorText = (props: {
   className?: string
   allowStyling?: boolean
 }) => {
+  const { isActive } = useView()
   const ref = useRef<HTMLDivElement>(null)
 
   // Handle focus on active state
