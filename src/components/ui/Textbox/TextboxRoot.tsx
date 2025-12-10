@@ -32,7 +32,7 @@ export const TextboxRoot = ({
   onFocus: React.FocusEventHandler<HTMLDivElement>
   className?: string
 }): JSX.Element => {
-  const [documentLanguage] = useYValue<string>(ydoc.ele, ['root', 'language'])
+  const [documentLanguage] = useYValue<string>(ydoc.ele, 'root.language')
   const onSpellcheck = useOnSpellcheck(documentLanguage)
 
   return (
