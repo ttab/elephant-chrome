@@ -13,7 +13,7 @@ interface DocumentWorkflow {
   statuses: Record<string, StatusSpecification>
 }
 
-export const useWorkflow = (type: string): DocumentWorkflow => {
+export const useWorkflow = (type?: string): DocumentWorkflow => {
   const { data: session } = useSession()
   const { workflow: client } = useRegistry()
   const [workflow, setWorkflow] = useState<DocumentWorkflow>({
@@ -22,7 +22,7 @@ export const useWorkflow = (type: string): DocumentWorkflow => {
   })
 
   useEffect(() => {
-    if (!client || !session?.accessToken) {
+    if (!client || !session?.accessToken || !type) {
       return
     }
 

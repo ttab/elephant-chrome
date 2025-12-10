@@ -48,7 +48,6 @@ export const PlanningHeader = ({ ydoc, asDialog, onDialogClose, session, provide
             {!asDialog && ydoc && (
               <StatusMenu
                 ydoc={ydoc}
-                type='core/planning-item'
               />
             )}
 

@@ -57,7 +57,7 @@ const StatusMenuHeader = ({ ydoc, planningId: propPlanningId }: {
   const { viewId } = useView()
   const { state, dispatch } = useNavigation()
   const history = useHistory()
-  const [workflowStatus] = useWorkflowStatus({ ydoc, isWorkflow: true })
+  const [workflowStatus] = useWorkflowStatus({ ydoc })
 
   // FIXME: We must have a way to retrieve the publish time defined in the planning.
   // FIXME: When yjs opening of related planning have been fixed this should be readded/remade.
@@ -137,7 +137,6 @@ const StatusMenuHeader = ({ ydoc, planningId: propPlanningId }: {
       {!!(propPlanningId || planningId) && ydoc.id && (
         <StatusMenu
           ydoc={ydoc}
-          type='core/article' // same workflow as article?
           publishTime={publishTime ? new Date(publishTime) : undefined}
           onBeforeStatusChange={onBeforeStatusChange}
         />

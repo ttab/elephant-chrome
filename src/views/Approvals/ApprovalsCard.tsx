@@ -25,7 +25,7 @@ export const ApprovalsCard = ({ trackedDocument, assignment, isSelected, isFocus
   const sections = useSections()
   const openArticle = useLink('Editor')
   const openFlash = useLink('Flash')
-  const [documentStatus] = useWorkflowStatus({ documentId: assignment._deliverableId, isWorkflow: true })
+  const [documentStatus] = useWorkflowStatus({ documentId: assignment._deliverableId })
 
   const openType = (assignmentType: string) => assignmentType === 'core/flash' ? openFlash : openArticle
 

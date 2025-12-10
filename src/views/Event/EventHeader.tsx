@@ -57,7 +57,6 @@ export const EventHeader = ({
             {!asDialog && ydoc && (
               <StatusMenu
                 ydoc={ydoc}
-                type='core/event'
               />
             )}
 
