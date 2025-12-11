@@ -1,6 +1,5 @@
 import { transformText, revertText, transformUnorderedList } from './core/index.js'
 import { transformVisual, revertVisual } from './tt/visual.js'
-// import type { TBElement } from '@ttab/textbit'
 import type { Block } from '@ttab/elephant-api/newsdoc'
 import { revertFactbox, transformFactbox } from './core/factbox.js'
 import { revertTable, transformTable } from './core/table.js'
