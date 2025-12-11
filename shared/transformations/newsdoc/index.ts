@@ -8,15 +8,8 @@ import { revertTvListing, transformTvListing } from './tt/tvListing.js'
 import { revertPrintArticle, transformPrintArticle } from './tt/printArticle.js'
 import { revertPrintText, transformPrintText } from './tt/printText.js'
 import { revertImage, transformImage } from './core/image.js'
-import type { TBEditor, TBElement, TBRange, TBText } from '@ttab/textbit'
-declare module 'slate' {
-  interface CustomTypes {
-    Editor: TBEditor
-    Element: TBElement
-    Text: TBText
-    Range: TBRange
-  }
-}
+import type { TBElement } from '@ttab/textbit'
+
 /**
  * Convert a NewsDoc block array to slate TBElement array
  */
