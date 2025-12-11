@@ -126,7 +126,7 @@ function EditorWrapper(props: ViewProps & {
         removable: true
       })
     ]
-  }, [openFactboxEditor])
+  }, [openFactboxEditor, openFactboxes, openImageSearch])
 
   if (!content) {
     return <View.Root />
