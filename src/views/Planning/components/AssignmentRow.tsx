@@ -16,7 +16,7 @@ import {
   PenIcon,
   type LucideProps
 } from '@ttab/elephant-ui/icons'
-import { type MouseEvent, useMemo, useState, useCallback, useEffect, useRef } from 'react'
+import { type MouseEvent, useMemo, useState, useCallback, useEffect, useRef, type JSX } from 'react'
 import { SluglineButton } from '@/components/DataItem/Slugline'
 import { useLink } from '@/hooks/useLink'
 import { Prompt } from '@/components'

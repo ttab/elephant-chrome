@@ -1,7 +1,7 @@
 import { CalendarPlus2Icon } from '@ttab/elephant-ui/icons'
 import type { FormProps } from '@/components/Form/Root'
 import { useRepositoryEvents } from '@/hooks/useRepositoryEvents'
-import { useRef } from 'react'
+import { useRef, type JSX } from 'react'
 import { Link } from '@/components/index'
 import { useDocuments } from '@/hooks/index/useDocuments'
 import type { HitV1 } from '@ttab/elephant-api/index'
@@ -13,7 +13,7 @@ export const DuplicatesTable = ({ documentId, type }: {
   documentId: string
   type: 'core/event' | 'core/planning-item'
 } & FormProps): JSX.Element => {
-  const createdDocumentIdRef = useRef<string | undefined>()
+  const createdDocumentIdRef = useRef<string | undefined>(null)
 
   const { data, mutate, error, isLoading } = useDocuments<HitV1, DuplicateFields>({
     documentType: type,

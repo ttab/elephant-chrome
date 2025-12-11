@@ -1,6 +1,7 @@
 import { type ttninjs } from '@ttab/api-client'
 import { DialogDescription, DialogTitle } from '@ttab/elephant-ui'
 import { toast } from 'sonner'
+import type { JSX } from 'react'
 
 const BASE_URL = import.meta.env.BASE_URL || ''
 

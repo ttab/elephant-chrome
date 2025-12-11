@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, type JSX } from 'react'
 import {
   Button,
   Command,
@@ -30,7 +30,7 @@ export const TimeDeliveryMenu = ({
   handleOnSelect,
   assignment,
   assignmentType
-}: TimeMenuProps): React.JSX.Element => {
+}: TimeMenuProps): JSX.Element => {
   const [open, setOpen] = useState(false)
 
   const handleOpenChange = (isOpen: boolean): void => {

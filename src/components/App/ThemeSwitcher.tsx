@@ -1,6 +1,7 @@
 import { Button } from '@ttab/elephant-ui'
 import { SunIcon, MoonIcon } from '@ttab/elephant-ui/icons'
 import { useTheme } from '@/hooks'
+import type { JSX } from 'react'
 
 export const ThemeSwitcher = (): JSX.Element => {
   const { theme, setTheme } = useTheme()

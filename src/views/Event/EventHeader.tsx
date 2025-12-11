@@ -1,7 +1,7 @@
 import { useView } from '@/hooks'
 import { useYValue } from '@/modules/yjs/hooks'
 
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, type JSX } from 'react'
 import { StatusMenu } from '@/components/DocumentStatus/StatusMenu'
 import { ViewHeader } from '@/components/View'
 import { Duplicate } from '@/components/Duplicate'

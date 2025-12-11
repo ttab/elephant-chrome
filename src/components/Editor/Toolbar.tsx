@@ -3,6 +3,7 @@ import {
   usePluginRegistry
 } from '@ttab/textbit'
 import { ToolbarItem } from './ToolbarItem'
+import type { JSX } from 'react'
 
 export const Toolbar = ({ isPrintArticle }: { isPrintArticle?: boolean }): JSX.Element => {
   const { actions } = usePluginRegistry()

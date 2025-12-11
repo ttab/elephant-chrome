@@ -1,7 +1,7 @@
 import { type ChangeEvent } from 'react'
-import { type Editor } from 'slate'
+import type { TBActionHandler } from '@ttab/textbit'
 
-export const actionHandler = ({ editor, api }: { editor: Editor, api?: unknown }): boolean => {
+export const actionHandler: TBActionHandler = ({ editor, api }) => {
   let fileSelector: HTMLInputElement | undefined = document.createElement('input')
 
   fileSelector.accept = 'image/jpg, image/jpeg, image/gif, image/png'
@@ -12,8 +12,7 @@ export const actionHandler = ({ editor, api }: { editor: Editor, api?: unknown }
     const event: ChangeEvent<HTMLInputElement> = e as ChangeEvent<HTMLInputElement>
 
     if (event?.target?.files?.length) {
-      // @ts-expect-error Needs fixing in Textbit
-      api.consumeFileInputChangeEvent(editor, event)
+      api?.consumeFileInputChangeEvent(editor, event)
     }
 
     setTimeout(() => {

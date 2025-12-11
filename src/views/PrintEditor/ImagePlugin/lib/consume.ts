@@ -1,12 +1,12 @@
 import type { Repository } from '@/shared/Repository'
-import { type Plugin } from '@ttab/textbit'
+import type { TBResource } from '@ttab/textbit'
 import { getCachedSession } from '@/shared/getCachedSession'
 import { toast } from 'sonner'
 
 export const consume = async (
-  input: Plugin.Resource | Plugin.Resource[],
+  input: TBResource | TBResource[],
   repository: Repository
-): Promise<Plugin.Resource | undefined> => {
+): Promise<TBResource | undefined> => {
   if (Array.isArray(input)) {
     throw new Error('Image plugin expected File for consumation, not a list/array')
   }
@@ -37,7 +37,7 @@ export const consume = async (
       throw new Error('No session found, user must be logged in to upload images')
     }
 
-    return await new Promise<Plugin.Resource>((resolve, reject) => {
+    return await new Promise<TBResource>((resolve, reject) => {
       const reader = new FileReader()
       const tmpImage = new Image()
       let cancelled = false

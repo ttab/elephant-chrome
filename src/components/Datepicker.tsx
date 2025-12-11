@@ -1,4 +1,4 @@
-import { useState, type MouseEvent } from 'react'
+import { useState, type MouseEvent, type JSX } from 'react'
 
 import {
   Button,

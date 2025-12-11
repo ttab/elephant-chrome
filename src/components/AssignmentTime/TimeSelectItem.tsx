@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, type MouseEvent } from 'react'
+import { useState, useEffect, useCallback, type MouseEvent, type JSX } from 'react'
 import {
   Command,
   CommandItem,

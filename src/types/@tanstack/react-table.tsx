@@ -2,6 +2,7 @@ import { type RowData, type Column } from '@tanstack/react-table'
 import { type LucideIcon } from '@ttab/elephant-ui/icons'
 import { type DefaultValueOption } from '..'
 import { type SetStateAction, type Dispatch } from 'react'
+import { type JSX } from 'react'
 
 declare module '@tanstack/react-table' {
   interface ColumnMeta<TData extends RowData, TValue> {

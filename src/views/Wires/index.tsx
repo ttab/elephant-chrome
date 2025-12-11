@@ -1,7 +1,7 @@
 import { View, ViewHeader } from '@/components/View'
 import { type ViewMetadata } from '@/types/index'
 import { MinusIcon, SaveIcon } from '@ttab/elephant-ui/icons'
-import { useMemo } from 'react'
+import { useMemo, type JSX } from 'react'
 import { wiresListColumns } from './WiresListColumns'
 import { Commands } from '@/components/Commands'
 import { TableCommandMenu } from '@/components/Commands/TableCommand'

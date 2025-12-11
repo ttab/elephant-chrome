@@ -21,7 +21,7 @@ import { SluglineEditable } from '@/components/DataItem/SluglineEditable'
 import { Button } from '@ttab/elephant-ui'
 import { useSession } from 'next-auth/react'
 import { PlanningHeader } from './components/PlanningHeader'
-import React, { type SetStateAction, useMemo, useState } from 'react'
+import React, { type SetStateAction, useMemo, useState, type JSX } from 'react'
 import type { NewItem } from '../Event/components/PlanningTable'
 import { MoveDialog } from './components/MoveDialog'
 import { RelatedEvents } from './components/RelatedEvents'
@@ -192,7 +192,6 @@ const PlanningViewContent = (props: ViewProps & {
                 ydoc={ydoc}
                 value={title}
                 label='Titel'
-                autoFocus={!!props.asDialog}
                 placeholder='Planeringstitel'
               />
             </Form.Title>

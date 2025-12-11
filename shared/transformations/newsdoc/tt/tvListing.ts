@@ -17,22 +17,27 @@ export const transformTvListing = (element: Block): TBElement => {
     },
     children: [
       {
+        class: 'text',
         type: 'tt/tv-listing/title',
         children: [{ text: data.title ?? '' }]
       },
       {
+        class: 'text',
         type: 'tt/tv-listing/channel',
         children: [{ text: data.channel ?? '' }]
       },
       {
+        class: 'text',
         type: 'tt/tv-listing/day',
         children: [{ text: data.day ?? '' }]
       },
       {
+        class: 'text',
         type: 'tt/tv-listing/time',
         children: [{ text: data.time ?? '' }]
       },
       {
+        class: 'text',
         type: 'tt/tv-listing/end_time',
         children: [{ text: data.end_time ?? '' }]
       }

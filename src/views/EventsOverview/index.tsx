@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useMemo, useState, type JSX } from 'react'
 import { type ViewMetadata } from '@/types'
 import { View, ViewHeader } from '@/components'
 import { TabsContent } from '@ttab/elephant-ui'

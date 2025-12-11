@@ -1,5 +1,5 @@
 import { useView } from '@/hooks'
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, type JSX } from 'react'
 import { StatusMenu } from '@/components/DocumentStatus/StatusMenu'
 import { ViewHeader } from '@/components/View'
 import { BookTextIcon } from '@ttab/elephant-ui/icons'

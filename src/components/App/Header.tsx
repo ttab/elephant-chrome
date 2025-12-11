@@ -1,4 +1,5 @@
 import { Menu } from './Menu'
+import type { JSX } from 'react'
 
 export const AppHeader = (): JSX.Element => {
   return (

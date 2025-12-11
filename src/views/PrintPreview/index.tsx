@@ -4,7 +4,7 @@ import {
 } from '@ttab/elephant-ui'
 import { type ViewProps, type ViewMetadata } from '@/types'
 import { PreviewHeader } from './PreviewHeader'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, type JSX } from 'react'
 import { FrownIcon, SettingsIcon } from '@ttab/elephant-ui/icons'
 
 /**

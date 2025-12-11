@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { type JSX } from 'react'
 import { type FormProps } from './Root'
 import { cva } from 'class-variance-authority'
 

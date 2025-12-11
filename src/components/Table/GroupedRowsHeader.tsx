@@ -1,6 +1,7 @@
 import { TableRow, TableCell } from '@ttab/elephant-ui'
 import { useTable } from '@/hooks/useTable'
 import { type ColumnDef, type Row } from '@tanstack/react-table'
+import type { JSX } from 'react'
 
 export const GroupedRowsHeader = <TData, TValue>({ row, columns }: {
   row: Row<unknown>
