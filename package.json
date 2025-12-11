@@ -4,6 +4,14 @@
   "license": "MIT",
   "version": "1.8.10",
   "type": "module",
+  "os": [
+    "darwin",
+    "linux"
+  ],
+  "cpu": [
+    "x64",
+    "arm64"
+  ],
   "scripts": {
     "debug": "concurrently npm:debug:vite",
     "debug:vite": "tsx watch --inspect --ignore vite.config.ts.timestamp* --env-file=.env src-srv/index.ts",
