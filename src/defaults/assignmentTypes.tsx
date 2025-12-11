@@ -1,12 +1,12 @@
 import { type DefaultValueOption } from '@/types'
 import {
   FileTextIcon,
-  ImageIcon,
   CameraIcon,
   VideoIcon,
   ApertureIcon,
   ZapIcon,
-  FileWarningIcon
+  FileWarningIcon,
+  PenToolIcon
 } from '@ttab/elephant-ui/icons'
 
 const iconProps = {
@@ -37,7 +37,7 @@ export const AssignmentTypes: DefaultValueOption[] = [
   {
     label: 'Grafik',
     value: 'graphic',
-    icon: ImageIcon,
+    icon: PenToolIcon,
     iconProps
   },
   {
