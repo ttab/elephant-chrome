@@ -1,7 +1,7 @@
 import { getSession as nextAuthGetSession } from 'next-auth/react'
 import type { Session } from 'next-auth'
 
-type CachedSession = (Session & { accessToken?: string }) | null
+type CachedSession = Session | null
 
 let cachedSession: CachedSession | undefined
 let inflightFetch: Promise<CachedSession> | null = null

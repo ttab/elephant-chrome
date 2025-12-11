@@ -58,7 +58,7 @@ export const normalizeImage = (editor: Editor, nodeEntry: NodeEntry): boolean | 
 
   let n = 0
   for (const [child, childPath] of children) {
-    if (TextbitElement.isBlock(child) || TextbitElement.isTextblock(child)) {
+    if (TextbitElement.isBlock(child) || TextbitElement.isText(child)) {
       // Unwrap block node children (move text element children upwards in tree)
       Transforms.unwrapNodes(editor, {
         at: childPath,

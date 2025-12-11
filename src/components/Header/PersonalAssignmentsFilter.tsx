@@ -1,6 +1,7 @@
 import { useTable } from '@/hooks/useTable'
 import { Button } from '@ttab/elephant-ui'
 import { UserIcon } from '@ttab/elephant-ui/icons'
+import type { JSX } from 'react'
 
 
 export const PersonalAssignmentsFilter = ({ assigneeId }: {

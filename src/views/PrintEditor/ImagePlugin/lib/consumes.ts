@@ -1,7 +1,7 @@
-import { type Plugin } from '@ttab/textbit'
+import { type TBConsumesFunction } from '@ttab/textbit'
 import { CONFIG } from '../config'
 
-export const consumes: Plugin.ConsumesFunction = ({ input }) => {
+export const consumes: TBConsumesFunction = ({ input }) => {
   if (!(input.data instanceof File)) {
     return [false]
   }

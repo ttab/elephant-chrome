@@ -1,5 +1,5 @@
 import { Dialog, DialogDescription, DialogTitle, DialogContent } from '@ttab/elephant-ui'
-import type { PropsWithChildren } from 'react'
+import type { PropsWithChildren, JSX } from 'react'
 
 export const ModalDialog = ({ children, isVisible }: {
   isVisible: boolean

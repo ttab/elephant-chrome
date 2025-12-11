@@ -9,6 +9,7 @@ import { useSections } from '@/hooks/useSections'
 import { CircleCheckIcon, ShapesIcon } from '@ttab/elephant-ui/icons'
 import { DocumentStatuses } from '@/defaults/documentStatuses'
 import { useUserTracker } from '@/hooks/useUserTracker'
+import { type JSX } from 'react'
 
 export const Commands = (props: {
   facets?: Facets

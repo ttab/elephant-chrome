@@ -1,5 +1,6 @@
 import { ViewProvider } from './ViewProvider'
 import { ViewContainer } from './ViewContainer'
+import type { JSX } from 'react'
 
 export const ViewWrapper = ({ children, viewId, name, colSpan: wantedColSpan }: {
   children: JSX.Element

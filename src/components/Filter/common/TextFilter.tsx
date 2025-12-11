@@ -1,6 +1,7 @@
 import type { LucideIcon } from '@ttab/elephant-ui/icons'
 import { Base } from '@/components/Filter/Base'
 import type { FilterProps } from '@/components/Filter'
+import type { JSX } from 'react'
 
 export const TextFilter = (props: FilterProps & {
   filterPage: string
@@ -15,4 +16,3 @@ export const TextFilter = (props: FilterProps & {
     )
   }
 }
-

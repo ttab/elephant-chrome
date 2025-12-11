@@ -2,7 +2,7 @@ import { TextBox } from '@/components/ui'
 import { snapshotDocument } from '@/lib/snapshotDocument'
 import { useYValue, type YDocument } from '@/modules/yjs/hooks'
 import { toSlateYXmlText } from '@/shared/yUtils'
-import { useRef } from 'react'
+import { useRef, type JSX } from 'react'
 import { toast } from 'sonner'
 import * as Y from 'yjs'
 

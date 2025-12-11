@@ -3,7 +3,7 @@ import { useUserTracker } from '@/hooks/useUserTracker'
 import type { HistoryState } from '@/navigation/hooks/useHistory'
 import { Button } from '@ttab/elephant-ui'
 import { CableIcon, PlusIcon } from '@ttab/elephant-ui/icons'
-import { useEffect } from 'react'
+import { useEffect, type JSX } from 'react'
 import { toast } from 'sonner'
 
 export const Controller = (): JSX.Element => {
@@ -90,4 +90,3 @@ function compareStates(state: HistoryState | null, wiresHistoryState: HistorySta
 
   return state.contentState.every((item, index) => item.path === wiresHistoryState.contentState[index].path)
 }
-

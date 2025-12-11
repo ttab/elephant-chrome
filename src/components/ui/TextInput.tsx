@@ -1,3 +1,4 @@
+import type { JSX } from 'react'
 import type { FormProps } from '../Form/Root'
 import { TextBox } from './'
 import { Validation } from '../Validation'

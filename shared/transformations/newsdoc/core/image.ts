@@ -26,14 +26,17 @@ export const transformImage = (element: Block): TBElement => {
     properties,
     children: [
       {
+        class: 'text',
         type: 'core/image/image',
         children: [{ text: '' }]
       },
       {
+        class: 'text',
         type: 'core/image/text',
         children: [{ text: data.text ?? '' }]
       },
       {
+        class: 'text',
         type: 'core/image/byline',
         children: [{ text: data.credit ?? '' }]
       }
@@ -43,8 +46,8 @@ export const transformImage = (element: Block): TBElement => {
 
 export function revertImage(element: TBElement): Block {
   const { id, properties, children } = element
-  const textNode = children?.find((c) => c.type === 'core/image/text')
-  const bylineNode = children?.find((c) => c.type === 'core/image/byline')
+  const textNode = (children as TBElement[])?.find((c) => c.type === 'core/image/text')
+  const bylineNode = (children as TBElement[])?.find((c) => c.type === 'core/image/byline')
   const imageId = (properties?.uri as string).split('core://image/')[1]
 
   function getText(node: Descendant | undefined) {

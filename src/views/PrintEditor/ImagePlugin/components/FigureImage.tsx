@@ -1,9 +1,8 @@
 import type { Repository } from '@/shared/Repository'
 import type { AttachmentDetails } from '@ttab/elephant-api/repository'
-import { type TBElement, TextbitElement, type Plugin } from '@ttab/textbit'
+import { TextbitElement, type TBComponentProps, Transforms, type Descendant } from '@ttab/textbit'
 import { Crop } from '@ttab/textbit-plugins'
-import { useEffect, useRef, useState } from 'react'
-import { Transforms, type Descendant } from 'slate'
+import { useEffect, useRef, useState, type JSX } from 'react'
 import { parseCropString, parseFocusString } from '../lib/utils'
 import { useSession } from 'next-auth/react'
 
@@ -11,13 +10,13 @@ import { useSession } from 'next-auth/react'
  * Render a "handout" image using a retreived signed download url.
  */
 
-export const FigureImage = ({ editor, children, rootNode, options }: Plugin.ComponentProps & {
+export const FigureImage = ({ editor, children, rootNode, options }: TBComponentProps & {
   options: {
     repository: Repository
     accessToken: string
   }
 }): JSX.Element => {
-  const { properties = {} } = TextbitElement.isBlock(rootNode) ? rootNode as TBElement : {}
+  const { properties = {} } = TextbitElement.isBlock(rootNode) ? rootNode : {}
 
   const focusStr = properties?.focus as string || undefined
   const cropStr = properties?.crop as string || undefined
@@ -67,7 +66,6 @@ export const FigureImage = ({ editor, children, rootNode, options }: Plugin.Comp
                 area={crop}
                 point={focus}
                 onChange={({ crop, focus }) => {
-                // @ts-expect-error Fix needed in Textbit to handle type better
                   const n = editor.children.findIndex((child: Descendant) => child.id === rootNode?.id)
                   if (n < 0) {
                     return
@@ -81,8 +79,7 @@ export const FigureImage = ({ editor, children, rootNode, options }: Plugin.Comp
                     editor,
                     {
                       properties: {
-                        // @ts-expect-error Fix needed in Textbit to handle type better
-                        ...rootNode.properties,
+                        ...rootNode?.properties,
                         crop: cropString,
                         focus: focusString
                       }

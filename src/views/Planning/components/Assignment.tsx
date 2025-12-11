@@ -7,7 +7,7 @@ import { Assignees } from '@/components/Assignees'
 import { SluglineEditable } from '@/components/DataItem/SluglineEditable'
 import { Form } from '@/components/Form'
 import { type FormProps } from '@/components/Form/Root'
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, type JSX } from 'react'
 import { type YDocument, useYPath, useYValue } from '@/modules/yjs/hooks'
 import type * as Y from 'yjs'
 import { useSession } from 'next-auth/react'
@@ -67,7 +67,7 @@ export const Assignment = ({ ydoc, assignment, onAbort, onClose }: {
               value={title}
               label='Titel'
               placeholder='Uppdragstitel'
-              autoFocus
+              autoFocus={true}
             />
           </Form.Title>
           <TextBox

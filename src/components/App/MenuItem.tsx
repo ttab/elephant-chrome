@@ -1,10 +1,9 @@
 import { Link } from '@/components/index'
-import {
-  type ApplicationMenuItem
-} from '@/defaults/applicationMenuItems'
+import { type ApplicationMenuItem } from '@/defaults/applicationMenuItems'
 import { SheetClose } from '@ttab/elephant-ui'
 import { useModal } from '../Modal/useModal'
 import * as Views from '@/views'
+import type { JSX } from 'react'
 
 export const MenuItem = ({ menuItem }: {
   menuItem: ApplicationMenuItem

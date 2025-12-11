@@ -1,4 +1,4 @@
-import type { Plugin } from '@ttab/textbit'
+import type { TBResource } from '@ttab/textbit'
 import type { Repository } from '@/shared/Repository'
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import { consume } from '@/views/PrintEditor/ImagePlugin/lib/consume'
@@ -12,7 +12,7 @@ const createResource = () => {
     resource: {
       type: 'core/image',
       data: file
-    } as Plugin.Resource,
+    } as TBResource,
     file
   }
 }
@@ -143,7 +143,7 @@ describe('ImagePlugin consume error handling', () => {
     const result = await consume(resource, repository)
 
     expect(result?.type).toBe('core/image')
-    const data = result?.data as Plugin.Resource
+    const data = result?.data as TBResource
     expect(data).toMatchObject({
       type: 'core/image',
       properties: {

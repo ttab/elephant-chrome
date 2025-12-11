@@ -5,6 +5,7 @@ import {
 import { ContextMenuItem } from './ContextMenuItem'
 import { ContextMenuGroup } from './ContextMenuGroup'
 import { cn } from '@ttab/elephant-ui/utils'
+import type { JSX } from 'react'
 
 export const ContextMenu = ({ className }: { className?: string }): JSX.Element => {
   const { spelling } = useContextMenuHints()

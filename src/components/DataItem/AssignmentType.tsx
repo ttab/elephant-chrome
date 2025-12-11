@@ -7,6 +7,7 @@ import type { DefaultValueOption } from '@/types/index'
 import type { FormProps } from '../Form/Root'
 import { useYValue } from '@/modules/yjs/hooks'
 import type * as Y from 'yjs'
+import type { JSX } from 'react'
 
 export const AssignmentType = ({ assignment, editable = false, readOnly = false, className, onChange }: {
   assignment?: Y.Map<unknown>

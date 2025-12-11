@@ -12,7 +12,7 @@ import {
 } from '@ttab/elephant-ui'
 import { useYValue, type YDocument } from '@/modules/yjs/hooks'
 import { PanelRightCloseIcon, PanelRightOpenIcon } from '@ttab/elephant-ui/icons'
-import { useState } from 'react'
+import { useState, type JSX } from 'react'
 import { AddNote } from '@/components/Notes/AddNote'
 import { Version } from '@/components/Version'
 import { ReadOnly } from './ReadOnly'

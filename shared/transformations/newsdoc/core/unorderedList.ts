@@ -24,7 +24,7 @@ export function revertUnorderedList(transformedList: TBElement): Block {
   return Block.create({
     id: transformedList.id || crypto.randomUUID(),
     type: transformedList.type,
-    content: transformedList.children.map((item) => {
+    content: (transformedList.children as TBElement[]).map((item) => {
       return Block.create({
         id: toString(item.id),
         type: 'core/text',

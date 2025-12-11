@@ -24,7 +24,8 @@ import {
   type Dispatch,
   type PropsWithChildren,
   type SetStateAction,
-  useCallback
+  useCallback,
+  type JSX
 } from 'react'
 import { useQuery } from '../hooks'
 import { updateFilter } from '@/lib/loadFilters'

@@ -1,5 +1,5 @@
 import { useSession } from 'next-auth/react'
-import { type PropsWithChildren } from 'react'
+import type { JSX, PropsWithChildren } from 'react'
 
 export interface NewItem {
   id: string
@@ -17,4 +17,3 @@ export const Root = ({ children }: PropsWithChildren): JSX.Element | null => {
       )
     : null
 }
-

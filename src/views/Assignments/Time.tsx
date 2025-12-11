@@ -1,7 +1,7 @@
 import { Tooltip } from '@ttab/elephant-ui'
 import { AlarmClockCheckIcon, CircleHelpIcon, Clock1Icon, Clock9Icon } from '@ttab/elephant-ui/icons'
 import type { LucideProps } from '@ttab/elephant-ui/icons'
-import { memo, useMemo } from 'react'
+import { memo, useMemo, type JSX } from 'react'
 
 const icons: Record<string, React.FC<LucideProps>> = {
   start: Clock1Icon,

@@ -1,4 +1,4 @@
-import { useMemo } from 'react'
+import { useMemo, type JSX } from 'react'
 import { TextBox } from '../ui'
 import type * as Y from 'yjs'
 import { Validation } from '../Validation'

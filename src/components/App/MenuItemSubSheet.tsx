@@ -9,6 +9,7 @@ import {
 } from '@ttab/elephant-ui'
 import { XIcon } from '@ttab/elephant-ui/icons'
 import { Latest as LatestComponent } from '@/views/Latest'
+import type { JSX } from 'react'
 
 interface SheetComponentProps {
   setOpen: (open: boolean) => void

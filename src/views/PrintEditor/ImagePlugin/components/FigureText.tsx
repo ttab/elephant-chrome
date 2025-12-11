@@ -1,6 +1,7 @@
-import type { Plugin } from '@ttab/textbit'
+import type { TBComponentProps } from '@ttab/textbit'
+import type { JSX } from 'react'
 
-export const FigureText = ({ children }: Plugin.ComponentProps): JSX.Element => {
+export const FigureText = ({ children }: TBComponentProps): JSX.Element => {
   return (
     <div
       draggable={false}

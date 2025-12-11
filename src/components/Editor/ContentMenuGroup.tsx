@@ -1,4 +1,4 @@
-import { type PropsWithChildren } from 'react'
+import type { PropsWithChildren, JSX } from 'react'
 import { Menu } from '@ttab/textbit'
 
 export const ContentMenuGroup = ({ children }: PropsWithChildren): JSX.Element => {

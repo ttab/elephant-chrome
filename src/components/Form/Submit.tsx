@@ -1,5 +1,5 @@
 import type { ButtonHTMLAttributes } from 'react'
-import React, { useState } from 'react'
+import React, { useState, type JSX } from 'react'
 import { type FormProps } from './Root'
 import { toast } from 'sonner'
 import { LoaderIcon } from '@ttab/elephant-ui/icons'
@@ -156,7 +156,7 @@ export const Submit = ({
         disabled?: boolean
       }
 
-      if (child.props && 'type' in child.props) {
+      if (child.props && typeof child.props === 'object' && 'type' in child.props) {
         if (childProps.type === 'button' && !childProps.role) {
           console.error('Button without role, please add a role to the button')
           toast.error('Kunde inte skicka data')
@@ -205,7 +205,7 @@ export const Submit = ({
         props.disabled = true
       }
 
-      if (typeof child.type !== 'string' && child.type && 'type' in child.props) {
+      if (typeof child.type !== 'string' && child.type && 'type') {
         const componentType = child.type as React.ComponentType<unknown>
         const displayName = (componentType).displayName
 

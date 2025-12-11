@@ -1,4 +1,4 @@
-import React, { useCallback, useRef } from 'react'
+import React, { type JSX, useCallback, useRef } from 'react'
 import { Awareness } from '../Awareness'
 import { TextboxRoot } from './Textbox/TextboxRoot'
 import { useYPath, type YDocument } from '@/modules/yjs/hooks'
@@ -50,7 +50,12 @@ export const TextBox = ({ icon: Icon, value, onChange, ...props }: {
 
         {value
           ? (
-              <TextboxRoot {...props} value={value} onBlur={handleOnBlur} onFocus={handleOnFocus} />
+              <TextboxRoot
+                {...props}
+                value={value}
+                onBlur={handleOnBlur}
+                onFocus={handleOnFocus}
+              />
             )
           : (
               <div className={cn(!props.singleLine && 'h-20!!',
@@ -67,7 +72,8 @@ export const TextBox = ({ icon: Icon, value, onChange, ...props }: {
                 dark:ring-gray-600
                 whitespace-nowrap
                 bg-gray-50
-                dark:bg-input`
+                dark:bg-input`,
+                props.className
               )}
               />
             )}

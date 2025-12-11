@@ -9,7 +9,7 @@ import {
   DialogTitle
 } from '@ttab/elephant-ui'
 import { LoaderIcon } from '@ttab/elephant-ui/icons'
-import { type MouseEvent, type PropsWithChildren } from 'react'
+import type { MouseEvent, PropsWithChildren, JSX } from 'react'
 import { useState } from 'react'
 
 export const CreatePrompt = ({

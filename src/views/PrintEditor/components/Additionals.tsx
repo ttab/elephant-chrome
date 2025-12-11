@@ -1,3 +1,4 @@
+import type { JSX } from 'react'
 import { useYValue } from '@/modules/yjs/hooks/useYValue'
 import type { YDocument } from '@/modules/yjs/hooks'
 import { Label, Checkbox } from '@ttab/elephant-ui'

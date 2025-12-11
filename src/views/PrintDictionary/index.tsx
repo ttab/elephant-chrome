@@ -1,5 +1,6 @@
 import { type ViewMetadata } from '@/types'
 import Dictionary from './Dictionary'
+import type { JSX } from 'react'
 
 /**
  * PrintPreview component.
