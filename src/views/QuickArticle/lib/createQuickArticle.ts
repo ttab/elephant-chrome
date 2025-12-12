@@ -19,12 +19,14 @@ export async function createQuickArticle({
   documentStatus,
   startDate,
   planningId,
+  slugline,
   section
 }: {
   ydoc: YDocument<Y.Map<unknown>>
   status: string
   session: Session
   planningId?: string
+  slugline?: string
   timeZone: string
   documentStatus: CreateArticleDocumentStatus
   startDate?: string

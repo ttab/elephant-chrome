@@ -25,6 +25,7 @@ import type { EleDocumentResponse } from '@/shared/types'
 import type * as Y from 'yjs'
 import { DocumentHeader } from '@/components/QuickDocument/DocumentHeader'
 import { DialogEditor } from '@/components/QuickDocument/DialogEditor'
+import { toSlateYXmlText } from '@/shared/yUtils'
 
 type PromptConfig = {
   visible: boolean
@@ -63,7 +64,8 @@ export const QuickArticleDialog = (props: {
 
   const allSections = useSections()
   const [, setYSection] = useYValue<Block | undefined>(ydoc.ele, 'links.core/section[0]')
-  const [slugline] = useYValue<Y.XmlText>(ydoc.ele, 'meta.tt/slugline[0].value', true)
+
+  const [slugline, setSlugline] = useYValue<Y.XmlText>(ydoc.ele, 'meta.tt/slugline[0].value', true)
 
   const handleSubmit = (setCreatePrompt: Dispatch<SetStateAction<boolean>>): void => {
     setCreatePrompt(true)
@@ -155,6 +157,22 @@ export const QuickArticleDialog = (props: {
                           payload: option.payload
                         })
 
+
+                        const getPlanningSlugline = (payload: { slugline?: string } | undefined): string | undefined => {
+                          if (!payload || !payload.slugline) {
+                            return
+                          }
+
+                          const { slugline } = payload as { slugline?: string }
+                          return slugline
+                        }
+
+                        const planningSlugline = getPlanningSlugline(option.payload as { slugline?: string })
+
+                        if (planningSlugline) {
+                          setSlugline(toSlateYXmlText(planningSlugline))
+                        }
+
                         const sectionPayload = option.payload as { section: string | undefined }
                         const sectionTitle = allSections
                           .find((s) => s.id === sectionPayload?.section)?.title
@@ -210,11 +228,22 @@ export const QuickArticleDialog = (props: {
             )}
 
             <Form.Group icon={TagsIcon}>
-              <SluglineEditable
-                ydoc={ydoc}
-                value={slugline}
-                documentStatus='draft'
-              />
+
+              {selectedPlanning && (
+                <SluglineEditable
+                  key={selectedPlanning?.value}
+                  ydoc={ydoc}
+                  value={slugline}
+                />
+              )}
+
+              {!selectedPlanning && (
+                <SluglineEditable
+                  ydoc={ydoc}
+                  value={slugline}
+                  documentStatus='draft'
+                />
+              )}
               <Newsvalue ydoc={ydoc} path='meta.core/newsvalue[0].value' />
             </Form.Group>
 
@@ -256,6 +285,7 @@ export const QuickArticleDialog = (props: {
                       documentStatus: config.documentStatus,
                       timeZone,
                       startDate,
+                      slugline: slugline ? slugline?.toString() as string : undefined,
                       section: (!selectedPlanning?.value) ? section || undefined : undefined
                     })
                       .then((data) => {
