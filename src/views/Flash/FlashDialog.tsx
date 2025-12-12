@@ -94,7 +94,7 @@ export const FlashDialog = (props: {
       return
     }
 
-    const quickArticleDocument = quickArticleDocumentTemplate(quickArticleData.deliverableId, quickArticleData.text, quickArticleData.payload)
+    const quickArticleDocument = quickArticleDocumentTemplate(quickArticleData.deliverableId, quickArticleData.payload, quickArticleData.text)
 
     void (async () => {
       await repository?.saveDocument(

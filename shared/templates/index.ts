@@ -11,6 +11,7 @@ export { quickArticleDocumentTemplate as quickArticle } from './quickArticleDocu
 
 export interface TemplatePayload {
   title?: string
+  text?: string
   meta?: {
     'tt/slugline'?: Block[]
     'core/newsvalue'?: Block[]
