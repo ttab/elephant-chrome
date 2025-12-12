@@ -30,7 +30,8 @@ const AddButton = ({
   variant = 'default',
   className,
   showModal,
-  hideModal
+  hideModal,
+  docType
 }: {
   type: View
   withNew?: boolean
@@ -38,9 +39,10 @@ const AddButton = ({
   className?: string
   showModal?: (content: ReactNode, type?: 'dialog') => void
   hideModal?: () => void
+  docType?: string
 }) => {
   const ViewDialog = Views[type]
-  const typeOutput = (t: string) => t === 'Planning' ? 'Planering' : t === 'Event' ? 'Händelse' : 'Faktaruta'
+  const typeLabel = (t?: string) => t ? documentTypeValueFormat[t].label : ''
 
   return (
     <Button
@@ -63,17 +65,23 @@ const AddButton = ({
       }}
     >
       {withNew && <PlusIcon size={18} strokeWidth={1.75} />}
-      <span className='pl-0.5'>{`${withNew ? 'Ny' : typeOutput(type)}`}</span>
+      <span className='pl-0.5'>{`${withNew ? 'Ny' : typeLabel(docType)}`}</span>
     </Button>
   )
 }
 
-export const AddButtonGroup = ({ type }: { type: View }) => {
+export const AddButtonGroup = ({ type, docType }: { type: View, docType?: string }) => {
   const { showModal, hideModal } = useModal()
   const ArticleViewDialog = Views['QuickArticle' as View]
   return (
     <ButtonGroup>
-      <AddButton withNew type={type} showModal={showModal} hideModal={hideModal} />
+      <AddButton
+        withNew
+        type={type}
+        showModal={showModal}
+        hideModal={hideModal}
+        docType={docType}
+      />
       <ButtonGroupSeparator />
       <DropdownMenu>
         <div>
@@ -92,6 +100,7 @@ export const AddButtonGroup = ({ type }: { type: View }) => {
               className='px-0'
               showModal={showModal}
               hideModal={hideModal}
+              docType={docType}
             />
           </DropdownMenuItem>
           <DropdownMenuSeparator />

@@ -5,9 +5,10 @@ import { PersonalAssignmentsFilter } from './PersonalAssignmentsFilter'
 import { useMemo, type JSX } from 'react'
 import { AddButtonGroup } from './AddButtonGroup'
 
-export const Header = ({ assigneeId, type }: {
+export const Header = ({ assigneeId, type, docType }: {
   type: View
   assigneeId?: string | undefined
+  docType?: string
 }): JSX.Element => {
   const showButton = useMemo(() => {
     const viewTypes: View[] = ['Planning', 'Event', 'Factbox']
@@ -20,7 +21,7 @@ export const Header = ({ assigneeId, type }: {
   return (
     <>
       {showButton && (
-        <AddButtonGroup type={type} />
+        <AddButtonGroup type={type} docType={docType} />
       )}
 
       <div className='hidden sm:block'>
