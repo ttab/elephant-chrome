@@ -72,7 +72,6 @@ const EditorText = (props: {
     <Textbit.Editable
       autoFocus={props.autoFocus === true && isActive}
       className={cn(`outline-none
-          h-full
           pt-4
           pb-4
           ps-2
@@ -80,7 +79,9 @@ const EditorText = (props: {
           **:data-spelling-error:border-b-2
           **:data-spelling-error:border-dotted
           **:data-spelling-error:border-red-500
-          grow overflow-auto pr-12 max-w-(--breakpoint-xl)`,
+          grow
+          pr-12
+          max-w-(--breakpoint-xl)`,
       props.allowStyling !== false ? 'ms-12 pe-12' : 'ps-14 pe-12',
       props.className)}
     >
