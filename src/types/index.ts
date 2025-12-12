@@ -3,6 +3,7 @@ import type * as views from '@/views'
 import { type LucideIcon } from '@ttab/elephant-ui/icons'
 import type { TemplatePayload } from '@/shared/templates'
 import type { Locale } from 'date-fns'
+import type { RefObject } from 'react'
 
 export enum NavigationActionType {
   SET = 'set',
@@ -114,7 +115,7 @@ export interface DefaultValueOption {
 }
 
 
-export type ValidateStateRef = React.MutableRefObject<ValidateState>
+export type ValidateStateRef = RefObject<ValidateState>
 
 export type ValidateState = Record<string, {
   label: string
@@ -173,4 +174,3 @@ export interface StatusData {
   workflowState: string
   workflowCheckpoint: string
 }
-

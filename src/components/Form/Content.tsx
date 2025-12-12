@@ -1,9 +1,10 @@
 import React, { type JSX } from 'react'
 import { type FormProps } from './Root'
 import { cva } from 'class-variance-authority'
+import { cloneChildrenWithProps } from './lib/cloneChildren'
 
 export const Content = React.memo(
-  ({ children, asDialog, onValidation, validateStateRef, onChange }: FormProps): JSX.Element => {
+  ({ children, asDialog, onValidation, validateStateRef }: FormProps): JSX.Element => {
     const variants = cva('flex flex-col gap-4 items-start',
       {
         variants: {
@@ -16,16 +17,11 @@ export const Content = React.memo(
 
     return (
       <div className={variants({ asDialog })}>
-        {React.Children.map(children, (child: React.ReactNode): React.ReactNode =>
-          React.isValidElement<FormProps>(child)
-            ? React.cloneElement(child, {
-              asDialog,
-              onChange,
-              onValidation,
-              validateStateRef
-            })
-            : child
-        )}
+        {cloneChildrenWithProps<FormProps>(children, {
+          asDialog,
+          onValidation,
+          validateStateRef
+        })}
       </div>
     )
   }

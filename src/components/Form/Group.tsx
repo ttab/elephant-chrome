@@ -1,6 +1,7 @@
-import React, { type JSX } from 'react'
+import { type JSX } from 'react'
 import { type LucideIcon } from '@ttab/elephant-ui/icons'
 import { type FormProps } from './Root'
+import { cloneChildrenWithProps } from './lib/cloneChildren'
 
 export const Group = ({ children, icon: Icon, asDialog, onValidation, validateStateRef, onChange }: FormProps & {
   icon?: LucideIcon
@@ -24,17 +25,12 @@ export const Group = ({ children, icon: Icon, asDialog, onValidation, validateSt
     <div className='flex gap-2 w-full items-center'>
       {Icon
         && <Icon size={18} strokeWidth={1.75} className='text-muted-foreground mr-4' />}
-      {React.Children.map(children, (child: React.ReactNode): React.ReactNode =>
-        React.isValidElement<FormProps>(child)
-          ? React.cloneElement(child, {
-            ...child.props,
-            asDialog,
-            onValidation,
-            onChange,
-            validateStateRef
-          })
-          : child
-      )}
+      {cloneChildrenWithProps<FormProps>(children, {
+        asDialog,
+        onValidation,
+        onChange,
+        validateStateRef
+      })}
     </div>
   </div>
 )
