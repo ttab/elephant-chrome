@@ -66,7 +66,7 @@
     "express-ws": "^5.0.2",
     "get-user-locale": "^3.0.0",
     "jose": "^6.1.2",
-    "lucide-react": "^0.555.0",
+    "lucide-react": "^0.560.0",
     "next-auth": "^5.0.0-beta.30",
     "node-html-parser": "^7.0.1",
     "pino": "^10.1.0",
