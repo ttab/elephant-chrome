@@ -3,12 +3,14 @@ import { Button, Tooltip } from '@ttab/elephant-ui'
 import { CalendarDaysIcon, CalendarPlus2Icon, FileInputIcon } from '@ttab/elephant-ui/icons'
 import type { JSX } from 'react'
 
-export const ToastAction = ({ planningId, flashId, eventId }: {
+export const ToastAction = ({ planningId, quickArticleid, flashId, eventId, view }: {
   planningId?: string
   flashId?: string
   eventId?: string
+  quickArticleid?: string
+  view: 'Flash' | 'QuickArticle' | 'Event' | 'Planning'
 }): JSX.Element => {
-  const openFlash = useLink('Flash')
+  const openType = useLink(view)
   const openPlanning = useLink('Planning')
   const openEvent = useLink('Event')
 
@@ -26,13 +28,25 @@ export const ToastAction = ({ planningId, flashId, eventId }: {
           </Button>
         </Tooltip>
       )}
+      {quickArticleid && (
+        <Tooltip
+          content='Öppna snabbartikel'
+        >
+          <Button
+            variant='icon'
+            onClick={(event) => openType(event, { id: quickArticleid }, 'last')}
+          >
+            <FileInputIcon size={16} strokeWidth={1.75} />
+          </Button>
+        </Tooltip>
+      )}
       {flashId && (
         <Tooltip
           content='Öppna flash'
         >
           <Button
             variant='icon'
-            onClick={(event) => openFlash(event, { id: flashId }, 'last')}
+            onClick={(event) => openType(event, { id: flashId }, 'last')}
           >
             <FileInputIcon size={16} strokeWidth={1.75} />
           </Button>
