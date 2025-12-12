@@ -9,22 +9,22 @@ import { CircleXIcon, TagsIcon, GanttChartSquareIcon } from '@ttab/elephant-ui/i
 import { useRegistry, useSections } from '@/hooks'
 import { useSession } from 'next-auth/react'
 import { useRef, useState } from 'react'
-import { QuickArticleDialogEditor } from './QuickArticleDialogEditor'
 import { UserMessage } from '@/components/UserMessage'
 import { Form } from '@/components/Form'
 import { fetch } from '@/lib/index/fetch-plannings-twirp'
 import { CreatePrompt } from '@/components/CreatePrompt'
-import { QuickArticleHeader } from './QuickArticleHeader'
 import { Block } from '@ttab/elephant-api/newsdoc'
 import { toast } from 'sonner'
-import { useYDocument, useYValue } from '@/modules/yjs/hooks'
-import { ToastAction } from './ToastAction'
+import { useYDocument, useYValue, type YDocument } from '@/modules/yjs/hooks'
+import { ToastAction } from '@/components/QuickDocument/ToastAction'
 import { SluglineEditable } from '@/components/DataItem/SluglineEditable'
 import { type CreateArticleDocumentStatus, createQuickArticle } from './lib/createQuickArticle'
 import type { DefaultValueOption, ViewProps } from '@/types'
 import type { Dispatch, JSX, SetStateAction } from 'react'
 import type { EleDocumentResponse } from '@/shared/types'
 import type * as Y from 'yjs'
+import { DocumentHeader } from '@/components/QuickDocument/DocumentHeader'
+import { DialogEditor } from '@/components/QuickDocument/DialogEditor'
 
 type PromptConfig = {
   visible: boolean
@@ -61,7 +61,6 @@ export const QuickArticleDialog = (props: {
     title: string
   } | undefined>(undefined)
 
-  const readOnly = Number(props?.version) > 0 && !props.asDialog
   const allSections = useSections()
   const [, setYSection] = useYValue<Block | undefined>(ydoc.ele, 'links.core/section[0]')
   const [slugline] = useYValue<Y.XmlText>(ydoc.ele, 'meta.tt/slugline[0].value', true)
@@ -121,7 +120,13 @@ export const QuickArticleDialog = (props: {
 
   return (
     <View.Root asDialog={props.asDialog} className={props.className}>
-      <QuickArticleHeader ydoc={ydoc} asDialog={props.asDialog} onDialogClose={props.onDialogClose} readOnly={readOnly} />
+      <DocumentHeader
+        view='QuickArticle'
+        asDialog={props.asDialog}
+        ydoc={{ id: props.documentId } as YDocument<Y.Map<unknown>>}
+        readOnly
+        onDialogClose={props.onDialogClose}
+      />
       <View.Content>
         <Form.Root asDialog={props.asDialog}>
           <Form.Content>
@@ -219,7 +224,7 @@ export const QuickArticleDialog = (props: {
                 : (<>Denna artikel kommer läggas i ett nytt uppdrag i den valda planeringen</>)}
             </UserMessage>
 
-            <QuickArticleDialogEditor ydoc={ydoc} setTitle={setTitle} />
+            <DialogEditor ydoc={ydoc} setTitle={setTitle} />
 
           </Form.Content>
 
@@ -255,14 +260,14 @@ export const QuickArticleDialog = (props: {
                     })
                       .then((data) => {
                         toast.success('Snabbartikel har skapats', {
-                          action: <ToastAction planningId={data?.updatedPlanningId} quickArticleid={ydoc.id} />
+                          action: <ToastAction planningId={data?.updatedPlanningId} quickArticleid={ydoc.id} view='QuickArticle' />
                         })
 
                         handleClose(config)
                       })
                       .catch(() => {
                         toast.error('Fel när snabbartikel skapades', {
-                          action: <ToastAction quickArticleid={ydoc.id} />
+                          action: <ToastAction quickArticleid={ydoc.id} view='QuickArticle' />
                         })
                       })
                   }}

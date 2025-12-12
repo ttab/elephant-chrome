@@ -1,7 +1,7 @@
+// src/components/DocumentHeader/StatusMenuLogic.tsx
+
 import { StatusMenu } from '@/components/DocumentStatus/StatusMenu'
-import { ViewHeader } from '@/components/View'
-import { NewspaperIcon } from '@ttab/elephant-ui/icons'
-import { useState, useCallback } from 'react'
+import { useCallback, useState } from 'react'
 import { toast } from 'sonner'
 import { useDeliverablePlanningId } from '@/hooks/index/useDeliverablePlanningId'
 import { updateAssignmentTime } from '@/lib/index/updateAssignmentPublishTime'
@@ -10,47 +10,17 @@ import { useView } from '@/hooks/useView'
 import { useHistory, useNavigation, useWorkflowStatus } from '@/hooks/index'
 import type { YDocument } from '@/modules/yjs/hooks'
 import type * as Y from 'yjs'
+import type { DocumentView } from './types'
+import { ViewMap } from './types' // Import the configuration map
 
-export const QuickArticleHeader = ({
-  ydoc,
-  asDialog,
-  onDialogClose,
-  preview,
-  planningId
-}: {
+interface StatusMenuHeaderProps {
   ydoc: YDocument<Y.Map<unknown>>
-  readOnly?: boolean
-  asDialog?: boolean
-  onDialogClose?: (() => void) | undefined
-  preview?: boolean
-  planningId?: string | null
-}) => {
-  return (
-    <ViewHeader.Root>
-      {!asDialog && (
-        <ViewHeader.Title name='QuickArticle' title='Snabbartikel' icon={NewspaperIcon} iconColor='#FF5150' preview={preview} />
-      )}
-
-      <ViewHeader.Content>
-        <div className='flex w-full h-full items-center space-x-2 font-bold'>
-          {asDialog && (
-            <ViewHeader.Title name='QuickArticle' title='Skapa ny snabbartikel' icon={NewspaperIcon} iconColor='#aabbcc' />
-          )}
-        </div>
-
-        {!asDialog && !!ydoc && !preview && <ViewHeader.RemoteUsers ydoc={ydoc} />}
-        {!asDialog && !!ydoc.id && !preview && <StatusMenuHeader ydoc={ydoc} planningId={planningId} />}
-      </ViewHeader.Content>
-
-      <ViewHeader.Action onDialogClose={onDialogClose} asDialog={asDialog} />
-    </ViewHeader.Root>
-  )
+  propPlanningId?: string | null
+  view: DocumentView // New prop to differentiate logic
 }
 
-const StatusMenuHeader = ({ ydoc, planningId: propPlanningId }: {
-  ydoc: YDocument<Y.Map<unknown>>
-  planningId?: string | null
-}) => {
+export const StatusMenuLogic = ({ ydoc, propPlanningId, view }: StatusMenuHeaderProps) => {
+  const viewConfig = ViewMap[view] // Get view-specific configuration
   const planningId = useDeliverablePlanningId(ydoc.id || '')
   const [publishTime] = useState<string | null>(null)
   const { viewId } = useView()
@@ -60,14 +30,19 @@ const StatusMenuHeader = ({ ydoc, planningId: propPlanningId }: {
 
   const onBeforeStatusChange = useCallback(async (newStatus: string, data?: Record<string, unknown>) => {
     if (!planningId) {
-      toast.error('Kunde inte ändra status på flash! Det gick inte att hitta en kopplad planering.')
+      // Use view-specific error message
+      toast.error(viewConfig.statusErrorText)
       return false
     }
+
+    // Determine the target for handleLink based on the view prop
+    const targetView = viewConfig.linkTarget
 
     if (newStatus === 'usable') {
       handleLink({
         dispatch,
-        viewItem: state.viewRegistry.get('Planning'),
+        // Use the configured linkTarget
+        viewItem: state.viewRegistry.get(targetView),
         props: { id: ydoc.id },
         viewId: crypto.randomUUID(),
         history,
@@ -82,7 +57,8 @@ const StatusMenuHeader = ({ ydoc, planningId: propPlanningId }: {
     if (newStatus === 'draft') {
       handleLink({
         dispatch,
-        viewItem: state.viewRegistry.get('Planning'),
+        // Use the configured linkTarget
+        viewItem: state.viewRegistry.get(targetView),
         props: { id: ydoc.id },
         viewId: crypto.randomUUID(),
         history,
@@ -91,7 +67,7 @@ const StatusMenuHeader = ({ ydoc, planningId: propPlanningId }: {
       })
     }
 
-    // We don't need to update publish time for flashes unless scheduling (when that would be?)
+    // The logic for updating publish time is identical for both original components
     if (newStatus !== 'withheld') {
       return true
     }
@@ -111,10 +87,11 @@ const StatusMenuHeader = ({ ydoc, planningId: propPlanningId }: {
     }
 
     return true
-  }, [planningId, ydoc.id, dispatch, history, state.viewRegistry, viewId, workflowStatus])
+  }, [planningId, ydoc.id, dispatch, history, state.viewRegistry, viewId, workflowStatus, viewConfig.statusErrorText, viewConfig.linkTarget])
 
   return (
     <>
+      {/* Renders if planningId exists from prop or hook, AND ydoc.id exists */}
       {!!(propPlanningId || planningId) && ydoc.id && (
         <StatusMenu
           ydoc={ydoc}

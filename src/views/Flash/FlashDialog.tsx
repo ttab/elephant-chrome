@@ -10,23 +10,23 @@ import { useRegistry, useSections } from '@/hooks'
 import { useSession } from 'next-auth/react'
 import type { Dispatch, SetStateAction } from 'react'
 import { type JSX, useRef, useState } from 'react'
-import { FlashEditor } from './FlashDialogEditor'
 import { UserMessage } from '@/components/UserMessage'
 import { Form } from '@/components/Form'
 import { fetch } from '@/lib/index/fetch-plannings-twirp'
 import type { CreateFlashDocumentStatus } from './lib/createFlash'
 import { createFlash } from './lib/createFlash'
 import { CreatePrompt } from '@/components/CreatePrompt'
-import { FlashHeader } from './FlashHeader'
 import { Block } from '@ttab/elephant-api/newsdoc'
 import { toast } from 'sonner'
 import { useYDocument, useYValue } from '@/modules/yjs/hooks'
 import type { EleDocumentResponse } from '@/shared/types'
 import type { QuickArticleData } from '@/shared/types'
 import type * as Y from 'yjs'
-import { createQuickArticle } from './lib/createQuickArticle'
-import { ToastAction } from './ToastAction'
+import { createQuickArticleAfterFlash } from './lib/createQuickArticleAfterFlash'
+import { ToastAction } from '@/components/QuickDocument/ToastAction'
 import { quickArticleDocumentTemplate } from '@/shared/templates/quickArticleDocumentTemplate'
+import { DocumentHeader } from '@/components/QuickDocument/DocumentHeader'
+import { DialogEditor } from '@/components/QuickDocument/DialogEditor'
 
 type PromptConfig = {
   visible: boolean
@@ -111,13 +111,13 @@ export const FlashDialog = (props: {
       })
         .then(() => {
           toast.success('Snabbartikel har skapats', {
-            action: <ToastAction planningId={data?.updatedPlanningId} flashId={ydoc.id} />
+            action: <ToastAction planningId={data?.updatedPlanningId} flashId={ydoc.id} view='Flash' />
           })
         })
         .catch(() => {
           // Flash creation OK, quick-article creation unsuccessful
           toast.error('Fel när snabbartikel skapades', {
-            action: <ToastAction planningId={data.updatedPlanningId} flashId={ydoc.id} />
+            action: <ToastAction planningId={data.updatedPlanningId} flashId={ydoc.id} view='Flash' />
           })
         })
     })()
@@ -130,7 +130,7 @@ export const FlashDialog = (props: {
   } | undefined, config: PromptConfig, startDate: string | undefined) => {
     // After flash has been successfully created, we celebrate with a toast
     toast.success(getLabel(data?.documentStatus), {
-      action: <ToastAction planningId={data?.updatedPlanningId} flashId={ydoc.id} />
+      action: <ToastAction planningId={data?.updatedPlanningId} flashId={ydoc.id} view='Flash' />
     })
 
     if (data?.quickArticleData) {
@@ -147,13 +147,13 @@ export const FlashDialog = (props: {
     if (ex?.message === 'FlashCreationError') {
       // Both flash and quick-article creation were unsuccessful
       toast.error('Flashen kunde inte skapas.', {
-        action: <ToastAction flashId={ydoc.id} />
+        action: <ToastAction flashId={ydoc.id} view='Flash' />
       })
     }
 
     if (ex?.message === 'CreateAssignmentError') {
       toast.error('Flashen har skapats. Tyvärr misslyckades det att koppla den till en planering.', {
-        action: <ToastAction flashId={ydoc.id} />
+        action: <ToastAction flashId={ydoc.id} view='Flash' />
       })
     }
   }
@@ -204,7 +204,13 @@ export const FlashDialog = (props: {
 
   return (
     <View.Root asDialog={props.asDialog} className={props.className}>
-      <FlashHeader ydoc={ydoc} asDialog={props.asDialog} onDialogClose={props.onDialogClose} readOnly={readOnly} />
+      <DocumentHeader
+        view='Flash'
+        asDialog={props.asDialog}
+        ydoc={ydoc}
+        readOnly={readOnly}
+        onDialogClose={props.onDialogClose}
+      />
       <View.Content>
         <Form.Root asDialog={props.asDialog}>
           <Form.Content>
@@ -293,7 +299,7 @@ export const FlashDialog = (props: {
                 : (<>Denna flash kommer läggas i ett nytt uppdrag i den valda planeringen</>)}
             </UserMessage>
 
-            <FlashEditor ydoc={ydoc} setTitle={setTitle} />
+            <DialogEditor ydoc={ydoc} setTitle={setTitle} />
 
           </Form.Content>
 
