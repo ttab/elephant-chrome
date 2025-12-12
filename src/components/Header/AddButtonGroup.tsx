@@ -18,6 +18,11 @@ import {
   SheetClose
 } from '@ttab/elephant-ui'
 import { ChevronDownIcon } from '@ttab/elephant-ui/icons'
+import { documentTypeValueFormat } from '@/defaults/documentTypeFormats'
+import type { buttonVariants } from '@ttab/elephant-ui'
+import type { VariantProps } from 'class-variance-authority'
+
+type Variant = VariantProps<typeof buttonVariants>['variant']
 
 const AddButton = ({
   type,
@@ -29,7 +34,7 @@ const AddButton = ({
 }: {
   type: View
   withNew?: boolean
-  variant?: 'link' | 'secondary' | 'default' | 'destructive' | 'outline' | 'ghost' | 'icon' | null
+  variant?: Variant
   className?: string
   showModal?: (content: ReactNode, type?: 'dialog') => void
   hideModal?: () => void
