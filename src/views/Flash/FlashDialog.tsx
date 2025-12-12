@@ -103,7 +103,7 @@ export const FlashDialog = (props: {
         'draft'
       ).catch((error) => console.error('could not save quick-article document', error))
 
-      createQuickArticle({
+      createQuickArticleAfterFlash({
         planningId: data?.updatedPlanningId,
         timeZone,
         startDate,

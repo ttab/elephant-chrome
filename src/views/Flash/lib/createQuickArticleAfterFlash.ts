@@ -2,7 +2,7 @@ import { addAssignmentWithDeliverable } from '@/lib/index/addAssignment'
 import { convertToISOStringInTimeZone } from '@/shared/datetime'
 import type { QuickArticleData } from '@/shared/types'
 
-export async function createQuickArticle({
+export async function createQuickArticleAfterFlash({
   planningId,
   startDate,
   timeZone,
