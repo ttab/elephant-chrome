@@ -3,12 +3,8 @@ import { getValueByYPath } from '@/shared/yUtils'
 import { convertToISOStringInTimeZone } from '@/shared/datetime'
 import { addAssignmentWithDeliverable } from '@/lib/index/addAssignment'
 import { snapshotDocument } from '@/lib/snapshotDocument'
-// import { yTextToSlateElement } from '@slate-yjs/core'
 import type { YDocument } from '@/modules/yjs/hooks'
 import type * as Y from 'yjs'
-// import type { YXmlText } from 'node_modules/yjs/dist/src/internals'
-// import type { TBElement } from '@ttab/textbit'
-// import type { Block } from '@ttab/elephant-api/newsdoc'
 
 export type CreateArticleDocumentStatus = 'usable' | 'done' | undefined
 
@@ -53,17 +49,6 @@ export async function createQuickArticle({
   // Create and collect all base data for the assignment
   const [title] = getValueByYPath<string>(ydoc.ele, 'root.title')
   const [newsvalue] = getValueByYPath<string>(ydoc.ele, 'meta.core/newsvalue[0].value')
-  const [slugline] = getValueByYPath<string>(ydoc.ele, 'meta.tt/slugline[0].value')
-  // const [sectionValue] = getValueByYPath<Block>(ydoc.ele, 'links.core/section[0]')
-
-  // const content = yTextToSlateElement((ydoc.ele.get('content') as YXmlText))?.children as TBElement[]
-
-  // const bodyTextNode = content.find((c) => {
-  //   const properties = c.properties as { role?: string }
-  //   return !properties.role
-  // })?.children[0]
-
-  // const bodyText = bodyTextNode && 'text' in bodyTextNode ? bodyTextNode?.text : ''
 
   const dt = new Date()
   let localDate: string
