@@ -88,7 +88,7 @@ export const AddButtonGroup = ({ type, docType }: { type: View, docType?: string
             asChild
             className='h-full rounded-br-md rounded-tr-md bg-primary hover:bg-primary/90 cursor-pointer transition-all'
           >
-            <ChevronDownIcon size={18} className='self-center h-full text-white' />
+            <ChevronDownIcon size={14} strokeWidth={1.75} className='self-center h-full text-white dark:text-black' />
           </DropdownMenuTrigger>
         </div>
         <DropdownMenuContent>
