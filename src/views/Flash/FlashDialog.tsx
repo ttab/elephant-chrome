@@ -23,7 +23,7 @@ import type { EleDocumentResponse } from '@/shared/types'
 import type { QuickArticleData } from '@/shared/types'
 import type * as Y from 'yjs'
 import { createQuickArticleAfterFlash } from './lib/createQuickArticleAfterFlash'
-import { ToastAction } from '@/components/QuickDocument/ToastAction'
+import { ToastAction } from '@/components/ToastAction'
 import { quickArticleDocumentTemplate } from '@/shared/templates/quickArticleDocumentTemplate'
 import { DocumentHeader } from '@/components/QuickDocument/DocumentHeader'
 import { DialogEditor } from '@/components/QuickDocument/DialogEditor'
@@ -130,7 +130,16 @@ export const FlashDialog = (props: {
   } | undefined, config: PromptConfig, startDate: string | undefined) => {
     // After flash has been successfully created, we celebrate with a toast
     toast.success(getLabel(data?.documentStatus), {
-      action: <ToastAction planningId={data?.updatedPlanningId} flashId={ydoc.id} view='Flash' />
+      action: (
+        <ToastAction
+          key='open-flash-1'
+          documentId={ydoc.id}
+          withView='Flash'
+          target='last'
+          Icon={ZapIcon}
+          label='Öppna planering'
+        />
+      )
     })
 
     if (data?.quickArticleData) {
@@ -147,13 +156,13 @@ export const FlashDialog = (props: {
     if (ex?.message === 'FlashCreationError') {
       // Both flash and quick-article creation were unsuccessful
       toast.error('Flashen kunde inte skapas.', {
-        action: <ToastAction flashId={ydoc.id} view='Flash' />
+        action: <ToastAction documentId={ydoc.id} withView='Flash' />
       })
     }
 
     if (ex?.message === 'CreateAssignmentError') {
       toast.error('Flashen har skapats. Tyvärr misslyckades det att koppla den till en planering.', {
-        action: <ToastAction flashId={ydoc.id} view='Flash' />
+        action: <ToastAction documentId={ydoc.id} withView='Flash' />
       })
     }
   }
