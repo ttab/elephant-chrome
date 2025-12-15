@@ -150,27 +150,23 @@ export const FlashDialog = (props: {
                 </Awareness>
 
                 {!!selectedPlanning && (
-                  <>
-                    <Button
-                      variant='ghost'
-                      className='text-muted-foreground flex h-7 w-7 p-0 data-[state=open]:bg-muted hover:bg-accent2'
-                      onClick={(e) => {
-                        e.preventDefault()
-                        setSelectedPlanning(undefined)
-                      }}
-                    >
-                      <CircleXIcon size={18} strokeWidth={1.75} />
-                    </Button>
-                  </>
+                  <Button
+                    variant='ghost'
+                    className='text-muted-foreground flex h-7 w-7 p-0 data-[state=open]:bg-muted hover:bg-accent2'
+                    onClick={(e) => {
+                      e.preventDefault()
+                      setSelectedPlanning(undefined)
+                    }}
+                  >
+                    <CircleXIcon size={18} strokeWidth={1.75} />
+                  </Button>
                 )}
-                <>
-                  <Checkbox
-                    id='SearchOlder'
-                    defaultChecked={searchOlder}
-                    onCheckedChange={(checked: boolean) => { setSearchOlder(checked) }}
-                  />
-                  <Label htmlFor='SearchOlder' className='text-muted-foreground'>Visa äldre</Label>
-                </>
+                <Checkbox
+                  id='SearchOlder'
+                  defaultChecked={searchOlder}
+                  onCheckedChange={(checked: boolean) => { setSearchOlder(checked) }}
+                />
+                <Label htmlFor='SearchOlder' className='text-muted-foreground'>Visa äldre</Label>
               </Form.Group>
             )}
 
