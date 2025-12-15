@@ -5,7 +5,7 @@ import {
   View
 } from '@/components'
 import { Button, Checkbox, ComboBox, Label } from '@ttab/elephant-ui'
-import { CircleXIcon, TagsIcon, GanttChartSquareIcon } from '@ttab/elephant-ui/icons'
+import { CircleXIcon, TagsIcon, GanttChartSquareIcon, NewspaperIcon } from '@ttab/elephant-ui/icons'
 import { useRegistry, useSections } from '@/hooks'
 import { useSession } from 'next-auth/react'
 import { useRef, useState } from 'react'
@@ -288,17 +288,24 @@ export const QuickArticleDialog = (props: {
                       slugline: slugline ? slugline?.toString() as string : undefined,
                       section: (!selectedPlanning?.value) ? section || undefined : undefined
                     })
-                      .then((data) => {
+                      .then(() => {
                         toast.success('Snabbartikel har skapats', {
-                          action: <ToastAction planningId={data?.updatedPlanningId} quickArticleid={ydoc.id} view='QuickArticle' />
+                          action: (
+                            <ToastAction
+                              key='open-article'
+                              documentId={ydoc.id}
+                              withView='Editor'
+                              target='last'
+                              Icon={NewspaperIcon}
+                              label='Öppna artikel'
+                            />
+                          )
                         })
 
                         handleClose(config)
                       })
                       .catch(() => {
-                        toast.error('Fel när snabbartikel skapades', {
-                          action: <ToastAction quickArticleid={ydoc.id} view='QuickArticle' />
-                        })
+                        toast.error('Fel när snabbartikel skapades')
                       })
                   }}
                   onSecondary={() => {

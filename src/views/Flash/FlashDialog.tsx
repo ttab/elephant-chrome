@@ -5,7 +5,7 @@ import {
 } from '@/components'
 import type { DefaultValueOption, ViewProps } from '@/types'
 import { Button, Checkbox, ComboBox, Label } from '@ttab/elephant-ui'
-import { CircleXIcon, TagsIcon, GanttChartSquareIcon } from '@ttab/elephant-ui/icons'
+import { CircleXIcon, TagsIcon, GanttChartSquareIcon, NewspaperIcon, ZapIcon } from '@ttab/elephant-ui/icons'
 import { useRegistry, useSections } from '@/hooks'
 import { useSession } from 'next-auth/react'
 import type { Dispatch, SetStateAction } from 'react'
@@ -109,15 +109,24 @@ export const FlashDialog = (props: {
         startDate,
         data: quickArticleData
       })
-        .then(() => {
+        .then((id) => {
           toast.success('Snabbartikel har skapats', {
-            action: <ToastAction planningId={data?.updatedPlanningId} flashId={ydoc.id} view='Flash' />
+            action: (
+              <ToastAction
+                key='open-article'
+                documentId={id}
+                withView='Editor'
+                target='last'
+                Icon={NewspaperIcon}
+                label='Öppna artikel'
+              />
+            )
           })
         })
         .catch(() => {
           // Flash creation OK, quick-article creation unsuccessful
           toast.error('Fel när snabbartikel skapades', {
-            action: <ToastAction planningId={data.updatedPlanningId} flashId={ydoc.id} view='Flash' />
+            action: <ToastAction withView='Flash' documentId={data.updatedPlanningId} />
           })
         })
     })()
