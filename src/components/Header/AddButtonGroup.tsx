@@ -1,5 +1,5 @@
 import { Button } from '@ttab/elephant-ui'
-import { PlusIcon } from '@ttab/elephant-ui/icons'
+import { PlusIcon, ChevronDownIcon } from '@ttab/elephant-ui/icons'
 import { type ReactNode } from 'react'
 import * as Views from '@/views'
 import { getTemplateFromView } from '@/shared/templates/lib/getTemplateFromView'
@@ -17,7 +17,6 @@ import {
   DropdownMenuTrigger,
   SheetClose
 } from '@ttab/elephant-ui'
-import { ChevronDownIcon } from '@ttab/elephant-ui/icons'
 import { documentTypeValueFormat } from '@/defaults/documentTypeFormats'
 import type { buttonVariants } from '@ttab/elephant-ui'
 import type { VariantProps } from 'class-variance-authority'
