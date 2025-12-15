@@ -86,13 +86,13 @@ export const AddButtonGroup = ({ type, docType }: { type: View, docType?: string
         <div>
           <DropdownMenuTrigger
             asChild
-            className='h-full rounded-br-md rounded-tr-md bg-primary/60 hover:bg-primary/30 cursor-pointer hover:text-black dark:hover:bg-gray-700 transition-all'
+            className='h-full rounded-br-md rounded-tr-md bg-primary hover:bg-primary/90 cursor-pointer transition-all'
           >
             <ChevronDownIcon size={18} className='self-center h-full text-white' />
           </DropdownMenuTrigger>
         </div>
-        <DropdownMenuContent align='end'>
-          <DropdownMenuItem>
+        <DropdownMenuContent>
+          <DropdownMenuItem inset={false} className='p-0'>
             <AddButton
               type={type}
               variant='ghost'
@@ -113,7 +113,7 @@ export const AddButtonGroup = ({ type, docType }: { type: View, docType?: string
                 )
               }}
             >
-              <DropdownMenuItem>
+              <DropdownMenuItem inset={false} className='p-0'>
                 <div>Artikel</div>
               </DropdownMenuItem>
             </SheetClose>
