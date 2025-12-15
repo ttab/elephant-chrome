@@ -45,12 +45,7 @@ export const Editor = ({ id, version, textOnly = false, direct, versionStatusHis
     const basePlugins = [Text, UnorderedList, OrderedList, Bold, Italic, Link, Table]
     return [
       ...basePlugins.map((initPlugin) => initPlugin()),
-      Text({
-        classNames: {
-          'heading-1': 'text-lg font-bold py-2',
-          'heading-2': 'text-md font-bold py-1'
-        }
-      }),
+      Text(),
       TTVisual({
         removable: false
       }),
@@ -99,7 +94,21 @@ export const Editor = ({ id, version, textOnly = false, direct, versionStatusHis
         plugins={getPlugins()}
         readOnly
       >
-        <Textbit.Editable key={id} />
+        <Textbit.Editable
+          key={id}
+          className={`outline-none
+            pt-4
+            pb-4
+            ps-12
+            pe-12
+            dark:text-slate-100
+            **:data-spelling-error:border-b-2
+            **:data-spelling-error:border-dotted
+            **:data-spelling-error:border-red-500
+            grow
+            pr-12
+            max-w-(--breakpoint-xl)`}
+        />
       </Textbit.Root>
     </div>
 

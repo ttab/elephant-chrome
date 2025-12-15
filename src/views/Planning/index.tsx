@@ -193,6 +193,7 @@ const PlanningViewContent = (props: ViewProps & {
                 value={title}
                 label='Titel'
                 placeholder='Planeringstitel'
+                autoFocus={props.asDialog === true}
               />
             </Form.Title>
 
