@@ -9,6 +9,7 @@ import { getValueByYPath } from '@/shared/yUtils'
 import { useYDocument } from '@/modules/yjs/hooks'
 import type * as Y from 'yjs'
 import { BaseEditor } from '@/components/Editor/BaseEditor'
+import { contentMenuLabels } from '@/defaults/contentMenuLabels'
 
 export const FlashView = (props: ViewProps & {
   documentId: string
@@ -46,7 +47,8 @@ export const FlashView = (props: ViewProps & {
           ...plugins.map((initPlugin) => initPlugin()),
           Text({
             countCharacters: ['heading-1', 'body'],
-            preventHotkeys: ['heading-1', 'heading-2', 'preamble']
+            preventHotkeys: ['heading-1', 'heading-2', 'preamble'],
+            ...contentMenuLabels
           })
         ]}
       >
