@@ -33,10 +33,12 @@ export async function createQuickArticleAfterFlash({
     localDate = convertToISOStringInTimeZone(dt, timeZone).slice(0, 10)
   }
 
+  const deliverableId = data?.deliverableId || crypto.randomUUID()
+
   const assignmentId = await addAssignmentWithDeliverable({
     planningId,
     type: 'text',
-    deliverableId: data?.deliverableId || crypto.randomUUID(),
+    deliverableId,
     title: 'Kort första text',
     slugline: data?.payload.meta['tt/slugline'][0].value,
     priority: 5,
@@ -50,4 +52,6 @@ export async function createQuickArticleAfterFlash({
   if (!assignmentId) {
     throw new Error('quickArticleCreationError')
   }
+
+  return deliverableId
 }
