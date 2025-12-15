@@ -7,6 +7,7 @@ import { PreVersion } from './Version/PreVersion'
 import type { Status as DocumentStatuses } from '@ttab/elephant-api/repository'
 import { PreVersionInfo } from './Version/PreVersionInfo'
 import type { JSX } from 'react'
+import { cn } from '@ttab/elephant-ui/utils'
 
 const BASE_URL = import.meta.env.BASE_URL || ''
 
@@ -47,8 +48,8 @@ export const Editor = ({ id, version, textOnly = false, direct, versionStatusHis
       ...basePlugins.map((initPlugin) => initPlugin()),
       Text({
         classNames: {
-          'heading-1': 'text-lg font-bold py-2',
-          'heading-2': 'text-md font-bold py-1'
+          countCharacters: ['heading-1', 'body'],
+          preventHotkeys: ['heading-1', 'heading-2', 'preamble']
         }
       }),
       TTVisual({
@@ -99,7 +100,21 @@ export const Editor = ({ id, version, textOnly = false, direct, versionStatusHis
         plugins={getPlugins()}
         readOnly
       >
-        <Textbit.Editable key={id} />
+        <Textbit.Editable
+          key={id}
+          className={cn(`outline-none
+            pt-4
+            pb-4
+            ps-12
+            pe-12
+            dark:text-slate-100
+            **:data-spelling-error:border-b-2
+            **:data-spelling-error:border-dotted
+            **:data-spelling-error:border-red-500
+            grow
+            pr-12
+            max-w-(--breakpoint-xl)`)}
+        />
       </Textbit.Root>
     </div>
 
