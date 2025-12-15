@@ -2,6 +2,10 @@ import { addAssignmentWithDeliverable } from '@/lib/index/addAssignment'
 import { convertToISOStringInTimeZone } from '@/shared/datetime'
 import type { QuickArticleData } from '@/shared/types'
 
+/**
+ * After creating a flash document, an article (text assignment) with the contents of the
+ * flash is also created, to assist in quick publish updates.
+*/
 export async function createQuickArticleAfterFlash({
   planningId,
   startDate,

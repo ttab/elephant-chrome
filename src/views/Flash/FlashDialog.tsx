@@ -83,6 +83,7 @@ export const FlashDialog = (props: {
     }
   }
 
+  // Create a quick-article after flash creation
   const createAndSaveQuickArticle = (data: {
     documentStatus: CreateFlashDocumentStatus
     updatedPlanningId: string
