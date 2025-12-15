@@ -2,10 +2,10 @@ import {
   BriefcaseBusinessIcon,
   CalendarDaysIcon,
   CalendarPlus2Icon,
-  NewspaperIcon
+  NewspaperIcon,
+  BoxesIcon,
+  type LucideIcon
 } from '@ttab/elephant-ui/icons'
-import { type LucideIcon } from '@ttab/elephant-ui/icons'
-import { BoxesIcon } from 'lucide-react'
 
 export const documentTypeValueFormat: Record<string, { icon: LucideIcon, key: string, label: string, color: string }> = {
   'core/event': {
