@@ -115,7 +115,7 @@ export const AddButtonGroup = ({ type, docType }: { type: View, docType?: string
                 )
               }}
             >
-              <DropdownMenuItem inset={false} className='p-0'>
+              <DropdownMenuItem inset={false} className='p-0 cursor-pointer'>
                 <div>Artikel</div>
               </DropdownMenuItem>
             </SheetClose>
