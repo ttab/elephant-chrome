@@ -19,7 +19,8 @@ export async function createFlash({
   timeZone,
   documentStatus,
   section,
-  startDate
+  startDate,
+  planningSection
 }: {
   ydoc: YDocument<Y.Map<unknown>>
   status: string
@@ -33,6 +34,12 @@ export async function createFlash({
     type: string
     rel: string
   }
+  planningSection?: {
+    type: string
+    rel: string
+    uuid: string
+    title: string
+  } | undefined
   startDate?: string
 }): Promise<{
   documentStatus: CreateFlashDocumentStatus
@@ -116,8 +123,8 @@ export async function createFlash({
           links: {
             'core/section': [Block.create({
               type: 'core/section',
-              uuid: section?.uuid,
-              title: section?.title,
+              uuid: section?.uuid || planningSection?.uuid,
+              title: section?.title || planningSection?.title,
               rel: 'section'
             })]
           }

@@ -259,8 +259,18 @@ export const FlashDialog = (props: {
                         })
 
                         const sectionPayload = option.payload as { section: string | undefined }
-                        const sectionTitle = allSections
-                          .find((s) => s.id === sectionPayload?.section)?.title
+                        const planningSection = allSections
+                          .find((s) => s.id === sectionPayload?.section)
+                        const sectionTitle = planningSection?.title
+
+                        if (planningSection) {
+                          setSection({
+                            uuid: planningSection?.id,
+                            title: planningSection?.title,
+                            rel: 'section',
+                            type: 'core/section'
+                          })
+                        }
 
                         if (sectionTitle && sectionPayload?.section) {
                           setYSection(Block.create({
@@ -346,7 +356,8 @@ export const FlashDialog = (props: {
                       timeZone,
                       documentStatus: config.documentStatus,
                       startDate,
-                      section: (!selectedPlanning?.value) ? section || undefined : undefined
+                      section: (!selectedPlanning?.value) ? section || undefined : undefined,
+                      planningSection: section
                     })
                       .then((data) => {
                         handleCreationSuccess(data, config, startDate)
