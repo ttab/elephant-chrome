@@ -8,7 +8,7 @@ import { Button, Checkbox, ComboBox, Label } from '@ttab/elephant-ui'
 import { CircleXIcon, TagsIcon, GanttChartSquareIcon, NewspaperIcon } from '@ttab/elephant-ui/icons'
 import { useRegistry, useSections } from '@/hooks'
 import { useSession } from 'next-auth/react'
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { UserMessage } from '@/components/UserMessage'
 import { Form } from '@/components/Form'
 import { fetch } from '@/lib/index/fetch-plannings-twirp'
@@ -20,12 +20,13 @@ import { ToastAction } from '@/components/ToastAction'
 import { SluglineEditable } from '@/components/DataItem/SluglineEditable'
 import { type CreateArticleDocumentStatus, createQuickArticle } from './lib/createQuickArticle'
 import type { DefaultValueOption, ViewProps } from '@/types'
-import type { Dispatch, JSX, SetStateAction } from 'react'
+import type { Dispatch, JSX, PropsWithChildren, SetStateAction } from 'react'
 import type { EleDocumentResponse } from '@/shared/types'
 import type * as Y from 'yjs'
 import { DocumentHeader } from '@/components/QuickDocument/DocumentHeader'
 import { DialogEditor } from '@/components/QuickDocument/DialogEditor'
 import { toSlateYXmlText } from '@/shared/yUtils'
+import type { FormProps } from '@/components/Form/Root'
 
 type PromptConfig = {
   visible: boolean
@@ -50,7 +51,7 @@ export const QuickArticleDialog = (props: {
   const [sendPrompt, setSendPrompt] = useState(false)
   const [savePrompt, setSavePrompt] = useState(false)
   const [donePrompt, setDonePrompt] = useState(false)
-  const [selectedPlanning, setSelectedPlanning] = useState<Omit<DefaultValueOption, 'payload'> & { payload: unknown } | undefined>(undefined)
+  const [selectedPlanning, setSelectedPlanning] = useState<Omit<DefaultValueOption, 'payload'> & { payload: { slugline?: string, sluglines?: string[] } } | undefined>(undefined)
   const [, setTitle] = useYValue<string | undefined>(ydoc.ele, 'root.title')
   const { index, locale, timeZone } = useRegistry()
   const [searchOlder, setSearchOlder] = useState(false)
@@ -131,6 +132,7 @@ export const QuickArticleDialog = (props: {
       />
       <View.Content>
         <Form.Root asDialog={props.asDialog}>
+          {!!selectedPlanning && <ValidateNow />}
           <Form.Content>
             {props.asDialog && (
               <Form.Group icon={GanttChartSquareIcon}>
@@ -146,43 +148,36 @@ export const QuickArticleDialog = (props: {
                         planningAwareness.current(isOpen)
                       }
                     }}
-                    fetch={(query) => fetch(query, session, index, locale, timeZone, { searchOlder })}
+                    fetch={(query) => fetch(query, session, index, locale, timeZone, { searchOlder, sluglines: true })}
                     minSearchChars={2}
                     modal={props.asDialog}
                     onSelect={(option) => {
+                      const slugline = (option.payload as { slugline: string | undefined }).slugline
+                      const sluglines = (option.payload as { sluglines: string[] | undefined }).sluglines
+                      const sectionPayload = (option.payload as { section: string | undefined }).section
+
                       if (option.value !== selectedPlanning?.value) {
                         setSelectedPlanning({
                           value: option.value,
                           label: option.label,
-                          payload: option.payload
+                          payload: {
+                            slugline,
+                            sluglines
+                          }
                         })
 
-
-                        const getPlanningSlugline = (payload: { slugline?: string } | undefined): string | undefined => {
-                          if (!payload || !payload.slugline) {
-                            return
-                          }
-
-                          const { slugline } = payload as { slugline?: string }
-                          return slugline
-                        }
-
-                        const planningSlugline = getPlanningSlugline(option.payload as { slugline?: string })
-
-                        if (planningSlugline) {
-                          setSlugline(toSlateYXmlText(planningSlugline))
-                        }
+                        setSlugline(toSlateYXmlText(slugline || ''))
 
                         const sectionPayload = option.payload as { section: string | undefined }
                         const sectionTitle = allSections
                           .find((s) => s.id === sectionPayload?.section)?.title
 
-                        if (sectionTitle && sectionPayload?.section) {
+                        if (sectionTitle && sectionPayload) {
                           setYSection(Block.create({
                             type: 'core/section',
                             rel: 'section',
                             title: sectionTitle,
-                            uuid: sectionPayload.section
+                            uuid: sectionPayload
                           }))
                         } else {
                           toast.error('Kunde inte hitta sektionen för planeringen')
@@ -230,6 +225,10 @@ export const QuickArticleDialog = (props: {
                   key={selectedPlanning?.value}
                   ydoc={ydoc}
                   value={slugline}
+                  compareValues={[
+                    ...(selectedPlanning?.payload?.sluglines || []),
+                    slugline?.toString()
+                  ]}
                 />
               )}
 
@@ -335,4 +334,14 @@ export const QuickArticleDialog = (props: {
       </View.Content>
     </View.Root>
   )
+}
+
+const ValidateNow = ({ setValidateForm }: FormProps & PropsWithChildren): null => {
+  useEffect(() => {
+    if (setValidateForm) {
+      setValidateForm(true)
+    }
+  }, [setValidateForm])
+
+  return null
 }
