@@ -168,9 +168,8 @@ export const QuickArticleDialog = (props: {
 
                         setSlugline(toSlateYXmlText(slugline || ''))
 
-                        const sectionPayload = option.payload as { section: string | undefined }
                         const sectionTitle = allSections
-                          .find((s) => s.id === sectionPayload?.section)?.title
+                          .find((s) => s.id === sectionPayload)?.title
 
                         if (sectionTitle && sectionPayload) {
                           setYSection(Block.create({
