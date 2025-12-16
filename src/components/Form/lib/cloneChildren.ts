@@ -1,7 +1,7 @@
 import React from 'react'
 
 export const isReactElement = <P>(child: React.ReactNode): child is React.ReactElement<P> =>
-  React.isValidElement<P>(child) && typeof child.type !== 'string'
+  React.isValidElement<P>(child) && typeof child.type !== 'string' && child.type !== React.Fragment
 
 export const cloneChildrenWithProps = <P>(
   children: React.ReactNode,
