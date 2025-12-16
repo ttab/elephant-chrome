@@ -83,7 +83,7 @@
     "vite-express": "^0.21.1",
     "y-indexeddb": "^9.0.12",
     "yjs": "^13.6.26",
-    "zod": "^4.1.12"
+    "zod": "^4.2.1"
   },
   "devDependencies": {
     "@auth/core": "^0.38.0",
