@@ -141,6 +141,7 @@ export const PreviewSheet = ({ id, wire, handleClose, textOnly = true, version, 
                 <ToggleGroup
                   type='single'
                   size='xs'
+                  tabIndex={-1}
                   disabled={documentStatus?.name === 'used'}
                   value={documentStatus?.version === currentVersion
                     ? documentStatus?.name

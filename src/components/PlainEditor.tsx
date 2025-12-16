@@ -90,12 +90,12 @@ export const Editor = ({ id, version, textOnly = false, direct, versionStatusHis
         <PreVersionInfo version={version} versionStatusHistory={versionStatusHistory} />
       )}
       <Textbit.Root
+        key={id}
         value={filterText(content, textOnly)}
         plugins={getPlugins()}
         readOnly
       >
         <Textbit.Editable
-          key={id}
           className={`outline-none
             pt-4
             pb-4
