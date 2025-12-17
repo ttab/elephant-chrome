@@ -20,7 +20,7 @@ import { ToastAction } from '@/components/ToastAction'
 import { SluglineEditable } from '@/components/DataItem/SluglineEditable'
 import { type CreateArticleDocumentStatus, createQuickArticle } from './lib/createQuickArticle'
 import type { DefaultValueOption, ViewProps } from '@/types'
-import type { Dispatch, JSX, PropsWithChildren, SetStateAction } from 'react'
+import type { Dispatch, JSX, SetStateAction } from 'react'
 import type { EleDocumentResponse } from '@/shared/types'
 import type * as Y from 'yjs'
 import { DocumentHeader } from '@/components/QuickDocument/DocumentHeader'
@@ -39,6 +39,7 @@ type PromptConfig = {
   documentStatus: CreateArticleDocumentStatus
   setPrompt: Dispatch<SetStateAction<boolean>>
 }
+import { ValidateNow } from '@/components/ValidateNow'
 
 export const QuickArticleDialog = (props: {
   documentId: string
@@ -333,14 +334,4 @@ export const QuickArticleDialog = (props: {
       </View.Content>
     </View.Root>
   )
-}
-
-const ValidateNow = ({ setValidateForm }: FormProps & PropsWithChildren): null => {
-  useEffect(() => {
-    if (setValidateForm) {
-      setValidateForm(true)
-    }
-  }, [setValidateForm])
-
-  return null
 }
