@@ -27,6 +27,7 @@ import { ToastAction } from '@/components/ToastAction'
 import { quickArticleDocumentTemplate } from '@/shared/templates/quickArticleDocumentTemplate'
 import { DocumentHeader } from '@/components/QuickDocument/DocumentHeader'
 import { DialogEditor } from '@/components/QuickDocument/DialogEditor'
+import { getLabel, promptConfig } from '@/components/QuickDocument/dialogConfig'
 
 type PromptConfig = {
   visible: boolean
@@ -67,20 +68,6 @@ export const FlashDialog = (props: {
 
   const handleSubmit = (setCreatePrompt: Dispatch<SetStateAction<boolean>>): void => {
     setCreatePrompt(true)
-  }
-
-  const getLabel = (documentStatus: CreateFlashDocumentStatus): string => {
-    switch (documentStatus) {
-      case 'usable': {
-        return 'Flash skickad'
-      }
-      case 'done': {
-        return 'Flash godkänd'
-      }
-      default: {
-        return 'Flash sparad'
-      }
-    }
   }
 
   // Create a quick-article after flash creation
@@ -139,7 +126,7 @@ export const FlashDialog = (props: {
     quickArticleData: QuickArticleData | undefined
   } | undefined, config: PromptConfig, startDate: string | undefined) => {
     // After flash has been successfully created, we celebrate with a toast
-    toast.success(getLabel(data?.documentStatus), {
+    toast.success(getLabel(data?.documentStatus, 'flash'), {
       action: (
         <ToastAction
           key='open-flash-1'

@@ -26,7 +26,7 @@ import type * as Y from 'yjs'
 import { DocumentHeader } from '@/components/QuickDocument/DocumentHeader'
 import { DialogEditor } from '@/components/QuickDocument/DialogEditor'
 import { toSlateYXmlText } from '@/shared/yUtils'
-import { type PromptConfig, promptConfig } from '@/components/QuickDocument/dialogConfig'
+import { getLabel, type PromptConfig, promptConfig } from '@/components/QuickDocument/dialogConfig'
 import { ValidateNow } from '@/components/ValidateNow'
 
 export const QuickArticleDialog = (props: {
@@ -243,7 +243,7 @@ export const QuickArticleDialog = (props: {
                       section: (!selectedPlanning?.value) ? section || undefined : undefined
                     })
                       .then(() => {
-                        toast.success('Snabbartikel har skapats', {
+                        toast.success(getLabel(config.documentStatus, 'article'), {
                           action: (
                             <ToastAction
                               key='open-article'
